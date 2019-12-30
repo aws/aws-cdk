@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-stepfunctions-tasks",
-  "version": "1.8.0",
+  "version": "1.19.0",
   "description": "Task integrations for AWS StepFunctions",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -11,8 +11,7 @@
         "package": "software.amazon.awscdk.services.stepfunctions.tasks",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "stepfunctions-tasks",
-          "versionSuffix": ".DEVPREVIEW"
+          "artifactId": "stepfunctions-tasks"
         }
       },
       "dotnet": {
@@ -20,8 +19,7 @@
         "packageId": "Amazon.CDK.AWS.StepFunctions.Tasks",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "versionSuffix": "-devpreview",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/png/default-64-dark.png"
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.aws-stepfunctions-tasks",
@@ -45,7 +43,8 @@
     "awslint": "cdk-awslint",
     "cfn2ts": "cfn2ts",
     "build+test+package": "npm run build+test && npm run package",
-    "build+test": "npm run build && npm test"
+    "build+test": "npm run build && npm test",
+    "compat": "cdk-compat"
   },
   "jest": {
     "moduleFileExtensions": [
@@ -56,7 +55,13 @@
         "branches": 65,
         "statements": 80
       }
-    }
+    },
+    "collectCoverage": true,
+    "coverageReporters": [
+      "lcov",
+      "html",
+      "text-summary"
+    ]
   },
   "keywords": [
     "aws",
@@ -74,47 +79,107 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^1.8.0",
-    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
-    "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
+    "@aws-cdk/assert": "1.19.0",
+    "cdk-build-tools": "1.19.0",
+    "cdk-integ-tools": "1.19.0",
     "jest": "^24.9.0",
-    "pkglint": "file:../../../tools/pkglint"
+    "pkglint": "1.19.0"
   },
   "dependencies": {
-    "@aws-cdk/assets": "^1.8.0",
-    "@aws-cdk/aws-cloudwatch": "^1.8.0",
-    "@aws-cdk/aws-ec2": "^1.8.0",
-    "@aws-cdk/aws-ecr": "^1.8.0",
-    "@aws-cdk/aws-ecr-assets": "^1.8.0",
-    "@aws-cdk/aws-ecs": "^1.8.0",
-    "@aws-cdk/aws-iam": "^1.8.0",
-    "@aws-cdk/aws-kms": "^1.8.0",
-    "@aws-cdk/aws-lambda": "^1.8.0",
-    "@aws-cdk/aws-s3": "^1.8.0",
-    "@aws-cdk/aws-sns": "^1.8.0",
-    "@aws-cdk/aws-sqs": "^1.8.0",
-    "@aws-cdk/aws-stepfunctions": "^1.8.0",
-    "@aws-cdk/core": "^1.8.0"
+    "@aws-cdk/assets": "1.19.0",
+    "@aws-cdk/aws-cloudwatch": "1.19.0",
+    "@aws-cdk/aws-ec2": "1.19.0",
+    "@aws-cdk/aws-ecr": "1.19.0",
+    "@aws-cdk/aws-ecr-assets": "1.19.0",
+    "@aws-cdk/aws-ecs": "1.19.0",
+    "@aws-cdk/aws-iam": "1.19.0",
+    "@aws-cdk/aws-kms": "1.19.0",
+    "@aws-cdk/aws-lambda": "1.19.0",
+    "@aws-cdk/aws-s3": "1.19.0",
+    "@aws-cdk/aws-sns": "1.19.0",
+    "@aws-cdk/aws-sqs": "1.19.0",
+    "@aws-cdk/aws-stepfunctions": "1.19.0",
+    "@aws-cdk/core": "1.19.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/assets": "^1.8.0",
-    "@aws-cdk/aws-cloudwatch": "^1.8.0",
-    "@aws-cdk/aws-ec2": "^1.8.0",
-    "@aws-cdk/aws-ecr": "^1.8.0",
-    "@aws-cdk/aws-ecr-assets": "^1.8.0",
-    "@aws-cdk/aws-ecs": "^1.8.0",
-    "@aws-cdk/aws-iam": "^1.8.0",
-    "@aws-cdk/aws-kms": "^1.8.0",
-    "@aws-cdk/aws-lambda": "^1.8.0",
-    "@aws-cdk/aws-s3": "^1.8.0",
-    "@aws-cdk/aws-sns": "^1.8.0",
-    "@aws-cdk/aws-sqs": "^1.8.0",
-    "@aws-cdk/aws-stepfunctions": "^1.8.0",
-    "@aws-cdk/core": "^1.8.0"
+    "@aws-cdk/assets": "1.19.0",
+    "@aws-cdk/aws-cloudwatch": "1.19.0",
+    "@aws-cdk/aws-ec2": "1.19.0",
+    "@aws-cdk/aws-ecr": "1.19.0",
+    "@aws-cdk/aws-ecr-assets": "1.19.0",
+    "@aws-cdk/aws-ecs": "1.19.0",
+    "@aws-cdk/aws-iam": "1.19.0",
+    "@aws-cdk/aws-kms": "1.19.0",
+    "@aws-cdk/aws-lambda": "1.19.0",
+    "@aws-cdk/aws-s3": "1.19.0",
+    "@aws-cdk/aws-sns": "1.19.0",
+    "@aws-cdk/aws-sqs": "1.19.0",
+    "@aws-cdk/aws-stepfunctions": "1.19.0",
+    "@aws-cdk/core": "1.19.0"
   },
   "engines": {
-    "node": ">= 8.10.0"
+    "node": ">= 10.3.0"
   },
-  "stability": "experimental"
+  "stability": "experimental",
+  "awslint": {
+    "exclude": [
+      "docs-public-apis:@aws-cdk/aws-stepfunctions-tasks.S3LocationConfig.uri",
+      "docs-public-apis:@aws-cdk/aws-stepfunctions-tasks.AlgorithmSpecification",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.AlgorithmSpecification.metricDefinitions",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.AlgorithmSpecification.trainingImage",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.Channel.compressionType",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.Channel.contentType",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.Channel.inputMode",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.Channel.recordWrapperType",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.Channel.shuffleConfig",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.CommonEcsRunTaskProps.containerOverrides",
+      "docs-public-apis:@aws-cdk/aws-stepfunctions-tasks.ContainerOverride",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.ContainerOverride.cpu",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.ContainerOverride.environment",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.ContainerOverride.memoryLimit",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.ContainerOverride.memoryReservation",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.EcsRunTaskBaseProps.parameters",
+      "docs-public-apis:@aws-cdk/aws-stepfunctions-tasks.ISageMakerTask",
+      "docs-public-apis:@aws-cdk/aws-stepfunctions-tasks.OutputDataConfig",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.OutputDataConfig.encryptionKey",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.PublishToTopicProps.messagePerSubscriptionType",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.PublishToTopicProps.subject",
+      "docs-public-apis:@aws-cdk/aws-stepfunctions-tasks.ResourceConfig",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.ResourceConfig.volumeEncryptionKey",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.RunLambdaTaskProps.payload",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.S3DataSource.attributeNames",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.S3DataSource.s3DataDistributionType",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.S3DataSource.s3DataType",
+      "docs-public-apis:@aws-cdk/aws-stepfunctions-tasks.S3LocationConfig",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.AlgorithmSpecification.algorithmName",
+      "docs-public-apis:@aws-cdk/aws-stepfunctions-tasks.SagemakerTrainTaskProps",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.SagemakerTrainTaskProps.hyperparameters",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.SagemakerTrainTaskProps.resourceConfig",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.SagemakerTrainTaskProps.stoppingCondition",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.SagemakerTrainTaskProps.tags",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.SagemakerTrainTaskProps.vpcConfig",
+      "docs-public-apis:@aws-cdk/aws-stepfunctions-tasks.SagemakerTransformProps",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.SagemakerTransformProps.batchStrategy",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.SagemakerTransformProps.environment",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.SagemakerTransformProps.maxConcurrentTransforms",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.SagemakerTransformProps.maxPayloadInMB",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.SagemakerTransformProps.role",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.SagemakerTransformProps.tags",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.SagemakerTransformProps.transformResources",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.StartExecutionProps.input",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.StartExecutionProps.name",
+      "docs-public-apis:@aws-cdk/aws-stepfunctions-tasks.StoppingCondition",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.StoppingCondition.maxRuntime",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.TransformInput.compressionType",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.TransformInput.contentType",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.TransformInput.splitType",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.TransformOutput.accept",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.TransformOutput.assembleWith",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.TransformOutput.encryptionKey",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.TransformResources.volumeKmsKeyId",
+      "docs-public-apis:@aws-cdk/aws-stepfunctions-tasks.VpcConfig",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.VpcConfig.subnets"
+    ]
+  }
 }

@@ -1,4 +1,4 @@
-import autoscaling = require('@aws-cdk/aws-autoscaling');
+import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import { Stack } from '@aws-cdk/core';
 import { BootstrapOptions } from './cluster';
 import { LifecycleLabel } from './spot-interrupt-handler';
@@ -12,9 +12,7 @@ export function renderUserData(clusterName: string, autoScalingGroup: autoscalin
 
   const extraArgs = new Array<string>();
 
-  if (options.useMaxPods) {
-    extraArgs.push('--use-max-pods');
-  }
+  extraArgs.push(`--use-max-pods ${options.useMaxPods === undefined ? true : options.useMaxPods}`);
 
   if (options.awsApiRetryAttempts) {
     extraArgs.push(`--aws-api-retry-attempts ${options.awsApiRetryAttempts}`);

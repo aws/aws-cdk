@@ -1,14 +1,14 @@
-import ec2 = require('@aws-cdk/aws-ec2');
-import kms = require('@aws-cdk/aws-kms');
-import secretsmanager = require('@aws-cdk/aws-secretsmanager');
-import { Construct,   RemovalPolicy, Resource, Token } from '@aws-cdk/core';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import { IRole, ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
+import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
+import { Construct, Duration, RemovalPolicy, Resource, Token } from '@aws-cdk/core';
 import { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { IParameterGroup } from './parameter-group';
-import { BackupProps, DatabaseClusterEngine, InstanceProps, Login } from './props';
+import { BackupProps, DatabaseClusterEngine, InstanceProps, Login, RotationMultiUserOptions } from './props';
 import { CfnDBCluster, CfnDBInstance, CfnDBSubnetGroup } from './rds.generated';
-import { SecretRotation, SecretRotationApplication, SecretRotationOptions } from './secret-rotation';
 
 /**
  * Properties for a new database cluster
@@ -51,7 +51,7 @@ export interface DatabaseClusterProps {
    * @default - Backup retention period for automated backups is 1 day.
    * Backup preferred window is set to a 30-minute window selected at random from an
    * 8-hour block of time for each AWS Region, occurring on a random day of the week.
-   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_UpgradeDBInstance.Maintenance.html#AdjustingTheMaintenanceWindow.Aurora
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithAutomatedBackups.html#USER_WorkingWithAutomatedBackups.BackupWindow
    */
   readonly backup?: BackupProps;
 
@@ -110,7 +110,7 @@ export interface DatabaseClusterProps {
    *
    * @default - 30-minute window selected at random from an 8-hour block of time for
    * each AWS Region, occurring on a random day of the week.
-   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_UpgradeDBInstance.Maintenance.html#AdjustingTheMaintenanceWindow.Aurora
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_UpgradeDBInstance.Maintenance.html#Concepts.DBMaintenance
    */
   readonly preferredMaintenanceWindow?: string;
 
@@ -128,6 +128,21 @@ export interface DatabaseClusterProps {
    * @default - Retain cluster.
    */
   readonly removalPolicy?: RemovalPolicy
+
+  /**
+   * The interval, in seconds, between points when Amazon RDS collects enhanced
+   * monitoring metrics for the DB instances.
+   *
+   * @default no enhanced monitoring
+   */
+  readonly monitoringInterval?: Duration;
+
+  /**
+   * Role that will be used to manage DB instances monitoring.
+   *
+   * @default - A role is automatically created for you
+   */
+  readonly monitoringRole?: IRole;
 }
 
 /**
@@ -174,7 +189,7 @@ abstract class DatabaseClusterBase extends Resource implements IDatabaseCluster 
   public asSecretAttachmentTarget(): secretsmanager.SecretAttachmentTargetProps {
     return {
       targetId: this.clusterIdentifier,
-      targetType: secretsmanager.AttachmentTargetType.CLUSTER
+      targetType: secretsmanager.AttachmentTargetType.RDS_DB_CLUSTER
     };
   }
 }
@@ -246,10 +261,8 @@ export class DatabaseCluster extends DatabaseClusterBase {
    */
   public readonly secret?: secretsmanager.ISecret;
 
-  /**
-   * The database engine of this cluster
-   */
-  private readonly secretRotationApplication: SecretRotationApplication;
+  private readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
+  private readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
 
   /**
    * The VPC where the DB subnet group is created.
@@ -286,7 +299,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
     });
     this.securityGroupId = securityGroup.securityGroupId;
 
-    let secret;
+    let secret: DatabaseSecret | undefined;
     if (!props.masterUser.password) {
       secret = new DatabaseSecret(this, 'Secret', {
         username: props.masterUser.username,
@@ -294,7 +307,8 @@ export class DatabaseCluster extends DatabaseClusterBase {
       });
     }
 
-    this.secretRotationApplication = props.engine.secretRotationApplication;
+    this.singleUserRotationApplication = props.engine.singleUserRotationApplication;
+    this.multiUserRotationApplication = props.engine.multiUserRotationApplication;
 
     const cluster = new CfnDBCluster(this, 'Resource', {
       // Basic
@@ -333,9 +347,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
     this.clusterReadEndpoint = new Endpoint(cluster.attrReadEndpointAddress, portAttribute);
 
     if (secret) {
-      this.secret = secret.addTargetAttachment('AttachedSecret', {
-        target: this
-      });
+      this.secret = secret.attach(this);
     }
 
     const instanceCount = props.instances != null ? props.instances : 2;
@@ -345,6 +357,17 @@ export class DatabaseCluster extends DatabaseClusterBase {
 
     // Get the actual subnet objects so we can depend on internet connectivity.
     const internetConnected = props.instanceProps.vpc.selectSubnets(props.instanceProps.vpcSubnets).internetConnectivityEstablished;
+
+    let monitoringRole;
+    if (props.monitoringInterval && props.monitoringInterval.toSeconds()) {
+      monitoringRole = props.monitoringRole || new Role(this, "MonitoringRole", {
+        assumedBy: new ServicePrincipal("monitoring.rds.amazonaws.com"),
+        managedPolicies: [
+          ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonRDSEnhancedMonitoringRole')
+        ]
+      });
+    }
+
     for (let i = 0; i < instanceCount; i++) {
       const instanceIndex = i + 1;
 
@@ -366,6 +389,8 @@ export class DatabaseCluster extends DatabaseClusterBase {
         // This is already set on the Cluster. Unclear to me whether it should be repeated or not. Better yes.
         dbSubnetGroupName: subnetGroup.ref,
         dbParameterGroupName: props.instanceProps.parameterGroup && props.instanceProps.parameterGroup.parameterGroupName,
+        monitoringInterval: props.monitoringInterval && props.monitoringInterval.toSeconds(),
+        monitoringRoleArn: monitoringRole && monitoringRole.roleArn
       });
 
       instance.applyRemovalPolicy(props.removalPolicy, {
@@ -386,18 +411,46 @@ export class DatabaseCluster extends DatabaseClusterBase {
 
   /**
    * Adds the single user rotation of the master password to this cluster.
+   *
+   * @param [automaticallyAfter=Duration.days(30)] Specifies the number of days after the previous rotation
+   * before Secrets Manager triggers the next automatic rotation.
    */
-  public addRotationSingleUser(id: string, options: SecretRotationOptions = {}): SecretRotation {
+  public addRotationSingleUser(automaticallyAfter?: Duration): secretsmanager.SecretRotation {
     if (!this.secret) {
       throw new Error('Cannot add single user rotation for a cluster without secret.');
     }
-    return new SecretRotation(this, id, {
+
+    const id = 'RotationSingleUser';
+    const existing = this.node.tryFindChild(id);
+    if (existing) {
+      throw new Error('A single user rotation was already added to this cluster.');
+    }
+
+    return new secretsmanager.SecretRotation(this, id, {
       secret: this.secret,
-      application: this.secretRotationApplication,
+      automaticallyAfter,
+      application: this.singleUserRotationApplication,
       vpc: this.vpc,
       vpcSubnets: this.vpcSubnets,
       target: this,
-      ...options
+    });
+  }
+
+  /**
+   * Adds the multi user rotation to this cluster.
+   */
+  public addRotationMultiUser(id: string, options: RotationMultiUserOptions): secretsmanager.SecretRotation {
+    if (!this.secret) {
+      throw new Error('Cannot add multi user rotation for a cluster without secret.');
+    }
+    return new secretsmanager.SecretRotation(this, id, {
+      secret: options.secret,
+      masterSecret: this.secret,
+      automaticallyAfter: options.automaticallyAfter,
+      application: this.multiUserRotationApplication,
+      vpc: this.vpc,
+      vpcSubnets: this.vpcSubnets,
+      target: this,
     });
   }
 }

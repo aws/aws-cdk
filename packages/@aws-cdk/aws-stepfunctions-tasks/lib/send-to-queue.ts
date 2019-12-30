@@ -1,8 +1,8 @@
-import iam = require('@aws-cdk/aws-iam');
-import sqs = require('@aws-cdk/aws-sqs');
-import sfn = require('@aws-cdk/aws-stepfunctions');
+import * as iam from '@aws-cdk/aws-iam';
+import * as sqs from '@aws-cdk/aws-sqs';
+import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Duration } from '@aws-cdk/core';
-import { resourceArnSuffix } from './resource-arn-suffix';
+import { getResourceArn } from './resource-arn-suffix';
 
 /**
  * Properties for SendMessageTask
@@ -80,7 +80,7 @@ export class SendToQueue implements sfn.IStepFunctionsTask {
 
   public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
     return {
-      resourceArn: 'arn:aws:states:::sqs:sendMessage' + resourceArnSuffix.get(this.integrationPattern),
+      resourceArn: getResourceArn("sqs", "sendMessage", this.integrationPattern),
       policyStatements: [new iam.PolicyStatement({
         actions: ['sqs:SendMessage'],
         resources: [this.queue.queueArn]

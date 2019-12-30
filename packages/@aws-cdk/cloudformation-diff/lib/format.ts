@@ -1,5 +1,5 @@
-import cxapi = require('@aws-cdk/cx-api');
-import colors = require('colors/safe');
+import * as cxapi from '@aws-cdk/cx-api';
+import * as colors from 'colors/safe';
 import { format } from 'util';
 import { Difference, isPropertyDifference, ResourceDifference, ResourceImpact } from './diff-template';
 import { DifferenceCollection, TemplateDiff } from './diff/types';
@@ -8,8 +8,10 @@ import { formatTable } from './format-table';
 import { IamChanges } from './iam/iam-changes';
 import { SecurityGroupChanges } from './network/security-group-changes';
 
+/* eslint-disable @typescript-eslint/no-require-imports */
 // tslint:disable-next-line:no-var-requires
 const { structuredPatch } = require('diff');
+/* eslint-enable */
 
 export interface FormatStream extends NodeJS.WritableStream {
   columns?: number;
@@ -66,7 +68,7 @@ function formatSecurityChangesWithBanner(formatter: Formatter, templateDiff: Tem
   formatter.formatIamChanges(templateDiff.iamChanges);
   formatter.formatSecurityGroupChanges(templateDiff.securityGroupChanges);
 
-  formatter.warning(`(NOTE: There may be security-related changes not in this list. See http://bit.ly/cdk-2EhF7Np)`);
+  formatter.warning(`(NOTE: There may be security-related changes not in this list. See https://github.com/aws/aws-cdk/issues/1299)`);
   formatter.printSectionFooter();
 }
 

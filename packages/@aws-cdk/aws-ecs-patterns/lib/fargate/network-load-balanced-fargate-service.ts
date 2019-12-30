@@ -7,6 +7,15 @@ import { NetworkLoadBalancedServiceBase, NetworkLoadBalancedServiceBaseProps } f
  */
 export interface NetworkLoadBalancedFargateServiceProps extends NetworkLoadBalancedServiceBaseProps {
   /**
+   * The task definition to use for tasks in the service. TaskDefinition or TaskImageOptions must be specified, but not both.
+   *
+   * [disable-awslint:ref-via-interface]
+   *
+   * @default - none
+   */
+  readonly taskDefinition?: FargateTaskDefinition;
+
+  /**
    * The number of cpu units used by the task.
    *
    * Valid values, which determines your range of valid values for the memory parameter:
@@ -75,28 +84,44 @@ export class NetworkLoadBalancedFargateService extends NetworkLoadBalancedServic
   /**
    * Constructs a new instance of the NetworkLoadBalancedFargateService class.
    */
-  constructor(scope: Construct, id: string, props: NetworkLoadBalancedFargateServiceProps) {
+  constructor(scope: Construct, id: string, props: NetworkLoadBalancedFargateServiceProps = {}) {
     super(scope, id, props);
 
     this.assignPublicIp = props.assignPublicIp !== undefined ? props.assignPublicIp : false;
 
-    this.taskDefinition = new FargateTaskDefinition(this, 'TaskDef', {
-      memoryLimitMiB: props.memoryLimitMiB,
-      cpu: props.cpu,
-      executionRole: props.executionRole,
-      taskRole: props.taskRole
-    });
+    if (props.taskDefinition && props.taskImageOptions) {
+      throw new Error('You must specify either a taskDefinition or an image, not both.');
+    } else if (props.taskDefinition) {
+      this.taskDefinition = props.taskDefinition;
+    } else if (props.taskImageOptions) {
+      const taskImageOptions = props.taskImageOptions;
+      this.taskDefinition = new FargateTaskDefinition(this, 'TaskDef', {
+        memoryLimitMiB: props.memoryLimitMiB,
+        cpu: props.cpu,
+        executionRole: taskImageOptions.executionRole,
+        taskRole: taskImageOptions.taskRole,
+        family: taskImageOptions.family,
+      });
 
-    const containerName = props.containerName !== undefined ? props.containerName : 'web';
-    const container = this.taskDefinition.addContainer(containerName, {
-      image: props.image,
-      logging: this.logDriver,
-      environment: props.environment,
-      secrets: props.secrets,
-    });
-    container.addPortMappings({
-      containerPort: props.containerPort || 80,
-    });
+      // Create log driver if logging is enabled
+      const enableLogging = taskImageOptions.enableLogging !== undefined ? taskImageOptions.enableLogging : true;
+      const logDriver = taskImageOptions.logDriver !== undefined
+                          ? taskImageOptions.logDriver : enableLogging
+                            ? this.createAWSLogDriver(this.node.id) : undefined;
+
+      const containerName = taskImageOptions.containerName !== undefined ? taskImageOptions.containerName : 'web';
+      const container = this.taskDefinition.addContainer(containerName, {
+        image: taskImageOptions.image,
+        logging: logDriver,
+        environment: taskImageOptions.environment,
+        secrets: taskImageOptions.secrets,
+      });
+      container.addPortMappings({
+        containerPort: taskImageOptions.containerPort || 80,
+      });
+    } else {
+      throw new Error('You must specify one of: taskDefinition or image');
+    }
 
     this.service = new FargateService(this, "Service", {
       cluster: this.cluster,
@@ -105,6 +130,11 @@ export class NetworkLoadBalancedFargateService extends NetworkLoadBalancedServic
       assignPublicIp: this.assignPublicIp,
       serviceName: props.serviceName,
       healthCheckGracePeriod: props.healthCheckGracePeriod,
+      minHealthyPercent: props.minHealthyPercent,
+      maxHealthyPercent: props.maxHealthyPercent,
+      propagateTags: props.propagateTags,
+      enableECSManagedTags: props.enableECSManagedTags,
+      cloudMapOptions: props.cloudMapOptions,
     });
     this.addServiceAsTarget(this.service);
   }

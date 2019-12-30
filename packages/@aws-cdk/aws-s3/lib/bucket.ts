@@ -1,12 +1,12 @@
-import events = require('@aws-cdk/aws-events');
-import iam = require('@aws-cdk/aws-iam');
-import kms = require('@aws-cdk/aws-kms');
+import * as events from '@aws-cdk/aws-events';
+import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import { Construct, Fn, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
 import { EOL } from 'os';
 import { BucketPolicy } from './bucket-policy';
 import { IBucketNotificationDestination } from './destination';
 import { BucketNotifications } from './notifications-resource';
-import perms = require('./perms');
+import * as perms from './perms';
 import { LifecycleRule } from './rule';
 import { CfnBucket } from './s3.generated';
 import { parseBucketArn, parseBucketName } from './util';
@@ -60,7 +60,7 @@ export interface IBucket extends IResource {
   readonly encryptionKey?: kms.IKey;
 
   /**
-   * The resource policy assoicated with this bucket.
+   * The resource policy associated with this bucket.
    *
    * If `autoCreatePolicy` is true, a `BucketPolicy` will be created upon the
    * first call to addToResourcePolicy(s).
@@ -172,7 +172,7 @@ export interface IBucket extends IResource {
   grantPublicAccess(keyPrefix?: string, ...allowedActions: string[]): iam.Grant;
 
   /**
-   * Define a CloudWatch event that triggers when something happens to this repository
+   * Defines a CloudWatch event that triggers when something happens to this bucket
    *
    * Requires that there exists at least one CloudTrail Trail in your account
    * that captures the event. This method will not create the Trail.
@@ -183,8 +183,12 @@ export interface IBucket extends IResource {
   onCloudTrailEvent(id: string, options?: OnCloudTrailBucketEventOptions): events.Rule;
 
   /**
-   * Defines an AWS CloudWatch event rule that can trigger a target when an image is pushed to this
-   * repository.
+   * Defines an AWS CloudWatch event that triggers when an object is uploaded
+   * to the specified paths (keys) in this bucket using the PutObject API call.
+   *
+   * Note that some tools like `aws s3 cp` will automatically use either
+   * PutObject or the multipart upload API depending on the file size,
+   * so using `onCloudTrailWriteObject` may be preferable.
    *
    * Requires that there exists at least one CloudTrail Trail in your account
    * that captures the event. This method will not create the Trail.
@@ -193,6 +197,23 @@ export interface IBucket extends IResource {
    * @param options Options for adding the rule
    */
   onCloudTrailPutObject(id: string, options?: OnCloudTrailBucketEventOptions): events.Rule;
+
+  /**
+   * Defines an AWS CloudWatch event that triggers when an object at the
+   * specified paths (keys) in this bucket are written to.  This includes
+   * the events PutObject, CopyObject, and CompleteMultipartUpload.
+   *
+   * Note that some tools like `aws s3 cp` will automatically use either
+   * PutObject or the multipart upload API depending on the file size,
+   * so using this method may be preferable to `onCloudTrailPutObject`.
+   *
+   * Requires that there exists at least one CloudTrail Trail in your account
+   * that captures the event. This method will not create the Trail.
+   *
+   * @param id The id of the rule
+   * @param options Options for adding the rule
+   */
+  onCloudTrailWriteObject(id: string, options?: OnCloudTrailBucketEventOptions): events.Rule;
 }
 
 /**
@@ -282,7 +303,7 @@ abstract class BucketBase extends Resource implements IBucket {
   public abstract readonly encryptionKey?: kms.IKey;
 
   /**
-   * The resource policy assoicated with this bucket.
+   * The resource policy associated with this bucket.
    *
    * If `autoCreatePolicy` is true, a `BucketPolicy` will be created upon the
    * first call to addToResourcePolicy(s).
@@ -325,8 +346,12 @@ abstract class BucketBase extends Resource implements IBucket {
   }
 
   /**
-   * Defines an AWS CloudWatch event rule that can trigger a target when an image is pushed to this
-   * repository.
+   * Defines an AWS CloudWatch event that triggers when an object is uploaded
+   * to the specified paths (keys) in this bucket using the PutObject API call.
+   *
+   * Note that some tools like `aws s3 cp` will automatically use either
+   * PutObject or the multipart upload API depending on the file size,
+   * so using `onCloudTrailWriteObject` may be preferable.
    *
    * Requires that there exists at least one CloudTrail Trail in your account
    * that captures the event. This method will not create the Trail.
@@ -339,6 +364,39 @@ abstract class BucketBase extends Resource implements IBucket {
     rule.addEventPattern({
       detail: {
         eventName: ['PutObject'],
+      },
+    });
+    return rule;
+  }
+
+  /**
+   * Defines an AWS CloudWatch event that triggers when an object at the
+   * specified paths (keys) in this bucket are written to.  This includes
+   * the events PutObject, CopyObject, and CompleteMultipartUpload.
+   *
+   * Note that some tools like `aws s3 cp` will automatically use either
+   * PutObject or the multipart upload API depending on the file size,
+   * so using this method may be preferable to `onCloudTrailPutObject`.
+   *
+   * Requires that there exists at least one CloudTrail Trail in your account
+   * that captures the event. This method will not create the Trail.
+   *
+   * @param id The id of the rule
+   * @param options Options for adding the rule
+   */
+  public onCloudTrailWriteObject(id: string, options: OnCloudTrailBucketEventOptions = {}): events.Rule {
+    const rule = this.onCloudTrailEvent(id, options);
+    rule.addEventPattern({
+      detail: {
+        eventName: [
+          'CompleteMultipartUpload',
+          'CopyObject',
+          'PutObject'
+        ],
+        requestParameters: {
+          bucketName: [ this.bucketName ],
+          key: options.paths,
+        },
       },
     });
     return rule;
@@ -883,7 +941,7 @@ export class Bucket extends BucketBase {
       ? false
       : attrs.bucketWebsiteNewUrlFormat;
 
-    const websiteUrl = newUrlFormat
+    const websiteDomain = newUrlFormat
       ? `${bucketName}.s3-website.${region}.${urlSuffix}`
       : `${bucketName}.s3-website-${region}.${urlSuffix}`;
 
@@ -891,8 +949,8 @@ export class Bucket extends BucketBase {
       public readonly bucketName = bucketName!;
       public readonly bucketArn = parseBucketArn(scope, attrs);
       public readonly bucketDomainName = attrs.bucketDomainName || `${bucketName}.s3.${urlSuffix}`;
-      public readonly bucketWebsiteUrl = attrs.bucketWebsiteUrl || websiteUrl;
-      public readonly bucketWebsiteDomainName = Fn.select(2, Fn.split('/', attrs.bucketWebsiteUrl || websiteUrl));
+      public readonly bucketWebsiteUrl = attrs.bucketWebsiteUrl || `http://${websiteDomain}`;
+      public readonly bucketWebsiteDomainName = attrs.bucketWebsiteUrl ? Fn.select(2, Fn.split('/', attrs.bucketWebsiteUrl)) : websiteDomain;
       public readonly bucketRegionalDomainName = attrs.bucketRegionalDomainName || `${bucketName}.s3.${region}.${urlSuffix}`;
       public readonly bucketDualStackDomainName = attrs.bucketDualStackDomainName || `${bucketName}.s3.dualstack.${region}.${urlSuffix}`;
       public readonly bucketWebsiteNewUrlFormat = newUrlFormat;

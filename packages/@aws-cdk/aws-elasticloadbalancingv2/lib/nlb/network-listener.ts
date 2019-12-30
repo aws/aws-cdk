@@ -2,6 +2,7 @@ import { Construct, Duration, IResource, Resource } from '@aws-cdk/core';
 import { BaseListener } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
 import { Protocol, SslPolicy } from '../shared/enums';
+import { IListenerCertificate } from '../shared/listener-certificate';
 import { INetworkLoadBalancer } from './network-load-balancer';
 import { INetworkLoadBalancerTarget, INetworkTargetGroup, NetworkTargetGroup } from './network-target-group';
 
@@ -33,7 +34,7 @@ export interface BaseNetworkListenerProps {
    *
    * @default - No certificates.
    */
-  readonly certificates?: INetworkListenerCertificateProps[];
+  readonly certificates?: IListenerCertificate[];
 
   /**
    * SSL Policy
@@ -45,12 +46,12 @@ export interface BaseNetworkListenerProps {
 
 /**
  * Properties for adding a certificate to a listener
+ *
+ * This interface exists for backwards compatibility.
+ *
+ * @deprecated Use IListenerCertificate instead
  */
-export interface INetworkListenerCertificateProps {
-  /**
-   * Certificate ARN from ACM
-   */
-  readonly certificateArn: string
+export interface INetworkListenerCertificateProps extends IListenerCertificate {
 }
 
 /**
@@ -89,8 +90,8 @@ export class NetworkListener extends BaseListener implements INetworkListener {
     const certs = props.certificates || [];
     const proto = props.protocol || (certs.length > 0 ? Protocol.TLS : Protocol.TCP);
 
-    if ([Protocol.TCP, Protocol.TLS].indexOf(proto) === -1) {
-      throw new Error(`The protocol must be either ${Protocol.TCP} or ${Protocol.TLS}. Found ${props.protocol}`);
+    if (NLB_PROTOCOLS.indexOf(proto) === -1) {
+      throw new Error(`The protocol must be one of ${NLB_PROTOCOLS.join(', ')}. Found ${props.protocol}`);
     }
 
     if (proto === Protocol.TLS && certs.filter(v => v != null).length === 0) {
@@ -220,3 +221,5 @@ export interface AddNetworkTargetsProps {
    */
   readonly healthCheck?: HealthCheck;
 }
+
+const NLB_PROTOCOLS = [Protocol.TCP, Protocol.TLS, Protocol.UDP, Protocol.TCP_UDP];

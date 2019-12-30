@@ -1,12 +1,11 @@
 import '@aws-cdk/assert/jest';
-import ec2 = require('@aws-cdk/aws-ec2');
-import iam = require('@aws-cdk/aws-iam');
-import kms = require('@aws-cdk/aws-kms');
-import s3 = require('@aws-cdk/aws-s3');
-import sfn = require('@aws-cdk/aws-stepfunctions');
-import cdk = require('@aws-cdk/core');
-import tasks = require('../lib');
-import { S3Location } from '../lib';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
+import * as s3 from '@aws-cdk/aws-s3';
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+import * as cdk from '@aws-cdk/core';
+import * as tasks from '../lib';
 
 let stack: cdk.Stack;
 
@@ -27,20 +26,31 @@ test('create basic training job', () => {
                 channelName: 'train',
                 dataSource: {
                     s3DataSource: {
-                        s3Location: S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'InputBucket', 'mybucket'), 'mytrainpath')
+                        s3Location: tasks.S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'InputBucket', 'mybucket'), 'mytrainpath')
                     }
                 }
             }
         ],
         outputDataConfig: {
-            s3OutputLocation: S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'OutputBucket', 'mybucket'), 'myoutputpath')
+            s3OutputLocation: tasks.S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'OutputBucket', 'mybucket'), 'myoutputpath')
         },
     })});
 
     // THEN
     expect(stack.resolve(task.toStateJson())).toEqual({
       Type: 'Task',
-      Resource: 'arn:aws:states:::sagemaker:createTrainingJob',
+      Resource: {
+        "Fn::Join": [
+          "",
+          [
+            "arn:",
+            {
+              Ref: "AWS::Partition",
+            },
+            ":states:::sagemaker:createTrainingJob",
+          ],
+        ],
+      },
       End: true,
       Parameters: {
         AlgorithmSpecification: {
@@ -92,13 +102,13 @@ test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration patt
                     channelName: 'train',
                     dataSource: {
                         s3DataSource: {
-                            s3Location: S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'InputBucket', 'mybucket'), 'mytrainpath')
+                            s3Location: tasks.S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'InputBucket', 'mybucket'), 'mytrainpath')
                         }
                     }
                 }
             ],
             outputDataConfig: {
-                s3OutputLocation: S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'OutputBucket', 'mybucket'), 'myoutputpath')
+                s3OutputLocation: tasks.S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'OutputBucket', 'mybucket'), 'myoutputpath')
             },
         })});
     }).toThrow(/Invalid Service Integration Pattern: WAIT_FOR_TASK_TOKEN is not supported to call SageMaker./i);
@@ -143,7 +153,7 @@ test('create complex training job', () => {
                 dataSource: {
                     s3DataSource: {
                         s3DataType: tasks.S3DataType.S3_PREFIX,
-                        s3Location: S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'InputBucketA', 'mybucket'), 'mytrainpath'),
+                        s3Location: tasks.S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'InputBucketA', 'mybucket'), 'mytrainpath'),
                     }
                 }
             },
@@ -155,13 +165,13 @@ test('create complex training job', () => {
                 dataSource: {
                     s3DataSource: {
                         s3DataType: tasks.S3DataType.S3_PREFIX,
-                        s3Location: S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'InputBucketB', 'mybucket'), 'mytestpath'),
+                        s3Location: tasks.S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'InputBucketB', 'mybucket'), 'mytestpath'),
                     }
                 }
             }
         ],
         outputDataConfig: {
-            s3OutputLocation: S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'OutputBucket', 'mybucket'), 'myoutputpath'),
+            s3OutputLocation: tasks.S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'OutputBucket', 'mybucket'), 'myoutputpath'),
             encryptionKey: kmsKey
         },
         resourceConfig: {
@@ -186,7 +196,18 @@ test('create complex training job', () => {
     // THEN
     expect(stack.resolve(task.toStateJson())).toEqual({
       Type: 'Task',
-      Resource: 'arn:aws:states:::sagemaker:createTrainingJob.sync',
+      Resource: {
+        "Fn::Join": [
+          "",
+          [
+            "arn:",
+            {
+              Ref: "AWS::Partition",
+            },
+            ":states:::sagemaker:createTrainingJob.sync",
+          ],
+        ],
+      },
       End: true,
       Parameters: {
         TrainingJobName: 'MyTrainJob',
@@ -285,13 +306,13 @@ test('pass param to training job', () => {
                 dataSource: {
                     s3DataSource: {
                         s3DataType: tasks.S3DataType.S3_PREFIX,
-                        s3Location: S3Location.fromJsonExpression('$.S3Bucket')
+                        s3Location: tasks.S3Location.fromJsonExpression('$.S3Bucket')
                     }
                 }
             }
         ],
         outputDataConfig: {
-            s3OutputLocation: S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'Bucket', 'mybucket'), 'myoutputpath'),
+            s3OutputLocation: tasks.S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'Bucket', 'mybucket'), 'myoutputpath'),
         },
         resourceConfig: {
             instanceCount: 1,
@@ -306,7 +327,18 @@ test('pass param to training job', () => {
     // THEN
     expect(stack.resolve(task.toStateJson())).toEqual({
       Type: 'Task',
-      Resource: 'arn:aws:states:::sagemaker:createTrainingJob',
+      Resource: {
+        "Fn::Join": [
+          "",
+          [
+            "arn:",
+            {
+              Ref: "AWS::Partition",
+            },
+            ":states:::sagemaker:createTrainingJob",
+          ],
+        ],
+      },
       End: true,
       Parameters: {
         'TrainingJobName.$': '$.JobName',

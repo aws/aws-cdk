@@ -1,11 +1,12 @@
-import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import ec2 = require('@aws-cdk/aws-ec2');
-import ecr = require('@aws-cdk/aws-ecr');
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as ecr from '@aws-cdk/aws-ecr';
 import { DockerImageAsset, DockerImageAssetProps } from '@aws-cdk/aws-ecr-assets';
-import events = require('@aws-cdk/aws-events');
-import iam = require('@aws-cdk/aws-iam');
-import kms = require('@aws-cdk/aws-kms');
-import secretsmanager = require('@aws-cdk/aws-secretsmanager');
+import * as events from '@aws-cdk/aws-events';
+import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
+import * as s3 from '@aws-cdk/aws-s3';
+import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { Aws, CfnResource, Construct, Duration, IResource, Lazy, PhysicalName, Resource, Stack } from '@aws-cdk/core';
 import { IArtifacts } from './artifacts';
 import { BuildSpec } from './build-spec';
@@ -175,7 +176,7 @@ abstract class ProjectBase extends Resource implements IProject {
    * May be unset, in which case this Project is not configured to use a VPC.
    * @internal
    */
-  protected _connections: ec2.Connections;
+  protected _connections: ec2.Connections | undefined;
 
   /**
    * Access the Connections object.
@@ -547,6 +548,16 @@ export interface ProjectProps extends CommonProjectProps {
 }
 
 /**
+ * The extra options passed to the {@link IProject.bindToCodePipeline} method.
+ */
+export interface BindToCodePipelineOptions {
+  /**
+   * The artifact bucket that will be used by the action that invokes this project.
+   */
+  readonly artifactBucket: s3.IBucket;
+}
+
+/**
  * A representation of a CodeBuild Project.
  */
 export class Project extends ProjectBase {
@@ -606,6 +617,23 @@ export class Project extends ProjectBase {
     return new Import(scope, id);
   }
 
+  /**
+   * Convert the environment variables map of string to {@link BuildEnvironmentVariable},
+   * which is the customer-facing type, to a list of {@link CfnProject.EnvironmentVariableProperty},
+   * which is the representation of environment variables in CloudFormation.
+   *
+   * @param environmentVariables the map of string to environment variables
+   * @returns an array of {@link CfnProject.EnvironmentVariableProperty} instances
+   */
+  public static serializeEnvVariables(environmentVariables: { [name: string]: BuildEnvironmentVariable }):
+      CfnProject.EnvironmentVariableProperty[] {
+    return Object.keys(environmentVariables).map(name => ({
+      name,
+      type: environmentVariables[name].type || BuildEnvironmentVariableType.PLAINTEXT,
+      value: environmentVariables[name].value,
+    }));
+  }
+
   public readonly grantPrincipal: iam.IPrincipal;
 
   /**
@@ -627,6 +655,7 @@ export class Project extends ProjectBase {
   private readonly buildImage: IBuildImage;
   private readonly _secondarySources: CfnProject.SourceProperty[];
   private readonly _secondaryArtifacts: CfnProject.ArtifactsProperty[];
+  private _encryptionKey?: kms.IKey;
 
   constructor(scope: Construct, id: string, props: ProjectProps) {
     super(scope, id, {
@@ -689,7 +718,8 @@ export class Project extends ProjectBase {
       artifacts: artifactsConfig.artifactsProperty,
       serviceRole: this.role.roleArn,
       environment: this.renderEnvironment(props.environment, environmentVariables),
-      encryptionKey: props.encryptionKey && props.encryptionKey.keyArn,
+      // lazy, because we have a setter for it in setEncryptionKey
+      encryptionKey: Lazy.stringValue({ produce: () => this._encryptionKey && this._encryptionKey.keyArn }),
       badgeEnabled: props.badge,
       cache: cache._toCloudFormation(),
       name: this.physicalName,
@@ -712,7 +742,7 @@ export class Project extends ProjectBase {
     this.addToRolePolicy(this.createLoggingPermission());
 
     if (props.encryptionKey) {
-      props.encryptionKey.grantEncryptDecrypt(this);
+      this.encryptionKey = props.encryptionKey;
     }
   }
 
@@ -743,6 +773,28 @@ export class Project extends ProjectBase {
   }
 
   /**
+   * A callback invoked when the given project is added to a CodePipeline.
+   *
+   * @param _scope the construct the binding is taking place in
+   * @param options additional options for the binding
+   */
+  public bindToCodePipeline(_scope: Construct, options: BindToCodePipelineOptions): void {
+    // work around a bug in CodeBuild: it ignores the KMS key set on the pipeline,
+    // and always uses its own, project-level key
+    if (options.artifactBucket.encryptionKey && !this._encryptionKey) {
+      // we cannot safely do this assignment if the key is of type kms.Key,
+      // and belongs to a stack in a different account or region than the project
+      // (that would cause an illegal reference, as KMS keys don't have physical names)
+      const keyStack = Stack.of(options.artifactBucket.encryptionKey);
+      const projectStack = Stack.of(this);
+      if (!(options.artifactBucket.encryptionKey instanceof kms.Key &&
+          (keyStack.account !== projectStack.account || keyStack.region !== projectStack.region))) {
+        this.encryptionKey = options.artifactBucket.encryptionKey;
+      }
+    }
+  }
+
+  /**
    * @override
    */
   protected validate(): string[] {
@@ -758,6 +810,11 @@ export class Project extends ProjectBase {
       }
     }
     return ret;
+  }
+
+  private set encryptionKey(encryptionKey: kms.IKey) {
+    this._encryptionKey = encryptionKey;
+    encryptionKey.grantEncryptDecrypt(this);
   }
 
   private createLoggingPermission() {
@@ -826,11 +883,7 @@ export class Project extends ProjectBase {
         : undefined,
       privilegedMode: env.privileged || false,
       computeType: env.computeType || this.buildImage.defaultComputeType,
-      environmentVariables: !hasEnvironmentVars ? undefined : Object.keys(vars).map(name => ({
-        name,
-        type: vars[name].type || BuildEnvironmentVariableType.PLAINTEXT,
-        value: vars[name].value
-      }))
+      environmentVariables: hasEnvironmentVars ? Project.serializeEnvVariables(vars) : undefined,
     };
   }
 
@@ -902,7 +955,6 @@ export class Project extends ProjectBase {
     }));
 
     const policy = new iam.Policy(this, 'PolicyDocument', {
-      policyName: 'CodeBuildEC2Policy',
       statements: [
         new iam.PolicyStatement({
           resources: ['*'],
@@ -945,7 +997,8 @@ export class Project extends ProjectBase {
 export enum ComputeType {
   SMALL = 'BUILD_GENERAL1_SMALL',
   MEDIUM = 'BUILD_GENERAL1_MEDIUM',
-  LARGE = 'BUILD_GENERAL1_LARGE'
+  LARGE = 'BUILD_GENERAL1_LARGE',
+  X2_LARGE = 'BUILD_GENERAL1_2XLARGE'
 }
 
 /**
@@ -1103,36 +1156,69 @@ interface LinuxBuildImageProps {
 export class LinuxBuildImage implements IBuildImage {
   public static readonly STANDARD_1_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/standard:1.0');
   public static readonly STANDARD_2_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/standard:2.0');
+  public static readonly STANDARD_3_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/standard:3.0');
   public static readonly AMAZON_LINUX_2 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:1.0');
+  public static readonly AMAZON_LINUX_2_2 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:2.0');
+  public static readonly AMAZON_LINUX_2_ARM = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-aarch64-standard:1.0');
+  /** @deprecated Use {@link STANDARD_2_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_BASE = LinuxBuildImage.codeBuildImage('aws/codebuild/ubuntu-base:14.04');
+  /** @deprecated Use {@link STANDARD_2_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_ANDROID_JAVA8_24_4_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/android-java-8:24.4.1');
+  /** @deprecated Use {@link STANDARD_2_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_ANDROID_JAVA8_26_1_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/android-java-8:26.1.1');
+  /** @deprecated Use {@link STANDARD_2_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_DOCKER_17_09_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/docker:17.09.0');
+  /** @deprecated Use {@link STANDARD_2_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_DOCKER_18_09_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/docker:18.09.0');
+  /** @deprecated Use {@link STANDARD_2_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_GOLANG_1_10 = LinuxBuildImage.codeBuildImage('aws/codebuild/golang:1.10');
+  /** @deprecated Use {@link STANDARD_2_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_GOLANG_1_11 = LinuxBuildImage.codeBuildImage('aws/codebuild/golang:1.11');
+  /** @deprecated Use {@link STANDARD_2_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_OPEN_JDK_8 = LinuxBuildImage.codeBuildImage('aws/codebuild/java:openjdk-8');
+  /** @deprecated Use {@link STANDARD_2_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_OPEN_JDK_9 = LinuxBuildImage.codeBuildImage('aws/codebuild/java:openjdk-9');
+  /** @deprecated Use {@link STANDARD_2_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_OPEN_JDK_11 = LinuxBuildImage.codeBuildImage('aws/codebuild/java:openjdk-11');
+  /** @deprecated Use {@link STANDARD_2_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_NODEJS_10_14_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/nodejs:10.14.1');
+  /** @deprecated Use {@link STANDARD_2_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_NODEJS_10_1_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/nodejs:10.1.0');
+  /** @deprecated Use {@link STANDARD_2_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_NODEJS_8_11_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/nodejs:8.11.0');
+  /** @deprecated Use {@link STANDARD_2_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_NODEJS_6_3_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/nodejs:6.3.1');
+  /** @deprecated Use {@link STANDARD_2_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_PHP_5_6 = LinuxBuildImage.codeBuildImage('aws/codebuild/php:5.6');
+  /** @deprecated Use {@link STANDARD_2_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_PHP_7_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/php:7.0');
+  /** @deprecated Use {@link STANDARD_2_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_PHP_7_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/php:7.1');
+  /** @deprecated Use {@link STANDARD_2_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_PYTHON_3_7_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/python:3.7.1');
+  /** @deprecated Use {@link STANDARD_2_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_PYTHON_3_6_5 = LinuxBuildImage.codeBuildImage('aws/codebuild/python:3.6.5');
+  /** @deprecated Use {@link STANDARD_2_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_PYTHON_3_5_2 = LinuxBuildImage.codeBuildImage('aws/codebuild/python:3.5.2');
+  /** @deprecated Use {@link STANDARD_2_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_PYTHON_3_4_5 = LinuxBuildImage.codeBuildImage('aws/codebuild/python:3.4.5');
+  /** @deprecated Use {@link STANDARD_2_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_PYTHON_3_3_6 = LinuxBuildImage.codeBuildImage('aws/codebuild/python:3.3.6');
+  /** @deprecated Use {@link STANDARD_2_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_PYTHON_2_7_12 = LinuxBuildImage.codeBuildImage('aws/codebuild/python:2.7.12');
+  /** @deprecated Use {@link STANDARD_2_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_RUBY_2_5_3 = LinuxBuildImage.codeBuildImage('aws/codebuild/ruby:2.5.3');
+  /** @deprecated Use {@link STANDARD_2_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_RUBY_2_5_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/ruby:2.5.1');
+  /** @deprecated Use {@link STANDARD_2_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_RUBY_2_3_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/ruby:2.3.1');
+  /** @deprecated Use {@link STANDARD_2_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_RUBY_2_2_5 = LinuxBuildImage.codeBuildImage('aws/codebuild/ruby:2.2.5');
+  /** @deprecated Use {@link STANDARD_2_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_DOTNET_CORE_1_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/dot-net:core-1');
+  /** @deprecated Use {@link STANDARD_2_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_DOTNET_CORE_2_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/dot-net:core-2.0');
+  /** @deprecated Use {@link STANDARD_2_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_DOTNET_CORE_2_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/dot-net:core-2.1');
 
   /**
@@ -1374,5 +1460,10 @@ export enum BuildEnvironmentVariableType {
   /**
    * An environment variable stored in Systems Manager Parameter Store.
    */
-  PARAMETER_STORE = 'PARAMETER_STORE'
+  PARAMETER_STORE = 'PARAMETER_STORE',
+
+  /**
+   * An environment variable stored in AWS Secrets Manager.
+   */
+  SECRETS_MANAGER = 'SECRETS_MANAGER'
 }

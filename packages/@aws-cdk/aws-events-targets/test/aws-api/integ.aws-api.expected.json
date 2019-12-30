@@ -96,7 +96,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AWSb4cf1abd4e4f4bc699441af7ccd9ec37CodeS3BucketC1F8355D"
+            "Ref": "AssetParameters4004cc41f85e7313875ae00610314ab53e83faa96c9696615bb8411b96377a4bS3Bucket386D1CAE"
           },
           "S3Key": {
             "Fn::Join": [
@@ -109,7 +109,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AWSb4cf1abd4e4f4bc699441af7ccd9ec37CodeS3VersionKeyBA3A7136"
+                          "Ref": "AssetParameters4004cc41f85e7313875ae00610314ab53e83faa96c9696615bb8411b96377a4bS3VersionKey633D63CD"
                         }
                       ]
                     }
@@ -122,7 +122,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AWSb4cf1abd4e4f4bc699441af7ccd9ec37CodeS3VersionKeyBA3A7136"
+                          "Ref": "AssetParameters4004cc41f85e7313875ae00610314ab53e83faa96c9696615bb8411b96377a4bS3VersionKey633D63CD"
                         }
                       ]
                     }
@@ -139,7 +139,7 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs10.x"
+        "Runtime": "nodejs12.x"
       },
       "DependsOn": [
         "AWSb4cf1abd4e4f4bc699441af7ccd9ec37ServiceRoleDefaultPolicy4D43A7C1",
@@ -219,17 +219,17 @@
     }
   },
   "Parameters": {
-    "AWSb4cf1abd4e4f4bc699441af7ccd9ec37CodeS3BucketC1F8355D": {
+    "AssetParameters4004cc41f85e7313875ae00610314ab53e83faa96c9696615bb8411b96377a4bS3Bucket386D1CAE": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"aws-cdk-aws-api-target-integ/AWSb4cf1abd4e4f4bc699441af7ccd9ec37/Code\""
+      "Description": "S3 bucket for asset \"4004cc41f85e7313875ae00610314ab53e83faa96c9696615bb8411b96377a4b\""
     },
-    "AWSb4cf1abd4e4f4bc699441af7ccd9ec37CodeS3VersionKeyBA3A7136": {
+    "AssetParameters4004cc41f85e7313875ae00610314ab53e83faa96c9696615bb8411b96377a4bS3VersionKey633D63CD": {
       "Type": "String",
-      "Description": "S3 key for asset version \"aws-cdk-aws-api-target-integ/AWSb4cf1abd4e4f4bc699441af7ccd9ec37/Code\""
+      "Description": "S3 key for asset version \"4004cc41f85e7313875ae00610314ab53e83faa96c9696615bb8411b96377a4b\""
     },
-    "AWSb4cf1abd4e4f4bc699441af7ccd9ec37CodeArtifactHash9D3A0C2E": {
+    "AssetParameters4004cc41f85e7313875ae00610314ab53e83faa96c9696615bb8411b96377a4bArtifactHash5D181EB7": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"aws-cdk-aws-api-target-integ/AWSb4cf1abd4e4f4bc699441af7ccd9ec37/Code\""
+      "Description": "Artifact hash for asset \"4004cc41f85e7313875ae00610314ab53e83faa96c9696615bb8411b96377a4b\""
     }
   }
 }

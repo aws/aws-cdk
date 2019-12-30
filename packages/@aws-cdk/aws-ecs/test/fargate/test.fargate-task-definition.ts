@@ -1,8 +1,8 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
-import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/core');
+import * as iam from '@aws-cdk/aws-iam';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import ecs = require('../../lib');
+import * as ecs from '../../lib';
 
 export = {
   "When creating an Fargate TaskDefinition": {
@@ -18,6 +18,24 @@ export = {
         RequiresCompatibilities: ["FARGATE"],
         Cpu: "256",
         Memory: "512",
+      }));
+
+      test.done();
+    },
+
+    "support lazy cpu and memory values"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
+        cpu: cdk.Lazy.numberValue({produce: () => 128}),
+        memoryLimitMiB: cdk.Lazy.numberValue({produce: () => 1024})
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike("AWS::ECS::TaskDefinition", {
+        Cpu: "128",
+        Memory: "1024"
       }));
 
       test.done();

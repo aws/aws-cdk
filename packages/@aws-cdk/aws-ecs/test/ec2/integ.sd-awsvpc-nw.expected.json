@@ -83,7 +83,13 @@
     "VpcPublicSubnet1EIPD7E02669": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
-        "Domain": "vpc"
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ-ecs/Vpc/PublicSubnet1"
+          }
+        ]
       }
     },
     "VpcPublicSubnet1NATGateway4D7517AA": {
@@ -174,7 +180,13 @@
     "VpcPublicSubnet2EIP3C605A87": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
-        "Domain": "vpc"
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ-ecs/Vpc/PublicSubnet2"
+          }
+        ]
       }
     },
     "VpcPublicSubnet2NATGateway9182C01D": {
@@ -486,7 +498,6 @@
       "Properties": {
         "MaxSize": "1",
         "MinSize": "1",
-        "DesiredCapacity": "1",
         "LaunchConfigurationName": {
           "Ref": "EcsClusterDefaultAutoScalingGroupLaunchConfigB7E376C1"
         },
@@ -757,7 +768,15 @@
       }
     },
     "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicACD2D4A4": {
-      "Type": "AWS::SNS::Topic"
+      "Type": "AWS::SNS::Topic",
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ-ecs/EcsCluster/DefaultAutoScalingGroup"
+          }
+        ]
+      }
     },
     "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookFFA63029": {
       "Type": "AWS::AutoScaling::LifecycleHook",
@@ -843,9 +862,6 @@
     "FrontendServiceBC94BA93": {
       "Type": "AWS::ECS::Service",
       "Properties": {
-        "TaskDefinition": {
-          "Ref": "TaskDef54694570"
-        },
         "Cluster": {
           "Ref": "EcsCluster97242B84"
         },
@@ -854,6 +870,7 @@
           "MinimumHealthyPercent": 50
         },
         "DesiredCount": 1,
+        "EnableECSManagedTags": false,
         "LaunchType": "EC2",
         "NetworkConfiguration": {
           "AwsvpcConfiguration": {
@@ -877,7 +894,6 @@
           }
         },
         "SchedulingStrategy": "REPLICA",
-        "EnableECSManagedTags": false,
         "ServiceRegistries": [
           {
             "RegistryArn": {
@@ -887,7 +903,10 @@
               ]
             }
           }
-        ]
+        ],
+        "TaskDefinition": {
+          "Ref": "TaskDef54694570"
+        }
       }
     },
     "FrontendServiceCloudmapService6FE76C06": {
@@ -939,7 +958,7 @@
   },
   "Parameters": {
     "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
-      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
       "Default": "/aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id"
     }
   }

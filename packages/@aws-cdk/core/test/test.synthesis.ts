@@ -1,10 +1,9 @@
-import cxapi = require('@aws-cdk/cx-api');
-import fs = require('fs');
+import * as cxapi from '@aws-cdk/cx-api';
+import * as fs from 'fs';
 import { Test } from 'nodeunit';
-import os = require('os');
-import path = require('path');
-import cdk = require('../lib');
-import { Construct, ConstructNode, ISynthesisSession } from '../lib';
+import * as os from 'os';
+import * as path from 'path';
+import * as cdk from '../lib';
 
 function createModernApp() {
   return new cdk.App({
@@ -24,8 +23,32 @@ export = {
 
     // THEN
     test.same(app.synth(), session); // same session if we synth() again
-    test.deepEqual(list(session.directory), [ 'cdk.out', 'manifest.json' ]);
-    test.deepEqual(readJson(session.directory, 'manifest.json').artifacts, {});
+    test.deepEqual(list(session.directory), [ 'cdk.out', 'manifest.json', 'tree.json' ]);
+    test.deepEqual(readJson(session.directory, 'manifest.json').artifacts, {
+      Tree: {
+        type: 'cdk:tree',
+        properties: { file: 'tree.json' }
+      }
+    });
+    test.deepEqual(readJson(session.directory, 'tree.json'), {
+      version: 'tree-0.1',
+      tree: {
+        id: 'App',
+        path: '',
+        children: {
+          Tree: { id: 'Tree', path: 'Tree' }
+        }
+      }
+    });
+    test.done();
+  },
+
+  'synthesis respects disabling tree metadata'(test: Test) {
+    const app = new cdk.App({
+      treeMetadata: false,
+    });
+    const assembly = app.synth();
+    test.deepEqual(list(assembly.directory), [ 'cdk.out', 'manifest.json' ]);
     test.done();
   },
 
@@ -38,11 +61,7 @@ export = {
     const session = app.synth();
 
     // THEN
-    test.deepEqual(list(session.directory), [
-      'cdk.out',
-      'manifest.json',
-      'one-stack.template.json'
-    ]);
+    test.ok(list(session.directory).includes('one-stack.template.json'));
     test.done();
   },
 
@@ -52,7 +71,7 @@ export = {
     const stack = new cdk.Stack(app, 'one-stack');
 
     class MyConstruct extends cdk.Construct {
-      protected synthesize(s: ISynthesisSession) {
+      protected synthesize(s: cdk.ISynthesisSession) {
         writeJson(s.assembly.outdir, 'foo.json', { bar: 123 });
         s.assembly.addArtifact('my-random-construct', {
           type: cxapi.ArtifactType.AWS_CLOUDFORMATION_STACK,
@@ -70,16 +89,17 @@ export = {
     const session = app.synth();
 
     // THEN
-    test.deepEqual(list(session.directory), [
-      'cdk.out',
-      'foo.json',
-      'manifest.json',
-      'one-stack.template.json'
-    ]);
+    test.ok(list(session.directory).includes('one-stack.template.json'));
+    test.ok(list(session.directory).includes('foo.json'));
+
     test.deepEqual(readJson(session.directory, 'foo.json'), { bar: 123 });
     test.deepEqual(session.manifest, {
-      version: '0.36.0',
+      version: cxapi.CLOUD_ASSEMBLY_VERSION,
       artifacts: {
+        'Tree': {
+          type: 'cdk:tree',
+          properties: { file: 'tree.json' }
+        },
         'my-random-construct': {
           type: 'aws:cloudformation:stack',
           environment: 'aws://12345/bar',
@@ -98,12 +118,12 @@ export = {
   'it should be possible to synthesize without an app'(test: Test) {
     const calls = new Array<string>();
 
-    class SynthesizeMe extends Construct {
+    class SynthesizeMe extends cdk.Construct {
       constructor() {
         super(undefined as any, 'id');
       }
 
-      protected synthesize(session: ISynthesisSession) {
+      protected synthesize(session: cdk.ISynthesisSession) {
         calls.push('synthesize');
 
         session.assembly.addArtifact('art', {
@@ -132,10 +152,10 @@ export = {
     }
 
     const root = new SynthesizeMe();
-    const assembly = ConstructNode.synth(root.node, { outdir: fs.mkdtempSync(path.join(os.tmpdir(), 'outdir')) });
+    const assembly = cdk.ConstructNode.synth(root.node, { outdir: fs.mkdtempSync(path.join(os.tmpdir(), 'outdir')) });
 
     test.deepEqual(calls, [ 'prepare', 'validate', 'synthesize' ]);
-    const stack = assembly.getStack('art');
+    const stack = assembly.getStackByName('art');
     test.deepEqual(stack.template, { hello: 123 });
     test.deepEqual(stack.templateFile, 'hey.json');
     test.deepEqual(stack.parameters, { paramId: 'paramValue', paramId2: 'paramValue2' });

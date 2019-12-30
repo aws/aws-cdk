@@ -1,8 +1,8 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/core');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import elbv2 = require('../../lib');
+import * as elbv2 from '../../lib';
 import { FakeSelfRegisteringTarget } from '../helpers';
 
 export = {
@@ -95,6 +95,43 @@ export = {
 
     // THEN
     expectSameStackSGRules(fixture.stack);
+
+    test.done();
+  },
+
+  'ingress is added to child stack SG instead of parent stack'(test: Test) {
+    // GIVEN
+    const fixture = new TestFixture(true);
+
+    const parentGroup = new elbv2.ApplicationTargetGroup(fixture.stack, 'TargetGroup', {
+      vpc: fixture.vpc,
+      port: 8008,
+      targets: [new FakeSelfRegisteringTarget(fixture.stack, 'Target', fixture.vpc)],
+    });
+
+    // listener requires at least one rule for ParentStack to create
+    fixture.listener.addTargetGroups('Default', { targetGroups: [parentGroup] });
+
+    const childStack = new cdk.Stack(fixture.app, 'childStack');
+
+    // WHEN
+    const childGroup = new elbv2.ApplicationTargetGroup(childStack, 'TargetGroup', {
+      // We're assuming the 2nd VPC is peered to the 1st, or something.
+      vpc: fixture.vpc,
+      port: 8008,
+      targets: [new FakeSelfRegisteringTarget(childStack, 'Target', fixture.vpc)],
+    });
+
+    new elbv2.ApplicationListenerRule(childStack, 'ListenerRule', {
+      listener: fixture.listener,
+      targetGroups: [childGroup],
+      priority: 100,
+      hostHeader: 'www.foo.com'
+    });
+
+    // THEN
+    expectSameStackSGRules(fixture.stack);
+    expectedImportedSGRules(childStack);
 
     test.done();
   },
@@ -244,7 +281,7 @@ class TestFixture {
   public readonly stack: cdk.Stack;
   public readonly vpc: ec2.Vpc;
   public readonly lb: elbv2.ApplicationLoadBalancer;
-  public readonly listener: elbv2.ApplicationListener;
+  public readonly _listener: elbv2.ApplicationListener | undefined;
 
   constructor(createListener?: boolean) {
     this.app = new cdk.App();
@@ -256,7 +293,12 @@ class TestFixture {
 
     createListener = createListener === undefined ? true : createListener;
     if (createListener) {
-      this.listener = this.lb.addListener('Listener', { port: 80, open: false });
+      this._listener = this.lb.addListener('Listener', { port: 80, open: false });
     }
+  }
+
+  public get listener(): elbv2.ApplicationListener {
+    if (this._listener === undefined) { throw new Error('Did not create a listener'); }
+    return this._listener;
   }
 }

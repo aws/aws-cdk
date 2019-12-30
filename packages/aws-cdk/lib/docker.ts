@@ -1,6 +1,6 @@
 import { ContainerImageAssetMetadataEntry } from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
-import path = require('path');
+import * as path from 'path';
 import { ToolkitInfo } from './api/toolkit-info';
 import { debug, print } from './logging';
 import { shell } from './os';
@@ -62,12 +62,17 @@ export async function prepareContainerAsset(assemblyDir: string,
     }
 
     const buildArgs = ([] as string[]).concat(...Object.entries(asset.buildArgs || {}).map(([k, v]) => ['--build-arg', `${k}=${v}`]));
+
     const baseCommand = [
       'docker', 'build',
       ...buildArgs,
       '--tag', latest,
       contextPath
     ];
+
+    if (asset.target) {
+      baseCommand.push('--target', asset.target);
+    }
 
     const command = ci
       ? [...baseCommand, '--cache-from', latest] // This does not fail if latest is not available

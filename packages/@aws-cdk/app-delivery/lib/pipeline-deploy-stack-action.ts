@@ -1,10 +1,10 @@
-import cfn = require('@aws-cdk/aws-cloudformation');
-import codepipeline = require('@aws-cdk/aws-codepipeline');
-import cpactions = require('@aws-cdk/aws-codepipeline-actions');
-import events = require('@aws-cdk/aws-events');
-import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/core');
-import cxapi = require('@aws-cdk/cx-api');
+import * as cfn from '@aws-cdk/aws-cloudformation';
+import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import * as cpactions from '@aws-cdk/aws-codepipeline-actions';
+import * as events from '@aws-cdk/aws-events';
+import * as iam from '@aws-cdk/aws-iam';
+import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 
 export interface PipelineDeployStackActionProps {
   /**
@@ -93,7 +93,7 @@ export class PipelineDeployStackAction implements codepipeline.IAction {
   /**
    * The role used by CloudFormation for the deploy action
    */
-  private _deploymentRole: iam.IRole;
+  private _deploymentRole?: iam.IRole;
 
   private readonly stack: cdk.Stack;
   private readonly prepareChangeSetAction: cpactions.CloudFormationCreateReplaceChangeSetAction;
@@ -147,6 +147,10 @@ export class PipelineDeployStackAction implements codepipeline.IAction {
   }
 
   public get deploymentRole(): iam.IRole {
+    if (!this._deploymentRole) {
+      throw new Error(`Use this action in a pipeline first before accessing 'deploymentRole'`);
+    }
+
     return this._deploymentRole;
   }
 

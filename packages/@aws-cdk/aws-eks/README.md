@@ -45,11 +45,6 @@ cluster.addResource('mypod', {
 });
 ```
 
-**NOTE**: in order to determine the default AMI for for Amazon EKS instances the
-`eks.Cluster` resource must be defined within a stack that is configured with an
-explicit `env.region`. See [Environments](https://docs.aws.amazon.com/cdk/latest/guide/environments.html)
-in the AWS CDK Developer Guide for more details.
-
 Here is a [complete sample](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-eks/test/integ.eks-kubectl.lit.ts).
 
 ### Capacity
@@ -386,7 +381,44 @@ When kubectl is disabled, you should be aware of the following:
    edit the [aws-auth ConfigMap](https://docs.aws.amazon.com/eks/latest/userguide/add-user-role.html)
    when you add capacity in order to map the IAM instance role to RBAC to allow nodes to join the cluster.
 3. Any `eks.Cluster` APIs that depend on programmatic kubectl support will fail
-   with an error: `cluster.addResource`, `cluster.awsAuth`, `props.mastersRole`.
+   with an error: `cluster.addResource`, `cluster.addChart`, `cluster.awsAuth`, `props.mastersRole`.
+
+### Helm Charts
+
+The `HelmChart` construct or `cluster.addChart` method can be used
+to add Kubernetes resources to this cluster using Helm.
+
+The following example will install the [NGINX Ingress Controller](https://kubernetes.github.io/ingress-nginx/)
+to you cluster using Helm.
+
+```ts
+// option 1: use a construct
+new HelmChart(this, 'NginxIngress', {
+  cluster,
+  chart: 'nginx-ingress',
+  repository: 'https://helm.nginx.com/stable',
+  namespace: 'kube-system'
+});
+
+// or, option2: use `addChart`
+cluster.addChart('NginxIngress', {
+  chart: 'nginx-ingress',
+  repository: 'https://helm.nginx.com/stable',
+  namespace: 'kube-system'
+});
+```
+
+Helm charts will be installed and updated using `helm upgrade --install`.
+This means that if the chart is added to CDK with the same release name, it will try to update
+the chart in the cluster. The chart will exists as CloudFormation resource.
+
+Helm charts are implemented as CloudFormation resources in CDK.
+This means that if the chart is deleted from your code (or the stack is
+deleted), the next `cdk deploy` will issue a `helm uninstall` command and the
+Helm chart will be deleted.
+
+When there is no `release` defined, the chart will be installed using the `node.uniqueId`,
+which will be lower cassed and truncated to the last 63 characters.
 
 ### Roadmap
 

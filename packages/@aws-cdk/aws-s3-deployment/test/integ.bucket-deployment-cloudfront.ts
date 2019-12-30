@@ -1,8 +1,8 @@
-import cloudfront = require('@aws-cdk/aws-cloudfront');
-import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/core');
-import path = require('path');
-import s3deploy = require('../lib');
+import * as cloudfront from '@aws-cdk/aws-cloudfront';
+import * as s3 from '@aws-cdk/aws-s3';
+import * as cdk from '@aws-cdk/core';
+import * as path from 'path';
+import * as s3deploy from '../lib';
 
 class TestBucketDeployment extends cdk.Stack {
   constructor(scope: cdk.App, id: string) {
@@ -23,7 +23,7 @@ class TestBucketDeployment extends cdk.Stack {
     });
 
     new s3deploy.BucketDeployment(this, 'DeployWithInvalidation', {
-      source: s3deploy.Source.asset(path.join(__dirname, 'my-website')),
+      sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
       destinationBucket: bucket,
       distribution,
       distributionPaths: ['/images/*.png'],

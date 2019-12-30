@@ -1,9 +1,10 @@
 import { expect, haveResource, SynthUtils } from '@aws-cdk/assert';
-import iam = require('@aws-cdk/aws-iam');
-import { App, Lazy, Stack } from '@aws-cdk/core';
-import fs = require('fs');
+import * as iam from '@aws-cdk/aws-iam';
+import { App, Construct, Lazy, Resource, Stack } from '@aws-cdk/core';
+import { ASSET_METADATA } from '@aws-cdk/cx-api';
+import * as fs from 'fs';
 import { Test } from 'nodeunit';
-import path = require('path');
+import * as path from 'path';
 import { DockerImageAsset } from '../lib';
 
 // tslint:disable:object-literal-key-quotes
@@ -20,12 +21,32 @@ export = {
 
     // THEN
     const template = SynthUtils.synthesize(stack).template;
-
-    test.deepEqual(template.Parameters.ImageImageName5E684353, {
+    test.deepEqual(template.Parameters.AssetParameters1a17a141505ac69144931fe263d130f4612251caa4bbbdaf68a44ed0f405439cImageName1ADCADB3, {
       Type: 'String',
-      Description: 'ECR repository name and tag asset "Image"'
+      Description: 'ECR repository name and tag for asset "1a17a141505ac69144931fe263d130f4612251caa4bbbdaf68a44ed0f405439c"'
     });
 
+    test.done();
+  },
+
+  'repository name is derived from node unique id'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    class CoolConstruct extends Resource {
+      constructor(scope: Construct, id: string) {
+        super(scope, id);
+      }
+    }
+    const coolConstruct = new CoolConstruct(stack, 'CoolConstruct');
+
+    // WHEN
+    new DockerImageAsset(coolConstruct, 'Image', {
+      directory: path.join(__dirname, 'demo-image'),
+    });
+
+    // THEN
+    const assetMetadata = stack.node.metadata.find(({ type }) => type === ASSET_METADATA);
+    test.deepEqual(assetMetadata && assetMetadata.data.repositoryName, 'cdk/coolconstructimage78ab38fc');
     test.done();
   },
 
@@ -34,7 +55,7 @@ export = {
     const stack = new Stack();
 
     // WHEN
-    const asset = new DockerImageAsset(stack, 'Image', {
+    new DockerImageAsset(stack, 'Image', {
       directory: path.join(__dirname, 'demo-image'),
       buildArgs: {
         a: 'b'
@@ -42,8 +63,27 @@ export = {
     });
 
     // THEN
-    const assetMetadata = asset.node.metadata.find(({ type }) => type === 'aws:cdk:asset');
+    const assetMetadata = stack.node.metadata.find(({ type }) => type === ASSET_METADATA);
     test.deepEqual(assetMetadata && assetMetadata.data.buildArgs, { a: 'b' });
+    test.done();
+  },
+
+  'with target'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new DockerImageAsset(stack, 'Image', {
+      directory: path.join(__dirname, 'demo-image'),
+      buildArgs: {
+        a: 'b'
+      },
+      target: 'a-target'
+    });
+
+    // THEN
+    const assetMetadata = stack.node.metadata.find(({ type }) => type === ASSET_METADATA);
+    test.deepEqual(assetMetadata && assetMetadata.data.target, 'a-target');
     test.done();
   },
 
@@ -80,7 +120,7 @@ export = {
                   ":",
                   { "Ref": "AWS::AccountId" },
                   ":repository/",
-                  { "Fn::GetAtt": [ "ImageAdoptRepositoryE1E84E35", "RepositoryName" ] }
+                  { "Fn::GetAtt": ["ImageAdoptRepositoryE1E84E35", "RepositoryName"] }
                 ]
               ]
             }
@@ -113,19 +153,29 @@ export = {
 
     // WHEN
     asset.repository.addToResourcePolicy(new iam.PolicyStatement({
-      actions: ['BOOM'],
+      actions: ['BAM:BOOM'],
       principals: [new iam.ServicePrincipal('test.service')]
     }));
 
     // THEN
     expect(stack).to(haveResource('Custom::ECRAdoptedRepository', {
       "RepositoryName": {
-        "Fn::Select": [ 0, { "Fn::Split": [ "@sha256:", { "Ref": "ImageImageName5E684353" } ] } ]
+        "Fn::Select": [
+          0,
+          {
+            "Fn::Split": [
+              "@sha256:",
+              {
+                "Ref": "AssetParameters1a17a141505ac69144931fe263d130f4612251caa4bbbdaf68a44ed0f405439cImageName1ADCADB3"
+              }
+            ]
+          }
+        ]
       },
       "PolicyDocument": {
         "Statement": [
           {
-            "Action": "BOOM",
+            "Action": "BAM:BOOM",
             "Effect": "Allow",
             "Principal": {
               "Service": "test.service"
@@ -169,14 +219,56 @@ export = {
     const app = new App();
     const stack = new Stack(app, 'stack');
 
-    new DockerImageAsset(stack, 'MyAsset', {
+    const image = new DockerImageAsset(stack, 'MyAsset', {
       directory: path.join(__dirname, 'demo-image')
     });
 
     const session = app.synth();
 
-    test.ok(fs.existsSync(path.join(session.directory, 'asset.1a17a141505ac69144931fe263d130f4612251caa4bbbdaf68a44ed0f405439c/Dockerfile')));
-    test.ok(fs.existsSync(path.join(session.directory, 'asset.1a17a141505ac69144931fe263d130f4612251caa4bbbdaf68a44ed0f405439c/index.py')));
+    test.ok(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'Dockerfile')));
+    test.ok(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'index.py')));
+    test.done();
+  },
+
+  'docker directory is staged without files specified in .dockerignore'(test: Test) {
+    const app = new App();
+    const stack = new Stack(app, 'stack');
+
+    const image = new DockerImageAsset(stack, 'MyAsset', {
+      directory: path.join(__dirname, 'dockerignore-image')
+    });
+
+    const session = app.synth();
+
+    // .dockerignore itself should be included in output to be processed during docker build
+    test.ok(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, '.dockerignore')));
+    test.ok(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, `Dockerfile`)));
+    test.ok(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'index.py')));
+    test.ok(!fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'foobar.txt')));
+    test.ok(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'subdirectory')));
+    test.ok(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'subdirectory', 'baz.txt')));
+
+    test.done();
+  },
+
+  'docker directory is staged without files specified in exclude option'(test: Test) {
+    const app = new App();
+    const stack = new Stack(app, 'stack');
+
+    const image = new DockerImageAsset(stack, 'MyAsset', {
+      directory: path.join(__dirname, 'dockerignore-image'),
+      exclude: ['subdirectory']
+    });
+
+    const session = app.synth();
+
+    test.ok(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, '.dockerignore')));
+    test.ok(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, `Dockerfile`)));
+    test.ok(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'index.py')));
+    test.ok(!fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'foobar.txt')));
+    test.ok(!fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'subdirectory')));
+    test.ok(!fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'subdirectory', 'baz.txt')));
+
     test.done();
   },
 
@@ -196,6 +288,20 @@ export = {
       directory: path.join(__dirname, 'demo-image'),
       buildArgs: { key: token }
     }), expected);
+
+    test.done();
+  },
+
+  'fails if using token as repositoryName'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const token = Lazy.stringValue({ produce: () => 'foo' });
+
+    // THEN
+    test.throws(() => new DockerImageAsset(stack, 'MyAsset1', {
+      directory: path.join(__dirname, 'demo-image'),
+      repositoryName: token
+    }), /Cannot use Token as value of 'repositoryName'/);
 
     test.done();
   }

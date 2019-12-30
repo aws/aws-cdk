@@ -37,7 +37,11 @@
             {
               "Key": "aws-cdk:subnet-type",
               "Value": "Public"
-            }
+            },
+            {
+              "Key": "kubernetes.io/role/elb",
+              "Value": "1"
+            }  
           ]
         }
       },
@@ -51,7 +55,11 @@
             {
               "Key": "Name",
               "Value": "k8s-vpc/vpc/PublicSubnet1"
-            }
+            },
+            {
+              "Key": "kubernetes.io/role/elb",
+              "Value": "1"
+            }  
           ]
         }
       },
@@ -84,7 +92,17 @@
       "vpcPublicSubnet1EIPDA49DCBE": {
         "Type": "AWS::EC2::EIP",
         "Properties": {
-          "Domain": "vpc"
+          "Domain": "vpc",
+          "Tags": [
+            {
+              "Key": "Name",
+              "Value": "k8s-vpc/vpc/PublicSubnet1"
+            },
+            {
+              "Key": "kubernetes.io/role/elb",
+              "Value": "1"
+            }  
+          ]
         }
       },
       "vpcPublicSubnet1NATGateway9C16659E": {
@@ -103,7 +121,11 @@
             {
               "Key": "Name",
               "Value": "k8s-vpc/vpc/PublicSubnet1"
-            }
+            },
+            {
+              "Key": "kubernetes.io/role/elb",
+              "Value": "1"
+            }  
           ]
         }
       },
@@ -128,7 +150,11 @@
             {
               "Key": "aws-cdk:subnet-type",
               "Value": "Public"
-            }
+            },
+            {
+              "Key": "kubernetes.io/role/elb",
+              "Value": "1"
+            }  
           ]
         }
       },
@@ -142,7 +168,11 @@
             {
               "Key": "Name",
               "Value": "k8s-vpc/vpc/PublicSubnet2"
-            }
+            },
+            {
+              "Key": "kubernetes.io/role/elb",
+              "Value": "1"
+            }  
           ]
         }
       },
@@ -175,7 +205,17 @@
       "vpcPublicSubnet2EIP9B3743B1": {
         "Type": "AWS::EC2::EIP",
         "Properties": {
-          "Domain": "vpc"
+          "Domain": "vpc",
+          "Tags": [
+            {
+              "Key": "Name",
+              "Value": "k8s-vpc/vpc/PublicSubnet2"
+            },
+            {
+              "Key": "kubernetes.io/role/elb",
+              "Value": "1"
+            }  
+          ]
         }
       },
       "vpcPublicSubnet2NATGateway9B8AE11A": {
@@ -194,7 +234,11 @@
             {
               "Key": "Name",
               "Value": "k8s-vpc/vpc/PublicSubnet2"
-            }
+            },
+            {
+              "Key": "kubernetes.io/role/elb",
+              "Value": "1"
+            }  
           ]
         }
       },
@@ -527,7 +571,8 @@
                 "Action": [
                   "eks:CreateCluster",
                   "eks:DescribeCluster",
-                  "eks:DeleteCluster"
+                  "eks:DeleteCluster",
+                  "eks:UpdateClusterVersion"
                 ],
                 "Effect": "Allow",
                 "Resource": "*"
@@ -558,7 +603,7 @@
         "Properties": {
           "Code": {
             "S3Bucket": {
-              "Ref": "cluster22ResourceHandlerCodeS3Bucket9D2D8D69"
+              "Ref": "AssetParametersea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204S3Bucket371D99F8"
             },
             "S3Key": {
               "Fn::Join": [
@@ -571,7 +616,7 @@
                         "Fn::Split": [
                           "||",
                           {
-                            "Ref": "cluster22ResourceHandlerCodeS3VersionKeyB44B9CDC"
+                            "Ref": "AssetParametersea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204S3VersionKeyFDCB25DD"
                           }
                         ]
                       }
@@ -584,7 +629,7 @@
                         "Fn::Split": [
                           "||",
                           {
-                            "Ref": "cluster22ResourceHandlerCodeS3VersionKeyB44B9CDC"
+                            "Ref": "AssetParametersea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204S3VersionKeyFDCB25DD"
                           }
                         ]
                       }
@@ -668,7 +713,7 @@
         "Properties": {
           "Code": {
             "S3Bucket": {
-              "Ref": "cluster22KubernetesResourceHandlerCodeS3Bucket73E6A860"
+              "Ref": "AssetParameters640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444S3Bucket919126CB"
             },
             "S3Key": {
               "Fn::Join": [
@@ -681,7 +726,7 @@
                         "Fn::Split": [
                           "||",
                           {
-                            "Ref": "cluster22KubernetesResourceHandlerCodeS3VersionKey7C559451"
+                            "Ref": "AssetParameters640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444S3VersionKey529BEF54"
                           }
                         ]
                       }
@@ -694,7 +739,7 @@
                         "Fn::Split": [
                           "||",
                           {
-                            "Ref": "cluster22KubernetesResourceHandlerCodeS3VersionKey7C559451"
+                            "Ref": "AssetParameters640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444S3VersionKey529BEF54"
                           }
                         ]
                       }
@@ -965,7 +1010,9 @@
       "cluster22NodesLaunchConfig184BF3BA": {
         "Type": "AWS::AutoScaling::LaunchConfiguration",
         "Properties": {
-          "ImageId": "ami-12345",
+          "ImageId": {
+            "Ref": "SsmParameterValueawsserviceeksoptimizedami114amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+          },
           "InstanceType": "t2.medium",
           "IamInstanceProfile": {
             "Ref": "cluster22NodesInstanceProfile3D4963ED"
@@ -987,7 +1034,7 @@
                   {
                     "Ref": "cluster227BD1CB20"
                   },
-                  " --kubelet-extra-args \"--node-labels lifecycle=OnDemand\"\n/opt/aws/bin/cfn-signal --exit-code $? --stack k8s-cluster --resource cluster22NodesASGC0A97398 --region test-region"
+                  " --kubelet-extra-args \"--node-labels lifecycle=OnDemand\" --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack k8s-cluster --resource cluster22NodesASGC0A97398 --region test-region"
                 ]
               ]
             }
@@ -1109,32 +1156,6 @@
         }
       }
     },
-    "Parameters": {
-      "cluster22ResourceHandlerCodeS3Bucket9D2D8D69": {
-        "Type": "String",
-        "Description": "S3 bucket for asset \"k8s-cluster/cluster22/Resource/ResourceHandler/Code\""
-      },
-      "cluster22ResourceHandlerCodeS3VersionKeyB44B9CDC": {
-        "Type": "String",
-        "Description": "S3 key for asset version \"k8s-cluster/cluster22/Resource/ResourceHandler/Code\""
-      },
-      "cluster22ResourceHandlerCodeArtifactHash26F3BC3F": {
-        "Type": "String",
-        "Description": "Artifact hash for asset \"k8s-cluster/cluster22/Resource/ResourceHandler/Code\""
-      },
-      "cluster22KubernetesResourceHandlerCodeS3Bucket73E6A860": {
-        "Type": "String",
-        "Description": "S3 bucket for asset \"k8s-cluster/cluster22/KubernetesResourceHandler/Code\""
-      },
-      "cluster22KubernetesResourceHandlerCodeS3VersionKey7C559451": {
-        "Type": "String",
-        "Description": "S3 key for asset version \"k8s-cluster/cluster22/KubernetesResourceHandler/Code\""
-      },
-      "cluster22KubernetesResourceHandlerCodeArtifactHash8138542A": {
-        "Type": "String",
-        "Description": "Artifact hash for asset \"k8s-cluster/cluster22/KubernetesResourceHandler/Code\""
-      }
-    },
     "Outputs": {
       "cluster22ConfigCommand96B20279": {
         "Value": {
@@ -1163,6 +1184,36 @@
             ]
           ]
         }
+      }
+    },
+    "Parameters": {
+      "AssetParametersea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204S3Bucket371D99F8": {
+        "Type": "String",
+        "Description": "S3 bucket for asset \"ea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204\""
+      },
+      "AssetParametersea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204S3VersionKeyFDCB25DD": {
+        "Type": "String",
+        "Description": "S3 key for asset version \"ea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204\""
+      },
+      "AssetParametersea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204ArtifactHashB80B497F": {
+        "Type": "String",
+        "Description": "Artifact hash for asset \"ea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204\""
+      },
+      "AssetParameters640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444S3Bucket919126CB": {
+        "Type": "String",
+        "Description": "S3 bucket for asset \"640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444\""
+      },
+      "AssetParameters640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444S3VersionKey529BEF54": {
+        "Type": "String",
+        "Description": "S3 key for asset version \"640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444\""
+      },
+      "AssetParameters640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444ArtifactHash606C8127": {
+        "Type": "String",
+        "Description": "Artifact hash for asset \"640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444\""
+      },
+      "SsmParameterValueawsserviceeksoptimizedami114amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+        "Type": "AWS::SSM::Parameter::Value<String>",
+        "Default": "/aws/service/eks/optimized-ami/1.14/amazon-linux-2/recommended/image_id"
       }
     }
   }

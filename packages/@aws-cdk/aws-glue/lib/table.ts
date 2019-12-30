@@ -1,6 +1,6 @@
-import iam = require('@aws-cdk/aws-iam');
-import kms = require('@aws-cdk/aws-kms');
-import s3 = require('@aws-cdk/aws-s3');
+import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
+import * as s3 from '@aws-cdk/aws-s3';
 import { Construct, Fn, IResource, Resource, Stack } from '@aws-cdk/core';
 import { DataFormat } from './data-format';
 import { IDatabase } from './database';
@@ -284,6 +284,7 @@ export class Table extends Resource implements ITable {
       resource: 'table',
       resourceName: `${this.database.databaseName}/${this.tableName}`
     });
+    this.node.defaultChild = tableResource;
   }
 
   /**

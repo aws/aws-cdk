@@ -1,10 +1,4 @@
 {
-  "Parameters": {
-    "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter": {
-      "Type": "AWS::SSM::Parameter::Value<String>",
-      "Default": "/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2"
-    }
-  },
   "Resources": {
     "VPCB9E5F0B4": {
       "Type": "AWS::EC2::VPC",
@@ -89,7 +83,13 @@
     "VPCPublicSubnet1EIP6AD938E8": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
-        "Domain": "vpc"
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-asg-integ/VPC/PublicSubnet1"
+          }
+        ]
       }
     },
     "VPCPublicSubnet1NATGatewayE0556630": {
@@ -180,7 +180,13 @@
     "VPCPublicSubnet2EIP4947BC00": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
-        "Domain": "vpc"
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-asg-integ/VPC/PublicSubnet2"
+          }
+        ]
       }
     },
     "VPCPublicSubnet2NATGateway3C070193": {
@@ -271,7 +277,13 @@
     "VPCPublicSubnet3EIPAD4BC883": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
-        "Domain": "vpc"
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-asg-integ/VPC/PublicSubnet3"
+          }
+        ]
       }
     },
     "VPCPublicSubnet3NATGatewayD3048F5C": {
@@ -619,7 +631,6 @@
       "Properties": {
         "MaxSize": "1",
         "MinSize": "1",
-        "DesiredCapacity": "1",
         "LaunchConfigurationName": {
           "Ref": "FleetLaunchConfig59F79D36"
         },
@@ -737,6 +748,12 @@
         "VPCPublicSubnet2DefaultRouteB7481BBA",
         "VPCPublicSubnet3DefaultRouteA0D29D46"
       ]
+    }
+  },
+  "Parameters": {
+    "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter": {
+      "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
+      "Default": "/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2"
     }
   }
 }

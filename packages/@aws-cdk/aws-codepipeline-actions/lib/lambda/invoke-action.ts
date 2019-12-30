@@ -1,6 +1,6 @@
-import codepipeline = require('@aws-cdk/aws-codepipeline');
-import iam = require('@aws-cdk/aws-iam');
-import lambda = require('@aws-cdk/aws-lambda');
+import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import * as iam from '@aws-cdk/aws-iam';
+import * as lambda from '@aws-cdk/aws-lambda';
 import { Construct, Stack } from "@aws-cdk/core";
 import { Action } from '../action';
 
@@ -60,6 +60,7 @@ export class LambdaInvokeAction extends Action {
   constructor(props: LambdaInvokeActionProps) {
     super({
       ...props,
+      resource: props.lambda,
       category: codepipeline.ActionCategory.INVOKE,
       provider: 'Lambda',
       artifactBounds: {

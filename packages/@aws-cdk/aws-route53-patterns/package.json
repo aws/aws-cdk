@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-route53-patterns",
-  "version": "1.8.0",
+  "version": "1.19.0",
   "description": "CDK Constructs for AWS Route53 patterns",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -11,8 +11,7 @@
         "package": "software.amazon.awscdk.services.route53.patterns",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "route53-patterns",
-          "versionSuffix": ".DEVPREVIEW"
+          "artifactId": "route53-patterns"
         }
       },
       "dotnet": {
@@ -20,8 +19,7 @@
         "packageId": "Amazon.CDK.AWS.Route53.Patterns",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "versionSuffix": "-devpreview",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/png/default-64-dark.png"
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.aws-route53-patterns",
@@ -45,7 +43,8 @@
     "awslint": "cdk-awslint",
     "cfn2ts": "cfn2ts",
     "build+test+package": "npm run build+test && npm run package",
-    "build+test": "npm run build && npm test"
+    "build+test": "npm run build && npm test",
+    "compat": "cdk-compat"
   },
   "keywords": [
     "aws",
@@ -67,41 +66,52 @@
         "branches": 70,
         "statements": 80
       }
-    }
+    },
+    "collectCoverage": true,
+    "coverageReporters": [
+      "lcov",
+      "html",
+      "text-summary"
+    ]
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^1.8.0",
-    "@aws-cdk/aws-s3": "^1.8.0",
-    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
-    "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
-    "cfn2ts": "file:../../../tools/cfn2ts",
+    "@aws-cdk/assert": "1.19.0",
+    "cdk-build-tools": "1.19.0",
+    "cdk-integ-tools": "1.19.0",
+    "cfn2ts": "1.19.0",
     "jest": "^24.9.0",
-    "pkglint": "file:../../../tools/pkglint"
+    "pkglint": "1.19.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-cloudfront": "^1.8.0",
-    "@aws-cdk/aws-certificatemanager": "^1.8.0",
-    "@aws-cdk/aws-iam": "^1.8.0",
-    "@aws-cdk/aws-route53": "^1.8.0",
-    "@aws-cdk/aws-route53-targets": "^1.8.0",
-    "@aws-cdk/aws-s3": "^1.8.0",
-    "@aws-cdk/core": "^1.8.0",
-    "@aws-cdk/region-info": "^1.8.0"
+    "@aws-cdk/aws-certificatemanager": "1.19.0",
+    "@aws-cdk/aws-cloudfront": "1.19.0",
+    "@aws-cdk/aws-iam": "1.19.0",
+    "@aws-cdk/aws-route53": "1.19.0",
+    "@aws-cdk/aws-route53-targets": "1.19.0",
+    "@aws-cdk/aws-s3": "1.19.0",
+    "@aws-cdk/core": "1.19.0",
+    "@aws-cdk/region-info": "1.19.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-cloudfront": "^1.8.0",
-    "@aws-cdk/aws-certificatemanager": "^1.8.0",
-    "@aws-cdk/aws-iam": "^1.8.0",
-    "@aws-cdk/aws-route53": "^1.8.0",
-    "@aws-cdk/aws-route53-targets": "^1.8.0",
-    "@aws-cdk/aws-s3": "^1.8.0",
-    "@aws-cdk/core": "^1.8.0",
-    "@aws-cdk/region-info": "^1.8.0"
+    "@aws-cdk/aws-certificatemanager": "1.19.0",
+    "@aws-cdk/aws-cloudfront": "1.19.0",
+    "@aws-cdk/aws-iam": "1.19.0",
+    "@aws-cdk/aws-route53": "1.19.0",
+    "@aws-cdk/aws-route53-targets": "1.19.0",
+    "@aws-cdk/aws-s3": "1.19.0",
+    "@aws-cdk/core": "1.19.0",
+    "@aws-cdk/region-info": "1.19.0"
   },
   "engines": {
-    "node": ">= 8.10.0"
+    "node": ">= 10.3.0"
   },
-  "stability": "experimental"
+  "stability": "experimental",
+  "awslint": {
+    "exclude": [
+      "docs-public-apis:@aws-cdk/aws-route53-patterns.HttpsRedirect",
+      "docs-public-apis:@aws-cdk/aws-route53-patterns.HttpsRedirectProps"
+    ]
+  }
 }

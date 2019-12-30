@@ -1,9 +1,9 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import kinesis = require('@aws-cdk/aws-kinesis');
-import lambda = require('@aws-cdk/aws-lambda');
-import cdk = require('@aws-cdk/core');
+import * as kinesis from '@aws-cdk/aws-kinesis';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import sources = require('../lib');
+import * as sources from '../lib';
 import { TestFunction } from './test-function';
 
 // tslint:disable:object-literal-key-quotes
@@ -120,6 +120,36 @@ export = {
       batchSize: 10001,
       startingPosition: lambda.StartingPosition.LATEST
     })), /Maximum batch size must be between 1 and 10000 inclusive \(given 10001\)/);
+
+    test.done();
+  },
+
+  'specific maxBatchingWindow'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const stream = new kinesis.Stream(stack, 'S');
+
+    // WHEN
+    fn.addEventSource(new sources.KinesisEventSource(stream, {
+      maxBatchingWindow: cdk.Duration.minutes(2),
+      startingPosition: lambda.StartingPosition.LATEST
+    }));
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
+      "EventSourceArn": {
+        "Fn::GetAtt": [
+          "S509448A1",
+          "Arn"
+        ]
+      },
+      "FunctionName":  {
+        "Ref": "Fn9270CBC0"
+      },
+      "MaximumBatchingWindowInSeconds": 120,
+      "StartingPosition": "LATEST"
+    }));
 
     test.done();
   },

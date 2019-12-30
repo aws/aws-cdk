@@ -1,7 +1,6 @@
-import s3 = require('@aws-cdk/aws-s3');
-import s3_assets = require('@aws-cdk/aws-s3-assets');
-import cdk = require('@aws-cdk/core');
-import { CfnResource } from '@aws-cdk/core';
+import * as s3 from '@aws-cdk/aws-s3';
+import * as s3_assets from '@aws-cdk/aws-s3-assets';
+import * as cdk from '@aws-cdk/core';
 
 export abstract class Code {
   /**
@@ -40,8 +39,8 @@ export abstract class Code {
    * Loads the function code from a local disk asset.
    * @param path Either a directory with the Lambda code bundle or a .zip file
    */
-  public static fromAsset(path: string): AssetCode {
-    return new AssetCode(path);
+  public static fromAsset(path: string, options?: s3_assets.AssetOptions): AssetCode {
+    return new AssetCode(path, options);
   }
 
   /**
@@ -90,7 +89,7 @@ export abstract class Code {
    * class to bind to it. Specifically it's required to allow assets to add
    * metadata for tooling like SAM CLI to be able to find their origins.
    */
-  public bindToResource(_resource: CfnResource) {
+  public bindToResource(_resource: cdk.CfnResource, _options?: ResourceBindOptions) {
     return;
   }
 }
@@ -170,14 +169,17 @@ export class AssetCode extends Code {
   /**
    * @param path The path to the asset file or directory.
    */
-  constructor(public readonly path: string) {
+  constructor(public readonly path: string, private readonly options: s3_assets.AssetOptions = { }) {
     super();
   }
 
   public bind(scope: cdk.Construct): CodeConfig {
     // If the same AssetCode is used multiple times, retain only the first instantiation.
     if (!this.asset) {
-      this.asset = new s3_assets.Asset(scope, 'Code', { path: this.path });
+      this.asset = new s3_assets.Asset(scope, 'Code', {
+        path: this.path,
+        ...this.options
+      });
     }
 
     if (!this.asset.isZipArchive) {
@@ -192,14 +194,25 @@ export class AssetCode extends Code {
     };
   }
 
-  public bindToResource(resource: CfnResource) {
+  public bindToResource(resource: cdk.CfnResource, options: ResourceBindOptions = { }) {
     if (!this.asset) {
       throw new Error(`bindToResource() must be called after bind()`);
     }
 
-      // https://github.com/aws/aws-cdk/issues/1432
-    this.asset.addResourceMetadata(resource, 'Code');
+    const resourceProperty = options.resourceProperty || 'Code';
+
+    // https://github.com/aws/aws-cdk/issues/1432
+    this.asset.addResourceMetadata(resource, resourceProperty);
   }
+}
+
+export interface ResourceBindOptions {
+  /**
+   * The name of the CloudFormation property to annotate with asset metadata.
+   * @see https://github.com/aws/aws-cdk/issues/1432
+   * @default Code
+   */
+  readonly resourceProperty?: string;
 }
 
 /**

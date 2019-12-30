@@ -1,5 +1,5 @@
-import codepipeline = require('@aws-cdk/aws-codepipeline');
-import s3 = require('@aws-cdk/aws-s3');
+import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import * as s3 from '@aws-cdk/aws-s3';
 import { Construct } from '@aws-cdk/core';
 import { Action } from '../action';
 import { deployArtifactBounds } from '../common';
@@ -40,6 +40,7 @@ export class S3DeployAction extends Action {
   constructor(props: S3DeployActionProps) {
     super({
       ...props,
+      resource: props.bucket,
       category: codepipeline.ActionCategory.DEPLOY,
       provider: 'S3',
       artifactBounds: deployArtifactBounds(),

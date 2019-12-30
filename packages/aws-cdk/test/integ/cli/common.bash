@@ -1,38 +1,47 @@
 set -eu
 scriptdir=$(cd $(dirname $0) && pwd)
-source $scriptdir/../common/util.bash
-
-CDK_REPO="${CDK_REPO:-}"
-
-# If CDK_REPO is set to point to the root of the CDK source repository
-# the CLI and modules will be taken from there. Otherwise, we will honor
-# the usual IS_CANARY flag for integration test-vs-canary mode switch.
-if [ -z "${CDK_REPO}" -a -z "${TESTS_PREPARED:-}" ]; then
-    prepare_toolkit
-    preload_npm_packages
-
-    # Only do this once
-    export TESTS_PREPARED=1
-fi
-
-if [[ "${CDK_REPO}" != "" ]]; then
-    export CDK_REPO=$(cd $CDK_REPO && pwd)
-    alias cdk=$CDK_REPO/packages/aws-cdk/bin/cdk
-fi
+cd ${scriptdir}
 
 if [[ -z "${CREDS_SET:-}" ]]; then
-    # Check that credentials are configured
-    aws sts get-caller-identity > /dev/null
+    # Check that credentials are configured (will error & abort if not)
+    creds=$(aws sts get-caller-identity)
+
+    export TEST_ACCOUNT=$(node -p "($creds).Account")
+    export TEST_REGION=${AWS_REGION:-${AWS_DEFAULT_REGION:-us-east-1}}
     export CREDS_SET=1
 fi
 
-cd ${scriptdir}
 
-if ${IS_CANARY:-false}; then
-  export STACK_NAME_PREFIX=cdk-toolkit-canary
-else
-  export STACK_NAME_PREFIX=cdk-toolkit-integration
+if [[ "${STACK_NAME_PREFIX:-}" == "" ]]; then
+  # Make the stack names unique based on the codebuild project name
+  # (if it exists). This prevents multiple codebuild projects stomping
+  # on each other's stacks and failing them.
+  #
+  # The get codebuild project name from the ID: PROJECT_NAME:1238a83
+  CODEBUILD_PROJECT=$(echo ${CODEBUILD_BUILD_ID:-} | cut -d: -f 1)
+
+  if [[ "${CODEBUILD_PROJECT:-}" != "" ]]; then
+    export STACK_NAME_PREFIX="${CODEBUILD_PROJECT}"
+  elif ${IS_CANARY:-false}; then
+    export STACK_NAME_PREFIX=cdk-toolkit-canary
+  else
+    export STACK_NAME_PREFIX=cdk-toolkit-integration
+  fi
 fi
+
+#----------------------------------------------------------------------------------
+# Only functions from here on out
+
+function log() {
+  echo >&2 "| $@"
+}
+
+function header() {
+  log
+  log "============================================================================================"
+  log $@
+  log "============================================================================================"
+}
 
 function cleanup_stack() {
   local stack_arn=$1
@@ -42,50 +51,47 @@ function cleanup_stack() {
   fi
 }
 
+integ_test_dir=/tmp/cdk-integ-test
+
+# Prepare the app fixture
+#
+# If this is done in the main test script, it will be skipped
+# in the subprocess scripts since the app fixture can just be reused.
+function prepare_fixture() {
+  if [[ -z "${FIXTURE_PREPARED:-}" ]]; then
+    log "Preparing app fixture..."
+
+    rm -rf $integ_test_dir
+    mkdir -p $integ_test_dir
+    cp -R app/* $integ_test_dir
+    cd $integ_test_dir
+
+    npm install \
+        @aws-cdk/core \
+        @aws-cdk/aws-sns \
+        @aws-cdk/aws-iam \
+        @aws-cdk/aws-lambda \
+        @aws-cdk/aws-ssm \
+        @aws-cdk/aws-ecr-assets \
+        @aws-cdk/aws-ec2
+
+    echo "| setup complete at: $PWD"
+    echo "| 'cdk' is: $(type -p cdk)"
+
+    export FIXTURE_PREPARED=1
+  fi
+}
+
 function cleanup() {
   cleanup_stack ${STACK_NAME_PREFIX}-test-1
   cleanup_stack ${STACK_NAME_PREFIX}-test-2
   cleanup_stack ${STACK_NAME_PREFIX}-iam-test
 }
 
-function install_dep() {
-  local dep=$1
-
-  if [ -n "${CDK_REPO}" ]; then
-    mkdir -p node_modules/@aws-cdk
-    local source="${CDK_REPO}/packages/${dep}"
-    local target="$PWD/node_modules/${dep}"
-    echo "| symlinking dependency ${target} => ${source}"
-    ln -s ${source} ${target}
-  else
-    echo "| installing dependency ${dep}"
-    npm i --no-save ${dep}
-  fi
-}
-
 function setup() {
   cleanup
-  rm -rf /tmp/cdk-integ-test
-  mkdir -p /tmp/cdk-integ-test
-  cp -R app/* /tmp/cdk-integ-test
-  cd /tmp/cdk-integ-test
-
-  if [ -n "${CDK_REPO}" ]; then
-    local cdk_bin="${CDK_REPO}/packages/aws-cdk/bin"
-    echo "| adding ${cdk_bin} to PATH"
-    export PATH=${cdk_bin}:$PATH
-  fi
-
-  install_dep @aws-cdk/core
-  install_dep @aws-cdk/aws-sns
-  install_dep @aws-cdk/aws-iam
-  install_dep @aws-cdk/aws-lambda
-  install_dep @aws-cdk/aws-ssm
-  install_dep @aws-cdk/aws-ecr-assets
-  install_dep @aws-cdk/aws-ec2
-
-  echo "| setup complete at: $PWD"
-  echo "| 'cdk' is: $(which cdk)"
+  prepare_fixture
+  cd $integ_test_dir
 }
 
 function fail() {
@@ -93,6 +99,10 @@ function fail() {
   exit 1
 }
 
+#
+# compares two files
+# usage: assert_diff TEST_NAME actual-file expected-file
+#
 function assert_diff() {
   local test=$1
   local actual=$2
@@ -114,6 +124,10 @@ function assert_diff() {
   }
 }
 
+#
+# compares the result of $1 with STDIN
+# usage: assert COMMAND < file
+#
 function assert() {
   local command="$1"
 

@@ -7,6 +7,7 @@ and let us know if it's not up-to-date (even better, submit a PR with your  corr
 
 - [Getting Started](#getting-started)
 - [Pull Requests](#pull-requests)
+  - [Pull Request Checklist](#pull-request-checklist)
   - [Step 1: Open Issue](#step-1-open-issue)
   - [Step 2: Design (optional)](#step-2-design-optional)
   - [Step 3: Work your Magic](#step-3-work-your-magic)
@@ -34,6 +35,8 @@ and let us know if it's not up-to-date (even better, submit a PR with your  corr
   - [Finding dependency cycles between packages](#finding-dependency-cycles-between-packages)
   - [Updating all Dependencies](#updating-all-dependencies)
   - [Running CLI integration tests](#running-cli-integration-tests)
+  - [API Compatibility Checks](#api-compatibility-checks)
+  - [Feature Flags](#feature-flags)
 - [Troubleshooting](#troubleshooting)
 - [Debugging](#debugging)
   - [Connecting the VS Code Debugger](#connecting-the-vs-code-debugger)
@@ -41,23 +44,26 @@ and let us know if it's not up-to-date (even better, submit a PR with your  corr
 
 ## Getting Started
 
-For day-to-day development and normal contributions, [Node.js 8.11](https://nodejs.org/download/release/v8.11.0/)
-should be sufficient.
-
-```console
-$ git clone git@github.com:aws/aws-cdk.git
-$ cd aws-cdk
-$ ./build.sh
-```
-
-If you wish to produce language bindings through `pack.sh`, you will need the following toolchains
-installed, or use the Docker workflow.
-
- - [Node.js 8.11.0](https://nodejs.org/download/release/v8.11.0/)
+For day-to-day development and normal contributions, the following SDKs and tools are required:
+ - [Node.js 10.3.0](https://nodejs.org/download/release/latest-v10.x/)
+ - [Yarn >= 1.19.1](https://yarnpkg.com/lang/en/docs/install)
  - [Java OpenJDK 8](http://openjdk.java.net/install/)
- - [.NET Core 2.0](https://www.microsoft.com/net/download)
+ - [.NET Core SDK 3.0](https://www.microsoft.com/net/download)
  - [Python 3.6.5](https://www.python.org/downloads/release/python-365/)
  - [Ruby 2.5.1](https://www.ruby-lang.org/en/news/2018/03/28/ruby-2-5-1-released/)
+ 
+The basic commands to get the repository cloned and built locally follow:
+
+```console
+$ git clone https://github.com/aws/aws-cdk.git
+$ cd aws-cdk
+$ yarn install
+$ yarn build
+```
+
+Alternatively, the [Full Docker build](#full-docker-build) workflow can be used so
+that you don't have to worry about installing all those tools on your local machine
+and instead only depend on having a working Docker install.
 
 ## Pull Requests
 
@@ -191,11 +197,10 @@ fixed for you by hitting `Ctrl-.` when your cursor is on a red underline.
 
 ### Main build scripts
 
-The build process is divided into stages, so you can invoke them as needed:
+The build process is divided into stages, so you can invoke them as needed from the root of the repo:
 
-- __`install.sh`__: installs all external dependencies and symlinks internal dependencies (using `lerna link`).
-- __`build.sh`__: runs `npm build` and `npm test` in all modules (in topological order).
-- __`pack.sh`__: packages all modules to all supported languages and produces a `dist/` directory with all the outputs
+- __`yarn build`__: runs the `build` and `test` commands in all modules (in topological order).
+- __`yarn pack`__: packages all modules to all supported languages and produces a `dist/` directory with all the outputs
   (running this script requires that you installed the [toolchains](#Toolchains) for all target languages on your
   system).
 
@@ -214,11 +219,11 @@ You can also add a few useful aliases to your shell profile:
 # runs an npm script via lerna for a the current module
 alias lr='lerna run --stream --scope $(node -p "require(\"./package.json\").name")'
 
-# runs "npm run build" (build + test) for the current module
+# runs "yarn build" (build + test) for the current module
 alias lb='lr build'
 alias lt='lr test'
 
-# runs "npm run watch" for the current module (recommended to run in a separate terminal session):
+# runs "yarn watch" for the current module (recommended to run in a separate terminal session):
 alias lw='lr watch'
 ```
 
@@ -254,9 +259,9 @@ the [guidelines](./design/aws-guidelines.md).
 
 Here are a few useful commands:
 
- * `npm run awslint` in every module will run __awslint__ for that module.
- * `npm run awslint list` prints all rules (details and rationale in the guidelines doc)
- * `scripts/foreach.sh npm run awslint` will start linting the entire repo, progressively. Rerun `scripts/foreach.sh` after fixing to continue.
+ * `yarn awslint` in every module will run __awslint__ for that module.
+ * `yarn awslint list` prints all rules (details and rationale in the guidelines doc)
+ * `scripts/foreach.sh yarn awslint` will start linting the entire repo, progressively. Rerun `scripts/foreach.sh` after fixing to continue.
  * `lerna run awslint --no-bail --stream 2> awslint.txt` will run __awslint__ in all modules and collect all results into awslint.txt
  * `lerna run awslint -- -i <RULE>` will run awslint throughout the repo and
    evaluate only the rule specified [awslint README](./tools/awslint/README.md)
@@ -275,7 +280,7 @@ between those.
 
 Each module also has an npm script called `cfn2ts`:
 
-* `npm run cfn2ts`: generates L1 for a specific module
+* `yarn cfn2ts`: generates L1 for a specific module
 * `lerna run cfn2ts`: generates L1 for the entire repo
 
 ### scripts/foreach.sh
@@ -318,7 +323,7 @@ This section includes step-by-step descriptions of common workflows.
 Clone the repo:
 
 ```console
-$ git clone git@github.com:aws/aws-cdk.git
+$ git clone https://github.com/aws/aws-cdk.git
 $ cd aws-cdk
 ```
 
@@ -328,7 +333,7 @@ Install and build:
 
 ```console
 $ ./install.sh
-$ ./build.sh
+$ yarn build
 ```
 
 If you also wish to package to all languages, make sure you have all the [toolchains](#Toolchains) and now run:
@@ -342,7 +347,7 @@ $ ./pack.sh
 Clone the repo:
 
 ```console
-$ git clone git@github.com:aws/aws-cdk.git
+$ git clone https://github.com/aws/aws-cdk.git
 $ cd aws-cdk
 ```
 
@@ -365,7 +370,7 @@ $ docker run -v $(pwd):/app -w /app aws-cdk <CDK ARGS>
 In many cases, you don't really need to build the entire project. Say you want to work on the `@aws-cdk/aws-ec2` module:
 
 ```console
-$ ./install.sh
+$ yarn install
 $ cd packages/@aws-cdk/aws-ec2
 $ ../../../scripts/buildup
 ```
@@ -409,7 +414,7 @@ One can use the `postinstall` script to symlink this repo:
 ```
 
 This assumes this repo is a sibling of the target repo and will install the CDK as a linked dependency during
-__npm install__.
+__yarn install__.
 
 ### Running integration tests in parallel
 
@@ -437,8 +442,8 @@ $ cdk -a some.app.js synth | $awscdk/scripts/template-deps-to-dot | dot -Tpng > 
 The root [package.json](./package.json) includes global devDependencies (see
 [lerna docs](https://github.com/lerna/lerna#common-devdependencies)) on the topic.
 
- * To add a global dependency, run `npm i --save-dev <dep>` at  the root.
- * To add a dependency for a specific module, run `npm i <dep>` inside the module's directory.
+ * To add a global dependency, run `yarn add <dep> --dev` at  the root.
+ * To add a dependency for a specific module, run `yarn add <dep>` inside the module's directory.
 
 Guidelines:
 
@@ -446,7 +451,7 @@ Guidelines:
  * Make sure dependencies are defined using [caret
    ranges](https://docs.npmjs.com/misc/semver#caret-ranges-123-025-004) (e.g. `^1.2.3`). This enables non-breaking
    updates to automatically be picked up.
- * Make sure `package-lock.json` files are included in your commit.
+ * Make sure `yarn.lock` is included in your commit.
 
 ### Finding dependency cycles between packages
 
@@ -469,7 +474,7 @@ Cycle: @aws-cdk/aws-sns => @aws-cdk/aws-lambda => @aws-cdk/aws-codecommit => @aw
 To update all dependencies (without bumping major versions):
 
 1. Obtain a fresh clone from "master".
-2. Run `./install.sh`
+2. Run `yarn install`
 3. Run `./scripts/update-dependencies.sh --mode full` (use `--mode semver` to avoid bumping major versions)
 4. Submit a Pull Request.
 
@@ -480,13 +485,89 @@ run as part of the regular build, since they have some particular requirements.
 See the [CLI CONTRIBUTING.md file](packages/aws-cdk/CONTRIBUTING.md) for
 more information on running those tests.
 
+### API Compatibility Checks
+
+All stable APIs in the CDK go through a compatibility check during build using
+the [jsii-diff] tool. This tool downloads the latest released version from npm
+and verifies that the APIs in the current build have not changed in a breaking
+way.
+
+[jsii-diff]: https://www.npmjs.com/package/jsii-diff
+
+Compatibility checks always run as part of a full build (`yarn build`).
+
+You can use `yarn compat` to run compatibility checks for all modules:
+
+```shell
+(working directory is repo root)
+$ yarn build
+$ yarn compat
+```
+
+You can also run `compat` from individual package directories:
+
+```shell
+$ cd packages/@aws-cdk/aws-sns
+$ yarn build
+$ yarn compat
+```
+
+The only case where it is legitimate to break a public API is if the existing
+API is a bug that blocked the usage of a feature. This means that by breaking
+this API we will not break anyone, because they weren't able to use it. The file
+`allowed-breaking-changes.txt` in the root of the repo is an exclusion file that
+can be used in these cases.
+
+### Feature Flags
+
+Sometimes we want to introduce new breaking behavior because we believe this is
+the correct default behavior for the CDK. The problem of course is that breaking
+changes are only allowed in major versions and those are rare.
+
+To address this need, we have a feature flags pattern/mechanism. It allows us to
+introduce new breaking behavior which is disabled by default (so existing
+projects will not be affected) but enabled automatically for new projects
+created through `cdk init`.
+
+The pattern is simple:
+
+1. Define a new const under
+   [cx-api/lib/features.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/cx-api/lib/features.ts)
+   with the name of the context key that **enables** this new feature (for
+   example, `ENABLE_STACK_NAME_DUPLICATES`). The context key should be in the
+   form `module.Type:feature` (e.g. `@aws-cdk/core:enableStackNameDuplicates`).
+2. Use `node.tryGetContext(cxapi.ENABLE_XXX)` to check if this feature is enabled
+   in your code. If it is not defined, revert to the legacy behavior.
+3. Add your feature flag to
+   [cx-api/lib/future.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/cx-api/lib/future.ts).
+   This map is inserted to generated `cdk.json` files for new projects created
+   through `cdk init`.
+4. In your PR title (which goes into CHANGELOG), add a `(under feature flag)` suffix. e.g:
+
+    ```
+    fix(core): impossible to use the same physical stack name for two stacks (under feature flag)
+    ```
+5. Under `BREAKING CHANGES` in your commit message describe this new behavior:
+
+    ```
+    BREAKING CHANGE: template file names for new projects created through "cdk init" 
+    will use the template artifact ID instead of the physical stack name to enable 
+    multiple stacks to use the same name. This is enabled through the flag 
+    `@aws-cdk/core:enableStackNameDuplicates` in newly generated `cdk.json` files.
+    ```
+
+In the [next major version of the
+CDK](https://github.com/aws/aws-cdk/issues/3398) we will either remove the
+legacy behavior or flip the logic for all these features and then
+reset the `FEATURE_FLAGS` map for the next cycle.
+
 ## Troubleshooting
 
 Most build issues can be solved by doing a full clean rebuild:
 
 ```shell
 $ git clean -fqdx .
-$ ./build.sh
+$ yarn build
 ```
 
 However, this will be time consuming. In this section we'll describe some common issues you may encounter and some more
@@ -557,7 +638,7 @@ $ CDK_TEST_BUILD=false lr test
 To debug your CDK application along with the CDK repository,
 
 1. Clone the CDK repository locally and build the repository. See [Workflows](#workflows) section for the different build options.
-2. Build the CDK application using the appropriate npm script (typically, `npm run build`) and then run the `link-all.sh` script as so -
+2. Build the CDK application using the appropriate npm script (typically, `yarn build`) and then run the `link-all.sh` script as so -
 
    ```
    cd /path/to/cdk/app

@@ -1,9 +1,9 @@
 import '@aws-cdk/assert/jest';
-import lambda = require('@aws-cdk/aws-lambda');
-import sns = require('@aws-cdk/aws-sns');
-import sqs = require('@aws-cdk/aws-sqs');
-import { SecretValue, Stack } from '@aws-cdk/core';
-import subs = require('../lib');
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as sns from '@aws-cdk/aws-sns';
+import * as sqs from '@aws-cdk/aws-sqs';
+import { CfnParameter, SecretValue, Stack } from '@aws-cdk/core';
+import * as subs from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -498,7 +498,7 @@ test('throws with mutliple subscriptions of the same subscriber', () => {
 
 test('with filter policy', () => {
   const fction = new lambda.Function(stack, 'MyFunc', {
-    runtime: lambda.Runtime.NODEJS_8_10,
+    runtime: lambda.Runtime.NODEJS_10_X,
     handler: 'index.handler',
     code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }')
   });
@@ -547,6 +547,29 @@ test('with filter policy', () => {
           ]
         }
       ]
+    }
+  });
+});
+
+test('region property is present on an imported topic', () => {
+  const imported = sns.Topic.fromTopicArn(stack, 'mytopic', 'arn:aws:sns:us-east-1:1234567890:mytopic');
+  const queue = new sqs.Queue(stack, 'myqueue');
+  imported.addSubscription(new subs.SqsSubscription(queue));
+
+  expect(stack).toHaveResource('AWS::SNS::Subscription', {
+    Region: 'us-east-1'
+  });
+});
+
+test('region property on an imported topic as a parameter', () => {
+  const topicArn = new CfnParameter(stack, 'topicArn');
+  const imported = sns.Topic.fromTopicArn(stack, 'mytopic', topicArn.valueAsString);
+  const queue = new sqs.Queue(stack, 'myqueue');
+  imported.addSubscription(new subs.SqsSubscription(queue));
+
+  expect(stack).toHaveResource('AWS::SNS::Subscription', {
+    Region: {
+      "Fn::Select": [ 3, { "Fn::Split": [ ":", { "Ref": "topicArn" } ] } ]
     }
   });
 });

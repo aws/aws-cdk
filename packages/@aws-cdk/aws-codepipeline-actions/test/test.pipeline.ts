@@ -1,15 +1,15 @@
 import { countResources, expect, haveResource, haveResourceLike, not, SynthUtils } from '@aws-cdk/assert';
-import codebuild = require('@aws-cdk/aws-codebuild');
-import codecommit = require('@aws-cdk/aws-codecommit');
-import codepipeline = require('@aws-cdk/aws-codepipeline');
-import targets = require('@aws-cdk/aws-events-targets');
-import iam = require('@aws-cdk/aws-iam');
-import lambda = require('@aws-cdk/aws-lambda');
-import s3 = require('@aws-cdk/aws-s3');
-import sns = require('@aws-cdk/aws-sns');
+import * as codebuild from '@aws-cdk/aws-codebuild';
+import * as codecommit from '@aws-cdk/aws-codecommit';
+import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import * as targets from '@aws-cdk/aws-events-targets';
+import * as iam from '@aws-cdk/aws-iam';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as s3 from '@aws-cdk/aws-s3';
+import * as sns from '@aws-cdk/aws-sns';
 import { App, Aws, CfnParameter, ConstructNode, SecretValue, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import cpactions = require('../lib');
+import * as cpactions from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -429,7 +429,7 @@ export = {
     const lambdaFun = new lambda.Function(stack, 'Function', {
       code: new lambda.InlineCode('bla'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_8_10,
+      runtime: lambda.Runtime.NODEJS_10_X,
     });
 
     const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
@@ -613,17 +613,17 @@ export = {
       expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
         "ArtifactStores": [
           {
-            "Region": "us-east-1",
-            "ArtifactStore": {
-              "Type": "S3",
-              "Location": "teststack-support-us-easteplicationbucket1a8063b3cdac6e7e0e73",
-            },
-          },
-          {
             "Region": "us-west-1",
             "ArtifactStore": {
               "Type": "S3",
               "Location": "sfo-replication-bucket",
+            },
+          },
+          {
+            "Region": "us-east-1",
+            "ArtifactStore": {
+              "Type": "S3",
+              "Location": "teststack-support-us-easteplicationbucket1a8063b3cdac6e7e0e73",
             },
           },
           {
@@ -662,8 +662,8 @@ export = {
         ],
       }));
 
-      test.equal(pipeline.crossRegionSupport[pipelineRegion], undefined);
-      test.equal(pipeline.crossRegionSupport['us-west-1'], undefined);
+      test.notEqual(pipeline.crossRegionSupport[pipelineRegion], undefined);
+      test.notEqual(pipeline.crossRegionSupport['us-west-1'], undefined);
 
       const usEast1Support = pipeline.crossRegionSupport['us-east-1'];
       test.notEqual(usEast1Support, undefined);
@@ -746,6 +746,94 @@ export = {
 
       test.done();
     },
+
+    'allows providing a resource-backed action from a different region directly'(test: Test) {
+      const account = '123456789012';
+      const app = new App();
+
+      const replicationRegion = 'us-west-1';
+      const replicationStack = new Stack(app, 'ReplicationStack', { env: { region: replicationRegion, account } });
+      const project = new codebuild.PipelineProject(replicationStack, 'CodeBuildProject', {
+        projectName: 'MyCodeBuildProject',
+      });
+
+      const pipelineRegion = 'us-west-2';
+      const pipelineStack = new Stack(app, 'TestStack', { env: { region: pipelineRegion, account } });
+      const sourceOutput = new codepipeline.Artifact('SourceOutput');
+      new codepipeline.Pipeline(pipelineStack, 'MyPipeline', {
+        stages: [
+          {
+            stageName: 'Source',
+            actions: [new cpactions.CodeCommitSourceAction({
+              actionName: 'CodeCommitAction',
+              output: sourceOutput,
+              repository: codecommit.Repository.fromRepositoryName(pipelineStack, 'Repo', 'my-codecommit-repo'),
+            })],
+          },
+          {
+            stageName: 'Build',
+            actions: [new cpactions.CodeBuildAction({
+              actionName: 'CodeBuildAction',
+              input: sourceOutput,
+              project,
+            })],
+          },
+        ],
+      });
+
+      expect(pipelineStack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+        "ArtifactStores": [
+          {
+            "Region": replicationRegion,
+            "ArtifactStore": {
+              "Type": "S3",
+              "Location": "replicationstackeplicationbucket2464cd5c33b386483b66",
+              "EncryptionKey": {
+                "Id": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":kms:us-west-1:123456789012:alias/ionstacktencryptionalias043cb2f8ceac9da9c07c",
+                    ],
+                  ],
+                },
+                "Type": "KMS"
+              },
+            },
+          },
+          {
+            "Region": pipelineRegion,
+          },
+        ],
+        "Stages": [
+          {
+            "Name": "Source",
+          },
+          {
+            "Name": "Build",
+            "Actions": [
+              {
+                "Name": "CodeBuildAction",
+                "Region": replicationRegion,
+                "Configuration": {
+                  "ProjectName": "MyCodeBuildProject",
+                },
+              },
+            ],
+          },
+        ],
+      }));
+
+      expect(replicationStack).to(haveResourceLike('AWS::S3::Bucket', {
+        "BucketName": "replicationstackeplicationbucket2464cd5c33b386483b66",
+      }));
+
+      test.done();
+    },
   },
 
   'cross-account Pipeline': {
@@ -769,7 +857,7 @@ export = {
       });
 
       const pipelineStack = new Stack(app, 'PipelineStack', {
-        env: { account: '123456789012', region: 'bermuda-triangle-42' },
+        env: { account: '123456789012', region: buildRegion },
       });
       const sourceBucket = new s3.Bucket(pipelineStack, 'ArtifactBucket', {
         bucketName: 'source-bucket',
@@ -796,7 +884,6 @@ export = {
                 actionName: 'CodeBuild',
                 project,
                 input: sourceOutput,
-                outputs: [new codepipeline.Artifact()],
               }),
             ],
           },
@@ -845,9 +932,6 @@ export = {
                 "s3:GetObject*",
                 "s3:GetBucket*",
                 "s3:List*",
-                "s3:DeleteObject*",
-                "s3:PutObject*",
-                "s3:Abort*",
               ],
               "Effect": "Allow",
               "Resource": [
@@ -859,7 +943,7 @@ export = {
                       {
                         "Ref": "AWS::Partition",
                       },
-                      ':s3:::pipelinestackeartifactsbucket5409dc84ec8d21c5e28c',
+                      ':s3:::pipelinestackeartifactsbucket5409dc84bb108027cb58',
                     ],
                   ],
                 },
@@ -871,7 +955,7 @@ export = {
                       {
                         "Ref": "AWS::Partition",
                       },
-                      ':s3:::pipelinestackeartifactsbucket5409dc84ec8d21c5e28c/*',
+                      ':s3:::pipelinestackeartifactsbucket5409dc84bb108027cb58/*',
                     ],
                   ],
                 },
@@ -881,9 +965,6 @@ export = {
               "Action": [
                 "kms:Decrypt",
                 "kms:DescribeKey",
-                "kms:Encrypt",
-                "kms:ReEncrypt*",
-                "kms:GenerateDataKey*",
               ],
               "Effect": "Allow",
               "Resource": "*",

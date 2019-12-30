@@ -1,7 +1,7 @@
-import codecommit = require('@aws-cdk/aws-codecommit');
-import codepipeline = require('@aws-cdk/aws-codepipeline');
-import targets = require('@aws-cdk/aws-events-targets');
-import iam = require('@aws-cdk/aws-iam');
+import * as codecommit from '@aws-cdk/aws-codecommit';
+import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import * as targets from '@aws-cdk/aws-events-targets';
+import * as iam from '@aws-cdk/aws-iam';
 import { Construct } from '@aws-cdk/core';
 import { Action } from '../action';
 import { sourceArtifactBounds } from '../common';
@@ -68,6 +68,7 @@ export class CodeCommitSourceAction extends Action {
 
     super({
       ...props,
+      resource: props.repository,
       category: codepipeline.ActionCategory.SOURCE,
       provider: 'CodeCommit',
       artifactBounds: sourceArtifactBounds(),

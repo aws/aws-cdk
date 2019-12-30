@@ -16,6 +16,7 @@ export * from './authorizer';
 export * from './json-schema';
 export * from './domain-name';
 export * from './base-path-mapping';
+export * from './cors';
 
 // AWS::ApiGateway CloudFormation Resources:
 export * from './apigateway.generated';

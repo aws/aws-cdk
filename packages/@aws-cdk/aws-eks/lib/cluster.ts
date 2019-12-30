@@ -1,14 +1,14 @@
-import autoscaling = require('@aws-cdk/aws-autoscaling');
-import ec2 = require('@aws-cdk/aws-ec2');
-import { Subnet } from '@aws-cdk/aws-ec2';
-import iam = require('@aws-cdk/aws-iam');
-import lambda = require('@aws-cdk/aws-lambda');
-import { CfnOutput, Construct, Duration, IResource, Resource, Stack, Tag } from '@aws-cdk/core';
-import path = require('path');
-import { EksOptimizedAmi, nodeTypeForInstanceType } from './ami';
+import * as autoscaling from '@aws-cdk/aws-autoscaling';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as iam from '@aws-cdk/aws-iam';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as ssm from '@aws-cdk/aws-ssm';
+import { CfnOutput, Construct, Duration, IResource, Resource, Stack, Tag, Token } from '@aws-cdk/core';
+import * as path from 'path';
 import { AwsAuth } from './aws-auth';
 import { ClusterResource } from './cluster-resource';
 import { CfnCluster, CfnClusterProps } from './eks.generated';
+import { HelmChart, HelmChartOptions } from './helm-chart';
 import { KubernetesResource } from './k8s-resource';
 import { KubectlLayer } from './kubectl-layer';
 import { spotInterruptHandler } from './spot-interrupt-handler';
@@ -310,8 +310,10 @@ export class Cluster extends Resource implements ICluster {
    * automatically added by Amazon EKS to the `system:masters` RBAC group of the
    * cluster. Use `addMastersRole` or `props.mastersRole` to define additional
    * IAM roles as administrators.
+   *
+   * @internal
    */
-  private readonly _defaultMastersRole?: iam.IRole;
+  public readonly _defaultMastersRole?: iam.IRole;
 
   /**
    * Manages the aws-auth config map.
@@ -449,7 +451,7 @@ export class Cluster extends Resource implements ICluster {
     const asg = new autoscaling.AutoScalingGroup(this, id, {
       ...options,
       vpc: this.vpc,
-      machineImage: new EksOptimizedAmi({
+      machineImage: new EksOptimizedImage({
         nodeType: nodeTypeForInstanceType(options.instanceType),
         kubernetesVersion: this.version,
       }),
@@ -580,6 +582,18 @@ export class Cluster extends Resource implements ICluster {
     return new KubernetesResource(this, `manifest-${id}`, { cluster: this, manifest });
   }
 
+  /**
+   * Defines a Helm chart in this cluster.
+   *
+   * @param id logical id of this chart.
+   * @param options options of this chart.
+   * @returns a `HelmChart` object
+   * @throws If `kubectlEnabled` is `false`
+   */
+  public addChart(id: string, options: HelmChartOptions) {
+    return new HelmChart(this, `chart-${id}`, { cluster: this, ...options });
+  }
+
   private createKubernetesResourceHandler() {
     if (!this.kubectlEnabled) {
       return undefined;
@@ -611,15 +625,24 @@ export class Cluster extends Resource implements ICluster {
    * @see https://docs.aws.amazon.com/eks/latest/userguide/network_reqs.html
    */
   private tagSubnets() {
-    for (const subnet of this.vpc.privateSubnets) {
-      if (!Subnet.isVpcSubnet(subnet)) {
-        // Just give up, all of them will be the same.
-        this.node.addWarning('Could not auto-tag private subnets with "kubernetes.io/role/internal-elb=1", please remember to do this manually');
-        return;
-      }
+    const tagAllSubnets = (type: string, subnets: ec2.ISubnet[], tag: string) => {
+      for (const subnet of subnets) {
+        // if this is not a concrete subnet, attach a construct warning
+        if (!ec2.Subnet.isVpcSubnet(subnet)) {
+          // message (if token): "could not auto-tag public/private subnet with tag..."
+          // message (if not token): "count not auto-tag public/private subnet xxxxx with tag..."
+          const subnetID = Token.isUnresolved(subnet.subnetId) ? '' : ` ${subnet.subnetId}`;
+          this.node.addWarning(`Could not auto-tag ${type} subnet${subnetID} with "${tag}=1", please remember to do this manually`);
+          continue;
+        }
 
-      subnet.node.applyAspect(new Tag("kubernetes.io/role/internal-elb", "1"));
-    }
+        subnet.node.applyAspect(new Tag(tag, "1"));
+      }
+    };
+
+    // https://docs.aws.amazon.com/eks/latest/userguide/network_reqs.html
+    tagAllSubnets('private', this.vpc.privateSubnets, "kubernetes.io/role/internal-elb");
+    tagAllSubnets('public', this.vpc.publicSubnets, "kubernetes.io/role/elb");
   }
 }
 
@@ -768,4 +791,82 @@ class ImportedCluster extends Resource implements ICluster {
       i++;
     }
   }
+}
+
+/**
+ * Properties for EksOptimizedImage
+ */
+export interface EksOptimizedImageProps {
+  /**
+   * What instance type to retrieve the image for (standard or GPU-optimized)
+   *
+   * @default NodeType.STANDARD
+   */
+  readonly nodeType?: NodeType;
+
+  /**
+   * The Kubernetes version to use
+   *
+   * @default - The latest version
+   */
+  readonly kubernetesVersion?: string;
+}
+
+/**
+ * Construct an Amazon Linux 2 image from the latest EKS Optimized AMI published in SSM
+ */
+export class EksOptimizedImage implements ec2.IMachineImage {
+  private readonly nodeType?: NodeType;
+  private readonly kubernetesVersion?: string;
+
+  private readonly amiParameterName: string;
+
+  /**
+   * Constructs a new instance of the EcsOptimizedAmi class.
+   */
+  public constructor(props: EksOptimizedImageProps) {
+    this.nodeType = props && props.nodeType;
+    this.kubernetesVersion = props && props.kubernetesVersion || LATEST_KUBERNETES_VERSION;
+
+    // set the SSM parameter name
+    this.amiParameterName = `/aws/service/eks/optimized-ami/${this.kubernetesVersion}/`
+      + ( this.nodeType === NodeType.STANDARD ? "amazon-linux-2/" : "" )
+      + ( this.nodeType === NodeType.GPU ? "amazon-linux2-gpu/" : "" )
+      + "recommended/image_id";
+  }
+
+  /**
+   * Return the correct image
+   */
+  public getImage(scope: Construct): ec2.MachineImageConfig {
+    const ami = ssm.StringParameter.valueForStringParameter(scope, this.amiParameterName);
+    return {
+      imageId: ami,
+      osType: ec2.OperatingSystemType.LINUX
+    };
+  }
+}
+
+// MAINTAINERS: use ./scripts/kube_bump.sh to update LATEST_KUBERNETES_VERSION
+const LATEST_KUBERNETES_VERSION = '1.14';
+
+/**
+ * Whether the worker nodes should support GPU or just standard instances
+ */
+export enum NodeType {
+  /**
+   * Standard instances
+   */
+  STANDARD = 'Standard',
+
+  /**
+   * GPU instances
+   */
+  GPU = 'GPU',
+}
+
+const GPU_INSTANCETYPES = ['p2', 'p3', 'g4'];
+
+export function nodeTypeForInstanceType(instanceType: ec2.InstanceType) {
+  return GPU_INSTANCETYPES.includes(instanceType.toString().substring(0, 2)) ? NodeType.GPU : NodeType.STANDARD;
 }

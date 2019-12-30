@@ -1,8 +1,8 @@
-import events = require('@aws-cdk/aws-events');
-import iam = require('@aws-cdk/aws-iam');
-import kms = require('@aws-cdk/aws-kms');
-import logs = require('@aws-cdk/aws-logs');
-import s3 = require('@aws-cdk/aws-s3');
+import * as events from '@aws-cdk/aws-events';
+import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
+import * as logs from '@aws-cdk/aws-logs';
+import * as s3 from '@aws-cdk/aws-s3';
 import { Construct, Resource, Stack } from '@aws-cdk/core';
 import { CfnTrail } from './cloudtrail.generated';
 
@@ -206,8 +206,10 @@ export class Trail extends Resource {
     });
     this.trailSnsTopicArn = trail.attrSnsTopicArn;
 
-    const s3BucketPolicy = this.s3bucket.node.findChild("Policy").node.findChild("Resource") as s3.CfnBucketPolicy;
-    trail.node.addDependency(s3BucketPolicy);
+    // Add a dependency on the bucket policy being updated, CloudTrail will test this upon creation.
+    if (this.s3bucket.policy) {
+      trail.node.addDependency(this.s3bucket.policy);
+    }
 
     // If props.sendToCloudWatchLogs is set to true then the trail needs to depend on the created logsRole
     // so that it can create the log stream for the log group. This ensures the logsRole is created and propagated

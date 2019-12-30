@@ -1,5 +1,6 @@
-import cloudwatch = require('@aws-cdk/aws-cloudwatch');
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import { Construct, Fn } from '@aws-cdk/core';
+import { EventInvokeConfigOptions } from './event-invoke-config';
 import { Function } from './function';
 import { IFunction, QualifiedFunctionBase } from './function-base';
 import { CfnVersion } from './lambda.generated';
@@ -20,7 +21,7 @@ export interface IVersion extends IFunction {
 /**
  * Properties for a new Lambda version
  */
-export interface VersionProps {
+export interface VersionProps extends EventInvokeConfigOptions {
   /**
    * SHA256 of the version of the Lambda source code
    *
@@ -41,6 +42,13 @@ export interface VersionProps {
    * Function to get the value of
    */
   readonly lambda: IFunction;
+
+  /**
+   * Specifies a provisioned concurrency configuration for a function's version.
+   *
+   * @default No provisioned concurrency
+   */
+  readonly provisionedConcurrentExecutions?: number;
 }
 
 export interface VersionAttributes {
@@ -81,7 +89,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
    * @param versionArn The version ARN to create this version from
    */
   public static fromVersionArn(scope: Construct, id: string, versionArn: string): IVersion {
-    const version = extractVersionFromArn(versionArn);
+    const version = extractQualifierFromArn(versionArn);
     const lambda = Function.fromFunctionArn(scope, `${id}Function`, versionArn);
 
     class Import extends QualifiedFunctionBase implements IVersion {
@@ -92,6 +100,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
       public readonly grantPrincipal = lambda.grantPrincipal;
       public readonly role = lambda.role;
 
+      protected readonly qualifier = version;
       protected readonly canCreatePermissions = false;
     }
     return new Import(scope, id);
@@ -106,6 +115,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
       public readonly grantPrincipal = attrs.lambda.grantPrincipal;
       public readonly role = attrs.lambda.role;
 
+      protected readonly qualifier = attrs.version;
       protected readonly canCreatePermissions = false;
     }
     return new Import(scope, id);
@@ -116,6 +126,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
   public readonly functionArn: string;
   public readonly functionName: string;
 
+  protected readonly qualifier: string;
   protected readonly canCreatePermissions = true;
 
   constructor(scope: Construct, id: string, props: VersionProps) {
@@ -126,12 +137,23 @@ export class Version extends QualifiedFunctionBase implements IVersion {
     const version = new CfnVersion(this, 'Resource', {
       codeSha256: props.codeSha256,
       description: props.description,
-      functionName: props.lambda.functionName
+      functionName: props.lambda.functionName,
+      provisionedConcurrencyConfig: this.determineProvisionedConcurrency(props)
     });
 
     this.version = version.attrVersion;
     this.functionArn = version.ref;
     this.functionName = `${this.lambda.functionName}:${this.version}`;
+    this.qualifier = version.attrVersion;
+
+    if (props.onFailure || props.onSuccess || props.maxEventAge || props.retryAttempts !== undefined) {
+      this.configureAsyncInvoke({
+        onFailure: props.onFailure,
+        onSuccess: props.onSuccess,
+        maxEventAge: props.maxEventAge,
+        retryAttempts: props.retryAttempts,
+      });
+    }
   }
 
   public get grantPrincipal() {
@@ -155,21 +177,38 @@ export class Version extends QualifiedFunctionBase implements IVersion {
       ...props
     });
   }
+
+  /**
+   * Validate that the provisionedConcurrentExecutions makes sense
+   *
+   * Member must have value greater than or equal to 1
+   */
+  private determineProvisionedConcurrency(props: VersionProps): CfnVersion.ProvisionedConcurrencyConfigurationProperty | undefined {
+    if (!props.provisionedConcurrentExecutions) {
+      return undefined;
+    }
+
+    if (props.provisionedConcurrentExecutions <= 0) {
+      throw new Error('provisionedConcurrentExecutions must have value greater than or equal to 1');
+    }
+
+    return {provisionedConcurrentExecutions: props.provisionedConcurrentExecutions};
+  }
 }
 
 /**
- * Given an opaque (token) ARN, returns a CloudFormation expression that extracts the version
- * name from the ARN.
+ * Given an opaque (token) ARN, returns a CloudFormation expression that extracts the
+ * qualifier (= version or alias) from the ARN.
  *
  * Version ARNs look like this:
  *
- *   arn:aws:lambda:region:account-id:function:function-name:version
+ *   arn:aws:lambda:region:account-id:function:function-name:qualifier
  *
- * ..which means that in order to extract the `version` component from the ARN, we can
+ * ..which means that in order to extract the `qualifier` component from the ARN, we can
  * split the ARN using ":" and select the component in index 7.
  *
  * @returns `FnSelect(7, FnSplit(':', arn))`
  */
-function extractVersionFromArn(arn: string) {
+export function extractQualifierFromArn(arn: string) {
   return Fn.select(7, Fn.split(':', arn));
 }

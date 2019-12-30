@@ -1,14 +1,17 @@
-import childProcess = require('child_process');
-import colors = require('colors/safe');
-import fs = require('fs-extra');
-import os = require('os');
-import path = require('path');
+import * as cxapi from '@aws-cdk/cx-api';
+import * as childProcess from 'child_process';
+import * as colors from 'colors/safe';
+import * as fs from 'fs-extra';
+import * as os from 'os';
+import * as path from 'path';
 import { error, print, warning } from './logging';
 
 export type InvokeHook = (targetDirectory: string) => Promise<void>;
 
 // tslint:disable:no-var-requires those libraries don't have up-to-date @types modules
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const camelCase = require('camelcase');
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const decamelize = require('decamelize');
 // tslint:enable:no-var-requires
 
@@ -18,7 +21,7 @@ const CDK_HOME = process.env.CDK_HOME ? path.resolve(process.env.CDK_HOME) : pat
 /**
  * Initialize a CDK package in the current directory
  */
-export async function cliInit(type?: string, language?: string, canUseNetwork?: boolean) {
+export async function cliInit(type?: string, language?: string, canUseNetwork = true, generateOnly = false) {
   if (!type && !language) {
     await printAvailableTemplates();
     return;
@@ -39,7 +42,8 @@ export async function cliInit(type?: string, language?: string, canUseNetwork?: 
     print(`Available languages for ${colors.green(type)}: ${template.languages.map(l => colors.blue(l)).join(', ')}`);
     throw new Error('No language was selected');
   }
-  await initializeProject(template, language, canUseNetwork !== undefined ? canUseNetwork : true);
+
+  await initializeProject(template, language, canUseNetwork, generateOnly);
 }
 
 /**
@@ -101,6 +105,7 @@ export class InitTemplate {
     await this.installFiles(sourceDirectory, targetDirectory, {
       name: decamelize(path.basename(path.resolve(targetDirectory)))
     });
+    await this.applyFutureFlags(targetDirectory);
     await this.invokeHooks(hookTempDirectory, targetDirectory);
     await fs.remove(hookTempDirectory);
   }
@@ -116,7 +121,7 @@ export class InitTemplate {
       } else if (file.match(/^.*\.template\.[^.]+$/)) {
         await this.installProcessed(fromFile, toFile.replace(/\.template(\.[^.]+)$/, '$1'), project);
         continue;
-      } else if (file.match(/^.*\.hook\.[^.]+$/)) {
+      } else if (file.match(/^.*\.hook\.(d.)?[^.]+$/)) {
         await this.installProcessed(fromFile, path.join(targetDirectory, "tmp", file), project);
         continue;
       } else {
@@ -139,6 +144,7 @@ export class InitTemplate {
 
     for (const file of files) {
       if (file.match(/^.*\.hook\.js$/)) {
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
         const invoke: InvokeHook = require(path.join(sourceDirectory, file)).invoke;
         await invoke(targetDirectory);
       }
@@ -152,6 +158,7 @@ export class InitTemplate {
 
   private expand(template: string, project: ProjectInfo) {
     const MATCH_VER_BUILD = /\+[a-f0-9]+$/; // Matches "+BUILD" in "x.y.z-beta+BUILD"
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const cdkVersion = require('../package.json').version.replace(MATCH_VER_BUILD, '');
     return template.replace(/%name%/g, project.name)
              .replace(/%name\.camelCased%/g, camelCase(project.name))
@@ -161,6 +168,25 @@ export class InitTemplate {
              .replace(/%name\.PythonModule%/g, project.name.replace(/-/g, '_'))
              .replace(/%python-executable%/g, pythonExecutable())
              .replace(/%name\.StackName%/g, project.name.replace(/[^A-Za-z0-9-]/g, '-'));
+  }
+
+  /**
+   * Adds context variables to `cdk.json` in the generated project directory to
+   * enable future behavior for new projects.
+   */
+  private async applyFutureFlags(projectDir: string) {
+    const cdkJson = path.join(projectDir, 'cdk.json');
+    if (!await fs.pathExists(cdkJson)) {
+      return;
+    }
+
+    const config = await fs.readJson(cdkJson);
+    config.context = {
+      ...config.context,
+      ...cxapi.FUTURE_FLAGS
+    };
+
+    await fs.writeJson(cdkJson, config, { spaces: 2 });
   }
 }
 
@@ -211,12 +237,14 @@ export async function printAvailableTemplates(language?: string) {
   }
 }
 
-async function initializeProject(template: InitTemplate, language: string, canUseNetwork: boolean) {
+async function initializeProject(template: InitTemplate, language: string, canUseNetwork: boolean, generateOnly: boolean) {
   await assertIsEmptyDirectory();
   print(`Applying project template ${colors.green(template.name)} for ${colors.blue(language)}`);
   await template.install(language, process.cwd());
-  await initializeGitRepository();
-  await postInstall(language, canUseNetwork);
+  if (!generateOnly) {
+    await initializeGitRepository();
+    await postInstall(language, canUseNetwork);
+  }
   if (await fs.pathExists('README.md')) {
     print(colors.green(await fs.readFile('README.md', { encoding: 'utf-8' })));
   } else {

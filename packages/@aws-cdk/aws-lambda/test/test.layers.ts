@@ -1,8 +1,10 @@
-import { expect, haveResource } from '@aws-cdk/assert';
-import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/core');
+import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
+import * as s3 from '@aws-cdk/aws-s3';
+import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Test, testCase } from 'nodeunit';
-import lambda = require('../lib');
+import * as path from 'path';
+import * as lambda from '../lib';
 
 export = testCase({
   'creating a layer'(test: Test) {
@@ -36,7 +38,7 @@ export = testCase({
     const code = new lambda.S3Code(bucket, 'ObjectKey');
     const layer = new lambda.LayerVersion(stack, 'LayerVersion', {
       code,
-      compatibleRuntimes: [lambda.Runtime.NODEJS_8_10]
+      compatibleRuntimes: [lambda.Runtime.NODEJS_10_X]
     });
 
     // WHEN
@@ -71,4 +73,24 @@ export = testCase({
 
     test.done();
   },
+
+  'asset metadata is added to the cloudformation resource'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    stack.node.setContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT, true);
+
+    // WHEN
+    new lambda.LayerVersion(stack, 'layer', {
+      code: lambda.Code.fromAsset(path.join(__dirname, 'layer-code'))
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::LayerVersion', {
+      Metadata: {
+        'aws:asset:path': 'asset.45f085ecc03a1a22cf003fba3fab28e660c92bcfcd4d0c01b62c7cd191070a2d',
+        'aws:asset:property': 'Content'
+      }
+    }, ResourcePart.CompleteDefinition));
+    test.done();
+  }
 });

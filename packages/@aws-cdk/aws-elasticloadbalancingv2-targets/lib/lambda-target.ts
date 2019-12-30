@@ -1,6 +1,6 @@
-import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
-import iam = require('@aws-cdk/aws-iam');
-import lambda = require('@aws-cdk/aws-lambda');
+import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
+import * as iam from '@aws-cdk/aws-iam';
+import * as lambda from '@aws-cdk/aws-lambda';
 
 export class LambdaTarget implements elbv2.IApplicationLoadBalancerTarget {
   /**
@@ -17,7 +17,7 @@ export class LambdaTarget implements elbv2.IApplicationLoadBalancerTarget {
    * Don't call this, it is called automatically when you add the target to a
    * load balancer.
    */
-  public attachToApplicationTargetGroup(targetGroup: elbv2.ApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
+  public attachToApplicationTargetGroup(targetGroup: elbv2.IApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
     this.fn.grantInvoke(new iam.ServicePrincipal('elasticloadbalancing.amazonaws.com'));
     return this.attach(targetGroup);
   }
@@ -28,7 +28,7 @@ export class LambdaTarget implements elbv2.IApplicationLoadBalancerTarget {
    * Don't call this, it is called automatically when you add the target to a
    * load balancer.
    */
-  public attachToNetworkTargetGroup(targetGroup: elbv2.NetworkTargetGroup): elbv2.LoadBalancerTargetProps {
+  public attachToNetworkTargetGroup(targetGroup: elbv2.INetworkTargetGroup): elbv2.LoadBalancerTargetProps {
     this.fn.grantInvoke(new iam.ServicePrincipal('elasticloadbalancing.amazonaws.com'));
     return this.attach(targetGroup);
   }

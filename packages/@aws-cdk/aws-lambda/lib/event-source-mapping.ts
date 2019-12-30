@@ -1,5 +1,4 @@
-import cdk = require('@aws-cdk/core');
-import { Resource } from '@aws-cdk/core';
+import * as cdk from '@aws-cdk/core';
 import { IFunction } from './function-base';
 import { CfnEventSourceMapping } from './lambda.generated';
 
@@ -37,7 +36,15 @@ export interface EventSourceMappingOptions {
    *
    * @default - Required for Amazon Kinesis and Amazon DynamoDB Streams sources.
    */
-  readonly startingPosition?: StartingPosition
+  readonly startingPosition?: StartingPosition;
+
+  /**
+   * The maximum amount of time to gather records before invoking the function.
+   * Maximum of Duration.minutes(5)
+   *
+   * @default Duration.seconds(0)
+   */
+  readonly maxBatchingWindow?: cdk.Duration;
 }
 
 export interface EventSourceMappingProps extends EventSourceMappingOptions {
@@ -59,9 +66,13 @@ export interface EventSourceMappingProps extends EventSourceMappingOptions {
  * The `SqsEventSource` class will automatically create the mapping, and will also
  * modify the Lambda's execution role so it can consume messages from the queue.
  */
-export class EventSourceMapping extends Resource {
+export class EventSourceMapping extends cdk.Resource {
   constructor(scope: cdk.Construct, id: string, props: EventSourceMappingProps) {
     super(scope, id);
+
+    if (props.maxBatchingWindow && props.maxBatchingWindow.toSeconds() > 300) {
+      throw new Error(`maxBatchingWindow cannot be over 300 seconds, got ${props.maxBatchingWindow.toSeconds()}`);
+    }
 
     new CfnEventSourceMapping(this, 'Resource', {
       batchSize: props.batchSize,
@@ -69,6 +80,7 @@ export class EventSourceMapping extends Resource {
       eventSourceArn: props.eventSourceArn,
       functionName: props.target.functionName,
       startingPosition: props.startingPosition,
+      maximumBatchingWindowInSeconds: props.maxBatchingWindow && props.maxBatchingWindow.toSeconds(),
     });
   }
 }

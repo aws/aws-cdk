@@ -1,4 +1,4 @@
-import colors = require('colors/safe');
+import * as colors from 'colors/safe';
 import { PropertyChange, ResourceChange } from "../diff/types";
 import { DiffableCollection } from "../diffable";
 import { renderIntrinsics } from "../render-intrinsics";

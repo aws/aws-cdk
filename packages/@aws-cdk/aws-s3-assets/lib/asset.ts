@@ -1,22 +1,14 @@
-import assets = require('@aws-cdk/assets');
-import iam = require('@aws-cdk/aws-iam');
-import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/core');
-import cxapi = require('@aws-cdk/cx-api');
-import fs = require('fs');
-import path = require('path');
+import * as assets from '@aws-cdk/assets';
+import * as iam from '@aws-cdk/aws-iam';
+import * as s3 from '@aws-cdk/aws-s3';
+import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
+import * as fs from 'fs';
+import * as path from 'path';
 
 const ARCHIVE_EXTENSIONS = [ '.zip', '.jar' ];
 
-export interface AssetProps extends assets.CopyOptions {
-  /**
-   * The disk location of the asset.
-   *
-   * The path should refer to one of the following:
-   * - A regular file or a .zip file, in which case the file will be uploaded as-is to S3.
-   * - A directory, in which case it will be archived into a .zip file and uploaded to S3.
-   */
-  readonly path: string;
+export interface AssetOptions extends assets.CopyOptions {
 
   /**
    * A list of principals that should be able to read this asset from S3.
@@ -25,6 +17,33 @@ export interface AssetProps extends assets.CopyOptions {
    * @default - No principals that can read file asset.
    */
   readonly readers?: iam.IGrantable[];
+
+  /**
+   * Custom source hash to use when identifying the specific version of the asset.
+   *
+   * NOTE: the source hash is used in order to identify a specific revision of the asset,
+   * and used for optimizing and caching deployment activities related to this asset such as
+   * packaging, uploading to Amazon S3, etc. If you chose to customize the source hash,
+   * you will need to make sure it is updated every time the source changes, or otherwise
+   * it is possible that some deployments will not be invalidated.
+   *
+   * @default - automatically calculate source hash based on the contents
+   * of the source file or directory.
+   *
+   * @experimental
+   */
+  readonly sourceHash?: string;
+}
+
+export interface AssetProps extends AssetOptions {
+  /**
+   * The disk location of the asset.
+   *
+   * The path should refer to one of the following:
+   * - A regular file or a .zip file, in which case the file will be uploaded as-is to S3.
+   * - A directory, in which case it will be archived into a .zip file and uploaded to S3.
+   */
+  readonly path: string;
 }
 
 /**
@@ -69,11 +88,6 @@ export class Asset extends cdk.Construct implements assets.IAsset {
 
   public readonly sourceHash: string;
 
-  /**
-   * The S3 prefix where all different versions of this asset are stored
-   */
-  private readonly s3Prefix: string;
-
   constructor(scope: cdk.Construct, id: string, props: AssetProps) {
     super(scope, id);
 
@@ -82,62 +96,31 @@ export class Asset extends cdk.Construct implements assets.IAsset {
       ...props,
       sourcePath: path.resolve(props.path),
     });
-    this.sourceHash = staging.sourceHash;
+
+    this.sourceHash = props.sourceHash || staging.sourceHash;
 
     this.assetPath = staging.stagedPath;
 
     const packaging = determinePackaging(staging.sourcePath);
 
     // sets isZipArchive based on the type of packaging and file extension
-    this.isZipArchive = packaging === AssetPackaging.ZIP_DIRECTORY
+    this.isZipArchive = packaging === cdk.FileAssetPackaging.ZIP_DIRECTORY
       ? true
       : ARCHIVE_EXTENSIONS.some(ext => staging.sourcePath.toLowerCase().endsWith(ext));
 
-    // add parameters for s3 bucket and s3 key. those will be set by
-    // the toolkit or by CI/CD when the stack is deployed and will include
-    // the name of the bucket and the S3 key where the code lives.
+    const stack = cdk.Stack.of(this);
 
-    const bucketParam = new cdk.CfnParameter(this, 'S3Bucket', {
-      type: 'String',
-      description: `S3 bucket for asset "${this.node.path}"`,
-    });
-
-    const keyParam = new cdk.CfnParameter(this, 'S3VersionKey', {
-      type: 'String',
-      description: `S3 key for asset version "${this.node.path}"`
-    });
-
-    const hashParam = new cdk.CfnParameter(this, 'ArtifactHash', {
-      description: `Artifact hash for asset "${this.node.path}"`,
-      type: 'String',
-    });
-
-    this.s3BucketName = bucketParam.valueAsString;
-    this.s3Prefix = cdk.Fn.select(0, cdk.Fn.split(cxapi.ASSET_PREFIX_SEPARATOR, keyParam.valueAsString)).toString();
-    const s3Filename = cdk.Fn.select(1, cdk.Fn.split(cxapi.ASSET_PREFIX_SEPARATOR, keyParam.valueAsString)).toString();
-    this.s3ObjectKey = `${this.s3Prefix}${s3Filename}`;
-
-    this.bucket = s3.Bucket.fromBucketName(this, 'AssetBucket', this.s3BucketName);
-
-    // form the s3 URL of the object key
-    this.s3Url = this.bucket.urlForObject(this.s3ObjectKey);
-
-    // attach metadata to the lambda function which includes information
-    // for tooling to be able to package and upload a directory to the
-    // s3 bucket and plug in the bucket name and key in the correct
-    // parameters.
-    const asset: cxapi.FileAssetMetadataEntry = {
-      path: this.assetPath,
-      id: this.node.uniqueId,
+    const location = stack.addFileAsset({
       packaging,
       sourceHash: this.sourceHash,
+      fileName: staging.stagedPath
+    });
 
-      s3BucketParameter: bucketParam.logicalId,
-      s3KeyParameter: keyParam.logicalId,
-      artifactHashParameter: hashParam.logicalId,
-    };
+    this.s3BucketName = location.bucketName;
+    this.s3ObjectKey = location.objectKey;
+    this.s3Url = location.s3Url;
 
-    this.node.addMetadata(cxapi.ASSET_METADATA, asset);
+    this.bucket = s3.Bucket.fromBucketName(this, 'AssetBucket', this.s3BucketName);
 
     for (const reader of (props.readers || [])) {
       this.grantRead(reader);
@@ -173,45 +156,28 @@ export class Asset extends cdk.Construct implements assets.IAsset {
   }
 
   /**
-   * Grants read permissions to the principal on the asset's S3 object.
+   * Grants read permissions to the principal on the assets bucket.
    */
   public grantRead(grantee: iam.IGrantable) {
-    // We give permissions on all files with the same prefix. Presumably
-    // different versions of the same file will have the same prefix
-    // and we don't want to accidentally revoke permission on old versions
-    // when deploying a new version.
-    this.bucket.grantRead(grantee, `${this.s3Prefix}*`);
+    // we give permissions on all files in the bucket since we don't want to
+    // accidentally revoke permission on old versions when deploying a new
+    // version (for example, when using Lambda traffic shifting).
+    this.bucket.grantRead(grantee);
   }
 }
 
-function determinePackaging(assetPath: string): AssetPackaging {
+function determinePackaging(assetPath: string): cdk.FileAssetPackaging {
   if (!fs.existsSync(assetPath)) {
     throw new Error(`Cannot find asset at ${assetPath}`);
   }
 
   if (fs.statSync(assetPath).isDirectory()) {
-    return AssetPackaging.ZIP_DIRECTORY;
+    return cdk.FileAssetPackaging.ZIP_DIRECTORY;
   }
 
   if (fs.statSync(assetPath).isFile()) {
-    return AssetPackaging.FILE;
+    return cdk.FileAssetPackaging.FILE;
   }
 
   throw new Error(`Asset ${assetPath} is expected to be either a directory or a regular file`);
-}
-
-/**
- * Defines the way an asset is packaged before it is uploaded to S3.
- */
-enum AssetPackaging {
-  /**
-   * Path refers to a directory on disk, the contents of the directory is
-   * archived into a .zip.
-   */
-  ZIP_DIRECTORY = 'zip',
-
-  /**
-   * Path refers to a single file on disk. The file is uploaded as-is.
-   */
-  FILE = 'file',
 }

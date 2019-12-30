@@ -1,9 +1,9 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import dynamodb = require('@aws-cdk/aws-dynamodb');
-import lambda = require('@aws-cdk/aws-lambda');
-import cdk = require('@aws-cdk/core');
+import * as dynamodb from '@aws-cdk/aws-dynamodb';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import sources = require('../lib');
+import * as sources from '../lib';
 import { TestFunction } from './test-function';
 
 // tslint:disable:object-literal-key-quotes
@@ -31,6 +31,11 @@ export = {
       "PolicyDocument": {
         "Statement": [
           {
+            "Action": "dynamodb:ListStreams",
+            "Effect": "Allow",
+            "Resource": { "Fn::Join": [ "", [ { "Fn::GetAtt": [ "TD925BC7E", "Arn" ] }, "/stream/*" ] ] }
+          },
+          {
             "Action": [
               "dynamodb:DescribeStream",
               "dynamodb:GetRecords",
@@ -43,11 +48,6 @@ export = {
                 "StreamArn"
               ]
             }
-          },
-          {
-            "Action": "dynamodb:ListStreams",
-            "Effect": "Allow",
-            "Resource": "*"
           }
         ],
         "Version": "2012-10-17"
@@ -172,4 +172,63 @@ export = {
 
     test.done();
   },
+
+  'specific maxBatchingWindow'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const table = new dynamodb.Table(stack, 'T', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING
+      },
+      stream: dynamodb.StreamViewType.NEW_IMAGE
+    });
+
+    // WHEN
+    fn.addEventSource(new sources.DynamoEventSource(table, {
+      maxBatchingWindow: cdk.Duration.minutes(2),
+      startingPosition: lambda.StartingPosition.LATEST
+    }));
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
+      "EventSourceArn": {
+        "Fn::GetAtt": [
+          "TD925BC7E",
+          "StreamArn"
+        ]
+      },
+      "FunctionName":  {
+        "Ref": "Fn9270CBC0"
+      },
+      "MaximumBatchingWindowInSeconds": 120,
+      "StartingPosition": "LATEST"
+    }));
+
+    test.done();
+  },
+
+  'throws if maxBatchingWindow > 300 seconds'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const table = new dynamodb.Table(stack, 'T', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING
+      },
+      stream: dynamodb.StreamViewType.NEW_IMAGE
+    });
+
+    // THEN
+    test.throws(() =>
+      fn.addEventSource(new sources.DynamoEventSource(table, {
+        maxBatchingWindow: cdk.Duration.seconds(301),
+        startingPosition: lambda.StartingPosition.LATEST
+      })), /maxBatchingWindow cannot be over 300 seconds/);
+
+    test.done();
+  },
+
 };
