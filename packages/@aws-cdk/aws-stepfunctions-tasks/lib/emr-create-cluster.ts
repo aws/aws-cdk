@@ -1,6 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import { Stack } from '@aws-cdk/core';
+import { CfnTag, Stack } from '@aws-cdk/core';
 import { getResourceArn } from './resource-arn-suffix';
 
 /**
