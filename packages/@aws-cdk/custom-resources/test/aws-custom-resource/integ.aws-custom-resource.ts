@@ -48,8 +48,8 @@ const getParameter = new AwsCustomResource(stack, 'GetParameter', {
   }
 });
 
-new cdk.CfnOutput(stack, 'MessageId', { value: cdk.Token.asString(snsPublish.getData('MessageId')) });
-new cdk.CfnOutput(stack, 'TopicArn', { value: cdk.Token.asString(listTopics.getData('Topics.0.TopicArn')) });
-new cdk.CfnOutput(stack, 'ParameterValue', { value: cdk.Token.asString(getParameter.getData('Parameter.Value')) });
+new cdk.CfnOutput(stack, 'MessageId', { value: snsPublish.getDataString('MessageId') });
+new cdk.CfnOutput(stack, 'TopicArn', { value: listTopics.getDataString('Topics.0.TopicArn') });
+new cdk.CfnOutput(stack, 'ParameterValue', { value: getParameter.getDataString('Parameter.Value') });
 
 app.synth();
