@@ -4,6 +4,33 @@ import { Aws, Stack } from '@aws-cdk/core';
 import { getResourceArn } from './resource-arn-suffix';
 
 /**
+ * The action to take when the cluster step fails.
+ * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_StepConfig.html
+ *
+ * Here, they are named as TERMINATE_JOB_FLOW, TERMINATE_CLUSTER, CANCEL_AND_WAIT, and CONTINUE respectively.
+ *
+ * @default CONTINUE
+ *
+ * @experimental
+ */
+export enum ActionOnFailure {
+  /**
+   * Terminate the Cluster on Step Failure
+   */
+  TERMINATE_CLUSTER = 'TERMINATE_CLUSTER',
+
+  /**
+   * Cancel Step execution and enter WAITING state
+   */
+  CANCEL_AND_WAIT = 'CANCEL_AND_WAIT',
+
+  /**
+   * Continue to the next Step
+   */
+  CONTINUE = 'CONTINUE'
+}
+
+/**
  * Properties for EmrAddStep
  *
  * @experimental
@@ -15,13 +42,48 @@ export interface EmrAddStepProps {
   readonly clusterId: string;
 
   /**
-   * The JSON that you want to provide to your AddStep call as input.
+   * The name of the Step
    *
-   * This uses the same syntax as the AddStep API.
-   *
-   * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_AddJobFlowSteps.html
+   * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_StepConfig.html
    */
-  readonly stepConfiguration: sfn.TaskInput;
+  readonly name: string;
+
+  /**
+   * The action to take when the cluster step fails.
+   *
+   * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_StepConfig.html
+   *
+   * @default CONTINUE
+   */
+  readonly actionOnFailure?: ActionOnFailure;
+
+  /**
+   * A path to a JAR file run during the step.
+   *
+   * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_HadoopJarStepConfig.html
+   */
+  readonly jar: string;
+
+  /**
+   * The name of the main class in the specified Java file. If not specified, the JAR file should specify a Main-Class in its manifest file.
+   *
+   * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_HadoopJarStepConfig.html
+   */
+  readonly mainClass?: string;
+
+  /**
+   * A list of command line arguments passed to the JAR file's main function when executed.
+   *
+   * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_HadoopJarStepConfig.html
+   */
+  readonly args?: string[];
+
+  /**
+   * A list of Java properties that are set when the step runs. You can use these properties to pass key value pairs to your main function.
+   *
+   * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_HadoopJarStepConfig.html
+   */
+  readonly properties?: { [key: string]: string };
 
   /**
    * The service integration pattern indicates different ways to call AddStep.
@@ -44,9 +106,11 @@ export interface EmrAddStepProps {
  */
 export class EmrAddStep implements sfn.IStepFunctionsTask {
 
+  private readonly actionOnFailure: ActionOnFailure;
   private readonly integrationPattern: sfn.ServiceIntegrationPattern;
 
   constructor(private readonly props: EmrAddStepProps) {
+    this.actionOnFailure = props.actionOnFailure || ActionOnFailure.CONTINUE;
     this.integrationPattern = props.integrationPattern || sfn.ServiceIntegrationPattern.SYNC;
 
     const supportedPatterns = [
@@ -65,7 +129,23 @@ export class EmrAddStep implements sfn.IStepFunctionsTask {
       policyStatements: this.createPolicyStatements(_task),
       parameters: {
         ClusterId: this.props.clusterId,
-        Step: this.props.stepConfiguration.value
+        Step: {
+          Name: this.props.name,
+          ActionOnFailure: this.actionOnFailure.valueOf(),
+          HadoopJarStep: {
+            Jar: this.props.jar,
+            MainClass: this.props.mainClass,
+            Args: this.props.args,
+            Properties: (this.props.properties === undefined) ?
+              undefined :
+              Object.entries(this.props.properties).map(
+                kv => ({
+                    Key: kv[0],
+                    Value: kv[1]
+                  })
+                )
+          }
+        }
       }
     };
   }

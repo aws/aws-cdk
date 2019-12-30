@@ -173,7 +173,10 @@
       "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.TransformOutput.encryptionKey",
       "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.TransformResources.volumeKmsKeyId",
       "docs-public-apis:@aws-cdk/aws-stepfunctions-tasks.VpcConfig",
-      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.VpcConfig.subnets"
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.VpcConfig.subnets",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.EmrAddStepProps.mainClass",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.EmrAddStepProps.args",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.EmrAddStepProps.properties"
     ]
   }
 }
