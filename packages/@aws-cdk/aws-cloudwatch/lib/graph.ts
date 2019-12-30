@@ -1,6 +1,7 @@
 import * as cdk from '@aws-cdk/core';
 import { IAlarm } from "./alarm";
 import { IMetric } from "./metric-types";
+import { metricGraphJson } from './metric-util';
 import { ConcreteWidget } from "./widget";
 
 /**
@@ -169,8 +170,7 @@ export class GraphWidget extends ConcreteWidget {
   public toJson(): any[] {
     const horizontalAnnoations =  (this.props.leftAnnotations || []).map(mapAnnotation('left')).concat(
       (this.props.rightAnnotations || []).map(mapAnnotation('right')));
-    const metrics = (this.props.left || []).map(m => metricJson(m, 'left')).concat(
-      (this.props.right || []).map(m => metricJson(m, 'right')));
+    const metrics = metricGraphJson(this.props.left || [], this.props.right || []);
     return [{
       type: 'metric',
       width: this.width,
@@ -232,7 +232,7 @@ export class SingleValueWidget extends ConcreteWidget {
         view: 'singleValue',
         title: this.props.title,
         region: this.props.region || cdk.Aws.REGION,
-        metrics: this.props.metrics.map(m => metricJson(m, 'left')),
+        metrics: metricGraphJson(this.props.metrics, []),
         setPeriodToTimeRange: this.props.setPeriodToTimeRange
       }
     }];
@@ -298,29 +298,4 @@ function mapAnnotation(yAxis: string): ((x: HorizontalAnnotation) => any) {
   return (a: HorizontalAnnotation) => {
     return { ...a, yAxis };
   };
-}
-
-/**
- * Return the JSON structure which represents this metric in a graph
- *
- * This will be called by GraphWidget, no need for clients to call this.
- */
-function metricJson(metric: IMetric, yAxis: string): any[] {
-  const config = metric.toGraphConfig();
-
-  // Namespace and metric Name
-  const ret: any[] = [
-    config.namespace,
-    config.metricName,
-  ];
-
-  // Dimensions
-  for (const dim of (config.dimensions || [])) {
-    ret.push(dim.name, dim.value);
-  }
-
-  // Options
-  ret.push({ yAxis, ...config.renderingProperties });
-
-  return ret;
 }

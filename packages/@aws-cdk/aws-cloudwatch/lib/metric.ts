@@ -224,7 +224,7 @@ export class Metric implements IMetric {
       return [];
     }
 
-    const list = Object.keys(dims).map(key => ({ name: key, value: dims[key] }));
+    const list = Object.keys(dims).sort().map(key => ({ name: key, value: dims[key] }));
 
     return list;
   }
