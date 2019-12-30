@@ -4,6 +4,7 @@ import { CfnAlarm } from './cloudwatch.generated';
 import { HorizontalAnnotation } from './graph';
 import { CreateAlarmOptions } from './metric';
 import { IMetric } from './metric-types';
+import { MetricSet } from './metric-util';
 import { parseStatistic } from './util.statistic';
 
 export interface IAlarm extends IResource {
@@ -121,8 +122,6 @@ export class Alarm extends Resource implements IAlarm {
 
     const comparisonOperator = props.comparisonOperator || ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD;
 
-    const config = props.metric.toAlarmConfig();
-
     const alarm = new CfnAlarm(this, 'Resource', {
       // Meta
       alarmDescription: props.alarmDescription,
@@ -143,7 +142,7 @@ export class Alarm extends Resource implements IAlarm {
       okActions: Lazy.listValue({ produce: () => this.okActionArns }),
 
       // Metric
-      ...dropUndef(config),
+      ...renderAlarmMetric(props.metric),
       ...dropUndef({
         // Alarm overrides
         period: props.period && props.period.toSeconds(),
@@ -225,6 +224,56 @@ export class Alarm extends Resource implements IAlarm {
    */
   public toAnnotation(): HorizontalAnnotation {
     return this.annotation;
+  }
+}
+
+function renderAlarmMetric(metric: IMetric) {
+  const config = metric.toMetricConfig();
+
+  if (config.metricStat) {
+    const st = config.metricStat;
+    return dropUndef({
+      dimensions: st.dimensions,
+      namespace: st.namespace,
+      metricName: st.metricName,
+      period: st.period,
+      statistic: renderIfSimpleStatistic(st.statistic),
+      extendedStatistic: renderIfExtendedStatistic(st.statistic),
+    });
+  } else if (config.mathExpression) {
+    // Expand the math expression metric into a set
+    const mset = new MetricSet<boolean>();
+    mset.addPrimary(true, metric);
+
+    let mid = 0;
+    function uniqueMetricId() {
+      return `mid${++mid}`;
+    }
+
+    return {
+      metrics: mset.entries.map(entry => {
+        const conf = entry.metric.toMetricConfig();
+
+        return dropUndef({
+          expression: conf.mathExpression?.expression,
+          metricStat: conf.metricStat ? {
+            metric: {
+              metricName: conf.metricStat.metricName,
+              namespace: conf.metricStat.namespace,
+              dimensions: conf.metricStat.dimensions,
+            },
+            period: conf.metricStat.period,
+            stat: conf.metricStat.statistic,
+            // unit: not used, on purpose. Does not do what we need it to do.
+          } : undefined,
+          id: entry.id || uniqueMetricId(),
+          label: conf.renderingProperties?.label,
+          returnData: entry.tag ? undefined : false, // Tag stores "primary" attribute, default is "true"
+        } as CfnAlarm.MetricDataQueryProperty);
+      })
+    };
+  } else {
+    throw new Error(`Metric object must have either 'metricStat' or 'mathExpression'`);
   }
 }
 

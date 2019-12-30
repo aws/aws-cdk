@@ -13,18 +13,18 @@ import { IMetric } from "./metric-types";
  *
  * This will be called by GraphWidget, no need for clients to call this.
  */
-export function metricGraphJson(left: IMetric[], right: IMetric[]): any[][] {
+export function allMetricsGraphJson(left: IMetric[], right: IMetric[]): any[][] {
   // Add metrics to a set which will automatically expand them recursively,
   // making sure to retain conflicting the visible one on conflicting metrics objects.
-  const mset = new MetricSet();
-  mset.addVisible('left', ...left);
-  mset.addVisible('right', ...right);
+  const mset = new MetricSet<string>();
+  mset.addPrimary('left', ...left);
+  mset.addPrimary('right', ...right);
 
   // Render all metrics from the set.
-  return mset.entries.map(entry => metricJson(entry.metric, entry.yAxis, entry.id));
+  return mset.entries.map(entry => metricGraphJson(entry.metric, entry.tag, entry.id));
 }
 
-function metricJson(metric: IMetric, yAxis?: string, id?: string) {
+function metricGraphJson(metric: IMetric, yAxis?: string, id?: string) {
   const config = metric.toMetricConfig();
 
   const ret: any[] = [];
@@ -63,29 +63,45 @@ function metricJson(metric: IMetric, yAxis?: string, id?: string) {
   return ret;
 }
 
-interface MetricEntry {
+/**
+ * A single metric in a MetricSet
+ */
+export interface MetricEntry<A> {
+  /**
+   * The metric object
+   */
   metric: IMetric;
-  yAxis?: string;
+
+  /**
+   * The tag, added if the object is a primary metric
+   */
+  tag?: A;
+
+  /**
+   * ID for this metric object
+   */
   id?: string;
 }
 
 /**
- * Maintain a set of metrics, expanding math expressions
+ * Contain a set of metrics, expanding math expressions
+ *
+ * "Primary" metrics (added via a top-level call) can be tagged with an additional value.
  */
-class MetricSet {
+export class MetricSet<A> {
   private readonly metricKeys = new Map<IMetric, string>();
-  private readonly metricMap = new Map<string, MetricEntry>();
+  private readonly metricMap = new Map<string, MetricEntry<A>>();
 
   /**
    * Add the given set of metrics to this set
    */
-  public addVisible(yAxis: string, ...metrics: IMetric[]) {
+  public addPrimary(tag: A, ...metrics: IMetric[]) {
     for (const metric of metrics) {
-      this.addOne(metric, yAxis);
+      this.addOne(metric, tag);
     }
   }
 
-  public get entries(): MetricEntry[] {
+  public get entries(): Array<MetricEntry<A>> {
     return Array.from(this.metricMap.values());
   }
 
@@ -99,7 +115,7 @@ class MetricSet {
    * one (and the new ones "renderingPropertieS" will be honored instead of the old
    * one's).
    */
-  private addOne(metric: IMetric, yAxis?: string, id?: string) {
+  private addOne(metric: IMetric, tag?: A, id?: string) {
     const key = this.keyOf(metric);
 
     // Record this one
@@ -113,16 +129,16 @@ class MetricSet {
         existing.id = id;
       }
       // Replace object if invisible metric is being made visible (to use new one's renderingProperties).
-      if (yAxis) {
-        if (existing.yAxis && existing.yAxis !== yAxis) {
+      if (tag) {
+        if (existing.tag && existing.tag !== tag) {
           throw new Error(`Same metric added on both axes: '${metric}' and '${existing.metric}'. Remove one.`);
         }
         // Replace object
-        existing.yAxis = yAxis;
+        existing.tag = tag;
         existing.metric = metric;
       }
     } else {
-      this.metricMap.set(key, { metric, yAxis, id });
+      this.metricMap.set(key, { metric, tag, id });
     }
 
     // Recurse and add children

@@ -1,7 +1,7 @@
 import * as cdk from '@aws-cdk/core';
 import { IAlarm } from "./alarm";
 import { IMetric } from "./metric-types";
-import { metricGraphJson } from './metric-util';
+import { allMetricsGraphJson } from './metric-util';
 import { ConcreteWidget } from "./widget";
 
 /**
@@ -170,7 +170,7 @@ export class GraphWidget extends ConcreteWidget {
   public toJson(): any[] {
     const horizontalAnnoations =  (this.props.leftAnnotations || []).map(mapAnnotation('left')).concat(
       (this.props.rightAnnotations || []).map(mapAnnotation('right')));
-    const metrics = metricGraphJson(this.props.left || [], this.props.right || []);
+    const metrics = allMetricsGraphJson(this.props.left || [], this.props.right || []);
     return [{
       type: 'metric',
       width: this.width,
@@ -232,7 +232,7 @@ export class SingleValueWidget extends ConcreteWidget {
         view: 'singleValue',
         title: this.props.title,
         region: this.props.region || cdk.Aws.REGION,
-        metrics: metricGraphJson(this.props.metrics, []),
+        metrics: allMetricsGraphJson(this.props.metrics, []),
         setPeriodToTimeRange: this.props.setPeriodToTimeRange
       }
     }];
