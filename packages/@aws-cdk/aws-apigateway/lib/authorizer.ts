@@ -1,5 +1,4 @@
-import { Construct } from '@aws-cdk/core';
-import { AuthorizerBase, TokenAuthorizer, TokenAuthorizerProps } from './authorizers';
+import { AuthorizationType } from './method';
 
 /**
  * Represents an API Gateway authorizer.
@@ -10,17 +9,10 @@ export interface IAuthorizer {
    * @attribute
    */
   readonly authorizerId: string;
-}
-
-/**
- * Base class for all custom authorizers
- */
-export class Authorizer {
 
   /**
-   * Return a new token authorizer with the specified properties.
+   * The required authorization type of this authorizer. If not specified,
+   * `authorizationType` is required when the method is defined.
    */
-  public static token(scope: Construct, id: string, props: TokenAuthorizerProps): AuthorizerBase {
-    return new TokenAuthorizer(scope, id, props);
-  }
+  readonly authorizationType?: AuthorizationType;
 }

@@ -7,6 +7,11 @@ import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as apigw from '../lib';
 
+const DUMMY_AUTHORIZER: apigw.IAuthorizer = {
+  authorizerId: 'dummyauthorizer',
+  authorizationType: apigw.AuthorizationType.CUSTOM
+};
+
 export = {
   'default setup'(test: Test) {
     // GIVEN
@@ -614,17 +619,15 @@ export = {
   'authorizer is bound correctly'(test: Test) {
     const stack = new cdk.Stack();
 
-    const auth = new DummyAuthorizer(stack, 'myauthorizer');
-
     const restApi = new apigw.RestApi(stack, 'myrestapi');
     restApi.root.addMethod('ANY', undefined, {
-      authorizer: auth
+      authorizer: DUMMY_AUTHORIZER
     });
 
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
       HttpMethod: 'ANY',
       AuthorizationType: 'CUSTOM',
-      AuthorizerId: stack.resolve(auth.authorizerId),
+      AuthorizerId: DUMMY_AUTHORIZER.authorizerId,
     }));
 
     test.done();
@@ -646,7 +649,6 @@ export = {
 
     const restApi = new apigw.RestApi(stack, 'myrestapi', {
       defaultMethodOptions: {
-        authorizationType: apigw.AuthorizationType.CUSTOM,
         authorizer: auth
       }
     });
@@ -669,7 +671,7 @@ export = {
     test.throws(() => {
       restApi.root.addMethod('ANY', undefined, {
         authorizationType: apigw.AuthorizationType.IAM,
-        authorizer: new DummyAuthorizer(stack, 'dummyauthorizer'),
+        authorizer: DUMMY_AUTHORIZER
       });
     }, /Authorization type is set to AWS_IAM which is different from what is required by the authorizer/);
 
@@ -678,11 +680,10 @@ export = {
 
   'fails when authorization type does not match the authorizer in default method options'(test: Test) {
     const stack = new cdk.Stack();
-    const authorizer = new DummyAuthorizer(stack, 'dummyauthorizer');
 
     const restApi = new apigw.RestApi(stack, 'myrestapi', {
       defaultMethodOptions: {
-        authorizer
+        authorizer: DUMMY_AUTHORIZER
       }
     });
 
@@ -695,23 +696,3 @@ export = {
     test.done();
   }
 };
-
-class DummyAuthorizer extends apigw.AuthorizerBase {
-  public readonly authorizerId: string;
-
-  constructor(scope: cdk.Construct, id: string) {
-    super(scope, id);
-    this.authorizerId = id;
-  }
-
-  public fetchRestApiId(): string {
-    return this.restApiId;
-  }
-
-  protected authorizerConfig(_: apigw.Method): apigw.AuthorizerConfig {
-    return {
-      authorizerId: this.authorizerId,
-      authorizationType: apigw.AuthorizationType.CUSTOM
-    };
-  }
-}
