@@ -19,6 +19,18 @@ const table = new dynamodb.Table(this, 'Table', {
 });
 ```
 
+### Importing existing tables
+
+To import an existing table into your CDK application, use the `Table.fromTableName` or `Table.fromTableArn` 
+factory method. This method accepts table name or table ARN which describes the properties of an already
+existing table:
+
+```ts
+const table = Table.fromTableArn(this, 'ImportedTable', 'arn:aws:dynamodb:us-east-1:111111111:table/my-table'); 
+// now you can just call methods on the table
+table.grantReadWriteData(user);
+```
+
 ### Keys
 
 When a table is defined, you must define it's schema using the `partitionKey`

@@ -73,15 +73,15 @@
     "@types/aws-lambda": "^8.10.39",
     "@types/fs-extra": "^8.0.1",
     "@types/sinon": "^7.5.0",
-    "aws-sdk": "^2.595.0",
-    "aws-sdk-mock": "^4.5.0",
+    "aws-sdk": "^2.596.0",
+    "aws-sdk-mock": "^5.0.0",
     "cdk-build-tools": "1.19.0",
     "cdk-integ-tools": "1.19.0",
     "cfn2ts": "1.19.0",
     "fs-extra": "^8.1.0",
     "nock": "^11.7.0",
     "pkglint": "1.19.0",
-    "sinon": "^7.5.0"
+    "sinon": "^8.0.1"
   },
   "dependencies": {
     "@aws-cdk/aws-cloudformation": "1.19.0",
@@ -111,7 +111,13 @@
         "branches": 70,
         "statements": 80
       }
-    }
+    },
+    "collectCoverage": true,
+    "coverageReporters": [
+      "lcov",
+      "html",
+      "text-summary"
+    ]
   },
   "engines": {
     "node": ">= 10.3.0"
