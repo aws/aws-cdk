@@ -1,4 +1,5 @@
-import { IMetric } from "./metric-types";
+import { Duration } from "@aws-cdk/core";
+import { IMetric, MetricConfig, MetricExpressionConfig, MetricStatConfig } from "./metric-types";
 
 /**
  * Return the JSON structure which represents these metrics in a graph.
@@ -30,27 +31,27 @@ function metricGraphJson(metric: IMetric, yAxis?: string, id?: string) {
   const ret: any[] = [];
   const options: any = { ...config.renderingProperties || {} };
 
-  if (config.metricStat) {
-    // Namespace and metric Name
-    ret.push(
-      config.metricStat.namespace,
-      config.metricStat.metricName,
-    );
+  dispatchMetric(metric, {
+    withStat(stat) {
+      ret.push(
+        stat.namespace,
+        stat.metricName,
+      );
 
-    // Dimensions
-    for (const dim of (config.metricStat.dimensions || [])) {
-      ret.push(dim.name, dim.value);
+      // Dimensions
+      for (const dim of (stat.dimensions || [])) {
+        ret.push(dim.name, dim.value);
+      }
+
+      // Metric attributes that are rendered to graph options
+      if (stat.account) { options.accountId = stat.account; }
+      if (stat.region) { options.region = stat.region; }
+    },
+
+    withExpression(expr) {
+      options.expression = expr.expression;
     }
-
-    // Metric attributes that are rendered to graph options
-    if (config.metricStat.account) { options.accountId = config.metricStat.account; }
-    if (config.metricStat.region) { options.region = config.metricStat.region; }
-  } else if (config.mathExpression) {
-    // Everything goes into the options object
-    options.expression = config.mathExpression.expression;
-  } else {
-    throw new Error(`Metric object must have either 'metricStat' or 'mathExpression'`);
-  }
+  });
 
   // Options
   if (!yAxis) { options.visible = false; }
@@ -191,7 +192,7 @@ function metricKey(metric: IMetric) {
       parts.push(conf.metricStat.statistic);
     }
     if (conf.metricStat.period) {
-      parts.push(`${conf.metricStat.period}`);
+      parts.push(`${conf.metricStat.period.toSeconds()}`);
     }
     if (conf.metricStat.region) {
       parts.push(conf.metricStat.region);
@@ -202,4 +203,46 @@ function metricKey(metric: IMetric) {
   }
 
   return parts.join('|');
+}
+
+/**
+ * Return the period of a metric
+ *
+ * For a stat metric, return the immediate period. For an expression metric,
+ * return the longest period of its constituent metrics (because the math expression
+ * will only emit a data point if all of its parts emit a data point).
+ *
+ * Formally it should be the LCM of the constituent periods, but the max is simpler,
+ * periods are likely to be multiples of one another anyway, and this is only used
+ * for display purposes.
+ */
+export function metricPeriod(metric: IMetric): Duration {
+  return dispatchMetric(metric, {
+    withStat(stat) {
+      return stat.period;
+    },
+    withExpression(expr) {
+      const metrs = Object.values(expr.expressionMetrics);
+      let maxPeriod = Duration.seconds(0);
+      for (const metr of metrs) {
+        const p = metricPeriod(metr);
+        if (p.toSeconds() > maxPeriod.toSeconds()) {
+          maxPeriod = p;
+        }
+      }
+      return maxPeriod;
+    },
+  });
+}
+
+// tslint:disable-next-line:max-line-length
+export function dispatchMetric<A, B>(metric: IMetric, fns: { withStat: (x: MetricStatConfig, c: MetricConfig) => A, withExpression: (x: MetricExpressionConfig, c: MetricConfig) => B }): A | B {
+  const conf = metric.toMetricConfig();
+  if (conf.metricStat) {
+    return fns.withStat(conf.metricStat, conf);
+  } else if (conf.mathExpression) {
+    return fns.withExpression(conf.mathExpression, conf);
+  } else {
+    throw new Error(`Metric object must have either 'metricStat' or 'mathExpression'`);
+  }
 }

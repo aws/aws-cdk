@@ -217,7 +217,7 @@ export class Metric implements IMetric {
       dimensions: metricConfig.metricStat.dimensions,
       namespace: metricConfig.metricStat.namespace,
       metricName: metricConfig.metricStat.metricName,
-      period: metricConfig.metricStat.period,
+      period: metricConfig.metricStat.period.toSeconds(),
       statistic: stat.type === 'simple' ? stat.statistic : undefined,
       extendedStatistic: stat.type === 'percentile' ? 'p' + stat.percentile : undefined,
       unit: this.unit
@@ -235,13 +235,13 @@ export class Metric implements IMetric {
       namespace: metricConfig.metricStat.namespace,
       metricName: metricConfig.metricStat.metricName,
       renderingProperties: {
-        period: metricConfig.metricStat.period,
+        period: metricConfig.metricStat.period.toSeconds(),
         stat: metricConfig.metricStat.statistic,
         color: metricConfig.renderingProperties?.color,
         label: metricConfig.renderingProperties?.label
       },
       // deprecated properties for backwards compatibility
-      period: metricConfig.metricStat.period,
+      period: metricConfig.metricStat.period.toSeconds(),
       statistic: metricConfig.metricStat.statistic,
       color: metricConfig.renderingProperties?.color,
       label: metricConfig.renderingProperties?.label,
@@ -255,7 +255,7 @@ export class Metric implements IMetric {
         dimensions: this.dimensionsAsList(),
         namespace: this.namespace,
         metricName: this.metricName,
-        period: this.period.toSeconds(),
+        period: this.period,
         statistic: this.statistic,
         account: this.account,
         region: this.region

@@ -1,3 +1,5 @@
+import { Duration } from "@aws-cdk/core";
+
 /**
  * Interface for metrics
  */
@@ -130,7 +132,7 @@ export interface MetricStatConfig {
   /**
    * How many seconds to aggregate over
    */
-  readonly period: number;
+  readonly period: Duration;
 
   /**
    * Aggregation function to use (can be either simple or a percentile)

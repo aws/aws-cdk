@@ -4,7 +4,7 @@ import { CfnAlarm } from './cloudwatch.generated';
 import { HorizontalAnnotation } from './graph';
 import { CreateAlarmOptions } from './metric';
 import { IMetric } from './metric-types';
-import { MetricSet } from './metric-util';
+import { dispatchMetric, metricPeriod, MetricSet } from './metric-util';
 import { parseStatistic } from './util.statistic';
 
 export interface IAlarm extends IResource {
@@ -162,7 +162,7 @@ export class Alarm extends Resource implements IAlarm {
     this.metric = props.metric;
     this.annotation = {
       // tslint:disable-next-line:max-line-length
-      label: `${this.metric} ${OPERATOR_SYMBOLS[comparisonOperator]} ${props.threshold} for ${props.evaluationPeriods} datapoints within ${describePeriod(props.evaluationPeriods * config.period)}`,
+      label: `${this.metric} ${OPERATOR_SYMBOLS[comparisonOperator]} ${props.threshold} for ${props.evaluationPeriods} datapoints within ${describePeriod(props.evaluationPeriods * metricPeriod(props.metric).toSeconds())}`,
       value: props.threshold,
     };
   }
@@ -228,53 +228,59 @@ export class Alarm extends Resource implements IAlarm {
 }
 
 function renderAlarmMetric(metric: IMetric) {
-  const config = metric.toMetricConfig();
+  return dispatchMetric(metric, {
+    withStat(st) {
+      return dropUndef({
+        dimensions: st.dimensions,
+        namespace: st.namespace,
+        metricName: st.metricName,
+        period: st.period?.toSeconds(),
+        statistic: renderIfSimpleStatistic(st.statistic),
+        extendedStatistic: renderIfExtendedStatistic(st.statistic),
+      });
+    },
 
-  if (config.metricStat) {
-    const st = config.metricStat;
-    return dropUndef({
-      dimensions: st.dimensions,
-      namespace: st.namespace,
-      metricName: st.metricName,
-      period: st.period,
-      statistic: renderIfSimpleStatistic(st.statistic),
-      extendedStatistic: renderIfExtendedStatistic(st.statistic),
-    });
-  } else if (config.mathExpression) {
-    // Expand the math expression metric into a set
-    const mset = new MetricSet<boolean>();
-    mset.addPrimary(true, metric);
+    withExpression() {
+      // Expand the math expression metric into a set
+      const mset = new MetricSet<boolean>();
+      mset.addPrimary(true, metric);
 
-    let mid = 0;
-    function uniqueMetricId() {
-      return `mid${++mid}`;
+      let mid = 0;
+      function uniqueMetricId() {
+        return `mid${++mid}`;
+      }
+
+      return {
+        metrics: mset.entries.map(entry => dispatchMetric(entry.metric, {
+          withStat(stat, conf) {
+            return {
+              metricStat: {
+                metric: {
+                  metricName: stat.metricName,
+                  namespace: stat.namespace,
+                  dimensions: stat.dimensions,
+                },
+                period: stat.period.toSeconds(),
+                stat: stat.statistic,
+                // unit: not used, on purpose. Does not do what we need it to do.
+              },
+              id: entry.id || uniqueMetricId(),
+              label: conf.renderingProperties?.label,
+              returnData: entry.tag ? undefined : false, // Tag stores "primary" attribute, default is "true"
+            };
+          },
+          withExpression(expr, conf) {
+            return {
+              expression: expr.expression,
+              id: entry.id || uniqueMetricId(),
+              label: conf.renderingProperties?.label,
+              returnData: entry.tag ? undefined : false, // Tag stores "primary" attribute, default is "true"
+            };
+          },
+        }) as CfnAlarm.MetricDataQueryProperty)
+      };
     }
-
-    return {
-      metrics: mset.entries.map(entry => {
-        const conf = entry.metric.toMetricConfig();
-
-        return dropUndef({
-          expression: conf.mathExpression?.expression,
-          metricStat: conf.metricStat ? {
-            metric: {
-              metricName: conf.metricStat.metricName,
-              namespace: conf.metricStat.namespace,
-              dimensions: conf.metricStat.dimensions,
-            },
-            period: conf.metricStat.period,
-            stat: conf.metricStat.statistic,
-            // unit: not used, on purpose. Does not do what we need it to do.
-          } : undefined,
-          id: entry.id || uniqueMetricId(),
-          label: conf.renderingProperties?.label,
-          returnData: entry.tag ? undefined : false, // Tag stores "primary" attribute, default is "true"
-        } as CfnAlarm.MetricDataQueryProperty);
-      })
-    };
-  } else {
-    throw new Error(`Metric object must have either 'metricStat' or 'mathExpression'`);
-  }
+  });
 }
 
 /**
