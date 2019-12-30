@@ -174,6 +174,47 @@ test('Add Step with static ClusterId and Step configuration and FIRE_AND_FORGET 
   });
 });
 
+test('Add Step with static ClusterId and Step configuration with TERMINATE_CLUSTER', () => {
+  // WHEN
+  const task = new sfn.Task(stack, 'Task', {
+      task: new tasks.EmrAddStep({
+        clusterId: 'ClusterId',
+        name: 'StepName',
+        jar: 'Jar',
+        actionOnFailure: ActionOnFailure.TERMINATE_CLUSTER,
+        integrationPattern: sfn.ServiceIntegrationPattern.SYNC
+      })
+    });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::elasticmapreduce:addStep.sync',
+        ],
+      ],
+    },
+    End: true,
+    Parameters: {
+      ClusterId: 'ClusterId',
+      Step: {
+        Name: 'StepName',
+        ActionOnFailure: 'TERMINATE_CLUSTER',
+        HadoopJarStep: {
+          Jar: 'Jar'
+        }
+      }
+    },
+  });
+});
+
 test('Add Step with static ClusterId and Step configuration with Args', () => {
   // WHEN
   const task = new sfn.Task(stack, 'Task', {
