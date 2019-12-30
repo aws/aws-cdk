@@ -92,4 +92,4 @@ dist
 .LAST_PACKAGE
 .LAST_BUILD
 *.snk
-.nycrc
+nyc.config.js
