@@ -243,7 +243,7 @@ export class TagManager {
   private readonly resourceTypeName: string;
   private readonly initialTagPriority = 50;
 
-  constructor(tagType: TagType, resourceTypeName: string, tagStructure?: any, options?: TagManagerOptions) {
+  constructor(tagType: TagType, resourceTypeName: string, tagStructure?: any, options: TagManagerOptions = { }) {
     this.resourceTypeName = resourceTypeName;
     this.tagFormatter = TAG_FORMATTERS[tagType];
     if (tagStructure !== undefined) {
