@@ -1,7 +1,6 @@
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
 import * as tasks from '../lib';
-import { ActionOnFailure } from '../lib';
 
 let stack: cdk.Stack;
 
@@ -17,7 +16,7 @@ test('Add Step with static ClusterId and Step configuration', () => {
         clusterId: 'ClusterId',
         name: 'StepName',
         jar: 'Jar',
-        actionOnFailure: ActionOnFailure.CONTINUE,
+        actionOnFailure: tasks.ActionOnFailure.CONTINUE,
         integrationPattern: sfn.ServiceIntegrationPattern.SYNC
       })
     });
@@ -58,7 +57,7 @@ test('Terminate cluster with ClusterId from payload and static Step configuratio
         clusterId: sfn.Data.stringAt('$.ClusterId'),
         name: 'StepName',
         jar: 'Jar',
-        actionOnFailure: ActionOnFailure.CONTINUE,
+        actionOnFailure: tasks.ActionOnFailure.CONTINUE,
         integrationPattern: sfn.ServiceIntegrationPattern.SYNC
       })
     });
@@ -99,7 +98,7 @@ test('Add Step with static ClusterId and Step Name from payload', () => {
         clusterId: 'ClusterId',
         name: sfn.Data.stringAt('$.StepName'),
         jar: 'Jar',
-        actionOnFailure: ActionOnFailure.CONTINUE,
+        actionOnFailure: tasks.ActionOnFailure.CONTINUE,
         integrationPattern: sfn.ServiceIntegrationPattern.SYNC
       })
     });
@@ -140,7 +139,7 @@ test('Add Step with static ClusterId and Step configuration and FIRE_AND_FORGET 
         clusterId: 'ClusterId',
         name: 'StepName',
         jar: 'Jar',
-        actionOnFailure: ActionOnFailure.CONTINUE,
+        actionOnFailure: tasks.ActionOnFailure.CONTINUE,
         integrationPattern: sfn.ServiceIntegrationPattern.FIRE_AND_FORGET
       })
     });
@@ -181,7 +180,7 @@ test('Add Step with static ClusterId and Step configuration with TERMINATE_CLUST
         clusterId: 'ClusterId',
         name: 'StepName',
         jar: 'Jar',
-        actionOnFailure: ActionOnFailure.TERMINATE_CLUSTER,
+        actionOnFailure: tasks.ActionOnFailure.TERMINATE_CLUSTER,
         integrationPattern: sfn.ServiceIntegrationPattern.SYNC
       })
     });
@@ -223,7 +222,7 @@ test('Add Step with static ClusterId and Step configuration with Args', () => {
         name: 'StepName',
         jar: 'Jar',
         args: ['Arg1'],
-        actionOnFailure: ActionOnFailure.CONTINUE,
+        actionOnFailure: tasks.ActionOnFailure.CONTINUE,
         integrationPattern: sfn.ServiceIntegrationPattern.SYNC
       })
     });
@@ -268,7 +267,7 @@ test('Add Step with static ClusterId and Step configuration with Properties', ()
         properties: {
           PropertyKey: 'PropertyValue'
         },
-        actionOnFailure: ActionOnFailure.CONTINUE,
+        actionOnFailure: tasks.ActionOnFailure.CONTINUE,
         integrationPattern: sfn.ServiceIntegrationPattern.SYNC
       })
     });
@@ -313,7 +312,7 @@ test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration patt
         clusterId: 'ClusterId',
         name: 'StepName',
         jar: 'Jar',
-        actionOnFailure: ActionOnFailure.CONTINUE,
+        actionOnFailure: tasks.ActionOnFailure.CONTINUE,
         integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN
       })
     });
