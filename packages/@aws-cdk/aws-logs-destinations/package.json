@@ -66,7 +66,13 @@
         "branches": 50,
         "statements": 80
       }
-    }
+    },
+    "collectCoverage": true,
+    "coverageReporters": [
+      "lcov",
+      "html",
+      "text-summary"
+    ]
   },
   "license": "Apache-2.0",
   "devDependencies": {
