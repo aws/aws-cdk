@@ -48,11 +48,12 @@ test('Create Cluster with FIRE_AND_FORGET integrationPattern', () => {
     Parameters: {
       Name: 'Cluster',
       Instances: {},
+      VisibleToAllUsers: true,
       JobFlowRole: {
-        'Fn::GetAtt': ['ClusterRoleD9CA7471', 'Arn']
+        Ref: 'ClusterRoleD9CA7471',
       },
       ServiceRole: {
-        'Fn::GetAtt': ['ServiceRole4288B192', 'Arn']
+        Ref: 'ServiceRole4288B192'
       }
     },
   });
@@ -87,11 +88,12 @@ test('Create Cluster with SYNC integrationPattern', () => {
     Parameters: {
       Name: 'Cluster',
       Instances: {},
+      VisibleToAllUsers: true,
       JobFlowRole: {
-        'Fn::GetAtt': ['ClusterRoleD9CA7471', 'Arn']
+        Ref: 'ClusterRoleD9CA7471',
       },
       ServiceRole: {
-        'Fn::GetAtt': ['ServiceRole4288B192', 'Arn']
+        Ref: 'ServiceRole4288B192'
       }
     },
   });
@@ -126,11 +128,12 @@ test('Create Cluster with clusterConfiguration Name from payload', () => {
     Parameters: {
       'Name.$': '$.ClusterName',
       'Instances': {},
+      'VisibleToAllUsers': true,
       'JobFlowRole': {
-        'Fn::GetAtt': ['ClusterRoleD9CA7471', 'Arn']
+        Ref: 'ClusterRoleD9CA7471',
       },
       'ServiceRole': {
-        'Fn::GetAtt': ['ServiceRole4288B192', 'Arn']
+        Ref: 'ServiceRole4288B192'
       }
     },
   });
@@ -169,11 +172,12 @@ test('Create Cluster with Tags', () => {
     Parameters: {
       Name: 'Cluster',
       Instances: {},
+      VisibleToAllUsers: true,
       JobFlowRole: {
-        'Fn::GetAtt': ['ClusterRoleD9CA7471', 'Arn']
+        Ref: 'ClusterRoleD9CA7471',
       },
       ServiceRole: {
-        'Fn::GetAtt': ['ServiceRole4288B192', 'Arn']
+        Ref: 'ServiceRole4288B192'
       },
       Tags: [{
         Key: 'Key',

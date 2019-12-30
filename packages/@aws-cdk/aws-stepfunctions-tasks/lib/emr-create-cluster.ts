@@ -102,6 +102,8 @@ export interface EmrCreateClusterProps {
 
   /**
    * A value of true indicates that all IAM users in the AWS account can perform cluster actions if they have the proper IAM policy permissions.
+   *
+   * @default true
    */
   readonly visibleToAllUsers?: boolean;
 
@@ -126,9 +128,11 @@ export interface EmrCreateClusterProps {
  */
 export class EmrCreateCluster implements sfn.IStepFunctionsTask {
 
+  private readonly visibleToAllUsers: boolean;
   private readonly integrationPattern: sfn.ServiceIntegrationPattern;
 
   constructor(private readonly props: EmrCreateClusterProps) {
+    this.visibleToAllUsers = (this.props.visibleToAllUsers !== undefined) ? this.props.visibleToAllUsers : true;
     this.integrationPattern = props.integrationPattern || sfn.ServiceIntegrationPattern.SYNC;
 
     const supportedPatterns = [
@@ -147,14 +151,14 @@ export class EmrCreateCluster implements sfn.IStepFunctionsTask {
       policyStatements: this.createPolicyStatements(_task),
       parameters: {
         Instances: this.props.instances,
-        JobFlowRole: this.props.clusterRole.roleArn,
+        JobFlowRole: this.props.clusterRole.roleName,
         Name: this.props.name,
-        ServiceRole: this.props.serviceRole.roleArn,
+        ServiceRole: this.props.serviceRole.roleName,
         AdditionalInfo: this.props.additionalInfo,
         Applications: this.props.applications,
         AutoScalingRole: (this.props.autoScalingRole === undefined) ?
           this.props.autoScalingRole :
-          this.props.autoScalingRole.roleArn,
+          this.props.autoScalingRole.roleName,
         BootstrapActions: this.props.bootstrapActions,
         Configurations: this.props.configurations,
         CustomAmiId: this.props.customAmiId,
@@ -170,7 +174,7 @@ export class EmrCreateCluster implements sfn.IStepFunctionsTask {
             Key: t.key,
             Value: t.value
           })),
-        VisibleToAllUsers: this.props.visibleToAllUsers
+        VisibleToAllUsers: this.visibleToAllUsers
       }
     };
   }
