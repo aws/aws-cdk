@@ -37,99 +37,71 @@ export interface EmrCreateClusterProps {
 
   /**
    * A JSON string for selecting additional features.
-   *
-   * @default None
    */
   readonly additionalInfo?: string;
 
   /**
    * A case-insensitive list of applications for Amazon EMR to install and configure when launching the cluster.
-   *
-   * @default None
    */
   readonly applications?: Array<{[key: string]: any}>;
 
   /**
    * An IAM role for automatic scaling policies.
-   *
-   * @default None
    */
   readonly autoScalingRole?: iam.IRole;
 
   /**
    * A list of bootstrap actions to run before Hadoop starts on the cluster nodes.
-   *
-   * @default None
    */
   readonly bootstrapActions?: Array<{[key: string]: any}>;
 
   /**
    * The list of configurations supplied for the EMR cluster you are creating.
-   *
-   * @default None
    */
   readonly configurations?: Array<{[key: string]: any}>;
 
   /**
    * The ID of a custom Amazon EBS-backed Linux AMI.
-   *
-   * @default 'Base Linux AMI for ReleaseLabel'
    */
   readonly customAmiId?: string;
 
   /**
    * The size, in GiB, of the EBS root device volume of the Linux AMI that is used for each EC2 instance.
-   *
-   * @default None
    */
   readonly ebsRootVolumeSize?: number;
 
   /**
    * Attributes for Kerberos configuration when Kerberos authentication is enabled using a security configuration.
-   *
-   * @default None
    */
   readonly kerberosAttributes?: {[key: string]: string};
 
   /**
    * The location in Amazon S3 to write the log files of the job flow.
-   *
-   * @default NoLogs
    */
   readonly logUri?: string;
 
   /**
    * The Amazon EMR release label, which determines the version of open-source application packages installed on the cluster.
-   *
-   * @default Current
    */
   readonly releaseLabel?: string;
 
   /**
    * Specifies the way that individual Amazon EC2 instances terminate when an automatic scale-in activity occurs or an instance group is resized.
-   *
-   * @default None
    */
   readonly scaleDownBehavior?: string;
 
   /**
    * The name of a security configuration to apply to the cluster.
-   *
-   * @default None
    */
   readonly securityConfiguration?: string;
 
   /**
    * A list of tags to associate with a cluster and propagate to Amazon EC2 instances.
-   *
-   * @default None
    */
   readonly tags?: CfnTag[];
 
   /**
    * A value of true indicates that all IAM users in the AWS account can perform cluster actions if they have the proper IAM policy permissions.
-   *
-   * @default true
    */
   readonly visibleToAllUsers?: boolean;
 

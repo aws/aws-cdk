@@ -173,7 +173,21 @@
       "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.TransformOutput.encryptionKey",
       "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.TransformResources.volumeKmsKeyId",
       "docs-public-apis:@aws-cdk/aws-stepfunctions-tasks.VpcConfig",
-      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.VpcConfig.subnets"
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.VpcConfig.subnets",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.EmrCreateClusterProps.additionalInfo",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.EmrCreateClusterProps.applications",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.EmrCreateClusterProps.autoScalingRole",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.EmrCreateClusterProps.bootstrapActions",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.EmrCreateClusterProps.configurations",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.EmrCreateClusterProps.customAmiId",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.EmrCreateClusterProps.ebsRootVolumeSize",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.EmrCreateClusterProps.kerberosAttributes",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.EmrCreateClusterProps.logUri",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.EmrCreateClusterProps.releaseLabel",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.EmrCreateClusterProps.scaleDownBehavior",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.EmrCreateClusterProps.securityConfiguration",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.EmrCreateClusterProps.tags",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.EmrCreateClusterProps.visibleToAllUsers"
     ]
   }
 }
