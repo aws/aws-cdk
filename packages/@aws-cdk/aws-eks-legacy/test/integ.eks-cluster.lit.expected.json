@@ -1,4 +1,5 @@
 {
+  "Transform": "AWS::Serverless-2016-10-31",
   "Resources": {
     "VPCB9E5F0B4": {
       "Type": "AWS::EC2::VPC",
@@ -10,7 +11,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "eks-integ-kubectl-disabled/VPC"
+            "Value": "eks-integ-test-basic/VPC"
           }
         ]
       }
@@ -27,7 +28,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "eks-integ-kubectl-disabled/VPC/PublicSubnet1"
+            "Value": "eks-integ-test-basic/VPC/PublicSubnet1"
           },
           {
             "Key": "aws-cdk:subnet-name",
@@ -53,7 +54,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "eks-integ-kubectl-disabled/VPC/PublicSubnet1"
+            "Value": "eks-integ-test-basic/VPC/PublicSubnet1"
           },
           {
             "Key": "kubernetes.io/role/elb",
@@ -95,7 +96,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "eks-integ-kubectl-disabled/VPC/PublicSubnet1"
+            "Value": "eks-integ-test-basic/VPC/PublicSubnet1"
           },
           {
             "Key": "kubernetes.io/role/elb",
@@ -119,7 +120,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "eks-integ-kubectl-disabled/VPC/PublicSubnet1"
+            "Value": "eks-integ-test-basic/VPC/PublicSubnet1"
           },
           {
             "Key": "kubernetes.io/role/elb",
@@ -140,7 +141,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "eks-integ-kubectl-disabled/VPC/PublicSubnet2"
+            "Value": "eks-integ-test-basic/VPC/PublicSubnet2"
           },
           {
             "Key": "aws-cdk:subnet-name",
@@ -166,7 +167,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "eks-integ-kubectl-disabled/VPC/PublicSubnet2"
+            "Value": "eks-integ-test-basic/VPC/PublicSubnet2"
           },
           {
             "Key": "kubernetes.io/role/elb",
@@ -208,7 +209,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "eks-integ-kubectl-disabled/VPC/PublicSubnet2"
+            "Value": "eks-integ-test-basic/VPC/PublicSubnet2"
           },
           {
             "Key": "kubernetes.io/role/elb",
@@ -232,7 +233,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "eks-integ-kubectl-disabled/VPC/PublicSubnet2"
+            "Value": "eks-integ-test-basic/VPC/PublicSubnet2"
           },
           {
             "Key": "kubernetes.io/role/elb",
@@ -253,7 +254,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "eks-integ-kubectl-disabled/VPC/PublicSubnet3"
+            "Value": "eks-integ-test-basic/VPC/PublicSubnet3"
           },
           {
             "Key": "aws-cdk:subnet-name",
@@ -279,7 +280,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "eks-integ-kubectl-disabled/VPC/PublicSubnet3"
+            "Value": "eks-integ-test-basic/VPC/PublicSubnet3"
           },
           {
             "Key": "kubernetes.io/role/elb",
@@ -321,7 +322,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "eks-integ-kubectl-disabled/VPC/PublicSubnet3"
+            "Value": "eks-integ-test-basic/VPC/PublicSubnet3"
           },
           {
             "Key": "kubernetes.io/role/elb",
@@ -345,7 +346,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "eks-integ-kubectl-disabled/VPC/PublicSubnet3"
+            "Value": "eks-integ-test-basic/VPC/PublicSubnet3"
           },
           {
             "Key": "kubernetes.io/role/elb",
@@ -366,7 +367,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "eks-integ-kubectl-disabled/VPC/PrivateSubnet1"
+            "Value": "eks-integ-test-basic/VPC/PrivateSubnet1"
           },
           {
             "Key": "aws-cdk:subnet-name",
@@ -392,7 +393,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "eks-integ-kubectl-disabled/VPC/PrivateSubnet1"
+            "Value": "eks-integ-test-basic/VPC/PrivateSubnet1"
           },
           {
             "Key": "kubernetes.io/role/internal-elb",
@@ -436,7 +437,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "eks-integ-kubectl-disabled/VPC/PrivateSubnet2"
+            "Value": "eks-integ-test-basic/VPC/PrivateSubnet2"
           },
           {
             "Key": "aws-cdk:subnet-name",
@@ -462,7 +463,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "eks-integ-kubectl-disabled/VPC/PrivateSubnet2"
+            "Value": "eks-integ-test-basic/VPC/PrivateSubnet2"
           },
           {
             "Key": "kubernetes.io/role/internal-elb",
@@ -506,7 +507,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "eks-integ-kubectl-disabled/VPC/PrivateSubnet3"
+            "Value": "eks-integ-test-basic/VPC/PrivateSubnet3"
           },
           {
             "Key": "aws-cdk:subnet-name",
@@ -532,7 +533,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "eks-integ-kubectl-disabled/VPC/PrivateSubnet3"
+            "Value": "eks-integ-test-basic/VPC/PrivateSubnet3"
           },
           {
             "Key": "kubernetes.io/role/internal-elb",
@@ -570,7 +571,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "eks-integ-kubectl-disabled/VPC"
+            "Value": "eks-integ-test-basic/VPC"
           }
         ]
       }
@@ -586,7 +587,7 @@
         }
       }
     },
-    "EKSClusterRoleC0AEAC3D": {
+    "EKSClusterClusterRoleB72F3251": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -645,11 +646,11 @@
         }
       }
     },
-    "EKSClusterControlPlaneSecurityGroupfromeksintegkubectldisabledEKSClusterNodesInstanceSecurityGroup1E8EEB07443828A1FF0": {
+    "EKSClusterControlPlaneSecurityGroupfromeksintegtestbasicEKSClusterNodesInstanceSecurityGroup5B890E254434E08C84B": {
       "Type": "AWS::EC2::SecurityGroupIngress",
       "Properties": {
         "IpProtocol": "tcp",
-        "Description": "from eksintegkubectldisabledEKSClusterNodesInstanceSecurityGroup1E8EEB07:443",
+        "Description": "from eksintegtestbasicEKSClusterNodesInstanceSecurityGroup5B890E25:443",
         "FromPort": 443,
         "GroupId": {
           "Fn::GetAtt": [
@@ -666,51 +667,265 @@
         "ToPort": 443
       }
     },
-    "EKSClusterBA6ECF8F": {
-      "Type": "AWS::EKS::Cluster",
+    "EKSClusterResourceHandlerServiceRoleFD631254": {
+      "Type": "AWS::IAM::Role",
       "Properties": {
-        "ResourcesVpcConfig": {
-          "SecurityGroupIds": [
+        "AssumeRolePolicyDocument": {
+          "Statement": [
             {
-              "Fn::GetAtt": [
-                "EKSClusterControlPlaneSecurityGroup580AD1FE",
-                "GroupId"
-              ]
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
             }
           ],
-          "SubnetIds": [
-            {
-              "Ref": "VPCPublicSubnet1SubnetB4246D30"
-            },
-            {
-              "Ref": "VPCPublicSubnet2Subnet74179F39"
-            },
-            {
-              "Ref": "VPCPublicSubnet3Subnet631C5E25"
-            },
-            {
-              "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
-            },
-            {
-              "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
-            },
-            {
-              "Ref": "VPCPrivateSubnet3Subnet3EDCD457"
-            }
-          ]
+          "Version": "2012-10-17"
         },
-        "RoleArn": {
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "EKSClusterResourceHandlerServiceRoleDefaultPolicy4D087A98": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "eks:CreateCluster",
+                "eks:DescribeCluster",
+                "eks:DeleteCluster",
+                "eks:UpdateClusterVersion"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": "iam:PassRole",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "EKSClusterClusterRoleB72F3251",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "EKSClusterResourceHandlerServiceRoleDefaultPolicy4D087A98",
+        "Roles": [
+          {
+            "Ref": "EKSClusterResourceHandlerServiceRoleFD631254"
+          }
+        ]
+      }
+    },
+    "EKSClusterResourceHandler31198B21": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParametersea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204S3Bucket371D99F8"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204S3VersionKeyFDCB25DD"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204S3VersionKeyFDCB25DD"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Handler": "index.handler",
+        "Role": {
           "Fn::GetAtt": [
-            "EKSClusterRoleC0AEAC3D",
+            "EKSClusterResourceHandlerServiceRoleFD631254",
             "Arn"
           ]
+        },
+        "Runtime": "python3.7",
+        "Layers": [
+          {
+            "Fn::GetAtt": [
+              "kubectllayer8C2542BCBF2B4DFEB765E181FD30A9A0617C4ADA",
+              "Outputs.LayerVersionArn"
+            ]
+          }
+        ],
+        "MemorySize": 512,
+        "Timeout": 900
+      },
+      "DependsOn": [
+        "EKSClusterResourceHandlerServiceRoleDefaultPolicy4D087A98",
+        "EKSClusterResourceHandlerServiceRoleFD631254"
+      ]
+    },
+    "EKSClusterE11008B6": {
+      "Type": "Custom::AWSCDK-EKS-Cluster",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "EKSClusterResourceHandler31198B21",
+            "Arn"
+          ]
+        },
+        "Config": {
+          "roleArn": {
+            "Fn::GetAtt": [
+              "EKSClusterClusterRoleB72F3251",
+              "Arn"
+            ]
+          },
+          "resourcesVpcConfig": {
+            "securityGroupIds": [
+              {
+                "Fn::GetAtt": [
+                  "EKSClusterControlPlaneSecurityGroup580AD1FE",
+                  "GroupId"
+                ]
+              }
+            ],
+            "subnetIds": [
+              {
+                "Ref": "VPCPublicSubnet1SubnetB4246D30"
+              },
+              {
+                "Ref": "VPCPublicSubnet2Subnet74179F39"
+              },
+              {
+                "Ref": "VPCPublicSubnet3Subnet631C5E25"
+              },
+              {
+                "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+              },
+              {
+                "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+              },
+              {
+                "Ref": "VPCPrivateSubnet3Subnet3EDCD457"
+              }
+            ]
+          }
         }
-      }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "EKSClusterKubernetesResourceHandler90E6DD64": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParameters640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444S3Bucket919126CB"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444S3VersionKey529BEF54"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444S3VersionKey529BEF54"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Handler": "index.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "EKSClusterResourceHandlerServiceRoleFD631254",
+            "Arn"
+          ]
+        },
+        "Runtime": "python3.7",
+        "Environment": {
+          "Variables": {
+            "CLUSTER_NAME": {
+              "Ref": "EKSClusterE11008B6"
+            }
+          }
+        },
+        "Layers": [
+          {
+            "Fn::GetAtt": [
+              "kubectllayer8C2542BCBF2B4DFEB765E181FD30A9A0617C4ADA",
+              "Outputs.LayerVersionArn"
+            ]
+          }
+        ],
+        "MemorySize": 256,
+        "Timeout": 900
+      },
+      "DependsOn": [
+        "EKSClusterResourceHandlerServiceRoleDefaultPolicy4D087A98",
+        "EKSClusterResourceHandlerServiceRoleFD631254"
+      ]
     },
     "EKSClusterNodesInstanceSecurityGroup460A275E": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
-        "GroupDescription": "eks-integ-kubectl-disabled/EKSCluster/Nodes/InstanceSecurityGroup",
+        "GroupDescription": "eks-integ-test-basic/EKSCluster/Nodes/InstanceSecurityGroup",
         "SecurityGroupEgress": [
           {
             "CidrIp": "0.0.0.0/0",
@@ -721,7 +936,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "eks-integ-kubectl-disabled/EKSCluster/Nodes"
+            "Value": "eks-integ-test-basic/EKSCluster/Nodes"
           },
           {
             "Key": {
@@ -730,7 +945,7 @@
                 [
                   "kubernetes.io/cluster/",
                   {
-                    "Ref": "EKSClusterBA6ECF8F"
+                    "Ref": "EKSClusterE11008B6"
                   }
                 ]
               ]
@@ -743,11 +958,11 @@
         }
       }
     },
-    "EKSClusterNodesInstanceSecurityGroupfromeksintegkubectldisabledEKSClusterNodesInstanceSecurityGroup1E8EEB07ALLTRAFFIC813BA9BB": {
+    "EKSClusterNodesInstanceSecurityGroupfromeksintegtestbasicEKSClusterNodesInstanceSecurityGroup5B890E25ALLTRAFFIC17050541": {
       "Type": "AWS::EC2::SecurityGroupIngress",
       "Properties": {
         "IpProtocol": "-1",
-        "Description": "from eksintegkubectldisabledEKSClusterNodesInstanceSecurityGroup1E8EEB07:ALL TRAFFIC",
+        "Description": "from eksintegtestbasicEKSClusterNodesInstanceSecurityGroup5B890E25:ALL TRAFFIC",
         "GroupId": {
           "Fn::GetAtt": [
             "EKSClusterNodesInstanceSecurityGroup460A275E",
@@ -762,11 +977,11 @@
         }
       }
     },
-    "EKSClusterNodesInstanceSecurityGroupfromeksintegkubectldisabledEKSClusterControlPlaneSecurityGroupA8D847C7443405A887C": {
+    "EKSClusterNodesInstanceSecurityGroupfromeksintegtestbasicEKSClusterControlPlaneSecurityGroup389B14F14436EFF5343": {
       "Type": "AWS::EC2::SecurityGroupIngress",
       "Properties": {
         "IpProtocol": "tcp",
-        "Description": "from eksintegkubectldisabledEKSClusterControlPlaneSecurityGroupA8D847C7:443",
+        "Description": "from eksintegtestbasicEKSClusterControlPlaneSecurityGroup389B14F1:443",
         "FromPort": 443,
         "GroupId": {
           "Fn::GetAtt": [
@@ -783,11 +998,11 @@
         "ToPort": 443
       }
     },
-    "EKSClusterNodesInstanceSecurityGroupfromeksintegkubectldisabledEKSClusterControlPlaneSecurityGroupA8D847C71025655350C1AD63E": {
+    "EKSClusterNodesInstanceSecurityGroupfromeksintegtestbasicEKSClusterControlPlaneSecurityGroup389B14F1102565535BB0D6C6D": {
       "Type": "AWS::EC2::SecurityGroupIngress",
       "Properties": {
         "IpProtocol": "tcp",
-        "Description": "from eksintegkubectldisabledEKSClusterControlPlaneSecurityGroupA8D847C7:1025-65535",
+        "Description": "from eksintegtestbasicEKSClusterControlPlaneSecurityGroup389B14F1:1025-65535",
         "FromPort": 1025,
         "GroupId": {
           "Fn::GetAtt": [
@@ -870,7 +1085,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "eks-integ-kubectl-disabled/EKSCluster/Nodes"
+            "Value": "eks-integ-test-basic/EKSCluster/Nodes"
           },
           {
             "Key": {
@@ -879,7 +1094,7 @@
                 [
                   "kubernetes.io/cluster/",
                   {
-                    "Ref": "EKSClusterBA6ECF8F"
+                    "Ref": "EKSClusterE11008B6"
                   }
                 ]
               ]
@@ -924,9 +1139,9 @@
               [
                 "#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ",
                 {
-                  "Ref": "EKSClusterBA6ECF8F"
+                  "Ref": "EKSClusterE11008B6"
                 },
-                " --kubelet-extra-args \"--node-labels lifecycle=OnDemand\" --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack eks-integ-kubectl-disabled --resource EKSClusterNodesASGC2597E34 --region test-region"
+                " --kubelet-extra-args \"--node-labels lifecycle=OnDemand\" --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack eks-integ-test-basic --resource EKSClusterNodesASGC2597E34 --region test-region"
               ]
             ]
           }
@@ -949,7 +1164,7 @@
           {
             "Key": "Name",
             "PropagateAtLaunch": true,
-            "Value": "eks-integ-kubectl-disabled/EKSCluster/Nodes"
+            "Value": "eks-integ-test-basic/EKSCluster/Nodes"
           },
           {
             "Key": {
@@ -958,7 +1173,7 @@
                 [
                   "kubernetes.io/cluster/",
                   {
-                    "Ref": "EKSClusterBA6ECF8F"
+                    "Ref": "EKSClusterE11008B6"
                   }
                 ]
               ]
@@ -995,6 +1210,46 @@
           "IgnoreUnmodifiedGroupSizeProperties": true
         }
       }
+    },
+    "EKSClusterAwsAuthmanifestA4E0796C": {
+      "Type": "Custom::AWSCDK-EKS-KubernetesResource",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "EKSClusterKubernetesResourceHandler90E6DD64",
+            "Arn"
+          ]
+        },
+        "Manifest": {
+          "Fn::Join": [
+            "",
+            [
+              "[{\"apiVersion\":\"v1\",\"kind\":\"ConfigMap\",\"metadata\":{\"name\":\"aws-auth\",\"namespace\":\"kube-system\"},\"data\":{\"mapRoles\":\"[{\\\"rolearn\\\":\\\"",
+              {
+                "Fn::GetAtt": [
+                  "EKSClusterNodesInstanceRoleEE5595D6",
+                  "Arn"
+                ]
+              },
+              "\\\",\\\"username\\\":\\\"system:node:{{EC2PrivateDNSName}}\\\",\\\"groups\\\":[\\\"system:bootstrappers\\\",\\\"system:nodes\\\"]}]\",\"mapUsers\":\"[]\",\"mapAccounts\":\"[]\"}}]"
+            ]
+          ]
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "kubectllayer8C2542BCBF2B4DFEB765E181FD30A9A0617C4ADA": {
+      "Type": "AWS::Serverless::Application",
+      "Properties": {
+        "Location": {
+          "ApplicationId": "arn:aws:serverlessrepo:us-east-1:903779448426:applications/lambda-layer-kubectl",
+          "SemanticVersion": "1.13.7"
+        },
+        "Parameters": {
+          "LayerName": "kubectl-de6ff3f9a59243920be5aeee7fc888a7"
+        }
+      }
     }
   },
   "Outputs": {
@@ -1005,7 +1260,7 @@
           [
             "aws eks update-kubeconfig --name ",
             {
-              "Ref": "EKSClusterBA6ECF8F"
+              "Ref": "EKSClusterE11008B6"
             },
             " --region test-region"
           ]
@@ -1019,23 +1274,39 @@
           [
             "aws eks get-token --cluster-name ",
             {
-              "Ref": "EKSClusterBA6ECF8F"
+              "Ref": "EKSClusterE11008B6"
             },
             " --region test-region"
           ]
         ]
       }
-    },
-    "EKSClusterNodesInstanceRoleARN10992C84": {
-      "Value": {
-        "Fn::GetAtt": [
-          "EKSClusterNodesInstanceRoleEE5595D6",
-          "Arn"
-        ]
-      }
     }
   },
   "Parameters": {
+    "AssetParametersea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204S3Bucket371D99F8": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"ea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204\""
+    },
+    "AssetParametersea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204S3VersionKeyFDCB25DD": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"ea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204\""
+    },
+    "AssetParametersea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204ArtifactHashB80B497F": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"ea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204\""
+    },
+    "AssetParameters640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444S3Bucket919126CB": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444\""
+    },
+    "AssetParameters640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444S3VersionKey529BEF54": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444\""
+    },
+    "AssetParameters640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444ArtifactHash606C8127": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444\""
+    },
     "SsmParameterValueawsserviceeksoptimizedami114amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
       "Type": "AWS::SSM::Parameter::Value<String>",
       "Default": "/aws/service/eks/optimized-ami/1.14/amazon-linux-2/recommended/image_id"

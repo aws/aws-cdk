@@ -1,13 +1,16 @@
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
+import * as lambda from '@aws-cdk/aws-lambda';
 import * as ssm from '@aws-cdk/aws-ssm';
-import { CfnOutput, Construct, IResource, Resource, Stack, Tag, Token } from '@aws-cdk/core';
+import { CfnOutput, Construct, Duration, IResource, Resource, Stack, Tag, Token } from '@aws-cdk/core';
+import * as path from 'path';
 import { AwsAuth } from './aws-auth';
-import { clusterArnComponents, ClusterResource } from './cluster-resource';
+import { ClusterResource } from './cluster-resource';
 import { CfnCluster, CfnClusterProps } from './eks.generated';
 import { HelmChart, HelmChartOptions } from './helm-chart';
 import { KubernetesResource } from './k8s-resource';
+import { KubectlLayer } from './kubectl-layer';
 import { spotInterruptHandler } from './spot-interrupt-handler';
 import { renderUserData } from './user-data';
 
@@ -226,6 +229,8 @@ export interface ClusterProps {
  *
  * This is a fully managed cluster of API Servers (control-plane)
  * The user is still required to create the worker nodes.
+ *
+ * @resource AWS::Eks-Legacy::Cluster
  */
 export class Cluster extends Resource implements ICluster {
   /**
@@ -289,19 +294,28 @@ export class Cluster extends Resource implements ICluster {
   public readonly kubectlEnabled: boolean;
 
   /**
+   * The CloudFormation custom resource handler that can apply Kubernetes
+   * manifests to this cluster.
+   *
+   * @internal
+   */
+  public readonly _k8sResourceHandler?: lambda.Function;
+
+  /**
    * The auto scaling group that hosts the default capacity for this cluster.
    * This will be `undefined` if the default capacity is set to 0.
    */
   public readonly defaultCapacity?: autoscaling.AutoScalingGroup;
 
   /**
-   * If this cluster is kubectl-enabled, returns the `ClusterResource` object
-   * that manages it. If this cluster is not kubectl-enabled (i.e. uses the
-   * stock `CfnCluster`), this is `undefined`.
+   * The IAM role that was used to create this cluster. This role is
+   * automatically added by Amazon EKS to the `system:masters` RBAC group of the
+   * cluster. Use `addMastersRole` or `props.mastersRole` to define additional
+   * IAM roles as administrators.
    *
    * @internal
    */
-  public readonly _clusterResource?: ClusterResource;
+  public readonly _defaultMastersRole?: iam.IRole;
 
   /**
    * Manages the aws-auth config map.
@@ -322,6 +336,8 @@ export class Cluster extends Resource implements ICluster {
       physicalName: props.clusterName,
     });
 
+    this.node.addWarning(`The @aws-cdk/aws-eks-legacy module will no longer be released as part of the AWS CDK starting March 1st, 2020. Please refer to https://github.com/aws/aws-cdk/issues/5544 for upgrade instructions`);
+
     const stack = Stack.of(this);
 
     this.vpc = props.vpc || new ec2.Vpc(this, 'DefaultVpc');
@@ -329,8 +345,7 @@ export class Cluster extends Resource implements ICluster {
 
     this.tagSubnets();
 
-    // this is the role used by EKS when interacting with AWS resources
-    this.role = props.role || new iam.Role(this, 'Role', {
+    this.role = props.role || new iam.Role(this, 'ClusterRole', {
       assumedBy: new iam.ServicePrincipal('eks.amazonaws.com'),
       managedPolicies: [
         iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKSClusterPolicy'),
@@ -366,13 +381,17 @@ export class Cluster extends Resource implements ICluster {
     this.kubectlEnabled = props.kubectlEnabled === undefined ? true : props.kubectlEnabled;
     if (this.kubectlEnabled) {
       resource = new ClusterResource(this, 'Resource', clusterProps);
-      this._clusterResource = resource;
+      this._defaultMastersRole = resource.creationRole;
     } else {
       resource = new CfnCluster(this, 'Resource', clusterProps);
     }
 
     this.clusterName = this.getResourceNameAttribute(resource.ref);
-    this.clusterArn = this.getResourceArnAttribute(resource.attrArn, clusterArnComponents(this.physicalName));
+    this.clusterArn = this.getResourceArnAttribute(resource.attrArn, {
+      service: 'eks',
+      resource: 'cluster',
+      resourceName: this.physicalName,
+    });
 
     this.clusterEndpoint = resource.attrEndpoint;
     this.clusterCertificateAuthorityData = resource.attrCertificateAuthorityData;
@@ -384,6 +403,11 @@ export class Cluster extends Resource implements ICluster {
     if (props.outputClusterName) {
       new CfnOutput(this, 'ClusterName', { value: this.clusterName });
     }
+
+    // we maintain a single manifest custom resource handler per cluster since
+    // permissions and role are scoped. This will return `undefined` if kubectl
+    // is not enabled for this cluster.
+    this._k8sResourceHandler = this.createKubernetesResourceHandler();
 
     // map the IAM role to the `system:masters` group.
     if (props.mastersRole) {
@@ -572,6 +596,29 @@ export class Cluster extends Resource implements ICluster {
    */
   public addChart(id: string, options: HelmChartOptions) {
     return new HelmChart(this, `chart-${id}`, { cluster: this, ...options });
+  }
+
+  private createKubernetesResourceHandler() {
+    if (!this.kubectlEnabled) {
+      return undefined;
+    }
+
+    return new lambda.Function(this, 'KubernetesResourceHandler', {
+      code: lambda.Code.fromAsset(path.join(__dirname, 'k8s-resource')),
+      runtime: lambda.Runtime.PYTHON_3_7,
+      handler: 'index.handler',
+      timeout: Duration.minutes(15),
+      layers: [ KubectlLayer.getOrCreate(this) ],
+      memorySize: 256,
+      environment: {
+        CLUSTER_NAME: this.clusterName,
+      },
+
+      // NOTE: we must use the default IAM role that's mapped to "system:masters"
+      // as the execution role of this custom resource handler. This is the only
+      // way to be able to interact with the cluster after it's been created.
+      role: this._defaultMastersRole,
+    });
   }
 
   /**
