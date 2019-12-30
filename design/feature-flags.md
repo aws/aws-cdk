@@ -83,19 +83,21 @@ but a better experience would be to include this information in the output of
 Here's the developer experience:
 
 1. Seek the approval of a core team member that a feature flag can be used.
-1. Define a new const under
+   * If the feature in question is being planned via an RFC, and the feature flag is contained in the proposal, 
+     core team member approval should include the feature flag.
+   * If the feature is being tracked in a single issue without an RFC, approval should be indicated in this issue.
+2. Define a new const under
    [cx-api/lib/features.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/cx-api/lib/features.ts)
    with the name of the context key that **enables** this new feature (for
    example, `ENABLE_STACK_NAME_DUPLICATES`). The context key should be in the
    form `module.Type:feature` (e.g. `@aws-cdk/core:enableStackNameDuplicates`).
-2. Use `node.tryGetContext(cxapi.ENABLE_XXX)` to check if this feature is enabled
+3. Use `node.tryGetContext(cxapi.ENABLE_XXX)` to check if this feature is enabled
    in your code. If it is not defined, revert to the legacy behavior.
-3. Add your feature flag to
+4. Add your feature flag to
    [cx-api/lib/future.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/cx-api/lib/future.ts).
    This map is inserted to generated `cdk.json` files for new projects created
    through `cdk init`.
-4. In your PR title (which goes into CHANGELOG), add a `(under feature flag)` suffix. e.g:
-
+5. In your PR title (which goes into CHANGELOG), add a `(behind feature flag)` suffix. e.g:
     ```
     fix(core): impossible to use the same physical stack name for two stacks (under feature flag)
     ```
