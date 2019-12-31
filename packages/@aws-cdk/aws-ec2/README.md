@@ -432,7 +432,7 @@ myEndpoint.connections.allowDefaultPortFrom(...);
 Alternatively, existing security groups can be used by specifying the `securityGroups` prop.
 
 ## VPC endpoint services
-A VPC endpoint service enables you to expose a Network Load Balancer(s) as a provider service to consumers, who connect to your service over a VPC endpoint. You can restrict access to your service via whitelisted principals, and require that new connections be manually accepted.
+A VPC endpoint service enables you to expose a Network Load Balancer(s) as a provider service to consumers, who connect to your service over a VPC endpoint. You can restrict access to your service via whitelisted principals (anything that extends ArnPrincipal), and require that new connections be manually accepted.
 ```ts
 new VpcEndpointService(this, "EndpointService", {
   vpcEndpointServiceLoadBalancers: [networkLoadBalancer1, networkLoadBalancer2],
@@ -440,6 +440,7 @@ new VpcEndpointService(this, "EndpointService", {
   whitelistedPrincipals: [new ArnPrincipal("arn:aws:iam::123456789012:root")]
 });
 ```
+
 ## Bastion Hosts
 A bastion host functions as an instance used to access servers and resources in a VPC without open up the complete VPC on a network level.
 You can use bastion hosts using a standard SSH connection targetting port 22 on the host. As an alternative, you can connect the SSH connection
