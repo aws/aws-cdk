@@ -24,7 +24,7 @@ export = {
           subnetIds: ['subnet1', 'subnet2'],
           securityGroupIds: ['sg1', 'sg2', 'sg3']
         },
-        name: 'MyResourceId-fake-request-id'
+        name: 'MyResourceId-fakerequestid'
       });
 
       test.done();
@@ -200,7 +200,7 @@ export = {
 
           // THEN
           test.deepEqual(mocks.actualRequest.createClusterRequest!, {
-            name: 'MyResourceId-fake-request-id',
+            name: 'MyResourceId-fakerequestid',
             roleArn: 'arn:of:role',
             resourcesVpcConfig:
             {
@@ -208,7 +208,7 @@ export = {
               securityGroupIds: ['sg1', 'sg2', 'sg3']
             }
           });
-          test.deepEqual(resp, { PhysicalResourceId: 'MyResourceId-fake-request-id' });
+          test.deepEqual(resp, { PhysicalResourceId: 'MyResourceId-fakerequestid' });
           test.done();
         },
 
@@ -230,9 +230,9 @@ export = {
         }));
         const resp = await handler.onEvent();
 
-        test.deepEqual(resp, { PhysicalResourceId: 'MyResourceId-fake-request-id' });
+        test.deepEqual(resp, { PhysicalResourceId: 'MyResourceId-fakerequestid' });
         test.deepEqual(mocks.actualRequest.createClusterRequest, {
-          name: 'MyResourceId-fake-request-id',
+          name: 'MyResourceId-fakerequestid',
           roleArn: 'arn:of:role',
           resourcesVpcConfig:
           {
@@ -251,9 +251,9 @@ export = {
         }));
         const resp = await handler.onEvent();
 
-        test.deepEqual(resp, { PhysicalResourceId: 'MyResourceId-fake-request-id' });
+        test.deepEqual(resp, { PhysicalResourceId: 'MyResourceId-fakerequestid' });
         test.deepEqual(mocks.actualRequest.createClusterRequest, {
-          name: 'MyResourceId-fake-request-id',
+          name: 'MyResourceId-fakerequestid',
           roleArn: 'new-arn'
         });
         test.done();
@@ -295,9 +295,9 @@ export = {
         const resp = await handler.onEvent();
 
         // THEN
-        test.deepEqual(resp, { PhysicalResourceId: 'MyResourceId-fake-request-id' });
+        test.deepEqual(resp, { PhysicalResourceId: 'MyResourceId-fakerequestid' });
         test.deepEqual(mocks.actualRequest.createClusterRequest, {
-          name: 'MyResourceId-fake-request-id',
+          name: 'MyResourceId-fakerequestid',
           roleArn: 'new-arn'
         });
         test.done();
