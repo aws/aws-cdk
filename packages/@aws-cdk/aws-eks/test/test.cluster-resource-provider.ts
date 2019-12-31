@@ -30,14 +30,14 @@ export = {
       test.done();
     },
 
-    async 'generated cluster name does not exceed 62 characters'(test: Test) {
+    async 'generated cluster name does not exceed 100 characters'(test: Test) {
       // GIVEN
       const req = {
         StackId: 'fake-stack-id',
         RequestId: '602c078a-6181-4352-9676-4f00352445aa',
         ResourceType: 'Custom::EKSCluster',
         ServiceToken: 'boom',
-        LogicalResourceId: 'VeryLongLogicalResourceIdVeryLongLogicalResourceIdVeryLongLogicalResourceIdVeryLongLogicalResourceIdVeryLongLogicalResourceIdVeryLongLogicalResourceIdVeryLongLogicalResourceIdVeryLongLogicalResourceId',
+        LogicalResourceId: 'hello'.repeat(30), // 150 chars (limit is 100)
         PhysicalResourceId: 'physical-resource-id',
         ResponseURL: 'http://response-url',
         RequestType: 'Create',
@@ -53,8 +53,8 @@ export = {
       await handler.onEvent();
 
       // THEN
-      test.equal(mocks.actualRequest.createClusterRequest?.name.length, 62);
-      test.deepEqual(mocks.actualRequest.createClusterRequest?.name, 'VeryLongLogicalResourceIdVery-602c078a6181435296764f00352445aa');
+      test.equal(mocks.actualRequest.createClusterRequest?.name.length, 100);
+      test.deepEqual(mocks.actualRequest.createClusterRequest?.name, 'hellohellohellohellohellohellohellohellohellohellohellohellohellohe-602c078a6181435296764f00352445aa');
       test.done();
     },
 
