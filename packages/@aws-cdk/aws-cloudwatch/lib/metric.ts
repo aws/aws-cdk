@@ -44,8 +44,7 @@ export interface CommonMetricOptions {
   /**
    * Unit for the metric that is associated with the alarm
    *
-   * @deprecated It is just used to select the data points with this specific unit and not to scale the threshold w.r.t the data points unit.
-   * It is most likely to be misused.
+   * @deprecated Unused, see package documentation.
    */
   readonly unit?: Unit;
 

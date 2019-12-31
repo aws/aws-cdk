@@ -221,7 +221,7 @@ export interface MetricAlarmConfig {
 
 /**
  * Properties used to construct the Metric identifying part of a Graph
- *  *
+ *
  * @deprecated Replaced by MetricConfig
  */
 export interface MetricGraphConfig {
