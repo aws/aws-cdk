@@ -58,6 +58,20 @@ export interface CommonMetricOptions {
    * Color for this metric when added to a Graph in a Dashboard
    */
   readonly color?: string;
+
+  /**
+   * Account which this metric comes from.
+   *
+   * @default Deployment account.
+   */
+  readonly account?: string;
+
+  /**
+   * Region which this metric comes from.
+   *
+   * @default Deployment region.
+   */
+  readonly region?: string;
 }
 
 /**
@@ -73,55 +87,18 @@ export interface MetricProps extends CommonMetricOptions {
    * Name of the metric.
    */
   readonly metricName: string;
-
-  /**
-   * Account which this metric comes from.
-   *
-   * @default Deployment account.
-   */
-  readonly account?: string;
-
-  /**
-   * Region which this metric comes from.
-   *
-   * @default Deployment region.
-   */
-  readonly region?: string;
 }
 
 /**
  * Properties of a metric that can be changed
  */
 export interface MetricOptions extends CommonMetricOptions {
-  /**
-   * Account which this metric comes from.
-   *
-   * @default Deployment account.
-   */
-  readonly account?: string;
-
-  /**
-   * Region which this metric comes from.
-   *
-   * @default Deployment region.
-   */
-  readonly region?: string;
 }
 
 /**
- * Properties for a MathExpression
+ * Configurable options for MathExpressions
  */
-export interface MathExpressionProps {
-  /**
-   * The expression defining the metric.
-   */
-  readonly expression: string;
-
-  /**
-   * The metrics used in the expression as KeyValuePair <id, metric>.
-   */
-  readonly expressionMetrics: Record<string, IMetric>;
-
+export interface MathExpressionOptions {
   /**
    * Label for this metric when added to a Graph in a Dashboard
    *
@@ -137,11 +114,29 @@ export interface MathExpressionProps {
   readonly color?: string;
 
   /**
-   * The period over which the specified statistic is applied.
+   * The period over which the expression's statistics are applied.
+   *
+   * This period overrides all periods in the metrics used in this
+   * math expression.
    *
    * @default Duration.minutes(5)
    */
   readonly period?: cdk.Duration;
+}
+
+/**
+ * Properties for a MathExpression
+ */
+export interface MathExpressionProps extends MathExpressionOptions {
+  /**
+   * The expression defining the metric.
+   */
+  readonly expression: string;
+
+  /**
+   * The metrics used in the expression as KeyValuePair <id, metric>.
+   */
+  readonly expressionMetrics: Record<string, IMetric>;
 }
 
 /**
@@ -413,7 +408,7 @@ export class MathExpression implements IMetric {
    *
    * @param props The set of properties to change.
    */
-  public with(props: MetricOptions): MathExpression {
+  public with(props: MathExpressionOptions): MathExpression {
     return new MathExpression({
       expression: this.expression,
       expressionMetrics: props.period ? changeAllPeriods(this.expressionMetrics, props.period) : this.expressionMetrics,
@@ -453,7 +448,6 @@ export class MathExpression implements IMetric {
   public createAlarm(scope: cdk.Construct, id: string, props: CreateAlarmOptions): Alarm {
     return new Alarm(scope, id, {
       metric: this.with({
-        statistic: props.statistic,
         period: props.period,
       }),
       alarmName: props.alarmName,
