@@ -5,7 +5,7 @@ import { CfnVPCEndpointService, CfnVPCEndpointServicePermissions } from './ec2.g
 /**
  * A load balancer that can host a VPC Endpoint Service
  */
-export interface IVpcEndpointLoadBalancer {
+export interface IVpcEndpointServiceLoadBalancer {
   /**
    * The ARN of the load balancer that hosts the VPC Endpoint Service
    */
@@ -33,7 +33,7 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
    * One or more network load balancer ARNs to host the service.
    * @attribute
    */
-  public readonly vpcEndpointServiceLoadBalancers: IVpcEndpointLoadBalancer[];
+  public readonly vpcEndpointServiceLoadBalancers: IVpcEndpointServiceLoadBalancer[];
 
   /**
    * Whether to require manual acceptance of new connections to the service.
@@ -88,7 +88,7 @@ export interface VpcEndpointServiceProps {
     /**
      * One or more load balancers to host the service.
      */
-    readonly vpcEndpointServiceLoadBalancers: IVpcEndpointLoadBalancer[];
+    readonly vpcEndpointServiceLoadBalancers: IVpcEndpointServiceLoadBalancer[];
 
     /**
      * Whether to require manual acceptance of new connections to the service.
