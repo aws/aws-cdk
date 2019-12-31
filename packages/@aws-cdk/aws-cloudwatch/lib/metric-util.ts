@@ -175,7 +175,7 @@ export class MetricSet<A> {
     // Recurse and add children
     const conf = metric.toMetricConfig();
     if (conf.mathExpression) {
-      for (const [subId, subMetric] of Object.entries(conf.mathExpression.expressionMetrics)) {
+      for (const [subId, subMetric] of Object.entries(conf.mathExpression.usingMetrics)) {
         this.addOne(subMetric, undefined, subId);
       }
     }
@@ -192,7 +192,7 @@ export function validateNoIdConflicts(expression: MathExpression) {
         // Nothing
       },
       withExpression(expr) {
-        for (const [id, subMetric] of Object.entries(expr.expressionMetrics)) {
+        for (const [id, subMetric] of Object.entries(expr.usingMetrics)) {
           const existing = seen.get(id);
           if (existing && metricKey(existing) !== metricKey(subMetric)) {
             throw new Error(`Same id ('${id}') used for two metrics in the expression: '${subMetric}' and '${existing}'. Rename one.`);
@@ -223,9 +223,9 @@ export function metricKey(metric: IMetric): string {
   const conf = metric.toMetricConfig();
   if (conf.mathExpression) {
     parts.push(conf.mathExpression.expression);
-    for (const id of Object.keys(conf.mathExpression.expressionMetrics).sort()) {
+    for (const id of Object.keys(conf.mathExpression.usingMetrics).sort()) {
       parts.push(id);
-      parts.push(metricKey(conf.mathExpression.expressionMetrics[id]));
+      parts.push(metricKey(conf.mathExpression.usingMetrics[id]));
     }
   }
   if (conf.metricStat) {
@@ -271,7 +271,7 @@ export function metricPeriod(metric: IMetric): Duration {
       return stat.period;
     },
     withExpression(expr) {
-      const metrs = Object.values(expr.expressionMetrics);
+      const metrs = Object.values(expr.usingMetrics);
       let maxPeriod = Duration.seconds(0);
       for (const metr of metrs) {
         const p = metricPeriod(metr);

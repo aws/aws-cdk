@@ -174,7 +174,7 @@ export interface MetricExpressionConfig {
   /**
    * Metrics used in the math expression
    */
-  readonly expressionMetrics: Record<string, IMetric>;
+  readonly usingMetrics: Record<string, IMetric>;
 }
 
 /**

@@ -433,7 +433,7 @@ export class MathExpression implements IMetric {
     return {
       mathExpression: {
         expression: this.expression,
-        expressionMetrics: this.usingMetrics
+        usingMetrics: this.usingMetrics
       },
       renderingProperties: {
         label: this.label,
