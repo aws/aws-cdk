@@ -213,7 +213,7 @@ const METRICKEY_SYMBOL = Symbol('@aws-cdk/aws-cloudwatch.MetricKey');
  * Can be used to determine as a hash key to determine if 2 Metric objects
  * represent the same metric. Excludes rendering properties.
  */
-function metricKey(metric: IMetric): string {
+export function metricKey(metric: IMetric): string {
   // Cache on the object itself. This is safe because Metric objects are immutable.
   if ((metric as any)[METRICKEY_SYMBOL] !== undefined) {
     return (metric as any)[METRICKEY_SYMBOL];

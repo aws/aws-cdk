@@ -2,7 +2,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Alarm, ComparisonOperator, TreatMissingData } from './alarm';
 import { Dimension, IMetric, MetricAlarmConfig, MetricConfig, MetricGraphConfig, Unit } from './metric-types';
-import { validateNoIdConflicts } from './metric-util';
+import { metricKey, validateNoIdConflicts } from './metric-util';
 import { normalizeStatistic, parseStatistic } from './util.statistic';
 
 export type DimensionHash = {[dim: string]: any};
@@ -111,15 +111,37 @@ export interface MetricOptions extends CommonMetricOptions {
 /**
  * Properties for a MathExpression
  */
-export interface MathExpressionProps extends CommonMetricOptions {
-    /**
-     * The expression defining the metric.
-     */
-    readonly expression: string;
-    /**
-     * The metrics used in the expression as KeyValuePair <id, metric>.
-     */
-    readonly expressionMetrics: Record<string, IMetric>;
+export interface MathExpressionProps {
+  /**
+   * The expression defining the metric.
+   */
+  readonly expression: string;
+
+  /**
+   * The metrics used in the expression as KeyValuePair <id, metric>.
+   */
+  readonly expressionMetrics: Record<string, IMetric>;
+
+  /**
+   * Label for this metric when added to a Graph in a Dashboard
+   *
+   * @default - Expression value is used as label
+   */
+  readonly label?: string;
+
+  /**
+   * Color for this metric when added to a Graph in a Dashboard
+   *
+   * @default - Automatic color
+   */
+  readonly color?: string;
+
+  /**
+   * The period over which the specified statistic is applied.
+   *
+   * @default Duration.minutes(5)
+   */
+  readonly period?: cdk.Duration;
 }
 
 /**
@@ -205,7 +227,7 @@ export class Metric implements IMetric {
    * @param props The set of properties to change.
    */
   public with(props: MetricOptions): Metric {
-    return new Metric({
+    const ret = new Metric({
       dimensions: ifUndefined(props.dimensions, this.dimensions),
       namespace: this.namespace,
       metricName: this.metricName,
@@ -217,6 +239,12 @@ export class Metric implements IMetric {
       account: ifUndefined(props.account, this.account),
       region: ifUndefined(props.region, this.region)
     });
+
+    // Save on objects: if the returned object is the same as the current
+    // object, just return ourselves.
+    if (metricKey(ret) === metricKey(this) && ret.color === this.color && ret.label === this.label) { return this; }
+
+    return ret;
   }
 
   public toMetricConfig(): MetricConfig {
@@ -358,9 +386,15 @@ export class MathExpression implements IMetric {
    */
   public readonly color?: string;
 
+  /**
+   * Aggregation period of this metric
+   */
+  public readonly period: cdk.Duration;
+
   constructor(props: MathExpressionProps) {
+    this.period = props.period || cdk.Duration.minutes(5);
     this.expression = props.expression;
-    this.expressionMetrics = props.expressionMetrics;
+    this.expressionMetrics = changeAllPeriods(props.expressionMetrics, this.period);
     this.label = props.label;
     this.color = props.color;
 
@@ -382,9 +416,10 @@ export class MathExpression implements IMetric {
   public with(props: MetricOptions): MathExpression {
     return new MathExpression({
       expression: this.expression,
-      expressionMetrics: this.expressionMetrics,
+      expressionMetrics: props.period ? changeAllPeriods(this.expressionMetrics, props.period) : this.expressionMetrics,
       label: ifUndefined(props.label, this.label),
-      color: ifUndefined(props.color, this.color)
+      color: ifUndefined(props.color, this.color),
+      period: ifUndefined(props.period, this.period),
     });
   }
 
@@ -542,4 +577,28 @@ function ifUndefined<T>(x: T | undefined, def: T | undefined): T | undefined {
     return x;
   }
   return def;
+}
+
+/**
+ * Change periods of all metrics in the map
+ */
+function changeAllPeriods(metrics: Record<string, IMetric>, period: cdk.Duration): Record<string, IMetric> {
+  const ret: Record<string, IMetric> = {};
+  for (const [id, metric] of Object.entries(metrics)) {
+    ret[id] = changePeriod(metric, period);
+  }
+  return ret;
+}
+
+/**
+ * Return a new metric object which is the same type as the input object, but with the period changed
+ *
+ * Uses JavaScript prototyping hackery to achieve this. Relies on the fact that
+ * both implementations of IMetric have a `period` member that contains that particular
+ * value.
+ */
+function changePeriod<A extends IMetric>(metric: A, period: cdk.Duration): A {
+  return Object.create(metric, {
+    period: { value: period, enumerable: true }
+  });
 }
