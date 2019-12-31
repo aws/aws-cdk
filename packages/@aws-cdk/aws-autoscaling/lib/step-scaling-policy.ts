@@ -147,7 +147,7 @@ export class StepScalingPolicy extends cdk.Construct {
 }
 
 function aggregationTypeFromMetric(metric: cloudwatch.IMetric): MetricAggregationType {
-  const statistic = metric.toAlarmConfig().statistic;
+  const statistic = metric.toMetricConfig().metricStat?.statistic;
   switch (statistic) {
     case 'Average':
       return MetricAggregationType.AVERAGE;

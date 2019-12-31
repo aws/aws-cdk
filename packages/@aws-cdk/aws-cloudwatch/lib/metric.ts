@@ -300,9 +300,10 @@ export class Metric extends BaseMetric {
   }
 
   public toMetricConfig(): MetricConfig {
+    const dims = this.dimensionsAsList();
     return {
       metricStat: {
-        dimensions: this.dimensionsAsList(),
+        dimensions: dims.length > 0 ? dims : undefined,
         namespace: this.namespace,
         metricName: this.metricName,
         period: this.period,
