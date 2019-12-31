@@ -317,7 +317,6 @@ export class Metric extends BaseMetric {
 export class MathExpression extends BaseMetric {
   public readonly expression: string;
   public readonly expressionMetrics: Record<string, IMetric>;
-  public readonly period: cdk.Duration;
   public readonly label?: string;
   public readonly color?: string;
 
@@ -327,7 +326,11 @@ export class MathExpression extends BaseMetric {
     this.expressionMetrics = props.expressionMetrics;
     this.label = props.label;
     this.color = props.color;
-    this.period = this.getPeriod();
+
+    const invalidVariableNames = Object.keys(props.expressionMetrics).filter(x => !validVariableName(x));
+    if (invalidVariableNames.length > 0) {
+      throw new Error(`Invalid variable names in expression: ${invalidVariableNames}. Must start with lowercase letter and only contain alphanumerics.`);
+    }
   }
 
   /**
@@ -368,23 +371,14 @@ export class MathExpression extends BaseMetric {
   }
 
   public toString() {
-    return this.label;
+    return this.label || this.expression;
   }
+}
 
-  private getPeriod(): cdk.Duration {
-    // TODO: Overall period must be the LCM of expressionMetrics periods.
-    // However, if different periods are used then most probably something was misconfigured.
-    let period = cdk.Duration.millis(1);
-    Object.keys(this.expressionMetrics).forEach(key => {
-      const metric = this.expressionMetrics[key];
-      if (metric instanceof Metric || metric instanceof MathExpression) {
-        if (period.toMilliseconds() < metric.period.toMilliseconds()) {
-          period = metric.period;
-        }
-      }
-    });
-    return period;
-  }
+const VALID_VARIABLE = new RegExp('^[a-z][a-zA-Z0-9_]*$');
+
+function validVariableName(x: string) {
+  return VALID_VARIABLE.test(x);
 }
 
 /**
