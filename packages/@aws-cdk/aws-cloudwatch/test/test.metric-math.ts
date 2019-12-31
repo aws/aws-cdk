@@ -19,7 +19,7 @@ export = {
     test.throws(() => {
       new MathExpression({
         expression: 'HAPPY + JOY',
-        expressionMetrics: {
+        usingMetrics: {
           HAPPY: a,
           JOY: b
         }
@@ -34,11 +34,11 @@ export = {
     test.throws(() => {
       new MathExpression({
         expression: 'a + e',
-        expressionMetrics: {
+        usingMetrics: {
           a,
           e: new MathExpression({
             expression: 'a + c',
-            expressionMetrics: { a: b, c }
+            usingMetrics: { a: b, c }
           })
         }
       });
@@ -54,7 +54,7 @@ export = {
         left: [
           new MathExpression({
             expression: 'a + b',
-            expressionMetrics: { a, b }
+            usingMetrics: { a, b }
           })
         ],
       });
@@ -75,11 +75,11 @@ export = {
         left: [
           new MathExpression({
             expression: 'a + e',
-            expressionMetrics: {
+            usingMetrics: {
               a,
               e: new MathExpression({
                 expression: 'b + c',
-                expressionMetrics: { b, c }
+                usingMetrics: { b, c }
               })
             }
           })
@@ -103,11 +103,11 @@ export = {
         left: [
           new MathExpression({
             expression: 'a + e',
-            expressionMetrics: {
+            usingMetrics: {
               a,
               e: new MathExpression({
                 expression: 'b + c',
-                expressionMetrics: { b: a, c }
+                usingMetrics: { b: a, c }
               })
             }
           })
@@ -130,11 +130,11 @@ export = {
         left: [
           new MathExpression({
             expression: 'a + e',
-            expressionMetrics: {
+            usingMetrics: {
               a,
               e: new MathExpression({
                 expression: 'a + c',
-                expressionMetrics: { a, c }
+                usingMetrics: { a, c }
               })
             }
           })
@@ -158,7 +158,7 @@ export = {
           a,
           new MathExpression({
             expression: 'a + b',
-            expressionMetrics: { a, b }
+            usingMetrics: { a, b }
           })
         ],
       });
@@ -178,7 +178,7 @@ export = {
         left: [
           new MathExpression({
             expression: 'a + b99',
-            expressionMetrics: { a, b99 }
+            usingMetrics: { a, b99 }
           })
         ],
       });
@@ -201,7 +201,7 @@ export = {
         threshold: 1, evaluationPeriods: 1,
         metric: new MathExpression({
           expression: 'a + b',
-          expressionMetrics: { a, b }
+          usingMetrics: { a, b }
         })
       });
 
@@ -247,11 +247,11 @@ export = {
         threshold: 1, evaluationPeriods: 1,
         metric: new MathExpression({
           expression: 'a + e',
-          expressionMetrics: {
+          usingMetrics: {
             a,
             e: new MathExpression({
               expression: 'b + c',
-              expressionMetrics: { b, c }
+              usingMetrics: { b, c }
             })
           }
         })
@@ -315,7 +315,7 @@ export = {
         threshold: 1, evaluationPeriods: 1,
         metric: new MathExpression({
           expression: 'a + b',
-          expressionMetrics: { a, b: b.with({ period: Duration.minutes(10) }) }
+          usingMetrics: { a, b: b.with({ period: Duration.minutes(10) }) }
         })
       });
 
@@ -334,7 +334,7 @@ export = {
         threshold: 1, evaluationPeriods: 1,
         metric: new MathExpression({
           expression: 'a + b99',
-          expressionMetrics: { a, b99 }
+          usingMetrics: { a, b99 }
         })
       });
 

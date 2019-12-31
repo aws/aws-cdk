@@ -134,9 +134,12 @@ export interface MathExpressionProps extends MathExpressionOptions {
   readonly expression: string;
 
   /**
-   * The metrics used in the expression as KeyValuePair <id, metric>.
+   * The metrics used in the expression, in a map.
+   *
+   * The key is the identifier that represents the given metric in the
+   * expression, and the value is the actual Metric object.
    */
-  readonly expressionMetrics: Record<string, IMetric>;
+  readonly usingMetrics: Record<string, IMetric>;
 }
 
 /**
@@ -369,7 +372,7 @@ export class MathExpression implements IMetric {
   /**
    * The metrics used in the expression as KeyValuePair <id, metric>.
    */
-  public readonly expressionMetrics: Record<string, IMetric>;
+  public readonly usingMetrics: Record<string, IMetric>;
 
   /**
    * Label for this metric when added to a Graph.
@@ -389,11 +392,11 @@ export class MathExpression implements IMetric {
   constructor(props: MathExpressionProps) {
     this.period = props.period || cdk.Duration.minutes(5);
     this.expression = props.expression;
-    this.expressionMetrics = changeAllPeriods(props.expressionMetrics, this.period);
+    this.usingMetrics = changeAllPeriods(props.usingMetrics, this.period);
     this.label = props.label;
     this.color = props.color;
 
-    const invalidVariableNames = Object.keys(props.expressionMetrics).filter(x => !validVariableName(x));
+    const invalidVariableNames = Object.keys(props.usingMetrics).filter(x => !validVariableName(x));
     if (invalidVariableNames.length > 0) {
       throw new Error(`Invalid variable names in expression: ${invalidVariableNames}. Must start with lowercase letter and only contain alphanumerics.`);
     }
@@ -411,7 +414,7 @@ export class MathExpression implements IMetric {
   public with(props: MathExpressionOptions): MathExpression {
     return new MathExpression({
       expression: this.expression,
-      expressionMetrics: props.period ? changeAllPeriods(this.expressionMetrics, props.period) : this.expressionMetrics,
+      usingMetrics: props.period ? changeAllPeriods(this.usingMetrics, props.period) : this.usingMetrics,
       label: ifUndefined(props.label, this.label),
       color: ifUndefined(props.color, this.color),
       period: ifUndefined(props.period, this.period),
@@ -430,7 +433,7 @@ export class MathExpression implements IMetric {
     return {
       mathExpression: {
         expression: this.expression,
-        expressionMetrics: this.expressionMetrics
+        expressionMetrics: this.usingMetrics
       },
       renderingProperties: {
         label: this.label,
