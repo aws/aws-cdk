@@ -245,9 +245,9 @@ function renderAlarmMetric(metric: IMetric) {
       const mset = new MetricSet<boolean>();
       mset.addPrimary(true, metric);
 
-      let mid = 0;
+      let eid = 0;
       function uniqueMetricId() {
-        return `mid${++mid}`;
+        return `expr_${++eid}`;
       }
 
       return {

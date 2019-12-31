@@ -209,7 +209,7 @@ export = {
       alarmMetricsAre([
         {
           Expression: "a + b",
-          Id: "mid1"
+          Id: "expr_1"
         },
         {
           Id: "a",
@@ -261,7 +261,7 @@ export = {
       alarmMetricsAre([
         {
           Expression: "a + e",
-          Id: "mid1"
+          Id: "expr_1"
         },
         {
           Id: "a",
@@ -342,7 +342,7 @@ export = {
       alarmMetricsAre([
         {
           Expression: "a + b99",
-          Id: "mid1"
+          Id: "expr_1"
         },
         {
           Id: "a",
