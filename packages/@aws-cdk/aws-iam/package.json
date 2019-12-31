@@ -88,7 +88,13 @@
         "branches": 70,
         "statements": 70
       }
-    }
+    },
+    "collectCoverage": true,
+    "coverageReporters": [
+      "lcov",
+      "html",
+      "text-summary"
+    ]
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {

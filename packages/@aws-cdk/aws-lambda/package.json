@@ -71,7 +71,7 @@
     "@types/lodash": "^4.14.149",
     "@types/nodeunit": "^0.0.30",
     "@types/sinon": "^7.5.0",
-    "aws-sdk": "^2.595.0",
+    "aws-sdk": "^2.596.0",
     "aws-sdk-mock": "^5.0.0",
     "cdk-build-tools": "1.19.0",
     "cdk-integ-tools": "1.19.0",
@@ -80,7 +80,7 @@
     "nock": "^11.7.0",
     "nodeunit": "^0.11.3",
     "pkglint": "1.19.0",
-    "sinon": "^8.0.1"
+    "sinon": "^8.0.2"
   },
   "dependencies": {
     "@aws-cdk/aws-cloudwatch": "1.19.0",
