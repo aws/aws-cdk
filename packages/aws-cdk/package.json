@@ -66,7 +66,7 @@
     "mockery": "^2.1.0",
     "nodeunit": "^0.11.3",
     "pkglint": "1.19.0",
-    "sinon": "^8.0.1"
+    "sinon": "^8.0.2"
   },
   "dependencies": {
     "@aws-cdk/cloudformation-diff": "1.19.0",
