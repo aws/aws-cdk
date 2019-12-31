@@ -69,9 +69,6 @@ class HaveOutputAssertion extends Assertion<StackInspector> {
 /**
  * Interface for haveOutput function properties
  * NOTE that at least one of [outputName, exportName] should be provided
- * @property outputName   logical id of the output
- * @property exportName   name of the resource output to be exported for a cross-stack reference
- * @property outputValue  value of the output
  */
 export interface HaveOutputProperties {
   /**
