@@ -17,11 +17,37 @@ attributes. Resources that expose metrics will have functions that look
 like `metricXxx()` which will return a Metric object, initialized with defaults
 that make sense.
 
+#### Exposed Metrics
+
 For example, `lambda.Function` objects have the `fn.metricErrors()` method, which
 represents the amount of errors reported by that Lambda function:
 
 ```ts
 const errors = fn.metricErrors();
+```
+
+#### Constructed Metrics
+
+Constructed metrics could be a regular metric or a math expression.
+
+For example, a math expression that sums two regular metrics:
+```ts
+const mathExpression = new MathExpression({
+    expression: "x+y",
+    expressionMetrics: {
+        x: new Metric(...metricProps),
+        y: new Metric(...otherMetricProps)
+    }
+})
+```
+Moreover, math expressions could be nested:
+```ts
+const nestedMathExpression = new MathExpression({
+    expression: "z/100",
+    expressionMetrics: {
+        z: mathExpression
+    }
+})
 ```
 
 ### Aggregation
