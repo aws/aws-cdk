@@ -12,4 +12,4 @@ tslint.json
 *.snk
 .nyc_output
 coverage
-.nycrc
+nyc.config.js
