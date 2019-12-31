@@ -9,6 +9,8 @@
 ---
 <!--END STABILITY BANNER-->
 
+## Metric objects
+
 Metric objects represent a metric that is emitted by AWS services or your own
 application, such as `CPUUsage`, `FailureCount` or `Bandwidth`.
 
@@ -17,8 +19,6 @@ attributes. Resources that expose metrics will have functions that look
 like `metricXxx()` which will return a Metric object, initialized with defaults
 that make sense.
 
-#### Exposed Metrics
-
 For example, `lambda.Function` objects have the `fn.metricErrors()` method, which
 represents the amount of errors reported by that Lambda function:
 
@@ -26,26 +26,45 @@ represents the amount of errors reported by that Lambda function:
 const errors = fn.metricErrors();
 ```
 
-#### Constructed Metrics
+### Instantiating a new Metric object
 
-Constructed metrics could be a regular metric or a math expression.
+If you want to reference a metric that is not yet exposed by an existing construct,
+you can instantiate a `Metric` object to represent it. For example:
 
-For example, a math expression that sums two regular metrics:
 ```ts
-const mathExpression = new MathExpression({
-    expression: "x+y",
+const metric = new Metric({
+    namespace: 'MyNamespace',
+    metricName: 'MyMetric',
+    dimensions: {
+        ProcessingStep: 'Download'
+    }
+});
+```
+
+### Metric Math
+
+Math expressions are supported by instantiating the `MathExpression` class.
+For example, a math expression that sums two other metrics looks like this:
+
+```ts
+const allProblems = new MathExpression({
+    expression: "errors + faults",
     expressionMetrics: {
-        x: new Metric(...metricProps),
-        y: new Metric(...otherMetricProps)
+        errors: myConstruct.metricErrors(),
+        faults: myConstruct.metricFaults(),
     }
 })
 ```
-Moreover, math expressions could be nested:
+
+You can use `MathExpression` objects like any other metric, including using
+them in other math expressions:
+
 ```ts
-const nestedMathExpression = new MathExpression({
-    expression: "z/100",
+const problemPercentage = new MathExpression({
+    expression: "(problems / invocations) * 100",
     expressionMetrics: {
-        z: mathExpression
+        problems: allProblems,
+        invocations: myConstruct.metricInvocations()
     }
 })
 ```
@@ -122,6 +141,24 @@ The most important properties to set while creating an Alarms are:
 - `comparisonOperator`: the comparison operation to use, defaults to `metric >= threshold`.
 - `evaluationPeriods`: how many consecutive periods the metric has to be
   breaching the the threshold for the alarm to trigger.
+
+### A note on units
+
+Metrics values are emitted with units, such as `seconds` or `bytes`. In
+CloudWatch, `Alarm`s do have a `unit` attribute, but that it is not used to
+scale the threshold value but it is scaled to filter metric values inside the
+same metric, considering only the metric values emitted under the given unit.
+
+For example, if a metric value is emitted as `1000 bytes`, and an alarm
+threshold is set to `1 kilobyte` (including the unit), the alarm will *not*
+trigger, as the units of the values and the alarm are different.
+
+It is therefore recommended to set the alarm (in this case) to `1000` and
+leave out the unit.
+
+It is still possible to specify `unit` as a property when creating `Metric`
+objects, but for safety that property will be ignored, because it will rarely
+do what you want.
 
 ## Dashboards
 

@@ -182,8 +182,10 @@ export interface ScalingInterval {
   readonly change: number;
 }
 
-function aggregationTypeFromMetric(metric: cloudwatch.IMetric): MetricAggregationType {
+function aggregationTypeFromMetric(metric: cloudwatch.IMetric): MetricAggregationType | undefined {
   const statistic = metric.toMetricConfig().metricStat?.statistic;
+  if (statistic === undefined) { return undefined; } // Math expression, don't know aggregation, leave default
+
   switch (statistic) {
     case 'Average':
       return MetricAggregationType.AVERAGE;

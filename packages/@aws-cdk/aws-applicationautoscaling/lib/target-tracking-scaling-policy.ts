@@ -115,6 +115,10 @@ export class TargetTrackingScalingPolicy extends cdk.Construct {
       throw new Error(`Exactly one of 'customMetric' or 'predefinedMetric' must be specified.`);
     }
 
+    if (props.customMetric && !props.customMetric.toMetricConfig().metricStat) {
+      throw new Error(`Math expressions are not supported for Target Tracking. Use Step Scaling or supply a Metric object.`);
+    }
+
     super(scope, id);
 
     const resource = new CfnScalingPolicy(this, 'Resource', {
@@ -140,14 +144,10 @@ export class TargetTrackingScalingPolicy extends cdk.Construct {
 
 function renderCustomMetric(metric?: cloudwatch.IMetric): CfnScalingPolicy.CustomizedMetricSpecificationProperty | undefined {
   if (!metric) { return undefined; }
-  const c = metric.toMetricConfig().metricStat;
+  const c = metric.toMetricConfig().metricStat!;
 
-  if (c === undefined) {
-    throw new Error("A `Metric` object must be used here.");
-  }
-
-  if (!c.statistic) {
-    throw new Error('Can only use Average, Minimum, Maximum, SampleCount, Sum statistic for target tracking');
+  if (c.statistic.startsWith('p')) {
+    throw new Error(`Can not use statistic '${c.statistic}' for Target Tracking: only Average, Minimum, Maximum, SampleCount, Sum are supported.`);
   }
 
   return {
