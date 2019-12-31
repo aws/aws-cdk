@@ -30,7 +30,7 @@ export = {
       test.done();
     },
 
-    async 'generated cluster name does not exceed 63 characters'(test: Test) {
+    async 'generated cluster name does not exceed 62 characters'(test: Test) {
       // GIVEN
       const req = {
         StackId: 'fake-stack-id',
@@ -53,8 +53,8 @@ export = {
       await handler.onEvent();
 
       // THEN
-      test.equal(mocks.actualRequest.createClusterRequest?.name.length, 63);
-      test.deepEqual(mocks.actualRequest.createClusterRequest?.name, 'VeryLongLogicalResourceIdVeryL-602c078a6181435296764f00352445aa');
+      test.equal(mocks.actualRequest.createClusterRequest?.name.length, 62);
+      test.deepEqual(mocks.actualRequest.createClusterRequest?.name, 'VeryLongLogicalResourceIdVery-602c078a6181435296764f00352445aa');
       test.done();
     },
 

@@ -4,7 +4,7 @@ import { IsCompleteResponse, OnEventResponse } from '@aws-cdk/custom-resources/l
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as aws from 'aws-sdk';
 
-const MAX_CLUSTER_NAME_LEN = 63;
+const MAX_CLUSTER_NAME_LEN = 62;
 
 export class ClusterResourceHandler {
 
@@ -274,4 +274,3 @@ function analyzeUpdate(oldProps: Partial<aws.EKS.CreateClusterRequest>, newProps
     updateLogging: JSON.stringify(newProps.logging) !== JSON.stringify(oldProps.logging),
   };
 }
-
