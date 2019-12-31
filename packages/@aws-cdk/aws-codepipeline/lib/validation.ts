@@ -53,6 +53,10 @@ export function validateArtifactName(artifactName: string | undefined): void {
   validateAgainstRegex(/^[a-zA-Z0-9_-]{1,100}$/, 'Artifact', artifactName);
 }
 
+export function validateNamespaceName(namespaceName: string | undefined): void {
+  validateAgainstRegex(/^[A-Za-z0-9@_-]{1,100}$/, 'Namespace', namespaceName);
+}
+
 function validateAgainstRegex(regex: RegExp, thing: string, name: string | undefined) {
   // name could be a Token - in that case, skip validation altogether
   if (cdk.Token.isUnresolved(name)) {

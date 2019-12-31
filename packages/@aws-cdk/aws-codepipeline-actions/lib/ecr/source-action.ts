@@ -7,6 +7,26 @@ import { Action } from '../action';
 import { sourceArtifactBounds } from '../common';
 
 /**
+ * The CodePipeline variables emitted by the ECR source Action.
+ */
+export interface IEcrSourceVariables {
+  /** The identifier of the registry. In ECR, this is usually the ID of the AWS account owning it. */
+  readonly registryId: string;
+
+  /** The physical name of the repository that this action tracks. */
+  readonly repositoryName: string;
+
+  /** The digest of the current image, in the form '<digest type>:<digest value>'. */
+  readonly imageDigest: string;
+
+  /** The Docker tag of the current image. */
+  readonly imageTag: string;
+
+  /** The full ECR Docker URI of the current image. */
+  readonly imageUri: string;
+}
+
+/**
  * Construction properties of {@link EcrSourceAction}.
  */
 export interface EcrSourceActionProps extends codepipeline.CommonAwsActionProps {
@@ -37,6 +57,7 @@ export interface EcrSourceActionProps extends codepipeline.CommonAwsActionProps 
  */
 export class EcrSourceAction extends Action {
   private readonly props: EcrSourceActionProps;
+  private readonly _variables: IEcrSourceVariables;
 
   constructor(props: EcrSourceActionProps) {
     super({
@@ -49,6 +70,19 @@ export class EcrSourceAction extends Action {
     });
 
     this.props = props;
+    this._variables = {
+      registryId: this.variableExpression('RegistryId'),
+      repositoryName: this.variableExpression('RepositoryName'),
+      imageDigest: this.variableExpression('ImageDigest'),
+      imageTag: this.variableExpression('ImageTag'),
+      imageUri: this.variableExpression('ImageURI'),
+    };
+  }
+
+  /** The variables emitted by this action. */
+  public get variables(): IEcrSourceVariables {
+    this.variableWasReferenced();
+    return this._variables;
   }
 
   protected bound(_scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):

@@ -1,6 +1,6 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as events from '@aws-cdk/aws-events';
-import { Construct } from '@aws-cdk/core';
+import { Construct, Lazy } from '@aws-cdk/core';
 
 /**
  * Low-level class for generic CodePipeline Actions.
@@ -13,12 +13,27 @@ import { Construct } from '@aws-cdk/core';
  * @experimental
  */
 export abstract class Action implements codepipeline.IAction {
+  public readonly actionProperties: codepipeline.ActionProperties;
   private _pipeline?: codepipeline.IPipeline;
   private _stage?: codepipeline.IStage;
   private _scope?: Construct;
+  private readonly customerProvidedNamespace?: string;
+  private actualNamespace?: string;
+  private variableReferenced = false;
 
-  constructor(public readonly actionProperties: codepipeline.ActionProperties) {
-    // nothing to do
+  protected constructor(actionProperties: codepipeline.ActionProperties) {
+    this.customerProvidedNamespace = actionProperties.variablesNamespace;
+    const variablesNamespace = actionProperties.variablesNamespace !== undefined
+      // if a customer passed a namespace explicitly, always use that
+      ? actionProperties.variablesNamespace
+      : Lazy.stringValue({ produce: () => {
+        // otherwise, only return a namespace if any variable was referenced
+        return this.variableReferenced ? this.actualNamespace : undefined;
+      }});
+    this.actionProperties = {
+      ...actionProperties,
+      variablesNamespace,
+    };
   }
 
   public bind(scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
@@ -26,6 +41,13 @@ export abstract class Action implements codepipeline.IAction {
     this._pipeline = stage.pipeline;
     this._stage = stage;
     this._scope = scope;
+
+    if (this.customerProvidedNamespace === undefined) {
+      // default a namespace name, based on the stage and action names
+      this.actualNamespace = `${stage.stageName}_${this.actionProperties.actionName}_NS`;
+    } else {
+      this.actualNamespace = this.customerProvidedNamespace;
+    }
 
     return this.bound(scope, stage, options);
   }
@@ -43,6 +65,22 @@ export abstract class Action implements codepipeline.IAction {
       },
     });
     return rule;
+  }
+
+  protected variableWasReferenced(): void {
+    this.variableReferenced = true;
+  }
+
+  protected variableExpression(variableName: string): string {
+    return Lazy.stringValue({ produce: () => {
+      // make sure the action was bound (= added to a pipeline)
+      if (this.actualNamespace) {
+        return `#{${this.actualNamespace}.${variableName}}`;
+      } else {
+        throw new Error(`Cannot reference variables of action '${this.actionProperties.actionName}', ` +
+          'as that action was never added to a pipeline');
+      }
+    }});
   }
 
   /**
