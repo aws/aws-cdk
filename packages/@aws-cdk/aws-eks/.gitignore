@@ -14,3 +14,5 @@ coverage
 nyc.config.js
 .LAST_PACKAGE
 *.snk
+
+.nycrc
