@@ -6,7 +6,7 @@ import { Alarm, GraphWidget, IWidget, MathExpression, Metric } from '../lib';
 const a = new Metric({ namespace: 'Test', metricName: 'ACount', period: Duration.seconds(10) });
 const b = new Metric({ namespace: 'Test', metricName: 'BCount', statistic: 'Average' });
 const c = new Metric({ namespace: 'Test', metricName: 'CCount' });
-// const b99 = new Metric({ namespace: 'Test', metricName: 'BCount', statistic: 'p99' });
+const b99 = new Metric({ namespace: 'Test', metricName: 'BCount', statistic: 'p99' });
 
 let stack: Stack;
 export = {
@@ -173,6 +173,23 @@ export = {
     },
 
     'can use percentiles in expression metrics in graphs'(test: Test) {
+      // GIVEN
+      const graph = new GraphWidget({
+        left: [
+          new MathExpression({
+            expression: 'a + b99',
+            expressionMetrics: { a, b99 }
+          })
+        ],
+      });
+
+      // THEN
+      graphMetricsAre(test, graph, [
+        [ { expression: 'a + b99', label: 'a + b99' } ],
+        [ 'Test', 'ACount', { period: 10, visible: false, id: 'a' } ],
+        [ 'Test', 'BCount', { visible: false, id: 'b99', stat: 'p99' } ],
+      ]);
+
       test.done();
     },
   },
@@ -293,10 +310,66 @@ export = {
     },
 
     'annotation for a mathexpression alarm is calculated based upon constituent metrics'(test: Test) {
+      // GIVEN
+      const alarm = new Alarm(stack, 'Alarm', {
+        threshold: 1, evaluationPeriods: 1,
+        metric: new MathExpression({
+          expression: 'a + b',
+          expressionMetrics: { a, b: b.with({ period: Duration.minutes(10) }) }
+        })
+      });
+
+      // WHEN
+      const alarmLabel = alarm.toAnnotation().label;
+
+      // THEN
+      test.equals(alarmLabel, 'a + b >= 1 for 1 datapoints within 10 minutes');
+
       test.done();
     },
 
     'can use percentiles in expression metrics in alarms'(test: Test) {
+      // GIVEN
+      new Alarm(stack, 'Alarm', {
+        threshold: 1, evaluationPeriods: 1,
+        metric: new MathExpression({
+          expression: 'a + b99',
+          expressionMetrics: { a, b99 }
+        })
+      });
+
+      // THEN
+      alarmMetricsAre([
+        {
+          Expression: "a + b99",
+          Id: "mid1"
+        },
+        {
+          Id: "a",
+          MetricStat: {
+            Metric: {
+              MetricName: "ACount",
+              Namespace: "Test"
+            },
+            Period: 10,
+            Stat: "Average"
+          },
+          ReturnData: false
+        },
+        {
+          Id: "b99",
+          MetricStat: {
+            Metric: {
+              MetricName: "BCount",
+              Namespace: "Test"
+            },
+            Period: 300,
+            Stat: "p99"
+          },
+          ReturnData: false
+        }
+      ]);
+
       test.done();
     },
   }
