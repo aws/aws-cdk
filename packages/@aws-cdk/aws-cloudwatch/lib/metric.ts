@@ -2,6 +2,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Alarm, ComparisonOperator, TreatMissingData } from './alarm';
 import { Dimension, IMetric, MetricAlarmConfig, MetricConfig, MetricGraphConfig, Unit } from './metric-types';
+import { validateNoIdConflicts } from './metric-util';
 import { normalizeStatistic, parseStatistic } from './util.statistic';
 
 export type DimensionHash = {[dim: string]: any};
@@ -382,6 +383,8 @@ export class MathExpression extends BaseMetric {
     if (invalidVariableNames.length > 0) {
       throw new Error(`Invalid variable names in expression: ${invalidVariableNames}. Must start with lowercase letter and only contain alphanumerics.`);
     }
+
+    validateNoIdConflicts(this);
   }
 
   /**

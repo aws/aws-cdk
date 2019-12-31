@@ -1,4 +1,5 @@
 import { Duration } from "@aws-cdk/core";
+import { MathExpression } from "./metric";
 import { IMetric, MetricConfig, MetricExpressionConfig, MetricStatConfig } from "./metric-types";
 
 /**
@@ -101,7 +102,6 @@ export interface MetricEntry<A> {
  * "Primary" metrics (added via a top-level call) can be tagged with an additional value.
  */
 export class MetricSet<A> {
-  private readonly metricKeys = new Map<IMetric, string>();
   private readonly metrics = new Array<MetricEntry<A>>();
   private readonly metricById = new Map<string, MetricEntry<A>>();
   private readonly metricByKey = new Map<string, MetricEntry<A>>();
@@ -129,15 +129,15 @@ export class MetricSet<A> {
    * one's).
    */
   private addOne(metric: IMetric, tag?: A, id?: string) {
-    const key = this.keyOf(metric);
+    const key = metricKey(metric);
 
     let existingEntry: MetricEntry<A> | undefined;
 
     // Try lookup existing by id if we have one
     if (id) {
       existingEntry = this.metricById.get(id);
-      if (existingEntry && this.keyOf(existingEntry.metric) !== key) {
-        throw new Error(`Same id used for two metrics in the same graph: '${metric}' and '${existingEntry.metric}'. Rename one.`);
+      if (existingEntry && metricKey(existingEntry.metric) !== key) {
+        throw new Error(`Can't happen, already checked elsewhere`);
       }
     }
 
@@ -180,19 +180,32 @@ export class MetricSet<A> {
       }
     }
   }
+}
 
-  /**
-   * Cached version of metricKey
-   */
-  private keyOf(metric: IMetric) {
-    const existing = this.metricKeys.get(metric);
-    if (existing) { return existing; }
+export function validateNoIdConflicts(expression: MathExpression) {
+  const seen = new Map<string, IMetric>();
+  visit(expression);
 
-    const key = metricKey(metric);
-    this.metricKeys.set(metric, key);
-    return key;
+  function visit(metric: IMetric) {
+    dispatchMetric(metric, {
+      withStat() {
+        // Nothing
+      },
+      withExpression(expr) {
+        for (const [id, subMetric] of Object.entries(expr.expressionMetrics)) {
+          const existing = seen.get(id);
+          if (existing && metricKey(existing) !== metricKey(subMetric)) {
+            throw new Error(`Same id ('${id}') used for two metrics in the expression: '${subMetric}' and '${existing}'. Rename one.`);
+          }
+          seen.set(id, subMetric);
+          visit(subMetric);
+        }
+      }
+    });
   }
 }
+
+const METRICKEY_SYMBOL = Symbol('@aws-cdk/aws-cloudwatch.MetricKey');
 
 /**
  * Return a unique string representation for this metric.
@@ -200,7 +213,11 @@ export class MetricSet<A> {
  * Can be used to determine as a hash key to determine if 2 Metric objects
  * represent the same metric. Excludes rendering properties.
  */
-function metricKey(metric: IMetric) {
+function metricKey(metric: IMetric): string {
+  // Cache on the object itself. This is safe because Metric objects are immutable.
+  if ((metric as any)[METRICKEY_SYMBOL] !== undefined) {
+    return (metric as any)[METRICKEY_SYMBOL];
+  }
   const parts = new Array<string>();
 
   const conf = metric.toMetricConfig();
@@ -232,7 +249,9 @@ function metricKey(metric: IMetric) {
     }
   }
 
-  return parts.join('|');
+  const ret = parts.join('|');
+  Object.defineProperty(metric, METRICKEY_SYMBOL, { value: ret });
+  return ret;
 }
 
 /**
