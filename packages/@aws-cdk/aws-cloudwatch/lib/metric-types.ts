@@ -90,11 +90,15 @@ export enum Unit {
 export interface MetricConfig {
   /**
    * In case the metric represents a query, the details of the query
+   *
+   * @default unset
    */
   readonly metricStat?: MetricStatConfig;
 
   /**
    * In case the metric is a math expression, the details of the math expression
+   *
+   * @default unset
    */
   readonly mathExpression?: MetricExpressionConfig;
 
@@ -103,6 +107,8 @@ export interface MetricConfig {
    *
    * Examples are 'label' and 'color', but any key in here will be
    * added to dashboard graphs.
+   *
+   * @default {}
    */
   readonly renderingProperties?: Record<string, any>;
 }
@@ -116,6 +122,8 @@ export interface MetricConfig {
 export interface MetricStatConfig {
   /**
    * The dimensions to apply to the alarm
+   *
+   * @default []
    */
   readonly dimensions?: Dimension[];
 
@@ -140,12 +148,16 @@ export interface MetricStatConfig {
   readonly statistic: string;
 
   /**
-   * Region of the metric
+   * Region which this metric comes from.
+   *
+   * @default Deployment region.
    */
   readonly region?: string;
 
   /**
-   * Account of the metric
+   * Account which this metric comes from.
+   *
+   * @default Deployment account.
    */
   readonly account?: string;
 }

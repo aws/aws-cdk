@@ -141,7 +141,11 @@ export class TargetTrackingScalingPolicy extends cdk.Construct {
 
 function renderCustomMetric(metric?: cloudwatch.IMetric): CfnScalingPolicy.CustomizedMetricSpecificationProperty | undefined {
   if (!metric) { return undefined; }
-  const c = metric.toAlarmConfig();
+  const c = metric.toMetricConfig().metricStat;
+
+  if (c === undefined) {
+    throw new Error("A `Metric` object must be used here.");
+  }
 
   if (!c.statistic) {
     throw new Error('Can only use Average, Minimum, Maximum, SampleCount, Sum statistic for target tracking');
@@ -151,8 +155,7 @@ function renderCustomMetric(metric?: cloudwatch.IMetric): CfnScalingPolicy.Custo
     dimensions: c.dimensions,
     metricName: c.metricName,
     namespace: c.namespace,
-    statistic: c.statistic,
-    unit: c.unit
+    statistic: c.statistic
   };
 }
 

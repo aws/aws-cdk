@@ -42,6 +42,9 @@ export interface CommonMetricOptions {
 
   /**
    * Unit for the metric that is associated with the alarm
+   *
+   * @deprecated It is just used to select the data points with this specific unit and not to scale the threshold w.r.t the data points unit.
+   * It is most likely to be misused.
    */
   readonly unit?: Unit;
 
@@ -72,11 +75,15 @@ export interface MetricProps extends CommonMetricOptions {
 
   /**
    * Account which this metric comes from.
+   *
+   * @default Deployment account.
    */
   readonly account?: string;
 
   /**
    * Region which this metric comes from.
+   *
+   * @default Deployment region.
    */
   readonly region?: string;
 }
@@ -87,19 +94,31 @@ export interface MetricProps extends CommonMetricOptions {
 export interface MetricOptions extends CommonMetricOptions {
   /**
    * Account which this metric comes from.
+   *
+   * @default Deployment account.
    */
   readonly account?: string;
 
   /**
    * Region which this metric comes from.
+   *
+   * @default Deployment region.
    */
   readonly region?: string;
 }
 
+/**
+ * Properties for a MathExpression
+ */
 export interface MathExpressionProps extends CommonMetricOptions {
-  readonly expression: string;
-
-  readonly expressionMetrics: Record<string, IMetric>;
+    /**
+     * The expression defining the metric.
+     */
+    readonly expression: string;
+    /**
+     * The metrics used in the expression as KeyValuePair <id, metric>.
+     */
+    readonly expressionMetrics: Record<string, IMetric>;
 }
 
 /**
@@ -107,6 +126,12 @@ export interface MathExpressionProps extends CommonMetricOptions {
  * This is kept only for backward compatibility and shouldn't be used.
  */
 abstract class BaseMetric implements IMetric {
+  /**
+   * Unit of the metric.
+   *
+   * @default None
+   * @deprecated Deprecated in MetricProps.
+   */
   public readonly unit?: Unit;
 
   public constructor(unit?: Unit) {
@@ -119,7 +144,7 @@ abstract class BaseMetric implements IMetric {
   public toAlarmConfig(): MetricAlarmConfig {
     const metricConfig = this.toMetricConfig();
     if (metricConfig.metricStat === undefined) {
-      throw new Error("MetricStatConfig must be set.");
+      throw new Error("A `Metric` object must be used here.");
     }
 
     const stat = parseStatistic(metricConfig.metricStat.statistic);
@@ -220,7 +245,17 @@ export class Metric extends BaseMetric {
   public readonly statistic: string;
   public readonly label?: string;
   public readonly color?: string;
+  /**
+   * Account which this metric comes from.
+   *
+   * @default Deployment account.
+   */
   public readonly account?: string;
+  /**
+   * Region which this metric comes from.
+   *
+   * @default Deployment region.
+   */
   public readonly region?: string;
 
   constructor(props: MetricProps) {
@@ -265,9 +300,10 @@ export class Metric extends BaseMetric {
   }
 
   public toMetricConfig(): MetricConfig {
+    const dims = this.dimensionsAsList();
     return {
       metricStat: {
-        dimensions: this.dimensionsAsList(),
+        dimensions: dims.length > 0 ? dims : undefined,
         namespace: this.namespace,
         metricName: this.metricName,
         period: this.period,
@@ -315,9 +351,24 @@ export class Metric extends BaseMetric {
  * alarms and graphs.
  */
 export class MathExpression extends BaseMetric {
+  /**
+   * The expression defining the metric.
+   */
   public readonly expression: string;
+
+  /**
+   * The metrics used in the expression as KeyValuePair <id, metric>.
+   */
   public readonly expressionMetrics: Record<string, IMetric>;
+
+  /**
+   * Label for this metric when added to a Graph.
+   */
   public readonly label?: string;
+
+  /**
+   * Color for this metric when added to a Graph.
+   */
   public readonly color?: string;
 
   constructor(props: MathExpressionProps) {
@@ -350,11 +401,11 @@ export class MathExpression extends BaseMetric {
   }
 
   public toAlarmConfig(): MetricAlarmConfig {
-    throw new Error("Cannot use a MathExpression here, use a Metric instead.");
+    throw new Error("A `Metric` object must be used here.");
   }
 
   public toGraphConfig(): MetricGraphConfig {
-    throw new Error("Cannot use a MathExpression here, use a Metric instead.");
+    throw new Error("A `Metric` object must be used here.");
   }
 
   public toMetricConfig(): MetricConfig {
