@@ -4,6 +4,8 @@ import { IsCompleteResponse, OnEventResponse } from '@aws-cdk/custom-resources/l
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as aws from 'aws-sdk';
 
+const MAX_CLUSTER_NAME_LEN = 100;
+
 export class ClusterResourceHandler {
 
   public get clusterName() {
@@ -71,7 +73,7 @@ export class ClusterResourceHandler {
       throw new Error('"roleArn" is required');
     }
 
-    const clusterName = this.newProps.name || `${this.logicalResourceId}-${this.requestId}`;
+    const clusterName = this.newProps.name || this.generateClusterName();
 
     const resp = await this.eks.createCluster({
       ...this.newProps,
@@ -220,6 +222,12 @@ export class ClusterResourceHandler {
         }
       };
     }
+  }
+
+  private generateClusterName() {
+    const suffix = this.requestId.replace(/-/g, ''); // 32 chars
+    const prefix = this.logicalResourceId.substr(0, MAX_CLUSTER_NAME_LEN - suffix.length - 1);
+    return `${prefix}-${suffix}`;
   }
 }
 
