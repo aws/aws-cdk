@@ -265,7 +265,7 @@ function renderAlarmMetric(metric: IMetric) {
                 stat: stat.statistic,
                 unit: stat.unitFilter,
               },
-              id: entry.id || uniqueMetricId(),
+              id: entry.id ?? uniqueMetricId(),
               label: conf.renderingProperties?.label,
               returnData: entry.tag ? undefined : false, // Tag stores "primary" attribute, default is "true"
             };
