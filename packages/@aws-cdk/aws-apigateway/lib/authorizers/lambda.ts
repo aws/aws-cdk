@@ -2,9 +2,8 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Construct, Duration, Lazy, Stack } from '@aws-cdk/core';
 import { CfnAuthorizer } from '../apigateway.generated';
-import { IAuthorizer } from '../authorizer';
+import { Authorizer, IAuthorizer } from '../authorizer';
 import { RestApi } from '../restapi';
-import { Authorizer } from './authorizer-base';
 
 /**
  * Properties for TokenAuthorizer
