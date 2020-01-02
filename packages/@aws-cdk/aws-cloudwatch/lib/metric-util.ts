@@ -1,6 +1,7 @@
-import { Duration } from '@aws-cdk/core';
-import { MathExpression } from './metric';
-import { IMetric, MetricConfig, MetricExpressionConfig, MetricStatConfig } from './metric-types';
+import { Duration } from "@aws-cdk/core";
+import { accountIfDifferentFromStack, DropEmptyGraphOptions, regionIfDifferentFromStack } from "./env-tokens";
+import { MathExpression } from "./metric";
+import { IMetric, MetricConfig, MetricExpressionConfig, MetricStatConfig } from "./metric-types";
 
 /**
  * Return the JSON structure which represents these metrics in a graph.
@@ -15,7 +16,7 @@ import { IMetric, MetricConfig, MetricExpressionConfig, MetricStatConfig } from 
  *
  * This will be called by GraphWidget, no need for clients to call this.
  */
-export function allMetricsGraphJson(left: IMetric[], right: IMetric[]): any[][] {
+export function allMetricsGraphJson(left: IMetric[], right: IMetric[]): any[] {
   // Add metrics to a set which will automatically expand them recursively,
   // making sure to retain conflicting the visible one on conflicting metrics objects.
   const mset = new MetricSet<string>();
@@ -23,7 +24,7 @@ export function allMetricsGraphJson(left: IMetric[], right: IMetric[]): any[][] 
   mset.addTopLevel('right', ...right);
 
   // Render all metrics from the set.
-  return mset.entries.map(entry => metricGraphJson(entry.metric, entry.tag, entry.id));
+  return mset.entries.map(entry => new DropEmptyGraphOptions(metricGraphJson(entry.metric, entry.tag, entry.id)));
 }
 
 function metricGraphJson(metric: IMetric, yAxis?: string, id?: string) {
@@ -45,8 +46,8 @@ function metricGraphJson(metric: IMetric, yAxis?: string, id?: string) {
       }
 
       // Metric attributes that are rendered to graph options
-      if (stat.account) { options.accountId = stat.account; }
-      if (stat.region) { options.region = stat.region; }
+      if (stat.account) { options.accountId = accountIfDifferentFromStack(stat.account); }
+      if (stat.region) { options.region = regionIfDifferentFromStack(stat.region); }
       if (stat.period && stat.period.toSeconds() !== 300) { options.period = stat.period.toSeconds(); }
       if (stat.statistic && stat.statistic !== 'Average') { options.stat = stat.statistic; }
     },
