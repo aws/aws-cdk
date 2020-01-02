@@ -30,7 +30,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/fs-extra": "^8.0.1",
-    "@types/yargs": "^13.0.3",
+    "@types/yargs": "^13.0.4",
     "cdk-build-tools": "1.19.0",
     "pkglint": "1.19.0"
   },
@@ -39,7 +39,7 @@
     "@aws-cdk/cx-api": "1.19.0",
     "aws-cdk": "1.19.0",
     "fs-extra": "^8.1.0",
-    "yargs": "^15.0.1"
+    "yargs": "^15.1.0"
   },
   "keywords": [
     "aws",

@@ -60,8 +60,8 @@
   "jest": {
     "coverageReporters": [
       "lcov",
-      "text-summary",
-      "html"
+      "html",
+      "text-summary"
     ],
     "coverageThreshold": {
       "global": {
@@ -73,7 +73,8 @@
     "testMatch": [
       "**/__tests__/**/*.ts?(x)",
       "**/?(*.)+(spec|test).ts?(x)"
-    ]
+    ],
+    "collectCoverage": true
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
