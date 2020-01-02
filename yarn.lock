@@ -5303,15 +5303,16 @@ jsesc@^2.5.1:
   resolved "https://registry.yarnpkg.com/jsesc/-/jsesc-2.5.2.tgz#80564d2e483dacf6e8ef209650a67df3f0c283a4"
   integrity sha512-OYu7XEzjkCQ3C5Ps3QIZsQfNpqoJyZZA99wd9aWd05NCtC5pWOkShK2mkL6HXQR6/Cy2lbNdPlZBpuQHXE63gA==
 
-jsii-diff@^0.20.11:
-  version "0.20.11"
-  resolved "https://registry.yarnpkg.com/jsii-diff/-/jsii-diff-0.20.11.tgz#a4a2a8aec9d46cb665fbfbc97a74864a4bc14b2f"
-  integrity sha512-hySgyHiY2pahmTEzpD8NSmgg/8cdeelGjSIEKVAo4gg3TfS9w3Ah0dXBAwINW7SxOOkxiuRhTLCGt1yRytNjvg==
+jsii-diff@^0.21.0:
+  version "0.21.0"
+  resolved "https://registry.yarnpkg.com/jsii-diff/-/jsii-diff-0.21.0.tgz#e5d266794475949518fd5594d1d78d6263dc5050"
+  integrity sha512-IqPNcTKyG3mfBC73jS+td57DvEw4e958n3V/fY8+Ju2g0p6U8DFkmJMhLvpEm2ftMWhmcTGPTwOKNzWIbWK7tQ==
   dependencies:
-    "@jsii/spec" "^0.20.11"
-    jsii-reflect "^0.20.11"
+    "@jsii/spec" "^0.21.0"
+    fs-extra "^8.1.0"
+    jsii-reflect "^0.21.0"
     log4js "^6.1.0"
-    typescript "~3.7.3"
+    typescript "~3.7.4"
     yargs "^15.0.2"
 
 jsii-pacmak@^0.20.11:
@@ -5341,6 +5342,17 @@ jsii-reflect@^0.20.11:
     colors "^1.4.0"
     fs-extra "^8.1.0"
     oo-ascii-tree "^0.20.11"
+    yargs "^15.0.2"
+
+jsii-reflect@^0.21.0:
+  version "0.21.0"
+  resolved "https://registry.yarnpkg.com/jsii-reflect/-/jsii-reflect-0.21.0.tgz#a6939a5303016d6ae6b418b8703de98dab2d71da"
+  integrity sha512-0tq4505zhpJNLhBouDiTd1s0IEUwJEq/IUPDIp64XK06JBX3H2/vKrBNrOuc/SazdtS7sz1ZOBTe1lCt14rIEA==
+  dependencies:
+    "@jsii/spec" "^0.21.0"
+    colors "^1.4.0"
+    fs-extra "^8.1.0"
+    oo-ascii-tree "^0.21.0"
     yargs "^15.0.2"
 
 jsii-rosetta@^0.20.11:
@@ -6574,6 +6586,11 @@ oo-ascii-tree@^0.20.11:
   version "0.20.11"
   resolved "https://registry.yarnpkg.com/oo-ascii-tree/-/oo-ascii-tree-0.20.11.tgz#9412974de3879f67a7d1cee8386a7b32c4eb9bc4"
   integrity sha512-8IBxIzSyQGf4Gz4JdwG6R8p/VYkRLyTVdJ7ZFSSm3zbHm6artNOGmc5BUXmqdRGOjXGzvy6xpeauKZ7tUh2dfg==
+
+oo-ascii-tree@^0.21.0:
+  version "0.21.0"
+  resolved "https://registry.yarnpkg.com/oo-ascii-tree/-/oo-ascii-tree-0.21.0.tgz#28e2e208d9648846e13872c442581dd1c5cbab24"
+  integrity sha512-8KmH/gIUBr90pOCP0FHF5MZilolakjfVJf9xnTrAwYRUNq/4l7Zq+PqFl3OUkXY6W8MKUY79OuckBrqXj2BoCQ==
 
 opener@^1.5.1:
   version "1.5.1"
