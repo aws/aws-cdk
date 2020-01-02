@@ -381,16 +381,17 @@ const authFn = new lambda.Function(this, 'booksAuthorizerLambda', {
   // ...
 });
 
-const auth = Authorizer.token(this, 'booksAuthorizer', {
-  headerName: '<key of the request header that will be used as authorization key>',
+const auth = new lambda.TokenAuthorizer(this, 'booksAuthorizer', {
   function: authFn
 });
 
 books.addMethod('GET', new apigateway.HttpIntegration('http://amazon.com'), {
-  authorizationType: apigateway.AuthorizationType.CUSTOM,
   authorizer: auth
 });
 ```
+
+By default, the `TokenAuthorizer` looks for the authorization token in the request header with the key 'Authorization'. This can,
+however, be modified by changing the `identitySource` property.
 
 Authorizers can also be passed via the `defaultMethodOptions` property within the `RestApi` construct or the `Method` construct. Unless
 explicitly overridden, the specified defaults will be applied across all `Method`s across the `RestApi` or across all `Resource`s,

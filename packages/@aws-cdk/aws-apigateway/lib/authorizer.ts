@@ -27,8 +27,7 @@ export interface IAuthorizer {
   readonly authorizerId: string;
 
   /**
-   * The required authorization type of this authorizer. If not specified,
-   * `authorizationType` is required when the method is defined.
+   * The authorization type of this authorizer.
    */
   readonly authorizationType?: AuthorizationType;
 }

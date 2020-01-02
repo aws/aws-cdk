@@ -540,6 +540,7 @@ export = {
     const api = new apigw.RestApi(stack, 'myapi', {
       defaultIntegration: rootInteg,
       defaultMethodOptions: {
+        authorizer: { authorizerId: 'AUTHID' },
         authorizationType: apigw.AuthorizationType.IAM,
       }
     });
@@ -552,15 +553,13 @@ export = {
     // CASE #2: should inherit integration from root and method options, but
     // "authorizationType" will be overridden to "None" instead of "IAM"
     child.addMethod('POST', undefined, {
-      authorizer: { authorizerId: 'AUTHID' },
-      authorizationType: apigw.AuthorizationType.CUSTOM
+      authorizationType: apigw.AuthorizationType.COGNITO
     });
 
     const child2 = api.root.addResource('child2', {
       defaultIntegration: new apigw.MockIntegration(),
       defaultMethodOptions: {
         authorizer: { authorizerId: 'AUTHID2' },
-        authorizationType: apigw.AuthorizationType.CUSTOM
       }
     });
 
@@ -577,6 +576,7 @@ export = {
       HttpMethod: 'GET',
       ResourceId: { "Fn::GetAtt": [ "myapi162F20B8", "RootResourceId" ] },
       Integration: { Type: 'AWS' },
+      AuthorizerId: 'AUTHID',
       AuthorizationType: 'AWS_IAM',
     }));
 
@@ -586,7 +586,7 @@ export = {
       ResourceId: { Ref: "myapichildA0A65412" },
       Integration: { Type: 'AWS' },
       AuthorizerId: 'AUTHID',
-      AuthorizationType: 'CUSTOM',
+      AuthorizationType: 'COGNITO_USER_POOLS',
     }));
 
     // CASE #3
@@ -594,7 +594,7 @@ export = {
       HttpMethod: 'DELETE',
       Integration: { Type: 'MOCK' },
       AuthorizerId: 'AUTHID2',
-      AuthorizationType: 'CUSTOM'
+      AuthorizationType: 'AWS_IAM'
     }));
 
     // CASE #4
@@ -602,7 +602,7 @@ export = {
       HttpMethod: 'PUT',
       Integration: { Type: 'AWS' },
       AuthorizerId: 'AUTHID2',
-      AuthorizationType: 'CUSTOM'
+      AuthorizationType: 'AWS_IAM'
     }));
 
     test.done();

@@ -11,10 +11,9 @@ import { RestApi } from '../restapi';
 export interface TokenAuthorizerProps {
 
   /**
-   * An optional name for the authorizer. When provided, this will also be used for the physical id of the
-   * CloudFormation resource of type `AWS::ApiGateway::Authorization`.
+   * An optional human friendly name for the authorizer. Note that, this is not the primary identifier of the authorizer.
    *
-   * @default - CDK will use the uniqueId assigned to this construct.
+   * @default - none
    */
   readonly authorizerName?: string;
 
@@ -32,15 +31,15 @@ export interface TokenAuthorizerProps {
    * The request header mapping expression for the bearer token. This is typically passed as part of the header, in which case
    * this should be `method.request.header.Authorizer` where Authorizer is the header containing the bearer token.
    * @see https://docs.aws.amazon.com/apigateway/api-reference/link-relation/authorizer-create/#identitySource
-   * @default 'method.request.header.Authorizer'
+   * @default 'method.request.header.Authorization'
    */
   readonly identitySource?: string;
 
   /**
-   * The TTL on how long APIGateway should cache the results. Max 1 hour.
+   * How long APIGateway should cache the results. Max 1 hour.
    * Disable caching by setting this to 0.
    *
-   *  @default - Duration.minutes(5)
+   * @default Duration.minutes(5)
    */
   readonly resultsCacheTtl?: Duration;
 
@@ -87,7 +86,7 @@ export class TokenAuthorizer extends Authorizer implements IAuthorizer {
     super(scope, id);
 
     if (props.resultsCacheTtl && props.resultsCacheTtl.toSeconds() > 3600) {
-      throw new Error(`Lambda authorizer property 'cacheTtl' must not be greater than 3600 seconds (1 hour)`);
+      throw new Error(`Lambda authorizer property 'resultsCacheTtl' must not be greater than 3600 seconds (1 hour)`);
     }
 
     const restApiId = Lazy.stringValue({ produce: () => this.restApiId });
@@ -130,7 +129,6 @@ export class TokenAuthorizer extends Authorizer implements IAuthorizer {
 
   /**
    * Attaches this authorizer to a specific REST API.
-   *
    * @internal
    */
   public _attachToApi(restApi: RestApi) {
