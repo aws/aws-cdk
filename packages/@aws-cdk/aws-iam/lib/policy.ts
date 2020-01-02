@@ -211,7 +211,8 @@ export class Policy extends Resource implements IPolicy {
 
   protected prepare() {
     // Remove the resource if it shouldn't exist. This will prevent it from being rendered to the template.
-    if (!this.shouldExist) {
+    const shouldExist = this.mustCreate || this.referenceTaken || (!this.document.isEmpty && this.isAttached);
+    if (shouldExist) {
       this.node.removeChild('Resource');
     }
   }
@@ -221,12 +222,5 @@ export class Policy extends Resource implements IPolicy {
    */
   private get isAttached() {
     return this.groups.length + this.users.length + this.roles.length > 0;
-  }
-
-  /**
-   * Whether the policy resource should be created
-   */
-  private get shouldExist() {
-    return this.mustCreate || this.referenceTaken || (!this.document.isEmpty && this.isAttached);
   }
 }
