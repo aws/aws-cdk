@@ -213,7 +213,7 @@ export class Policy extends Resource implements IPolicy {
     // Remove the resource if it shouldn't exist. This will prevent it from being rendered to the template.
     const shouldExist = this.mustCreate || this.referenceTaken || (!this.document.isEmpty && this.isAttached);
     if (shouldExist) {
-      this.node.removeChild('Resource');
+      this.node.tryRemoveChild('Resource');
     }
   }
 
