@@ -49,7 +49,7 @@ For example, a math expression that sums two other metrics looks like this:
 ```ts
 const allProblems = new MathExpression({
     expression: "errors + faults",
-    expressionMetrics: {
+    usingMetrics: {
         errors: myConstruct.metricErrors(),
         faults: myConstruct.metricFaults(),
     }
@@ -62,7 +62,7 @@ them in other math expressions:
 ```ts
 const problemPercentage = new MathExpression({
     expression: "(problems / invocations) * 100",
-    expressionMetrics: {
+    usingMetrics: {
         problems: allProblems,
         invocations: myConstruct.metricInvocations()
     }
