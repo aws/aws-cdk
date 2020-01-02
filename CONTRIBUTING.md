@@ -201,7 +201,7 @@ The build process is divided into stages, so you can invoke them as needed from 
 
 - __`yarn build`__: runs the `build` and `test` commands in all modules (in topological order).
 - __`yarn pack`__: packages all modules to all supported languages and produces a `dist/` directory with all the outputs
-  (running this script requires that you installed the [toolchains](#Toolchains) for all target languages on your
+  (running this script requires that you installed the [toolchains](#getting-started) for all target languages on your
   system).
 
 ### Partial build tools
@@ -336,7 +336,7 @@ $ ./install.sh
 $ yarn build
 ```
 
-If you also wish to package to all languages, make sure you have all the [toolchains](#Toolchains) and now run:
+If you also wish to package to all languages, make sure you have all the [toolchains](#getting-started) and now run:
 
 ```
 $ ./pack.sh
