@@ -258,29 +258,18 @@ export function metricKey(metric: IMetric): string {
 /**
  * Return the period of a metric
  *
- * For a stat metric, return the immediate period. For an expression metric,
- * return the longest period of its constituent metrics (because the math expression
- * will only emit a data point if all of its parts emit a data point).
+ * For a stat metric, return the immediate period.
  *
- * Formally it should be the LCM of the constituent periods, but the max is simpler,
- * periods are likely to be multiples of one another anyway, and this is only used
- * for display purposes.
+ * For an expression metric, all metrics used in it have been made to have the
+ * same period, so we return the period of the first inner metric.
  */
 export function metricPeriod(metric: IMetric): Duration {
   return dispatchMetric(metric, {
     withStat(stat) {
       return stat.period;
     },
-    withExpression(expr) {
-      const metrs = Object.values(expr.usingMetrics);
-      let maxPeriod = Duration.seconds(0);
-      for (const metr of metrs) {
-        const p = metricPeriod(metr);
-        if (p.toSeconds() > maxPeriod.toSeconds()) {
-          maxPeriod = p;
-        }
-      }
-      return maxPeriod;
+    withExpression() {
+      return (metric as MathExpression).period || Duration.minutes(5);
     },
   });
 }

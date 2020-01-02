@@ -212,6 +212,7 @@ export class Metric implements IMetric {
     this.statistic = normalizeStatistic(props.statistic || "Average");
     this.label = props.label;
     this.color = props.color;
+    this.unit = props.unit;
     this.account = props.account;
     this.region = props.region;
   }
@@ -266,7 +267,7 @@ export class Metric implements IMetric {
   public toAlarmConfig(): MetricAlarmConfig {
     const metricConfig = this.toMetricConfig();
     if (metricConfig.metricStat === undefined) {
-      throw new Error("A `Metric` object must be used here.");
+      throw new Error(`Using a math expression is not supported here. Pass a 'Metric' object instead`);
     }
 
     const stat = parseStatistic(metricConfig.metricStat.statistic);
@@ -284,7 +285,7 @@ export class Metric implements IMetric {
   public toGraphConfig(): MetricGraphConfig {
     const metricConfig = this.toMetricConfig();
     if (metricConfig.metricStat === undefined) {
-      throw new Error("MetricStatConfig need to set");
+      throw new Error(`Using a math expression is not supported here. Pass a 'Metric' object instead`);
     }
 
     return {
@@ -411,9 +412,16 @@ export class MathExpression implements IMetric {
    * @param props The set of properties to change.
    */
   public with(props: MathExpressionOptions): MathExpression {
+    // Short-circuit creating a new object if there would be no effective change
+    if ((props.label === undefined || props.label === this.label)
+      && (props.color === undefined || props.color === this.color)
+      && (props.period === undefined)) {
+      return this;
+    }
+
     return new MathExpression({
       expression: this.expression,
-      usingMetrics: props.period ? changeAllPeriods(this.usingMetrics, props.period) : this.usingMetrics,
+      usingMetrics: this.usingMetrics,
       label: ifUndefined(props.label, this.label),
       color: ifUndefined(props.color, this.color),
       period: ifUndefined(props.period, this.period),
