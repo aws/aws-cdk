@@ -237,6 +237,7 @@ function renderAlarmMetric(metric: IMetric) {
         period: st.period?.toSeconds(),
         statistic: renderIfSimpleStatistic(st.statistic),
         extendedStatistic: renderIfExtendedStatistic(st.statistic),
+        unit: st.unitFilter,
       });
     },
 
@@ -262,7 +263,7 @@ function renderAlarmMetric(metric: IMetric) {
                 },
                 period: stat.period.toSeconds(),
                 stat: stat.statistic,
-                // unit: not used, on purpose. Does not do what we need it to do.
+                unit: stat.unitFilter,
               },
               id: entry.id || uniqueMetricId(),
               label: conf.renderingProperties?.label,

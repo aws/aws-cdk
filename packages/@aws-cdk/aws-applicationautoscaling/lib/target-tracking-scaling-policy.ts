@@ -154,7 +154,8 @@ function renderCustomMetric(metric?: cloudwatch.IMetric): CfnScalingPolicy.Custo
     dimensions: c.dimensions,
     metricName: c.metricName,
     namespace: c.namespace,
-    statistic: c.statistic
+    statistic: c.statistic,
+    unit: c.unitFilter,
   };
 }
 

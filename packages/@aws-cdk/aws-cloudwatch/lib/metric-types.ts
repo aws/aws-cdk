@@ -148,6 +148,17 @@ export interface MetricStatConfig {
   readonly statistic: string;
 
   /**
+   * Unit used to filter the metric stream
+   *
+   * Only refer to datums emitted to the metric stream with the given unit and
+   * ignore all others. Only useful when datums are being emitted to the same
+   * metric stream under different units.
+   *
+   * @default Refer to all metric datums
+   */
+  readonly unitFilter?: Unit;
+
+  /**
    * Region which this metric comes from.
    *
    * @default Deployment region.

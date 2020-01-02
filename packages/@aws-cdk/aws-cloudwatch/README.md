@@ -144,21 +144,22 @@ The most important properties to set while creating an Alarms are:
 
 ### A note on units
 
-Metrics values are emitted with units, such as `seconds` or `bytes`. In
-CloudWatch, `Alarm`s do have a `unit` attribute, but that it is not used to
-scale the threshold value but it is scaled to filter metric values inside the
-same metric, considering only the metric values emitted under the given unit.
+In CloudWatch, Metrics datums are emitted with units, such as `seconds` or
+`bytes`. When `Metric` objects are given a `unit` attribute, it will be used to
+*filter* the stream of metric datums for datums emitted using the same `unit`
+attribute.
 
-For example, if a metric value is emitted as `1000 bytes`, and an alarm
-threshold is set to `1 kilobyte` (including the unit), the alarm will *not*
-trigger, as the units of the values and the alarm are different.
+In particular, it will *not* be used to rescale datums or alarm threshold
+values.  If you leave out the `unit` field, all metric datums will be retrieved,
+regardless of unit. Because most of the time all datums for a given metric will
+be emitted using only a single unit, it is recommended to not specify `unit` at
+all and retrieve all values.
 
-It is therefore recommended to set the alarm (in this case) to `1000` and
-leave out the unit.
+Note that in any case, CloudWatch only supports filtering by `unit` for Alarms,
+not in Dashboard graphs.
 
-It is still possible to specify `unit` as a property when creating `Metric`
-objects, but for safety that property will be ignored, because it will rarely
-do what you want.
+Please upvote the following GitHub issue if you would like to see support for
+unit calculations in CDK: https://github.com/aws/aws-cdk/issues/5595
 
 ## Dashboards
 

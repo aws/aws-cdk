@@ -42,9 +42,18 @@ export interface CommonMetricOptions {
   readonly dimensions?: DimensionHash;
 
   /**
-   * Unit for the metric that is associated with the alarm
+   * Unit used to filter the metric stream
    *
-   * @deprecated Unused, see package documentation.
+   * Only refer to datums emitted to the metric stream with the given unit and
+   * ignore all others. Only useful when datums are being emitted to the same
+   * metric stream under different units.
+   *
+   * The default is to use all matric datums in the stream, regardless of unit,
+   * which is recommended in nearly all cases.
+   *
+   * CloudWatch does not honor this property for graphs.
+   *
+   * @default All metric datums in the given metric stream
    */
   readonly unit?: Unit;
 
@@ -254,8 +263,9 @@ export class Metric implements IMetric {
         metricName: this.metricName,
         period: this.period,
         statistic: this.statistic,
+        unitFilter: this.unit,
         account: this.account,
-        region: this.region
+        region: this.region,
       },
       renderingProperties: {
         color: this.color,
