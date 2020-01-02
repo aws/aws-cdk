@@ -161,7 +161,7 @@
     "jsii-reflect": "^0.20.11",
     "jsonschema": "^1.2.5",
     "yaml": "1.7.2",
-    "yargs": "^15.0.1",
+    "yargs": "^15.1.0",
     "@aws-cdk/aws-eks-legacy": "1.19.0"
   },
   "devDependencies": {

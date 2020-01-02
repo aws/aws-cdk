@@ -54,7 +54,7 @@
     "ts-jest": "^24.2.0",
     "tslint": "^5.20.1",
     "typescript": "~3.7.4",
-    "yargs": "^15.0.1"
+    "yargs": "^15.1.0"
   },
   "keywords": [
     "aws",
