@@ -16,7 +16,7 @@
     "awslint": "bin/awslint"
   },
   "dependencies": {
-    "@jsii/spec": "^0.20.11",
+    "@jsii/spec": "^0.21.0",
     "camelcase": "^5.3.1",
     "colors": "^1.4.0",
     "fs-extra": "^8.1.0",
