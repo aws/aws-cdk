@@ -283,18 +283,6 @@ export class TagManager {
   }
 
   /**
-   * Creates the Tags property object
-   *
-   * The object contains a single key for the tag property name with a value of
-   * the properly formatted tags
-   */
-  public asCfnProperty(): {[key: string]: any} {
-    const tagsProp: {[key: string]: any} = {};
-    tagsProp[this.tagPropertyName] = this.renderTags();
-    return tagsProp;
-  }
-
-  /**
    * Determine if the aspect applies here
    *
    * Looks at the include and exclude resourceTypeName arrays to determine if
