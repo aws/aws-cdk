@@ -19,8 +19,8 @@ export function allMetricsGraphJson(left: IMetric[], right: IMetric[]): any[][] 
   // Add metrics to a set which will automatically expand them recursively,
   // making sure to retain conflicting the visible one on conflicting metrics objects.
   const mset = new MetricSet<string>();
-  mset.addPrimary('left', ...left);
-  mset.addPrimary('right', ...right);
+  mset.addTopLevel('left', ...left);
+  mset.addTopLevel('right', ...right);
 
   // Render all metrics from the set.
   return mset.entries.map(entry => metricGraphJson(entry.metric, entry.tag, entry.id));
@@ -109,7 +109,7 @@ export class MetricSet<A> {
   /**
    * Add the given set of metrics to this set
    */
-  public addPrimary(tag: A, ...metrics: IMetric[]) {
+  public addTopLevel(tag: A, ...metrics: IMetric[]) {
     for (const metric of metrics) {
       this.addOne(metric, tag);
     }

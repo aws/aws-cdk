@@ -606,7 +606,7 @@ function changePeriod<A extends IMetric>(metric: A, period: cdk.Duration): IMetr
  *
  * Metric types used in a MathExpression need to implement at least this:
  * a `with` method that takes at least a `period` and returns a modified copy
- * of the metric objecdt.
+ * of the metric object.
  *
  * We put it here instead of on `IMetric` because there is no way to type
  * it in jsii in a way that concrete implementations `Metric` and `MathExpression`

@@ -243,7 +243,7 @@ function renderAlarmMetric(metric: IMetric) {
     withExpression() {
       // Expand the math expression metric into a set
       const mset = new MetricSet<boolean>();
-      mset.addPrimary(true, metric);
+      mset.addTopLevel(true, metric);
 
       let eid = 0;
       function uniqueMetricId() {
