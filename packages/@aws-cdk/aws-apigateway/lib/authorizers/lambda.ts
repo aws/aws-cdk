@@ -1,9 +1,9 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Construct, Duration, Stack } from '@aws-cdk/core';
+import { Construct, Duration, Lazy, Stack } from '@aws-cdk/core';
 import { CfnAuthorizer } from '../apigateway.generated';
-import { AuthorizationType, Method } from '../method';
-import { AuthorizerBase, AuthorizerConfig } from './authorizer-base';
+import { Authorizer, IAuthorizer } from '../authorizer';
+import { RestApi } from '../restapi';
 
 /**
  * Properties for TokenAuthorizer
@@ -68,7 +68,7 @@ export interface TokenAuthorizerProps {
  *
  * @resource AWS::ApiGateway::Authorizer
  */
-export class TokenAuthorizer extends AuthorizerBase {
+export class TokenAuthorizer extends Authorizer implements IAuthorizer {
 
   /**
    * The id of the authorizer.
@@ -81,6 +81,8 @@ export class TokenAuthorizer extends AuthorizerBase {
    */
   public readonly authorizerArn: string;
 
+  private restApiId?: string;
+
   constructor(scope: Construct, id: string, props: TokenAuthorizerProps) {
     super(scope, id);
 
@@ -88,9 +90,11 @@ export class TokenAuthorizer extends AuthorizerBase {
       throw new Error(`Lambda authorizer property 'cacheTtl' must not be greater than 3600 seconds (1 hour)`);
     }
 
+    const restApiId = Lazy.stringValue({ produce: () => this.restApiId });
+
     const resource = new CfnAuthorizer(this, 'Resource', {
       name: props.authorizerName,
-      restApiId: this.restApiId,
+      restApiId,
       type: 'TOKEN',
       authorizerUri: `arn:aws:apigateway:${Stack.of(this).region}:lambda:path/2015-03-31/functions/${props.handler.functionArn}/invocations`,
       authorizerCredentials: props.assumeRole ? props.assumeRole.roleArn : undefined,
@@ -103,7 +107,7 @@ export class TokenAuthorizer extends AuthorizerBase {
 
     this.authorizerArn = Stack.of(this).formatArn({
       service: 'execute-api',
-      resource: this.restApiId,
+      resource: restApiId,
       resourceName: `authorizers/${this.authorizerId}`
     });
 
@@ -125,12 +129,15 @@ export class TokenAuthorizer extends AuthorizerBase {
   }
 
   /**
-   * Configuration needed to bind this authorizer to a {@link Method}.
+   * Attaches this authorizer to a specific REST API.
+   *
+   * @internal
    */
-  protected authorizerConfig(_: Method): AuthorizerConfig {
-    return {
-      authorizerId: this.authorizerId,
-      authorizationType: AuthorizationType.CUSTOM,
-    };
+  public _attachToApi(restApi: RestApi) {
+    if (this.restApiId && this.restApiId !== restApi.restApiId) {
+      throw new Error(`Cannot attach authorizer to two different rest APIs`);
+    }
+
+    this.restApiId = restApi.restApiId;
   }
 }

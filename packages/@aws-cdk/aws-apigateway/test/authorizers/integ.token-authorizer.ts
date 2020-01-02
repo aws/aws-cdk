@@ -1,7 +1,7 @@
 import * as lambda from '@aws-cdk/aws-lambda';
 import { App, Stack } from '@aws-cdk/core';
 import * as path from 'path';
-import { AuthorizationType, Authorizer, MockIntegration, PassthroughBehavior, RestApi } from '../../lib';
+import { MockIntegration, PassthroughBehavior, RestApi, TokenAuthorizer } from '../../lib';
 
 // Against the RestApi endpoint from the stack output, run
 // `curl -s -o /dev/null -w "%{http_code}" <url>` should return 401
@@ -19,7 +19,7 @@ const authorizerFn = new lambda.Function(stack, 'MyAuthorizerFunction', {
 
 const restapi = new RestApi(stack, 'MyRestApi');
 
-const authorizer = Authorizer.token(stack, 'MyAuthorizer', {
+const authorizer = new TokenAuthorizer(stack, 'MyAuthorizer', {
   handler: authorizerFn,
 });
 
@@ -35,6 +35,5 @@ restapi.root.addMethod('ANY', new MockIntegration({
   methodResponses: [
     { statusCode: '200' }
   ],
-  authorizer,
-  authorizationType: AuthorizationType.CUSTOM
+  authorizer
 });

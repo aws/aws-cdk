@@ -1,5 +1,20 @@
-import { Construct } from '@aws-cdk/core';
-import { AuthorizerBase, TokenAuthorizer, TokenAuthorizerProps } from './authorizers';
+import { Resource } from '@aws-cdk/core';
+import { AuthorizationType } from './method';
+import { RestApi } from './restapi';
+
+/**
+ * Base class for all custom authorizers
+ */
+export abstract class Authorizer extends Resource implements IAuthorizer {
+  public readonly abstract authorizerId: string;
+  public readonly authorizationType?: AuthorizationType = AuthorizationType.CUSTOM;
+
+  /**
+   * Called when the authorizer is used from a specific REST API.
+   * @internal
+   */
+  public abstract _attachToApi(restApi: RestApi): void;
+}
 
 /**
  * Represents an API Gateway authorizer.
@@ -10,17 +25,10 @@ export interface IAuthorizer {
    * @attribute
    */
   readonly authorizerId: string;
-}
-
-/**
- * Base class for all custom authorizers
- */
-export class Authorizer {
 
   /**
-   * Return a new token authorizer with the specified properties.
+   * The required authorization type of this authorizer. If not specified,
+   * `authorizationType` is required when the method is defined.
    */
-  public static token(scope: Construct, id: string, props: TokenAuthorizerProps): AuthorizerBase {
-    return new TokenAuthorizer(scope, id, props);
-  }
+  readonly authorizationType?: AuthorizationType;
 }
