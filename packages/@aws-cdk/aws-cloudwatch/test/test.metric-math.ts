@@ -47,6 +47,18 @@ export = {
     test.done();
   },
 
+  'can not use invalid period in MathExpression'(test: Test) {
+    test.throws(() => {
+      new MathExpression({
+        expression: 'a+b',
+        usingMetrics: {a, b},
+        period: Duration.seconds(20)
+      });
+    }, /'period' must be 1, 5, 10, 30, or a multiple of 60 seconds, received 20/);
+
+    test.done();
+  },
+
   'in graphs': {
     'MathExpressions can be added to a graph'(test: Test) {
       // GIVEN
@@ -270,6 +282,7 @@ export = {
               MetricName: "ACount",
               Namespace: "Test"
             },
+            Period: 300,
             Stat: "Average"
           },
           ReturnData: false
@@ -321,6 +334,7 @@ export = {
               MetricName: "ACount",
               Namespace: "Test"
             },
+            Period: 300,
             Stat: "Average"
           },
           ReturnData: false
@@ -350,6 +364,76 @@ export = {
               Namespace: "Test"
             },
             Period: 300,
+            Stat: "Average"
+          },
+          ReturnData: false
+        }
+      ]);
+
+      test.done();
+    },
+
+    'MathExpression controls period of metrics transitively used in it with alarms'(test: Test) {
+      // GIVEN
+      new Alarm(stack, 'Alarm', {
+        threshold: 1, evaluationPeriods: 1,
+        metric: new MathExpression({
+          expression: 'a + e',
+          usingMetrics: {
+            a,
+            e: new MathExpression({
+              expression: 'b + c',
+              usingMetrics: { b, c },
+              period: Duration.minutes(1)
+            })
+          },
+          period: Duration.seconds(30)
+        })
+      });
+
+      // THEN
+      alarmMetricsAre([
+        {
+          Expression: "a + e",
+          Id: "expr_1"
+        },
+        {
+          Id: "a",
+          MetricStat: {
+            Metric: {
+              MetricName: "ACount",
+              Namespace: "Test"
+            },
+            Period: 30,
+            Stat: "Average"
+          },
+          ReturnData: false
+        },
+        {
+          Expression: "b + c",
+          Id: "e",
+          ReturnData: false
+        },
+        {
+          Id: "b",
+          MetricStat: {
+            Metric: {
+              MetricName: "BCount",
+              Namespace: "Test"
+            },
+            Period: 30,
+            Stat: "Average"
+          },
+          ReturnData: false
+        },
+        {
+          Id: "c",
+          MetricStat: {
+            Metric: {
+              MetricName: "CCount",
+              Namespace: "Test"
+            },
+            Period: 30,
             Stat: "Average"
           },
           ReturnData: false
@@ -402,6 +486,7 @@ export = {
               MetricName: "ACount",
               Namespace: "Test"
             },
+            Period: 300,
             Stat: "Average"
           },
           ReturnData: false
