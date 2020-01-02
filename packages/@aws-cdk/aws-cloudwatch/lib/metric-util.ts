@@ -215,9 +215,10 @@ const METRICKEY_SYMBOL = Symbol('@aws-cdk/aws-cloudwatch.MetricKey');
  */
 export function metricKey(metric: IMetric): string {
   // Cache on the object itself. This is safe because Metric objects are immutable.
-  if ((metric as any)[METRICKEY_SYMBOL] !== undefined) {
+  if (metric.hasOwnProperty(METRICKEY_SYMBOL)) {
     return (metric as any)[METRICKEY_SYMBOL];
   }
+
   const parts = new Array<string>();
 
   const conf = metric.toMetricConfig();

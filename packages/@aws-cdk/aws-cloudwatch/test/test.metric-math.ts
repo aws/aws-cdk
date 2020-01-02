@@ -3,7 +3,7 @@ import { Duration, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { Alarm, GraphWidget, IWidget, MathExpression, Metric } from '../lib';
 
-const a = new Metric({ namespace: 'Test', metricName: 'ACount', period: Duration.seconds(10) });
+const a = new Metric({ namespace: 'Test', metricName: 'ACount' });
 const b = new Metric({ namespace: 'Test', metricName: 'BCount', statistic: 'Average' });
 const c = new Metric({ namespace: 'Test', metricName: 'CCount' });
 const b99 = new Metric({ namespace: 'Test', metricName: 'BCount', statistic: 'p99' });
@@ -62,7 +62,7 @@ export = {
       // THEN
       graphMetricsAre(test, graph, [
         [ { expression: 'a + b', label: 'a + b' } ],
-        [ 'Test', 'ACount', { period: 10, visible: false, id: 'a' } ],
+        [ 'Test', 'ACount', { visible: false, id: 'a' } ],
         [ 'Test', 'BCount', { visible: false, id: 'b' } ],
       ]);
 
@@ -89,7 +89,7 @@ export = {
       // THEN
       graphMetricsAre(test, graph, [
         [ { label: 'a + e', expression: 'a + e' } ],
-        [ 'Test', 'ACount', { period: 10, visible: false, id: 'a' } ],
+        [ 'Test', 'ACount', { visible: false, id: 'a' } ],
         [ { expression: 'b + c', visible: false, id: 'e' } ],
         [ 'Test', 'BCount', { visible: false, id: 'b' } ],
         [ 'Test', 'CCount', { visible: false, id: 'c' } ]
@@ -116,9 +116,9 @@ export = {
 
       graphMetricsAre(test, graph, [
         [ { label: 'a + e', expression: 'a + e' } ],
-        [ 'Test', 'ACount', { period: 10, visible: false, id: 'a' } ],
+        [ 'Test', 'ACount', { visible: false, id: 'a' } ],
         [ { expression: 'b + c', visible: false, id: 'e' } ],
-        [ 'Test', 'ACount', { period: 10, visible: false, id: 'b' } ],
+        [ 'Test', 'ACount', { visible: false, id: 'b' } ],
         [ 'Test', 'CCount', { visible: false, id: 'c' } ]
       ]);
 
@@ -144,7 +144,7 @@ export = {
       // THEN
       graphMetricsAre(test, graph, [
         [ { label: 'a + e', expression: 'a + e' } ],
-        [ 'Test', 'ACount', { period: 10, visible: false, id: 'a' } ],
+        [ 'Test', 'ACount', { visible: false, id: 'a' } ],
         [ { expression: 'a + c', visible: false, id: 'e' } ],
         [ 'Test', 'CCount', { visible: false, id: 'c' } ]
       ]);
@@ -165,8 +165,60 @@ export = {
 
       // THEN
       graphMetricsAre(test, graph, [
-        [ 'Test', 'ACount', { period: 10, id: 'a' } ],
+        [ 'Test', 'ACount', { id: 'a' } ],
         [ { label: 'a + b', expression: 'a + b' } ],
+        [ 'Test', 'BCount', { visible: false, id: 'b' } ]
+      ]);
+      test.done();
+    },
+
+    'MathExpression controls period of metrics directly used in it'(test: Test) {
+      // Check that if we add A with { period: 10s } to a mathexpression of period 5m
+      // then two metric lines are added for A, one at 10s and one at 5m
+      const graph = new GraphWidget({
+        left: [
+          a.with({ period: Duration.seconds(10) }),
+          new MathExpression({
+            expression: 'a + b',
+            usingMetrics: { a: a.with({ period: Duration.seconds(10) }), b }
+          })
+        ],
+      });
+
+      // THEN
+      graphMetricsAre(test, graph, [
+        [ 'Test', 'ACount', { period: 10 } ],
+        [ { label: 'a + b', expression: 'a + b' } ],
+        [ 'Test', 'ACount', { visible: false, id: 'a' } ],
+        [ 'Test', 'BCount', { visible: false, id: 'b' } ]
+      ]);
+      test.done();
+    },
+
+    'MathExpression controls period of metrics transitively used in it'(test: Test) {
+      // Same as the previous test, but recursively
+
+      const graph = new GraphWidget({
+        left: [
+          new MathExpression({
+            expression: 'a + e',
+            usingMetrics: {
+              a,
+              e: new MathExpression({
+                expression: 'a + b',
+                period: Duration.minutes(1),
+                usingMetrics: { a, b }
+              })
+            }
+          })
+        ],
+      });
+
+      // THEN
+      graphMetricsAre(test, graph, [
+        [ { expression: 'a + e', label: 'a + e' } ],
+        [ 'Test', 'ACount', { visible: false, id: 'a' } ],
+        [ { expression: 'a + b', visible: false, id: 'e' } ],
         [ 'Test', 'BCount', { visible: false, id: 'b' } ]
       ]);
       test.done();
@@ -186,7 +238,7 @@ export = {
       // THEN
       graphMetricsAre(test, graph, [
         [ { expression: 'a + b99', label: 'a + b99' } ],
-        [ 'Test', 'ACount', { period: 10, visible: false, id: 'a' } ],
+        [ 'Test', 'ACount', { visible: false, id: 'a' } ],
         [ 'Test', 'BCount', { visible: false, id: 'b99', stat: 'p99' } ],
       ]);
 
@@ -218,7 +270,6 @@ export = {
               MetricName: "ACount",
               Namespace: "Test"
             },
-            Period: 10,
             Stat: "Average"
           },
           ReturnData: false
@@ -270,7 +321,6 @@ export = {
               MetricName: "ACount",
               Namespace: "Test"
             },
-            Period: 10,
             Stat: "Average"
           },
           ReturnData: false
@@ -314,8 +364,9 @@ export = {
       const alarm = new Alarm(stack, 'Alarm', {
         threshold: 1, evaluationPeriods: 1,
         metric: new MathExpression({
+          period: Duration.minutes(10),
           expression: 'a + b',
-          usingMetrics: { a, b: b.with({ period: Duration.minutes(10) }) }
+          usingMetrics: { a, b: b.with({ period: Duration.minutes(20) }) } // This is overridden
         })
       });
 
@@ -351,7 +402,6 @@ export = {
               MetricName: "ACount",
               Namespace: "Test"
             },
-            Period: 10,
             Stat: "Average"
           },
           ReturnData: false

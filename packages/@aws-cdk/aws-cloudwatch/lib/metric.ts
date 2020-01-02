@@ -432,7 +432,7 @@ export class MathExpression implements IMetric {
     return {
       mathExpression: {
         expression: this.expression,
-        usingMetrics: this.usingMetrics
+        usingMetrics: this.usingMetrics,
       },
       renderingProperties: {
         label: this.label,
@@ -593,8 +593,36 @@ function changeAllPeriods(metrics: Record<string, IMetric>, period: cdk.Duration
  * both implementations of IMetric have a `period` member that contains that particular
  * value.
  */
-function changePeriod<A extends IMetric>(metric: A, period: cdk.Duration): A {
-  return Object.create(metric, {
-    period: { value: period, enumerable: true }
-  });
+function changePeriod<A extends IMetric>(metric: A, period: cdk.Duration): IMetric {
+  if (isModifiableMetric(metric)) {
+    return metric.with({ period });
+  }
+
+  throw new Error(`Metric object should also implement 'with': ${metric}`);
+}
+
+/**
+ * Private protocol for metrics
+ *
+ * Metric types used in a MathExpression need to implement at least this:
+ * a `with` method that takes at least a `period` and returns a modified copy
+ * of the metric objecdt.
+ *
+ * We put it here instead of on `IMetric` because there is no way to type
+ * it in jsii in a way that concrete implementations `Metric` and `MathExpression`
+ * can be statically typable about the fields that are changeable: all
+ * `with` methods would need to take the same argument type, but not all
+ * classes have the same `with`-able properties.
+ *
+ * This class exists to prevent having to use `instanceof` in the `changePeriod`
+ * function, so that we have a system where in principle new implementations
+ * of `IMetric` can be added. Because it will be rare, the mechanism doesn't have
+ * to be exposed very well, just has to be possible.
+ */
+interface IModifiableMetric {
+  with(options: { period?: cdk.Duration }): IMetric;
+}
+
+function isModifiableMetric(m: any): m is IModifiableMetric {
+  return typeof m === 'object' && m !== null && !!m.with;
 }
