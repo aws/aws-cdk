@@ -147,7 +147,7 @@ function renderCustomMetric(metric?: cloudwatch.IMetric): CfnScalingPolicy.Custo
   const c = metric.toMetricConfig().metricStat!;
 
   if (c.statistic.startsWith('p')) {
-    throw new Error(`Can not use statistic '${c.statistic}' for Target Tracking: only Average, Minimum, Maximum, SampleCount, Sum are supported.`);
+    throw new Error(`Cannot use statistic '${c.statistic}' for Target Tracking: only 'Average', 'Minimum', 'Maximum', 'SampleCount', and 'Sum' are supported.`);
   }
 
   return {
