@@ -30,6 +30,34 @@ export = {
       test.done();
     },
 
+    async 'generated cluster name does not exceed 100 characters'(test: Test) {
+      // GIVEN
+      const req = {
+        StackId: 'fake-stack-id',
+        RequestId: '602c078a-6181-4352-9676-4f00352445aa',
+        ResourceType: 'Custom::EKSCluster',
+        ServiceToken: 'boom',
+        LogicalResourceId: 'hello'.repeat(30), // 150 chars (limit is 100)
+        PhysicalResourceId: 'physical-resource-id',
+        ResponseURL: 'http://response-url',
+        RequestType: 'Create',
+        ResourceProperties: {
+          ServiceToken: 'boom',
+          Config: mocks.MOCK_PROPS,
+          AssumeRoleArn: mocks.MOCK_ASSUME_ROLE_ARN
+        }
+      };
+
+      // WHEN
+      const handler = new ClusterResourceHandler(mocks.client, req);
+      await handler.onEvent();
+
+      // THEN
+      test.equal(mocks.actualRequest.createClusterRequest?.name.length, 100);
+      test.deepEqual(mocks.actualRequest.createClusterRequest?.name, 'hellohellohellohellohellohellohellohellohellohellohellohellohellohe-602c078a6181435296764f00352445aa');
+      test.done();
+    },
+
     async 'onCreate: explicit cluster name'(test: Test) {
       const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Create', {
         ...mocks.MOCK_PROPS,
