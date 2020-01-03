@@ -381,7 +381,7 @@ const authFn = new lambda.Function(this, 'booksAuthorizerLambda', {
   // ...
 });
 
-const auth = new lambda.TokenAuthorizer(this, 'booksAuthorizer', {
+const auth = new apigateway.TokenAuthorizer(this, 'booksAuthorizer', {
   function: authFn
 });
 
