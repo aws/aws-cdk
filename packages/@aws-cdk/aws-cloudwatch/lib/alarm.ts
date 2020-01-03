@@ -4,6 +4,7 @@ import { CfnAlarm } from './cloudwatch.generated';
 import { HorizontalAnnotation } from './graph';
 import { CreateAlarmOptions } from './metric';
 import { IMetric } from './metric-types';
+import { dispatchMetric, dropUndefined, metricPeriod, MetricSet } from './metric-util';
 import { parseStatistic } from './util.statistic';
 
 export interface IAlarm extends IResource {
@@ -121,8 +122,6 @@ export class Alarm extends Resource implements IAlarm {
 
     const comparisonOperator = props.comparisonOperator || ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD;
 
-    const config = props.metric.toAlarmConfig();
-
     const alarm = new CfnAlarm(this, 'Resource', {
       // Meta
       alarmDescription: props.alarmDescription,
@@ -143,8 +142,8 @@ export class Alarm extends Resource implements IAlarm {
       okActions: Lazy.listValue({ produce: () => this.okActionArns }),
 
       // Metric
-      ...dropUndef(config),
-      ...dropUndef({
+      ...renderAlarmMetric(props.metric),
+      ...dropUndefined({
         // Alarm overrides
         period: props.period && props.period.toSeconds(),
         statistic: renderIfSimpleStatistic(props.statistic),
@@ -163,7 +162,7 @@ export class Alarm extends Resource implements IAlarm {
     this.metric = props.metric;
     this.annotation = {
       // tslint:disable-next-line:max-line-length
-      label: `${this.metric} ${OPERATOR_SYMBOLS[comparisonOperator]} ${props.threshold} for ${props.evaluationPeriods} datapoints within ${describePeriod(props.evaluationPeriods * config.period)}`,
+      label: `${this.metric} ${OPERATOR_SYMBOLS[comparisonOperator]} ${props.threshold} for ${props.evaluationPeriods} datapoints within ${describePeriod(props.evaluationPeriods * metricPeriod(props.metric).toSeconds())}`,
       value: props.threshold,
     };
   }
@@ -228,6 +227,63 @@ export class Alarm extends Resource implements IAlarm {
   }
 }
 
+function renderAlarmMetric(metric: IMetric) {
+  return dispatchMetric(metric, {
+    withStat(st) {
+      return dropUndefined({
+        dimensions: st.dimensions,
+        namespace: st.namespace,
+        metricName: st.metricName,
+        period: st.period?.toSeconds(),
+        statistic: renderIfSimpleStatistic(st.statistic),
+        extendedStatistic: renderIfExtendedStatistic(st.statistic),
+        unit: st.unitFilter,
+      });
+    },
+
+    withExpression() {
+      // Expand the math expression metric into a set
+      const mset = new MetricSet<boolean>();
+      mset.addTopLevel(true, metric);
+
+      let eid = 0;
+      function uniqueMetricId() {
+        return `expr_${++eid}`;
+      }
+
+      return {
+        metrics: mset.entries.map(entry => dispatchMetric(entry.metric, {
+          withStat(stat, conf) {
+            return {
+              metricStat: {
+                metric: {
+                  metricName: stat.metricName,
+                  namespace: stat.namespace,
+                  dimensions: stat.dimensions,
+                },
+                period: stat.period.toSeconds(),
+                stat: stat.statistic,
+                unit: stat.unitFilter,
+              },
+              id: entry.id ?? uniqueMetricId(),
+              label: conf.renderingProperties?.label,
+              returnData: entry.tag ? undefined : false, // Tag stores "primary" attribute, default is "true"
+            };
+          },
+          withExpression(expr, conf) {
+            return {
+              expression: expr.expression,
+              id: entry.id ?? uniqueMetricId(),
+              label: conf.renderingProperties?.label,
+              returnData: entry.tag ? undefined : false, // Tag stores "primary" attribute, default is "true"
+            };
+          },
+        }) as CfnAlarm.MetricDataQueryProperty)
+      };
+    }
+  });
+}
+
 /**
  * Return a human readable string for this period
  *
@@ -238,16 +294,6 @@ function describePeriod(seconds: number) {
   if (seconds === 1) { return '1 second'; }
   if (seconds > 60) { return (seconds / 60) + ' minutes'; }
   return seconds + ' seconds';
-}
-
-function dropUndef<T extends object>(x: T): T {
-  const ret: any = {};
-  for (const [key, value] of Object.entries(x)) {
-    if (value !== undefined) {
-      ret[key] = value;
-    }
-  }
-  return ret;
 }
 
 function renderIfSimpleStatistic(statistic?: string): string | undefined {
