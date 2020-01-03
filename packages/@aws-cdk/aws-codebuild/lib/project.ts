@@ -322,7 +322,7 @@ abstract class ProjectBase extends Resource implements IProject {
       metricName,
       dimensions: { ProjectName: this.projectName },
       ...props
-    }).attachTo(this);
+    });
   }
 
   /**
