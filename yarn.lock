@@ -2394,10 +2394,10 @@ codemaker@^0.20.11:
     decamelize "^1.2.0"
     fs-extra "^8.1.0"
 
-codemaker@^0.21.0:
-  version "0.21.0"
-  resolved "https://registry.yarnpkg.com/codemaker/-/codemaker-0.21.0.tgz#48a2689b2f9dae0a17605cbfdc3f4cb87d241b30"
-  integrity sha512-DC+ri9UWyAuJriTuAm5SIFhkP82KkwLFNDjKsvmfyl6t4rA2K8C327bAoWQLINUOxsNUZTArcRMhbf5ZDQerQw==
+codemaker@^0.21.1:
+  version "0.21.1"
+  resolved "https://registry.yarnpkg.com/codemaker/-/codemaker-0.21.1.tgz#602196e445a25c5705aa15e5e8a14d71be09e2d9"
+  integrity sha512-HUul4F1E2XW/ei2zK+SDPy8f/VJ17h3nfpPYJIG6YY0UTHBq3/RPhiuvHIRXXIYtHeKHBw/1cE/Em6RtURyDRg==
   dependencies:
     camelcase "^5.3.1"
     decamelize "^1.2.0"
