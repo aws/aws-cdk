@@ -432,10 +432,10 @@
   dependencies:
     jsonschema "^1.2.5"
 
-"@jsii/spec@^0.21.0":
-  version "0.21.0"
-  resolved "https://registry.yarnpkg.com/@jsii/spec/-/spec-0.21.0.tgz#beb1403e3afbe055e7b7b31ab282febbbf1b023e"
-  integrity sha512-6VV3aOeo3YlElqPtpZncPt4jiZgurF1fyi1qjReSvpVYRuO3zC3aDP+fPzFrjROxcAXewte0+1HGxCaC5cB2pw==
+"@jsii/spec@^0.21.0", "@jsii/spec@^0.21.1":
+  version "0.21.1"
+  resolved "https://registry.yarnpkg.com/@jsii/spec/-/spec-0.21.1.tgz#d8e5bfb887b80131a8ba3e2f6ccf4fbedfb64dbd"
+  integrity sha512-2PpF0AvY3kqrv4buFsajKBdWH5Bsi6q7in9gAkWJUJHVi3yZzFqsuIDyw07SQ/jksJkkRH+6QNU9h164GrDCRQ==
   dependencies:
     jsonschema "^1.2.5"
 
