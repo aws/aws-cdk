@@ -432,10 +432,10 @@
   dependencies:
     jsonschema "^1.2.5"
 
-"@jsii/spec@^0.21.0":
-  version "0.21.0"
-  resolved "https://registry.yarnpkg.com/@jsii/spec/-/spec-0.21.0.tgz#beb1403e3afbe055e7b7b31ab282febbbf1b023e"
-  integrity sha512-6VV3aOeo3YlElqPtpZncPt4jiZgurF1fyi1qjReSvpVYRuO3zC3aDP+fPzFrjROxcAXewte0+1HGxCaC5cB2pw==
+"@jsii/spec@^0.21.0", "@jsii/spec@^0.21.1":
+  version "0.21.1"
+  resolved "https://registry.yarnpkg.com/@jsii/spec/-/spec-0.21.1.tgz#d8e5bfb887b80131a8ba3e2f6ccf4fbedfb64dbd"
+  integrity sha512-2PpF0AvY3kqrv4buFsajKBdWH5Bsi6q7in9gAkWJUJHVi3yZzFqsuIDyw07SQ/jksJkkRH+6QNU9h164GrDCRQ==
   dependencies:
     jsonschema "^1.2.5"
 
@@ -5310,16 +5310,16 @@ jsii-reflect@^0.20.11:
     oo-ascii-tree "^0.20.11"
     yargs "^15.0.2"
 
-jsii-reflect@^0.21.0:
-  version "0.21.0"
-  resolved "https://registry.yarnpkg.com/jsii-reflect/-/jsii-reflect-0.21.0.tgz#a6939a5303016d6ae6b418b8703de98dab2d71da"
-  integrity sha512-0tq4505zhpJNLhBouDiTd1s0IEUwJEq/IUPDIp64XK06JBX3H2/vKrBNrOuc/SazdtS7sz1ZOBTe1lCt14rIEA==
+jsii-reflect@^0.21.0, jsii-reflect@^0.21.1:
+  version "0.21.1"
+  resolved "https://registry.yarnpkg.com/jsii-reflect/-/jsii-reflect-0.21.1.tgz#a7b80bcb7937eb831799f37017bf5cd734e8e855"
+  integrity sha512-S2KNIYTAmucw74iTKIfqdey/AORfb590Pn3f5HHu7C+GL7IcZaOKZ7YcUddwNU72RElCvR2XepOEhxPkCEwyIg==
   dependencies:
-    "@jsii/spec" "^0.21.0"
+    "@jsii/spec" "^0.21.1"
     colors "^1.4.0"
     fs-extra "^8.1.0"
-    oo-ascii-tree "^0.21.0"
-    yargs "^15.0.2"
+    oo-ascii-tree "^0.21.1"
+    yargs "^15.1.0"
 
 jsii-rosetta@^0.20.11:
   version "0.20.11"
@@ -6552,10 +6552,10 @@ oo-ascii-tree@^0.20.11:
   resolved "https://registry.yarnpkg.com/oo-ascii-tree/-/oo-ascii-tree-0.20.11.tgz#9412974de3879f67a7d1cee8386a7b32c4eb9bc4"
   integrity sha512-8IBxIzSyQGf4Gz4JdwG6R8p/VYkRLyTVdJ7ZFSSm3zbHm6artNOGmc5BUXmqdRGOjXGzvy6xpeauKZ7tUh2dfg==
 
-oo-ascii-tree@^0.21.0:
-  version "0.21.0"
-  resolved "https://registry.yarnpkg.com/oo-ascii-tree/-/oo-ascii-tree-0.21.0.tgz#28e2e208d9648846e13872c442581dd1c5cbab24"
-  integrity sha512-8KmH/gIUBr90pOCP0FHF5MZilolakjfVJf9xnTrAwYRUNq/4l7Zq+PqFl3OUkXY6W8MKUY79OuckBrqXj2BoCQ==
+oo-ascii-tree@^0.21.1:
+  version "0.21.1"
+  resolved "https://registry.yarnpkg.com/oo-ascii-tree/-/oo-ascii-tree-0.21.1.tgz#fc4cded55dabbeefe7ccc70780731585bc16ea29"
+  integrity sha512-vSspvVgLYHEaTSgqDVuHrb1F7ITHEs8pNY46LWacFNMF0NVegATdU4DWYrTfDdX2f5cmW0ZzffpCxwg5nImIvw==
 
 opener@^1.5.1:
   version "1.5.1"
