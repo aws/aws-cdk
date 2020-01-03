@@ -12,7 +12,7 @@ os.environ['PATH'] = '/opt/helm:/opt/awscli:' + os.environ['PATH']
 outdir = os.environ.get('TEST_OUTDIR', '/tmp')
 kubeconfig = os.path.join(outdir, 'kubeconfig')
 
-def handler(event, context):
+def helm_handler(event, context):
     logger.info(json.dumps(event))
 
     request_type = event['RequestType']
