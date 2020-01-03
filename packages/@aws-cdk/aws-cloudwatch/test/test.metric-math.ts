@@ -42,7 +42,7 @@ export = {
           })
         }
       });
-    }, /Same id \('a'\) used for two metrics/);
+    }, /The ID 'a' used for two metrics in the expression: 'BCount' and 'ACount'. Rename one/);
 
     test.done();
   },
