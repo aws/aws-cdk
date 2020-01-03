@@ -305,14 +305,14 @@ export class Metric implements IMetric {
       renderingProperties: {
         period: metricConfig.metricStat.period.toSeconds(),
         stat: metricConfig.metricStat.statistic,
-        color: metricConfig.renderingProperties?.color,
-        label: metricConfig.renderingProperties?.label
+        color: asString(metricConfig.renderingProperties?.color),
+        label: asString(metricConfig.renderingProperties?.label),
       },
       // deprecated properties for backwards compatibility
       period: metricConfig.metricStat.period.toSeconds(),
       statistic: metricConfig.metricStat.statistic,
-      color: metricConfig.renderingProperties?.color,
-      label: metricConfig.renderingProperties?.label,
+      color: asString(metricConfig.renderingProperties?.color),
+      label: asString(metricConfig.renderingProperties?.label),
       unit: this.unit
     };
   }
@@ -359,6 +359,14 @@ export class Metric implements IMetric {
 
     return list;
   }
+}
+
+function asString(x?: unknown): string | undefined {
+  if (x === undefined) { return undefined; }
+  if (typeof x !== 'string') {
+    throw new Error(`Expected string, got ${x}`);
+  }
+  return x;
 }
 
 /**

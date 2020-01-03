@@ -33,11 +33,11 @@ you can instantiate a `Metric` object to represent it. For example:
 
 ```ts
 const metric = new Metric({
-    namespace: 'MyNamespace',
-    metricName: 'MyMetric',
-    dimensions: {
-        ProcessingStep: 'Download'
-    }
+  namespace: 'MyNamespace',
+  metricName: 'MyMetric',
+  dimensions: {
+    ProcessingStep: 'Download'
+  }
 });
 ```
 
@@ -48,11 +48,11 @@ For example, a math expression that sums two other metrics looks like this:
 
 ```ts
 const allProblems = new MathExpression({
-    expression: "errors + faults",
-    usingMetrics: {
-        errors: myConstruct.metricErrors(),
-        faults: myConstruct.metricFaults(),
-    }
+  expression: "errors + faults",
+  usingMetrics: {
+    errors: myConstruct.metricErrors(),
+    faults: myConstruct.metricFaults(),
+  }
 })
 ```
 
@@ -61,11 +61,11 @@ them in other math expressions:
 
 ```ts
 const problemPercentage = new MathExpression({
-    expression: "(problems / invocations) * 100",
-    usingMetrics: {
-        problems: allProblems,
-        invocations: myConstruct.metricInvocations()
-    }
+  expression: "(problems / invocations) * 100",
+  usingMetrics: {
+    problems: allProblems,
+    invocations: myConstruct.metricInvocations()
+  }
 })
 ```
 
@@ -85,9 +85,9 @@ to the metric function call:
 
 ```ts
 const minuteErrorRate = fn.metricErrors({
-    statistic: 'avg',
-    period: Duration.minutes(1),
-    label: 'Lambda failure rate'
+  statistic: 'avg',
+  period: Duration.minutes(1),
+  label: 'Lambda failure rate'
 });
 ```
 
@@ -120,9 +120,9 @@ object, passing the `Metric` object to set the alarm on:
 
 ```ts
 new Alarm(this, 'Alarm', {
-    metric: fn.metricErrors(),
-    threshold: 100,
-    evaluationPeriods: 2,
+  metric: fn.metricErrors(),
+  threshold: 100,
+  evaluationPeriods: 2,
 });
 ```
 
@@ -130,8 +130,8 @@ Alternatively, you can call `metric.createAlarm()`:
 
 ```ts
 fn.metricErrors().createAlarm(this, 'Alarm', {
-    threshold: 100,
-    evaluationPeriods: 2,
+  threshold: 100,
+  evaluationPeriods: 2,
 });
 ```
 
@@ -149,17 +149,17 @@ In CloudWatch, Metrics datums are emitted with units, such as `seconds` or
 *filter* the stream of metric datums for datums emitted using the same `unit`
 attribute.
 
-In particular, it will *not* be used to rescale datums or alarm threshold
-values.  If you leave out the `unit` field, all metric datums will be retrieved,
-regardless of unit. Because most of the time all datums for a given metric will
-be emitted using only a single unit, it is recommended to not specify `unit` at
-all and retrieve all values.
+In particular, the `unit` field is *not* used to rescale datums or alarm threshold
+values (for example, it cannot be used to specify an alarm threshold in
+*Megabytes* if the metric stream is being emitted as *bytes*).
 
-Note that in any case, CloudWatch only supports filtering by `unit` for Alarms,
-not in Dashboard graphs.
+You almost certainly don't want to specify the `unit` property when creating
+`Metric` objects (which will retrieve all datums regardless of their unit),
+unless you have very specific requirements. Note that in any case, CloudWatch
+only supports filtering by `unit` for Alarms, not in Dashboard graphs.
 
-Please upvote the following GitHub issue if you would like to see support for
-unit calculations in CDK: https://github.com/aws/aws-cdk/issues/5595
+Please see the following GitHub issue for a discussion on real unit
+calculations in CDK: https://github.com/aws/aws-cdk/issues/5595
 
 ## Dashboards
 
@@ -183,15 +183,15 @@ A graph widget can display any number of metrics on either the `left` or
 
 ```ts
 dashboard.addWidgets(new GraphWidget({
-    title: "Executions vs error rate",
+  title: "Executions vs error rate",
 
-    left: [executionCountMetric],
+  left: [executionCountMetric],
 
-    right: [errorCountMetric.with({
-        statistic: "average",
-        label: "Error rate",
-        color: "00FF00"
-    })]
+  right: [errorCountMetric.with({
+    statistic: "average",
+    label: "Error rate",
+    color: "00FF00"
+  })]
 }));
 ```
 
@@ -201,8 +201,8 @@ An alarm widget shows the graph and the alarm line of a single alarm:
 
 ```ts
 dashboard.addWidgets(new AlarmWidget({
-    title: "Errors",
-    alarm: errorAlarm,
+  title: "Errors",
+  alarm: errorAlarm,
 }));
 ```
 
@@ -213,7 +213,7 @@ to a graph of the value over time):
 
 ```ts
 dashboard.addWidgets(new SingleValueWidget({
-    metrics: [visitorCount, purchaseCount],
+  metrics: [visitorCount, purchaseCount],
 }));
 ```
 
@@ -224,7 +224,7 @@ to your dashboard:
 
 ```ts
 dashboard.addWidgets(new TextWidget({
-    markdown: '# Key Performance Indicators'
+  markdown: '# Key Performance Indicators'
 }));
 ```
 

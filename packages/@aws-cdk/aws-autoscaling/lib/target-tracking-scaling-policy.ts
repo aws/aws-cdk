@@ -118,7 +118,7 @@ export class TargetTrackingScalingPolicy extends cdk.Construct {
     }
 
     if (props.customMetric && !props.customMetric.toMetricConfig().metricStat) {
-      throw new Error(`Math expressions are not supported for Target Tracking. Use Step Scaling or supply a Metric object.`);
+      throw new Error(`Only direct metrics are supported for Target Tracking. Use Step Scaling or supply a Metric object.`);
     }
 
     super(scope, id);

@@ -91,14 +91,14 @@ export interface MetricConfig {
   /**
    * In case the metric represents a query, the details of the query
    *
-   * @default unset
+   * @default - unset
    */
   readonly metricStat?: MetricStatConfig;
 
   /**
    * In case the metric is a math expression, the details of the math expression
    *
-   * @default unset
+   * @default - unset
    */
   readonly mathExpression?: MetricExpressionConfig;
 
@@ -110,7 +110,7 @@ export interface MetricConfig {
    *
    * @default {}
    */
-  readonly renderingProperties?: Record<string, any>;
+  readonly renderingProperties?: Record<string, unknown>;
 }
 
 /**
@@ -154,7 +154,10 @@ export interface MetricStatConfig {
    * ignore all others. Only useful when datums are being emitted to the same
    * metric stream under different units.
    *
-   * @default Refer to all metric datums
+   * This field has been renamed from plain `unit` to clearly communicate
+   * its purpose.
+   *
+   * @default - Refer to all metric datums
    */
   readonly unitFilter?: Unit;
 
@@ -295,7 +298,7 @@ export interface MetricGraphConfig {
 /**
  * Custom rendering properties that override the default rendering properties specified in the yAxis parameter of the widget object.
  *
- * @deprecated Replaced by `MetricConfig`.
+ * @deprecated Replaced by MetricConfig.
  */
 export interface MetricRenderingProperties {
   /**

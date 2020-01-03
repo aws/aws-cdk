@@ -4,7 +4,7 @@ import { CfnAlarm } from './cloudwatch.generated';
 import { HorizontalAnnotation } from './graph';
 import { CreateAlarmOptions } from './metric';
 import { IMetric } from './metric-types';
-import { dispatchMetric, dropUndef, metricPeriod, MetricSet } from './metric-util';
+import { dispatchMetric, dropUndefined, metricPeriod, MetricSet } from './metric-util';
 import { parseStatistic } from './util.statistic';
 
 export interface IAlarm extends IResource {
@@ -143,7 +143,7 @@ export class Alarm extends Resource implements IAlarm {
 
       // Metric
       ...renderAlarmMetric(props.metric),
-      ...dropUndef({
+      ...dropUndefined({
         // Alarm overrides
         period: props.period && props.period.toSeconds(),
         statistic: renderIfSimpleStatistic(props.statistic),
@@ -230,7 +230,7 @@ export class Alarm extends Resource implements IAlarm {
 function renderAlarmMetric(metric: IMetric) {
   return dispatchMetric(metric, {
     withStat(st) {
-      return dropUndef({
+      return dropUndefined({
         dimensions: st.dimensions,
         namespace: st.namespace,
         metricName: st.metricName,
@@ -273,7 +273,7 @@ function renderAlarmMetric(metric: IMetric) {
           withExpression(expr, conf) {
             return {
               expression: expr.expression,
-              id: entry.id || uniqueMetricId(),
+              id: entry.id ?? uniqueMetricId(),
               label: conf.renderingProperties?.label,
               returnData: entry.tag ? undefined : false, // Tag stores "primary" attribute, default is "true"
             };
