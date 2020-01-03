@@ -1,7 +1,7 @@
-import cxapi = require('@aws-cdk/cx-api');
-import aws = require('aws-sdk');
-import colors = require('colors/safe');
-import uuid = require('uuid');
+import * as cxapi from '@aws-cdk/cx-api';
+import * as aws from 'aws-sdk';
+import * as colors from 'colors/safe';
+import * as uuid from 'uuid';
 import { Tag } from "../api/cxapp/stacks";
 import { prepareAssets } from '../assets';
 import { debug, error, print } from '../logging';
@@ -37,6 +37,11 @@ export interface DeployStackOptions {
   ci?: boolean;
   reuseAssets?: string[];
   tags?: Tag[];
+
+  /**
+   * Whether to execute the changeset or leave it in review.
+   * @default true
+   */
   execute?: boolean;
 }
 
@@ -93,7 +98,8 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     return { noOp: true, outputs: await getStackOutputs(cfn, deployName), stackArn: changeSet.StackId! };
   }
 
-  if (options.execute) {
+  const execute = options.execute === undefined ? true : options.execute;
+  if (execute) {
     debug('Initiating execution of changeset %s on stack %s', changeSetName, deployName);
     await cfn.executeChangeSet({StackName: deployName, ChangeSetName: changeSetName}).promise();
     // tslint:disable-next-line:max-line-length
@@ -105,8 +111,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     }
     debug('Stack %s has completed updating', deployName);
   } else {
-    debug('Entering no-execute workflow for ChangeSet %s on stack %s', changeSetName, deployName);
-    cfn.executeChangeSet();
+    print(`Changeset %s created and waiting in review for manual execution (--no-execute)`, changeSetName);
   }
   return { noOp: false, outputs: await getStackOutputs(cfn, deployName), stackArn: changeSet.StackId! };
 }

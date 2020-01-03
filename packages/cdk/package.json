@@ -1,12 +1,12 @@
 {
   "name": "cdk",
-  "version": "1.16.1",
+  "version": "1.19.0",
   "description": "AWS CDK Toolkit",
   "bin": {
     "cdk": "bin/cdk"
   },
   "dependencies": {
-    "aws-cdk": "1.16.1"
+    "aws-cdk": "1.19.0"
   },
   "repository": {
     "type": "git",

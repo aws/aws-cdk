@@ -236,12 +236,6 @@ The CDK CLI will search for the specified VPC in the the stack's region and
 account, and import the subnet configuration. Looking up can be done by VPC
 ID, but more flexibly by searching for a specific tag on the VPC.
 
-The import does assume that the VPC will be *symmetric*, i.e. that there are
-subnet groups that have a subnet in every Availability Zone that the VPC
-spreads over. VPCs with other layouts cannot currently be imported, and will
-either lead to an error on import, or when another construct tries to access
-the subnets.
-
 Subnet types will be determined from the `aws-cdk:subnet-type` tag on the
 subnet if it exists, or the presence of a route to an Internet Gateway
 otherwise. Subnet names will be determined from the `aws-cdk:subnet-name` tag

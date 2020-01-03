@@ -1,8 +1,8 @@
-import assets = require('@aws-cdk/assets');
-import ecr = require('@aws-cdk/aws-ecr');
+import * as assets from '@aws-cdk/assets';
+import * as ecr from '@aws-cdk/aws-ecr';
 import { Construct, Stack, Token } from '@aws-cdk/core';
-import fs = require('fs');
-import path = require('path');
+import * as fs from 'fs';
+import * as path from 'path';
 import { AdoptedRepository } from './adopted-repository';
 
 export interface DockerImageAssetProps extends assets.CopyOptions {
@@ -80,12 +80,7 @@ export class DockerImageAsset extends Construct implements assets.IAsset {
     const ignore = path.join(dir, '.dockerignore');
 
     if (fs.existsSync(ignore)) {
-      exclude = [
-        ...exclude,
-        ...fs.readFileSync(ignore).toString().split('\n').filter(e => !!e),
-        // prevents accidentally excluding Dockerfile with a "*"
-        '!Dockerfile',
-      ];
+      exclude = [...exclude, ...fs.readFileSync(ignore).toString().split('\n').filter(e => !!e)];
     }
 
     const staging = new assets.Staging(this, 'Staging', {

@@ -1,10 +1,10 @@
 import { expect, haveResource, SynthUtils } from '@aws-cdk/assert';
-import s3_assets = require('@aws-cdk/aws-s3-assets');
-import sns = require('@aws-cdk/aws-sns');
+import * as s3_assets from '@aws-cdk/aws-s3-assets';
+import * as sns from '@aws-cdk/aws-sns';
 import { App, CfnParameter, CfnResource, Construct, Stack } from '@aws-cdk/core';
-import fs = require('fs');
+import * as fs from 'fs';
 import { Test } from 'nodeunit';
-import path = require('path');
+import * as path from 'path';
 import { NestedStack } from '../lib/nested-stack';
 
 // tslint:disable:max-line-length

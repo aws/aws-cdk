@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-dynamodb-global",
-  "version": "1.16.1",
+  "version": "1.19.0",
   "description": "Build a global dynamodb table",
   "license": "Apache-2.0",
   "homepage": "https://github.com/aws/aws-cdk",
@@ -21,8 +21,7 @@
         "package": "software.amazon.awscdk.services.dynamodb.global",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "dynamodb-global",
-          "versionSuffix": ".DEVPREVIEW"
+          "artifactId": "dynamodb-global"
         }
       },
       "python": {
@@ -34,7 +33,6 @@
         "packageId": "Amazon.CDK.AWS.DynamoDB.Global",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "versionSuffix": "-devpreview",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       }
     }
@@ -47,25 +45,27 @@
     "global"
   ],
   "dependencies": {
-    "@aws-cdk/aws-cloudformation": "1.16.1",
-    "@aws-cdk/aws-dynamodb": "1.16.1",
-    "@aws-cdk/aws-iam": "1.16.1",
-    "@aws-cdk/aws-lambda": "1.16.1",
-    "@aws-cdk/core": "1.16.1"
+    "@aws-cdk/aws-cloudformation": "1.19.0",
+    "@aws-cdk/aws-dynamodb": "1.19.0",
+    "@aws-cdk/aws-iam": "1.19.0",
+    "@aws-cdk/aws-lambda": "1.19.0",
+    "@aws-cdk/core": "1.19.0"
   },
   "devDependencies": {
-    "@aws-cdk/assert": "1.16.1",
-    "cdk-build-tools": "1.16.1",
-    "cdk-integ-tools": "1.16.1",
-    "cfn2ts": "1.16.1",
-    "pkglint": "1.16.1"
+    "@aws-cdk/assert": "1.19.0",
+    "@types/nodeunit": "^0.0.30",
+    "cdk-build-tools": "1.19.0",
+    "cdk-integ-tools": "1.19.0",
+    "cfn2ts": "1.19.0",
+    "nodeunit": "^0.11.3",
+    "pkglint": "1.19.0"
   },
   "peerDependencies": {
-    "@aws-cdk/aws-cloudformation": "1.16.1",
-    "@aws-cdk/aws-dynamodb": "1.16.1",
-    "@aws-cdk/aws-iam": "1.16.1",
-    "@aws-cdk/aws-lambda": "1.16.1",
-    "@aws-cdk/core": "1.16.1"
+    "@aws-cdk/aws-cloudformation": "1.19.0",
+    "@aws-cdk/aws-dynamodb": "1.19.0",
+    "@aws-cdk/aws-iam": "1.19.0",
+    "@aws-cdk/aws-lambda": "1.19.0",
+    "@aws-cdk/core": "1.19.0"
   },
   "scripts": {
     "build": "cdk-build",

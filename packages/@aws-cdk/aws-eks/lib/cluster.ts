@@ -1,16 +1,13 @@
-import autoscaling = require('@aws-cdk/aws-autoscaling');
-import ec2 = require('@aws-cdk/aws-ec2');
-import { Subnet } from '@aws-cdk/aws-ec2';
-import iam = require('@aws-cdk/aws-iam');
-import lambda = require('@aws-cdk/aws-lambda');
-import ssm = require('@aws-cdk/aws-ssm');
-import { CfnOutput, Construct, Duration, IResource, Resource, Stack, Tag } from '@aws-cdk/core';
-import path = require('path');
+import * as autoscaling from '@aws-cdk/aws-autoscaling';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as iam from '@aws-cdk/aws-iam';
+import * as ssm from '@aws-cdk/aws-ssm';
+import { CfnOutput, Construct, IResource, Resource, Stack, Tag, Token } from '@aws-cdk/core';
 import { AwsAuth } from './aws-auth';
-import { ClusterResource } from './cluster-resource';
+import { clusterArnComponents, ClusterResource } from './cluster-resource';
 import { CfnCluster, CfnClusterProps } from './eks.generated';
+import { HelmChart, HelmChartOptions } from './helm-chart';
 import { KubernetesResource } from './k8s-resource';
-import { KubectlLayer } from './kubectl-layer';
 import { spotInterruptHandler } from './spot-interrupt-handler';
 import { renderUserData } from './user-data';
 
@@ -292,26 +289,19 @@ export class Cluster extends Resource implements ICluster {
   public readonly kubectlEnabled: boolean;
 
   /**
-   * The CloudFormation custom resource handler that can apply Kubernetes
-   * manifests to this cluster.
-   *
-   * @internal
-   */
-  public readonly _k8sResourceHandler?: lambda.Function;
-
-  /**
    * The auto scaling group that hosts the default capacity for this cluster.
    * This will be `undefined` if the default capacity is set to 0.
    */
   public readonly defaultCapacity?: autoscaling.AutoScalingGroup;
 
   /**
-   * The IAM role that was used to create this cluster. This role is
-   * automatically added by Amazon EKS to the `system:masters` RBAC group of the
-   * cluster. Use `addMastersRole` or `props.mastersRole` to define additional
-   * IAM roles as administrators.
+   * If this cluster is kubectl-enabled, returns the `ClusterResource` object
+   * that manages it. If this cluster is not kubectl-enabled (i.e. uses the
+   * stock `CfnCluster`), this is `undefined`.
+   *
+   * @internal
    */
-  private readonly _defaultMastersRole?: iam.IRole;
+  public readonly _clusterResource?: ClusterResource;
 
   /**
    * Manages the aws-auth config map.
@@ -339,7 +329,8 @@ export class Cluster extends Resource implements ICluster {
 
     this.tagSubnets();
 
-    this.role = props.role || new iam.Role(this, 'ClusterRole', {
+    // this is the role used by EKS when interacting with AWS resources
+    this.role = props.role || new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('eks.amazonaws.com'),
       managedPolicies: [
         iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKSClusterPolicy'),
@@ -375,17 +366,13 @@ export class Cluster extends Resource implements ICluster {
     this.kubectlEnabled = props.kubectlEnabled === undefined ? true : props.kubectlEnabled;
     if (this.kubectlEnabled) {
       resource = new ClusterResource(this, 'Resource', clusterProps);
-      this._defaultMastersRole = resource.creationRole;
+      this._clusterResource = resource;
     } else {
       resource = new CfnCluster(this, 'Resource', clusterProps);
     }
 
     this.clusterName = this.getResourceNameAttribute(resource.ref);
-    this.clusterArn = this.getResourceArnAttribute(resource.attrArn, {
-      service: 'eks',
-      resource: 'cluster',
-      resourceName: this.physicalName,
-    });
+    this.clusterArn = this.getResourceArnAttribute(resource.attrArn, clusterArnComponents(this.physicalName));
 
     this.clusterEndpoint = resource.attrEndpoint;
     this.clusterCertificateAuthorityData = resource.attrCertificateAuthorityData;
@@ -397,11 +384,6 @@ export class Cluster extends Resource implements ICluster {
     if (props.outputClusterName) {
       new CfnOutput(this, 'ClusterName', { value: this.clusterName });
     }
-
-    // we maintain a single manifest custom resource handler per cluster since
-    // permissions and role are scoped. This will return `undefined` if kubectl
-    // is not enabled for this cluster.
-    this._k8sResourceHandler = this.createKubernetesResourceHandler();
 
     // map the IAM role to the `system:masters` group.
     if (props.mastersRole) {
@@ -580,27 +562,16 @@ export class Cluster extends Resource implements ICluster {
     return new KubernetesResource(this, `manifest-${id}`, { cluster: this, manifest });
   }
 
-  private createKubernetesResourceHandler() {
-    if (!this.kubectlEnabled) {
-      return undefined;
-    }
-
-    return new lambda.Function(this, 'KubernetesResourceHandler', {
-      code: lambda.Code.fromAsset(path.join(__dirname, 'k8s-resource')),
-      runtime: lambda.Runtime.PYTHON_3_7,
-      handler: 'index.handler',
-      timeout: Duration.minutes(15),
-      layers: [ KubectlLayer.getOrCreate(this) ],
-      memorySize: 256,
-      environment: {
-        CLUSTER_NAME: this.clusterName,
-      },
-
-      // NOTE: we must use the default IAM role that's mapped to "system:masters"
-      // as the execution role of this custom resource handler. This is the only
-      // way to be able to interact with the cluster after it's been created.
-      role: this._defaultMastersRole,
-    });
+  /**
+   * Defines a Helm chart in this cluster.
+   *
+   * @param id logical id of this chart.
+   * @param options options of this chart.
+   * @returns a `HelmChart` object
+   * @throws If `kubectlEnabled` is `false`
+   */
+  public addChart(id: string, options: HelmChartOptions) {
+    return new HelmChart(this, `chart-${id}`, { cluster: this, ...options });
   }
 
   /**
@@ -611,15 +582,24 @@ export class Cluster extends Resource implements ICluster {
    * @see https://docs.aws.amazon.com/eks/latest/userguide/network_reqs.html
    */
   private tagSubnets() {
-    for (const subnet of this.vpc.privateSubnets) {
-      if (!Subnet.isVpcSubnet(subnet)) {
-        // Just give up, all of them will be the same.
-        this.node.addWarning('Could not auto-tag private subnets with "kubernetes.io/role/internal-elb=1", please remember to do this manually');
-        return;
-      }
+    const tagAllSubnets = (type: string, subnets: ec2.ISubnet[], tag: string) => {
+      for (const subnet of subnets) {
+        // if this is not a concrete subnet, attach a construct warning
+        if (!ec2.Subnet.isVpcSubnet(subnet)) {
+          // message (if token): "could not auto-tag public/private subnet with tag..."
+          // message (if not token): "count not auto-tag public/private subnet xxxxx with tag..."
+          const subnetID = Token.isUnresolved(subnet.subnetId) ? '' : ` ${subnet.subnetId}`;
+          this.node.addWarning(`Could not auto-tag ${type} subnet${subnetID} with "${tag}=1", please remember to do this manually`);
+          continue;
+        }
 
-      subnet.node.applyAspect(new Tag("kubernetes.io/role/internal-elb", "1"));
-    }
+        subnet.node.applyAspect(new Tag(tag, "1"));
+      }
+    };
+
+    // https://docs.aws.amazon.com/eks/latest/userguide/network_reqs.html
+    tagAllSubnets('private', this.vpc.privateSubnets, "kubernetes.io/role/internal-elb");
+    tagAllSubnets('public', this.vpc.publicSubnets, "kubernetes.io/role/elb");
   }
 }
 
@@ -808,7 +788,7 @@ export class EksOptimizedImage implements ec2.IMachineImage {
     // set the SSM parameter name
     this.amiParameterName = `/aws/service/eks/optimized-ami/${this.kubernetesVersion}/`
       + ( this.nodeType === NodeType.STANDARD ? "amazon-linux-2/" : "" )
-      + ( this.nodeType === NodeType.GPU ? " amazon-linux2-gpu/" : "" )
+      + ( this.nodeType === NodeType.GPU ? "amazon-linux2-gpu/" : "" )
       + "recommended/image_id";
   }
 
@@ -842,6 +822,8 @@ export enum NodeType {
   GPU = 'GPU',
 }
 
+const GPU_INSTANCETYPES = ['p2', 'p3', 'g4'];
+
 export function nodeTypeForInstanceType(instanceType: ec2.InstanceType) {
-  return instanceType.toString().startsWith('p2') || instanceType.toString().startsWith('p3') ? NodeType.GPU : NodeType.STANDARD;
+  return GPU_INSTANCETYPES.includes(instanceType.toString().substring(0, 2)) ? NodeType.GPU : NodeType.STANDARD;
 }

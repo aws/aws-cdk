@@ -1,8 +1,8 @@
-import cfn = require("@aws-cdk/aws-cloudformation");
-import iam = require("@aws-cdk/aws-iam");
-import lambda = require("@aws-cdk/aws-lambda");
-import cdk = require("@aws-cdk/core");
-import path = require("path");
+import * as cfn from '@aws-cdk/aws-cloudformation';
+import * as iam from '@aws-cdk/aws-iam';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as cdk from '@aws-cdk/core';
+import * as path from 'path';
 import { GlobalTableProps } from "./aws-dynamodb-global";
 
 /**
@@ -16,7 +16,7 @@ export class GlobalTableCoordinator extends cdk.Stack {
       code: lambda.Code.fromAsset(path.resolve(__dirname, "../", "lambda-packages", "aws-global-table-coordinator", "lib")),
       description: "Lambda to make DynamoDB a global table",
       handler: "index.handler",
-      runtime: lambda.Runtime.NODEJS_8_10,
+      runtime: lambda.Runtime.NODEJS_10_X,
       timeout: cdk.Duration.minutes(5),
       uuid: "D38B65A6-6B54-4FB6-9BAD-9CD40A6DAC12",
     });

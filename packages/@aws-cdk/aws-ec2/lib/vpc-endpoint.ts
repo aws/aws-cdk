@@ -1,7 +1,8 @@
-import iam = require('@aws-cdk/aws-iam');
+import * as iam from '@aws-cdk/aws-iam';
 import { Aws, Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
 import { Connections, IConnectable } from './connections';
 import { CfnVPCEndpoint } from './ec2.generated';
+import { Peer } from './peer';
 import { Port } from './port';
 import { ISecurityGroup, SecurityGroup } from './security-group';
 import { allRouteTableIds } from './util';
@@ -210,7 +211,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly CLOUDFORMATION = new InterfaceVpcEndpointAwsService('cloudformation');
   public static readonly CLOUDTRAIL = new InterfaceVpcEndpointAwsService('cloudtrail');
   public static readonly CODEBUILD = new InterfaceVpcEndpointAwsService('codebuild');
-  public static readonly CODEBUILD_FIPS = new InterfaceVpcEndpointAwsService('codebuil-fips');
+  public static readonly CODEBUILD_FIPS = new InterfaceVpcEndpointAwsService('codebuild-fips');
   public static readonly CODECOMMIT = new InterfaceVpcEndpointAwsService('codecommit');
   public static readonly CODECOMMIT_FIPS = new InterfaceVpcEndpointAwsService('codecommit-fips');
   public static readonly CODEPIPELINE = new InterfaceVpcEndpointAwsService('codepipeline');
@@ -244,6 +245,8 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly STS = new InterfaceVpcEndpointAwsService('sts');
   public static readonly TRANSFER = new InterfaceVpcEndpointAwsService('transfer.server');
   public static readonly STORAGE_GATEWAY = new InterfaceVpcEndpointAwsService('storagegateway');
+  public static readonly REKOGNITION = new InterfaceVpcEndpointAwsService('rekognition');
+  public static readonly REKOGNITION_FIPS = new InterfaceVpcEndpointAwsService('rekognition-fips');
 
   /**
    * The name of the service.
@@ -292,6 +295,16 @@ export interface InterfaceVpcEndpointOptions {
    * @default - a new security group is created
    */
   readonly securityGroups?: ISecurityGroup[];
+
+  /**
+   * Whether to automatically allow VPC traffic to the endpoint
+   *
+   * If enabled, all traffic to the endpoint from within the VPC will be
+   * automatically allowed. This is done based on the VPC's CIDR range.
+   *
+   * @default true
+   */
+  readonly open?: boolean;
 }
 
 /**
@@ -380,11 +393,16 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
     const securityGroups = props.securityGroups || [new SecurityGroup(this, 'SecurityGroup', {
       vpc: props.vpc
     })];
+
     this.securityGroupId = securityGroups[0].securityGroupId;
     this.connections = new Connections({
       defaultPort: Port.tcp(props.service.port),
       securityGroups
     });
+
+    if (props.open !== false) {
+      this.connections.allowDefaultPortFrom(Peer.ipv4(props.vpc.vpcCidrBlock));
+    }
 
     const subnets = props.vpc.selectSubnets({ ...props.subnets, onePerAz: true });
     const subnetIds = subnets.subnetIds;

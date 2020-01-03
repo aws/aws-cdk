@@ -1,5 +1,5 @@
-import lambda = require('@aws-cdk/aws-lambda');
-import sns = require('@aws-cdk/aws-sns');
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as sns from '@aws-cdk/aws-sns';
 import { CfnResource, Construct, RemovalPolicy, Resource, Token } from '@aws-cdk/core';
 import { CfnCustomResource } from './cloudformation.generated';
 
@@ -187,7 +187,7 @@ export class CustomResource extends Resource {
    *
    * @param attributeName the name of the attribute
    * @returns a token for `Fn::GetAtt`. Use `Token.asXxx` to encode the returned `Reference` as a specific type or
-   * use the convinience `getAttString` for string attributes.
+   * use the convenience `getAttString` for string attributes.
    */
   public getAtt(attributeName: string) {
     return this.resource.getAtt(attributeName);

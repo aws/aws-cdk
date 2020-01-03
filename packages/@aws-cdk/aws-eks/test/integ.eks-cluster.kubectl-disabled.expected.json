@@ -36,6 +36,10 @@
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Public"
+          },
+          {
+            "Key": "kubernetes.io/role/elb",
+            "Value": "1"
           }
         ]
       }
@@ -50,6 +54,10 @@
           {
             "Key": "Name",
             "Value": "eks-integ-kubectl-disabled/VPC/PublicSubnet1"
+          },
+          {
+            "Key": "kubernetes.io/role/elb",
+            "Value": "1"
           }
         ]
       }
@@ -83,7 +91,17 @@
     "VPCPublicSubnet1EIP6AD938E8": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
-        "Domain": "vpc"
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "eks-integ-kubectl-disabled/VPC/PublicSubnet1"
+          },
+          {
+            "Key": "kubernetes.io/role/elb",
+            "Value": "1"
+          }
+        ]
       }
     },
     "VPCPublicSubnet1NATGatewayE0556630": {
@@ -102,6 +120,10 @@
           {
             "Key": "Name",
             "Value": "eks-integ-kubectl-disabled/VPC/PublicSubnet1"
+          },
+          {
+            "Key": "kubernetes.io/role/elb",
+            "Value": "1"
           }
         ]
       }
@@ -127,6 +149,10 @@
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Public"
+          },
+          {
+            "Key": "kubernetes.io/role/elb",
+            "Value": "1"
           }
         ]
       }
@@ -141,6 +167,10 @@
           {
             "Key": "Name",
             "Value": "eks-integ-kubectl-disabled/VPC/PublicSubnet2"
+          },
+          {
+            "Key": "kubernetes.io/role/elb",
+            "Value": "1"
           }
         ]
       }
@@ -174,7 +204,17 @@
     "VPCPublicSubnet2EIP4947BC00": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
-        "Domain": "vpc"
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "eks-integ-kubectl-disabled/VPC/PublicSubnet2"
+          },
+          {
+            "Key": "kubernetes.io/role/elb",
+            "Value": "1"
+          }
+        ]
       }
     },
     "VPCPublicSubnet2NATGateway3C070193": {
@@ -193,6 +233,10 @@
           {
             "Key": "Name",
             "Value": "eks-integ-kubectl-disabled/VPC/PublicSubnet2"
+          },
+          {
+            "Key": "kubernetes.io/role/elb",
+            "Value": "1"
           }
         ]
       }
@@ -218,6 +262,10 @@
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Public"
+          },
+          {
+            "Key": "kubernetes.io/role/elb",
+            "Value": "1"
           }
         ]
       }
@@ -232,6 +280,10 @@
           {
             "Key": "Name",
             "Value": "eks-integ-kubectl-disabled/VPC/PublicSubnet3"
+          },
+          {
+            "Key": "kubernetes.io/role/elb",
+            "Value": "1"
           }
         ]
       }
@@ -265,7 +317,17 @@
     "VPCPublicSubnet3EIPAD4BC883": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
-        "Domain": "vpc"
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "eks-integ-kubectl-disabled/VPC/PublicSubnet3"
+          },
+          {
+            "Key": "kubernetes.io/role/elb",
+            "Value": "1"
+          }
+        ]
       }
     },
     "VPCPublicSubnet3NATGatewayD3048F5C": {
@@ -284,6 +346,10 @@
           {
             "Key": "Name",
             "Value": "eks-integ-kubectl-disabled/VPC/PublicSubnet3"
+          },
+          {
+            "Key": "kubernetes.io/role/elb",
+            "Value": "1"
           }
         ]
       }
@@ -520,7 +586,7 @@
         }
       }
     },
-    "EKSClusterClusterRoleB72F3251": {
+    "EKSClusterRoleC0AEAC3D": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -635,7 +701,7 @@
         },
         "RoleArn": {
           "Fn::GetAtt": [
-            "EKSClusterClusterRoleB72F3251",
+            "EKSClusterRoleC0AEAC3D",
             "Arn"
           ]
         }

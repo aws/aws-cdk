@@ -1,12 +1,12 @@
 import { countResources, expect, haveResource, ResourcePart } from '@aws-cdk/assert';
-import ec2 = require('@aws-cdk/aws-ec2');
-import targets = require('@aws-cdk/aws-events-targets');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as targets from '@aws-cdk/aws-events-targets';
 import { ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
-import lambda = require('@aws-cdk/aws-lambda');
-import logs = require('@aws-cdk/aws-logs');
-import cdk = require('@aws-cdk/core');
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as logs from '@aws-cdk/aws-logs';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import rds = require('../lib');
+import * as rds from '../lib';
 
 export = {
   'create a DB instance'(test: Test) {
@@ -261,7 +261,42 @@ export = {
       instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
       vpc,
       generateMasterUserPassword: true,
-    }), /`masterUsername`.*`generateMasterUserPassword`/);
+    }), '`masterUsername` must be specified when `generateMasterUserPassword` is set to true.');
+
+    test.done();
+  },
+
+  'throws when specifying user name without asking to generate a new password'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // THEN
+    test.throws(() => new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
+      snapshotIdentifier: 'my-snapshot',
+      engine: rds.DatabaseInstanceEngine.MYSQL,
+      instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
+      vpc,
+      masterUsername: 'superadmin'
+    }), 'Cannot specify `masterUsername` when `generateMasterUserPassword` is set to false.');
+
+    test.done();
+  },
+
+  'throws when password and generate password ar both specified'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // THEN
+    test.throws(() => new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
+      snapshotIdentifier: 'my-snapshot',
+      engine: rds.DatabaseInstanceEngine.MYSQL,
+      instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
+      vpc,
+      masterUserPassword: cdk.SecretValue.plainText('supersecret'),
+      generateMasterUserPassword: true,
+    }), 'Cannot specify `masterUserPassword` when `generateMasterUserPassword` is set to true.');
 
     test.done();
   },
@@ -308,7 +343,7 @@ export = {
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.Code.fromInline('dummy'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_8_10
+      runtime: lambda.Runtime.NODEJS_10_X
     });
 
     // WHEN
@@ -588,5 +623,43 @@ export = {
     }));
 
     test.done();
-  }
+  },
+
+  'throws when trying to add rotation to an instance without secret'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const instance = new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.SQL_SERVER_EE,
+      instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      masterUsername: 'syscdk',
+      masterUserPassword: cdk.SecretValue.plainText('tooshort'),
+      vpc
+    });
+
+    // THEN
+    test.throws(() => instance.addRotationSingleUser(), /without secret/);
+
+    test.done();
+  },
+
+  'throws when trying to add single user rotation multiple times'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const instance = new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.SQL_SERVER_EE,
+      instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      masterUsername: 'syscdk',
+      vpc
+    });
+
+    // WHEN
+    instance.addRotationSingleUser();
+
+    // THEN
+    test.throws(() => instance.addRotationSingleUser(), /A single user rotation was already added to this instance/);
+
+    test.done();
+  },
 };

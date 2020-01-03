@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-cloudfront",
-  "version": "1.16.1",
+  "version": "1.19.0",
   "description": "CDK Constructs for AWS CloudFront",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -11,8 +11,7 @@
         "package": "software.amazon.awscdk.services.cloudfront",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "cloudfront",
-          "versionSuffix": ".DEVPREVIEW"
+          "artifactId": "cloudfront"
         }
       },
       "dotnet": {
@@ -20,7 +19,6 @@
         "packageId": "Amazon.CDK.AWS.CloudFront",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "versionSuffix": "-devpreview",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
@@ -64,29 +62,31 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "1.16.1",
-    "aws-sdk": "^2.569.0",
-    "cdk-build-tools": "1.16.1",
-    "cdk-integ-tools": "1.16.1",
-    "cfn2ts": "1.16.1",
-    "pkglint": "1.16.1"
+    "@aws-cdk/assert": "1.19.0",
+    "@types/nodeunit": "^0.0.30",
+    "aws-sdk": "^2.597.0",
+    "cdk-build-tools": "1.19.0",
+    "cdk-integ-tools": "1.19.0",
+    "cfn2ts": "1.19.0",
+    "nodeunit": "^0.11.3",
+    "pkglint": "1.19.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-certificatemanager": "1.16.1",
-    "@aws-cdk/aws-iam": "1.16.1",
-    "@aws-cdk/aws-kms": "1.16.1",
-    "@aws-cdk/aws-lambda": "1.16.1",
-    "@aws-cdk/aws-s3": "1.16.1",
-    "@aws-cdk/core": "1.16.1"
+    "@aws-cdk/aws-certificatemanager": "1.19.0",
+    "@aws-cdk/aws-iam": "1.19.0",
+    "@aws-cdk/aws-kms": "1.19.0",
+    "@aws-cdk/aws-lambda": "1.19.0",
+    "@aws-cdk/aws-s3": "1.19.0",
+    "@aws-cdk/core": "1.19.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-certificatemanager": "1.16.1",
-    "@aws-cdk/aws-iam": "1.16.1",
-    "@aws-cdk/aws-kms": "1.16.1",
-    "@aws-cdk/aws-lambda": "1.16.1",
-    "@aws-cdk/aws-s3": "1.16.1",
-    "@aws-cdk/core": "1.16.1"
+    "@aws-cdk/aws-certificatemanager": "1.19.0",
+    "@aws-cdk/aws-iam": "1.19.0",
+    "@aws-cdk/aws-kms": "1.19.0",
+    "@aws-cdk/aws-lambda": "1.19.0",
+    "@aws-cdk/aws-s3": "1.19.0",
+    "@aws-cdk/core": "1.19.0"
   },
   "engines": {
     "node": ">= 10.3.0"
@@ -94,6 +94,7 @@
   "stability": "experimental",
   "awslint": {
     "exclude": [
+      "props-physical-name:@aws-cdk/aws-cloudfront.OriginAccessIdentityProps",
       "docs-public-apis:@aws-cdk/aws-cloudfront.OriginProtocolPolicy",
       "docs-public-apis:@aws-cdk/aws-cloudfront.ViewerProtocolPolicy.ALLOW_ALL",
       "docs-public-apis:@aws-cdk/aws-cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS",
@@ -103,8 +104,6 @@
       "props-default-doc:@aws-cdk/aws-cloudfront.Behavior.trustedSigners",
       "docs-public-apis:@aws-cdk/aws-cloudfront.CloudFrontWebDistributionProps",
       "docs-public-apis:@aws-cdk/aws-cloudfront.LambdaFunctionAssociation",
-      "docs-public-apis:@aws-cdk/aws-cloudfront.S3OriginConfig",
-      "props-default-doc:@aws-cdk/aws-cloudfront.S3OriginConfig.originAccessIdentityId",
       "props-default-doc:@aws-cdk/aws-cloudfront.SourceConfiguration.customOriginSource",
       "props-default-doc:@aws-cdk/aws-cloudfront.SourceConfiguration.s3OriginSource",
       "docs-public-apis:@aws-cdk/aws-cloudfront.CloudFrontAllowedCachedMethods.GET_HEAD",

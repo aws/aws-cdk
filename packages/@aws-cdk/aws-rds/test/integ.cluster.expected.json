@@ -66,10 +66,7 @@
       }
     },
     "VPCPublicSubnet1DefaultRoute91CEF279": {
-     "Type": "AWS::EC2::Route",
-      "DependsOn": [
-        "VPCVPCGW99B986DC"
-      ],
+      "Type": "AWS::EC2::Route",
       "Properties": {
         "RouteTableId": {
           "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
@@ -78,12 +75,21 @@
         "GatewayId": {
           "Ref": "VPCIGWB7E252D3"
         }
-      }
+      },
+      "DependsOn": [
+        "VPCVPCGW99B986DC"
+      ]
     },
     "VPCPublicSubnet1EIP6AD938E8": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
-        "Domain": "vpc"
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-rds-integ/VPC/PublicSubnet1"
+          }
+        ]
       }
     },
     "VPCPublicSubnet1NATGatewayE0556630": {
@@ -158,9 +164,6 @@
     },
     "VPCPublicSubnet2DefaultRouteB7481BBA": {
       "Type": "AWS::EC2::Route",
-      "DependsOn": [
-        "VPCVPCGW99B986DC"
-      ],
       "Properties": {
         "RouteTableId": {
           "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
@@ -169,12 +172,21 @@
         "GatewayId": {
           "Ref": "VPCIGWB7E252D3"
         }
-      }
+      },
+      "DependsOn": [
+        "VPCVPCGW99B986DC"
+      ]
     },
     "VPCPublicSubnet2EIP4947BC00": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
-        "Domain": "vpc"
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-rds-integ/VPC/PublicSubnet2"
+          }
+        ]
       }
     },
     "VPCPublicSubnet2NATGateway3C070193": {
@@ -399,8 +411,8 @@
           "Version": "2012-10-17"
         }
       },
-      "DeletionPolicy": "Retain",
-      "UpdateReplacePolicy": "Retain"
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
     },
     "DatabaseSubnets56F17B9A": {
       "Type": "AWS::RDS::DBSubnetGroup",
@@ -486,13 +498,13 @@
           }
         ]
       },
-      "DeletionPolicy": "Retain",
-      "UpdateReplacePolicy": "Retain"
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
     },
     "DatabaseInstance1844F58FD": {
       "Type": "AWS::RDS::DBInstance",
       "Properties": {
-        "DBInstanceClass": "db.t2.small",
+        "DBInstanceClass": "db.t3.small",
         "DBClusterIdentifier": {
           "Ref": "DatabaseB269D8BB"
         },
@@ -506,13 +518,13 @@
         "VPCPublicSubnet1DefaultRoute91CEF279",
         "VPCPublicSubnet2DefaultRouteB7481BBA"
       ],
-      "DeletionPolicy": "Retain",
-      "UpdateReplacePolicy": "Retain"
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
     },
     "DatabaseInstance2AA380DEE": {
       "Type": "AWS::RDS::DBInstance",
       "Properties": {
-        "DBInstanceClass": "db.t2.small",
+        "DBInstanceClass": "db.t3.small",
         "DBClusterIdentifier": {
           "Ref": "DatabaseB269D8BB"
         },
@@ -526,8 +538,8 @@
         "VPCPublicSubnet1DefaultRoute91CEF279",
         "VPCPublicSubnet2DefaultRouteB7481BBA"
       ],
-      "DeletionPolicy": "Retain",
-      "UpdateReplacePolicy": "Retain"
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
     }
   }
 }

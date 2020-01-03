@@ -1,6 +1,5 @@
-import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/core');
-import { Stack } from '@aws-cdk/core';
+import * as iam from '@aws-cdk/aws-iam';
+import * as cdk from '@aws-cdk/core';
 
 /**
  * A Lambda-based custom resource handler that provisions S3 bucket
@@ -27,7 +26,7 @@ export class NotificationsResourceHandler extends cdk.Construct {
    * @returns The ARN of the custom resource lambda function.
    */
   public static singleton(context: cdk.Construct) {
-    const root = Stack.of(context);
+    const root = cdk.Stack.of(context);
 
     // well-known logical id to ensure stack singletonity
     const logicalId = 'BucketNotificationsHandler050a0587b7544547bf325f094a3db834';
@@ -79,7 +78,7 @@ export class NotificationsResourceHandler extends cdk.Construct {
         Code: { ZipFile: `exports.handler = ${handler.toString()};` },
         Handler: 'index.handler',
         Role: role.roleArn,
-        Runtime: 'nodejs8.10',
+        Runtime: 'nodejs10.x',
         Timeout: 300,
       }
     });
@@ -100,8 +99,11 @@ export class NotificationsResourceHandler extends cdk.Construct {
  * specified bucket.
  */
 const handler = (event: any, context: any) => {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports, import/no-extraneous-dependencies
   const s3 = new (require('aws-sdk').S3)();
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const https = require("https");
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const url = require("url");
 
   log(JSON.stringify(event, undefined, 2));
