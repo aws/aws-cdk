@@ -14,8 +14,8 @@ describe('IAM policy', () => {
     stack = new Stack(app, 'MyStack');
   });
 
-  test('fails when "mustCreate" policy is empty', () => {
-    new Policy(stack, 'MyPolicy', { mustCreate: true });
+  test('fails when "forced" policy is empty', () => {
+    new Policy(stack, 'MyPolicy', { force: true });
 
     expect(() => app.synth()).toThrow(/is empty/);
   });
@@ -221,8 +221,8 @@ describe('IAM policy', () => {
     p3.attachToRole(role);
   });
 
-  test('fails if "mustCreate" policy is not attached to a principal', () => {
-    new Policy(stack, 'MyPolicy', { mustCreate: true });
+  test('fails if "forced" policy is not attached to a principal', () => {
+    new Policy(stack, 'MyPolicy', { force: true });
     expect(() => app.synth()).toThrow(/attached to at least one principal: user, group or role/);
   });
 
@@ -253,9 +253,9 @@ describe('IAM policy', () => {
     }
   });
 
-  test('mustCreate=false, dependency on empty Policy never materializes', () => {
+  test('force=false, dependency on empty Policy never materializes', () => {
     // GIVEN
-    const pol = new Policy(stack, 'Pol', { mustCreate: false });
+    const pol = new Policy(stack, 'Pol', { force: false });
 
     const res = new CfnResource(stack, 'Resource', {
       type: 'Some::Resource',
@@ -274,9 +274,9 @@ describe('IAM policy', () => {
     });
   });
 
-  test('mustCreate=false, dependency on attached and non-empty Policy can be taken', () => {
+  test('force=false, dependency on attached and non-empty Policy can be taken', () => {
     // GIVEN
-    const pol = new Policy(stack, 'Pol', { mustCreate: false });
+    const pol = new Policy(stack, 'Pol', { force: false });
     pol.addStatements(new PolicyStatement({
       actions: ['s3:*'],
       resources: ['*'],
@@ -297,15 +297,15 @@ describe('IAM policy', () => {
     }, ResourcePart.CompleteDefinition);
   });
 
-  test('empty policy is OK if mustCreate=false', () => {
-    new Policy(stack, 'Pol', { mustCreate: false });
+  test('empty policy is OK if force=false', () => {
+    new Policy(stack, 'Pol', { force: false });
 
     app.synth();
     // If we got here, all OK
   });
 
   test('reading policyName forces a Policy to materialize', () => {
-    const pol = new Policy(stack, 'Pol', { mustCreate: false });
+    const pol = new Policy(stack, 'Pol', { force: false });
     Array.isArray(pol.policyName);
 
     expect(() => app.synth()).toThrow(/empty policy/);
