@@ -204,6 +204,20 @@ export interface ITaggable {
 }
 
 /**
+ * Options to configure TagManager behavior
+ */
+export interface TagManagerOptions {
+  /**
+   * The name of the property in CloudFormation for these tags
+   *
+   * Normally this is `tags`, but Cognito UserPool uses UserPoolTags
+   *
+   * @default "tags"
+   */
+  readonly tagPropertyName?: string;
+}
+
+/**
  * TagManager facilitates a common implementation of tagging for Constructs.
  */
 export class TagManager {
@@ -215,18 +229,27 @@ export class TagManager {
     return (construct as any).tags !== undefined;
   }
 
+  /**
+   * The property name for tag values
+   *
+   * Normally this is `tags` but some resources choose a different name. Cognito
+   * UserPool uses UserPoolTags
+   */
+  public readonly tagPropertyName: string;
+
   private readonly tags = new Map<string, Tag>();
   private readonly priorities = new Map<string, number>();
   private readonly tagFormatter: ITagFormatter;
   private readonly resourceTypeName: string;
   private readonly initialTagPriority = 50;
 
-  constructor(tagType: TagType, resourceTypeName: string, tagStructure?: any) {
+  constructor(tagType: TagType, resourceTypeName: string, tagStructure?: any, options: TagManagerOptions = { }) {
     this.resourceTypeName = resourceTypeName;
     this.tagFormatter = TAG_FORMATTERS[tagType];
     if (tagStructure !== undefined) {
       this._setTag(...this.tagFormatter.parseTags(tagStructure, this.initialTagPriority));
     }
+    this.tagPropertyName = options.tagPropertyName || 'tags';
   }
 
   /**
@@ -259,6 +282,12 @@ export class TagManager {
     return this.tagFormatter.formatTags(Array.from(this.tags.values()));
   }
 
+  /**
+   * Determine if the aspect applies here
+   *
+   * Looks at the include and exclude resourceTypeName arrays to determine if
+   * the aspect applies here
+   */
   public applyTagAspectHere(include?: string[], exclude?: string[]) {
     if (exclude && exclude.length > 0 && exclude.indexOf(this.resourceTypeName) !== -1) {
       return false;

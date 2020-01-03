@@ -21,6 +21,26 @@ export = {
 
     test.done();
   },
+  'support tags'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const pool = new cognito.UserPool(stack, 'Pool', {
+      userPoolName: 'myPool',
+    });
+    cdk.Tag.add(pool, "PoolTag", "PoolParty");
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::Cognito::UserPool', {
+      UserPoolName: 'myPool',
+      UserPoolTags: {
+        PoolTag: "PoolParty",
+      }
+    }));
+
+    test.done();
+  },
 
   'lambda triggers are defined'(test: Test) {
     // GIVEN
