@@ -2385,15 +2385,6 @@ code-point-at@^1.0.0:
   resolved "https://registry.yarnpkg.com/code-point-at/-/code-point-at-1.1.0.tgz#0d070b4d043a5bea33a2f1a40e2edb3d9a4ccf77"
   integrity sha1-DQcLTQQ6W+ozovGkDi7bPZpMz3c=
 
-codemaker@^0.20.11:
-  version "0.20.11"
-  resolved "https://registry.yarnpkg.com/codemaker/-/codemaker-0.20.11.tgz#5fc7f4f6fa0a6e6b59b97b176208b423ddc041bd"
-  integrity sha512-sN56fTstGieaoaBfm2jQjSwPNAp7nRgwWReDCoEFrWs8F6GVX1lJF3MpnsWqz3JRVoSDiIG3LAtx4kf/vkOagQ==
-  dependencies:
-    camelcase "^5.3.1"
-    decamelize "^1.2.0"
-    fs-extra "^8.1.0"
-
 codemaker@^0.21.0:
   version "0.21.0"
   resolved "https://registry.yarnpkg.com/codemaker/-/codemaker-0.21.0.tgz#48a2689b2f9dae0a17605cbfdc3f4cb87d241b30"
@@ -5281,20 +5272,21 @@ jsii-diff@^0.21.0:
     typescript "~3.7.4"
     yargs "^15.0.2"
 
-jsii-pacmak@^0.20.11:
-  version "0.20.11"
-  resolved "https://registry.yarnpkg.com/jsii-pacmak/-/jsii-pacmak-0.20.11.tgz#db856e8e54e8077146a80ef3b407f0df8db09db7"
-  integrity sha512-Xsbh9XHt32CPPiSqMtgxEsBV1xZe/NUR+y/NWkdRG683iJIROxV/qZH3k3s/Wgm18OhR3PjmgiHbkuMZFwJt+w==
+jsii-pacmak@^0.21.0:
+  version "0.21.0"
+  resolved "https://registry.yarnpkg.com/jsii-pacmak/-/jsii-pacmak-0.21.0.tgz#b3d4e75515b5443484944d0b622b7560f1d9165d"
+  integrity sha512-EOg84KBL7z9uyLJX8OwjAd4YzWhGm9D4Yi5u215ATp9RuXPJ0Z9owr00XL4QSLVgX4gBW69QMzEBvFmwsKlryw==
   dependencies:
-    "@jsii/spec" "^0.20.11"
+    "@jsii/spec" "^0.21.0"
     camelcase "^5.1.3"
     clone "^2.1.2"
-    codemaker "^0.20.11"
+    codemaker "^0.21.0"
     commonmark "^0.29.0"
     escape-string-regexp "^2.0.0"
     fs-extra "^8.1.0"
-    jsii-reflect "^0.20.11"
-    jsii-rosetta "^0.20.11"
+    jsii-reflect "^0.21.0"
+    jsii-rosetta "^0.21.0"
+    semver "^7.1.1"
     spdx-license-list "^6.1.0"
     xmlbuilder "^13.0.2"
     yargs "^15.0.2"
@@ -5321,15 +5313,15 @@ jsii-reflect@^0.21.0:
     oo-ascii-tree "^0.21.0"
     yargs "^15.0.2"
 
-jsii-rosetta@^0.20.11:
-  version "0.20.11"
-  resolved "https://registry.yarnpkg.com/jsii-rosetta/-/jsii-rosetta-0.20.11.tgz#1edf5785421f3b1dad604a6df7702c1a70c8ca70"
-  integrity sha512-6aJxNZbjTVp0Ic6d9z/Dn+4nfPvHFLQuHhfoRSlJ9PZ+W7AC02c+ZiQUv+NvpBpFes4ssgCVNgSrg6iVBQiFGg==
+jsii-rosetta@^0.21.0:
+  version "0.21.0"
+  resolved "https://registry.yarnpkg.com/jsii-rosetta/-/jsii-rosetta-0.21.0.tgz#67a1a8c5294b6b481cfc095c6c04ef178840992f"
+  integrity sha512-9dAOb4p3NhZU85syQwctK+dCT4/27bw4o3UYI8LD5oYK0FqbK1iPwQRGPCqcCXCaW4vl8Ymh3fGC+ezWhfAXXA==
   dependencies:
-    "@jsii/spec" "^0.20.11"
+    "@jsii/spec" "^0.21.0"
     commonmark "^0.29.0"
     fs-extra "^8.1.0"
-    typescript "~3.7.3"
+    typescript "~3.7.4"
     yargs "^15.0.2"
 
 jsii@^0.20.11:
