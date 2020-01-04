@@ -36,14 +36,6 @@ export = {
           FirelensConfiguration: {
             Type: 'fluentbit'
           },
-          Image: {
-            'Fn::FindInMap': [
-              'FluentBitECRImageMapping', {
-                Ref: 'AWS::Region'
-              },
-              'image'
-            ]
-          },
         }
       ]
     }));
@@ -184,7 +176,6 @@ export = {
         ContainerDefinitions: [
           {
             Essential: true,
-            Image: '906394416424.dkr.ecr.us-east-1.amazonaws.com/aws-for-fluent-bit:latest',
             MemoryReservation: 50,
             Name: 'log_router',
             FirelensConfiguration: {

@@ -434,13 +434,7 @@
               "Type": "fluentbit"
             },
             "Image": {
-              "Fn::FindInMap": [
-                "FluentBitECRImageMapping",
-                {
-                  "Ref": "AWS::Region"
-                },
-                "image"
-              ]
+              "Ref": "SsmParameterValueawsserviceawsforfluentbit210C96584B6F00A464EAD1953AFF4B05118Parameter"
             },
             "LogConfiguration": {
               "LogDriver": "awslogs",
@@ -605,74 +599,10 @@
       }
     }
   },
-  "Mappings": {
-    "FluentBitECRImageMapping": {
-      "us-east-1": {
-        "image": "906394416424.dkr.ecr.us-east-1.amazonaws.com/aws-for-fluent-bit:latest"
-      },
-      "us-east-2": {
-        "image": "906394416424.dkr.ecr.us-east-2.amazonaws.com/aws-for-fluent-bit:latest"
-      },
-      "us-west-1": {
-        "image": "906394416424.dkr.ecr.us-west-1.amazonaws.com/aws-for-fluent-bit:latest"
-      },
-      "us-west-2": {
-        "image": "906394416424.dkr.ecr.us-west-2.amazonaws.com/aws-for-fluent-bit:latest"
-      },
-      "ap-east-1": {
-        "image": "449074385750.dkr.ecr.ap-east-1.amazonaws.com/aws-for-fluent-bit:latest"
-      },
-      "ap-south-1": {
-        "image": "906394416424.dkr.ecr.ap-south-1.amazonaws.com/aws-for-fluent-bit:latest"
-      },
-      "ap-northeast-2": {
-        "image": "906394416424.dkr.ecr.ap-northeast-2.amazonaws.com/aws-for-fluent-bit:latest"
-      },
-      "ap-southeast-1": {
-        "image": "906394416424.dkr.ecr.ap-southeast-1.amazonaws.com/aws-for-fluent-bit:latest"
-      },
-      "ap-southeast-2": {
-        "image": "906394416424.dkr.ecr.ap-southeast-2.amazonaws.com/aws-for-fluent-bit:latest"
-      },
-      "ap-northeast-1": {
-        "image": "906394416424.dkr.ecr.ap-northeast-1.amazonaws.com/aws-for-fluent-bit:latest"
-      },
-      "ca-central-1": {
-        "image": "906394416424.dkr.ecr.ca-central-1.amazonaws.com/aws-for-fluent-bit:latest"
-      },
-      "eu-central-1": {
-        "image": "906394416424.dkr.ecr.eu-central-1.amazonaws.com/aws-for-fluent-bit:latest"
-      },
-      "eu-west-1": {
-        "image": "906394416424.dkr.ecr.eu-west-1.amazonaws.com/aws-for-fluent-bit:latest"
-      },
-      "eu-west-2": {
-        "image": "906394416424.dkr.ecr.eu-west-2.amazonaws.com/aws-for-fluent-bit:latest"
-      },
-      "eu-west-3": {
-        "image": "906394416424.dkr.ecr.eu-west-3.amazonaws.com/aws-for-fluent-bit:latest"
-      },
-      "eu-north-1": {
-        "image": "906394416424.dkr.ecr.eu-north-1.amazonaws.com/aws-for-fluent-bit:latest"
-      },
-      "me-south-1": {
-        "image": "741863432321.dkr.ecr.me-south-1.amazonaws.com/aws-for-fluent-bit:latest"
-      },
-      "sa-east-1": {
-        "image": "906394416424.dkr.ecr.sa-east-1.amazonaws.com/aws-for-fluent-bit:latest"
-      },
-      "us-gov-east-1": {
-        "image": "161423150738.dkr.ecr.us-gov-east-1.amazonaws.com/aws-for-fluent-bit:latest"
-      },
-      "us-gov-west-1": {
-        "image": "161423150738.dkr.ecr.us-gov-west-1.amazonaws.com/aws-for-fluent-bit:latest"
-      },
-      "cn-north-1": {
-        "image": "128054284489.dkr.ecr.cn-north-1.amazonaws.com.cn/aws-for-fluent-bit:latest"
-      },
-      "cn-northwest-1": {
-        "image": "128054284489.dkr.ecr.cn-northwest-1.amazonaws.com.cn/aws-for-fluent-bit:latest"
-      }
+  "Parameters": {
+    "SsmParameterValueawsserviceawsforfluentbit210C96584B6F00A464EAD1953AFF4B05118Parameter": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/aws/service/aws-for-fluent-bit/2.1.0"
     }
   }
 }

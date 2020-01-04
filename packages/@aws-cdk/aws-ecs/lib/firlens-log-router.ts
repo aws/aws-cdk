@@ -1,4 +1,5 @@
 import * as iam from '@aws-cdk/aws-iam';
+import * as ssm from '@aws-cdk/aws-ssm';
 import * as cdk from '@aws-cdk/core';
 import { TaskDefinition } from './base/task-definition';
 import { ContainerDefinition, ContainerDefinitionOptions, ContainerDefinitionProps } from "./container-definition";
@@ -123,64 +124,13 @@ function renderFirelensConfig(firelensConfig: FirelensConfig): CfnTaskDefinition
 }
 
 /**
- * Fluent Bit images in Amazon ECR
- * https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_firelens.html#firelens-using-fluentbit
+ * SSM parameters for latest fluent bit docker image in ECR
+ * https://github.com/aws/aws-for-fluent-bit#using-ssm-to-find-available-versions
  */
-const regFluentBitECRImageMapping: { [region: string]: string } = {
-  'us-east-1': '906394416424.dkr.ecr.us-east-1.amazonaws.com/aws-for-fluent-bit:latest',
-  'us-east-2': '906394416424.dkr.ecr.us-east-2.amazonaws.com/aws-for-fluent-bit:latest',
-  'us-west-1': '906394416424.dkr.ecr.us-west-1.amazonaws.com/aws-for-fluent-bit:latest',
-  'us-west-2': '906394416424.dkr.ecr.us-west-2.amazonaws.com/aws-for-fluent-bit:latest',
-  'ap-east-1': '449074385750.dkr.ecr.ap-east-1.amazonaws.com/aws-for-fluent-bit:latest',
-  'ap-south-1': '906394416424.dkr.ecr.ap-south-1.amazonaws.com/aws-for-fluent-bit:latest',
-  'ap-northeast-2': '906394416424.dkr.ecr.ap-northeast-2.amazonaws.com/aws-for-fluent-bit:latest',
-  'ap-southeast-1': '906394416424.dkr.ecr.ap-southeast-1.amazonaws.com/aws-for-fluent-bit:latest',
-  'ap-southeast-2': '906394416424.dkr.ecr.ap-southeast-2.amazonaws.com/aws-for-fluent-bit:latest',
-  'ap-northeast-1': '906394416424.dkr.ecr.ap-northeast-1.amazonaws.com/aws-for-fluent-bit:latest',
-  'ca-central-1': '906394416424.dkr.ecr.ca-central-1.amazonaws.com/aws-for-fluent-bit:latest',
-  'eu-central-1': '906394416424.dkr.ecr.eu-central-1.amazonaws.com/aws-for-fluent-bit:latest',
-  'eu-west-1': '906394416424.dkr.ecr.eu-west-1.amazonaws.com/aws-for-fluent-bit:latest',
-  'eu-west-2': '906394416424.dkr.ecr.eu-west-2.amazonaws.com/aws-for-fluent-bit:latest',
-  'eu-west-3': '906394416424.dkr.ecr.eu-west-3.amazonaws.com/aws-for-fluent-bit:latest',
-  'eu-north-1': '906394416424.dkr.ecr.eu-north-1.amazonaws.com/aws-for-fluent-bit:latest',
-  'me-south-1': '741863432321.dkr.ecr.me-south-1.amazonaws.com/aws-for-fluent-bit:latest',
-  'sa-east-1': '906394416424.dkr.ecr.sa-east-1.amazonaws.com/aws-for-fluent-bit:latest',
-  'us-gov-east-1': '161423150738.dkr.ecr.us-gov-east-1.amazonaws.com/aws-for-fluent-bit:latest',
-  'us-gov-west-1': '161423150738.dkr.ecr.us-gov-west-1.amazonaws.com/aws-for-fluent-bit:latest',
-  'cn-north-1': '128054284489.dkr.ecr.cn-north-1.amazonaws.com.cn/aws-for-fluent-bit:latest',
-  'cn-northwest-1': '128054284489.dkr.ecr.cn-northwest-1.amazonaws.com.cn/aws-for-fluent-bit:latest',
-};
-
-/**
- * Get static fluentbit image URI if region has been specified,
- * or build Fn::FindInMap to get Fluent Bit image in Amazon ECR if stack.region is unresolved (region agnostic),
- * TODO: retrieve image with SSM parameters, like EKS optimized AMI.
- */
-function retrieveFluentBitECRImage(stack: cdk.Stack): string {
-  if (cdk.Token.isUnresolved(stack.region)) {
-    /**
-     * Build Fn::FindInMap to get Fluent Bit image in Amazon ECR if stack.region is unresolved (region agnostic),
-     * find existed cfn mapping to avoid duplicated mapping in cfn.
-     */
-
-    const imageMappingId = 'FluentBitECRImageMapping';
-    let cfnRegFluentBitECRImageMapping = stack.node.tryFindChild(imageMappingId) as cdk.CfnMapping;
-    if (!cfnRegFluentBitECRImageMapping) {
-      // Transform {region: image} to {region: {image: $image}} and create CFN Mappings and Fn::FindInMap
-      cfnRegFluentBitECRImageMapping = new cdk.CfnMapping(stack, imageMappingId, {
-        mapping: Object.entries(regFluentBitECRImageMapping).reduce((ret, [region, image]) => ({ ...ret, [region]: { image } }), {})
-      });
-    }
-    return cfnRegFluentBitECRImageMapping.findInMap(stack.region, 'image');
-  } else {
-    return regFluentBitECRImageMapping[stack.region];
-  }
-}
+const latestFluentBitImage = '/aws/service/aws-for-fluent-bit/2.1.0';
 
 /**
  * Obtain Fluent Bit image in Amazon ECR build and setup corresponding IAM permissions.
- * Fluent Bit image will be static URI if region has been specified in this stack,
- * or build Fn::FindInMap to get Fluent Bit image in Amazon ECR.
  * ECR image pull permissions will be granted in task execution role.
  * Cloudwatch logs or Firehose permissions will be grant by check options in logDriverConfig.
  * https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_firelens.html#firelens-using-fluentbit
@@ -219,11 +169,9 @@ export function obtainDefaultFluentBitECRImage(task: TaskDefinition, logDriverCo
     }));
   }
 
-  const fluentbitImage = retrieveFluentBitECRImage(cdk.Stack.of(task));
-
   // Not use ContainerImage.fromEcrRepository since it's not support parsing ECR repo URI,
   // use repo ARN might result in complex Fn:: functions in cloudformation template.
-  return ContainerImage.fromRegistry(fluentbitImage);
+  return ContainerImage.fromRegistry(ssm.StringParameter.valueForStringParameter(task, latestFluentBitImage));
 }
 
 /**
