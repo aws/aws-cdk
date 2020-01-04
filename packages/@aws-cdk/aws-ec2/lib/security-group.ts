@@ -1,8 +1,10 @@
-import { Construct, IResource, Lazy, Resource, ResourceProps, Stack, Token } from '@aws-cdk/core';
+import { Construct, ContextProvider, IResource, Lazy, Resource, ResourceProps, Stack, Token } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Connections } from './connections';
 import { CfnSecurityGroup, CfnSecurityGroupEgress, CfnSecurityGroupIngress } from './ec2.generated';
 import { IPeer } from './peer';
 import { Port } from './port';
+import { SecurityGroupLookupOptions } from './security-group-lookup';
 import { IVpc } from './vpc';
 
 const SECURITY_GROUP_SYMBOL = Symbol.for('@aws-cdk/iam.SecurityGroup');
@@ -286,6 +288,54 @@ export class SecurityGroup extends SecurityGroupBase {
     return options.mutable !== false
     ? new MutableImport(scope, id)
     : new ImmutableImport(scope, id);
+  }
+
+  /**
+   * Import an existing security group into this app.
+   */
+  public static fromLookup(scope: Construct, id: string, options: SecurityGroupLookupOptions): ISecurityGroup {
+    if (Token.isUnresolved(options.vpcId)
+      || Object.values(options.filter || {}).some(Token.isUnresolved)
+      || Object.keys(options.filter || {}).some(Token.isUnresolved)) {
+      throw new Error(`All arguments to SecurityGroup.fromLookup() must be concrete (no Tokens)`);
+    }
+    const DEFAULT_SECURITY_GROUP: cxapi.SecurityGroupContextResponse = {
+      securityGroupId: 'sg-12345678',
+    };
+    const filter: {[key: string]: string} = {};
+    for (const [name, value] of Object.entries(options.filter || {})) {
+        filter[`${name}`] = value;
+    }
+
+    // Handle this filter specially
+    if (options.vpcId) { filter['vpc-id'] = options.vpcId; }
+
+    const attributes: cxapi.SecurityGroupContextResponse = ContextProvider.getValue(scope, {
+      provider: cxapi.SECURITY_GROUP_PROVIDER,
+      props: {
+        vpcId: options.vpcId,
+        filter,
+      } as cxapi.SecurityGroupContextQuery,
+      dummyValue: DEFAULT_SECURITY_GROUP,
+    }).value;
+
+    class ImmutableImport extends SecurityGroupBase {
+      public securityGroupId: string;
+
+      constructor(scope2: Construct, id2: string, props: cxapi.SecurityGroupContextResponse) {
+        super(scope2, id2);
+        this.securityGroupId = props.securityGroupId;
+      }
+      public addEgressRule(_peer: IPeer, _connection: Port, _description?: string, _remoteRule?: boolean) {
+        // do nothing
+      }
+
+      public addIngressRule(_peer: IPeer, _connection: Port, _description?: string, _remoteRule?: boolean)  {
+        // do nothing
+      }
+    }
+
+    return new ImmutableImport(scope, id, attributes || DEFAULT_SECURITY_GROUP);
   }
 
   /**

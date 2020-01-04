@@ -118,6 +118,8 @@
       "props-default-doc:@aws-cdk/cx-api.HostedZoneContextQuery.privateZone",
       "props-default-doc:@aws-cdk/cx-api.HostedZoneContextQuery.region",
       "props-default-doc:@aws-cdk/cx-api.HostedZoneContextQuery.vpcId",
+      "props-default-doc:@aws-cdk/cx-api.SecurityGroupContextQuery.account",
+      "props-default-doc:@aws-cdk/cx-api.SecurityGroupContextQuery.region",
       "docs-public-apis:@aws-cdk/cx-api.CloudArtifact.id",
       "props-default-doc:@aws-cdk/cx-api.MetadataEntry.trace",
       "docs-public-apis:@aws-cdk/cx-api.MetadataEntryResult",

@@ -6,6 +6,7 @@ import { AmiContextProviderPlugin } from './ami';
 import { AZContextProviderPlugin } from './availability-zones';
 import { HostedZoneContextProviderPlugin } from './hosted-zones';
 import { ContextProviderPlugin } from './provider';
+import { SecurityGroupContextProviderPlugin } from './security-group';
 import { SSMContextProviderPlugin } from './ssm-parameters';
 import { VpcNetworkContextProviderPlugin } from './vpcs';
 
@@ -58,4 +59,5 @@ const availableContextProviders: ProviderMap = {
   [cxapi.HOSTED_ZONE_PROVIDER]: HostedZoneContextProviderPlugin,
   [cxapi.VPC_PROVIDER]: VpcNetworkContextProviderPlugin,
   [cxapi.AMI_PROVIDER]: AmiContextProviderPlugin,
+  [cxapi.SECURITY_GROUP_PROVIDER]: SecurityGroupContextProviderPlugin,
 };
