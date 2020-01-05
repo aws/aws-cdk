@@ -6,10 +6,9 @@ import { Authorizer, IAuthorizer } from '../authorizer';
 import { RestApi } from '../restapi';
 
 /**
- * Properties for TokenAuthorizer
+ * Base properties for all lambda authorizers
  */
-export interface TokenAuthorizerProps {
-
+export interface LambdaAuthorizerProps {
   /**
    * An optional human friendly name for the authorizer. Note that, this is not the primary identifier of the authorizer.
    *
@@ -28,28 +27,12 @@ export interface TokenAuthorizerProps {
   readonly handler: lambda.IFunction;
 
   /**
-   * The request header mapping expression for the bearer token. This is typically passed as part of the header, in which case
-   * this should be `method.request.header.Authorizer` where Authorizer is the header containing the bearer token.
-   * @see https://docs.aws.amazon.com/apigateway/api-reference/link-relation/authorizer-create/#identitySource
-   * @default 'method.request.header.Authorization'
-   */
-  readonly identitySource?: string;
-
-  /**
    * How long APIGateway should cache the results. Max 1 hour.
    * Disable caching by setting this to 0.
    *
    * @default Duration.minutes(5)
    */
   readonly resultsCacheTtl?: Duration;
-
-  /**
-   * An optional regex to be matched against the authorization token. When matched the authorizer lambda is invoked,
-   * otherwise a 401 Unauthorized is returned to the client.
-   *
-   * @default - no regex filter will be applied.
-   */
-  readonly validationRegex?: string;
 
   /**
    * An optional IAM role for APIGateway to assume before calling the Lambda-based authorizer. The IAM role must be
@@ -60,14 +43,7 @@ export interface TokenAuthorizerProps {
   readonly assumeRole?: iam.IRole;
 }
 
-/**
- * Token based lambda authorizer that recognizes the caller's identity as a bearer token,
- * such as a JSON Web Token (JWT) or an OAuth token.
- * Based on the token, authorization is performed by a lambda function.
- *
- * @resource AWS::ApiGateway::Authorizer
- */
-export class TokenAuthorizer extends Authorizer implements IAuthorizer {
+abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
 
   /**
    * The id of the authorizer.
@@ -77,12 +53,13 @@ export class TokenAuthorizer extends Authorizer implements IAuthorizer {
 
   /**
    * The ARN of the authorizer to be used in permission policies, such as IAM and resource-based grants.
+   * @attribute
    */
   public readonly authorizerArn: string;
 
-  private restApiId?: string;
+  protected restApiId?: string;
 
-  constructor(scope: Construct, id: string, props: TokenAuthorizerProps) {
+  protected constructor(scope: Construct, id: string, props: LambdaAuthorizerProps) {
     super(scope, id);
 
     if (props.resultsCacheTtl && props.resultsCacheTtl.toSeconds() > 3600) {
@@ -91,18 +68,7 @@ export class TokenAuthorizer extends Authorizer implements IAuthorizer {
 
     const restApiId = Lazy.stringValue({ produce: () => this.restApiId });
 
-    const resource = new CfnAuthorizer(this, 'Resource', {
-      name: props.authorizerName ?? this.node.uniqueId,
-      restApiId,
-      type: 'TOKEN',
-      authorizerUri: `arn:aws:apigateway:${Stack.of(this).region}:lambda:path/2015-03-31/functions/${props.handler.functionArn}/invocations`,
-      authorizerCredentials: props.assumeRole ? props.assumeRole.roleArn : undefined,
-      authorizerResultTtlInSeconds: props.resultsCacheTtl && props.resultsCacheTtl.toSeconds(),
-      identitySource: props.identitySource || 'method.request.header.Authorization',
-      identityValidationExpression: props.validationRegex,
-    });
-
-    this.authorizerId = resource.ref;
+    this.authorizerId = this.getResource(props).ref;
 
     this.authorizerArn = Stack.of(this).formatArn({
       service: 'execute-api',
@@ -137,5 +103,103 @@ export class TokenAuthorizer extends Authorizer implements IAuthorizer {
     }
 
     this.restApiId = restApi.restApiId;
+  }
+
+  protected abstract getResource<T extends LambdaAuthorizerProps>(props: T): CfnAuthorizer;
+}
+
+/**
+ * Properties for TokenAuthorizer
+ */
+export interface TokenAuthorizerProps extends LambdaAuthorizerProps {
+  /**
+   * An optional regex to be matched against the authorization token. When matched the authorizer lambda is invoked,
+   * otherwise a 401 Unauthorized is returned to the client.
+   *
+   * @default - no regex filter will be applied.
+   */
+  readonly validationRegex?: string;
+
+  /**
+   * The request header mapping expression for the bearer token. This is typically passed as part of the header, in which case
+   * this should be `method.request.header.Authorizer` where Authorizer is the header containing the bearer token.
+   * @see https://docs.aws.amazon.com/apigateway/api-reference/link-relation/authorizer-create/#identitySource
+   * @default 'method.request.header.Authorization'
+   */
+  readonly identitySource?: string;
+}
+
+/**
+ * Token based lambda authorizer that recognizes the caller's identity as a bearer token,
+ * such as a JSON Web Token (JWT) or an OAuth token.
+ * Based on the token, authorization is performed by a lambda function.
+ *
+ * @resource AWS::ApiGateway::Authorizer
+ */
+export class TokenAuthorizer extends LambdaAuthorizer {
+
+  constructor(scope: Construct, id: string, props: TokenAuthorizerProps) {
+    super(scope, id, props);
+  }
+
+  protected getResource(props: TokenAuthorizerProps): CfnAuthorizer {
+    const restApiId = Lazy.stringValue({ produce: () => this.restApiId });
+
+    return new CfnAuthorizer(this, 'Resource', {
+      name: props.authorizerName ?? this.node.uniqueId,
+      restApiId,
+      type: 'TOKEN',
+      authorizerUri: `arn:aws:apigateway:${Stack.of(this).region}:lambda:path/2015-03-31/functions/${props.handler.functionArn}/invocations`,
+      authorizerCredentials: props.assumeRole ? props.assumeRole.roleArn : undefined,
+      authorizerResultTtlInSeconds: props.resultsCacheTtl && props.resultsCacheTtl.toSeconds(),
+      identitySource: props.identitySource || 'method.request.header.Authorization',
+      identityValidationExpression: props.validationRegex,
+    });
+  }
+}
+
+/**
+ * Properties for RequestAuthorizerProps
+ */
+export interface RequestAuthorizerProps extends LambdaAuthorizerProps {
+  /**
+   * An array of request header mapping expressions for identities. This is typically passed as part of the header,
+   * in which case this should be `method.request.header.Authorizer` where Authorizer is the header containing the
+   * bearer token.
+   * @see https://docs.aws.amazon.com/apigateway/api-reference/link-relation/authorizer-create/#identitySource
+   * @default no identity sources
+   */
+  readonly identitySource?: string[];
+}
+
+/**
+ * Request-based lambda authorizer that recognizes the caller's identity via request parameters,
+ * such as headers, paths, query strings, stage variables, or context variables.
+ * Based on the request, authorization is performed by a lambda function.
+ *
+ * @resource AWS::ApiGateway::Authorizer
+ */
+export class RequestAuthorizer extends LambdaAuthorizer {
+
+  constructor(scope: Construct, id: string, props: RequestAuthorizerProps) {
+    super(scope, id, props);
+
+    if (props.resultsCacheTtl && props.identitySource?.length === 0) {
+      throw new Error(`At least one Identity Source is required for a REQUEST-based Lambda authorizer.`);
+    }
+  }
+
+  protected getResource(props: RequestAuthorizerProps): CfnAuthorizer {
+    const restApiId = Lazy.stringValue({ produce: () => this.restApiId });
+
+    return new CfnAuthorizer(this, 'Resource', {
+      name: props.authorizerName ?? this.node.uniqueId,
+      restApiId,
+      type: 'REQUEST',
+      authorizerUri: `arn:aws:apigateway:${Stack.of(this).region}:lambda:path/2015-03-31/functions/${props.handler.functionArn}/invocations`,
+      authorizerCredentials: props.assumeRole ? props.assumeRole.roleArn : undefined,
+      authorizerResultTtlInSeconds: props.resultsCacheTtl && props.resultsCacheTtl.toSeconds(),
+      identitySource: props.identitySource?.join(','),
+    });
   }
 }

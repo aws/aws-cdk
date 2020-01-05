@@ -4,6 +4,7 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import { Duration, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { AuthorizationType, RestApi, TokenAuthorizer } from '../../lib';
+import {RequestAuthorizer} from '../../lib/authorizers';
 
 export = {
   'default token authorizer'(test: Test) {
@@ -29,6 +30,40 @@ export = {
       Type: 'TOKEN',
       RestApiId: stack.resolve(restApi.restApiId),
       IdentitySource: 'method.request.header.Authorization'
+    }));
+
+    expect(stack).to(haveResource('AWS::Lambda::Permission', {
+      Action: 'lambda:InvokeFunction',
+      Principal: 'apigateway.amazonaws.com',
+    }));
+
+    test.ok(auth.authorizerArn.endsWith(`/authorizers/${auth.authorizerId}`), 'Malformed authorizer ARN');
+
+    test.done();
+  },
+
+  'default request authorizer'(test: Test) {
+    const stack = new Stack();
+
+    const func = new lambda.Function(stack, 'myfunction', {
+      handler: 'handler',
+      code: lambda.Code.fromInline('foo'),
+      runtime: lambda.Runtime.NODEJS_12_X,
+    });
+
+    const auth = new RequestAuthorizer(stack, 'myauthorizer', {
+      handler: func
+    });
+
+    const restApi = new RestApi(stack, 'myrestapi');
+    restApi.root.addMethod('ANY', undefined, {
+      authorizer: auth,
+      authorizationType: AuthorizationType.CUSTOM
+    });
+
+    expect(stack).to(haveResource('AWS::ApiGateway::Authorizer', {
+      Type: 'REQUEST',
+      RestApiId: stack.resolve(restApi.restApiId),
     }));
 
     expect(stack).to(haveResource('AWS::Lambda::Permission', {
@@ -76,6 +111,39 @@ export = {
     test.done();
   },
 
+  'request authorizer with all parameters specified'(test: Test) {
+    const stack = new Stack();
+
+    const func = new lambda.Function(stack, 'myfunction', {
+      handler: 'handler',
+      code: lambda.Code.fromInline('foo'),
+      runtime: lambda.Runtime.NODEJS_12_X,
+    });
+
+    const auth = new RequestAuthorizer(stack, 'myauthorizer', {
+      handler: func,
+      identitySource: ['method.request.header.whoami'],
+      authorizerName: 'myauthorizer',
+      resultsCacheTtl: Duration.minutes(1),
+    });
+
+    const restApi = new RestApi(stack, 'myrestapi');
+    restApi.root.addMethod('ANY', undefined, {
+      authorizer: auth,
+      authorizationType: AuthorizationType.CUSTOM
+    });
+
+    expect(stack).to(haveResource('AWS::ApiGateway::Authorizer', {
+      Type: 'REQUEST',
+      RestApiId: stack.resolve(restApi.restApiId),
+      IdentitySource: 'method.request.header.whoami',
+      Name: 'myauthorizer',
+      AuthorizerResultTtlInSeconds: 60
+    }));
+
+    test.done();
+  },
+
   'token authorizer with assume role'(test: Test) {
     const stack = new Stack();
 
@@ -103,6 +171,58 @@ export = {
 
     expect(stack).to(haveResource('AWS::ApiGateway::Authorizer', {
       Type: 'TOKEN',
+      RestApiId: stack.resolve(restApi.restApiId),
+    }));
+
+    expect(stack).to(haveResource('AWS::IAM::Role'));
+
+    expect(stack).to(haveResource('AWS::IAM::Policy', {
+      Roles: [
+        stack.resolve(role.roleName)
+      ],
+      PolicyDocument: {
+        Statement: [
+          {
+            Resource: stack.resolve(func.functionArn),
+            Action: 'lambda:InvokeFunction',
+            Effect: 'Allow',
+          }
+        ],
+      }
+    }, ResourcePart.Properties, true));
+
+    expect(stack).notTo(haveResource('AWS::Lambda::Permission'));
+
+    test.done();
+  },
+
+  'request authorizer with assume role'(test: Test) {
+    const stack = new Stack();
+
+    const func = new lambda.Function(stack, 'myfunction', {
+      handler: 'handler',
+      code: lambda.Code.fromInline('foo'),
+      runtime: lambda.Runtime.NODEJS_12_X,
+    });
+
+    const role = new iam.Role(stack, 'authorizerassumerole', {
+      assumedBy: new iam.ServicePrincipal('apigateway.amazonaws.com'),
+      roleName: 'authorizerassumerole'
+    });
+
+    const auth = new RequestAuthorizer(stack, 'myauthorizer', {
+      handler: func,
+      assumeRole: role
+    });
+
+    const restApi = new RestApi(stack, 'myrestapi');
+    restApi.root.addMethod('ANY', undefined, {
+      authorizer: auth,
+      authorizationType: AuthorizationType.CUSTOM
+    });
+
+    expect(stack).to(haveResource('AWS::ApiGateway::Authorizer', {
+      Type: 'REQUEST',
       RestApiId: stack.resolve(restApi.restApiId),
     }));
 
