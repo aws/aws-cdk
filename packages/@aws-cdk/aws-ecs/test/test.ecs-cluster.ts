@@ -1119,7 +1119,7 @@ export = {
     });
 
     // THEN
-    test.deepEqual(stack1.resolve(cluster1.autoscalingGroup.auto_scaling_group_arn), stack2.resolve(cluster2.autoscalingGroup.auto_scaling_group_arn));
+    test.deepEqual(stack1.resolve(cluster1.autoscalingGroup.autoScalingGroupArn), stack2.resolve(cluster2.autoscalingGroup.autoScalingGroupArn));
     test.done();
   },
 
