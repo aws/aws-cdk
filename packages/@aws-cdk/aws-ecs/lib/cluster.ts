@@ -564,7 +564,6 @@ class ImportedCluster extends Resource implements ICluster {
    */
   public readonly hasEc2Capacity: boolean;
 
-  
   /**
    * Autoscaling group of the cluster
    */
@@ -585,8 +584,6 @@ class ImportedCluster extends Resource implements ICluster {
     this.hasEc2Capacity = props.hasEc2Capacity !== false;
     this.autoscalingGroup = props.autoscalingGroup;
     this._defaultCloudMapNamespace = props.defaultCloudMapNamespace;
-    
-
     this.clusterArn = props.clusterArn !== undefined ? props.clusterArn : Stack.of(this).formatArn({
       service: 'ecs',
       resource: 'cluster',
