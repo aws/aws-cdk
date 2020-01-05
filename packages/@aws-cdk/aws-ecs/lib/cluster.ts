@@ -564,11 +564,17 @@ class ImportedCluster extends Resource implements ICluster {
    */
   public readonly hasEc2Capacity: boolean;
 
+  
+  /**
+   * Autoscaling group of the cluster
+   */
+  public readonly autoscalingGroup?: autoscaling.IAutoScalingGroup;
+
   /**
    * Cloudmap namespace created in the cluster
    */
   private _defaultCloudMapNamespace?: cloudmap.INamespace;
-
+  
   /**
    * Constructs a new instance of the ImportedCluster class.
    */
@@ -577,7 +583,9 @@ class ImportedCluster extends Resource implements ICluster {
     this.clusterName = props.clusterName;
     this.vpc = props.vpc;
     this.hasEc2Capacity = props.hasEc2Capacity !== false;
+    this.autoscalingGroup = props.autoscalingGroup;
     this._defaultCloudMapNamespace = props.defaultCloudMapNamespace;
+    
 
     this.clusterArn = props.clusterArn !== undefined ? props.clusterArn : Stack.of(this).formatArn({
       service: 'ecs',
