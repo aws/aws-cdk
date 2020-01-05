@@ -577,6 +577,7 @@ class ImportedCluster extends Resource implements ICluster {
     this.clusterName = props.clusterName;
     this.vpc = props.vpc;
     this.hasEc2Capacity = props.hasEc2Capacity !== false;
+    this._autoscalingGroup = props.autoscalingGroup;
     this._defaultCloudMapNamespace = props.defaultCloudMapNamespace;
 
     this.clusterArn = props.clusterArn !== undefined ? props.clusterArn : Stack.of(this).formatArn({
