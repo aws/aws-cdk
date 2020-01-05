@@ -43,3 +43,30 @@ test('lambda as notification target', () => {
     }
   });
 });
+
+test('lambda as notification target specified by function arn', () => {
+  // GIVEN
+  const stack = new Stack();
+  const bucketA = new s3.Bucket(stack, 'MyBucket');
+  const fn = lambda.Function.fromFunctionArn(stack, 'MyFunction', 'arn:aws:lambda:us-east-1:123456789012:function:ProcessKinesisRecords');
+
+  // WHEN
+  bucketA.addObjectCreatedNotification(new s3n.LambdaDestination(fn), { suffix: '.png' });
+
+  // THEN
+  expect(stack).toHaveResource('Custom::S3BucketNotifications', {
+    NotificationConfiguration: {
+      LambdaFunctionConfigurations: [
+        {
+          Events: [ "s3:ObjectCreated:*" ],
+          Filter: {
+            Key: {
+              FilterRules: [ { Name: "suffix", Value: ".png" } ]
+            }
+          },
+          LambdaFunctionArn: "arn:aws:lambda:us-east-1:123456789012:function:ProcessKinesisRecords"
+        }
+      ]
+    }
+  });
+});
