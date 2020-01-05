@@ -1123,7 +1123,6 @@ export = {
     test.done();
   },
 
-
   'export/import of a cluster with a namespace'(test: Test) {
     // GIVEN
     const stack1 = new cdk.Stack();
@@ -1150,9 +1149,6 @@ export = {
     // THEN
     test.equal(cluster2.defaultCloudMapNamespace!.type, cloudmap.NamespaceType.DNS_PRIVATE);
     test.deepEqual(stack2.resolve(cluster2.defaultCloudMapNamespace!.namespaceId), 'import-namespace-id');
-
-    // Can retrieve subnets from VPC - will throw 'There are no 'Private' subnets in this VPC. Use a different VPC subnet selection.' if broken.
-    cluster2.vpc.selectSubnets();
 
     test.done();
   },
