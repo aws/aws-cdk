@@ -1040,7 +1040,6 @@
       "Properties": {
         "MaxSize": "2",
         "MinSize": "1",
-        "DesiredCapacity": "2",
         "LaunchConfigurationName": {
           "Ref": "ClusterDefaultCapacityLaunchConfig72790CF7"
         },
