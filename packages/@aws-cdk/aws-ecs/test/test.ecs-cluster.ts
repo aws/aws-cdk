@@ -1094,6 +1094,34 @@ export = {
 
     test.done();
   },
+  'export/import of a cluster with an ASG'(test: Test) {
+    // GIVEN
+    const stack1 = new cdk.Stack();
+    const vpc1 = new ec2.Vpc(stack1, 'Vpc');
+    const cluster1 = new ecs.Cluster(stack1, 'Cluster', { vpc: vpc1 });
+    cluster1.addCapacity("DefaultAutoScalingGroup", {
+      instanceType: new ec2.InstanceType('t2.micro'),
+      associatePublicIpAddress: true,
+      vpcSubnets: {
+        onePerAz: true,
+        subnetType: ec2.SubnetType.PUBLIC
+      },
+    });
+    const stack2 = new cdk.Stack();
+
+    // WHEN
+    const cluster2 = ecs.Cluster.fromClusterAttributes(stack2, 'ImportedCluster', {
+      vpc: vpc1,
+      securityGroups: cluster1.connections.securityGroups,
+      autoscalingGroup: cluster1.autoscalingGroup,
+      clusterName: 'imported-cluster-name',
+    });
+
+    // THEN
+    test.deepEqual(stack2.resolve(cluster2.autoscalingGroup), stack2.resolve(cluster1.autoscalingGroup));
+    test.done();
+  },
+
 
   'export/import of a cluster with a namespace'(test: Test) {
     // GIVEN
