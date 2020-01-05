@@ -20,6 +20,14 @@ export interface AssetImageProps {
    * @default none
    */
   readonly target?: string;
+
+  /**
+   * Path to the Dockerfile (relative to the directory).
+   *
+   * @default - 'Dockerfile'
+   */
+  readonly file?: string;
+
 }
 
 /**
@@ -40,6 +48,7 @@ export class AssetImage extends ContainerImage {
       directory: this.directory,
       buildArgs: this.props.buildArgs,
       target: this.props.target,
+      file: this.props.file,
     });
     asset.repository.grantPull(containerDefinition.taskDefinition.obtainExecutionRole());
 

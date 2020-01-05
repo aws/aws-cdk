@@ -264,6 +264,49 @@ export = {
     test.done();
   },
 
+  async 'passes the correct file to docker build'(test: Test) {
+    // GIVEN
+    const toolkit = new ToolkitInfo({
+      sdk: new MockSDK(),
+      bucketName: 'BUCKET_NAME',
+      bucketEndpoint: 'BUCKET_ENDPOINT',
+      environment: { name: 'env', account: '1234', region: 'abc' }
+    });
+
+    const prepareEcrRepositoryStub = sinon.stub(toolkit, 'prepareEcrRepository').resolves({
+      repositoryUri: 'uri',
+      repositoryName: 'name'
+    });
+
+    const shellStub = sinon.stub(os, 'shell').rejects('STOPTEST');
+
+    // WHEN
+    const asset: cxapi.ContainerImageAssetMetadataEntry = {
+      id: 'assetId',
+      imageNameParameter: 'MyParameter',
+      packaging: 'container-image',
+      path: '/foo',
+      sourceHash: '1234567890abcdef',
+      repositoryName: 'some-name',
+      file: 'some-file'
+    };
+
+    try {
+      await prepareContainerAsset('.', asset, toolkit, false);
+    } catch (e) {
+      if (!/STOPTEST/.test(e.toString())) { throw e; }
+    }
+
+    // THEN
+    const command = ['docker', 'build', '--tag', `uri:latest`, '/foo', '--file', 'some-file'];
+
+    test.ok(shellStub.calledWith(command));
+
+    prepareEcrRepositoryStub.restore();
+    shellStub.restore();
+    test.done();
+  },
+
   async 'relative path'(test: Test) {
     // GIVEN
     const toolkit = new ToolkitInfo({
