@@ -1,14 +1,18 @@
 #!/bin/bash
 set -euo pipefail
+scriptdir=$(cd $(dirname $0) && pwd)
 
-if ! [ -x "$(command -v yarn)" ]; then
-  echo "yarn is not installed. Install it from here- https://yarnpkg.com/en/docs/install."
-  exit 1
+echo "************************************************************"
+echo " buildup usage:"
+echo " - execute 'buildup' again to resume after failure"
+echo " - execute 'buildup --restart' to restart"
+echo ""
+echo " for advanced usage, see ${scriptdir}/foreach.sh"
+echo "************************************************************"
+
+if [ "${1:-}" == "--restart" ] || [ "${1:-}" == "--reset" ]; then
+  ${scriptdir}/foreach.sh --reset
 fi
 
-export NODE_OPTIONS="--max-old-space-size=4096 ${NODE_OPTIONS:-}"
 
-scriptdir=$(cd $(dirname $0) && pwd)
-export PATH=$(cd $scriptdir && npm bin):$PATH
-scope=$(${scriptdir}/current-scope)
-exec lerna run build --scope ${scope} --include-dependencies
+${scriptdir}/foreach.sh --up yarn build
