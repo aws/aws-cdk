@@ -9,7 +9,7 @@ import org.hamcrest.CoreMatchers;
 import java.io.IOException;
 import static org.junit.Assert.assertThat;
 
-public class %name.PascalCasedStackTest {
+public class %name.PascalCased%StackTest {
     private final static ObjectMapper JSON =
         new ObjectMapper().configure(SerializationFeature.INDENT_OUTPUT, true);
 
