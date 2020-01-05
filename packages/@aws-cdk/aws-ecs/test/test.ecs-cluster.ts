@@ -1099,6 +1099,7 @@ export = {
     const stack1 = new cdk.Stack();
     const vpc1 = new ec2.Vpc(stack1, 'Vpc');
     const cluster1 = new ecs.Cluster(stack1, 'Cluster', { vpc: vpc1 });
+   
     cluster1.addCapacity("DefaultAutoScalingGroup", {
       instanceType: new ec2.InstanceType('t2.micro'),
       associatePublicIpAddress: true,
@@ -1118,7 +1119,7 @@ export = {
     });
 
     // THEN
-    test.deepEqual(stack2.resolve(cluster2.autoscalingGroup), stack2.resolve(cluster1.autoscalingGroup));
+    test.deepEqual(stack1.resolve(cluster1.autoscalingGroup.auto_scaling_group_arn), stack2.resolve(cluster2.autoscalingGroup.auto_scaling_group_arn));
     test.done();
   },
 
