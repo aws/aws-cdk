@@ -104,7 +104,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
       metricName,
       dimensions: { LoadBalancer: this.loadBalancerFullName },
       ...props
-    });
+    }).attachTo(this);
   }
 
   /**

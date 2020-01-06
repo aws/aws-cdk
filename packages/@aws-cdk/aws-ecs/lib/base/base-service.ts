@@ -542,7 +542,7 @@ export abstract class BaseService extends Resource
       metricName,
       dimensions: { ClusterName: this.cluster.clusterName, ServiceName: this.serviceName },
       ...props
-    });
+    }).attachTo(this);
   }
 
   /**

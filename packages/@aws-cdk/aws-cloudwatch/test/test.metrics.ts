@@ -39,4 +39,16 @@ export = {
 
     test.done();
   },
+
+  'Metric optimization: "with" with the same period returns the same object'(test: Test) {
+    const m = new Metric({ namespace: 'Test', metricName: 'Metric', period: cdk.Duration.minutes(10) });
+
+    // Note: object equality, NOT deep equality on purpose
+    test.equals(m.with({}), m);
+    test.equals(m.with({ period: cdk.Duration.minutes(10) }), m);
+
+    test.notEqual(m.with({ period: cdk.Duration.minutes(5) }), m);
+
+    test.done();
+  },
 };

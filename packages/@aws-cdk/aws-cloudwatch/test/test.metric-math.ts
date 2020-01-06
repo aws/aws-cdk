@@ -59,6 +59,18 @@ export = {
     test.done();
   },
 
+  'MathExpression optimization: "with" with the same period returns the same object'(test: Test) {
+    const m = new MathExpression({ expression: 'SUM(METRICS())', usingMetrics: {}, period: Duration.minutes(10) });
+
+    // Note: object equality, NOT deep equality on purpose
+    test.equals(m.with({}), m);
+    test.equals(m.with({ period: Duration.minutes(10) }), m);
+
+    test.notEqual(m.with({ period: Duration.minutes(5) }), m);
+
+    test.done();
+  },
+
   'in graphs': {
     'MathExpressions can be added to a graph'(test: Test) {
       // GIVEN
