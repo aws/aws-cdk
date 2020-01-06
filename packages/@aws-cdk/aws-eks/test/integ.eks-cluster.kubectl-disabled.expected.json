@@ -941,7 +941,6 @@
       "Properties": {
         "MaxSize": "1",
         "MinSize": "1",
-        "DesiredCapacity": "1",
         "LaunchConfigurationName": {
           "Ref": "EKSClusterNodesLaunchConfig921F1106"
         },
