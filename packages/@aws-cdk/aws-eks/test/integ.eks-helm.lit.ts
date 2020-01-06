@@ -38,7 +38,7 @@ class ClusterStack extends TestStack {
     // automatically be mapped via aws-auth to allow nodes to join the cluster.
     this.cluster.addCapacity('Nodes', {
       instanceType: new ec2.InstanceType('t2.medium'),
-      desiredCapacity: 3,
+      minCapacity: 3,
     });
 
     // add two Helm charts to the cluster. This will be the Kubernetes dashboard and the Nginx Ingress Controller
