@@ -7,7 +7,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Aws, CfnResource, Construct, Duration, IResource, Lazy, PhysicalName, Resource, Stack } from '@aws-cdk/core';
+import { Aws, Construct, Duration, IResource, Lazy, PhysicalName, Resource, Stack } from '@aws-cdk/core';
 import { IArtifacts } from './artifacts';
 import { BuildSpec } from './build-spec';
 import { Cache } from './cache';
@@ -973,10 +973,9 @@ export class Project extends ProjectBase {
     this.role.attachInlinePolicy(policy);
 
     // add an explicit dependency between the EC2 Policy and this Project -
-    // otherwise, creating the Project fails,
-    // as it requires these permissions to be already attached to the Project's Role
-    const cfnPolicy = policy.node.findChild('Resource') as CfnResource;
-    project.addDependsOn(cfnPolicy);
+    // otherwise, creating the Project fails, as it requires these permissions
+    // to be already attached to the Project's Role
+    project.node.addDependency(policy);
   }
 
   private validateCodePipelineSettings(artifacts: IArtifacts) {
