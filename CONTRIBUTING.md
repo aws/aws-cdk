@@ -303,10 +303,17 @@ if a task fails, it will stop, and then to resume, simply run `foreach.sh` again
 To reset the session (either when all tasks finished or if you wish to run a different session), run:
 
 ```console
-$ rm -f ~/.foreach.*
+$ scripts/foreach.sh --reset
 ```
 
-This will effectively delete the state files.
+If you wish to run a command only against a module's dependency closure, use:
+
+```console
+$ cd packages/my-module
+$ ../scripts/foreach.sh --up COMMAND
+```
+
+This will execute `COMMAND` against `my-module` and all it's deps (in a topological order of course).
 
 ### Jetbrains support (WebStorm/IntelliJ)
 
@@ -375,6 +382,8 @@ $ yarn install
 $ cd packages/@aws-cdk/aws-ec2
 $ ../../../scripts/buildup
 ```
+
+Note that `buildup` uses `foreach.sh`, which means it's resumable. If your build fails and you wish to resume, just run `buildup` again. If you wish to restart, run `buildup --restart`.
 
 ### Quick Iteration
 
