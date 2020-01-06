@@ -751,7 +751,8 @@ export = {
         },
         {
           DeviceName: "ephemeral",
-          VirtualName: "ephemeral0"
+          VirtualName: "ephemeral0",
+          NoDevice: false
         }
       ]
     }));
