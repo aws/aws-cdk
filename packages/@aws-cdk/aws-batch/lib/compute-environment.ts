@@ -330,13 +330,13 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
       computeEnvironmentName: this.physicalName,
       computeResources,
       serviceRole: props.serviceRole
-      ? props.serviceRole.roleArn
-      : new iam.LazyRole(this, 'Resource-Service-Instance-Role', {
-        managedPolicies: [
-          iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSBatchServiceRole'),
-        ],
-        assumedBy: new iam.ServicePrincipal('batch.amazonaws.com'),
-      }).roleArn,
+        ? props.serviceRole.roleArn
+        : new iam.Role(this, 'Resource-Service-Instance-Role', {
+          managedPolicies: [
+            iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSBatchServiceRole'),
+          ],
+          assumedBy: new iam.ServicePrincipal('batch.amazonaws.com'),
+        }).roleArn,
       state: this.isEnabled(props) ? 'ENABLED' : 'DISABLED',
       type: this.isManagedByAWS(props) ? 'UNMANAGED' : 'MANAGED',
     });
