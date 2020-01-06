@@ -189,20 +189,20 @@ export class Policy extends Resource implements IPolicy {
     // validate that the policy document is not empty
     if (this.document.isEmpty) {
       if (this.force) {
-        result.push('Policy created with mustCreate=true is empty. You must add statements to the policy');
+        result.push('Policy created with force=true is empty. You must add statements to the policy');
       }
       if (!this.force && this.referenceTaken) {
-        result.push('Policy name has been read of empty policy. You must add statements to the policy so it can exist.');
+        result.push('This Policy has been referenced by a resource, so it must contain at least one statement.');
       }
     }
 
     // validate that the policy is attached to at least one principal (role, user or group).
     if (!this.isAttached) {
       if (this.force) {
-        result.push(`Policy created with mustCreate=true must be attached to at least one principal: user, group or role`);
+        result.push(`Policy created with force=true must be attached to at least one principal: user, group or role`);
       }
       if (!this.force && this.referenceTaken) {
-        result.push('Policy name has been read of unattached policy. Attach to at least one principal: user, group or role.');
+        result.push('This Policy has been referenced by a resource, so it must be attached to at least one user, group or role.');
       }
     }
 
