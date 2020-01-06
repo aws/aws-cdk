@@ -80,7 +80,7 @@
     "nock": "^11.7.1",
     "nodeunit": "^0.11.3",
     "pkglint": "1.19.0",
-    "sinon": "^8.0.2"
+    "sinon": "^8.0.3"
   },
   "dependencies": {
     "@aws-cdk/aws-cloudwatch": "1.19.0",
