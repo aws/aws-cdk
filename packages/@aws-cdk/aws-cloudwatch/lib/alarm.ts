@@ -4,8 +4,10 @@ import { CfnAlarm } from './cloudwatch.generated';
 import { HorizontalAnnotation } from './graph';
 import { CreateAlarmOptions } from './metric';
 import { IMetric, MetricStatConfig } from './metric-types';
-import { dispatchMetric, dropUndefined, metricPeriod, MetricSet } from './metric-util';
-import { parseStatistic } from './util.statistic';
+import { dispatchMetric, metricPeriod } from './private/metric-util';
+import { MetricSet } from './private/rendering';
+import { dropUndefined } from './private/util';
+import { parseStatistic } from './private/util.statistic';
 
 export interface IAlarm extends IResource {
   /**

@@ -1,5 +1,5 @@
 import * as cdk from '@aws-cdk/core';
-import { dropUndefined } from './metric-util';
+import { dropUndefined } from './util';
 
 /**
  * Make a Token that renders to given region if used in a different stack, otherwise undefined

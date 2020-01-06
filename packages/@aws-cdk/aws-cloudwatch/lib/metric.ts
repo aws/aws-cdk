@@ -2,8 +2,8 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Alarm, ComparisonOperator, TreatMissingData } from './alarm';
 import { Dimension, IMetric, MetricAlarmConfig, MetricConfig, MetricGraphConfig, Unit } from './metric-types';
-import { validateNoIdConflicts } from './metric-util';
-import { normalizeStatistic, parseStatistic } from './util.statistic';
+import { validateNoIdConflicts } from './private/metric-util';
+import { normalizeStatistic, parseStatistic } from './private/util.statistic';
 
 export type DimensionHash = {[dim: string]: any};
 
