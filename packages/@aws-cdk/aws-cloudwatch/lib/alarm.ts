@@ -1,11 +1,13 @@
-import { Construct, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
+import { Construct, IResource, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
 import { IAlarmAction } from './alarm-action';
 import { CfnAlarm } from './cloudwatch.generated';
 import { HorizontalAnnotation } from './graph';
 import { CreateAlarmOptions } from './metric';
-import { IMetric } from './metric-types';
-import { dispatchMetric, dropUndefined, metricPeriod, MetricSet } from './metric-util';
-import { parseStatistic } from './util.statistic';
+import { IMetric, MetricStatConfig } from './metric-types';
+import { dispatchMetric, metricPeriod } from './private/metric-util';
+import { dropUndefined } from './private/object';
+import { MetricSet } from './private/rendering';
+import { parseStatistic } from './private/statistic';
 
 export interface IAlarm extends IResource {
   /**
@@ -142,7 +144,7 @@ export class Alarm extends Resource implements IAlarm {
       okActions: Lazy.listValue({ produce: () => this.okActionArns }),
 
       // Metric
-      ...renderAlarmMetric(props.metric),
+      ...this.renderMetric(props.metric),
       ...dropUndefined({
         // Alarm overrides
         period: props.period && props.period.toSeconds(),
@@ -225,63 +227,86 @@ export class Alarm extends Resource implements IAlarm {
   public toAnnotation(): HorizontalAnnotation {
     return this.annotation;
   }
+
+  private renderMetric(metric: IMetric) {
+    const self = this;
+    return dispatchMetric(metric, {
+      withStat(st) {
+        self.validateMetricStat(st, metric);
+
+        return dropUndefined({
+          dimensions: st.dimensions,
+          namespace: st.namespace,
+          metricName: st.metricName,
+          period: st.period?.toSeconds(),
+          statistic: renderIfSimpleStatistic(st.statistic),
+          extendedStatistic: renderIfExtendedStatistic(st.statistic),
+          unit: st.unitFilter,
+        });
+      },
+
+      withExpression() {
+        // Expand the math expression metric into a set
+        const mset = new MetricSet<boolean>();
+        mset.addTopLevel(true, metric);
+
+        let eid = 0;
+        function uniqueMetricId() {
+          return `expr_${++eid}`;
+        }
+
+        return {
+          metrics: mset.entries.map(entry => dispatchMetric(entry.metric, {
+            withStat(stat, conf) {
+              self.validateMetricStat(stat, entry.metric);
+
+              return {
+                metricStat: {
+                  metric: {
+                    metricName: stat.metricName,
+                    namespace: stat.namespace,
+                    dimensions: stat.dimensions,
+                  },
+                  period: stat.period.toSeconds(),
+                  stat: stat.statistic,
+                  unit: stat.unitFilter,
+                },
+                id: entry.id || uniqueMetricId(),
+                label: conf.renderingProperties?.label,
+                returnData: entry.tag ? undefined : false, // Tag stores "primary" attribute, default is "true"
+              };
+            },
+            withExpression(expr, conf) {
+              return {
+                expression: expr.expression,
+                id: entry.id || uniqueMetricId(),
+                label: conf.renderingProperties?.label,
+                returnData: entry.tag ? undefined : false, // Tag stores "primary" attribute, default is "true"
+              };
+            },
+          }) as CfnAlarm.MetricDataQueryProperty)
+        };
+      }
+    });
+  }
+
+  /**
+   * Validate that if a region and account are in the given stat config, they match the Alarm
+   */
+  private validateMetricStat(stat: MetricStatConfig, metric: IMetric) {
+    const stack = Stack.of(this);
+
+    if (definitelyDifferent(stat.region, stack.region)) {
+      throw new Error(`Cannot create an Alarm in region '${stack.region}' based on metric '${metric}' in '${stat.region}'`);
+    }
+    if (definitelyDifferent(stat.account, stack.account)) {
+      throw new Error(`Cannot create an Alarm in account '${stack.account}' based on metric '${metric}' in '${stat.account}'`);
+    }
+  }
 }
 
-function renderAlarmMetric(metric: IMetric) {
-  return dispatchMetric(metric, {
-    withStat(st) {
-      return dropUndefined({
-        dimensions: st.dimensions,
-        namespace: st.namespace,
-        metricName: st.metricName,
-        period: st.period?.toSeconds(),
-        statistic: renderIfSimpleStatistic(st.statistic),
-        extendedStatistic: renderIfExtendedStatistic(st.statistic),
-        unit: st.unitFilter,
-      });
-    },
-
-    withExpression() {
-      // Expand the math expression metric into a set
-      const mset = new MetricSet<boolean>();
-      mset.addTopLevel(true, metric);
-
-      let eid = 0;
-      function uniqueMetricId() {
-        return `expr_${++eid}`;
-      }
-
-      return {
-        metrics: mset.entries.map(entry => dispatchMetric(entry.metric, {
-          withStat(stat, conf) {
-            return {
-              metricStat: {
-                metric: {
-                  metricName: stat.metricName,
-                  namespace: stat.namespace,
-                  dimensions: stat.dimensions,
-                },
-                period: stat.period.toSeconds(),
-                stat: stat.statistic,
-                unit: stat.unitFilter,
-              },
-              id: entry.id ?? uniqueMetricId(),
-              label: conf.renderingProperties?.label,
-              returnData: entry.tag ? undefined : false, // Tag stores "primary" attribute, default is "true"
-            };
-          },
-          withExpression(expr, conf) {
-            return {
-              expression: expr.expression,
-              id: entry.id ?? uniqueMetricId(),
-              label: conf.renderingProperties?.label,
-              returnData: entry.tag ? undefined : false, // Tag stores "primary" attribute, default is "true"
-            };
-          },
-        }) as CfnAlarm.MetricDataQueryProperty)
-      };
-    }
-  });
+function definitelyDifferent(x: string | undefined, y: string) {
+  return x && !Token.isUnresolved(y) && x !== y;
 }
 
 /**
