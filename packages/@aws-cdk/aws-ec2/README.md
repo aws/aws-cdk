@@ -12,6 +12,10 @@
 The `@aws-cdk/aws-ec2` package contains primitives for setting up networking and
 instances.
 
+```ts nofixture
+import ec2 = require('@aws-cdk/aws-ec2');
+```
+
 ## VPC
 
 Most projects need a Virtual Private Cloud to provide security by means of
@@ -19,8 +23,6 @@ network partitioning. This is achieved by creating an instance of
 `Vpc`:
 
 ```ts
-import ec2 = require('@aws-cdk/aws-ec2');
-
 const vpc = new ec2.Vpc(this, 'VPC');
 ```
 
@@ -186,7 +188,6 @@ by setting the `reserved` subnetConfiguration property to true, as shown
 below:
 
 ```ts
-import ec2 = require('@aws-cdk/aws-ec2');
 const vpc = new ec2.Vpc(this, 'TheVPC', {
   natGateways: 1,
   subnetConfiguration: [
@@ -257,7 +258,7 @@ which you can add egress traffic rules.
 
 You can manipulate Security Groups directly:
 
-```ts
+```ts fixture=with-vpc
 const mySecurityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {
   vpc,
   description: 'Allow ssh access to ec2 instances',
@@ -275,7 +276,7 @@ have security groups, you have to add an **Egress** rule to one Security Group,
 and an **Ingress** rule to the other. The connections object will automatically
 take care of this for you:
 
-```ts
+```ts fixture=conns
 // Allow connections from anywhere
 loadBalancer.connections.allowFromAnyIpv4(ec2.Port.tcp(443), 'Allow inbound HTTPS');
 
@@ -290,23 +291,23 @@ appFleet.connections.allowTo(dbFleet, ec2.Port.tcp(443), 'App can call database'
 
 There are various classes that implement the connection peer part:
 
-```ts
+```ts fixture=conns
 // Simple connection peers
 let peer = ec2.Peer.ipv4("10.0.0.0/16");
-let peer = ec2.Peer.anyIpv4();
-let peer = ec2.Peer.ipv6("::/0");
-let peer = ec2.Peer.anyIpv6();
-let peer = ec2.Peer.prefixList("pl-12345");
-fleet.connections.allowTo(peer, ec2.Port.tcp(443), 'Allow outbound HTTPS');
+peer = ec2.Peer.anyIpv4();
+peer = ec2.Peer.ipv6("::0/0");
+peer = ec2.Peer.anyIpv6();
+peer = ec2.Peer.prefixList("pl-12345");
+appFleet.connections.allowTo(peer, ec2.Port.tcp(443), 'Allow outbound HTTPS');
 ```
 
 Any object that has a security group can itself be used as a connection peer:
 
-```ts
+```ts fixture=conns
 // These automatically create appropriate ingress and egress rules in both security groups
 fleet1.connections.allowTo(fleet2, ec2.Port.tcp(80), 'Allow between fleets');
 
-fleet.connections.allowFromAnyIpv4(ec2.Port.tcp(80), 'Allow from load balancer');
+appFleet.connections.allowFromAnyIpv4(ec2.Port.tcp(80), 'Allow from load balancer');
 ```
 
 ### Port Ranges
@@ -336,12 +337,12 @@ If the object you're calling the peering method on has a default port associated
 
 For example:
 
-```ts
+```ts fixture=conns
 // Port implicit in listener
 listener.connections.allowDefaultPortFromAnyIpv4('Allow public');
 
 // Port implicit in peer
-fleet.connections.allowDefaultPortTo(rdsDatabase, 'Fleet can access database');
+appFleet.connections.allowDefaultPortTo(rdsDatabase, 'Fleet can access database');
 ```
 
 ## Machine Images (AMIs)
@@ -368,7 +369,7 @@ examples of things you might want to use:
 Create your VPC with VPN connections by specifying the `vpnConnections` props (keys are construct `id`s):
 
 ```ts
-const vpc = new ec2.Vpc(stack, 'MyVpc', {
+const vpc = new ec2.Vpc(this, 'MyVpc', {
   vpnConnections: {
     dynamic: { // Dynamic routing (BGP)
       ip: '1.2.3.4'
@@ -387,13 +388,13 @@ const vpc = new ec2.Vpc(stack, 'MyVpc', {
 To create a VPC that can accept VPN connections, set `vpnGateway` to `true`:
 
 ```ts
-const vpc = new ec2.Vpc(stack, 'MyVpc', {
+const vpc = new ec2.Vpc(this, 'MyVpc', {
   vpnGateway: true
 });
 ```
 
 VPN connections can then be added:
-```ts
+```ts fixture=with-vpc
 vpc.addVpnConnection('Dynamic', {
   ip: '1.2.3.4'
 });
@@ -402,9 +403,10 @@ vpc.addVpnConnection('Dynamic', {
 Routes will be propagated on the route tables associated with the private subnets.
 
 VPN connections expose [metrics (cloudwatch.Metric)](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-cloudwatch/README.md) across all tunnels in the account/region and per connection:
-```ts
+
+```ts fixture=with-vpc
 // Across all tunnels in the account/region
-const allDataOut = VpnConnection.metricAllTunnelDataOut();
+const allDataOut = ec2.VpnConnection.metricAllTunnelDataOut();
 
 // For a specific vpn connection
 const vpnConnection = vpc.addVpnConnection('Dynamic', {
@@ -425,8 +427,9 @@ By default, interface VPC endpoints create a new security group and traffic is *
 automatically allowed from the VPC CIDR.
 
 Use the `connections` object to allow traffic to flow to the endpoint:
-```ts
-myEndpoint.connections.allowDefaultPortFrom(...);
+
+```ts fixture=conns
+myEndpoint.connections.allowDefaultPortFromAnyIpv4();
 ```
 
 Alternatively, existing security groups can be used by specifying the `securityGroups` prop.
@@ -447,18 +450,42 @@ You can use bastion hosts using a standard SSH connection targetting port 22 on 
 feature of AWS Systems Manager Session Manager, which does not need an opened security group. (https://aws.amazon.com/about-aws/whats-new/2019/07/session-manager-launches-tunneling-support-for-ssh-and-scp/)
 
 A default bastion host for use via SSM can be configured like:
-```ts
+```ts fixture=with-vpc
 const host = new ec2.BastionHostLinux(this, 'BastionHost', { vpc });
 ```
 
 If you want to connect from the internet using SSH, you need to place the host into a public subnet. You can then configure allowed source hosts.
-```ts
+```ts fixture=with-vpc
 const host = new ec2.BastionHostLinux(this, 'BastionHost', {
   vpc,
-  subnetSelection: { subnetType: SubnetType.PUBLIC },
+  subnetSelection: { subnetType: ec2.SubnetType.PUBLIC },
 });
-host.allowSshAccessFrom(Peer.ipv4('1.2.3.4/32'));
+host.allowSshAccessFrom(ec2.Peer.ipv4('1.2.3.4/32'));
 ```
 
 As there are no SSH public keys deployed on this machine, you need to use [EC2 Instance Connect](https://aws.amazon.com/de/blogs/compute/new-using-amazon-ec2-instance-connect-for-ssh-access-to-your-ec2-instances/)
 with the command `aws ec2-instance-connect send-ssh-public-key` to provide your SSH public key.
+
+
+## Block Devices
+
+To add EBS block device mappings, specify the `blockDeviceMappings` property. The follow example sets the EBS-backed
+root device (`/dev/sda1`) size to 50 GiB, and adds another EBS-backed device mapped to `/dev/sdm` that is 100 GiB in
+size:
+
+```ts
+new ec2.Instance(this, 'Instance', {
+  // ...
+  blockDeviceMappings: [
+    {
+      deviceName: '/dev/sda1',
+      volume: ec2.BlockDeviceVolume.ebs(50),
+    },
+    {
+      deviceName: '/dev/sdm',
+      volume: ec2.BlockDeviceVolume.ebs(100),
+    },
+  ],
+});
+
+```
