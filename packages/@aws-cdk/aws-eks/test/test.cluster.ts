@@ -228,6 +228,13 @@ export = {
                 "Arn"
               ]
             },
+            "\\\",\\\"username\\\":\\\"",
+            {
+              "Fn::GetAtt": [
+                "roleC7B7E775",
+                "Arn"
+              ]
+            },
             "\\\",\\\"groups\\\":[\\\"system:masters\\\"]}]\",\"mapUsers\":\"[]\",\"mapAccounts\":\"[]\"}}]"
           ]
         ]
@@ -637,8 +644,8 @@ export = {
             Principal: {
               AWS: {
                 "Fn::GetAtt": [
-                  "awscdkawseksKubernetesResourceProviderNestedStackawscdkawseksKubernetesResourceProviderNestedStackResource1A5AAA66",
-                  "Outputs.StackawscdkawseksKubernetesResourceProviderHandlerServiceRole36007028Arn"
+                  "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B",
+                  "Outputs.StackawscdkawseksKubectlProviderHandlerServiceRole2C52B3ECArn"
                 ]
               }
             }
@@ -764,20 +771,8 @@ export = {
             Principal: {
               AWS: {
                 "Fn::GetAtt": [
-                  "awscdkawseksKubernetesResourceProviderNestedStackawscdkawseksKubernetesResourceProviderNestedStackResource1A5AAA66",
-                  "Outputs.StackawscdkawseksKubernetesResourceProviderHandlerServiceRole36007028Arn"
-                ]
-              }
-            }
-          },
-          {
-            Action: "sts:AssumeRole",
-            Effect: "Allow",
-            Principal: {
-              AWS: {
-                "Fn::GetAtt": [
-                  "awscdkawseksHelmResourceProviderNestedStackawscdkawseksHelmResourceProviderNestedStackResource5C12A9A9",
-                  "Outputs.StackawscdkawseksHelmResourceProviderHandlerServiceRole83B6C3CEArn"
+                  "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B",
+                  "Outputs.StackawscdkawseksKubectlProviderHandlerServiceRole2C52B3ECArn"
                 ]
               }
             }
