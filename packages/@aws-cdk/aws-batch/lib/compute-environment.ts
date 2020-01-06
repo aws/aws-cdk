@@ -145,27 +145,6 @@ export interface ComputeResourceProps {
   readonly image?: ec2.IMachineImage;
 
   /**
-   * The launch template to use for your compute resources. Any other compute resource parameters
-   * that you specify in a CreateComputeEnvironment API operation override the same parameters in
-   * the launch template. You must specify either the launch template ID or launch template name in
-   * the request, but not both. For more information, see Launch Template Support in the AWS Batch User Guide.
-   *
-   * @default - no launch template will be used
-   */
-  readonly launchTemplate?: ec2.CfnInstance.LaunchTemplateSpecificationProperty;
-
-  /**
-   * The Amazon EC2 placement group to associate with your compute resources. If you intend to submit multi-node
-   * parallel jobs to your compute environment, you should consider creating a cluster placement group and
-   * associate it with your compute resources. This keeps your multi-node parallel job on a logical grouping of
-   * instances within a single Availability Zone with high network flow potential. For more information, see
-   * Placement Groups in the Amazon EC2 User Guide for Linux Instances.
-   *
-   * @default - no placement group will be used
-   */
-  readonly placementGroup?: ec2.CfnPlacementGroup;
-
-  /**
    * This property will be ignored if you set the environment type to ON_DEMAND.
    *
    * The Amazon Resource Name (ARN) of the Amazon EC2 Spot Fleet IAM role applied to a SPOT compute environment.
@@ -337,10 +316,8 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
           assumedBy: new iam.ServicePrincipal('batch.amazonaws.com'),
         }).roleArn,
         instanceTypes: this.buildInstanceTypes(props.computeResources.instanceTypes),
-        launchTemplate: props.computeResources.launchTemplate,
         maxvCpus: props.computeResources.maxvCpus || 256,
         minvCpus: props.computeResources.minvCpus || 0,
-        placementGroup: props.computeResources.placementGroup && props.computeResources.placementGroup.ref,
         securityGroupIds: this.buildSecurityGroupIds(props.computeResources.vpc, props.computeResources.securityGroups),
         spotIamFleetRole: spotFleetRole ? spotFleetRole.roleArn : undefined,
         subnets: props.computeResources.vpc.selectSubnets(props.computeResources.vpcSubnets).subnetIds,
