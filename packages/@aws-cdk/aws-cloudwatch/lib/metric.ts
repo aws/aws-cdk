@@ -244,7 +244,7 @@ export class Metric implements IMetric {
       // For these we're not going to do deep equality, misses some opportunity for optimization
       // but that's okay.
       && (props.dimensions === undefined)
-      && (props.period === undefined)) {
+      && (props.period === undefined || props.period.toSeconds() === this.period.toSeconds())) {
       return this;
     }
 
@@ -462,7 +462,7 @@ export class MathExpression implements IMetric {
     // Short-circuit creating a new object if there would be no effective change
     if ((props.label === undefined || props.label === this.label)
       && (props.color === undefined || props.color === this.color)
-      && (props.period === undefined)) {
+      && (props.period === undefined || props.period.toSeconds() === this.period.toSeconds())) {
       return this;
     }
 
