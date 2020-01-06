@@ -488,6 +488,7 @@ export = {
     const stack = new Stack();
     const vpcEndpoint = InterfaceVpcEndpoint.fromInterfaceVpcEndpointAttributes(stack, "vpc-endpoint", {
       vpcEndpointId: "vpce-1234",
+      securityGroupId: "sg-1234",
       port: 443,
     });
 
