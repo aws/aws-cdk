@@ -43,7 +43,7 @@ export interface DockerImageAssetProps extends assets.CopyOptions {
   /**
    * Path to the Dockerfile (relative to the directory).
    *
-   * @default - 'Dockerfile'
+   * @default 'Dockerfile'
    */
   readonly file?: string;
 }

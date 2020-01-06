@@ -110,7 +110,7 @@ export interface ContainerImageAssetMetadataEntry extends BaseAssetMetadataEntry
   /**
    * Path to the Dockerfile (relative to the directory).
    *
-   * @default no file is passed
+   * @default - no file is passed
    */
   readonly file?: string;
 

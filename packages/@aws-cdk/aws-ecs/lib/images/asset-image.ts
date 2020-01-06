@@ -24,7 +24,7 @@ export interface AssetImageProps {
   /**
    * Path to the Dockerfile (relative to the directory).
    *
-   * @default - 'Dockerfile'
+   * @default 'Dockerfile'
    */
   readonly file?: string;
 
