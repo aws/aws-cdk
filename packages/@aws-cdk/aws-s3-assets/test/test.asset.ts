@@ -1,12 +1,11 @@
 import { expect, haveResource, ResourcePart, SynthUtils } from '@aws-cdk/assert';
-import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/core');
-import { App, Stack } from '@aws-cdk/core';
-import cxapi = require('@aws-cdk/cx-api');
-import fs = require('fs');
+import * as iam from '@aws-cdk/aws-iam';
+import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
+import * as fs from 'fs';
 import { Test } from 'nodeunit';
-import os = require('os');
-import path = require('path');
+import * as os from 'os';
+import * as path from 'path';
 import { Asset } from '../lib/asset';
 
 // tslint:disable:max-line-length
@@ -60,7 +59,7 @@ export = {
       path: dirPath
     });
 
-    const synth = app.synth().getStack(stack.stackName);
+    const synth = app.synth().getStackByName(stack.stackName);
     const meta = synth.manifest.metadata || {};
     test.ok(meta['/my-stack']);
     test.ok(meta['/my-stack'][0]);
@@ -234,8 +233,8 @@ export = {
       process.chdir(tempdir); // change current directory to somewhere in /tmp
 
       // GIVEN
-      const app = new App({ outdir: tempdir });
-      const stack = new Stack(app, 'stack');
+      const app = new cdk.App({ outdir: tempdir });
+      const stack = new cdk.Stack(app, 'stack');
 
       // WHEN
       new Asset(stack, 'ZipFile', {
@@ -258,8 +257,8 @@ export = {
       process.chdir(tempdir); // change current directory to somewhere in /tmp
 
       // GIVEN
-      const app = new App({ outdir: tempdir });
-      const stack = new Stack(app, 'stack');
+      const app = new cdk.App({ outdir: tempdir });
+      const stack = new cdk.Stack(app, 'stack');
 
       // WHEN
       new Asset(stack, 'ZipDirectory', {
@@ -282,14 +281,14 @@ export = {
       process.chdir(tempdir); // change current directory to somewhere in /tmp
 
       const staging = '.my-awesome-staging-directory';
-      const app = new App({
+      const app = new cdk.App({
         outdir: staging,
         context: {
           [cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT]: 'true',
         }
       });
 
-      const stack = new Stack(app, 'stack');
+      const stack = new cdk.Stack(app, 'stack');
 
       const resource = new cdk.CfnResource(stack, 'MyResource', { type: 'My::Resource::Type' });
       const asset = new Asset(stack, 'MyAsset', { path: SAMPLE_ASSET_DIR });
@@ -308,7 +307,7 @@ export = {
     'if staging is disabled, asset path is absolute'(test: Test) {
       // GIVEN
       const staging = path.resolve(mkdtempSync());
-      const app = new App({
+      const app = new cdk.App({
         outdir: staging,
         context: {
           [cxapi.DISABLE_ASSET_STAGING_CONTEXT]: 'true',
@@ -316,7 +315,7 @@ export = {
         }
       });
 
-      const stack = new Stack(app, 'stack');
+      const stack = new cdk.Stack(app, 'stack');
 
       const resource = new cdk.CfnResource(stack, 'MyResource', { type: 'My::Resource::Type' });
       const asset = new Asset(stack, 'MyAsset', { path: SAMPLE_ASSET_DIR });
@@ -334,13 +333,13 @@ export = {
 
     'cdk metadata points to staged asset'(test: Test) {
       // GIVEN
-      const app = new App();
-      const stack = new Stack(app, 'stack');
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'stack');
       new Asset(stack, 'MyAsset', { path: SAMPLE_ASSET_DIR });
 
       // WHEN
       const session = app.synth();
-      const artifact = session.getStack(stack.stackName);
+      const artifact = session.getStackByName(stack.stackName);
       const metadata = artifact.manifest.metadata || {};
       const md = Object.values(metadata)[0]![0]!.data;
       test.deepEqual(md.path, 'asset.6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2');

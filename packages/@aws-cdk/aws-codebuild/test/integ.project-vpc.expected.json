@@ -83,7 +83,13 @@
     "MyVPCPublicSubnet1EIP5EB6147D": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
-        "Domain": "vpc"
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-codebuild-project-vpc/MyVPC/PublicSubnet1"
+          }
+        ]
       }
     },
     "MyVPCPublicSubnet1NATGateway838228A5": {
@@ -343,35 +349,6 @@
         ]
       }
     },
-    "MyProjectPolicyDocument646EE0F2": {
-      "Type": "AWS::IAM::Policy",
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": [
-                "ec2:CreateNetworkInterface",
-                "ec2:DescribeNetworkInterfaces",
-                "ec2:DeleteNetworkInterface",
-                "ec2:DescribeSubnets",
-                "ec2:DescribeSecurityGroups",
-                "ec2:DescribeDhcpOptions",
-                "ec2:DescribeVpcs"
-              ],
-              "Effect": "Allow",
-              "Resource": "*"
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "PolicyName": "CodeBuildEC2Policy",
-        "Roles": [
-          {
-            "Ref": "MyProjectRole9BBE5233"
-          }
-        ]
-      }
-    },
     "MyProject39F7B0AE": {
       "Type": "AWS::CodeBuild::Project",
       "Properties": {
@@ -416,6 +393,35 @@
       "DependsOn": [
         "MyProjectPolicyDocument646EE0F2"
       ]
+    },
+    "MyProjectPolicyDocument646EE0F2": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "ec2:CreateNetworkInterface",
+                "ec2:DescribeNetworkInterfaces",
+                "ec2:DeleteNetworkInterface",
+                "ec2:DescribeSubnets",
+                "ec2:DescribeSecurityGroups",
+                "ec2:DescribeDhcpOptions",
+                "ec2:DescribeVpcs"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "MyProjectPolicyDocument646EE0F2",
+        "Roles": [
+          {
+            "Ref": "MyProjectRole9BBE5233"
+          }
+        ]
+      }
     }
   }
 }

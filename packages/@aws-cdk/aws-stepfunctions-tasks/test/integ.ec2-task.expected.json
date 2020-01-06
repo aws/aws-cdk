@@ -141,7 +141,6 @@
       "Properties": {
         "MaxSize": "1",
         "MinSize": "1",
-        "DesiredCapacity": "1",
         "LaunchConfigurationName": {
           "Ref": "FargateClusterDefaultAutoScalingGroupLaunchConfig57306899"
         },
@@ -772,7 +771,7 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs8.10",
+        "Runtime": "nodejs10.x",
         "Timeout": 300
       },
       "DependsOn": [
@@ -898,7 +897,11 @@
             "Arn"
           ]
         }
-      }
+      },
+      "DependsOn": [
+        "StateMachineRoleDefaultPolicyDF1E6607",
+        "StateMachineRoleB840431D"
+      ]
     }
   },
   "Parameters": {

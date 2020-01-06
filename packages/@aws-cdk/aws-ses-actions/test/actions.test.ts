@@ -1,12 +1,12 @@
 import { ResourcePart } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
-import kms = require('@aws-cdk/aws-kms');
-import lambda = require('@aws-cdk/aws-lambda');
-import s3 = require('@aws-cdk/aws-s3');
-import ses = require('@aws-cdk/aws-ses');
-import sns = require('@aws-cdk/aws-sns');
+import * as kms from '@aws-cdk/aws-kms';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as s3 from '@aws-cdk/aws-s3';
+import * as ses from '@aws-cdk/aws-ses';
+import * as sns from '@aws-cdk/aws-sns';
 import { Stack } from '@aws-cdk/core';
-import actions = require('../lib');
+import * as actions from '../lib';
 
 let stack: Stack;
 let rule: ses.ReceiptRule;
@@ -86,7 +86,7 @@ test('add lambda action', () => {
   const fn = new lambda.Function(stack, 'Function', {
     code: lambda.Code.fromInline('boom'),
     handler: 'index.handler',
-    runtime: lambda.Runtime.NODEJS_8_10
+    runtime: lambda.Runtime.NODEJS_10_X
   });
 
   rule.addAction(new actions.Lambda({

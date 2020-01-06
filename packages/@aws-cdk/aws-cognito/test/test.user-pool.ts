@@ -1,8 +1,8 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
-import lambda = require('@aws-cdk/aws-lambda');
-import cdk = require('@aws-cdk/core');
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import cognito = require('../lib');
+import * as cognito from '../lib';
 
 export = {
   'default setup'(test: Test) {
@@ -21,6 +21,26 @@ export = {
 
     test.done();
   },
+  'support tags'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const pool = new cognito.UserPool(stack, 'Pool', {
+      userPoolName: 'myPool',
+    });
+    cdk.Tag.add(pool, "PoolTag", "PoolParty");
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::Cognito::UserPool', {
+      UserPoolName: 'myPool',
+      UserPoolTags: {
+        PoolTag: "PoolParty",
+      }
+    }));
+
+    test.done();
+  },
 
   'lambda triggers are defined'(test: Test) {
     // GIVEN
@@ -28,7 +48,7 @@ export = {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_8_10,
+      runtime: lambda.Runtime.NODEJS_10_X,
     });
 
     // WHEN
@@ -57,61 +77,61 @@ export = {
     const createAuthChallengeLambdaFn = new lambda.Function(stack, 'createAuthChallengeLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_8_10,
+      runtime: lambda.Runtime.NODEJS_10_X,
     });
 
     const customMessageLambdaFn = new lambda.Function(stack, 'customMessageLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_8_10,
+      runtime: lambda.Runtime.NODEJS_10_X,
     });
 
     const defineAuthChallengeLambdaFn = new lambda.Function(stack, 'defineAuthChallengeLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_8_10,
+      runtime: lambda.Runtime.NODEJS_10_X,
     });
 
     const postAuthenticationLambdaFn = new lambda.Function(stack, 'postAuthenticationLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_8_10,
+      runtime: lambda.Runtime.NODEJS_10_X,
     });
 
     const postConfirmationLambdaFn = new lambda.Function(stack, 'postConfirmationLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_8_10,
+      runtime: lambda.Runtime.NODEJS_10_X,
     });
 
     const preAuthenticationLambdaFn = new lambda.Function(stack, 'preAuthenticationLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_8_10,
+      runtime: lambda.Runtime.NODEJS_10_X,
     });
 
     const preSignUpLambdaFn = new lambda.Function(stack, 'preSignUpLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_8_10,
+      runtime: lambda.Runtime.NODEJS_10_X,
     });
 
     const preTokenGenerationLambdaFn = new lambda.Function(stack, 'preTokenGenerationLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_8_10,
+      runtime: lambda.Runtime.NODEJS_10_X,
     });
 
     const userMigrationLambdaFn = new lambda.Function(stack, 'userMigrationLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_8_10,
+      runtime: lambda.Runtime.NODEJS_10_X,
     });
 
     const verifyAuthChallengeResponseLambdaFn = new lambda.Function(stack, 'verifyAuthChallengeResponseLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_8_10,
+      runtime: lambda.Runtime.NODEJS_10_X,
     });
 
     // WHEN
@@ -152,7 +172,7 @@ export = {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_8_10,
+      runtime: lambda.Runtime.NODEJS_10_X,
     });
 
     // WHEN

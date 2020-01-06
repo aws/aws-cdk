@@ -1,15 +1,15 @@
 import { expect, haveResource, isSuperObject } from '@aws-cdk/assert';
-import cfn = require('@aws-cdk/aws-cloudformation');
-import codebuild = require('@aws-cdk/aws-codebuild');
-import codepipeline = require('@aws-cdk/aws-codepipeline');
-import cpactions = require('@aws-cdk/aws-codepipeline-actions');
-import events = require('@aws-cdk/aws-events');
-import iam = require('@aws-cdk/aws-iam');
-import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/core');
-import cxapi = require('@aws-cdk/cx-api');
-import fc = require('fast-check');
-import nodeunit = require('nodeunit');
+import * as cfn from '@aws-cdk/aws-cloudformation';
+import * as codebuild from '@aws-cdk/aws-codebuild';
+import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import * as cpactions from '@aws-cdk/aws-codepipeline-actions';
+import * as events from '@aws-cdk/aws-events';
+import * as iam from '@aws-cdk/aws-iam';
+import * as s3 from '@aws-cdk/aws-s3';
+import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
+import * as fc from 'fast-check';
+import * as nodeunit from 'nodeunit';
 import { PipelineDeployStackAction } from '../lib/pipeline-deploy-stack-action';
 
 interface SelfUpdatingPipeline {
@@ -199,6 +199,49 @@ export = nodeunit.testCase({
         Version: '2012-10-17',
         Statement: [
           {
+            Action: [
+              "s3:GetObject*",
+              "s3:GetBucket*",
+              "s3:List*",
+            ],
+            Effect: "Allow",
+            Resource: [
+              {
+                "Fn::GetAtt": [
+                  "CodePipelineArtifactsBucketF1E925CF",
+                  "Arn",
+                ],
+              },
+              {
+                "Fn::Join": [
+                  "",
+                  [
+                    {
+                      "Fn::GetAtt": [
+                        "CodePipelineArtifactsBucketF1E925CF",
+                        "Arn",
+                      ],
+                    },
+                    "/*",
+                  ],
+                ],
+              },
+            ],
+          },
+          {
+            Action: [
+              "kms:Decrypt",
+              "kms:DescribeKey",
+            ],
+            Effect: "Allow",
+            Resource: {
+              "Fn::GetAtt": [
+                "CodePipelineArtifactsBucketEncryptionKey85407CB4",
+                "Arn",
+              ],
+            },
+          },
+          {
             Action: '*',
             Effect: 'Allow',
             Resource: '*',
@@ -272,6 +315,49 @@ export = nodeunit.testCase({
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [
+          {
+            Action: [
+              "s3:GetObject*",
+              "s3:GetBucket*",
+              "s3:List*",
+            ],
+            Effect: "Allow",
+            Resource: [
+              {
+                "Fn::GetAtt": [
+                  "CodePipelineArtifactsBucketF1E925CF",
+                  "Arn",
+                ],
+              },
+              {
+                "Fn::Join": [
+                  "",
+                  [
+                    {
+                      "Fn::GetAtt": [
+                        "CodePipelineArtifactsBucketF1E925CF",
+                        "Arn",
+                      ],
+                    },
+                    "/*"
+                  ],
+                ],
+              },
+            ],
+          },
+          {
+            Action: [
+              "kms:Decrypt",
+              "kms:DescribeKey",
+            ],
+            Effect: "Allow",
+            Resource: {
+              "Fn::GetAtt": [
+                "CodePipelineArtifactsBucketEncryptionKey85407CB4",
+                "Arn",
+              ],
+            },
+          },
           {
             Action: [
               'ec2:AuthorizeSecurityGroupEgress',

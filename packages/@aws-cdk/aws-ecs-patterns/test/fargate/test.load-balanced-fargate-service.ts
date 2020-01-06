@@ -1,10 +1,11 @@
 import { expect, haveResource, haveResourceLike, SynthUtils } from '@aws-cdk/assert';
-import ec2 = require('@aws-cdk/aws-ec2');
-import ecs = require('@aws-cdk/aws-ecs');
-import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/core');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as ecs from '@aws-cdk/aws-ecs';
+import { ApplicationProtocol } from '@aws-cdk/aws-elasticloadbalancingv2';
+import * as iam from '@aws-cdk/aws-iam';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import ecsPatterns = require('../../lib');
+import * as ecsPatterns from '../../lib';
 
 export = {
   'setting loadBalancerType to Network creates an NLB'(test: Test) {
@@ -72,7 +73,7 @@ export = {
 
     // THEN
     const serviceTaskDefinition = SynthUtils.synthesize(stack).template.Resources.ServiceTaskDef1922A00F;
-    test.deepEqual(serviceTaskDefinition.Properties.ExecutionRoleArn, { 'Fn::GetAtt': [ 'ExecutionRole605A040B', 'Arn' ] });
+    test.deepEqual(serviceTaskDefinition.Properties.ExecutionRoleArn, { 'Fn::GetAtt': ['ExecutionRole605A040B', 'Arn'] });
     test.done();
   },
 
@@ -100,7 +101,7 @@ export = {
 
     // THEN
     const serviceTaskDefinition = SynthUtils.synthesize(stack).template.Resources.ServiceTaskDef1922A00F;
-    test.deepEqual(serviceTaskDefinition.Properties.TaskRoleArn, { 'Fn::GetAtt': [ 'taskRoleTest9DA66B6E', 'Arn' ] });
+    test.deepEqual(serviceTaskDefinition.Properties.TaskRoleArn, { 'Fn::GetAtt': ['taskRoleTest9DA66B6E', 'Arn'] });
     test.done();
   },
 
@@ -250,6 +251,163 @@ export = {
         }
       ],
       Family: "fargate-task-family"
+    }));
+
+    test.done();
+  },
+
+  'setting NLB special listener port to create the listener'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // WHEN
+    new ecsPatterns.NetworkLoadBalancedFargateService(stack, "FargateNlbService", {
+      cluster,
+      listenerPort: 2015,
+      taskImageOptions: {
+        containerPort: 2015,
+        image: ecs.ContainerImage.fromRegistry('abiosoft/caddy')
+      },
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ElasticLoadBalancingV2::Listener', {
+      DefaultActions: [
+        {
+          Type: "forward"
+        }
+      ],
+      Port: 2015,
+      Protocol: "TCP"
+    }));
+
+    test.done();
+  },
+
+  'setting ALB special listener port to create the listener'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, "FargateAlbService", {
+      cluster,
+      listenerPort: 2015,
+      taskImageOptions: {
+        containerPort: 2015,
+        image: ecs.ContainerImage.fromRegistry('abiosoft/caddy')
+      },
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ElasticLoadBalancingV2::Listener', {
+      DefaultActions: [
+        {
+          Type: "forward"
+        }
+      ],
+      Port: 2015,
+      Protocol: "HTTP"
+    }));
+
+    test.done();
+  },
+
+  'setting ALB HTTPS protocol to create the listener on 443'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, "FargateAlbService", {
+      cluster,
+      protocol: ApplicationProtocol.HTTPS,
+      domainName: 'domain.com',
+      domainZone: {
+        hostedZoneId: 'fakeId',
+        zoneName: 'domain.com',
+        hostedZoneArn: 'arn:aws:route53:::hostedzone/fakeId',
+        stack,
+        node: stack.node,
+      },
+      taskImageOptions: {
+        containerPort: 2015,
+        image: ecs.ContainerImage.fromRegistry('abiosoft/caddy')
+      },
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ElasticLoadBalancingV2::Listener', {
+      DefaultActions: [
+        {
+          Type: "forward"
+        }
+      ],
+      Port: 443,
+      Protocol: "HTTPS"
+    }));
+
+    test.done();
+  },
+
+  'setting ALB HTTP protocol to create the listener on 80'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, "FargateAlbService", {
+      cluster,
+      protocol: ApplicationProtocol.HTTP,
+      taskImageOptions: {
+        containerPort: 2015,
+        image: ecs.ContainerImage.fromRegistry('abiosoft/caddy')
+      },
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ElasticLoadBalancingV2::Listener', {
+      DefaultActions: [
+        {
+          Type: "forward"
+        }
+      ],
+      Port: 80,
+      Protocol: "HTTP"
+    }));
+
+    test.done();
+  },
+
+  'setting ALB without any protocol or listenerPort to create the listener on 80'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, "FargateAlbService", {
+      cluster,
+      taskImageOptions: {
+        containerPort: 2015,
+        image: ecs.ContainerImage.fromRegistry('abiosoft/caddy')
+      },
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ElasticLoadBalancingV2::Listener', {
+      DefaultActions: [
+        {
+          Type: "forward"
+        }
+      ],
+      Port: 80,
+      Protocol: "HTTP"
     }));
 
     test.done();

@@ -5,3 +5,6 @@ dist
 
 .LAST_BUILD
 *.snk
+.nyc_output
+coverage
+nyc.config.js
