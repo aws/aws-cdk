@@ -1,7 +1,8 @@
 import { IMetric } from "../metric-types";
-import { accountIfDifferentFromStack, DropEmptyGraphOptions, regionIfDifferentFromStack } from "./env-tokens";
+import { DropEmptyObjectAtTheEndOfAnArray } from "./drop-empty-object-at-the-end-of-an-array-token";
+import { accountIfDifferentFromStack, regionIfDifferentFromStack } from "./env-tokens";
 import { dispatchMetric, metricKey } from "./metric-util";
-import { dropUndefined } from "./util";
+import { dropUndefined } from "./object";
 
 /**
  * Return the JSON structure which represents these metrics in a graph.
@@ -24,7 +25,7 @@ export function allMetricsGraphJson(left: IMetric[], right: IMetric[]): any[] {
   mset.addTopLevel('right', ...right);
 
   // Render all metrics from the set.
-  return mset.entries.map(entry => new DropEmptyGraphOptions(metricGraphJson(entry.metric, entry.tag, entry.id)));
+  return mset.entries.map(entry => new DropEmptyObjectAtTheEndOfAnArray(metricGraphJson(entry.metric, entry.tag, entry.id)));
 }
 
 function metricGraphJson(metric: IMetric, yAxis?: string, id?: string) {

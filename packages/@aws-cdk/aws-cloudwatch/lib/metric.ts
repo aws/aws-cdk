@@ -2,8 +2,8 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Alarm, ComparisonOperator, TreatMissingData } from './alarm';
 import { Dimension, IMetric, MetricAlarmConfig, MetricConfig, MetricGraphConfig, Unit } from './metric-types';
-import { validateNoIdConflicts } from './private/metric-util';
-import { normalizeStatistic, parseStatistic } from './private/util.statistic';
+import { dispatchMetric, metricKey } from './private/metric-util';
+import { normalizeStatistic, parseStatistic } from './private/statistic';
 
 export type DimensionHash = {[dim: string]: any};
 
@@ -448,7 +448,7 @@ export class MathExpression implements IMetric {
       throw new Error(`Invalid variable names in expression: ${invalidVariableNames}. Must start with lowercase letter and only contain alphanumerics.`);
     }
 
-    validateNoIdConflicts(this);
+    this.validateNoIdConflicts();
   }
 
   /**
@@ -522,6 +522,30 @@ export class MathExpression implements IMetric {
   public toString() {
     return this.label || this.expression;
   }
+
+  private validateNoIdConflicts() {
+    const seen = new Map<string, IMetric>();
+    visit(this);
+
+    function visit(metric: IMetric) {
+      dispatchMetric(metric, {
+        withStat() {
+          // Nothing
+        },
+        withExpression(expr) {
+          for (const [id, subMetric] of Object.entries(expr.usingMetrics)) {
+            const existing = seen.get(id);
+            if (existing && metricKey(existing) !== metricKey(subMetric)) {
+              throw new Error(`The ID '${id}' used for two metrics in the expression: '${subMetric}' and '${existing}'. Rename one.`);
+            }
+            seen.set(id, subMetric);
+            visit(subMetric);
+          }
+        }
+      });
+    }
+  }
+
 }
 
 const VALID_VARIABLE = new RegExp('^[a-z][a-zA-Z0-9_]*$');

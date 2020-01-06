@@ -5,9 +5,9 @@ import { HorizontalAnnotation } from './graph';
 import { CreateAlarmOptions } from './metric';
 import { IMetric, MetricStatConfig } from './metric-types';
 import { dispatchMetric, metricPeriod } from './private/metric-util';
+import { dropUndefined } from './private/object';
 import { MetricSet } from './private/rendering';
-import { dropUndefined } from './private/util';
-import { parseStatistic } from './private/util.statistic';
+import { parseStatistic } from './private/statistic';
 
 export interface IAlarm extends IResource {
   /**
