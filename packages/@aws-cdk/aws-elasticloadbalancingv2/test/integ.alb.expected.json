@@ -491,15 +491,6 @@
         "EvaluationPeriods": 2,
         "Dimensions": [
           {
-            "Name": "TargetGroup",
-            "Value": {
-              "Fn::GetAtt": [
-                "LBListenerTargetGroupF04FCF6D",
-                "TargetGroupFullName"
-              ]
-            }
-          },
-          {
             "Name": "LoadBalancer",
             "Value": {
               "Fn::Join": [
@@ -547,6 +538,15 @@
                     ]
                   }
                 ]
+              ]
+            }
+          },
+          {
+            "Name": "TargetGroup",
+            "Value": {
+              "Fn::GetAtt": [
+                "LBListenerTargetGroupF04FCF6D",
+                "TargetGroupFullName"
               ]
             }
           }
@@ -565,15 +565,6 @@
         "EvaluationPeriods": 2,
         "Dimensions": [
           {
-            "Name": "TargetGroup",
-            "Value": {
-              "Fn::GetAtt": [
-                "LBListenerConditionalTargetGroupA75CCCD9",
-                "TargetGroupFullName"
-              ]
-            }
-          },
-          {
             "Name": "LoadBalancer",
             "Value": {
               "Fn::Join": [
@@ -621,6 +612,15 @@
                     ]
                   }
                 ]
+              ]
+            }
+          },
+          {
+            "Name": "TargetGroup",
+            "Value": {
+              "Fn::GetAtt": [
+                "LBListenerConditionalTargetGroupA75CCCD9",
+                "TargetGroupFullName"
               ]
             }
           }
