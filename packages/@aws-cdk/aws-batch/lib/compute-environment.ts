@@ -1,6 +1,6 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
-import { Construct, IResource, Resource, Stack, Tag } from '@aws-cdk/core';
+import { Construct, IResource, Resource, Stack, Tag, Aws } from '@aws-cdk/core';
 import { CfnComputeEnvironment } from './batch.generated';
 
 /**
@@ -440,7 +440,7 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
    * @param props - the compute environment construct properties
    */
   private getSpotFleetRole(props: ComputeEnvironmentProps): iam.IRole | undefined {
-    const spotFleetArn = `arn:aws:iam::${this.stack.account}:role/aws-service-role/spotfleet.amazonaws.com/AWSServiceRoleForEC2SpotFleet`;
+    const spotFleetArn = `arn${Aws.PARTITION}iam::${this.stack.account}:role/aws-service-role/spotfleet.amazonaws.com/AWSServiceRoleForEC2SpotFleet`;
     let role = props.computeResources ? props.computeResources.spotIamFleetRole : undefined;
 
     if (props.allocationStrategy && props.allocationStrategy !== AllocationStrategy.BEST_FIT) {
