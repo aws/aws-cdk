@@ -61,6 +61,13 @@ export interface SDKOptions {
    * @default No certificate bundle
    */
   caBundlePath?: string;
+
+  /**
+   * The custom suer agent to use.
+   *
+   * @default - <package-name>/<package-version>
+   */
+  userAgent?: string;
 }
 
 /**
@@ -191,9 +198,14 @@ export class SDK implements ISDK {
   private async configureSDKHttpOptions(options: SDKOptions) {
     const config: {[k: string]: any} = {};
     const httpOptions: {[k: string]: any} = {};
-    // Find the package.json from the main toolkit
-    const pkg = (require.main as any).require('../package.json');
-    config.customUserAgent = `${pkg.name}/${pkg.version}`;
+
+    let userAgent = options.userAgent;
+    if (userAgent == null) {
+      // Find the package.json from the main toolkit
+      const pkg = (require.main as any).require('../package.json');
+      userAgent = `${pkg.name}/${pkg.version}`;
+    }
+    config.customUserAgent = userAgent;
 
     // https://aws.amazon.com/blogs/developer/using-the-aws-sdk-for-javascript-from-behind-a-proxy/
     options.proxyAddress = options.proxyAddress || httpsProxyFromEnvironment();

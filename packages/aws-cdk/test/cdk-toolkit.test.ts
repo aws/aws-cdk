@@ -1,53 +1,45 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import * as nodeunit from 'nodeunit';
 import { AppStacks, Tag } from '../lib/api/cxapp/stacks';
 import { DeployStackResult } from '../lib/api/deploy-stack';
 import { DeployStackOptions, IDeploymentTarget, Template } from '../lib/api/deployment-target';
 import { SDK } from '../lib/api/util/sdk';
 import { CdkToolkit } from '../lib/cdk-toolkit';
 
-export = nodeunit.testCase({
-  deploy: {
-    'makes correct CloudFormation calls': {
-      'without options'(test: nodeunit.Test) {
-        // GIVEN
-        const toolkit = new CdkToolkit({
-          appStacks: new TestAppStacks(test),
-          provisioner: new TestProvisioner(test, {
-            'Test-Stack-A': { Foo: 'Bar' },
-            'Test-Stack-B': { Baz: 'Zinga!' },
-          }),
-        });
+describe('deploy', () => {
+  describe('makes correct CloudFormation calls', () => {
+    test('without options', () => {
+      // GIVEN
+      const toolkit = new CdkToolkit({
+        appStacks: new TestAppStacks(),
+        provisioner: new TestProvisioner({
+          'Test-Stack-A': { Foo: 'Bar' },
+          'Test-Stack-B': { Baz: 'Zinga!' },
+        }),
+      });
 
-        // WHEN
-        toolkit.deploy({ stackNames: ['Test-Stack-A', 'Test-Stack-B'], sdk: new SDK() });
+      // WHEN
+      toolkit.deploy({ stackNames: ['Test-Stack-A', 'Test-Stack-B'], sdk: new SDK() });
+    });
 
-        // THEN
-        test.done();
-      },
-      'with sns notification arns'(test: nodeunit.Test) {
-        // GIVEN
-        const notificationArns = ['arn:aws:sns:::cfn-notifications', 'arn:aws:sns:::my-cool-topic'];
-        const toolkit = new CdkToolkit({
-          appStacks: new TestAppStacks(test),
-          provisioner: new TestProvisioner(test, {
-            'Test-Stack-A': { Foo: 'Bar' },
-            'Test-Stack-B': { Baz: 'Zinga!' },
-          }, notificationArns),
-        });
+    test('with sns notification arns', () => {
+      // GIVEN
+      const notificationArns = ['arn:aws:sns:::cfn-notifications', 'arn:aws:sns:::my-cool-topic'];
+      const toolkit = new CdkToolkit({
+        appStacks: new TestAppStacks(),
+        provisioner: new TestProvisioner({
+          'Test-Stack-A': { Foo: 'Bar' },
+          'Test-Stack-B': { Baz: 'Zinga!' },
+        }, notificationArns),
+      });
 
-        // WHEN
-        toolkit.deploy({
-          stackNames: ['Test-Stack-A', 'Test-Stack-B'],
-          notificationArns,
-          sdk: new SDK()
-        });
-
-        // THEN
-        test.done();
-      },
-    },
-  },
+      // WHEN
+      toolkit.deploy({
+        stackNames: ['Test-Stack-A', 'Test-Stack-B'],
+        notificationArns,
+        sdk: new SDK()
+      });
+    });
+  });
 });
 
 class MockStack {
@@ -65,7 +57,7 @@ class TestAppStacks extends AppStacks {
   public static readonly MOCK_STACK_A = new MockStack('Test-Stack-A');
   public static readonly MOCK_STACK_B = new MockStack('Test-Stack-B');
 
-  constructor(private readonly test: nodeunit.Test) {
+  constructor() {
     super(undefined as any);
   }
 
@@ -81,7 +73,7 @@ class TestAppStacks extends AppStacks {
   }
 
   public selectStacks(selectors: string[]): Promise<cxapi.CloudFormationStackArtifact[]> {
-    this.test.deepEqual(selectors, ['Test-Stack-A', 'Test-Stack-B']);
+    expect(selectors).toEqual(['Test-Stack-A', 'Test-Stack-B']);
     return Promise.resolve([
       // Cheating the type system here (intentionally, so we have to stub less!)
       TestAppStacks.MOCK_STACK_A as cxapi.CloudFormationStackArtifact,
@@ -91,8 +83,7 @@ class TestAppStacks extends AppStacks {
 
   public processMetadata(stacks: cxapi.CloudFormationStackArtifact[]): void {
     stacks.forEach(stack =>
-      this.test.ok(stack === TestAppStacks.MOCK_STACK_A || stack === TestAppStacks.MOCK_STACK_B,
-        `Not an expected mock stack: ${stack.stackName}`));
+      expect([TestAppStacks.MOCK_STACK_A, TestAppStacks.MOCK_STACK_B]).toContain(stack));
   }
 
   public listStacks(): never {
@@ -113,7 +104,6 @@ class TestProvisioner implements IDeploymentTarget {
   private readonly expectedNotificationArns?: string[];
 
   constructor(
-    private readonly test: nodeunit.Test,
     expectedTags: { [stackName: string]: { [key: string]: string } } = {},
     expectedNotificationArns?: string[],
   ) {
@@ -128,12 +118,10 @@ class TestProvisioner implements IDeploymentTarget {
   }
 
   public deployStack(options: DeployStackOptions): Promise<DeployStackResult> {
-    this.test.ok(
-      options.stack.stackName === TestAppStacks.MOCK_STACK_A.stackName || options.stack.stackName === TestAppStacks.MOCK_STACK_B.stackName,
-      `Not an expected mock stack: ${options.stack.stackName}`
-    );
-    this.test.deepEqual(options.tags, this.expectedTags[options.stack.stackName]);
-    this.test.deepEqual(options.notificationArns, this.expectedNotificationArns);
+    expect([TestAppStacks.MOCK_STACK_A.stackName, TestAppStacks.MOCK_STACK_B.stackName])
+      .toContain(options.stack.stackName);
+    expect(options.tags).toEqual(this.expectedTags[options.stack.stackName]);
+    expect(options.notificationArns).toEqual(this.expectedNotificationArns);
     return Promise.resolve({
       stackArn: `arn:aws:cloudformation:::stack/${options.stack.stackName}/MockedOut`,
       noOp: false,
