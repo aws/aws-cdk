@@ -455,3 +455,27 @@ host.allowSshAccessFrom(ec2.Peer.ipv4('1.2.3.4/32'));
 
 As there are no SSH public keys deployed on this machine, you need to use [EC2 Instance Connect](https://aws.amazon.com/de/blogs/compute/new-using-amazon-ec2-instance-connect-for-ssh-access-to-your-ec2-instances/)
 with the command `aws ec2-instance-connect send-ssh-public-key` to provide your SSH public key.
+
+
+## Block Devices
+
+To add EBS block device mappings, specify the `blockDeviceMappings` property. The follow example sets the EBS-backed
+root device (`/dev/sda1`) size to 50 GiB, and adds another EBS-backed device mapped to `/dev/sdm` that is 100 GiB in
+size:
+
+```ts
+new ec2.Instance(this, 'Instance', {
+  // ...
+  blockDeviceMappings: [
+    {
+      deviceName: '/dev/sda1',
+      volume: ec2.BlockDeviceVolume.ebs(50),
+    },
+    {
+      deviceName: '/dev/sdm',
+      volume: ec2.BlockDeviceVolume.ebs(100),
+    },
+  ],
+});
+
+```
