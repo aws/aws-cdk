@@ -4,7 +4,7 @@ import { CfnVPCEndpointService, CfnVPCEndpointServicePermissions } from './ec2.g
 
 /**
  * A load balancer that can host a VPC Endpoint Service
- * @experimental
+ *
  */
 export interface IVpcEndpointServiceLoadBalancer {
   /**
