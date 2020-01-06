@@ -4,21 +4,24 @@ import { CfnVPCEndpointService, CfnVPCEndpointServicePermissions } from './ec2.g
 
 /**
  * A load balancer that can host a VPC Endpoint Service
+ * @experimental
  */
 export interface IVpcEndpointServiceLoadBalancer {
   /**
    * The ARN of the load balancer that hosts the VPC Endpoint Service
+   * @experimental
    */
   readonly loadBalancerArn: string;
 }
 
 /**
  * A VPC endpoint service.
+ * @experimental
  */
 export interface IVpcEndpointService extends IResource {
   /**
    * Name of the Vpc Endpoint Service
-   *
+   * @experimental
    */
   readonly vpcEndpointServiceName?: string;
 }
@@ -26,6 +29,7 @@ export interface IVpcEndpointService extends IResource {
 /**
  * A VPC endpoint service
  * @resource AWS::EC2::VPCEndpointService
+ * @experimental
  */
 export class VpcEndpointService extends Resource implements IVpcEndpointService {
 
@@ -37,11 +41,13 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
 
   /**
    * Whether to require manual acceptance of new connections to the service.
+   * @experimental
    */
   public readonly acceptanceRequired: boolean;
 
   /**
    * One or more Principal ARNs to allow inbound connections to.
+   * @experimental
    */
   public readonly whitelistedPrincipals: ArnPrincipal[];
 
@@ -74,17 +80,20 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
 
 /**
  * Construction properties for a VpcEndpointService.
+ * @experimental
  */
 export interface VpcEndpointServiceProps {
 
   /**
    * Name of the Vpc Endpoint Service
    * @default - CDK generated name
+   * @experimental
    */
   readonly vpcEndpointServiceName?: string;
 
   /**
    * One or more load balancers to host the VPC Endpoint Service.
+   * @experimental
    */
   readonly vpcEndpointServiceLoadBalancers: IVpcEndpointServiceLoadBalancer[];
 
@@ -92,6 +101,7 @@ export interface VpcEndpointServiceProps {
    * Whether requests from service consumers to connect to the service through
    * an endpoint must be accepted.
    * @default true
+   * @experimental
    */
   readonly acceptanceRequired?: boolean;
 
@@ -100,6 +110,7 @@ export interface VpcEndpointServiceProps {
    * These principals can connect to your service using VPC endpoints. Takes a
    * list of one or more ArnPrincipal.
    * @default - no principals
+   * @experimental
    */
   readonly whitelistedPrincipals?: ArnPrincipal[];
 }
