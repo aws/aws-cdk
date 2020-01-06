@@ -29,3 +29,6 @@ cdk.context.json
 .cdk.staging/
 cdk.out/
 *.tabl.json
+
+# Yarn error log
+yarn-error.log
