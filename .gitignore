@@ -28,4 +28,4 @@ coverage/
 cdk.context.json
 .cdk.staging/
 cdk.out/
-
+*.tabl.json
