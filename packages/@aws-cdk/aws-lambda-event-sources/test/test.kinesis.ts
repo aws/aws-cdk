@@ -153,4 +153,34 @@ export = {
 
     test.done();
   },
+
+  'contains eventSourceMappingId after lambda binding'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const stream = new kinesis.Stream(stack, 'S');
+    const eventSource = new sources.KinesisEventSource(stream, {
+      startingPosition: lambda.StartingPosition.TRIM_HORIZON
+    });
+
+    // WHEN
+    fn.addEventSource(eventSource);
+
+    // THEN
+    test.notEqual(eventSource.eventSourceMappingId, undefined);
+    test.done();
+  },
+
+  'eventSourceMappingId is undefined before binding to lambda'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const stream = new kinesis.Stream(stack, 'S');
+    const eventSource = new sources.KinesisEventSource(stream, {
+      startingPosition: lambda.StartingPosition.TRIM_HORIZON
+    });
+
+    // WHEN/THEN
+    test.equal(eventSource.eventSourceMappingId, undefined);
+    test.done();
+  },
 };

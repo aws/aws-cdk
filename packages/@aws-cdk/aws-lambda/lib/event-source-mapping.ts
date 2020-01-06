@@ -67,6 +67,12 @@ export interface EventSourceMappingProps extends EventSourceMappingOptions {
  * modify the Lambda's execution role so it can consume messages from the queue.
  */
 export class EventSourceMapping extends cdk.Resource {
+  /**
+   * The Ref of the EventSourceMapping
+   * @attribute
+   */
+  public readonly eventSourceMappingId: string;
+
   constructor(scope: cdk.Construct, id: string, props: EventSourceMappingProps) {
     super(scope, id);
 
@@ -74,7 +80,7 @@ export class EventSourceMapping extends cdk.Resource {
       throw new Error(`maxBatchingWindow cannot be over 300 seconds, got ${props.maxBatchingWindow.toSeconds()}`);
     }
 
-    new CfnEventSourceMapping(this, 'Resource', {
+    const cfnEventSourceMapping = new CfnEventSourceMapping(this, 'Resource', {
       batchSize: props.batchSize,
       enabled: props.enabled,
       eventSourceArn: props.eventSourceArn,
@@ -82,6 +88,7 @@ export class EventSourceMapping extends cdk.Resource {
       startingPosition: props.startingPosition,
       maximumBatchingWindowInSeconds: props.maxBatchingWindow && props.maxBatchingWindow.toSeconds(),
     });
+    this.eventSourceMappingId = cfnEventSourceMapping.ref;
   }
 }
 
