@@ -228,6 +228,13 @@ export = {
                 "Arn"
               ]
             },
+            "\\\",\\\"username\\\":\\\"",
+            {
+              "Fn::GetAtt": [
+                "roleC7B7E775",
+                "Arn"
+              ]
+            },
             "\\\",\\\"groups\\\":[\\\"system:masters\\\"]}]\",\"mapUsers\":\"[]\",\"mapAccounts\":\"[]\"}}]"
           ]
         ]
