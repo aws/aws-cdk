@@ -37,13 +37,11 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
 
   /**
    * Whether to require manual acceptance of new connections to the service.
-   * @attribute
    */
   public readonly acceptanceRequired: boolean;
 
   /**
    * One or more Principal ARNs to allow inbound connections to.
-   * @attribute
    */
   public readonly whitelistedPrincipals: ArnPrincipal[];
 
@@ -66,7 +64,7 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
     });
 
     if (this.whitelistedPrincipals.length > 0) {
-      new CfnVPCEndpointServicePermissions(this, id + "Permissions", {
+      new CfnVPCEndpointServicePermissions(this, "Permissions", {
         serviceId: this.endpointService.ref,
         allowedPrincipals: this.whitelistedPrincipals.map(x => x.arn)
       });
@@ -79,26 +77,29 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
  */
 export interface VpcEndpointServiceProps {
 
-    /**
-     * Name of the Vpc Endpoint Service
-     * @default - CDK generated name
-     */
-    readonly vpcEndpointServiceName?: string;
+  /**
+   * Name of the Vpc Endpoint Service
+   * @default - CDK generated name
+   */
+  readonly vpcEndpointServiceName?: string;
 
-    /**
-     * One or more load balancers to host the service.
-     */
-    readonly vpcEndpointServiceLoadBalancers: IVpcEndpointServiceLoadBalancer[];
+  /**
+   * One or more load balancers to host the VPC Endpoint Service.
+   */
+  readonly vpcEndpointServiceLoadBalancers: IVpcEndpointServiceLoadBalancer[];
 
-    /**
-     * Whether to require manual acceptance of new connections to the service.
-     * @default true
-     */
-    readonly acceptanceRequired?: boolean;
+  /**
+   * Whether requests from service consumers to connect to the service through
+   * an endpoint must be accepted.
+   * @default true
+   */
+  readonly acceptanceRequired?: boolean;
 
-    /**
-     * One or more ArnPrincipal to allow inbound connections to.
-     * @default - no principals
-     */
-    readonly whitelistedPrincipals?: ArnPrincipal[];
+  /**
+   * IAM users, IAM roles, or AWS accounts to allow inbound connections from.
+   * These principals can connect to your service using VPC endpoints. Takes a
+   * list of one or more ArnPrincipal.
+   * @default - no principals
+   */
+  readonly whitelistedPrincipals?: ArnPrincipal[];
 }

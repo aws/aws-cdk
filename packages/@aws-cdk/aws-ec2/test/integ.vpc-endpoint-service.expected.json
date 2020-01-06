@@ -18,7 +18,7 @@
         "AcceptanceRequired": false
       }
     },
-    "MyVpcEndpointServiceWithPrincipalsMyVpcEndpointServiceWithPrincipalsPermissions87AE200F": {
+    "MyVpcEndpointServiceWithPrincipalsPermissions29F9BD5A": {
       "Type": "AWS::EC2::VPCEndpointServicePermissions",
       "Properties": {
         "ServiceId": {
