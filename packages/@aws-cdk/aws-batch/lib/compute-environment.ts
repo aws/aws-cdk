@@ -447,7 +447,7 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
       return;
     }
 
-    if (props.computeResources && props.computeResources.type &&
+    if (props.computeResources && props.computeResources.type && role === undefined &&
         props.computeResources.type === ComputeResourceType.SPOT) {
       role = iam.Role.fromRoleArn(this, 'Resource-SpotFleet-Role', spotFleetArn);
     }

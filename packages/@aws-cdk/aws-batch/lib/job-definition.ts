@@ -18,8 +18,6 @@ export interface JobDefinitionProps {
 
   /**
    * An object with various properties specific to container-based jobs.
-   *
-   * @default - undefined
    */
   readonly container: IJobDefinitionContainer;
 
