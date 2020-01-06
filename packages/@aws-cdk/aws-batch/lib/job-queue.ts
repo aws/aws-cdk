@@ -113,17 +113,17 @@ export class JobQueue extends Resource implements IJobQueue {
 
     const jobQueue = new CfnJobQueue(this, 'Resource', {
       computeEnvironmentOrder: props.computeEnvironmentOrder
-      ? props.computeEnvironmentOrder.map(cp => ({
-        computeEnvironment: cp.computeEnvironment.computeEnvironmentArn,
-        order: cp.order,
-      } as CfnJobQueue.ComputeEnvironmentOrderProperty))
-      : [
-        {
-          // Get an AWS Managed Compute Environment
-          computeEnvironment: new ComputeEnvironment(this, 'Resource-Batch-Compute-Environment').computeEnvironmentArn,
-          order: 1,
-        },
-      ],
+        ? props.computeEnvironmentOrder.map(cp => ({
+          computeEnvironment: cp.computeEnvironment.computeEnvironmentArn,
+          order: cp.order,
+        } as CfnJobQueue.ComputeEnvironmentOrderProperty))
+        : [
+          {
+            // Get an AWS Managed Compute Environment
+            computeEnvironment: new ComputeEnvironment(this, 'Resource-Batch-Compute-Environment').computeEnvironmentArn,
+            order: 1,
+          },
+        ],
       jobQueueName: this.physicalName,
       priority: props.priority || 1,
       state: props.enabled === undefined ? 'ENABLED' : (props.enabled ? 'ENABLED' : 'DISABLED'),
