@@ -563,7 +563,8 @@ export class Stack extends Construct implements ITaggable {
         imageNameParameter: params.imageNameParameter.logicalId,
         repositoryName: asset.repositoryName,
         buildArgs: asset.dockerBuildArgs,
-        target: asset.dockerBuildTarget
+        target: asset.dockerBuildTarget,
+        file: asset.dockerFile,
       };
 
       this.node.addMetadata(cxapi.ASSET_METADATA, metadata);
