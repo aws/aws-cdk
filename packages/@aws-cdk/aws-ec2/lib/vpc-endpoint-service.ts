@@ -9,7 +9,6 @@ import { CfnVPCEndpointService, CfnVPCEndpointServicePermissions } from './ec2.g
 export interface IVpcEndpointServiceLoadBalancer {
   /**
    * The ARN of the load balancer that hosts the VPC Endpoint Service
-   * @experimental
    */
   readonly loadBalancerArn: string;
 }
