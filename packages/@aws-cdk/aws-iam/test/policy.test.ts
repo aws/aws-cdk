@@ -308,7 +308,7 @@ describe('IAM policy', () => {
     const pol = new Policy(stack, 'Pol', { force: false });
     Array.isArray(pol.policyName);
 
-    expect(() => app.synth()).toThrow(/empty policy/);
+    expect(() => app.synth()).toThrow(/must contain at least one statement/);
   });
 });
 
