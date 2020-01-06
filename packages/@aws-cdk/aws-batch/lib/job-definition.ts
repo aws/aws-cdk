@@ -188,7 +188,7 @@ export class JobDefinition extends Resource implements IJobDefinition {
       resource: 'job-definition',
       resourceName: this.physicalName,
     });
-    this.jobDefinitionName = this.getResourceNameAttribute(this.physicalName);
+    this.jobDefinitionName = this.getResourceNameAttribute(jobDef.ref);
   }
 
   private deserializeEnvVariables(env?: { [name: string]: string}): CfnJobDefinition.EnvironmentProperty[] | undefined {

@@ -134,6 +134,6 @@ export class JobQueue extends Resource implements IJobQueue {
       resource: 'job-queue',
       resourceName: this.physicalName,
     });
-    this.jobQueueName = this.getResourceNameAttribute(this.physicalName);
+    this.jobQueueName = this.getResourceNameAttribute(jobQueue.ref);
   }
 }

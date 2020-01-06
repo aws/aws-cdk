@@ -303,7 +303,7 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
     let computeResources: CfnComputeEnvironment.ComputeResourcesProperty | undefined;
 
     // Only allow compute resources to be set when using UNMANAGED type
-    if (props.computeResources && !this.isManagedByAWS(props)) {
+    if (props.computeResources && !this.isManaged(props)) {
       computeResources = {
         allocationStrategy: props.allocationStrategy || AllocationStrategy.BEST_FIT,
         bidPercentage: props.computeResources.bidPercentage,
@@ -337,8 +337,8 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
           ],
           assumedBy: new iam.ServicePrincipal('batch.amazonaws.com'),
         }).roleArn,
-      state: this.isEnabled(props) ? 'ENABLED' : 'DISABLED',
-      type: this.isManagedByAWS(props) ? 'UNMANAGED' : 'MANAGED',
+      state: props.enabled === undefined ? 'ENABLED' : ( props.enabled ? 'ENABLED' : 'DISABLED' ),
+      type: this.isManaged(props) ? 'UNMANAGED' : 'MANAGED',
     });
 
     if (props.computeResources && props.computeResources.vpc) {
@@ -350,14 +350,10 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
       resource: 'compute-environment',
       resourceName: this.physicalName,
     });
-    this.computeEnvironmentName = this.getResourceNameAttribute(props.computeEnvironmentName || this.physicalName);
+    this.computeEnvironmentName = this.getResourceNameAttribute(computeEnvironment.ref);
   }
 
-  private isEnabled(props: ComputeEnvironmentProps): boolean {
-    return props.enabled === undefined ? true : props.enabled;
-  }
-
-  private isManagedByAWS(props: ComputeEnvironmentProps): boolean {
+  private isManaged(props: ComputeEnvironmentProps): boolean {
     return props.managed === undefined ? true : props.managed;
   }
 
@@ -369,11 +365,11 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
       return;
     }
 
-    if (this.isManagedByAWS(props) && props.computeResources !== undefined) {
+    if (this.isManaged(props) && props.computeResources !== undefined) {
       throw new Error('It is not allowed to set computeResources on an AWS managed compute environment');
     }
 
-    if (!this.isManagedByAWS(props) && props.computeResources === undefined) {
+    if (!this.isManaged(props) && props.computeResources === undefined) {
       throw new Error('computeResources is missing but required on an unmanaged compute environment');
     }
 
