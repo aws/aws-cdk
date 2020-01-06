@@ -215,8 +215,8 @@ export class JobDefinition extends Resource implements IJobDefinition {
       instanceType: container.instanceType && container.instanceType.toString(),
       jobRoleArn: container.jobRole && container.jobRole.roleArn,
       linuxParameters: container.linuxParams
-      ? { devices: container.linuxParams.renderLinuxParameters().devices }
-      : undefined,
+        ? { devices: container.linuxParams.renderLinuxParameters().devices }
+        : undefined,
       memory: container.memoryLimitMiB || 4,
       mountPoints: container.mountPoints,
       privileged: container.privileged || false,
