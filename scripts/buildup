@@ -16,3 +16,8 @@ fi
 
 
 ${scriptdir}/foreach.sh --up yarn build
+${scriptdir}/foreach.sh --reset
+
+echo "************************************************************"
+echo "buildup done"
+echo "************************************************************"
