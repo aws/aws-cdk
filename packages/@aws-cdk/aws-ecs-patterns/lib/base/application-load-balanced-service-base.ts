@@ -1,11 +1,11 @@
 import { DnsValidatedCertificate, ICertificate } from '@aws-cdk/aws-certificatemanager';
 import { IVpc } from '@aws-cdk/aws-ec2';
 import { AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerImage, ICluster, LogDriver, PropagatedTagSource, Secret } from '@aws-cdk/aws-ecs';
-import { ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationTargetGroup } from '@aws-cdk/aws-elasticloadbalancingv2';
+import { ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationTargetGroup, ListenerCertificate } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { IRole } from '@aws-cdk/aws-iam';
 import { AddressRecordTarget, ARecord, IHostedZone } from '@aws-cdk/aws-route53';
 import { LoadBalancerTarget } from '@aws-cdk/aws-route53-targets';
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 
 /**
  * The properties for the base ApplicationLoadBalancedEc2Service or ApplicationLoadBalancedFargateService service.
@@ -68,7 +68,7 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * @default HTTP. If a certificate is specified, the protocol will be
    * set by default to HTTPS.
    */
- readonly protocol?: ApplicationProtocol;
+  readonly protocol?: ApplicationProtocol;
 
   /**
    * The domain name for the service, e.g. "api.example.com."
@@ -100,6 +100,24 @@ export interface ApplicationLoadBalancedServiceBaseProps {
   readonly healthCheckGracePeriod?: cdk.Duration;
 
   /**
+   * The maximum number of tasks, specified as a percentage of the Amazon ECS
+   * service's DesiredCount value, that can run in a service during a
+   * deployment.
+   *
+   * @default - 100 if daemon, otherwise 200
+   */
+  readonly maxHealthyPercent?: number;
+
+  /**
+   * The minimum number of tasks, specified as a percentage of
+   * the Amazon ECS service's DesiredCount value, that must
+   * continue to run and remain healthy during a deployment.
+   *
+   * @default - 0 if daemon, otherwise 50
+   */
+  readonly minHealthyPercent?: number;
+
+  /**
    * The application load balancer that will serve traffic to the service.
    *
    * [disable-awslint:ref-via-interface]
@@ -107,6 +125,14 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * @default - a new load balancer will be created.
    */
   readonly loadBalancer?: ApplicationLoadBalancer;
+
+  /**
+   * Listener port of the application load balancer that will serve traffic to the service.
+   *
+   * @default - The default listener port is determined from the protocol (port 80 for HTTP,
+   * port 443 for HTTPS). A domain name and zone must be also be specified if using HTTPS.
+   */
+  readonly listenerPort?: number;
 
   /**
    * Specifies whether to propagate the tags from the task definition or the service to the tasks in the service.
@@ -273,17 +299,18 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
 
     this.loadBalancer = props.loadBalancer !== undefined ? props.loadBalancer : new ApplicationLoadBalancer(this, 'LB', lbProps);
 
-    const targetProps = {
-      port: 80
-    };
-
     if (props.certificate !== undefined && props.protocol !== undefined && props.protocol !== ApplicationProtocol.HTTPS) {
       throw new Error('The HTTPS protocol must be used when a certificate is given');
     }
     const protocol = props.protocol !== undefined ? props.protocol : (props.certificate ? ApplicationProtocol.HTTPS : ApplicationProtocol.HTTP);
 
+    const targetProps = {
+      port: 80
+    };
+
     this.listener = this.loadBalancer.addListener('PublicListener', {
       protocol,
+      port: props.listenerPort,
       open: true
     });
     this.targetGroup = this.listener.addTargets('ECS', targetProps);
@@ -303,7 +330,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
       }
     }
     if (this.certificate !== undefined) {
-      this.listener.addCertificateArns('Arns', [this.certificate.certificateArn]);
+      this.listener.addCertificates('Arns', [ListenerCertificate.fromCertificateManager(this.certificate)]);
     }
 
     let domainName = this.loadBalancer.loadBalancerDnsName;

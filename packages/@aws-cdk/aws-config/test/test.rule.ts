@@ -1,9 +1,9 @@
 import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
-import targets = require('@aws-cdk/aws-events-targets');
-import lambda = require('@aws-cdk/aws-lambda');
-import cdk = require('@aws-cdk/core');
+import * as targets from '@aws-cdk/aws-events-targets';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import config = require('../lib');
+import * as config from '../lib';
 
 export = {
   'create a managed rule'(test: Test) {
@@ -44,7 +44,7 @@ export = {
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.AssetCode.fromInline('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_8_10
+      runtime: lambda.Runtime.NODEJS_10_X
     });
 
     // WHEN
@@ -210,7 +210,7 @@ export = {
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.AssetCode.fromInline('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_8_10
+      runtime: lambda.Runtime.NODEJS_10_X
     });
 
     // WHEN
@@ -231,7 +231,7 @@ export = {
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.AssetCode.fromInline('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_8_10
+      runtime: lambda.Runtime.NODEJS_10_X
     });
 
     // THEN
@@ -252,7 +252,7 @@ export = {
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.Code.fromInline('dummy'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_8_10
+      runtime: lambda.Runtime.NODEJS_10_X
     });
 
     // WHEN

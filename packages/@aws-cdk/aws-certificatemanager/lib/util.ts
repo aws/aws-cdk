@@ -1,7 +1,7 @@
 import { Arn, Stack, Token } from '@aws-cdk/core';
 import { ICertificate } from './certificate';
 import { DnsValidatedCertificate } from './dns-validated-certificate';
-import publicSuffixes = require('./public-suffixes');
+import { publicSuffixes } from './public-suffixes';
 
 /**
  * Returns the apex domain (domain.com) from a subdomain (www.sub.domain.com)

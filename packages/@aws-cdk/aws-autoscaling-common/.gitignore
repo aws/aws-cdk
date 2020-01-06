@@ -13,7 +13,7 @@ lib/*.zip
 .LAST_BUILD
 .nyc_output
 coverage
-.nycrc
+nyc.config.js
 .LAST_PACKAGE
 tsconfig.json
 

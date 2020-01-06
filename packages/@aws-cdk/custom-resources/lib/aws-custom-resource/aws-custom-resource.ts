@@ -1,9 +1,13 @@
 import { CustomResource, CustomResourceProvider } from '@aws-cdk/aws-cloudformation';
-import iam = require('@aws-cdk/aws-iam');
-import lambda = require('@aws-cdk/aws-lambda');
-import cdk = require('@aws-cdk/core');
-import path = require('path');
-import metadata = require('./sdk-api-metadata.json');
+import * as iam from '@aws-cdk/aws-iam';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as cdk from '@aws-cdk/core';
+import * as fs from 'fs';
+import * as path from 'path';
+
+// don't use "require" since the typescript compiler emits errors since this
+// file is not listed in tsconfig.json.
+const metadata = JSON.parse(fs.readFileSync(path.join(__dirname, 'sdk-api-metadata.json'), 'utf-8'));
 
 /**
  * AWS SDK service metadata.
@@ -96,6 +100,13 @@ export interface AwsSdkCall {
 
 export interface AwsCustomResourceProps {
   /**
+   * Cloudformation Resource type.
+   *
+   * @default - Custom::AWS
+   */
+  readonly resourceType?: string;
+
+  /**
    * The AWS SDK call to make when the resource is created.
    * At least onCreate, onUpdate or onDelete must be specified.
    *
@@ -133,9 +144,19 @@ export interface AwsCustomResourceProps {
   readonly policyStatements?: iam.PolicyStatement[];
 
   /**
+   * The execution role for the Lambda function implementing this custom
+   * resource provider. This role will apply to all `AwsCustomResource`
+   * instances in the stack. The role must be assumable by the
+   * `lambda.amazonaws.com` service principal.
+   *
+   * @default - a new role is created
+   */
+  readonly role?: iam.IRole;
+
+  /**
    * The timeout for the Lambda function implementing this custom resource.
    *
-   * @default Duration.seconds(30)
+   * @default Duration.minutes(2)
    */
   readonly timeout?: cdk.Duration
 }
@@ -160,11 +181,12 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
 
     const provider = new lambda.SingletonFunction(this, 'Provider', {
       code: lambda.Code.fromAsset(path.join(__dirname, 'runtime')),
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_12_X,
       handler: 'index.handler',
       uuid: '679f53fa-c002-430c-b0da-5b7982bd2287',
       lambdaPurpose: 'AWS',
-      timeout: props.timeout || cdk.Duration.seconds(30),
+      timeout: props.timeout || cdk.Duration.minutes(2),
+      role: props.role,
     });
     this.grantPrincipal = provider.grantPrincipal;
 
@@ -185,8 +207,8 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
 
     const create = props.onCreate || props.onUpdate;
     this.customResource = new CustomResource(this, 'Resource', {
-      resourceType: 'Custom::AWS',
-      provider: CustomResourceProvider.lambda(provider),
+      resourceType: props.resourceType || 'Custom::AWS',
+      provider: CustomResourceProvider.fromLambda(provider),
       properties: {
         create: create && encodeBooleans(create),
         update: props.onUpdate && encodeBooleans(props.onUpdate),
@@ -200,10 +222,24 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
    *
    * Example for S3 / listBucket : 'Buckets.0.Name'
    *
+   * Use `Token.asXxx` to encode the returned `Reference` as a specific type or
+   * use the convenience `getDataString` for string attributes.
+   *
    * @param dataPath the path to the data
    */
   public getData(dataPath: string) {
     return this.customResource.getAtt(dataPath);
+  }
+
+  /**
+   * Returns response data for the AWS SDK call as string.
+   *
+   * Example for S3 / listBucket : 'Buckets.0.Name'
+   *
+   * @param dataPath the path to the data
+   */
+  public getDataString(dataPath: string): string {
+    return this.customResource.getAttString(dataPath);
   }
 }
 

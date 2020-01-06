@@ -1,5 +1,5 @@
-import AWS = require('aws-sdk');
-import sinon = require('sinon');
+import * as AWS from 'aws-sdk';
+import * as sinon from 'sinon';
 import { SDK } from "../../lib/api/util/sdk";
 
 /**
@@ -11,7 +11,7 @@ import { SDK } from "../../lib/api/util/sdk";
 export class MockSDK extends SDK {
   private readonly sandbox: sinon.SinonSandbox;
   constructor() {
-    super();
+    super({ userAgent: 'aws-cdk/jest' });
     this.sandbox = sinon.createSandbox();
   }
 

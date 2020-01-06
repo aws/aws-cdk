@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-ec2",
-  "version": "1.15.0",
+  "version": "1.19.0",
   "description": "CDK Constructs for AWS EC2",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -11,8 +11,7 @@
         "package": "software.amazon.awscdk.services.ec2",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "ec2",
-          "versionSuffix": ".DEVPREVIEW"
+          "artifactId": "ec2"
         }
       },
       "dotnet": {
@@ -20,7 +19,6 @@
         "packageId": "Amazon.CDK.AWS.EC2",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "versionSuffix": "-devpreview",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
@@ -45,7 +43,8 @@
     "awslint": "cdk-awslint",
     "cfn2ts": "cfn2ts",
     "build+test+package": "npm run build+test && npm run package",
-    "build+test": "npm run build && npm test"
+    "build+test": "npm run build && npm test",
+    "compat": "cdk-compat"
   },
   "cdk-build": {
     "cloudformation": "AWS::EC2"
@@ -63,26 +62,28 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "1.15.0",
-    "cdk-build-tools": "^1.15.0",
-    "cdk-integ-tools": "^1.15.0",
-    "cfn2ts": "^1.15.0",
-    "pkglint": "^1.15.0"
+    "@aws-cdk/assert": "1.19.0",
+    "@types/nodeunit": "^0.0.30",
+    "cdk-build-tools": "1.19.0",
+    "cdk-integ-tools": "1.19.0",
+    "cfn2ts": "1.19.0",
+    "nodeunit": "^0.11.3",
+    "pkglint": "1.19.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-cloudwatch": "1.15.0",
-    "@aws-cdk/aws-iam": "1.15.0",
-    "@aws-cdk/aws-ssm": "1.15.0",
-    "@aws-cdk/core": "1.15.0",
-    "@aws-cdk/cx-api": "1.15.0"
+    "@aws-cdk/aws-cloudwatch": "1.19.0",
+    "@aws-cdk/aws-iam": "1.19.0",
+    "@aws-cdk/aws-ssm": "1.19.0",
+    "@aws-cdk/core": "1.19.0",
+    "@aws-cdk/cx-api": "1.19.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-cloudwatch": "1.15.0",
-    "@aws-cdk/aws-iam": "1.15.0",
-    "@aws-cdk/aws-ssm": "1.15.0",
-    "@aws-cdk/core": "1.15.0",
-    "@aws-cdk/cx-api": "1.15.0"
+    "@aws-cdk/aws-cloudwatch": "1.19.0",
+    "@aws-cdk/aws-iam": "1.19.0",
+    "@aws-cdk/aws-ssm": "1.19.0",
+    "@aws-cdk/core": "1.19.0",
+    "@aws-cdk/cx-api": "1.19.0"
   },
   "engines": {
     "node": ">= 10.3.0"
@@ -213,6 +214,9 @@
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.SSM_MESSAGES",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.STS",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.TRANSFER",
+      "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.STORAGE_GATEWAY",
+      "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.REKOGNITION",
+      "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.REKOGNITION_FIPS",
       "docs-public-apis:@aws-cdk/aws-ec2.Port.toString",
       "docs-public-apis:@aws-cdk/aws-ec2.PrivateSubnet.fromPrivateSubnetAttributes",
       "docs-public-apis:@aws-cdk/aws-ec2.PublicSubnet.fromPublicSubnetAttributes",
@@ -456,7 +460,9 @@
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2016_CHINESE_SIMPLIFIED_FULL_BASE",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2019_POLISH_FULL_BASE",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2008_R2_SP1_JAPANESE_64BIT_SQL_2008_R2_SP3_WEB",
-      "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2008_R2_SP1_PORTUGESE_BRAZIL_64BIT_BASE"
+      "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2008_R2_SP1_PORTUGESE_BRAZIL_64BIT_BASE",
+      "props-default-doc:@aws-cdk/aws-ec2.InterfaceVpcEndpointAttributes.securityGroupId",
+      "props-default-doc:@aws-cdk/aws-ec2.InterfaceVpcEndpointAttributes.securityGroups"
     ]
   },
   "stability": "stable"

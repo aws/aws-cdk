@@ -1,14 +1,17 @@
-import childProcess = require('child_process');
-import colors = require('colors/safe');
-import fs = require('fs-extra');
-import os = require('os');
-import path = require('path');
+import * as cxapi from '@aws-cdk/cx-api';
+import * as childProcess from 'child_process';
+import * as colors from 'colors/safe';
+import * as fs from 'fs-extra';
+import * as os from 'os';
+import * as path from 'path';
 import { error, print, warning } from './logging';
 
 export type InvokeHook = (targetDirectory: string) => Promise<void>;
 
 // tslint:disable:no-var-requires those libraries don't have up-to-date @types modules
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const camelCase = require('camelcase');
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const decamelize = require('decamelize');
 // tslint:enable:no-var-requires
 
@@ -18,7 +21,7 @@ const CDK_HOME = process.env.CDK_HOME ? path.resolve(process.env.CDK_HOME) : pat
 /**
  * Initialize a CDK package in the current directory
  */
-export async function cliInit(type?: string, language?: string, canUseNetwork?: boolean) {
+export async function cliInit(type?: string, language?: string, canUseNetwork = true, generateOnly = false, workDir = process.cwd()) {
   if (!type && !language) {
     await printAvailableTemplates();
     return;
@@ -39,7 +42,8 @@ export async function cliInit(type?: string, language?: string, canUseNetwork?: 
     print(`Available languages for ${colors.green(type)}: ${template.languages.map(l => colors.blue(l)).join(', ')}`);
     throw new Error('No language was selected');
   }
-  await initializeProject(template, language, canUseNetwork !== undefined ? canUseNetwork : true);
+
+  await initializeProject(template, language, canUseNetwork, generateOnly, workDir);
 }
 
 /**
@@ -101,6 +105,7 @@ export class InitTemplate {
     await this.installFiles(sourceDirectory, targetDirectory, {
       name: decamelize(path.basename(path.resolve(targetDirectory)))
     });
+    await this.applyFutureFlags(targetDirectory);
     await this.invokeHooks(hookTempDirectory, targetDirectory);
     await fs.remove(hookTempDirectory);
   }
@@ -139,6 +144,7 @@ export class InitTemplate {
 
     for (const file of files) {
       if (file.match(/^.*\.hook\.js$/)) {
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
         const invoke: InvokeHook = require(path.join(sourceDirectory, file)).invoke;
         await invoke(targetDirectory);
       }
@@ -152,6 +158,7 @@ export class InitTemplate {
 
   private expand(template: string, project: ProjectInfo) {
     const MATCH_VER_BUILD = /\+[a-f0-9]+$/; // Matches "+BUILD" in "x.y.z-beta+BUILD"
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const cdkVersion = require('../package.json').version.replace(MATCH_VER_BUILD, '');
     return template.replace(/%name%/g, project.name)
              .replace(/%name\.camelCased%/g, camelCase(project.name))
@@ -161,6 +168,25 @@ export class InitTemplate {
              .replace(/%name\.PythonModule%/g, project.name.replace(/-/g, '_'))
              .replace(/%python-executable%/g, pythonExecutable())
              .replace(/%name\.StackName%/g, project.name.replace(/[^A-Za-z0-9-]/g, '-'));
+  }
+
+  /**
+   * Adds context variables to `cdk.json` in the generated project directory to
+   * enable future behavior for new projects.
+   */
+  private async applyFutureFlags(projectDir: string) {
+    const cdkJson = path.join(projectDir, 'cdk.json');
+    if (!await fs.pathExists(cdkJson)) {
+      return;
+    }
+
+    const config = await fs.readJson(cdkJson);
+    config.context = {
+      ...config.context,
+      ...cxapi.FUTURE_FLAGS
+    };
+
+    await fs.writeJson(cdkJson, config, { spaces: 2 });
   }
 }
 
@@ -211,12 +237,14 @@ export async function printAvailableTemplates(language?: string) {
   }
 }
 
-async function initializeProject(template: InitTemplate, language: string, canUseNetwork: boolean) {
-  await assertIsEmptyDirectory();
+async function initializeProject(template: InitTemplate, language: string, canUseNetwork: boolean, generateOnly: boolean, workDir: string) {
+  await assertIsEmptyDirectory(workDir);
   print(`Applying project template ${colors.green(template.name)} for ${colors.blue(language)}`);
-  await template.install(language, process.cwd());
-  await initializeGitRepository();
-  await postInstall(language, canUseNetwork);
+  await template.install(language, workDir);
+  if (!generateOnly) {
+    await initializeGitRepository(workDir);
+    await postInstall(language, canUseNetwork, workDir);
+  }
   if (await fs.pathExists('README.md')) {
     print(colors.green(await fs.readFile('README.md', { encoding: 'utf-8' })));
   } else {
@@ -224,43 +252,43 @@ async function initializeProject(template: InitTemplate, language: string, canUs
   }
 }
 
-async function assertIsEmptyDirectory() {
-  const files = await fs.readdir(process.cwd());
+async function assertIsEmptyDirectory(workDir: string) {
+  const files = await fs.readdir(workDir);
   if (files.filter(f => !f.startsWith('.')).length !== 0) {
     throw new Error('`cdk init` cannot be run in a non-empty directory!');
   }
 }
 
-async function initializeGitRepository() {
-  if (await isInGitRepository(process.cwd())) { return; }
+async function initializeGitRepository(workDir: string) {
+  if (await isInGitRepository(workDir)) { return; }
   print('Initializing a new git repository...');
   try {
-    await execute('git', 'init');
-    await execute('git', 'add', '.');
-    await execute('git', 'commit', '--message="Initial commit"', '--no-gpg-sign');
+    await execute('git', ['init'], { cwd: workDir });
+    await execute('git', ['add', '.'], { cwd: workDir });
+    await execute('git', ['commit', '--message="Initial commit"', '--no-gpg-sign'], { cwd: workDir });
   } catch (e) {
     warning('Unable to initialize git repository for your project.');
   }
 }
 
-async function postInstall(language: string, canUseNetwork: boolean) {
+async function postInstall(language: string, canUseNetwork: boolean, workDir: string) {
   switch (language) {
   case 'javascript':
-    return await postInstallJavascript(canUseNetwork);
+    return await postInstallJavascript(canUseNetwork, workDir);
   case 'typescript':
-    return await postInstallTypescript(canUseNetwork);
+    return await postInstallTypescript(canUseNetwork, workDir);
   case 'java':
-    return await postInstallJava(canUseNetwork);
+    return await postInstallJava(canUseNetwork, workDir);
   case 'python':
-    return await postInstallPython();
+    return await postInstallPython(workDir);
   }
 }
 
-async function postInstallJavascript(canUseNetwork: boolean) {
-  return postInstallTypescript(canUseNetwork);
+async function postInstallJavascript(canUseNetwork: boolean, cwd: string) {
+  return postInstallTypescript(canUseNetwork, cwd);
 }
 
-async function postInstallTypescript(canUseNetwork: boolean) {
+async function postInstallTypescript(canUseNetwork: boolean, cwd: string) {
   const command = 'npm';
 
   if (!canUseNetwork) {
@@ -270,27 +298,27 @@ async function postInstallTypescript(canUseNetwork: boolean) {
 
   print(`Executing ${colors.green(`${command} install`)}...`);
   try {
-    await execute(command, 'install');
+    await execute(command, ['install'], { cwd });
   } catch (e) {
     throw new Error(`${colors.green(`${command} install`)} failed: ` + e.message);
   }
 }
 
-async function postInstallJava(canUseNetwork: boolean) {
+async function postInstallJava(canUseNetwork: boolean, cwd: string) {
   if (!canUseNetwork) {
     print(`Please run ${colors.green(`mvn package`)}!`);
     return;
   }
 
   print(`Executing ${colors.green('mvn package')}...`);
-  await execute('mvn', 'package');
+  await execute('mvn', ['package'], { cwd });
 }
 
-async function postInstallPython() {
+async function postInstallPython(cwd: string) {
   const python = pythonExecutable();
   print(`Executing ${colors.green('Creating virtualenv...')}`);
   try {
-    await execute(python, '-m venv', '.env');
+    await execute(python, ['-m venv', '.env'], { cwd });
   } catch (e) {
     print('Unable to create virtualenv automatically');
     print(`Please run ${colors.green(python + ' -m venv .env')}!`);
@@ -325,8 +353,8 @@ function isRoot(dir: string) {
  *
  * @returns STDOUT (if successful).
  */
-async function execute(cmd: string, ...args: string[]) {
-  const child = childProcess.spawn(cmd, args, { shell: true, stdio: [ 'ignore', 'pipe', 'inherit' ] });
+async function execute(cmd: string, args: string[], { cwd }: { cwd: string }) {
+  const child = childProcess.spawn(cmd, args, { cwd, shell: true, stdio: [ 'ignore', 'pipe', 'inherit' ] });
   let stdout = '';
   child.stdout.on('data', chunk => stdout += chunk.toString());
   return new Promise<string>((ok, fail) => {
