@@ -311,10 +311,10 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
         ec2KeyPair: props.computeResources.ec2KeyPair,
         imageId: props.computeResources.image && props.computeResources.image.getImage(this).imageId,
         instanceRole: props.computeResources.instanceRole
-        ? props.computeResources.instanceRole.roleArn
-        : new iam.LazyRole(this, 'Resource-Instance-Role', {
-          assumedBy: new iam.ServicePrincipal('batch.amazonaws.com'),
-        }).roleArn,
+          ? props.computeResources.instanceRole.roleArn
+          : new iam.LazyRole(this, 'Resource-Instance-Role', {
+            assumedBy: new iam.ServicePrincipal('batch.amazonaws.com'),
+          }).roleArn,
         instanceTypes: this.buildInstanceTypes(props.computeResources.instanceTypes),
         maxvCpus: props.computeResources.maxvCpus || 256,
         minvCpus: props.computeResources.minvCpus || 0,
