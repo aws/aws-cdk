@@ -684,6 +684,13 @@
                     "Arn"
                   ]
                 },
+                "\\\",\\\"username\\\":\\\"",
+                {
+                  "Fn::GetAtt": [
+                    "AdminRole38563C57",
+                    "Arn"
+                  ]
+                },
                 "\\\",\\\"groups\\\":[\\\"system:masters\\\"]},{\\\"rolearn\\\":\\\"",
                 {
                   "Fn::GetAtt": [
