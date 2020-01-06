@@ -208,7 +208,7 @@ test('encodes booleans', () => {
   });
 });
 
-test('timeout defaults to 30 seconds', () => {
+test('timeout defaults to 2 minutes', () => {
   // GIVEN
   const stack = new cdk.Stack();
 
@@ -223,7 +223,7 @@ test('timeout defaults to 30 seconds', () => {
 
   // THEN
   expect(stack).toHaveResource('AWS::Lambda::Function', {
-    Timeout: 60
+    Timeout: 120
   });
 });
 
