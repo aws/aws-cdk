@@ -1109,14 +1109,14 @@ export = {
       },
     });
     const stack2 = new cdk.Stack();
-    const asg2 = autoscaling.AutoScalingGroup.fromAutoScalingGroupName(stack2, 'ImportedASG', cluster1.cluster_name)
+    const asg2 = autoscaling.AutoScalingGroup.fromAutoScalingGroupName(stack2, 'ImportedASG', cluster1.autoscalingGroup.autoScalingGroupName)
 
     // WHEN
     const cluster2 = ecs.Cluster.fromClusterAttributes(stack2, 'ImportedCluster', {
       vpc: vpc1,
       securityGroups: cluster1.connections.securityGroups,
-      autoscalingGroup: cluster1.autoscalingGroup,
-      clusterName: 'imported-cluster-name',
+      autoscalingGroup: asg2,
+      clusterName: cluster1.clusterName,
     });
 
     // THEN
