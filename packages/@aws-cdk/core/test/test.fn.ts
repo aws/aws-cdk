@@ -176,7 +176,22 @@ export = nodeunit.testCase({
       });
       test.done();
     }
-  }
+  },
+  'nested Fn::Join with list token'(test: nodeunit.Test) {
+    const stack = new Stack();
+    const inner = Fn.join(',', Token.asList({ NotReallyList: true }));
+    const outer = Fn.join(',', [ inner, 'Foo' ]);
+    test.deepEqual(stack.resolve(outer), {
+      'Fn::Join': [
+        ',',
+        [
+          { 'Fn::Join': [ ',', { NotReallyList: true } ] },
+          'Foo'
+        ]
+      ]
+    });
+    test.done();
+  },
 });
 
 function stringListToken(o: any): string[] {
