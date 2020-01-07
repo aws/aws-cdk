@@ -127,8 +127,29 @@ export abstract class BaseLoadBalancer extends Resource {
 
     const internetFacing = ifUndefined(baseProps.internetFacing, false);
 
+    const hasPrivateSubnets = baseProps.vpc.privateSubnets !== undefined && baseProps.vpc.privateSubnets.length > 0;
+    const hasPublicSubnets = baseProps.vpc.publicSubnets !== undefined && baseProps.vpc.publicSubnets.length > 0;
+    const hasIsolatedSubnets = baseProps.vpc.isolatedSubnets !== undefined && baseProps.vpc.isolatedSubnets.length > 0;
+
+    let vpcSubnetType;
+    if (internetFacing) {
+      if (!hasPublicSubnets) {
+        throw new Error("Internet-facing load balancer requires 'Public' subnets, but none were found.");
+      } else {
+        vpcSubnetType = ec2.SubnetType.PUBLIC;
+      }
+    } else {
+      if (hasPrivateSubnets) {
+        vpcSubnetType = ec2.SubnetType.PRIVATE;
+      } else if (hasIsolatedSubnets) {
+        vpcSubnetType = ec2.SubnetType.ISOLATED;
+      } else {
+        throw new Error("Internal load balancer requires 'Private' or 'Isolated' subnets, but none were found.");
+      }
+    }
+
     const vpcSubnets = ifUndefined(baseProps.vpcSubnets,
-      { subnetType: internetFacing ? ec2.SubnetType.PUBLIC : ec2.SubnetType.PRIVATE });
+      { subnetType: vpcSubnetType });
 
     const { subnetIds, internetConnectivityEstablished } = baseProps.vpc.selectSubnets(vpcSubnets);
 
