@@ -504,7 +504,7 @@
     "DatabaseInstance1844F58FD": {
       "Type": "AWS::RDS::DBInstance",
       "Properties": {
-        "DBInstanceClass": "db.t2.small",
+        "DBInstanceClass": "db.t3.small",
         "DBClusterIdentifier": {
           "Ref": "DatabaseB269D8BB"
         },
@@ -524,7 +524,7 @@
     "DatabaseInstance2AA380DEE": {
       "Type": "AWS::RDS::DBInstance",
       "Properties": {
-        "DBInstanceClass": "db.t2.small",
+        "DBInstanceClass": "db.t3.small",
         "DBClusterIdentifier": {
           "Ref": "DatabaseB269D8BB"
         },

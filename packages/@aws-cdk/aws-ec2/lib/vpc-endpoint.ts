@@ -2,6 +2,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import { Aws, Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
 import { Connections, IConnectable } from './connections';
 import { CfnVPCEndpoint } from './ec2.generated';
+import { Peer } from './peer';
 import { Port } from './port';
 import { ISecurityGroup, SecurityGroup } from './security-group';
 import { allRouteTableIds } from './util';
@@ -294,6 +295,16 @@ export interface InterfaceVpcEndpointOptions {
    * @default - a new security group is created
    */
   readonly securityGroups?: ISecurityGroup[];
+
+  /**
+   * Whether to automatically allow VPC traffic to the endpoint
+   *
+   * If enabled, all traffic to the endpoint from within the VPC will be
+   * automatically allowed. This is done based on the VPC's CIDR range.
+   *
+   * @default true
+   */
+  readonly open?: boolean;
 }
 
 /**
@@ -382,11 +393,16 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
     const securityGroups = props.securityGroups || [new SecurityGroup(this, 'SecurityGroup', {
       vpc: props.vpc
     })];
+
     this.securityGroupId = securityGroups[0].securityGroupId;
     this.connections = new Connections({
       defaultPort: Port.tcp(props.service.port),
       securityGroups
     });
+
+    if (props.open !== false) {
+      this.connections.allowDefaultPortFrom(Peer.ipv4(props.vpc.vpcCidrBlock));
+    }
 
     const subnets = props.vpc.selectSubnets({ ...props.subnets, onePerAz: true });
     const subnetIds = subnets.subnetIds;

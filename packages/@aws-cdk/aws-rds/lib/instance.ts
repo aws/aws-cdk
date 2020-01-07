@@ -10,9 +10,8 @@ import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { IOptionGroup } from './option-group';
 import { IParameterGroup } from './parameter-group';
-import { DatabaseClusterEngine } from './props';
+import { DatabaseClusterEngine, RotationMultiUserOptions } from './props';
 import { CfnDBInstance, CfnDBInstanceProps, CfnDBSubnetGroup } from './rds.generated';
-import { SecretRotation, SecretRotationApplication, SecretRotationOptions } from './secret-rotation';
 
 /**
  * A database instance
@@ -144,7 +143,7 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
   public asSecretAttachmentTarget(): secretsmanager.SecretAttachmentTargetProps {
     return {
       targetId: this.instanceIdentifier,
-      targetType: secretsmanager.AttachmentTargetType.INSTANCE
+      targetType: secretsmanager.AttachmentTargetType.RDS_DB_INSTANCE
     };
   }
 }
@@ -154,17 +153,22 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
  * secret rotation.
  */
 export class DatabaseInstanceEngine extends DatabaseClusterEngine {
-  public static readonly MARIADB = new DatabaseInstanceEngine('mariadb', SecretRotationApplication.MARIADB_ROTATION_SINGLE_USER);
-  public static readonly MYSQL = new DatabaseInstanceEngine('mysql', SecretRotationApplication.MYSQL_ROTATION_SINGLE_USER);
-  public static readonly ORACLE_EE = new DatabaseInstanceEngine('oracle-ee', SecretRotationApplication.ORACLE_ROTATION_SINGLE_USER);
-  public static readonly ORACLE_SE2 = new DatabaseInstanceEngine('oracle-se2', SecretRotationApplication.ORACLE_ROTATION_SINGLE_USER);
-  public static readonly ORACLE_SE1 = new DatabaseInstanceEngine('oracle-se1', SecretRotationApplication.ORACLE_ROTATION_SINGLE_USER);
-  public static readonly ORACLE_SE = new DatabaseInstanceEngine('oracle-se', SecretRotationApplication.ORACLE_ROTATION_SINGLE_USER);
-  public static readonly POSTGRES = new DatabaseInstanceEngine('postgres', SecretRotationApplication.POSTGRES_ROTATION_SINGLE_USER);
-  public static readonly SQL_SERVER_EE = new DatabaseInstanceEngine('sqlserver-ee', SecretRotationApplication.SQLSERVER_ROTATION_SINGLE_USER);
-  public static readonly SQL_SERVER_SE = new DatabaseInstanceEngine('sqlserver-se', SecretRotationApplication.SQLSERVER_ROTATION_SINGLE_USER);
-  public static readonly SQL_SERVER_EX = new DatabaseInstanceEngine('sqlserver-ex', SecretRotationApplication.SQLSERVER_ROTATION_SINGLE_USER);
-  public static readonly SQL_SERVER_WEB = new DatabaseInstanceEngine('sqlserver-web', SecretRotationApplication.SQLSERVER_ROTATION_SINGLE_USER);
+  /* tslint:disable max-line-length */
+  public static readonly MARIADB = new DatabaseInstanceEngine('mariadb', secretsmanager.SecretRotationApplication.MARIADB_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.MARIADB_ROTATION_MULTI_USER);
+  public static readonly MYSQL = new DatabaseInstanceEngine('mysql', secretsmanager.SecretRotationApplication.MYSQL_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.MYSQL_ROTATION_MULTI_USER);
+  public static readonly ORACLE_EE = new DatabaseInstanceEngine('oracle-ee', secretsmanager.SecretRotationApplication.ORACLE_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.ORACLE_ROTATION_MULTI_USER);
+  public static readonly ORACLE_SE2 = new DatabaseInstanceEngine('oracle-se2', secretsmanager.SecretRotationApplication.ORACLE_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.ORACLE_ROTATION_MULTI_USER);
+  public static readonly ORACLE_SE1 = new DatabaseInstanceEngine('oracle-se1', secretsmanager.SecretRotationApplication.ORACLE_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.ORACLE_ROTATION_MULTI_USER);
+  public static readonly ORACLE_SE = new DatabaseInstanceEngine('oracle-se', secretsmanager.SecretRotationApplication.ORACLE_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.ORACLE_ROTATION_MULTI_USER);
+  public static readonly POSTGRES = new DatabaseInstanceEngine('postgres', secretsmanager.SecretRotationApplication.POSTGRES_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.POSTGRES_ROTATION_MULTI_USER);
+  public static readonly SQL_SERVER_EE = new DatabaseInstanceEngine('sqlserver-ee', secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_MULTI_USER);
+  public static readonly SQL_SERVER_SE = new DatabaseInstanceEngine('sqlserver-se', secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_MULTI_USER);
+  public static readonly SQL_SERVER_EX = new DatabaseInstanceEngine('sqlserver-ex', secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_MULTI_USER);
+  public static readonly SQL_SERVER_WEB = new DatabaseInstanceEngine('sqlserver-web', secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_MULTI_USER);
+  /* tslint:enable max-line-length */
+
+  /** To make it a compile-time error to pass a DatabaseClusterEngine where a DatabaseInstanceEngine is expected. */
+  public readonly isDatabaseInstanceEngine = true;
 }
 
 /**
@@ -665,12 +669,14 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
 
   protected readonly sourceCfnProps: CfnDBInstanceProps;
 
-  private readonly secretRotationApplication: SecretRotationApplication;
+  private readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
+  private readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
 
   constructor(scope: Construct, id: string, props: DatabaseInstanceSourceProps) {
     super(scope, id, props);
 
-    this.secretRotationApplication = props.engine.secretRotationApplication;
+    this.singleUserRotationApplication = props.engine.singleUserRotationApplication;
+    this.multiUserRotationApplication = props.engine.multiUserRotationApplication;
 
     this.sourceCfnProps = {
       ...this.newCfnProps,
@@ -687,18 +693,46 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
 
   /**
    * Adds the single user rotation of the master password to this instance.
+   *
+   * @param [automaticallyAfter=Duration.days(30)] Specifies the number of days after the previous rotation
+   * before Secrets Manager triggers the next automatic rotation.
    */
-  public addRotationSingleUser(id: string, options: SecretRotationOptions = {}): SecretRotation {
+  public addRotationSingleUser(automaticallyAfter?: Duration): secretsmanager.SecretRotation {
     if (!this.secret) {
       throw new Error('Cannot add single user rotation for an instance without secret.');
     }
-    return new SecretRotation(this, id, {
+
+    const id = 'RotationSingleUser';
+    const existing = this.node.tryFindChild(id);
+    if (existing) {
+      throw new Error('A single user rotation was already added to this instance.');
+    }
+
+    return new secretsmanager.SecretRotation(this, id, {
       secret: this.secret,
-      application: this.secretRotationApplication,
+      automaticallyAfter,
+      application: this.singleUserRotationApplication,
       vpc: this.vpc,
       vpcSubnets: this.vpcPlacement,
       target: this,
-      ...options
+    });
+  }
+
+  /**
+   * Adds the multi user rotation to this instance.
+   */
+  public addRotationMultiUser(id: string, options: RotationMultiUserOptions): secretsmanager.SecretRotation {
+    if (!this.secret) {
+      throw new Error('Cannot add multi user rotation for an instance without secret.');
+    }
+    return new secretsmanager.SecretRotation(this, id, {
+      secret: options.secret,
+      masterSecret: this.secret,
+      automaticallyAfter: options.automaticallyAfter,
+      application: this.multiUserRotationApplication,
+      vpc: this.vpc,
+      vpcSubnets: this.vpcPlacement,
+      target: this,
     });
   }
 }
@@ -750,7 +784,7 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
   constructor(scope: Construct, id: string, props: DatabaseInstanceProps) {
     super(scope, id, props);
 
-    let secret;
+    let secret: DatabaseSecret | undefined;
     if (!props.masterUserPassword) {
       secret = new DatabaseSecret(this, 'Secret', {
         username: props.masterUsername,
@@ -782,9 +816,7 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
     });
 
     if (secret) {
-      this.secret = secret.addTargetAttachment('AttachedSecret', {
-        target: this
-      });
+      this.secret = secret.attach(this);
     }
 
     this.setLogRetention();
@@ -882,9 +914,7 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
     });
 
     if (secret) {
-      this.secret = secret.addTargetAttachment('AttachedSecret', {
-        target: this
-      });
+      this.secret = secret.attach(this);
     }
 
     this.setLogRetention();

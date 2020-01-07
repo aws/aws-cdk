@@ -14,6 +14,7 @@ import { BasicLifecycleHookProps, LifecycleHook } from './lifecycle-hook';
 import { BasicScheduledActionProps, ScheduledAction } from './scheduled-action';
 import { BasicStepScalingPolicyProps, StepScalingPolicy } from './step-scaling-policy';
 import { BaseTargetTrackingProps, PredefinedMetric, TargetTrackingScalingPolicy } from './target-tracking-scaling-policy';
+import { BlockDevice, EbsDeviceVolumeType } from './volume';
 
 /**
  * Name tag constant
@@ -44,7 +45,11 @@ export interface CommonAutoScalingGroupProps {
   /**
    * Initial amount of instances in the fleet
    *
-   * @default 1
+   * If this is set to a number, every deployment will reset the amount of
+   * instances to this number. It is recommended to leave this value blank.
+   *
+   * @default minCapacity, and leave unchanged during deployment
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-group.html#cfn-as-group-desiredcapacity
    */
   readonly desiredCapacity?: number;
 
@@ -448,57 +453,50 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       userData: userDataToken,
       associatePublicIpAddress: props.associatePublicIpAddress,
       spotPrice: props.spotPrice,
-      blockDeviceMappings: (props.blockDevices !== undefined ? props.blockDevices.map<CfnLaunchConfiguration.BlockDeviceMappingProperty>(
-          ({deviceName, volume, mappingEnabled}) => {
-            const {virtualName, ebsDevice: ebs} = volume;
-
-            if (ebs) {
-              const {iops, volumeType} = ebs;
-
-              if (!iops) {
-                if (volumeType === EbsDeviceVolumeType.IO1) {
-                  throw new Error('iops property is required with volumeType: EbsDeviceVolumeType.IO1');
-                }
-              } else if (volumeType !== EbsDeviceVolumeType.IO1) {
-                this.node.addWarning('iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
-              }
-            }
-
-            return {
-              deviceName,
-              ebs,
-              virtualName,
-              noDevice: mappingEnabled !== undefined ? !mappingEnabled : undefined,
-            };
-          }) : undefined),
+      blockDeviceMappings: (props.blockDevices !== undefined ?
+        synthesizeBlockDeviceMappings(this, props.blockDevices).map<CfnLaunchConfiguration.BlockDeviceMappingProperty>(
+          ({ deviceName, ebs, virtualName, noDevice }) => ({
+            deviceName, ebs, virtualName, noDevice: noDevice ? true : false
+          })
+        ) : undefined),
     });
 
     launchConfig.node.addDependency(this.role);
 
-    const desiredCapacity =
-        (props.desiredCapacity !== undefined ? props.desiredCapacity :
-        (props.minCapacity !== undefined ? props.minCapacity :
-        (props.maxCapacity !== undefined ? props.maxCapacity : 1)));
+    // desiredCapacity just reflects what the user has supplied.
+    const desiredCapacity = props.desiredCapacity;
     const minCapacity = props.minCapacity !== undefined ? props.minCapacity : 1;
-    const maxCapacity = props.maxCapacity !== undefined ? props.maxCapacity : desiredCapacity;
+    const maxCapacity = props.maxCapacity !== undefined ? props.maxCapacity :
+                        desiredCapacity !== undefined ? desiredCapacity : Math.max(minCapacity, 1);
 
+    withResolved(minCapacity, maxCapacity, (min, max) => {
+      if (min > max) {
+        throw new Error(`minCapacity (${min}) should be <= maxCapacity (${max})`);
+      }
+    });
     withResolved(desiredCapacity, minCapacity, (desired, min) => {
+      if (desired === undefined) { return; }
       if (desired < min) {
         throw new Error(`Should have minCapacity (${min}) <= desiredCapacity (${desired})`);
       }
     });
     withResolved(desiredCapacity, maxCapacity, (desired, max) => {
+      if (desired === undefined) { return; }
       if (max < desired) {
         throw new Error(`Should have desiredCapacity (${desired}) <= maxCapacity (${max})`);
       }
     });
+
+    if (desiredCapacity !== undefined) {
+      this.node.addWarning(`desiredCapacity has been configured. Be aware this will reset the size of your AutoScalingGroup on every deployment. See https://github.com/aws/aws-cdk/issues/5215`);
+    }
 
     const { subnetIds, hasPublic } = props.vpc.selectSubnets(props.vpcSubnets);
     const asgProps: CfnAutoScalingGroupProps = {
       cooldown: props.cooldown !== undefined ? props.cooldown.toSeconds().toString() : undefined,
       minSize: Tokenization.stringifyNumber(minCapacity),
       maxSize: Tokenization.stringifyNumber(maxCapacity),
-      desiredCapacity: Tokenization.stringifyNumber(desiredCapacity),
+      desiredCapacity: desiredCapacity !== undefined ? Tokenization.stringifyNumber(desiredCapacity) : undefined,
       launchConfigurationName: launchConfig.ref,
       loadBalancerNames: Lazy.listValue({ produce: () => this.loadBalancerNames }, { omitEmpty: true }),
       targetGroupArns: Lazy.listValue({ produce: () => this.targetGroupArns }, { omitEmpty: true }),
@@ -938,158 +936,31 @@ export interface MetricTargetTrackingProps extends BaseTargetTrackingProps {
   readonly targetValue: number;
 }
 
-export interface BlockDevice {
-  /**
-   * The device name exposed to the EC2 instance
-   *
-   * @example '/dev/sdh', 'xvdh'
-   *
-   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/device_naming.html
-   */
-  readonly deviceName: string;
-
-  /**
-   * Defines the block device volume, to be either an Amazon EBS volume or an ephemeral instance store volume
-   *
-   * @example BlockDeviceVolume.ebs(15), BlockDeviceVolume.ephemeral(0)
-   *
-   */
-  readonly volume: BlockDeviceVolume;
-
-  /**
-   * If false, the device mapping will be suppressed.
-   * If set to false for the root device, the instance might fail the Amazon EC2 health check.
-   * Amazon EC2 Auto Scaling launches a replacement instance if the instance fails the health check.
-   *
-   * @default true - device mapping is left untouched
-   */
-  readonly mappingEnabled?: boolean;
-}
-
-export interface EbsDeviceOptionsBase {
-  /**
-   * Indicates whether to delete the volume when the instance is terminated.
-   *
-   * @default - true for Amazon EC2 Auto Scaling, false otherwise (e.g. EBS)
-   */
-  readonly deleteOnTermination?: boolean;
-
-  /**
-   * The number of I/O operations per second (IOPS) to provision for the volume.
-   *
-   * Must only be set for {@link volumeType}: {@link EbsDeviceVolumeType.IO1}
-   *
-   * The maximum ratio of IOPS to volume size (in GiB) is 50:1, so for 5,000 provisioned IOPS,
-   * you need at least 100 GiB storage on the volume.
-   *
-   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html
-   */
-  readonly iops?: number;
-
-  /**
-   * The EBS volume type
-   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html
-   *
-   * @default {@link EbsDeviceVolumeType.GP2}
-   */
-  readonly volumeType?: EbsDeviceVolumeType;
-}
-
-export interface EbsDeviceOptions extends EbsDeviceOptionsBase {
-  /**
-   * Specifies whether the EBS volume is encrypted.
-   * Encrypted EBS volumes can only be attached to instances that support Amazon EBS encryption
-   *
-   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSEncryption.html#EBSEncryption_supported_instances
-   *
-   * @default false
-   */
-  readonly encrypted?: boolean;
-}
-
-export interface EbsDeviceSnapshotOptions extends EbsDeviceOptionsBase {
-  /**
-   * The volume size, in Gibibytes (GiB)
-   *
-   * If you specify volumeSize, it must be equal or greater than the size of the snapshot.
-   *
-   * @default - The snapshot size
-   */
-  readonly volumeSize?: number;
-}
-
-export interface EbsDeviceProps extends EbsDeviceSnapshotOptions {
-  readonly snapshotId?: string;
-}
-
 /**
- * Describes a block device mapping for an Auto Scaling group.
+ * Synthesize an array of block device mappings from a list of block device
+ *
+ * @param construct the instance/asg construct, used to host any warning
+ * @param blockDevices list of block devices
  */
-export class BlockDeviceVolume  {
-  /**
-   * Creates a new Elastic Block Storage device
-   *
-   * @param volumeSize The volume size, in Gibibytes (GiB)
-   * @param options additional device options
-   */
-  public static ebs(volumeSize: number, options: EbsDeviceOptions = {}): BlockDeviceVolume {
-    return new this({...options, volumeSize});
-  }
+function synthesizeBlockDeviceMappings(construct: Construct, blockDevices: BlockDevice[]): CfnLaunchConfiguration.BlockDeviceMappingProperty[] {
+  return blockDevices.map<CfnLaunchConfiguration.BlockDeviceMappingProperty>(({ deviceName, volume, mappingEnabled }) => {
+    const { virtualName, ebsDevice: ebs } = volume;
 
-  /**
-   * Creates a new Elastic Block Storage device from an existing snapshot
-   *
-   * @param snapshotId The snapshot ID of the volume to use
-   * @param options additional device options
-   */
-  public static ebsFromSnapshot(snapshotId: string, options: EbsDeviceSnapshotOptions = {}): BlockDeviceVolume {
-    return new this({...options, snapshotId});
-  }
+    if (ebs) {
+      const { iops, volumeType } = ebs;
 
-  /**
-   * Creates a virtual, ephemeral device.
-   * The name will be in the form ephemeral{volumeIndex}.
-   *
-   * @param volumeIndex the volume index. Must be equal or greater than 0
-   */
-  public static ephemeral(volumeIndex: number) {
-    if (volumeIndex < 0) {
-      throw new Error(`volumeIndex must be a number starting from 0, got "${volumeIndex}"`);
+      if (!iops) {
+        if (volumeType === EbsDeviceVolumeType.IO1) {
+          throw new Error('iops property is required with volumeType: EbsDeviceVolumeType.IO1');
+        }
+      } else if (volumeType !== EbsDeviceVolumeType.IO1) {
+        construct.node.addWarning('iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
+      }
     }
 
-    return new this(undefined, `ephemeral${volumeIndex}`);
-  }
-
-  protected constructor(public readonly ebsDevice?: EbsDeviceProps, public readonly virtualName?: string) {
-  }
-}
-
-/**
- * Supported EBS volume types for {@link AutoScalingGroupProps.blockDevices}
- */
-export enum EbsDeviceVolumeType {
-  /**
-   * Magnetic
-   */
-  STANDARD = 'standard',
-
-  /**
-   *  Provisioned IOPS SSD
-   */
-  IO1 = 'io1',
-
-  /**
-   * General Purpose SSD
-   */
-  GP2 = 'gp2',
-
-  /**
-   * Throughput Optimized HDD
-   */
-  ST1 = 'st1',
-
-  /**
-   * Cold HDD
-   */
-  SC1 = 'sc1',
+    return {
+      deviceName, ebs, virtualName,
+      noDevice: mappingEnabled === false ? true : undefined,
+    };
+  });
 }

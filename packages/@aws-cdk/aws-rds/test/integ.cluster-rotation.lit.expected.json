@@ -548,11 +548,11 @@
         }
       }
     },
-    "DatabaseSecurityGroupfromawscdkrdsclusterrotationDatabaseRotationSecurityGroup35913E19IndirectPort12DA2942": {
+    "DatabaseSecurityGroupfromawscdkrdsclusterrotationDatabaseRotationSingleUserSecurityGroup0FFF34B1IndirectPortE6A88723": {
       "Type": "AWS::EC2::SecurityGroupIngress",
       "Properties": {
         "IpProtocol": "tcp",
-        "Description": "from awscdkrdsclusterrotationDatabaseRotationSecurityGroup35913E19:{IndirectPort}",
+        "Description": "from awscdkrdsclusterrotationDatabaseRotationSingleUserSecurityGroup0FFF34B1:{IndirectPort}",
         "FromPort": {
           "Fn::GetAtt": [
             "DatabaseB269D8BB",
@@ -567,7 +567,7 @@
         },
         "SourceSecurityGroupId": {
           "Fn::GetAtt": [
-            "DatabaseRotationSecurityGroup17736B63",
+            "DatabaseRotationSingleUserSecurityGroupAC6E0E73",
             "GroupId"
           ]
         },
@@ -590,7 +590,7 @@
         }
       }
     },
-    "DatabaseSecretAttachedSecretE6CAC445": {
+    "DatabaseSecretAttachmentE5D1B020": {
       "Type": "AWS::SecretsManager::SecretTargetAttachment",
       "Properties": {
         "SecretId": {
@@ -602,39 +602,58 @@
         "TargetType": "AWS::RDS::DBCluster"
       }
     },
-    "DatabaseSecretAttachedSecretRotationSchedule93D67FF7": {
+    "DatabaseSecretAttachmentRotationScheduleA4E9F034": {
       "Type": "AWS::SecretsManager::RotationSchedule",
       "Properties": {
         "SecretId": {
-          "Ref": "DatabaseSecretAttachedSecretE6CAC445"
+          "Ref": "DatabaseSecretAttachmentE5D1B020"
         },
         "RotationLambdaARN": {
-          "Fn::Join": [
-            "",
-            [
-              "arn:",
-              {
-                "Ref": "AWS::Partition"
-              },
-              ":lambda:",
-              {
-                "Ref": "AWS::Region"
-              },
-              ":",
-              {
-                "Ref": "AWS::AccountId"
-              },
-              ":function:awscdkrdsclusterrotationDatabaseRotation30042AAE"
-            ]
+          "Fn::GetAtt": [
+            "DatabaseRotationSingleUser65F55654",
+            "Outputs.RotationLambdaARN"
           ]
         },
         "RotationRules": {
           "AutomaticallyAfterDays": 30
         }
-      },
-      "DependsOn": [
-        "DatabaseRotationPermission64416CB0"
-      ]
+      }
+    },
+    "DatabaseSecretAttachmentPolicy5ACFE6CA": {
+      "Type": "AWS::SecretsManager::ResourcePolicy",
+      "Properties": {
+        "ResourcePolicy": {
+          "Statement": [
+            {
+              "Action": "secretsmanager:DeleteSecret",
+              "Effect": "Deny",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              },
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "SecretId": {
+          "Ref": "DatabaseSecretAttachmentE5D1B020"
+        }
+      }
     },
     "DatabaseB269D8BB": {
       "Type": "AWS::RDS::DBCluster",
@@ -682,7 +701,7 @@
     "DatabaseInstance1844F58FD": {
       "Type": "AWS::RDS::DBInstance",
       "Properties": {
-        "DBInstanceClass": "db.t2.small",
+        "DBInstanceClass": "db.t3.small",
         "DBClusterIdentifier": {
           "Ref": "DatabaseB269D8BB"
         },
@@ -702,7 +721,7 @@
     "DatabaseInstance2AA380DEE": {
       "Type": "AWS::RDS::DBInstance",
       "Properties": {
-        "DBInstanceClass": "db.t2.small",
+        "DBInstanceClass": "db.t3.small",
         "DBClusterIdentifier": {
           "Ref": "DatabaseB269D8BB"
         },
@@ -719,10 +738,10 @@
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"
     },
-    "DatabaseRotationSecurityGroup17736B63": {
+    "DatabaseRotationSingleUserSecurityGroupAC6E0E73": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
-        "GroupDescription": "aws-cdk-rds-cluster-rotation/Database/Rotation/SecurityGroup",
+        "GroupDescription": "aws-cdk-rds-cluster-rotation/Database/RotationSingleUser/SecurityGroup",
         "SecurityGroupEgress": [
           {
             "CidrIp": "0.0.0.0/0",
@@ -735,12 +754,12 @@
         }
       }
     },
-    "DatabaseRotation6B6E1D86": {
+    "DatabaseRotationSingleUser65F55654": {
       "Type": "AWS::Serverless::Application",
       "Properties": {
         "Location": {
           "ApplicationId": "arn:aws:serverlessrepo:us-east-1:297356227824:applications/SecretsManagerRDSMySQLRotationSingleUser",
-          "SemanticVersion": "1.0.85"
+          "SemanticVersion": "1.1.3"
         },
         "Parameters": {
           "endpoint": {
@@ -758,13 +777,7 @@
               ]
             ]
           },
-          "functionName": "awscdkrdsclusterrotationDatabaseRotation30042AAE",
-          "vpcSecurityGroupIds": {
-            "Fn::GetAtt": [
-              "DatabaseRotationSecurityGroup17736B63",
-              "GroupId"
-            ]
-          },
+          "functionName": "awscdkrdsclusterrotationDatabaseRotationSingleUser171A8E3A",
           "vpcSubnetIds": {
             "Fn::Join": [
               "",
@@ -782,30 +795,15 @@
                 }
               ]
             ]
+          },
+          "vpcSecurityGroupIds": {
+            "Fn::GetAtt": [
+              "DatabaseRotationSingleUserSecurityGroupAC6E0E73",
+              "GroupId"
+            ]
           }
         }
       }
-    },
-    "DatabaseRotationPermission64416CB0": {
-      "Type": "AWS::Lambda::Permission",
-      "Properties": {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": "awscdkrdsclusterrotationDatabaseRotation30042AAE",
-        "Principal": {
-          "Fn::Join": [
-            "",
-            [
-              "secretsmanager.",
-              {
-                "Ref": "AWS::URLSuffix"
-              }
-            ]
-          ]
-        }
-      },
-      "DependsOn": [
-        "DatabaseRotation6B6E1D86"
-      ]
     }
   }
 }
