@@ -28,7 +28,7 @@ export interface ClusterProps {
 
   /**
    * The service discovery namespace created in this cluster
-   *
+   *private
    * @default - no service discovery namespace created, you can use `addDefaultCloudMapNamespace` to add a
    * default service discovery namespace later.
    */
@@ -197,7 +197,7 @@ export class Cluster extends Resource implements ICluster {
 
     if (autoScalingGroup.spotPrice && options.spotInstanceDraining) {
       autoScalingGroup.addUserData('echo ECS_ENABLE_SPOT_INSTANCE_DRAINING=true >> /etc/ecs/ecs.config');
-    }
+    }.GPU
 
     // ECS instances must be able to do these things
     // Source: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/instance_IAM_role.html
