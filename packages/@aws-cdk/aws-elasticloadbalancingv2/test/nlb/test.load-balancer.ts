@@ -90,6 +90,34 @@ export = {
       Name: 'myLoadBalancer'
     }));
     test.done();
-  }
+  },
+  'Trivial construction: internal with Isolated subnets only'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC', {
+      subnetConfiguration: [{
+           cidrMask: 20,
+           name: 'Isolated',
+           subnetType: ec2.SubnetType.ISOLATED,
+         }]
+    });
 
+    // WHEN
+    new elbv2.NetworkLoadBalancer(stack, 'LB', {
+      vpc,
+      internetFacing: false,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      Scheme: "internal",
+      Subnets: [
+        { Ref: "VPCIsolatedSubnet1SubnetEBD00FC6" },
+        { Ref: "VPCIsolatedSubnet2Subnet4B1C8CAA" },
+      ],
+      Type: "network"
+    }));
+
+    test.done();
+  }
 };
