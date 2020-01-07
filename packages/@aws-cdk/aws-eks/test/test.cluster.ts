@@ -55,7 +55,7 @@ export = {
 
       // THEN
       test.ok(cluster.defaultCapacity);
-      expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', { DesiredCapacity: '2' }));
+      expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', { MinSize: '2', MaxSize: '2' }));
       expect(stack).to(haveResource('AWS::AutoScaling::LaunchConfiguration', { InstanceType: 'm5.large' }));
       test.done();
     },
@@ -72,7 +72,7 @@ export = {
 
       // THEN
       test.ok(cluster.defaultCapacity);
-      expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', { DesiredCapacity: '10' }));
+      expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', { MinSize: '10', MaxSize: '10' }));
       expect(stack).to(haveResource('AWS::AutoScaling::LaunchConfiguration', { InstanceType: 'm2.xlarge' }));
       test.done();
     },
