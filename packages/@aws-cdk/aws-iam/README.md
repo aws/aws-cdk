@@ -47,9 +47,83 @@ The `grant*` methods accept an `IGrantable` object. This interface is implemente
 
 You can find which `grant*` methods exist for a resource in the [AWS CDK API Reference](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-construct-library.html).
 
+### Roles
+
+Many AWS resources require *Roles* to operate. These Roles define the AWS API
+calls an instance or other AWS service is allowed to make.
+
+Creating Roles and populating them with the right permissions *Statements* is
+a necessary but tedious part of setting up AWS infrastructure. In order to
+help you focus on your business logic, CDK will take care of creating
+roles and populating them with least-privilege permissions automatically.
+
+All constructs that require Roles will create one for you if don't specify
+one at construction time. Permissions will be added to that role
+automatically if you associate the construct with other constructs from the
+AWS Construct Library (for example, if you tell an *AWS CodePipeline* to trigger
+an *AWS Lambda Function*, the Pipeline's Role will automatically get
+`lambda:InvokeFunction` permissions on that particular Lambda Function),
+or if you explicitly grant permissions using `grant` functions (see the
+previous section).
+
+#### Opting out of automatic permissions management
+
+You may prefer to manage a Role's permissions yourself instead of having the
+CDK automatically manage them for you. This may happen in one of the
+following cases:
+
+* You don't like the permissions that CDK automatically generates and
+  want to substitute your own set.
+* The least-permissions policy that the CDK generates is becoming too
+  big for IAM to store, and you need to add some wildcards to keep the
+  policy size down.
+
+To this end, you can create a `Role` yourself and wrap the object in
+an instance of the `ImmutableRole` wrapper class when you pass the
+role to a construct.
+
+For example, to have an AWS CodePipeline *not* automatically add the required
+permissions to trigger the expected targets, do the following:
+
+```ts
+const role = new iam.Role(this, 'Role', {
+  assumedBy: new iam.ServicePrincipal('codepipeline.amazonaws.com'),
+});
+
+new codepipeline.Pipeline(this, 'Pipeline', {
+  // Give the Pipeline an immutable view of the Role
+  role: new iam.ImmutableRole(role),
+});
+
+// You now have to manage the Role policies yourself
+role.addToPolicy(new iam.PolicyStatement({
+  action: [/* whatever actions you want */],
+  resource: [/* whatever resources you intend to touch */],
+});
+```
+
+#### Using existing roles
+
+If there are Roles in your account that have already been created which you
+would like to use in your CDK application, you can use `Role.fromRoleArn` to
+import them, as follows:
+
+```ts
+const role = iam.Role.fromRoleArn(this, 'Role', 'arn:aws:iam::123456789012:role/MyExistingRole', {
+  // Set 'mutable' to 'false' to use the role as-is and prevent adding new
+  // policies to it. The default is 'true', which means the role may be
+  // modified as part of the deployment.
+  mutable: false,
+});
+```
+
+In the previous example, passing `mutable: false` does the same as wrapping
+the Role in an `ImmutableRole`, but is more convenient to use in the case of
+using existing Roles.
+
 ### Configuring an ExternalId
 
-If you need to create roles that will be assumed by 3rd parties, it is generally a good idea to [require an `ExternalId`
+If you need to create Roles that will be assumed by 4rd parties, it is generally a good idea to [require an `ExternalId`
 to assume them](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_create_for-user_externalid.html).  Configuring
 an `ExternalId` works like this:
 

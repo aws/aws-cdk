@@ -2,6 +2,7 @@ import { Construct, Duration, Lazy, Resource, Stack, Token } from '@aws-cdk/core
 import { Grant } from './grant';
 import { CfnRole } from './iam.generated';
 import { IIdentity } from './identity-base';
+import { ImmutableRole } from './immutable-role';
 import { IManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
 import { PolicyDocument } from './policy-document';
@@ -157,16 +158,32 @@ export class Role extends Resource implements IRole {
     const parsedArn = scopeStack.parseArn(roleArn);
     const roleName = parsedArn.resourceName!;
 
-    abstract class Import extends Resource implements IRole {
+    class Import extends Resource implements IRole {
       public readonly grantPrincipal: IPrincipal = this;
       public readonly assumeRoleAction: string = 'sts:AssumeRole';
       public readonly policyFragment = new ArnPrincipal(roleArn).policyFragment;
       public readonly roleArn = roleArn;
       public readonly roleName = roleName;
+      private readonly attachedPolicies = new AttachedPolicies();
+      private defaultPolicy?: Policy;
 
-      public abstract addToPolicy(statement: PolicyStatement): boolean;
+      public addToPolicy(statement: PolicyStatement): boolean {
+        if (!this.defaultPolicy) {
+          this.defaultPolicy = new Policy(this, 'Policy');
+          this.attachInlinePolicy(this.defaultPolicy);
+        }
+        this.defaultPolicy.addStatements(statement);
+        return true;
+      }
 
-      public abstract attachInlinePolicy(policy: Policy): void;
+      public attachInlinePolicy(policy: Policy): void {
+        const policyAccount = Stack.of(policy).account;
+
+        if (accountsAreEqualOrOneIsUnresolved(policyAccount, roleAccount)) {
+          this.attachedPolicies.attach(policy);
+          policy.attachToRole(this);
+        }
+      }
 
       public addManagedPolicy(_policy: IManagedPolicy): void {
         // FIXME: Add warning that we're ignoring this
@@ -194,44 +211,11 @@ export class Role extends Resource implements IRole {
 
     const roleAccount = parsedArn.account;
 
-    class MutableImport extends Import {
-      private readonly attachedPolicies = new AttachedPolicies();
-      private defaultPolicy?: Policy;
-
-      public addToPolicy(statement: PolicyStatement): boolean {
-        if (!this.defaultPolicy) {
-          this.defaultPolicy = new Policy(this, 'Policy');
-          this.attachInlinePolicy(this.defaultPolicy);
-        }
-        this.defaultPolicy.addStatements(statement);
-        return true;
-      }
-
-      public attachInlinePolicy(policy: Policy): void {
-        const policyAccount = Stack.of(policy).account;
-
-        if (accountsAreEqualOrOneIsUnresolved(policyAccount, roleAccount)) {
-          this.attachedPolicies.attach(policy);
-          policy.attachToRole(this);
-        }
-      }
-    }
-
-    class ImmutableImport extends Import {
-      public addToPolicy(_statement: PolicyStatement): boolean {
-        return true;
-      }
-
-      public attachInlinePolicy(_policy: Policy): void {
-        // do nothing
-      }
-    }
-
     const scopeAccount = scopeStack.account;
 
     return options.mutable !== false && accountsAreEqualOrOneIsUnresolved(scopeAccount, roleAccount)
-      ? new MutableImport(scope, id)
-      : new ImmutableImport(scope, id);
+      ? new Import(scope, id)
+      : new ImmutableRole(new Import(scope, id));
 
     function accountsAreEqualOrOneIsUnresolved(account1: string | undefined,
                                                account2: string | undefined): boolean {
