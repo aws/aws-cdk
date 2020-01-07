@@ -4,6 +4,7 @@ import { Policy } from './policy';
 import { PolicyStatement } from './policy-statement';
 import { IPrincipal } from './principals';
 import { IRole } from './role';
+import { DependableTrait } from '@aws-cdk/core';
 
 /**
  * An immutable wrapper around an IRole
@@ -28,6 +29,10 @@ export class ImmutableRole implements IRole {
   public readonly stack = this.role.stack;
 
   constructor(private readonly role: IRole) {
+    // implement IDependable privately
+    DependableTrait.implement(this, {
+      dependencyRoots: [ role ]
+    });
   }
 
   public attachInlinePolicy(_policy: Policy): void {
