@@ -149,6 +149,14 @@ function prepare_java_packages() {
     exit 1
   fi
 
+  # Rename all maven-metadata.xml* files to maven-metadata-local.xml*
+  # This is necessary for Maven to find them correctly after we've rsync'ed
+  # them into place:
+  # https://github.com/sonatype/sonatype-aether/blob/master/aether-impl/src/main/java/org/sonatype/aether/impl/internal/SimpleLocalRepositoryManager.java#L114
+  for f in $(find $dist_root/java -name maven-metadata.xml\*); do
+    mv "$f" "$(echo "$f" | sed s/metadata\.xml/metadata-local.xml/)"
+  done
+
   export MAVEN_CONFIG=${MAVEN_CONFIG:-$HOME/.m2}
   rsync -a $dist_root/java/ ${MAVEN_CONFIG}/repository
 }
