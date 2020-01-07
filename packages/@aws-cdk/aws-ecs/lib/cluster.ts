@@ -570,7 +570,8 @@ class ImportedCluster extends Resource implements ICluster {
    *
    * @default - No default autoscaling group
    */
-  readonly autoscalingGroup?: autoscaling.IAutoScalingGroup;
+  public readonly autoscalingGroup?: autoscaling.IAutoScalingGroup;
+
   /**
    * Cloudmap namespace created in the cluster
    */
