@@ -18,7 +18,7 @@ class EksClusterStack extends TestStack {
 
     cluster.addCapacity('Nodes', {
       instanceType: new ec2.InstanceType('t2.medium'),
-      desiredCapacity: 1,  // Raise this number to add more nodes
+      minCapacity: 1,  // Raise this number to add more nodes
     });
     /// !hide
   }
