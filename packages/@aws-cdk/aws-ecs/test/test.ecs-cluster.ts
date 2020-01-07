@@ -1,5 +1,6 @@
 import { countResources, expect, haveResource } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
+import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
@@ -645,7 +646,7 @@ export = {
     cluster.addCapacity('GpuAutoScalingGroup', {
       instanceType: new ec2.InstanceType('t2.micro'),
       machineImage: new ecs.EcsOptimizedAmi({
-        hardwareType: ecs.AmiHardwareType.GPU
+        hardwareType: ecs.AmiHardtwareType.GPU
       }),
     });
 
@@ -1099,7 +1100,6 @@ export = {
     const stack1 = new cdk.Stack();
     const vpc1 = new ec2.Vpc(stack1, 'Vpc');
     const cluster1 = new ecs.Cluster(stack1, 'Cluster', { vpc: vpc1 });
-   
     cluster1.addCapacity("DefaultAutoScalingGroup", {
       instanceType: new ec2.InstanceType('t2.micro'),
       associatePublicIpAddress: true,
@@ -1109,6 +1109,7 @@ export = {
       },
     });
     const stack2 = new cdk.Stack();
+    const asg2 = autoscaling.AutoScalingGroup.fromAutoScalingGroupName(stack2, 'ImportedASG', cluster1.cluster_name)
 
     // WHEN
     const cluster2 = ecs.Cluster.fromClusterAttributes(stack2, 'ImportedCluster', {
@@ -1119,7 +1120,7 @@ export = {
     });
 
     // THEN
-    test.deepEqual(stack1.resolve(cluster1.autoscalingGroup.autoScalingGroupArn), stack2.resolve(cluster2.autoscalingGroup.autoScalingGroupArn));
+    test.deepEqual(stack2.resolve(asg2.autoScalingGroupArn), stack2.resolve(cluster2.autoscalingGroup.autoScalingGroupArn));
     test.done();
   },
 
