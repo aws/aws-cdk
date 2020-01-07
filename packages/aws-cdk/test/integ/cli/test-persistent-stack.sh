@@ -6,12 +6,8 @@ source ${scriptdir}/common.bash
 
 setup
 
-stack="${STACK_NAME_PREFIX}-docker"
+echo "Creating/updating the persistent stack"
+cdk deploy ${STACK_NAME_PREFIX}-PersistentStack
 
-stack_arn=$(cdk deploy -v ${stack} --require-approval=never)
-echo "Stack deployed successfully"
-
-# destroy
-cdk destroy -f ${stack}
-
+# NOTE: No 'destroy' on that stack on purpose
 echo "✅  success"

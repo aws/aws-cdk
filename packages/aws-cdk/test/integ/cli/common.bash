@@ -68,6 +68,7 @@ function prepare_fixture() {
 
     npm install \
         @aws-cdk/core \
+        @aws-cdk/aws-cloudwatch \
         @aws-cdk/aws-sns \
         @aws-cdk/aws-iam \
         @aws-cdk/aws-lambda \

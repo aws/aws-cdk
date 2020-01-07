@@ -134,6 +134,23 @@ class ConditionalResourceStack extends cdk.Stack {
   }
 }
 
+/**
+ * Persistent stack will not be deleted during tests
+ *
+ * Use this stack to test that CDK releases will still be able to update a
+ * stack created by a previous release. Put resources in here for which it is
+ * critical that they don't become undeployable.
+ */
+class PersistentStack extends cdk.Stack {
+  constructor(parent, id, props) {
+    super(parent, id, props);
+
+    new ec2.Vpc(this, 'Vpc', {
+      maxAzs: 1
+    });
+  }
+}
+
 const stackPrefix = process.env.STACK_NAME_PREFIX || 'cdk-toolkit-integration';
 
 const app = new cdk.App();
@@ -165,5 +182,7 @@ if (process.env.ENABLE_VPC_TESTING) { // Gating so we don't do context fetching 
 }
 
 new ConditionalResourceStack(app, `${stackPrefix}-conditional-resource`)
+
+new PersistentStack(app, `${stackPrefix}-PersistentStack`);
 
 app.synth();
