@@ -1,10 +1,10 @@
 import { expect, haveResource, SynthUtils } from '@aws-cdk/assert';
-import s3_assets = require('@aws-cdk/aws-s3-assets');
-import sns = require('@aws-cdk/aws-sns');
-import { App, CfnParameter, CfnResource, Construct, Stack } from '@aws-cdk/core';
-import fs = require('fs');
+import * as s3_assets from '@aws-cdk/aws-s3-assets';
+import * as sns from '@aws-cdk/aws-sns';
+import { App, CfnParameter, CfnResource, Construct, ContextProvider, Stack } from '@aws-cdk/core';
+import * as fs from 'fs';
 import { Test } from 'nodeunit';
-import path = require('path');
+import * as path from 'path';
 import { NestedStack } from '../lib/nested-stack';
 
 // tslint:disable:max-line-length
@@ -872,5 +872,32 @@ export = {
     }));
 
     test.done();
-  }
+  },
+
+  'missing context in nested stack is reported if the context is not available'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'ParentStack', { env: { account: '1234account', region: 'us-east-44' } });
+    const nestedStack = new NestedStack(stack, 'nested');
+    const provider = 'dummyProvider';
+    const expectedKey = ContextProvider.getKey(nestedStack, {
+      provider
+    }).key;
+
+    // WHEN
+    ContextProvider.getValue(nestedStack, {
+      provider,
+      dummyValue: ['dummy1a', 'dummy1b', 'dummy1c'],
+    });
+
+    // THEN: missing context is reported in the cloud assembly
+    const asm = app.synth();
+    const missing = asm.manifest.missing;
+
+    test.ok(missing && missing.find(m => {
+      return (m.key === expectedKey);
+    }));
+
+    test.done();
+  },
 };

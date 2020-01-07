@@ -1,5 +1,5 @@
-import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import cdk = require('@aws-cdk/core');
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as cdk from '@aws-cdk/core';
 import { Chain } from '../chain';
 import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';
@@ -177,7 +177,7 @@ export class Task extends State implements INextable {
             dimensions: this.taskProps.metricDimensions,
             statistic: 'sum',
             ...props
-        });
+        }).attachTo(this);
     }
 
     /**

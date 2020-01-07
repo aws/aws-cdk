@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-apigateway",
-  "version": "1.19.0",
+  "version": "1.20.0",
   "description": "The CDK Construct Library for AWS::ApiGateway",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -65,27 +65,29 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "1.19.0",
-    "@aws-cdk/aws-ec2": "1.19.0",
-    "cdk-build-tools": "1.19.0",
-    "cdk-integ-tools": "1.19.0",
-    "cfn2ts": "1.19.0",
-    "pkglint": "1.19.0"
+    "@aws-cdk/assert": "1.20.0",
+    "@aws-cdk/aws-ec2": "1.20.0",
+    "@types/nodeunit": "^0.0.30",
+    "cdk-build-tools": "1.20.0",
+    "cdk-integ-tools": "1.20.0",
+    "cfn2ts": "1.20.0",
+    "nodeunit": "^0.11.3",
+    "pkglint": "1.20.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-certificatemanager": "1.19.0",
-    "@aws-cdk/aws-elasticloadbalancingv2": "1.19.0",
-    "@aws-cdk/aws-iam": "1.19.0",
-    "@aws-cdk/aws-lambda": "1.19.0",
-    "@aws-cdk/core": "1.19.0"
+    "@aws-cdk/aws-certificatemanager": "1.20.0",
+    "@aws-cdk/aws-elasticloadbalancingv2": "1.20.0",
+    "@aws-cdk/aws-iam": "1.20.0",
+    "@aws-cdk/aws-lambda": "1.20.0",
+    "@aws-cdk/core": "1.20.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-certificatemanager": "1.19.0",
-    "@aws-cdk/aws-elasticloadbalancingv2": "1.19.0",
-    "@aws-cdk/aws-iam": "1.19.0",
-    "@aws-cdk/aws-lambda": "1.19.0",
-    "@aws-cdk/core": "1.19.0"
+    "@aws-cdk/aws-certificatemanager": "1.20.0",
+    "@aws-cdk/aws-elasticloadbalancingv2": "1.20.0",
+    "@aws-cdk/aws-iam": "1.20.0",
+    "@aws-cdk/aws-lambda": "1.20.0",
+    "@aws-cdk/core": "1.20.0"
   },
   "engines": {
     "node": ">= 10.3.0"
@@ -283,7 +285,8 @@
       "props-default-doc:@aws-cdk/aws-apigateway.MethodOptions.operationName",
       "props-default-doc:@aws-cdk/aws-apigateway.MethodOptions.requestModels",
       "props-default-doc:@aws-cdk/aws-apigateway.MethodOptions.requestValidator",
-      "docs-public-apis:@aws-cdk/aws-apigateway.ResourceBase.url"
+      "docs-public-apis:@aws-cdk/aws-apigateway.ResourceBase.url",
+      "attribute-tag:@aws-cdk/aws-apigateway.TokenAuthorizer.authorizerArn"
     ]
   },
   "stability": "stable"

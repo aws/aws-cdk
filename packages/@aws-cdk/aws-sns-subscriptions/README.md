@@ -36,7 +36,7 @@ Add an HTTPS Subscription to your topic:
 ```ts
 import subscriptions = require('@aws-cdk/aws-sns-subscriptions');
 
-myTopic.addSubscription(new subsscriptions.UrlSubscription('https://foobar.com/'));
+myTopic.addSubscription(new subscriptions.UrlSubscription('https://foobar.com/'));
 ```
 
 ### Amazon SQS
@@ -49,7 +49,7 @@ import subscriptions = require('@aws-cdk/aws-sns-subscriptions');
 
 const myQueue = new sqs.Queue(this, 'MyQueue');
 
-myTopic.addSubscription(new subsscriptions.SqsSubscription(queue));
+myTopic.addSubscription(new subscriptions.SqsSubscription(queue));
 ```
 
 Note that subscriptions of queues in different accounts need to be manually confirmed by

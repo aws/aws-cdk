@@ -1,5 +1,5 @@
 import { countResources, expect, haveResource } from '@aws-cdk/assert';
-import iam = require('@aws-cdk/aws-iam');
+import * as iam from '@aws-cdk/aws-iam';
 import { Test } from 'nodeunit';
 import { Cluster, KubernetesResource } from '../lib';
 import { AwsAuth } from '../lib/aws-auth';
@@ -71,7 +71,21 @@ export = {
                 "Arn"
               ]
             },
+            "\\\",\\\"username\\\":\\\"",
+            {
+              "Fn::GetAtt": [
+                "roleC7B7E775",
+                "Arn"
+              ]
+            },
             "\\\",\\\"groups\\\":[\\\"role-group2\\\",\\\"role-group3\\\"]}]\",\"mapUsers\":\"[{\\\"userarn\\\":\\\"",
+            {
+              "Fn::GetAtt": [
+                "user2C2B57AE",
+                "Arn"
+              ]
+            },
+            "\\\",\\\"username\\\":\\\"",
             {
               "Fn::GetAtt": [
                 "user2C2B57AE",
@@ -118,7 +132,15 @@ export = {
                 "Arn"
               ]
             },
-            "\\\",\\\"username\\\":\\\"system:node:{{EC2PrivateDNSName}}\\\",\\\"groups\\\":[\\\"system:bootstrappers\\\",\\\"system:nodes\\\"]},{\\\"rolearn\\\":\\\"arn:aws:iam::123456789012:role/S3Access\\\",\\\"groups\\\":[\\\"group1\\\"]}]\",\"mapUsers\":\"[{\\\"userarn\\\":\\\"arn:",
+            "\\\",\\\"username\\\":\\\"system:node:{{EC2PrivateDNSName}}\\\",\\\"groups\\\":[\\\"system:bootstrappers\\\",\\\"system:nodes\\\"]},{\\\"rolearn\\\":\\\"arn:aws:iam::123456789012:role/S3Access\\\",\\\"username\\\":\\\"arn:aws:iam::123456789012:role/S3Access\\\",\\\"groups\\\":[\\\"group1\\\"]}]\",\"mapUsers\":\"[{\\\"userarn\\\":\\\"arn:",
+            {
+              Ref: "AWS::Partition"
+            },
+            ":iam::",
+            {
+              Ref: "AWS::AccountId"
+            },
+            ":user/MyUserName\\\",\\\"username\\\":\\\"arn:",
             {
               Ref: "AWS::Partition"
             },

@@ -219,7 +219,7 @@ export class Role extends Resource implements IRole {
 
     class ImmutableImport extends Import {
       public addToPolicy(_statement: PolicyStatement): boolean {
-        return false;
+        return true;
       }
 
       public attachInlinePolicy(_policy: Policy): void {

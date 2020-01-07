@@ -3,9 +3,9 @@
 // Does not include the actual code generation itself.
 
 import { schema } from '@aws-cdk/cfnspec';
-import codemaker = require('codemaker');
+import * as codemaker from 'codemaker';
 import { itemTypeNames, PropertyAttributeName, scalarTypeNames, SpecName } from './spec-utils';
-import util = require('./util');
+import * as util from './util';
 
 const RESOURCE_CLASS_PREFIX = 'Cfn';
 

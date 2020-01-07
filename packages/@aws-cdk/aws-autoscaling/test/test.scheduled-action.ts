@@ -1,8 +1,8 @@
 import { expect, haveResource, MatchStyle, } from '@aws-cdk/assert';
-import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/core');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import autoscaling = require('../lib');
+import * as autoscaling from '../lib';
 
 export = {
   'can schedule an action'(test: Test) {
@@ -64,7 +64,6 @@ export = {
           Properties: {
             MaxSize: "1",
             MinSize: "1",
-            DesiredCapacity: "1",
             LaunchConfigurationName: { Ref: "ASGLaunchConfigC00AF12B" },
             Tags: [
               {

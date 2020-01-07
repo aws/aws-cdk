@@ -1,7 +1,7 @@
-import fs = require('fs');
+import * as fs from 'fs';
 import { Test } from 'nodeunit';
-import path = require('path');
-import cfnspec = require('../lib');
+import * as path from 'path';
+import * as cfnspec from '../lib';
 import { MetricType } from '../lib/schema';
 
 function resourceAugmentationTest(resource: string) {

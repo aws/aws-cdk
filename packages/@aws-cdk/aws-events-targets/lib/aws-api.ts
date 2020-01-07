@@ -1,8 +1,8 @@
-import events = require('@aws-cdk/aws-events');
-import iam = require('@aws-cdk/aws-iam');
-import lambda = require('@aws-cdk/aws-lambda');
-import path = require('path');
-import metadata = require('./sdk-api-metadata.json');
+import * as events from '@aws-cdk/aws-events';
+import * as iam from '@aws-cdk/aws-iam';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as path from 'path';
+import * as metadata from './sdk-api-metadata.json';
 import { addLambdaPermission } from './util';
 
 /**

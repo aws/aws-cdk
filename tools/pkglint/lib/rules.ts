@@ -1,7 +1,7 @@
-import caseUtils = require('case');
-import fs = require('fs');
-import path = require('path');
-import semver = require('semver');
+import * as caseUtils from 'case';
+import * as fs from 'fs';
+import * as path from 'path';
+import * as semver from 'semver';
 import { LICENSE, NOTICE } from './licensing';
 import { PackageJson, ValidationRule } from './packagejson';
 import {
@@ -704,36 +704,6 @@ export class NpmIgnoreForJsiiModules extends ValidationRule {
 }
 
 /**
- * nodeunit and @types/nodeunit must appear in devDependencies if
- * the test script uses "nodeunit"
- */
-export class GlobalDevDependencies extends ValidationRule {
-  public readonly name = 'dependencies/global-dev';
-
-  public validate(pkg: PackageJson): void {
-
-    const deps = [
-      'typescript',
-      'tslint',
-      'nodeunit',
-      '@types/nodeunit',
-      // '@types/node', // we tend to get @types/node 12.x from transitive closures now, it breaks builds.
-      'nyc'
-    ];
-
-    for (const dep of deps) {
-      if (pkg.getDevDependency(dep)) {
-        pkg.report({
-          ruleName: this.name,
-          message: `devDependency ${dep} is defined at the repo level`,
-          fix: () => pkg.removeDevDependency(dep)
-        });
-      }
-    }
-  }
-}
-
-/**
  * Must use 'cdk-watch' command
  */
 export class MustUseCDKWatch extends ValidationRule {
@@ -762,7 +732,7 @@ export class MustUseCDKTest extends ValidationRule {
     // files in .gitignore.
     fileShouldContain(this.name, pkg, '.gitignore', '.nyc_output');
     fileShouldContain(this.name, pkg, '.gitignore', 'coverage');
-    fileShouldContain(this.name, pkg, '.gitignore', '.nycrc');
+    fileShouldContain(this.name, pkg, '.gitignore', 'nyc.config.js');
   }
 }
 
@@ -975,6 +945,12 @@ export class JestCoverageTarget extends ValidationRule {
         branches: 80,
         statements: 80
       };
+
+      // Coverage collection must be enabled
+      expectJSON(this.name, pkg, 'jest.collectCoverage', true);
+      // The correct coverage reporters must be enabled
+      expectJSON(this.name, pkg, 'jest.coverageReporters', ['lcov', 'html', 'text-summary']);
+
       for (const key of Object.keys(defaults)) {
         const deepPath = ['coverageThreshold', 'global', key];
         const setting = deepGet(pkg.json.jest, deepPath);

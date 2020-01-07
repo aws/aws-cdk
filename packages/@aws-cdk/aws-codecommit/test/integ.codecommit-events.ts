@@ -1,6 +1,6 @@
-import sns = require('@aws-cdk/aws-sns');
-import cdk = require('@aws-cdk/core');
-import codecommit = require('../lib');
+import * as sns from '@aws-cdk/aws-sns';
+import * as cdk from '@aws-cdk/core';
+import * as codecommit from '../lib';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-codecommit-events');

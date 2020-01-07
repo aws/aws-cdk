@@ -1,5 +1,5 @@
-import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import cdk = require('@aws-cdk/core');
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as cdk from '@aws-cdk/core';
 import { IAutoScalingGroup } from './auto-scaling-group';
 import { CfnScalingPolicy } from './autoscaling.generated';
 
@@ -117,6 +117,10 @@ export class TargetTrackingScalingPolicy extends cdk.Construct {
       throw new Error('When tracking the ALBRequestCountPerTarget metric, the ALB identifier must be supplied in resourceLabel');
     }
 
+    if (props.customMetric && !props.customMetric.toMetricConfig().metricStat) {
+      throw new Error(`Only direct metrics are supported for Target Tracking. Use Step Scaling or supply a Metric object.`);
+    }
+
     super(scope, id);
 
     this.resource = new CfnScalingPolicy(this, 'Resource', {
@@ -141,18 +145,14 @@ export class TargetTrackingScalingPolicy extends cdk.Construct {
 
 function renderCustomMetric(metric?: cloudwatch.IMetric): CfnScalingPolicy.CustomizedMetricSpecificationProperty | undefined {
   if (!metric) { return undefined; }
-  const c = metric.toAlarmConfig();
-
-  if (!c.statistic) {
-    throw new Error('Can only use Average, Minimum, Maximum, SampleCount, Sum statistic for target tracking');
-  }
+  const c = metric.toMetricConfig().metricStat!;
 
   return {
     dimensions: c.dimensions,
     metricName: c.metricName,
     namespace: c.namespace,
     statistic: c.statistic,
-    unit: c.unit
+    unit: c.unitFilter,
   };
 }
 
