@@ -1,4 +1,4 @@
-import iam = require('@aws-cdk/aws-iam');
+import * as iam from '@aws-cdk/aws-iam';
 import { Construct, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { CfnEventBus } from './events.generated';
 

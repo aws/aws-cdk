@@ -1,6 +1,6 @@
-import secretsmanager = require('@aws-cdk/aws-secretsmanager');
-import cdk = require('@aws-cdk/core');
-import codebuild = require('../lib');
+import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
+import * as cdk from '@aws-cdk/core';
+import * as codebuild from '../lib';
 
 class TestStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string) {

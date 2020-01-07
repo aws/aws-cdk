@@ -1,6 +1,6 @@
-import appscaling = require('@aws-cdk/aws-applicationautoscaling');
-import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import cdk = require('@aws-cdk/core');
+import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as cdk from '@aws-cdk/core';
 
 /**
  * Use an ApplicationAutoScaling StepScalingAction as an Alarm Action

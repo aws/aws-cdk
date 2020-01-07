@@ -1,7 +1,7 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import codepipeline = require('../lib');
+import * as codepipeline from '../lib';
 import { Stage } from '../lib/stage';
 
 // tslint:disable:object-literal-key-quotes

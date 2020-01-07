@@ -1,6 +1,6 @@
 import { Lazy } from "../lazy";
 import { Reference } from "../reference";
-import { DefaultTokenResolver, IFragmentConcatenator, IPostProcessor, IResolvable, IResolveContext  } from "../resolvable";
+import { DefaultTokenResolver, IFragmentConcatenator, IPostProcessor, IResolvable, IResolveContext } from "../resolvable";
 import { TokenizedStringFragments } from "../string-fragments";
 import { Token } from "../token";
 import { Intrinsic } from "./intrinsic";
@@ -171,9 +171,16 @@ export function minimalCloudFormationJoin(delimiter: string, values: any[]): any
   }
 
   function isSplicableFnJoinIntrinsic(obj: any): boolean {
-    return isIntrinsic(obj)
-      && Object.keys(obj)[0] === 'Fn::Join'
-      && obj['Fn::Join'][0] === delimiter;
+    if (!isIntrinsic(obj)) { return false; }
+    if (Object.keys(obj)[0] !== 'Fn::Join') { return false;  }
+
+    const [ delim, list ] = obj['Fn::Join'];
+    if (delim !== delimiter) { return false; }
+
+    if (Token.isUnresolved(list)) { return false; }
+    if (!Array.isArray(list)) { return false; }
+
+    return true;
   }
 }
 

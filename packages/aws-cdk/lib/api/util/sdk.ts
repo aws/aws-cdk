@@ -1,10 +1,11 @@
-import cxapi = require('@aws-cdk/cx-api');
-import AWS = require('aws-sdk');
-import child_process = require('child_process');
-import fs = require('fs-extra');
-import os = require('os');
-import path = require('path');
-import util = require('util');
+import * as cxapi from '@aws-cdk/cx-api';
+import * as AWS from 'aws-sdk';
+import * as child_process from 'child_process';
+import * as fs from 'fs-extra';
+import * as https from 'https';
+import * as os from 'os';
+import * as path from 'path';
+import * as util from 'util';
 import { debug } from '../../logging';
 import { PluginHost } from '../../plugin';
 import { CredentialProviderSource, Mode } from '../aws-auth/credentials';
@@ -53,6 +54,20 @@ export interface SDKOptions {
    * @default Automatically determine.
    */
   ec2creds?: boolean;
+
+  /**
+   * A path to a certificate bundle that contains a cert to be trusted.
+   *
+   * @default No certificate bundle
+   */
+  caBundlePath?: string;
+
+  /**
+   * The custom suer agent to use.
+   *
+   * @default - <package-name>/<package-version>
+   */
+  userAgent?: string;
 }
 
 /**
@@ -88,22 +103,7 @@ export class SDK implements ISDK {
 
     const defaultCredentialProvider = makeCLICompatibleCredentialProvider(options.profile, options.ec2creds);
 
-    // Find the package.json from the main toolkit
-    const pkg = (require.main as any).require('../package.json');
-    AWS.config.update({
-        customUserAgent: `${pkg.name}/${pkg.version}`
-    });
-
-    // https://aws.amazon.com/blogs/developer/using-the-aws-sdk-for-javascript-from-behind-a-proxy/
-    if (options.proxyAddress === undefined) {
-      options.proxyAddress = httpsProxyFromEnvironment();
-    }
-    if (options.proxyAddress) { // Ignore empty string on purpose
-      debug('Using proxy server: %s', options.proxyAddress);
-      AWS.config.update({
-        httpOptions: { agent: require('proxy-agent')(options.proxyAddress) }
-      });
-    }
+    this.configureSDKHttpOptions(options);
 
     this.defaultAwsAccount = new DefaultAWSAccount(defaultCredentialProvider, getCLICompatibleDefaultRegionGetter(this.profile));
     this.credentialsCache = new CredentialsCache(this.defaultAwsAccount, defaultCredentialProvider);
@@ -195,6 +195,34 @@ export class SDK implements ISDK {
     return environment;
   }
 
+  private async configureSDKHttpOptions(options: SDKOptions) {
+    const config: {[k: string]: any} = {};
+    const httpOptions: {[k: string]: any} = {};
+
+    let userAgent = options.userAgent;
+    if (userAgent == null) {
+      // Find the package.json from the main toolkit
+      const pkg = (require.main as any).require('../package.json');
+      userAgent = `${pkg.name}/${pkg.version}`;
+    }
+    config.customUserAgent = userAgent;
+
+    // https://aws.amazon.com/blogs/developer/using-the-aws-sdk-for-javascript-from-behind-a-proxy/
+    options.proxyAddress = options.proxyAddress || httpsProxyFromEnvironment();
+    options.caBundlePath = options.caBundlePath || caBundlePathFromEnvironment();
+
+    if (options.proxyAddress) { // Ignore empty string on purpose
+      debug('Using proxy server: %s', options.proxyAddress);
+      httpOptions.proxy = options.proxyAddress;
+    }
+    if (options.caBundlePath) {
+      debug('Using ca bundle path: %s', options.caBundlePath);
+      httpOptions.agent = new https.Agent({ca: await readIfPossible(options.caBundlePath)});
+    }
+    config.httpOptions = httpOptions;
+
+    AWS.config.update(config);
+  }
 }
 
 /**
@@ -433,6 +461,19 @@ function httpsProxyFromEnvironment(): string | undefined {
   }
   if (process.env.HTTPS_PROXY) {
     return process.env.HTTPS_PROXY;
+  }
+  return undefined;
+}
+
+/**
+ * Find and return a CA certificate bundle path to be passed into the SDK.
+ */
+function caBundlePathFromEnvironment(): string | undefined {
+  if (process.env.aws_ca_bundle) {
+    return process.env.aws_ca_bundle;
+  }
+  if (process.env.AWS_CA_BUNDLE) {
+    return process.env.AWS_CA_BUNDLE;
   }
   return undefined;
 }

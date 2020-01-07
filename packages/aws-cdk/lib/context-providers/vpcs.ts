@@ -1,5 +1,5 @@
-import cxapi = require('@aws-cdk/cx-api');
-import AWS = require('aws-sdk');
+import * as cxapi from '@aws-cdk/cx-api';
+import * as AWS from 'aws-sdk';
 import { ISDK, Mode } from '../api';
 import { debug } from '../logging';
 import { ContextProviderPlugin } from './provider';
@@ -20,7 +20,7 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
     return await this.readVpcProps(ec2, vpcId, args);
   }
 
-  private async findVpc(ec2: AWS.EC2, args: cxapi.VpcContextQuery): Promise<string> {
+  private async findVpc(ec2: AWS.EC2, args: cxapi.VpcContextQuery): Promise<AWS.EC2.Vpc> {
     // Build request filter (map { Name -> Value } to list of [{ Name, Values }])
     const filters: AWS.EC2.Filter[] = Object.entries(args.filter).map(([tag, value]) => ({ Name: tag, Values: [value] }));
 
@@ -35,10 +35,12 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
       throw new Error(`Found ${vpcs.length} VPCs matching ${JSON.stringify(args)}; please narrow the search criteria`);
     }
 
-    return vpcs[0].VpcId!;
+    return vpcs[0];
   }
 
-  private async readVpcProps(ec2: AWS.EC2, vpcId: string, args: cxapi.VpcContextQuery): Promise<cxapi.VpcContextResponse> {
+  private async readVpcProps(ec2: AWS.EC2, vpc: AWS.EC2.Vpc, args: cxapi.VpcContextQuery): Promise<cxapi.VpcContextResponse> {
+    const vpcId = vpc.VpcId!;
+
     debug(`Describing VPC ${vpcId}`);
 
     const filters = { Filters: [{ Name: 'vpc-id', Values: [vpcId] }] };
@@ -80,6 +82,7 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
 
       return {
         az: subnet.AvailabilityZone!,
+        cidr: subnet.CidrBlock!,
         type,
         name,
         subnetId: subnet.SubnetId!,
@@ -120,6 +123,7 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
 
     return {
       vpcId,
+      vpcCidrBlock: vpc.CidrBlock!,
       availabilityZones: grouped.azs,
       isolatedSubnetIds: collapse(flatMap(findGroups(SubnetType.Isolated, grouped), group => group.subnets.map(s => s.subnetId))),
       isolatedSubnetNames: collapse(flatMap(findGroups(SubnetType.Isolated, grouped), group => group.name ? [group.name] : [])),
@@ -224,6 +228,7 @@ function groupAsymmetricSubnets(subnets: Subnet[]): cxapi.VpcSubnetGroup[] {
       type: subnetTypeToVpcSubnetType(subnetArray[0].type),
       subnets: subnetArray.map(subnet => ({
         subnetId: subnet.subnetId,
+        cidr: subnet.cidr,
         availabilityZone: subnet.az,
         routeTableId: subnet.routeTableId,
       })),
@@ -253,6 +258,7 @@ function isValidSubnetType(val: string): val is SubnetType {
 
 interface Subnet {
   az: string;
+  cidr: string;
   type: SubnetType;
   name: string;
   routeTableId: string;

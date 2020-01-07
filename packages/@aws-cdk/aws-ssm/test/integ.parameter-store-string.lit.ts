@@ -1,6 +1,6 @@
 /// !cdk-integ *
-import cdk = require('@aws-cdk/core');
-import ssm = require('../lib');
+import * as cdk from '@aws-cdk/core';
+import * as ssm from '../lib';
 
 class CreatingStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string) {

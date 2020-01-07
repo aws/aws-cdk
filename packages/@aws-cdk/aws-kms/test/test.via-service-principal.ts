@@ -1,6 +1,6 @@
-import iam = require('@aws-cdk/aws-iam');
+import * as iam from '@aws-cdk/aws-iam';
 import { Test } from 'nodeunit';
-import kms = require('../lib');
+import * as kms from '../lib';
 
 export = {
   'Via service, any principal'(test: Test) {

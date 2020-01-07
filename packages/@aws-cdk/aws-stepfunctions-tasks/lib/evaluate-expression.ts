@@ -1,8 +1,8 @@
-import iam = require('@aws-cdk/aws-iam');
-import lambda = require('@aws-cdk/aws-lambda');
-import sfn = require('@aws-cdk/aws-stepfunctions');
-import cdk = require('@aws-cdk/core');
-import path = require('path');
+import * as iam from '@aws-cdk/aws-iam';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+import * as cdk from '@aws-cdk/core';
+import * as path from 'path';
 
 /**
  * Properties for EvaluateExpression

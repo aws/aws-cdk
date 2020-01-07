@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-glue",
-  "version": "1.19.0",
+  "version": "1.20.0",
   "description": "The CDK Construct Library for AWS::Glue",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -62,24 +62,26 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "1.19.0",
-    "cdk-build-tools": "1.19.0",
-    "cdk-integ-tools": "1.19.0",
-    "cfn2ts": "1.19.0",
-    "pkglint": "1.19.0"
+    "@aws-cdk/assert": "1.20.0",
+    "@types/nodeunit": "^0.0.30",
+    "cdk-build-tools": "1.20.0",
+    "cdk-integ-tools": "1.20.0",
+    "cfn2ts": "1.20.0",
+    "nodeunit": "^0.11.3",
+    "pkglint": "1.20.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-iam": "1.19.0",
-    "@aws-cdk/aws-kms": "1.19.0",
-    "@aws-cdk/aws-s3": "1.19.0",
-    "@aws-cdk/core": "1.19.0"
+    "@aws-cdk/aws-iam": "1.20.0",
+    "@aws-cdk/aws-kms": "1.20.0",
+    "@aws-cdk/aws-s3": "1.20.0",
+    "@aws-cdk/core": "1.20.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-iam": "1.19.0",
-    "@aws-cdk/aws-kms": "1.19.0",
-    "@aws-cdk/aws-s3": "1.19.0",
-    "@aws-cdk/core": "1.19.0"
+    "@aws-cdk/aws-iam": "1.20.0",
+    "@aws-cdk/aws-kms": "1.20.0",
+    "@aws-cdk/aws-s3": "1.20.0",
+    "@aws-cdk/core": "1.20.0"
   },
   "engines": {
     "node": ">= 10.3.0"
@@ -106,8 +108,16 @@
       "docs-public-apis:@aws-cdk/aws-glue.Table.fromTableArn",
       "docs-public-apis:@aws-cdk/aws-glue.Schema.DOUBLE",
       "docs-public-apis:@aws-cdk/aws-glue.Schema.FLOAT",
+      "docs-public-apis:@aws-cdk/aws-glue.SerializationLibrary.AVRO",
+      "docs-public-apis:@aws-cdk/aws-glue.SerializationLibrary.CLOUDTRAIL",
+      "docs-public-apis:@aws-cdk/aws-glue.SerializationLibrary.GROK",
       "docs-public-apis:@aws-cdk/aws-glue.SerializationLibrary.HIVE_JSON",
+      "docs-public-apis:@aws-cdk/aws-glue.SerializationLibrary.LAZY_SIMPLE",
+      "docs-public-apis:@aws-cdk/aws-glue.SerializationLibrary.OPEN_CSV",
       "docs-public-apis:@aws-cdk/aws-glue.SerializationLibrary.OPENX_JSON",
+      "docs-public-apis:@aws-cdk/aws-glue.SerializationLibrary.ORC",
+      "docs-public-apis:@aws-cdk/aws-glue.SerializationLibrary.PARQUET",
+      "docs-public-apis:@aws-cdk/aws-glue.SerializationLibrary.REGEXP",
       "docs-public-apis:@aws-cdk/aws-glue.SerializationLibrary.className"
     ]
   }

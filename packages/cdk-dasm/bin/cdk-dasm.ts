@@ -1,4 +1,4 @@
-import YAML = require('yaml');
+import * as YAML from 'yaml';
 import { dasmTypeScript } from '../lib';
 
 let s = '';

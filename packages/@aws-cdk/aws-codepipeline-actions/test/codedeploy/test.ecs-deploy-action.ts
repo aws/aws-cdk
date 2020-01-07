@@ -1,9 +1,9 @@
 import { expect, haveResourceLike } from "@aws-cdk/assert";
-import codedeploy = require('@aws-cdk/aws-codedeploy');
-import codepipeline = require('@aws-cdk/aws-codepipeline');
-import cdk = require('@aws-cdk/core');
+import * as codedeploy from '@aws-cdk/aws-codedeploy';
+import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import cpactions = require('../../lib');
+import * as cpactions from '../../lib';
 
 export = {
   'CodeDeploy ECS Deploy Action': {

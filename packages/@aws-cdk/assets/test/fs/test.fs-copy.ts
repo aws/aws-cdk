@@ -1,7 +1,7 @@
-import fs = require('fs');
+import * as fs from 'fs';
 import { Test } from 'nodeunit';
-import os = require('os');
-import path = require('path');
+import * as os from 'os';
+import * as path from 'path';
 import { copyDirectory } from '../../lib/fs/copy';
 import { FollowMode } from '../../lib/fs/follow-mode';
 

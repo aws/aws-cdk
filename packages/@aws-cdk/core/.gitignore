@@ -9,6 +9,6 @@ coverage
 .jsii
 
 .LAST_BUILD
-.nycrc
+nyc.config.js
 .LAST_PACKAGE
 *.snk

@@ -1,5 +1,5 @@
-import ses = require('@aws-cdk/aws-ses');
-import sns = require('@aws-cdk/aws-sns');
+import * as ses from '@aws-cdk/aws-ses';
+import * as sns from '@aws-cdk/aws-sns';
 
 /**
  * Construction properties for a BounceTemplate.

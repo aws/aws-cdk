@@ -1,9 +1,11 @@
 // tslint:disable: no-console
 // tslint:disable: max-line-length
+/* eslint-disable @typescript-eslint/no-require-imports */
 import cfnResponse = require('../../lib/provider-framework/runtime/cfn-response');
 import framework = require('../../lib/provider-framework/runtime/framework');
 import outbound = require('../../lib/provider-framework/runtime/outbound');
 import mocks = require('./mocks');
+/* eslint-enable */
 
 console.log = jest.fn();
 
@@ -239,6 +241,38 @@ test('fails if user handler returns a non-object response', async () => {
   expectCloudFormationFailed('return values from user-handlers must be JSON objects. got: \"string\"');
 });
 
+describe('if CREATE fails, the subsequent DELETE will be ignored', () => {
+
+  it('FAILED response sets PhysicalResourceId to a special marker', async () => {
+    // WHEN
+    mocks.onEventImplMock = async () => { throw new Error('CREATE FAILED'); };
+
+    // THEN
+    await simulateEvent({
+      RequestType: 'Create'
+    });
+
+    expectCloudFormationFailed('CREATE FAILED', {
+      PhysicalResourceId: cfnResponse.CREATE_FAILED_PHYSICAL_ID_MARKER,
+    });
+  });
+
+  it('DELETE request with the marker succeeds without calling user handler', async () => {
+    // GIVEN
+    // user handler is not assigned
+
+    // WHEN
+    await simulateEvent({
+      RequestType: 'Delete',
+      PhysicalResourceId: cfnResponse.CREATE_FAILED_PHYSICAL_ID_MARKER
+    });
+
+    // THEN
+    expectCloudFormationSuccess();
+  });
+
+});
+
 // -----------------------------------------------------------------------------------------------------------------------
 
 /**
@@ -290,10 +324,11 @@ async function simulateEvent(req: Partial<AWSLambda.CloudFormationCustomResource
   }
 }
 
-function expectCloudFormationFailed(expectedReason: string) {
+function expectCloudFormationFailed(expectedReason: string, resp?: Partial<AWSLambda.CloudFormationCustomResourceResponse>) {
   expectCloudFormationResponse({
     Status: 'FAILED',
-    Reason: expectedReason
+    Reason: expectedReason,
+    ...resp
   });
 }
 

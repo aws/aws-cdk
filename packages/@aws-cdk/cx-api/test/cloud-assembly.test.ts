@@ -1,4 +1,4 @@
-import path = require('path');
+import * as path from 'path';
 import { CloudAssembly } from '../lib';
 import { CLOUD_ASSEMBLY_VERSION, verifyManifestVersion } from '../lib/versioning';
 

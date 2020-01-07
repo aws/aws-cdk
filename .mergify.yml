@@ -1,0 +1,61 @@
+# See https://doc.mergify.io
+
+pull_request_rules:
+  - name: label core
+    actions:
+      label:
+        add: [ contribution/core ]
+    conditions:
+      - author~=^(eladb|RomainMuller|garnaat|nija-at|shivlaks|skinny85|rix0rrr|NGL321|Jerry-AWS|SomayaB)$
+      - -label~="contribution/core"
+  - name: automatic merge
+    actions:
+      comment:
+        message: Thank you for contributing! Your pull request is now being automatically merged.
+      merge:
+        strict: smart
+        method: squash
+        strict_method: merge
+      delete_head_branch: {}
+    conditions:
+      - -title~=(WIP|wip)
+      - -label~=(blocked|do-not-merge)
+      - -merged
+      - -closed
+      - author!=dependabot[bot]
+      - author!=dependabot-preview[bot]
+      - "#approved-reviews-by>=1"
+      - -approved-reviews-by~=author
+      - "#changes-requested-reviews-by=0"
+      - status-success~=AWS CodeBuild us-east-1
+      - status-success=Semantic Pull Request
+  - name: remove stale reviews
+    actions:
+      dismiss_reviews: {}
+    conditions:
+      - author!=dependabot[bot]
+      - author!=dependabot-preview[bot]
+        # List out all the people whose work is okay to provisionally approve
+      - author!=eladb
+      - author!=RomainMuller
+      - author!=garnaat
+      - author!=nija-at
+      - author!=shivlaks
+      - author!=skinny85
+      - author!=rix0rrr
+      - author!=NGL321
+      - author!=Jerry-AWS
+      - author!=SomayaB
+      - base=master
+      - -merged
+      - -closed
+  - name: if fails conventional commits
+    actions:
+      comment:
+        message: Title does not follow the guidelines of [Conventional Commits](https://www.conventionalcommits.org). Please adjust title before merge.
+    conditions:
+      - author!=dependabot[bot]
+      - author!=dependabot-preview[bot]
+      - status-failure=Semantic Pull Request
+      - -merged
+      - -closed

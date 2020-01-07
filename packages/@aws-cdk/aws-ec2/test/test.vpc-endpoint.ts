@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import { AnyPrincipal, PolicyStatement } from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
@@ -306,6 +306,30 @@ export = {
       expect(stack).to(haveResource('AWS::EC2::VPCEndpoint', {
         SecurityGroupIds: ['existing-id'],
       }));
+
+      test.done();
+    },
+    'security group has ingress by default'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VpcNetwork');
+
+      // WHEN
+      vpc.addInterfaceEndpoint('SecretsManagerEndpoint', {
+        service: InterfaceVpcEndpointAwsService.SECRETS_MANAGER,
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::EC2::SecurityGroup', {
+        SecurityGroupIngress: [
+          {
+            CidrIp: { "Fn::GetAtt": [ "VpcNetworkB258E83A", "CidrBlock" ] },
+            FromPort: 443,
+            IpProtocol: "tcp",
+            ToPort: 443
+          }
+        ]
+      }, ));
 
       test.done();
     }

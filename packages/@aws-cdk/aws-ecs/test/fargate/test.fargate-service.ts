@@ -1,13 +1,12 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
-import appscaling = require('@aws-cdk/aws-applicationautoscaling');
-import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import ec2 = require('@aws-cdk/aws-ec2');
-import elbv2 = require("@aws-cdk/aws-elasticloadbalancingv2");
-import cloudmap = require('@aws-cdk/aws-servicediscovery');
-import cdk = require('@aws-cdk/core');
+import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
+import * as cloudmap from '@aws-cdk/aws-servicediscovery';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { ContainerImage, DeploymentControllerType } from '../../lib';
-import ecs = require('../../lib');
+import * as ecs from '../../lib';
 import { LaunchType } from '../../lib/base/base-service';
 
 export = {
@@ -182,7 +181,7 @@ export = {
         maxHealthyPercent: 150,
         minHealthyPercent: 55,
         deploymentController: {
-          type: DeploymentControllerType.CODE_DEPLOY
+          type: ecs.DeploymentControllerType.CODE_DEPLOY
         },
         securityGroup: new ec2.SecurityGroup(stack, 'SecurityGroup1', {
           allowAllOutbound: true,
@@ -209,7 +208,7 @@ export = {
           MinimumHealthyPercent: 55
         },
         DeploymentController: {
-          Type: DeploymentControllerType.CODE_DEPLOY
+          Type: ecs.DeploymentControllerType.CODE_DEPLOY
         },
         DesiredCount: 2,
         HealthCheckGracePeriodSeconds: 60,
@@ -357,7 +356,7 @@ export = {
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
       taskDefinition.addContainer('MainContainer', {
-        image: ContainerImage.fromRegistry('hello'),
+        image: ecs.ContainerImage.fromRegistry('hello'),
       });
 
       // WHEN
@@ -384,7 +383,7 @@ export = {
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
       const container = taskDefinition.addContainer('MainContainer', {
-        image: ContainerImage.fromRegistry('hello'),
+        image: ecs.ContainerImage.fromRegistry('hello'),
       });
       container.addPortMappings({ containerPort: 8000 });
       const service = new ecs.FargateService(stack, 'Service', { cluster, taskDefinition});
@@ -460,7 +459,7 @@ export = {
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
       const container = taskDefinition.addContainer('MainContainer', {
-        image: ContainerImage.fromRegistry('hello'),
+        image: ecs.ContainerImage.fromRegistry('hello'),
       });
       container.addPortMappings({ containerPort: 8000 });
 
@@ -518,7 +517,7 @@ export = {
         const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
         const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
         const container = taskDefinition.addContainer('MainContainer', {
-          image: ContainerImage.fromRegistry('hello'),
+          image: ecs.ContainerImage.fromRegistry('hello'),
         });
         container.addPortMappings({ containerPort: 8000 });
         container.addPortMappings({ containerPort: 8001 });
@@ -573,7 +572,7 @@ export = {
         const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
         const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
         const container = taskDefinition.addContainer('MainContainer', {
-          image: ContainerImage.fromRegistry('hello'),
+          image: ecs.ContainerImage.fromRegistry('hello'),
         });
         container.addPortMappings({ containerPort: 8000 });
         container.addPortMappings({ containerPort: 8001, protocol: ecs.Protocol.TCP });
@@ -607,7 +606,7 @@ export = {
         const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
         const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
         const container = taskDefinition.addContainer('MainContainer', {
-          image: ContainerImage.fromRegistry('hello'),
+          image: ecs.ContainerImage.fromRegistry('hello'),
         });
         container.addPortMappings({ containerPort: 8000 });
         container.addPortMappings({ containerPort: 8001, protocol: ecs.Protocol.UDP });
@@ -641,7 +640,7 @@ export = {
         const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
         const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
         const container = taskDefinition.addContainer('MainContainer', {
-          image: ContainerImage.fromRegistry('hello'),
+          image: ecs.ContainerImage.fromRegistry('hello'),
         });
         container.addPortMappings({ containerPort: 8000 });
         container.addPortMappings({ containerPort: 8001, protocol: ecs.Protocol.UDP });
@@ -677,7 +676,7 @@ export = {
         const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
         const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
         const container = taskDefinition.addContainer('MainContainer', {
-          image: ContainerImage.fromRegistry('hello'),
+          image: ecs.ContainerImage.fromRegistry('hello'),
         });
         container.addPortMappings({ containerPort: 8000 });
         container.addPortMappings({ containerPort: 8001 });
@@ -712,7 +711,7 @@ export = {
         const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
         const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
         const container = taskDefinition.addContainer('MainContainer', {
-          image: ContainerImage.fromRegistry('hello'),
+          image: ecs.ContainerImage.fromRegistry('hello'),
         });
         container.addPortMappings({ containerPort: 8000 });
         container.addPortMappings({ containerPort: 8001 });
@@ -750,7 +749,7 @@ export = {
           const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
           const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
           const container = taskDefinition.addContainer('MainContainer', {
-            image: ContainerImage.fromRegistry('hello'),
+            image: ecs.ContainerImage.fromRegistry('hello'),
           });
           container.addPortMappings({ containerPort: 8000 });
 
@@ -800,7 +799,7 @@ export = {
           const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
           const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
           const container = taskDefinition.addContainer('MainContainer', {
-            image: ContainerImage.fromRegistry('hello'),
+            image: ecs.ContainerImage.fromRegistry('hello'),
           });
           container.addPortMappings({ containerPort: 8000 });
 
@@ -852,7 +851,7 @@ export = {
           const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
           const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
           const container = taskDefinition.addContainer('MainContainer', {
-            image: ContainerImage.fromRegistry('hello'),
+            image: ecs.ContainerImage.fromRegistry('hello'),
           });
           container.addPortMappings({ containerPort: 8000 });
 
@@ -904,7 +903,7 @@ export = {
           const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
           const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
           const container = taskDefinition.addContainer('MainContainer', {
-            image: ContainerImage.fromRegistry('hello'),
+            image: ecs.ContainerImage.fromRegistry('hello'),
           });
           container.addPortMappings({ containerPort: 8000 });
 
@@ -959,7 +958,7 @@ export = {
           const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
           const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
           const container = taskDefinition.addContainer('MainContainer', {
-            image: ContainerImage.fromRegistry('hello'),
+            image: ecs.ContainerImage.fromRegistry('hello'),
           });
           container.addPortMappings({ containerPort: 8000 });
 
@@ -1009,7 +1008,7 @@ export = {
           const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
           const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
           const container = taskDefinition.addContainer('MainContainer', {
-            image: ContainerImage.fromRegistry('hello'),
+            image: ecs.ContainerImage.fromRegistry('hello'),
           });
           container.addPortMappings({ containerPort: 8000 });
 
@@ -1064,7 +1063,7 @@ export = {
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
     const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
     const container = taskDefinition.addContainer('MainContainer', {
-      image: ContainerImage.fromRegistry('hello'),
+      image: ecs.ContainerImage.fromRegistry('hello'),
     });
     container.addPortMappings({ containerPort: 8000 });
 
@@ -1103,7 +1102,7 @@ export = {
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
     const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
     const container = taskDefinition.addContainer('MainContainer', {
-      image: ContainerImage.fromRegistry('hello'),
+      image: ecs.ContainerImage.fromRegistry('hello'),
     });
     container.addPortMappings({ containerPort: 8000 });
 
@@ -1151,7 +1150,7 @@ export = {
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
     const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
     const container = taskDefinition.addContainer('MainContainer', {
-      image: ContainerImage.fromRegistry('hello'),
+      image: ecs.ContainerImage.fromRegistry('hello'),
     });
     container.addPortMappings({ containerPort: 8000 });
 
@@ -1185,7 +1184,7 @@ export = {
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
     const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
     const container = taskDefinition.addContainer('MainContainer', {
-      image: ContainerImage.fromRegistry('hello'),
+      image: ecs.ContainerImage.fromRegistry('hello'),
     });
     container.addPortMappings({ containerPort: 8000 });
 
@@ -1219,7 +1218,7 @@ export = {
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
     const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
     const container = taskDefinition.addContainer('MainContainer', {
-      image: ContainerImage.fromRegistry('hello'),
+      image: ecs.ContainerImage.fromRegistry('hello'),
     });
     container.addPortMappings({ containerPort: 8000 });
 
@@ -1259,7 +1258,7 @@ export = {
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
       const container = taskDefinition.addContainer('MainContainer', {
-        image: ContainerImage.fromRegistry('hello'),
+        image: ecs.ContainerImage.fromRegistry('hello'),
         memoryLimitMiB: 512
       });
       container.addPortMappings({ containerPort: 8000 });
@@ -1285,7 +1284,7 @@ export = {
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
       const container = taskDefinition.addContainer('MainContainer', {
-        image: ContainerImage.fromRegistry('hello'),
+        image: ecs.ContainerImage.fromRegistry('hello'),
       });
       container.addPortMappings({ containerPort: 8000 });
 
@@ -1344,7 +1343,7 @@ export = {
 
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
       const container = taskDefinition.addContainer('MainContainer', {
-        image: ContainerImage.fromRegistry('hello'),
+        image: ecs.ContainerImage.fromRegistry('hello'),
         memoryLimitMiB: 512
       });
       container.addPortMappings({ containerPort: 8000 });

@@ -1,9 +1,9 @@
 import { expect, haveResourceLike } from "@aws-cdk/assert";
-import codepipeline = require('@aws-cdk/aws-codepipeline');
-import lambda = require('@aws-cdk/aws-lambda');
+import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import * as lambda from '@aws-cdk/aws-lambda';
 import { Aws, Lazy, SecretValue, Stack, Token } from "@aws-cdk/core";
 import { Test } from 'nodeunit';
-import cpactions = require('../../lib');
+import * as cpactions from '../../lib';
 
 // tslint:disable:object-literal-key-quotes
 

@@ -1,11 +1,10 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import iam = require('@aws-cdk/aws-iam');
-import kms = require('@aws-cdk/aws-kms');
-import lambda = require('@aws-cdk/aws-lambda');
-import cdk = require('@aws-cdk/core');
-import { SecretValue, Stack } from '@aws-cdk/core';
+import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import secretsmanager = require('../lib');
+import * as secretsmanager from '../lib';
 
 export = {
   'default secret'(test: Test) {
@@ -310,28 +309,45 @@ export = {
     test.done();
   },
 
-  'attached secret'(test: Test) {
+  'can attach a secret with attach()'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const secret = new secretsmanager.Secret(stack, 'Secret');
-    const target: secretsmanager.ISecretAttachmentTarget = {
-      asSecretAttachmentTarget: () => ({
-        targetId: 'instance',
-        targetType: secretsmanager.AttachmentTargetType.INSTANCE
-      })
-    };
 
     // WHEN
-    secret.addTargetAttachment('AttachedSecret', { target });
+    secret.attach({
+      asSecretAttachmentTarget: () => ({
+        targetId: 'target-id',
+        targetType: 'target-type' as secretsmanager.AttachmentTargetType
+      })
+    });
 
     // THEN
     expect(stack).to(haveResource('AWS::SecretsManager::SecretTargetAttachment', {
       SecretId: {
         Ref: 'SecretA720EF05'
       },
-      TargetId: 'instance',
-      TargetType: 'AWS::RDS::DBInstance'
+      TargetId: 'target-id',
+      TargetType: 'target-type'
     }));
+
+    test.done();
+  },
+
+  'throws when trying to attach a target multiple times to a secret'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const secret = new secretsmanager.Secret(stack, 'Secret');
+    const target = {
+      asSecretAttachmentTarget: () => ({
+        targetId: 'target-id',
+        targetType: 'target-type' as secretsmanager.AttachmentTargetType
+      })
+    };
+    secret.attach(target);
+
+    // THEN
+    test.throws(() => secret.attach(target), /Secret is already attached to a target/);
 
     test.done();
   },
@@ -340,13 +356,12 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const secret = new secretsmanager.Secret(stack, 'Secret');
-    const target: secretsmanager.ISecretAttachmentTarget = {
+    const attachedSecret = secret.attach({
       asSecretAttachmentTarget: () => ({
-        targetId: 'cluster',
-        targetType: secretsmanager.AttachmentTargetType.CLUSTER
+        targetId: 'target-id',
+        targetType: 'target-type' as secretsmanager.AttachmentTargetType
       })
-    };
-    const attachedSecret = secret.addTargetAttachment('AttachedSecret', { target });
+    });
     const rotationLambda = new lambda.Function(stack, 'Lambda', {
       runtime: lambda.Runtime.NODEJS_10_X,
       code: lambda.Code.fromInline('export.handler = event => event;'),
@@ -361,7 +376,7 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::SecretsManager::RotationSchedule', {
       SecretId: {
-        Ref: 'SecretAttachedSecret94145316' // The secret returned by the attachment, not the secret itself.
+        Ref: 'SecretAttachment2E1B7C3B' // The secret returned by the attachment, not the secret itself.
       }
     }));
 
@@ -398,14 +413,49 @@ export = {
 
   'equivalence of SecretValue and Secret.fromSecretAttributes'(test: Test) {
     // GIVEN
-    const stack = new Stack();
+    const stack = new cdk.Stack();
 
     // WHEN
     const imported = secretsmanager.Secret.fromSecretAttributes(stack, 'Imported', { secretArn: 'my-secret-arn' }).secretValueFromJson('password');
-    const value = SecretValue.secretsManager('my-secret-arn', { jsonField: 'password' });
+    const value = cdk.SecretValue.secretsManager('my-secret-arn', { jsonField: 'password' });
 
     // THEN
     test.deepEqual(stack.resolve(imported), stack.resolve(value));
+    test.done();
+  },
+
+  'can add to the resource policy of a secret'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const secret = new secretsmanager.Secret(stack, 'Secret');
+
+    // WHEN
+    secret.addToResourcePolicy(new iam.PolicyStatement({
+      actions: ['secretsmanager:GetSecretValue'],
+      resources: ['*'],
+      principals: [new iam.ArnPrincipal('arn:aws:iam::123456789012:user/cool-user')]
+    }));
+
+    // THEN
+    expect(stack).to(haveResource('AWS::SecretsManager::ResourcePolicy', {
+      ResourcePolicy: {
+        Statement: [
+          {
+            Action: 'secretsmanager:GetSecretValue',
+            Effect: 'Allow',
+            Principal: {
+              AWS: 'arn:aws:iam::123456789012:user/cool-user'
+            },
+            Resource: '*'
+          }
+        ],
+        Version: '2012-10-17'
+      },
+      SecretId: {
+        Ref: 'SecretA720EF05'
+      }
+    }));
+
     test.done();
   }
 };

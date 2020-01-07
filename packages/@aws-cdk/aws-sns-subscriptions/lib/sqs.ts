@@ -1,6 +1,6 @@
-import iam = require('@aws-cdk/aws-iam');
-import sns = require('@aws-cdk/aws-sns');
-import sqs = require('@aws-cdk/aws-sqs');
+import * as iam from '@aws-cdk/aws-iam';
+import * as sns from '@aws-cdk/aws-sns';
+import * as sqs from '@aws-cdk/aws-sqs';
 import { Construct, Stack } from '@aws-cdk/core';
 import { SubscriptionProps } from './subscription';
 

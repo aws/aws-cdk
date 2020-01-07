@@ -1,7 +1,7 @@
-import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import ec2 = require('@aws-cdk/aws-ec2');
-import iam = require('@aws-cdk/aws-iam');
-import s3 = require('@aws-cdk/aws-s3');
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as iam from '@aws-cdk/aws-iam';
+import * as s3 from '@aws-cdk/aws-s3';
 import { Construct, Duration, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
 import { BaseLoadBalancer, BaseLoadBalancerProps, ILoadBalancerV2 } from '../shared/base-load-balancer';
 import { IpAddressType } from '../shared/enums';
@@ -79,7 +79,10 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
   }
 
   /**
-   * Enable access logging for this load balancer
+   * Enable access logging for this load balancer.
+   *
+   * A region must be specified on the stack containing the load balancer; you cannot enable logging on
+   * environment-agnostic stacks. See https://docs.aws.amazon.com/cdk/latest/guide/environments.html
    */
   public logAccessLogs(bucket: s3.IBucket, prefix?: string) {
     this.setAttribute('access_logs.s3.enabled', 'true');

@@ -1,13 +1,13 @@
-import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import ec2 = require('@aws-cdk/aws-ec2');
-import ecr = require('@aws-cdk/aws-ecr');
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as ecr from '@aws-cdk/aws-ecr';
 import { DockerImageAsset, DockerImageAssetProps } from '@aws-cdk/aws-ecr-assets';
-import events = require('@aws-cdk/aws-events');
-import iam = require('@aws-cdk/aws-iam');
-import kms = require('@aws-cdk/aws-kms');
-import s3 = require('@aws-cdk/aws-s3');
-import secretsmanager = require('@aws-cdk/aws-secretsmanager');
-import { Aws, CfnResource, Construct, Duration, IResource, Lazy, PhysicalName, Resource, Stack } from '@aws-cdk/core';
+import * as events from '@aws-cdk/aws-events';
+import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
+import * as s3 from '@aws-cdk/aws-s3';
+import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
+import { Aws, Construct, Duration, IResource, Lazy, PhysicalName, Resource, Stack } from '@aws-cdk/core';
 import { IArtifacts } from './artifacts';
 import { BuildSpec } from './build-spec';
 import { Cache } from './cache';
@@ -322,7 +322,7 @@ abstract class ProjectBase extends Resource implements IProject {
       metricName,
       dimensions: { ProjectName: this.projectName },
       ...props
-    });
+    }).attachTo(this);
   }
 
   /**
@@ -955,7 +955,6 @@ export class Project extends ProjectBase {
     }));
 
     const policy = new iam.Policy(this, 'PolicyDocument', {
-      policyName: 'CodeBuildEC2Policy',
       statements: [
         new iam.PolicyStatement({
           resources: ['*'],
@@ -974,10 +973,9 @@ export class Project extends ProjectBase {
     this.role.attachInlinePolicy(policy);
 
     // add an explicit dependency between the EC2 Policy and this Project -
-    // otherwise, creating the Project fails,
-    // as it requires these permissions to be already attached to the Project's Role
-    const cfnPolicy = policy.node.findChild('Resource') as CfnResource;
-    project.addDependsOn(cfnPolicy);
+    // otherwise, creating the Project fails, as it requires these permissions
+    // to be already attached to the Project's Role
+    project.node.addDependency(policy);
   }
 
   private validateCodePipelineSettings(artifacts: IArtifacts) {
@@ -998,7 +996,8 @@ export class Project extends ProjectBase {
 export enum ComputeType {
   SMALL = 'BUILD_GENERAL1_SMALL',
   MEDIUM = 'BUILD_GENERAL1_MEDIUM',
-  LARGE = 'BUILD_GENERAL1_LARGE'
+  LARGE = 'BUILD_GENERAL1_LARGE',
+  X2_LARGE = 'BUILD_GENERAL1_2XLARGE'
 }
 
 /**
@@ -1112,6 +1111,31 @@ export interface IBuildImage {
   runScriptBuildspec(entrypoint: string): BuildSpec;
 }
 
+class ArmBuildImage implements IBuildImage {
+  public readonly type = 'ARM_CONTAINER';
+  public readonly defaultComputeType = ComputeType.LARGE;
+  public readonly imagePullPrincipalType = ImagePullPrincipalType.CODEBUILD;
+  public readonly imageId: string;
+
+  constructor(imageId: string) {
+    this.imageId = imageId;
+  }
+
+  public validate(buildEnvironment: BuildEnvironment): string[] {
+    const ret = [];
+    if (buildEnvironment.computeType &&
+        buildEnvironment.computeType !== ComputeType.LARGE) {
+      ret.push(`ARM images only support ComputeType '${ComputeType.LARGE}' - ` +
+        `'${buildEnvironment.computeType}' was given`);
+    }
+    return ret;
+  }
+
+  public runScriptBuildspec(entrypoint: string): BuildSpec {
+    return runScriptLinuxBuildSpec(entrypoint);
+  }
+}
+
 /**
  * The options when creating a CodeBuild Docker build image
  * using {@link LinuxBuildImage.fromDockerRegistry}
@@ -1157,9 +1181,12 @@ export class LinuxBuildImage implements IBuildImage {
   public static readonly STANDARD_1_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/standard:1.0');
   public static readonly STANDARD_2_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/standard:2.0');
   public static readonly STANDARD_3_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/standard:3.0');
+
   public static readonly AMAZON_LINUX_2 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:1.0');
   public static readonly AMAZON_LINUX_2_2 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:2.0');
-  public static readonly AMAZON_LINUX_2_ARM = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-aarch64-standard:1.0');
+
+  public static readonly AMAZON_LINUX_2_ARM: IBuildImage = new ArmBuildImage('aws/codebuild/amazonlinux2-aarch64-standard:1.0');
+
   /** @deprecated Use {@link STANDARD_2_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_BASE = LinuxBuildImage.codeBuildImage('aws/codebuild/ubuntu-base:14.04');
   /** @deprecated Use {@link STANDARD_2_0} and specify runtime in buildspec runtime-versions section */
@@ -1289,32 +1316,36 @@ export class LinuxBuildImage implements IBuildImage {
   }
 
   public runScriptBuildspec(entrypoint: string): BuildSpec {
-    return BuildSpec.fromObject({
-      version: '0.2',
-      phases: {
-        pre_build: {
-          commands: [
-            // Better echo the location here; if this fails, the error message only contains
-            // the unexpanded variables by default. It might fail if you're running an old
-            // definition of the CodeBuild project--the permissions will have been changed
-            // to only allow downloading the very latest version.
-            `echo "Downloading scripts from s3://\${${S3_BUCKET_ENV}}/\${${S3_KEY_ENV}}"`,
-            `aws s3 cp s3://\${${S3_BUCKET_ENV}}/\${${S3_KEY_ENV}} /tmp`,
-            `mkdir -p /tmp/scriptdir`,
-            `unzip /tmp/$(basename \$${S3_KEY_ENV}) -d /tmp/scriptdir`,
-          ]
-        },
-        build: {
-          commands: [
-            'export SCRIPT_DIR=/tmp/scriptdir',
-            `echo "Running ${entrypoint}"`,
-            `chmod +x /tmp/scriptdir/${entrypoint}`,
-            `/tmp/scriptdir/${entrypoint}`,
-          ]
-        }
-      }
-    });
+    return runScriptLinuxBuildSpec(entrypoint);
   }
+}
+
+function runScriptLinuxBuildSpec(entrypoint: string) {
+  return BuildSpec.fromObject({
+    version: '0.2',
+    phases: {
+      pre_build: {
+        commands: [
+          // Better echo the location here; if this fails, the error message only contains
+          // the unexpanded variables by default. It might fail if you're running an old
+          // definition of the CodeBuild project--the permissions will have been changed
+          // to only allow downloading the very latest version.
+          `echo "Downloading scripts from s3://\${${S3_BUCKET_ENV}}/\${${S3_KEY_ENV}}"`,
+          `aws s3 cp s3://\${${S3_BUCKET_ENV}}/\${${S3_KEY_ENV}} /tmp`,
+          `mkdir -p /tmp/scriptdir`,
+          `unzip /tmp/$(basename \$${S3_KEY_ENV}) -d /tmp/scriptdir`,
+        ]
+      },
+      build: {
+        commands: [
+          'export SCRIPT_DIR=/tmp/scriptdir',
+          `echo "Running ${entrypoint}"`,
+          `chmod +x /tmp/scriptdir/${entrypoint}`,
+          `/tmp/scriptdir/${entrypoint}`,
+        ]
+      }
+    }
+  });
 }
 
 /**
@@ -1460,5 +1491,10 @@ export enum BuildEnvironmentVariableType {
   /**
    * An environment variable stored in Systems Manager Parameter Store.
    */
-  PARAMETER_STORE = 'PARAMETER_STORE'
+  PARAMETER_STORE = 'PARAMETER_STORE',
+
+  /**
+   * An environment variable stored in AWS Secrets Manager.
+   */
+  SECRETS_MANAGER = 'SECRETS_MANAGER'
 }

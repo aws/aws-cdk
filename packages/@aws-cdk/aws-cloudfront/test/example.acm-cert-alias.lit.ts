@@ -1,7 +1,7 @@
-import certificatemanager = require('@aws-cdk/aws-certificatemanager');
-import s3 = require('@aws-cdk/aws-s3');
+import * as certificatemanager from '@aws-cdk/aws-certificatemanager';
+import * as s3 from '@aws-cdk/aws-s3';
 import { App, Construct, Stack } from '@aws-cdk/core';
-import cloudfront = require('../lib');
+import * as cloudfront from '../lib';
 
 class AcmCertificateAliasStack extends Stack {
   constructor(scope: Construct, id: string) {

@@ -1,10 +1,9 @@
 import { expect, haveResource, MatchStyle } from '@aws-cdk/assert';
-import acm = require('@aws-cdk/aws-certificatemanager');
-import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/core');
+import * as acm from '@aws-cdk/aws-certificatemanager';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import elbv2 = require('../../lib');
-import { ListenerCertificate } from '../../lib';
+import * as elbv2 from '../../lib';
 import { FakeSelfRegisteringTarget } from '../helpers';
 
 export = {
@@ -156,7 +155,7 @@ export = {
     lb.addListener('Listener', {
       port: 443,
       protocol: elbv2.Protocol.TLS,
-      certificates: [ ListenerCertificate.fromCertificateManager(cert) ],
+      certificates: [ elbv2.ListenerCertificate.fromCertificateManager(cert) ],
       sslPolicy: elbv2.SslPolicy.TLS12,
       defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })]
     });

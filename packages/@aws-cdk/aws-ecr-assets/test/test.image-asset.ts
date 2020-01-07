@@ -1,10 +1,10 @@
 import { expect, haveResource, SynthUtils } from '@aws-cdk/assert';
-import iam = require('@aws-cdk/aws-iam');
+import * as iam from '@aws-cdk/aws-iam';
 import { App, Construct, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { ASSET_METADATA } from '@aws-cdk/cx-api';
-import fs = require('fs');
+import * as fs from 'fs';
 import { Test } from 'nodeunit';
-import path = require('path');
+import * as path from 'path';
 import { DockerImageAsset } from '../lib';
 
 // tslint:disable:object-literal-key-quotes
@@ -84,6 +84,23 @@ export = {
     // THEN
     const assetMetadata = stack.node.metadata.find(({ type }) => type === ASSET_METADATA);
     test.deepEqual(assetMetadata && assetMetadata.data.target, 'a-target');
+    test.done();
+  },
+
+  'with file'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    const directoryPath = path.join(__dirname, 'demo-image-custom-docker-file');
+    // WHEN
+    new DockerImageAsset(stack, 'Image', {
+      directory: directoryPath,
+      file: 'Dockerfile.Custom'
+    });
+
+    // THEN
+    const assetMetadata = stack.node.metadata.find(({ type }) => type === ASSET_METADATA);
+    test.deepEqual(assetMetadata && assetMetadata.data.file, path.join(directoryPath, 'Dockerfile.Custom'));
     test.done();
   },
 
@@ -211,7 +228,21 @@ export = {
       new DockerImageAsset(stack, 'Asset', {
         directory: __dirname
       });
-    }, /No 'Dockerfile' found in/);
+    }, /Cannot find file at/);
+    test.done();
+  },
+
+  'fails if the file does not exist'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // THEN
+    test.throws(() => {
+      new DockerImageAsset(stack, 'Asset', {
+        directory: __dirname,
+        file: 'doesnt-exist'
+      });
+    }, /Cannot find file at/);
     test.done();
   },
 

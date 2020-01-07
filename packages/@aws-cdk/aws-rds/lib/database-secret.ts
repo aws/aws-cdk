@@ -1,5 +1,5 @@
-import kms = require('@aws-cdk/aws-kms');
-import secretsmanager = require('@aws-cdk/aws-secretsmanager');
+import * as kms from '@aws-cdk/aws-kms';
+import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { Construct } from '@aws-cdk/core';
 
 /**

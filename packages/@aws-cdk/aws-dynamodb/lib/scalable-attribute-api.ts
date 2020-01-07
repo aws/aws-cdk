@@ -1,4 +1,4 @@
-import appscaling = require('@aws-cdk/aws-applicationautoscaling');
+import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 
 /**
  * Interface for scalable attributes

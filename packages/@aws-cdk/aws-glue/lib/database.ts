@@ -1,4 +1,4 @@
-import s3 = require('@aws-cdk/aws-s3');
+import * as s3 from '@aws-cdk/aws-s3';
 import { Construct, IResource, Resource, Stack } from '@aws-cdk/core';
 import { CfnDatabase } from './glue.generated';
 

@@ -1,5 +1,5 @@
-import cdk = require('@aws-cdk/core');
-import ec2 = require('../lib');
+import * as cdk from '@aws-cdk/core';
+import * as ec2 from '../lib';
 
 class NatInstanceStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {

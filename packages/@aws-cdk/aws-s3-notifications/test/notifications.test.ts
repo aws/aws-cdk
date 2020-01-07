@@ -1,10 +1,9 @@
 import { SynthUtils } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
-import s3 = require('@aws-cdk/aws-s3');
-import sns = require('@aws-cdk/aws-sns');
-import cdk = require('@aws-cdk/core');
-import { ConstructNode, Stack } from '@aws-cdk/core';
-import s3n = require('../lib');
+import * as s3 from '@aws-cdk/aws-s3';
+import * as sns from '@aws-cdk/aws-sns';
+import * as cdk from '@aws-cdk/core';
+import * as s3n from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 // tslint:disable:max-line-length
@@ -277,7 +276,7 @@ test('prefix/suffix filters', () => {
 });
 
 test('a notification destination can specify a set of dependencies that must be resolved before the notifications resource is created', () => {
-  const stack = new Stack();
+  const stack = new cdk.Stack();
 
   const bucket = new s3.Bucket(stack, 'Bucket');
   const dependent = new cdk.CfnResource(stack, 'Dependent', { type: 'DependOnMe' });
@@ -291,7 +290,7 @@ test('a notification destination can specify a set of dependencies that must be 
 
   bucket.addObjectCreatedNotification(dest);
 
-  ConstructNode.prepare(stack.node);
+  cdk.ConstructNode.prepare(stack.node);
 
   expect(SynthUtils.synthesize(stack).template.Resources.BucketNotifications8F2E257D).toEqual({
     Type: 'Custom::S3BucketNotifications',

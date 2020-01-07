@@ -1,4 +1,4 @@
-import yargs = require('yargs');
+import * as yargs from 'yargs';
 import { shell } from '../lib/os';
 import { packageCompiler } from '../lib/package-info';
 

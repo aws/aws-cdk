@@ -1,7 +1,7 @@
 import '@aws-cdk/assert/jest';
-import sfn = require('@aws-cdk/aws-stepfunctions');
+import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Stack } from '@aws-cdk/core';
-import tasks = require('../lib');
+import * as tasks from '../lib';
 
 test('Activity can be used in a Task', () => {
   // GIVEN

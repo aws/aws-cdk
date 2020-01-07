@@ -1,6 +1,6 @@
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import ec2 = require('../lib');
+import * as ec2 from '../lib';
 
 export = {
   'NetworkAclEntry CidrBlock should be optional'(test: Test) {

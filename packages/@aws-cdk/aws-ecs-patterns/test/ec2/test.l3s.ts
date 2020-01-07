@@ -1,14 +1,13 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import { Certificate } from '@aws-cdk/aws-certificatemanager';
-import ec2 = require('@aws-cdk/aws-ec2');
-import ecs = require('@aws-cdk/aws-ecs');
-import { AwsLogDriver } from '@aws-cdk/aws-ecs';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as ecs from '@aws-cdk/aws-ecs';
 import { ApplicationProtocol } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { PublicHostedZone } from '@aws-cdk/aws-route53';
-import cloudmap = require('@aws-cdk/aws-servicediscovery');
-import cdk = require('@aws-cdk/core');
+import * as cloudmap from '@aws-cdk/aws-servicediscovery';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import ecsPatterns = require('../../lib');
+import * as ecsPatterns from '../../lib';
 
 export = {
   'test ECS loadbalanced construct'(test: Test) {
@@ -385,7 +384,8 @@ export = {
 
     test.done();
   },
-  'test Fargateloadbalanced construct with TLS'(test: Test) {
+
+  'test Fargate loadbalanced construct with TLS'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -585,7 +585,7 @@ export = {
           TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
           TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
         },
-        logDriver: new AwsLogDriver({
+        logDriver: new ecs.AwsLogDriver({
           streamPrefix: "TestStream"
         }),
       },
@@ -620,6 +620,7 @@ export = {
 
     test.done();
   },
+
   'test Fargate loadbalanced construct with logging enabled'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -668,6 +669,7 @@ export = {
 
     test.done();
   },
+
   'test Fargate loadbalanced construct with both image and taskDefinition provided'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -697,6 +699,7 @@ export = {
 
     test.done();
   },
+
   'test Fargate application loadbalanced construct with taskDefinition provided'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();

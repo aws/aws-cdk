@@ -1,10 +1,10 @@
-import ec2 = require('@aws-cdk/aws-ec2');
-import ecr = require('@aws-cdk/aws-ecr');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as ecr from '@aws-cdk/aws-ecr';
 import { DockerImageAsset, DockerImageAssetProps } from '@aws-cdk/aws-ecr-assets';
-import iam = require('@aws-cdk/aws-iam');
-import kms = require('@aws-cdk/aws-kms');
-import s3 = require('@aws-cdk/aws-s3');
-import sfn = require('@aws-cdk/aws-stepfunctions');
+import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
+import * as s3 from '@aws-cdk/aws-s3';
+import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Construct, Duration } from '@aws-cdk/core';
 
 export interface ISageMakerTask extends sfn.IStepFunctionsTask, iam.IGrantable {}

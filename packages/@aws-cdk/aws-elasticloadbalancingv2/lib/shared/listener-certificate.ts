@@ -1,4 +1,4 @@
-import acm = require('@aws-cdk/aws-certificatemanager');
+import * as acm from '@aws-cdk/aws-certificatemanager';
 
 /**
  * A certificate source for an ELBv2 listener

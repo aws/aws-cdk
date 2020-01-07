@@ -1,8 +1,8 @@
-import assets = require('@aws-cdk/assets');
-import ecr = require('@aws-cdk/aws-ecr');
+import * as assets from '@aws-cdk/assets';
+import * as ecr from '@aws-cdk/aws-ecr';
 import { Construct, Stack, Token } from '@aws-cdk/core';
-import fs = require('fs');
-import path = require('path');
+import * as fs from 'fs';
+import * as path from 'path';
 import { AdoptedRepository } from './adopted-repository';
 
 export interface DockerImageAssetProps extends assets.CopyOptions {
@@ -39,6 +39,13 @@ export interface DockerImageAssetProps extends assets.CopyOptions {
    * @default - no target
    */
   readonly target?: string;
+
+  /**
+   * Path to the Dockerfile (relative to the directory).
+   *
+   * @default 'Dockerfile'
+   */
+  readonly file?: string;
 }
 
 /**
@@ -71,8 +78,11 @@ export class DockerImageAsset extends Construct implements assets.IAsset {
     if (!fs.existsSync(dir)) {
       throw new Error(`Cannot find image directory at ${dir}`);
     }
-    if (!fs.existsSync(path.join(dir, 'Dockerfile'))) {
-      throw new Error(`No 'Dockerfile' found in ${dir}`);
+
+    // validate the docker file exists
+    const file = path.join(dir, props.file || 'Dockerfile');
+    if (!fs.existsSync(file)) {
+      throw new Error(`Cannot find file at ${file}`);
     }
 
     let exclude: string[] = props.exclude || [];
@@ -96,6 +106,7 @@ export class DockerImageAsset extends Construct implements assets.IAsset {
       directoryName: staging.stagedPath,
       dockerBuildArgs: props.buildArgs,
       dockerBuildTarget: props.target,
+      dockerFile: file,
       repositoryName: props.repositoryName || `cdk/${this.node.uniqueId.replace(/[:/]/g, '-').toLowerCase()}`,
       sourceHash: staging.sourceHash
     });

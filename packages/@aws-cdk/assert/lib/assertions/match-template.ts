@@ -1,4 +1,4 @@
-import cfnDiff = require('@aws-cdk/cloudformation-diff');
+import * as cfnDiff from '@aws-cdk/cloudformation-diff';
 import { Assertion } from '../assertion';
 import { StackInspector } from '../inspector';
 

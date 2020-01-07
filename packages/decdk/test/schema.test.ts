@@ -1,6 +1,6 @@
 import { spawn as spawnAsync, SpawnOptions } from 'child_process';
-import reflect = require('jsii-reflect');
-import path = require('path');
+import * as reflect from 'jsii-reflect';
+import * as path from 'path';
 import { SchemaContext, schemaForInterface } from '../lib/jsii2schema';
 
 const fixturedir = path.join(__dirname, 'fixture');

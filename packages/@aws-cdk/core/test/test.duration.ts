@@ -1,4 +1,4 @@
-import nodeunit = require('nodeunit');
+import * as nodeunit from 'nodeunit';
 import { Duration, Stack, Token } from '../lib';
 
 export = nodeunit.testCase({

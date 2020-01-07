@@ -1,4 +1,4 @@
-import iam = require('@aws-cdk/aws-iam');
+import * as iam from '@aws-cdk/aws-iam';
 import { Construct, Lazy, Stack } from '@aws-cdk/core';
 import { Mapping } from './aws-auth-mapping';
 import { Cluster } from './cluster';
@@ -95,7 +95,7 @@ export class AwsAuth extends Construct {
     return Lazy.anyValue({
       produce: () => this.stack.toJsonString(this.roleMappings.map(m => ({
         rolearn: m.role.roleArn,
-        username: m.mapping.username,
+        username: m.mapping.username ?? m.role.roleArn,
         groups: m.mapping.groups
       })))
     });
@@ -105,7 +105,7 @@ export class AwsAuth extends Construct {
     return Lazy.anyValue({
       produce: () => this.stack.toJsonString(this.userMappings.map(m => ({
         userarn: m.user.userArn,
-        username: m.mapping.username,
+        username: m.mapping.username ?? m.user.userArn,
         groups: m.mapping.groups
       })))
     });

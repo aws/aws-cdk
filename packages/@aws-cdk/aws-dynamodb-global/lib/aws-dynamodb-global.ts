@@ -1,5 +1,5 @@
-import dynamodb = require("@aws-cdk/aws-dynamodb");
-import cdk = require("@aws-cdk/core");
+import * as dynamodb from '@aws-cdk/aws-dynamodb';
+import * as cdk from '@aws-cdk/core';
 import { GlobalTableCoordinator } from "./global-table-coordinator";
 
 /**

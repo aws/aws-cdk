@@ -1,4 +1,4 @@
-import codepipeline = require('@aws-cdk/aws-codepipeline');
+import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import { Construct } from '@aws-cdk/core';
 import { Action } from '../action';
 import { IJenkinsProvider, jenkinsArtifactsBounds } from "./jenkins-provider";

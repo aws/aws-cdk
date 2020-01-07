@@ -1,5 +1,4 @@
-import cdk = require('@aws-cdk/core');
-import { Stack } from '@aws-cdk/core';
+import * as cdk from '@aws-cdk/core';
 import { BucketAttributes } from './bucket';
 
 export function parseBucketArn(construct: cdk.IConstruct, props: BucketAttributes): string {
@@ -10,7 +9,7 @@ export function parseBucketArn(construct: cdk.IConstruct, props: BucketAttribute
   }
 
   if (props.bucketName) {
-    return Stack.of(construct).formatArn({
+    return cdk.Stack.of(construct).formatArn({
       // S3 Bucket names are globally unique in a partition,
       // and so their ARNs have empty region and account components
       region: '',
@@ -32,7 +31,7 @@ export function parseBucketName(construct: cdk.IConstruct, props: BucketAttribut
 
   // extract bucket name from bucket arn
   if (props.bucketArn) {
-    return Stack.of(construct).parseArn(props.bucketArn).resource;
+    return cdk.Stack.of(construct).parseArn(props.bucketArn).resource;
   }
 
   // no bucket name is okay since it's optional.

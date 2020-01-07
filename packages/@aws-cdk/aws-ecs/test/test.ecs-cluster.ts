@@ -1,10 +1,9 @@
 import { countResources, expect, haveResource } from '@aws-cdk/assert';
-import ec2 = require('@aws-cdk/aws-ec2');
-import { InstanceType } from '@aws-cdk/aws-ec2';
-import cloudmap = require('@aws-cdk/aws-servicediscovery');
-import cdk = require('@aws-cdk/core');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as cloudmap from '@aws-cdk/aws-servicediscovery';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import ecs = require('../lib');
+import * as ecs from '../lib';
 
 export = {
   "When creating an ECS Cluster": {
@@ -68,7 +67,6 @@ export = {
       expect(stack).to(haveResource("AWS::AutoScaling::AutoScalingGroup", {
         MaxSize: "1",
         MinSize: "1",
-        DesiredCapacity: "1",
         LaunchConfigurationName: {
           Ref: "EcsClusterDefaultAutoScalingGroupLaunchConfigB7E376C1"
         },
@@ -214,7 +212,6 @@ export = {
       expect(stack).to(haveResource("AWS::AutoScaling::AutoScalingGroup", {
         MaxSize: "1",
         MinSize: "1",
-        DesiredCapacity: "1",
         LaunchConfigurationName: {
           Ref: "EcsClusterDefaultAutoScalingGroupLaunchConfigB7E376C1"
         },
@@ -515,7 +512,6 @@ export = {
       expect(stack).to(haveResource("AWS::AutoScaling::AutoScalingGroup", {
         MaxSize: "1",
         MinSize: "1",
-        DesiredCapacity: "1",
         LaunchConfigurationName: {
           Ref: "EcsClusterDefaultAutoScalingGroupLaunchConfigB7E376C1"
         },
@@ -606,7 +602,7 @@ export = {
 
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
     cluster.addCapacity('DefaultAutoScalingGroup', {
-      instanceType: new InstanceType("m3.large")
+      instanceType: new ec2.InstanceType("m3.large")
     });
 
     // THEN
@@ -1274,7 +1270,6 @@ export = {
     expect(stack).to(haveResource("AWS::AutoScaling::AutoScalingGroup", {
       MaxSize: "1",
       MinSize: "1",
-      DesiredCapacity: "1",
       LaunchConfigurationName: {
         Ref: "EcsClusterDefaultAutoScalingGroupLaunchConfigB7E376C1"
       },

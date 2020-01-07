@@ -1,9 +1,9 @@
-import lambda = require('@aws-cdk/aws-lambda');
-import sns = require('@aws-cdk/aws-sns');
-import sns_subscriptions = require('@aws-cdk/aws-sns-subscriptions');
-import sqs = require('@aws-cdk/aws-sqs');
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as sns from '@aws-cdk/aws-sns';
+import * as sns_subscriptions from '@aws-cdk/aws-sns-subscriptions';
+import * as sqs from '@aws-cdk/aws-sqs';
 import { App, CfnParameter, Construct, Stack } from '@aws-cdk/core';
-import cfn = require('../lib');
+import * as cfn from '../lib';
 
 interface MyNestedStackProps {
   readonly subscriber?: sqs.Queue;

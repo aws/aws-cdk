@@ -1,7 +1,7 @@
-import sqs = require('@aws-cdk/aws-sqs');
-import sfn = require('@aws-cdk/aws-stepfunctions');
-import cdk = require('@aws-cdk/core');
-import tasks = require('../lib');
+import * as sqs from '@aws-cdk/aws-sqs';
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+import * as cdk from '@aws-cdk/core';
+import * as tasks from '../lib';
 
 let stack: cdk.Stack;
 let queue: sqs.Queue;

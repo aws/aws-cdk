@@ -1,5 +1,5 @@
-import cfnspec = require('@aws-cdk/cfnspec');
-import types = require('./types');
+import * as cfnspec from '@aws-cdk/cfnspec';
+import * as types from './types';
 import { deepEqual, diffKeyedEntities } from './util';
 
 export function diffAttribute(oldValue: any, newValue: any): types.Difference<string> {

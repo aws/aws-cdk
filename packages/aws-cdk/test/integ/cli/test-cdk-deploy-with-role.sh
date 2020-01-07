@@ -42,15 +42,17 @@ aws iam put-role-policy \
         }]
     }')
 
-for i in $(seq 1 10); do
+# 5 minutes
+attempts=60
+for i in $(seq 1 $attempts); do
     if aws sts assume-role --role-arn ${role_arn} --role-session-name testing >/dev/null; then
         echo "Successfully assumed newly created role"
         break;
-    elif [ $i -lt 10 ]; then
+    elif [ $i -lt $attempts ]; then
         echo "Sleeping 5 seconds to improve chances of the role having propagated"
         sleep 5
     else
-        echo "Failed to assume role after 10 attempts, exiting."
+        echo "Failed to assume role after $attempts attempts, exiting."
         exit 1
     fi
 done

@@ -1,6 +1,6 @@
-import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/core');
-import ec2 = require('../lib');
+import * as iam from '@aws-cdk/aws-iam';
+import * as cdk from '@aws-cdk/core';
+import * as ec2 from '../lib';
 
 const app = new cdk.App();
 
@@ -32,13 +32,13 @@ class VpcEndpointStack extends cdk.Stack {
     }));
 
     // Add an interface endpoint
-    const ecrDockerEndpoint = vpc.addInterfaceEndpoint('EcrDockerEndpoint', {
-      service: ec2.InterfaceVpcEndpointAwsService.ECR_DOCKER
-    });
+    vpc.addInterfaceEndpoint('EcrDockerEndpoint', {
+      service: ec2.InterfaceVpcEndpointAwsService.ECR_DOCKER,
 
-    // When working with an interface endpoint, use the connections object to
-    // allow traffic to flow to the endpoint.
-    ecrDockerEndpoint.connections.allowDefaultPortFromAnyIpv4();
+      // Uncomment the following to allow more fine-grained control over
+      // who can access the endpoint via the '.connections' object.
+      // open: false
+    });
     /// !hide
   }
 }
