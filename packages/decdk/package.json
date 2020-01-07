@@ -158,18 +158,19 @@
     "@aws-cdk/cx-api": "1.19.0",
     "@aws-cdk/region-info": "1.19.0",
     "fs-extra": "^8.1.0",
-    "jsii-reflect": "^0.20.11",
+    "jsii-reflect": "^0.21.1",
     "jsonschema": "^1.2.5",
     "yaml": "1.7.2",
-    "yargs": "^15.0.1"
+    "yargs": "^15.1.0",
+    "@aws-cdk/aws-eks-legacy": "1.19.0"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.0.1",
-    "@types/jest": "^24.0.24",
+    "@types/jest": "^24.0.25",
     "@types/yaml": "1.2.0",
     "@types/yargs": "^13.0.4",
     "jest": "^24.9.0",
-    "jsii": "^0.20.11"
+    "jsii": "^0.21.1"
   },
   "keywords": [
     "aws",

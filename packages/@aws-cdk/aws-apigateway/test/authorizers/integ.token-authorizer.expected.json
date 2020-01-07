@@ -1,0 +1,311 @@
+{
+  "Resources": {
+    "MyAuthorizerFunctionServiceRole8A34C19E": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "MyAuthorizerFunction70F1223E": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParameters6695c4a3dad80ddeef2797a1729306b7c136d67ce21d2187fdbc7bbad009993aS3Bucket115F9EA4"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters6695c4a3dad80ddeef2797a1729306b7c136d67ce21d2187fdbc7bbad009993aS3VersionKey1039487E"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters6695c4a3dad80ddeef2797a1729306b7c136d67ce21d2187fdbc7bbad009993aS3VersionKey1039487E"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Handler": "index.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "MyAuthorizerFunctionServiceRole8A34C19E",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs10.x"
+      },
+      "DependsOn": [
+        "MyAuthorizerFunctionServiceRole8A34C19E"
+      ]
+    },
+    "MyRestApi2D1F47A9": {
+      "Type": "AWS::ApiGateway::RestApi",
+      "Properties": {
+        "Name": "MyRestApi"
+      }
+    },
+    "MyRestApiDeploymentB555B5828fad37a0e56bbac79ae37ae990881dca": {
+      "Type": "AWS::ApiGateway::Deployment",
+      "Properties": {
+        "RestApiId": {
+          "Ref": "MyRestApi2D1F47A9"
+        },
+        "Description": "Automatically created by the RestApi construct"
+      },
+      "DependsOn": [
+        "MyRestApiANY05143F93"
+      ]
+    },
+    "MyRestApiDeploymentStageprodC33B8E5F": {
+      "Type": "AWS::ApiGateway::Stage",
+      "Properties": {
+        "RestApiId": {
+          "Ref": "MyRestApi2D1F47A9"
+        },
+        "DeploymentId": {
+          "Ref": "MyRestApiDeploymentB555B5828fad37a0e56bbac79ae37ae990881dca"
+        },
+        "StageName": "prod"
+      }
+    },
+    "MyRestApiCloudWatchRoleD4042E8E": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "apigateway.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "MyRestApiAccount2FB6DB7A": {
+      "Type": "AWS::ApiGateway::Account",
+      "Properties": {
+        "CloudWatchRoleArn": {
+          "Fn::GetAtt": [
+            "MyRestApiCloudWatchRoleD4042E8E",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "MyRestApi2D1F47A9"
+      ]
+    },
+    "MyRestApiANY05143F93": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "ANY",
+        "ResourceId": {
+          "Fn::GetAtt": [
+            "MyRestApi2D1F47A9",
+            "RootResourceId"
+          ]
+        },
+        "RestApiId": {
+          "Ref": "MyRestApi2D1F47A9"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "MyAuthorizer6575980E"
+        },
+        "Integration": {
+          "IntegrationResponses": [
+            {
+              "StatusCode": "200"
+            }
+          ],
+          "PassthroughBehavior": "NEVER",
+          "RequestTemplates": {
+            "application/json": "{ \"statusCode\": 200 }"
+          },
+          "Type": "MOCK"
+        },
+        "MethodResponses": [
+          {
+            "StatusCode": "200"
+          }
+        ]
+      }
+    },
+    "MyAuthorizer6575980E": {
+      "Type": "AWS::ApiGateway::Authorizer",
+      "Properties": {
+        "RestApiId": {
+          "Ref": "MyRestApi2D1F47A9"
+        },
+        "Type": "TOKEN",
+        "AuthorizerUri": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:aws:apigateway:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":lambda:path/2015-03-31/functions/",
+              {
+                "Fn::GetAtt": [
+                  "MyAuthorizerFunction70F1223E",
+                  "Arn"
+                ]
+              },
+              "/invocations"
+            ]
+          ]
+        },
+        "IdentitySource": "method.request.header.Authorization"
+      }
+    },
+    "MyAuthorizerFunctionTokenAuthorizerIntegMyAuthorizer793B1D5FPermissions7557AE26": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "MyAuthorizerFunction70F1223E",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "MyRestApi2D1F47A9"
+              },
+              "/authorizers/",
+              {
+                "Ref": "MyAuthorizer6575980E"
+              }
+            ]
+          ]
+        }
+      }
+    }
+  },
+  "Parameters": {
+    "AssetParameters6695c4a3dad80ddeef2797a1729306b7c136d67ce21d2187fdbc7bbad009993aS3Bucket115F9EA4": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"6695c4a3dad80ddeef2797a1729306b7c136d67ce21d2187fdbc7bbad009993a\""
+    },
+    "AssetParameters6695c4a3dad80ddeef2797a1729306b7c136d67ce21d2187fdbc7bbad009993aS3VersionKey1039487E": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"6695c4a3dad80ddeef2797a1729306b7c136d67ce21d2187fdbc7bbad009993a\""
+    },
+    "AssetParameters6695c4a3dad80ddeef2797a1729306b7c136d67ce21d2187fdbc7bbad009993aArtifactHash1A0BBA4E": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"6695c4a3dad80ddeef2797a1729306b7c136d67ce21d2187fdbc7bbad009993a\""
+    }
+  },
+  "Outputs": {
+    "MyRestApiEndpoint4C55E4CB": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://",
+            {
+              "Ref": "MyRestApi2D1F47A9"
+            },
+            ".execute-api.",
+            {
+              "Ref": "AWS::Region"
+            },
+            ".",
+            {
+              "Ref": "AWS::URLSuffix"
+            },
+            "/",
+            {
+              "Ref": "MyRestApiDeploymentStageprodC33B8E5F"
+            },
+            "/"
+          ]
+        ]
+      }
+    }
+  }
+}

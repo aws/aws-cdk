@@ -322,7 +322,7 @@ abstract class ProjectBase extends Resource implements IProject {
       metricName,
       dimensions: { ProjectName: this.projectName },
       ...props
-    });
+    }).attachTo(this);
   }
 
   /**
@@ -1111,6 +1111,31 @@ export interface IBuildImage {
   runScriptBuildspec(entrypoint: string): BuildSpec;
 }
 
+class ArmBuildImage implements IBuildImage {
+  public readonly type = 'ARM_CONTAINER';
+  public readonly defaultComputeType = ComputeType.LARGE;
+  public readonly imagePullPrincipalType = ImagePullPrincipalType.CODEBUILD;
+  public readonly imageId: string;
+
+  constructor(imageId: string) {
+    this.imageId = imageId;
+  }
+
+  public validate(buildEnvironment: BuildEnvironment): string[] {
+    const ret = [];
+    if (buildEnvironment.computeType &&
+        buildEnvironment.computeType !== ComputeType.LARGE) {
+      ret.push(`ARM images only support ComputeType '${ComputeType.LARGE}' - ` +
+        `'${buildEnvironment.computeType}' was given`);
+    }
+    return ret;
+  }
+
+  public runScriptBuildspec(entrypoint: string): BuildSpec {
+    return runScriptLinuxBuildSpec(entrypoint);
+  }
+}
+
 /**
  * The options when creating a CodeBuild Docker build image
  * using {@link LinuxBuildImage.fromDockerRegistry}
@@ -1156,9 +1181,12 @@ export class LinuxBuildImage implements IBuildImage {
   public static readonly STANDARD_1_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/standard:1.0');
   public static readonly STANDARD_2_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/standard:2.0');
   public static readonly STANDARD_3_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/standard:3.0');
+
   public static readonly AMAZON_LINUX_2 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:1.0');
   public static readonly AMAZON_LINUX_2_2 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:2.0');
-  public static readonly AMAZON_LINUX_2_ARM = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-aarch64-standard:1.0');
+
+  public static readonly AMAZON_LINUX_2_ARM: IBuildImage = new ArmBuildImage('aws/codebuild/amazonlinux2-aarch64-standard:1.0');
+
   /** @deprecated Use {@link STANDARD_2_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_BASE = LinuxBuildImage.codeBuildImage('aws/codebuild/ubuntu-base:14.04');
   /** @deprecated Use {@link STANDARD_2_0} and specify runtime in buildspec runtime-versions section */
@@ -1288,32 +1316,36 @@ export class LinuxBuildImage implements IBuildImage {
   }
 
   public runScriptBuildspec(entrypoint: string): BuildSpec {
-    return BuildSpec.fromObject({
-      version: '0.2',
-      phases: {
-        pre_build: {
-          commands: [
-            // Better echo the location here; if this fails, the error message only contains
-            // the unexpanded variables by default. It might fail if you're running an old
-            // definition of the CodeBuild project--the permissions will have been changed
-            // to only allow downloading the very latest version.
-            `echo "Downloading scripts from s3://\${${S3_BUCKET_ENV}}/\${${S3_KEY_ENV}}"`,
-            `aws s3 cp s3://\${${S3_BUCKET_ENV}}/\${${S3_KEY_ENV}} /tmp`,
-            `mkdir -p /tmp/scriptdir`,
-            `unzip /tmp/$(basename \$${S3_KEY_ENV}) -d /tmp/scriptdir`,
-          ]
-        },
-        build: {
-          commands: [
-            'export SCRIPT_DIR=/tmp/scriptdir',
-            `echo "Running ${entrypoint}"`,
-            `chmod +x /tmp/scriptdir/${entrypoint}`,
-            `/tmp/scriptdir/${entrypoint}`,
-          ]
-        }
-      }
-    });
+    return runScriptLinuxBuildSpec(entrypoint);
   }
+}
+
+function runScriptLinuxBuildSpec(entrypoint: string) {
+  return BuildSpec.fromObject({
+    version: '0.2',
+    phases: {
+      pre_build: {
+        commands: [
+          // Better echo the location here; if this fails, the error message only contains
+          // the unexpanded variables by default. It might fail if you're running an old
+          // definition of the CodeBuild project--the permissions will have been changed
+          // to only allow downloading the very latest version.
+          `echo "Downloading scripts from s3://\${${S3_BUCKET_ENV}}/\${${S3_KEY_ENV}}"`,
+          `aws s3 cp s3://\${${S3_BUCKET_ENV}}/\${${S3_KEY_ENV}} /tmp`,
+          `mkdir -p /tmp/scriptdir`,
+          `unzip /tmp/$(basename \$${S3_KEY_ENV}) -d /tmp/scriptdir`,
+        ]
+      },
+      build: {
+        commands: [
+          'export SCRIPT_DIR=/tmp/scriptdir',
+          `echo "Running ${entrypoint}"`,
+          `chmod +x /tmp/scriptdir/${entrypoint}`,
+          `/tmp/scriptdir/${entrypoint}`,
+        ]
+      }
+    }
+  });
 }
 
 /**

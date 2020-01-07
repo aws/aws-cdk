@@ -58,7 +58,7 @@ export interface PolicyProps {
   readonly statements?: PolicyStatement[];
 
   /**
-   * Whether an `AWS::IAM::Policy` must be created
+   * Force creation of an `AWS::IAM::Policy`
    *
    * Unless set to `true`, this `Policy` construct will not materialize to an
    * `AWS::IAM::Policy` CloudFormation resource in case it would have no effect
@@ -71,7 +71,7 @@ export interface PolicyProps {
    *
    * @default false
    */
-  readonly mustCreate?: boolean;
+  readonly force?: boolean;
 }
 
 /**
@@ -99,7 +99,7 @@ export class Policy extends Resource implements IPolicy {
   private readonly roles = new Array<IRole>();
   private readonly users = new Array<IUser>();
   private readonly groups = new Array<IGroup>();
-  private readonly mustCreate: boolean;
+  private readonly force: boolean;
   private referenceTaken = false;
 
   constructor(scope: Construct, id: string, props: PolicyProps = {}) {
@@ -120,7 +120,7 @@ export class Policy extends Resource implements IPolicy {
     });
 
     this._policyName = this.physicalName!;
-    this.mustCreate = props.mustCreate !== undefined ? props.mustCreate : false;
+    this.force = props.force !== undefined ? props.force : false;
 
     if (props.users) {
       props.users.forEach(u => this.attachToUser(u));
@@ -188,21 +188,21 @@ export class Policy extends Resource implements IPolicy {
 
     // validate that the policy document is not empty
     if (this.document.isEmpty) {
-      if (this.mustCreate) {
-        result.push('Policy created with mustCreate=true is empty. You must add statements to the policy');
+      if (this.force) {
+        result.push('Policy created with force=true is empty. You must add statements to the policy');
       }
-      if (!this.mustCreate && this.referenceTaken) {
-        result.push('Policy name has been read of empty policy. You must add statements to the policy so it can exist.');
+      if (!this.force && this.referenceTaken) {
+        result.push('This Policy has been referenced by a resource, so it must contain at least one statement.');
       }
     }
 
     // validate that the policy is attached to at least one principal (role, user or group).
     if (!this.isAttached) {
-      if (this.mustCreate) {
-        result.push(`Policy created with mustCreate=true must be attached to at least one principal: user, group or role`);
+      if (this.force) {
+        result.push(`Policy created with force=true must be attached to at least one principal: user, group or role`);
       }
-      if (!this.mustCreate && this.referenceTaken) {
-        result.push('Policy name has been read of unattached policy. Attach to at least one principal: user, group or role.');
+      if (!this.force && this.referenceTaken) {
+        result.push('This Policy has been referenced by a resource, so it must be attached to at least one user, group or role.');
       }
     }
 
@@ -211,8 +211,9 @@ export class Policy extends Resource implements IPolicy {
 
   protected prepare() {
     // Remove the resource if it shouldn't exist. This will prevent it from being rendered to the template.
-    if (!this.shouldExist) {
-      this.node.removeChild('Resource');
+    const shouldExist = this.force || this.referenceTaken || (!this.document.isEmpty && this.isAttached);
+    if (!shouldExist) {
+      this.node.tryRemoveChild('Resource');
     }
   }
 
@@ -221,12 +222,5 @@ export class Policy extends Resource implements IPolicy {
    */
   private get isAttached() {
     return this.groups.length + this.users.length + this.roles.length > 0;
-  }
-
-  /**
-   * Whether the policy resource should be created
-   */
-  private get shouldExist() {
-    return this.mustCreate || this.referenceTaken || (!this.document.isEmpty && this.isAttached);
   }
 }

@@ -441,10 +441,13 @@ export class ConstructNode {
   /**
    * Remove the child with the given name, if present.
    *
-   * It is not an error if a child with the given name does not exist.
+   * @returns Whether a child with the given name was deleted.
+   * @experimental
    */
-  public removeChild(childName: string) {
+  public tryRemoveChild(childName: string): boolean {
+    if (!(childName in this._children)) { return false; }
     delete this._children[childName];
+    return true;
   }
 
   /**

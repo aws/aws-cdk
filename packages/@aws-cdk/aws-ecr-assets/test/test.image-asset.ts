@@ -87,6 +87,23 @@ export = {
     test.done();
   },
 
+  'with file'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    const directoryPath = path.join(__dirname, 'demo-image-custom-docker-file');
+    // WHEN
+    new DockerImageAsset(stack, 'Image', {
+      directory: directoryPath,
+      file: 'Dockerfile.Custom'
+    });
+
+    // THEN
+    const assetMetadata = stack.node.metadata.find(({ type }) => type === ASSET_METADATA);
+    test.deepEqual(assetMetadata && assetMetadata.data.file, path.join(directoryPath, 'Dockerfile.Custom'));
+    test.done();
+  },
+
   'asset.repository.grantPull can be used to grant a principal permissions to use the image'(test: Test) {
     // GIVEN
     const stack = new Stack();
@@ -211,7 +228,21 @@ export = {
       new DockerImageAsset(stack, 'Asset', {
         directory: __dirname
       });
-    }, /No 'Dockerfile' found in/);
+    }, /Cannot find file at/);
+    test.done();
+  },
+
+  'fails if the file does not exist'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // THEN
+    test.throws(() => {
+      new DockerImageAsset(stack, 'Asset', {
+        directory: __dirname,
+        file: 'doesnt-exist'
+      });
+    }, /Cannot find file at/);
     test.done();
   },
 
