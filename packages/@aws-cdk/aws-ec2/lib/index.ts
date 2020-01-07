@@ -9,10 +9,12 @@ export * from './network-acl-types';
 export * from './port';
 export * from './security-group';
 export * from './peer';
+export * from './volume';
 export * from './vpc';
 export * from './vpc-lookup';
 export * from './vpn';
 export * from './vpc-endpoint';
+export * from './vpc-endpoint-service';
 export * from './user-data';
 export * from './windows-versions';
 

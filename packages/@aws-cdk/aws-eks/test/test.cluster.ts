@@ -55,7 +55,7 @@ export = {
 
       // THEN
       test.ok(cluster.defaultCapacity);
-      expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', { DesiredCapacity: '2' }));
+      expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', { MinSize: '2', MaxSize: '2' }));
       expect(stack).to(haveResource('AWS::AutoScaling::LaunchConfiguration', { InstanceType: 'm5.large' }));
       test.done();
     },
@@ -72,7 +72,7 @@ export = {
 
       // THEN
       test.ok(cluster.defaultCapacity);
-      expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', { DesiredCapacity: '10' }));
+      expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', { MinSize: '10', MaxSize: '10' }));
       expect(stack).to(haveResource('AWS::AutoScaling::LaunchConfiguration', { InstanceType: 'm2.xlarge' }));
       test.done();
     },
@@ -222,6 +222,13 @@ export = {
           "",
           [
             "[{\"apiVersion\":\"v1\",\"kind\":\"ConfigMap\",\"metadata\":{\"name\":\"aws-auth\",\"namespace\":\"kube-system\"},\"data\":{\"mapRoles\":\"[{\\\"rolearn\\\":\\\"",
+            {
+              "Fn::GetAtt": [
+                "roleC7B7E775",
+                "Arn"
+              ]
+            },
+            "\\\",\\\"username\\\":\\\"",
             {
               "Fn::GetAtt": [
                 "roleC7B7E775",
@@ -637,8 +644,8 @@ export = {
             Principal: {
               AWS: {
                 "Fn::GetAtt": [
-                  "awscdkawseksKubernetesResourceProviderNestedStackawscdkawseksKubernetesResourceProviderNestedStackResource1A5AAA66",
-                  "Outputs.StackawscdkawseksKubernetesResourceProviderHandlerServiceRole36007028Arn"
+                  "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B",
+                  "Outputs.StackawscdkawseksKubectlProviderHandlerServiceRole2C52B3ECArn"
                 ]
               }
             }
@@ -764,20 +771,8 @@ export = {
             Principal: {
               AWS: {
                 "Fn::GetAtt": [
-                  "awscdkawseksKubernetesResourceProviderNestedStackawscdkawseksKubernetesResourceProviderNestedStackResource1A5AAA66",
-                  "Outputs.StackawscdkawseksKubernetesResourceProviderHandlerServiceRole36007028Arn"
-                ]
-              }
-            }
-          },
-          {
-            Action: "sts:AssumeRole",
-            Effect: "Allow",
-            Principal: {
-              AWS: {
-                "Fn::GetAtt": [
-                  "awscdkawseksHelmResourceProviderNestedStackawscdkawseksHelmResourceProviderNestedStackResource5C12A9A9",
-                  "Outputs.StackawscdkawseksHelmResourceProviderHandlerServiceRole83B6C3CEArn"
+                  "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B",
+                  "Outputs.StackawscdkawseksKubectlProviderHandlerServiceRole2C52B3ECArn"
                 ]
               }
             }
