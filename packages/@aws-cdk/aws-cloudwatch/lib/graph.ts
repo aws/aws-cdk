@@ -1,7 +1,7 @@
 import * as cdk from '@aws-cdk/core';
 import { IAlarm } from "./alarm";
 import { IMetric } from "./metric-types";
-import { allMetricsGraphJson } from './metric-util';
+import { allMetricsGraphJson } from './private/rendering';
 import { ConcreteWidget } from "./widget";
 
 /**
