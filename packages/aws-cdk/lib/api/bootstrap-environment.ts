@@ -1,7 +1,7 @@
-import cxapi = require('@aws-cdk/cx-api');
-import fs = require('fs-extra');
-import os = require('os');
-import path = require('path');
+import * as cxapi from '@aws-cdk/cx-api';
+import * as fs from 'fs-extra';
+import * as os from 'os';
+import * as path from 'path';
 import {Tag} from "./cxapp/stacks";
 import { deployStack, DeployStackResult } from './deploy-stack';
 import { ISDK } from './util/sdk';

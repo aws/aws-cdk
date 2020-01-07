@@ -1,9 +1,9 @@
 // import { SynthUtils } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
-import lambda = require('@aws-cdk/aws-lambda');
-import s3 = require('@aws-cdk/aws-s3');
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as s3 from '@aws-cdk/aws-s3';
 import { Stack } from '@aws-cdk/core';
-import s3n = require('../../lib');
+import * as s3n from '../../lib';
 
 test('lambda as notification target', () => {
   // GIVEN
@@ -38,6 +38,33 @@ test('lambda as notification target', () => {
             }
           },
           LambdaFunctionArn: { "Fn::GetAtt": [ "MyFunction3BAA72D1", "Arn" ] }
+        }
+      ]
+    }
+  });
+});
+
+test('lambda as notification target specified by function arn', () => {
+  // GIVEN
+  const stack = new Stack();
+  const bucketA = new s3.Bucket(stack, 'MyBucket');
+  const fn = lambda.Function.fromFunctionArn(stack, 'MyFunction', 'arn:aws:lambda:us-east-1:123456789012:function:ProcessKinesisRecords');
+
+  // WHEN
+  bucketA.addObjectCreatedNotification(new s3n.LambdaDestination(fn), { suffix: '.png' });
+
+  // THEN
+  expect(stack).toHaveResource('Custom::S3BucketNotifications', {
+    NotificationConfiguration: {
+      LambdaFunctionConfigurations: [
+        {
+          Events: [ "s3:ObjectCreated:*" ],
+          Filter: {
+            Key: {
+              FilterRules: [ { Name: "suffix", Value: ".png" } ]
+            }
+          },
+          LambdaFunctionArn: "arn:aws:lambda:us-east-1:123456789012:function:ProcessKinesisRecords"
         }
       ]
     }

@@ -1,4 +1,4 @@
-import sns = require('@aws-cdk/aws-sns');
+import * as sns from '@aws-cdk/aws-sns';
 import { Aws, CfnOutput, CfnParameter, CfnResource, Construct, Duration, Fn, IResolvable, IResolveContext, Lazy, Reference, Stack, Token } from '@aws-cdk/core';
 import { CfnStack } from './cloudformation.generated';
 
@@ -122,8 +122,8 @@ export class NestedStack extends Stack {
    * - If this is referenced from the parent stack, it will return a token that parses the name from the stack ID.
    * - If this is referenced from the context of the nested stack, it will return `{ "Ref": "AWS::StackName" }`
    *
-   * @example mystack-mynestedstack-sggfrhxhum7w
    * @attribute
+   * @example mystack-mynestedstack-sggfrhxhum7w
    */
   public get stackName() {
     return this._contextualStackName;
@@ -136,8 +136,8 @@ export class NestedStack extends Stack {
    * - If this is referenced from the parent stack, it will return `{ "Ref": "LogicalIdOfNestedStackResource" }`.
    * - If this is referenced from the context of the nested stack, it will return `{ "Ref": "AWS::StackId" }`
    *
-   * @example "arn:aws:cloudformation:us-east-2:123456789012:stack/mystack-mynestedstack-sggfrhxhum7w/f449b250-b969-11e0-a185-5081d0136786"
    * @attribute
+   * @example "arn:aws:cloudformation:us-east-2:123456789012:stack/mystack-mynestedstack-sggfrhxhum7w/f449b250-b969-11e0-a185-5081d0136786"
    */
   public get stackId() {
     return this._contextualStackId;

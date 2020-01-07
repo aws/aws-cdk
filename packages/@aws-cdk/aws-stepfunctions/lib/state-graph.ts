@@ -1,4 +1,4 @@
-import iam = require('@aws-cdk/aws-iam');
+import * as iam from '@aws-cdk/aws-iam';
 import { Duration } from '@aws-cdk/core';
 import { State } from "./states/state";
 

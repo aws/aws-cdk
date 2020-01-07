@@ -1,7 +1,7 @@
 {
   "name": "pkgtools",
   "private": true,
-  "version": "1.19.0",
+  "version": "1.20.0",
   "description": "Tools for generating cross-package artifacts",
   "main": "index.js",
   "repository": {
@@ -30,13 +30,13 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/fs-extra": "^8.0.1",
-    "@types/yargs": "^13.0.3",
-    "cdk-build-tools": "1.19.0",
-    "pkglint": "1.19.0"
+    "@types/yargs": "^13.0.4",
+    "cdk-build-tools": "1.20.0",
+    "pkglint": "1.20.0"
   },
   "dependencies": {
     "fs-extra": "^8.1.0",
-    "yargs": "^15.0.1"
+    "yargs": "^15.1.0"
   },
   "keywords": [
     "aws",

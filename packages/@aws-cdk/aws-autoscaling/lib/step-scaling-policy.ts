@@ -1,6 +1,6 @@
 import { findAlarmThresholds, normalizeIntervals } from '@aws-cdk/aws-autoscaling-common';
-import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import cdk = require('@aws-cdk/core');
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as cdk from '@aws-cdk/core';
 import { IAutoScalingGroup } from './auto-scaling-group';
 import { AdjustmentType, MetricAggregationType, StepScalingAction } from './step-scaling-action';
 
@@ -146,8 +146,10 @@ export class StepScalingPolicy extends cdk.Construct {
   }
 }
 
-function aggregationTypeFromMetric(metric: cloudwatch.IMetric): MetricAggregationType {
-  const statistic = metric.toAlarmConfig().statistic;
+function aggregationTypeFromMetric(metric: cloudwatch.IMetric): MetricAggregationType | undefined {
+  const statistic = metric.toMetricConfig().metricStat?.statistic;
+  if (statistic === undefined) { return undefined; } // Math expression, don't know aggregation, leave default
+
   switch (statistic) {
     case 'Average':
       return MetricAggregationType.AVERAGE;
