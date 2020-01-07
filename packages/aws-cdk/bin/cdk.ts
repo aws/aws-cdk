@@ -84,6 +84,7 @@ async function parseCommandLineArguments() {
     .commandDir('../lib/commands', { exclude: /^_.*/ })
     .version(version.DISPLAY_VERSION)
     .demandCommand(1, '') // just print help
+    .recommendCommands()
     .help()
     .alias('h', 'help')
     .epilogue([
