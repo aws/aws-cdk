@@ -1101,7 +1101,8 @@ export = {
     const stack1 = new cdk.Stack();
     const vpc1 = new ec2.Vpc(stack1, 'Vpc');
     const cluster1 = new ecs.Cluster(stack1, 'Cluster', { vpc: vpc1 });
-    cluster1.addCapacity("DefaultAutoScalingGroup", {
+    const asgName = "DefaultAutoScalingGroup";
+    cluster1.addCapacity(asgName, {
       instanceType: new ec2.InstanceType('t2.micro'),
       associatePublicIpAddress: true,
       vpcSubnets: {
@@ -1110,7 +1111,7 @@ export = {
       },
     });
     const stack2 = new cdk.Stack();
-    const asg2 = autoscaling.AutoScalingGroup.fromAutoScalingGroupName(stack2, 'ImportedASG', cluster1.autoscalingGroup.autoScalingGroupName)
+    const asg2 = autoscaling.AutoScalingGroup.fromAutoScalingGroupName(stack2, 'ImportedASG', asgName)
 
     // WHEN
     const cluster2 = ecs.Cluster.fromClusterAttributes(stack2, 'ImportedCluster', {
