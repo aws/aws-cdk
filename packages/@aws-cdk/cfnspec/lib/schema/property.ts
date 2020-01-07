@@ -222,6 +222,19 @@ export function isPropertyScrutinyType(str: string): str is PropertyScrutinyType
   return (PropertyScrutinyType as any)[str] !== undefined;
 }
 
+const tagPropertyNames = {
+  Tags: "",
+  UserPoolTags: "",
+};
+
+export type TagPropertyName = keyof typeof tagPropertyNames;
+
+export function isTagPropertyName(name?: string): name is TagPropertyName {
+  if (undefined === name) {
+    return false;
+  }
+  return tagPropertyNames.hasOwnProperty(name);
+}
 /**
  * This function validates that the property **can** be a Tag Property
  *

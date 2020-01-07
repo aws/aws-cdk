@@ -97,7 +97,7 @@ export class AugmentationGenerator {
 
     this.code.line(`    dimensions: { ${dimStrings.join(', ') } },`);
     this.code.line(`    ...props`);
-    this.code.line(`  });`);
+    this.code.line(`  }).attachTo(this);`);
     this.code.line('};');
   }
 
