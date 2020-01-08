@@ -29,5 +29,5 @@ export interface FingerprintOptions extends CopyOptions {
    *
    * @default - hash is only based on source content
    */
-  readonly extra?: string;
+  readonly extraHash?: string;
 }

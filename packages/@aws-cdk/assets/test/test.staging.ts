@@ -67,7 +67,7 @@ export = {
 
     // WHEN
     const withoutExtra = new Staging(stack, 'withoutExtra', { sourcePath: directory });
-    const withExtra = new Staging(stack, 'withExtra', { sourcePath: directory, extra: 'boom' });
+    const withExtra = new Staging(stack, 'withExtra', { sourcePath: directory, extraHash: 'boom' });
 
     // THEN
     test.notEqual(withoutExtra.sourceHash, withExtra.sourceHash);

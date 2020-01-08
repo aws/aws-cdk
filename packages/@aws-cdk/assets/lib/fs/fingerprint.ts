@@ -23,7 +23,7 @@ const CTRL_ETX = '\x03';
  */
 export function fingerprint(fileOrDirectory: string, options: FingerprintOptions = { }) {
   const hash = crypto.createHash('sha256');
-  _hashField(hash, 'options.extra', options.extra || '');
+  _hashField(hash, 'options.extra', options.extraHash || '');
   const follow = options.follow || FollowMode.EXTERNAL;
   _hashField(hash, 'options.follow', follow);
 

@@ -94,23 +94,20 @@ export class DockerImageAsset extends Construct implements assets.IAsset {
     }
 
     // include build context in "extra" so it will impact the hash
-    const extraHash = new Array<any>();
-    if (props.extra) { extraHash.push(props.extra); }
-    if (props.buildArgs) {
-      extraHash.push({ buildArgs: props.buildArgs });
-    }
-    if (props.target) {
-      extraHash.push({ target: props.target });
-    }
-    if (props.file) {
-      extraHash.push({ file: props.file });
-    }
+    const extraHash: { [field: string]: any } = { };
+    if (props.extraHash)      { extraHash.user = props.extraHash; }
+    if (props.buildArgs)      { extraHash.buildArgs = props.buildArgs; }
+    if (props.target)         { extraHash.target = props.target; }
+    if (props.file)           { extraHash.file = props.file; }
+    if (props.repositoryName) { extraHash.repositoryName = props.repositoryName; }
 
     const staging = new assets.Staging(this, 'Staging', {
       ...props,
       exclude,
       sourcePath: dir,
-      extra: extraHash.length === 0 ? undefined : extraHash.map(x => JSON.stringify(x)).join('=====')
+      extraHash: Object.keys(extraHash).length === 0
+        ? undefined
+        : JSON.stringify(extraHash)
     });
 
     this.sourceHash = staging.sourceHash;
