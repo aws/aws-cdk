@@ -18,3 +18,16 @@ export interface CopyOptions {
    */
   readonly exclude?: string[];
 }
+
+/**
+ * Options related to calculating source hash.
+ */
+export interface FingerprintOptions extends CopyOptions {
+  /**
+   * Extra information to encode into the fingerprint (e.g. build instructions
+   * and other inputs)
+   *
+   * @default - hash is only based on source content
+   */
+  readonly extraHash?: string;
+}
