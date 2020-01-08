@@ -1,10 +1,10 @@
+import { DependableTrait } from '@aws-cdk/core';
 import { Grant } from './grant';
 import { IManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
 import { PolicyStatement } from './policy-statement';
 import { IPrincipal } from './principals';
 import { IRole } from './role';
-import { DependableTrait } from '@aws-cdk/core';
 
 /**
  * An immutable wrapper around an IRole
