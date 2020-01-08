@@ -12,7 +12,7 @@ export = {
     const func = new lambda.Function(stack, 'myfunction', {
       handler: 'handler',
       code: lambda.Code.fromInline('foo'),
-      runtime: lambda.Runtime.NODEJS_8_10,
+      runtime: lambda.Runtime.NODEJS_10_X,
     });
 
     const auth = new TokenAuthorizer(stack, 'myauthorizer', {
@@ -47,7 +47,7 @@ export = {
     const func = new lambda.Function(stack, 'myfunction', {
       handler: 'handler',
       code: lambda.Code.fromInline('foo'),
-      runtime: lambda.Runtime.NODEJS_8_10,
+      runtime: lambda.Runtime.NODEJS_10_X,
     });
 
     const auth = new TokenAuthorizer(stack, 'myauthorizer', {
@@ -82,7 +82,7 @@ export = {
     const func = new lambda.Function(stack, 'myfunction', {
       handler: 'handler',
       code: lambda.Code.fromInline('foo'),
-      runtime: lambda.Runtime.NODEJS_8_10,
+      runtime: lambda.Runtime.NODEJS_10_X,
     });
 
     const role = new iam.Role(stack, 'authorizerassumerole', {
