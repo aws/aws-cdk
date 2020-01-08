@@ -7,8 +7,6 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### ⚠ BREAKING CHANGES
 
-* **core:**  * TagManager constructor now takes a property object instead of
- individual agruments: new TagManager(props: TagManagerProps) instead of new cdk.TagManager(cdk.TagType.STANDARD, resourceType, initialTags);
 * **autoscaling:** AutoScalingGroups without `desiredCapacity` are now
 initially scaled to their minimum capacity (instead of their maximum
 capaciety).
