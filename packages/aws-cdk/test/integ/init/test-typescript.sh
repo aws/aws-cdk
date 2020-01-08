@@ -21,7 +21,7 @@ for template in $templates; do
 
     setup
 
-    cdk init -l typescript -t $template
+    cdk init -l typescript $template
     npm ls # this will fail if we have unmet peer dependencies
     npm run build
     npm run test
