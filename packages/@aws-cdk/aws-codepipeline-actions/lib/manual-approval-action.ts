@@ -24,6 +24,13 @@ export interface ManualApprovalActionProps extends codepipeline.CommonAwsActionP
    * Any additional information that you want to include in the notification email message.
    */
   readonly additionalInformation?: string;
+
+  /**
+   * URL you want to provide to the reviewer as part of the approval request.
+   *
+   * @default - the approval request will not have an external link
+   */
+  readonly externalEntityLink?: string;
 }
 
 /**
@@ -73,6 +80,7 @@ export class ManualApprovalAction extends Action {
         ? {
           NotificationArn: this._notificationTopic.topicArn,
           CustomData: this.props.additionalInformation,
+          ExternalEntityLink: this.props.externalEntityLink,
         }
         : undefined,
     };
