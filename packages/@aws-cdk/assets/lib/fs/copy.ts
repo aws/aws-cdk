@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { CopyOptions } from './copy-options';
+import { CopyOptions } from './options';
 import { FollowMode } from './follow-mode';
 import { shouldExclude, shouldFollow } from './utils';
 
