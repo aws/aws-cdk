@@ -48,7 +48,7 @@
   },
   "cdk-build": {
     "pre": [
-      "cp -f $(node -p 'require.resolve(\"aws-sdk/apis/metadata.json\")') lib/sdk-api-metadata.json"
+      "cp -f $(node -p 'require.resolve(\"aws-sdk/apis/metadata.json\")') lib/sdk-api-metadata.json && rm -f lib/sdk-api-metadata.d.ts"
     ]
   },
   "jest": {
