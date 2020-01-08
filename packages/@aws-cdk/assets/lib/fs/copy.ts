@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { CopyOptions } from './copy-options';
 import { FollowMode } from './follow-mode';
+import { CopyOptions } from './options';
 import { shouldExclude, shouldFollow } from './utils';
 
 export function copyDirectory(srcDir: string, destDir: string, options: CopyOptions = { }, rootDir?: string) {
