@@ -49,7 +49,7 @@ export = {
       new lambda.Function(this.stack, 'LambdaWithCustomSG', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_8_10,
+        runtime: lambda.Runtime.NODEJS_10_X,
         vpc: this.vpc,
         securityGroup: new ec2.SecurityGroup(this.stack, 'CustomSecurityGroupX', { vpc: this.vpc }),
       });
@@ -74,7 +74,7 @@ export = {
       new lambda.Function(this.stack, 'LambdaWithCustomSGList', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_8_10,
+        runtime: lambda.Runtime.NODEJS_10_X,
         vpc: this.vpc,
         securityGroups: [
           new ec2.SecurityGroup(this.stack, 'CustomSecurityGroupA', { vpc: this.vpc }),
@@ -104,7 +104,7 @@ export = {
         new lambda.Function(this.stack, 'LambdaWithWrongProps', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_8_10,
+        runtime: lambda.Runtime.NODEJS_10_X,
         vpc: this.vpc,
         securityGroup: new ec2.SecurityGroup(this.stack, 'CustomSecurityGroupB', { vpc: this.vpc }),
         securityGroups: [
