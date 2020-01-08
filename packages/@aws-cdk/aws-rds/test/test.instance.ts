@@ -301,7 +301,7 @@ export = {
     test.done();
   },
 
-  'create a read replica'(test: Test) {
+  'create a read replica in the same region - with the subnet group name'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -323,8 +323,20 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::RDS::DBInstance', {
       SourceDBInstanceIdentifier: {
-        Ref: 'InstanceC1063A87'
-      }
+        "Fn::Join": ["", [
+          "arn:",
+          { Ref: "AWS::Partition" },
+          ":rds:",
+          { Ref: "AWS::Region" },
+          ":",
+          { Ref: "AWS::AccountId" },
+          ":db:",
+          { Ref: "InstanceC1063A87" },
+        ]],
+      },
+      DBSubnetGroupName: {
+        Ref: 'ReadReplicaSubnetGroup680C605C',
+      },
     }));
 
     test.done();

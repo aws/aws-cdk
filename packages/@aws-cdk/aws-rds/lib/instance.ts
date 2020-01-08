@@ -965,7 +965,8 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
 
     const instance = new CfnDBInstance(this, 'Resource', {
       ...this.newCfnProps,
-      sourceDbInstanceIdentifier: props.sourceDatabaseInstance.instanceIdentifier,
+      // this must be ARN, not ID, because of https://github.com/terraform-providers/terraform-provider-aws/issues/528#issuecomment-391169012
+      sourceDbInstanceIdentifier: props.sourceDatabaseInstance.instanceArn,
       kmsKeyId: props.kmsKey && props.kmsKey.keyArn,
       storageEncrypted: props.kmsKey ? true : props.storageEncrypted,
     });
