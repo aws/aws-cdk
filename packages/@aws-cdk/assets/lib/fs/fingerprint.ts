@@ -1,7 +1,7 @@
 import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
-import { FingerprintOptions } from './copy-options';
+import { FingerprintOptions } from './options';
 import { FollowMode } from './follow-mode';
 import { shouldExclude, shouldFollow } from './utils';
 
