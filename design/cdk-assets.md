@@ -155,6 +155,8 @@ for each asset in manifest:
     publish to destination (upload/push)
 ```
 
+> When we execute this tool in a CodeBuild project, we should enable [local caching](https://docs.aws.amazon.com/codebuild/latest/userguide/build-caching.html#caching-local) of docker images as an optimization.
+
 Example (`cdk.out/assets.json` as above):
 
 ```shell
