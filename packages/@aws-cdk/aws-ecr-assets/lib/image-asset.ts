@@ -5,7 +5,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { AdoptedRepository } from './adopted-repository';
 
-export interface DockerImageAssetProps extends assets.CopyOptions {
+export interface DockerImageAssetProps extends assets.FingerprintOptions {
   /**
    * The directory where the Dockerfile is stored
    */
@@ -93,10 +93,24 @@ export class DockerImageAsset extends Construct implements assets.IAsset {
       exclude = [...exclude, ...fs.readFileSync(ignore).toString().split('\n').filter(e => !!e)];
     }
 
+    // include build context in "extra" so it will impact the hash
+    const extraHash = new Array<any>();
+    if (props.extra) { extraHash.push(props.extra); }
+    if (props.buildArgs) {
+      extraHash.push({ buildArgs: props.buildArgs });
+    }
+    if (props.target) {
+      extraHash.push({ target: props.target });
+    }
+    if (props.file) {
+      extraHash.push({ file: props.file });
+    }
+
     const staging = new assets.Staging(this, 'Staging', {
       ...props,
       exclude,
-      sourcePath: dir
+      sourcePath: dir,
+      extra: extraHash.length === 0 ? undefined : extraHash.map(x => JSON.stringify(x)).join('=====')
     });
 
     this.sourceHash = staging.sourceHash;

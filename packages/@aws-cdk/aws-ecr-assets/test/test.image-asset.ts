@@ -335,5 +335,26 @@ export = {
     }), /Cannot use Token as value of 'repositoryName'/);
 
     test.done();
+  },
+
+  'docker build options are included in the asset id'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const directory = path.join(__dirname, 'demo-image-custom-docker-file');
+
+    const asset1 = new DockerImageAsset(stack, 'Asset1', { directory });
+    const asset2 = new DockerImageAsset(stack, 'Asset2', { directory, file: 'Dockerfile.Custom' });
+    const asset3 = new DockerImageAsset(stack, 'Asset3', { directory, target: 'NonDefaultTarget' });
+    const asset4 = new DockerImageAsset(stack, 'Asset4', { directory, buildArgs: { opt1: '123', opt2: 'boom' } });
+    const asset5 = new DockerImageAsset(stack, 'Asset5', { directory, file: 'Dockerfile.Custom', target: 'NonDefaultTarget' });
+    const asset6 = new DockerImageAsset(stack, 'Asset6', { directory, extra: 'random-extra' });
+
+    test.deepEqual(asset1.sourceHash, 'b84a5001da0f5714e484134e2471213d7e987e22ee6219469029f1779370cc2a');
+    test.deepEqual(asset2.sourceHash, 'c6568a7946e92a408c60278f70834b901638e71237d470ed1e5e6d707c55c0c9');
+    test.deepEqual(asset3.sourceHash, '963a5329c170c54bc667fddab8d9cc4cec4bffb65ce3a1f323bb5fbc1d268732');
+    test.deepEqual(asset4.sourceHash, '0e3eb87273509e0f0d45d67d40fa3080566aa22abd7f976e1ce7ea60a8ccd0a8');
+    test.deepEqual(asset5.sourceHash, 'd4b1d298bef965fc992008b564d9e4918fd7e489cce3647fa1554f78e5461f37');
+    test.deepEqual(asset6.sourceHash, 'ee4f6b50c5261a639a4ff775b44fbe578abee3db2742e771f24d6c03b0745a52');
+    test.done();
   }
 };

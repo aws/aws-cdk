@@ -1,7 +1,7 @@
 import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
-import { CopyOptions } from './copy-options';
+import { FingerprintOptions } from './copy-options';
 import { FollowMode } from './follow-mode';
 import { shouldExclude, shouldFollow } from './utils';
 
@@ -9,14 +9,6 @@ const BUFFER_SIZE = 8 * 1024;
 const CTRL_SOH = '\x01';
 const CTRL_SOT = '\x02';
 const CTRL_ETX = '\x03';
-
-export interface FingerprintOptions extends CopyOptions {
-  /**
-   * Extra information to encode into the fingerprint (e.g. build instructions
-   * and other inputs)
-   */
-  extra?: string;
-}
 
 /**
  * Produces fingerprint based on the contents of a single file or an entire directory tree.

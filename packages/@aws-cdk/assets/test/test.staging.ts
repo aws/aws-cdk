@@ -57,5 +57,22 @@ export = {
       'tree.json',
     ]);
     test.done();
+  },
+
+  'allow specifying extra data to include in the source hash'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'stack');
+    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+
+    // WHEN
+    const withoutExtra = new Staging(stack, 'withoutExtra', { sourcePath: directory });
+    const withExtra = new Staging(stack, 'withExtra', { sourcePath: directory, extra: 'boom' });
+
+    // THEN
+    test.notEqual(withoutExtra.sourceHash, withExtra.sourceHash);
+    test.deepEqual(withoutExtra.sourceHash, '2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00');
+    test.deepEqual(withExtra.sourceHash, 'c95c915a5722bb9019e2c725d11868e5a619b55f36172f76bcbcaa8bb2d10c5f');
+    test.done();
   }
 };
