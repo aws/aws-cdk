@@ -74,6 +74,10 @@ export async function prepareContainerAsset(assemblyDir: string,
       baseCommand.push('--target', asset.target);
     }
 
+    if (asset.file) {
+      baseCommand.push('--file', asset.file);
+    }
+
     const command = ci
       ? [...baseCommand, '--cache-from', latest] // This does not fail if latest is not available
       : baseCommand;
