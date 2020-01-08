@@ -25,5 +25,9 @@ for template in $templates; do
     npm ls # this will fail if we have unmet peer dependencies
     npm run build
     npm run test
-    cdk synth
+
+    # Can't run `cdk synth` on libraries
+    if [[ $template != "lib" ]]; then
+        cdk synth
+    fi
 done
