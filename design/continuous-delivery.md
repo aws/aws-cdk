@@ -291,6 +291,8 @@ Then, for each asset, cdk-assets will perform the following operation:
 
 In order for the publish to be able to execute `docker build`, this command must be executed in an environment that has docker available (in CodeBuild this means the project must be "privileged").
 
+[Caching of docker layers](https://docs.aws.amazon.com/codebuild/latest/userguide/build-caching.html#caching-local) is supported by CodeBuild and therefore `--ci` feature we have today in the CDK which pulls the `latest` tag of images before docker builds is not required. Furthermore, since images will now be identified only by their source hash (and not by their construct node ID) means that it will be impossible to pull a "latest" version.
+
 **Templates as Assets**
 
 Some deployment systems (e.g. the CDK CLI) require that CloudFormation templates will be uploaded an S3 location before they can be deployed (this is done automatically in CodePipeline). Due to S3 eventual consistency, these files must be immutable, so we need to upload a new template file every time the template changes.
