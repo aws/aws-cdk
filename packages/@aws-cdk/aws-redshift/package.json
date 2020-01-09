@@ -85,14 +85,41 @@
     "pkglint": "1.20.0"
   },
   "dependencies": {
-    "@aws-cdk/core": "1.20.0"
+    "@aws-cdk/core": "1.20.0",
+    "@aws-cdk/aws-ec2": "1.20.0",
+    "@aws-cdk/aws-iam": "1.20.0",
+    "@aws-cdk/aws-secretsmanager": "1.20.0",
+    "@aws-cdk/aws-kms": "1.20.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/core": "1.20.0"
+    "@aws-cdk/core": "1.20.0",
+    "@aws-cdk/aws-ec2": "1.20.0",
+    "@aws-cdk/aws-iam": "1.20.0",
+    "@aws-cdk/aws-secretsmanager": "1.20.0",
+    "@aws-cdk/aws-kms": "1.20.0"
   },
   "engines": {
     "node": ">= 10.3.0"
+  },
+  "awslint": {
+    "exclude": [
+      "docs-public-apis:@aws-cdk/aws-redshift.ClusterType.MULTI_NODE",
+      "docs-public-apis:@aws-cdk/aws-redshift.ClusterType.SINGLE_NODE",
+      "docs-public-apis:@aws-cdk/aws-redshift.NodeType.DC1_8XLARGE",
+      "docs-public-apis:@aws-cdk/aws-redshift.NodeType.DC1_LARGE",
+      "docs-public-apis:@aws-cdk/aws-redshift.NodeType.DC2_8XLARGE",
+      "docs-public-apis:@aws-cdk/aws-redshift.NodeType.DC2_LARGE",
+      "docs-public-apis:@aws-cdk/aws-redshift.NodeType.DS2_8XLARGE",
+      "docs-public-apis:@aws-cdk/aws-redshift.NodeType.DS2_XLARGE",
+      "docs-public-apis:@aws-cdk/aws-redshift.NodeType.RA3_16XLARGE",
+      "docs-public-apis:@aws-cdk/aws-redshift.ParameterGroupParameters.parameterName",
+      "docs-public-apis:@aws-cdk/aws-redshift.ParameterGroupParameters.parameterValue",
+      "props-struct-name:@aws-cdk/aws-redshift.IClusterParameterGroup",
+      "props-physical-name:@aws-cdk/aws-redshift.ClusterParameterGroupProps",
+      "props-physical-name:@aws-cdk/aws-redshift.DatabaseSecretProps",
+      "props-physical-name:@aws-cdk/aws-redshift.RedshiftClusterProps"
+    ]
   },
   "stability": "experimental"
 }
