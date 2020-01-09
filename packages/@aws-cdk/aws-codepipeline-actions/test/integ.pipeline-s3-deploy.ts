@@ -34,6 +34,11 @@ new codepipeline.Pipeline(stack, 'Pipeline', {
           actionName: 'DeployAction',
           input: sourceOutput,
           bucket: deployBucket,
+          accessControl: s3.BucketAccessControl.PUBLIC_READ,
+          cacheControl: [
+            cpactions.CacheControl.setPublic(),
+            cpactions.CacheControl.maxAge(cdk.Duration.hours(12)),
+          ],
         })
       ],
     },
