@@ -484,7 +484,7 @@
       "Properties": {
         "EventPattern": {
           "detail-type": [
-            "CodePipeline Stage Execution State Change"
+            "CodePipeline Action Execution State Change"
           ],
           "source": [
             "aws.codepipeline"
