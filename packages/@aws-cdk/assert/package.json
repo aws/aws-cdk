@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/assert",
-  "version": "1.19.0",
+  "version": "1.20.0",
   "description": "An assertion library for use with CDK Apps",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -14,10 +14,25 @@
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test"
   },
-  "nyc": {
-    "statements": 40,
-    "lines": 40,
-    "branches": 30
+  "jest": {
+    "collectCoverage": true,
+    "coverageReporters": [
+      "lcov",
+      "html",
+      "text-summary"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "statements": 80,
+        "lines": 80,
+        "branches": 60
+      }
+    },
+    "preset": "ts-jest",
+    "testMatch": [
+      "**/__tests__/**/*.ts?(x)",
+      "**/?(*.)+(spec|test).ts?(x)"
+    ]
   },
   "author": {
     "name": "Amazon Web Services",
@@ -26,18 +41,19 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/jest": "^24.0.23",
-    "@types/nodeunit": "^0.0.30",
-    "cdk-build-tools": "1.19.0",
-    "nodeunit": "^0.11.3",
-    "pkglint": "1.19.0"
+    "@types/jest": "^24.0.25",
+    "cdk-build-tools": "1.20.0",
+    "jest": "^24.9.0",
+    "pkglint": "1.20.0",
+    "ts-jest": "^24.2.0"
   },
   "dependencies": {
-    "@aws-cdk/cloudformation-diff": "1.19.0",
-    "@aws-cdk/core": "1.19.0",
-    "@aws-cdk/cx-api": "1.19.0",
-    "jest": "^24.9.0",
-    "source-map-support": "^0.5.16"
+    "@aws-cdk/cloudformation-diff": "1.20.0",
+    "@aws-cdk/core": "1.20.0",
+    "@aws-cdk/cx-api": "1.20.0"
+  },
+  "peerDependencies": {
+    "jest": "^24.9.0"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",

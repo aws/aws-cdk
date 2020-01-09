@@ -82,7 +82,7 @@ export class Activity extends Resource implements IActivity {
             dimensions: { ActivityArn: this.activityArn },
             statistic: 'sum',
             ...props
-        });
+        }).attachTo(this);
     }
 
     /**
