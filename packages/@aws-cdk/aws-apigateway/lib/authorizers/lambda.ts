@@ -13,7 +13,7 @@ export interface TokenAuthorizerProps {
   /**
    * An optional human friendly name for the authorizer. Note that, this is not the primary identifier of the authorizer.
    *
-   * @default - none
+   * @default this.node.uniqueId
    */
   readonly authorizerName?: string;
 
@@ -92,7 +92,7 @@ export class TokenAuthorizer extends Authorizer implements IAuthorizer {
     const restApiId = Lazy.stringValue({ produce: () => this.restApiId });
 
     const resource = new CfnAuthorizer(this, 'Resource', {
-      name: props.authorizerName,
+      name: props.authorizerName ?? this.node.uniqueId,
       restApiId,
       type: 'TOKEN',
       authorizerUri: `arn:aws:apigateway:${Stack.of(this).region}:lambda:path/2015-03-31/functions/${props.handler.functionArn}/invocations`,
