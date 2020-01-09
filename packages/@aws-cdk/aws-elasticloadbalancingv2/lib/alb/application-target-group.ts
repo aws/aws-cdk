@@ -191,7 +191,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
         LoadBalancer: this.firstLoadBalancerFullName,
       },
       ...props
-    });
+    }).attachTo(this);
   }
 
   /**

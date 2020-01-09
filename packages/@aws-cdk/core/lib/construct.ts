@@ -439,6 +439,18 @@ export class ConstructNode {
   }
 
   /**
+   * Remove the child with the given name, if present.
+   *
+   * @returns Whether a child with the given name was deleted.
+   * @experimental
+   */
+  public tryRemoveChild(childName: string): boolean {
+    if (!(childName in this._children)) { return false; }
+    delete this._children[childName];
+    return true;
+  }
+
+  /**
    * Locks this construct from allowing more children to be added. After this
    * call, no more children can be added to this construct or to any children.
    * @internal

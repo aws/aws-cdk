@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
@@ -250,6 +250,37 @@ export = {
         });
 
         test.done();
-    }
+    },
+
+    'State machines must depend on their roles'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const task = new stepfunctions.Task(stack, 'Task', {
+            task: {
+                bind: () => ({
+                    resourceArn: 'resource',
+                    policyStatements: [
+                        new iam.PolicyStatement({
+                            resources: ['resource'],
+                            actions: ["lambda:InvokeFunction"],
+                        })
+                    ],
+                })
+            }
+        });
+        new stepfunctions.StateMachine(stack, 'StateMachine', {
+            definition: task
+        });
+
+        // THEN
+        expect(stack).to(haveResource('AWS::StepFunctions::StateMachine', {
+            DependsOn: [
+                'StateMachineRoleDefaultPolicyDF1E6607',
+                'StateMachineRoleB840431D'
+            ]
+        }, ResourcePart.CompleteDefinition));
+
+        test.done();
+    },
 
 };

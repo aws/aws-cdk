@@ -332,6 +332,71 @@ const proxy = resource.addProxy({
 });
 ```
 
+### Authorizers
+
+API Gateway [supports several different authorization types](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-control-access-to-api.html)
+that can be used for controlling access to your REST APIs.
+
+#### IAM-based authorizer
+
+The following CDK code provides 'excecute-api' permission to an IAM user, via IAM policies, for the 'GET' method on the `books` resource:
+
+```ts
+const getBooks = books.addMethod('GET', new apigateway.HttpIntegration('http://amazon.com'), {
+  authorizationType: apigateway.AuthorizationType.IAM
+});
+
+iamUser.attachInlinePolicy(new iam.Policy(this, 'AllowBooks', {
+  statements: [
+    new iam.PolicyStatement({
+      actions: [ 'execute-api:Invoke' ],
+      effect: iam.Effect.Allow,
+      resources: [ getBooks.methodArn() ]
+    })
+  ]
+}))
+```
+
+#### Lambda-based token authorizer
+
+API Gateway also allows [lambda functions to be used as authorizers](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-use-lambda-authorizer.html).
+
+This module provides support for token-based Lambda authorizers. When a client makes a request to an API's methods configured with such
+an authorizer, API Gateway calls the Lambda authorizer, which takes the caller's identity as input and returns an IAM policy as output. 
+A token-based Lambda authorizer (also called a token authorizer) receives the caller's identity in a bearer token, such as
+a JSON Web Token (JWT) or an OAuth token. 
+
+API Gateway interacts with the authorizer Lambda function handler by passing input and expecting the output in a specific format.
+The event object that the handler is called with contains the `authorizationToken` and the `methodArn` from the request to the
+API Gateway endpoint. The handler is expected to return the `principalId` (i.e. the client identifier) and a `policyDocument` stating
+what the client is authorizer to perform.
+See https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-use-lambda-authorizer.html for a detailed specification on
+inputs and outputs of the lambda handler.
+
+The following code attaches a token-based Lambda authorizer to the 'GET' Method of the Book resource:
+
+```ts
+const authFn = new lambda.Function(this, 'booksAuthorizerLambda', {
+  // ...
+  // ...
+});
+
+const auth = new apigateway.TokenAuthorizer(this, 'booksAuthorizer', {
+  function: authFn
+});
+
+books.addMethod('GET', new apigateway.HttpIntegration('http://amazon.com'), {
+  authorizer: auth
+});
+```
+
+By default, the `TokenAuthorizer` looks for the authorization token in the request header with the key 'Authorization'. This can,
+however, be modified by changing the `identitySource` property.
+
+Authorizers can also be passed via the `defaultMethodOptions` property within the `RestApi` construct or the `Method` construct. Unless
+explicitly overridden, the specified defaults will be applied across all `Method`s across the `RestApi` or across all `Resource`s,
+depending on where the defaults were specified.
+
 ### Deployments
 
 By default, the `RestApi` construct will automatically create an API Gateway

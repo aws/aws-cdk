@@ -110,7 +110,7 @@ export = {
     test.done();
   },
 
-  'export/import'(test: Test) {
+  'import from arn'(test: Test) {
     // GIVEN
     const stack2 = new Stack();
 
@@ -119,8 +119,28 @@ export = {
     imported.addStream('MakeMeAStream');
 
     // THEN
+    test.deepEqual(imported.logGroupName, 'my-log-group');
+    test.deepEqual(imported.logGroupArn, 'arn:aws:logs:us-east-1:123456789012:log-group:my-log-group');
     expect(stack2).to(haveResource('AWS::Logs::LogStream', {
       LogGroupName: "my-log-group"
+    }));
+    test.done();
+  },
+
+  'import from name'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const imported = LogGroup.fromLogGroupName(stack, 'lg', 'my-log-group');
+    imported.addStream('MakeMeAStream');
+
+    // THEN
+    test.deepEqual(imported.logGroupName, 'my-log-group');
+    test.ok(/^arn:.+:logs:.+:.+:log-group:my-log-group$/.test(imported.logGroupArn),
+      `LogGroup ARN ${imported.logGroupArn} does not match the expected pattern`);
+    expect(stack).to(haveResource('AWS::Logs::LogStream', {
+      LogGroupName: 'my-log-group'
     }));
     test.done();
   },

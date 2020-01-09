@@ -87,6 +87,23 @@ export = {
     test.done();
   },
 
+  'with file'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    const directoryPath = path.join(__dirname, 'demo-image-custom-docker-file');
+    // WHEN
+    new DockerImageAsset(stack, 'Image', {
+      directory: directoryPath,
+      file: 'Dockerfile.Custom'
+    });
+
+    // THEN
+    const assetMetadata = stack.node.metadata.find(({ type }) => type === ASSET_METADATA);
+    test.deepEqual(assetMetadata && assetMetadata.data.file, path.join(directoryPath, 'Dockerfile.Custom'));
+    test.done();
+  },
+
   'asset.repository.grantPull can be used to grant a principal permissions to use the image'(test: Test) {
     // GIVEN
     const stack = new Stack();
@@ -211,7 +228,21 @@ export = {
       new DockerImageAsset(stack, 'Asset', {
         directory: __dirname
       });
-    }, /No 'Dockerfile' found in/);
+    }, /Cannot find file at/);
+    test.done();
+  },
+
+  'fails if the file does not exist'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // THEN
+    test.throws(() => {
+      new DockerImageAsset(stack, 'Asset', {
+        directory: __dirname,
+        file: 'doesnt-exist'
+      });
+    }, /Cannot find file at/);
     test.done();
   },
 
@@ -303,6 +334,29 @@ export = {
       repositoryName: token
     }), /Cannot use Token as value of 'repositoryName'/);
 
+    test.done();
+  },
+
+  'docker build options are included in the asset id'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const directory = path.join(__dirname, 'demo-image-custom-docker-file');
+
+    const asset1 = new DockerImageAsset(stack, 'Asset1', { directory });
+    const asset2 = new DockerImageAsset(stack, 'Asset2', { directory, file: 'Dockerfile.Custom' });
+    const asset3 = new DockerImageAsset(stack, 'Asset3', { directory, target: 'NonDefaultTarget' });
+    const asset4 = new DockerImageAsset(stack, 'Asset4', { directory, buildArgs: { opt1: '123', opt2: 'boom' } });
+    const asset5 = new DockerImageAsset(stack, 'Asset5', { directory, file: 'Dockerfile.Custom', target: 'NonDefaultTarget' });
+    const asset6 = new DockerImageAsset(stack, 'Asset6', { directory, extraHash: 'random-extra' });
+    const asset7 = new DockerImageAsset(stack, 'Asset7', { directory, repositoryName: 'foo' });
+
+    test.deepEqual(asset1.sourceHash, 'b84a5001da0f5714e484134e2471213d7e987e22ee6219469029f1779370cc2a');
+    test.deepEqual(asset2.sourceHash, 'c6568a7946e92a408c60278f70834b901638e71237d470ed1e5e6d707c55c0c9');
+    test.deepEqual(asset3.sourceHash, '963a5329c170c54bc667fddab8d9cc4cec4bffb65ce3a1f323bb5fbc1d268732');
+    test.deepEqual(asset4.sourceHash, '0e3eb87273509e0f0d45d67d40fa3080566aa22abd7f976e1ce7ea60a8ccd0a8');
+    test.deepEqual(asset5.sourceHash, 'de0fd4b2bff8c9f180351fd59c6f2e9409fa21366453e1e0b75fedbd93dda1fc');
+    test.deepEqual(asset6.sourceHash, '00879adf80f97271bf6d7e214b4fac8a043fc6e2661912cbf4d898ccb317d46c');
+    test.deepEqual(asset7.sourceHash, 'b8abda995e51bd1a47b2705fa40021f3e9619a334bddb96866e808b09303eff7');
     test.done();
   }
 };
