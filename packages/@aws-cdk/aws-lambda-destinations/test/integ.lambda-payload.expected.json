@@ -72,6 +72,48 @@
         "FirstServiceRole097DB3A5"
       ]
     },
+    "FirstEventInvokeConfigSuccess865FF6FF": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "EventPattern": {
+          "detail-type": [
+            "Lambda Function Invocation Result - Success"
+          ],
+          "resources": [
+            {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Fn::GetAtt": [
+                      "First8D4707F1",
+                      "Arn"
+                    ]
+                  },
+                  ":$LATEST"
+                ]
+              ]
+            }
+          ],
+          "source": [
+            "lambda"
+          ]
+        },
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Fn::GetAtt": [
+                "Second394350F9",
+                "Arn"
+              ]
+            },
+            "Id": "Target0",
+            "InputPath": "$.detail.responsePayload"
+          }
+        ]
+      }
+    },
     "FirstEventInvokeConfig7DE6209E": {
       "Type": "AWS::Lambda::EventInvokeConfig",
       "Properties": {
@@ -177,6 +219,67 @@
         "SecondServiceRole55940A31"
       ]
     },
+    "SecondAllowEventRuleawscdklambdapayloadFirstEventInvokeConfigSuccess57BB07DB29B2D540": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "Second394350F9",
+            "Arn"
+          ]
+        },
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "FirstEventInvokeConfigSuccess865FF6FF",
+            "Arn"
+          ]
+        }
+      }
+    },
+    "SecondEventInvokeConfigSuccess53614893": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "EventPattern": {
+          "detail-type": [
+            "Lambda Function Invocation Result - Success"
+          ],
+          "resources": [
+            {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Fn::GetAtt": [
+                      "Second394350F9",
+                      "Arn"
+                    ]
+                  },
+                  ":$LATEST"
+                ]
+              ]
+            }
+          ],
+          "source": [
+            "lambda"
+          ]
+        },
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Fn::GetAtt": [
+                "Third1125870F",
+                "Arn"
+              ]
+            },
+            "Id": "Target0",
+            "InputPath": "$.detail.responsePayload"
+          }
+        ]
+      }
+    },
     "SecondEventInvokeConfig3F9DE36C": {
       "Type": "AWS::Lambda::EventInvokeConfig",
       "Properties": {
@@ -207,25 +310,6 @@
               ]
             }
           }
-        }
-      }
-    },
-    "SecondAllowEventRuleawscdklambdachainChainRule1BDBA1E17A85B6404": {
-      "Type": "AWS::Lambda::Permission",
-      "Properties": {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": {
-          "Fn::GetAtt": [
-            "Second394350F9",
-            "Arn"
-          ]
-        },
-        "Principal": "events.amazonaws.com",
-        "SourceArn": {
-          "Fn::GetAtt": [
-            "ChainRule1A76E96E4",
-            "Arn"
-          ]
         }
       }
     },
@@ -279,7 +363,7 @@
         "ThirdServiceRole42701801"
       ]
     },
-    "ThirdAllowEventRuleawscdklambdachainChainRule2487268BE44B4A2FD": {
+    "ThirdAllowEventRuleawscdklambdapayloadSecondEventInvokeConfigSuccess845AED5BBC6FDE80": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -292,94 +376,10 @@
         "Principal": "events.amazonaws.com",
         "SourceArn": {
           "Fn::GetAtt": [
-            "ChainRule23A5B02A5",
+            "SecondEventInvokeConfigSuccess53614893",
             "Arn"
           ]
         }
-      }
-    },
-    "ChainRule1A76E96E4": {
-      "Type": "AWS::Events::Rule",
-      "Properties": {
-        "EventPattern": {
-          "detail-type": [
-            "Lambda Function Invocation Result - Success"
-          ],
-          "resources": [
-            {
-              "Fn::Join": [
-                "",
-                [
-                  {
-                    "Fn::GetAtt": [
-                      "First8D4707F1",
-                      "Arn"
-                    ]
-                  },
-                  ":$LATEST"
-                ]
-              ]
-            }
-          ],
-          "source": [
-            "lambda"
-          ]
-        },
-        "State": "ENABLED",
-        "Targets": [
-          {
-            "Arn": {
-              "Fn::GetAtt": [
-                "Second394350F9",
-                "Arn"
-              ]
-            },
-            "Id": "Target0",
-            "InputPath": "$.detail.responsePayload"
-          }
-        ]
-      }
-    },
-    "ChainRule23A5B02A5": {
-      "Type": "AWS::Events::Rule",
-      "Properties": {
-        "EventPattern": {
-          "detail-type": [
-            "Lambda Function Invocation Result - Success"
-          ],
-          "resources": [
-            {
-              "Fn::Join": [
-                "",
-                [
-                  {
-                    "Fn::GetAtt": [
-                      "Second394350F9",
-                      "Arn"
-                    ]
-                  },
-                  ":$LATEST"
-                ]
-              ]
-            }
-          ],
-          "source": [
-            "lambda"
-          ]
-        },
-        "State": "ENABLED",
-        "Targets": [
-          {
-            "Arn": {
-              "Fn::GetAtt": [
-                "Third1125870F",
-                "Arn"
-              ]
-            },
-            "Id": "Target0",
-            "InputPath": "$.detail.responsePayload"
-          }
-        ]
       }
     }
   }

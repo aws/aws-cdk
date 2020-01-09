@@ -12,11 +12,26 @@ export interface DestinationConfig {
 }
 
 /**
+ * The type of destination
+ */
+export enum DestinationType {
+  /**
+   * Failure
+   */
+  FAILURE = 'Failure',
+
+  /**
+   * Success
+   */
+  SUCCESS = 'Success',
+}
+
+/**
  * A Lambda destination
  */
 export interface IDestination {
   /**
    * Binds this destination to the Lambda function
    */
-  bind(scope: Construct, fn: IFunction): DestinationConfig;
+  bind(scope: Construct, fn: IFunction, type?: DestinationType): DestinationConfig;
 }
