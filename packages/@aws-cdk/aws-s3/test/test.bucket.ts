@@ -1771,7 +1771,7 @@ export = {
     test.done();
   },
 
- 'Acess log prefix given without bucket'(test: Test) {
+ 'Access log prefix given without bucket'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -1779,6 +1779,19 @@ export = {
     test.throws(() => new s3.Bucket(stack, 'MyBucket', {
       serverAccessLogsPrefix: 'hello'
     }), /"serverAccessLogsBucket" is required if "serverAccessLogsPrefix" is set/);
+
+    test.done();
+ },
+
+ 'Bucket Allow Log delivery changes bucket Access Control should fail'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const accessLogBucket = new s3.Bucket(stack, 'AccessLogs', {
+      accessControl: s3.BucketAccessControl.AUTHENTICATED_READ,
+    });
+    test.throws(() => accessLogBucket.allowLogDelivery(), /The bucket's ACL has been set and can't be changed/);
 
     test.done();
  },

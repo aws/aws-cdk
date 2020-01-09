@@ -476,6 +476,10 @@ abstract class BucketBase extends Resource implements IBucket {
    * Adds write permissions to the LogDelivery group via the Bucket ACL.
    */
   public allowLogDelivery() {
+    if (this.accessControl && this.accessControl !== BucketAccessControl.LOG_DELIVERY_WRITE) {
+      throw new Error("The bucket's ACL has been set and can't be changed");
+    }
+
     this.accessControl = BucketAccessControl.LOG_DELIVERY_WRITE;
   }
 
