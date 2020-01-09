@@ -301,7 +301,7 @@ export = {
     test.done();
   },
 
-  'create a read replica'(test: Test) {
+  'create a read replica in the same region - with the subnet group name'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -323,8 +323,20 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::RDS::DBInstance', {
       SourceDBInstanceIdentifier: {
-        Ref: 'InstanceC1063A87'
-      }
+        "Fn::Join": ["", [
+          "arn:",
+          { Ref: "AWS::Partition" },
+          ":rds:",
+          { Ref: "AWS::Region" },
+          ":",
+          { Ref: "AWS::AccountId" },
+          ":db:",
+          { Ref: "InstanceC1063A87" },
+        ]],
+      },
+      DBSubnetGroupName: {
+        Ref: 'ReadReplicaSubnetGroup680C605C',
+      },
     }));
 
     test.done();
@@ -623,5 +635,43 @@ export = {
     }));
 
     test.done();
-  }
+  },
+
+  'throws when trying to add rotation to an instance without secret'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const instance = new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.SQL_SERVER_EE,
+      instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      masterUsername: 'syscdk',
+      masterUserPassword: cdk.SecretValue.plainText('tooshort'),
+      vpc
+    });
+
+    // THEN
+    test.throws(() => instance.addRotationSingleUser(), /without secret/);
+
+    test.done();
+  },
+
+  'throws when trying to add single user rotation multiple times'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const instance = new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.SQL_SERVER_EE,
+      instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      masterUsername: 'syscdk',
+      vpc
+    });
+
+    // WHEN
+    instance.addRotationSingleUser();
+
+    // THEN
+    test.throws(() => instance.addRotationSingleUser(), /A single user rotation was already added to this instance/);
+
+    test.done();
+  },
 };

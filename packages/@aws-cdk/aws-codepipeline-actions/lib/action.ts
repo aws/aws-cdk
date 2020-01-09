@@ -34,7 +34,7 @@ export abstract class Action implements codepipeline.IAction {
     const rule = new events.Rule(this.scope, name, options);
     rule.addTarget(target);
     rule.addEventPattern({
-      detailType: [ 'CodePipeline Stage Execution State Change' ],
+      detailType: [ 'CodePipeline Action Execution State Change' ],
       source: [ 'aws.codepipeline' ],
       resources: [ this.pipeline.pipelineArn ],
       detail: {

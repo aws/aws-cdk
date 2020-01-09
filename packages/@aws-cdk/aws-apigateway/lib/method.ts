@@ -1,6 +1,6 @@
 import { Construct, Resource, Stack } from '@aws-cdk/core';
 import { CfnMethod, CfnMethodProps } from './apigateway.generated';
-import { IAuthorizer } from './authorizer';
+import { Authorizer, IAuthorizer } from './authorizer';
 import { ConnectionType, Integration } from './integration';
 import { MockIntegration } from './integrations/mock';
 import { MethodResponse } from './methodresponse';
@@ -19,13 +19,21 @@ export interface MethodOptions {
 
   /**
    * Method authorization.
-   * @default None open access
+   * If the value is set of `Custom`, an `authorizer` must also be specified.
+   *
+   * If you're using one of the authorizers that are available via the {@link Authorizer} class, such as {@link Authorizer#token()},
+   * it is recommended that this option not be specified. The authorizer will take care of setting the correct authorization type.
+   * However, specifying an authorization type using this property that conflicts with what is expected by the {@link Authorizer}
+   * will result in an error.
+   *
+   * @default - open access unless `authorizer` is specified
    */
   readonly authorizationType?: AuthorizationType;
 
   /**
    * If `authorizationType` is `Custom`, this specifies the ID of the method
    * authorizer resource.
+   * If specified, the value of `authorizationType` must be set to `Custom`
    */
   readonly authorizer?: IAuthorizer;
 
@@ -117,6 +125,20 @@ export class Method extends Resource {
 
     const defaultMethodOptions = props.resource.defaultMethodOptions || {};
     const authorizer = options.authorizer || defaultMethodOptions.authorizer;
+    const authorizerId = authorizer?.authorizerId;
+
+    const authorizationTypeOption = options.authorizationType || defaultMethodOptions.authorizationType;
+    const authorizationType = authorizer?.authorizationType || authorizationTypeOption || AuthorizationType.NONE;
+
+    // if the authorizer defines an authorization type and we also have an explicit option set, check that they are the same
+    if (authorizer?.authorizationType && authorizationTypeOption && authorizer?.authorizationType !== authorizationTypeOption) {
+      throw new Error(`${this.resource}/${this.httpMethod} - Authorization type is set to ${authorizationTypeOption} ` +
+        `which is different from what is required by the authorizer [${authorizer.authorizationType}]`);
+    }
+
+    if (authorizer instanceof Authorizer) {
+      authorizer._attachToApi(this.restApi);
+    }
 
     const methodProps: CfnMethodProps = {
       resourceId: props.resource.resourceId,
@@ -124,8 +146,8 @@ export class Method extends Resource {
       httpMethod: this.httpMethod,
       operationName: options.operationName || defaultMethodOptions.operationName,
       apiKeyRequired: options.apiKeyRequired || defaultMethodOptions.apiKeyRequired,
-      authorizationType: options.authorizationType || defaultMethodOptions.authorizationType || AuthorizationType.NONE,
-      authorizerId: authorizer && authorizer.authorizerId,
+      authorizationType,
+      authorizerId,
       requestParameters: options.requestParameters || defaultMethodOptions.requestParameters,
       integration: this.renderIntegration(props.integration),
       methodResponses: this.renderMethodResponses(options.methodResponses),

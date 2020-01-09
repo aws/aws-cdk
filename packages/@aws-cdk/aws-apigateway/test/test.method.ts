@@ -2,9 +2,15 @@ import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as iam from '@aws-cdk/aws-iam';
+import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as apigw from '../lib';
+
+const DUMMY_AUTHORIZER: apigw.IAuthorizer = {
+  authorizerId: 'dummyauthorizer',
+  authorizationType: apigw.AuthorizationType.CUSTOM
+};
 
 export = {
   'default setup'(test: Test) {
@@ -609,4 +615,84 @@ export = {
 
     test.done();
   },
+
+  'authorizer is bound correctly'(test: Test) {
+    const stack = new cdk.Stack();
+
+    const restApi = new apigw.RestApi(stack, 'myrestapi');
+    restApi.root.addMethod('ANY', undefined, {
+      authorizer: DUMMY_AUTHORIZER
+    });
+
+    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+      HttpMethod: 'ANY',
+      AuthorizationType: 'CUSTOM',
+      AuthorizerId: DUMMY_AUTHORIZER.authorizerId,
+    }));
+
+    test.done();
+  },
+
+  'authorizer via default method options'(test: Test) {
+    const stack = new cdk.Stack();
+
+    const func = new lambda.Function(stack, 'myfunction', {
+      handler: 'handler',
+      code: lambda.Code.fromInline('foo'),
+      runtime: lambda.Runtime.NODEJS_10_X,
+    });
+
+    const auth = new apigw.TokenAuthorizer(stack, 'myauthorizer1', {
+      authorizerName: 'myauthorizer1',
+      handler: func
+    });
+
+    const restApi = new apigw.RestApi(stack, 'myrestapi', {
+      defaultMethodOptions: {
+        authorizer: auth
+      }
+    });
+    restApi.root.addMethod('ANY');
+
+    expect(stack).to(haveResource('AWS::ApiGateway::Authorizer', {
+      Name: 'myauthorizer1',
+      Type: 'TOKEN',
+      RestApiId: stack.resolve(restApi.restApiId)
+    }));
+
+    test.done();
+  },
+
+  'fails when authorization type does not match the authorizer'(test: Test) {
+    const stack = new cdk.Stack();
+
+    const restApi = new apigw.RestApi(stack, 'myrestapi');
+
+    test.throws(() => {
+      restApi.root.addMethod('ANY', undefined, {
+        authorizationType: apigw.AuthorizationType.IAM,
+        authorizer: DUMMY_AUTHORIZER
+      });
+    }, /Authorization type is set to AWS_IAM which is different from what is required by the authorizer/);
+
+    test.done();
+  },
+
+  'fails when authorization type does not match the authorizer in default method options'(test: Test) {
+    const stack = new cdk.Stack();
+
+    const restApi = new apigw.RestApi(stack, 'myrestapi', {
+      defaultMethodOptions: {
+        authorizer: DUMMY_AUTHORIZER
+      }
+    });
+
+    test.throws(() => {
+      restApi.root.addMethod('ANY', undefined, {
+        authorizationType: apigw.AuthorizationType.NONE,
+      });
+    }, /Authorization type is set to NONE which is different from what is required by the authorizer/);
+
+    test.done();
+  }
 };
