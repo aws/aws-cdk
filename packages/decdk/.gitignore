@@ -2,4 +2,5 @@
 *.d.ts
 !deps.js
 test/fixture/.jsii
+test/fixture/tsconfig.json
 cdk.schema.json
