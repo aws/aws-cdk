@@ -674,23 +674,25 @@ export interface VpcProps {
    * subnet in each AZ provide the following:
    *
    * ```ts
-   * subnetConfiguration: [
-   *    {
-   *      cidrMask: 24,
-   *      name: 'ingress',
-   *      subnetType: SubnetType.PUBLIC,
-   *    },
-   *    {
-   *      cidrMask: 24,
-   *      name: 'application',
-   *      subnetType: SubnetType.PRIVATE,
-   *    },
-   *    {
-   *      cidrMask: 28,
-   *      name: 'rds',
-   *      subnetType: SubnetType.ISOLATED,
-   *    }
-   * ]
+   * new ec2.Vpc(this, 'VPC', {
+   *   subnetConfiguration: [
+   *      {
+   *        cidrMask: 24,
+   *        name: 'ingress',
+   *        subnetType: ec2.SubnetType.PUBLIC,
+   *      },
+   *      {
+   *        cidrMask: 24,
+   *        name: 'application',
+   *        subnetType: ec2.SubnetType.PRIVATE,
+   *      },
+   *      {
+   *        cidrMask: 28,
+   *        name: 'rds',
+   *        subnetType: ec2.SubnetType.ISOLATED,
+   *      }
+   *   ]
+   * });
    * ```
    *
    * @default - The VPC CIDR will be evenly divided between 1 public and 1
@@ -701,7 +703,7 @@ export interface VpcProps {
   /**
    * Indicates whether a VPN gateway should be created and attached to this VPC.
    *
-   * @default - true when vpnGatewayAsn or vpnConnections is specified.
+   * @default - true when vpnGatewayAsn or vpnConnections is specified
    */
   readonly vpnGateway?: boolean;
 
@@ -803,15 +805,13 @@ export interface SubnetConfiguration {
  * For example:
  *
  * ```ts
- * import { SubnetType, Vpc } from '@aws-cdk/aws-ec2'
- *
- * const vpc = new Vpc(this, 'TheVPC', {
+ * const vpc = new ec2.Vpc(this, 'TheVPC', {
  *   cidr: "10.0.0.0/16"
  * })
  *
  * // Iterate the private subnets
  * const selection = vpc.selectSubnets({
- *   subnetType: SubnetType.PRIVATE
+ *   subnetType: ec2.SubnetType.PRIVATE
  * });
  *
  * for (const subnet of selection.subnets) {

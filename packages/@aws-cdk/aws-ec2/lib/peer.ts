@@ -27,7 +27,17 @@ export interface IPeer extends IConnectable {
 }
 
 /**
- * Factories for static connection peer
+ * Peer object factories (to be used in Security Group management)
+ *
+ * The static methods on this object can be used to create peer objects
+ * which represent a connection partner in Security Group rules.
+ *
+ * Use this object if you need to represent connection partners using plain IP
+ * addresses, or a prefix list ID.
+ *
+ * If you want to address a connection partner by Security Group, you can just
+ * use the Security Group (or the construct that contains a Security Group)
+ * directly, as it already implements `IPeer`.
  */
 export class Peer {
   /**
