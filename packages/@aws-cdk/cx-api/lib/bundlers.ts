@@ -5,16 +5,16 @@ import { FileAssetMetadataEntry } from './assets';
 /**
  * An asset bundler
  */
-export interface IBundler {
+export abstract class Bundler {
   /**
-   * Bundler options as passed to the constructor
+   * @param options Bundler options that are passed to the constructor
    */
-  readonly options?: any;
+  constructor(public readonly options?: any) {}
 
   /**
    * Bundles the asset
    */
-  bundle(asset: FileAssetMetadataEntry, assemblyDir: string): Promise<FileAssetMetadataEntry>;
+  public abstract bundle(asset: FileAssetMetadataEntry, assemblyDir: string): Promise<FileAssetMetadataEntry>;
 }
 
 /**
@@ -46,14 +46,9 @@ export interface ParcelBundlerOptions {
 /**
  * Bundle asset with Parcel
  */
-export class ParcelBundler implements IBundler {
-  /**
-   * Parcel bundler options
-   */
-  public readonly options?: any;
-
-  constructor(options?: ParcelBundlerOptions) { // Cannot use `public readonly` here to change type to any
-    this.options = options; // Change type to any
+export class ParcelBundler extends Bundler {
+  constructor(options?: ParcelBundlerOptions) {
+    super(options);
   }
 
   public async bundle(asset: FileAssetMetadataEntry, assemblyDir: string): Promise<FileAssetMetadataEntry> {

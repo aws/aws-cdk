@@ -78,11 +78,11 @@ export interface FileAssetMetadataEntry extends BaseAssetMetadataEntry {
   readonly bundlerClassName?: string;
 
   /**
-   * Options for the bundler
+   * Options for the bunlder
    *
    * @default - no bundler
    */
-  readonly bundlerOptions?: any;
+  readonly bundlerOptions?: string;
 }
 
 export interface ContainerImageAssetMetadataEntry extends BaseAssetMetadataEntry {

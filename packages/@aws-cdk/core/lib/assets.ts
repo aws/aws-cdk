@@ -1,4 +1,4 @@
-import { IBundler } from '@aws-cdk/cx-api';
+import { Bundler } from '@aws-cdk/cx-api';
 
 /**
  * Represents the source for a file asset.
@@ -28,7 +28,7 @@ export interface FileAssetSource {
    *
    * @default - do not use a bundler
    */
-  readonly bundler?: IBundler;
+  readonly bundler?: Bundler;
 }
 
 export interface DockerImageAssetSource {
