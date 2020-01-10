@@ -4,7 +4,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
 
-import { ClusterParameterGroup, ClusterType, RedshiftCluster } from '../lib';
+import { Cluster, ClusterParameterGroup, ClusterType } from '../lib';
 
 test('check that instantiation works', () => {
   // GIVEN
@@ -12,7 +12,7 @@ test('check that instantiation works', () => {
   const vpc = new ec2.Vpc(stack, 'VPC');
 
   // WHEN
-  new RedshiftCluster(stack, 'Redshift', {
+  new Cluster(stack, 'Redshift', {
     masterUser: {
       masterUsername: 'admin',
       masterPassword: cdk.SecretValue.plainText('tooshort'),
@@ -63,7 +63,7 @@ test('can create a cluster with imported vpc and security group', () => {
   const sg = ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', "SecurityGroupId12345");
 
   // WHEN
-  new RedshiftCluster(stack, 'Redshift', {
+  new Cluster(stack, 'Redshift', {
     masterUser: {
       masterUsername: 'admin',
       masterPassword: cdk.SecretValue.plainText('tooshort'),
@@ -87,7 +87,7 @@ test('creates a secret when master credentials are not specified', () => {
   const vpc = new ec2.Vpc(stack, 'VPC');
 
   // WHEN
-  new RedshiftCluster(stack, 'Redshift', {
+  new Cluster(stack, 'Redshift', {
     masterUser: {
       masterUsername: 'admin',
     },
@@ -138,7 +138,7 @@ test('SIngle Node CLusters spawn only single node', () => {
   const vpc = new ec2.Vpc(stack, 'VPC');
 
   // WHEN
-  new RedshiftCluster(stack, 'Redshift', {
+  new Cluster(stack, 'Redshift', {
     masterUser: {
       masterUsername: 'admin',
     },
@@ -159,7 +159,7 @@ test('create an encrypted cluster with custom KMS key', () => {
   const vpc = new ec2.Vpc(stack, 'VPC');
 
   // WHEN
-  new RedshiftCluster(stack, 'Redshift', {
+  new Cluster(stack, 'Redshift', {
     masterUser: {
       masterUsername: 'admin',
     },
@@ -195,7 +195,7 @@ test('cluster with parameter group', () => {
     ]
   });
 
-  new RedshiftCluster(stack, 'Redshift', {
+  new Cluster(stack, 'Redshift', {
     masterUser: {
       masterUsername: 'admin',
     },
@@ -214,7 +214,7 @@ test('imported cluster with imported security group honors allowAllOutbound', ()
   // GIVEN
   const stack = testStack();
 
-  const cluster = RedshiftCluster.fromRedshiftClusterAttributes(stack, 'Database', {
+  const cluster = Cluster.fromClusterAttributes(stack, 'Database', {
     clusterEndpointAddress: 'addr',
     clusterName: 'identifier',
     clusterEndpointPort: 3306,
@@ -299,7 +299,7 @@ test('imported cluster with imported security group honors allowAllOutbound', ()
 //     const vpc = new ec2.Vpc(stack, 'VPC');
 
 //     // WHEN
-//     const cluster = new RedshiftCluster(stack, 'Redshift', {
+//     const cluster = new Cluster(stack, 'Redshift', {
 //       masterUser: {
 //         masterUsername: 'admin',
 //         masterPassword: cdk.SecretValue.plainText('tooshort')

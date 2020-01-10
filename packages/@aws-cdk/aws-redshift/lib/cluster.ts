@@ -3,7 +3,7 @@ import { IRole } from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { Construct, Duration, RemovalPolicy, Resource, Token } from '@aws-cdk/core';
-import { IRedshiftCluster, RedshiftClusterAttributes } from './cluster-ref';
+import { ClusterAttributes, ICluster } from './cluster-ref';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { IParameterGroup } from './parameter-group';
@@ -37,7 +37,7 @@ export enum ClusterType {
 /**
  * Properties for a new database cluster
  */
-export interface RedshiftClusterProps {
+export interface ClusterProps {
 
     /**
      * An optional identifier for the cluster
@@ -178,7 +178,7 @@ export interface LoggingProperties {
 /**
  * A new or imported clustered database.
  */
-abstract class RedshiftClusterBase extends Resource implements IRedshiftCluster {
+abstract class ClusterBase extends Resource implements ICluster {
     /**
      * Name of the cluster
      */
@@ -215,12 +215,12 @@ abstract class RedshiftClusterBase extends Resource implements IRedshiftCluster 
  *
  * @resource AWS::Redshift::Cluster
  */
-export class RedshiftCluster extends RedshiftClusterBase {
+export class Cluster extends ClusterBase {
     /**
      * Import an existing DatabaseCluster from properties
      */
-    public static fromRedshiftClusterAttributes(scope: Construct, id: string, attrs: RedshiftClusterAttributes): IRedshiftCluster {
-        class Import extends RedshiftClusterBase implements IRedshiftCluster {
+    public static fromClusterAttributes(scope: Construct, id: string, attrs: ClusterAttributes): ICluster {
+        class Import extends ClusterBase implements ICluster {
             public readonly defaultPort = ec2.Port.tcp(attrs.clusterEndpointPort);
             public readonly connections = new ec2.Connections({
                 securityGroups: attrs.securityGroups,
@@ -273,7 +273,7 @@ export class RedshiftCluster extends RedshiftClusterBase {
      */
     private readonly vpcSubnets?: ec2.SubnetSelection;
 
-    constructor(scope: Construct, id: string, props: RedshiftClusterProps) {
+    constructor(scope: Construct, id: string, props: ClusterProps) {
         super(scope, id);
 
         this.vpc = props.vpc ? props.vpc : new ec2.Vpc(this, "vpc");

@@ -6,7 +6,7 @@ import { Endpoint } from './endpoint';
 /**
  * Create a Redshift Cluster with a given number of nodes.
  */
-export interface IRedshiftCluster extends IResource, ec2.IConnectable, secretsmanager.ISecretAttachmentTarget {
+export interface ICluster extends IResource, ec2.IConnectable, secretsmanager.ISecretAttachmentTarget {
   /**
    * Name of the cluster
    * @attribute ClusterName
@@ -28,7 +28,7 @@ export interface IRedshiftCluster extends IResource, ec2.IConnectable, secretsma
 /**
  * Properties that describe an existing cluster instance
  */
-export interface RedshiftClusterAttributes {
+export interface ClusterAttributes {
   /**
    * The security groups of the redshift cluster
    */
