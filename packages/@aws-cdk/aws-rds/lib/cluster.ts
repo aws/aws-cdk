@@ -102,11 +102,9 @@ export interface DatabaseClusterProps {
   readonly kmsKey?: kms.IKey;
 
   /**
-   * A daily time range in 24-hours UTC format in which backups preferably execute.
+   * A preferred maintenance window day/time range. Should be specified as a range ddd:hh24:mi-ddd:hh24:mi (24H Clock UTC).
    *
-   * Must be at least 30 minutes long.
-   *
-   * Example: '01:00-02:00'
+   * Example: 'Sun:23:45-Mon:00:15'
    *
    * @default - 30-minute window selected at random from an 8-hour block of time for
    * each AWS Region, occurring on a random day of the week.

@@ -199,6 +199,7 @@
     "MyAuthorizer6575980E": {
       "Type": "AWS::ApiGateway::Authorizer",
       "Properties": {
+        "Name": "TokenAuthorizerIntegMyAuthorizer793B1D5F",
         "RestApiId": {
           "Ref": "MyRestApi2D1F47A9"
         },

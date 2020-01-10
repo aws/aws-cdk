@@ -63,7 +63,7 @@ import route53 = require('@aws-cdk/aws-route53');
 
 new route53.ARecord(this, 'ARecord', {
   zone: myZone,
-  target: route53.AddressRecordTarget.fromIpAddresses('1.2.3.4', '5.6.7.8')
+  target: route53.RecordTarget.fromIpAddresses('1.2.3.4', '5.6.7.8')
 });
 ```
 
@@ -74,7 +74,7 @@ import targets = require('@aws-cdk/aws-route53-targets');
 
 new route53.AaaaRecord(this, 'Alias', {
   zone: myZone,
-  target: route53.AddressRecordTarget.fromAlias(new targets.CloudFrontTarget(distribution))
+  target: route53.RecordTarget.fromAlias(new targets.CloudFrontTarget(distribution))
 });
 ```
 
