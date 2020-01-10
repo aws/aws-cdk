@@ -2,8 +2,8 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Alarm, ComparisonOperator, TreatMissingData } from './alarm';
 import { Dimension, IMetric, MetricAlarmConfig, MetricConfig, MetricGraphConfig, Unit } from './metric-types';
-import { metricKey, validateNoIdConflicts } from './metric-util';
-import { normalizeStatistic, parseStatistic } from './util.statistic';
+import { dispatchMetric, metricKey } from './private/metric-util';
+import { normalizeStatistic, parseStatistic } from './private/statistic';
 
 export type DimensionHash = {[dim: string]: any};
 
@@ -234,7 +234,21 @@ export class Metric implements IMetric {
    * @param props The set of properties to change.
    */
   public with(props: MetricOptions): Metric {
-    const ret = new Metric({
+    // Short-circuit creating a new object if there would be no effective change
+    if ((props.label === undefined || props.label === this.label)
+      && (props.color === undefined || props.color === this.color)
+      && (props.statistic === undefined || props.statistic === this.statistic)
+      && (props.unit === undefined || props.unit === this.unit)
+      && (props.account === undefined || props.account === this.account)
+      && (props.region === undefined || props.region === this.region)
+      // For these we're not going to do deep equality, misses some opportunity for optimization
+      // but that's okay.
+      && (props.dimensions === undefined)
+      && (props.period === undefined || props.period.toSeconds() === this.period.toSeconds())) {
+      return this;
+    }
+
+    return new Metric({
       dimensions: ifUndefined(props.dimensions, this.dimensions),
       namespace: this.namespace,
       metricName: this.metricName,
@@ -246,12 +260,27 @@ export class Metric implements IMetric {
       account: ifUndefined(props.account, this.account),
       region: ifUndefined(props.region, this.region)
     });
+  }
 
-    // Save on objects: if the returned object is the same as the current
-    // object, just return ourselves.
-    if (metricKey(ret) === metricKey(this) && ret.color === this.color && ret.label === this.label) { return this; }
+  /**
+   * Attach the metric object to the given construct scope
+   *
+   * Returns a Metric object that uses the account and region from the Stack
+   * the given construct is defined in. If the metric is subsequently used
+   * in a Dashboard or Alarm in a different Stack defined in a different
+   * account or region, the appropriate 'region' and 'account' fields
+   * will be added to it.
+   *
+   * If the scope we attach to is in an environment-agnostic stack,
+   * nothing is done and the same Metric object is returned.
+   */
+  public attachTo(scope: cdk.Construct): Metric {
+    const stack = cdk.Stack.of(scope);
 
-    return ret;
+    return this.with({
+      region: cdk.Token.isUnresolved(stack.region) ? undefined : stack.region,
+      account: cdk.Token.isUnresolved(stack.account) ? undefined : stack.account,
+    });
   }
 
   public toMetricConfig(): MetricConfig {
@@ -419,7 +448,7 @@ export class MathExpression implements IMetric {
       throw new Error(`Invalid variable names in expression: ${invalidVariableNames}. Must start with lowercase letter and only contain alphanumerics.`);
     }
 
-    validateNoIdConflicts(this);
+    this.validateNoIdConflicts();
   }
 
   /**
@@ -433,7 +462,7 @@ export class MathExpression implements IMetric {
     // Short-circuit creating a new object if there would be no effective change
     if ((props.label === undefined || props.label === this.label)
       && (props.color === undefined || props.color === this.color)
-      && (props.period === undefined)) {
+      && (props.period === undefined || props.period.toSeconds() === this.period.toSeconds())) {
       return this;
     }
 
@@ -493,6 +522,30 @@ export class MathExpression implements IMetric {
   public toString() {
     return this.label || this.expression;
   }
+
+  private validateNoIdConflicts() {
+    const seen = new Map<string, IMetric>();
+    visit(this);
+
+    function visit(metric: IMetric) {
+      dispatchMetric(metric, {
+        withStat() {
+          // Nothing
+        },
+        withExpression(expr) {
+          for (const [id, subMetric] of Object.entries(expr.usingMetrics)) {
+            const existing = seen.get(id);
+            if (existing && metricKey(existing) !== metricKey(subMetric)) {
+              throw new Error(`The ID '${id}' used for two metrics in the expression: '${subMetric}' and '${existing}'. Rename one.`);
+            }
+            seen.set(id, subMetric);
+            visit(subMetric);
+          }
+        }
+      });
+    }
+  }
+
 }
 
 const VALID_VARIABLE = new RegExp('^[a-z][a-zA-Z0-9_]*$');

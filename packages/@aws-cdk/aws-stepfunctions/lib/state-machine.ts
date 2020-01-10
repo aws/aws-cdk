@@ -173,7 +173,7 @@ export class StateMachine extends StateMachineBase {
             dimensions: { StateMachineArn: this.stateMachineArn },
             statistic: 'sum',
             ...props
-        });
+        }).attachTo(this);
     }
 
     /**

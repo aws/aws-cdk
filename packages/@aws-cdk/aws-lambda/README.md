@@ -107,7 +107,7 @@ setting the `deadLetterQueueEnabled: true` configuration.
 import lambda = require('@aws-cdk/aws-lambda');
 
 const fn = new lambda.Function(this, 'MyFunction', {
-    runtime: lambda.Runtime.NODEJS_8_10,
+    runtime: lambda.Runtime.NODEJS_10_X,
     handler: 'index.handler',
     code: lambda.Code.fromInline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
     deadLetterQueueEnabled: true
@@ -122,7 +122,7 @@ import sqs = require('@aws-cdk/aws-sqs');
 
 const dlq = new sqs.Queue(this, 'DLQ');
 const fn = new lambda.Function(this, 'MyFunction', {
-    runtime: lambda.Runtime.NODEJS_8_10,
+    runtime: lambda.Runtime.NODEJS_10_X,
     handler: 'index.handler',
     code: lambda.Code.fromInline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
     deadLetterQueue: dlq
@@ -138,7 +138,7 @@ to learn more about AWS Lambdas and DLQs.
 import lambda = require('@aws-cdk/aws-lambda');
 
 const fn = new lambda.Function(this, 'MyFunction', {
-    runtime: lambda.Runtime.NODEJS_8_10,
+    runtime: lambda.Runtime.NODEJS_10_X,
     handler: 'index.handler',
     code: lambda.Code.fromInline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
     tracing: lambda.Tracing.ACTIVE
@@ -153,7 +153,7 @@ to learn more about AWS Lambda's X-Ray support.
 import lambda = require('@aws-cdk/aws-lambda');
 
 const fn = new lambda.Function(this, 'MyFunction', {
-    runtime: lambda.Runtime.NODEJS_8_10,
+    runtime: lambda.Runtime.NODEJS_10_X,
     handler: 'index.handler',
     code: lambda.Code.fromInline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
     reservedConcurrentExecutions: 100

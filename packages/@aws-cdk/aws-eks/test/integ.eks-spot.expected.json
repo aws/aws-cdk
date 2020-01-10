@@ -871,8 +871,7 @@
       "Type": "AWS::AutoScaling::AutoScalingGroup",
       "Properties": {
         "MaxSize": "2",
-        "MinSize": "1",
-        "DesiredCapacity": "2",
+        "MinSize": "2",
         "LaunchConfigurationName": {
           "Ref": "myClusterDefaultCapacityLaunchConfigCF6D4B81"
         },
