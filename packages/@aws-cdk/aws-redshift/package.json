@@ -118,7 +118,7 @@
       "props-struct-name:@aws-cdk/aws-redshift.IClusterParameterGroup",
       "props-physical-name:@aws-cdk/aws-redshift.ClusterParameterGroupProps",
       "props-physical-name:@aws-cdk/aws-redshift.DatabaseSecretProps",
-      "props-physical-name:@aws-cdk/aws-redshift.RedshiftClusterProps"
+      "props-physical-name:@aws-cdk/aws-redshift.ClusterProps"
     ]
   },
   "stability": "experimental"

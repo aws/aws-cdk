@@ -54,8 +54,6 @@ When the master password is generated and stored in AWS Secrets Manager, it can 
 instance.addRotationSingleUser(); // Will rotate automatically after 30 days
 ```
 
-[example of setting up master password rotation for a cluster](test/integ.cluster-rotation.lit.ts)
-
 The multi user rotation scheme is also available:
 ```ts
 instance.addRotationMultiUser('MyUser', {
