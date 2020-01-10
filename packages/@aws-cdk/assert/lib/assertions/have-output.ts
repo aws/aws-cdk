@@ -1,7 +1,9 @@
-import {Assertion} from "../assertion";
-import {StackInspector} from "../inspector";
+import { JestFriendlyAssertion } from '../assertion';
+import { StackInspector } from '../inspector';
 
-class HaveOutputAssertion extends Assertion<StackInspector> {
+class HaveOutputAssertion extends JestFriendlyAssertion<StackInspector> {
+  private readonly inspected: InspectionFailure[] = [];
+
   constructor(private readonly outputName?: string, private readonly exportName?: any, private outputValue?: any) {
     super();
     if (!this.outputName && !this.exportName) {
@@ -10,59 +12,65 @@ class HaveOutputAssertion extends Assertion<StackInspector> {
   }
 
   public get description(): string {
-    const descriptionPartsArray = [
-      'output',
-      `${this.outputName ? ' with name ' + this.outputName : ''}`,
-      `${this.exportName ? ' with export name ' + JSON.stringify(this.exportName) : ''}`,
-      `${this.outputValue ? ' with value ' + JSON.stringify(this.outputValue) : ''}`
-    ];
-    return descriptionPartsArray.join();
+    const descriptionPartsArray = new Array<string>();
+
+    if (this.outputName) {
+      descriptionPartsArray.push(`name '${this.outputName}'`);
+    }
+    if (this.exportName) {
+      descriptionPartsArray.push(`export name ${JSON.stringify(this.exportName)}`);
+    }
+    if (this.outputValue) {
+      descriptionPartsArray.push(`value ${JSON.stringify(this.outputValue)}`);
+    }
+
+    return 'output with ' + descriptionPartsArray.join(', ');
   }
 
   public assertUsing(inspector: StackInspector): boolean {
     if (!('Outputs' in inspector.value)) {
       return false;
     }
-    return (this.checkOutputName(inspector)) &&
-        (this.checkExportName(inspector)) &&
-        (this.checkOutputValue(inspector));
-  }
 
-  private checkOutputName(inspector: StackInspector): boolean {
-    if (!this.outputName) {
-      return true;
+    for (const [name, props] of Object.entries(inspector.value.Outputs as Record<string, any>)) {
+      const mismatchedFields = new Array<string>();
+
+      if (this.outputName && name !== this.outputName) {
+        mismatchedFields.push('name');
+      }
+
+      if (this.exportName && JSON.stringify(this.exportName) !== JSON.stringify(props.Export?.Name)) {
+        mismatchedFields.push('export name');
+      }
+
+      if (this.outputValue && JSON.stringify(this.outputValue) !== JSON.stringify(props.Value)) {
+        mismatchedFields.push('value');
+      }
+
+      if (mismatchedFields.length === 0) {
+        return true;
+      }
+
+      this.inspected.push({
+        output: { [name]: props },
+        failureReason: `mismatched ${mismatchedFields.join(', ')}`,
+      });
     }
-    return this.outputName in inspector.value.Outputs;
+
+    return false;
   }
 
-  private checkExportName(inspector: StackInspector): boolean {
-    if (!this.exportName) {
-      return true;
+  public generateErrorMessage() {
+    const lines = new Array<string>();
+
+    lines.push(`None of ${this.inspected.length} outputs matches ${this.description}.`);
+
+    for (const inspected of this.inspected) {
+      lines.push(`- ${inspected.failureReason} in:`);
+      lines.push(indent(4, JSON.stringify(inspected.output, null, 2)));
     }
-    const outputs = Object.entries(inspector.value.Outputs)
-        .filter(([name, ]) => !this.outputName || this.outputName === name)
-        .map(([, value]) => value);
-    const outputWithExport = this.findOutput(outputs);
-    return !!outputWithExport;
-  }
 
-  private checkOutputValue(inspector: StackInspector): boolean {
-    if (!this.outputValue) {
-      return true;
-    }
-    const output = this.outputName ?
-      inspector.value.Outputs[this.outputName] :
-      this.findOutput(Object.values(inspector.value.Outputs));
-    return output ?
-        JSON.stringify(output.Value) === JSON.stringify(this.outputValue) :
-        false;
-  }
-
-  private findOutput(outputs: any): any {
-    const thisExportNameString = JSON.stringify(this.exportName);
-    return outputs.find((out: any) => {
-      return JSON.stringify(out.Export?.Name) === thisExportNameString;
-    });
+    return lines.join('\n');
   }
 }
 
@@ -88,11 +96,21 @@ export interface HaveOutputProperties {
   outputValue?: any;
 }
 
+interface InspectionFailure {
+  output: any;
+  failureReason: string;
+}
+
 /**
  * An assertion  to check whether Output with particular properties is present in a stack
  * @param props  properties of the Output that is being asserted against.
  *               Check ``HaveOutputProperties`` interface to get full list of available parameters
  */
-export function haveOutput(props: HaveOutputProperties): Assertion<StackInspector> {
+export function haveOutput(props: HaveOutputProperties): JestFriendlyAssertion<StackInspector> {
   return new HaveOutputAssertion(props.outputName, props.exportName, props.outputValue);
+}
+
+function indent(n: number, s: string) {
+  const prefix = ' '.repeat(n);
+  return prefix + s.replace(/\n/g, '\n' + prefix);
 }
