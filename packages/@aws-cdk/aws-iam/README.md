@@ -78,9 +78,8 @@ following cases:
   big for IAM to store, and you need to add some wildcards to keep the
   policy size down.
 
-To this end, you can create a `Role` yourself and wrap the object in
-an instance of the `ImmutableRole` wrapper class when you pass the
-role to a construct.
+To prevent constructs from updating your Role's policy, pass the object
+returned by `myRole.withoutPolicyUpdates()` instead of `myRole` itself.
 
 For example, to have an AWS CodePipeline *not* automatically add the required
 permissions to trigger the expected targets, do the following:
@@ -92,7 +91,7 @@ const role = new iam.Role(this, 'Role', {
 
 new codepipeline.Pipeline(this, 'Pipeline', {
   // Give the Pipeline an immutable view of the Role
-  role: new iam.ImmutableRole(role),
+  role: role.withoutPolicyUpdates(),
 });
 
 // You now have to manage the Role policies yourself
@@ -116,10 +115,6 @@ const role = iam.Role.fromRoleArn(this, 'Role', 'arn:aws:iam::123456789012:role/
   mutable: false,
 });
 ```
-
-In the previous example, passing `mutable: false` does the same as wrapping
-the Role in an `ImmutableRole`, but is more convenient to use in the case of
-using existing Roles.
 
 ### Configuring an ExternalId
 

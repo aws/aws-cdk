@@ -6,7 +6,7 @@ import * as iam from '../lib';
 
 describe('ImmutableRole', () => {
   let stack: Stack;
-  let mutableRole: iam.IRole;
+  let mutableRole: iam.Role;
   let immutableRole: iam.IRole;
 
   beforeEach(() => {
@@ -14,7 +14,7 @@ describe('ImmutableRole', () => {
     mutableRole = new iam.Role(stack, 'MutableRole', {
       assumedBy: new iam.AnyPrincipal(),
     });
-    immutableRole = new iam.ImmutableRole(mutableRole);
+    immutableRole = mutableRole.withoutPolicyUpdates();
   });
 
   test('ignores calls to attachInlinePolicy', () => {

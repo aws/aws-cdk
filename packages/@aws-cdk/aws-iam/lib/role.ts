@@ -2,12 +2,12 @@ import { Construct, Duration, Lazy, Resource, Stack, Token } from '@aws-cdk/core
 import { Grant } from './grant';
 import { CfnRole } from './iam.generated';
 import { IIdentity } from './identity-base';
-import { ImmutableRole } from './immutable-role';
 import { IManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
 import { PolicyDocument } from './policy-document';
 import { PolicyStatement } from './policy-statement';
 import { ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
+import { ImmutableRole } from './private/immutable-role';
 import { AttachedPolicies } from './util';
 
 export interface RoleProps {
@@ -368,6 +368,19 @@ export class Role extends Resource implements IRole {
    */
   public grantPassRole(identity: IPrincipal) {
     return this.grant(identity, 'iam:PassRole');
+  }
+
+  /**
+   * Return a copy of this Role object whose Policies will not be updated
+   *
+   * Use the object returned by this method if you want this Role to be used by
+   * a construct without it automatically updating the Role's Policies.
+   *
+   * If you do, you are responsible for adding the correct statements to the
+   * Role's policies yourself.
+   */
+  public withoutPolicyUpdates(): IRole {
+    return new ImmutableRole(this);
   }
 }
 
