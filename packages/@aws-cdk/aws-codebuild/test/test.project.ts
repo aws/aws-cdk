@@ -315,7 +315,7 @@ export = {
       source: codebuild.Source.gitHubEnterprise({
         httpsCloneUrl: 'https://mygithub-enterprise.com/myuser/myrepo',
       }),
-      role: new iam.ImmutableRole(role),
+      role: role.withoutPolicyUpdates(),
       vpc,
     });
 
