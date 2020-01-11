@@ -484,7 +484,7 @@ CNAME records only for subdomains.)
 ```ts
 new route53.ARecord(this, 'CustomDomainAliasRecord', {
   zone: hostedZoneForExampleCom,
-  target: route53.AddressRecordTarget.fromAlias(new route53_targets.ApiGateway(api))
+  target: route53.RecordTarget.fromAlias(new route53_targets.ApiGateway(api))
 });
 ```
 
@@ -527,7 +527,7 @@ If you wish to setup this domain with an Amazon Route53 alias, use the `route53_
 ```ts
 new route53.ARecord(this, 'CustomDomainAliasRecord', {
   zone: hostedZoneForExampleCom,
-  target: route53.AddressRecordTarget.fromAlias(new route53_targets.ApiGatewayDomain(domainName))
+  target: route53.RecordTarget.fromAlias(new route53_targets.ApiGatewayDomain(domainName))
 });
 ```
 
