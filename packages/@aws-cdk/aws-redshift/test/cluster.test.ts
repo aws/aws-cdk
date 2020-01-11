@@ -1,10 +1,10 @@
-import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
+import { expect as cdkExpect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
 
-import { Cluster, ClusterParameterGroup, ClusterType } from '../lib';
+import { Cluster, ClusterParameterGroup, ClusterType, NodeType } from '../lib';
 
 test('check that instantiation works', () => {
   // GIVEN
@@ -21,7 +21,7 @@ test('check that instantiation works', () => {
   });
 
   // THEN
-  expect(stack).to(haveResource('AWS::Redshift::Cluster', {
+  cdkExpect(stack).to(haveResource('AWS::Redshift::Cluster', {
     Properties: {
       AllowVersionUpgrade: true,
       MasterUsername: "admin",
@@ -40,7 +40,7 @@ test('check that instantiation works', () => {
     UpdateReplacePolicy: 'Retain'
   }, ResourcePart.CompleteDefinition));
 
-  expect(stack).to(haveResource('AWS::Redshift::ClusterSubnetGroup', {
+  cdkExpect(stack).to(haveResource('AWS::Redshift::ClusterSubnetGroup', {
     Properties: {
       Description: `Subnets for Redshift Redshift cluster`,
       SubnetIds: [
@@ -73,7 +73,7 @@ test('can create a cluster with imported vpc and security group', () => {
   });
 
   // THEN
-  expect(stack).to(haveResource('AWS::Redshift::Cluster', {
+  cdkExpect(stack).to(haveResource('AWS::Redshift::Cluster', {
     ClusterSubnetGroupName: { Ref: "RedshiftSubnetsDFE70E0A" },
     MasterUsername: "admin",
     MasterUserPassword: "tooshort",
@@ -95,7 +95,7 @@ test('creates a secret when master credentials are not specified', () => {
   });
 
   // THEN
-  expect(stack).to(haveResource('AWS::Redshift::Cluster', {
+  cdkExpect(stack).to(haveResource('AWS::Redshift::Cluster', {
     MasterUsername: {
       'Fn::Join': [
         '',
@@ -122,7 +122,7 @@ test('creates a secret when master credentials are not specified', () => {
     },
   }));
 
-  expect(stack).to(haveResource('AWS::SecretsManager::Secret', {
+  cdkExpect(stack).to(haveResource('AWS::SecretsManager::Secret', {
     GenerateSecretString: {
       ExcludeCharacters: '\"@/\\',
       GenerateStringKey: 'password',
@@ -143,14 +143,16 @@ test('SIngle Node CLusters spawn only single node', () => {
       masterUsername: 'admin',
     },
     vpc,
+    nodeType: NodeType.DC1_8XLARGE,
     clusterType: ClusterType.SINGLE_NODE
   });
 
   // THEN
-  expect(stack).to(haveResource('AWS::Redshift::Cluster', {
+  cdkExpect(stack).to(haveResource('AWS::Redshift::Cluster', {
     ClusterType: "single-node",
+    NodeType: "dc1.8xlarge",
     NumberOfNodes: 1,
-    }));
+  }));
 });
 
 test('create an encrypted cluster with custom KMS key', () => {
@@ -168,7 +170,7 @@ test('create an encrypted cluster with custom KMS key', () => {
   });
 
   // THEN
-  expect(stack).to(haveResource('AWS::Redshift::Cluster', {
+  cdkExpect(stack).to(haveResource('AWS::Redshift::Cluster', {
     KmsKeyId: {
       'Fn::GetAtt': [
         'Key961B73FD',
@@ -204,7 +206,7 @@ test('cluster with parameter group', () => {
   });
 
   // THEN
-  expect(stack).to(haveResource('AWS::Redshift::Cluster', {
+  cdkExpect(stack).to(haveResource('AWS::Redshift::Cluster', {
     ClusterParameterGroupName: { Ref: 'ParamsA8366201' },
   }));
 
@@ -229,113 +231,77 @@ test('imported cluster with imported security group honors allowAllOutbound', ()
   cluster.connections.allowToAnyIpv4(ec2.Port.tcp(443));
 
   // THEN
-  expect(stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
+  cdkExpect(stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
     GroupId: 'sg-123456789',
   }));
 });
 
-//   "cluster with enabled monitoring"(test: Test) {
-//     // GIVEN
-//     const stack = testStack();
-//     const vpc = new ec2.Vpc(stack, "VPC");
+test('can create a cluster with logging enabled', () => {
+  // GIVEN
+  const stack = testStack();
+  const vpc = new ec2.Vpc(stack, 'VPC');
 
-//     // WHEN
-//     new DatabaseCluster(stack, "Database", {
-//       engine: DatabaseClusterEngine.AURORA,
-//       instances: 1,
-//       masterUser: {
-//         username: "admin"
-//       },
-//       instanceProps: {
-//         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
-//         vpc
-//       },
-//       monitoringInterval: cdk.Duration.minutes(1),
-//     });
+  // WHEN
+  new Cluster(stack, 'Redshift', {
+    masterUser: {
+      masterUsername: 'admin',
+    },
+    vpc,
+    loggingProperties: {
+      bucketName: "logging-bucket",
+      s3KeyPrefix: "prefix"
+    }
+  });
 
-//     // THEN
-//     expect(stack).to(haveResource("AWS::RDS::DBInstance", {
-//       MonitoringInterval: 60,
-//       MonitoringRoleArn: {
-//         "Fn::GetAtt": ["DatabaseMonitoringRole576991DA", "Arn"]
-//       }
-//     }, ResourcePart.Properties));
+  // THEN
+  cdkExpect(stack).to(haveResource('AWS::Redshift::Cluster', {
+    LoggingProperties: {
+      BucketName: 'logging-bucket',
+      S3KeyPrefix: 'prefix'
+    },
+  }));
+});
 
-//     expect(stack).to(haveResource("AWS::IAM::Role", {
-//       AssumeRolePolicyDocument: {
-//         Statement: [
-//           {
-//             Action: "sts:AssumeRole",
-//             Effect: "Allow",
-//             Principal: {
-//               Service: "monitoring.rds.amazonaws.com"
-//             }
-//           }
-//         ],
-//         Version: "2012-10-17"
-//       },
-//       ManagedPolicyArns: [
-//         {
-//           "Fn::Join": [
-//             "",
-//             [
-//               "arn:",
-//               {
-//                 Ref: "AWS::Partition"
-//               },
-//               ":iam::aws:policy/service-role/AmazonRDSEnhancedMonitoringRole"
-//             ]
-//           ]
-//         }
-//       ]
-//     }));
+test('throws when trying to add rotation to a cluster without secret', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'VPC');
 
-//     test.done();
-//   },
+  // WHEN
+  const cluster = new Cluster(stack, 'Redshift', {
+    masterUser: {
+      masterUsername: 'admin',
+      masterPassword: cdk.SecretValue.plainText('tooshort')
+    },
+    vpc,
+  });
 
-// test('throws when trying to add rotation to a cluster without secret', () => {
-//     // GIVEN
-//     const stack = new cdk.Stack();
-//     const vpc = new ec2.Vpc(stack, 'VPC');
+  // THEN
+  expect(() => {
+    cluster.addRotationSingleUser();
+  }).toThrowError();
 
-//     // WHEN
-//     const cluster = new Cluster(stack, 'Redshift', {
-//       masterUser: {
-//         masterUsername: 'admin',
-//         masterPassword: cdk.SecretValue.plainText('tooshort')
-//         },
-//       vpc,
-//     });
+});
 
-//     // THEN
-//     expect(() => {
-//       cluster.addRotationSingleUser()
-//     }).toThrowError()
+test('throws when trying to add single user rotation multiple times', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'VPC');
+  const cluster = new Cluster(stack, 'Redshift', {
+    masterUser: {
+      masterUsername: 'admin',
+    },
+    vpc,
+  });
 
-//   });
+  // WHEN
+  cluster.addRotationSingleUser();
 
-//   'throws when trying to add single user rotation multiple timet'(test: Test) {
-//     // GIVEN
-//     const stack = new cdk.Stack();
-//     const vpc = new ec2.Vpc(stack, 'VPC');
-//     const cluster = new DatabaseCluster(stack, 'Database', {
-//       engine: DatabaseClusterEngine.AURORA_MYSQL,
-//       masterUser: { username: 'admin' },
-//       instanceProps: {
-//         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
-//         vpc
-//       }
-//     });
-
-//     // WHEN
-//     cluster.addRotationSingleUser();
-
-//     // THEN
-//     test.throws(() => cluster.addRotationSingleUser(), /A single user rotation was already added to this cluster/);
-
-//     test.done();
-//   },
-// };
+  // THEN
+  expect(() => {
+    cluster.addRotationSingleUser();
+  }).toThrowError();
+});
 
 function testStack() {
   const stack = new cdk.Stack(undefined, undefined, { env: { account: '12345', region: 'us-test-1' } });
