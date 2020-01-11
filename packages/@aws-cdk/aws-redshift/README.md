@@ -51,12 +51,12 @@ cluster.clusterEndpoint.socketAddress;   // "HOSTNAME:PORT"
 
 When the master password is generated and stored in AWS Secrets Manager, it can be rotated automatically:
 ```ts
-instance.addRotationSingleUser(); // Will rotate automatically after 30 days
+cluster.addRotationSingleUser(); // Will rotate automatically after 30 days
 ```
 
 The multi user rotation scheme is also available:
 ```ts
-instance.addRotationMultiUser('MyUser', {
+cluster.addRotationMultiUser('MyUser', {
   secret: myImportedSecret
 });
 ```
