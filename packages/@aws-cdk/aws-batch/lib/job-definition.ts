@@ -142,7 +142,7 @@ export class JobDefinition extends Resource implements IJobDefinition {
    */
   public static fromJobDefinitionArn(scope: Construct, id: string, jobDefinitionArn: string): IJobDefinition {
     const stack = Stack.of(scope);
-    const jobDefName = stack.parseArn(jobDefinitionArn).resource;
+    const jobDefName = stack.parseArn(jobDefinitionArn).resourceName!;
 
     class Import extends Resource implements IJobDefinition {
       public readonly jobDefinitionArn = jobDefinitionArn;

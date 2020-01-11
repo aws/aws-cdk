@@ -268,7 +268,7 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
    */
   public static fromComputeEnvironmentArn(scope: Construct, id: string, computeEnvironmentArn: string): IComputeEnvironment {
     const stack = Stack.of(scope);
-    const computeEnvironmentName = stack.parseArn(computeEnvironmentArn).resource;
+    const computeEnvironmentName = stack.parseArn(computeEnvironmentArn).resourceName!;
 
     class Import extends Resource implements IComputeEnvironment {
       public readonly computeEnvironmentArn = computeEnvironmentArn;

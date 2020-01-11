@@ -93,7 +93,7 @@ export class JobQueue extends Resource implements IJobQueue {
    */
   public static fromJobQueueArn(scope: Construct, id: string, jobQueueArn: string): IJobQueue {
     const stack = Stack.of(scope);
-    const jobQueueName = stack.parseArn(jobQueueArn).resource;
+    const jobQueueName = stack.parseArn(jobQueueArn).resourceName!;
 
     class Import extends Resource implements IJobQueue {
       public readonly jobQueueArn = jobQueueArn;
