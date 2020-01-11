@@ -68,6 +68,10 @@
       "global": {
         "branches": 60,
         "statements": 80
+      },
+      "./lib/redshift.generated.ts": {
+        "branches": 40,
+        "statements": 70
       }
     },
     "collectCoverage": true,
