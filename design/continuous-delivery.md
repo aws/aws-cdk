@@ -221,6 +221,17 @@ To accommodate these requirements we will make the following changes to how `cdk
 5. Allow specifying the managed policy to use for the deployment role (mostly it will be the administrator managed policy).
 6. Allow specifying an optional qualifier for the physical names of all resources to address bucket hijacking concerns and allow multiple bootstraps to the same environment for whatever reason.
 
+**Bootstrapping at Scale**
+
+Since organizations may have to bootstrap thousands of accounts, we need to make sure we allow users to leverage "account stamping" tools such as [AWS CloudFormation StackSets](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/what-is-cfnstacksets.html) and [AWS Control Tower](https://aws.amazon.com/controltower/). All of these tools are based on automatically and reliably deploying a single AWS CloudFormation template to multiple accounts across an organization.
+
+To make sure users can use these tools for bootstrapping, we will take the following requirements:
+
+- Bootstrapping "logic" MUST be expressible through an AWS CloudFormation template.
+- Bootstrapping MUST be self-contained within an environment (account+region). We can't rely on the bootstrapping process to work across accounts or regions.
+- Bootstrapping template size cannot exceed 50KiB so it can be deployed through the `TemplateBody` option of the CloudFormation `CreateStack` API (and not require an S3 bucket).
+- Bootstrapping templates cannot rely on any other asset such as files on S3 or docker images.
+
 **Resource Names**
 
 We need to be able to synthesize asset locations into the templates for consumption and publishing. We also need to be able to assume a role in order to be able to publish to the environment.
@@ -311,10 +322,9 @@ At this point, all assets are published to asset stores in their target environm
 
 To deploy a stack to an environment, the deployment will need to:
 
-1. Assume the **Deployment IAM Role** from the target environment.
+1. Assume the **Deployment IAM Role** from the target environment. The deployment IAM role is encoded inside the cloud assembly. By default the name of the role is rendered by `core.Stack` based on the conventions of the bootstrapping template, but users are able to override this behavior if their environments used custom bootstrapping.
 2. Create a CloudFormation change-set for the stack.
-3. Execute the change-set by requesting CloudFormation to assume the administrative **CloudFormation IAM
-Role**.
+3. Execute the change-set by requesting CloudFormation to assume the administrative **CloudFormation IAM Role** (again, role is encoded in the cloud assembly).
 
 ## Walkthrough
 
