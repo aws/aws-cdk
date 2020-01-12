@@ -948,8 +948,7 @@
         "Type": "AWS::AutoScaling::AutoScalingGroup",
         "Properties": {
           "MaxSize": "3",
-          "MinSize": "1",
-          "DesiredCapacity": "3",
+          "MinSize": "3",
           "LaunchConfigurationName": {
             "Ref": "cluster22NodesLaunchConfig184BF3BA"
           },

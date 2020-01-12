@@ -147,7 +147,7 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
       metricValue: jsonField
     });
 
-    return new cloudwatch.Metric({ metricName, namespace: metricNamespace });
+    return new cloudwatch.Metric({ metricName, namespace: metricNamespace }).attachTo(this);
   }
 
   /**
