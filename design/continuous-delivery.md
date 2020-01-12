@@ -12,8 +12,7 @@ The only caveat is that **new environments** (account/region) will need to be bo
 
 - [Requirements](#requirements)
 - [Approach](#approach)
-- [Build](#build)
-- [Synthesis](#synthesis)
+- [Build + Synthesis](#build--synthesis)
 - [Bootstrapping](#bootstrapping)
 - [Mutation](#mutation)
 - [Publishing](#publishing)
@@ -21,25 +20,27 @@ The only caveat is that **new environments** (account/region) will need to be bo
 - [Walkthrough](#walkthrough)
   - [Bootstrapping](#bootstrapping-1)
   - [Source](#source)
-  - [Synthesis](#synthesis-1)
+  - [Synthesis](#synthesis)
+  - [Pipeline Initialization](#pipeline-initialization)
   - [Mutation](#mutation-1)
   - [Publishing](#publishing-1)
   - [Deployment](#deployment-1)
-- [Goal](#goal)
-- [Approach](#approach-1)
-- [Requirements](#requirements-1)
+- [Compatibility Plan](#compatibility-plan)
+  - [Goal](#goal)
+  - [Approach](#approach-1)
+  - [Requirements](#requirements-1)
 
 ## Requirements
 
 This list describes only the minimal set of requirements from this feature. After we release these building blocks, we will look into vending higher-level "one liner" APIs that will make it very easy to get started.
 
-1. **Deployment system**: the design should focus on building blocks that can be easily integrated into various deployment systems. This spec
+1. **Deployment system**: the design should focus on building blocks that can be easily integrated into various deployment systems. This spec describes the integration with the CDK CLI and AWS CodePipelines, but it should be applicable to any deployment system.
 1. **Assets**: Support apps that include all supported assets (S3 files, ECR images)
 1. **Multi-environment**: Support apps that have stacks that target multiple environments (accounts/regions)
 1. **Orchestration**: Allow developers to express complex deployment orchestration based on the capabilities of CodePipeline
 1. **User-defined build+synth runtime**: the runtime environment in which the code is built and the CDK app is synthesized should be fully customizable by the user
-1. **Restricted deployment runtime**: for security reasons, the runtime environment in which deployment is executed will be fully controlled and will not allow running user code or user-defined image
-1. **Bootstrapping**: It should be possible to update bootstrapping resources automatically if possible and least discover that the bootstrap environment is not up-to-date.
+1. **Restricted deployment runtime**: for security reasons, the runtime environment in which deployment is executed will not allow running user code or user-defined image
+1. **Bootstrapping**: it should be possible to leverage existing AWS account stamping tools like AWS CloudFormation StackSets and AWS Control Tower in order to manage bootstrapping at scale.
 1. **Custom replication**: In order to support isolated and air-gapped regions, as well as deployment across partitions, the solution should support customizing how and where assets are published and replicated to.
 
 _Considerations:_
@@ -56,43 +57,43 @@ _Non-requirements/assumptions:_
 
 ## Approach
 
+The general approach is that deployment of a CDK app is governed by a central system (e.g. an AWS CodePipeline, a Jenkins system or any other deployment tool). This central deployment system runs within credentials from a central deployment account, which then assumes roles within all other accounts that can then deploy resources to them. This deployment account is referred to as the **tools account** in the [CodePipeline Cross Account Reference Architecture](https://github.com/awslabs/aws-refarch-cross-account-pipeline).
+
 At a high-level, we will model the deployment process of a CDK app as follows:
 
 ```
 bootstrap => source => build => synthesis => mutate => publish => deploy
 ```
 
-1. **bootstrap**: manually pre-provision resources required to deploy CDK apps into this environment (such as an S3 bucket, ECR repository and various IAM roles that trust the central deployment account).
+
+1. **bootstrap**: provision resources required to deploy CDK apps into all environments in advance (such as an S3 bucket, ECR repository and various IAM roles that trust the central deployment account).
 2. **source**: the code is pulled from a source repository (e.g. CodeCommit, GitHub or S3), like any other app.
-3. **build**: compiles the CDK app code into an executable program (user-defined).
-4. **synthesis**: invokes the compiled executable to produce a [cloud assembly](https://github.com/aws/aws-cdk/blob/master/design/cloud-assembly.md) from the app. It includes a CloudFormation template for each stack and asset sources (docker images, s3 files, etc) that must be packaged and published to the asset store in each environment that consumes them.
-5. **mutate**: update stack(s) required by the pipeline. This includes pipeline resources and other auxiliary resources such as regional replication buckets. These stacks are limited to 50KiB and are not allowed to use assets, so they can be deployed without bootstrapping resources.
-6. **publish**: package and publish all assets to asset stores (S3 bucket, ECR repository) so they can be consumed.
-7. **deploy**: stage(s), stacks are deployed to the various environments through some orchestration process (e.g. deploy first to this region, run these canaries, wait for errors, continue to the next stage, etc).
+3. **build + synthesis**: compiles the CDK app code into an executable program (user-defined) and invokes the compiled executable through `cdk synth` to produce a [cloud assembly](https://github.com/aws/aws-cdk/blob/master/design/cloud-assembly.md) from the app. The cloud assembly includes a CloudFormation template for each stack and asset sources (docker images, s3 files, etc) that must be packaged and published to the asset store in each environment that consumes them.
+4. **mutate**: update stack(s) required by the pipeline. This includes pipeline resources and other auxiliary resources such as regional replication buckets. These stacks are limited to 50KiB and are not allowed to use assets, so they can be deployed without bootstrapping resources.
+5. **publish**: package and publish all assets to asset stores (S3 bucket, ECR repository) so they can be consumed.
+6. **deploy**: stage(s), stacks are deployed to the various environments through some orchestration process (e.g. deploy first to this region, run these canaries, wait for errors, continue to the next stage, etc).
 
 NOTE: The deployment phase can include any number of stack deployment actions. Each deployment action is responsible deploy a single stack, along with any assets it references.
 
 This following sections describes the design of each component in the toolchain.
 
-## Build
+## Build + Synthesis
 
-In this stage we compile the CDK app to an executable program through a user-defined build system.
+In this stage we compile the CDK app to an executable program through a user-defined build system and synthesize a cloud assembly from it.
 
 We assume a single source repository which masters the CDK app itself. This repo can be structured in any way users wish, and may include multiple modules or just a single one. If users choose to organize their project into modules and master different modules in other repositories, eventually the build artifacts from these builds should be available when the app is synthesized.
 
 The only requirement from the build step is the it will have an output artifact that is a cloud-assembly directory which is obtained through `cdk synth` (defaults to `./cdk.out`). Other than that, users can fully control their build environment.
 
-## Synthesis
+The implication is that users will have to manually configure their build step to invoke `cdk synth` when the app is ready (e.g. code has been compiled).
 
-The CDK synthesizes a CloudFormation template for each stack defined in the CDK app.
-
-When stacks are defined, users can specify the target environment (account and region) into which the stack should be deployed:
+The CDK synthesizes a CloudFormation template for each stack defined in the CDK app. When stacks are defined, users can specify the target environment (account and region) into which the stack should be deployed:
 
 ```ts
 new Stack(this, 'my-stack', { env: { account: '123456789012', region: 'us-east-1' } });
 ```
 
-**Deployment Across Environments**
+**Multiple Environments**
 
 In order to support deploying stacks from a centralized (pipeline/development) environment to other environments, the bootstrap stack includes a set of named IAM roles which trust the central account for publishing and deployment.
 
@@ -100,8 +101,10 @@ In order to encourage separation of concerns and allow customizability, we will 
 
 For each stack, we will encode additional two IAM roles:
 
-1. Administrator CloudFormation IAM role which can only be assumed by the CloudFormation service principal
-1. Deployment IAM role which can be assumed by any principal from the central account and has permissions to "pass role" on the administrator role.
+1. Administrator CloudFormation IAM role which can only be assumed by the CloudFormation service principal (also known as the "action role" in CodePipeline terminology)
+2. Deployment IAM role which can be assumed by any principal from the central account and has permissions to "pass role" on the administrator role (also known as the "CFN role" in CodePipeline terminology).
+
+> The publisher role which is also provisioned during bootstrapping is encoded in the `assets.json` file *per-asset* to allow for maximum customizability.
 
 This is the recommended setup for cross-account CloudFormation deployments.
 
@@ -146,7 +149,9 @@ The main issue is #2. Different deployment tools have different ways to configur
 
 The solution is to resolve asset locations **during synthesis** and use naming conventions for bootstrapping resources. This means that asset locations will be concrete values and we can also encode all publishing information to the assembly manifest. It will also allow customizing all publishing behavior from within the CDK app, without the need to supply additional plugin capabilities.
 
-We will synthesize a file called `assets.json`, which will include preparation and publishing instructions for each asset.
+We will synthesize a file called `assets.json`, which will include preparation and publishing instructions for each asset. 
+
+By default, S3 assets will be stored in a single S3 bucket where the object key will be based on the asset's source hash. Docker assets will be stored in a single ECR repository where the image tag will be based on the asset source hash (hash of the contents of the Dockerfile directory).
 
 For file assets:
 
@@ -199,12 +204,12 @@ The CDK already has a dedicated tool for bootstrapping environments called **`cd
 
 Environment bootstrapping doesn't have to be performed by the development team, and does not require deep knowledge of the application structure, besides the set of accounts and regions into which the app needs to be deployed.
 
-The current implementation only provisions an S3 bucket, but in order to be able to continuously deploy CDK stacks that use asses, we will need the following resources:
+The current implementation only provisions an S3 bucket, but in order to be able to continuously deploy CDK stacks that use asses, we will need the following resources __in each AWS environment (account + region)__:
 
 For publishing:
 
-* **S3 Bucket**: for file asset and CloudFormation templates
-* **ECR Repository**: for docker image assets
+* **S3 Bucket (+ KMS resources)**: for file asset and CloudFormation template (a single bucket will contain all files keyed by their source hash)
+* **ECR Repository**: for all docker image assets (a single repo will contain all images tagged by their source hash).
 * **Publishing Role**: IAM role trusted by the deployment account, and allows publishing to the S3 bucket and the ECR repository.
 
 For deployment:
@@ -240,7 +245,7 @@ This means that we cannot rely on CloudFormation physical name generation since 
 
 We will employ a naming convention which encodes `account`, `region` and an optional `qualifier` (such as `cdk-account-region[-qualifier]-xxxx`). This is because not all AWS resource names are environment-local: IAM roles are account-wide and S3 buckets are global.
 
-It is important that we do not rely on hashing or parsing account and region in order to be able to support environment-agnostic stacks (in which case "account" resolves to `{ "Ref": "AWS::AccountId" }`, etc.
+It is important that we do not rely on hashing or parsing account and region in order to be able to support account stamping tools like CloudFormation StackSets and Control Tower (in which case "account" resolves to `{ "Ref": "AWS::AccountId" }`, etc.
 
 In order to address the risk of S3 bucket hijacking, we need to be ale to support an optional `qualifier` postfix. This means that we need to allow users to specify this qualifier when they define the Stack's `env`. Perhaps we need to encode this into `aws://account/region[/qualifier]`
 
@@ -272,7 +277,7 @@ Therefore, we recommend that all resources needed for the deployment pipeline ar
 
 We can't begin to deploy an app before we provision and update the required the deployment resources based on the structure of the app. This is the purpose of the "**mutation**" stage.
 
-The initial creation of the pipeline will be performed manually using `cdk deploy pipeline-main` (where `pipeline-main` is name of the main pipeline stack), but from that point forward, any changes to the pipeline will be done by pushing a commit into the repo, and letting the pipeline pick it up.
+The initial creation of the pipeline will be performed manually using `cdk deploy pipeline-main` (where `pipeline-main` is name of the main pipeline stack for example), but from that point forward, any changes to the pipeline will be done by pushing a commit into the repo, and letting the pipeline pick it up.
 
 For example, if we use CodePipeline for deploying an app to multiple environments, the deployment infrastructure requires a central pipeline stack, which contains the pipeline itself, it's artifacts bucket and other related resources such as CodeBuild projects. It will also require a stack in each region that includes a CodePipeline regional replication bucket (and key). See [cross-region support](https://docs.aws.amazon.com/codepipeline/latest/userguide/actions-create-cross-region.html) in the CodePipeline User Guide.
 
@@ -280,8 +285,8 @@ In CodePipeline, we will implement self-mutation using a pre-configured CodeBuil
 
 To mitigate the security risk, `cdk deploy pipeline-*` should run against a synthesized cloud assembly (from the build step) and not against the executable app, and should also prohibit the use of docker assets. These are the two elements where user code is executed and must not be done in an environment with administrative privileges. The mutation CodeBuild action will not be customizable to ensure that users don't accidentally allow it to execute arbitrary code.
 
-> ALTERNATIVE CONSIDERED: We initially considered leveraging the bootstrapping process in order to provision cross-regional replication resources for CodePipeline but: (a) this is very specific to CodePipeline and not relevant to other deployment systems (e.g. Travis, GitHub Actions); and (b) it will require the bootstrapping process to span more than a single environment. In order to allow users to use "account stamping" tools like Stack Sets or Landing Zone, we decided that the bootstrapping process will be as simple as possible (== a single cloudformation template). 
-> The trade-off is that for the CodePipeline resources, we will use "cdk deploy pipeline-*", and so we can encode all this within the CDK. In fact cross account/region is actually already supported in the CDK and will automatically define all these stacks and region for you, so it should already "Just Work".
+> Alternative Considered: We initially considered leveraging the bootstrapping process in order to provision cross-regional replication resources for CodePipeline but: (a) this is very specific to CodePipeline and not relevant to other deployment systems (e.g. Travis, GitHub Actions); and (b) it will require the bootstrapping process to span more than a single environment. In order to allow users to use "account stamping" tools like Stack Sets or Landing Zone, we decided that the bootstrapping process will be as simple as possible (== a single CloudFormation template). 
+> The trade-off is that for the CodePipeline resources, we will use `cdk deploy pipeline-*`, and so we can encode all this within the CDK. In fact cross account/region is actually already supported in the CDK and will automatically define all these stacks and region for you, so it should already "Just Work".
 
 ## Publishing
 
@@ -312,7 +317,7 @@ In order for the publish to be able to execute `docker build`, this command must
 
 **Templates as Assets**
 
-Some deployment systems (e.g. the CDK CLI) require that CloudFormation templates will be uploaded an S3 location before they can be deployed (this is done automatically in CodePipeline). Due to S3 eventual consistency, these files must be immutable, so we need to upload a new template file every time the template changes.
+Some deployment systems (e.g. the CDK CLI and other systems we explored) require that CloudFormation templates will be uploaded an S3 location before they can be deployed (this is done automatically in CodePipeline). Due to S3 eventual consistency, these files must be immutable, so we need to upload a new template file every time the template changes.
 
 To that end, we will treat all CloudFormation templates in the assembly like any other asset. They will be identified by their source hash (the hash of the template) and uploaded to the asset store in the environment in which they are expected to be deployed, like any other file asset.
 
@@ -325,6 +330,8 @@ To deploy a stack to an environment, the deployment will need to:
 1. Assume the **Deployment IAM Role** from the target environment. The deployment IAM role is encoded inside the cloud assembly. By default the name of the role is rendered by `core.Stack` based on the conventions of the bootstrapping template, but users are able to override this behavior if their environments used custom bootstrapping.
 2. Create a CloudFormation change-set for the stack.
 3. Execute the change-set by requesting CloudFormation to assume the administrative **CloudFormation IAM Role** (again, role is encoded in the cloud assembly).
+
+> This step intentionally uses the most standard CloudFormation deployment actions. This means that users will be able to implement custom flows that leverages these building blocks in any way they need. For example, they can incorporate a manual approval step between changeset creation and execution.
 
 ## Walkthrough
 
@@ -422,8 +429,8 @@ The `manifest.json` file will include an entry for each stack defined above (lik
       "environment": "aws://2222222222US/us-east-1",
       "properties": {
         "templateFile": "vpc-us.template.json",
-        "deployRoleArn": "aws-cdk-deploy-2222222222EU-us-east-1",
-        "adminRoleArn": "aws-cdk-admin-2222222222EU-us-east-1"
+        "deployRoleArn": "arn:aws:iam::2222222222US:role/aws-cdk-deploy-2222222222EU-us-east-1",
+        "adminRoleArn": "arn:aws:iam::2222222222US:role/aws-cdk-admin-2222222222EU-us-east-1"
       }
     },
     "service-us": {
@@ -431,8 +438,8 @@ The `manifest.json` file will include an entry for each stack defined above (lik
       "environment": "aws://2222222222US/us-east-1",
       "properties": {
         "templateFile": "service-us.template.json",
-        "deployRoleArn": "aws-cdk-deploy-2222222222EU-us-east-1",
-        "adminRoleArn": "aws-cdk-admin-2222222222EU-us-east-1"
+        "deployRoleArn": "arn:aws:iam::2222222222US:role/aws-cdk-deploy-2222222222EU-us-east-1",
+        "adminRoleArn": "arn:aws:iam::2222222222US:role/aws-cdk-admin-2222222222EU-us-east-1"
       }
     },
     "vpc-eu": {
@@ -440,8 +447,8 @@ The `manifest.json` file will include an entry for each stack defined above (lik
       "environment": "aws://3333333333EU/eu-west-2",
       "properties": {
         "templateFile": "vpc-eu.template.json",
-        "deployRoleArn": "aws-cdk-deploy-3333333333EU-eu-west-2",
-        "adminRoleArn": "aws-cdk-admin-3333333333EU-eu-west-2"
+        "deployRoleArn": "arn:aws:iam::3333333333EU:role/aws-cdk-deploy-3333333333EU-eu-west-2",
+        "adminRoleArn": "arn:aws:iam::3333333333EU:role/aws-cdk-admin-3333333333EU-eu-west-2"
       }
     },
     "service-eu": {
@@ -449,8 +456,8 @@ The `manifest.json` file will include an entry for each stack defined above (lik
       "environment": "aws://3333333333EU/eu-west-2",
       "properties": {
         "templateFile": "service-eu.template.json",
-        "deployRoleArn": "aws-cdk-deploy-3333333333EU-eu-west-2",
-        "adminRoleArn": "aws-cdk-admin-3333333333EU-eu-west-2"
+        "deployRoleArn": "arn:aws:iam::3333333333EU:role/aws-cdk-deploy-3333333333EU-eu-west-2",
+        "adminRoleArn": "arn:aws:iam::3333333333EU:role/aws-cdk-admin-3333333333EU-eu-west-2"
       }
     },
     "pipeline-main": {
@@ -458,8 +465,8 @@ The `manifest.json` file will include an entry for each stack defined above (lik
       "environment": "aws://111111111DEP/us-west-2",
       "properties": {
         "templateFile": "pipeline-main.template.json",
-        "deployRoleArn": "aws-cdk-deploy-111111111DEP-us-west-2",
-        "adminRoleArn": "aws-cdk-admin-111111111DEP-us-west-2"
+        "deployRoleArn": "arn:aws:iam::111111111DEP:role/aws-cdk-deploy-111111111DEP-us-west-2",
+        "adminRoleArn": "arn:aws:iam::111111111DEP:role/aws-cdk-admin-111111111DEP-us-west-2"
       }
     },
     "pipeline-us-east-1": {
@@ -467,8 +474,8 @@ The `manifest.json` file will include an entry for each stack defined above (lik
       "environment": "aws://111111111DEP/us-east-1",
       "properties": {
         "templateFile": "pipeline-main.template.json",
-        "deployRoleArn": "aws-cdk-deploy-111111111DEP-us-east-1",
-        "adminRoleArn": "aws-cdk-admin-111111111DEP-us-east-1"
+        "deployRoleArn": "arn:aws:iam::111111111DEP:role/aws-cdk-deploy-111111111DEP-us-east-1",
+        "adminRoleArn": "arn:aws:iam::111111111DEP:role/aws-cdk-admin-111111111DEP-us-east-1"
       }
     },
     "pipeline-eu-west-2": {
@@ -476,8 +483,8 @@ The `manifest.json` file will include an entry for each stack defined above (lik
       "environment": "aws://111111111DEP/eu-west-2",
       "properties": {
         "templateFile": "pipeline-main.template.json",
-        "deployRoleArn": "aws-cdk-deploy-111111111DEP-eu-west-2",
-        "adminRoleArn": "aws-cdk-admin-111111111DEP-eu-west-2"
+        "deployRoleArn": "arn:aws:iam::111111111DEP:role/aws-cdk-deploy-111111111DEP-eu-west-2",
+        "adminRoleArn": "arn:aws:iam::111111111DEP:role/aws-cdk-admin-111111111DEP-eu-west-2"
       }
     }
   }
@@ -537,15 +544,23 @@ The `assets.json` file will look like this:
 
 It lists the two assets (one file asset and one image asset) and, for each, it lists the publishing locations which include repository, key and publishing IAM role to assume.
 
-### Mutation
+### Pipeline Initialization
 
-The first stage in our pipeline is the mutation stage. This stage will include a single CodeBuild action that will simply execute:
+At this point we have a bunch of bootstrapped environments and a local `cdk.out` directory. In order to deploy our self-mutating CI/CD pipeline for the app, we need to perform a single, one-off, manual operation:
 
 ```console
-$ cdk deploy pipeline-*
+$ cdk deploy "pipeline-*"
 ```
 
+Running this manually will deploy our pipeline which monitors our source control. From now on, any chances to our pipeline will be done by pushing commits into our source repository and not through the CDK CLI.
+
+### Mutation
+
+The first stage in our pipeline is the mutation stage. This stage will include a single CodeBuild action that will simply execute: `cdk deploy pipeline-*`.
+
 This will update all the stacks with names that begin with "pipeline-". Namely, it includes the pipeline stack itself, and the auxiliary stacks that include the pipeline's regional replication buckets. Since we are using `cdk deploy` here, we can technically deploy any stack to any environment in this stage because `cdk deploy` can assume the deployment role in any of the environments which trust the deployment account.
+
+> In the [CodePipeline Cross Account Reference Architecture](https://github.com/awslabs/aws-refarch-cross-account-pipeline) the "deployment account" is known as the "tools account".
 
 Notice that this stage happens **before** the publish stage. This is because the structure of the publish stage is dependent on which assets the app uses (we synthesize an action per asset for maximal parallelism), so we want to make sure the pipeline will be updated before publishing.
 
@@ -564,6 +579,8 @@ Once we deploy these stacks, our pipeline will be ready to deploy the rest of ou
 The next stage in the process is the publishing stage.
 
 In our example, this stage will consist of two CodeBuild actions that will run the following commands concurrently. These command will package & upload the asset to all the environments. It will consult `assets.json` to determine the exact location into which to publish each asset and which cross-account role to assume.
+
+> The CodePipeline stage that includes all the asset publishing actions will be automatically generated based on the application structure. This means that any new assets added to the app will automatically appear in this pipeline stage as new CodeBuild actions.
 
 The first action will run this command:
 
@@ -595,7 +612,7 @@ CodePipeline will use the regional replication buckets to transfer cdk.out to th
 
 That's it basically.
 
-# Compatibility Plan
+## Compatibility Plan
 
 This section describes how we plan to implement this new model, while still supporting old CLIs, apps written with old frameworks and old bootstrap environments.
 
@@ -607,13 +624,13 @@ This design requires disruptive changes to the following components:
 - **AdoptedRepository**: The new asset mechanism does not require Docker image assets to be backed by `AdoptedRepository` since the ECR repository in the new bootstrap stack will allow anyone to read from it.
 - **Deployment Roles**: In the new mode, the cloud assembly manifest also includes IAM roles for deployment. These only exist in the new model, and should cause the CLI to assume these roles during depoyment.
 
-## Goal
+### Goal
 
 Existing applications should continue to seamlessly work in any combination of CLI/framework without any forced modification when suppot for these new capabilities is introduced.
 
 Obvsiouly, if users wish to leverage the new CDK continuous delivery capabilities, they will have to upgrade all three components (bootstrap stack, framework, CLI). It's important that their experience will be guided (i.e. they will be promoted exactly what they need to do and not simply get cryptic error messages).
 
-## Approach
+### Approach
 
 The main implication is that both CLI and framework should continue to support the "legacy mode" which controls all relevant behavior: asset synthesis (including `AdoptedRepository`), deployment roles and any other aspect described in this design.
 
@@ -638,7 +655,7 @@ The following table describes the desired behavior for each combination of CLI v
 | 14 | 1110 | NEW  | NEW       | NEW       | OLD |      | <span style="color:red">can this work??</span>
 | 15 | 1111 | NEW  | NEW       | NEW       | NEW | 2.0  | Final state
 
-## Requirements
+### Requirements
 
 The CLI must auto-detect the assembly format version of the synthesized app based on heuristics `assets.json` or asset metadata in manifest (perhaps we will just bump the assembly manifest version number). Based on this version it will execute either the legacy (1.0) code path or the new code path. If the old code path is required, the old bootstrap behavior will be expected. If the bootstrap stack
 

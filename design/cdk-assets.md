@@ -4,6 +4,10 @@
 
 This document specifies the requirements for this tool derived from the [continuous delivery design document](./continuous-delivery.md).
 
+## Assumptions
+
+* Similarly to any resource defined through code and managed through CloudFormation, we are not attempting to protect assets from manual tampering by users.
+
 ## Asset Manifest
 
 The main input to `cdk-assets` is a JSON file called `assets.json` which includes a manifest of assets. 
