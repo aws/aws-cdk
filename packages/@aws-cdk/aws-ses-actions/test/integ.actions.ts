@@ -1,10 +1,10 @@
-import kms = require('@aws-cdk/aws-kms');
-import lambda = require('@aws-cdk/aws-lambda');
-import s3 = require('@aws-cdk/aws-s3');
-import ses = require('@aws-cdk/aws-ses');
-import sns = require('@aws-cdk/aws-sns');
-import cdk = require('@aws-cdk/core');
-import actions = require('../lib');
+import * as kms from '@aws-cdk/aws-kms';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as s3 from '@aws-cdk/aws-s3';
+import * as ses from '@aws-cdk/aws-ses';
+import * as sns from '@aws-cdk/aws-sns';
+import * as cdk from '@aws-cdk/core';
+import * as actions from '../lib';
 
 const app = new cdk.App();
 
@@ -15,7 +15,7 @@ const topic = new sns.Topic(stack, 'Topic');
 const fn = new lambda.Function(stack, 'Function', {
   code: lambda.Code.fromInline('exports.handler = async (event) => event;'),
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_8_10
+  runtime: lambda.Runtime.NODEJS_10_X
 });
 
 const bucket = new s3.Bucket(stack, 'Bucket');

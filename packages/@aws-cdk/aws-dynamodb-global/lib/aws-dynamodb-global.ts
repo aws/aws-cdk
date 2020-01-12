@@ -1,5 +1,5 @@
-import dynamodb = require("@aws-cdk/aws-dynamodb");
-import cdk = require("@aws-cdk/core");
+import * as dynamodb from '@aws-cdk/aws-dynamodb';
+import * as cdk from '@aws-cdk/core';
 import { GlobalTableCoordinator } from "./global-table-coordinator";
 
 /**
@@ -53,11 +53,12 @@ export class GlobalTable extends cdk.Construct {
 
     this.lambdaGlobalTableCoordinator = new GlobalTableCoordinator(scope, id + "-CustomResource", props);
 
+    const scopeStack = cdk.Stack.of(scope);
     // here we loop through the configured regions.
     // in each region we'll deploy a separate stack with a DynamoDB Table with identical properties in the individual stacks
-    for (const reg of props.regions) {
-      const regionalStack = new cdk.Stack(this, id + "-" + reg, { env: { region: reg } });
-      const regionalTable = new dynamodb.Table(regionalStack, `${id}-GlobalTable-${reg}`, regionalTableProps);
+    for (const region of props.regions) {
+      const regionalStack = new cdk.Stack(this, id + "-" + region, { env: { region, account: scopeStack.account } });
+      const regionalTable = new dynamodb.Table(regionalStack, `${id}-GlobalTable-${region}`, regionalTableProps);
       this._regionalTables.push(regionalTable);
 
       // deploy the regional stack before the Lambda coordinator stack

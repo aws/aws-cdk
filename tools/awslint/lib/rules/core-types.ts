@@ -1,4 +1,4 @@
-import reflect = require("jsii-reflect");
+import * as reflect from 'jsii-reflect';
 import { TypeSystem } from "jsii-reflect";
 import { getDocTag } from "./util";
 
@@ -121,7 +121,7 @@ export class CoreTypes {
   }
 
   public get physicalNameClass() {
-    return this.sys.findClass(CoreTypesFqn.PhysicalName)
+    return this.sys.findClass(CoreTypesFqn.PhysicalName);
   }
 
   private readonly sys: TypeSystem;

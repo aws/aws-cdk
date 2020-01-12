@@ -17,7 +17,7 @@ else
 fi
 
 for template in $templates; do
-    echo "Trying template $template"
+    echo "Trying TypeScript template $template"
 
     setup
 

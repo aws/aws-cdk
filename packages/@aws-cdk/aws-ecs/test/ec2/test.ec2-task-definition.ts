@@ -1,13 +1,13 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import { Protocol } from '@aws-cdk/aws-ec2';
 import { Repository } from '@aws-cdk/aws-ecr';
-import iam = require('@aws-cdk/aws-iam');
-import secretsmanager = require('@aws-cdk/aws-secretsmanager');
-import ssm = require('@aws-cdk/aws-ssm');
-import cdk = require('@aws-cdk/core');
+import * as iam from '@aws-cdk/aws-iam';
+import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
+import * as ssm from '@aws-cdk/aws-ssm';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import path = require('path');
-import ecs = require('../../lib');
+import * as path from 'path';
+import * as ecs from '../../lib';
 
 export = {
   "When creating an ECS TaskDefinition": {

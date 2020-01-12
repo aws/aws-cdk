@@ -1,7 +1,7 @@
-import lambda = require('@aws-cdk/aws-lambda');
+import * as lambda from '@aws-cdk/aws-lambda';
 import { App, Construct, Stack } from '@aws-cdk/core';
-import path = require('path');
-import cfn = require('../lib');
+import * as path from 'path';
+import * as cfn from '../lib';
 
 class NestedStack extends cfn.NestedStack {
   constructor(scope: Construct, id: string) {

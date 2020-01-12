@@ -1,9 +1,9 @@
-import fs = require('fs-extra');
-import os = require('os');
-import fs_path = require('path');
+import * as fs from 'fs-extra';
+import * as os from 'os';
+import * as fs_path from 'path';
 import { Tag } from './api/cxapp/stacks';
 import { debug, warning } from './logging';
-import util = require('./util');
+import * as util from './util';
 
 export type SettingsMap = {[key: string]: any};
 
@@ -233,7 +233,6 @@ export class Settings {
       versionReporting: argv.versionReporting,
       staging: argv.staging,
       output: argv.output,
-      generateOnly: argv.generateOnly,
     });
   }
 

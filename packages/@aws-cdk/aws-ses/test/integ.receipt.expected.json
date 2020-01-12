@@ -106,7 +106,7 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs8.10"
+        "Runtime": "nodejs10.x"
       },
       "DependsOn": [
         "SingletonLambda224e77f9a32e4b4dac32983477abba16ServiceRole3037F5B4"

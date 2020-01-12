@@ -6,6 +6,9 @@ source ${scriptdir}/common.bash
 
 setup
 
-assert "cdk version" "cdk --version"
+cdk version > v1.txt
+cdk --version > v2.txt
+
+assert_diff "version" v1.txt v2.txt
 
 echo "✅  success"

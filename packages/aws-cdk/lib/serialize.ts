@@ -1,7 +1,9 @@
-import YAML = require('yaml');
+import * as YAML from 'yaml';
 
+/* eslint-disable @typescript-eslint/no-require-imports */
 // tslint:disable-next-line: no-var-requires
 const yamlTypes = require('yaml/types');
+/* eslint-enable */
 
 /**
  * Stringify to YAML

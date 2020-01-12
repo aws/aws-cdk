@@ -1,7 +1,7 @@
 import { expect } from '@aws-cdk/assert';
 import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import glue = require('../lib');
+import * as glue from '../lib';
 
 export = {
   'default database creates a bucket to store the datbase'(test: Test) {

@@ -4,7 +4,6 @@ s3 = boto3.client('s3')
 
 def on_event(event, ctx):
   print(event)
-  return { 'PhysicalResourceId': event.get('PhysicalResourceId', event['RequestId']) }
 
 def is_complete(event, ctx):
   print(event)

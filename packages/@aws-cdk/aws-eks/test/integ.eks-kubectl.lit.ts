@@ -1,7 +1,7 @@
 /// !cdk-integ *
 
-import ec2 = require('@aws-cdk/aws-ec2');
-import iam = require('@aws-cdk/aws-iam');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as iam from '@aws-cdk/aws-iam';
 import { App, Construct } from '@aws-cdk/core';
 import { Cluster } from '../lib';
 import { TestStack } from './util';
@@ -38,7 +38,7 @@ class ClusterStack extends TestStack {
     // automatically be mapped via aws-auth to allow nodes to join the cluster.
     this.cluster.addCapacity('Nodes', {
       instanceType: new ec2.InstanceType('t2.medium'),
-      desiredCapacity: 3,
+      minCapacity: 3,
     });
 
     // add an arbitrary k8s manifest to the cluster. This will `kubectl apply`

@@ -1,6 +1,6 @@
-import cdk = require('@aws-cdk/core');
-import reflect = require('jsii-reflect');
-import jsonschema = require('jsonschema');
+import * as cdk from '@aws-cdk/core';
+import * as reflect from 'jsii-reflect';
+import * as jsonschema from 'jsonschema';
 import { renderFullSchema } from './cdk-schema';
 import { isConstruct, isDataType, isEnumLikeClass, isSerializableInterface, SchemaContext, schemaForPolymorphic } from './jsii2schema';
 

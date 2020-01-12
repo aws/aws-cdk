@@ -1,5 +1,5 @@
-import iam = require('@aws-cdk/aws-iam');
-import lambda = require('@aws-cdk/aws-lambda');
+import * as iam from '@aws-cdk/aws-iam';
+import * as lambda from '@aws-cdk/aws-lambda';
 import { IntegrationOptions } from '../integration';
 import { Method } from '../method';
 import { AwsIntegration } from './aws';

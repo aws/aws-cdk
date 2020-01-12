@@ -2,6 +2,7 @@ import { Construct, Duration, IResource, Resource } from '@aws-cdk/core';
 import { BaseListener } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
 import { Protocol, SslPolicy } from '../shared/enums';
+import { IListenerCertificate } from '../shared/listener-certificate';
 import { INetworkLoadBalancer } from './network-load-balancer';
 import { INetworkLoadBalancerTarget, INetworkTargetGroup, NetworkTargetGroup } from './network-target-group';
 
@@ -33,7 +34,7 @@ export interface BaseNetworkListenerProps {
    *
    * @default - No certificates.
    */
-  readonly certificates?: INetworkListenerCertificateProps[];
+  readonly certificates?: IListenerCertificate[];
 
   /**
    * SSL Policy
@@ -45,12 +46,12 @@ export interface BaseNetworkListenerProps {
 
 /**
  * Properties for adding a certificate to a listener
+ *
+ * This interface exists for backwards compatibility.
+ *
+ * @deprecated Use IListenerCertificate instead
  */
-export interface INetworkListenerCertificateProps {
-  /**
-   * Certificate ARN from ACM
-   */
-  readonly certificateArn: string
+export interface INetworkListenerCertificateProps extends IListenerCertificate {
 }
 
 /**

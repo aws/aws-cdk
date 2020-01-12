@@ -1,6 +1,6 @@
 /// !cdk-integ *
 
-import s3 = require('@aws-cdk/aws-s3');
+import * as s3 from '@aws-cdk/aws-s3';
 import { App, CfnOutput, Construct, Stack } from '@aws-cdk/core';
 import { S3Assert } from './integration-test-fixtures/s3-assert';
 import { S3File } from './integration-test-fixtures/s3-file';

@@ -1,5 +1,5 @@
-import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import ec2 = require('@aws-cdk/aws-ec2');
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as ec2 from '@aws-cdk/aws-ec2';
 import { Construct, Duration, IConstruct } from '@aws-cdk/core';
 import {
   BaseTargetGroupProps, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
@@ -191,7 +191,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
         LoadBalancer: this.firstLoadBalancerFullName,
       },
       ...props
-    });
+    }).attachTo(this);
   }
 
   /**

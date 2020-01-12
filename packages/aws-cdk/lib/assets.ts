@@ -1,10 +1,10 @@
 // tslint:disable-next-line:max-line-length
-import cxapi = require('@aws-cdk/cx-api');
+import * as cxapi from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
-import colors = require('colors');
-import fs = require('fs-extra');
-import os = require('os');
-import path = require('path');
+import * as colors from 'colors';
+import * as fs from 'fs-extra';
+import * as os from 'os';
+import * as path from 'path';
 import { ToolkitInfo } from './api/toolkit-info';
 import { zipDirectory } from './archive';
 import { prepareContainerAsset } from './docker';

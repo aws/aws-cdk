@@ -1,3 +1,4 @@
+import { Construct, Stack } from '@aws-cdk/core';
 import { IHostedZone } from './hosted-zone-ref';
 
 /**
@@ -55,4 +56,14 @@ export function determineFullyQualifiedDomainName(providedName: string, hostedZo
   }
 
   return `${providedName}${suffix}.`;
+}
+
+export function makeHostedZoneArn(construct: Construct, hostedZoneId: string): string {
+  return Stack.of(construct).formatArn({
+    account: '',
+    region: '',
+    service: 'route53',
+    resource: 'hostedzone',
+    resourceName: hostedZoneId
+  });
 }

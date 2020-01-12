@@ -1,6 +1,6 @@
-import events = require('@aws-cdk/aws-events');
-import iam = require('@aws-cdk/aws-iam');
-import s3 = require('@aws-cdk/aws-s3');
+import * as events from '@aws-cdk/aws-events';
+import * as iam from '@aws-cdk/aws-iam';
+import * as s3 from '@aws-cdk/aws-s3';
 import { Construct, IResource } from '@aws-cdk/core';
 import { Artifact } from './artifact';
 
@@ -152,6 +152,11 @@ export interface IStage {
   readonly stageName: string;
 
   readonly pipeline: IPipeline;
+
+  /**
+   * The actions belonging to this stage.
+   */
+  readonly actions: IAction[];
 
   addAction(action: IAction): void;
 

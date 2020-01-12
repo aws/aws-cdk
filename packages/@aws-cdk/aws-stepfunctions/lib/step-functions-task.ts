@@ -1,5 +1,5 @@
-import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import iam = require('@aws-cdk/aws-iam');
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as iam from '@aws-cdk/aws-iam';
 import { Duration } from '@aws-cdk/core';
 import { Task } from './states/task';
 
@@ -28,9 +28,10 @@ export interface StepFunctionsTaskConfig {
   /**
    * Parameters pass a collection of key-value pairs, either static values or JSONPath expressions that select from the input.
    *
-   * What is passed here will be merged with any default parameters
-   * configured by the `resource`. For example, a DynamoDB table target
-   * will
+   * The meaning of these parameters is task-dependent.
+   *
+   * Its values will be merged with the `parameters` property which is configured directly
+   * on the Task state.
    *
    * @see
    * https://docs.aws.amazon.com/step-functions/latest/dg/input-output-inputpath-params.html#input-output-parameters

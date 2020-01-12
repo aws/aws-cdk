@@ -1,5 +1,5 @@
-import route53 = require('@aws-cdk/aws-route53');
-import s3 = require('@aws-cdk/aws-s3');
+import * as route53 from '@aws-cdk/aws-route53';
+import * as s3 from '@aws-cdk/aws-s3';
 import {Stack, Token} from '@aws-cdk/core';
 import {RegionInfo} from '@aws-cdk/region-info';
 

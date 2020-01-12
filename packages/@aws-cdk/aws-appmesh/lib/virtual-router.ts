@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 
 import { CfnVirtualRouter } from './appmesh.generated';
 import { IMesh, Mesh } from './mesh';

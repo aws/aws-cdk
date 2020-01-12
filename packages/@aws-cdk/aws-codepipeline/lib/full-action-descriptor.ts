@@ -1,4 +1,4 @@
-import iam = require('@aws-cdk/aws-iam');
+import * as iam from '@aws-cdk/aws-iam';
 import { ActionArtifactBounds, ActionCategory, ActionConfig, IAction } from './action';
 import { Artifact } from './artifact';
 
@@ -13,6 +13,7 @@ export interface FullActionDescriptorProps {
  * This class is private to the aws-codepipeline package.
  */
 export class FullActionDescriptor {
+  public readonly action: IAction;
   public readonly actionName: string;
   public readonly category: ActionCategory;
   public readonly owner: string;
@@ -27,6 +28,7 @@ export class FullActionDescriptor {
   public readonly configuration: any;
 
   constructor(props: FullActionDescriptorProps) {
+    this.action = props.action;
     const actionProperties = props.action.actionProperties;
     this.actionName = actionProperties.actionName;
     this.category = actionProperties.category;

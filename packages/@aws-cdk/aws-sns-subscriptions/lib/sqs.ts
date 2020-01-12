@@ -1,7 +1,7 @@
-import iam = require('@aws-cdk/aws-iam');
-import sns = require('@aws-cdk/aws-sns');
-import sqs = require('@aws-cdk/aws-sqs');
-import { Construct } from '@aws-cdk/core';
+import * as iam from '@aws-cdk/aws-iam';
+import * as sns from '@aws-cdk/aws-sns';
+import * as sqs from '@aws-cdk/aws-sqs';
+import { Construct, Stack } from '@aws-cdk/core';
 import { SubscriptionProps } from './subscription';
 
 /**
@@ -50,6 +50,15 @@ export class SqsSubscription implements sns.ITopicSubscription {
       protocol: sns.SubscriptionProtocol.SQS,
       rawMessageDelivery: this.props.rawMessageDelivery,
       filterPolicy: this.props.filterPolicy,
+      region: this.regionFromArn(topic),
     };
+  }
+
+  private regionFromArn(topic: sns.ITopic): string | undefined {
+    // no need to specify `region` for topics defined within the same stack
+    if (topic instanceof sns.Topic) {
+      return undefined;
+    }
+    return Stack.of(topic).parseArn(topic.topicArn).region;
   }
 }

@@ -1,5 +1,5 @@
-import iam = require('@aws-cdk/aws-iam');
-import kms = require('@aws-cdk/aws-kms');
+import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import { Construct, IResource, Resource, Stack } from '@aws-cdk/core';
 import { CfnStream } from './kinesis.generated';
 

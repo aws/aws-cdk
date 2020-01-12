@@ -1,4 +1,4 @@
-import ec2 = require('@aws-cdk/aws-ec2');
+import * as ec2 from '@aws-cdk/aws-ec2';
 import { Construct, IResource, Resource } from '@aws-cdk/core';
 import { DatabaseInstanceEngine } from './instance';
 import { CfnOptionGroup } from './rds.generated';
@@ -27,14 +27,14 @@ export interface OptionConfiguration {
   /**
    * The settings for the option.
    *
-   * @default no settings
+   * @default - no settings
    */
   readonly settings?: { [name: string]: string };
 
   /**
    * The version for the option.
    *
-   * @default no version
+   * @default - no version
    */
   readonly version?: string;
 
@@ -42,13 +42,15 @@ export interface OptionConfiguration {
    * The port number that this option uses. If `port` is specified then `vpc`
    * must also be specified.
    *
-   * @default no port
+   * @default - no port
    */
   readonly port?: number;
 
   /**
    * The VPC where a security group should be created for this option. If `vpc`
    * is specified then `port` must also be specified.
+   *
+   * @default - no VPC
    */
   readonly vpc?: ec2.IVpc;
 }
@@ -81,6 +83,9 @@ export interface OptionGroupProps {
   readonly configurations: OptionConfiguration[];
 }
 
+/**
+ * An option group
+ */
 export class OptionGroup extends Resource implements IOptionGroup {
   /**
    * Import an existing option group.

@@ -1,8 +1,8 @@
 import '@aws-cdk/assert/jest';
-import route53 = require('@aws-cdk/aws-route53');
-import s3 = require('@aws-cdk/aws-s3');
+import * as route53 from '@aws-cdk/aws-route53';
+import * as s3 from '@aws-cdk/aws-s3';
 import { App, Stack } from '@aws-cdk/core';
-import targets = require('../lib');
+import * as targets from '../lib';
 
 const [recordName, zoneName] = ['foo', 'test.public'];
 const bucketName = [recordName, zoneName].join('.');

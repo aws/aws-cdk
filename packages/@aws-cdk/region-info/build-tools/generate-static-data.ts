@@ -1,5 +1,5 @@
-import fs = require('fs-extra');
-import path = require('path');
+import * as fs from 'fs-extra';
+import * as path from 'path';
 import { Default } from '../lib/default';
 import { AWS_REGIONS, AWS_SERVICES } from './aws-entities';
 

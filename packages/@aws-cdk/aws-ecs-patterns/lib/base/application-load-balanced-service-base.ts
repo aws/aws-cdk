@@ -1,11 +1,11 @@
 import { DnsValidatedCertificate, ICertificate } from '@aws-cdk/aws-certificatemanager';
 import { IVpc } from '@aws-cdk/aws-ec2';
 import { AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerImage, ICluster, LogDriver, PropagatedTagSource, Secret } from '@aws-cdk/aws-ecs';
-import { ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationTargetGroup } from '@aws-cdk/aws-elasticloadbalancingv2';
+import { ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationTargetGroup, ListenerCertificate } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { IRole } from '@aws-cdk/aws-iam';
-import { AddressRecordTarget, ARecord, IHostedZone } from '@aws-cdk/aws-route53';
+import { ARecord, IHostedZone, RecordTarget } from '@aws-cdk/aws-route53';
 import { LoadBalancerTarget } from '@aws-cdk/aws-route53-targets';
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 
 /**
  * The properties for the base ApplicationLoadBalancedEc2Service or ApplicationLoadBalancedFargateService service.
@@ -100,6 +100,24 @@ export interface ApplicationLoadBalancedServiceBaseProps {
   readonly healthCheckGracePeriod?: cdk.Duration;
 
   /**
+   * The maximum number of tasks, specified as a percentage of the Amazon ECS
+   * service's DesiredCount value, that can run in a service during a
+   * deployment.
+   *
+   * @default - 100 if daemon, otherwise 200
+   */
+  readonly maxHealthyPercent?: number;
+
+  /**
+   * The minimum number of tasks, specified as a percentage of
+   * the Amazon ECS service's DesiredCount value, that must
+   * continue to run and remain healthy during a deployment.
+   *
+   * @default - 0 if daemon, otherwise 50
+   */
+  readonly minHealthyPercent?: number;
+
+  /**
    * The application load balancer that will serve traffic to the service.
    *
    * [disable-awslint:ref-via-interface]
@@ -111,7 +129,8 @@ export interface ApplicationLoadBalancedServiceBaseProps {
   /**
    * Listener port of the application load balancer that will serve traffic to the service.
    *
-   * @default 80
+   * @default - The default listener port is determined from the protocol (port 80 for HTTP,
+   * port 443 for HTTPS). A domain name and zone must be also be specified if using HTTPS.
    */
   readonly listenerPort?: number;
 
@@ -286,8 +305,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
     const protocol = props.protocol !== undefined ? props.protocol : (props.certificate ? ApplicationProtocol.HTTPS : ApplicationProtocol.HTTP);
 
     const targetProps = {
-      port: props.listenerPort !== undefined ? props.listenerPort : 80,
-      protocol
+      port: 80
     };
 
     this.listener = this.loadBalancer.addListener('PublicListener', {
@@ -312,7 +330,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
       }
     }
     if (this.certificate !== undefined) {
-      this.listener.addCertificateArns('Arns', [this.certificate.certificateArn]);
+      this.listener.addCertificates('Arns', [ListenerCertificate.fromCertificateManager(this.certificate)]);
     }
 
     let domainName = this.loadBalancer.loadBalancerDnsName;
@@ -324,7 +342,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
       const record = new ARecord(this, "DNS", {
         zone: props.domainZone,
         recordName: props.domainName,
-        target: AddressRecordTarget.fromAlias(new LoadBalancerTarget(this.loadBalancer)),
+        target: RecordTarget.fromAlias(new LoadBalancerTarget(this.loadBalancer)),
       });
 
       domainName = record.domainName;

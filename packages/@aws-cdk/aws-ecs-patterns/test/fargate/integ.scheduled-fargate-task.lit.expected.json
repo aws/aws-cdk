@@ -83,7 +83,13 @@
     "VpcPublicSubnet1EIPD7E02669": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
-        "Domain": "vpc"
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-fargate-integ/Vpc/PublicSubnet1"
+          }
+        ]
       }
     },
     "VpcPublicSubnet1NATGateway4D7517AA": {
@@ -698,7 +704,7 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs8.10",
+        "Runtime": "nodejs10.x",
         "Timeout": 300
       },
       "DependsOn": [

@@ -1,7 +1,7 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import cognito = require('../lib');
+import * as cognito from '../lib';
 
 export = {
   'default setup'(test: Test) {

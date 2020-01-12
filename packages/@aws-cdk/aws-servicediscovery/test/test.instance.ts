@@ -1,9 +1,9 @@
 import { countResources, expect, haveResource } from '@aws-cdk/assert';
-import ec2 = require('@aws-cdk/aws-ec2');
-import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
-import cdk = require('@aws-cdk/core');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import servicediscovery = require('../lib');
+import * as servicediscovery from '../lib';
 
 export = {
   'IpInstance for service in HTTP namespace'(test: Test) {

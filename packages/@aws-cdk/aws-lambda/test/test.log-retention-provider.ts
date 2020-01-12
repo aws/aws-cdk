@@ -1,9 +1,9 @@
-import AWSSDK = require('aws-sdk');
-import AWS = require('aws-sdk-mock');
-import nock = require('nock');
+import * as AWSSDK from 'aws-sdk';
+import * as AWS from 'aws-sdk-mock';
+import * as nock from 'nock';
 import { Test } from 'nodeunit';
-import sinon = require('sinon');
-import provider = require('../lib/log-retention-provider');
+import * as sinon from 'sinon';
+import * as provider from '../lib/log-retention-provider';
 
 AWS.setSDK(require.resolve('aws-sdk'));
 

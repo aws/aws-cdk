@@ -1,6 +1,6 @@
-import codepipeline = require('@aws-cdk/aws-codepipeline');
-import targets = require('@aws-cdk/aws-events-targets');
-import s3 = require('@aws-cdk/aws-s3');
+import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import * as targets from '@aws-cdk/aws-events-targets';
+import * as s3 from '@aws-cdk/aws-s3';
 import { Construct } from '@aws-cdk/core';
 import { Action } from '../action';
 import { sourceArtifactBounds } from '../common';

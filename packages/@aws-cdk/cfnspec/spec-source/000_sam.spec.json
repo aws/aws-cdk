@@ -34,6 +34,41 @@
                 }
             }
         },
+        "AWS::Serverless::Api.CorsConfiguration": {
+            "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#cors-configuration",
+            "Properties": {
+                "AllowCredentials": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#cors-configuration",
+                    "PrimitiveType": "Boolean",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "AllowHeaders": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#cors-configuration",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "AllowMethods": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#cors-configuration",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "AllowOrigin": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#cors-configuration",
+                    "PrimitiveType": "String",
+                    "Required": true,
+                    "UpdateType": "Immutable"
+                },
+                "MaxAge": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#cors-configuration",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
         "AWS::Serverless::Api.S3Location": {
             "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#s3-location-object",
             "Properties": {
@@ -431,6 +466,35 @@
                 }
             }
         },
+        "AWS::Serverless::Function.S3KeyFilter": {
+            "Documentation": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-notificationconfiguration-config-filter.html",
+            "Properties": {
+                "Rules": {
+                    "Documentation": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-notificationconfiguration-config-filter.html",
+                    "ItemType": "S3KeyFilterRule",
+                    "Required": true,
+                    "Type": "List",
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
+        "AWS::Serverless::Function.S3KeyFilterRule": {
+            "Documentation": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-notificationconfiguration-config-filter-s3key-rules.html",
+            "Properties": {
+                "Name": {
+                    "Documentation": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-notificationconfiguration-config-filter-s3key-rules.html",
+                    "PrimitiveType": "String",
+                    "Required": true,
+                    "UpdateType": "Immutable"
+                },
+                "Value": {
+                    "Documentation": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-notificationconfiguration-config-filter-s3key-rules.html",
+                    "PrimitiveType": "String",
+                    "Required": true,
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
         "AWS::Serverless::Function.S3Location": {
             "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#s3-location-object",
             "Properties": {
@@ -459,8 +523,8 @@
             "Properties": {
                 "S3Key": {
                     "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-notificationconfiguration-config-filter.html",
-                    "PrimitiveType": "String",
                     "Required": true,
+                    "Type": "S3KeyFilter",
                     "UpdateType": "Immutable"
                 }
             }
@@ -836,8 +900,13 @@
                 },
                 "Cors": {
                     "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapi",
-                    "PrimitiveType": "String",
+                    "PrimitiveTypes": [
+                        "String"
+                    ],
                     "Required": false,
+                    "Types": [
+                        "CorsConfiguration"
+                    ],
                     "UpdateType": "Immutable"
                 },
                 "DefinitionBody": {
@@ -865,8 +934,9 @@
                 },
                 "MethodSettings": {
                     "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapi",
-                    "PrimitiveType": "Json",
+                    "PrimitiveItemType": "Json",
                     "Required": false,
+                    "Type": "List",
                     "UpdateType": "Immutable"
                 },
                 "Name": {

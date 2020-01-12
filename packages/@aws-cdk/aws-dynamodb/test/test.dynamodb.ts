@@ -1,6 +1,6 @@
 import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
-import appscaling = require('@aws-cdk/aws-applicationautoscaling');
-import iam = require('@aws-cdk/aws-iam');
+import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
+import * as iam from '@aws-cdk/aws-iam';
 import { CfnDeletionPolicy, ConstructNode, RemovalPolicy, Stack, Tag } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import {
@@ -11,7 +11,7 @@ import {
   LocalSecondaryIndexProps,
   ProjectionType,
   StreamViewType,
-  Table
+  Table,
 } from '../lib';
 
 // tslint:disable:object-literal-key-quotes
@@ -1184,6 +1184,55 @@ export = {
       test.done();
     },
 
+    '"grantTableListStreams" should fail if streaming is not enabled on table"'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const table = new Table(stack, 'my-table', {
+        partitionKey: {
+          name: 'id',
+          type: AttributeType.STRING
+        }
+      });
+      const user = new iam.User(stack, 'user');
+
+      // WHEN
+      test.throws(() => table.grantTableListStreams(user), /DynamoDB Streams must be enabled on the table my-table/);
+
+      test.done();
+    },
+
+    '"grantTableListStreams" allows principal to list all streams for this table'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const table = new Table(stack, 'my-table', {
+        partitionKey: {
+          name: 'id',
+          type: AttributeType.STRING
+        },
+        stream: StreamViewType.NEW_IMAGE
+      });
+      const user = new iam.User(stack, 'user');
+
+      // WHEN
+      table.grantTableListStreams(user);
+
+      // THEN
+      expect(stack).to(haveResource('AWS::IAM::Policy', {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "dynamodb:ListStreams",
+              "Effect": "Allow",
+              "Resource": { "Fn::Join": [ "", [ { "Fn::GetAtt": [ "mytable0324D45C", "Arn" ] }, "/stream/*" ] ] }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Users": [ { "Ref": "user2C2B57AE" } ]
+      }));
+      test.done();
+    },
+
     '"grantStreamRead" should fail if streaming is not enabled on table"'(test: Test) {
       // GIVEN
       const stack = new Stack();
@@ -1220,6 +1269,11 @@ export = {
       expect(stack).to(haveResource('AWS::IAM::Policy', {
         "PolicyDocument": {
           "Statement": [
+            {
+              "Action": "dynamodb:ListStreams",
+              "Effect": "Allow",
+              "Resource": { "Fn::Join": [ "", [ { "Fn::GetAtt": [ "mytable0324D45C", "Arn" ] }, "/stream/*" ] ] }
+            },
             {
               "Action": [
                 "dynamodb:DescribeStream",
@@ -1278,6 +1332,125 @@ export = {
       }));
       test.done();
     }
+  },
+
+  'import': {
+    'report error when importing an external/existing table from invalid arn missing resource name'(test: Test) {
+      const stack = new Stack();
+
+      const tableArn = 'arn:aws:dynamodb:us-east-1::table/';
+      // WHEN
+      test.throws(() => Table.fromTableArn(stack, 'ImportedTable', tableArn), /ARN for DynamoDB table must be in the form: .../);
+
+      test.done();
+    },
+    'static import(ref) allows importing an external/existing table from arn'(test: Test) {
+      const stack = new Stack();
+
+      const tableArn = 'arn:aws:dynamodb:us-east-1:11111111:table/MyTable';
+      const table = Table.fromTableArn(stack, 'ImportedTable', tableArn);
+
+      const role = new iam.Role(stack, 'NewRole', {
+        assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+      });
+      table.grantReadData(role);
+
+      // it is possible to obtain a permission statement for a ref
+      expect(stack).to(haveResource('AWS::IAM::Policy', {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                'dynamodb:BatchGetItem',
+                'dynamodb:GetRecords',
+                'dynamodb:GetShardIterator',
+                'dynamodb:Query',
+                'dynamodb:GetItem',
+                'dynamodb:Scan'
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                tableArn,
+                { "Ref": "AWS::NoValue" }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": 'NewRoleDefaultPolicy90E8F49D',
+        "Roles": [ { "Ref": 'NewRole99763075' } ]
+      }));
+
+      test.deepEqual(table.tableArn, tableArn);
+      test.deepEqual(stack.resolve(table.tableName), 'MyTable');
+      test.done();
+    },
+    'static import(ref) allows importing an external/existing table from table name'(test: Test) {
+      const stack = new Stack();
+
+      const tableName = 'MyTable';
+      const table = Table.fromTableName(stack, 'ImportedTable', tableName);
+
+      const role = new iam.Role(stack, 'NewRole', {
+        assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+      });
+      table.grantReadWriteData(role);
+
+      // it is possible to obtain a permission statement for a ref
+      expect(stack).to(haveResource('AWS::IAM::Policy', {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                'dynamodb:BatchGetItem',
+                'dynamodb:GetRecords',
+                'dynamodb:GetShardIterator',
+                'dynamodb:Query',
+                'dynamodb:GetItem',
+                'dynamodb:Scan',
+                'dynamodb:BatchWriteItem',
+                'dynamodb:PutItem',
+                'dynamodb:UpdateItem',
+                'dynamodb:DeleteItem'
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":dynamodb:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":table/MyTable"
+                    ]
+                  ]
+                },
+                {
+                  "Ref": "AWS::NoValue"
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": 'NewRoleDefaultPolicy90E8F49D',
+        "Roles": [ { "Ref": 'NewRole99763075' } ]
+      }));
+
+      test.deepEqual(table.tableArn, 'arn:${Token[AWS::Partition.3]}:dynamodb:${Token[AWS::Region.4]}:${Token[AWS::AccountId.0]}:table/MyTable');
+      test.deepEqual(stack.resolve(table.tableName), tableName);
+      test.done();
+    },
   },
 };
 

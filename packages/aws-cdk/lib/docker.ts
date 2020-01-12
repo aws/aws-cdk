@@ -1,6 +1,6 @@
 import { ContainerImageAssetMetadataEntry } from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
-import path = require('path');
+import * as path from 'path';
 import { ToolkitInfo } from './api/toolkit-info';
 import { debug, print } from './logging';
 import { shell } from './os';
@@ -72,6 +72,10 @@ export async function prepareContainerAsset(assemblyDir: string,
 
     if (asset.target) {
       baseCommand.push('--target', asset.target);
+    }
+
+    if (asset.file) {
+      baseCommand.push('--file', asset.file);
     }
 
     const command = ci

@@ -1,7 +1,7 @@
-import iam = require('@aws-cdk/aws-iam');
-import secretsmanager = require('@aws-cdk/aws-secretsmanager');
-import ssm = require('@aws-cdk/aws-ssm');
-import cdk = require('@aws-cdk/core');
+import * as iam from '@aws-cdk/aws-iam';
+import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
+import * as ssm from '@aws-cdk/aws-ssm';
+import * as cdk from '@aws-cdk/core';
 import { NetworkMode, TaskDefinition } from './base/task-definition';
 import { ContainerImage, ContainerImageConfig } from './container-image';
 import { CfnTaskDefinition } from './ecs.generated';
@@ -463,10 +463,8 @@ export class ContainerDefinition extends cdk.Construct {
 
   /**
    * Returns the host port for the requested container port if it exists
-   *
-   * @internal
    */
-  public _findPortMapping(containerPort: number, protocol: Protocol): PortMapping | undefined {
+  public findPortMapping(containerPort: number, protocol: Protocol): PortMapping | undefined {
     for (const portMapping of this.portMappings) {
       const p = portMapping.protocol || Protocol.TCP;
       const c = portMapping.containerPort;
@@ -614,8 +612,8 @@ export interface HealthCheck {
   readonly timeout?: cdk.Duration;
 }
 
-function renderKV(env: { [key: string]: string }, keyName: string, valueName: string): any {
-  const ret = [];
+function renderKV(env: { [key: string]: string }, keyName: string, valueName: string): any[] {
+  const ret = new Array();
   for (const [key, value] of Object.entries(env)) {
     ret.push({ [keyName]: key, [valueName]: value });
   }

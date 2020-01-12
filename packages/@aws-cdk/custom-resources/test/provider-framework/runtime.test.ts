@@ -1,10 +1,13 @@
 // tslint:disable: no-console
 // tslint:disable: max-line-length
+/* eslint-disable @typescript-eslint/no-require-imports */
 import cfnResponse = require('../../lib/provider-framework/runtime/cfn-response');
-import consts = require('../../lib/provider-framework/runtime/consts');
 import framework = require('../../lib/provider-framework/runtime/framework');
 import outbound = require('../../lib/provider-framework/runtime/outbound');
 import mocks = require('./mocks');
+/* eslint-enable */
+
+console.log = jest.fn();
 
 cfnResponse.includeStackTraces = false;
 
@@ -99,48 +102,53 @@ test('fails gracefully if "onEvent" throws an error', async () => {
   expectNoWaiter();
 });
 
-describe('Physical IDs', () => {
+describe('PhysicalResourceId', () => {
 
-  describe('must be returned from all operations', () => {
+  describe('if not omitted from onEvent result', () => {
 
-    test('CREATE', async () => {
+    it('defaults to RequestId for CREATE', async () => {
       // WHEN
-      mocks.onEventImplMock = async () => ({ Data: { a: 123 } } as any);
+      mocks.onEventImplMock = async () => undefined;
 
       // THEN
       await simulateEvent({
         RequestType: 'Create'
       });
 
-      expectCloudFormationFailed('onEvent response must include a PhysicalResourceId for all request types');
+      expectCloudFormationSuccess({
+        PhysicalResourceId: mocks.MOCK_REQUEST.RequestId
+      });
     });
 
-    test('UPDATE', async () => {
+    it('defaults to the current PhysicalResourceId for UPDATE', async () => {
       // WHEN
-      mocks.onEventImplMock = async () => ({ Data: { a: 123 } } as any);
+      mocks.onEventImplMock = async () => undefined;
 
       // THEN
       await simulateEvent({
-        PhysicalResourceId: 'Boom',
-        RequestType: 'Update'
+        RequestType: 'Update',
+        PhysicalResourceId: MOCK_PHYSICAL_ID
       });
 
-      expectCloudFormationFailed('onEvent response must include a PhysicalResourceId for all request types');
+      expectCloudFormationSuccess({
+        PhysicalResourceId: MOCK_PHYSICAL_ID
+      });
     });
 
-    test('DELETE', async () => {
+    it('defaults to the current PhysicalResourceId for DELETE', async () => {
       // WHEN
-      mocks.onEventImplMock = async () => ({ Data: { a: 123 } } as any);
+      mocks.onEventImplMock = async () => undefined;
 
       // THEN
       await simulateEvent({
-        PhysicalResourceId: 'Boom',
-        RequestType: 'Delete'
+        RequestType: 'Delete',
+        PhysicalResourceId: MOCK_PHYSICAL_ID
       });
 
-      expectCloudFormationFailed('onEvent response must include a PhysicalResourceId for all request types');
+      expectCloudFormationSuccess({
+        PhysicalResourceId: MOCK_PHYSICAL_ID
+      });
     });
-
   });
 
   test('UPDATE: can change the physical ID by returning a new ID', async () => {
@@ -212,10 +220,6 @@ test('if there is no user-defined "isComplete", the waiter will not be triggered
   mocks.onEventImplMock = async () => ({ PhysicalResourceId: MOCK_PHYSICAL_ID });
 
   // WHEN
-  delete process.env[consts.USER_IS_COMPLETE_FUNCTION_ARN_ENV];
-  delete process.env[consts.WAITER_STATE_MACHINE_ARN_ENV];
-  // ...onEvent is already defined
-
   await simulateEvent({
     RequestType: 'Create',
   });
@@ -237,6 +241,38 @@ test('fails if user handler returns a non-object response', async () => {
   expectCloudFormationFailed('return values from user-handlers must be JSON objects. got: \"string\"');
 });
 
+describe('if CREATE fails, the subsequent DELETE will be ignored', () => {
+
+  it('FAILED response sets PhysicalResourceId to a special marker', async () => {
+    // WHEN
+    mocks.onEventImplMock = async () => { throw new Error('CREATE FAILED'); };
+
+    // THEN
+    await simulateEvent({
+      RequestType: 'Create'
+    });
+
+    expectCloudFormationFailed('CREATE FAILED', {
+      PhysicalResourceId: cfnResponse.CREATE_FAILED_PHYSICAL_ID_MARKER,
+    });
+  });
+
+  it('DELETE request with the marker succeeds without calling user handler', async () => {
+    // GIVEN
+    // user handler is not assigned
+
+    // WHEN
+    await simulateEvent({
+      RequestType: 'Delete',
+      PhysicalResourceId: cfnResponse.CREATE_FAILED_PHYSICAL_ID_MARKER
+    });
+
+    // THEN
+    expectCloudFormationSuccess();
+  });
+
+});
+
 // -----------------------------------------------------------------------------------------------------------------------
 
 /**
@@ -255,7 +291,7 @@ async function simulateEvent(req: Partial<AWSLambda.CloudFormationCustomResource
     ...req
   };
 
-  mocks.resetStartExecutionMock();
+  mocks.prepareForExecution();
 
   await framework.onEvent(x as AWSLambda.CloudFormationCustomResourceEvent);
 
@@ -288,10 +324,11 @@ async function simulateEvent(req: Partial<AWSLambda.CloudFormationCustomResource
   }
 }
 
-function expectCloudFormationFailed(expectedReason: string) {
+function expectCloudFormationFailed(expectedReason: string, resp?: Partial<AWSLambda.CloudFormationCustomResourceResponse>) {
   expectCloudFormationResponse({
     Status: 'FAILED',
-    Reason: expectedReason
+    Reason: expectedReason,
+    ...resp
   });
 }
 

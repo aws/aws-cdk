@@ -1,11 +1,11 @@
-import events = require('@aws-cdk/aws-events');
-import cdk = require('@aws-cdk/core');
+import * as events from '@aws-cdk/aws-events';
+import * as cdk from '@aws-cdk/core';
 import { IAction, IPipeline, IStage } from "./action";
 import { Artifact } from "./artifact";
 import { CfnPipeline } from './codepipeline.generated';
 import { FullActionDescriptor } from './full-action-descriptor';
 import { Pipeline, StageProps } from './pipeline';
-import validation = require('./validation');
+import * as validation from './validation';
 
 /**
  * A Stage in a Pipeline.
@@ -42,8 +42,12 @@ export class Stage implements IStage {
   /**
    * Get a duplicate of this stage's list of actions.
    */
-  public get actions(): FullActionDescriptor[] {
+  public get actionDescriptors(): FullActionDescriptor[] {
     return this._actions.slice();
+  }
+
+  public get actions(): IAction[] {
+    return this._actions.map(actionDescriptor => actionDescriptor.action);
   }
 
   public get pipeline(): IPipeline {
@@ -52,7 +56,7 @@ export class Stage implements IStage {
 
   public render(): CfnPipeline.StageDeclarationProperty {
     // first, assign names to output Artifacts who don't have one
-    for (const action of this.actions) {
+    for (const action of this._actions) {
       const outputArtifacts = action.outputs;
 
       const unnamedOutputs = outputArtifacts.filter(o => !o.artifactName);
@@ -116,7 +120,7 @@ export class Stage implements IStage {
 
   private validateActions(): string[] {
     const ret = new Array<string>();
-    for (const action of this.actions) {
+    for (const action of this.actionDescriptors) {
       ret.push(...this.validateAction(action));
     }
     return ret;

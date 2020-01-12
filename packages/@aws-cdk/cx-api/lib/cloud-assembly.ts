@@ -1,6 +1,6 @@
-import fs = require('fs');
-import os = require('os');
-import path = require('path');
+import * as fs from 'fs';
+import * as os from 'os';
+import * as path from 'path';
 import { ArtifactManifest, ArtifactType, CloudArtifact } from './cloud-artifact';
 import { CloudFormationStackArtifact } from './cloudformation-artifact';
 import { topologicalSort } from './toposort';
@@ -98,18 +98,49 @@ export class CloudAssembly {
 
   /**
    * Returns a CloudFormation stack artifact from this assembly.
+   *
    * @param stackName the name of the CloudFormation stack.
    * @throws if there is no stack artifact by that name
+   * @throws if there is more than one stack with the same stack name. You can
+   * use `getStackArtifact(stack.artifactId)` instead.
    * @returns a `CloudFormationStackArtifact` object.
    */
-  public getStack(stackName: string): CloudFormationStackArtifact {
-    const artifact = this.tryGetArtifact(stackName);
+  public getStackByName(stackName: string): CloudFormationStackArtifact {
+    const artifacts = this.artifacts.filter(a => a instanceof CloudFormationStackArtifact && a.stackName === stackName);
+    if (!artifacts || artifacts.length === 0) {
+      throw new Error(`Unable to find stack with stack name "${stackName}"`);
+    }
+
+    if (artifacts.length > 1) {
+      throw new Error(`There are multiple stacks with the stack name "${stackName}" (${artifacts.map(a => a.id).join(',')}). Use "getStackArtifact(id)" instead`);
+    }
+
+    return artifacts[0] as CloudFormationStackArtifact;
+  }
+
+  /**
+   * Returns a CloudFormation stack artifact by name from this assembly.
+   * @deprecated renamed to `getStackByName` (or `getStackArtifact(id)`)
+   */
+  public getStack(stackName: string) {
+    return this.getStackByName(stackName);
+  }
+
+  /**
+   * Returns a CloudFormation stack artifact from this assembly.
+   *
+   * @param artifactId the artifact id of the stack (can be obtained through `stack.artifactId`).
+   * @throws if there is no stack artifact with that id
+   * @returns a `CloudFormationStackArtifact` object.
+   */
+  public getStackArtifact(artifactId: string): CloudFormationStackArtifact {
+    const artifact = this.tryGetArtifact(artifactId);
     if (!artifact) {
-      throw new Error(`Unable to find artifact with id "${stackName}"`);
+      throw new Error(`Unable to find artifact with id "${artifactId}"`);
     }
 
     if (!(artifact instanceof CloudFormationStackArtifact)) {
-      throw new Error(`Artifact ${stackName} is not a CloudFormation stack`);
+      throw new Error(`Artifact ${artifactId} is not a CloudFormation stack`);
     }
 
     return artifact;
@@ -215,7 +246,9 @@ export class CloudAssemblyBuilder {
    * @param missing Missing context information.
    */
   public addMissing(missing: MissingContext) {
-    this.missing.push(missing);
+    if (this.missing.every(m => m.key !== missing.key)) {
+      this.missing.push(missing);
+    }
   }
 
   /**

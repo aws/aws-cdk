@@ -1,9 +1,9 @@
 // tslint:disable:object-literal-key-quotes
 import { expect, haveResource } from '@aws-cdk/assert';
-import acm = require('@aws-cdk/aws-certificatemanager');
+import * as acm from '@aws-cdk/aws-certificatemanager';
 import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import apigw = require('../lib');
+import * as apigw from '../lib';
 
 export = {
   'can define either an EDGE or REGIONAL domain name'(test: Test) {

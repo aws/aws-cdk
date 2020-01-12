@@ -1,6 +1,6 @@
-import sns = require('@aws-cdk/aws-sns');
+import * as sns from '@aws-cdk/aws-sns';
 import { App, Construct, Stack } from '@aws-cdk/core';
-import cfn = require('../lib');
+import * as cfn from '../lib';
 
 class YourNestedStack extends cfn.NestedStack {
   constructor(scope: Construct, id: string) {

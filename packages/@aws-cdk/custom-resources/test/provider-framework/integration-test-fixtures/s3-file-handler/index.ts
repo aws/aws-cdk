@@ -1,10 +1,10 @@
 // tslint:disable: no-console
-import AWS = require('aws-sdk');
-import api = require('./api');
+import * as AWS from 'aws-sdk';
+import * as api from './api';
 
 const s3 = new AWS.S3();
 
-export async function onEvent(event: AWSCDKAsyncCustomResource.OnEventRequest): Promise<AWSCDKAsyncCustomResource.OnEventResponse> {
+export async function onEvent(event: AWSCDKAsyncCustomResource.OnEventRequest) {
   switch (event.RequestType) {
     case 'Create':
     case 'Update':
@@ -56,7 +56,7 @@ export async function putObject(event: AWSCDKAsyncCustomResource.OnEventRequest)
   };
 }
 
-export async function deleteObject(event: AWSCDKAsyncCustomResource.OnEventRequest): Promise<AWSCDKAsyncCustomResource.OnEventResponse> {
+export async function deleteObject(event: AWSCDKAsyncCustomResource.OnEventRequest) {
   const bucketName = event.ResourceProperties.BucketName;
   if (!bucketName) { throw new Error(`"BucketName" is required`); }
 
@@ -69,8 +69,4 @@ export async function deleteObject(event: AWSCDKAsyncCustomResource.OnEventReque
     Bucket: bucketName,
     Key: objectKey,
   }).promise();
-
-  return {
-    PhysicalResourceId: objectKey
-  };
 }

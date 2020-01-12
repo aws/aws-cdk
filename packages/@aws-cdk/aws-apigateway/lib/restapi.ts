@@ -1,4 +1,4 @@
-import iam = require('@aws-cdk/aws-iam');
+import * as iam from '@aws-cdk/aws-iam';
 import { CfnOutput, Construct, IResource as IResourceBase, Resource, Stack } from '@aws-cdk/core';
 import { ApiKey, IApiKey } from './api-key';
 import { CfnAccount, CfnRestApi } from './apigateway.generated';
@@ -301,7 +301,7 @@ export class RestApi extends Resource implements IRestApi {
   /**
    * Adds a usage plan.
    */
-  public addUsagePlan(id: string, props: UsagePlanProps): UsagePlan {
+  public addUsagePlan(id: string, props: UsagePlanProps = {}): UsagePlan {
     return new UsagePlan(this, id, props);
   }
 

@@ -1,5 +1,5 @@
-import codepipeline = require('@aws-cdk/aws-codepipeline');
-import events = require('@aws-cdk/aws-events');
+import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import * as events from '@aws-cdk/aws-events';
 import { Construct } from '@aws-cdk/core';
 
 /**
@@ -34,7 +34,7 @@ export abstract class Action implements codepipeline.IAction {
     const rule = new events.Rule(this.scope, name, options);
     rule.addTarget(target);
     rule.addEventPattern({
-      detailType: [ 'CodePipeline Stage Execution State Change' ],
+      detailType: [ 'CodePipeline Action Execution State Change' ],
       source: [ 'aws.codepipeline' ],
       resources: [ this.pipeline.pipelineArn ],
       detail: {

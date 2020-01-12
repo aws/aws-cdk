@@ -1,10 +1,9 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/core');
-import { App, Stack } from '@aws-cdk/core';
+import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import sns = require('../lib');
-import { SubscriptionProtocol, Topic } from '../lib';
+import * as sns from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -63,6 +62,21 @@ export = {
           }
         }
       });
+
+      test.done();
+    },
+
+    'specify kmsMasterKey'(test: Test) {
+      const stack = new cdk.Stack();
+      const key = new kms.Key(stack, "CustomKey");
+
+      new sns.Topic(stack, 'MyTopic', {
+        masterKey: key,
+      });
+
+      expect(stack).to(haveResource("AWS::SNS::Topic", {
+        "KmsMasterKeyId": { "Ref": "CustomKey1E6D0D07" },
+      }));
 
       test.done();
     },
@@ -230,13 +244,13 @@ export = {
 
   'subscription is created under the topic scope by default'(test: Test) {
     // GIVEN
-    const stack = new Stack();
-    const topic = new Topic(stack, 'Topic');
+    const stack = new cdk.Stack();
+    const topic = new sns.Topic(stack, 'Topic');
 
     // WHEN
     topic.addSubscription({
       bind: () => ({
-        protocol: SubscriptionProtocol.HTTP,
+        protocol: sns.SubscriptionProtocol.HTTP,
         endpoint: 'http://foo/bar',
         subscriberId: 'my-subscription'
       })
@@ -249,15 +263,15 @@ export = {
 
   'if "scope" is defined, subscription will be created under that scope'(test: Test) {
     // GIVEN
-    const app = new App();
-    const stack = new Stack(app, 'A');
-    const stack2 = new Stack(app, 'B');
-    const topic = new Topic(stack, 'Topic');
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'A');
+    const stack2 = new cdk.Stack(app, 'B');
+    const topic = new sns.Topic(stack, 'Topic');
 
     // WHEN
     topic.addSubscription({
       bind: () => ({
-        protocol: SubscriptionProtocol.HTTP,
+        protocol: sns.SubscriptionProtocol.HTTP,
         endpoint: 'http://foo/bar',
         subscriberScope: stack2,
         subscriberId: 'subscriberId'

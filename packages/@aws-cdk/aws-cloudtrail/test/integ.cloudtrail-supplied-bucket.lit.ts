@@ -1,9 +1,8 @@
-import iam = require('@aws-cdk/aws-iam');
-import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/core');
-import { Stack } from '@aws-cdk/core';
+import * as iam from '@aws-cdk/aws-iam';
+import * as s3 from '@aws-cdk/aws-s3';
+import * as cdk from '@aws-cdk/core';
 
-import cloudtrail = require('../lib');
+import * as cloudtrail from '../lib';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'integ-cloudtrail');
@@ -22,7 +21,7 @@ Trailbucket.addToResourcePolicy(new iam.PolicyStatement({
       }));
 
 Trailbucket.addToResourcePolicy(new iam.PolicyStatement({
-        resources: [Trailbucket.arnForObjects(`AWSLogs/${Stack.of(stack).account}/*`)],
+        resources: [Trailbucket.arnForObjects(`AWSLogs/${cdk.Stack.of(stack).account}/*`)],
         actions: ["s3:PutObject"],
         principals: [cloudTrailPrincipal],
         conditions:  {
