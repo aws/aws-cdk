@@ -3,6 +3,7 @@ import 'source-map-support/register';
 
 import * as cxapi from '@aws-cdk/cx-api';
 import * as colors from 'colors/safe';
+import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as yargs from 'yargs';
 
@@ -17,7 +18,7 @@ import { availableInitLanguages, cliInit, printAvailableTemplates } from '../lib
 import { data, debug, error, print, setVerbose, success } from '../lib/logging';
 import { PluginHost } from '../lib/plugin';
 import { serializeStructure } from '../lib/serialize';
-import { Configuration, Settings } from '../lib/settings';
+import { Configuration, PROJECT_CONFIG, Settings } from '../lib/settings';
 import * as version from '../lib/version';
 
 // tslint:disable:no-shadowed-variable max-line-length
@@ -103,6 +104,15 @@ async function initCommandLine() {
   if (argv.verbose) {
     setVerbose();
   }
+
+  const projectRootDirectory = await lookupProjectRoot();
+
+  if (projectRootDirectory) {
+    // We change to the project root directory to maintian the behavior prior to (1.21.0) this feature where
+    // cdk commands had to be executed from the project root.
+    process.chdir(projectRootDirectory);
+  }
+
   debug('CDK toolkit version:', version.DISPLAY_VERSION);
   debug('Command line arguments:', argv);
 
@@ -380,6 +390,30 @@ async function initCommandLine() {
   function toJsonOrYaml(object: any): string {
     return serializeStructure(object, argv.json);
   }
+}
+
+async function lookupProjectRoot(): Promise<string | undefined> {
+
+  async function ascend(directoryParts: string[]): Promise<string | undefined> {
+
+    if (directoryParts.length === 0) {
+      return undefined;
+    }
+
+    const directory = directoryParts.join(path.sep);
+
+    const filePath = path.join(directory, PROJECT_CONFIG);
+
+    if (await fs.pathExists(filePath)) {
+      return directory;
+    }
+
+    return ascend(directoryParts.slice(0, -1));
+
+  }
+
+  return ascend(path.resolve(process.cwd()).split(path.sep));
+
 }
 
 initCommandLine()
