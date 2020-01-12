@@ -221,10 +221,9 @@ To accommodate these requirements we will make the following changes to how `cdk
 
 1. Extend the bootstrap stack to include these resources.
 2. Use explicit convention-based physical names for all resources.
-3. Allow specifying a list of *trusted accounts* from which the CloudFormation service principal can deploy to this account.
-4. Allow specifying a list of accounts from which principals can deploy to this account from the CLI.
-5. Allow specifying the managed policy to use for the deployment role (mostly it will be the administrator managed policy).
-6. Allow specifying an optional qualifier for the physical names of all resources to address bucket hijacking concerns and allow multiple bootstraps to the same environment for whatever reason.
+3. Allow specifying a list of *trusted accounts* that can deploy to this account.
+4. Allow specifying the managed policy to use for the deployment role (mostly it will be the administrator managed policy).
+5. Allow specifying an optional qualifier for the physical names of all resources to address bucket hijacking concerns and allow multiple bootstraps to the same environment for whatever reason.
 
 **Bootstrapping at Scale**
 
@@ -247,7 +246,7 @@ We will employ a naming convention which encodes `account`, `region` and an opti
 
 It is important that we do not rely on hashing or parsing account and region in order to be able to support account stamping tools like CloudFormation StackSets and Control Tower (in which case "account" resolves to `{ "Ref": "AWS::AccountId" }`, etc.
 
-In order to address the risk of S3 bucket hijacking, we need to be ale to support an optional `qualifier` postfix. This means that we need to allow users to specify this qualifier when they define the Stack's `env`. Perhaps we need to encode this into `aws://account/region[/qualifier]`
+In order to address the risk of S3 bucket hijacking, we need to be able to support an optional `qualifier` postfix. This means that we need to allow users to specify this qualifier when they define the Stack's `env`. Perhaps we need to encode this into `aws://account/region[/qualifier]`
 
 > **Alternative considered**: one way to implement environment-specific name-spacing would have been to export the bootstrapping resources through a CloudFormation Export and then reference them using Fn::ImportValue. This would have worked for templates, but means that we would need a way to resolve import values during publishing as well (and as a result also Fn::Join, etc).
 
