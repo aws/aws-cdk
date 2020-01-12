@@ -1791,7 +1791,13 @@ export = {
     const accessLogBucket = new s3.Bucket(stack, 'AccessLogs', {
       accessControl: s3.BucketAccessControl.AUTHENTICATED_READ,
     });
-    test.throws(() => accessLogBucket.allowLogDelivery(), /The bucket's ACL has been set and can't be changed/);
+    test.throws(() =>
+      new s3.Bucket(stack, 'MyBucket', {
+        serverAccessLogsBucket: accessLogBucket,
+        serverAccessLogsPrefix: 'hello',
+        accessControl: s3.BucketAccessControl.AUTHENTICATED_READ,
+      })
+      , /Cannot enable log delivery to this bucket because the bucket's ACL has been set and can't be changed/);
 
     test.done();
  },

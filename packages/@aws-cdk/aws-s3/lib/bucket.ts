@@ -100,11 +100,6 @@ export interface IBucket extends IResource {
   arnForObjects(keyPattern: string): string;
 
   /**
-   * Grants write permissions for the LogDelivery group to the bucket.
-   */
-  allowLogDelivery(): void;
-
-  /**
    * Grant read permissions for this bucket and it's contents to an IAM
    * principal (Role/Group/User).
    *
@@ -470,17 +465,6 @@ abstract class BucketBase extends Resource implements IBucket {
    */
   public arnForObjects(keyPattern: string): string {
     return `${this.bucketArn}/${keyPattern}`;
-  }
-
-  /**
-   * Adds write permissions to the LogDelivery group via the Bucket ACL.
-   */
-  public allowLogDelivery() {
-    if (this.accessControl && this.accessControl !== BucketAccessControl.LOG_DELIVERY_WRITE) {
-      throw new Error("The bucket's ACL has been set and can't be changed");
-    }
-
-    this.accessControl = BucketAccessControl.LOG_DELIVERY_WRITE;
   }
 
   /**
@@ -1074,7 +1058,7 @@ export class Bucket extends BucketBase {
     this.disallowPublicAccess = props.blockPublicAccess && props.blockPublicAccess.blockPublicPolicy;
     this.accessControl = props.accessControl;
 
-    if (props.serverAccessLogsBucket) {
+    if (props.serverAccessLogsBucket instanceof Bucket) {
       props.serverAccessLogsBucket.allowLogDelivery();
     }
 
@@ -1420,6 +1404,14 @@ export class Bucket extends BucketBase {
       redirectAllRequestsTo: props.websiteRedirect,
       routingRules
     };
+  }
+
+  private allowLogDelivery() {
+    if (this.accessControl && this.accessControl !== BucketAccessControl.LOG_DELIVERY_WRITE) {
+      throw new Error("Cannot enable log delivery to this bucket because the bucket's ACL has been set and can't be changed");
+    }
+
+    this.accessControl = BucketAccessControl.LOG_DELIVERY_WRITE;
   }
 }
 
