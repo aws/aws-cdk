@@ -25,7 +25,9 @@ The only caveat is that **new environments** (account/region) will need to be bo
   - [Mutation](#mutation-1)
   - [Publishing](#publishing-1)
   - [Deployment](#deployment-1)
-- [Compatibility Plan](#compatibility-plan)
+- [Goal](#goal)
+- [Approach](#approach-1)
+- [Requirements](#requirements-1)
 
 ## Requirements
 
@@ -261,10 +263,14 @@ We can't begin to deploy an app before we provision and update the required the 
 
 The initial creation of the pipeline will be performed manually using `cdk deploy pipeline-main` (where `pipeline-main` is name of the main pipeline stack), but from that point forward, any changes to the pipeline will be done by pushing a commit into the repo, and letting the pipeline pick it up.
 
-For example, if we use CodePipeline for deploying an app to multiple environments,the deployment infrastructure will consist of a central pipeline stack, which contains the pipeline itself, it's artifacts bucket and other related resources such as CodeBuild projects. It will also require a stack in each region that includes a CodePipeline regional replication bucket (and key).
+For example, if we use CodePipeline for deploying an app to multiple environments, the deployment infrastructure requires a central pipeline stack, which contains the pipeline itself, it's artifacts bucket and other related resources such as CodeBuild projects. It will also require a stack in each region that includes a CodePipeline regional replication bucket (and key). See [cross-region support](https://docs.aws.amazon.com/codepipeline/latest/userguide/actions-create-cross-region.html) in the CodePipeline User Guide.
 
-In CodePipeline, we will implement this stage using a CodeBuild action which runs `cdk deploy "pipeline-*"`. This will deploy all stacks that begin with the `pipeline-` prefix. These stacks can be deployed to any bootstrapped environment since `cdk deploy` can assume the deployment role.
+In CodePipeline, we will implement self-mutation using a pre-configured CodeBuild action which runs `cdk deploy "pipeline-*"`. This will deploy all stacks that begin with the `pipeline-` prefix. These stacks can be deployed to any bootstrapped environment since `cdk deploy` can assume the deployment role.
 
+To mitigate the security risk, `cdk deploy pipeline-*` should run against a synthesized cloud assembly (from the build step) and not against the executable app, and should also prohibit the use of docker assets. These are the two elements where user code is executed and must not be done in an environment with administrative privileges. The mutation CodeBuild action will not be customizable to ensure that users don't accidentally allow it to execute arbitrary code.
+
+> ALTERNATIVE CONSIDERED: We initially considered leveraging the bootstrapping process in order to provision cross-regional replication resources for CodePipeline but: (a) this is very specific to CodePipeline and not relevant to other deployment systems (e.g. Travis, GitHub Actions); and (b) it will require the bootstrapping process to span more than a single environment. In order to allow users to use "account stamping" tools like Stack Sets or Landing Zone, we decided that the bootstrapping process will be as simple as possible (== a single cloudformation template). 
+> The trade-off is that for the CodePipeline resources, we will use "cdk deploy pipeline-*", and so we can encode all this within the CDK. In fact cross account/region is actually already supported in the CDK and will automatically define all these stacks and region for you, so it should already "Just Work".
 
 ## Publishing
 
