@@ -6,12 +6,6 @@ source ${scriptdir}/common.bash
 
 setup
 
-function cleanup() {
-  popd
-}
-
-trap cleanup EXIT INT
-
 pushd docker
 cdk diff ${STACK_NAME_PREFIX}-test-1
 
