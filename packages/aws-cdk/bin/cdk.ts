@@ -406,6 +406,7 @@ async function lookupProjectRoot(): Promise<string | undefined> {
     const parentDir = path.dirname(directory);
 
     if (parentDir === directory) {
+      // We reached the file system root, give up.
       return undefined;
     }
 
