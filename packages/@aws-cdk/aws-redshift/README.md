@@ -17,11 +17,11 @@
 
 ### Starting a Redshift Cluster Database
 
-To set up a Redshift cluster, define a `RedshiftCluster`. It will be launched in a VPC.
-You can specify a VPC, otherwise one will be created. The nodes are always launched in private Subnets and are encrypted by default.
+To set up a Redshift cluster, define a `Cluster`. It will be launched in a VPC.
+You can specify a VPC, otherwise one will be created. The nodes are always launched in private subnets and are encrypted by default.
 
 ``` typescript
-const cluster = new RedshiftCluster(this, 'Redshift', {
+const cluster = new redshift.Cluster(this, 'Redshift', {
     masterUser: {
       masterUsername: 'admin',
     },
@@ -41,7 +41,7 @@ a default port, so you don't need to specify the port:
 cluster.connections.allowFromAnyIpv4('Open to the world');
 ```
 
-The endpoints to access your database cluster will be available as the `.clusterEndpoint` attribute:
+The endpoint to access your database cluster will be available as the `.clusterEndpoint` attribute:
 
 ```ts
 cluster.clusterEndpoint.socketAddress;   // "HOSTNAME:PORT"
