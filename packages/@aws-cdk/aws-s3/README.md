@@ -192,6 +192,28 @@ When `blockPublicPolicy` is set to `true`, `grantPublicRead()` throws an error.
 
 [block public access settings]: https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html
 
+### Logging configuration
+
+Use `serverAccessLogsBucket` to describe where server access logs are to be stored.
+
+```ts
+const accessLogsBucket = new Bucket(this, 'AccessLogsBucket');
+
+const bucket = new Bucket(this, 'MyBucket', {
+  serverAccessLogsBucket: accessLogsBucket,
+});
+```
+
+It's also possible to specify a prefix for Amazon S3 to assign to all log object keys.
+
+```ts
+const bucket = new Bucket(this, 'MyBucket', {
+  serverAccessLogsBucket: accessLogsBucket,
+  serverAccessLogsPrefix: 'logs'
+});
+```
+
+[S3 Server access logging]: https://docs.aws.amazon.com/AmazonS3/latest/dev/ServerLogs.html
 
 ### Website redirection
 
