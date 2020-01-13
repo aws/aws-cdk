@@ -73,7 +73,7 @@ export = {
 
       // THEN
       graphMetricsAre(test, new Stack(), graph, [
-        [ 'Test', 'ACount', { accountId: '1234', region: 'us-north-5' }],
+        [ 'Test', 'ACount' ],
       ]);
 
       test.done();
