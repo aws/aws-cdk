@@ -4,6 +4,9 @@ import { Mapping } from './aws-auth-mapping';
 import { Cluster } from './cluster';
 import { KubernetesResource } from './k8s-resource';
 
+/**
+ * Configuration props for the AwsAuth construct.
+ */
 export interface AwsAuthProps {
   /**
    * The EKS cluster to apply this configuration to.

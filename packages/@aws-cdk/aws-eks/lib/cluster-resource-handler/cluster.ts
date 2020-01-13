@@ -3,71 +3,34 @@
 import { IsCompleteResponse, OnEventResponse } from '@aws-cdk/custom-resources/lib/provider-framework/types';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as aws from 'aws-sdk';
+import { EksClient, ResourceHandler } from './common';
 
 const MAX_CLUSTER_NAME_LEN = 100;
 
-export class ClusterResourceHandler {
-
+export class ClusterResourceHandler extends ResourceHandler {
   public get clusterName() {
     if (!this.physicalResourceId) {
-      throw new Error(`Cannot determie cluster name without physical resource ID`);
+      throw new Error(`Cannot determine cluster name without physical resource ID`);
     }
 
     return this.physicalResourceId;
   }
 
-  private readonly requestType: string;
-  private readonly requestId: string;
-  private readonly logicalResourceId: string;
-  private readonly physicalResourceId?: string;
   private readonly newProps: aws.EKS.CreateClusterRequest;
   private readonly oldProps: Partial<aws.EKS.CreateClusterRequest>;
 
-  constructor(private readonly eks: EksClient, event: any) {
-    this.requestId = event.RequestId;
-    this.logicalResourceId = event.LogicalResourceId;
-    this.newProps = parseProps(event.ResourceProperties);
+  constructor(eks: EksClient, event: AWSLambda.CloudFormationCustomResourceEvent) {
+    super(eks, event);
+
+    this.newProps = parseProps(this.event.ResourceProperties);
     this.oldProps = event.RequestType === 'Update' ? parseProps(event.OldResourceProperties) : { };
-    this.physicalResourceId = event.PhysicalResourceId;
-
-    const roleToAssume = event.ResourceProperties.AssumeRoleArn;
-    if (!roleToAssume) {
-      throw new Error(`AssumeRoleArn must be provided`);
-    }
-
-    eks.configureAssumeRole({
-      RoleArn: roleToAssume,
-      RoleSessionName: `AWSCDK.EKSCluster.${event.RequestType}.${this.requestId}`
-    });
-
-    this.requestType = event.RequestType;
-  }
-
-  public onEvent() {
-    switch (this.requestType) {
-      case 'Create': return this.onCreate();
-      case 'Update': return this.onUpdate();
-      case 'Delete': return this.onDelete();
-    }
-
-    throw new Error(`Invalid request type ${this.requestType}`);
-  }
-
-  public isComplete() {
-    switch (this.requestType) {
-      case 'Create': return this.isCreateComplete();
-      case 'Update': return this.isUpdateComplete();
-      case 'Delete': return this.isDeleteComplete();
-    }
-
-    throw new Error(`Invalid request type ${this.requestType}`);
   }
 
   // ------
   // CREATE
   // ------
 
-  private async onCreate(): Promise<OnEventResponse> {
+  protected async onCreate(): Promise<OnEventResponse> {
     console.log('onCreate: creating cluster with options:', JSON.stringify(this.newProps, undefined, 2));
     if (!this.newProps.roleArn) {
       throw new Error('"roleArn" is required');
@@ -89,7 +52,7 @@ export class ClusterResourceHandler {
     };
   }
 
-  private async isCreateComplete() {
+  protected async isCreateComplete() {
     return this.isActive();
   }
 
@@ -97,7 +60,7 @@ export class ClusterResourceHandler {
   // DELETE
   // ------
 
-  private async onDelete(): Promise<OnEventResponse> {
+  protected async onDelete(): Promise<OnEventResponse> {
     console.log(`onDelete: deleting cluster ${this.clusterName}`);
     try {
       await this.eks.deleteCluster({ name: this.clusterName });
@@ -113,7 +76,7 @@ export class ClusterResourceHandler {
     };
   }
 
-  private async isDeleteComplete(): Promise<IsCompleteResponse> {
+  protected async isDeleteComplete(): Promise<IsCompleteResponse> {
     console.log(`isDeleteComplete: waiting for cluster ${this.clusterName} to be deleted`);
 
     try {
@@ -138,7 +101,7 @@ export class ClusterResourceHandler {
   // UPDATE
   // ------
 
-  private async onUpdate() {
+  protected async onUpdate() {
     const updates = analyzeUpdate(this.oldProps, this.newProps);
     console.log(`onUpdate:`, JSON.stringify({ updates }, undefined, 2));
 
@@ -168,7 +131,7 @@ export class ClusterResourceHandler {
     }
 
     if (updates.updateLogging || updates.updateAccess) {
-      return await this.eks.updateClusterConfig({
+      await this.eks.updateClusterConfig({
         name: this.clusterName,
         logging: this.newProps.logging,
         resourcesVpcConfig: this.newProps.resourcesVpcConfig
@@ -179,7 +142,7 @@ export class ClusterResourceHandler {
     return;
   }
 
-  private async isUpdateComplete() {
+  protected async isUpdateComplete() {
     console.log(`isUpdateComplete`);
     return this.isActive();
   }
@@ -231,15 +194,6 @@ export class ClusterResourceHandler {
   }
 }
 
-export interface EksClient {
-  configureAssumeRole(request: aws.STS.AssumeRoleRequest): void;
-  createCluster(request: aws.EKS.CreateClusterRequest): Promise<aws.EKS.CreateClusterResponse>;
-  deleteCluster(request: aws.EKS.DeleteClusterRequest): Promise<aws.EKS.DeleteClusterResponse>;
-  describeCluster(request: aws.EKS.DescribeClusterRequest): Promise<aws.EKS.DescribeClusterResponse>;
-  updateClusterConfig(request: aws.EKS.UpdateClusterConfigRequest): Promise<aws.EKS.UpdateClusterConfigResponse>;
-  updateClusterVersion(request: aws.EKS.UpdateClusterVersionRequest): Promise<aws.EKS.UpdateClusterVersionResponse>;
-}
-
 function parseProps(props: any): aws.EKS.CreateClusterRequest {
   return props?.Config ?? { };
 }
@@ -273,4 +227,3 @@ function analyzeUpdate(oldProps: Partial<aws.EKS.CreateClusterRequest>, newProps
     updateLogging: JSON.stringify(newProps.logging) !== JSON.stringify(oldProps.logging),
   };
 }
-
