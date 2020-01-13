@@ -75,7 +75,7 @@ export class DnsValidatedCertificate extends cdk.Resource implements ICertificat
         }));
         requestorFunction.addToRolePolicy(new iam.PolicyStatement({
             actions: ['route53:changeResourceRecordSets'],
-            resources: [`arn:aws:route53:::hostedzone/${this.hostedZoneId}`],
+            resources: [`arn:${cdk.Stack.of(requestorFunction).partition}:route53:::hostedzone/${this.hostedZoneId}`],
         }));
 
         const certificate = new cfn.CustomResource(this, 'CertificateRequestorResource', {
