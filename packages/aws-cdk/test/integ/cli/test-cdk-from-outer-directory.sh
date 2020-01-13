@@ -6,7 +6,8 @@ source ${scriptdir}/common.bash
 
 setup
 
-pushd ..
+temp_dir=$(mktemp -d)
+pushd ${temp_dir}
 set +e
 output="$(cdk diff ${STACK_NAME_PREFIX}-test-1 2>&1)"
 set -e
