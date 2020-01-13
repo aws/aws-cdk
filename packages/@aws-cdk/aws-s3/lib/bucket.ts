@@ -60,13 +60,6 @@ export interface IBucket extends IResource {
   readonly encryptionKey?: kms.IKey;
 
   /**
-   * Optional bucket Access Control.
-   *
-   * @default BucketAccessControl.PRIVATE
-   */
-  accessControl?: BucketAccessControl;
-
-  /**
    * The resource policy associated with this bucket.
    *
    * If `autoCreatePolicy` is true, a `BucketPolicy` will be created upon the
@@ -308,11 +301,6 @@ abstract class BucketBase extends Resource implements IBucket {
    * Optional KMS encryption key associated with this bucket.
    */
   public abstract readonly encryptionKey?: kms.IKey;
-
-  /**
-   * Optional Bucket access control.
-   */
-  public abstract accessControl?: BucketAccessControl;
 
   /**
    * The resource policy associated with this bucket.
@@ -1005,9 +993,9 @@ export class Bucket extends BucketBase {
 
   public readonly encryptionKey?: kms.IKey;
   public policy?: BucketPolicy;
-  public accessControl?: BucketAccessControl;
   protected autoCreatePolicy = true;
   protected disallowPublicAccess?: boolean;
+  private accessControl?: BucketAccessControl;
   private readonly lifecycleRules: LifecycleRule[] = [];
   private readonly versioned?: boolean;
   private readonly notifications: BucketNotifications;
@@ -1406,6 +1394,12 @@ export class Bucket extends BucketBase {
     };
   }
 
+  /**
+   * Allows the LogDelivery group to write, fails if ACL was set differently.
+   *
+   * @see
+   * https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl
+   */
   private allowLogDelivery() {
     if (this.accessControl && this.accessControl !== BucketAccessControl.LOG_DELIVERY_WRITE) {
       throw new Error("Cannot enable log delivery to this bucket because the bucket's ACL has been set and can't be changed");
