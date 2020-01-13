@@ -1,4 +1,3 @@
-import * as s3 from '@aws-cdk/aws-s3';
 import { Construct, IResource, Resource, Stack } from '@aws-cdk/core';
 import { CfnDatabase } from './glue.generated';
 
@@ -83,27 +82,29 @@ export class Database extends Resource implements IDatabase {
   /**
    * Location URI of this database.
    */
-  public readonly locationUri: string;
+  public readonly locationUri?: string;
 
   constructor(scope: Construct, id: string, props: DatabaseProps) {
     super(scope, id, {
       physicalName: props.databaseName,
     });
 
+    let databaseInput: CfnDatabase.DatabaseInputProperty = {
+      name: props.databaseName,
+    };
+
     if (props.locationUri) {
       this.locationUri = props.locationUri;
-    } else {
-      const bucket = new s3.Bucket(this, 'Bucket');
-      this.locationUri = `s3://${bucket.bucketName}/${props.databaseName}`;
+      databaseInput = {
+        locationUri: this.locationUri,
+        ...databaseInput
+      };
     }
 
     this.catalogId = Stack.of(this).account;
     const resource = new CfnDatabase(this, 'Resource', {
       catalogId: this.catalogId,
-      databaseInput: {
-        name: this.physicalName,
-        locationUri: this.locationUri
-      }
+      databaseInput
     });
 
     // see https://docs.aws.amazon.com/glue/latest/dg/glue-specifying-resource-arns.html#data-catalog-resource-arns

@@ -4,7 +4,7 @@ import { Test } from 'nodeunit';
 import * as glue from '../lib';
 
 export = {
-  'default database creates a bucket to store the datbase'(test: Test) {
+  'default database does not create a bucket'(test: Test) {
     const stack = new Stack();
 
     new glue.Database(stack, 'Database', {
@@ -13,11 +13,6 @@ export = {
 
     expect(stack).toMatch({
       Resources: {
-        DatabaseBucket318AF64F: {
-          Type: 'AWS::S3::Bucket',
-          DeletionPolicy: "Retain",
-          UpdateReplacePolicy: "Retain"
-        },
         DatabaseB269D8BB: {
           Type: 'AWS::Glue::Database',
           Properties: {
@@ -25,18 +20,6 @@ export = {
               Ref: "AWS::AccountId"
             },
             DatabaseInput: {
-              LocationUri: {
-                "Fn::Join": [
-                  "",
-                  [
-                    "s3://",
-                    {
-                      Ref: "DatabaseBucket318AF64F"
-                    },
-                    "/test_database"
-                  ]
-                ]
-              },
               Name: "test_database"
             }
           }
