@@ -968,7 +968,6 @@ export class Bucket extends BucketBase {
       public readonly bucketWebsiteNewUrlFormat = newUrlFormat;
       public readonly encryptionKey = attrs.encryptionKey;
       public policy?: BucketPolicy = undefined;
-      public accessControl?: BucketAccessControl = undefined;
       protected autoCreatePolicy = false;
       protected disallowPublicAccess = false;
 
