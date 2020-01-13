@@ -21,6 +21,8 @@ To set up a Redshift cluster, define a `Cluster`. It will be launched in a VPC.
 You can specify a VPC, otherwise one will be created. The nodes are always launched in private subnets and are encrypted by default.
 
 ``` typescript
+import redshift = require('@aws-cdk/aws-redshift');
+...
 const cluster = new redshift.Cluster(this, 'Redshift', {
     masterUser: {
       masterUsername: 'admin',
