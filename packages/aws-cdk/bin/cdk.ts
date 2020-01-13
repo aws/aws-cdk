@@ -110,6 +110,7 @@ async function initCommandLine() {
   if (projectRootDirectory) {
     // We change to the project root directory to maintian the behavior prior to (1.21.0) this feature where
     // cdk commands had to be executed from the project root.
+    // Note that if we cannot locate the project root, then we proceed anyway because the user might have the "app" configured in some other way.
     process.chdir(projectRootDirectory);
   }
 
