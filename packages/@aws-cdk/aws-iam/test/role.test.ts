@@ -1,6 +1,6 @@
 import '@aws-cdk/assert/jest';
 import { Duration, Stack } from '@aws-cdk/core';
-import { ArnPrincipal, CompositePrincipal, FederatedPrincipal, ManagedPolicy, PolicyStatement, Role, ServicePrincipal, User } from '../lib';
+import { AnyPrincipal, ArnPrincipal, CompositePrincipal, FederatedPrincipal, ManagedPolicy, PolicyStatement, Role, ServicePrincipal, User } from '../lib';
 
 describe('IAM role', () => {
   test('default role', () => {
@@ -316,6 +316,32 @@ describe('IAM role', () => {
             ":iam::aws:policy/managed-policy"
           ]
         ]
+      }
+    });
+  });
+
+  test('Principal-* in an AssumeRolePolicyDocument gets translated to { "AWS": "*" }', () => {
+    // The docs say that "Principal: *" and "Principal: { AWS: * }" are equivalent
+    // (https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_principal.html)
+    // but in practice CreateRole errors out if you use "Principal: *" in an AssumeRolePolicyDocument:
+    // An error occurred (MalformedPolicyDocument) when calling the CreateRole operation: AssumeRolepolicy contained an invalid principal: "STAR":"*".
+
+    // Make sure that we handle this case specially.
+    const stack = new Stack();
+    new Role(stack, 'Role', {
+      assumedBy: new AnyPrincipal(),
+    });
+
+    expect(stack).toHaveResource('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: "sts:AssumeRole",
+            Effect: "Allow",
+            Principal: { AWS: "*" },
+          }
+        ],
+        Version: "2012-10-17"
       }
     });
   });
