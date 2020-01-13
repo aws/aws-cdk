@@ -129,7 +129,8 @@ export abstract class BaseLoadBalancer extends Resource {
 
     const internetFacing = ifUndefined(baseProps.internetFacing, false);
 
-    const vpcSubnets = (internetFacing ? { subnetType: ec2.SubnetType.PUBLIC } : {});
+    const vpcSubnets = ifUndefined(baseProps.vpcSubnets,
+      (internetFacing ? {subnetType: ec2.SubnetType.PUBLIC} : {}) );
     const { subnetIds, internetConnectivityEstablished } = baseProps.vpc.selectSubnets(vpcSubnets);
 
     this.vpc = baseProps.vpc;
