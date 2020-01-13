@@ -155,8 +155,8 @@ test('lambda payload as destination', () => {
   // WHEN
   new lambda.Function(stack, 'Function', {
     ...lambdaProps,
-    onSuccess: new destinations.LambdaPayloadDestination(successLambda),
-    onFailure: new destinations.LambdaPayloadDestination(failureLambda),
+    onSuccess: new destinations.LambdaDestination(successLambda, { responseOnly: true }),
+    onFailure: new destinations.LambdaDestination(failureLambda, { responseOnly: true }),
   });
 
   // THEN

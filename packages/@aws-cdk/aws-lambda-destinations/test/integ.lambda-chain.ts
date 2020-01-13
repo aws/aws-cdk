@@ -20,17 +20,17 @@ class TestStack extends Stack {
     const third = new lambda.Function(this, 'Third', lambdaProps);
 
     first.configureAsyncInvoke({
-      onSuccess: new destinations.LambdaPayloadDestination(second),
+      onSuccess: new destinations.LambdaDestination(second, { responseOnly: true }),
     });
 
     second.configureAsyncInvoke({
-      onSuccess: new destinations.LambdaPayloadDestination(third),
+      onSuccess: new destinations.LambdaDestination(third, { responseOnly: true }),
     });
   }
 }
 
 const app = new App();
 
-new TestStack(app, 'aws-cdk-lambda-payload');
+new TestStack(app, 'aws-cdk-lambda-chain');
 
 app.synth();

@@ -27,11 +27,21 @@ export enum DestinationType {
 }
 
 /**
+ * Options when binding a destination to a function
+ */
+export interface DestinationOptions {
+  /**
+   * The destination type
+   */
+  readonly type: DestinationType;
+}
+
+/**
  * A Lambda destination
  */
 export interface IDestination {
   /**
    * Binds this destination to the Lambda function
    */
-  bind(scope: Construct, fn: IFunction, type?: DestinationType): DestinationConfig;
+  bind(scope: Construct, fn: IFunction, options?: DestinationOptions): DestinationConfig;
 }

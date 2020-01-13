@@ -219,7 +219,7 @@
         "SecondServiceRole55940A31"
       ]
     },
-    "SecondAllowEventRuleawscdklambdapayloadFirstEventInvokeConfigSuccess57BB07DB29B2D540": {
+    "SecondAllowEventRuleawscdklambdachainFirstEventInvokeConfigSuccess2DCAE39F08E88C92": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -363,7 +363,7 @@
         "ThirdServiceRole42701801"
       ]
     },
-    "ThirdAllowEventRuleawscdklambdapayloadSecondEventInvokeConfigSuccess845AED5BBC6FDE80": {
+    "ThirdAllowEventRuleawscdklambdachainSecondEventInvokeConfigSuccess2078CDC9C6C3FA25": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",

@@ -12,7 +12,7 @@ export class SnsDestination implements lambda.IDestination {
   /**
    * Returns a destination configuration
    */
-  public bind(_scope: Construct, fn: lambda.IFunction, _type?: lambda.DestinationType): lambda.DestinationConfig {
+  public bind(_scope: Construct, fn: lambda.IFunction, _options?: lambda.DestinationOptions): lambda.DestinationConfig {
     // deduplicated automatically
     this.topic.grantPublish(fn);
 
