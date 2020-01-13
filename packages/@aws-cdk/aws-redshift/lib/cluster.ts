@@ -85,14 +85,14 @@ export interface ClusterProps {
     readonly port?: number;
 
     /**
-     * Whether to enable storage encryption
+     * Whether to enable encryption of data in the cluster
      *
      * @default false
      */
-    readonly storageEncrypted?: boolean
+    readonly encrypted?: boolean
 
     /**
-     * The KMS key for storage encryption. If specified `storageEncrypted`
+     * The KMS key for storage encryption.
      * will be set to `true`.
      *
      * @default - default master key.
@@ -345,7 +345,7 @@ export class Cluster extends ClusterBase {
             publiclyAccessible: false,
             // Encryption
             kmsKeyId: props.kmsKey && props.kmsKey.keyArn,
-            encrypted: true,
+            encrypted: props.encrypted ? props.encrypted : true,
         });
 
         cluster.applyRemovalPolicy(props.removalPolicy, {
