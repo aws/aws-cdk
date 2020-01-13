@@ -395,13 +395,7 @@ async function initCommandLine() {
 
 async function lookupProjectRoot(): Promise<string | undefined> {
 
-  async function ascend(directoryParts: string[]): Promise<string | undefined> {
-
-    if (directoryParts.length === 0) {
-      return undefined;
-    }
-
-    const directory = directoryParts.join(path.sep);
+  async function ascend(directory: string): Promise<string | undefined> {
 
     const filePath = path.join(directory, PROJECT_CONFIG);
 
@@ -409,11 +403,17 @@ async function lookupProjectRoot(): Promise<string | undefined> {
       return directory;
     }
 
-    return ascend(directoryParts.slice(0, -1));
+    const parentDir = path.dirname(directory);
+
+    if (parentDir === directory) {
+      return undefined;
+    }
+
+    return ascend(parentDir);
 
   }
 
-  return ascend(path.resolve(process.cwd()).split(path.sep));
+  return ascend(path.resolve(process.cwd()));
 
 }
 
