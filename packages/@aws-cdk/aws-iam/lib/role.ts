@@ -417,7 +417,7 @@ export interface IRole extends IIdentity {
 }
 
 function createAssumeRolePolicy(principal: IPrincipal, externalIds: string[]) {
-  const statement = new NonPrincipalNormalizingStatement();
+  const statement = new AwsStarStatement();
   statement.addPrincipals(principal);
   statement.addActions(principal.assumeRoleAction);
 
@@ -441,13 +441,16 @@ function validateMaxSessionDuration(duration?: number) {
 }
 
 /**
- * A PolicyStatement that doesn't normalize its Principal field.
+ * A PolicyStatement that normalizes its Principal field differently
+ *
+ * Normally, "anyone" is normalized to "Principal: *", but this statement
+ * normalizes to "Principal: { AWS: * }".
  */
-class NonPrincipalNormalizingStatement extends PolicyStatement {
+class AwsStarStatement extends PolicyStatement {
   public toStatementJson(): any {
     const stat = super.toStatementJson();
 
-    if (stat.Principal && stat.Principal === '*') {
+    if (stat.Principal === '*') {
       stat.Principal = { AWS: '*' };
     }
 
