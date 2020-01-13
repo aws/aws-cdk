@@ -212,13 +212,8 @@ export class RestApi extends Resource implements IRestApi {
    */
   public deploymentStage!: Stage;
 
-  /**
-   * The domain name mapped to this API, if defined through the `domainName`
-   * configuration prop, or added later via `addDomainName`
-   */
-  private _domainName?: DomainName;
-
   private readonly methods = new Array<Method>();
+  private _domainName?: DomainName;
   private _latestDeployment: Deployment | undefined;
 
   constructor(scope: Construct, id: string, props: RestApiProps = { }) {
