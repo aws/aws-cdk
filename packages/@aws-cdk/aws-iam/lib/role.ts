@@ -417,7 +417,7 @@ export interface IRole extends IIdentity {
 }
 
 function createAssumeRolePolicy(principal: IPrincipal, externalIds: string[]) {
-  const statement = new PolicyStatement();
+  const statement = new AwsStarStatement();
   statement.addPrincipals(principal);
   statement.addActions(principal.assumeRoleAction);
 
@@ -437,5 +437,23 @@ function validateMaxSessionDuration(duration?: number) {
 
   if (duration < 3600 || duration > 43200) {
     throw new Error(`maxSessionDuration is set to ${duration}, but must be >= 3600sec (1hr) and <= 43200sec (12hrs)`);
+  }
+}
+
+/**
+ * A PolicyStatement that normalizes its Principal field differently
+ *
+ * Normally, "anyone" is normalized to "Principal: *", but this statement
+ * normalizes to "Principal: { AWS: * }".
+ */
+class AwsStarStatement extends PolicyStatement {
+  public toStatementJson(): any {
+    const stat = super.toStatementJson();
+
+    if (stat.Principal === '*') {
+      stat.Principal = { AWS: '*' };
+    }
+
+    return stat;
   }
 }
