@@ -32,7 +32,7 @@ export enum CodeCommitTrigger {
 /**
  * The CodePipeline variables emitted by the CodeCommit source Action.
  */
-export interface ICodeCommitSourceVariables {
+export interface CodeCommitSourceVariables {
   /** The name of the repository this action points to. */
   readonly repositoryName: string;
 
@@ -103,7 +103,7 @@ export class CodeCommitSourceAction extends Action {
   }
 
   /** The variables emitted by this action. */
-  public get variables(): ICodeCommitSourceVariables {
+  public get variables(): CodeCommitSourceVariables {
     return {
       repositoryName: this.variableExpression('RepositoryName'),
       branchName: this.variableExpression('BranchName'),

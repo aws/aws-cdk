@@ -15,7 +15,7 @@ export enum GitHubTrigger {
 /**
  * The CodePipeline variables emitted by GitHub source Action.
  */
-export interface IGitHubSourceVariables {
+export interface GitHubSourceVariables {
   /** The name of the repository this action points to. */
   readonly repositoryName: string;
   /** The name of the branch this action tracks. */
@@ -100,7 +100,7 @@ export class GitHubSourceAction extends Action {
   }
 
   /** The variables emitted by this action. */
-  public get variables(): IGitHubSourceVariables {
+  public get variables(): GitHubSourceVariables {
     return {
       repositoryName: this.variableExpression('RepositoryName'),
       branchName: this.variableExpression('BranchName'),

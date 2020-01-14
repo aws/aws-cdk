@@ -9,7 +9,7 @@ import { sourceArtifactBounds } from '../common';
 /**
  * The CodePipeline variables emitted by the ECR source Action.
  */
-export interface IEcrSourceVariables {
+export interface EcrSourceVariables {
   /** The identifier of the registry. In ECR, this is usually the ID of the AWS account owning it. */
   readonly registryId: string;
 
@@ -72,7 +72,7 @@ export class EcrSourceAction extends Action {
   }
 
   /** The variables emitted by this action. */
-  public get variables(): IEcrSourceVariables {
+  public get variables(): EcrSourceVariables {
     return {
       registryId: this.variableExpression('RegistryId'),
       repositoryName: this.variableExpression('RepositoryName'),

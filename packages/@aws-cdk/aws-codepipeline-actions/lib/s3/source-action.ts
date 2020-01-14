@@ -33,7 +33,7 @@ export enum S3Trigger {
 /**
  * The CodePipeline variables emitted by the S3 source Action.
  */
-export interface IS3SourceVariables {
+export interface S3SourceVariables {
   /** The identifier of the S3 version of the object that triggered the build. */
   readonly versionId: string;
 
@@ -100,7 +100,7 @@ export class S3SourceAction extends Action {
   }
 
   /** The variables emitted by this action. */
-  public get variables(): IS3SourceVariables {
+  public get variables(): S3SourceVariables {
     return  {
       versionId: this.variableExpression('VersionId'),
       eTag: this.variableExpression('ETag'),
