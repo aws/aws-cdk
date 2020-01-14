@@ -561,7 +561,10 @@ export interface CreateAlarmOptions {
   /**
    * The period over which the specified statistic is applied.
    *
-   * @default Duration.minutes(5)
+   * Cannot be used with `MathExpression` objects.
+   *
+   * @default - The period from the metric
+   * @deprecated Use `metric.with({ period: ... })` to encode the period into the Metric object
    */
   readonly period?: cdk.Duration;
 
@@ -577,7 +580,10 @@ export interface CreateAlarmOptions {
    * - "SampleCount | "n"
    * - "pNN.NN"
    *
-   * @default Average
+   * Cannot be used with `MathExpression` objects.
+   *
+   * @default - The statistic from the metric
+   * @deprecated Use `metric.with({ statistic: ... })` to encode the period into the Metric object
    */
   readonly statistic?: string;
 
@@ -672,7 +678,7 @@ function changeAllPeriods(metrics: Record<string, IMetric>, period: cdk.Duration
  * both implementations of IMetric have a `period` member that contains that particular
  * value.
  */
-function changePeriod<A extends IMetric>(metric: A, period: cdk.Duration): IMetric {
+function changePeriod(metric: IMetric, period: cdk.Duration): IMetric {
   if (isModifiableMetric(metric)) {
     return metric.with({ period });
   }
