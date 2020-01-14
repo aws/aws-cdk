@@ -29,7 +29,9 @@ export interface BaseLoadBalancerProps {
   /**
    * Where in the VPC to place the load balancer
    *
-   * @default - Public subnets if internetFacing, otherwise private subnets.
+   * @default - Public subnets if internetFacing, Private subnets if internal and
+   * there are Private subnets, Isolated subnets if internal and there are no
+   * Private subnets.
    */
   readonly vpcSubnets?: ec2.SubnetSelection;
 
@@ -128,8 +130,7 @@ export abstract class BaseLoadBalancer extends Resource {
     const internetFacing = ifUndefined(baseProps.internetFacing, false);
 
     const vpcSubnets = ifUndefined(baseProps.vpcSubnets,
-      { subnetType: internetFacing ? ec2.SubnetType.PUBLIC : ec2.SubnetType.PRIVATE });
-
+      (internetFacing ? {subnetType: ec2.SubnetType.PUBLIC} : {}) );
     const { subnetIds, internetConnectivityEstablished } = baseProps.vpc.selectSubnets(vpcSubnets);
 
     this.vpc = baseProps.vpc;
