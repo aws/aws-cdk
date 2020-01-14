@@ -178,5 +178,111 @@ export = {
     }));
 
     test.done();
+  },
+
+  'a domain name can be added later'(test: Test) {
+    // GIVEN
+    const domainName = 'my.domain.com';
+    const stack = new Stack();
+    const certificate = new acm.Certificate(stack, 'cert', { domainName: 'my.domain.com' });
+
+    // WHEN
+    const api = new apigw.RestApi(stack, 'api', {});
+
+    api.root.addMethod('GET');
+
+    api.addDomainName('domainId', { domainName, certificate });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::DomainName', {
+      "DomainName": domainName,
+      "EndpointConfiguration": {
+        "Types": [
+          "REGIONAL"
+        ]
+      },
+      "RegionalCertificateArn": {
+        "Ref": "cert56CA94EB"
+      }
+    }));
+    expect(stack).to(haveResource('AWS::ApiGateway::BasePathMapping', {
+      "DomainName": {
+        "Ref": "apidomainId102F8DAA"
+      },
+      "RestApiId": {
+        "Ref": "apiC8550315"
+      },
+      "Stage": {
+        "Ref": "apiDeploymentStageprod896C8101"
+      }
+    }));
+
+    test.done();
+  },
+
+  'multiple domain names can be added'(test: Test) {
+    // GIVEN
+    const domainName = 'my.domain.com';
+    const stack = new Stack();
+    const certificate = new acm.Certificate(stack, 'cert', { domainName: 'my.domain.com' });
+
+    // WHEN
+    const api = new apigw.RestApi(stack, 'api', {});
+
+    api.root.addMethod('GET');
+
+    const domainName1 = api.addDomainName('domainId', { domainName, certificate });
+    api.addDomainName('domainId1', { domainName: 'your.domain.com', certificate });
+    api.addDomainName('domainId2', { domainName: 'our.domain.com', certificate });
+
+    test.deepEqual(api.domainName, domainName1);
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::DomainName', {
+      "DomainName": 'my.domain.com',
+      "EndpointConfiguration": {
+        "Types": [
+          "REGIONAL"
+        ]
+      },
+      "RegionalCertificateArn": {
+        "Ref": "cert56CA94EB"
+      }
+    }));
+    expect(stack).to(haveResource('AWS::ApiGateway::DomainName', {
+      "DomainName": 'your.domain.com',
+      "EndpointConfiguration": {
+        "Types": [
+          "REGIONAL"
+        ]
+      },
+      "RegionalCertificateArn": {
+        "Ref": "cert56CA94EB"
+      }
+    }));
+    expect(stack).to(haveResource('AWS::ApiGateway::DomainName', {
+      "DomainName": 'our.domain.com',
+      "EndpointConfiguration": {
+        "Types": [
+          "REGIONAL"
+        ]
+      },
+      "RegionalCertificateArn": {
+        "Ref": "cert56CA94EB"
+      }
+    }));
+    expect(stack).to(haveResource('AWS::ApiGateway::BasePathMapping', {
+      "DomainName": {
+        "Ref": "apidomainId102F8DAA"
+      },
+      "RestApiId": {
+        "Ref": "apiC8550315"
+      },
+      "Stage": {
+        "Ref": "apiDeploymentStageprod896C8101"
+      }
+    }));
+
+    test.done();
   }
 };
