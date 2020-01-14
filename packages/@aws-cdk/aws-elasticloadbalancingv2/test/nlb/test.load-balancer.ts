@@ -90,6 +90,174 @@ export = {
       Name: 'myLoadBalancer'
     }));
     test.done();
-  }
+  },
 
+  'Trivial construction: internal with Isolated subnets only'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC', {
+      subnetConfiguration: [{
+           cidrMask: 20,
+           name: 'Isolated',
+           subnetType: ec2.SubnetType.ISOLATED,
+         }]
+    });
+
+    // WHEN
+    new elbv2.NetworkLoadBalancer(stack, 'LB', {
+      vpc,
+      internetFacing: false,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      Scheme: "internal",
+      Subnets: [
+        { Ref: "VPCIsolatedSubnet1SubnetEBD00FC6" },
+        { Ref: "VPCIsolatedSubnet2Subnet4B1C8CAA" },
+      ],
+      Type: "network"
+    }));
+
+    test.done();
+  },
+    'Internal with Public, Private, and Isolated subnets'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC', {
+      subnetConfiguration: [{
+           cidrMask: 24,
+           name: 'Public',
+           subnetType: ec2.SubnetType.PUBLIC,
+         }, {
+           cidrMask: 24,
+           name: 'Private',
+           subnetType: ec2.SubnetType.PRIVATE,
+         }, {
+           cidrMask: 28,
+           name: 'Isolated',
+           subnetType: ec2.SubnetType.ISOLATED,
+         }
+         ]
+    });
+
+    // WHEN
+    new elbv2.NetworkLoadBalancer(stack, 'LB', {
+      vpc,
+      internetFacing: false,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      Scheme: "internal",
+      Subnets: [
+        { Ref: "VPCPrivateSubnet1Subnet8BCA10E0" },
+        { Ref: "VPCPrivateSubnet2SubnetCFCDAA7A" },
+      ],
+      Type: "network"
+    }));
+
+    test.done();
+  },
+    'Internet-facing with Public, Private, and Isolated subnets'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC', {
+      subnetConfiguration: [{
+           cidrMask: 24,
+           name: 'Public',
+           subnetType: ec2.SubnetType.PUBLIC,
+         }, {
+           cidrMask: 24,
+           name: 'Private',
+           subnetType: ec2.SubnetType.PRIVATE,
+         }, {
+           cidrMask: 28,
+           name: 'Isolated',
+           subnetType: ec2.SubnetType.ISOLATED,
+         }
+         ]
+    });
+
+    // WHEN
+    new elbv2.NetworkLoadBalancer(stack, 'LB', {
+      vpc,
+      internetFacing: true,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      Scheme: "internet-facing",
+      Subnets: [
+        { Ref: "VPCPublicSubnet1SubnetB4246D30" },
+        { Ref: "VPCPublicSubnet2Subnet74179F39" },
+      ],
+      Type: "network"
+    }));
+
+    test.done();
+  },
+  'Internal load balancer supplying public subnets'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new elbv2.NetworkLoadBalancer(stack, 'LB', {
+      vpc,
+      internetFacing: false,
+      vpcSubnets: {subnetType: ec2.SubnetType.PUBLIC}
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      Scheme: "internal",
+      Subnets: [
+        { Ref: "VPCPublicSubnet1SubnetB4246D30" },
+        { Ref: "VPCPublicSubnet2Subnet74179F39" },
+      ],
+      Type: "network"
+    }));
+
+    test.done();
+  },
+  'Internal load balancer supplying isolated subnets'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC', {
+      subnetConfiguration: [{
+           cidrMask: 24,
+           name: 'Public',
+           subnetType: ec2.SubnetType.PUBLIC,
+         }, {
+           cidrMask: 24,
+           name: 'Private',
+           subnetType: ec2.SubnetType.PRIVATE,
+         }, {
+           cidrMask: 28,
+           name: 'Isolated',
+           subnetType: ec2.SubnetType.ISOLATED,
+         }
+         ]
+    });
+
+    // WHEN
+    new elbv2.NetworkLoadBalancer(stack, 'LB', {
+      vpc,
+      internetFacing: false,
+      vpcSubnets: {subnetType: ec2.SubnetType.ISOLATED}
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      Scheme: "internal",
+      Subnets: [
+        { Ref: "VPCIsolatedSubnet1SubnetEBD00FC6" },
+        { Ref: "VPCIsolatedSubnet2Subnet4B1C8CAA" },
+      ],
+      Type: "network"
+    }));
+
+    test.done();
+  }
 };
