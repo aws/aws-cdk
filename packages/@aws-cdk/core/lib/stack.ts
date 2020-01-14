@@ -730,11 +730,11 @@ export class Stack extends Construct implements ITaggable {
     for (const reference of tokens) {
 
       // skip if this is not a CfnReference
-      if (!CfnReference.isCfnReference(reference)) {
+      if (!CfnReference.isCfnReference(reference.token)) {
         continue;
       }
 
-      const targetStack = Stack.of(reference.target);
+      const targetStack = Stack.of(reference.token.target);
 
       // skip if this is not a cross-stack reference
       if (targetStack === this) {
@@ -746,11 +746,11 @@ export class Stack extends Construct implements ITaggable {
 
       // if one side is a nested stack (has "parentStack"), we let it create the reference
       // since it has more knowledge about the world.
-      const consumedValue = factory.prepareCrossReference(this, reference);
+      const consumedValue = factory._prepareCrossReference(this, reference.token, reference.source);
 
       // if the reference has already been assigned a value for the consuming stack, carry on.
-      if (!reference.hasValueForStack(this)) {
-        reference.assignValueForStack(this, consumedValue);
+      if (!reference.token.hasValueForStack(this)) {
+        reference.token.assignValueForStack(this, consumedValue);
       }
     }
 
@@ -880,8 +880,9 @@ export class Stack extends Construct implements ITaggable {
    * Exports a resolvable value for use in another stack.
    *
    * @returns a token that can be used to reference the value from the producing stack.
+   * @internal
    */
-  protected prepareCrossReference(sourceStack: Stack, reference: Reference): IResolvable {
+  protected _prepareCrossReference(sourceStack: Stack, reference: Reference, sourceElement: CfnElement): IResolvable {
     const targetStack = Stack.of(reference.target);
 
     // Ensure a singleton "Exports" scoping Construct
@@ -903,7 +904,7 @@ export class Stack extends Construct implements ITaggable {
     // if the producing stack is a nested stack (i.e. has a parent), the dependency is taken on the parent.
     const producerDependency = targetStack.nestedStackParent ? targetStack.nestedStackParent : targetStack;
     const consumerDependency = sourceStack.nestedStackParent ? sourceStack.nestedStackParent : sourceStack;
-    consumerDependency.addDependency(producerDependency, `${sourceStack.node.path} -> ${reference.target.node.path}.${reference.displayName}`);
+    consumerDependency.addDependency(producerDependency, `${sourceElement.node.path} -> ${reference.target.node.path}.${reference.displayName}`);
 
     // We want to return an actual FnImportValue Token here, but Fn.importValue() returns a 'string',
     // so construct one in-place.
@@ -1062,12 +1063,12 @@ export class Stack extends Construct implements ITaggable {
   /**
    * Returns all the tokens used within the scope of the current stack.
    */
-  private findTokens() {
-    const tokens = new Array<IResolvable>();
+  private findTokens(): Ref[] {
+    const tokens = new Array<Ref>();
 
-    for (const element of cfnElements(this)) {
+    for (const source of cfnElements(this)) {
       try {
-        tokens.push(...findTokens(element, () => element._toCloudFormation()));
+        tokens.push(...findTokens(source, () => source._toCloudFormation()).map(token => ({ source, token })));
       }  catch (e) {
         // Note: it might be that the properties of the CFN object aren't valid.
         // This will usually be preventatively caught in a construct's validate()
@@ -1087,6 +1088,11 @@ export class Stack extends Construct implements ITaggable {
     }
     return tokens;
   }
+}
+
+interface Ref {
+  readonly source: CfnElement;
+  readonly token: IResolvable;
 }
 
 function merge(template: any, part: any) {

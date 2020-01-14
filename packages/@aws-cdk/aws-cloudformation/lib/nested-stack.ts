@@ -1,5 +1,6 @@
 import * as sns from '@aws-cdk/aws-sns';
-import { Aws, CfnOutput, CfnParameter, CfnResource, Construct, Duration, Fn, IResolvable, IResolveContext, Lazy, Reference, Stack, Token } from '@aws-cdk/core';
+import { Aws, CfnElement, CfnOutput, CfnParameter, CfnResource, Construct, Duration, Fn,
+        IResolvable, IResolveContext, Lazy, Reference, Stack, Token } from '@aws-cdk/core';
 import { CfnStack } from './cloudformation.generated';
 
 const NESTED_STACK_SYMBOL = Symbol.for('@aws-cdk/aws-cloudformation.NestedStack');
@@ -145,8 +146,10 @@ export class NestedStack extends Stack {
 
   /**
    * Called by the base "prepare" method when a reference is found.
+   *
+   * @internal
    */
-  protected prepareCrossReference(sourceStack: Stack, reference: Reference): IResolvable {
+  protected _prepareCrossReference(sourceStack: Stack, reference: Reference, sourceElement: CfnElement): IResolvable {
     const targetStack = Stack.of(reference.target);
 
     // the nested stack references a resource from the parent stack:
@@ -173,20 +176,20 @@ export class NestedStack extends Stack {
     // output from one and pass as parameter to the other
     if (targetStack.nestedStackParent && targetStack.nestedStackParent === sourceStack.nestedStackParent) {
       const outputValue = this.getCreateOutputForReference(reference);
-      return (sourceStack as NestedStack).prepareCrossReference(sourceStack, outputValue);
+      return (sourceStack as NestedStack)._prepareCrossReference(sourceStack, outputValue, sourceElement);
     }
 
     // nested stack references a value from some other non-nested stack:
     // normal export/import, with dependency between the parents
     if (sourceStack.nestedStackParent && sourceStack.nestedStackParent !== targetStack) {
-      return super.prepareCrossReference(sourceStack, reference);
+      return super._prepareCrossReference(sourceStack, reference, sourceElement);
     }
 
     // some non-nested stack (that is not the parent) references a resource inside the nested stack:
     // we output the value and let our parent export it
     if (!sourceStack.nestedStackParent && targetStack.nestedStackParent && targetStack.nestedStackParent !== sourceStack) {
       const outputValue = this.getCreateOutputForReference(reference);
-      return (targetStack.nestedStackParent as NestedStack).prepareCrossReference(sourceStack, outputValue);
+      return (targetStack.nestedStackParent as NestedStack)._prepareCrossReference(sourceStack, outputValue, sourceElement);
     }
 
     throw new Error('unexpected nested stack cross reference');
