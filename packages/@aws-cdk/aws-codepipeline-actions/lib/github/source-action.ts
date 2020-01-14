@@ -85,7 +85,6 @@ export interface GitHubSourceActionProps extends codepipeline.CommonActionProps 
  */
 export class GitHubSourceAction extends Action {
   private readonly props: GitHubSourceActionProps;
-  private readonly _variables: IGitHubSourceVariables;
 
   constructor(props: GitHubSourceActionProps) {
     super({
@@ -98,7 +97,11 @@ export class GitHubSourceAction extends Action {
     });
 
     this.props = props;
-    this._variables = {
+  }
+
+  /** The variables emitted by this action. */
+  public get variables(): IGitHubSourceVariables {
+    return {
       repositoryName: this.variableExpression('RepositoryName'),
       branchName: this.variableExpression('BranchName'),
       authorDate: this.variableExpression('AuthorDate'),
@@ -107,12 +110,6 @@ export class GitHubSourceAction extends Action {
       commitMessage: this.variableExpression('CommitMessage'),
       commitUrl: this.variableExpression('CommitUrl'),
     };
-  }
-
-  /** The variables emitted by this action. */
-  public get variables(): IGitHubSourceVariables {
-    this.variableWasReferenced();
-    return this._variables;
   }
 
   protected bound(scope: Construct, stage: codepipeline.IStage, _options: codepipeline.ActionBindOptions):

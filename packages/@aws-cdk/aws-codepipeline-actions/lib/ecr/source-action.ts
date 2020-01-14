@@ -57,7 +57,6 @@ export interface EcrSourceActionProps extends codepipeline.CommonAwsActionProps 
  */
 export class EcrSourceAction extends Action {
   private readonly props: EcrSourceActionProps;
-  private readonly _variables: IEcrSourceVariables;
 
   constructor(props: EcrSourceActionProps) {
     super({
@@ -70,19 +69,17 @@ export class EcrSourceAction extends Action {
     });
 
     this.props = props;
-    this._variables = {
+  }
+
+  /** The variables emitted by this action. */
+  public get variables(): IEcrSourceVariables {
+    return {
       registryId: this.variableExpression('RegistryId'),
       repositoryName: this.variableExpression('RepositoryName'),
       imageDigest: this.variableExpression('ImageDigest'),
       imageTag: this.variableExpression('ImageTag'),
       imageUri: this.variableExpression('ImageURI'),
     };
-  }
-
-  /** The variables emitted by this action. */
-  public get variables(): IEcrSourceVariables {
-    this.variableWasReferenced();
-    return this._variables;
   }
 
   protected bound(_scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):

@@ -81,7 +81,6 @@ export interface S3SourceActionProps extends codepipeline.CommonAwsActionProps {
  */
 export class S3SourceAction extends Action {
   private readonly props: S3SourceActionProps;
-  private readonly _variables: IS3SourceVariables;
 
   constructor(props: S3SourceActionProps) {
     super({
@@ -98,16 +97,14 @@ export class S3SourceAction extends Action {
     }
 
     this.props = props;
-    this._variables = {
-      versionId: this.variableExpression('VersionId'),
-      eTag: this.variableExpression('ETag'),
-    };
   }
 
   /** The variables emitted by this action. */
   public get variables(): IS3SourceVariables {
-    this.variableWasReferenced();
-    return this._variables;
+    return  {
+      versionId: this.variableExpression('VersionId'),
+      eTag: this.variableExpression('ETag'),
+    };
   }
 
   protected bound(_scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):

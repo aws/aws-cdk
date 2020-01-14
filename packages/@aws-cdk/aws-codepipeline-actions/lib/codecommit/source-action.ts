@@ -85,7 +85,6 @@ export interface CodeCommitSourceActionProps extends codepipeline.CommonAwsActio
 export class CodeCommitSourceAction extends Action {
   private readonly branch: string;
   private readonly props: CodeCommitSourceActionProps;
-  private readonly _variables: ICodeCommitSourceVariables;
 
   constructor(props: CodeCommitSourceActionProps) {
     const branch = props.branch || 'master';
@@ -101,7 +100,11 @@ export class CodeCommitSourceAction extends Action {
 
     this.branch = branch;
     this.props = props;
-    this._variables = {
+  }
+
+  /** The variables emitted by this action. */
+  public get variables(): ICodeCommitSourceVariables {
+    return {
       repositoryName: this.variableExpression('RepositoryName'),
       branchName: this.variableExpression('BranchName'),
       authorDate: this.variableExpression('AuthorDate'),
@@ -109,12 +112,6 @@ export class CodeCommitSourceAction extends Action {
       commitId: this.variableExpression('CommitId'),
       commitMessage: this.variableExpression('CommitMessage'),
     };
-  }
-
-  /** The variables emitted by this action. */
-  public get variables(): ICodeCommitSourceVariables {
-    this.variableWasReferenced();
-    return this._variables;
   }
 
   protected bound(_scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):

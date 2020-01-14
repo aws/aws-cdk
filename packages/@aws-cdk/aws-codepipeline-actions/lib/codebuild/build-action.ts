@@ -103,7 +103,6 @@ export class CodeBuildAction extends Action {
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec-ref-syntax
    */
   public variable(variableName: string): string {
-    this.variableWasReferenced();
     return this.variableExpression(variableName);
   }
 

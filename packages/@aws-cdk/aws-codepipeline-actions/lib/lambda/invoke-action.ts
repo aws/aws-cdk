@@ -86,7 +86,6 @@ export class LambdaInvokeAction extends Action {
    * @see https://docs.aws.amazon.com/codepipeline/latest/APIReference/API_PutJobSuccessResult.html
    */
   public variable(variableName: string): string {
-    this.variableWasReferenced();
     return this.variableExpression(variableName);
   }
 
