@@ -61,8 +61,8 @@
     "jszip": "^3.2.2",
     "mockery": "^2.1.0",
     "pkglint": "1.20.0",
-    "sinon": "^8.0.2",
-    "ts-jest": "^24.2.0"
+    "sinon": "^8.0.4",
+    "ts-jest": "^24.3.0"
   },
   "dependencies": {
     "@aws-cdk/cloudformation-diff": "1.20.0",
@@ -78,6 +78,7 @@
     "json-diff": "^0.5.4",
     "minimatch": ">=3.0",
     "promptly": "^3.0.3",
+    "proxy-agent": "^3.1.1",
     "request": "^2.88.0",
     "semver": "^7.1.1",
     "source-map-support": "^0.5.16",
