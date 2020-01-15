@@ -115,7 +115,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
 
       physicalResourceId = call.physicalResourceIdPath
         ? flatData[call.physicalResourceIdPath]
-        : call.physicalResourceId;
+        : call.physicalResourceId || (event as any).PhysicalResourceId;
     }
 
     await respond('SUCCESS', 'OK', physicalResourceId, data);

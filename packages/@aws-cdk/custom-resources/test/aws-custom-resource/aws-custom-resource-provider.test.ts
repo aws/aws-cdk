@@ -151,6 +151,41 @@ test('delete event', async () => {
   expect(request.isDone()).toBeTruthy();
 });
 
+test('delete event with Delete call and no physical resource id in call', async () => {
+  const deleteParameterFake = sinon.fake.resolves({});
+
+  AWS.mock('SSM', 'deleteParameter', deleteParameterFake);
+
+  const event: AWSLambda.CloudFormationCustomResourceDeleteEvent = {
+    ...eventCommon,
+    RequestType: 'Delete',
+    PhysicalResourceId: 'physicalResourceId',
+    ResourceProperties: {
+      ServiceToken: 'token',
+      Delete: {
+        service: 'SSM',
+        action: 'deleteParameter',
+        parameters: {
+          Name: 'my-param'
+        },
+      } as AwsSdkCall
+    }
+  };
+
+  const request = createRequest(body =>
+    body.Status === 'SUCCESS' &&
+    body.PhysicalResourceId === 'physicalResourceId'
+  );
+
+  await handler(event, {} as AWSLambda.Context);
+
+  sinon.assert.calledWith(deleteParameterFake, {
+    Name: 'my-param'
+  });
+
+  expect(request.isDone()).toBeTruthy();
+});
+
 test('catch errors', async () => {
   const error: NodeJS.ErrnoException = new Error();
   error.code = 'NoSuchBucket';
