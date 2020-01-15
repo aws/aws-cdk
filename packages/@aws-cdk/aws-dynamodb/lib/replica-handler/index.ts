@@ -20,10 +20,11 @@ export async function onEventHandler(event: any): Promise<any> {
     installLatestSdk();
   }
 
-  let AWS = require('/tmp/node_modules/aws-sdk'); // eslint-disable-line @typescript-eslint/no-require-imports
-
+  let AWS: any;
   if (process.env.USE_NORMAL_SDK) { // For tests only
     AWS = require('aws-sdk'); // eslint-disable-line @typescript-eslint/no-require-imports, import/no-extraneous-dependencies
+  } else {
+    AWS = require('/tmp/node_modules/aws-sdk'); // eslint-disable-line @typescript-eslint/no-require-imports
   }
 
   const dynamodb = new AWS.DynamoDB() as DynamoDB;
