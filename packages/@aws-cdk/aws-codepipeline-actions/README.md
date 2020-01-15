@@ -44,6 +44,26 @@ pipeline.addStage({
 });
 ```
 
+The CodeCommit source action emits variables:
+
+```typescript
+const sourceAction = new codepipeline_actions.CodeCommitSourceAction({
+  // ...
+  variablesNamespace: 'MyNamespace', // optional - by default, a name will be generated for you
+});
+
+// later:
+
+new codepipeline_actions.CodeBuildAction({
+  // ...
+  environmentVariables: {
+    COMMIT_ID: {
+      value: sourceAction.variables.commitId,
+    },
+  },
+});
+```
+
 #### GitHub
 
 To use GitHub as the source of a CodePipeline:
@@ -63,6 +83,26 @@ const sourceAction = new codepipeline_actions.GitHubSourceAction({
 pipeline.addStage({
   stageName: 'Source',
   actions: [sourceAction],
+});
+```
+
+The GitHub source action emits variables:
+
+```typescript
+const sourceAction = new codepipeline_actions.GitHubSourceAction({
+  // ...
+  variablesNamespace: 'MyNamespace', // optional - by default, a name will be generated for you
+});
+
+// later:
+
+new codepipeline_actions.CodeBuildAction({
+  // ...
+  environmentVariables: {
+    COMMIT_URL: {
+      value: sourceAction.variables.commitUrl,
+    },
+  },
 });
 ```
 
@@ -116,6 +156,26 @@ const sourceAction = new codepipeline_actions.S3SourceAction({
 });
 ```
 
+The S3 source action emits variables:
+
+```typescript
+const sourceAction = new codepipeline_actions.S3SourceAction({
+  // ...
+  variablesNamespace: 'MyNamespace', // optional - by default, a name will be generated for you
+});
+
+// later:
+
+new codepipeline_actions.CodeBuildAction({
+  // ...
+  environmentVariables: {
+    VERSION_ID: {
+      value: sourceAction.variables.versionId,
+    },
+  },
+});
+```
+
 #### AWS ECR
 
 To use an ECR Repository as a source in a Pipeline:
@@ -134,6 +194,26 @@ const sourceAction = new codepipeline_actions.EcrSourceAction({
 pipeline.addStage({
   stageName: 'Source',
   actions: [sourceAction],
+});
+```
+
+The ECR source action emits variables:
+
+```typescript
+const sourceAction = new codepipeline_actions.EcrSourceAction({
+  // ...
+  variablesNamespace: 'MyNamespace', // optional - by default, a name will be generated for you
+});
+
+// later:
+
+new codepipeline_actions.CodeBuildAction({
+  // ...
+  environmentVariables: {
+    IMAGE_URI: {
+      value: sourceAction.variables.imageUri,
+    },
+  },
 });
 ```
 
@@ -266,6 +346,48 @@ const project = new codebuild.PipelineProject(this, 'MyProject', {
 });
 ```
 
+##### Variables
+
+The CodeBuild action emits variables.
+Unlike many other actions, the variables are not static,
+but dynamic, defined in the buildspec,
+in the 'exported-variables' subsection of the 'env' section.
+Example:
+
+```typescript
+const buildAction = new codepipeline_actions.CodeBuildAction({
+  actionName: 'Build1',
+  input: sourceOutput,
+  project: new codebuild.PipelineProject(this, 'Project', {
+    buildSpec: codebuild.BuildSpec.fromObject({
+      version: '0.2',
+      env: {
+        'exported-variables': [
+          'MY_VAR',
+        ],
+      },
+      phases: {
+        build: {
+          commands: 'export MY_VAR="some value"',
+        },
+      }, 
+    }),
+  }),
+  variablesNamespace: 'MyNamespace', // optional - by default, a name will be generated for you
+});
+
+// later:
+
+new codepipeline_actions.CodeBuildAction({
+  // ...
+  environmentVariables: {
+    MyVar: {
+      value: buildAction.variable('MY_VAR'),
+    },
+  },
+});
+```
+
 #### Jenkins
 
 In order to use Jenkins Actions in the Pipeline,
@@ -304,7 +426,7 @@ const buildAction = new codepipeline_actions.JenkinsAction({
   actionName: 'JenkinsBuild',
   jenkinsProvider: jenkinsProvider,
   projectName: 'MyProject',
-  type: ccodepipeline_actions.JenkinsActionType.BUILD,
+  type: codepipeline_actions.JenkinsActionType.BUILD,
 });
 ```
 
@@ -421,7 +543,7 @@ const func = new lambda.Function(lambdaStack, 'Lambda', {
   runtime: lambda.Runtime.NODEJS_10_X,
 });
 // used to make sure each CDK synthesis produces a different Version
-const version = func.addVersion('NewVersion')
+const version = func.addVersion('NewVersion');
 const alias = new lambda.Alias(lambdaStack, 'LambdaAlias', {
   aliasName: 'Prod',
   version,
@@ -595,6 +717,49 @@ const lambdaAction = new codepipeline_actions.LambdaInvokeAction({
     new codepipeline.Artifact('Out2'),
   ],
   lambda: fn
+});
+```
+
+The Lambda invoke action emits variables.
+Unlike many other actions, the variables are not static,
+but dynamic, defined by the function calling the `PutJobSuccessResult`
+API with the `outputVariables` property filled with the map of variables
+Example:
+
+```typescript
+import lambda = require('@aws-cdk/aws-lambda');
+
+const lambdaInvokeAction = new codepipeline_actions.LambdaInvokeAction({
+  actionName: 'Lambda',
+  lambda: new lambda.Function(this, 'Func', {
+    runtime: lambda.Runtime.NODEJS_10_X,
+    handler: 'index.handler',
+    code: lambda.Code.fromInline(`
+        var AWS = require('aws-sdk');
+
+        exports.handler = async function(event, context) {
+            var codepipeline = new AWS.CodePipeline();
+            await codepipeline.putJobSuccessResult({
+                jobId: event['CodePipeline.job'].id,
+                outputVariables: {
+                    MY_VAR: "some value",
+                },
+            }).promise();
+        }
+    `),
+  }),
+  variablesNamespace: 'MyNamespace', // optional - by default, a name will be generated for you
+});
+
+// later:
+
+new codepipeline_actions.CodeBuildAction({
+  // ...
+  environmentVariables: {
+    MyVar: {
+      value: lambdaInvokeAction.variable('MY_VAR'),
+    },
+  },
 });
 ```
 

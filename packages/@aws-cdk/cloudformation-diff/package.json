@@ -44,20 +44,20 @@
     "@aws-cdk/cfnspec": "1.20.0",
     "@aws-cdk/cx-api": "1.20.0",
     "colors": "^1.4.0",
-    "diff": "^4.0.1",
+    "diff": "^4.0.2",
     "fast-deep-equal": "^3.1.1",
     "string-width": "^4.2.0",
     "table": "^5.4.6"
   },
   "devDependencies": {
-    "@types/jest": "^24.0.25",
+    "@types/jest": "^24.9.0",
     "@types/string-width": "^4.0.1",
     "@types/table": "^4.0.7",
     "cdk-build-tools": "1.20.0",
     "fast-check": "^1.21.0",
     "jest": "^24.9.0",
     "pkglint": "1.20.0",
-    "ts-jest": "^24.2.0"
+    "ts-jest": "^24.3.0"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
