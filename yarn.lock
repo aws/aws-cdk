@@ -7730,10 +7730,10 @@ signal-exit@^3.0.0, signal-exit@^3.0.2:
   resolved "https://registry.yarnpkg.com/signal-exit/-/signal-exit-3.0.2.tgz#b5fdc08f1287ea1178628e415e25132b73646c6d"
   integrity sha1-tf3AjxKH6hF4Yo5BXiUTK3NkbG0=
 
-sinon@^8.0.1, sinon@^8.0.2:
-  version "8.0.2"
-  resolved "https://registry.yarnpkg.com/sinon/-/sinon-8.0.2.tgz#cc5f6daa9cc351b86b03faaca1e9c3650a04ae11"
-  integrity sha512-8W1S7BnCyvk7SK+Xi15B1QAVLuS81G/NGmWefPb31+ly6xI3fXaug/g5oUdfc8+7ruC4Ay51AxuLlYm8diq6kA==
+sinon@^8.0.1, sinon@^8.0.4:
+  version "8.0.4"
+  resolved "https://registry.yarnpkg.com/sinon/-/sinon-8.0.4.tgz#eb13242fa50bf876c54e88bdc96f281a0dd08a53"
+  integrity sha512-cFsmgmvsgFb87e7SV7IcekogITlHX2KmlplyI9Pda0FH1Z8Ms/kWbpLs25Idp0m6ZJ3HEEjhaYYXbcTtWWUn4w==
   dependencies:
     "@sinonjs/commons" "^1.7.0"
     "@sinonjs/formatio" "^4.0.1"
