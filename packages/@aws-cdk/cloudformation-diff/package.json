@@ -44,7 +44,7 @@
     "@aws-cdk/cfnspec": "1.20.0",
     "@aws-cdk/cx-api": "1.20.0",
     "colors": "^1.4.0",
-    "diff": "^4.0.1",
+    "diff": "^4.0.2",
     "fast-deep-equal": "^3.1.1",
     "string-width": "^4.2.0",
     "table": "^5.4.6"
