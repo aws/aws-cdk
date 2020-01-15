@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-elasticloadbalancingv2-targets",
-  "version": "1.19.0",
+  "version": "1.20.0",
   "description": "Integration targets for AWS ElasticLoadBalancingV2",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -55,7 +55,13 @@
         "branches": 65,
         "statements": 80
       }
-    }
+    },
+    "collectCoverage": true,
+    "coverageReporters": [
+      "lcov",
+      "html",
+      "text-summary"
+    ]
   },
   "keywords": [
     "aws",
@@ -71,29 +77,28 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "1.19.0",
-    "@aws-cdk/aws-ec2": "1.19.0",
-    "cdk-build-tools": "1.19.0",
-    "cdk-integ-tools": "1.19.0",
+    "@aws-cdk/assert": "1.20.0",
+    "cdk-build-tools": "1.20.0",
+    "cdk-integ-tools": "1.20.0",
     "jest": "^24.9.0",
-    "pkglint": "1.19.0"
+    "pkglint": "1.20.0"
   },
   "dependencies": {
-    "@aws-cdk/assets": "1.19.0",
-    "@aws-cdk/aws-ec2": "1.19.0",
-    "@aws-cdk/aws-elasticloadbalancingv2": "1.19.0",
-    "@aws-cdk/aws-iam": "1.19.0",
-    "@aws-cdk/aws-lambda": "1.19.0",
-    "@aws-cdk/core": "1.19.0"
+    "@aws-cdk/assets": "1.20.0",
+    "@aws-cdk/aws-ec2": "1.20.0",
+    "@aws-cdk/aws-elasticloadbalancingv2": "1.20.0",
+    "@aws-cdk/aws-iam": "1.20.0",
+    "@aws-cdk/aws-lambda": "1.20.0",
+    "@aws-cdk/core": "1.20.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/assets": "1.19.0",
-    "@aws-cdk/aws-ec2": "1.19.0",
-    "@aws-cdk/aws-elasticloadbalancingv2": "1.19.0",
-    "@aws-cdk/aws-iam": "1.19.0",
-    "@aws-cdk/aws-lambda": "1.19.0",
-    "@aws-cdk/core": "1.19.0"
+    "@aws-cdk/assets": "1.20.0",
+    "@aws-cdk/aws-ec2": "1.20.0",
+    "@aws-cdk/aws-elasticloadbalancingv2": "1.20.0",
+    "@aws-cdk/aws-iam": "1.20.0",
+    "@aws-cdk/aws-lambda": "1.20.0",
+    "@aws-cdk/core": "1.20.0"
   },
   "engines": {
     "node": ">= 10.3.0"

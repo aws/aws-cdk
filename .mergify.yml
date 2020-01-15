@@ -22,6 +22,8 @@ pull_request_rules:
       - -label~=(blocked|do-not-merge)
       - -merged
       - -closed
+      - author!=dependabot[bot]
+      - author!=dependabot-preview[bot]
       - "#approved-reviews-by>=1"
       - -approved-reviews-by~=author
       - "#changes-requested-reviews-by=0"

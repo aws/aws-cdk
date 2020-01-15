@@ -21,6 +21,6 @@ for template in $templates; do
 
     setup
 
-    cdk init -l java -t $template
+    cdk init -l java $template
     cdk synth
 done

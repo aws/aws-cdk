@@ -9,6 +9,8 @@
 ---
 <!--END STABILITY BANNER-->
 
+## Metric objects
+
 Metric objects represent a metric that is emitted by AWS services or your own
 application, such as `CPUUsage`, `FailureCount` or `Bandwidth`.
 
@@ -22,6 +24,49 @@ represents the amount of errors reported by that Lambda function:
 
 ```ts
 const errors = fn.metricErrors();
+```
+
+### Instantiating a new Metric object
+
+If you want to reference a metric that is not yet exposed by an existing construct,
+you can instantiate a `Metric` object to represent it. For example:
+
+```ts
+const metric = new Metric({
+  namespace: 'MyNamespace',
+  metricName: 'MyMetric',
+  dimensions: {
+    ProcessingStep: 'Download'
+  }
+});
+```
+
+### Metric Math
+
+Math expressions are supported by instantiating the `MathExpression` class.
+For example, a math expression that sums two other metrics looks like this:
+
+```ts
+const allProblems = new MathExpression({
+  expression: "errors + faults",
+  usingMetrics: {
+    errors: myConstruct.metricErrors(),
+    faults: myConstruct.metricFaults(),
+  }
+})
+```
+
+You can use `MathExpression` objects like any other metric, including using
+them in other math expressions:
+
+```ts
+const problemPercentage = new MathExpression({
+  expression: "(problems / invocations) * 100",
+  usingMetrics: {
+    problems: allProblems,
+    invocations: myConstruct.metricInvocations()
+  }
+})
 ```
 
 ### Aggregation
@@ -40,9 +85,9 @@ to the metric function call:
 
 ```ts
 const minuteErrorRate = fn.metricErrors({
-    statistic: 'avg',
-    period: Duration.minutes(1),
-    label: 'Lambda failure rate'
+  statistic: 'avg',
+  period: Duration.minutes(1),
+  label: 'Lambda failure rate'
 });
 ```
 
@@ -75,9 +120,9 @@ object, passing the `Metric` object to set the alarm on:
 
 ```ts
 new Alarm(this, 'Alarm', {
-    metric: fn.metricErrors(),
-    threshold: 100,
-    evaluationPeriods: 2,
+  metric: fn.metricErrors(),
+  threshold: 100,
+  evaluationPeriods: 2,
 });
 ```
 
@@ -85,8 +130,8 @@ Alternatively, you can call `metric.createAlarm()`:
 
 ```ts
 fn.metricErrors().createAlarm(this, 'Alarm', {
-    threshold: 100,
-    evaluationPeriods: 2,
+  threshold: 100,
+  evaluationPeriods: 2,
 });
 ```
 
@@ -96,6 +141,25 @@ The most important properties to set while creating an Alarms are:
 - `comparisonOperator`: the comparison operation to use, defaults to `metric >= threshold`.
 - `evaluationPeriods`: how many consecutive periods the metric has to be
   breaching the the threshold for the alarm to trigger.
+
+### A note on units
+
+In CloudWatch, Metrics datums are emitted with units, such as `seconds` or
+`bytes`. When `Metric` objects are given a `unit` attribute, it will be used to
+*filter* the stream of metric datums for datums emitted using the same `unit`
+attribute.
+
+In particular, the `unit` field is *not* used to rescale datums or alarm threshold
+values (for example, it cannot be used to specify an alarm threshold in
+*Megabytes* if the metric stream is being emitted as *bytes*).
+
+You almost certainly don't want to specify the `unit` property when creating
+`Metric` objects (which will retrieve all datums regardless of their unit),
+unless you have very specific requirements. Note that in any case, CloudWatch
+only supports filtering by `unit` for Alarms, not in Dashboard graphs.
+
+Please see the following GitHub issue for a discussion on real unit
+calculations in CDK: https://github.com/aws/aws-cdk/issues/5595
 
 ## Dashboards
 
@@ -119,15 +183,15 @@ A graph widget can display any number of metrics on either the `left` or
 
 ```ts
 dashboard.addWidgets(new GraphWidget({
-    title: "Executions vs error rate",
+  title: "Executions vs error rate",
 
-    left: [executionCountMetric],
+  left: [executionCountMetric],
 
-    right: [errorCountMetric.with({
-        statistic: "average",
-        label: "Error rate",
-        color: "00FF00"
-    })]
+  right: [errorCountMetric.with({
+    statistic: "average",
+    label: "Error rate",
+    color: "00FF00"
+  })]
 }));
 ```
 
@@ -137,8 +201,8 @@ An alarm widget shows the graph and the alarm line of a single alarm:
 
 ```ts
 dashboard.addWidgets(new AlarmWidget({
-    title: "Errors",
-    alarm: errorAlarm,
+  title: "Errors",
+  alarm: errorAlarm,
 }));
 ```
 
@@ -149,7 +213,7 @@ to a graph of the value over time):
 
 ```ts
 dashboard.addWidgets(new SingleValueWidget({
-    metrics: [visitorCount, purchaseCount],
+  metrics: [visitorCount, purchaseCount],
 }));
 ```
 
@@ -160,7 +224,7 @@ to your dashboard:
 
 ```ts
 dashboard.addWidgets(new TextWidget({
-    markdown: '# Key Performance Indicators'
+  markdown: '# Key Performance Indicators'
 }));
 ```
 
