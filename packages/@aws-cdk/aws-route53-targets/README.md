@@ -43,7 +43,7 @@ This library contains Route53 Alias Record targets for:
   ```
 * InterfaceVpcEndpoints
 
-**Important:** Based on the CFN docs for VPCEndpoints - [see here](attrDnsEntries) - the attribute returned for DnsEntries in CloudFormation a combination of the hosted zone ID and the DNS name. The entries are ordered as follows: regional public DNS, zonal public DNS, private DNS, and wildcard DNS. This order is not enforced for AWS Marketplace services, and therefore this CDK construct is ONLY guaranteed to work with non-marketplace services.
+**Important:** Based on the CFN docs for VPCEndpoints - [see here](attrDnsEntries) - the attributes returned for DnsEntries in CloudFormation is a combination of the hosted zone ID and the DNS name. The entries are ordered as follows: regional public DNS, zonal public DNS, private DNS, and wildcard DNS. This order is not enforced for AWS Marketplace services, and therefore this CDK construct is ONLY guaranteed to work with non-marketplace services.
   ```ts
   new route53.ARecord(stack, "AliasRecord", {
     zone,
