@@ -31,6 +31,17 @@ export enum S3Trigger {
 }
 
 /**
+ * The CodePipeline variables emitted by the S3 source Action.
+ */
+export interface S3SourceVariables {
+  /** The identifier of the S3 version of the object that triggered the build. */
+  readonly versionId: string;
+
+  /** The e-tag of the S3 version of the object that triggered the build. */
+  readonly eTag: string;
+}
+
+/**
  * Construction properties of the {@link S3SourceAction S3 source Action}.
  */
 export interface S3SourceActionProps extends codepipeline.CommonAwsActionProps {
@@ -86,6 +97,14 @@ export class S3SourceAction extends Action {
     }
 
     this.props = props;
+  }
+
+  /** The variables emitted by this action. */
+  public get variables(): S3SourceVariables {
+    return  {
+      versionId: this.variableExpression('VersionId'),
+      eTag: this.variableExpression('ETag'),
+    };
   }
 
   protected bound(_scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):

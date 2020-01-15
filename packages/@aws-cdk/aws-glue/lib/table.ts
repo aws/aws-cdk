@@ -236,7 +236,7 @@ export class Table extends Resource implements ITable {
 
     this.database = props.database;
     this.dataFormat = props.dataFormat;
-    this.s3Prefix = props.s3Prefix || 'data/';
+    this.s3Prefix = (props.s3Prefix !== undefined && props.s3Prefix !== null) ? props.s3Prefix : 'data/';
 
     validateSchema(props.columns, props.partitionKeys);
     this.columns = props.columns;

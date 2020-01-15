@@ -283,6 +283,52 @@ test('relative path', async () => {
   shellStub.restore();
 });
 
+test('passes the correct file to docker build', async () => {
+  // GIVEN
+  const toolkit = new ToolkitInfo({
+    sdk: new MockSDK(),
+    bucketName: 'BUCKET_NAME',
+    bucketEndpoint: 'BUCKET_ENDPOINT',
+    environment: { name: 'env', account: '1234', region: 'abc' }
+  });
+
+  const prepareEcrRepositoryStub = sinon.stub(toolkit, 'prepareEcrRepository').resolves({
+    repositoryUri: 'uri',
+  });
+
+  const shellStub = sinon.stub(os, 'shell').rejects('STOPTEST');
+
+  // WHEN
+  const asset: cxapi.ContainerImageAssetMetadataEntry = {
+    id: 'assetId',
+    imageNameParameter: 'MyParameter',
+    packaging: 'container-image',
+    path: '/foo',
+    sourceHash: '1234567890abcdef',
+    repositoryName: 'some-name',
+    imageTag: 'image-tag',
+    buildArgs: {
+      a: 'b',
+      c: 'd'
+    },
+    target: 'a-target',
+    file: 'some-file'
+  };
+
+  try {
+    await prepareContainerAsset('.', asset, toolkit, false);
+  } catch (e) {
+    if (!/STOPTEST/.test(e.toString())) { throw e; }
+  }
+
+  const command = ['docker', 'build', '--tag', `uri:latest`, '/foo', '--file', 'some-file'];
+
+  expect(shellStub.calledWith(command)).toBeTruthy();
+
+  prepareEcrRepositoryStub.restore();
+  shellStub.restore();
+});
+
 // since "imageNameParameter" is present, this means we are pre 1.21.0, which
 // implies which is before "imageTag" was supported. still, for the sake of
 // correctness of the protocol we added support for specifying image tag even if
@@ -316,6 +362,7 @@ test('"imageTag" is used instead of "latest"', async () => {
       c: 'd'
     },
     target: 'a-target',
+    file: 'some-file'
   };
 
   try {

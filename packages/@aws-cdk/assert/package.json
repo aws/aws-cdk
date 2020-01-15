@@ -23,9 +23,8 @@
     ],
     "coverageThreshold": {
       "global": {
-        "statements": 80,
-        "lines": 80,
-        "branches": 60
+        "statements": 75,
+        "branches": 65
       }
     },
     "preset": "ts-jest",
@@ -45,7 +44,7 @@
     "cdk-build-tools": "1.20.0",
     "jest": "^24.9.0",
     "pkglint": "1.20.0",
-    "ts-jest": "^24.2.0"
+    "ts-jest": "^24.3.0"
   },
   "dependencies": {
     "@aws-cdk/cloudformation-diff": "1.20.0",

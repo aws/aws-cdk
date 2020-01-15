@@ -1,4 +1,4 @@
-import { Assertion } from "../assertion";
+import { Assertion, JestFriendlyAssertion } from "../assertion";
 import { StackInspector } from "../inspector";
 
 /**
@@ -30,8 +30,8 @@ export function haveResourceLike(resourceType: string,
 
 type PropertyPredicate = (props: any, inspection: InspectionFailure) => boolean;
 
-export class HaveResourceAssertion extends Assertion<StackInspector> {
-  private inspected: InspectionFailure[] = [];
+export class HaveResourceAssertion extends JestFriendlyAssertion<StackInspector> {
+  private readonly inspected: InspectionFailure[] = [];
   private readonly part: ResourcePart;
   private readonly predicate: PropertyPredicate;
 
