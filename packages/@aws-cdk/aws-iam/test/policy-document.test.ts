@@ -341,7 +341,8 @@ describe('IAM polocy document', () => {
       get grantPrincipal() { return this; },
       assumeRoleAction: 'sts:AssumeRole',
       policyFragment: new PrincipalPolicyFragment({ AWS: ['foo', 'bar'] }),
-      addToPolicy() { return false; }
+      addToPolicy() { return false; },
+      sameAccount() { return false; }
     };
     const s = new PolicyStatement();
     s.addAccountRootPrincipal();

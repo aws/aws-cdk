@@ -1,4 +1,4 @@
-import { DependableTrait } from '@aws-cdk/core';
+import { DependableTrait, IConstruct } from '@aws-cdk/core';
 import { Grant } from '../grant';
 import { IManagedPolicy } from '../managed-policy';
 import { Policy } from '../policy';
@@ -22,7 +22,7 @@ import { IRole } from '../role';
 export class ImmutableRole implements IRole {
   public readonly assumeRoleAction = this.role.assumeRoleAction;
   public readonly policyFragment = this.role.policyFragment;
-  public readonly grantPrincipal = this.role.grantPrincipal;
+  public readonly grantPrincipal = this;
   public readonly roleArn = this.role.roleArn;
   public readonly roleName = this.role.roleName;
   public readonly node = this.role.node;
@@ -54,5 +54,9 @@ export class ImmutableRole implements IRole {
 
   public grantPassRole(grantee: IPrincipal): Grant {
     return this.role.grantPassRole(grantee);
+  }
+
+  public sameAccount(scope: IConstruct): boolean | undefined {
+    return this.role.sameAccount(scope);
   }
 }

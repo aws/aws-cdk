@@ -77,5 +77,5 @@ export class ScopedAws {
 }
 
 function pseudoString(name: string): string {
-  return Token.asString({ Ref: name }, { displayHint: name });
+  return Token.asString({ Ref: name }, { displayHint: name.replace('::', '.') });
 }

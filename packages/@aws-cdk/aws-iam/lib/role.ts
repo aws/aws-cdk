@@ -1,4 +1,4 @@
-import { Construct, Duration, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
+import { Construct, Duration, IConstruct, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { Grant } from './grant';
 import { CfnRole } from './iam.generated';
 import { IIdentity } from './identity-base';
@@ -7,6 +7,7 @@ import { Policy } from './policy';
 import { PolicyDocument } from './policy-document';
 import { PolicyStatement } from './policy-statement';
 import { ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
+import { accountsAreDefinitelyDifferent, sameAccount } from './private/accounts';
 import { ImmutableRole } from './private/immutable-role';
 import { AttachedPolicies } from './util';
 
@@ -184,7 +185,7 @@ export class Role extends Resource implements IRole {
       public attachInlinePolicy(policy: Policy): void {
         const policyAccount = Stack.of(policy).account;
 
-        if (accountsAreEqualOrOneIsUnresolved(policyAccount, roleAccount)) {
+        if (!accountsAreDefinitelyDifferent(policyAccount, roleAccount)) {
           this.attachedPolicies.attach(policy);
           policy.attachToRole(this);
         }
@@ -212,21 +213,17 @@ export class Role extends Resource implements IRole {
           scope: this,
         });
       }
+
+      public sameAccount(scp: IConstruct): boolean | undefined {
+        return sameAccount(parsedArn.account, Stack.of(scp).account);
+      }
     }
 
     const roleAccount = parsedArn.account;
-
     const scopeAccount = scopeStack.account;
 
-    return options.mutable !== false && accountsAreEqualOrOneIsUnresolved(scopeAccount, roleAccount)
-      ? new Import(scope, id)
-      : new ImmutableRole(new Import(scope, id));
-
-    function accountsAreEqualOrOneIsUnresolved(account1: string | undefined,
-                                               account2: string | undefined): boolean {
-      return Token.isUnresolved(account1) || Token.isUnresolved(account2) ||
-        account1 === account2;
-    }
+    const mutable = options.mutable !== false && !accountsAreDefinitelyDifferent(scopeAccount, roleAccount);
+    return mutable ? new Import(scope, id) : new ImmutableRole(new Import(scope, id));
   }
 
   public readonly grantPrincipal: IPrincipal = this;
@@ -381,6 +378,10 @@ export class Role extends Resource implements IRole {
    */
   public withoutPolicyUpdates(): IRole {
     return new ImmutableRole(this);
+  }
+
+  public sameAccount(scope: Construct): boolean | undefined {
+    return sameAccount(Stack.of(this).account, Stack.of(scope).account);
   }
 }
 

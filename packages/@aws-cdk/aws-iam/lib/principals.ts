@@ -48,6 +48,17 @@ export interface IPrincipal extends IGrantable {
    * question does not have a policy document to add the statement to.
    */
   addToPolicy(statement: PolicyStatement): boolean;
+
+  /**
+   * Return whether the principal and the given construct are in the same AWS account.
+   *
+   * This is used by `Grant` to determine whether a trust policy needs
+   * to be added to the resource as well as a permissions policy needs to be
+   * added to the identity.
+   *
+   * Returns `undefined` if it is unknown whether the accounts are the same.
+   */
+  sameAccount(scope: cdk.IConstruct): boolean | undefined;
 }
 
 /**
@@ -76,6 +87,10 @@ export abstract class PrincipalBase implements IPrincipal {
     // This is a first pass to make the object readable. Descendant principals
     // should return something nicer.
     return JSON.stringify(this.policyFragment.principalJson);
+  }
+
+  public sameAccount(_scope: cdk.Construct): boolean | undefined {
+    return false;
   }
 
   public toJSON() {

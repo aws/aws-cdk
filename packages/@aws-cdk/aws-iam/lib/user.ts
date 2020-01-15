@@ -1,4 +1,4 @@
-import { Construct, Lazy, Resource, SecretValue, Stack } from '@aws-cdk/core';
+import { Construct, IConstruct, Lazy, Resource, SecretValue, Stack } from '@aws-cdk/core';
 import { IGroup } from './group';
 import { CfnUser } from './iam.generated';
 import { IIdentity } from './identity-base';
@@ -6,6 +6,7 @@ import { IManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
 import { PolicyStatement } from './policy-statement';
 import { ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
+import { sameAccount } from './private/accounts';
 import { AttachedPolicies, undefinedIfEmpty } from './util';
 
 export interface IUser extends IIdentity {
@@ -153,6 +154,10 @@ export class User extends Resource implements IIdentity, IUser {
       public addManagedPolicy(_policy: IManagedPolicy): void {
         throw new Error('Cannot add managed policy to imported User');
       }
+
+      public sameAccount(_scope: IConstruct): boolean | undefined {
+        return true;
+      }
     }
 
     return new Import(scope, id);
@@ -254,6 +259,10 @@ export class User extends Resource implements IIdentity, IUser {
 
     this.defaultPolicy.addStatements(statement);
     return true;
+  }
+
+  public sameAccount(scope: IConstruct): boolean | undefined {
+    return sameAccount(Stack.of(this).account, Stack.of(scope).account);
   }
 
   private parseLoginProfile(props: UserProps): CfnUser.LoginProfileProperty | undefined {

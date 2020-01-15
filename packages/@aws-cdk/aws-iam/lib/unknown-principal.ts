@@ -43,4 +43,8 @@ export class UnknownPrincipal implements IPrincipal {
     this.resource.node.addWarning(`Add statement to this resource's role: ${repr}`);
     return true; // Pretend we did the work. The human will do it for us, eventually.
   }
+
+  public sameAccount(_scope: IConstruct): boolean | undefined {
+    return undefined;
+  }
 }

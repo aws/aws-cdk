@@ -1,10 +1,11 @@
-import { Construct, Lazy, Resource, Stack } from '@aws-cdk/core';
+import { Construct, IConstruct, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { CfnGroup } from './iam.generated';
 import { IIdentity } from './identity-base';
 import { IManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
 import { PolicyStatement } from './policy-statement';
 import { ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
+import { sameAccount } from './private/accounts';
 import { IUser } from './user';
 import { AttachedPolicies } from './util';
 
@@ -104,6 +105,10 @@ abstract class GroupBase extends Resource implements IGroup {
 
     this.defaultPolicy.addStatements(statement);
     return true;
+  }
+
+  public sameAccount(scope: IConstruct): boolean | undefined {
+    return sameAccount(Stack.of(this).account, Stack.of(scope).account);
   }
 }
 

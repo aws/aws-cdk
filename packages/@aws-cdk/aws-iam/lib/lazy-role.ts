@@ -4,6 +4,7 @@ import { IManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
 import { PolicyStatement } from './policy-statement';
 import { IPrincipal, PrincipalPolicyFragment } from './principals';
+import { sameAccount } from './private/accounts';
 import { IRole, Role, RoleProps } from './role';
 
 // tslint:disable-next-line:no-empty-interface
@@ -105,6 +106,10 @@ export class LazyRole extends cdk.Resource implements IRole {
    */
   public grantPassRole(identity: IPrincipal): Grant {
     return this.instantiate().grantPassRole(identity);
+  }
+
+  public sameAccount(scope: cdk.IConstruct): boolean | undefined {
+    return sameAccount(cdk.Stack.of(this).account, cdk.Stack.of(scope).account);
   }
 
   private instantiate(): Role {

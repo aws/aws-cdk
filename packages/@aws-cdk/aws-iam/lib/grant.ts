@@ -119,7 +119,10 @@ export class Grant {
       scope: options.resource
     });
 
-    if (result.success) { return result; }
+    // If we added to the principal AND we're in the same account, then we're done.
+    // If not, it's a different account and we must also add a trust policy on the resource.
+    const definitelySameAccount = options.grantee.grantPrincipal.sameAccount(options.resource) === true;
+    if (result.success && definitelySameAccount) { return result; }
 
     const statement = new PolicyStatement({
       actions: options.actions,

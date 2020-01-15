@@ -135,11 +135,15 @@ export class Arn {
    *      components of the ARN.
    */
   public static parse(arn: string, sepIfToken: string = '/', hasName: boolean = true): ArnComponents {
-    if (Token.isUnresolved(arn)) {
+    const components = arn.split(':') as Array<string | undefined>;
+    const looksLikeArn = arn.startsWith('arn:') && components.length >= 6 && components.length <= 7;
+
+    // If the ARN merely contains Tokens, but otherwise *looks* mostly like an ARN,
+    // it's a string of the form 'arn:${partition}:service:us-west-1:${account}:abc/xyz'. Parse fields
+    // out to the best of our ability. Tokens won't contain ":" so this won't break them.
+    if (Token.isUnresolved(arn) && !looksLikeArn) {
       return parseToken(arn, sepIfToken, hasName);
     }
-
-    const components = arn.split(':') as Array<string | undefined>;
 
     if (components.length < 6) {
       throw new Error('ARNs must have at least 6 components: ' + arn);

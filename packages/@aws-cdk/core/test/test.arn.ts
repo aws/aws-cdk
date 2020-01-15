@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { ArnComponents, CfnOutput, ScopedAws, Stack } from '../lib';
+import { ArnComponents, Aws, CfnOutput, ScopedAws, Stack } from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
 import { toCloudFormation } from './util';
 
@@ -230,6 +230,25 @@ export = {
         }
       }
     });
+
+    test.done();
+  },
+
+  'parse other fields if only some are tokens'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const parsed = stack.parseArn(`arn:${Aws.PARTITION}:iam::123456789012:role/S3Access`);
+
+    // THEN
+    test.deepEqual(stack.resolve(parsed.partition), { Ref: 'AWS::Partition' });
+    test.deepEqual(stack.resolve(parsed.service), 'iam');
+    test.equal(stack.resolve(parsed.region), undefined); // Note: This is wrong! It should be '', but parseArn() is incorrect.
+    test.deepEqual(stack.resolve(parsed.account), '123456789012');
+    test.deepEqual(stack.resolve(parsed.resource), 'role');
+    test.deepEqual(stack.resolve(parsed.resourceName), 'S3Access');
+    test.equal(parsed.sep, '/');
 
     test.done();
   },
