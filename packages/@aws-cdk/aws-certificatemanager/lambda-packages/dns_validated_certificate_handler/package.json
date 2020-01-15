@@ -1,7 +1,7 @@
 {
   "name": "dns_validated_certificate_handler",
   "private": true,
-  "version": "1.19.0",
+  "version": "1.20.0",
   "description": "This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.",
   "main": "lib/index.js",
   "directories": {

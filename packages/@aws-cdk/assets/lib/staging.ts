@@ -2,9 +2,9 @@ import { Construct, ISynthesisSession } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs';
 import * as path from 'path';
-import { copyDirectory, CopyOptions, fingerprint } from './fs';
+import { copyDirectory, fingerprint, FingerprintOptions } from './fs';
 
-export interface StagingProps extends CopyOptions {
+export interface StagingProps extends FingerprintOptions {
   readonly sourcePath: string;
 }
 
@@ -46,7 +46,7 @@ export class Staging extends Construct {
    */
   public readonly sourceHash: string;
 
-  private readonly copyOptions: CopyOptions;
+  private readonly fingerprintOptions: FingerprintOptions;
 
   private readonly relativePath?: string;
 
@@ -54,7 +54,7 @@ export class Staging extends Construct {
     super(scope, id);
 
     this.sourcePath = props.sourcePath;
-    this.copyOptions = props;
+    this.fingerprintOptions = props;
     this.sourceHash = fingerprint(this.sourcePath, props);
 
     const stagingDisabled = this.node.tryGetContext(cxapi.DISABLE_ASSET_STAGING_CONTEXT);
@@ -84,7 +84,7 @@ export class Staging extends Construct {
       fs.copyFileSync(this.sourcePath, targetPath);
     } else if (stat.isDirectory()) {
       fs.mkdirSync(targetPath);
-      copyDirectory(this.sourcePath, targetPath, this.copyOptions);
+      copyDirectory(this.sourcePath, targetPath, this.fingerprintOptions);
     } else {
       throw new Error(`Unknown file type: ${this.sourcePath}`);
     }
