@@ -563,7 +563,8 @@ export class Stack extends Construct implements ITaggable {
         imageNameParameter: params.imageNameParameter.logicalId,
         repositoryName: asset.repositoryName,
         buildArgs: asset.dockerBuildArgs,
-        target: asset.dockerBuildTarget
+        target: asset.dockerBuildTarget,
+        file: asset.dockerFile,
       };
 
       this.node.addMetadata(cxapi.ASSET_METADATA, metadata);
@@ -791,6 +792,10 @@ export class Stack extends Construct implements ITaggable {
     const text = JSON.stringify(this._toCloudFormation(), undefined, 2);
     fs.writeFileSync(outPath, text);
 
+    for (const ctx of this._missingContext) {
+      builder.addMissing(ctx);
+    }
+
     // if this is a nested stack, do not emit it as a cloud assembly artifact (it will be registered as an s3 asset instead)
     if (this.nested) {
       return;
@@ -823,10 +828,6 @@ export class Stack extends Construct implements ITaggable {
       dependencies: deps.length > 0 ? deps : undefined,
       metadata: Object.keys(meta).length > 0 ? meta : undefined,
     });
-
-    for (const ctx of this._missingContext) {
-      builder.addMissing(ctx);
-    }
   }
 
   /**

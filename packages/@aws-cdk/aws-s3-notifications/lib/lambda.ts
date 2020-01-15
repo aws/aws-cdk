@@ -23,7 +23,7 @@ export class LambdaDestination implements s3.IBucketNotificationDestination {
 
     // if we have a permission resource for this relationship, add it as a dependency
     // to the bucket notifications resource, so it will be created first.
-    const permission = this.fn.node.findChild(permissionId) as CfnResource;
+    const permission = this.fn.node.tryFindChild(permissionId) as CfnResource | undefined;
 
     return {
       type: s3.BucketNotificationDestinationType.LAMBDA,

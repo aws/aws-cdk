@@ -121,6 +121,20 @@ export = {
     test.done();
   },
 
+  'can remove children from the tree using tryRemoveChild()'(test: Test) {
+    const root = new Root();
+    const childrenBeforeAdding = root.node.children.length; // Invariant to adding 'Metadata' resource or not
+
+    // Add & remove
+    const child = new Construct(root, 'Construct');
+    test.equals(true, root.node.tryRemoveChild(child.node.id));
+    test.equals(false, root.node.tryRemoveChild(child.node.id)); // Second time does nothing
+
+    test.equals(undefined, root.node.tryFindChild(child.node.id));
+    test.equals(childrenBeforeAdding, root.node.children.length);
+    test.done();
+  },
+
   'construct.toString() and construct.toTreeString() can be used for diagnostics'(test: Test) {
     const t = createTree();
 

@@ -171,7 +171,7 @@ export interface AaaaRecordProps extends RecordSetOptions {
   /**
    * The target.
    */
-  readonly target: AddressRecordTarget;
+  readonly target: RecordTarget;
 }
 
 /**

@@ -20,6 +20,13 @@ export abstract class Assertion<InspectorClass extends Inspector> {
   }
 }
 
+export abstract class JestFriendlyAssertion<InspectorClass extends Inspector> extends Assertion<InspectorClass> {
+  /**
+   * Generates an error message that can be used by Jest.
+   */
+  public abstract generateErrorMessage(): string;
+}
+
 import { AndAssertion } from "./assertions/and-assertion";
 
 function and<I extends Inspector>(left: Assertion<I>, right: Assertion<I>): Assertion<I> {

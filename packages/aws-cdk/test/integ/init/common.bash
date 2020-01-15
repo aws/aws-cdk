@@ -1,5 +1,5 @@
 set -eu
-init_test_dir=/tmp/cdk-init-test
+init_test_dir="${init_test_dir:=/tmp/cdk-init-test}"
 
 function setup() {
   rm -rf $init_test_dir

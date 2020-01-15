@@ -92,6 +92,20 @@ export class CodeBuildAction extends Action {
     this.props = props;
   }
 
+  /**
+   * Reference a CodePipeline variable defined by the CodeBuild project this action points to.
+   * Variables in CodeBuild actions are defined using the 'exported-variables' subsection of the 'env'
+   * section of the buildspec.
+   *
+   * @param variableName the name of the variable to reference.
+   *   A variable by this name must be present in the 'exported-variables' section of the buildspec
+   *
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec-ref-syntax
+   */
+  public variable(variableName: string): string {
+    return this.variableExpression(variableName);
+  }
+
   protected bound(scope: cdk.Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
       codepipeline.ActionConfig {
     // check for a cross-account action if there are any outputs

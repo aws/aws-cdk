@@ -191,8 +191,8 @@ describe('IAM Role.fromRoleArn', () => {
             addToPolicyResult = importedRole.addToPolicy(somePolicyStatement());
           });
 
-          test('returns false', () => {
-            expect(addToPolicyResult).toBe(false);
+          test('pretends to succeed', () => {
+            expect(addToPolicyResult).toBe(true);
           });
 
           test("does NOT generate a default Policy resource pointing at the imported role's physical name", () => {
@@ -278,8 +278,8 @@ describe('IAM Role.fromRoleArn', () => {
           addToPolicyResult = importedRole.addToPolicy(somePolicyStatement());
         });
 
-        test('returns false', () => {
-          expect(addToPolicyResult).toBe(false);
+        test('pretends to succeed', () => {
+          expect(addToPolicyResult).toBe(true);
         });
 
         test("does NOT generate a default Policy resource pointing at the imported role's physical name", () => {
@@ -473,6 +473,27 @@ describe('IAM Role.fromRoleArn', () => {
             });
           });
         });
+      });
+    });
+  });
+
+  describe('imported with the ARN of a service role', () => {
+    beforeEach(() => {
+      roleStack = new Stack();
+      importedRole = Role.fromRoleArn(roleStack, 'Role',
+        `arn:aws:iam::${roleAccount}:role/service-role/codebuild-role`);
+    });
+
+    it("correctly strips the 'service-role' prefix from the role name", () => {
+      new Policy(roleStack, 'Policy', {
+        statements: [somePolicyStatement()],
+        roles: [importedRole],
+      });
+
+      expect(roleStack).toHaveResourceLike('AWS::IAM::Policy', {
+        "Roles": [
+          "codebuild-role",
+        ],
       });
     });
   });

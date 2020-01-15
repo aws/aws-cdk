@@ -309,7 +309,9 @@
                   "BucketName": {
                     "Ref": "DeployBucket67E2C076"
                   },
-                  "Extract": "true"
+                  "Extract": "true",
+                  "CannedACL": "PublicRead",
+                  "CacheControl": "public, max-age: 43200"
                 },
                 "InputArtifacts": [
                   {

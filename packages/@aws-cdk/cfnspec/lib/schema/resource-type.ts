@@ -1,5 +1,5 @@
 import { Documented, PrimitiveType } from './base-types';
-import { isTagProperty, Property, TagProperty } from './property';
+import { isTagProperty, isTagPropertyName, Property, TagProperty } from './property';
 
 export interface ResourceType extends Documented {
   /**
@@ -31,6 +31,7 @@ export interface ResourceType extends Documented {
 export interface TaggableResource extends ResourceType {
   Properties: {
     Tags: TagProperty;
+    UserPoolTags: TagProperty;
     [name: string]: Property;
   }
 }
@@ -61,8 +62,13 @@ export interface ComplexListAttribute {
  * generation of properties will be used.
  */
 export function isTaggableResource(spec: ResourceType): spec is TaggableResource {
-  if (spec.Properties && spec.Properties.Tags) {
-    return isTagProperty(spec.Properties.Tags);
+  if (spec.Properties === undefined) {
+    return false;
+  }
+  for (const key of Object.keys(spec.Properties)) {
+    if (isTagPropertyName(key) && isTagProperty(spec.Properties[key])) {
+      return true;
+    }
   }
   return false;
 }

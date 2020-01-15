@@ -208,7 +208,7 @@ test('encodes booleans', () => {
   });
 });
 
-test('timeout defaults to 30 seconds', () => {
+test('timeout defaults to 2 minutes', () => {
   // GIVEN
   const stack = new cdk.Stack();
 
@@ -223,7 +223,7 @@ test('timeout defaults to 30 seconds', () => {
 
   // THEN
   expect(stack).toHaveResource('AWS::Lambda::Function', {
-    Timeout: 60
+    Timeout: 120
   });
 });
 
@@ -309,4 +309,68 @@ test('can use existing role', () => {
   });
 
   expect(stack).not.toHaveResource('AWS::IAM::Role');
+});
+
+test('getData', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const awsSdk = new AwsCustomResource(stack, 'AwsSdk', {
+    onCreate: {
+      service: 'service',
+      action: 'action',
+      physicalResourceId: 'id'
+    }
+  });
+
+  // WHEN
+  const token = awsSdk.getData('Data');
+
+  // THEN
+  expect(stack.resolve(token)).toEqual({
+    'Fn::GetAtt': [
+      'AwsSdkE966FE43',
+      'Data'
+    ]
+  });
+});
+
+test('getDataString', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const awsSdk = new AwsCustomResource(stack, 'AwsSdk1', {
+    onCreate: {
+      service: 'service',
+      action: 'action',
+      physicalResourceId: 'id'
+    }
+  });
+
+  // WHEN
+  new AwsCustomResource(stack, 'AwsSdk2', {
+    onCreate: {
+      service: 'service',
+      action: 'action',
+      parameters: {
+        a: awsSdk.getDataString('Data')
+      },
+      physicalResourceId: 'id'
+    }
+  });
+
+  // THEN
+  expect(stack).toHaveResource('Custom::AWS', {
+    Create: {
+      service: 'service',
+      action: 'action',
+      parameters: {
+        a: {
+          'Fn::GetAtt': [
+            'AwsSdk155B91071',
+            'Data'
+          ]
+        }
+      },
+      physicalResourceId: 'id'
+    }
+  });
 });

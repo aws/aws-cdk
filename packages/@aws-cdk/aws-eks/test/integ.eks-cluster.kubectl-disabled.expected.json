@@ -58,7 +58,7 @@
           {
             "Key": "kubernetes.io/role/elb",
             "Value": "1"
-          }          
+          }
         ]
       }
     },
@@ -100,7 +100,7 @@
           {
             "Key": "kubernetes.io/role/elb",
             "Value": "1"
-          }          
+          }
         ]
       }
     },
@@ -153,7 +153,7 @@
           {
             "Key": "kubernetes.io/role/elb",
             "Value": "1"
-          }          
+          }
         ]
       }
     },
@@ -586,7 +586,7 @@
         }
       }
     },
-    "EKSClusterClusterRoleB72F3251": {
+    "EKSClusterRoleC0AEAC3D": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -701,7 +701,7 @@
         },
         "RoleArn": {
           "Fn::GetAtt": [
-            "EKSClusterClusterRoleB72F3251",
+            "EKSClusterRoleC0AEAC3D",
             "Arn"
           ]
         }
@@ -941,7 +941,6 @@
       "Properties": {
         "MaxSize": "1",
         "MinSize": "1",
-        "DesiredCapacity": "1",
         "LaunchConfigurationName": {
           "Ref": "EKSClusterNodesLaunchConfig921F1106"
         },

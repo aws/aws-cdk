@@ -156,7 +156,7 @@ export interface AwsCustomResourceProps {
   /**
    * The timeout for the Lambda function implementing this custom resource.
    *
-   * @default Duration.seconds(60)
+   * @default Duration.minutes(2)
    */
   readonly timeout?: cdk.Duration
 }
@@ -185,7 +185,7 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
       handler: 'index.handler',
       uuid: '679f53fa-c002-430c-b0da-5b7982bd2287',
       lambdaPurpose: 'AWS',
-      timeout: props.timeout || cdk.Duration.seconds(60),
+      timeout: props.timeout || cdk.Duration.minutes(2),
       role: props.role,
     });
     this.grantPrincipal = provider.grantPrincipal;
@@ -222,10 +222,24 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
    *
    * Example for S3 / listBucket : 'Buckets.0.Name'
    *
+   * Use `Token.asXxx` to encode the returned `Reference` as a specific type or
+   * use the convenience `getDataString` for string attributes.
+   *
    * @param dataPath the path to the data
    */
   public getData(dataPath: string) {
     return this.customResource.getAtt(dataPath);
+  }
+
+  /**
+   * Returns response data for the AWS SDK call as string.
+   *
+   * Example for S3 / listBucket : 'Buckets.0.Name'
+   *
+   * @param dataPath the path to the data
+   */
+  public getDataString(dataPath: string): string {
+    return this.customResource.getAttString(dataPath);
   }
 }
 

@@ -4,6 +4,7 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as genspec from './genspec';
 import { itemTypeNames, PropertyAttributeName, scalarTypeNames, SpecName } from './spec-utils';
+import { upcaseFirst } from './util';
 
 const CORE = genspec.CORE_NAMESPACE;
 const RESOURCE_BASE_CLASS = `${CORE}.CfnResource`; // base class for all resources
@@ -296,8 +297,8 @@ export default class CodeGenerator {
     if (propsType && propMap) {
       this.code.line();
       for (const prop of Object.values(propMap)) {
-        if (prop === 'tags' && isTaggable(spec)) {
-          this.code.line(`this.tags = new ${TAG_MANAGER}(${tagType(spec)}, ${cfnResourceTypeName}, props.tags);`);
+        if (schema.isTagPropertyName(upcaseFirst(prop)) && schema.isTaggableResource(spec)) {
+          this.code.line(`this.tags = new ${TAG_MANAGER}(${tagType(spec)}, ${cfnResourceTypeName}, props.${prop}, { tagPropertyName: '${prop}' });`);
         } else {
           this.code.line(`this.${prop} = props.${prop};`);
         }
@@ -311,7 +312,7 @@ export default class CodeGenerator {
     // setup render properties
     if (propsType && propMap) {
       this.code.line();
-      this.emitCloudFormationProperties(propsType, propMap, isTaggable(spec));
+      this.emitCloudFormationProperties(propsType, propMap, schema.isTaggableResource(spec));
     }
 
     this.closeClass(resourceName);
@@ -329,7 +330,7 @@ export default class CodeGenerator {
     this.code.indent('return {');
     for (const prop of Object.values(propMap)) {
       // handle tag rendering because of special cases
-      if (prop === 'tags' && taggable) {
+      if (taggable && schema.isTagPropertyName(upcaseFirst(prop))) {
         this.code.line(`${prop}: this.tags.renderTags(),`);
         continue;
       }
@@ -553,7 +554,7 @@ export default class CodeGenerator {
     this.docLink(props.spec.Documentation, props.additionalDocs);
     const question = props.spec.Required ? ';' : ' | undefined;';
     const line = `: ${this.findNativeType(props.context, props.spec, props.propName)}${question}`;
-    if (props.propName === 'Tags' && schema.isTagProperty(props.spec)) {
+    if (schema.isTagPropertyName(props.propName) && schema.isTagProperty(props.spec)) {
       this.code.line(`public readonly tags: ${TAG_MANAGER};`);
     } else {
       this.code.line(`public ${javascriptPropertyName}${line}`);
@@ -638,7 +639,7 @@ export default class CodeGenerator {
       // 'tokenizableType' operates at the level of rendered type names in TypeScript, so stringify
       // the objects.
       const renderedTypes = itemTypes.map(t => this.renderCodeName(resourceContext, t));
-      if (!tokenizableType(renderedTypes) && propName !== 'Tags') {
+      if (!tokenizableType(renderedTypes) && !schema.isTagPropertyName(propName)) {
         // Always accept a token in place of any list element (unless the list elements are tokenizable)
         itemTypes.push(genspec.TOKEN_NAME);
       }
@@ -670,7 +671,7 @@ export default class CodeGenerator {
     // everything to be tokenizable because there are languages that do not
     // support union types (i.e. Java, .NET), so we lose type safety if we have
     // a union.
-    if (!tokenizableType(alternatives) && propName !== 'Tags') {
+    if (!tokenizableType(alternatives) && !schema.isTagPropertyName(propName)) {
       alternatives.push(genspec.TOKEN_NAME.fqn);
     }
     return alternatives.join(' | ');
@@ -737,24 +738,23 @@ function tokenizableType(alternatives: string[]): boolean {
   return false;
 }
 
-function tagType(resource: schema.ResourceType): string {
-  if (schema.isTaggableResource(resource)) {
-    const prop = resource.Properties.Tags;
-    if (schema.isTagPropertyStandard(prop)) {
+function tagType(resource: schema.TaggableResource): string {
+  for (const name of Object.keys(resource.Properties)) {
+    if (!schema.isTagPropertyName(name)) {
+      continue;
+    }
+    if (schema.isTagPropertyStandard(resource.Properties[name])) {
       return `${TAG_TYPE}.STANDARD`;
     }
-    if (schema.isTagPropertyAutoScalingGroup(prop)) {
+    if (schema.isTagPropertyAutoScalingGroup(resource.Properties[name])) {
       return `${TAG_TYPE}.AUTOSCALING_GROUP`;
     }
-    if (schema.isTagPropertyJson(prop) || schema.isTagPropertyStringMap(prop)) {
+    if (schema.isTagPropertyJson(resource.Properties[name]) ||
+      schema.isTagPropertyStringMap(resource.Properties[name])) {
       return `${TAG_TYPE}.MAP`;
     }
   }
   return `${TAG_TYPE}.NOT_TAGGABLE`;
-}
-
-function isTaggable(resource: schema.ResourceType): boolean {
-  return tagType(resource) !== `${TAG_TYPE}.NOT_TAGGABLE`;
 }
 
 enum Container {

@@ -166,6 +166,9 @@ export class DatabaseInstanceEngine extends DatabaseClusterEngine {
   public static readonly SQL_SERVER_EX = new DatabaseInstanceEngine('sqlserver-ex', secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_MULTI_USER);
   public static readonly SQL_SERVER_WEB = new DatabaseInstanceEngine('sqlserver-web', secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_MULTI_USER);
   /* tslint:enable max-line-length */
+
+  /** To make it a compile-time error to pass a DatabaseClusterEngine where a DatabaseInstanceEngine is expected. */
+  public readonly isDatabaseInstanceEngine = true;
 }
 
 /**
@@ -962,7 +965,8 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
 
     const instance = new CfnDBInstance(this, 'Resource', {
       ...this.newCfnProps,
-      sourceDbInstanceIdentifier: props.sourceDatabaseInstance.instanceIdentifier,
+      // this must be ARN, not ID, because of https://github.com/terraform-providers/terraform-provider-aws/issues/528#issuecomment-391169012
+      sourceDbInstanceIdentifier: props.sourceDatabaseInstance.instanceArn,
       kmsKeyId: props.kmsKey && props.kmsKey.keyArn,
       storageEncrypted: props.kmsKey ? true : props.storageEncrypted,
     });

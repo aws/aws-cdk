@@ -88,7 +88,7 @@ You can add customized capacity through `cluster.addCapacity()` or
 ```ts
 cluster.addCapacity('frontend-nodes', {
   instanceType: new ec2.InstanceType('t2.medium'),
-  desiredCapacity: 3,
+  minCapacity: 3,
   vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC }
 });
 ```
@@ -125,7 +125,7 @@ you can use `kubeletExtraArgs` to add custom node labels or taints.
 // up to ten spot instances
 cluster.addCapacity('spot', {
   instanceType: new ec2.InstanceType('t3.large'),
-  desiredCapacity: 2,
+  minCapacity: 2,
   bootstrapOptions: {
     kubeletExtraArgs: '--node-labels foo=bar,goo=far',
     awsApiRetryAttempts: 5

@@ -51,8 +51,8 @@ export = {
         title: 'My fancy graph',
         region: { Ref: 'AWS::Region' },
         metrics: [
-          ['CDK', 'Test', { yAxis: 'left', period: 300, stat: 'Average' }],
-          ['CDK', 'Tast', { yAxis: 'right', period: 300, stat: 'Average' }]
+          ['CDK', 'Test'],
+          ['CDK', 'Tast', { yAxis: 'right' }]
         ],
         yAxis: {}
       }
@@ -77,7 +77,7 @@ export = {
         view: 'timeSeries',
         region: { Ref: 'AWS::Region' },
         metrics: [
-          ['CDK', 'Test', { yAxis: 'left', period: 300, stat: 'Average', label: 'MyMetric', color: '000000' }],
+          ['CDK', 'Test', { label: 'MyMetric', color: '000000' }],
         ],
         yAxis: {}
       }
@@ -105,7 +105,7 @@ export = {
         view: 'singleValue',
         region: { Ref: 'AWS::Region' },
         metrics: [
-          ['CDK', 'Test', { yAxis: 'left', period: 300, stat: 'Average' }],
+          ['CDK', 'Test'],
         ]
       }
     }]);
@@ -171,7 +171,7 @@ export = {
         title: 'My fancy graph',
         region: { Ref: 'AWS::Region' },
         metrics: [
-          ['CDK', 'Test', { yAxis: 'left', period: 300, stat: 'Average' }],
+          ['CDK', 'Test'],
         ],
         annotations: { horizontal: [{
           yAxis: 'left',
@@ -213,7 +213,7 @@ export = {
         view: 'timeSeries',
         region: { Ref: 'AWS::Region' },
         metrics: [
-          ['CDK', 'Test', { yAxis: 'right', period: 300, stat: 'Average' }],
+          ['CDK', 'Test', { yAxis: 'right' }],
         ],
         annotations: {
           horizontal: [{
@@ -261,8 +261,8 @@ export = {
         title: 'My fancy graph',
         region: { Ref: 'AWS::Region' },
         metrics: [
-          ['CDK', 'Test', { yAxis: 'left', period: 300, stat: 'Average' }],
-          ['CDK', 'Tast', { yAxis: 'right', period: 300, stat: 'Average' }]
+          ['CDK', 'Test'],
+          ['CDK', 'Tast', { yAxis: 'right' }]
         ],
         yAxis: {
           left: { label: "Left yAxis", max: 100 },
@@ -309,7 +309,7 @@ export = {
         view: 'singleValue',
         region: { Ref: 'AWS::Region' },
         metrics: [
-          ['CDK', 'Test', { yAxis: 'left', period: 300, stat: 'Average' }],
+          ['CDK', 'Test'],
         ],
         setPeriodToTimeRange: true
       }
@@ -320,8 +320,8 @@ export = {
 
   'allows overriding custom values of dashboard widgets'(test: Test) {
     class HiddenMetric extends Metric {
-      public toGraphConfig(): any {
-        const ret = super.toGraphConfig();
+      public toMetricConfig() {
+        const ret = super.toMetricConfig();
         // @ts-ignore
         ret.renderingProperties.visible = false;
         return ret;
@@ -338,7 +338,7 @@ export = {
     // test.ok(widget.toJson()[0].properties.metrics[0].visible === false);
     test.deepEqual(
       stack.resolve(widget.toJson())[0].properties.metrics[0],
-      ["CDK", "Test", { yAxis: 'left', period: 300, stat: 'Average', visible: false }]
+      ["CDK", "Test", { visible: false }]
     );
 
     test.done();
