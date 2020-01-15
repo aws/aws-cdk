@@ -21,6 +21,6 @@ for template in $templates; do
 
     setup
 
-    cdk init -l csharp -t $template
+    cdk init -l csharp $template
     cdk synth
 done

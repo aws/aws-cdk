@@ -2,10 +2,10 @@
 
 from aws_cdk import core
 
-from %name%.%name%_stack import %name.PascalCased%Stack
+from %name.PythonModule%.%name.PythonModule%_stack import %name.PascalCased%Stack
 
 
 app = core.App()
-%name.PascalCased%Stack(app, "%name%", env={'region': 'us-west-2'})
+%name.PascalCased%Stack(app, "%name.StackName%", env={'region': 'us-west-2'})
 
 app.synth()

@@ -21,6 +21,6 @@ for template in $templates; do
 
     setup
 
-    cdk init -l fsharp -t $template
+    cdk init -l fsharp $template
     cdk synth
 done
