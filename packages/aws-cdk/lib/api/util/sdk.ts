@@ -211,7 +211,7 @@ export class SDK implements ISDK {
     const caBundlePath = options.caBundlePath || caBundlePathFromEnvironment();
 
     if (proxyAddress && caBundlePath) {
-      throw new Error(`Cannot specify Proxy (${proxyAddress}) and CA Bundle (${caBundlePath}) at the same time`);
+      throw new Error(`At the moment, cannot specify Proxy (${proxyAddress}) and CA Bundle (${caBundlePath}) at the same time. See https://github.com/aws/aws-cdk/issues/5804`);
       // Maybe it's possible after all, but I've been staring at
       // https://github.com/TooTallNate/node-proxy-agent/blob/master/index.js#L79
       // a while now trying to figure out what to pass in so that the underlying Agent
