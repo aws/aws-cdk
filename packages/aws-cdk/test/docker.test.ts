@@ -306,7 +306,6 @@ test('passes the correct file to docker build', async () => {
     path: '/foo',
     sourceHash: '1234567890abcdef',
     repositoryName: 'some-name',
-    imageTag: 'image-tag',
     buildArgs: {
       a: 'b',
       c: 'd'
@@ -321,9 +320,8 @@ test('passes the correct file to docker build', async () => {
     if (!/STOPTEST/.test(e.toString())) { throw e; }
   }
 
-  const command = ['docker', 'build', '--tag', `uri:latest`, '/foo', '--file', 'some-file'];
-
-  expect(shellStub.calledWith(command)).toBeTruthy();
+  const command = ['docker', 'build', '--build-arg', 'a=b', '--build-arg', 'c=d', '--tag', 'uri:latest', '/foo', '--target', 'a-target', '--file', 'some-file'];
+  sinon.assert.calledWith(shellStub, command);
 
   prepareEcrRepositoryStub.restore();
   shellStub.restore();
@@ -372,7 +370,7 @@ test('"imageTag" is used instead of "latest"', async () => {
   }
 
   // THEN
-  const command = ['docker', 'build', '--build-arg', 'a=b', '--build-arg', 'c=d', '--tag', `uri:image-tag`, '/foo', '--target', 'a-target'];
+  const command = ['docker', 'build', '--build-arg', 'a=b', '--build-arg', 'c=d', '--tag', 'uri:image-tag', '/foo', '--target', 'a-target', '--file', 'some-file'];
   sinon.assert.calledWith(shellStub, command);
 
   prepareEcrRepositoryStub.restore();
