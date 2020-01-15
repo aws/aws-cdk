@@ -498,7 +498,7 @@ export class Table extends TableBase {
         throw new Error('The `PAY_PER_REQUEST` billing mode must be used when specifying `replicaRegions`');
       }
     } else if (props.stream) {
-        streamSpecification = { streamViewType : props.stream };
+      streamSpecification = { streamViewType : props.stream };
     } else {
       streamSpecification = undefined;
     }
@@ -543,47 +543,7 @@ export class Table extends TableBase {
     }
 
     if (props.replicaRegions) {
-      const provider = ReplicaProvider.getOrCreate(this);
-
-      // Documentation at https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/V2gt_IAM.html
-      // is currently incorrect. AWS Support recommends `dynamodb:*` in both source and destination regions
-
-      // Permissions in the source region
-      this.grant(provider.onEventHandler, 'dynamodb:*');
-      this.grant(provider.isCompleteHandler, 'dynamodb:DescribeTable');
-
-      // Permissions in the destination regions
-      provider.onEventHandler.addToRolePolicy(new iam.PolicyStatement({
-        actions: ['dynamodb:*'],
-        resources: props.replicaRegions.map(region => Stack.of(this).formatArn({
-          region,
-          service: 'dynamodb',
-          resource: 'table',
-          resourceName: this.tableName
-        }))
-      }));
-
-      let previousRegion;
-      for (const region of props.replicaRegions) {
-        // Use multiple custom resource because multiple create/delete
-        // updates cannot be combined in a single API call.
-        const currentRegion = new CustomResource(this, `Replica${region}`, {
-          provider: provider.provider,
-          resourceType: 'Custom::DynamoDBReplica',
-          properties: {
-            TableName: this.tableName,
-            Region: region,
-          }
-        });
-
-        // We need to create/delete regions sequentially because we cannot
-        // have multiple table updates at the same time. The `isCompleteHandler`
-        // of the provider waits until the replica is an ACTIVE state.
-        if (previousRegion) {
-          currentRegion.node.addDependency(previousRegion);
-        }
-        previousRegion = currentRegion;
-      }
+      this.createReplicaTables(props.replicaRegions);
     }
   }
 
@@ -934,6 +894,55 @@ export class Table extends TableBase {
       resource: 'role/aws-service-role/dynamodb.application-autoscaling.amazonaws.com',
       resourceName: 'AWSServiceRoleForApplicationAutoScaling_DynamoDBTable'
     }));
+  }
+
+  /**
+   * Creates replica tables
+   *
+   * @param regions regions where to create tables
+   */
+  private createReplicaTables(regions: string[]) {
+    const provider = ReplicaProvider.getOrCreate(this);
+
+    // Documentation at https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/V2gt_IAM.html
+    // is currently incorrect. AWS Support recommends `dynamodb:*` in both source and destination regions
+
+    // Permissions in the source region
+    this.grant(provider.onEventHandler, 'dynamodb:*');
+    this.grant(provider.isCompleteHandler, 'dynamodb:DescribeTable');
+
+    // Permissions in the destination regions
+    provider.onEventHandler.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['dynamodb:*'],
+      resources: regions.map(region => Stack.of(this).formatArn({
+        region,
+        service: 'dynamodb',
+        resource: 'table',
+        resourceName: this.tableName
+      }))
+    }));
+
+    let previousRegion;
+    for (const region of regions) {
+      // Use multiple custom resources because multiple create/delete
+      // updates cannot be combined in a single API call.
+      const currentRegion = new CustomResource(this, `Replica${region}`, {
+        provider: provider.provider,
+        resourceType: 'Custom::DynamoDBReplica',
+        properties: {
+          TableName: this.tableName,
+          Region: region,
+        }
+      });
+
+      // We need to create/delete regions sequentially because we cannot
+      // have multiple table updates at the same time. The `isCompleteHandler`
+      // of the provider waits until the replica is an ACTIVE state.
+      if (previousRegion) {
+        currentRegion.node.addDependency(previousRegion);
+      }
+      previousRegion = currentRegion;
+    }
   }
 
   /**
