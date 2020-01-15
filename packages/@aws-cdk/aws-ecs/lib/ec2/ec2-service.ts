@@ -1,5 +1,5 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
-import { Construct, Lazy, Resource } from '@aws-cdk/core';
+import { Construct, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { BaseService, BaseServiceOptions, IService, LaunchType, PropagatedTagSource } from '../base/base-service';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
 import { CfnService } from '../ecs.generated';
@@ -160,9 +160,16 @@ export class Ec2Service extends BaseService implements IEc2Service {
     if (props.taskDefinition.networkMode === NetworkMode.AWS_VPC) {
       this.configureAwsVpcNetworking(props.cluster.vpc, props.assignPublicIp, props.vpcSubnets, props.securityGroup);
     } else {
-      // Either None, Bridge or Host networking. Copy SecurityGroup from ASG.
+      // Either None, Bridge or Host networking. Copy SecurityGroups from ASG.
+      // We have to be smart here -- by default future Security Group rules would be created
+      // in the Cluster stack. However, if the Cluster is in a different stack than us,
+      // that will lead to a cyclic reference (we point to that stack for the cluster name,
+      // but that stack will point to the ALB probably created right next to us).
+      //
+      // In that case, reference the same security groups but make sure new rules are
+      // created in the current scope (i.e., this stack)
       validateNoNetworkingProps(props);
-      this.connections.addSecurityGroup(...props.cluster.connections.securityGroups);
+      this.connections.addSecurityGroup(...securityGroupsInThisStack(this, props.cluster.connections.securityGroups));
     }
 
     this.addPlacementConstraints(...props.placementConstraints || []);
@@ -216,6 +223,28 @@ function validateNoNetworkingProps(props: Ec2ServiceProps) {
   if (props.vpcSubnets !== undefined || props.securityGroup !== undefined || props.assignPublicIp) {
     throw new Error('vpcSubnets, securityGroup and assignPublicIp can only be used in AwsVpc networking mode');
   }
+}
+
+/**
+ * Force security group rules to be created in this stack.
+ *
+ * For every security group, if the scope and the group are in different stacks, return
+ * a fake "imported" security group instead. This will behave as the original security group,
+ * but new Ingress and Egress rule resources will be added in the current stack instead of the
+ * other one.
+ */
+function securityGroupsInThisStack(scope: Construct, groups: ec2.ISecurityGroup[]): ec2.ISecurityGroup[] {
+  const thisStack = Stack.of(scope);
+
+  let i = 1;
+  return groups.map(group => {
+    if (thisStack === Stack.of(group)) { return group; } // Simple case, just return the original one
+
+    return ec2.SecurityGroup.fromSecurityGroupId(scope, `SecurityGroup${i++}`, group.securityGroupId, {
+      allowAllOutbound: group.allowAllOutbound,
+      mutable: true,
+    });
+  });
 }
 
 /**
