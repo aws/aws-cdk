@@ -1,9 +1,7 @@
-import { CustomResource, CustomResourceProvider } from '@aws-cdk/aws-cloudformation';
-import * as lambda from '@aws-cdk/aws-lambda';
-import { Construct, Duration, Stack } from '@aws-cdk/core';
-import * as path from 'path';
+import { CustomResource } from '@aws-cdk/aws-cloudformation';
+import { Construct, Stack } from '@aws-cdk/core';
 import { Cluster } from './cluster';
-import { KubectlLayer } from './kubectl-layer';
+import { KubectlProvider } from './kubectl-provider';
 
 /**
  * Helm Chart options.
@@ -72,18 +70,20 @@ export class HelmChart extends Construct {
   constructor(scope: Construct, id: string, props: HelmChartProps) {
     super(scope, id);
 
-    const stack = Stack.of(this);
-
-    // we maintain a single manifest custom resource handler for each cluster
-    const handler = this.getOrCreateHelmChartHandler(props.cluster);
-    if (!handler) {
+    if (!props.cluster._clusterResource) {
       throw new Error(`Cannot define a Helm chart on a cluster with kubectl disabled`);
     }
 
+    const stack = Stack.of(this);
+
+    const provider = KubectlProvider.getOrCreate(this);
+
     new CustomResource(this, 'Resource', {
-      provider: CustomResourceProvider.lambda(handler),
+      provider: provider.provider,
       resourceType: HelmChart.RESOURCE_TYPE,
       properties: {
+        ClusterName: props.cluster.clusterName,
+        RoleArn: props.cluster._clusterResource.getCreationRoleArn(provider.role),
         Release: props.release || this.node.uniqueId.slice(-63).toLowerCase(), // Helm has a 63 character limit for the name
         Chart: props.chart,
         Version: props.version,
@@ -92,32 +92,5 @@ export class HelmChart extends Construct {
         Repository: props.repository
       }
     });
-  }
-
-  private getOrCreateHelmChartHandler(cluster: Cluster): lambda.IFunction | undefined {
-    if (!cluster.kubectlEnabled) {
-      return undefined;
-    }
-
-    let handler = cluster.node.tryFindChild('HelmChartHandler') as lambda.IFunction;
-    if (!handler) {
-      handler = new lambda.Function(cluster, 'HelmChartHandler', {
-        code: lambda.Code.fromAsset(path.join(__dirname, 'helm-chart')),
-        runtime: lambda.Runtime.PYTHON_3_7,
-        handler: 'index.handler',
-        timeout: Duration.minutes(15),
-        layers: [ KubectlLayer.getOrCreate(this, { version: "2.0.0-beta1" }) ],
-        memorySize: 256,
-        environment: {
-          CLUSTER_NAME: cluster.clusterName,
-        },
-
-        // NOTE: we must use the default IAM role that's mapped to "system:masters"
-        // as the execution role of this custom resource handler. This is the only
-        // way to be able to interact with the cluster after it's been created.
-        role: cluster._defaultMastersRole,
-      });
-    }
-    return handler;
   }
 }
