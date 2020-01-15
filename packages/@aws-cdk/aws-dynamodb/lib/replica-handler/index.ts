@@ -57,15 +57,15 @@ export async function isCompleteHandler(event: any): Promise<any> {
   const replicas = (data.Table && data.Table.Replicas) || [];
   const regionReplica = replicas.find(r => r.RegionName === event.ResourceProperties.Region);
 
-  if (event.RequestType === 'Create') {
-    // Creation is complete when replica is reported as ACTIVE
-    return { IsComplete: !!(regionReplica && regionReplica.ReplicaStatus === 'ACTIVE') };
+  switch (event.RequestType) {
+    case 'Create':
+      // Creation is complete when replica is reported as ACTIVE
+      return { IsComplete: !!(regionReplica && regionReplica.ReplicaStatus === 'ACTIVE') };
+    case 'Delete':
+      // Deletion is complete when replica is gone
+      return { IsComplete: regionReplica === undefined };
+    case 'Update':
+      // We do not expect to receive Update events
+      return { IsComplete: true };
   }
-
-  if (event.RequestType === 'Delete') {
-    // Deletion is complete when replica is gone
-    return { IsComplete: regionReplica === undefined };
-  }
-
-  return { IsComplete: true };
 }
