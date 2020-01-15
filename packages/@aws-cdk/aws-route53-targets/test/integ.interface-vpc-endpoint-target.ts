@@ -1,17 +1,22 @@
-import ec2 = require('@aws-cdk/aws-ec2');
-import route53 = require('@aws-cdk/aws-route53');
-import cdk = require('@aws-cdk/core');
-import targets = require('../lib');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as route53 from '@aws-cdk/aws-route53';
+import * as cdk from '@aws-cdk/core';
+import * as targets from '../lib';
 
 const app = new cdk.App();
 
-const stack = new cdk.Stack(app, 'aws-cdk-interface-vpc-endpoint');
+const stack = new cdk.Stack(app, 'aws-cdk-interface-vpc-endpoint', {
+  env: {
+    region: 'us-west-2'
+  }
+});
+
 const vpc = new ec2.Vpc(stack, 'VPC');
 
 const interfaceVpcEndpoint = new ec2.InterfaceVpcEndpoint(stack, 'InterfaceEndpoint', {
   vpc,
   service: {
-    name: 'com.amazonaws.vpce.us-west-2.vpce-svc-01234567890987654',
+    name: 'com.amazonaws.us-west-2.sms',
     port: 80
   },
   privateDnsEnabled: false,

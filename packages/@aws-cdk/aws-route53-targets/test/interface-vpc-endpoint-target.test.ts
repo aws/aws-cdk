@@ -1,8 +1,8 @@
 import '@aws-cdk/assert/jest';
-import ec2 = require('@aws-cdk/aws-ec2');
-import route53 = require('@aws-cdk/aws-route53');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as route53 from '@aws-cdk/aws-route53';
 import { Stack } from '@aws-cdk/core';
-import targets = require('../lib');
+import * as targets from '../lib';
 
 test('use InterfaceVpcEndpoint as record target', () => {
   // GIVEN
@@ -12,7 +12,7 @@ test('use InterfaceVpcEndpoint as record target', () => {
   const interfaceVpcEndpoint = new ec2.InterfaceVpcEndpoint(stack, 'InterfaceEndpoint', {
     vpc,
     service: {
-      name: 'com.amazonaws.vpce.us-west-2.vpce-svc-0123456789',
+      name: 'com.amazonaws.us-west-2.workspaces',
       port: 80
     }
   });

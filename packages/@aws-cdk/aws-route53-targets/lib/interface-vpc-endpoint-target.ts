@@ -1,6 +1,6 @@
-import ec2 = require('@aws-cdk/aws-ec2');
-import route53 = require('@aws-cdk/aws-route53');
-import cdk = require('@aws-cdk/core');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as route53 from '@aws-cdk/aws-route53';
+import * as cdk from '@aws-cdk/core';
 
 /**
  * Set an InterfaceVpcEndpoint as a target for an ARecord

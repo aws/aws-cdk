@@ -78,7 +78,6 @@
   "devDependencies": {
     "@aws-cdk/assert": "1.19.0",
     "@aws-cdk/aws-certificatemanager": "1.19.0",
-    "@aws-cdk/aws-ec2": "1.19.0",
     "@aws-cdk/aws-lambda": "1.19.0",
     "cdk-build-tools": "1.19.0",
     "cdk-integ-tools": "1.19.0",
@@ -89,6 +88,7 @@
   "dependencies": {
     "@aws-cdk/aws-apigateway": "1.19.0",
     "@aws-cdk/aws-cloudfront": "1.19.0",
+    "@aws-cdk/aws-ec2": "1.19.0",
     "@aws-cdk/aws-elasticloadbalancing": "1.19.0",
     "@aws-cdk/aws-elasticloadbalancingv2": "1.19.0",
     "@aws-cdk/aws-iam": "1.19.0",
@@ -107,7 +107,8 @@
     "@aws-cdk/aws-route53": "1.19.0",
     "@aws-cdk/aws-s3": "1.19.0",
     "@aws-cdk/core": "1.19.0",
-    "@aws-cdk/region-info": "1.19.0"
+    "@aws-cdk/region-info": "1.19.0",
+    "@aws-cdk/aws-ec2": "1.19.0"
   },
   "engines": {
     "node": ">= 10.3.0"

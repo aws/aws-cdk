@@ -83,7 +83,13 @@
     "VPCPublicSubnet1EIP6AD938E8": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
-        "Domain": "vpc"
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-interface-vpc-endpoint/VPC/PublicSubnet1"
+          }
+        ]
       }
     },
     "VPCPublicSubnet1NATGatewayE0556630": {
@@ -174,7 +180,13 @@
     "VPCPublicSubnet2EIP4947BC00": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
-        "Domain": "vpc"
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-interface-vpc-endpoint/VPC/PublicSubnet2"
+          }
+        ]
       }
     },
     "VPCPublicSubnet2NATGateway3C070193": {
@@ -265,7 +277,13 @@
     "VPCPublicSubnet3EIPAD4BC883": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
-        "Domain": "vpc"
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-interface-vpc-endpoint/VPC/PublicSubnet3"
+          }
+        ]
       }
     },
     "VPCPublicSubnet3NATGatewayD3048F5C": {
@@ -507,6 +525,34 @@
             "IpProtocol": "-1"
           }
         ],
+        "SecurityGroupIngress": [
+          {
+            "CidrIp": {
+              "Fn::GetAtt": [
+                "VPCB9E5F0B4",
+                "CidrBlock"
+              ]
+            },
+            "Description": {
+              "Fn::Join": [
+                "",
+                [
+                  "from ",
+                  {
+                    "Fn::GetAtt": [
+                      "VPCB9E5F0B4",
+                      "CidrBlock"
+                    ]
+                  },
+                  ":80"
+                ]
+              ]
+            },
+            "FromPort": 80,
+            "IpProtocol": "tcp",
+            "ToPort": 80
+          }
+        ],
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
         }
@@ -515,7 +561,7 @@
     "InterfaceEndpoint12DE6E71": {
       "Type": "AWS::EC2::VPCEndpoint",
       "Properties": {
-        "ServiceName": "com.amazonaws.vpce.us-west-2.vpce-svc-01234567890987654",
+        "ServiceName": "com.amazonaws.us-west-2.sms",
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
         },
@@ -551,9 +597,7 @@
             "VPCId": {
               "Ref": "VPCB9E5F0B4"
             },
-            "VPCRegion": {
-              "Ref": "AWS::Region"
-            }
+            "VPCRegion": "us-west-2"
           }
         ]
       }
