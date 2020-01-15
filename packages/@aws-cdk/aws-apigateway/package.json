@@ -47,10 +47,7 @@
     "compat": "cdk-compat"
   },
   "cdk-build": {
-    "cloudformation": [
-      "AWS::ApiGateway",
-      "AWS::ApiGatewayV2"
-    ]
+    "cloudformation": "AWS::ApiGateway"
   },
   "keywords": [
     "aws",

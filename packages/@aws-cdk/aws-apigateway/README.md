@@ -582,6 +582,13 @@ OPTIONS added to them.
 See [#906](https://github.com/aws/aws-cdk/issues/906) for a list of CORS
 features which are not yet supported.
 
+## APIGateway v2
+
+APIGateway v2 APIs are now moved to its own package named `aws-apigatewayv2`. For backwards compatibility, existing
+APIGateway v2 APIs continue to live in this package, but have been marked deprecated. 
+
+Move to using `aws-apigatewayv2` to get the latest APIs and updates.
+
 ----
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
