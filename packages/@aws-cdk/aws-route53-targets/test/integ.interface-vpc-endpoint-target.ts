@@ -1,5 +1,5 @@
 import ec2 = require('@aws-cdk/aws-ec2');
-import r53 = require('@aws-cdk/aws-route53');
+import route53 = require('@aws-cdk/aws-route53');
 import cdk = require('@aws-cdk/core');
 import targets = require('../lib');
 
@@ -19,15 +19,15 @@ const interfaceVpcEndpoint = new ec2.InterfaceVpcEndpoint(stack, 'InterfaceEndpo
       subnetType: ec2.SubnetType.PRIVATE
   }
 });
-const zone = new r53.PrivateHostedZone(stack, 'PrivateZone', {
+const zone = new route53.PrivateHostedZone(stack, 'PrivateZone', {
   vpc,
   zoneName: 'test.aws.cdk.com'
 });
 
-new r53.ARecord(stack, "AliasEndpointRecord", {
+new route53.ARecord(stack, "AliasEndpointRecord", {
   zone,
   recordName: 'foo',
-  target: r53.RecordTarget.fromAlias(new targets.InterfaceVpcEndpointTarget(interfaceVpcEndpoint))
+  target: route53.RecordTarget.fromAlias(new targets.InterfaceVpcEndpointTarget(interfaceVpcEndpoint))
 });
 
 app.synth();
