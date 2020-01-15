@@ -120,6 +120,7 @@
       "docs-public-apis:@aws-cdk/aws-codepipeline.ActionArtifactBounds.maxOutputs",
       "docs-public-apis:@aws-cdk/aws-codepipeline.ActionArtifactBounds.minInputs",
       "docs-public-apis:@aws-cdk/aws-codepipeline.ActionArtifactBounds.minOutputs",
+      "public-static-props-all-caps:@aws-cdk/aws-codepipeline.GlobalVariables.executionId",
       "docs-public-apis:@aws-cdk/aws-codepipeline.ActionBindOptions",
       "docs-public-apis:@aws-cdk/aws-codepipeline.ActionBindOptions.bucket",
       "docs-public-apis:@aws-cdk/aws-codepipeline.ActionBindOptions.role",

@@ -30,6 +30,29 @@ export enum CodeCommitTrigger {
 }
 
 /**
+ * The CodePipeline variables emitted by the CodeCommit source Action.
+ */
+export interface CodeCommitSourceVariables {
+  /** The name of the repository this action points to. */
+  readonly repositoryName: string;
+
+  /** The name of the branch this action tracks. */
+  readonly branchName: string;
+
+  /** The date the currently last commit on the tracked branch was authored, in ISO-8601 format. */
+  readonly authorDate: string;
+
+  /** The date the currently last commit on the tracked branch was committed, in ISO-8601 format. */
+  readonly committerDate: string;
+
+  /** The SHA1 hash of the currently last commit on the tracked branch. */
+  readonly commitId: string;
+
+  /** The message of the currently last commit on the tracked branch. */
+  readonly commitMessage: string;
+}
+
+/**
  * Construction properties of the {@link CodeCommitSourceAction CodeCommit source CodePipeline Action}.
  */
 export interface CodeCommitSourceActionProps extends codepipeline.CommonAwsActionProps {
@@ -77,6 +100,18 @@ export class CodeCommitSourceAction extends Action {
 
     this.branch = branch;
     this.props = props;
+  }
+
+  /** The variables emitted by this action. */
+  public get variables(): CodeCommitSourceVariables {
+    return {
+      repositoryName: this.variableExpression('RepositoryName'),
+      branchName: this.variableExpression('BranchName'),
+      authorDate: this.variableExpression('AuthorDate'),
+      committerDate: this.variableExpression('CommitterDate'),
+      commitId: this.variableExpression('CommitId'),
+      commitMessage: this.variableExpression('CommitMessage'),
+    };
   }
 
   protected bound(_scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):

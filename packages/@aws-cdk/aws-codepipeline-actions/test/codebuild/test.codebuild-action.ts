@@ -3,6 +3,7 @@ import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codecommit from '@aws-cdk/aws-codecommit';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as s3 from '@aws-cdk/aws-s3';
+import * as sns from '@aws-cdk/aws-sns';
 import { App, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as cpactions from '../../lib';
@@ -113,6 +114,85 @@ export = {
                 "Name": "CodeBuild",
                 "Configuration": {
                   "ProjectName": "codeBuildProjectNameInAnotherAccount",
+                },
+              },
+            ],
+          },
+        ],
+      }));
+
+      test.done();
+    },
+
+    'exposes variables for other actions to consume'(test: Test) {
+      const stack = new Stack();
+
+      const sourceOutput = new codepipeline.Artifact();
+      const codeBuildAction = new cpactions.CodeBuildAction({
+        actionName: 'CodeBuild',
+        input: sourceOutput,
+        project: new codebuild.PipelineProject(stack, 'CodeBuild', {
+          buildSpec: codebuild.BuildSpec.fromObject({
+            version: '0.2',
+            env: {
+              'exported-variables': [
+                'SomeVar',
+              ],
+            },
+            phases: {
+              build: {
+                commands: [
+                  'export SomeVar="Some Value"',
+                ],
+              },
+            },
+          }),
+        }),
+      });
+      new codepipeline.Pipeline(stack, 'Pipeline', {
+        stages: [
+          {
+            stageName: 'Source',
+            actions: [
+              new cpactions.S3SourceAction({
+                actionName: 'S3_Source',
+                bucket: s3.Bucket.fromBucketName(stack, 'Bucket', 'bucket'),
+                bucketKey: 'key',
+                output: sourceOutput,
+              }),
+            ],
+          },
+          {
+            stageName: 'Build',
+            actions: [
+              codeBuildAction,
+              new cpactions.ManualApprovalAction({
+                actionName: 'Approve',
+                additionalInformation: codeBuildAction.variable('SomeVar'),
+                notificationTopic: sns.Topic.fromTopicArn(stack, 'Topic', 'arn:aws:sns:us-east-1:123456789012:mytopic'),
+                runOrder: 2,
+              }),
+            ],
+          },
+        ],
+      });
+
+      expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+        "Stages": [
+          {
+            "Name": "Source",
+          },
+          {
+            "Name": "Build",
+            "Actions": [
+              {
+                "Name": "CodeBuild",
+                "Namespace": "Build_CodeBuild_NS",
+              },
+              {
+                "Name": "Approve",
+                "Configuration": {
+                  "CustomData": "#{Build_CodeBuild_NS.SomeVar}",
                 },
               },
             ],
