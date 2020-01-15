@@ -301,4 +301,34 @@ export = {
 
     test.done();
   },
+
+  'can use an ImmutableRole for a Project within a VPC'(test: Test) {
+    const stack = new cdk.Stack();
+
+    const role = new iam.Role(stack, 'Role', {
+      assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com')
+    });
+
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    new codebuild.Project(stack, 'Project', {
+      source: codebuild.Source.gitHubEnterprise({
+        httpsCloneUrl: 'https://mygithub-enterprise.com/myuser/myrepo',
+      }),
+      role: role.withoutPolicyUpdates(),
+      vpc,
+    });
+
+    expect(stack).to(countResources('AWS::IAM::Policy', 0));
+
+    // Check that the CodeBuild project does not have a DependsOn
+    expect(stack).to(haveResource('AWS::CodeBuild::Project', (res: any) => {
+      if (res.DependsOn && res.DependsOn.length > 0) {
+        throw new Error(`CodeBuild project should have no DependsOn, but got: ${JSON.stringify(res, undefined, 2)}`);
+      }
+      return true;
+    }, ResourcePart.CompleteDefinition));
+
+    test.done();
+  },
 };
