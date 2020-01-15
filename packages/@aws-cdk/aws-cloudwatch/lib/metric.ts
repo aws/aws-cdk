@@ -674,9 +674,8 @@ function changeAllPeriods(metrics: Record<string, IMetric>, period: cdk.Duration
 /**
  * Return a new metric object which is the same type as the input object, but with the period changed
  *
- * Uses JavaScript prototyping hackery to achieve this. Relies on the fact that
- * both implementations of IMetric have a `period` member that contains that particular
- * value.
+ * Relies on the fact that implementations of `IMetric` are also supposed to have
+ * an implementation of `with` that accepts an argument called `period`. See `IModifiableMetric`.
  */
 function changePeriod(metric: IMetric, period: cdk.Duration): IMetric {
   if (isModifiableMetric(metric)) {
