@@ -1,7 +1,9 @@
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
+import { CustomResource } from '@aws-cdk/aws-cloudformation';
 import * as iam from '@aws-cdk/aws-iam';
 import { Aws, Construct, IResource, Lazy, RemovalPolicy, Resource, Stack } from '@aws-cdk/core';
 import { CfnTable } from './dynamodb.generated';
+import { ReplicaProvider } from './replica-provider';
 import { EnableScalingProps, IScalableTableAttribute } from './scalable-attribute-api';
 import { ScalableTableAttribute } from './scalable-table-attribute';
 
@@ -105,7 +107,7 @@ export interface TableOptions {
    * When an item in the table is modified, StreamViewType determines what information
    * is written to the stream for this table.
    *
-   * @default - streams are disabled
+   * @default - streams are disabled unless `replicaRegions` is specified
    */
   readonly stream?: StreamViewType;
 
@@ -115,6 +117,13 @@ export interface TableOptions {
    * @default RemovalPolicy.RETAIN
    */
   readonly removalPolicy?: RemovalPolicy;
+
+  /**
+   * Regions where replica tables will be created
+   *
+   * @default - no replica tables are created
+   */
+  readonly replicaRegions?: string[];
 }
 
 export interface TableProps extends TableOptions {
@@ -478,6 +487,22 @@ export class Table extends TableBase {
     this.billingMode = props.billingMode || BillingMode.PROVISIONED;
     this.validateProvisioning(props);
 
+    let streamSpecification: CfnTable.StreamSpecificationProperty | undefined;
+    if (props.replicaRegions) {
+      if (props.stream && props.stream !== StreamViewType.NEW_AND_OLD_IMAGES) {
+        throw new Error('`stream` must be set to `NEW_AND_OLD_IMAGES` when specifying `replicaRegions`');
+      }
+      streamSpecification = { streamViewType: StreamViewType.NEW_AND_OLD_IMAGES };
+
+      if (props.billingMode !== BillingMode.PAY_PER_REQUEST) {
+        throw new Error('The `PAY_PER_REQUEST` billing mode must be used when specifying `replicaRegions`');
+      }
+    } else if (props.stream) {
+        streamSpecification = { streamViewType : props.stream };
+    } else {
+      streamSpecification = undefined;
+    }
+
     this.table = new CfnTable(this, 'Resource', {
       tableName: this.physicalName,
       keySchema: this.keySchema,
@@ -491,7 +516,7 @@ export class Table extends TableBase {
         writeCapacityUnits: props.writeCapacity || 5
       },
       sseSpecification: props.serverSideEncryption ? { sseEnabled: props.serverSideEncryption } : undefined,
-      streamSpecification: props.stream ? { streamViewType: props.stream } : undefined,
+      streamSpecification,
       timeToLiveSpecification: props.timeToLiveAttribute ? { attributeName: props.timeToLiveAttribute, enabled: true } : undefined
     });
     this.table.applyRemovalPolicy(props.removalPolicy);
@@ -505,7 +530,7 @@ export class Table extends TableBase {
     });
     this.tableName = this.getResourceNameAttribute(this.table.ref);
 
-    this.tableStreamArn = props.stream ? this.table.attrStreamArn : undefined;
+    this.tableStreamArn = streamSpecification ? this.table.attrStreamArn : undefined;
 
     this.scalingRole = this.makeScalingRole();
 
@@ -515,6 +540,50 @@ export class Table extends TableBase {
     if (props.sortKey) {
       this.addKey(props.sortKey, RANGE_KEY_TYPE);
       this.tableSortKey = props.sortKey;
+    }
+
+    if (props.replicaRegions) {
+      const provider = ReplicaProvider.getOrCreate(this);
+
+      // Documentation at https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/V2gt_IAM.html
+      // is currently incorrect. AWS Support recommends `dynamodb:*` in both source and destination regions
+
+      // Permissions in the source region
+      this.grant(provider.onEventHandler, 'dynamodb:*');
+      this.grant(provider.isCompleteHandler, 'dynamodb:DescribeTable');
+
+      // Permissions in the destination regions
+      provider.onEventHandler.addToRolePolicy(new iam.PolicyStatement({
+        actions: ['dynamodb:*'],
+        resources: props.replicaRegions.map(region => Stack.of(this).formatArn({
+          region,
+          service: 'dynamodb',
+          resource: 'table',
+          resourceName: this.tableName
+        }))
+      }));
+
+      let previousRegion;
+      for (const region of props.replicaRegions) {
+        // Use multiple custom resource because multiple create/delete
+        // updates cannot be combined in a single API call.
+        const currentRegion = new CustomResource(this, `Replica${region}`, {
+          provider: provider.provider,
+          resourceType: 'Custom::DynamoDBReplica',
+          properties: {
+            TableName: this.tableName,
+            Region: region,
+          }
+        });
+
+        // We need to create/delete regions sequentially because we cannot
+        // have multiple table updates at the same time. The `isCompleteHandler`
+        // of the provider waits until the replica is an ACTIVE state.
+        if (previousRegion) {
+          currentRegion.node.addDependency(previousRegion);
+        }
+        previousRegion = currentRegion;
+      }
     }
   }
 

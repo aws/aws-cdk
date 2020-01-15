@@ -2,6 +2,7 @@
   "name": "@aws-cdk/aws-dynamodb-global",
   "version": "1.20.0",
   "description": "Build a global dynamodb table",
+  "deprecated": "This module has been deprecated. Use @aws-cdk/aws-dynamodb.Table with replicaRegions instead",
   "license": "Apache-2.0",
   "homepage": "https://github.com/aws/aws-cdk",
   "repository": {
@@ -86,5 +87,5 @@
   },
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
-  "stability": "experimental"
+  "stability": "deprecated"
 }

@@ -1452,6 +1452,76 @@ export = {
       test.done();
     },
   },
+
+  'global': {
+    'create replicas'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      new Table(stack, 'Table', {
+        partitionKey: {
+          name: 'id',
+          type: AttributeType.STRING
+        },
+        billingMode: BillingMode.PAY_PER_REQUEST,
+        replicaRegions: [
+          'eu-west-2',
+          'eu-central-1'
+        ],
+      });
+
+      // THEN
+      expect(stack).to(haveResource('Custom::DynamoDBReplica', {
+        Region: 'eu-west-2'
+      }));
+      expect(stack).to(haveResource('Custom::DynamoDBReplica', {
+        Region: 'eu-central-1'
+      }));
+
+      test.done();
+    },
+
+    'throws with PROVISIONED billing mode'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+
+      // THEN
+      test.throws(() => new Table(stack, 'Table', {
+        partitionKey: {
+          name: 'id',
+          type: AttributeType.STRING
+        },
+        replicaRegions: [
+          'eu-west-2',
+          'eu-central-1'
+        ],
+      }), /`PAY_PER_REQUEST`/);
+
+      test.done();
+    },
+
+    'throws when stream is set and not set to NEW_AND_OLD_IMAGES'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+
+      // THEN
+      test.throws(() => new Table(stack, 'Table', {
+        partitionKey: {
+          name: 'id',
+          type: AttributeType.STRING
+        },
+        billingMode: BillingMode.PAY_PER_REQUEST,
+        replicaRegions: [
+          'eu-west-2',
+          'eu-central-1'
+        ],
+        stream: StreamViewType.OLD_IMAGE,
+      }), /`NEW_AND_OLD_IMAGES`/);
+
+      test.done();
+    }
+  }
 };
 
 function testGrant(test: Test, expectedActions: string[], invocation: (user: iam.IPrincipal, table: Table) => void) {
