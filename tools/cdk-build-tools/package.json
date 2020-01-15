@@ -32,13 +32,13 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/fs-extra": "^8.0.1",
-    "@types/jest": "^24.0.25",
+    "@types/jest": "^24.9.0",
     "@types/yargs": "^15.0.0",
     "pkglint": "1.20.0"
   },
   "dependencies": {
-    "@typescript-eslint/eslint-plugin": "^2.15.0",
-    "@typescript-eslint/parser": "^2.15.0",
+    "@typescript-eslint/eslint-plugin": "^2.16.0",
+    "@typescript-eslint/parser": "^2.16.0",
     "awslint": "1.20.0",
     "colors": "^1.4.0",
     "eslint": "^6.8.0",
@@ -51,7 +51,7 @@
     "jsii-pacmak": "^0.21.1",
     "nodeunit": "^0.11.3",
     "nyc": "^15.0.0",
-    "ts-jest": "^24.2.0",
+    "ts-jest": "^24.3.0",
     "tslint": "^5.20.1",
     "typescript": "~3.7.4",
     "yargs": "^15.1.0"
