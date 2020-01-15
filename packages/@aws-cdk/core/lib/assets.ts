@@ -72,6 +72,7 @@ export interface DockerImageAssetSource {
    * registry and the tag parts.
    *
    * @default - automatically derived from the asset's ID.
+   * @deprecated repository name should be specified at the environment-level and not at the image level
    */
   readonly repositoryName?: string;
 }
