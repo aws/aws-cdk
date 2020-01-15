@@ -38,6 +38,9 @@ export interface RestApiProps extends ResourceOptions {
    * deployment. To customize the stage options, use the `deployStageOptions`
    * property.
    *
+   * If this is unset, you must assign a `Stage` object that contains the
+   * latest deployment to the `RestApi`'s `deploymentStage`.
+   *
    * A CloudFormation Output will also be defined with the root URL endpoint
    * of this REST API.
    *
