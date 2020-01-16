@@ -484,7 +484,7 @@ CNAME records only for subdomains.)
 ```ts
 new route53.ARecord(this, 'CustomDomainAliasRecord', {
   zone: hostedZoneForExampleCom,
-  target: route53.AddressRecordTarget.fromAlias(new route53_targets.ApiGateway(api))
+  target: route53.RecordTarget.fromAlias(new route53_targets.ApiGateway(api))
 });
 ```
 
@@ -527,7 +527,7 @@ If you wish to setup this domain with an Amazon Route53 alias, use the `route53_
 ```ts
 new route53.ARecord(this, 'CustomDomainAliasRecord', {
   zone: hostedZoneForExampleCom,
-  target: route53.AddressRecordTarget.fromAlias(new route53_targets.ApiGatewayDomain(domainName))
+  target: route53.RecordTarget.fromAlias(new route53_targets.ApiGatewayDomain(domainName))
 });
 ```
 
@@ -581,6 +581,15 @@ OPTIONS added to them.
 
 See [#906](https://github.com/aws/aws-cdk/issues/906) for a list of CORS
 features which are not yet supported.
+
+## APIGateway v2
+
+APIGateway v2 APIs are now moved to its own package named `aws-apigatewayv2`. For backwards compatibility, existing
+APIGateway v2 "CFN resources" (such as `CfnApi`) that were previously exported as part of this package, are still
+exported from here and have been marked deprecated. However, updates to these CloudFormation resources, such as new
+properties and new resource types will not be available.
+
+Move to using `aws-apigatewayv2` to get the latest APIs and updates.
 
 ----
 
