@@ -27,7 +27,6 @@ export interface DeployStackOptions {
   notificationArns?: string[];
   deployName?: string;
   quiet?: boolean;
-  ci?: boolean;
   toolkitStackName?: string;
   reuseAssets?: string[];
   tags?: Tag[];
@@ -73,7 +72,6 @@ export class CloudFormationDeploymentTarget implements IDeploymentTarget {
       notificationArns: options.notificationArns,
       quiet: options.quiet,
       sdk: this.aws,
-      ci: options.ci,
       reuseAssets: options.reuseAssets,
       toolkitInfo,
       tags: options.tags,

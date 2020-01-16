@@ -29,16 +29,3 @@ export class FileAssetParameters extends Construct {
     });
   }
 }
-
-export class DockerImageAssetParameters extends Construct {
-  public readonly imageNameParameter: CfnParameter;
-
-  constructor(scope: Construct, id: string) {
-    super(scope, id);
-
-    this.imageNameParameter = new CfnParameter(this, 'ImageName', {
-      type: 'String',
-      description: `ECR repository name and tag for asset "${id}"`,
-    });
-  }
-}
