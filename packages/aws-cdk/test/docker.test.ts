@@ -370,7 +370,7 @@ test('"imageTag" is used instead of "latest"', async () => {
   }
 
   // THEN
-  const command = ['docker', 'build', '--build-arg', 'a=b', '--build-arg', 'c=d', '--tag', 'uri:image-tag', '/foo', '--target', 'a-target', '--file', 'some-file'];
+  const command = ['docker', 'build', '--build-arg', 'a=b', '--build-arg', 'c=d', '--tag', 'uri:image-tag', '/foo', '--target', 'a-target', '--file', '/foo/some-file'];
   sinon.assert.calledWith(shellStub, command);
 
   prepareEcrRepositoryStub.restore();
