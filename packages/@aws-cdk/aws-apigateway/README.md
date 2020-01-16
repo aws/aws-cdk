@@ -585,7 +585,9 @@ features which are not yet supported.
 ## APIGateway v2
 
 APIGateway v2 APIs are now moved to its own package named `aws-apigatewayv2`. For backwards compatibility, existing
-APIGateway v2 APIs continue to live in this package, but have been marked deprecated. 
+APIGateway v2 "CFN resources" (such as `CfnApi`) that were previously exported as part of this package, are still
+exported from here and have been marked deprecated. However, updates to these CloudFormation resources, such as new
+properties and new resource types will not be available.
 
 Move to using `aws-apigatewayv2` to get the latest APIs and updates.
 
