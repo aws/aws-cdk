@@ -89,6 +89,14 @@
   "engines": {
     "node": ">= 10.3.0"
   },
+  "nyc": {
+    "exclude": [
+      "coverage/**",
+      "test/**",
+      "lib/*.generated.js",
+      "lib/apigatewayv2.js"
+    ]
+  },
   "awslint": {
     "exclude": [
       "from-method:@aws-cdk/aws-apigateway.Resource",
