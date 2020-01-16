@@ -34,6 +34,7 @@
     "@aws-cdk/aws-amazonmq": "1.21.0",
     "@aws-cdk/aws-amplify": "1.21.0",
     "@aws-cdk/aws-apigateway": "1.21.0",
+    "@aws-cdk/aws-apigatewayv2": "1.21.0",
     "@aws-cdk/aws-applicationautoscaling": "1.21.0",
     "@aws-cdk/aws-appmesh": "1.21.0",
     "@aws-cdk/aws-appstream": "1.21.0",
