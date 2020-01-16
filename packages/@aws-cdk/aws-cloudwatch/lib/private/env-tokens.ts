@@ -26,7 +26,9 @@ class StackDependentToken implements cdk.IResolvable {
   public resolve(context: cdk.IResolveContext) {
     const stackValue = this.fn(cdk.Stack.of(context.scope));
 
-    if (cdk.Token.isUnresolved(stackValue) || stackValue === this.originalValue) {
+    // Don't render if the values are definitely the same. If the stack
+    // is unresolved we don't know, better output the value.
+    if (!cdk.Token.isUnresolved(stackValue) && stackValue === this.originalValue) {
       return undefined;
     }
 

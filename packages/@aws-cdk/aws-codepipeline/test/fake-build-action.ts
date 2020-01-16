@@ -17,10 +17,13 @@ export interface FakeBuildActionProps extends codepipeline.CommonActionProps {
   account?: string;
 
   region?: string;
+
+  customConfigKey?: string;
 }
 
 export class FakeBuildAction implements codepipeline.IAction {
   public readonly actionProperties: codepipeline.ActionProperties;
+  private readonly customConfigKey: string | undefined;
 
   constructor(props: FakeBuildActionProps) {
     this.actionProperties = {
@@ -31,11 +34,16 @@ export class FakeBuildAction implements codepipeline.IAction {
       inputs: [props.input, ...props.extraInputs || []],
       outputs: props.output ? [props.output] : undefined,
     };
+    this.customConfigKey = props.customConfigKey;
   }
 
   public bind(_scope: Construct, _stage: codepipeline.IStage, _options: codepipeline.ActionBindOptions):
       codepipeline.ActionConfig {
-    return {};
+    return {
+      configuration: {
+        CustomConfigKey: this.customConfigKey,
+      },
+    };
   }
 
   public onStateChange(_name: string, _target?: events.IRuleTarget, _options?: events.RuleProps): events.Rule {

@@ -3,7 +3,7 @@ import { IVpc } from '@aws-cdk/aws-ec2';
 import { AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerImage, ICluster, LogDriver, PropagatedTagSource, Secret } from '@aws-cdk/aws-ecs';
 import { ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationTargetGroup, ListenerCertificate } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { IRole } from '@aws-cdk/aws-iam';
-import { AddressRecordTarget, ARecord, IHostedZone } from '@aws-cdk/aws-route53';
+import { ARecord, IHostedZone, RecordTarget } from '@aws-cdk/aws-route53';
 import { LoadBalancerTarget } from '@aws-cdk/aws-route53-targets';
 import * as cdk from '@aws-cdk/core';
 
@@ -342,7 +342,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
       const record = new ARecord(this, "DNS", {
         zone: props.domainZone,
         recordName: props.domainName,
-        target: AddressRecordTarget.fromAlias(new LoadBalancerTarget(this.loadBalancer)),
+        target: RecordTarget.fromAlias(new LoadBalancerTarget(this.loadBalancer)),
       });
 
       domainName = record.domainName;

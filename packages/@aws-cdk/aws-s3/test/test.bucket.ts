@@ -1723,5 +1723,82 @@ export = {
     // THEN
     new s3.Bucket(stack, 'b', { encryptionKey: key });
     test.done();
-  }
+  },
+
+  'Bucket with Server Access Logs'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const accessLogBucket = new s3.Bucket(stack, 'AccessLogs');
+    new s3.Bucket(stack, 'MyBucket', {
+      serverAccessLogsBucket: accessLogBucket,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::S3::Bucket', {
+      LoggingConfiguration: {
+        DestinationBucketName: {
+          Ref: 'AccessLogs8B620ECA',
+        },
+      }
+    }));
+
+    test.done();
+  },
+
+  'Bucket with Server Access Logs with Prefix'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const accessLogBucket = new s3.Bucket(stack, 'AccessLogs');
+    new s3.Bucket(stack, 'MyBucket', {
+      serverAccessLogsBucket: accessLogBucket,
+      serverAccessLogsPrefix: 'hello',
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::S3::Bucket', {
+      LoggingConfiguration: {
+        DestinationBucketName: {
+          Ref: 'AccessLogs8B620ECA',
+        },
+        LogFilePrefix: 'hello'
+      }
+    }));
+
+    test.done();
+  },
+
+ 'Access log prefix given without bucket'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // THEN
+    test.throws(() => new s3.Bucket(stack, 'MyBucket', {
+      serverAccessLogsPrefix: 'hello'
+    }), /"serverAccessLogsBucket" is required if "serverAccessLogsPrefix" is set/);
+
+    test.done();
+ },
+
+ 'Bucket Allow Log delivery changes bucket Access Control should fail'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const accessLogBucket = new s3.Bucket(stack, 'AccessLogs', {
+      accessControl: s3.BucketAccessControl.AUTHENTICATED_READ,
+    });
+    test.throws(() =>
+      new s3.Bucket(stack, 'MyBucket', {
+        serverAccessLogsBucket: accessLogBucket,
+        serverAccessLogsPrefix: 'hello',
+        accessControl: s3.BucketAccessControl.AUTHENTICATED_READ,
+      })
+      , /Cannot enable log delivery to this bucket because the bucket's ACL has been set and can't be changed/);
+
+    test.done();
+ },
 };

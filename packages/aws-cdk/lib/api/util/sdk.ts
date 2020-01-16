@@ -195,9 +195,9 @@ export class SDK implements ISDK {
     return environment;
   }
 
-  private async configureSDKHttpOptions(options: SDKOptions) {
+  private configureSDKHttpOptions(options: SDKOptions) {
     const config: {[k: string]: any} = {};
-    const httpOptions: {[k: string]: any} = {};
+    config.httpOptions = {};
 
     let userAgent = options.userAgent;
     if (userAgent == null) {
@@ -207,19 +207,30 @@ export class SDK implements ISDK {
     }
     config.customUserAgent = userAgent;
 
-    // https://aws.amazon.com/blogs/developer/using-the-aws-sdk-for-javascript-from-behind-a-proxy/
-    options.proxyAddress = options.proxyAddress || httpsProxyFromEnvironment();
-    options.caBundlePath = options.caBundlePath || caBundlePathFromEnvironment();
+    const proxyAddress = options.proxyAddress || httpsProxyFromEnvironment();
+    const caBundlePath = options.caBundlePath || caBundlePathFromEnvironment();
 
-    if (options.proxyAddress) { // Ignore empty string on purpose
-      debug('Using proxy server: %s', options.proxyAddress);
-      httpOptions.proxy = options.proxyAddress;
+    if (proxyAddress && caBundlePath) {
+      throw new Error(`At the moment, cannot specify Proxy (${proxyAddress}) and CA Bundle (${caBundlePath}) at the same time. See https://github.com/aws/aws-cdk/issues/5804`);
+      // Maybe it's possible after all, but I've been staring at
+      // https://github.com/TooTallNate/node-proxy-agent/blob/master/index.js#L79
+      // a while now trying to figure out what to pass in so that the underlying Agent
+      // object will get the 'ca' argument. It's not trivial and I don't want to risk it.
     }
-    if (options.caBundlePath) {
-      debug('Using ca bundle path: %s', options.caBundlePath);
-      httpOptions.agent = new https.Agent({ca: await readIfPossible(options.caBundlePath)});
+
+    if (proxyAddress) { // Ignore empty string on purpose
+      // https://aws.amazon.com/blogs/developer/using-the-aws-sdk-for-javascript-from-behind-a-proxy/
+      debug('Using proxy server: %s', proxyAddress);
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const ProxyAgent: any = require('proxy-agent');
+      config.httpOptions.agent = new ProxyAgent(proxyAddress);
     }
-    config.httpOptions = httpOptions;
+    if (caBundlePath) {
+      debug('Using CA bundle path: %s', caBundlePath);
+      config.httpOptions.agent = new https.Agent({
+        ca: readIfPossible(caBundlePath)
+      });
+    }
 
     AWS.config.update(config);
   }
@@ -512,7 +523,7 @@ async function hasEc2Credentials() {
       ['/sys/devices/virtual/dmi/id/sys_vendor', /ec2/i],
     ];
     for (const [file, re] of files) {
-      if (matchesRegex(re, await readIfPossible(file))) {
+      if (matchesRegex(re, readIfPossible(file))) {
         instance = true;
         break;
       }
@@ -532,10 +543,15 @@ async function setConfigVariable() {
   }
 }
 
-async function readIfPossible(filename: string): Promise<string | undefined> {
+/**
+ * Read a file if it exists, or return undefined
+ *
+ * Not async because it is used in the constructor
+ */
+function readIfPossible(filename: string): string | undefined {
   try {
-    if (!await fs.pathExists(filename)) { return undefined; }
-    return fs.readFile(filename, { encoding: 'utf-8' });
+    if (!fs.pathExistsSync(filename)) { return undefined; }
+    return fs.readFileSync(filename, { encoding: 'utf-8' });
   } catch (e) {
     debug(e);
     return undefined;

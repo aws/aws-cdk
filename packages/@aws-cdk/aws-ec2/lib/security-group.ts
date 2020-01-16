@@ -18,6 +18,11 @@ export interface ISecurityGroup extends IResource, IPeer {
   readonly securityGroupId: string;
 
   /**
+   * Whether the SecurityGroup has been configured to allow all outbound traffic
+   */
+  readonly allowAllOutbound: boolean;
+
+  /**
    * Add an ingress rule for the current security group
    *
    * `remoteRule` controls where the Rule object is created if the peer is also a
@@ -52,6 +57,7 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
   }
 
   public abstract readonly securityGroupId: string;
+  public abstract readonly allowAllOutbound: boolean;
 
   public readonly canInlineRule = false;
   public readonly connections: Connections = new Connections({ securityGroups: [this] });
@@ -294,6 +300,7 @@ export class SecurityGroup extends SecurityGroupBase {
   public static fromSecurityGroupId(scope: Construct, id: string, securityGroupId: string, options: SecurityGroupImportOptions = {}): ISecurityGroup {
     class MutableImport extends SecurityGroupBase {
       public securityGroupId = securityGroupId;
+      public allowAllOutbound = options.allowAllOutbound ?? true;
 
       public addEgressRule(peer: IPeer, connection: Port, description?: string, remoteRule?: boolean) {
         // Only if allowAllOutbound has been disabled
@@ -305,6 +312,7 @@ export class SecurityGroup extends SecurityGroupBase {
 
     class ImmutableImport extends SecurityGroupBase {
       public securityGroupId = securityGroupId;
+      public allowAllOutbound = options.allowAllOutbound ?? true;
 
       public addEgressRule(_peer: IPeer, _connection: Port, _description?: string, _remoteRule?: boolean) {
         // do nothing
@@ -341,11 +349,14 @@ export class SecurityGroup extends SecurityGroupBase {
    */
   public readonly securityGroupVpcId: string;
 
+  /**
+   * Whether the SecurityGroup has been configured to allow all outbound traffic
+   */
+  public readonly allowAllOutbound: boolean;
+
   private readonly securityGroup: CfnSecurityGroup;
   private readonly directIngressRules: CfnSecurityGroup.IngressProperty[] = [];
   private readonly directEgressRules: CfnSecurityGroup.EgressProperty[] = [];
-
-  private readonly allowAllOutbound: boolean;
 
   constructor(scope: Construct, id: string, props: SecurityGroupProps) {
     super(scope, id, {

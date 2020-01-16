@@ -109,6 +109,61 @@ export = {
 
       test.done();
     },
+
+    'exposes variables for other actions to consume'(test: Test) {
+      const stack = new Stack();
+
+      const sourceOutput = new codepipeline.Artifact();
+      const codeCommitSourceAction = new cpactions.CodeCommitSourceAction({
+        actionName: 'Source',
+        repository: new codecommit.Repository(stack, 'MyRepo', {
+          repositoryName: 'my-repo',
+        }),
+        output: sourceOutput,
+      });
+      new codepipeline.Pipeline(stack, 'Pipeline', {
+        stages: [
+          {
+            stageName: 'Source',
+            actions: [codeCommitSourceAction],
+          },
+          {
+            stageName: 'Build',
+            actions: [
+              new cpactions.CodeBuildAction({
+                actionName: 'Build',
+                project: new codebuild.PipelineProject(stack, 'MyProject'),
+                input: sourceOutput,
+                environmentVariables: {
+                  AuthorDate: { value: codeCommitSourceAction.variables.authorDate },
+                },
+              }),
+            ],
+          },
+        ],
+      });
+
+      expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+        "Stages": [
+          {
+            "Name": "Source",
+          },
+          {
+            "Name": "Build",
+            "Actions": [
+              {
+                "Name": "Build",
+                "Configuration": {
+                  "EnvironmentVariables": '[{"name":"AuthorDate","type":"PLAINTEXT","value":"#{Source_Source_NS.AuthorDate}"}]',
+                },
+              },
+            ],
+          },
+        ],
+      }));
+
+      test.done();
+    },
   },
 };
 
