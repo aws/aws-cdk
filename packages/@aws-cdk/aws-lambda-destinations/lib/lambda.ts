@@ -12,7 +12,7 @@ export interface LambdaDestinationOptions {
    * Whether the destination function receives only the `responsePayload` of
    * the origin function.
    *
-   * @default false
+   * @default false The destination function receives the full invocation record.
    */
   readonly responseOnly?: boolean;
 }
