@@ -320,7 +320,7 @@ test('passes the correct file to docker build', async () => {
     if (!/STOPTEST/.test(e.toString())) { throw e; }
   }
 
-  const command = ['docker', 'build', '--build-arg', 'a=b', '--build-arg', 'c=d', '--tag', 'uri:latest', '/foo', '--target', 'a-target', '--file', 'some-file'];
+  const command = ['docker', 'build', '--build-arg', 'a=b', '--build-arg', 'c=d', '--tag', 'uri:latest', '/foo', '--target', 'a-target', '--file', '/foo/some-file'];
   sinon.assert.calledWith(shellStub, command);
 
   prepareEcrRepositoryStub.restore();
