@@ -68,7 +68,7 @@ import cfn = require('@aws-cdk/aws-cloudformation');
 import s3 = require('@aws-cdk/aws-s3');
 
 class MyNestedStack extends cfn.NestedStack {
-  constructor(scope: Construct, id: string, props: cfn.NestedStackProps) {
+  constructor(scope: Construct, id: string, props?: cfn.NestedStackProps) {
     super(scope, id, props);
 
     new s3.Bucket(this, 'NestedBucket');  
@@ -76,11 +76,11 @@ class MyNestedStack extends cfn.NestedStack {
 }
 
 class MyParentStack extends Stack {
-  constructor(scope: Construct, id: string, props: StackProps) {
+  constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    new MyNestedStack(scope, 'Nested1');
-    new MyNestedStack(scope, 'Nested2');
+    new MyNestedStack(this, 'Nested1');
+    new MyNestedStack(this, 'Nested2');
   }
 }
 ```
