@@ -47,10 +47,7 @@
     "compat": "cdk-compat"
   },
   "cdk-build": {
-    "cloudformation": [
-      "AWS::ApiGateway",
-      "AWS::ApiGatewayV2"
-    ]
+    "cloudformation": "AWS::ApiGateway"
   },
   "keywords": [
     "aws",
@@ -91,6 +88,14 @@
   },
   "engines": {
     "node": ">= 10.3.0"
+  },
+  "nyc": {
+    "exclude": [
+      "coverage/**",
+      "test/**",
+      "lib/*.generated.js",
+      "lib/apigatewayv2.js"
+    ]
   },
   "awslint": {
     "exclude": [
