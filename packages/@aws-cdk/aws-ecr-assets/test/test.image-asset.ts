@@ -100,7 +100,7 @@ export = {
 
     // THEN
     const assetMetadata = stack.node.metadata.find(({ type }) => type === ASSET_METADATA);
-    test.deepEqual(assetMetadata && assetMetadata.data.file, path.join(directoryPath, 'Dockerfile.Custom'));
+    test.deepEqual(assetMetadata && assetMetadata.data.file, 'Dockerfile.Custom');
     test.done();
   },
 
