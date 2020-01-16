@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## [1.21.1](https://github.com/aws/aws-cdk/compare/v1.21.0...v1.21.1) (2020-01-16)
 
+### Bug Fixes
+
+* **ecr-assets:** fix assembly creation to not include absolute paths to docker files ([#5807](https://github.com/aws/aws-cdk/issues/5807)) ([6bc8ecc](https://github.com/aws/aws-cdk/pull/5833/commits/6bc8eccdba21a10944c81ababe07df37c07481d0))
+* **cli:** revert cdk execution from inner directories ([#5826](https://github.com/aws/aws-cdk/issues/5826)) ([da9c626](https://github.com/aws/aws-cdk/pull/5833/commits/da9c6262fd262a5cfd8c150c2c165e46ecbc95b1))
+
 ## [1.21.0](https://github.com/aws/aws-cdk/compare/v1.20.0...v1.21.0) (2020-01-15)
 
 
