@@ -22,7 +22,7 @@ const zone = new route53.PublicHostedZone(stack, 'HostedZone', { zoneName: 'test
 new route53.ARecord(zone, 'Alias', {
   zone,
   recordName: '_foo',
-  target: route53.AddressRecordTarget.fromAlias(new targets.LoadBalancerTarget(lb))
+  target: route53.RecordTarget.fromAlias(new targets.LoadBalancerTarget(lb))
 });
 
 app.synth();
