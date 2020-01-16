@@ -117,7 +117,7 @@ export class DockerImageAsset extends Construct implements assets.IAsset {
       directoryName: staging.stagedPath,
       dockerBuildArgs: props.buildArgs,
       dockerBuildTarget: props.target,
-      dockerFile: file,
+      dockerFile: props.file,
       repositoryName: props.repositoryName || `cdk/${this.node.uniqueId.replace(/[:/]/g, '-').toLowerCase()}`,
       sourceHash: staging.sourceHash
     });

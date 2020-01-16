@@ -75,7 +75,8 @@ export async function prepareContainerAsset(assemblyDir: string,
     }
 
     if (asset.file) {
-      baseCommand.push('--file', asset.file);
+      // remember we assume the file is relative (we validate this in the asset constructor)
+      baseCommand.push('--file', path.join(contextPath, asset.file));
     }
 
     const command = ci
