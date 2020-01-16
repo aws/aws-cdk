@@ -19,6 +19,6 @@ public class %name.PascalCased%StackTest {
         %name.PascalCased%Stack stack = new %name.PascalCased%Stack(app, "test");
 
         JsonNode actual = JSON.valueToTree(app.synth().getStackArtifact(stack.getArtifactId()).getTemplate());
-        assertThat(actual.asText(), CoreMatchers.both(CoreMatchers.containsString("AWS::SQS::Queue")).and(CoreMatchers.containsString("AWS::SNS::Topic")));
+        assertThat(actual.toString(), CoreMatchers.both(CoreMatchers.containsString("AWS::SQS::Queue")).and(CoreMatchers.containsString("AWS::SNS::Topic")));
     }
 }
