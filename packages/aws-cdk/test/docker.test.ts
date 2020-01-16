@@ -332,7 +332,7 @@ test('passes the correct file to docker build', async () => {
   }
 
   // THEN
-  const command = ['docker', 'build', '--tag', `uri:latest`, '/foo', '--file', 'some-file'];
+  const command = ['docker', 'build', '--tag', `uri:latest`, '/foo', '--file', '/foo/some-file'];
 
   expect(shellStub.calledWith(command)).toBeTruthy();
 
