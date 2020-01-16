@@ -61,7 +61,7 @@
     "jszip": "^3.2.2",
     "mockery": "^2.1.0",
     "pkglint": "1.21.0",
-    "sinon": "^8.0.4",
+    "sinon": "^8.1.0",
     "ts-jest": "^24.3.0"
   },
   "dependencies": {
