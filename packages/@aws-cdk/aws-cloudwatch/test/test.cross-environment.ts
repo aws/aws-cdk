@@ -46,6 +46,38 @@ export = {
 
       test.done();
     },
+
+    'metric with explicit account and region will render in environment agnostic stack'(test: Test) {
+      // GIVEN
+      const graph = new GraphWidget({
+        left: [
+          a.with({ account: '1234', region: 'us-north-5' })
+        ],
+      });
+
+      // THEN
+      graphMetricsAre(test, new Stack(), graph, [
+        [ 'Test', 'ACount', { accountId: '1234', region: 'us-north-5' }],
+      ]);
+
+      test.done();
+    },
+
+    'metric attached to agnostic stack will not render in agnostic stack'(test: Test) {
+      // GIVEN
+      const graph = new GraphWidget({
+        left: [
+          a.attachTo(new Stack()),
+        ],
+      });
+
+      // THEN
+      graphMetricsAre(test, new Stack(), graph, [
+        [ 'Test', 'ACount' ],
+      ]);
+
+      test.done();
+    },
   },
 
   'in alarms': {
