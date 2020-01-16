@@ -1,4 +1,5 @@
 import { expect, haveResource } from '@aws-cdk/assert';
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as appscaling from '../lib';
@@ -82,5 +83,61 @@ export = {
     }));
 
     test.done();
-  }
+  },
+
+  'step scaling on MathExpression'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const target = createScalableTarget(stack);
+
+    // WHEN
+    target.scaleOnMetric('Metric', {
+      metric: new cloudwatch.MathExpression({
+        expression: 'a',
+        usingMetrics: {
+          a: new cloudwatch.Metric({
+            namespace: 'Test',
+            metricName: 'Metric',
+          })
+        },
+      }),
+      adjustmentType: appscaling.AdjustmentType.CHANGE_IN_CAPACITY,
+      scalingSteps: [
+        { change: -1, lower: 0, upper: 49 },
+        { change: 0, lower: 50, upper: 99 },
+        { change: 1, lower: 100 }
+      ]
+    });
+
+    // THEN
+    expect(stack).notTo(haveResource('AWS::CloudWatch::Alarm', {
+      Period: 60
+    }));
+
+    expect(stack).to(haveResource('AWS::CloudWatch::Alarm', {
+      ComparisonOperator: "LessThanOrEqualToThreshold",
+      EvaluationPeriods: 1,
+      Metrics: [
+        {
+          Expression: "a",
+          Id: "expr_1"
+        },
+        {
+          Id: "a",
+          MetricStat: {
+            Metric: {
+              MetricName: "Metric",
+              Namespace: "Test"
+            },
+            Period: 300,
+            Stat: "Average"
+          },
+          ReturnData: false
+        }
+      ],
+      Threshold: 49
+    }));
+
+    test.done();
+  },
 };
