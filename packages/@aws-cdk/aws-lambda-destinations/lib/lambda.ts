@@ -44,8 +44,8 @@ export class LambdaDestination implements lambda.IDestination {
       throw new Error('Options must be defined when using `responseOnly`.');
     }
 
-    // Match invocation result of the function to which this destination is added and
-    // use it to trigger destination function
+    // Match invocation result of the source function (`fn`) and use it
+    // to trigger the destination function (`this.fn`).
     new events.Rule(scope, options.type, {
       eventPattern: {
         detailType: [`Lambda Function Invocation Result - ${options.type}`],
@@ -54,7 +54,7 @@ export class LambdaDestination implements lambda.IDestination {
       },
       targets: [
         new targets.LambdaFunction(this.fn, {
-          event: events.RuleTargetInput.fromEventPath('$.detail.responsePayload')
+          event: events.RuleTargetInput.fromEventPath('$.detail.responsePayload') // Extract response payload
         })
       ]
     });
