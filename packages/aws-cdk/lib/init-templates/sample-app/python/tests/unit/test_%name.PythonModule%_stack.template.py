@@ -2,13 +2,13 @@ import json
 import pytest
 
 from aws_cdk import core
-from %name%.%name%_stack import %name.PascalCased%Stack
+from %name%.%name.PythonModule%_stack import %name.PascalCased%Stack
 
 
 def get_template():
     app = core.App()
-    %name.PascalCased%Stack(app, "%name%")
-    return json.dumps(app.synth().get_stack("%name%").template)
+    %name.PascalCased%Stack(app, "%name.StackName%")
+    return json.dumps(app.synth().get_stack("%name.StackName%").template)
 
 
 def test_sqs_queue_created():

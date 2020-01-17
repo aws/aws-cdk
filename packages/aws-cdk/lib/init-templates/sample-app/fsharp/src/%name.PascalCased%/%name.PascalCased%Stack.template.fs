@@ -1,4 +1,4 @@
-namespace HelloCdk
+namespace %name.PascalCased%
 
 open Amazon.CDK
 open Amazon.CDK.AWS.SNS
