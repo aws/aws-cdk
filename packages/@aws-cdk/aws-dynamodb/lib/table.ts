@@ -1,7 +1,7 @@
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import { CustomResource } from '@aws-cdk/aws-cloudformation';
 import * as iam from '@aws-cdk/aws-iam';
-import { Aws, Construct, IResource, Lazy, RemovalPolicy, Resource, Stack } from '@aws-cdk/core';
+import { Aws, Construct, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
 import { CfnTable } from './dynamodb.generated';
 import { ReplicaProvider } from './replica-provider';
 import { EnableScalingProps, IScalableTableAttribute } from './scalable-attribute-api';
@@ -902,6 +902,12 @@ export class Table extends TableBase {
    * @param regions regions where to create tables
    */
   private createReplicaTables(regions: string[]) {
+    const stack = Stack.of(this);
+
+    if (!Token.isUnresolved(stack.region) && regions.includes(stack.region)) {
+      throw new Error('`replicaRegions` cannot include the region where this stack is deployed.');
+    }
+
     const provider = ReplicaProvider.getOrCreate(this);
 
     // Documentation at https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/V2gt_IAM.html
@@ -914,7 +920,7 @@ export class Table extends TableBase {
     // Permissions in the destination regions
     provider.onEventHandler.addToRolePolicy(new iam.PolicyStatement({
       actions: ['dynamodb:*'],
-      resources: regions.map(region => Stack.of(this).formatArn({
+      resources: regions.map(region => stack.formatArn({
         region,
         service: 'dynamodb',
         resource: 'table',
@@ -923,7 +929,7 @@ export class Table extends TableBase {
     }));
 
     let previousRegion;
-    for (const region of regions) {
+    for (const region of new Set(regions)) { // Remove duplicates
       // Use multiple custom resources because multiple create/delete
       // updates cannot be combined in a single API call.
       const currentRegion = new CustomResource(this, `Replica${region}`, {

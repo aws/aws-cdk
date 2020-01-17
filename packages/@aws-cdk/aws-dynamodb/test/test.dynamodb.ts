@@ -1,7 +1,7 @@
 import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as iam from '@aws-cdk/aws-iam';
-import { CfnDeletionPolicy, ConstructNode, RemovalPolicy, Stack, Tag } from '@aws-cdk/core';
+import { App, CfnDeletionPolicy, ConstructNode, RemovalPolicy, Stack, Tag } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import {
   Attribute,
@@ -1518,6 +1518,30 @@ export = {
         ],
         stream: StreamViewType.OLD_IMAGE,
       }), /`NEW_AND_OLD_IMAGES`/);
+
+      test.done();
+    },
+
+    'throws with replica in same region as stack'(test: Test) {
+      // GIVEN
+      const app = new App();
+      const stack = new Stack(app, 'Stack', {
+        env: { region: 'us-east-1' }
+      });
+
+      // THEN
+      test.throws(() => new Table(stack, 'Table', {
+        partitionKey: {
+          name: 'id',
+          type: AttributeType.STRING
+        },
+        billingMode: BillingMode.PAY_PER_REQUEST,
+        replicaRegions: [
+          'eu-west-1',
+          'us-east-1',
+          'eu-west-2',
+        ],
+      }), /`replicaRegions` cannot include the region where this stack is deployed/);
 
       test.done();
     }
