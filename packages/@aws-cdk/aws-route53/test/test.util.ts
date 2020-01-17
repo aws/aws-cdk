@@ -33,7 +33,26 @@ export = {
     test.done();
   },
 
-  'providedName that matches zoneName returns providedName with a dot'(test: Test) {
+  'providedName that matches zoneName returns providedName with a trailing dot'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const providedName = 'test.domain.com';
+    const qualified = util.determineFullyQualifiedDomainName(providedName, {
+        hostedZoneId: 'fakeId',
+        zoneName: 'test.domain.com.',
+        hostedZoneArn: 'arn:aws:route53:::hostedzone/fakeId',
+        stack,
+        node: stack.node,
+    });
+
+    // THEN
+    test.equal(qualified, 'test.domain.com.');
+    test.done();
+  },
+
+  'providedName that ends with zoneName returns providedName with a trailing dot'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -52,7 +71,7 @@ export = {
     test.done();
   },
 
-  'providedName that does not matches zoneName concatenates providedName and zoneName'(test: Test) {
+  'providedName that does not match zoneName concatenates providedName and zoneName'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
 
