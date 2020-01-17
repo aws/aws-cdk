@@ -105,56 +105,35 @@ export class ToolkitInfo {
    *
    * @experimental
    */
-  public async prepareEcrRepository(asset: cxapi.ContainerImageAssetMetadataEntry): Promise<EcrRepositoryInfo> {
+  public async prepareEcrRepository(repositoryName: string): Promise<EcrRepositoryInfo> {
     const ecr = await this.props.sdk.ecr(this.props.environment.account, this.props.environment.region, Mode.ForWriting);
-    let repositoryName;
-    if (asset.repositoryName) {
-      // Repository name provided by user
-      repositoryName = asset.repositoryName;
-    } else {
-      // Repository name based on asset id
-      const assetId = asset.id;
-      repositoryName = 'cdk/' + assetId.replace(/[:/]/g, '-').toLowerCase();
-    }
 
-    let repository;
+    // check if repo already exists
     try {
-      debug(`${repositoryName}: checking for repository.`);
+      debug(`${repositoryName}: checking if ECR repository already exists`);
       const describeResponse = await ecr.describeRepositories({ repositoryNames: [repositoryName] }).promise();
-      repository = describeResponse.repositories![0];
+      const existingRepositoryUri = describeResponse.repositories![0]?.repositoryUri;
+      if (existingRepositoryUri) {
+        return { repositoryUri: existingRepositoryUri };
+      }
     } catch (e) {
       if (e.code !== 'RepositoryNotFoundException') { throw e; }
     }
 
-    if (repository) {
-      return {
-        repositoryUri: repository.repositoryUri!,
-        repositoryName
-      };
+    // create the repo (tag it so it will be easier to garbage collect in the future)
+    debug(`${repositoryName}: creating ECR repository`);
+    const assetTag = { Key: 'awscdk:asset', Value: 'true' };
+    const response = await ecr.createRepository({ repositoryName, tags: [ assetTag ] }).promise();
+    const repositoryUri = response.repository?.repositoryUri;
+    if (!repositoryUri) {
+      throw new Error(`CreateRepository did not return a repository URI for ${repositoryUri}`);
     }
 
-    debug(`${repositoryName}: creating`);
-    const response = await ecr.createRepository({ repositoryName }).promise();
-    repository = response.repository!;
+    // configure image scanning on push (helps in identifying software vulnerabilities, no additional charge)
+    debug(`${repositoryName}: enable image scanning`);
+    await ecr.putImageScanningConfiguration({ repositoryName, imageScanningConfiguration: { scanOnPush: true } }).promise();
 
-    // Better put a lifecycle policy on this so as to not cost too much money
-    await ecr.putLifecyclePolicy({
-      repositoryName,
-      lifecyclePolicyText: JSON.stringify(DEFAULT_REPO_LIFECYCLE)
-    }).promise();
-
-    // Configure image scanning on push (helps in identifying software vulnerabilities, no additional charge)
-    await ecr.putImageScanningConfiguration({
-      repositoryName,
-      imageScanningConfiguration: {
-        scanOnPush: true
-      }
-    }).promise();
-
-    return {
-      repositoryUri: repository.repositoryUri!,
-      repositoryName
-    };
+    return { repositoryUri };
   }
 
   /**
@@ -201,7 +180,6 @@ export class ToolkitInfo {
 /** @experimental */
 export interface EcrRepositoryInfo {
   repositoryUri: string;
-  repositoryName: string;
 }
 
 /** @experimental */
@@ -251,18 +229,3 @@ function getOutputValue(stack: aws.CloudFormation.Stack, output: string): string
   }
   return result;
 }
-
-export const DEFAULT_REPO_LIFECYCLE = {
-  rules: [
-    {
-      rulePriority: 100,
-      description: 'Retain only 5 images',
-      selection: {
-        tagStatus: 'any',
-        countType: 'imageCountMoreThan',
-        countNumber: 5,
-      },
-      action: { type: 'expire' }
-    }
-  ]
-};
