@@ -78,7 +78,6 @@
   "devDependencies": {
     "@aws-cdk/assert": "1.21.0",
     "@aws-cdk/aws-certificatemanager": "1.21.0",
-    "@aws-cdk/aws-ec2": "1.21.0",
     "@aws-cdk/aws-lambda": "1.21.0",
     "cdk-build-tools": "1.21.0",
     "cdk-integ-tools": "1.21.0",
@@ -89,6 +88,7 @@
   "dependencies": {
     "@aws-cdk/aws-apigateway": "1.21.0",
     "@aws-cdk/aws-cloudfront": "1.21.0",
+    "@aws-cdk/aws-ec2": "1.21.0",
     "@aws-cdk/aws-elasticloadbalancing": "1.21.0",
     "@aws-cdk/aws-elasticloadbalancingv2": "1.21.0",
     "@aws-cdk/aws-iam": "1.21.0",
