@@ -9,6 +9,13 @@ announce() {
   echo "~~~~ $1 ~~~~"
 }
 
+cleanup() {
+  # revert the file we renamed for the test
+  mv ${integ_test_dir}/docker/Dockerfile.Custom.bak ${integ_test_dir}/docker/Dockerfile.Custom
+}
+
+trap cleanup EXIT INT
+
 # default is cdk.out
 cdk synth
 
@@ -40,6 +47,15 @@ cdk -a . synth ${STACK_NAME_PREFIX}-test-2 | grep "topic152D84A37"
 announce "cdk deploy"
 cdk -a . deploy "${STACK_NAME_PREFIX}-lambda" --require-approval=never
 
+# rename the original custom docker file that was used during synth.
+# this verifies that the assemly has a copy of it and that the manifest uses
+# relative paths to reference to it.
+mv ${integ_test_dir}/docker/Dockerfile.Custom ${integ_test_dir}/docker/Dockerfile.Custom.bak
+
+# deploy a docker image with custom file without synth (uses assets)
+cdk -a . deploy "${STACK_NAME_PREFIX}-docker-with-custom-file" --require-approval=never
+
 # destory
 announce "cdk destroy"
 cdk -a . destroy -f "${STACK_NAME_PREFIX}-lambda"
+# cdk -a . destroy -f "${STACK_NAME_PREFIX}-docker"

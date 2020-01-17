@@ -221,7 +221,7 @@ test('passes the correct docker file name if specified', async () => {
   }
 
   // THEN
-  const command = ['docker', 'build', '--tag', `uri:some-tag`, '--file', 'CustomDockerfile', '--build-arg', 'a=b', '--build-arg', 'c=d', '/foo'];
+  const command = ['docker', 'build', '--tag', `uri:some-tag`, '--file', '/foo/CustomDockerfile', '--build-arg', 'a=b', '--build-arg', 'c=d', '/foo'];
   sinon.assert.calledWith(shellStub, command);
 
   prepareEcrRepositoryStub.restore();

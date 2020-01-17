@@ -84,7 +84,8 @@ export async function prepareContainerAsset(assemblyDir: string,
     }
 
     if (asset.file) {
-      baseCommand.push('--file', asset.file);
+      // remember we assume the file is relative (we validate this in the asset constructor)
+      baseCommand.push('--file', path.join(contextPath, asset.file));
     }
 
     const command = ci
@@ -161,7 +162,8 @@ export async function prepareContainerAssetNew(assemblyDir: string,
   }
 
   if (asset.file) {
-    buildCommand.push('--file', asset.file);
+      // remember we assume the file is relative (we validate this in the asset constructor)
+      buildCommand.push('--file', path.join(contextPath, asset.file));
   }
 
   for (const [ key, value ] of Object.entries(asset.buildArgs || {})) {
