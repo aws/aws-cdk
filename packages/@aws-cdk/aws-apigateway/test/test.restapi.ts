@@ -515,6 +515,35 @@ export = {
     test.done();
   },
 
+  "with 'vpcEndpoints' specified but 'endpointTypes' is not PRIVATE, should throw an Error"(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const vpcEndpoint = InterfaceVpcEndpoint.fromInterfaceVpcEndpointAttributes(stack, "vpc-endpoint", {
+      vpcEndpointId: "vpce-1234",
+      securityGroupId: "sg-1234",
+      port: 443,
+    });
+
+    // CASE 1 - no endpointTypes
+    test.throws(() => new apigw.RestApi(stack, 'api', {
+      vpcEndpoints: [ vpcEndpoint ],
+    }));
+
+    // CASE 2 - empty endpointTypes
+    test.throws(() => new apigw.RestApi(stack, 'api', {
+      endpointTypes: [],
+      vpcEndpoints: [ vpcEndpoint ],
+    }));
+
+    // CASE 3 - endpointTypes without private
+    test.throws(() => new apigw.RestApi(stack, 'api', {
+      endpointTypes: [ apigw.EndpointType.EDGE ],
+      vpcEndpoints: [ vpcEndpoint ],
+    }));
+
+    test.done();
+  },
+
   '"cloneFrom" can be used to clone an existing API'(test: Test) {
     // GIVEN
     const stack = new Stack();

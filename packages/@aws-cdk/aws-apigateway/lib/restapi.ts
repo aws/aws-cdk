@@ -237,6 +237,13 @@ export class RestApi extends Resource implements IRestApi {
 
     let vpcEndpointIds: string[] | undefined;
     if (props.vpcEndpoints && props.vpcEndpoints.length > 0) {
+      if (
+        !props.endpointTypes || 
+        props.endpointTypes.length == 0 || 
+        !props.endpointTypes.includes(EndpointType.PRIVATE)
+       ) {
+        throw new Error('When specifying "vpcEndpoints", "endpointTypes" with EndpointType.PRIVATE is required');
+      }
       vpcEndpointIds = props.vpcEndpoints.map(endpoint => endpoint.vpcEndpointId);
     }
 
