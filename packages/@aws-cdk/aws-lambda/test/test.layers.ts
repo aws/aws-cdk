@@ -16,7 +16,7 @@ export = testCase({
     // WHEN
     new lambda.LayerVersion(stack, 'LayerVersion', {
       code,
-      compatibleRuntimes: [lambda.Runtime.NODEJS_8_10]
+      compatibleRuntimes: [lambda.Runtime.NODEJS_10_X]
     });
 
     // THEN
@@ -25,7 +25,7 @@ export = testCase({
         S3Bucket: stack.resolve(bucket.bucketName),
         S3Key: 'ObjectKey',
       },
-      CompatibleRuntimes: ['nodejs8.10']
+      CompatibleRuntimes: ['nodejs10.x']
     }));
 
     test.done();

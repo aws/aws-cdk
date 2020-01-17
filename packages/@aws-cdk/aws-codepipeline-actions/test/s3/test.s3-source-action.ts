@@ -175,6 +175,60 @@ export = {
 
       test.done();
     },
+
+    'exposes variables for other actions to consume'(test: Test) {
+      const stack = new Stack();
+
+      const sourceOutput = new codepipeline.Artifact();
+      const s3SourceAction = new cpactions.S3SourceAction({
+        actionName: 'Source',
+        output: sourceOutput,
+        bucket: new s3.Bucket(stack, 'Bucket'),
+        bucketKey: 'key.zip',
+      });
+      new codepipeline.Pipeline(stack, 'Pipeline', {
+        stages: [
+          {
+            stageName: 'Source',
+            actions: [s3SourceAction],
+          },
+          {
+            stageName: 'Build',
+            actions: [
+              new cpactions.CodeBuildAction({
+                actionName: 'Build',
+                project: new codebuild.PipelineProject(stack, 'MyProject'),
+                input: sourceOutput,
+                environmentVariables: {
+                  VersionId: { value: s3SourceAction.variables.versionId },
+                },
+              }),
+            ],
+          },
+        ],
+      });
+
+      expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+        "Stages": [
+          {
+            "Name": "Source",
+          },
+          {
+            "Name": "Build",
+            "Actions": [
+              {
+                "Name": "Build",
+                "Configuration": {
+                  "EnvironmentVariables": '[{"name":"VersionId","type":"PLAINTEXT","value":"#{Source_Source_NS.VersionId}"}]',
+                },
+              },
+            ],
+          },
+        ],
+      }));
+
+      test.done();
+    },
   },
 };
 
