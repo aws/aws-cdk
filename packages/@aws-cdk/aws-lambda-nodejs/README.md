@@ -47,10 +47,10 @@ new lambda.NodejsFunction(this, 'MyFunction', {
 All other properties of `lambda.Function` are supported, see also the [AWS Lambda construct library](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-lambda).
 
 ### Configuring Parcel
-The `NodejsFunction` construct exposes some Parcel options via properties: `minify`, `sourceMaps`,
+The `NodejsFunction` construct exposes some [Parcel](https://parceljs.org/) options via properties: `minify`, `sourceMaps`,
 `buildDir` and `cacheDir`.
 
-Parcel transpiles your code (every internal module) with `@babel/preset-env` and uses the
+Parcel transpiles your code (every internal module) with [@babel/preset-env](https://babeljs.io/docs/en/babel-preset-env) and uses the
 `engines.node` defined in `package.json` as target (defaults to Node.js 8).
 
 Configuring Babel with Parcel is possible via a `.babelrc` or a `babel` config in `package.json`.
