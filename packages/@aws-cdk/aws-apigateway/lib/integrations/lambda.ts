@@ -1,5 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
+import { Lazy } from '@aws-cdk/core';
 import { IntegrationOptions } from '../integration';
 import { Method } from '../method';
 import { AwsIntegration } from './aws';
@@ -60,7 +61,7 @@ export class LambdaIntegration extends AwsIntegration {
     this.handler.addPermission(`ApiPermission.${desc}`, {
       principal,
       scope: method,
-      sourceArn: method.methodArn,
+      sourceArn: Lazy.stringValue({ produce: () => method.methodArn }),
     });
 
     // add permission to invoke from the console
