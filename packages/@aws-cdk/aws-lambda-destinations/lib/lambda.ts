@@ -12,6 +12,12 @@ export interface LambdaDestinationOptions {
    * Whether the destination function receives only the `responsePayload` of
    * the origin function.
    *
+   * When set to `true` and used as `onSuccess` destination the `responsePayload`
+   * contains the payload returned by the source Lambda function.
+   *
+   * When set to `true` and used as `onFailure` destination the `responsePayload`
+   * contains the error object returned by source Lambda function.
+   *
    * @default false The destination function receives the full invocation record.
    */
   readonly responseOnly?: boolean;
