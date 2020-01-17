@@ -1,6 +1,6 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import * as sinon from 'sinon';
-import { DEFAULT_REPO_LIFECYCLE, ToolkitInfo } from '../lib';
+import { ToolkitInfo } from '../lib';
 import { prepareContainerAsset } from '../lib/docker';
 import * as os from '../lib/os';
 import { MockSDK } from './util/mock-sdk';
@@ -96,9 +96,8 @@ test('derives repository name from asset id', async () => {
   expect(createdName).toBe('cdk/stack-construct-abc123');
 });
 
-test('configures lifecycle policy and image scanning', async () => {
+test('configures image scanning', async () => {
   // GIVEN
-  let putLifecyclePolicyParams;
   let putImageScanningConfigurationParams;
 
   const sdk = new MockSDK();
@@ -113,11 +112,6 @@ test('configures lifecycle policy and image scanning', async () => {
           repositoryUri: 'uri'
         }
       };
-    },
-
-    putLifecyclePolicy(params) {
-      putLifecyclePolicyParams = params;
-      return {};
     },
 
     putImageScanningConfiguration(params) {
@@ -151,12 +145,6 @@ test('configures lifecycle policy and image scanning', async () => {
     if (!/STOPTEST/.test(e.toString())) { throw e; }
   }
 
-  // THEN
-  expect(putLifecyclePolicyParams).toEqual({
-    repositoryName: 'some-name',
-    lifecyclePolicyText: JSON.stringify(DEFAULT_REPO_LIFECYCLE)
-  });
-
   expect(putImageScanningConfigurationParams).toEqual({
     repositoryName: 'some-name',
     imageScanningConfiguration: {
@@ -176,7 +164,6 @@ test('passes the correct target to docker build', async () => {
 
   const prepareEcrRepositoryStub = sinon.stub(toolkit, 'prepareEcrRepository').resolves({
     repositoryUri: 'uri',
-    repositoryName: 'name'
   });
 
   const shellStub = sinon.stub(os, 'shell').rejects('STOPTEST');
@@ -197,7 +184,7 @@ test('passes the correct target to docker build', async () => {
   };
 
   try {
-    await prepareContainerAsset('.', asset, toolkit, false, false);
+    await prepareContainerAsset('.', asset, toolkit, false);
   } catch (e) {
     if (!/STOPTEST/.test(e.toString())) { throw e; }
   }
@@ -221,7 +208,6 @@ test('passes the correct args to docker build', async () => {
 
   const prepareEcrRepositoryStub = sinon.stub(toolkit, 'prepareEcrRepository').resolves({
     repositoryUri: 'uri',
-    repositoryName: 'name'
   });
 
   const shellStub = sinon.stub(os, 'shell').rejects('STOPTEST');
@@ -265,7 +251,6 @@ test('relative path', async () => {
 
   const prepareEcrRepositoryStub = sinon.stub(toolkit, 'prepareEcrRepository').resolves({
     repositoryUri: 'uri',
-    repositoryName: 'name'
   });
 
   const shellStub = sinon.stub(os, 'shell').rejects('STOPTEST');
@@ -309,7 +294,6 @@ test('passes the correct file to docker build', async () => {
 
   const prepareEcrRepositoryStub = sinon.stub(toolkit, 'prepareEcrRepository').resolves({
     repositoryUri: 'uri',
-    repositoryName: 'name'
   });
 
   const shellStub = sinon.stub(os, 'shell').rejects('STOPTEST');
@@ -322,6 +306,60 @@ test('passes the correct file to docker build', async () => {
     path: '/foo',
     sourceHash: '1234567890abcdef',
     repositoryName: 'some-name',
+    buildArgs: {
+      a: 'b',
+      c: 'd'
+    },
+    target: 'a-target',
+    file: 'some-file'
+  };
+
+  try {
+    await prepareContainerAsset('.', asset, toolkit, false);
+  } catch (e) {
+    if (!/STOPTEST/.test(e.toString())) { throw e; }
+  }
+
+  const command = ['docker', 'build', '--build-arg', 'a=b', '--build-arg', 'c=d', '--tag', 'uri:latest', '/foo', '--target', 'a-target', '--file', '/foo/some-file'];
+  sinon.assert.calledWith(shellStub, command);
+
+  prepareEcrRepositoryStub.restore();
+  shellStub.restore();
+});
+
+// since "imageNameParameter" is present, this means we are pre 1.21.0, which
+// implies which is before "imageTag" was supported. still, for the sake of
+// correctness of the protocol we added support for specifying image tag even if
+// it's probably not going to be used.
+test('"imageTag" is used instead of "latest"', async () => {
+  // GIVEN
+  const toolkit = new ToolkitInfo({
+    sdk: new MockSDK(),
+    bucketName: 'BUCKET_NAME',
+    bucketEndpoint: 'BUCKET_ENDPOINT',
+    environment: { name: 'env', account: '1234', region: 'abc' }
+  });
+
+  const prepareEcrRepositoryStub = sinon.stub(toolkit, 'prepareEcrRepository').resolves({
+    repositoryUri: 'uri',
+  });
+
+  const shellStub = sinon.stub(os, 'shell').rejects('STOPTEST');
+
+  // WHEN
+  const asset: cxapi.ContainerImageAssetMetadataEntry = {
+    id: 'assetId',
+    imageNameParameter: 'MyParameter',
+    packaging: 'container-image',
+    path: '/foo',
+    sourceHash: '1234567890abcdef',
+    repositoryName: 'some-name',
+    imageTag: 'image-tag',
+    buildArgs: {
+      a: 'b',
+      c: 'd'
+    },
+    target: 'a-target',
     file: 'some-file'
   };
 
@@ -332,9 +370,8 @@ test('passes the correct file to docker build', async () => {
   }
 
   // THEN
-  const command = ['docker', 'build', '--tag', `uri:latest`, '/foo', '--file', 'some-file'];
-
-  expect(shellStub.calledWith(command)).toBeTruthy();
+  const command = ['docker', 'build', '--build-arg', 'a=b', '--build-arg', 'c=d', '--tag', 'uri:image-tag', '/foo', '--target', 'a-target', '--file', '/foo/some-file'];
+  sinon.assert.calledWith(shellStub, command);
 
   prepareEcrRepositoryStub.restore();
   shellStub.restore();
