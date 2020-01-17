@@ -18,6 +18,8 @@ export interface LambdaDestinationOptions {
    * When set to `true` and used as `onFailure` destination the `responsePayload`
    * contains the error object returned by source Lambda function.
    *
+   * See the README of this module to see a full explanation of this option.
+   *
    * @default false The destination function receives the full invocation record.
    */
   readonly responseOnly?: boolean;

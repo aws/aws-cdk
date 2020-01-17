@@ -39,7 +39,12 @@ const myFn = new lambda.Function(this, 'Fn', {
 See also [Configuring Destinations for Asynchronous Invocation](https://docs.aws.amazon.com/lambda/latest/dg/invocation-async.html#invocation-async-destinations).
 
 ### Invocation record
+When a lambda function is configured with a destination, an invocation record is created by the Lambda service
+when the lambda function completes. The invocation record contains the details of the function, its context, and
+the request and response payloads.
+
 The following example shows the format of the invocation record for a successful invocation:
+
 ```json
 {
 	"version": "1.0",
@@ -62,6 +67,7 @@ The following example shows the format of the invocation record for a successful
 ```
 
 In case of failure, the record contains the reason and error object:
+
 ```json
 {
     "version": "1.0",
@@ -89,7 +95,7 @@ In case of failure, the record contains the reason and error object:
 ```
 
 #### Destination-specific JSON format
-* For SNS/SQS, the JSON object is passed as the `Message` to the destination.
+* For SNS/SQS, the invocation record JSON is passed as the `Message` to the destination.
 * For Lambda, the JSON is passed as the payload to the function.
 * For EventBridge, the JSON is passed as the `Detail` in the PutEvents call. The source is `lambda`,
 and detail type is either `Lambda Function Invocation Result - Success` or `Lambda Function Invocation Result – Failure`.
