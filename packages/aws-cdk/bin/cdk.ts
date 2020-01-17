@@ -3,7 +3,6 @@ import 'source-map-support/register';
 
 import * as cxapi from '@aws-cdk/cx-api';
 import * as colors from 'colors/safe';
-import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as yargs from 'yargs';
 
@@ -18,7 +17,7 @@ import { availableInitLanguages, cliInit, printAvailableTemplates } from '../lib
 import { data, debug, error, print, setVerbose, success } from '../lib/logging';
 import { PluginHost } from '../lib/plugin';
 import { serializeStructure } from '../lib/serialize';
-import { Configuration, PROJECT_CONFIG, Settings } from '../lib/settings';
+import { Configuration, Settings } from '../lib/settings';
 import * as version from '../lib/version';
 
 // tslint:disable:no-shadowed-variable max-line-length
@@ -104,16 +103,6 @@ async function initCommandLine() {
   if (argv.verbose) {
     setVerbose();
   }
-
-  const projectRootDirectory = await lookupProjectRoot();
-
-  if (projectRootDirectory) {
-    // We change to the project root directory to maintian the behavior prior to (1.21.0) this feature, where
-    // cdk commands had to be executed from the project root.
-    // Note that if we cannot locate the project root, then we proceed anyway because the user might have the "app" configured in some other way.
-    process.chdir(projectRootDirectory);
-  }
-
   debug('CDK toolkit version:', version.DISPLAY_VERSION);
   debug('Command line arguments:', argv);
 
@@ -390,31 +379,6 @@ async function initCommandLine() {
   function toJsonOrYaml(object: any): string {
     return serializeStructure(object, argv.json);
   }
-}
-
-async function lookupProjectRoot(): Promise<string | undefined> {
-
-  async function ascend(directory: string): Promise<string | undefined> {
-
-    const filePath = path.join(directory, PROJECT_CONFIG);
-
-    if (await fs.pathExists(filePath)) {
-      return directory;
-    }
-
-    const parentDir = path.dirname(directory);
-
-    if (parentDir === directory) {
-      // We reached the file system root, give up.
-      return undefined;
-    }
-
-    return ascend(parentDir);
-
-  }
-
-  return ascend(path.resolve(process.cwd()));
-
 }
 
 initCommandLine()
