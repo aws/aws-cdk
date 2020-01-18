@@ -1,0 +1,27 @@
+# https://octokit.github.io/rest.js
+# https://github.com/actions/toolkit/blob/master/packages/github/src/context.ts
+
+name: PR Vadlidations
+on: pull_request
+
+jobs:
+  mandatory-changes:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v1
+
+      - name: Setup node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 10
+
+      - name: Install packages
+        run: npm install --only=dev
+
+      - name: Validate
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        run: |
+          node ./.github/workflows/pr-validations.js mandatoryChanges
