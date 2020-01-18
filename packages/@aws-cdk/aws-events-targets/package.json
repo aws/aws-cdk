@@ -86,7 +86,7 @@
   "devDependencies": {
     "@aws-cdk/assert": "1.21.1",
     "@aws-cdk/aws-codecommit": "1.21.1",
-    "aws-sdk": "^2.605.0",
+    "aws-sdk": "^2.606.0",
     "aws-sdk-mock": "^5.0.0",
     "cdk-build-tools": "1.21.1",
     "cdk-integ-tools": "1.21.1",
