@@ -13,6 +13,7 @@
     "lint": "cdk-lint",
     "pkglint": "pkglint -f",
     "test": "cdk-test",
+    "integ": "jest --testMatch '**/?(*.)+(integ-test).ts'",
     "package": "cdk-package",
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test",
@@ -39,6 +40,7 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
+    "@aws-cdk/core": "1.23.0",
     "@types/archiver": "^3.0.0",
     "@types/fs-extra": "^8.0.1",
     "@types/glob": "^7.1.1",
