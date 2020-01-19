@@ -565,20 +565,21 @@ export abstract class BaseService extends Resource
    * This method is called to create a networkConfiguration.
    */
   // tslint:disable-next-line:max-line-length
-  protected configureAwsVpcNetworking(vpc: ec2.IVpc, assignPublicIp?: boolean, vpcSubnets?: ec2.SubnetSelection, securityGroup?: ec2.ISecurityGroup) {
+  protected configureAwsVpcNetworking(vpc: ec2.IVpc, assignPublicIp?: boolean, vpcSubnets?: ec2.SubnetSelection, securityGroups?: ec2.ISecurityGroup[]) {
     if (vpcSubnets === undefined) {
       vpcSubnets = { subnetType: assignPublicIp ? ec2.SubnetType.PUBLIC : ec2.SubnetType.PRIVATE };
     }
-    if (securityGroup === undefined) {
-      securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', { vpc });
+    if (securityGroups === undefined || securityGroups.length === 0) {
+      securityGroups = [ new ec2.SecurityGroup(this, 'SecurityGroup', { vpc }) ];
     }
-    this.connections.addSecurityGroup(securityGroup);
+
+    securityGroups.forEach((sg) => { this.connections.addSecurityGroup(sg); }, this);
 
     this.networkConfiguration = {
       awsvpcConfiguration: {
         assignPublicIp: assignPublicIp ? 'ENABLED' : 'DISABLED',
         subnets: vpc.selectSubnets(vpcSubnets).subnetIds,
-        securityGroups: Lazy.listValue({ produce: () => [securityGroup!.securityGroupId] }),
+        securityGroups: securityGroups.map((sg) => sg.securityGroupId)
       }
     };
   }

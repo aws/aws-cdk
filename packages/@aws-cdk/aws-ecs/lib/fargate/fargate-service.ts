@@ -34,8 +34,16 @@ export interface FargateServiceProps extends BaseServiceOptions {
    * The security groups to associate with the service. If you do not specify a security group, the default security group for the VPC is used.
    *
    * @default - A new security group is created.
+   * @deprecated use securityGroups instead
    */
   readonly securityGroup?: ec2.ISecurityGroup;
+
+  /**
+   * The security groups to associate with the service. If you do not specify a security group, the default security group for the VPC is used.
+   *
+   * @default - A new security group is created
+   */
+  readonly securityGroups?: ec2.ISecurityGroup[];
 
   /**
    * The platform version on which to run your service.
@@ -83,6 +91,11 @@ export class FargateService extends BaseService implements IFargateService {
   }
 
   /**
+   * The security groups associated to the task.
+   */
+  private readonly securityGroups?: ec2.ISecurityGroup[];
+
+  /**
    * Constructs a new instance of the FargateService class.
    */
   constructor(scope: cdk.Construct, id: string, props: FargateServiceProps) {
@@ -92,6 +105,10 @@ export class FargateService extends BaseService implements IFargateService {
 
     if (props.propagateTags && props.propagateTaskTagsFrom) {
       throw new Error('You can only specify either propagateTags or propagateTaskTagsFrom. Alternatively, you can leave both blank');
+    }
+
+    if (props.securityGroup !== undefined && props.securityGroups !== undefined) {
+      throw new Error("Only one of SecurityGroup or SecurityGroups can be populated.");
     }
 
     const propagateTagsFromSource = props.propagateTaskTagsFrom !== undefined ? props.propagateTaskTagsFrom
@@ -109,7 +126,13 @@ export class FargateService extends BaseService implements IFargateService {
       platformVersion: props.platformVersion,
     }, props.taskDefinition);
 
-    this.configureAwsVpcNetworking(props.cluster.vpc, props.assignPublicIp, props.vpcSubnets, props.securityGroup);
+    if (props.securityGroup !== undefined) {
+      this.securityGroups = [ props.securityGroup ];
+    } else if (props.securityGroups !== undefined) {
+      this.securityGroups = props.securityGroups;
+    }
+
+    this.configureAwsVpcNetworking(props.cluster.vpc, props.assignPublicIp, props.vpcSubnets, this.securityGroups);
 
     if (!props.taskDefinition.defaultContainer) {
       throw new Error('A TaskDefinition must have at least one essential container');

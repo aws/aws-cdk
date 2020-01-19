@@ -237,6 +237,223 @@ export = {
       test.done();
     },
 
+    "with multiple securty groups, it correctly updates cloudformation template"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+        networkMode: ecs.NetworkMode.AWS_VPC
+      });
+      const securityGroup1 = new ec2.SecurityGroup(stack, 'SecurityGroup1', {
+        allowAllOutbound: true,
+        description: 'Example',
+        securityGroupName: 'Bingo',
+        vpc,
+      });
+      const securityGroup2 = new ec2.SecurityGroup(stack, 'SecurityGroup2', {
+        allowAllOutbound: false,
+        description: 'Example',
+        securityGroupName: 'Rolly',
+        vpc,
+      });
+
+      cluster.addDefaultCloudMapNamespace({
+        name: 'foo.com',
+        type: cloudmap.NamespaceType.DNS_PRIVATE
+      });
+
+      taskDefinition.addContainer("web", {
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+        memoryLimitMiB: 512,
+      });
+
+      // WHEN
+      const service = new ecs.Ec2Service(stack, "Ec2Service", {
+        cluster,
+        taskDefinition,
+        desiredCount: 2,
+        assignPublicIp: true,
+        cloudMapOptions: {
+          name: "myapp",
+          dnsRecordType: cloudmap.DnsRecordType.A,
+          dnsTtl: cdk.Duration.seconds(50),
+          failureThreshold: 20
+        },
+        daemon: false,
+        healthCheckGracePeriod: cdk.Duration.seconds(60),
+        maxHealthyPercent: 150,
+        minHealthyPercent: 55,
+        securityGroups: [ securityGroup1, securityGroup2 ],
+        serviceName: "bonjour",
+        vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC }
+      });
+
+      service.addPlacementConstraints(PlacementConstraint.memberOf("attribute:ecs.instance-type =~ t2.*"));
+      service.addPlacementStrategies(PlacementStrategy.spreadAcross(ecs.BuiltInAttributes.AVAILABILITY_ZONE));
+
+      // THEN
+      expect(stack).to(haveResource("AWS::ECS::Service", {
+        TaskDefinition: {
+          Ref: "Ec2TaskDef0226F28C"
+        },
+        Cluster: {
+          Ref: "EcsCluster97242B84"
+        },
+        DeploymentConfiguration: {
+          MaximumPercent: 150,
+          MinimumHealthyPercent: 55
+        },
+        DesiredCount: 2,
+        LaunchType: LaunchType.EC2,
+        NetworkConfiguration: {
+          AwsvpcConfiguration: {
+            AssignPublicIp: "ENABLED",
+            SecurityGroups: [
+              {
+                "Fn::GetAtt": [
+                  "SecurityGroup1F554B36F",
+                  "GroupId"
+                ]
+              },
+              {
+                "Fn::GetAtt": [
+                  "SecurityGroup23BE86BB7",
+                  "GroupId"
+                ]
+              }
+            ],
+            Subnets: [
+              {
+                Ref: "MyVpcPublicSubnet1SubnetF6608456"
+              },
+              {
+                Ref: "MyVpcPublicSubnet2Subnet492B6BFB"
+              }
+            ]
+          }
+        },
+        PlacementConstraints: [
+          {
+            Expression: "attribute:ecs.instance-type =~ t2.*",
+            Type: "memberOf"
+          }
+        ],
+        PlacementStrategies: [
+          {
+            Field: "attribute:ecs.availability-zone",
+            Type: "spread"
+          }
+        ],
+        SchedulingStrategy: "REPLICA",
+        ServiceName: "bonjour",
+        ServiceRegistries: [
+          {
+            RegistryArn: {
+              "Fn::GetAtt": [
+                "Ec2ServiceCloudmapService45B52C0F",
+                "Arn"
+              ]
+            }
+          }
+        ]
+      }));
+
+      expect(stack).to(haveResource("AWS::EC2::SecurityGroup", {
+        GroupDescription: "Example",
+        GroupName: "Bingo",
+        SecurityGroupEgress: [
+          {
+            CidrIp: "0.0.0.0/0",
+            Description: "Allow all outbound traffic by default",
+            IpProtocol: "-1"
+          }
+        ],
+        VpcId: {
+          Ref: "MyVpcF9F0CA6F"
+        }
+      }));
+
+      expect(stack).to(haveResource("AWS::EC2::SecurityGroup", {
+        GroupDescription: "Example",
+        GroupName: "Rolly",
+        SecurityGroupEgress: [
+          {
+            CidrIp: "255.255.255.255/32",
+            Description: "Disallow all traffic",
+            FromPort: 252,
+            IpProtocol: "icmp",
+            ToPort: 86
+          }
+        ],
+        VpcId: {
+          Ref: "MyVpcF9F0CA6F"
+        }
+      }));
+
+      test.done();
+    },
+
+    "throws when both securityGroup and securityGroups are supplied"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+        networkMode: ecs.NetworkMode.AWS_VPC
+      });
+      const securityGroup1 = new ec2.SecurityGroup(stack, 'SecurityGroup1', {
+        allowAllOutbound: true,
+        description: 'Example',
+        securityGroupName: 'Bingo',
+        vpc,
+      });
+      const securityGroup2 = new ec2.SecurityGroup(stack, 'SecurityGroup2', {
+        allowAllOutbound: false,
+        description: 'Example',
+        securityGroupName: 'Rolly',
+        vpc,
+      });
+
+      cluster.addDefaultCloudMapNamespace({
+        name: 'foo.com',
+        type: cloudmap.NamespaceType.DNS_PRIVATE
+      });
+
+      taskDefinition.addContainer("web", {
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+        memoryLimitMiB: 512,
+      });
+
+      // THEN
+      test.throws(() => {
+        new ecs.Ec2Service(stack, "Ec2Service", {
+          cluster,
+          taskDefinition,
+          desiredCount: 2,
+          assignPublicIp: true,
+          cloudMapOptions: {
+            name: "myapp",
+            dnsRecordType: cloudmap.DnsRecordType.A,
+            dnsTtl: cdk.Duration.seconds(50),
+            failureThreshold: 20
+          },
+          daemon: false,
+          healthCheckGracePeriod: cdk.Duration.seconds(60),
+          maxHealthyPercent: 150,
+          minHealthyPercent: 55,
+          securityGroup: securityGroup1,
+          securityGroups: [ securityGroup2 ],
+          serviceName: "bonjour",
+          vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC }
+        });
+      }, /Only one of SecurityGroup or SecurityGroups can be populated./);
+
+      test.done();
+    },
+
     "throws when task definition is not EC2 compatible"(test: Test) {
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
