@@ -34,5 +34,5 @@ class FargateTest extends Stack {
 }
 
 const app = new App();
-new FargateTest(app, 'fargate-test');
+new FargateTest(app, 'fargate-integ-test');
 app.synth();
