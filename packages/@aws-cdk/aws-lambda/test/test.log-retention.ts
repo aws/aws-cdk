@@ -93,5 +93,23 @@ export = {
 
     test.done();
 
-  }
+  },
+
+  'use as a LogGroup'(test: Test) {
+    const stack = new cdk.Stack();
+    const group = new LogRetention(stack, 'MyLambda', {
+      logGroupName: 'group',
+      retention: logs.RetentionDays.ONE_MONTH,
+    });
+
+    group.addStream('stream');
+
+    expect(stack).to(haveResource('AWS::Logs::LogStream', {
+      LogGroupName: {
+        'Fn::GetAtt': [ 'MyLambdaCCE802FB', 'LogGroupName' ]
+      }
+    }));
+
+    test.done();
+  },
 };

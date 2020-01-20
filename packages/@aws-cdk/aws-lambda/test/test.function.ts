@@ -85,5 +85,30 @@ export = testCase({
       code: lambda.Code.fromInline('')
     }), /Lambda inline code cannot be empty/);
     test.done();
-  }
+  },
+
+  'logGroup getter throws an exception when both logRetention and exposeLogGroup are unset'(test: Test) {
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'fn', {
+      handler: 'foo',
+      runtime: lambda.Runtime.NODEJS_10_X,
+      code: lambda.Code.fromInline('foo'),
+    });
+    test.throws(() => fn.logGroup, /LogGroup is not available/);
+    test.done();
+  },
+
+  'logGroup is available when exposeLogGroup is set'(test: Test) {
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'fn', {
+      handler: 'foo',
+      runtime: lambda.Runtime.NODEJS_10_X,
+      code: lambda.Code.fromInline('foo'),
+      exposeLogGroup: true,
+    });
+    const logGroup = fn.logGroup;
+    test.ok(logGroup.logGroupName);
+    test.ok(logGroup.logGroupArn);
+    test.done();
+  },
 });
