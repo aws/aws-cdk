@@ -268,7 +268,7 @@ export class Cluster extends Resource implements ICluster {
       metricName,
       dimensions: { ClusterName: this.clusterName },
       ...props
-    });
+    }).attachTo(this);
   }
 }
 

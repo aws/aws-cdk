@@ -27,6 +27,17 @@ export interface ActionArtifactBounds {
   readonly maxOutputs: number;
 }
 
+/**
+ * The CodePipeline variables that are global,
+ * not bound to a specific action.
+ * This class defines a bunch of static fields that represent the different variables.
+ * These can be used can be used in any action configuration.
+ */
+export class GlobalVariables {
+  /** The identifier of the current pipeline execution. */
+  public static readonly executionId = '#{codepipeline.PipelineExecutionId}';
+}
+
 export interface ActionProperties {
   readonly actionName: string;
   readonly role?: iam.IRole;
@@ -84,6 +95,13 @@ export interface ActionProperties {
   readonly artifactBounds: ActionArtifactBounds;
   readonly inputs?: Artifact[];
   readonly outputs?: Artifact[];
+
+  /**
+   * The name of the namespace to use for variables emitted by this action.
+   *
+   * @default - a name will be generated, based on the stage and action names
+   */
+  readonly variablesNamespace?: string;
 }
 
 export interface ActionBindOptions {
@@ -181,6 +199,15 @@ export interface CommonActionProps {
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/reference-pipeline-structure.html
    */
   readonly runOrder?: number;
+
+  /**
+   * The name of the namespace to use for variables emitted by this action.
+   *
+   * @default - a name will be generated, based on the stage and action names,
+   *   if any of the action's variables were referenced - otherwise,
+   *   no namespace will be set
+   */
+  readonly variablesNamespace?: string;
 }
 
 /**

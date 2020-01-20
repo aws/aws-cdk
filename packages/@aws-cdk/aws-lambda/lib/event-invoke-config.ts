@@ -1,5 +1,5 @@
 import { Construct, Duration, Resource } from '@aws-cdk/core';
-import { IDestination } from './destination';
+import { DestinationType, IDestination } from './destination';
 import { IFunction } from './function-base';
 import { CfnEventInvokeConfig } from './lambda.generated';
 
@@ -83,8 +83,8 @@ export class EventInvokeConfig extends Resource {
     new CfnEventInvokeConfig(this, 'Resource', {
       destinationConfig: props.onFailure || props.onSuccess
         ? {
-          ...props.onFailure ? { onFailure: props.onFailure.bind(this, props.function) } : {},
-          ...props.onSuccess ? { onSuccess: props.onSuccess.bind(this, props.function) } : {},
+          ...props.onFailure ? { onFailure: props.onFailure.bind(this, props.function, { type: DestinationType.FAILURE }) } : {},
+          ...props.onSuccess ? { onSuccess: props.onSuccess.bind(this, props.function, { type: DestinationType.SUCCESS }) } : {},
         }
         : undefined,
       functionName: props.function.functionName,

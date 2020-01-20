@@ -9,7 +9,7 @@ import org.hamcrest.CoreMatchers;
 import java.io.IOException;
 import static org.junit.Assert.assertThat;
 
-public class %name.PascalCasedStackTest {
+public class %name.PascalCased%StackTest {
     private final static ObjectMapper JSON =
         new ObjectMapper().configure(SerializationFeature.INDENT_OUTPUT, true);
 
@@ -19,6 +19,6 @@ public class %name.PascalCasedStackTest {
         %name.PascalCased%Stack stack = new %name.PascalCased%Stack(app, "test");
 
         JsonNode actual = JSON.valueToTree(app.synth().getStackArtifact(stack.getArtifactId()).getTemplate());
-        assertThat(actual.asText(), CoreMatchers.both(CoreMatchers.containsString("AWS::SQS::Queue")).and(CoreMatchers.containsString("AWS::SNS::Topic")));
+        assertThat(actual.toString(), CoreMatchers.both(CoreMatchers.containsString("AWS::SQS::Queue")).and(CoreMatchers.containsString("AWS::SNS::Topic")));
     }
 }
