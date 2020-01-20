@@ -1,4 +1,5 @@
 import {
+  countResources,
   exactlyMatchTemplate,
   expect,
   haveResource,
@@ -27,21 +28,25 @@ export = {
         KeyPolicy: {
           Statement: [
           {
-            Action: [
-            "kms:Create*",
-            "kms:Describe*",
-            "kms:Enable*",
-            "kms:List*",
-            "kms:Put*",
-            "kms:Update*",
-            "kms:Revoke*",
-            "kms:Disable*",
-            "kms:Get*",
-            "kms:Delete*",
-            "kms:ScheduleKeyDeletion",
-            "kms:CancelKeyDeletion",
-            "kms:GenerateDataKey"
-            ],
+              Action: [
+                "kms:CancelKeyDeletion",
+                "kms:Create*",
+                "kms:Delete*",
+                "kms:Describe*",
+                "kms:Disable*",
+                "kms:DisconnectCustomKeyStore",
+                "kms:Enable*",
+                "kms:GenerateDataKey",
+                "kms:Get*",
+                "kms:ImportKeyMaterial",
+                "kms:List*",
+                "kms:Put*",
+                "kms:Revoke*",
+                "kms:ScheduleKeyDeletion",
+                "kms:TagResource",
+                "kms:UntagResource",
+                "kms:Update*",
+              ],
             Effect: "Allow",
             Principal: {
             AWS: {
@@ -103,19 +108,23 @@ export = {
           Statement: [
             {
             Action: [
-              "kms:Create*",
-              "kms:Describe*",
-              "kms:Enable*",
-              "kms:List*",
-              "kms:Put*",
-              "kms:Update*",
-              "kms:Revoke*",
-              "kms:Disable*",
-              "kms:Get*",
-              "kms:Delete*",
-              "kms:ScheduleKeyDeletion",
-              "kms:CancelKeyDeletion",
-              "kms:GenerateDataKey"
+                "kms:CancelKeyDeletion",
+                "kms:Create*",
+                "kms:Delete*",
+                "kms:Describe*",
+                "kms:Disable*",
+                "kms:DisconnectCustomKeyStore",
+                "kms:Enable*",
+                "kms:GenerateDataKey",
+                "kms:Get*",
+                "kms:ImportKeyMaterial",
+                "kms:List*",
+                "kms:Put*",
+                "kms:Revoke*",
+                "kms:ScheduleKeyDeletion",
+                "kms:TagResource",
+                "kms:UntagResource",
+                "kms:Update*",
             ],
             Effect: "Allow",
             Principal: {
@@ -183,19 +192,23 @@ export = {
               Statement: [
                 {
                   Action: [
+                    "kms:CancelKeyDeletion",
                     "kms:Create*",
+                    "kms:Delete*",
                     "kms:Describe*",
+                    "kms:Disable*",
+                    "kms:DisconnectCustomKeyStore",
                     "kms:Enable*",
+                    "kms:GenerateDataKey",
+                    "kms:Get*",
+                    "kms:ImportKeyMaterial",
                     "kms:List*",
                     "kms:Put*",
-                    "kms:Update*",
                     "kms:Revoke*",
-                    "kms:Disable*",
-                    "kms:Get*",
-                    "kms:Delete*",
                     "kms:ScheduleKeyDeletion",
-                    "kms:CancelKeyDeletion",
-                    "kms:GenerateDataKey"
+                    "kms:TagResource",
+                    "kms:UntagResource",
+                    "kms:Update*",
                   ],
                   Effect: "Allow",
                   Principal: {
@@ -267,74 +280,16 @@ export = {
     const alias = key.addAlias('alias/xoo');
     test.ok(alias.aliasName);
 
-    expect(stack).toMatch({
-      Resources: {
-        MyKey6AB29FA6: {
-          Type: "AWS::KMS::Key",
-          Properties: {
-            EnableKeyRotation: true,
-            Enabled: false,
-            KeyPolicy: {
-              Statement: [
-                {
-                  Action: [
-                    "kms:Create*",
-                    "kms:Describe*",
-                    "kms:Enable*",
-                    "kms:List*",
-                    "kms:Put*",
-                    "kms:Update*",
-                    "kms:Revoke*",
-                    "kms:Disable*",
-                    "kms:Get*",
-                    "kms:Delete*",
-                    "kms:ScheduleKeyDeletion",
-                    "kms:CancelKeyDeletion",
-                    "kms:GenerateDataKey"
-                  ],
-                  Effect: "Allow",
-                  Principal: {
-                    AWS: {
-                      "Fn::Join": [
-                        "",
-                        [
-                          "arn:",
-                          {
-                            Ref: "AWS::Partition"
-                          },
-                          ":iam::",
-                          {
-                            Ref: "AWS::AccountId"
-                          },
-                          ":root"
-                        ]
-                      ]
-                    }
-                  },
-                  Resource: "*"
-                }
-              ],
-              Version: "2012-10-17"
-            }
-          },
-          DeletionPolicy: "Retain",
-          UpdateReplacePolicy: "Retain",
-        },
-        MyKeyAlias1B45D9DA: {
-          Type: "AWS::KMS::Alias",
-          Properties: {
-            AliasName: "alias/xoo",
-            TargetKeyId: {
-              "Fn::GetAtt": [
-                "MyKey6AB29FA6",
-                "Arn"
-              ]
-            }
-          }
-        }
+    expect(stack).to(countResources('AWS::KMS::Alias', 1));
+    expect(stack).to(haveResource('AWS::KMS::Alias', {
+      AliasName: "alias/xoo",
+      TargetKeyId: {
+        "Fn::GetAtt": [
+          "MyKey6AB29FA6",
+          "Arn"
+        ]
       }
-    });
-
+    }));
     test.done();
   },
 
@@ -352,86 +307,25 @@ export = {
     test.ok(alias1.aliasName);
     test.ok(alias2.aliasName);
 
-    expect(stack).toMatch({
-      Resources: {
-        MyKey6AB29FA6: {
-          Type: "AWS::KMS::Key",
-          Properties: {
-            EnableKeyRotation: true,
-            Enabled: false,
-            KeyPolicy: {
-              Statement: [
-                {
-                  Action: [
-                    "kms:Create*",
-                    "kms:Describe*",
-                    "kms:Enable*",
-                    "kms:List*",
-                    "kms:Put*",
-                    "kms:Update*",
-                    "kms:Revoke*",
-                    "kms:Disable*",
-                    "kms:Get*",
-                    "kms:Delete*",
-                    "kms:ScheduleKeyDeletion",
-                    "kms:CancelKeyDeletion",
-                    "kms:GenerateDataKey"
-                  ],
-                  Effect: "Allow",
-                  Principal: {
-                    AWS: {
-                      "Fn::Join": [
-                        "",
-                        [
-                          "arn:",
-                          {
-                            Ref: "AWS::Partition"
-                          },
-                          ":iam::",
-                          {
-                            Ref: "AWS::AccountId"
-                          },
-                          ":root"
-                        ]
-                      ]
-                    }
-                  },
-                  Resource: "*"
-                }
-              ],
-              Version: "2012-10-17"
-            }
-          },
-          DeletionPolicy: "Retain",
-          UpdateReplacePolicy: "Retain",
-        },
-        MyKeyAlias1B45D9DA: {
-          Type: "AWS::KMS::Alias",
-          Properties: {
-            AliasName: "alias/alias1",
-            TargetKeyId: {
-              "Fn::GetAtt": [
-                "MyKey6AB29FA6",
-                "Arn"
-              ]
-            }
-          }
-        },
-        MyKeyAliasaliasalias2EC56BD3E: {
-          Type: "AWS::KMS::Alias",
-          Properties: {
-            AliasName: "alias/alias2",
-            TargetKeyId: {
-              "Fn::GetAtt": [
-                "MyKey6AB29FA6",
-                "Arn"
-              ]
-            }
-          }
-        }
+    expect(stack).to(countResources('AWS::KMS::Alias', 2));
+    expect(stack).to(haveResource('AWS::KMS::Alias', {
+      AliasName: 'alias/alias1',
+      TargetKeyId: {
+        "Fn::GetAtt": [
+          "MyKey6AB29FA6",
+          "Arn"
+        ]
       }
-    });
-
+    }));
+    expect(stack).to(haveResource('AWS::KMS::Alias', {
+      AliasName: 'alias/alias2',
+      TargetKeyId: {
+        "Fn::GetAtt": [
+          "MyKey6AB29FA6",
+          "Arn"
+        ]
+      }
+    }));
     test.done();
   },
 
@@ -451,7 +345,25 @@ export = {
           // This one is there by default
           {
             // tslint:disable-next-line:max-line-length
-            Action: [ "kms:Create*", "kms:Describe*", "kms:Enable*", "kms:List*", "kms:Put*", "kms:Update*", "kms:Revoke*", "kms:Disable*", "kms:Get*", "kms:Delete*", "kms:ScheduleKeyDeletion", "kms:CancelKeyDeletion", "kms:GenerateDataKey" ],
+            Action: [
+              "kms:CancelKeyDeletion",
+              "kms:Create*",
+              "kms:Delete*",
+              "kms:Describe*",
+              "kms:Disable*",
+              "kms:DisconnectCustomKeyStore",
+              "kms:Enable*",
+              "kms:GenerateDataKey",
+              "kms:Get*",
+              "kms:ImportKeyMaterial",
+              "kms:List*",
+              "kms:Put*",
+              "kms:Revoke*",
+              "kms:ScheduleKeyDeletion",
+              "kms:TagResource",
+              "kms:UntagResource",
+              "kms:Update*",
+            ],
             Effect: "Allow",
             Principal: { AWS: { "Fn::Join": [ "", [ "arn:", { Ref: "AWS::Partition" }, ":iam::", { Ref: "AWS::AccountId" }, ":root" ] ] } },
             Resource: "*"
@@ -554,7 +466,7 @@ export = {
   },
   'enablePolicyControl changes key policy to allow IAM control'(test: Test) {
     const stack = new Stack();
-    new Key(stack, 'MyKey', {enablePolicyControl: true});
+    new Key(stack, 'MyKey', {trustAccountIdentities: true});
     expect(stack).to(haveResourceLike('AWS::KMS::Key', {
       "KeyPolicy": {
         "Statement": [
