@@ -293,7 +293,7 @@ export = {
           Required: false
         },
         {
-          Name: 'timezone',
+          Name: 'zoneinfo',
           AttributeDataType: 'String',
           Mutable: true,
           Required: false
