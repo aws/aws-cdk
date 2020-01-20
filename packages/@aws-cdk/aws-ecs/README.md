@@ -302,11 +302,9 @@ const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', { vpc, internetFacing: 
 const listener = lb.addListener('Listener', { port: 80 });
 service.registerLoadBalancerTargets(
   {
-    containerTarget: {
-      containerName: 'web',
-      containerPort: 80,
-    },
-    targetGroupId: 'ECS',
+    containerName: 'web',
+    containerPort: 80,
+    newTargetGroupId: 'ECS',
     listener: ecs.ListenerConfig.applicationListener(listener, {
       protocol: elbv2.ApplicationProtocol.HTTPS
     }),
