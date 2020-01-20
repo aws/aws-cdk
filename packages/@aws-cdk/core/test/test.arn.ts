@@ -141,6 +141,7 @@ export = {
           partition: 'aws',
           service: 'apigateway',
           region: 'us-east-1',
+          account: '',
           resource: 'a123456789012bc3de45678901f23a45',
           sep: ':',
           resourceName: '/test/mydemoresource/*'
@@ -148,6 +149,7 @@ export = {
         'arn:aws-cn:cloud9::123456789012:environment:81e900317347585a0601e04c8d52eaEX': {
           partition: 'aws-cn',
           service: 'cloud9',
+          region: '',
           account: '123456789012',
           resource: 'environment',
           resourceName: '81e900317347585a0601e04c8d52eaEX',
@@ -155,6 +157,8 @@ export = {
         },
         'arn::cognito-sync:::identitypool/us-east-1:1a1a1a1a-ffff-1111-9999-12345678:bla': {
           service: 'cognito-sync',
+          region: '',
+          account: '',
           resource: 'identitypool',
           resourceName: 'us-east-1:1a1a1a1a-ffff-1111-9999-12345678:bla',
           sep: '/'
@@ -162,6 +166,8 @@ export = {
         'arn:aws:s3:::my_corporate_bucket': {
           partition: 'aws',
           service: 's3',
+          region: '',
+          account: '',
           resource: 'my_corporate_bucket'
         }
       };
@@ -202,6 +208,23 @@ export = {
       // tslint:disable-next-line:max-line-length
       test.deepEqual(stack.resolve(parsed.resourceName), { 'Fn::Select': [ 1, { 'Fn::Split': [ '/', { 'Fn::Select': [ 5, { 'Fn::Split': [ ':', theToken ]} ]} ]} ]});
 
+      test.done();
+    },
+
+    'returns empty string ARN components'(test: Test) {
+      const stack = new Stack();
+      const arn = 'arn:aws:iam::123456789012:role/abc123';
+      const expected: ArnComponents = {
+        partition: 'aws',
+        service: 'iam',
+        region: '',
+        account: '123456789012',
+        resource: 'role',
+        resourceName: 'abc123',
+        sep: '/'
+      };
+
+      test.deepEqual(stack.parseArn(arn), expected, arn);
       test.done();
     }
   },
