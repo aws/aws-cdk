@@ -31,7 +31,14 @@ export async function prepareContainerAsset(assemblyDir: string,
                                             asset: ContainerImageAssetMetadataEntry,
                                             toolkitInfo: ToolkitInfo,
                                             reuse: boolean,
-                                            ci?: boolean): Promise<[CloudFormation.Parameter]> {
+                                            ci?: boolean): Promise<CloudFormation.Parameter[]> {
+
+  // following 1.21.0, image asset location (repositoryName and imageTag) is fully determined by the
+  // app, and therefore there is no need to wire the image name through a cloudformation parameter.
+  if (!asset.imageNameParameter) {
+    await prepareContainerAssetNew(assemblyDir, asset, toolkitInfo);
+    return [ ];
+  }
 
   if (reuse) {
     return [
@@ -44,8 +51,10 @@ export async function prepareContainerAsset(assemblyDir: string,
   debug(' 👑  Preparing Docker image asset:', contextPath);
 
   try {
-    const ecr = await toolkitInfo.prepareEcrRepository(asset);
-    const latest = `${ecr.repositoryUri}:latest`;
+    const repositoryName = asset.repositoryName ?? 'cdk/' + asset.id.replace(/[:/]/g, '-').toLowerCase();
+    const ecr = await toolkitInfo.prepareEcrRepository(repositoryName);
+    const imageTag = asset.imageTag ?? 'latest';
+    const latest = `${ecr.repositoryUri}:${imageTag}`;
 
     let loggedIn = false;
 
@@ -75,7 +84,8 @@ export async function prepareContainerAsset(assemblyDir: string,
     }
 
     if (asset.file) {
-      baseCommand.push('--file', asset.file);
+      // remember we assume the file is relative (we validate this in the asset constructor)
+      baseCommand.push('--file', path.join(contextPath, asset.file));
     }
 
     const command = ci
@@ -103,7 +113,7 @@ export async function prepareContainerAsset(assemblyDir: string,
     }
 
     return [
-      { ParameterKey: asset.imageNameParameter, ParameterValue: repoDigest.replace(ecr.repositoryUri, ecr.repositoryName) },
+      { ParameterKey: asset.imageNameParameter, ParameterValue: repoDigest.replace(ecr.repositoryUri, repositoryName) },
     ];
   } catch (e) {
     if (e.code === 'ENOENT') {
@@ -112,6 +122,72 @@ export async function prepareContainerAsset(assemblyDir: string,
     }
     throw e;
   }
+}
+
+/**
+ * Build and upload a Docker image
+ */
+export async function prepareContainerAssetNew(assemblyDir: string,
+                                               asset: ContainerImageAssetMetadataEntry,
+                                               toolkitInfo: ToolkitInfo) {
+
+  if (asset.imageNameParameter || !asset.repositoryName || !asset.imageTag) {
+    throw new Error(`invalid docker image asset configuration. "repositoryName" and "imageTag" are required and "imageNameParameter" is not allowed`);
+  }
+
+  const contextPath = path.isAbsolute(asset.path) ? asset.path : path.join(assemblyDir, asset.path);
+
+  debug(' 👑  Preparing Docker image asset:', contextPath);
+  const ecr = await toolkitInfo.prepareEcrRepository(asset.repositoryName);
+
+  // if both repo name and image tag are explicitly defined, we assume the
+  // image is immutable and can skip build & push.
+  debug(`${asset.repositoryName}:${asset.imageTag}: checking if image already exists`);
+  if (await toolkitInfo.checkEcrImage(asset.repositoryName, asset.imageTag)) {
+    print(`${asset.repositoryName}:${asset.imageTag}: image already exists, skipping build and push`);
+    return;
+  }
+
+  // we use "latest" for image tag for backwards compatibility with pre-1.21.0 apps.
+  const fullImageName = `${ecr.repositoryUri}:${asset.imageTag}`;
+
+  // render "docker build" command
+
+  const buildCommand = [ 'docker', 'build' ];
+
+  buildCommand.push('--tag', fullImageName);
+
+  if (asset.target) {
+    buildCommand.push('--target', asset.target);
+  }
+
+  if (asset.file) {
+      // remember we assume the file is relative (we validate this in the asset constructor)
+      buildCommand.push('--file', path.join(contextPath, asset.file));
+  }
+
+  for (const [ key, value ] of Object.entries(asset.buildArgs || {})) {
+    buildCommand.push(`--build-arg`, `${key}=${value}`);
+  }
+
+  buildCommand.push(contextPath);
+
+  try {
+    await shell(buildCommand);
+  } catch (e) {
+    if (e.code === 'ENOENT') {
+      throw new Error('Unable to execute "docker" in order to build a container asset. Please install "docker" and try again.');
+    }
+    throw e;
+  }
+
+  // login to ECR
+  await dockerLogin(toolkitInfo);
+
+  // There's no way to make this quiet, so we can't use a PleaseHold. Print a header message.
+  print(` ⌛ Pushing Docker image for ${contextPath}; this may take a while.`);
+  await shell(['docker', 'push', fullImageName]);
+  debug(` 👑  Docker image for ${contextPath} pushed.`);
 }
 
 /**
