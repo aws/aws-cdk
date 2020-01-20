@@ -21,6 +21,7 @@ export = {
 
     test.done();
   },
+
   'support tags'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -258,6 +259,54 @@ export = {
 
     // THEN
     test.throws(() => toThrow(), /'autoVerifiedAttributes' can only include EMAIL or PHONE_NUMBER/);
+    test.done();
+  },
+
+  'support adding additional attributes for all the users'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const { ADDRESS, LOCALE, TIMEZONE } = cognito.UserPoolAttribute;
+    new cognito.UserPool(stack, 'Pool', {
+      userAttributes: [
+        { name: ADDRESS },
+        { name: LOCALE },
+        { name: TIMEZONE, mutable: true },
+        { name: 'another_attribute' }
+      ]
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::Cognito::UserPool', {
+      Schema: [
+        {
+          Name: 'address',
+          AttributeDataType: 'String',
+          Mutable: false,
+          Required: false
+        },
+        {
+          Name: 'locale',
+          AttributeDataType: 'String',
+          Mutable: false,
+          Required: false
+        },
+        {
+          Name: 'timezone',
+          AttributeDataType: 'String',
+          Mutable: true,
+          Required: false
+        },
+        {
+          Name: 'another_attribute',
+          AttributeDataType: 'String',
+          Mutable: false,
+          Required: false
+        }
+      ]
+    }));
+
     test.done();
   }
 };

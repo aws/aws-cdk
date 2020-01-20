@@ -120,6 +120,58 @@ export enum UserPoolAttribute {
   WEBSITE = 'website'
 }
 
+interface SchemaAttribute {
+  /**
+   * Specifies whether the value of the attribute can be changed.
+   *
+   * @default - false
+   */
+  readonly mutable?: boolean,
+
+  /**
+   * Specifies whether a user pool attribute is required.
+   * If the attribute is required and the user does not provide a value, registration or sign-in will fail.
+   *
+   * @default - false
+   */
+  readonly required?: boolean
+}
+
+/**
+ * Standard attributes for all users in a user-pool
+ * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html#cognito-user-pools-standard-attributes
+ */
+export interface StandardSchemaAttribute extends SchemaAttribute {
+  /**
+   * Name of one of the standard attributes
+   */
+  readonly name: UserPoolAttribute,
+
+  /**
+   * Standard attributes are all strings. No other type is allowed.
+   * @default - 'String'
+   */
+  readonly type?: 'String'
+}
+
+/**
+ * Custom attributes for all users in a user-pool
+ * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html#user-pool-settings-custom-attributes
+ */
+export interface CustomSchemaAttribute extends SchemaAttribute {
+  /**
+   * Name of a custom attribute.
+   * This will get an automatic prefix `custom:` in Cognito, once deployed.
+   */
+  readonly name: string,
+
+  /**
+   * Custom attributes can be strings or numbers only.
+   * @default - 'String'
+   */
+  readonly type?: 'String' | 'Number',
+}
+
 /**
  * Methods of user sign-in
  */
@@ -250,6 +302,13 @@ export interface UserPoolProps {
    * @default - No Lambda triggers.
    */
   readonly lambdaTriggers?: UserPoolTriggers;
+
+  /**
+   * Standard or Custom attributes to add to all users in this user pool
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html
+   * @default - no additional attributes
+   */
+  readonly userAttributes?: Array<StandardSchemaAttribute | CustomSchemaAttribute>;
 }
 
 export interface UserPoolAttributes {
@@ -402,12 +461,25 @@ export class UserPool extends Resource implements IUserPool {
       }
     }
 
+    let schema: CfnUserPool.SchemaAttributeProperty[] | undefined;
+    if (props.userAttributes) {
+      schema = props.userAttributes.map(attribute => {
+        return {
+          name: attribute.name,
+          attributeDataType: attribute.type || 'String',
+          required: attribute.required || false,
+          mutable: attribute.mutable || false,
+        };
+      });
+    }
+
     const userPool = new CfnUserPool(this, 'Resource', {
       userPoolName: this.physicalName,
       usernameAttributes,
       aliasAttributes,
       autoVerifiedAttributes: props.autoVerifiedAttributes,
-      lambdaConfig: Lazy.anyValue({ produce: () => this.triggers })
+      lambdaConfig: Lazy.anyValue({ produce: () => this.triggers }),
+      schema
     });
 
     this.userPoolId = this.getResourceNameAttribute(userPool.ref);
