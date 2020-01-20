@@ -7,19 +7,23 @@
           "Statement": [
             {
               "Action": [
+                "kms:CancelKeyDeletion",
                 "kms:Create*",
+                "kms:Delete*",
                 "kms:Describe*",
+                "kms:Disable*",
+                "kms:DisconnectCustomKeyStore",
                 "kms:Enable*",
+                "kms:GenerateDataKey",
+                "kms:Get*",
+                "kms:ImportKeyMaterial",
                 "kms:List*",
                 "kms:Put*",
-                "kms:Update*",
                 "kms:Revoke*",
-                "kms:Disable*",
-                "kms:Get*",
-                "kms:Delete*",
                 "kms:ScheduleKeyDeletion",
-                "kms:CancelKeyDeletion",
-                "kms:GenerateDataKey"
+                "kms:TagResource",
+                "kms:UntagResource",
+                "kms:Update*"
               ],
               "Effect": "Allow",
               "Principal": {
@@ -66,13 +70,11 @@
         },
         "Description": "Created by aws-cdk-s3/MyBucket"
       },
-      "DeletionPolicy": "Retain",
-      "UpdateReplacePolicy": "Retain"
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
     },
     "MyBucketF68F3FF0": {
       "Type": "AWS::S3::Bucket",
-      "DeletionPolicy": "Delete",
-      "UpdateReplacePolicy": "Delete",
       "Properties": {
         "BucketEncryption": {
           "ServerSideEncryptionConfiguration": [
@@ -89,12 +91,12 @@
             }
           ]
         }
-      }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "MyOtherBucket543F3540": {
       "Type": "AWS::S3::Bucket",
-      "DeletionPolicy": "Delete",
-      "UpdateReplacePolicy": "Delete",
       "Properties": {
         "BucketEncryption": {
           "ServerSideEncryptionConfiguration": [
@@ -105,7 +107,9 @@
             }
           ]
         }
-      }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "MyUserDC45028B": {
       "Type": "AWS::IAM::User"

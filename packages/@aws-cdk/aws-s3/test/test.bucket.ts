@@ -9,6 +9,25 @@ import * as s3 from '../lib';
 // to make it easy to copy & paste from output:
 // tslint:disable:object-literal-key-quotes
 
+const stdKeyPolicyActions = [
+  "kms:CancelKeyDeletion",
+  "kms:Create*",
+  "kms:Delete*",
+  "kms:Describe*",
+  "kms:Disable*",
+  "kms:DisconnectCustomKeyStore",
+  "kms:Enable*",
+  "kms:GenerateDataKey",
+  "kms:Get*",
+  "kms:ImportKeyMaterial",
+  "kms:List*",
+  "kms:Put*",
+  "kms:Revoke*",
+  "kms:ScheduleKeyDeletion",
+  "kms:TagResource",
+  "kms:UntagResource",
+  "kms:Update*",
+];
 export = {
   'default bucket'(test: Test) {
     const stack = new cdk.Stack();
@@ -265,21 +284,7 @@ export = {
             "KeyPolicy": {
               "Statement": [
                 {
-                  "Action": [
-                    "kms:Create*",
-                    "kms:Describe*",
-                    "kms:Enable*",
-                    "kms:List*",
-                    "kms:Put*",
-                    "kms:Update*",
-                    "kms:Revoke*",
-                    "kms:Disable*",
-                    "kms:Get*",
-                    "kms:Delete*",
-                    "kms:ScheduleKeyDeletion",
-                    "kms:CancelKeyDeletion",
-                    "kms:GenerateDataKey"
-                  ],
+                  "Action": stdKeyPolicyActions,
                   "Effect": "Allow",
                   "Principal": {
                     "AWS": {
@@ -826,8 +831,7 @@ export = {
         "KeyPolicy": {
           "Statement": [
             {
-              "Action": ["kms:Create*", "kms:Describe*", "kms:Enable*", "kms:List*", "kms:Put*", "kms:Update*",
-                "kms:Revoke*", "kms:Disable*", "kms:Get*", "kms:Delete*", "kms:ScheduleKeyDeletion", "kms:CancelKeyDeletion", "kms:GenerateDataKey"],
+              "Action": stdKeyPolicyActions,
               "Effect": "Allow",
               "Principal": {
                 "AWS": {
@@ -869,21 +873,7 @@ export = {
               "KeyPolicy": {
                 "Statement": [
                   {
-                    "Action": [
-                      "kms:Create*",
-                      "kms:Describe*",
-                      "kms:Enable*",
-                      "kms:List*",
-                      "kms:Put*",
-                      "kms:Update*",
-                      "kms:Revoke*",
-                      "kms:Disable*",
-                      "kms:Get*",
-                      "kms:Delete*",
-                      "kms:ScheduleKeyDeletion",
-                      "kms:CancelKeyDeletion",
-                      "kms:GenerateDataKey"
-                    ],
+                    "Action": stdKeyPolicyActions,
                     "Effect": "Allow",
                     "Principal": {
                       "AWS": {
