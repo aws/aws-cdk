@@ -1,7 +1,7 @@
 import { CustomResource } from '@aws-cdk/aws-cloudformation';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct } from "@aws-cdk/core";
+import { Construct, ITaggable, Lazy, TagManager, TagType } from "@aws-cdk/core";
 import { Cluster } from './cluster';
 import { FARGATE_PROFILE_RESOURCE_TYPE } from './cluster-resource-handler/consts';
 import { ClusterResourceProvider } from './cluster-resource-provider';
@@ -120,7 +120,7 @@ export interface Selector {
  * eks.amazonaws.com/fargate-profile: profile_name. However, the pod must still
  * match a selector in that profile in order to be scheduled onto Fargate.
  */
-export class FargateProfile extends Construct {
+export class FargateProfile extends Construct implements ITaggable {
 
   /**
    * The full Amazon Resource Name (ARN) of the Fargate profile.
@@ -135,6 +135,11 @@ export class FargateProfile extends Construct {
    * @attribute
    */
   public readonly fargateProfileName: string;
+
+  /**
+   * Resource tags.
+   */
+  public readonly tags: TagManager;
 
   constructor(scope: Construct, id: string, props: FargateProfileProps) {
     super(scope, id);
@@ -160,6 +165,11 @@ export class FargateProfile extends Construct {
       throw new Error(`Fargate profile supports up to five selectors`);
     }
 
+    this.tags = new TagManager(TagType.MAP, 'AWS::EKS::FargateProfile');
+    for (const [ key, value ] of Object.entries(props.tags || {})) {
+      this.tags.setTag(key, value);
+    }
+
     const resource = new CustomResource(this, 'Resource', {
       provider: provider.provider,
       resourceType: FARGATE_PROFILE_RESOURCE_TYPE,
@@ -171,7 +181,7 @@ export class FargateProfile extends Construct {
           podExecutionRoleArn: role.roleArn,
           selectors: props.selectors,
           subnets,
-          tags: props.tags
+          tags: Lazy.anyValue({ produce: () => this.tags.renderTags() })
         }
       }
     });

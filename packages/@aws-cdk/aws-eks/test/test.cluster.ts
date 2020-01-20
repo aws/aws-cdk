@@ -6,6 +6,7 @@ import { Test } from 'nodeunit';
 import * as eks from '../lib';
 import { spotInterruptHandler } from '../lib/spot-interrupt-handler';
 import { testFixture, testFixtureNoVpc } from './util';
+import { Stack } from '@aws-cdk/core';
 
 // tslint:disable:max-line-length
 
@@ -847,6 +848,34 @@ export = {
           }
         ],
         Version: "2012-10-17"
+      }
+    }));
+    test.done();
+  },
+
+  'coreDnsComputeType will patch the coreDNS configuration to use a "fargate" compute type and restore to "ec2" upon removal'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new eks.Cluster(stack, 'MyCluster', {
+      coreDnsComputeType: eks.CoreDnsComputeType.FARGATE
+    });
+
+    // THEN
+    expect(stack).to(haveResource('Custom::AWSCDK-EKS-KubernetesPatch', {
+      ResourceName: "deployment/coredns",
+      ResourceNamespace: "kube-system",
+      ApplyPatchJson: "{\"spec\":{\"template\":{\"metadata\":{\"annotations\":{\"eks.amazonaws.com/compute-type\":\"fargate\"}}}}}",
+      RestorePatchJson: "{\"spec\":{\"template\":{\"metadata\":{\"annotations\":{\"eks.amazonaws.com/compute-type\":\"ec2\"}}}}}",
+      ClusterName: {
+        Ref: "MyCluster8AD82BF8"
+      },
+      RoleArn: {
+        "Fn::GetAtt": [
+          "MyClusterCreationRoleB5FA4FF3",
+          "Arn"
+        ]
       }
     }));
     test.done();
