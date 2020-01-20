@@ -354,6 +354,38 @@ export = {
     test.done();
   },
 
+  'setting ALB HTTPS correctly sets the recordset name'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, "FargateAlbService", {
+      cluster,
+      protocol: ApplicationProtocol.HTTPS,
+      domainName: 'test.domain.com',
+      domainZone: {
+        hostedZoneId: 'fakeId',
+        zoneName: 'domain.com.',
+        hostedZoneArn: 'arn:aws:route53:::hostedzone/fakeId',
+        stack,
+        node: stack.node,
+      },
+      taskImageOptions: {
+        containerPort: 2015,
+        image: ecs.ContainerImage.fromRegistry('abiosoft/caddy')
+      },
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::Route53::RecordSet', {
+      Name: 'test.domain.com.',
+    }));
+
+    test.done();
+  },
+
   'setting ALB HTTP protocol to create the listener on 80'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
