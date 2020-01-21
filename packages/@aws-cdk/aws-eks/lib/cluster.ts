@@ -432,7 +432,9 @@ export class Cluster extends Resource implements ICluster {
       new CfnOutput(this, 'GetTokenCommand', { value: `${getTokenCommandPrefix} ${postfix}` });
     }
 
-    this.defineCoreDnsComputeType(props.coreDnsComputeType || CoreDnsComputeType.EC2);
+    if (this.kubectlEnabled) {
+      this.defineCoreDnsComputeType(props.coreDnsComputeType || CoreDnsComputeType.EC2);
+    }
   }
 
   /**
@@ -659,7 +661,7 @@ export class Cluster extends Resource implements ICluster {
    */
   private defineCoreDnsComputeType(type: CoreDnsComputeType) {
     if (!this.kubectlEnabled) {
-      return;
+      throw new Error(`kubectl must be enabled in order to define the compute type for CoreDNS`);
     }
 
     // ec2 is the "built in" compute type of the cluster so if this is the
