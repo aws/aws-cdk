@@ -21,6 +21,7 @@ export class FullActionDescriptor {
   public readonly version: string;
   public readonly runOrder: number;
   public readonly artifactBounds: ActionArtifactBounds;
+  public readonly namespace?: string;
   public readonly inputs: Artifact[];
   public readonly outputs: Artifact[];
   public readonly region?: string;
@@ -37,6 +38,7 @@ export class FullActionDescriptor {
     this.version = actionProperties.version || '1';
     this.runOrder = actionProperties.runOrder === undefined ? 1 : actionProperties.runOrder;
     this.artifactBounds = actionProperties.artifactBounds;
+    this.namespace = actionProperties.variablesNamespace;
     this.inputs = deduplicateArtifacts(actionProperties.inputs);
     this.outputs = deduplicateArtifacts(actionProperties.outputs);
     this.region = props.actionRegion || actionProperties.region;

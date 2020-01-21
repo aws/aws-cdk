@@ -11,7 +11,7 @@ import { SDK } from "../../lib/api/util/sdk";
 export class MockSDK extends SDK {
   private readonly sandbox: sinon.SinonSandbox;
   constructor() {
-    super();
+    super({ userAgent: 'aws-cdk/jest' });
     this.sandbox = sinon.createSandbox();
   }
 

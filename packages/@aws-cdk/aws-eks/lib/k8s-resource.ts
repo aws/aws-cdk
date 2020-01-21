@@ -1,12 +1,11 @@
-import { CustomResource, NestedStack } from '@aws-cdk/aws-cloudformation';
-import * as iam from '@aws-cdk/aws-iam';
-import * as lambda from '@aws-cdk/aws-lambda';
-import { Construct, Duration, Stack } from '@aws-cdk/core';
-import * as cr from '@aws-cdk/custom-resources';
-import * as path from 'path';
+import { CustomResource } from '@aws-cdk/aws-cloudformation';
+import { Construct, Stack } from '@aws-cdk/core';
 import { Cluster } from './cluster';
-import { KubectlLayer } from './kubectl-layer';
+import { KubectlProvider } from './kubectl-provider';
 
+/**
+ * Properties for KubernetesResources
+ */
 export interface KubernetesResourceProps {
   /**
    * The EKS cluster to apply this configuration to.
@@ -56,12 +55,8 @@ export class KubernetesResource extends Construct {
   constructor(scope: Construct, id: string, props: KubernetesResourceProps) {
     super(scope, id);
 
-    if (!props.cluster._clusterResource) {
-      throw new Error(`Cannot define a KubernetesManifest resource on a cluster with kubectl disabled`);
-    }
-
     const stack = Stack.of(this);
-    const provider = KubernetesResourceProvider.getOrCreate(this);
+    const provider = KubectlProvider.getOrCreate(this);
 
     new CustomResource(this, 'Resource', {
       provider: provider.provider,
@@ -72,53 +67,8 @@ export class KubernetesResource extends Construct {
         // StepFunctions, CloudWatch Dashboards etc).
         Manifest: stack.toJsonString(props.manifest),
         ClusterName: props.cluster.clusterName,
-        RoleArn: props.cluster._clusterResource.getCreationRoleArn(provider.role)
+        RoleArn: props.cluster._getKubectlCreationRoleArn(provider.role)
       }
     });
-  }
-}
-
-class KubernetesResourceProvider extends NestedStack {
-  /**
-   * Creates a stack-singleton resource provider nested stack.
-   */
-  public static getOrCreate(scope: Construct) {
-    const stack = Stack.of(scope);
-    const uid = '@aws-cdk/aws-eks.KubernetesResourceProvider';
-    return stack.node.tryFindChild(uid) as KubernetesResourceProvider || new KubernetesResourceProvider(stack, uid);
-  }
-
-  /**
-   * The custom resource provider.
-   */
-  public readonly provider: cr.Provider;
-
-  /**
-   * The IAM role used to execute this provider.
-   */
-  public readonly role: iam.IRole;
-
-  private constructor(scope: Construct, id: string) {
-    super(scope, id);
-
-    const handler = new lambda.Function(this, 'Handler', {
-      runtime: lambda.Runtime.PYTHON_2_7,
-      handler: 'index.handler',
-      timeout: Duration.minutes(15),
-      layers: [ KubectlLayer.getOrCreate(this) ],
-      memorySize: 256,
-      code: lambda.Code.fromAsset(path.join(__dirname, 'k8s-resource-handler'))
-    });
-
-    this.provider = new cr.Provider(this, 'Provider', {
-      onEventHandler: handler
-    });
-
-    this.role = handler.role!;
-
-    this.role.addToPolicy(new iam.PolicyStatement({
-      actions: [ 'eks:DescribeCluster' ],
-      resources: [ '*' ]
-    }));
   }
 }

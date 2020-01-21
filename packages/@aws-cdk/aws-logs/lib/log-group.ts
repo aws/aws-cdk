@@ -147,7 +147,7 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
       metricValue: jsonField
     });
 
-    return new cloudwatch.Metric({ metricName, namespace: metricNamespace });
+    return new cloudwatch.Metric({ metricName, namespace: metricNamespace }).attachTo(this);
   }
 
   /**
@@ -305,12 +305,29 @@ export interface LogGroupProps {
  */
 export class LogGroup extends LogGroupBase {
   /**
-   * Import an existing LogGroup
+   * Import an existing LogGroup given its ARN
    */
   public static fromLogGroupArn(scope: Construct, id: string, logGroupArn: string): ILogGroup {
     class Import extends LogGroupBase {
       public readonly logGroupArn = logGroupArn;
       public readonly logGroupName = Stack.of(scope).parseArn(logGroupArn, ':').resourceName!;
+    }
+
+    return new Import(scope, id);
+  }
+
+  /**
+   * Import an existing LogGroup given its name
+   */
+  public static fromLogGroupName(scope: Construct, id: string, logGroupName: string): ILogGroup {
+    class Import extends LogGroupBase {
+      public readonly logGroupName = logGroupName;
+      public readonly logGroupArn = Stack.of(scope).formatArn({
+        service: 'logs',
+        resource: 'log-group',
+        sep: ':',
+        resourceName: logGroupName,
+      });
     }
 
     return new Import(scope, id);
