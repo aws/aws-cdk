@@ -17,10 +17,10 @@ export interface FargateProfileOptions {
   readonly fargateProfileName?: string;
 
   /**
-   * The Amazon Resource Name (ARN) of the pod execution role to use for pods
-   * that match the selectors in the Fargate profile. The pod execution role
-   * allows Fargate infrastructure to register with your cluster as a node, and
-   * it provides read access to Amazon ECR image repositories.
+   * The pod execution role to use for pods that match the selectors in the
+   * Fargate profile. The pod execution role allows Fargate infrastructure to
+   * register with your cluster as a node, and it provides read access to Amazon
+   * ECR image repositories.
    *
    * @see https://docs.aws.amazon.com/eks/latest/userguide/pod-execution-role.html
    * @default - a role will be automatically created

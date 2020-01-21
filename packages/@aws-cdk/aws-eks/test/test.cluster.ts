@@ -6,7 +6,6 @@ import { Test } from 'nodeunit';
 import * as eks from '../lib';
 import { spotInterruptHandler } from '../lib/spot-interrupt-handler';
 import { testFixture, testFixtureNoVpc } from './util';
-import { Stack } from '@aws-cdk/core';
 
 // tslint:disable:max-line-length
 
@@ -855,7 +854,7 @@ export = {
 
   'coreDnsComputeType will patch the coreDNS configuration to use a "fargate" compute type and restore to "ec2" upon removal'(test: Test) {
     // GIVEN
-    const stack = new Stack();
+    const stack = new cdk.Stack();
 
     // WHEN
     new eks.Cluster(stack, 'MyCluster', {
