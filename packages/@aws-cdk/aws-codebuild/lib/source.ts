@@ -20,6 +20,11 @@ export interface SourceConfig {
 
   readonly buildTriggers?: CfnProject.ProjectTriggersProperty;
 
+  /**
+   * `AWS::CodeBuild::Project.SourceVersion`
+   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codebuild-project.html#cfn-codebuild-project-sourceversion
+   * @default the latest version
+   */
   readonly sourceVersion?: string | undefined;
 }
 
@@ -561,6 +566,7 @@ export interface GitHubSourceProps extends ThirdPartyGitSourceProps {
    * The name of the branch.
    *
    * @example 'mybranch'
+   * @default the default branch's HEAD commit ID is used
    */
   readonly branch?: string;
 }
