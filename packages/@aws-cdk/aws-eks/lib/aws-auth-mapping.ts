@@ -16,10 +16,3 @@ export interface AwsAuthMapping {
    */
   readonly groups: string[];
 }
-
-/**
- * AwsAuth mapping.
- *
- * @deprecated use `AwsAuthMapping` instead
- */
-export interface Mapping extends AwsAuthMapping { }
