@@ -69,7 +69,8 @@
     "cdk-integ-tools": "1.21.1",
     "cfn2ts": "1.21.1",
     "nodeunit": "^0.11.3",
-    "pkglint": "1.21.1"
+    "pkglint": "1.21.1",
+    "sinon": "^8.1.0"
   },
   "dependencies": {
     "@aws-cdk/aws-autoscaling": "1.21.1",
