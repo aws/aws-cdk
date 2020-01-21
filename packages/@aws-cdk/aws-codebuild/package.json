@@ -70,7 +70,7 @@
     "@aws-cdk/aws-sns": "1.21.1",
     "@aws-cdk/aws-sqs": "1.21.1",
     "@types/nodeunit": "^0.0.30",
-    "aws-sdk": "^2.606.0",
+    "aws-sdk": "^2.607.0",
     "cdk-build-tools": "1.21.1",
     "cdk-integ-tools": "1.21.1",
     "cfn2ts": "1.21.1",
