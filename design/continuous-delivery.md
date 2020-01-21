@@ -215,7 +215,7 @@ For publishing:
 For deployment:
 
 * **CloudFormation Role**: IAM role which allows the CloudFormation service principal to deploy stacks into the environment (this role usually has administrative privileges).
-* **Deployment Role**: IAM role which allows anyone from the deployment account to create, update and describe CloudFormation change sets and s"pass" the CloudFormation role (`iam:PassRole`).
+* **Deployment Role**: IAM role which allows anyone from the deployment account to create, update and describe CloudFormation change sets and "pass" the CloudFormation role (`iam:PassRole`).
 
 To accommodate these requirements we will make the following changes to how `cdk bootstrap` works:
 
