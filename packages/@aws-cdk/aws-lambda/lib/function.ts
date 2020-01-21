@@ -234,9 +234,9 @@ export interface FunctionProps extends EventInvokeConfigOptions {
   /**
    * The number of days log events are kept in CloudWatch Logs. When updating
    * this property, unsetting it doesn't remove the log retention policy. To
-   * remove the retention policy, set the value to `Infinity`.
+   * remove the retention policy, set the value to `INFINITE`.
    *
-   * @default - Logs never expire.
+   * @default logs.RetentionDays.INFINITE
    */
   readonly logRetention?: logs.RetentionDays;
 

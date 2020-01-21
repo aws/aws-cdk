@@ -63,7 +63,7 @@ export class LogRetention extends cdk.Construct {
       properties: {
         ServiceToken: provider.functionArn,
         LogGroupName: props.logGroupName,
-        RetentionInDays: props.retention === Infinity ? undefined : props.retention
+        RetentionInDays: props.retention === logs.RetentionDays.INFINITE ? undefined : props.retention
       }
     });
   }
