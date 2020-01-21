@@ -10,8 +10,8 @@
 *                                                 @aws/aws-cdk-team
 /packages/aws-cdk                                 @aws/aws-cdk-team  @RomainMuller
 /packages/@aws-cdk/aws-code*/                     @aws/aws-cdk-team  @skinny85
-/packages/@aws-cdk/aws-ecs/                       @aws/aws-cdk-team  @SoManyHs
-/packages/@aws-cdk/aws-ecs-patterns               @aws/aws-cdk-team  @SoManyHs
+/packages/@aws-cdk/aws-ecs/                       @aws/aws-cdk-team  @aws/aws-ecs-devx
+/packages/@aws-cdk/aws-ecs-patterns               @aws/aws-cdk-team  @aws/aws-ecs-devx
 /packages/@aws-cdk/aws-budgets                    @aws/aws-cdk-team  @eladb
 /packages/@aws-cdk/aws-cloudformation             @aws/aws-cdk-team  @eladb
 /packages/@aws-cdk/aws-config                     @aws/aws-cdk-team  @eladb
