@@ -37,6 +37,7 @@ export interface AwsSdkCall {
   /**
    * The parameters for the service action
    *
+   * @default - no paramters
    * @see https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/index.html
    */
   readonly parameters?: any;
@@ -98,6 +99,11 @@ export interface AwsSdkCall {
   readonly outputPath?: string;
 }
 
+/**
+ * Properties for AwsCustomResource.
+ *
+ * Note that at least onCreate, onUpdate or onDelete must be specified.
+ */
 export interface AwsCustomResourceProps {
   /**
    * Cloudformation Resource type.
@@ -108,7 +114,6 @@ export interface AwsCustomResourceProps {
 
   /**
    * The AWS SDK call to make when the resource is created.
-   * At least onCreate, onUpdate or onDelete must be specified.
    *
    * @default - the call when the resource is updated
    */
@@ -161,11 +166,19 @@ export interface AwsCustomResourceProps {
   readonly timeout?: cdk.Duration
 }
 
+/**
+ * Defines a custom resource that invokes AWS API calls to create and manage a custom resource.
+ *
+ * Use when you want to customize exactly which calls should be executed to CREATE/UPDATE/DELETE the resource.
+ *
+ */
 export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
   public readonly grantPrincipal: iam.IPrincipal;
 
   private readonly customResource: CustomResource;
 
+  // 'props' cannot be optional, even though all its properties are optional.
+  // this is because at least one sdk call must be provided.
   constructor(scope: cdk.Construct, id: string, props: AwsCustomResourceProps) {
     super(scope, id);
 
