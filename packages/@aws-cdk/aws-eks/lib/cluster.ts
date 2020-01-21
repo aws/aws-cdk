@@ -6,7 +6,9 @@ import { CfnOutput, Construct, IResource, Resource, Stack, Tag, Token } from '@a
 import { AwsAuth } from './aws-auth';
 import { clusterArnComponents, ClusterResource } from './cluster-resource';
 import { CfnCluster, CfnClusterProps } from './eks.generated';
+import { FargateProfile, FargateProfileOptions } from './fargate-profile';
 import { HelmChart, HelmChartOptions } from './helm-chart';
+import { KubernetesPatch } from './k8s-patch';
 import { KubernetesResource } from './k8s-resource';
 import { spotInterruptHandler } from './spot-interrupt-handler';
 import { renderUserData } from './user-data';
@@ -50,6 +52,9 @@ export interface ICluster extends IResource, ec2.IConnectable {
   readonly clusterCertificateAuthorityData: string;
 }
 
+/**
+ * Attributes for EKS clusters.
+ */
 export interface ClusterAttributes {
   /**
    * The VPC in which this Cluster was created
@@ -84,9 +89,9 @@ export interface ClusterAttributes {
 }
 
 /**
- * Properties to instantiate the Cluster
+ * Options for configuring an EKS cluster.
  */
-export interface ClusterProps {
+export interface ClusterOptions {
   /**
    * The VPC in which to create the Cluster
    *
@@ -154,6 +159,46 @@ export interface ClusterProps {
   readonly mastersRole?: iam.IRole;
 
   /**
+   * Controls the "eks.amazonaws.com/compute-type" annotation in the CoreDNS
+   * configuration on your cluster to determine which compute type to use
+   * for CoreDNS.
+   *
+   * @default CoreDnsComputeType.EC2 (for `FargateCluster` the default is FARGATE)
+   */
+  readonly coreDnsComputeType?: CoreDnsComputeType;
+
+  /**
+   * Determines whether a CloudFormation output with the name of the cluster
+   * will be synthesized.
+   *
+   * @default false
+   */
+  readonly outputClusterName?: boolean;
+
+  /**
+   * Determines whether a CloudFormation output with the ARN of the "masters"
+   * IAM role will be synthesized (if `mastersRole` is specified).
+   *
+   * @default false
+   */
+  readonly outputMastersRoleArn?: boolean;
+
+  /**
+   * Determines whether a CloudFormation output with the `aws eks
+   * update-kubeconfig` command will be synthesized. This command will include
+   * the cluster name and, if applicable, the ARN of the masters IAM role.
+   *
+   * @default true
+   */
+  readonly outputConfigCommand?: boolean;
+}
+
+/**
+ * Configuration props for EKS clusters.
+ */
+export interface ClusterProps extends ClusterOptions {
+
+  /**
    * Allows defining `kubectrl`-related resources on this cluster.
    *
    * If this is disabled, it will not be possible to use the following
@@ -194,31 +239,6 @@ export interface ClusterProps {
    * @default m5.large
    */
   readonly defaultCapacityInstance?: ec2.InstanceType;
-
-  /**
-   * Determines whether a CloudFormation output with the name of the cluster
-   * will be synthesized.
-   *
-   * @default false
-   */
-  readonly outputClusterName?: boolean;
-
-  /**
-   * Determines whether a CloudFormation output with the ARN of the "masters"
-   * IAM role will be synthesized (if `mastersRole` is specified).
-   *
-   * @default false
-   */
-  readonly outputMastersRoleArn?: boolean;
-
-  /**
-   * Determines whether a CloudFormation output with the `aws eks
-   * update-kubeconfig` command will be synthesized. This command will include
-   * the cluster name and, if applicable, the ARN of the masters IAM role.
-   *
-   * @default true
-   */
-  readonly outputConfigCommand?: boolean;
 }
 
 /**
@@ -298,10 +318,8 @@ export class Cluster extends Resource implements ICluster {
    * If this cluster is kubectl-enabled, returns the `ClusterResource` object
    * that manages it. If this cluster is not kubectl-enabled (i.e. uses the
    * stock `CfnCluster`), this is `undefined`.
-   *
-   * @internal
    */
-  public readonly _clusterResource?: ClusterResource;
+  private readonly _clusterResource?: ClusterResource;
 
   /**
    * Manages the aws-auth config map.
@@ -412,6 +430,10 @@ export class Cluster extends Resource implements ICluster {
       const postfix = commonCommandOptions.join(' ');
       new CfnOutput(this, 'ConfigCommand', { value: `${updateConfigCommandPrefix} ${postfix}` });
       new CfnOutput(this, 'GetTokenCommand', { value: `${getTokenCommandPrefix} ${postfix}` });
+    }
+
+    if (this.kubectlEnabled) {
+      this.defineCoreDnsComputeType(props.coreDnsComputeType || CoreDnsComputeType.EC2);
     }
   }
 
@@ -575,6 +597,36 @@ export class Cluster extends Resource implements ICluster {
   }
 
   /**
+   * Adds a Fargate profile to this cluster.
+   * @see https://docs.aws.amazon.com/eks/latest/userguide/fargate-profile.html
+   *
+   * @param id the id of this profile
+   * @param options profile options
+   */
+  public addFargateProfile(id: string, options: FargateProfileOptions) {
+    return new FargateProfile(this, `fargate-profile-${id}`, {
+      ...options,
+      cluster: this,
+    });
+  }
+
+  /**
+   * Returns the role ARN for the cluster creation role for kubectl-enabled
+   * clusters.
+   * @param assumedBy The IAM that will assume this role. If omitted, the
+   * creation role will be returned witout modification of its trust policy.
+   *
+   * @internal
+   */
+  public _getKubectlCreationRoleArn(assumedBy?: iam.IRole) {
+    if (!this._clusterResource) {
+      throw new Error(`Unable to perform this operation since kubectl is not enabled for this cluster`);
+    }
+
+    return this._clusterResource.getCreationRoleArn(assumedBy);
+  }
+
+  /**
    * Opportunistically tag subnets with the required tags.
    *
    * If no subnets could be found (because this is an imported VPC), add a warning.
@@ -600,6 +652,47 @@ export class Cluster extends Resource implements ICluster {
     // https://docs.aws.amazon.com/eks/latest/userguide/network_reqs.html
     tagAllSubnets('private', this.vpc.privateSubnets, "kubernetes.io/role/internal-elb");
     tagAllSubnets('public', this.vpc.publicSubnets, "kubernetes.io/role/elb");
+  }
+
+  /**
+   * Patches the CoreDNS deployment configuration and sets the "eks.amazonaws.com/compute-type"
+   * annotation to either "ec2" or "fargate". Note that if "ec2" is selected, the resource is
+   * omitted/removed, since the cluster is created with the "ec2" compute type by default.
+   */
+  private defineCoreDnsComputeType(type: CoreDnsComputeType) {
+    if (!this.kubectlEnabled) {
+      throw new Error(`kubectl must be enabled in order to define the compute type for CoreDNS`);
+    }
+
+    // ec2 is the "built in" compute type of the cluster so if this is the
+    // requested type we can simply omit the resource. since the resource's
+    // `restorePatch` is configured to restore the value to "ec2" this means
+    // that deletion of the resource will change to "ec2" as well.
+    if (type === CoreDnsComputeType.EC2) {
+      return;
+    }
+
+    // this is the json patch we merge into the resource based off of:
+    // https://docs.aws.amazon.com/eks/latest/userguide/fargate-getting-started.html#fargate-gs-coredns
+    const renderPatch = (computeType: CoreDnsComputeType) => ({
+      spec: {
+        template: {
+          metadata: {
+            annotations: {
+              'eks.amazonaws.com/compute-type': computeType
+            }
+          }
+        }
+      }
+    });
+
+    new KubernetesPatch(this, 'CoreDnsComputeTypePatch', {
+      cluster: this,
+      resourceName: 'deployment/coredns',
+      resourceNamespace: 'kube-system',
+      applyPatch: renderPatch(CoreDnsComputeType.FARGATE),
+      restorePatch: renderPatch(CoreDnsComputeType.EC2)
+    });
   }
 }
 
@@ -642,6 +735,9 @@ export interface CapacityOptions extends autoscaling.CommonAutoScalingGroupProps
   readonly bootstrapOptions?: BootstrapOptions;
 }
 
+/**
+ * EKS node bootstrapping options.
+ */
 export interface BootstrapOptions {
   /**
    * Sets `--max-pods` for the kubelet based on the capacity of the EC2 instance.
@@ -718,6 +814,7 @@ export interface AutoScalingGroupOptions {
 
   /**
    * Allows options for node bootstrapping through EC2 user data.
+   * @default - default options
    */
   readonly bootstrapOptions?: BootstrapOptions;
 }
@@ -820,6 +917,21 @@ export enum NodeType {
    * GPU instances
    */
   GPU = 'GPU',
+}
+
+/**
+ * The type of compute resources to use for CoreDNS.
+ */
+export enum CoreDnsComputeType {
+  /**
+   * Deploy CoreDNS on EC2 instances.
+   */
+  EC2 = 'ec2',
+
+  /**
+   * Deploy CoreDNS on Fargate-managed instances.
+   */
+  FARGATE = 'fargate'
 }
 
 const GPU_INSTANCETYPES = ['p2', 'p3', 'g4'];
