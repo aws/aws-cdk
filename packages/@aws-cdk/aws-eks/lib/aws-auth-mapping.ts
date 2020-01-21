@@ -1,5 +1,7 @@
-
-export interface Mapping {
+/**
+ * AwsAuth mapping.
+ */
+export interface AwsAuthMapping {
   /**
    * The user name within Kubernetes to map to the IAM role.
    *
