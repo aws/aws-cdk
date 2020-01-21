@@ -107,8 +107,7 @@
     "@aws-cdk/aws-route53": "1.21.1",
     "@aws-cdk/aws-s3": "1.21.1",
     "@aws-cdk/core": "1.21.1",
-    "@aws-cdk/region-info": "1.21.1",
-    "@aws-cdk/aws-ec2": "1.21.1"
+    "@aws-cdk/region-info": "1.21.1"
   },
   "engines": {
     "node": ">= 10.3.0"

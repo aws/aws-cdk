@@ -1,4 +1,3 @@
-import * as metrics from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
@@ -34,15 +33,15 @@ export interface LogRetentionProps {
  * log group. The log group is created if it doesn't already exist. The policy
  * is removed when `retentionDays` is `undefined` or equal to `Infinity`.
  */
-export class LogRetention extends cdk.Construct implements logs.ILogGroup {
+export class LogRetention extends cdk.Construct {
 
+  /**
+   * The ARN of the LogGroup.
+   */
   public readonly logGroupArn: string;
-  public readonly logGroupName: string;
-  public readonly stack: cdk.Stack;
 
   constructor(scope: cdk.Construct, id: string, props: LogRetentionProps) {
     super(scope, id);
-    this.stack = cdk.Stack.of(this);
 
     // Custom resource provider
     const provider = new SingletonFunction(this, 'Provider', {
@@ -74,60 +73,14 @@ export class LogRetention extends cdk.Construct implements logs.ILogGroup {
       }
     });
 
-    this.logGroupName = resource.getAtt('LogGroupName').toString();
+    const logGroupName = resource.getAtt('LogGroupName').toString();
     // Append ':*' at the end of the ARN to match with how CloudFormation does this for LogGroup ARNs
     // See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-loggroup.html#aws-resource-logs-loggroup-return-values
     this.logGroupArn = cdk.Stack.of(this).formatArn({
       service: 'logs',
       resource: 'log-group',
-      resourceName: this.logGroupName,
+      resourceName: `${logGroupName}:*`,
       sep: ':'
-    }) + ':*';
-  }
-
-  public addStream(id: string, props: logs.StreamOptions = {}): logs.LogStream {
-    return new logs.LogStream(this, id, {
-      logGroup: this,
-      ...props
-    });
-  }
-
-  public addSubscriptionFilter(id: string, props: logs.SubscriptionFilterOptions): logs.SubscriptionFilter {
-    return new logs.SubscriptionFilter(this, id, {
-      logGroup: this,
-      ...props
-    });
-  }
-
-  public addMetricFilter(id: string, props: logs.MetricFilterOptions): logs.MetricFilter {
-    return new logs.MetricFilter(this, id, {
-      logGroup: this,
-      ...props
-    });
-  }
-
-  public extractMetric(jsonField: string, metricNamespace: string, metricName: string) {
-    new logs.MetricFilter(this, `${metricNamespace}_${metricName}`, {
-      logGroup: this,
-      metricNamespace,
-      metricName,
-      filterPattern: logs.FilterPattern.exists(jsonField),
-      metricValue: jsonField
-    });
-
-    return new metrics.Metric({ metricName, namespace: metricNamespace }).attachTo(this);
-  }
-
-  public grantWrite(grantee: iam.IGrantable) {
-    return this.grant(grantee, 'logs:CreateLogStream', 'logs:PutLogEvents');
-  }
-
-  public grant(grantee: iam.IGrantable, ...actions: string[]) {
-    return iam.Grant.addToPrincipal({
-      grantee,
-      actions,
-      resourceArns: [this.logGroupArn],
-      scope: this,
     });
   }
 }

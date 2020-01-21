@@ -501,11 +501,12 @@ export class Function extends FunctionBase {
     // Log retention
     if (props.logRetention || props.exposeLogGroup) {
       const retention = props.logRetention || logs.RetentionDays.INFINITE;
-      this._logGroup = new LogRetention(this, 'LogRetention', {
+      const logretention = new LogRetention(this, 'LogRetention', {
         logGroupName: `/aws/lambda/${this.functionName}`,
         retention,
         role: props.logRetentionRole
       });
+      this._logGroup = logs.LogGroup.fromLogGroupArn(this, `${this.node.id}-LogGroup`, logretention.logGroupArn);
     }
 
     props.code.bindToResource(resource);
