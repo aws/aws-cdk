@@ -73,7 +73,7 @@ export = {
     test.done();
   },
 
-  'supports tags through props and through aspects'(test: Test) {
+  'supports tags through aspects'(test: Test) {
     // GIVEN
     const stack = new Stack();
     const cluster = new eks.Cluster(stack, 'MyCluster');
@@ -81,12 +81,10 @@ export = {
     // WHEN
     cluster.addFargateProfile('MyProfile', {
       selectors: [ { namespace: 'default' } ],
-      tags: {
-        propTag: '123'
-      }
     });
 
     Tag.add(stack, 'aspectTag', 'hello');
+    Tag.add(cluster, 'propTag', '123');
 
     // THEN
     expect(stack).to(haveResource('Custom::AWSCDK-EKS-FargateProfile', {

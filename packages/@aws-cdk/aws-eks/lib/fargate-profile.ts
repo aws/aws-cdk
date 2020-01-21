@@ -54,17 +54,6 @@ export interface FargateProfileOptions {
    * @default - all private subnets of the VPC are selected.
    */
   readonly subnetSelection?: ec2.SubnetSelection;
-
-  /**
-   * The metadata to apply to the Fargate profile to assist with categorization
-   * and organization. Each tag consists of a key and an optional value, both of
-   * which you define. Fargate profile tags do not propagate to any other
-   * resources associated with the Fargate profile, such as the pods that are
-   * scheduled with it.
-   *
-   * @default - no tags, you can add tags using `Tag.add()`
-   */
-  readonly tags?: { [name: string]: string };
 }
 
 /**
@@ -166,9 +155,6 @@ export class FargateProfile extends Construct implements ITaggable {
     }
 
     this.tags = new TagManager(TagType.MAP, 'AWS::EKS::FargateProfile');
-    for (const [ key, value ] of Object.entries(props.tags || {})) {
-      this.tags.setTag(key, value);
-    }
 
     const resource = new CustomResource(this, 'Resource', {
       provider: provider.provider,
