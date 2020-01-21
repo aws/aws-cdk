@@ -19,6 +19,8 @@ export interface SourceConfig {
   readonly sourceProperty: CfnProject.SourceProperty;
 
   readonly buildTriggers?: CfnProject.ProjectTriggersProperty;
+
+  readonly sourceVersion?: string | undefined;
 }
 
 /**
@@ -554,6 +556,13 @@ export interface GitHubSourceProps extends ThirdPartyGitSourceProps {
    * @example 'aws-cdk'
    */
   readonly repo: string;
+
+  /**
+   * The name of the branch.
+   *
+   * @example 'mybranch'
+   */
+  readonly branch?: string;
 }
 
 /**
@@ -561,11 +570,13 @@ export interface GitHubSourceProps extends ThirdPartyGitSourceProps {
  */
 class GitHubSource extends ThirdPartyGitSource {
   public readonly type = GITHUB_SOURCE_TYPE;
+  public readonly branch?: string;
   private readonly httpsCloneUrl: string;
 
   constructor(props: GitHubSourceProps) {
     super(props);
     this.httpsCloneUrl = `https://github.com/${props.owner}/${props.repo}.git`;
+    this.branch = props.branch;
   }
 
   public bind(_scope: Construct, project: IProject): SourceConfig {
@@ -575,6 +586,7 @@ class GitHubSource extends ThirdPartyGitSource {
         ...superConfig.sourceProperty,
         location: this.httpsCloneUrl,
       },
+      sourceVersion: this.branch,
       buildTriggers: superConfig.buildTriggers,
     };
   }

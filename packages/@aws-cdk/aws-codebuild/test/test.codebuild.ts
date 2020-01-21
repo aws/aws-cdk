@@ -479,6 +479,7 @@ export = {
         source: codebuild.Source.gitHub({
           owner: 'testowner',
           repo: 'testrepo',
+          branch: 'testbranch',
           cloneDepth: 3,
           webhook: true,
           reportBuildStatus: false,
@@ -496,6 +497,10 @@ export = {
           ReportBuildStatus: false,
           GitCloneDepth: 3,
         }
+      }));
+
+      expect(stack).to(haveResource('AWS::CodeBuild::Project', {
+        SourceVersion: 'testbranch',
       }));
 
       expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {

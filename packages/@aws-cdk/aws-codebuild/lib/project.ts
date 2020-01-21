@@ -727,6 +727,7 @@ export class Project extends ProjectBase {
       secondarySources: Lazy.anyValue({ produce: () => this.renderSecondarySources() }),
       secondaryArtifacts: Lazy.anyValue({ produce: () => this.renderSecondaryArtifacts() }),
       triggers: sourceConfig.buildTriggers,
+      sourceVersion: sourceConfig.sourceVersion,
       vpcConfig: this.configureVpc(props),
     });
 

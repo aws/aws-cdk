@@ -103,6 +103,27 @@ export = {
       test.done();
     },
 
+    'can set a branch as the SourceVersion'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      new codebuild.Project(stack, 'Project', {
+        source: codebuild.Source.gitHub({
+          owner: 'testowner',
+          repo: 'testrepo',
+          branch: 'testbranch',
+        })
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::CodeBuild::Project', {
+        SourceVersion: 'testbranch',
+      }));
+
+      test.done();
+    },
+
     'can explicitly set reportBuildStatus to false'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
