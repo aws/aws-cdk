@@ -255,7 +255,7 @@ export interface FunctionProps extends EventInvokeConfigOptions {
    * When this property and the `logRetention` property are both unset, the
    * getter will throw an exception.
    *
-   * @default false
+   * @default false unless the `logRetention` property is set.
    */
   readonly exposeLogGroup?: boolean;
 }
