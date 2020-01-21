@@ -122,14 +122,5 @@
   "engines": {
     "node": ">= 10.3.0"
   },
-  "stability": "experimental",
-  "awslint": {
-    "exclude": [
-      "construct-ctor-props-optional:@aws-cdk/custom-resources.AwsCustomResource",
-      "props-physical-name:@aws-cdk/custom-resources.AsyncCustomResourceProps",
-      "docs-public-apis:@aws-cdk/custom-resources.AwsCustomResource",
-      "docs-public-apis:@aws-cdk/custom-resources.AwsCustomResourceProps",
-      "props-default-doc:@aws-cdk/custom-resources.AwsSdkCall.parameters"
-    ]
-  }
+  "stability": "experimental"
 }
