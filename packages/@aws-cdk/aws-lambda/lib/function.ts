@@ -247,17 +247,6 @@ export interface FunctionProps extends EventInvokeConfigOptions {
    * @default - A new role is created.
    */
   readonly logRetentionRole?: iam.IRole;
-
-  /**
-   * Expose the log group of the lambda function via `logGroup` getter. When
-   * this property is set, the getter will return the Lambda function's log
-   * group.
-   * When this property and the `logRetention` property are both unset, the
-   * getter will throw an exception.
-   *
-   * @default false unless the `logRetention` property is set.
-   */
-  readonly exposeLogGroup?: boolean;
 }
 
 /**
@@ -499,11 +488,10 @@ export class Function extends FunctionBase {
     }
 
     // Log retention
-    if (props.logRetention || props.exposeLogGroup) {
-      const retention = props.logRetention || logs.RetentionDays.INFINITE;
+    if (props.logRetention) {
       const logretention = new LogRetention(this, 'LogRetention', {
         logGroupName: `/aws/lambda/${this.functionName}`,
-        retention,
+        retention: props.logRetention,
         role: props.logRetentionRole
       });
       this._logGroup = logs.LogGroup.fromLogGroupArn(this, `${this.node.id}-LogGroup`, logretention.logGroupArn);
@@ -591,7 +579,11 @@ export class Function extends FunctionBase {
    */
   public get logGroup(): logs.ILogGroup {
     if (!this._logGroup) {
-      throw new Error('LogGroup is not available when "exposeLogGroup" property is unset.');
+      const logretention = new LogRetention(this, 'LogRetention', {
+        logGroupName: `/aws/lambda/${this.functionName}`,
+        retention: logs.RetentionDays.INFINITE,
+      });
+      this._logGroup = logs.LogGroup.fromLogGroupArn(this, `${this.node.id}-LogGroup`, logretention.logGroupArn);
     }
     return this._logGroup;
   }
