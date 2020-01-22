@@ -425,10 +425,10 @@
     "@types/istanbul-reports" "^1.1.1"
     "@types/yargs" "^13.0.0"
 
-"@jsii/spec@^0.21.1":
-  version "0.21.1"
-  resolved "https://registry.yarnpkg.com/@jsii/spec/-/spec-0.21.1.tgz#d8e5bfb887b80131a8ba3e2f6ccf4fbedfb64dbd"
-  integrity sha512-2PpF0AvY3kqrv4buFsajKBdWH5Bsi6q7in9gAkWJUJHVi3yZzFqsuIDyw07SQ/jksJkkRH+6QNU9h164GrDCRQ==
+"@jsii/spec@^0.21.1", "@jsii/spec@^0.21.2":
+  version "0.21.2"
+  resolved "https://registry.yarnpkg.com/@jsii/spec/-/spec-0.21.2.tgz#61b288792c0bf1907b3afebf37e832bc1ef4fc15"
+  integrity sha512-uz3+xGPgyacN5lk3Rshmzto1WZXHICmxx9cRjzE2tzSfALHJXEMeU594Y5eYA2hOlG7k7SBpk6a4XcLe2czIyQ==
   dependencies:
     jsonschema "^1.2.5"
 
