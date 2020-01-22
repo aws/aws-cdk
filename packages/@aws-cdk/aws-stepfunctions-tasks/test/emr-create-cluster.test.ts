@@ -227,9 +227,6 @@ test('Create Cluster without Roles', () => {
   });
   const task = new sfn.Task(stack, 'Task', { task: createClusterTask});
 
-  // tslint:disable-next-line:no-console
-  console.log();
-
   // THEN
   expect(stack.resolve(task.toStateJson())).toEqual({
     Type: 'Task',
