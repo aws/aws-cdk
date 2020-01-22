@@ -1,4 +1,4 @@
-import {expect, haveResource, haveResourceLike, InspectionFailure, ResourcePart} from '@aws-cdk/assert';
+import { ABSENT, expect, haveResource, haveResourceLike, InspectionFailure, ResourcePart } from '@aws-cdk/assert';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
@@ -738,7 +738,7 @@ export = {
             VolumeSize: 15,
             VolumeType: "io1"
           },
-          NoDevice: false
+          NoDevice: ABSENT
         },
         {
           DeviceName: "ebs-snapshot",
@@ -753,7 +753,7 @@ export = {
         {
           DeviceName: "ephemeral",
           VirtualName: "ephemeral0",
-          NoDevice: false
+          NoDevice: ABSENT
         }
       ]
     }));
