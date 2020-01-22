@@ -14,7 +14,7 @@ export function build(options: BuildOptions): void {
     const args = [
       'build',
       options.entry,
-      '-d',
+      '--out-dir',
       options.buildDir,
       '--out-file',
       'index.js',

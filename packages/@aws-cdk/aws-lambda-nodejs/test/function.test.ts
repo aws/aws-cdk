@@ -34,8 +34,10 @@ test('NodejsFunction', () => {
   expect(spawnSync).toHaveBeenCalledWith('parcel', expect.arrayContaining([
     'build',
     expect.stringContaining('function.test.handler1.ts'), // Automatically finds .ts handler file
-    '-d',
+    '--out-dir',
     expect.stringContaining(buildDir),
+    '--out-file',
+    'index.js',
     '--global',
     'handler',
     '--target',
@@ -74,8 +76,7 @@ test('throws when entry cannot be automatically found', () => {
 });
 
 test('throws with the wrong runtime family', () => {
-  expect(() => new NodejsFunction(stack, 'Fn', {
-    entry: path.join(__dirname, 'integ.function.handler-ts.ts'),
+  expect(() => new NodejsFunction(stack, 'handler1', {
     runtime: Runtime.PYTHON_3_8
   })).toThrow(/Only `NODEJS` runtimes are supported/);
 });
