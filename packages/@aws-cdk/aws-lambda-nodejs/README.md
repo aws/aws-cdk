@@ -29,7 +29,7 @@ up the entry file:
 ```
 .
 ├── stack.ts # defines a 'NodeJsFunction' with 'my-handler' as id
-├── stack.handler.ts # exports a function named 'handler'
+├── stack.my-handler.ts # exports a function named 'handler'
 ```
 
 This file is used as "entry" for [Parcel](https://parceljs.org/). This means that your code is
