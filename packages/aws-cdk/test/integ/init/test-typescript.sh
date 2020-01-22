@@ -21,9 +21,13 @@ for template in $templates; do
 
     setup
 
-    cdk init -l typescript -t $template
+    cdk init -l typescript $template
     npm ls # this will fail if we have unmet peer dependencies
     npm run build
     npm run test
-    cdk synth
+
+    # Can't run `cdk synth` on libraries
+    if [[ $template != "lib" ]]; then
+        cdk synth
+    fi
 done

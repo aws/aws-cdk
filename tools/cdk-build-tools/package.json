@@ -1,7 +1,7 @@
 {
   "name": "cdk-build-tools",
   "private": true,
-  "version": "1.20.0",
+  "version": "1.21.1",
   "description": "Tools package with shared build scripts for CDK packages",
   "main": "lib/index.js",
   "repository": {
@@ -32,14 +32,14 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/fs-extra": "^8.0.1",
-    "@types/jest": "^24.0.25",
-    "@types/yargs": "^15.0.0",
-    "pkglint": "1.20.0"
+    "@types/jest": "^24.9.0",
+    "@types/yargs": "^15.0.1",
+    "pkglint": "1.21.1"
   },
   "dependencies": {
-    "@typescript-eslint/eslint-plugin": "^2.15.0",
-    "@typescript-eslint/parser": "^2.15.0",
-    "awslint": "1.20.0",
+    "@typescript-eslint/eslint-plugin": "^2.16.0",
+    "@typescript-eslint/parser": "^2.16.0",
+    "awslint": "1.21.1",
     "colors": "^1.4.0",
     "eslint": "^6.8.0",
     "eslint-import-resolver-node": "^0.3.3",
@@ -51,9 +51,9 @@
     "jsii-pacmak": "^0.21.1",
     "nodeunit": "^0.11.3",
     "nyc": "^15.0.0",
-    "ts-jest": "^24.2.0",
+    "ts-jest": "^24.3.0",
     "tslint": "^5.20.1",
-    "typescript": "~3.7.4",
+    "typescript": "~3.7.5",
     "yargs": "^15.1.0"
   },
   "keywords": [
