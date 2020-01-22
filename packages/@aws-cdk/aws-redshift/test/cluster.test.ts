@@ -2,6 +2,7 @@ import { expect as cdkExpect, haveResource, ResourcePart } from '@aws-cdk/assert
 import '@aws-cdk/assert/jest';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
+import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 
 import { Cluster, ClusterParameterGroup, ClusterType, NodeType } from '../lib';
@@ -240,6 +241,7 @@ test('can create a cluster with logging enabled', () => {
   // GIVEN
   const stack = testStack();
   const vpc = new ec2.Vpc(stack, 'VPC');
+  const bucket = s3.Bucket.fromBucketName(stack, "bucket", "logging-bucket");
 
   // WHEN
   new Cluster(stack, 'Redshift', {
@@ -248,7 +250,7 @@ test('can create a cluster with logging enabled', () => {
     },
     vpc,
     loggingProperties: {
-      bucketName: "logging-bucket",
+      bucket,
       s3KeyPrefix: "prefix"
     }
   });

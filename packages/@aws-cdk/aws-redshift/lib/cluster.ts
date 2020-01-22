@@ -1,6 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { IRole } from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
+import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { Construct, Duration, IResource, RemovalPolicy, Resource, Token } from '@aws-cdk/core';
 import { DatabaseSecret } from './database-secret';
@@ -218,14 +219,16 @@ export interface ClusterProps {
  */
 export interface LoggingProperties {
     /**
-     * BucketName
+     * Bucket to send logs to
      */
-    readonly bucketName: string
+    readonly bucket: s3.IBucket
 
     /**
      * Prefix
+     *
+     * @default - no prefix
      */
-    readonly s3KeyPrefix: string
+    readonly s3KeyPrefix?: string
 }
 
 /**
@@ -366,6 +369,14 @@ export class Cluster extends ClusterBase {
         this.singleUserRotationApplication = secretsmanager.SecretRotationApplication.REDSHIFT_ROTATION_SINGLE_USER;
         this.multiUserRotationApplication = secretsmanager.SecretRotationApplication.REDSHIFT_ROTATION_MULTI_USER;
 
+        let loggingProperties;
+        if (props.loggingProperties) {
+            loggingProperties = {
+                bucketName: props.loggingProperties.bucket.bucketName,
+                s3KeyPrefix: props.loggingProperties.s3KeyPrefix
+            };
+        }
+
         const cluster = new CfnCluster(this, 'Resource', {
             // Basic
             allowVersionUpgrade: true,
@@ -386,7 +397,7 @@ export class Cluster extends ClusterBase {
             preferredMaintenanceWindow: props.preferredMaintenanceWindow,
             nodeType: props.nodeType || NodeType.DC2_LARGE,
             numberOfNodes: nodeCount,
-            loggingProperties: props.loggingProperties,
+            loggingProperties,
             iamRoles: props.roles ? props.roles.map(role => role.roleArn) : undefined,
             dbName: props.defaultDatabaseName || "default_db",
             publiclyAccessible: false,
