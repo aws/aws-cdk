@@ -1,4 +1,4 @@
-import { countResources, expect, haveResource, InspectionFailure } from '@aws-cdk/assert';
+import { ABSENT, countResources, expect, haveResource } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
@@ -103,15 +103,9 @@ export = {
       retention: logs.RetentionDays.INFINITE,
     });
 
-    expect(stack).to(haveResource('Custom::LogRetention',
-      (resourceProps: any, inspection: InspectionFailure) => {
-        if (resourceProps.RetentionInDays !== undefined) {
-          inspection.failureReason = 'RetentionInDays was present when it was not expected';
-          return false;
-        }
-        return true;
-      }
-    ));
+    expect(stack).to(haveResource('Custom::LogRetention', {
+      RetentionInDays: ABSENT
+    }));
 
     test.done();
   }
