@@ -2,7 +2,12 @@ import { Assertion, JestFriendlyAssertion } from "../assertion";
 import { StackInspector } from "../inspector";
 
 /**
- * Magic value to signify that a certain key should be absent from the property bag
+ * Magic value to signify that a certain key should be absent from the property bag.
+ *
+ * The property is either not present or set to `undefined.
+ *
+ * NOTE: `ABSENT` only works with the `haveResource()` and `haveResourceLike()`
+ * assertions.
  */
 export const ABSENT = '{{ABSENT}}';
 
