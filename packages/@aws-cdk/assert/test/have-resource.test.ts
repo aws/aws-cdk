@@ -1,7 +1,7 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { writeFileSync } from 'fs';
 import { join } from 'path';
-import { expect as cdkExpect, haveResource, ABSENT } from '../lib/index';
+import { ABSENT, expect as cdkExpect, haveResource } from '../lib/index';
 
 test('support resource with no properties', () => {
   const synthStack = mkStack({
@@ -96,7 +96,7 @@ describe('property absence', () => {
 
   test('fail on presence', () => {
     const synthStack = mkSomeResource({
-      PropA: 'somevalue'
+      PropA: 3
     });
 
     expect(() => {
