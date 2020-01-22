@@ -64,12 +64,13 @@
   "devDependencies": {
     "@aws-cdk/assert": "1.21.1",
     "@types/nodeunit": "^0.0.30",
-    "aws-sdk": "^2.606.0",
+    "aws-sdk": "^2.608.0",
     "cdk-build-tools": "1.21.1",
     "cdk-integ-tools": "1.21.1",
     "cfn2ts": "1.21.1",
     "nodeunit": "^0.11.3",
-    "pkglint": "1.21.1"
+    "pkglint": "1.21.1",
+    "sinon": "^8.1.0"
   },
   "dependencies": {
     "@aws-cdk/aws-autoscaling": "1.21.1",
@@ -97,14 +98,10 @@
   },
   "awslint": {
     "exclude": [
-      "props-no-arn-refs:@aws-cdk/aws-eks.ClusterProps.outputMastersRoleArn",
-      "props-default-doc:@aws-cdk/aws-eks.AutoScalingGroupOptions.bootstrapOptions",
+      "resource-attribute:@aws-cdk/aws-eks.FargateCluster.clusterSecurityGroupId",
       "resource-attribute:@aws-cdk/aws-eks.Cluster.clusterSecurityGroupId",
-      "docs-public-apis:@aws-cdk/aws-eks.AwsAuthProps",
-      "docs-public-apis:@aws-cdk/aws-eks.BootstrapOptions",
-      "docs-public-apis:@aws-cdk/aws-eks.ClusterAttributes",
-      "docs-public-apis:@aws-cdk/aws-eks.KubernetesResourceProps",
-      "docs-public-apis:@aws-cdk/aws-eks.Mapping"
+      "props-no-arn-refs:@aws-cdk/aws-eks.ClusterProps.outputMastersRoleArn",
+      "resource-attribute:@aws-cdk/aws-eks.Cluster.clusterSecurityGroupId"
     ]
   },
   "stability": "experimental"

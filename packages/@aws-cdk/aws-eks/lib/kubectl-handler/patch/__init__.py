@@ -12,7 +12,7 @@ os.environ['PATH'] = '/opt/kubectl:/opt/awscli:' + os.environ['PATH']
 outdir = os.environ.get('TEST_OUTDIR', '/tmp')
 kubeconfig = os.path.join(outdir, 'kubeconfig')
 
-def apply_handler(event, context):
+def patch_handler(event, context):
     logger.info(json.dumps(event))
 
     request_type = event['RequestType']
@@ -20,7 +20,6 @@ def apply_handler(event, context):
 
     # resource properties (all required)
     cluster_name  = props['ClusterName']
-    manifest_text = props['Manifest']
     role_arn      = props['RoleArn']
 
     # "log in" to the cluster
@@ -30,29 +29,27 @@ def apply_handler(event, context):
         '--kubeconfig', kubeconfig
     ])
 
-    # write resource manifests in sequence: { r1 }{ r2 }{ r3 } (this is how
-    # a stream of JSON objects can be included in a k8s manifest).
-    manifest_list = json.loads(manifest_text)
-    manifest_file = os.path.join(outdir, 'manifest.yaml')
-    with open(manifest_file, "w") as f:
-        f.writelines(map(lambda obj: json.dumps(obj), manifest_list))
+    resource_name = props['ResourceName']
+    resource_namespace = props['ResourceNamespace']
+    apply_patch_json = props['ApplyPatchJson']
+    restore_patch_json = props['RestorePatchJson']
 
-    logger.info("manifest written to: %s" % manifest_file)
+    patch_json = None
+    if request_type == 'Create' or request_type == 'Update': 
+        patch_json = apply_patch_json
+    elif request_type == 'Delete': 
+        patch_json = restore_patch_json
+    else:
+        raise Exception("invalid request type %s" % request_type)
 
-    if request_type == 'Create' or request_type == 'Update':
-        kubectl('apply', manifest_file)
-    elif request_type == "Delete":
-        try:
-            kubectl('delete', manifest_file)
-        except Exception as e:
-            logger.info("delete error: %s" % e)
+    kubectl([ 'patch', resource_name, '-n', resource_namespace, '-p', patch_json ])
 
 
-def kubectl(verb, file):
+def kubectl(args):
     retry = 3
     while retry > 0:
         try:
-            cmd = ['kubectl', verb, '--kubeconfig', kubeconfig, '-f', file]
+            cmd = [ 'kubectl', '--kubeconfig', kubeconfig ] + args
             output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as exc:
             output = exc.output
