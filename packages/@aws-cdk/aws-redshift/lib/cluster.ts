@@ -183,17 +183,17 @@ export interface ClusterProps {
     readonly masterUser: Login;
 
     /**
-     * A list of AWS Identity and Access Management (IAM) roles that can be used by the cluster to access other AWS services.
+     * A list of AWS Identity and Access Management (IAM) role that can be used by the cluster to access other AWS services.
      * Specify a maximum of 10 roles.
      *
      * @default - A role is automatically created for you
      */
-    readonly iamRoles?: IRole[];
+    readonly roles?: IRole[];
 
     /**
      * Name of a database which is automatically created inside the cluster
      *
-     * @default - Database is not created in cluster.
+     * @default - default_db
      */
     readonly defaultDatabaseName?: string;
 
@@ -208,7 +208,7 @@ export interface ClusterProps {
      * The removal policy to apply when the cluster and its instances are removed
      * from the stack or replaced during an update.
      *
-     * @default - Retain cluster.
+     * @default - RemovalPolicy.RETAIN
      */
     readonly removalPolicy?: RemovalPolicy
 }
@@ -387,7 +387,7 @@ export class Cluster extends ClusterBase {
             nodeType: props.nodeType || NodeType.DC2_LARGE,
             numberOfNodes: nodeCount,
             loggingProperties: props.loggingProperties,
-            iamRoles: props.iamRoles ? props.iamRoles.map(role => role.roleArn) : undefined,
+            iamRoles: props.roles ? props.roles.map(role => role.roleArn) : undefined,
             dbName: props.defaultDatabaseName || "default_db",
             publiclyAccessible: false,
             // Encryption
