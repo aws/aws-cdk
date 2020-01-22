@@ -218,6 +218,228 @@ test('Create Cluster with Tags', () => {
   });
 });
 
+test('Create Cluster with Applications', () => {
+  // WHEN
+  const task = new sfn.Task(stack, 'Task', { task: new tasks.EmrCreateCluster({
+    instances: {},
+    clusterRole,
+    name: 'Cluster',
+    serviceRole,
+    autoScalingRole,
+    applications: [
+      { name: 'Hive', version: '0.0' },
+      { name: 'Spark', version: '0.0' }
+    ],
+    integrationPattern: sfn.ServiceIntegrationPattern.FIRE_AND_FORGET
+  }) });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::elasticmapreduce:createCluster',
+        ],
+      ],
+    },
+    End: true,
+    Parameters: {
+      Name: 'Cluster',
+      Instances: {},
+      VisibleToAllUsers: true,
+      JobFlowRole: {
+        Ref: 'ClusterRoleD9CA7471',
+      },
+      ServiceRole: {
+        Ref: 'ServiceRole4288B192'
+      },
+      AutoScalingRole: {
+        Ref: 'AutoScalingRole015ADA0A'
+      },
+      Applications: [
+        { Name: 'Hive', Version: '0.0' },
+        { Name: 'Spark', Version: '0.0' }
+      ]
+    },
+  });
+});
+
+test('Create Cluster with Bootstrap Actions', () => {
+  // WHEN
+  const task = new sfn.Task(stack, 'Task', { task: new tasks.EmrCreateCluster({
+    instances: {},
+    clusterRole,
+    name: 'Cluster',
+    serviceRole,
+    autoScalingRole,
+    bootstrapActions: [{
+      name: 'Bootstrap',
+      path: 's3://null',
+      args: [ 'Arg' ]
+    }],
+    integrationPattern: sfn.ServiceIntegrationPattern.FIRE_AND_FORGET
+  }) });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::elasticmapreduce:createCluster',
+        ],
+      ],
+    },
+    End: true,
+    Parameters: {
+      Name: 'Cluster',
+      Instances: {},
+      VisibleToAllUsers: true,
+      JobFlowRole: {
+        Ref: 'ClusterRoleD9CA7471',
+      },
+      ServiceRole: {
+        Ref: 'ServiceRole4288B192'
+      },
+      AutoScalingRole: {
+        Ref: 'AutoScalingRole015ADA0A'
+      },
+      BootstrapActions: [{
+        Name: 'Bootstrap',
+        ScriptBootstrapAction: {
+          Path: 's3://null',
+          Args: [ 'Arg' ]
+        }
+      }]
+    },
+  });
+});
+
+test('Create Cluster with Configurations', () => {
+  // WHEN
+  const task = new sfn.Task(stack, 'Task', { task: new tasks.EmrCreateCluster({
+    instances: {},
+    clusterRole,
+    name: 'Cluster',
+    serviceRole,
+    autoScalingRole,
+    configurations: [{
+      classification: 'classification',
+      properties: {
+        Key: 'Value'
+      }
+    }],
+    integrationPattern: sfn.ServiceIntegrationPattern.FIRE_AND_FORGET
+  }) });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::elasticmapreduce:createCluster',
+        ],
+      ],
+    },
+    End: true,
+    Parameters: {
+      Name: 'Cluster',
+      Instances: {},
+      VisibleToAllUsers: true,
+      JobFlowRole: {
+        Ref: 'ClusterRoleD9CA7471',
+      },
+      ServiceRole: {
+        Ref: 'ServiceRole4288B192'
+      },
+      AutoScalingRole: {
+        Ref: 'AutoScalingRole015ADA0A'
+      },
+      Configurations: [{
+        Classification: 'classification',
+        Properties: {
+          Key: 'Value'
+        }
+      }]
+    },
+  });
+});
+
+test('Create Cluster with KerberosAttributes', () => {
+  // WHEN
+  const task = new sfn.Task(stack, 'Task', { task: new tasks.EmrCreateCluster({
+    instances: {},
+    clusterRole,
+    name: 'Cluster',
+    serviceRole,
+    autoScalingRole,
+    kerberosAttributes: {
+      realm: 'realm',
+      adDomainJoinPassword: 'password1',
+      adDomainJoinUser: 'user',
+      crossRealmTrustPrincipalPassword: 'password2',
+      kdcAdminPassword: 'password3'
+    },
+    integrationPattern: sfn.ServiceIntegrationPattern.FIRE_AND_FORGET
+  }) });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::elasticmapreduce:createCluster',
+        ],
+      ],
+    },
+    End: true,
+    Parameters: {
+      Name: 'Cluster',
+      Instances: {},
+      VisibleToAllUsers: true,
+      JobFlowRole: {
+        Ref: 'ClusterRoleD9CA7471',
+      },
+      ServiceRole: {
+        Ref: 'ServiceRole4288B192'
+      },
+      AutoScalingRole: {
+        Ref: 'AutoScalingRole015ADA0A'
+      },
+      KerberosAttributes: {
+        Realm: 'realm',
+        ADDomainJoinPassword: 'password1',
+        ADDomainJoinUser: 'user',
+        CrossRealmTrustPrincipalPassword: 'password2',
+        KdcAdminPassword: 'password3'
+      }
+    },
+  });
+});
+
 test('Create Cluster without Roles', () => {
   // WHEN
   const createClusterTask = new tasks.EmrCreateCluster({

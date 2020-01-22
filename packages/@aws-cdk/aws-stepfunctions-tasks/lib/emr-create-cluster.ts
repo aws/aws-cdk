@@ -1,6 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import { CfnTag, Stack } from '@aws-cdk/core';
+import * as cdk from '@aws-cdk/core';
 import { getResourceArn } from './resource-arn-suffix';
 
 /**
@@ -16,7 +16,7 @@ export interface EmrCreateClusterProps {
   /**
    * A specification of the number and type of Amazon EC2 instances.
    */
-  readonly instances: {[key: string]: any};
+  readonly instances: EmrCreateCluster.InstancesConfigProperty;
 
   /**
    * Also called instance profile and EC2 role. An IAM role for an EMR cluster. The EC2 instances of the cluster assume this role.
@@ -49,7 +49,7 @@ export interface EmrCreateClusterProps {
   /**
    * A case-insensitive list of applications for Amazon EMR to install and configure when launching the cluster.
    */
-  readonly applications?: Array<{[key: string]: any}>;
+  readonly applications?: EmrCreateCluster.ApplicationConfigProperty[];
 
   /**
    * An IAM role for automatic scaling policies. A Role will be created if one is not provided.
@@ -61,12 +61,12 @@ export interface EmrCreateClusterProps {
   /**
    * A list of bootstrap actions to run before Hadoop starts on the cluster nodes.
    */
-  readonly bootstrapActions?: Array<{[key: string]: any}>;
+  readonly bootstrapActions?: EmrCreateCluster.BootstrapActionConfigProperty[];
 
   /**
    * The list of configurations supplied for the EMR cluster you are creating.
    */
-  readonly configurations?: Array<{[key: string]: any}>;
+  readonly configurations?: EmrCreateCluster.ConfigurationProperty[];
 
   /**
    * The ID of a custom Amazon EBS-backed Linux AMI.
@@ -81,7 +81,7 @@ export interface EmrCreateClusterProps {
   /**
    * Attributes for Kerberos configuration when Kerberos authentication is enabled using a security configuration.
    */
-  readonly kerberosAttributes?: {[key: string]: string};
+  readonly kerberosAttributes?: EmrCreateCluster.KerberosAttributesProperty;
 
   /**
    * The location in Amazon S3 to write the log files of the job flow.
@@ -106,7 +106,7 @@ export interface EmrCreateClusterProps {
   /**
    * A list of tags to associate with a cluster and propagate to Amazon EC2 instances.
    */
-  readonly tags?: CfnTag[];
+  readonly tags?: cdk.CfnTag[];
 
   /**
    * A value of true indicates that all IAM users in the AWS account can perform cluster actions if they have the proper IAM policy permissions.
@@ -123,6 +123,227 @@ export interface EmrCreateClusterProps {
    * @default SYNC
    */
   readonly integrationPattern?: sfn.ServiceIntegrationPattern;
+}
+
+/**
+ * Properties for the EMR Cluster EC2 Instances
+ *
+ * See the RunJobFlow API for complete documentation on input parameters
+ *
+ * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_JobFlowInstancesConfig.html
+ *
+ * @experimental
+ */
+export namespace EmrCreateCluster {
+  export interface InstancesConfigProperty {
+
+  }
+}
+
+/**
+ * Properties for the EMR Cluster Applications
+ *
+ * Applies to Amazon EMR releases 4.0 and later. A case-insensitive list of applications for Amazon EMR to install and configure when launching
+ * the cluster.
+ *
+ * See the RunJobFlow API for complete documentation on input parameters
+ *
+ * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_Application.html
+ *
+ * @experimental
+ */
+export namespace EmrCreateCluster {
+  export interface ApplicationConfigProperty {
+    /**
+     * This option is for advanced users only. This is meta information about third-party applications that third-party vendors use
+     * for testing purposes.
+     */
+    readonly additionalInfo?: {[key: string]: string};
+
+    /**
+     * Arguments for Amazon EMR to pass to the application.
+     */
+    readonly args?: string[];
+
+    /**
+     * The name of the application.
+     */
+    readonly name: string;
+
+    /**
+     * The version of the application.
+     */
+    readonly version?: string;
+  }
+}
+
+/**
+ * Render the ApplicationConfigProperty as JSON
+ *
+ * @param property
+ */
+function ApplicationConfigPropertyToJson(property: EmrCreateCluster.ApplicationConfigProperty) {
+  return {
+    Name: cdk.stringToCloudFormation(property.name),
+    Args: cdk.listMapper(cdk.stringToCloudFormation)(property.args),
+    Version: cdk.stringToCloudFormation(property.version),
+    AdditionalInfo: cdk.objectToCloudFormation(property.additionalInfo)
+  };
+}
+
+/**
+ * Properties for the EMR Cluster Bootstrap Actions
+ *
+ * See the RunJobFlow API for complete documentation on input parameters
+ *
+ * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_BootstrapActionConfig.html
+ *
+ * @experimental
+ */
+export namespace EmrCreateCluster {
+  export interface BootstrapActionConfigProperty {
+    /**
+     * The name of the bootstrap action.
+     */
+    readonly name: string;
+
+    /**
+     * Location of the script to run during a bootstrap action. Can be either a location in Amazon S3 or on a local file system.
+     */
+    readonly path: string;
+
+    /**
+     * A list of command line arguments to pass to the bootstrap action script.
+     */
+    readonly args?: string[];
+  }
+}
+
+/**
+ * Render the BootstrapActionProperty as JSON
+ *
+ * @param property
+ */
+function BootstrapActionConfigToJson(property: EmrCreateCluster.BootstrapActionConfigProperty) {
+  return {
+    Name: cdk.stringToCloudFormation(property.name),
+    ScriptBootstrapAction: {
+      Path: cdk.stringToCloudFormation(property.path),
+      Args: cdk.listMapper(cdk.stringToCloudFormation)(property.args)
+    }
+  };
+}
+
+/**
+ * Properties for the EMR Cluster Configurations
+ *
+ * See the RunJobFlow API for complete documentation on input parameters
+ *
+ * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_Configuration.html
+ *
+ * @experimental
+ */
+export namespace EmrCreateCluster {
+  export interface ConfigurationProperty {
+    /**
+     * The classification within a configuration.
+     */
+    readonly classification?: string;
+
+    /**
+     * A set of properties specified within a configuration classification.
+     */
+    readonly properties?: {[key: string]: string};
+
+    /**
+     * A list of additional configurations to apply within a configuration object.
+     */
+    readonly configurations?: ConfigurationProperty[];
+  }
+}
+
+/**
+ * Render the ConfigurationProperty as JSON
+ *
+ * @param property
+ */
+function ConfigurationPropertyToJson(property: EmrCreateCluster.ConfigurationProperty) {
+  return {
+    Classification: cdk.stringToCloudFormation(property.classification),
+    Properties: cdk.objectToCloudFormation(property.properties),
+    Configurations: cdk.listMapper(ConfigurationPropertyToJson)(property.configurations)
+  };
+}
+
+/**
+ * Properties for the EMR Cluster Kerberos Attributes
+ *
+ * See the RunJobFlow API for complete documentation on input parameters
+ *
+ * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_KerberosAttributes.html
+ *
+ * @experimental
+ */
+export namespace EmrCreateCluster {
+  export interface KerberosAttributesProperty {
+    /**
+     * The Active Directory password for ADDomainJoinUser.
+     */
+    readonly adDomainJoinPassword?: string;
+
+    /**
+     * Required only when establishing a cross-realm trust with an Active Directory domain. A user with sufficient privileges to join
+     * resources to the domain.
+     */
+    readonly adDomainJoinUser?: string;
+
+    /**
+     * Required only when establishing a cross-realm trust with a KDC in a different realm. The cross-realm principal password, which
+     * must be identical across realms.
+     */
+    readonly crossRealmTrustPrincipalPassword?: string;
+
+    /**
+     * The password used within the cluster for the kadmin service on the cluster-dedicated KDC, which maintains Kerberos principals,
+     * password policies, and keytabs for the cluster.
+     */
+    readonly kdcAdminPassword?: string;
+
+    /**
+     * The name of the Kerberos realm to which all nodes in a cluster belong. For example, EC2.INTERNAL.
+     */
+    readonly realm: string;
+  }
+}
+
+/**
+ * Render the KerberosAttributesProperty as JSON
+ *
+ * @param property
+ */
+function KerberosAttributesPropertyToJson(property: EmrCreateCluster.KerberosAttributesProperty) {
+  return {
+    ADDomainJoinPassword: cdk.stringToCloudFormation(property.adDomainJoinPassword),
+    ADDomainJoinUser: cdk.stringToCloudFormation(property.adDomainJoinUser),
+    CrossRealmTrustPrincipalPassword: cdk.stringToCloudFormation(property.crossRealmTrustPrincipalPassword),
+    KdcAdminPassword: cdk.stringToCloudFormation(property.kdcAdminPassword),
+    Realm: cdk.stringToCloudFormation(property.realm)
+  };
+}
+
+/**
+ * Properties for the EMR Cluster Placement Type
+ *
+ * See the RunJobFlow API for complete documentation on input parameters
+ *
+ * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_PlacementType.html
+ *
+ * @experimental
+ */
+export namespace EmrCreateCluster {
+  export interface PlacementTypeProperty {
+
+  }
 }
 
 /**
@@ -208,28 +429,25 @@ export class EmrCreateCluster implements sfn.IStepFunctionsTask {
       policyStatements: this.createPolicyStatements(task, this._serviceRole, this._clusterRole, this._autoScalingRole),
       parameters: {
         Instances: this.props.instances,
-        JobFlowRole: this._clusterRole.roleName,
-        Name: this.props.name,
-        ServiceRole: this._serviceRole.roleName,
-        AdditionalInfo: this.props.additionalInfo,
-        Applications: this.props.applications,
-        AutoScalingRole: this._autoScalingRole.roleName,
-        BootstrapActions: this.props.bootstrapActions,
-        Configurations: this.props.configurations,
-        CustomAmiId: this.props.customAmiId,
-        EbsRootVolumeSize: this.props.ebsRootVolumeSize,
-        KerberosAttributes: this.props.kerberosAttributes,
-        LogUri: this.props.logUri,
-        ReleaseLabel: this.props.releaseLabel,
-        ScaleDownBehavior: this.props.scaleDownBehavior,
-        SecurityConfiguration: this.props.securityConfiguration,
-        Tags: (this.props.tags === undefined) ?
-          this.props.tags :
-          this.props.tags.map(t => ({
-            Key: t.key,
-            Value: t.value
-          })),
-        VisibleToAllUsers: this.visibleToAllUsers
+        JobFlowRole: cdk.stringToCloudFormation(this._clusterRole.roleName),
+        Name: cdk.stringToCloudFormation(this.props.name),
+        ServiceRole: cdk.stringToCloudFormation(this._serviceRole.roleName),
+        AdditionalInfo: cdk.stringToCloudFormation(this.props.additionalInfo),
+        Applications: cdk.listMapper(ApplicationConfigPropertyToJson)(this.props.applications),
+        AutoScalingRole: cdk.stringToCloudFormation(this._autoScalingRole.roleName),
+        BootstrapActions: cdk.listMapper(BootstrapActionConfigToJson)(this.props.bootstrapActions),
+        Configurations: cdk.listMapper(ConfigurationPropertyToJson)(this.props.configurations),
+        CustomAmiId: cdk.stringToCloudFormation(this.props.customAmiId),
+        EbsRootVolumeSize: cdk.numberToCloudFormation(this.props.ebsRootVolumeSize),
+        KerberosAttributes: (this.props.kerberosAttributes === undefined) ?
+          this.props.kerberosAttributes :
+          KerberosAttributesPropertyToJson(this.props.kerberosAttributes),
+        LogUri: cdk.stringToCloudFormation(this.props.logUri),
+        ReleaseLabel: cdk.stringToCloudFormation(this.props.releaseLabel),
+        ScaleDownBehavior: cdk.stringToCloudFormation(this.props.scaleDownBehavior),
+        SecurityConfiguration: cdk.stringToCloudFormation(this.props.securityConfiguration),
+        Tags: cdk.listMapper(cdk.cfnTagToCloudFormation)(this.props.tags),
+        VisibleToAllUsers: cdk.booleanToCloudFormation(this.visibleToAllUsers)
       }
     };
   }
@@ -239,7 +457,7 @@ export class EmrCreateCluster implements sfn.IStepFunctionsTask {
    */
   private createPolicyStatements(task: sfn.Task, serviceRole: iam.IRole, clusterRole: iam.IRole,
                                  autoScalingRole: iam.IRole): iam.PolicyStatement[] {
-    const stack = Stack.of(task);
+    const stack = cdk.Stack.of(task);
 
     const policyStatements = [
       new iam.PolicyStatement({
