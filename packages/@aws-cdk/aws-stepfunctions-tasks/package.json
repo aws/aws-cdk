@@ -196,7 +196,9 @@
       "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.EmrCreateClusterProps.scaleDownBehavior",
       "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.EmrCreateClusterProps.securityConfiguration",
       "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.EmrCreateClusterProps.tags",
-      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.EmrCreateClusterProps.visibleToAllUsers"
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.EmrCreateClusterProps.visibleToAllUsers",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.EmrCreateCluster.*",
+      "docs-public-apis:@aws-cdk/aws-stepfunctions-tasks.EmrCreateCluster.*"
     ]
   }
 }

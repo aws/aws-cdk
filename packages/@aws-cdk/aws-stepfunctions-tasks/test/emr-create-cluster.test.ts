@@ -63,7 +63,9 @@ test('Create Cluster with FIRE_AND_FORGET integrationPattern', () => {
     End: true,
     Parameters: {
       Name: 'Cluster',
-      Instances: {},
+      Instances: {
+        KeepJobFlowAliveWhenNoSteps: true
+      },
       VisibleToAllUsers: true,
       JobFlowRole: {
         Ref: 'ClusterRoleD9CA7471',
@@ -107,7 +109,9 @@ test('Create Cluster with SYNC integrationPattern', () => {
     End: true,
     Parameters: {
       Name: 'Cluster',
-      Instances: {},
+      Instances: {
+        KeepJobFlowAliveWhenNoSteps: true
+      },
       VisibleToAllUsers: true,
       JobFlowRole: {
         Ref: 'ClusterRoleD9CA7471',
@@ -151,7 +155,9 @@ test('Create Cluster with clusterConfiguration Name from payload', () => {
     End: true,
     Parameters: {
       'Name.$': '$.ClusterName',
-      'Instances': {},
+      'Instances': {
+        KeepJobFlowAliveWhenNoSteps: true
+      },
       'VisibleToAllUsers': true,
       'JobFlowRole': {
         Ref: 'ClusterRoleD9CA7471',
@@ -199,7 +205,9 @@ test('Create Cluster with Tags', () => {
     End: true,
     Parameters: {
       Name: 'Cluster',
-      Instances: {},
+      Instances: {
+        KeepJobFlowAliveWhenNoSteps: true
+      },
       VisibleToAllUsers: true,
       JobFlowRole: {
         Ref: 'ClusterRoleD9CA7471',
@@ -251,7 +259,9 @@ test('Create Cluster with Applications', () => {
     End: true,
     Parameters: {
       Name: 'Cluster',
-      Instances: {},
+      Instances: {
+        KeepJobFlowAliveWhenNoSteps: true
+      },
       VisibleToAllUsers: true,
       JobFlowRole: {
         Ref: 'ClusterRoleD9CA7471',
@@ -304,7 +314,9 @@ test('Create Cluster with Bootstrap Actions', () => {
     End: true,
     Parameters: {
       Name: 'Cluster',
-      Instances: {},
+      Instances: {
+        KeepJobFlowAliveWhenNoSteps: true
+      },
       VisibleToAllUsers: true,
       JobFlowRole: {
         Ref: 'ClusterRoleD9CA7471',
@@ -361,7 +373,9 @@ test('Create Cluster with Configurations', () => {
     End: true,
     Parameters: {
       Name: 'Cluster',
-      Instances: {},
+      Instances: {
+        KeepJobFlowAliveWhenNoSteps: true
+      },
       VisibleToAllUsers: true,
       JobFlowRole: {
         Ref: 'ClusterRoleD9CA7471',
@@ -418,7 +432,9 @@ test('Create Cluster with KerberosAttributes', () => {
     End: true,
     Parameters: {
       Name: 'Cluster',
-      Instances: {},
+      Instances: {
+        KeepJobFlowAliveWhenNoSteps: true
+      },
       VisibleToAllUsers: true,
       JobFlowRole: {
         Ref: 'ClusterRoleD9CA7471',
@@ -467,7 +483,9 @@ test('Create Cluster without Roles', () => {
     End: true,
     Parameters: {
       Name: 'Cluster',
-      Instances: {},
+      Instances: {
+        KeepJobFlowAliveWhenNoSteps: true
+      },
       VisibleToAllUsers: true,
       JobFlowRole: {
         Ref: 'TaskInstanceRoleB72072BF'
@@ -539,6 +557,87 @@ test('Create Cluster without Roles', () => {
     }
   });
 
+});
+
+test('Create Cluster with Instances configuration', () => {
+  // WHEN
+  const task = new sfn.Task(stack, 'Task', { task: new tasks.EmrCreateCluster({
+    instances: {
+      additionalMasterSecurityGroups: ['MasterGroup'],
+      additionalSlaveSecurityGroups: ['SlaveGroup'],
+      ec2KeyName: 'Ec2KeyName',
+      ec2SubnetId: 'Ec2SubnetId',
+      ec2SubnetIds: ['Ec2SubnetId'],
+      emrManagedMasterSecurityGroup: 'MasterGroup',
+      emrManagedSlaveSecurityGroup: 'SlaveGroup',
+      hadoopVersion: 'HadoopVersion',
+      instanceCount: 1,
+      masterInstanceType: 'MasterInstanceType',
+      placement: {
+        availabilityZone: 'AvailabilityZone',
+        availabilityZones: ['AvailabilityZone']
+      },
+      serviceAccessSecurityGroup: 'ServiceAccessGroup',
+      slaveInstanceType: 'SlaveInstanceType',
+      terminationProtected: true
+    },
+    clusterRole,
+    name: 'Cluster',
+    serviceRole,
+    autoScalingRole,
+    integrationPattern: sfn.ServiceIntegrationPattern.FIRE_AND_FORGET
+  }) });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::elasticmapreduce:createCluster',
+        ],
+      ],
+    },
+    End: true,
+    Parameters: {
+      Name: 'Cluster',
+      Instances: {
+        AdditionalMasterSecurityGroups: ['MasterGroup'],
+        AdditionalSlaveSecurityGroups: ['SlaveGroup'],
+        Ec2KeyName: 'Ec2KeyName',
+        Ec2SubnetId: 'Ec2SubnetId',
+        Ec2SubnetIds: ['Ec2SubnetId'],
+        EmrManagedMasterSecurityGroup: 'MasterGroup',
+        EmrManagedSlaveSecurityGroup: 'SlaveGroup',
+        HadoopVersion: 'HadoopVersion',
+        InstanceCount: 1,
+        KeepJobFlowAliveWhenNoSteps: true,
+        MasterInstanceType: 'MasterInstanceType',
+        Placement: {
+          AvailabilityZone: 'AvailabilityZone',
+          AvailabilityZones: ['AvailabilityZone']
+        },
+        ServiceAccessSecurityGroup: 'ServiceAccessGroup',
+        SlaveInstanceType: 'SlaveInstanceType',
+        TerminationProtected: true
+      },
+      VisibleToAllUsers: true,
+      JobFlowRole: {
+        Ref: 'ClusterRoleD9CA7471',
+      },
+      ServiceRole: {
+        Ref: 'ServiceRole4288B192'
+      },
+      AutoScalingRole: {
+        Ref: 'AutoScalingRole015ADA0A'
+      }
+    },
+  });
 });
 
 test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration pattern', () => {
