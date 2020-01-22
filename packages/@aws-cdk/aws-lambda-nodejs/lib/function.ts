@@ -1,8 +1,10 @@
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
-import { spawnSync } from 'child_process';
+import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
+import { build } from './build';
+import { nodeMajorVersion, parseStackTrace } from './util';
 
 /**
  * Properties for a NodejsFunction
@@ -11,7 +13,10 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
   /**
    * Path to the entry file (JavaScript or TypeScript).
    *
-   * @default - `index.ts` or `index.js` in the folder named as the construct's id.
+   * @default - Derived from the name of the defining file and the construct's id.
+   * If the `NodejsFunction` is defined in `stack.ts` with `my-handler` as id
+   * (`new NodejsFunction(this, 'my-handler')`), the construct will look at `stack.my-handler.ts`
+   * and `stack.my-handler.js`.
    */
   readonly entry?: string;
 
@@ -64,89 +69,72 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
  */
 export class NodejsFunction extends lambda.Function {
   constructor(scope: cdk.Construct, id: string, props: NodejsFunctionProps = {}) {
-    let entry: string;
-    if (props.entry) {
-      if (!/\.(js|ts)$/.test(props.entry)) {
-        throw new Error('Only JavaScript or TypeScript entry files are supported.');
-      }
-      if (!fs.existsSync(props.entry)) {
-        throw new Error(`Cannot find entry file at ${props.entry}`);
-      }
-      entry = props.entry;
-    } else if (fs.existsSync(path.join(id, 'index.ts'))) {
-      entry = path.join(id, 'index.ts');
-    } else if (fs.existsSync(path.join(id, 'index.js'))) {
-      entry = path.join(id, 'index.js');
-    } else {
-      throw new Error('Cannot find entry file.');
-    }
-
     if (props.runtime && props.runtime.family !== lambda.RuntimeFamily.NODEJS) {
       throw new Error('Only `NODEJS` runtimes are supported.');
     }
 
+    const entry = findEntry(id, props.entry);
     const handler = props.handler || 'handler';
-    const filename = path.basename(entry, path.extname(entry));
+    const buildDir = props.buildDir || path.join(path.dirname(entry), '.build');
+    const handlerDir = path.join(buildDir, crypto.createHash('sha256').update(entry).digest('hex'));
 
     // Build with Parcel
-    const buildDir = build({
+    build({
       entry,
       global: handler,
       minify: props.minify,
       sourceMaps: props.sourceMaps,
-      buildDir: props.buildDir,
+      buildDir: handlerDir,
       cacheDir: props.cacheDir
     });
 
+    const defaultRunTime = nodeMajorVersion() >= 12
+      ? lambda.Runtime.NODEJS_12_X
+      : lambda.Runtime.NODEJS_10_X;
+
     super(scope, id, {
       ...props,
-      runtime: props.runtime || lambda.Runtime.NODEJS_12_X,
-      code: lambda.Code.fromAsset(buildDir),
-      handler: `${filename}.${handler}`,
+      runtime: props.runtime || defaultRunTime,
+      code: lambda.Code.fromAsset(handlerDir),
+      handler: `index.${handler}`,
     });
   }
 }
 
-interface BuildOptions {
-  entry: string;
-  global: string;
-  minify?: boolean;
-  sourceMaps?: boolean;
-  buildDir?: string;
-  cacheDir?: string;
+function findEntry(id: string, entry?: string): string {
+  if (entry) {
+    if (!/\.(js|ts)$/.test(entry)) {
+      throw new Error('Only JavaScript or TypeScript entry files are supported.');
+    }
+    if (!fs.existsSync(entry)) {
+      throw new Error(`Cannot find entry file at ${entry}`);
+    }
+    return entry;
+  }
+
+  const definingFile = findDefiningFile();
+  const extname = path.extname(definingFile);
+
+  const tsHandlerFile = definingFile.replace(new RegExp(`${extname}$`), `.${id}.ts`);
+  if (fs.existsSync(tsHandlerFile)) {
+    return tsHandlerFile;
+  }
+
+  const jsHandlerFile = definingFile.replace(new RegExp(`${extname}$`), `.${id}.js`);
+  if (fs.existsSync(jsHandlerFile)) {
+    return jsHandlerFile;
+  }
+
+  throw new Error('Cannot find entry file.');
 }
 
-function build(options: BuildOptions): string {
-  const buildDir = path.join(path.dirname(options.entry), '.build');
+function findDefiningFile(): string {
+  const stackTrace = parseStackTrace();
+  const functionIndex = stackTrace.findIndex(s => /NodejsFunction/.test(s.methodName || ''));
 
-  const args = [
-    'build',
-    options.entry,
-    '-d',
-    options.buildDir || buildDir,
-    '--global',
-    options.global,
-    '--target',
-    'node',
-    '--bundle-node-modules',
-    '--log-level',
-    '2',
-    !options.minify && '--no-minify',
-    !options.sourceMaps && '--no-source-maps',
-    ...options.cacheDir
-      ? ['--cache-dir', options.cacheDir]
-      : [],
-  ].filter(Boolean) as string[];
-
-  const parcel = spawnSync('parcel', args);
-
-  if (parcel.error) {
-    throw parcel.error;
+  if (functionIndex === -1 || !stackTrace[functionIndex + 1]) {
+    throw new Error('Cannot find defining file.');
   }
 
-  if (parcel.status !== 0) {
-    throw new Error(parcel.stderr.toString().trim());
-  }
-
-  return buildDir;
+  return stackTrace[functionIndex + 1].file;
 }

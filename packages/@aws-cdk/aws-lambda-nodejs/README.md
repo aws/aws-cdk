@@ -24,13 +24,12 @@ Define a `NodejsFunction`:
 new lambda.NodejsFunction(this, 'my-handler');
 ```
 
-By default, the construct will look up for a `index.ts` or `index.js` that exports a `handler`
-function in the folder named as the construct's id:
+By default, the construct will use the name of the defining file and the construct's id to look
+up the entry file:
 ```
 .
-├── my-handler
-|   └── index.ts # exports a function named 'handler'
 ├── stack.ts # defines a 'NodeJsFunction' with 'my-handler' as id
+├── stack.handler.ts # exports a function named 'handler'
 ```
 
 This file is used as "entry" for [Parcel](https://parceljs.org/). This means that your code is

@@ -49,7 +49,8 @@
   "cdk-build": {
     "eslint": {
       "ignore-pattern": [
-        "test/handler-js/index.js"
+        "test/function.test.handler2.js",
+        "test/integ-handlers/js-handler.js"
       ]
     }
   },
