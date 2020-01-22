@@ -213,9 +213,7 @@ export class EmrCreateCluster implements sfn.IStepFunctionsTask {
         ServiceRole: this._serviceRole.roleName,
         AdditionalInfo: this.props.additionalInfo,
         Applications: this.props.applications,
-        AutoScalingRole: (this.props.autoScalingRole === undefined) ?
-          this.props.autoScalingRole :
-          this.props.autoScalingRole.roleName,
+        AutoScalingRole: this._autoScalingRole.roleName,
         BootstrapActions: this.props.bootstrapActions,
         Configurations: this.props.configurations,
         CustomAmiId: this.props.customAmiId,
