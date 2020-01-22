@@ -59,6 +59,8 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
   /**
    * The cache directory
    *
+   * Parcel uses a filesystem cache for fast rebuilds.
+   *
    * @default - `.cache` in the root directory
    */
   readonly cacheDir?: string;
