@@ -33,7 +33,7 @@
   "devDependencies": {
     "@types/fs-extra": "^8.0.1",
     "@types/jest": "^24.9.0",
-    "@types/yargs": "^15.0.0",
+    "@types/yargs": "^15.0.1",
     "pkglint": "1.21.1"
   },
   "dependencies": {
