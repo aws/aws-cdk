@@ -32,7 +32,7 @@ const cluster = new redshift.Cluster(this, 'Redshift', {
 ```
 By default, the master password will be generated and stored in AWS Secrets Manager.
 
-By default a default database (`default_db`) will be created upon construction. To change the name set `defaultDatabaseName` attribute.
+A default database named `default_db` will be created in the cluster. To change the name of this database set the `defaultDatabaseName` attribute in the constructor properties.
 
 ### Connecting
 
@@ -62,7 +62,5 @@ cluster.addRotationMultiUser('MyUser', {
   secret: myImportedSecret
 });
 ```
-
-See also [@aws-cdk/aws-secretsmanager](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-secretsmanager/README.md) for credentials rotation of existing clusters/instances.
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.

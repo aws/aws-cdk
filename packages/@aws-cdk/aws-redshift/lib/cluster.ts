@@ -2,8 +2,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import { IRole } from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Construct, Duration, RemovalPolicy, Resource, Token } from '@aws-cdk/core';
-import { ClusterAttributes, ICluster } from './cluster-ref';
+import { Construct, Duration, IResource, RemovalPolicy, Resource, Token } from '@aws-cdk/core';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { IParameterGroup } from './parameter-group';
@@ -32,6 +31,51 @@ export enum NodeType {
 export enum ClusterType {
     SINGLE_NODE = "single-node",
     MULTI_NODE = "multi-node"
+}
+
+/**
+ * Create a Redshift Cluster with a given number of nodes.
+ */
+export interface ICluster extends IResource, ec2.IConnectable, secretsmanager.ISecretAttachmentTarget {
+    /**
+     * Name of the cluster
+     *
+     * @attribute ClusterName
+     */
+    readonly clusterName: string;
+
+    /**
+     * The endpoint to use for read/write operations
+     *
+     * @attribute EndpointAddress,EndpointPort
+     */
+    readonly clusterEndpoint: Endpoint;
+}
+
+/**
+ * Properties that describe an existing cluster instance
+ */
+export interface ClusterAttributes {
+    /**
+     * The security groups of the redshift cluster
+     */
+    readonly securityGroups: ec2.ISecurityGroup[];
+
+    /**
+     * Identifier for the cluster
+     */
+    readonly clusterName: string;
+
+    /**
+     * Cluster endpoint address
+     */
+    readonly clusterEndpointAddress: string;
+
+    /**
+     * Cluster endpoint port
+     */
+    readonly clusterEndpointPort: number;
+
 }
 
 /**
