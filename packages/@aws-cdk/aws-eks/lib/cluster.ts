@@ -699,7 +699,7 @@ export class Cluster extends Resource implements ICluster {
 /**
  * Options for adding worker nodes
  */
-export interface CapacityOptions extends autoscaling.CommonAutoScalingGroupProps {
+export interface CapacityOptions extends Omit<autoscaling.AutoScalingGroupProps, 'vpc' | 'machineImage' | 'updateType' | 'instanceType'> {
   /**
    * Instance type of the instances to start
    */
