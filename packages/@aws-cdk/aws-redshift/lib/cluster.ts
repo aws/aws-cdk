@@ -10,12 +10,10 @@ import { Login, RotationMultiUserOptions } from './props';
 import { CfnCluster, CfnClusterSubnetGroup } from './redshift.generated';
 
 /**
- * What node type to use
+ * Possible Node Types to use in the cluster
+ * used for defining {@link ClusterProps.nodeType}.
  */
 export enum NodeType {
-    /**
-     *
-     */
     DS2_XLARGE = "ds2.xlarge",
     DS2_8XLARGE = "ds2.8xlarge",
     DC1_LARGE = "dc1.large",
@@ -26,15 +24,17 @@ export enum NodeType {
 }
 
 /**
- * What cluster type to use
+ * What cluster type to use.
+ * Used by {@link ClusterProps.clusterType}
  */
 export enum ClusterType {
     SINGLE_NODE = "single-node",
-    MULTI_NODE = "multi-node"
+    MULTI_NODE = "multi-node",
 }
 
 /**
  * Create a Redshift Cluster with a given number of nodes.
+ * Implemented by {@link Cluster} via {@link ClusterBase}.
  */
 export interface ICluster extends IResource, ec2.IConnectable, secretsmanager.ISecretAttachmentTarget {
     /**
@@ -58,8 +58,10 @@ export interface ICluster extends IResource, ec2.IConnectable, secretsmanager.IS
 export interface ClusterAttributes {
     /**
      * The security groups of the redshift cluster
+     *
+     * @default no security groups will be attached to the import
      */
-    readonly securityGroups: ec2.ISecurityGroup[];
+    readonly securityGroups?: ec2.ISecurityGroup[];
 
     /**
      * Identifier for the cluster
@@ -110,14 +112,14 @@ export interface ClusterProps {
     /**
      * The node type to be provisioned for the cluster.
      *
-     * @default NodeType.DC2_LARGE
+     * @default {@link NodeType.DC2_LARGE}
      */
     readonly nodeType?: NodeType;
 
     /**
      * Settings for the individual instances that are launched
      *
-     * @default ClusterType.MULTI_NODE
+     * @default {@link ClusterType.MULTI_NODE}
      */
     readonly clusterType?: ClusterType;
 
@@ -141,7 +143,7 @@ export interface ClusterProps {
      *
      * @default - default master key.
      */
-    readonly kmsKey?: kms.IKey;
+    readonly encryptionKey?: kms.IKey;
 
     /**
      * A preferred maintenance window day/time range. Should be specified as a range ddd:hh24:mi-ddd:hh24:mi (24H Clock UTC).
@@ -159,7 +161,14 @@ export interface ClusterProps {
      *
      * @default a new Vpc will be created
      */
-    readonly vpc?: ec2.IVpc;
+    readonly vpc: ec2.IVpc;
+
+    /**
+     * Where to place the instances within the VPC
+     *
+     * @default private subnets
+     */
+    readonly vpcSubnets?: ec2.SubnetSelection;
 
     /**
      * Security group.
@@ -239,11 +248,6 @@ abstract class ClusterBase extends Resource implements ICluster {
     public abstract readonly connections: ec2.Connections;
 
     /**
-     * Security group identifier of this database
-     */
-    public abstract readonly securityGroupIds: string[];
-
-    /**
      * Renders the secret attachment target specifications.
      */
     public asSecretAttachmentTarget(): secretsmanager.SecretAttachmentTargetProps {
@@ -273,7 +277,6 @@ export class Cluster extends ClusterBase {
             public readonly clusterName = attrs.clusterName;
             public readonly instanceIdentifiers: string[] = [];
             public readonly clusterEndpoint = new Endpoint(attrs.clusterEndpointAddress, attrs.clusterEndpointPort);
-            public readonly securityGroupIds = attrs.securityGroups.map(sg => sg.securityGroupId);
         }
 
         return new Import(scope, id);
@@ -320,8 +323,8 @@ export class Cluster extends ClusterBase {
     constructor(scope: Construct, id: string, props: ClusterProps) {
         super(scope, id);
 
-        this.vpc = props.vpc ? props.vpc : new ec2.Vpc(this, "vpc");
-        this.vpcSubnets = {
+        this.vpc = props.vpc;
+        this.vpcSubnets = props.vpcSubnets ? props.vpcSubnets : {
             subnetType: ec2.SubnetType.PRIVATE,
         };
 
@@ -388,7 +391,7 @@ export class Cluster extends ClusterBase {
             dbName: props.defaultDatabaseName || "default_db",
             publiclyAccessible: false,
             // Encryption
-            kmsKeyId: props.kmsKey && props.kmsKey.keyArn,
+            kmsKeyId: props.encryptionKey && props.encryptionKey.keyArn,
             encrypted: props.encrypted ? props.encrypted : true,
         });
 

@@ -165,7 +165,7 @@ test('create an encrypted cluster with custom KMS key', () => {
     masterUser: {
       masterUsername: 'admin',
     },
-    kmsKey: new kms.Key(stack, 'Key'),
+    encryptionKey: new kms.Key(stack, 'Key'),
     vpc
   });
 
