@@ -39,4 +39,6 @@ change-return-type:@aws-cdk/aws-lambda-destinations.EventBridgeDestination.bind
 change-return-type:@aws-cdk/aws-lambda-destinations.LambdaDestination.bind
 change-return-type:@aws-cdk/aws-lambda-destinations.SnsDestination.bind
 change-return-type:@aws-cdk/aws-lambda-destinations.SqsDestination.bind
-
+incompatible-argument:@aws-cdk/aws-ecs.BaseService.configureAwsVpcNetworking
+incompatible-argument:@aws-cdk/aws-ecs.Ec2Service.configureAwsVpcNetworking
+incompatible-argument:@aws-cdk/aws-ecs.FargateService.configureAwsVpcNetworking
