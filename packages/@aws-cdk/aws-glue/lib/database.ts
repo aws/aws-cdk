@@ -97,14 +97,14 @@ export class Database extends Resource implements IDatabase {
       this.locationUri = props.locationUri;
       databaseInput = {
         locationUri: this.locationUri,
-        ...databaseInput
+        ...databaseInput,
       };
     }
 
     this.catalogId = Stack.of(this).account;
     const resource = new CfnDatabase(this, 'Resource', {
       catalogId: this.catalogId,
-      databaseInput
+      databaseInput,
     });
 
     // see https://docs.aws.amazon.com/glue/latest/dg/glue-specifying-resource-arns.html#data-catalog-resource-arns
