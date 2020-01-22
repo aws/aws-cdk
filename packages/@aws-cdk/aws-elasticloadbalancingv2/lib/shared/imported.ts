@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 import { ITargetGroup, TargetGroupImportProps } from './base-target-group';
 
 /**

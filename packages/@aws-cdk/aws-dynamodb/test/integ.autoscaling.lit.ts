@@ -1,6 +1,6 @@
-import appscaling = require('@aws-cdk/aws-applicationautoscaling');
-import cdk = require('@aws-cdk/core');
-import dynamodb = require('../lib');
+import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
+import * as cdk from '@aws-cdk/core';
+import * as dynamodb from '../lib';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-dynamodb');

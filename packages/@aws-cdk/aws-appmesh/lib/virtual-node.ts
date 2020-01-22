@@ -1,7 +1,6 @@
-import cloudmap = require('@aws-cdk/aws-servicediscovery');
-import cdk = require('@aws-cdk/core');
+import * as cloudmap from '@aws-cdk/aws-servicediscovery';
+import * as cdk from '@aws-cdk/core';
 
-import { Lazy } from '@aws-cdk/core';
 import { CfnVirtualNode } from './appmesh.generated';
 import { IMesh } from './mesh';
 import { HealthCheck, PortMapping, Protocol, VirtualNodeListener } from './shared-interfaces';
@@ -148,17 +147,54 @@ abstract class VirtualNodeBase extends cdk.Resource implements IVirtualNode {
   }
 }
 
+/**
+ * Minimum and maximum thresholds for HeathCheck numeric properties
+ *
+ * @see https://docs.aws.amazon.com/app-mesh/latest/APIReference/API_HealthCheckPolicy.html
+ */
+const HEALTH_CHECK_PROPERTY_THRESHOLDS: {[key in (keyof CfnVirtualNode.HealthCheckProperty)]?: [number, number]} = {
+  healthyThreshold: [2, 10],
+  intervalMillis: [5000, 300000],
+  port: [1, 65535],
+  timeoutMillis: [2000, 60000],
+  unhealthyThreshold: [2, 10],
+};
+
 function renderHealthCheck(hc: HealthCheck | undefined, pm: PortMapping): CfnVirtualNode.HealthCheckProperty | undefined {
   if (hc === undefined) { return undefined; }
-  return {
+
+  if (hc.protocol === Protocol.TCP && hc.path) {
+    throw new Error('The path property cannot be set with Protocol.TCP');
+  }
+
+  const healthCheck: CfnVirtualNode.HealthCheckProperty = {
     healthyThreshold: hc.healthyThreshold || 2,
     intervalMillis: (hc.interval || cdk.Duration.seconds(5)).toMilliseconds(), // min
-    path: hc.path || hc.protocol === Protocol.HTTP ? '/' : undefined,
+    path: hc.path || (hc.protocol === Protocol.HTTP ? '/' : undefined),
     port: hc.port || pm.port,
     protocol: hc.protocol || pm.protocol,
     timeoutMillis: (hc.timeout || cdk.Duration.seconds(2)).toMilliseconds(),
     unhealthyThreshold: hc.unhealthyThreshold || 2,
   };
+
+  (Object.keys(healthCheck) as Array<keyof CfnVirtualNode.HealthCheckProperty>)
+    .filter((key) =>
+        HEALTH_CHECK_PROPERTY_THRESHOLDS[key] &&
+          typeof healthCheck[key] === 'number' &&
+          !cdk.Token.isUnresolved(healthCheck[key])
+    ).map((key) => {
+      const [min, max] = HEALTH_CHECK_PROPERTY_THRESHOLDS[key]!;
+      const value = healthCheck[key]!;
+
+      if (value < min) {
+        throw new Error(`The value of '${key}' is below the minimum threshold (expected >=${min}, got ${value})`);
+      }
+      if (value > max) {
+        throw new Error(`The value of '${key}' is above the maximum threshold (expected <=${max}, got ${value})`);
+      }
+    });
+
+  return healthCheck;
 }
 
 /**
@@ -217,8 +253,8 @@ export class VirtualNode extends VirtualNodeBase {
       virtualNodeName: this.physicalName,
       meshName: this.mesh.meshName,
       spec: {
-        backends: Lazy.anyValue({ produce: () => this.backends }, { omitEmptyArray: true }),
-        listeners: Lazy.anyValue({ produce: () => this.listeners }, { omitEmptyArray: true }),
+        backends: cdk.Lazy.anyValue({ produce: () => this.backends }, { omitEmptyArray: true }),
+        listeners: cdk.Lazy.anyValue({ produce: () => this.listeners }, { omitEmptyArray: true }),
         serviceDiscovery: {
           dns: props.dnsHostName !== undefined ? { hostname: props.dnsHostName } : undefined,
           awsCloudMap: props.cloudMapService !== undefined ? {

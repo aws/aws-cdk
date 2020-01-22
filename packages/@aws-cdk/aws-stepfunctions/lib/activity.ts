@@ -1,4 +1,4 @@
-import cloudwatch = require('@aws-cdk/aws-cloudwatch');
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import { Construct, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { CfnActivity } from './stepfunctions.generated';
 
@@ -82,7 +82,7 @@ export class Activity extends Resource implements IActivity {
             dimensions: { ActivityArn: this.activityArn },
             statistic: 'sum',
             ...props
-        });
+        }).attachTo(this);
     }
 
     /**

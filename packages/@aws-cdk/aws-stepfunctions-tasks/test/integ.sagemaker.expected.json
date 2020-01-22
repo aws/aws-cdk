@@ -376,7 +376,11 @@
               {
                 "Ref": "TrainingData3FDB6D34"
               },
-              "/result/\"},\"ResourceConfig\":{\"InstanceCount\":1,\"InstanceType\":\"ml.m4.xlarge\",\"VolumeSizeInGB\":10},\"StoppingCondition\":{\"MaxRuntimeInSeconds\":3600}},\"Type\":\"Task\",\"Resource\":\"arn:aws:states:::sagemaker:createTrainingJob\"}}}"
+              "/result/\"},\"ResourceConfig\":{\"InstanceCount\":1,\"InstanceType\":\"ml.m4.xlarge\",\"VolumeSizeInGB\":10},\"StoppingCondition\":{\"MaxRuntimeInSeconds\":3600}},\"Type\":\"Task\",\"Resource\":\"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":states:::sagemaker:createTrainingJob\"}}}"
             ]
           ]
         },
@@ -386,7 +390,11 @@
             "Arn"
           ]
         }
-      }
+      },
+      "DependsOn": [
+        "StateMachineRoleDefaultPolicyDF1E6607",
+        "StateMachineRoleB840431D"
+      ]
     }
   }
 }

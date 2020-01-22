@@ -1,7 +1,7 @@
-import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/core');
-import path = require('path');
-import s3deploy = require('../lib');
+import * as s3 from '@aws-cdk/aws-s3';
+import * as cdk from '@aws-cdk/core';
+import * as path from 'path';
+import * as s3deploy from '../lib';
 
 class TestBucketDeployment extends cdk.Stack {
   constructor(scope: cdk.App, id: string) {
@@ -14,7 +14,7 @@ class TestBucketDeployment extends cdk.Stack {
     });
 
     new s3deploy.BucketDeployment(this, 'DeployMe', {
-      source: s3deploy.Source.asset(path.join(__dirname, 'my-website')),
+      sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
       destinationBucket,
       retainOnDelete: false, // default is true, which will block the integration test cleanup
     });
@@ -22,7 +22,7 @@ class TestBucketDeployment extends cdk.Stack {
     const bucket2 = new s3.Bucket(this, 'Destination2');
 
     new s3deploy.BucketDeployment(this, 'DeployWithPrefix', {
-      source: s3deploy.Source.asset(path.join(__dirname, 'my-website')),
+      sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
       destinationBucket: bucket2,
       destinationKeyPrefix: 'deploy/here/',
       retainOnDelete: false, // default is true, which will block the integration test cleanup
@@ -32,6 +32,6 @@ class TestBucketDeployment extends cdk.Stack {
 
 const app = new cdk.App();
 
-new TestBucketDeployment(app, 'test-bucket-deployments-1');
+new TestBucketDeployment(app, 'test-bucket-deployments-2');
 
 app.synth();

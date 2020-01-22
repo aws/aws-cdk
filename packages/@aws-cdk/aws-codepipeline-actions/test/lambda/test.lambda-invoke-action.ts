@@ -1,9 +1,11 @@
 import { expect, haveResourceLike } from "@aws-cdk/assert";
-import codepipeline = require('@aws-cdk/aws-codepipeline');
-import lambda = require('@aws-cdk/aws-lambda');
+import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as s3 from '@aws-cdk/aws-s3';
+import * as sns from '@aws-cdk/aws-sns';
 import { Aws, Lazy, SecretValue, Stack, Token } from "@aws-cdk/core";
 import { Test } from 'nodeunit';
-import cpactions = require('../../lib');
+import * as cpactions from '../../lib';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -230,6 +232,68 @@ export = {
 
       test.done();
     },
+
+    'exposes variables for other actions to consume'(test: Test) {
+      const stack = new Stack();
+
+      const sourceOutput = new codepipeline.Artifact();
+      const lambdaInvokeAction = new cpactions.LambdaInvokeAction({
+        actionName: 'LambdaInvoke',
+        lambda: lambda.Function.fromFunctionArn(stack, 'Func', 'arn:aws:lambda:us-east-1:123456789012:function:some-func'),
+      });
+      new codepipeline.Pipeline(stack, 'Pipeline', {
+        stages: [
+          {
+            stageName: 'Source',
+            actions: [
+              new cpactions.S3SourceAction({
+                actionName: 'S3_Source',
+                bucket: s3.Bucket.fromBucketName(stack, 'Bucket', 'bucket'),
+                bucketKey: 'key',
+                output: sourceOutput,
+              }),
+            ],
+          },
+          {
+            stageName: 'Invoke',
+            actions: [
+              lambdaInvokeAction,
+              new cpactions.ManualApprovalAction({
+                actionName: 'Approve',
+                additionalInformation: lambdaInvokeAction.variable('SomeVar'),
+                notificationTopic: sns.Topic.fromTopicArn(stack, 'Topic', 'arn:aws:sns:us-east-1:123456789012:mytopic'),
+                runOrder: 2,
+              }),
+            ],
+          },
+        ],
+      });
+
+      expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+        "Stages": [
+          {
+            "Name": "Source",
+          },
+          {
+            "Name": "Invoke",
+            "Actions": [
+              {
+                "Name": "LambdaInvoke",
+                "Namespace": "Invoke_LambdaInvoke_NS",
+              },
+              {
+                "Name": "Approve",
+                "Configuration": {
+                  "CustomData": "#{Invoke_LambdaInvoke_NS.SomeVar}",
+                },
+              },
+            ],
+          },
+        ],
+      }));
+
+      test.done();
+    },
   },
 };
 
@@ -264,7 +328,7 @@ function stackIncludingLambdaInvokeCodePipeline(props: HelperProps) {
             lambda: new lambda.Function(stack, 'Lambda', {
               code: lambda.Code.fromCfnParameters(),
               handler: 'index.handler',
-              runtime: lambda.Runtime.NODEJS_8_10,
+              runtime: lambda.Runtime.NODEJS_10_X,
             }),
             userParameters: props.userParams,
             inputs: props.lambdaInput ? [props.lambdaInput] : undefined,

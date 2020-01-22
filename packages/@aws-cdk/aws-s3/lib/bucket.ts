@@ -1,12 +1,12 @@
-import events = require('@aws-cdk/aws-events');
-import iam = require('@aws-cdk/aws-iam');
-import kms = require('@aws-cdk/aws-kms');
-import { Construct, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
+import * as events from '@aws-cdk/aws-events';
+import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
+import { Construct, Fn, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
 import { EOL } from 'os';
 import { BucketPolicy } from './bucket-policy';
 import { IBucketNotificationDestination } from './destination';
 import { BucketNotifications } from './notifications-resource';
-import perms = require('./perms');
+import * as perms from './perms';
 import { LifecycleRule } from './rule';
 import { CfnBucket } from './s3.generated';
 import { parseBucketArn, parseBucketName } from './util';
@@ -29,6 +29,12 @@ export interface IBucket extends IResource {
    * @attribute
    */
   readonly bucketWebsiteUrl: string;
+
+  /**
+   * The Domain name of the static website.
+   * @attribute
+   */
+  readonly bucketWebsiteDomainName: string;
 
   /**
    * The IPv4 DNS name of the specified bucket.
@@ -54,7 +60,7 @@ export interface IBucket extends IResource {
   readonly encryptionKey?: kms.IKey;
 
   /**
-   * The resource policy assoicated with this bucket.
+   * The resource policy associated with this bucket.
    *
    * If `autoCreatePolicy` is true, a `BucketPolicy` will be created upon the
    * first call to addToResourcePolicy(s).
@@ -166,7 +172,7 @@ export interface IBucket extends IResource {
   grantPublicAccess(keyPrefix?: string, ...allowedActions: string[]): iam.Grant;
 
   /**
-   * Define a CloudWatch event that triggers when something happens to this repository
+   * Defines a CloudWatch event that triggers when something happens to this bucket
    *
    * Requires that there exists at least one CloudTrail Trail in your account
    * that captures the event. This method will not create the Trail.
@@ -177,8 +183,12 @@ export interface IBucket extends IResource {
   onCloudTrailEvent(id: string, options?: OnCloudTrailBucketEventOptions): events.Rule;
 
   /**
-   * Defines an AWS CloudWatch event rule that can trigger a target when an image is pushed to this
-   * repository.
+   * Defines an AWS CloudWatch event that triggers when an object is uploaded
+   * to the specified paths (keys) in this bucket using the PutObject API call.
+   *
+   * Note that some tools like `aws s3 cp` will automatically use either
+   * PutObject or the multipart upload API depending on the file size,
+   * so using `onCloudTrailWriteObject` may be preferable.
    *
    * Requires that there exists at least one CloudTrail Trail in your account
    * that captures the event. This method will not create the Trail.
@@ -187,6 +197,23 @@ export interface IBucket extends IResource {
    * @param options Options for adding the rule
    */
   onCloudTrailPutObject(id: string, options?: OnCloudTrailBucketEventOptions): events.Rule;
+
+  /**
+   * Defines an AWS CloudWatch event that triggers when an object at the
+   * specified paths (keys) in this bucket are written to.  This includes
+   * the events PutObject, CopyObject, and CompleteMultipartUpload.
+   *
+   * Note that some tools like `aws s3 cp` will automatically use either
+   * PutObject or the multipart upload API depending on the file size,
+   * so using this method may be preferable to `onCloudTrailPutObject`.
+   *
+   * Requires that there exists at least one CloudTrail Trail in your account
+   * that captures the event. This method will not create the Trail.
+   *
+   * @param id The id of the rule
+   * @param options Options for adding the rule
+   */
+  onCloudTrailWriteObject(id: string, options?: OnCloudTrailBucketEventOptions): events.Rule;
 }
 
 /**
@@ -266,6 +293,7 @@ abstract class BucketBase extends Resource implements IBucket {
   public abstract readonly bucketName: string;
   public abstract readonly bucketDomainName: string;
   public abstract readonly bucketWebsiteUrl: string;
+  public abstract readonly bucketWebsiteDomainName: string;
   public abstract readonly bucketRegionalDomainName: string;
   public abstract readonly bucketDualStackDomainName: string;
 
@@ -275,7 +303,7 @@ abstract class BucketBase extends Resource implements IBucket {
   public abstract readonly encryptionKey?: kms.IKey;
 
   /**
-   * The resource policy assoicated with this bucket.
+   * The resource policy associated with this bucket.
    *
    * If `autoCreatePolicy` is true, a `BucketPolicy` will be created upon the
    * first call to addToResourcePolicy(s).
@@ -318,8 +346,12 @@ abstract class BucketBase extends Resource implements IBucket {
   }
 
   /**
-   * Defines an AWS CloudWatch event rule that can trigger a target when an image is pushed to this
-   * repository.
+   * Defines an AWS CloudWatch event that triggers when an object is uploaded
+   * to the specified paths (keys) in this bucket using the PutObject API call.
+   *
+   * Note that some tools like `aws s3 cp` will automatically use either
+   * PutObject or the multipart upload API depending on the file size,
+   * so using `onCloudTrailWriteObject` may be preferable.
    *
    * Requires that there exists at least one CloudTrail Trail in your account
    * that captures the event. This method will not create the Trail.
@@ -332,6 +364,39 @@ abstract class BucketBase extends Resource implements IBucket {
     rule.addEventPattern({
       detail: {
         eventName: ['PutObject'],
+      },
+    });
+    return rule;
+  }
+
+  /**
+   * Defines an AWS CloudWatch event that triggers when an object at the
+   * specified paths (keys) in this bucket are written to.  This includes
+   * the events PutObject, CopyObject, and CompleteMultipartUpload.
+   *
+   * Note that some tools like `aws s3 cp` will automatically use either
+   * PutObject or the multipart upload API depending on the file size,
+   * so using this method may be preferable to `onCloudTrailPutObject`.
+   *
+   * Requires that there exists at least one CloudTrail Trail in your account
+   * that captures the event. This method will not create the Trail.
+   *
+   * @param id The id of the rule
+   * @param options Options for adding the rule
+   */
+  public onCloudTrailWriteObject(id: string, options: OnCloudTrailBucketEventOptions = {}): events.Rule {
+    const rule = this.onCloudTrailEvent(id, options);
+    rule.addEventPattern({
+      detail: {
+        eventName: [
+          'CompleteMultipartUpload',
+          'CopyObject',
+          'PutObject'
+        ],
+        requestParameters: {
+          bucketName: [ this.bucketName ],
+          key: options.paths,
+        },
       },
     });
     return rule;
@@ -836,6 +901,18 @@ export interface BucketProps {
    * @default - No CORS configuration.
    */
   readonly cors?: CorsRule[];
+
+  /**
+   * Destination bucket for the server access logs.
+   * @default - Access logs are disabled
+   */
+  readonly serverAccessLogsBucket?: IBucket;
+
+  /**
+   * Optional log file prefix to use for the bucket's access logs.
+   * @default - No log file prefix
+   */
+  readonly serverAccessLogsPrefix?: string;
 }
 
 /**
@@ -876,7 +953,7 @@ export class Bucket extends BucketBase {
       ? false
       : attrs.bucketWebsiteNewUrlFormat;
 
-    const websiteUrl = newUrlFormat
+    const websiteDomain = newUrlFormat
       ? `${bucketName}.s3-website.${region}.${urlSuffix}`
       : `${bucketName}.s3-website-${region}.${urlSuffix}`;
 
@@ -884,7 +961,8 @@ export class Bucket extends BucketBase {
       public readonly bucketName = bucketName!;
       public readonly bucketArn = parseBucketArn(scope, attrs);
       public readonly bucketDomainName = attrs.bucketDomainName || `${bucketName}.s3.${urlSuffix}`;
-      public readonly bucketWebsiteUrl = attrs.bucketWebsiteUrl || websiteUrl;
+      public readonly bucketWebsiteUrl = attrs.bucketWebsiteUrl || `http://${websiteDomain}`;
+      public readonly bucketWebsiteDomainName = attrs.bucketWebsiteUrl ? Fn.select(2, Fn.split('/', attrs.bucketWebsiteUrl)) : websiteDomain;
       public readonly bucketRegionalDomainName = attrs.bucketRegionalDomainName || `${bucketName}.s3.${region}.${urlSuffix}`;
       public readonly bucketDualStackDomainName = attrs.bucketDualStackDomainName || `${bucketName}.s3.dualstack.${region}.${urlSuffix}`;
       public readonly bucketWebsiteNewUrlFormat = newUrlFormat;
@@ -908,6 +986,7 @@ export class Bucket extends BucketBase {
   public readonly bucketName: string;
   public readonly bucketDomainName: string;
   public readonly bucketWebsiteUrl: string;
+  public readonly bucketWebsiteDomainName: string;
   public readonly bucketDualStackDomainName: string;
   public readonly bucketRegionalDomainName: string;
 
@@ -915,6 +994,7 @@ export class Bucket extends BucketBase {
   public policy?: BucketPolicy;
   protected autoCreatePolicy = true;
   protected disallowPublicAccess?: boolean;
+  private accessControl?: BucketAccessControl;
   private readonly lifecycleRules: LifecycleRule[] = [];
   private readonly versioned?: boolean;
   private readonly notifications: BucketNotifications;
@@ -939,7 +1019,8 @@ export class Bucket extends BucketBase {
       publicAccessBlockConfiguration: props.blockPublicAccess,
       metricsConfigurations: Lazy.anyValue({ produce: () => this.parseMetricConfiguration() }),
       corsConfiguration: Lazy.anyValue({ produce: () => this.parseCorsConfiguration() }),
-      accessControl: props.accessControl,
+      accessControl: Lazy.stringValue({ produce: () => this.accessControl }),
+      loggingConfiguration: this.parseServerAccessLogs(props),
     });
 
     resource.applyRemovalPolicy(props.removalPolicy);
@@ -957,10 +1038,16 @@ export class Bucket extends BucketBase {
 
     this.bucketDomainName = resource.attrDomainName;
     this.bucketWebsiteUrl = resource.attrWebsiteUrl;
+    this.bucketWebsiteDomainName = Fn.select(2, Fn.split('/', this.bucketWebsiteUrl));
     this.bucketDualStackDomainName = resource.attrDualStackDomainName;
     this.bucketRegionalDomainName = resource.attrRegionalDomainName;
 
     this.disallowPublicAccess = props.blockPublicAccess && props.blockPublicAccess.blockPublicPolicy;
+    this.accessControl = props.accessControl;
+
+    if (props.serverAccessLogsBucket instanceof Bucket) {
+      props.serverAccessLogsBucket.allowLogDelivery();
+    }
 
     // Add all bucket metric configurations rules
     (props.metrics || []).forEach(this.addMetric.bind(this));
@@ -1205,6 +1292,21 @@ export class Bucket extends BucketBase {
     }
   }
 
+  private parseServerAccessLogs(props: BucketProps): CfnBucket.LoggingConfigurationProperty | undefined {
+    if (props.serverAccessLogsPrefix && !props.serverAccessLogsBucket) {
+      throw new Error(`"serverAccessLogsBucket" is required if "serverAccessLogsPrefix" is set`);
+    }
+
+    if (!props.serverAccessLogsBucket) {
+      return undefined;
+    }
+
+    return {
+      destinationBucketName: props.serverAccessLogsBucket.bucketName,
+      logFilePrefix: props.serverAccessLogsPrefix,
+    };
+  }
+
   private parseMetricConfiguration(): CfnBucket.MetricsConfigurationProperty[] | undefined {
     if (!this.metrics || this.metrics.length === 0) {
       return undefined;
@@ -1289,6 +1391,20 @@ export class Bucket extends BucketBase {
       redirectAllRequestsTo: props.websiteRedirect,
       routingRules
     };
+  }
+
+  /**
+   * Allows the LogDelivery group to write, fails if ACL was set differently.
+   *
+   * @see
+   * https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl
+   */
+  private allowLogDelivery() {
+    if (this.accessControl && this.accessControl !== BucketAccessControl.LOG_DELIVERY_WRITE) {
+      throw new Error("Cannot enable log delivery to this bucket because the bucket's ACL has been set and can't be changed");
+    }
+
+    this.accessControl = BucketAccessControl.LOG_DELIVERY_WRITE;
   }
 }
 

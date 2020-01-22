@@ -1,11 +1,11 @@
-import {expect, haveResource, haveResourceLike, InspectionFailure, ResourcePart} from '@aws-cdk/assert';
-import ec2 = require('@aws-cdk/aws-ec2');
-import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/core');
-import { Lazy } from '@aws-cdk/core';
-import cxapi = require('@aws-cdk/cx-api');
+import { ABSENT, expect, haveResource, haveResourceLike, InspectionFailure, ResourcePart } from '@aws-cdk/assert';
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as iam from '@aws-cdk/aws-iam';
+import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
-import autoscaling = require('../lib');
+import * as autoscaling from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -23,7 +23,7 @@ export = {
     expect(stack).toMatch({
       "Parameters": {
         "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter": {
-          "Type": "AWS::SSM::Parameter::Value<String>",
+          "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
           "Default": "/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2"
         }
       },
@@ -114,7 +114,6 @@ export = {
             }
           },
           "Properties": {
-            "DesiredCapacity": "1",
             "LaunchConfigurationName": {
               "Ref": "MyFleetLaunchConfig5D7F9801"
             },
@@ -170,9 +169,9 @@ export = {
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
-      minCapacity: Lazy.numberValue({ produce: () => 5 }),
-      maxCapacity: Lazy.numberValue({ produce: () => 1 }),
-      desiredCapacity: Lazy.numberValue({ produce: () => 20 }),
+      minCapacity: cdk.Lazy.numberValue({ produce: () => 5 }),
+      maxCapacity: cdk.Lazy.numberValue({ produce: () => 1 }),
+      desiredCapacity: cdk.Lazy.numberValue({ produce: () => 20 }),
     });
 
     // THEN: no exception
@@ -253,7 +252,6 @@ export = {
     expect(stack).to(haveResource("AWS::AutoScaling::AutoScalingGroup", {
       MinSize: "10",
       MaxSize: "10",
-      DesiredCapacity: "10",
     }
     ));
 
@@ -276,8 +274,7 @@ export = {
     // THEN
     expect(stack).to(haveResource("AWS::AutoScaling::AutoScalingGroup", {
       MinSize: "1",
-      MaxSize: "10",
-      DesiredCapacity: "10",
+      MaxSize: "10"
     }
     ));
 
@@ -693,7 +690,7 @@ export = {
     });
 
     // THEN
-    test.notEqual(asg.node.defaultChild, undefined);
+    test.ok(asg.node.defaultChild instanceof autoscaling.CfnAutoScalingGroup);
 
     test.done();
   },
@@ -741,7 +738,7 @@ export = {
             VolumeSize: 15,
             VolumeType: "io1"
           },
-          NoDevice: false
+          NoDevice: ABSENT
         },
         {
           DeviceName: "ebs-snapshot",
@@ -755,7 +752,8 @@ export = {
         },
         {
           DeviceName: "ephemeral",
-          VirtualName: "ephemeral0"
+          VirtualName: "ephemeral0",
+          NoDevice: ABSENT
         }
       ]
     }));
@@ -861,6 +859,104 @@ export = {
 
     test.done();
   },
+
+  'step scaling on metric'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+    const asg = new autoscaling.AutoScalingGroup(stack, 'MyStack', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+    });
+
+    // WHEN
+    asg.scaleOnMetric('Metric', {
+      metric: new cloudwatch.Metric({
+        namespace: 'Test',
+        metricName: 'Metric',
+      }),
+      adjustmentType: autoscaling.AdjustmentType.CHANGE_IN_CAPACITY,
+      scalingSteps: [
+        { change: -1, lower: 0, upper: 49 },
+        { change: 0, lower: 50, upper: 99 },
+        { change: 1, lower: 100 }
+      ]
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::CloudWatch::Alarm', {
+      ComparisonOperator: "LessThanOrEqualToThreshold",
+      EvaluationPeriods: 1,
+      MetricName: "Metric",
+      Namespace: "Test",
+      Period: 300,
+    }));
+
+    test.done();
+  },
+
+  'step scaling on MathExpression'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+    const asg = new autoscaling.AutoScalingGroup(stack, 'MyStack', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+    });
+
+    // WHEN
+    asg.scaleOnMetric('Metric', {
+      metric: new cloudwatch.MathExpression({
+        expression: 'a',
+        usingMetrics: {
+          a: new cloudwatch.Metric({
+            namespace: 'Test',
+            metricName: 'Metric',
+          })
+        },
+      }),
+      adjustmentType: autoscaling.AdjustmentType.CHANGE_IN_CAPACITY,
+      scalingSteps: [
+        { change: -1, lower: 0, upper: 49 },
+        { change: 0, lower: 50, upper: 99 },
+        { change: 1, lower: 100 }
+      ]
+    });
+
+    // THEN
+    expect(stack).notTo(haveResource('AWS::CloudWatch::Alarm', {
+      Period: 60
+    }));
+
+    expect(stack).to(haveResource('AWS::CloudWatch::Alarm', {
+      "ComparisonOperator": "LessThanOrEqualToThreshold",
+      "EvaluationPeriods": 1,
+      "Metrics": [
+        {
+          "Expression": "a",
+          "Id": "expr_1"
+        },
+        {
+          "Id": "a",
+          "MetricStat": {
+            "Metric": {
+              "MetricName": "Metric",
+              "Namespace": "Test"
+            },
+            "Period": 300,
+            "Stat": "Average"
+          },
+          "ReturnData": false
+        }
+      ],
+      "Threshold": 49
+    }));
+
+    test.done();
+  },
+
 };
 
 function mockVpc(stack: cdk.Stack) {

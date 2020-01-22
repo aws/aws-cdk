@@ -1,7 +1,8 @@
-import cxapi = require('@aws-cdk/cx-api');
-import fs = require('fs-extra');
-import os = require('os');
-import path = require('path');
+import * as cxapi from '@aws-cdk/cx-api';
+import * as fs from 'fs-extra';
+import * as os from 'os';
+import * as path from 'path';
+import {Tag} from "./cxapp/stacks";
 import { deployStack, DeployStackResult } from './deploy-stack';
 import { ISDK } from './util/sdk';
 
@@ -26,6 +27,17 @@ export interface BootstrapEnvironmentProps {
    * @default - the default KMS key for S3 will be used.
    */
   readonly kmsKeyId?: string;
+  /**
+   * Tags for cdktoolkit stack.
+   *
+   * @default - None.
+   */
+  readonly tags?: Tag[];
+  /**
+   * Whether to execute the changeset or only create it and leave it in review.
+   * @default true
+   */
+  readonly execute?: boolean;
 }
 
 /** @experimental */
@@ -63,7 +75,7 @@ export async function bootstrapEnvironment(environment: cxapi.Environment, aws: 
       },
       [BUCKET_DOMAIN_NAME_OUTPUT]: {
         Description: "The domain name of the S3 bucket owned by the CDK toolkit stack",
-        Value: { "Fn::GetAtt": ["StagingBucket", "DomainName"] }
+        Value: { "Fn::GetAtt": ["StagingBucket", "RegionalDomainName"] }
       }
     }
   };
@@ -83,5 +95,10 @@ export async function bootstrapEnvironment(environment: cxapi.Environment, aws: 
   });
 
   const assembly = builder.buildAssembly();
-  return await deployStack({ stack: assembly.getStack(toolkitStackName), sdk: aws, roleArn });
+  return await deployStack({
+    stack: assembly.getStackByName(toolkitStackName),
+    sdk: aws, roleArn,
+    tags: props.tags,
+    execute: props.execute
+  });
 }

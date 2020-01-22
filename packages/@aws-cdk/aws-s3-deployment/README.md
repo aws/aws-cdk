@@ -17,8 +17,8 @@
 
 > __Status: Experimental__
 
-This library allows populating an S3 bucket with the contents of a .zip file
-from another S3 bucket or from local disk.
+This library allows populating an S3 bucket with the contents of .zip files
+from other S3 buckets or from local disk.
 
 The following example defines a publicly accessible S3 bucket with web hosting
 enabled and populates it from a local directory on disk.
@@ -30,7 +30,7 @@ const websiteBucket = new s3.Bucket(this, 'WebsiteBucket', {
 });
 
 new s3deploy.BucketDeployment(this, 'DeployWebsite', {
-  source: s3deploy.Source.asset('./website-dist'),
+  sources: [s3deploy.Source.asset('./website-dist')],
   destinationBucket: websiteBucket,
   destinationKeyPrefix: 'web/static' // optional prefix in destination bucket
 });
@@ -40,13 +40,15 @@ This is what happens under the hood:
 
 1. When this stack is deployed (either via `cdk deploy` or via CI/CD), the
    contents of the local `website-dist` directory will be archived and uploaded
-   to an intermediary assets bucket.
+   to an intermediary assets bucket. If there is more than one source, they will
+   be individually uploaded.
 2. The `BucketDeployment` construct synthesizes a custom CloudFormation resource
    of type `Custom::CDKBucketDeployment` into the template. The source bucket/key
    is set to point to the assets bucket.
 3. The custom resource downloads the .zip archive, extracts it and issues `aws
    s3 sync --delete` against the destination bucket (in this case
-   `websiteBucket`).
+   `websiteBucket`). If there is more than one source, the sources will be 
+   downloaded and merged pre-deployment at this step.
 
 ## Supported sources
 
@@ -62,6 +64,48 @@ By default, the contents of the destination bucket will be deleted when the
 `BucketDeployment` resource is removed from the stack or when the destination is
 changed. You can use the option `retainOnDelete: true` to disable this behavior,
 in which case the contents will be retained.
+
+## Objects metadata
+
+You can specify metadata to be set on all the objects in your deployment.
+There are 2 types of metadata in S3: system-defined metadata and user-defined metadata.
+System-defined metadata have a special purpose, for example cache-control defines how long to keep an object cached.
+User-defined metadata are not used by S3 and keys always begin with `x-amzn-meta-` (if this is not provided, it is added automatically).
+
+System defined metadata keys include the following:
+
+- cache-control
+- content-disposition
+- content-encoding
+- content-language
+- content-type
+- expires
+- server-side-encryption
+- storage-class
+- website-redirect-location
+- ssekms-key-id
+- sse-customer-algorithm
+
+```ts
+const websiteBucket = new s3.Bucket(this, 'WebsiteBucket', {
+  websiteIndexDocument: 'index.html',
+  publicReadAccess: true
+});
+
+new s3deploy.BucketDeployment(this, 'DeployWebsite', {
+  sources: [s3deploy.Source.asset('./website-dist')],
+  destinationBucket: websiteBucket,
+  destinationKeyPrefix: 'web/static', // optional prefix in destination bucket
+  userMetadata: { "A": "1", "b": "2" }, // user-defined metadata
+
+  // system-defined metadata
+  contentType: "text/html",
+  contentLanguage: "en",
+  storageClass: StorageClass.INTELLIGENT_TIERING,
+  serverSideEncryption: ServerSideEncryption.AES_256,
+  cacheControl: [CacheControl.setPublic(), CacheControl.maxAge(cdk.Duration.hours(1))],
+});
+```
 
 ## CloudFront Invalidation
 
@@ -82,12 +126,21 @@ const distribution = new cloudfront.CloudFrontWebDistribution(this, 'Distributio
 });
 
 new s3deploy.BucketDeployment(this, 'DeployWithInvalidation', {
-  source: s3deploy.Source.asset('./website-dist'),
+  sources: [s3deploy.Source.asset('./website-dist')],
   destinationBucket: bucket,
   distribution,
   distributionPaths: ['/images/*.png'],
 });
 ```
+
+## Memory Limit
+
+The default memory limit for the deployment resource is 128MiB. If you need to
+copy larger files, you can use the `memoryLimit` configuration to specify the
+size of the AWS Lambda resource handler.
+
+> NOTE: a new AWS Lambda handler will be created in your stack for each memory
+> limit configuration.
 
 ## Notes
 

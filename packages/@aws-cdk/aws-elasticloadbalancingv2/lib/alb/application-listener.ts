@@ -1,11 +1,12 @@
-import ec2 = require('@aws-cdk/aws-ec2');
+import * as ec2 from '@aws-cdk/aws-ec2';
 import { Construct, Duration, IResource, Lazy, Resource } from '@aws-cdk/core';
 import { BaseListener } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
 import { ApplicationProtocol, SslPolicy } from '../shared/enums';
+import { IListenerCertificate, ListenerCertificate } from '../shared/listener-certificate';
 import { determineProtocolAndPort } from '../shared/util';
 import { ApplicationListenerCertificate } from './application-listener-certificate';
-import { ApplicationListenerRule, FixedResponse, validateFixedResponse } from './application-listener-rule';
+import { ApplicationListenerRule, FixedResponse, RedirectResponse, validateFixedResponse, validateRedirectResponse } from './application-listener-rule';
 import { IApplicationLoadBalancer } from './application-load-balancer';
 import { ApplicationTargetGroup, IApplicationLoadBalancerTarget, IApplicationTargetGroup } from './application-target-group';
 
@@ -31,8 +32,16 @@ export interface BaseApplicationListenerProps {
    * The certificates to use on this listener
    *
    * @default - No certificates.
+   * @deprecated Use the `certificates` property instead
    */
   readonly certificateArns?: string[];
+
+  /**
+   * Certificate list of ACM cert ARNs
+   *
+   * @default - No certificates.
+   */
+  readonly certificates?: IListenerCertificate[];
 
   /**
    * The security policy that defines which ciphers and protocols are supported.
@@ -115,7 +124,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
 
     super(scope, id, {
       loadBalancerArn: props.loadBalancer.loadBalancerArn,
-      certificates: Lazy.anyValue({ produce: () => this.certificateArns.map(certificateArn => ({ certificateArn })) }, { omitEmptyArray: true}),
+      certificates: Lazy.anyValue({ produce: () => this.certificateArns.map(certificateArn => ({ certificateArn })) }, { omitEmptyArray: true }),
       protocol,
       port,
       sslPolicy: props.sslPolicy,
@@ -124,7 +133,14 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
     this.loadBalancer = props.loadBalancer;
     this.protocol = protocol;
     this.certificateArns = [];
-    this.certificateArns.push(...(props.certificateArns || []));
+
+    // Attach certificates
+    if (props.certificateArns && props.certificateArns.length > 0) {
+      this.addCertificateArns("ListenerCertificate", props.certificateArns);
+    }
+    if (props.certificates && props.certificates.length > 0) {
+      this.addCertificates("DefaultCertificates", props.certificates);
+    }
 
     // This listener edits the securitygroup of the load balancer,
     // but adds its own default port.
@@ -142,9 +158,38 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
 
   /**
    * Add one or more certificates to this listener.
+   *
+   * After the first certificate, this creates ApplicationListenerCertificates
+   * resources since cloudformation requires the certificates array on the
+   * listener resource to have a length of 1.
+   *
+   * @deprecated Use `addCertificates` instead.
    */
-  public addCertificateArns(_id: string, arns: string[]): void {
-    this.certificateArns.push(...arns);
+  public addCertificateArns(id: string, arns: string[]): void {
+    this.addCertificates(id, arns.map(ListenerCertificate.fromArn));
+  }
+
+  /**
+   * Add one or more certificates to this listener.
+   *
+   * After the first certificate, this creates ApplicationListenerCertificates
+   * resources since cloudformation requires the certificates array on the
+   * listener resource to have a length of 1.
+   */
+  public addCertificates(id: string, certificates: IListenerCertificate[]): void {
+    const additionalCerts = [...certificates];
+
+    if (this.certificateArns.length === 0 && additionalCerts.length > 0) {
+      const first = additionalCerts.splice(0, 1)[0];
+      this.certificateArns.push(first.certificateArn);
+    }
+
+    if (additionalCerts.length > 0) {
+      new ApplicationListenerCertificate(this, id, {
+        listener: this,
+        certificates: additionalCerts
+      });
+    }
   }
 
   /**
@@ -244,12 +289,43 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
   }
 
   /**
+   * Add a redirect response
+   */
+  public addRedirectResponse(id: string, props: AddRedirectResponseProps) {
+    checkAddRuleProps(props);
+    const redirectResponse = {
+      host: props.host,
+      path: props.path,
+      port: props.port,
+      protocol: props.protocol,
+      query: props.query,
+      statusCode: props.statusCode
+    };
+
+    validateRedirectResponse(redirectResponse);
+
+    if (props.priority) {
+      new ApplicationListenerRule(this, id + 'Rule', {
+        listener: this,
+        priority: props.priority,
+        redirectResponse,
+        ...props
+      });
+    } else {
+      this._addDefaultAction({
+        redirectConfig: redirectResponse,
+        type: 'redirect'
+      });
+    }
+  }
+
+  /**
    * Register that a connectable that has been added to this load balancer.
    *
    * Don't call this directly. It is called by ApplicationTargetGroup.
    */
   public registerConnectable(connectable: ec2.IConnectable, portRange: ec2.Port): void {
-    this.connections.allowTo(connectable, portRange, 'Load balancer to target');
+    connectable.connections.allowFrom(this.loadBalancer, portRange, 'Load balancer to target');
   }
 
   /**
@@ -582,6 +658,12 @@ export interface AddApplicationTargetsProps extends AddRuleProps {
  * Properties for adding a fixed response to a listener
  */
 export interface AddFixedResponseProps extends AddRuleProps, FixedResponse {
+}
+
+/**
+ * Properties for adding a redirect response to a listener
+ */
+export interface AddRedirectResponseProps extends AddRuleProps, RedirectResponse {
 }
 
 function checkAddRuleProps(props: AddRuleProps) {

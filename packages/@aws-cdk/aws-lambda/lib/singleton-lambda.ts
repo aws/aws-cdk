@@ -1,6 +1,5 @@
-import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/core');
-import { Stack } from '@aws-cdk/core';
+import * as iam from '@aws-cdk/aws-iam';
+import * as cdk from '@aws-cdk/core';
 import { Function as LambdaFunction, FunctionProps } from './function';
 import { FunctionBase, IFunction } from './function-base';
 import { Permission } from './permission';
@@ -66,13 +65,13 @@ export class SingletonFunction extends FunctionBase {
 
   private ensureLambda(props: SingletonFunctionProps): IFunction {
     const constructName = (props.lambdaPurpose || 'SingletonLambda') + slugify(props.uuid);
-    const existing = Stack.of(this).node.tryFindChild(constructName);
+    const existing = cdk.Stack.of(this).node.tryFindChild(constructName);
     if (existing) {
       // Just assume this is true
       return existing as FunctionBase;
     }
 
-    return new LambdaFunction(Stack.of(this), constructName, props);
+    return new LambdaFunction(cdk.Stack.of(this), constructName, props);
   }
 }
 

@@ -3,6 +3,7 @@ tsconfig.json
 tslint.json
 *.js.map
 *.d.ts
+!lib/provider-framework/types.d.ts
 *.generated.ts
 dist
 lib/generated/resources.ts
@@ -11,8 +12,8 @@ lib/generated/resources.ts
 .LAST_BUILD
 .nyc_output
 coverage
-.nycrc
+nyc.config.js
 .LAST_PACKAGE
 *.snk
 
-lib/sdk-api-metadata.json
+lib/aws-custom-resource/sdk-api-metadata.json

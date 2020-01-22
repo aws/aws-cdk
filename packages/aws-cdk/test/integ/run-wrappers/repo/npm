@@ -1,0 +1,25 @@
+#!/bin/bash
+# Wrapper for 'npm' which will symlink packages from the monorepo.
+set -eu
+command=$1
+
+lerna=$REPO_ROOT/node_modules/.bin/lerna
+
+if [[ "$command" == "install" || "$command" == "i" ]]; then
+  npmargs="install"
+  shift
+
+  while [[ "${1:-}" != "" ]]; do
+    packageloc=$(cd $REPO_ROOT && npx lerna ls --loglevel silent -p --scope $1) && {
+      # Rewrite to 'npm install /path/to/@aws-cdk/pkg'
+      npmargs="$npmargs $packageloc"
+    } || {
+      npmargs="$npmargs $1"
+    }
+    shift
+  done
+
+  exec $ORIGINAL_NPM $npmargs
+fi
+
+exec $ORIGINAL_NPM "$@"

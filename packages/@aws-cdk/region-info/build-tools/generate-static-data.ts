@@ -1,5 +1,5 @@
-import fs = require('fs-extra');
-import path = require('path');
+import * as fs from 'fs-extra';
+import * as path from 'path';
 import { Default } from '../lib/default';
 import { AWS_REGIONS, AWS_SERVICES } from './aws-entities';
 
@@ -29,7 +29,8 @@ async function main(): Promise<void> {
     'ap-southeast-1',
     'ap-southeast-2',
     'ap-northeast-1',
-    'sa-east-1'
+    'sa-east-1',
+    'eu-west-1',
   ]);
 
   const AWS_CDK_METADATA = new Set([

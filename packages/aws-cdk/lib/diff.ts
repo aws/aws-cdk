@@ -1,7 +1,6 @@
-import cfnDiff = require('@aws-cdk/cloudformation-diff');
-import { FormatStream } from '@aws-cdk/cloudformation-diff';
-import cxapi = require('@aws-cdk/cx-api');
-import colors = require('colors/safe');
+import * as cfnDiff from '@aws-cdk/cloudformation-diff';
+import * as cxapi from '@aws-cdk/cx-api';
+import * as colors from 'colors/safe';
 import { print, warning } from './logging';
 
 /**
@@ -19,12 +18,7 @@ export function printStackDiff(
       newTemplate: cxapi.CloudFormationStackArtifact,
       strict: boolean,
       context: number,
-      stream?: FormatStream): number {
-
-  if (newTemplate.assets.length > 0) {
-    const issue = 'https://github.com/aws/aws-cdk/issues/395';
-    warning(`The ${newTemplate.name} stack uses assets, which are currently not accounted for in the diff output! See ${issue}`);
-  }
+      stream?: cfnDiff.FormatStream): number {
 
   const diff = cfnDiff.diffTemplate(oldTemplate, newTemplate.template);
 

@@ -19,3 +19,16 @@ changed-type:@aws-cdk/aws-dynamodb.Table.tableStreamArn
 incompatible-argument:@aws-cdk/aws-apigateway.LambdaRestApi.addModel
 incompatible-argument:@aws-cdk/aws-apigateway.Model.<initializer>
 incompatible-argument:@aws-cdk/aws-apigateway.RestApi.addModel
+incompatible-argument:@aws-cdk/aws-apigateway.ProxyResource.addProxy
+incompatible-argument:@aws-cdk/aws-apigateway.Resource.addProxy
+incompatible-argument:@aws-cdk/aws-apigateway.ResourceBase.addProxy
+incompatible-argument:@aws-cdk/aws-apigateway.IResource.addProxy
+incompatible-argument:@aws-cdk/aws-servicediscovery.Service.fromServiceAttributes
+removed:@aws-cdk/core.ConstructNode.addReference
+removed:@aws-cdk/core.ConstructNode.references
+removed:@aws-cdk/core.OutgoingReference
+change-return-type:@aws-cdk/aws-lambda-destinations.EventBridgeDestination.bind
+change-return-type:@aws-cdk/aws-lambda-destinations.LambdaDestination.bind
+change-return-type:@aws-cdk/aws-lambda-destinations.SnsDestination.bind
+change-return-type:@aws-cdk/aws-lambda-destinations.SqsDestination.bind
+

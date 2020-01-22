@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 import { ActionCategory } from "./action";
 import { Artifact } from "./artifact";
 
@@ -51,6 +51,10 @@ export function validateName(thing: string, name: string | undefined): void {
 export function validateArtifactName(artifactName: string | undefined): void {
   // https://docs.aws.amazon.com/codepipeline/latest/APIReference/API_Artifact.html#CodePipeline-Type-Artifact-name
   validateAgainstRegex(/^[a-zA-Z0-9_-]{1,100}$/, 'Artifact', artifactName);
+}
+
+export function validateNamespaceName(namespaceName: string | undefined): void {
+  validateAgainstRegex(/^[A-Za-z0-9@_-]{1,100}$/, 'Namespace', namespaceName);
 }
 
 function validateAgainstRegex(regex: RegExp, thing: string, name: string | undefined) {

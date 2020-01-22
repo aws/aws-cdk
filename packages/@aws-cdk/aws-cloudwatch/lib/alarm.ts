@@ -1,10 +1,13 @@
-import { Construct, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
+import { Construct, IResource, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
 import { IAlarmAction } from './alarm-action';
 import { CfnAlarm } from './cloudwatch.generated';
 import { HorizontalAnnotation } from './graph';
 import { CreateAlarmOptions } from './metric';
-import { IMetric } from './metric-types';
-import { normalizeStatistic } from './util.statistic';
+import { IMetric, MetricStatConfig } from './metric-types';
+import { dispatchMetric, metricPeriod } from './private/metric-util';
+import { dropUndefined } from './private/object';
+import { MetricSet } from './private/rendering';
+import { parseStatistic } from './private/statistic';
 
 export interface IAlarm extends IResource {
   /**
@@ -121,8 +124,6 @@ export class Alarm extends Resource implements IAlarm {
 
     const comparisonOperator = props.comparisonOperator || ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD;
 
-    const config = props.metric.toAlarmConfig();
-
     const alarm = new CfnAlarm(this, 'Resource', {
       // Meta
       alarmDescription: props.alarmDescription,
@@ -143,11 +144,12 @@ export class Alarm extends Resource implements IAlarm {
       okActions: Lazy.listValue({ produce: () => this.okActionArns }),
 
       // Metric
-      ...dropUndef(config),
-      ...dropUndef({
+      ...this.renderMetric(props.metric),
+      ...dropUndefined({
         // Alarm overrides
         period: props.period && props.period.toSeconds(),
-        statistic: props.statistic && normalizeStatistic(props.statistic),
+        statistic: renderIfSimpleStatistic(props.statistic),
+        extendedStatistic: renderIfExtendedStatistic(props.statistic),
       })
     });
 
@@ -162,7 +164,7 @@ export class Alarm extends Resource implements IAlarm {
     this.metric = props.metric;
     this.annotation = {
       // tslint:disable-next-line:max-line-length
-      label: `${this.metric} ${OPERATOR_SYMBOLS[comparisonOperator]} ${props.threshold} for ${props.evaluationPeriods} datapoints within ${describePeriod(props.evaluationPeriods * config.period)}`,
+      label: `${this.metric} ${OPERATOR_SYMBOLS[comparisonOperator]} ${props.threshold} for ${props.evaluationPeriods} datapoints within ${describePeriod(props.evaluationPeriods * metricPeriod(props.metric).toSeconds())}`,
       value: props.threshold,
     };
   }
@@ -225,6 +227,86 @@ export class Alarm extends Resource implements IAlarm {
   public toAnnotation(): HorizontalAnnotation {
     return this.annotation;
   }
+
+  private renderMetric(metric: IMetric) {
+    const self = this;
+    return dispatchMetric(metric, {
+      withStat(st) {
+        self.validateMetricStat(st, metric);
+
+        return dropUndefined({
+          dimensions: st.dimensions,
+          namespace: st.namespace,
+          metricName: st.metricName,
+          period: st.period?.toSeconds(),
+          statistic: renderIfSimpleStatistic(st.statistic),
+          extendedStatistic: renderIfExtendedStatistic(st.statistic),
+          unit: st.unitFilter,
+        });
+      },
+
+      withExpression() {
+        // Expand the math expression metric into a set
+        const mset = new MetricSet<boolean>();
+        mset.addTopLevel(true, metric);
+
+        let eid = 0;
+        function uniqueMetricId() {
+          return `expr_${++eid}`;
+        }
+
+        return {
+          metrics: mset.entries.map(entry => dispatchMetric(entry.metric, {
+            withStat(stat, conf) {
+              self.validateMetricStat(stat, entry.metric);
+
+              return {
+                metricStat: {
+                  metric: {
+                    metricName: stat.metricName,
+                    namespace: stat.namespace,
+                    dimensions: stat.dimensions,
+                  },
+                  period: stat.period.toSeconds(),
+                  stat: stat.statistic,
+                  unit: stat.unitFilter,
+                },
+                id: entry.id || uniqueMetricId(),
+                label: conf.renderingProperties?.label,
+                returnData: entry.tag ? undefined : false, // Tag stores "primary" attribute, default is "true"
+              };
+            },
+            withExpression(expr, conf) {
+              return {
+                expression: expr.expression,
+                id: entry.id || uniqueMetricId(),
+                label: conf.renderingProperties?.label,
+                returnData: entry.tag ? undefined : false, // Tag stores "primary" attribute, default is "true"
+              };
+            },
+          }) as CfnAlarm.MetricDataQueryProperty)
+        };
+      }
+    });
+  }
+
+  /**
+   * Validate that if a region and account are in the given stat config, they match the Alarm
+   */
+  private validateMetricStat(stat: MetricStatConfig, metric: IMetric) {
+    const stack = Stack.of(this);
+
+    if (definitelyDifferent(stat.region, stack.region)) {
+      throw new Error(`Cannot create an Alarm in region '${stack.region}' based on metric '${metric}' in '${stat.region}'`);
+    }
+    if (definitelyDifferent(stat.account, stack.account)) {
+      throw new Error(`Cannot create an Alarm in account '${stack.account}' based on metric '${metric}' in '${stat.account}'`);
+    }
+  }
+}
+
+function definitelyDifferent(x: string | undefined, y: string) {
+  return x && !Token.isUnresolved(y) && x !== y;
 }
 
 /**
@@ -239,12 +321,24 @@ function describePeriod(seconds: number) {
   return seconds + ' seconds';
 }
 
-function dropUndef<T extends object>(x: T): T {
-  const ret: any = {};
-  for (const [key, value] of Object.entries(x)) {
-    if (value !== undefined) {
-      ret[key] = value;
-    }
+function renderIfSimpleStatistic(statistic?: string): string | undefined {
+  if (statistic === undefined) { return undefined; }
+
+  const parsed = parseStatistic(statistic);
+  if (parsed.type === 'simple') {
+    return parsed.statistic;
   }
-  return ret;
+  return undefined;
+}
+
+function renderIfExtendedStatistic(statistic?: string): string | undefined {
+  if (statistic === undefined) { return undefined; }
+
+  const parsed = parseStatistic(statistic);
+  if (parsed.type === 'percentile') {
+    // Already percentile. Avoid parsing because we might get into
+    // floating point rounding issues, return as-is but lowercase the p.
+    return statistic.toLowerCase();
+  }
+  return undefined;
 }

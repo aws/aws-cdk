@@ -39,12 +39,14 @@ def handler(event, context):
         physical_id = event.get('PhysicalResourceId', None)
 
         try:
-            source_bucket_name = props['SourceBucketName']
-            source_object_key  = props['SourceObjectKey']
-            dest_bucket_name   = props['DestinationBucketName']
-            dest_bucket_prefix = props.get('DestinationBucketKeyPrefix', '')
-            retain_on_delete   = props.get('RetainOnDelete', "true") == "true"
-            distribution_id    = props.get('DistributionId', '')
+            source_bucket_names = props['SourceBucketNames']
+            source_object_keys  = props['SourceObjectKeys']
+            dest_bucket_name    = props['DestinationBucketName']
+            dest_bucket_prefix  = props.get('DestinationBucketKeyPrefix', '')
+            retain_on_delete    = props.get('RetainOnDelete', "true") == "true"
+            distribution_id     = props.get('DistributionId', '')
+            user_metadata       = props.get('UserMetadata', {})
+            system_metadata     = props.get('SystemMetadata', {})
 
             default_distribution_path = dest_bucket_prefix
             if not default_distribution_path.endswith("/"):
@@ -62,7 +64,7 @@ def handler(event, context):
         if dest_bucket_prefix == "/":
             dest_bucket_prefix = ""
 
-        s3_source_zip = "s3://%s/%s" % (source_bucket_name, source_object_key)
+        s3_source_zips = map(lambda name, key: "s3://%s/%s" % (name, key), source_bucket_names, source_object_keys)
         s3_dest = "s3://%s/%s" % (dest_bucket_name, dest_bucket_prefix)
 
         old_s3_dest = "s3://%s/%s" % (old_props.get("DestinationBucketName", ""), old_props.get("DestinationBucketKeyPrefix", ""))
@@ -96,7 +98,7 @@ def handler(event, context):
             aws_command("s3", "rm", old_s3_dest, "--recursive")
 
         if request_type == "Update" or request_type == "Create":
-            s3_deploy(s3_source_zip, s3_dest)
+            s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata)
 
         if distribution_id:
             cloudfront_invalidate(distribution_id, distribution_paths)
@@ -109,8 +111,8 @@ def handler(event, context):
         cfn_error(str(e))
 
 #---------------------------------------------------------------------------------------------------
-# populate all files from s3_source_zip to a destination bucket
-def s3_deploy(s3_source_zip, s3_dest):
+# populate all files from s3_source_zips to a destination bucket
+def s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata):
     # create a temporary working directory
     workdir=tempfile.mkdtemp()
     logger.info("| workdir: %s" % workdir)
@@ -120,15 +122,16 @@ def s3_deploy(s3_source_zip, s3_dest):
     os.mkdir(contents_dir)
 
     # download the archive from the source and extract to "contents"
-    archive=os.path.join(workdir, 'archive.zip')
-    logger.info("| archive: %s" % archive)
-    aws_command("s3", "cp", s3_source_zip, archive)
-    logger.info("| extracting archive to: %s" % contents_dir)
-    with ZipFile(archive, "r") as zip:
-      zip.extractall(contents_dir)
+    for s3_source_zip in s3_source_zips:
+        archive=os.path.join(workdir, str(uuid4()))
+        logger.info("archive: %s" % archive)
+        aws_command("s3", "cp", s3_source_zip, archive)
+        logger.info("| extracting archive to: %s\n" % contents_dir)
+        with ZipFile(archive, "r") as zip:
+          zip.extractall(contents_dir)
 
     # sync from "contents" to destination
-    aws_command("s3", "sync", "--delete", contents_dir, s3_dest)
+    aws_command("s3", "sync", "--delete", contents_dir, s3_dest, *create_metadata_args(user_metadata, system_metadata))
     shutil.rmtree(workdir)
 
 #---------------------------------------------------------------------------------------------------
@@ -147,6 +150,23 @@ def cloudfront_invalidate(distribution_id, distribution_paths):
     cloudfront.get_waiter('invalidation_completed').wait(
         DistributionId=distribution_id,
         Id=invalidation_resp['Invalidation']['Id'])
+
+#---------------------------------------------------------------------------------------------------
+# set metadata
+def create_metadata_args(raw_user_metadata, raw_system_metadata):
+    if len(raw_user_metadata) == 0 and len(raw_system_metadata) == 0:
+        return []
+
+    format_system_metadata_key = lambda k: k.lower()
+    format_user_metadata_key = lambda k: k.lower() if k.lower().startswith("x-amzn-meta-") else f"x-amzn-meta-{k.lower()}" 
+
+    system_metadata = { format_system_metadata_key(k): v for k, v in raw_system_metadata.items() }
+    user_metadata = { format_user_metadata_key(k): v for k, v in raw_user_metadata.items() }
+
+    system_args = [f"--{k} '{v}'" for k, v in system_metadata.items()]
+    user_args = ["--metadata", f"'{json.dumps(user_metadata)}'"] if len(user_metadata) > 0 else []
+
+    return system_args + user_args + ["--metadata-directive", "REPLACE"]
 
 #---------------------------------------------------------------------------------------------------
 # executes an "aws" cli command

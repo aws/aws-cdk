@@ -1,4 +1,4 @@
-import { Construct, Resource } from '@aws-cdk/core';
+import { Construct, Resource, Tokenization } from '@aws-cdk/core';
 import { CommonTaskDefinitionProps, Compatibility, ITaskDefinition, NetworkMode, TaskDefinition } from '../base/task-definition';
 
 /**
@@ -77,8 +77,8 @@ export class FargateTaskDefinition extends TaskDefinition implements IFargateTas
   constructor(scope: Construct, id: string, props: FargateTaskDefinitionProps = {}) {
     super(scope, id, {
       ...props,
-      cpu: props.cpu !== undefined ? String(props.cpu) : '256',
-      memoryMiB: props.memoryLimitMiB !== undefined ? String(props.memoryLimitMiB) : '512',
+      cpu: props.cpu !== undefined ? Tokenization.stringifyNumber(props.cpu) : '256',
+      memoryMiB: props.memoryLimitMiB !== undefined ? Tokenization.stringifyNumber(props.memoryLimitMiB) : '512',
       compatibility: Compatibility.FARGATE,
       networkMode: NetworkMode.AWS_VPC,
     });

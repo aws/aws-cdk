@@ -1,7 +1,7 @@
 import '@aws-cdk/assert/jest';
-import sfn = require('@aws-cdk/aws-stepfunctions');
+import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Stack } from '@aws-cdk/core';
-import tasks = require('../lib');
+import * as tasks from '../lib';
 
 let stack: Stack;
 let child: sfn.StateMachine;
@@ -26,13 +26,29 @@ test('Execute State Machine - Default - Fire and Forget', () => {
     definition: task
   });
 
-  expect(stack).toHaveResource('AWS::StepFunctions::StateMachine', {
-    DefinitionString: {
-      "Fn::Join": ["", [
-          "{\"StartAt\":\"ChildTask\",\"States\":{\"ChildTask\":{\"End\":true,\"Parameters\":{\"Input\":{\"foo\":\"bar\"},\"StateMachineArn\":\"",
-          { Ref: "ChildStateMachine9133117F" },
-          "\",\"Name\":\"myExecutionName\"},\"Type\":\"Task\",\"Resource\":\"arn:aws:states:::states:startExecution\"}}}"
-      ]]
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    Resource: {
+      "Fn::Join": [
+        "",
+        [
+          "arn:",
+          {
+            Ref: "AWS::Partition",
+          },
+          ":states:::states:startExecution",
+        ],
+      ],
+    },
+    End: true,
+    Parameters: {
+      Input: {
+        foo: "bar"
+       },
+      Name: 'myExecutionName',
+      StateMachineArn: {
+        Ref: "ChildStateMachine9133117F"
+      }
     },
   });
 });
@@ -48,13 +64,25 @@ test('Execute State Machine - Sync', () => {
     definition: task
   });
 
-  expect(stack).toHaveResource('AWS::StepFunctions::StateMachine', {
-    DefinitionString: {
-      "Fn::Join": ["", [
-          "{\"StartAt\":\"ChildTask\",\"States\":{\"ChildTask\":{\"End\":true,\"Parameters\":{\"StateMachineArn\":\"",
-          { Ref: "ChildStateMachine9133117F" },
-          "\"},\"Type\":\"Task\",\"Resource\":\"arn:aws:states:::states:startExecution.sync\"}}}"
-      ]]
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    Resource: {
+      "Fn::Join": [
+        "",
+        [
+          "arn:",
+          {
+            Ref: "AWS::Partition",
+          },
+          ":states:::states:startExecution.sync",
+        ],
+      ],
+    },
+    End: true,
+    Parameters: {
+      StateMachineArn: {
+        Ref: "ChildStateMachine9133117F"
+      }
     },
   });
 });
@@ -73,14 +101,28 @@ test('Execute State Machine - Wait For Task Token', () => {
     definition: task
   });
 
-  expect(stack).toHaveResource('AWS::StepFunctions::StateMachine', {
-    DefinitionString: {
-      "Fn::Join": ["", [
-          "{\"StartAt\":\"ChildTask\",\"States\":{\"ChildTask\":{\"End\":true,\"Parameters\":{\"Input\":"
-          + "{\"token.$\":\"$$.Task.Token\"},\"StateMachineArn\":\"",
-          { Ref: "ChildStateMachine9133117F" },
-          "\"},\"Type\":\"Task\",\"Resource\":\"arn:aws:states:::states:startExecution.waitForTaskToken\"}}}"
-      ]]
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    Resource: {
+      "Fn::Join": [
+        "",
+        [
+          "arn:",
+          {
+            Ref: "AWS::Partition",
+          },
+          ":states:::states:startExecution.waitForTaskToken",
+        ],
+      ],
+    },
+    End: true,
+    Parameters: {
+      Input: {
+        "token.$": "$$.Task.Token"
+      },
+      StateMachineArn: {
+        Ref: "ChildStateMachine9133117F"
+      }
     },
   });
 });

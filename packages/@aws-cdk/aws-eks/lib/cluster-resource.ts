@@ -1,11 +1,9 @@
-import cfn = require('@aws-cdk/aws-cloudformation');
-import { PolicyStatement } from '@aws-cdk/aws-iam';
-import iam = require('@aws-cdk/aws-iam');
-import lambda = require('@aws-cdk/aws-lambda');
-import { Construct, Duration, Token } from '@aws-cdk/core';
-import path = require('path');
+import * as cfn from '@aws-cdk/aws-cloudformation';
+import * as iam from '@aws-cdk/aws-iam';
+import { ArnComponents, Construct, Lazy, Stack, Token } from '@aws-cdk/core';
+import { CLUSTER_RESOURCE_TYPE } from './cluster-resource-handler/consts';
+import { ClusterResourceProvider } from './cluster-resource-provider';
 import { CfnClusterProps } from './eks.generated';
-import { KubectlLayer } from './kubectl-layer';
 
 /**
  * A low-level CFN resource Amazon EKS cluster implemented through a custom
@@ -18,11 +16,6 @@ import { KubectlLayer } from './kubectl-layer';
  * manifest and IAM role/user RBAC mapping.
  */
 export class ClusterResource extends Construct {
-  /**
-   * The AWS CloudFormation resource type used for this resource.
-   */
-  public static readonly RESOURCE_TYPE = 'Custom::AWSCDK-EKS-Cluster';
-
   public readonly attrEndpoint: string;
   public readonly attrArn: string;
   public readonly attrCertificateAuthorityData: string;
@@ -33,51 +26,116 @@ export class ClusterResource extends Construct {
    * that gets administrator privilages on the cluster (`system:masters`), and
    * will be able to issue `kubectl` commands against it.
    */
-  public readonly creationRole: iam.IRole;
+  private readonly creationRole: iam.Role;
+  private readonly trustedPrincipals: string[] = [];
 
   constructor(scope: Construct, id: string, props: CfnClusterProps) {
     super(scope, id);
 
-    // each cluster resource will have it's own lambda handler since permissions
-    // are scoped to this cluster and related resources like it's role
-    const handler = new lambda.Function(this, 'ResourceHandler', {
-      code: lambda.Code.fromAsset(path.join(__dirname, 'cluster-resource')),
-      runtime: lambda.Runtime.PYTHON_3_7,
-      handler: 'index.handler',
-      timeout: Duration.minutes(15),
-      memorySize: 512,
-      layers: [ KubectlLayer.getOrCreate(this) ],
-    });
+    const stack = Stack.of(this);
+    const provider = ClusterResourceProvider.getOrCreate(this);
 
     if (!props.roleArn) {
       throw new Error(`"roleArn" is required`);
     }
 
-    // since we don't know the cluster name at this point, we must give this role star resource permissions
-    handler.addToRolePolicy(new PolicyStatement({
-      actions: [ 'eks:CreateCluster', 'eks:DescribeCluster', 'eks:DeleteCluster' ],
-      resources: [ '*' ]
-    }));
+    // the role used to create the cluster. this becomes the administrator role
+    // of the cluster.
+    this.creationRole = new iam.Role(this, 'CreationRole', {
+      assumedBy: new iam.CompositePrincipal(...provider.roles.map(x => new iam.ArnPrincipal(x.roleArn)))
+    });
 
     // the CreateCluster API will allow the cluster to assume this role, so we
     // need to allow the lambda execution role to pass it.
-    handler.addToRolePolicy(new PolicyStatement({
+    this.creationRole.addToPolicy(new iam.PolicyStatement({
       actions: [ 'iam:PassRole' ],
       resources: [ props.roleArn ]
     }));
 
+    // if we know the cluster name, restrict the policy to only allow
+    // interacting with this specific cluster otherwise, we will have to grant
+    // this role to manage all clusters in the account. this must be lazy since
+    // `props.name` may contain a lazy value that conditionally resolves to a
+    // physical name.
+    const resourceArn = Lazy.stringValue({
+      produce: () => stack.resolve(props.name)
+        ? stack.formatArn(clusterArnComponents(stack.resolve(props.name)))
+        : '*'
+    });
+
+    const fargateProfileResourceArn = Lazy.stringValue({
+      produce: () => stack.resolve(props.name)
+        ? stack.formatArn({ service: 'eks', resource: 'fargateprofile', resourceName: stack.resolve(props.name) + '/*' })
+        : '*'
+    });
+
+    this.creationRole.addToPolicy(new iam.PolicyStatement({
+      actions: [ 'eks:CreateCluster', 'eks:DescribeCluster', 'eks:DeleteCluster', 'eks:UpdateClusterVersion', 'eks:UpdateClusterConfig', 'eks:CreateFargateProfile' ],
+      resources: [ resourceArn ]
+    }));
+
+    this.creationRole.addToPolicy(new iam.PolicyStatement({
+      actions: [ 'eks:DescribeFargateProfile', 'eks:DeleteFargateProfile' ],
+      resources: [ fargateProfileResourceArn ]
+    }));
+
+    this.creationRole.addToPolicy(new iam.PolicyStatement({
+      actions: [ 'iam:GetRole' ],
+      resources: [ '*' ],
+    }));
+
+    this.creationRole.addToPolicy(new iam.PolicyStatement({
+      actions: [ 'iam:CreateServiceLinkedRole' ],
+      resources: [ '*' ],
+    }));
+
     const resource = new cfn.CustomResource(this, 'Resource', {
-      resourceType: ClusterResource.RESOURCE_TYPE,
-      provider: cfn.CustomResourceProvider.lambda(handler),
+      resourceType: CLUSTER_RESOURCE_TYPE,
+      provider: provider.provider,
       properties: {
-        Config: props
+        Config: props,
+        AssumeRoleArn: this.creationRole.roleArn
       }
     });
+
+    resource.node.addDependency(this.creationRole);
 
     this.ref = resource.ref;
     this.attrEndpoint = Token.asString(resource.getAtt('Endpoint'));
     this.attrArn = Token.asString(resource.getAtt('Arn'));
     this.attrCertificateAuthorityData = Token.asString(resource.getAtt('CertificateAuthorityData'));
-    this.creationRole = handler.role!;
   }
+
+  /**
+   * Returns the ARN of the cluster creation role and grants `trustedRole`
+   * permissions to assume this role.
+   */
+  public getCreationRoleArn(trustedRole?: iam.IRole): string {
+
+    if (!trustedRole) {
+      return this.creationRole.roleArn;
+    }
+
+    if (!this.trustedPrincipals.includes(trustedRole.roleArn)) {
+      if (!this.creationRole.assumeRolePolicy) {
+        throw new Error(`unexpected: cluster creation role must have trust policy`);
+      }
+
+      this.creationRole.assumeRolePolicy.addStatements(new iam.PolicyStatement({
+        actions: [ 'sts:AssumeRole' ],
+        principals: [ new iam.ArnPrincipal(trustedRole.roleArn) ]
+      }));
+
+      this.trustedPrincipals.push(trustedRole.roleArn);
+    }
+    return this.creationRole.roleArn;
+  }
+}
+
+export function clusterArnComponents(clusterName: string): ArnComponents {
+  return {
+    service: 'eks',
+    resource: 'cluster',
+    resourceName: clusterName,
+  };
 }

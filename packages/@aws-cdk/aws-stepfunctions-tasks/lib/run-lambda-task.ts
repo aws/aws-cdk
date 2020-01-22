@@ -1,7 +1,7 @@
-import iam = require('@aws-cdk/aws-iam');
-import lambda = require('@aws-cdk/aws-lambda');
-import sfn = require('@aws-cdk/aws-stepfunctions');
-import { resourceArnSuffix } from './resource-arn-suffix';
+import * as iam from '@aws-cdk/aws-iam';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+import { getResourceArn } from './resource-arn-suffix';
 
 /**
  * Properties for RunLambdaTask
@@ -79,10 +79,8 @@ export class RunLambdaTask implements sfn.IStepFunctionsTask {
   }
 
   public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
-    const resourceArn = 'arn:aws:states:::lambda:invoke' + resourceArnSuffix.get(this.integrationPattern);
-
     return {
-      resourceArn,
+      resourceArn: getResourceArn("lambda", "invoke", this.integrationPattern),
       policyStatements: [new iam.PolicyStatement({
         resources: [this.lambdaFunction.functionArn],
         actions: ["lambda:InvokeFunction"],

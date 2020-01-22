@@ -1,10 +1,9 @@
 import { SynthUtils } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
-import s3 = require('@aws-cdk/aws-s3');
-import sns = require('@aws-cdk/aws-sns');
-import cdk = require('@aws-cdk/core');
-import { ConstructNode, Stack } from '@aws-cdk/core';
-import s3n = require('../lib');
+import * as s3 from '@aws-cdk/aws-s3';
+import * as sns from '@aws-cdk/aws-sns';
+import * as cdk from '@aws-cdk/core';
+import * as s3n from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 // tslint:disable:max-line-length
@@ -277,7 +276,7 @@ test('prefix/suffix filters', () => {
 });
 
 test('a notification destination can specify a set of dependencies that must be resolved before the notifications resource is created', () => {
-  const stack = new Stack();
+  const stack = new cdk.Stack();
 
   const bucket = new s3.Bucket(stack, 'Bucket');
   const dependent = new cdk.CfnResource(stack, 'Dependent', { type: 'DependOnMe' });
@@ -291,7 +290,7 @@ test('a notification destination can specify a set of dependencies that must be 
 
   bucket.addObjectCreatedNotification(dest);
 
-  ConstructNode.prepare(stack.node);
+  cdk.ConstructNode.prepare(stack.node);
 
   expect(SynthUtils.synthesize(stack).template.Resources.BucketNotifications8F2E257D).toEqual({
     Type: 'Custom::S3BucketNotifications',
@@ -305,7 +304,7 @@ test('a notification destination can specify a set of dependencies that must be 
 });
 
 describe('CloudWatch Events', () => {
-  test('onPutItem contains the Bucket ARN itself when path is undefined', () => {
+  test('onCloudTrailPutObject contains the Bucket ARN itself when path is undefined', () => {
     const stack = new cdk.Stack();
     const bucket = s3.Bucket.fromBucketAttributes(stack, 'Bucket', {
       bucketName: 'MyBucket',
@@ -347,7 +346,7 @@ describe('CloudWatch Events', () => {
     });
   });
 
-  test("onPutItem contains the path when it's provided", () => {
+  test("onCloudTrailPutObject contains the path when it's provided", () => {
     const stack = new cdk.Stack();
     const bucket = s3.Bucket.fromBucketAttributes(stack, 'Bucket', {
       bucketName: 'MyBucket',
@@ -387,6 +386,92 @@ describe('CloudWatch Events', () => {
         },
       },
       "State": "ENABLED",
+    });
+  });
+
+  test("onCloudTrailWriteObject matches on events CompleteMultipartUpload, CopyObject, and PutObject", () => {
+    const stack = new cdk.Stack();
+    const bucket = s3.Bucket.fromBucketAttributes(stack, 'Bucket', {
+      bucketName: 'MyBucket',
+    });
+    bucket.onCloudTrailWriteObject('OnCloudTrailWriteObjectRule', {
+      target: {
+        bind: () => ({ arn: 'ARN', id: '' })
+      }
+    });
+
+    expect(stack).toHaveResourceLike('AWS::Events::Rule', {
+      "EventPattern": {
+        "source": [
+          "aws.s3",
+        ],
+        "detail": {
+          "eventName": [
+            "CompleteMultipartUpload",
+            "CopyObject",
+            "PutObject",
+          ],
+        },
+      },
+      "State": "ENABLED",
+    });
+  });
+
+  test('onCloudTrailWriteObject matches on the requestParameter bucketName when the path is not provided', () => {
+    const stack = new cdk.Stack();
+    const bucket = s3.Bucket.fromBucketAttributes(stack, 'Bucket', {
+      bucketName: 'MyBucket',
+    });
+    bucket.onCloudTrailWriteObject('OnCloudTrailWriteObjectRule', {
+      target: {
+        bind: () => ({ arn: 'ARN', id: '' })
+      },
+    });
+
+    expect(stack).toHaveResourceLike('AWS::Events::Rule', {
+      "EventPattern": {
+        "source": [
+          "aws.s3",
+        ],
+        "detail": {
+          "requestParameters": {
+            "bucketName": [
+              bucket.bucketName,
+            ],
+          },
+        },
+      },
+    });
+  });
+
+  test("onCloudTrailWriteObject matches on the requestParameters bucketName and key when the path is provided", () => {
+    const stack = new cdk.Stack();
+    const bucket = s3.Bucket.fromBucketAttributes(stack, 'Bucket', {
+      bucketName: 'MyBucket',
+    });
+    bucket.onCloudTrailWriteObject('OnCloudTrailWriteObjectRule', {
+      target: {
+        bind: () => ({ arn: 'ARN', id: '' })
+      },
+      paths: ['my/path.zip']
+    });
+
+    expect(stack).toHaveResourceLike('AWS::Events::Rule', {
+      "EventPattern": {
+        "source": [
+          "aws.s3",
+        ],
+        "detail": {
+          "requestParameters": {
+            "bucketName": [
+              bucket.bucketName,
+            ],
+            "key": [
+              "my/path.zip",
+            ],
+          },
+        },
+      },
     });
   });
 });

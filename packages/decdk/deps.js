@@ -34,7 +34,7 @@ for (const dir of modules) {
     errors = true;
   }
 
-  const requirement = `^${meta.version}`;
+  const requirement = `${meta.version}`;
 
   if (exists && exists !== requirement) {
     console.error(`invalid version requirement: expecting '${requirement}', got ${exists}`);

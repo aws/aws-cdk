@@ -26,7 +26,7 @@ new Stream(this, 'MyFirstStream');
 Define a KMS-encrypted stream:
 
 ```ts
-const stream = newStream(this, 'MyEncryptedStream', {
+const stream = new Stream(this, 'MyEncryptedStream', {
     encryption: StreamEncryption.Kms
 });
 

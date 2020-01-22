@@ -1,5 +1,6 @@
 // tslint:disable:no-console
-import AWS = require('aws-sdk');
+// eslint-disable-next-line import/no-extraneous-dependencies
+import * as AWS from 'aws-sdk';
 import { AwsApiInput } from '../aws-api';
 
 export async function handler(event: AwsApiInput) {

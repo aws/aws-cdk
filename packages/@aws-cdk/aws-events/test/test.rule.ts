@@ -1,10 +1,8 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
-import iam = require('@aws-cdk/aws-iam');
-import { ServicePrincipal } from '@aws-cdk/aws-iam';
-import cdk = require('@aws-cdk/core');
-import { Stack } from '@aws-cdk/core';
+import * as iam from '@aws-cdk/aws-iam';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { EventField, IRule, IRuleTarget, RuleTargetConfig, RuleTargetInput, Schedule } from '../lib';
+import { EventBus, EventField, IRule, IRuleTarget, RuleTargetConfig, RuleTargetInput, Schedule } from '../lib';
 import { Rule } from '../lib/rule';
 
 // tslint:disable:object-literal-key-quotes
@@ -28,6 +26,26 @@ export = {
         }
       }
     });
+    test.done();
+  },
+
+  'can get rule name'(test: Test) {
+    const stack = new cdk.Stack();
+    const rule = new Rule(stack, 'MyRule', {
+      schedule: Schedule.rate(cdk.Duration.minutes(10)),
+    });
+
+    new cdk.CfnResource(stack, 'Res', {
+      type: 'Test::Resource',
+      properties: {
+        RuleName: rule.ruleName
+      }
+    });
+
+    expect(stack).to(haveResource('Test::Resource', {
+      RuleName: { Ref: 'MyRuleA44AB831' }
+    }));
+
     test.done();
   },
 
@@ -308,7 +326,7 @@ export = {
     });
 
     const role = new iam.Role(stack, 'SomeRole', {
-      assumedBy: new ServicePrincipal('nobody')
+      assumedBy: new iam.ServicePrincipal('nobody')
     });
 
     // a plain string should just be stringified (i.e. double quotes added and escaped)
@@ -363,13 +381,14 @@ export = {
 
   'fromEventRuleArn'(test: Test) {
     // GIVEN
-    const stack = new Stack();
+    const stack = new cdk.Stack();
 
     // WHEN
-    const importedRule = Rule.fromEventRuleArn(stack, 'ImportedRule', 'arn:of:rule');
+    const importedRule = Rule.fromEventRuleArn(stack, 'ImportedRule', 'arn:aws:events:us-east-2:123456789012:rule/example');
 
     // THEN
-    test.deepEqual(importedRule.ruleArn, 'arn:of:rule');
+    test.deepEqual(importedRule.ruleArn, 'arn:aws:events:us-east-2:123456789012:rule/example');
+    test.deepEqual(importedRule.ruleName, 'example');
     test.done();
   },
 
@@ -466,6 +485,43 @@ export = {
         }
       ]
     }));
+    test.done();
+  },
+
+  'associate rule with event bus'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const eventBus = new EventBus(stack, 'EventBus');
+
+    // WHEN
+    new Rule(stack, 'MyRule', {
+      eventPattern: {
+        detail: ['detail']
+      },
+      eventBus,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Events::Rule', {
+      EventBusName: {
+        Ref: 'EventBus7B8748AA'
+      }
+    }));
+
+    test.done();
+  },
+
+  'throws with eventBus and schedule'(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'MyStack');
+    const eventBus = new EventBus(stack, 'EventBus');
+
+    // THEN
+    test.throws(() => new Rule(stack, 'MyRule', {
+      schedule: Schedule.rate(cdk.Duration.minutes(10)),
+      eventBus,
+    }), /Cannot associate rule with 'eventBus' when using 'schedule'/);
     test.done();
   },
 
@@ -576,7 +632,7 @@ export = {
       test.done();
     },
 
-    'generates an event bus target in the source rule, and a separate rule with an identical target in the target stack'(test: Test) {
+    'generates the correct rules in the source and target stacks when eventPattern is passed in the constructor'(test: Test) {
       const app = new cdk.App();
 
       const sourceAccount = '123456789012';
@@ -663,6 +719,51 @@ export = {
         "Action": "events:PutEvents",
         "StatementId": "MySid",
         "Principal": sourceAccount,
+      }));
+
+      test.done();
+    },
+
+    'generates the correct rule in the target stack when addEventPattern in the source rule is used'(test: Test) {
+      const app = new cdk.App();
+
+      const sourceAccount = '123456789012';
+      const sourceStack = new cdk.Stack(app, 'SourceStack', {
+        env: {
+          account: sourceAccount,
+          region: 'us-west-2',
+        },
+      });
+      const rule = new Rule(sourceStack, 'Rule');
+
+      const targetAccount = '234567890123';
+      const targetStack = new cdk.Stack(app, 'TargetStack', {
+        env: {
+          account: targetAccount,
+          region: 'us-west-2',
+        },
+      });
+      const resource = new cdk.Construct(targetStack, 'Resource1');
+
+      rule.addTarget(new SomeTarget('T', resource));
+
+      rule.addEventPattern({
+        source: ['some-event'],
+      });
+
+      expect(targetStack).to(haveResourceLike('AWS::Events::Rule', {
+        "EventPattern": {
+          "source": [
+            "some-event",
+          ],
+        },
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Id": "T",
+            "Arn": "ARN1",
+          },
+        ],
       }));
 
       test.done();

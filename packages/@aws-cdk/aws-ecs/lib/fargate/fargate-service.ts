@@ -1,6 +1,5 @@
-import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/core');
-import { Construct, Resource } from '@aws-cdk/core';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as cdk from '@aws-cdk/core';
 import { BaseService, BaseServiceOptions, IService, LaunchType, PropagatedTagSource } from '../base/base-service';
 import { TaskDefinition } from '../base/task-definition';
 
@@ -53,7 +52,8 @@ export interface FargateServiceProps extends BaseServiceOptions {
    * Specifies whether to propagate the tags from the task definition or the service to the tasks in the service.
    * Tags can only be propagated to the tasks within the service during service creation.
    *
-   * @default PropagatedTagSource.SERVICE
+   * @deprecated Use `propagateTags` instead.
+   * @default PropagatedTagSource.NONE
    */
   readonly propagateTaskTagsFrom?: PropagatedTagSource;
 }
@@ -75,8 +75,8 @@ export class FargateService extends BaseService implements IFargateService {
   /**
    * Import a task definition from the specified task definition ARN.
    */
-  public static fromFargateServiceArn(scope: Construct, id: string, fargateServiceArn: string): IFargateService {
-    class Import extends Resource implements IFargateService {
+  public static fromFargateServiceArn(scope: cdk.Construct, id: string, fargateServiceArn: string): IFargateService {
+    class Import extends cdk.Resource implements IFargateService {
       public readonly serviceArn = fargateServiceArn;
     }
     return new Import(scope, id);
@@ -90,11 +90,18 @@ export class FargateService extends BaseService implements IFargateService {
       throw new Error('Supplied TaskDefinition is not configured for compatibility with Fargate');
     }
 
+    if (props.propagateTags && props.propagateTaskTagsFrom) {
+      throw new Error('You can only specify either propagateTags or propagateTaskTagsFrom. Alternatively, you can leave both blank');
+    }
+
+    const propagateTagsFromSource = props.propagateTaskTagsFrom !== undefined ? props.propagateTaskTagsFrom
+                                      : (props.propagateTags !== undefined ? props.propagateTags : PropagatedTagSource.NONE);
+
     super(scope, id, {
       ...props,
       desiredCount: props.desiredCount !== undefined ? props.desiredCount : 1,
       launchType: LaunchType.FARGATE,
-      propagateTags: props.propagateTaskTagsFrom === undefined ? PropagatedTagSource.NONE : props.propagateTaskTagsFrom,
+      propagateTags: propagateTagsFromSource,
       enableECSManagedTags: props.enableECSManagedTags,
     }, {
       cluster: props.cluster.clusterName,

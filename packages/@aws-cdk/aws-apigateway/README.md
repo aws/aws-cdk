@@ -332,6 +332,71 @@ const proxy = resource.addProxy({
 });
 ```
 
+### Authorizers
+
+API Gateway [supports several different authorization types](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-control-access-to-api.html)
+that can be used for controlling access to your REST APIs.
+
+#### IAM-based authorizer
+
+The following CDK code provides 'excecute-api' permission to an IAM user, via IAM policies, for the 'GET' method on the `books` resource:
+
+```ts
+const getBooks = books.addMethod('GET', new apigateway.HttpIntegration('http://amazon.com'), {
+  authorizationType: apigateway.AuthorizationType.IAM
+});
+
+iamUser.attachInlinePolicy(new iam.Policy(this, 'AllowBooks', {
+  statements: [
+    new iam.PolicyStatement({
+      actions: [ 'execute-api:Invoke' ],
+      effect: iam.Effect.Allow,
+      resources: [ getBooks.methodArn() ]
+    })
+  ]
+}))
+```
+
+#### Lambda-based token authorizer
+
+API Gateway also allows [lambda functions to be used as authorizers](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-use-lambda-authorizer.html).
+
+This module provides support for token-based Lambda authorizers. When a client makes a request to an API's methods configured with such
+an authorizer, API Gateway calls the Lambda authorizer, which takes the caller's identity as input and returns an IAM policy as output. 
+A token-based Lambda authorizer (also called a token authorizer) receives the caller's identity in a bearer token, such as
+a JSON Web Token (JWT) or an OAuth token. 
+
+API Gateway interacts with the authorizer Lambda function handler by passing input and expecting the output in a specific format.
+The event object that the handler is called with contains the `authorizationToken` and the `methodArn` from the request to the
+API Gateway endpoint. The handler is expected to return the `principalId` (i.e. the client identifier) and a `policyDocument` stating
+what the client is authorizer to perform.
+See https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-use-lambda-authorizer.html for a detailed specification on
+inputs and outputs of the lambda handler.
+
+The following code attaches a token-based Lambda authorizer to the 'GET' Method of the Book resource:
+
+```ts
+const authFn = new lambda.Function(this, 'booksAuthorizerLambda', {
+  // ...
+  // ...
+});
+
+const auth = new apigateway.TokenAuthorizer(this, 'booksAuthorizer', {
+  function: authFn
+});
+
+books.addMethod('GET', new apigateway.HttpIntegration('http://amazon.com'), {
+  authorizer: auth
+});
+```
+
+By default, the `TokenAuthorizer` looks for the authorization token in the request header with the key 'Authorization'. This can,
+however, be modified by changing the `identitySource` property.
+
+Authorizers can also be passed via the `defaultMethodOptions` property within the `RestApi` construct or the `Method` construct. Unless
+explicitly overridden, the specified defaults will be applied across all `Method`s across the `RestApi` or across all `Resource`s,
+depending on where the defaults were specified.
+
 ### Deployments
 
 By default, the `RestApi` construct will automatically create an API Gateway
@@ -419,7 +484,7 @@ CNAME records only for subdomains.)
 ```ts
 new route53.ARecord(this, 'CustomDomainAliasRecord', {
   zone: hostedZoneForExampleCom,
-  target: route53.AddressRecordTarget.fromAlias(new route53_targets.ApiGateway(api))
+  target: route53.RecordTarget.fromAlias(new route53_targets.ApiGateway(api))
 });
 ```
 
@@ -462,9 +527,69 @@ If you wish to setup this domain with an Amazon Route53 alias, use the `route53_
 ```ts
 new route53.ARecord(this, 'CustomDomainAliasRecord', {
   zone: hostedZoneForExampleCom,
-  target: route53.AddressRecordTarget.fromAlias(new route53_targets.ApiGatewayDomain(domainName))
+  target: route53.RecordTarget.fromAlias(new route53_targets.ApiGatewayDomain(domainName))
 });
 ```
+
+### Cross Origin Resource Sharing (CORS)
+
+[Cross-Origin Resource Sharing (CORS)](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) is a mechanism
+that uses additional HTTP headers to tell browsers to give a web application
+running at one origin, access to selected resources from a different origin. A
+web application executes a cross-origin HTTP request when it requests a resource
+that has a different origin (domain, protocol, or port) from its own.
+
+You can add the CORS [preflight](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS#Preflighted_requests) OPTIONS HTTP method to any API resource via the `defaultCorsPreflightOptions` option or by calling the `addCorsPreflight` on a specific resource.
+
+The following example will enable CORS for all methods and all origins on all resources of the API:
+
+```ts
+new apigateway.RestApi(this, 'api', {
+  defaultCorsPreflightOptions: {
+    allowOrigins: apigateway.Cors.ALL_ORIGINS,
+    allowMethods: apigateway.Cors.ALL_METHODS // this is also the default
+  }
+})
+```
+
+The following example will add an OPTIONS method to the `myResource` API resource, which
+only allows GET and PUT HTTP requests from the origin https://amazon.com.
+
+```ts
+myResource.addCorsPreflight({
+  allowOrigins: [ 'https://amazon.com' ],
+  allowMethods: [ 'GET', 'PUT' ]
+});
+```
+
+See the
+[`CorsOptions`](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-apigateway.CorsOptions.html)
+API reference for a detailed list of supported configuration options.
+
+You can specify defaults this at the resource level, in which case they will be applied to the entire resource sub-tree:
+
+```ts
+const subtree = resource.addResource('subtree', {
+  defaultCorsPreflightOptions: {
+    allowOrigins: [ 'https://amazon.com' ]
+  }
+});
+```
+
+This means that all resources under `subtree` (inclusive) will have a preflight
+OPTIONS added to them.
+
+See [#906](https://github.com/aws/aws-cdk/issues/906) for a list of CORS
+features which are not yet supported.
+
+## APIGateway v2
+
+APIGateway v2 APIs are now moved to its own package named `aws-apigatewayv2`. For backwards compatibility, existing
+APIGateway v2 "CFN resources" (such as `CfnApi`) that were previously exported as part of this package, are still
+exported from here and have been marked deprecated. However, updates to these CloudFormation resources, such as new
+properties and new resource types will not be available.
+
+Move to using `aws-apigatewayv2` to get the latest APIs and updates.
 
 ----
 

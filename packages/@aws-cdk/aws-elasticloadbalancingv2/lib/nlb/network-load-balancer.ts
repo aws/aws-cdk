@@ -1,5 +1,5 @@
-import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import ec2 = require('@aws-cdk/aws-ec2');
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as ec2 from '@aws-cdk/aws-ec2';
 import { Construct, Resource } from '@aws-cdk/core';
 import { BaseLoadBalancer, BaseLoadBalancerProps, ILoadBalancerV2 } from '../shared/base-load-balancer';
 import { BaseNetworkListenerProps, NetworkListener } from './network-listener';
@@ -104,7 +104,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
       metricName,
       dimensions: { LoadBalancer: this.loadBalancerFullName },
       ...props
-    });
+    }).attachTo(this);
   }
 
   /**
@@ -227,11 +227,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
 /**
  * A network load balancer
  */
-export interface INetworkLoadBalancer extends ILoadBalancerV2 {
-  /**
-   * The ARN of this load balancer
-   */
-  readonly loadBalancerArn: string;
+export interface INetworkLoadBalancer extends ILoadBalancerV2, ec2.IVpcEndpointServiceLoadBalancer {
 
   /**
    * The VPC this load balancer has been created in (if available)

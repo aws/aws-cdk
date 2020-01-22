@@ -1,7 +1,7 @@
-import lambda = require('@aws-cdk/aws-lambda');
-import sns = require('@aws-cdk/aws-sns');
-import cdk = require('@aws-cdk/core');
-import subs = require('../lib');
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as sns from '@aws-cdk/aws-sns';
+import * as cdk from '@aws-cdk/core';
+import * as subs from '../lib';
 
 class SnsToLambda extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
@@ -11,7 +11,7 @@ class SnsToLambda extends cdk.Stack {
 
     const fction = new lambda.Function(this, 'Echo', {
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_8_10,
+      runtime: lambda.Runtime.NODEJS_10_X,
       code: lambda.Code.fromInline(`exports.handler = ${handler.toString()}`)
     });
 
@@ -19,7 +19,7 @@ class SnsToLambda extends cdk.Stack {
 
     const fctionFiltered = new lambda.Function(this, 'Filtered', {
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_8_10,
+      runtime: lambda.Runtime.NODEJS_10_X,
       code: lambda.Code.fromInline(`exports.handler = ${handler.toString()}`)
     });
 

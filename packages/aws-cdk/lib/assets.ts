@@ -1,17 +1,17 @@
 // tslint:disable-next-line:max-line-length
-import cxapi = require('@aws-cdk/cx-api');
+import * as cxapi from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
-import colors = require('colors');
-import fs = require('fs-extra');
-import os = require('os');
-import path = require('path');
+import * as colors from 'colors';
+import * as fs from 'fs-extra';
+import * as os from 'os';
+import * as path from 'path';
 import { ToolkitInfo } from './api/toolkit-info';
 import { zipDirectory } from './archive';
 import { prepareContainerAsset } from './docker';
 import { debug, success } from './logging';
 
 // tslint:disable-next-line:max-line-length
-export async function prepareAssets(stack: cxapi.CloudFormationStackArtifact, toolkitInfo?: ToolkitInfo, ci?: boolean, reuse?: string[]): Promise<CloudFormation.Parameter[]> {
+export async function prepareAssets(stack: cxapi.CloudFormationStackArtifact, toolkitInfo?: ToolkitInfo, reuse?: string[]): Promise<CloudFormation.Parameter[]> {
   reuse = reuse || [];
   const assets = stack.assets;
 
@@ -41,21 +41,21 @@ export async function prepareAssets(stack: cxapi.CloudFormationStackArtifact, to
     }
 
     const assemblyDir = stack.assembly.directory;
-    params = params.concat(await prepareAsset(assemblyDir, asset, toolkitInfo, reuseAsset, ci));
+    params = params.concat(await prepareAsset(assemblyDir, asset, toolkitInfo, reuseAsset));
   }
 
   return params;
 }
 
 // tslint:disable-next-line:max-line-length
-async function prepareAsset(assemblyDir: string, asset: cxapi.AssetMetadataEntry, toolkitInfo: ToolkitInfo, reuse: boolean, ci?: boolean): Promise<CloudFormation.Parameter[]> {
+async function prepareAsset(assemblyDir: string, asset: cxapi.AssetMetadataEntry, toolkitInfo: ToolkitInfo, reuse: boolean): Promise<CloudFormation.Parameter[]> {
   switch (asset.packaging) {
     case 'zip':
       return await prepareZipAsset(assemblyDir, asset, toolkitInfo, reuse);
     case 'file':
       return await prepareFileAsset(assemblyDir, asset, toolkitInfo, reuse);
     case 'container-image':
-      return await prepareContainerAsset(assemblyDir, asset, toolkitInfo, reuse, ci);
+      return await prepareContainerAsset(assemblyDir, asset, toolkitInfo, reuse);
     default:
       // tslint:disable-next-line:max-line-length
       throw new Error(`Unsupported packaging type: ${(asset as any).packaging}. You might need to upgrade your aws-cdk toolkit to support this asset type.`);

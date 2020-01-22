@@ -65,7 +65,7 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs8.10"
+        "Runtime": "nodejs10.x"
       },
       "DependsOn": [
         "MyLambdaServiceRoleDefaultPolicy5BBC6F68",

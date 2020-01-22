@@ -1,0 +1,19 @@
+{
+  "version": "0.36.0",
+  "artifacts": {
+    "InitStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "InitStack.template.json"
+      }
+    }
+  },
+  "runtime": {
+    "libraries": {
+      "@aws-cdk/core": "1.12.0",
+      "@aws-cdk/cx-api": "1.12.0",
+      "jsii-runtime": "node.js/v8.11.4"
+    }
+  }
+}

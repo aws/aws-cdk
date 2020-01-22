@@ -4,7 +4,7 @@ about: Create a new issue
 labels: status/needs-triage
 ---
 
-<!-- NOTE:📕 If issue regarding developer guide, please create issue [here](https://github.com/awsdocs/aws-cdk-guide/issues) -->
+<!-- NOTE:📕 If there is an issue regarding developer guide, please create an issue [here](https://github.com/awsdocs/aws-cdk-guide/issues) -->
 
 ## :question: General Issue
 
@@ -30,4 +30,4 @@ falling prey to the [X/Y problem][2]!
 
 
 ### Other information
-<!-- e.g. detailed explanation, stacktraces, related issues, suggestions how to fix, links for us to have context, eg. associated pull-request, stackoverflow, gitter, etc -->
+<!-- e.g. detailed explanation, stacktraces, related issues, suggestions on how to fix, links for us to have context, eg. associated pull-request, stackoverflow, gitter, etc -->
