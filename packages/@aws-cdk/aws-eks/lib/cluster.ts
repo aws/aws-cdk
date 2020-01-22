@@ -699,12 +699,7 @@ export class Cluster extends Resource implements ICluster {
 /**
  * Options for adding worker nodes
  */
-export interface CapacityOptions extends Omit<autoscaling.AutoScalingGroupProps, 'vpc' | 'machineImage' | 'updateType' | 'instanceType'> {
-  /**
-   * Instance type of the instances to start
-   */
-  readonly instanceType: ec2.InstanceType;
-
+export interface CapacityOptions extends Omit<autoscaling.AutoScalingGroupProps, 'vpc' | 'machineImage' | 'updateType'> {
   /**
    * Will automatically update the aws-auth ConfigMap to map the IAM instance
    * role to RBAC.
