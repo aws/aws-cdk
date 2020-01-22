@@ -12,19 +12,13 @@ export interface BuildOptions {
 export function build(options: BuildOptions): void {
   try {
     const args = [
-      'build',
-      options.entry,
-      '--out-dir',
-      options.buildDir,
-      '--out-file',
-      'index.js',
-      '--global',
-      options.global,
-      '--target',
-      'node',
+      'build', options.entry,
+      '--out-dir', options.buildDir,
+      '--out-file', 'index.js',
+      '--global', options.global,
+      '--target', 'node',
       '--bundle-node-modules',
-      '--log-level',
-      '2',
+      '--log-level', '2',
       !options.minify && '--no-minify',
       !options.sourceMaps && '--no-source-maps',
       ...options.cacheDir
