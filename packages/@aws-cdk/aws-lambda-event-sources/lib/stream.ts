@@ -1,5 +1,5 @@
 import * as lambda from '@aws-cdk/aws-lambda';
-import {Duration} from '@aws-cdk/core';
+import { Duration, IResolvable } from '@aws-cdk/core';
 
 /**
  * The set of properties for event sources that follow the streaming model,
@@ -20,6 +20,47 @@ export interface StreamEventSourceProps {
    * @default 100
    */
   readonly batchSize?: number;
+
+  /**
+   * If the function returns an error, split the batch in two and retry.
+   *
+   * @default false
+   */
+  readonly bisectBatchOnFunctionError?: boolean;
+
+  /**
+   * An Amazon SQS queue or Amazon SNS topic destination for discarded records.
+   *
+   * @default discarded records are ignored
+   */
+  readonly destinationConfig?: lambda.CfnEventSourceMapping.DestinationConfigProperty | IResolvable | undefined;
+
+  /**
+   * The maximum age of a record that Lambda sends to a function for processing.
+   * Valid Range:
+   * * Minimum value of 60
+   * * Maximum value of 604800
+   *
+   * @default 604800
+   */
+  readonly maximumRecordAgeInSeconds?: number;
+
+  /**
+   * Maximum number of retry attempts
+   *
+   * @default todoNumber
+   */
+  readonly maximumRetryAttempts?: number;
+
+  /**
+   * The number of batches to process from each shard concurrently.
+   * Valid Range:
+   * * Minimum value of 1
+   * * Maximum value of 10
+   *
+   * @default 1
+   */
+  readonly parallelizationFactor?: number;
 
   /**
    * Where to begin consuming the stream.
@@ -48,8 +89,13 @@ export abstract class StreamEventSource implements lambda.IEventSource {
     return {
       ...options,
       batchSize: this.props.batchSize || 100,
+      bisectBatchOnFunctionError: this.props.bisectBatchOnFunctionError,
       startingPosition: this.props.startingPosition,
       maxBatchingWindow: this.props.maxBatchingWindow,
+      maximumRecordAgeInSeconds: this.props.maximumRecordAgeInSeconds,
+      maximumRetryAttempts: this.props.maximumRetryAttempts,
+      parallelizationFactor: this.props.parallelizationFactor,
+      destinationConfig: this.props.destinationConfig
     };
   }
 }

@@ -109,7 +109,13 @@
       "docs-public-apis:@aws-cdk/aws-lambda-event-sources.KinesisEventSourceProps",
       "docs-public-apis:@aws-cdk/aws-lambda-event-sources.S3EventSourceProps",
       "props-default-doc:@aws-cdk/aws-lambda-event-sources.S3EventSourceProps.filters",
-      "docs-public-apis:@aws-cdk/aws-lambda-event-sources.SqsEventSourceProps"
+      "docs-public-apis:@aws-cdk/aws-lambda-event-sources.SqsEventSourceProps",
+      "duration-prop-type:@aws-cdk/aws-lambda-event-sources.DynamoEventSourceProps.maximumRecordAgeInSeconds",
+      "duration-prop-type:@aws-cdk/aws-lambda-event-sources.KinesisEventSourceProps.maximumRecordAgeInSeconds",
+      "duration-prop-name:@aws-cdk/aws-lambda-event-sources.KinesisEventSourceProps.maximumRecordAgeInSeconds",
+      "duration-prop-type:@aws-cdk/aws-lambda-event-sources.StreamEventSourceProps.maximumRecordAgeInSeconds",
+      "duration-prop-name:@aws-cdk/aws-lambda-event-sources.StreamEventSourceProps.maximumRecordAgeInSeconds",
+      "duration-prop-name:@aws-cdk/aws-lambda-event-sources.DynamoEventSourceProps.maximumRecordAgeInSeconds"
     ]
   }
 }

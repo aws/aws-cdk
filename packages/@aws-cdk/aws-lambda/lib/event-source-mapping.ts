@@ -22,6 +22,20 @@ export interface EventSourceMappingOptions {
   readonly batchSize?: number;
 
   /**
+   * If the function returns an error, split the batch in two and retry.
+   *
+   * @default false
+   */
+  readonly bisectBatchOnFunctionError?: boolean;
+
+  /**
+   * An Amazon SQS queue or Amazon SNS topic destination for discarded records.
+   *
+   * @default discard records are ignored
+   */
+  readonly destinationConfig?: CfnEventSourceMapping.DestinationConfigProperty | cdk.IResolvable | undefined;
+
+  /**
    * Set to false to disable the event source upon creation.
    *
    * @default true
@@ -45,6 +59,35 @@ export interface EventSourceMappingOptions {
    * @default Duration.seconds(0)
    */
   readonly maxBatchingWindow?: cdk.Duration;
+
+  /**
+   * The maximum age of a record that Lambda sends to a function for processing.
+   * Valid Range:
+   * * Minimum value of 60
+   * * Maximum value of 604800
+   *
+   * @default 604800
+   */
+  readonly maximumRecordAgeInSeconds?: number;
+
+  /**
+   * The maximum number of times to retry when the function returns an error.
+   *
+   * Valid Range: Minimum value of 0. Maximum value of 10000.
+   *
+   * @default 10000
+   */
+  readonly maximumRetryAttempts?: number;
+
+  /**
+   * The number of batches to process from each shard concurrently.
+   * Valid Range:
+   * * Minimum value of 1
+   * * Maximum value of 10
+   *
+   * @default 1
+   */
+  readonly parallelizationFactor?: number;
 }
 
 export interface EventSourceMappingProps extends EventSourceMappingOptions {
@@ -74,13 +117,30 @@ export class EventSourceMapping extends cdk.Resource {
       throw new Error(`maxBatchingWindow cannot be over 300 seconds, got ${props.maxBatchingWindow.toSeconds()}`);
     }
 
+    if (props.maximumRecordAgeInSeconds && (props.maximumRecordAgeInSeconds < 60 || props.maximumRecordAgeInSeconds > 604800)) {
+      throw new Error(`maximumRecordAgeInSeconds must be between 60 and 604800 inclusive, got ${props.maximumRecordAgeInSeconds}`);
+    }
+
+    if (props.maximumRetryAttempts && (props.maximumRetryAttempts < 0 || props.maximumRetryAttempts > 10000)) {
+      throw new Error(`maximumRetryAttempts must be between 0 and 10000 inclusive, got ${props.maximumRetryAttempts}`);
+    }
+
+    if ((props.parallelizationFactor || props.parallelizationFactor === 0) && (props.parallelizationFactor < 1 || props.parallelizationFactor > 10)) {
+      throw new Error(`parallelizationFactor must be between 1 and 10 inclusive, got ${props.parallelizationFactor}`);
+    }
+
     new CfnEventSourceMapping(this, 'Resource', {
       batchSize: props.batchSize,
+      bisectBatchOnFunctionError: props.bisectBatchOnFunctionError,
+      destinationConfig: props.destinationConfig,
       enabled: props.enabled,
       eventSourceArn: props.eventSourceArn,
       functionName: props.target.functionName,
       startingPosition: props.startingPosition,
       maximumBatchingWindowInSeconds: props.maxBatchingWindow && props.maxBatchingWindow.toSeconds(),
+      maximumRecordAgeInSeconds: props.maximumRecordAgeInSeconds,
+      maximumRetryAttempts: props.maximumRetryAttempts,
+      parallelizationFactor: props.parallelizationFactor
     });
   }
 }
