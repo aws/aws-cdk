@@ -28,7 +28,7 @@ By default, the construct will use the name of the defining file and the constru
 up the entry file:
 ```
 .
-├── stack.ts # defines a 'NodeJsFunction' with 'my-handler' as id
+├── stack.ts # defines a 'NodejsFunction' with 'my-handler' as id
 ├── stack.my-handler.ts # exports a function named 'handler'
 ```
 
