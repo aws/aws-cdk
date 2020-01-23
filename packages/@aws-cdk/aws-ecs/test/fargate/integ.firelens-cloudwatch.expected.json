@@ -434,7 +434,7 @@
               "Type": "fluentbit"
             },
             "Image": {
-              "Ref": "SsmParameterValueawsserviceawsforfluentbit210C96584B6F00A464EAD1953AFF4B05118Parameter"
+              "Ref": "SsmParameterValueawsserviceawsforfluentbitlatestC96584B6F00A464EAD1953AFF4B05118Parameter"
             },
             "LogConfiguration": {
               "LogDriver": "awslogs",
@@ -600,9 +600,9 @@
     }
   },
   "Parameters": {
-    "SsmParameterValueawsserviceawsforfluentbit210C96584B6F00A464EAD1953AFF4B05118Parameter": {
+    "SsmParameterValueawsserviceawsforfluentbitlatestC96584B6F00A464EAD1953AFF4B05118Parameter": {
       "Type": "AWS::SSM::Parameter::Value<String>",
-      "Default": "/aws/service/aws-for-fluent-bit/2.1.0"
+      "Default": "/aws/service/aws-for-fluent-bit/latest"
     }
   }
 }

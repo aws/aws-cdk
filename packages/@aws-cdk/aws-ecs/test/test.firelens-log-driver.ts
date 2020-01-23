@@ -158,12 +158,11 @@ export = {
       const stack2 = new cdk.Stack(undefined, 'Stack2', { env: { region: 'us-east-1' }});
       const td2 = new ecs.Ec2TaskDefinition(stack2, 'TaskDefinition');
       td2.addFirelensLogRouter("log_router", {
-        image: ecs.obtainDefaultFluentBitECRImage(td2),
+        image: ecs.obtainDefaultFluentBitECRImage(td2, undefined, '2.1.0'),
         firelensConfig: {
           type: ecs.FirelensLogRouterType.FLUENTBIT,
           options: {
             enableECSLogMetadata: false,
-            configFileType: ecs.FirelensConfigFileType.S3,
             configFileValue: 'arn:aws:s3:::mybucket/fluent.conf'
           }
         },

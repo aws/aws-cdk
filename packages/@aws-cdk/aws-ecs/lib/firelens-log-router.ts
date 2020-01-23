@@ -109,33 +109,37 @@ function renderFirelensConfig(firelensConfig: FirelensConfig): CfnTaskDefinition
   if (!firelensConfig.options) {
     return { type: firelensConfig.type };
   } else {
-    const enableECSLogMetadata = firelensConfig.options.enableECSLogMetadata || firelensConfig.options.enableECSLogMetadata === undefined ? 'true' : 'false';
-    const configFileType = firelensConfig.options.configFileType || /arn:aws[a-zA-Z-]*:s3:::.+/.test(firelensConfig.options.configFileValue)
+    const options = firelensConfig.options;
+    const enableECSLogMetadata = options.enableECSLogMetadata || options.enableECSLogMetadata === undefined;
+    const configFileType = options.configFileType ||
+      (cdk.Token.isUnresolved(options.configFileValue) || /arn:aws[a-zA-Z-]*:s3:::.+/.test(options.configFileValue))
       ? FirelensConfigFileType.S3 : FirelensConfigFileType.FILE;
+
     return {
       type: firelensConfig.type,
       options: {
-        'enable-ecs-log-metadata': enableECSLogMetadata,
+        'enable-ecs-log-metadata': enableECSLogMetadata ? 'true' : 'false',
         'config-file-type': configFileType,
         'config-file-value': firelensConfig.options.configFileValue
       }
     };
   }
+
 }
 
 /**
  * SSM parameters for latest fluent bit docker image in ECR
  * https://github.com/aws/aws-for-fluent-bit#using-ssm-to-find-available-versions
  */
-const latestFluentBitImage = '/aws/service/aws-for-fluent-bit/2.1.0';
+const fluentBitImageSSMPath = '/aws/service/aws-for-fluent-bit';
 
 /**
- * Obtain Fluent Bit image in Amazon ECR build and setup corresponding IAM permissions.
+ * Obtain Fluent Bit image in Amazon ECR and setup corresponding IAM permissions.
  * ECR image pull permissions will be granted in task execution role.
  * Cloudwatch logs or Firehose permissions will be grant by check options in logDriverConfig.
  * https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_firelens.html#firelens-using-fluentbit
  */
-export function obtainDefaultFluentBitECRImage(task: TaskDefinition, logDriverConfig?: LogDriverConfig): ContainerImage {
+export function obtainDefaultFluentBitECRImage(task: TaskDefinition, logDriverConfig?: LogDriverConfig, imageTag?: string): ContainerImage {
   // grant ECR image pull permissions to executor role
   task.addToExecutionRolePolicy(new iam.PolicyStatement({
     actions: [
@@ -169,9 +173,12 @@ export function obtainDefaultFluentBitECRImage(task: TaskDefinition, logDriverCo
     }));
   }
 
+  const fluentBitImageTag = imageTag || 'latest';
+  const fluentBitImage = `${fluentBitImageSSMPath}/${fluentBitImageTag}`;
+
   // Not use ContainerImage.fromEcrRepository since it's not support parsing ECR repo URI,
   // use repo ARN might result in complex Fn:: functions in cloudformation template.
-  return ContainerImage.fromRegistry(ssm.StringParameter.valueForStringParameter(task, latestFluentBitImage));
+  return ContainerImage.fromRegistry(ssm.StringParameter.valueForStringParameter(task, fluentBitImage));
 }
 
 /**
