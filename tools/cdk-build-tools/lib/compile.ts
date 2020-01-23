@@ -22,6 +22,8 @@ export async function compileCurrentPackage(timers: Timers, options: CDKBuildOpt
     '.',
     '--ext=.js,.ts',
     '--ignore-path=.gitignore',
+    '--no-eslintrc', // ignore local .eslintrc files
+    `--resolve-plugins-relative-to=${__dirname}`,
     ...options.eslint?.["ignore-pattern"]?.map(pattern => `--ignore-pattern=${pattern}`) || []
   ], { timers });
   await shell([compilers.tslint || require.resolve('tslint/bin/tslint'), '--project', '.'], { timers });

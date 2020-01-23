@@ -56,7 +56,7 @@ granting permissions to other AWS accounts or organizations.
 
 [Example of Lambda Layer usage](test/integ.layer-version.lit.ts)
 
-## Event Rule Target
+### Event Rule Target
 
 You can use an AWS Lambda function as a target for an Amazon CloudWatch event
 rule:
@@ -107,7 +107,7 @@ setting the `deadLetterQueueEnabled: true` configuration.
 import lambda = require('@aws-cdk/aws-lambda');
 
 const fn = new lambda.Function(this, 'MyFunction', {
-    runtime: lambda.Runtime.NODEJS_8_10,
+    runtime: lambda.Runtime.NODEJS_10_X,
     handler: 'index.handler',
     code: lambda.Code.fromInline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
     deadLetterQueueEnabled: true
@@ -122,7 +122,7 @@ import sqs = require('@aws-cdk/aws-sqs');
 
 const dlq = new sqs.Queue(this, 'DLQ');
 const fn = new lambda.Function(this, 'MyFunction', {
-    runtime: lambda.Runtime.NODEJS_8_10,
+    runtime: lambda.Runtime.NODEJS_10_X,
     handler: 'index.handler',
     code: lambda.Code.fromInline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
     deadLetterQueue: dlq
@@ -138,7 +138,7 @@ to learn more about AWS Lambdas and DLQs.
 import lambda = require('@aws-cdk/aws-lambda');
 
 const fn = new lambda.Function(this, 'MyFunction', {
-    runtime: lambda.Runtime.NODEJS_8_10,
+    runtime: lambda.Runtime.NODEJS_10_X,
     handler: 'index.handler',
     code: lambda.Code.fromInline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
     tracing: lambda.Tracing.ACTIVE
@@ -153,7 +153,7 @@ to learn more about AWS Lambda's X-Ray support.
 import lambda = require('@aws-cdk/aws-lambda');
 
 const fn = new lambda.Function(this, 'MyFunction', {
-    runtime: lambda.Runtime.NODEJS_8_10,
+    runtime: lambda.Runtime.NODEJS_10_X,
     handler: 'index.handler',
     code: lambda.Code.fromInline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
     reservedConcurrentExecutions: 100
@@ -161,3 +161,8 @@ const fn = new lambda.Function(this, 'MyFunction', {
 ```
 See [the AWS documentation](https://docs.aws.amazon.com/lambda/latest/dg/concurrent-executions.html)
 managing concurrency.
+
+### Language-specific APIs
+Language-specific higher level constructs are provided in separate modules:
+
+* Node.js: [`@aws-cdk/aws-lambda-nodejs`](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-lambda-nodejs)

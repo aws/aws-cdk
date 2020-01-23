@@ -1,3 +1,144 @@
+# CloudFormation Resource Specification v10.3.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::AppStream::Fleet Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::AppStream::ImageBuilder Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::EC2::Instance HibernationOptions (__added__)
+* AWS::EC2::Instance HostResourceGroupArn (__added__)
+* AWS::IoTEvents::DetectorModel EvaluationMethod (__added__)
+* AWS::RDS::DBInstance CACertificateIdentifier (__added__)
+* AWS::SSM::ResourceDataSync S3Destination (__added__)
+* AWS::SSM::ResourceDataSync SyncSource (__added__)
+* AWS::SSM::ResourceDataSync SyncType (__added__)
+* AWS::SSM::ResourceDataSync BucketName.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::SSM::ResourceDataSync BucketRegion.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::SSM::ResourceDataSync SyncFormat.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Transfer::User HomeDirectoryMappings (__added__)
+* AWS::Transfer::User HomeDirectoryType (__added__)
+* AWS::WAFv2::IPSet Addresses.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::IPSet IPAddressVersion.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::IPSet Name.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::WAFv2::RegexPatternSet Name.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::WAFv2::RegexPatternSet RegularExpressionList.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::RuleGroup Capacity.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::RuleGroup Name.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::WAFv2::RuleGroup VisibilityConfig.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::WebACL DefaultAction.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::WebACL Name.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::WAFv2::WebACL VisibilityConfig.Required (__changed__)
+  * Old: false
+  * New: true
+
+## Property Type Changes
+
+* AWS::EC2::Instance.HibernationOptions (__added__)
+* AWS::SSM::ResourceDataSync.AwsOrganizationsSource (__added__)
+* AWS::SSM::ResourceDataSync.S3Destination (__added__)
+* AWS::SSM::ResourceDataSync.SyncSource (__added__)
+* AWS::Transfer::User.HomeDirectoryMapEntry (__added__)
+* AWS::AutoScaling::AutoScalingGroup.LaunchTemplateOverrides WeightedCapacity (__added__)
+* AWS::SageMaker::Model.ContainerDefinition Mode (__added__)
+
+
+# CloudFormation Resource Specification v10.2.0
+
+## New Resource Types
+
+* AWS::CodeBuild::ReportGroup
+* AWS::EC2::GatewayRouteTableAssociation
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Cloud9::EnvironmentEC2 Tags (__added__)
+* AWS::Cloud9::EnvironmentEC2 Description.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Cloud9::EnvironmentEC2 Name.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::EC2::EIP InstanceId.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Conditional
+* AWS::EC2::EIP PublicIpv4Pool.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Conditional
+* AWS::MSK::Cluster OpenMonitoring (__added__)
+* AWS::MSK::Cluster EnhancedMonitoring.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::RDS::DBInstance MaxAllocatedStorage (__added__)
+* AWS::SSM::Document Name (__added__)
+
+## Property Type Changes
+
+* AWS::DLM::LifecyclePolicy.CrossRegionCopyRetainRule (__added__)
+* AWS::DLM::LifecyclePolicy.CrossRegionCopyRule (__added__)
+* AWS::MSK::Cluster.JmxExporter (__added__)
+* AWS::MSK::Cluster.NodeExporter (__added__)
+* AWS::MSK::Cluster.OpenMonitoring (__added__)
+* AWS::MSK::Cluster.Prometheus (__added__)
+* AWS::DLM::LifecyclePolicy.FastRestoreRule Interval (__added__)
+* AWS::DLM::LifecyclePolicy.FastRestoreRule IntervalUnit (__added__)
+* AWS::DLM::LifecyclePolicy.FastRestoreRule Count.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DLM::LifecyclePolicy.PolicyDetails ResourceTypes.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::DLM::LifecyclePolicy.PolicyDetails Schedules.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::DLM::LifecyclePolicy.PolicyDetails TargetTags.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::DLM::LifecyclePolicy.RetainRule Interval (__added__)
+* AWS::DLM::LifecyclePolicy.RetainRule IntervalUnit (__added__)
+* AWS::DLM::LifecyclePolicy.RetainRule Count.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DLM::LifecyclePolicy.Schedule CrossRegionCopyRules (__added__)
+
+
 # CloudFormation Resource Specification v10.1.0
 
 ## New Resource Types

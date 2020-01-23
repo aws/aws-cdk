@@ -66,10 +66,10 @@ export = {
               'Fn::Join': [
                 '',
                 [
-                  'arn:aws:route53:::hostedzone/',
-                  {
-                    Ref: 'ExampleDotCom4D1B83AA'
-                  }
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':route53:::hostedzone/',
+                  { Ref: 'ExampleDotCom4D1B83AA' }
                 ]
               ]
             }

@@ -732,7 +732,7 @@ export class MustUseCDKTest extends ValidationRule {
     // files in .gitignore.
     fileShouldContain(this.name, pkg, '.gitignore', '.nyc_output');
     fileShouldContain(this.name, pkg, '.gitignore', 'coverage');
-    fileShouldContain(this.name, pkg, '.gitignore', '.nycrc');
+    fileShouldContain(this.name, pkg, '.gitignore', 'nyc.config.js');
   }
 }
 
@@ -945,6 +945,12 @@ export class JestCoverageTarget extends ValidationRule {
         branches: 80,
         statements: 80
       };
+
+      // Coverage collection must be enabled
+      expectJSON(this.name, pkg, 'jest.collectCoverage', true);
+      // The correct coverage reporters must be enabled
+      expectJSON(this.name, pkg, 'jest.coverageReporters', ['lcov', 'html', 'text-summary']);
+
       for (const key of Object.keys(defaults)) {
         const deepPath = ['coverageThreshold', 'global', key];
         const setting = deepGet(pkg.json.jest, deepPath);

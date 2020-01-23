@@ -45,12 +45,12 @@ async function main() {
   } else if (testFiles.length > 0) {
     const testCommand: string[] = [];
 
-    // We cannot pass the .nycrc config file using '--nycrc-path', because
+    // We cannot pass the nyc.config.js config file using '--nycrc-path', because
     // that can only be a filename relative to '--cwd', but if we set '--cwd'
     // nyc doesn't find the source files anymore.
     //
-    // We end up symlinking .nycrc into the package.
-    const nycConfig = '.nycrc';
+    // We end up symlinking nyc.config.js into the package.
+    const nycConfig = 'nyc.config.js';
 
     // Delete file if it exists
     try {
@@ -59,7 +59,7 @@ async function main() {
       if (e.code !== 'ENOENT') { return; }
     }
 
-    await fs.ensureSymlink(configFilePath('nycrc'), nycConfig);
+    await fs.ensureSymlink(configFilePath('nyc.config.js'), nycConfig);
     testCommand.push(...[args.nyc, '--clean']);
 
     testCommand.push(args.nodeunit);

@@ -3,7 +3,7 @@ dist
 .LAST_BUILD
 .jsii
 .nyc_output
-.nycrc
+nyc.config.js
 tsconfig.json
 *.js
 *.d.ts

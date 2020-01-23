@@ -423,11 +423,9 @@ export abstract class BaseService extends Resource
    *
    * service.registerLoadBalancerTargets(
    *   {
-   *     containerTarget: {
-   *       containerName: 'web',
-   *       containerPort: 80,
-   *     },
-   *     targetGroupId: 'ECS',
+   *     containerName: 'web',
+   *     containerPort: 80,
+   *     newTargetGroupId: 'ECS',
    *     listener: ecs.ListenerConfig.applicationListener(listener, {
    *       protocol: elbv2.ApplicationProtocol.HTTPS
    *     }),
@@ -542,7 +540,7 @@ export abstract class BaseService extends Resource
       metricName,
       dimensions: { ClusterName: this.cluster.clusterName, ServiceName: this.serviceName },
       ...props
-    });
+    }).attachTo(this);
   }
 
   /**
