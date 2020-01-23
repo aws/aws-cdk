@@ -40,44 +40,38 @@ function readNumberFromGithubEvent() {
     return number;
 }
 
-function isSemantic(title, type) {
-    return title.match(type + "(.*):");
-}
-
 function isFeature(issue) {
-    return isSemantic(issue.title, "feat")
+    return issue.title.startsWith("feat")
 }
 
 function isFix(issue) {
-    return isSemantic(issue.title, "fix")
+    return issue.title.startsWith("fix")
 }
 
-function validateTest(files) {
-    tests = files.filter(f => f.filename.split(path.sep).includes("test"));
-
-    if (tests.length == 0) {
-        throw new Error(semanticType + "Pull Requests (feat) must contain a change to a test file");
-    };        
+function testChanged(files) {
+    return files.filter(f => f.filename.toLowerCase().includes("test")).length != 0;
 }
 
-function validateReadme(files) {
-    readmes = files.filter(f => path.basename(f.filename) == "README.md");
-
-    if (readmes.length == 0) {
-        throw new Error(semanticType + " Pull Requests (feat) must contain a change to a readme file");
-    };
+function readmeChanged(files) {
+    return files.filter(f => path.basename(f.filename) == "README.md").length != 0;
 }
 
 function featureContainsReadme(issue, files) {
-    if (isFeature(issue)) validateReadme(files);
+    if (isFeature(issue) && !readmeChanged(files)) {
+        throw new ValidationFailed("Features must contain a change to a README file");
+    };
 };
 
 function featureContainsTest(issue, files) {
-    if (isFeature(issue)) validateTest(files);
+    if (isFeature(issue) && !testChanged(files)) {
+        throw new ValidationFailed("Features must contain a change to a test file");
+    };
 };
 
 function fixContainsTest(issue, files) {
-    if (isFix(issue)) validateTest(files);
+    if (isFix(issue) && !testChanged(files)) {
+        throw new ValidationFailed("Fixes must contain a change to a test file");
+    };
 };
 
 async function mandatoryChanges(number) {
@@ -127,7 +121,8 @@ async function mandatoryChanges(number) {
 
 }
 
-// this is necessary to make the function runnable from the command line.
+// this is necessary so that 'make-runnable' will make this function
+// runnable from the command line.
 module.exports.mandatoryChanges = async function(number) {
     await mandatoryChanges(number);
 }
