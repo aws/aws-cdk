@@ -456,7 +456,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       blockDeviceMappings: (props.blockDevices !== undefined ?
         synthesizeBlockDeviceMappings(this, props.blockDevices).map<CfnLaunchConfiguration.BlockDeviceMappingProperty>(
           ({ deviceName, ebs, virtualName, noDevice }) => ({
-            deviceName, ebs, virtualName, noDevice: noDevice ? true : false
+            deviceName, ebs, virtualName, noDevice: noDevice ? true : undefined
           })
         ) : undefined),
     });
