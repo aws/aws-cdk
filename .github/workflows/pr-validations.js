@@ -2,6 +2,9 @@ const path = require("path")
 const fs = require("fs")
 const GitHub = require("github-api")
 
+const OWNER = "aws"
+const REPO = "aws-cdk"
+
 class ValidationFailed extends Error {
     constructor(message) {
         super(message);
@@ -86,9 +89,6 @@ async function mandatoryChanges(number) {
     try {
 
         const gh = createGitHubClient();
-
-        const OWNER = "aws"
-        const REPO = "aws-cdk"
         
         const issues = gh.getIssues(OWNER, REPO);
         const repo = gh.getRepo(OWNER, REPO);
