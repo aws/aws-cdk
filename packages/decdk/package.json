@@ -109,6 +109,7 @@
     "@aws-cdk/aws-lambda": "1.21.1",
     "@aws-cdk/aws-lambda-destinations": "1.21.1",
     "@aws-cdk/aws-lambda-event-sources": "1.21.1",
+    "@aws-cdk/aws-lambda-nodejs": "1.21.1",
     "@aws-cdk/aws-logs": "1.21.1",
     "@aws-cdk/aws-logs-destinations": "1.21.1",
     "@aws-cdk/aws-managedblockchain": "1.21.1",
