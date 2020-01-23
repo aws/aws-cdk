@@ -7,11 +7,13 @@ class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    new lambda.NodejsFunction(this, 'handler-ts', {
+    new lambda.NodejsFunction(this, 'ts-handler', {
       entry: path.join(__dirname, 'integ-handlers/ts-handler.ts'),
       runtime: Runtime.NODEJS_12_X,
+      minify: true,
     });
-    new lambda.NodejsFunction(this, 'handler-js', {
+
+    new lambda.NodejsFunction(this, 'js-handler', {
       entry: path.join(__dirname, 'integ-handlers/js-handler.js'),
       runtime: Runtime.NODEJS_12_X,
     });

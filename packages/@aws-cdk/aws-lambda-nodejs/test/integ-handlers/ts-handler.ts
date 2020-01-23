@@ -1,6 +1,5 @@
-import got from 'got';
+import { mult } from './util';
 
 export async function handler(): Promise<void> {
-  const response = await got('https://aws.amazon.com');
-  console.log(response.body); // tslint:disable-line no-console
+  console.log(mult(3, 4)); // tslint:disable-line no-console
 }

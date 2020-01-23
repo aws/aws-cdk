@@ -1,6 +1,5 @@
-import got from 'got';
+import { add } from './util';
 
 export async function handler() {
-  const response = await got('https://aws.amazon.com');
-  console.log(response.body);
+  console.log(add(1, 2));
 }
