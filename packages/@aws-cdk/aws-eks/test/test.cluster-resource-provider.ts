@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { ClusterResourceHandler } from '../lib/cluster-resource-handler/handler';
+import { ClusterResourceHandler } from '../lib/cluster-resource-handler/cluster';
 import * as mocks from './cluster-resource-handler-mocks';
 
 export = {
@@ -32,13 +32,12 @@ export = {
 
     async 'generated cluster name does not exceed 100 characters'(test: Test) {
       // GIVEN
-      const req = {
+      const req: AWSLambda.CloudFormationCustomResourceCreateEvent = {
         StackId: 'fake-stack-id',
         RequestId: '602c078a-6181-4352-9676-4f00352445aa',
         ResourceType: 'Custom::EKSCluster',
         ServiceToken: 'boom',
         LogicalResourceId: 'hello'.repeat(30), // 150 chars (limit is 100)
-        PhysicalResourceId: 'physical-resource-id',
         ResponseURL: 'http://response-url',
         RequestType: 'Create',
         ResourceProperties: {

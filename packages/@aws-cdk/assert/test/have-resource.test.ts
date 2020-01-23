@@ -1,7 +1,7 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { writeFileSync } from 'fs';
 import { join } from 'path';
-import { expect as cdkExpect, haveResource } from '../lib/index';
+import { ABSENT, expect as cdkExpect, haveResource } from '../lib/index';
 
 test('support resource with no properties', () => {
   const synthStack = mkStack({
@@ -83,6 +83,62 @@ test('haveResource allows to opt in value extension', () => {
   ).not.toThrowError();
 });
 
+describe('property absence', () => {
+  test('pass on absence', () => {
+    const synthStack = mkSomeResource({
+      Prop: 'somevalue'
+    });
+
+    cdkExpect(synthStack).to(haveResource('Some::Resource', {
+      PropA: ABSENT
+    }));
+  });
+
+  test('fail on presence', () => {
+    const synthStack = mkSomeResource({
+      PropA: 3
+    });
+
+    expect(() => {
+      cdkExpect(synthStack).to(haveResource('Some::Resource', {
+        PropA: ABSENT
+      }));
+    }).toThrowError(/PropA/);
+  });
+
+  test('pass on deep absence', () => {
+    const synthStack = mkSomeResource({
+      Deep: {
+        Prop: 'somevalue',
+      }
+    });
+
+    cdkExpect(synthStack).to(haveResource('Some::Resource', {
+      Deep: {
+        Prop: 'somevalue',
+        PropA: ABSENT
+      }
+    }));
+  });
+
+  test('fail on deep presence', () => {
+    const synthStack = mkSomeResource({
+      Deep: {
+        Prop: 'somevalue',
+      }
+    });
+
+    expect(() => {
+      cdkExpect(synthStack).to(haveResource('Some::Resource', {
+        Deep: {
+          Prop: ABSENT
+        }
+      }));
+    }).toThrowError(/Prop/);
+  });
+
+});
+
 function mkStack(template: any): cxapi.CloudFormationStackArtifact {
   const assembly = new cxapi.CloudAssemblyBuilder();
   assembly.addArtifact('test', {
@@ -95,4 +151,15 @@ function mkStack(template: any): cxapi.CloudFormationStackArtifact {
 
   writeFileSync(join(assembly.outdir, 'template.json'), JSON.stringify(template));
   return assembly.buildAssembly().getStackByName('test');
+}
+
+function mkSomeResource(props: any): cxapi.CloudFormationStackArtifact {
+  return mkStack({
+    Resources: {
+      SomeResource: {
+        Type: 'Some::Resource',
+        Properties: props
+      }
+    }
+  });
 }

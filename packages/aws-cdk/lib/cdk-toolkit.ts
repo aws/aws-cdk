@@ -138,7 +138,6 @@ export class CdkToolkit {
           stack,
           deployName: stack.stackName,
           roleArn: options.roleArn,
-          ci: options.ci,
           toolkitStackName: options.toolkitStackName,
           reuseAssets: options.reuseAssets,
           notificationArns: options.notificationArns,
@@ -287,13 +286,6 @@ export interface DeployOptions {
    * @default RequireApproval.Broadening
    */
   requireApproval?: RequireApproval;
-
-  /**
-   * Whether we're in CI mode
-   *
-   * @default false
-   */
-  ci?: boolean;
 
   /**
    * Reuse the assets with the given asset IDs

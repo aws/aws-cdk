@@ -3,7 +3,10 @@
 import { IsCompleteResponse } from '@aws-cdk/custom-resources/lib/provider-framework/types';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as aws from 'aws-sdk';
-import { ClusterResourceHandler, EksClient } from './handler';
+import { ClusterResourceHandler } from './cluster';
+import { EksClient } from './common';
+import * as consts from './consts';
+import { FargateProfileResourceHandler } from './fargate';
 
 aws.config.logger = console;
 
@@ -15,6 +18,9 @@ const defaultEksClient: EksClient = {
   describeCluster: req => getEksClient().describeCluster(req).promise(),
   updateClusterConfig: req => getEksClient().updateClusterConfig(req).promise(),
   updateClusterVersion: req => getEksClient().updateClusterVersion(req).promise(),
+  createFargateProfile: req => getEksClient().createFargateProfile(req).promise(),
+  deleteFargateProfile: req => getEksClient().deleteFargateProfile(req).promise(),
+  describeFargateProfile: req => getEksClient().describeFargateProfile(req).promise(),
   configureAssumeRole: req => {
     console.log(JSON.stringify({ assumeRole: req }, undefined, 2));
     const creds = new aws.ChainableTemporaryCredentials({
@@ -34,11 +40,20 @@ function getEksClient() {
 }
 
 export async function onEvent(event: AWSLambda.CloudFormationCustomResourceEvent) {
-  const provider = new ClusterResourceHandler(defaultEksClient, event);
+  const provider = createResourceHandler(event);
   return provider.onEvent();
 }
 
 export async function isComplete(event: AWSLambda.CloudFormationCustomResourceEvent): Promise<IsCompleteResponse> {
-  const provider = new ClusterResourceHandler(defaultEksClient, event);
+  const provider = createResourceHandler(event);
   return provider.isComplete();
+}
+
+function createResourceHandler(event: AWSLambda.CloudFormationCustomResourceEvent) {
+  switch (event.ResourceType) {
+    case consts.CLUSTER_RESOURCE_TYPE: return new ClusterResourceHandler(defaultEksClient, event);
+    case consts.FARGATE_PROFILE_RESOURCE_TYPE: return new FargateProfileResourceHandler(defaultEksClient, event);
+    default:
+      throw new Error(`Unsupported resource type "${event.ResourceType}`);
+  }
 }

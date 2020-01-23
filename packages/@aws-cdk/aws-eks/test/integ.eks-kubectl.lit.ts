@@ -4,6 +4,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import { App, Construct } from '@aws-cdk/core';
 import { Cluster } from '../lib';
+import * as hello from './hello-k8s';
 import { TestStack } from './util';
 
 class VpcStack extends TestStack {
@@ -21,7 +22,6 @@ class ClusterStack extends TestStack {
   constructor(scope: Construct, id: string, props: { vpc: ec2.Vpc }) {
     super(scope, id);
 
-    /// !show
     // define the cluster. kubectl is enabled by default.
     this.cluster = new Cluster(this, 'cluster22', {
       vpc: props.vpc,
@@ -43,42 +43,7 @@ class ClusterStack extends TestStack {
 
     // add an arbitrary k8s manifest to the cluster. This will `kubectl apply`
     // these resources upon creation or `kubectl delete` upon removal.
-    this.cluster.addResource('hello-kubernetes',
-      {
-        apiVersion: "v1",
-        kind: "Service",
-        metadata: { name: "hello-kubernetes" },
-        spec: {
-          type: "LoadBalancer",
-          ports: [ { port: 80, targetPort: 8080 } ],
-          selector: { app: "hello-kubernetes" }
-        }
-      },
-      {
-        apiVersion: "apps/v1",
-        kind: "Deployment",
-        metadata: { name: "hello-kubernetes" },
-        spec: {
-          replicas: 1,
-          selector: { matchLabels: { app: "hello-kubernetes" } },
-          template: {
-            metadata: {
-              labels: { app: "hello-kubernetes" }
-            },
-            spec: {
-              containers: [
-                {
-                  name: "hello-kubernetes",
-                  image: "paulbouwer/hello-kubernetes:1.5",
-                  ports: [ { containerPort: 8080 } ]
-                }
-              ]
-            }
-          }
-        }
-      }
-    );
-    /// !hide
+    this.cluster.addResource('hello-kubernetes', ...hello.resources);
   }
 }
 

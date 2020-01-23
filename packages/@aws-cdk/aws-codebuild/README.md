@@ -130,7 +130,7 @@ const project = new codebuild.PipelineProject(this, 'Project', {
 })
 ```
 
-For more details, see the readme of the `@aws-cdk/@aws-codepipeline` package.
+For more details, see the readme of the `@aws-cdk/@aws-codepipeline-actions` package.
 
 ## Caching
 

@@ -788,19 +788,28 @@ export = {
     });
 
     // THEN
-    const parentParams = SynthUtils.toCloudFormation(parent).Parameters;
-    const nestedParams = SynthUtils.toCloudFormation(nested).Parameters;
-    test.ok(parentParams.AssetParametershashofsourceImageName1CFB7817);
-    test.ok(nestedParams.referencetomystackAssetParametershashofsourceImageName7D5F0882Ref);
-
-    // verify parameter is passed to nested stack
-    expect(parent).to(haveResource('AWS::CloudFormation::Stack', {
-      Parameters: {
-        referencetomystackAssetParametershashofsourceImageName7D5F0882Ref: {
-          Ref: "AssetParametershashofsourceImageName1CFB7817"
-        }
+    const asm = app.synth();
+    test.deepEqual(asm.getStackArtifact(parent.artifactId).assets, [
+      {
+        repositoryName: 'aws-cdk/assets',
+        imageTag: 'hash-of-source',
+        id: 'hash-of-source',
+        packaging: 'container-image',
+        path: 'my-image',
+        sourceHash: 'hash-of-source',
+        buildArgs: { key: 'value', boom: 'bam' },
+        target: 'buildTarget'
+      },
+      {
+        path: 'mystacknestedstackFAE12FB5.nested.template.json',
+        id: 'fcdaee79eb79f37eca3a9b1cc0cc9ba150e4eea8c5d6d0c343cb6cd9dc68e2e5',
+        packaging: 'file',
+        sourceHash: 'fcdaee79eb79f37eca3a9b1cc0cc9ba150e4eea8c5d6d0c343cb6cd9dc68e2e5',
+        s3BucketParameter: 'AssetParametersfcdaee79eb79f37eca3a9b1cc0cc9ba150e4eea8c5d6d0c343cb6cd9dc68e2e5S3Bucket67A749F8',
+        s3KeyParameter: 'AssetParametersfcdaee79eb79f37eca3a9b1cc0cc9ba150e4eea8c5d6d0c343cb6cd9dc68e2e5S3VersionKeyE1E6A8D4',
+        artifactHashParameter: 'AssetParametersfcdaee79eb79f37eca3a9b1cc0cc9ba150e4eea8c5d6d0c343cb6cd9dc68e2e5ArtifactHash0AEDBE8A'
       }
-    }));
+    ]);
 
     test.done();
   },

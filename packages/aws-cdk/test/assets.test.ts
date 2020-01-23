@@ -67,7 +67,7 @@ test('prepare assets with reuse', async () => {
   const toolkit = new FakeToolkit();
 
   // WHEN
-  const params = await prepareAssets(stack, toolkit as any, undefined, ['SomeStackSomeResource4567']);
+  const params = await prepareAssets(stack, toolkit as any, ['SomeStackSomeResource4567']);
 
   // THEN
   expect(params).toEqual([
@@ -101,7 +101,7 @@ test('prepare container asset with reuse', async () => {
   const toolkit = new FakeToolkit();
 
   // WHEN
-  const params = await prepareAssets(stack, toolkit as any, undefined, ['SomeStackSomeResource4567']);
+  const params = await prepareAssets(stack, toolkit as any, ['SomeStackSomeResource4567']);
 
   // THEN
   expect(params).toEqual([

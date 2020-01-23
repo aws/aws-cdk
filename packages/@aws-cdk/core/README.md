@@ -165,7 +165,7 @@ the `CfnOutput` class:
 new CfnOutput(this, 'OutputName', {
   value: bucket.bucketName,
   description: 'The name of an S3 bucket', // Optional
-  exportName: 'Global.BucketName', // Registers a CloudFormation export
+  exportName: 'TheAwesomeBucket', // Registers a CloudFormation export named "TheAwesomeBucket"
 });
 ```
 
