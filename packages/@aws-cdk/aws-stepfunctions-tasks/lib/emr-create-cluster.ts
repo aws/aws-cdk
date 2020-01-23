@@ -354,6 +354,12 @@ export namespace EmrCreateCluster {
     TASK = 'TASK'
   }
 
+  export enum EbsBlockDeviceVolumeType {
+    GP2 = 'gp2',
+    IO1 = 'io1',
+    STANDARD = 'standard'
+  }
+
   /**
    * Configuration of requested EBS block device associated with the instance group with count of volumes that will be
    * associated to every instance.
@@ -381,7 +387,7 @@ export namespace EmrCreateCluster {
     /**
      * The volume type. Volume types supported are gp2, io1, standard.
      */
-    readonly volumeType: string
+    readonly volumeType: EbsBlockDeviceVolumeType
   }
 
   /**
@@ -394,7 +400,7 @@ export namespace EmrCreateCluster {
       VolumeSpecification: {
         Iops: cdk.numberToCloudFormation(property.iops),
         SizeInGB: cdk.numberToCloudFormation(property.sizeInGB),
-        VolumeType: cdk.stringToCloudFormation(property.volumeType)
+        VolumeType: cdk.stringToCloudFormation(property.volumeType.valueOf())
       },
       VolumesPerInstance: cdk.numberToCloudFormation(property.volumesPerInstance)
     };
