@@ -290,8 +290,10 @@ test('Create Cluster with Bootstrap Actions', () => {
     autoScalingRole,
     bootstrapActions: [{
       name: 'Bootstrap',
-      path: 's3://null',
-      args: [ 'Arg' ]
+      scriptBootstrapAction: {
+        path: 's3://null',
+        args: [ 'Arg' ]
+      }
     }],
     integrationPattern: sfn.ServiceIntegrationPattern.FIRE_AND_FORGET
   }) });
@@ -657,9 +659,11 @@ test('Create Cluster with InstanceFleet', () => {
           }],
           ebsConfiguration: {
             ebsBlockDeviceConfigs: [{
-              iops: 1,
-              sizeInGB: 1,
-              volumeType: tasks.EmrCreateCluster.EbsBlockDeviceVolumeType.STANDARD,
+              volumeSpecification: {
+                iops: 1,
+                sizeInGB: 1,
+                volumeType: tasks.EmrCreateCluster.EbsBlockDeviceVolumeType.STANDARD,
+              },
               volumesPerInstance: 1
             }],
             ebsOptimized: true
@@ -668,9 +672,11 @@ test('Create Cluster with InstanceFleet', () => {
           weightedCapacity: 1
         }],
         launchSpecifications: {
-          blockDurationMinutes: 1,
-          timeoutAction: tasks.EmrCreateCluster.SpotTimeoutAction.TERMINATE_CLUSTER,
-          timeoutDurationMinutes: 1
+          spotSpecification: {
+            blockDurationMinutes: 1,
+            timeoutAction: tasks.EmrCreateCluster.SpotTimeoutAction.TERMINATE_CLUSTER,
+            timeoutDurationMinutes: 1
+          }
         },
         name: 'Master',
         targetOnDemandCapacity: 1,
@@ -739,6 +745,171 @@ test('Create Cluster with InstanceFleet', () => {
           Name: 'Master',
           TargetOnDemandCapacity: 1,
           TargetSpotCapacity: 1
+        }]
+      },
+      VisibleToAllUsers: true,
+      JobFlowRole: {
+        Ref: 'ClusterRoleD9CA7471',
+      },
+      ServiceRole: {
+        Ref: 'ServiceRole4288B192'
+      },
+      AutoScalingRole: {
+        Ref: 'AutoScalingRole015ADA0A'
+      }
+    },
+  });
+});
+
+test('Create Cluster with InstanceGroup', () => {
+  // WHEN
+  const task = new sfn.Task(stack, 'Task', { task: new tasks.EmrCreateCluster({
+    instances: {
+      instanceGroups: [{
+        autoScalingPolicy: {
+          constraints: {
+            maxCapacity: 2,
+            minCapacity: 1,
+          },
+          rules: [{
+            action: {
+              market: tasks.EmrCreateCluster.InstanceMarket.ON_DEMAND,
+              simpleScalingPolicyConfiguration: {
+                adjustmentType: tasks.EmrCreateCluster.ScalingAdjustmentType.CHANGE_IN_CAPACITY,
+                coolDown: 1,
+                scalingAdjustment: 1
+              }
+            },
+            description: 'Description',
+            name: 'Name',
+            trigger: {
+              cloudWatchAlarmDefinition: {
+                comparisonOperator: tasks.EmrCreateCluster.CloudWatchAlarmComparisonOperator.GREATER_THAN,
+                dimensions: [{
+                  key: 'Key',
+                  value: 'Value'
+                }],
+                evalutionPeriods: 1,
+                metricName: 'Name',
+                namespace: 'Namespace',
+                period: 1,
+                statistic: tasks.EmrCreateCluster.CloudWatchAlarmStatistic.AVERAGE,
+                threshold: 1,
+                unit: tasks.EmrCreateCluster.CloudWatchAlarmUnit.NONE
+              }
+            }
+          }]
+        },
+        bidPrice: '1',
+        configurations: [{
+          classification: 'Classification',
+          properties: {
+            Key: 'Value'
+          }
+        }],
+        ebsConfiguration: {
+          ebsBlockDeviceConfigs: [{
+            volumeSpecification: {
+              iops: 1,
+              sizeInGB: 1,
+              volumeType: tasks.EmrCreateCluster.EbsBlockDeviceVolumeType.STANDARD,
+            },
+            volumesPerInstance: 1
+          }],
+          ebsOptimized: true
+        },
+        instanceCount: 1,
+        instanceRole: tasks.EmrCreateCluster.InstanceRoleType.MASTER,
+        instanceType: 'm5.xlarge',
+        market: tasks.EmrCreateCluster.InstanceMarket.ON_DEMAND,
+        name: 'Name'
+      }]
+    },
+    clusterRole,
+    name: 'Cluster',
+    serviceRole,
+    autoScalingRole,
+    integrationPattern: sfn.ServiceIntegrationPattern.FIRE_AND_FORGET
+  }) });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::elasticmapreduce:createCluster',
+        ],
+      ],
+    },
+    End: true,
+    Parameters: {
+      Name: 'Cluster',
+      Instances: {
+        KeepJobFlowAliveWhenNoSteps: true,
+        InstanceGroups: [{
+          AutoScalingPolicy: {
+            Constraints: {
+              MaxCapacity: 2,
+              MinCapacity: 1
+            },
+            Rules: [{
+              Action: {
+                Market: 'ON_DEMAND',
+                SimpleScalingPolicyConfiguration: {
+                  AdjustmentType: 'CHANGE_IN_CAPACITY',
+                  CoolDown: 1,
+                  ScalingAdjustment: 1
+                }
+              },
+              Description: 'Description',
+              Name: 'Name',
+              Trigger: {
+                CloudWatchAlarmDefinition: {
+                  ComparisonOperator: 'GREATER_THAN',
+                  Dimensions: [{
+                    Key: 'Key',
+                    Value: 'Value'
+                  }],
+                  EvaluationPeriods: 1,
+                  MetricName: 'Name',
+                  Namespace: 'Namespace',
+                  Period: 1,
+                  Statistic: 'AVERAGE',
+                  Threshold: 1,
+                  Unit: 'NONE'
+                }
+              }
+            }]
+          },
+          BidPrice: '1',
+          Configurations: [{
+            Classification: 'Classification',
+            Properties: {
+              Key: 'Value'
+            }
+          }],
+          EbsConfiguration: {
+            EbsBlockDeviceConfigs: [{
+              VolumeSpecification: {
+                Iops: 1,
+                SizeInGB: 1,
+                VolumeType: 'standard'
+              },
+              VolumesPerInstance: 1
+            }],
+            EbsOptimized: true
+          },
+          InstanceCount: 1,
+          InstanceRole: 'MASTER',
+          InstanceType: 'm5.xlarge',
+          Market: 'ON_DEMAND',
+          Name: 'Name'
         }]
       },
       VisibleToAllUsers: true,

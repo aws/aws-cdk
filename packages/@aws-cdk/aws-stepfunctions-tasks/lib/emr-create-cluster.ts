@@ -361,19 +361,14 @@ export namespace EmrCreateCluster {
   }
 
   /**
-   * Configuration of requested EBS block device associated with the instance group with count of volumes that will be
-   * associated to every instance.
+   * EBS volume specifications such as volume type, IOPS, and size (GiB) that will be requested for the EBS volume attached
+   * to an EC2 instance in the cluster.
    *
-   * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_EbsBlockDeviceConfig.html
+   * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_VolumeSpecification.html
    *
    * @experimental
    */
-  export interface EbsBlockDeviceConfigProperty {
-    /**
-     * Number of EBS volumes with a specific volume configuration that will be associated with every instance in the instance group
-     */
-    readonly volumesPerInstance?: number;
-
+  export interface VolumeSpecificationProperty {
     /**
      * The number of I/O operations per second (IOPS) that the volume supports.
      */
@@ -391,6 +386,27 @@ export namespace EmrCreateCluster {
   }
 
   /**
+   * Configuration of requested EBS block device associated with the instance group with count of volumes that will be
+   * associated to every instance.
+   *
+   * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_EbsBlockDeviceConfig.html
+   *
+   * @experimental
+   */
+  export interface EbsBlockDeviceConfigProperty {
+    /**
+     * EBS volume specifications such as volume type, IOPS, and size (GiB) that will be requested for the EBS volume attached to an EC2
+     * instance in the cluster.
+     */
+    readonly volumeSpecification: VolumeSpecificationProperty;
+
+    /**
+     * Number of EBS volumes with a specific volume configuration that will be associated with every instance in the instance group
+     */
+    readonly volumesPerInstance?: number;
+  }
+
+  /**
    * Render the EbsBlockDeviceConfigProperty as JSON
    *
    * @param property
@@ -398,9 +414,9 @@ export namespace EmrCreateCluster {
   export function EbsBlockDeviceConfigPropertyToJson(property: EbsBlockDeviceConfigProperty) {
     return {
       VolumeSpecification: {
-        Iops: cdk.numberToCloudFormation(property.iops),
-        SizeInGB: cdk.numberToCloudFormation(property.sizeInGB),
-        VolumeType: cdk.stringToCloudFormation(property.volumeType.valueOf())
+        Iops: cdk.numberToCloudFormation(property.volumeSpecification.iops),
+        SizeInGB: cdk.numberToCloudFormation(property.volumeSpecification.sizeInGB),
+        VolumeType: cdk.stringToCloudFormation(property.volumeSpecification.volumeType.valueOf())
       },
       VolumesPerInstance: cdk.numberToCloudFormation(property.volumesPerInstance)
     };
@@ -508,7 +524,7 @@ export namespace EmrCreateCluster {
   }
 
   /**
-   * The launch specification for Spot instances in the fleet, which determines the defined duration and provisioning timeout behavior.
+   * The launch specification for Spot instances in the instance fleet, which determines the defined duration and provisioning timeout behavior.
    *
    * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_SpotProvisioningSpecification.html
    *
@@ -532,16 +548,30 @@ export namespace EmrCreateCluster {
   }
 
   /**
-   * Render the SpotProvisioningSpecificationProperty to JSON
+   * The launch specification for Spot instances in the fleet, which determines the defined duration and provisioning timeout behavior.
+   *
+   * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_InstanceFleetProvisioningSpecifications.html
+   *
+   * @experimental
+   */
+  export interface InstanceFleetProvisioningSpecificationsProperty {
+    /**
+     * The launch specification for Spot instances in the fleet, which determines the defined duration and provisioning timeout behavior.
+     */
+    readonly spotSpecification: SpotProvisioningSpecificationProperty;
+  }
+
+  /**
+   * Render the InstanceFleetProvisioningSpecificationsProperty to JSON
    *
    * @param property
    */
-  export function SpotProvisioningSpecificationPropertyToJson(property: SpotProvisioningSpecificationProperty) {
+  export function InstanceFleetProvisioningSpecificationsPropertyToJson(property: InstanceFleetProvisioningSpecificationsProperty) {
     return {
       SpotSpecification: {
-        BlockDurationMinutes: cdk.numberToCloudFormation(property.blockDurationMinutes),
-        TimeoutAction: cdk.stringToCloudFormation(property.timeoutAction.valueOf()),
-        TimeoutDurationMinutes: cdk.numberToCloudFormation(property.timeoutDurationMinutes)
+        BlockDurationMinutes: cdk.numberToCloudFormation(property.spotSpecification.blockDurationMinutes),
+        TimeoutAction: cdk.stringToCloudFormation(property.spotSpecification.timeoutAction.valueOf()),
+        TimeoutDurationMinutes: cdk.numberToCloudFormation(property.spotSpecification.timeoutDurationMinutes)
       }
     };
   }
@@ -567,7 +597,7 @@ export namespace EmrCreateCluster {
     /**
      * The launch specification for the instance fleet.
      */
-    readonly launchSpecifications?: SpotProvisioningSpecificationProperty;
+    readonly launchSpecifications?: InstanceFleetProvisioningSpecificationsProperty;
 
     /**
      * The friendly name of the instance fleet.
@@ -596,7 +626,7 @@ export namespace EmrCreateCluster {
       InstanceTypeConfigs: cdk.listMapper(InstanceTypeConfigPropertyToJson)(property.instanceTypeConfigs),
       LaunchSpecifications: (property.launchSpecifications === undefined) ?
         property.launchSpecifications :
-        SpotProvisioningSpecificationPropertyToJson(property.launchSpecifications),
+        InstanceFleetProvisioningSpecificationsPropertyToJson(property.launchSpecifications),
       Name: cdk.stringToCloudFormation(property.name),
       TargetOnDemandCapacity: cdk.numberToCloudFormation(property.targetOnDemandCapacity),
       TargetSpotCapacity: cdk.numberToCloudFormation(property.targetSpotCapacity)
@@ -604,9 +634,454 @@ export namespace EmrCreateCluster {
   }
 
   /**
+   * CloudWatch Alarm Comparison Operators
+   */
+  export enum CloudWatchAlarmComparisonOperator {
+    GREATER_THAN_OR_EQUAL = 'GREATER_THAN_OR_EQUAL',
+    GREATER_THAN = 'GREATER_THAN',
+    LESS_THAN = 'LESS_THAN',
+    LESS_THAN_OR_EQUAL = 'LESS_THAN_OR_EQUAL'
+  }
+
+  /**
+   * CloudWatch Alarm Statistics
+   */
+  export enum CloudWatchAlarmStatistic {
+    SAMPLE_COUNT = 'SAMPLE_COUNT',
+    AVERAGE = 'AVERAGE',
+    SUM = 'SUM',
+    MINIMUM = 'MINIMUM',
+    MAXIMUM = 'MAXIMUM'
+  }
+
+  /**
+   * CloudWatch Alarm Units
+   */
+  export enum CloudWatchAlarmUnit {
+    NONE = 'NONE',
+    SECONDS = 'SECONDS',
+    MICRO_SECONDS = 'MICRO_SECONDS',
+    MILLI_SECONDS = 'MILLI_SECONDS',
+    BYTES = 'BYTES',
+    KILO_BYTES = 'KILO_BYTES',
+    MEGA_BYTES = 'MEGA_BYTES',
+    GIGA_BYTES = 'GIGA_BYTES',
+    TERA_BYTES = 'TERA_BYTES',
+    BITS = 'BITS',
+    KILO_BITS = 'KILO_BITS',
+    MEGA_BITS = 'MEGA_BITS',
+    GIGA_BITS = 'GIGA_BITS',
+    TERA_BITS = 'TERA_BITS',
+    PERCENT = 'PERCENT',
+    COUNT = 'COUNT',
+    BYTES_PER_SECOND = 'BYTES_PER_SECOND',
+    KILO_BYTES_PER_SECOND = 'KILO_BYTES_PER_SECOND',
+    MEGA_BYTES_PER_SECOND = 'MEGA_BYTES_PER_SECOND',
+    GIGA_BYTES_PER_SECOND = 'GIGA_BYTES_PER_SECOND',
+    TERA_BYTES_PER_SECOND = 'TERA_BYTES_PER_SECOND',
+    BITS_PER_SECOND = 'BITS_PER_SECOND',
+    KILO_BITS_PER_SECOND = 'KILO_BITS_PER_SECOND',
+    MEGA_BITS_PER_SECOND = 'MEGA_BITS_PER_SECOND',
+    GIGA_BITS_PER_SECOND = 'GIGA_BITS_PER_SECOND',
+    TERA_BITS_PER_SECOND = 'TERA_BITS_PER_SECOND',
+    COUNT_PER_SECOND = 'COUNT_PER_SECOND'
+  }
+
+  /**
+   * A CloudWatch dimension, which is specified using a Key (known as a Name in CloudWatch), Value pair. By default, Amazon EMR uses
+   * one dimension whose Key is JobFlowID and Value is a variable representing the cluster ID, which is ${emr.clusterId}. This enables
+   * the rule to bootstrap when the cluster ID becomes available
+   *
+   * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_MetricDimension.html
+   *
+   * @experimental
+   */
+  export interface MetricDimensionProperty {
+    /**
+     * The dimension name
+     */
+    readonly key: string;
+
+    /**
+     * The dimension value
+     */
+    readonly value: string;
+  }
+
+  /**
+   * Render the MetricDimensionProperty as JSON
+   *
+   * @param property
+   */
+  export function MetricDimensionPropertyToJson(property: MetricDimensionProperty) {
+    return {
+      Key: cdk.stringToCloudFormation(property.key),
+      Value: cdk.stringToCloudFormation(property.value)
+    };
+  }
+
+  /**
+   * The definition of a CloudWatch metric alarm, which determines when an automatic scaling activity is triggered. When the defined alarm conditions
+   * are satisfied, scaling activity begins.
+   *
+   * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_CloudWatchAlarmDefinition.html
+   *
+   * @experimental
+   */
+  export interface CloudWatchAlarmDefinitionProperty {
+    /**
+     * Determines how the metric specified by MetricName is compared to the value specified by Threshold
+     */
+    readonly comparisonOperator: CloudWatchAlarmComparisonOperator;
+
+    /**
+     * A CloudWatch metric dimension.
+     */
+    readonly dimensions?: MetricDimensionProperty[];
+
+    /**
+     * The number of periods, in five-minute increments, during which the alarm condition must exist before the alarm triggers automatic
+     * scaling activity. The default value is 1.
+     */
+    readonly evalutionPeriods?: number;
+
+    /**
+     * The name of the CloudWatch metric that is watched to determine an alarm condition.
+     */
+    readonly metricName: string;
+
+    /**
+     * The namespace for the CloudWatch metric. The default is AWS/ElasticMapReduce.
+     */
+    readonly namespace?: string;
+
+    /**
+     * The period, in seconds, over which the statistic is applied. EMR CloudWatch metrics are emitted every five minutes (300 seconds), so if
+     * an EMR CloudWatch metric is specified, specify 300.
+     */
+    readonly period: number;
+
+    /**
+     * The statistic to apply to the metric associated with the alarm. The default is AVERAGE.
+     */
+    readonly statistic?: CloudWatchAlarmStatistic;
+
+    /**
+     * The value against which the specified statistic is compared.
+     */
+    readonly threshold?: number;
+
+    /**
+     * The unit of measure associated with the CloudWatch metric being watched. The value specified for Unit must correspond to the units
+     * specified in the CloudWatch metric.
+     */
+    readonly unit?: CloudWatchAlarmUnit;
+  }
+
+  /**
+   * The conditions that trigger an automatic scaling activity and the definition of a CloudWatch metric alarm.
+   * When the defined alarm conditions are met along with other trigger parameters, scaling activity begins.
+   *
+   * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_ScalingTrigger.html
+   *
+   * @experimental
+   */
+  export interface ScalingTriggerProperty {
+    /**
+     * The definition of a CloudWatch metric alarm. When the defined alarm conditions are met along with other trigger parameters,
+     * scaling activity begins.
+     */
+    readonly cloudWatchAlarmDefinition: CloudWatchAlarmDefinitionProperty;
+  }
+
+  /**
+   * Render the ScalingTriggerProperty to JSON
+   *
+   * @param property
+   */
+  export function ScalingTriggerPropertyToJson(property: ScalingTriggerProperty) {
+    return {
+      CloudWatchAlarmDefinition: {
+        ComparisonOperator: cdk.stringToCloudFormation(property.cloudWatchAlarmDefinition.comparisonOperator.valueOf()),
+        Dimensions: cdk.listMapper(MetricDimensionPropertyToJson)(property.cloudWatchAlarmDefinition.dimensions),
+        EvaluationPeriods: cdk.numberToCloudFormation(property.cloudWatchAlarmDefinition.evalutionPeriods),
+        MetricName: cdk.stringToCloudFormation(property.cloudWatchAlarmDefinition.metricName),
+        Namespace: cdk.stringToCloudFormation(property.cloudWatchAlarmDefinition.namespace),
+        Period: cdk.numberToCloudFormation(property.cloudWatchAlarmDefinition.period),
+        Statistic: cdk.stringToCloudFormation(property.cloudWatchAlarmDefinition.statistic?.valueOf()),
+        Threshold: cdk.numberToCloudFormation(property.cloudWatchAlarmDefinition.threshold),
+        Unit: cdk.stringToCloudFormation(property.cloudWatchAlarmDefinition.unit?.valueOf())
+      }
+    };
+  }
+
+  /**
+   * EC2 Instance Market
+   */
+  export enum InstanceMarket {
+    ON_DEMAND = 'ON_DEMAND',
+    SPOT = 'SPOT'
+  }
+
+  /**
+   * AutoScaling Adjustment Type
+   */
+  export enum ScalingAdjustmentType {
+    CHANGE_IN_CAPACITY = 'CHANGE_IN_CAPACITY',
+    PERCENT_CHANGE_IN_CAPACITY = 'PERCENT_CHANGE_IN_CAPACITY',
+    EXACT_CAPACITY = 'EXACT_CAPACITY'
+  }
+
+  /**
+   * An automatic scaling configuration, which describes how the policy adds or removes instances, the cooldown period, and the number of EC2
+   * instances that will be added each time the CloudWatch metric alarm condition is satisfied.
+   *
+   * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_SimpleScalingPolicyConfiguration.html
+   *
+   * @experimental
+   */
+  export interface SimpleScalingPolicyConfigurationProperty {
+    /**
+     * The way in which EC2 instances are added (if ScalingAdjustment is a positive number) or terminated (if ScalingAdjustment is a negative
+     * number) each time the scaling activity is triggered.
+     */
+    readonly adjustmentType?: ScalingAdjustmentType;
+
+    /**
+     * The amount of time, in seconds, after a scaling activity completes before any further trigger-related scaling activities can start.
+     * The default value is 0.
+     */
+    readonly coolDown?: number;
+
+    /**
+     * The amount by which to scale in or scale out, based on the specified AdjustmentType. A positive value adds to the instance group's
+     * EC2 instance count while a negative number removes instances. If AdjustmentType is set to EXACT_CAPACITY, the number should only be
+     * a positive integer.
+     */
+    readonly scalingAdjustment: number;
+  }
+
+  /**
+   * The type of adjustment the automatic scaling activity makes when triggered, and the periodicity of the adjustment.
+   * And an automatic scaling configuration, which describes how the policy adds or removes instances, the cooldown period,
+   * and the number of EC2 instances that will be added each time the CloudWatch metric alarm condition is satisfied.
+   *
+   * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_ScalingAction.html
+   *
+   * @experimental
+   */
+  export interface ScalingActionProperty {
+    /**
+     * Not available for instance groups. Instance groups use the market type specified for the group.
+     */
+    readonly market?: InstanceMarket;
+
+    /**
+     * The type of adjustment the automatic scaling activity makes when triggered, and the periodicity of the adjustment.
+     */
+    readonly simpleScalingPolicyConfiguration: SimpleScalingPolicyConfigurationProperty;
+  }
+
+  /**
+   * Render the ScalingActionPropety to JSON
+   *
+   * @param property
+   */
+  export function ScalingActionPropertyToJson(property: ScalingActionProperty) {
+    return {
+      Market: cdk.stringToCloudFormation(property.market?.valueOf()),
+      SimpleScalingPolicyConfiguration: {
+        AdjustmentType: cdk.stringToCloudFormation(property.simpleScalingPolicyConfiguration.adjustmentType),
+        CoolDown: cdk.numberToCloudFormation(property.simpleScalingPolicyConfiguration.coolDown),
+        ScalingAdjustment: cdk.numberToCloudFormation(property.simpleScalingPolicyConfiguration.scalingAdjustment)
+      }
+    };
+  }
+
+  /**
+   * A scale-in or scale-out rule that defines scaling activity, including the CloudWatch metric alarm that triggers activity, how EC2
+   * instances are added or removed, and the periodicity of adjustments.
+   *
+   * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_ScalingRule.html
+   *
+   * @experimental
+   */
+  export interface ScalingRuleProperty {
+    /**
+     * The conditions that trigger an automatic scaling activity.
+     */
+    readonly action: ScalingActionProperty;
+
+    /**
+     * A friendly, more verbose description of the automatic scaling rule.
+     */
+    readonly description?: string;
+
+    /**
+     * The name used to identify an automatic scaling rule. Rule names must be unique within a scaling policy.
+     */
+    readonly name: string;
+
+    /**
+     * The CloudWatch alarm definition that determines when automatic scaling activity is triggered.
+     */
+    readonly trigger: ScalingTriggerProperty;
+  }
+
+  /**
+   * Render the ScalingRuleProperty to JSON
+   *
+   * @param property
+   */
+  export function ScalingRulePropertyToJson(property: ScalingRuleProperty) {
+    return {
+      Action: ScalingActionPropertyToJson(property.action),
+      Description: cdk.stringToCloudFormation(property.description),
+      Name: cdk.stringToCloudFormation(property.name),
+      Trigger: ScalingTriggerPropertyToJson(property.trigger)
+    };
+  }
+
+  /**
+   * The upper and lower EC2 instance limits for an automatic scaling policy. Automatic scaling activities triggered by automatic scaling
+   * rules will not cause an instance group to grow above or below these limits.
+   *
+   * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_ScalingConstraints.html
+   *
+   * @experimental
+   */
+  export interface ScalingConstraintsProperty {
+    /**
+     * The upper boundary of EC2 instances in an instance group beyond which scaling activities are not allowed to grow. Scale-out
+     * activities will not add instances beyond this boundary.
+     */
+    readonly maxCapacity: number;
+
+    /**
+     * The lower boundary of EC2 instances in an instance group below which scaling activities are not allowed to shrink. Scale-in
+     * activities will not terminate instances below this boundary.
+     */
+    readonly minCapacity: number;
+  }
+
+  /**
+   * An automatic scaling policy for a core instance group or task instance group in an Amazon EMR cluster.
+   *
+   * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_AutoScalingPolicy.html
+   *
+   * @experimental
+   */
+  export interface AutoScalingPolicyProperty {
+    /**
+     * The upper and lower EC2 instance limits for an automatic scaling policy. Automatic scaling activity will not cause an instance
+     * group to grow above or below these limits.
+     */
+    readonly constraints: ScalingConstraintsProperty;
+
+    /**
+     * The scale-in and scale-out rules that comprise the automatic scaling policy.
+     */
+    readonly rules: ScalingRuleProperty[];
+  }
+
+  /**
+   * Render the AutoScalingPolicyProperty to JSON
+   *
+   * @param property
+   */
+  export function AutoScalingPolicyPropertyToJson(property: AutoScalingPolicyProperty) {
+    return {
+      Constraints: {
+        MaxCapacity: cdk.numberToCloudFormation(property.constraints.maxCapacity),
+        MinCapacity: cdk.numberToCloudFormation(property.constraints.minCapacity)
+      },
+      Rules: cdk.listMapper(ScalingRulePropertyToJson)(property.rules)
+    };
+  }
+
+  /**
+   * Configuration defining a new instance group.
+   *
+   * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_InstanceGroupConfig.html
+   *
+   * @experimental
+   */
+  export interface InstanceGroupConfigProperty {
+    /**
+     * An automatic scaling policy for a core instance group or task instance group in an Amazon EMR cluster.
+     */
+    readonly autoScalingPolicy?: AutoScalingPolicyProperty;
+
+    /**
+     * The bid price for each EC2 Spot instance type as defined by InstanceType. Expressed in USD.
+     */
+    readonly bidPrice?: string;
+
+    /**
+     * The list of configurations supplied for an EMR cluster instance group.
+     */
+    readonly configurations?: ConfigurationProperty[];
+
+    /**
+     * EBS configurations that will be attached to each EC2 instance in the instance group.
+     */
+    readonly ebsConfiguration?: EbsConfigurationProperty;
+
+    /**
+     * Target number of instances for the instance group.
+     */
+    readonly instanceCount: number;
+
+    /**
+     * The role of the instance group in the cluster.
+     */
+    readonly instanceRole: InstanceRoleType;
+
+    /**
+     * The EC2 instance type for all instances in the instance group.
+     */
+    readonly instanceType: string;
+
+    /**
+     * Market type of the EC2 instances used to create a cluster node.
+     */
+    readonly market?: InstanceMarket;
+
+    /**
+     * Friendly name given to the instance group.
+     */
+    readonly name?: string;
+  }
+
+  /**
+   * Render the InstanceGroupConfigProperty to JSON
+   *
+   * @param property
+   */
+  export function InstanceGroupConfigPropertyToJson(property: InstanceGroupConfigProperty) {
+    return {
+      AutoScalingPolicy: (property.autoScalingPolicy === undefined) ?
+        property.autoScalingPolicy :
+        AutoScalingPolicyPropertyToJson(property.autoScalingPolicy),
+      BidPrice: cdk.numberToCloudFormation(property.bidPrice),
+      Configurations: cdk.listMapper(ConfigurationPropertyToJson)(property.configurations),
+      EbsConfiguration: (property.ebsConfiguration === undefined) ?
+        property.ebsConfiguration :
+        EbsConfigurationPropertyToJson(property.ebsConfiguration),
+      InstanceCount: cdk.numberToCloudFormation(property.instanceCount),
+      InstanceRole: cdk.stringToCloudFormation(property.instanceRole.valueOf()),
+      InstanceType: cdk.stringToCloudFormation(property.instanceType),
+      Market: cdk.stringToCloudFormation(property.market?.valueOf()),
+      Name: cdk.stringToCloudFormation(property.name)
+    };
+  }
+
+  /**
    * The Amazon EC2 Availability Zone configuration of the cluster (job flow).
    *
    * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_PlacementType.html
+   *
+   * @experimental
    */
   export interface PlacementTypeProperty {
     /**
@@ -699,7 +1174,7 @@ export namespace EmrCreateCluster {
     /**
      * Configuration for the instance groups in a cluster.
      */
-    // readonly instanceGroups?: InstanceGroupConfigProperty[];
+    readonly instanceGroups?: InstanceGroupConfigProperty[];
 
     /**
      * The EC2 instance type of the master node.
@@ -745,7 +1220,7 @@ export namespace EmrCreateCluster {
       HadoopVersion: cdk.stringToCloudFormation(property.hadoopVersion),
       InstanceCount: cdk.numberToCloudFormation(property.instanceCount),
       InstanceFleets: cdk.listMapper(InstanceFleetConfigPropertyToJson)(property.instanceFleets),
-      InstanceGroups: undefined,
+      InstanceGroups: cdk.listMapper(InstanceGroupConfigPropertyToJson)(property.instanceGroups),
       KeepJobFlowAliveWhenNoSteps: true,
       MasterInstanceType: cdk.stringToCloudFormation(property.masterInstanceType),
       Placement: (property.placement === undefined) ?
@@ -807,6 +1282,25 @@ export namespace EmrCreateCluster {
   }
 
   /**
+   * Configuration of the script to run during a bootstrap action.
+   *
+   * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_ScriptBootstrapActionConfig.html
+   *
+   * @experimental
+   */
+  export interface ScriptBootstrapActionConfigProperty {
+    /**
+     * Location of the script to run during a bootstrap action. Can be either a location in Amazon S3 or on a local file system.
+     */
+    readonly path: string;
+
+    /**
+     * A list of command line arguments to pass to the bootstrap action script.
+     */
+    readonly args?: string[];
+  }
+
+  /**
    * Configuration of a bootstrap action.
    *
    * See the RunJobFlow API for complete documentation on input parameters
@@ -822,14 +1316,9 @@ export namespace EmrCreateCluster {
     readonly name: string;
 
     /**
-     * Location of the script to run during a bootstrap action. Can be either a location in Amazon S3 or on a local file system.
+     * The script run by the bootstrap action
      */
-    readonly path: string;
-
-    /**
-     * A list of command line arguments to pass to the bootstrap action script.
-     */
-    readonly args?: string[];
+    readonly scriptBootstrapAction: ScriptBootstrapActionConfigProperty
   }
 
   /**
@@ -841,8 +1330,8 @@ export namespace EmrCreateCluster {
     return {
       Name: cdk.stringToCloudFormation(property.name),
       ScriptBootstrapAction: {
-        Path: cdk.stringToCloudFormation(property.path),
-        Args: cdk.listMapper(cdk.stringToCloudFormation)(property.args)
+        Path: cdk.stringToCloudFormation(property.scriptBootstrapAction.path),
+        Args: cdk.listMapper(cdk.stringToCloudFormation)(property.scriptBootstrapAction.args)
       }
     };
   }
