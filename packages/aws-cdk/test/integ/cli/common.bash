@@ -66,6 +66,11 @@ function prepare_fixture() {
     cp -R app/* $integ_test_dir
     cd $integ_test_dir
 
+    # if this directory is missing, but exists in any of the 
+    # parent directories, npm will install these packages there. lets make sure
+    # we install locally.
+    mkdir -p node_modules
+
     npm install \
         @aws-cdk/core \
         @aws-cdk/aws-sns \

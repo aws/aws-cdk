@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-eks",
-  "version": "1.21.0",
+  "version": "1.21.1",
   "description": "The CDK Construct Library for AWS::EKS",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -62,49 +62,46 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "1.21.0",
+    "@aws-cdk/assert": "1.21.1",
     "@types/nodeunit": "^0.0.30",
-    "aws-sdk": "^2.601.0",
-    "cdk-build-tools": "1.21.0",
-    "cdk-integ-tools": "1.21.0",
-    "cfn2ts": "1.21.0",
+    "aws-sdk": "^2.608.0",
+    "cdk-build-tools": "1.21.1",
+    "cdk-integ-tools": "1.21.1",
+    "cfn2ts": "1.21.1",
     "nodeunit": "^0.11.3",
-    "pkglint": "1.21.0"
+    "pkglint": "1.21.1",
+    "sinon": "^8.1.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-autoscaling": "1.21.0",
-    "@aws-cdk/aws-cloudformation": "1.21.0",
-    "@aws-cdk/aws-ec2": "1.21.0",
-    "@aws-cdk/aws-iam": "1.21.0",
-    "@aws-cdk/aws-lambda": "1.21.0",
-    "@aws-cdk/aws-ssm": "1.21.0",
-    "@aws-cdk/core": "1.21.0",
-    "@aws-cdk/custom-resources": "1.21.0"
+    "@aws-cdk/aws-autoscaling": "1.21.1",
+    "@aws-cdk/aws-cloudformation": "1.21.1",
+    "@aws-cdk/aws-ec2": "1.21.1",
+    "@aws-cdk/aws-iam": "1.21.1",
+    "@aws-cdk/aws-lambda": "1.21.1",
+    "@aws-cdk/aws-ssm": "1.21.1",
+    "@aws-cdk/core": "1.21.1",
+    "@aws-cdk/custom-resources": "1.21.1"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-autoscaling": "1.21.0",
-    "@aws-cdk/aws-cloudformation": "1.21.0",
-    "@aws-cdk/aws-ec2": "1.21.0",
-    "@aws-cdk/aws-iam": "1.21.0",
-    "@aws-cdk/aws-lambda": "1.21.0",
-    "@aws-cdk/aws-ssm": "1.21.0",
-    "@aws-cdk/core": "1.21.0",
-    "@aws-cdk/custom-resources": "1.21.0"
+    "@aws-cdk/aws-autoscaling": "1.21.1",
+    "@aws-cdk/aws-cloudformation": "1.21.1",
+    "@aws-cdk/aws-ec2": "1.21.1",
+    "@aws-cdk/aws-iam": "1.21.1",
+    "@aws-cdk/aws-lambda": "1.21.1",
+    "@aws-cdk/aws-ssm": "1.21.1",
+    "@aws-cdk/core": "1.21.1",
+    "@aws-cdk/custom-resources": "1.21.1"
   },
   "engines": {
     "node": ">= 10.3.0"
   },
   "awslint": {
     "exclude": [
-      "props-no-arn-refs:@aws-cdk/aws-eks.ClusterProps.outputMastersRoleArn",
-      "props-default-doc:@aws-cdk/aws-eks.AutoScalingGroupOptions.bootstrapOptions",
+      "resource-attribute:@aws-cdk/aws-eks.FargateCluster.clusterSecurityGroupId",
       "resource-attribute:@aws-cdk/aws-eks.Cluster.clusterSecurityGroupId",
-      "docs-public-apis:@aws-cdk/aws-eks.AwsAuthProps",
-      "docs-public-apis:@aws-cdk/aws-eks.BootstrapOptions",
-      "docs-public-apis:@aws-cdk/aws-eks.ClusterAttributes",
-      "docs-public-apis:@aws-cdk/aws-eks.KubernetesResourceProps",
-      "docs-public-apis:@aws-cdk/aws-eks.Mapping"
+      "props-no-arn-refs:@aws-cdk/aws-eks.ClusterProps.outputMastersRoleArn",
+      "resource-attribute:@aws-cdk/aws-eks.Cluster.clusterSecurityGroupId"
     ]
   },
   "stability": "experimental"
