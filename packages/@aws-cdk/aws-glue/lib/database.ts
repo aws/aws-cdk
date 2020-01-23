@@ -36,6 +36,8 @@ export interface DatabaseProps {
   /**
    * The location of the database (for example, an HDFS path).
    *
+   * @default undefined. This field is optional in AWS::Glue::Database DatabaseInput
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-database-databaseinput.html
    */
   readonly locationUri?: string;
 }
@@ -56,12 +58,6 @@ export class Database extends Resource implements IDatabase {
     }
 
     return new Import(scope, id);
-  }
-
-  private static validateLocationUri(locationUri: string): void {
-    if (locationUri.length < 1 || locationUri.length > 1024) {
-      throw new Error(`locationUri length must be (inclusively) between 1 and 1024, but was ${locationUri.length}`);
-    }
   }
 
   /**
@@ -99,7 +95,7 @@ export class Database extends Resource implements IDatabase {
     };
 
     if (props.locationUri !== undefined) {
-      Database.validateLocationUri(props.locationUri);
+      validateLocationUri(props.locationUri);
       this.locationUri = props.locationUri;
       databaseInput = {
         locationUri: this.locationUri,
@@ -126,5 +122,11 @@ export class Database extends Resource implements IDatabase {
       service: 'glue',
       resource: 'catalog'
     });
+  }
+}
+
+function validateLocationUri(locationUri: string): void {
+  if (locationUri.length < 1 || locationUri.length > 1024) {
+    throw new Error(`locationUri length must be (inclusively) between 1 and 1024, but was ${locationUri.length}`);
   }
 }
