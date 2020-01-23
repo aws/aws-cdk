@@ -72,5 +72,27 @@ export = {
       [ 'arn:', { Ref: 'AWS::Partition' }, ':glue:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':catalog' ] ] });
     test.deepEqual(stack.resolve(database.catalogId), { Ref: 'AWS::AccountId' });
     test.done();
+  },
+
+  'locationUri length must be >= 1'(test: Test) {
+    const stack = new Stack();
+    test.throws(() =>
+        new glue.Database(stack, 'Database', {
+          databaseName: 'test_database',
+          locationUri: ''
+        })
+    );
+    test.done();
+  },
+
+  'locationUri length must be <= 1024'(test: Test) {
+    const stack = new Stack();
+    test.throws(() =>
+        new glue.Database(stack, 'Database', {
+          databaseName: 'test_database',
+          locationUri: 'a'.repeat(1025)
+        })
+    );
+    test.done();
   }
 };

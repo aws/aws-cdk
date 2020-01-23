@@ -36,7 +36,6 @@ export interface DatabaseProps {
   /**
    * The location of the database (for example, an HDFS path).
    *
-   * @default a bucket is created and the database is stored under s3://<bucket-name>/<database-name>
    */
   readonly locationUri?: string;
 }
@@ -57,6 +56,12 @@ export class Database extends Resource implements IDatabase {
     }
 
     return new Import(scope, id);
+  }
+
+  private static validateLocationUri(locationUri: string): void {
+    if (locationUri.length < 1 || locationUri.length > 1024) {
+      throw new Error(`locationUri length must be (inclusively) between 1 and 1024, but was ${locationUri.length}`);
+    }
   }
 
   /**
@@ -93,7 +98,8 @@ export class Database extends Resource implements IDatabase {
       name: props.databaseName,
     };
 
-    if (props.locationUri) {
+    if (props.locationUri !== undefined) {
+      Database.validateLocationUri(props.locationUri);
       this.locationUri = props.locationUri;
       databaseInput = {
         locationUri: this.locationUri,
