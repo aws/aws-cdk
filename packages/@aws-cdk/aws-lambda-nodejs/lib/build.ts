@@ -1,19 +1,48 @@
 import { spawnSync } from 'child_process';
 
+/**
+ * Build options
+ */
 export interface BuildOptions {
-  entry: string;
-  global: string;
-  minify?: boolean;
-  sourceMaps?: boolean;
-  buildDir: string;
-  cacheDir?: string;
+  /**
+   * Entry file
+   */
+  readonly entry: string;
+
+  /**
+   * The output directory
+   */
+  readonly outDir: string;
+
+  /**
+   * Expose modules as UMD under this name
+   */
+  readonly global: string;
+
+  /**
+   * Minify
+   */
+  readonly minify?: boolean;
+
+  /**
+   * Include source maps
+   */
+  readonly sourceMaps?: boolean;
+
+  /**
+   * The cache directory
+   */
+  readonly cacheDir?: string;
 }
 
+/**
+ * Build with Parcel
+ */
 export function build(options: BuildOptions): void {
   try {
     const args = [
       'build', options.entry,
-      '--out-dir', options.buildDir,
+      '--out-dir', options.outDir,
       '--out-file', 'index.js',
       '--global', options.global,
       '--target', 'node',

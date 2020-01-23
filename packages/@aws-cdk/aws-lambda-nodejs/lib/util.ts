@@ -1,6 +1,9 @@
 // From https://github.com/errwischt/stacktrace-parser/blob/master/src/stack-trace-parser.js
 const STACK_RE = /^\s*at (?:((?:\[object object\])?[^\\/]+(?: \[as \S+\])?) )?\(?(.*?):(\d+)(?::(\d+))?\)?\s*$/i;
 
+/**
+ * A parsed stack trace line
+ */
 export interface StackTrace {
   readonly file: string;
   readonly methodName?: string;
@@ -8,6 +11,9 @@ export interface StackTrace {
   readonly column: number;
 }
 
+/**
+ * Parses the stack trace of an error
+ */
 export function parseStackTrace(error?: Error): StackTrace[] {
   const err = error || new Error();
 
@@ -34,6 +40,9 @@ export function parseStackTrace(error?: Error): StackTrace[] {
   return stackTrace;
 }
 
+/**
+ * Returns the major version of node installation
+ */
 export function nodeMajorVersion(): number {
   return parseInt(process.versions.node.split('.')[0], 10);
 }

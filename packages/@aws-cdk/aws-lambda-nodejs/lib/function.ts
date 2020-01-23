@@ -84,10 +84,10 @@ export class NodejsFunction extends lambda.Function {
     // Build with Parcel
     build({
       entry,
+      outDir: handlerDir,
       global: handler,
       minify: props.minify,
       sourceMaps: props.sourceMaps,
-      buildDir: handlerDir,
       cacheDir: props.cacheDir
     });
 
@@ -104,6 +104,12 @@ export class NodejsFunction extends lambda.Function {
   }
 }
 
+/**
+ * Searches for an entry file. Preference order is the following:
+ * 1. Given entry file
+ * 2. A .ts file named as the defining file with id as suffix (defining-file.id.ts)
+ * 3. A .js file name as the defining file with id as suffix (defining-file.id.js)
+ */
 function findEntry(id: string, entry?: string): string {
   if (entry) {
     if (!/\.(js|ts)$/.test(entry)) {
@@ -131,6 +137,9 @@ function findEntry(id: string, entry?: string): string {
   throw new Error('Cannot find entry file.');
 }
 
+/**
+ * Finds the name of the file where the `NodejsFunction` is defined
+ */
 function findDefiningFile(): string {
   const stackTrace = parseStackTrace();
   const functionIndex = stackTrace.findIndex(s => /NodejsFunction/.test(s.methodName || ''));
