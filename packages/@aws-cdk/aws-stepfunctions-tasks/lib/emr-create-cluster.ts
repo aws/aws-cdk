@@ -587,7 +587,7 @@ export namespace EmrCreateCluster {
     /**
      * The node type that the instance fleet hosts. Valid values are MASTER,CORE,and TASK.
      */
-    readonly instanceFleeType: InstanceRoleType;
+    readonly instanceFleetType: InstanceRoleType;
 
     /**
      * The instance type configurations that define the EC2 instances in the instance fleet.

@@ -647,7 +647,7 @@ test('Create Cluster with InstanceFleet', () => {
   const task = new sfn.Task(stack, 'Task', { task: new tasks.EmrCreateCluster({
     instances: {
       instanceFleets: [{
-        instanceFleeType: tasks.EmrCreateCluster.InstanceRoleType.MASTER,
+        instanceFleetType: tasks.EmrCreateCluster.InstanceRoleType.MASTER,
         instanceTypeConfigs: [{
           bidPrice: '1',
           bidPriceAsPercentageOfOnDemandPrice: 1,
