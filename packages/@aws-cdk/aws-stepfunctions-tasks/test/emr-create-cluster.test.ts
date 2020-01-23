@@ -640,6 +640,121 @@ test('Create Cluster with Instances configuration', () => {
   });
 });
 
+test('Create Cluster with InstanceFleet', () => {
+  // WHEN
+  const task = new sfn.Task(stack, 'Task', { task: new tasks.EmrCreateCluster({
+    instances: {
+      instanceFleets: [{
+        instanceFleeType: tasks.EmrCreateCluster.InstanceRoleType.MASTER,
+        instanceTypeConfigs: [{
+          bidPrice: '1',
+          bidPriceAsPercentageOfOnDemandPrice: 1,
+          configurations: [{
+            classification: 'Classification',
+            properties: {
+              Key: 'Value'
+            }
+          }],
+          ebsConfiguration: {
+            ebsBlockDeviceConfigs: [{
+              iops: 1,
+              sizeInGB: 1,
+              volumeType: tasks.EmrCreateCluster.EbsBlockDeviceVolumeType.STANDARD,
+              volumesPerInstance: 1
+            }],
+            ebsOptimized: true
+          },
+          instanceType: 'm5.xlarge',
+          weightedCapacity: 1
+        }],
+        launchSpecifications: {
+          blockDurationMinutes: 1,
+          timeoutAction: tasks.EmrCreateCluster.SpotTimeoutAction.TERMINATE_CLUSTER,
+          timeoutDurationMinutes: 1
+        },
+        name: 'Master',
+        targetOnDemandCapacity: 1,
+        targetSpotCapacity: 1
+      }]
+    },
+    clusterRole,
+    name: 'Cluster',
+    serviceRole,
+    autoScalingRole,
+    integrationPattern: sfn.ServiceIntegrationPattern.FIRE_AND_FORGET
+  }) });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::elasticmapreduce:createCluster',
+        ],
+      ],
+    },
+    End: true,
+    Parameters: {
+      Name: 'Cluster',
+      Instances: {
+        KeepJobFlowAliveWhenNoSteps: true,
+        InstanceFleets: [{
+          InstanceFleetType: 'MASTER',
+          InstanceTypeConfigs: [{
+            BidPrice: '1',
+            BidPriceAsPercentageOfOnDemandPrice: 1,
+            Configurations: [{
+              Classification: 'Classification',
+              Properties: {
+                Key: 'Value'
+              }
+            }],
+            EbsConfiguration: {
+              EbsBlockDeviceConfigs: [{
+                VolumeSpecification: {
+                  Iops: 1,
+                  SizeInGB: 1,
+                  VolumeType: 'standard'
+                },
+                VolumesPerInstance: 1
+              }],
+              EbsOptimized: true
+            },
+            InstanceType: 'm5.xlarge',
+            WeightedCapacity: 1
+          }],
+          LaunchSpecifications: {
+            SpotSpecification: {
+              BlockDurationMinutes: 1,
+              TimeoutAction: 'TERMINATE_CLUSTER',
+              TimeoutDurationMinutes: 1
+            }
+          },
+          Name: 'Master',
+          TargetOnDemandCapacity: 1,
+          TargetSpotCapacity: 1
+        }]
+      },
+      VisibleToAllUsers: true,
+      JobFlowRole: {
+        Ref: 'ClusterRoleD9CA7471',
+      },
+      ServiceRole: {
+        Ref: 'ServiceRole4288B192'
+      },
+      AutoScalingRole: {
+        Ref: 'AutoScalingRole015ADA0A'
+      }
+    },
+  });
+});
+
 test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration pattern', () => {
   expect(() => {
     new sfn.Task(stack, 'Task', {
