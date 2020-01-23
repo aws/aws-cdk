@@ -44,7 +44,7 @@ export = {
 
   },
 
-  'addDockerImageAsset correctly sets metadata and creates an ECR parameter'(test: Test) {
+  'addDockerImageAsset correctly sets metadata'(test: Test) {
     // GIVEN
     const stack = new Stack();
 
@@ -62,16 +62,56 @@ export = {
     test.equal(assetMetadata && assetMetadata.data.path, 'directory-name');
     test.equal(assetMetadata && assetMetadata.data.sourceHash, 'source-hash');
     test.equal(assetMetadata && assetMetadata.data.repositoryName, 'repository-name');
+    test.equal(assetMetadata && assetMetadata.data.imageTag, 'source-hash');
 
-    test.deepEqual(toCloudFormation(stack), {
-      Parameters: {
-        AssetParameterssourcehashImageName3B572B12: {
-          Type: 'String',
-          Description: 'ECR repository name and tag for asset "source-hash"'
-        }
-      }
+    test.deepEqual(toCloudFormation(stack), { });
+    test.done();
+  },
+
+  'addDockerImageAsset uses the default repository name'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    stack.addDockerImageAsset({
+      sourceHash: 'source-hash',
+      directoryName: 'directory-name',
     });
 
+    // THEN
+    const assetMetadata = stack.node.metadata.find(({ type }) => type === cxapi.ASSET_METADATA);
+
+    test.equal(assetMetadata && assetMetadata.data.packaging, 'container-image');
+    test.equal(assetMetadata && assetMetadata.data.path, 'directory-name');
+    test.equal(assetMetadata && assetMetadata.data.sourceHash, 'source-hash');
+    test.equal(assetMetadata && assetMetadata.data.repositoryName, 'aws-cdk/assets');
+    test.equal(assetMetadata && assetMetadata.data.imageTag, 'source-hash');
+
+    test.deepEqual(toCloudFormation(stack), { });
+    test.done();
+  },
+
+  'addDockerImageAsset supports overriding repository name through a context key as a workaround until we have API for that'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    stack.node.setContext('assets-ecr-repository-name', 'my-custom-repo-name');
+
+    // WHEN
+    stack.addDockerImageAsset({
+      sourceHash: 'source-hash',
+      directoryName: 'directory-name',
+    });
+
+    // THEN
+    const assetMetadata = stack.node.metadata.find(({ type }) => type === cxapi.ASSET_METADATA);
+
+    test.equal(assetMetadata && assetMetadata.data.packaging, 'container-image');
+    test.equal(assetMetadata && assetMetadata.data.path, 'directory-name');
+    test.equal(assetMetadata && assetMetadata.data.sourceHash, 'source-hash');
+    test.equal(assetMetadata && assetMetadata.data.repositoryName, 'my-custom-repo-name');
+    test.equal(assetMetadata && assetMetadata.data.imageTag, 'source-hash');
+
+    test.deepEqual(toCloudFormation(stack), { });
     test.done();
   },
 };

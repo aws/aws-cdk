@@ -542,34 +542,7 @@ export = {
                   {
                     Ref: "AWS::URLSuffix"
                   },
-                  "/",
-                  {
-                    "Fn::Select": [
-                      0,
-                      {
-                        "Fn::Split": [
-                          "@sha256:",
-                          {
-                            Ref: "AssetParameters1a17a141505ac69144931fe263d130f4612251caa4bbbdaf68a44ed0f405439cImageName1ADCADB3"
-                          }
-                        ]
-                      }
-                    ]
-                  },
-                  "@sha256:",
-                  {
-                    "Fn::Select": [
-                      1,
-                      {
-                        "Fn::Split": [
-                          "@sha256:",
-                          {
-                            Ref: "AssetParameters1a17a141505ac69144931fe263d130f4612251caa4bbbdaf68a44ed0f405439cImageName1ADCADB3"
-                          }
-                        ]
-                      }
-                    ]
-                  }
+                  "/aws-cdk/assets:baa2d6eb2a17c75424df631c8c70ff39f2d5f3bee8b9e1a109ee24ca17300540"
                 ]
               ]
             },

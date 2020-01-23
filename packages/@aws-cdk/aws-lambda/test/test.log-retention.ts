@@ -1,4 +1,4 @@
-import { countResources, expect, haveResource } from '@aws-cdk/assert';
+import { ABSENT, countResources, expect, haveResource } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
@@ -93,5 +93,20 @@ export = {
 
     test.done();
 
+  },
+
+  'with RetentionPeriod set to Infinity'(test: Test) {
+    const stack = new cdk.Stack();
+
+    new LogRetention(stack, 'MyLambda', {
+      logGroupName: 'group',
+      retention: logs.RetentionDays.INFINITE,
+    });
+
+    expect(stack).to(haveResource('Custom::LogRetention', {
+      RetentionInDays: ABSENT
+    }));
+
+    test.done();
   }
 };
