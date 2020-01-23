@@ -59,3 +59,23 @@ test('can clear all values in all objects', () => {
   expect(settings1.all).toEqual({ });
   expect(settings2.all).toEqual({});
 });
+
+test('can parse string context from command line arguments', () => {
+  // GIVEN
+  const settings1 = Settings.fromCommandLineArguments({ context: ['foo=bar'] });
+  const settings2 = Settings.fromCommandLineArguments({ context: ['foo='] });
+
+  // THEN
+  expect(settings1.get(['context']).foo).toEqual( 'bar');
+  expect(settings2.get(['context']).foo).toEqual( '');
+});
+
+test('can parse string context from command line arguments with equals sign in value', () => {
+  // GIVEN
+  const settings1 = Settings.fromCommandLineArguments({ context: ['foo==bar='] });
+  const settings2 = Settings.fromCommandLineArguments({ context: ['foo=bar='] });
+
+  // THEN
+  expect(settings1.get(['context']).foo).toEqual( '=bar=');
+  expect(settings2.get(['context']).foo).toEqual( 'bar=');
+});
