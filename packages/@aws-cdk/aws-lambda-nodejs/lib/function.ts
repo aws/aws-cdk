@@ -80,6 +80,10 @@ export class NodejsFunction extends lambda.Function {
     const handler = props.handler || 'handler';
     const buildDir = props.buildDir || path.join(path.dirname(entry), '.build');
     const handlerDir = path.join(buildDir, crypto.createHash('sha256').update(entry).digest('hex'));
+    const defaultRunTime = nodeMajorVersion() >= 12
+    ? lambda.Runtime.NODEJS_12_X
+    : lambda.Runtime.NODEJS_10_X;
+    const runtime = props.runtime || defaultRunTime;
 
     // Build with Parcel
     build({
@@ -88,16 +92,13 @@ export class NodejsFunction extends lambda.Function {
       global: handler,
       minify: props.minify,
       sourceMaps: props.sourceMaps,
-      cacheDir: props.cacheDir
+      cacheDir: props.cacheDir,
+      nodeVersion: extractVersion(runtime),
     });
-
-    const defaultRunTime = nodeMajorVersion() >= 12
-      ? lambda.Runtime.NODEJS_12_X
-      : lambda.Runtime.NODEJS_10_X;
 
     super(scope, id, {
       ...props,
-      runtime: props.runtime || defaultRunTime,
+      runtime,
       code: lambda.Code.fromAsset(handlerDir),
       handler: `index.${handler}`,
     });
@@ -149,4 +150,17 @@ function findDefiningFile(): string {
   }
 
   return stackTrace[functionIndex + 1].file;
+}
+
+/**
+ * Extracts the version from the runtime
+ */
+function extractVersion(runtime: lambda.Runtime): string | undefined {
+  const match = runtime.name.match(/nodejs(\d+)/);
+
+  if (!match) {
+    return undefined;
+  }
+
+  return match[1];
 }

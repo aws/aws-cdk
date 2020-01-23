@@ -1,4 +1,6 @@
 import { spawnSync } from 'child_process';
+import * as fs from 'fs';
+import { findPkgPath, updatePkg } from './util';
 
 /**
  * Build options
@@ -33,13 +35,28 @@ export interface BuildOptions {
    * The cache directory
    */
   readonly cacheDir?: string;
+
+  /**
+   * The node version to use as target for Babel
+   */
+  readonly nodeVersion?: string;
 }
 
 /**
  * Build with Parcel
  */
 export function build(options: BuildOptions): void {
+  const pkgPath = findPkgPath();
+  let originalPkg;
+
   try {
+    if (options.nodeVersion && pkgPath) {
+      // Update engines.node (Babel target)
+      originalPkg = updatePkg(pkgPath, {
+        engines: { node: `>= ${options.nodeVersion}` }
+      });
+    }
+
     const args = [
       'build', options.entry,
       '--out-dir', options.outDir,
@@ -66,5 +83,9 @@ export function build(options: BuildOptions): void {
     }
   } catch (err) {
     throw new Error(`Failed to build file at ${options.entry}: ${err}`);
+  } finally { // Always restore package.json to original
+    if (pkgPath && originalPkg) {
+      fs.writeFileSync(pkgPath, originalPkg);
+    }
   }
 }
