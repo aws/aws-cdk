@@ -19,7 +19,6 @@ const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
 const asset = new s3_assets.Asset(stack, 'SampleAsset', {
   path: path.join(__dirname, 'firelens.conf')
 });
-asset.grantRead(taskDefinition.obtainExecutionRole());
 
 // firelens log router with custom s3 configuration file
 taskDefinition.addFirelensLogRouter("log_router", {

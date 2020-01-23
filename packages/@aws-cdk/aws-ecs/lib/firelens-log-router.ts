@@ -109,17 +109,12 @@ function renderFirelensConfig(firelensConfig: FirelensConfig): CfnTaskDefinition
   if (!firelensConfig.options) {
     return { type: firelensConfig.type };
   } else {
-    const options = firelensConfig.options;
-    const enableECSLogMetadata = options.enableECSLogMetadata || options.enableECSLogMetadata === undefined;
-    const configFileType = options.configFileType ||
-      (cdk.Token.isUnresolved(options.configFileValue) || /arn:aws[a-zA-Z-]*:s3:::.+/.test(options.configFileValue))
-      ? FirelensConfigFileType.S3 : FirelensConfigFileType.FILE;
-
+    // firelensConfig.options.configFileType has been filled with s3 or file type in constructor.
     return {
       type: firelensConfig.type,
       options: {
-        'enable-ecs-log-metadata': enableECSLogMetadata ? 'true' : 'false',
-        'config-file-type': configFileType,
+        'enable-ecs-log-metadata': firelensConfig.options.enableECSLogMetadata ? 'true' : 'false',
+        'config-file-type': firelensConfig.options.configFileType!,
         'config-file-value': firelensConfig.options.configFileValue
       }
     };
@@ -192,11 +187,43 @@ export class FirelensLogRouter extends ContainerDefinition {
   public readonly firelensConfig: FirelensConfig;
 
   /**
-   * Constructs a new instance of the ContainerDefinition class.
+   * Constructs a new instance of the FirelensLogRouter class.
    */
   constructor(scope: cdk.Construct, id: string, props: FirelensLogRouterProps) {
     super(scope, id, props);
-    this.firelensConfig = props.firelensConfig;
+    const options = props.firelensConfig.options;
+    if (options) {
+      const enableECSLogMetadata = options.enableECSLogMetadata || options.enableECSLogMetadata === undefined;
+      const configFileType = options.configFileType ||
+        (cdk.Token.isUnresolved(options.configFileValue) || /arn:aws[a-zA-Z-]*:s3:::.+/.test(options.configFileValue))
+        ? FirelensConfigFileType.S3 : FirelensConfigFileType.FILE;
+      this.firelensConfig = {
+        type: props.firelensConfig.type,
+        options: {
+          enableECSLogMetadata,
+          configFileType,
+          configFileValue: options.configFileValue
+        }
+      };
+
+      // grant s3 access permissions
+      if (configFileType === FirelensConfigFileType.S3) {
+        props.taskDefinition.addToExecutionRolePolicy(new iam.PolicyStatement({
+          actions: [
+            "s3:GetObject",
+          ],
+          resources: [options.configFileValue]
+        }));
+        props.taskDefinition.addToExecutionRolePolicy(new iam.PolicyStatement({
+          actions: [
+            "s3:GetBucketLocation",
+          ],
+          resources: [options.configFileValue.split('/')[0]]
+        }));
+      }
+    } else {
+      this.firelensConfig = props.firelensConfig;
+    }
   }
 
   /**
