@@ -1,4 +1,5 @@
 /* tslint:disable no-console */
+import { IsCompleteRequest, IsCompleteResponse, OnEventRequest, OnEventResponse } from '@aws-cdk/custom-resources/lib/provider-framework/types';
 import { DynamoDB } from 'aws-sdk'; // eslint-disable-line import/no-extraneous-dependencies
 import { execSync } from 'child_process';
 
@@ -11,7 +12,7 @@ function installLatestSdk(): void {
   latestSdkInstalled = true;
 }
 
-export async function onEventHandler(event: any): Promise<any> {
+export async function onEventHandler(event: OnEventRequest): Promise<OnEventResponse> {
   console.log('Event: %j', event);
 
   // ReplicaUpdates has been introduced in v2.577.0
@@ -44,7 +45,7 @@ export async function onEventHandler(event: any): Promise<any> {
   return { PhysicalResourceId: event.ResourceProperties.Region };
 }
 
-export async function isCompleteHandler(event: any): Promise<any> {
+export async function isCompleteHandler(event: IsCompleteRequest): Promise<IsCompleteResponse> {
   console.log('Event: %j', event);
 
   const dynamodb = new DynamoDB();

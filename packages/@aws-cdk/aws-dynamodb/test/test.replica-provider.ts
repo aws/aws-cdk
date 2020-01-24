@@ -1,3 +1,4 @@
+import { OnEventRequest } from '@aws-cdk/custom-resources/lib/provider-framework/types';
 import * as AWS from 'aws-sdk-mock';
 import { Test } from 'nodeunit';
 import * as sinon from 'sinon';
@@ -5,12 +6,19 @@ import { isCompleteHandler, onEventHandler } from '../lib/replica-handler';
 
 AWS.setSDK(require.resolve('aws-sdk'));
 
-const createEvent = {
+const createEvent: OnEventRequest = {
   RequestType: 'Create',
   ResourceProperties: {
     TableName: 'my-table',
-    Region: 'eu-west-2'
-  }
+    Region: 'eu-west-2',
+    ServiceToken: 'token'
+  },
+  ServiceToken: 'token',
+  ResponseURL: 'url',
+  LogicalResourceId: 'logical-id',
+  RequestId: 'request-id',
+  StackId: 'stack-id',
+  ResourceType: 'resource-type'
 };
 
 export = {
