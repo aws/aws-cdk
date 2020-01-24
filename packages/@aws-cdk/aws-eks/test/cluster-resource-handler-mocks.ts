@@ -1,5 +1,5 @@
 import * as sdk from 'aws-sdk';
-import { EksClient } from '../lib/cluster-resource-handler/handler';
+import { EksClient } from '../lib/cluster-resource-handler/common';
 
 /**
  * Request objects will be assigned when a request of the relevant type will be
@@ -12,6 +12,9 @@ export let actualRequest: {
   deleteClusterRequest?: sdk.EKS.DeleteClusterRequest;
   updateClusterConfigRequest?: sdk.EKS.UpdateClusterConfigRequest;
   updateClusterVersionRequest?: sdk.EKS.UpdateClusterVersionRequest;
+  createFargateProfile?: sdk.EKS.CreateFargateProfileRequest;
+  describeFargateProfile?: sdk.EKS.DescribeFargateProfileRequest;
+  deleteFargateProfile?: sdk.EKS.DeleteFargateProfileRequest;
 } = { };
 
 /**
@@ -92,8 +95,22 @@ export const client: EksClient = {
   updateClusterVersion: async req => {
     actualRequest.updateClusterVersionRequest = req;
     return { };
-  }
+  },
 
+  createFargateProfile: async req => {
+    actualRequest.createFargateProfile = req;
+    return { };
+  },
+
+  describeFargateProfile: async req => {
+    actualRequest.describeFargateProfile = req;
+    return { };
+  },
+
+  deleteFargateProfile: async req => {
+    actualRequest.deleteFargateProfile = req;
+    return { };
+  },
 };
 
 export const MOCK_PROPS = {

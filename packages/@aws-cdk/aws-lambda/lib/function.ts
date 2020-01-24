@@ -34,32 +34,16 @@ export enum Tracing {
   DISABLED = "Disabled"
 }
 
-export interface FunctionProps extends EventInvokeConfigOptions {
-  /**
-   * The source code of your Lambda function. You can point to a file in an
-   * Amazon Simple Storage Service (Amazon S3) bucket or specify your source
-   * code as inline text.
-   */
-  readonly code: Code;
-
+/**
+ * Non runtime options
+ */
+export interface FunctionOptions extends EventInvokeConfigOptions {
   /**
    * A description of the function.
    *
    * @default - No description.
    */
   readonly description?: string;
-
-  /**
-   * The name of the method within your code that Lambda calls to execute
-   * your function. The format includes the file name. It can also include
-   * namespaces and other qualifiers, depending on the runtime.
-   * For more information, see https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-features.html#gettingstarted-features-programmingmodel.
-   *
-   * NOTE: If you specify your source code as inline text by specifying the
-   * ZipFile property within the Code property, specify index.function_name as
-   * the handler.
-   */
-  readonly handler: string;
 
   /**
    * The function execution time (in seconds) after which Lambda terminates
@@ -79,13 +63,6 @@ export interface FunctionProps extends EventInvokeConfigOptions {
    * @default - No environment variables.
    */
   readonly environment?: { [key: string]: string };
-
-  /**
-   * The runtime environment for the Lambda function that you are uploading.
-   * For valid values, see the Runtime property in the AWS Lambda Developer
-   * Guide.
-   */
-  readonly runtime: Runtime;
 
   /**
    * A name for the function.
@@ -234,9 +211,9 @@ export interface FunctionProps extends EventInvokeConfigOptions {
   /**
    * The number of days log events are kept in CloudWatch Logs. When updating
    * this property, unsetting it doesn't remove the log retention policy. To
-   * remove the retention policy, set the value to `Infinity`.
+   * remove the retention policy, set the value to `INFINITE`.
    *
-   * @default - Logs never expire.
+   * @default logs.RetentionDays.INFINITE
    */
   readonly logRetention?: logs.RetentionDays;
 
@@ -247,6 +224,34 @@ export interface FunctionProps extends EventInvokeConfigOptions {
    * @default - A new role is created.
    */
   readonly logRetentionRole?: iam.IRole;
+}
+
+export interface FunctionProps extends FunctionOptions {
+  /**
+   * The runtime environment for the Lambda function that you are uploading.
+   * For valid values, see the Runtime property in the AWS Lambda Developer
+   * Guide.
+   */
+  readonly runtime: Runtime;
+
+  /**
+   * The source code of your Lambda function. You can point to a file in an
+   * Amazon Simple Storage Service (Amazon S3) bucket or specify your source
+   * code as inline text.
+   */
+  readonly code: Code;
+
+  /**
+   * The name of the method within your code that Lambda calls to execute
+   * your function. The format includes the file name. It can also include
+   * namespaces and other qualifiers, depending on the runtime.
+   * For more information, see https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-features.html#gettingstarted-features-programmingmodel.
+   *
+   * NOTE: If you specify your source code as inline text by specifying the
+   * ZipFile property within the Code property, specify index.function_name as
+   * the handler.
+   */
+  readonly handler: string;
 }
 
 /**
