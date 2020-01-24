@@ -108,5 +108,19 @@ export = {
     }));
 
     test.done();
-  }
+  },
+
+  'log group ARN is well formed and conforms'(test: Test) {
+    const stack = new cdk.Stack();
+    const group = new LogRetention(stack, 'MyLambda', {
+      logGroupName: 'group',
+      retention: logs.RetentionDays.ONE_MONTH,
+    });
+
+    const logGroupArn = group.logGroupArn;
+    test.ok(logGroupArn.indexOf('logs') > -1, 'log group ARN is not as expected');
+    test.ok(logGroupArn.indexOf('log-group') > -1, 'log group ARN is not as expected');
+    test.ok(logGroupArn.endsWith(':*'), 'log group ARN is not as expected');
+    test.done();
+  },
 };

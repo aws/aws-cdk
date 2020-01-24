@@ -1,3 +1,4 @@
+import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as _ from 'lodash';
@@ -85,5 +86,38 @@ export = testCase({
       code: lambda.Code.fromInline('')
     }), /Lambda inline code cannot be empty/);
     test.done();
-  }
+  },
+
+  'logGroup is correctly returned'(test: Test) {
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'fn', {
+      handler: 'foo',
+      runtime: lambda.Runtime.NODEJS_10_X,
+      code: lambda.Code.fromInline('foo'),
+    });
+    const logGroup = fn.logGroup;
+    test.ok(logGroup.logGroupName);
+    test.ok(logGroup.logGroupArn);
+    test.done();
+  },
+
+  'one and only one child LogRetention construct will be created'(test: Test) {
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'fn', {
+      handler: 'foo',
+      runtime: lambda.Runtime.NODEJS_10_X,
+      code: lambda.Code.fromInline('foo'),
+      logRetention: logs.RetentionDays.FIVE_DAYS,
+    });
+
+    // tslint:disable:no-unused-expression
+    // Call logGroup a few times. If more than one instance of LogRetention was created,
+    // the second call will fail on duplicate constructs.
+    fn.logGroup;
+    fn.logGroup;
+    fn.logGroup;
+    // tslint:enable:no-unused-expression
+
+    test.done();
+  },
 });
