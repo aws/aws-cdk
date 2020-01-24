@@ -622,7 +622,7 @@ export namespace EmrCreateCluster {
    */
   export function InstanceFleetConfigPropertyToJson(property: InstanceFleetConfigProperty) {
     return {
-      InstanceFleetType: cdk.stringToCloudFormation(property.instanceFleeType.valueOf()),
+      InstanceFleetType: cdk.stringToCloudFormation(property.instanceFleetType.valueOf()),
       InstanceTypeConfigs: cdk.listMapper(InstanceTypeConfigPropertyToJson)(property.instanceTypeConfigs),
       LaunchSpecifications: (property.launchSpecifications === undefined) ?
         property.launchSpecifications :
