@@ -181,3 +181,8 @@ correct log retention period (never expire, by default).
 
 *Further note* that, if the log group already exists and the `logRetention` is not set, the custom resource will reset
 the log retention to never expire even if it was configured with a different value.
+
+### Language-specific APIs
+Language-specific higher level constructs are provided in separate modules:
+
+* Node.js: [`@aws-cdk/aws-lambda-nodejs`](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-lambda-nodejs)
