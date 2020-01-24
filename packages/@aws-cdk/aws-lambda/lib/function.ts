@@ -576,6 +576,13 @@ export class Function extends FunctionBase {
 
   /**
    * The LogGroup where the Lambda function's logs are made available.
+   *
+   * If either `logRetention` is set or this property is called, a CloudFormation custom resource is added to the stack that
+   * pre-creates the log group as part of the stack deployment, if it already doesn't exist, and sets the correct log retention
+   * period (never expire, by default).
+   *
+   * Further, if the log group already exists and the `logRetention` is not set, the custom resource will reset the log retention
+   * to never expire even if it was configured with a different value.
    */
   public get logGroup(): logs.ILogGroup {
     if (!this._logGroup) {
