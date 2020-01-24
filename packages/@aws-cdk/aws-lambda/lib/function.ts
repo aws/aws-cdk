@@ -494,7 +494,7 @@ export class Function extends FunctionBase {
         retention: props.logRetention,
         role: props.logRetentionRole
       });
-      this._logGroup = logs.LogGroup.fromLogGroupArn(this, `${this.node.id}-LogGroup`, logretention.logGroupArn);
+      this._logGroup = logs.LogGroup.fromLogGroupArn(this, 'LogGroup', logretention.logGroupArn);
     }
 
     props.code.bindToResource(resource);
