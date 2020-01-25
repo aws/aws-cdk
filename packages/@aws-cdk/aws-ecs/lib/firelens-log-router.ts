@@ -131,7 +131,7 @@ const fluentBitImageSSMPath = '/aws/service/aws-for-fluent-bit';
 /**
  * Obtain Fluent Bit image in Amazon ECR and setup corresponding IAM permissions.
  * ECR image pull permissions will be granted in task execution role.
- * Cloudwatch logs or Firehose permissions will be grant by check options in logDriverConfig.
+ * Cloudwatch logs, Kinesis data stream or firehose permissions will be grant by check options in logDriverConfig.
  * https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_firelens.html#firelens-using-fluentbit
  */
 export function obtainDefaultFluentBitECRImage(task: TaskDefinition, logDriverConfig?: LogDriverConfig, imageTag?: string): ContainerImage {
@@ -163,6 +163,13 @@ export function obtainDefaultFluentBitECRImage(task: TaskDefinition, logDriverCo
     task.addToTaskRolePolicy(new iam.PolicyStatement({
       actions: [
         'firehose:PutRecordBatch',
+      ],
+      resources: ['*']
+    }));
+  } else if (logName === 'kinesis') {
+    task.addToTaskRolePolicy(new iam.PolicyStatement({
+      actions: [
+        'kinesis:PutRecords',
       ],
       resources: ['*']
     }));
