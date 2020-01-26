@@ -232,6 +232,7 @@ export class Pipeline extends PipelineBase {
         bucketName: PhysicalName.GENERATE_IF_NEEDED,
         encryptionKey,
         encryption: s3.BucketEncryption.KMS,
+        blockPublicAccess: new s3.BlockPublicAccess(s3.BlockPublicAccess.BLOCK_ALL),
         removalPolicy: RemovalPolicy.RETAIN
       });
       // add an alias to make finding the key in the console easier
