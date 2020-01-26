@@ -416,7 +416,7 @@ export namespace EmrCreateCluster {
       VolumeSpecification: {
         Iops: cdk.numberToCloudFormation(property.volumeSpecification.iops),
         SizeInGB: cdk.numberToCloudFormation(property.volumeSpecification.sizeInGB),
-        VolumeType: cdk.stringToCloudFormation(property.volumeSpecification.volumeType.valueOf())
+        VolumeType: cdk.stringToCloudFormation(property.volumeSpecification.volumeType?.valueOf())
       },
       VolumesPerInstance: cdk.numberToCloudFormation(property.volumesPerInstance)
     };
@@ -508,7 +508,7 @@ export namespace EmrCreateCluster {
       EbsConfiguration: (property.ebsConfiguration === undefined) ?
         property.ebsConfiguration :
         EbsConfigurationPropertyToJson(property.ebsConfiguration),
-      InstanceType: cdk.stringToCloudFormation(property.instanceType.valueOf()),
+      InstanceType: cdk.stringToCloudFormation(property.instanceType?.valueOf()),
       WeightedCapacity: cdk.numberToCloudFormation(property.weightedCapacity)
     };
   }
@@ -570,7 +570,7 @@ export namespace EmrCreateCluster {
     return {
       SpotSpecification: {
         BlockDurationMinutes: cdk.numberToCloudFormation(property.spotSpecification.blockDurationMinutes),
-        TimeoutAction: cdk.stringToCloudFormation(property.spotSpecification.timeoutAction.valueOf()),
+        TimeoutAction: cdk.stringToCloudFormation(property.spotSpecification.timeoutAction?.valueOf()),
         TimeoutDurationMinutes: cdk.numberToCloudFormation(property.spotSpecification.timeoutDurationMinutes)
       }
     };
@@ -622,7 +622,7 @@ export namespace EmrCreateCluster {
    */
   export function InstanceFleetConfigPropertyToJson(property: InstanceFleetConfigProperty) {
     return {
-      InstanceFleetType: cdk.stringToCloudFormation(property.instanceFleetType.valueOf()),
+      InstanceFleetType: cdk.stringToCloudFormation(property.instanceFleetType?.valueOf()),
       InstanceTypeConfigs: cdk.listMapper(InstanceTypeConfigPropertyToJson)(property.instanceTypeConfigs),
       LaunchSpecifications: (property.launchSpecifications === undefined) ?
         property.launchSpecifications :
@@ -802,7 +802,7 @@ export namespace EmrCreateCluster {
   export function ScalingTriggerPropertyToJson(property: ScalingTriggerProperty) {
     return {
       CloudWatchAlarmDefinition: {
-        ComparisonOperator: cdk.stringToCloudFormation(property.cloudWatchAlarmDefinition.comparisonOperator.valueOf()),
+        ComparisonOperator: cdk.stringToCloudFormation(property.cloudWatchAlarmDefinition.comparisonOperator?.valueOf()),
         Dimensions: cdk.listMapper(MetricDimensionPropertyToJson)(property.cloudWatchAlarmDefinition.dimensions),
         EvaluationPeriods: cdk.numberToCloudFormation(property.cloudWatchAlarmDefinition.evalutionPeriods),
         MetricName: cdk.stringToCloudFormation(property.cloudWatchAlarmDefinition.metricName),
@@ -1069,7 +1069,7 @@ export namespace EmrCreateCluster {
         property.ebsConfiguration :
         EbsConfigurationPropertyToJson(property.ebsConfiguration),
       InstanceCount: cdk.numberToCloudFormation(property.instanceCount),
-      InstanceRole: cdk.stringToCloudFormation(property.instanceRole.valueOf()),
+      InstanceRole: cdk.stringToCloudFormation(property.instanceRole?.valueOf()),
       InstanceType: cdk.stringToCloudFormation(property.instanceType),
       Market: cdk.stringToCloudFormation(property.market?.valueOf()),
       Name: cdk.stringToCloudFormation(property.name)
