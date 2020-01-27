@@ -15,9 +15,8 @@ test('Modify an InstanceFleet with static ClusterId, InstanceFleetName, and Inst
       task: new tasks.EmrModifyInstanceFleetByName({
         clusterId: 'ClusterId',
         instanceFleetName: 'InstanceFleetName',
-        instanceFleetConfiguration: sfn.TaskInput.fromObject({
-          TargetOnDemandCapacity: 2
-        })
+        targetOnDemandCapacity: 2,
+        targetSpotCapacity: 0
       })
     });
 
@@ -41,7 +40,8 @@ test('Modify an InstanceFleet with static ClusterId, InstanceFleetName, and Inst
       ClusterId: 'ClusterId',
       InstanceFleetName: 'InstanceFleetName',
       InstanceFleet: {
-        TargetOnDemandCapacity: 2
+        TargetOnDemandCapacity: 2,
+        TargetSpotCapacity: 0
       }
     },
   });
@@ -53,9 +53,8 @@ test('Modify an InstanceFleet with ClusterId from payload and static InstanceFle
     task: new tasks.EmrModifyInstanceFleetByName({
       clusterId: sfn.TaskInput.fromDataAt('$.ClusterId').value,
       instanceFleetName: 'InstanceFleetName',
-      instanceFleetConfiguration: sfn.TaskInput.fromObject({
-        TargetOnDemandCapacity: 2
-      })
+      targetOnDemandCapacity: 2,
+      targetSpotCapacity: 0
     })
   });
 
@@ -79,7 +78,8 @@ test('Modify an InstanceFleet with ClusterId from payload and static InstanceFle
       'ClusterId.$': '$.ClusterId',
       'InstanceFleetName': 'InstanceFleetName',
       'InstanceFleet': {
-        TargetOnDemandCapacity: 2
+        TargetOnDemandCapacity: 2,
+        TargetSpotCapacity: 0
       }
     },
   });
@@ -91,9 +91,8 @@ test('Modify an InstanceFleet with static ClusterId and InstanceFleetConfigurate
     task: new tasks.EmrModifyInstanceFleetByName({
       clusterId: 'ClusterId',
       instanceFleetName: sfn.TaskInput.fromDataAt('$.InstanceFleetName').value,
-      instanceFleetConfiguration: sfn.TaskInput.fromObject({
-        TargetOnDemandCapacity: 2
-      })
+      targetOnDemandCapacity: 2,
+      targetSpotCapacity: 0
     })
   });
 
@@ -117,19 +116,21 @@ test('Modify an InstanceFleet with static ClusterId and InstanceFleetConfigurate
       'ClusterId': 'ClusterId',
       'InstanceFleetName.$': '$.InstanceFleetName',
       'InstanceFleet': {
-        TargetOnDemandCapacity: 2
+        TargetOnDemandCapacity: 2,
+        TargetSpotCapacity: 0
       }
     },
   });
 });
 
-test('Modify an InstanceFleet with static ClusterId and InstanceFleetName and InstanceFleetConfigurateion from payload', () => {
+test('Modify an InstanceFleet with static ClusterId and InstanceFleetName and Target Capacities from payload', () => {
   // WHEN
   const task = new sfn.Task(stack, 'Task', {
     task: new tasks.EmrModifyInstanceFleetByName({
       clusterId: 'ClusterId',
       instanceFleetName: 'InstanceFleetName',
-      instanceFleetConfiguration: sfn.TaskInput.fromDataAt('$.InstanceFleetConfiguration')
+      targetOnDemandCapacity: sfn.TaskInput.fromDataAt('$.TargetOnDemandCapacity').value,
+      targetSpotCapacity: sfn.TaskInput.fromDataAt('$.TargetSpotCapacity').value
     })
   });
 
@@ -150,9 +151,12 @@ test('Modify an InstanceFleet with static ClusterId and InstanceFleetName and In
     },
     End: true,
     Parameters: {
-      'ClusterId': 'ClusterId',
-      'InstanceFleetName': 'InstanceFleetName',
-      'InstanceFleet.$': '$.InstanceFleetConfiguration'
+      ClusterId: 'ClusterId',
+      InstanceFleetName: 'InstanceFleetName',
+      InstanceFleet: {
+        'TargetOnDemandCapacity.$': '$.TargetOnDemandCapacity',
+        'TargetSpotCapacity.$': '$.TargetSpotCapacity'
+      }
     },
   });
 });

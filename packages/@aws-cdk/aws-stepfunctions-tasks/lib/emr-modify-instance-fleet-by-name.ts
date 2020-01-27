@@ -20,13 +20,22 @@ export interface EmrModifyInstanceFleetByNameProps {
   readonly instanceFleetName: string;
 
   /**
-   * The JSON that you want to provide to your ModifyInstanceFleet call as input.
+   * The target capacity of On-Demand units for the instance fleet.
    *
-   * This uses the same syntax as the ModifyInstanceFleet API.
+   * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_InstanceFleetModifyConfig.html
    *
-   * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_ModifyInstanceFleet.html
+   * @default None
    */
-  readonly instanceFleetConfiguration: sfn.TaskInput;
+  readonly targetOnDemandCapacity?: number;
+
+  /**
+   * The target capacity of Spot units for the instance fleet.
+   *
+   * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_InstanceFleetModifyConfig.html
+   *
+   * @default None
+   */
+  readonly targetSpotCapacity?: number;
 }
 
 /**
@@ -54,7 +63,10 @@ export class EmrModifyInstanceFleetByName implements sfn.IStepFunctionsTask {
       parameters: {
         ClusterId: this.props.clusterId,
         InstanceFleetName: this.props.instanceFleetName,
-        InstanceFleet: this.props.instanceFleetConfiguration.value
+        InstanceFleet: {
+          TargetOnDemandCapacity: this.props.targetOnDemandCapacity,
+          TargetSpotCapacity: this.props.targetSpotCapacity
+        }
       }
     };
   }
