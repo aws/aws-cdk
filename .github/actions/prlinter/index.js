@@ -2,21 +2,28 @@ const core = require('@actions/core');
 const github = require('@actions/github');
 const linter = require('prlint')
 
+const checks = {
+    "MANDATORY_CHANGES": linter.mandatoryChanges
+}
+
+
 async function run() {
+
+    const check = core.getInput('check', {required: true});
 
     const number = github.context.issue.number;
 
     try {
     
-        await linter.mandatoryChanges(number);
+        await checks[check](number);
     
     } catch (error) {
     
         core.setFailed(error.message);
 
         gh = new github.GitHub(process.env.GITHUB_TOKEN);
-        
-        gh.issues.createComment({
+
+        await gh.issues.createComment({
             owner: "aws",
             repo: "aws-cdk",
             issue_number: number,

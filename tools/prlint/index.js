@@ -1,18 +1,10 @@
 const path = require("path")
-const fs = require("fs")
 const GitHub = require("github-api")
 
 const OWNER = "aws"
 const REPO = "aws-cdk"
 
-class ValidationFailed extends Error {
-    constructor(message) {
-        super(message);
-    }    
-}
-
 function createGitHubClient() {
-
     const token = process.env.GITHUB_TOKEN;
 
     if (token) {
@@ -22,25 +14,6 @@ function createGitHubClient() {
     }
     
     return new GitHub({'token': token});
-}
-
-function readNumberFromGithubEvent() {
-
-    // https://help.github.com/en/actions/automating-your-workflow-with-github-actions/using-environment-variables
-
-    github_event = process.env.GITHUB_EVENT_PATH;
-
-    if (!github_event) {
-        throw new Error("GITHUB_EVENT_PATH undefined");
-    }
-
-    number = JSON.parse(fs.readFileSync(github_event)).number
-
-    if (!number) {
-        throw new Error("GitHub Event is not related to a PR");
-    }
-
-    return number;
 }
 
 function isFeature(issue) {
@@ -78,13 +51,6 @@ function fixContainsTest(issue, files) {
 };
 
 async function mandatoryChanges(number) {
-
-    try {
-        number = number ? number : readNumberFromGithubEvent();
-    } catch (err) {
-        throw new Error("Unable to determine PR number: " + err.message 
-            + ". Either pass it as the first argument, or execute from GitHub Actions.");
-    }
 
     const gh = createGitHubClient();
     

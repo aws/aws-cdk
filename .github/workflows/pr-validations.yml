@@ -1,7 +1,7 @@
 # https://octokit.github.io/rest.js
 # https://github.com/actions/toolkit/blob/master/packages/github/src/context.ts
 
-name: PR Validations
+name: PR Linter
 on: pull_request
 
 jobs:
@@ -17,7 +17,7 @@ jobs:
 
       - name: Validate
         uses: ./.github/actions/prlinter
-        with:
-          check: MANDATORY_CHANGES        
+        # with:
+        #   check: MANDATORY_CHANGES        
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
