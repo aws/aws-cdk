@@ -12,6 +12,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v1
 
+      - name: Install packages
+        run: cd .github/actions/prlinter && npm install
+
       - name: Validate
         uses: ./.github/actions/prlinter
         with:
