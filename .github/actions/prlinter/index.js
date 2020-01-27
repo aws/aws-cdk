@@ -40,7 +40,7 @@ async function run() {
         const check = checks[checkType];
 
         if (!check) {
-            throw new Error(`Unsupported check type (${checkType}). Choose one of ${Object.keys(checks)}`)
+            throw new Error(`Unsupported check type '${checkType}'. Choose one of: ${Object.keys(checks)}`)
         }
 
         await runCheck(check);

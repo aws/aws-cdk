@@ -18,6 +18,6 @@ jobs:
       - name: Validate
         uses: ./.github/actions/prlinter
         with:
-          check: MANDATORY_CHANGES2
+          check: MANDATORY_CHANGES
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
