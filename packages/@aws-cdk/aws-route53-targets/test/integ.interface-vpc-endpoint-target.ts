@@ -17,7 +17,8 @@ const interfaceVpcEndpoint = new ec2.InterfaceVpcEndpoint(stack, 'InterfaceEndpo
   vpc,
   service: {
     name: 'com.amazonaws.us-west-2.sms',
-    port: 80
+    port: 80,
+    privateDnsDefault: false
   },
   privateDnsEnabled: false,
   subnets: {

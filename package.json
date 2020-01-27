@@ -14,6 +14,7 @@
   },
   "devDependencies": {
     "conventional-changelog-cli": "^2.0.31",
+    "eslint-plugin-node": "^11.0.0",
     "fs-extra": "^8.1.0",
     "jsii-diff": "^0.21.2",
     "jsii-pacmak": "^0.21.2",
