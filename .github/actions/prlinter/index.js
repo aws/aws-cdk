@@ -14,7 +14,8 @@ async function run() {
     
         core.setFailed(error.message);
 
-        github.issues.createComment({
+        gh = new github.GitHub();
+        gh.issues.createComment({
             owner: "aws",
             repo: "aws-cdk",
             issue_number: number,
