@@ -104,7 +104,7 @@ export enum UserPoolAttribute {
   /**
    * The End-User's time zone
    */
-  TIMEZONE = 'timezone',
+  TIMEZONE = 'zoneinfo',
 
   /**
    * Time the End-User's information was last updated.
