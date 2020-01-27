@@ -6,32 +6,10 @@ const checks = {
     "MANDATORY_CHANGES": linter.mandatoryChanges
 }
 
-async function runCheck(check) {
+async function run() {
 
     const number = github.context.issue.number;
 
-    try {
-    
-        await check(number);
-    
-    } catch (error) {
-    
-        core.setFailed(error.message);
-
-        gh = new github.GitHub(process.env.GITHUB_TOKEN);
-
-        await gh.issues.createComment({
-            owner: "aws",
-            repo: "aws-cdk",
-            issue_number: number,
-            body: `🚫 ${error.message}`
-        });
-    }    
-
-}
-
-
-async function run() {
 
     try {
 
@@ -43,9 +21,26 @@ async function run() {
             throw new Error(`Unsupported check type '${checkType}'. Choose one of: ${Object.keys(checks)}`)
         }
 
-        await runCheck(check);
+        await check(number);
     
     } catch (error) {
+
+        if (error instanceof linter.LinterError) {            
+    
+            // only post a comment if its an actual validation error.
+            // otherwise its probably a bug and we should look at the build log to fix it.
+
+            gh = new github.GitHub(process.env.GITHUB_TOKEN);
+    
+            await gh.issues.createComment({
+                owner: "aws",
+                repo: "aws-cdk",
+                issue_number: number,
+                body: `🚫 ${error.message}`
+            });
+    
+        } 
+
         core.setFailed(error.message);
     }
 
