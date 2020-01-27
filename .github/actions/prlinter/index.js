@@ -6,16 +6,13 @@ const checks = {
     "MANDATORY_CHANGES": linter.mandatoryChanges
 }
 
-
-async function run() {
-
-    const check = core.getInput('check', {required: true});
+async function runCheck(check) {
 
     const number = github.context.issue.number;
 
     try {
     
-        await checks[check](number);
+        await check(number);
     
     } catch (error) {
     
@@ -30,6 +27,28 @@ async function run() {
             body: `🚫 ${error.message}`
         });
     }    
+
+}
+
+
+async function run() {
+
+    try {
+
+        const checkType = core.getInput('check', {required: true});
+
+        const check = checks[checkType];
+
+        if (!check) {
+            throw new Error(`Unsupported check type (${checkType}). Choose one of ${Object.keys(checks)}`)
+        }
+
+        await runCheck(check);
+    
+    } catch (error) {
+        core.setFailed(error.message);
+    }
+
 }
 
 run()
