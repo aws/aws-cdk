@@ -5,7 +5,7 @@ const GitHub = require("github-api")
 const OWNER = "aws"
 const REPO = "aws-cdk"
 
-class ValidationFailed extends Error {
+export class ValidationFailed extends Error {
     constructor(message) {
         super(message);
     }    
@@ -77,7 +77,7 @@ function fixContainsTest(issue, files) {
     };
 };
 
-async function mandatoryChanges(number) {
+export async function mandatoryChanges(number) {
 
     try {
         number = number ? number : readNumberFromGithubEvent();
@@ -86,45 +86,26 @@ async function mandatoryChanges(number) {
             + ". Either pass it as the first argument, or execute from GitHub Actions.");
     }
     
-    try {
-
-        const gh = createGitHubClient();
-        
-        const issues = gh.getIssues(OWNER, REPO);
-        const repo = gh.getRepo(OWNER, REPO);
-        
-        console.log(`⌛  Fetching PR number ${number}`)
-        const issue = (await issues.getIssue(number)).data;
-
-        console.log(`⌛  Fetching files for PR number ${number}`)
-        const files = (await repo.listPullRequestFiles(number)).data;
-
-        console.log("⌛  Validating...");
-
-        featureContainsReadme(issue, files);
-        featureContainsTest(issue, files);
-        fixContainsTest(issue, files);
+    const gh = createGitHubClient();
     
-        console.log("✅  Success")
-        
-    } catch (err) {
-        
-        if (err instanceof ValidationFailed) {
-            console.log("❌ Vadlidation failed: " + err.message);
-        } else {
-            console.log("❌ Unable to validate: " + err.message);
-            console.log(err.stack)
-        }
-        
-        process.exit(1);
-    }
+    const issues = gh.getIssues(OWNER, REPO);
+    const repo = gh.getRepo(OWNER, REPO);
+    
+    console.log(`⌛  Fetching PR number ${number}`)
+    const issue = (await issues.getIssue(number)).data;
 
-}
+    console.log(`⌛  Fetching files for PR number ${number}`)
+    const files = (await repo.listPullRequestFiles(number)).data;
 
-// this is necessary so that 'make-runnable' will make this function
-// runnable from the command line.
-module.exports.mandatoryChanges = async function(number) {
-    await mandatoryChanges(number);
+    console.log("⌛  Validating...");
+
+    featureContainsReadme(issue, files);
+    featureContainsTest(issue, files);
+    fixContainsTest(issue, files);
+
+    console.log("✅  Success")
+        
+
 }
 
 require('make-runnable/custom')({
