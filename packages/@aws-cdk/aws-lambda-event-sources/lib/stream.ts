@@ -47,8 +47,11 @@ export interface StreamEventSourceProps {
 
   /**
    * Maximum number of retry attempts
+   * Valid Range:
+   * * Minimum value of 0
+   * * Maximum value of 10000
    *
-   * @default todoNumber
+   * @default 10000
    */
   readonly maximumRetryAttempts?: number;
 

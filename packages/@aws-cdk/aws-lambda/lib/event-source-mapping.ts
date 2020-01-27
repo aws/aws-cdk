@@ -31,7 +31,7 @@ export interface EventSourceMappingOptions {
   /**
    * An Amazon SQS queue or Amazon SNS topic destination for discarded records.
    *
-   * @default discard records are ignored
+   * @default discarded records are ignored
    */
   readonly destinationConfig?: CfnEventSourceMapping.DestinationConfigProperty | cdk.IResolvable | undefined;
 
@@ -73,7 +73,9 @@ export interface EventSourceMappingOptions {
   /**
    * The maximum number of times to retry when the function returns an error.
    *
-   * Valid Range: Minimum value of 0. Maximum value of 10000.
+   * Valid Range: 
+   * * Minimum value of 0
+   * * Maximum value of 10000
    *
    * @default 10000
    */
