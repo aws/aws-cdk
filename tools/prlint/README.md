@@ -39,3 +39,6 @@ Error: Features must contain a change to a README file
     at Object.mandatoryChanges (/Users/epolon/dev/src/github.com/aws/aws-cdk/tools/prlint/index.js:74:5)
     at process._tickCallback (internal/process/next_tick.js:68:7)
 ```
+
+Note that an **un-authenticated** GitHub client is created, unless you set the `GITHUB_TOKEN` env variable.
+

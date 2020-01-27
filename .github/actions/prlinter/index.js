@@ -7,9 +7,7 @@ const checks = {
 }
 
 async function run() {
-
     const number = github.context.issue.number;
-
 
     try {
 
