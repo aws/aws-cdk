@@ -299,14 +299,21 @@ export class EmrCreateCluster implements sfn.IStepFunctionsTask {
   }
 
   /**
-   * Generate the Role used by the EC2 instances
+   * Generate the Role and Instance Profile used by the EC2 instances
    *
    * Data access permissions will need to be updated by the user
    */
   private createClusterRole(task: sfn.Task): iam.IRole {
-    return new iam.Role(task, 'InstanceRole', {
+    const role = new iam.Role(task, 'InstanceRole', {
       assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
     });
+
+    new iam.CfnInstanceProfile(task, 'InstanceProfile', {
+      roles: [ role.roleName ],
+      instanceProfileName: role.roleName
+    });
+
+    return role;
   }
 
   /**
