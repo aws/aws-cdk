@@ -423,11 +423,9 @@ export abstract class BaseService extends Resource
    *
    * service.registerLoadBalancerTargets(
    *   {
-   *     containerTarget: {
-   *       containerName: 'web',
-   *       containerPort: 80,
-   *     },
-   *     targetGroupId: 'ECS',
+   *     containerName: 'web',
+   *     containerPort: 80,
+   *     newTargetGroupId: 'ECS',
    *     listener: ecs.ListenerConfig.applicationListener(listener, {
    *       protocol: elbv2.ApplicationProtocol.HTTPS
    *     }),

@@ -34,7 +34,6 @@ export interface DeployStackOptions {
   notificationArns?: string[];
   deployName?: string;
   quiet?: boolean;
-  ci?: boolean;
   reuseAssets?: string[];
   tags?: Tag[];
 
@@ -53,7 +52,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     throw new Error(`The stack ${options.stack.displayName} does not have an environment`);
   }
 
-  const params = await prepareAssets(options.stack, options.toolkitInfo, options.ci, options.reuseAssets);
+  const params = await prepareAssets(options.stack, options.toolkitInfo, options.reuseAssets);
 
   const deployName = options.deployName || options.stack.stackName;
 

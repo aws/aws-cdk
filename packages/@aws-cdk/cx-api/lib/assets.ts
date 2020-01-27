@@ -78,20 +78,35 @@ export interface ContainerImageAssetMetadataEntry extends BaseAssetMetadataEntry
   readonly packaging: 'container-image';
 
   /**
-   * ECR Repository name and repo digest (separated by "@sha256:") where this image is stored.
+   * ECR Repository name and repo digest (separated by "@sha256:") where this
+   * image is stored.
+   *
+   * @default undefined If not specified, `repositoryName` and `imageTag` are
+   * required because otherwise how will the stack know where to find the asset,
+   * ha?
+   * @deprecated specify `repositoryName` and `imageTag` instead, and then you
+   * know where the image will go.
    */
-  readonly imageNameParameter: string;
+  readonly imageNameParameter?: string;
 
   /**
-   * ECR repository name, if omitted a default name based on the asset's
-   * ID is used instead. Specify this property if you need to statically
-   * address the image, e.g. from a Kubernetes Pod.
-   * Note, this is only the repository name, without the registry and
-   * the tag parts.
+   * ECR repository name, if omitted a default name based on the asset's ID is
+   * used instead. Specify this property if you need to statically address the
+   * image, e.g. from a Kubernetes Pod. Note, this is only the repository name,
+   * without the registry and the tag parts.
    *
-   * @default automatically derived from the asset's ID.
+   * @default - this parameter is REQUIRED after 1.21.0
    */
   readonly repositoryName?: string;
+
+  /**
+   * The docker image tag to use for tagging pushed images. This field is
+   * required if `imageParameterName` is ommited (otherwise, the app won't be
+   * able to find the image).
+   *
+   * @default - this parameter is REQUIRED after 1.21.0
+   */
+  readonly imageTag?: string;
 
   /**
    * Build args to pass to the `docker build` command

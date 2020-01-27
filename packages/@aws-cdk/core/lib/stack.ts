@@ -6,7 +6,7 @@ import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation , F
 import { Construct, ConstructNode, IConstruct, ISynthesisSession } from './construct';
 import { ContextProvider } from './context-provider';
 import { Environment } from './environment';
-import { DockerImageAssetParameters, FileAssetParameters } from './private/asset-parameters';
+import { FileAssetParameters } from './private/asset-parameters';
 import { CLOUDFORMATION_TOKEN_RESOLVER, CloudFormationLang } from './private/cloudformation-lang';
 import { LogicalIDs } from './private/logical-id';
 import { findTokens , resolve } from './private/resolve';
@@ -16,6 +16,21 @@ const STACK_SYMBOL = Symbol.for('@aws-cdk/core.Stack');
 const MY_STACK_CACHE = Symbol.for('@aws-cdk/core.Stack.myStack');
 
 const VALID_STACK_NAME_REGEX = /^[A-Za-z][A-Za-z0-9-]*$/;
+
+/**
+ * The well-known name for the docker image asset ECR repository. All docker
+ * image assets will be pushed into this repository with an image tag based on
+ * the source hash.
+ */
+const ASSETS_ECR_REPOSITORY_NAME = "aws-cdk/assets";
+
+/**
+ * This allows users to work around the fact that the ECR repository is
+ * (currently) not configurable by setting this context key to their desired
+ * repository name. The CLI will auto-create this ECR repository if it's not
+ * already created.
+ */
+const ASSETS_ECR_REPOSITORY_NAME_OVERRIDE_CONTEXT_KEY = "assets-ecr-repository-name";
 
 export interface StackProps {
   /**
@@ -219,6 +234,12 @@ export class Stack extends Construct implements ITaggable {
 
   private _templateUrl?: string;
   private readonly _stackName: string;
+
+  /**
+   * The image ID of all the docker image assets that were already added to this
+   * stack (to avoid duplication).
+   */
+  private readonly addedImageAssets = new Set<string>();
 
   /**
    * Creates a new stack.
@@ -551,34 +572,33 @@ export class Stack extends Construct implements ITaggable {
       return this.nestedStackParent.addDockerImageAsset(asset);
     }
 
-    let params = this.assetParameters.node.tryFindChild(asset.sourceHash) as DockerImageAssetParameters;
-    if (!params) {
-      params = new DockerImageAssetParameters(this.assetParameters, asset.sourceHash);
+    // check if we have an override from context
+    const repositoryNameOverride = this.node.tryGetContext(ASSETS_ECR_REPOSITORY_NAME_OVERRIDE_CONTEXT_KEY);
+    const repositoryName = asset.repositoryName ?? repositoryNameOverride ?? ASSETS_ECR_REPOSITORY_NAME;
+    const imageTag = asset.sourceHash;
+    const assetId = asset.sourceHash;
 
+    // only add every image (identified by source hash) once for each stack that uses it.
+    if (!this.addedImageAssets.has(assetId)) {
       const metadata: cxapi.ContainerImageAssetMetadataEntry = {
-        id: asset.sourceHash,
+        repositoryName,
+        imageTag,
+        id: assetId,
         packaging: 'container-image',
         path: asset.directoryName,
         sourceHash: asset.sourceHash,
-        imageNameParameter: params.imageNameParameter.logicalId,
-        repositoryName: asset.repositoryName,
         buildArgs: asset.dockerBuildArgs,
         target: asset.dockerBuildTarget,
         file: asset.dockerFile,
       };
 
       this.node.addMetadata(cxapi.ASSET_METADATA, metadata);
+      this.addedImageAssets.add(assetId);
     }
 
-    // Parse repository name and tag from the parameter (<REPO_NAME>@sha256:<TAG>)
-    // Example: cdk/cdkexampleimageb2d7f504@sha256:72c4f956379a43b5623d529ddd969f6826dde944d6221f445ff3e7add9875500
-    const components = Fn.split('@sha256:', params.imageNameParameter.valueAsString);
-    const repositoryName = Fn.select(0, components).toString();
-    const imageSha = Fn.select(1, components).toString();
-    const imageUri = `${this.account}.dkr.ecr.${this.region}.${this.urlSuffix}/${repositoryName}@sha256:${imageSha}`;
-
     return {
-      imageUri, repositoryName
+      imageUri: `${this.account}.dkr.ecr.${this.region}.${this.urlSuffix}/${repositoryName}:${imageTag}`,
+      repositoryName
     };
   }
 
