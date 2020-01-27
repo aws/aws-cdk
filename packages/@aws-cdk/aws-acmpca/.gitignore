@@ -9,6 +9,7 @@ dist
 .jsii
 
 .LAST_BUILD
+nyc.config.js
 .nyc_output
 coverage
 .nycrc

@@ -22,15 +22,15 @@
         }
       },
       "python": {
-        "distName": "aws-cdk.acmpca",
-        "module": "aws_cdk.acmpca"
+        "distName": "aws-cdk.aws-acmpca",
+        "module": "aws_cdk.aws_acmpca"
       }
     }
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git",
-    "directory": "packages/@aws-cdk/@aws-cdk/aws-acmpca"
+    "directory": "packages/@aws-cdk/aws-acmpca"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "scripts": {
@@ -71,7 +71,13 @@
         "branches": 60,
         "statements": 80
       }
-    }
+    },
+    "collectCoverage": true,
+    "coverageReporters": [
+      "lcov",
+      "html",
+      "text-summary"
+    ]
   },
   "license": "Apache-2.0",
   "devDependencies": {
