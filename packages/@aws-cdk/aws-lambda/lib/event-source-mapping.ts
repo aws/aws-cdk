@@ -68,12 +68,12 @@ export interface EventSourceMappingOptions {
    *
    * @default 604800
    */
-  readonly maximumRecordAgeInSeconds?: number;
+  readonly maximumRecordAge?: cdk.Duration;
 
   /**
    * The maximum number of times to retry when the function returns an error.
    *
-   * Valid Range: 
+   * Valid Range:
    * * Minimum value of 0
    * * Maximum value of 10000
    *
@@ -119,8 +119,8 @@ export class EventSourceMapping extends cdk.Resource {
       throw new Error(`maxBatchingWindow cannot be over 300 seconds, got ${props.maxBatchingWindow.toSeconds()}`);
     }
 
-    if (props.maximumRecordAgeInSeconds && (props.maximumRecordAgeInSeconds < 60 || props.maximumRecordAgeInSeconds > 604800)) {
-      throw new Error(`maximumRecordAgeInSeconds must be between 60 and 604800 inclusive, got ${props.maximumRecordAgeInSeconds}`);
+    if (props.maximumRecordAge && (props.maximumRecordAge.toSeconds() < 60 || props.maximumRecordAge.toSeconds() > 604800)) {
+      throw new Error(`maximumRecordAge must be between 60 and 604800 seconds inclusive, got ${props.maximumRecordAge.toSeconds()}`);
     }
 
     if (props.maximumRetryAttempts && (props.maximumRetryAttempts < 0 || props.maximumRetryAttempts > 10000)) {
@@ -140,7 +140,7 @@ export class EventSourceMapping extends cdk.Resource {
       functionName: props.target.functionName,
       startingPosition: props.startingPosition,
       maximumBatchingWindowInSeconds: props.maxBatchingWindow && props.maxBatchingWindow.toSeconds(),
-      maximumRecordAgeInSeconds: props.maximumRecordAgeInSeconds,
+      maximumRecordAgeInSeconds: props.maximumRecordAge && props.maximumRecordAge.toSeconds(),
       maximumRetryAttempts: props.maximumRetryAttempts,
       parallelizationFactor: props.parallelizationFactor
     });

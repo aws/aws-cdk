@@ -43,7 +43,7 @@ export interface StreamEventSourceProps {
    *
    * @default 604800
    */
-  readonly maximumRecordAgeInSeconds?: number;
+  readonly maximumRecordAge?: Duration;
 
   /**
    * Maximum number of retry attempts
@@ -95,7 +95,7 @@ export abstract class StreamEventSource implements lambda.IEventSource {
       bisectBatchOnFunctionError: this.props.bisectBatchOnFunctionError,
       startingPosition: this.props.startingPosition,
       maxBatchingWindow: this.props.maxBatchingWindow,
-      maximumRecordAgeInSeconds: this.props.maximumRecordAgeInSeconds,
+      maximumRecordAge: this.props.maximumRecordAge,
       maximumRetryAttempts: this.props.maximumRetryAttempts,
       parallelizationFactor: this.props.parallelizationFactor,
       destinationConfig: this.props.destinationConfig

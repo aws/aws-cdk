@@ -441,7 +441,7 @@ export = {
 
     // WHEN
     fn.addEventSource(new sources.DynamoEventSource(table, {
-      maximumRecordAgeInSeconds: 100,
+      maximumRecordAge: cdk.Duration.seconds(100),
       startingPosition: lambda.StartingPosition.LATEST
     }));
 
@@ -478,9 +478,9 @@ export = {
     // THEN
     test.throws(() =>
       fn.addEventSource(new sources.DynamoEventSource(table, {
-        maximumRecordAgeInSeconds: 59,
+        maximumRecordAge: cdk.Duration.seconds(59),
         startingPosition: lambda.StartingPosition.LATEST
-      })), /maximumRecordAgeInSeconds must be between 60 and 604800 inclusive, got 59/);
+      })), /maximumRecordAge must be between 60 and 604800 seconds inclusive, got 59/);
 
     test.done();
   },
@@ -500,9 +500,9 @@ export = {
     // THEN
     test.throws(() =>
       fn.addEventSource(new sources.DynamoEventSource(table, {
-        maximumRecordAgeInSeconds: 604801,
+        maximumRecordAge: cdk.Duration.seconds(604801),
         startingPosition: lambda.StartingPosition.LATEST
-      })), /maximumRecordAgeInSeconds must be between 60 and 604800 inclusive, got 604801/);
+      })), /maximumRecordAge must be between 60 and 604800 seconds inclusive, got 604801/);
 
     test.done();
   },
