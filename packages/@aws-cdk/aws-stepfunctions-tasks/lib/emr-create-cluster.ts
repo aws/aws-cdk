@@ -201,7 +201,15 @@ export class EmrCreateCluster implements sfn.IStepFunctionsTask {
     // If the Roles are undefined then they weren't provided, so create them
     this._serviceRole = this._serviceRole || this.createServiceRole(task);
     this._clusterRole = this._clusterRole || this.createClusterRole(task);
-    this._autoScalingRole = this._autoScalingRole || this.createAutoScalingRole(task);
+
+    // AutoScaling roles are not valid with InstanceFleet clusters.
+    // Attempt to create only if .instances.instanceFleets is undefined or empty
+    if (this.props.instances.instanceFleets === undefined || this.props.instances.instanceFleets.length === 0) {
+      this._autoScalingRole = this._autoScalingRole || this.createAutoScalingRole(task);
+    // If InstanceFleets are used and an AutoScaling Role is specified, throw an error
+    } else if (this._autoScalingRole !== undefined) {
+      throw new Error('Auto Scaling roles can not be specified with instance fleets.');
+    }
 
     return {
       resourceArn: getResourceArn('elasticmapreduce', 'createCluster', this.integrationPattern),
@@ -213,7 +221,7 @@ export class EmrCreateCluster implements sfn.IStepFunctionsTask {
         ServiceRole: cdk.stringToCloudFormation(this._serviceRole.roleName),
         AdditionalInfo: cdk.stringToCloudFormation(this.props.additionalInfo),
         Applications: cdk.listMapper(EmrCreateCluster.ApplicationConfigPropertyToJson)(this.props.applications),
-        AutoScalingRole: cdk.stringToCloudFormation(this._autoScalingRole.roleName),
+        AutoScalingRole: cdk.stringToCloudFormation(this._autoScalingRole?.roleName),
         BootstrapActions: cdk.listMapper(EmrCreateCluster.BootstrapActionConfigToJson)(this.props.bootstrapActions),
         Configurations: cdk.listMapper(EmrCreateCluster.ConfigurationPropertyToJson)(this.props.configurations),
         CustomAmiId: cdk.stringToCloudFormation(this.props.customAmiId),
@@ -235,7 +243,7 @@ export class EmrCreateCluster implements sfn.IStepFunctionsTask {
    * This generates the PolicyStatements required by the Task to call CreateCluster.
    */
   private createPolicyStatements(task: sfn.Task, serviceRole: iam.IRole, clusterRole: iam.IRole,
-                                 autoScalingRole: iam.IRole): iam.PolicyStatement[] {
+                                 autoScalingRole?: iam.IRole): iam.PolicyStatement[] {
     const stack = cdk.Stack.of(task);
 
     const policyStatements = [
@@ -254,10 +262,15 @@ export class EmrCreateCluster implements sfn.IStepFunctionsTask {
       actions: ['iam:PassRole'],
       resources: [
         serviceRole.roleArn,
-        clusterRole.roleArn,
-        autoScalingRole.roleArn
+        clusterRole.roleArn
       ]
     }));
+    if (autoScalingRole !== undefined) {
+      policyStatements.push(new iam.PolicyStatement({
+        actions: ['iam:PassRole'],
+        resources: [ autoScalingRole.roleName ]
+      }));
+    }
 
     if (this.integrationPattern === sfn.ServiceIntegrationPattern.SYNC) {
       policyStatements.push(new iam.PolicyStatement({

@@ -686,7 +686,6 @@ test('Create Cluster with InstanceFleet', () => {
     clusterRole,
     name: 'Cluster',
     serviceRole,
-    autoScalingRole,
     integrationPattern: sfn.ServiceIntegrationPattern.FIRE_AND_FORGET
   }) });
 
@@ -753,9 +752,6 @@ test('Create Cluster with InstanceFleet', () => {
       },
       ServiceRole: {
         Ref: 'ServiceRole4288B192'
-      },
-      AutoScalingRole: {
-        Ref: 'AutoScalingRole015ADA0A'
       }
     },
   });
