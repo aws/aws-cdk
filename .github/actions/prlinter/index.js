@@ -1,6 +1,6 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
-const linter = require('../../../tools/prlint/pr-validations')
+const linter = require('prlint')
 
 try {
     linter.mandatoryChanges(github.context.issue.number);
