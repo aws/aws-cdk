@@ -26,7 +26,7 @@ export interface EmrModifyInstanceFleetByNameProps {
    *
    * @default None
    */
-  readonly targetOnDemandCapacity?: number;
+  readonly targetOnDemandCapacity: number;
 
   /**
    * The target capacity of Spot units for the instance fleet.
@@ -35,7 +35,7 @@ export interface EmrModifyInstanceFleetByNameProps {
    *
    * @default None
    */
-  readonly targetSpotCapacity?: number;
+  readonly targetSpotCapacity: number;
 }
 
 /**
