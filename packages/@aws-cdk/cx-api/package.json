@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/cx-api",
-  "version": "1.21.1",
+  "version": "1.22.0",
   "description": "Cloud executable protocol",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -68,9 +68,9 @@
   "devDependencies": {
     "@types/jest": "^24.9.0",
     "@types/semver": "^6.2.0",
-    "cdk-build-tools": "1.21.1",
+    "cdk-build-tools": "1.22.0",
     "jest": "^24.9.0",
-    "pkglint": "1.21.1"
+    "pkglint": "1.22.0"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
