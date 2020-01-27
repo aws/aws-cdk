@@ -27,15 +27,6 @@ new glue.Database(stack, 'MyDatabase', {
 });
 ```
 
-By default, a S3 bucket is created and the Database is stored under  `s3://<bucket-name>/`, but you can manually specify another location:
-
-```ts
-new glue.Database(stack, 'MyDatabase', {
-  databaseName: 'my_database',
-  locationUri: 's3://explicit-bucket/some-path/'
-});
-```
-
 ### Table
 
 A Glue table describes a table of data in S3: its structure (column names and types), location of data (S3 objects with a common prefix in a S3 bucket), and format for the files (Json, Avro, Parquet, etc.):
