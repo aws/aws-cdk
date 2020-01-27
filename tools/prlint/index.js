@@ -58,6 +58,10 @@ function fixContainsTest(issue, files) {
 
 async function mandatoryChanges(number) {
 
+    if (!number) {
+        throw new Error('Must provide a PR number')
+    }
+
     const gh = createGitHubClient();
     
     const issues = gh.getIssues(OWNER, REPO);
