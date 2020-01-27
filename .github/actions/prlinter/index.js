@@ -10,7 +10,7 @@ try {
 
     console.log('Validating...');
 
-    linter.mandatoryChanges(github.context.issue.number);
+    await linter.mandatoryChanges(github.context.issue.number);
 
     console.log('Success!')
 
