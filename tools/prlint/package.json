@@ -2,7 +2,7 @@
   "name": "prlint",
   "version": "0.0.1",
   "description": "",
-  "main": "pr-validations.js",
+  "main": "index.js",
   "keywords": [],  
   "author": {
     "name": "Amazon Web Services",
