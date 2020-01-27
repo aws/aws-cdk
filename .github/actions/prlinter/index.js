@@ -4,26 +4,22 @@ const linter = require('prlint')
 
 async function run() {
 
-    try {
+    const number = github.context.issue.number;
 
-        const number = github.context.issue.number;
+    try {
     
-        console.log(`PR: ${number}`);
-    
-        console.log('Validating...');
-    
-        await linter.mandatoryChanges(github.context.issue.number);
-    
-        console.log('Success!')
-    
+        await linter.mandatoryChanges(number);
     
     } catch (error) {
     
-        console.log(`Failed: ${error.message}`)
-    
         core.setFailed(error.message);
-    
-        console.log('Set Failed')
+
+        github.issues.createComment({
+            owner: "aws",
+            repo: "aws-cdk",
+            issue_number: number,
+            body: `🚫 ${error.message}`
+        });
     }    
 }
 
