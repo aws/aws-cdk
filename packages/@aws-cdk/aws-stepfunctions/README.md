@@ -110,6 +110,7 @@ are supported:
 * `Parallel`
 * `Succeed`
 * `Fail`
+* `Map`
 
 An arbitrary JSON object (specified at execution start) is passed from state to
 state and transformed during the execution of the workflow. For more
