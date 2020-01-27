@@ -39,7 +39,7 @@ const submitJob = new sfn.Task(this, 'Submit Job', {
 });
 
 const waitX = new sfn.Wait(this, 'Wait X Seconds', {
-    duration: sfn.WaitDuration.secondsPath('$.wait_time'),
+    duration: sfn.WaitTime.secondsPath('$.waitSeconds'),
 });
 
 const getStatus = new sfn.Task(this, 'Get Job Status', {
