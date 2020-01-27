@@ -199,7 +199,11 @@
       "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.EmrCreateClusterProps.visibleToAllUsers",
       "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.EmrCreateCluster.*",
       "docs-public-apis:@aws-cdk/aws-stepfunctions-tasks.EmrCreateCluster.*",
-      "duration-prop-type:@aws-cdk/aws-stepfunctions-tasks.EmrCreateCluster.CloudWatchAlarmDefinitionProperty.period"
+      "duration-prop-type:@aws-cdk/aws-stepfunctions-tasks.EmrCreateCluster.CloudWatchAlarmDefinitionProperty.period",
+      "props-default-doc:@aws-cdk/aws-stepfunctions-tasks.EmrModifyInstanceGroupByName.*",
+      "docs-public-apis:@aws-cdk/aws-stepfunctions-tasks.EmrModifyInstanceGroupByName.*",
+      "duration-prop-type:@aws-cdk/aws-stepfunctions-tasks.EmrModifyInstanceGroupByName.InstanceResizePolicyProperty.instanceTerminationTimeout",
+      "duration-prop-type:@aws-cdk/aws-stepfunctions-tasks.EmrModifyInstanceGroupByName.ShrinkPolicyProperty.decommissionTimeout"
     ]
   }
 }

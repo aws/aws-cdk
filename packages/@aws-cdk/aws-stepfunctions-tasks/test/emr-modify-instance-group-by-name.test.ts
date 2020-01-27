@@ -9,15 +9,30 @@ beforeEach(() => {
   stack = new cdk.Stack();
 });
 
-test('Modify an InstanceGroup with static ClusterId, InstanceGroupName, and InstanceGroupConfiguration', () => {
+test('Modify an InstanceGroup with static ClusterId, InstanceGroupName, and InstanceGroup', () => {
   // WHEN
   const task = new sfn.Task(stack, 'Task', {
       task: new tasks.EmrModifyInstanceGroupByName({
         clusterId: 'ClusterId',
         instanceGroupName: 'InstanceGroupName',
-        instanceGroupConfiguration: sfn.TaskInput.fromObject({
-          InstanceCount: 2
-        })
+        instanceGroup: {
+          configurations: [{
+            classification: 'Classification',
+            properties: {
+              Key: 'Value'
+            }
+          }],
+          eC2InstanceIdsToTerminate: ['InstanceToTerminate'],
+          instanceCount: 1,
+          shrinkPolicy: {
+            decommissionTimeout: 1,
+            instanceResizePolicy: {
+              instanceTerminationTimeout: 1,
+              instancesToProtect: ['InstanceToProtect'],
+              instancesToTerminate: ['InstanceToTerminate']
+            }
+          }
+        }
       })
     });
 
@@ -41,9 +56,24 @@ test('Modify an InstanceGroup with static ClusterId, InstanceGroupName, and Inst
       ClusterId: 'ClusterId',
       InstanceGroupName: 'InstanceGroupName',
       InstanceGroup: {
-        InstanceCount: 2
+        Configurations: [{
+          Classification: 'Classification',
+          Properties: {
+            Key: 'Value'
+          }
+        }],
+        EC2InstanceIdsToTerminate: ['InstanceToTerminate'],
+        InstanceCount: 1,
+        ShrinkPolicy: {
+          DecommissionTimeout: 1,
+          InstanceResizePolicy: {
+            InstanceTerminationTimeout: 1,
+            InstancesToProtect: ['InstanceToProtect'],
+            InstancesToTerminate: ['InstanceToTerminate']
+          }
+        }
       }
-    },
+    }
   });
 });
 
@@ -51,11 +81,11 @@ test('Modify an InstanceGroup with ClusterId from payload and static InstanceGro
   // WHEN
   const task = new sfn.Task(stack, 'Task', {
     task: new tasks.EmrModifyInstanceGroupByName({
-      clusterId: sfn.TaskInput.fromDataAt('$.ClusterId').value,
+      clusterId: sfn.Data.stringAt('$.ClusterId'),
       instanceGroupName: 'InstanceGroupName',
-      instanceGroupConfiguration: sfn.TaskInput.fromObject({
-        InstanceCount: 2
-      })
+      instanceGroup: {
+        instanceCount: 1
+      }
     })
   });
 
@@ -79,9 +109,9 @@ test('Modify an InstanceGroup with ClusterId from payload and static InstanceGro
       'ClusterId.$': '$.ClusterId',
       'InstanceGroupName': 'InstanceGroupName',
       'InstanceGroup': {
-        InstanceCount: 2
+        InstanceCount: 1
       }
-    },
+    }
   });
 });
 
@@ -90,10 +120,10 @@ test('Modify an InstanceGroup with static ClusterId and InstanceGroupConfigurate
   const task = new sfn.Task(stack, 'Task', {
     task: new tasks.EmrModifyInstanceGroupByName({
       clusterId: 'ClusterId',
-      instanceGroupName: sfn.TaskInput.fromDataAt('$.InstanceGroupName').value,
-      instanceGroupConfiguration: sfn.TaskInput.fromObject({
-        InstanceCount: 2
-      })
+      instanceGroupName: sfn.Data.stringAt('$.InstanceGroupName'),
+      instanceGroup: {
+        instanceCount: 1
+      }
     })
   });
 
@@ -117,19 +147,21 @@ test('Modify an InstanceGroup with static ClusterId and InstanceGroupConfigurate
       'ClusterId': 'ClusterId',
       'InstanceGroupName.$': '$.InstanceGroupName',
       'InstanceGroup': {
-        InstanceCount: 2
+        InstanceCount: 1
       }
     },
   });
 });
 
-test('Modify an InstanceGroup with static ClusterId and InstanceGroupName and InstanceGroupConfigurateion from payload', () => {
+test('Modify an InstanceGroup with static ClusterId and InstanceGroupName and InstanceCount from payload', () => {
   // WHEN
   const task = new sfn.Task(stack, 'Task', {
     task: new tasks.EmrModifyInstanceGroupByName({
       clusterId: 'ClusterId',
       instanceGroupName: 'InstanceGroupName',
-      instanceGroupConfiguration: sfn.TaskInput.fromDataAt('$.InstanceGroupConfiguration')
+      instanceGroup: {
+        instanceCount: sfn.Data.numberAt('$.InstanceCount')
+      }
     })
   });
 
@@ -150,9 +182,11 @@ test('Modify an InstanceGroup with static ClusterId and InstanceGroupName and In
     },
     End: true,
     Parameters: {
-      'ClusterId': 'ClusterId',
-      'InstanceGroupName': 'InstanceGroupName',
-      'InstanceGroup.$': '$.InstanceGroupConfiguration'
+      ClusterId: 'ClusterId',
+      InstanceGroupName: 'InstanceGroupName',
+      InstanceGroup: {
+        'InstanceCount.$': '$.InstanceCount'
+      }
     },
   });
 });
