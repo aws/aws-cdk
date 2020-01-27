@@ -51,7 +51,7 @@ test('Modify an InstanceFleet with ClusterId from payload and static InstanceFle
   // WHEN
   const task = new sfn.Task(stack, 'Task', {
     task: new tasks.EmrModifyInstanceFleetByName({
-      clusterId: sfn.TaskInput.fromDataAt('$.ClusterId').value,
+      clusterId: sfn.Data.stringAt('$.ClusterId'),
       instanceFleetName: 'InstanceFleetName',
       targetOnDemandCapacity: 2,
       targetSpotCapacity: 0
@@ -90,7 +90,7 @@ test('Modify an InstanceFleet with static ClusterId and InstanceFleetConfigurate
   const task = new sfn.Task(stack, 'Task', {
     task: new tasks.EmrModifyInstanceFleetByName({
       clusterId: 'ClusterId',
-      instanceFleetName: sfn.TaskInput.fromDataAt('$.InstanceFleetName').value,
+      instanceFleetName: sfn.Data.stringAt('$.InstanceFleetName'),
       targetOnDemandCapacity: 2,
       targetSpotCapacity: 0
     })
@@ -129,8 +129,8 @@ test('Modify an InstanceFleet with static ClusterId and InstanceFleetName and Ta
     task: new tasks.EmrModifyInstanceFleetByName({
       clusterId: 'ClusterId',
       instanceFleetName: 'InstanceFleetName',
-      targetOnDemandCapacity: sfn.TaskInput.fromDataAt('$.TargetOnDemandCapacity').value,
-      targetSpotCapacity: sfn.TaskInput.fromDataAt('$.TargetSpotCapacity').value
+      targetOnDemandCapacity: sfn.Data.numberAt('$.TargetOnDemandCapacity'),
+      targetSpotCapacity: sfn.Data.numberAt('$.TargetSpotCapacity')
     })
   });
 
