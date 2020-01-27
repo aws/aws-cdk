@@ -1,9 +1,9 @@
-import { getInput, setOutput, setFailed } from '@actions/core';
-import { context } from '@actions/github';
-import mandatoryChanges from '../../../tools/prlint/pr-validations'
+const core = require('@actions/core');
+const github = require('@actions/github');
+const linter = require('../../../tools/prlint/pr-validations')
 
 try {
-    mandatoryChanges(github.context.issue.number);
+    linter.mandatoryChanges(github.context.issue.number);
 } catch (error) {
-    setFailed(error.message);
+    core.setFailed(error.message);
 }
