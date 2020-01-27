@@ -268,7 +268,7 @@ export class EmrCreateCluster implements sfn.IStepFunctionsTask {
     if (autoScalingRole !== undefined) {
       policyStatements.push(new iam.PolicyStatement({
         actions: ['iam:PassRole'],
-        resources: [ autoScalingRole.roleName ]
+        resources: [ autoScalingRole.roleArn ]
       }));
     }
 
