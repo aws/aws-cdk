@@ -5,7 +5,7 @@ const GitHub = require("github-api")
 const OWNER = "aws"
 const REPO = "aws-cdk"
 
-export class ValidationFailed extends Error {
+class ValidationFailed extends Error {
     constructor(message) {
         super(message);
     }    
@@ -77,7 +77,7 @@ function fixContainsTest(issue, files) {
     };
 };
 
-export async function mandatoryChanges(number) {
+async function mandatoryChanges(number) {
 
     try {
         number = number ? number : readNumberFromGithubEvent();
@@ -85,7 +85,7 @@ export async function mandatoryChanges(number) {
         throw new Error("Unable to determine PR number: " + err.message 
             + ". Either pass it as the first argument, or execute from GitHub Actions.");
     }
-    
+
     const gh = createGitHubClient();
     
     const issues = gh.getIssues(OWNER, REPO);
@@ -105,8 +105,9 @@ export async function mandatoryChanges(number) {
 
     console.log("✅  Success")
         
-
 }
+
+module.exports.mandatoryChanges = mandatoryChanges
 
 require('make-runnable/custom')({
     printOutputFrame: false
