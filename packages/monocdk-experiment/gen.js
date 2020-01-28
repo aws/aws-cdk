@@ -41,7 +41,7 @@ async function main() {
     }
 
     if (subdirs.length > 0) {
-      console.error(`WARNING: ${moduledir} includes a directory that is not "lib" or "test": ${subdirs.join(',')}`);
+      console.error(`WARNING: ${moduledir} includes a directory that is not one of [${allowed.join(',')}]: [${subdirs.join(',')}]`);
     }
 
     const basename = path.basename(moduledir);
@@ -49,7 +49,7 @@ async function main() {
     const target = `${srcdir}/${basename}/lib`;
     await fs.copy(source, target);
 
-    await fs.writeFile(path.join(path.dirname(target), 'index.ts'), 'export * from "./lib"\n');
+    await fs.writeFile(path.join(path.dirname(target), 'index.ts'), `export * from './lib'\n`);
 
     const namespace = basename.replace(/-/g, '_');
     reexports.push(`import * as ${namespace} from './${basename}/lib'; export { ${namespace} };`)
