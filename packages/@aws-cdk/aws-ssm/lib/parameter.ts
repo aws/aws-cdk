@@ -257,7 +257,7 @@ export interface StringParameterAttributes extends CommonStringParameterAttribut
 }
 
 /**
- * Attributes for securing string parameters.
+ * Attributes for secure string parameters.
  */
 export interface SecureStringParameterAttributes extends CommonStringParameterAttributes {
   /**
