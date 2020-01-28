@@ -167,11 +167,11 @@ export = {
     fn.addEventSource(eventSource);
 
     // THEN
-    test.notEqual(eventSource.eventSourceMappingId, undefined);
+    test.ok(eventSource.eventSourceMappingId);
     test.done();
   },
 
-  'eventSourceMappingId is undefined before binding to lambda'(test: Test) {
+  'eventSourceMappingId throws error before binding to lambda'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const stream = new kinesis.Stream(stack, 'S');
@@ -180,7 +180,7 @@ export = {
     });
 
     // WHEN/THEN
-    test.equal(eventSource.eventSourceMappingId, undefined);
+    test.throws(() => eventSource.eventSourceMappingId, /KinesisEventSource is not yet bound to an event source mapping/);
     test.done();
   },
 };

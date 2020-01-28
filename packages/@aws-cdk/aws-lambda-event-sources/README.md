@@ -116,7 +116,7 @@ To process events with a Lambda function, first create or update a DynamoDB tabl
 and add it to your Lambda function. The following parameters will impact Amazon DynamoDB's polling behavior:
 
 * __batchSize__: Determines how many records are buffered before invoking your lambda function - could impact your function's memory usage (if too high) and ability to keep up with incoming data velocity (if too low).
-* __startingPosition__: Will determine where to being consumption, either at the most recent ('LATEST') record or the oldest record ('TRIM_HORIZON'). 'TRIM_HORIZON' will ensure you process all available data, while 'LATEST' will ignore all reocrds that arrived prior to attaching the event source.
+* __startingPosition__: Will determine where to being consumption, either at the most recent ('LATEST') record or the oldest record ('TRIM_HORIZON'). 'TRIM_HORIZON' will ensure you process all available data, while 'LATEST' will ignore all records that arrived prior to attaching the event source.
 
 ```ts
 import dynamodb = require('@aws-cdk/aws-dynamodb');
@@ -145,8 +145,8 @@ first create or update an Amazon Kinesis stream and select custom values for the
 event source parameters. The following parameters will impact Amazon Kinesis's polling
 behavior:
 
-* __batchSize__: Determines how many records are buffered before invoking your lambnda function - could impact your function's memory usage (if too high) and ability to keep up with incoming data velocity (if too low).
-* __startingPosition__: Will determine where to being consumption, either at the most recent ('LATEST') record or the oldest record ('TRIM_HORIZON'). 'TRIM_HORIZON' will ensure you process all available data, while 'LATEST' will ignore all reocrds that arrived prior to attaching the event source.
+* __batchSize__: Determines how many records are buffered before invoking your lambda function - could impact your function's memory usage (if too high) and ability to keep up with incoming data velocity (if too low).
+* __startingPosition__: Will determine where to being consumption, either at the most recent ('LATEST') record or the oldest record ('TRIM_HORIZON'). 'TRIM_HORIZON' will ensure you process all available data, while 'LATEST' will ignore all records that arrived prior to attaching the event source.
 
 ```ts
 import lambda = require('@aws-cdk/aws-lambda');
@@ -161,6 +161,22 @@ myFunction.addEventSource(new KinesisEventSource(queue, {
 });
 ```
 
+### Event Source Mapping
+After creating and binding an event source to a lambda function you can access the Ref of the created `AWS::Lambda::EventSourceMapping` as `eventSourceMappingId`.
+```ts
+import lambda = require('@aws-cdk/aws-lambda');
+import kinesis = require('@aws-cdk/aws-kinesis');
+import { KinesisEventSource } from '@aws-cdk/aws-lambda-event-sources';
+
+const stream = new kinesis.Stream(this, 'MyStream');
+const eventSource = new KinesisEventSource(queue, {
+  batchSize: 100, // default
+  startingPosition: lambda.StartingPosition.TRIM_HORIZON
+};
+myFunction.addEventSource(eventSource);
+
+const eventSourceMappingId = eventSource.eventSourceMappingId;
+```
 ## Roadmap
 
 Eventually, this module will support all the event sources described under

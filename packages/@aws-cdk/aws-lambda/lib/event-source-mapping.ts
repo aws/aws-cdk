@@ -68,7 +68,7 @@ export interface EventSourceMappingProps extends EventSourceMappingOptions {
  */
 export class EventSourceMapping extends cdk.Resource {
   /**
-   * The Ref of the EventSourceMapping
+   * The identifier for this EventSourceMapping
    * @attribute
    */
   public readonly eventSourceMappingId: string;

@@ -18,7 +18,7 @@ export interface SqsEventSourceProps {
  * Use an Amazon SQS queue as an event source for AWS Lambda.
  */
 export class SqsEventSource implements lambda.IEventSource {
-  private _eventSourceMappingId: string | undefined = undefined;
+  private _eventSourceMappingId?: string = undefined;
 
   constructor(readonly queue: sqs.IQueue, private readonly props: SqsEventSourceProps = { }) {
     if (this.props.batchSize !== undefined && (this.props.batchSize < 1 || this.props.batchSize > 10)) {
@@ -37,9 +37,12 @@ export class SqsEventSource implements lambda.IEventSource {
   }
 
   /**
-   * The Ref of the EventSourceMapping
+   * The identifier for this EventSourceMapping
    */
-  public get eventSourceMappingId(): string | undefined {
+  public get eventSourceMappingId(): string {
+    if (!this._eventSourceMappingId) {
+      throw new Error("SqsEventSource is not yet bound to an event source mapping");
+    }
     return this._eventSourceMappingId;
   }
 }

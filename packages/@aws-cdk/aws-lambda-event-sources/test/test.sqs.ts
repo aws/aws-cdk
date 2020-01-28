@@ -124,18 +124,18 @@ export = {
     fn.addEventSource(eventSource);
 
     // THEN
-    test.notEqual(eventSource.eventSourceMappingId, undefined);
+    test.ok(eventSource.eventSourceMappingId);
     test.done();
   },
 
-  'eventSourceMappingId is undefined before binding to lambda'(test: Test) {
+  'eventSourceMappingId throws error before binding to lambda'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const q = new sqs.Queue(stack, 'Q');
     const eventSource = new sources.SqsEventSource(q);
 
     // WHEN/THEN
-    test.equal(eventSource.eventSourceMappingId, undefined);
+    test.throws(() => eventSource.eventSourceMappingId, /SqsEventSource is not yet bound to an event source mapping/);
     test.done();
   },
 };

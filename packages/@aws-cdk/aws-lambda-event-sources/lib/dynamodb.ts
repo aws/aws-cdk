@@ -9,7 +9,7 @@ export interface DynamoEventSourceProps extends StreamEventSourceProps {
  * Use an Amazon DynamoDB stream as an event source for AWS Lambda.
  */
 export class DynamoEventSource extends StreamEventSource {
-  private _eventSourceMappingId: string | undefined = undefined;
+  private _eventSourceMappingId?: string = undefined;
 
   constructor(private readonly table: dynamodb.Table, props: DynamoEventSourceProps) {
     super(props);
@@ -33,9 +33,12 @@ export class DynamoEventSource extends StreamEventSource {
   }
 
   /**
-   * The Ref of the EventSourceMapping
+   * The identifier for this EventSourceMapping
    */
-  public get eventSourceMappingId(): string | undefined {
+  public get eventSourceMappingId(): string {
+    if (!this._eventSourceMappingId) {
+      throw new Error("DynamoEventSource is not yet bound to an event source mapping");
+    }
     return this._eventSourceMappingId;
   }
 }
