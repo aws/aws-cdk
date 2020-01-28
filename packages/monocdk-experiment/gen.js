@@ -8,7 +8,7 @@ async function main() {
   const srcdir = path.resolve('src');
   const reexports = [];
 
-  await fs.rmdir(srcdir, { recursive: true });
+  await fs.remove(srcdir);
   await fs.mkdir(srcdir);
 
   const root = path.resolve(__dirname, 'node_modules', '@aws-cdk');
