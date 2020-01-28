@@ -289,8 +289,6 @@ export interface ISecretAttachmentTarget {
 
 /**
  * The type of service or database that's being associated with the secret.
- *
- * @deprecated use `SecretTargetType` instead
  */
 export enum AttachmentTargetType {
   /**
