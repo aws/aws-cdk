@@ -70,10 +70,6 @@ export class HelmChart extends Construct {
   constructor(scope: Construct, id: string, props: HelmChartProps) {
     super(scope, id);
 
-    if (!props.cluster._clusterResource) {
-      throw new Error(`Cannot define a Helm chart on a cluster with kubectl disabled`);
-    }
-
     const stack = Stack.of(this);
 
     const provider = KubectlProvider.getOrCreate(this);
@@ -83,7 +79,7 @@ export class HelmChart extends Construct {
       resourceType: HelmChart.RESOURCE_TYPE,
       properties: {
         ClusterName: props.cluster.clusterName,
-        RoleArn: props.cluster._clusterResource.getCreationRoleArn(provider.role),
+        RoleArn: props.cluster._getKubectlCreationRoleArn(provider.role),
         Release: props.release || this.node.uniqueId.slice(-63).toLowerCase(), // Helm has a 63 character limit for the name
         Chart: props.chart,
         Version: props.version,

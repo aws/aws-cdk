@@ -6,7 +6,7 @@ pull_request_rules:
       label:
         add: [ contribution/core ]
     conditions:
-      - author~=^(eladb|RomainMuller|garnaat|nija-at|shivlaks|skinny85|rix0rrr|NGL321|Jerry-AWS|SomayaB)$
+      - author~=^(eladb|RomainMuller|garnaat|nija-at|shivlaks|skinny85|rix0rrr|NGL321|Jerry-AWS|SomayaB|MrArnoldPalmer|NetaNir|iliapolo)$
       - -label~="contribution/core"
   - name: automatic merge
     actions:
@@ -29,6 +29,7 @@ pull_request_rules:
       - "#changes-requested-reviews-by=0"
       - status-success~=AWS CodeBuild us-east-1
       - status-success=Semantic Pull Request
+      - status-success=mandatory-changes
   - name: remove stale reviews
     actions:
       dismiss_reviews: {}
@@ -46,6 +47,9 @@ pull_request_rules:
       - author!=NGL321
       - author!=Jerry-AWS
       - author!=SomayaB
+      - author!=MrArnoldPalmer
+      - author!=NetaNir
+      - author!=iliapolo
       - base=master
       - -merged
       - -closed

@@ -1,0 +1,20 @@
+# The basics
+*.ts
+*.tgz
+*.snk
+!*.d.ts
+!*.js
+
+# Coverage
+coverage
+.nyc_output
+.nycrc
+
+# Build gear
+dist
+.LAST_BUILD
+.LAST_PACKAGE
+
+*.tsbuildinfo
+tsconfig.json
+!.jsii

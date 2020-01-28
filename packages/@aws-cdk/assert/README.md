@@ -75,7 +75,35 @@ Example:
 
 ```ts
 expect(stack).to(haveResource('AWS::CertificateManager::Certificate', {
-    DomainName: 'test.example.com'
+    DomainName: 'test.example.com',
     // Note: some properties omitted here
+
+    ShouldNotExist: ABSENT
+}));
+```
+
+`ABSENT` is a magic value to assert that a particular key in an object is *not* set (or set to `undefined`).
+
+
+### Check existence of an output
+`haveOutput` assertion can be used to check that a stack contains specific output.
+Parameters to check against can be:
+- `outputName`
+- `outputValue`
+- `exportName`
+
+If `outputValue` is provided, at least one of `outputName`, `exportName` should be provided as well
+
+Example
+```ts
+expect(synthStack).to(haveOutput({
+  outputName: 'TestOutputName',
+  exportName: 'TestOutputExportName',
+  outputValue: {
+    'Fn::GetAtt': [
+      'TestResource',
+      'Arn'
+    ]
+  }
 }));
 ```
