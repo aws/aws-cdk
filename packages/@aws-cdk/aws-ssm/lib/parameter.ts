@@ -148,6 +148,11 @@ abstract class ParameterBase extends Resource implements IParameter {
   public abstract readonly parameterName: string;
   public abstract readonly parameterType: string;
 
+  /**
+   * The encryption key that is used to encrypt this parameter.
+   *
+   * * @default - default master key
+   */
   public readonly encryptionKey?: kms.IKey;
 
   public grantRead(grantee: iam.IGrantable): iam.Grant {
@@ -230,6 +235,11 @@ export interface CommonStringParameterAttributes {
   readonly simpleName?: boolean;
 }
 
+/**
+ * Attributes for parameters of various types of string.
+ *
+ * @see ParameterType
+ */
 export interface StringParameterAttributes extends CommonStringParameterAttributes {
   /**
    * The version number of the value you wish to retrieve.
@@ -246,6 +256,9 @@ export interface StringParameterAttributes extends CommonStringParameterAttribut
   readonly type?: ParameterType;
 }
 
+/**
+ * Attributes for secure string parameters.
+ */
 export interface SecureStringParameterAttributes extends CommonStringParameterAttributes {
   /**
    * The version number of the value you wish to retrieve. This is required for secure strings.
