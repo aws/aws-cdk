@@ -167,9 +167,10 @@ export interface AwsCustomResourceProps {
 }
 
 /**
- * Defines a custom resource that invokes AWS API calls to create and manage a custom resource.
+ * Defines a custom resource that is materialized using specific AWS API calls.
  *
- * Use when you want to customize exactly which calls should be executed to CREATE/UPDATE/DELETE the resource.
+ * Use this to bridge any gap that might exist in the CloudFormation Coverage.
+ * You can specify exactly which calls are invoked for the 'CREATE', 'UPDATE' and 'DELETE' life cycle events.
  *
  */
 export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
