@@ -1,37 +1,38 @@
 {
-  "name": "@aws-cdk/aws-ssm",
+  "name": "@aws-cdk/aws-acmpca",
   "version": "1.22.0",
-  "description": "The CDK Construct Library for AWS::SSM",
+  "description": "The CDK Construct Library for AWS::ACMPCA",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
     "targets": {
-      "java": {
-        "package": "software.amazon.awscdk.services.ssm",
-        "maven": {
-          "groupId": "software.amazon.awscdk",
-          "artifactId": "ssm"
-        }
-      },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.SSM",
-        "packageId": "Amazon.CDK.AWS.SSM",
+        "namespace": "Amazon.CDK.AWS.ACMPCA",
+        "packageId": "Amazon.CDK.AWS.ACMPCA",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
+      "java": {
+        "package": "software.amazon.awscdk.services.acmpca",
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "acmpca"
+        }
+      },
       "python": {
-        "distName": "aws-cdk.aws-ssm",
-        "module": "aws_cdk.aws_ssm"
+        "distName": "aws-cdk.aws-acmpca",
+        "module": "aws_cdk.aws_acmpca"
       }
     }
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git",
-    "directory": "packages/@aws-cdk/aws-ssm"
+    "directory": "packages/@aws-cdk/aws-acmpca"
   },
+  "homepage": "https://github.com/aws/aws-cdk",
   "scripts": {
     "build": "cdk-build",
     "watch": "cdk-watch",
@@ -47,44 +48,52 @@
     "compat": "cdk-compat"
   },
   "cdk-build": {
-    "cloudformation": "AWS::SSM"
+    "cloudformation": "AWS::ACMPCA"
   },
   "keywords": [
     "aws",
     "cdk",
     "constructs",
-    "ssm"
+    "AWS::ACMPCA",
+    "aws-acmpca"
   ],
   "author": {
     "name": "Amazon Web Services",
     "url": "https://aws.amazon.com",
     "organization": true
   },
+  "jest": {
+    "moduleFileExtensions": [
+      "js"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 60,
+        "statements": 80
+      }
+    },
+    "collectCoverage": true,
+    "coverageReporters": [
+      "lcov",
+      "html",
+      "text-summary"
+    ]
+  },
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "1.22.0",
-    "@types/nodeunit": "^0.0.30",
     "cdk-build-tools": "1.22.0",
-    "cdk-integ-tools": "1.22.0",
     "cfn2ts": "1.22.0",
-    "nodeunit": "^0.11.3",
     "pkglint": "1.22.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-iam": "1.22.0",
-    "@aws-cdk/aws-kms": "1.22.0",
-    "@aws-cdk/core": "1.22.0",
-    "@aws-cdk/cx-api": "1.22.0"
+    "@aws-cdk/core": "1.22.0"
   },
-  "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-iam": "1.22.0",
-    "@aws-cdk/aws-kms": "1.22.0",
-    "@aws-cdk/core": "1.22.0",
-    "@aws-cdk/cx-api": "1.22.0"
+    "@aws-cdk/core": "1.22.0"
   },
   "engines": {
     "node": ">= 10.3.0"
   },
-  "stability": "stable"
+  "stability": "experimental"
 }
