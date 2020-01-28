@@ -11,12 +11,12 @@ async function main() {
   await fs.remove(srcdir);
   await fs.mkdir(srcdir);
 
-  const root = path.resolve(__dirname, 'node_modules', '@aws-cdk');
+  const root = path.resolve(__dirname, '..', '@aws-cdk');
   const modules = await fs.readdir(root);
 
   for (const dir of modules) {
-    const module = path.resolve(root, dir);
-    const meta = JSON.parse(await fs.readFile(path.join(module, 'package.json'), 'utf-8'));
+    const moduledir = path.resolve(root, dir);
+    const meta = JSON.parse(await fs.readFile(path.join(moduledir, 'package.json'), 'utf-8'));
 
     if (meta.deprecated) {
       console.error(`skipping deprecated ${meta.name}`);
@@ -28,10 +28,25 @@ async function main() {
       continue;
     }
 
-    const basename = path.basename(module);
-    const source = `${module}/lib`;
+    // check if moduledir includes any directory other than "lib" and "test"
+    const subdirs = [];
+    const allowed = [ 'lib', 'test', 'node_modules', 'scripts', 'build-tools' ];
+    for (const file of await fs.readdir(moduledir)) {
+      if (allowed.includes(file)) {
+        continue;
+      }
+      if ((await fs.stat(path.join(moduledir, file))).isDirectory()) {
+        subdirs.push(file);
+      }
+    }
+
+    if (subdirs.length > 0) {
+      console.error(`WARNING: ${moduledir} includes a directory that is not "lib" or "test": ${subdirs.join(',')}`);
+    }
+
+    const basename = path.basename(moduledir);
+    const source = `${moduledir}/lib`;
     const target = `${srcdir}/${basename}/lib`;
-    console.log(`${source} => ${target}`);
     await fs.copy(source, target);
 
     await fs.writeFile(path.join(path.dirname(target), 'index.ts'), 'export * from "./lib"\n');
