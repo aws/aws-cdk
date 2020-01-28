@@ -10,10 +10,13 @@
   },
   "scripts": {
     "build": "node deps.js && node gen.js && tsc",
-    "test": "jest",
+    "test": "cdk-test",
     "package": "mkdir -p dist/js && cd dist/js && npm pack ../../",
     "build+test": "npm run build && npm test",
     "build+test+package": "npm run build+test && npm run package"
+  },
+  "jest": {
+    "moduleFileExtensions": [ "js" ]
   },
   "author": {
     "name": "Amazon Web Services",
