@@ -248,7 +248,7 @@ export class Settings {
     const context: any = {};
 
     for (const assignment of ((argv as any).context || [])) {
-      const parts = assignment.split('=', 2);
+      const parts = assignment.split(/=(.*)/, 2);
       if (parts.length === 2) {
         debug('CLI argument context: %s=%s', parts[0], parts[1]);
         if (parts[0].match(/^aws:.+/)) {

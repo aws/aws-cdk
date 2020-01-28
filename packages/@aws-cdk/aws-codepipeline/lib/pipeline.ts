@@ -8,7 +8,7 @@ import { CfnPipeline } from './codepipeline.generated';
 import { CrossRegionSupportConstruct, CrossRegionSupportStack } from './cross-region-support-stack';
 import { FullActionDescriptor } from './full-action-descriptor';
 import { Stage } from './stage';
-import { validateName, validateSourceAction } from "./validation";
+import { validateName, validateNamespaceName, validateSourceAction } from "./validation";
 
 /**
  * Allows you to control where to place a new Stage when it's added to the Pipeline.
@@ -232,6 +232,7 @@ export class Pipeline extends PipelineBase {
         bucketName: PhysicalName.GENERATE_IF_NEEDED,
         encryptionKey,
         encryption: s3.BucketEncryption.KMS,
+        blockPublicAccess: new s3.BlockPublicAccess(s3.BlockPublicAccess.BLOCK_ALL),
         removalPolicy: RemovalPolicy.RETAIN
       });
       // add an alias to make finding the key in the console easier
@@ -354,15 +355,18 @@ export class Pipeline extends PipelineBase {
     // get the role for the given action
     const actionRole = this.getRoleForAction(stage, action, actionScope);
 
+    // // CodePipeline Variables
+    validateNamespaceName(action.actionProperties.variablesNamespace);
+
     // bind the Action
-    const actionDescriptor = action.bind(actionScope, stage, {
+    const actionConfig = action.bind(actionScope, stage, {
       role: actionRole ? actionRole : this.role,
       bucket: crossRegionInfo.artifactBucket,
     });
 
     return new FullActionDescriptor({
       action,
-      actionConfig: actionDescriptor,
+      actionConfig,
       actionRole,
       actionRegion: crossRegionInfo.region,
     });

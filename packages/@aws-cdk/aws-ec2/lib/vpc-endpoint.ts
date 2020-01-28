@@ -204,6 +204,27 @@ export interface IInterfaceVpcEndpointService {
 }
 
 /**
+ * A custom-hosted service for an interface VPC endpoint.
+ */
+export class InterfaceVpcEndpointService implements IInterfaceVpcEndpointService {
+
+  /**
+   * The name of the service.
+   */
+  public readonly name: string;
+
+  /**
+   * The port of the service.
+   */
+  public readonly port: number;
+
+  constructor(name: string, port?: number) {
+    this.name = name;
+    this.port = port || 443;
+  }
+}
+
+/**
  * An AWS service for an interface VPC endpoint.
  */
 export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointService {

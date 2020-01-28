@@ -112,7 +112,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
       metricName,
       dimensions: { LoadBalancer: this.loadBalancerFullName },
       ...props
-    });
+    }).attachTo(this);
   }
 
   /**
@@ -235,11 +235,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
 /**
  * A network load balancer
  */
-export interface INetworkLoadBalancer extends ILoadBalancerV2 {
-  /**
-   * The ARN of this load balancer
-   */
-  readonly loadBalancerArn: string;
+export interface INetworkLoadBalancer extends ILoadBalancerV2, ec2.IVpcEndpointServiceLoadBalancer {
 
   /**
    * The VPC this load balancer has been created in (if available)

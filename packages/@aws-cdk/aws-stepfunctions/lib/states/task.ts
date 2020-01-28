@@ -177,7 +177,7 @@ export class Task extends State implements INextable {
             dimensions: this.taskProps.metricDimensions,
             statistic: 'sum',
             ...props
-        });
+        }).attachTo(this);
     }
 
     /**

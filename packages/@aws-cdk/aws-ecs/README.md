@@ -53,9 +53,9 @@ const ecsService = new ecs.Ec2Service(this, 'Service', {
 
 For a set of constructs defining common ECS architectural patterns, see the `@aws-cdk/aws-ecs-patterns` package.
 
-## AWS Fargate vs Amazon ECS
+## Launch Types: AWS Fargate vs Amazon EC2
 
-There are two sets of constructs in this library; one to run tasks on Amazon ECS and
+There are two sets of constructs in this library; one to run tasks on Amazon EC2 and
 one to run tasks on AWS Fargate.
 
 - Use the `Ec2TaskDefinition` and `Ec2Service` constructs to run tasks on Amazon EC2 instances running in your account.
@@ -302,11 +302,9 @@ const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', { vpc, internetFacing: 
 const listener = lb.addListener('Listener', { port: 80 });
 service.registerLoadBalancerTargets(
   {
-    containerTarget: {
-      containerName: 'web',
-      containerPort: 80,
-    },
-    targetGroupId: 'ECS',
+    containerName: 'web',
+    containerPort: 80,
+    newTargetGroupId: 'ECS',
     listener: ecs.ListenerConfig.applicationListener(listener, {
       protocol: elbv2.ApplicationProtocol.HTTPS
     }),
@@ -461,6 +459,7 @@ Currently Supported Log Drivers:
 - json-file
 - splunk
 - syslog
+- awsfirelens
 
 ### awslogs Log Driver
 
@@ -470,7 +469,7 @@ const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
 taskDefinition.addContainer('TheContainer', {
   image: ecs.ContainerImage.fromRegistry('example-image'),
   memoryLimitMiB: 256,
-  logging: new ecs.LogDrivers.awslogs({ streamPrefix: 'EventDemo' })
+  logging: ecs.LogDrivers.awslogs({ streamPrefix: 'EventDemo' })
 });
 ```
 
@@ -482,7 +481,7 @@ const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
 taskDefinition.addContainer('TheContainer', {
   image: ecs.ContainerImage.fromRegistry('example-image'),
   memoryLimitMiB: 256,
-  logging: new ecs.LogDrivers.fluentd()
+  logging: ecs.LogDrivers.fluentd()
 });
 ```
 
@@ -494,7 +493,7 @@ const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
 taskDefinition.addContainer('TheContainer', {
   image: ecs.ContainerImage.fromRegistry('example-image'),
   memoryLimitMiB: 256,
-  logging: new ecs.LogDrivers.gelf()
+  logging: ecs.LogDrivers.gelf({ address: 'my-gelf-address' })
 });
 ```
 
@@ -506,7 +505,7 @@ const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
 taskDefinition.addContainer('TheContainer', {
   image: ecs.ContainerImage.fromRegistry('example-image'),
   memoryLimitMiB: 256,
-  logging: new ecs.LogDrivers.journald()
+  logging: ecs.LogDrivers.journald()
 });
 ```
 
@@ -518,7 +517,7 @@ const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
 taskDefinition.addContainer('TheContainer', {
   image: ecs.ContainerImage.fromRegistry('example-image'),
   memoryLimitMiB: 256,
-  logging: new ecs.LogDrivers.jsonFile()
+  logging: ecs.LogDrivers.jsonFile()
 });
 ```
 
@@ -530,7 +529,10 @@ const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
 taskDefinition.addContainer('TheContainer', {
   image: ecs.ContainerImage.fromRegistry('example-image'),
   memoryLimitMiB: 256,
-  logging: new ecs.LogDrivers.splunk()
+  logging: ecs.LogDrivers.splunk({
+    token: cdk.SecretValue.secretsManager('my-splunk-token'),
+    url: 'my-splunk-url'
+  })
 });
 ```
 
@@ -542,7 +544,25 @@ const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
 taskDefinition.addContainer('TheContainer', {
   image: ecs.ContainerImage.fromRegistry('example-image'),
   memoryLimitMiB: 256,
-  logging: new ecs.LogDrivers.syslog()
+  logging: ecs.LogDrivers.syslog()
+});
+```
+
+### firelens Log Driver
+
+```ts
+// Create a Task Definition for the container to start
+const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
+taskDefinition.addContainer('TheContainer', {
+  image: ecs.ContainerImage.fromRegistry('example-image'),
+  memoryLimitMiB: 256,
+  logging: ecs.LogDrivers.firelens({
+    options: {
+        Name: 'firehose',
+        region: 'us-west-2',
+        delivery_stream: 'my-stream',
+    }
+  })
 });
 ```
 
