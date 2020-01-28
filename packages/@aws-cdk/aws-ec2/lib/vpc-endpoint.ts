@@ -205,7 +205,7 @@ export interface IInterfaceVpcEndpointService {
   /**
    * Whether Private DNS is supported by default.
    */
-  readonly privateDnsDefault: boolean;
+  readonly privateDnsDefault?: boolean;
 }
 
 /**
@@ -226,7 +226,7 @@ export class InterfaceVpcEndpointService implements IInterfaceVpcEndpointService
   /**
    * Whether Private DNS is supported by default.
    */
-  public readonly privateDnsDefault: boolean;
+  public readonly privateDnsDefault?: boolean;
 
   constructor(name: string, port?: number) {
     this.name = name;
@@ -293,7 +293,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   /**
    * Whether Private DNS is supported by default.
    */
-  public readonly privateDnsDefault: boolean;
+  public readonly privateDnsDefault?: boolean;
 
   constructor(name: string, prefix?: string, port?: number) {
     this.name = `${prefix || 'com.amazonaws'}.${Aws.REGION}.${name}`;
@@ -315,7 +315,8 @@ export interface InterfaceVpcEndpointOptions {
    * Whether to associate a private hosted zone with the specified VPC. This
    * allows you to make requests to the service using its default DNS hostname.
    *
-   * @default set by the instance of IInterfaceVpcEndpointService
+   * @default set by the instance of IInterfaceVpcEndpointService, or true if
+   * not defined by the instance of IInterfaceVpcEndpointService
    */
   readonly privateDnsEnabled?: boolean;
 
@@ -444,16 +445,21 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
 
     const subnets = props.vpc.selectSubnets({ ...props.subnets, onePerAz: true });
     const subnetIds = subnets.subnetIds;
-
-    const endpoint = new CfnVPCEndpoint(this, 'Resource', {
-      privateDnsEnabled: props.privateDnsEnabled !== undefined ? props.privateDnsEnabled : props.service.privateDnsDefault,
+    const endpointProps = {
+      privateDnsEnabled: true,
       policyDocument: Lazy.anyValue({ produce: () => this.policyDocument }),
       securityGroupIds: securityGroups.map(s => s.securityGroupId),
       serviceName: props.service.name,
       vpcEndpointType: VpcEndpointType.INTERFACE,
       subnetIds,
       vpcId: props.vpc.vpcId
-    });
+    };
+    if (props.privateDnsEnabled !== undefined) {
+      endpointProps.privateDnsEnabled = props.privateDnsEnabled;
+    } else if (props.service.privateDnsDefault !== undefined) {
+      endpointProps.privateDnsEnabled = props.service.privateDnsDefault;
+    }
+    const endpoint = new CfnVPCEndpoint(this, 'Resource', endpointProps);
 
     this.vpcEndpointId = endpoint.ref;
     this.vpcEndpointCreationTimestamp = endpoint.attrCreationTimestamp;

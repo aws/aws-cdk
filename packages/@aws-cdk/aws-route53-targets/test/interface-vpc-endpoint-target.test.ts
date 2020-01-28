@@ -13,8 +13,7 @@ test('use InterfaceVpcEndpoint as record target', () => {
     vpc,
     service: {
       name: 'com.amazonaws.us-west-2.workspaces',
-      port: 80,
-      privateDnsDefault: true
+      port: 80
     }
   });
   const zone = new route53.PrivateHostedZone(stack, 'PrivateZone', {
