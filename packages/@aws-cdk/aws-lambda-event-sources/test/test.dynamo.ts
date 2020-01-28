@@ -1,6 +1,8 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import * as dynamodb from '@aws-cdk/aws-dynamodb';
 import * as lambda from '@aws-cdk/aws-lambda';
+import * as destinations from '@aws-cdk/aws-lambda-destinations';
+import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as sources from '../lib';
@@ -511,6 +513,7 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new TestFunction(stack, 'Fn');
+    const queue = new sqs.Queue(stack, 'Queue');
     const table = new dynamodb.Table(stack, 'T', {
       partitionKey: {
         name: 'id',
@@ -521,11 +524,7 @@ export = {
 
     // WHEN
     fn.addEventSource(new sources.DynamoEventSource(table, {
-      destinationConfig: {
-        onFailure: {
-          destination: "DLQ"
-        }
-      },
+      destinationOnFailure: new destinations.SqsDestination(queue),
       startingPosition: lambda.StartingPosition.LATEST
     }));
 
@@ -542,7 +541,13 @@ export = {
       },
       "DestinationConfig": {
         "OnFailure": {
-          "Destination": "DLQ"
+          "Destination": {
+            "Fn::GetAtt": [
+              "Queue4A7E3555",
+              "Arn"
+            ]
+          }
+
         }
       },
       "StartingPosition": "LATEST"

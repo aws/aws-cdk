@@ -1,5 +1,5 @@
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Duration, IResolvable } from '@aws-cdk/core';
+import { Duration } from '@aws-cdk/core';
 
 /**
  * The set of properties for event sources that follow the streaming model,
@@ -33,7 +33,7 @@ export interface StreamEventSourceProps {
    *
    * @default discarded records are ignored
    */
-  readonly destinationConfig?: lambda.CfnEventSourceMapping.DestinationConfigProperty | IResolvable | undefined;
+  readonly destinationOnFailure?: lambda.IDestination;
 
   /**
    * The maximum age of a record that Lambda sends to a function for processing.
@@ -98,7 +98,7 @@ export abstract class StreamEventSource implements lambda.IEventSource {
       maximumRecordAge: this.props.maximumRecordAge,
       maximumRetryAttempts: this.props.maximumRetryAttempts,
       parallelizationFactor: this.props.parallelizationFactor,
-      destinationConfig: this.props.destinationConfig
+      destinationOnFailure: this.props.destinationOnFailure
     };
   }
 }

@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import { DestinationType, IDestination } from './destination';
 import { IFunction } from './function-base';
 import { CfnEventSourceMapping } from './lambda.generated';
 
@@ -33,7 +34,7 @@ export interface EventSourceMappingOptions {
    *
    * @default discarded records are ignored
    */
-  readonly destinationConfig?: CfnEventSourceMapping.DestinationConfigProperty | cdk.IResolvable | undefined;
+  readonly destinationOnFailure?: IDestination;
 
   /**
    * Set to false to disable the event source upon creation.
@@ -134,7 +135,11 @@ export class EventSourceMapping extends cdk.Resource {
     new CfnEventSourceMapping(this, 'Resource', {
       batchSize: props.batchSize,
       bisectBatchOnFunctionError: props.bisectBatchOnFunctionError,
-      destinationConfig: props.destinationConfig,
+      destinationConfig: props.destinationOnFailure
+        ? {
+          onFailure: props.destinationOnFailure.bind(this, props.target, { type: DestinationType.FAILURE })
+        }
+        : undefined,
       enabled: props.enabled,
       eventSourceArn: props.eventSourceArn,
       functionName: props.target.functionName,

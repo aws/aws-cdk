@@ -72,6 +72,7 @@
     "@aws-cdk/aws-iam": "1.22.0",
     "@aws-cdk/aws-kinesis": "1.22.0",
     "@aws-cdk/aws-lambda": "1.22.0",
+    "@aws-cdk/aws-lambda-destinations": "1.22.0",
     "@aws-cdk/aws-s3": "1.22.0",
     "@aws-cdk/aws-s3-notifications": "1.22.0",
     "@aws-cdk/aws-sns": "1.22.0",
@@ -92,7 +93,8 @@
     "@aws-cdk/aws-sns": "1.22.0",
     "@aws-cdk/aws-sns-subscriptions": "1.22.0",
     "@aws-cdk/aws-sqs": "1.22.0",
-    "@aws-cdk/core": "1.22.0"
+    "@aws-cdk/core": "1.22.0",
+    "@aws-cdk/aws-lambda-destinations": "1.22.0"
   },
   "engines": {
     "node": ">= 10.3.0"
@@ -109,13 +111,7 @@
       "docs-public-apis:@aws-cdk/aws-lambda-event-sources.KinesisEventSourceProps",
       "docs-public-apis:@aws-cdk/aws-lambda-event-sources.S3EventSourceProps",
       "props-default-doc:@aws-cdk/aws-lambda-event-sources.S3EventSourceProps.filters",
-      "docs-public-apis:@aws-cdk/aws-lambda-event-sources.SqsEventSourceProps",
-      "duration-prop-type:@aws-cdk/aws-lambda-event-sources.DynamoEventSourceProps.maximumRecordAgeInSeconds",
-      "duration-prop-type:@aws-cdk/aws-lambda-event-sources.KinesisEventSourceProps.maximumRecordAgeInSeconds",
-      "duration-prop-name:@aws-cdk/aws-lambda-event-sources.KinesisEventSourceProps.maximumRecordAgeInSeconds",
-      "duration-prop-type:@aws-cdk/aws-lambda-event-sources.StreamEventSourceProps.maximumRecordAgeInSeconds",
-      "duration-prop-name:@aws-cdk/aws-lambda-event-sources.StreamEventSourceProps.maximumRecordAgeInSeconds",
-      "duration-prop-name:@aws-cdk/aws-lambda-event-sources.DynamoEventSourceProps.maximumRecordAgeInSeconds"
+      "docs-public-apis:@aws-cdk/aws-lambda-event-sources.SqsEventSourceProps"
     ]
   }
 }
