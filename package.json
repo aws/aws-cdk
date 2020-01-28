@@ -1,6 +1,6 @@
 {
   "name": "aws-cdk",
-  "version": "1.21.1",
+  "version": "1.22.0",
   "private": true,
   "pkglint": {
     "include": "dependencies/node-version"
@@ -15,9 +15,9 @@
   "devDependencies": {
     "conventional-changelog-cli": "^2.0.31",
     "fs-extra": "^8.1.0",
-    "jsii-diff": "^0.21.1",
-    "jsii-pacmak": "^0.21.1",
-    "jsii-rosetta": "^0.21.1",
+    "jsii-diff": "^0.21.2",
+    "jsii-pacmak": "^0.21.2",
+    "jsii-rosetta": "^0.21.2",
     "lerna": "^3.20.2",
     "typescript": "~3.7.5"
   },
@@ -50,7 +50,10 @@
       "@aws-cdk/assets/minimatch",
       "@aws-cdk/assets/minimatch/**",
       "@aws-cdk/cx-api/semver",
-      "@aws-cdk/cx-api/semver/**"
+      "@aws-cdk/cx-api/semver/**",
+      "@aws-cdk/cx-api/semver/**",
+      "@aws-cdk/aws-lambda-nodejs/parcel-bundler",
+      "@aws-cdk/aws-lambda-nodejs/parcel-bundler/**"
     ]
   }
 }

@@ -2,6 +2,16 @@ import { Assertion, JestFriendlyAssertion } from "../assertion";
 import { StackInspector } from "../inspector";
 
 /**
+ * Magic value to signify that a certain key should be absent from the property bag.
+ *
+ * The property is either not present or set to `undefined.
+ *
+ * NOTE: `ABSENT` only works with the `haveResource()` and `haveResourceLike()`
+ * assertions.
+ */
+export const ABSENT = '{{ABSENT}}';
+
+/**
  * An assertion to check whether a resource of a given type and with the given properties exists, disregarding properties
  *
  * @param resourceType the type of the resource that is expected to be present.
@@ -117,67 +127,89 @@ export interface InspectionFailure {
  *
  * A super-object has the same or more property values, recursing into sub properties if ``allowValueExtension`` is true.
  */
-export function isSuperObject(superObj: any, obj: any, errors: string[] = [], allowValueExtension: boolean = false): boolean {
-  if (obj == null) { return true; }
-  if (Array.isArray(superObj) !== Array.isArray(obj)) {
+export function isSuperObject(superObj: any, pattern: any, errors: string[] = [], allowValueExtension: boolean = false): boolean {
+  if (pattern == null) { return true; }
+  if (Array.isArray(superObj) !== Array.isArray(pattern)) {
     errors.push('Array type mismatch');
     return false;
   }
   if (Array.isArray(superObj)) {
-    if (obj.length !== superObj.length) {
+    if (pattern.length !== superObj.length) {
       errors.push('Array length mismatch');
       return false;
     }
 
     // Do isSuperObject comparison for individual objects
-    for (let i = 0; i < obj.length; i++) {
-      if (!isSuperObject(superObj[i], obj[i], [], allowValueExtension)) {
+    for (let i = 0; i < pattern.length; i++) {
+      if (!isSuperObject(superObj[i], pattern[i], [], allowValueExtension)) {
         errors.push(`Array element ${i} mismatch`);
       }
     }
     return errors.length === 0;
   }
-  if ((typeof superObj === 'object') !== (typeof obj === 'object')) {
+  if ((typeof superObj === 'object') !== (typeof pattern === 'object')) {
     errors.push('Object type mismatch');
     return false;
   }
-  if (typeof obj === 'object') {
-    for (const key of Object.keys(obj)) {
-      if (!(key in superObj)) {
-        errors.push(`Field ${key} missing`);
+  if (typeof pattern === 'object') {
+    for (const [patternKey, patternValue] of Object.entries(pattern)) {
+      if (patternValue === ABSENT) {
+        if (superObj[patternKey] !== undefined) { errors.push(`Field ${patternKey} present, but shouldn't be`); }
         continue;
       }
 
+      if (!(patternKey in superObj)) {
+        errors.push(`Field ${patternKey} missing`);
+        continue;
+      }
+
+      const innerErrors = new Array<string>();
       const valueMatches = allowValueExtension
-                         ? isSuperObject(superObj[key], obj[key], [], allowValueExtension)
-                         : isStrictlyEqual(superObj[key], obj[key]);
+                         ? isSuperObject(superObj[patternKey], patternValue, innerErrors, allowValueExtension)
+                         : isStrictlyEqual(superObj[patternKey], patternValue, innerErrors);
       if (!valueMatches) {
-        errors.push(`Field ${key} mismatch`);
+        errors.push(`Field ${patternKey} mismatch: ${innerErrors.join(', ')}`);
       }
     }
     return errors.length === 0;
   }
 
-  if (superObj !== obj) {
+  if (superObj !== pattern) {
     errors.push('Different values');
   }
   return errors.length === 0;
+}
 
-  function isStrictlyEqual(left: any, right: any): boolean {
-    if (left === right) { return true; }
-    if (typeof left !== typeof right) { return false; }
-    if (typeof left === 'object' && typeof right === 'object') {
-      if (Array.isArray(left) !== Array.isArray(right)) { return false; }
-      const allKeys = new Set<string>([...Object.keys(left), ...Object.keys(right)]);
-      for (const key of allKeys) {
-        if (!isStrictlyEqual(left[key], right[key])) {
-          return false;
-        }
-      }
-      return true;
-    }
+function isStrictlyEqual(left: any, pattern: any, errors: string[]): boolean {
+  if (left === pattern) { return true; }
+  if (typeof left !== typeof pattern) {
+    errors.push(`${typeof left} !== ${typeof pattern}`);
     return false;
   }
+
+  if (typeof left === 'object' && typeof pattern === 'object') {
+    if (Array.isArray(left) !== Array.isArray(pattern)) { return false; }
+    const allKeys = new Set<string>([...Object.keys(left), ...Object.keys(pattern)]);
+    for (const key of allKeys) {
+      if (pattern[key] === ABSENT) {
+        if (left[key] !== undefined) {
+          errors.push(`Field ${key} present, but shouldn't be`);
+          return false;
+        }
+        return true;
+      }
+
+      const innerErrors = new Array<string>();
+      if (!isStrictlyEqual(left[key], pattern[key], innerErrors)) {
+        errors.push(`${Array.isArray(left) ? 'element ' : ''}${key}: ${innerErrors.join(', ')}`);
+        return false;
+      }
+    }
+    return true;
+  }
+
+  errors.push(`${left} !== ${pattern}`);
+  return false;
 }
 
 /**

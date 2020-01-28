@@ -34,32 +34,16 @@ export enum Tracing {
   DISABLED = "Disabled"
 }
 
-export interface FunctionProps extends EventInvokeConfigOptions {
-  /**
-   * The source code of your Lambda function. You can point to a file in an
-   * Amazon Simple Storage Service (Amazon S3) bucket or specify your source
-   * code as inline text.
-   */
-  readonly code: Code;
-
+/**
+ * Non runtime options
+ */
+export interface FunctionOptions extends EventInvokeConfigOptions {
   /**
    * A description of the function.
    *
    * @default - No description.
    */
   readonly description?: string;
-
-  /**
-   * The name of the method within your code that Lambda calls to execute
-   * your function. The format includes the file name. It can also include
-   * namespaces and other qualifiers, depending on the runtime.
-   * For more information, see https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-features.html#gettingstarted-features-programmingmodel.
-   *
-   * NOTE: If you specify your source code as inline text by specifying the
-   * ZipFile property within the Code property, specify index.function_name as
-   * the handler.
-   */
-  readonly handler: string;
 
   /**
    * The function execution time (in seconds) after which Lambda terminates
@@ -79,13 +63,6 @@ export interface FunctionProps extends EventInvokeConfigOptions {
    * @default - No environment variables.
    */
   readonly environment?: { [key: string]: string };
-
-  /**
-   * The runtime environment for the Lambda function that you are uploading.
-   * For valid values, see the Runtime property in the AWS Lambda Developer
-   * Guide.
-   */
-  readonly runtime: Runtime;
 
   /**
    * A name for the function.
@@ -249,6 +226,34 @@ export interface FunctionProps extends EventInvokeConfigOptions {
   readonly logRetentionRole?: iam.IRole;
 }
 
+export interface FunctionProps extends FunctionOptions {
+  /**
+   * The runtime environment for the Lambda function that you are uploading.
+   * For valid values, see the Runtime property in the AWS Lambda Developer
+   * Guide.
+   */
+  readonly runtime: Runtime;
+
+  /**
+   * The source code of your Lambda function. You can point to a file in an
+   * Amazon Simple Storage Service (Amazon S3) bucket or specify your source
+   * code as inline text.
+   */
+  readonly code: Code;
+
+  /**
+   * The name of the method within your code that Lambda calls to execute
+   * your function. The format includes the file name. It can also include
+   * namespaces and other qualifiers, depending on the runtime.
+   * For more information, see https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-features.html#gettingstarted-features-programmingmodel.
+   *
+   * NOTE: If you specify your source code as inline text by specifying the
+   * ZipFile property within the Code property, specify index.function_name as
+   * the handler.
+   */
+  readonly handler: string;
+}
+
 /**
  * Deploys a file from from inside the construct library as a function.
  *
@@ -408,6 +413,8 @@ export class Function extends FunctionBase {
 
   private readonly layers: ILayerVersion[] = [];
 
+  private _logGroup?: logs.ILogGroup;
+
   /**
    * Environment variables for this function
    */
@@ -487,11 +494,12 @@ export class Function extends FunctionBase {
 
     // Log retention
     if (props.logRetention) {
-      new LogRetention(this, 'LogRetention', {
+      const logretention = new LogRetention(this, 'LogRetention', {
         logGroupName: `/aws/lambda/${this.functionName}`,
         retention: props.logRetention,
         role: props.logRetentionRole
       });
+      this._logGroup = logs.LogGroup.fromLogGroupArn(this, 'LogGroup', logretention.logGroupArn);
     }
 
     props.code.bindToResource(resource);
@@ -569,6 +577,27 @@ export class Function extends FunctionBase {
       provisionedConcurrentExecutions: provisionedExecutions,
       ...asyncInvokeConfig,
     });
+  }
+
+  /**
+   * The LogGroup where the Lambda function's logs are made available.
+   *
+   * If either `logRetention` is set or this property is called, a CloudFormation custom resource is added to the stack that
+   * pre-creates the log group as part of the stack deployment, if it already doesn't exist, and sets the correct log retention
+   * period (never expire, by default).
+   *
+   * Further, if the log group already exists and the `logRetention` is not set, the custom resource will reset the log retention
+   * to never expire even if it was configured with a different value.
+   */
+  public get logGroup(): logs.ILogGroup {
+    if (!this._logGroup) {
+      const logretention = new LogRetention(this, 'LogRetention', {
+        logGroupName: `/aws/lambda/${this.functionName}`,
+        retention: logs.RetentionDays.INFINITE,
+      });
+      this._logGroup = logs.LogGroup.fromLogGroupArn(this, `${this.node.id}-LogGroup`, logretention.logGroupArn);
+    }
+    return this._logGroup;
   }
 
   private renderEnvironment() {

@@ -5,11 +5,6 @@
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"
     },
-    "MyDatabaseBucketCA6D21E6": {
-      "Type": "AWS::S3::Bucket",
-      "UpdateReplacePolicy": "Retain",
-      "DeletionPolicy": "Retain"
-    },
     "MyDatabase1E2517DB": {
       "Type": "AWS::Glue::Database",
       "Properties": {
@@ -17,18 +12,6 @@
           "Ref": "AWS::AccountId"
         },
         "DatabaseInput": {
-          "LocationUri": {
-            "Fn::Join": [
-              "",
-              [
-                "s3://",
-                {
-                  "Ref": "MyDatabaseBucketCA6D21E6"
-                },
-                "/my_database"
-              ]
-            ]
-          },
           "Name": "my_database"
         }
       }
