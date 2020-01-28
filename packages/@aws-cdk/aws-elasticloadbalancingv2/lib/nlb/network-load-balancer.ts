@@ -40,10 +40,10 @@ export interface NetworkLoadBalancerAttributes {
   readonly loadBalancerDnsName?: string;
 
   /**
-   * The optional VPC to associate with the imported load balancer.
+   * The VPC to associate with the imported load balancer.
    *
-   * @default - When not provided, imported load balancers cannot be used
-   * in ecs-patterns.
+   * @default - When not provided, listeners cannot be created on imported load
+   * balancers.
    */
   readonly loadBalancerVpc?: ec2.IVpc;
 }

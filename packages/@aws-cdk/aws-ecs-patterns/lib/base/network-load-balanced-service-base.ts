@@ -97,6 +97,8 @@ export interface NetworkLoadBalancedServiceBaseProps {
 
   /**
    * The network load balancer that will serve traffic to the service.
+   * If the load balancer has been imported, the vpc attribute must be specified
+   * in the call to fromNetworkLoadBalancerAttributes().
    *
    * [disable-awslint:ref-via-interface]
    *
