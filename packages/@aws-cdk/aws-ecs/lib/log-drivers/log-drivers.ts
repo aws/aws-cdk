@@ -63,6 +63,8 @@ export class LogDrivers {
 
   /**
    * Creates a log driver configuration that sends log information to firelens log router.
+   * For detail configurations, please refer to Amazon ECS FireLens Examples:
+   * https://github.com/aws-samples/amazon-ecs-firelens-examples
    */
   public static firelens(props: FireLensLogDriverProps): LogDriver {
     return new FireLensLogDriver(props);
