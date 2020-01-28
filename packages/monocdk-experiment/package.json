@@ -8,6 +8,7 @@
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git"
   },
+  "stability": "experimental",
   "scripts": {
     "build": "node deps.js && node gen.js && tsc",
     "test": "cdk-test",
@@ -16,7 +17,9 @@
     "build+test+package": "npm run build+test && npm run package"
   },
   "jest": {
-    "moduleFileExtensions": [ "js" ]
+    "moduleFileExtensions": [
+      "js"
+    ]
   },
   "author": {
     "name": "Amazon Web Services",
