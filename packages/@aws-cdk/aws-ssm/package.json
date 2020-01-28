@@ -86,20 +86,5 @@
   "engines": {
     "node": ">= 10.3.0"
   },
-  "awslint": {
-    "exclude": [
-      "export:@aws-cdk/aws-ssm.IParameter",
-      "import-props-interface:@aws-cdk/aws-ssm.ParameterImportProps",
-      "resource-attribute:@aws-cdk/aws-ssm.IParameter.parameterValue",
-      "from-attributes:fromStringParameterAttributes",
-      "from-attributes:fromStringListParameterAttributes",
-      "props-physical-name:@aws-cdk/aws-ssm.StringListParameterProps",
-      "props-physical-name:@aws-cdk/aws-ssm.StringParameterProps",
-      "docs-public-apis:@aws-cdk/aws-ssm.StringParameterAttributes",
-      "docs-public-apis:@aws-cdk/aws-ssm.SecureStringParameterAttributes",
-      "docs-public-apis:@aws-cdk/aws-ssm.StringParameter.encryptionKey",
-      "docs-public-apis:@aws-cdk/aws-ssm.StringListParameter.encryptionKey"
-    ]
-  },
   "stability": "stable"
 }
