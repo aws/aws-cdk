@@ -96,12 +96,8 @@ export class DockerImageAsset extends Construct implements assets.IAsset {
       exclude = [...exclude, ...fs.readFileSync(ignore).toString().split('\n').filter(e => !!e)];
     }
 
-    // .dockerignore files allow you to ignore the Dockerfile and .dockerignore file
-    // so that these files do not get sent to the Daemon during COPY or ADD. The
-    // files are still utilized by the Docker daemon, even if they are ignored
-    // We need to copy these files into the asset folder, even if they
-    // are included in the .dockerignore, so that these files can be used during the
-    // docker build, so remove any excludes that would match these two essential files
+    // make sure the docker file and the dockerignore file end up in the staging area
+    // see https://github.com/aws/aws-cdk/issues/6004
     exclude = exclude.filter(ignoreExpression => {
       return !(minimatch(file, ignoreExpression, { matchBase: true }) ||
              minimatch(ignore, ignoreExpression, { matchBase: true }));
