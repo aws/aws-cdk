@@ -49,6 +49,8 @@
       "**/jszip/**",
       "@aws-cdk/assets/minimatch",
       "@aws-cdk/assets/minimatch/**",
+      "@aws-cdk/aws-ecr-assets/minimatch",
+      "@aws-cdk/aws-ecr-assets/minimatch/**",
       "@aws-cdk/cx-api/semver",
       "@aws-cdk/cx-api/semver/**",
       "@aws-cdk/cx-api/semver/**",
