@@ -79,6 +79,57 @@ export interface PipelineDeployStackActionProps {
    * deployment is allowed to do.
    */
   readonly adminPermissions: boolean;
+
+  // tslint:disable:max-line-length Because of long URLs in documentation
+  /**
+   * Input artifact to use for template parameters values and stack policy.
+   *
+   * The template configuration file should contain a JSON object that should look like this:
+   * `{ "Parameters": {...}, "Tags": {...}, "StackPolicy": {... }}`. For more information,
+   * see [AWS CloudFormation Artifacts](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/continuous-delivery-codepipeline-cfn-artifacts.html).
+   *
+   * Note that if you include sensitive information, such as passwords, restrict access to this
+   * file.
+   *
+   * @default No template configuration based on input artifacts
+   */
+  readonly templateConfiguration?: codepipeline.ArtifactPath;
+
+  /**
+   * Additional template parameters.
+   *
+   * Template parameters specified here take precedence over template parameters
+   * found in the artifact specified by the `templateConfiguration` property.
+   *
+   * We recommend that you use the template configuration file to specify
+   * most of your parameter values. Use parameter overrides to specify only
+   * dynamic parameter values (values that are unknown until you run the
+   * pipeline).
+   *
+   * All parameter names must be present in the stack template.
+   *
+   * Note: the entire object cannot be more than 1kB.
+   *
+   * @default No overrides
+   */
+  readonly parameterOverrides?: { [name: string]: any };
+
+  /**
+   * The list of additional input Artifacts for this Action.
+   * This is especially useful when used in conjunction with the `parameterOverrides` property.
+   * For example, if you have:
+   *
+   *   parameterOverrides: {
+   *     'Param1': action1.outputArtifact.bucketName,
+   *     'Param2': action2.outputArtifact.objectKey,
+   *   }
+   *
+   * , if the output Artifacts of `action1` and `action2` were not used to
+   * set either the `templateConfiguration` or the `templatePath` properties,
+   * you need to make sure to include them in the `extraInputs` -
+   * otherwise, you'll get an "unrecognized Artifact" error during your Pipeline's execution.
+   */
+  readonly extraInputs?: codepipeline.Artifact[];
 }
 
 /**
@@ -124,6 +175,9 @@ export class PipelineDeployStackAction implements codepipeline.IAction {
       adminPermissions: props.adminPermissions,
       deploymentRole: props.role,
       capabilities,
+      templateConfiguration: props.templateConfiguration,
+      parameterOverrides: props.parameterOverrides,
+      extraInputs: props.extraInputs,
     });
     this.executeChangeSetAction = new cpactions.CloudFormationExecuteChangeSetAction({
       actionName: 'Execute',
