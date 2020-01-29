@@ -31,8 +31,10 @@ export interface SingletonFunctionProps extends FunctionProps {
 /**
  * A Lambda that will only ever be added to a stack once.
  *
- * The lambda is identified using the value of 'uuid'. Run 'uuidgen'
- * for every SingletonLambda you create.
+ * This construct is a way to guarantee that the lambda function will be guaranteed to be part of the stack,
+ * once and only once, irrespective of how many times the construct is declared to be part of the stack.
+ * This is guaranteed as long as the `uuid` property and the optional `lambdaPurpose` property stay the same
+ * whenever they're declared into the stack.
  *
  * @resource AWS::Lambda::Function
  */
