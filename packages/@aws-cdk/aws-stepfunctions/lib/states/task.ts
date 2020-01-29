@@ -87,6 +87,17 @@ export interface TaskProps {
      * @default 60
      */
     readonly timeout?: cdk.Duration;
+    
+    /**
+     * Maximum time between heart beats
+     *
+     * If the time between heart beats takes longer than this, a 'Timeout' error is raised.
+     *
+     * This is only relevant when using an Activity type as resource.
+     *
+     * @default No heart beat timeout
+     */
+    readonly heartbeat?: Duration;
 }
 
 /**
