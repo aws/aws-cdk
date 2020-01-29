@@ -35,7 +35,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/fs-extra": "^8.0.1",
-    "@types/semver": "^6.2.0",
+    "@types/semver": "^7.1.0",
     "@types/yargs": "^15.0.1"
   },
   "dependencies": {
