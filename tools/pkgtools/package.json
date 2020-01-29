@@ -30,7 +30,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/fs-extra": "^8.0.1",
-    "@types/yargs": "^15.0.1",
+    "@types/yargs": "^15.0.2",
     "cdk-build-tools": "1.22.0",
     "pkglint": "1.22.0"
   },

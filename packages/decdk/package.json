@@ -171,7 +171,7 @@
     "@types/fs-extra": "^8.0.1",
     "@types/jest": "^25.1.0",
     "@types/yaml": "1.2.0",
-    "@types/yargs": "^15.0.1",
+    "@types/yargs": "^15.0.2",
     "jest": "^24.9.0",
     "jsii": "^0.21.2"
   },

@@ -54,7 +54,7 @@
     "@types/table": "^4.0.7",
     "@types/uuid": "^3.4.6",
     "@types/yaml": "^1.2.0",
-    "@types/yargs": "^15.0.1",
+    "@types/yargs": "^15.0.2",
     "aws-sdk-mock": "^5.0.0",
     "cdk-build-tools": "1.22.0",
     "jest": "^24.9.0",
