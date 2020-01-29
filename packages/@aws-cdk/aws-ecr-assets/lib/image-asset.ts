@@ -103,8 +103,8 @@ export class DockerImageAsset extends Construct implements assets.IAsset {
     // are included in the .dockerignore, so that these files can be used during the
     // docker build, so remove any excludes that would match these two essential files
     exclude = exclude.filter(ignoreExpression => {
-      return !(minimatch('Dockerfile', ignoreExpression, { dot: true }) ||
-             minimatch('.dockerignore', ignoreExpression, { dot: true }));
+      return !(minimatch(file, ignoreExpression, { matchBase: true }) ||
+             minimatch(ignore, ignoreExpression, { matchBase: true }));
     });
 
     if (props.repositoryName) {
