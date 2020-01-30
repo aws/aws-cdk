@@ -27,14 +27,14 @@ export interface EventSourceMappingOptions {
    *
    * @default false
    */
-  readonly bisectBatchOnFunctionError?: boolean;
+  readonly bisectBatchOnError?: boolean;
 
   /**
    * An Amazon SQS queue or Amazon SNS topic destination for discarded records.
    *
    * @default discarded records are ignored
    */
-  readonly destinationOnFailure?: IDestination;
+  readonly onFailure?: IDestination;
 
   /**
    * Set to false to disable the event source upon creation.
@@ -64,12 +64,12 @@ export interface EventSourceMappingOptions {
   /**
    * The maximum age of a record that Lambda sends to a function for processing.
    * Valid Range:
-   * * Minimum value of 60
-   * * Maximum value of 604800
+   * * Minimum value of 60 seconds
+   * * Maximum value of 7 days
    *
-   * @default 604800
+   * @default Duration.days(7)
    */
-  readonly maximumRecordAge?: cdk.Duration;
+  readonly maxRecordAge?: cdk.Duration;
 
   /**
    * The maximum number of times to retry when the function returns an error.
@@ -80,7 +80,7 @@ export interface EventSourceMappingOptions {
    *
    * @default 10000
    */
-  readonly maximumRetryAttempts?: number;
+  readonly retryAttempts?: number;
 
   /**
    * The number of batches to process from each shard concurrently.
@@ -120,33 +120,37 @@ export class EventSourceMapping extends cdk.Resource {
       throw new Error(`maxBatchingWindow cannot be over 300 seconds, got ${props.maxBatchingWindow.toSeconds()}`);
     }
 
-    if (props.maximumRecordAge && (props.maximumRecordAge.toSeconds() < 60 || props.maximumRecordAge.toSeconds() > 604800)) {
-      throw new Error(`maximumRecordAge must be between 60 and 604800 seconds inclusive, got ${props.maximumRecordAge.toSeconds()}`);
+    if (props.maxRecordAge && (props.maxRecordAge.toSeconds() < 60 || props.maxRecordAge.toDays({integral: false}) > 7)) {
+      throw new Error(`maximumRecordAge must be between 60 and 604800 seconds inclusive, got ${props.maxRecordAge.toSeconds()}`);
     }
 
-    if (props.maximumRetryAttempts && (props.maximumRetryAttempts < 0 || props.maximumRetryAttempts > 10000)) {
-      throw new Error(`maximumRetryAttempts must be between 0 and 10000 inclusive, got ${props.maximumRetryAttempts}`);
+    if (props.retryAttempts && (props.retryAttempts < 0 || props.retryAttempts > 10000)) {
+      throw new Error(`maximumRetryAttempts must be between 0 and 10000 inclusive, got ${props.retryAttempts}`);
     }
 
     if ((props.parallelizationFactor || props.parallelizationFactor === 0) && (props.parallelizationFactor < 1 || props.parallelizationFactor > 10)) {
       throw new Error(`parallelizationFactor must be between 1 and 10 inclusive, got ${props.parallelizationFactor}`);
     }
 
+    let onFailure;
+
+    if (props.onFailure) {
+      onFailure = {
+        onFailure: props.onFailure.bind(this, props.target, { type: DestinationType.FAILURE })
+      };
+    }
+
     new CfnEventSourceMapping(this, 'Resource', {
       batchSize: props.batchSize,
-      bisectBatchOnFunctionError: props.bisectBatchOnFunctionError,
-      destinationConfig: props.destinationOnFailure
-        ? {
-          onFailure: props.destinationOnFailure.bind(this, props.target, { type: DestinationType.FAILURE })
-        }
-        : undefined,
+      bisectBatchOnFunctionError: props.bisectBatchOnError,
+      destinationConfig: onFailure,
       enabled: props.enabled,
       eventSourceArn: props.eventSourceArn,
       functionName: props.target.functionName,
       startingPosition: props.startingPosition,
-      maximumBatchingWindowInSeconds: props.maxBatchingWindow && props.maxBatchingWindow.toSeconds(),
-      maximumRecordAgeInSeconds: props.maximumRecordAge && props.maximumRecordAge.toSeconds(),
-      maximumRetryAttempts: props.maximumRetryAttempts,
+      maximumBatchingWindowInSeconds: props.maxBatchingWindow?.toSeconds(),
+      maximumRecordAgeInSeconds: props.maxRecordAge?.toSeconds(),
+      maximumRetryAttempts: props.retryAttempts,
       parallelizationFactor: props.parallelizationFactor
     });
   }

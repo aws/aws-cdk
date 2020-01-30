@@ -247,7 +247,7 @@ export = {
 
     // WHEN
     fn.addEventSource(new sources.DynamoEventSource(table, {
-      maximumRetryAttempts: 10,
+      retryAttempts: 10,
       startingPosition: lambda.StartingPosition.LATEST
     }));
 
@@ -284,7 +284,7 @@ export = {
     // THEN
     test.throws(() =>
       fn.addEventSource(new sources.DynamoEventSource(table, {
-        maximumRetryAttempts: -1,
+        retryAttempts: -1,
         startingPosition: lambda.StartingPosition.LATEST
       })), /maximumRetryAttempts must be between 0 and 10000 inclusive, got -1/);
 
@@ -306,7 +306,7 @@ export = {
     // THEN
     test.throws(() =>
       fn.addEventSource(new sources.DynamoEventSource(table, {
-        maximumRetryAttempts: 10001,
+        retryAttempts: 10001,
         startingPosition: lambda.StartingPosition.LATEST
       })), /maximumRetryAttempts must be between 0 and 10000 inclusive, got 10001/);
 
@@ -327,7 +327,7 @@ export = {
 
     // WHEN
     fn.addEventSource(new sources.DynamoEventSource(table, {
-      bisectBatchOnFunctionError: true,
+      bisectBatchOnError: true,
       startingPosition: lambda.StartingPosition.LATEST
     }));
 
@@ -443,7 +443,7 @@ export = {
 
     // WHEN
     fn.addEventSource(new sources.DynamoEventSource(table, {
-      maximumRecordAge: cdk.Duration.seconds(100),
+      maxRecordAge: cdk.Duration.seconds(100),
       startingPosition: lambda.StartingPosition.LATEST
     }));
 
@@ -480,7 +480,7 @@ export = {
     // THEN
     test.throws(() =>
       fn.addEventSource(new sources.DynamoEventSource(table, {
-        maximumRecordAge: cdk.Duration.seconds(59),
+        maxRecordAge: cdk.Duration.seconds(59),
         startingPosition: lambda.StartingPosition.LATEST
       })), /maximumRecordAge must be between 60 and 604800 seconds inclusive, got 59/);
 
@@ -502,7 +502,7 @@ export = {
     // THEN
     test.throws(() =>
       fn.addEventSource(new sources.DynamoEventSource(table, {
-        maximumRecordAge: cdk.Duration.seconds(604801),
+        maxRecordAge: cdk.Duration.seconds(604801),
         startingPosition: lambda.StartingPosition.LATEST
       })), /maximumRecordAge must be between 60 and 604800 seconds inclusive, got 604801/);
 
@@ -524,7 +524,7 @@ export = {
 
     // WHEN
     fn.addEventSource(new sources.DynamoEventSource(table, {
-      destinationOnFailure: new destinations.SqsDestination(queue),
+      onFailure: new destinations.SqsDestination(queue),
       startingPosition: lambda.StartingPosition.LATEST
     }));
 

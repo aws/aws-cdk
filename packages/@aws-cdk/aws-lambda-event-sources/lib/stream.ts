@@ -26,24 +26,24 @@ export interface StreamEventSourceProps {
    *
    * @default false
    */
-  readonly bisectBatchOnFunctionError?: boolean;
+  readonly bisectBatchOnError?: boolean;
 
   /**
    * An Amazon SQS queue or Amazon SNS topic destination for discarded records.
    *
    * @default discarded records are ignored
    */
-  readonly destinationOnFailure?: lambda.IDestination;
+  readonly onFailure?: lambda.IDestination;
 
   /**
    * The maximum age of a record that Lambda sends to a function for processing.
    * Valid Range:
-   * * Minimum value of 60
-   * * Maximum value of 604800
+   * * Minimum value of 60 seconds
+   * * Maximum value of 7 days
    *
-   * @default 604800
+   * @default Duration.days(7)
    */
-  readonly maximumRecordAge?: Duration;
+  readonly maxRecordAge?: Duration;
 
   /**
    * Maximum number of retry attempts
@@ -53,7 +53,7 @@ export interface StreamEventSourceProps {
    *
    * @default 10000
    */
-  readonly maximumRetryAttempts?: number;
+  readonly retryAttempts?: number;
 
   /**
    * The number of batches to process from each shard concurrently.
@@ -92,13 +92,13 @@ export abstract class StreamEventSource implements lambda.IEventSource {
     return {
       ...options,
       batchSize: this.props.batchSize || 100,
-      bisectBatchOnFunctionError: this.props.bisectBatchOnFunctionError,
+      bisectBatchOnError: this.props.bisectBatchOnError,
       startingPosition: this.props.startingPosition,
       maxBatchingWindow: this.props.maxBatchingWindow,
-      maximumRecordAge: this.props.maximumRecordAge,
-      maximumRetryAttempts: this.props.maximumRetryAttempts,
+      maxRecordAge: this.props.maxRecordAge,
+      retryAttempts: this.props.retryAttempts,
       parallelizationFactor: this.props.parallelizationFactor,
-      destinationOnFailure: this.props.destinationOnFailure
+      onFailure: this.props.onFailure
     };
   }
 }
