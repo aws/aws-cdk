@@ -142,12 +142,12 @@ Integration tests perform a few functions in the CDK code base -
    CloudFormation deployment does not mean that the resources are set up correctly.
 
 If you are working on a new feature that is using previously unused CloudFormation resource types, or involves 
-configuring resource types across services, you need to write integration tests that use these resource types of
+configuring resource types across services, you need to write integration tests that use these resource types or
 features.
 
 To the extent possible, include a section (like below) in the integration test file that specifies how the successfully
-deployed can be verified for correctness. Correctness here implies that the resources have been set up correctly. The
-steps here are usually AWS CLI commands but they need not be.
+deployed stack can be verified for correctness. Correctness here implies that the resources have been set up correctly.
+The steps here are usually AWS CLI commands but they need not be.
 
 ```ts
 /*
@@ -786,4 +786,3 @@ To debug your CDK application along with the CDK repository,
 * [Workshop](https://github.com/aws-samples/aws-cdk-intro-workshop): source for https://cdkworkshop.com
 * [Developer Guide](https://github.com/awsdocs/aws-cdk-guide): markdown source for developer guide
 * [jsii](https://github.com/aws/jsii): the technology we use for multi-language support. If you are looking to help us support new languages, start there.
-
