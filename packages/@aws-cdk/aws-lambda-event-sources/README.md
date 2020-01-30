@@ -116,11 +116,18 @@ To process events with a Lambda function, first create or update a DynamoDB tabl
 and add it to your Lambda function. The following parameters will impact Amazon DynamoDB's polling behavior:
 
 * __batchSize__: Determines how many records are buffered before invoking your lambda function - could impact your function's memory usage (if too high) and ability to keep up with incoming data velocity (if too low).
+* __bisectBatchOnError__: If a batch encounters an error, this will cause the batch to be split in two and have each new smaller batch retried, allowing the records in error to be isolated.
+* __maxBatchingWindow__: The maximum amount of time to gather records before invoking the lambda. This increases the likelihood of a full batch at the cost of possibly delaying processing.
+* __maxRecordAge__: The maximum age of a record that will be sent to the function for processing.
+* __onFailure__: In the event a record fails and consumes all retries, the record will be sent to SQS queue or SNS topic that is specified here
+* __parallelizationFactor__: The number of batches to concurrently process on each shard.
+* __retryAttempts__: The maximum number of times a record should be retried in the event of failure.
 * __startingPosition__: Will determine where to being consumption, either at the most recent ('LATEST') record or the oldest record ('TRIM_HORIZON'). 'TRIM_HORIZON' will ensure you process all available data, while 'LATEST' will ignore all reocrds that arrived prior to attaching the event source.
 
 ```ts
 import dynamodb = require('@aws-cdk/aws-dynamodb');
 import lambda = require('@aws-cdk/aws-lambda');
+import sqs = require('@aws-cdk/aws-sqs');
 import { DynamoEventSource } from '@aws-cdk/aws-lambda-event-sources';
 
 const table = new dynamodb.Table(..., {
@@ -128,9 +135,15 @@ const table = new dynamodb.Table(..., {
   stream: dynamodb.StreamViewType.NEW_IMAGE // make sure stream is configured
 });
 
+const deadLetterQueue = new sqs.Queue(this, 'deadLetterQueue');
+
 const function = new lambda.Function(...);
 function.addEventSource(new DynamoEventSource(table, {
-  startingPosition: lambda.StartingPosition.TRIM_HORIZON
+  startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+  batchSize: 5,
+  bisectBatchOnError: true,
+  onFailure: deadLetterQueue,
+  retryAttempts: 10
 }));
 ```
 
@@ -146,6 +159,12 @@ event source parameters. The following parameters will impact Amazon Kinesis's p
 behavior:
 
 * __batchSize__: Determines how many records are buffered before invoking your lambnda function - could impact your function's memory usage (if too high) and ability to keep up with incoming data velocity (if too low).
+* __bisectBatchOnError__: If a batch encounters an error, this will cause the batch to be split in two and have each new smaller batch retried, allowing the records in error to be isolated.
+* __maxBatchingWindow__: The maximum amount of time to gather records before invoking the lambda. This increases the likelihood of a full batch at the cost of possibly delaying processing.
+* __maxRecordAge__: The maximum age of a record that will be sent to the function for processing.
+* __onFailure__: In the event a record fails and consumes all retries, the record will be sent to SQS queue or SNS topic that is specified here
+* __parallelizationFactor__: The number of batches to concurrently process on each shard.
+* __retryAttempts__: The maximum number of times a record should be retried in the event of failure.
 * __startingPosition__: Will determine where to being consumption, either at the most recent ('LATEST') record or the oldest record ('TRIM_HORIZON'). 'TRIM_HORIZON' will ensure you process all available data, while 'LATEST' will ignore all reocrds that arrived prior to attaching the event source.
 
 ```ts
