@@ -41,7 +41,7 @@ export interface S3DownloadAndExecuteOptions {
    *
    * @default no arguments.
    */
-  readonly arguments?: string[]
+  readonly arguments?: string
 }
 
 /**
@@ -147,20 +147,19 @@ class LinuxUserData extends UserData {
           "}");
       this.functionsAdded.add('download_and_execute_s3_file');
     }
-    let argumentStr = "";
-    if ( params.arguments && params.arguments.length > 0 ) {
-      argumentStr = params.arguments.map(x => this.posixEscape(x)).join(' ');
-    }
+    const args = [
+        `s3://${params.bucketName}/${params.bucketKey}`,
+        (params.localFile && params.localFile.length !== 0) ? params.localFile : `/tmp/${ params.bucketKey }`,
+        params.arguments || ""
+    ];
 
-    const localPath = (params.localFile && params.localFile.length !== 0) ? params.localFile : `/tmp/${ params.bucketKey }`;
-
-    this.addCommands(`download_and_execute_s3_file \"s3://${params.bucketName}/${params.bucketKey}\" \"${localPath}\" ${argumentStr}` );
+    this.addCommands(`download_and_execute_s3_file ${ args.join(' ') }` );
   }
 
   public addSignalOnExitCommand( resource: Resource ): void {
     const stack = Stack.of(resource);
     const resourceID = stack.getLogicalId(resource.node.defaultChild as CfnElement);
-    this.addOnExitCommands(`/opt/aws/bin/cfn-signal --stack ${stack.stackName} --resource ${resourceID} --region ${stack.region} -e $exitCode || echo "Failed to send Cloudformation Signal"`);
+    this.addOnExitCommands(`/opt/aws/bin/cfn-signal --stack ${stack.stackName} --resource ${resourceID} --region ${stack.region} -e $exitCode || echo 'Failed to send Cloudformation Signal'`);
   }
 
   private renderOnExitLines(): string[] {
@@ -169,17 +168,6 @@ class LinuxUserData extends UserData {
     }
     return [];
   }
-
-  /**
-   * Escape a shell argument for POSIX shells
-   *
-   */
-  private posixEscape(x: string) {
-    // Turn ' -> '"'"'
-    x = x.replace("'", "'\"'\"'");
-    return `'${x}'`;
-  }
-
 }
 
 /**
@@ -236,12 +224,10 @@ class WindowsUserData extends UserData {
         params.bucketName,
         params.bucketKey,
         params.localFile || "C:/temp/" + params.bucketKey,
+        params.arguments || ""
     ];
-    if ( params.arguments ) {
-      args.push(...params.arguments);
-    }
 
-    this.addCommands(`download_and_execute_s3_file ${ args.map(x => `'${x}'` ).join(' ') }` );
+    this.addCommands(`download_and_execute_s3_file ${ args.join(' ') }` );
   }
 
   public addSignalOnExitCommand( resource: Resource ): void {

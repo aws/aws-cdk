@@ -77,7 +77,7 @@ export = {
       bucketName: "test3",
       bucketKey: "filename3.bat",
       localFile: ".\\thirdScript.sh",
-      arguments: ["arg1", "arg2"]
+      arguments: "arg1 arg2 -arg $variable"
     } );
 
     // THEN
@@ -97,9 +97,10 @@ export = {
         'Read-S3Object -BucketName $bucketName -key $bucketKey -file $localFile -ErrorAction Stop\n' +
         '&"$localFile" @arguments\n' +
         'if (!$?) { Write-Error \'Failed to execute file\' -ErrorAction Stop }\n' +
-        '}\ndownload_and_execute_s3_file \'test\' \'filename.bat\' \'C:/temp/filename.bat\'\n' +
-        'download_and_execute_s3_file \'test2\' \'filename2.bat\' \'.\\otherScript.sh\'\n' +
-        'download_and_execute_s3_file \'test3\' \'filename3.bat\' \'.\\thirdScript.sh\' \'arg1\' \'arg2\'</powershell>'
+        '}\n' +
+        'download_and_execute_s3_file test filename.bat C:/temp/filename.bat \n' +
+        'download_and_execute_s3_file test2 filename2.bat .\\otherScript.sh \n' +
+        'download_and_execute_s3_file test3 filename3.bat .\\thirdScript.sh arg1 arg2 -arg $variable</powershell>'
     );
     test.done();
   },
@@ -151,9 +152,9 @@ export = {
     test.equals(rendered, '#!/bin/bash\n' +
         'function exitTrap(){\n' +
         'exitCode=$?\n' +
-        '/opt/aws/bin/cfn-signal --stack Stack --resource RESOURCE1989552F --region ${Token[AWS::Region.4]} -e $exitCode || echo "Failed to send Cloudformation Signal"\n' +
-        '}' +
-        '\ntrap exitTrap EXIT\n' +
+        '/opt/aws/bin/cfn-signal --stack Stack --resource RESOURCE1989552F --region ${Token[AWS::Region.4]} -e $exitCode || echo \'Failed to send Cloudformation Signal\'\n' +
+        '}\n' +
+        'trap exitTrap EXIT\n' +
         'command1');
     test.done();
   },
@@ -174,7 +175,7 @@ export = {
       bucketName: "test3",
       bucketKey: "filename3.sh",
       localFile: "~/thirdScript.sh",
-      arguments: ["arg1", "arg2"]
+      arguments: "arg1 arg2 $variable"
     } );
 
     // THEN
@@ -193,9 +194,9 @@ export = {
         '${path} "$@"\n' +
         'if [ $? -ne 0 ]; then exit 1;fi;\n' +
         '}\n' +
-        'download_and_execute_s3_file "s3://test/filename.sh" "/tmp/filename.sh" \n' +
-        'download_and_execute_s3_file "s3://test2/filename2.sh" "~/otherScript.sh" \n' +
-        'download_and_execute_s3_file "s3://test3/filename3.sh" "~/thirdScript.sh" \'arg1\' \'arg2\'');
+        'download_and_execute_s3_file s3://test/filename.sh /tmp/filename.sh \n' +
+        'download_and_execute_s3_file s3://test2/filename2.sh ~/otherScript.sh \n' +
+        'download_and_execute_s3_file s3://test3/filename3.sh ~/thirdScript.sh arg1 arg2 $variable');
     test.done();
   },
   'can create Custom user data'(test: Test) {
