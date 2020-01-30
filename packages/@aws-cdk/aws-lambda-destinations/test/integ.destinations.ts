@@ -4,9 +4,11 @@ import * as sqs from '@aws-cdk/aws-sqs';
 import { App, Construct, Duration, Stack, StackProps } from '@aws-cdk/core';
 import * as destinations from '../lib';
 
-// After deploy, test with:
-// aws lambda invoke --function-name <deployed fn name> --invocation-type Event --payload '"OK"' response.json
-// aws lambda invoke --function-name <deployed fn name> --invocation-type Event --payload '"NOT OK"' response.json
+/*
+ * Stack verification steps:
+ * * aws lambda invoke --function-name <deployed fn name> --invocation-type Event --payload '"OK"' response.json
+ * * aws lambda invoke --function-name <deployed fn name> --invocation-type Event --payload '"NOT OK"' response.json
+ */
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
