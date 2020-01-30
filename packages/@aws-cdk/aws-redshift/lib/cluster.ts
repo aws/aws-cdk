@@ -1,5 +1,5 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
-import { IRole } from '@aws-cdk/aws-iam';
+import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
@@ -189,7 +189,7 @@ export interface ClusterProps {
      *
      * @default - A role is automatically created for you
      */
-    readonly roles?: IRole[];
+    readonly roles?: iam.IRole[];
 
     /**
      * Name of a database which is automatically created inside the cluster
@@ -256,7 +256,7 @@ abstract class ClusterBase extends Resource implements ICluster {
     public asSecretAttachmentTarget(): secretsmanager.SecretAttachmentTargetProps {
         return {
             targetId: this.clusterName,
-            targetType: secretsmanager.AttachmentTargetType.REDSHIFT_CLUSTER
+            targetType: secretsmanager.AttachmentTargetType.REDSHIFT_CLUSTER,
         };
     }
 }
@@ -272,10 +272,9 @@ export class Cluster extends ClusterBase {
      */
     public static fromClusterAttributes(scope: Construct, id: string, attrs: ClusterAttributes): ICluster {
         class Import extends ClusterBase implements ICluster {
-            public readonly defaultPort = ec2.Port.tcp(attrs.clusterEndpointPort);
             public readonly connections = new ec2.Connections({
                 securityGroups: attrs.securityGroups,
-                defaultPort: this.defaultPort
+                defaultPort: ec2.Port.tcp(attrs.clusterEndpointPort),
             });
             public readonly clusterName = attrs.clusterName;
             public readonly instanceIdentifiers: string[] = [];
@@ -299,11 +298,6 @@ export class Cluster extends ClusterBase {
      * Access to the network connections
      */
     public readonly connections: ec2.Connections;
-
-    /**
-     * Security group identifier of this database
-     */
-    public readonly securityGroupIds: string[];
 
     /**
      * The secret attached to this cluster
@@ -349,7 +343,7 @@ export class Cluster extends ClusterBase {
                 securityGroupName: 'redshift SG'
             })];
 
-        this.securityGroupIds = securityGroups.map(sg => sg.securityGroupId);
+        const securityGroupIds = securityGroups.map(sg => sg.securityGroupId);
 
         let secret: DatabaseSecret | undefined;
         if (!props.masterUser.masterPassword) {
@@ -360,7 +354,7 @@ export class Cluster extends ClusterBase {
         }
 
         const clusterType = props.clusterType || ClusterType.MULTI_NODE;
-        const nodeCount = props.numberOfNodes ? props.numberOfNodes : (clusterType === ClusterType.MULTI_NODE ? 2 : 1);
+        const nodeCount = props.numberOfNodes !== undefined ? props.numberOfNodes : (clusterType === ClusterType.MULTI_NODE ? 2 : 1);
 
         if (clusterType === ClusterType.MULTI_NODE && nodeCount < 2) {
             throw new Error('Number of nodes for cluster type multi-node must be at least 2');
@@ -384,7 +378,7 @@ export class Cluster extends ClusterBase {
             clusterType,
             clusterIdentifier: props.clusterIdentifier,
             clusterSubnetGroupName: subnetGroup.ref,
-            vpcSecurityGroupIds: this.securityGroupIds,
+            vpcSecurityGroupIds: securityGroupIds,
             port: props.port,
             clusterParameterGroupName: props.parameterGroup && props.parameterGroup.parameterGroupName,
             // Admin
@@ -403,7 +397,7 @@ export class Cluster extends ClusterBase {
             publiclyAccessible: false,
             // Encryption
             kmsKeyId: props.encryptionKey && props.encryptionKey.keyArn,
-            encrypted: props.encrypted ? props.encrypted : true,
+            encrypted: props.encrypted,
         });
 
         cluster.applyRemovalPolicy(props.removalPolicy, {

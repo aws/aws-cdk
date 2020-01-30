@@ -32,7 +32,6 @@ test('check that instantiation works', () => {
       NumberOfNodes: 2,
       NodeType: "dc2.large",
       DBName: "default_db",
-      Encrypted: true,
       PubliclyAccessible: false,
       ClusterSubnetGroupName: { Ref: "RedshiftSubnetsDFE70E0A" },
       VpcSecurityGroupIds: [{ "Fn::GetAtt": ["RedshiftSecurityGroup796D74A7", "GroupId"] }]
@@ -125,7 +124,7 @@ test('creates a secret when master credentials are not specified', () => {
 
   cdkExpect(stack).to(haveResource('AWS::SecretsManager::Secret', {
     GenerateSecretString: {
-      ExcludeCharacters: '\"@/\\',
+      ExcludeCharacters: '"@/\\\ \'',
       GenerateStringKey: 'password',
       PasswordLength: 30,
       SecretStringTemplate: '{"username":"admin"}'

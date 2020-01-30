@@ -29,10 +29,10 @@ export class DatabaseSecret extends secretsmanager.Secret {
     super(scope, id, {
       encryptionKey: props.encryptionKey,
       generateSecretString: {
-        passwordLength: 30, // Oracle password cannot have more than 30 characters
+        passwordLength: 30, // Redshift password could be up to 64 characters
         secretStringTemplate: JSON.stringify({ username: props.username }),
         generateStringKey: 'password',
-        excludeCharacters: '"@/\\'
+        excludeCharacters: '"@/\\\ \''
       }
     });
   }
