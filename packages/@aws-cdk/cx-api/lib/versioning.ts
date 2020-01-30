@@ -31,7 +31,7 @@ import { AssemblyManifest } from './cloud-assembly';
  * Note that the versions are not compared in a semver way, they are used as
  * opaque ordered tokens.
  */
-export const CLOUD_ASSEMBLY_VERSION = '1.22.0';
+export const CLOUD_ASSEMBLY_VERSION = '1.23.0';
 
 /**
  * Look at the type of response we get and upgrade it to the latest expected version
@@ -75,7 +75,7 @@ export function upgradeAssemblyManifest(manifest: AssemblyManifest): AssemblyMan
     // Backwards compatible changes to ContainerImageAssetMetadataEntry:
     // * Make `imageNameParameter` optional (new apps do not require it anymore because container images go to a well-known repository)
     // * Add optional `imageTag` to allow apps to specify exactly where to store the image (required if `imageNameParameter` is not defined)
-    manifest = justUpgradeVersion(manifest, '1.22.0');
+    manifest = justUpgradeVersion(manifest, '1.23.0');
   }
 
   return manifest;
