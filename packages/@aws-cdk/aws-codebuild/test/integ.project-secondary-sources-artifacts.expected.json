@@ -209,6 +209,11 @@
             "SourceIdentifier": "AddSource1",
             "Type": "S3"
           }
+        ],
+        "SecondarySourceVersions": [
+          {
+            "SourceIdentifier": "AddSource1"
+          }
         ]
       }
     }

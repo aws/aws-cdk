@@ -479,7 +479,6 @@ export = {
         source: codebuild.Source.gitHub({
           owner: 'testowner',
           repo: 'testrepo',
-          branch: 'testbranch',
           cloneDepth: 3,
           webhook: true,
           reportBuildStatus: false,
@@ -497,10 +496,6 @@ export = {
           ReportBuildStatus: false,
           GitCloneDepth: 3,
         }
-      }));
-
-      expect(stack).to(haveResource('AWS::CodeBuild::Project', {
-        SourceVersion: 'testbranch',
       }));
 
       expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
@@ -864,6 +859,76 @@ export = {
             "Type": "S3",
           },
         ],
+      }));
+
+      test.done();
+    },
+  },
+
+  'secondary source versions': {
+    'allow secondary source versions'(test: Test) {
+      const stack = new cdk.Stack();
+      const bucket = new s3.Bucket(stack, 'MyBucket');
+      const project = new codebuild.Project(stack, 'MyProject', {
+        source: codebuild.Source.s3({
+          bucket,
+          path: 'some/path',
+        }),
+      });
+
+      project.addSecondarySource(codebuild.Source.s3({
+        bucket,
+        path: 'another/path',
+        identifier: 'source1',
+        sourceVersion: 'someversion'
+      }));
+
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        "SecondarySources": [
+          {
+            "SourceIdentifier": "source1",
+            "Type": "S3",
+          },
+        ],
+        "SecondarySourceVersions": [
+          {
+            "SourceIdentifier": "source1",
+            "SourceVersion": "someversion"
+          }
+        ]
+      }));
+
+      test.done();
+    },
+
+    'allow not to specify secondary source versions'(test: Test) {
+      const stack = new cdk.Stack();
+      const bucket = new s3.Bucket(stack, 'MyBucket');
+      const project = new codebuild.Project(stack, 'MyProject', {
+        source: codebuild.Source.s3({
+          bucket,
+          path: 'some/path',
+        }),
+      });
+
+      project.addSecondarySource(codebuild.Source.s3({
+        bucket,
+        path: 'another/path',
+        identifier: 'source1',
+      }));
+
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        "SecondarySources": [
+          {
+            "SourceIdentifier": "source1",
+            "Type": "S3",
+          },
+        ],
+        "SecondarySourceVersions": [
+          {
+            "SourceIdentifier": "source1",
+          }
+        ]
       }));
 
       test.done();

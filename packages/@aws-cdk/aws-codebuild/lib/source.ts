@@ -25,7 +25,7 @@ export interface SourceConfig {
    * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codebuild-project.html#cfn-codebuild-project-sourceversion
    * @default the latest version
    */
-  readonly sourceVersion?: string | undefined;
+  readonly sourceVersion?: string;
 }
 
 /**
@@ -478,6 +478,14 @@ abstract class ThirdPartyGitSource extends GitSource {
  */
 export interface CodeCommitSourceProps extends GitSourceProps {
   readonly repository: codecommit.IRepository;
+
+  /**
+   *  The commit ID, branch, or Git tag to use.
+   *
+   * @example 'mybranch'
+   * @default the default branch's HEAD commit ID is used
+   */
+  readonly sourceVersion?: string;
 }
 
 /**
@@ -486,10 +494,12 @@ export interface CodeCommitSourceProps extends GitSourceProps {
 class CodeCommitSource extends GitSource {
   public readonly type = CODECOMMIT_SOURCE_TYPE;
   private readonly repo: codecommit.IRepository;
+  private readonly sourceVersion?: string;
 
   constructor(props: CodeCommitSourceProps) {
     super(props);
     this.repo = props.repository;
+    this.sourceVersion = props.sourceVersion;
   }
 
   public bind(_scope: Construct, project: IProject): SourceConfig {
@@ -505,6 +515,7 @@ class CodeCommitSource extends GitSource {
         ...superConfig.sourceProperty,
         location: this.repo.repositoryCloneUrlHttp,
       },
+      sourceVersion: this.sourceVersion,
     };
   }
 }
@@ -515,6 +526,13 @@ class CodeCommitSource extends GitSource {
 export interface S3SourceProps extends SourceProps {
   readonly bucket: s3.IBucket;
   readonly path: string;
+
+  /**
+   *  The version ID of the object that represents the build input ZIP file to use.
+   *
+   * @default latest
+   */
+  readonly sourceVersion?: string;
 }
 
 /**
@@ -524,11 +542,13 @@ class S3Source extends Source {
   public readonly type = S3_SOURCE_TYPE;
   private readonly bucket: s3.IBucket;
   private readonly path: string;
+  private readonly sourceVersion?: string;
 
   constructor(props: S3SourceProps) {
     super(props);
     this.bucket = props.bucket;
     this.path = props.path;
+    this.sourceVersion = props.sourceVersion;
   }
 
   public bind(_scope: Construct, project: IProject): SourceConfig {
@@ -540,6 +560,7 @@ class S3Source extends Source {
         ...superConfig.sourceProperty,
         location: `${this.bucket.bucketName}/${this.path}`,
       },
+      sourceVersion: this.sourceVersion,
     };
   }
 }
@@ -563,12 +584,13 @@ export interface GitHubSourceProps extends ThirdPartyGitSourceProps {
   readonly repo: string;
 
   /**
-   * The name of the branch.
+   * The commit ID, pull request ID, branch name, or tag name that corresponds to
+   * the version of the source code you want to build
    *
-   * @example 'mybranch'
+   * @example 'pr/25'
    * @default the default branch's HEAD commit ID is used
    */
-  readonly branch?: string;
+  readonly sourceVersion?: string;
 }
 
 /**
@@ -576,13 +598,13 @@ export interface GitHubSourceProps extends ThirdPartyGitSourceProps {
  */
 class GitHubSource extends ThirdPartyGitSource {
   public readonly type = GITHUB_SOURCE_TYPE;
-  public readonly branch?: string;
+  private readonly sourceVersion?: string;
   private readonly httpsCloneUrl: string;
 
   constructor(props: GitHubSourceProps) {
     super(props);
     this.httpsCloneUrl = `https://github.com/${props.owner}/${props.repo}.git`;
-    this.branch = props.branch;
+    this.sourceVersion = props.sourceVersion;
   }
 
   public bind(_scope: Construct, project: IProject): SourceConfig {
@@ -592,7 +614,7 @@ class GitHubSource extends ThirdPartyGitSource {
         ...superConfig.sourceProperty,
         location: this.httpsCloneUrl,
       },
-      sourceVersion: this.branch,
+      sourceVersion: this.sourceVersion,
       buildTriggers: superConfig.buildTriggers,
     };
   }
@@ -613,6 +635,15 @@ export interface GitHubEnterpriseSourceProps extends ThirdPartyGitSourceProps {
    * @default false
    */
   readonly ignoreSslErrors?: boolean;
+
+  /**
+   * The commit ID, pull request ID, branch name, or tag name that corresponds to
+   * the version of the source code you want to build
+   *
+   * @example 'pr/25'
+   * @default the default branch's HEAD commit ID is used
+   */
+  readonly sourceVersion?: string;
 }
 
 /**
@@ -622,11 +653,13 @@ class GitHubEnterpriseSource extends ThirdPartyGitSource {
   public readonly type = GITHUB_ENTERPRISE_SOURCE_TYPE;
   private readonly httpsCloneUrl: string;
   private readonly ignoreSslErrors?: boolean;
+  private readonly sourceVersion?: string;
 
   constructor(props: GitHubEnterpriseSourceProps) {
     super(props);
     this.httpsCloneUrl = props.httpsCloneUrl;
     this.ignoreSslErrors = props.ignoreSslErrors;
+    this.sourceVersion = props.sourceVersion;
   }
 
   public bind(_scope: Construct, _project: IProject): SourceConfig {
@@ -637,6 +670,7 @@ class GitHubEnterpriseSource extends ThirdPartyGitSource {
         location: this.httpsCloneUrl,
         insecureSsl: this.ignoreSslErrors,
       },
+      sourceVersion: this.sourceVersion,
       buildTriggers: superConfig.buildTriggers,
     };
   }
@@ -659,6 +693,14 @@ export interface BitBucketSourceProps extends ThirdPartyGitSourceProps {
    * @example 'aws-cdk'
    */
   readonly repo: string;
+
+  /**
+   *  The commit ID, branch name, or tag name that corresponds to the version of the source code you want to build
+   *
+   * @example 'mybranch'
+   * @default the default branch's HEAD commit ID is used
+   */
+  readonly sourceVersion?: string;
 }
 
 /**
@@ -667,10 +709,12 @@ export interface BitBucketSourceProps extends ThirdPartyGitSourceProps {
 class BitBucketSource extends ThirdPartyGitSource {
   public readonly type = BITBUCKET_SOURCE_TYPE;
   private readonly httpsCloneUrl: any;
+  private readonly sourceVersion?: string;
 
   constructor(props: BitBucketSourceProps) {
     super(props);
     this.httpsCloneUrl = `https://bitbucket.org/${props.owner}/${props.repo}.git`;
+    this.sourceVersion = props.sourceVersion;
   }
 
   public bind(_scope: Construct, _project: IProject): SourceConfig {
@@ -690,6 +734,7 @@ class BitBucketSource extends ThirdPartyGitSource {
         ...superConfig.sourceProperty,
         location: this.httpsCloneUrl,
       },
+      sourceVersion: this.sourceVersion,
       buildTriggers: superConfig.buildTriggers,
     };
   }
