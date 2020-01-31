@@ -75,6 +75,14 @@ export function upgradeAssemblyManifest(manifest: AssemblyManifest): AssemblyMan
     // Backwards compatible changes to ContainerImageAssetMetadataEntry:
     // * Make `imageNameParameter` optional (new apps do not require it anymore because container images go to a well-known repository)
     // * Add optional `imageTag` to allow apps to specify exactly where to store the image (required if `imageNameParameter` is not defined)
+    manifest = justUpgradeVersion(manifest, '1.21.0');
+  }
+
+  if (manifest.version === '1.21.0') {
+    // Backwards compatible changes.
+    // The version was bumped simply to align it with the published version
+    // due to a mistake we made when publishing 1.22.0.
+    // see https://github.com/aws/aws-cdk/issues/5986
     manifest = justUpgradeVersion(manifest, '1.23.0');
   }
 
