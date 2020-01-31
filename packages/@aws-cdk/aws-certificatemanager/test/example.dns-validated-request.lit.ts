@@ -13,7 +13,7 @@ class CertStack extends Stack {
 
     const certificate = new certmgr.DnsValidatedCertificate(this, 'TestCertificate', {
         domainName: 'test.example.com',
-        hostedZone,
+        hostedZone: hostedZone,
     });
     /// !hide
 
