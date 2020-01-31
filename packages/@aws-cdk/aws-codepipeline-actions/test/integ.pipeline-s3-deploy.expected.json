@@ -311,7 +311,7 @@
                     "Ref": "DeployBucket67E2C076"
                   },
                   "Extract": "true",
-                  "CannedACL": "PublicRead",
+                  "CannedACL": "public-read",
                   "CacheControl": "public, max-age: 43200"
                 },
                 "InputArtifacts": [
