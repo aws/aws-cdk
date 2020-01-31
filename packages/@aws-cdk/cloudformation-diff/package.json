@@ -54,7 +54,7 @@
     "@types/string-width": "^4.0.1",
     "@types/table": "^4.0.7",
     "cdk-build-tools": "1.22.0",
-    "fast-check": "^1.21.0",
+    "fast-check": "^1.22.0",
     "jest": "^24.9.0",
     "pkglint": "1.22.0",
     "ts-jest": "^24.3.0"

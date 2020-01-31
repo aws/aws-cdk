@@ -3125,7 +3125,7 @@ capture-stack-trace@^1.0.0:
   resolved "https://registry.yarnpkg.com/capture-stack-trace/-/capture-stack-trace-1.0.1.tgz#a6c0bbe1f38f3aa0b92238ecb6ff42c344d4135d"
   integrity sha512-mYQLZnx5Qt1JgB1WEiMCf2647plpGeQ2NMR/5L0HNZzGQo4fuSPnK+wjfPnKZV0aiJDgzmWqqkV/g7JD+DW0qw==
 
-case@^1.6.2:
+case@1.6.2, case@^1.6.2:
   version "1.6.2"
   resolved "https://registry.yarnpkg.com/case/-/case-1.6.2.tgz#2ea68af6956752cd69c349c8b3e6bc860d1cba95"
   integrity sha512-ll380ZRoraT7mUK2G92UbH+FJVD5AwdVIAYk9xhV1tauh0carDgYByUD1HhjCWsWgxrfQvCeHvtfj7IYR6TKeg==
@@ -4948,12 +4948,12 @@ falafel@^2.1.0:
     isarray "0.0.1"
     object-keys "^1.0.6"
 
-fast-check@^1.21.0:
-  version "1.21.0"
-  resolved "https://registry.yarnpkg.com/fast-check/-/fast-check-1.21.0.tgz#2bb4f7898197fa9a01a8d1078f1ea60c7eb94cb6"
-  integrity sha512-t9E+rNNV8DNSUqxvUwJ8DBAVm0qiGsVktvUXB3zUC9PTnNbYqGvGVycL6osOo+CRWH8nJYLk/fXynqdag2StdQ==
+fast-check@^1.22.0:
+  version "1.22.0"
+  resolved "https://registry.yarnpkg.com/fast-check/-/fast-check-1.22.0.tgz#7de574a58bdad99363117e36bfa7fa360dec7902"
+  integrity sha512-HQ1n8tgQdKZTmQRlInvJx/KUaSc7eY/Z0LX/kdEbP1/ZKrZ1GlwQ9K2lpA4EakmSqckcuYCR7/8bzwEcdq2qJQ==
   dependencies:
-    pure-rand "^1.7.0"
+    pure-rand "^2.0.0"
     tslib "^1.10.0"
 
 fast-deep-equal@^2.0.1:
@@ -9491,10 +9491,10 @@ punycode@^2.1.0, punycode@^2.1.1:
   resolved "https://registry.yarnpkg.com/punycode/-/punycode-2.1.1.tgz#b58b010ac40c22c5657616c8d2c2c02c7bf479ec"
   integrity sha512-XRsRjdf+j5ml+y/6GKHPZbrF/8p2Yga0JPtdqTIY2Xe5ohJPD9saDJJLPvp9+NSBprVvevdXZybnj2cv8OEd0A==
 
-pure-rand@^1.7.0:
-  version "1.7.0"
-  resolved "https://registry.yarnpkg.com/pure-rand/-/pure-rand-1.7.0.tgz#8b119d05f5f83c409efbede897f1386c4df32313"
-  integrity sha512-Mpghwu8LvQUpr8NRFmGTgX8mFi8WHqor9oE0cCj2Sk5XjA10lBx880qUXtXQPYzrUL8NVQ87nqZvV7LI6gVdOw==
+pure-rand@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/pure-rand/-/pure-rand-2.0.0.tgz#3324633545207907fe964c2f0ebf05d8e9a7f129"
+  integrity sha512-mk98aayyd00xbfHgE3uEmAUGzz3jCdm8Mkf5DUXUhc7egmOaGG2D7qhVlynGenNe9VaNJZvzO9hkc8myuTkDgw==
 
 purgecss@^1.4.0:
   version "1.4.2"
