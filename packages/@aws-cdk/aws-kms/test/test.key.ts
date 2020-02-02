@@ -13,6 +13,21 @@ import { Test } from 'nodeunit';
 import { Key } from '../lib';
 
 // tslint:disable:object-literal-key-quotes
+const ACTIONS: string[] = [
+  "kms:Create*",
+  "kms:Describe*",
+  "kms:Enable*",
+  "kms:List*",
+  "kms:Put*",
+  "kms:Update*",
+  "kms:Revoke*",
+  "kms:Disable*",
+  "kms:Get*",
+  "kms:Delete*",
+  "kms:ScheduleKeyDeletion",
+  "kms:CancelKeyDeletion",
+  "kms:GenerateDataKey"
+];
 
 export = {
   'default key'(test: Test) {
@@ -28,53 +43,35 @@ export = {
         KeyPolicy: {
           Statement: [
           {
-              Action: [
-                "kms:CancelKeyDeletion",
-                "kms:Create*",
-                "kms:Delete*",
-                "kms:Describe*",
-                "kms:Disable*",
-                "kms:DisconnectCustomKeyStore",
-                "kms:Enable*",
-                "kms:GenerateDataKey",
-                "kms:Get*",
-                "kms:ImportKeyMaterial",
-                "kms:List*",
-                "kms:Put*",
-                "kms:Revoke*",
-                "kms:ScheduleKeyDeletion",
-                "kms:TagResource",
-                "kms:UntagResource",
-                "kms:Update*",
+              Action: ACTIONS,
+              Effect: "Allow",
+                  Principal: {
+                    AWS: {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:",
+                          {
+                            Ref: "AWS::Partition"
+                          },
+                          ":iam::",
+                          {
+                            Ref: "AWS::AccountId"
+                          },
+                          ":root"
+                        ]
+                      ]
+                    }
+                  },
+                  Resource: "*"
+                }
               ],
-            Effect: "Allow",
-            Principal: {
-            AWS: {
-              "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                Ref: "AWS::Partition"
-                },
-                ":iam::",
-                {
-                Ref: "AWS::AccountId"
-                },
-                ":root"
-              ]
-              ]
+              Version: "2012-10-17"
             }
-            },
-            Resource: "*"
-          }
-          ],
-          Version: "2012-10-17"
+          },
+          DeletionPolicy: "Retain",
+          UpdateReplacePolicy: "Retain"
         }
-        },
-        DeletionPolicy: "Retain",
-        UpdateReplacePolicy: "Retain"
-      }
       }
     }));
     test.done();
@@ -102,68 +99,50 @@ export = {
     expect(stack).to(exactlyMatchTemplate({
       Resources: {
         MyKey6AB29FA6: {
-        Type: "AWS::KMS::Key",
-        Properties: {
-          KeyPolicy: {
-          Statement: [
-            {
-            Action: [
-                "kms:CancelKeyDeletion",
-                "kms:Create*",
-                "kms:Delete*",
-                "kms:Describe*",
-                "kms:Disable*",
-                "kms:DisconnectCustomKeyStore",
-                "kms:Enable*",
-                "kms:GenerateDataKey",
-                "kms:Get*",
-                "kms:ImportKeyMaterial",
-                "kms:List*",
-                "kms:Put*",
-                "kms:Revoke*",
-                "kms:ScheduleKeyDeletion",
-                "kms:TagResource",
-                "kms:UntagResource",
-                "kms:Update*",
-            ],
-            Effect: "Allow",
-            Principal: {
-              AWS: {
-              "Fn::Join": [
-                "",
-                [
-                "arn:",
+          Type: "AWS::KMS::Key",
+          Properties: {
+            KeyPolicy: {
+              Statement: [
                 {
-                  Ref: "AWS::Partition"
+                  Action: ACTIONS,
+                  Effect: "Allow",
+                  Principal: {
+                    AWS: {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:",
+                          {
+                            Ref: "AWS::Partition"
+                          },
+                          ":iam::",
+                          {
+                            Ref: "AWS::AccountId"
+                          },
+                          ":root"
+                        ]
+                      ]
+                    }
+                  },
+                  Resource: '*'
                 },
-                ":iam::",
                 {
-                  Ref: "AWS::AccountId"
-                },
-                ":root"
-                ]
-              ]
-              }
-            },
-            Resource: '*'
-            },
-            {
-            Action: "kms:encrypt",
-            Effect: "Allow",
-            Principal: {
-              AWS: "arn"
-            },
-            Resource: "*"
+                  Action: "kms:encrypt",
+                  Effect: "Allow",
+                  Principal: {
+                    AWS: "arn"
+                  },
+                  Resource: "*"
+                }
+              ],
+              Version: "2012-10-17"
             }
-          ],
-          Version: "2012-10-17"
-          }
-        },
-        DeletionPolicy: "Retain",
-        UpdateReplacePolicy: "Retain",
+          },
+          DeletionPolicy: "Retain",
+          UpdateReplacePolicy: "Retain",
         }
       }
-      }));
+    }));
 
     test.done();
   },
@@ -191,25 +170,7 @@ export = {
             KeyPolicy: {
               Statement: [
                 {
-                  Action: [
-                    "kms:CancelKeyDeletion",
-                    "kms:Create*",
-                    "kms:Delete*",
-                    "kms:Describe*",
-                    "kms:Disable*",
-                    "kms:DisconnectCustomKeyStore",
-                    "kms:Enable*",
-                    "kms:GenerateDataKey",
-                    "kms:Get*",
-                    "kms:ImportKeyMaterial",
-                    "kms:List*",
-                    "kms:Put*",
-                    "kms:Revoke*",
-                    "kms:ScheduleKeyDeletion",
-                    "kms:TagResource",
-                    "kms:UntagResource",
-                    "kms:Update*",
-                  ],
+                  Action: ACTIONS,
                   Effect: "Allow",
                   Principal: {
                     AWS: {
@@ -344,35 +305,16 @@ export = {
         Statement: [
           // This one is there by default
           {
-            // tslint:disable-next-line:max-line-length
-            Action: [
-              "kms:CancelKeyDeletion",
-              "kms:Create*",
-              "kms:Delete*",
-              "kms:Describe*",
-              "kms:Disable*",
-              "kms:DisconnectCustomKeyStore",
-              "kms:Enable*",
-              "kms:GenerateDataKey",
-              "kms:Get*",
-              "kms:ImportKeyMaterial",
-              "kms:List*",
-              "kms:Put*",
-              "kms:Revoke*",
-              "kms:ScheduleKeyDeletion",
-              "kms:TagResource",
-              "kms:UntagResource",
-              "kms:Update*",
-            ],
+            Action: ACTIONS,
             Effect: "Allow",
-            Principal: { AWS: { "Fn::Join": [ "", [ "arn:", { Ref: "AWS::Partition" }, ":iam::", { Ref: "AWS::AccountId" }, ":root" ] ] } },
+            Principal: { AWS: { "Fn::Join": ["", ["arn:", { Ref: "AWS::Partition" }, ":iam::", { Ref: "AWS::AccountId" }, ":root"]] } },
             Resource: "*"
           },
           // This is the interesting one
           {
             Action: "kms:Decrypt",
             Effect: "Allow",
-            Principal: { AWS: { "Fn::GetAtt": [ "User00B015A1", "Arn" ] } },
+            Principal: { AWS: { "Fn::GetAtt": ["User00B015A1", "Arn"] } },
             Resource: "*"
           }
         ],
@@ -386,7 +328,7 @@ export = {
           {
             Action: "kms:Decrypt",
             Effect: "Allow",
-            Resource: { "Fn::GetAtt": [ "Key961B73FD", "Arn" ] }
+            Resource: { "Fn::GetAtt": ["Key961B73FD", "Arn"] }
           }
         ],
         Version: "2012-10-17"
@@ -466,7 +408,7 @@ export = {
   },
   'enablePolicyControl changes key policy to allow IAM control'(test: Test) {
     const stack = new Stack();
-    new Key(stack, 'MyKey', {trustAccountIdentities: true});
+    new Key(stack, 'MyKey', { trustAccountIdentities: true });
     expect(stack).to(haveResourceLike('AWS::KMS::Key', {
       "KeyPolicy": {
         "Statement": [
