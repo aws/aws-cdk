@@ -313,7 +313,7 @@ export class Key extends KeyBase {
       public readonly keyArn = keyArn;
       public readonly keyId: string;
       protected readonly policy?: iam.PolicyDocument | undefined = undefined;
-      // defaulting true: if we are importing they key the key policy is
+      // defaulting true: if we are importing the key the key policy is
       // undefined and impossible to change here; this means updating identity
       // policies is really the only option
       protected readonly trustAccountIdentities: boolean = true;
