@@ -880,7 +880,7 @@ export = {
         bucket,
         path: 'another/path',
         identifier: 'source1',
-        sourceVersion: 'someversion'
+        version: 'someversion'
       }));
 
       expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {

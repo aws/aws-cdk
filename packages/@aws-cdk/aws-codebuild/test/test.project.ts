@@ -273,7 +273,7 @@ export = {
       source: codebuild.Source.s3({
         bucket: new s3.Bucket(stack, 'Bucket'),
         path: 'path',
-        sourceVersion: 's3version'
+        version: 's3version'
       }),
       cache: codebuild.Cache.local(codebuild.LocalCacheMode.CUSTOM, codebuild.LocalCacheMode.DOCKER_LAYER,
         codebuild.LocalCacheMode.SOURCE)

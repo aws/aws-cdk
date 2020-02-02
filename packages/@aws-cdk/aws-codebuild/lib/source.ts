@@ -533,7 +533,7 @@ export interface S3SourceProps extends SourceProps {
    *
    * @default latest
    */
-  readonly sourceVersion?: string;
+  readonly version?: string;
 }
 
 /**
@@ -543,13 +543,13 @@ class S3Source extends Source {
   public readonly type = S3_SOURCE_TYPE;
   private readonly bucket: s3.IBucket;
   private readonly path: string;
-  private readonly sourceVersion?: string;
+  private readonly version?: string;
 
   constructor(props: S3SourceProps) {
     super(props);
     this.bucket = props.bucket;
     this.path = props.path;
-    this.sourceVersion = props.sourceVersion;
+    this.version = props.version;
   }
 
   public bind(_scope: Construct, project: IProject): SourceConfig {
@@ -561,7 +561,7 @@ class S3Source extends Source {
         ...superConfig.sourceProperty,
         location: `${this.bucket.bucketName}/${this.path}`,
       },
-      sourceVersion: this.sourceVersion,
+      sourceVersion: this.version,
     };
   }
 }
