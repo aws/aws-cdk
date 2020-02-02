@@ -94,4 +94,18 @@ orderDS.createResolver({
     responseMappingTemplate: MappingTemplate.dynamoDbResultList(),
 });
 
+const customesESDS = api.addElasticsearchDataSource(
+    'CustomerES',
+    'The customer elastic search domain',
+    stack.region,
+    `https://search-mydomain.${stack.region}.es.amazonaws.com`
+);
+
+customesESDS.createResolver({
+    typeName: 'Query',
+    fieldName: 'searchCustomers',
+    requestMappingTemplate: MappingTemplate.elasticsearchSimpleTermQuery('customerindex', 'customer', 'name'),
+    responseMappingTemplate: MappingTemplate.elasticsearchListResult()
+});
+
 app.synth();

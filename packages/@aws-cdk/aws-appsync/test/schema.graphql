@@ -22,6 +22,7 @@ type Query {
     getCustomerOrdersGe(customer: String): Order
     getCustomerOrdersFilter(customer: String, order: String): Order
     getCustomerOrdersBetween(customer: String, order1: String, order2: String): Order
+    searchCustomers(name: String): [Customer]
 }
 
 type Mutation {

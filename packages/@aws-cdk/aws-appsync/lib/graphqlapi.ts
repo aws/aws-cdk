@@ -230,6 +230,22 @@ export class GraphQLApi extends Construct {
         });
     }
 
+    /**
+     * add a new Elasticsearch data source to this API
+     * @param name The name of the data source
+     * @param description The description of the data source
+     * @param region Region in which the Elasticsearch domain exists
+     * @param endpoint Endpoint of the Elasticsearch domain
+     */
+    public addElasticsearchDataSource(name: string, description: string, region: string, endpoint: string): ElasticsearchDataSource {
+        return new ElasticsearchDataSource(this, `${name}DS`, {
+            api: this,
+            description,
+            name,
+            region,
+            endpoint
+        });
+    }
 }
 
 /**
@@ -612,6 +628,35 @@ export class KeyCondition {
 }
 
 /**
+ * Properties for an AppSync Elasticsearch data source
+ */
+export interface ElasticsearchDataSourceProps extends BaseDataSourceProps {
+    /**
+     * Region for the Amazon Elasticsearch Service domain
+     */
+    readonly region: string;
+    /**
+     * Endpoint for the Amazon Elasticsearch Service domain
+     */
+    readonly endpoint: string;
+}
+
+/**
+ * An AppSync data source backed by Elasticsearch
+ */
+export class ElasticsearchDataSource extends BaseDataSource {
+    constructor(scope: Construct, id: string, props: ElasticsearchDataSourceProps) {
+        super(scope, id, props, {
+            type: 'AMAZON_ELASTICSEARCH',
+            elasticsearchConfig: {
+                awsRegion: props.region,
+                endpoint: props.endpoint
+            }
+        });
+    }
+}
+
+/**
  * MappingTemplates for AppSync resolvers
  */
 export abstract class MappingTemplate {
@@ -711,6 +756,69 @@ export abstract class MappingTemplate {
      */
     public static lambdaResult(): MappingTemplate {
         return this.fromString('$util.toJson($ctx.result)');
+    }
+
+    public static elasticsearchGetDocumentById(index: string, type: string): MappingTemplate {
+        return this.fromString(`
+            {
+                "version": "2017-02-28",
+                "operation": "GET",
+                "path": "/${index}/${type}/\${context.arguments.id}",
+                "params": {}
+            }
+        `);
+    }
+
+    public static elasticsearchSimpleTermQuery(index: string, type: string, field: string): MappingTemplate {
+        return this.fromString(`
+            {
+                "version":"2017-02-28",
+                "operation":"GET",
+                "path":"/${index}/${type}/_search",
+                "params":{
+                    "body": {
+                        "from": 0,
+                        "size": 50,
+                        "query": {
+                            "term" :{
+                                "${field}":"\${context.arguments.${field}}"
+                            }
+                        }
+                    }
+                }
+            }
+        `);
+    }
+
+    public static elasticsearchPaginateWithFixedSizePages(index: string, type: string): MappingTemplate {
+        return this.fromString(`
+            {
+                "version": "2017-02-28",
+                "operation": "GET",
+                "path": "/${index}/${type}/_search",
+                "params": {
+                    "body": {
+                        "from": \${context.arguments.from},
+                        "size": \${context.arguments.size}
+                    }
+                }
+            }
+        `);
+    }
+
+    public static elasticsearchSingleResult(): MappingTemplate {
+        return this.fromString('$util.toJson($context.result.get("_source"))');
+    }
+
+    public static elasticsearchListResult(): MappingTemplate {
+        return this.fromString(`
+            [
+                #foreach($entry in $context.result.hits.hits)
+                    #if( $velocityCount > 1 ) , #end
+                    $util.toJson($entry.get("_source"))
+                #end
+            ]
+        `);
     }
 
     /**
