@@ -538,13 +538,6 @@ export interface ProjectProps extends CommonProjectProps {
   readonly secondarySources?: ISource[];
 
   /**
-   * The secondary source versions for the Project.   *
-   * @default - No secondary source versions (they default to latest).
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codebuild-project.html#cfn-codebuild-project-sourceversion
-   */
-  readonly secondarySourceVersions?: CfnProject.ProjectSourceVersionProperty[];
-
-  /**
    * The secondary artifacts for the Project.
    * Can also be added after the Project has been created by using the {@link Project#addSecondaryArtifact} method.
    *
@@ -633,7 +626,7 @@ export class Project extends ProjectBase {
    * @returns an array of {@link CfnProject.EnvironmentVariableProperty} instances
    */
   public static serializeEnvVariables(environmentVariables: { [name: string]: BuildEnvironmentVariable }):
-    CfnProject.EnvironmentVariableProperty[] {
+      CfnProject.EnvironmentVariableProperty[] {
     return Object.keys(environmentVariables).map(name => ({
       name,
       type: environmentVariables[name].type || BuildEnvironmentVariableType.PLAINTEXT,
@@ -769,10 +762,12 @@ export class Project extends ProjectBase {
     }
     const secondarySourceConfig = secondarySource.bind(this, this);
     this._secondarySources.push(secondarySourceConfig.sourceProperty);
-    this._secondarySourceVersions.push({
-      sourceIdentifier: secondarySource.identifier,
-      sourceVersion: secondarySourceConfig.sourceVersion,
-    });
+    if (secondarySourceConfig.sourceVersion) {
+      this._secondarySourceVersions.push({
+        sourceIdentifier: secondarySource.identifier,
+        sourceVersion: secondarySourceConfig.sourceVersion,
+      });
+    }
   }
 
   /**
@@ -804,7 +799,7 @@ export class Project extends ProjectBase {
       const keyStack = Stack.of(options.artifactBucket.encryptionKey);
       const projectStack = Stack.of(this);
       if (!(options.artifactBucket.encryptionKey instanceof kms.Key &&
-        (keyStack.account !== projectStack.account || keyStack.region !== projectStack.region))) {
+          (keyStack.account !== projectStack.account || keyStack.region !== projectStack.region))) {
         this.encryptionKey = options.artifactBucket.encryptionKey;
       }
     }
@@ -911,8 +906,8 @@ export class Project extends ProjectBase {
 
   private renderSecondarySourceVersions(): CfnProject.ProjectSourceVersionProperty[] | undefined {
     return this._secondarySourceVersions.length === 0
-    ? undefined
-    : this._secondarySourceVersions;
+      ? undefined
+      : this._secondarySourceVersions;
   }
 
   private renderSecondaryArtifacts(): CfnProject.ArtifactsProperty[] | undefined {
@@ -1005,8 +1000,8 @@ export class Project extends ProjectBase {
     const artifactsType = artifacts.type;
 
     if ((sourceType === CODEPIPELINE_SOURCE_ARTIFACTS_TYPE ||
-      artifactsType === CODEPIPELINE_SOURCE_ARTIFACTS_TYPE) &&
-      (sourceType !== artifactsType)) {
+        artifactsType === CODEPIPELINE_SOURCE_ARTIFACTS_TYPE) &&
+        (sourceType !== artifactsType)) {
       throw new Error('Both source and artifacts must be set to CodePipeline');
     }
   }
@@ -1146,7 +1141,7 @@ class ArmBuildImage implements IBuildImage {
   public validate(buildEnvironment: BuildEnvironment): string[] {
     const ret = [];
     if (buildEnvironment.computeType &&
-      buildEnvironment.computeType !== ComputeType.LARGE) {
+        buildEnvironment.computeType !== ComputeType.LARGE) {
       ret.push(`ARM images only support ComputeType '${ComputeType.LARGE}' - ` +
         `'${buildEnvironment.computeType}' was given`);
     }

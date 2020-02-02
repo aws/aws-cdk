@@ -923,11 +923,6 @@ export = {
             "SourceIdentifier": "source1",
             "Type": "S3",
           },
-        ],
-        "SecondarySourceVersions": [
-          {
-            "SourceIdentifier": "source1",
-          }
         ]
       }));
 

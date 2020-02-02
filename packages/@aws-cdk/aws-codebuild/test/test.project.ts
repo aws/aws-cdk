@@ -112,7 +112,7 @@ export = {
         source: codebuild.Source.gitHub({
           owner: 'testowner',
           repo: 'testrepo',
-          sourceVersion: 'testbranch',
+          branchOrRef: 'testbranch',
         })
       });
 
@@ -132,7 +132,7 @@ export = {
       new codebuild.Project(stack, 'Project', {
         source: codebuild.Source.gitHubEnterprise({
           httpsCloneUrl: 'https://mygithub-enterprise.com/myuser/myrepo',
-          sourceVersion: 'testbranch',
+          branchOrRef: 'testbranch',
         })
       });
 
@@ -216,7 +216,7 @@ export = {
       source: codebuild.Source.bitBucket({
         owner: 'testowner',
         repo: 'testrepo',
-        sourceVersion: 'testbranch',
+        branchOrRef: 'testbranch',
       })
     });
 
