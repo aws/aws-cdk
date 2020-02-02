@@ -297,6 +297,9 @@ function newEksClientMock() {
       }
     }),
     deleteFargateProfile: sinon.fake(),
-    describeFargateProfile: sinon.fake.throws('not implemented')
+    describeFargateProfile: sinon.fake.throws('not implemented'),
+    createOpenIDConnectProvider: sinon.fake(),
+    deleteOpenIDConnectProvider: sinon.fake(),
+    getOpenIDConnectProvider: sinon.fake()
   };
 }

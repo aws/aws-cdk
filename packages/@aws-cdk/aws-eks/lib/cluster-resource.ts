@@ -19,6 +19,7 @@ export class ClusterResource extends Construct {
   public readonly attrEndpoint: string;
   public readonly attrArn: string;
   public readonly attrCertificateAuthorityData: string;
+  public readonly attrOpenIDConnectIssuerUrl: string;
   public readonly ref: string;
 
   /**
@@ -90,6 +91,11 @@ export class ClusterResource extends Construct {
     }));
 
     this.creationRole.addToPolicy(new iam.PolicyStatement({
+      actions: [ 'iam:CreateOpenIDConnectProvider', 'iam:DeleteOpenIDConnectProvider', 'iam:GetOpenIDConnectProvider' ],
+      resources: [ '*' ],
+    }));
+
+    this.creationRole.addToPolicy(new iam.PolicyStatement({
       actions: [ 'iam:CreateServiceLinkedRole' ],
       resources: [ '*' ],
     }));
@@ -109,6 +115,7 @@ export class ClusterResource extends Construct {
     this.attrEndpoint = Token.asString(resource.getAtt('Endpoint'));
     this.attrArn = Token.asString(resource.getAtt('Arn'));
     this.attrCertificateAuthorityData = Token.asString(resource.getAtt('CertificateAuthorityData'));
+    this.attrOpenIDConnectIssuerUrl = Token.asString(resource.getAtt('OpenIDConnectIssuerUrl'));
   }
 
   /**

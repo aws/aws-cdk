@@ -1,5 +1,6 @@
 import * as sdk from 'aws-sdk';
 import { EksClient } from '../lib/cluster-resource-handler/common';
+import { Response } from 'aws-sdk';
 
 /**
  * Request objects will be assigned when a request of the relevant type will be
@@ -15,6 +16,9 @@ export let actualRequest: {
   createFargateProfile?: sdk.EKS.CreateFargateProfileRequest;
   describeFargateProfile?: sdk.EKS.DescribeFargateProfileRequest;
   deleteFargateProfile?: sdk.EKS.DeleteFargateProfileRequest;
+  createOpenIDConnectProvider?: sdk.IAM.CreateOpenIDConnectProviderRequest;
+  deleteOpenIDConnectProvider?: sdk.IAM.DeleteOpenIDConnectProviderRequest;
+  getOpenIDConnectProvider?: sdk.IAM.GetOpenIDConnectProviderRequest;
 } = { };
 
 /**
@@ -109,6 +113,21 @@ export const client: EksClient = {
 
   deleteFargateProfile: async req => {
     actualRequest.deleteFargateProfile = req;
+    return { };
+  },
+
+  createOpenIDConnectProvider: async req => {
+    actualRequest.createOpenIDConnectProvider = req;
+    return { };
+  },
+
+  deleteOpenIDConnectProvider: async req => {
+    actualRequest.deleteOpenIDConnectProvider = req;
+    return { $response: new Response() };
+  },
+
+  getOpenIDConnectProvider: async req => {
+    actualRequest.getOpenIDConnectProvider = req;
     return { };
   },
 };

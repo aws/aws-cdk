@@ -7,10 +7,12 @@ import { ClusterResourceHandler } from './cluster';
 import { EksClient } from './common';
 import * as consts from './consts';
 import { FargateProfileResourceHandler } from './fargate';
+import { OpenIDConnectResourceHandler } from './oidc';
 
 aws.config.logger = console;
 
 let eks: aws.EKS | undefined;
+let iam: aws.IAM | undefined;
 
 const defaultEksClient: EksClient = {
   createCluster: req => getEksClient().createCluster(req).promise(),
@@ -21,6 +23,9 @@ const defaultEksClient: EksClient = {
   createFargateProfile: req => getEksClient().createFargateProfile(req).promise(),
   deleteFargateProfile: req => getEksClient().deleteFargateProfile(req).promise(),
   describeFargateProfile: req => getEksClient().describeFargateProfile(req).promise(),
+  createOpenIDConnectProvider: req => getIamClient().createOpenIDConnectProvider(req).promise(),
+  deleteOpenIDConnectProvider: req => getIamClient().deleteOpenIDConnectProvider(req).promise(),
+  getOpenIDConnectProvider: req => getIamClient().getOpenIDConnectProvider(req).promise(),
   configureAssumeRole: req => {
     console.log(JSON.stringify({ assumeRole: req }, undefined, 2));
     const creds = new aws.ChainableTemporaryCredentials({
@@ -28,6 +33,7 @@ const defaultEksClient: EksClient = {
     });
 
     eks = new aws.EKS({ credentials: creds });
+    iam = new aws.IAM({ credentials: creds });
   }
 };
 
@@ -37,6 +43,14 @@ function getEksClient() {
   }
 
   return eks;
+}
+
+function getIamClient() {
+  if (!iam) {
+    throw new Error(`IAM client not initialized (call "configureAssumeRole")`);
+  }
+
+  return iam;
 }
 
 export async function onEvent(event: AWSLambda.CloudFormationCustomResourceEvent) {
@@ -53,6 +67,7 @@ function createResourceHandler(event: AWSLambda.CloudFormationCustomResourceEven
   switch (event.ResourceType) {
     case consts.CLUSTER_RESOURCE_TYPE: return new ClusterResourceHandler(defaultEksClient, event);
     case consts.FARGATE_PROFILE_RESOURCE_TYPE: return new FargateProfileResourceHandler(defaultEksClient, event);
+    case consts.OPENIDCONNECT_PROVIDER_RESOURCE_TYPE: return new OpenIDConnectResourceHandler(defaultEksClient, event);
     default:
       throw new Error(`Unsupported resource type "${event.ResourceType}`);
   }
