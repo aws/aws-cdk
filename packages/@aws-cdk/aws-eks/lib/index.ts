@@ -6,3 +6,4 @@ export * from './fargate-profile';
 export * from './helm-chart';
 export * from './k8s-resource';
 export * from './fargate-cluster';
+export * from './service-account';
