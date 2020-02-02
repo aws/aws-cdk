@@ -5,7 +5,7 @@ import * as cdk from '@aws-cdk/core';
 import { TaskDefinition } from './task-definition';
 
 /**
- * Properties of a job definition container
+ * Properties of a job definition container.
  */
 export interface IJobDefinitionContainer {
   /**
@@ -41,7 +41,7 @@ export interface IJobDefinitionContainer {
   /**
    * The IAM role that the container can assume for AWS permissions.
    *
-   * @default - An IAM role will created
+   * @default - An IAM role will created.
    */
   readonly jobRole?: iam.IRole;
 
@@ -49,7 +49,7 @@ export interface IJobDefinitionContainer {
    * Linux-specific modifications that are applied to the container, such as details for device mappings.
    * For now, only the `devices` property is supported.
    *
-   * @default - None will be used
+   * @default - None will be used.
    */
   readonly linuxParams?: ecs.LinuxParameters;
 
@@ -64,7 +64,7 @@ export interface IJobDefinitionContainer {
   /**
    * The mount points for data volumes in your container.
    *
-   * @default - No mount points will be used
+   * @default - No mount points will be used.
    */
   readonly mountPoints?: ecs.MountPoint[];
 
@@ -85,21 +85,21 @@ export interface IJobDefinitionContainer {
    * The number of physical GPUs to reserve for the container. The number of GPUs reserved for all
    * containers in a job should not exceed the number of available GPUs on the compute resource that the job is launched on.
    *
-   * @default - No GPU reservation
+   * @default - No GPU reservation.
    */
   readonly gpuCount?: number;
 
   /**
    * A list of ulimits to set in the container.
    *
-   * @default - No limits
+   * @default - No limits.
    */
   readonly ulimits?: ecs.Ulimit[];
 
   /**
    * The user name to use inside the container.
    *
-   * @default - None will be used
+   * @default - None will be used.
    */
   readonly user?: string;
 
@@ -114,14 +114,14 @@ export interface IJobDefinitionContainer {
   /**
    * A list of data volumes used in a job.
    *
-   * @default - No data volumes will be used
+   * @default - No data volumes will be used.
    */
   readonly volumes?: ecs.Volume[];
 }
 
 /**
  * An interface representing a job definition image config
- * for binding a container image to a batch job definition
+ * for binding a container image to a batch job definition.
  */
 export interface IJobDefinitionImageConfig {
   /**
@@ -136,7 +136,7 @@ export interface IJobDefinitionImageConfig {
 }
 
 /**
- * The configuration for creating a batch container image
+ * The configuration for creating a batch container image.
  */
 export class JobDefinitionImageConfig implements IJobDefinitionImageConfig {
   public readonly imageName: string;

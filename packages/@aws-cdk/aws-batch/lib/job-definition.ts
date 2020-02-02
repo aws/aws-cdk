@@ -33,7 +33,7 @@ export interface JobDefinitionProps {
    * placeholders or override the default job definition parameters. Parameters
    * in job submission requests take precedence over the defaults in a job definition.
    * This allows you to use the same job definition for multiple jobs that use the same
-   * format, and programmatically change values in the command at submission time
+   * format, and programmatically change values in the command at submission time.
    *
    * @link https://docs.aws.amazon.com/batch/latest/userguide/job_definition_parameters.html
    * @default - undefined
@@ -59,7 +59,7 @@ export interface JobDefinitionProps {
 }
 
 /**
- * Properties for specifying multi-node properties for compute resources
+ * Properties for specifying multi-node properties for compute resources.
  */
 export interface IMultiNodeProps {
   /**
@@ -79,7 +79,7 @@ export interface IMultiNodeProps {
 }
 
 /**
- * Properties for a multi-node batch job
+ * Properties for a multi-node batch job.
  */
 export interface INodeRangeProps {
   /**
@@ -109,18 +109,18 @@ export interface INodeRangeProps {
 
 /**
  * An interface representing a job definition - either a new one, created with the CDK, *using the
- * {@link JobDefinition} class, or existing ones, referenced using the {@link JobDefinition.fromJobDefinitionArn} method..
+ * {@link JobDefinition} class, or existing ones, referenced using the {@link JobDefinition.fromJobDefinitionArn} method.
  */
 export interface IJobDefinition extends IResource {
   /**
-   * The ARN of this batch job definition
+   * The ARN of this batch job definition.
    *
    * @attribute
    */
   readonly jobDefinitionArn: string;
 
   /**
-   * The name of the batch job definition
+   * The name of the batch job definition.
    *
    * @attribute
    */
@@ -128,7 +128,7 @@ export interface IJobDefinition extends IResource {
 }
 
 /**
- * Batch Job Definition
+ * Batch Job Definition.
  *
  * Defines a batch job definition to execute a specific batch job.
  */

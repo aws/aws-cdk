@@ -3,22 +3,22 @@ import { CfnJobQueue } from './batch.generated';
 import { ComputeEnvironment, IComputeEnvironment } from './compute-environment';
 
 /**
- * Properties for mapping a compute environment to a job queue
+ * Properties for mapping a compute environment to a job queue.
  */
 export interface JobQueueComputeEnvironment {
   /**
-   * The batch compute environment to use for processing submitted jobs to this queue
+   * The batch compute environment to use for processing submitted jobs to this queue.
    */
   readonly computeEnvironment: IComputeEnvironment;
 
   /**
-   * The order in which this compute environment will be selected for dynamic allocation of resources to process submitted jobs
+   * The order in which this compute environment will be selected for dynamic allocation of resources to process submitted jobs.
    */
   readonly order: number;
 }
 
 /**
- * Properties of a batch job queue
+ * Properties of a batch job queue.
  */
 export interface JobQueueProps {
   /**
@@ -57,11 +57,11 @@ export interface JobQueueProps {
 }
 
 /**
- * Properties of a Job Queue
+ * Properties of a Job Queue.
  */
 export interface IJobQueue extends IResource {
   /**
-   * The ARN of this batch job queue
+   * The ARN of this batch job queue.
    *
    * @attribute
    */
@@ -78,7 +78,7 @@ export interface IJobQueue extends IResource {
 }
 
 /**
- * Batch Job Queue
+ * Batch Job Queue.
  *
  * Defines a batch job queue to define how submitted batch jobs
  * should be ran based on specified batch compute environments.

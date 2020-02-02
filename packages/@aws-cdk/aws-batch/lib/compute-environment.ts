@@ -5,35 +5,35 @@ import { CfnComputeEnvironment } from './batch.generated';
 
 /**
  * Property to specify if the compute environment
- * uses On-Demand of SpotFleet compute resources
+ * uses On-Demand or SpotFleet compute resources.
  */
 export enum ComputeResourceType {
   /**
-   * Resources will be EC2 On-Demand resources
+   * Resources will be EC2 On-Demand resources.
    */
   ON_DEMAND  = 'EC2',
 
   /**
-   * Resources will be EC2 SpotFleet resources
+   * Resources will be EC2 SpotFleet resources.
    */
   SPOT = 'SPOT',
 }
 
 /**
  * Properties for how to prepare compute resources
- * that are provisioned for a compute environment
+ * that are provisioned for a compute environment.
  */
 export enum AllocationStrategy {
   /**
    * Batch will use the best fitting instance type will be used
-   * when assigning a batch job in this compute environment
+   * when assigning a batch job in this compute environment.
    */
   BEST_FIT = 'BEST_FIT',
 
   /**
    * Batch will select additional instance types that are large enough to
    * meet the requirements of the jobs in the queue, with a preference for
-   * instance types with a lower cost per unit vCPU
+   * instance types with a lower cost per unit vCPU.
    */
   BEST_FIT_PROGRESSIVE = 'BEST_FIT_PROGRESSIVE',
 
@@ -41,19 +41,19 @@ export enum AllocationStrategy {
    * This is only available for Spot Instance compute resources and will select
    * additional instance types that are large enough to meet the requirements of
    * the jobs in the queue, with a preference for instance types that are less
-   * likely to be interrupted
+   * likely to be interrupted.
    */
   SPOT_CAPACITY_OPTIMIZED = 'SPOT_CAPACITY_OPTIMIZED',
 }
 
 /**
- * Properties for defining the structure of the batch compute cluster
+ * Properties for defining the structure of the batch compute cluster.
  */
-export interface ComputeResourceProps {
+export interface ComputeResources {
   /**
    * The IAM role applied to EC2 resources in the compute environment.
    *
-   * @default - a new role will be created
+   * @default - a new role will be created.
    */
   readonly instanceRole?: iam.IRole;
 
@@ -70,7 +70,7 @@ export interface ComputeResourceProps {
   /**
    * The EC2 security group(s) associated with instances launched in the compute environment.
    *
-   * @default AWS default security group
+   * @default AWS default security group.
    */
   readonly securityGroups?: ec2.ISecurityGroup[];
 
@@ -82,7 +82,7 @@ export interface ComputeResourceProps {
   /**
    * The VPC subnets into which the compute resources are launched.
    *
-   * @default - private subnets of the supplied VPC
+   * @default - private subnets of the supplied VPC.
    */
   readonly vpcSubnets?: ec2.SubnetSelection;
 
@@ -109,7 +109,7 @@ export interface ComputeResourceProps {
   /**
    * The desired number of EC2 vCPUS in the compute environment.
    *
-   * @default - no desired vcpu value will be used
+   * @default - no desired vcpu value will be used.
    */
   readonly desiredvCpus?: number;
 
@@ -140,7 +140,7 @@ export interface ComputeResourceProps {
   /**
    * The Amazon Machine Image (AMI) ID used for instances launched in the compute environment.
    *
-   * @default - no image will be used
+   * @default - no image will be used.
    */
   readonly image?: ec2.IMachineImage;
 
@@ -151,16 +151,16 @@ export interface ComputeResourceProps {
    * For more information, see Amazon EC2 Spot Fleet Role in the AWS Batch User Guide.
    *
    * @link https://docs.aws.amazon.com/batch/latest/userguide/spot_fleet_IAM_role.html
-   * @default - no fleet role will be used
+   * @default - no fleet role will be used.
    */
-  readonly spotIamFleetRole?: iam.IRole;
+  readonly spotFleetRole?: iam.IRole;
 
   /**
    * Key-value pair tags to be applied to resources that are launched in the compute environment.
    * For AWS Batch, these take the form of "String1": "String2", where String1 is the tag key and
    * String2 is the tag value—for example, { "Name": "AWS Batch Instance - C4OnDemand" }.
    *
-   * @default - no tags will be assigned on compute resources
+   * @default - no tags will be assigned on compute resources.
    */
   readonly computeResourcesTags?: Tag;
 }
@@ -204,7 +204,7 @@ export interface ComputeEnvironmentProps {
    *
    * @default - AWS-managed compute resources
    */
-  readonly computeResources?: ComputeResourceProps;
+  readonly computeResources?: ComputeResources;
 
   /**
    * The state of the compute environment. If the state is set to true, then the compute
@@ -221,7 +221,7 @@ export interface ComputeEnvironmentProps {
    *
    * @link https://docs.aws.amazon.com/batch/latest/userguide/service_IAM_role.html
    *
-   * @default - Role using the 'service-role/AWSBatchServiceRole' policy
+   * @default - Role using the 'service-role/AWSBatchServiceRole' policy.
    */
   readonly serviceRole?: iam.IRole,
 
@@ -235,18 +235,18 @@ export interface ComputeEnvironmentProps {
 }
 
 /**
- * Properties of a compute environment
+ * Properties of a compute environment.
  */
 export interface IComputeEnvironment extends IResource {
   /**
-   * The ARN of this compute environment
+   * The ARN of this compute environment.
    *
    * @attribute
    */
   readonly computeEnvironmentArn: string;
 
   /**
-   * The name of this compute environment
+   * The name of this compute environment.
    *
    * @attribute
    */
@@ -254,7 +254,7 @@ export interface IComputeEnvironment extends IResource {
 }
 
 /**
- * Batch Compute Environment
+ * Batch Compute Environment.
  *
  * Defines a batch compute environment to run batch jobs on.
  */
@@ -279,14 +279,14 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
   }
 
   /**
-   * The ARN of this compute environment
+   * The ARN of this compute environment.
    *
    * @attribute
    */
   public readonly computeEnvironmentArn: string;
 
   /**
-   * The name of this compute environment
+   * The name of this compute environment.
    *
    * @attribute
    */
@@ -312,7 +312,7 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
         imageId: props.computeResources.image && props.computeResources.image.getImage(this).imageId,
         instanceRole: props.computeResources.instanceRole
           ? props.computeResources.instanceRole.roleArn
-          : new iam.LazyRole(this, 'Resource-Instance-Role', {
+          : new iam.Role(this, 'Resource-Instance-Role', {
             assumedBy: new iam.ServicePrincipal('batch.amazonaws.com'),
           }).roleArn,
         instanceTypes: this.buildInstanceTypes(props.computeResources.instanceTypes),
@@ -337,7 +337,7 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
           ],
           assumedBy: new iam.ServicePrincipal('batch.amazonaws.com'),
         }).roleArn,
-      state: props.enabled === undefined ? 'ENABLED' : ( props.enabled ? 'ENABLED' : 'DISABLED' ),
+      state: props.enabled === undefined ? 'ENABLED' : (props.enabled ? 'ENABLED' : 'DISABLED'),
       type: this.isManaged(props) ? 'UNMANAGED' : 'MANAGED',
     });
 
@@ -358,7 +358,7 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
   }
 
   /**
-   * Validates the properties provided for a new batch compute environment
+   * Validates the properties provided for a new batch compute environment.
    */
   private validateProps(props: ComputeEnvironmentProps) {
     if (props === undefined) {
@@ -441,7 +441,7 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
    */
   private getSpotFleetRole(props: ComputeEnvironmentProps): iam.IRole | undefined {
     const spotFleetArn = `arn${Aws.PARTITION}iam::${this.stack.account}:role/aws-service-role/spotfleet.amazonaws.com/AWSServiceRoleForEC2SpotFleet`;
-    let role = props.computeResources ? props.computeResources.spotIamFleetRole : undefined;
+    let role = props.computeResources ? props.computeResources.spotFleetRole : undefined;
 
     if (props.allocationStrategy && props.allocationStrategy !== AllocationStrategy.BEST_FIT) {
       return;

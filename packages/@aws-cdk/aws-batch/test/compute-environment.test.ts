@@ -180,7 +180,7 @@ describe('Batch Compute Evironment', () => {
           vpcSubnets: {
             subnetType: ec2.SubnetType.PRIVATE,
           },
-        } as batch.ComputeResourceProps,
+        } as batch.ComputeResources,
         enabled: false,
         managed: false,
       };
