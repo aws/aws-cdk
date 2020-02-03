@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 // Find JSII packages that have a certain field in their package.json. Outputs the directories containing
 // jsii.json.
-import fs = require('fs');
-import path = require('path');
-import yargs = require('yargs');
+import * as fs from 'fs';
+import * as path from 'path';
+import * as yargs from 'yargs';
 
 // tslint:disable:no-shadowed-variable
 const argv = yargs
@@ -57,6 +57,7 @@ function enumeratePackages(root: string, pred: PackagePredicate): JSIIPackage[] 
   const seen = new Set<string>();
 
   function recurse(directory: string, includeDevDependencies: boolean) {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const packageJson = require(path.join(directory, '/package.json'));
 
     // Make sure we don't keep on doing the same packages over and over.

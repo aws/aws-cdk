@@ -1,5 +1,5 @@
-import lambda = require('@aws-cdk/aws-lambda');
-import cdk = require('@aws-cdk/core');
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as cdk from '@aws-cdk/core';
 
 export class TestFunction extends lambda.Function {
   constructor(scope: cdk.Construct, id: string) {

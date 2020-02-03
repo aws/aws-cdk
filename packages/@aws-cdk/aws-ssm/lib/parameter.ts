@@ -1,11 +1,11 @@
-import iam = require('@aws-cdk/aws-iam');
-import kms = require('@aws-cdk/aws-kms');
+import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import {
   CfnDynamicReference, CfnDynamicReferenceService, CfnParameter,
   Construct, ContextProvider, Fn, IResource, Resource, Stack, Token
 } from '@aws-cdk/core';
-import cxapi = require('@aws-cdk/cx-api');
-import ssm = require('./ssm.generated');
+import * as cxapi from '@aws-cdk/cx-api';
+import * as ssm from './ssm.generated';
 import { arnForParameterName, AUTOGEN_MARKER } from './util';
 
 /**
@@ -148,6 +148,11 @@ abstract class ParameterBase extends Resource implements IParameter {
   public abstract readonly parameterName: string;
   public abstract readonly parameterType: string;
 
+  /**
+   * The encryption key that is used to encrypt this parameter.
+   *
+   * * @default - default master key
+   */
   public readonly encryptionKey?: kms.IKey;
 
   public grantRead(grantee: iam.IGrantable): iam.Grant {
@@ -230,6 +235,11 @@ export interface CommonStringParameterAttributes {
   readonly simpleName?: boolean;
 }
 
+/**
+ * Attributes for parameters of various types of string.
+ *
+ * @see ParameterType
+ */
 export interface StringParameterAttributes extends CommonStringParameterAttributes {
   /**
    * The version number of the value you wish to retrieve.
@@ -246,6 +256,9 @@ export interface StringParameterAttributes extends CommonStringParameterAttribut
   readonly type?: ParameterType;
 }
 
+/**
+ * Attributes for secure string parameters.
+ */
 export interface SecureStringParameterAttributes extends CommonStringParameterAttributes {
   /**
    * The version number of the value you wish to retrieve. This is required for secure strings.
@@ -414,6 +427,7 @@ export class StringListParameter extends ParameterBase implements IStringListPar
 
   /**
    * Imports an external parameter of type string list.
+   * Returns a token and should not be parsed.
    */
   public static fromStringListParameterName(scope: Construct, id: string, stringListParameterName: string): IStringListParameter {
     class Import extends ParameterBase {

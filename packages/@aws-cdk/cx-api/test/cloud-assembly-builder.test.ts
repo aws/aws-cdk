@@ -1,6 +1,6 @@
-import fs = require('fs');
-import os = require('os');
-import path = require('path');
+import * as fs from 'fs';
+import * as os from 'os';
+import * as path from 'path';
 import { ArtifactType, CloudAssemblyBuilder } from '../lib';
 import { CLOUD_ASSEMBLY_VERSION } from '../lib/versioning';
 

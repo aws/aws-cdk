@@ -1,5 +1,4 @@
-import ec2 = require("../lib");
-import { LookupMachineImage } from "../lib";
+import * as ec2 from '../lib';
 
 /// !show
 // Pick the right Amazon Linux edition. All arguments shown are optional
@@ -17,7 +16,7 @@ const windows = new ec2.WindowsImage(ec2.WindowsVersion.WINDOWS_SERVER_2019_ENGL
 // Look up the most recent image matching a set of AMI filters.
 // In this case, look up the NAT instance AMI, by using a wildcard
 // in the 'name' field:
-const natAmi = new LookupMachineImage({
+const natAmi = new ec2.LookupMachineImage({
   name: 'amzn-ami-vpc-nat-*',
   owners: ['amazon'],
 });

@@ -1,9 +1,9 @@
-import fs = require('fs');
+import * as fs from 'fs';
 import { Test } from 'nodeunit';
-import path = require('path');
+import * as path from 'path';
 import { ImportMock } from 'ts-mock-imports';
 import { FollowMode } from '../../lib/fs';
-import util = require('../../lib/fs/utils');
+import * as util from '../../lib/fs/utils';
 
 export = {
   shouldExclude: {

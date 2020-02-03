@@ -1,8 +1,8 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import cdk = require('@aws-cdk/core');
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import appscaling = require('../lib');
+import * as appscaling from '../lib';
 import { createScalableTarget } from './util';
 
 export = {

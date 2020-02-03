@@ -1,7 +1,7 @@
-import cxapi = require('@aws-cdk/cx-api');
-import aws = require('aws-sdk');
-import colors = require('colors/safe');
-import uuid = require('uuid');
+import * as cxapi from '@aws-cdk/cx-api';
+import * as aws from 'aws-sdk';
+import * as colors from 'colors/safe';
+import * as uuid from 'uuid';
 import { Tag } from "../api/cxapp/stacks";
 import { prepareAssets } from '../assets';
 import { debug, error, print } from '../logging';
@@ -34,7 +34,6 @@ export interface DeployStackOptions {
   notificationArns?: string[];
   deployName?: string;
   quiet?: boolean;
-  ci?: boolean;
   reuseAssets?: string[];
   tags?: Tag[];
 
@@ -53,7 +52,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     throw new Error(`The stack ${options.stack.displayName} does not have an environment`);
   }
 
-  const params = await prepareAssets(options.stack, options.toolkitInfo, options.ci, options.reuseAssets);
+  const params = await prepareAssets(options.stack, options.toolkitInfo, options.reuseAssets);
 
   const deployName = options.deployName || options.stack.stackName;
 

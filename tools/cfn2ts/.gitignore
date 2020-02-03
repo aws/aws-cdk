@@ -6,5 +6,5 @@ node_modules
 .LAST_BUILD
 .nyc_output
 coverage
-.nycrc
+nyc.config.js
 *.snk

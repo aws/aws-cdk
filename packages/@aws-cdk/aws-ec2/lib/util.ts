@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 import { ISubnet, SelectedSubnets, Subnet, SubnetType } from './vpc';
 
 /**

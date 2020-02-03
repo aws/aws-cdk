@@ -1,14 +1,13 @@
 // import { expect, haveResource, haveResourceLike, SynthUtils } from '@aws-cdk/assert';
 import { SynthUtils } from '@aws-cdk/assert';
-import cdk = require('@aws-cdk/core');
-import { Stack, Tokenization } from '@aws-cdk/core';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import s3 = require('../lib');
+import * as s3 from '../lib';
 
 export = {
   'bucket must have versioning: failure'(test: Test) {
     // GIVEN
-    const stack = new Stack();
+    const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket');
 
     // WHEN
@@ -24,7 +23,7 @@ export = {
 
   'bucket must have versioning: success'(test: Test) {
     // GIVEN
-    const stack = new Stack();
+    const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', {
       versioned: true
     });
@@ -44,7 +43,7 @@ class BucketVersioningChecker implements cdk.IAspect {
   public visit(node: cdk.IConstruct): void {
     if (node instanceof s3.CfnBucket) {
       if (!node.versioningConfiguration ||
-        (!Tokenization.isResolvable(node.versioningConfiguration) && node.versioningConfiguration.status !== 'Enabled')) {
+        (!cdk.Tokenization.isResolvable(node.versioningConfiguration) && node.versioningConfiguration.status !== 'Enabled')) {
         node.node.addError('Bucket versioning is not enabled');
       }
     }

@@ -1,9 +1,9 @@
-import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import lambda = require('@aws-cdk/aws-lambda');
-import cdk = require('@aws-cdk/core');
-import codedeploy = require('../../lib');
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as cdk from '@aws-cdk/core';
+import * as codedeploy from '../../lib';
 
-import path = require('path');
+import * as path from 'path';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-codedeploy-lambda');

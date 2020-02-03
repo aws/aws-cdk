@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 import { Condition } from '../condition';
 import { StateGraph } from '../state-graph';
 import { CatchProps, DISCARD, Errors, IChainable, INextable, RetryProps } from '../types';

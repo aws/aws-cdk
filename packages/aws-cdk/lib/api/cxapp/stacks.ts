@@ -1,8 +1,8 @@
-import cxapi = require('@aws-cdk/cx-api');
+import * as cxapi from '@aws-cdk/cx-api';
 import { RegionInfo } from '@aws-cdk/region-info';
-import colors = require('colors/safe');
-import minimatch = require('minimatch');
-import contextproviders = require('../../context-providers');
+import * as colors from 'colors/safe';
+import * as minimatch from 'minimatch';
+import * as contextproviders from '../../context-providers';
 import { debug, error, print, warning } from '../../logging';
 import { Configuration } from '../../settings';
 import { flatMap } from '../../util/arrays';
@@ -269,6 +269,7 @@ export class AppStacks {
         const modules = new Array<string>();
 
         // inject toolkit version to list of modules
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
         const toolkitVersion = require('../../../package.json').version;
         modules.push(`aws-cdk=${toolkitVersion}`);
 

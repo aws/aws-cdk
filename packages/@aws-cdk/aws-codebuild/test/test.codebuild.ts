@@ -1,11 +1,11 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
-import codecommit = require('@aws-cdk/aws-codecommit');
-import ec2 = require('@aws-cdk/aws-ec2');
-import kms = require('@aws-cdk/aws-kms');
-import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/core');
+import * as codecommit from '@aws-cdk/aws-codecommit';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as kms from '@aws-cdk/aws-kms';
+import * as s3 from '@aws-cdk/aws-s3';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import codebuild = require('../lib');
+import * as codebuild from '../lib';
 import { CodePipelineSource } from '../lib/codepipeline-source';
 import { NoSource } from '../lib/no-source';
 
@@ -1230,6 +1230,73 @@ export = {
     }, /Windows images do not support the Small ComputeType/);
 
     test.done();
+  },
+
+  'ARM image': {
+    'AMAZON_LINUX_2_ARM': {
+      'has type ARM_CONTAINER and default ComputeType LARGE'(test: Test) {
+        const stack = new cdk.Stack();
+        new codebuild.PipelineProject(stack, 'Project', {
+          environment: {
+            buildImage: codebuild.LinuxBuildImage.AMAZON_LINUX_2_ARM,
+          },
+        });
+
+        expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+          "Environment": {
+            "Type": "ARM_CONTAINER",
+            "ComputeType": "BUILD_GENERAL1_LARGE",
+          },
+        }));
+
+        test.done();
+      },
+
+      'cannot be used in conjunction with ComputeType SMALL'(test: Test) {
+        const stack = new cdk.Stack();
+
+        test.throws(() => {
+          new codebuild.PipelineProject(stack, 'Project', {
+            environment: {
+              buildImage: codebuild.LinuxBuildImage.AMAZON_LINUX_2_ARM,
+              computeType: codebuild.ComputeType.SMALL,
+            },
+          });
+        }, /ARM images only support ComputeType 'BUILD_GENERAL1_LARGE' - 'BUILD_GENERAL1_SMALL' was given/);
+
+        test.done();
+      },
+
+      'cannot be used in conjunction with ComputeType MEDIUM'(test: Test) {
+        const stack = new cdk.Stack();
+
+        test.throws(() => {
+          new codebuild.PipelineProject(stack, 'Project', {
+            environment: {
+              buildImage: codebuild.LinuxBuildImage.AMAZON_LINUX_2_ARM,
+              computeType: codebuild.ComputeType.MEDIUM,
+            },
+          });
+        }, /ARM images only support ComputeType 'BUILD_GENERAL1_LARGE' - 'BUILD_GENERAL1_MEDIUM' was given/);
+
+        test.done();
+      },
+
+      'cannot be used in conjunction with ComputeType X2_LARGE'(test: Test) {
+        const stack = new cdk.Stack();
+
+        test.throws(() => {
+          new codebuild.PipelineProject(stack, 'Project', {
+            environment: {
+              buildImage: codebuild.LinuxBuildImage.AMAZON_LINUX_2_ARM,
+              computeType: codebuild.ComputeType.X2_LARGE,
+            },
+          });
+        }, /ARM images only support ComputeType 'BUILD_GENERAL1_LARGE' - 'BUILD_GENERAL1_2XLARGE' was given/);
+
+        test.done();
+      },
+    },
   },
 
   'badge support test'(test: Test) {

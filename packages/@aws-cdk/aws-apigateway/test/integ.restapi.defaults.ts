@@ -1,5 +1,5 @@
-import cdk = require('@aws-cdk/core');
-import apigateway = require('../lib');
+import * as cdk from '@aws-cdk/core';
+import * as apigateway from '../lib';
 
 const app = new cdk.App();
 

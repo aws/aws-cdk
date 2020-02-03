@@ -13,9 +13,10 @@
 # if a task fails, it will stop, and then to resume, simply run `foreach.sh` again (with or without the same command).
 #
 # to reset the session (either when all tasks finished or if you wish to run a different session), run:
-#     rm -f ~/.foreach.*
+#     foreach.sh --reset
 #
-# this will effectively delete the state files.
+# to run the command only against the current module and its dependencies:
+#     foreach.sh --up COMMAND
 #
 # --------------------------------------------------------------------------------------------------
 set -euo pipefail
@@ -23,7 +24,6 @@ scriptdir=$(cd $(dirname $0) && pwd)
 statedir="${scriptdir}"
 statefile="${statedir}/.foreach.state"
 commandfile="${statedir}/.foreach.command"
-command_arg="${@:-}"
 base=$PWD
 
 function heading {
@@ -44,6 +44,21 @@ if [[ "${1:-}" == "--reset" ]]; then
     exit 0
 fi
 
+up=""
+up_desc=""
+if [[ "${1:-}" == "--up" ]]; then
+    if [ ! -f package.json ]; then
+      echo "--up can only be executed from within a module directory (looking for package.json)"
+      exit 1
+    fi
+
+    scope=$(node -p "require('./package.json').name")
+    up=" --scope ${scope} --include-dependencies"
+    up_desc="('${scope}' and its dependencies)"
+    shift
+fi
+
+command_arg="${@:-}"
 
 if [ -f "${statefile}" ] && [ -f "${commandfile}" ]; then
   command="$(cat ${commandfile})"
@@ -57,8 +72,8 @@ fi
 if [ ! -f "${statefile}" ] && [ ! -f "${commandfile}" ]; then
   if [ ! -z "${command_arg}" ]; then
     command="${command_arg}"
-    success "starting new session"
-    node_modules/.bin/lerna ls --all --toposort -p > ${statefile}
+    success "starting new session ${up_desc}"
+    ${scriptdir}/../node_modules/.bin/lerna ls --all ${up} --toposort -p > ${statefile}
     echo "${command}" > ${commandfile}
   else
     error "no active session, use \"$(basename $0) COMMAND\" to start a new session"

@@ -1,4 +1,4 @@
-import colors = require('colors/safe');
+import * as colors from 'colors/safe';
 
 /**
  * Returns a set of strings when printed on the console produces a banner msg. The message is in the following format -

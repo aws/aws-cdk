@@ -1,9 +1,8 @@
 import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
-import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/core');
-import { RemovalPolicy, Stack } from '@aws-cdk/core';
+import * as iam from '@aws-cdk/aws-iam';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import ecr = require('../lib');
+import * as ecr from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -453,7 +452,7 @@ export = {
 
       // WHEN
       new ecr.Repository(stack, 'Repo', {
-        removalPolicy: RemovalPolicy.DESTROY
+        removalPolicy: cdk.RemovalPolicy.DESTROY
       });
 
       // THEN
@@ -466,7 +465,7 @@ export = {
 
     'grant adds appropriate resource-*'(test: Test) {
       // GIVEN
-      const stack = new Stack();
+      const stack = new cdk.Stack();
       const repo = new ecr.Repository(stack, 'TestHarnessRepo');
 
       // WHEN

@@ -1,9 +1,9 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
-import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/core');
+import * as iam from '@aws-cdk/aws-iam';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import codepipeline = require('../lib');
-import validations = require('../lib/validation');
+import * as codepipeline from '../lib';
+import * as validations from '../lib/validation';
 import { FakeBuildAction } from './fake-build-action';
 import { FakeSourceAction } from './fake-source-action';
 
@@ -356,6 +356,50 @@ export = {
     test.throws(() => {
       buildStage.addAction(buildAction);
     }, /Role is not supported for actions with an owner different than 'AWS' - got 'ThirdParty' \(Action: 'build' in Stage: 'Build'\)/);
+
+    test.done();
+  },
+
+  'actions can be retrieved from stages they have been added to'(test: Test) {
+    const stack = new cdk.Stack();
+
+    const sourceOutput = new codepipeline.Artifact();
+    const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+      stages: [
+        {
+          stageName: 'Source',
+          actions: [
+            new FakeSourceAction({
+              actionName: 'source',
+              output: sourceOutput,
+            }),
+          ],
+        },
+      ],
+    });
+    const sourceStage = pipeline.stages[0];
+    const buildStage = pipeline.addStage({
+      stageName: 'Build',
+      actions: [
+        new FakeBuildAction({
+          actionName: 'build1',
+          input: sourceOutput,
+          runOrder: 11,
+        }),
+        new FakeBuildAction({
+          actionName: 'build2',
+          input: sourceOutput,
+          runOrder: 2,
+        }),
+      ],
+    });
+
+    test.equal(sourceStage.actions.length, 1);
+    test.equal(sourceStage.actions[0].actionProperties.actionName, 'source');
+
+    test.equal(buildStage.actions.length, 2);
+    test.equal(buildStage.actions[0].actionProperties.actionName, 'build1');
+    test.equal(buildStage.actions[1].actionProperties.actionName, 'build2');
 
     test.done();
   },

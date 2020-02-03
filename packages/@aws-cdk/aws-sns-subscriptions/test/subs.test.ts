@@ -1,9 +1,9 @@
 import '@aws-cdk/assert/jest';
-import lambda = require('@aws-cdk/aws-lambda');
-import sns = require('@aws-cdk/aws-sns');
-import sqs = require('@aws-cdk/aws-sqs');
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as sns from '@aws-cdk/aws-sns';
+import * as sqs from '@aws-cdk/aws-sqs';
 import { CfnParameter, SecretValue, Stack } from '@aws-cdk/core';
-import subs = require('../lib');
+import * as subs from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -202,7 +202,7 @@ test('queue subscription (with raw delivery)', () => {
 
 test('lambda subscription', () => {
   const fction = new lambda.Function(stack, 'MyFunc', {
-    runtime: lambda.Runtime.NODEJS_8_10,
+    runtime: lambda.Runtime.NODEJS_10_X,
     handler: 'index.handler',
     code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }')
   });
@@ -262,7 +262,7 @@ test('lambda subscription', () => {
               "Arn"
             ]
           },
-          "Runtime": "nodejs8.10"
+          "Runtime": "nodejs10.x"
         },
         "DependsOn": [
           "MyFuncServiceRole54065130"
@@ -332,7 +332,7 @@ test('email subscription', () => {
 test('multiple subscriptions', () => {
   const queue = new sqs.Queue(stack, 'MyQueue');
   const func = new lambda.Function(stack, 'MyFunc', {
-    runtime: lambda.Runtime.NODEJS_8_10,
+    runtime: lambda.Runtime.NODEJS_10_X,
     handler: 'index.handler',
     code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }')
   });
@@ -446,7 +446,7 @@ test('multiple subscriptions', () => {
               "Arn"
             ]
           },
-          "Runtime": "nodejs8.10"
+          "Runtime": "nodejs10.x"
         },
         "DependsOn": [
           "MyFuncServiceRole54065130"

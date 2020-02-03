@@ -1,4 +1,4 @@
-import reflect = require('jsii-reflect');
+import * as reflect from 'jsii-reflect';
 import { Linter } from '../linter';
 import { CoreTypes } from './core-types';
 

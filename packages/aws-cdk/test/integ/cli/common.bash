@@ -13,7 +13,16 @@ fi
 
 
 if [[ "${STACK_NAME_PREFIX:-}" == "" ]]; then
-  if ${IS_CANARY:-false}; then
+  # Make the stack names unique based on the codebuild project name
+  # (if it exists). This prevents multiple codebuild projects stomping
+  # on each other's stacks and failing them.
+  #
+  # The get codebuild project name from the ID: PROJECT_NAME:1238a83
+  CODEBUILD_PROJECT=$(echo ${CODEBUILD_BUILD_ID:-} | cut -d: -f 1)
+
+  if [[ "${CODEBUILD_PROJECT:-}" != "" ]]; then
+    export STACK_NAME_PREFIX="${CODEBUILD_PROJECT}"
+  elif ${IS_CANARY:-false}; then
     export STACK_NAME_PREFIX=cdk-toolkit-canary
   else
     export STACK_NAME_PREFIX=cdk-toolkit-integration
@@ -56,6 +65,11 @@ function prepare_fixture() {
     mkdir -p $integ_test_dir
     cp -R app/* $integ_test_dir
     cd $integ_test_dir
+
+    # if this directory is missing, but exists in any of the 
+    # parent directories, npm will install these packages there. lets make sure
+    # we install locally.
+    mkdir -p node_modules
 
     npm install \
         @aws-cdk/core \

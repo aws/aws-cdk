@@ -1,6 +1,6 @@
-import codepipeline = require('@aws-cdk/aws-codepipeline');
-import targets = require('@aws-cdk/aws-events-targets');
-import s3 = require('@aws-cdk/aws-s3');
+import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import * as targets from '@aws-cdk/aws-events-targets';
+import * as s3 from '@aws-cdk/aws-s3';
 import { Construct } from '@aws-cdk/core';
 import { Action } from '../action';
 import { sourceArtifactBounds } from '../common';
@@ -28,6 +28,17 @@ export enum S3Trigger {
    * for the events to be delivered.
    */
   EVENTS = 'Events',
+}
+
+/**
+ * The CodePipeline variables emitted by the S3 source Action.
+ */
+export interface S3SourceVariables {
+  /** The identifier of the S3 version of the object that triggered the build. */
+  readonly versionId: string;
+
+  /** The e-tag of the S3 version of the object that triggered the build. */
+  readonly eTag: string;
 }
 
 /**
@@ -86,6 +97,14 @@ export class S3SourceAction extends Action {
     }
 
     this.props = props;
+  }
+
+  /** The variables emitted by this action. */
+  public get variables(): S3SourceVariables {
+    return  {
+      versionId: this.variableExpression('VersionId'),
+      eTag: this.variableExpression('ETag'),
+    };
   }
 
   protected bound(_scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):

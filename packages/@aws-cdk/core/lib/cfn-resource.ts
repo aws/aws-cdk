@@ -1,10 +1,11 @@
-import cxapi = require('@aws-cdk/cx-api');
+import * as cxapi from '@aws-cdk/cx-api';
 import { CfnCondition } from './cfn-condition';
 // import required to be here, otherwise causes a cycle when running the generated JavaScript
 // tslint:disable-next-line:ordered-imports
 import { CfnRefElement } from './cfn-element';
 import { CfnCreationPolicy, CfnDeletionPolicy, CfnUpdatePolicy } from './cfn-resource-policy';
 import { Construct, IConstruct } from './construct';
+import { addDependency } from './deps';
 import { CfnReference } from './private/cfn-reference';
 import { Reference } from './reference';
 import { RemovalPolicy, RemovalPolicyOptions } from './removal-policy';
@@ -223,11 +224,14 @@ export class CfnResource extends CfnRefElement {
   }
 
   /**
-   * Indicates that this resource depends on another resource and cannot be provisioned
-   * unless the other resource has been successfully provisioned.
+   * Indicates that this resource depends on another resource and cannot be
+   * provisioned unless the other resource has been successfully provisioned.
+   *
+   * This can be used for resources across stacks (or nested stack) boundaries
+   * and the dependency will automatically be transferred to the relevant scope.
    */
-  public addDependsOn(resource: CfnResource) {
-    this.dependsOn.add(resource);
+  public addDependsOn(target: CfnResource) {
+    addDependency(this, target, `"${this.node.path}" depends on "${target.node.path}"`);
   }
 
   /**
@@ -235,6 +239,20 @@ export class CfnResource extends CfnRefElement {
    */
   public toString() {
     return `${super.toString()} [${this.cfnResourceType}]`;
+  }
+
+  /**
+   * Called by the `addDependency` helper function in order to realize a direct
+   * dependency between two resources that are directly defined in the same
+   * stacks.
+   *
+   * Use `resource.addDependsOn` to define the dependency between two resources,
+   * which also takes stack boundaries into account.
+   *
+   * @internal
+   */
+  public _addResourceDependency(target: CfnResource) {
+    this.dependsOn.add(target);
   }
 
   /**
@@ -300,8 +318,13 @@ export class CfnResource extends CfnRefElement {
   }
 
   protected get cfnProperties(): { [key: string]: any } {
-    const tags = TagManager.isTaggable(this) ? this.tags.renderTags() : {};
-    return deepMerge(this._cfnProperties || {}, {tags});
+    const props = this._cfnProperties || {};
+    if (TagManager.isTaggable(this)) {
+      const tagsProp: { [key: string]: any } = {};
+      tagsProp[this.tags.tagPropertyName] = this.tags.renderTags();
+      return deepMerge(props, tagsProp);
+    }
+    return props;
   }
 
   protected renderProperties(props: {[key: string]: any}): { [key: string]: any } {

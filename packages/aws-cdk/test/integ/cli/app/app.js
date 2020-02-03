@@ -84,7 +84,7 @@ class LambdaStack extends cdk.Stack {
 
     const fn = new lambda.Function(this, 'my-function', {
       code: lambda.Code.asset(path.join(__dirname, 'lambda')),
-      runtime: lambda.Runtime.NODEJS_8_10,
+      runtime: lambda.Runtime.NODEJS_10_X,
       handler: 'index.handler'
     });
 
@@ -100,6 +100,18 @@ class DockerStack extends cdk.Stack {
       directory: path.join(__dirname, 'docker')
     });
   }
+}
+
+class DockerStackWithCustomFile extends cdk.Stack {
+  constructor(parent, id, props) {
+    super(parent, id, props);
+
+    new docker.DockerImageAsset(this, 'image', {
+      directory: path.join(__dirname, 'docker'),
+      file: 'Dockerfile.Custom'
+    });
+  }
+
 }
 
 const VPC_TAG_NAME = 'custom-tag';
@@ -155,6 +167,7 @@ new MissingSSMParameterStack(app, `${stackPrefix}-missing-ssm-parameter`, { env:
 
 new LambdaStack(app, `${stackPrefix}-lambda`);
 new DockerStack(app, `${stackPrefix}-docker`);
+new DockerStackWithCustomFile(app, `${stackPrefix}-docker-with-custom-file`);
 
 if (process.env.ENABLE_VPC_TESTING) { // Gating so we don't do context fetching unless that's what we are here for
   const env = { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION };

@@ -1,10 +1,11 @@
-import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import ec2 = require('@aws-cdk/aws-ec2');
-import iam = require('@aws-cdk/aws-iam');
-import logs = require('@aws-cdk/aws-logs');
-import sqs = require('@aws-cdk/aws-sqs');
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as iam from '@aws-cdk/aws-iam';
+import * as logs from '@aws-cdk/aws-logs';
+import * as sqs from '@aws-cdk/aws-sqs';
 import { Construct, Duration, Fn, Lazy } from '@aws-cdk/core';
 import { Code, CodeConfig } from './code';
+import { EventInvokeConfigOptions } from './event-invoke-config';
 import { IEventSource } from './event-source';
 import { FunctionAttributes, FunctionBase, IFunction } from './function-base';
 import { Version } from './lambda-version';
@@ -33,31 +34,16 @@ export enum Tracing {
   DISABLED = "Disabled"
 }
 
-export interface FunctionProps {
-  /**
-   * The source code of your Lambda function. You can point to a file in an
-   * Amazon Simple Storage Service (Amazon S3) bucket or specify your source
-   * code as inline text.
-   */
-  readonly code: Code;
-
+/**
+ * Non runtime options
+ */
+export interface FunctionOptions extends EventInvokeConfigOptions {
   /**
    * A description of the function.
    *
    * @default - No description.
    */
   readonly description?: string;
-
-  /**
-   * The name of the function (within your source code) that Lambda calls to
-   * start running your code. For more information, see the Handler property
-   * in the AWS Lambda Developer Guide.
-   *
-   * NOTE: If you specify your source code as inline text by specifying the
-   * ZipFile property within the Code property, specify index.function_name as
-   * the handler.
-   */
-  readonly handler: string;
 
   /**
    * The function execution time (in seconds) after which Lambda terminates
@@ -77,13 +63,6 @@ export interface FunctionProps {
    * @default - No environment variables.
    */
   readonly environment?: { [key: string]: string };
-
-  /**
-   * The runtime environment for the Lambda function that you are uploading.
-   * For valid values, see the Runtime property in the AWS Lambda Developer
-   * Guide.
-   */
-  readonly runtime: Runtime;
 
   /**
    * A name for the function.
@@ -232,9 +211,9 @@ export interface FunctionProps {
   /**
    * The number of days log events are kept in CloudWatch Logs. When updating
    * this property, unsetting it doesn't remove the log retention policy. To
-   * remove the retention policy, set the value to `Infinity`.
+   * remove the retention policy, set the value to `INFINITE`.
    *
-   * @default - Logs never expire.
+   * @default logs.RetentionDays.INFINITE
    */
   readonly logRetention?: logs.RetentionDays;
 
@@ -245,6 +224,34 @@ export interface FunctionProps {
    * @default - A new role is created.
    */
   readonly logRetentionRole?: iam.IRole;
+}
+
+export interface FunctionProps extends FunctionOptions {
+  /**
+   * The runtime environment for the Lambda function that you are uploading.
+   * For valid values, see the Runtime property in the AWS Lambda Developer
+   * Guide.
+   */
+  readonly runtime: Runtime;
+
+  /**
+   * The source code of your Lambda function. You can point to a file in an
+   * Amazon Simple Storage Service (Amazon S3) bucket or specify your source
+   * code as inline text.
+   */
+  readonly code: Code;
+
+  /**
+   * The name of the method within your code that Lambda calls to execute
+   * your function. The format includes the file name. It can also include
+   * namespaces and other qualifiers, depending on the runtime.
+   * For more information, see https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-features.html#gettingstarted-features-programmingmodel.
+   *
+   * NOTE: If you specify your source code as inline text by specifying the
+   * ZipFile property within the Code property, specify index.function_name as
+   * the handler.
+   */
+  readonly handler: string;
 }
 
 /**
@@ -406,6 +413,8 @@ export class Function extends FunctionBase {
 
   private readonly layers: ILayerVersion[] = [];
 
+  private _logGroup?: logs.ILogGroup;
+
   /**
    * Environment variables for this function
    */
@@ -485,14 +494,25 @@ export class Function extends FunctionBase {
 
     // Log retention
     if (props.logRetention) {
-      new LogRetention(this, 'LogRetention', {
+      const logretention = new LogRetention(this, 'LogRetention', {
         logGroupName: `/aws/lambda/${this.functionName}`,
         retention: props.logRetention,
         role: props.logRetentionRole
       });
+      this._logGroup = logs.LogGroup.fromLogGroupArn(this, 'LogGroup', logretention.logGroupArn);
     }
 
     props.code.bindToResource(resource);
+
+    // Event Invoke Config
+    if (props.onFailure || props.onSuccess || props.maxEventAge || props.retryAttempts !== undefined) {
+      this.configureAsyncInvoke({
+        onFailure: props.onFailure,
+        onSuccess: props.onSuccess,
+        maxEventAge: props.maxEventAge,
+        retryAttempts: props.retryAttempts,
+      });
+    }
   }
 
   /**
@@ -540,14 +560,44 @@ export class Function extends FunctionBase {
    * @param codeSha256 The SHA-256 hash of the most recently deployed Lambda source code, or
    *  omit to skip validation.
    * @param description A description for this version.
+   * @param provisionedExecutions A provisioned concurrency configuration for a function's version.
+   * @param asyncInvokeConfig configuration for this version when it is invoked asynchronously.
    * @returns A new Version object.
    */
-  public addVersion(name: string, codeSha256?: string, description?: string): Version {
+  public addVersion(
+    name: string,
+    codeSha256?: string,
+    description?: string,
+    provisionedExecutions?: number,
+    asyncInvokeConfig: EventInvokeConfigOptions = {}): Version {
     return new Version(this, 'Version' + name, {
       lambda: this,
       codeSha256,
       description,
+      provisionedConcurrentExecutions: provisionedExecutions,
+      ...asyncInvokeConfig,
     });
+  }
+
+  /**
+   * The LogGroup where the Lambda function's logs are made available.
+   *
+   * If either `logRetention` is set or this property is called, a CloudFormation custom resource is added to the stack that
+   * pre-creates the log group as part of the stack deployment, if it already doesn't exist, and sets the correct log retention
+   * period (never expire, by default).
+   *
+   * Further, if the log group already exists and the `logRetention` is not set, the custom resource will reset the log retention
+   * to never expire even if it was configured with a different value.
+   */
+  public get logGroup(): logs.ILogGroup {
+    if (!this._logGroup) {
+      const logretention = new LogRetention(this, 'LogRetention', {
+        logGroupName: `/aws/lambda/${this.functionName}`,
+        retention: logs.RetentionDays.INFINITE,
+      });
+      this._logGroup = logs.LogGroup.fromLogGroupArn(this, `${this.node.id}-LogGroup`, logretention.logGroupArn);
+    }
+    return this._logGroup;
   }
 
   private renderEnvironment() {

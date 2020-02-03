@@ -1,12 +1,11 @@
 import { countResources, expect, haveResource } from '@aws-cdk/assert';
-import cloudfront = require('@aws-cdk/aws-cloudfront');
-import iam = require('@aws-cdk/aws-iam');
-import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/core');
+import * as cloudfront from '@aws-cdk/aws-cloudfront';
+import * as iam from '@aws-cdk/aws-iam';
+import * as s3 from '@aws-cdk/aws-s3';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import path = require('path');
-import s3deploy = require('../lib');
-import { CacheControl, Expires, ServerSideEncryption, StorageClass } from '../lib';
+import * as path from 'path';
+import * as s3deploy from '../lib';
 
 // tslint:disable:max-line-length
 // tslint:disable:object-literal-key-quotes
@@ -238,11 +237,11 @@ export = {
       metadata: { "A": "1", "b": "2" },
       contentType: "text/html",
       contentLanguage: "en",
-      storageClass: StorageClass.INTELLIGENT_TIERING,
+      storageClass: s3deploy.StorageClass.INTELLIGENT_TIERING,
       contentDisposition: "inline",
-      serverSideEncryption: ServerSideEncryption.AES_256,
-      cacheControl: [CacheControl.setPublic(), CacheControl.maxAge(cdk.Duration.hours(1))],
-      expires: Expires.after(cdk.Duration.hours(12))
+      serverSideEncryption: s3deploy.ServerSideEncryption.AES_256,
+      cacheControl: [s3deploy.CacheControl.setPublic(), s3deploy.CacheControl.maxAge(cdk.Duration.hours(1))],
+      expires: s3deploy.Expires.after(cdk.Duration.hours(12))
     });
 
     // THEN
@@ -255,7 +254,7 @@ export = {
         'storage-class': 'INTELLIGENT_TIERING',
         'server-side-encryption': 'AES256',
         'cache-control': 'public, max-age=3600',
-        'expires': Expires.after(cdk.Duration.hours(12)).value
+        'expires': s3deploy.Expires.after(cdk.Duration.hours(12)).value
       }
     }));
 

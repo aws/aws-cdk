@@ -1,8 +1,8 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
-import lambda = require('@aws-cdk/aws-lambda');
-import cdk = require('@aws-cdk/core');
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import cognito = require('../lib');
+import * as cognito from '../lib';
 
 export = {
   'default setup'(test: Test) {
@@ -17,6 +17,26 @@ export = {
     // THEN
     expect(stack).to(haveResourceLike('AWS::Cognito::UserPool', {
       UserPoolName: 'myPool'
+    }));
+
+    test.done();
+  },
+  'support tags'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const pool = new cognito.UserPool(stack, 'Pool', {
+      userPoolName: 'myPool',
+    });
+    cdk.Tag.add(pool, "PoolTag", "PoolParty");
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::Cognito::UserPool', {
+      UserPoolName: 'myPool',
+      UserPoolTags: {
+        PoolTag: "PoolParty",
+      }
     }));
 
     test.done();

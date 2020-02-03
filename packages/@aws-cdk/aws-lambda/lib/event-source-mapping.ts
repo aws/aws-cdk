@@ -1,5 +1,4 @@
-import cdk = require('@aws-cdk/core');
-import { Resource } from '@aws-cdk/core';
+import * as cdk from '@aws-cdk/core';
 import { IFunction } from './function-base';
 import { CfnEventSourceMapping } from './lambda.generated';
 
@@ -67,7 +66,7 @@ export interface EventSourceMappingProps extends EventSourceMappingOptions {
  * The `SqsEventSource` class will automatically create the mapping, and will also
  * modify the Lambda's execution role so it can consume messages from the queue.
  */
-export class EventSourceMapping extends Resource {
+export class EventSourceMapping extends cdk.Resource {
   constructor(scope: cdk.Construct, id: string, props: EventSourceMappingProps) {
     super(scope, id);
 

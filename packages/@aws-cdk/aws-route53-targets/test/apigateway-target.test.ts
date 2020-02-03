@@ -1,9 +1,9 @@
 import { expect as expectStack, haveResource } from '@aws-cdk/assert';
-import apigw = require('@aws-cdk/aws-apigateway');
-import acm = require('@aws-cdk/aws-certificatemanager');
-import route53 = require('@aws-cdk/aws-route53');
+import * as apigw from '@aws-cdk/aws-apigateway';
+import * as acm from '@aws-cdk/aws-certificatemanager';
+import * as route53 from '@aws-cdk/aws-route53';
 import { Stack } from '@aws-cdk/core';
-import targets = require('../lib');
+import * as targets from '../lib';
 
 test('targets.ApiGateway can be used to the default domain of an APIGW', () => {
   // GIVEN

@@ -1,7 +1,7 @@
 import { SynthUtils } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
-import cdk = require('@aws-cdk/core');
-import iam = require('../lib');
+import * as cdk from '@aws-cdk/core';
+import * as iam from '../lib';
 
 describe('automatic cross-stack references', () => {
   test('automatic exports are created when attributes are referneced across stacks', () => {
