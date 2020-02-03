@@ -64,7 +64,7 @@
   "devDependencies": {
     "@aws-cdk/assert": "1.22.0",
     "@types/nodeunit": "^0.0.30",
-    "aws-sdk": "^2.608.0",
+    "aws-sdk": "^2.610.0",
     "cdk-build-tools": "1.22.0",
     "cdk-integ-tools": "1.22.0",
     "cfn2ts": "1.22.0",

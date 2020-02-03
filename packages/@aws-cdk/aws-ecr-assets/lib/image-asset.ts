@@ -2,6 +2,7 @@ import * as assets from '@aws-cdk/assets';
 import * as ecr from '@aws-cdk/aws-ecr';
 import { Construct, Stack, Token } from '@aws-cdk/core';
 import * as fs from 'fs';
+import * as minimatch from 'minimatch';
 import * as path from 'path';
 
 export interface DockerImageAssetProps extends assets.FingerprintOptions {
@@ -94,6 +95,13 @@ export class DockerImageAsset extends Construct implements assets.IAsset {
     if (fs.existsSync(ignore)) {
       exclude = [...exclude, ...fs.readFileSync(ignore).toString().split('\n').filter(e => !!e)];
     }
+
+    // make sure the docker file and the dockerignore file end up in the staging area
+    // see https://github.com/aws/aws-cdk/issues/6004
+    exclude = exclude.filter(ignoreExpression => {
+      return !(minimatch(file, ignoreExpression, { matchBase: true }) ||
+             minimatch(ignore, ignoreExpression, { matchBase: true }));
+    });
 
     if (props.repositoryName) {
       this.node.addWarning(`DockerImageAsset.repositoryName is deprecated. Override "core.Stack.addDockerImageAsset" to control asset locations`);
