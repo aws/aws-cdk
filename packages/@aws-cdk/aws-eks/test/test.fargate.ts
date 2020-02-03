@@ -129,7 +129,7 @@ export = {
     test.done();
   },
 
-  'fails if therer are no selectors or if there are more than 5'(test: Test) {
+  'fails if there are no selectors or if there are more than 5'(test: Test) {
     // GIVEN
     const stack = new Stack();
     const cluster = new eks.Cluster(stack, 'MyCluster');
