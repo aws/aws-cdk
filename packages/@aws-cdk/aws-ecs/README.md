@@ -459,6 +459,7 @@ Currently Supported Log Drivers:
 - json-file
 - splunk
 - syslog
+- awsfirelens
 
 ### awslogs Log Driver
 
@@ -468,7 +469,7 @@ const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
 taskDefinition.addContainer('TheContainer', {
   image: ecs.ContainerImage.fromRegistry('example-image'),
   memoryLimitMiB: 256,
-  logging: new ecs.LogDrivers.awslogs({ streamPrefix: 'EventDemo' })
+  logging: ecs.LogDrivers.awslogs({ streamPrefix: 'EventDemo' })
 });
 ```
 
@@ -480,7 +481,7 @@ const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
 taskDefinition.addContainer('TheContainer', {
   image: ecs.ContainerImage.fromRegistry('example-image'),
   memoryLimitMiB: 256,
-  logging: new ecs.LogDrivers.fluentd()
+  logging: ecs.LogDrivers.fluentd()
 });
 ```
 
@@ -492,7 +493,7 @@ const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
 taskDefinition.addContainer('TheContainer', {
   image: ecs.ContainerImage.fromRegistry('example-image'),
   memoryLimitMiB: 256,
-  logging: new ecs.LogDrivers.gelf()
+  logging: ecs.LogDrivers.gelf({ address: 'my-gelf-address' })
 });
 ```
 
@@ -504,7 +505,7 @@ const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
 taskDefinition.addContainer('TheContainer', {
   image: ecs.ContainerImage.fromRegistry('example-image'),
   memoryLimitMiB: 256,
-  logging: new ecs.LogDrivers.journald()
+  logging: ecs.LogDrivers.journald()
 });
 ```
 
@@ -516,7 +517,7 @@ const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
 taskDefinition.addContainer('TheContainer', {
   image: ecs.ContainerImage.fromRegistry('example-image'),
   memoryLimitMiB: 256,
-  logging: new ecs.LogDrivers.jsonFile()
+  logging: ecs.LogDrivers.jsonFile()
 });
 ```
 
@@ -528,7 +529,10 @@ const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
 taskDefinition.addContainer('TheContainer', {
   image: ecs.ContainerImage.fromRegistry('example-image'),
   memoryLimitMiB: 256,
-  logging: new ecs.LogDrivers.splunk()
+  logging: ecs.LogDrivers.splunk({
+    token: cdk.SecretValue.secretsManager('my-splunk-token'),
+    url: 'my-splunk-url'
+  })
 });
 ```
 
@@ -540,7 +544,25 @@ const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
 taskDefinition.addContainer('TheContainer', {
   image: ecs.ContainerImage.fromRegistry('example-image'),
   memoryLimitMiB: 256,
-  logging: new ecs.LogDrivers.syslog()
+  logging: ecs.LogDrivers.syslog()
+});
+```
+
+### firelens Log Driver
+
+```ts
+// Create a Task Definition for the container to start
+const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
+taskDefinition.addContainer('TheContainer', {
+  image: ecs.ContainerImage.fromRegistry('example-image'),
+  memoryLimitMiB: 256,
+  logging: ecs.LogDrivers.firelens({
+    options: {
+        Name: 'firehose',
+        region: 'us-west-2',
+        delivery_stream: 'my-stream',
+    }
+  })
 });
 ```
 
