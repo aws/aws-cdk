@@ -375,12 +375,40 @@ export = {
     // WHEN
     new route53.CaaAmazonRecord(stack, 'CAAAmazon', {
       zone,
-      recordName: 'www', // should have no effect
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::Route53::RecordSet', {
       Name: "myzone.",
+      Type: "CAA",
+      HostedZoneId: {
+        Ref: "HostedZoneDB99F866"
+      },
+      ResourceRecords: [
+        '0 issue "amazon.com"'
+      ],
+      TTL: "1800"
+    }));
+    test.done();
+  },
+
+  'CAA Amazon record with record name'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    const zone = new route53.HostedZone(stack, 'HostedZone', {
+      zoneName: 'myzone'
+    });
+
+    // WHEN
+    new route53.CaaAmazonRecord(stack, 'CAAAmazon', {
+      zone,
+      recordName: 'www',
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Route53::RecordSet', {
+      Name: "www.myzone.",
       Type: "CAA",
       HostedZoneId: {
         Ref: "HostedZoneDB99F866"
