@@ -569,6 +569,45 @@ export = {
 
       test.done();
     },
+    'route propagation defaults to isolated subnets when there are no private subnets'(test: Test) {
+      const stack = getTestStack();
+      new Vpc(stack, 'VPC', {
+        subnetConfiguration: [
+          { subnetType: SubnetType.ISOLATED, name: 'Isolated' },
+        ],
+        vpnGateway: true,
+      });
+
+      expect(stack).to(haveResource('AWS::EC2::VPNGatewayRoutePropagation', {
+        RouteTableIds: [
+          {
+            Ref: 'VPCIsolatedSubnet1RouteTableEB156210'
+          },
+          {
+            Ref: 'VPCIsolatedSubnet2RouteTable9B4F78DC'
+          },
+          {
+            Ref: 'VPCIsolatedSubnet3RouteTableCB6A1FDA'
+          }
+        ],
+        VpnGatewayId: {
+          Ref: 'VPCVpnGatewayB5ABAE68'
+        }
+      }));
+
+      test.done();
+    },
+    'route propagation throws when there are no private or isolated subnets'(test: Test) {
+      const stack = getTestStack();
+      test.throws(() => new Vpc(stack, 'VPC', {
+        subnetConfiguration: [
+          { subnetType: SubnetType.PUBLIC, name: 'Public' },
+        ],
+        vpnGateway: true,
+      }), /Expected to have either PRIVATE or ISOLATED subnets for VPN gateway route propagation/);
+
+      test.done();
+    },
     'fails when specifying vpnConnections with vpnGateway set to false'(test: Test) {
       // GIVEN
       const stack = new Stack();
