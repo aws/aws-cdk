@@ -226,12 +226,11 @@ export class InterfaceVpcEndpointService implements IInterfaceVpcEndpointService
   /**
    * Whether Private DNS is supported by default.
    */
-  public readonly privateDnsDefault?: boolean;
+  public readonly privateDnsDefault?: boolean = false;
 
   constructor(name: string, port?: number) {
     this.name = name;
     this.port = port || 443;
-    this.privateDnsDefault = false;
   }
 }
 
@@ -293,12 +292,11 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   /**
    * Whether Private DNS is supported by default.
    */
-  public readonly privateDnsDefault?: boolean;
+  public readonly privateDnsDefault?: boolean = true;
 
   constructor(name: string, prefix?: string, port?: number) {
     this.name = `${prefix || 'com.amazonaws'}.${Aws.REGION}.${name}`;
     this.port = port || 443;
-    this.privateDnsDefault = true;
   }
 }
 
@@ -445,21 +443,16 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
 
     const subnets = props.vpc.selectSubnets({ ...props.subnets, onePerAz: true });
     const subnetIds = subnets.subnetIds;
-    const endpointProps = {
-      privateDnsEnabled: true,
+
+    const endpoint = new CfnVPCEndpoint(this, 'Resource', {
+      privateDnsEnabled: props.privateDnsEnabled ?? props.service.privateDnsDefault ?? true,
       policyDocument: Lazy.anyValue({ produce: () => this.policyDocument }),
       securityGroupIds: securityGroups.map(s => s.securityGroupId),
       serviceName: props.service.name,
       vpcEndpointType: VpcEndpointType.INTERFACE,
       subnetIds,
       vpcId: props.vpc.vpcId
-    };
-    if (props.privateDnsEnabled !== undefined) {
-      endpointProps.privateDnsEnabled = props.privateDnsEnabled;
-    } else if (props.service.privateDnsDefault !== undefined) {
-      endpointProps.privateDnsEnabled = props.service.privateDnsDefault;
-    }
-    const endpoint = new CfnVPCEndpoint(this, 'Resource', endpointProps);
+    });
 
     this.vpcEndpointId = endpoint.ref;
     this.vpcEndpointCreationTimestamp = endpoint.attrCreationTimestamp;
