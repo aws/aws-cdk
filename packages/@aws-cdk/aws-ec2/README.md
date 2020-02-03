@@ -489,3 +489,37 @@ new ec2.Instance(this, 'Instance', {
 });
 
 ```
+
+## VPC Flow Logs
+VPC Flow Logs is a feature that enables you to capture information about the IP traffic going to and from network interfaces in your VPC. Flow log data can be published to Amazon CloudWatch Logs and Amazon S3. After you've created a flow log, you can retrieve and view its data in the chosen destination. (https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html).
+
+By default a flow log will be created with CloudWatch Logs as the destination.
+
+You can create a flow log like this:
+
+```ts
+new ec2.FlowLog(this, 'FlowLog', {
+  resourceType: ec2.FlowLogResourceType.fromVpc(vpc)
+})
+```
+Or you can add a Flow Log to a VPC by using the addFlowLog method like this:
+
+```ts
+const vpc = new ec2.Vpc(this, 'Vpc');
+
+vpc.addFlowLog('FlowLog');
+```
+
+You can also add multiple flow logs with different destinations.
+
+```ts
+const vpc = new ec2.Vpc(this, 'Vpc');
+
+vpc.addFlowLog('FlowLogS3', {
+  destination: ec2.FlowLogDestination.toS3()
+});
+
+vpc.addFlowLog('FlowLogCloudWatch', {
+  trafficType: ec2.FlowLogTrafficType.REJECT
+});
+```
