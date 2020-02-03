@@ -32,7 +32,7 @@ const myTopic = new sns.Topic(this, 'Topic');
 
 const myFn = new lambda.Function(this, 'Fn', {
   // other props
-  onSuccess: new destinations.SnsDestionation(myTopic)
+  onSuccess: new destinations.SnsDestination(myTopic)
 })
 ```
 

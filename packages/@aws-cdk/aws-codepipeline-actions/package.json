@@ -90,7 +90,8 @@
     "@aws-cdk/aws-s3": "1.22.0",
     "@aws-cdk/aws-sns": "1.22.0",
     "@aws-cdk/aws-sns-subscriptions": "1.22.0",
-    "@aws-cdk/core": "1.22.0"
+    "@aws-cdk/core": "1.22.0",
+    "case": "1.6.2"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -111,6 +112,9 @@
     "@aws-cdk/aws-sns-subscriptions": "1.22.0",
     "@aws-cdk/core": "1.22.0"
   },
+  "bundledDependencies": [
+    "case"
+  ],
   "engines": {
     "node": ">= 10.3.0"
   },
