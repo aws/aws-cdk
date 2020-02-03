@@ -130,6 +130,37 @@ Work your magic. Here are some guidelines:
    changes along the way, but try to avoid conflating multiple features. Eventually all these are going to go into a
    single commit, so you can use that to frame your scope.
 
+#### Integration Tests
+
+Integration tests perform a few functions in the CDK code base -
+1. Acts as a regression detector. It does this by running `cdk synth` on the integration test and comparing it against
+   the `*.expected.json` file. This highlights how a change affects the synthesized stacks.
+2. Allows for a way to verify if the stacks are still valid CloudFormation templates, as part of an intrusive change.
+   This is done by running `yarn integ` which will run `cdk deploy` across all of the integration tests in that package.
+   Remember to set up AWS credentials before doing this.
+3. (Optionally) Acts as a way to validate that constructs set up the CloudFormation resources as expected. A successful
+   CloudFormation deployment does not mean that the resources are set up correctly.
+
+If you are working on a new feature that is using previously unused CloudFormation resource types, or involves 
+configuring resource types across services, you need to write integration tests that use these resource types or
+features.
+
+To the extent possible, include a section (like below) in the integration test file that specifies how the successfully
+deployed stack can be verified for correctness. Correctness here implies that the resources have been set up correctly.
+The steps here are usually AWS CLI commands but they need not be.
+
+```ts
+/*
+ * Stack verification steps:
+ * * <step-1>
+ * * <step-2>
+ */
+```
+
+Examples:
+* [integ.destinations.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-lambda-destinations/test/integ.destinations.ts#L7)
+* [integ.token-authorizer.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-apigateway/test/authorizers/integ.token-authorizer.ts#L6)
+
 ### Step 4: Commit
 
 Create a commit with the proposed change changes:
@@ -755,4 +786,3 @@ To debug your CDK application along with the CDK repository,
 * [Workshop](https://github.com/aws-samples/aws-cdk-intro-workshop): source for https://cdkworkshop.com
 * [Developer Guide](https://github.com/awsdocs/aws-cdk-guide): markdown source for developer guide
 * [jsii](https://github.com/aws/jsii): the technology we use for multi-language support. If you are looking to help us support new languages, start there.
-
