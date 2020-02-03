@@ -76,7 +76,7 @@ export class ClusterResource extends Construct {
 
     this.creationRole.addToPolicy(new iam.PolicyStatement({
       actions: [ 'eks:CreateCluster', 'eks:DescribeCluster', 'eks:DeleteCluster', 'eks:UpdateClusterVersion', 'eks:UpdateClusterConfig', 'eks:CreateFargateProfile' ],
-      resources: [ resourceArn ]
+      resources: [ resourceArn, `${resourceArn}/*` ]
     }));
 
     this.creationRole.addToPolicy(new iam.PolicyStatement({
