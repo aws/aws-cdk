@@ -1,6 +1,7 @@
 import { Construct, Duration, IResource, Resource, Stack } from '@aws-cdk/core';
 import { CfnJobDefinition } from './batch.generated';
-import { JobDefinitionContainer, JobDefinitionImageConfig } from './job-definition-image-config';
+import { JobDefinitionContainer } from './job-definition-container';
+import { JobDefinitionImageConfig } from './job-definition-image-config';
 
 /**
  * Construction properties of the {@link JobDefinition} construct.
