@@ -147,8 +147,9 @@ export interface BucketDeploymentProps {
   readonly serverSideEncryptionAwsKmsKeyId?: string;
   /**
    * System-defined x-amz-server-side-encryption-customer-algorithm metadata to be set on all objects in the deployment.
+   * Warning: This is not a useful parameter until this bug is fixed: https://github.com/aws/aws-cdk/issues/6080
    * @default - Not set.
-   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/ServerSideEncryptionCustomerKeys.html#sse-c-how-to-programmatically-intro
    */
   readonly serverSideEncryptionCustomerAlgorithm?: string;
 }
@@ -262,11 +263,11 @@ function mapSystemMetadata(metadata: BucketDeploymentProps) {
   if (metadata.contentEncoding) { res["content-encoding"] = metadata.contentEncoding; }
   if (metadata.contentLanguage) { res["content-language"] = metadata.contentLanguage; }
   if (metadata.contentType) { res["content-type"] = metadata.contentType; }
-  if (metadata.serverSideEncryption) { res["server-side-encryption"] = metadata.serverSideEncryption; }
+  if (metadata.serverSideEncryption) { res.sse = metadata.serverSideEncryption; }
   if (metadata.storageClass) { res["storage-class"] = metadata.storageClass; }
-  if (metadata.websiteRedirectLocation) { res["website-redirect-location"] = metadata.websiteRedirectLocation; }
-  if (metadata.serverSideEncryptionAwsKmsKeyId) { res["ssekms-key-id"] = metadata.serverSideEncryptionAwsKmsKeyId; }
-  if (metadata.serverSideEncryptionCustomerAlgorithm) { res["sse-customer-algorithm"] = metadata.serverSideEncryptionCustomerAlgorithm; }
+  if (metadata.websiteRedirectLocation) { res["website-redirect"] = metadata.websiteRedirectLocation; }
+  if (metadata.serverSideEncryptionAwsKmsKeyId) { res["sse-kms-key-id"] = metadata.serverSideEncryptionAwsKmsKeyId; }
+  if (metadata.serverSideEncryptionCustomerAlgorithm) { res["sse-c-copy-source"] = metadata.serverSideEncryptionCustomerAlgorithm; }
 
   return Object.keys(res).length === 0 ? undefined : res;
 }
