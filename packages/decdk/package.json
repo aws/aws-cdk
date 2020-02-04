@@ -31,6 +31,7 @@
     "@aws-cdk/app-delivery": "1.22.0",
     "@aws-cdk/assets": "1.22.0",
     "@aws-cdk/aws-accessanalyzer": "1.22.0",
+    "@aws-cdk/aws-acmpca": "1.22.0",
     "@aws-cdk/aws-amazonmq": "1.22.0",
     "@aws-cdk/aws-amplify": "1.22.0",
     "@aws-cdk/aws-apigateway": "1.22.0",
@@ -168,9 +169,9 @@
   },
   "devDependencies": {
     "@types/fs-extra": "^8.0.1",
-    "@types/jest": "^24.9.0",
+    "@types/jest": "^25.1.1",
     "@types/yaml": "1.2.0",
-    "@types/yargs": "^15.0.1",
+    "@types/yargs": "^15.0.2",
     "jest": "^24.9.0",
     "jsii": "^0.21.2"
   },
