@@ -367,9 +367,11 @@ export class EcsOptimizedAmi implements ec2.IMachineImage {
    */
   public getImage(scope: Construct): ec2.MachineImageConfig {
     const ami = ssm.StringParameter.valueForTypedStringParameter(scope, this.amiParameterName, ssm.ParameterType.AWS_EC2_IMAGE_ID);
+    const osType = this.windowsVersion ? ec2.OperatingSystemType.WINDOWS : ec2.OperatingSystemType.LINUX;
     return {
       imageId: ami,
-      osType: this.windowsVersion ? ec2.OperatingSystemType.WINDOWS : ec2.OperatingSystemType.LINUX
+      osType,
+      userData: ec2.UserData.forOperatingSystem(osType),
     };
   }
 }
@@ -438,9 +440,11 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
    */
   public getImage(scope: Construct): ec2.MachineImageConfig {
     const ami = ssm.StringParameter.valueForTypedStringParameter(scope, this.amiParameterName, ssm.ParameterType.AWS_EC2_IMAGE_ID);
+    const osType = this.windowsVersion ? ec2.OperatingSystemType.WINDOWS : ec2.OperatingSystemType.LINUX;
     return {
       imageId: ami,
-      osType: this.windowsVersion ? ec2.OperatingSystemType.WINDOWS : ec2.OperatingSystemType.LINUX
+      osType,
+      userData: ec2.UserData.forOperatingSystem(osType),
     };
   }
 }
