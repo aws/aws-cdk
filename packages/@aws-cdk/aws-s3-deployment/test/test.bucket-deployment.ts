@@ -218,6 +218,7 @@ export = {
       retainOnDelete: true,
     });
 
+    // THEN
     expect(stack).to(haveResource('Custom::CDKBucketDeployment', {
       RetainOnDelete: true
     }));
@@ -225,7 +226,7 @@ export = {
     test.done();
   },
 
-  'object metadata can be given'(test: Test) {
+  'user metadata is correctly transformed'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const bucket = new s3.Bucket(stack, 'Dest');
@@ -234,27 +235,54 @@ export = {
     new s3deploy.BucketDeployment(stack, 'Deploy', {
       sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website.zip'))],
       destinationBucket: bucket,
-      metadata: { "A": "1", "b": "2" },
-      contentType: "text/html",
-      contentLanguage: "en",
-      storageClass: s3deploy.StorageClass.INTELLIGENT_TIERING,
-      contentDisposition: "inline",
-      serverSideEncryption: s3deploy.ServerSideEncryption.AES_256,
-      cacheControl: [s3deploy.CacheControl.setPublic(), s3deploy.CacheControl.maxAge(cdk.Duration.hours(1))],
-      expires: s3deploy.Expires.after(cdk.Duration.hours(12))
-    });
+      metadata: {
+        A: '1',
+        B: '2'
+      }
+    })
 
     // THEN
     expect(stack).to(haveResource('Custom::CDKBucketDeployment', {
       UserMetadata: { 'x-amzn-meta-a': '1', 'x-amzn-meta-b': '2' },
+    }));
+
+    test.done();
+  },
+
+  'system metadata is correctly transformed'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const bucket = new s3.Bucket(stack, 'Dest');
+
+    // WHEN
+    new s3deploy.BucketDeployment(stack, 'Deploy', {
+      sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website.zip'))],
+      destinationBucket: bucket,
+      contentType: "text/html",
+      contentLanguage: "en",
+      storageClass: s3deploy.StorageClass.INTELLIGENT_TIERING,
+      contentDisposition: "inline",
+      serverSideEncryption: s3deploy.ServerSideEncryption.AWS_KMS,
+      serverSideEncryptionAwsKmsKeyId: "mykey",
+      serverSideEncryptionCustomerAlgorithm: "rot13",
+      websiteRedirectLocation: "example",
+      cacheControl: [s3deploy.CacheControl.setPublic(), s3deploy.CacheControl.maxAge(cdk.Duration.hours(1))],
+      expires: s3deploy.Expires.after(cdk.Duration.hours(12))
+    })
+
+    // THEN
+    expect(stack).to(haveResource('Custom::CDKBucketDeployment', {
       SystemMetadata: {
         'content-type': 'text/html',
         'content-language': 'en',
         'content-disposition': 'inline',
         'storage-class': 'INTELLIGENT_TIERING',
-        'sse': 'AES256',
+        'sse': 'aws:kms',
+        'sse-kms-key-id': 'mykey',
         'cache-control': 'public, max-age=3600',
-        'expires': s3deploy.Expires.after(cdk.Duration.hours(12)).value
+        'expires': s3deploy.Expires.after(cdk.Duration.hours(12)).value,
+        'sse-c-copy-source': 'rot13',
+        'website-redirect': 'example'
       }
     }));
 
