@@ -1,8 +1,8 @@
 import '@aws-cdk/assert/jest';
-import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import sns = require('@aws-cdk/aws-sns');
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as sns from '@aws-cdk/aws-sns';
 import { Stack } from '@aws-cdk/core';
-import actions = require('../lib');
+import * as actions from '../lib';
 
 test('can use topic as alarm action', () => {
   // GIVEN

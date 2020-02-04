@@ -1,8 +1,8 @@
 import { Construct, Resource } from '@aws-cdk/core';
 import { CfnModel, CfnModelProps } from './apigateway.generated';
-import jsonSchema = require('./json-schema');
+import * as jsonSchema from './json-schema';
 import { IRestApi, RestApi } from './restapi';
-import util = require('./util');
+import * as util from './util';
 
 export interface IModel {
   /**

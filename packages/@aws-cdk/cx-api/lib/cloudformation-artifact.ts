@@ -1,5 +1,5 @@
-import fs = require('fs');
-import path = require('path');
+import * as fs from 'fs';
+import * as path from 'path';
 import { ASSET_METADATA, AssetMetadataEntry } from './assets';
 import { ArtifactManifest, AwsCloudFormationStackProperties, CloudArtifact } from './cloud-artifact';
 import { CloudAssembly } from './cloud-assembly';
@@ -32,7 +32,20 @@ export class CloudFormationStackArtifact extends CloudArtifact {
   public readonly parameters: { [id: string]: string };
 
   /**
-   * The name of this stack.
+   * The physical name of this stack.
+   */
+  public readonly stackName: string;
+
+  /**
+   * A string that represents this stack. Should only be used in user interfaces.
+   * If the stackName and artifactId are the same, it will just return that. Otherwise,
+   * it will return something like "<artifactId> (<stackName>)"
+   */
+  public readonly displayName: string;
+
+  /**
+   * The physical name of this stack.
+   * @deprecated renamed to `stackName`
    */
   public readonly name: string;
 
@@ -41,8 +54,8 @@ export class CloudFormationStackArtifact extends CloudArtifact {
    */
   public readonly environment: Environment;
 
-  constructor(assembly: CloudAssembly, name: string, artifact: ArtifactManifest) {
-    super(assembly, name, artifact);
+  constructor(assembly: CloudAssembly, artifactId: string, artifact: ArtifactManifest) {
+    super(assembly, artifactId, artifact);
 
     if (!artifact.properties || !artifact.properties.templateFile) {
       throw new Error(`Invalid CloudFormation stack artifact. Missing "templateFile" property in cloud assembly manifest`);
@@ -55,8 +68,15 @@ export class CloudFormationStackArtifact extends CloudArtifact {
     this.templateFile = properties.templateFile;
     this.parameters = properties.parameters || { };
 
-    this.name = this.originalName = name;
+    this.stackName = properties.stackName || artifactId;
     this.template = JSON.parse(fs.readFileSync(path.join(this.assembly.directory, this.templateFile), 'utf-8'));
     this.assets = this.findMetadataByType(ASSET_METADATA).map(e => e.data);
+
+    this.displayName = this.stackName === artifactId
+      ? this.stackName
+      : `${artifactId} (${this.stackName})`;
+
+    this.name = this.stackName; // backwards compat
+    this.originalName = this.stackName;
   }
 }

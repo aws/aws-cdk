@@ -1,4 +1,4 @@
-import { Construct, IResource, Lazy, Resource, ResourceProps, Stack } from '@aws-cdk/core';
+import { Construct, IResource, Lazy, Resource, ResourceProps, Stack, Token } from '@aws-cdk/core';
 import { Connections } from './connections';
 import { CfnSecurityGroup, CfnSecurityGroupEgress, CfnSecurityGroupIngress } from './ec2.generated';
 import { IPeer } from './peer';
@@ -7,12 +7,20 @@ import { IVpc } from './vpc';
 
 const SECURITY_GROUP_SYMBOL = Symbol.for('@aws-cdk/iam.SecurityGroup');
 
+/**
+ * Interface for security group-like objects
+ */
 export interface ISecurityGroup extends IResource, IPeer {
   /**
    * ID for the current security group
    * @attribute
    */
   readonly securityGroupId: string;
+
+  /**
+   * Whether the SecurityGroup has been configured to allow all outbound traffic
+   */
+  readonly allowAllOutbound: boolean;
 
   /**
    * Add an ingress rule for the current security group
@@ -49,6 +57,7 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
   }
 
   public abstract readonly securityGroupId: string;
+  public abstract readonly allowAllOutbound: boolean;
 
   public readonly canInlineRule = false;
   public readonly connections: Connections = new Connections({ securityGroups: [this] });
@@ -170,8 +179,12 @@ function determineRuleScope(
     return [peer, `${group.uniqueId}:${connection} ${reversedFromTo}`];
   } else {
     // Regular (do old ID escaping to in order to not disturb existing deployments)
-    return [group, `${fromTo} ${peer.uniqueId}:${connection}`.replace('/', '_')];
+    return [group, `${fromTo} ${renderPeer(peer)}:${connection}`.replace('/', '_')];
   }
+}
+
+function renderPeer(peer: IPeer) {
+  return Token.isUnresolved(peer.uniqueId) ? `{IndirectPeer}` : peer.uniqueId;
 }
 
 function differentStacks(group1: SecurityGroupBase, group2: SecurityGroupBase) {
@@ -220,7 +233,7 @@ export interface SecurityGroupProps {
  */
 export interface SecurityGroupImportOptions {
   /**
-   * Mark the SecurityGroup as having been created allowing all outbound traffico
+   * Mark the SecurityGroup as having been created allowing all outbound traffic
    *
    * Only if this is set to false will egress rules be added to this security
    * group. Be aware, this would undo any potential "all outbound traffic"
@@ -246,9 +259,38 @@ export interface SecurityGroupImportOptions {
 /**
  * Creates an Amazon EC2 security group within a VPC.
  *
- * This class has an additional optimization over imported security groups that it can also create
- * inline ingress and egress rule (which saves on the total number of resources inside
- * the template).
+ * Security Groups act like a firewall with a set of rules, and are associated
+ * with any AWS resource that has or creates Elastic Network Interfaces (ENIs).
+ * A typical example of a resource that has a security group is an Instance (or
+ * Auto Scaling Group of instances)
+ *
+ * If you are defining new infrastructure in CDK, there is a good chance you
+ * won't have to interact with this class at all. Like IAM Roles, Security
+ * Groups need to exist to control access between AWS resources, but CDK will
+ * automatically generate and populate them with least-privilege permissions
+ * for you so you can concentrate on your business logic.
+ *
+ * All Constructs that require Security Groups will create one for you if you
+ * don't specify one at construction. After construction, you can selectively
+ * allow connections to and between constructs via--for example-- the `instance.connections`
+ * object. Think of it as "allowing connections to your instance", rather than
+ * "adding ingress rules a security group". See the [Allowing
+ * Connections](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-ec2-readme.html#allowing-connections)
+ * section in the library documentation for examples.
+ *
+ * Direct manipulation of the Security Group through `addIngressRule` and
+ * `addEgressRule` is possible, but mutation through the `.connections` object
+ * is recommended. If you peer two constructs with security groups this way,
+ * appropriate rules will be created in both.
+ *
+ * If you have an existing security group you want to use in your CDK application,
+ * you would import it like this:
+ *
+ * ```ts
+ * const securityGroup = SecurityGroup.fromSecurityGroupId(this, 'SG', 'sg-12345', {
+ *   mutable: false
+ * });
+ * ```
  */
 export class SecurityGroup extends SecurityGroupBase {
 
@@ -258,6 +300,7 @@ export class SecurityGroup extends SecurityGroupBase {
   public static fromSecurityGroupId(scope: Construct, id: string, securityGroupId: string, options: SecurityGroupImportOptions = {}): ISecurityGroup {
     class MutableImport extends SecurityGroupBase {
       public securityGroupId = securityGroupId;
+      public allowAllOutbound = options.allowAllOutbound ?? true;
 
       public addEgressRule(peer: IPeer, connection: Port, description?: string, remoteRule?: boolean) {
         // Only if allowAllOutbound has been disabled
@@ -269,6 +312,7 @@ export class SecurityGroup extends SecurityGroupBase {
 
     class ImmutableImport extends SecurityGroupBase {
       public securityGroupId = securityGroupId;
+      public allowAllOutbound = options.allowAllOutbound ?? true;
 
       public addEgressRule(_peer: IPeer, _connection: Port, _description?: string, _remoteRule?: boolean) {
         // do nothing
@@ -305,11 +349,14 @@ export class SecurityGroup extends SecurityGroupBase {
    */
   public readonly securityGroupVpcId: string;
 
+  /**
+   * Whether the SecurityGroup has been configured to allow all outbound traffic
+   */
+  public readonly allowAllOutbound: boolean;
+
   private readonly securityGroup: CfnSecurityGroup;
   private readonly directIngressRules: CfnSecurityGroup.IngressProperty[] = [];
   private readonly directEgressRules: CfnSecurityGroup.EgressProperty[] = [];
-
-  private readonly allowAllOutbound: boolean;
 
   constructor(scope: Construct, id: string, props: SecurityGroupProps) {
     super(scope, id, {

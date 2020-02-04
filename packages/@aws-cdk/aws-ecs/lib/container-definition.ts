@@ -1,7 +1,7 @@
-import iam = require('@aws-cdk/aws-iam');
-import secretsmanager = require('@aws-cdk/aws-secretsmanager');
-import ssm = require('@aws-cdk/aws-ssm');
-import cdk = require('@aws-cdk/core');
+import * as iam from '@aws-cdk/aws-iam';
+import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
+import * as ssm from '@aws-cdk/aws-ssm';
+import * as cdk from '@aws-cdk/core';
 import { NetworkMode, TaskDefinition } from './base/task-definition';
 import { ContainerImage, ContainerImageConfig } from './container-image';
 import { CfnTaskDefinition } from './ecs.generated';
@@ -127,6 +127,20 @@ export interface ContainerDefinitionOptions {
    * @default - No secret environment variables.
    */
   readonly secrets?: { [key: string]: Secret };
+
+  /**
+   * Time duration (in seconds) to wait before giving up on resolving dependencies for a container.
+   *
+   * @default - none
+   */
+  readonly startTimeout?: cdk.Duration;
+
+  /**
+   * Time duration (in seconds) to wait before the container is forcefully killed if it doesn't exit normally on its own.
+   *
+   * @default - none
+   */
+  readonly stopTimeout?: cdk.Duration;
 
   /**
    * Specifies whether the container is marked essential.
@@ -402,7 +416,7 @@ export class ContainerDefinition extends cdk.Construct {
     this.portMappings.push(...portMappings.map(pm => {
       if (this.taskDefinition.networkMode === NetworkMode.AWS_VPC || this.taskDefinition.networkMode === NetworkMode.HOST) {
         if (pm.containerPort !== pm.hostPort && pm.hostPort !== undefined) {
-          throw new Error(`Host port ${pm.hostPort} does not match container port ${pm.containerPort}.`);
+          throw new Error(`Host port (${pm.hostPort}) must be left out or equal to container port ${pm.containerPort} for network mode ${this.taskDefinition.networkMode}`);
         }
       }
 
@@ -449,10 +463,8 @@ export class ContainerDefinition extends cdk.Construct {
 
   /**
    * Returns the host port for the requested container port if it exists
-   *
-   * @internal
    */
-  public _findPortMapping(containerPort: number, protocol: Protocol): PortMapping | undefined {
+  public findPortMapping(containerPort: number, protocol: Protocol): PortMapping | undefined {
     for (const portMapping of this.portMappings) {
       const p = portMapping.protocol || Protocol.TCP;
       const c = portMapping.containerPort;
@@ -522,6 +534,8 @@ export class ContainerDefinition extends cdk.Construct {
       privileged: this.props.privileged,
       readonlyRootFilesystem: this.props.readonlyRootFilesystem,
       repositoryCredentials: this.imageConfig.repositoryCredentials,
+      startTimeout: this.props.startTimeout && this.props.startTimeout.toSeconds(),
+      stopTimeout: this.props.stopTimeout && this.props.stopTimeout.toSeconds(),
       ulimits: cdk.Lazy.anyValue({ produce: () => this.ulimits.map(renderUlimit) }, { omitEmptyArray: true }),
       user: this.props.user,
       volumesFrom: cdk.Lazy.anyValue({ produce: () => this.volumesFrom.map(renderVolumeFrom) }, { omitEmptyArray: true }),
@@ -598,8 +612,8 @@ export interface HealthCheck {
   readonly timeout?: cdk.Duration;
 }
 
-function renderKV(env: { [key: string]: string }, keyName: string, valueName: string): any {
-  const ret = [];
+function renderKV(env: { [key: string]: string }, keyName: string, valueName: string): any[] {
+  const ret = new Array();
   for (const [key, value] of Object.entries(env)) {
     ret.push({ [keyName]: key, [valueName]: value });
   }

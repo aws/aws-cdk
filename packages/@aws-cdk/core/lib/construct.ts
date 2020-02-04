@@ -1,4 +1,4 @@
-import cxapi = require('@aws-cdk/cx-api');
+import * as cxapi from '@aws-cdk/cx-api';
 import { IAspect } from './aspect';
 import { DependableTrait, IDependable } from './dependency';
 import { makeUniqueId } from './private/uniqueid';
@@ -436,6 +436,18 @@ export class ConstructNode {
     }
 
     return ret;
+  }
+
+  /**
+   * Remove the child with the given name, if present.
+   *
+   * @returns Whether a child with the given name was deleted.
+   * @experimental
+   */
+  public tryRemoveChild(childName: string): boolean {
+    if (!(childName in this._children)) { return false; }
+    delete this._children[childName];
+    return true;
   }
 
   /**

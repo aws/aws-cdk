@@ -12,6 +12,6 @@ coverage
 
 .jsii
 
-.nycrc
+nyc.config.js
 .LAST_PACKAGE
 *.snk

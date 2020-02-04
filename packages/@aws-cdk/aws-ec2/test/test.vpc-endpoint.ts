@@ -1,9 +1,9 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import { AnyPrincipal, PolicyStatement } from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 // eslint-disable-next-line max-len
-import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, InterfaceVpcEndpoint, InterfaceVpcEndpointAwsService, SubnetType, Vpc } from '../lib';
+import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, InterfaceVpcEndpoint, InterfaceVpcEndpointAwsService, InterfaceVpcEndpointService, SecurityGroup, SubnetType, Vpc } from '../lib';
 
 export = {
   'gateway endpoint': {
@@ -276,7 +276,7 @@ export = {
 
       // WHEN
       const importedEndpoint = InterfaceVpcEndpoint.fromInterfaceVpcEndpointAttributes(stack2, 'ImportedEndpoint', {
-        securityGroupId: 'security-group-id',
+        securityGroups: [SecurityGroup.fromSecurityGroupId(stack2, 'SG', 'security-group-id')],
         vpcEndpointId: 'vpc-endpoint-id',
         port: 80
       });
@@ -289,6 +289,66 @@ export = {
       test.deepEqual(importedEndpoint.vpcEndpointId, 'vpc-endpoint-id');
 
       test.done();
-    }
+    },
+
+    'with existing security groups'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VpcNetwork');
+
+      // WHEN
+      vpc.addInterfaceEndpoint('EcrDocker', {
+        service: InterfaceVpcEndpointAwsService.ECR_DOCKER,
+        securityGroups: [SecurityGroup.fromSecurityGroupId(stack, 'SG', 'existing-id')]
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::EC2::VPCEndpoint', {
+        SecurityGroupIds: ['existing-id'],
+      }));
+
+      test.done();
+    },
+    'security group has ingress by default'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VpcNetwork');
+
+      // WHEN
+      vpc.addInterfaceEndpoint('SecretsManagerEndpoint', {
+        service: InterfaceVpcEndpointAwsService.SECRETS_MANAGER,
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::EC2::SecurityGroup', {
+        SecurityGroupIngress: [
+          {
+            CidrIp: { "Fn::GetAtt": [ "VpcNetworkB258E83A", "CidrBlock" ] },
+            FromPort: 443,
+            IpProtocol: "tcp",
+            ToPort: 443
+          }
+        ]
+      }, ));
+
+      test.done();
+    },
+    'non-AWS service interface endpoint'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VpcNetwork');
+
+      // WHEN
+      vpc.addInterfaceEndpoint('YourService', {
+        service: new InterfaceVpcEndpointService("com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc", 443)
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::EC2::VPCEndpoint', {
+        ServiceName: "com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc"
+      }));
+
+      test.done();
+    },
   }
 };

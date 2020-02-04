@@ -1,9 +1,9 @@
 import '@aws-cdk/assert/jest';
-import cloudfront = require('@aws-cdk/aws-cloudfront');
-import route53 = require('@aws-cdk/aws-route53');
-import s3 = require('@aws-cdk/aws-s3');
+import * as cloudfront from '@aws-cdk/aws-cloudfront';
+import * as route53 from '@aws-cdk/aws-route53';
+import * as s3 from '@aws-cdk/aws-s3';
 import { Stack } from '@aws-cdk/core';
-import targets = require('../lib');
+import * as targets from '../lib';
 
 test('use CloudFront as record target', () => {
   // GIVEN
@@ -27,7 +27,7 @@ test('use CloudFront as record target', () => {
   new route53.ARecord(zone, 'Alias', {
     zone,
     recordName: '_foo',
-    target: route53.AddressRecordTarget.fromAlias(new targets.CloudFrontTarget(distribution))
+    target: route53.RecordTarget.fromAlias(new targets.CloudFrontTarget(distribution))
   });
 
   // THEN

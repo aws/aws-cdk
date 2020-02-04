@@ -1,4 +1,4 @@
-import iam = require('@aws-cdk/aws-iam');
+import * as iam from '@aws-cdk/aws-iam';
 import { CfnOutput, Construct, IResource as IResourceBase, Resource, Stack } from '@aws-cdk/core';
 import { ApiKey, IApiKey } from './api-key';
 import { CfnAccount, CfnRestApi } from './apigateway.generated';
@@ -156,6 +156,13 @@ export interface RestApiProps extends ResourceOptions {
    * @default - no domain name is defined, use `addDomainName` or directly define a `DomainName`.
    */
   readonly domainName?: DomainNameOptions;
+
+  /**
+   * Export name for the CfnOutput containing the API endpoint
+   *
+   * @default - when no export name is given, output will be created without export
+   */
+  readonly endpointExportName?: string;
 }
 
 /**
@@ -205,13 +212,8 @@ export class RestApi extends Resource implements IRestApi {
    */
   public deploymentStage!: Stage;
 
-  /**
-   * The domain name mapped to this API, if defined through the `domainName`
-   * configuration prop.
-   */
-  public readonly domainName?: DomainName;
-
   private readonly methods = new Array<Method>();
+  private _domainName?: DomainName;
   private _latestDeployment: Deployment | undefined;
 
   constructor(scope: Construct, id: string, props: RestApiProps = { }) {
@@ -246,8 +248,16 @@ export class RestApi extends Resource implements IRestApi {
     this.restApiRootResourceId = resource.attrRootResourceId;
 
     if (props.domainName) {
-      this.domainName = this.addDomainName('CustomDomain', props.domainName);
+      this.addDomainName('CustomDomain', props.domainName);
     }
+  }
+
+  /**
+   * The first domain name mapped to this API, if defined through the `domainName`
+   * configuration prop, or added via `addDomainName`
+   */
+  public get domainName() {
+    return this._domainName;
   }
 
   /**
@@ -285,16 +295,20 @@ export class RestApi extends Resource implements IRestApi {
    * @param options custom domain options
    */
   public addDomainName(id: string, options: DomainNameOptions): DomainName {
-    return new DomainName(this, id, {
+    const domainName = new DomainName(this, id, {
       ...options,
       mapping: this
     });
+    if (!this._domainName) {
+      this._domainName = domainName;
+    }
+    return domainName;
   }
 
   /**
    * Adds a usage plan.
    */
-  public addUsagePlan(id: string, props: UsagePlanProps): UsagePlan {
+  public addUsagePlan(id: string, props: UsagePlanProps = {}): UsagePlan {
     return new UsagePlan(this, id, props);
   }
 
@@ -392,7 +406,7 @@ export class RestApi extends Resource implements IRestApi {
         ...props.deployOptions
       });
 
-      new CfnOutput(this, 'Endpoint', { value: this.urlForPath() });
+      new CfnOutput(this, 'Endpoint', { exportName: props.endpointExportName, value: this.urlForPath() });
     } else {
       if (props.deployOptions) {
         throw new Error(`Cannot set 'deployOptions' if 'deploy' is disabled`);

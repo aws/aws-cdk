@@ -1,7 +1,7 @@
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 
-import appmesh = require('../lib');
+import * as appmesh from '../lib';
 
 export = {
   'Can export existing route and re-import'(test: Test) {

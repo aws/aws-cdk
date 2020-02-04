@@ -1,10 +1,10 @@
 import { expect, haveResource, SynthUtils } from '@aws-cdk/assert';
-import s3_assets = require('@aws-cdk/aws-s3-assets');
-import sns = require('@aws-cdk/aws-sns');
-import { App, CfnParameter, CfnResource, Construct, Stack } from '@aws-cdk/core';
-import fs = require('fs');
+import * as s3_assets from '@aws-cdk/aws-s3-assets';
+import * as sns from '@aws-cdk/aws-sns';
+import { App, CfnParameter, CfnResource, Construct, ContextProvider, Stack } from '@aws-cdk/core';
+import * as fs from 'fs';
 import { Test } from 'nodeunit';
-import path = require('path');
+import * as path from 'path';
 import { NestedStack } from '../lib/nested-stack';
 
 /* eslint-disable max-len */
@@ -84,7 +84,7 @@ export = {
     const assembly = app.synth();
 
     // THEN
-    test.deepEqual(assembly.getStack(parent.stackName).assets, [{
+    test.deepEqual(assembly.getStackByName(parent.stackName).assets, [{
       path: 'parentstacknestedstack844892C0.nested.template.json',
       id: 'c639c0a5e7320758aa22589669ecebc98f185b711300b074f53998c8f9a45096',
       packaging: 'file',
@@ -418,8 +418,8 @@ export = {
     });
 
     // verify a depedency was established between the parents
-    const stack1Artifact = assembly.getStack(stack1.stackName);
-    const stack2Artifact = assembly.getStack(stack2.stackName);
+    const stack1Artifact = assembly.getStackByName(stack1.stackName);
+    const stack2Artifact = assembly.getStackByName(stack2.stackName);
     test.deepEqual(stack1Artifact.dependencies.length, 1);
     test.deepEqual(stack2Artifact.dependencies.length, 0);
     test.same(stack1Artifact.dependencies[0], stack2Artifact);
@@ -465,7 +465,7 @@ export = {
     });
 
     // parent stack (stack1) should export this value
-    test.deepEqual(assembly.getStack(stack1.stackName).template.Outputs, {
+    test.deepEqual(assembly.getStackByName(stack1.stackName).template.Outputs, {
       ExportsOutputFnGetAttNestedUnderStack1NestedStackNestedUnderStack1NestedStackResourceF616305BOutputsStack1NestedUnderStack1ResourceInNestedStack6EE9DCD2MyAttribute564EECF3: {
         Value: { 'Fn::GetAtt': ['NestedUnderStack1NestedStackNestedUnderStack1NestedStackResourceF616305B', 'Outputs.Stack1NestedUnderStack1ResourceInNestedStack6EE9DCD2MyAttribute'] },
         Export: { Name: 'Stack1:ExportsOutputFnGetAttNestedUnderStack1NestedStackNestedUnderStack1NestedStackResourceF616305BOutputsStack1NestedUnderStack1ResourceInNestedStack6EE9DCD2MyAttribute564EECF3' }
@@ -487,8 +487,8 @@ export = {
     });
 
     test.deepEqual(assembly.stacks.length, 2);
-    const stack1Artifact = assembly.getStack(stack1.stackName);
-    const stack2Artifact = assembly.getStack(stack2.stackName);
+    const stack1Artifact = assembly.getStackByName(stack1.stackName);
+    const stack2Artifact = assembly.getStackByName(stack2.stackName);
     test.deepEqual(stack1Artifact.dependencies.length, 0);
     test.deepEqual(stack2Artifact.dependencies.length, 1);
     test.same(stack2Artifact.dependencies[0], stack1Artifact);
@@ -718,7 +718,7 @@ export = {
     }));
 
     // parent stack should have 2 assets
-    test.deepEqual(assembly.getStack(parent.stackName).assets.length, 2);
+    test.deepEqual(assembly.getStackByName(parent.stackName).assets.length, 2);
     test.done();
   },
 
@@ -764,7 +764,7 @@ export = {
     }));
 
     // parent stack should have 2 assets
-    test.deepEqual(assembly.getStack(parent.stackName).assets.length, 2);
+    test.deepEqual(assembly.getStackByName(parent.stackName).assets.length, 2);
     test.done();
   },
 
@@ -788,19 +788,28 @@ export = {
     });
 
     // THEN
-    const parentParams = SynthUtils.toCloudFormation(parent).Parameters;
-    const nestedParams = SynthUtils.toCloudFormation(nested).Parameters;
-    test.ok(parentParams.AssetParametershashofsourceImageName1CFB7817);
-    test.ok(nestedParams.referencetomystackAssetParametershashofsourceImageName7D5F0882Ref);
-
-    // verify parameter is passed to nested stack
-    expect(parent).to(haveResource('AWS::CloudFormation::Stack', {
-      Parameters: {
-        referencetomystackAssetParametershashofsourceImageName7D5F0882Ref: {
-          Ref: "AssetParametershashofsourceImageName1CFB7817"
-        }
+    const asm = app.synth();
+    test.deepEqual(asm.getStackArtifact(parent.artifactId).assets, [
+      {
+        repositoryName: 'aws-cdk/assets',
+        imageTag: 'hash-of-source',
+        id: 'hash-of-source',
+        packaging: 'container-image',
+        path: 'my-image',
+        sourceHash: 'hash-of-source',
+        buildArgs: { key: 'value', boom: 'bam' },
+        target: 'buildTarget'
+      },
+      {
+        path: 'mystacknestedstackFAE12FB5.nested.template.json',
+        id: 'fcdaee79eb79f37eca3a9b1cc0cc9ba150e4eea8c5d6d0c343cb6cd9dc68e2e5',
+        packaging: 'file',
+        sourceHash: 'fcdaee79eb79f37eca3a9b1cc0cc9ba150e4eea8c5d6d0c343cb6cd9dc68e2e5',
+        s3BucketParameter: 'AssetParametersfcdaee79eb79f37eca3a9b1cc0cc9ba150e4eea8c5d6d0c343cb6cd9dc68e2e5S3Bucket67A749F8',
+        s3KeyParameter: 'AssetParametersfcdaee79eb79f37eca3a9b1cc0cc9ba150e4eea8c5d6d0c343cb6cd9dc68e2e5S3VersionKeyE1E6A8D4',
+        artifactHashParameter: 'AssetParametersfcdaee79eb79f37eca3a9b1cc0cc9ba150e4eea8c5d6d0c343cb6cd9dc68e2e5ArtifactHash0AEDBE8A'
       }
-    }));
+    ]);
 
     test.done();
   },
@@ -819,8 +828,8 @@ export = {
     // THEN: the first non-nested stack records the assembly metadata
     const asm = app.synth();
     test.deepEqual(asm.stacks.length, 2); // only one stack is defined as an artifact
-    test.deepEqual(asm.getStack(parent.stackName).findMetadataByType('foo'), []);
-    test.deepEqual(asm.getStack(child.stackName).findMetadataByType('foo'), [
+    test.deepEqual(asm.getStackByName(parent.stackName).findMetadataByType('foo'), []);
+    test.deepEqual(asm.getStackByName(child.stackName).findMetadataByType('foo'), [
       {
         path: '/parent/child/nested/resource',
         type: 'foo',
@@ -828,5 +837,76 @@ export = {
       }
     ]);
     test.done();
-  }
+  },
+
+  'referencing attributes with period across stacks'(test: Test) {
+    // GIVEN
+    const parent = new Stack();
+    const nested = new NestedStack(parent, 'nested');
+    const consumed = new CfnResource(nested, 'resource-in-nested', { type: 'CONSUMED' });
+
+    // WHEN
+    new CfnResource(parent, 'resource-in-parent', {
+      type: 'CONSUMER',
+      properties: {
+        ConsumedAttribute: consumed.getAtt('Consumed.Attribute')
+      }
+    });
+
+    // THEN
+    expect(nested).toMatch({
+      Resources: {
+        resourceinnested: {
+          Type: "CONSUMED"
+        }
+      },
+      Outputs: {
+        nestedresourceinnested59B1F01CConsumedAttribute: {
+          Value: {
+            "Fn::GetAtt": [
+              "resourceinnested",
+              "Consumed.Attribute"
+            ]
+          }
+        }
+      }
+    });
+    expect(parent).to(haveResource('CONSUMER', {
+      ConsumedAttribute: {
+        "Fn::GetAtt": [
+          "nestedNestedStacknestedNestedStackResource3DD143BF",
+          "Outputs.nestedresourceinnested59B1F01CConsumedAttribute"
+        ]
+      }
+    }));
+
+    test.done();
+  },
+
+  'missing context in nested stack is reported if the context is not available'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'ParentStack', { env: { account: '1234account', region: 'us-east-44' } });
+    const nestedStack = new NestedStack(stack, 'nested');
+    const provider = 'dummyProvider';
+    const expectedKey = ContextProvider.getKey(nestedStack, {
+      provider
+    }).key;
+
+    // WHEN
+    ContextProvider.getValue(nestedStack, {
+      provider,
+      dummyValue: ['dummy1a', 'dummy1b', 'dummy1c'],
+    });
+
+    // THEN: missing context is reported in the cloud assembly
+    const asm = app.synth();
+    const missing = asm.manifest.missing;
+
+    test.ok(missing && missing.find(m => {
+      return (m.key === expectedKey);
+    }));
+
+    test.done();
+  },
 };

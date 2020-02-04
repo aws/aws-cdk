@@ -1,5 +1,7 @@
 [
   {
+  },
+  {
     "Resources": {
       "globdynamodbintegGlobalTableuseast162596384": {
         "Type": "AWS::DynamoDB::Table",
@@ -203,7 +205,7 @@
               "Arn"
             ]
           },
-          "Runtime": "nodejs8.10",
+          "Runtime": "nodejs10.x",
           "Description": "Lambda to make DynamoDB a global table",
           "Timeout": 300
         },

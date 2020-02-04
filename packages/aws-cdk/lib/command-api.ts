@@ -1,4 +1,4 @@
-import yargs = require('yargs');
+import * as yargs from 'yargs';
 import { AppStacks } from './api/cxapp/stacks';
 import { ISDK } from './api/util/sdk';
 import { Configuration } from './settings';

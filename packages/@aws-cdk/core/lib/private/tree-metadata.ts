@@ -1,8 +1,10 @@
-import fs = require('fs');
-import path = require('path');
+import * as fs from 'fs';
+import * as path from 'path';
 
 import { ArtifactType } from '@aws-cdk/cx-api';
 import { Construct, IConstruct, ISynthesisSession } from '../construct';
+import { Stack } from '../stack';
+import { IInspectable, TreeInspector } from '../tree';
 
 const FILE_PATH = 'tree.json';
 
@@ -22,11 +24,23 @@ export class TreeMetadata extends Construct {
     const lookup: { [path: string]: Node } = { };
 
     const visit = (construct: IConstruct): Node => {
-      const children = construct.node.children.map(visit);
+      const children = construct.node.children.map((c) => {
+        try {
+          return visit(c);
+        } catch (e) {
+          this.node.addWarning(`Failed to render tree metadata for node [${c.node.id}]. Reason: ${e}`);
+          return undefined;
+        }
+      });
+      const childrenMap = children
+        .filter((child) => child !== undefined)
+        .reduce((map, child) => Object.assign(map, { [child!.id]: child }), {});
+
       const node: Node = {
         id: construct.node.id || 'App',
         path: construct.node.path,
-        children: children.length === 0 ? undefined : children,
+        children: Object.keys(childrenMap).length === 0 ? undefined : childrenMap,
+        attributes: this.synthAttributes(construct)
       };
 
       lookup[node.path] = node;
@@ -49,10 +63,27 @@ export class TreeMetadata extends Construct {
       }
     });
   }
+
+  private synthAttributes(construct: IConstruct): { [key: string]: any } | undefined {
+    // check if a construct implements IInspectable
+    function canInspect(inspectable: any): inspectable is IInspectable {
+      return inspectable.inspect !== undefined;
+    }
+
+    const inspector = new TreeInspector();
+
+    // get attributes from the inspector
+    if (canInspect(construct)) {
+      construct.inspect(inspector);
+      return Stack.of(construct).resolve(inspector.attributes);
+    }
+    return undefined;
+  }
 }
 
 interface Node {
   id: string;
   path: string;
-  children?: Node[];
+  children?: { [key: string]: Node };
+  attributes?: { [key: string]: any };
 }

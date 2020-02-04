@@ -134,7 +134,7 @@ export function isUpdateType(str: string): str is UpdateType {
   }
 }
 
-export function isScalarPropery(prop: Property): prop is ScalarProperty {
+export function isScalarProperty(prop: Property): prop is ScalarProperty {
   return isPrimitiveProperty(prop)
     || isComplexProperty(prop)
     // A UnionProperty is only Scalar if it defines Types or PrimitiveTypes
@@ -222,6 +222,19 @@ export function isPropertyScrutinyType(str: string): str is PropertyScrutinyType
   return (PropertyScrutinyType as any)[str] !== undefined;
 }
 
+const tagPropertyNames = {
+  Tags: "",
+  UserPoolTags: "",
+};
+
+export type TagPropertyName = keyof typeof tagPropertyNames;
+
+export function isTagPropertyName(name?: string): name is TagPropertyName {
+  if (undefined === name) {
+    return false;
+  }
+  return tagPropertyNames.hasOwnProperty(name);
+}
 /**
  * This function validates that the property **can** be a Tag Property
  *

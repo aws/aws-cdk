@@ -38,7 +38,7 @@ function update-spec() {
     node build-tools/spec-diff.js "${title}" "${target}" "${intermediate}" >> CHANGELOG.md.new
     echo "" >> CHANGELOG.md.new
 
-    echo >&2 "Updarting source spec..."
+    echo >&2 "Updating source spec..."
     rm -f ${target}
     cp ${intermediate} ${target}
 }

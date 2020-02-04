@@ -1,4 +1,4 @@
-import ec2 = require("@aws-cdk/aws-ec2");
+import * as ec2 from '@aws-cdk/aws-ec2';
 
 /// !show
 // Pick a Windows edition to use

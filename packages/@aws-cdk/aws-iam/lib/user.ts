@@ -5,8 +5,7 @@ import { IIdentity } from './identity-base';
 import { IManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
 import { PolicyStatement } from './policy-statement';
-import { ArnPrincipal, PrincipalPolicyFragment } from './principals';
-import { IPrincipal } from './principals';
+import { ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
 import { AttachedPolicies, undefinedIfEmpty } from './util';
 
 export interface IUser extends IIdentity {

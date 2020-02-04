@@ -1,5 +1,5 @@
-import cxapi = require('@aws-cdk/cx-api');
-import colors = require('colors/safe');
+import * as cxapi from '@aws-cdk/cx-api';
+import * as colors from 'colors/safe';
 import { format } from 'util';
 import { Difference, isPropertyDifference, ResourceDifference, ResourceImpact } from './diff-template';
 import { DifferenceCollection, TemplateDiff } from './diff/types';

@@ -12,15 +12,16 @@
   },
   "devDependencies": {
     "@aws-cdk/assert": "^%cdk-version%",
-    "@types/jest": "^24.0.18",
+    "@types/jest": "^24.0.22",
+    "@types/node": "10.17.5",
     "jest": "^24.9.0",
-    "ts-jest": "^24.0.2",
+    "ts-jest": "^24.1.0",
     "aws-cdk": "^%cdk-version%",
     "ts-node": "^8.1.0",
-    "typescript": "~3.6.2"
+    "typescript": "~3.7.2"
   },
   "dependencies": {
     "@aws-cdk/core": "^%cdk-version%",
-    "source-map-support": "^0.5.9"
+    "source-map-support": "^0.5.16"
   }
 }

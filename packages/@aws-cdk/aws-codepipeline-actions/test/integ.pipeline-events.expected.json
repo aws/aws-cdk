@@ -127,6 +127,7 @@
     "MyPipelineArtifactsBucket727923DD": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
+        "PublicAccessBlockConfiguration" : {"BlockPublicAcls":true,"BlockPublicPolicy":true,"IgnorePublicAcls":true,"RestrictPublicBuckets":true},
         "BucketEncryption": {
           "ServerSideEncryptionConfiguration": [
             {
@@ -484,7 +485,7 @@
       "Properties": {
         "EventPattern": {
           "detail-type": [
-            "CodePipeline Stage Execution State Change"
+            "CodePipeline Action Execution State Change"
           ],
           "source": [
             "aws.codepipeline"

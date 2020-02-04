@@ -13,7 +13,6 @@ coverage
 dist
 .LAST_BUILD
 .LAST_PACKAGE
-.jsii
 
 # Include .jsii
 !.jsii
@@ -21,3 +20,5 @@ dist
 *.snk
 
 *.tsbuildinfo
+
+tsconfig.json

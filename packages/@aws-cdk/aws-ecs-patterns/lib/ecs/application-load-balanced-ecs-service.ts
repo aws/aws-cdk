@@ -92,7 +92,8 @@ export class ApplicationLoadBalancedEc2Service extends ApplicationLoadBalancedSe
       const taskImageOptions = props.taskImageOptions;
       this.taskDefinition = new Ec2TaskDefinition(this, 'TaskDef', {
         executionRole: taskImageOptions.executionRole,
-        taskRole: taskImageOptions.taskRole
+        taskRole: taskImageOptions.taskRole,
+        family: taskImageOptions.family,
       });
 
       // Create log driver if logging is enabled
@@ -125,6 +126,8 @@ export class ApplicationLoadBalancedEc2Service extends ApplicationLoadBalancedSe
       assignPublicIp: false,
       serviceName: props.serviceName,
       healthCheckGracePeriod: props.healthCheckGracePeriod,
+      minHealthyPercent: props.minHealthyPercent,
+      maxHealthyPercent: props.maxHealthyPercent,
       propagateTags: props.propagateTags,
       enableECSManagedTags: props.enableECSManagedTags,
       cloudMapOptions: props.cloudMapOptions,

@@ -7,6 +7,8 @@ const handler = require('..');
 const nock = require('nock');
 const ResponseURL = 'https://cloudwatch-response-mock.example.com/';
 
+AWS.setSDK(require.resolve('aws-sdk'));
+
 describe('DNS Validated Certificate Handler', () => {
   let origLog = console.log;
   const testRequestId = 'f4ef1b10-c39a-44e3-99c0-fbf7e53c3943';

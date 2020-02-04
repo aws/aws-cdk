@@ -5,10 +5,10 @@
  * document at `spec/specification.json`.
  */
 
-import fastJsonPatch = require('fast-json-patch');
-import fs = require('fs-extra');
-import md5 = require('md5');
-import path = require('path');
+import * as fastJsonPatch from 'fast-json-patch';
+import * as fs from 'fs-extra';
+import * as md5 from 'md5';
+import * as path from 'path';
 import { schema } from '../lib';
 import { detectScrutinyTypes } from './scrutiny';
 
@@ -27,6 +27,7 @@ async function main() {
   }
 
   detectScrutinyTypes(spec);
+  replaceIncompleteTypes(spec);
 
   spec.Fingerprint = md5(JSON.stringify(normalize(spec)));
 
@@ -48,6 +49,28 @@ function decorateResourceTypes(data: any) {
   const resourceTypes = data.ResourceTypes || data.ResourceType;
   for (const name of Object.keys(resourceTypes)) {
     resourceTypes[name].RequiredTransform = requiredTransform;
+  }
+}
+
+/**
+ * Fix incomplete type definitions in PropertyTypes
+ *
+ * Some user-defined types are defined to not have any properties, and not
+ * be a collection of other types either. They have no definition at all.
+ *
+ * Add a property object type with empty properties.
+ */
+function replaceIncompleteTypes(spec: schema.Specification) {
+  for (const [name, definition] of Object.entries(spec.PropertyTypes)) {
+    if (!schema.isRecordType(definition)
+    && !schema.isCollectionProperty(definition)
+    && !schema.isScalarProperty(definition)
+    && !schema.isPrimitiveProperty(definition)) {
+      // tslint:disable-next-line:no-console
+      console.log(`[${name}] Incomplete type, adding empty "Properties" field`);
+
+      (definition as unknown as schema.RecordProperty).Properties = {};
+    }
   }
 }
 

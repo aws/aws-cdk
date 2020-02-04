@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-import path = require('path');
-import yargs = require('yargs');
+import * as path from 'path';
+import * as yargs from 'yargs';
 import { findPackageJsons, ValidationRule } from '../lib';
 
 /* eslint-disable no-shadow */

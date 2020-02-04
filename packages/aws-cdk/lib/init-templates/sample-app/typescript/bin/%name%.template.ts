@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 import { %name.PascalCased%Stack } from '../lib/%name%-stack';
 
 const app = new cdk.App();

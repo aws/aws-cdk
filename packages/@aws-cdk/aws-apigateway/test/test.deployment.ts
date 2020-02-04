@@ -1,9 +1,9 @@
 import { expect, haveResource, ResourcePart, SynthUtils } from '@aws-cdk/assert';
-import lambda = require('@aws-cdk/aws-lambda');
+import * as lambda from '@aws-cdk/aws-lambda';
 import { CfnResource, Lazy, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import path = require('path');
-import apigateway = require('../lib');
+import * as path from 'path';
+import * as apigateway from '../lib';
 
 export = {
   'minimal setup'(test: Test) {

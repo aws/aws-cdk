@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 import {Chain} from '../chain';
 import {IChainable, INextable} from '../types';
 import { StateType } from './private/state-type';
@@ -96,6 +96,16 @@ export interface PassProps {
      * @default No injected result
      */
     readonly result?: Result;
+
+    /**
+     * Parameters pass a collection of key-value pairs, either static values or JSONPath expressions that select from the input.
+     *
+     * @see
+     * https://docs.aws.amazon.com/step-functions/latest/dg/input-output-inputpath-params.html#input-output-parameters
+     *
+     * @default No parameters
+     */
+    readonly parameters?: { [name: string]: any };
 }
 
 /**

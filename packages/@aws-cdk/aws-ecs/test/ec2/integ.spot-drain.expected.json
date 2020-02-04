@@ -83,7 +83,13 @@
     "VpcPublicSubnet1EIPD7E02669": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
-        "Domain": "vpc"
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ-spot/Vpc/PublicSubnet1"
+          }
+        ]
       }
     },
     "VpcPublicSubnet1NATGateway4D7517AA": {
@@ -174,7 +180,13 @@
     "VpcPublicSubnet2EIP3C605A87": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
-        "Domain": "vpc"
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ-spot/Vpc/PublicSubnet2"
+          }
+        ]
       }
     },
     "VpcPublicSubnet2NATGateway9182C01D": {
@@ -758,7 +770,15 @@
       }
     },
     "EcsClusterasgSpotLifecycleHookDrainHookTopic6212EC83": {
-      "Type": "AWS::SNS::Topic"
+      "Type": "AWS::SNS::Topic",
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ-spot/EcsCluster/asgSpot"
+          }
+        ]
+      }
     },
     "EcsClusterasgSpotLifecycleHookDrainHook91178D34": {
       "Type": "AWS::AutoScaling::LifecycleHook",
@@ -1195,7 +1215,15 @@
       }
     },
     "EcsClusterasgOdLifecycleHookDrainHookTopic673CE202": {
-      "Type": "AWS::SNS::Topic"
+      "Type": "AWS::SNS::Topic",
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ-spot/EcsCluster/asgOd"
+          }
+        ]
+      }
     },
     "EcsClusterasgOdLifecycleHookDrainHook03AC5A9E": {
       "Type": "AWS::AutoScaling::LifecycleHook",
@@ -1272,9 +1300,6 @@
     "ServiceD69D759B": {
       "Type": "AWS::ECS::Service",
       "Properties": {
-        "TaskDefinition": {
-          "Ref": "Task79114B6B"
-        },
         "Cluster": {
           "Ref": "EcsCluster97242B84"
         },
@@ -1285,7 +1310,10 @@
         "DesiredCount": 1,
         "EnableECSManagedTags": false,
         "LaunchType": "EC2",
-        "SchedulingStrategy": "REPLICA"
+        "SchedulingStrategy": "REPLICA",
+        "TaskDefinition": {
+          "Ref": "Task79114B6B"
+        }
       }
     }
   },

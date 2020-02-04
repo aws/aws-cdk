@@ -1,7 +1,7 @@
-import iam = require('@aws-cdk/aws-iam');
-import logs = require('@aws-cdk/aws-logs');
-import cdk = require('@aws-cdk/core');
-import path = require('path');
+import * as iam from '@aws-cdk/aws-iam';
+import * as logs from '@aws-cdk/aws-logs';
+import * as cdk from '@aws-cdk/core';
+import * as path from 'path';
 import { Code } from './code';
 import { Runtime } from './runtime';
 import { SingletonFunction } from './singleton-lambda';
@@ -34,6 +34,12 @@ export interface LogRetentionProps {
  * is removed when `retentionDays` is `undefined` or equal to `Infinity`.
  */
 export class LogRetention extends cdk.Construct {
+
+  /**
+   * The ARN of the LogGroup.
+   */
+  public readonly logGroupArn: string;
+
   constructor(scope: cdk.Construct, id: string, props: LogRetentionProps) {
     super(scope, id);
 
@@ -58,13 +64,23 @@ export class LogRetention extends cdk.Construct {
 
     // Need to use a CfnResource here to prevent lerna dependency cycles
     // @aws-cdk/aws-cloudformation -> @aws-cdk/aws-lambda -> @aws-cdk/aws-cloudformation
-    new cdk.CfnResource(this, 'Resource', {
+    const resource = new cdk.CfnResource(this, 'Resource', {
       type: 'Custom::LogRetention',
       properties: {
         ServiceToken: provider.functionArn,
         LogGroupName: props.logGroupName,
-        RetentionInDays: props.retention === Infinity ? undefined : props.retention
+        RetentionInDays: props.retention === logs.RetentionDays.INFINITE ? undefined : props.retention
       }
+    });
+
+    const logGroupName = resource.getAtt('LogGroupName').toString();
+    // Append ':*' at the end of the ARN to match with how CloudFormation does this for LogGroup ARNs
+    // See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-loggroup.html#aws-resource-logs-loggroup-return-values
+    this.logGroupArn = cdk.Stack.of(this).formatArn({
+      service: 'logs',
+      resource: 'log-group',
+      resourceName: `${logGroupName}:*`,
+      sep: ':'
     });
   }
 }

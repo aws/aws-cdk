@@ -79,7 +79,9 @@ test('create HTTPS redirect with existing cert', () => {
   // WHEN
   new HttpsRedirect(stack, 'Redirect', {
     recordNames: ['foo.example.com'],
-    certificate: Certificate.fromCertificateArn(stack, 'Certificate', 'someArn'),
+    certificate: Certificate.fromCertificateArn(
+      stack, 'Certificate', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'
+    ),
     targetDomain: 'bar.example.com',
     zone: HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
       hostedZoneId: 'ID',
@@ -99,7 +101,7 @@ test('create HTTPS redirect with existing cert', () => {
   expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
     DistributionConfig: {
       ViewerCertificate: {
-        AcmCertificateArn: "someArn"
+        AcmCertificateArn: "arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d"
       }
     }
   });

@@ -1,4 +1,4 @@
-import YAML = require('yaml');
+import * as YAML from 'yaml';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const yamlTypes = require('yaml/types');
@@ -20,7 +20,7 @@ export function toYAML(obj: any): string {
  * Parse YAML
  */
 export function fromYAML(str: string): any {
-    return YAML.parse(str, { schema: 'yaml-1.1' });
+  return YAML.parse(str, { schema: 'yaml-1.1' });
 }
 
 /**

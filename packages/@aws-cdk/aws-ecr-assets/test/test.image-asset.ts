@@ -1,9 +1,10 @@
-import { expect, haveResource, SynthUtils } from '@aws-cdk/assert';
-import iam = require('@aws-cdk/aws-iam');
+import { expect, haveResource } from '@aws-cdk/assert';
+import * as iam from '@aws-cdk/aws-iam';
 import { App, Lazy, Stack } from '@aws-cdk/core';
-import fs = require('fs');
+import { ASSET_METADATA } from '@aws-cdk/cx-api';
+import * as fs from 'fs';
 import { Test } from 'nodeunit';
-import path = require('path');
+import * as path from 'path';
 import { DockerImageAsset } from '../lib';
 
 /* eslint-disable quote-props */
@@ -11,7 +12,8 @@ import { DockerImageAsset } from '../lib';
 export = {
   'test instantiating Asset Image'(test: Test) {
     // GIVEN
-    const stack = new Stack();
+    const app = new App();
+    const stack = new Stack(app, 'test-stack');
 
     // WHEN
     new DockerImageAsset(stack, 'Image', {
@@ -19,12 +21,19 @@ export = {
     });
 
     // THEN
-    const template = SynthUtils.synthesize(stack).template;
-    test.deepEqual(template.Parameters.AssetParameters1a17a141505ac69144931fe263d130f4612251caa4bbbdaf68a44ed0f405439cImageName1ADCADB3, {
-      Type: 'String',
-      Description: 'ECR repository name and tag for asset "1a17a141505ac69144931fe263d130f4612251caa4bbbdaf68a44ed0f405439c"'
-    });
-
+    const asm = app.synth();
+    const artifact = asm.getStackArtifact(stack.artifactId);
+    test.deepEqual(artifact.template, {}, 'template is empty');
+    test.deepEqual(artifact.assets, [
+      {
+        repositoryName: 'aws-cdk/assets',
+        imageTag: 'baa2d6eb2a17c75424df631c8c70ff39f2d5f3bee8b9e1a109ee24ca17300540',
+        id: 'baa2d6eb2a17c75424df631c8c70ff39f2d5f3bee8b9e1a109ee24ca17300540',
+        packaging: 'container-image',
+        path: 'asset.baa2d6eb2a17c75424df631c8c70ff39f2d5f3bee8b9e1a109ee24ca17300540',
+        sourceHash: 'baa2d6eb2a17c75424df631c8c70ff39f2d5f3bee8b9e1a109ee24ca17300540'
+      }
+    ]);
     test.done();
   },
 
@@ -41,7 +50,7 @@ export = {
     });
 
     // THEN
-    const assetMetadata = stack.node.metadata.find(({ type }) => type === 'aws:cdk:asset');
+    const assetMetadata = stack.node.metadata.find(({ type }) => type === ASSET_METADATA);
     test.deepEqual(assetMetadata && assetMetadata.data.buildArgs, { a: 'b' });
     test.done();
   },
@@ -60,8 +69,25 @@ export = {
     });
 
     // THEN
-    const assetMetadata = stack.node.metadata.find(({ type }) => type === 'aws:cdk:asset');
+    const assetMetadata = stack.node.metadata.find(({ type }) => type === ASSET_METADATA);
     test.deepEqual(assetMetadata && assetMetadata.data.target, 'a-target');
+    test.done();
+  },
+
+  'with file'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    const directoryPath = path.join(__dirname, 'demo-image-custom-docker-file');
+    // WHEN
+    new DockerImageAsset(stack, 'Image', {
+      directory: directoryPath,
+      file: 'Dockerfile.Custom'
+    });
+
+    // THEN
+    const assetMetadata = stack.node.metadata.find(({ type }) => type === ASSET_METADATA);
+    test.deepEqual(assetMetadata && assetMetadata.data.file, 'Dockerfile.Custom');
     test.done();
   },
 
@@ -92,13 +118,18 @@ export = {
                 "",
                 [
                   "arn:",
-                  { "Ref": "AWS::Partition" },
+                  {
+                    "Ref": "AWS::Partition"
+                  },
                   ":ecr:",
-                  { "Ref": "AWS::Region" },
+                  {
+                    "Ref": "AWS::Region"
+                  },
                   ":",
-                  { "Ref": "AWS::AccountId" },
-                  ":repository/",
-                  { "Fn::GetAtt": ["ImageAdoptRepositoryE1E84E35", "RepositoryName"] }
+                  {
+                    "Ref": "AWS::AccountId"
+                  },
+                  ":repository/aws-cdk/assets"
                 ]
               ]
             }
@@ -117,51 +148,6 @@ export = {
           "Ref": "MyUserDC45028B"
         }
       ]
-    }));
-
-    test.done();
-  },
-
-  'asset.repository.addToResourcePolicy can be used to modify the ECR resource policy via the adoption custom resource'(test: Test) {
-    // GIVEN
-    const stack = new Stack();
-    const asset = new DockerImageAsset(stack, 'Image', {
-      directory: path.join(__dirname, 'demo-image')
-    });
-
-    // WHEN
-    asset.repository.addToResourcePolicy(new iam.PolicyStatement({
-      actions: ['BAM:BOOM'],
-      principals: [new iam.ServicePrincipal('test.service')]
-    }));
-
-    // THEN
-    expect(stack).to(haveResource('Custom::ECRAdoptedRepository', {
-      "RepositoryName": {
-        "Fn::Select": [
-          0,
-          {
-            "Fn::Split": [
-              "@sha256:",
-              {
-                "Ref": "AssetParameters1a17a141505ac69144931fe263d130f4612251caa4bbbdaf68a44ed0f405439cImageName1ADCADB3"
-              }
-            ]
-          }
-        ]
-      },
-      "PolicyDocument": {
-        "Statement": [
-          {
-            "Action": "BAM:BOOM",
-            "Effect": "Allow",
-            "Principal": {
-              "Service": "test.service"
-            }
-          }
-        ],
-        "Version": "2012-10-17"
-      }
     }));
 
     test.done();
@@ -189,7 +175,21 @@ export = {
       new DockerImageAsset(stack, 'Asset', {
         directory: __dirname
       });
-    }, /No 'Dockerfile' found in/);
+    }, /Cannot find file at/);
+    test.done();
+  },
+
+  'fails if the file does not exist'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // THEN
+    test.throws(() => {
+      new DockerImageAsset(stack, 'Asset', {
+        directory: __dirname,
+        file: 'doesnt-exist'
+      });
+    }, /Cannot find file at/);
     test.done();
   },
 
@@ -281,6 +281,29 @@ export = {
       repositoryName: token
     }), /Cannot use Token as value of 'repositoryName'/);
 
+    test.done();
+  },
+
+  'docker build options are included in the asset id'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const directory = path.join(__dirname, 'demo-image-custom-docker-file');
+
+    const asset1 = new DockerImageAsset(stack, 'Asset1', { directory });
+    const asset2 = new DockerImageAsset(stack, 'Asset2', { directory, file: 'Dockerfile.Custom' });
+    const asset3 = new DockerImageAsset(stack, 'Asset3', { directory, target: 'NonDefaultTarget' });
+    const asset4 = new DockerImageAsset(stack, 'Asset4', { directory, buildArgs: { opt1: '123', opt2: 'boom' } });
+    const asset5 = new DockerImageAsset(stack, 'Asset5', { directory, file: 'Dockerfile.Custom', target: 'NonDefaultTarget' });
+    const asset6 = new DockerImageAsset(stack, 'Asset6', { directory, extraHash: 'random-extra' });
+    const asset7 = new DockerImageAsset(stack, 'Asset7', { directory, repositoryName: 'foo' });
+
+    test.deepEqual(asset1.sourceHash, '31959f03fcdf1bddec1420d315dddedfccf559e87e95c85854a01f2cac103fc8');
+    test.deepEqual(asset2.sourceHash, 'a42cd51ab2bc5e2a4399c4bc41f7df761ff19877b54bce52d69c6e8d628f16fd');
+    test.deepEqual(asset3.sourceHash, '9efbc91d5c2f43782e49b27e784caad32d8619a0cecf806a6e55cf70f1cfbc22');
+    test.deepEqual(asset4.sourceHash, '2907224e59cb720ba5810a624f1c1267f547377e8a23c50d72286dd81dc8435e');
+    test.deepEqual(asset5.sourceHash, 'd718928111c650564240141b156188ebdbb93d3c5f1448dd1afe823ae7f742a5');
+    test.deepEqual(asset6.sourceHash, 'fe3ef82c91b6321ac17bc3a14c75845fa1ddbafe550e0a04d5cf680015903a2d');
+    test.deepEqual(asset7.sourceHash, '80f586ed82faacec8a285dd99c7ee52e06525fee1721bc80bc846d1a8266fe36');
     test.done();
   }
 };

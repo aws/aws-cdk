@@ -1,10 +1,10 @@
 import { countResources, expect, haveResourceLike, not } from "@aws-cdk/assert";
-import codebuild = require('@aws-cdk/aws-codebuild');
-import codepipeline = require('@aws-cdk/aws-codepipeline');
-import s3 = require('@aws-cdk/aws-s3');
+import * as codebuild from '@aws-cdk/aws-codebuild';
+import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import * as s3 from '@aws-cdk/aws-s3';
 import { Stack } from "@aws-cdk/core";
 import { Test } from 'nodeunit';
-import cpactions = require('../../lib');
+import * as cpactions from '../../lib';
 
 /* eslint-disable quote-props */
 
@@ -172,6 +172,60 @@ export = {
       test.throws(() => {
         sourceStage.addAction(duplicateBucketAndPath);
       }, /S3 source action with path 'my\/other\/path' is already present in the pipeline for this source bucket/);
+
+      test.done();
+    },
+
+    'exposes variables for other actions to consume'(test: Test) {
+      const stack = new Stack();
+
+      const sourceOutput = new codepipeline.Artifact();
+      const s3SourceAction = new cpactions.S3SourceAction({
+        actionName: 'Source',
+        output: sourceOutput,
+        bucket: new s3.Bucket(stack, 'Bucket'),
+        bucketKey: 'key.zip',
+      });
+      new codepipeline.Pipeline(stack, 'Pipeline', {
+        stages: [
+          {
+            stageName: 'Source',
+            actions: [s3SourceAction],
+          },
+          {
+            stageName: 'Build',
+            actions: [
+              new cpactions.CodeBuildAction({
+                actionName: 'Build',
+                project: new codebuild.PipelineProject(stack, 'MyProject'),
+                input: sourceOutput,
+                environmentVariables: {
+                  VersionId: { value: s3SourceAction.variables.versionId },
+                },
+              }),
+            ],
+          },
+        ],
+      });
+
+      expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+        "Stages": [
+          {
+            "Name": "Source",
+          },
+          {
+            "Name": "Build",
+            "Actions": [
+              {
+                "Name": "Build",
+                "Configuration": {
+                  "EnvironmentVariables": '[{"name":"VersionId","type":"PLAINTEXT","value":"#{Source_Source_NS.VersionId}"}]',
+                },
+              },
+            ],
+          },
+        ],
+      }));
 
       test.done();
     },

@@ -1,6 +1,6 @@
 import '@aws-cdk/assert/jest';
 import { App, CfnOutput, Stack } from '@aws-cdk/core';
-import iam = require('../lib');
+import * as iam from '../lib';
 
 test('use of cross-stack role reference does not lead to URLSuffix being exported', () => {
   // GIVEN

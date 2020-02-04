@@ -1,10 +1,10 @@
 import { countResources, expect, haveResourceLike, not } from "@aws-cdk/assert";
-import codebuild = require('@aws-cdk/aws-codebuild');
-import codecommit = require('@aws-cdk/aws-codecommit');
-import codepipeline = require('@aws-cdk/aws-codepipeline');
+import * as codebuild from '@aws-cdk/aws-codebuild';
+import * as codecommit from '@aws-cdk/aws-codecommit';
+import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import { Stack } from "@aws-cdk/core";
 import { Test } from 'nodeunit';
-import cpactions = require('../../lib');
+import * as cpactions from '../../lib';
 
 /* eslint-disable quote-props */
 
@@ -106,6 +106,61 @@ export = {
       }));
 
       expect(stack).to(not(haveResourceLike('AWS::Events::Rule')));
+
+      test.done();
+    },
+
+    'exposes variables for other actions to consume'(test: Test) {
+      const stack = new Stack();
+
+      const sourceOutput = new codepipeline.Artifact();
+      const codeCommitSourceAction = new cpactions.CodeCommitSourceAction({
+        actionName: 'Source',
+        repository: new codecommit.Repository(stack, 'MyRepo', {
+          repositoryName: 'my-repo',
+        }),
+        output: sourceOutput,
+      });
+      new codepipeline.Pipeline(stack, 'Pipeline', {
+        stages: [
+          {
+            stageName: 'Source',
+            actions: [codeCommitSourceAction],
+          },
+          {
+            stageName: 'Build',
+            actions: [
+              new cpactions.CodeBuildAction({
+                actionName: 'Build',
+                project: new codebuild.PipelineProject(stack, 'MyProject'),
+                input: sourceOutput,
+                environmentVariables: {
+                  AuthorDate: { value: codeCommitSourceAction.variables.authorDate },
+                },
+              }),
+            ],
+          },
+        ],
+      });
+
+      expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+        "Stages": [
+          {
+            "Name": "Source",
+          },
+          {
+            "Name": "Build",
+            "Actions": [
+              {
+                "Name": "Build",
+                "Configuration": {
+                  "EnvironmentVariables": '[{"name":"AuthorDate","type":"PLAINTEXT","value":"#{Source_Source_NS.AuthorDate}"}]',
+                },
+              },
+            ],
+          },
+        ],
+      }));
 
       test.done();
     },

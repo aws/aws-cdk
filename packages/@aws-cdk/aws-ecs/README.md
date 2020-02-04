@@ -53,9 +53,9 @@ const ecsService = new ecs.Ec2Service(this, 'Service', {
 
 For a set of constructs defining common ECS architectural patterns, see the `@aws-cdk/aws-ecs-patterns` package.
 
-## AWS Fargate vs Amazon ECS
+## Launch Types: AWS Fargate vs Amazon EC2
 
-There are two sets of constructs in this library; one to run tasks on Amazon ECS and
+There are two sets of constructs in this library; one to run tasks on Amazon EC2 and
 one to run tasks on AWS Fargate.
 
 - Use the `Ec2TaskDefinition` and `Ec2Service` constructs to run tasks on Amazon EC2 instances running in your account.
@@ -276,29 +276,20 @@ const service = new ecs.FargateService(this, 'Service', { /* ... */ });
 
 const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', { vpc, internetFacing: true });
 const listener = lb.addListener('Listener', { port: 80 });
-const target = listener.addTargets('ECS', {
+const targetGroup1 = listener.addTargets('ECS1', {
   port: 80,
   targets: [service]
 });
-```
-
-Note that in the example above, if you have multiple containers with multiple ports, then only the first essential container along with its first added container port will be registered as target. To have more control over which container and port to register as targets:
-
-```ts
-import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
-
-const service = new ecs.FargateService(this, 'Service', { /* ... */ });
-
-const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', { vpc, internetFacing: true });
-const listener = lb.addListener('Listener', { port: 80 });
-const target = listener.addTargets('ECS', {
+const targetGroup2 = listener.addTargets('ECS2', {
   port: 80,
   targets: [service.loadBalancerTarget({
     containerName: 'MyContainer',
-    containerPort: 12345
+    containerPort: 8080
   })]
 });
 ```
+
+Note that in the example above, the default `service` only allows you to register the first essential container or the first mapped port on the container as a target and add it to a new target group. To have more control over which container and port to register as targets, you can use `service.loadBalancerTarget()` to return a load balancing target for a specific container and port.
 
 Alternatively, you can also create all load balancer targets to be registered in this service, add them to target groups, and attach target groups to listeners accordingly.
 
@@ -311,17 +302,30 @@ const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', { vpc, internetFacing: 
 const listener = lb.addListener('Listener', { port: 80 });
 service.registerLoadBalancerTargets(
   {
-    containerTarget: {
-      containerName: 'web',
-      containerPort: 80,
-    },
-    targetGroupId: 'ECS',
+    containerName: 'web',
+    containerPort: 80,
+    newTargetGroupId: 'ECS',
     listener: ecs.ListenerConfig.applicationListener(listener, {
       protocol: elbv2.ApplicationProtocol.HTTPS
     }),
   },
 );
 ```
+
+### Using a Load Balancer from a different Stack
+
+If you want to put your Load Balancer and the Service it is load balancing to in
+different stacks, you may not be able to use the convenience methods
+`loadBalancer.addListener()` and `listener.addTargets()`.
+
+The reason is that these methods will create resources in the same Stack as the
+object they're called on, which may lead to cyclic references between stacks.
+Instead, you will have to create an `ApplicationListener` in the service stack,
+or an empty `TargetGroup` in the load balancer stack that you attach your
+service to.
+
+See the [ecs/cross-stack-load-balancer example](https://github.com/aws-samples/aws-cdk-examples/tree/master/typescript/ecs/cross-stack-load-balancer/)
+for the alternatives.
 
 ### Include a classic load balancer
 `Services` can also be directly attached to a classic load balancer as targets:
@@ -454,7 +458,7 @@ Currently Supported Log Drivers:
 - journald
 - json-file
 - splunk
-- syslog  
+- syslog
 
 ### awslogs Log Driver
 

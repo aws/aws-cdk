@@ -1,7 +1,7 @@
-import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/core');
-import path = require('path');
-import s3deploy = require('../lib');
+import * as s3 from '@aws-cdk/aws-s3';
+import * as cdk from '@aws-cdk/core';
+import * as path from 'path';
+import * as s3deploy from '../lib';
 
 class TestBucketDeployment extends cdk.Stack {
   constructor(scope: cdk.App, id: string) {

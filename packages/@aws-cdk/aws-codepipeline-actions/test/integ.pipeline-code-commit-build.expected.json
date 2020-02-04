@@ -375,6 +375,7 @@
     "PipelineArtifactsBucket22248F97": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
+        "PublicAccessBlockConfiguration" : {"BlockPublicAcls":true,"BlockPublicPolicy":true,"IgnorePublicAcls":true,"RestrictPublicBuckets":true},
         "BucketEncryption": {
           "ServerSideEncryptionConfiguration": [
             {
@@ -578,7 +579,8 @@
                 "Configuration": {
                   "ProjectName": {
                     "Ref": "MyBuildProject30DB9D6E"
-                  }
+                  },
+                  "EnvironmentVariables": "[{\"name\":\"TEST_ENV_VARIABLE\",\"type\":\"PLAINTEXT\",\"value\":\"test env variable value\"},{\"name\":\"PARAM_STORE_VARIABLE\",\"type\":\"PARAMETER_STORE\",\"value\":\"param_store\"}]"
                 },
                 "InputArtifacts": [
                   {

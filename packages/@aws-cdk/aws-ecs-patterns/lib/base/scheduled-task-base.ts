@@ -90,6 +90,8 @@ export abstract class ScheduledTaskBase extends Construct {
   public readonly cluster: ICluster;
   /**
    * The desired number of instantiations of the task definition to keep running on the service.
+   *
+   * The minimum value is 1
    */
   public readonly desiredTaskCount: number;
 
@@ -105,6 +107,9 @@ export abstract class ScheduledTaskBase extends Construct {
     super(scope, id);
 
     this.cluster = props.cluster || this.getDefaultCluster(this, props.vpc);
+    if (props.desiredTaskCount !== undefined && props.desiredTaskCount < 1) {
+      throw new Error('You must specify a desiredTaskCount greater than 0');
+    }
     this.desiredTaskCount = props.desiredTaskCount || 1;
 
     // An EventRule that describes the event trigger (in this case a scheduled run)

@@ -1,6 +1,6 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/core');
+import * as iam from '@aws-cdk/aws-iam';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { Metric } from '../lib';
 
@@ -30,5 +30,25 @@ export = {
     }));
 
     test.done();
-  }
+  },
+
+  'can not use invalid period in Metric'(test: Test) {
+    test.throws(() => {
+      new Metric({ namespace: 'Test', metricName: 'ACount', period: cdk.Duration.seconds(20) });
+    }, /'period' must be 1, 5, 10, 30, or a multiple of 60 seconds, received 20/);
+
+    test.done();
+  },
+
+  'Metric optimization: "with" with the same period returns the same object'(test: Test) {
+    const m = new Metric({ namespace: 'Test', metricName: 'Metric', period: cdk.Duration.minutes(10) });
+
+    // Note: object equality, NOT deep equality on purpose
+    test.equals(m.with({}), m);
+    test.equals(m.with({ period: cdk.Duration.minutes(10) }), m);
+
+    test.notEqual(m.with({ period: cdk.Duration.minutes(5) }), m);
+
+    test.done();
+  },
 };

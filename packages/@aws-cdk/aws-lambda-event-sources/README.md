@@ -125,12 +125,12 @@ import { DynamoEventSource } from '@aws-cdk/aws-lambda-event-sources';
 
 const table = new dynamodb.Table(..., {
   partitionKey: ...,
-  stream: dynamodb.StreamViewType.NewImage // make sure stream is configured
+  stream: dynamodb.StreamViewType.NEW_IMAGE // make sure stream is configured
 });
 
 const function = new lambda.Function(...);
 function.addEventSource(new DynamoEventSource(table, {
-  startingPosition: lambda.StartingPosition.TrimHorizon
+  startingPosition: lambda.StartingPosition.TRIM_HORIZON
 }));
 ```
 

@@ -5,7 +5,7 @@
 .jsii
 .LAST_BUILD
 .LAST_PACKAGE
-.nycrc
+nyc.config.js
 .nyc_output
 coverage
 dist

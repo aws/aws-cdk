@@ -1,4 +1,4 @@
-import cxapi = require('@aws-cdk/cx-api');
+import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
 import { CfnResource, Construct, Stack, StackProps } from '../lib';
 import { App, AppProps } from '../lib/app';
@@ -36,7 +36,7 @@ function synth(context?: { [key: string]: any }): cxapi.CloudAssembly {
 
 function synthStack(name: string, includeMetadata: boolean = false, context?: any): cxapi.CloudFormationStackArtifact {
   const response = synth(context);
-  const stack = response.getStack(name);
+  const stack = response.getStackByName(name);
 
   if (!includeMetadata) {
     delete (stack as any).metadata;
@@ -53,7 +53,8 @@ export = {
     test.deepEqual(response.stacks.length, 2);
 
     const stack1 = response.stacks[0];
-    test.deepEqual(stack1.name, 'stack1');
+    test.deepEqual(stack1.stackName, 'stack1');
+    test.deepEqual(stack1.id, 'stack1');
     test.deepEqual(stack1.environment.account, 12345);
     test.deepEqual(stack1.environment.region, 'us-east-1');
     test.deepEqual(stack1.environment.name, 'aws://12345/us-east-1');
@@ -70,7 +71,8 @@ export = {
     });
 
     const stack2 = response.stacks[1];
-    test.deepEqual(stack2.name, 'stack2');
+    test.deepEqual(stack2.stackName, 'stack2');
+    test.deepEqual(stack2.id, 'stack2');
     test.deepEqual(stack2.environment.name, 'aws://unknown-account/unknown-region');
     test.deepEqual(stack2.template, { Resources:
       { s2c1: { Type: 'DummyResource', Properties: { Prog2: 'Prog2' } },
@@ -256,6 +258,7 @@ export = {
 
   const libs = (response.runtime && response.runtime.libraries) || {};
 
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const version = require('../package.json').version;
   test.deepEqual(libs['@aws-cdk/core'], version);
   test.deepEqual(libs['@aws-cdk/cx-api'], version);
@@ -286,6 +289,7 @@ export = {
 
   const libs = (response.runtime && response.runtime.libraries) || {};
 
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const version = require('../package.json').version;
   test.deepEqual(libs, {
     '@aws-cdk/core': version,
@@ -307,7 +311,7 @@ export = {
   });
 
   // THEN
-  test.deepEqual(response.stacks.map(s => ({ name: s.name, template: s.template })), [
+  test.deepEqual(response.stacks.map(s => ({ name: s.stackName, template: s.template })), [
     {
       name: 'Stack',
       template: { Resources: { Res: { Type: 'CDK::TopStack::Resource' } } },

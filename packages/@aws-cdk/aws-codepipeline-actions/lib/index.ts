@@ -2,6 +2,7 @@ export * from './alexa-ask/deploy-action';
 export * from './cloudformation/pipeline-actions';
 export * from './codebuild/build-action';
 export * from './codecommit/source-action';
+export * from './codedeploy/ecs-deploy-action';
 export * from './codedeploy/server-deploy-action';
 export * from './ecr/source-action';
 export * from './ecs/deploy-action';

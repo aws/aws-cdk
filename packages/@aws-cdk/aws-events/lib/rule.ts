@@ -1,4 +1,5 @@
 import { App, Construct, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
+import { IEventBus } from './event-bus';
 import { EventPattern } from './event-pattern';
 import { CfnEventBusPolicy, CfnRule } from './events.generated';
 import { IRule } from './rule-ref';
@@ -68,6 +69,13 @@ export interface RuleProps {
    * @default - No targets.
    */
   readonly targets?: IRuleTarget[];
+
+  /**
+   * The event bus to associate with this rule.
+   *
+   * @default - The default event bus.
+   */
+  readonly eventBus?: IEventBus;
 }
 
 /**
@@ -100,15 +108,22 @@ export class Rule extends Resource implements IRule {
     super(scope, id, {
       physicalName: props.ruleName,
     });
+
+    if (props.eventBus && props.schedule) {
+      throw new Error(`Cannot associate rule with 'eventBus' when using 'schedule'`);
+    }
+
     this.description = props.description;
+    this.scheduleExpression = props.schedule && props.schedule.expressionString;
 
     const resource = new CfnRule(this, 'Resource', {
       name: this.physicalName,
       description: this.description,
       state: props.enabled == null ? 'ENABLED' : (props.enabled ? 'ENABLED' : 'DISABLED'),
-      scheduleExpression: Lazy.stringValue({ produce: () => this.scheduleExpression }),
+      scheduleExpression: this.scheduleExpression,
       eventPattern: Lazy.anyValue({ produce: () => this._renderEventPattern() }),
       targets: Lazy.anyValue({ produce: () => this.renderTargets() }),
+      eventBusName: props.eventBus && props.eventBus.eventBusName,
     });
 
     this.ruleArn = this.getResourceArnAttribute(resource.attrArn, {
@@ -119,7 +134,6 @@ export class Rule extends Resource implements IRule {
     this.ruleName = this.getResourceNameAttribute(resource.ref);
 
     this.addEventPattern(props.eventPattern);
-    this.scheduleExpression = props.schedule && props.schedule.expressionString;
 
     for (const target of props.targets || []) {
       this.addTarget(target);
@@ -346,10 +360,10 @@ export class Rule extends Resource implements IRule {
 
   protected validate() {
     if (Object.keys(this.eventPattern).length === 0 && !this.scheduleExpression) {
-      return [ `Either 'eventPattern' or 'schedule' must be defined` ];
+      return [`Either 'eventPattern' or 'schedule' must be defined`];
     }
 
-    return [ ];
+    return [];
   }
 
   private renderTargets() {

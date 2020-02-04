@@ -1,6 +1,6 @@
-import codebuild = require('@aws-cdk/aws-codebuild');
-import events = require('@aws-cdk/aws-events');
-import iam = require('@aws-cdk/aws-iam');
+import * as codebuild from '@aws-cdk/aws-codebuild';
+import * as events from '@aws-cdk/aws-events';
+import * as iam from '@aws-cdk/aws-iam';
 import { singletonEventRole } from './util';
 
 /**

@@ -352,6 +352,10 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
 
     return resource.resourceForPath(parts.join('/'));
   }
+
+  public get url(): string {
+    return this.restApi.urlForPath(this.path);
+  }
 }
 
 export class Resource extends ResourceBase {
@@ -458,7 +462,10 @@ export class ProxyResource extends Resource {
     // In case this proxy is mounted under the root, also add this method to
     // the root so that empty paths are proxied as well.
     if (this.parentResource && this.parentResource.path === '/') {
-      this.parentResource.addMethod(httpMethod, integration, options);
+      // skip if the root resource already has this method defined
+      if (!(this.parentResource.node.tryFindChild(httpMethod) instanceof Method)) {
+        this.parentResource.addMethod(httpMethod, integration, options);
+      }
     }
     return super.addMethod(httpMethod, integration, options);
   }

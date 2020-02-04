@@ -6,6 +6,8 @@ const LambdaTester = require('lambda-tester').noVersionCheck();
 const sinon = require('sinon');
 const nock = require('nock');
 
+AWS.setSDK(require.resolve('aws-sdk'));
+
 describe('Global DynamoDB Handler', () => {
   const origLog = console.log;
   const testRequestId = 'f4ef1b10-c39a-44e3-99c0-fbf7e53c3943';

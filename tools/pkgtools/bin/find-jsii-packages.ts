@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 // Find JSII packages that have a certain field in their package.json. Outputs the directories containing
 // jsii.json.
-import fs = require('fs');
-import path = require('path');
-import yargs = require('yargs');
+import * as fs from 'fs';
+import * as path from 'path';
+import * as yargs from 'yargs';
 
 /* eslint-disable no-shadow */
 const argv = yargs

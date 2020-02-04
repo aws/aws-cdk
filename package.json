@@ -1,30 +1,25 @@
 {
   "name": "aws-cdk",
+  "version": "1.22.0",
+  "private": true,
   "pkglint": {
     "include": "dependencies/node-version"
   },
   "scripts": {
     "pkglint": "lerna --scope pkglint run build && lerna run pkglint",
+    "build": "./build.sh",
+    "pack": "./pack.sh",
+    "compat": "./scripts/check-api-compatibility.sh",
     "build-all": "tsc -b"
   },
   "devDependencies": {
-    "@types/jest": "^24.0.19",
-    "@types/node": "^8.10.55",
-    "@types/nodeunit": "^0.0.30",
-    "@typescript-eslint/eslint-plugin": "^2.4.0",
-    "@typescript-eslint/parser": "^2.4.0",
-    "conventional-changelog-cli": "^2.0.25",
-    "eslint": "^6.5.1",
-    "eslint-plugin-import": "^2.18.2",
+    "conventional-changelog-cli": "^2.0.31",
     "fs-extra": "^8.1.0",
-    "jest": "^24.9.0",
-    "jsii-diff": "^0.19.0",
-    "lerna": "^3.18.1",
-    "nodeunit": "^0.11.3",
-    "nyc": "^14.1.1",
-    "standard-version": "^7.0.0",
-    "ts-jest": "^24.1.0",
-    "typescript": "~3.6.3"
+    "jsii-diff": "^0.21.2",
+    "jsii-pacmak": "^0.21.2",
+    "jsii-rosetta": "^0.21.2",
+    "lerna": "^3.20.2",
+    "typescript": "~3.7.5"
   },
   "repository": {
     "type": "git",
@@ -42,5 +37,23 @@
     "name": "Amazon Web Services",
     "url": "https://aws.amazon.com"
   },
-  "version": "1.13.1"
+  "workspaces": {
+    "packages": [
+      "packages/*",
+      "packages/@aws-cdk/*",
+      "packages/@aws-cdk/*/lambda-packages/*",
+      "tools/*"
+    ],
+    "nohoist": [
+      "**/jszip",
+      "**/jszip/**",
+      "@aws-cdk/assets/minimatch",
+      "@aws-cdk/assets/minimatch/**",
+      "@aws-cdk/cx-api/semver",
+      "@aws-cdk/cx-api/semver/**",
+      "@aws-cdk/cx-api/semver/**",
+      "@aws-cdk/aws-lambda-nodejs/parcel-bundler",
+      "@aws-cdk/aws-lambda-nodejs/parcel-bundler/**"
+    ]
+  }
 }

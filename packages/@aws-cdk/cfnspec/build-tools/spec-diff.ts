@@ -1,5 +1,5 @@
-import fs = require('fs-extra');
-import util = require('util');
+import * as fs from 'fs-extra';
+import * as util from 'util';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const jsonDiff = require('json-diff').diff;

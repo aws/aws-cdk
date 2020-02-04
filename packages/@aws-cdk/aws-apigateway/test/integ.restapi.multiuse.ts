@@ -1,13 +1,13 @@
-import lambda = require('@aws-cdk/aws-lambda');
-import cdk = require('@aws-cdk/core');
-import apigw = require('../lib');
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as cdk from '@aws-cdk/core';
+import * as apigw from '../lib';
 
 class MultiStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string) {
     super(scope, id);
 
     const hello = new apigw.LambdaIntegration(new lambda.Function(this, 'Hello', {
-      runtime: lambda.Runtime.NODEJS_8_10,
+      runtime: lambda.Runtime.NODEJS_10_X,
       handler: 'index.handler',
       code: lambda.Code.inline(`exports.handler = ${helloCode}`)
     }));
