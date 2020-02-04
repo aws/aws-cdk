@@ -37,7 +37,7 @@ export interface JobQueueProps {
    *
    * @default Default-Compute-Environment
    */
-  readonly computeEnvironmentOrder?: JobQueueComputeEnvironment[];
+  readonly computeEnvironments?: JobQueueComputeEnvironment[];
 
   /**
    * The priority of the job queue. Job queues with a higher priority (or a higher integer value for the priority parameter) are evaluated first
@@ -112,8 +112,8 @@ export class JobQueue extends Resource implements IJobQueue {
     });
 
     const jobQueue = new CfnJobQueue(this, 'Resource', {
-      computeEnvironmentOrder: props.computeEnvironmentOrder
-        ? props.computeEnvironmentOrder.map(cp => ({
+      computeEnvironmentOrder: props.computeEnvironments
+        ? props.computeEnvironments.map(cp => ({
           computeEnvironment: cp.computeEnvironment.computeEnvironmentArn,
           order: cp.order,
         } as CfnJobQueue.ComputeEnvironmentOrderProperty))

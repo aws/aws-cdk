@@ -17,7 +17,7 @@ describe('Batch Job Queue', () => {
     const existingJobQ = new batch.JobQueue(stack, 'test-job-queue', {
       priority: 1,
       enabled: false,
-      computeEnvironmentOrder: [
+      computeEnvironments: [
         {
           computeEnvironment,
           order: 1,
@@ -35,7 +35,7 @@ describe('Batch Job Queue', () => {
     const props: batch.JobQueueProps = {
       priority: 1,
       enabled: false,
-      computeEnvironmentOrder: [
+      computeEnvironments: [
         {
           computeEnvironment,
           order: 1,
@@ -65,7 +65,7 @@ describe('Batch Job Queue', () => {
     // WHEN
     new batch.JobQueue(stack, 'test-job-queue', {
       enabled: false,
-      computeEnvironmentOrder: [
+      computeEnvironments: [
         {
           computeEnvironment,
           order: 1,

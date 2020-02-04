@@ -1,7 +1,6 @@
-
 import { Construct, Duration, IResource, Resource, Stack } from '@aws-cdk/core';
 import { CfnJobDefinition } from './batch.generated';
-import { IJobDefinitionContainer, IJobDefinitionImageConfig, JobDefinitionImageConfig } from './job-definition-image-config';
+import { JobDefinitionContainer, JobDefinitionImageConfig } from './job-definition-image-config';
 
 /**
  * Construction properties of the {@link JobDefinition} construct.
@@ -19,7 +18,7 @@ export interface JobDefinitionProps {
   /**
    * An object with various properties specific to container-based jobs.
    */
-  readonly container: IJobDefinitionContainer;
+  readonly container: JobDefinitionContainer;
 
   /**
    * An object with various properties specific to multi-node parallel jobs.
@@ -85,7 +84,7 @@ export interface INodeRangeProps {
   /**
    * The container details for the node range.
    */
-  container: IJobDefinitionContainer;
+  container: JobDefinitionContainer;
 
   /**
    * The minimum node index value to apply this container definition against.
@@ -154,7 +153,7 @@ export class JobDefinition extends Resource implements IJobDefinition {
 
   public readonly jobDefinitionArn: string;
   public readonly jobDefinitionName: string;
-  private readonly imageConfig: IJobDefinitionImageConfig;
+  private readonly imageConfig: JobDefinitionImageConfig;
 
   constructor(scope: Construct, id: string, props: JobDefinitionProps) {
     super(scope, id, {
@@ -203,7 +202,7 @@ export class JobDefinition extends Resource implements IJobDefinition {
     return vars;
   }
 
-  private buildJobContainer(container?: IJobDefinitionContainer): CfnJobDefinition.ContainerPropertiesProperty | undefined {
+  private buildJobContainer(container?: JobDefinitionContainer): CfnJobDefinition.ContainerPropertiesProperty | undefined {
     if (container === undefined) {
       return undefined;
     }

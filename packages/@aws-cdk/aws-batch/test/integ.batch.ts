@@ -1,7 +1,8 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import ecr = require('@aws-cdk/aws-ecr');
-import { ContainerImage, EcrImage } from '@aws-cdk/aws-ecs';
+import * as ecs from '@aws-cdk/aws-ecs';
 import cdk = require('@aws-cdk/core');
+
 import * as batch from '../lib/';
 
 export const app = new cdk.App();
@@ -11,7 +12,7 @@ const stack = new cdk.Stack(app, 'batch-stack');
 const vpc = new ec2.Vpc(stack, 'vpc');
 
 new batch.JobQueue(stack, 'batch-job-queue', {
-  computeEnvironmentOrder: [
+  computeEnvironments: [
     {
       computeEnvironment: new batch.ComputeEnvironment(stack, 'batch-managed-compute-env'),
       order: 1,
@@ -44,12 +45,12 @@ const repo = new ecr.Repository(stack, 'batch-job-repo');
 
 new batch.JobDefinition(stack, 'batch-job-def-from-ecr', {
   container: {
-    image: new EcrImage(repo, 'latest'),
+    image: new ecs.EcrImage(repo, 'latest'),
   },
 });
 
 new batch.JobDefinition(stack, 'batch-job-def-from-', {
   container: {
-    image: ContainerImage.fromRegistry('docker/whalesay'),
+    image: ecs.ContainerImage.fromRegistry('docker/whalesay'),
   },
 });
