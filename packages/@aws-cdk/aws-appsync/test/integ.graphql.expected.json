@@ -16,7 +16,7 @@
             "ApiId"
           ]
         },
-        "Definition": "type Customer {\n    id: String!\n    name: String!\n}\n\ninput SaveCustomerInput {\n    name: String!\n}\n\ntype Order {\n    customer: String!\n    order: String!\n}\n\ntype Query {\n    getCustomers: [Customer]\n    getCustomer(id: String): Customer\n    getCustomerOrdersEq(customer: String): Order\n    getCustomerOrdersLt(customer: String): Order\n    getCustomerOrdersLe(customer: String): Order\n    getCustomerOrdersGt(customer: String): Order\n    getCustomerOrdersGe(customer: String): Order\n    getCustomerOrdersFilter(customer: String, order: String): Order\n    getCustomerOrdersBetween(customer: String, order1: String, order2: String): Order\n}\n\ntype Mutation {\n    addCustomer(customer: SaveCustomerInput!): Customer\n    saveCustomer(id: String!, customer: SaveCustomerInput!): Customer\n    removeCustomer(id: String!): Customer\n}"
+        "Definition": "type Customer {\n    id: String!\n    name: String!\n}\n\ninput SaveCustomerInput {\n    name: String!\n}\n\ntype Order {\n    customer: String!\n    order: String!\n}\n\ntype Query {\n    getCustomers: [Customer]\n    getCustomer(id: String): Customer\n    getCustomerOrdersEq(customer: String): Order\n    getCustomerOrdersLt(customer: String): Order\n    getCustomerOrdersLe(customer: String): Order\n    getCustomerOrdersGt(customer: String): Order\n    getCustomerOrdersGe(customer: String): Order\n    getCustomerOrdersFilter(customer: String, order: String): Order\n    getCustomerOrdersBetween(customer: String, order1: String, order2: String): Order\n    searchCustomers(name: String): [Customer]\n}\n\ntype Mutation {\n    addCustomer(customer: SaveCustomerInput!): Customer\n    saveCustomer(id: String!, customer: SaveCustomerInput!): Customer\n    removeCustomer(id: String!): Customer\n}"
       }
     },
     "ApiCustomerDSServiceRoleA929BCF7": {
@@ -442,6 +442,81 @@
       },
       "DependsOn": [
         "ApiOrderDS4B3EEEBA",
+        "ApiSchema510EECD7"
+      ]
+    },
+    "ApiCustomerESDSServiceRoleEFB692F3": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "appsync.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "ApiCustomerESDSCA288A53": {
+      "Type": "AWS::AppSync::DataSource",
+      "Properties": {
+        "ApiId": {
+          "Fn::GetAtt": [
+            "ApiF70053CD",
+            "ApiId"
+          ]
+        },
+        "Name": "CustomerES",
+        "Type": "AMAZON_ELASTICSEARCH",
+        "Description": "The customer elastic search domain",
+        "ElasticsearchConfig": {
+          "AwsRegion": {
+            "Ref": "AWS::Region"
+          },
+          "Endpoint": {
+            "Fn::Join": [
+              "",
+              [
+                "https://search-mydomain.",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ".es.amazonaws.com"
+              ]
+            ]
+          }
+        },
+        "ServiceRoleArn": {
+          "Fn::GetAtt": [
+            "ApiCustomerESDSServiceRoleEFB692F3",
+            "Arn"
+          ]
+        }
+      }
+    },
+    "ApiCustomerESDSQuerysearchCustomersResolver443D8B5E": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Fn::GetAtt": [
+            "ApiF70053CD",
+            "ApiId"
+          ]
+        },
+        "FieldName": "searchCustomers",
+        "TypeName": "Query",
+        "DataSourceName": "CustomerES",
+        "Kind": "UNIT",
+        "RequestMappingTemplate": "\n            {\n                \"version\":\"2017-02-28\",\n                \"operation\":\"GET\",\n                \"path\":\"/customerindex/customer/_search\",\n                \"params\":{\n                    \"body\": {\n                        \"from\": 0,\n                        \"size\": 50,\n                        \"query\": {\n                            \"term\" :{\n                                \"name\":\"${context.arguments.name}\"\n                            }\n                        }\n                    }\n                }\n            }\n        ",
+        "ResponseMappingTemplate": "\n            [\n                #foreach($entry in $context.result.hits.hits)\n                    #if( $velocityCount > 1 ) , #end\n                    $util.toJson($entry.get(\"_source\"))\n                #end\n            ]\n        "
+      },
+      "DependsOn": [
+        "ApiCustomerESDSCA288A53",
         "ApiSchema510EECD7"
       ]
     },
