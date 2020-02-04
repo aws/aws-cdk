@@ -4,6 +4,9 @@ const fs = require('fs-extra');
 const path = require('path');
 const glob = require('glob');
 
+const INCLUDE_DIRS = [ 'lib', 'lambda', 'lambda-packages' ];
+const EXCLUDE_DIRS = [ 'lib', 'test', 'node_modules', 'scripts', 'build-tools', 'rosetta', 'suffixes' ];
+
 async function main() {
   const srcdir = path.resolve('src');
   const reexports = [];
@@ -28,9 +31,9 @@ async function main() {
       continue;
     }
 
-    // check if moduledir includes any directory other than "lib" and "test"
+    // fail if the module directory has an unfamiliar subdirectory
     const subdirs = [];
-    const allowed = [ 'lib', 'test', 'node_modules', 'scripts', 'build-tools' ];
+    const allowed = [ ...INCLUDE_DIRS, ...EXCLUDE_DIRS ];
     for (const file of await fs.readdir(moduledir)) {
       if (allowed.includes(file)) {
         continue;
@@ -41,15 +44,23 @@ async function main() {
     }
 
     if (subdirs.length > 0) {
-      console.error(`WARNING: ${moduledir} includes a directory that is not one of [${allowed.join(',')}]: [${subdirs.join(',')}]`);
+      throw new Error(`${moduledir} includes a directory that is not one of [${allowed.join(',')}]: [${subdirs.join(',')}]`);
     }
 
     const basename = path.basename(moduledir);
-    const source = `${moduledir}/lib`;
-    const target = `${srcdir}/${basename}/lib`;
-    await fs.copy(source, target);
+    const targetroot = path.join(srcdir, basename);
+    for (const dir of INCLUDE_DIRS) {
+      const source = path.join(moduledir, dir);
+      if (!await fs.pathExists(source)) {
+        continue;
+      }
 
-    await fs.writeFile(path.join(path.dirname(target), 'index.ts'), `export * from './lib'\n`);
+      const target = path.join(targetroot, dir);
+      console.log(`${source} => ${target}`);
+      await fs.copy(source, target);
+    }
+
+    await fs.writeFile(path.join(targetroot, 'index.ts'), `export * from './lib'\n`);
 
     const namespace = basename.replace(/-/g, '_');
     reexports.push(`import * as ${namespace} from './${basename}/lib'; export { ${namespace} };`)
