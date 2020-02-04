@@ -1,6 +1,7 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as s3 from '@aws-cdk/aws-s3';
 import { Construct, Duration } from '@aws-cdk/core';
+import { kebab as toKebabCase } from 'case';
 import { Action } from '../action';
 import { deployArtifactBounds } from '../common';
 
@@ -113,12 +114,13 @@ export class S3DeployAction extends Action {
     // the Action Role also needs to read from the Pipeline's bucket
     options.bucket.grantRead(options.role);
 
+    const acl = this.props.accessControl;
     return {
       configuration: {
         BucketName: this.props.bucket.bucketName,
         Extract: this.props.extract === false ? 'false' : 'true',
         ObjectKey: this.props.objectKey,
-        CannedACL: this.props.accessControl,
+        CannedACL: acl ? toKebabCase(acl.toString()) : undefined,
         CacheControl: this.props.cacheControl && this.props.cacheControl.map(ac => ac.value).join(', '),
       },
     };
