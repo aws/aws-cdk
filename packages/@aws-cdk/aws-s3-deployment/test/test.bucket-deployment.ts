@@ -239,7 +239,7 @@ export = {
         A: '1',
         B: '2'
       }
-    })
+    });
 
     // THEN
     expect(stack).to(haveResource('Custom::CDKBucketDeployment', {
@@ -268,7 +268,7 @@ export = {
       websiteRedirectLocation: "example",
       cacheControl: [s3deploy.CacheControl.setPublic(), s3deploy.CacheControl.maxAge(cdk.Duration.hours(1))],
       expires: s3deploy.Expires.after(cdk.Duration.hours(12))
-    })
+    });
 
     // THEN
     expect(stack).to(haveResource('Custom::CDKBucketDeployment', {
