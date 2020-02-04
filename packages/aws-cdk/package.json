@@ -46,7 +46,7 @@
     "@types/jszip": "^3.1.7",
     "@types/minimatch": "^3.0.3",
     "@types/mockery": "^1.4.29",
-    "@types/node": "^10.17.13",
+    "@types/node": "^10.17.14",
     "@types/promptly": "^3.0.0",
     "@types/request": "^2.48.4",
     "@types/semver": "^7.1.0",
