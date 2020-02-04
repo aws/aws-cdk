@@ -291,6 +291,7 @@ export interface KeyProps {
    * to how it works for other AWS resources).
    *
    * @default false
+   * @see https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html#key-policy-default-allow-root-enable-iam
    */
   readonly trustAccountIdentities?: boolean;
 }
