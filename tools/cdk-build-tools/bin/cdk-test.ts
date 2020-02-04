@@ -46,13 +46,6 @@ async function main() {
     const jestConfig = { ...globalJestConfig, ...packageJson.jest };
 
     const jestConfigFile = 'jest.config.gen.json';
-    // Delete file if it exists
-    try {
-      await fs.unlink(jestConfigFile);
-    } catch (e) {
-      if (e.code !== 'ENOENT') { return; }
-    }
-
     await fs.writeFile(jestConfigFile, JSON.stringify(jestConfig));
 
     await shell([args.jest, '--config', jestConfigFile], { timers });
