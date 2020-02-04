@@ -758,6 +758,12 @@ export abstract class MappingTemplate {
         return this.fromString('$util.toJson($ctx.result)');
     }
 
+    /**
+     * Mapping template to fetch a document by id in Elasticsearch
+     *
+     * @param index Name of the index in Elasticserch
+     * @param type Type of the doucment
+     */
     public static elasticsearchGetDocumentById(index: string, type: string): MappingTemplate {
         return this.fromString(`
             {
@@ -769,6 +775,13 @@ export abstract class MappingTemplate {
         `);
     }
 
+    /**
+     * Mapping template to do a simple search term query
+     *
+     * @param index Name of the index in Elasticsearch
+     * @param type Type of the doucment
+     * @param field Name of the field to query
+     */
     public static elasticsearchSimpleTermQuery(index: string, type: string, field: string): MappingTemplate {
         return this.fromString(`
             {
@@ -790,6 +803,12 @@ export abstract class MappingTemplate {
         `);
     }
 
+    /**
+     * Mapping template to to simple pagination query
+     *
+     * @param index Name of the index in Elasticsearch
+     * @param type Type of the document
+     */
     public static elasticsearchPaginateWithFixedSizePages(index: string, type: string): MappingTemplate {
         return this.fromString(`
             {
@@ -806,10 +825,16 @@ export abstract class MappingTemplate {
         `);
     }
 
+    /**
+     * Mapping template for a single result item from Elasticsearch
+     */
     public static elasticsearchSingleResult(): MappingTemplate {
         return this.fromString('$util.toJson($context.result.get("_source"))');
     }
 
+    /**
+     * Mapping template for a list result from Elasticsearch
+     */
     public static elasticsearchListResult(): MappingTemplate {
         return this.fromString(`
             [
