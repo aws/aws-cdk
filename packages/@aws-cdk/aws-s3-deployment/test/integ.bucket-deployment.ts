@@ -2,7 +2,6 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as path from 'path';
 import * as s3deploy from '../lib';
-import { CacheControl } from '../lib';
 
 class TestBucketDeployment extends cdk.Stack {
   constructor(scope: cdk.App, id: string) {
@@ -35,7 +34,7 @@ class TestBucketDeployment extends cdk.Stack {
       sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
       destinationBucket: bucket3,
       retainOnDelete: false, // default is true, which will block the integration test cleanup
-      cacheControl: [CacheControl.setPublic(), CacheControl.maxAge(cdk.Duration.minutes(1))],
+      cacheControl: [s3deploy.CacheControl.setPublic(), s3deploy.CacheControl.maxAge(cdk.Duration.minutes(1))],
       contentType: 'text/html',
       metadata: { A: 'aaa', B: 'bbb', C: 'ccc' }
     });
