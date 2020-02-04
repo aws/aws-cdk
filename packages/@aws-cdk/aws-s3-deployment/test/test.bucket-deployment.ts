@@ -252,11 +252,53 @@ export = {
         'content-language': 'en',
         'content-disposition': 'inline',
         'storage-class': 'INTELLIGENT_TIERING',
-        'server-side-encryption': 'AES256',
+        'sse': 'AES256',
         'cache-control': 'public, max-age=3600',
         'expires': s3deploy.Expires.after(cdk.Duration.hours(12)).value
       }
     }));
+
+    test.done();
+  },
+
+  'expires type has correct values'(test: Test) {
+    test.equal(s3deploy.Expires.atDate(new Date('Sun, 26 Jan 2020 00:53:20 GMT')).value, 'Sun, 26 Jan 2020 00:53:20 GMT');
+    test.equal(s3deploy.Expires.atTimestamp(1580000000000).value, 'Sun, 26 Jan 2020 00:53:20 GMT');
+    test.equal(s3deploy.Expires.after(cdk.Duration.seconds(10)).value, new Date(Date.now() + 10000).toUTCString());
+    test.equal(s3deploy.Expires.fromString('Tue, 04 Feb 2020 08:45:33 GMT').value, 'Tue, 04 Feb 2020 08:45:33 GMT');
+
+    test.done();
+  },
+
+  'cache control type has correct values'(test: Test) {
+    test.equal(s3deploy.CacheControl.mustRevalidate().value, 'must-revalidate');
+    test.equal(s3deploy.CacheControl.noCache().value, 'no-cache');
+    test.equal(s3deploy.CacheControl.noTransform().value, 'no-transform');
+    test.equal(s3deploy.CacheControl.setPublic().value, 'public');
+    test.equal(s3deploy.CacheControl.setPrivate().value, 'private');
+    test.equal(s3deploy.CacheControl.proxyRevalidate().value, 'proxy-revalidate');
+    test.equal(s3deploy.CacheControl.maxAge(cdk.Duration.minutes(1)).value, 'max-age=60');
+    test.equal(s3deploy.CacheControl.sMaxAge(cdk.Duration.minutes(1)).value, 's-max-age=60');
+    test.equal(s3deploy.CacheControl.fromString('only-if-cached').value, 'only-if-cached');
+
+    test.done();
+  },
+
+  'storage class type has correct values'(test: Test) {
+    test.equal(s3deploy.StorageClass.STANDARD, 'STANDARD');
+    test.equal(s3deploy.StorageClass.REDUCED_REDUNDANCY, 'REDUCED_REDUNDANCY');
+    test.equal(s3deploy.StorageClass.STANDARD_IA, 'STANDARD_IA');
+    test.equal(s3deploy.StorageClass.ONEZONE_IA, 'ONEZONE_IA');
+    test.equal(s3deploy.StorageClass.INTELLIGENT_TIERING, 'INTELLIGENT_TIERING');
+    test.equal(s3deploy.StorageClass.GLACIER, 'GLACIER');
+    test.equal(s3deploy.StorageClass.DEEP_ARCHIVE, 'DEEP_ARCHIVE');
+
+    test.done();
+  },
+
+  'server side encryption type has correct values'(test: Test) {
+    test.equal(s3deploy.ServerSideEncryption.AES_256, 'AES256');
+    test.equal(s3deploy.ServerSideEncryption.AWS_KMS, 'aws:kms');
 
     test.done();
   },
