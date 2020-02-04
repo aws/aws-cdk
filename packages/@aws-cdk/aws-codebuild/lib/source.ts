@@ -126,16 +126,19 @@ interface GitSourceProps extends SourceProps {
  */
 abstract class GitSource extends Source {
   private readonly cloneDepth?: number;
+  private readonly branchOrRef?: string;
 
   protected constructor(props: GitSourceProps) {
     super(props);
 
     this.cloneDepth = props.cloneDepth;
+    this.branchOrRef = props.branchOrRef;
   }
 
   public bind(_scope: Construct, _project: IProject): SourceConfig {
     const superConfig = super.bind(_scope, _project);
     return {
+      sourceVersion: this.branchOrRef,
       sourceProperty: {
         ...superConfig.sourceProperty,
         gitCloneDepth: this.cloneDepth,
@@ -474,6 +477,7 @@ abstract class ThirdPartyGitSource extends GitSource {
         ...superConfig.sourceProperty,
         reportBuildStatus: this.reportBuildStatus,
       },
+      sourceVersion: superConfig.sourceVersion,
       buildTriggers: webhook === undefined ? undefined : {
         webhook,
         filterGroups: anyFilterGroupsProvided ? this.webhookFilters.map(fg => fg._toJson()) : undefined,
@@ -495,12 +499,10 @@ export interface CodeCommitSourceProps extends GitSourceProps {
 class CodeCommitSource extends GitSource {
   public readonly type = CODECOMMIT_SOURCE_TYPE;
   private readonly repo: codecommit.IRepository;
-  private readonly branchOrRef?: string;
 
   constructor(props: CodeCommitSourceProps) {
     super(props);
     this.repo = props.repository;
-    this.branchOrRef = props.branchOrRef;
   }
 
   public bind(_scope: Construct, project: IProject): SourceConfig {
@@ -516,7 +518,7 @@ class CodeCommitSource extends GitSource {
         ...superConfig.sourceProperty,
         location: this.repo.repositoryCloneUrlHttp,
       },
-      sourceVersion: this.branchOrRef,
+      sourceVersion: superConfig.sourceVersion,
     };
   }
 }
@@ -591,12 +593,10 @@ export interface GitHubSourceProps extends ThirdPartyGitSourceProps {
 class GitHubSource extends ThirdPartyGitSource {
   public readonly type = GITHUB_SOURCE_TYPE;
   private readonly httpsCloneUrl: string;
-  private readonly branchOrRef?: string;
 
   constructor(props: GitHubSourceProps) {
     super(props);
     this.httpsCloneUrl = `https://github.com/${props.owner}/${props.repo}.git`;
-    this.branchOrRef = props.branchOrRef;
   }
 
   public bind(_scope: Construct, project: IProject): SourceConfig {
@@ -606,7 +606,7 @@ class GitHubSource extends ThirdPartyGitSource {
         ...superConfig.sourceProperty,
         location: this.httpsCloneUrl,
       },
-      sourceVersion: this.branchOrRef,
+      sourceVersion: superConfig.sourceVersion,
       buildTriggers: superConfig.buildTriggers,
     };
   }
@@ -636,13 +636,11 @@ class GitHubEnterpriseSource extends ThirdPartyGitSource {
   public readonly type = GITHUB_ENTERPRISE_SOURCE_TYPE;
   private readonly httpsCloneUrl: string;
   private readonly ignoreSslErrors?: boolean;
-  private readonly branchOrRef?: string;
 
   constructor(props: GitHubEnterpriseSourceProps) {
     super(props);
     this.httpsCloneUrl = props.httpsCloneUrl;
     this.ignoreSslErrors = props.ignoreSslErrors;
-    this.branchOrRef = props.branchOrRef;
   }
 
   public bind(_scope: Construct, _project: IProject): SourceConfig {
@@ -653,7 +651,7 @@ class GitHubEnterpriseSource extends ThirdPartyGitSource {
         location: this.httpsCloneUrl,
         insecureSsl: this.ignoreSslErrors,
       },
-      sourceVersion: this.branchOrRef,
+      sourceVersion: superConfig.sourceVersion,
       buildTriggers: superConfig.buildTriggers,
     };
   }
@@ -684,12 +682,10 @@ export interface BitBucketSourceProps extends ThirdPartyGitSourceProps {
 class BitBucketSource extends ThirdPartyGitSource {
   public readonly type = BITBUCKET_SOURCE_TYPE;
   private readonly httpsCloneUrl: any;
-  private readonly branchOrRef?: string;
 
   constructor(props: BitBucketSourceProps) {
     super(props);
     this.httpsCloneUrl = `https://bitbucket.org/${props.owner}/${props.repo}.git`;
-    this.branchOrRef = props.branchOrRef;
   }
 
   public bind(_scope: Construct, _project: IProject): SourceConfig {
@@ -709,7 +705,7 @@ class BitBucketSource extends ThirdPartyGitSource {
         ...superConfig.sourceProperty,
         location: this.httpsCloneUrl,
       },
-      sourceVersion: this.branchOrRef,
+      sourceVersion: superConfig.sourceVersion,
       buildTriggers: superConfig.buildTriggers,
     };
   }
