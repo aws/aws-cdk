@@ -292,7 +292,7 @@ export = {
   'expires type has correct values'(test: Test) {
     test.equal(s3deploy.Expires.atDate(new Date('Sun, 26 Jan 2020 00:53:20 GMT')).value, 'Sun, 26 Jan 2020 00:53:20 GMT');
     test.equal(s3deploy.Expires.atTimestamp(1580000000000).value, 'Sun, 26 Jan 2020 00:53:20 GMT');
-    test.equal(s3deploy.Expires.after(cdk.Duration.seconds(10)).value, new Date(Date.now() + 10000).toUTCString());
+    test.ok(Math.abs(new Date(s3deploy.Expires.after(cdk.Duration.minutes(10)).value).getTime() - (Date.now() + 600000)) < 15000, "Expires.after accurate to within 15 seconds");
     test.equal(s3deploy.Expires.fromString('Tue, 04 Feb 2020 08:45:33 GMT').value, 'Tue, 04 Feb 2020 08:45:33 GMT');
 
     test.done();
