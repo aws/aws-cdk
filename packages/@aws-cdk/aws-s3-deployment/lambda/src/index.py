@@ -158,7 +158,7 @@ def create_metadata_args(raw_user_metadata, raw_system_metadata):
         return []
 
     format_system_metadata_key = lambda k: k.lower()
-    format_user_metadata_key = lambda k: k.lower() if k.lower().startswith("x-amzn-meta-") else f"x-amzn-meta-{k.lower()}" 
+    format_user_metadata_key = lambda k: k.lower() if k.lower().startswith("x-amzn-meta-") else f"x-amzn-meta-{k.lower()}"
 
     system_metadata = { format_system_metadata_key(k): v for k, v in raw_system_metadata.items() }
     user_metadata = { format_user_metadata_key(k): v for k, v in raw_user_metadata.items() }
