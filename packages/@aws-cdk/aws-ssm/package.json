@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-ssm",
-  "version": "1.21.1",
+  "version": "1.22.0",
   "description": "The CDK Construct Library for AWS::SSM",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -62,44 +62,29 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "1.21.1",
+    "@aws-cdk/assert": "1.22.0",
     "@types/nodeunit": "^0.0.30",
-    "cdk-build-tools": "1.21.1",
-    "cdk-integ-tools": "1.21.1",
-    "cfn2ts": "1.21.1",
+    "cdk-build-tools": "1.22.0",
+    "cdk-integ-tools": "1.22.0",
+    "cfn2ts": "1.22.0",
     "nodeunit": "^0.11.3",
-    "pkglint": "1.21.1"
+    "pkglint": "1.22.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-iam": "1.21.1",
-    "@aws-cdk/aws-kms": "1.21.1",
-    "@aws-cdk/core": "1.21.1",
-    "@aws-cdk/cx-api": "1.21.1"
+    "@aws-cdk/aws-iam": "1.22.0",
+    "@aws-cdk/aws-kms": "1.22.0",
+    "@aws-cdk/core": "1.22.0",
+    "@aws-cdk/cx-api": "1.22.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-iam": "1.21.1",
-    "@aws-cdk/aws-kms": "1.21.1",
-    "@aws-cdk/core": "1.21.1",
-    "@aws-cdk/cx-api": "1.21.1"
+    "@aws-cdk/aws-iam": "1.22.0",
+    "@aws-cdk/aws-kms": "1.22.0",
+    "@aws-cdk/core": "1.22.0",
+    "@aws-cdk/cx-api": "1.22.0"
   },
   "engines": {
     "node": ">= 10.3.0"
-  },
-  "awslint": {
-    "exclude": [
-      "export:@aws-cdk/aws-ssm.IParameter",
-      "import-props-interface:@aws-cdk/aws-ssm.ParameterImportProps",
-      "resource-attribute:@aws-cdk/aws-ssm.IParameter.parameterValue",
-      "from-attributes:fromStringParameterAttributes",
-      "from-attributes:fromStringListParameterAttributes",
-      "props-physical-name:@aws-cdk/aws-ssm.StringListParameterProps",
-      "props-physical-name:@aws-cdk/aws-ssm.StringParameterProps",
-      "docs-public-apis:@aws-cdk/aws-ssm.StringParameterAttributes",
-      "docs-public-apis:@aws-cdk/aws-ssm.SecureStringParameterAttributes",
-      "docs-public-apis:@aws-cdk/aws-ssm.StringParameter.encryptionKey",
-      "docs-public-apis:@aws-cdk/aws-ssm.StringListParameter.encryptionKey"
-    ]
   },
   "stability": "stable"
 }
