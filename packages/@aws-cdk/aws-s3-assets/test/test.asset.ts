@@ -34,18 +34,18 @@ export = {
 
     test.deepEqual(stack.resolve(entry!.data), {
       path: SAMPLE_ASSET_DIR,
-      id: '6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2',
+      id: '29b2a596a6e4efb88c13158906b9a44a8bced412dba7eadd4741e471cad01f52',
       packaging: 'zip',
-      sourceHash: '6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2',
-      s3BucketParameter: 'AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3Bucket50B5A10B',
-      s3KeyParameter: 'AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3VersionKey1F7D75F9',
-      artifactHashParameter: 'AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2ArtifactHash220DE9BD',
+      sourceHash: '29b2a596a6e4efb88c13158906b9a44a8bced412dba7eadd4741e471cad01f52',
+      s3BucketParameter: 'AssetParameters29b2a596a6e4efb88c13158906b9a44a8bced412dba7eadd4741e471cad01f52S3BucketC972D718',
+      s3KeyParameter: 'AssetParameters29b2a596a6e4efb88c13158906b9a44a8bced412dba7eadd4741e471cad01f52S3VersionKeyCEE36F6D',
+      artifactHashParameter: 'AssetParameters29b2a596a6e4efb88c13158906b9a44a8bced412dba7eadd4741e471cad01f52ArtifactHash21E1D9D2',
     });
 
     const template = JSON.parse(fs.readFileSync(path.join(session.directory, 'MyStack.template.json'), 'utf-8'));
 
-    test.equal(template.Parameters.AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3Bucket50B5A10B.Type, 'String');
-    test.equal(template.Parameters.AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3VersionKey1F7D75F9.Type, 'String');
+    test.equal(template.Parameters.AssetParameters29b2a596a6e4efb88c13158906b9a44a8bced412dba7eadd4741e471cad01f52S3BucketC972D718.Type, 'String');
+    test.equal(template.Parameters.AssetParameters29b2a596a6e4efb88c13158906b9a44a8bced412dba7eadd4741e471cad01f52S3VersionKeyCEE36F6D.Type, 'String');
 
     test.done();
   },
@@ -64,13 +64,13 @@ export = {
     test.ok(meta['/my-stack']);
     test.ok(meta['/my-stack'][0]);
     test.deepEqual(meta['/my-stack'][0].data, {
-      path: 'asset.6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2',
-      id: "6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2",
+      path: 'asset.29b2a596a6e4efb88c13158906b9a44a8bced412dba7eadd4741e471cad01f52',
+      id: "29b2a596a6e4efb88c13158906b9a44a8bced412dba7eadd4741e471cad01f52",
       packaging: "zip",
-      sourceHash: '6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2',
-      s3BucketParameter: "AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3Bucket50B5A10B",
-      s3KeyParameter: "AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3VersionKey1F7D75F9",
-      artifactHashParameter: 'AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2ArtifactHash220DE9BD',
+      sourceHash: '29b2a596a6e4efb88c13158906b9a44a8bced412dba7eadd4741e471cad01f52',
+      s3BucketParameter: "AssetParameters29b2a596a6e4efb88c13158906b9a44a8bced412dba7eadd4741e471cad01f52S3BucketC972D718",
+      s3KeyParameter: "AssetParameters29b2a596a6e4efb88c13158906b9a44a8bced412dba7eadd4741e471cad01f52S3VersionKeyCEE36F6D",
+      artifactHashParameter: 'AssetParameters29b2a596a6e4efb88c13158906b9a44a8bced412dba7eadd4741e471cad01f52ArtifactHash21E1D9D2',
     });
 
     test.done();
@@ -87,18 +87,18 @@ export = {
     const template = SynthUtils.synthesize(stack).template;
 
     test.deepEqual(stack.resolve(entry!.data), {
-      path: 'asset.78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197.txt',
+      path: 'asset.9a16305bcae498e96e650ce18b97bc8b84bd236fbb1bd95e0589ea386c12a187.txt',
       packaging: 'file',
-      id: '78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197',
-      sourceHash: '78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197',
-      s3BucketParameter: 'AssetParameters78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197S3Bucket2C60F94A',
-      s3KeyParameter: 'AssetParameters78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197S3VersionKey9482DC35',
-      artifactHashParameter: 'AssetParameters78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197ArtifactHash22BFFA67',
+      id: '9a16305bcae498e96e650ce18b97bc8b84bd236fbb1bd95e0589ea386c12a187',
+      sourceHash: '9a16305bcae498e96e650ce18b97bc8b84bd236fbb1bd95e0589ea386c12a187',
+      s3BucketParameter: 'AssetParameters9a16305bcae498e96e650ce18b97bc8b84bd236fbb1bd95e0589ea386c12a187S3Bucket571780D6',
+      s3KeyParameter: 'AssetParameters9a16305bcae498e96e650ce18b97bc8b84bd236fbb1bd95e0589ea386c12a187S3VersionKey5BC8CFA3',
+      artifactHashParameter: 'AssetParameters9a16305bcae498e96e650ce18b97bc8b84bd236fbb1bd95e0589ea386c12a187ArtifactHashAC78E97C',
     });
 
     // verify that now the template contains parameters for this asset
-    test.equal(template.Parameters.AssetParameters78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197S3Bucket2C60F94A.Type, 'String');
-    test.equal(template.Parameters.AssetParameters78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197S3VersionKey9482DC35.Type, 'String');
+    test.equal(template.Parameters.AssetParameters9a16305bcae498e96e650ce18b97bc8b84bd236fbb1bd95e0589ea386c12a187S3Bucket571780D6.Type, 'String');
+    test.equal(template.Parameters.AssetParameters9a16305bcae498e96e650ce18b97bc8b84bd236fbb1bd95e0589ea386c12a187S3VersionKey5BC8CFA3.Type, 'String');
 
     test.done();
   },
@@ -123,8 +123,8 @@ export = {
             Action: ["s3:GetObject*", "s3:GetBucket*", "s3:List*"],
             Effect: 'Allow',
             Resource: [
-              { "Fn::Join": ["", ["arn:", {Ref: "AWS::Partition"}, ":s3:::", {Ref: "AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3Bucket50B5A10B"} ] ] },
-              { "Fn::Join": ["", [ "arn:", {Ref: "AWS::Partition"}, ":s3:::", {Ref: "AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3Bucket50B5A10B"}, "/*" ] ] }
+              { "Fn::Join": ["", ["arn:", {Ref: "AWS::Partition"}, ":s3:::", {Ref: "AssetParameters29b2a596a6e4efb88c13158906b9a44a8bced412dba7eadd4741e471cad01f52S3BucketC972D718"} ] ] },
+              { "Fn::Join": ["", [ "arn:", {Ref: "AWS::Partition"}, ":s3:::", {Ref: "AssetParameters29b2a596a6e4efb88c13158906b9a44a8bced412dba7eadd4741e471cad01f52S3BucketC972D718"}, "/*" ] ] }
             ]
           }
         ]
@@ -198,7 +198,7 @@ export = {
     // THEN
     expect(stack).to(haveResource('My::Resource::Type', {
       Metadata: {
-        "aws:asset:path": 'asset.6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2',
+        "aws:asset:path": 'asset.29b2a596a6e4efb88c13158906b9a44a8bced412dba7eadd4741e471cad01f52',
         "aws:asset:property": "PropName"
       }
     }, ResourcePart.CompleteDefinition));
@@ -248,7 +248,7 @@ export = {
       // THEN
       app.synth();
       test.ok(fs.existsSync(tempdir));
-      test.ok(fs.existsSync(path.join(tempdir, 'asset.a7a79cdf84b802ea8b198059ff899cffc095a1b9606e919f98e05bf80779756b.zip')));
+      test.ok(fs.existsSync(path.join(tempdir, 'asset.1a2c2e3c558cb7a64c1d0e24e31f718163b2dbc2825b0c8c3ea4361c1508c28a.zip')));
       test.done();
     },
 
@@ -268,7 +268,7 @@ export = {
       // THEN
       app.synth();
       test.ok(fs.existsSync(tempdir));
-      const hash = 'asset.6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2';
+      const hash = 'asset.29b2a596a6e4efb88c13158906b9a44a8bced412dba7eadd4741e471cad01f52';
       test.ok(fs.existsSync(path.join(tempdir, hash, 'sample-asset-file.txt')));
       test.ok(fs.existsSync(path.join(tempdir, hash, 'sample-jar-asset.jar')));
       fs.readdirSync(tempdir);
@@ -298,7 +298,7 @@ export = {
 
       const template = SynthUtils.synthesize(stack).template;
       test.deepEqual(template.Resources.MyResource.Metadata, {
-        "aws:asset:path": `asset.6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2`,
+        "aws:asset:path": `asset.29b2a596a6e4efb88c13158906b9a44a8bced412dba7eadd4741e471cad01f52`,
         "aws:asset:property": "PropName"
       });
       test.done();
@@ -342,7 +342,7 @@ export = {
       const artifact = session.getStackByName(stack.stackName);
       const metadata = artifact.manifest.metadata || {};
       const md = Object.values(metadata)[0]![0]!.data;
-      test.deepEqual(md.path, 'asset.6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2');
+      test.deepEqual(md.path, 'asset.29b2a596a6e4efb88c13158906b9a44a8bced412dba7eadd4741e471cad01f52');
       test.done();
     }
 
