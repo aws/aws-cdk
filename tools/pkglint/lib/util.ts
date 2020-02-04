@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { PackageJson } from "./packagejson";
+import { PackageJson } from './packagejson';
 
 /**
  * Expect a particular JSON key to be a given value
@@ -142,7 +142,7 @@ export function deepSet(x: any, jsonPath: string[], value: any) {
  */
 export function monoRepoVersion() {
   const found = findLernaJSON();
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  // eslint-disable-next-line @typescript-eslint/no-require-imports,@typescript-eslint/no-var-requires
   const lernaJson = require(found);
   return lernaJson.version;
 }

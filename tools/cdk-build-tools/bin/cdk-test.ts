@@ -84,6 +84,6 @@ main().then(() => {
   buildTimer.end();
   process.stderr.write(`${e.toString()}\n`);
   process.stderr.write(`Tests failed. ${timers.display()}\n`);
-  process.stderr.write(`!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n`);
+  process.stderr.write('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n');
   process.exit(1);
 });

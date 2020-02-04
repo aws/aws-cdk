@@ -10,7 +10,7 @@ export const cfnResourceLinter = new Linter(a => CfnResourceReflection.findAll(a
 
 cfnResourceLinter.add({
   code: 'resource-class',
-  message: `every resource must have a resource class (L2), add '@resource %s' to its docstring`,
+  message: 'every resource must have a resource class (L2), add \'@resource %s\' to its docstring',
   warning: true,
   eval: e => {
     const l2 = ResourceReflection.findAll(e.ctx.classType.assembly).find(r => r.cfn.fullname === e.ctx.fullname);
@@ -26,7 +26,7 @@ export class CfnResourceReflection {
   public static findByName(sys: reflect.TypeSystem, fullName: string) {
     const [ org, ns, resource ] = fullName.split('::');
     if (resource === undefined) {
-        throw new Error(`Not a valid CFN resource name: ${fullName}`);
+      throw new Error(`Not a valid CFN resource name: ${fullName}`);
     }
     const fqn = `@aws-cdk/${org.toLocaleLowerCase()}-${ns.toLocaleLowerCase()}.Cfn${resource}`;
     if (!sys.tryFindFqn(fqn)) {
@@ -52,7 +52,7 @@ export class CfnResourceReflection {
   public readonly attributeNames: string[]; // (normalized) bucketArn, bucketName, queueUrl
   public readonly doc: string; // link to CloudFormation docs
 
-  constructor(cls: reflect.ClassType) {
+  public constructor(cls: reflect.ClassType) {
     this.classType = cls;
 
     this.basename = cls.name.substr('Cfn'.length);

@@ -159,7 +159,7 @@ export class Model extends Resource implements IModel {
    */
   public readonly modelId: string;
 
-  constructor(scope: Construct, id: string, props: ModelProps) {
+  public constructor(scope: Construct, id: string, props: ModelProps) {
     super(scope, id, {
       physicalName: props.modelName,
     });

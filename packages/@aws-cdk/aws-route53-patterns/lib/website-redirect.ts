@@ -30,7 +30,7 @@ export interface HttpsRedirectProps {
 }
 
 export class HttpsRedirect extends Construct {
-  constructor(scope: Construct, id: string, props: HttpsRedirectProps) {
+  public constructor(scope: Construct, id: string, props: HttpsRedirectProps) {
     super(scope, id);
 
     const domainNames = props.recordNames || [props.zone.zoneName];
@@ -66,8 +66,8 @@ export class HttpsRedirect extends Construct {
       viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
     });
 
-    domainNames.forEach((domainName) => {
-      const hash = crypto.createHash('md5').update(domainName).digest("hex").substr(0, 6);
+    domainNames.forEach(domainName => {
+      const hash = crypto.createHash('md5').update(domainName).digest('hex').substr(0, 6);
       new ARecord(this, `RedirectAliasRecord${hash}`, {
         recordName: domainName,
         zone: props.zone,

@@ -166,7 +166,7 @@ export class Stage extends Resource {
   public readonly restApi: IRestApi;
   private enableCacheCluster?: boolean;
 
-  constructor(scope: Construct, id: string, props: StageProps) {
+  public constructor(scope: Construct, id: string, props: StageProps) {
     super(scope, id);
 
     this.enableCacheCluster = props.cacheClusterEnabled;
@@ -214,6 +214,7 @@ export class Stage extends Resource {
 
   private renderMethodSettings(props: StageProps): CfnStage.MethodSettingProperty[] | undefined {
     const settings = new Array<CfnStage.MethodSettingProperty>();
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     const self = this;
 
     // extract common method options from the stage props

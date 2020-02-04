@@ -25,7 +25,7 @@ export interface DatabaseSecretProps {
  * @resource AWS::SecretsManager::Secret
  */
 export class DatabaseSecret extends secretsmanager.Secret {
-  constructor(scope: Construct, id: string, props: DatabaseSecretProps) {
+  public constructor(scope: Construct, id: string, props: DatabaseSecretProps) {
     super(scope, id, {
       encryptionKey: props.encryptionKey,
       generateSecretString: {

@@ -243,7 +243,7 @@ export class TaskDefinition extends TaskDefinitionBase {
   /**
    * Constructs a new instance of the TaskDefinition class.
    */
-  constructor(scope: Construct, id: string, props: TaskDefinitionProps) {
+  public constructor(scope: Construct, id: string, props: TaskDefinitionProps) {
     super(scope, id);
 
     this.family = props.family || this.node.uniqueId;
@@ -272,7 +272,7 @@ export class TaskDefinition extends TaskDefinitionBase {
     this._executionRole = props.executionRole;
 
     this.taskRole = props.taskRole || new iam.Role(this, 'TaskRole', {
-        assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+      assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
     });
 
     const taskDef = new CfnTaskDefinition(this, 'Resource', {
@@ -282,8 +282,8 @@ export class TaskDefinition extends TaskDefinitionBase {
       family: this.family,
       taskRoleArn: this.taskRole.roleArn,
       requiresCompatibilities: [
-        ...(isEc2Compatible(props.compatibility) ? ["EC2"] : []),
-        ...(isFargateCompatible(props.compatibility) ? ["FARGATE"] : []),
+        ...(isEc2Compatible(props.compatibility) ? ['EC2'] : []),
+        ...(isFargateCompatible(props.compatibility) ? ['FARGATE'] : []),
       ],
       networkMode: this.renderNetworkMode(this.networkMode),
       placementConstraints: Lazy.anyValue({ produce: () =>
@@ -552,7 +552,7 @@ export interface LoadBalancerTarget {
   /**
    * The port mapping of the target.
    */
-  readonly portMapping: PortMapping
+  readonly portMapping: PortMapping;
 }
 
 /**
@@ -621,12 +621,12 @@ export enum Scope {
   /**
    * Docker volumes that are scoped to a task are automatically provisioned when the task starts and destroyed when the task stops.
    */
-  TASK = "task",
+  TASK = 'task',
 
   /**
    * Docker volumes that are scoped as shared persist after the task stops.
    */
-  SHARED = "shared"
+  SHARED = 'shared'
 }
 
 /**

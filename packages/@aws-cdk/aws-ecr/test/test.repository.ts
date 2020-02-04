@@ -18,9 +18,9 @@ export = {
     expect(stack).toMatch({
       Resources: {
         Repo02AC86CF: {
-          Type: "AWS::ECR::Repository",
-          DeletionPolicy: "Retain",
-          UpdateReplacePolicy: "Retain",
+          Type: 'AWS::ECR::Repository',
+          DeletionPolicy: 'Retain',
+          UpdateReplacePolicy: 'Retain',
         }
       }
     });
@@ -40,7 +40,7 @@ export = {
     expect(stack).to(haveResource('AWS::ECR::Repository', {
       LifecyclePolicy: {
         // eslint-disable-next-line max-len
-        LifecyclePolicyText: "{\"rules\":[{\"rulePriority\":1,\"selection\":{\"tagStatus\":\"tagged\",\"tagPrefixList\":[\"abc\"],\"countType\":\"imageCountMoreThan\",\"countNumber\":1},\"action\":{\"type\":\"expire\"}}]}"
+        LifecyclePolicyText: '{"rules":[{"rulePriority":1,"selection":{"tagStatus":"tagged","tagPrefixList":["abc"],"countType":"imageCountMoreThan","countNumber":1},"action":{"type":"expire"}}]}'
       }
     }));
 
@@ -61,7 +61,7 @@ export = {
     expect(stack).to(haveResource('AWS::ECR::Repository', {
       LifecyclePolicy: {
         // eslint-disable-next-line max-len
-        LifecyclePolicyText: "{\"rules\":[{\"rulePriority\":1,\"selection\":{\"tagStatus\":\"any\",\"countType\":\"sinceImagePushed\",\"countNumber\":5,\"countUnit\":\"days\"},\"action\":{\"type\":\"expire\"}}]}",
+        LifecyclePolicyText: '{"rules":[{"rulePriority":1,"selection":{"tagStatus":"any","countType":"sinceImagePushed","countNumber":5,"countUnit":"days"},"action":{"type":"expire"}}]}',
       }
     }));
 
@@ -82,7 +82,7 @@ export = {
     expect(stack).to(haveResource('AWS::ECR::Repository', {
       LifecyclePolicy: {
         // eslint-disable-next-line max-len
-        LifecyclePolicyText: "{\"rules\":[{\"rulePriority\":1,\"selection\":{\"tagStatus\":\"any\",\"countType\":\"imageCountMoreThan\",\"countNumber\":5},\"action\":{\"type\":\"expire\"}}]}",
+        LifecyclePolicyText: '{"rules":[{"rulePriority":1,"selection":{"tagStatus":"any","countType":"imageCountMoreThan","countNumber":5},"action":{"type":"expire"}}]}',
       }
     }));
 
@@ -102,7 +102,7 @@ export = {
     expect(stack).to(haveResource('AWS::ECR::Repository', {
       LifecyclePolicy: {
         // eslint-disable-next-line max-len
-        LifecyclePolicyText: "{\"rules\":[{\"rulePriority\":10,\"selection\":{\"tagStatus\":\"tagged\",\"tagPrefixList\":[\"b\"],\"countType\":\"imageCountMoreThan\",\"countNumber\":5},\"action\":{\"type\":\"expire\"}},{\"rulePriority\":11,\"selection\":{\"tagStatus\":\"tagged\",\"tagPrefixList\":[\"a\"],\"countType\":\"imageCountMoreThan\",\"countNumber\":5},\"action\":{\"type\":\"expire\"}}]}"
+        LifecyclePolicyText: '{"rules":[{"rulePriority":10,"selection":{"tagStatus":"tagged","tagPrefixList":["b"],"countType":"imageCountMoreThan","countNumber":5},"action":{"type":"expire"}},{"rulePriority":11,"selection":{"tagStatus":"tagged","tagPrefixList":["a"],"countType":"imageCountMoreThan","countNumber":5},"action":{"type":"expire"}}]}'
       }
     }));
 
@@ -122,7 +122,7 @@ export = {
     expect(stack).to(haveResource('AWS::ECR::Repository', {
       LifecyclePolicy: {
         // eslint-disable-next-line max-len
-        LifecyclePolicyText: "{\"rules\":[{\"rulePriority\":1,\"selection\":{\"tagStatus\":\"tagged\",\"tagPrefixList\":[\"important\"],\"countType\":\"imageCountMoreThan\",\"countNumber\":999},\"action\":{\"type\":\"expire\"}},{\"rulePriority\":2,\"selection\":{\"tagStatus\":\"any\",\"countType\":\"imageCountMoreThan\",\"countNumber\":5},\"action\":{\"type\":\"expire\"}}]}"
+        LifecyclePolicyText: '{"rules":[{"rulePriority":1,"selection":{"tagStatus":"tagged","tagPrefixList":["important"],"countType":"imageCountMoreThan","countNumber":999},"action":{"type":"expire"}},{"rulePriority":2,"selection":{"tagStatus":"any","countType":"imageCountMoreThan","countNumber":5},"action":{"type":"expire"}}]}'
       }
     }));
 
@@ -142,9 +142,9 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::ECR::Repository', {
-      "LifecyclePolicy": {
+      'LifecyclePolicy': {
         // eslint-disable-next-line max-len
-        "LifecyclePolicyText": "{\"rules\":[{\"rulePriority\":1,\"selection\":{\"tagStatus\":\"any\",\"countType\":\"imageCountMoreThan\",\"countNumber\":3},\"action\":{\"type\":\"expire\"}}]}"
+        'LifecyclePolicyText': '{"rules":[{"rulePriority":1,"selection":{"tagStatus":"any","countType":"imageCountMoreThan","countNumber":3},"action":{"type":"expire"}}]}'
       }
     }));
     test.done();
@@ -195,7 +195,7 @@ export = {
 
     // WHEN/THEN
     test.throws(() => ecr.Repository.fromRepositoryArn(stack, 'arn', cdk.Fn.getAtt('Boom', 'Boom').toString()),
-      /\"repositoryArn\" is a late-bound value, and therefore \"repositoryName\" is required\. Use \`fromRepositoryAttributes\` instead/);
+      /"repositoryArn" is a late-bound value, and therefore "repositoryName" is required\. Use `fromRepositoryAttributes` instead/);
 
     test.done();
   },
@@ -279,11 +279,11 @@ export = {
       RepositoryPolicyText: {
         Statement: [
           {
-            Action: "*",
-            Effect: "Allow"
+            Action: '*',
+            Effect: 'Allow'
           }
         ],
-        Version: "2012-10-17"
+        Version: '2012-10-17'
       },
     }));
 
@@ -302,24 +302,24 @@ export = {
       });
 
       expect(stack).to(haveResourceLike('AWS::Events::Rule', {
-        "EventPattern": {
-          "source": [
-            "aws.ecr",
+        'EventPattern': {
+          'source': [
+            'aws.ecr',
           ],
-          "detail": {
-            "eventName": [
-              "PutImage",
+          'detail': {
+            'eventName': [
+              'PutImage',
             ],
-            "requestParameters": {
-              "repositoryName": [
+            'requestParameters': {
+              'repositoryName': [
                 {
-                  "Ref": "Repo02AC86CF"
+                  'Ref': 'Repo02AC86CF'
                 }
               ],
             },
           },
         },
-        "State": "ENABLED",
+        'State': 'ENABLED',
       }));
 
       test.done();
@@ -335,22 +335,22 @@ export = {
       });
 
       expect(stack).to(haveResourceLike('AWS::Events::Rule', {
-        "EventPattern": {
-          "source": [
-            "aws.ecr",
+        'EventPattern': {
+          'source': [
+            'aws.ecr',
           ],
-          "detail": {
-            "repository-name": [
+          'detail': {
+            'repository-name': [
               {
-                "Ref": "Repo02AC86CF"
+                'Ref': 'Repo02AC86CF'
               }
             ],
-            "scan-status": [
-              "COMPLETE"
+            'scan-status': [
+              'COMPLETE'
             ]
           }
         },
-        "State": "ENABLED",
+        'State': 'ENABLED',
       }));
 
       test.done();
@@ -368,25 +368,25 @@ export = {
       });
 
       expect(stack).to(haveResourceLike('AWS::Events::Rule', {
-        "EventPattern": {
-          "source": [
-            "aws.ecr",
+        'EventPattern': {
+          'source': [
+            'aws.ecr',
           ],
-          "detail": {
-            "repository-name": [
+          'detail': {
+            'repository-name': [
               {
-                "Ref": "Repo02AC86CF"
+                'Ref': 'Repo02AC86CF'
               }
             ],
-            "image-tags": [
-              "some-tag"
+            'image-tags': [
+              'some-tag'
             ],
-            "scan-status": [
-              "COMPLETE"
+            'scan-status': [
+              'COMPLETE'
             ]
           }
         },
-        "State": "ENABLED",
+        'State': 'ENABLED',
       }));
 
       test.done();
@@ -404,27 +404,27 @@ export = {
       });
 
       expect(stack).to(haveResourceLike('AWS::Events::Rule', {
-        "EventPattern": {
-          "source": [
-            "aws.ecr",
+        'EventPattern': {
+          'source': [
+            'aws.ecr',
           ],
-          "detail": {
-            "repository-name": [
+          'detail': {
+            'repository-name': [
               {
-                "Ref": "Repo02AC86CF"
+                'Ref': 'Repo02AC86CF'
               }
             ],
-            "image-tags": [
-              "tag1",
-              "tag2",
-              "tag3"
+            'image-tags': [
+              'tag1',
+              'tag2',
+              'tag3'
             ],
-            "scan-status": [
-              "COMPLETE"
+            'scan-status': [
+              'COMPLETE'
             ]
           }
         },
-        "State": "ENABLED",
+        'State': 'ENABLED',
       }));
 
       test.done();
@@ -440,8 +440,8 @@ export = {
 
       // THEN
       expect(stack).to(haveResource('AWS::ECR::Repository', {
-        "Type": "AWS::ECR::Repository",
-        "DeletionPolicy": "Retain"
+        'Type': 'AWS::ECR::Repository',
+        'DeletionPolicy': 'Retain'
       }, ResourcePart.CompleteDefinition));
       test.done();
     },
@@ -457,8 +457,8 @@ export = {
 
       // THEN
       expect(stack).to(haveResource('AWS::ECR::Repository', {
-        "Type": "AWS::ECR::Repository",
-        "DeletionPolicy": "Delete"
+        'Type': 'AWS::ECR::Repository',
+        'DeletionPolicy': 'Delete'
       }, ResourcePart.CompleteDefinition));
       test.done();
     },
@@ -473,19 +473,19 @@ export = {
 
       // THEN
       expect(stack).to(haveResource('AWS::ECR::Repository', {
-        "RepositoryPolicyText": {
-          "Statement": [
+        'RepositoryPolicyText': {
+          'Statement': [
             {
-              "Action": [
-                "ecr:BatchCheckLayerAvailability",
-                "ecr:GetDownloadUrlForLayer",
-                "ecr:BatchGetImage"
+              'Action': [
+                'ecr:BatchCheckLayerAvailability',
+                'ecr:GetDownloadUrlForLayer',
+                'ecr:BatchGetImage'
               ],
-              "Effect": "Allow",
-              "Principal": "*",
+              'Effect': 'Allow',
+              'Principal': '*',
             }
           ],
-          "Version": "2012-10-17"
+          'Version': '2012-10-17'
         }
       }));
 

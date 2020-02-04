@@ -1,4 +1,4 @@
-import { Duration } from "@aws-cdk/core";
+import { Duration } from '@aws-cdk/core';
 
 /**
  * Declaration of a Life cycle rule
@@ -198,7 +198,7 @@ export class StorageClass {
    */
   public static readonly INTELLIGENT_TIERING = new StorageClass('INTELLIGENT_TIERING');
 
-  constructor(public readonly value: string) { }
+  public constructor(public readonly value: string) { }
 
   public toString() { return this.value; }
 }

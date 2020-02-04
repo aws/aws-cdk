@@ -7,7 +7,7 @@ import { CfnResource, Construct, Stack } from '@aws-cdk/core';
  * Use a Lambda function as a bucket notification destination
  */
 export class LambdaDestination implements s3.IBucketNotificationDestination {
-  constructor(private readonly fn: lambda.IFunction) {
+  public constructor(private readonly fn: lambda.IFunction) {
   }
 
   public bind(_scope: Construct, bucket: s3.IBucket): s3.BucketNotificationDestinationConfig {

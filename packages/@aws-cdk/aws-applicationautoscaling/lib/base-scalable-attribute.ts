@@ -49,6 +49,10 @@ export abstract class BaseScalableAttribute extends cdk.Construct {
   public constructor(scope: cdk.Construct, id: string, protected readonly props: BaseScalableAttributeProps) {
     super(scope, id);
 
+    if (props.minCapacity && props.minCapacity > props.maxCapacity) {
+      throw new Error(`minCapacity (${props.minCapacity}) cannot be greater than maxCapacity (${props.maxCapacity}).`);
+    }
+
     this.target = new ScalableTarget(this, 'Target', {
       serviceNamespace: this.props.serviceNamespace,
       scalableDimension: this.props.dimension,

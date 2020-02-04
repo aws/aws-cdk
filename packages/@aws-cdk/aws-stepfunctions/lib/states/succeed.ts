@@ -7,14 +7,14 @@ import { State } from './state';
  * Properties for defining a Succeed state
  */
 export interface SucceedProps {
-    /**
+  /**
      * An optional description for this state
      *
      * @default No comment
      */
-    readonly comment?: string;
+  readonly comment?: string;
 
-    /**
+  /**
      * JSONPath expression to select part of the state to be the input to this state.
      *
      * May also be the special value DISCARD, which will cause the effective
@@ -22,9 +22,9 @@ export interface SucceedProps {
      *
      * @default $
      */
-    readonly inputPath?: string;
+  readonly inputPath?: string;
 
-    /**
+  /**
      * JSONPath expression to select part of the state to be the output to this state.
      *
      * May also be the special value DISCARD, which will cause the effective
@@ -32,7 +32,7 @@ export interface SucceedProps {
      *
      * @default $
      */
-    readonly outputPath?: string;
+  readonly outputPath?: string;
 
 }
 
@@ -42,20 +42,20 @@ export interface SucceedProps {
  * Reaching a Succeed state terminates the state execution in success.
  */
 export class Succeed extends State {
-    public readonly endStates: INextable[] = [];
+  public readonly endStates: INextable[] = [];
 
-    constructor(scope: cdk.Construct, id: string, props: SucceedProps = {}) {
-        super(scope, id, props);
-    }
+  public constructor(scope: cdk.Construct, id: string, props: SucceedProps = {}) {
+    super(scope, id, props);
+  }
 
-    /**
+  /**
      * Return the Amazon States Language object for this state
      */
-    public toStateJson(): object {
-        return {
-            Type: StateType.SUCCEED,
-            Comment: this.comment,
-            ...this.renderInputOutput(),
-        };
-    }
+  public toStateJson(): object {
+    return {
+      Type: StateType.SUCCEED,
+      Comment: this.comment,
+      ...this.renderInputOutput(),
+    };
+  }
 }

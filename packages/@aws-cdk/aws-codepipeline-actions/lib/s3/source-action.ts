@@ -82,7 +82,7 @@ export interface S3SourceActionProps extends codepipeline.CommonAwsActionProps {
 export class S3SourceAction extends Action {
   private readonly props: S3SourceActionProps;
 
-  constructor(props: S3SourceActionProps) {
+  public constructor(props: S3SourceActionProps) {
     super({
       ...props,
       resource: props.bucket,
@@ -108,7 +108,7 @@ export class S3SourceAction extends Action {
   }
 
   protected bound(_scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
-      codepipeline.ActionConfig {
+  codepipeline.ActionConfig {
     if (this.props.trigger === S3Trigger.EVENTS) {
       const id = stage.pipeline.node.uniqueId + 'SourceEventRule' + this.props.bucketKey;
       if (this.props.bucket.node.tryFindChild(id)) {

@@ -66,7 +66,7 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
   /**
    * Constructs a new instance of the QueueProcessingFargateService class.
    */
-  constructor(scope: Construct, id: string, props: QueueProcessingFargateServiceProps) {
+  public constructor(scope: Construct, id: string, props: QueueProcessingFargateServiceProps) {
     super(scope, id, props);
 
     // Create a Task Definition for the container to start

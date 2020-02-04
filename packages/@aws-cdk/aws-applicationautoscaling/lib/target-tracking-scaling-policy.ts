@@ -110,13 +110,13 @@ export class TargetTrackingScalingPolicy extends cdk.Construct {
    */
   public readonly scalingPolicyArn: string;
 
-  constructor(scope: cdk.Construct, id: string, props: TargetTrackingScalingPolicyProps) {
+  public constructor(scope: cdk.Construct, id: string, props: TargetTrackingScalingPolicyProps) {
     if ((props.customMetric === undefined) === (props.predefinedMetric === undefined)) {
-      throw new Error(`Exactly one of 'customMetric' or 'predefinedMetric' must be specified.`);
+      throw new Error('Exactly one of \'customMetric\' or \'predefinedMetric\' must be specified.');
     }
 
     if (props.customMetric && !props.customMetric.toMetricConfig().metricStat) {
-      throw new Error(`Only direct metrics are supported for Target Tracking. Use Step Scaling or supply a Metric object.`);
+      throw new Error('Only direct metrics are supported for Target Tracking. Use Step Scaling or supply a Metric object.');
     }
 
     super(scope, id);
@@ -147,6 +147,7 @@ function renderCustomMetric(metric?: cloudwatch.IMetric): CfnScalingPolicy.Custo
   const c = metric.toMetricConfig().metricStat!;
 
   if (c.statistic.startsWith('p')) {
+    // eslint-disable-next-line max-len
     throw new Error(`Cannot use statistic '${c.statistic}' for Target Tracking: only 'Average', 'Minimum', 'Maximum', 'SampleCount', and 'Sum' are supported.`);
   }
 

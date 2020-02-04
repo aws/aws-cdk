@@ -3,15 +3,15 @@ import * as cdk from '@aws-cdk/core';
 import * as codebuild from '../lib';
 
 class TestStack extends cdk.Stack {
-  constructor(scope: cdk.App, id: string) {
+  public constructor(scope: cdk.App, id: string) {
     super(scope, id);
 
-    const secrets = secretsmanager.Secret.fromSecretArn(this, "MySecrets",
+    const secrets = secretsmanager.Secret.fromSecretArn(this, 'MySecrets',
       `arn:aws:secretsmanager:${this.region}:${this.account}:secret:my-secrets-123456`);
 
     new codebuild.Project(this, 'MyProject', {
       buildSpec: codebuild.BuildSpec.fromObject({
-        version: "0.2",
+        version: '0.2',
         phases: {
           build: {
             commands: [ 'ls' ]

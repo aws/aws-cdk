@@ -10,7 +10,7 @@ import { dropUndefined } from './object';
 export class DropEmptyObjectAtTheEndOfAnArray implements cdk.IResolvable, cdk.IPostProcessor {
   public readonly creationStack: string[];
 
-  constructor(private readonly value: any) {
+  public constructor(private readonly value: any) {
     this.creationStack = cdk.captureStackTrace();
   }
 

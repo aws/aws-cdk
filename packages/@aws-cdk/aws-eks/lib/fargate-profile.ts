@@ -1,7 +1,7 @@
 import { CustomResource } from '@aws-cdk/aws-cloudformation';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct, ITaggable, Lazy, TagManager, TagType } from "@aws-cdk/core";
+import { Construct, ITaggable, Lazy, TagManager, TagType } from '@aws-cdk/core';
 import { Cluster } from './cluster';
 import { FARGATE_PROFILE_RESOURCE_TYPE } from './cluster-resource-handler/consts';
 import { ClusterResourceProvider } from './cluster-resource-provider';
@@ -130,7 +130,7 @@ export class FargateProfile extends Construct implements ITaggable {
    */
   public readonly tags: TagManager;
 
-  constructor(scope: Construct, id: string, props: FargateProfileProps) {
+  public constructor(scope: Construct, id: string, props: FargateProfileProps) {
     super(scope, id);
 
     const provider = ClusterResourceProvider.getOrCreate(this);
@@ -147,11 +147,11 @@ export class FargateProfile extends Construct implements ITaggable {
     }
 
     if (props.selectors.length < 1) {
-      throw new Error(`Fargate profile requires at least one selector`);
+      throw new Error('Fargate profile requires at least one selector');
     }
 
     if (props.selectors.length > 5) {
-      throw new Error(`Fargate profile supports up to five selectors`);
+      throw new Error('Fargate profile supports up to five selectors');
     }
 
     this.tags = new TagManager(TagType.MAP, 'AWS::EKS::FargateProfile');

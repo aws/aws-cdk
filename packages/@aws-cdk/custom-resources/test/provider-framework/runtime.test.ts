@@ -1,18 +1,17 @@
-// tslint:disable: no-console
-// tslint:disable: max-line-length
-/* eslint-disable @typescript-eslint/no-require-imports */
+/* eslint-disable @typescript-eslint/no-require-imports,max-len,no-console */
 import cfnResponse = require('../../lib/provider-framework/runtime/cfn-response');
 import framework = require('../../lib/provider-framework/runtime/framework');
 import outbound = require('../../lib/provider-framework/runtime/outbound');
 import mocks = require('./mocks');
 /* eslint-enable */
 
+// eslint-disable-next-line no-console
 console.log = jest.fn();
 
 cfnResponse.includeStackTraces = false;
 
 const MOCK_PHYSICAL_ID = 'mock-physical-resource-id';
-const MOCK_PROPS = { Name: "Value", List: ["1", "2", "3"], ServiceToken: 'bla' };
+const MOCK_PROPS = { Name: 'Value', List: ['1', '2', '3'], ServiceToken: 'bla' };
 const MOCK_ATTRS = { MyAttribute: 'my-mock-attribute' };
 
 outbound.httpRequest = mocks.httpRequestMock;
@@ -198,7 +197,7 @@ test('isComplete always returns "false" and then a timeout occurs', async () => 
   });
 
   // THEN
-  expectCloudFormationFailed(`Operation timed out`);
+  expectCloudFormationFailed('Operation timed out');
 });
 
 test('isComplete: "Data" is not allowed if InComplete is "False"', async () => {
@@ -212,7 +211,7 @@ test('isComplete: "Data" is not allowed if InComplete is "False"', async () => {
     PhysicalResourceId: MOCK_PHYSICAL_ID
   });
 
-  expectCloudFormationFailed(`"Data" is not allowed if "IsComplete" is "False"`);
+  expectCloudFormationFailed('"Data" is not allowed if "IsComplete" is "False"');
 });
 
 test('if there is no user-defined "isComplete", the waiter will not be triggered or needed', async () => {
@@ -238,7 +237,7 @@ test('fails if user handler returns a non-object response', async () => {
   await simulateEvent({ RequestType: 'Create' });
 
   // THEN
-  expectCloudFormationFailed('return values from user-handlers must be JSON objects. got: \"string\"');
+  expectCloudFormationFailed('return values from user-handlers must be JSON objects. got: "string"');
 });
 
 describe('if CREATE fails, the subsequent DELETE will be ignored', () => {
@@ -334,6 +333,7 @@ function expectCloudFormationFailed(expectedReason: string, resp?: Partial<AWSLa
 
 function expectCloudFormationSuccess(resp?: Partial<AWSLambda.CloudFormationCustomResourceResponse>) {
   if (mocks.cfnResponse.Status !== 'SUCCESS') {
+    // eslint-disable-next-line no-console
     console.error(mocks.cfnResponse.Reason || '<NO REASON>');
   }
 

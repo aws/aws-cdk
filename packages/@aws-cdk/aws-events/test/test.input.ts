@@ -21,7 +21,7 @@ export = {
       expect(stack).to(haveResourceLike('AWS::Events::Rule', {
         Targets: [
           {
-            Input: "{\"SomeObject\":\"withAValue\"}"
+            Input: '{"SomeObject":"withAValue"}'
           }
         ]
       }));
@@ -86,14 +86,14 @@ export = {
               'Fn::Join': [
                 '',
                 [
-                  '{\"userArn\":\"',
+                  '{"userArn":"',
                   {
                     'Fn::GetAtt': [
                       'User00B015A1',
                       'Arn'
                     ]
                   },
-                  '\"}'
+                  '"}'
                 ]
               ]
             }
@@ -119,7 +119,7 @@ export = {
       expect(stack).to(haveResourceLike('AWS::Events::Rule', {
         Targets: [
           {
-            Input: "\"I have\"\n\"multiple lines\""
+            Input: '"I have"\n"multiple lines"'
           }
         ]
       }));
@@ -135,13 +135,13 @@ export = {
       });
 
       // WHEN
-      rule.addTarget(new SomeTarget(RuleTargetInput.fromMultilineText('this is not\\na real newline'))),
+      rule.addTarget(new SomeTarget(RuleTargetInput.fromMultilineText('this is not\\na real newline')));
 
       // THEN
       expect(stack).to(haveResourceLike('AWS::Events::Rule', {
         Targets: [
           {
-            Input: "\"this is not\\\\na real newline\""
+            Input: '"this is not\\\\na real newline"'
           }
         ]
       }));
@@ -165,7 +165,7 @@ export = {
       expect(stack).to(haveResourceLike('AWS::Events::Rule', {
         Targets: [
           {
-            Input: "\"hello world\""
+            Input: '"hello world"'
           }
         ]
       }));

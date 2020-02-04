@@ -1,16 +1,16 @@
 import * as reflect from 'jsii-reflect';
-import { TypeSystem } from "jsii-reflect";
-import { getDocTag } from "./util";
+import { TypeSystem } from 'jsii-reflect';
+import { getDocTag } from './util';
 
-const CORE_MODULE = "@aws-cdk/core";
+const CORE_MODULE = '@aws-cdk/core';
 enum CoreTypesFqn {
-  CfnResource = "@aws-cdk/core.CfnResource",
-  Construct = "@aws-cdk/core.Construct",
-  ConstructInterface = "@aws-cdk/core.IConstruct",
-  Resource = "@aws-cdk/core.Resource",
-  ResourceInterface = "@aws-cdk/core.IResource",
-  ResolvableInterface = "@aws-cdk/core.IResolvable",
-  PhysicalName = "@aws-cdk/core.PhysicalName"
+  CfnResource = '@aws-cdk/core.CfnResource',
+  Construct = '@aws-cdk/core.Construct',
+  ConstructInterface = '@aws-cdk/core.IConstruct',
+  Resource = '@aws-cdk/core.Resource',
+  ResourceInterface = '@aws-cdk/core.IResource',
+  ResolvableInterface = '@aws-cdk/core.IResolvable',
+  PhysicalName = '@aws-cdk/core.PhysicalName'
 }
 
 export class CoreTypes {
@@ -44,7 +44,7 @@ export class CoreTypes {
       return false;
     }
 
-    if (!c.name.startsWith("Cfn")) {
+    if (!c.name.startsWith('Cfn')) {
       return false;
     }
 
@@ -75,7 +75,7 @@ export class CoreTypes {
    */
   public static isResourceClass(classType: reflect.ClassType) {
     const baseResource = classType.system.findClass(CoreTypesFqn.Resource);
-    return classType.extends(baseResource) || getDocTag(classType, "resource");
+    return classType.extends(baseResource) || getDocTag(classType, 'resource');
   }
 
   /**
@@ -126,7 +126,7 @@ export class CoreTypes {
 
   private readonly sys: TypeSystem;
 
-  constructor(sys: reflect.TypeSystem) {
+  public constructor(sys: reflect.TypeSystem) {
     this.sys = sys;
     if (!sys.includesAssembly(CORE_MODULE)) {
       // disable-all-checks

@@ -8,6 +8,6 @@ export class ArbitraryCompleteIntervals extends fc.Arbitrary<scalingcommon.Compl
   }
 }
 
-export function arbitrary_complete_intervals() {
+export function arbitraryCompleteIntervals() {
   return new ArbitraryCompleteIntervals();
 }

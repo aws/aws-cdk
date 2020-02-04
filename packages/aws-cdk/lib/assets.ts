@@ -20,7 +20,7 @@ export async function prepareAssets(stack: cxapi.CloudFormationStackArtifact, to
 
   if (!toolkitInfo) {
     // eslint-disable-next-line max-len
-    throw new Error(`This stack uses assets, so the toolkit stack must be deployed to the environment (Run "${colors.blue("cdk bootstrap " + stack.environment!.name)}")`);
+    throw new Error(`This stack uses assets, so the toolkit stack must be deployed to the environment (Run "${colors.blue('cdk bootstrap ' + stack.environment!.name)}")`);
   }
 
   let params = new Array<CloudFormation.Parameter>();
@@ -36,7 +36,7 @@ export async function prepareAssets(stack: cxapi.CloudFormationStackArtifact, to
     }
 
     if (!stack.assembly) {
-      throw new Error(`Unexpected: stack assembly is required in order to find assets in assemly directory`);
+      throw new Error('Unexpected: stack assembly is required in order to find assets in assemly directory');
     }
 
     const assemblyDir = stack.assembly.directory;
@@ -62,10 +62,10 @@ async function prepareAsset(assemblyDir: string, asset: cxapi.AssetMetadataEntry
 }
 
 async function prepareZipAsset(
-    assemblyDir: string,
-    asset: cxapi.FileAssetMetadataEntry,
-    toolkitInfo: ToolkitInfo,
-    reuse: boolean): Promise<CloudFormation.Parameter[]> {
+  assemblyDir: string,
+  asset: cxapi.FileAssetMetadataEntry,
+  toolkitInfo: ToolkitInfo,
+  reuse: boolean): Promise<CloudFormation.Parameter[]> {
 
   if (reuse) {
     return await prepareFileAsset(assemblyDir, asset, toolkitInfo, reuse);
@@ -96,12 +96,12 @@ async function prepareZipAsset(
  * @param contentType Content-type to use when uploading to S3 (none will be specified by default)
  */
 async function prepareFileAsset(
-    assemblyDir: string,
-    asset: cxapi.FileAssetMetadataEntry,
-    toolkitInfo: ToolkitInfo,
-    reuse: boolean,
-    filePath?: string,
-    contentType?: string): Promise<CloudFormation.Parameter[]> {
+  assemblyDir: string,
+  asset: cxapi.FileAssetMetadataEntry,
+  toolkitInfo: ToolkitInfo,
+  reuse: boolean,
+  filePath?: string,
+  contentType?: string): Promise<CloudFormation.Parameter[]> {
 
   if (reuse) {
     return [

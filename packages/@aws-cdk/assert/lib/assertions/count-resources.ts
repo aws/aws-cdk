@@ -1,5 +1,5 @@
-import { Assertion } from "../assertion";
-import { StackInspector } from "../inspector";
+import { Assertion } from '../assertion';
+import { StackInspector } from '../inspector';
 
 /**
  * An assertion to check whether a resource of a given type and with the given properties exists, disregarding properties
@@ -11,8 +11,8 @@ export function countResources(resourceType: string, count = 1): Assertion<Stack
 class CountResourcesAssertion extends Assertion<StackInspector> {
   private inspected: number = 0;
 
-  constructor(private readonly resourceType: string,
-              private readonly count: number) {
+  public constructor(private readonly resourceType: string,
+                     private readonly count: number) {
     super();
   }
 

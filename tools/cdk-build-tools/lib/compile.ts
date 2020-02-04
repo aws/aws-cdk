@@ -18,15 +18,14 @@ export async function compileCurrentPackage(timers: Timers, options: CDKBuildOpt
   // Always call linters
   await shell([
     compilers.eslint || require.resolve('eslint/bin/eslint'),
-    `--config=${path.resolve(__dirname, '..', 'config', 'eslintrc.yml')}`,
+    `--config=${path.resolve(__dirname, '..', '..', '..', '.eslintrc.yml')}`,
     '.',
-    '--ext=.js,.ts',
+    '--ext=.js,.ts,.jsx,.tsx',
     '--ignore-path=.gitignore',
     '--no-eslintrc', // ignore local .eslintrc files
     `--resolve-plugins-relative-to=${__dirname}`,
-    ...options.eslint?.["ignore-pattern"]?.map(pattern => `--ignore-pattern=${pattern}`) || []
+    ...options.eslint?.['ignore-pattern']?.map(pattern => `--ignore-pattern=${pattern}`) || []
   ], { timers });
-  await shell([compilers.tslint || require.resolve('tslint/bin/tslint'), '--project', '.'], { timers });
   await shell(['pkglint'], { timers });
   await shell([ path.join(__dirname, '..', 'bin', 'cdk-awslint') ], { timers });
 }

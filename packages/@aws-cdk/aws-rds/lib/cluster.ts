@@ -91,7 +91,7 @@ export interface DatabaseClusterProps {
    *
    * @default false
    */
-  readonly storageEncrypted?: boolean
+  readonly storageEncrypted?: boolean;
 
   /**
    * The KMS key for storage encryption. If specified `storageEncrypted`
@@ -125,7 +125,7 @@ export interface DatabaseClusterProps {
    *
    * @default - Retain cluster.
    */
-  readonly removalPolicy?: RemovalPolicy
+  readonly removalPolicy?: RemovalPolicy;
 
   /**
    * The interval, in seconds, between points when Amazon RDS collects enhanced
@@ -272,7 +272,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
    */
   private readonly vpcSubnets?: ec2.SubnetSelection;
 
-  constructor(scope: Construct, id: string, props: DatabaseClusterProps) {
+  public constructor(scope: Construct, id: string, props: DatabaseClusterProps) {
     super(scope, id);
 
     this.vpc = props.instanceProps.vpc;
@@ -358,8 +358,8 @@ export class DatabaseCluster extends DatabaseClusterBase {
 
     let monitoringRole;
     if (props.monitoringInterval && props.monitoringInterval.toSeconds()) {
-      monitoringRole = props.monitoringRole || new Role(this, "MonitoringRole", {
-        assumedBy: new ServicePrincipal("monitoring.rds.amazonaws.com"),
+      monitoringRole = props.monitoringRole || new Role(this, 'MonitoringRole', {
+        assumedBy: new ServicePrincipal('monitoring.rds.amazonaws.com'),
         managedPolicies: [
           ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonRDSEnhancedMonitoringRole')
         ]

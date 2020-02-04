@@ -1,4 +1,4 @@
-import { IsCompleteResponse, OnEventResponse } from "@aws-cdk/custom-resources/lib/provider-framework/types";
+import { IsCompleteResponse, OnEventResponse } from '@aws-cdk/custom-resources/lib/provider-framework/types';
 
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as aws from 'aws-sdk';
@@ -10,7 +10,7 @@ export abstract class ResourceHandler {
   protected readonly physicalResourceId?: string;
   protected readonly event: AWSLambda.CloudFormationCustomResourceEvent;
 
-  constructor(protected readonly eks: EksClient, event: AWSLambda.CloudFormationCustomResourceEvent) {
+  public constructor(protected readonly eks: EksClient, event: AWSLambda.CloudFormationCustomResourceEvent) {
     this.requestType = event.RequestType;
     this.requestId = event.RequestId;
     this.logicalResourceId = event.LogicalResourceId;
@@ -19,7 +19,7 @@ export abstract class ResourceHandler {
 
     const roleToAssume = event.ResourceProperties.AssumeRoleArn;
     if (!roleToAssume) {
-      throw new Error(`AssumeRoleArn must be provided`);
+      throw new Error('AssumeRoleArn must be provided');
     }
 
     eks.configureAssumeRole({
@@ -49,7 +49,7 @@ export abstract class ResourceHandler {
   }
 
   protected log(x: any) {
-    // tslint:disable-next-line: no-console
+    // eslint-disable-next-line no-console
     console.log(JSON.stringify(x, undefined, 2));
   }
 

@@ -1,6 +1,6 @@
-import { IFragmentConcatenator, IResolvable } from "../resolvable";
-import { TokenizedStringFragments } from "../string-fragments";
-import { isResolvableObject } from "../token";
+import { IFragmentConcatenator, IResolvable } from '../resolvable';
+import { TokenizedStringFragments } from '../string-fragments';
+import { isResolvableObject } from '../token';
 
 // Details for encoding and decoding Tokens into native types; should not be exported
 
@@ -35,7 +35,7 @@ export class TokenString {
     return new TokenString(s, LIST_TOKEN_REGEX);
   }
 
-  constructor(private readonly str: string, private readonly re: RegExp) {
+  public constructor(private readonly str: string, private readonly re: RegExp) {
   }
 
   /**
@@ -78,7 +78,7 @@ export class TokenString {
  * Quote a string for use in a regex
  */
 export function regexQuote(s: string) {
-  return s.replace(/[.?*+^$[\]\\(){}|-]/g, "\\$&");
+  return s.replace(/[.?*+^$[\]\\(){}|-]/g, '\\$&');
 }
 
 /**

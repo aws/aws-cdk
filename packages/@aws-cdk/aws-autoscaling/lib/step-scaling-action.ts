@@ -67,7 +67,7 @@ export class StepScalingAction extends cdk.Construct {
 
   private readonly adjustments = new Array<CfnScalingPolicy.StepAdjustmentProperty>();
 
-  constructor(scope: cdk.Construct, id: string, props: StepScalingActionProps) {
+  public constructor(scope: cdk.Construct, id: string, props: StepScalingActionProps) {
     super(scope, id);
 
     const resource = new CfnScalingPolicy(this, 'Resource', {

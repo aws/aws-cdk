@@ -88,7 +88,7 @@ export class ScheduledEc2Task extends ScheduledTaskBase {
   /**
    * Constructs a new instance of the ScheduledEc2Task class.
    */
-  constructor(scope: Construct, id: string, props: ScheduledEc2TaskProps) {
+  public constructor(scope: Construct, id: string, props: ScheduledEc2TaskProps) {
     super(scope, id, props);
 
     if (props.scheduledEc2TaskDefinitionOptions && props.scheduledEc2TaskImageOptions) {

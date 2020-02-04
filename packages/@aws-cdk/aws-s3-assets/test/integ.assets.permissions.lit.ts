@@ -4,7 +4,7 @@ import * as path from 'path';
 import * as assets from '../lib';
 
 class TestStack extends cdk.Stack {
-  constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
+  public constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
     const asset = new assets.Asset(this, 'MyFile', {

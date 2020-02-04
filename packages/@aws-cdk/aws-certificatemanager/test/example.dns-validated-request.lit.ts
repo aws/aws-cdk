@@ -3,7 +3,7 @@ import { App, Construct, Stack } from '@aws-cdk/core';
 import * as certmgr from '../lib';
 
 class CertStack extends Stack {
-  constructor(scope: Construct, id: string) {
+  public constructor(scope: Construct, id: string) {
     super(scope, id);
     /// !show
     const hostedZone = route53.HostedZone.fromLookup(this, 'HostedZone', {
@@ -12,8 +12,8 @@ class CertStack extends Stack {
     });
 
     const certificate = new certmgr.DnsValidatedCertificate(this, 'TestCertificate', {
-        domainName: 'test.example.com',
-        hostedZone,
+      domainName: 'test.example.com',
+      hostedZone,
     });
     /// !hide
 

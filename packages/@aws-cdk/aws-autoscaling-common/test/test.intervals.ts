@@ -2,7 +2,7 @@ import * as fc from 'fast-check';
 import { Test } from 'nodeunit';
 import * as appscaling from '../lib';
 import { findAlarmThresholds, normalizeIntervals } from '../lib/interval-utils';
-import { arbitrary_complete_intervals } from './util';
+import { arbitraryCompleteIntervals } from './util';
 
 export = {
   'test bounds propagation'(test: Test) {
@@ -32,8 +32,8 @@ export = {
 
   'lower alarm index is lower than higher alarm index'(test: Test) {
     fc.assert(fc.property(
-      arbitrary_complete_intervals(),
-      (intervals) => {
+      arbitraryCompleteIntervals(),
+      intervals => {
         const alarms = findAlarmThresholds(intervals);
 
         return (alarms.lowerAlarmIntervalIndex === undefined
@@ -47,8 +47,8 @@ export = {
 
   'never pick undefined intervals for relative alarms'(test: Test) {
     fc.assert(fc.property(
-      arbitrary_complete_intervals(),
-      (intervals) => {
+      arbitraryCompleteIntervals(),
+      intervals => {
         const alarms = findAlarmThresholds(intervals);
 
         return (alarms.lowerAlarmIntervalIndex === undefined || intervals[alarms.lowerAlarmIntervalIndex].change !== undefined)
@@ -61,8 +61,8 @@ export = {
 
   'pick intervals on either side of the undefined interval, if present'(test: Test) {
     fc.assert(fc.property(
-      arbitrary_complete_intervals(),
-      (intervals) => {
+      arbitraryCompleteIntervals(),
+      intervals => {
         // There must be an undefined interval and it must not be at the edges
         const i = intervals.findIndex(x => x.change === undefined);
         fc.pre(i > 0 && i < intervals.length - 1);
@@ -77,8 +77,8 @@ export = {
 
   'no picking upper bound infinity for lower alarm'(test: Test) {
     fc.assert(fc.property(
-      arbitrary_complete_intervals(),
-      (intervals) => {
+      arbitraryCompleteIntervals(),
+      intervals => {
         const alarms = findAlarmThresholds(intervals);
         fc.pre(alarms.lowerAlarmIntervalIndex !== undefined);
 
@@ -91,8 +91,8 @@ export = {
 
   'no picking lower bound 0 for upper alarm'(test: Test) {
     fc.assert(fc.property(
-      arbitrary_complete_intervals(),
-      (intervals) => {
+      arbitraryCompleteIntervals(),
+      intervals => {
         const alarms = findAlarmThresholds(intervals);
         fc.pre(alarms.upperAlarmIntervalIndex !== undefined);
 

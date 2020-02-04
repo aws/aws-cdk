@@ -1,7 +1,6 @@
-import { ResourceHandler } from "./common";
-
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as aws from 'aws-sdk';
+import { ResourceHandler } from './common';
 
 const MAX_NAME_LEN = 63;
 
@@ -19,7 +18,7 @@ export class FargateProfileResourceHandler extends ResourceHandler {
     this.log({ createFargateProfileResponse });
 
     if (!createFargateProfileResponse.fargateProfile) {
-      throw new Error(`invalid CreateFargateProfile response`);
+      throw new Error('invalid CreateFargateProfile response');
     }
 
     return {
@@ -32,7 +31,7 @@ export class FargateProfileResourceHandler extends ResourceHandler {
 
   protected async onDelete() {
     if (!this.physicalResourceId) {
-      throw new Error(`Cannot delete a profile without a physical id`);
+      throw new Error('Cannot delete a profile without a physical id');
     }
 
     const deleteFargateProfile: aws.EKS.DeleteFargateProfileRequest = {
@@ -87,7 +86,7 @@ export class FargateProfileResourceHandler extends ResourceHandler {
    */
   private async queryStatus(): Promise<aws.EKS.FargateProfileStatus | 'NOT_FOUND' | undefined> {
     if (!this.physicalResourceId) {
-      throw new Error(`Unable to determine status for fargate profile without a resource name`);
+      throw new Error('Unable to determine status for fargate profile without a resource name');
     }
 
     const describeFargateProfile: aws.EKS.DescribeFargateProfileRequest = {

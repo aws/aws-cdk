@@ -278,7 +278,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
    */
   public static fromStringParameterAttributes(scope: Construct, id: string, attrs: StringParameterAttributes): IStringParameter {
     if (!attrs.parameterName) {
-      throw new Error(`parameterName cannot be an empty string`);
+      throw new Error('parameterName cannot be an empty string');
     }
 
     const type = attrs.type || ParameterType.STRING;
@@ -378,7 +378,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
   public readonly parameterType: string;
   public readonly stringValue: string;
 
-  constructor(scope: Construct, id: string, props: StringParameterProps) {
+  public constructor(scope: Construct, id: string, props: StringParameterProps) {
     super(scope, id, {
       physicalName: props.parameterName,
     });
@@ -432,7 +432,7 @@ export class StringListParameter extends ParameterBase implements IStringListPar
   public readonly parameterType: string;
   public readonly stringListValue: string[];
 
-  constructor(scope: Construct, id: string, props: StringListParameterProps) {
+  public constructor(scope: Construct, id: string, props: StringListParameterProps) {
     super(scope, id, {
       physicalName: props.parameterName,
     });

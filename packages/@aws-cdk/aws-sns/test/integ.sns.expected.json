@@ -1,13 +1,5 @@
 {
   "Resources": {
-    "MyTopic86869434": {
-      "Type": "AWS::SNS::Topic",
-      "Properties": {
-        "DisplayName": "fooDisplayName",
-        "TopicName": "fooTopic",
-        "KmsMasterKeyId": { "Ref":"CustomKey1E6D0D07" }
-      }
-    },
     "CustomKey1E6D0D07": {
       "Type": "AWS::KMS::Key",
       "Properties": {
@@ -56,6 +48,16 @@
       },
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"
+    },
+    "MyTopic86869434": {
+      "Type": "AWS::SNS::Topic",
+      "Properties": {
+        "DisplayName": "fooDisplayName",
+        "KmsMasterKeyId": {
+          "Ref": "CustomKey1E6D0D07"
+        },
+        "TopicName": "fooTopic"
+      }
     }
   }
 }

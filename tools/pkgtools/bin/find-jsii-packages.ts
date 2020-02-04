@@ -57,7 +57,7 @@ function enumeratePackages(root: string, pred: PackagePredicate): JSIIPackage[] 
   const seen = new Set<string>();
 
   function recurse(directory: string, includeDevDependencies: boolean) {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    // eslint-disable-next-line @typescript-eslint/no-require-imports,@typescript-eslint/no-var-requires
     const packageJson = require(path.join(directory, '/package.json'));
 
     // Make sure we don't keep on doing the same packages over and over.
@@ -68,7 +68,7 @@ function enumeratePackages(root: string, pred: PackagePredicate): JSIIPackage[] 
     debug(`Checking directory: ${directory}`);
 
     if (pred(packageJson)) {
-      debug(`Matches predicate.`);
+      debug('Matches predicate.');
       ret.push({ directory, packageJson });
     }
 

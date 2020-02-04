@@ -215,7 +215,7 @@ export = {
       protected allocateLogicalId(element: CfnElement): string {
         if (element.node.id === 'A') { return 'LogicalIdOfA'; }
         if (element.node.id === 'B') { return 'LogicalIdOfB'; }
-        throw new Error(`Invalid element ID`);
+        throw new Error('Invalid element ID');
       }
     }
 

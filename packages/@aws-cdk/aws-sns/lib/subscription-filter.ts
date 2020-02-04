@@ -142,5 +142,5 @@ export class SubscriptionFilter {
     return new SubscriptionFilter([{ exists: true }]);
   }
 
-  constructor(public readonly conditions: any[] = []) {}
+  public constructor(public readonly conditions: any[] = []) {}
 }

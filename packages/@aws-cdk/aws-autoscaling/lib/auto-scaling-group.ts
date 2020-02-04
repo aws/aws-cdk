@@ -416,7 +416,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   private readonly loadBalancerNames: string[] = [];
   private readonly targetGroupArns: string[] = [];
 
-  constructor(scope: Construct, id: string, props: AutoScalingGroupProps) {
+  public constructor(scope: Construct, id: string, props: AutoScalingGroupProps) {
     super(scope, id);
 
     this.securityGroup = new ec2.SecurityGroup(this, 'InstanceSecurityGroup', {
@@ -488,7 +488,8 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     });
 
     if (desiredCapacity !== undefined) {
-      this.node.addWarning(`desiredCapacity has been configured. Be aware this will reset the size of your AutoScalingGroup on every deployment. See https://github.com/aws/aws-cdk/issues/5215`);
+      // eslint-disable-next-line max-len
+      this.node.addWarning('desiredCapacity has been configured. Be aware this will reset the size of your AutoScalingGroup on every deployment. See https://github.com/aws/aws-cdk/issues/5215');
     }
 
     const { subnetIds, hasPublic } = props.vpc.selectSubnets(props.vpcSubnets);
@@ -504,10 +505,10 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
         {
           topicArn: props.notificationsTopic.topicArn,
           notificationTypes: [
-            "autoscaling:EC2_INSTANCE_LAUNCH",
-            "autoscaling:EC2_INSTANCE_LAUNCH_ERROR",
-            "autoscaling:EC2_INSTANCE_TERMINATE",
-            "autoscaling:EC2_INSTANCE_TERMINATE_ERROR"
+            'autoscaling:EC2_INSTANCE_LAUNCH',
+            'autoscaling:EC2_INSTANCE_LAUNCH_ERROR',
+            'autoscaling:EC2_INSTANCE_TERMINATE',
+            'autoscaling:EC2_INSTANCE_TERMINATE_ERROR'
           ],
         }
       ],

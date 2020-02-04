@@ -50,9 +50,9 @@ export = {
     expect(stack).to(matchTemplate({
       Resources: {
         LogGroupF5B46931: {
-          Type: "AWS::Logs::LogGroup",
-          DeletionPolicy: "Retain",
-          UpdateReplacePolicy: "Retain"
+          Type: 'AWS::Logs::LogGroup',
+          DeletionPolicy: 'Retain',
+          UpdateReplacePolicy: 'Retain'
         }
       }
     }));
@@ -76,9 +76,9 @@ export = {
     expect(stack).to(matchTemplate({
       Resources: {
         LogGroupF5B46931: {
-          Type: "AWS::Logs::LogGroup",
-          DeletionPolicy: "Retain",
-          UpdateReplacePolicy: "Retain"
+          Type: 'AWS::Logs::LogGroup',
+          DeletionPolicy: 'Retain',
+          UpdateReplacePolicy: 'Retain'
         }
       }
     }));
@@ -100,9 +100,9 @@ export = {
     expect(stack).to(matchTemplate({
       Resources: {
         LogGroupF5B46931: {
-          Type: "AWS::Logs::LogGroup",
-          DeletionPolicy: "Delete",
-          UpdateReplacePolicy: "Delete"
+          Type: 'AWS::Logs::LogGroup',
+          DeletionPolicy: 'Delete',
+          UpdateReplacePolicy: 'Delete'
         }
       }
     }));
@@ -122,7 +122,7 @@ export = {
     test.deepEqual(imported.logGroupName, 'my-log-group');
     test.deepEqual(imported.logGroupArn, 'arn:aws:logs:us-east-1:123456789012:log-group:my-log-group');
     expect(stack2).to(haveResource('AWS::Logs::LogStream', {
-      LogGroupName: "my-log-group"
+      LogGroupName: 'my-log-group'
     }));
     test.done();
   },
@@ -155,13 +155,13 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::Logs::MetricFilter', {
-      FilterPattern: "{ $.myField = \"*\" }",
-      LogGroupName: { Ref: "LogGroupF5B46931" },
+      FilterPattern: '{ $.myField = "*" }',
+      LogGroupName: { Ref: 'LogGroupF5B46931' },
       MetricTransformations: [
         {
-        MetricName: "Field",
-        MetricNamespace: "MyService",
-        MetricValue: "$.myField"
+          MetricName: 'Field',
+          MetricNamespace: 'MyService',
+          MetricValue: '$.myField'
         }
       ]
     }));
@@ -181,12 +181,12 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::Logs::MetricFilter', {
-      FilterPattern: "{ $.myField = \"*\" }",
+      FilterPattern: '{ $.myField = "*" }',
       MetricTransformations: [
         {
-          MetricName: "Field",
-          MetricNamespace: "MyNamespace/MyService",
-          MetricValue: "$.myField"
+          MetricName: 'Field',
+          MetricNamespace: 'MyNamespace/MyService',
+          MetricValue: '$.myField'
         }
       ]
     }));
@@ -210,12 +210,12 @@ export = {
       PolicyDocument: {
         Statement: [
           {
-            Action: [ "logs:CreateLogStream", "logs:PutLogEvents" ],
-            Effect: "Allow",
-            Resource: { "Fn::GetAtt": [ "LogGroupF5B46931", "Arn" ] }
+            Action: [ 'logs:CreateLogStream', 'logs:PutLogEvents' ],
+            Effect: 'Allow',
+            Resource: { 'Fn::GetAtt': [ 'LogGroupF5B46931', 'Arn' ] }
           }
         ],
-        Version: "2012-10-17"
+        Version: '2012-10-17'
       }
     }));
 

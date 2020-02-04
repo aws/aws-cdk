@@ -79,7 +79,7 @@ export class CfnResource extends CfnRefElement {
    * Creates a resource construct.
    * @param cfnResourceType The CloudFormation type of this resource (e.g. AWS::DynamoDB::Table)
    */
-  constructor(scope: Construct, id: string, props: CfnResourceProps) {
+  public constructor(scope: Construct, id: string, props: CfnResourceProps) {
     super(scope, id);
 
     if (!props.type) {

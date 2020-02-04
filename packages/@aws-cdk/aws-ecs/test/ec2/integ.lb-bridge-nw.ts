@@ -1,4 +1,3 @@
-
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as cdk from '@aws-cdk/core';
@@ -21,7 +20,7 @@ const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
 });
 
 const container = taskDefinition.addContainer('web', {
-  image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
   memoryLimitMiB: 256,
 });
 container.addPortMappings({
@@ -30,7 +29,7 @@ container.addPortMappings({
   protocol: ecs.Protocol.TCP
 });
 
-const service = new ecs.Ec2Service(stack, "Service", {
+const service = new ecs.Ec2Service(stack, 'Service', {
   cluster,
   taskDefinition,
 });

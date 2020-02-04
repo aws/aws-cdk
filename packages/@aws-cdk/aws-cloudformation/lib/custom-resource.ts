@@ -155,7 +155,7 @@ export interface CustomResourceProps {
 export class CustomResource extends Resource {
   private readonly resource: CfnResource;
 
-  constructor(scope: Construct, id: string, props: CustomResourceProps) {
+  public constructor(scope: Construct, id: string, props: CustomResourceProps) {
     super(scope, id);
 
     const type = renderResourceType(props.resourceType);

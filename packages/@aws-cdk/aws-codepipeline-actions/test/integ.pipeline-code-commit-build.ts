@@ -4,7 +4,7 @@ import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as cdk from '@aws-cdk/core';
 import * as cpactions from '../lib';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quotes */
 
 const app = new cdk.App();
 
@@ -28,10 +28,10 @@ const buildAction = new cpactions.CodeBuildAction({
   input: sourceOutput,
   outputs: [new codepipeline.Artifact()],
   environmentVariables: {
-    'TEST_ENV_VARIABLE': {
+    TEST_ENV_VARIABLE: {
       value: 'test env variable value',
     },
-    'PARAM_STORE_VARIABLE': {
+    PARAM_STORE_VARIABLE: {
       value: 'param_store',
       type: codebuild.BuildEnvironmentVariableType.PARAMETER_STORE,
     },

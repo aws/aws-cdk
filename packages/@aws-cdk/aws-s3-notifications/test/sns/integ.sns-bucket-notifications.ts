@@ -4,13 +4,13 @@ import * as cdk from '@aws-cdk/core';
 import * as s3n from '../../lib';
 
 class MyStack extends cdk.Stack {
-  constructor(scope: cdk.App, id: string) {
+  public constructor(scope: cdk.App, id: string) {
     super(scope, id);
 
     const objectCreateTopic = new sns.Topic(this, 'ObjectCreatedTopic');
     const objectRemovedTopic = new sns.Topic(this, 'ObjectDeletedTopic');
     const bucket = new s3.Bucket(this, 'MyBucket', {
-        removalPolicy: cdk.RemovalPolicy.DESTROY
+      removalPolicy: cdk.RemovalPolicy.DESTROY
     });
 
     bucket.addObjectCreatedNotification(new s3n.SnsDestination(objectCreateTopic));

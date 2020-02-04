@@ -31,7 +31,7 @@ function lastNCharacters(str: string, n: number) {
 export class CrossRegionSupportConstruct extends cdk.Construct {
   public readonly replicationBucket: s3.IBucket;
 
-  constructor(scope: cdk.Construct, id: string) {
+  public constructor(scope: cdk.Construct, id: string) {
     super(scope, id);
 
     const encryptionKey = new kms.Key(this, 'CrossRegionCodePipelineReplicationBucketEncryptionKey', {
@@ -83,7 +83,7 @@ export class CrossRegionSupportStack extends cdk.Stack {
    */
   public readonly replicationBucket: s3.IBucket;
 
-  constructor(scope: cdk.Construct, id: string, props: CrossRegionSupportStackProps) {
+  public constructor(scope: cdk.Construct, id: string, props: CrossRegionSupportStackProps) {
     super(scope, id, {
       stackName: generateStackName(props),
       env: {

@@ -30,7 +30,7 @@ export class TemplateDiff implements ITemplateDiff {
    */
   public readonly securityGroupChanges: SecurityGroupChanges;
 
-  constructor(args: ITemplateDiff) {
+  public constructor(args: ITemplateDiff) {
     if (args.awsTemplateFormatVersion !== undefined) {
       this.awsTemplateFormatVersion = args.awsTemplateFormatVersion;
     }
@@ -281,7 +281,7 @@ export class Difference<ValueType> implements IDifference<ValueType> {
    * @param oldValue the old value, cannot be equal (to the sense of +deepEqual+) to +newValue+.
    * @param newValue the new value, cannot be equal (to the sense of +deepEqual+) to +oldValue+.
    */
-  constructor(public readonly oldValue: ValueType | undefined, public readonly newValue: ValueType | undefined) {
+  public constructor(public readonly oldValue: ValueType | undefined, public readonly newValue: ValueType | undefined) {
     if (oldValue === undefined && newValue === undefined) {
       throw new AssertionError({ message: 'oldValue and newValue are both undefined!' });
     }
@@ -308,14 +308,14 @@ export class Difference<ValueType> implements IDifference<ValueType> {
 export class PropertyDifference<ValueType> extends Difference<ValueType> {
   public readonly changeImpact?: ResourceImpact;
 
-  constructor(oldValue: ValueType | undefined, newValue: ValueType | undefined, args: { changeImpact?: ResourceImpact }) {
+  public constructor(oldValue: ValueType | undefined, newValue: ValueType | undefined, args: { changeImpact?: ResourceImpact }) {
     super(oldValue, newValue);
     this.changeImpact = args.changeImpact;
   }
 }
 
 export class DifferenceCollection<V, T extends IDifference<V>> {
-  constructor(private readonly diffs: { [logicalId: string]: T }) {}
+  public constructor(private readonly diffs: { [logicalId: string]: T }) {}
 
   public get changes(): { [logicalId: string]: T } {
     return onlyChanges(this.diffs);
@@ -503,13 +503,14 @@ export class ResourceDifference implements IDifference<Resource> {
   /** The resource type (or old and new type if it has changed) */
   private readonly resourceTypes: { readonly oldType?: string, readonly newType?: string };
 
-  constructor(public readonly oldValue: Resource | undefined,
-              public readonly newValue: Resource | undefined,
-              args: {
-          resourceType: { oldType?: string, newType?: string },
-          propertyDiffs: { [key: string]: PropertyDifference<any> },
-          otherDiffs: { [key: string]: Difference<any> }
-        }
+  public constructor(
+    public readonly oldValue: Resource | undefined,
+    public readonly newValue: Resource | undefined,
+    args: {
+      resourceType: { oldType?: string, newType?: string };
+      propertyDiffs: { [key: string]: PropertyDifference<any> };
+      otherDiffs: { [key: string]: Difference<any> };
+    }
   ) {
     this.resourceTypes = args.resourceType;
     this.propertyDiffs = args.propertyDiffs;
@@ -616,8 +617,8 @@ export class ResourceDifference implements IDifference<Resource> {
     const baseImpact = Object.keys(this.otherChanges).length > 0 ? ResourceImpact.WILL_UPDATE : ResourceImpact.NO_CHANGE;
 
     return Object.values(this.propertyDiffs)
-           .map(elt => elt.changeImpact)
-           .reduce(worstImpact, baseImpact);
+      .map(elt => elt.changeImpact)
+      .reduce(worstImpact, baseImpact);
   }
 
   /**

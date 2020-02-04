@@ -117,7 +117,7 @@ export class Alarm extends Resource implements IAlarm {
    */
   private readonly annotation: HorizontalAnnotation;
 
-  constructor(scope: Construct, id: string, props: AlarmProps) {
+  public constructor(scope: Construct, id: string, props: AlarmProps) {
     super(scope, id, {
       physicalName: props.alarmName,
     });
@@ -229,10 +229,9 @@ export class Alarm extends Resource implements IAlarm {
   }
 
   private renderMetric(metric: IMetric) {
-    const self = this;
     return dispatchMetric(metric, {
-      withStat(st) {
-        self.validateMetricStat(st, metric);
+      withStat: st => {
+        this.validateMetricStat(st, metric);
 
         return dropUndefined({
           dimensions: st.dimensions,
@@ -245,7 +244,7 @@ export class Alarm extends Resource implements IAlarm {
         });
       },
 
-      withExpression() {
+      withExpression: () => {
         // Expand the math expression metric into a set
         const mset = new MetricSet<boolean>();
         mset.addTopLevel(true, metric);
@@ -257,8 +256,8 @@ export class Alarm extends Resource implements IAlarm {
 
         return {
           metrics: mset.entries.map(entry => dispatchMetric(entry.metric, {
-            withStat(stat, conf) {
-              self.validateMetricStat(stat, entry.metric);
+            withStat: (stat, conf) => {
+              this.validateMetricStat(stat, entry.metric);
 
               return {
                 metricStat: {
@@ -276,14 +275,12 @@ export class Alarm extends Resource implements IAlarm {
                 returnData: entry.tag ? undefined : false, // Tag stores "primary" attribute, default is "true"
               };
             },
-            withExpression(expr, conf) {
-              return {
-                expression: expr.expression,
-                id: entry.id || uniqueMetricId(),
-                label: conf.renderingProperties?.label,
-                returnData: entry.tag ? undefined : false, // Tag stores "primary" attribute, default is "true"
-              };
-            },
+            withExpression: (expr, conf) => ({
+              expression: expr.expression,
+              id: entry.id || uniqueMetricId(),
+              label: conf.renderingProperties?.label,
+              returnData: entry.tag ? undefined : false, // Tag stores "primary" attribute, default is "true"
+            }),
           }) as CfnAlarm.MetricDataQueryProperty)
         };
       }

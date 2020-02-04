@@ -3,7 +3,7 @@ import * as fs from 'fs-extra';
 import * as promptly from 'promptly';
 import { format } from 'util';
 import { Mode } from './api/aws-auth/credentials';
-import { AppStacks, DefaultSelection, ExtendedStackSelection, Tag } from "./api/cxapp/stacks";
+import { AppStacks, DefaultSelection, ExtendedStackSelection, Tag } from './api/cxapp/stacks';
 import { destroyStack } from './api/deploy-stack';
 import { IDeploymentTarget } from './api/deployment-target';
 import { stackExists } from './api/util/cloudformation';
@@ -34,7 +34,7 @@ export class CdkToolkit {
   private readonly appStacks: AppStacks;
   private readonly provisioner: IDeploymentTarget;
 
-  constructor(props: CdkToolkitProps) {
+  public constructor(props: CdkToolkitProps) {
     this.appStacks = props.appStacks;
     this.provisioner = props.provisioner;
   }
@@ -121,7 +121,7 @@ export class CdkToolkit {
               'but terminal (TTY) is not attached so we are unable to get a confirmation from the user');
           }
 
-          const confirmed = await promptly.confirm(`Do you wish to deploy these changes (y/n)?`);
+          const confirmed = await promptly.confirm('Do you wish to deploy these changes (y/n)?');
           if (!confirmed) { throw new Error('Aborted by user'); }
         }
       }
@@ -146,8 +146,8 @@ export class CdkToolkit {
         });
 
         const message = result.noOp
-          ? ` ✅  %s (no changes)`
-          : ` ✅  %s`;
+          ? ' ✅  %s (no changes)'
+          : ' ✅  %s';
 
         success('\n' + message, stack.displayName);
 
@@ -339,5 +339,5 @@ export interface DestroyOptions {
   /**
    * Whether the destroy request came from a deploy.
    */
-  fromDeploy?: boolean
+  fromDeploy?: boolean;
 }

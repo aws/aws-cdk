@@ -4,7 +4,7 @@ import * as path from 'path';
 import * as lambda from '../lib';
 
 class TestStack extends Stack {
-  constructor(scope: Construct, id: string, props?: StackProps) {
+  public constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
     new lambda.NodejsFunction(this, 'ts-handler', {

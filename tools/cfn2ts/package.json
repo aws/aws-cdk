@@ -57,5 +57,8 @@
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
     "node": ">= 10.3.0"
+  },
+  "eslint": {
+    "ignore-pattern": ["test/enrichments/*.ts"]
   }
 }

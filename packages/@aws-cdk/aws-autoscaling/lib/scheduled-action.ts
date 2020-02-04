@@ -23,7 +23,7 @@ export interface BasicScheduledActionProps {
    *
    * @default - The rule is activate immediately.
    */
-  readonly startTime?: Date
+  readonly startTime?: Date;
 
   /**
    * When this scheduled action expires.
@@ -80,7 +80,7 @@ export interface ScheduledActionProps extends BasicScheduledActionProps {
  * Define a scheduled scaling action
  */
 export class ScheduledAction extends Resource {
-  constructor(scope: Construct, id: string, props: ScheduledActionProps) {
+  public constructor(scope: Construct, id: string, props: ScheduledActionProps) {
     super(scope, id);
 
     if (props.minCapacity === undefined && props.maxCapacity === undefined && props.desiredCapacity === undefined) {

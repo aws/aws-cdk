@@ -18,7 +18,7 @@ interface DemoResourceProps {
 class DemoResource extends cdk.Construct {
   public readonly response: string;
 
-  constructor(scope: cdk.Construct, id: string, props: DemoResourceProps) {
+  public constructor(scope: cdk.Construct, id: string, props: DemoResourceProps) {
     super(scope, id);
 
     const resource = new CustomResource(this, 'Resource', {
@@ -41,7 +41,7 @@ class DemoResource extends cdk.Construct {
  * A stack that only sets up the CustomResource and shows how to get an attribute from it
  */
 class SucceedingStack extends cdk.Stack {
-  constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
+  public constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
     const resource = new DemoResource(this, 'DemoResource', {

@@ -62,7 +62,7 @@ export class PackageJson {
 
   private reports: Report[] = [];
 
-  constructor(public readonly fullPath: string) {
+  public constructor(public readonly fullPath: string) {
     this.json = JSON.parse(fs.readFileSync(fullPath, { encoding: 'utf-8' }));
     this.packageRoot = path.dirname(path.resolve(fullPath));
     this.packageName = this.json.name;

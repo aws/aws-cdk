@@ -24,7 +24,7 @@ export abstract class LinterBase {
 export class AggregateLinter extends LinterBase {
   private linters: LinterBase[];
 
-  constructor(...linters: LinterBase[]) {
+  public constructor(...linters: LinterBase[]) {
     super();
     this.linters = linters;
   }
@@ -52,7 +52,7 @@ export class AggregateLinter extends LinterBase {
 export class Linter<T> extends LinterBase {
   private readonly _rules: { [name: string]: ConcreteRule<T> } = { };
 
-  constructor(private readonly init: (assembly: reflect.Assembly) => T | T[] | undefined) {
+  public constructor(private readonly init: (assembly: reflect.Assembly) => T | T[] | undefined) {
     super();
   }
 
@@ -109,7 +109,7 @@ export class Evaluation<T> {
   private readonly curr: ConcreteRule<T>;
   private readonly diagnostics: Diagnostic[];
 
-  constructor(ctx: T, rule: ConcreteRule<T>, diagnostics: Diagnostic[], options: LinterOptions) {
+  public constructor(ctx: T, rule: ConcreteRule<T>, diagnostics: Diagnostic[], options: LinterOptions) {
     this.ctx = ctx;
     this.options = options;
     this.curr = rule;
@@ -264,7 +264,7 @@ export class Evaluation<T> {
 }
 
 export interface Rule {
-  code: string,
+  code: string;
   message: string;
   warning?: boolean;
 }

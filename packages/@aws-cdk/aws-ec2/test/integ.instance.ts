@@ -6,7 +6,7 @@ import * as ec2 from '../lib';
 const app = new cdk.App();
 
 class TestStack extends cdk.Stack {
-  constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
+  public constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
     const vpc = new ec2.Vpc(this, 'VPC');

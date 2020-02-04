@@ -1,6 +1,6 @@
 import { Construct, IResource as IResourceBase, Resource } from '@aws-cdk/core';
 import { CfnApiKey } from './apigateway.generated';
-import { ResourceOptions } from "./resource";
+import { ResourceOptions } from './resource';
 import { RestApi } from './restapi';
 
 /**
@@ -70,7 +70,7 @@ export interface ApiKeyProps extends ResourceOptions {
 export class ApiKey extends Resource implements IApiKey {
   public readonly keyId: string;
 
-  constructor(scope: Construct, id: string, props: ApiKeyProps = { }) {
+  public constructor(scope: Construct, id: string, props: ApiKeyProps = { }) {
     super(scope, id, {
       physicalName: props.apiKeyName,
     });

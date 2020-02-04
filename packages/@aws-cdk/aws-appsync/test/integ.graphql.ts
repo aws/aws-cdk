@@ -7,47 +7,47 @@ const app = new App();
 const stack = new Stack(app, 'aws-appsync-integ');
 
 const api = new GraphQLApi(stack, 'Api', {
-    name: `demoapi`,
-    schemaDefinitionFile: join(__dirname, 'schema.graphql'),
+  name: 'demoapi',
+  schemaDefinitionFile: join(__dirname, 'schema.graphql'),
 });
 
 const customerTable = new Table(stack, 'CustomerTable', {
-    billingMode: BillingMode.PAY_PER_REQUEST,
-    partitionKey: {
-        name: 'id',
-        type: AttributeType.STRING,
-    },
+  billingMode: BillingMode.PAY_PER_REQUEST,
+  partitionKey: {
+    name: 'id',
+    type: AttributeType.STRING,
+  },
 });
 const customerDS = api.addDynamoDbDataSource('Customer', 'The customer data source', customerTable);
 customerDS.createResolver({
-    typeName: 'Query',
-    fieldName: 'getCustomers',
-    requestMappingTemplate: MappingTemplate.dynamoDbScanTable(),
-    responseMappingTemplate: MappingTemplate.dynamoDbResultList(),
+  typeName: 'Query',
+  fieldName: 'getCustomers',
+  requestMappingTemplate: MappingTemplate.dynamoDbScanTable(),
+  responseMappingTemplate: MappingTemplate.dynamoDbResultList(),
 });
 customerDS.createResolver({
-    typeName: 'Query',
-    fieldName: 'getCustomer',
-    requestMappingTemplate: MappingTemplate.dynamoDbGetItem('id', 'id'),
-    responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
+  typeName: 'Query',
+  fieldName: 'getCustomer',
+  requestMappingTemplate: MappingTemplate.dynamoDbGetItem('id', 'id'),
+  responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
 });
 customerDS.createResolver({
-    typeName: 'Mutation',
-    fieldName: 'addCustomer',
-    requestMappingTemplate: MappingTemplate.dynamoDbPutItem('id', 'customer'),
-    responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
+  typeName: 'Mutation',
+  fieldName: 'addCustomer',
+  requestMappingTemplate: MappingTemplate.dynamoDbPutItem('id', 'customer'),
+  responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
 });
 customerDS.createResolver({
-    typeName: 'Mutation',
-    fieldName: 'saveCustomer',
-    requestMappingTemplate: MappingTemplate.dynamoDbPutItem('id', 'customer', 'id'),
-    responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
+  typeName: 'Mutation',
+  fieldName: 'saveCustomer',
+  requestMappingTemplate: MappingTemplate.dynamoDbPutItem('id', 'customer', 'id'),
+  responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
 });
 customerDS.createResolver({
-    typeName: 'Mutation',
-    fieldName: 'removeCustomer',
-    requestMappingTemplate: MappingTemplate.dynamoDbDeleteItem('id', 'id'),
-    responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
+  typeName: 'Mutation',
+  fieldName: 'removeCustomer',
+  requestMappingTemplate: MappingTemplate.dynamoDbDeleteItem('id', 'id'),
+  responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
 });
 
 app.synth();

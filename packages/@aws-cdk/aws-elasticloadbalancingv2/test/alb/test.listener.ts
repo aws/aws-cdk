@@ -65,9 +65,9 @@ export = {
       SecurityGroupIngress: [
         {
           Description: 'Allow from anyone on port 80',
-          CidrIp: "0.0.0.0/0",
+          CidrIp: '0.0.0.0/0',
           FromPort: 80,
-          IpProtocol: "tcp",
+          IpProtocol: 'tcp',
           ToPort: 80
         }
       ]
@@ -107,12 +107,12 @@ export = {
       defaultTargetGroups: [new elbv2.ApplicationTargetGroup(stack, 'Group', { vpc, port: 80 })]
     });
 
-    listener.addCertificateArns("Arns", ['cert']);
+    listener.addCertificateArns('Arns', ['cert']);
 
     // THEN
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::Listener', {
       Certificates: [
-        { CertificateArn: "cert" }
+        { CertificateArn: 'cert' }
       ],
     }));
 
@@ -181,8 +181,8 @@ export = {
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::Listener', {
       DefaultActions: [
         {
-          TargetGroupArn: { Ref: "TargetGroup3D7CD9B8" },
-          Type: "forward"
+          TargetGroupArn: { Ref: 'TargetGroup3D7CD9B8' },
+          Type: 'forward'
         }
       ],
     }));
@@ -196,8 +196,8 @@ export = {
       ],
       Actions: [
         {
-          TargetGroupArn: { Ref: "TargetGroup3D7CD9B8" },
-          Type: "forward"
+          TargetGroupArn: { Ref: 'TargetGroup3D7CD9B8' },
+          Type: 'forward'
         }
       ],
     }));
@@ -228,33 +228,33 @@ export = {
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::Listener', {
       DefaultActions: [
         {
-          TargetGroupArn: { Ref: "LBListenerTargetsGroup76EF81E8" },
-          Type: "forward"
+          TargetGroupArn: { Ref: 'LBListenerTargetsGroup76EF81E8' },
+          Type: 'forward'
         }
       ],
     }));
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
-      VpcId: { Ref: "Stack8A423254" },
+      VpcId: { Ref: 'Stack8A423254' },
       Port: 80,
-      Protocol: "HTTP",
+      Protocol: 'HTTP',
       Targets: [
-        { Id: "i-12345" }
+        { Id: 'i-12345' }
       ]
     }));
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::ListenerRule', {
       Actions: [
         {
-          TargetGroupArn: { Ref: "LBListenerWithPathGroupE889F9E5" },
-          Type: "forward"
+          TargetGroupArn: { Ref: 'LBListenerWithPathGroupE889F9E5' },
+          Type: 'forward'
         }
       ],
     }));
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
-      VpcId: { Ref: "Stack8A423254" },
+      VpcId: { Ref: 'Stack8A423254' },
       Port: 80,
-      Protocol: "HTTP",
+      Protocol: 'HTTP',
       Targets: [
-        { Id: "i-5678" }
+        { Id: 'i-5678' }
       ]
     }));
 
@@ -275,7 +275,7 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::Listener', {
       Certificates: [
-        { CertificateArn: "cert" }
+        { CertificateArn: 'cert' }
       ],
     }));
 
@@ -297,7 +297,7 @@ export = {
     // THEN
     expect(stack2).to(haveResource('AWS::ElasticLoadBalancingV2::ListenerCertificate', {
       Certificates: [
-        { CertificateArn: "cert" }
+        { CertificateArn: 'cert' }
       ],
     }));
 
@@ -322,16 +322,16 @@ export = {
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
       TargetGroupAttributes: [
         {
-          Key: "stickiness.enabled",
-          Value: "true"
+          Key: 'stickiness.enabled',
+          Value: 'true'
         },
         {
-          Key: "stickiness.type",
-          Value: "lb_cookie"
+          Key: 'stickiness.type',
+          Value: 'lb_cookie'
         },
         {
-          Key: "stickiness.lb_cookie.duration_seconds",
-          Value: "3600"
+          Key: 'stickiness.lb_cookie.duration_seconds',
+          Value: '3600'
         }
       ]
     }));
@@ -362,7 +362,7 @@ export = {
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
       UnhealthyThresholdCount: 3,
       HealthCheckIntervalSeconds: 30,
-      HealthCheckPath: "/test",
+      HealthCheckPath: '/test',
       HealthCheckTimeoutSeconds: 3600,
     }));
 
@@ -420,8 +420,8 @@ export = {
       Priority: 30,
       Actions: [
         {
-          TargetGroupArn: { Ref: "TargetGroup3D7CD9B8" },
-          Type: "forward"
+          TargetGroupArn: { Ref: 'TargetGroup3D7CD9B8' },
+          Type: 'forward'
         }
       ],
     }));
@@ -448,8 +448,8 @@ export = {
     expect(stack).toMatch({
       Resources: {
         SomeResource: {
-          Type: "Test::Resource",
-          DependsOn: ["LoadBalancerListenerE1A099B9"]
+          Type: 'Test::Resource',
+          DependsOn: ['LoadBalancerListenerE1A099B9']
         }
       }
     }, MatchStyle.SUPERSET);
@@ -481,11 +481,11 @@ export = {
 
     for (const metric of metrics) {
       test.equal('AWS/ApplicationELB', metric.namespace);
-      const loadBalancerArn = { Ref: "LBSomeListenerCA01F1A0" };
+      const loadBalancerArn = { Ref: 'LBSomeListenerCA01F1A0' };
 
       test.deepEqual(stack.resolve(metric.dimensions), {
-         TargetGroup: { 'Fn::GetAtt': [ 'TargetGroup3D7CD9B8', 'TargetGroupFullName' ] },
-         LoadBalancer: { 'Fn::Join':
+        TargetGroup: { 'Fn::GetAtt': [ 'TargetGroup3D7CD9B8', 'TargetGroupFullName' ] },
+        LoadBalancer: { 'Fn::Join':
             [ '',
               [ { 'Fn::Select': [ 1, { 'Fn::Split': [ '/', loadBalancerArn ] } ] },
                 '/',
@@ -494,7 +494,7 @@ export = {
                 { 'Fn::Select': [ 3, { 'Fn::Split': [ '/', loadBalancerArn ] } ] }
               ]
             ]
-         }
+        }
       });
     }
 
@@ -526,8 +526,8 @@ export = {
     expect(stack).toMatch({
       Resources: {
         SomeResource: {
-          Type: "Test::Resource",
-          DependsOn: ["LoadBalancerListenerSecondGroupRuleF5FDC196"]
+          Type: 'Test::Resource',
+          DependsOn: ['LoadBalancerListenerSecondGroupRuleF5FDC196']
         }
       }
     }, MatchStyle.SUPERSET);
@@ -655,8 +655,8 @@ export = {
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
       TargetGroupAttributes: [
         {
-          Key: "deregistration_delay.timeout_seconds",
-          Value: "30"
+          Key: 'deregistration_delay.timeout_seconds',
+          Value: '30'
         }
       ]
     }));
@@ -896,7 +896,7 @@ export = {
       defaultTargetGroups: [new elbv2.ApplicationTargetGroup(stack, 'Group', { vpc, port: 80 })]
     });
 
-    listener.addCertificateArns("ListenerCertificateX", ['cert3']);
+    listener.addCertificateArns('ListenerCertificateX', ['cert3']);
 
     // THEN
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::Listener', {
@@ -916,7 +916,7 @@ export = {
 };
 
 class ResourceWithLBDependency extends cdk.CfnResource {
-  constructor(scope: cdk.Construct, id: string, targetGroup: elbv2.ITargetGroup) {
+  public constructor(scope: cdk.Construct, id: string, targetGroup: elbv2.ITargetGroup) {
     super(scope, id, { type: 'Test::Resource' });
     this.node.addDependency(targetGroup.loadBalancerAttached);
   }

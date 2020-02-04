@@ -28,7 +28,7 @@ export class FullActionDescriptor {
   public readonly role?: iam.IRole;
   public readonly configuration: any;
 
-  constructor(props: FullActionDescriptorProps) {
+  public constructor(props: FullActionDescriptorProps) {
     this.action = props.action;
     const actionProperties = props.action.actionProperties;
     this.actionName = actionProperties.actionName;

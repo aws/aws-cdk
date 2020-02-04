@@ -3,7 +3,7 @@ import * as eks from '../lib';
 import { TestStack } from './util';
 
 class EksClusterStack extends TestStack {
-  constructor(scope: cdk.App, id: string) {
+  public constructor(scope: cdk.App, id: string) {
     super(scope, id);
 
     new eks.Cluster(this, 'Cluster');

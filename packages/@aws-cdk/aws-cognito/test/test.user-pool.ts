@@ -29,13 +29,13 @@ export = {
     const pool = new cognito.UserPool(stack, 'Pool', {
       userPoolName: 'myPool',
     });
-    cdk.Tag.add(pool, "PoolTag", "PoolParty");
+    cdk.Tag.add(pool, 'PoolTag', 'PoolParty');
 
     // THEN
     expect(stack).to(haveResourceLike('AWS::Cognito::UserPool', {
       UserPoolName: 'myPool',
       UserPoolTags: {
-        PoolTag: "PoolParty",
+        PoolTag: 'PoolParty',
       }
     }));
 

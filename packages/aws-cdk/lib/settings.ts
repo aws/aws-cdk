@@ -1,6 +1,6 @@
 import * as fs from 'fs-extra';
 import * as os from 'os';
-import * as fs_path from 'path';
+import * as fsPath from 'path';
 import { Tag } from './api/cxapp/stacks';
 import { debug, warning } from './logging';
 import * as util from './util';
@@ -39,7 +39,7 @@ export class Configuration {
   private _projectContext?: Settings;
   private loaded = false;
 
-  constructor(commandLineArguments?: Arguments) {
+  public constructor(commandLineArguments?: Arguments) {
     this.commandLineArguments = commandLineArguments
                               ? Settings.fromCommandLineArguments(commandLineArguments)
                               : new Settings();
@@ -48,14 +48,14 @@ export class Configuration {
 
   private get projectConfig() {
     if (!this._projectConfig) {
-      throw new Error(`#load has not been called yet!`);
+      throw new Error('#load has not been called yet!');
     }
     return this._projectConfig;
   }
 
   private get projectContext() {
     if (!this._projectContext) {
-      throw new Error(`#load has not been called yet!`);
+      throw new Error('#load has not been called yet!');
     }
     return this._projectContext;
   }
@@ -71,9 +71,9 @@ export class Configuration {
     await this.migrateLegacyContext();
 
     this.context = new Context(
-        this.commandLineContext,
-        this.projectConfig.subSettings([CONTEXT_KEY]).makeReadOnly(),
-        this.projectContext);
+      this.commandLineContext,
+      this.projectConfig.subSettings([CONTEXT_KEY]).makeReadOnly(),
+      this.projectContext);
 
     // Build settings from what's left
     this.settings = this.defaultConfig
@@ -149,7 +149,7 @@ async function loadAndLog(fileName: string): Promise<Settings> {
 export class Context {
   private readonly bags: Settings[];
 
-  constructor(...bags: Settings[]) {
+  public constructor(...bags: Settings[]) {
     this.bags = bags.length > 0 ? bags : [new Settings()];
   }
 
@@ -270,8 +270,8 @@ export class Settings {
       if (parts.length === 2) {
         debug('CLI argument tags: %s=%s', parts[0], parts[1]);
         tags.push({
-         Key: parts[0],
-         Value: parts[1]
+          Key: parts[0],
+          Value: parts[1]
         });
       } else {
         warning('Tags argument is not an assignment (key=value): %s', assignment);
@@ -280,7 +280,7 @@ export class Settings {
     return tags;
   }
 
-  constructor(private settings: SettingsMap = {}, public readonly readOnly = false) {}
+  public constructor(private settings: SettingsMap = {}, public readonly readOnly = false) {}
 
   public async load(fileName: string): Promise<this> {
     if (this.readOnly) {
@@ -359,7 +359,7 @@ export class Settings {
     if (!this.settings.context) { return; }
     if (key in this.settings.context) {
       // eslint-disable-next-line max-len
-      throw new Error(`The 'context.${key}' key was found in ${fs_path.resolve(fileName)}, but it is no longer supported. Please remove it.`);
+      throw new Error(`The 'context.${key}' key was found in ${fsPath.resolve(fileName)}, but it is no longer supported. Please remove it.`);
     }
   }
 
@@ -368,7 +368,7 @@ export class Settings {
     for (const contextKey of Object.keys(this.settings.context)) {
       if (contextKey.startsWith(prefix)) {
         // eslint-disable-next-line max-len
-        warning(`A reserved context key ('context.${prefix}') key was found in ${fs_path.resolve(fileName)}, it might cause surprising behavior and should be removed.`);
+        warning(`A reserved context key ('context.${prefix}') key was found in ${fsPath.resolve(fileName)}, it might cause surprising behavior and should be removed.`);
       }
     }
   }
@@ -376,7 +376,7 @@ export class Settings {
 
 function expandHomeDir(x: string) {
   if (x.startsWith('~')) {
-    return fs_path.join(os.homedir(), x.substr(1));
+    return fsPath.join(os.homedir(), x.substr(1));
   }
   return x;
 }

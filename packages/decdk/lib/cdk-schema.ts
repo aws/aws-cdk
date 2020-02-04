@@ -38,7 +38,7 @@ export function renderFullSchema(typeSystem: jsiiReflect.TypeSystem, options: Re
   for (const deco of deconstructs) {
     const resource = schemaForResource(deco, ctx);
     if (resource) {
-      output.properties.Resources.patternProperties["^[a-zA-Z0-9]+$"].anyOf.push(resource);
+      output.properties.Resources.patternProperties['^[a-zA-Z0-9]+$'].anyOf.push(resource);
     }
   }
 
@@ -85,18 +85,16 @@ export function schemaForResource(construct: ConstructAndProps, ctx: SchemaConte
     return undefined;
   }
 
-  return ctx.define(construct.constructClass.fqn, () => {
-    return {
-      additionalProperties: false,
-      properties: {
-        Properties: propsSchema,
-        Type: {
-          enum: [ construct.constructClass.fqn ],
-          type: "string"
-        }
+  return ctx.define(construct.constructClass.fqn, () => ({
+    additionalProperties: false,
+    properties: {
+      Properties: propsSchema,
+      Type: {
+        enum: [ construct.constructClass.fqn ],
+        type: 'string'
       }
-    };
-  });
+    }
+  }));
 }
 
 function isCfnResource(klass: jsiiReflect.ClassType) {

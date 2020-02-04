@@ -190,7 +190,7 @@ test('passes the correct target to docker build', async () => {
   }
 
   // THEN
-  const command = ['docker', 'build', '--build-arg', 'a=b', '--build-arg', 'c=d', '--tag', `uri:latest`, '/foo', '--target', 'a-target'];
+  const command = ['docker', 'build', '--build-arg', 'a=b', '--build-arg', 'c=d', '--tag', 'uri:latest', '/foo', '--target', 'a-target'];
   expect(shellStub.calledWith(command)).toBeTruthy();
 
   prepareEcrRepositoryStub.restore();
@@ -233,7 +233,7 @@ test('passes the correct args to docker build', async () => {
   }
 
   // THEN
-  const command = ['docker', 'build', '--build-arg', 'a=b', '--build-arg', 'c=d', '--tag', `uri:latest`, '/foo'];
+  const command = ['docker', 'build', '--build-arg', 'a=b', '--build-arg', 'c=d', '--tag', 'uri:latest', '/foo'];
   expect(shellStub.calledWith(command)).toBeTruthy();
 
   prepareEcrRepositoryStub.restore();
@@ -276,7 +276,7 @@ test('relative path', async () => {
   }
 
   // THEN
-  const command = ['docker', 'build', '--build-arg', 'a=b', '--build-arg', 'c=d', '--tag', `uri:latest`, '/assembly/dir/root/relative-to-assembly'];
+  const command = ['docker', 'build', '--build-arg', 'a=b', '--build-arg', 'c=d', '--tag', 'uri:latest', '/assembly/dir/root/relative-to-assembly'];
   expect(shellStub.calledWith(command)).toBeTruthy();
 
   prepareEcrRepositoryStub.restore();
@@ -320,7 +320,15 @@ test('passes the correct file to docker build', async () => {
     if (!/STOPTEST/.test(e.toString())) { throw e; }
   }
 
-  const command = ['docker', 'build', '--build-arg', 'a=b', '--build-arg', 'c=d', '--tag', 'uri:latest', '/foo', '--target', 'a-target', '--file', '/foo/some-file'];
+  const command = [
+    'docker', 'build',
+    '--build-arg', 'a=b',
+    '--build-arg', 'c=d',
+    '--tag', 'uri:latest',
+    '/foo',
+    '--target', 'a-target',
+    '--file', '/foo/some-file'
+  ];
   sinon.assert.calledWith(shellStub, command);
 
   prepareEcrRepositoryStub.restore();
@@ -370,7 +378,15 @@ test('"imageTag" is used instead of "latest"', async () => {
   }
 
   // THEN
-  const command = ['docker', 'build', '--build-arg', 'a=b', '--build-arg', 'c=d', '--tag', 'uri:image-tag', '/foo', '--target', 'a-target', '--file', '/foo/some-file'];
+  const command = [
+    'docker', 'build',
+    '--build-arg', 'a=b',
+    '--build-arg', 'c=d',
+    '--tag', 'uri:image-tag',
+    '/foo',
+    '--target', 'a-target',
+    '--file', '/foo/some-file'
+  ];
   sinon.assert.calledWith(shellStub, command);
 
   prepareEcrRepositoryStub.restore();

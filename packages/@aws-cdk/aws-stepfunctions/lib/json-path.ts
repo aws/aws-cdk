@@ -10,7 +10,7 @@ export class JsonPathToken implements IResolvable {
   public readonly creationStack: string[];
   public displayHint: string;
 
-  constructor(public readonly path: string) {
+  public constructor(public readonly path: string) {
     this.creationStack = captureStackTrace();
     this.displayHint = path.replace(/^[^a-zA-Z]+/, '');
     Object.defineProperty(this, JSON_PATH_TOKEN_SYMBOL, { value: true });
@@ -183,7 +183,7 @@ function renderNumber(key: string, value: number): {[key: string]: number | stri
  * Render a parameter boolean
  */
 function renderBoolean(key: string, value: boolean): {[key: string]: boolean} {
-    return { [key]: value };
+  return { [key]: value };
 }
 
 /**

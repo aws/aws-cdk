@@ -160,7 +160,7 @@ export class LayerVersion extends LayerVersionBase {
   public readonly layerVersionArn: string;
   public readonly compatibleRuntimes?: Runtime[];
 
-  constructor(scope: Construct, id: string, props: LayerVersionProps) {
+  public constructor(scope: Construct, id: string, props: LayerVersionProps) {
     super(scope, id, {
       physicalName: props.layerVersionName,
     });
@@ -174,10 +174,10 @@ export class LayerVersion extends LayerVersionBase {
     // Allow usage of the code in this context...
     const code = props.code.bind(this);
     if (code.inlineCode) {
-      throw new Error(`Inline code is not supported for AWS Lambda layers`);
+      throw new Error('Inline code is not supported for AWS Lambda layers');
     }
     if (!code.s3Location) {
-      throw new Error(`Code must define an S3 location`);
+      throw new Error('Code must define an S3 location');
     }
 
     const resource: CfnLayerVersion = new CfnLayerVersion(this, 'Resource', {

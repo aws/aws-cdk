@@ -2,14 +2,14 @@ import * as kinesis from '@aws-cdk/aws-kinesis';
 import * as lambda from '@aws-cdk/aws-lambda';
 import {StreamEventSource, StreamEventSourceProps} from './stream';
 
-export interface KinesisEventSourceProps extends StreamEventSourceProps {
-}
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface KinesisEventSourceProps extends StreamEventSourceProps { }
 
 /**
  * Use an Amazon Kinesis stream as an event source for AWS Lambda.
  */
 export class KinesisEventSource extends StreamEventSource {
-  constructor(readonly stream: kinesis.IStream, props: KinesisEventSourceProps) {
+  public constructor(public readonly stream: kinesis.IStream, props: KinesisEventSourceProps) {
     super(props);
 
     if (this.props.batchSize !== undefined && (this.props.batchSize < 1 || this.props.batchSize > 10000)) {

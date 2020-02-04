@@ -2,7 +2,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as path from 'path';
-import {Tag} from "./cxapp/stacks";
+import {Tag} from './cxapp/stacks';
 import { deployStack, DeployStackResult } from './deploy-stack';
 import { ISDK } from './util/sdk';
 
@@ -44,17 +44,17 @@ export interface BootstrapEnvironmentProps {
 export async function bootstrapEnvironment(environment: cxapi.Environment, aws: ISDK, toolkitStackName: string, roleArn: string | undefined, props: BootstrapEnvironmentProps = {}): Promise<DeployStackResult> {
 
   const template = {
-    Description: "The CDK Toolkit Stack. It was created by `cdk bootstrap` and manages resources necessary for managing your Cloud Applications with AWS CDK.",
+    Description: 'The CDK Toolkit Stack. It was created by `cdk bootstrap` and manages resources necessary for managing your Cloud Applications with AWS CDK.',
     Resources: {
       StagingBucket: {
-        Type: "AWS::S3::Bucket",
+        Type: 'AWS::S3::Bucket',
         Properties: {
           BucketName: props.bucketName,
-          AccessControl: "Private",
+          AccessControl: 'Private',
           BucketEncryption: {
             ServerSideEncryptionConfiguration: [{
               ServerSideEncryptionByDefault: {
-                SSEAlgorithm: "aws:kms",
+                SSEAlgorithm: 'aws:kms',
                 KMSMasterKeyID: props.kmsKeyId,
               },
             }]
@@ -70,12 +70,12 @@ export async function bootstrapEnvironment(environment: cxapi.Environment, aws: 
     },
     Outputs: {
       [BUCKET_NAME_OUTPUT]: {
-        Description: "The name of the S3 bucket owned by the CDK toolkit stack",
-        Value: { Ref: "StagingBucket" }
+        Description: 'The name of the S3 bucket owned by the CDK toolkit stack',
+        Value: { Ref: 'StagingBucket' }
       },
       [BUCKET_DOMAIN_NAME_OUTPUT]: {
-        Description: "The domain name of the S3 bucket owned by the CDK toolkit stack",
-        Value: { "Fn::GetAtt": ["StagingBucket", "RegionalDomainName"] }
+        Description: 'The domain name of the S3 bucket owned by the CDK toolkit stack',
+        Value: { 'Fn::GetAtt': ['StagingBucket', 'RegionalDomainName'] }
       }
     }
   };

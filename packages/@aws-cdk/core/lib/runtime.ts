@@ -40,7 +40,7 @@ export function dateToCloudFormation(x?: Date): any {
  */
 function pad(x: number) {
   if (x < 10) {
-    return "0" + x.toString();
+    return '0' + x.toString();
   }
   return x.toString();
 }
@@ -68,7 +68,7 @@ export function hashMapper(elementMapper: Mapper): Mapper {
 
     const ret: any = {};
 
-    Object.keys(x).forEach((key) => {
+    Object.keys(x).forEach(key => {
       ret[key] = elementMapper(x[key]);
     });
 
@@ -123,8 +123,10 @@ export function unionMapper(validators: Validator[], mappers: Mapper[]): Mapper 
  * about the failure that occurred.
  */
 export class ValidationResult {
-  constructor(readonly errorMessage: string = '', readonly results: ValidationResults = new ValidationResults()) {
-  }
+  public constructor(
+    public readonly errorMessage: string = '',
+    public readonly results: ValidationResults = new ValidationResults()
+  ) {}
 
   public get isSuccess(): boolean {
     return !this.errorMessage && this.results.isSuccess;
@@ -163,7 +165,7 @@ export class ValidationResult {
  * A collection of validation results
  */
 export class ValidationResults {
-  constructor(public results: ValidationResult[] = []) {
+  public constructor(public results: ValidationResult[] = []) {
   }
 
   public collect(result: ValidationResult) {
@@ -188,7 +190,7 @@ export class ValidationResults {
    * return a success.
    */
   public wrap(message: string): ValidationResult {
-    if (this.isSuccess) { return VALIDATION_SUCCESS; }
+    if (this.isSuccess) { return VALIDATION_SUCCESS; }
     return new ValidationResult(message, this);
   }
 }
@@ -300,9 +302,7 @@ export function hashValidator(elementValidator: Validator): Validator {
  * Decorate a validator with a message clarifying the property the failure is for.
  */
 export function propertyValidator(propName: string, validator: Validator): Validator {
-  return (x: any) => {
-    return validator(x).prefix(propName);
-  };
+  return (x: any) => validator(x).prefix(propName);
 }
 
 /**
@@ -316,7 +316,7 @@ export function propertyValidator(propName: string, validator: Validator): Valid
  */
 export function requiredValidator(x: any) {
   if (x == null) {
-    return new ValidationResult(`required but missing`);
+    return new ValidationResult('required but missing');
   }
   return VALIDATION_SUCCESS;
 }

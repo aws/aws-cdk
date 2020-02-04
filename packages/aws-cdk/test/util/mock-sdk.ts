@@ -1,6 +1,6 @@
 import * as AWS from 'aws-sdk';
 import * as sinon from 'sinon';
-import { SDK } from "../../lib/api/util/sdk";
+import { SDK } from '../../lib/api/util/sdk';
 
 /**
  * An SDK that allows replacing (some of) the clients
@@ -10,7 +10,7 @@ import { SDK } from "../../lib/api/util/sdk";
  */
 export class MockSDK extends SDK {
   private readonly sandbox: sinon.SinonSandbox;
-  constructor() {
+  public constructor() {
     super({ userAgent: 'aws-cdk/jest' });
     this.sandbox = sinon.createSandbox();
   }
@@ -98,7 +98,7 @@ type SyncHandlerSubsetOf<S> = {[K in keyof S]?: MockHandlerType<AwsCallInputOutp
  * We only ever 'await response.promise()' so that's the only thing we implement here.
  */
 class FakeAWSResponse<T> {
-  constructor(private readonly x: T) {
+  public constructor(private readonly x: T) {
   }
 
   public promise(): Promise<T> {

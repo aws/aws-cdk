@@ -38,7 +38,7 @@
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
-          "ZipFile": "exports.handler = function handler(event, _context, callback) {\n    // tslint:disable:no-console\n    console.log('====================================================');\n    console.log(JSON.stringify(event, undefined, 2));\n    console.log('====================================================');\n    return callback(undefined, event);\n}"
+          "ZipFile": "exports.handler = function handler(event, _context, callback) {\n    /* eslint-disable no-console */\n    console.log('====================================================');\n    console.log(JSON.stringify(event, undefined, 2));\n    console.log('====================================================');\n    /* eslint-enable no-console */\n    return callback(undefined, event);\n}"
         },
         "Handler": "index.handler",
         "Role": {
@@ -119,7 +119,7 @@
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
-          "ZipFile": "exports.handler = function handler(event, _context, callback) {\n    // tslint:disable:no-console\n    console.log('====================================================');\n    console.log(JSON.stringify(event, undefined, 2));\n    console.log('====================================================');\n    return callback(undefined, event);\n}"
+          "ZipFile": "exports.handler = function handler(event, _context, callback) {\n    /* eslint-disable no-console */\n    console.log('====================================================');\n    console.log(JSON.stringify(event, undefined, 2));\n    console.log('====================================================');\n    /* eslint-enable no-console */\n    return callback(undefined, event);\n}"
         },
         "Handler": "index.handler",
         "Role": {

@@ -49,9 +49,9 @@ export = nodeunit.testCase({
         'd'
       ]);
 
-      test.deepEqual(stack.resolve(obj), { 'Fn::Join': [ "",
+      test.deepEqual(stack.resolve(obj), { 'Fn::Join': [ '',
         [
-          "a",
+          'a',
           { 'Fn::GetAtt': ['a', 'bc'] },
           'cd',
         ]
@@ -86,9 +86,9 @@ export = nodeunit.testCase({
           fc.string(), fc.array(nonEmptyString, 1, 3), tokenish, fc.array(nonEmptyString, 1, 3),
           (delimiter, prefix, obj, suffix) =>
             _.isEqual(stack.resolve(Fn.join(delimiter, [...prefix, stringToken(obj), ...suffix])),
-                      { 'Fn::Join': [delimiter, [prefix.join(delimiter), obj, suffix.join(delimiter)]] })
+              { 'Fn::Join': [delimiter, [prefix.join(delimiter), obj, suffix.join(delimiter)]] })
         ),
-        { verbose: true, seed: 1539874645005, path: "0:0:0:0:0:0:0:0:0" }
+        { verbose: true, seed: 1539874645005, path: '0:0:0:0:0:0:0:0:0' }
       );
     }),
     'flattens joins nested under joins with same delimiter': asyncTest(async () => {
@@ -96,12 +96,12 @@ export = nodeunit.testCase({
       await fc.assert(
         fc.property(
           fc.string(), fc.array(anyValue),
-                      fc.array(anyValue, 1, 3),
-                      fc.array(anyValue),
+          fc.array(anyValue, 1, 3),
+          fc.array(anyValue),
           (delimiter, prefix, nested, suffix) =>
             // Gonna test
             _.isEqual(stack.resolve(Fn.join(delimiter, [...prefix, Fn.join(delimiter, nested), ...suffix])),
-                      stack.resolve(Fn.join(delimiter, [...prefix, ...nested, ...suffix])))
+              stack.resolve(Fn.join(delimiter, [...prefix, ...nested, ...suffix])))
         ),
         { verbose: true }
       );
@@ -126,7 +126,7 @@ export = nodeunit.testCase({
         { verbose: true }
       );
     }),
-    'Fn::EachMemberIn': asyncTest(async (test) => {
+    'Fn::EachMemberIn': asyncTest(async test => {
       const stack = new Stack();
       const eachMemberIn = Fn.conditionEachMemberIn(
         Fn.valueOfAll('AWS::EC2::Subnet::Id', 'VpcId'),
@@ -140,7 +140,7 @@ export = nodeunit.testCase({
       });
     }),
 
-    'cross-stack FnJoin elements are properly resolved': asyncTest(async (test) => {
+    'cross-stack FnJoin elements are properly resolved': asyncTest(async test => {
       // GIVEN
       const app = new App();
       const stack1 = new Stack(app, 'Stack1');

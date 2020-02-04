@@ -6,7 +6,7 @@ export class FileAssetParameters extends Construct {
   public readonly objectKeyParameter: CfnParameter;
   public readonly artifactHashParameter: CfnParameter;
 
-  constructor(scope: Construct, id: string) {
+  public constructor(scope: Construct, id: string) {
     super(scope, id);
 
     // add parameters for s3 bucket and s3 key. those will be set by

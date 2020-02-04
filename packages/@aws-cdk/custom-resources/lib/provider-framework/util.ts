@@ -10,6 +10,7 @@ export function calculateRetryPolicy(props: { totalTimeout?: Duration, queryInte
   const maxAttempts = totalTimeout.toSeconds() / interval.toSeconds();
 
   if (Math.round(maxAttempts) !== maxAttempts) {
+    // eslint-disable-next-line max-len
     throw new Error(`Cannot determine retry count since totalTimeout=${totalTimeout.toSeconds()}s is not integrally dividable by queryInterval=${interval.toSeconds()}s`);
   }
 

@@ -66,14 +66,14 @@ abstract class TagBase implements IAspect {
 
   protected readonly props: TagProps;
 
-  constructor(key: string, props: TagProps = {}) {
+  public constructor(key: string, props: TagProps = {}) {
     this.key = key;
     this.props = props;
   }
 
   public visit(construct: IConstruct): void {
     if (TagManager.isTaggable(construct)) {
-        this.applyTag(construct);
+      this.applyTag(construct);
     }
   }
 
@@ -106,7 +106,7 @@ export class Tag extends TagBase {
 
   private readonly defaultPriority = 100;
 
-  constructor(key: string, value: string, props: TagProps = {}) {
+  public constructor(key: string, value: string, props: TagProps = {}) {
     super(key, props);
     if (value === undefined) {
       throw new Error('Tag must have a value');
@@ -133,7 +133,7 @@ export class RemoveTag extends TagBase {
 
   private readonly defaultPriority = 200;
 
-  constructor(key: string, props: TagProps = {}) {
+  public constructor(key: string, props: TagProps = {}) {
     super(key, props);
   }
 

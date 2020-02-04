@@ -73,9 +73,9 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
     return new Import(scope, id);
   }
 
-  constructor(scope: Construct, id: string, props: NetworkLoadBalancerProps) {
+  public constructor(scope: Construct, id: string, props: NetworkLoadBalancerProps) {
     super(scope, id, props, {
-      type: "network",
+      type: 'network',
     });
 
     if (props.crossZoneEnabled) { this.setAttribute('load_balancing.cross_zone.enabled', 'true'); }

@@ -1,12 +1,12 @@
-import * as child_process from 'child_process';
+import * as childProcess from 'child_process';
 import * as path from 'path';
 import { InvokeHook } from '../../../init';
 
 export const invoke: InvokeHook = async (targetDirectory: string) => {
-  const slnPath = path.join(targetDirectory, "src", "%name.PascalCased%.sln");
-  const csprojPath = path.join(targetDirectory, "src", "%name.PascalCased%", "%name.PascalCased%.csproj");
+  const slnPath = path.join(targetDirectory, 'src', '%name.PascalCased%.sln');
+  const csprojPath = path.join(targetDirectory, 'src', '%name.PascalCased%', '%name.PascalCased%.csproj');
 
-  const child = child_process.spawn('dotnet', [ 'sln', slnPath, 'add', csprojPath ], {
+  const child = childProcess.spawn('dotnet', [ 'sln', slnPath, 'add', csprojPath ], {
     // Need this for Windows where we want .cmd and .bat to be found as well.
     shell: true,
     stdio: [ 'ignore', 'pipe', 'inherit' ]

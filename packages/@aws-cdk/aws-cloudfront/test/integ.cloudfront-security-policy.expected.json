@@ -4,6 +4,9 @@
       "Type": "AWS::CloudFront::Distribution",
       "Properties": {
         "DistributionConfig": {
+          "Aliases": [
+            "test.test.com"
+          ],
           "DefaultCacheBehavior": {
             "AllowedMethods": [
               "GET",
@@ -13,6 +16,7 @@
               "GET",
               "HEAD"
             ],
+            "Compress": true,
             "ForwardedValues": {
               "Cookies": {
                 "Forward": "none"
@@ -20,8 +24,7 @@
               "QueryString": false
             },
             "TargetOriginId": "origin1",
-            "ViewerProtocolPolicy": "redirect-to-https",
-            "Compress": true
+            "ViewerProtocolPolicy": "redirect-to-https"
           },
           "DefaultRootObject": "index.html",
           "Enabled": true,
@@ -54,10 +57,7 @@
             "AcmCertificateArn": "arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d",
             "MinimumProtocolVersion": "TLSv1",
             "SslSupportMethod": "sni-only"
-          },
-          "Aliases": [
-            "test.test.com"
-          ]
+          }
         }
       }
     }

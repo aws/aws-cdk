@@ -7,7 +7,7 @@ export class AugmentationGenerator {
   private readonly code = new CodeMaker();
   private readonly outputFile: string;
 
-  constructor(moduleName: string, private readonly spec: schema.Specification, private readonly affix: string) {
+  public constructor(moduleName: string, private readonly spec: schema.Specification, private readonly affix: string) {
     this.outputFile = `${moduleName}-augmentations.generated.ts`;
     this.code.openFile(this.outputFile);
 
@@ -79,17 +79,17 @@ export class AugmentationGenerator {
   }
 
   private emitMetricFunctionDeclaration(resource: SpecName): void {
-    this.code.line(`/**`);
+    this.code.line('/**');
     this.code.line(` * Return the given named metric for this ${resource.resourceName}`);
-    this.code.line(` */`);
-    this.code.line(`metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric;`);
+    this.code.line(' */');
+    this.code.line('metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric;');
   }
 
   private emitMetricFunction(className: string, metrics: schema.ResourceMetricAugmentations): void {
     this.code.line(`${className}.prototype.metric = function(metricName: string, props?: cloudwatch.MetricOptions) {`);
-    this.code.line(`  return new cloudwatch.Metric({`);
+    this.code.line('  return new cloudwatch.Metric({');
     this.code.line(`    namespace: '${metrics.namespace}',`);
-    this.code.line(`    metricName,`);
+    this.code.line('    metricName,');
 
     const dimStrings = new Array<string>();
     for (const [key, field] of Object.entries(metrics.dimensions)) {
@@ -97,17 +97,17 @@ export class AugmentationGenerator {
     }
 
     this.code.line(`    dimensions: { ${dimStrings.join(', ') } },`);
-    this.code.line(`    ...props`);
-    this.code.line(`  }).attachTo(this);`);
+    this.code.line('    ...props');
+    this.code.line('  }).attachTo(this);');
     this.code.line('};');
   }
 
   private emitSpecificMetricFunctionDeclaration(metric: schema.ResourceMetric): void {
-    this.code.line(`/**`);
+    this.code.line('/**');
     this.code.line(` * ${metric.documentation}`);
-    this.code.line(` *`);
+    this.code.line(' *');
     this.code.line(` * ${metricStatistic(metric)} over 5 minutes`);
-    this.code.line(` */`);
+    this.code.line(' */');
     this.code.line(`metric${metricFunctionName(metric)}(props?: cloudwatch.MetricOptions): cloudwatch.Metric;`);
   }
 

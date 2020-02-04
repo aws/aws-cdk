@@ -9,7 +9,7 @@ interface ConstructThatTakesAVpcProps {
 }
 
 class ConstructThatTakesAVpc extends cdk.Construct {
-  constructor(scope: cdk.Construct, id: string, _props: ConstructThatTakesAVpcProps) {
+  public constructor(scope: cdk.Construct, id: string, _props: ConstructThatTakesAVpcProps) {
     super(scope, id);
 
     // new ec2.CfnInstance(this, 'Instance', {
@@ -26,7 +26,7 @@ class ConstructThatTakesAVpc extends cdk.Construct {
 class Stack1 extends cdk.Stack {
   public readonly vpc: ec2.Vpc;
 
-  constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
+  public constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
     this.vpc = new ec2.Vpc(this, 'VPC');
@@ -41,7 +41,7 @@ interface Stack2Props extends cdk.StackProps {
  * Stack2 consumes the VPC
  */
 class Stack2 extends cdk.Stack {
-  constructor(scope: cdk.App, id: string, props: Stack2Props) {
+  public constructor(scope: cdk.App, id: string, props: Stack2Props) {
     super(scope, id, props);
 
     // Pass the VPC to a construct that needs it

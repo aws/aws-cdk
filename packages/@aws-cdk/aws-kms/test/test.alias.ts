@@ -136,7 +136,7 @@ export = {
     });
 
     class MyConstruct extends Construct {
-      constructor(scope: Construct, id: string, key: IKey) {
+      public constructor(scope: Construct, id: string, key: IKey) {
         super(scope, id);
 
         new CfnOutput(stack, 'OutId', {
@@ -153,19 +153,19 @@ export = {
     const template = SynthUtils.synthesize(stack).template.Outputs;
 
     test.deepEqual(template, {
-      "OutId": {
-        "Value": "alias/myAlias",
+      'OutId': {
+        'Value': 'alias/myAlias',
       },
-      "OutArn": {
-        "Value": {
-          "Fn::Join": ["", [
-            "arn:",
-            { Ref: "AWS::Partition" },
-            ":kms:",
-            { Ref: "AWS::Region" },
-            ":",
-            { Ref: "AWS::AccountId" },
-            ":alias/myAlias",
+      'OutArn': {
+        'Value': {
+          'Fn::Join': ['', [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':kms:',
+            { Ref: 'AWS::Region' },
+            ':',
+            { Ref: 'AWS::AccountId' },
+            ':alias/myAlias',
           ]],
         },
       },

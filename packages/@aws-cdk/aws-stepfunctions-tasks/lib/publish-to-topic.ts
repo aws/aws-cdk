@@ -49,7 +49,7 @@ export class PublishToTopic implements sfn.IStepFunctionsTask {
 
   private readonly integrationPattern: sfn.ServiceIntegrationPattern;
 
-  constructor(private readonly topic: sns.ITopic, private readonly props: PublishToTopicProps) {
+  public constructor(private readonly topic: sns.ITopic, private readonly props: PublishToTopicProps) {
     this.integrationPattern = props.integrationPattern || sfn.ServiceIntegrationPattern.FIRE_AND_FORGET;
 
     const supportedPatterns = [
@@ -70,7 +70,7 @@ export class PublishToTopic implements sfn.IStepFunctionsTask {
 
   public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
     return {
-      resourceArn: getResourceArn("sns", "publish", this.integrationPattern),
+      resourceArn: getResourceArn('sns', 'publish', this.integrationPattern),
       policyStatements: [new iam.PolicyStatement({
         actions: ['sns:Publish'],
         resources: [this.topic.topicArn]
@@ -78,7 +78,7 @@ export class PublishToTopic implements sfn.IStepFunctionsTask {
       parameters: {
         TopicArn: this.topic.topicArn,
         Message: this.props.message.value,
-        MessageStructure: this.props.messagePerSubscriptionType ? "json" : undefined,
+        MessageStructure: this.props.messagePerSubscriptionType ? 'json' : undefined,
         Subject: this.props.subject,
       }
     };

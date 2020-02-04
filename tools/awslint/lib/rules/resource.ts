@@ -47,7 +47,7 @@ export class ResourceReflection {
   public readonly core: CoreTypes;
   public readonly physicalNameProp?: reflect.Property;
 
-  constructor(public readonly construct: ConstructReflection) {
+  public constructor(public readonly construct: ConstructReflection) {
     this.assembly = construct.classType.assembly;
     this.sys = this.assembly.system;
 
@@ -55,7 +55,7 @@ export class ResourceReflection {
     if (!cfn) {
       throw new Error(`Cannot find L1 class for L2 ${construct.fqn}. ` +
         `Is "${guessResourceName(construct.fqn)}" an actual CloudFormation resource. ` +
-        `If not, use the "@resource" doc tag to indicate the full resource name (e.g. "@resource AWS::Route53::HostedZone")`);
+        'If not, use the "@resource" doc tag to indicate the full resource name (e.g. "@resource AWS::Route53::HostedZone")');
     }
 
     this.core = new CoreTypes(this.sys);
@@ -156,7 +156,7 @@ function findDeclarationSite(prop: reflect.Property): reflect.Property {
 
 resourceLinter.add({
   code: 'resource-class-extends-resource',
-  message: `resource classes must extend "cdk.Resource" directly or indirectly`,
+  message: 'resource classes must extend "cdk.Resource" directly or indirectly',
   eval: e => {
     const resourceBase = e.ctx.sys.findClass(e.ctx.core.resourceClass.fqn);
     e.assert(e.ctx.construct.classType.extends(resourceBase), e.ctx.construct.fqn);
@@ -220,8 +220,8 @@ resourceLinter.add({
 
 resourceLinter.add({
   code: 'props-physical-name',
-  message: "Every Resource must have a single physical name construction property, " +
-    "with a name that is an ending substring of <cfnResource>Name",
+  message: 'Every Resource must have a single physical name construction property, ' +
+    'with a name that is an ending substring of <cfnResource>Name',
   eval: e => {
     if (!e.ctx.construct.propsType) { return; }
     e.assert(e.ctx.physicalNameProp, e.ctx.construct.propsFqn);

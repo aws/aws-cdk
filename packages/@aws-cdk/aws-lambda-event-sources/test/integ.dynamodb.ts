@@ -5,7 +5,7 @@ import { DynamoEventSource } from '../lib';
 import { TestFunction } from './test-function';
 
 class DynamoEventSourceTest extends cdk.Stack {
-  constructor(scope: cdk.App, id: string) {
+  public constructor(scope: cdk.App, id: string) {
     super(scope, id);
 
     const fn = new TestFunction(this, 'F');

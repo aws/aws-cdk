@@ -67,7 +67,7 @@ export class HelmChart extends Construct {
    */
   public static readonly RESOURCE_TYPE = 'Custom::AWSCDK-EKS-HelmChart';
 
-  constructor(scope: Construct, id: string, props: HelmChartProps) {
+  public constructor(scope: Construct, id: string, props: HelmChartProps) {
     super(scope, id);
 
     const stack = Stack.of(this);

@@ -11,7 +11,7 @@ export class EventBridgeDestination implements lambda.IDestination {
   /**
    * @default - use the default event bus
    */
-  constructor(private readonly eventBus?: events.IEventBus) {
+  public constructor(private readonly eventBus?: events.IEventBus) {
   }
 
   /**

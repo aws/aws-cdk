@@ -28,7 +28,7 @@ export function deepEqual(lvalue: any, rvalue: any): boolean {
     const keys = Object.keys(lvalue);
     if (keys.length !== Object.keys(rvalue).length) { return false; }
     for (const key of keys) {
-      if (!rvalue.hasOwnProperty(key)) { return false; }
+      if (!Object.prototype.hasOwnProperty.call(rvalue, key)) { return false; }
       if (!deepEqual(lvalue[key], rvalue[key])) { return false; }
     }
     return true;

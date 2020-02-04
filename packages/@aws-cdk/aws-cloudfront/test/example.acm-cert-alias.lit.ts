@@ -4,7 +4,7 @@ import { App, Construct, Stack } from '@aws-cdk/core';
 import * as cloudfront from '../lib';
 
 class AcmCertificateAliasStack extends Stack {
-  constructor(scope: Construct, id: string) {
+  public constructor(scope: Construct, id: string) {
     super(scope, id);
     /// !show
     const s3BucketSource = new s3.Bucket(this, 'Bucket');

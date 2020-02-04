@@ -3,7 +3,7 @@ import * as cdk from '@aws-cdk/core';
 import * as apigw from '../lib';
 
 class BookStack extends cdk.Stack {
-  constructor(scope: cdk.App, id: string) {
+  public constructor(scope: cdk.App, id: string) {
     super(scope, id);
 
     const booksHandler = new apigw.LambdaIntegration(new lambda.Function(this, 'BooksHandler', {
@@ -46,7 +46,7 @@ class BookStack extends cdk.Stack {
 }
 
 class BookApp extends cdk.App {
-  constructor() {
+  public constructor() {
     super();
 
     new BookStack(this, 'restapi-books-example');

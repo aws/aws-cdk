@@ -56,15 +56,13 @@ test('can parse prefixlist', () => {
 
 test('equality is reflexive', () => {
   fc.assert(fc.property(
-    arbitraryRule, (statement) => {
-      return new SecurityGroupRule(statement).equal(new SecurityGroupRule(statement));
-    }
+    arbitraryRule, statement => new SecurityGroupRule(statement).equal(new SecurityGroupRule(statement))
   ));
 });
 
 test('equality is symmetric', () => {
   fc.assert(fc.property(
-    twoArbitraryRules, (s) => {
+    twoArbitraryRules, s => {
       const a = new SecurityGroupRule(s.rule1);
       const b = new SecurityGroupRule(s.rule2);
 

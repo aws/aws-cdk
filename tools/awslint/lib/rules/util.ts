@@ -25,7 +25,7 @@ export function getDocTag(documentable: reflect.Documentable, tag: string): stri
     for (const base of documentable.interfaces) {
       const baseTag = getDocTag(base, tag);
       if (baseTag) {
-         return baseTag;
+        return baseTag;
       }
     }
   }

@@ -194,7 +194,7 @@ export class Service extends ServiceBase {
    */
   public readonly routingPolicy: RoutingPolicy;
 
-  constructor(scope: Construct, id: string, props: ServiceProps) {
+  public constructor(scope: Construct, id: string, props: ServiceProps) {
     super(scope, id);
 
     const namespaceType = props.namespace.type;
@@ -229,7 +229,7 @@ export class Service extends ServiceBase {
     if (props.healthCheck
         && props.healthCheck.type === HealthCheckType.TCP
         && props.healthCheck.resourcePath) {
-          throw new Error('Cannot specify `resourcePath` when using a `TCP` health check.');
+      throw new Error('Cannot specify `resourcePath` when using a `TCP` health check.');
     }
 
     // Set defaults where necessary
@@ -249,10 +249,10 @@ export class Service extends ServiceBase {
     const dnsConfig: CfnService.DnsConfigProperty | undefined = props.namespace.type === NamespaceType.HTTP
       ? undefined
       : {
-          dnsRecords: renderDnsRecords(dnsRecordType, props.dnsTtl),
-          namespaceId: props.namespace.namespaceId,
-          routingPolicy,
-        };
+        dnsRecords: renderDnsRecords(dnsRecordType, props.dnsTtl),
+        namespaceId: props.namespace.namespaceId,
+        routingPolicy,
+      };
 
     const healthCheckConfigDefaults = {
       type: HealthCheckType.HTTP,
@@ -387,27 +387,27 @@ export enum DnsRecordType {
   /**
    * An A record
    */
-  A = "A",
+  A = 'A',
 
   /**
    * An AAAA record
    */
-  AAAA = "AAAA",
+  AAAA = 'AAAA',
 
   /**
    * Both an A and AAAA record
    */
-  A_AAAA = "A, AAAA",
+  A_AAAA = 'A, AAAA',
 
   /**
    * A Srv record
    */
-  SRV = "SRV",
+  SRV = 'SRV',
 
   /**
    * A CNAME record
    */
-  CNAME = "CNAME",
+  CNAME = 'CNAME',
 }
 
 export enum RoutingPolicy {
@@ -415,13 +415,13 @@ export enum RoutingPolicy {
    * Route 53 returns the applicable value from one randomly selected instance from among the instances that you
    * registered using the same service.
    */
-  WEIGHTED = "WEIGHTED",
+  WEIGHTED = 'WEIGHTED',
 
   /**
    * If you define a health check for the service and the health check is healthy, Route 53 returns the applicable value
    * for up to eight instances.
    */
-  MULTIVALUE = "MULTIVALUE",
+  MULTIVALUE = 'MULTIVALUE',
 }
 
 export enum HealthCheckType {
@@ -429,18 +429,18 @@ export enum HealthCheckType {
    * Route 53 tries to establish a TCP connection. If successful, Route 53 submits an HTTP request and waits for an HTTP
    * status code of 200 or greater and less than 400.
    */
-  HTTP = "HTTP",
+  HTTP = 'HTTP',
 
   /**
    * Route 53 tries to establish a TCP connection. If successful, Route 53 submits an HTTPS request and waits for an
    * HTTP status code of 200 or greater and less than 400.  If you specify HTTPS for the value of Type, the endpoint
    * must support TLS v1.0 or later.
    */
-  HTTPS = "HTTPS",
+  HTTPS = 'HTTPS',
 
   /**
    * Route 53 tries to establish a TCP connection.
    * If you specify TCP for Type, don't specify a value for ResourcePath.
    */
-  TCP = "TCP",
+  TCP = 'TCP',
 }

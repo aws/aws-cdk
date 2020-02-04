@@ -27,7 +27,7 @@ export class SecurityGroupRule {
    */
   public readonly peer?: RulePeer;
 
-  constructor(ruleObject: any, groupRef?: string) {
+  public constructor(ruleObject: any, groupRef?: string) {
     this.ipProtocol = ruleObject.IpProtocol || '*unknown*';
     this.fromPort = ruleObject.FromPort;
     this.toPort = ruleObject.ToPort;
@@ -35,16 +35,16 @@ export class SecurityGroupRule {
 
     this.peer =
         findFirst(ruleObject,
-            ['CidrIp', 'CidrIpv6'],
-            (ip) => ({ kind: 'cidr-ip', ip } as CidrIpPeer))
+          ['CidrIp', 'CidrIpv6'],
+          ip => ({ kind: 'cidr-ip', ip } as CidrIpPeer))
         ||
         findFirst(ruleObject,
-            ['DestinationSecurityGroupId', 'SourceSecurityGroupId'],
-            (securityGroupId) => ({ kind: 'security-group', securityGroupId } as SecurityGroupPeer))
+          ['DestinationSecurityGroupId', 'SourceSecurityGroupId'],
+          securityGroupId => ({ kind: 'security-group', securityGroupId } as SecurityGroupPeer))
         ||
         findFirst(ruleObject,
-            ['DestinationPrefixListId', 'SourcePrefixListId'],
-            (prefixListId) => ({ kind: 'prefix-list', prefixListId } as PrefixListPeer));
+          ['DestinationPrefixListId', 'SourcePrefixListId'],
+          prefixListId => ({ kind: 'prefix-list', prefixListId } as PrefixListPeer));
   }
 
   public equal(other: SecurityGroupRule) {

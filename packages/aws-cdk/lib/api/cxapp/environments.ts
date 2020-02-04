@@ -31,7 +31,7 @@ async function parseEnvironment(sdk: ISDK, env: cxapi.Environment): Promise<cxap
   const region = env.region === cxapi.UNKNOWN_REGION ? await sdk.defaultRegion() : env.region;
 
   if (!account || !region) {
-    throw new Error(`Unable to determine default account and/or region`);
+    throw new Error('Unable to determine default account and/or region');
   }
 
   return {
@@ -45,7 +45,7 @@ async function parseEnvironment(sdk: ISDK, env: cxapi.Environment): Promise<cxap
  */
 export function environmentsFromDescriptors(envSpecs: string[]): cxapi.Environment[] {
   if (envSpecs.length === 0) {
-    throw new Error(`Either specify an app with '--app', or specify an environment name like 'aws://123456789012/us-east-1'`);
+    throw new Error('Either specify an app with \'--app\', or specify an environment name like \'aws://123456789012/us-east-1\'');
   }
 
   const ret = new Array<cxapi.Environment>();

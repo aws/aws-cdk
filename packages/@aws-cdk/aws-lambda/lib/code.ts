@@ -1,5 +1,5 @@
 import * as s3 from '@aws-cdk/aws-s3';
-import * as s3_assets from '@aws-cdk/aws-s3-assets';
+import * as s3a from '@aws-cdk/aws-s3-assets';
 import * as cdk from '@aws-cdk/core';
 
 export abstract class Code {
@@ -39,7 +39,7 @@ export abstract class Code {
    * Loads the function code from a local disk asset.
    * @param path Either a directory with the Lambda code bundle or a .zip file
    */
-  public static fromAsset(path: string, options?: s3_assets.AssetOptions): AssetCode {
+  public static fromAsset(path: string, options?: s3a.AssetOptions): AssetCode {
     return new AssetCode(path, options);
   }
 
@@ -113,7 +113,7 @@ export class S3Code extends Code {
   public readonly isInline = false;
   private bucketName: string;
 
-  constructor(bucket: s3.IBucket, private key: string, private objectVersion?: string) {
+  public constructor(bucket: s3.IBucket, private key: string, private objectVersion?: string) {
     super();
 
     if (!bucket.bucketName) {
@@ -140,15 +140,15 @@ export class S3Code extends Code {
 export class InlineCode extends Code {
   public readonly isInline = true;
 
-  constructor(private code: string) {
+  public constructor(private code: string) {
     super();
 
     if (code.length === 0) {
-      throw new Error(`Lambda inline code cannot be empty`);
+      throw new Error('Lambda inline code cannot be empty');
     }
 
     if (code.length > 4096) {
-      throw new Error("Lambda source is too large, must be <= 4096 but is " + code.length);
+      throw new Error('Lambda source is too large, must be <= 4096 but is ' + code.length);
     }
   }
 
@@ -164,19 +164,19 @@ export class InlineCode extends Code {
  */
 export class AssetCode extends Code {
   public readonly isInline = false;
-  private asset?: s3_assets.Asset;
+  private asset?: s3a.Asset;
 
   /**
    * @param path The path to the asset file or directory.
    */
-  constructor(public readonly path: string, private readonly options: s3_assets.AssetOptions = { }) {
+  public constructor(public readonly path: string, private readonly options: s3a.AssetOptions = { }) {
     super();
   }
 
   public bind(scope: cdk.Construct): CodeConfig {
     // If the same AssetCode is used multiple times, retain only the first instantiation.
     if (!this.asset) {
-      this.asset = new s3_assets.Asset(scope, 'Code', {
+      this.asset = new s3a.Asset(scope, 'Code', {
         path: this.path,
         ...this.options
       });
@@ -196,7 +196,7 @@ export class AssetCode extends Code {
 
   public bindToResource(resource: cdk.CfnResource, options: ResourceBindOptions = { }) {
     if (!this.asset) {
-      throw new Error(`bindToResource() must be called after bind()`);
+      throw new Error('bindToResource() must be called after bind()');
     }
 
     const resourceProperty = options.resourceProperty || 'Code';
@@ -249,7 +249,7 @@ export class CfnParametersCode extends Code {
   private _bucketNameParam?: cdk.CfnParameter;
   private _objectKeyParam?: cdk.CfnParameter;
 
-  constructor(props: CfnParametersCodeProps = {}) {
+  public constructor(props: CfnParametersCodeProps = {}) {
     super();
 
     this._bucketNameParam = props.bucketNameParam;

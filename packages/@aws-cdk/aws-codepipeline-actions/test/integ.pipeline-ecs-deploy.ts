@@ -16,7 +16,7 @@ const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-ecs-deploy');
 const vpc = new ec2.Vpc(stack, 'VPC', {
   maxAzs: 1,
 });
-const cluster = new ecs.Cluster(stack, "EcsCluster", {
+const cluster = new ecs.Cluster(stack, 'EcsCluster', {
   vpc,
 });
 const repository = new ecr.Repository(stack, 'EcrRepo');
@@ -50,12 +50,14 @@ const project = new codebuild.PipelineProject(stack, 'EcsProject', {
   buildSpec: codebuild.BuildSpec.fromObject({
     version: '0.2',
     phases: {
+      // eslint-disable-next-line @typescript-eslint/camelcase
       pre_build: {
         commands: '$(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)',
       },
       build: {
         commands: 'docker build -t $REPOSITORY_URI:latest .',
       },
+      // eslint-disable-next-line @typescript-eslint/camelcase
       post_build: {
         commands: [
           'docker push $REPOSITORY_URI:latest',

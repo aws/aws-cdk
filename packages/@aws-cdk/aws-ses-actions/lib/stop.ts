@@ -16,7 +16,7 @@ export interface StopProps {
  * notification to Amazon SNS.
  */
 export class Stop implements ses.IReceiptRuleAction {
-  constructor(private readonly props: StopProps = {}) {
+  public constructor(private readonly props: StopProps = {}) {
   }
 
   public bind(_rule: ses.IReceiptRule): ses.ReceiptRuleActionConfig {

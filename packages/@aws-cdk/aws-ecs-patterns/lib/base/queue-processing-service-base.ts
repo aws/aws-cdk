@@ -91,7 +91,7 @@ export interface QueueProcessingServiceBaseProps {
    *
    * @default (desiredTaskCount * 2)
    */
-  readonly maxScalingCapacity?: number
+  readonly maxScalingCapacity?: number;
 
   /**
    * The intervals for scaling based on the SQS queue's ApproximateNumberOfMessagesVisible metric.
@@ -183,11 +183,11 @@ export abstract class QueueProcessingServiceBase extends Construct {
   /**
    * Constructs a new instance of the QueueProcessingServiceBase class.
    */
-  constructor(scope: Construct, id: string, props: QueueProcessingServiceBaseProps) {
+  public constructor(scope: Construct, id: string, props: QueueProcessingServiceBaseProps) {
     super(scope, id);
 
     if (props.cluster && props.vpc) {
-      throw new Error(`You can only specify either vpc or cluster. Alternatively, you can leave both blank`);
+      throw new Error('You can only specify either vpc or cluster. Alternatively, you can leave both blank');
     }
     this.cluster = props.cluster || this.getDefaultCluster(this, props.vpc);
 
@@ -215,7 +215,7 @@ export abstract class QueueProcessingServiceBase extends Construct {
     this.maxCapacity = props.maxScalingCapacity || (2 * this.desiredCount);
 
     if (!this.desiredCount && !this.maxCapacity) {
-      throw new Error(`maxScalingCapacity must be set and greater than 0 if desiredCount is 0`);
+      throw new Error('maxScalingCapacity must be set and greater than 0 if desiredCount is 0');
     }
 
     new CfnOutput(this, 'SQSQueue', { value: this.sqsQueue.queueName });

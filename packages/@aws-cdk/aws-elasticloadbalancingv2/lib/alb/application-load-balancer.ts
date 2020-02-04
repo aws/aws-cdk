@@ -60,9 +60,9 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
   public readonly connections: ec2.Connections;
   private readonly securityGroup: ec2.ISecurityGroup;
 
-  constructor(scope: Construct, id: string, props: ApplicationLoadBalancerProps) {
+  public constructor(scope: Construct, id: string, props: ApplicationLoadBalancerProps) {
     super(scope, id, props, {
-      type: "application",
+      type: 'application',
       securityGroups: Lazy.listValue({ produce: () => [this.securityGroup.securityGroupId] }),
       ipAddressType: props.ipAddressType,
     });
@@ -91,7 +91,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
 
     const region = Stack.of(this).region;
     if (Token.isUnresolved(region)) {
-      throw new Error(`Region is required to enable ELBv2 access logging`);
+      throw new Error('Region is required to enable ELBv2 access logging');
     }
 
     const account = ELBV2_ACCOUNTS[region];
@@ -100,7 +100,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
     }
 
     prefix = prefix || '';
-    bucket.grantPut(new iam.AccountPrincipal(account), `${(prefix ? prefix + "/" : "")}AWSLogs/${Stack.of(this).account}/*`);
+    bucket.grantPut(new iam.AccountPrincipal(account), `${(prefix ? prefix + '/' : '')}AWSLogs/${Stack.of(this).account}/*`);
 
     // make sure the bucket's policy is created before the ALB (see https://github.com/aws/aws-cdk/issues/1633)
     this.node.addDependency(bucket);
@@ -578,7 +578,7 @@ class ImportedApplicationLoadBalancer extends Resource implements IApplicationLo
    */
   public readonly vpc?: ec2.IVpc;
 
-  constructor(scope: Construct, id: string, private readonly props: ApplicationLoadBalancerAttributes) {
+  public constructor(scope: Construct, id: string, private readonly props: ApplicationLoadBalancerAttributes) {
     super(scope, id);
 
     this.loadBalancerArn = props.loadBalancerArn;

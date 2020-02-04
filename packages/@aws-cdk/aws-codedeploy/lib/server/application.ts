@@ -59,7 +59,7 @@ export class ServerApplication extends Resource implements IServerApplication {
   public readonly applicationArn: string;
   public readonly applicationName: string;
 
-  constructor(scope: Construct, id: string, props: ServerApplicationProps = {}) {
+  public constructor(scope: Construct, id: string, props: ServerApplicationProps = {}) {
     super(scope, id, {
       physicalName: props.applicationName,
     });

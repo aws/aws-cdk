@@ -25,7 +25,7 @@ export class FakeBuildAction implements codepipeline.IAction {
   public readonly actionProperties: codepipeline.ActionProperties;
   private readonly customConfigKey: string | undefined;
 
-  constructor(props: FakeBuildActionProps) {
+  public constructor(props: FakeBuildActionProps) {
     this.actionProperties = {
       ...props,
       category: codepipeline.ActionCategory.BUILD,
@@ -38,7 +38,7 @@ export class FakeBuildAction implements codepipeline.IAction {
   }
 
   public bind(_scope: Construct, _stage: codepipeline.IStage, _options: codepipeline.ActionBindOptions):
-      codepipeline.ActionConfig {
+  codepipeline.ActionConfig {
     return {
       configuration: {
         CustomConfigKey: this.customConfigKey,

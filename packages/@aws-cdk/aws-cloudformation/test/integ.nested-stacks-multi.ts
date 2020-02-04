@@ -3,7 +3,7 @@ import { App, Construct, Stack } from '@aws-cdk/core';
 import * as cfn from '../lib';
 
 class YourNestedStack extends cfn.NestedStack {
-  constructor(scope: Construct, id: string) {
+  public constructor(scope: Construct, id: string) {
     super(scope, id);
 
     new sns.Topic(this, 'YourResource');
@@ -11,7 +11,7 @@ class YourNestedStack extends cfn.NestedStack {
 }
 
 class MyNestedStack extends cfn.NestedStack {
-  constructor(scope: Construct, id: string) {
+  public constructor(scope: Construct, id: string) {
     super(scope, id);
 
     new sns.Topic(this, 'MyResource');

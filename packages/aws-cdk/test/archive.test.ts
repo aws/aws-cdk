@@ -29,7 +29,7 @@ test('zipDirectory can take a directory and produce a zip from it', async () => 
 
     // check that mode is preserved
     const stat = await fs.stat(path.join(extractDir, 'executable.txt'));
-    // tslint:disable-next-line:no-bitwise
+    // eslint-disable-next-line no-bitwise
     const isExec = (stat.mode & fs.constants.S_IXUSR) || (stat.mode & fs.constants.S_IXGRP) || (stat.mode & fs.constants.S_IXOTH);
     expect(isExec).toBeTruthy();
   } finally {

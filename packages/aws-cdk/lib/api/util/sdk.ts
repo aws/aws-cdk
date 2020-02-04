@@ -1,6 +1,6 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
-import * as child_process from 'child_process';
+import * as childProcess from 'child_process';
 import * as fs from 'fs-extra';
 import * as https from 'https';
 import * as os from 'os';
@@ -98,7 +98,7 @@ export class SDK implements ISDK {
    */
   private readonly retryOptions = { maxRetries: 6, retryDelayOptions: { base: 300 }};
 
-  constructor(options: SDKOptions = {}) {
+  public constructor(options: SDKOptions = {}) {
     this.profile = options.profile;
 
     const defaultCredentialProvider = makeCLICompatibleCredentialProvider(options.profile, options.ec2creds);
@@ -181,11 +181,11 @@ export class SDK implements ISDK {
     }
 
     if (!region) {
-      throw new Error(`AWS region must be configured either when you configure your CDK stack or through the environment`);
+      throw new Error('AWS region must be configured either when you configure your CDK stack or through the environment');
     }
 
     if (!account) {
-      throw new Error(`Unable to resolve AWS account to use. It must be either configured when you define your CDK or through the environment`);
+      throw new Error('Unable to resolve AWS account to use. It must be either configured when you define your CDK or through the environment');
     }
 
     const environment: cxapi.Environment = {
@@ -211,6 +211,7 @@ export class SDK implements ISDK {
     const caBundlePath = options.caBundlePath || caBundlePathFromEnvironment();
 
     if (proxyAddress && caBundlePath) {
+      // eslint-disable-next-line max-len
       throw new Error(`At the moment, cannot specify Proxy (${proxyAddress}) and CA Bundle (${caBundlePath}) at the same time. See https://github.com/aws/aws-cdk/issues/5804`);
       // Maybe it's possible after all, but I've been staring at
       // https://github.com/TooTallNate/node-proxy-agent/blob/master/index.js#L79
@@ -221,7 +222,7 @@ export class SDK implements ISDK {
     if (proxyAddress) { // Ignore empty string on purpose
       // https://aws.amazon.com/blogs/developer/using-the-aws-sdk-for-javascript-from-behind-a-proxy/
       debug('Using proxy server: %s', proxyAddress);
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      // eslint-disable-next-line @typescript-eslint/no-require-imports,@typescript-eslint/no-var-requires
       const ProxyAgent: any = require('proxy-agent');
       config.httpOptions.agent = new ProxyAgent(proxyAddress);
     }
@@ -315,7 +316,7 @@ class DefaultAWSAccount {
   private defaultAccountId?: string = undefined;
   private readonly accountCache = new AccountAccessKeyCache();
 
-  constructor(
+  public constructor(
     private readonly defaultCredentialsProvider: Promise<AWS.CredentialProviderChain>,
     private readonly region: () => Promise<string | undefined>) {
   }

@@ -40,7 +40,7 @@ export abstract class AclCidr {
 }
 
 class AclCidrImpl extends AclCidr {
-  constructor(private readonly config: AclCidrConfig) {
+  public constructor(private readonly config: AclCidrConfig) {
     super();
   }
 
@@ -159,7 +159,7 @@ export abstract class AclTraffic {
 }
 
 class AclTrafficImpl extends AclTraffic {
-  constructor(private readonly config: AclTrafficConfig) {
+  public constructor(private readonly config: AclTrafficConfig) {
     super();
   }
 
@@ -236,10 +236,10 @@ export interface AclPortRange {
   /**
    * The first port in the range. Required if you specify 6 (TCP) or 17 (UDP) for the protocol parameter.
    */
-  readonly from?: number
+  readonly from?: number;
 
   /**
    * The last port in the range. Required if you specify 6 (TCP) or 17 (UDP) for the protocol parameter.
    */
-  readonly to?: number
+  readonly to?: number;
 }

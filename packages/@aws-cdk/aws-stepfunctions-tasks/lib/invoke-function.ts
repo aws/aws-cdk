@@ -24,7 +24,7 @@ export interface InvokeFunctionProps {
  * OUTPUT: the output of this task is the return value of the Lambda Function.
  */
 export class InvokeFunction implements sfn.IStepFunctionsTask {
-  constructor(private readonly lambdaFunction: lambda.IFunction, private readonly props: InvokeFunctionProps = {}) {
+  public constructor(private readonly lambdaFunction: lambda.IFunction, private readonly props: InvokeFunctionProps = {}) {
   }
 
   public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
@@ -32,7 +32,7 @@ export class InvokeFunction implements sfn.IStepFunctionsTask {
       resourceArn: this.lambdaFunction.functionArn,
       policyStatements: [new iam.PolicyStatement({
         resources: [this.lambdaFunction.functionArn],
-        actions: ["lambda:InvokeFunction"],
+        actions: ['lambda:InvokeFunction'],
       })],
       metricPrefixSingular: 'LambdaFunction',
       metricPrefixPlural: 'LambdaFunctions',

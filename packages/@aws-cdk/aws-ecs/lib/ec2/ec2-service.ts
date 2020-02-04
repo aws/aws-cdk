@@ -83,9 +83,8 @@ export interface Ec2ServiceProps extends BaseServiceOptions {
 /**
  * The interface for a service using the EC2 launch type on an ECS cluster.
  */
-export interface IEc2Service extends IService {
-
-}
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface IEc2Service extends IService { }
 
 /**
  * This creates a service using the EC2 launch type on an ECS cluster.
@@ -111,7 +110,7 @@ export class Ec2Service extends BaseService implements IEc2Service {
   /**
    * Constructs a new instance of the Ec2Service class.
    */
-  constructor(scope: Construct, id: string, props: Ec2ServiceProps) {
+  public constructor(scope: Construct, id: string, props: Ec2ServiceProps) {
     if (props.daemon && props.desiredCount !== undefined) {
       throw new Error('Daemon mode launches one task on every instance. Don\'t supply desiredCount.');
     }

@@ -35,7 +35,7 @@ export interface BasePathMappingProps extends BasePathMappingOptions {
  * `DomainName.addBasePathMapping()` to define mappings.
  */
 export class BasePathMapping extends Resource {
-  constructor(scope: Construct, id: string, props: BasePathMappingProps) {
+  public constructor(scope: Construct, id: string, props: BasePathMappingProps) {
     super(scope, id);
 
     if (props.basePath && !Token.isUnresolved(props.basePath)) {

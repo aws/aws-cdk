@@ -4,13 +4,13 @@ import * as cdk from '@aws-cdk/core';
 import * as fc from 'fast-check';
 import { Test } from 'nodeunit';
 import * as appscaling from '../lib';
-import { arbitrary_input_intervals, createScalableTarget } from './util';
+import { arbitraryInputIntervals, createScalableTarget } from './util';
 
 export = {
   'alarm thresholds are valid numbers'(test: Test) {
     fc.assert(fc.property(
-      arbitrary_input_intervals(),
-      (intervals) => {
+      arbitraryInputIntervals(),
+      intervals => {
         const template = setupStepScaling(intervals);
 
         const lowerThreshold = template.lowerThreshold;
@@ -29,14 +29,17 @@ export = {
 
   'generated step intervals are valid intervals'(test: Test) {
     fc.assert(fc.property(
-      arbitrary_input_intervals(),
-      (intervals) => {
+      arbitraryInputIntervals(),
+      intervals => {
         const template = setupStepScaling(intervals);
         const steps = template.allStepsAbsolute();
 
-        return reportFalse(steps.every(step => {
-          return step.MetricIntervalLowerBound! < step.MetricIntervalUpperBound!;
-        }), steps, 'template', JSON.stringify(template, undefined, 2));
+        return reportFalse(
+          steps.every(step => step.MetricIntervalLowerBound! < step.MetricIntervalUpperBound!),
+          steps,
+          'template',
+          JSON.stringify(template, undefined, 2)
+        );
       }
     ));
 
@@ -45,8 +48,8 @@ export = {
 
   'generated step intervals are nonoverlapping'(test: Test) {
     fc.assert(fc.property(
-      arbitrary_input_intervals(),
-      (intervals) => {
+      arbitraryInputIntervals(),
+      intervals => {
         const template = setupStepScaling(intervals);
         const steps = template.allStepsAbsolute();
 
@@ -66,20 +69,18 @@ export = {
 
   'all template intervals occur in input array'(test: Test) {
     fc.assert(fc.property(
-      arbitrary_input_intervals(),
-      (intervals) => {
+      arbitraryInputIntervals(),
+      intervals => {
         const template = setupStepScaling(intervals);
         const steps = template.allStepsAbsolute();
 
-        return steps.every(step => {
-          return reportFalse(intervals.find(interval => {
-            const acceptableLowerBounds = step.MetricIntervalLowerBound === -Infinity ? [undefined, 0] : [undefined, step.MetricIntervalLowerBound];
-            // eslint-disable-next-line max-len
-            const acceptableUpperBounds = step.MetricIntervalUpperBound === Infinity ? [undefined, Infinity] : [undefined, step.MetricIntervalUpperBound];
+        return steps.every(step => reportFalse(intervals.find(interval => {
+          const acceptableLowerBounds = step.MetricIntervalLowerBound === -Infinity ? [undefined, 0] : [undefined, step.MetricIntervalLowerBound];
+          // eslint-disable-next-line max-len
+          const acceptableUpperBounds = step.MetricIntervalUpperBound === Infinity ? [undefined, Infinity] : [undefined, step.MetricIntervalUpperBound];
 
-            return (acceptableLowerBounds.includes(interval.lower) && acceptableUpperBounds.includes(interval.upper));
-          }) !== undefined, step, intervals);
-        });
+          return (acceptableLowerBounds.includes(interval.lower) && acceptableUpperBounds.includes(interval.upper));
+        }) !== undefined, step, intervals));
       }
     ));
 
@@ -88,8 +89,8 @@ export = {
 
   'lower alarm uses lower policy'(test: Test) {
     fc.assert(fc.property(
-      arbitrary_input_intervals(),
-      (intervals) => {
+      arbitraryInputIntervals(),
+      intervals => {
         const template = setupStepScaling(intervals);
         const alarm = template.resource(template.lowerAlarm);
         fc.pre(alarm !== undefined);
@@ -103,8 +104,8 @@ export = {
 
   'upper alarm uses upper policy'(test: Test) {
     fc.assert(fc.property(
-      arbitrary_input_intervals(),
-      (intervals) => {
+      arbitraryInputIntervals(),
+      intervals => {
         const template = setupStepScaling(intervals);
         const alarm = template.resource(template.upperAlarm);
         fc.pre(alarm !== undefined);
@@ -133,13 +134,13 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
-      PolicyType: "StepScaling",
+      PolicyType: 'StepScaling',
       ScalingTargetId: {
-        Ref: "Target3191CF44"
+        Ref: 'Target3191CF44'
       },
       StepScalingPolicyConfiguration: {
-        AdjustmentType: "ChangeInCapacity",
-        MetricAggregationType: "Average",
+        AdjustmentType: 'ChangeInCapacity',
+        MetricAggregationType: 'Average',
         StepAdjustments: [
           {
             MetricIntervalUpperBound: 0,
@@ -175,8 +176,7 @@ class ScalingStackTemplate {
   public readonly upperPolicy = 'TargetScaleIntervalUpperPolicy7C751132';
   public readonly upperAlarm = 'TargetScaleIntervalUpperAlarm69FD1BBB';
 
-  constructor(private readonly template: any) {
-  }
+  public constructor(private readonly template: any) { }
 
   public get lowerThreshold() {
     return this.threshold(this.lowerAlarm);

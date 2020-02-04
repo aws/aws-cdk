@@ -1,4 +1,3 @@
-// tslint:disable-next-line:no-var-requires
 import * as crypto from 'crypto';
 import { unresolved } from './encoding';
 
@@ -65,7 +64,7 @@ export function makeUniqueId(components: string[]) {
  * The hash is limited in size.
  */
 function pathHash(path: string[]): string {
-  const md5 = crypto.createHash('md5').update(path.join(PATH_SEP)).digest("hex");
+  const md5 = crypto.createHash('md5').update(path.join(PATH_SEP)).digest('hex');
   return md5.slice(0, HASH_LEN).toUpperCase();
 }
 

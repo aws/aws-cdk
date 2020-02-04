@@ -18,7 +18,7 @@ export const builder = {
 };
 
 export interface Arguments extends yargs.Arguments {
-  browser: string
+  browser: string;
 }
 
 export function handler(args: yargs.Arguments) {
@@ -26,7 +26,7 @@ export function handler(args: yargs.Arguments) {
 }
 
 export async function realHandler(options: CommandOptions): Promise<number> {
-  const url = `https://docs.aws.amazon.com/cdk/api/latest/`;
+  const url = 'https://docs.aws.amazon.com/cdk/api/latest/';
   print(colors.green(url));
   const browserCommand = (options.args.browser as string).replace(/%u/g, url);
   debug(`Opening documentation ${colors.green(browserCommand)}`);

@@ -59,7 +59,7 @@ export class SendToQueue implements sfn.IStepFunctionsTask {
 
   private readonly integrationPattern: sfn.ServiceIntegrationPattern;
 
-  constructor(private readonly queue: sqs.IQueue, private readonly props: SendToQueueProps) {
+  public constructor(private readonly queue: sqs.IQueue, private readonly props: SendToQueueProps) {
     this.integrationPattern = props.integrationPattern || sfn.ServiceIntegrationPattern.FIRE_AND_FORGET;
 
     const supportedPatterns = [
@@ -80,7 +80,7 @@ export class SendToQueue implements sfn.IStepFunctionsTask {
 
   public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
     return {
-      resourceArn: getResourceArn("sqs", "sendMessage", this.integrationPattern),
+      resourceArn: getResourceArn('sqs', 'sendMessage', this.integrationPattern),
       policyStatements: [new iam.PolicyStatement({
         actions: ['sqs:SendMessage'],
         resources: [this.queue.queueArn]

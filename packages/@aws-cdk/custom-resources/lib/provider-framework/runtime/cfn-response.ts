@@ -1,5 +1,4 @@
-// tslint:disable: max-line-length
-// tslint:disable: no-console
+/* eslint-disable max-len,no-console */
 import * as url from 'url';
 import { httpRequest } from './outbound';
 import { log } from './util';
@@ -18,7 +17,7 @@ export interface CloudFormationEventContext {
   PhysicalResourceId?: string;
   LogicalResourceId: string;
   ResponseURL: string;
-  Data?: any
+  Data?: any;
 }
 
 export async function submitResponse(status: 'SUCCESS' | 'FAILED', event: CloudFormationEventContext, options: CloudFormationResponseOptions = { }) {
@@ -49,6 +48,7 @@ export async function submitResponse(status: 'SUCCESS' | 'FAILED', event: CloudF
   }, responseBody);
 }
 
+// eslint-disable-next-line prefer-const
 export let includeStackTraces = true; // for unit tests
 
 export function safeHandler(block: (event: any) => Promise<void>) {
@@ -58,7 +58,7 @@ export function safeHandler(block: (event: any) => Promise<void>) {
     // indicates that this DELETE is a subsequent DELETE to a failed CREATE
     // operation.
     if (event.RequestType === 'Delete' && event.PhysicalResourceId === CREATE_FAILED_PHYSICAL_ID_MARKER) {
-      log(`ignoring DELETE event caused by a failed CREATE event`);
+      log('ignoring DELETE event caused by a failed CREATE event');
       await submitResponse('SUCCESS', event);
       return;
     }
@@ -68,7 +68,7 @@ export function safeHandler(block: (event: any) => Promise<void>) {
     } catch (e) {
       // tell waiter state machine to retry
       if (e instanceof Retry) {
-        log(`retry requested by handler`);
+        log('retry requested by handler');
         throw e;
       }
 
@@ -79,7 +79,7 @@ export function safeHandler(block: (event: any) => Promise<void>) {
         // address this, we use a marker so the provider framework can simply
         // ignore the subsequent DELETE.
         if (event.RequestType === 'Create') {
-          log(`CREATE failed, responding with a marker physical resource id so that the subsequent DELETE will be ignored`);
+          log('CREATE failed, responding with a marker physical resource id so that the subsequent DELETE will be ignored');
           event.PhysicalResourceId = CREATE_FAILED_PHYSICAL_ID_MARKER;
         } else {
           // otherwise, if PhysicalResourceId is not specified, something is

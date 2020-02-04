@@ -4,7 +4,7 @@ import * as os from 'os';
 import * as path from 'path';
 import { availableInitTemplates, cliInit } from '../lib/init';
 
-cliTest('create a TypeScript library project', async (workDir) => {
+cliTest('create a TypeScript library project', async workDir => {
   await cliInit('lib', 'typescript', false, undefined /* canUseNetwork */, workDir);
 
   // Check that package.json and lib/ got created in the current directory
@@ -12,7 +12,7 @@ cliTest('create a TypeScript library project', async (workDir) => {
   expect(await fs.pathExists(path.join(workDir, 'lib'))).toBeTruthy();
 });
 
-cliTest('create a TypeScript app project', async (workDir) => {
+cliTest('create a TypeScript app project', async workDir => {
   await cliInit('app', 'typescript', false, undefined /* canUseNetwork */, workDir);
 
   // Check that package.json and bin/ got created in the current directory
@@ -20,7 +20,7 @@ cliTest('create a TypeScript app project', async (workDir) => {
   expect(await fs.pathExists(path.join(workDir, 'bin'))).toBeTruthy();
 });
 
-cliTest('create a JavaScript app project', async (workDir) => {
+cliTest('create a JavaScript app project', async workDir => {
   await cliInit('app', 'javascript', false, undefined /* canUseNetwork */, workDir);
 
   // Check that package.json and bin/ got created in the current directory
@@ -29,7 +29,7 @@ cliTest('create a JavaScript app project', async (workDir) => {
   expect(await fs.pathExists(path.join(workDir, '.git'))).toBeTruthy();
 });
 
-cliTest('--generate-only should skip git init', async (workDir) => {
+cliTest('--generate-only should skip git init', async workDir => {
   await cliInit('app', 'javascript', false, true, workDir);
 
   // Check that package.json and bin/ got created in the current directory
@@ -38,7 +38,7 @@ cliTest('--generate-only should skip git init', async (workDir) => {
   expect(await fs.pathExists(path.join(workDir, '.git'))).toBeFalsy();
 });
 
-cliTest('git directory does not throw off the initer!', async (workDir) => {
+cliTest('git directory does not throw off the initer!', async workDir => {
   fs.mkdirSync(path.join(workDir, '.git'));
 
   await cliInit('app', 'typescript', false, undefined /* canUseNetwork */, workDir);

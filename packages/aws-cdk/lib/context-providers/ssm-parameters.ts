@@ -7,14 +7,14 @@ import { ContextProviderPlugin } from './provider';
  * Plugin to read arbitrary SSM parameter names
  */
 export class SSMContextProviderPlugin implements ContextProviderPlugin {
-  constructor(private readonly aws: ISDK) {
+  public constructor(private readonly aws: ISDK) {
   }
 
   public async getValue(args: {[key: string]: any}) {
     const region = args.region;
     const account = args.account;
     if (!('parameterName' in args)) {
-        throw new Error('parameterName must be provided in props for SSMContextProviderPlugin');
+      throw new Error('parameterName must be provided in props for SSMContextProviderPlugin');
     }
     const parameterName = args.parameterName;
     debug(`Reading SSM parameter ${account}:${region}:${parameterName}`);

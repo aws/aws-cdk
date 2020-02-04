@@ -189,7 +189,7 @@ export interface InstanceProps {
    *
    * @default - no association
    */
-  readonly privateIpAddress?: string
+  readonly privateIpAddress?: string;
 }
 
 /**
@@ -254,7 +254,7 @@ export class Instance extends Resource implements IInstance {
   private readonly securityGroup: ISecurityGroup;
   private readonly securityGroups: ISecurityGroup[] = [];
 
-  constructor(scope: Construct, id: string, props: InstanceProps) {
+  public constructor(scope: Construct, id: string, props: InstanceProps) {
     super(scope, id);
 
     if (props.securityGroup) {

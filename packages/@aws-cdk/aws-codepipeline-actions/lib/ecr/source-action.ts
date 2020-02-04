@@ -58,7 +58,7 @@ export interface EcrSourceActionProps extends codepipeline.CommonAwsActionProps 
 export class EcrSourceAction extends Action {
   private readonly props: EcrSourceActionProps;
 
-  constructor(props: EcrSourceActionProps) {
+  public constructor(props: EcrSourceActionProps) {
     super({
       ...props,
       resource: props.repository,
@@ -83,7 +83,7 @@ export class EcrSourceAction extends Action {
   }
 
   protected bound(_scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
-      codepipeline.ActionConfig {
+  codepipeline.ActionConfig {
     options.role.addToPolicy(new iam.PolicyStatement({
       actions: ['ecr:DescribeImages'],
       resources: [this.props.repository.repositoryArn]

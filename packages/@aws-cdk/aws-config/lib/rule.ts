@@ -204,7 +204,7 @@ export interface RuleProps {
    *
    * @default 24 hours
    */
-  readonly maximumExecutionFrequency?: MaximumExecutionFrequency
+  readonly maximumExecutionFrequency?: MaximumExecutionFrequency;
 }
 
 /**
@@ -237,7 +237,7 @@ export class ManagedRule extends RuleNew {
   /** @attribute */
   public readonly configRuleComplianceType: string;
 
-  constructor(scope: Construct, id: string, props: ManagedRuleProps) {
+  public constructor(scope: Construct, id: string, props: ManagedRuleProps) {
     super(scope, id, {
       physicalName: props.configRuleName,
     });
@@ -304,7 +304,7 @@ export class CustomRule extends RuleNew {
   /** @attribute */
   public readonly configRuleComplianceType: string;
 
-  constructor(scope: Construct, id: string, props: CustomRuleProps) {
+  public constructor(scope: Construct, id: string, props: CustomRuleProps) {
     super(scope, id, {
       physicalName: props.configRuleName,
     });
@@ -317,13 +317,13 @@ export class CustomRule extends RuleNew {
 
     if (props.configurationChanges) {
       sourceDetails.push({
-          eventSource: 'aws.config',
-          messageType: 'ConfigurationItemChangeNotification'
-        });
+        eventSource: 'aws.config',
+        messageType: 'ConfigurationItemChangeNotification'
+      });
       sourceDetails.push({
-          eventSource: 'aws.config',
-          messageType: 'OversizedConfigurationItemChangeNotification'
-        });
+        eventSource: 'aws.config',
+        messageType: 'OversizedConfigurationItemChangeNotification'
+      });
     }
 
     if (props.periodic) {

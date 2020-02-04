@@ -1,7 +1,7 @@
 import { Construct } from '@aws-cdk/core';
 import { ContainerDefinition } from '../container-definition';
 import { BaseLogDriverProps } from './base-log-driver';
-import { LogDriver, LogDriverConfig } from "./log-driver";
+import { LogDriver, LogDriverConfig } from './log-driver';
 import { joinWithCommas, stringifyOptions } from './utils';
 
 /**
@@ -44,12 +44,12 @@ export class JsonFileLogDriver extends LogDriver {
    *
    * @param props the json-file log driver configuration options.
    */
-  constructor(private readonly props: JsonFileLogDriverProps = {}) {
+  public constructor(private readonly props: JsonFileLogDriverProps = {}) {
     super();
 
     // Validation
     if (props.maxFile && props.maxFile < 0) {
-        throw new Error('`maxFile` must be a positive integer.');
+      throw new Error('`maxFile` must be a positive integer.');
     }
   }
 

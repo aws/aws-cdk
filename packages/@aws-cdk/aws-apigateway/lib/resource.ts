@@ -163,7 +163,7 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
 
   private readonly children: { [pathPart: string]: Resource } = { };
 
-  constructor(scope: Construct, id: string) {
+  public constructor(scope: Construct, id: string) {
     super(scope, id);
   }
 
@@ -207,7 +207,7 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
     // the "Vary" header is required if we allow a specific origin
     // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin#CORS_and_caching
     if (initialOrigin !== '*') {
-      headers.Vary = `'Origin'`;
+      headers.Vary = '\'Origin\'';
     }
 
     //
@@ -229,7 +229,7 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
     // Access-Control-Allow-Credentials
 
     if (options.allowCredentials) {
-      headers['Access-Control-Allow-Credentials'] = `'true'`;
+      headers['Access-Control-Allow-Credentials'] = '\'true\'';
     }
 
     //
@@ -238,7 +238,7 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
     let maxAgeSeconds;
 
     if (options.maxAge && options.disableCache) {
-      throw new Error(`The options "maxAge" and "disableCache" are mutually exclusive`);
+      throw new Error('The options "maxAge" and "disableCache" are mutually exclusive');
     }
 
     if (options.maxAge) {
@@ -299,13 +299,13 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
 
       const template = new Array<string>();
 
-      template.push(`#set($origin = $input.params("Origin"))`);
-      template.push(`#if($origin == "") #set($origin = $input.params("origin")) #end`);
+      template.push('#set($origin = $input.params("Origin"))');
+      template.push('#if($origin == "") #set($origin = $input.params("origin")) #end');
 
       const condition = origins.map(o => `$origin.matches("${o}")`).join(' || ');
 
       template.push(`#if(${condition})`);
-      template.push(`  #set($context.responseOverride.header.Access-Control-Allow-Origin = $origin)`);
+      template.push('  #set($context.responseOverride.header.Access-Control-Allow-Origin = $origin)');
       template.push('#end');
 
       return {
@@ -342,7 +342,7 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
     const parts = path.split('/');
     const next = parts.shift();
     if (!next || next === '') {
-      throw new Error(`resourceForPath cannot be called with an empty path`);
+      throw new Error('resourceForPath cannot be called with an empty path');
     }
 
     let resource = this.getResource(next);
@@ -368,7 +368,7 @@ export class Resource extends ResourceBase {
   public readonly defaultMethodOptions?: MethodOptions;
   public readonly defaultCorsPreflightOptions?: CorsOptions;
 
-  constructor(scope: Construct, id: string, props: ResourceProps) {
+  public constructor(scope: Construct, id: string, props: ResourceProps) {
     super(scope, id);
 
     validateResourcePathPart(props.pathPart);
@@ -444,7 +444,7 @@ export class ProxyResource extends Resource {
    */
   public readonly anyMethod?: Method;
 
-  constructor(scope: Construct, id: string, props: ProxyResourceProps) {
+  public constructor(scope: Construct, id: string, props: ProxyResourceProps) {
     super(scope, id, {
       parent: props.parent,
       pathPart: '{proxy+}',
@@ -482,7 +482,7 @@ function validateResourcePathPart(part: string) {
     }
   }
 
-  if (!/^[a-zA-Z0-9\.\_\-]+$/.test(part)) {
+  if (!/^[a-zA-Z0-9._-]+$/.test(part)) {
     throw new Error(`Resource's path part only allow [a-zA-Z0-9._-], an optional trailing '+'
       and curly braces at the beginning and the end: ${part}`);
   }

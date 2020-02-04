@@ -1,6 +1,6 @@
 import * as cdk from '@aws-cdk/core';
-import { ActionCategory } from "./action";
-import { Artifact } from "./artifact";
+import { ActionCategory } from './action';
+import { Artifact } from './artifact';
 
 /**
  * Validation function that checks if the number of artifacts is within the given bounds

@@ -44,7 +44,7 @@ export function parseMethodOptionsPath(originalPath: string): { resourcePath: st
 
 export function parseAwsApiCall(path?: string, action?: string, actionParams?: { [key: string]: string }): { apiType: string, apiValue: string } {
   if (actionParams && !action) {
-    throw new Error(`"actionParams" requires that "action" will be set`);
+    throw new Error('"actionParams" requires that "action" will be set');
   }
 
   if (path && action) {
@@ -69,7 +69,7 @@ export function parseAwsApiCall(path?: string, action?: string, actionParams?: {
     };
   }
 
-  throw new Error(`Either "path" or "action" are required`);
+  throw new Error('Either "path" or "action" are required');
 }
 
 export function validateInteger(property: number | undefined, messagePrefix: string) {
@@ -79,19 +79,6 @@ export function validateInteger(property: number | undefined, messagePrefix: str
 }
 
 export class JsonSchemaMapper {
-  /**
-   * Transforms naming of some properties to prefix with a $, where needed
-   * according to the JSON schema spec
-   * @param schema The JsonSchema object to transform for CloudFormation output
-   */
-  public static toCfnJsonSchema(schema: jsonSchema.JsonSchema): any {
-    const result = JsonSchemaMapper._toCfnJsonSchema(schema);
-    if (! ("$schema" in result)) {
-      result.$schema = jsonSchema.JsonSchemaVersion.DRAFT4;
-    }
-    return result;
-  }
-
   private static readonly SchemaPropsWithPrefix: { [key: string]: string } = {
     schema: '$schema',
     ref: '$ref',
@@ -104,6 +91,19 @@ export class JsonSchemaMapper {
     patternProperties: true,
     dependencies: true,
   };
+
+  /**
+   * Transforms naming of some properties to prefix with a $, where needed
+   * according to the JSON schema spec
+   * @param schema The JsonSchema object to transform for CloudFormation output
+   */
+  public static toCfnJsonSchema(schema: jsonSchema.JsonSchema): any {
+    const result = JsonSchemaMapper._toCfnJsonSchema(schema);
+    if (! ('$schema' in result)) {
+      result.$schema = jsonSchema.JsonSchemaVersion.DRAFT4;
+    }
+    return result;
+  }
 
   private static _toCfnJsonSchema(schema: any, preserveKeys = false): any {
     if (schema == null || typeof schema !== 'object') {

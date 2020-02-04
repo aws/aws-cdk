@@ -3,7 +3,7 @@ import { Test } from 'nodeunit';
 import { Cluster, KubernetesResource } from '../lib';
 import { testFixtureNoVpc } from './util';
 
-// tslint:disable:max-line-length
+/* eslint-disable max-len */
 
 export = {
   'basic usage'(test: Test) {

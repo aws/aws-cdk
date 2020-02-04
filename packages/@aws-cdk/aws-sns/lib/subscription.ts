@@ -61,7 +61,7 @@ export interface SubscriptionProps extends SubscriptionOptions {
 export class Subscription extends Resource {
   private readonly filterPolicy?: { [attribute: string]: any[] };
 
-  constructor(scope: Construct, id: string, props: SubscriptionProps) {
+  public constructor(scope: Construct, id: string, props: SubscriptionProps) {
     super(scope, id);
 
     if (props.rawMessageDelivery && ['http', 'https', 'sqs'].indexOf(props.protocol) < 0) {

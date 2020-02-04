@@ -3,7 +3,7 @@ import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { OriginAccessIdentity } from '../lib';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quotes */
 
 export = {
   'Origin Access Identity with automatic comment'(test: Test) {
@@ -13,12 +13,12 @@ export = {
 
     expect(stack).toMatch(
       {
-        "Resources": {
-          "OAIE1EFC67F": {
-            "Type": "AWS::CloudFront::CloudFrontOriginAccessIdentity",
-            "Properties": {
-              "CloudFrontOriginAccessIdentityConfig": {
-                "Comment": "Allows CloudFront to reach the bucket"
+        Resources: {
+          OAIE1EFC67F: {
+            Type: "AWS::CloudFront::CloudFrontOriginAccessIdentity",
+            Properties: {
+              CloudFrontOriginAccessIdentityConfig: {
+                Comment: "Allows CloudFront to reach the bucket"
               }
             }
           }
@@ -37,12 +37,12 @@ export = {
 
     expect(stack).toMatch(
       {
-        "Resources": {
-          "OAIE1EFC67F": {
-            "Type": "AWS::CloudFront::CloudFrontOriginAccessIdentity",
-            "Properties": {
-              "CloudFrontOriginAccessIdentityConfig": {
-                "Comment": "test comment"
+        Resources: {
+          OAIE1EFC67F: {
+            Type: "AWS::CloudFront::CloudFrontOriginAccessIdentity",
+            Properties: {
+              CloudFrontOriginAccessIdentityConfig: {
+                Comment: "test comment"
               }
             }
           }

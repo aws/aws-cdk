@@ -1,6 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import { Duration } from '@aws-cdk/core';
-import { State } from "./states/state";
+import { State } from './states/state';
 
 /**
  * A collection of connected states
@@ -25,7 +25,7 @@ import { State } from "./states/state";
  * You do not need to instantiate this class; it is used internally.
  */
 export class StateGraph {
-    /**
+  /**
      * Set a timeout to render into the graph JSON.
      *
      * Read/write. Only makes sense on the top-level graph, subgraphs
@@ -33,126 +33,126 @@ export class StateGraph {
      *
      * @default No timeout
      */
-    public timeout?: Duration;
+  public timeout?: Duration;
 
-    /**
+  /**
      * The accumulated policy statements
      */
-    public readonly policyStatements = new Array<iam.PolicyStatement>();
+  public readonly policyStatements = new Array<iam.PolicyStatement>();
 
-    /**
+  /**
      * All states in this graph
      */
-    private readonly allStates = new Set<State>();
+  private readonly allStates = new Set<State>();
 
-    /**
+  /**
      * A mapping of stateId -> Graph for all states in this graph and subgraphs
      */
-    private readonly allContainedStates = new Map<string, StateGraph>();
+  private readonly allContainedStates = new Map<string, StateGraph>();
 
-    /**
+  /**
      * Containing graph of this graph
      */
-    private superGraph?: StateGraph;
+  private superGraph?: StateGraph;
 
-    constructor(public readonly startState: State, private readonly graphDescription: string) {
-        this.allStates.add(startState);
-        startState.bindToGraph(this);
-    }
+  public constructor(public readonly startState: State, private readonly graphDescription: string) {
+    this.allStates.add(startState);
+    startState.bindToGraph(this);
+  }
 
-    /**
+  /**
      * Register a state as part of this graph
      *
      * Called by State.bindToGraph().
      */
-    public registerState(state: State) {
-        this.registerContainedState(state.stateId, this);
-        this.allStates.add(state);
-    }
+  public registerState(state: State) {
+    this.registerContainedState(state.stateId, this);
+    this.allStates.add(state);
+  }
 
-    /**
+  /**
      * Register a Policy Statement used by states in this graph
      */
-    public registerPolicyStatement(statement: iam.PolicyStatement) {
-        if (this.superGraph) {
-            this.superGraph.registerPolicyStatement(statement);
-        } else {
-            this.policyStatements.push(statement);
-        }
+  public registerPolicyStatement(statement: iam.PolicyStatement) {
+    if (this.superGraph) {
+      this.superGraph.registerPolicyStatement(statement);
+    } else {
+      this.policyStatements.push(statement);
     }
+  }
 
-    /**
+  /**
      * Register this graph as a child of the given graph
      *
      * Resource changes will be bubbled up to the given graph.
      */
-    public registerSuperGraph(graph: StateGraph) {
-        if (this.superGraph === graph) { return; }
-        if (this.superGraph) {
-            throw new Error('Every StateGraph can only be registered into one other StateGraph');
-        }
-        this.superGraph = graph;
-        this.pushContainedStatesUp(graph);
-        this.pushPolicyStatementsUp(graph);
+  public registerSuperGraph(graph: StateGraph) {
+    if (this.superGraph === graph) { return; }
+    if (this.superGraph) {
+      throw new Error('Every StateGraph can only be registered into one other StateGraph');
     }
+    this.superGraph = graph;
+    this.pushContainedStatesUp(graph);
+    this.pushPolicyStatementsUp(graph);
+  }
 
-    /**
+  /**
      * Return the Amazon States Language JSON for this graph
      */
-    public toGraphJson(): object {
-        const states: any = {};
-        for (const state of this.allStates) {
-            states[state.stateId] = state.toStateJson();
-        }
-
-        return {
-            StartAt: this.startState.stateId,
-            States: states,
-            TimeoutSeconds: this.timeout && this.timeout.toSeconds()
-        };
+  public toGraphJson(): object {
+    const states: any = {};
+    for (const state of this.allStates) {
+      states[state.stateId] = state.toStateJson();
     }
 
-    /**
+    return {
+      StartAt: this.startState.stateId,
+      States: states,
+      TimeoutSeconds: this.timeout && this.timeout.toSeconds()
+    };
+  }
+
+  /**
      * Return a string description of this graph
      */
-    public toString() {
-        const someNodes = Array.from(this.allStates).slice(0, 3).map(x => x.stateId);
-        if (this.allStates.size > 3) { someNodes.push('...'); }
-        return `${this.graphDescription} (${someNodes.join(', ')})`;
-    }
+  public toString() {
+    const someNodes = Array.from(this.allStates).slice(0, 3).map(x => x.stateId);
+    if (this.allStates.size > 3) { someNodes.push('...'); }
+    return `${this.graphDescription} (${someNodes.join(', ')})`;
+  }
 
-    /**
+  /**
      * Register a stateId and graph where it was registered
      */
-    private registerContainedState(stateId: string, graph: StateGraph) {
-        if (this.superGraph) {
-            this.superGraph.registerContainedState(stateId, graph);
-        } else {
-            const existingGraph = this.allContainedStates.get(stateId);
-            if (existingGraph) {
-                throw new Error(`State with name '${stateId}' occurs in both ${graph} and ${existingGraph}. All states must have unique names.`);
-            }
+  private registerContainedState(stateId: string, graph: StateGraph) {
+    if (this.superGraph) {
+      this.superGraph.registerContainedState(stateId, graph);
+    } else {
+      const existingGraph = this.allContainedStates.get(stateId);
+      if (existingGraph) {
+        throw new Error(`State with name '${stateId}' occurs in both ${graph} and ${existingGraph}. All states must have unique names.`);
+      }
 
-            this.allContainedStates.set(stateId, graph);
-        }
+      this.allContainedStates.set(stateId, graph);
     }
+  }
 
-    /**
+  /**
      * Push all contained state info up to the given super graph
      */
-    private pushContainedStatesUp(superGraph: StateGraph) {
-        for (const [stateId, graph] of this.allContainedStates) {
-            superGraph.registerContainedState(stateId, graph);
-        }
+  private pushContainedStatesUp(superGraph: StateGraph) {
+    for (const [stateId, graph] of this.allContainedStates) {
+      superGraph.registerContainedState(stateId, graph);
     }
+  }
 
-    /**
+  /**
      * Push all policy statements to into the given super graph
      */
-    private pushPolicyStatementsUp(superGraph: StateGraph) {
-        for (const policyStatement of this.policyStatements) {
-            superGraph.registerPolicyStatement(policyStatement);
-        }
+  private pushPolicyStatementsUp(superGraph: StateGraph) {
+    for (const policyStatement of this.policyStatements) {
+      superGraph.registerPolicyStatement(policyStatement);
     }
+  }
 
 }

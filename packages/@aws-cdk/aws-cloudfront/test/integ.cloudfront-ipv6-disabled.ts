@@ -1,4 +1,3 @@
-
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as cloudfront from '../lib';
@@ -21,6 +20,6 @@ new cloudfront.CloudFrontWebDistribution(stack, 'MyDistribution', {
     }
   ],
   enableIpV6: false
- });
+});
 
 app.synth();

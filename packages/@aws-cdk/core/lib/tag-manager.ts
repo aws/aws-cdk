@@ -153,7 +153,7 @@ class KeyValueFormatter implements ITagFormatter {
   public parseTags(keyValueTags: any, priority: number): Tag[] {
     const tags: Tag[] = [];
     for (const key in keyValueTags) {
-      if (keyValueTags.hasOwnProperty(key)) {
+      if (Object.hasOwnProperty.call(keyValueTags, key)) {
         const value = keyValueTags[key];
         tags.push({
           key,
@@ -243,7 +243,7 @@ export class TagManager {
   private readonly resourceTypeName: string;
   private readonly initialTagPriority = 50;
 
-  constructor(tagType: TagType, resourceTypeName: string, tagStructure?: any, options: TagManagerOptions = { }) {
+  public constructor(tagType: TagType, resourceTypeName: string, tagStructure?: any, options: TagManagerOptions = { }) {
     this.resourceTypeName = resourceTypeName;
     this.tagFormatter = TAG_FORMATTERS[tagType];
     if (tagStructure !== undefined) {

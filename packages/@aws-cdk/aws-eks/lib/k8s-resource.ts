@@ -52,7 +52,7 @@ export class KubernetesResource extends Construct {
    */
   public static readonly RESOURCE_TYPE = 'Custom::AWSCDK-EKS-KubernetesResource';
 
-  constructor(scope: Construct, id: string, props: KubernetesResourceProps) {
+  public constructor(scope: Construct, id: string, props: KubernetesResourceProps) {
     super(scope, id);
 
     const stack = Stack.of(this);

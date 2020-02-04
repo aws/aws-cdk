@@ -248,7 +248,7 @@ class MyResource extends Resource {
   public readonly arn: string;
   public readonly name: string;
 
-  constructor(scope: Construct, id: string, physicalName?: string) {
+  public constructor(scope: Construct, id: string, physicalName?: string) {
     super(scope, id, { physicalName });
 
     this.arn = this.getResourceArnAttribute('simple-arn', {

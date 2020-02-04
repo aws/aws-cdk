@@ -35,7 +35,7 @@ export interface RotationScheduleProps extends RotationScheduleOptions {
  * A rotation schedule.
  */
 export class RotationSchedule extends Resource {
-  constructor(scope: Construct, id: string, props: RotationScheduleProps) {
+  public constructor(scope: Construct, id: string, props: RotationScheduleProps) {
     super(scope, id);
 
     new CfnRotationSchedule(this, 'Resource', {

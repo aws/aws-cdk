@@ -1,7 +1,7 @@
 import { Construct, Duration } from '@aws-cdk/core';
 import { ContainerDefinition } from '../container-definition';
 import { BaseLogDriverProps } from './base-log-driver';
-import { LogDriver, LogDriverConfig } from "./log-driver";
+import { LogDriver, LogDriverConfig } from './log-driver';
 import { ensureInRange, ensurePositiveInteger, renderCommonLogDriverOptions, stringifyOptions } from './utils';
 
 /**
@@ -68,7 +68,7 @@ export class GelfLogDriver extends LogDriver {
    *
    * @param props the gelf log driver configuration options.
    */
-  constructor(private readonly props: GelfLogDriverProps) {
+  public constructor(private readonly props: GelfLogDriverProps) {
     super();
 
     // Validation

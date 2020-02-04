@@ -47,7 +47,7 @@ export interface ReceiptFilterProps {
  * block all receipt filter.
  */
 export class ReceiptFilter extends Resource {
-  constructor(scope: Construct, id: string, props: ReceiptFilterProps = {}) {
+  public constructor(scope: Construct, id: string, props: ReceiptFilterProps = {}) {
     super(scope, id, {
       physicalName: props.receiptFilterName,
     });
@@ -78,7 +78,7 @@ export interface WhiteListReceiptFilterProps {
  * A white list receipt filter.
  */
 export class WhiteListReceiptFilter extends Construct {
-  constructor(scope: Construct, id: string, props: WhiteListReceiptFilterProps) {
+  public constructor(scope: Construct, id: string, props: WhiteListReceiptFilterProps) {
     super(scope, id);
 
     new ReceiptFilter(this, 'BlockAll');

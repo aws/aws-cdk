@@ -9,7 +9,7 @@ import * as destinations from '../lib';
 // aws lambda invoke --function-name <deployed fn name> --invocation-type Event --payload '"NOT OK"' response.json
 
 class TestStack extends Stack {
-  constructor(scope: Construct, id: string, props?: StackProps) {
+  public constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
     const topic = new sns.Topic(this, 'Topic');

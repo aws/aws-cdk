@@ -480,7 +480,7 @@ class CodeCommitSource extends GitSource {
   public readonly type = CODECOMMIT_SOURCE_TYPE;
   private readonly repo: codecommit.IRepository;
 
-  constructor(props: CodeCommitSourceProps) {
+  public constructor(props: CodeCommitSourceProps) {
     super(props);
     this.repo = props.repository;
   }
@@ -518,7 +518,7 @@ class S3Source extends Source {
   private readonly bucket: s3.IBucket;
   private readonly path: string;
 
-  constructor(props: S3SourceProps) {
+  public constructor(props: S3SourceProps) {
     super(props);
     this.bucket = props.bucket;
     this.path = props.path;
@@ -563,7 +563,7 @@ class GitHubSource extends ThirdPartyGitSource {
   public readonly type = GITHUB_SOURCE_TYPE;
   private readonly httpsCloneUrl: string;
 
-  constructor(props: GitHubSourceProps) {
+  public constructor(props: GitHubSourceProps) {
     super(props);
     this.httpsCloneUrl = `https://github.com/${props.owner}/${props.repo}.git`;
   }
@@ -605,7 +605,7 @@ class GitHubEnterpriseSource extends ThirdPartyGitSource {
   private readonly httpsCloneUrl: string;
   private readonly ignoreSslErrors?: boolean;
 
-  constructor(props: GitHubEnterpriseSourceProps) {
+  public constructor(props: GitHubEnterpriseSourceProps) {
     super(props);
     this.httpsCloneUrl = props.httpsCloneUrl;
     this.ignoreSslErrors = props.ignoreSslErrors;
@@ -650,7 +650,7 @@ class BitBucketSource extends ThirdPartyGitSource {
   public readonly type = BITBUCKET_SOURCE_TYPE;
   private readonly httpsCloneUrl: any;
 
-  constructor(props: BitBucketSourceProps) {
+  public constructor(props: BitBucketSourceProps) {
     super(props);
     this.httpsCloneUrl = `https://bitbucket.org/${props.owner}/${props.repo}.git`;
   }
@@ -677,15 +677,11 @@ class BitBucketSource extends ThirdPartyGitSource {
   }
 
   private anyWebhookFilterContainsPrReopenedEventAction() {
-    return this.webhookFilters.findIndex(fg => {
-      return fg._actions.findIndex(a => a === EventAction.PULL_REQUEST_REOPENED) !== -1;
-    }) !== -1;
+    return this.webhookFilters.findIndex(fg => fg._actions.findIndex(a => a === EventAction.PULL_REQUEST_REOPENED) !== -1) !== -1;
   }
 
   private anyWebhookFilterContainsFilePathConditions() {
-    return this.webhookFilters.findIndex(fg => {
-      return fg._filters.findIndex(f => f.type === FILE_PATH_WEBHOOK_COND) !== -1;
-    }) !== -1;
+    return this.webhookFilters.findIndex(fg => fg._filters.findIndex(f => f.type === FILE_PATH_WEBHOOK_COND) !== -1) !== -1;
   }
 }
 

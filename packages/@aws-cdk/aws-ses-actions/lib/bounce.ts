@@ -59,7 +59,7 @@ export class BounceTemplate {
     statusCode: '4.0.0'
   });
 
-  constructor(public readonly props: BounceTemplateProps) {
+  public constructor(public readonly props: BounceTemplateProps) {
   }
 }
 
@@ -91,7 +91,7 @@ export interface BounceProps {
  * optionally, publishes a notification to Amazon SNS.
  */
 export class Bounce implements ses.IReceiptRuleAction {
-  constructor(private readonly props: BounceProps) {
+  public constructor(private readonly props: BounceProps) {
   }
 
   public bind(_rule: ses.IReceiptRule): ses.ReceiptRuleActionConfig {

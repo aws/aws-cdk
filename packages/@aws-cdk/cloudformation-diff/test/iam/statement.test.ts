@@ -121,15 +121,13 @@ test('a Deny statement with a NotPrincipal is positive', () => {
 
 test('equality is reflexive', () => {
   fc.assert(fc.property(
-    arbitraryStatement, (statement) => {
-      return new Statement(statement).equal(new Statement(statement));
-    }
+    arbitraryStatement, statement => new Statement(statement).equal(new Statement(statement))
   ));
 });
 
 test('equality is symmetric', () => {
   fc.assert(fc.property(
-    twoArbitraryStatements, (s) => {
+    twoArbitraryStatements, s => {
       const a = new Statement(s.statement1);
       const b = new Statement(s.statement2);
 

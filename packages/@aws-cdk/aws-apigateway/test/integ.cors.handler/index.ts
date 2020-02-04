@@ -1,5 +1,5 @@
 exports.handler = async (evt: any) => {
-  // tslint:disable-next-line:no-console
+  // eslint-disable-next-line no-console
   console.error(JSON.stringify(evt, undefined, 2));
   return {
     statusCode: 200,

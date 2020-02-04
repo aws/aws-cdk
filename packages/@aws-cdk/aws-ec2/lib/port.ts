@@ -176,7 +176,7 @@ export class Port {
    */
   public readonly canInlineRule: boolean;
 
-  constructor(private readonly props: PortProps) {
+  public constructor(private readonly props: PortProps) {
     this.canInlineRule = !Token.isUnresolved(props.fromPort) && !Token.isUnresolved(props.toPort);
   }
 
@@ -197,5 +197,5 @@ export class Port {
 }
 
 function renderPort(port: number) {
-  return Token.isUnresolved(port) ? `{IndirectPort}` : port.toString();
+  return Token.isUnresolved(port) ? '{IndirectPort}' : port.toString();
 }

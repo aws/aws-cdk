@@ -69,14 +69,14 @@ export = {
 
     // THEN
     expect(stack).toMatch({
-      "Resources": {
-        "ImportedRuleSetMyRule53EE2F7F": {
-          "Type": "AWS::SES::ReceiptRule",
-          "Properties": {
-            "Rule": {
-              "Enabled": true
+      'Resources': {
+        'ImportedRuleSetMyRule53EE2F7F': {
+          'Type': 'AWS::SES::ReceiptRule',
+          'Properties': {
+            'Rule': {
+              'Enabled': true
             },
-            "RuleSetName": "MyRuleSet"
+            'RuleSetName': 'MyRuleSet'
           }
         }
       },

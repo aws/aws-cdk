@@ -91,7 +91,7 @@ export class LifecycleHook extends Resource implements ILifecycleHook {
    */
   public readonly lifecycleHookName: string;
 
-  constructor(scope: Construct, id: string, props: LifecycleHookProps) {
+  public constructor(scope: Construct, id: string, props: LifecycleHookProps) {
     super(scope, id, {
       physicalName: props.lifecycleHookName,
     });

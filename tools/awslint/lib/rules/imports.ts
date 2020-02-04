@@ -15,7 +15,7 @@ class ImportsReflection {
   public readonly attributesStructName: string;
   public readonly attributesStruct?: reflect.InterfaceType;
 
-  constructor(public readonly resource: ResourceReflection) {
+  public constructor(public readonly resource: ResourceReflection) {
     const sys = resource.sys;
     this.prefix = `from${resource.basename}`;
     const classType = resource.construct.classType;
@@ -23,7 +23,7 @@ class ImportsReflection {
     this.fromAttributesMethod = classType.allMethods.find(x => x.name === this.fromAttributesMethodName);
 
     this.fromMethods = classType.allMethods.filter(x =>
-        x.static
+      x.static
         && x.name.match(`^${this.prefix}[A-Z]`)
         && x.name !== this.fromAttributesMethodName);
 

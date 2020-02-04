@@ -16,7 +16,7 @@ export interface MetricFilterProps extends MetricFilterOptions {
  * A filter that extracts information from CloudWatch Logs and emits to CloudWatch Metrics
  */
 export class MetricFilter extends Resource {
-  constructor(scope: Construct, id: string, props: MetricFilterProps) {
+  public constructor(scope: Construct, id: string, props: MetricFilterProps) {
     super(scope, id);
 
     // It looks odd to map this object to a singleton list, but that's how

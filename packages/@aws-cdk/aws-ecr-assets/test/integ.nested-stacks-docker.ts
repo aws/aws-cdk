@@ -2,13 +2,13 @@ import * as cfn from '@aws-cdk/aws-cloudformation';
 import * as iam from '@aws-cdk/aws-iam';
 import { App, CfnOutput, Construct, Stack, StackProps } from '@aws-cdk/core';
 import * as path from 'path';
-import * as ecr_assets from '../lib';
+import * as ecrAssets from '../lib';
 
 class TheNestedStack extends cfn.NestedStack {
-  constructor(scope: Construct, id: string, props?: cfn.NestedStackProps) {
+  public constructor(scope: Construct, id: string, props?: cfn.NestedStackProps) {
     super(scope, id, props);
 
-    const asset = new ecr_assets.DockerImageAsset(this, 'my-image', {
+    const asset = new ecrAssets.DockerImageAsset(this, 'my-image', {
       directory: path.join(__dirname, 'demo-image')
     });
 
@@ -20,7 +20,7 @@ class TheNestedStack extends cfn.NestedStack {
 }
 
 class TheParentStack extends Stack {
-  constructor(scope: Construct, id: string, props?: StackProps) {
+  public constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
     new TheNestedStack(this, 'nested-stack-with-image');

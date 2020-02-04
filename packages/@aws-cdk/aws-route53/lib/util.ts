@@ -20,12 +20,12 @@ export function validateZoneName(zoneName: string) {
     throw new ValidationError('zone name labels cannot be more than 63 bytes long');
   }
   if (!zoneName.match(/^[a-z0-9!"#$%&'()*+,/:;<=>?@[\\\]^_`{|}~.-]+$/i)) {
-    throw new ValidationError('zone names can only contain a-z, 0-9, -, ! " # $ % & \' ( ) * + , - / : ; < = > ? @ [ \ ] ^ _ ` { | } ~ .');
+    throw new ValidationError('zone names can only contain a-z, 0-9, -, ! " # $ % & \' ( ) * + , - / : ; < = > ? @ [ \\ ] ^ _ ` { | } ~ .');
   }
 }
 
 class ValidationError extends Error {
-  constructor(message: string) {
+  public constructor(message: string) {
     super(message);
   }
 }

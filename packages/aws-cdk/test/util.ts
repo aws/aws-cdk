@@ -5,7 +5,7 @@ import * as path from 'path';
 export interface TestStackArtifact {
   stackName: string;
   template: any;
-  env?: string,
+  env?: string;
   depends?: string[];
   metadata?: cxapi.StackMetadata;
   assets?: cxapi.AssetMetadataEntry[];

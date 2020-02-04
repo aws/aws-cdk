@@ -36,7 +36,7 @@ export class SecretValue extends Intrinsic {
    */
   public static secretsManager(secretId: string, options: SecretsManagerSecretOptions = { }): SecretValue {
     if (!secretId) {
-      throw new Error(`secretId cannot be empty`);
+      throw new Error('secretId cannot be empty');
     }
 
     const parts = [
@@ -87,7 +87,7 @@ export class SecretValue extends Intrinsic {
    */
   public static cfnParameter(param: CfnParameter) {
     if (!param.noEcho) {
-      throw new Error(`CloudFormation parameter must be configured with "NoEcho"`);
+      throw new Error('CloudFormation parameter must be configured with "NoEcho"');
     }
 
     return new SecretValue(param.value);

@@ -122,7 +122,7 @@ export abstract class BaseLoadBalancer extends Resource {
    */
   private readonly attributes: Attributes = {};
 
-  constructor(scope: Construct, id: string, baseProps: BaseLoadBalancerProps, additionalProps: any) {
+  public constructor(scope: Construct, id: string, baseProps: BaseLoadBalancerProps, additionalProps: any) {
     super(scope, id, {
       physicalName: baseProps.loadBalancerName,
     });

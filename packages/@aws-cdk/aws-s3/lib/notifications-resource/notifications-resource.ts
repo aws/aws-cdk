@@ -35,7 +35,7 @@ export class BucketNotifications extends cdk.Construct {
   private resource?: cdk.CfnResource;
   private readonly bucket: Bucket;
 
-  constructor(scope: cdk.Construct, id: string, props: NotificationsProps) {
+  public constructor(scope: cdk.Construct, id: string, props: NotificationsProps) {
     super(scope, id);
     this.bucket = props.bucket;
   }
@@ -163,7 +163,7 @@ interface NotificationConfiguration {
 interface CommonConfiguration {
   Id?: string;
   Events: EventType[];
-  Filter?: Filter
+  Filter?: Filter;
 }
 
 interface LambdaFunctionConfiguration extends CommonConfiguration {
@@ -184,5 +184,5 @@ interface FilterRule {
 }
 
 interface Filter {
-  Key: { FilterRules: FilterRule[] }
+  Key: { FilterRules: FilterRule[] };
 }

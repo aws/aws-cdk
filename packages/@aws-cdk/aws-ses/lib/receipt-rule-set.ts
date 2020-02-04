@@ -36,7 +36,7 @@ export interface ReceiptRuleSetProps {
    *
    * @default - No rules are added to the rule set.
    */
-  readonly rules?: ReceiptRuleOptions[]
+  readonly rules?: ReceiptRuleOptions[];
 
   /**
    * Whether to add a first rule to stop processing messages
@@ -96,7 +96,7 @@ export class ReceiptRuleSet extends ReceiptRuleSetBase {
 
   public readonly receiptRuleSetName: string;
 
-  constructor(scope: Construct, id: string, props: ReceiptRuleSetProps = {}) {
+  public constructor(scope: Construct, id: string, props: ReceiptRuleSetProps = {}) {
     super(scope, id, {
       physicalName: props.receiptRuleSetName,
     });

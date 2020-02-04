@@ -1,4 +1,4 @@
-import { Token } from "./token";
+import { Token } from './token';
 
 /**
  * Represents a length of time.
@@ -151,7 +151,7 @@ export class Duration {
   public toString(): string {
     return Token.asString(
       () => {
-        throw new Error(`Duration.toString() was used, but .toSeconds, .toMinutes or .toDays should have been called instead`);
+        throw new Error('Duration.toString() was used, but .toSeconds, .toMinutes or .toDays should have been called instead');
       },
       { displayHint: `${this.amount} ${this.unit.label}` }
     );

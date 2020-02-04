@@ -60,6 +60,7 @@ test('diff can diff multiple stacks', async () => {
   });
 
   // THEN
+  // eslint-disable-next-line no-control-regex
   const plainTextOutput = buffer.data.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '');
   expect(plainTextOutput).toContain('Stack A');
   expect(plainTextOutput).toContain('Stack B');
@@ -122,7 +123,7 @@ class StringWritable extends Writable {
   public data: string;
   private readonly _decoder: NodeStringDecoder;
 
-  constructor(options: any = {}) {
+  public constructor(options: any = {}) {
     super(options);
     this._decoder = new StringDecoder(options && options.defaultEncoding);
     this.data = '';

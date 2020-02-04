@@ -25,7 +25,7 @@ export class CfnCondition extends CfnElement implements ICfnConditionExpression,
    * Build a new condition. The condition must be constructed with a condition token,
    * that the condition is based on.
    */
-  constructor(scope: Construct, id: string, props?: CfnConditionProps) {
+  public constructor(scope: Construct, id: string, props?: CfnConditionProps) {
     super(scope, id);
     this.expression = props && props.expression;
   }
@@ -86,4 +86,5 @@ export class CfnCondition extends CfnElement implements ICfnConditionExpression,
  * });
  * ```
  */
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface ICfnConditionExpression extends IResolvable { }

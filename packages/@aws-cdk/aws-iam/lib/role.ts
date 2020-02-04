@@ -270,7 +270,7 @@ export class Role extends Resource implements IRole {
   private readonly managedPolicies: IManagedPolicy[] = [];
   private readonly attachedPolicies = new AttachedPolicies();
 
-  constructor(scope: Construct, id: string, props: RoleProps) {
+  public constructor(scope: Construct, id: string, props: RoleProps) {
     super(scope, id, {
       physicalName: props.roleName,
     });

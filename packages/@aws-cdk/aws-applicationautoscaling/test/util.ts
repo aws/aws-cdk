@@ -20,6 +20,6 @@ export class ArbitraryInputIntervals extends fc.Arbitrary<appscaling.ScalingInte
   }
 }
 
-export function arbitrary_input_intervals() {
+export function arbitraryInputIntervals() {
   return new ArbitraryInputIntervals();
 }

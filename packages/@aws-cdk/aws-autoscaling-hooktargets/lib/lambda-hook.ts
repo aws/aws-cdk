@@ -11,7 +11,7 @@ import { TopicHook } from './topic-hook';
  * Internally creates a Topic to make the connection.
  */
 export class FunctionHook implements autoscaling.ILifecycleHookTarget {
-  constructor(private readonly fn: lambda.IFunction) {
+  public constructor(private readonly fn: lambda.IFunction) {
   }
 
   public bind(scope: Construct, lifecycleHook: autoscaling.ILifecycleHook): autoscaling.LifecycleHookTargetConfig {

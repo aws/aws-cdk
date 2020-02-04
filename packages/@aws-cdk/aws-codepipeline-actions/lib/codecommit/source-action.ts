@@ -86,7 +86,7 @@ export class CodeCommitSourceAction extends Action {
   private readonly branch: string;
   private readonly props: CodeCommitSourceActionProps;
 
-  constructor(props: CodeCommitSourceActionProps) {
+  public constructor(props: CodeCommitSourceActionProps) {
     const branch = props.branch || 'master';
 
     super({
@@ -115,7 +115,7 @@ export class CodeCommitSourceAction extends Action {
   }
 
   protected bound(_scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
-      codepipeline.ActionConfig {
+  codepipeline.ActionConfig {
     const createEvent = this.props.trigger === undefined ||
       this.props.trigger === CodeCommitTrigger.EVENTS;
     if (createEvent) {

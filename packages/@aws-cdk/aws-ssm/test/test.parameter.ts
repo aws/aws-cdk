@@ -1,4 +1,4 @@
-// tslint:disable: max-line-length
+/* eslint-disable max-len */
 
 import { expect, haveResource } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
@@ -144,7 +144,7 @@ export = {
     test.throws(() => new ssm.StringListParameter(stack, 'myParam2', {
       stringListValue: [ 'foo', 'bar' ],
       parameterName: 'path/to/parameter2'
-    }), /Parameter names must be fully qualified \(if they include \"\/\" they must also begin with a \"\/\"\)\: path\/to\/parameter2/);
+    }), /Parameter names must be fully qualified \(if they include "\/" they must also begin with a "\/"\): path\/to\/parameter2/);
 
     test.done();
   },
@@ -173,8 +173,8 @@ export = {
     expect(stack).toMatch({
       Parameters: {
         MyParamNameParameter: {
-          Type: "AWS::SSM::Parameter::Value<String>",
-          Default: "MyParamName"
+          Type: 'AWS::SSM::Parameter::Value<String>',
+          Default: 'MyParamName'
         }
       }
     });
@@ -406,7 +406,7 @@ export = {
     test.done();
   },
 
-  'valueForStringParameter': {
+  valueForStringParameter: {
 
     'returns a token that represents the SSM parameter value'(test: Test) {
       // GIVEN
@@ -419,8 +419,8 @@ export = {
       expect(stack).toMatch({
         Parameters: {
           SsmParameterValuemyparamnameC96584B6F00A464EAD1953AFF4B05118Parameter: {
-            Type: "AWS::SSM::Parameter::Value<String>",
-            Default: "my-param-name"
+            Type: 'AWS::SSM::Parameter::Value<String>',
+            Default: 'my-param-name'
           }
         }
       });
@@ -442,12 +442,12 @@ export = {
       expect(stack).toMatch({
         Parameters: {
           SsmParameterValuemyparamnameC96584B6F00A464EAD1953AFF4B05118Parameter: {
-            Type: "AWS::SSM::Parameter::Value<String>",
-            Default: "my-param-name"
+            Type: 'AWS::SSM::Parameter::Value<String>',
+            Default: 'my-param-name'
           },
           SsmParameterValuemyparamname2C96584B6F00A464EAD1953AFF4B05118Parameter: {
-            Type: "AWS::SSM::Parameter::Value<String>",
-            Default: "my-param-name-2"
+            Type: 'AWS::SSM::Parameter::Value<String>',
+            Default: 'my-param-name-2'
           }
         }
       });

@@ -107,7 +107,7 @@ export class OptionGroup extends Resource implements IOptionGroup {
    */
   public readonly optionConnections: { [key: string]: ec2.Connections } = {};
 
-  constructor(scope: Construct, id: string, props: OptionGroupProps) {
+  public constructor(scope: Construct, id: string, props: OptionGroupProps) {
     super(scope, id);
 
     const optionGroup = new CfnOptionGroup(this, 'Resource', {

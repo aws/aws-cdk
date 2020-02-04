@@ -2,7 +2,7 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 
 export class TestFunction extends lambda.Function {
-  constructor(scope: cdk.Construct, id: string) {
+  public constructor(scope: cdk.Construct, id: string) {
     super(scope, id, {
       handler: 'index.handler',
       code: lambda.Code.fromInline(`exports.handler = ${handler.toString()}`),

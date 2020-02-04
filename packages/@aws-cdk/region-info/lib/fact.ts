@@ -2,6 +2,8 @@
  * A database of regional information.
  */
 export class Fact {
+  private static readonly database: { [region: string]: { [name: string]: string } } = {};
+
   /**
    * @returns the list of names of AWS regions for which there is at least one registered fact. This
    *          may not be an exhaustive list of all available AWS regions.
@@ -68,8 +70,6 @@ export class Fact {
     }
     delete regionFacts[name];
   }
-
-  private static readonly database: { [region: string]: { [name: string]: string } } = {};
 
   private constructor() {
     throw new Error('Use the static methods of Fact instead!');

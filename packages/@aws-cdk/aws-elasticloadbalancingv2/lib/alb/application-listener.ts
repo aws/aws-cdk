@@ -6,7 +6,9 @@ import { ApplicationProtocol, SslPolicy } from '../shared/enums';
 import { IListenerCertificate, ListenerCertificate } from '../shared/listener-certificate';
 import { determineProtocolAndPort } from '../shared/util';
 import { ApplicationListenerCertificate } from './application-listener-certificate';
-import { ApplicationListenerRule, FixedResponse, RedirectResponse, validateFixedResponse, validateRedirectResponse } from './application-listener-rule';
+import {
+  ApplicationListenerRule, FixedResponse, RedirectResponse, validateFixedResponse, validateRedirectResponse
+} from './application-listener-rule';
 import { IApplicationLoadBalancer } from './application-load-balancer';
 import { ApplicationTargetGroup, IApplicationLoadBalancerTarget, IApplicationTargetGroup } from './application-target-group';
 
@@ -116,10 +118,10 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
    */
   private readonly protocol: ApplicationProtocol;
 
-  constructor(scope: Construct, id: string, props: ApplicationListenerProps) {
+  public constructor(scope: Construct, id: string, props: ApplicationListenerProps) {
     const [protocol, port] = determineProtocolAndPort(props.protocol, props.port);
     if (protocol === undefined || port === undefined) {
-      throw new Error(`At least one of 'port' or 'protocol' is required`);
+      throw new Error('At least one of \'port\' or \'protocol\' is required');
     }
 
     super(scope, id, {
@@ -136,10 +138,10 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
 
     // Attach certificates
     if (props.certificateArns && props.certificateArns.length > 0) {
-      this.addCertificateArns("ListenerCertificate", props.certificateArns);
+      this.addCertificateArns('ListenerCertificate', props.certificateArns);
     }
     if (props.certificates && props.certificates.length > 0) {
-      this.addCertificates("DefaultCertificates", props.certificates);
+      this.addCertificates('DefaultCertificates', props.certificates);
     }
 
     // This listener edits the securitygroup of the load balancer,
@@ -439,7 +441,7 @@ class ImportedApplicationListener extends Resource implements IApplicationListen
    */
   public readonly listenerArn: string;
 
-  constructor(scope: Construct, id: string, props: ApplicationListenerAttributes) {
+  public constructor(scope: Construct, id: string, props: ApplicationListenerAttributes) {
     super(scope, id);
 
     this.listenerArn = props.listenerArn;
@@ -481,7 +483,7 @@ class ImportedApplicationListener extends Resource implements IApplicationListen
    */
   public addTargetGroups(id: string, props: AddApplicationTargetGroupsProps): void {
     if ((props.hostHeader !== undefined || props.pathPattern !== undefined) !== (props.priority !== undefined)) {
-      throw new Error(`Setting 'pathPattern' or 'hostHeader' also requires 'priority', and vice versa`);
+      throw new Error('Setting \'pathPattern\' or \'hostHeader\' also requires \'priority\', and vice versa');
     }
 
     if (props.priority !== undefined) {
@@ -668,6 +670,6 @@ export interface AddRedirectResponseProps extends AddRuleProps, RedirectResponse
 
 function checkAddRuleProps(props: AddRuleProps) {
   if ((props.hostHeader !== undefined || props.pathPattern !== undefined) !== (props.priority !== undefined)) {
-    throw new Error(`Setting 'pathPattern' or 'hostHeader' also requires 'priority', and vice versa`);
+    throw new Error('Setting \'pathPattern\' or \'hostHeader\' also requires \'priority\', and vice versa');
   }
 }

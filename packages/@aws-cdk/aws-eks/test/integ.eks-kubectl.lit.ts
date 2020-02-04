@@ -10,7 +10,7 @@ import { TestStack } from './util';
 class VpcStack extends TestStack {
   public readonly vpc: ec2.Vpc;
 
-  constructor(scope: Construct, id: string) {
+  public constructor(scope: Construct, id: string) {
     super(scope, id);
     this.vpc = new ec2.Vpc(this, 'vpc', { maxAzs: 2 });
   }
@@ -19,7 +19,7 @@ class VpcStack extends TestStack {
 class ClusterStack extends TestStack {
   public readonly cluster: Cluster;
 
-  constructor(scope: Construct, id: string, props: { vpc: ec2.Vpc }) {
+  public constructor(scope: Construct, id: string, props: { vpc: ec2.Vpc }) {
     super(scope, id);
 
     // define the cluster. kubectl is enabled by default.

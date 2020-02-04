@@ -14,9 +14,9 @@ export = {
       new sns.Topic(stack, 'MyTopic');
 
       expect(stack).toMatch({
-        "Resources": {
-          "MyTopic86869434": {
-          "Type": "AWS::SNS::Topic"
+        'Resources': {
+          'MyTopic86869434': {
+            'Type': 'AWS::SNS::Topic'
           }
         }
       });
@@ -32,12 +32,12 @@ export = {
       });
 
       expect(stack).toMatch({
-        "Resources": {
-          "MyTopic86869434": {
-          "Type": "AWS::SNS::Topic",
-          "Properties": {
-            "TopicName": "topicName"
-          }
+        'Resources': {
+          'MyTopic86869434': {
+            'Type': 'AWS::SNS::Topic',
+            'Properties': {
+              'TopicName': 'topicName'
+            }
           }
         }
       });
@@ -53,12 +53,12 @@ export = {
       });
 
       expect(stack).toMatch({
-        "Resources": {
-          "MyTopic86869434": {
-          "Type": "AWS::SNS::Topic",
-          "Properties": {
-            "DisplayName": "displayName"
-          }
+        'Resources': {
+          'MyTopic86869434': {
+            'Type': 'AWS::SNS::Topic',
+            'Properties': {
+              'DisplayName': 'displayName'
+            }
           }
         }
       });
@@ -68,14 +68,14 @@ export = {
 
     'specify kmsMasterKey'(test: Test) {
       const stack = new cdk.Stack();
-      const key = new kms.Key(stack, "CustomKey");
+      const key = new kms.Key(stack, 'CustomKey');
 
       new sns.Topic(stack, 'MyTopic', {
         masterKey: key,
       });
 
-      expect(stack).to(haveResource("AWS::SNS::Topic", {
-        "KmsMasterKeyId": { "Ref": "CustomKey1E6D0D07" },
+      expect(stack).to(haveResource('AWS::SNS::Topic', {
+        'KmsMasterKeyId': { 'Ref': 'CustomKey1E6D0D07' },
       }));
 
       test.done();
@@ -90,13 +90,13 @@ export = {
       });
 
       expect(stack).toMatch({
-        "Resources": {
-          "MyTopic86869434": {
-          "Type": "AWS::SNS::Topic",
-          "Properties": {
-            "DisplayName": "displayName",
-            "TopicName": "topicName"
-          }
+        'Resources': {
+          'MyTopic86869434': {
+            'Type': 'AWS::SNS::Topic',
+            'Properties': {
+              'DisplayName': 'displayName',
+              'TopicName': 'topicName'
+            }
           }
         }
       });
@@ -119,16 +119,16 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::SNS::TopicPolicy', {
-    PolicyDocument: {
-      Version: '2012-10-17',
-      Statement: [{
-        "Sid": "0",
-        "Action": "sns:*",
-        "Effect": "Allow",
-        "Principal": { "AWS": "arn" },
-        "Resource": "*"
-      }]
-    }
+      PolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [{
+          'Sid': '0',
+          'Action': 'sns:*',
+          'Effect': 'Allow',
+          'Principal': { 'AWS': 'arn' },
+          'Resource': '*'
+        }]
+      }
     }));
 
     test.done();
@@ -145,16 +145,16 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::IAM::Policy', {
-    "PolicyDocument": {
-      Version: '2012-10-17',
-      "Statement": [
-      {
-        "Action": "sns:Publish",
-        "Effect": "Allow",
-        "Resource": stack.resolve(topic.topicArn)
+      'PolicyDocument': {
+        Version: '2012-10-17',
+        'Statement': [
+          {
+            'Action': 'sns:Publish',
+            'Effect': 'Allow',
+            'Resource': stack.resolve(topic.topicArn)
+          }
+        ],
       }
-      ],
-    }
     }));
 
     test.done();
@@ -169,35 +169,35 @@ export = {
     topic.addToResourcePolicy(new iam.PolicyStatement({ actions: ['service:statement1'] }));
 
     expect(stack).toMatch({
-      "Resources": {
-      "MyTopic86869434": {
-        "Type": "AWS::SNS::Topic"
-      },
-      "MyTopicPolicy12A5EC17": {
-        "Type": "AWS::SNS::TopicPolicy",
-        "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-          {
-            "Action": "service:statement0",
-            "Effect": "Allow",
-            "Sid": "0"
-          },
-          {
-            "Action": "service:statement1",
-            "Effect": "Allow",
-            "Sid": "1"
-          }
-          ],
-          "Version": "2012-10-17"
+      'Resources': {
+        'MyTopic86869434': {
+          'Type': 'AWS::SNS::Topic'
         },
-        "Topics": [
-          {
-          "Ref": "MyTopic86869434"
+        'MyTopicPolicy12A5EC17': {
+          'Type': 'AWS::SNS::TopicPolicy',
+          'Properties': {
+            'PolicyDocument': {
+              'Statement': [
+                {
+                  'Action': 'service:statement0',
+                  'Effect': 'Allow',
+                  'Sid': '0'
+                },
+                {
+                  'Action': 'service:statement1',
+                  'Effect': 'Allow',
+                  'Sid': '1'
+                }
+              ],
+              'Version': '2012-10-17'
+            },
+            'Topics': [
+              {
+                'Ref': 'MyTopic86869434'
+              }
+            ]
           }
-        ]
         }
-      }
       }
     });
 

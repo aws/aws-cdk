@@ -8,7 +8,7 @@ import * as cfn from '../lib';
 class ProducerNestedStack extends cfn.NestedStack {
   public readonly topic: sns.Topic;
 
-  constructor(scope: Construct, id: string) {
+  public constructor(scope: Construct, id: string) {
     super(scope, id);
 
     this.topic = new sns.Topic(this, 'MyTopic');
@@ -18,7 +18,7 @@ class ProducerNestedStack extends cfn.NestedStack {
 class ParentStack extends Stack {
   public readonly topic: sns.Topic;
 
-  constructor(scope: Construct, id: string) {
+  public constructor(scope: Construct, id: string) {
     super(scope, id);
 
     const nested = new ProducerNestedStack(this, 'Nested1');
@@ -27,7 +27,7 @@ class ParentStack extends Stack {
 }
 
 class ConsumerStack extends Stack {
-  constructor(scope: Construct, id: string, topic: sns.Topic) {
+  public constructor(scope: Construct, id: string, topic: sns.Topic) {
     super(scope, id);
 
     new sns.Topic(this, 'ConsumerTopic', {

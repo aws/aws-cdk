@@ -1,7 +1,7 @@
-import { aws } from '../lib' /// <omit/>
+import { aws } from '../lib'; /// <omit/>
 
 export class Queue extends aws.sqs.QueueBase {
-  enrichment() {
+  public enrichment() {
     return 'I am an enriched queue';
   }
 }

@@ -99,7 +99,7 @@ export class PipelineDeployStackAction implements codepipeline.IAction {
   private readonly prepareChangeSetAction: cpactions.CloudFormationCreateReplaceChangeSetAction;
   private readonly executeChangeSetAction: cpactions.CloudFormationExecuteChangeSetAction;
 
-  constructor(props: PipelineDeployStackActionProps) {
+  public constructor(props: PipelineDeployStackActionProps) {
     this.stack = props.stack;
     const assets = this.stack.node.metadata.filter(md => md.type === cxapi.ASSET_METADATA);
     if (assets.length > 0) {
@@ -134,10 +134,10 @@ export class PipelineDeployStackAction implements codepipeline.IAction {
   }
 
   public bind(scope: cdk.Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
-      codepipeline.ActionConfig {
+  codepipeline.ActionConfig {
     if (this.stack.environment !== cdk.Stack.of(scope).environment) {
       // FIXME: Add the necessary to extend to stacks in a different account
-      throw new Error(`Cross-environment deployment is not supported`);
+      throw new Error('Cross-environment deployment is not supported');
     }
 
     stage.addAction(this.prepareChangeSetAction);
@@ -148,7 +148,7 @@ export class PipelineDeployStackAction implements codepipeline.IAction {
 
   public get deploymentRole(): iam.IRole {
     if (!this._deploymentRole) {
-      throw new Error(`Use this action in a pipeline first before accessing 'deploymentRole'`);
+      throw new Error('Use this action in a pipeline first before accessing \'deploymentRole\'');
     }
 
     return this._deploymentRole;

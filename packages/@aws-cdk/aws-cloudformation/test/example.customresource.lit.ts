@@ -13,7 +13,7 @@ interface CopyOperationProps {
 }
 
 class CopyOperation extends Construct {
-  constructor(parent: Construct, name: string, props: CopyOperationProps) {
+  public constructor(parent: Construct, name: string, props: CopyOperationProps) {
     super(parent, name);
 
     const lambdaProvider = new lambda.SingletonFunction(this, 'Provider', {

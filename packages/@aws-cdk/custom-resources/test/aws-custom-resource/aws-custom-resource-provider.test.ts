@@ -8,7 +8,8 @@ import { flatten, handler } from '../../lib/aws-custom-resource/runtime';
 
 AWS.setSDK(require.resolve('aws-sdk'));
 
-console.log = jest.fn(); // tslint:disable-line no-console
+// eslint-disable-next-line no-console
+console.log = jest.fn();
 
 const eventCommon = {
   ServiceToken: 'token',
@@ -383,8 +384,6 @@ test('flatten correctly flattens a nested object', () => {
 test('installs the latest SDK', async () => {
   const tmpPath = '/tmp/node_modules/aws-sdk';
 
-  fs.remove(tmpPath);
-
   const publishFake = sinon.fake.resolves({});
 
   AWS.mock('SNS', 'publish', publishFake);
@@ -415,4 +414,6 @@ test('installs the latest SDK', async () => {
   expect(request.isDone()).toBeTruthy();
 
   expect(() => require.resolve(tmpPath)).not.toThrow();
+
+  await fs.remove(tmpPath);
 });

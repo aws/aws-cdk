@@ -97,7 +97,7 @@ export class ApplicationMultipleTargetGroupsFargateService extends ApplicationMu
   /**
    * Constructs a new instance of the ApplicationMultipleTargetGroupsFargateService class.
    */
-  constructor(scope: Construct, id: string, props: ApplicationMultipleTargetGroupsFargateServiceProps = {}) {
+  public constructor(scope: Construct, id: string, props: ApplicationMultipleTargetGroupsFargateServiceProps = {}) {
     super(scope, id, props);
 
     this.assignPublicIp = props.assignPublicIp !== undefined ? props.assignPublicIp : false;
@@ -155,7 +155,7 @@ export class ApplicationMultipleTargetGroupsFargateService extends ApplicationMu
   }
 
   private createFargateService(props: ApplicationMultipleTargetGroupsFargateServiceProps): FargateService {
-    return new FargateService(this, "Service", {
+    return new FargateService(this, 'Service', {
       cluster: this.cluster,
       desiredCount: this.desiredCount,
       taskDefinition: this.taskDefinition,

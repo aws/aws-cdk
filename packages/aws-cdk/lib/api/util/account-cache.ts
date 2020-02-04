@@ -20,7 +20,7 @@ export class AccountAccessKeyCache {
   /**
    * @param filePath Path to the cache file
    */
-  constructor(filePath?: string) {
+  public constructor(filePath?: string) {
     this.cacheFile = filePath || path.join(os.homedir(), '.cdk', 'cache', 'accounts.json');
   }
 

@@ -5,7 +5,7 @@ import * as targets from '../../lib';
 const app = new cdk.App();
 
 class AwsApi extends cdk.Stack {
-  constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
+  public constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
     // Force new deployment of 'cool-service' and stop 'dev-instance' at midnight everyday

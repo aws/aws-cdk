@@ -1,7 +1,7 @@
-import { CustomResource } from "@aws-cdk/aws-cloudformation";
-import { Construct, Stack } from "@aws-cdk/core";
-import { Cluster } from "./cluster";
-import { KubectlProvider } from "./kubectl-provider";
+import { CustomResource } from '@aws-cdk/aws-cloudformation';
+import { Construct, Stack } from '@aws-cdk/core';
+import { Cluster } from './cluster';
+import { KubectlProvider } from './kubectl-provider';
 
 export interface CoreDnsComputeTypeProps {
   /**
@@ -37,7 +37,7 @@ export interface CoreDnsComputeTypeProps {
  * Kubernetes resource.
  */
 export class KubernetesPatch extends Construct {
-  constructor(scope: Construct, id: string, props: CoreDnsComputeTypeProps) {
+  public constructor(scope: Construct, id: string, props: CoreDnsComputeTypeProps) {
     super(scope, id);
 
     const stack = Stack.of(this);

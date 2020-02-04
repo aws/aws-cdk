@@ -77,7 +77,6 @@
     "pipelinePipeline22F2A91DArtifactsBucketC1799DCD": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
-        "PublicAccessBlockConfiguration" : {"BlockPublicAcls":true,"BlockPublicPolicy":true,"IgnorePublicAcls":true,"RestrictPublicBuckets":true},
         "BucketEncryption": {
           "ServerSideEncryptionConfiguration": [
             {
@@ -92,6 +91,12 @@
               }
             }
           ]
+        },
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": true,
+          "BlockPublicPolicy": true,
+          "IgnorePublicAcls": true,
+          "RestrictPublicBuckets": true
         }
       },
       "UpdateReplacePolicy": "Retain",

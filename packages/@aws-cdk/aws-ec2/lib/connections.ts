@@ -1,6 +1,6 @@
-import { IPeer, Peer } from "./peer";
+import { IPeer, Peer } from './peer';
 import { Port } from './port';
-import { ISecurityGroup } from "./security-group";
+import { ISecurityGroup } from './security-group';
 
 /**
  * The goal of this module is to make possible to write statements like this:
@@ -93,7 +93,7 @@ export class Connections implements IConnectable {
    */
   private remoteRule: boolean = false;
 
-  constructor(props: ConnectionsProps = {}) {
+  public constructor(props: ConnectionsProps = {}) {
     this.connections = this;
     this._securityGroups.push(...(props.securityGroups || []));
 

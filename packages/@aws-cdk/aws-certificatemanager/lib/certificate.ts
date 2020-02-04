@@ -83,7 +83,7 @@ export class Certificate extends Resource implements ICertificate {
    */
   public readonly certificateArn: string;
 
-  constructor(scope: Construct, id: string, props: CertificateProps) {
+  public constructor(scope: Construct, id: string, props: CertificateProps) {
     super(scope, id);
 
     const allDomainNames = [props.domainName].concat(props.subjectAlternativeNames || []);
@@ -106,7 +106,7 @@ export class Certificate extends Resource implements ICertificate {
       let validationDomain = props.validationDomains && props.validationDomains[domainName];
       if (validationDomain === undefined) {
         if (Token.isUnresolved(domainName)) {
-          throw new Error(`When using Tokens for domain names, 'validationDomains' needs to be supplied`);
+          throw new Error('When using Tokens for domain names, \'validationDomains\' needs to be supplied');
         }
         validationDomain = apexDomain(domainName);
       }

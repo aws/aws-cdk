@@ -28,7 +28,7 @@ export class UnknownPrincipal implements IPrincipal {
   public readonly grantPrincipal: IPrincipal;
   private readonly resource: IConstruct;
 
-  constructor(props: UnknownPrincipalProps) {
+  public constructor(props: UnknownPrincipalProps) {
     this.resource = props.resource;
     this.grantPrincipal = this;
   }

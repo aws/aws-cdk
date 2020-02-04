@@ -9,11 +9,11 @@ import { IParameterGroup } from './parameter-group';
  * used for secret rotation.
  */
 export class DatabaseClusterEngine {
-  /* tslint:disable max-line-length */
+  /* eslint-disable max-len */
   public static readonly AURORA = new DatabaseClusterEngine('aurora', secretsmanager.SecretRotationApplication.MYSQL_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.MYSQL_ROTATION_MULTI_USER);
   public static readonly AURORA_MYSQL = new DatabaseClusterEngine('aurora-mysql', secretsmanager.SecretRotationApplication.MYSQL_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.MYSQL_ROTATION_MULTI_USER);
   public static readonly AURORA_POSTGRESQL = new DatabaseClusterEngine('aurora-postgresql', secretsmanager.SecretRotationApplication.POSTGRES_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.POSTGRES_ROTATION_MULTI_USER);
-  /* tslint:enable max-line-length */
+  /* eslint-enable max-len */
 
   /**
    * The engine.
@@ -30,8 +30,11 @@ export class DatabaseClusterEngine {
    */
   public readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
 
-  // tslint:disable-next-line max-line-length
-  constructor(name: string, singleUserRotationApplication: secretsmanager.SecretRotationApplication, multiUserRotationApplication: secretsmanager.SecretRotationApplication) {
+  public constructor(
+    name: string,
+    singleUserRotationApplication: secretsmanager.SecretRotationApplication,
+    multiUserRotationApplication: secretsmanager.SecretRotationApplication
+  ) {
     this.name = name;
     this.singleUserRotationApplication = singleUserRotationApplication;
     this.multiUserRotationApplication = multiUserRotationApplication;

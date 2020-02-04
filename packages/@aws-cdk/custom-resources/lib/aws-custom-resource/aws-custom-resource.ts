@@ -158,7 +158,7 @@ export interface AwsCustomResourceProps {
    *
    * @default Duration.minutes(2)
    */
-  readonly timeout?: cdk.Duration
+  readonly timeout?: cdk.Duration;
 }
 
 export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
@@ -166,7 +166,7 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
 
   private readonly customResource: CustomResource;
 
-  constructor(scope: cdk.Construct, id: string, props: AwsCustomResourceProps) {
+  public constructor(scope: cdk.Construct, id: string, props: AwsCustomResourceProps) {
     super(scope, id);
 
     if (!props.onCreate && !props.onUpdate && !props.onDelete) {

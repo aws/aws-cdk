@@ -4,7 +4,7 @@ import * as path from 'path';
 import * as apigw from '../lib';
 
 class TestStack extends Stack {
-  constructor(scope: Construct, id: string, props?: StackProps) {
+  public constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
     const api = new apigw.RestApi(this, 'cors-api-test');

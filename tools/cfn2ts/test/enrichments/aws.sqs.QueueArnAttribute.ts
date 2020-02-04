@@ -1,7 +1,7 @@
-import { aws } from '../lib' /// <omit/>
+import { aws } from '../lib'; /// <omit/>
 
 export class QueueArnAttribute extends aws.sqs.QueueArnAttributeBase {
-  enrichment() {
+  public enrichment() {
     return 'I am an enriched queue arn attribute';
   }
 }

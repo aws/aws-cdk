@@ -1,5 +1,3 @@
-exports.handler = async (_: any) => {
-  return {
-    statusCode: 200
-  };
-};
+exports.handler = async (_: any) => ({
+  statusCode: 200
+});

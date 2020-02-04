@@ -13,7 +13,7 @@ export interface IFilterPattern {
 export abstract class JsonPattern implements IFilterPattern {
   // This is a separate class so we have some type safety where users can't
   // combine text patterns and JSON patterns with an 'and' operation.
-  constructor(public readonly jsonPatternString: string) { }
+  public constructor(public readonly jsonPatternString: string) { }
 
   public get logPatternString(): string {
     return '{ ' + this.jsonPatternString + ' }';
@@ -41,7 +41,7 @@ export class FilterPattern {
    * A log pattern that matches all events.
    */
   public static allEvents(): IFilterPattern {
-    return new LiteralLogPattern("");
+    return new LiteralLogPattern('');
   }
 
   /**
@@ -196,7 +196,7 @@ export class FilterPattern {
  * Use a string literal as a log pattern
  */
 class LiteralLogPattern implements IFilterPattern {
-  constructor(public readonly logPatternString: string) {
+  public constructor(public readonly logPatternString: string) {
   }
 }
 
@@ -206,7 +206,7 @@ class LiteralLogPattern implements IFilterPattern {
 class TextLogPattern implements IFilterPattern {
   public readonly logPatternString: string;
 
-  constructor(clauses: string[][]) {
+  public constructor(clauses: string[][]) {
     const quotedClauses = clauses.map(terms => terms.map(quoteTerm).join(' '));
     if (quotedClauses.length === 1) {
       this.logPatternString = quotedClauses[0];

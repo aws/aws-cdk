@@ -3,7 +3,7 @@ import { Test } from 'nodeunit';
 import * as eks from '../lib';
 import { testFixtureCluster } from './util';
 
-// tslint:disable:max-line-length
+/* eslint-disable max-len */
 
 export = {
   'add Helm chart': {
@@ -48,7 +48,7 @@ export = {
       new eks.HelmChart(stack, 'MyChart', { cluster, chart: 'chart', values: { foo: 123 } });
 
       // THEN
-      expect(stack).to(haveResource(eks.HelmChart.RESOURCE_TYPE, { Values: '{\"foo\":123}' }));
+      expect(stack).to(haveResource(eks.HelmChart.RESOURCE_TYPE, { Values: '{"foo":123}' }));
       test.done();
     }
   }

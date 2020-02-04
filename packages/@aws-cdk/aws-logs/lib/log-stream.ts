@@ -63,7 +63,7 @@ export class LogStream extends Resource implements ILogStream {
    */
   public readonly logStreamName: string;
 
-  constructor(scope: Construct, id: string, props: LogStreamProps) {
+  public constructor(scope: Construct, id: string, props: LogStreamProps) {
     super(scope, id, {
       physicalName: props.logStreamName,
     });

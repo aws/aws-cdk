@@ -5,7 +5,7 @@ import { App, Construct, Stack } from '@aws-cdk/core';
 import * as targets from '../lib';
 
 class TestStack extends Stack {
-  constructor(scope: Construct, id: string) {
+  public constructor(scope: Construct, id: string) {
     super(scope, id);
 
     const vpc = new ec2.Vpc(this, 'Stack', { maxAzs: 2, natGateways: 1 });

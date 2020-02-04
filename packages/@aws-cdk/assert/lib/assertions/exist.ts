@@ -4,7 +4,7 @@ import { StackPathInspector } from '../inspector';
 class ExistingResourceAssertion extends Assertion<StackPathInspector> {
   public description: string = 'an existing resource';
 
-  constructor() {
+  public constructor() {
     super();
   }
 

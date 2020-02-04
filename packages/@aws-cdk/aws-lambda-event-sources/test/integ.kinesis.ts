@@ -5,7 +5,7 @@ import { KinesisEventSource } from '../lib';
 import { TestFunction } from './test-function';
 
 class KinesisEventSourceTest extends cdk.Stack {
-  constructor(scope: cdk.App, id: string) {
+  public constructor(scope: cdk.App, id: string) {
     super(scope, id);
 
     const fn = new TestFunction(this, 'F');

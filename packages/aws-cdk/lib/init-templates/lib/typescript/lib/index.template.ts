@@ -16,7 +16,7 @@ export class %name.PascalCased% extends cdk.Construct {
   /** @returns the ARN of the SQS queue */
   public readonly queueArn: string;
 
-  constructor(scope: cdk.Construct, id: string, props: %name.PascalCased%Props = {}) {
+  public constructor(scope: cdk.Construct, id: string, props: %name.PascalCased%Props = {}) {
     super(scope, id);
 
     const queue = new sqs.Queue(this, '%name.PascalCased%Queue', {

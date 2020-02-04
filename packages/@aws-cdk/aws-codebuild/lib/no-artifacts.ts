@@ -13,7 +13,7 @@ import { Artifacts } from './artifacts';
 export class NoArtifacts extends Artifacts {
   public readonly type = 'NO_ARTIFACTS';
 
-  constructor() {
+  public constructor() {
     super({});
   }
 }

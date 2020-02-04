@@ -28,11 +28,11 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::RDS::DBCluster', {
       Properties: {
-        Engine: "aurora",
-        DBSubnetGroupName: { Ref: "DatabaseSubnets56F17B9A" },
-        MasterUsername: "admin",
-        MasterUserPassword: "tooshort",
-        VpcSecurityGroupIds: [ {"Fn::GetAtt": ["DatabaseSecurityGroup5C91FDCB", "GroupId"]}]
+        Engine: 'aurora',
+        DBSubnetGroupName: { Ref: 'DatabaseSubnets56F17B9A' },
+        MasterUsername: 'admin',
+        MasterUserPassword: 'tooshort',
+        VpcSecurityGroupIds: [ {'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId']}]
       },
       DeletionPolicy: 'Retain',
       UpdateReplacePolicy: 'Retain'
@@ -66,11 +66,11 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::RDS::DBCluster', {
-      Engine: "aurora",
-      DBSubnetGroupName: { Ref: "DatabaseSubnets56F17B9A" },
-      MasterUsername: "admin",
-      MasterUserPassword: "tooshort",
-      VpcSecurityGroupIds: [ {"Fn::GetAtt": ["DatabaseSecurityGroup5C91FDCB", "GroupId"]}]
+      Engine: 'aurora',
+      DBSubnetGroupName: { Ref: 'DatabaseSubnets56F17B9A' },
+      MasterUsername: 'admin',
+      MasterUserPassword: 'tooshort',
+      VpcSecurityGroupIds: [ {'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId']}]
     }));
 
     test.done();
@@ -80,9 +80,9 @@ export = {
     // GIVEN
     const stack = testStack();
     const vpc = ec2.Vpc.fromLookup(stack, 'VPC', {
-      vpcId: "VPC12345"
+      vpcId: 'VPC12345'
     });
-    const sg = ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', "SecurityGroupId12345");
+    const sg = ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'SecurityGroupId12345');
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
@@ -101,11 +101,11 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::RDS::DBCluster', {
-      Engine: "aurora",
-      DBSubnetGroupName: { Ref: "DatabaseSubnets56F17B9A" },
-      MasterUsername: "admin",
-      MasterUserPassword: "tooshort",
-      VpcSecurityGroupIds: [ "SecurityGroupId12345" ]
+      Engine: 'aurora',
+      DBSubnetGroupName: { Ref: 'DatabaseSubnets56F17B9A' },
+      MasterUsername: 'admin',
+      MasterUserPassword: 'tooshort',
+      VpcSecurityGroupIds: [ 'SecurityGroupId12345' ]
     }));
 
     test.done();
@@ -192,7 +192,7 @@ export = {
 
     expect(stack).to(haveResource('AWS::SecretsManager::Secret', {
       GenerateSecretString: {
-        ExcludeCharacters: '\"@/\\',
+        ExcludeCharacters: '"@/\\',
         GenerateStringKey: 'password',
         PasswordLength: 30,
         SecretStringTemplate: '{"username":"admin"}'
@@ -275,7 +275,7 @@ export = {
     // WHEN
     new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
-      engineVersion: "5.7.mysql_aurora.2.04.4",
+      engineVersion: '5.7.mysql_aurora.2.04.4',
       masterUser: {
         username: 'admin'
       },
@@ -287,8 +287,8 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::RDS::DBCluster', {
-      Engine: "aurora-mysql",
-      EngineVersion: "5.7.mysql_aurora.2.04.4",
+      Engine: 'aurora-mysql',
+      EngineVersion: '5.7.mysql_aurora.2.04.4',
     }));
 
     test.done();
@@ -302,7 +302,7 @@ export = {
     // WHEN
     new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA_POSTGRESQL,
-      engineVersion: "10.7",
+      engineVersion: '10.7',
       masterUser: {
         username: 'admin'
       },
@@ -314,8 +314,8 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::RDS::DBCluster', {
-      Engine: "aurora-postgresql",
-      EngineVersion: "10.7",
+      Engine: 'aurora-postgresql',
+      EngineVersion: '10.7',
     }));
 
     test.done();
@@ -374,17 +374,17 @@ export = {
     test.done();
   },
 
-  "cluster with enabled monitoring"(test: Test) {
+  'cluster with enabled monitoring'(test: Test) {
     // GIVEN
     const stack = testStack();
-    const vpc = new ec2.Vpc(stack, "VPC");
+    const vpc = new ec2.Vpc(stack, 'VPC');
 
     // WHEN
-    new DatabaseCluster(stack, "Database", {
+    new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA,
       instances: 1,
       masterUser: {
-        username: "admin"
+        username: 'admin'
       },
       instanceProps: {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
@@ -394,36 +394,36 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource("AWS::RDS::DBInstance", {
+    expect(stack).to(haveResource('AWS::RDS::DBInstance', {
       MonitoringInterval: 60,
       MonitoringRoleArn: {
-        "Fn::GetAtt": ["DatabaseMonitoringRole576991DA", "Arn"]
+        'Fn::GetAtt': ['DatabaseMonitoringRole576991DA', 'Arn']
       }
     }, ResourcePart.Properties));
 
-    expect(stack).to(haveResource("AWS::IAM::Role", {
+    expect(stack).to(haveResource('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Statement: [
           {
-            Action: "sts:AssumeRole",
-            Effect: "Allow",
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
             Principal: {
-              Service: "monitoring.rds.amazonaws.com"
+              Service: 'monitoring.rds.amazonaws.com'
             }
           }
         ],
-        Version: "2012-10-17"
+        Version: '2012-10-17'
       },
       ManagedPolicyArns: [
         {
-          "Fn::Join": [
-            "",
+          'Fn::Join': [
+            '',
             [
-              "arn:",
+              'arn:',
               {
-                Ref: "AWS::Partition"
+                Ref: 'AWS::Partition'
               },
-              ":iam::aws:policy/service-role/AmazonRDSEnhancedMonitoringRole"
+              ':iam::aws:policy/service-role/AmazonRDSEnhancedMonitoringRole'
             ]
           ]
         }
@@ -436,21 +436,21 @@ export = {
   'create a cluster with imported monitoring role'(test: Test) {
     // GIVEN
     const stack = testStack();
-    const vpc = new ec2.Vpc(stack, "VPC");
+    const vpc = new ec2.Vpc(stack, 'VPC');
 
-    const monitoringRole = new Role(stack, "MonitoringRole", {
-      assumedBy: new ServicePrincipal("monitoring.rds.amazonaws.com"),
+    const monitoringRole = new Role(stack, 'MonitoringRole', {
+      assumedBy: new ServicePrincipal('monitoring.rds.amazonaws.com'),
       managedPolicies: [
         ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonRDSEnhancedMonitoringRole')
       ]
     });
 
     // WHEN
-    new DatabaseCluster(stack, "Database", {
+    new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA,
       instances: 1,
       masterUser: {
-        username: "admin"
+        username: 'admin'
       },
       instanceProps: {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
@@ -461,10 +461,10 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource("AWS::RDS::DBInstance", {
+    expect(stack).to(haveResource('AWS::RDS::DBInstance', {
       MonitoringInterval: 60,
       MonitoringRoleArn: {
-        "Fn::GetAtt": ["MonitoringRole90457BF9", "Arn"]
+        'Fn::GetAtt': ['MonitoringRole90457BF9', 'Arn']
       }
     }, ResourcePart.Properties));
 

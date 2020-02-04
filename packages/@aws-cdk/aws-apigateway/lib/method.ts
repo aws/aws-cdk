@@ -52,7 +52,7 @@ export interface MethodOptions {
    * for the integration response to be correctly mapped to a response to the client.
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-method-settings-method-response.html
    */
-  readonly methodResponses?: MethodResponse[]
+  readonly methodResponses?: MethodResponse[];
 
   /**
    * The request parameters that API Gateway accepts. Specify request parameters
@@ -112,7 +112,7 @@ export class Method extends Resource {
   public readonly resource: IResource;
   public readonly restApi: RestApi;
 
-  constructor(scope: Construct, id: string, props: MethodProps) {
+  public constructor(scope: Construct, id: string, props: MethodProps) {
     super(scope, id);
 
     this.resource = props.resource;
@@ -214,15 +214,15 @@ export class Method extends Resource {
 
     let credentials;
     if (options.credentialsPassthrough !== undefined && options.credentialsRole !== undefined) {
-      throw new Error(`'credentialsPassthrough' and 'credentialsRole' are mutually exclusive`);
+      throw new Error('\'credentialsPassthrough\' and \'credentialsRole\' are mutually exclusive');
     }
 
     if (options.connectionType === ConnectionType.VPC_LINK && options.vpcLink === undefined) {
-      throw new Error(`'connectionType' of VPC_LINK requires 'vpcLink' prop to be set`);
+      throw new Error('\'connectionType\' of VPC_LINK requires \'vpcLink\' prop to be set');
     }
 
     if (options.connectionType === ConnectionType.INTERNET && options.vpcLink !== undefined) {
-      throw new Error(`cannot set 'vpcLink' where 'connectionType' is INTERNET`);
+      throw new Error('cannot set \'vpcLink\' where \'connectionType\' is INTERNET');
     }
 
     if (options.credentialsRole) {
@@ -261,7 +261,7 @@ export class Method extends Resource {
       if (mr.responseModels) {
         responseModels = {};
         for (const contentType in mr.responseModels) {
-          if (mr.responseModels.hasOwnProperty(contentType)) {
+          if (Object.prototype.hasOwnProperty.call(mr.responseModels, contentType)) {
             responseModels[contentType] = mr.responseModels[contentType].modelId;
           }
         }
@@ -285,8 +285,8 @@ export class Method extends Resource {
 
     const models: {[param: string]: string} = {};
     for (const contentType in requestModels) {
-      if (requestModels.hasOwnProperty(contentType)) {
-          models[contentType] = requestModels[contentType].modelId;
+      if (Object.prototype.hasOwnProperty.call(requestModels, contentType)) {
+        models[contentType] = requestModels[contentType].modelId;
       }
     }
 

@@ -1,9 +1,9 @@
 import * as colors from 'colors/safe';
-import { PropertyChange, ResourceChange } from "../diff/types";
-import { DiffableCollection } from "../diffable";
-import { renderIntrinsics } from "../render-intrinsics";
+import { PropertyChange, ResourceChange } from '../diff/types';
+import { DiffableCollection } from '../diffable';
+import { renderIntrinsics } from '../render-intrinsics';
 import { deepRemoveUndefined, dropIfEmpty, makeComparator } from '../util';
-import { RuleJson, SecurityGroupRule } from "./security-group-rule";
+import { RuleJson, SecurityGroupRule } from './security-group-rule';
 
 export interface SecurityGroupChangesProps {
   ingressRulePropertyChanges: PropertyChange[];
@@ -19,7 +19,7 @@ export class SecurityGroupChanges {
   public readonly ingress = new DiffableCollection<SecurityGroupRule>();
   public readonly egress = new DiffableCollection<SecurityGroupRule>();
 
-  constructor(props: SecurityGroupChangesProps) {
+  public constructor(props: SecurityGroupChangesProps) {
     // Group rules
     for (const ingressProp of props.ingressRulePropertyChanges) {
       this.ingress.addOld(...this.readInlineRules(ingressProp.oldValue, ingressProp.resourceLogicalId));

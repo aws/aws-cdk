@@ -323,9 +323,9 @@ export = {
       expect(stack).to(haveResourceLike('AWS::EC2::SecurityGroup', {
         SecurityGroupIngress: [
           {
-            CidrIp: { "Fn::GetAtt": [ "VpcNetworkB258E83A", "CidrBlock" ] },
+            CidrIp: { 'Fn::GetAtt': [ 'VpcNetworkB258E83A', 'CidrBlock' ] },
             FromPort: 443,
-            IpProtocol: "tcp",
+            IpProtocol: 'tcp',
             ToPort: 443
           }
         ]
@@ -340,12 +340,12 @@ export = {
 
       // WHEN
       vpc.addInterfaceEndpoint('YourService', {
-        service: new InterfaceVpcEndpointService("com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc", 443)
+        service: new InterfaceVpcEndpointService('com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc', 443)
       });
 
       // THEN
       expect(stack).to(haveResource('AWS::EC2::VPCEndpoint', {
-        ServiceName: "com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc"
+        ServiceName: 'com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc'
       }));
 
       test.done();

@@ -41,7 +41,7 @@ export class AliasTargetInstance extends InstanceBase {
    */
   public readonly dnsName: string;
 
-  constructor(scope: cdk.Construct, id: string, props: AliasTargetInstanceProps) {
+  public constructor(scope: cdk.Construct, id: string, props: AliasTargetInstanceProps) {
     super(scope, id);
 
     if (props.service.namespace.type === NamespaceType.HTTP) {

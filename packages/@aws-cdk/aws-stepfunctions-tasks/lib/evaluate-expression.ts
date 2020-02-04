@@ -50,11 +50,11 @@ export interface Event {
  * @experimental
  */
 export class EvaluateExpression implements sfn.IStepFunctionsTask {
-  constructor(private readonly props: EvaluateExpressionProps) {
+  public constructor(private readonly props: EvaluateExpressionProps) {
   }
 
   public bind(task: sfn.Task): sfn.StepFunctionsTaskConfig {
-    const matches = this.props.expression.match(/\$[.\[][.a-zA-Z[\]0-9]+/g);
+    const matches = this.props.expression.match(/\$[.[][.a-zA-Z[\]0-9]+/g);
 
     if (!matches) {
       throw new Error('No paths found in expression');

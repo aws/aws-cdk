@@ -280,28 +280,28 @@ export class ContainerDefinition extends cdk.Construct {
   /**
    * The mount points for data volumes in your container.
    */
-   public readonly mountPoints = new Array<MountPoint>();
+  public readonly mountPoints = new Array<MountPoint>();
 
   /**
    * The list of port mappings for the container. Port mappings allow containers to access ports
    * on the host container instance to send or receive traffic.
    */
-   public readonly portMappings = new Array<PortMapping>();
+  public readonly portMappings = new Array<PortMapping>();
 
-   /**
+  /**
     * The data volumes to mount from another container in the same task definition.
     */
-   public readonly volumesFrom = new Array<VolumeFrom>();
+  public readonly volumesFrom = new Array<VolumeFrom>();
 
-   /**
+  /**
     * An array of ulimits to set in the container.
     */
-   public readonly ulimits = new Array<Ulimit>();
+  public readonly ulimits = new Array<Ulimit>();
 
-   /**
+  /**
     * An array dependencies defined for container startup and shutdown.
     */
-   public readonly containerDependencies = new Array<ContainerDependency>();
+  public readonly containerDependencies = new Array<ContainerDependency>();
 
   /**
    * Specifies whether the container will be marked essential.
@@ -315,7 +315,7 @@ export class ContainerDefinition extends cdk.Construct {
    */
   public readonly essential: boolean;
 
-   /**
+  /**
     * The name of this container
     */
   public readonly containerName: string;
@@ -342,11 +342,11 @@ export class ContainerDefinition extends cdk.Construct {
   /**
    * Constructs a new instance of the ContainerDefinition class.
    */
-  constructor(scope: cdk.Construct, id: string, private readonly props: ContainerDefinitionProps) {
+  public constructor(scope: cdk.Construct, id: string, private readonly props: ContainerDefinitionProps) {
     super(scope, id);
     if (props.memoryLimitMiB !== undefined && props.memoryReservationMiB !== undefined) {
       if (props.memoryLimitMiB < props.memoryReservationMiB) {
-        throw new Error(`MemoryLimitMiB should not be less than MemoryReservationMiB.`);
+        throw new Error('MemoryLimitMiB should not be less than MemoryReservationMiB.');
       }
     }
     this.essential = props.essential !== undefined ? props.essential : true;
@@ -370,7 +370,7 @@ export class ContainerDefinition extends cdk.Construct {
    */
   public addLink(container: ContainerDefinition, alias?: string) {
     if (this.taskDefinition.networkMode !== NetworkMode.BRIDGE) {
-      throw new Error(`You must use network mode Bridge to add container links.`);
+      throw new Error('You must use network mode Bridge to add container links.');
     }
     if (alias !== undefined) {
       this.links.push(`${container.containerName}:${alias}`);
@@ -416,6 +416,7 @@ export class ContainerDefinition extends cdk.Construct {
     this.portMappings.push(...portMappings.map(pm => {
       if (this.taskDefinition.networkMode === NetworkMode.AWS_VPC || this.taskDefinition.networkMode === NetworkMode.HOST) {
         if (pm.containerPort !== pm.hostPort && pm.hostPort !== undefined) {
+          // eslint-disable-next-line max-len
           throw new Error(`Host port (${pm.hostPort}) must be left out or equal to container port ${pm.containerPort} for network mode ${this.taskDefinition.networkMode}`);
         }
       }
@@ -613,7 +614,7 @@ export interface HealthCheck {
 }
 
 function renderKV(env: { [key: string]: string }, keyName: string, valueName: string): any[] {
-  const ret = new Array();
+  const ret = [];
   for (const [key, value] of Object.entries(env)) {
     ret.push({ [keyName]: key, [valueName]: value });
   }
@@ -635,7 +636,7 @@ function getHealthCheckCommand(hc: HealthCheck): string[] {
   const hcCommand = new Array<string>();
 
   if (cmd.length === 0) {
-    throw new Error(`At least one argument must be supplied for health check command.`);
+    throw new Error('At least one argument must be supplied for health check command.');
   }
 
   if (cmd.length === 1) {
@@ -643,7 +644,7 @@ function getHealthCheckCommand(hc: HealthCheck): string[] {
     return hcCommand;
   }
 
-  if (cmd[0] !== "CMD" && cmd[0] !== 'CMD-SHELL') {
+  if (cmd[0] !== 'CMD' && cmd[0] !== 'CMD-SHELL') {
     hcCommand.push('CMD');
   }
 
@@ -669,38 +670,38 @@ export interface Ulimit {
    *
    * For more information, see [UlimitName](https://docs.aws.amazon.com/cdk/api/latest/typescript/api/aws-ecs/ulimitname.html#aws_ecs_UlimitName).
    */
-  readonly name: UlimitName,
+  readonly name: UlimitName;
 
   /**
    * The soft limit for the ulimit type.
    */
-  readonly softLimit: number,
+  readonly softLimit: number;
 
   /**
    * The hard limit for the ulimit type.
    */
-  readonly hardLimit: number,
+  readonly hardLimit: number;
 }
 
 /**
  * Type of resource to set a limit on
  */
 export enum UlimitName {
-  CORE = "core",
-  CPU = "cpu",
-  DATA = "data",
-  FSIZE = "fsize",
-  LOCKS = "locks",
-  MEMLOCK = "memlock",
-  MSGQUEUE = "msgqueue",
-  NICE = "nice",
-  NOFILE = "nofile",
-  NPROC = "nproc",
-  RSS = "rss",
-  RTPRIO = "rtprio",
-  RTTIME = "rttime",
-  SIGPENDING = "sigpending",
-  STACK = "stack"
+  CORE = 'core',
+  CPU = 'cpu',
+  DATA = 'data',
+  FSIZE = 'fsize',
+  LOCKS = 'locks',
+  MEMLOCK = 'memlock',
+  MSGQUEUE = 'msgqueue',
+  NICE = 'nice',
+  NOFILE = 'nofile',
+  NPROC = 'nproc',
+  RSS = 'rss',
+  RTPRIO = 'rtprio',
+  RTTIME = 'rttime',
+  SIGPENDING = 'sigpending',
+  STACK = 'stack'
 }
 
 function renderUlimit(ulimit: Ulimit): CfnTaskDefinition.UlimitProperty {
@@ -798,7 +799,7 @@ export interface PortMapping {
    *
    * @default TCP
    */
-  readonly protocol?: Protocol
+  readonly protocol?: Protocol;
 }
 
 /**
@@ -808,12 +809,12 @@ export enum Protocol {
   /**
    * TCP
    */
-  TCP = "tcp",
+  TCP = 'tcp',
 
   /**
    * UDP
    */
-  UDP = "udp",
+  UDP = 'udp',
 }
 
 function renderPortMapping(pm: PortMapping): CfnTaskDefinition.PortMappingProperty {
@@ -831,19 +832,19 @@ export interface ScratchSpace {
   /**
    * The path on the container to mount the scratch volume at.
    */
-  readonly containerPath: string,
+  readonly containerPath: string;
   /**
    * Specifies whether to give the container read-only access to the scratch volume.
    *
    * If this value is true, the container has read-only access to the scratch volume.
    * If this value is false, then the container can write to the scratch volume.
    */
-  readonly readOnly: boolean,
-  readonly sourcePath: string,
+  readonly readOnly: boolean;
+  readonly sourcePath: string;
   /**
    * The name of the scratch volume to mount. Must be a volume name referenced in the name parameter of task definition volume.
    */
-  readonly name: string,
+  readonly name: string;
 }
 
 /**
@@ -853,20 +854,20 @@ export interface MountPoint {
   /**
    * The path on the container to mount the host volume at.
    */
-  readonly containerPath: string,
+  readonly containerPath: string;
   /**
    * Specifies whether to give the container read-only access to the volume.
    *
    * If this value is true, the container has read-only access to the volume.
    * If this value is false, then the container can write to the volume.
    */
-  readonly readOnly: boolean,
+  readonly readOnly: boolean;
   /**
    * The name of the volume to mount.
    *
    * Must be a volume name referenced in the name parameter of task definition volume.
    */
-  readonly sourceVolume: string,
+  readonly sourceVolume: string;
 }
 
 function renderMountPoint(mp: MountPoint): CfnTaskDefinition.MountPointProperty {
@@ -884,7 +885,7 @@ export interface VolumeFrom {
   /**
    * The name of another container within the same task definition from which to mount volumes.
    */
-  readonly sourceContainer: string,
+  readonly sourceContainer: string;
 
   /**
    * Specifies whether the container has read-only access to the volume.
@@ -892,7 +893,7 @@ export interface VolumeFrom {
    * If this value is true, the container has read-only access to the volume.
    * If this value is false, then the container can write to the volume.
    */
-  readonly readOnly: boolean,
+  readonly readOnly: boolean;
 }
 
 function renderVolumeFrom(vf: VolumeFrom): CfnTaskDefinition.VolumeFromProperty {

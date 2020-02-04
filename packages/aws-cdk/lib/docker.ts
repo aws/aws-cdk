@@ -132,7 +132,7 @@ export async function prepareContainerAssetNew(assemblyDir: string,
                                                toolkitInfo: ToolkitInfo) {
 
   if (asset.imageNameParameter || !asset.repositoryName || !asset.imageTag) {
-    throw new Error(`invalid docker image asset configuration. "repositoryName" and "imageTag" are required and "imageNameParameter" is not allowed`);
+    throw new Error('invalid docker image asset configuration. "repositoryName" and "imageTag" are required and "imageNameParameter" is not allowed');
   }
 
   const contextPath = path.isAbsolute(asset.path) ? asset.path : path.join(assemblyDir, asset.path);
@@ -162,12 +162,12 @@ export async function prepareContainerAssetNew(assemblyDir: string,
   }
 
   if (asset.file) {
-      // remember we assume the file is relative (we validate this in the asset constructor)
-      buildCommand.push('--file', path.join(contextPath, asset.file));
+    // remember we assume the file is relative (we validate this in the asset constructor)
+    buildCommand.push('--file', path.join(contextPath, asset.file));
   }
 
   for (const [ key, value ] of Object.entries(asset.buildArgs || {})) {
-    buildCommand.push(`--build-arg`, `${key}=${value}`);
+    buildCommand.push('--build-arg', `${key}=${value}`);
   }
 
   buildCommand.push(contextPath);
@@ -196,7 +196,7 @@ export async function prepareContainerAssetNew(assemblyDir: string,
 async function dockerLogin(toolkitInfo: ToolkitInfo) {
   const credentials = await toolkitInfo.getEcrCredentials();
   await shell(['docker', 'login',
-  '--username', credentials.username,
-  '--password', credentials.password,
-  credentials.endpoint]);
+    '--username', credentials.username,
+    '--password', credentials.password,
+    credentials.endpoint]);
 }

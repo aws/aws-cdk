@@ -1,0 +1,270 @@
+---
+env:
+  jest: true
+  node: true
+
+plugins:
+  - '@typescript-eslint'
+  - import
+
+parser: '@typescript-eslint/parser'
+parserOptions:
+  project: ./package.json
+  ecmaVersion: 2018
+  sourceType: module
+  ecmaFeatures:
+    modules: true
+
+extends:
+  - eslint:recommended
+  - plugin:import/typescript
+  - plugin:@typescript-eslint/eslint-recommended
+  - plugin:@typescript-eslint/recommended
+
+settings:
+  import/parsers:
+    '@typescript-eslint/parser': ['.ts', '.tsx']
+  import/resolver:
+    node: {}
+    typescript:
+      directory: ./tsconfig.json
+
+rules:
+  # Disabling undersirable rules
+  '@typescript-eslint/explicit-function-return-type': off
+  '@typescript-eslint/interface-name-prefix': off
+  '@typescript-eslint/no-explicit-any': off
+  '@typescript-eslint/no-inferrable-types': off
+  '@typescript-eslint/no-namespace': off
+  '@typescript-eslint/no-non-null-assertion': off
+  '@typescript-eslint/no-parameter-properties': off
+  '@typescript-eslint/no-use-before-define': off
+  camelcase: off
+  comma-dangle: off
+  eol-last: off
+  no-case-declarations: off
+  no-empty-function: off           # Superceded by @typescript-eslint/no-empty-function
+  no-switch-case-fall-through: off
+  no-template-curly-in-string: off
+  semi: off                        # Superceded by @typescript-eslint/semi
+  sort-keys: off
+
+  # Rule Configuration
+  '@typescript-eslint/array-type':
+    - error
+    - default: array-simple
+      readonly: array-simple
+
+  '@typescript-eslint/ban-types':
+    - error
+    - types:
+        Object:
+          message: 'Avoid using the `Object` type. Did you mean `object`?'
+          fixWith: object
+        Function: 'Avoid using the `Function` type. Prefer a specific function type, like `() => void`.'
+        Boolean:
+          message: 'Avoid using the `Boolean` type. Did you mean `boolean`?'
+          fixWith: boolean
+        Number:
+          message: 'Avoid using the `Number` type. Did you mean `number`?'
+          fixWith: number
+        String:
+          message: 'Avoid using the `String` type. Did you mean `string`?'
+          fixWith: string
+        Symbol:
+          message: 'Avoid using the `Symbol` type. Did you mean `symbol`?'
+          fixWith: symbol
+
+  '@typescript-eslint/camelcase':
+    - error
+    - properties: always
+      genericType: always
+      ignoreDestructuring: true
+
+  '@typescript-eslint/explicit-member-accessibility':
+    - error
+    - accessibility: explicit
+
+  '@typescript-eslint/indent':
+    - error
+    - 2
+    - FunctionDeclaration:
+        parameters: first
+      FunctionExpression:
+        parameters: first
+      ignoredNodes:
+        - ConditionalExpression
+      SwitchCase: 1
+
+  '@typescript-eslint/member-delimiter-style':
+    - error
+    - multiline:
+        delimiter: 'semi'
+        requireLast: true
+      singleline:
+        delimiter: 'comma'
+        requireLast: false
+
+  '@typescript-eslint/member-ordering':
+    - error
+    - default:
+      - 'static-field'
+      - 'private-static-field'
+      - 'static-method'
+      - 'instance-field'
+      - 'constructor'
+      - 'instance-method'
+
+  '@typescript-eslint/no-empty-function':
+    - error
+    - allow: ['protected-constructors', 'private-constructors']
+
+  '@typescript-eslint/no-unused-vars':
+    - error
+    - args: all
+      argsIgnorePattern: '^_'
+      vars: all
+      varsIgnorePattern: '^_'
+
+
+  '@typescript-eslint/no-floating-promises': error
+
+  '@typescript-eslint/no-empty-interface': error
+
+  # Require use of the `import { foo } from 'bar';` form instead of `import foo = require('bar');`
+  '@typescript-eslint/no-require-imports':
+    - error
+
+  '@typescript-eslint/prefer-for-of': error
+
+  '@typescript-eslint/prefer-function-type': error
+
+  '@typescript-eslint/semi': error
+
+  '@typescript-eslint/type-annotation-spacing':
+    - error
+    - before: false
+      after: true
+      overrides:
+        arrow:
+          before: true
+          after: true
+
+  '@typescript-eslint/unified-signatures': error
+
+  arrow-body-style:
+    - error
+    - as-needed
+
+  arrow-parens:
+    - error
+    - as-needed
+
+  curly: error
+
+  dot-notation: error
+
+  eqeqeq:
+    - error
+    - always
+    - 'null': ignore
+
+  guard-for-in: error
+
+  import/order:
+    - error
+    - groups:
+      - [builtin, external, internal, unknown, index]
+      - parent
+      - sibling
+
+  # Require all imported dependencies are actually declared in package.json
+  import/no-extraneous-dependencies:
+    - error
+    - devDependencies:                # Only allow importing devDependencies from:
+        - '**/build-tools/**'         # --> Build tools
+        - '**/test/**'                # --> Unit tests
+      optionalDependencies: false     # Disallow importing optional dependencies (those shouldn't be in use in the project)
+      peerDependencies: false         # Disallow importing peer dependencies (that aren't also direct dependencies)
+
+  # Require all imported libraries actually resolve (!!required for import/no-extraneous-dependencies to work!!)
+  import/no-unresolved: error
+
+
+  max-len:
+    - error
+    - code: 150
+
+  new-parens: error
+
+  no-bitwise: error
+
+  no-caller: error
+
+  no-cond-assign:
+    - error
+    - except-parens
+
+  no-console: warn
+
+  no-constant-condition:
+    - warn
+    - checkLoops: false
+
+  no-eval: error
+
+  no-inner-declarations: warn
+
+  no-multiple-empty-lines:
+    - error
+    - max: 2
+      maxEOF: 1
+      maxBOF: 0
+
+  no-new-wrappers: error
+
+  no-shadow: error
+
+  no-throw-literal: error
+
+  no-trailing-spaces: error
+
+  no-undef-init: error
+
+  no-unused-expressions: error
+
+  object-shorthand: error
+
+  one-var:
+    - error
+    - never
+
+  quote-props:
+    - error
+    - consistent-as-needed
+
+  quotes:
+    - error
+    - single
+    - avoidEscape: true
+
+  radix: error
+
+  space-before-function-paren:
+    - error
+    - anonymous: never
+      asyncArrow: always
+      named: never
+
+  spaced-comment:
+    - error
+    - always
+    - markers: ['/']
+
+overrides:
+  # For those few "vanilla" JS files, disable annoying TypeScript-isms.
+  - files: ['*.js', '*.jsx']
+    rules:
+      '@typescript-eslint/explicit-member-accessibility': off
+      '@typescript-eslint/no-require-imports': off
+      '@typescript-eslint/no-var-requires': off

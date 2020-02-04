@@ -66,7 +66,7 @@ export class ParameterGroup extends ParameterGroupBase {
    */
   public readonly parameterGroupName: string;
 
-  constructor(scope: Construct, id: string, props: ParameterGroupProps) {
+  public constructor(scope: Construct, id: string, props: ParameterGroupProps) {
     super(scope, id);
 
     const resource = new CfnDBParameterGroup(this, 'Resource', {
@@ -97,7 +97,7 @@ export class ClusterParameterGroup extends ParameterGroupBase {
    */
   public readonly parameterGroupName: string;
 
-  constructor(scope: Construct, id: string, props: ClusterParameterGroupProps) {
+  public constructor(scope: Construct, id: string, props: ClusterParameterGroupProps) {
     super(scope, id);
 
     const resource = new CfnDBClusterParameterGroup(this, 'Resource', {

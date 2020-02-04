@@ -151,25 +151,25 @@ export class EventBus extends Resource implements IEventBus {
       actions: ['events:PutEvents'],
       resourceArns: ['*'],
     });
- }
+  }
 
   private static eventBusProps(defaultEventBusName: string, props?: EventBusProps) {
     if (props) {
       const { eventBusName, eventSourceName } = props;
-      const eventBusNameRegex = /^[\/\.\-_A-Za-z0-9]{1,256}$/;
+      const eventBusNameRegex = /^[/.\-_A-Za-z0-9]{1,256}$/;
 
       if (eventBusName !== undefined && eventSourceName !== undefined) {
         throw new Error(
-          `'eventBusName' and 'eventSourceName' cannot both be provided`
+          '\'eventBusName\' and \'eventSourceName\' cannot both be provided'
         );
       } else if (eventBusName !== undefined) {
         if (eventBusName === 'default') {
           throw new Error(
-            `'eventBusName' must not be 'default'`
+            '\'eventBusName\' must not be \'default\''
           );
         } else if (eventBusName.indexOf('/') > -1) {
           throw new Error(
-            `'eventBusName' must not contain '/'`
+            '\'eventBusName\' must not contain \'/\''
           );
         } else if (!eventBusNameRegex.test(eventBusName)) {
           throw new Error(
@@ -179,7 +179,7 @@ export class EventBus extends Resource implements IEventBus {
         return { eventBusName };
       } else if (eventSourceName !== undefined) {
         // Ex: aws.partner/PartnerName/acct1/repo1
-        const eventSourceNameRegex = /^aws\.partner(\/[\.\-_A-Za-z0-9]+){2,}$/;
+        const eventSourceNameRegex = /^aws\.partner(\/[.\-_A-Za-z0-9]+){2,}$/;
         if (!eventSourceNameRegex.test(eventSourceName)) {
           throw new Error(
             `'eventSourceName' must satisfy: ${eventSourceNameRegex}`
@@ -216,7 +216,7 @@ export class EventBus extends Resource implements IEventBus {
    */
   public readonly eventSourceName?: string;
 
-  constructor(scope: Construct, id: string, props?: EventBusProps) {
+  public constructor(scope: Construct, id: string, props?: EventBusProps) {
     const { eventBusName, eventSourceName } = EventBus.eventBusProps(
       Lazy.stringValue({ produce: () => this.node.uniqueId }),
       props

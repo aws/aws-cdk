@@ -38,7 +38,7 @@ export class Aws {
  * tree, and their values will be exported automatically.
  */
 export class ScopedAws {
-  constructor(private readonly scope: Construct) {
+  public constructor(private readonly scope: Construct) {
   }
 
   public get accountId(): string {

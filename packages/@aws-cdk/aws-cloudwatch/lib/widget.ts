@@ -39,7 +39,7 @@ export abstract class ConcreteWidget implements IWidget {
   protected x?: number;
   protected y?: number;
 
-  constructor(width: number, height: number) {
+  public constructor(width: number, height: number) {
     this.width = width;
     this.height = height;
 

@@ -46,7 +46,7 @@ export class CnameInstance extends InstanceBase {
    */
   public readonly cname: string;
 
-  constructor(scope: cdk.Construct, id: string, props: CnameInstanceProps) {
+  public constructor(scope: cdk.Construct, id: string, props: CnameInstanceProps) {
     super(scope, id);
 
     if (props.service.namespace.type === NamespaceType.HTTP) {

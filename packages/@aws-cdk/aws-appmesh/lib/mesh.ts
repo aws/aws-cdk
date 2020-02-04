@@ -168,7 +168,7 @@ export class Mesh extends MeshBase {
    */
   public readonly meshArn: string;
 
-  constructor(scope: cdk.Construct, id: string, props: MeshProps = {}) {
+  public constructor(scope: cdk.Construct, id: string, props: MeshProps = {}) {
     super(scope, id, {
       physicalName: props.meshName || cdk.Lazy.stringValue({ produce: () => this.node.uniqueId })
     });

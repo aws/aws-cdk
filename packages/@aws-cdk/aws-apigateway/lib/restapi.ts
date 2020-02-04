@@ -216,7 +216,7 @@ export class RestApi extends Resource implements IRestApi {
   private _domainName?: DomainName;
   private _latestDeployment: Deployment | undefined;
 
-  constructor(scope: Construct, id: string, props: RestApiProps = { }) {
+  public constructor(scope: Construct, id: string, props: RestApiProps = { }) {
     super(scope, id, {
       physicalName: props.restApiName || id,
     });
@@ -381,7 +381,7 @@ export class RestApi extends Resource implements IRestApi {
    */
   protected validate() {
     if (this.methods.length === 0) {
-      return [ `The REST API doesn't contain any methods` ];
+      return [ 'The REST API doesn\'t contain any methods' ];
     }
 
     return [];
@@ -409,7 +409,7 @@ export class RestApi extends Resource implements IRestApi {
       new CfnOutput(this, 'Endpoint', { exportName: props.endpointExportName, value: this.urlForPath() });
     } else {
       if (props.deployOptions) {
-        throw new Error(`Cannot set 'deployOptions' if 'deploy' is disabled`);
+        throw new Error('Cannot set \'deployOptions\' if \'deploy\' is disabled');
       }
     }
   }
@@ -466,7 +466,7 @@ class RootResource extends ResourceBase {
   public readonly defaultMethodOptions?: MethodOptions | undefined;
   public readonly defaultCorsPreflightOptions?: CorsOptions | undefined;
 
-  constructor(api: RestApi, props: RestApiProps, resourceId: string) {
+  public constructor(api: RestApi, props: RestApiProps, resourceId: string) {
     super(api, 'Default');
 
     this.parentResource = undefined;

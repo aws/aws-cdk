@@ -23,6 +23,6 @@ export function upcaseFirst(str: string): string {
  */
 export function joinIf(left: string | undefined, sep: string, right: string | undefined): string {
   if (!left) { return right || ''; }
-  if (!right) { return left || ''; }
+  if (!right) { return left || ''; }
   return left + sep + right;
 }

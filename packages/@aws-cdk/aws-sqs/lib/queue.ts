@@ -235,7 +235,7 @@ export class Queue extends QueueBase {
 
   protected readonly autoCreatePolicy = true;
 
-  constructor(scope: Construct, id: string, props: QueueProps = {}) {
+  public constructor(scope: Construct, id: string, props: QueueProps = {}) {
     super(scope, id, {
       physicalName: props.queueName,
     });
@@ -246,7 +246,7 @@ export class Queue extends QueueBase {
               ? {
                 deadLetterTargetArn: props.deadLetterQueue.queue.queueArn,
                 maxReceiveCount: props.deadLetterQueue.maxReceiveCount
-                }
+              }
               : undefined;
 
     const { encryptionMasterKey, encryptionProps } = _determineEncryptionProps.call(this);

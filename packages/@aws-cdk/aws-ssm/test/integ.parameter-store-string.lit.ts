@@ -3,7 +3,7 @@ import * as cdk from '@aws-cdk/core';
 import * as ssm from '../lib';
 
 class CreatingStack extends cdk.Stack {
-  constructor(scope: cdk.App, id: string) {
+  public constructor(scope: cdk.App, id: string) {
     super(scope, id);
 
     new ssm.StringParameter(this, 'String', {
@@ -14,7 +14,7 @@ class CreatingStack extends cdk.Stack {
 }
 
 class UsingStack extends cdk.Stack {
-  constructor(scope: cdk.App, id: string) {
+  public constructor(scope: cdk.App, id: string) {
     super(scope, id);
 
     /// !show

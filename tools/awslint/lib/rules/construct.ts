@@ -36,7 +36,7 @@ export class ConstructReflection {
   public readonly sys: reflect.TypeSystem;
   public readonly core: CoreTypes;
 
-  constructor(public readonly classType: reflect.ClassType) {
+  public constructor(public readonly classType: reflect.ClassType) {
     this.fqn = classType.fqn;
     this.sys = classType.system;
     this.core = new CoreTypes(this.sys);
@@ -272,7 +272,7 @@ constructLinter.add({
     if (CoreTypes.isCfnResource(e.ctx.classType)) { return; }
 
     for (const property of e.ctx.propsType.ownProperties) {
-    e.assert(!property.type.isAny, `${e.ctx.propsFqn}.${property.name}`);
+      e.assert(!property.type.isAny, `${e.ctx.propsFqn}.${property.name}`);
     }
   }
 });

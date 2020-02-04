@@ -128,7 +128,7 @@ export class Group extends GroupBase {
 
   private readonly managedPolicies: IManagedPolicy[] = [];
 
-  constructor(scope: Construct, id: string, props: GroupProps = {}) {
+  public constructor(scope: Construct, id: string, props: GroupProps = {}) {
     super(scope, id, {
       physicalName: props.groupName,
     });

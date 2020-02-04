@@ -88,7 +88,7 @@ export class Asset extends cdk.Construct implements assets.IAsset {
 
   public readonly sourceHash: string;
 
-  constructor(scope: cdk.Construct, id: string, props: AssetProps) {
+  public constructor(scope: cdk.Construct, id: string, props: AssetProps) {
     super(scope, id);
 
     // stage the asset source (conditionally).

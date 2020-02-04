@@ -66,7 +66,7 @@ function replaceIncompleteTypes(spec: schema.Specification) {
     && !schema.isCollectionProperty(definition)
     && !schema.isScalarProperty(definition)
     && !schema.isPrimitiveProperty(definition)) {
-      // tslint:disable-next-line:no-console
+      // eslint-disable-next-line no-console
       console.log(`[${name}] Incomplete type, adding empty "Properties" field`);
 
       (definition as unknown as schema.RecordProperty).Properties = {};

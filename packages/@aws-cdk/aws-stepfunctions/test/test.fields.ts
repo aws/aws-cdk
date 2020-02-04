@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { Context, Data, FieldUtils } from "../lib";
+import { Context, Data, FieldUtils } from '../lib';
 
 export = {
   'deep replace correctly handles fields in arrays'(test: Test) {

@@ -143,7 +143,7 @@ export class VirtualRouter extends VirtualRouterBase {
 
   private readonly listeners = new Array<CfnVirtualRouter.VirtualRouterListenerProperty>();
 
-  constructor(scope: cdk.Construct, id: string, props: VirtualRouterProps) {
+  public constructor(scope: cdk.Construct, id: string, props: VirtualRouterProps) {
     super(scope, id, {
       physicalName: props.virtualRouterName || cdk.Lazy.stringValue({ produce: () => this.node.uniqueId })
     });
@@ -219,7 +219,7 @@ class ImportedVirtualRouter extends VirtualRouterBase {
 
   private _mesh?: IMesh;
 
-  constructor(scope: cdk.Construct, id: string, props: VirtualRouterAttributes) {
+  public constructor(scope: cdk.Construct, id: string, props: VirtualRouterAttributes) {
     super(scope, id);
 
     if (props.mesh) {
@@ -227,7 +227,7 @@ class ImportedVirtualRouter extends VirtualRouterBase {
     }
     if (props.meshName) {
       if (props.mesh) {
-        throw new Error(`Supply either 'mesh' or 'meshName', but not both`);
+        throw new Error('Supply either \'mesh\' or \'meshName\', but not both');
       }
       this._mesh = Mesh.fromMeshName(this, 'Mesh', props.meshName);
     }
@@ -252,7 +252,7 @@ class ImportedVirtualRouter extends VirtualRouterBase {
    */
   public get mesh(): IMesh {
     if (!this._mesh) {
-      throw new Error(`Please supply either 'mesh' or 'meshName' when calling 'fromVirtualRouterAttributes'`);
+      throw new Error('Please supply either \'mesh\' or \'meshName\' when calling \'fromVirtualRouterAttributes\'');
     }
     return this._mesh;
   }

@@ -67,7 +67,7 @@ export interface EventSourceMappingProps extends EventSourceMappingOptions {
  * modify the Lambda's execution role so it can consume messages from the queue.
  */
 export class EventSourceMapping extends cdk.Resource {
-  constructor(scope: cdk.Construct, id: string, props: EventSourceMappingProps) {
+  public constructor(scope: cdk.Construct, id: string, props: EventSourceMappingProps) {
     super(scope, id);
 
     if (props.maxBatchingWindow && props.maxBatchingWindow.toSeconds() > 300) {

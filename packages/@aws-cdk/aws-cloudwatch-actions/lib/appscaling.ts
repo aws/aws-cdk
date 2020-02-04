@@ -6,7 +6,7 @@ import * as cdk from '@aws-cdk/core';
  * Use an ApplicationAutoScaling StepScalingAction as an Alarm Action
  */
 export class ApplicationScalingAction implements cloudwatch.IAlarmAction {
-  constructor(private readonly stepScalingAction: appscaling.StepScalingAction) {
+  public constructor(private readonly stepScalingAction: appscaling.StepScalingAction) {
   }
 
   public bind(_scope: cdk.Construct, _alarm: cloudwatch.IAlarm): cloudwatch.AlarmActionConfig {

@@ -14,7 +14,7 @@ export class InstanceIdTarget implements elbv2.IApplicationLoadBalancerTarget, e
    * @param instanceId Instance ID of the instance to register to
    * @param port Override the default port for the target group
    */
-  constructor(private readonly instanceId: string, private readonly port?: number) {
+  public constructor(private readonly instanceId: string, private readonly port?: number) {
   }
 
   /**
@@ -52,7 +52,7 @@ export class InstanceTarget extends InstanceIdTarget {
    * @param instance Instance to register to
    * @param port Override the default port for the target group
    */
-  constructor(instance: ec2.Instance, port?: number) {
+  public constructor(instance: ec2.Instance, port?: number) {
     super(instance.instanceId, port);
   }
 }

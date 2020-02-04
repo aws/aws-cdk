@@ -1,6 +1,6 @@
-import { Duration } from "@aws-cdk/core";
-import { MathExpression } from "../metric";
-import { IMetric, MetricConfig, MetricExpressionConfig, MetricStatConfig } from "../metric-types";
+import { Duration } from '@aws-cdk/core';
+import { MathExpression } from '../metric';
+import { IMetric, MetricConfig, MetricExpressionConfig, MetricStatConfig } from '../metric-types';
 
 const METRICKEY_SYMBOL = Symbol('@aws-cdk/aws-cloudwatch.MetricKey');
 
@@ -12,7 +12,7 @@ const METRICKEY_SYMBOL = Symbol('@aws-cdk/aws-cloudwatch.MetricKey');
  */
 export function metricKey(metric: IMetric): string {
   // Cache on the object itself. This is safe because Metric objects are immutable.
-  if (metric.hasOwnProperty(METRICKEY_SYMBOL)) {
+  if (Object.prototype.hasOwnProperty.call(metric, METRICKEY_SYMBOL)) {
     return (metric as any)[METRICKEY_SYMBOL];
   }
 
@@ -109,16 +109,16 @@ export function metricPeriod(metric: IMetric): Duration {
  * repeated in all places where code needs to make a distinction on the type
  * of metric object that is being passed.
  */
-// tslint:disable-next-line:max-line-length
+// eslint-disable-next-line max-len
 export function dispatchMetric<A, B>(metric: IMetric, fns: { withStat: (x: MetricStatConfig, c: MetricConfig) => A, withExpression: (x: MetricExpressionConfig, c: MetricConfig) => B }): A | B {
   const conf = metric.toMetricConfig();
   if (conf.metricStat && conf.mathExpression) {
-    throw new Error(`Metric object must not produce both 'metricStat' and 'mathExpression'`);
+    throw new Error('Metric object must not produce both \'metricStat\' and \'mathExpression\'');
   } else if (conf.metricStat) {
     return fns.withStat(conf.metricStat, conf);
   } else if (conf.mathExpression) {
     return fns.withExpression(conf.mathExpression, conf);
   } else {
-    throw new Error(`Metric object must have either 'metricStat' or 'mathExpression'`);
+    throw new Error('Metric object must have either \'metricStat\' or \'mathExpression\'');
   }
 }

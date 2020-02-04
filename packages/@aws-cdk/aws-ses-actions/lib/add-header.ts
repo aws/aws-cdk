@@ -25,7 +25,7 @@ export class AddHeader implements ses.IReceiptRuleAction {
   private readonly name: string;
   private readonly value: string;
 
-  constructor(props: AddHeaderProps) {
+  public constructor(props: AddHeaderProps) {
     if (!/^[a-zA-Z0-9-]{1,50}$/.test(props.name)) {
       // eslint-disable-next-line max-len
       throw new Error('Header `name` must be between 1 and 50 characters, inclusive, and consist of alphanumeric (a-z, A-Z, 0-9) characters and dashes only.');

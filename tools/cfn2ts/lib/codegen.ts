@@ -17,7 +17,7 @@ enum TreeAttributes {
   CFN_PROPS = 'aws:cdk:cloudformation:props'
 }
 
-interface Dictionary<T> { [key: string]: T; }
+interface Dictionary<T> { [key: string]: T }
 
 /**
  * Emits classes for all resource types
@@ -32,7 +32,7 @@ export default class CodeGenerator {
    * @param moduleName the name of the module (used to determine the file name).
    * @param spec     CloudFormation resource specification
    */
-  constructor(moduleName: string, private readonly spec: schema.Specification, private readonly affix: string) {
+  public constructor(moduleName: string, private readonly spec: schema.Specification, private readonly affix: string) {
     this.outputFile = `${moduleName}.generated.ts`;
     this.code.openFile(this.outputFile);
 
@@ -162,7 +162,7 @@ export default class CodeGenerator {
         propName,
         spec: propSpec,
         additionalDocs: quoteCode(additionalDocs)},
-        container
+      container
       );
       propertyMap[propName] = newName;
     });
@@ -213,7 +213,7 @@ export default class CodeGenerator {
 
     const cfnResourceTypeName = `${JSON.stringify(cfnName)}`;
     this.code.line('/**');
-    this.code.line(` * The CloudFormation resource type name for this resource class.`);
+    this.code.line(' * The CloudFormation resource type name for this resource class.');
     this.code.line(' */');
     this.code.line(`public static readonly CFN_RESOURCE_TYPE_NAME = ${cfnResourceTypeName};`);
 
@@ -259,13 +259,13 @@ export default class CodeGenerator {
     this.code.line('/**');
     this.code.line(` * Create a new ${quoteCode(resourceName.specName!.fqn)}.`);
     this.code.line(' *');
-    this.code.line(` * @param scope - scope in which this resource is defined`);
-    this.code.line(` * @param id    - scoped id of the resource`);
-    this.code.line(` * @param props - resource properties`);
+    this.code.line(' * @param scope - scope in which this resource is defined');
+    this.code.line(' * @param id    - scoped id of the resource');
+    this.code.line(' * @param props - resource properties');
     this.code.line(' */');
     const optionalProps = spec.Properties && !Object.values(spec.Properties).some(p => p.Required || false);
     const propsArgument = propsType ? `, props: ${propsType.className}${optionalProps ? ' = {}' : ''}` : '';
-    this.code.openBlock(`constructor(scope: ${CONSTRUCT_CLASS}, id: string${propsArgument})`);
+    this.code.openBlock(`public constructor(scope: ${CONSTRUCT_CLASS}, id: string${propsArgument})`);
     this.code.line(`super(scope, id, { type: ${resourceName.className}.CFN_RESOURCE_TYPE_NAME${propsType ? ', properties: props' : ''} });`);
     // verify all required properties
     if (spec.Properties) {
@@ -414,6 +414,7 @@ export default class CodeGenerator {
     // Generate the return object
     this.code.line('return {');
 
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     const self = this;
     Object.keys(nameConversionTable).forEach(cfnName => {
       const propName = nameConversionTable[cfnName];
@@ -499,6 +500,7 @@ export default class CodeGenerator {
         this.code.line(`errors.collect(${CORE}.propertyValidator('${propName}', ${CORE}.requiredValidator)(properties.${propName}));`);
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-this-alias
       const self = this;
       const validatorExpression = genspec.typeDispatch<string>(resource, propSpec, {
         visitAtom(type: genspec.CodeName) {
@@ -599,8 +601,8 @@ export default class CodeGenerator {
 
     this.docLink(propTypeSpec.Documentation, '@stability external');
     if (!propTypeSpec.Properties || Object.keys(propTypeSpec.Properties).length === 0) {
-      this.code.line(`// A genuine empty-object type`);
-      this.code.line(`// eslint-disable-next-line @typescript-eslint/no-empty-interface`);
+      this.code.line('// A genuine empty-object type');
+      this.code.line('// eslint-disable-next-line @typescript-eslint/no-empty-interface');
     }
     this.code.openBlock(`export interface ${typeName.className}`);
     const conversionTable: Dictionary<string> = {};
@@ -651,7 +653,7 @@ export default class CodeGenerator {
       if (schema.isMapProperty(propSpec)) {
         alternatives.push(`{ [key: string]: (${union}) }`);
       } else {
-        // To make TSLint happy, we have to either emit: SingleType[] or Array<Alt1 | Alt2>
+        // To make ESLint happy, we have to either emit: SingleType[] or Array<Alt1 | Alt2>
         if (union.indexOf('|') !== -1) {
           alternatives.push(`Array<${union}>`);
         } else {

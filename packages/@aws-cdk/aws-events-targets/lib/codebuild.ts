@@ -21,7 +21,7 @@ export interface CodeBuildProjectProps {
  * Start a CodeBuild build when an AWS CloudWatch events rule is triggered.
  */
 export class CodeBuildProject implements events.IRuleTarget {
-  constructor(
+  public constructor(
     private readonly project: codebuild.IProject,
     private readonly props: CodeBuildProjectProps = {}
   ) {}

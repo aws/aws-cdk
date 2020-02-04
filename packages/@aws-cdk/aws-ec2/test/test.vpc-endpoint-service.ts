@@ -2,7 +2,7 @@ import { expect, haveResource } from '@aws-cdk/assert';
 import { ArnPrincipal } from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-// tslint:disable-next-line:max-line-length
+// eslint-disable-next-line max-len
 import { IVpcEndpointServiceLoadBalancer, Vpc, VpcEndpointService } from '../lib';
 
 /**
@@ -13,7 +13,7 @@ class DummyEndpointLoadBalacer implements IVpcEndpointServiceLoadBalancer {
    * The ARN of the load balancer that hosts the VPC Endpoint Service
    */
   public readonly loadBalancerArn: string;
-  constructor(arn: string) {
+  public constructor(arn: string) {
     this.loadBalancerArn = arn;
   }
 }
@@ -23,24 +23,24 @@ export = {
     'create endpoint service with no principals'(test: Test) {
       // GIVEN
       const stack = new Stack();
-      new Vpc(stack, "MyVPC");
+      new Vpc(stack, 'MyVPC');
 
       // WHEN
-      const lb = new DummyEndpointLoadBalacer("arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a");
-      new VpcEndpointService(stack, "EndpointService", {
+      const lb = new DummyEndpointLoadBalacer('arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a');
+      new VpcEndpointService(stack, 'EndpointService', {
         vpcEndpointServiceLoadBalancers: [lb],
         acceptanceRequired: false,
-        whitelistedPrincipals: [new ArnPrincipal("arn:aws:iam::123456789012:root")]
+        whitelistedPrincipals: [new ArnPrincipal('arn:aws:iam::123456789012:root')]
       });
       // THEN
       expect(stack).to(haveResource('AWS::EC2::VPCEndpointService', {
-          NetworkLoadBalancerArns: ["arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a"],
-          AcceptanceRequired: false
+        NetworkLoadBalancerArns: ['arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a'],
+        AcceptanceRequired: false
       }));
 
       expect(stack).notTo(haveResource('AWS::EC2::VPCEndpointServicePermissions', {
         ServiceId: {
-          Ref: "EndpointServiceED36BE1F"
+          Ref: 'EndpointServiceED36BE1F'
         },
         AllowedPrincipals: []
       }));
@@ -52,24 +52,24 @@ export = {
       const stack = new Stack();
 
       // WHEN
-      const lb = new DummyEndpointLoadBalacer("arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a");
-      new VpcEndpointService(stack, "EndpointService", {
+      const lb = new DummyEndpointLoadBalacer('arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a');
+      new VpcEndpointService(stack, 'EndpointService', {
         vpcEndpointServiceLoadBalancers: [lb],
         acceptanceRequired: false,
-        whitelistedPrincipals: [new ArnPrincipal("arn:aws:iam::123456789012:root")]
+        whitelistedPrincipals: [new ArnPrincipal('arn:aws:iam::123456789012:root')]
       });
 
       // THEN
       expect(stack).to(haveResource('AWS::EC2::VPCEndpointService', {
-          NetworkLoadBalancerArns: ["arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a"],
-          AcceptanceRequired: false
+        NetworkLoadBalancerArns: ['arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a'],
+        AcceptanceRequired: false
       }));
 
       expect(stack).to(haveResource('AWS::EC2::VPCEndpointServicePermissions', {
         ServiceId: {
-          Ref: "EndpointServiceED36BE1F"
+          Ref: 'EndpointServiceED36BE1F'
         },
-        AllowedPrincipals: ["arn:aws:iam::123456789012:root"]
+        AllowedPrincipals: ['arn:aws:iam::123456789012:root']
       }));
 
       test.done();
@@ -80,24 +80,24 @@ export = {
       const stack = new Stack();
 
       // WHEN
-      const lb = new DummyEndpointLoadBalacer("arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a");
-      new VpcEndpointService(stack, "EndpointService", {
+      const lb = new DummyEndpointLoadBalacer('arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a');
+      new VpcEndpointService(stack, 'EndpointService', {
         vpcEndpointServiceLoadBalancers: [lb],
         acceptanceRequired: true,
-        whitelistedPrincipals: [new ArnPrincipal("arn:aws:iam::123456789012:root")]
+        whitelistedPrincipals: [new ArnPrincipal('arn:aws:iam::123456789012:root')]
       });
 
       // THEN
       expect(stack).to(haveResource('AWS::EC2::VPCEndpointService', {
-          NetworkLoadBalancerArns: ["arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a"],
-          AcceptanceRequired: true
+        NetworkLoadBalancerArns: ['arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a'],
+        AcceptanceRequired: true
       }));
 
       expect(stack).to(haveResource('AWS::EC2::VPCEndpointServicePermissions', {
         ServiceId: {
-          Ref: "EndpointServiceED36BE1F"
+          Ref: 'EndpointServiceED36BE1F'
         },
-        AllowedPrincipals: ["arn:aws:iam::123456789012:root"]
+        AllowedPrincipals: ['arn:aws:iam::123456789012:root']
       }));
 
       test.done();

@@ -7,7 +7,7 @@ import { Construct } from '@aws-cdk/core';
  * Use an SQS queue as a bucket notification destination
  */
 export class SqsDestination implements s3.IBucketNotificationDestination {
-  constructor(private readonly queue: sqs.IQueue) {
+  public constructor(private readonly queue: sqs.IQueue) {
   }
 
   /**

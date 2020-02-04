@@ -97,7 +97,7 @@ export class NetworkMultipleTargetGroupsFargateService extends NetworkMultipleTa
   /**
    * Constructs a new instance of the NetworkMultipleTargetGroupsFargateService class.
    */
-  constructor(scope: Construct, id: string, props: NetworkMultipleTargetGroupsFargateServiceProps = {}) {
+  public constructor(scope: Construct, id: string, props: NetworkMultipleTargetGroupsFargateServiceProps = {}) {
     super(scope, id, props);
 
     this.assignPublicIp = props.assignPublicIp !== undefined ? props.assignPublicIp : false;
@@ -155,7 +155,7 @@ export class NetworkMultipleTargetGroupsFargateService extends NetworkMultipleTa
   }
 
   private createFargateService(props: NetworkMultipleTargetGroupsFargateServiceProps): FargateService {
-    return new FargateService(this, "Service", {
+    return new FargateService(this, 'Service', {
       cluster: this.cluster,
       desiredCount: this.desiredCount,
       taskDefinition: this.taskDefinition,

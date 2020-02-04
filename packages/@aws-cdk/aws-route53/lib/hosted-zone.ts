@@ -53,7 +53,7 @@ export class HostedZone extends Resource implements IHostedZone {
     class Import extends Resource implements IHostedZone {
       public readonly hostedZoneId = hostedZoneId;
       public get zoneName(): string {
-        throw new Error(`HostedZone.fromHostedZoneId doesn't support "zoneName"`);
+        throw new Error('HostedZone.fromHostedZoneId doesn\'t support "zoneName"');
       }
       public get hostedZoneArn(): string {
         return makeHostedZoneArn(this, this.hostedZoneId);
@@ -120,7 +120,7 @@ export class HostedZone extends Resource implements IHostedZone {
    */
   protected readonly vpcs = new Array<CfnHostedZone.VPCProperty>();
 
-  constructor(scope: Construct, id: string, props: HostedZoneProps) {
+  public constructor(scope: Construct, id: string, props: HostedZoneProps) {
     super(scope, id);
 
     validateZoneName(props.zoneName);
@@ -164,6 +164,7 @@ export interface PublicHostedZoneProps extends CommonHostedZoneProps {
   readonly caaAmazon?: boolean;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface IPublicHostedZone extends IHostedZone { }
 
 /**
@@ -176,7 +177,7 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
   public static fromPublicHostedZoneId(scope: Construct, id: string, publicHostedZoneId: string): IPublicHostedZone {
     class Import extends Resource implements IPublicHostedZone {
       public readonly hostedZoneId = publicHostedZoneId;
-      public get zoneName(): string { throw new Error(`cannot retrieve "zoneName" from an an imported hosted zone`); }
+      public get zoneName(): string { throw new Error('cannot retrieve "zoneName" from an an imported hosted zone'); }
       public get hostedZoneArn(): string {
         return makeHostedZoneArn(this, this.hostedZoneId);
       }
@@ -184,7 +185,7 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
     return new Import(scope, id);
   }
 
-  constructor(scope: Construct, id: string, props: PublicHostedZoneProps) {
+  public constructor(scope: Construct, id: string, props: PublicHostedZoneProps) {
     super(scope, id, props);
 
     if (props.caaAmazon) {
@@ -244,7 +245,8 @@ export interface PrivateHostedZoneProps extends CommonHostedZoneProps {
   readonly vpc: ec2.IVpc;
 }
 
-export interface IPrivateHostedZone extends IHostedZone {}
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface IPrivateHostedZone extends IHostedZone { }
 
 /**
  * Create a Route53 private hosted zone for use in one or more VPCs.
@@ -259,7 +261,7 @@ export class PrivateHostedZone extends HostedZone implements IPrivateHostedZone 
   public static fromPrivateHostedZoneId(scope: Construct, id: string, privateHostedZoneId: string): IPrivateHostedZone {
     class Import extends Resource implements IPrivateHostedZone {
       public readonly hostedZoneId = privateHostedZoneId;
-      public get zoneName(): string { throw new Error(`cannot retrieve "zoneName" from an an imported hosted zone`); }
+      public get zoneName(): string { throw new Error('cannot retrieve "zoneName" from an an imported hosted zone'); }
       public get hostedZoneArn(): string {
         return makeHostedZoneArn(this, this.hostedZoneId);
       }
@@ -267,7 +269,7 @@ export class PrivateHostedZone extends HostedZone implements IPrivateHostedZone 
     return new Import(scope, id);
   }
 
-  constructor(scope: Construct, id: string, props: PrivateHostedZoneProps) {
+  public constructor(scope: Construct, id: string, props: PrivateHostedZoneProps) {
     super(scope, id, props);
 
     this.addVpc(props.vpc);

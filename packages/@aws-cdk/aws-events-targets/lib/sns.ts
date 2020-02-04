@@ -25,7 +25,7 @@ export interface SnsTopicProps {
  *
  */
 export class SnsTopic implements events.IRuleTarget {
-  constructor(public readonly topic: sns.ITopic, private readonly props: SnsTopicProps = {}) {
+  public constructor(public readonly topic: sns.ITopic, private readonly props: SnsTopicProps = {}) {
   }
 
   /**

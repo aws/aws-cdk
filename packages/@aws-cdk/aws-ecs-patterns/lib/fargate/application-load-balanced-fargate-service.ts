@@ -88,7 +88,7 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
   /**
    * Constructs a new instance of the ApplicationLoadBalancedFargateService class.
    */
-  constructor(scope: Construct, id: string, props: ApplicationLoadBalancedFargateServiceProps = {}) {
+  public constructor(scope: Construct, id: string, props: ApplicationLoadBalancedFargateServiceProps = {}) {
     super(scope, id, props);
 
     this.assignPublicIp = props.assignPublicIp !== undefined ? props.assignPublicIp : false;
@@ -127,7 +127,7 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
       throw new Error('You must specify one of: taskDefinition or image');
     }
 
-    this.service = new FargateService(this, "Service", {
+    this.service = new FargateService(this, 'Service', {
       cluster: this.cluster,
       desiredCount: this.desiredCount,
       taskDefinition: this.taskDefinition,

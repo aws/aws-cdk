@@ -48,7 +48,7 @@ export class KubernetesResource extends Construct {
    */
   public static readonly RESOURCE_TYPE = 'Custom::AWSCDK-EKS-KubernetesResource';
 
-  constructor(scope: Construct, id: string, props: KubernetesResourceProps) {
+  public constructor(scope: Construct, id: string, props: KubernetesResourceProps) {
     super(scope, id);
 
     const stack = Stack.of(this);
@@ -56,7 +56,7 @@ export class KubernetesResource extends Construct {
     // we maintain a single manifest custom resource handler for each cluster
     const handler = props.cluster._k8sResourceHandler;
     if (!handler) {
-      throw new Error(`Cannot define a KubernetesManifest resource on a cluster with kubectl disabled`);
+      throw new Error('Cannot define a KubernetesManifest resource on a cluster with kubectl disabled');
     }
 
     new cfn.CustomResource(this, 'Resource', {

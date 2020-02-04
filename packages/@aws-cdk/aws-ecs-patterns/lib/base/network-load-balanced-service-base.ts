@@ -1,5 +1,7 @@
 import { IVpc } from '@aws-cdk/aws-ec2';
-import { AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerImage, ICluster, LogDriver, PropagatedTagSource, Secret } from '@aws-cdk/aws-ecs';
+import {
+  AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerImage, ICluster, LogDriver, PropagatedTagSource, Secret
+} from '@aws-cdk/aws-ecs';
 import { NetworkListener, NetworkLoadBalancer, NetworkTargetGroup } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { IRole } from '@aws-cdk/aws-iam';
 import { ARecord, IHostedZone, RecordTarget } from '@aws-cdk/aws-route53';
@@ -248,7 +250,7 @@ export abstract class NetworkLoadBalancedServiceBase extends cdk.Construct {
   /**
    * Constructs a new instance of the NetworkLoadBalancedServiceBase class.
    */
-  constructor(scope: cdk.Construct, id: string, props: NetworkLoadBalancedServiceBaseProps = {}) {
+  public constructor(scope: cdk.Construct, id: string, props: NetworkLoadBalancedServiceBaseProps = {}) {
     super(scope, id);
 
     if (props.cluster && props.vpc) {
@@ -284,7 +286,7 @@ export abstract class NetworkLoadBalancedServiceBase extends cdk.Construct {
         throw new Error('A Route53 hosted domain zone name is required to configure the specified domain name');
       }
 
-      new ARecord(this, "DNS", {
+      new ARecord(this, 'DNS', {
         zone: props.domainZone,
         recordName: props.domainName,
         target: RecordTarget.fromAlias(new LoadBalancerTarget(this.loadBalancer)),

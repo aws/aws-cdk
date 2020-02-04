@@ -118,7 +118,7 @@ export class SecretRotationApplication {
    */
   public readonly isMultiUser?: boolean;
 
-  constructor(applicationId: string, semanticVersion: string, options?: SecretRotationApplicationOptions) {
+  public constructor(applicationId: string, semanticVersion: string, options?: SecretRotationApplicationOptions) {
     this.applicationId = `arn:aws:serverlessrepo:us-east-1:297356227824:applications/${applicationId}`;
     this.semanticVersion = semanticVersion;
     this.isMultiUser = options && options.isMultiUser;
@@ -199,7 +199,7 @@ export interface SecretRotationProps {
  * Secret rotation for a service or database
  */
 export class SecretRotation extends Construct {
-  constructor(scope: Construct, id: string, props: SecretRotationProps) {
+  public constructor(scope: Construct, id: string, props: SecretRotationProps) {
     super(scope, id);
 
     if (!props.target.connections.defaultPort) {

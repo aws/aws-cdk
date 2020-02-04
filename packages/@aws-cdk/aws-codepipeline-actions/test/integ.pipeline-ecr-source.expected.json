@@ -2,8 +2,8 @@
   "Resources": {
     "MyBucketF68F3FF0": {
       "Type": "AWS::S3::Bucket",
-      "DeletionPolicy": "Delete",
-      "UpdateReplacePolicy": "Delete"
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "MyPipelineRoleC0D47CA4": {
       "Type": "AWS::IAM::Role",
@@ -348,8 +348,8 @@
     },
     "MyEcrRepo767466D0": {
       "Type": "AWS::ECR::Repository",
-      "DeletionPolicy": "Retain",
-      "UpdateReplacePolicy": "Retain"
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
     },
     "MyEcrRepoawscdkcodepipelineecrsourceMyPipeline63CF3194SourceEventRule911FDB6D": {
       "Type": "AWS::Events::Rule",

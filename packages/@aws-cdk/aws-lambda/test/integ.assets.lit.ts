@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as lambda from '../lib';
 
 class TestStack extends cdk.Stack {
-  constructor(scope: cdk.App, id: string) {
+  public constructor(scope: cdk.App, id: string) {
     super(scope, id);
 
     /// !show

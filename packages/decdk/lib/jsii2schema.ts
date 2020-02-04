@@ -134,7 +134,7 @@ export function schemaForTypeReference(type: jsiiReflect.TypeReference, ctx: Sch
   }
 
   if (!ctx.hasWarningsOrErrors) {
-    ctx.error(`didn't match any schematizable shape`);
+    ctx.error('didn\'t match any schematizable shape');
   }
 
   return undefined;
@@ -178,9 +178,7 @@ export function schemaForPolymorphic(type: jsiiReflect.Type | undefined, ctx: Sc
     return undefined;
   }
 
-  return ctx.define(type.fqn, () => {
-    return { anyOf };
-  });
+  return ctx.define(type.fqn, () => ({ anyOf }));
 }
 
 function schemaForEnum(type: jsiiReflect.Type | undefined) {
@@ -299,7 +297,7 @@ export function schemaForInterface(type: jsiiReflect.Type | undefined, ctx: Sche
         // if prop is not serializable but optional, we can still serialize
         // but without this property.
         if (prop.optional) {
-          ctx.warning(`optional proprety omitted because it cannot be schematized`);
+          ctx.warning('optional proprety omitted because it cannot be schematized');
           continue;
         }
 
@@ -371,9 +369,7 @@ function schemaForEnumLikeClass(type: jsiiReflect.Type | undefined, ctx: SchemaC
     return undefined;
   }
 
-  return ctx.define(type.fqn, () => {
-    return { anyOf };
-  });
+  return ctx.define(type.fqn, () => ({ anyOf }));
 }
 
 function methodSchema(method: jsiiReflect.Callable, ctx: SchemaContext) {
@@ -392,7 +388,7 @@ function methodSchema(method: jsiiReflect.Callable, ctx: SchemaContext) {
 
       // bail out - can't serialize a required parameter, so we can't serialize the method
       if (!param && !prop.optional) {
-        ctx.error(`cannot schematize method because parameter cannot be schematized`);
+        ctx.error('cannot schematize method because parameter cannot be schematized');
         return undefined;
       }
 
@@ -503,7 +499,7 @@ export function isSerializableInterface(type: jsiiReflect.Type | undefined, erro
   }
 
   return type.allProperties.every(p =>
-      isSerializableTypeReference(p.type, errorPrefix)
+    isSerializableTypeReference(p.type, errorPrefix)
       || isConstruct(p.type)
       || p.optional);
 }
@@ -581,7 +577,7 @@ function allImplementationsOfType(type: jsiiReflect.Type) {
     return allImplementations(type).filter(x => !x.abstract);
   }
 
-  throw new Error(`Must either be a class or an interface`);
+  throw new Error('Must either be a class or an interface');
 }
 
 function allSubclasses(base: jsiiReflect.ClassType) {

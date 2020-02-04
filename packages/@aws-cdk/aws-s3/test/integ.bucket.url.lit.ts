@@ -2,7 +2,7 @@ import * as cdk from '@aws-cdk/core';
 import * as s3 from '../lib';
 
 class TestStack extends cdk.Stack {
-  constructor(scope: cdk.App, id: string) {
+  public constructor(scope: cdk.App, id: string) {
     super(scope, id);
 
     /// !show

@@ -1,4 +1,4 @@
-import { Reference } from "../reference";
+import { Reference } from '../reference';
 
 const CFN_REFERENCE_SYMBOL = Symbol.for('@aws-cdk/core.CfnReference');
 
@@ -17,6 +17,11 @@ const CFN_REFERENCE_SYMBOL = Symbol.for('@aws-cdk/core.CfnReference');
  * Stack, we'll register the dependency.
  */
 export class CfnReference extends Reference {
+  /**
+   * Static table where we keep singleton CfnReference instances
+   */
+  private static referenceTable = new Map<Construct, Map<string, CfnReference>>();
+
   /**
    * Check whether this is actually a Reference
    */
@@ -50,11 +55,6 @@ export class CfnReference extends Reference {
       return new CfnReference(cfnIntrinsic, pseudoName, scope);
     });
   }
-
-  /**
-   * Static table where we keep singleton CfnReference instances
-   */
-  private static referenceTable = new Map<Construct, Map<string, CfnReference>>();
 
   /**
    * Get or create the table
@@ -111,7 +111,7 @@ export class CfnReference extends Reference {
 
   public assignValueForStack(stack: Stack, value: IResolvable) {
     if (this.hasValueForStack(stack)) {
-      throw new Error(`Cannot assign a reference value twice to the same stack. Use hasValueForStack to check first`);
+      throw new Error('Cannot assign a reference value twice to the same stack. Use hasValueForStack to check first');
     }
 
     this.replacementTokens.set(stack, value);
@@ -126,8 +126,8 @@ export class CfnReference extends Reference {
   }
 }
 
-import { CfnElement } from "../cfn-element";
-import { Construct, IConstruct } from "../construct";
-import { IResolvable, IResolveContext } from "../resolvable";
-import { Stack } from "../stack";
-import { Token } from "../token";
+import { CfnElement } from '../cfn-element';
+import { Construct, IConstruct } from '../construct';
+import { IResolvable, IResolveContext } from '../resolvable';
+import { Stack } from '../stack';
+import { Token } from '../token';

@@ -110,7 +110,7 @@ export interface UnionProperty extends PropertyBase {
   /** Valid primitive types for the property */
   PrimitiveTypes?: PrimitiveType[];
   /** Valid complex types for the property */
-  Types?: string[]
+  Types?: string[];
   /** Valid primitive item types for this property */
   PrimitiveItemTypes?: PrimitiveType[];
   /** Valid list item types for the property */
@@ -223,8 +223,8 @@ export function isPropertyScrutinyType(str: string): str is PropertyScrutinyType
 }
 
 const tagPropertyNames = {
-  Tags: "",
-  UserPoolTags: "",
+  Tags: '',
+  UserPoolTags: '',
 };
 
 export type TagPropertyName = keyof typeof tagPropertyNames;
@@ -233,7 +233,7 @@ export function isTagPropertyName(name?: string): name is TagPropertyName {
   if (undefined === name) {
     return false;
   }
-  return tagPropertyNames.hasOwnProperty(name);
+  return Object.prototype.hasOwnProperty.call(tagPropertyNames, name);
 }
 /**
  * This function validates that the property **can** be a Tag Property

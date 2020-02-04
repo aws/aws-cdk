@@ -660,7 +660,7 @@ export class BlockPublicAccess {
   public ignorePublicAcls: boolean | undefined;
   public restrictPublicBuckets: boolean | undefined;
 
-  constructor(options: BlockPublicAccessOptions) {
+  public constructor(options: BlockPublicAccessOptions) {
     this.blockPublicAcls = options.blockPublicAcls;
     this.blockPublicPolicy = options.blockPublicPolicy;
     this.ignorePublicAcls = options.ignorePublicAcls;
@@ -694,23 +694,23 @@ export enum HttpMethods {
   /**
    * The GET method requests a representation of the specified resource.
    */
-  GET = "GET",
+  GET = 'GET',
   /**
    * The PUT method replaces all current representations of the target resource with the request payload.
    */
-  PUT = "PUT",
+  PUT = 'PUT',
   /**
    * The HEAD method asks for a response identical to that of a GET request, but without the response body.
    */
-  HEAD = "HEAD",
+  HEAD = 'HEAD',
   /**
    * The POST method is used to submit an entity to the specified resource, often causing a change in state or side effects on the server.
    */
-  POST = "POST",
+  POST = 'POST',
   /**
    * The DELETE method deletes the specified resource.
    */
-  DELETE = "DELETE",
+  DELETE = 'DELETE',
 }
 
 /**
@@ -1001,7 +1001,7 @@ export class Bucket extends BucketBase {
   private readonly metrics: BucketMetrics[] = [];
   private readonly cors: CorsRule[] = [];
 
-  constructor(scope: Construct, id: string, props: BucketProps = {}) {
+  public constructor(scope: Construct, id: string, props: BucketProps = {}) {
     super(scope, id, {
       physicalName: props.bucketName,
     });
@@ -1192,8 +1192,8 @@ export class Bucket extends BucketBase {
    * user's configuration.
    */
   private parseEncryption(props: BucketProps): {
-    bucketEncryption?: CfnBucket.BucketEncryptionProperty,
-    encryptionKey?: kms.IKey
+    bucketEncryption?: CfnBucket.BucketEncryptionProperty;
+    encryptionKey?: kms.IKey;
   } {
 
     // default based on whether encryptionKey is specified
@@ -1260,11 +1260,9 @@ export class Bucket extends BucketBase {
       return undefined;
     }
 
-    const self = this;
+    return { rules: this.lifecycleRules.map(parseLifecycleRule.bind(this)) };
 
-    return { rules: this.lifecycleRules.map(parseLifecycleRule) };
-
-    function parseLifecycleRule(rule: LifecycleRule): CfnBucket.RuleProperty {
+    function parseLifecycleRule(this: Bucket, rule: LifecycleRule): CfnBucket.RuleProperty {
       const enabled = rule.enabled !== undefined ? rule.enabled : true;
 
       const x: CfnBucket.RuleProperty = {
@@ -1285,7 +1283,7 @@ export class Bucket extends BucketBase {
           transitionDate: t.transitionDate,
           transitionInDays: t.transitionAfter && t.transitionAfter.toDays()
         })),
-        tagFilters: self.parseTagFilters(rule.tagFilters)
+        tagFilters: this.parseTagFilters(rule.tagFilters)
       };
 
       return x;
@@ -1294,7 +1292,7 @@ export class Bucket extends BucketBase {
 
   private parseServerAccessLogs(props: BucketProps): CfnBucket.LoggingConfigurationProperty | undefined {
     if (props.serverAccessLogsPrefix && !props.serverAccessLogsBucket) {
-      throw new Error(`"serverAccessLogsBucket" is required if "serverAccessLogsPrefix" is set`);
+      throw new Error('"serverAccessLogsBucket" is required if "serverAccessLogsPrefix" is set');
     }
 
     if (!props.serverAccessLogsBucket) {
@@ -1312,15 +1310,13 @@ export class Bucket extends BucketBase {
       return undefined;
     }
 
-    const self = this;
+    return this.metrics.map(parseMetric.bind(this));
 
-    return this.metrics.map(parseMetric);
-
-    function parseMetric(metric: BucketMetrics): CfnBucket.MetricsConfigurationProperty {
+    function parseMetric(this: Bucket, metric: BucketMetrics): CfnBucket.MetricsConfigurationProperty {
       return {
         id: metric.id,
         prefix: metric.prefix,
-        tagFilters: self.parseTagFilters(metric.tagFilters)
+        tagFilters: this.parseTagFilters(metric.tagFilters)
       };
     }
   }
@@ -1361,14 +1357,14 @@ export class Bucket extends BucketBase {
     }
 
     if (props.websiteErrorDocument && !props.websiteIndexDocument) {
-      throw new Error(`"websiteIndexDocument" is required if "websiteErrorDocument" is set`);
+      throw new Error('"websiteIndexDocument" is required if "websiteErrorDocument" is set');
     }
 
     if (props.websiteRedirect && (props.websiteErrorDocument || props.websiteIndexDocument || props.websiteRoutingRules)) {
-        throw new Error('"websiteIndexDocument", "websiteErrorDocument" and, "websiteRoutingRules" cannot be set if "websiteRedirect" is used');
+      throw new Error('"websiteIndexDocument", "websiteErrorDocument" and, "websiteRoutingRules" cannot be set if "websiteRedirect" is used');
     }
 
-    const routingRules =  props.websiteRoutingRules ? props.websiteRoutingRules.map<CfnBucket.RoutingRuleProperty>((rule) => {
+    const routingRules =  props.websiteRoutingRules ? props.websiteRoutingRules.map<CfnBucket.RoutingRuleProperty>(rule => {
       if (rule.condition && !rule.condition.httpErrorCodeReturnedEquals && !rule.condition.keyPrefixEquals) {
         throw new Error('The condition property cannot be an empty object');
       }
@@ -1376,10 +1372,10 @@ export class Bucket extends BucketBase {
       return {
         redirectRule: {
           hostName: rule.hostName,
-            httpRedirectCode: rule.httpRedirectCode,
-            protocol: rule.protocol,
-            replaceKeyWith: rule.replaceKey && rule.replaceKey.withKey,
-            replaceKeyPrefixWith: rule.replaceKey && rule.replaceKey.prefixWithKey,
+          httpRedirectCode: rule.httpRedirectCode,
+          protocol: rule.protocol,
+          replaceKeyWith: rule.replaceKey && rule.replaceKey.withKey,
+          replaceKeyPrefixWith: rule.replaceKey && rule.replaceKey.prefixWithKey,
         },
         routingRuleCondition: rule.condition
       };

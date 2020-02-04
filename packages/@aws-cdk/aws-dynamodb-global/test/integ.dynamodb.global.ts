@@ -8,7 +8,7 @@ const stack = new Stack(app, 'Default');
 new GlobalTable(stack, 'globdynamodbinteg', {
   partitionKey: { name: 'hashKey', type: AttributeType.STRING },
   tableName: 'integrationtest',
-  regions: ["us-east-1", "us-east-2", "us-west-2"],
+  regions: ['us-east-1', 'us-east-2', 'us-west-2'],
   removalPolicy: RemovalPolicy.DESTROY,
 });
 app.synth();

@@ -85,7 +85,7 @@ export class Database extends Resource implements IDatabase {
    */
   public readonly locationUri?: string;
 
-  constructor(scope: Construct, id: string, props: DatabaseProps) {
+  public constructor(scope: Construct, id: string, props: DatabaseProps) {
     super(scope, id, {
       physicalName: props.databaseName,
     });

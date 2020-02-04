@@ -66,13 +66,11 @@
         },
         "Description": "Created by aws-cdk-s3/MyBucket"
       },
-      "DeletionPolicy": "Retain",
-      "UpdateReplacePolicy": "Retain"
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
     },
     "MyBucketF68F3FF0": {
       "Type": "AWS::S3::Bucket",
-      "DeletionPolicy": "Delete",
-      "UpdateReplacePolicy": "Delete",
       "Properties": {
         "BucketEncryption": {
           "ServerSideEncryptionConfiguration": [
@@ -89,12 +87,12 @@
             }
           ]
         }
-      }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "MyOtherBucket543F3540": {
       "Type": "AWS::S3::Bucket",
-      "DeletionPolicy": "Delete",
-      "UpdateReplacePolicy": "Delete",
       "Properties": {
         "BucketEncryption": {
           "ServerSideEncryptionConfiguration": [
@@ -105,7 +103,9 @@
             }
           ]
         }
-      }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "MyUserDC45028B": {
       "Type": "AWS::IAM::User"

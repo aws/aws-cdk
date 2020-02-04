@@ -263,7 +263,7 @@ interface TestResourceProps extends cdk.CfnResourceProps {
 }
 
 class TestResource extends cdk.CfnResource {
-  constructor(scope: cdk.Construct, id: string, props: TestResourceProps) {
+  public constructor(scope: cdk.Construct, id: string, props: TestResourceProps) {
     super(scope, id, props);
   }
 }
@@ -273,7 +273,7 @@ interface TestParameterProps extends cdk.CfnParameterProps {
 }
 
 class TestParameter extends cdk.CfnParameter {
-  constructor(scope: cdk.Construct, id: string, props: TestParameterProps) {
+  public constructor(scope: cdk.Construct, id: string, props: TestParameterProps) {
     super(scope, id, props);
   }
 }

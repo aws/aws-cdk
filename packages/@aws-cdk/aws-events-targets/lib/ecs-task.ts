@@ -62,7 +62,7 @@ export class EcsTask implements events.IRuleTarget {
   private readonly taskDefinition: ecs.TaskDefinition;
   private readonly taskCount: number;
 
-  constructor(private readonly props: EcsTaskProps) {
+  public constructor(private readonly props: EcsTaskProps) {
     this.cluster = props.cluster;
     this.taskDefinition = props.taskDefinition;
     this.taskCount = props.taskCount !== undefined ? props.taskCount : 1;
@@ -81,7 +81,7 @@ export class EcsTask implements events.IRuleTarget {
       actions: ['ecs:RunTask'],
       resources: [this.taskDefinition.taskDefinitionArn],
       conditions: {
-        ArnEquals: { "ecs:cluster": this.cluster.clusterArn }
+        ArnEquals: { 'ecs:cluster': this.cluster.clusterArn }
       }
     })];
 

@@ -3,12 +3,12 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import { App, Construct, Lazy, PhysicalName, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
-import { ActionCategory, IAction, IPipeline, IStage } from "./action";
+import { ActionCategory, IAction, IPipeline, IStage } from './action';
 import { CfnPipeline } from './codepipeline.generated';
 import { CrossRegionSupportConstruct, CrossRegionSupportStack } from './cross-region-support-stack';
 import { FullActionDescriptor } from './full-action-descriptor';
 import { Stage } from './stage';
-import { validateName, validateNamespaceName, validateSourceAction } from "./validation";
+import { validateName, validateNamespaceName, validateSourceAction } from './validation';
 
 /**
  * Allows you to control where to place a new Stage when it's added to the Pipeline.
@@ -208,7 +208,7 @@ export class Pipeline extends PipelineBase {
   private readonly _crossRegionSupport: { [region: string]: CrossRegionSupport } = {};
   private readonly _crossAccountSupport: { [account: string]: Stack } = {};
 
-  constructor(scope: Construct, id: string, props: PipelineProps = {}) {
+  public constructor(scope: Construct, id: string, props: PipelineProps = {}) {
     super(scope, id, {
       physicalName: props.pipelineName,
     });
@@ -341,7 +341,7 @@ export class Pipeline extends PipelineBase {
    */
   public get crossRegionSupport(): { [region: string]: CrossRegionSupport } {
     const ret: { [region: string]: CrossRegionSupport }  = {};
-    Object.keys(this._crossRegionSupport).forEach((key) => {
+    Object.keys(this._crossRegionSupport).forEach(key => {
       ret[key] = this._crossRegionSupport[key];
     });
     return ret;
@@ -452,7 +452,7 @@ export class Pipeline extends PipelineBase {
   }
 
   private createSupportResourcesForRegion(otherStack: Stack | undefined, actionRegion: string):
-      CrossRegionSupport {
+  CrossRegionSupport {
     // if we have a stack from the resource passed - use that!
     if (otherStack) {
       // check if the stack doesn't have this magic construct already
@@ -571,10 +571,10 @@ export class Pipeline extends PipelineBase {
 
     // generate a role in the other stack, that the Pipeline will assume for executing this action
     const ret = new iam.Role(otherAccountStack,
-        `${this.node.uniqueId}-${stage.stageName}-${action.actionProperties.actionName}-ActionRole`, {
-      assumedBy: new iam.AccountPrincipal(pipelineStack.account),
-      roleName: PhysicalName.GENERATE_IF_NEEDED,
-    });
+      `${this.node.uniqueId}-${stage.stageName}-${action.actionProperties.actionName}-ActionRole`, {
+        assumedBy: new iam.AccountPrincipal(pipelineStack.account),
+        roleName: PhysicalName.GENERATE_IF_NEEDED,
+      });
     // the other stack with the role has to be deployed before the pipeline stack
     // (CodePipeline verifies you can assume the action Role on creation)
     pipelineStack.addDependency(otherAccountStack);
@@ -614,7 +614,7 @@ export class Pipeline extends PipelineBase {
     }
     // check whether the pipeline account is a static string
     if (Token.isUnresolved(pipelineStack.account)) {
-      throw new Error("Pipeline stack which uses cross-environment actions must have an explicitly set account");
+      throw new Error('Pipeline stack which uses cross-environment actions must have an explicitly set account');
     }
 
     if (pipelineStack.account === targetAccount) {
@@ -659,9 +659,9 @@ export class Pipeline extends PipelineBase {
   private calculateInsertIndexFromPlacement(placement: StagePlacement): number {
     // check if at most one placement property was provided
     const providedPlacementProps = ['rightBefore', 'justAfter', 'atIndex']
-      .filter((prop) => (placement as any)[prop] !== undefined);
+      .filter(prop => (placement as any)[prop] !== undefined);
     if (providedPlacementProps.length > 1) {
-      throw new Error("Error adding Stage to the Pipeline: " +
+      throw new Error('Error adding Stage to the Pipeline: ' +
         'you can only provide at most one placement property, but ' +
         `'${providedPlacementProps.join(', ')}' were given`);
     }
@@ -669,7 +669,7 @@ export class Pipeline extends PipelineBase {
     if (placement.rightBefore !== undefined) {
       const targetIndex = this.findStageIndex(placement.rightBefore);
       if (targetIndex === -1) {
-        throw new Error("Error adding Stage to the Pipeline: " +
+        throw new Error('Error adding Stage to the Pipeline: ' +
           `the requested Stage to add it before, '${placement.rightBefore.stageName}', was not found`);
       }
       return targetIndex;
@@ -678,7 +678,7 @@ export class Pipeline extends PipelineBase {
     if (placement.justAfter !== undefined) {
       const targetIndex = this.findStageIndex(placement.justAfter);
       if (targetIndex === -1) {
-        throw new Error("Error adding Stage to the Pipeline: " +
+        throw new Error('Error adding Stage to the Pipeline: ' +
           `the requested Stage to add it after, '${placement.justAfter.stageName}', was not found`);
       }
       return targetIndex + 1;
@@ -807,7 +807,7 @@ export class Pipeline extends PipelineBase {
   private requireRegion(): string {
     const region = Stack.of(this).region;
     if (Token.isUnresolved(region)) {
-      throw new Error(`Pipeline stack which uses cross-environment actions must have an explicitly set region`);
+      throw new Error('Pipeline stack which uses cross-environment actions must have an explicitly set region');
     }
     return region;
   }
@@ -815,7 +815,7 @@ export class Pipeline extends PipelineBase {
   private requireApp(): App {
     const app = this.node.root;
     if (!app || !App.isApp(app)) {
-      throw new Error(`Pipeline stack which uses cross-environment actions must be part of a CDK app`);
+      throw new Error('Pipeline stack which uses cross-environment actions must be part of a CDK app');
     }
     return app;
   }

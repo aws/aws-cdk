@@ -38,9 +38,8 @@ export interface FargateTaskDefinitionProps extends CommonTaskDefinitionProps {
 /**
  * The interface of a task definition run on a Fargate cluster.
  */
-export interface IFargateTaskDefinition extends ITaskDefinition {
-
-}
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface IFargateTaskDefinition extends ITaskDefinition { }
 
 /**
  * The details of a task definition run on a Fargate cluster.
@@ -74,7 +73,7 @@ export class FargateTaskDefinition extends TaskDefinition implements IFargateTas
   /**
    * Constructs a new instance of the FargateTaskDefinition class.
    */
-  constructor(scope: Construct, id: string, props: FargateTaskDefinitionProps = {}) {
+  public constructor(scope: Construct, id: string, props: FargateTaskDefinitionProps = {}) {
     super(scope, id, {
       ...props,
       cpu: props.cpu !== undefined ? Tokenization.stringifyNumber(props.cpu) : '256',

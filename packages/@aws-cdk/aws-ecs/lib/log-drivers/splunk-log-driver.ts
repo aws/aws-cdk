@@ -1,7 +1,7 @@
 import { Construct, SecretValue } from '@aws-cdk/core';
 import { ContainerDefinition } from '../container-definition';
 import { BaseLogDriverProps } from './base-log-driver';
-import { LogDriver, LogDriverConfig } from "./log-driver";
+import { LogDriver, LogDriverConfig } from './log-driver';
 import { ensureInRange, renderCommonLogDriverOptions, stringifyOptions } from './utils';
 
 /**
@@ -114,7 +114,7 @@ export class SplunkLogDriver extends LogDriver {
    *
    * @param props the splunk log driver configuration options.
    */
-  constructor(private readonly props: SplunkLogDriverProps) {
+  public constructor(private readonly props: SplunkLogDriverProps) {
     super();
 
     if (props.gzipLevel) {

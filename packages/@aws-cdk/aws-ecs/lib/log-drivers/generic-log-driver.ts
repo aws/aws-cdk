@@ -1,6 +1,6 @@
 import { Construct } from '@aws-cdk/core';
 import { ContainerDefinition } from '../container-definition';
-import { LogDriver, LogDriverConfig } from "../index";
+import { LogDriver, LogDriverConfig } from '../index';
 import { removeEmpty } from './utils';
 
 /**
@@ -51,7 +51,7 @@ export class GenericLogDriver extends LogDriver {
    *
    * @param props the generic log driver configuration options.
    */
-  constructor(props: GenericLogDriverProps) {
+  public constructor(props: GenericLogDriverProps) {
     super();
 
     this.logDriver = props.logDriver;

@@ -6,7 +6,7 @@ export function haveType(type: string): Assertion<StackPathInspector> {
 }
 
 class StackPathHasTypeAssertion extends Assertion<StackPathInspector> {
-  constructor(private readonly type: string) {
+  public constructor(private readonly type: string) {
     super();
   }
 

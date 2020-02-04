@@ -38,7 +38,7 @@ export class S3File extends Construct {
   public readonly url: string;
   public readonly etag: string;
 
-  constructor(scope: Construct, id: string, props: S3FileProps) {
+  public constructor(scope: Construct, id: string, props: S3FileProps) {
     super(scope, id);
 
     const resource = new cfn.CustomResource(this, 'Resource', {
@@ -72,7 +72,7 @@ class S3FileProvider extends Construct {
 
   private readonly provider: cr.Provider;
 
-  constructor(scope: Construct, id: string) {
+  public constructor(scope: Construct, id: string) {
     super(scope, id);
 
     this.provider = new cr.Provider(this, 's3file-provider', {
@@ -91,7 +91,7 @@ class S3FileProvider extends Construct {
               's3:PutObject*',
               's3:Abort*'
             ] })
-          ]
+        ]
       }),
     });
   }

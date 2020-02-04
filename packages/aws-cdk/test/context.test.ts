@@ -11,14 +11,14 @@ const state: {
 beforeAll(async done => {
   state.previousWorkingDir = process.cwd();
   state.tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'aws-cdk-test'));
-  // tslint:disable-next-line:no-console
+  // eslint-disable-next-line no-console
   console.log('Temporary working directory:', state.tempDir);
   process.chdir(state.tempDir);
   done();
 });
 
 afterAll(async done => {
-  // tslint:disable-next-line:no-console
+  // eslint-disable-next-line no-console
   console.log('Switching back to', state.previousWorkingDir, 'cleaning up', state.tempDir);
   process.chdir(state.previousWorkingDir!);
   await fs.remove(state.tempDir!);

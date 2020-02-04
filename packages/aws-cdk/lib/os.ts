@@ -1,4 +1,4 @@
-import * as child_process from 'child_process';
+import * as childProcess from 'child_process';
 import * as colors from 'colors/safe';
 import { debug } from './logging';
 

@@ -51,7 +51,7 @@ export interface SubscriptionFilterProps extends SubscriptionFilterOptions {
  * A new Subscription on a CloudWatch log group.
  */
 export class SubscriptionFilter extends Resource {
-  constructor(scope: Construct, id: string, props: SubscriptionFilterProps) {
+  public constructor(scope: Construct, id: string, props: SubscriptionFilterProps) {
     super(scope, id);
 
     const destProps = props.destination.bind(this, props.logGroup);

@@ -35,6 +35,9 @@ async function defaultInvokeFunction(req: AWS.Lambda.InvocationRequest): Promise
   return await lambda.invoke(req).promise();
 }
 
+// eslint-disable-next-line prefer-const
 export let startExecution = defaultStartExecution;
+// eslint-disable-next-line prefer-const
 export let invokeFunction = defaultInvokeFunction;
+// eslint-disable-next-line prefer-const
 export let httpRequest = defaultHttpRequest;

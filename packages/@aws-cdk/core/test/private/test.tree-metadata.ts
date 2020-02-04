@@ -5,7 +5,7 @@ import * as path from 'path';
 import { App, CfnParameter, CfnResource, Construct, Lazy, Stack, TreeInspector } from '../../lib/index';
 
 abstract class AbstractCfnResource extends CfnResource {
-  constructor(scope: Construct, id: string) {
+  public constructor(scope: Construct, id: string) {
     super(scope, id, {
       type: 'CDK::UnitTest::MyCfnResource'
     });
@@ -176,7 +176,7 @@ export = {
     class MyFirstResource extends AbstractCfnResource {
       public readonly lazykey: string;
 
-      constructor(scope: Construct, id: string) {
+      public constructor(scope: Construct, id: string) {
         super(scope, id);
         this.lazykey = Lazy.stringValue({ produce: () => 'LazyResolved!' });
       }
@@ -191,7 +191,7 @@ export = {
     class MySecondResource extends AbstractCfnResource {
       public readonly myprop: string;
 
-      constructor(scope: Construct, id: string, myprop: string) {
+      public constructor(scope: Construct, id: string, myprop: string) {
         super(scope, id);
         this.myprop = myprop;
       }
@@ -281,11 +281,9 @@ export = {
 
     const treenode = app.node.findChild('Tree');
 
-    const warn = treenode.node.metadata.find((md) => {
-      return md.type === cxapi.WARNING_METADATA_KEY
+    const warn = treenode.node.metadata.find(md => md.type === cxapi.WARNING_METADATA_KEY
         && /Forcing an inspect error/.test(md.data as string)
-        && /mycfnresource/.test(md.data as string);
-    });
+        && /mycfnresource/.test(md.data as string));
     test.ok(warn);
 
     // assert that the rest of the construct tree is rendered

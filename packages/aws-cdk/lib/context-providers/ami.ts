@@ -7,7 +7,7 @@ import { ContextProviderPlugin } from './provider';
  * Plugin to search AMIs for the current account
  */
 export class AmiContextProviderPlugin implements ContextProviderPlugin {
-  constructor(private readonly aws: ISDK) {
+  public constructor(private readonly aws: ISDK) {
   }
 
   public async getValue(args: cxapi.AmiContextQuery & { region: string, account: string }) {
@@ -31,7 +31,7 @@ export class AmiContextProviderPlugin implements ContextProviderPlugin {
     const images = [...response.Images || []].filter(i => i.ImageId !== undefined);
 
     if (images.length === 0) {
-      throw new Error(`No AMI found that matched the search criteria`);
+      throw new Error('No AMI found that matched the search criteria');
     }
 
     // Return the most recent one
@@ -48,7 +48,5 @@ export class AmiContextProviderPlugin implements ContextProviderPlugin {
  * Make a comparator that sorts in descending order given a sort key extractor
  */
 function descending<A>(valueOf: (x: A) => number) {
-  return (a: A, b: A) => {
-    return valueOf(b) - valueOf(a);
-  };
+  return (a: A, b: A) => valueOf(b) - valueOf(a);
 }

@@ -20,7 +20,7 @@ export abstract class ImportedTargetGroupBase extends cdk.Construct implements I
    */
   public readonly loadBalancerAttached: cdk.IDependable = new cdk.ConcreteDependable();
 
-  constructor(scope: cdk.Construct, id: string, props: TargetGroupImportProps) {
+  public constructor(scope: cdk.Construct, id: string, props: TargetGroupImportProps) {
     super(scope, id);
 
     this.targetGroupArn = props.targetGroupArn;

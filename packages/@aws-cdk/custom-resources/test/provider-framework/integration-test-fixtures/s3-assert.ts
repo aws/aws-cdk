@@ -32,7 +32,7 @@ export interface S3AssertProps {
  */
 export class S3Assert extends Construct {
 
-  constructor(scope: Construct, id: string, props: S3AssertProps) {
+  public constructor(scope: Construct, id: string, props: S3AssertProps) {
     super(scope, id);
 
     new cfn.CustomResource(this, 'Resource', {
@@ -61,7 +61,7 @@ class S3AssertProvider extends Construct {
 
   private readonly provider: cr.Provider;
 
-  constructor(scope: Construct, id: string) {
+  public constructor(scope: Construct, id: string) {
     super(scope, id);
 
     const onEvent = new lambda.Function(this, 's3assert-on-event', {

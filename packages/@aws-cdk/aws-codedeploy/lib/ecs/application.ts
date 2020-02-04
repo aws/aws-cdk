@@ -1,6 +1,6 @@
 import { Construct, IResource, Resource } from '@aws-cdk/core';
-import { CfnApplication } from "../codedeploy.generated";
-import { arnForApplication } from "../utils";
+import { CfnApplication } from '../codedeploy.generated';
+import { arnForApplication } from '../utils';
 
 /**
  * Represents a reference to a CodeDeploy Application deploying to Amazon ECS.
@@ -58,7 +58,7 @@ export class EcsApplication extends Resource implements IEcsApplication {
   public readonly applicationArn: string;
   public readonly applicationName: string;
 
-  constructor(scope: Construct, id: string, props: EcsApplicationProps = {}) {
+  public constructor(scope: Construct, id: string, props: EcsApplicationProps = {}) {
     super(scope, id, {
       physicalName: props.applicationName,
     });

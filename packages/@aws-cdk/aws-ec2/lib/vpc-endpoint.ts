@@ -49,8 +49,8 @@ export abstract class VpcEndpoint extends Resource implements IVpcEndpoint {
 /**
  * A gateway VPC endpoint.
  */
-export interface IGatewayVpcEndpoint extends IVpcEndpoint {
-}
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface IGatewayVpcEndpoint extends IVpcEndpoint { }
 
 /**
  * The type of VPC endpoint.
@@ -96,7 +96,7 @@ export class GatewayVpcEndpointAwsService implements IGatewayVpcEndpointService 
    */
   public readonly name: string;
 
-  constructor(name: string, prefix?: string) {
+  public constructor(name: string, prefix?: string) {
     this.name = `${prefix || 'com.amazonaws'}.${Aws.REGION}.${name}`;
   }
 }
@@ -115,7 +115,7 @@ export interface GatewayVpcEndpointOptions {
    *
    * @default private subnets
    */
-  readonly subnets?: SubnetSelection[]
+  readonly subnets?: SubnetSelection[];
 }
 
 /**
@@ -125,7 +125,7 @@ export interface GatewayVpcEndpointProps extends GatewayVpcEndpointOptions {
   /**
    * The VPC network in which the gateway endpoint will be used.
    */
-  readonly vpc: IVpc
+  readonly vpc: IVpc;
 }
 
 /**
@@ -163,14 +163,14 @@ export class GatewayVpcEndpoint extends VpcEndpoint implements IGatewayVpcEndpoi
    */
   public readonly vpcEndpointDnsEntries: string[];
 
-  constructor(scope: Construct, id: string, props: GatewayVpcEndpointProps) {
+  public constructor(scope: Construct, id: string, props: GatewayVpcEndpointProps) {
     super(scope, id);
 
     const subnets = props.subnets || [{ subnetType: SubnetType.PRIVATE }];
     const routeTableIds = allRouteTableIds(...subnets.map(s => props.vpc.selectSubnets(s)));
 
     if (routeTableIds.length === 0) {
-      throw new Error(`Can't add a gateway endpoint to VPC; route table IDs are not available`);
+      throw new Error('Can\'t add a gateway endpoint to VPC; route table IDs are not available');
     }
 
     const endpoint = new CfnVPCEndpoint(this, 'Resource', {
@@ -218,7 +218,7 @@ export class InterfaceVpcEndpointService implements IInterfaceVpcEndpointService
    */
   public readonly port: number;
 
-  constructor(name: string, port?: number) {
+  public constructor(name: string, port?: number) {
     this.name = name;
     this.port = port || 443;
   }
@@ -279,7 +279,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
    */
   public readonly port: number;
 
-  constructor(name: string, prefix?: string, port?: number) {
+  public constructor(name: string, prefix?: string, port?: number) {
     this.name = `${prefix || 'com.amazonaws'}.${Aws.REGION}.${name}`;
     this.port = port || 443;
   }
@@ -335,7 +335,7 @@ export interface InterfaceVpcEndpointProps extends InterfaceVpcEndpointOptions {
   /**
    * The VPC network in which the interface endpoint will be used.
    */
-  readonly vpc: IVpc
+  readonly vpc: IVpc;
 }
 
 /**
@@ -408,7 +408,7 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
    */
   public readonly connections: Connections;
 
-  constructor(scope: Construct, id: string, props: InterfaceVpcEndpointProps) {
+  public constructor(scope: Construct, id: string, props: InterfaceVpcEndpointProps) {
     super(scope, id);
 
     const securityGroups = props.securityGroups || [new SecurityGroup(this, 'SecurityGroup', {

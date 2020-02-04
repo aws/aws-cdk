@@ -74,7 +74,7 @@ export class StepScalingAction extends cdk.Construct {
 
   private readonly adjustments = new Array<CfnScalingPolicy.StepAdjustmentProperty>();
 
-  constructor(scope: cdk.Construct, id: string, props: StepScalingActionProps) {
+  public constructor(scope: cdk.Construct, id: string, props: StepScalingActionProps) {
     super(scope, id);
 
     // Cloudformation requires either the ResourceId, ScalableDimension, and ServiceNamespace

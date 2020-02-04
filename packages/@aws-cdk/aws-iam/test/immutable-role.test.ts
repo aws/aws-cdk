@@ -2,7 +2,7 @@ import '@aws-cdk/assert/jest';
 import { Stack } from '@aws-cdk/core';
 import * as iam from '../lib';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quotes */
 
 describe('ImmutableRole', () => {
   let stack: Stack;
@@ -30,20 +30,20 @@ describe('ImmutableRole', () => {
     immutableRole.attachInlinePolicy(policy);
 
     expect(stack).toHaveResource('AWS::IAM::Policy', {
-      "PolicyDocument": {
-        "Statement": [
+      PolicyDocument: {
+        Statement: [
           {
-            "Action": "s3:*",
-            "Resource": "*",
-            "Effect": "Allow",
+            Action: 's3:*',
+            Resource: '*',
+            Effect: 'Allow',
           },
         ],
-        "Version": "2012-10-17",
+        Version: '2012-10-17',
       },
-      "PolicyName": "Policy23B91518",
-      "Users": [
+      PolicyName: 'Policy23B91518',
+      Users: [
         {
-          "Ref": "User00B015A1",
+          Ref: 'User00B015A1',
         },
       ],
     });
@@ -55,7 +55,7 @@ describe('ImmutableRole', () => {
     immutableRole.addManagedPolicy({ managedPolicyArn: 'Arn2' });
 
     expect(stack).toHaveResourceLike('AWS::IAM::Role', {
-      "ManagedPolicyArns": [
+      ManagedPolicyArns: [
         'Arn1',
       ],
     });
@@ -73,12 +73,12 @@ describe('ImmutableRole', () => {
     }));
 
     expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
-      "PolicyDocument": {
-        "Statement": [
+      PolicyDocument: {
+        Statement: [
           {
-            "Resource": "*",
-            "Action": "s3:*",
-            "Effect": "Allow",
+            Resource: '*',
+            Action: 's3:*',
+            Effect: 'Allow',
           },
         ],
       },

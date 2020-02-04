@@ -145,22 +145,22 @@ test('Recognize public subnet by route table', async () => {
         RouteTableId: 'rtb-123456',
         Routes: [
           {
-            DestinationCidrBlock: "10.0.2.0/26",
-            Origin: "CreateRoute",
-            State: "active",
-            VpcPeeringConnectionId: "pcx-xxxxxx"
+            DestinationCidrBlock: '10.0.2.0/26',
+            Origin: 'CreateRoute',
+            State: 'active',
+            VpcPeeringConnectionId: 'pcx-xxxxxx'
           },
           {
-            DestinationCidrBlock: "10.0.1.0/24",
-            GatewayId: "local",
-            Origin: "CreateRouteTable",
-            State: "active"
+            DestinationCidrBlock: '10.0.1.0/24',
+            GatewayId: 'local',
+            Origin: 'CreateRouteTable',
+            State: 'active'
           },
           {
-            DestinationCidrBlock: "0.0.0.0/0",
-            GatewayId: "igw-xxxxxx",
-            Origin: "CreateRoute",
-            State: "active"
+            DestinationCidrBlock: '0.0.0.0/0',
+            GatewayId: 'igw-xxxxxx',
+            Origin: 'CreateRoute',
+            State: 'active'
           }
         ],
       },

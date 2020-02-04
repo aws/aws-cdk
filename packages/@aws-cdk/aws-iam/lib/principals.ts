@@ -91,14 +91,14 @@ export abstract class PrincipalBase implements IPrincipal {
  * set of "Condition"s that need to be applied to the policy.
  */
 export class PrincipalPolicyFragment {
-  constructor(
+  public constructor(
     public readonly principalJson: { [key: string]: string[] },
     public readonly conditions: { [key: string]: any } = { }) {
   }
 }
 
 export class ArnPrincipal extends PrincipalBase {
-  constructor(public readonly arn: string) {
+  public constructor(public readonly arn: string) {
     super();
   }
 
@@ -112,7 +112,7 @@ export class ArnPrincipal extends PrincipalBase {
 }
 
 export class AccountPrincipal extends ArnPrincipal {
-  constructor(public readonly accountId: any) {
+  public constructor(public readonly accountId: any) {
     super(new StackDependentToken(stack => `arn:${stack.partition}:iam::${accountId}:root`).toString());
   }
 
@@ -144,7 +144,7 @@ export interface ServicePrincipalOpts {
  * An IAM principal that represents an AWS service (i.e. sqs.amazonaws.com).
  */
 export class ServicePrincipal extends PrincipalBase {
-  constructor(public readonly service: string, private readonly opts: ServicePrincipalOpts = {}) {
+  public constructor(public readonly service: string, private readonly opts: ServicePrincipalOpts = {}) {
     super();
   }
 
@@ -165,7 +165,7 @@ export class ServicePrincipal extends PrincipalBase {
  * A principal that represents an AWS Organization
  */
 export class OrganizationPrincipal extends PrincipalBase {
-  constructor(public readonly organizationId: string) {
+  public constructor(public readonly organizationId: string) {
     super();
   }
 
@@ -195,7 +195,7 @@ export class OrganizationPrincipal extends PrincipalBase {
  *
  */
 export class CanonicalUserPrincipal extends PrincipalBase {
-  constructor(public readonly canonicalUserId: string) {
+  public constructor(public readonly canonicalUserId: string) {
     super();
   }
 
@@ -211,7 +211,7 @@ export class CanonicalUserPrincipal extends PrincipalBase {
 export class FederatedPrincipal extends PrincipalBase {
   public readonly assumeRoleAction: string;
 
-  constructor(
+  public constructor(
     public readonly federated: string,
     public readonly conditions: {[key: string]: any},
     assumeRoleAction: string = 'sts:AssumeRole') {
@@ -230,12 +230,12 @@ export class FederatedPrincipal extends PrincipalBase {
 }
 
 export class AccountRootPrincipal extends AccountPrincipal {
-  constructor() {
+  public constructor() {
     super(new StackDependentToken(stack => stack.account).toString());
   }
 
   public toString() {
-    return `AccountRootPrincipal()`;
+    return 'AccountRootPrincipal()';
   }
 }
 
@@ -243,12 +243,12 @@ export class AccountRootPrincipal extends AccountPrincipal {
  * A principal representing all identities in all accounts
  */
 export class AnyPrincipal extends ArnPrincipal {
-  constructor() {
+  public constructor() {
     super('*');
   }
 
   public toString() {
-    return `AnyPrincipal()`;
+    return 'AnyPrincipal()';
   }
 }
 
@@ -262,7 +262,7 @@ export class CompositePrincipal extends PrincipalBase {
   public readonly assumeRoleAction: string;
   private readonly principals = new Array<PrincipalBase>();
 
-  constructor(...principals: PrincipalBase[]) {
+  public constructor(...principals: PrincipalBase[]) {
     super();
     if (principals.length === 0) {
       throw new Error('CompositePrincipals must be constructed with at least 1 Principal but none were passed.');
@@ -275,14 +275,14 @@ export class CompositePrincipal extends PrincipalBase {
     for (const p of principals) {
       if (p.assumeRoleAction !== this.assumeRoleAction) {
         throw new Error(
-          `Cannot add multiple principals with different "assumeRoleAction". ` +
+          'Cannot add multiple principals with different "assumeRoleAction". ' +
           `Expecting "${this.assumeRoleAction}", got "${p.assumeRoleAction}"`);
       }
 
       const fragment = p.policyFragment;
       if (fragment.conditions && Object.keys(fragment.conditions).length > 0) {
         throw new Error(
-          `Components of a CompositePrincipal must not have conditions. ` +
+          'Components of a CompositePrincipal must not have conditions. ' +
           `Tried to add the following fragment: ${JSON.stringify(fragment)}`);
       }
 
@@ -312,7 +312,7 @@ export class CompositePrincipal extends PrincipalBase {
  */
 class StackDependentToken implements cdk.IResolvable {
   public readonly creationStack: string[];
-  constructor(private readonly fn: (stack: cdk.Stack) => any) {
+  public constructor(private readonly fn: (stack: cdk.Stack) => any) {
     this.creationStack = cdk.captureStackTrace();
   }
 
@@ -325,14 +325,16 @@ class StackDependentToken implements cdk.IResolvable {
   }
 
   public toJSON() {
-    return `<unresolved-token>`;
+    return '<unresolved-token>';
   }
 }
 
 class ServicePrincipalToken implements cdk.IResolvable {
   public readonly creationStack: string[];
-  constructor(private readonly service: string,
-              private readonly opts: ServicePrincipalOpts) {
+  public constructor(
+    private readonly service: string,
+    private readonly opts: ServicePrincipalOpts
+  ) {
     this.creationStack = cdk.captureStackTrace();
   }
 

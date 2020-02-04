@@ -24,17 +24,17 @@ export interface AccessKeysRotatedProps extends RuleProps {
  * @resource AWS::Config::ConfigRule
  */
 export class AccessKeysRotated extends ManagedRule {
-  constructor(scope: Construct, id: string, props: AccessKeysRotatedProps = {}) {
+  public constructor(scope: Construct, id: string, props: AccessKeysRotatedProps = {}) {
     super(scope, id, {
       ...props,
       identifier: 'ACCESS_KEYS_ROTATED',
       inputParameters: {
         ...props.maxAge
           ? {
-              maxAccessKeyAge: props.maxAge.toDays()
-            }
+            maxAccessKeyAge: props.maxAge.toDays()
+          }
           : {}
-        }
+      }
     });
   }
 }
@@ -72,7 +72,7 @@ export interface CloudFormationStackDriftDetectionCheckProps extends RuleProps {
 export class CloudFormationStackDriftDetectionCheck extends ManagedRule {
   private readonly role: iam.IRole;
 
-  constructor(scope: Construct, id: string, props: CloudFormationStackDriftDetectionCheckProps = {}) {
+  public constructor(scope: Construct, id: string, props: CloudFormationStackDriftDetectionCheckProps = {}) {
     super(scope, id, {
       ...props,
       identifier: 'CLOUDFORMATION_STACK_DRIFT_DETECTION_CHECK',
@@ -113,7 +113,7 @@ export interface CloudFormationStackNotificationCheckProps extends RuleProps {
  * @resource AWS::Config::ConfigRule
  */
 export class CloudFormationStackNotificationCheck extends ManagedRule {
-  constructor(scope: Construct, id: string, props: CloudFormationStackNotificationCheckProps = {}) {
+  public constructor(scope: Construct, id: string, props: CloudFormationStackNotificationCheckProps = {}) {
     if (props.topics && props.topics.length > 5) {
       throw new Error('At most 5 topics can be specified.');
     }

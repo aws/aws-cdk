@@ -19,37 +19,37 @@ export = {
     expect(stack).toMatch({
       Resources: {
         apiGETECF0BD67: {
-        Type: "AWS::ApiGateway::Method",
-        Properties: {
-          HttpMethod: "GET",
-          ResourceId: {
-          "Fn::GetAtt": [
-            "apiC8550315",
-            "RootResourceId"
-          ]
-          },
-          RestApiId: {
-          Ref: "apiC8550315"
-          },
-          AuthorizationType: "NONE",
-          Integration: {
-          Type: "MOCK"
+          Type: 'AWS::ApiGateway::Method',
+          Properties: {
+            HttpMethod: 'GET',
+            ResourceId: {
+              'Fn::GetAtt': [
+                'apiC8550315',
+                'RootResourceId'
+              ]
+            },
+            RestApiId: {
+              Ref: 'apiC8550315'
+            },
+            AuthorizationType: 'NONE',
+            Integration: {
+              Type: 'MOCK'
+            }
           }
-        }
         },
         apiC8550315: {
-        Type: "AWS::ApiGateway::RestApi",
-        Properties: {
-          Name: "api"
-        }
+          Type: 'AWS::ApiGateway::RestApi',
+          Properties: {
+            Name: 'api'
+          }
         },
         deployment33381975: {
-        Type: "AWS::ApiGateway::Deployment",
-        Properties: {
-          RestApiId: {
-          Ref: "apiC8550315"
+          Type: 'AWS::ApiGateway::Deployment',
+          Properties: {
+            RestApiId: {
+              Ref: 'apiC8550315'
+            }
           }
-        }
         }
       }
     });
@@ -70,39 +70,39 @@ export = {
     expect(stack).toMatch({
       Resources: {
         apiGETECF0BD67: {
-        Type: "AWS::ApiGateway::Method",
-        Properties: {
-          HttpMethod: "GET",
-          ResourceId: {
-          "Fn::GetAtt": [
-            "apiC8550315",
-            "RootResourceId"
-          ]
-          },
-          RestApiId: {
-          Ref: "apiC8550315"
-          },
-          AuthorizationType: "NONE",
-          Integration: {
-          Type: "MOCK"
+          Type: 'AWS::ApiGateway::Method',
+          Properties: {
+            HttpMethod: 'GET',
+            ResourceId: {
+              'Fn::GetAtt': [
+                'apiC8550315',
+                'RootResourceId'
+              ]
+            },
+            RestApiId: {
+              Ref: 'apiC8550315'
+            },
+            AuthorizationType: 'NONE',
+            Integration: {
+              Type: 'MOCK'
+            }
           }
-        }
         },
         apiC8550315: {
-        Type: "AWS::ApiGateway::RestApi",
-        Properties: {
-          Name: "api"
-        }
-        },
-        deployment33381975: {
-        Type: "AWS::ApiGateway::Deployment",
-        Properties: {
-          RestApiId: {
-          Ref: "apiC8550315"
+          Type: 'AWS::ApiGateway::RestApi',
+          Properties: {
+            Name: 'api'
           }
         },
-        DeletionPolicy: "Retain",
-        UpdateReplacePolicy: "Retain"
+        deployment33381975: {
+          Type: 'AWS::ApiGateway::Deployment',
+          Properties: {
+            RestApiId: {
+              Ref: 'apiC8550315'
+            }
+          },
+          DeletionPolicy: 'Retain',
+          UpdateReplacePolicy: 'Retain'
         }
       }
     });
@@ -172,7 +172,7 @@ export = {
     deployment.node.addDependency(dep);
 
     expect(stack).to(haveResource('AWS::ApiGateway::Deployment', {
-      DependsOn: [ "MyResource" ],
+      DependsOn: [ 'MyResource' ],
     }, ResourcePart.CompleteDefinition));
 
     test.done();

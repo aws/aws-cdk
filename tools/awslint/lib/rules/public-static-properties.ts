@@ -7,9 +7,9 @@ export const publicStaticPropertiesLinter = new Linter(assembly => {
   const result = new Array<Property>();
   for (const c of assembly.classes) {
     for (const property of c.allProperties) {
-        if (property.const && property.static) {
-            result.push(property);
-        }
+      if (property.const && property.static) {
+        result.push(property);
+      }
     }
   }
   return result;

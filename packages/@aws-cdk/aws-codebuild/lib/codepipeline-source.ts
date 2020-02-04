@@ -9,7 +9,7 @@ import { CODEPIPELINE_SOURCE_ARTIFACTS_TYPE } from './source-types';
 export class CodePipelineSource extends Source {
   public readonly type = CODEPIPELINE_SOURCE_ARTIFACTS_TYPE;
 
-  constructor() {
+  public constructor() {
     super({});
   }
 }

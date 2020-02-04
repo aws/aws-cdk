@@ -7,7 +7,7 @@ import { App, Construct, Stack } from '@aws-cdk/core';
 import * as cfn from '../lib';
 
 class ConsumerNestedStack extends cfn.NestedStack {
-  constructor(scope: Construct, id: string, topic: sns.Topic) {
+  public constructor(scope: Construct, id: string, topic: sns.Topic) {
     super(scope, id);
 
     new sns.Topic(this, 'ConsumerTopic', {
@@ -18,7 +18,7 @@ class ConsumerNestedStack extends cfn.NestedStack {
 
 class ProducerStack extends Stack {
   public readonly topic: sns.Topic;
-  constructor(scope: Construct, id: string) {
+  public constructor(scope: Construct, id: string) {
     super(scope, id);
 
     this.topic = new sns.Topic(this, 'MyTopic');
@@ -26,7 +26,7 @@ class ProducerStack extends Stack {
 }
 
 class ParentStack extends Stack {
-  constructor(scope: Construct, id: string, topic: sns.Topic) {
+  public constructor(scope: Construct, id: string, topic: sns.Topic) {
     super(scope, id);
 
     new ConsumerNestedStack(this, 'Nested1', topic);

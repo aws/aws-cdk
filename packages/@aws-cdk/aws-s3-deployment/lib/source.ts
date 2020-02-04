@@ -1,5 +1,5 @@
 import * as s3 from '@aws-cdk/aws-s3';
-import * as s3_assets from '@aws-cdk/aws-s3-assets';
+import * as s3a from '@aws-cdk/aws-s3-assets';
 import * as cdk from '@aws-cdk/core';
 
 export interface SourceConfig {
@@ -58,9 +58,9 @@ export class Source {
         while (context.node.tryFindChild(`Asset${id}`)) {
           id++;
         }
-        const asset = new s3_assets.Asset(context, `Asset${id}`, { path });
+        const asset = new s3a.Asset(context, `Asset${id}`, { path });
         if (!asset.isZipArchive) {
-          throw new Error(`Asset path must be either a .zip file or a directory`);
+          throw new Error('Asset path must be either a .zip file or a directory');
         }
         return {
           bucket: asset.bucket,

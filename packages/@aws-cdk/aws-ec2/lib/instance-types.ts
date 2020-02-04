@@ -421,7 +421,7 @@ export class InstanceType {
     return new InstanceType(`${instanceClass}.${instanceSize}`);
   }
 
-  constructor(private readonly instanceTypeIdentifier: string) {
+  public constructor(private readonly instanceTypeIdentifier: string) {
   }
 
   /**

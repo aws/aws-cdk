@@ -1,4 +1,4 @@
-// tslint:disable:no-console
+/* eslint-disable no-console */
 
 import { IsCompleteResponse, OnEventResponse } from '@aws-cdk/custom-resources/lib/provider-framework/types';
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -10,7 +10,7 @@ const MAX_CLUSTER_NAME_LEN = 100;
 export class ClusterResourceHandler extends ResourceHandler {
   public get clusterName() {
     if (!this.physicalResourceId) {
-      throw new Error(`Cannot determine cluster name without physical resource ID`);
+      throw new Error('Cannot determine cluster name without physical resource ID');
     }
 
     return this.physicalResourceId;
@@ -19,7 +19,7 @@ export class ClusterResourceHandler extends ResourceHandler {
   private readonly newProps: aws.EKS.CreateClusterRequest;
   private readonly oldProps: Partial<aws.EKS.CreateClusterRequest>;
 
-  constructor(eks: EksClient, event: AWSLambda.CloudFormationCustomResourceEvent) {
+  public constructor(eks: EksClient, event: AWSLambda.CloudFormationCustomResourceEvent) {
     super(eks, event);
 
     this.newProps = parseProps(this.event.ResourceProperties);
@@ -103,7 +103,7 @@ export class ClusterResourceHandler extends ResourceHandler {
 
   protected async onUpdate() {
     const updates = analyzeUpdate(this.oldProps, this.newProps);
-    console.log(`onUpdate:`, JSON.stringify({ updates }, undefined, 2));
+    console.log('onUpdate:', JSON.stringify({ updates }, undefined, 2));
 
     // if there is an update that requires replacement, go ahead and just create
     // a new cluster with the new config. The old cluster will automatically be
@@ -115,6 +115,7 @@ export class ClusterResourceHandler extends ResourceHandler {
       // already a cluster with that name". this is a common behavior for
       // CloudFormation resources that support specifying a physical name.
       if (this.oldProps.name === this.newProps.name && this.oldProps.name) {
+        // eslint-disable-next-line max-len
         throw new Error(`Cannot replace cluster "${this.oldProps.name}" since it has an explicit physical name. Either rename the cluster or remove the "name" configuration`);
       }
 
@@ -143,7 +144,7 @@ export class ClusterResourceHandler extends ResourceHandler {
   }
 
   protected async isUpdateComplete() {
-    console.log(`isUpdateComplete`);
+    console.log('isUpdateComplete');
     return this.isActive();
   }
 

@@ -6,7 +6,7 @@ import * as iam from '@aws-cdk/aws-iam';
 export class ViaServicePrincipal extends iam.PrincipalBase {
   private readonly basePrincipal: iam.IPrincipal;
 
-  constructor(private readonly serviceName: string, basePrincipal?: iam.IPrincipal) {
+  public constructor(private readonly serviceName: string, basePrincipal?: iam.IPrincipal) {
     super();
     this.basePrincipal = basePrincipal ? basePrincipal : new iam.AnyPrincipal();
   }

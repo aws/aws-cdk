@@ -268,7 +268,7 @@ export = {
     test.equals(
       type.inputString,
       // eslint-disable-next-line max-len
-      `struct<primitive:string,with_comment:string COMMENT 'this has a comment',array:array<string>,map:map<string,string>,nested_struct:struct<nested:string COMMENT 'nested comment'>>`);
+      'struct<primitive:string,with_comment:string COMMENT \'this has a comment\',array:array<string>,map:map<string,string>,nested_struct:struct<nested:string COMMENT \'nested comment\'>>');
     test.done();
   }
 };

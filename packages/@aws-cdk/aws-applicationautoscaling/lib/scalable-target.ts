@@ -93,7 +93,7 @@ export class ScalableTarget extends Resource implements IScalableTarget {
 
   private readonly actions = new Array<CfnScalableTarget.ScheduledActionProperty>();
 
-  constructor(scope: Construct, id: string, props: ScalableTargetProps) {
+  public constructor(scope: Construct, id: string, props: ScalableTargetProps) {
     super(scope, id);
 
     withResolved(props.maxCapacity, max => {
@@ -186,7 +186,7 @@ export interface ScalingSchedule {
    *
    * @default The rule is activate immediately
    */
-  readonly startTime?: Date
+  readonly startTime?: Date;
 
   /**
    * When this scheduled action expires.

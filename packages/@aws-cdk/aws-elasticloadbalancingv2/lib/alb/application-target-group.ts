@@ -88,7 +88,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
   private readonly protocol?: ApplicationProtocol;
   private readonly port?: number;
 
-  constructor(scope: Construct, id: string, props: ApplicationTargetGroupProps = {}) {
+  public constructor(scope: Construct, id: string, props: ApplicationTargetGroupProps = {}) {
     const [protocol, port] = determineProtocolAndPort(props.protocol, props.port);
     super(scope, id, { ...props }, {
       protocol,
@@ -315,7 +315,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
 
     if (this.targetType !== undefined && this.targetType !== TargetType.LAMBDA
       && (this.protocol === undefined || this.port === undefined)) {
-        ret.push(`At least one of 'port' or 'protocol' is required for a non-Lambda TargetGroup`);
+      ret.push('At least one of \'port\' or \'protocol\' is required for a non-Lambda TargetGroup');
     }
 
     if (this.healthCheck && this.healthCheck.protocol && !ALB_HEALTH_CHECK_PROTOCOLS.includes(this.healthCheck.protocol)) {
@@ -374,11 +374,11 @@ export interface IApplicationTargetGroup extends ITargetGroup {
 class ImportedApplicationTargetGroup extends ImportedTargetGroupBase implements IApplicationTargetGroup {
   public registerListener(_listener: IApplicationListener, _associatingConstruct?: IConstruct) {
     // Nothing to do, we know nothing of our members
-    this.node.addWarning(`Cannot register listener on imported target group -- security groups might need to be updated manually`);
+    this.node.addWarning('Cannot register listener on imported target group -- security groups might need to be updated manually');
   }
 
   public registerConnectable(_connectable: ec2.IConnectable, _portRange?: ec2.Port | undefined): void {
-    this.node.addWarning(`Cannot register connectable on imported target group -- security groups might need to be updated manually`);
+    this.node.addWarning('Cannot register connectable on imported target group -- security groups might need to be updated manually');
   }
 
   public addTarget(...targets: IApplicationLoadBalancerTarget[]) {

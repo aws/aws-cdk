@@ -36,7 +36,13 @@
   "devDependencies": {
     "@types/fs-extra": "^8.0.1",
     "@types/semver": "^6.2.0",
-    "@types/yargs": "^15.0.1"
+    "@types/yargs": "^15.0.1",
+    "@typescript-eslint/eslint-plugin": "^2.19.0",
+    "@typescript-eslint/parser": "^2.19.0",
+    "eslint": "^6.8.0",
+    "eslint-import-resolver-node": "^0.3.3",
+    "eslint-import-resolver-typescript": "^2.0.0",
+    "eslint-plugin-import": "^2.20.1"
   },
   "dependencies": {
     "case": "^1.6.2",

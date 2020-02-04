@@ -3,7 +3,7 @@
  * range that is either not valid, or outside of the VPC size limits.
  */
 export class InvalidCidrRangeError extends Error {
-  constructor(cidr: string) {
+  public constructor(cidr: string) {
     super(cidr + ' is not a valid VPC CIDR range (must be between /16 and /28)');
     // The following line is required for type checking of custom errors, and must be called right after super()
     // https://stackoverflow.com/questions/31626231/custom-error-class-in-typescript
@@ -113,7 +113,7 @@ export class NetworkBuilder {
    * less than the first IP in the network
    *
    */
-  constructor(cidr: string) {
+  public constructor(cidr: string) {
     this.networkCidr = new CidrBlock(cidr);
     this.subnetCidrs = [];
     this.nextAvailableIp = this.networkCidr.minAddress();
@@ -144,14 +144,14 @@ export class NetworkBuilder {
       this.subnetCidrs.push(subnet);
       subnets.push(subnet);
     }
-    return subnets.map((subnet) => (subnet.cidr));
+    return subnets.map(subnet => (subnet.cidr));
   }
 
   /**
    * return the CIDR notation strings for all subnets in the network
    */
   public get cidrStrings(): string[] {
-    return this.subnetCidrs.map((subnet) => (subnet.cidr));
+    return this.subnetCidrs.map(subnet => (subnet.cidr));
   }
 
   /**
@@ -222,9 +222,9 @@ export class CidrBlock {
    * then the next avaiable block will be returned. For example, if
    * `10.0.3.1/28` is given the returned block will represent `10.0.3.16/28`.
    */
-  constructor(cidr: string)
-  constructor(ipAddress: number, mask: number)
-  constructor(ipAddressOrCidr: string | number, mask?: number) {
+  public constructor(cidr: string)
+  public constructor(ipAddress: number, mask: number)
+  public constructor(ipAddressOrCidr: string | number, mask?: number) {
     if (typeof ipAddressOrCidr === 'string') {
       this.mask = parseInt(ipAddressOrCidr.split('/')[1], 10);
       this.networkAddress = NetworkUtils.ipToNum(ipAddressOrCidr.split('/')[0]) +

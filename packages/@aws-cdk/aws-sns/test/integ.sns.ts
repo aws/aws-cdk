@@ -3,10 +3,10 @@ import { App, Stack, StackProps } from '@aws-cdk/core';
 import { Topic } from '../lib';
 
 class SNSInteg extends Stack {
-  constructor(scope: App, id: string, props?: StackProps) {
+  public constructor(scope: App, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const key = new Key(this, "CustomKey");
+    const key = new Key(this, 'CustomKey');
 
     new Topic(this, 'MyTopic', {
       topicName: 'fooTopic',

@@ -71,7 +71,7 @@ export class CloudAssembly {
    * Reads a cloud assembly from the specified directory.
    * @param directory The root directory of the assembly.
    */
-  constructor(directory: string) {
+  public constructor(directory: string) {
     this.directory = directory;
 
     const manifest = JSON.parse(fs.readFileSync(path.join(directory, MANIFEST_FILE), 'UTF-8'));
@@ -112,6 +112,7 @@ export class CloudAssembly {
     }
 
     if (artifacts.length > 1) {
+      // eslint-disable-next-line max-len
       throw new Error(`There are multiple stacks with the stack name "${stackName}" (${artifacts.map(a => a.id).join(',')}). Use "getStackArtifact(id)" instead`);
     }
 
@@ -161,7 +162,7 @@ export class CloudAssembly {
     const tree = trees[0];
 
     if (!(tree instanceof TreeCloudArtifact)) {
-      throw new Error(`"Tree" artifact is not of expected type`);
+      throw new Error('"Tree" artifact is not of expected type');
     }
 
     return tree;
@@ -215,7 +216,7 @@ export class CloudAssemblyBuilder {
    * Initializes a cloud assembly builder.
    * @param outdir The output directory, uses temporary directory if undefined
    */
-  constructor(outdir?: string) {
+  public constructor(outdir?: string) {
     this.outdir = outdir || fs.mkdtempSync(path.join(os.tmpdir(), 'cdk.out'));
 
     // we leverage the fact that outdir is long-lived to avoid staging assets into it

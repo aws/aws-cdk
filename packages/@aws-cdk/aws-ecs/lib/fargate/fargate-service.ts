@@ -61,9 +61,8 @@ export interface FargateServiceProps extends BaseServiceOptions {
 /**
  * The interface for a service using the Fargate launch type on an ECS cluster.
  */
-export interface IFargateService extends IService {
-
-}
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface IFargateService extends IService { }
 
 /**
  * This creates a service using the Fargate launch type on an ECS cluster.
@@ -85,7 +84,7 @@ export class FargateService extends BaseService implements IFargateService {
   /**
    * Constructs a new instance of the FargateService class.
    */
-  constructor(scope: cdk.Construct, id: string, props: FargateServiceProps) {
+  public constructor(scope: cdk.Construct, id: string, props: FargateServiceProps) {
     if (!props.taskDefinition.isFargateCompatible) {
       throw new Error('Supplied TaskDefinition is not configured for compatibility with Fargate');
     }

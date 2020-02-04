@@ -1,4 +1,4 @@
-// tslint:disable: max-line-length
+/* eslint:disable max-len */
 import * as cfn from '@aws-cdk/aws-cloudformation';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
@@ -82,11 +82,12 @@ export class Provider extends Construct implements cfn.ICustomResourceProvider {
 
   private readonly entrypoint: lambda.Function;
 
-  constructor(scope: Construct, id: string, props: ProviderProps) {
+  public constructor(scope: Construct, id: string, props: ProviderProps) {
     super(scope, id);
 
     if (!props.isCompleteHandler && (props.queryInterval || props.totalTimeout)) {
-      throw new Error(`"queryInterval" and "totalTimeout" can only be configured if "isCompleteHandler" is specified. Otherwise, they have no meaning`);
+      // eslint-disable-next-line max-len
+      throw new Error('"queryInterval" and "totalTimeout" can only be configured if "isCompleteHandler" is specified. Otherwise, they have no meaning');
     }
 
     this.onEventHandler = props.onEventHandler;

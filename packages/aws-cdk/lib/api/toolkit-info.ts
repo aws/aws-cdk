@@ -10,9 +10,9 @@ import { ISDK } from './util/sdk';
 
 /** @experimental */
 export interface UploadProps {
-  s3KeyPrefix?: string,
-  s3KeySuffix?: string,
-  contentType?: string,
+  s3KeyPrefix?: string;
+  s3KeySuffix?: string;
+  contentType?: string;
 }
 
 /** @experimental */
@@ -32,11 +32,11 @@ export class ToolkitInfo {
    */
   private readonly previousUploads: {[key: string]: Uploaded} = {};
 
-  constructor(private readonly props: {
-    sdk: ISDK,
-    bucketName: string,
-    bucketEndpoint: string,
-    environment: cxapi.Environment
+  public constructor(private readonly props: {
+    sdk: ISDK;
+    bucketName: string;
+    bucketEndpoint: string;
+    environment: cxapi.Environment;
   }) {
     this.sdk = props.sdk;
   }
@@ -142,7 +142,7 @@ export class ToolkitInfo {
   public async getEcrCredentials(): Promise<EcrCredentials> {
     const ecr = await this.props.sdk.ecr(this.props.environment.account, this.props.environment.region, Mode.ForReading);
 
-    debug(`Fetching ECR authorization token`);
+    debug('Fetching ECR authorization token');
     const authData =  (await ecr.getAuthorizationToken({ }).promise()).authorizationData || [];
     if (authData.length === 0) {
       throw new Error('No authorization data received from ECR');
@@ -208,7 +208,7 @@ export async function loadToolkitInfo(environment: cxapi.Environment, sdk: ISDK,
   const stack = await waitForStack(cfn, stackName);
   if (!stack) {
     debug('The environment %s doesn\'t have the CDK toolkit stack (%s) installed. Use %s to setup your environment for use with the toolkit.',
-        environment.name, stackName, colors.blue(`cdk bootstrap "${environment.name}"`));
+      environment.name, stackName, colors.blue(`cdk bootstrap "${environment.name}"`));
     return undefined;
   }
   return new ToolkitInfo({

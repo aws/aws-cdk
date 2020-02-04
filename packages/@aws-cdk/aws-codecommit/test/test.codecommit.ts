@@ -19,16 +19,16 @@ export = {
       expect(stack).toMatch({
         Resources: {
           MyRepository4C4BD5FC: {
-            Type: "AWS::CodeCommit::Repository",
+            Type: 'AWS::CodeCommit::Repository',
             Properties: {
-              RepositoryName: "MyRepository",
+              RepositoryName: 'MyRepository',
               Triggers: [
                 {
                   Events: [
-                    "all"
+                    'all'
                   ],
-                  DestinationArn: "arn:aws:sns:*:123456789012:my_topic",
-                  Name: "MyRepository/arn:aws:sns:*:123456789012:my_topic"
+                  DestinationArn: 'arn:aws:sns:*:123456789012:my_topic',
+                  Name: 'MyRepository/arn:aws:sns:*:123456789012:my_topic'
                 }
               ]
             }

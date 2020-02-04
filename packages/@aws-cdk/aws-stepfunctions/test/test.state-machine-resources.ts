@@ -5,282 +5,282 @@ import { Test } from 'nodeunit';
 import * as stepfunctions from '../lib';
 
 export = {
-    'Tasks can add permissions to the execution role'(test: Test) {
-        // GIVEN
-        const stack = new cdk.Stack();
-        const task = new stepfunctions.Task(stack, 'Task', {
-            task: {
-                bind: () => ({
-                    resourceArn: 'resource',
-                    policyStatements: [new iam.PolicyStatement({
-                        actions: ['resource:Everything'],
-                        resources: ['resource']
-                    })],
-                })
-            }
-        });
+  'Tasks can add permissions to the execution role'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const task = new stepfunctions.Task(stack, 'Task', {
+      task: {
+        bind: () => ({
+          resourceArn: 'resource',
+          policyStatements: [new iam.PolicyStatement({
+            actions: ['resource:Everything'],
+            resources: ['resource']
+          })],
+        })
+      }
+    });
 
-        // WHEN
-        new stepfunctions.StateMachine(stack, 'SM', {
-            definition: task
-        });
+    // WHEN
+    new stepfunctions.StateMachine(stack, 'SM', {
+      definition: task
+    });
 
-        // THEN
-        expect(stack).to(haveResource('AWS::IAM::Policy', {
-            PolicyDocument: {
-                Version: '2012-10-17',
-                Statement: [
-                    {
-                        Action: "resource:Everything",
-                        Effect: "Allow",
-                        Resource: "resource"
-                    }
-                ],
-            }
-        }));
+    // THEN
+    expect(stack).to(haveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Action: 'resource:Everything',
+            Effect: 'Allow',
+            Resource: 'resource'
+          }
+        ],
+      }
+    }));
 
-        test.done();
-    },
+    test.done();
+  },
 
-    'Tasks hidden inside a Parallel state are also included'(test: Test) {
-        // GIVEN
-        const stack = new cdk.Stack();
-        const task = new stepfunctions.Task(stack, 'Task', {
-            task: {
-                bind: () => ({
-                    resourceArn: 'resource',
-                    policyStatements: [
-                        new iam.PolicyStatement({
-                            actions: ['resource:Everything'],
-                            resources: ['resource']
-                        })
-                    ]
-                })
-            }
-        });
+  'Tasks hidden inside a Parallel state are also included'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const task = new stepfunctions.Task(stack, 'Task', {
+      task: {
+        bind: () => ({
+          resourceArn: 'resource',
+          policyStatements: [
+            new iam.PolicyStatement({
+              actions: ['resource:Everything'],
+              resources: ['resource']
+            })
+          ]
+        })
+      }
+    });
 
-        const para = new stepfunctions.Parallel(stack, 'Para');
-        para.branch(task);
+    const para = new stepfunctions.Parallel(stack, 'Para');
+    para.branch(task);
 
-        // WHEN
-        new stepfunctions.StateMachine(stack, 'SM', {
-            definition: para
-        });
+    // WHEN
+    new stepfunctions.StateMachine(stack, 'SM', {
+      definition: para
+    });
 
-        // THEN
-        expect(stack).to(haveResource('AWS::IAM::Policy', {
-            PolicyDocument: {
-                Version: '2012-10-17',
-                Statement: [
-                    {
-                        Action: "resource:Everything",
-                        Effect: "Allow",
-                        Resource: "resource"
-                    }
-                ],
-            }
-        }));
+    // THEN
+    expect(stack).to(haveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Action: 'resource:Everything',
+            Effect: 'Allow',
+            Resource: 'resource'
+          }
+        ],
+      }
+    }));
 
-        test.done();
-    },
+    test.done();
+  },
 
-    'Task should render InputPath / Parameters / OutputPath correctly'(test: Test) {
-        // GIVEN
-        const stack = new cdk.Stack();
-        const task = new stepfunctions.Task(stack, 'Task', {
-            inputPath: "$",
-            outputPath: "$.state",
-            task: {
-                bind: () => ({
-                    resourceArn: 'resource',
-                    parameters: {
-                        "input.$": "$",
-                        "stringArgument": "inital-task",
-                        "numberArgument": 123,
-                        "booleanArgument": true,
-                        "arrayArgument": ["a", "b", "c"]
-                    }
-                })
-            }
-        });
+  'Task should render InputPath / Parameters / OutputPath correctly'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const task = new stepfunctions.Task(stack, 'Task', {
+      inputPath: '$',
+      outputPath: '$.state',
+      task: {
+        bind: () => ({
+          resourceArn: 'resource',
+          parameters: {
+            'input.$': '$',
+            'stringArgument': 'inital-task',
+            'numberArgument': 123,
+            'booleanArgument': true,
+            'arrayArgument': ['a', 'b', 'c']
+          }
+        })
+      }
+    });
 
-        // WHEN
-        const taskState = task.toStateJson();
+    // WHEN
+    const taskState = task.toStateJson();
 
-        // THEN
-        test.deepEqual(taskState, { End: true,
-            Retry: undefined,
-            Catch: undefined,
-            InputPath: '$',
-            Parameters:
+    // THEN
+    test.deepEqual(taskState, { End: true,
+      Retry: undefined,
+      Catch: undefined,
+      InputPath: '$',
+      Parameters:
              { 'input.$': '$',
                'stringArgument': 'inital-task',
                'numberArgument': 123,
                'booleanArgument': true,
                'arrayArgument': [ 'a', 'b', 'c' ] },
-            OutputPath: '$.state',
-            Type: 'Task',
-            Comment: undefined,
-            Resource: 'resource',
-            ResultPath: undefined,
-            TimeoutSeconds: undefined,
-            HeartbeatSeconds: undefined
-        });
+      OutputPath: '$.state',
+      Type: 'Task',
+      Comment: undefined,
+      Resource: 'resource',
+      ResultPath: undefined,
+      TimeoutSeconds: undefined,
+      HeartbeatSeconds: undefined
+    });
 
-        test.done();
-    },
+    test.done();
+  },
 
-    'Task combines taskobject parameters with direct parameters'(test: Test) {
-        // GIVEN
-        const stack = new cdk.Stack();
-        const task = new stepfunctions.Task(stack, 'Task', {
-            inputPath: "$",
-            outputPath: "$.state",
-            task: {
-                bind: () => ({
-                    resourceArn: 'resource',
-                    parameters: {
-                        a: "aa",
-                    }
-                })
-            },
-            parameters: {
-                b: "bb"
-            }
-        });
+  'Task combines taskobject parameters with direct parameters'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const task = new stepfunctions.Task(stack, 'Task', {
+      inputPath: '$',
+      outputPath: '$.state',
+      task: {
+        bind: () => ({
+          resourceArn: 'resource',
+          parameters: {
+            a: 'aa',
+          }
+        })
+      },
+      parameters: {
+        b: 'bb'
+      }
+    });
 
-        // WHEN
-        const taskState = task.toStateJson();
+    // WHEN
+    const taskState = task.toStateJson();
 
-        // THEN
-        test.deepEqual(taskState, { End: true,
-            Retry: undefined,
-            Catch: undefined,
-            InputPath: '$',
-            Parameters:
+    // THEN
+    test.deepEqual(taskState, { End: true,
+      Retry: undefined,
+      Catch: undefined,
+      InputPath: '$',
+      Parameters:
              { a: 'aa',
                b: 'bb', },
-            OutputPath: '$.state',
-            Type: 'Task',
-            Comment: undefined,
-            Resource: 'resource',
-            ResultPath: undefined,
-            TimeoutSeconds: undefined,
-            HeartbeatSeconds: undefined
-        });
+      OutputPath: '$.state',
+      Type: 'Task',
+      Comment: undefined,
+      Resource: 'resource',
+      ResultPath: undefined,
+      TimeoutSeconds: undefined,
+      HeartbeatSeconds: undefined
+    });
 
-        test.done();
-    },
+    test.done();
+  },
 
-    'Can grant start execution to a role'(test: Test) {
-        // GIVEN
-        const stack = new cdk.Stack();
-        const task = new stepfunctions.Task(stack, 'Task', {
-            task: {
-                bind: () => ({ resourceArn: 'resource' })
+  'Can grant start execution to a role'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const task = new stepfunctions.Task(stack, 'Task', {
+      task: {
+        bind: () => ({ resourceArn: 'resource' })
+      }
+    });
+    const stateMachine = new stepfunctions.StateMachine(stack, 'StateMachine', {
+      definition: task
+    });
+    const role = new iam.Role(stack, 'Role', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com')
+    });
+
+    // WHEN
+    stateMachine.grantStartExecution(role);
+
+    // THEN
+    expect(stack).to(haveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'states:StartExecution',
+            Effect: 'Allow',
+            Resource: {
+              Ref: 'StateMachine2E01A3A5'
             }
-        });
-        const stateMachine = new stepfunctions.StateMachine(stack, 'StateMachine', {
-            definition: task
-        });
-        const role = new iam.Role(stack, 'Role', {
-            assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com')
-        });
+          }
+        ],
+        Version: '2012-10-17',
+      },
+      PolicyName: 'RoleDefaultPolicy5FFB7DAB',
+      Roles: [
+        {
+          Ref: 'Role1ABCC5F0'
+        }
+      ]
+    }));
 
-        // WHEN
-        stateMachine.grantStartExecution(role);
+    test.done();
+  },
 
-        // THEN
-        expect(stack).to(haveResource('AWS::IAM::Policy', {
-            PolicyDocument: {
-                Statement: [
-                    {
-                        Action: 'states:StartExecution',
-                        Effect: 'Allow',
-                        Resource: {
-                            Ref: 'StateMachine2E01A3A5'
-                        }
-                    }
-                ],
-                Version: '2012-10-17',
-            },
-            PolicyName: 'RoleDefaultPolicy5FFB7DAB',
-            Roles: [
-                {
-                    Ref: 'Role1ABCC5F0'
-                }
-            ]
-        }));
+  'Pass should render InputPath / Parameters / OutputPath correctly'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const task = new stepfunctions.Pass(stack, 'Pass', {
+      inputPath: '$',
+      outputPath: '$.state',
+      parameters: {
+        'input.$': '$',
+        'stringArgument': 'inital-task',
+        'numberArgument': 123,
+        'booleanArgument': true,
+        'arrayArgument': ['a', 'b', 'c']
+      }
+    });
 
-        test.done();
-    },
+    // WHEN
+    const taskState = task.toStateJson();
 
-    'Pass should render InputPath / Parameters / OutputPath correctly'(test: Test) {
-        // GIVEN
-        const stack = new cdk.Stack();
-        const task = new stepfunctions.Pass(stack, 'Pass', {
-            inputPath: "$",
-            outputPath: "$.state",
-            parameters: {
-                "input.$": "$",
-                "stringArgument": "inital-task",
-                "numberArgument": 123,
-                "booleanArgument": true,
-                "arrayArgument": ["a", "b", "c"]
-            }
-        });
-
-        // WHEN
-        const taskState = task.toStateJson();
-
-        // THEN
-        test.deepEqual(taskState, { End: true,
-            InputPath: '$',
-            OutputPath: '$.state',
-            Parameters:
+    // THEN
+    test.deepEqual(taskState, { End: true,
+      InputPath: '$',
+      OutputPath: '$.state',
+      Parameters:
              { 'input.$': '$',
                'stringArgument': 'inital-task',
                'numberArgument': 123,
                'booleanArgument': true,
                'arrayArgument': [ 'a', 'b', 'c' ] },
-            Type: 'Pass',
-            Comment: undefined,
-            Result: undefined,
-            ResultPath: undefined,
-        });
+      Type: 'Pass',
+      Comment: undefined,
+      Result: undefined,
+      ResultPath: undefined,
+    });
 
-        test.done();
-    },
+    test.done();
+  },
 
-    'State machines must depend on their roles'(test: Test) {
-        // GIVEN
-        const stack = new cdk.Stack();
-        const task = new stepfunctions.Task(stack, 'Task', {
-            task: {
-                bind: () => ({
-                    resourceArn: 'resource',
-                    policyStatements: [
-                        new iam.PolicyStatement({
-                            resources: ['resource'],
-                            actions: ["lambda:InvokeFunction"],
-                        })
-                    ],
-                })
-            }
-        });
-        new stepfunctions.StateMachine(stack, 'StateMachine', {
-            definition: task
-        });
+  'State machines must depend on their roles'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const task = new stepfunctions.Task(stack, 'Task', {
+      task: {
+        bind: () => ({
+          resourceArn: 'resource',
+          policyStatements: [
+            new iam.PolicyStatement({
+              resources: ['resource'],
+              actions: ['lambda:InvokeFunction'],
+            })
+          ],
+        })
+      }
+    });
+    new stepfunctions.StateMachine(stack, 'StateMachine', {
+      definition: task
+    });
 
-        // THEN
-        expect(stack).to(haveResource('AWS::StepFunctions::StateMachine', {
-            DependsOn: [
-                'StateMachineRoleDefaultPolicyDF1E6607',
-                'StateMachineRoleB840431D'
-            ]
-        }, ResourcePart.CompleteDefinition));
+    // THEN
+    expect(stack).to(haveResource('AWS::StepFunctions::StateMachine', {
+      DependsOn: [
+        'StateMachineRoleDefaultPolicyDF1E6607',
+        'StateMachineRoleB840431D'
+      ]
+    }, ResourcePart.CompleteDefinition));
 
-        test.done();
-    },
+    test.done();
+  },
 
 };

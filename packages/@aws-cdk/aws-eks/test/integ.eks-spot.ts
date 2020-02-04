@@ -4,7 +4,7 @@ import * as eks from '../lib';
 import { TestStack } from './util';
 
 class MyStack extends TestStack {
-  constructor(scope: Construct, id: string) {
+  public constructor(scope: Construct, id: string) {
     super(scope, id);
 
     const vpc = new ec2.Vpc(this, 'vpc', { maxAzs: 2 });

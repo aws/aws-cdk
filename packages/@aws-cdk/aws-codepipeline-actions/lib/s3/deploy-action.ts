@@ -92,7 +92,7 @@ export interface S3DeployActionProps extends codepipeline.CommonAwsActionProps {
 export class S3DeployAction extends Action {
   private readonly props: S3DeployActionProps;
 
-  constructor(props: S3DeployActionProps) {
+  public constructor(props: S3DeployActionProps) {
     super({
       ...props,
       resource: props.bucket,
@@ -106,7 +106,7 @@ export class S3DeployAction extends Action {
   }
 
   protected bound(_scope: Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
-      codepipeline.ActionConfig {
+  codepipeline.ActionConfig {
     // pipeline needs permissions to write to the S3 bucket
     this.props.bucket.grantWrite(options.role);
 

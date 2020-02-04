@@ -11,10 +11,10 @@ export function formatTable(cells: string[][], columns: number | undefined): str
   return table.table(cells, {
     border: TABLE_BORDER_CHARACTERS,
     columns: buildColumnConfig(columns !== undefined ? calculcateColumnWidths(cells, columns) : undefined),
-    drawHorizontalLine: (line) => {
+    drawHorizontalLine: line =>
       // Numbering like this: [line 0] [header = row[0]] [line 1] [row 1] [line 2] [content 2] [line 3]
-      return (line < 2 || line === cells.length) || lineBetween(cells[line - 1], cells[line]);
-    }
+      (line < 2 || line === cells.length) || lineBetween(cells[line - 1], cells[line])
+
   }).trimRight();
 }
 

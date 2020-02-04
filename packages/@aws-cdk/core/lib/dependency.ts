@@ -1,4 +1,4 @@
-import { IConstruct } from "./construct";
+import { IConstruct } from './construct';
 
 /**
  * Trait marker for classes that can be depended upon
@@ -11,6 +11,7 @@ import { IConstruct } from "./construct";
  * those constructs are deployed before the resources depending ON them are
  * deployed.
  */
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface IDependable {
   // Empty, this interface is a trait marker
 }
@@ -26,7 +27,8 @@ export interface IDependable {
 export class ConcreteDependable implements IDependable {
   private readonly _dependencyRoots = new Array<IConstruct>();
 
-  constructor() {
+  public constructor() {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     const self = this;
     DependableTrait.implement(this, {
       get dependencyRoots() { return self._dependencyRoots; },

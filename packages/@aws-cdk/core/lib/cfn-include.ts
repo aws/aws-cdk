@@ -26,7 +26,7 @@ export class CfnInclude extends CfnElement {
    * @param id The ID of this construct
    * @param props Initialization properties.
    */
-  constructor(scope: Construct, id: string, props: CfnIncludeProps) {
+  public constructor(scope: Construct, id: string, props: CfnIncludeProps) {
     super(scope, id);
     this.template = props.template;
   }

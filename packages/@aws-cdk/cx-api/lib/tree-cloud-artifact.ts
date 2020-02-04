@@ -4,7 +4,7 @@ import { CloudAssembly } from './cloud-assembly';
 export class TreeCloudArtifact extends CloudArtifact {
   public readonly file: string;
 
-  constructor(assembly: CloudAssembly, name: string, artifact: ArtifactManifest) {
+  public constructor(assembly: CloudAssembly, name: string, artifact: ArtifactManifest) {
     super(assembly, name, artifact);
 
     const properties = (this.manifest.properties || {});

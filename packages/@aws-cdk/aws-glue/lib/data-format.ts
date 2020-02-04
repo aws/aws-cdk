@@ -40,7 +40,7 @@ export class InputFormat {
    */
   public static readonly TEXT = new InputFormat('org.apache.hadoop.mapred.TextInputFormat');
 
-  constructor(public readonly className: string) {}
+  public constructor(public readonly className: string) {}
 }
 
 /**
@@ -75,7 +75,7 @@ export class OutputFormat {
    */
   public static readonly PARQUET = new OutputFormat('org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat');
 
-  constructor(public readonly className: string) {}
+  public constructor(public readonly className: string) {}
 }
 
 /**
@@ -134,7 +134,7 @@ export class SerializationLibrary {
    */
   public static readonly REGEXP = new SerializationLibrary('org.apache.hadoop.hive.serde2.RegexSerDe');
 
-  constructor(public readonly className: string) {}
+  public constructor(public readonly className: string) {}
 }
 
 /**

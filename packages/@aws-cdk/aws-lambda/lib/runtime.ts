@@ -66,7 +66,7 @@ export class Runtime {
    */
   public readonly family?: RuntimeFamily;
 
-  constructor(name: string, family?: RuntimeFamily, props: LambdaRuntimeProps = { }) {
+  public constructor(name: string, family?: RuntimeFamily, props: LambdaRuntimeProps = { }) {
     this.name = name;
     this.supportsInlineCode = !!props.supportsInlineCode;
     this.family = family;

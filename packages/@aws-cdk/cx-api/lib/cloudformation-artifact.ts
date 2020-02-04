@@ -54,11 +54,11 @@ export class CloudFormationStackArtifact extends CloudArtifact {
    */
   public readonly environment: Environment;
 
-  constructor(assembly: CloudAssembly, artifactId: string, artifact: ArtifactManifest) {
+  public constructor(assembly: CloudAssembly, artifactId: string, artifact: ArtifactManifest) {
     super(assembly, artifactId, artifact);
 
     if (!artifact.properties || !artifact.properties.templateFile) {
-      throw new Error(`Invalid CloudFormation stack artifact. Missing "templateFile" property in cloud assembly manifest`);
+      throw new Error('Invalid CloudFormation stack artifact. Missing "templateFile" property in cloud assembly manifest');
     }
     if (!artifact.environment) {
       throw new Error('Invalid CloudFormation stack artifact. Missing environment');

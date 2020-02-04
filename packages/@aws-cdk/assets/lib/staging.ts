@@ -50,7 +50,7 @@ export class Staging extends Construct {
 
   private readonly relativePath?: string;
 
-  constructor(scope: Construct, id: string, props: StagingProps) {
+  public constructor(scope: Construct, id: string, props: StagingProps) {
     super(scope, id);
 
     this.sourcePath = props.sourcePath;
@@ -61,7 +61,7 @@ export class Staging extends Construct {
     if (stagingDisabled) {
       this.stagedPath = this.sourcePath;
     } else {
-      this.relativePath = `asset.` + this.sourceHash + path.extname(this.sourcePath);
+      this.relativePath = `asset.${this.sourceHash}${path.extname(this.sourcePath)}`;
       this.stagedPath = this.relativePath; // always relative to outdir
     }
   }

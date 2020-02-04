@@ -115,7 +115,7 @@ export interface CustomActionRegistrationProps {
  * and taking the `actionProperties` as properly typed, construction properties.
  */
 export class CustomActionRegistration extends cdk.Construct {
-  constructor(parent: cdk.Construct, id: string, props: CustomActionRegistrationProps) {
+  public constructor(parent: cdk.Construct, id: string, props: CustomActionRegistrationProps) {
     super(parent, id);
 
     new codepipeline.CfnCustomActionType(this, 'Resource', {
@@ -134,11 +134,11 @@ export class CustomActionRegistration extends cdk.Construct {
         entityUrlTemplate: props.entityUrl,
         executionUrlTemplate: props.executionUrl,
       },
-      configurationProperties: props.actionProperties === undefined ? undefined : props.actionProperties.map((ap) => { return {
+      configurationProperties: props.actionProperties === undefined ? undefined : props.actionProperties.map(ap => ({
         key: ap.key || false,
         secret: ap.secret || false,
         ...ap,
-      }; }),
+      })),
     });
   }
 }

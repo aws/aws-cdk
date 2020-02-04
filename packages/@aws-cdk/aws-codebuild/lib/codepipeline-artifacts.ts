@@ -8,7 +8,7 @@ import { Artifacts } from './artifacts';
 export class CodePipelineArtifacts extends Artifacts {
   public readonly type = 'CODEPIPELINE';
 
-  constructor() {
+  public constructor() {
     super({});
   }
 }

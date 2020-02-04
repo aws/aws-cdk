@@ -5,7 +5,7 @@ import * as ec2 from '../lib';
 const app = new cdk.App();
 
 class VpcEndpointStack extends cdk.Stack {
-  constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
+  public constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
     /// !show
@@ -29,7 +29,7 @@ class VpcEndpointStack extends cdk.Stack {
         principals: [new iam.AnyPrincipal()],
         actions: ['dynamodb:DescribeTable', 'dynamodb:ListTables'],
         resources: ['*'],
-    }));
+      }));
 
     // Add an interface endpoint
     vpc.addInterfaceEndpoint('EcrDockerEndpoint', {

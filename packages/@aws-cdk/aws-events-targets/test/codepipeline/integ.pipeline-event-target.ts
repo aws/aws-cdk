@@ -12,13 +12,13 @@ class MockAction implements codepipeline.IAction {
   public readonly actionProperties: codepipeline.ActionProperties;
   private readonly configuration: any;
 
-  constructor(props: MockActionProps) {
+  public constructor(props: MockActionProps) {
     this.actionProperties = props;
     this.configuration = props.configuration;
   }
 
   public bind(_scope: cdk.Construct, _stage: codepipeline.IStage, _options: codepipeline.ActionBindOptions):
-      codepipeline.ActionConfig {
+  codepipeline.ActionConfig {
     return {
       configuration: this.configuration,
     };

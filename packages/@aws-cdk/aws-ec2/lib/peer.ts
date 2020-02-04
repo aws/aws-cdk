@@ -1,5 +1,5 @@
-import { Token } from "@aws-cdk/core";
-import { Connections, IConnectable } from "./connections";
+import { Token } from '@aws-cdk/core';
+import { Connections, IConnectable } from './connections';
 
 /**
  * Interface for classes that provide the peer-specification parts of a security group rule
@@ -87,7 +87,7 @@ class CidrIPv4 implements IPeer {
   public readonly connections: Connections = new Connections({ peer: this });
   public readonly uniqueId: string;
 
-  constructor(private readonly cidrIp: string) {
+  public constructor(private readonly cidrIp: string) {
     if (!Token.isUnresolved(cidrIp)) {
       const cidrMatch = cidrIp.match(/^(\d{1,3}\.){3}\d{1,3}(\/\d+)?$/);
 
@@ -121,8 +121,8 @@ class CidrIPv4 implements IPeer {
  * Any IPv4 address
  */
 class AnyIPv4 extends CidrIPv4 {
-  constructor() {
-    super("0.0.0.0/0");
+  public constructor() {
+    super('0.0.0.0/0');
   }
 }
 
@@ -134,7 +134,7 @@ class CidrIPv6 implements IPeer {
   public readonly connections: Connections = new Connections({ peer: this });
   public readonly uniqueId: string;
 
-  constructor(private readonly cidrIpv6: string) {
+  public constructor(private readonly cidrIpv6: string) {
     if (!Token.isUnresolved(cidrIpv6)) {
       const cidrMatch = cidrIpv6.match(/^([\da-f]{0,4}:){2,7}([\da-f]{0,4})?(\/\d+)?$/);
 
@@ -168,8 +168,8 @@ class CidrIPv6 implements IPeer {
  * Any IPv6 address
  */
 class AnyIPv6 extends CidrIPv6 {
-  constructor() {
-    super("::/0");
+  public constructor() {
+    super('::/0');
   }
 }
 
@@ -187,7 +187,7 @@ class PrefixList implements IPeer {
   public readonly connections: Connections = new Connections({ peer: this });
   public readonly uniqueId: string;
 
-  constructor(private readonly prefixListId: string) {
+  public constructor(private readonly prefixListId: string) {
     this.uniqueId = prefixListId;
   }
 

@@ -63,7 +63,7 @@ export class Deployment extends Resource {
 
   private readonly resource: LatestDeploymentResource;
 
-  constructor(scope: Construct, id: string, props: DeploymentProps) {
+  public constructor(scope: Construct, id: string, props: DeploymentProps) {
     super(scope, id);
 
     this.resource = new LatestDeploymentResource(this, 'Resource', {
@@ -96,7 +96,7 @@ class LatestDeploymentResource extends CfnDeployment {
   private hashComponents = new Array<any>();
   private originalLogicalId: string;
 
-  constructor(scope: Construct, id: string, props: CfnDeploymentProps) {
+  public constructor(scope: Construct, id: string, props: CfnDeploymentProps) {
     super(scope, id, props);
 
     this.originalLogicalId = Stack.of(this).getLogicalId(this);
@@ -128,7 +128,7 @@ class LatestDeploymentResource extends CfnDeployment {
     if (this.hashComponents.length > 0) {
       const md5 = crypto.createHash('md5');
       this.hashComponents.map(x => stack.resolve(x)).forEach(c => md5.update(JSON.stringify(c)));
-      this.overrideLogicalId(this.originalLogicalId + md5.digest("hex"));
+      this.overrideLogicalId(this.originalLogicalId + md5.digest('hex'));
     }
     super.prepare();
   }

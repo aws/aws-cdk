@@ -1,6 +1,6 @@
-import { IResolvable, IResolveContext } from "./resolvable";
+import { IResolvable, IResolveContext } from './resolvable';
 import { captureStackTrace } from './stack-trace';
-import { Token } from "./token";
+import { Token } from './token';
 
 /**
  * Interface for lazy string producers
@@ -122,7 +122,7 @@ export class Lazy {
 abstract class LazyBase implements IResolvable {
   public readonly creationStack: string[];
 
-  constructor() {
+  public constructor() {
     this.creationStack = captureStackTrace();
   }
 
@@ -143,7 +143,7 @@ abstract class LazyBase implements IResolvable {
 }
 
 class LazyString extends LazyBase {
-  constructor(private readonly producer: IStringProducer) {
+  public constructor(private readonly producer: IStringProducer) {
     super();
   }
 
@@ -153,7 +153,7 @@ class LazyString extends LazyBase {
 }
 
 class LazyNumber extends LazyBase {
-  constructor(private readonly producer: INumberProducer) {
+  public constructor(private readonly producer: INumberProducer) {
     super();
   }
 
@@ -163,7 +163,7 @@ class LazyNumber extends LazyBase {
 }
 
 class LazyList extends LazyBase {
-  constructor(private readonly producer: IListProducer, private readonly options: LazyListValueOptions = {}) {
+  public constructor(private readonly producer: IListProducer, private readonly options: LazyListValueOptions = {}) {
     super();
   }
 
@@ -177,7 +177,7 @@ class LazyList extends LazyBase {
 }
 
 class LazyAny extends LazyBase {
-  constructor(private readonly producer: IAnyProducer, private readonly options: LazyAnyValueOptions = {}) {
+  public constructor(private readonly producer: IAnyProducer, private readonly options: LazyAnyValueOptions = {}) {
     super();
   }
 

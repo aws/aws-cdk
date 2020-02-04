@@ -28,7 +28,7 @@ export class PolicyDocument implements cdk.IResolvable {
   private readonly statements = new Array<PolicyStatement>();
   private readonly autoAssignSids: boolean;
 
-  constructor(props: PolicyDocumentProps = {}) {
+  public constructor(props: PolicyDocumentProps = {}) {
     this.creationStack = cdk.captureStackTrace();
     this.autoAssignSids = !!props.assignSids;
 
@@ -97,7 +97,7 @@ export class PolicyDocument implements cdk.IResolvable {
  * Removes duplicate statements and assign Sids if necessary
  */
 class RemoveDuplicateStatements implements cdk.IPostProcessor {
-  constructor(private readonly autoAssignSids: boolean) {
+  public constructor(private readonly autoAssignSids: boolean) {
   }
 
   public postProcess(input: any, _context: cdk.IResolveContext): any {

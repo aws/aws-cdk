@@ -100,8 +100,8 @@ export interface MetricProps extends CommonMetricOptions {
 /**
  * Properties of a metric that can be changed
  */
-export interface MetricOptions extends CommonMetricOptions {
-}
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface MetricOptions extends CommonMetricOptions { }
 
 /**
  * Configurable options for MathExpressions
@@ -207,7 +207,7 @@ export class Metric implements IMetric {
    */
   public readonly region?: string;
 
-  constructor(props: MetricProps) {
+  public constructor(props: MetricProps) {
     this.period = props.period || cdk.Duration.minutes(5);
     const periodSec = this.period.toSeconds();
     if (periodSec !== 1 && periodSec !== 5 && periodSec !== 10 && periodSec !== 30 && periodSec % 60 !== 0) {
@@ -218,7 +218,7 @@ export class Metric implements IMetric {
     this.namespace = props.namespace;
     this.metricName = props.metricName;
     // Try parsing, this will throw if it's not a valid stat
-    this.statistic = normalizeStatistic(props.statistic || "Average");
+    this.statistic = normalizeStatistic(props.statistic || 'Average');
     this.label = props.label;
     this.color = props.color;
     this.unit = props.unit;
@@ -306,7 +306,7 @@ export class Metric implements IMetric {
   public toAlarmConfig(): MetricAlarmConfig {
     const metricConfig = this.toMetricConfig();
     if (metricConfig.metricStat === undefined) {
-      throw new Error(`Using a math expression is not supported here. Pass a 'Metric' object instead`);
+      throw new Error('Using a math expression is not supported here. Pass a \'Metric\' object instead');
     }
 
     const stat = parseStatistic(metricConfig.metricStat.statistic);
@@ -324,7 +324,7 @@ export class Metric implements IMetric {
   public toGraphConfig(): MetricGraphConfig {
     const metricConfig = this.toMetricConfig();
     if (metricConfig.metricStat === undefined) {
-      throw new Error(`Using a math expression is not supported here. Pass a 'Metric' object instead`);
+      throw new Error('Using a math expression is not supported here. Pass a \'Metric\' object instead');
     }
 
     return {
@@ -436,7 +436,7 @@ export class MathExpression implements IMetric {
    */
   public readonly period: cdk.Duration;
 
-  constructor(props: MathExpressionProps) {
+  public constructor(props: MathExpressionProps) {
     this.period = props.period || cdk.Duration.minutes(5);
     this.expression = props.expression;
     this.usingMetrics = changeAllPeriods(props.usingMetrics, this.period);
@@ -445,6 +445,7 @@ export class MathExpression implements IMetric {
 
     const invalidVariableNames = Object.keys(props.usingMetrics).filter(x => !validVariableName(x));
     if (invalidVariableNames.length > 0) {
+      // eslint-disable-next-line max-len
       throw new Error(`Invalid variable names in expression: ${invalidVariableNames}. Must start with lowercase letter and only contain alphanumerics.`);
     }
 
@@ -476,11 +477,11 @@ export class MathExpression implements IMetric {
   }
 
   public toAlarmConfig(): MetricAlarmConfig {
-    throw new Error(`Using a math expression is not supported here. Pass a 'Metric' object instead`);
+    throw new Error('Using a math expression is not supported here. Pass a \'Metric\' object instead');
   }
 
   public toGraphConfig(): MetricGraphConfig {
-    throw new Error(`Using a math expression is not supported here. Pass a 'Metric' object instead`);
+    throw new Error('Using a math expression is not supported here. Pass a \'Metric\' object instead');
   }
 
   public toMetricConfig(): MetricConfig {

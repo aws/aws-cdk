@@ -28,7 +28,7 @@ export class ImmutableRole implements IRole {
   public readonly node = this.role.node;
   public readonly stack = this.role.stack;
 
-  constructor(private readonly role: IRole) {
+  public constructor(private readonly role: IRole) {
     // implement IDependable privately
     DependableTrait.implement(this, {
       dependencyRoots: [ role ]

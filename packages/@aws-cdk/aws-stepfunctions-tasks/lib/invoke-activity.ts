@@ -21,7 +21,7 @@ export interface InvokeActivityProps {
  * An Activity can be used directly as a Resource.
  */
 export class InvokeActivity implements sfn.IStepFunctionsTask {
-  constructor(private readonly activity: sfn.IActivity, private readonly props: InvokeActivityProps = {}) {
+  public constructor(private readonly activity: sfn.IActivity, private readonly props: InvokeActivityProps = {}) {
   }
 
   public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {

@@ -1,4 +1,4 @@
-// tslint:disable:no-console
+/* eslint-disable no-console */
 
 import { IsCompleteResponse } from '@aws-cdk/custom-resources/lib/provider-framework/types';
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -33,7 +33,7 @@ const defaultEksClient: EksClient = {
 
 function getEksClient() {
   if (!eks) {
-    throw new Error(`EKS client not initialized (call "configureAssumeRole")`);
+    throw new Error('EKS client not initialized (call "configureAssumeRole")');
   }
 
   return eks;

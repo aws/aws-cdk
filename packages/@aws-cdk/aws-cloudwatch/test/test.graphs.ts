@@ -241,11 +241,11 @@ export = {
         new Metric({ namespace: 'CDK', metricName: 'Tast' })
       ],
       leftYAxis: ({
-        label: "Left yAxis",
+        label: 'Left yAxis',
         max: 100
       }),
       rightYAxis: ({
-        label: "Right yAxis",
+        label: 'Right yAxis',
         min: 10,
         showUnits: false
       })
@@ -265,8 +265,8 @@ export = {
           ['CDK', 'Tast', { yAxis: 'right' }]
         ],
         yAxis: {
-          left: { label: "Left yAxis", max: 100 },
-          right: { label: "Right yAxis", min: 10, showUnits: false } }
+          left: { label: 'Left yAxis', max: 100 },
+          right: { label: 'Right yAxis', min: 10, showUnits: false } }
       }
     }]);
 
@@ -322,8 +322,7 @@ export = {
     class HiddenMetric extends Metric {
       public toMetricConfig() {
         const ret = super.toMetricConfig();
-        // @ts-ignore
-        ret.renderingProperties.visible = false;
+        ret.renderingProperties!.visible = false;
         return ret;
       }
     }
@@ -338,7 +337,7 @@ export = {
     // test.ok(widget.toJson()[0].properties.metrics[0].visible === false);
     test.deepEqual(
       stack.resolve(widget.toJson())[0].properties.metrics[0],
-      ["CDK", "Test", { visible: false }]
+      ['CDK', 'Test', { visible: false }]
     );
 
     test.done();

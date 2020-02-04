@@ -71,7 +71,7 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
  * A Node.js Lambda function bundled using Parcel
  */
 export class NodejsFunction extends lambda.Function {
-  constructor(scope: cdk.Construct, id: string, props: NodejsFunctionProps = {}) {
+  public constructor(scope: cdk.Construct, id: string, props: NodejsFunctionProps = {}) {
     if (props.runtime && props.runtime.family !== lambda.RuntimeFamily.NODEJS) {
       throw new Error('Only `NODEJS` runtimes are supported.');
     }

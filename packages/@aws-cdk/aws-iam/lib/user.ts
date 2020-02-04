@@ -185,7 +185,7 @@ export class User extends Resource implements IIdentity, IUser {
   private readonly attachedPolicies = new AttachedPolicies();
   private defaultPolicy?: Policy;
 
-  constructor(scope: Construct, id: string, props: UserProps = {}) {
+  public constructor(scope: Construct, id: string, props: UserProps = {}) {
     super(scope, id, {
       physicalName: props.userName,
     });

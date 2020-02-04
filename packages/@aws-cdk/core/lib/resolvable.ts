@@ -1,7 +1,7 @@
-import { IConstruct } from "./construct";
-import { TokenString } from "./private/encoding";
-import { TokenMap } from "./private/token-map";
-import { TokenizedStringFragments } from "./string-fragments";
+import { IConstruct } from './construct';
+import { TokenString } from './private/encoding';
+import { TokenMap } from './private/token-map';
+import { TokenizedStringFragments } from './string-fragments';
 
 /**
  * Current resolution context for tokens
@@ -120,7 +120,7 @@ export class StringConcat implements IFragmentConcatenator {
  * @experimental
  */
 export class DefaultTokenResolver implements ITokenResolver {
-  constructor(private readonly concat: IFragmentConcatenator) {
+  public constructor(private readonly concat: IFragmentConcatenator) {
   }
 
   /**

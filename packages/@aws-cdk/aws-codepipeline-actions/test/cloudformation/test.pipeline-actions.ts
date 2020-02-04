@@ -8,7 +8,7 @@ import * as nodeunit from 'nodeunit';
 import * as cpactions from '../../lib';
 
 export = nodeunit.testCase({
-  'CreateReplaceChangeSet': {
+  CreateReplaceChangeSet: {
     'works'(test: nodeunit.Test) {
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'Stack');
@@ -39,7 +39,7 @@ export = nodeunit.testCase({
 
       // TODO: revert "as any" once we move all actions into a single package.
       test.deepEqual(stage.fullActions[0].actionProperties.inputs, [artifact],
-                     'The input was correctly registered');
+        'The input was correctly registered');
 
       _assertActionMatches(test, stack, stage.fullActions, 'CloudFormation', 'Deploy', {
         ActionMode: 'CHANGE_SET_CREATE_REPLACE',
@@ -108,7 +108,7 @@ export = nodeunit.testCase({
     }
   },
 
-  'ExecuteChangeSet': {
+  ExecuteChangeSet: {
     'works'(test: nodeunit.Test) {
       const stack = new cdk.Stack();
       const pipelineRole = new RoleDouble(stack, 'PipelineRole');
@@ -125,7 +125,7 @@ export = nodeunit.testCase({
 
       const stackArn = _stackArn('MyStack', stack);
       _assertPermissionGranted(test, stack, pipelineRole.statements, 'cloudformation:ExecuteChangeSet', stackArn,
-                               { StringEqualsIfExists: { 'cloudformation:ChangeSetName': 'MyChangeSet' } });
+        { StringEqualsIfExists: { 'cloudformation:ChangeSetName': 'MyChangeSet' } });
 
       _assertActionMatches(test, stack, stage.fullActions, 'CloudFormation', 'Deploy', {
         ActionMode: 'CHANGE_SET_EXECUTE',
@@ -232,7 +232,7 @@ export = nodeunit.testCase({
 interface PolicyStatementJson {
   Effect: 'Allow' | 'Deny';
   Action: string | string[];
-  Resource: string | string[];
+  Resource: string | string[];
   Condition: any;
 }
 
@@ -251,14 +251,14 @@ function _assertActionMatches(test: nodeunit.Test,
     })
   ), null, 2);
   test.ok(_hasAction(stack, actions, provider, category, configuration),
-          `Expected to find an action with provider ${provider}, category ${category}${configurationStr}, but found ${actionsStr}`);
+    `Expected to find an action with provider ${provider}, category ${category}${configurationStr}, but found ${actionsStr}`);
 }
 
 function _hasAction(stack: cdk.Stack, actions: FullAction[], provider: string, category: string,
                     configuration?: { [key: string]: any}) {
   for (const action of actions) {
-    if (action.actionProperties.provider !== provider) { continue; }
-    if (action.actionProperties.category !== category) { continue; }
+    if (action.actionProperties.provider !== provider) { continue; }
+    if (action.actionProperties.category !== category) { continue; }
     if (configuration && !action.actionConfig.configuration) { continue; }
     if (configuration) {
       for (const key of Object.keys(configuration)) {
@@ -284,7 +284,7 @@ function _assertPermissionGranted(test: nodeunit.Test,
   const resolvedStatements = stack.resolve(statements.map(s => s.toStatementJson()));
   const statementsStr = JSON.stringify(resolvedStatements, null, 2);
   test.ok(_grantsPermission(stack, resolvedStatements, action, resource, conditions),
-          `Expected to find a statement granting ${action} on ${JSON.stringify(stack.resolve(resource))}${conditionStr}, found:\n${statementsStr}`);
+    `Expected to find a statement granting ${action} on ${JSON.stringify(stack.resolve(resource))}${conditionStr}, found:\n${statementsStr}`);
 }
 
 function _grantsPermission(stack: cdk.Stack, statements: PolicyStatementJson[], action: string, resource: string, conditions?: any) {
@@ -322,7 +322,7 @@ class PipelineDouble extends cdk.Resource implements codepipeline.IPipeline {
   public readonly role: iam.Role;
   public readonly artifactBucket: s3.IBucket;
 
-  constructor(scope: cdk.Construct, id: string, { pipelineName, role }: { pipelineName?: string, role: iam.Role }) {
+  public constructor(scope: cdk.Construct, id: string, { pipelineName, role }: { pipelineName?: string, role: iam.Role }) {
     super(scope, id);
     this.pipelineName = pipelineName || 'TestPipeline';
     this.pipelineArn = cdk.Stack.of(this).formatArn({ service: 'codepipeline', resource: 'pipeline', resourceName: this.pipelineName });
@@ -331,16 +331,16 @@ class PipelineDouble extends cdk.Resource implements codepipeline.IPipeline {
   }
 
   public onEvent(_id: string, _options: events.OnEventOptions): events.Rule {
-    throw new Error("Method not implemented.");
+    throw new Error('Method not implemented.');
   }
   public onStateChange(_id: string, _options: events.OnEventOptions): events.Rule {
-    throw new Error("Method not implemented.");
+    throw new Error('Method not implemented.');
   }
 }
 
 class FullAction {
-  constructor(readonly actionProperties: codepipeline.ActionProperties,
-              readonly actionConfig: codepipeline.ActionConfig) {
+  public constructor(public readonly actionProperties: codepipeline.ActionProperties,
+                     public readonly actionConfig: codepipeline.ActionConfig) {
     // empty
   }
 }
@@ -355,7 +355,7 @@ class StageDouble implements codepipeline.IStage {
     throw new Error('StageDouble is not a real construct');
   }
 
-  constructor({ name, pipeline, actions }: { name?: string, pipeline: PipelineDouble, actions: codepipeline.IAction[] }) {
+  public constructor({ name, pipeline, actions }: { name?: string, pipeline: PipelineDouble, actions: codepipeline.IAction[] }) {
     this.stageName = name || 'TestStage';
     this.pipeline = pipeline;
 
@@ -376,7 +376,7 @@ class StageDouble implements codepipeline.IStage {
   }
 
   public onStateChange(_name: string, _target?: events.IRuleTarget, _options?: events.RuleProps):
-      events.Rule {
+  events.Rule {
     throw new Error('onStateChange() is not supported on StageDouble');
   }
 }
@@ -384,7 +384,7 @@ class StageDouble implements codepipeline.IStage {
 class RoleDouble extends iam.Role {
   public readonly statements = new Array<iam.PolicyStatement>();
 
-  constructor(scope: cdk.Construct, id: string, props: iam.RoleProps = { assumedBy: new iam.ServicePrincipal('test') }) {
+  public constructor(scope: cdk.Construct, id: string, props: iam.RoleProps = { assumedBy: new iam.ServicePrincipal('test') }) {
     super(scope, id, props);
   }
 

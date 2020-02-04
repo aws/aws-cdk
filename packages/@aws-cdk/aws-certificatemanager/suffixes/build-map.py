@@ -31,6 +31,6 @@ with open('public_suffix_list.dat', 'r') as f:
 
 with open('../lib/public-suffixes.ts', 'w') as o:
   o.write('// This file has been generated using ../suffixes/build-map.py\n')
-  o.write('')
-  o.write('// eslint-disable-next-line quote-props, @typescript-eslint/indent\n')
+  o.write('\n')
+  o.write('/* eslint-disable quotes,quote-props,@typescript-eslint/indent */\n')
   o.write('export const publicSuffixes = %s;' % json.dumps(trie, indent=2))

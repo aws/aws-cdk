@@ -4,7 +4,7 @@ import * as path from 'path';
 import * as cfn from '../lib';
 
 class NestedStack extends cfn.NestedStack {
-  constructor(scope: Construct, id: string) {
+  public constructor(scope: Construct, id: string) {
     super(scope, id);
 
     new lambda.Function(this, 'Handler', {
@@ -16,7 +16,7 @@ class NestedStack extends cfn.NestedStack {
 }
 
 class ParentStack extends Stack {
-  constructor(scope: Construct, id: string) {
+  public constructor(scope: Construct, id: string) {
     super(scope, id);
 
     new NestedStack(this, 'Nested');

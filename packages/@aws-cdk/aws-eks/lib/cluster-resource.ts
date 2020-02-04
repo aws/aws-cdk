@@ -29,14 +29,14 @@ export class ClusterResource extends Construct {
   private readonly creationRole: iam.Role;
   private readonly trustedPrincipals: string[] = [];
 
-  constructor(scope: Construct, id: string, props: CfnClusterProps) {
+  public constructor(scope: Construct, id: string, props: CfnClusterProps) {
     super(scope, id);
 
     const stack = Stack.of(this);
     const provider = ClusterResourceProvider.getOrCreate(this);
 
     if (!props.roleArn) {
-      throw new Error(`"roleArn" is required`);
+      throw new Error('"roleArn" is required');
     }
 
     // the role used to create the cluster. this becomes the administrator role
@@ -70,7 +70,14 @@ export class ClusterResource extends Construct {
     });
 
     this.creationRole.addToPolicy(new iam.PolicyStatement({
-      actions: [ 'eks:CreateCluster', 'eks:DescribeCluster', 'eks:DeleteCluster', 'eks:UpdateClusterVersion', 'eks:UpdateClusterConfig', 'eks:CreateFargateProfile' ],
+      actions: [
+        'eks:CreateCluster',
+        'eks:DescribeCluster',
+        'eks:DeleteCluster',
+        'eks:UpdateClusterVersion',
+        'eks:UpdateClusterConfig',
+        'eks:CreateFargateProfile',
+      ],
       resources: [ resourceArn ]
     }));
 
@@ -118,7 +125,7 @@ export class ClusterResource extends Construct {
 
     if (!this.trustedPrincipals.includes(trustedRole.roleArn)) {
       if (!this.creationRole.assumeRolePolicy) {
-        throw new Error(`unexpected: cluster creation role must have trust policy`);
+        throw new Error('unexpected: cluster creation role must have trust policy');
       }
 
       this.creationRole.assumeRolePolicy.addStatements(new iam.PolicyStatement({

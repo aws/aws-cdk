@@ -12,9 +12,9 @@ export = {
       expect(app.stack).to(exactlyMatchTemplate({
         Resources: {
           HostedZoneDB99F866: {
-            Type: "AWS::Route53::HostedZone",
+            Type: 'AWS::Route53::HostedZone',
             Properties: {
-              Name: "test.public."
+              Name: 'test.public.'
             }
           }
         }
@@ -28,9 +28,9 @@ export = {
       expect(app.stack).to(beASupersetOfTemplate({
         Resources: {
           HostedZoneDB99F866: {
-            Type: "AWS::Route53::HostedZone",
+            Type: 'AWS::Route53::HostedZone',
             Properties: {
-              Name: "test.private.",
+              Name: 'test.private.',
               VPCs: [{
                 VPCId: { Ref: 'VPCB9E5F0B4' },
                 VPCRegion: 'bermuda-triangle'
@@ -50,9 +50,9 @@ export = {
       expect(app.stack).to(beASupersetOfTemplate({
         Resources: {
           HostedZoneDB99F866: {
-            Type: "AWS::Route53::HostedZone",
+            Type: 'AWS::Route53::HostedZone',
             Properties: {
-              Name: "test.private.",
+              Name: 'test.private.',
               VPCs: [{
                 VPCId: { Ref: 'VPC17DE2CF87' },
                 VPCRegion: 'bermuda-triangle'
@@ -83,11 +83,11 @@ export = {
       values: ['SeeThere']
     });
 
-    expect(stack2).to(haveResource("AWS::Route53::RecordSet", {
-      HostedZoneId: "hosted-zone-id",
-      Name: "lookHere.cdk.local.",
-      ResourceRecords: [ "\"SeeThere\"" ],
-      Type: "TXT"
+    expect(stack2).to(haveResource('AWS::Route53::RecordSet', {
+      HostedZoneId: 'hosted-zone-id',
+      Name: 'lookHere.cdk.local.',
+      ResourceRecords: [ '"SeeThere"' ],
+      Type: 'TXT'
     }));
 
     test.done();
@@ -137,26 +137,26 @@ export = {
       VPCs: [
         {
           VPCId: {
-            Ref: "VPC17DE2CF87"
+            Ref: 'VPC17DE2CF87'
           },
           VPCRegion: {
-            Ref: "AWS::Region"
+            Ref: 'AWS::Region'
           }
         },
         {
           VPCId: {
-            Ref: "VPC2C1F0E711"
+            Ref: 'VPC2C1F0E711'
           },
           VPCRegion: {
-            Ref: "AWS::Region"
+            Ref: 'AWS::Region'
           }
         },
         {
           VPCId: {
-            Ref: "VPC3CB5FCDA8"
+            Ref: 'VPC3CB5FCDA8'
           },
           VPCRegion: {
-            Ref: "AWS::Region"
+            Ref: 'AWS::Region'
           }
         }
       ]
@@ -221,7 +221,7 @@ class TestApp {
   public readonly stack: cdk.Stack;
   private readonly app: cdk.App;
 
-  constructor() {
+  public constructor() {
     const account = '123456789012';
     const region = 'bermuda-triangle';
     const context = {

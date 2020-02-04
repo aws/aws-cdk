@@ -59,7 +59,7 @@ export interface AwsIntegrationProps {
   /**
    * Integration options, such as content handling, request/response mapping, etc.
    */
-  readonly options?: IntegrationOptions
+  readonly options?: IntegrationOptions;
 }
 
 /**
@@ -71,7 +71,7 @@ export interface AwsIntegrationProps {
 export class AwsIntegration extends Integration {
   private scope?: cdk.IConstruct;
 
-  constructor(props: AwsIntegrationProps) {
+  public constructor(props: AwsIntegrationProps) {
     const backend = props.subdomain ? `${props.subdomain}.${props.service}` : props.service;
     const type = props.proxy ? IntegrationType.AWS_PROXY : IntegrationType.AWS;
     const { apiType, apiValue } = parseAwsApiCall(props.path, props.action, props.actionParameters);

@@ -14,7 +14,7 @@ export const attributesLinter = new Linter(a => {
 class AttributeReflection {
   public readonly fqn: string;
 
-  constructor(public readonly resource: ResourceReflection, public readonly attr: Attribute) {
+  public constructor(public readonly resource: ResourceReflection, public readonly attr: Attribute) {
     this.fqn = resource.fqn + '.' + attr.property.name;
   }
 }

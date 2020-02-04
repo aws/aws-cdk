@@ -101,7 +101,7 @@ export interface TableProps {
    *
    * @default table is not partitioned
    */
-  readonly partitionKeys?: Column[]
+  readonly partitionKeys?: Column[];
 
   /**
    * Storage type of the table's data.
@@ -229,7 +229,7 @@ export class Table extends Resource implements ITable {
    */
   public readonly partitionKeys?: Column[];
 
-  constructor(scope: Construct, id: string, props: TableProps) {
+  public constructor(scope: Construct, id: string, props: TableProps) {
     super(scope, id, {
       physicalName: props.tableName,
     });
@@ -260,6 +260,7 @@ export class Table extends Resource implements ITable {
         partitionKeys: renderColumns(props.partitionKeys),
 
         parameters: {
+          // eslint-disable-next-line @typescript-eslint/camelcase
           has_encrypted_data: this.encryption !== TableEncryption.UNENCRYPTED
         },
         storageDescriptor: {
@@ -340,7 +341,7 @@ function validateSchema(columns: Column[], partitionKeys?: Column[]): void {
   const names = new Set<string>();
   (columns.concat(partitionKeys || [])).forEach(column => {
     if (names.has(column.name)) {
-      throw new Error(`column names and partition keys must be unique, but 'p1' is duplicated`);
+      throw new Error('column names and partition keys must be unique, but \'p1\' is duplicated');
     }
     names.add(column.name);
   });
@@ -415,11 +416,9 @@ function renderColumns(columns?: Array<Column | Column>) {
   if (columns === undefined) {
     return undefined;
   }
-  return columns.map(column => {
-    return {
-      name: column.name,
-      type: column.type.inputString,
-      comment: column.comment
-    };
-  });
+  return columns.map(column => ({
+    name: column.name,
+    type: column.type.inputString,
+    comment: column.comment
+  }));
 }

@@ -49,7 +49,7 @@ export class PluginHost {
    */
   public readonly credentialProviderSources = new Array<CredentialProviderSource>();
 
-  constructor() {
+  public constructor() {
     if (PluginHost.instance && PluginHost.instance !== this) {
       throw new Error('New instances of PluginHost must not be built. Use PluginHost.instance instead!');
     }
@@ -62,7 +62,7 @@ export class PluginHost {
    */
   public load(moduleSpec: string) {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      // eslint-disable-next-line @typescript-eslint/no-require-imports,@typescript-eslint/no-var-requires
       const plugin = require(moduleSpec);
       if (!isPlugin(plugin)) {
         error(`Module ${green(moduleSpec)} is not a valid plug-in, or has an unsupported version.`);

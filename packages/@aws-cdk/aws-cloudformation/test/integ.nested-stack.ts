@@ -1,6 +1,6 @@
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sns from '@aws-cdk/aws-sns';
-import * as sns_subscriptions from '@aws-cdk/aws-sns-subscriptions';
+import * as subscriptions from '@aws-cdk/aws-sns-subscriptions';
 import * as sqs from '@aws-cdk/aws-sqs';
 import { App, CfnParameter, Construct, Stack } from '@aws-cdk/core';
 import * as cfn from '../lib';
@@ -13,7 +13,7 @@ interface MyNestedStackProps {
 }
 
 class MyNestedStack extends cfn.NestedStack {
-  constructor(scope: Construct, id: string, props: MyNestedStackProps) {
+  public constructor(scope: Construct, id: string, props: MyNestedStackProps) {
     const topicNamePrefixLogicalId = 'TopicNamePrefix';
 
     super(scope, id, {
@@ -30,7 +30,7 @@ class MyNestedStack extends cfn.NestedStack {
       // since the subscription resources are defined in the subscriber's stack, this
       // will add an SNS subscription resource to the parent stack that reference this topic.
       if (props.subscriber) {
-        topic.addSubscription(new sns_subscriptions.SqsSubscription(props.subscriber));
+        topic.addSubscription(new subscriptions.SqsSubscription(props.subscriber));
       }
     }
 
@@ -49,7 +49,7 @@ class MyNestedStack extends cfn.NestedStack {
 }
 
 class MyTestStack extends Stack {
-  constructor(scope: Construct, id: string) {
+  public constructor(scope: Construct, id: string) {
     super(scope, id);
 
     const queue = new sqs.Queue(this, 'SubscriberQueue');

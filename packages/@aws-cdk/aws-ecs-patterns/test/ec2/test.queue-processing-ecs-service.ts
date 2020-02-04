@@ -22,45 +22,45 @@ export = {
     });
 
     // THEN - QueueWorker is of EC2 launch type, an SQS queue is created and all default properties are set.
-    expect(stack).to(haveResource("AWS::ECS::Service", {
+    expect(stack).to(haveResource('AWS::ECS::Service', {
       DesiredCount: 1,
-      LaunchType: "EC2",
+      LaunchType: 'EC2',
     }));
 
-    expect(stack).to(haveResource("AWS::SQS::Queue"));
+    expect(stack).to(haveResource('AWS::SQS::Queue'));
 
     expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           Environment: [
             {
-              Name: "QUEUE_NAME",
+              Name: 'QUEUE_NAME',
               Value: {
-                "Fn::GetAtt": [
-                  "ServiceEcsProcessingQueueC266885C",
-                  "QueueName"
+                'Fn::GetAtt': [
+                  'ServiceEcsProcessingQueueC266885C',
+                  'QueueName'
                 ]
               }
             }
           ],
           LogConfiguration: {
-            LogDriver: "awslogs",
+            LogDriver: 'awslogs',
             Options: {
-              "awslogs-group": {
-                Ref: "ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1"
+              'awslogs-group': {
+                Ref: 'ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1'
               },
-              "awslogs-stream-prefix": "Service",
-              "awslogs-region": {
-                Ref: "AWS::Region"
+              'awslogs-stream-prefix': 'Service',
+              'awslogs-region': {
+                Ref: 'AWS::Region'
               }
             }
           },
           Essential: true,
-          Image: "test",
+          Image: 'test',
           Memory: 512
         }
       ],
-      Family: "ServiceQueueProcessingTaskDef83DB34F1"
+      Family: 'ServiceQueueProcessingTaskDef83DB34F1'
     }));
 
     test.done();
@@ -81,62 +81,62 @@ export = {
       cluster,
       memoryLimitMiB: 1024,
       image: ecs.ContainerImage.fromRegistry('test'),
-      command: ["-c", "4", "amazon.com"],
+      command: ['-c', '4', 'amazon.com'],
       enableLogging: false,
       desiredTaskCount: 2,
       environment: {
-        TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
-        TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
+        TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
+        TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value'
       },
       queue,
       maxScalingCapacity: 5,
-      serviceName: "ecs-test-service",
-      family: "ecs-task-family"
+      serviceName: 'ecs-test-service',
+      family: 'ecs-task-family'
     });
 
     // THEN - QueueWorker is of EC2 launch type, an SQS queue is created and all optional properties are set.
-    expect(stack).to(haveResource("AWS::ECS::Service", {
+    expect(stack).to(haveResource('AWS::ECS::Service', {
       DesiredCount: 2,
-      LaunchType: "EC2",
-      ServiceName: "ecs-test-service"
+      LaunchType: 'EC2',
+      ServiceName: 'ecs-test-service'
     }));
 
-    expect(stack).to(haveResource("AWS::SQS::Queue", {
-      QueueName: "ecs-test-sqs-queue"
+    expect(stack).to(haveResource('AWS::SQS::Queue', {
+      QueueName: 'ecs-test-sqs-queue'
     }));
 
     expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           Command: [
-            "-c",
-            "4",
-            "amazon.com"
+            '-c',
+            '4',
+            'amazon.com'
           ],
           Environment: [
             {
-              Name: "TEST_ENVIRONMENT_VARIABLE1",
-              Value: "test environment variable 1 value"
+              Name: 'TEST_ENVIRONMENT_VARIABLE1',
+              Value: 'test environment variable 1 value'
             },
             {
-              Name: "TEST_ENVIRONMENT_VARIABLE2",
-              Value: "test environment variable 2 value"
+              Name: 'TEST_ENVIRONMENT_VARIABLE2',
+              Value: 'test environment variable 2 value'
             },
             {
-              Name: "QUEUE_NAME",
+              Name: 'QUEUE_NAME',
               Value: {
-                "Fn::GetAtt": [
-                  "ecstestqueueD1FDA34B",
-                  "QueueName"
+                'Fn::GetAtt': [
+                  'ecstestqueueD1FDA34B',
+                  'QueueName'
                 ]
               }
             }
           ],
-          Image: "test",
+          Image: 'test',
           Memory: 1024
         }
       ],
-      Family: "ecs-task-family"
+      Family: 'ecs-task-family'
     }));
 
     test.done();
@@ -159,9 +159,9 @@ export = {
     });
 
     // THEN - QueueWorker is of EC2 launch type, an SQS queue is created and all default properties are set.
-    expect(stack).to(haveResource("AWS::ECS::Service", {
+    expect(stack).to(haveResource('AWS::ECS::Service', {
       DesiredCount: 0,
-      LaunchType: "EC2",
+      LaunchType: 'EC2',
     }));
 
     test.done();

@@ -8,7 +8,7 @@ import * as route53 from '@aws-cdk/aws-route53';
  * domain name defined throug the `RestApiProps.domainName` prop.
  */
 export class ApiGatewayDomain implements route53.IAliasRecordTarget {
-  constructor(private readonly domainName: apig.IDomainName) { }
+  public constructor(private readonly domainName: apig.IDomainName) { }
 
   public bind(_record: route53.IRecordSet): route53.AliasRecordTargetConfig {
     return {
@@ -26,9 +26,9 @@ export class ApiGatewayDomain implements route53.IAliasRecordTarget {
  * `ApiGatewayDomain` class.
  */
 export class ApiGateway extends ApiGatewayDomain {
-  constructor(api: apig.RestApi) {
+  public constructor(api: apig.RestApi) {
     if (!api.domainName) {
-      throw new Error(`API does not define a default domain name`);
+      throw new Error('API does not define a default domain name');
     }
 
     super(api.domainName);

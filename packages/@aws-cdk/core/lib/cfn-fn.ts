@@ -48,7 +48,7 @@ export class Fn {
    */
   public static join(delimiter: string, listOfValues: string[]): string {
     if (listOfValues.length === 0) {
-      throw new Error(`FnJoin requires at least one value to be provided`);
+      throw new Error('FnJoin requires at least one value to be provided');
     }
 
     return new FnJoin(delimiter, listOfValues).toString();
@@ -315,7 +315,7 @@ export class Fn {
  * Base class for tokens that represent CloudFormation intrinsic functions.
  */
 class FnBase extends Intrinsic {
-  constructor(name: string, value: any) {
+  public constructor(name: string, value: any) {
     super({ [name]: value });
   }
 }
@@ -330,7 +330,7 @@ class FnRef extends FnBase {
    * Creates an ``Ref`` function.
    * @param logicalName The logical name of a parameter/resource for which you want to retrieve its value.
    */
-  constructor(logicalName: string) {
+  public constructor(logicalName: string) {
     super('Ref', logicalName);
   }
 }
@@ -346,7 +346,7 @@ class FnFindInMap extends FnBase {
    * @param topLevelKey The top-level key name. Its value is a list of key-value pairs.
    * @param secondLevelKey The second-level key name, which is set to one of the keys from the list assigned to TopLevelKey.
    */
-  constructor(mapName: string, topLevelKey: any, secondLevelKey: any) {
+  public constructor(mapName: string, topLevelKey: any, secondLevelKey: any) {
     super('Fn::FindInMap', [ mapName, topLevelKey, secondLevelKey ]);
   }
 }
@@ -360,7 +360,7 @@ class FnGetAtt extends FnBase {
    * @param logicalNameOfResource The logical name (also called logical ID) of the resource that contains the attribute that you want.
    * @param attributeName The name of the resource-specific attribute whose value you want. See the resource's reference page for details about the attributes available for that resource type.
    */
-  constructor(logicalNameOfResource: string, attributeName: string) {
+  public constructor(logicalNameOfResource: string, attributeName: string) {
     super('Fn::GetAtt', [ logicalNameOfResource, attributeName ]);
   }
 }
@@ -380,7 +380,7 @@ class FnGetAZs extends FnBase {
    *         which the stack is created. Specifying an empty string is equivalent to
    *         specifying AWS::Region.
    */
-  constructor(region?: string) {
+  public constructor(region?: string) {
     super('Fn::GetAZs', region || '');
   }
 }
@@ -395,7 +395,7 @@ class FnImportValue extends FnBase {
    * Creates an ``Fn::ImportValue`` function.
    * @param sharedValueToImport The stack output value that you want to import.
    */
-  constructor(sharedValueToImport: string) {
+  public constructor(sharedValueToImport: string) {
     super('Fn::ImportValue', sharedValueToImport);
   }
 }
@@ -409,7 +409,7 @@ class FnSelect extends FnBase {
    * @param index The index of the object to retrieve. This must be a value from zero to N-1, where N represents the number of elements in the array.
    * @param array The list of objects to select from. This list must not be null, nor can it have null entries.
    */
-  constructor(index: number, array: any) {
+  public constructor(index: number, array: any) {
     super('Fn::Select', [ index, array ]);
   }
 }
@@ -426,7 +426,7 @@ class FnSplit extends FnBase {
    * @param delimiter A string value that determines where the source string is divided.
    * @param source The string value that you want to split.
    */
-  constructor(delimiter: string, source: any) {
+  public constructor(delimiter: string, source: any) {
     super('Fn::Split', [ delimiter, source ]);
   }
 }
@@ -447,7 +447,7 @@ class FnSub extends FnBase {
    * @param variables The name of a variable that you included in the String parameter.
    *          The value that AWS CloudFormation substitutes for the associated variable name at runtime.
    */
-  constructor(body: string, variables?: { [key: string]: any }) {
+  public constructor(body: string, variables?: { [key: string]: any }) {
     super('Fn::Sub', variables ? [body, variables] : body);
   }
 }
@@ -463,7 +463,7 @@ class FnBase64 extends FnBase {
    * Creates an ``Fn::Base64`` function.
    * @param data The string value you want to convert to Base64.
    */
-  constructor(data: any) {
+  public constructor(data: any) {
     super('Fn::Base64', data);
   }
 }
@@ -478,7 +478,7 @@ class FnCidr extends FnBase {
    * @param count  The number of subnets' Cidr block wanted. Count can be 1 to 256.
    * @param sizeMask The digit covered in the subnet.
    */
-  constructor(ipBlock: any, count: any, sizeMask?: any) {
+  public constructor(ipBlock: any, count: any, sizeMask?: any) {
     if (count < 1 || count > 256) {
       throw new Error(`Fn::Cidr's count attribute must be betwen 1 and 256, ${count} was provided.`);
     }
@@ -487,7 +487,7 @@ class FnCidr extends FnBase {
 }
 
 class FnConditionBase extends Intrinsic implements ICfnConditionExpression {
-  constructor(type: string, value: any) {
+  public constructor(type: string, value: any) {
     super({ [type]: value });
   }
 }
@@ -498,7 +498,7 @@ class FnConditionBase extends Intrinsic implements ICfnConditionExpression {
  * conditions that you can include is 2, and the maximum is 10.
  */
 class FnAnd extends FnConditionBase {
-  constructor(...condition: ICfnConditionExpression[]) {
+  public constructor(...condition: ICfnConditionExpression[]) {
     super('Fn::And', condition);
   }
 }
@@ -513,7 +513,7 @@ class FnEquals extends FnConditionBase {
    * @param lhs A value of any type that you want to compare.
    * @param rhs A value of any type that you want to compare.
    */
-  constructor(lhs: any, rhs: any) {
+  public constructor(lhs: any, rhs: any) {
     super('Fn::Equals', [ lhs, rhs ]);
   }
 }
@@ -532,7 +532,7 @@ class FnIf extends FnConditionBase {
    * @param valueIfTrue A value to be returned if the specified condition evaluates to true.
    * @param valueIfFalse A value to be returned if the specified condition evaluates to false.
    */
-  constructor(condition: string, valueIfTrue: any, valueIfFalse: any) {
+  public constructor(condition: string, valueIfTrue: any, valueIfFalse: any) {
     super('Fn::If', [ condition, valueIfTrue, valueIfFalse ]);
   }
 }
@@ -546,7 +546,7 @@ class FnNot extends FnConditionBase {
    * Creates an ``Fn::Not`` condition function.
    * @param condition A condition such as ``Fn::Equals`` that evaluates to true or false.
    */
-  constructor(condition: ICfnConditionExpression) {
+  public constructor(condition: ICfnConditionExpression) {
     super('Fn::Not', [ condition ]);
   }
 }
@@ -561,7 +561,7 @@ class FnOr extends FnConditionBase {
    * Creates an ``Fn::Or`` condition function.
    * @param condition A condition that evaluates to true or false.
    */
-  constructor(...condition: ICfnConditionExpression[]) {
+  public constructor(...condition: ICfnConditionExpression[]) {
     super('Fn::Or', condition);
   }
 }
@@ -575,7 +575,7 @@ class FnContains extends FnConditionBase {
    * @param listOfStrings A list of strings, such as "A", "B", "C".
    * @param value A string, such as "A", that you want to compare against a list of strings.
    */
-  constructor(listOfStrings: any, value: string) {
+  public constructor(listOfStrings: any, value: string) {
     super('Fn::Contains', [ listOfStrings, value ]);
   }
 }
@@ -589,7 +589,7 @@ class FnEachMemberEquals extends FnConditionBase {
    * @param listOfStrings A list of strings, such as "A", "B", "C".
    * @param value A string, such as "A", that you want to compare against a list of strings.
    */
-  constructor(listOfStrings: any, value: string) {
+  public constructor(listOfStrings: any, value: string) {
     super('Fn::EachMemberEquals', [ listOfStrings, value ]);
   }
 }
@@ -604,7 +604,7 @@ class FnEachMemberIn extends FnConditionBase {
    * @param stringsToCheck A list of strings, such as "A", "B", "C". AWS CloudFormation checks whether each member in the strings_to_check parameter is in the strings_to_match parameter.
    * @param stringsToMatch A list of strings, such as "A", "B", "C". Each member in the strings_to_match parameter is compared against the members of the strings_to_check parameter.
    */
-  constructor(stringsToCheck: string[], stringsToMatch: string[]) {
+  public constructor(stringsToCheck: string[], stringsToMatch: string[]) {
     super('Fn::EachMemberIn', [stringsToCheck, stringsToMatch]);
   }
 }
@@ -619,7 +619,7 @@ class FnRefAll extends FnBase {
    *            AWS::EC2::VPC::Id. For more information, see Parameters in the AWS
    *            CloudFormation User Guide.
    */
-  constructor(parameterType: string) {
+  public constructor(parameterType: string) {
     super('Fn::RefAll', parameterType);
   }
 }
@@ -633,7 +633,7 @@ class FnValueOf extends FnBase {
    * @param parameterOrLogicalId The name of a parameter for which you want to retrieve attribute values. The parameter must be declared in the Parameters section of the template.
    * @param attribute The name of an attribute from which you want to retrieve a value.
    */
-  constructor(parameterOrLogicalId: string, attribute: string) {
+  public constructor(parameterOrLogicalId: string, attribute: string) {
     super('Fn::ValueOf', [ parameterOrLogicalId, attribute ]);
   }
 }
@@ -647,7 +647,7 @@ class FnValueOfAll extends FnBase {
    * @param parameterType An AWS-specific parameter type, such as AWS::EC2::SecurityGroup::Id or AWS::EC2::VPC::Id. For more information, see Parameters in the AWS CloudFormation User Guide.
    * @param attribute The name of an attribute from which you want to retrieve a value. For more information about attributes, see Supported Attributes.
    */
-  constructor(parameterType: string, attribute: string) {
+  public constructor(parameterType: string, attribute: string) {
     super('Fn::ValueOfAll', [ parameterType, attribute ]);
   }
 }
@@ -669,9 +669,9 @@ class FnJoin implements IResolvable {
    *          It will not terminate the final value.
    * @param listOfValues The list of values you want combined.
    */
-  constructor(delimiter: string, listOfValues: any[]) {
+  public constructor(delimiter: string, listOfValues: any[]) {
     if (listOfValues.length === 0) {
-      throw new Error(`FnJoin requires at least one value to be provided`);
+      throw new Error('FnJoin requires at least one value to be provided');
     }
 
     this.delimiter = delimiter;
@@ -696,7 +696,7 @@ class FnJoin implements IResolvable {
   }
 
   public toJSON() {
-    return `<Fn::Join>`;
+    return '<Fn::Join>';
   }
 
   /**

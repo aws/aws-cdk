@@ -1,6 +1,6 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as cdk from '@aws-cdk/core';
-import { CustomActionRegistration } from "../custom-action-registration";
+import { CustomActionRegistration } from '../custom-action-registration';
 
 /**
  * A Jenkins provider.
@@ -148,7 +148,7 @@ export class JenkinsProvider extends BaseJenkinsProvider {
   private buildIncluded = false;
   private testIncluded = false;
 
-  constructor(scope: cdk.Construct, id: string, props: JenkinsProviderProps) {
+  public constructor(scope: cdk.Construct, id: string, props: JenkinsProviderProps) {
     super(scope, id, props.version);
 
     this.providerName = props.providerName;
@@ -208,7 +208,7 @@ class ImportedJenkinsProvider extends BaseJenkinsProvider {
   public readonly providerName: string;
   public readonly serverUrl: string;
 
-  constructor(scope: cdk.Construct, id: string, props: JenkinsProviderAttributes) {
+  public constructor(scope: cdk.Construct, id: string, props: JenkinsProviderAttributes) {
     super(scope, id, props.version);
 
     this.providerName = props.providerName;

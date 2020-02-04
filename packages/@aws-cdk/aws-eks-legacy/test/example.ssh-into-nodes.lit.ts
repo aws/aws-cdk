@@ -3,7 +3,7 @@ import * as cdk from '@aws-cdk/core';
 import * as eks from '../lib';
 
 class EksClusterStack extends cdk.Stack {
-  constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
+  public constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
     const vpc = new ec2.Vpc(this, 'VPC');

@@ -39,7 +39,7 @@ export interface StartExecutionProps {
 export class StartExecution implements sfn.IStepFunctionsTask {
   private readonly integrationPattern: sfn.ServiceIntegrationPattern;
 
-  constructor(private readonly stateMachine: sfn.IStateMachine, private readonly props: StartExecutionProps = {}) {
+  public constructor(private readonly stateMachine: sfn.IStateMachine, private readonly props: StartExecutionProps = {}) {
     this.integrationPattern = props.integrationPattern || sfn.ServiceIntegrationPattern.FIRE_AND_FORGET;
 
     const supportedPatterns = [
@@ -60,7 +60,7 @@ export class StartExecution implements sfn.IStepFunctionsTask {
 
   public bind(task: sfn.Task): sfn.StepFunctionsTaskConfig {
     return {
-      resourceArn: getResourceArn("states", "startExecution", this.integrationPattern),
+      resourceArn: getResourceArn('states', 'startExecution', this.integrationPattern),
       policyStatements: this.createScopedAccessPolicy(task),
       parameters: {
         Input: this.props.input,

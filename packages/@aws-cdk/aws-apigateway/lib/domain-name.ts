@@ -79,7 +79,7 @@ export class DomainName extends Resource implements IDomainName {
   public readonly domainNameAliasDomainName: string;
   public readonly domainNameAliasHostedZoneId: string;
 
-  constructor(scope: Construct, id: string, props: DomainNameProps) {
+  public constructor(scope: Construct, id: string, props: DomainNameProps) {
     super(scope, id);
 
     const endpointType = props.endpointType || EndpointType.REGIONAL;

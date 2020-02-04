@@ -20,7 +20,7 @@ export interface LambdaFunctionProps {
  * Use an AWS Lambda function as an event rule target.
  */
 export class LambdaFunction implements events.IRuleTarget {
-  constructor(private readonly handler: lambda.IFunction, private readonly props: LambdaFunctionProps = {}) {
+  public constructor(private readonly handler: lambda.IFunction, private readonly props: LambdaFunctionProps = {}) {
 
   }
 

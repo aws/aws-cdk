@@ -95,7 +95,7 @@ export class AppStacks {
    */
   public assembly?: cxapi.CloudAssembly;
 
-  constructor(private readonly props: AppStacksProps) {}
+  public constructor(private readonly props: AppStacksProps) {}
 
   /**
    * List all stacks in the CX and return the selected ones
@@ -121,7 +121,7 @@ export class AppStacks {
           if (stacks.length === 1) {
             return stacks;
           } else {
-            throw new Error(`Since this app includes more than a single stack, specify which stacks to use (wildcards are supported)\n` +
+            throw new Error('Since this app includes more than a single stack, specify which stacks to use (wildcards are supported)\n' +
               `Stacks: ${stacks.map(x => x.id).join(' ')}`);
           }
         default:
@@ -209,14 +209,14 @@ export class AppStacks {
 
         let tryLookup = true;
         if (previouslyMissingKeys && setsEqual(missingKeys, previouslyMissingKeys)) {
-          debug(`Not making progress trying to resolve environmental context. Giving up.`);
+          debug('Not making progress trying to resolve environmental context. Giving up.');
           tryLookup = false;
         }
 
         previouslyMissingKeys = missingKeys;
 
         if (tryLookup) {
-          debug(`Some context information is missing. Fetching...`);
+          debug('Some context information is missing. Fetching...');
 
           await contextproviders.provideContextValues(assembly.manifest.missing, this.props.configuration.context, this.props.aws);
 
@@ -264,20 +264,20 @@ export class AppStacks {
       // All good, return
       this.assembly = assembly;
       return assembly;
+    }
 
-      function formatModules(runtime: cxapi.RuntimeInfo): string {
-        const modules = new Array<string>();
+    function formatModules(runtime: cxapi.RuntimeInfo): string {
+      const modules = new Array<string>();
 
-        // inject toolkit version to list of modules
-        // eslint-disable-next-line @typescript-eslint/no-require-imports
-        const toolkitVersion = require('../../../package.json').version;
-        modules.push(`aws-cdk=${toolkitVersion}`);
+      // inject toolkit version to list of modules
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const toolkitVersion = require('../../../package.json').version;
+      modules.push(`aws-cdk=${toolkitVersion}`);
 
-        for (const key of Object.keys(runtime.libraries).sort()) {
-          modules.push(`${key}=${runtime.libraries[key]}`);
-        }
-        return modules.join(',');
+      for (const key of Object.keys(runtime.libraries).sort()) {
+        modules.push(`${key}=${runtime.libraries[key]}`);
       }
+      return modules.join(',');
     }
   }
 
@@ -364,8 +364,8 @@ export enum ExtendedStackSelection {
  * Modifies `selectedStacks` in-place.
  */
 function includeDownstreamStacks(
-    selectedStacks: Map<string, cxapi.CloudFormationStackArtifact>,
-    allStacks: Map<string, cxapi.CloudFormationStackArtifact>) {
+  selectedStacks: Map<string, cxapi.CloudFormationStackArtifact>,
+  allStacks: Map<string, cxapi.CloudFormationStackArtifact>) {
   const added = new Array<string>();
 
   let madeProgress = true;
@@ -393,8 +393,8 @@ function includeDownstreamStacks(
  * Modifies `selectedStacks` in-place.
  */
 function includeUpstreamStacks(
-    selectedStacks: Map<string, cxapi.CloudFormationStackArtifact>,
-    allStacks: Map<string, cxapi.CloudFormationStackArtifact>) {
+  selectedStacks: Map<string, cxapi.CloudFormationStackArtifact>,
+  allStacks: Map<string, cxapi.CloudFormationStackArtifact>) {
   const added = new Array<string>();
   let madeProgress = true;
   while (madeProgress) {

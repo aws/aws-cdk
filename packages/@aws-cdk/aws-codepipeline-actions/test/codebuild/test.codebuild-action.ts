@@ -1,4 +1,4 @@
-import { expect, haveResourceLike } from "@aws-cdk/assert";
+import { expect, haveResourceLike } from '@aws-cdk/assert';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codecommit from '@aws-cdk/aws-codecommit';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
@@ -103,17 +103,17 @@ export = {
       });
 
       expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
-        "Stages": [
+        'Stages': [
           {
-            "Name": "Source",
+            'Name': 'Source',
           },
           {
-            "Name": "Build",
-            "Actions": [
+            'Name': 'Build',
+            'Actions': [
               {
-                "Name": "CodeBuild",
-                "Configuration": {
-                  "ProjectName": "codeBuildProjectNameInAnotherAccount",
+                'Name': 'CodeBuild',
+                'Configuration': {
+                  'ProjectName': 'codeBuildProjectNameInAnotherAccount',
                 },
               },
             ],
@@ -178,21 +178,21 @@ export = {
       });
 
       expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
-        "Stages": [
+        'Stages': [
           {
-            "Name": "Source",
+            'Name': 'Source',
           },
           {
-            "Name": "Build",
-            "Actions": [
+            'Name': 'Build',
+            'Actions': [
               {
-                "Name": "CodeBuild",
-                "Namespace": "Build_CodeBuild_NS",
+                'Name': 'CodeBuild',
+                'Namespace': 'Build_CodeBuild_NS',
               },
               {
-                "Name": "Approve",
-                "Configuration": {
-                  "CustomData": "#{Build_CodeBuild_NS.SomeVar}",
+                'Name': 'Approve',
+                'Configuration': {
+                  'CustomData': '#{Build_CodeBuild_NS.SomeVar}',
                 },
               },
             ],

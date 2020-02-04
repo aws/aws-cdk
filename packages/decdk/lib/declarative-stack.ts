@@ -11,7 +11,7 @@ export interface DeclarativeStackProps extends cdk.StackProps {
 }
 
 export class DeclarativeStack extends cdk.Stack {
-  constructor(scope: cdk.App, id: string, props: DeclarativeStackProps) {
+  public constructor(scope: cdk.App, id: string, props: DeclarativeStackProps) {
     super(scope, id);
 
     const typeSystem = props.typeSystem;
@@ -127,7 +127,7 @@ function deserializeValue(stack: cdk.Stack, typeRef: reflect.TypeReference, opti
 
     throw new Error(
       `{ Ref } can only be used when a construct type is expected and this is ${typeRef}. ` +
-      `Use { Fn::GetAtt } to represent specific resource attributes`);
+      'Use { Fn::GetAtt } to represent specific resource attributes');
   }
 
   const getAtt = tryResolveGetAtt(value);
@@ -290,7 +290,7 @@ function deconstructType(stack: cdk.Stack, typeRef: reflect.TypeReference, value
   const parts = methodFqn.split('.');
   const last = parts[parts.length - 1];
   if (last !== '<initializer>') {
-    throw new Error(`Expectring an initializer`);
+    throw new Error('Expectring an initializer');
   }
 
   const classFqn = parts.slice(0, parts.length - 1).join('.');
@@ -387,7 +387,7 @@ function deconstructGetAtt(stack: cdk.Stack, id: string, attribute: string) {
     if (!res) {
       const include = stack.node.tryFindChild('Include') as cdk.CfnInclude;
       if (!include) {
-        throw new Error(`Unexpected - "Include" should be in the stack at this point`);
+        throw new Error('Unexpected - "Include" should be in the stack at this point');
       }
 
       const raw = (include.template as any).Resources[id];
@@ -396,7 +396,7 @@ function deconstructGetAtt(stack: cdk.Stack, id: string, attribute: string) {
       }
 
       // just leak
-      return { "Fn::GetAtt": [ id, attribute ] };
+      return { 'Fn::GetAtt': [ id, attribute ] };
     }
     return (res as any)[attribute];
   }});

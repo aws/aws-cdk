@@ -1,4 +1,3 @@
-
 /**
  * Metadata key used to print INFO-level messages by the toolkit when an app is syntheized.
  */

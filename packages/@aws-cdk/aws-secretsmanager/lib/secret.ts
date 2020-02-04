@@ -214,7 +214,7 @@ export class Secret extends SecretBase {
 
   protected readonly autoCreatePolicy = true;
 
-  constructor(scope: Construct, id: string, props: SecretProps = {}) {
+  public constructor(scope: Construct, id: string, props: SecretProps = {}) {
     super(scope, id, {
       physicalName: props.secretName,
     });
@@ -405,7 +405,7 @@ export class SecretTargetAttachment extends SecretBase implements ISecretTargetA
 
   protected readonly autoCreatePolicy = true;
 
-  constructor(scope: Construct, id: string, props: SecretTargetAttachmentProps) {
+  public constructor(scope: Construct, id: string, props: SecretTargetAttachmentProps) {
     super(scope, id);
 
     const attachment = new secretsmanager.CfnSecretTargetAttachment(this, 'Resource', {

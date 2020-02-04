@@ -11,4 +11,3 @@ nyc.config.js
 coverage
 dist
 tsconfig.json
-tslint.json

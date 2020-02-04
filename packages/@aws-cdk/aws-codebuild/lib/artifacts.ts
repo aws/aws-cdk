@@ -129,7 +129,7 @@ export interface S3ArtifactsProps extends ArtifactsProps {
 class S3Artifacts extends Artifacts {
   public readonly type = 'S3';
 
-  constructor(private readonly props: S3ArtifactsProps) {
+  public constructor(private readonly props: S3ArtifactsProps) {
     super(props);
   }
 

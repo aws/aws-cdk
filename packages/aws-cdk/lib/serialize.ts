@@ -1,6 +1,6 @@
 import * as YAML from 'yaml';
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+// eslint-disable-next-line @typescript-eslint/no-require-imports,@typescript-eslint/no-var-requires
 const yamlTypes = require('yaml/types');
 
 /**

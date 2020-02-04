@@ -45,7 +45,7 @@ export class SingletonFunction extends FunctionBase {
   protected readonly canCreatePermissions: boolean;
   private lambdaFunction: IFunction;
 
-  constructor(scope: cdk.Construct, id: string, props: SingletonFunctionProps) {
+  public constructor(scope: cdk.Construct, id: string, props: SingletonFunctionProps) {
     super(scope, id);
 
     this.lambdaFunction = this.ensureLambda(props);

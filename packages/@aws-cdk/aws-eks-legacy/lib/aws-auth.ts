@@ -24,7 +24,7 @@ export class AwsAuth extends Construct {
   private readonly userMappings = new Array<{ user: iam.IUser, mapping: Mapping }>();
   private readonly accounts = new Array<string>();
 
-  constructor(scope: Construct, id: string, props: AwsAuthProps) {
+  public constructor(scope: Construct, id: string, props: AwsAuthProps) {
     super(scope, id);
 
     this.stack = Stack.of(this);
@@ -33,11 +33,11 @@ export class AwsAuth extends Construct {
       cluster: props.cluster,
       manifest: [
         {
-          apiVersion: "v1",
-          kind: "ConfigMap",
+          apiVersion: 'v1',
+          kind: 'ConfigMap',
           metadata: {
-            name: "aws-auth",
-            namespace: "kube-system"
+            name: 'aws-auth',
+            namespace: 'kube-system'
           },
           data: {
             mapRoles: this.synthesizeMapRoles(),

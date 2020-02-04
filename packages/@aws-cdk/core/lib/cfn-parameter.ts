@@ -107,7 +107,7 @@ export class CfnParameter extends CfnElement {
    * @param scope The parent construct.
    * @param props The parameter properties.
    */
-  constructor(scope: Construct, id: string, private readonly props: CfnParameterProps = {}) {
+  public constructor(scope: Construct, id: string, private readonly props: CfnParameterProps = {}) {
     super(scope, id);
 
     this.type = props.type || 'String';

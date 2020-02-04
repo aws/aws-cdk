@@ -56,7 +56,7 @@ export interface WindowsImageProps {
  * https://aws.amazon.com/blogs/mt/query-for-the-latest-windows-ami-using-systems-manager-parameter-store/
  */
 export class WindowsImage implements IMachineImage  {
-  constructor(private readonly version: WindowsVersion, private readonly props: WindowsImageProps = {}) {
+  public constructor(private readonly version: WindowsVersion, private readonly props: WindowsImageProps = {}) {
   }
 
   /**
@@ -131,7 +131,7 @@ export class AmazonLinuxImage implements IMachineImage {
   private readonly virtualization: AmazonLinuxVirt;
   private readonly storage: AmazonLinuxStorage;
 
-  constructor(private readonly props: AmazonLinuxImageProps = {}) {
+  public constructor(private readonly props: AmazonLinuxImageProps = {}) {
     this.generation = (props && props.generation) || AmazonLinuxGeneration.AMAZON_LINUX;
     this.edition = (props && props.edition) || AmazonLinuxEdition.STANDARD;
     this.virtualization = (props && props.virtualization) || AmazonLinuxVirt.HVM;
@@ -255,13 +255,13 @@ export interface GenericWindowsImageProps {
  * manually specify an AMI map.
  */
 export class GenericLinuxImage implements IMachineImage  {
-  constructor(private readonly amiMap: {[region: string]: string}, private readonly props: GenericLinuxImageProps = {}) {
+  public constructor(private readonly amiMap: {[region: string]: string}, private readonly props: GenericLinuxImageProps = {}) {
   }
 
   public getImage(scope: Construct): MachineImageConfig {
     const region = Stack.of(scope).region;
     if (Token.isUnresolved(region)) {
-      throw new Error(`Unable to determine AMI from AMI map since stack is region-agnostic`);
+      throw new Error('Unable to determine AMI from AMI map since stack is region-agnostic');
     }
 
     const ami = region !== 'test-region' ? this.amiMap[region] : 'ami-12345';
@@ -283,13 +283,13 @@ export class GenericLinuxImage implements IMachineImage  {
  * Allows you to create a generic Windows EC2 , manually specify an AMI map.
  */
 export class GenericWindowsImage implements IMachineImage  {
-  constructor(private readonly amiMap: {[region: string]: string}, private readonly props: GenericWindowsImageProps = {}) {
+  public constructor(private readonly amiMap: {[region: string]: string}, private readonly props: GenericWindowsImageProps = {}) {
   }
 
   public getImage(scope: Construct): MachineImageConfig {
     const region = Stack.of(scope).region;
     if (Token.isUnresolved(region)) {
-      throw new Error(`Unable to determine AMI from AMI map since stack is region-agnostic`);
+      throw new Error('Unable to determine AMI from AMI map since stack is region-agnostic');
     }
 
     const ami = region !== 'test-region' ? this.amiMap[region] : 'ami-12345';
@@ -326,7 +326,7 @@ export enum OperatingSystemType {
  * https://docs.aws.amazon.com/cdk/latest/guide/context.html for more information.
  */
 export class LookupMachineImage implements IMachineImage {
-  constructor(private readonly props: LookupMachineImageProps) {
+  public constructor(private readonly props: LookupMachineImageProps) {
   }
 
   public getImage(scope: Construct): MachineImageConfig {
@@ -345,7 +345,7 @@ export class LookupMachineImage implements IMachineImage {
       props: {
         owners: this.props.owners,
         filters,
-       } as cxapi.AmiContextQuery,
+      } as cxapi.AmiContextQuery,
       dummyValue: 'ami-1234',
     }).value as cxapi.AmiContextResponse;
 

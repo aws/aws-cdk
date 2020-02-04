@@ -6,7 +6,7 @@ import { S3Assert } from './integration-test-fixtures/s3-assert';
 import { S3File } from './integration-test-fixtures/s3-file';
 
 class TestStack extends Stack {
-  constructor(scope: Construct, id: string) {
+  public constructor(scope: Construct, id: string) {
     super(scope, id);
 
     const file2Contents = 'this file has a generated physical id';

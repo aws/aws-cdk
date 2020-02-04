@@ -74,12 +74,12 @@ export class IpInstance extends InstanceBase {
    */
   public readonly port: number;
 
-  constructor(scope: cdk.Construct, id: string, props: IpInstanceProps) {
+  public constructor(scope: cdk.Construct, id: string, props: IpInstanceProps) {
     super(scope, id);
     const dnsRecordType = props.service.dnsRecordType;
 
     if (dnsRecordType === DnsRecordType.CNAME) {
-        throw new Error('Service must support `A`, `AAAA` or `SRV` records to register this instance type.');
+      throw new Error('Service must support `A`, `AAAA` or `SRV` records to register this instance type.');
     }
     if (dnsRecordType === DnsRecordType.SRV) {
       if (!props.port) {

@@ -3,7 +3,7 @@ import { App, Construct, Stack } from '@aws-cdk/core';
 import { Deployment, LambdaRestApi, Stage } from '../lib';
 
 class LateBoundDeploymentStageStack extends Stack {
-  constructor(scope: Construct) {
+  public constructor(scope: Construct) {
     super(scope, 'LateBoundDeploymentStageStack');
 
     const fn = new Function(this, 'myfn', {

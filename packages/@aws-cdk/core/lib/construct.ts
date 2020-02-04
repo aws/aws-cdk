@@ -123,7 +123,7 @@ export class ConstructNode {
   private readonly invokedAspects: IAspect[] = [];
   private _defaultChild: IConstruct | undefined;
 
-  constructor(private readonly host: Construct, scope: IConstruct, id: string) {
+  public constructor(private readonly host: Construct, scope: IConstruct, id: string) {
     id = id || ''; // if undefined, convert to empty string
 
     this.id = sanitizeId(id);
@@ -536,7 +536,7 @@ export class Construct implements IConstruct {
    * the ID includes a path separator (`/`), then it will be replaced by double
    * dash `--`.
    */
-  constructor(scope: Construct, id: string) {
+  public constructor(scope: Construct, id: string) {
     Object.defineProperty(this, CONSTRUCT_SYMBOL, { value: true });
 
     this.node = new ConstructNode(this, scope, id);

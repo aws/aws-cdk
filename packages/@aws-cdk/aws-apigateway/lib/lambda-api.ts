@@ -42,9 +42,9 @@ export interface LambdaRestApiProps extends RestApiProps {
  * add resources and methods to the API.
  */
 export class LambdaRestApi extends RestApi {
-  constructor(scope: cdk.Construct, id: string, props: LambdaRestApiProps) {
+  public constructor(scope: cdk.Construct, id: string, props: LambdaRestApiProps) {
     if ((props.options && props.options.defaultIntegration) || props.defaultIntegration) {
-      throw new Error(`Cannot specify "defaultIntegration" since Lambda integration is automatically defined`);
+      throw new Error('Cannot specify "defaultIntegration" since Lambda integration is automatically defined');
     }
 
     super(scope, id, {
@@ -65,13 +65,13 @@ export class LambdaRestApi extends RestApi {
 }
 
 function addResourceThrows(): Resource {
-  throw new Error(`Cannot call 'addResource' on a proxying LambdaRestApi; set 'proxy' to false`);
+  throw new Error('Cannot call \'addResource\' on a proxying LambdaRestApi; set \'proxy\' to false');
 }
 
 function addMethodThrows(): Method {
-  throw new Error(`Cannot call 'addMethod' on a proxying LambdaRestApi; set 'proxy' to false`);
+  throw new Error('Cannot call \'addMethod\' on a proxying LambdaRestApi; set \'proxy\' to false');
 }
 
 function addProxyThrows(): ProxyResource {
-  throw new Error(`Cannot call 'addProxy' on a proxying LambdaRestApi; set 'proxy' to false`);
+  throw new Error('Cannot call \'addProxy\' on a proxying LambdaRestApi; set \'proxy\' to false');
 }

@@ -25,7 +25,7 @@ export class TopicPolicy extends Resource {
     assignSids: true
   });
 
-  constructor(scope: Construct, id: string, props: TopicPolicyProps) {
+  public constructor(scope: Construct, id: string, props: TopicPolicyProps) {
     super(scope, id);
 
     new CfnTopicPolicy(this, 'Resource', {

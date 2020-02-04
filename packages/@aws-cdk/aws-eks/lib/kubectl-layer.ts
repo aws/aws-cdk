@@ -26,7 +26,7 @@ export class KubectlLayer extends Construct implements lambda.ILayerVersion {
    */
   public static getOrCreate(scope: Construct, props: KubectlLayerProps = {}): KubectlLayer {
     const stack = Stack.of(scope);
-    const id = 'kubectl-layer-' + (props.version ? props.version : "8C2542BC-BF2B-4DFE-B765-E181FD30A9A0");
+    const id = 'kubectl-layer-' + (props.version ? props.version : '8C2542BC-BF2B-4DFE-B765-E181FD30A9A0');
     const exists = stack.node.tryFindChild(id) as KubectlLayer;
     if (exists) {
       return exists;
@@ -45,10 +45,10 @@ export class KubectlLayer extends Construct implements lambda.ILayerVersion {
    */
   public readonly compatibleRuntimes?: lambda.Runtime[] = undefined;
 
-  constructor(scope: Construct, id: string, props: KubectlLayerProps = {}) {
+  public constructor(scope: Construct, id: string, props: KubectlLayerProps = {}) {
     super(scope, id);
 
-    const uniqueId = crypto.createHash('md5').update(this.node.path).digest("hex");
+    const uniqueId = crypto.createHash('md5').update(this.node.path).digest('hex');
     const version = props.version || KUBECTL_APP_VERSION;
 
     this.stack.templateOptions.transforms = [ 'AWS::Serverless-2016-10-31' ]; // required for AWS::Serverless

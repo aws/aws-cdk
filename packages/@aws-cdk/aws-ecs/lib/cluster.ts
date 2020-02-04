@@ -91,7 +91,7 @@ export class Cluster extends Resource implements ICluster {
   /**
    * Constructs a new instance of the Cluster class.
    */
-  constructor(scope: Construct, id: string, props: ClusterProps = {}) {
+  public constructor(scope: Construct, id: string, props: ClusterProps = {}) {
     super(scope, id, {
       physicalName: props.clusterName,
     });
@@ -114,7 +114,7 @@ export class Cluster extends Resource implements ICluster {
       : undefined;
 
     this._autoscalingGroup = props.capacity !== undefined
-      ? this.addCapacity("DefaultAutoScalingGroup", props.capacity)
+      ? this.addCapacity('DefaultAutoScalingGroup', props.capacity)
       : undefined;
   }
 
@@ -125,7 +125,7 @@ export class Cluster extends Resource implements ICluster {
    */
   public addDefaultCloudMapNamespace(options: CloudMapNamespaceOptions): cloudmap.INamespace {
     if (this._defaultCloudMapNamespace !== undefined) {
-      throw new Error("Can only add default namespace once.");
+      throw new Error('Can only add default namespace once.');
     }
 
     const namespaceType = options.type !== undefined
@@ -203,16 +203,16 @@ export class Cluster extends Resource implements ICluster {
     // Source: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/instance_IAM_role.html
     autoScalingGroup.addToRolePolicy(new iam.PolicyStatement({
       actions: [
-        "ecs:CreateCluster",
-        "ecs:DeregisterContainerInstance",
-        "ecs:DiscoverPollEndpoint",
-        "ecs:Poll",
-        "ecs:RegisterContainerInstance",
-        "ecs:StartTelemetrySession",
-        "ecs:Submit*",
-        "ecr:GetAuthorizationToken",
-        "logs:CreateLogStream",
-        "logs:PutLogEvents"
+        'ecs:CreateCluster',
+        'ecs:DeregisterContainerInstance',
+        'ecs:DiscoverPollEndpoint',
+        'ecs:Poll',
+        'ecs:RegisterContainerInstance',
+        'ecs:StartTelemetrySession',
+        'ecs:Submit*',
+        'ecr:GetAuthorizationToken',
+        'logs:CreateLogStream',
+        'logs:PutLogEvents'
       ],
       resources: ['*']
     }));
@@ -331,11 +331,11 @@ export class EcsOptimizedAmi implements ec2.IMachineImage {
   /**
    * Constructs a new instance of the EcsOptimizedAmi class.
    */
-  constructor(props?: EcsOptimizedAmiProps) {
+  public constructor(props?: EcsOptimizedAmiProps) {
     this.hwType = (props && props.hardwareType) || AmiHardwareType.STANDARD;
     if (props && props.generation) {      // generation defined in the props object
       if (props.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX && this.hwType !== AmiHardwareType.STANDARD) {
-        throw new Error(`Amazon Linux does not support special hardware type. Use Amazon Linux 2 instead`);
+        throw new Error('Amazon Linux does not support special hardware type. Use Amazon Linux 2 instead');
       } else if (props.windowsVersion) {
         throw new Error('"windowsVersion" and Linux image "generation" cannot be both set');
       } else {
@@ -353,13 +353,13 @@ export class EcsOptimizedAmi implements ec2.IMachineImage {
     }
 
     // set the SSM parameter name
-    this.amiParameterName = "/aws/service/ecs/optimized-ami/"
-      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX ? "amazon-linux/" : "")
-      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 ? "amazon-linux-2/" : "")
-      + (this.windowsVersion ? `windows_server/${this.windowsVersion}/english/full/` : "")
-      + (this.hwType === AmiHardwareType.GPU ? "gpu/" : "")
-      + (this.hwType === AmiHardwareType.ARM ? "arm64/" : "")
-      + "recommended/image_id";
+    this.amiParameterName = '/aws/service/ecs/optimized-ami/'
+      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX ? 'amazon-linux/' : '')
+      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 ? 'amazon-linux-2/' : '')
+      + (this.windowsVersion ? `windows_server/${this.windowsVersion}/english/full/` : '')
+      + (this.hwType === AmiHardwareType.GPU ? 'gpu/' : '')
+      + (this.hwType === AmiHardwareType.ARM ? 'arm64/' : '')
+      + 'recommended/image_id';
   }
 
   /**
@@ -424,13 +424,13 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
     }
 
     // set the SSM parameter name
-    this.amiParameterName = "/aws/service/ecs/optimized-ami/"
-      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX ? "amazon-linux/" : "")
-      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 ? "amazon-linux-2/" : "")
-      + (this.windowsVersion ? `windows_server/${this.windowsVersion}/english/full/` : "")
-      + (this.hwType === AmiHardwareType.GPU ? "gpu/" : "")
-      + (this.hwType === AmiHardwareType.ARM ? "arm64/" : "")
-      + "recommended/image_id";
+    this.amiParameterName = '/aws/service/ecs/optimized-ami/'
+      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX ? 'amazon-linux/' : '')
+      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 ? 'amazon-linux-2/' : '')
+      + (this.windowsVersion ? `windows_server/${this.windowsVersion}/english/full/` : '')
+      + (this.hwType === AmiHardwareType.GPU ? 'gpu/' : '')
+      + (this.hwType === AmiHardwareType.ARM ? 'arm64/' : '')
+      + 'recommended/image_id';
   }
 
   /**
@@ -572,7 +572,7 @@ class ImportedCluster extends Resource implements ICluster {
   /**
    * Constructs a new instance of the ImportedCluster class.
    */
-  constructor(scope: Construct, id: string, props: ClusterAttributes) {
+  public constructor(scope: Construct, id: string, props: ClusterAttributes) {
     super(scope, id);
     this.clusterName = props.clusterName;
     this.vpc = props.vpc;
@@ -625,7 +625,7 @@ export interface AddAutoScalingGroupCapacityOptions {
    *
    * @default false
    */
-  readonly spotInstanceDraining?: boolean
+  readonly spotInstanceDraining?: boolean;
 }
 
 /**

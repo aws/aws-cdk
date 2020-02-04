@@ -11,6 +11,7 @@ export interface PrivateDnsNamespaceProps extends BaseNamespaceProps {
   readonly vpc: ec2.IVpc;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface IPrivateDnsNamespace extends INamespace { }
 
 export interface PrivateDnsNamespaceAttributes {
@@ -65,10 +66,10 @@ export class PrivateDnsNamespace extends Resource implements IPrivateDnsNamespac
    */
   public readonly type: NamespaceType;
 
-  constructor(scope: Construct, id: string, props: PrivateDnsNamespaceProps) {
+  public constructor(scope: Construct, id: string, props: PrivateDnsNamespaceProps) {
     super(scope, id);
     if (props.vpc === undefined) {
-      throw new Error(`VPC must be specified for PrivateDNSNamespaces`);
+      throw new Error('VPC must be specified for PrivateDNSNamespaces');
     }
 
     const ns = new CfnPrivateDnsNamespace(this, 'Resource', {

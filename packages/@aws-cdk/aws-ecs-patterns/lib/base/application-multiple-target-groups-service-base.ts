@@ -352,7 +352,7 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
   /**
    * Constructs a new instance of the ApplicationMultipleTargetGroupsServiceBase class.
    */
-  constructor(scope: Construct, id: string, props: ApplicationMultipleTargetGroupsServiceBaseProps = {}) {
+  public constructor(scope: Construct, id: string, props: ApplicationMultipleTargetGroupsServiceBaseProps = {}) {
     super(scope, id);
 
     this.validateInput(props);
@@ -397,7 +397,7 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
       this.loadBalancer = this.createLoadBalancer('LB');
       const protocol = this.createListenerProtocol();
       this.listener = this.configListener(protocol, {
-        listenerName: "PublicListener",
+        listenerName: 'PublicListener',
         loadBalancer: this.loadBalancer,
       });
       const domainName = this.createDomainName(this.loadBalancer);

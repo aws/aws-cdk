@@ -33,7 +33,7 @@ export interface TaggableResource extends ResourceType {
     Tags: TagProperty;
     UserPoolTags: TagProperty;
     [name: string]: Property;
-  }
+  };
 }
 
 export type Attribute = PrimitiveAttribute | ListAttribute;

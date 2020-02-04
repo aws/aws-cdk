@@ -3,7 +3,9 @@ import { BaseNamespaceProps, INamespace, NamespaceType } from './namespace';
 import { DnsServiceProps, Service } from './service';
 import { CfnPublicDnsNamespace } from './servicediscovery.generated';
 
-export interface PublicDnsNamespaceProps extends BaseNamespaceProps {}
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface PublicDnsNamespaceProps extends BaseNamespaceProps { }
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface IPublicDnsNamespace extends INamespace { }
 export interface PublicDnsNamespaceAttributes {
   /**
@@ -20,7 +22,7 @@ export interface PublicDnsNamespaceAttributes {
    * Namespace ARN for the Namespace.
    */
   readonly namespaceArn: string;
- }
+}
 
 /**
  * Define a Public DNS Namespace
@@ -57,7 +59,7 @@ export class PublicDnsNamespace extends Resource implements IPublicDnsNamespace 
    */
   public readonly type: NamespaceType;
 
-  constructor(scope: Construct, id: string, props: PublicDnsNamespaceProps) {
+  public constructor(scope: Construct, id: string, props: PublicDnsNamespaceProps) {
     super(scope, id);
 
     const ns = new CfnPublicDnsNamespace(this, 'Resource', {

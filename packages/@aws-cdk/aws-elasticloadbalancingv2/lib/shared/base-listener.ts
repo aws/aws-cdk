@@ -13,7 +13,7 @@ export abstract class BaseListener extends Resource {
 
   private readonly defaultActions: CfnListener.ActionProperty[] = [];
 
-  constructor(scope: Construct, id: string, additionalProps: any) {
+  public constructor(scope: Construct, id: string, additionalProps: any) {
     super(scope, id);
 
     const resource = new CfnListener(this, 'Resource', {

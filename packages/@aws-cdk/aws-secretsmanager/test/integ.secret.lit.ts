@@ -3,7 +3,7 @@ import * as cdk from '@aws-cdk/core';
 import * as secretsmanager from '../lib';
 
 class SecretsManagerStack extends cdk.Stack {
-  constructor(scope: cdk.App, id: string) {
+  public constructor(scope: cdk.App, id: string) {
     super(scope, id);
 
     const role = new iam.Role(this, 'TestRole', { assumedBy: new iam.AccountRootPrincipal() });

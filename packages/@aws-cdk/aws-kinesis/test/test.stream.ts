@@ -14,12 +14,12 @@ export = {
     new Stream(stack, 'MyStream');
 
     expect(stack).toMatch({
-      "Resources": {
-        "MyStream5C050E93": {
-          "Type": "AWS::Kinesis::Stream",
-          "Properties": {
-            "RetentionPeriodHours": 24,
-            "ShardCount": 1
+      'Resources': {
+        'MyStream5C050E93': {
+          'Type': 'AWS::Kinesis::Stream',
+          'Properties': {
+            'RetentionPeriodHours': 24,
+            'ShardCount': 1
           }
         }
       }
@@ -40,7 +40,7 @@ export = {
     test.done();
   },
 
-  "uses explicit shard count"(test: Test) {
+  'uses explicit shard count'(test: Test) {
     const stack = new Stack();
 
     new Stream(stack, 'MyStream', {
@@ -48,12 +48,12 @@ export = {
     });
 
     expect(stack).toMatch({
-      "Resources": {
-        "MyStream5C050E93": {
-          "Type": "AWS::Kinesis::Stream",
-          "Properties": {
-            "RetentionPeriodHours": 24,
-            "ShardCount": 2
+      'Resources': {
+        'MyStream5C050E93': {
+          'Type': 'AWS::Kinesis::Stream',
+          'Properties': {
+            'RetentionPeriodHours': 24,
+            'ShardCount': 2
           }
         }
       }
@@ -61,7 +61,7 @@ export = {
 
     test.done();
   },
-  "uses explicit retention period"(test: Test) {
+  'uses explicit retention period'(test: Test) {
     const stack = new Stack();
 
     new Stream(stack, 'MyStream', {
@@ -69,12 +69,12 @@ export = {
     });
 
     expect(stack).toMatch({
-      "Resources": {
-        "MyStream5C050E93": {
-          "Type": "AWS::Kinesis::Stream",
-          "Properties": {
-            "RetentionPeriodHours": 168,
-            "ShardCount": 1
+      'Resources': {
+        'MyStream5C050E93': {
+          'Type': 'AWS::Kinesis::Stream',
+          'Properties': {
+            'RetentionPeriodHours': 168,
+            'ShardCount': 1
           }
         }
       }
@@ -82,14 +82,14 @@ export = {
 
     test.done();
   },
-  "retention period must be between 24 and 168 hours"(test: Test) {
+  'retention period must be between 24 and 168 hours'(test: Test) {
     test.throws({
       block: () => {
         new Stream(new Stack(), 'MyStream', {
           retentionPeriodHours: 169
         });
       },
-      message: "retentionPeriodHours must be between 24 and 168 hours"
+      message: 'retentionPeriodHours must be between 24 and 168 hours'
     });
 
     test.throws({
@@ -98,12 +98,12 @@ export = {
           retentionPeriodHours: 23
         });
       },
-      message: "retentionPeriodHours must be between 24 and 168 hours"
+      message: 'retentionPeriodHours must be between 24 and 168 hours'
     });
 
     test.done();
   },
-  "auto-creates KMS key if encryption type is KMS but no key is provided"(test: Test) {
+  'auto-creates KMS key if encryption type is KMS but no key is provided'(test: Test) {
     const stack = new Stack();
 
     new Stream(stack, 'MyStream', {
@@ -111,68 +111,68 @@ export = {
     });
 
     expect(stack).toMatch({
-      "Resources": {
-        "MyStreamKey76F3300E": {
-          "Type": "AWS::KMS::Key",
-          "Properties": {
-            "Description": "Created by MyStream",
-            "KeyPolicy": {
-              "Statement": [
+      'Resources': {
+        'MyStreamKey76F3300E': {
+          'Type': 'AWS::KMS::Key',
+          'Properties': {
+            'Description': 'Created by MyStream',
+            'KeyPolicy': {
+              'Statement': [
                 {
-                  "Action": [
-                    "kms:Create*",
-                    "kms:Describe*",
-                    "kms:Enable*",
-                    "kms:List*",
-                    "kms:Put*",
-                    "kms:Update*",
-                    "kms:Revoke*",
-                    "kms:Disable*",
-                    "kms:Get*",
-                    "kms:Delete*",
-                    "kms:ScheduleKeyDeletion",
-                    "kms:CancelKeyDeletion",
-                    "kms:GenerateDataKey"
+                  'Action': [
+                    'kms:Create*',
+                    'kms:Describe*',
+                    'kms:Enable*',
+                    'kms:List*',
+                    'kms:Put*',
+                    'kms:Update*',
+                    'kms:Revoke*',
+                    'kms:Disable*',
+                    'kms:Get*',
+                    'kms:Delete*',
+                    'kms:ScheduleKeyDeletion',
+                    'kms:CancelKeyDeletion',
+                    'kms:GenerateDataKey'
                   ],
-                  "Effect": "Allow",
-                  "Principal": {
-                    "AWS": {
-                      "Fn::Join": [
-                        "",
+                  'Effect': 'Allow',
+                  'Principal': {
+                    'AWS': {
+                      'Fn::Join': [
+                        '',
                         [
-                          "arn:",
+                          'arn:',
                           {
-                            "Ref": "AWS::Partition"
+                            'Ref': 'AWS::Partition'
                           },
-                          ":iam::",
+                          ':iam::',
                           {
-                            "Ref": "AWS::AccountId"
+                            'Ref': 'AWS::AccountId'
                           },
-                          ":root"
+                          ':root'
                         ]
                       ]
                     }
                   },
-                  "Resource": "*"
+                  'Resource': '*'
                 }
               ],
-              "Version": "2012-10-17"
+              'Version': '2012-10-17'
             }
           },
-          "DeletionPolicy": "Retain",
-          "UpdateReplacePolicy": "Retain"
+          'DeletionPolicy': 'Retain',
+          'UpdateReplacePolicy': 'Retain'
         },
-        "MyStream5C050E93": {
-          "Type": "AWS::Kinesis::Stream",
-          "Properties": {
-            "RetentionPeriodHours": 24,
-            "ShardCount": 1,
-            "StreamEncryption": {
-              "EncryptionType": "KMS",
-              "KeyId": {
-                "Fn::GetAtt": [
-                  "MyStreamKey76F3300E",
-                  "Arn"
+        'MyStream5C050E93': {
+          'Type': 'AWS::Kinesis::Stream',
+          'Properties': {
+            'RetentionPeriodHours': 24,
+            'ShardCount': 1,
+            'StreamEncryption': {
+              'EncryptionType': 'KMS',
+              'KeyId': {
+                'Fn::GetAtt': [
+                  'MyStreamKey76F3300E',
+                  'Arn'
                 ]
               }
             }
@@ -183,11 +183,11 @@ export = {
 
     test.done();
   },
-  "uses explicit KMS key if encryption type is KMS and a key is provided"(test: Test) {
+  'uses explicit KMS key if encryption type is KMS and a key is provided'(test: Test) {
     const stack = new Stack();
 
     const explicitKey = new kms.Key(stack, 'ExplicitKey', {
-      description: `Explicit Key`
+      description: 'Explicit Key'
     });
 
     new Stream(stack, 'MyStream', {
@@ -196,68 +196,68 @@ export = {
     });
 
     expect(stack).toMatch({
-      "Resources": {
-        "ExplicitKey7DF42F37": {
-          "Type": "AWS::KMS::Key",
-          "Properties": {
-            "Description": "Explicit Key",
-            "KeyPolicy": {
-              "Statement": [
+      'Resources': {
+        'ExplicitKey7DF42F37': {
+          'Type': 'AWS::KMS::Key',
+          'Properties': {
+            'Description': 'Explicit Key',
+            'KeyPolicy': {
+              'Statement': [
                 {
-                  "Action": [
-                    "kms:Create*",
-                    "kms:Describe*",
-                    "kms:Enable*",
-                    "kms:List*",
-                    "kms:Put*",
-                    "kms:Update*",
-                    "kms:Revoke*",
-                    "kms:Disable*",
-                    "kms:Get*",
-                    "kms:Delete*",
-                    "kms:ScheduleKeyDeletion",
-                    "kms:CancelKeyDeletion",
-                    "kms:GenerateDataKey"
+                  'Action': [
+                    'kms:Create*',
+                    'kms:Describe*',
+                    'kms:Enable*',
+                    'kms:List*',
+                    'kms:Put*',
+                    'kms:Update*',
+                    'kms:Revoke*',
+                    'kms:Disable*',
+                    'kms:Get*',
+                    'kms:Delete*',
+                    'kms:ScheduleKeyDeletion',
+                    'kms:CancelKeyDeletion',
+                    'kms:GenerateDataKey'
                   ],
-                  "Effect": "Allow",
-                  "Principal": {
-                    "AWS": {
-                      "Fn::Join": [
-                        "",
+                  'Effect': 'Allow',
+                  'Principal': {
+                    'AWS': {
+                      'Fn::Join': [
+                        '',
                         [
-                          "arn:",
+                          'arn:',
                           {
-                            "Ref": "AWS::Partition"
+                            'Ref': 'AWS::Partition'
                           },
-                          ":iam::",
+                          ':iam::',
                           {
-                            "Ref": "AWS::AccountId"
+                            'Ref': 'AWS::AccountId'
                           },
-                          ":root"
+                          ':root'
                         ]
                       ]
                     }
                   },
-                  "Resource": "*"
+                  'Resource': '*'
                 }
               ],
-              "Version": "2012-10-17"
+              'Version': '2012-10-17'
             }
           },
-          "DeletionPolicy": "Retain",
-          "UpdateReplacePolicy": "Retain"
+          'DeletionPolicy': 'Retain',
+          'UpdateReplacePolicy': 'Retain'
         },
-        "MyStream5C050E93": {
-          "Type": "AWS::Kinesis::Stream",
-          "Properties": {
-            "RetentionPeriodHours": 24,
-            "ShardCount": 1,
-            "StreamEncryption": {
-              "EncryptionType": "KMS",
-              "KeyId": {
-                "Fn::GetAtt": [
-                  "ExplicitKey7DF42F37",
-                  "Arn"
+        'MyStream5C050E93': {
+          'Type': 'AWS::Kinesis::Stream',
+          'Properties': {
+            'RetentionPeriodHours': 24,
+            'ShardCount': 1,
+            'StreamEncryption': {
+              'EncryptionType': 'KMS',
+              'KeyId': {
+                'Fn::GetAtt': [
+                  'ExplicitKey7DF42F37',
+                  'Arn'
                 ]
               }
             }
@@ -268,137 +268,137 @@ export = {
 
     test.done();
   },
-  "permissions": {
-    "with encryption": {
-      "grantRead creates and attaches a policy with read only access to Stream and EncryptionKey"(test: Test) {
+  'permissions': {
+    'with encryption': {
+      'grantRead creates and attaches a policy with read only access to Stream and EncryptionKey'(test: Test) {
         const stack = new Stack();
         const stream = new Stream(stack, 'MyStream', {
           encryption: StreamEncryption.KMS
         });
 
-        const user = new iam.User(stack, "MyUser");
+        const user = new iam.User(stack, 'MyUser');
         stream.grantRead(user);
 
         expect(stack).toMatch({
-          "Resources": {
-            "MyStreamKey76F3300E": {
-              "Type": "AWS::KMS::Key",
-              "Properties": {
-                "Description": "Created by MyStream",
-                "KeyPolicy": {
-                  "Statement": [
+          'Resources': {
+            'MyStreamKey76F3300E': {
+              'Type': 'AWS::KMS::Key',
+              'Properties': {
+                'Description': 'Created by MyStream',
+                'KeyPolicy': {
+                  'Statement': [
                     {
-                      "Action": [
-                        "kms:Create*",
-                        "kms:Describe*",
-                        "kms:Enable*",
-                        "kms:List*",
-                        "kms:Put*",
-                        "kms:Update*",
-                        "kms:Revoke*",
-                        "kms:Disable*",
-                        "kms:Get*",
-                        "kms:Delete*",
-                        "kms:ScheduleKeyDeletion",
-                        "kms:CancelKeyDeletion",
-                        "kms:GenerateDataKey"
+                      'Action': [
+                        'kms:Create*',
+                        'kms:Describe*',
+                        'kms:Enable*',
+                        'kms:List*',
+                        'kms:Put*',
+                        'kms:Update*',
+                        'kms:Revoke*',
+                        'kms:Disable*',
+                        'kms:Get*',
+                        'kms:Delete*',
+                        'kms:ScheduleKeyDeletion',
+                        'kms:CancelKeyDeletion',
+                        'kms:GenerateDataKey'
                       ],
-                      "Effect": "Allow",
-                      "Principal": {
-                        "AWS": {
-                          "Fn::Join": [
-                            "",
+                      'Effect': 'Allow',
+                      'Principal': {
+                        'AWS': {
+                          'Fn::Join': [
+                            '',
                             [
-                              "arn:",
+                              'arn:',
                               {
-                                "Ref": "AWS::Partition"
+                                'Ref': 'AWS::Partition'
                               },
-                              ":iam::",
+                              ':iam::',
                               {
-                                "Ref": "AWS::AccountId"
+                                'Ref': 'AWS::AccountId'
                               },
-                              ":root"
+                              ':root'
                             ]
                           ]
                         }
                       },
-                      "Resource": "*"
+                      'Resource': '*'
                     },
                     {
-                      "Action": "kms:Decrypt",
-                      "Effect": "Allow",
-                      "Principal": {
-                        "AWS": {
-                          "Fn::GetAtt": [
-                            "MyUserDC45028B",
-                            "Arn"
+                      'Action': 'kms:Decrypt',
+                      'Effect': 'Allow',
+                      'Principal': {
+                        'AWS': {
+                          'Fn::GetAtt': [
+                            'MyUserDC45028B',
+                            'Arn'
                           ]
                         }
                       },
-                      "Resource": "*"
+                      'Resource': '*'
                     }
                   ],
-                  "Version": "2012-10-17"
+                  'Version': '2012-10-17'
                 }
               },
-              "DeletionPolicy": "Retain",
-              "UpdateReplacePolicy": "Retain"
+              'DeletionPolicy': 'Retain',
+              'UpdateReplacePolicy': 'Retain'
             },
-            "MyStream5C050E93": {
-              "Type": "AWS::Kinesis::Stream",
-              "Properties": {
-                "RetentionPeriodHours": 24,
-                "ShardCount": 1,
-                "StreamEncryption": {
-                  "EncryptionType": "KMS",
-                  "KeyId": {
-                    "Fn::GetAtt": [
-                      "MyStreamKey76F3300E",
-                      "Arn"
+            'MyStream5C050E93': {
+              'Type': 'AWS::Kinesis::Stream',
+              'Properties': {
+                'RetentionPeriodHours': 24,
+                'ShardCount': 1,
+                'StreamEncryption': {
+                  'EncryptionType': 'KMS',
+                  'KeyId': {
+                    'Fn::GetAtt': [
+                      'MyStreamKey76F3300E',
+                      'Arn'
                     ]
                   }
                 }
               }
             },
-            "MyUserDC45028B": {
-              "Type": "AWS::IAM::User"
+            'MyUserDC45028B': {
+              'Type': 'AWS::IAM::User'
             },
-            "MyUserDefaultPolicy7B897426": {
-              "Type": "AWS::IAM::Policy",
-              "Properties": {
-                "PolicyDocument": {
-                  "Statement": [
+            'MyUserDefaultPolicy7B897426': {
+              'Type': 'AWS::IAM::Policy',
+              'Properties': {
+                'PolicyDocument': {
+                  'Statement': [
                     {
-                      "Action": [
-                        "kinesis:DescribeStream",
-                        "kinesis:GetRecords",
-                        "kinesis:GetShardIterator"
+                      'Action': [
+                        'kinesis:DescribeStream',
+                        'kinesis:GetRecords',
+                        'kinesis:GetShardIterator'
                       ],
-                      "Effect": "Allow",
-                      "Resource": {
-                        "Fn::GetAtt": [
-                          "MyStream5C050E93",
-                          "Arn"
+                      'Effect': 'Allow',
+                      'Resource': {
+                        'Fn::GetAtt': [
+                          'MyStream5C050E93',
+                          'Arn'
                         ]
                       }
                     },
                     {
-                      "Action": "kms:Decrypt",
-                      "Effect": "Allow",
-                      "Resource": {
-                        "Fn::GetAtt": [
-                          "MyStreamKey76F3300E",
-                          "Arn"
+                      'Action': 'kms:Decrypt',
+                      'Effect': 'Allow',
+                      'Resource': {
+                        'Fn::GetAtt': [
+                          'MyStreamKey76F3300E',
+                          'Arn'
                         ]
                       }
                     }
                   ],
-                  "Version": "2012-10-17"
+                  'Version': '2012-10-17'
                 },
-                "PolicyName": "MyUserDefaultPolicy7B897426",
-                "Users": [
+                'PolicyName': 'MyUserDefaultPolicy7B897426',
+                'Users': [
                   {
-                    "Ref": "MyUserDC45028B"
+                    'Ref': 'MyUserDC45028B'
                   }
                 ]
               }
@@ -408,143 +408,143 @@ export = {
 
         test.done();
       },
-      "grantWrite creates and attaches a policy with write only access to Stream and EncryptionKey"(test: Test) {
+      'grantWrite creates and attaches a policy with write only access to Stream and EncryptionKey'(test: Test) {
         const stack = new Stack();
         const stream = new Stream(stack, 'MyStream', {
           encryption: StreamEncryption.KMS
         });
 
-        const user = new iam.User(stack, "MyUser");
+        const user = new iam.User(stack, 'MyUser');
         stream.grantWrite(user);
 
         expect(stack).toMatch({
-          "Resources": {
-            "MyStreamKey76F3300E": {
-              "Type": "AWS::KMS::Key",
-              "Properties": {
-                "Description": "Created by MyStream",
-                "KeyPolicy": {
-                  "Statement": [
+          'Resources': {
+            'MyStreamKey76F3300E': {
+              'Type': 'AWS::KMS::Key',
+              'Properties': {
+                'Description': 'Created by MyStream',
+                'KeyPolicy': {
+                  'Statement': [
                     {
-                      "Action": [
-                        "kms:Create*",
-                        "kms:Describe*",
-                        "kms:Enable*",
-                        "kms:List*",
-                        "kms:Put*",
-                        "kms:Update*",
-                        "kms:Revoke*",
-                        "kms:Disable*",
-                        "kms:Get*",
-                        "kms:Delete*",
-                        "kms:ScheduleKeyDeletion",
-                        "kms:CancelKeyDeletion",
-                        "kms:GenerateDataKey"
+                      'Action': [
+                        'kms:Create*',
+                        'kms:Describe*',
+                        'kms:Enable*',
+                        'kms:List*',
+                        'kms:Put*',
+                        'kms:Update*',
+                        'kms:Revoke*',
+                        'kms:Disable*',
+                        'kms:Get*',
+                        'kms:Delete*',
+                        'kms:ScheduleKeyDeletion',
+                        'kms:CancelKeyDeletion',
+                        'kms:GenerateDataKey'
                       ],
-                      "Effect": "Allow",
-                      "Principal": {
-                        "AWS": {
-                          "Fn::Join": [
-                            "",
+                      'Effect': 'Allow',
+                      'Principal': {
+                        'AWS': {
+                          'Fn::Join': [
+                            '',
                             [
-                              "arn:",
+                              'arn:',
                               {
-                                "Ref": "AWS::Partition"
+                                'Ref': 'AWS::Partition'
                               },
-                              ":iam::",
+                              ':iam::',
                               {
-                                "Ref": "AWS::AccountId"
+                                'Ref': 'AWS::AccountId'
                               },
-                              ":root"
+                              ':root'
                             ]
                           ]
                         }
                       },
-                      "Resource": "*"
+                      'Resource': '*'
                     },
                     {
-                      "Action": [
-                        "kms:Encrypt",
-                        "kms:ReEncrypt*",
-                        "kms:GenerateDataKey*"
+                      'Action': [
+                        'kms:Encrypt',
+                        'kms:ReEncrypt*',
+                        'kms:GenerateDataKey*'
                       ],
-                      "Effect": "Allow",
-                      "Principal": {
-                        "AWS": {
-                          "Fn::GetAtt": [
-                            "MyUserDC45028B",
-                            "Arn"
+                      'Effect': 'Allow',
+                      'Principal': {
+                        'AWS': {
+                          'Fn::GetAtt': [
+                            'MyUserDC45028B',
+                            'Arn'
                           ]
                         }
                       },
-                      "Resource": "*"
+                      'Resource': '*'
                     }
                   ],
-                  "Version": "2012-10-17"
+                  'Version': '2012-10-17'
                 }
               },
-              "DeletionPolicy": "Retain",
-              "UpdateReplacePolicy": "Retain"
+              'DeletionPolicy': 'Retain',
+              'UpdateReplacePolicy': 'Retain'
             },
-            "MyStream5C050E93": {
-              "Type": "AWS::Kinesis::Stream",
-              "Properties": {
-                "RetentionPeriodHours": 24,
-                "ShardCount": 1,
-                "StreamEncryption": {
-                  "EncryptionType": "KMS",
-                  "KeyId": {
-                    "Fn::GetAtt": [
-                      "MyStreamKey76F3300E",
-                      "Arn"
+            'MyStream5C050E93': {
+              'Type': 'AWS::Kinesis::Stream',
+              'Properties': {
+                'RetentionPeriodHours': 24,
+                'ShardCount': 1,
+                'StreamEncryption': {
+                  'EncryptionType': 'KMS',
+                  'KeyId': {
+                    'Fn::GetAtt': [
+                      'MyStreamKey76F3300E',
+                      'Arn'
                     ]
                   }
                 }
               }
             },
-            "MyUserDC45028B": {
-              "Type": "AWS::IAM::User"
+            'MyUserDC45028B': {
+              'Type': 'AWS::IAM::User'
             },
-            "MyUserDefaultPolicy7B897426": {
-              "Type": "AWS::IAM::Policy",
-              "Properties": {
-                "PolicyDocument": {
-                  "Statement": [
+            'MyUserDefaultPolicy7B897426': {
+              'Type': 'AWS::IAM::Policy',
+              'Properties': {
+                'PolicyDocument': {
+                  'Statement': [
                     {
-                      "Action": [
-                        "kinesis:DescribeStream",
-                        "kinesis:PutRecord",
-                        "kinesis:PutRecords"
+                      'Action': [
+                        'kinesis:DescribeStream',
+                        'kinesis:PutRecord',
+                        'kinesis:PutRecords'
                       ],
-                      "Effect": "Allow",
-                      "Resource": {
-                        "Fn::GetAtt": [
-                          "MyStream5C050E93",
-                          "Arn"
+                      'Effect': 'Allow',
+                      'Resource': {
+                        'Fn::GetAtt': [
+                          'MyStream5C050E93',
+                          'Arn'
                         ]
                       }
                     },
                     {
-                      "Action": [
-                        "kms:Encrypt",
-                        "kms:ReEncrypt*",
-                        "kms:GenerateDataKey*",
+                      'Action': [
+                        'kms:Encrypt',
+                        'kms:ReEncrypt*',
+                        'kms:GenerateDataKey*',
                       ],
-                      "Effect": "Allow",
-                      "Resource": {
-                        "Fn::GetAtt": [
-                          "MyStreamKey76F3300E",
-                          "Arn"
+                      'Effect': 'Allow',
+                      'Resource': {
+                        'Fn::GetAtt': [
+                          'MyStreamKey76F3300E',
+                          'Arn'
                         ]
                       }
                     }
                   ],
-                  "Version": "2012-10-17"
+                  'Version': '2012-10-17'
                 },
-                "PolicyName": "MyUserDefaultPolicy7B897426",
-                "Users": [
+                'PolicyName': 'MyUserDefaultPolicy7B897426',
+                'Users': [
                   {
-                    "Ref": "MyUserDC45028B"
+                    'Ref': 'MyUserDC45028B'
                   }
                 ]
               }
@@ -554,147 +554,147 @@ export = {
 
         test.done();
       },
-      "grantReadWrite creates and attaches a policy with access to Stream and EncryptionKey"(test: Test) {
+      'grantReadWrite creates and attaches a policy with access to Stream and EncryptionKey'(test: Test) {
         const stack = new Stack();
         const stream = new Stream(stack, 'MyStream', {
           encryption: StreamEncryption.KMS
         });
 
-        const user = new iam.User(stack, "MyUser");
+        const user = new iam.User(stack, 'MyUser');
         stream.grantReadWrite(user);
 
         expect(stack).toMatch({
-          "Resources": {
-            "MyStreamKey76F3300E": {
-              "Type": "AWS::KMS::Key",
-              "Properties": {
-                "Description": "Created by MyStream",
-                "KeyPolicy": {
-                  "Statement": [
+          'Resources': {
+            'MyStreamKey76F3300E': {
+              'Type': 'AWS::KMS::Key',
+              'Properties': {
+                'Description': 'Created by MyStream',
+                'KeyPolicy': {
+                  'Statement': [
                     {
-                      "Action": [
-                        "kms:Create*",
-                        "kms:Describe*",
-                        "kms:Enable*",
-                        "kms:List*",
-                        "kms:Put*",
-                        "kms:Update*",
-                        "kms:Revoke*",
-                        "kms:Disable*",
-                        "kms:Get*",
-                        "kms:Delete*",
-                        "kms:ScheduleKeyDeletion",
-                        "kms:CancelKeyDeletion",
-                        "kms:GenerateDataKey"
+                      'Action': [
+                        'kms:Create*',
+                        'kms:Describe*',
+                        'kms:Enable*',
+                        'kms:List*',
+                        'kms:Put*',
+                        'kms:Update*',
+                        'kms:Revoke*',
+                        'kms:Disable*',
+                        'kms:Get*',
+                        'kms:Delete*',
+                        'kms:ScheduleKeyDeletion',
+                        'kms:CancelKeyDeletion',
+                        'kms:GenerateDataKey'
                       ],
-                      "Effect": "Allow",
-                      "Principal": {
-                        "AWS": {
-                          "Fn::Join": [
-                            "",
+                      'Effect': 'Allow',
+                      'Principal': {
+                        'AWS': {
+                          'Fn::Join': [
+                            '',
                             [
-                              "arn:",
+                              'arn:',
                               {
-                                "Ref": "AWS::Partition"
+                                'Ref': 'AWS::Partition'
                               },
-                              ":iam::",
+                              ':iam::',
                               {
-                                "Ref": "AWS::AccountId"
+                                'Ref': 'AWS::AccountId'
                               },
-                              ":root"
+                              ':root'
                             ]
                           ]
                         }
                       },
-                      "Resource": "*"
+                      'Resource': '*'
                     },
                     {
-                      "Action": [
-                        "kms:Decrypt",
-                        "kms:Encrypt",
-                        "kms:ReEncrypt*",
-                        "kms:GenerateDataKey*"
+                      'Action': [
+                        'kms:Decrypt',
+                        'kms:Encrypt',
+                        'kms:ReEncrypt*',
+                        'kms:GenerateDataKey*'
                       ],
-                      "Effect": "Allow",
-                      "Principal": {
-                        "AWS": {
-                          "Fn::GetAtt": [
-                            "MyUserDC45028B",
-                            "Arn"
+                      'Effect': 'Allow',
+                      'Principal': {
+                        'AWS': {
+                          'Fn::GetAtt': [
+                            'MyUserDC45028B',
+                            'Arn'
                           ]
                         }
                       },
-                      "Resource": "*"
+                      'Resource': '*'
                     }
                   ],
-                  "Version": "2012-10-17"
+                  'Version': '2012-10-17'
                 }
               },
-              "DeletionPolicy": "Retain",
-              "UpdateReplacePolicy": "Retain"
+              'DeletionPolicy': 'Retain',
+              'UpdateReplacePolicy': 'Retain'
             },
-            "MyStream5C050E93": {
-              "Type": "AWS::Kinesis::Stream",
-              "Properties": {
-                "RetentionPeriodHours": 24,
-                "ShardCount": 1,
-                "StreamEncryption": {
-                  "EncryptionType": "KMS",
-                  "KeyId": {
-                    "Fn::GetAtt": [
-                      "MyStreamKey76F3300E",
-                      "Arn"
+            'MyStream5C050E93': {
+              'Type': 'AWS::Kinesis::Stream',
+              'Properties': {
+                'RetentionPeriodHours': 24,
+                'ShardCount': 1,
+                'StreamEncryption': {
+                  'EncryptionType': 'KMS',
+                  'KeyId': {
+                    'Fn::GetAtt': [
+                      'MyStreamKey76F3300E',
+                      'Arn'
                     ]
                   }
                 }
               }
             },
-            "MyUserDC45028B": {
-              "Type": "AWS::IAM::User"
+            'MyUserDC45028B': {
+              'Type': 'AWS::IAM::User'
             },
-            "MyUserDefaultPolicy7B897426": {
-              "Type": "AWS::IAM::Policy",
-              "Properties": {
-                "PolicyDocument": {
-                  "Statement": [
+            'MyUserDefaultPolicy7B897426': {
+              'Type': 'AWS::IAM::Policy',
+              'Properties': {
+                'PolicyDocument': {
+                  'Statement': [
                     {
-                      "Action": [
-                        "kinesis:DescribeStream",
-                        "kinesis:GetRecords",
-                        "kinesis:GetShardIterator",
-                        "kinesis:PutRecord",
-                        "kinesis:PutRecords"
+                      'Action': [
+                        'kinesis:DescribeStream',
+                        'kinesis:GetRecords',
+                        'kinesis:GetShardIterator',
+                        'kinesis:PutRecord',
+                        'kinesis:PutRecords'
                       ],
-                      "Effect": "Allow",
-                      "Resource": {
-                        "Fn::GetAtt": [
-                          "MyStream5C050E93",
-                          "Arn"
+                      'Effect': 'Allow',
+                      'Resource': {
+                        'Fn::GetAtt': [
+                          'MyStream5C050E93',
+                          'Arn'
                         ]
                       }
                     },
                     {
-                      "Action": [
-                        "kms:Decrypt",
-                        "kms:Encrypt",
-                        "kms:ReEncrypt*",
-                        "kms:GenerateDataKey*"
+                      'Action': [
+                        'kms:Decrypt',
+                        'kms:Encrypt',
+                        'kms:ReEncrypt*',
+                        'kms:GenerateDataKey*'
                       ],
-                      "Effect": "Allow",
-                      "Resource": {
-                        "Fn::GetAtt": [
-                          "MyStreamKey76F3300E",
-                          "Arn"
+                      'Effect': 'Allow',
+                      'Resource': {
+                        'Fn::GetAtt': [
+                          'MyStreamKey76F3300E',
+                          'Arn'
                         ]
                       }
                     }
                   ],
-                  "Version": "2012-10-17"
+                  'Version': '2012-10-17'
                 },
-                "PolicyName": "MyUserDefaultPolicy7B897426",
-                "Users": [
+                'PolicyName': 'MyUserDefaultPolicy7B897426',
+                'Users': [
                   {
-                    "Ref": "MyUserDC45028B"
+                    'Ref': 'MyUserDC45028B'
                   }
                 ]
               }
@@ -705,52 +705,52 @@ export = {
         test.done();
       }
     },
-    "with no encryption": {
-      "grantRead creates and associates a policy with read only access to Stream"(test: Test) {
+    'with no encryption': {
+      'grantRead creates and associates a policy with read only access to Stream'(test: Test) {
         const stack = new Stack();
         const stream = new Stream(stack, 'MyStream');
 
-        const user = new iam.User(stack, "MyUser");
+        const user = new iam.User(stack, 'MyUser');
         stream.grantRead(user);
 
         expect(stack).toMatch({
-          "Resources": {
-            "MyStream5C050E93": {
-              "Type": "AWS::Kinesis::Stream",
-              "Properties": {
-                "RetentionPeriodHours": 24,
-                "ShardCount": 1
+          'Resources': {
+            'MyStream5C050E93': {
+              'Type': 'AWS::Kinesis::Stream',
+              'Properties': {
+                'RetentionPeriodHours': 24,
+                'ShardCount': 1
               }
             },
-            "MyUserDC45028B": {
-              "Type": "AWS::IAM::User"
+            'MyUserDC45028B': {
+              'Type': 'AWS::IAM::User'
             },
-            "MyUserDefaultPolicy7B897426": {
-              "Type": "AWS::IAM::Policy",
-              "Properties": {
-                "PolicyDocument": {
-                  "Statement": [
+            'MyUserDefaultPolicy7B897426': {
+              'Type': 'AWS::IAM::Policy',
+              'Properties': {
+                'PolicyDocument': {
+                  'Statement': [
                     {
-                      "Action": [
-                        "kinesis:DescribeStream",
-                        "kinesis:GetRecords",
-                        "kinesis:GetShardIterator"
+                      'Action': [
+                        'kinesis:DescribeStream',
+                        'kinesis:GetRecords',
+                        'kinesis:GetShardIterator'
                       ],
-                      "Effect": "Allow",
-                      "Resource": {
-                        "Fn::GetAtt": [
-                          "MyStream5C050E93",
-                          "Arn"
+                      'Effect': 'Allow',
+                      'Resource': {
+                        'Fn::GetAtt': [
+                          'MyStream5C050E93',
+                          'Arn'
                         ]
                       }
                     }
                   ],
-                  "Version": "2012-10-17"
+                  'Version': '2012-10-17'
                 },
-                "PolicyName": "MyUserDefaultPolicy7B897426",
-                "Users": [
+                'PolicyName': 'MyUserDefaultPolicy7B897426',
+                'Users': [
                   {
-                    "Ref": "MyUserDC45028B"
+                    'Ref': 'MyUserDC45028B'
                   }
                 ]
               }
@@ -760,51 +760,51 @@ export = {
 
         test.done();
       },
-      "grantWrite creates and attaches a policy with write only access to Stream"(test: Test) {
+      'grantWrite creates and attaches a policy with write only access to Stream'(test: Test) {
         const stack = new Stack();
         const stream = new Stream(stack, 'MyStream');
 
-        const user = new iam.User(stack, "MyUser");
+        const user = new iam.User(stack, 'MyUser');
         stream.grantWrite(user);
 
         expect(stack).toMatch({
-          "Resources": {
-            "MyStream5C050E93": {
-              "Type": "AWS::Kinesis::Stream",
-              "Properties": {
-                "RetentionPeriodHours": 24,
-                "ShardCount": 1
+          'Resources': {
+            'MyStream5C050E93': {
+              'Type': 'AWS::Kinesis::Stream',
+              'Properties': {
+                'RetentionPeriodHours': 24,
+                'ShardCount': 1
               }
             },
-            "MyUserDC45028B": {
-              "Type": "AWS::IAM::User"
+            'MyUserDC45028B': {
+              'Type': 'AWS::IAM::User'
             },
-            "MyUserDefaultPolicy7B897426": {
-              "Type": "AWS::IAM::Policy",
-              "Properties": {
-                "PolicyDocument": {
-                  "Statement": [
+            'MyUserDefaultPolicy7B897426': {
+              'Type': 'AWS::IAM::Policy',
+              'Properties': {
+                'PolicyDocument': {
+                  'Statement': [
                     {
-                      "Action": [
-                        "kinesis:DescribeStream",
-                        "kinesis:PutRecord",
-                        "kinesis:PutRecords"
+                      'Action': [
+                        'kinesis:DescribeStream',
+                        'kinesis:PutRecord',
+                        'kinesis:PutRecords'
                       ],
-                      "Effect": "Allow",
-                      "Resource": {
-                        "Fn::GetAtt": [
-                          "MyStream5C050E93",
-                          "Arn"
+                      'Effect': 'Allow',
+                      'Resource': {
+                        'Fn::GetAtt': [
+                          'MyStream5C050E93',
+                          'Arn'
                         ]
                       }
                     }
                   ],
-                  "Version": "2012-10-17"
+                  'Version': '2012-10-17'
                 },
-                "PolicyName": "MyUserDefaultPolicy7B897426",
-                "Users": [
+                'PolicyName': 'MyUserDefaultPolicy7B897426',
+                'Users': [
                   {
-                    "Ref": "MyUserDC45028B"
+                    'Ref': 'MyUserDC45028B'
                   }
                 ]
               }
@@ -814,53 +814,53 @@ export = {
 
         test.done();
       },
-      "greatReadWrite creates and attaches a policy with write only access to Stream"(test: Test) {
+      'greatReadWrite creates and attaches a policy with write only access to Stream'(test: Test) {
         const stack = new Stack();
         const stream = new Stream(stack, 'MyStream');
 
-        const user = new iam.User(stack, "MyUser");
+        const user = new iam.User(stack, 'MyUser');
         stream.grantReadWrite(user);
 
         expect(stack).toMatch({
-          "Resources": {
-            "MyStream5C050E93": {
-              "Type": "AWS::Kinesis::Stream",
-              "Properties": {
-                "RetentionPeriodHours": 24,
-                "ShardCount": 1
+          'Resources': {
+            'MyStream5C050E93': {
+              'Type': 'AWS::Kinesis::Stream',
+              'Properties': {
+                'RetentionPeriodHours': 24,
+                'ShardCount': 1
               }
             },
-            "MyUserDC45028B": {
-              "Type": "AWS::IAM::User"
+            'MyUserDC45028B': {
+              'Type': 'AWS::IAM::User'
             },
-            "MyUserDefaultPolicy7B897426": {
-              "Type": "AWS::IAM::Policy",
-              "Properties": {
-                "PolicyDocument": {
-                  "Statement": [
+            'MyUserDefaultPolicy7B897426': {
+              'Type': 'AWS::IAM::Policy',
+              'Properties': {
+                'PolicyDocument': {
+                  'Statement': [
                     {
-                      "Action": [
-                        "kinesis:DescribeStream",
-                        "kinesis:GetRecords",
-                        "kinesis:GetShardIterator",
-                        "kinesis:PutRecord",
-                        "kinesis:PutRecords"
+                      'Action': [
+                        'kinesis:DescribeStream',
+                        'kinesis:GetRecords',
+                        'kinesis:GetShardIterator',
+                        'kinesis:PutRecord',
+                        'kinesis:PutRecords'
                       ],
-                      "Effect": "Allow",
-                      "Resource": {
-                        "Fn::GetAtt": [
-                          "MyStream5C050E93",
-                          "Arn"
+                      'Effect': 'Allow',
+                      'Resource': {
+                        'Fn::GetAtt': [
+                          'MyStream5C050E93',
+                          'Arn'
                         ]
                       }
                     }
                   ],
-                  "Version": "2012-10-17"
+                  'Version': '2012-10-17'
                 },
-                "PolicyName": "MyUserDefaultPolicy7B897426",
-                "Users": [
+                'PolicyName': 'MyUserDefaultPolicy7B897426',
+                'Users': [
                   {
-                    "Ref": "MyUserDC45028B"
+                    'Ref': 'MyUserDC45028B'
                   }
                 ]
               }
@@ -872,8 +872,8 @@ export = {
       }
     }
   },
-  "cross-stack permissions": {
-    "no encryption"(test: Test) {
+  'cross-stack permissions': {
+    'no encryption'(test: Test) {
       const app = new App();
       const stackA = new Stack(app, 'stackA');
       const streamFromStackA = new Stream(stackA, 'MyStream');
@@ -883,58 +883,58 @@ export = {
       streamFromStackA.grantRead(user);
 
       expect(stackA).toMatch({
-        "Resources": {
-          "MyStream5C050E93": {
-            "Type": "AWS::Kinesis::Stream",
-            "Properties": {
-              "RetentionPeriodHours": 24,
-              "ShardCount": 1
+        'Resources': {
+          'MyStream5C050E93': {
+            'Type': 'AWS::Kinesis::Stream',
+            'Properties': {
+              'RetentionPeriodHours': 24,
+              'ShardCount': 1
             }
           }
         },
-        "Outputs": {
-          "ExportsOutputFnGetAttMyStream5C050E93Arn4ABF30CD": {
-            "Value": {
-              "Fn::GetAtt": [
-                "MyStream5C050E93",
-                "Arn"
+        'Outputs': {
+          'ExportsOutputFnGetAttMyStream5C050E93Arn4ABF30CD': {
+            'Value': {
+              'Fn::GetAtt': [
+                'MyStream5C050E93',
+                'Arn'
               ]
             },
-            "Export": {
-              "Name": "stackA:ExportsOutputFnGetAttMyStream5C050E93Arn4ABF30CD"
+            'Export': {
+              'Name': 'stackA:ExportsOutputFnGetAttMyStream5C050E93Arn4ABF30CD'
             }
           }
         }
       });
 
       expect(stackB).toMatch({
-        "Resources": {
-          "UserWhoNeedsAccessF8959C3D": {
-            "Type": "AWS::IAM::User"
+        'Resources': {
+          'UserWhoNeedsAccessF8959C3D': {
+            'Type': 'AWS::IAM::User'
           },
-          "UserWhoNeedsAccessDefaultPolicy6A9EB530": {
-            "Type": "AWS::IAM::Policy",
-            "Properties": {
-              "PolicyDocument": {
-                "Statement": [
+          'UserWhoNeedsAccessDefaultPolicy6A9EB530': {
+            'Type': 'AWS::IAM::Policy',
+            'Properties': {
+              'PolicyDocument': {
+                'Statement': [
                   {
-                    "Action": [
-                      "kinesis:DescribeStream",
-                      "kinesis:GetRecords",
-                      "kinesis:GetShardIterator"
+                    'Action': [
+                      'kinesis:DescribeStream',
+                      'kinesis:GetRecords',
+                      'kinesis:GetShardIterator'
                     ],
-                    "Effect": "Allow",
-                    "Resource": {
-                      "Fn::ImportValue": "stackA:ExportsOutputFnGetAttMyStream5C050E93Arn4ABF30CD"
+                    'Effect': 'Allow',
+                    'Resource': {
+                      'Fn::ImportValue': 'stackA:ExportsOutputFnGetAttMyStream5C050E93Arn4ABF30CD'
                     }
                   }
                 ],
-                "Version": "2012-10-17"
+                'Version': '2012-10-17'
               },
-              "PolicyName": "UserWhoNeedsAccessDefaultPolicy6A9EB530",
-              "Users": [
+              'PolicyName': 'UserWhoNeedsAccessDefaultPolicy6A9EB530',
+              'Users': [
                 {
-                  "Ref": "UserWhoNeedsAccessF8959C3D"
+                  'Ref': 'UserWhoNeedsAccessF8959C3D'
                 }
               ]
             }
@@ -944,7 +944,7 @@ export = {
 
       test.done();
     },
-    "fails with encryption due to cyclic dependency"(test: Test) {
+    'fails with encryption due to cyclic dependency'(test: Test) {
       const app = new App();
       const stackA = new Stack(app, 'stackA');
       const streamFromStackA = new Stream(stackA, 'MyStream', {

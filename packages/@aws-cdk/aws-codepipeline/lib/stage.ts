@@ -1,7 +1,7 @@
 import * as events from '@aws-cdk/aws-events';
 import * as cdk from '@aws-cdk/core';
-import { IAction, IPipeline, IStage } from "./action";
-import { Artifact } from "./artifact";
+import { IAction, IPipeline, IStage } from './action';
+import { Artifact } from './artifact';
 import { CfnPipeline } from './codepipeline.generated';
 import { FullActionDescriptor } from './full-action-descriptor';
 import { Pipeline, StageProps } from './pipeline';
@@ -27,7 +27,7 @@ export class Stage implements IStage {
   /**
    * Create a new Stage.
    */
-  constructor(props: StageProps, pipeline: Pipeline) {
+  public constructor(props: StageProps, pipeline: Pipeline) {
     validation.validateName('Stage', props.stageName);
 
     this.stageName = props.stageName;
@@ -129,9 +129,9 @@ export class Stage implements IStage {
   private validateAction(action: FullActionDescriptor): string[] {
     return validation.validateArtifactBounds('input', action.inputs, action.artifactBounds.minInputs,
       action.artifactBounds.maxInputs, action.category, action.provider)
-    .concat(validation.validateArtifactBounds('output', action.outputs, action.artifactBounds.minOutputs,
-      action.artifactBounds.maxOutputs, action.category, action.provider)
-    );
+      .concat(validation.validateArtifactBounds('output', action.outputs, action.artifactBounds.minOutputs,
+        action.artifactBounds.maxOutputs, action.category, action.provider)
+      );
   }
 
   private attachActionToPipeline(action: IAction): FullActionDescriptor {

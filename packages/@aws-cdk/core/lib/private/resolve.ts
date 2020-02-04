@@ -1,7 +1,7 @@
 import { IConstruct } from '../construct';
 import { DefaultTokenResolver, IPostProcessor, IResolvable, IResolveContext, ITokenResolver, StringConcat } from '../resolvable';
 import { TokenizedStringFragments } from '../string-fragments';
-import { containsListTokenElement, TokenString, unresolved } from "./encoding";
+import { containsListTokenElement, TokenString, unresolved } from './encoding';
 import { TokenMap } from './token-map';
 
 // This file should not be exported to consumers, resolving should happen through Construct.resolve()

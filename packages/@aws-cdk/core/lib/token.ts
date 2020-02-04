@@ -1,11 +1,11 @@
-import { IConstruct } from "./construct";
-import { Lazy } from "./lazy";
-import { unresolved } from "./private/encoding";
-import { Intrinsic } from "./private/intrinsic";
-import { resolve } from "./private/resolve";
-import { TokenMap } from "./private/token-map";
-import { IResolvable, ITokenResolver } from "./resolvable";
-import { TokenizedStringFragments } from "./string-fragments";
+import { IConstruct } from './construct';
+import { Lazy } from './lazy';
+import { unresolved } from './private/encoding';
+import { Intrinsic } from './private/intrinsic';
+import { resolve } from './private/resolve';
+import { TokenMap } from './private/token-map';
+import { IResolvable, ITokenResolver } from './resolvable';
+import { TokenizedStringFragments } from './string-fragments';
 
 /**
  * Represents a special or lazily-evaluated value.
@@ -75,8 +75,7 @@ export class Token {
     return isResolvableObject(value) ? value : new Intrinsic(value);
   }
 
-  private constructor() {
-  }
+  private constructor() {}
 }
 
 /**
@@ -138,9 +137,9 @@ export class Tokenization {
 
     if (Token.isUnresolved(x)) {
       return Lazy.stringValue({ produce: context => {
-          const resolved = context.resolve(x);
-          return typeof resolved !== 'number' ? resolved : `${resolved}`;
-        } });
+        const resolved = context.resolve(x);
+        return typeof resolved !== 'number' ? resolved : `${resolved}`;
+      } });
     } else {
       return typeof x !== 'number' ? x : `${x}`;
     }
@@ -203,5 +202,5 @@ export function withResolved(...args: any[]) {
   if (args.length < 2) { return; }
   const argArray = args.slice(0, args.length - 1);
   if (argArray.some(Token.isUnresolved)) { return; }
-  args[args.length - 1].apply(arguments, argArray);
+  args[args.length - 1](argArray);
 }

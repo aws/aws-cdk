@@ -29,7 +29,8 @@ test('NodejsFunction', () => {
   new NodejsFunction(stack, 'handler2');
 
   // THEN
-  const { spawnSync } = require('child_process'); // eslint-disable-line @typescript-eslint/no-require-imports
+  // eslint-disable-next-line @typescript-eslint/no-require-imports,@typescript-eslint/no-var-requires
+  const { spawnSync } = require('child_process');
 
   expect(spawnSync).toHaveBeenCalledWith('parcel', expect.arrayContaining([
     'build',

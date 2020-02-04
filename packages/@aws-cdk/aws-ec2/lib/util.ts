@@ -43,15 +43,15 @@ export class ImportSubnetGroup {
   private readonly routeTableIds: string[];
   private readonly groups: number;
 
-  constructor(
-      subnetIds: string[] | undefined,
-      names: string[] | undefined,
-      routeTableIds: string[] | undefined,
-      type: SubnetType,
-      private readonly availabilityZones: string[],
-      idField: string,
-      nameField: string,
-      routeTableIdField: string) {
+  public constructor(
+    subnetIds: string[] | undefined,
+    names: string[] | undefined,
+    routeTableIds: string[] | undefined,
+    type: SubnetType,
+    private readonly availabilityZones: string[],
+    idField: string,
+    nameField: string,
+    routeTableIdField: string) {
 
     this.subnetIds = subnetIds || [];
     this.routeTableIds = routeTableIds || [];

@@ -2,7 +2,7 @@ import { Assertion } from '../assertion';
 import { Inspector } from '../inspector';
 
 export class NegatedAssertion<I extends Inspector> extends Assertion<I> {
-  constructor(private readonly negated: Assertion<I>) {
+  public constructor(private readonly negated: Assertion<I>) {
     super();
   }
 

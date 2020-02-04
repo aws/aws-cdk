@@ -8,7 +8,7 @@ import {
   Port,
   SecurityGroup,
   Vpc,
-} from "../lib";
+} from '../lib';
 
 export = {
   'peering between two security groups does not recursive infinitely'(test: Test) {
@@ -42,22 +42,22 @@ export = {
     somethingConnectable.connections.allowTo(securityGroup, Port.allTcp(), 'Connect there');
 
     // THEN: rule to generated security group to connect to imported
-    expect(stack).to(haveResource("AWS::EC2::SecurityGroupEgress", {
-        GroupId: { "Fn::GetAtt": [ "SomeSecurityGroupEF219AD6", "GroupId" ] },
-        IpProtocol: "tcp",
-        Description: "Connect there",
-        DestinationSecurityGroupId: "sg-12345",
-        FromPort: 0,
-        ToPort: 65535
+    expect(stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
+      GroupId: { 'Fn::GetAtt': [ 'SomeSecurityGroupEF219AD6', 'GroupId' ] },
+      IpProtocol: 'tcp',
+      Description: 'Connect there',
+      DestinationSecurityGroupId: 'sg-12345',
+      FromPort: 0,
+      ToPort: 65535
     }));
 
     // THEN: rule to imported security group to allow connections from generated
-    expect(stack).to(haveResource("AWS::EC2::SecurityGroupIngress", {
-      IpProtocol: "tcp",
-      Description: "Connect there",
+    expect(stack).to(haveResource('AWS::EC2::SecurityGroupIngress', {
+      IpProtocol: 'tcp',
+      Description: 'Connect there',
       FromPort: 0,
-      GroupId: "sg-12345",
-      SourceSecurityGroupId: { "Fn::GetAtt": [ "SomeSecurityGroupEF219AD6", "GroupId" ] },
+      GroupId: 'sg-12345',
+      SourceSecurityGroupId: { 'Fn::GetAtt': [ 'SomeSecurityGroupEF219AD6', 'GroupId' ] },
       ToPort: 65535
     }));
 
@@ -78,11 +78,11 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
-      GroupDescription: "SecurityGroup1",
+      GroupDescription: 'SecurityGroup1',
       SecurityGroupIngress: [
         {
-          Description: "from 0.0.0.0/0:88",
-          CidrIp: "0.0.0.0/0",
+          Description: 'from 0.0.0.0/0:88',
+          CidrIp: '0.0.0.0/0',
           FromPort: 88,
           ToPort: 88,
           IpProtocol: 'tcp'
@@ -91,11 +91,11 @@ export = {
     }));
 
     expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
-      GroupDescription: "SecurityGroup2",
+      GroupDescription: 'SecurityGroup2',
       SecurityGroupIngress: [
         {
-          Description: "from 0.0.0.0/0:88",
-          CidrIp: "0.0.0.0/0",
+          Description: 'from 0.0.0.0/0:88',
+          CidrIp: '0.0.0.0/0',
           FromPort: 88,
           ToPort: 88,
           IpProtocol: 'tcp'
@@ -123,15 +123,15 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::EC2::SecurityGroupIngress', {
-      GroupId: { "Fn::GetAtt": [ "SecurityGroup23BE86BB7", "GroupId" ] },
-      SourceSecurityGroupId: { "Fn::GetAtt": [ "SecurityGroup1F554B36F", "GroupId" ] },
+      GroupId: { 'Fn::GetAtt': [ 'SecurityGroup23BE86BB7', 'GroupId' ] },
+      SourceSecurityGroupId: { 'Fn::GetAtt': [ 'SecurityGroup1F554B36F', 'GroupId' ] },
       FromPort: 88,
       ToPort: 88
     }));
 
     expect(stack).to(haveResource('AWS::EC2::SecurityGroupIngress', {
-      GroupId: { "Fn::GetAtt": [ "SecurityGroup3E5E374B9", "GroupId" ] },
-      SourceSecurityGroupId: { "Fn::GetAtt": [ "SecurityGroup1F554B36F", "GroupId" ] },
+      GroupId: { 'Fn::GetAtt': [ 'SecurityGroup3E5E374B9', 'GroupId' ] },
+      SourceSecurityGroupId: { 'Fn::GetAtt': [ 'SecurityGroup1F554B36F', 'GroupId' ] },
       FromPort: 88,
       ToPort: 88
     }));
@@ -153,15 +153,15 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::EC2::SecurityGroupIngress', {
-      GroupId: { "Fn::GetAtt": [ "SecurityGroup1F554B36F", "GroupId" ] },
-      SourceSecurityGroupId: { "Fn::GetAtt": [ "SecurityGroup1F554B36F", "GroupId" ] },
+      GroupId: { 'Fn::GetAtt': [ 'SecurityGroup1F554B36F', 'GroupId' ] },
+      SourceSecurityGroupId: { 'Fn::GetAtt': [ 'SecurityGroup1F554B36F', 'GroupId' ] },
       FromPort: 88,
       ToPort: 88
     }));
 
     expect(stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
-      DestinationSecurityGroupId: { "Fn::GetAtt": [ "SecurityGroup1F554B36F", "GroupId" ] },
-      GroupId: { "Fn::GetAtt": [ "SecurityGroup1F554B36F", "GroupId" ] },
+      DestinationSecurityGroupId: { 'Fn::GetAtt': [ 'SecurityGroup1F554B36F', 'GroupId' ] },
+      GroupId: { 'Fn::GetAtt': [ 'SecurityGroup1F554B36F', 'GroupId' ] },
       FromPort: 88,
       ToPort: 88
     }));
@@ -188,13 +188,13 @@ export = {
     ConstructNode.prepare(app.node);
 
     expect(stack2).to(haveResource('AWS::EC2::SecurityGroupIngress', {
-      GroupId: { "Fn::GetAtt": [ "SecurityGroupDD263621", "GroupId" ] },
-      SourceSecurityGroupId: { "Fn::ImportValue": "Stack1:ExportsOutputFnGetAttSecurityGroupDD263621GroupIdDF6F8B09" },
+      GroupId: { 'Fn::GetAtt': [ 'SecurityGroupDD263621', 'GroupId' ] },
+      SourceSecurityGroupId: { 'Fn::ImportValue': 'Stack1:ExportsOutputFnGetAttSecurityGroupDD263621GroupIdDF6F8B09' },
     }));
 
     expect(stack2).to(haveResource('AWS::EC2::SecurityGroupEgress', {
-      GroupId: { "Fn::ImportValue": "Stack1:ExportsOutputFnGetAttSecurityGroupDD263621GroupIdDF6F8B09" },
-      DestinationSecurityGroupId: { "Fn::GetAtt": [ "SecurityGroupDD263621", "GroupId" ] },
+      GroupId: { 'Fn::ImportValue': 'Stack1:ExportsOutputFnGetAttSecurityGroupDD263621GroupIdDF6F8B09' },
+      DestinationSecurityGroupId: { 'Fn::GetAtt': [ 'SecurityGroupDD263621', 'GroupId' ] },
     }));
 
     test.done();
@@ -219,13 +219,13 @@ export = {
     ConstructNode.prepare(app.node);
 
     expect(stack2).to(haveResource('AWS::EC2::SecurityGroupIngress', {
-      GroupId: { "Fn::ImportValue": "Stack1:ExportsOutputFnGetAttSecurityGroupDD263621GroupIdDF6F8B09" },
-      SourceSecurityGroupId: { "Fn::GetAtt": [ "SecurityGroupDD263621", "GroupId" ] },
+      GroupId: { 'Fn::ImportValue': 'Stack1:ExportsOutputFnGetAttSecurityGroupDD263621GroupIdDF6F8B09' },
+      SourceSecurityGroupId: { 'Fn::GetAtt': [ 'SecurityGroupDD263621', 'GroupId' ] },
     }));
 
     expect(stack2).to(haveResource('AWS::EC2::SecurityGroupEgress', {
-      GroupId: { "Fn::GetAtt": [ "SecurityGroupDD263621", "GroupId" ] },
-      DestinationSecurityGroupId: { "Fn::ImportValue": "Stack1:ExportsOutputFnGetAttSecurityGroupDD263621GroupIdDF6F8B09" },
+      GroupId: { 'Fn::GetAtt': [ 'SecurityGroupDD263621', 'GroupId' ] },
+      DestinationSecurityGroupId: { 'Fn::ImportValue': 'Stack1:ExportsOutputFnGetAttSecurityGroupDD263621GroupIdDF6F8B09' },
     }));
 
     test.done();
@@ -252,13 +252,13 @@ export = {
     ConstructNode.prepare(app.node);
 
     expect(stack2).to(haveResource('AWS::EC2::SecurityGroupEgress', {
-      GroupId: { "Fn::ImportValue": "Stack1:ExportsOutputFnGetAttSecurityGroupAED40ADC5GroupId1D10C76A" },
-      DestinationSecurityGroupId: { "Fn::GetAtt": [ "SecurityGroupDD263621", "GroupId" ] },
+      GroupId: { 'Fn::ImportValue': 'Stack1:ExportsOutputFnGetAttSecurityGroupAED40ADC5GroupId1D10C76A' },
+      DestinationSecurityGroupId: { 'Fn::GetAtt': [ 'SecurityGroupDD263621', 'GroupId' ] },
     }));
 
     expect(stack2).to(haveResource('AWS::EC2::SecurityGroupEgress', {
-      GroupId: { "Fn::ImportValue": "Stack1:ExportsOutputFnGetAttSecurityGroupB04591F90GroupIdFA7208D5" },
-      DestinationSecurityGroupId: { "Fn::GetAtt": [ "SecurityGroupDD263621", "GroupId" ] },
+      GroupId: { 'Fn::ImportValue': 'Stack1:ExportsOutputFnGetAttSecurityGroupB04591F90GroupIdFA7208D5' },
+      DestinationSecurityGroupId: { 'Fn::GetAtt': [ 'SecurityGroupDD263621', 'GroupId' ] },
     }));
 
     test.done();
@@ -276,17 +276,17 @@ export = {
     somethingConnectable.connections.allowFrom(securityGroup, Port.allTcp(), 'Connect there');
 
     // THEN: rule to generated security group to connect to imported
-    expect(stack).to(haveResource("AWS::EC2::SecurityGroupIngress", {
-      GroupId: { "Fn::GetAtt": [ "SomeSecurityGroupEF219AD6", "GroupId" ] },
-      IpProtocol: "tcp",
-      Description: "Connect there",
-      SourceSecurityGroupId: "sg-12345",
+    expect(stack).to(haveResource('AWS::EC2::SecurityGroupIngress', {
+      GroupId: { 'Fn::GetAtt': [ 'SomeSecurityGroupEF219AD6', 'GroupId' ] },
+      IpProtocol: 'tcp',
+      Description: 'Connect there',
+      SourceSecurityGroupId: 'sg-12345',
       FromPort: 0,
       ToPort: 65535
     }));
 
     // THEN: rule to imported security group to allow connections from generated
-    expect(stack).notTo(haveResource("AWS::EC2::SecurityGroupEgress"));
+    expect(stack).notTo(haveResource('AWS::EC2::SecurityGroupEgress'));
 
     test.done();
   },
@@ -305,22 +305,22 @@ export = {
     somethingConnectable.connections.allowFrom(securityGroup, Port.allTcp(), 'Connect there');
 
     // THEN: rule to generated security group to connect to imported
-    expect(stack).to(haveResource("AWS::EC2::SecurityGroupIngress", {
-      GroupId: { "Fn::GetAtt": [ "SomeSecurityGroupEF219AD6", "GroupId" ] },
-      IpProtocol: "tcp",
-      Description: "Connect there",
-      SourceSecurityGroupId: "sg-12345",
+    expect(stack).to(haveResource('AWS::EC2::SecurityGroupIngress', {
+      GroupId: { 'Fn::GetAtt': [ 'SomeSecurityGroupEF219AD6', 'GroupId' ] },
+      IpProtocol: 'tcp',
+      Description: 'Connect there',
+      SourceSecurityGroupId: 'sg-12345',
       FromPort: 0,
       ToPort: 65535
     }));
 
     // THEN: rule to imported security group to allow connections from generated
-    expect(stack).to(haveResource("AWS::EC2::SecurityGroupEgress", {
-      IpProtocol: "tcp",
-      Description: "Connect there",
+    expect(stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
+      IpProtocol: 'tcp',
+      Description: 'Connect there',
       FromPort: 0,
-      GroupId: "sg-12345",
-      DestinationSecurityGroupId: { "Fn::GetAtt": [ "SomeSecurityGroupEF219AD6", "GroupId" ] },
+      GroupId: 'sg-12345',
+      DestinationSecurityGroupId: { 'Fn::GetAtt': [ 'SomeSecurityGroupEF219AD6', 'GroupId' ] },
       ToPort: 65535
     }));
 
@@ -329,6 +329,6 @@ export = {
 };
 
 class SomethingConnectable implements IConnectable {
-  constructor(public readonly connections: Connections) {
+  public constructor(public readonly connections: Connections) {
   }
 }

@@ -13,6 +13,7 @@ const params = new ClusterParameterGroup(stack, 'Params', {
   family: 'aurora5.6',
   description: 'A nice parameter group',
   parameters: {
+    // eslint-disable-next-line @typescript-eslint/camelcase
     character_set_database: 'utf8mb4'
   }
 });

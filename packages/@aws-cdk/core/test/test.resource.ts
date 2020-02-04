@@ -1,8 +1,8 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
 import { App, App as Root, CfnCondition,
-    CfnDeletionPolicy, CfnResource, Construct, ConstructNode,
-    Fn, RemovalPolicy, Stack } from '../lib';
+  CfnDeletionPolicy, CfnResource, Construct, ConstructNode,
+  Fn, RemovalPolicy, Stack } from '../lib';
 import { toCloudFormation } from './util';
 
 export = {
@@ -19,9 +19,9 @@ export = {
     test.deepEqual(toCloudFormation(stack), {
       Resources: {
         MyResource: {
-          Type: "MyResourceType",
+          Type: 'MyResourceType',
           Properties: {
-            Prop1: "p1",
+            Prop1: 'p1',
             Prop2: 123
           }
         }
@@ -108,12 +108,12 @@ export = {
 
     test.deepEqual(toCloudFormation(stack), {
       Resources: {
-        MyResource: { Type: "My::Counter", Properties: { Count: 1 } },
+        MyResource: { Type: 'My::Counter', Properties: { Count: 1 } },
         MyResource2: {
-          Type: "Type",
+          Type: 'Type',
           Properties: {
             Perm: {
-              "Fn::GetAtt": [ "MyResource", "Arn" ]
+              'Fn::GetAtt': [ 'MyResource', 'Arn' ]
             }
           }
         }
@@ -135,18 +135,18 @@ export = {
     test.deepEqual(toCloudFormation(stack), {
       Resources: {
         Counter1: {
-          Type: "My::Counter",
+          Type: 'My::Counter',
           Properties: { Count: 1 }
         },
         Counter2: {
-          Type: "My::Counter",
+          Type: 'My::Counter',
           Properties: { Count: 1 },
           DependsOn: [
-            "Counter1",
-            "Resource3"
+            'Counter1',
+            'Resource3'
           ]
         },
-        Resource3: { Type: "MyResourceType" }
+        Resource3: { Type: 'MyResourceType' }
       }
     });
 
@@ -170,15 +170,15 @@ export = {
     test.deepEqual(toCloudFormation(stack), {
       Resources: {
         Counter1: {
-          Type: "My::Counter",
+          Type: 'My::Counter',
           Properties: {
             Count: 1
           }
         },
         Dependent: {
-          Type: "R",
+          Type: 'R',
           DependsOn: [
-            "Counter1"
+            'Counter1'
           ]
         }
       }
@@ -273,7 +273,7 @@ export = {
     test.deepEqual(toCloudFormation(stack), {
       Resources: {
         Resource: {
-          Type: "Type",
+          Type: 'Type',
           Metadata: {
             MyKey: 10,
             MyValue: 99
@@ -321,7 +321,7 @@ export = {
       public readonly r1: CfnResource;
       public readonly r2: CfnResource;
 
-      constructor(scope: Construct, id: string) {
+      public constructor(scope: Construct, id: string) {
         super(scope, id);
 
         this.r1 = new CfnResource(this, 'R1', { type: 'T1' });
@@ -332,7 +332,7 @@ export = {
     class C2 extends Construct {
       public readonly r3: CfnResource;
 
-      constructor(scope: Construct, id: string) {
+      public constructor(scope: Construct, id: string) {
         super(scope, id);
 
         this.r3 = new CfnResource(this, 'R3', { type: 'T3' });
@@ -342,7 +342,7 @@ export = {
     // C3 returns [ c2 ] for it's dependency elements
     // this should result in 'flattening' the list of elements.
     class C3 extends Construct {
-      constructor(scope: Construct, id: string) {
+      public constructor(scope: Construct, id: string) {
         super(scope, id);
 
         new C2(this, 'C2');
@@ -382,7 +382,7 @@ export = {
     test.done();
   },
 
-  'overrides': {
+  overrides: {
     'addOverride(p, v) allows assigning arbitrary values to synthesized resource definitions'(test: Test) {
       // GIVEN
       const stack = new Stack();
@@ -695,7 +695,7 @@ class Counter extends CfnResource {
 
   public count: number;
 
-  constructor(scope: Construct, id: string, props: CounterProps) {
+  public constructor(scope: Construct, id: string, props: CounterProps) {
     super(scope, id, { type: 'My::Counter', properties: { Count: props.Count } });
     this.arn = this.getAtt('Arn').toString();
     this.url = this.getAtt('URL').toString();
@@ -720,7 +720,7 @@ class CustomizableResource extends CfnResource {
   public prop2: any;
   public prop3: any;
 
-  constructor(scope: Construct, id: string, props?: any) {
+  public constructor(scope: Construct, id: string, props?: any) {
     super(scope, id, { type: 'MyResourceType', properties: props });
     if (props !== undefined) {
       this.prop1 = props.prop1;

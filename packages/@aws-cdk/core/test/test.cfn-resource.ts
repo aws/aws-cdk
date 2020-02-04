@@ -21,7 +21,7 @@ export = nodeunit.testCase({
           }
         }
       });
-      test.ok(called, `renderProperties must be called called`);
+      test.ok(called, 'renderProperties must be called called');
 
       test.done();
     }

@@ -1,4 +1,4 @@
-/* eslint-disable max-len */
+/* eslint-disable max-len,no-console */
 import * as childProcess from 'child_process';
 import * as colors from 'colors';
 import * as fs from 'fs-extra';
@@ -202,7 +202,7 @@ async function main() {
 
     // we don't have a .jsii file, and --no-compile is explicily set, then it's an error
     if (args.compile === false) {
-      throw new Error(`No .jsii file and --no-compile is set`);
+      throw new Error('No .jsii file and --no-compile is set');
     }
 
     // compile!
@@ -225,7 +225,7 @@ async function loadModule(dir: string) {
   // We run 'awslint' during build time, assemblies are guaranteed to be ok.
 
   if (ts.roots.length !== 1) {
-    throw new Error(`Expecting only a single root assembly`);
+    throw new Error('Expecting only a single root assembly');
   }
 
   return ts.roots[0];

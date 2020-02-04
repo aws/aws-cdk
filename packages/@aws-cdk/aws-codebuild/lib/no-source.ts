@@ -13,7 +13,7 @@ import { NO_SOURCE_TYPE } from './source-types';
 export class NoSource extends Source {
   public readonly type = NO_SOURCE_TYPE;
 
-  constructor() {
+  public constructor() {
     super({});
   }
 }

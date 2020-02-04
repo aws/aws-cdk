@@ -8,7 +8,7 @@ export class LambdaTarget implements elbv2.IApplicationLoadBalancerTarget {
    *
    * @param functionArn The Lambda Function to load balance to
    */
-  constructor(private readonly fn: lambda.IFunction) {
+  public constructor(private readonly fn: lambda.IFunction) {
   }
 
   /**

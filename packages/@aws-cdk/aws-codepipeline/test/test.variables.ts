@@ -5,7 +5,7 @@ import * as codepipeline from '../lib';
 import { FakeBuildAction } from './fake-build-action';
 import { FakeSourceAction } from './fake-source-action';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quotes */
 
 export = {
   'Pipeline Variables': {
@@ -25,13 +25,13 @@ export = {
       });
 
       expect(stack, true).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
-        "Stages": [
+        Stages: [
           {
-            "Name": "Source",
-            "Actions": [
+            Name: "Source",
+            Actions: [
               {
-                "Name": "Source",
-                "Namespace": "MyNamespace",
+                Name: "Source",
+                Namespace: "MyNamespace",
               },
             ],
           },
@@ -67,17 +67,17 @@ export = {
       });
 
       expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
-        "Stages": [
+        Stages: [
           {
-            "Name": "Source",
+            Name: "Source",
           },
           {
-            "Name": "Build",
-            "Actions": [
+            Name: "Build",
+            Actions: [
               {
-                "Name": "Build",
-                "Configuration": {
-                  "CustomConfigKey": "#{SourceVariables.FirstVariable}",
+                Name: "Build",
+                Configuration: {
+                  CustomConfigKey: "#{SourceVariables.FirstVariable}",
                 },
               },
             ],
@@ -123,14 +123,14 @@ export = {
       });
 
       expect(stack, true).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
-        "Stages": [
+        Stages: [
           {
-            "Name": "Source",
-            "Actions": [
+            Name: "Source",
+            Actions: [
               {
-                "Name": "Build",
-                "Configuration": {
-                  "CustomConfigKey": "#{codepipeline.PipelineExecutionId}",
+                Name: "Build",
+                Configuration: {
+                  CustomConfigKey: "#{codepipeline.PipelineExecutionId}",
                 },
               },
             ],

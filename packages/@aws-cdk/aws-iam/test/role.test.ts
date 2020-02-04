@@ -1,6 +1,8 @@
 import '@aws-cdk/assert/jest';
 import { Duration, Stack } from '@aws-cdk/core';
-import { AnyPrincipal, ArnPrincipal, CompositePrincipal, FederatedPrincipal, ManagedPolicy, PolicyStatement, Role, ServicePrincipal, User } from '../lib';
+import {
+  AnyPrincipal, ArnPrincipal, CompositePrincipal, FederatedPrincipal, ManagedPolicy, PolicyStatement, Role, ServicePrincipal, User
+} from '../lib';
 
 describe('IAM role', () => {
   test('default role', () => {
@@ -13,13 +15,13 @@ describe('IAM role', () => {
     expect(stack).toMatchTemplate({ Resources:
       { MyRoleF48FFE04:
          { Type: 'AWS::IAM::Role',
-         Properties:
+           Properties:
           { AssumeRolePolicyDocument:
            { Statement:
             [ { Action: 'sts:AssumeRole',
               Effect: 'Allow',
               Principal: { Service: 'sns.amazonaws.com' } } ],
-             Version: '2012-10-17' } } } } });
+           Version: '2012-10-17' } } } } });
   });
 
   test('a role can grant PassRole permissions', () => {
@@ -36,12 +38,12 @@ describe('IAM role', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: "iam:PassRole",
-            Effect: "Allow",
-            Resource: { "Fn::GetAtt": [ "Role1ABCC5F0", "Arn" ] }
+            Action: 'iam:PassRole',
+            Effect: 'Allow',
+            Resource: { 'Fn::GetAtt': [ 'Role1ABCC5F0', 'Arn' ] }
           }
         ],
-        Version: "2012-10-17"
+        Version: '2012-10-17'
       },
     });
   });
@@ -61,15 +63,15 @@ describe('IAM role', () => {
       AssumeRolePolicyDocument: {
         Statement: [
           {
-            Action: "sts:AssumeRole",
+            Action: 'sts:AssumeRole',
             Condition: {
-              StringEquals: { "sts:ExternalId": "SomeSecret" }
+              StringEquals: { 'sts:ExternalId': 'SomeSecret' }
             },
-            Effect: "Allow",
-            Principal: { Service: "sns.amazonaws.com" }
+            Effect: 'Allow',
+            Principal: { Service: 'sns.amazonaws.com' }
           }
         ],
-        Version: "2012-10-17"
+        Version: '2012-10-17'
       }
     });
   });
@@ -89,15 +91,15 @@ describe('IAM role', () => {
       AssumeRolePolicyDocument: {
         Statement: [
           {
-            Action: "sts:AssumeRole",
+            Action: 'sts:AssumeRole',
             Condition: {
-              StringEquals: { "sts:ExternalId": "SomeSecret" }
+              StringEquals: { 'sts:ExternalId': 'SomeSecret' }
             },
-            Effect: "Allow",
-            Principal: { Service: "sns.amazonaws.com" }
+            Effect: 'Allow',
+            Principal: { Service: 'sns.amazonaws.com' }
           }
         ],
-        Version: "2012-10-17"
+        Version: '2012-10-17'
       }
     });
   });
@@ -117,15 +119,15 @@ describe('IAM role', () => {
       AssumeRolePolicyDocument: {
         Statement: [
           {
-            Action: "sts:AssumeRole",
+            Action: 'sts:AssumeRole',
             Condition: {
-              StringEquals: { "sts:ExternalId": ["SomeSecret", "AnotherSecret"] }
+              StringEquals: { 'sts:ExternalId': ['SomeSecret', 'AnotherSecret'] }
             },
-            Effect: "Allow",
-            Principal: { Service: "sns.amazonaws.com" }
+            Effect: 'Allow',
+            Principal: { Service: 'sns.amazonaws.com' }
           }
         ],
-        Version: "2012-10-17"
+        Version: '2012-10-17'
       }
     });
   });
@@ -144,17 +146,17 @@ describe('IAM role', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: "service:myaction",
-            Effect: "Allow",
-            Resource: "myresource"
+            Action: 'service:myaction',
+            Effect: 'Allow',
+            Resource: 'myresource'
           }
         ],
-        Version: "2012-10-17"
+        Version: '2012-10-17'
       },
-      PolicyName: "MyRoleDefaultPolicyA36BE1DD",
+      PolicyName: 'MyRoleDefaultPolicyA36BE1DD',
       Roles: [
         {
-          Ref: "MyRoleF48FFE04"
+          Ref: 'MyRoleF48FFE04'
         }
       ]
     });
@@ -173,13 +175,13 @@ describe('IAM role', () => {
     expect(stack).toMatchTemplate({ Resources:
       { MyRoleF48FFE04:
          { Type: 'AWS::IAM::Role',
-         Properties:
+           Properties:
           { AssumeRolePolicyDocument:
            { Statement:
             [ { Action: 'sts:AssumeRole',
               Effect: 'Allow',
               Principal: { Service: 'test.service' } } ],
-             Version: '2012-10-17' },
+           Version: '2012-10-17' },
           ManagedPolicyArns: [ 'managed1', 'managed2', 'managed3' ] } } } });
 
   });
@@ -195,15 +197,15 @@ describe('IAM role', () => {
 
     expect(stack).toHaveResource('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
+        Version: '2012-10-17',
         Statement: [
           {
-            Principal: { Federated: "foo" },
+            Principal: { Federated: 'foo' },
             Condition: {
-              StringEquals: { key: "value" }
+              StringEquals: { key: 'value' }
             },
-            Action: "sts:AssumeSomething",
-            Effect: "Allow",
+            Action: 'sts:AssumeSomething',
+            Effect: 'Allow',
           }
         ],
       }
@@ -218,21 +220,21 @@ describe('IAM role', () => {
       expect(stack).toMatchTemplate({
         Resources: {
           MyRoleF48FFE04: {
-          Type: "AWS::IAM::Role",
-          Properties: {
-            AssumeRolePolicyDocument: {
-            Statement: [
-              {
-              Action: "sts:AssumeRole",
-              Effect: "Allow",
-              Principal: {
-                Service: "sns.amazonaws.com"
+            Type: 'AWS::IAM::Role',
+            Properties: {
+              AssumeRolePolicyDocument: {
+                Statement: [
+                  {
+                    Action: 'sts:AssumeRole',
+                    Effect: 'Allow',
+                    Principal: {
+                      Service: 'sns.amazonaws.com'
+                    }
+                  }
+                ],
+                Version: '2012-10-17'
               }
-              }
-            ],
-            Version: "2012-10-17"
             }
-          }
           }
         }
       });
@@ -280,15 +282,15 @@ describe('IAM role', () => {
       AssumeRolePolicyDocument: {
         Statement: [
           {
-            Action: "sts:AssumeRole",
-            Effect: "Allow",
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
             Principal: {
-              Service: "boom.amazonaws.test",
-              AWS: "1111111"
+              Service: 'boom.amazonaws.test',
+              AWS: '1111111'
             }
           }
         ],
-        Version: "2012-10-17"
+        Version: '2012-10-17'
       }
     });
   });
@@ -306,14 +308,14 @@ describe('IAM role', () => {
 
     expect(stack).toHaveResource('AWS::IAM::Role', {
       PermissionsBoundary: {
-        "Fn::Join": [
-          "",
+        'Fn::Join': [
+          '',
           [
-            "arn:",
+            'arn:',
             {
-              Ref: "AWS::Partition"
+              Ref: 'AWS::Partition'
             },
-            ":iam::aws:policy/managed-policy"
+            ':iam::aws:policy/managed-policy'
           ]
         ]
       }
@@ -336,12 +338,12 @@ describe('IAM role', () => {
       AssumeRolePolicyDocument: {
         Statement: [
           {
-            Action: "sts:AssumeRole",
-            Effect: "Allow",
-            Principal: { AWS: "*" },
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: { AWS: '*' },
           }
         ],
-        Version: "2012-10-17"
+        Version: '2012-10-17'
       }
     });
   });

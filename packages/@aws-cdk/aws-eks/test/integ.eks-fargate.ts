@@ -1,10 +1,10 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { App, Construct, Stack, StackProps } from "@aws-cdk/core";
+import { App, Construct, Stack, StackProps } from '@aws-cdk/core';
 import * as eks from '../lib';
 import * as hello from './hello-k8s';
 
 class FargateTest extends Stack {
-  constructor(scope: Construct, id: string, props?: StackProps) {
+  public constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
     // allow all account users to assume this role in order to admin the cluster

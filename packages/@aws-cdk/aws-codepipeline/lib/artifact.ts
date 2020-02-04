@@ -1,5 +1,5 @@
 import * as s3 from '@aws-cdk/aws-s3';
-import { Lazy, Token } from "@aws-cdk/core";
+import { Lazy, Token } from '@aws-cdk/core';
 import * as validation from './validation';
 
 /**
@@ -18,7 +18,7 @@ export class Artifact {
 
   private _artifactName?: string;
 
-  constructor(artifactName?: string) {
+  public constructor(artifactName?: string) {
     validation.validateArtifactName(artifactName);
 
     this._artifactName = artifactName;
@@ -105,7 +105,7 @@ export class ArtifactPath {
     return new ArtifactPath(Artifact.artifact(artifactName), fileName);
   }
 
-  constructor(readonly artifact: Artifact, readonly fileName: string) {
+  public constructor(public readonly artifact: Artifact, public readonly fileName: string) {
 
   }
 

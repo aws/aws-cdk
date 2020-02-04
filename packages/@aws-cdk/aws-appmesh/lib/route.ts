@@ -143,7 +143,7 @@ export class Route extends cdk.Resource implements IRoute {
   private readonly httpRoute?: CfnRoute.HttpRouteProperty;
   private readonly tcpRoute?: CfnRoute.TcpRouteProperty;
 
-  constructor(scope: cdk.Construct, id: string, props: RouteProps) {
+  public constructor(scope: cdk.Construct, id: string, props: RouteProps) {
     super(scope, id, {
       physicalName: props.routeName || cdk.Lazy.stringValue({ produce: () => this.node.uniqueId })
     });
@@ -251,7 +251,7 @@ class ImportedRoute extends cdk.Resource implements IRoute {
    */
   public readonly routeArn: string;
 
-  constructor(scope: cdk.Construct, id: string, props: RouteAttributes) {
+  public constructor(scope: cdk.Construct, id: string, props: RouteAttributes) {
     super(scope, id);
 
     if (props.routeArn) {

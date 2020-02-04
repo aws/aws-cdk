@@ -110,13 +110,13 @@ export = testCase({
       logRetention: logs.RetentionDays.FIVE_DAYS,
     });
 
-    // tslint:disable:no-unused-expression
+    /* eslint-disable no-unused-expressions */
     // Call logGroup a few times. If more than one instance of LogRetention was created,
     // the second call will fail on duplicate constructs.
     fn.logGroup;
     fn.logGroup;
     fn.logGroup;
-    // tslint:enable:no-unused-expression
+    /* eslint-enable no-unused-expressions */
 
     test.done();
   },

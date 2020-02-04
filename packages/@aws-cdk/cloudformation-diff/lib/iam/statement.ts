@@ -32,7 +32,7 @@ export class Statement {
    */
   public readonly condition?: any;
 
-  constructor(statement: UnknownMap) {
+  public constructor(statement: UnknownMap) {
     this.sid = expectString(statement.Sid);
     this.effect = expectEffect(statement.Effect);
     this.resources = new Targets(statement, 'Resource', 'NotResource');
@@ -156,7 +156,7 @@ export class Targets {
    */
   public readonly not: boolean;
 
-  constructor(statement: UnknownMap, positiveKey: string, negativeKey: string) {
+  public constructor(statement: UnknownMap, positiveKey: string, negativeKey: string) {
     if (negativeKey in statement) {
       this.values = forceListOfStrings(statement[negativeKey]);
       this.not = true;

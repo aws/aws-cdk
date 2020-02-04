@@ -81,7 +81,7 @@ export class ApplicationLoadBalancedEc2Service extends ApplicationLoadBalancedSe
   /**
    * Constructs a new instance of the ApplicationLoadBalancedEc2Service class.
    */
-  constructor(scope: Construct, id: string, props: ApplicationLoadBalancedEc2ServiceProps = {}) {
+  public constructor(scope: Construct, id: string, props: ApplicationLoadBalancedEc2ServiceProps = {}) {
     super(scope, id, props);
 
     if (props.taskDefinition && props.taskImageOptions) {
@@ -119,7 +119,7 @@ export class ApplicationLoadBalancedEc2Service extends ApplicationLoadBalancedSe
       throw new Error('You must specify one of: taskDefinition or image');
     }
 
-    this.service = new Ec2Service(this, "Service", {
+    this.service = new Ec2Service(this, 'Service', {
       cluster: this.cluster,
       desiredCount: this.desiredCount,
       taskDefinition: this.taskDefinition,

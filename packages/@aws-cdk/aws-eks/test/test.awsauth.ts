@@ -47,59 +47,59 @@ export = {
     expect(stack).to(countResources(KubernetesResource.RESOURCE_TYPE, 1));
     expect(stack).to(haveResource(KubernetesResource.RESOURCE_TYPE, {
       Manifest: {
-        "Fn::Join": [
-          "",
+        'Fn::Join': [
+          '',
           [
-            "[{\"apiVersion\":\"v1\",\"kind\":\"ConfigMap\",\"metadata\":{\"name\":\"aws-auth\",\"namespace\":\"kube-system\"},\"data\":{\"mapRoles\":\"[{\\\"rolearn\\\":\\\"",
+            '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system"},"data":{"mapRoles":"[{\\"rolearn\\":\\"',
             {
-              "Fn::GetAtt": [
-                "ClusterDefaultCapacityInstanceRole3E209969",
-                "Arn"
+              'Fn::GetAtt': [
+                'ClusterDefaultCapacityInstanceRole3E209969',
+                'Arn'
               ]
             },
-            "\\\",\\\"username\\\":\\\"system:node:{{EC2PrivateDNSName}}\\\",\\\"groups\\\":[\\\"system:bootstrappers\\\",\\\"system:nodes\\\"]},{\\\"rolearn\\\":\\\"",
+            '\\",\\"username\\":\\"system:node:{{EC2PrivateDNSName}}\\",\\"groups\\":[\\"system:bootstrappers\\",\\"system:nodes\\"]},{\\"rolearn\\":\\"',
             {
-              "Fn::GetAtt": [
-                "roleC7B7E775",
-                "Arn"
+              'Fn::GetAtt': [
+                'roleC7B7E775',
+                'Arn'
               ]
             },
-            "\\\",\\\"username\\\":\\\"roleuser\\\",\\\"groups\\\":[\\\"role-group1\\\"]},{\\\"rolearn\\\":\\\"",
+            '\\",\\"username\\":\\"roleuser\\",\\"groups\\":[\\"role-group1\\"]},{\\"rolearn\\":\\"',
             {
-              "Fn::GetAtt": [
-                "roleC7B7E775",
-                "Arn"
+              'Fn::GetAtt': [
+                'roleC7B7E775',
+                'Arn'
               ]
             },
-            "\\\",\\\"username\\\":\\\"",
+            '\\",\\"username\\":\\"',
             {
-              "Fn::GetAtt": [
-                "roleC7B7E775",
-                "Arn"
+              'Fn::GetAtt': [
+                'roleC7B7E775',
+                'Arn'
               ]
             },
-            "\\\",\\\"groups\\\":[\\\"role-group2\\\",\\\"role-group3\\\"]}]\",\"mapUsers\":\"[{\\\"userarn\\\":\\\"",
+            '\\",\\"groups\\":[\\"role-group2\\",\\"role-group3\\"]}]","mapUsers":"[{\\"userarn\\":\\"',
             {
-              "Fn::GetAtt": [
-                "user2C2B57AE",
-                "Arn"
+              'Fn::GetAtt': [
+                'user2C2B57AE',
+                'Arn'
               ]
             },
-            "\\\",\\\"username\\\":\\\"",
+            '\\",\\"username\\":\\"',
             {
-              "Fn::GetAtt": [
-                "user2C2B57AE",
-                "Arn"
+              'Fn::GetAtt': [
+                'user2C2B57AE',
+                'Arn'
               ]
             },
-            "\\\",\\\"groups\\\":[\\\"user-group1\\\",\\\"user-group2\\\"]},{\\\"userarn\\\":\\\"",
+            '\\",\\"groups\\":[\\"user-group1\\",\\"user-group2\\"]},{\\"userarn\\":\\"',
             {
-              "Fn::GetAtt": [
-                "user2C2B57AE",
-                "Arn"
+              'Fn::GetAtt': [
+                'user2C2B57AE',
+                'Arn'
               ]
             },
-            "\\\",\\\"username\\\":\\\"foo\\\",\\\"groups\\\":[\\\"user-group1\\\",\\\"user-group2\\\"]}]\",\"mapAccounts\":\"[\\\"112233\\\",\\\"5566776655\\\"]\"}}]"
+            '\\",\\"username\\":\\"foo\\",\\"groups\\":[\\"user-group1\\",\\"user-group2\\"]}]","mapAccounts":"[\\"112233\\",\\"5566776655\\"]"}}]'
           ]
         ]
       }
@@ -122,33 +122,33 @@ export = {
     // THEN
     expect(stack).to(haveResource(KubernetesResource.RESOURCE_TYPE, {
       Manifest: {
-        "Fn::Join": [
-          "",
+        'Fn::Join': [
+          '',
           [
-            "[{\"apiVersion\":\"v1\",\"kind\":\"ConfigMap\",\"metadata\":{\"name\":\"aws-auth\",\"namespace\":\"kube-system\"},\"data\":{\"mapRoles\":\"[{\\\"rolearn\\\":\\\"",
+            '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system"},"data":{"mapRoles":"[{\\"rolearn\\":\\"',
             {
-              "Fn::GetAtt": [
-                "ClusterDefaultCapacityInstanceRole3E209969",
-                "Arn"
+              'Fn::GetAtt': [
+                'ClusterDefaultCapacityInstanceRole3E209969',
+                'Arn'
               ]
             },
-            "\\\",\\\"username\\\":\\\"system:node:{{EC2PrivateDNSName}}\\\",\\\"groups\\\":[\\\"system:bootstrappers\\\",\\\"system:nodes\\\"]},{\\\"rolearn\\\":\\\"arn:aws:iam::123456789012:role/S3Access\\\",\\\"username\\\":\\\"arn:aws:iam::123456789012:role/S3Access\\\",\\\"groups\\\":[\\\"group1\\\"]}]\",\"mapUsers\":\"[{\\\"userarn\\\":\\\"arn:",
+            '\\",\\"username\\":\\"system:node:{{EC2PrivateDNSName}}\\",\\"groups\\":[\\"system:bootstrappers\\",\\"system:nodes\\"]},{\\"rolearn\\":\\"arn:aws:iam::123456789012:role/S3Access\\",\\"username\\":\\"arn:aws:iam::123456789012:role/S3Access\\",\\"groups\\":[\\"group1\\"]}]","mapUsers":"[{\\"userarn\\":\\"arn:',
             {
-              Ref: "AWS::Partition"
+              Ref: 'AWS::Partition'
             },
-            ":iam::",
+            ':iam::',
             {
-              Ref: "AWS::AccountId"
+              Ref: 'AWS::AccountId'
             },
-            ":user/MyUserName\\\",\\\"username\\\":\\\"arn:",
+            ':user/MyUserName\\",\\"username\\":\\"arn:',
             {
-              Ref: "AWS::Partition"
+              Ref: 'AWS::Partition'
             },
-            ":iam::",
+            ':iam::',
             {
-              Ref: "AWS::AccountId"
+              Ref: 'AWS::AccountId'
             },
-            ":user/MyUserName\\\",\\\"groups\\\":[\\\"group2\\\"]}]\",\"mapAccounts\":\"[]\"}}]"
+            ':user/MyUserName\\",\\"groups\\":[\\"group2\\"]}]","mapAccounts":"[]"}}]'
           ]
         ]
       }

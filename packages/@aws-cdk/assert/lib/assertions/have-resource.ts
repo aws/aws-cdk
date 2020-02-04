@@ -1,5 +1,5 @@
-import { Assertion, JestFriendlyAssertion } from "../assertion";
-import { StackInspector } from "../inspector";
+import { Assertion, JestFriendlyAssertion } from '../assertion';
+import { StackInspector } from '../inspector';
 
 /**
  * Magic value to signify that a certain key should be absent from the property bag.
@@ -45,10 +45,10 @@ export class HaveResourceAssertion extends JestFriendlyAssertion<StackInspector>
   private readonly part: ResourcePart;
   private readonly predicate: PropertyPredicate;
 
-  constructor(private readonly resourceType: string,
-              private readonly properties?: any,
-              part?: ResourcePart,
-              allowValueExtension: boolean = false) {
+  public constructor(private readonly resourceType: string,
+                     private readonly properties?: any,
+                     part?: ResourcePart,
+                     allowValueExtension: boolean = false) {
     super();
 
     this.predicate = typeof properties === 'function' ? properties : makeSuperObjectPredicate(properties, allowValueExtension);

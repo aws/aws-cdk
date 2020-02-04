@@ -5,7 +5,7 @@ import { JsonSchemaMapper, parseAwsApiCall, parseMethodOptionsPath } from '../li
 export = testCase({
   'parseMethodResourcePath': {
     'fails if path does not start with a /'(test: Test) {
-      test.throws(() => parseMethodOptionsPath('foo'), /Method options path must start with \'\/\'/);
+      test.throws(() => parseMethodOptionsPath('foo'), /Method options path must start with '\/'/);
       test.done();
     },
 

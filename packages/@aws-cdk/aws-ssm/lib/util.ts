@@ -1,4 +1,4 @@
-import { IConstruct, Stack, Token } from "@aws-cdk/core";
+import { IConstruct, Stack, Token } from '@aws-cdk/core';
 
 export const AUTOGEN_MARKER = '$$autogen$$';
 
@@ -40,7 +40,8 @@ export function arnForParameterName(scope: IConstruct, parameterName: string, op
     if (!concreteName || Token.isUnresolved(concreteName)) {
 
       if (options.simpleName === undefined) {
-        throw new Error(`Unable to determine ARN separator for SSM parameter since the parameter name is an unresolved token. Use "fromAttributes" and specify "simpleName" explicitly`);
+        // eslint-disable-next-line max-len
+        throw new Error('Unable to determine ARN separator for SSM parameter since the parameter name is an unresolved token. Use "fromAttributes" and specify "simpleName" explicitly');
       }
 
       return options.simpleName;
@@ -52,9 +53,11 @@ export function arnForParameterName(scope: IConstruct, parameterName: string, op
     if (options.simpleName !== undefined && options.simpleName !== result) {
 
       if (concreteName === AUTOGEN_MARKER) {
-        throw new Error(`If "parameterName" is not explicitly defined, "simpleName" must be "true" or undefined since auto-generated parameter names always have simple names`);
+        // eslint-disable-next-line max-len
+        throw new Error('If "parameterName" is not explicitly defined, "simpleName" must be "true" or undefined since auto-generated parameter names always have simple names');
       }
 
+      // eslint-disable-next-line max-len
       throw new Error(`Parameter name "${concreteName}" is ${result ? 'a simple name' : 'not a simple name'}, but "simpleName" was explicitly set to ${options.simpleName}. Either omit it or set it to ${result}`);
     }
 

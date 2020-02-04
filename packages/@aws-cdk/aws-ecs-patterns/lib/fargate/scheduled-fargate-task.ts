@@ -85,7 +85,7 @@ export class ScheduledFargateTask extends ScheduledTaskBase {
   /**
    * Constructs a new instance of the ScheduledFargateTask class.
    */
-  constructor(scope: Construct, id: string, props: ScheduledFargateTaskProps) {
+  public constructor(scope: Construct, id: string, props: ScheduledFargateTaskProps) {
     super(scope, id, props);
 
     if (props.scheduledFargateTaskDefinitionOptions && props.scheduledFargateTaskImageOptions) {

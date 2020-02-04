@@ -1,4 +1,4 @@
-import { Intrinsic } from "./private/intrinsic";
+import { Intrinsic } from './private/intrinsic';
 
 const REFERENCE_SYMBOL = Symbol.for('@aws-cdk/core.Reference');
 
@@ -18,7 +18,7 @@ export abstract class Reference extends Intrinsic {
   public readonly target: IConstruct;
   public readonly displayName: string;
 
-  constructor(value: any, target: IConstruct, displayName?: string) {
+  public constructor(value: any, target: IConstruct, displayName?: string) {
     super(value);
     Object.defineProperty(this, REFERENCE_SYMBOL, { value: true });
     this.target = target;

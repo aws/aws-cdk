@@ -55,20 +55,18 @@ test('calls DescribeImages on the request', async () => {
 
 test('returns the most recent AMI matching the criteria', async () => {
   // GIVEN
-  AWS.mock('EC2', 'describeImages', (_: aws.EC2.DescribeImagesRequest, cb: AwsCallback<aws.EC2.DescribeImagesResult>) => {
-    return cb(null, {
-      Images: [
-        {
-          ImageId: 'ami-1234',
-          CreationDate: "2016-06-22T08:39:59.000Z",
-        },
-        {
-          ImageId: 'ami-5678',
-          CreationDate: "2019-06-22T08:39:59.000Z",
-        }
-      ]
-    });
-  });
+  AWS.mock('EC2', 'describeImages', (_: aws.EC2.DescribeImagesRequest, cb: AwsCallback<aws.EC2.DescribeImagesResult>) => cb(null, {
+    Images: [
+      {
+        ImageId: 'ami-1234',
+        CreationDate: '2016-06-22T08:39:59.000Z',
+      },
+      {
+        ImageId: 'ami-5678',
+        CreationDate: '2019-06-22T08:39:59.000Z',
+      }
+    ]
+  }));
 
   // WHEN
   const result = await new AmiContextProviderPlugin(mockSDK).getValue({

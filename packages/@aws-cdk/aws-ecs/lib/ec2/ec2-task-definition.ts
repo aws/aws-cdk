@@ -28,9 +28,8 @@ export interface Ec2TaskDefinitionProps extends CommonTaskDefinitionProps {
 /**
  * The interface of a task definition run on an EC2 cluster.
  */
-export interface IEc2TaskDefinition extends ITaskDefinition {
-
-}
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface IEc2TaskDefinition extends ITaskDefinition { }
 
 /**
  * The details of a task definition run on an EC2 cluster.
@@ -55,7 +54,7 @@ export class Ec2TaskDefinition extends TaskDefinition implements IEc2TaskDefinit
   /**
    * Constructs a new instance of the Ec2TaskDefinition class.
    */
-  constructor(scope: Construct, id: string, props: Ec2TaskDefinitionProps = {}) {
+  public constructor(scope: Construct, id: string, props: Ec2TaskDefinitionProps = {}) {
     super(scope, id, {
       ...props,
       compatibility: Compatibility.EC2,

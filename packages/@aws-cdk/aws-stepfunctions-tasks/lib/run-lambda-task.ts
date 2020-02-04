@@ -60,7 +60,7 @@ export interface RunLambdaTaskProps {
 export class RunLambdaTask implements sfn.IStepFunctionsTask {
   private readonly integrationPattern: sfn.ServiceIntegrationPattern;
 
-  constructor(private readonly lambdaFunction: lambda.IFunction, private readonly props: RunLambdaTaskProps = {}) {
+  public constructor(private readonly lambdaFunction: lambda.IFunction, private readonly props: RunLambdaTaskProps = {}) {
     this.integrationPattern = props.integrationPattern || sfn.ServiceIntegrationPattern.FIRE_AND_FORGET;
 
     const supportedPatterns = [
@@ -80,10 +80,10 @@ export class RunLambdaTask implements sfn.IStepFunctionsTask {
 
   public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
     return {
-      resourceArn: getResourceArn("lambda", "invoke", this.integrationPattern),
+      resourceArn: getResourceArn('lambda', 'invoke', this.integrationPattern),
       policyStatements: [new iam.PolicyStatement({
         resources: [this.lambdaFunction.functionArn],
-        actions: ["lambda:InvokeFunction"],
+        actions: ['lambda:InvokeFunction'],
       })],
       metricPrefixSingular: 'LambdaFunction',
       metricPrefixPlural: 'LambdaFunctions',

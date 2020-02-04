@@ -1,4 +1,4 @@
-// tslint:disable:no-console no-eval
+/* eslint-disable no-console */
 import { Event } from '../evaluate-expression';
 
 export async function handler(event: Event): Promise<any> {
@@ -11,5 +11,6 @@ export async function handler(event: Event): Promise<any> {
     );
   console.log(`Expression: ${expression}`);
 
+  // eslint-disable-next-line no-eval
   return eval(expression);
 }

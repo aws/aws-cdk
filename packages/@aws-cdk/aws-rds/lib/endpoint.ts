@@ -21,7 +21,7 @@ export class Endpoint {
    */
   public readonly socketAddress: string;
 
-  constructor(address: string, port: number) {
+  public constructor(address: string, port: number) {
     this.hostname = address;
     this.port = port;
 

@@ -19,7 +19,7 @@ export class QueuePolicy extends Resource {
    */
   public readonly document = new PolicyDocument();
 
-  constructor(scope: Construct, id: string, props: QueuePolicyProps) {
+  public constructor(scope: Construct, id: string, props: QueuePolicyProps) {
     super(scope, id);
 
     new CfnQueuePolicy(this, 'Resource', {

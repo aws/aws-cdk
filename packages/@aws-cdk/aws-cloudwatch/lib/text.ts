@@ -1,4 +1,4 @@
-import { ConcreteWidget } from "./widget";
+import { ConcreteWidget } from './widget';
 
 /**
  * Properties for a Text widget
@@ -30,7 +30,7 @@ export interface TextWidgetProps {
 export class TextWidget extends ConcreteWidget {
   private readonly markdown: string;
 
-  constructor(props: TextWidgetProps) {
+  public constructor(props: TextWidgetProps) {
     super(props.width || 6, props.height || 2);
     this.markdown = props.markdown;
   }

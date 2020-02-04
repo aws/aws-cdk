@@ -178,11 +178,11 @@ function renderHealthCheck(hc: HealthCheck | undefined, pm: PortMapping): CfnVir
   };
 
   (Object.keys(healthCheck) as Array<keyof CfnVirtualNode.HealthCheckProperty>)
-    .filter((key) =>
-        HEALTH_CHECK_PROPERTY_THRESHOLDS[key] &&
+    .filter(key =>
+      HEALTH_CHECK_PROPERTY_THRESHOLDS[key] &&
           typeof healthCheck[key] === 'number' &&
           !cdk.Token.isUnresolved(healthCheck[key])
-    ).map((key) => {
+    ).map(key => {
       const [min, max] = HEALTH_CHECK_PROPERTY_THRESHOLDS[key]!;
       const value = healthCheck[key]!;
 
@@ -239,7 +239,7 @@ export class VirtualNode extends VirtualNodeBase {
    */
   public readonly mesh: IMesh;
 
-  constructor(scope: cdk.Construct, id: string, props: VirtualNodeProps) {
+  public constructor(scope: cdk.Construct, id: string, props: VirtualNodeProps) {
     super(scope, id, {
       physicalName: props.virtualNodeName || cdk.Lazy.stringValue({ produce: () => this.node.uniqueId })
     });
@@ -321,7 +321,7 @@ class ImportedVirtualNode extends VirtualNodeBase {
    */
   public readonly virtualNodeArn: string;
 
-  constructor(scope: cdk.Construct, id: string, props: VirtualNodeAttributes) {
+  public constructor(scope: cdk.Construct, id: string, props: VirtualNodeAttributes) {
     super(scope, id);
 
     if (props.virtualNodeArn) {

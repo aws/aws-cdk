@@ -22,7 +22,7 @@ export class BucketPolicy extends Resource {
    */
   public readonly document = new PolicyDocument();
 
-  constructor(scope: Construct, id: string, props: BucketPolicyProps) {
+  public constructor(scope: Construct, id: string, props: BucketPolicyProps) {
     super(scope, id);
 
     if (!props.bucket.bucketName) {

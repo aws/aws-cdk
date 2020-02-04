@@ -1,6 +1,6 @@
 import * as cdk from '@aws-cdk/core';
 import { BaseTargetGroupProps, HealthCheck, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
-         TargetGroupAttributes, TargetGroupBase, TargetGroupImportProps } from '../shared/base-target-group';
+  TargetGroupAttributes, TargetGroupBase, TargetGroupImportProps } from '../shared/base-target-group';
 import { Protocol } from '../shared/enums';
 import { ImportedTargetGroupBase } from '../shared/imported';
 import { INetworkListener } from './network-listener';
@@ -55,7 +55,7 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
 
   private readonly listeners: INetworkListener[];
 
-  constructor(scope: cdk.Construct, id: string, props: NetworkTargetGroupProps) {
+  public constructor(scope: cdk.Construct, id: string, props: NetworkTargetGroupProps) {
     super(scope, id, props, {
       protocol: Protocol.TCP,
       port: props.port,

@@ -43,12 +43,13 @@ export class CodeName {
   }
 
   /* eslint-disable no-shadow */
-  constructor(readonly packageName: string,
-              readonly namespace: string,
-              readonly className: string,
-              readonly specName?: SpecName,
-              readonly methodName?: string) {
-  }
+  public constructor(
+    public readonly packageName: string,
+    public readonly namespace: string,
+    public readonly className: string,
+    public readonly specName?: SpecName,
+    public readonly methodName?: string
+  ) {}
   /* eslint-enable no-shadow */
 
   /**
@@ -94,10 +95,10 @@ export const TOKEN_NAME = new CodeName('', CORE_NAMESPACE, 'IResolvable');
  * Resource attribute
  */
 export class Attribute {
-  constructor(
-    readonly propertyName: string,
-    readonly attributeType: string,
-    readonly constructorArguments: string) {
+  public constructor(
+    public readonly propertyName: string,
+    public readonly attributeType: string,
+    public readonly constructorArguments: string) {
   }
 }
 

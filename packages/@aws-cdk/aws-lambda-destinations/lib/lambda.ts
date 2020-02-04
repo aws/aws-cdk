@@ -29,7 +29,7 @@ export interface LambdaDestinationOptions {
  * Use a Lambda function as a Lambda destination
  */
 export class LambdaDestination implements lambda.IDestination {
-  constructor(private readonly fn: lambda.IFunction, private readonly options: LambdaDestinationOptions = {}) {
+  public constructor(private readonly fn: lambda.IFunction, private readonly options: LambdaDestinationOptions = {}) {
   }
 
   /**

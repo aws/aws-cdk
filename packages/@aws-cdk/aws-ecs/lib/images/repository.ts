@@ -1,7 +1,7 @@
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { Construct, Token } from '@aws-cdk/core';
-import { ContainerDefinition } from "../container-definition";
-import { ContainerImage, ContainerImageConfig } from "../container-image";
+import { ContainerDefinition } from '../container-definition';
+import { ContainerImage, ContainerImageConfig } from '../container-image';
 
 /**
  * Regex pattern to check if it is an ECR image URL.
@@ -30,7 +30,7 @@ export class RepositoryImage extends ContainerImage {
   /**
    * Constructs a new instance of the RepositoryImage class.
    */
-  constructor(private readonly imageName: string, private readonly props: RepositoryImageProps = {}) {
+  public constructor(private readonly imageName: string, private readonly props: RepositoryImageProps = {}) {
     super();
   }
 

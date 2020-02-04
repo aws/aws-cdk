@@ -52,11 +52,11 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
 
   private readonly endpointService: CfnVPCEndpointService;
 
-  constructor(scope: Construct, id: string, props: VpcEndpointServiceProps) {
+  public constructor(scope: Construct, id: string, props: VpcEndpointServiceProps) {
     super(scope, id);
 
     if (props.vpcEndpointServiceLoadBalancers === undefined || props.vpcEndpointServiceLoadBalancers.length === 0) {
-      throw new Error("VPC Endpoint Service must have at least one load balancer specified.");
+      throw new Error('VPC Endpoint Service must have at least one load balancer specified.');
     }
 
     this.vpcEndpointServiceLoadBalancers = props.vpcEndpointServiceLoadBalancers;
@@ -69,7 +69,7 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
     });
 
     if (this.whitelistedPrincipals.length > 0) {
-      new CfnVPCEndpointServicePermissions(this, "Permissions", {
+      new CfnVPCEndpointServicePermissions(this, 'Permissions', {
         serviceId: this.endpointService.ref,
         allowedPrincipals: this.whitelistedPrincipals.map(x => x.arn)
       });

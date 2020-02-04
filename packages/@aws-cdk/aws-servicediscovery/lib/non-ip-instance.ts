@@ -35,7 +35,7 @@ export class NonIpInstance extends InstanceBase {
    */
   public readonly service: IService;
 
-  constructor(scope: cdk.Construct, id: string, props: NonIpInstanceProps) {
+  public constructor(scope: cdk.Construct, id: string, props: NonIpInstanceProps) {
     super(scope, id);
 
     if (props.service.namespace.type !== NamespaceType.HTTP) {

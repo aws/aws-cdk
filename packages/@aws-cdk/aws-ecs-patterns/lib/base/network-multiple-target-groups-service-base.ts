@@ -284,7 +284,7 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends Construct {
   /**
    * Constructs a new instance of the NetworkMultipleTargetGroupsServiceBase class.
    */
-  constructor(scope: Construct, id: string, props: NetworkMultipleTargetGroupsServiceBaseProps = {}) {
+  public constructor(scope: Construct, id: string, props: NetworkMultipleTargetGroupsServiceBaseProps = {}) {
     super(scope, id);
 
     this.validateInput(props);

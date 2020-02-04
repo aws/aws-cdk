@@ -4,8 +4,8 @@ import { Cluster, ClusterOptions, CoreDnsComputeType } from './cluster';
 /**
  * Configuration props for EKS Fargate.
  */
-export interface FargateClusterProps extends ClusterOptions {
-}
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface FargateClusterProps extends ClusterOptions { }
 
 /**
  * Defines an EKS cluster that runs entirely on AWS Fargate.
@@ -15,7 +15,7 @@ export interface FargateClusterProps extends ClusterOptions {
  * `addFargateProfile`.
  */
 export class FargateCluster extends Cluster {
-  constructor(scope: Construct, id: string, props: FargateClusterProps = { }) {
+  public constructor(scope: Construct, id: string, props: FargateClusterProps = { }) {
     super(scope, id, {
       ...props,
       defaultCapacity: 0,

@@ -2,14 +2,14 @@ import * as dynamodb from '@aws-cdk/aws-dynamodb';
 import * as lambda from '@aws-cdk/aws-lambda';
 import {StreamEventSource, StreamEventSourceProps} from './stream';
 
-export interface DynamoEventSourceProps extends StreamEventSourceProps {
-}
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface DynamoEventSourceProps extends StreamEventSourceProps { }
 
 /**
  * Use an Amazon DynamoDB stream as an event source for AWS Lambda.
  */
 export class DynamoEventSource extends StreamEventSource {
-  constructor(private readonly table: dynamodb.Table, props: DynamoEventSourceProps) {
+  public constructor(private readonly table: dynamodb.Table, props: DynamoEventSourceProps) {
     super(props);
 
     if (this.props.batchSize !== undefined && (this.props.batchSize < 1 || this.props.batchSize > 1000)) {

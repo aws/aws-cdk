@@ -22,15 +22,15 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::Route53::RecordSet', {
-      Name: "www.myzone.",
-      Type: "CNAME",
+      Name: 'www.myzone.',
+      Type: 'CNAME',
       HostedZoneId: {
-        Ref: "HostedZoneDB99F866"
+        Ref: 'HostedZoneDB99F866'
       },
       ResourceRecords: [
-        "zzz"
+        'zzz'
       ],
-      TTL: "1800"
+      TTL: '1800'
     }));
     test.done();
   },
@@ -54,15 +54,15 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::Route53::RecordSet', {
-      Name: "aa.myzone.",
-      Type: "CNAME",
+      Name: 'aa.myzone.',
+      Type: 'CNAME',
       HostedZoneId: {
-        Ref: "HostedZoneDB99F866"
+        Ref: 'HostedZoneDB99F866'
       },
       ResourceRecords: [
-        "bbb"
+        'bbb'
       ],
-      TTL: "6077"
+      TTL: '6077'
     }));
     test.done();
   },
@@ -84,13 +84,13 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::Route53::RecordSet', {
-      Name: "myzone.",
-      Type: "A",
+      Name: 'myzone.',
+      Type: 'A',
       HostedZoneId: {
-        Ref: "HostedZoneDB99F866"
+        Ref: 'HostedZoneDB99F866'
       },
       ResourceRecords: [
-        "1.2.3.4"
+        '1.2.3.4'
       ],
     }));
     test.done();
@@ -113,16 +113,16 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::Route53::RecordSet', {
-      Name: "www.myzone.",
-      Type: "A",
+      Name: 'www.myzone.',
+      Type: 'A',
       HostedZoneId: {
-        Ref: "HostedZoneDB99F866"
+        Ref: 'HostedZoneDB99F866'
       },
       ResourceRecords: [
-        "1.2.3.4",
-        "5.6.7.8"
+        '1.2.3.4',
+        '5.6.7.8'
       ],
-      TTL: "1800"
+      TTL: '1800'
     }));
     test.done();
   },
@@ -136,12 +136,10 @@ export = {
     });
 
     const target: route53.IAliasRecordTarget = {
-      bind: () => {
-        return {
-          hostedZoneId: 'Z2P70J7EXAMPLE',
-          dnsName: 'foo.example.com'
-        };
-      }
+      bind: () => ({
+        hostedZoneId: 'Z2P70J7EXAMPLE',
+        dnsName: 'foo.example.com'
+      })
     };
 
     // WHEN
@@ -184,15 +182,15 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::Route53::RecordSet', {
-      Name: "www.myzone.",
-      Type: "AAAA",
+      Name: 'www.myzone.',
+      Type: 'AAAA',
       HostedZoneId: {
-        Ref: "HostedZoneDB99F866"
+        Ref: 'HostedZoneDB99F866'
       },
       ResourceRecords: [
-        "2001:0db8:85a3:0000:0000:8a2e:0370:7334"
+        '2001:0db8:85a3:0000:0000:8a2e:0370:7334'
       ],
-      TTL: "1800"
+      TTL: '1800'
     }));
     test.done();
   },
@@ -205,12 +203,10 @@ export = {
     });
 
     const target: route53.IAliasRecordTarget = {
-      bind: () => {
-        return {
-          hostedZoneId: 'Z2P70J7EXAMPLE',
-          dnsName: 'foo.example.com'
-        };
-      }
+      bind: () => ({
+        hostedZoneId: 'Z2P70J7EXAMPLE',
+        dnsName: 'foo.example.com'
+      })
     };
 
     // WHEN
@@ -252,15 +248,15 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::Route53::RecordSet', {
-      Name: "www.myzone.",
-      Type: "CNAME",
+      Name: 'www.myzone.',
+      Type: 'CNAME',
       HostedZoneId: {
-        Ref: "HostedZoneDB99F866"
+        Ref: 'HostedZoneDB99F866'
       },
       ResourceRecords: [
-        "hello"
+        'hello'
       ],
-      TTL: "1800"
+      TTL: '1800'
     }));
     test.done();
   },
@@ -282,15 +278,15 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::Route53::RecordSet', {
-      Name: "www.myzone.",
-      Type: "TXT",
+      Name: 'www.myzone.',
+      Type: 'TXT',
       HostedZoneId: {
-        Ref: "HostedZoneDB99F866"
+        Ref: 'HostedZoneDB99F866'
       },
       ResourceRecords: [
         '"should be enclosed with double quotes"'
       ],
-      TTL: "1800"
+      TTL: '1800'
     }));
     test.done();
   },
@@ -317,15 +313,15 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::Route53::RecordSet', {
-      Name: "www.myzone.",
-      Type: "SRV",
+      Name: 'www.myzone.',
+      Type: 'SRV',
       HostedZoneId: {
-        Ref: "HostedZoneDB99F866"
+        Ref: 'HostedZoneDB99F866'
       },
       ResourceRecords: [
         '10 5 8080 aws.com'
       ],
-      TTL: "1800"
+      TTL: '1800'
     }));
     test.done();
   },
@@ -351,15 +347,15 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::Route53::RecordSet', {
-      Name: "www.myzone.",
-      Type: "CAA",
+      Name: 'www.myzone.',
+      Type: 'CAA',
       HostedZoneId: {
-        Ref: "HostedZoneDB99F866"
+        Ref: 'HostedZoneDB99F866'
       },
       ResourceRecords: [
         '0 issue "ssl.com"'
       ],
-      TTL: "1800"
+      TTL: '1800'
     }));
     test.done();
   },
@@ -380,15 +376,15 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::Route53::RecordSet', {
-      Name: "myzone.",
-      Type: "CAA",
+      Name: 'myzone.',
+      Type: 'CAA',
       HostedZoneId: {
-        Ref: "HostedZoneDB99F866"
+        Ref: 'HostedZoneDB99F866'
       },
       ResourceRecords: [
         '0 issue "amazon.com"'
       ],
-      TTL: "1800"
+      TTL: '1800'
     }));
     test.done();
   },
@@ -413,15 +409,15 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::Route53::RecordSet', {
-      Name: "mail.myzone.",
-      Type: "MX",
+      Name: 'mail.myzone.',
+      Type: 'MX',
       HostedZoneId: {
-        Ref: "HostedZoneDB99F866"
+        Ref: 'HostedZoneDB99F866'
       },
       ResourceRecords: [
         '10 workmail.aws'
       ],
-      TTL: "1800"
+      TTL: '1800'
     }));
     test.done();
   },
@@ -443,15 +439,15 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::Route53::RecordSet', {
-      Name: "foo.myzone.",
-      Type: "NS",
+      Name: 'foo.myzone.',
+      Type: 'NS',
       HostedZoneId: {
-        Ref: "HostedZoneDB99F866"
+        Ref: 'HostedZoneDB99F866'
       },
       ResourceRecords: [
-        "ns-1777.awsdns-30.co.uk."
+        'ns-1777.awsdns-30.co.uk.'
       ],
-      TTL: "172800"
+      TTL: '172800'
     }));
     test.done();
   }

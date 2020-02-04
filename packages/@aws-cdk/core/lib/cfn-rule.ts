@@ -65,7 +65,7 @@ export class CfnRule extends CfnRefElement {
    * @param scope The parent construct.
    * @param props The rule props.
    */
-  constructor(scope: Construct, id: string, props?: CfnRuleProps) {
+  public constructor(scope: Construct, id: string, props?: CfnRuleProps) {
     super(scope, id);
 
     this.ruleCondition = props && props.ruleCondition;

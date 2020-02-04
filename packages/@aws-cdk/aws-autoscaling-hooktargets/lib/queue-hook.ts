@@ -6,7 +6,7 @@ import { Construct } from '@aws-cdk/core';
  * Use an SQS queue as a hook target
  */
 export class QueueHook implements autoscaling.ILifecycleHookTarget {
-  constructor(private readonly queue: sqs.IQueue) {
+  public constructor(private readonly queue: sqs.IQueue) {
   }
 
   public bind(_scope: Construct, lifecycleHook: autoscaling.ILifecycleHook): autoscaling.LifecycleHookTargetConfig {

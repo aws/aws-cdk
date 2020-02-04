@@ -53,7 +53,8 @@ export = {
 
       // THEN
       test.equal(mocks.actualRequest.createClusterRequest?.name.length, 100);
-      test.deepEqual(mocks.actualRequest.createClusterRequest?.name, 'hellohellohellohellohellohellohellohellohellohellohellohellohellohe-602c078a6181435296764f00352445aa');
+      test.deepEqual(mocks.actualRequest.createClusterRequest?.name,
+        'hellohellohellohellohellohellohellohellohellohellohellohellohellohe-602c078a6181435296764f00352445aa');
       test.done();
     },
 
@@ -304,6 +305,7 @@ export = {
           err = e;
         }
 
+        // eslint-disable-next-line max-len
         test.equal(err?.message, 'Cannot replace cluster "explicit-cluster-name" since it has an explicit physical name. Either rename the cluster or remove the "name" configuration');
         test.done();
       },

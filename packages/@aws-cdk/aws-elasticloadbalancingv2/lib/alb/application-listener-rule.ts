@@ -166,11 +166,11 @@ export class ApplicationListenerRule extends cdk.Construct {
   private readonly actions: any[] = [];
   private readonly listener: IApplicationListener;
 
-  constructor(scope: cdk.Construct, id: string, props: ApplicationListenerRuleProps) {
+  public constructor(scope: cdk.Construct, id: string, props: ApplicationListenerRuleProps) {
     super(scope, id);
 
     if (!props.hostHeader && !props.pathPattern) {
-      throw new Error(`At least one of 'hostHeader' or 'pathPattern' is required when defining a load balancing rule.`);
+      throw new Error('At least one of \'hostHeader\' or \'pathPattern\' is required when defining a load balancing rule.');
     }
 
     const possibleActions: Array<keyof ApplicationListenerRuleProps> = ['targetGroups', 'fixedResponse', 'redirectResponse'];

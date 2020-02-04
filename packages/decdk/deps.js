@@ -2,6 +2,9 @@
 // | this script runs during build to verify that this package depends on the entire aws construct
 // | library. the script will fail (and update package.json) if this is not true.
 // |
+
+/* eslint-disable no-console */
+
 const fs = require('fs');
 const path = require('path');
 

@@ -46,7 +46,7 @@ export class CfnOutput extends CfnElement {
    * @param scope The parent construct.
    * @param props CfnOutput properties.
    */
-  constructor(scope: Construct, id: string, props: CfnOutputProps) {
+  public constructor(scope: Construct, id: string, props: CfnOutputProps) {
     super(scope, id);
 
     if (props.value === undefined) {

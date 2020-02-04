@@ -201,7 +201,7 @@ test('add s3 action', () => {
           },
           Effect: 'Allow',
           Principal: {
-            Service: "ses.amazonaws.com"
+            Service: 'ses.amazonaws.com'
           },
           Resource: {
             'Fn::Join': [
@@ -240,7 +240,7 @@ test('add s3 action', () => {
             'kms:Delete*',
             'kms:ScheduleKeyDeletion',
             'kms:CancelKeyDeletion',
-            "kms:GenerateDataKey"
+            'kms:GenerateDataKey'
           ],
           Effect: 'Allow',
           Principal: {
@@ -281,7 +281,7 @@ test('add s3 action', () => {
           },
           Effect: 'Allow',
           Principal: {
-            Service: "ses.amazonaws.com"
+            Service: 'ses.amazonaws.com'
           },
           Resource: '*'
         }

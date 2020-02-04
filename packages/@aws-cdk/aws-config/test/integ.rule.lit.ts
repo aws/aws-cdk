@@ -7,7 +7,7 @@ import * as config from '../lib';
 const app = new cdk.App();
 
 class ConfigStack extends cdk.Stack {
-  constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
+  public constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
     /// !show

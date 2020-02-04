@@ -40,7 +40,7 @@ export class LogRetention extends cdk.Construct {
    */
   public readonly logGroupArn: string;
 
-  constructor(scope: cdk.Construct, id: string, props: LogRetentionProps) {
+  public constructor(scope: cdk.Construct, id: string, props: LogRetentionProps) {
     super(scope, id);
 
     // Custom resource provider

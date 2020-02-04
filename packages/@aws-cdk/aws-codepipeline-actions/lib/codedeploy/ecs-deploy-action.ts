@@ -108,7 +108,7 @@ export interface CodeDeployEcsDeployActionProps extends codepipeline.CommonAwsAc
 export class CodeDeployEcsDeployAction extends Action {
   private readonly actionProps: CodeDeployEcsDeployActionProps;
 
-  constructor(props: CodeDeployEcsDeployActionProps) {
+  public constructor(props: CodeDeployEcsDeployActionProps) {
     const inputs: codepipeline.Artifact[] = [];
     inputs.push(determineTaskDefinitionArtifact(props));
     inputs.push(determineAppSpecArtifact(props));
@@ -136,7 +136,7 @@ export class CodeDeployEcsDeployAction extends Action {
   }
 
   protected bound(_scope: Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
-      codepipeline.ActionConfig {
+  codepipeline.ActionConfig {
     // permissions, based on:
     // https://docs.aws.amazon.com/codedeploy/latest/userguide/auth-and-access-control-permissions-reference.html
 

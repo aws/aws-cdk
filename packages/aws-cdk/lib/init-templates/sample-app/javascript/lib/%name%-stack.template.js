@@ -9,7 +9,7 @@ class %name.PascalCased%Stack extends cdk.Stack {
    * @param {string} id
    * @param {cdk.StackProps=} props
    */
-  constructor(scope, id, props) {
+  public constructor(scope, id, props) {
     super(scope, id, props);
 
     const queue = new sqs.Queue(this, '%name.PascalCased%Queue', {

@@ -40,7 +40,7 @@ export class VersionCheckTTL {
   // File modify times are accurate only to the second
   private readonly ttlSecs: number;
 
-  constructor(file?: string, ttlSecs?: number) {
+  public constructor(file?: string, ttlSecs?: number) {
     this.file = file || VersionCheckTTL.timestampFilePath();
     try {
       fs.mkdirsSync(path.dirname(this.file));
@@ -84,7 +84,7 @@ export async function latestVersionIfHigher(currentVersion: string, cacheFile: V
     return null;
   }
 
-  const { stdout, stderr } = await exec(`npm view aws-cdk version`);
+  const { stdout, stderr } = await exec('npm view aws-cdk version');
   if (stderr && stderr.trim().length > 0) {
     debug(`The 'npm view' command generated an error stream with content [${stderr.trim()}]`);
   }
@@ -113,9 +113,9 @@ export async function displayVersionMessage(): Promise<void> {
     if (laterVersion) {
       const bannerMsg = formatAsBanner([
         `Newer version of CDK is available [${colors.green(laterVersion as string)}]`,
-        `Upgrade recommended`,
+        'Upgrade recommended',
       ]);
-      bannerMsg.forEach((e) => print(e));
+      bannerMsg.forEach(e => print(e));
     }
   } catch (err) {
     debug(`Could not run version check - ${err.message}`);

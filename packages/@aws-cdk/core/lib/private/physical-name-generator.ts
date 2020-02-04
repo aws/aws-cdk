@@ -39,7 +39,7 @@ export function generatePhysicalName(resource: IResource): string {
 abstract class NamePart {
   public readonly bareStr: string;
 
-  constructor(bareStr: string) {
+  public constructor(bareStr: string) {
     this.bareStr = bareStr;
   }
 
@@ -47,7 +47,7 @@ abstract class NamePart {
 }
 
 class PrefixNamePart extends NamePart {
-  constructor(bareStr: string, private readonly prefixLength: number) {
+  public constructor(bareStr: string, private readonly prefixLength: number) {
     super(bareStr);
   }
 
@@ -57,7 +57,7 @@ class PrefixNamePart extends NamePart {
 }
 
 class SuffixNamePart extends NamePart {
-  constructor(str: string, private readonly suffixLength: number) {
+  public constructor(str: string, private readonly suffixLength: number) {
     super(str);
   }
 
@@ -81,12 +81,12 @@ const GENERATE_IF_NEEDED_SYMBOL = Symbol.for('@aws-cdk/core.<private>.GenerateIf
 export class GeneratedWhenNeededMarker implements IResolvable {
   public readonly creationStack: string[] = [];
 
-  constructor() {
+  public constructor() {
     Object.defineProperty(this, GENERATE_IF_NEEDED_SYMBOL, { value: true });
   }
 
   public resolve(_ctx: IResolveContext): never {
-    throw new Error(`Invalid physical name passed to CloudFormation. Use "this.physicalName" instead`);
+    throw new Error('Invalid physical name passed to CloudFormation. Use "this.physicalName" instead');
   }
 
   public toString(): string {

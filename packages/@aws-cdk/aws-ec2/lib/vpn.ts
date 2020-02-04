@@ -147,7 +147,7 @@ export class VpnConnection extends cdk.Resource implements IVpnConnection {
   public readonly customerGatewayIp: string;
   public readonly customerGatewayAsn: number;
 
-  constructor(scope: cdk.Construct, id: string, props: VpnConnectionProps) {
+  public constructor(scope: cdk.Construct, id: string, props: VpnConnectionProps) {
     super(scope, id);
 
     if (!props.vpc.vpnGatewayId) {

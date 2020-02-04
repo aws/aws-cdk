@@ -40,10 +40,10 @@ abstract class OriginAccessIdentityBase extends cdk.Resource {
   protected arn(): string {
     return cdk.Stack.of(this).formatArn(
       {
-        service: "iam",
-        region: "", // global
-        account: "cloudfront",
-        resource: "user",
+        service: 'iam',
+        region: '', // global
+        account: 'cloudfront',
+        resource: 'user',
         resourceName: `CloudFront Origin Access Identity ${this.originAccessIdentityName}`
       }
     );
@@ -69,7 +69,7 @@ export class OriginAccessIdentity extends OriginAccessIdentityBase implements IO
     class Import extends OriginAccessIdentityBase {
       public readonly originAccessIdentityName = originAccessIdentityName;
       public readonly grantPrincipal = new iam.ArnPrincipal(this.arn());
-      constructor(s: cdk.Construct, i: string) {
+      public constructor(s: cdk.Construct, i: string) {
         super(s, i, { physicalName: originAccessIdentityName });
       }
     }
@@ -103,12 +103,12 @@ export class OriginAccessIdentity extends OriginAccessIdentityBase implements IO
    */
   private readonly resource: CfnCloudFrontOriginAccessIdentity;
 
-  constructor(scope: cdk.Construct, id: string, props?: OriginAccessIdentityProps) {
+  public constructor(scope: cdk.Construct, id: string, props?: OriginAccessIdentityProps) {
     super(scope, id);
 
-    this.resource = new CfnCloudFrontOriginAccessIdentity(this, "Resource", {
+    this.resource = new CfnCloudFrontOriginAccessIdentity(this, 'Resource', {
       cloudFrontOriginAccessIdentityConfig: {
-        comment: (props && props.comment) || "Allows CloudFront to reach the bucket"
+        comment: (props && props.comment) || 'Allows CloudFront to reach the bucket'
       }
     });
     // physical id - OAI name

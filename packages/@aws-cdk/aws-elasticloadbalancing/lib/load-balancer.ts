@@ -230,7 +230,7 @@ export class LoadBalancer extends Resource implements IConnectable {
   private readonly instancePorts: number[] = [];
   private readonly targets: ILoadBalancerTarget[] = [];
 
-  constructor(scope: Construct, id: string, props: LoadBalancerProps) {
+  public constructor(scope: Construct, id: string, props: LoadBalancerProps) {
     super(scope, id);
 
     this.securityGroup = new SecurityGroup(this, 'SecurityGroup', { vpc: props.vpc, allowAllOutbound: false });
@@ -264,7 +264,7 @@ export class LoadBalancer extends Resource implements IConnectable {
     const protocol = ifUndefinedLazy(listener.externalProtocol, () => wellKnownProtocol(listener.externalPort));
     const instancePort = listener.internalPort || listener.externalPort;
     const instanceProtocol = ifUndefined(listener.internalProtocol,
-                 ifUndefined(tryWellKnownProtocol(instancePort),
+      ifUndefined(tryWellKnownProtocol(instancePort),
                  isHttpProtocol(protocol) ? LoadBalancingProtocol.HTTP : LoadBalancingProtocol.TCP));
 
     this.listeners.push({
@@ -386,7 +386,7 @@ export class LoadBalancer extends Resource implements IConnectable {
 export class ListenerPort implements IConnectable {
   public readonly connections: Connections;
 
-  constructor(securityGroup: ISecurityGroup, defaultPort: Port) {
+  public constructor(securityGroup: ISecurityGroup, defaultPort: Port) {
     this.connections = new Connections({ securityGroups: [securityGroup], defaultPort });
   }
 }
@@ -422,10 +422,10 @@ function ifUndefinedLazy<T>(x: T | undefined, def: () => T): T {
  */
 function healthCheckToJSON(healthCheck: HealthCheck): CfnLoadBalancer.HealthCheckProperty {
   const protocol = ifUndefined(healthCheck.protocol,
-           ifUndefined(tryWellKnownProtocol(healthCheck.port),
-           LoadBalancingProtocol.TCP));
+    ifUndefined(tryWellKnownProtocol(healthCheck.port),
+      LoadBalancingProtocol.TCP));
 
-  const path = protocol === LoadBalancingProtocol.HTTP || protocol === LoadBalancingProtocol.HTTPS ? ifUndefined(healthCheck.path, "/") : "";
+  const path = protocol === LoadBalancingProtocol.HTTP || protocol === LoadBalancingProtocol.HTTPS ? ifUndefined(healthCheck.path, '/') : '';
 
   const target = `${protocol.toUpperCase()}:${healthCheck.port}${path}`;
 

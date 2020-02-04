@@ -114,7 +114,7 @@ export interface RecordSetProps extends RecordSetOptions {
 export class RecordSet extends Resource implements IRecordSet {
   public readonly domainName: string;
 
-  constructor(scope: Construct, id: string, props: RecordSetProps) {
+  public constructor(scope: Construct, id: string, props: RecordSetProps) {
     super(scope, id);
 
     const ttl = props.target.aliasTarget ? undefined : ((props.ttl && props.ttl.toSeconds()) || 1800).toString();
@@ -155,7 +155,7 @@ export interface ARecordProps extends RecordSetOptions {
  * @resource AWS::Route53::RecordSet
  */
 export class ARecord extends RecordSet {
-  constructor(scope: Construct, id: string, props: ARecordProps) {
+  public constructor(scope: Construct, id: string, props: ARecordProps) {
     super(scope, id, {
       ...props,
       recordType: RecordType.A,
@@ -180,7 +180,7 @@ export interface AaaaRecordProps extends RecordSetOptions {
  * @resource AWS::Route53::RecordSet
  */
 export class AaaaRecord extends RecordSet {
-  constructor(scope: Construct, id: string, props: AaaaRecordProps) {
+  public constructor(scope: Construct, id: string, props: AaaaRecordProps) {
     super(scope, id, {
       ...props,
       recordType: RecordType.AAAA,
@@ -205,7 +205,7 @@ export interface CnameRecordProps extends RecordSetOptions {
  * @resource AWS::Route53::RecordSet
  */
 export class CnameRecord extends RecordSet {
-  constructor(scope: Construct, id: string, props: CnameRecordProps) {
+  public constructor(scope: Construct, id: string, props: CnameRecordProps) {
     super(scope, id, {
       ...props,
       recordType: RecordType.CNAME,
@@ -230,7 +230,7 @@ export interface TxtRecordProps extends RecordSetOptions {
  * @resource AWS::Route53::RecordSet
  */
 export class TxtRecord extends RecordSet {
-  constructor(scope: Construct, id: string, props: TxtRecordProps) {
+  public constructor(scope: Construct, id: string, props: TxtRecordProps) {
     super(scope, id, {
       ...props,
       recordType: RecordType.TXT,
@@ -279,7 +279,7 @@ export interface SrvRecordProps extends RecordSetOptions {
  * @resource AWS::Route53::RecordSet
  */
 export class SrvRecord extends RecordSet {
-  constructor(scope: Construct, id: string, props: SrvRecordProps) {
+  public constructor(scope: Construct, id: string, props: SrvRecordProps) {
     super(scope, id, {
       ...props,
       recordType: RecordType.SRV,
@@ -347,7 +347,7 @@ export interface CaaRecordProps extends RecordSetOptions {
  * @resource AWS::Route53::RecordSet
  */
 export class CaaRecord extends RecordSet {
-  constructor(scope: Construct, id: string, props: CaaRecordProps) {
+  public constructor(scope: Construct, id: string, props: CaaRecordProps) {
     super(scope, id, {
       ...props,
       recordType: RecordType.CAA,
@@ -359,7 +359,8 @@ export class CaaRecord extends RecordSet {
 /**
  * Construction properties for a CaaAmazonRecord.
  */
-export interface CaaAmazonRecordProps extends RecordSetOptions {}
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface CaaAmazonRecordProps extends RecordSetOptions { }
 
 /**
  * A DNS Amazon CAA record.
@@ -370,7 +371,7 @@ export interface CaaAmazonRecordProps extends RecordSetOptions {}
  * @resource AWS::Route53::RecordSet
  */
 export class CaaAmazonRecord extends CaaRecord {
-  constructor(scope: Construct, id: string, props: CaaAmazonRecordProps) {
+  public constructor(scope: Construct, id: string, props: CaaAmazonRecordProps) {
     super(scope, id, {
       ...props,
       values: [
@@ -416,7 +417,7 @@ export interface MxRecordProps extends RecordSetOptions {
  * @resource AWS::Route53::RecordSet
  */
 export class MxRecord extends RecordSet {
-  constructor(scope: Construct, id: string, props: MxRecordProps) {
+  public constructor(scope: Construct, id: string, props: MxRecordProps) {
     super(scope, id, {
       ...props,
       recordType: RecordType.MX,
@@ -439,7 +440,7 @@ export interface ZoneDelegationRecordProps extends RecordSetOptions {
  * A record to delegate further lookups to a different set of name servers.
  */
 export class ZoneDelegationRecord extends RecordSet {
-  constructor(scope: Construct, id: string, props: ZoneDelegationRecordProps) {
+  public constructor(scope: Construct, id: string, props: ZoneDelegationRecordProps) {
     super(scope, id, {
       ...props,
       recordType: RecordType.NS,

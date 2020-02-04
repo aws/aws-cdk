@@ -102,7 +102,7 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
   /**
    * Configures options for asynchronous invocation.
    */
-  configureAsyncInvoke(options: EventInvokeConfigOptions): void
+  configureAsyncInvoke(options: EventInvokeConfigOptions): void;
 }
 
 /**
@@ -267,7 +267,7 @@ export abstract class FunctionBase extends Resource implements IFunction {
       // Fake resource-like object on which to call addToResourcePolicy(), which actually
       // calls addPermission()
       resource: {
-        addToResourcePolicy: (_statement) => {
+        addToResourcePolicy: _statement => {
           // Couldn't add permissions to the principal, so add them locally.
           const identifier = `Invoke${grantee.grantPrincipal}`; // calls the .toString() of the princpal
           this.addPermission(identifier, {
@@ -317,11 +317,11 @@ export abstract class FunctionBase extends Resource implements IFunction {
       return (principal as iam.AccountPrincipal).accountId;
     }
 
-    if (`service` in principal) {
+    if ('service' in principal) {
       return (principal as iam.ServicePrincipal).service;
     }
 
-    if (`arn` in principal) {
+    if ('arn' in principal) {
       return (principal as iam.ArnPrincipal).arn;
     }
 
@@ -369,7 +369,7 @@ class LatestVersion extends FunctionBase implements IVersion {
 
   protected readonly canCreatePermissions = true;
 
-  constructor(lambda: FunctionBase) {
+  public constructor(lambda: FunctionBase) {
     super(lambda, '$LATEST');
     this.lambda = lambda;
   }

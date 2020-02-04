@@ -77,7 +77,7 @@ export class NetworkMultipleTargetGroupsEc2Service extends NetworkMultipleTarget
   /**
    * Constructs a new instance of the NetworkMultipleTargetGroupsEc2Service class.
    */
-  constructor(scope: Construct, id: string, props: NetworkMultipleTargetGroupsEc2ServiceProps = {}) {
+  public constructor(scope: Construct, id: string, props: NetworkMultipleTargetGroupsEc2ServiceProps = {}) {
     super(scope, id, props);
 
     if (props.taskDefinition && props.taskImageOptions) {
@@ -134,7 +134,7 @@ export class NetworkMultipleTargetGroupsEc2Service extends NetworkMultipleTarget
   }
 
   private createEc2Service(props: NetworkMultipleTargetGroupsEc2ServiceProps): Ec2Service {
-    return new Ec2Service(this, "Service", {
+    return new Ec2Service(this, 'Service', {
       cluster: this.cluster,
       desiredCount: this.desiredCount,
       taskDefinition: this.taskDefinition,

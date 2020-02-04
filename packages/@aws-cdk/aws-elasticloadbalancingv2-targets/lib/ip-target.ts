@@ -34,7 +34,7 @@ export class IpTarget implements elbv2.IApplicationLoadBalancerTarget, elbv2.INe
    * @param port Override the group's default port
    * @param availabilityZone Availability zone to send traffic from
    */
-  constructor(private readonly ipAddress: string, private readonly port?: number, private readonly availabilityZone?: string) {
+  public constructor(private readonly ipAddress: string, private readonly port?: number, private readonly availabilityZone?: string) {
   }
 
   /**

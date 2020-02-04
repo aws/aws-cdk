@@ -1,7 +1,7 @@
-import { IConstruct } from "./construct";
-import { Intrinsic } from "./private/intrinsic";
-import { IPostProcessor, IResolveContext } from "./resolvable";
-import { Stack } from "./stack";
+import { IConstruct } from './construct';
+import { Intrinsic } from './private/intrinsic';
+import { IPostProcessor, IResolveContext } from './resolvable';
+import { Stack } from './stack';
 
 /**
  * Given an object, converts all keys to PascalCase given they are currently in camel case.
@@ -35,7 +35,7 @@ export function capitalizePropertyNames(construct: IConstruct, obj: any): any {
  * Turns empty arrays/objects to undefined (after evaluating tokens).
  */
 export function ignoreEmpty(obj: any): any {
- return new PostResolveToken(obj, o => {
+  return new PostResolveToken(obj, o => {
     // undefined/null
     if (o == null) {
       return o;
@@ -79,7 +79,7 @@ export function filterUndefined(obj: any): any {
  * A Token that applies a function AFTER resolve resolution
  */
 export class PostResolveToken extends Intrinsic implements IPostProcessor {
-  constructor(value: any, private readonly processor: (x: any) => any) {
+  public constructor(value: any, private readonly processor: (x: any) => any) {
     super(value);
   }
 

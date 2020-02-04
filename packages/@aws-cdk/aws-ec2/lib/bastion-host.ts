@@ -1,12 +1,12 @@
-import { IPrincipal, IRole, PolicyStatement } from "@aws-cdk/aws-iam";
-import { CfnOutput, Construct, Stack } from "@aws-cdk/core";
-import { AmazonLinuxGeneration, AmazonLinuxImage, InstanceClass, InstanceSize, InstanceType } from ".";
-import { Connections } from "./connections";
-import { IInstance, Instance } from "./instance";
-import { IPeer } from "./peer";
-import { Port } from "./port";
-import { ISecurityGroup } from "./security-group";
-import { IVpc, SubnetSelection, SubnetType } from "./vpc";
+import { IPrincipal, IRole, PolicyStatement } from '@aws-cdk/aws-iam';
+import { CfnOutput, Construct, Stack } from '@aws-cdk/core';
+import { AmazonLinuxGeneration, AmazonLinuxImage, InstanceClass, InstanceSize, InstanceType } from '.';
+import { Connections } from './connections';
+import { IInstance, Instance } from './instance';
+import { IPeer } from './peer';
+import { Port } from './port';
+import { ISecurityGroup } from './security-group';
+import { IVpc, SubnetSelection, SubnetType } from './vpc';
 
 /**
  * Properties of the bastion host
@@ -118,7 +118,7 @@ export class BastionHostLinux extends Construct implements IInstance {
    */
   public readonly instancePublicIp: string;
 
-  constructor(scope: Construct, id: string, props: BastionHostLinuxProps) {
+  public constructor(scope: Construct, id: string, props: BastionHostLinuxProps) {
     super(scope, id);
     this.stack = Stack.of(scope);
     this.instance = new Instance(this, 'Resource', {
@@ -163,8 +163,8 @@ export class BastionHostLinux extends Construct implements IInstance {
    * called, you should use SSM Session Manager to connect to the instance.
    */
   public allowSshAccessFrom(...peer: IPeer[]): void {
-      peer.forEach(p => {
-        this.connections.allowFrom(p, Port.tcp(22), 'SSH access');
-      });
+    peer.forEach(p => {
+      this.connections.allowFrom(p, Port.tcp(22), 'SSH access');
+    });
   }
 }

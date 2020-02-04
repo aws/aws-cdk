@@ -110,7 +110,7 @@ export class NetworkAcl extends NetworkAclBase {
   private readonly networkAcl: CfnNetworkAcl;
   private readonly vpc: IVpc;
 
-  constructor(scope: Construct, id: string, props: NetworkAclProps) {
+  public constructor(scope: Construct, id: string, props: NetworkAclProps) {
     super(scope, id, {
       physicalName: props.networkAclName
     });
@@ -149,12 +149,12 @@ export enum Action {
   /**
    * Allow the traffic
    */
-  ALLOW = "allow",
+  ALLOW = 'allow',
 
   /**
    * Deny the traffic
    */
-  DENY = "deny",
+  DENY = 'deny',
 }
 
 /**
@@ -166,7 +166,7 @@ export interface INetworkAclEntry extends IResource {
   /**
    * The network ACL.
    */
-  readonly networkAcl: INetworkAcl
+  readonly networkAcl: INetworkAcl;
 
 }
 
@@ -266,7 +266,7 @@ export interface NetworkAclEntryProps extends CommonNetworkAclEntryOptions {
 export class NetworkAclEntry extends NetworkAclEntryBase {
   public readonly networkAcl: INetworkAcl;
 
-  constructor(scope: Construct, id: string, props: NetworkAclEntryProps) {
+  public constructor(scope: Construct, id: string, props: NetworkAclEntryProps) {
     super(scope, id, {
       physicalName: props.networkAclEntryName
     });
@@ -290,7 +290,7 @@ export class NetworkAclEntry extends NetworkAclEntryBase {
  * @experimental
  */
 export interface ISubnetNetworkAclAssociation extends IResource {
- /**
+  /**
   * ID for the current SubnetNetworkAclAssociation
   * @attribute
   */
@@ -364,7 +364,7 @@ export class SubnetNetworkAclAssociation extends SubnetNetworkAclAssociationBase
 
   private association: CfnSubnetNetworkAclAssociation;
 
-  constructor(scope: Construct, id: string, props: SubnetNetworkAclAssociationProps) {
+  public constructor(scope: Construct, id: string, props: SubnetNetworkAclAssociationProps) {
     super(scope, id, {
       physicalName: props.subnetNetworkAclAssociationName
     });

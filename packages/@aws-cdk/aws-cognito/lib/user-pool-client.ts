@@ -44,7 +44,7 @@ export interface UserPoolClientProps {
    * List of enabled authentication flows
    * @default no enabled flows
    */
-  readonly enabledAuthFlows?: AuthFlow[]
+  readonly enabledAuthFlows?: AuthFlow[];
 }
 
 /**
@@ -66,7 +66,7 @@ export class UserPoolClient extends Resource {
    */
   public readonly userPoolClientClientSecret: string;
 
-  constructor(scope: Construct, id: string, props: UserPoolClientProps) {
+  public constructor(scope: Construct, id: string, props: UserPoolClientProps) {
     super(scope, id, {
       physicalName: props.userPoolClientName,
     });

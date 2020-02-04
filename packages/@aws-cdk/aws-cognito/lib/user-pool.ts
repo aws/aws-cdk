@@ -346,7 +346,7 @@ export class UserPool extends Resource implements IUserPool {
 
   private triggers: CfnUserPool.LambdaConfigProperty = { };
 
-  constructor(scope: Construct, id: string, props: UserPoolProps = {}) {
+  public constructor(scope: Construct, id: string, props: UserPoolProps = {}) {
     super(scope, id, {
       physicalName: props.userPoolName,
     });
@@ -355,19 +355,18 @@ export class UserPool extends Resource implements IUserPool {
     let usernameAttributes: UserPoolAttribute[] | undefined;
 
     if (props.usernameAliasAttributes != null && props.signInType !== SignInType.USERNAME) {
-      throw new Error(`'usernameAliasAttributes' can only be set with a signInType of 'USERNAME'`);
+      throw new Error('\'usernameAliasAttributes\' can only be set with a signInType of \'USERNAME\'');
     }
 
     if (props.usernameAliasAttributes
-      && !props.usernameAliasAttributes.every(a => {
-        return a === UserPoolAttribute.EMAIL || a === UserPoolAttribute.PHONE_NUMBER || a === UserPoolAttribute.PREFERRED_USERNAME;
-      })) {
-      throw new Error(`'usernameAliasAttributes' can only include EMAIL, PHONE_NUMBER, or PREFERRED_USERNAME`);
+      // eslint-disable-next-line max-len
+      && !props.usernameAliasAttributes.every(a => a === UserPoolAttribute.EMAIL || a === UserPoolAttribute.PHONE_NUMBER || a === UserPoolAttribute.PREFERRED_USERNAME)) {
+      throw new Error('\'usernameAliasAttributes\' can only include EMAIL, PHONE_NUMBER, or PREFERRED_USERNAME');
     }
 
     if (props.autoVerifiedAttributes
       && !props.autoVerifiedAttributes.every(a => a === UserPoolAttribute.EMAIL || a === UserPoolAttribute.PHONE_NUMBER)) {
-      throw new Error(`'autoVerifiedAttributes' can only include EMAIL or PHONE_NUMBER`);
+      throw new Error('\'autoVerifiedAttributes\' can only include EMAIL or PHONE_NUMBER');
     }
 
     switch (props.signInType) {

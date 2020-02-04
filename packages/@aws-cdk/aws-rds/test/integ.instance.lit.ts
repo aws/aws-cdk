@@ -9,7 +9,7 @@ import * as rds from '../lib';
 const app = new cdk.App();
 
 class DatabaseInstanceStack extends cdk.Stack {
-  constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
+  public constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
     const vpc = new ec2.Vpc(this, 'VPC', { maxAzs: 2 });
@@ -19,6 +19,7 @@ class DatabaseInstanceStack extends cdk.Stack {
     const parameterGroup = new rds.ParameterGroup(this, 'ParameterGroup', {
       family: 'oracle-se1-11.2',
       parameters: {
+        // eslint-disable-next-line @typescript-eslint/camelcase
         open_cursors: '2500'
       }
     });

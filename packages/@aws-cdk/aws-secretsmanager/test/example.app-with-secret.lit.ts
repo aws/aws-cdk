@@ -3,7 +3,7 @@ import * as cdk from '@aws-cdk/core';
 import * as secretsmanager from '../lib';
 
 class ExampleStack extends cdk.Stack {
-  constructor(scope: cdk.App, id: string) {
+  public constructor(scope: cdk.App, id: string) {
     super(scope, id);
 
     /// !show

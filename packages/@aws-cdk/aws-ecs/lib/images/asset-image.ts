@@ -39,7 +39,7 @@ export class AssetImage extends ContainerImage {
    *
    * @param directory The directory containing the Dockerfile
    */
-  constructor(private readonly directory: string, private readonly props: AssetImageProps = {}) {
+  public constructor(private readonly directory: string, private readonly props: AssetImageProps = {}) {
     super();
   }
 

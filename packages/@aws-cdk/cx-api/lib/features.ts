@@ -1,4 +1,3 @@
-
 /**
  * Enables the embedding of the "aws:cdk:path" in CloudFormation template metadata.
  */

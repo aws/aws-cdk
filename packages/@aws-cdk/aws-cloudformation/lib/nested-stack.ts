@@ -1,5 +1,8 @@
 import * as sns from '@aws-cdk/aws-sns';
-import { Aws, CfnOutput, CfnParameter, CfnResource, Construct, Duration, Fn, IResolvable, IResolveContext, Lazy, Reference, Stack, Token } from '@aws-cdk/core';
+import {
+  Aws, CfnOutput, CfnParameter, CfnResource, Construct, Duration, Fn, IResolvable, IResolveContext,
+  Lazy, Reference, Stack, Token
+} from '@aws-cdk/core';
 import { CfnStack } from './cloudformation.generated';
 
 const NESTED_STACK_SYMBOL = Symbol.for('@aws-cdk/aws-cloudformation.NestedStack');
@@ -83,7 +86,7 @@ export class NestedStack extends Stack {
   private readonly _contextualStackId: string;
   private readonly _contextualStackName: string;
 
-  constructor(scope: Construct, id: string, props: NestedStackProps = { }) {
+  public constructor(scope: Construct, id: string, props: NestedStackProps = { }) {
     const parentStack = findParentStack(scope);
 
     super(scope, id, { env: { account: parentStack.account, region: parentStack.region } });
@@ -220,12 +223,12 @@ export class NestedStack extends Stack {
  */
 function findParentStack(scope: Construct): Stack {
   if (!scope) {
-    throw new Error(`Nested stacks cannot be defined as a root construct`);
+    throw new Error('Nested stacks cannot be defined as a root construct');
   }
 
   const parentStack = scope.node.scopes.reverse().find(p => Stack.isStack(p));
   if (!parentStack) {
-    throw new Error(`Nested stacks must be defined within scope of another non-nested stack`);
+    throw new Error('Nested stacks must be defined within scope of another non-nested stack');
   }
 
   return parentStack as Stack;

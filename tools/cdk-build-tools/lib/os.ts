@@ -1,8 +1,8 @@
-import * as child_process from 'child_process';
+import * as childProcess from 'child_process';
 import * as colors from 'colors/safe';
 import * as fs from 'fs';
 import * as util from 'util';
-import { Timers } from "./timer";
+import { Timers } from './timer';
 
 interface ShellOptions {
   timers?: Timers;

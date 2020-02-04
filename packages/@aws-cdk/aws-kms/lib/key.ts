@@ -289,7 +289,7 @@ export class Key extends KeyBase {
       public readonly keyId: string;
       protected readonly policy?: iam.PolicyDocument | undefined = undefined;
 
-      constructor(keyId: string) {
+      public constructor(keyId: string) {
         super(scope, id);
 
         this.keyId = keyId;
@@ -308,7 +308,7 @@ export class Key extends KeyBase {
   public readonly keyId: string;
   protected readonly policy?: iam.PolicyDocument;
 
-  constructor(scope: Construct, id: string, props: KeyProps = {}) {
+  public constructor(scope: Construct, id: string, props: KeyProps = {}) {
     super(scope, id);
 
     if (props.policy) {
@@ -340,19 +340,19 @@ export class Key extends KeyBase {
    */
   private allowAccountToAdmin() {
     const actions = [
-      "kms:Create*",
-      "kms:Describe*",
-      "kms:Enable*",
-      "kms:List*",
-      "kms:Put*",
-      "kms:Update*",
-      "kms:Revoke*",
-      "kms:Disable*",
-      "kms:Get*",
-      "kms:Delete*",
-      "kms:ScheduleKeyDeletion",
-      "kms:CancelKeyDeletion",
-      "kms:GenerateDataKey"
+      'kms:Create*',
+      'kms:Describe*',
+      'kms:Enable*',
+      'kms:List*',
+      'kms:Put*',
+      'kms:Update*',
+      'kms:Revoke*',
+      'kms:Disable*',
+      'kms:Get*',
+      'kms:Delete*',
+      'kms:ScheduleKeyDeletion',
+      'kms:CancelKeyDeletion',
+      'kms:GenerateDataKey'
     ];
 
     this.addToResourcePolicy(new iam.PolicyStatement({

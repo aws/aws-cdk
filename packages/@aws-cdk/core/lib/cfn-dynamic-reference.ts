@@ -1,4 +1,4 @@
-import { Intrinsic } from "./private/intrinsic";
+import { Intrinsic } from './private/intrinsic';
 
 /**
  * Properties for a Dynamic Reference
@@ -24,7 +24,7 @@ export interface CfnDynamicReferenceProps {
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/dynamic-references.html
  */
 export class CfnDynamicReference extends Intrinsic {
-  constructor(service: CfnDynamicReferenceService, key: string) {
+  public constructor(service: CfnDynamicReferenceService, key: string) {
     super('{{resolve:' + service + ':' + key + '}}');
   }
 }

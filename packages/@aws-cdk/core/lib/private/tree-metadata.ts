@@ -16,7 +16,7 @@ const FILE_PATH = 'tree.json';
  * @experimental
  */
 export class TreeMetadata extends Construct {
-  constructor(scope: Construct) {
+  public constructor(scope: Construct) {
     super(scope, 'Tree');
   }
 
@@ -24,7 +24,7 @@ export class TreeMetadata extends Construct {
     const lookup: { [path: string]: Node } = { };
 
     const visit = (construct: IConstruct): Node => {
-      const children = construct.node.children.map((c) => {
+      const children = construct.node.children.map(c => {
         try {
           return visit(c);
         } catch (e) {
@@ -33,7 +33,7 @@ export class TreeMetadata extends Construct {
         }
       });
       const childrenMap = children
-        .filter((child) => child !== undefined)
+        .filter(child => child !== undefined)
         .reduce((map, child) => Object.assign(map, { [child!.id]: child }), {});
 
       const node: Node = {

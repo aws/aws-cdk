@@ -1,7 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import { Instance } from './instance';
 import { InstanceType } from './instance-types';
-import { IMachineImage, LookupMachineImage } from "./machine-image";
+import { IMachineImage, LookupMachineImage } from './machine-image';
 import { Port } from './port';
 import { SecurityGroup } from './security-group';
 import { PrivateSubnet, PublicSubnet, RouterType, Vpc } from './vpc';
@@ -14,12 +14,12 @@ export interface GatewayConfig {
   /**
    * Availability Zone
    */
-  readonly az: string
+  readonly az: string;
 
   /**
    * Identity of gateway spawned by the provider
    */
-  readonly gatewayId: string
+  readonly gatewayId: string;
 }
 
 /**
@@ -170,7 +170,7 @@ class NatGateway extends NatProvider {
 class NatInstance extends NatProvider {
   private gateways: PrefSet<Instance> = new PrefSet<Instance>();
 
-  constructor(private readonly props: NatInstanceProps) {
+  public constructor(private readonly props: NatInstanceProps) {
     super();
   }
 
@@ -261,7 +261,7 @@ class PrefSet<A> {
  * @experimental
  */
 export class NatInstanceImage extends LookupMachineImage {
-  constructor() {
+  public constructor() {
     super({
       name: 'amzn-ami-vpc-nat-*',
       owners: ['amazon'],

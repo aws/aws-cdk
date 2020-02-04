@@ -102,7 +102,7 @@ export class Policy extends Resource implements IPolicy {
   private readonly force: boolean;
   private referenceTaken = false;
 
-  constructor(scope: Construct, id: string, props: PolicyProps = {}) {
+  public constructor(scope: Construct, id: string, props: PolicyProps = {}) {
     super(scope, id, {
       physicalName: props.policyName ||
         // generatePolicyName will take the last 128 characters of the logical id since
@@ -199,7 +199,7 @@ export class Policy extends Resource implements IPolicy {
     // validate that the policy is attached to at least one principal (role, user or group).
     if (!this.isAttached) {
       if (this.force) {
-        result.push(`Policy created with force=true must be attached to at least one principal: user, group or role`);
+        result.push('Policy created with force=true must be attached to at least one principal: user, group or role');
       }
       if (!this.force && this.referenceTaken) {
         result.push('This Policy has been referenced by a resource, so it must be attached to at least one user, group or role.');

@@ -104,13 +104,13 @@ export class Rule extends Resource implements IRule {
   private readonly description?: string;
   private readonly accountEventBusTargets: { [account: string]: boolean } = {};
 
-  constructor(scope: Construct, id: string, props: RuleProps = { }) {
+  public constructor(scope: Construct, id: string, props: RuleProps = { }) {
     super(scope, id, {
       physicalName: props.ruleName,
     });
 
     if (props.eventBus && props.schedule) {
-      throw new Error(`Cannot associate rule with 'eventBus' when using 'schedule'`);
+      throw new Error('Cannot associate rule with \'eventBus\' when using \'schedule\'');
     }
 
     this.description = props.description;
@@ -232,7 +232,7 @@ export class Rule extends Resource implements IRule {
             },
             stackName: `${targetStack.stackName}-EventBusPolicy-support-${targetRegion}-${sourceAccount}`,
           });
-          new CfnEventBusPolicy(eventBusPolicyStack, `GivePermToOtherAccount`, {
+          new CfnEventBusPolicy(eventBusPolicyStack, 'GivePermToOtherAccount', {
             action: 'events:PutEvents',
             statementId: 'MySid',
             principal: sourceAccount,
@@ -246,10 +246,13 @@ export class Rule extends Resource implements IRule {
 
         // eventPattern is mutable through addEventPattern(), so we need to lazy evaluate it
         // but only Tokens can be lazy in the framework, so make a subclass instead
-        const self = this;
         class CopyRule extends Rule {
+          public constructor(context: Construct, private readonly self: Rule, props: RuleProps) {
+            super(context, `${self.node.uniqueId}-${id}`, props);
+          }
+
           public _renderEventPattern(): any {
-            return self._renderEventPattern();
+            return this.self._renderEventPattern();
           }
 
           // we need to override validate(), as it uses the
@@ -265,7 +268,7 @@ export class Rule extends Resource implements IRule {
           }
         }
 
-        new CopyRule(targetStack, `${this.node.uniqueId}-${id}`, {
+        new CopyRule(targetStack, this, {
           targets: [target],
           eventPattern: this.eventPattern,
           schedule: this.scheduleExpression ? Schedule.expression(this.scheduleExpression) : undefined,
@@ -360,7 +363,7 @@ export class Rule extends Resource implements IRule {
 
   protected validate() {
     if (Object.keys(this.eventPattern).length === 0 && !this.scheduleExpression) {
-      return [`Either 'eventPattern' or 'schedule' must be defined`];
+      return ['Either \'eventPattern\' or \'schedule\' must be defined'];
     }
 
     return [];

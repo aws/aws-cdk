@@ -2,14 +2,14 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as events from '@aws-cdk/aws-events';
 import * as cdk from '@aws-cdk/core';
+import * as path from 'path';
 import * as targets from '../../lib';
 
-import * as path from 'path';
 
 const app = new cdk.App();
 
 class EventStack extends cdk.Stack {
-  constructor(scope: cdk.App, id: string) {
+  public constructor(scope: cdk.App, id: string) {
     super(scope, id);
 
     const vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 1 });

@@ -1,4 +1,4 @@
-import { ApplicationProtocol } from "./enums";
+import { ApplicationProtocol } from './enums';
 
 export type Attributes = {[key: string]: string | undefined};
 

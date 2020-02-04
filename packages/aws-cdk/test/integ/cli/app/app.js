@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies,no-unused-expressions */
 const path = require('path');
 const cdk = require('@aws-cdk/core');
 const ec2 = require('@aws-cdk/aws-ec2');
@@ -54,7 +55,6 @@ class ProvidingStack extends cdk.Stack {
     this.topic = new sns.Topic(this, 'BogusTopic'); // Some filler
   }
 }
-
 
 
 class ConsumingStack extends cdk.Stack {
@@ -172,11 +172,11 @@ new DockerStackWithCustomFile(app, `${stackPrefix}-docker-with-custom-file`);
 if (process.env.ENABLE_VPC_TESTING) { // Gating so we don't do context fetching unless that's what we are here for
   const env = { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION };
   if (process.env.ENABLE_VPC_TESTING === 'DEFINE')
-    new DefineVpcStack(app, `${stackPrefix}-define-vpc`, { env });
+  {new DefineVpcStack(app, `${stackPrefix}-define-vpc`, { env });}
   if (process.env.ENABLE_VPC_TESTING === 'IMPORT')
-  new ImportVpcStack(app, `${stackPrefix}-import-vpc`, { env });
+  {new ImportVpcStack(app, `${stackPrefix}-import-vpc`, { env });}
 }
 
-new ConditionalResourceStack(app, `${stackPrefix}-conditional-resource`)
+new ConditionalResourceStack(app, `${stackPrefix}-conditional-resource`);
 
 app.synth();

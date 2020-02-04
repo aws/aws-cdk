@@ -1,4 +1,4 @@
-import { ENABLE_DIFF_NO_FAIL, ENABLE_STACK_NAME_DUPLICATES_CONTEXT } from "./features";
+import { ENABLE_DIFF_NO_FAIL, ENABLE_STACK_NAME_DUPLICATES_CONTEXT } from './features';
 
 /**
  * This map includes context keys and values for feature flags that enable

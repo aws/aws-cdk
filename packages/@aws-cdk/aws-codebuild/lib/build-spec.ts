@@ -37,7 +37,7 @@ export abstract class BuildSpec {
 class FilenameBuildSpec extends BuildSpec {
   public readonly isImmediate: boolean = false;
 
-  constructor(private readonly filename: string) {
+  public constructor(private readonly filename: string) {
     super();
   }
 
@@ -56,7 +56,7 @@ class FilenameBuildSpec extends BuildSpec {
 class ObjectBuildSpec extends BuildSpec {
   public readonly isImmediate: boolean = true;
 
-  constructor(public readonly spec: {[key: string]: any}) {
+  public constructor(public readonly spec: {[key: string]: any}) {
     super();
   }
 

@@ -21,9 +21,9 @@ const READ_DATA_ACTIONS = [
 ];
 
 const READ_STREAM_DATA_ACTIONS = [
-  "dynamodb:DescribeStream",
-  "dynamodb:GetRecords",
-  "dynamodb:GetShardIterator",
+  'dynamodb:DescribeStream',
+  'dynamodb:GetRecords',
+  'dynamodb:GetShardIterator',
 ];
 
 const WRITE_DATA_ACTIONS = [
@@ -395,7 +395,7 @@ export class Table extends TableBase {
       public readonly tableName: string;
       public readonly tableArn: string;
 
-      constructor(_scope: Construct, _id: string, _tableArn: string, _tableName: string) {
+      public constructor(_scope: Construct, _id: string, _tableArn: string, _tableName: string) {
         super(_scope, _id);
         this.tableArn = _tableArn;
         this.tableName = _tableName;
@@ -406,11 +406,11 @@ export class Table extends TableBase {
       }
 
       public grantTableListStreams(_grantee: iam.IGrantable): iam.Grant {
-        throw new Error("Method not implemented.");
+        throw new Error('Method not implemented.');
       }
 
       public grantStreamRead(_grantee: iam.IGrantable): iam.Grant {
-        throw new Error("Method not implemented.");
+        throw new Error('Method not implemented.');
       }
     }
 
@@ -425,7 +425,7 @@ export class Table extends TableBase {
       if (!maybeTableName) { throw new Error('ARN for DynamoDB table must be in the form: ...'); }
       tableName = maybeTableName;
     } else {
-      if (attrs.tableArn) { throw new Error("Only one of tableArn or tableName can be provided"); }
+      if (attrs.tableArn) { throw new Error('Only one of tableArn or tableName can be provided'); }
       tableName = attrs.tableName;
       tableArn = stack.formatArn({
         service: 'dynamodb',
@@ -470,7 +470,7 @@ export class Table extends TableBase {
   private readonly indexScaling = new Map<string, ScalableAttributePair>();
   private readonly scalingRole: iam.IRole;
 
-  constructor(scope: Construct, id: string, props: TableProps) {
+  public constructor(scope: Construct, id: string, props: TableProps) {
     super(scope, id, {
       physicalName: props.tableName,
     });

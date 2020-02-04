@@ -19,7 +19,7 @@ export interface SfnStateMachineProps {
  * Use a StepFunctions state machine as a target for AWS CloudWatch event rules.
  */
 export class SfnStateMachine implements events.IRuleTarget {
-  constructor(public readonly machine: sfn.IStateMachine, private readonly props: SfnStateMachineProps = {}) {
+  public constructor(public readonly machine: sfn.IStateMachine, private readonly props: SfnStateMachineProps = {}) {
   }
 
   /**
@@ -29,14 +29,14 @@ export class SfnStateMachine implements events.IRuleTarget {
    */
   public bind(_rule: events.IRule, _id?: string): events.RuleTargetConfig {
     return {
-        id: '',
-        arn: this.machine.stateMachineArn,
-        role: singletonEventRole(this.machine, [new iam.PolicyStatement({
-            actions: ['states:StartExecution'],
-            resources: [this.machine.stateMachineArn]
-        })]),
-        input: this.props.input,
-        targetResource: this.machine,
+      id: '',
+      arn: this.machine.stateMachineArn,
+      role: singletonEventRole(this.machine, [new iam.PolicyStatement({
+        actions: ['states:StartExecution'],
+        resources: [this.machine.stateMachineArn]
+      })]),
+      input: this.props.input,
+      targetResource: this.machine,
     };
   }
 }

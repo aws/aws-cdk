@@ -24,28 +24,29 @@ export = {
         IntegrationResponses: [
           {
             ResponseParameters: {
-              "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
-              "method.response.header.Access-Control-Allow-Origin": "'https://amazon.com'",
-              "method.response.header.Vary": "'Origin'",
-              "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'",
+              'method.response.header.Access-Control-Allow-Headers':
+                "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+              'method.response.header.Access-Control-Allow-Origin': "'https://amazon.com'",
+              'method.response.header.Vary': "'Origin'",
+              'method.response.header.Access-Control-Allow-Methods': "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'",
             },
-            StatusCode: "204"
+            StatusCode: '204'
           }
         ],
         RequestTemplates: {
-          "application/json": "{ statusCode: 200 }"
+          'application/json': '{ statusCode: 200 }'
         },
-        Type: "MOCK"
+        Type: 'MOCK'
       },
       MethodResponses: [
         {
           ResponseParameters: {
-            "method.response.header.Access-Control-Allow-Headers": true,
-            "method.response.header.Access-Control-Allow-Origin": true,
-            "method.response.header.Vary": true,
-            "method.response.header.Access-Control-Allow-Methods": true
+            'method.response.header.Access-Control-Allow-Headers': true,
+            'method.response.header.Access-Control-Allow-Origin': true,
+            'method.response.header.Vary': true,
+            'method.response.header.Access-Control-Allow-Methods': true
           },
-          StatusCode: "204"
+          StatusCode: '204'
         }
       ]
     }));
@@ -72,30 +73,31 @@ export = {
         IntegrationResponses: [
           {
             ResponseParameters: {
-              "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
-              "method.response.header.Access-Control-Allow-Origin": "'https://amazon.com'",
-              "method.response.header.Vary": "'Origin'",
-              "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'",
-              "method.response.header.Access-Control-Allow-Credentials": "'true'"
+              'method.response.header.Access-Control-Allow-Headers':
+                "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+              'method.response.header.Access-Control-Allow-Origin': "'https://amazon.com'",
+              'method.response.header.Vary': "'Origin'",
+              'method.response.header.Access-Control-Allow-Methods': "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'",
+              'method.response.header.Access-Control-Allow-Credentials': "'true'"
             },
-            StatusCode: "204"
+            StatusCode: '204'
           }
         ],
         RequestTemplates: {
-          "application/json": "{ statusCode: 200 }"
+          'application/json': '{ statusCode: 200 }'
         },
-        Type: "MOCK"
+        Type: 'MOCK'
       },
       MethodResponses: [
         {
           ResponseParameters: {
-            "method.response.header.Access-Control-Allow-Headers": true,
-            "method.response.header.Access-Control-Allow-Origin": true,
-            "method.response.header.Vary": true,
-            "method.response.header.Access-Control-Allow-Methods": true,
-            "method.response.header.Access-Control-Allow-Credentials": true
+            'method.response.header.Access-Control-Allow-Headers': true,
+            'method.response.header.Access-Control-Allow-Origin': true,
+            'method.response.header.Vary': true,
+            'method.response.header.Access-Control-Allow-Methods': true,
+            'method.response.header.Access-Control-Allow-Credentials': true
           },
-          StatusCode: "204"
+          StatusCode: '204'
         }
       ]
     }));
@@ -122,28 +124,29 @@ export = {
         IntegrationResponses: [
           {
             ResponseParameters: {
-              "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
-              "method.response.header.Access-Control-Allow-Origin": "'https://aws.amazon.com'",
-              "method.response.header.Vary": "'Origin'",
-              "method.response.header.Access-Control-Allow-Methods": "'GET,PUT'",
+              'method.response.header.Access-Control-Allow-Headers':
+                "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+              'method.response.header.Access-Control-Allow-Origin': "'https://aws.amazon.com'",
+              'method.response.header.Vary': "'Origin'",
+              'method.response.header.Access-Control-Allow-Methods': "'GET,PUT'",
             },
-            StatusCode: "204"
+            StatusCode: '204'
           }
         ],
         RequestTemplates: {
-          "application/json": "{ statusCode: 200 }"
+          'application/json': '{ statusCode: 200 }'
         },
-        Type: "MOCK"
+        Type: 'MOCK'
       },
       MethodResponses: [
         {
           ResponseParameters: {
-            "method.response.header.Access-Control-Allow-Headers": true,
-            "method.response.header.Access-Control-Allow-Origin": true,
-            "method.response.header.Vary": true,
-            "method.response.header.Access-Control-Allow-Methods": true,
+            'method.response.header.Access-Control-Allow-Headers': true,
+            'method.response.header.Access-Control-Allow-Origin': true,
+            'method.response.header.Vary': true,
+            'method.response.header.Access-Control-Allow-Methods': true,
           },
-          StatusCode: "204"
+          StatusCode: '204'
         }
       ]
     }));
@@ -170,28 +173,29 @@ export = {
         IntegrationResponses: [
           {
             ResponseParameters: {
-              "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
-              "method.response.header.Access-Control-Allow-Origin": "'https://aws.amazon.com'",
-              "method.response.header.Vary": "'Origin'",
-              "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'",
+              'method.response.header.Access-Control-Allow-Headers':
+                "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+              'method.response.header.Access-Control-Allow-Origin': "'https://aws.amazon.com'",
+              'method.response.header.Vary': "'Origin'",
+              'method.response.header.Access-Control-Allow-Methods': "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'",
             },
-            StatusCode: "204"
+            StatusCode: '204'
           }
         ],
         RequestTemplates: {
-          "application/json": "{ statusCode: 200 }"
+          'application/json': '{ statusCode: 200 }'
         },
-        Type: "MOCK"
+        Type: 'MOCK'
       },
       MethodResponses: [
         {
           ResponseParameters: {
-            "method.response.header.Access-Control-Allow-Headers": true,
-            "method.response.header.Access-Control-Allow-Origin": true,
-            "method.response.header.Vary": true,
-            "method.response.header.Access-Control-Allow-Methods": true,
+            'method.response.header.Access-Control-Allow-Headers': true,
+            'method.response.header.Access-Control-Allow-Origin': true,
+            'method.response.header.Vary': true,
+            'method.response.header.Access-Control-Allow-Methods': true,
           },
-          StatusCode: "204"
+          StatusCode: '204'
         }
       ]
     }));
@@ -233,28 +237,29 @@ export = {
         IntegrationResponses: [
           {
             ResponseParameters: {
-              "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
-              "method.response.header.Access-Control-Allow-Origin": "'https://aws.amazon.com'",
-              "method.response.header.Vary": "'Origin'",
-              "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'",
+              'method.response.header.Access-Control-Allow-Headers':
+                "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+              'method.response.header.Access-Control-Allow-Origin': "'https://aws.amazon.com'",
+              'method.response.header.Vary': "'Origin'",
+              'method.response.header.Access-Control-Allow-Methods': "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'",
             },
-            StatusCode: "200"
+            StatusCode: '200'
           }
         ],
         RequestTemplates: {
-          "application/json": "{ statusCode: 200 }"
+          'application/json': '{ statusCode: 200 }'
         },
-        Type: "MOCK"
+        Type: 'MOCK'
       },
       MethodResponses: [
         {
           ResponseParameters: {
-            "method.response.header.Access-Control-Allow-Headers": true,
-            "method.response.header.Access-Control-Allow-Origin": true,
-            "method.response.header.Vary": true,
-            "method.response.header.Access-Control-Allow-Methods": true,
+            'method.response.header.Access-Control-Allow-Headers': true,
+            'method.response.header.Access-Control-Allow-Origin': true,
+            'method.response.header.Vary': true,
+            'method.response.header.Access-Control-Allow-Methods': true,
           },
-          StatusCode: "200"
+          StatusCode: '200'
         }
       ]
     }));
@@ -294,31 +299,34 @@ export = {
         IntegrationResponses: [
           {
             ResponseParameters: {
-              "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
-              "method.response.header.Access-Control-Allow-Origin": "'https://twitch.tv'",
-              "method.response.header.Vary": "'Origin'",
-              "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+              'method.response.header.Access-Control-Allow-Headers':
+                "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+              'method.response.header.Access-Control-Allow-Origin': "'https://twitch.tv'",
+              'method.response.header.Vary': "'Origin'",
+              'method.response.header.Access-Control-Allow-Methods': "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
             },
             ResponseTemplates: {
-              "application/json": "#set($origin = $input.params(\"Origin\"))\n#if($origin == \"\") #set($origin = $input.params(\"origin\")) #end\n#if($origin.matches(\"https://amazon.com\") || $origin.matches(\"https://aws.amazon.com\"))\n  #set($context.responseOverride.header.Access-Control-Allow-Origin = $origin)\n#end"
+              'application/json':
+                // eslint-disable-next-line max-len
+                '#set($origin = $input.params("Origin"))\n#if($origin == "") #set($origin = $input.params("origin")) #end\n#if($origin.matches("https://amazon.com") || $origin.matches("https://aws.amazon.com"))\n  #set($context.responseOverride.header.Access-Control-Allow-Origin = $origin)\n#end'
             },
-            StatusCode: "204"
+            StatusCode: '204'
           }
         ],
         RequestTemplates: {
-          "application/json": "{ statusCode: 200 }"
+          'application/json': '{ statusCode: 200 }'
         },
-        Type: "MOCK"
+        Type: 'MOCK'
       },
       MethodResponses: [
         {
           ResponseParameters: {
-            "method.response.header.Access-Control-Allow-Headers": true,
-            "method.response.header.Access-Control-Allow-Origin": true,
-            "method.response.header.Vary": true,
-            "method.response.header.Access-Control-Allow-Methods": true
+            'method.response.header.Access-Control-Allow-Headers': true,
+            'method.response.header.Access-Control-Allow-Origin': true,
+            'method.response.header.Vary': true,
+            'method.response.header.Access-Control-Allow-Methods': true
           },
-          StatusCode: "204"
+          StatusCode: '204'
         }
       ]
     }));
@@ -345,30 +353,31 @@ export = {
         IntegrationResponses: [
           {
             ResponseParameters: {
-              "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
-              "method.response.header.Access-Control-Allow-Origin": "'https://amazon.com'",
-              "method.response.header.Vary": "'Origin'",
-              "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'",
-              "method.response.header.Access-Control-Max-Age": `'${60 * 60}'`
+              'method.response.header.Access-Control-Allow-Headers':
+                "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+              'method.response.header.Access-Control-Allow-Origin': "'https://amazon.com'",
+              'method.response.header.Vary': "'Origin'",
+              'method.response.header.Access-Control-Allow-Methods': "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'",
+              'method.response.header.Access-Control-Max-Age': `'${60 * 60}'`
             },
-            StatusCode: "204"
+            StatusCode: '204'
           }
         ],
         RequestTemplates: {
-          "application/json": "{ statusCode: 200 }"
+          'application/json': '{ statusCode: 200 }'
         },
-        Type: "MOCK"
+        Type: 'MOCK'
       },
       MethodResponses: [
         {
           ResponseParameters: {
-            "method.response.header.Access-Control-Allow-Headers": true,
-            "method.response.header.Access-Control-Allow-Origin": true,
-            "method.response.header.Vary": true,
-            "method.response.header.Access-Control-Allow-Methods": true,
-            "method.response.header.Access-Control-Max-Age": true
+            'method.response.header.Access-Control-Allow-Headers': true,
+            'method.response.header.Access-Control-Allow-Origin': true,
+            'method.response.header.Vary': true,
+            'method.response.header.Access-Control-Allow-Methods': true,
+            'method.response.header.Access-Control-Max-Age': true
           },
-          StatusCode: "204"
+          StatusCode: '204'
         }
       ]
     }));
@@ -395,30 +404,31 @@ export = {
         IntegrationResponses: [
           {
             ResponseParameters: {
-              "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
-              "method.response.header.Access-Control-Allow-Origin": "'https://amazon.com'",
-              "method.response.header.Vary": "'Origin'",
-              "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'",
-              "method.response.header.Access-Control-Max-Age": `'-1'`
+              'method.response.header.Access-Control-Allow-Headers':
+                "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+              'method.response.header.Access-Control-Allow-Origin': "'https://amazon.com'",
+              'method.response.header.Vary': "'Origin'",
+              'method.response.header.Access-Control-Allow-Methods': "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'",
+              'method.response.header.Access-Control-Max-Age': '\'-1\''
             },
-            StatusCode: "204"
+            StatusCode: '204'
           }
         ],
         RequestTemplates: {
-          "application/json": "{ statusCode: 200 }"
+          'application/json': '{ statusCode: 200 }'
         },
-        Type: "MOCK"
+        Type: 'MOCK'
       },
       MethodResponses: [
         {
           ResponseParameters: {
-            "method.response.header.Access-Control-Allow-Headers": true,
-            "method.response.header.Access-Control-Allow-Origin": true,
-            "method.response.header.Vary": true,
-            "method.response.header.Access-Control-Allow-Methods": true,
-            "method.response.header.Access-Control-Max-Age": true
+            'method.response.header.Access-Control-Allow-Headers': true,
+            'method.response.header.Access-Control-Allow-Origin': true,
+            'method.response.header.Vary': true,
+            'method.response.header.Access-Control-Allow-Methods': true,
+            'method.response.header.Access-Control-Max-Age': true
           },
-          StatusCode: "204"
+          StatusCode: '204'
         }
       ]
     }));
@@ -461,30 +471,31 @@ export = {
         IntegrationResponses: [
           {
             ResponseParameters: {
-              "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
-              "method.response.header.Access-Control-Allow-Origin": "'https://amazon.com'",
-              "method.response.header.Vary": "'Origin'",
-              "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'",
-              "method.response.header.Access-Control-Expose-Headers": "'Authorization,Foo'",
+              'method.response.header.Access-Control-Allow-Headers':
+                "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+              'method.response.header.Access-Control-Allow-Origin': "'https://amazon.com'",
+              'method.response.header.Vary': "'Origin'",
+              'method.response.header.Access-Control-Allow-Methods': "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'",
+              'method.response.header.Access-Control-Expose-Headers': "'Authorization,Foo'",
             },
-            StatusCode: "204"
+            StatusCode: '204'
           }
         ],
         RequestTemplates: {
-          "application/json": "{ statusCode: 200 }"
+          'application/json': '{ statusCode: 200 }'
         },
-        Type: "MOCK"
+        Type: 'MOCK'
       },
       MethodResponses: [
         {
           ResponseParameters: {
-            "method.response.header.Access-Control-Allow-Headers": true,
-            "method.response.header.Access-Control-Allow-Origin": true,
-            "method.response.header.Vary": true,
-            "method.response.header.Access-Control-Allow-Methods": true,
-            "method.response.header.Access-Control-Expose-Headers": true,
+            'method.response.header.Access-Control-Allow-Headers': true,
+            'method.response.header.Access-Control-Allow-Origin': true,
+            'method.response.header.Vary': true,
+            'method.response.header.Access-Control-Allow-Methods': true,
+            'method.response.header.Access-Control-Expose-Headers': true,
           },
-          StatusCode: "204"
+          StatusCode: '204'
         }
       ]
     }));
@@ -534,7 +545,7 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
       HttpMethod: 'OPTIONS',
-      ResourceId: { "Fn::GetAtt": [ "apiC8550315", "RootResourceId" ] }
+      ResourceId: { 'Fn::GetAtt': [ 'apiC8550315', 'RootResourceId' ] }
     }));
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
       HttpMethod: 'OPTIONS',
@@ -568,65 +579,67 @@ export = {
     // THENB
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
       ResourceId: {
-        Ref: "apiAllowAll2F5BC564"
+        Ref: 'apiAllowAll2F5BC564'
       },
       Integration: {
         IntegrationResponses: [
           {
             ResponseParameters: {
-              "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
-              "method.response.header.Access-Control-Allow-Origin": "'*'",
-              "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+              'method.response.header.Access-Control-Allow-Headers':
+                "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+              'method.response.header.Access-Control-Allow-Origin': "'*'",
+              'method.response.header.Access-Control-Allow-Methods': "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
             },
-            StatusCode: "204"
+            StatusCode: '204'
           }
         ],
         RequestTemplates: {
-          "application/json": "{ statusCode: 200 }"
+          'application/json': '{ statusCode: 200 }'
         },
-        Type: "MOCK"
+        Type: 'MOCK'
       },
       MethodResponses: [
         {
           ResponseParameters: {
-            "method.response.header.Access-Control-Allow-Headers": true,
-            "method.response.header.Access-Control-Allow-Origin": true,
-            "method.response.header.Access-Control-Allow-Methods": true
+            'method.response.header.Access-Control-Allow-Headers': true,
+            'method.response.header.Access-Control-Allow-Origin': true,
+            'method.response.header.Access-Control-Allow-Methods': true
           },
-          StatusCode: "204"
+          StatusCode: '204'
         }
       ]
     }));
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
       ResourceId: {
-        Ref: "apiAllowSpecific77DD8AF1"
+        Ref: 'apiAllowSpecific77DD8AF1'
       },
       Integration: {
         IntegrationResponses: [
           {
             ResponseParameters: {
-              "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
-              "method.response.header.Access-Control-Allow-Origin": "'http://specific.com'",
-              "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'",
-              "method.response.header.Vary": "'Origin'"
+              'method.response.header.Access-Control-Allow-Headers':
+                "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+              'method.response.header.Access-Control-Allow-Origin': "'http://specific.com'",
+              'method.response.header.Access-Control-Allow-Methods': "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'",
+              'method.response.header.Vary': "'Origin'"
             },
-            StatusCode: "204"
+            StatusCode: '204'
           }
         ],
         RequestTemplates: {
-          "application/json": "{ statusCode: 200 }"
+          'application/json': '{ statusCode: 200 }'
         },
-        Type: "MOCK"
+        Type: 'MOCK'
       },
       MethodResponses: [
         {
           ResponseParameters: {
-            "method.response.header.Access-Control-Allow-Headers": true,
-            "method.response.header.Access-Control-Allow-Origin": true,
-            "method.response.header.Access-Control-Allow-Methods": true,
-            "method.response.header.Vary": true
+            'method.response.header.Access-Control-Allow-Headers': true,
+            'method.response.header.Access-Control-Allow-Origin': true,
+            'method.response.header.Access-Control-Allow-Methods': true,
+            'method.response.header.Vary': true
           },
-          StatusCode: "204"
+          StatusCode: '204'
         }
       ]
     }));
@@ -671,16 +684,16 @@ export = {
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
       HttpMethod: 'OPTIONS',
       ResourceId: {
-        "Fn::GetAtt": [
-          "lambdarestapiAAD10924",
-          "RootResourceId"
+        'Fn::GetAtt': [
+          'lambdarestapiAAD10924',
+          'RootResourceId'
         ]
       },
     }));
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
       HttpMethod: 'OPTIONS',
       ResourceId: {
-        Ref: "lambdarestapiproxyE3AE07E3"
+        Ref: 'lambdarestapiproxyE3AE07E3'
       }
     }));
     test.done();

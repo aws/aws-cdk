@@ -39,7 +39,7 @@ export interface SqsQueueProps {
  */
 export class SqsQueue implements events.IRuleTarget {
 
-  constructor(public readonly queue: sqs.IQueue, private readonly props: SqsQueueProps = {}) {
+  public constructor(public readonly queue: sqs.IQueue, private readonly props: SqsQueueProps = {}) {
     if (props.messageGroupId !== undefined && !queue.fifo) {
       throw new Error('messageGroupId cannot be specified for non-FIFO queues');
     }
@@ -56,7 +56,7 @@ export class SqsQueue implements events.IRuleTarget {
     this.queue.grantSendMessages(new iam.ServicePrincipal('events.amazonaws.com',
       {
         conditions: {
-          ArnEquals: { "aws:SourceArn": rule.ruleArn }
+          ArnEquals: { 'aws:SourceArn': rule.ruleArn }
         }
       })
     );

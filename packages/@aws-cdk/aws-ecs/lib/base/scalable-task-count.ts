@@ -19,7 +19,7 @@ export class ScalableTaskCount extends appscaling.BaseScalableAttribute {
   /**
    * Constructs a new instance of the ScalableTaskCount class.
    */
-  constructor(scope: Construct, id: string, props: ScalableTaskCountProps) {
+  public constructor(scope: Construct, id: string, props: ScalableTaskCountProps) {
     super(scope, id, props);
   }
 

@@ -153,7 +153,7 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
  * secret rotation.
  */
 export class DatabaseInstanceEngine extends DatabaseClusterEngine {
-  /* tslint:disable max-line-length */
+  /* eslint-disable max-len */
   public static readonly MARIADB = new DatabaseInstanceEngine('mariadb', secretsmanager.SecretRotationApplication.MARIADB_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.MARIADB_ROTATION_MULTI_USER);
   public static readonly MYSQL = new DatabaseInstanceEngine('mysql', secretsmanager.SecretRotationApplication.MYSQL_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.MYSQL_ROTATION_MULTI_USER);
   public static readonly ORACLE_EE = new DatabaseInstanceEngine('oracle-ee', secretsmanager.SecretRotationApplication.ORACLE_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.ORACLE_ROTATION_MULTI_USER);
@@ -165,7 +165,7 @@ export class DatabaseInstanceEngine extends DatabaseClusterEngine {
   public static readonly SQL_SERVER_SE = new DatabaseInstanceEngine('sqlserver-se', secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_MULTI_USER);
   public static readonly SQL_SERVER_EX = new DatabaseInstanceEngine('sqlserver-ex', secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_MULTI_USER);
   public static readonly SQL_SERVER_WEB = new DatabaseInstanceEngine('sqlserver-web', secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_MULTI_USER);
-  /* tslint:enable max-line-length */
+  /* eslint-enable max-len */
 
   /** To make it a compile-time error to pass a DatabaseClusterEngine where a DatabaseInstanceEngine is expected. */
   public readonly isDatabaseInstanceEngine = true;
@@ -477,7 +477,7 @@ export interface DatabaseInstanceNewProps {
    *
    * @default RemovalPolicy.Retain
    */
-  readonly removalPolicy?: RemovalPolicy
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -498,7 +498,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
   private readonly cloudwatchLogsRetention?: logs.RetentionDays;
   private readonly cloudwatchLogsRetentionRole?: iam.IRole;
 
-  constructor(scope: Construct, id: string, props: DatabaseInstanceNewProps) {
+  public constructor(scope: Construct, id: string, props: DatabaseInstanceNewProps) {
     super(scope, id);
 
     this.vpc = props.vpc;
@@ -672,7 +672,7 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
   private readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
   private readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
 
-  constructor(scope: Construct, id: string, props: DatabaseInstanceSourceProps) {
+  public constructor(scope: Construct, id: string, props: DatabaseInstanceSourceProps) {
     super(scope, id, props);
 
     this.singleUserRotationApplication = props.engine.singleUserRotationApplication;
@@ -781,7 +781,7 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
   public readonly instanceEndpoint: Endpoint;
   public readonly secret?: secretsmanager.ISecret;
 
-  constructor(scope: Construct, id: string, props: DatabaseInstanceProps) {
+  public constructor(scope: Construct, id: string, props: DatabaseInstanceProps) {
     super(scope, id, props);
 
     let secret: DatabaseSecret | undefined;
@@ -869,7 +869,7 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
   public readonly instanceEndpoint: Endpoint;
   public readonly secret?: secretsmanager.ISecret;
 
-  constructor(scope: Construct, id: string, props: DatabaseInstanceFromSnapshotProps) {
+  public constructor(scope: Construct, id: string, props: DatabaseInstanceFromSnapshotProps) {
     super(scope, id, props);
 
     let secret: DatabaseSecret | undefined;
@@ -960,7 +960,7 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
   public readonly dbInstanceEndpointPort: string;
   public readonly instanceEndpoint: Endpoint;
 
-  constructor(scope: Construct, id: string, props: DatabaseInstanceReadReplicaProps) {
+  public constructor(scope: Construct, id: string, props: DatabaseInstanceReadReplicaProps) {
     super(scope, id, props);
 
     const instance = new CfnDBInstance(this, 'Resource', {

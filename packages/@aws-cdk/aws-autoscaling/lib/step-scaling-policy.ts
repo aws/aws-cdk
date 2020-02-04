@@ -69,7 +69,7 @@ export class StepScalingPolicy extends cdk.Construct {
   public readonly upperAlarm?: cloudwatch.Alarm;
   public readonly upperAction?: StepScalingAction;
 
-  constructor(scope: cdk.Construct, id: string, props: StepScalingPolicyProps) {
+  public constructor(scope: cdk.Construct, id: string, props: StepScalingPolicyProps) {
     super(scope, id);
 
     if (props.scalingSteps.length < 2) {
@@ -207,7 +207,7 @@ export interface ScalingInterval {
  * aws-cloudwatch-actions -> aws-autoscaling (for the definition of IStepScalingAction)
  */
 class StepScalingAlarmAction implements cloudwatch.IAlarmAction {
-  constructor(private readonly stepScalingAction: StepScalingAction) {
+  public constructor(private readonly stepScalingAction: StepScalingAction) {
   }
 
   public bind(_scope: cdk.Construct, _alarm: cloudwatch.IAlarm): cloudwatch.AlarmActionConfig {

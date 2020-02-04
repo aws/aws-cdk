@@ -8,7 +8,7 @@ import { ScheduledEc2Task } from '../../lib';
 const app = new cdk.App();
 
 class EventStack extends cdk.Stack {
-  constructor(scope: cdk.App, id: string) {
+  public constructor(scope: cdk.App, id: string) {
     super(scope, id);
 
     const vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 1 });

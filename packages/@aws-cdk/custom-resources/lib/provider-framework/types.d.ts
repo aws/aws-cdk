@@ -4,7 +4,7 @@
 /**
  * these types can be accessed without needing to `import` the module.
  * e.g. `AWSCDKAsyncCustomResource.OnEventRequest`
- */ 
+ */
 export as namespace AWSCDKAsyncCustomResource;
 
 /**

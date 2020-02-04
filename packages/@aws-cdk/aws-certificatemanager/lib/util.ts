@@ -21,7 +21,7 @@ export function apexDomain(domainName: string): string {
 }
 
 export function isDnsValidatedCertificate(cert: ICertificate): cert is DnsValidatedCertificate {
-  return cert.hasOwnProperty('domainName');
+  return Object.prototype.hasOwnProperty.call(cert, 'domainName');
 }
 
 export function getCertificateRegion(cert: ICertificate): string | undefined {
@@ -30,8 +30,7 @@ export function getCertificateRegion(cert: ICertificate): string | undefined {
   if (isDnsValidatedCertificate(cert)) {
     const requestResource = cert.node.findChild('CertificateRequestorResource').node.defaultChild;
 
-    // @ts-ignore
-    const { _cfnProperties: properties } = requestResource;
+    const { _cfnProperties: properties } = requestResource as any;
     const { Region: region } = properties;
 
     if (region && !Token.isUnresolved(region)) {

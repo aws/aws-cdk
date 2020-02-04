@@ -1,7 +1,7 @@
 import { Construct } from '@aws-cdk/core';
 import { ContainerDefinition } from '../container-definition';
 import { BaseLogDriverProps } from './base-log-driver';
-import { LogDriver, LogDriverConfig } from "./log-driver";
+import { LogDriver, LogDriverConfig } from './log-driver';
 import { renderCommonLogDriverOptions, stringifyOptions } from './utils';
 
 /**
@@ -79,7 +79,7 @@ export class SyslogLogDriver extends LogDriver {
    *
    * @param props the syslog log driver configuration options.
    */
-  constructor(private readonly props: SyslogLogDriverProps = {}) {
+  public constructor(private readonly props: SyslogLogDriverProps = {}) {
     super();
   }
 

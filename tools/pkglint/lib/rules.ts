@@ -14,7 +14,7 @@ import {
   monoRepoVersion,
 } from './util';
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+// eslint-disable-next-line @typescript-eslint/no-require-imports,@typescript-eslint/no-var-requires
 const AWS_SERVICE_NAMES = require('./aws-service-official-names.json');
 
 /**
@@ -488,7 +488,7 @@ function cdkModuleName(name: string) {
     .map(s => s === 'aws' ? 'AWS' : caseUtils.pascal(s))
     .join('.');
 
-  const pythonName = name.replace(/^@/g, "").replace(/\//g, ".").split(".").map(caseUtils.kebab).join(".");
+  const pythonName = name.replace(/^@/g, '').replace(/\//g, '.').split('.').map(caseUtils.kebab).join('.');
 
   return {
     javaPackage: `software.amazon.awscdk${isLegacyCdkPkg ? '' : `.${name.replace(/^aws-/, 'services-').replace(/-/g, '.')}`}`,
@@ -500,7 +500,7 @@ function cdkModuleName(name: string) {
     dotnetNamespace: `Amazon.CDK${isCdkPkg ? '' : `.${dotnetSuffix}`}`,
     python: {
       distName: `aws-cdk.${pythonName}`,
-      module: `aws_cdk.${pythonName.replace(/-/g, "_")}`,
+      module: `aws_cdk.${pythonName.replace(/-/g, '_')}`,
     },
   };
 }
@@ -568,17 +568,17 @@ export class JSIIDotNetStrongNameIsRequired extends ValidationRule {
     if (signAssembly !== signAssemblyExpected) {
       pkg.report({
         ruleName: this.name,
-        message: `.NET packages must have strong-name signing enabled.`,
+        message: '.NET packages must have strong-name signing enabled.',
         fix: () => deepSet(pkg.json, ['jsii', 'targets', 'dotnet', 'signAssembly'], signAssemblyExpected)
       });
     }
 
     const assemblyOriginatorKeyFile = deepGet(pkg.json, ['jsii', 'targets', 'dotnet', 'assemblyOriginatorKeyFile']) as string | undefined;
-    const assemblyOriginatorKeyFileExpected = "../../key.snk";
+    const assemblyOriginatorKeyFileExpected = '../../key.snk';
     if (assemblyOriginatorKeyFile !== assemblyOriginatorKeyFileExpected) {
       pkg.report({
         ruleName: this.name,
-        message: `.NET packages must use the strong name key fetched by fetch-dotnet-snk.sh`,
+        message: '.NET packages must use the strong name key fetched by fetch-dotnet-snk.sh',
         fix: () => deepSet(pkg.json, ['jsii', 'targets', 'dotnet', 'assemblyOriginatorKeyFile'], assemblyOriginatorKeyFileExpected)
       });
     }
@@ -597,6 +597,7 @@ export class MustDependOnBuildTools extends ValidationRule {
     expectDevDependency(this.name,
       pkg,
       'cdk-build-tools',
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       `${require('../../cdk-build-tools/package.json').version}`);
   }
 }
@@ -762,6 +763,7 @@ export class MustHaveIntegCommand extends ValidationRule {
     expectDevDependency(this.name,
       pkg,
       'cdk-integ-tools',
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       `${require('../../cdk-integ-tools/package.json').version}`);
   }
 }
@@ -785,6 +787,7 @@ export class PkgLintAsScript extends ValidationRule {
   public validate(pkg: PackageJson): void {
     const script = 'pkglint -f';
 
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     expectDevDependency(this.name, pkg, 'pkglint', `${require('../package.json').version}`);
 
     if (!pkg.npmScript('pkglint')) {
@@ -1028,6 +1031,7 @@ export class YarnNohoistBundledDependencies extends ValidationRule {
 
     const repoPackageJson = path.resolve(__dirname, '../../../package.json');
 
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const nohoist: string[] = require(repoPackageJson).workspaces.nohoist;
 
     const missing = new Array<string>();
@@ -1043,6 +1047,7 @@ export class YarnNohoistBundledDependencies extends ValidationRule {
         ruleName: this.name,
         message: `Repository-level 'workspaces.nohoist' directive is missing: ${missing.join(', ')}`,
         fix: () => {
+          // eslint-disable-next-line @typescript-eslint/no-require-imports,@typescript-eslint/no-var-requires
           const packageJson = require(repoPackageJson);
           packageJson.workspaces.nohoist = [...packageJson.workspaces.nohoist, ...missing].sort();
           fs.writeFileSync(repoPackageJson, `${JSON.stringify(packageJson, null, 2)}\n`, { encoding: 'utf8' });

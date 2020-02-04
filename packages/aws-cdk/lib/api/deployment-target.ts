@@ -1,5 +1,5 @@
 import { CloudFormationStackArtifact } from '@aws-cdk/cx-api';
-import { Tag } from "../api/cxapp/stacks";
+import { Tag } from '../api/cxapp/stacks';
 import { debug } from '../logging';
 import { deserializeStructure } from '../serialize';
 import { Mode } from './aws-auth/credentials';
@@ -43,7 +43,7 @@ export interface ProvisionerProps {
 export class CloudFormationDeploymentTarget implements IDeploymentTarget {
   private readonly aws: ISDK;
 
-  constructor(props: ProvisionerProps) {
+  public constructor(props: ProvisionerProps) {
     this.aws = props.aws;
   }
 

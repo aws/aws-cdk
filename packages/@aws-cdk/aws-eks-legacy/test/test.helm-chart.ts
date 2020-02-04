@@ -3,7 +3,7 @@ import { Test } from 'nodeunit';
 import * as eks from '../lib';
 import { testFixtureCluster } from './util';
 
-// tslint:disable:max-line-length
+/* eslint-disable max-len */
 
 export = {
   'add Helm chart': {

@@ -42,7 +42,7 @@ export interface RunEcsFargateTaskProps extends CommonEcsRunTaskProps {
  * Start a service on an ECS cluster
  */
 export class RunEcsFargateTask extends EcsRunTaskBase {
-  constructor(props: RunEcsFargateTaskProps) {
+  public constructor(props: RunEcsFargateTaskProps) {
     if (!props.taskDefinition.isFargateCompatible) {
       throw new Error('Supplied TaskDefinition is not configured for compatibility with Fargate');
     }

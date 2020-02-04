@@ -343,7 +343,7 @@ export class LogGroup extends LogGroupBase {
    */
   public readonly logGroupName: string;
 
-  constructor(scope: Construct, id: string, props: LogGroupProps = {}) {
+  public constructor(scope: Construct, id: string, props: LogGroupProps = {}) {
     super(scope, id, {
       physicalName: props.logGroupName,
     });

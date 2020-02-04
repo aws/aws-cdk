@@ -57,7 +57,7 @@ export abstract class Resource extends Construct implements IResource {
   private _physicalName: string | undefined;
   private readonly _allowCrossEnvironment: boolean;
 
-  constructor(scope: Construct, id: string, props: ResourceProps = {}) {
+  public constructor(scope: Construct, id: string, props: ResourceProps = {}) {
     super(scope, id);
     this.stack = Stack.of(this);
 

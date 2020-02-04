@@ -77,7 +77,7 @@ export interface CodeBuildActionProps extends codepipeline.CommonAwsActionProps 
 export class CodeBuildAction extends Action {
   private readonly props: CodeBuildActionProps;
 
-  constructor(props: CodeBuildActionProps) {
+  public constructor(props: CodeBuildActionProps) {
     super({
       ...props,
       category: props.type === CodeBuildActionType.TEST
@@ -107,7 +107,7 @@ export class CodeBuildAction extends Action {
   }
 
   protected bound(scope: cdk.Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
-      codepipeline.ActionConfig {
+  codepipeline.ActionConfig {
     // check for a cross-account action if there are any outputs
     if ((this.actionProperties.outputs || []).length > 0) {
       const pipelineStack = cdk.Stack.of(scope);

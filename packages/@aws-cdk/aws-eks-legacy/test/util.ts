@@ -30,7 +30,7 @@ const env = {
 };
 
 export class TestStack extends Stack {
-  constructor(scope: Construct, id: string) {
+  public constructor(scope: Construct, id: string) {
     super(scope, id, { env });
   }
 }

@@ -22,7 +22,7 @@ export class ResourcePolicy extends Resource {
    */
   public readonly document = new iam.PolicyDocument();
 
-  constructor(scope: Construct, id: string, props: ResourcePolicyProps) {
+  public constructor(scope: Construct, id: string, props: ResourcePolicyProps) {
     super(scope, id);
 
     new CfnResourcePolicy(this, 'Resource', {

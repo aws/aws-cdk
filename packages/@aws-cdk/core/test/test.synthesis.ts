@@ -119,7 +119,7 @@ export = {
     const calls = new Array<string>();
 
     class SynthesizeMe extends cdk.Construct {
-      constructor() {
+      public constructor() {
         super(undefined as any, 'id');
       }
 

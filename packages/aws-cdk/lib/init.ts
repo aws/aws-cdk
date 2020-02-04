@@ -9,10 +9,10 @@ import { error, print, warning } from './logging';
 export type InvokeHook = (targetDirectory: string) => Promise<void>;
 
 // those libraries don't have up-to-date @types modules
-/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable @typescript-eslint/no-require-imports,@typescript-eslint/no-var-requires */
 const camelCase = require('camelcase');
 const decamelize = require('decamelize');
-/* eslint-enable @typescript-eslint/no-var-requires */
+/* eslint-enable @typescript-eslint/no-require-imports,@typescript-eslint/no-var-requires */
 
 const TEMPLATES_DIR = path.join(__dirname, 'init-templates');
 const CDK_HOME = process.env.CDK_HOME ? path.resolve(process.env.CDK_HOME) : path.join(os.homedir(), '.cdk');
@@ -68,10 +68,12 @@ export class InitTemplate {
   public readonly description: string;
   public readonly aliases = new Set<string>();
 
-  constructor(private readonly basePath: string,
-              public readonly name: string,
-              public readonly languages: string[],
-              info: any) {
+  public constructor(
+    private readonly basePath: string,
+    public readonly name: string,
+    public readonly languages: string[],
+    info: any
+  ) {
     this.description = info.description;
     for (const alias of info.aliases || []) {
       this.aliases.add(alias);
@@ -121,7 +123,7 @@ export class InitTemplate {
         await this.installProcessed(fromFile, toFile.replace(/\.template(\.[^.]+)$/, '$1'), project);
         continue;
       } else if (file.match(/^.*\.hook\.(d.)?[^.]+$/)) {
-        await this.installProcessed(fromFile, path.join(targetDirectory, "tmp", file), project);
+        await this.installProcessed(fromFile, path.join(targetDirectory, 'tmp', file), project);
         continue;
       } else {
         await fs.copy(fromFile, toFile);
@@ -194,26 +196,20 @@ interface ProjectInfo {
   readonly name: string;
 }
 
-export const availableInitTemplates: Promise<InitTemplate[]> =
-  new Promise(async resolve => {
-    const templateNames = await listDirectory(TEMPLATES_DIR);
-    const templates = new Array<InitTemplate>();
-    for (const templateName of templateNames) {
-      templates.push(await InitTemplate.fromName(templateName));
-    }
-    resolve(templates);
-  });
-export const availableInitLanguages: Promise<string[]> =
-  new Promise(async resolve => {
-    const templates = await availableInitTemplates;
+export const availableInitTemplates: Promise<InitTemplate[]> = listDirectory(TEMPLATES_DIR)
+  .then(templateNames => Promise.all(templateNames.map(templateName => InitTemplate.fromName(templateName))));
+
+export const availableInitLanguages: Promise<string[]> = availableInitTemplates
+  .then(templates => {
     const result = new Set<string>();
     for (const template of templates) {
       for (const language of template.languages) {
         result.add(language);
       }
     }
-    resolve([...result]);
+    return Array.from(result);
   });
+
 /**
  * @param dirPath is the directory to be listed.
  * @returns the list of file or directory names contained in ``dirPath``, excluding any dot-file, and sorted.
@@ -247,7 +243,7 @@ async function initializeProject(template: InitTemplate, language: string, canUs
   if (await fs.pathExists('README.md')) {
     print(colors.green(await fs.readFile('README.md', { encoding: 'utf-8' })));
   } else {
-    print(`✅ All done!`);
+    print('✅ All done!');
   }
 }
 
@@ -305,7 +301,7 @@ async function postInstallTypescript(canUseNetwork: boolean, cwd: string) {
 
 async function postInstallJava(canUseNetwork: boolean, cwd: string) {
   if (!canUseNetwork) {
-    print(`Please run ${colors.green(`mvn package`)}!`);
+    print(`Please run ${colors.green('mvn package')}!`);
     return;
   }
 

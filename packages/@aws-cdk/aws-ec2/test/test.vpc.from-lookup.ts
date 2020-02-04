@@ -1,7 +1,7 @@
-import { Construct, ContextProvider, GetContextValueOptions, GetContextValueResult, Lazy, Stack } from "@aws-cdk/core";
+import { Construct, ContextProvider, GetContextValueOptions, GetContextValueResult, Lazy, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
-import { Vpc } from "../lib";
+import { Vpc } from '../lib';
 
 export = {
   'Vpc.fromLookup()': {

@@ -1,9 +1,9 @@
-import { Schedule } from "@aws-cdk/aws-applicationautoscaling";
+import { Schedule } from '@aws-cdk/aws-applicationautoscaling';
 import { IVpc } from '@aws-cdk/aws-ec2';
-import { AwsLogDriver, Cluster, ContainerImage, ICluster, LogDriver, Secret, TaskDefinition } from "@aws-cdk/aws-ecs";
-import { Rule } from "@aws-cdk/aws-events";
-import { EcsTask } from "@aws-cdk/aws-events-targets";
-import { Construct, Stack } from "@aws-cdk/core";
+import { AwsLogDriver, Cluster, ContainerImage, ICluster, LogDriver, Secret, TaskDefinition } from '@aws-cdk/aws-ecs';
+import { Rule } from '@aws-cdk/aws-events';
+import { EcsTask } from '@aws-cdk/aws-events-targets';
+import { Construct, Stack } from '@aws-cdk/core';
 
 /**
  * The properties for the base ScheduledEc2Task or ScheduledFargateTask task.
@@ -103,7 +103,7 @@ export abstract class ScheduledTaskBase extends Construct {
   /**
    * Constructs a new instance of the ScheduledTaskBase class.
    */
-  constructor(scope: Construct, id: string, props: ScheduledTaskBaseProps) {
+  public constructor(scope: Construct, id: string, props: ScheduledTaskBaseProps) {
     super(scope, id);
 
     this.cluster = props.cluster || this.getDefaultCluster(this, props.vpc);

@@ -1,4 +1,4 @@
-import { OperatingSystemType } from "./machine-image";
+import { OperatingSystemType } from './machine-image';
 
 /**
  * Options when constructing UserData for Linux
@@ -60,7 +60,7 @@ export abstract class UserData {
 class LinuxUserData extends UserData {
   private readonly lines: string[] = [];
 
-  constructor(private readonly props: LinuxUserDataOptions = {}) {
+  public constructor(private readonly props: LinuxUserDataOptions = {}) {
     super();
   }
 
@@ -77,7 +77,7 @@ class LinuxUserData extends UserData {
 class WindowsUserData extends UserData {
   private readonly lines: string[] = [];
 
-  constructor() {
+  public constructor() {
     super();
   }
 
@@ -93,7 +93,7 @@ class WindowsUserData extends UserData {
 class CustomUserData extends UserData {
   private readonly lines: string[] = [];
 
-  constructor() {
+  public constructor() {
     super();
   }
 

@@ -1,5 +1,5 @@
-// tslint:disable: max-line-length
-import { App, CfnOutput, CfnParameter, Stack } from "@aws-cdk/core";
+/* eslint-disable max-len */
+import { App, CfnOutput, CfnParameter, Stack } from '@aws-cdk/core';
 import * as ssm from '../lib';
 
 const app = new App();
@@ -15,6 +15,7 @@ const params = [
   new ssm.StringListParameter(stack, 'ListSimple', { stringListValue: [ 'hello', 'world' ], parameterName: 'list-simple-name' }),
   new ssm.StringListParameter(stack, 'ListPath', { stringListValue: [ 'hello', 'world' ], parameterName: '/list/path/name' }),
   new ssm.StringParameter(stack, 'ParameterizedSimple', { stringValue: 'hello, world', parameterName: input.valueAsString, simpleName: true }),
+  // eslint-disable-next-line max-len
   new ssm.StringParameter(stack, 'ParameterizedNonSimple', { stringValue: 'hello, world', parameterName: `/${input.valueAsString}/non/simple`, simpleName: false }),
 ];
 

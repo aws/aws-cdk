@@ -5,7 +5,7 @@
  * have an AWS construct library.
  */
 
-import * as child_process from 'child_process';
+import * as childProcess from 'child_process';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as cfnspec from '../lib';
@@ -35,7 +35,7 @@ async function main() {
     // we already have a module for this namesapce, move on.
     if (await fs.pathExists(packagePath)) {
       const packageJsonPath = path.join(packagePath, 'package.json');
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      // eslint-disable-next-line @typescript-eslint/no-require-imports,@typescript-eslint/no-var-requires
       const packageJson = require(packageJsonPath);
       let scopes: string | string[] = packageJson['cdk-build'].cloudformation;
       if (typeof scopes === 'string') { scopes = [scopes]; }
@@ -79,30 +79,11 @@ async function main() {
       ? lowcaseModuleName
       : `${moduleFamily.toLocaleLowerCase()}.${lowcaseModuleName}`;
     const pythonDistName = `aws-cdk.${pythonDistSubName}`;
-    const pythonModuleName = pythonDistName.replace(/-/g, "_");
-
-    async function write(relativePath: string, contents: string[] | string | object) {
-      const fullPath = path.join(packagePath, relativePath);
-      const dir = path.dirname(fullPath);
-      await fs.mkdirp(dir);
-
-      let data;
-      if (typeof contents === 'string') {
-        data = contents.trimLeft(); // trim first newline
-      } else if (Array.isArray(contents)) {
-        data = contents.join('\n');
-      } else if (typeof contents === 'object') {
-        data = JSON.stringify(contents, undefined, 2);
-      } else {
-        throw new Error('Invalid type of contents: ' + contents);
-      }
-
-      await fs.writeFile(fullPath, data + '\n');
-    }
+    const pythonModuleName = pythonDistName.replace(/-/g, '_');
 
     console.log(`generating module for ${packageName}...`);
 
-    await write('package.json', {
+    await write(packagePath, 'package.json', {
       'name': packageName,
       version,
       'description': `The CDK Construct Library for ${namespace}`,
@@ -115,8 +96,8 @@ async function main() {
             namespace: dotnetPackage,
             packageId: dotnetPackage,
             signAssembly: true,
-            assemblyOriginatorKeyFile: "../../key.snk",
-            iconUrl: "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+            assemblyOriginatorKeyFile: '../../key.snk',
+            iconUrl: 'https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png'
           },
           java: {
             package: `${javaGroupId}.${javaPackage}`,
@@ -132,43 +113,43 @@ async function main() {
         }
       },
       'repository': {
-        type: "git",
-        url: "https://github.com/aws/aws-cdk.git",
+        type: 'git',
+        url: 'https://github.com/aws/aws-cdk.git',
         directory: `packages/@aws-cdk/${packageName}`,
       },
-      'homepage': "https://github.com/aws/aws-cdk",
+      'homepage': 'https://github.com/aws/aws-cdk',
       'scripts': {
-        build: "cdk-build",
-        watch: "cdk-watch",
-        lint: "cdk-lint",
-        test: "cdk-test",
-        integ: "cdk-integ",
-        pkglint: "pkglint -f",
-        package: "cdk-package",
-        awslint: "cdk-awslint",
-        cfn2ts: "cfn2ts",
-        'build+test+package': "npm run build+test && npm run package",
-        'build+test': "npm run build && npm test",
-        compat: "cdk-compat"
+        'build': 'cdk-build',
+        'watch': 'cdk-watch',
+        'lint': 'cdk-lint',
+        'test': 'cdk-test',
+        'integ': 'cdk-integ',
+        'pkglint': 'pkglint -f',
+        'package': 'cdk-package',
+        'awslint': 'cdk-awslint',
+        'cfn2ts': 'cfn2ts',
+        'build+test+package': 'npm run build+test && npm run package',
+        'build+test': 'npm run build && npm test',
+        'compat': 'cdk-compat'
       },
       'cdk-build': {
         cloudformation: namespace
       },
       'keywords': [
-        "aws",
-        "cdk",
-        "constructs",
+        'aws',
+        'cdk',
+        'constructs',
         namespace,
         moduleName
       ],
       'author': {
-        name: "Amazon Web Services",
-        url: "https://aws.amazon.com",
+        name: 'Amazon Web Services',
+        url: 'https://aws.amazon.com',
         organization: true
       },
-      jest: {
+      'jest': {
         moduleFileExtensions: [
-          "js"
+          'js'
         ],
         coverageThreshold: {
           global: {
@@ -177,31 +158,30 @@ async function main() {
           }
         }
       },
-      license: "Apache-2.0",
-      devDependencies: {
-        "@aws-cdk/assert": version,
-        "cdk-build-tools": version,
-        "cfn2ts": version,
-        "pkglint": version,
+      'license': 'Apache-2.0',
+      'devDependencies': {
+        '@aws-cdk/assert': version,
+        'cdk-build-tools': version,
+        'cfn2ts': version,
+        'pkglint': version,
       },
-      dependencies: {
-        "@aws-cdk/core": version,
+      'dependencies': {
+        '@aws-cdk/core': version,
       },
-      peerDependencies: {
-        "@aws-cdk/core": version,
+      'peerDependencies': {
+        '@aws-cdk/core': version,
       },
       'engines': {
         node: '>= 10.3.0'
       },
-      stability: "experimental"
+      'stability': 'experimental'
     });
 
-    await write('.gitignore', [
+    await write(packagePath, '.gitignore', [
       '*.js',
       '*.js.map',
       '*.d.ts',
       'tsconfig.json',
-      'tslint.json',
       'node_modules',
       '*.generated.ts',
       'dist',
@@ -215,7 +195,7 @@ async function main() {
       '*.snk',
     ]);
 
-    await write('.npmignore', [
+    await write(packagePath, '.npmignore', [
       '# Don\'t include original .ts files when doing `npm pack`',
       '*.ts',
       '!*.d.ts',
@@ -238,21 +218,21 @@ async function main() {
       'tsconfig.json',
     ]);
 
-    await write('lib/index.ts', [
+    await write(packagePath, 'lib/index.ts', [
       `// ${namespace} CloudFormation Resources:`,
       `export * from './${lowcaseModuleName}.generated';`
     ]);
 
-    await write(`test/${lowcaseModuleName}.test.ts`, [
+    await write(packagePath, `test/${lowcaseModuleName}.test.ts`, [
       "import '@aws-cdk/assert/jest';",
       "import {} from '../lib';",
-      "",
+      '',
       "test('No tests are specified for this package', () => {",
-      "  expect(true).toBe(true);",
-      "});",
+      '  expect(true).toBe(true);',
+      '});',
     ]);
 
-    await write('README.md', [
+    await write(packagePath, 'README.md', [
       `## ${namespace} Construct Library`,
       '<!--BEGIN STABILITY BANNER-->',
       '',
@@ -321,4 +301,23 @@ async function exec(command: string) {
       }
     });
   });
+}
+
+async function write(packagePath: string, relativePath: string, contents: string[] | string | object) {
+  const fullPath = path.join(packagePath, relativePath);
+  const dir = path.dirname(fullPath);
+  await fs.mkdirp(dir);
+
+  let data;
+  if (typeof contents === 'string') {
+    data = contents.trimLeft(); // trim first newline
+  } else if (Array.isArray(contents)) {
+    data = contents.join('\n');
+  } else if (typeof contents === 'object') {
+    data = JSON.stringify(contents, undefined, 2);
+  } else {
+    throw new Error('Invalid type of contents: ' + contents);
+  }
+
+  await fs.writeFile(fullPath, data + '\n');
 }

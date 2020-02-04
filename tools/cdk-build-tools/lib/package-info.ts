@@ -9,6 +9,7 @@ const stat = util.promisify(fs.stat);
  * Return the package JSON for the current package
  */
 export function currentPackageJson(): any {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   return require(path.join(process.cwd(), 'package.json'));
 }
 
@@ -20,7 +21,7 @@ export function cdkBuildOptions(): CDKBuildOptions {
   // now it's easiest to just read them from the package JSON.
   // Our package directories are littered with .json files enough
   // already.
-  return currentPackageJson()["cdk-build"] || {};
+  return currentPackageJson()['cdk-build'] || {};
 }
 
 /**
@@ -75,18 +76,17 @@ export interface CompilerOverrides {
   eslint?: string;
   jsii?: string;
   tsc?: string;
-  eslint?: string;
 }
 
 /**
  * Return the compiler for this package (either tsc or jsii)
  */
 export function packageCompiler(compilers: CompilerOverrides): string[] {
-    if (isJsii()) {
-        return [compilers.jsii || require.resolve('jsii/bin/jsii'), '--project-references', '--silence-warnings=reserved-word'];
-    } else {
-        return [compilers.tsc || require.resolve('typescript/bin/tsc'), '--build'];
-    }
+  if (isJsii()) {
+    return [compilers.jsii || require.resolve('jsii/bin/jsii'), '--project-references', '--silence-warnings=reserved-word'];
+  } else {
+    return [compilers.tsc || require.resolve('typescript/bin/tsc'), '--build'];
+  }
 }
 
 export interface CDKBuildOptions {
@@ -102,7 +102,7 @@ export interface CDKBuildOptions {
     /**
      * Patterns to be ignored.
      */
-    "ignore-pattern"?: string[];
+    'ignore-pattern'?: string[];
   };
 
   /**

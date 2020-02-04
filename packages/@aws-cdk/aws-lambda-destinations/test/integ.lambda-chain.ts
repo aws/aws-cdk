@@ -15,7 +15,7 @@ import * as destinations from '../lib';
 //   aws logs filter-log-events --log-group-name /aws/lambda/<error function name>
 
 class TestStack extends Stack {
-  constructor(scope: Construct, id: string, props?: StackProps) {
+  public constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
     const lambdaProps: lambda.FunctionProps = {

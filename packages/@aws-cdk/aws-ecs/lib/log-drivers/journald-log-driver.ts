@@ -1,7 +1,7 @@
 import { Construct } from '@aws-cdk/core';
 import { ContainerDefinition } from '../container-definition';
 import { BaseLogDriverProps } from './base-log-driver';
-import { LogDriver, LogDriverConfig } from "./log-driver";
+import { LogDriver, LogDriverConfig } from './log-driver';
 import { renderCommonLogDriverOptions, stringifyOptions } from './utils';
 
 /**
@@ -9,7 +9,8 @@ import { renderCommonLogDriverOptions, stringifyOptions } from './utils';
  *
  * [Source](https://docs.docker.com/config/containers/logging/journald/)
  */
-export interface JournaldLogDriverProps extends BaseLogDriverProps {}
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface JournaldLogDriverProps extends BaseLogDriverProps { }
 
 /**
  * A log driver that sends log information to journald Logs.
@@ -20,7 +21,7 @@ export class JournaldLogDriver extends LogDriver {
    *
    * @param props the journald log driver configuration options.
    */
-  constructor(private readonly props: JournaldLogDriverProps = {}) {
+  public constructor(private readonly props: JournaldLogDriverProps = {}) {
     super();
   }
 

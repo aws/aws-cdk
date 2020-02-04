@@ -3,7 +3,7 @@ import * as cdk from '@aws-cdk/core';
 import * as apigw from '../lib';
 
 class MultiStack extends cdk.Stack {
-  constructor(scope: cdk.App, id: string) {
+  public constructor(scope: cdk.App, id: string) {
     super(scope, id);
 
     const hello = new apigw.LambdaIntegration(new lambda.Function(this, 'Hello', {
@@ -21,7 +21,7 @@ class MultiStack extends cdk.Stack {
 }
 
 class MultiApp extends cdk.App {
-  constructor() {
+  public constructor() {
     super();
 
     new MultiStack(this, 'restapi-multiuse-example');

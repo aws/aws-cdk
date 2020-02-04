@@ -2,7 +2,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
 import { App as Root, Aws, Construct, ConstructNode, ConstructOrder, IConstruct, Lazy, ValidationError } from '../lib';
 
-/* eslint-disable camelcase */
+/* eslint-disable @typescript-eslint/camelcase */
 
 export = {
   'the "Root" construct is a special construct which can be used as the root of the tree'(test: Test) {
@@ -62,7 +62,7 @@ export = {
     test.done();
   },
 
-  "dont allow unresolved tokens to be used in construct IDs"(test: Test) {
+  'dont allow unresolved tokens to be used in construct IDs'(test: Test) {
     // GIVEN
     const root = new Root();
     const token = Lazy.stringValue({ produce: () => 'lazy' });
@@ -141,7 +141,9 @@ export = {
     test.equal(t.root.toString(), '<root>');
     test.equal(t.child1_1_1.toString(), 'HighChild/Child1/Child11/Child111');
     test.equal(t.child2.toString(), 'HighChild/Child2');
-    test.equal(toTreeString(t.root), 'App\n  TreeMetadata [Tree]\n  Construct [HighChild]\n    Construct [Child1]\n      Construct [Child11]\n        Construct [Child111]\n      Construct [Child12]\n    Construct [Child2]\n      Construct [Child21]\n');
+    test.equal(toTreeString(t.root),
+      // eslint-disable-next-line max-len
+      'App\n  TreeMetadata [Tree]\n  Construct [HighChild]\n    Construct [Child1]\n      Construct [Child11]\n        Construct [Child111]\n      Construct [Child12]\n    Construct [Child2]\n      Construct [Child21]\n');
     test.done();
   },
 
@@ -258,7 +260,8 @@ export = {
     test.deepEqual(con.node.metadata[0].data, 'value');
     test.deepEqual(con.node.metadata[1].data, 103);
     test.deepEqual(con.node.metadata[2].data, [ 123, 456 ]);
-    test.ok(con.node.metadata[0].trace && con.node.metadata[0].trace[0].indexOf('FIND_ME') !== -1, 'First stack line should include this function\s name');
+    test.ok(con.node.metadata[0].trace && con.node.metadata[0].trace[0].indexOf('FIND_ME') !== -1,
+      'First stack line should include this function\'s name');
     test.done();
   },
 
@@ -337,7 +340,7 @@ export = {
     }
 
     class TheirConstruct extends Construct {
-      constructor(scope: Construct, id: string) {
+      public constructor(scope: Construct, id: string) {
         super(scope, id);
 
         new YourConstruct(this, 'YourConstruct');
@@ -349,7 +352,7 @@ export = {
     }
 
     class TestStack extends Root {
-      constructor() {
+      public constructor() {
         super();
 
         new MyConstruct(this, 'MyConstruct');
@@ -443,7 +446,7 @@ export = {
     test.done();
   },
 
-  'defaultChild': {
+  defaultChild: {
     'returns the child with id "Resource"'(test: Test) {
       const root = new Root();
       new Construct(root, 'child1');
@@ -514,7 +517,7 @@ function createTree(context?: any) {
 }
 
 class MyBeautifulConstruct extends Construct {
-  constructor(scope: Construct, id: string) {
+  public constructor(scope: Construct, id: string) {
     super(scope, id);
   }
 }

@@ -74,7 +74,7 @@ export interface AwsApiProps extends AwsApiInput {
  * Use an AWS Lambda function that makes API calls as an event rule target.
  */
 export class AwsApi implements events.IRuleTarget {
-  constructor(private readonly props: AwsApiProps) {}
+  public constructor(private readonly props: AwsApiProps) {}
 
   /**
    * Returns a RuleTarget that can be used to trigger this AwsApi as a

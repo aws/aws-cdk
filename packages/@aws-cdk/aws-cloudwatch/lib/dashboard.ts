@@ -1,7 +1,7 @@
-import { Construct, Lazy, Resource, Stack, Token } from "@aws-cdk/core";
+import { Construct, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
 import { CfnDashboard } from './cloudwatch.generated';
-import { Column, Row } from "./layout";
-import { IWidget } from "./widget";
+import { Column, Row } from './layout';
+import { IWidget } from './widget';
 
 export enum PeriodOverride {
   AUTO = 'auto',
@@ -55,7 +55,7 @@ export interface DashboardProps {
    *
    * @default - No widgets
    */
-  readonly widgets?: IWidget[][]
+  readonly widgets?: IWidget[][];
 }
 
 /**
@@ -64,7 +64,7 @@ export interface DashboardProps {
 export class Dashboard extends Resource {
   private readonly rows: IWidget[] = [];
 
-  constructor(scope: Construct, id: string, props: DashboardProps = {}) {
+  public constructor(scope: Construct, id: string, props: DashboardProps = {}) {
     super(scope, id, {
       physicalName: props.dashboardName,
     });

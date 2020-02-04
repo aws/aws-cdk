@@ -43,7 +43,7 @@ export interface RunEcsEc2TaskProps extends CommonEcsRunTaskProps {
  * Run an ECS/EC2 Task in a StepFunctions workflow
  */
 export class RunEcsEc2Task extends EcsRunTaskBase {
-  constructor(props: RunEcsEc2TaskProps) {
+  public constructor(props: RunEcsEc2TaskProps) {
     if (!props.taskDefinition.isEc2Compatible) {
       throw new Error('Supplied TaskDefinition is not configured for compatibility with EC2');
     }

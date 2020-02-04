@@ -71,7 +71,7 @@ export class QueueProcessingEc2Service extends QueueProcessingServiceBase {
   /**
    * Constructs a new instance of the QueueProcessingEc2Service class.
    */
-  constructor(scope: Construct, id: string, props: QueueProcessingEc2ServiceProps) {
+  public constructor(scope: Construct, id: string, props: QueueProcessingEc2ServiceProps) {
     super(scope, id, props);
 
     // Create a Task Definition for the container to start

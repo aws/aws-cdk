@@ -4,7 +4,7 @@ import * as cdk from '@aws-cdk/core';
 import * as asg from '../lib';
 
 class TestStack extends cdk.Stack {
-  constructor(scope: cdk.App, id: string) {
+  public constructor(scope: cdk.App, id: string) {
     super(scope, id);
 
     const vpc = new ec2.Vpc(this, 'VPC');

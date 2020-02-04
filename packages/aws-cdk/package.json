@@ -101,6 +101,12 @@
     "node": ">= 10.3.0"
   },
   "stability": "stable",
+  "eslint": {
+    "ignore-pattern": [
+      "lib/init-templates/**/*.template.js",
+      "lib/init-templates/**/*.template.ts"
+    ]
+  },
   "jest": {
     "collectCoverage": true,
     "coverageReporters": [

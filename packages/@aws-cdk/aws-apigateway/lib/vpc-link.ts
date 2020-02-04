@@ -40,7 +40,7 @@ export class VpcLink extends Resource {
 
   private readonly targets = new Array<elbv2.INetworkLoadBalancer>();
 
-  constructor(scope: Construct, id: string, props: VpcLinkProps = {}) {
+  public constructor(scope: Construct, id: string, props: VpcLinkProps = {}) {
     super(scope, id, {
       physicalName: props.vpcLinkName ||
         Lazy.stringValue({ produce: () => this.node.uniqueId }),
@@ -65,7 +65,7 @@ export class VpcLink extends Resource {
 
   protected validate(): string[] {
     if (this.targets.length === 0) {
-      return [ `No targets added to vpc link` ];
+      return [ 'No targets added to vpc link' ];
     }
     return [];
   }

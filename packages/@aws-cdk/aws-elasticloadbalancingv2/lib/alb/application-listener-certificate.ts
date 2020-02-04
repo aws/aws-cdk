@@ -36,11 +36,11 @@ export interface ApplicationListenerCertificateProps {
  * Add certificates to a listener
  */
 export class ApplicationListenerCertificate extends cdk.Construct {
-  constructor(scope: cdk.Construct, id: string, props: ApplicationListenerCertificateProps) {
+  public constructor(scope: cdk.Construct, id: string, props: ApplicationListenerCertificateProps) {
     super(scope, id);
 
     if (!props.certificateArns && !props.certificates) {
-      throw new Error(`At least one of 'certificateArns' or 'certificates' is required`);
+      throw new Error('At least one of \'certificateArns\' or \'certificates\' is required');
     }
 
     const certificates = [

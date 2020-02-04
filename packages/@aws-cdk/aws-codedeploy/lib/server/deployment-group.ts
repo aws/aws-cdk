@@ -71,7 +71,7 @@ abstract class ServerDeploymentGroupBase extends cdk.Resource implements IServer
   public readonly deploymentConfig: IServerDeploymentConfig;
   public abstract readonly autoScalingGroups?: autoscaling.AutoScalingGroup[];
 
-  constructor(scope: cdk.Construct, id: string, deploymentConfig?: IServerDeploymentConfig, props?: cdk.ResourceProps) {
+  public constructor(scope: cdk.Construct, id: string, deploymentConfig?: IServerDeploymentConfig, props?: cdk.ResourceProps) {
     super(scope, id, props);
     this.deploymentConfig = deploymentConfig || ServerDeploymentConfig.ONE_AT_A_TIME;
   }
@@ -84,7 +84,7 @@ class ImportedServerDeploymentGroup extends ServerDeploymentGroupBase {
   public readonly deploymentGroupArn: string;
   public readonly autoScalingGroups?: autoscaling.AutoScalingGroup[] = undefined;
 
-  constructor(scope: cdk.Construct, id: string, props: ServerDeploymentGroupAttributes) {
+  public constructor(scope: cdk.Construct, id: string, props: ServerDeploymentGroupAttributes) {
     super(scope, id, props.deploymentConfig);
 
     this.application = props.application;
@@ -115,7 +115,7 @@ export type InstanceTagGroup = {[key: string]: string[]};
 export class InstanceTagSet {
   private readonly _instanceTagGroups: InstanceTagGroup[];
 
-  constructor(...instanceTagGroups: InstanceTagGroup[]) {
+  public constructor(...instanceTagGroups: InstanceTagGroup[]) {
     if (instanceTagGroups.length > 3) {
       throw new Error('An instance tag set can have a maximum of 3 instance tag groups, ' +
         `but ${instanceTagGroups.length} were provided`);
@@ -247,9 +247,9 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
    * @returns a Construct representing a reference to an existing Deployment Group
    */
   public static fromServerDeploymentGroupAttributes(
-      scope: cdk.Construct,
-      id: string,
-      attrs: ServerDeploymentGroupAttributes): IServerDeploymentGroup {
+    scope: cdk.Construct,
+    id: string,
+    attrs: ServerDeploymentGroupAttributes): IServerDeploymentGroup {
     return new ImportedServerDeploymentGroup(scope, id, attrs);
   }
 
@@ -263,7 +263,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
   private readonly codeDeployBucket: s3.IBucket;
   private readonly alarms: cloudwatch.IAlarm[];
 
-  constructor(scope: cdk.Construct, id: string, props: ServerDeploymentGroupProps = {}) {
+  public constructor(scope: cdk.Construct, id: string, props: ServerDeploymentGroupProps = {}) {
     super(scope, id, props.deploymentConfig, {
       physicalName: props.deploymentGroupName,
     });
@@ -349,14 +349,14 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
         asg.addUserData(
           'PKG_CMD=`which yum 2>/dev/null`',
           'if [ -z "$PKG_CMD" ]; then',
-            'PKG_CMD=apt-get',
+          'PKG_CMD=apt-get',
           'else',
-            'PKG=CMD=yum',
+          'PKG=CMD=yum',
           'fi',
           '$PKG_CMD update -y',
           '$PKG_CMD install -y ruby2.0',
           'if [ $? -ne 0 ]; then',
-            '$PKG_CMD install -y ruby',
+          '$PKG_CMD install -y ruby',
           'fi',
           '$PKG_CMD install -y awscli',
           'TMP_DIR=`mktemp -d`',
@@ -378,7 +378,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
   }
 
   private loadBalancerInfo(loadBalancer?: LoadBalancer):
-      CfnDeploymentGroup.LoadBalancerInfoProperty | undefined {
+  CfnDeploymentGroup.LoadBalancerInfoProperty | undefined {
     if (!loadBalancer) {
       return undefined;
     }
@@ -400,40 +400,36 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
   }
 
   private ec2TagSet(tagSet?: InstanceTagSet):
-      CfnDeploymentGroup.EC2TagSetProperty | undefined {
+  CfnDeploymentGroup.EC2TagSetProperty | undefined {
     if (!tagSet || tagSet.instanceTagGroups.length === 0) {
       return undefined;
     }
 
     return {
-      ec2TagSetList: tagSet.instanceTagGroups.map(tagGroup => {
-        return {
-          ec2TagGroup: this.tagGroup2TagsArray(tagGroup) as
+      ec2TagSetList: tagSet.instanceTagGroups.map(tagGroup => ({
+        ec2TagGroup: this.tagGroup2TagsArray(tagGroup) as
             CfnDeploymentGroup.EC2TagFilterProperty[],
-        };
-      }),
+      })),
     };
   }
 
   private onPremiseTagSet(tagSet?: InstanceTagSet):
-      CfnDeploymentGroup.OnPremisesTagSetProperty | undefined {
+  CfnDeploymentGroup.OnPremisesTagSetProperty | undefined {
     if (!tagSet || tagSet.instanceTagGroups.length === 0) {
       return undefined;
     }
 
     return {
-      onPremisesTagSetList: tagSet.instanceTagGroups.map(tagGroup => {
-        return {
-          onPremisesTagGroup: this.tagGroup2TagsArray(tagGroup),
-        };
-      }),
+      onPremisesTagSetList: tagSet.instanceTagGroups.map(tagGroup => ({
+        onPremisesTagGroup: this.tagGroup2TagsArray(tagGroup),
+      })),
     };
   }
 
   private tagGroup2TagsArray(tagGroup: InstanceTagGroup): CfnDeploymentGroup.TagFilterProperty[] {
     const tagsInGroup = new Array<CfnDeploymentGroup.TagFilterProperty>();
     for (const tagKey in tagGroup) {
-      if (tagGroup.hasOwnProperty(tagKey)) {
+      if (Object.prototype.hasOwnProperty.call(tagGroup, tagKey)) {
         const tagValues = tagGroup[tagKey];
         if (tagKey.length > 0) {
           if (tagValues.length > 0) {

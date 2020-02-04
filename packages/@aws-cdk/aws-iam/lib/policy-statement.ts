@@ -21,10 +21,11 @@ export class PolicyStatement {
   private readonly notResource = new Array<any>();
   private readonly condition: { [key: string]: any } = { };
 
-  constructor(props: PolicyStatementProps = {}) {
+  public constructor(props: PolicyStatementProps = {}) {
     // Validate actions
     for (const action of [...props.actions || [], ...props.notActions || []]) {
       if (!/^(\*|[a-zA-Z0-9-]+:[a-zA-Z0-9*]+)$/.test(action)) {
+        // eslint-disable-next-line max-len
         throw new Error(`Action '${action}' is invalid. An action string consists of a service namespace, a colon, and the name of an action. Action names can include wildcards.`);
       }
     }
@@ -48,14 +49,14 @@ export class PolicyStatement {
 
   public addActions(...actions: string[]) {
     if (actions.length > 0 && this.notAction.length > 0) {
-      throw new Error(`Cannot add 'Actions' to policy statement if 'NotActions' have been added`);
+      throw new Error('Cannot add \'Actions\' to policy statement if \'NotActions\' have been added');
     }
     this.action.push(...actions);
   }
 
   public addNotActions(...notActions: string[]) {
     if (notActions.length > 0 && this.action.length > 0) {
-      throw new Error(`Cannot add 'NotActions' to policy statement if 'Actions' have been added`);
+      throw new Error('Cannot add \'NotActions\' to policy statement if \'Actions\' have been added');
     }
     this.notAction.push(...notActions);
   }
@@ -73,7 +74,7 @@ export class PolicyStatement {
 
   public addPrincipals(...principals: IPrincipal[]) {
     if (Object.keys(principals).length > 0 && Object.keys(this.notPrincipal).length > 0) {
-      throw new Error(`Cannot add 'Principals' to policy statement if 'NotPrincipals' have been added`);
+      throw new Error('Cannot add \'Principals\' to policy statement if \'NotPrincipals\' have been added');
     }
     for (const principal of principals) {
       const fragment = principal.policyFragment;
@@ -84,7 +85,7 @@ export class PolicyStatement {
 
   public addNotPrincipals(...notPrincipals: IPrincipal[]) {
     if (Object.keys(notPrincipals).length > 0 && Object.keys(this.principal).length > 0) {
-      throw new Error(`Cannot add 'NotPrincipals' to policy statement if 'Principals' have been added`);
+      throw new Error('Cannot add \'NotPrincipals\' to policy statement if \'Principals\' have been added');
     }
     for (const notPrincipal of notPrincipals) {
       const fragment = notPrincipal.policyFragment;
@@ -133,14 +134,14 @@ export class PolicyStatement {
 
   public addResources(...arns: string[]) {
     if (arns.length > 0 && this.notResource.length > 0) {
-      throw new Error(`Cannot add 'Resources' to policy statement if 'NotResources' have been added`);
+      throw new Error('Cannot add \'Resources\' to policy statement if \'NotResources\' have been added');
     }
     this.resource.push(...arns);
   }
 
   public addNotResources(...arns: string[]) {
     if (arns.length > 0 && this.resource.length > 0) {
-      throw new Error(`Cannot add 'NotResources' to policy statement if 'Resources' have been added`);
+      throw new Error('Cannot add \'NotResources\' to policy statement if \'Resources\' have been added');
     }
     this.notResource.push(...arns);
   }

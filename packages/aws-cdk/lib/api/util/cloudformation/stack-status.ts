@@ -10,30 +10,30 @@ export class StackStatus {
     return new StackStatus(description.StackStatus, description.StackStatusReason);
   }
 
-  constructor(public readonly name: string, public readonly reason?: string) {}
+  public constructor(public readonly name: string, public readonly reason?: string) {}
 
-  get isCreationFailure(): boolean {
+  public get isCreationFailure(): boolean {
     return this.name === 'ROLLBACK_COMPLETE'
       || this.name === 'ROLLBACK_FAILED';
   }
 
-  get isDeleted(): boolean {
+  public get isDeleted(): boolean {
     return this.name.startsWith('DELETE_');
   }
 
-  get isFailure(): boolean {
+  public get isFailure(): boolean {
     return this.name.endsWith('FAILED');
   }
 
-  get isRollback(): boolean {
+  public get isRollback(): boolean {
     return this.name.indexOf('ROLLBACK') !== -1;
   }
 
-  get isStable(): boolean {
+  public get isStable(): boolean {
     return !this.name.endsWith('_IN_PROGRESS');
   }
 
-  get isSuccess(): boolean {
+  public get isSuccess(): boolean {
     return !this.isRollback && !this.isFailure;
   }
 

@@ -22,16 +22,16 @@ export enum Tracing {
    * Lambda will respect any tracing header it receives from an upstream service.
    * If no tracing header is received, Lambda will call X-Ray for a tracing decision.
    */
-  ACTIVE = "Active",
+  ACTIVE = 'Active',
   /**
    * Lambda will only trace the request from an upstream service
    * if it contains a tracing header with "sampled=1"
    */
-  PASS_THROUGH = "PassThrough",
+  PASS_THROUGH = 'PassThrough',
   /**
    * Lambda will not trace any request.
    */
-  DISABLED = "Disabled"
+  DISABLED = 'Disabled'
 }
 
 /**
@@ -292,7 +292,7 @@ export class Function extends FunctionBase {
 
       protected readonly canCreatePermissions = false;
 
-      constructor(s: Construct, i: string) {
+      public constructor(s: Construct, i: string) {
         super(s, i);
 
         this.grantPrincipal = role || new iam.UnknownPrincipal({ resource: this });
@@ -420,7 +420,7 @@ export class Function extends FunctionBase {
    */
   private readonly environment: { [key: string]: string };
 
-  constructor(scope: Construct, id: string, props: FunctionProps) {
+  public constructor(scope: Construct, id: string, props: FunctionProps) {
     super(scope, id, {
       physicalName: props.functionName,
     });
@@ -430,11 +430,11 @@ export class Function extends FunctionBase {
     const managedPolicies = new Array<iam.IManagedPolicy>();
 
     // the arn is in the form of - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
-    managedPolicies.push(iam.ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaBasicExecutionRole"));
+    managedPolicies.push(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole'));
 
     if (props.vpc) {
       // Policy that will have ENI creation permissions
-      managedPolicies.push(iam.ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaVPCAccessExecutionRole"));
+      managedPolicies.push(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaVPCAccessExecutionRole'));
     }
 
     this.role = props.role || new iam.Role(this, 'ServiceRole', {
@@ -618,13 +618,13 @@ export class Function extends FunctionBase {
    */
   private configureVpc(props: FunctionProps): CfnFunction.VpcConfigProperty | undefined {
     if ((props.securityGroup || props.allowAllOutbound !== undefined) && !props.vpc) {
-      throw new Error(`Cannot configure 'securityGroup' or 'allowAllOutbound' without configuring a VPC`);
+      throw new Error('Cannot configure \'securityGroup\' or \'allowAllOutbound\' without configuring a VPC');
     }
 
     if (!props.vpc) { return undefined; }
 
     if (props.securityGroup && props.allowAllOutbound !== undefined) {
-      throw new Error(`Configure 'allowAllOutbound' directly on the supplied SecurityGroup.`);
+      throw new Error('Configure \'allowAllOutbound\' directly on the supplied SecurityGroup.');
     }
 
     let securityGroups: ec2.ISecurityGroup[];
@@ -727,7 +727,7 @@ function extractNameFromArn(arn: string) {
 export function verifyCodeConfig(code: CodeConfig, runtime: Runtime) {
   // mutually exclusive
   if ((!code.inlineCode && !code.s3Location) || (code.inlineCode && code.s3Location)) {
-    throw new Error(`lambda.Code must specify one of "inlineCode" or "s3Location" but not both`);
+    throw new Error('lambda.Code must specify one of "inlineCode" or "s3Location" but not both');
   }
 
   // if this is inline code, check that the runtime supports

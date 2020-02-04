@@ -53,7 +53,7 @@ export class Topic extends TopicBase {
 
   protected readonly autoCreatePolicy: boolean = true;
 
-  constructor(scope: Construct, id: string, props: TopicProps = {}) {
+  public constructor(scope: Construct, id: string, props: TopicProps = {}) {
     super(scope, id, {
       physicalName: props.topicName,
     });

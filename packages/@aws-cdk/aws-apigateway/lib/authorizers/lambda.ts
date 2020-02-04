@@ -55,7 +55,7 @@ export interface TokenAuthorizerProps {
    * An optional IAM role for APIGateway to assume before calling the Lambda-based authorizer. The IAM role must be
    * assumable by 'apigateway.amazonaws.com'.
    *
-   * @default - A resource policy is added to the Lambda function allowing apigateway.amazonaws.com to invoke the function.
+   * @default - A resource policy is added to the Lambda function allowing apigateway.amazonaws.com to invoke the function.
    */
   readonly assumeRole?: iam.IRole;
 }
@@ -82,11 +82,11 @@ export class TokenAuthorizer extends Authorizer implements IAuthorizer {
 
   private restApiId?: string;
 
-  constructor(scope: Construct, id: string, props: TokenAuthorizerProps) {
+  public constructor(scope: Construct, id: string, props: TokenAuthorizerProps) {
     super(scope, id);
 
     if (props.resultsCacheTtl && props.resultsCacheTtl.toSeconds() > 3600) {
-      throw new Error(`Lambda authorizer property 'resultsCacheTtl' must not be greater than 3600 seconds (1 hour)`);
+      throw new Error('Lambda authorizer property \'resultsCacheTtl\' must not be greater than 3600 seconds (1 hour)');
     }
 
     const restApiId = Lazy.stringValue({ produce: () => this.restApiId });
@@ -133,7 +133,7 @@ export class TokenAuthorizer extends Authorizer implements IAuthorizer {
    */
   public _attachToApi(restApi: RestApi) {
     if (this.restApiId && this.restApiId !== restApi.restApiId) {
-      throw new Error(`Cannot attach authorizer to two different rest APIs`);
+      throw new Error('Cannot attach authorizer to two different rest APIs');
     }
 
     this.restApiId = restApi.restApiId;

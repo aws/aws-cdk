@@ -2,7 +2,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as aws from 'aws-sdk';
 import * as colors from 'colors/safe';
 import * as uuid from 'uuid';
-import { Tag } from "../api/cxapp/stacks";
+import { Tag } from '../api/cxapp/stacks';
 import { prepareAssets } from '../assets';
 import { debug, error, print } from '../logging';
 import { toYAML } from '../serialize';
@@ -14,8 +14,8 @@ import { StackStatus } from './util/cloudformation/stack-status';
 import { ISDK } from './util/sdk';
 
 type TemplateBodyParameter = {
-  TemplateBody?: string
-  TemplateURL?: string
+  TemplateBody?: string;
+  TemplateURL?: string;
 };
 
 /** @experimental */
@@ -74,7 +74,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
 
   const changeSetName = `CDK-${executionId}`;
   debug(`Attempting to create ChangeSet ${changeSetName} to ${update ? 'update' : 'create'} stack ${deployName}`);
-  print(`%s: creating CloudFormation changeset...`, colors.bold(deployName));
+  print('%s: creating CloudFormation changeset...', colors.bold(deployName));
   const changeSet = await cfn.createChangeSet({
     StackName: deployName,
     ChangeSetName: changeSetName,
@@ -101,7 +101,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
   if (execute) {
     debug('Initiating execution of changeset %s on stack %s', changeSetName, deployName);
     await cfn.executeChangeSet({StackName: deployName, ChangeSetName: changeSetName}).promise();
-  // eslint-disable-next-line max-len
+    // eslint-disable-next-line max-len
     const monitor = options.quiet ? undefined : new StackActivityMonitor(cfn, deployName, options.stack, (changeSetDescription.Changes || []).length).start();
     debug('Execution of changeset %s on stack %s has started; waiting for the update to complete...', changeSetName, deployName);
     await waitForStack(cfn, deployName);
@@ -110,7 +110,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     }
     debug('Stack %s has completed updating', deployName);
   } else {
-    print(`Changeset %s created and waiting in review for manual execution (--no-execute)`, changeSetName);
+    print('Changeset %s created and waiting in review for manual execution (--no-execute)', changeSetName);
   }
   return { noOp: false, outputs: await getStackOutputs(cfn, deployName), stackArn: changeSet.StackId! };
 }
@@ -154,7 +154,7 @@ async function makeBodyParameter(stack: cxapi.CloudFormationStackArtifact, toolk
       'Run the following command in order to setup an S3 bucket in this environment, and then re-deploy:\n\n',
       colors.blue(`\t$ cdk bootstrap ${stack.environment!.name}\n`));
 
-    throw new Error(`Template too large to deploy ("cdk bootstrap" is required)`);
+    throw new Error('Template too large to deploy ("cdk bootstrap" is required)');
   } else {
     return { TemplateBody: templateJson };
   }

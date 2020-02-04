@@ -1,12 +1,12 @@
-import { expect, haveResourceLike } from "@aws-cdk/assert";
+import { expect, haveResourceLike } from '@aws-cdk/assert';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as ecr from '@aws-cdk/aws-ecr';
-import { Stack } from "@aws-cdk/core";
+import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as cpactions from '../../lib';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quotes */
 
 export = {
   'ECR source Action': {
@@ -42,17 +42,17 @@ export = {
       });
 
       expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
-        "Stages": [
+        Stages: [
           {
-            "Name": "Source",
+            Name: "Source",
           },
           {
-            "Name": "Build",
-            "Actions": [
+            Name: "Build",
+            Actions: [
               {
-                "Name": "Build",
-                "Configuration": {
-                  "EnvironmentVariables": '[{"name":"ImageDigest","type":"PLAINTEXT","value":"#{Source_Source_NS.ImageDigest}"}]',
+                Name: "Build",
+                Configuration: {
+                  EnvironmentVariables: '[{"name":"ImageDigest","type":"PLAINTEXT","value":"#{Source_Source_NS.ImageDigest}"}]',
                 },
               },
             ],

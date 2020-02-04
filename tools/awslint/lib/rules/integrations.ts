@@ -13,8 +13,7 @@ class IntegrationReflection {
     return x.allMethods.some(m => m.name === BIND_METHOD_NAME);
   }
 
-  constructor(public readonly integrationInterface: reflect.InterfaceType) {
-  }
+  public constructor(public readonly integrationInterface: reflect.InterfaceType) {}
 
   public get bindMethod(): reflect.Method {
     return this.integrationInterface.allMethods.find(m => m.name === BIND_METHOD_NAME)!;
@@ -23,7 +22,7 @@ class IntegrationReflection {
 
 integrationLinter.add({
   code: 'integ-return-type',
-  message: `'bind(...)' should return a type named 'XxxConfig'`,
+  message: '\'bind(...)\' should return a type named \'XxxConfig\'',
   eval: e => {
     const returnsFqn = e.ctx.bindMethod.returns.type.fqn;
 

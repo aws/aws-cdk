@@ -28,7 +28,7 @@ export interface LambdaProps {
   /**
    * The Lambda function to invoke.
    */
-  readonly function: lambda.IFunction
+  readonly function: lambda.IFunction;
 
   /**
    * The invocation type of the Lambda function.
@@ -50,7 +50,7 @@ export interface LambdaProps {
  * Amazon SNS.
  */
 export class Lambda implements ses.IReceiptRuleAction {
-  constructor(private readonly props: LambdaProps) {
+  public constructor(private readonly props: LambdaProps) {
   }
 
   public bind(rule: ses.IReceiptRule): ses.ReceiptRuleActionConfig {

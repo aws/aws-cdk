@@ -23,7 +23,7 @@ export interface CodeDeployServerDeployActionProps extends codepipeline.CommonAw
 export class CodeDeployServerDeployAction extends Action {
   private readonly deploymentGroup: codedeploy.IServerDeploymentGroup;
 
-  constructor(props: CodeDeployServerDeployActionProps) {
+  public constructor(props: CodeDeployServerDeployActionProps) {
     super({
       ...props,
       resource: props.deploymentGroup,
@@ -37,7 +37,7 @@ export class CodeDeployServerDeployAction extends Action {
   }
 
   protected bound(_scope: Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
-      codepipeline.ActionConfig {
+  codepipeline.ActionConfig {
     // permissions, based on:
     // https://docs.aws.amazon.com/codedeploy/latest/userguide/auth-and-access-control-permissions-reference.html
 

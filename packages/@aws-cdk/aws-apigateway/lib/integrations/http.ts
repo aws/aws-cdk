@@ -37,7 +37,7 @@ export interface HttpIntegrationProps {
  * response data is mapped to the method response.
  */
 export class HttpIntegration extends Integration {
-  constructor(url: string, props: HttpIntegrationProps = { }) {
+  public constructor(url: string, props: HttpIntegrationProps = { }) {
     const proxy = props.proxy !== undefined ? props.proxy : true;
     const method = props.httpMethod || 'GET';
     super({

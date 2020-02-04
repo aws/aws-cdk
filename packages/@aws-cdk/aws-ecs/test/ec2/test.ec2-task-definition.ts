@@ -10,79 +10,79 @@ import * as path from 'path';
 import * as ecs from '../../lib';
 
 export = {
-  "When creating an ECS TaskDefinition": {
-    "with only required properties set, it correctly sets default properties"(test: Test) {
+  'When creating an ECS TaskDefinition': {
+    'with only required properties set, it correctly sets default properties'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
       new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       // THEN
-      expect(stack).to(haveResource("AWS::ECS::TaskDefinition", {
-        Family: "Ec2TaskDef",
+      expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
+        Family: 'Ec2TaskDef',
         NetworkMode: ecs.NetworkMode.BRIDGE,
-        RequiresCompatibilities: ["EC2"]
+        RequiresCompatibilities: ['EC2']
       }));
 
       // test error if no container defs?
       test.done();
     },
 
-    "with all properties set"(test: Test) {
+    'with all properties set'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
       new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
         executionRole: new iam.Role(stack, 'ExecutionRole', {
           path: '/',
           assumedBy: new iam.CompositePrincipal(
-            new iam.ServicePrincipal("ecs.amazonaws.com"),
-            new iam.ServicePrincipal("ecs-tasks.amazonaws.com")
+            new iam.ServicePrincipal('ecs.amazonaws.com'),
+            new iam.ServicePrincipal('ecs-tasks.amazonaws.com')
           )
         }),
-        family: "ecs-tasks",
+        family: 'ecs-tasks',
         networkMode: ecs.NetworkMode.AWS_VPC,
-        placementConstraints: [ecs.PlacementConstraint.memberOf("attribute:ecs.instance-type =~ t2.*")],
+        placementConstraints: [ecs.PlacementConstraint.memberOf('attribute:ecs.instance-type =~ t2.*')],
         taskRole: new iam.Role(stack, 'TaskRole', {
           assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
         }),
         volumes: [{
           host: {
-            sourcePath: "/tmp/cache",
+            sourcePath: '/tmp/cache',
           },
-          name: "scratch"
+          name: 'scratch'
         }]
       });
 
       // THEN
-      expect(stack).to(haveResource("AWS::ECS::TaskDefinition", {
+      expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
         ExecutionRoleArn: {
-          "Fn::GetAtt": [
-            "ExecutionRole605A040B",
-            "Arn"
+          'Fn::GetAtt': [
+            'ExecutionRole605A040B',
+            'Arn'
           ]
         },
-        Family: "ecs-tasks",
-        NetworkMode: "awsvpc",
+        Family: 'ecs-tasks',
+        NetworkMode: 'awsvpc',
         PlacementConstraints: [
           {
-            Expression: "attribute:ecs.instance-type =~ t2.*",
-            Type: "memberOf"
+            Expression: 'attribute:ecs.instance-type =~ t2.*',
+            Type: 'memberOf'
           }
         ],
         RequiresCompatibilities: [
-          "EC2"
+          'EC2'
         ],
         TaskRoleArn: {
-          "Fn::GetAtt": [
-            "TaskRole30FC0FBB",
-            "Arn"
+          'Fn::GetAtt': [
+            'TaskRole30FC0FBB',
+            'Arn'
           ]
         },
         Volumes: [
           {
             Host: {
-              SourcePath: "/tmp/cache"
+              SourcePath: '/tmp/cache'
             },
-            Name: "scratch"
+            Name: 'scratch'
           }
         ]
       }));
@@ -90,20 +90,20 @@ export = {
       test.done();
     },
 
-    "correctly sets placement constraint"(test: Test) {
+    'correctly sets placement constraint'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       // WHEN
-      taskDefinition.addPlacementConstraint(ecs.PlacementConstraint.memberOf("attribute:ecs.instance-type =~ t2.*"));
+      taskDefinition.addPlacementConstraint(ecs.PlacementConstraint.memberOf('attribute:ecs.instance-type =~ t2.*'));
 
       // THEN
-      expect(stack).to(haveResource("AWS::ECS::TaskDefinition", {
+      expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
         PlacementConstraints: [
           {
-            Expression: "attribute:ecs.instance-type =~ t2.*",
-            Type: "memberOf"
+            Expression: 'attribute:ecs.instance-type =~ t2.*',
+            Type: 'memberOf'
           }
         ],
 
@@ -112,7 +112,7 @@ export = {
       test.done();
     },
 
-    "correctly sets network mode"(test: Test) {
+    'correctly sets network mode'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
       new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
@@ -120,21 +120,21 @@ export = {
       });
 
       // THEN
-      expect(stack).to(haveResource("AWS::ECS::TaskDefinition", {
+      expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
         NetworkMode: ecs.NetworkMode.AWS_VPC,
       }));
 
       test.done();
     },
 
-    "correctly sets containers"(test: Test) {
+    'correctly sets containers'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
 
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
-      const container = taskDefinition.addContainer("web", {
-        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+      const container = taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
         memoryLimitMiB: 512 // add validation?
       });
 
@@ -149,7 +149,7 @@ export = {
       });
 
       container.addVolumesFrom({
-        sourceContainer: "foo",
+        sourceContainer: 'foo',
         readOnly: true
       });
 
@@ -159,13 +159,13 @@ export = {
       }));
 
       // THEN
-      expect(stack).to(haveResource("AWS::ECS::TaskDefinition", {
-        Family: "Ec2TaskDef",
+      expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
+        Family: 'Ec2TaskDef',
         ContainerDefinitions: [{
           Essential: true,
           Memory: 512,
-          Image: "amazon/amazon-ecs-sample",
-          Name: "web",
+          Image: 'amazon/amazon-ecs-sample',
+          Name: 'web',
           PortMappings: [{
             ContainerPort: 3000,
             HostPort: 0,
@@ -174,14 +174,14 @@ export = {
           Ulimits: [
             {
               HardLimit: 128,
-              Name: "rss",
+              Name: 'rss',
               SoftLimit: 128
             }
           ],
           VolumesFrom: [
             {
               ReadOnly: true,
-              SourceContainer: "foo"
+              SourceContainer: 'foo'
             }
           ]
         }],
@@ -192,9 +192,9 @@ export = {
           Version: '2012-10-17',
           Statement: [
             {
-              Action: "ecs:*",
-              Effect: "Allow",
-              Resource: "*"
+              Action: 'ecs:*',
+              Effect: 'Allow',
+              Resource: '*'
             }
           ],
         },
@@ -203,7 +203,7 @@ export = {
       test.done();
     },
 
-    "all container definition options defined"(test: Test) {
+    'all container definition options defined'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
 
@@ -214,8 +214,8 @@ export = {
         version: 1
       });
 
-      taskDefinition.addContainer("web", {
-        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
         memoryLimitMiB: 2048,
         cpu: 256,
         disableNetworking: true,
@@ -224,17 +224,17 @@ export = {
         dnsServers: ['1.1.1.1'],
         dockerLabels: { LABEL: 'label' },
         dockerSecurityOptions: ['ECS_SELINUX_CAPABLE=true'],
-        entryPoint: ["/app/node_modules/.bin/cdk"],
-        environment: { TEST_ENVIRONMENT_VARIABLE: "test environment variable value" },
+        entryPoint: ['/app/node_modules/.bin/cdk'],
+        environment: { TEST_ENVIRONMENT_VARIABLE: 'test environment variable value' },
         essential: true,
         extraHosts: { EXTRAHOST: 'extra host' },
         healthCheck: {
-          command: ["curl localhost:8000"],
+          command: ['curl localhost:8000'],
           interval: cdk.Duration.seconds(20),
           retries: 5,
           startPeriod: cdk.Duration.seconds(10)
         },
-        hostname: "webHost",
+        hostname: 'webHost',
         linuxParameters: new ecs.LinuxParameters(stack, 'LinuxParameters', {
           initProcessEnabled: true,
           sharedMemorySize: 1024,
@@ -247,115 +247,115 @@ export = {
           SECRET: ecs.Secret.fromSecretsManager(secret),
           PARAMETER: ecs.Secret.fromSsmParameter(parameter),
         },
-        user: "amazon",
-        workingDirectory: "app/"
+        user: 'amazon',
+        workingDirectory: 'app/'
       });
 
       // THEN
-      expect(stack).to(haveResource("AWS::ECS::TaskDefinition", {
-        Family: "Ec2TaskDef",
+      expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
+        Family: 'Ec2TaskDef',
         ContainerDefinitions: [
           {
             Command: [
-              "CMD env"
+              'CMD env'
             ],
             Cpu: 256,
             DisableNetworking: true,
             DnsSearchDomains: [
-              "0.0.0.0"
+              '0.0.0.0'
             ],
             DnsServers: [
-              "1.1.1.1"
+              '1.1.1.1'
             ],
             DockerLabels: {
-              LABEL: "label"
+              LABEL: 'label'
             },
             DockerSecurityOptions: [
-              "ECS_SELINUX_CAPABLE=true"
+              'ECS_SELINUX_CAPABLE=true'
             ],
             EntryPoint: [
-              "/app/node_modules/.bin/cdk"
+              '/app/node_modules/.bin/cdk'
             ],
             Environment: [
               {
-                Name: "TEST_ENVIRONMENT_VARIABLE",
-                Value: "test environment variable value"
+                Name: 'TEST_ENVIRONMENT_VARIABLE',
+                Value: 'test environment variable value'
               }
             ],
             Essential: true,
             ExtraHosts: [
               {
-                Hostname: "EXTRAHOST",
-                IpAddress: "extra host"
+                Hostname: 'EXTRAHOST',
+                IpAddress: 'extra host'
               }
             ],
             HealthCheck: {
               Command: [
-                "CMD-SHELL",
-                "curl localhost:8000"
+                'CMD-SHELL',
+                'curl localhost:8000'
               ],
               Interval: 20,
               Retries: 5,
               StartPeriod: 10,
               Timeout: 5
             },
-            Hostname: "webHost",
-            Image: "amazon/amazon-ecs-sample",
+            Hostname: 'webHost',
+            Image: 'amazon/amazon-ecs-sample',
             LinuxParameters: {
               Capabilities: {},
               InitProcessEnabled: true,
               SharedMemorySize: 1024,
             },
             LogConfiguration: {
-              LogDriver: "awslogs",
+              LogDriver: 'awslogs',
               Options: {
-                "awslogs-group": {
-                  Ref: "Ec2TaskDefwebLogGroup7F786C6B"
+                'awslogs-group': {
+                  Ref: 'Ec2TaskDefwebLogGroup7F786C6B'
                 },
-                "awslogs-stream-prefix": "prefix",
-                "awslogs-region": {
-                  Ref: "AWS::Region"
+                'awslogs-stream-prefix': 'prefix',
+                'awslogs-region': {
+                  Ref: 'AWS::Region'
                 }
               }
             },
             Memory: 2048,
             MemoryReservation: 1024,
-            Name: "web",
+            Name: 'web',
             Privileged: true,
             ReadonlyRootFilesystem: true,
             Secrets: [
               {
-                Name: "SECRET",
+                Name: 'SECRET',
                 ValueFrom: {
-                  Ref: "SecretA720EF05"
+                  Ref: 'SecretA720EF05'
                 }
               },
               {
-                Name: "PARAMETER",
+                Name: 'PARAMETER',
                 ValueFrom: {
-                  "Fn::Join": [
-                    "",
+                  'Fn::Join': [
+                    '',
                     [
-                      "arn:",
+                      'arn:',
                       {
-                        Ref: "AWS::Partition"
+                        Ref: 'AWS::Partition'
                       },
-                      ":ssm:",
+                      ':ssm:',
                       {
-                        Ref: "AWS::Region"
+                        Ref: 'AWS::Region'
                       },
-                      ":",
+                      ':',
                       {
-                        Ref: "AWS::AccountId"
+                        Ref: 'AWS::AccountId'
                       },
-                      ":parameter/name"
+                      ':parameter/name'
                     ]
                   ]
                 }
               }
             ],
-            User: "amazon",
-            WorkingDirectory: "app/"
+            User: 'amazon',
+            WorkingDirectory: 'app/'
           }
         ],
       }));
@@ -363,14 +363,14 @@ export = {
       test.done();
     },
 
-    "correctly sets containers from ECR repository using all props"(test: Test) {
+    'correctly sets containers from ECR repository using all props'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
 
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
-      taskDefinition.addContainer("web", {
-        image: ecs.ContainerImage.fromEcrRepository(new Repository(stack, "myECRImage", {
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromEcrRepository(new Repository(stack, 'myECRImage', {
           lifecycleRegistryId: '123456789101',
           lifecycleRules: [{
             rulePriority: 10,
@@ -387,82 +387,82 @@ export = {
       expect(stack).to(haveResource('AWS::ECR::Repository', {
         LifecyclePolicy: {
           // eslint-disable-next-line max-len
-          LifecyclePolicyText: "{\"rules\":[{\"rulePriority\":10,\"selection\":{\"tagStatus\":\"tagged\",\"tagPrefixList\":[\"abc\"],\"countType\":\"imageCountMoreThan\",\"countNumber\":1},\"action\":{\"type\":\"expire\"}}]}",
-          RegistryId: "123456789101"
+          LifecyclePolicyText: '{"rules":[{"rulePriority":10,"selection":{"tagStatus":"tagged","tagPrefixList":["abc"],"countType":"imageCountMoreThan","countNumber":1},"action":{"type":"expire"}}]}',
+          RegistryId: '123456789101'
         },
-        RepositoryName: "project-a/amazon-ecs-sample"
+        RepositoryName: 'project-a/amazon-ecs-sample'
       }));
 
-      expect(stack).to(haveResource("AWS::ECS::TaskDefinition", {
-        Family: "Ec2TaskDef",
+      expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
+        Family: 'Ec2TaskDef',
         ContainerDefinitions: [{
           Essential: true,
           Memory: 512,
           Image: {
-            "Fn::Join": [
-              "",
+            'Fn::Join': [
+              '',
               [
                 {
-                  "Fn::Select": [
+                  'Fn::Select': [
                     4,
                     {
-                      "Fn::Split": [
-                        ":",
+                      'Fn::Split': [
+                        ':',
                         {
-                          "Fn::GetAtt": [
-                            "myECRImage7DEAE474",
-                            "Arn"
+                          'Fn::GetAtt': [
+                            'myECRImage7DEAE474',
+                            'Arn'
                           ]
                         }
                       ]
                     }
                   ]
                 },
-                ".dkr.ecr.",
+                '.dkr.ecr.',
                 {
-                  "Fn::Select": [
+                  'Fn::Select': [
                     3,
                     {
-                      "Fn::Split": [
-                        ":",
+                      'Fn::Split': [
+                        ':',
                         {
-                          "Fn::GetAtt": [
-                            "myECRImage7DEAE474",
-                            "Arn"
+                          'Fn::GetAtt': [
+                            'myECRImage7DEAE474',
+                            'Arn'
                           ]
                         }
                       ]
                     }
                   ]
                 },
-                ".",
+                '.',
                 {
-                  Ref: "AWS::URLSuffix"
+                  Ref: 'AWS::URLSuffix'
                 },
-                "/",
+                '/',
                 {
-                  Ref: "myECRImage7DEAE474"
+                  Ref: 'myECRImage7DEAE474'
                 },
-                ":latest"
+                ':latest'
               ]
             ]
           },
-          Name: "web"
+          Name: 'web'
         }],
       }));
 
       test.done();
     },
 
-    "correctly sets containers from ECR repository using default props"(test: Test) {
+    'correctly sets containers from ECR repository using default props'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
 
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       // WHEN
-      taskDefinition.addContainer("web", {
-        image: ecs.ContainerImage.fromEcrRepository(new Repository(stack, "myECRImage")),
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromEcrRepository(new Repository(stack, 'myECRImage')),
         memoryLimitMiB: 512
       });
 
@@ -472,82 +472,84 @@ export = {
       test.done();
     },
 
-    "warns when setting containers from ECR repository using fromRegistry method"(test: Test) {
+    'warns when setting containers from ECR repository using fromRegistry method'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
 
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       // WHEN
-      const container = taskDefinition.addContainer("web", {
-        image: ecs.ContainerImage.fromRegistry("ACCOUNT.dkr.ecr.REGION.amazonaws.com/REPOSITORY"),
+      const container = taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('ACCOUNT.dkr.ecr.REGION.amazonaws.com/REPOSITORY'),
         memoryLimitMiB: 512
       });
 
       // THEN
-      test.deepEqual(container.node.metadata[0].data, "Proper policies need to be attached before pulling from ECR repository, or use 'fromEcrRepository'.");
+      test.deepEqual(container.node.metadata[0].data,
+        "Proper policies need to be attached before pulling from ECR repository, or use 'fromEcrRepository'.");
       test.done();
     },
 
-    "warns when setting containers from ECR repository by creating a RepositoryImage class"(test: Test) {
+    'warns when setting containers from ECR repository by creating a RepositoryImage class'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
 
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
-      const repo = new ecs.RepositoryImage("ACCOUNT.dkr.ecr.REGION.amazonaws.com/REPOSITORY");
+      const repo = new ecs.RepositoryImage('ACCOUNT.dkr.ecr.REGION.amazonaws.com/REPOSITORY');
 
       // WHEN
-      const container = taskDefinition.addContainer("web", {
+      const container = taskDefinition.addContainer('web', {
         image: repo,
         memoryLimitMiB: 512
       });
 
       // THEN
-      test.deepEqual(container.node.metadata[0].data, "Proper policies need to be attached before pulling from ECR repository, or use 'fromEcrRepository'.");
+      test.deepEqual(container.node.metadata[0].data,
+        "Proper policies need to be attached before pulling from ECR repository, or use 'fromEcrRepository'.");
 
       test.done();
     },
 
-    "correctly sets containers from asset using default props"(test: Test) {
+    'correctly sets containers from asset using default props'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
 
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       // WHEN
-      taskDefinition.addContainer("web", {
+      taskDefinition.addContainer('web', {
         image: ecs.ContainerImage.fromAsset(path.join(__dirname, '..', 'demo-image')),
         memoryLimitMiB: 512
       });
 
       // THEN
-      expect(stack).to(haveResource("AWS::ECS::TaskDefinition", {
-        Family: "Ec2TaskDef",
+      expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
+        Family: 'Ec2TaskDef',
         ContainerDefinitions: [
           {
             Essential: true,
             Image: {
-              "Fn::Join": [
-                "",
+              'Fn::Join': [
+                '',
                 [
                   {
-                    Ref: "AWS::AccountId"
+                    Ref: 'AWS::AccountId'
                   },
-                  ".dkr.ecr.",
+                  '.dkr.ecr.',
                   {
-                    Ref: "AWS::Region"
+                    Ref: 'AWS::Region'
                   },
-                  ".",
+                  '.',
                   {
-                    Ref: "AWS::URLSuffix"
+                    Ref: 'AWS::URLSuffix'
                   },
-                  "/aws-cdk/assets:baa2d6eb2a17c75424df631c8c70ff39f2d5f3bee8b9e1a109ee24ca17300540"
+                  '/aws-cdk/assets:baa2d6eb2a17c75424df631c8c70ff39f2d5f3bee8b9e1a109ee24ca17300540'
                 ]
               ]
             },
             Memory: 512,
-            Name: "web"
+            Name: 'web'
           }
         ],
       }));
@@ -555,13 +557,13 @@ export = {
       test.done();
     },
 
-    "correctly sets containers from asset using all props"(test: Test) {
+    'correctly sets containers from asset using all props'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
 
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
-      taskDefinition.addContainer("web", {
+      taskDefinition.addContainer('web', {
         image: ecs.ContainerImage.fromAsset(path.join(__dirname, '..', 'demo-image'), {
           buildArgs: { HTTP_PROXY: 'http://10.20.30.2:1234' }
         }),
@@ -571,117 +573,117 @@ export = {
       test.done();
     },
 
-    "correctly sets scratch space"(test: Test) {
+    'correctly sets scratch space'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
-      const container = taskDefinition.addContainer("web", {
-        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+      const container = taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
         memoryLimitMiB: 512
       });
 
       container.addScratch({
-        containerPath: "./cache",
+        containerPath: './cache',
         readOnly: true,
-        sourcePath: "/tmp/cache",
-        name: "scratch"
+        sourcePath: '/tmp/cache',
+        name: 'scratch'
       });
 
       // THEN
-      expect(stack).to(haveResourceLike("AWS::ECS::TaskDefinition", {
-        Family: "Ec2TaskDef",
+      expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+        Family: 'Ec2TaskDef',
         ContainerDefinitions: [{
           MountPoints: [
             {
-              ContainerPath: "./cache",
+              ContainerPath: './cache',
               ReadOnly: true,
-              SourceVolume: "scratch"
+              SourceVolume: 'scratch'
             }
           ]
         }],
         Volumes: [{
           Host: {
-            SourcePath: "/tmp/cache"
+            SourcePath: '/tmp/cache'
           },
-          Name: "scratch"
+          Name: 'scratch'
         }]
       }));
 
       test.done();
     },
-    "correctly sets container dependenices"(test: Test) {
+    'correctly sets container dependenices'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       const dependency1 = taskDefinition.addContainer('dependency1', {
-        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
         memoryLimitMiB: 512
       });
 
       const dependency2 = taskDefinition.addContainer('dependency2', {
-        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
         memoryLimitMiB: 512
       });
 
-      const container = taskDefinition.addContainer("web", {
-        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+      const container = taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
         memoryLimitMiB: 512
       });
 
       container.addContainerDependencies({
         container: dependency1
       },
-        {
-          container: dependency2,
-          condition: ecs.ContainerDependencyCondition.SUCCESS
-        }
+      {
+        container: dependency2,
+        condition: ecs.ContainerDependencyCondition.SUCCESS
+      }
       );
 
       // THEN
-      expect(stack).to(haveResourceLike("AWS::ECS::TaskDefinition", {
-        Family: "Ec2TaskDef",
+      expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+        Family: 'Ec2TaskDef',
         ContainerDefinitions: [{
-          Name: "dependency1"
+          Name: 'dependency1'
         },
         {
-          Name: "dependency2"
+          Name: 'dependency2'
         },
         {
-          Name: "web",
+          Name: 'web',
           DependsOn: [{
-            Condition: "HEALTHY",
-            ContainerName: "dependency1"
+            Condition: 'HEALTHY',
+            ContainerName: 'dependency1'
           },
           {
-            Condition: "SUCCESS",
-            ContainerName: "dependency2"
+            Condition: 'SUCCESS',
+            ContainerName: 'dependency2'
           }]
         }]
       }));
 
       test.done();
     },
-    "correctly sets links"(test: Test) {
+    'correctly sets links'(test: Test) {
       const stack = new cdk.Stack();
 
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
         networkMode: ecs.NetworkMode.BRIDGE
       });
 
-      const container = taskDefinition.addContainer("web", {
-        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+      const container = taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
         memoryLimitMiB: 512
       });
 
-      const linkedContainer1 = taskDefinition.addContainer("linked1", {
-        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+      const linkedContainer1 = taskDefinition.addContainer('linked1', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
         memoryLimitMiB: 512
       });
 
-      const linkedContainer2 = taskDefinition.addContainer("linked2", {
-        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+      const linkedContainer2 = taskDefinition.addContainer('linked2', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
         memoryLimitMiB: 512
       });
 
@@ -689,14 +691,14 @@ export = {
       container.addLink(linkedContainer2);
 
       // THEN
-      expect(stack).to(haveResourceLike("AWS::ECS::TaskDefinition", {
+      expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
         ContainerDefinitions: [
           {
             Links: [
               'linked1:linked',
               'linked2'
             ],
-            Name: "web"
+            Name: 'web'
           },
           {
             Name: 'linked1'
@@ -710,7 +712,7 @@ export = {
       test.done();
     },
 
-    "correctly set policy statement to the task IAM role"(test: Test) {
+    'correctly set policy statement to the task IAM role'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
@@ -727,9 +729,9 @@ export = {
           Version: '2012-10-17',
           Statement: [
             {
-              Action: "test:SpecialName",
-              Effect: "Allow",
-              Resource: "*"
+              Action: 'test:SpecialName',
+              Effect: 'Allow',
+              Resource: '*'
             }
           ],
         },
@@ -737,27 +739,27 @@ export = {
 
       test.done();
     },
-    "correctly sets volumes from"(test: Test) {
+    'correctly sets volumes from'(test: Test) {
       const stack = new cdk.Stack();
 
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {});
 
-      const container = taskDefinition.addContainer("web", {
-        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+      const container = taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
         memoryLimitMiB: 512
       });
 
       container.addVolumesFrom({
-        sourceContainer: "SourceContainer",
+        sourceContainer: 'SourceContainer',
         readOnly: true
       });
 
       // THEN
-      expect(stack).to(haveResourceLike("AWS::ECS::TaskDefinition", {
+      expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
         ContainerDefinitions: [{
           VolumesFrom: [
             {
-              SourceContainer: "SourceContainer",
+              SourceContainer: 'SourceContainer',
               ReadOnly: true,
             }
           ]
@@ -767,7 +769,7 @@ export = {
       test.done();
     },
 
-    "correctly set policy statement to the task execution IAM role"(test: Test) {
+    'correctly set policy statement to the task execution IAM role'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
@@ -784,9 +786,9 @@ export = {
           Version: '2012-10-17',
           Statement: [
             {
-              Action: "test:SpecialName",
-              Effect: "Allow",
-              Resource: "*"
+              Action: 'test:SpecialName',
+              Effect: 'Allow',
+              Resource: '*'
             }
           ],
         },
@@ -795,14 +797,14 @@ export = {
       test.done();
     },
 
-    "correctly sets volumes"(test: Test) {
+    'correctly sets volumes'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
       const volume = {
         host: {
-          sourcePath: "/tmp/cache",
+          sourcePath: '/tmp/cache',
         },
-        name: "scratch"
+        name: 'scratch'
       };
 
       // Adding volumes via props is a bit clunky
@@ -810,61 +812,61 @@ export = {
         volumes: [volume]
       });
 
-      const container = taskDefinition.addContainer("web", {
-        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+      const container = taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
         memoryLimitMiB: 512
       });
 
       // this needs to be a better API -- should auto-add volumes
       container.addMountPoints({
-        containerPath: "./cache",
+        containerPath: './cache',
         readOnly: true,
-        sourceVolume: "scratch",
+        sourceVolume: 'scratch',
       });
 
       // THEN
-      expect(stack).to(haveResourceLike("AWS::ECS::TaskDefinition", {
-        Family: "Ec2TaskDef",
+      expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+        Family: 'Ec2TaskDef',
         ContainerDefinitions: [{
           MountPoints: [
             {
-              ContainerPath: "./cache",
+              ContainerPath: './cache',
               ReadOnly: true,
-              SourceVolume: "scratch"
+              SourceVolume: 'scratch'
             }
           ]
         }],
         Volumes: [{
           Host: {
-            SourcePath: "/tmp/cache"
+            SourcePath: '/tmp/cache'
           },
-          Name: "scratch"
+          Name: 'scratch'
         }]
       }));
 
       test.done();
     },
 
-    "correctly sets placement constraints"(test: Test) {
+    'correctly sets placement constraints'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
         placementConstraints: [
-          ecs.PlacementConstraint.memberOf("attribute:ecs.instance-type =~ t2.*"),
+          ecs.PlacementConstraint.memberOf('attribute:ecs.instance-type =~ t2.*'),
         ]
       });
 
-      taskDefinition.addContainer("web", {
+      taskDefinition.addContainer('web', {
         memoryLimitMiB: 1024,
-        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample")
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample')
       });
 
       // THEN
-      expect(stack).to(haveResource("AWS::ECS::TaskDefinition", {
+      expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
         PlacementConstraints: [
           {
-            Expression: "attribute:ecs.instance-type =~ t2.*",
-            Type: "memberOf"
+            Expression: 'attribute:ecs.instance-type =~ t2.*',
+            Type: 'memberOf'
           }
         ]
       }));
@@ -872,7 +874,7 @@ export = {
       test.done();
     },
 
-    "correctly sets taskRole"(test: Test) {
+    'correctly sets taskRole'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
@@ -881,42 +883,42 @@ export = {
         })
       });
 
-      taskDefinition.addContainer("web", {
-        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
         memoryLimitMiB: 512
       });
 
       // THEN
-      expect(stack).to(haveResourceLike("AWS::ECS::TaskDefinition", {
+      expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
         TaskRoleArn: stack.resolve(taskDefinition.taskRole.roleArn)
       }));
 
       test.done();
     },
 
-    "automatically sets taskRole by default"(test: Test) {
+    'automatically sets taskRole by default'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       // THEN
-      expect(stack).to(haveResourceLike("AWS::ECS::TaskDefinition", {
+      expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
         TaskRoleArn: stack.resolve(taskDefinition.taskRole.roleArn)
       }));
 
       test.done();
     },
 
-    "correctly sets dockerVolumeConfiguration"(test: Test) {
+    'correctly sets dockerVolumeConfiguration'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
       const volume = {
-        name: "scratch",
+        name: 'scratch',
         dockerVolumeConfiguration: {
-          driver: "local",
+          driver: 'local',
           scope: ecs.Scope.TASK,
           driverOpts: {
-            key1: "value"
+            key1: 'value'
           }
         }
       };
@@ -925,21 +927,21 @@ export = {
         volumes: [volume]
       });
 
-      taskDefinition.addContainer("web", {
-        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
         memoryLimitMiB: 512
       });
 
       // THEN
-      expect(stack).to(haveResourceLike("AWS::ECS::TaskDefinition", {
-        Family: "Ec2TaskDef",
+      expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+        Family: 'Ec2TaskDef',
         Volumes: [{
-          Name: "scratch",
+          Name: 'scratch',
           DockerVolumeConfiguration: {
-            Driver: "local",
+            Driver: 'local',
             Scope: 'task',
             DriverOpts: {
-              key1: "value"
+              key1: 'value'
             }
           }
         }]
@@ -960,7 +962,7 @@ export = {
         proxyIngressPort: 15000,
         proxyEgressPort: 15001,
         appPorts: [9080, 9081],
-        egressIgnoredIPs: ["169.254.170.2", "169.254.169.254"]
+        egressIgnoredIPs: ['169.254.170.2', '169.254.169.254']
       }
     });
 

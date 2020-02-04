@@ -4,7 +4,7 @@ import { StackInspector } from '../inspector';
 class HaveOutputAssertion extends JestFriendlyAssertion<StackInspector> {
   private readonly inspected: InspectionFailure[] = [];
 
-  constructor(private readonly outputName?: string, private readonly exportName?: any, private outputValue?: any) {
+  public constructor(private readonly outputName?: string, private readonly exportName?: any, private outputValue?: any) {
     super();
     if (!this.outputName && !this.exportName) {
       throw new Error('At least one of [outputName, exportName] should be provided');

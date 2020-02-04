@@ -5,7 +5,7 @@ import { MatchStyle, matchTemplate } from './assertions/match-template';
 export abstract class Inspector {
   public aroundAssert?: (cb: () => void) => any;
 
-  constructor() {
+  public constructor() {
     this.aroundAssert = undefined;
   }
 
@@ -29,7 +29,7 @@ export class StackInspector extends Inspector {
 
   private readonly template: { [key: string]: any };
 
-  constructor(public readonly stack: api.CloudFormationStackArtifact | object) {
+  public constructor(public readonly stack: api.CloudFormationStackArtifact | object) {
     super();
 
     this.template = stack instanceof api.CloudFormationStackArtifact ? stack.template : stack;
@@ -37,7 +37,7 @@ export class StackInspector extends Inspector {
 
   public at(path: string | string[]): StackPathInspector {
     if (!(this.stack instanceof api.CloudFormationStackArtifact)) {
-      throw new Error(`Cannot use "expect(stack).at(path)" for a raw template, only CloudFormationStackArtifact`);
+      throw new Error('Cannot use "expect(stack).at(path)" for a raw template, only CloudFormationStackArtifact');
     }
 
     const strPath = typeof path === 'string' ? path : path.join('/');
@@ -54,7 +54,7 @@ export class StackInspector extends Inspector {
 }
 
 export class StackPathInspector extends Inspector {
-  constructor(public readonly stack: api.CloudFormationStackArtifact, public readonly path: string) {
+  public constructor(public readonly stack: api.CloudFormationStackArtifact, public readonly path: string) {
     super();
   }
 

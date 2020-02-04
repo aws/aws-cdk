@@ -21,7 +21,7 @@ export class FakeSourceAction implements codepipeline.IAction {
 
   public readonly actionProperties: codepipeline.ActionProperties;
 
-  constructor(props: FakeSourceActionProps) {
+  public constructor(props: FakeSourceActionProps) {
     this.actionProperties = {
       ...props,
       category: codepipeline.ActionCategory.SOURCE,
@@ -35,7 +35,7 @@ export class FakeSourceAction implements codepipeline.IAction {
   }
 
   public bind(_scope: Construct, _stage: codepipeline.IStage, _options: codepipeline.ActionBindOptions):
-      codepipeline.ActionConfig {
+  codepipeline.ActionConfig {
     return {};
   }
 

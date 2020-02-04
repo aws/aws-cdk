@@ -47,7 +47,7 @@ export interface IntegrationOptions {
    * There are three valid values: WHEN_NO_MATCH, WHEN_NO_TEMPLATES, and
    * NEVER.
    */
-  readonly passthroughBehavior?: PassthroughBehavior
+  readonly passthroughBehavior?: PassthroughBehavior;
 
   /**
    * The request parameters that API Gateway sends with the backend request.
@@ -139,7 +139,7 @@ export interface IntegrationProps {
  * or implement on your own by specifying the set of props.
  */
 export class Integration {
-  constructor(private readonly props: IntegrationProps) { }
+  public constructor(private readonly props: IntegrationProps) { }
 
   /**
    * Allows `Method` to access the integration props.

@@ -113,7 +113,7 @@ export class ReceiptRule extends Resource implements IReceiptRule {
   public readonly receiptRuleName: string;
   private readonly actions = new Array<CfnReceiptRule.ActionProperty>();
 
-  constructor(scope: Construct, id: string, props: ReceiptRuleProps) {
+  public constructor(scope: Construct, id: string, props: ReceiptRuleProps) {
     super(scope, id, {
       physicalName: props.receiptRuleName,
     });
@@ -167,7 +167,7 @@ export interface DropSpamReceiptRuleProps extends ReceiptRuleProps {
 export class DropSpamReceiptRule extends Construct {
   public readonly rule: ReceiptRule;
 
-  constructor(scope: Construct, id: string, props: DropSpamReceiptRuleProps) {
+  public constructor(scope: Construct, id: string, props: DropSpamReceiptRuleProps) {
     super(scope, id);
 
     const fn = new lambda.SingletonFunction(this, 'Function', {
@@ -206,7 +206,7 @@ function dropSpamCode(event: any, _: any, callback: any) {
   console.log('Spam filter');
 
   const sesNotification = event.Records[0].ses;
-  console.log("SES Notification:\n", JSON.stringify(sesNotification, null, 2));
+  console.log('SES Notification:\n', JSON.stringify(sesNotification, null, 2));
 
   // Check if any spam check failed
   if (sesNotification.receipt.spfVerdict.status === 'FAIL'

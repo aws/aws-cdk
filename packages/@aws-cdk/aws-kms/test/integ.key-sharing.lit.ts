@@ -12,7 +12,7 @@ const app = new cdk.App();
 class KeyStack extends cdk.Stack {
   public readonly key: kms.Key;
 
-  constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
+  public constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
     this.key = new kms.Key(this, 'MyKey', { removalPolicy: cdk.RemovalPolicy.DESTROY });
   }
@@ -26,7 +26,7 @@ interface UseStackProps extends cdk.StackProps {
  * Stack that uses the key
  */
 class UseStack extends cdk.Stack {
-  constructor(scope: cdk.App, id: string, props: UseStackProps) {
+  public constructor(scope: cdk.App, id: string, props: UseStackProps) {
     super(scope, id, props);
 
     // Use the IKey object here.

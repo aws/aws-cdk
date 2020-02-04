@@ -277,7 +277,7 @@ export class Repository extends RepositoryBase {
   private readonly repository: CfnRepository;
   private readonly triggers = new Array<CfnRepository.RepositoryTriggerProperty>();
 
-  constructor(scope: Construct, id: string, props: RepositoryProps) {
+  public constructor(scope: Construct, id: string, props: RepositoryProps) {
     super(scope, id, {
       physicalName: props.repositoryName,
     });
@@ -342,7 +342,7 @@ export class Repository extends RepositoryBase {
  * Creates for a repository trigger to an SNS topic or Lambda function.
  */
 export interface RepositoryTriggerOptions {
-   /**
+  /**
     * A name for the trigger.Triggers on a repository must have unique names
     */
   readonly name?: string;

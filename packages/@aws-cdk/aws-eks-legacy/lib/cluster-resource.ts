@@ -34,7 +34,7 @@ export class ClusterResource extends Construct {
    */
   public readonly creationRole: iam.IRole;
 
-  constructor(scope: Construct, id: string, props: CfnClusterProps) {
+  public constructor(scope: Construct, id: string, props: CfnClusterProps) {
     super(scope, id);
 
     // each cluster resource will have it's own lambda handler since permissions
@@ -49,7 +49,7 @@ export class ClusterResource extends Construct {
     });
 
     if (!props.roleArn) {
-      throw new Error(`"roleArn" is required`);
+      throw new Error('"roleArn" is required');
     }
 
     // since we don't know the cluster name at this point, we must give this role star resource permissions

@@ -1,11 +1,11 @@
 import * as cfnspec from '@aws-cdk/cfnspec';
 import * as colors from 'colors/safe';
-import { PropertyChange, PropertyMap, ResourceChange } from "../diff/types";
+import { PropertyChange, PropertyMap, ResourceChange } from '../diff/types';
 import { DiffableCollection } from '../diffable';
-import { renderIntrinsics } from "../render-intrinsics";
+import { renderIntrinsics } from '../render-intrinsics';
 import { deepRemoveUndefined, dropIfEmpty, flatMap, makeComparator } from '../util';
 import { ManagedPolicyAttachment, ManagedPolicyJson, parseManagedPolicies } from './managed-policy';
-import { parseLambdaPermission, parseStatements, renderCondition, Statement, StatementJson, Targets } from "./statement";
+import { parseLambdaPermission, parseStatements, renderCondition, Statement, StatementJson, Targets } from './statement';
 
 export interface IamChangesProps {
   propertyChanges: PropertyChange[];
@@ -31,7 +31,7 @@ export class IamChanges {
   public readonly statements = new DiffableCollection<Statement>();
   public readonly managedPolicies = new DiffableCollection<ManagedPolicyAttachment>();
 
-  constructor(props: IamChangesProps) {
+  public constructor(props: IamChangesProps) {
     for (const propertyChange of props.propertyChanges) {
       this.readPropertyChange(propertyChange);
     }
@@ -183,9 +183,8 @@ export class IamChanges {
 
     const appliesToPrincipal = 'AWS:${' + logicalId + '}';
 
-    return flatMap(policies, (policy: any) => {
-      return defaultPrincipal(appliesToPrincipal, parseStatements(renderIntrinsics(policy.PolicyDocument.Statement)));
-    });
+    return flatMap(policies, (policy: any) =>
+      defaultPrincipal(appliesToPrincipal, parseStatements(renderIntrinsics(policy.PolicyDocument.Statement))));
   }
 
   /**
@@ -229,9 +228,7 @@ export class IamChanges {
       resources = [resources];
     }
 
-    return flatMap(resources, (resource: string) => {
-      return defaultResource(resource, parseStatements(properties[policyKeys[0]].Statement));
-    });
+    return flatMap(resources, (resource: string) => defaultResource(resource, parseStatements(properties[policyKeys[0]].Statement)));
   }
 
   private readManagedPolicies(policyArns: string[] | undefined, logicalId: string): ManagedPolicyAttachment[] {

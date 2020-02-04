@@ -69,7 +69,7 @@ export interface EventInvokeConfigProps extends EventInvokeConfigOptions {
  * queue for too long, Lambda discards it.
  */
 export class EventInvokeConfig extends Resource {
-  constructor(scope: Construct, id: string, props: EventInvokeConfigProps) {
+  public constructor(scope: Construct, id: string, props: EventInvokeConfigProps) {
     super(scope, id);
 
     if (props.maxEventAge && (props.maxEventAge.toSeconds() < 60 || props.maxEventAge.toSeconds() > 21600)) {

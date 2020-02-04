@@ -150,11 +150,10 @@ export class UsagePlan extends Resource {
 
   private readonly apiStages = new Array<UsagePlanPerApiStage>();
 
-  constructor(scope: Construct, id: string, props: UsagePlanProps = { }) {
+  public constructor(scope: Construct, id: string, props: UsagePlanProps = { }) {
     super(scope, id);
-    let resource: CfnUsagePlan;
 
-    resource = new CfnUsagePlan(this, 'Resource', {
+    const resource = new CfnUsagePlan(this, 'Resource', {
       apiStages: Lazy.anyValue({ produce: () => this.renderApiStages(this.apiStages) }),
       description: props.description,
       quota: this.renderQuota(props),

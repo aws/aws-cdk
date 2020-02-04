@@ -94,7 +94,7 @@ export class App extends Construct {
    * Initializes a CDK application.
    * @param props initialization properties
    */
-  constructor(props: AppProps = {}) {
+  public constructor(props: AppProps = {}) {
     super(undefined as any, '');
 
     Object.defineProperty(this, APP_SYMBOL, { value: true });

@@ -1,7 +1,7 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import { Construct } from '@aws-cdk/core';
 import { Action } from '../action';
-import { IJenkinsProvider, jenkinsArtifactsBounds } from "./jenkins-provider";
+import { IJenkinsProvider, jenkinsArtifactsBounds } from './jenkins-provider';
 
 /**
  * The type of the Jenkins Action that determines its CodePipeline Category -
@@ -62,7 +62,7 @@ export interface JenkinsActionProps extends codepipeline.CommonActionProps {
 export class JenkinsAction extends Action {
   private readonly props: JenkinsActionProps;
 
-  constructor(props: JenkinsActionProps) {
+  public constructor(props: JenkinsActionProps) {
     super({
       ...props,
       category: props.type === JenkinsActionType.BUILD
@@ -78,7 +78,7 @@ export class JenkinsAction extends Action {
   }
 
   protected bound(_scope: Construct, _stage: codepipeline.IStage, _options: codepipeline.ActionBindOptions):
-      codepipeline.ActionConfig {
+  codepipeline.ActionConfig {
     if (this.actionProperties.category === codepipeline.ActionCategory.BUILD) {
       this.props.jenkinsProvider._registerBuildProvider();
     } else {

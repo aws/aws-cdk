@@ -8,10 +8,10 @@ import { DEFAULT_SYNTH_OPTIONS, IntegrationTests } from '../lib/integ-helpers';
 async function main() {
   const argv = yargs
     .usage('Usage: cdk-integ [TEST...]')
-      .option('list', { type: 'boolean', default: false, desc: 'List tests instead of running them' })
-      .option('clean', { type: 'boolean', default: true, desc: 'Skips stack clean up after test is completed (use --no-clean to negate)' })
-      .option('verbose', { type: 'boolean', default: false, alias: 'v', desc: 'Verbose logs' })
-      .argv;
+    .option('list', { type: 'boolean', default: false, desc: 'List tests instead of running them' })
+    .option('clean', { type: 'boolean', default: true, desc: 'Skips stack clean up after test is completed (use --no-clean to negate)' })
+    .option('verbose', { type: 'boolean', default: false, alias: 'v', desc: 'Verbose logs' })
+    .argv;
 
   const tests = await new IntegrationTests('test').fromCliArgs(argv._);
 
@@ -45,7 +45,7 @@ async function main() {
         // Note: no "context" and "env", so use default user settings!
       });
 
-      console.error(`Success! Writing out reference synth.`);
+      console.error('Success! Writing out reference synth.');
 
       // If this all worked, write the new expectation file
       const actual = await test.invoke([ ...args, '--json', 'synth', ...stackToDeploy ], {
@@ -57,7 +57,7 @@ async function main() {
       await test.writeExpected(actual);
     } finally {
       if (argv.clean) {
-        console.error(`Cleaning up.`);
+        console.error('Cleaning up.');
         await test.invoke(['destroy', '--force', ...stackToDeploy ]);
       } else {
         console.error('Skipping clean up (--no-clean).');

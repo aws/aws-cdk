@@ -144,12 +144,12 @@ abstract class StreamBase extends Resource implements IStream {
    */
   public grantReadWrite(grantee: iam.IGrantable) {
     const ret = this.grant(
-        grantee,
-        'kinesis:DescribeStream',
-        'kinesis:GetRecords',
-        'kinesis:GetShardIterator',
-        'kinesis:PutRecord',
-        'kinesis:PutRecords');
+      grantee,
+      'kinesis:DescribeStream',
+      'kinesis:GetRecords',
+      'kinesis:GetShardIterator',
+      'kinesis:PutRecord',
+      'kinesis:PutRecords');
 
     if (this.encryptionKey) {
       this.encryptionKey.grantEncryptDecrypt(grantee);
@@ -240,7 +240,7 @@ export class Stream extends StreamBase {
 
   private readonly stream: CfnStream;
 
-  constructor(scope: Construct, id: string, props: StreamProps = {}) {
+  public constructor(scope: Construct, id: string, props: StreamProps = {}) {
     super(scope, id, {
       physicalName: props.streamName,
     });
@@ -248,12 +248,12 @@ export class Stream extends StreamBase {
     const shardCount = props.shardCount || 1;
     const retentionPeriodHours = props.retentionPeriodHours || 24;
     if (retentionPeriodHours < 24 && retentionPeriodHours > 168) {
-      throw new Error("retentionPeriodHours must be between 24 and 168 hours");
+      throw new Error('retentionPeriodHours must be between 24 and 168 hours');
     }
 
     const { streamEncryption, encryptionKey } = this.parseEncryption(props);
 
-    this.stream = new CfnStream(this, "Resource", {
+    this.stream = new CfnStream(this, 'Resource', {
       name: this.physicalName,
       retentionPeriodHours,
       shardCount,
@@ -275,8 +275,8 @@ export class Stream extends StreamBase {
    * user's configuration.
    */
   private parseEncryption(props: StreamProps): {
-    streamEncryption?: CfnStream.StreamEncryptionProperty,
-    encryptionKey?: kms.IKey
+    streamEncryption?: CfnStream.StreamEncryptionProperty;
+    encryptionKey?: kms.IKey;
   } {
 
     // default to unencrypted.

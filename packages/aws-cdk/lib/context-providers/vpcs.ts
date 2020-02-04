@@ -6,7 +6,7 @@ import { ContextProviderPlugin } from './provider';
 
 export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
 
-  constructor(private readonly aws: ISDK) {
+  public constructor(private readonly aws: ISDK) {
   }
 
   public async getValue(args: cxapi.VpcContextQuery) {
@@ -143,7 +143,7 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
 class RouteTables {
   public readonly mainRouteTable?: AWS.EC2.RouteTable;
 
-  constructor(private readonly tables: AWS.EC2.RouteTable[]) {
+  public constructor(private readonly tables: AWS.EC2.RouteTable[]) {
     this.mainRouteTable = this.tables.find(table => !!table.Associations && table.Associations.some(assoc => !!assoc.Main));
   }
 

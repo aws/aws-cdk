@@ -84,7 +84,7 @@ export interface RuleTargetInputProperties {
  * Event Input that is directly derived from the construct
  */
 class LiteralEventInput extends RuleTargetInput {
-  constructor(private readonly props: RuleTargetInputProperties) {
+  public constructor(private readonly props: RuleTargetInputProperties) {
     super();
   }
 
@@ -121,7 +121,7 @@ class LiteralEventInput extends RuleTargetInput {
  * quotes by using a string replace.
  */
 class FieldAwareEventInput extends RuleTargetInput {
-  constructor(private readonly input: any, private readonly inputType: InputType) {
+  public constructor(private readonly input: any, private readonly inputType: InputType) {
     super();
   }
 
@@ -140,10 +140,8 @@ class FieldAwareEventInput extends RuleTargetInput {
       return key;
     }
 
-    const self = this;
-
     class EventFieldReplacer extends DefaultTokenResolver {
-      constructor() {
+      public constructor(private readonly self: FieldAwareEventInput) {
         super(new StringConcat());
       }
 
@@ -156,7 +154,7 @@ class FieldAwareEventInput extends RuleTargetInput {
         }
         inputPathsMap[key] = t.path;
 
-        return self.keyPlaceholder(key);
+        return this.self.keyPlaceholder(key);
       }
     }
 
@@ -167,13 +165,13 @@ class FieldAwareEventInput extends RuleTargetInput {
       // JSONify individual lines
       resolved = Tokenization.resolve(this.input, {
         scope: rule,
-        resolver: new EventFieldReplacer()
+        resolver: new EventFieldReplacer(this)
       });
       resolved = resolved.split('\n').map(stack.toJsonString).join('\n');
     } else {
       resolved = stack.toJsonString(Tokenization.resolve(this.input, {
         scope: rule,
-        resolver: new EventFieldReplacer()
+        resolver: new EventFieldReplacer(this)
       }));
     }
 
@@ -323,5 +321,5 @@ const EVENT_FIELD_SYMBOL = Symbol.for('@aws-cdk/aws-events.EventField');
  * Quote a string for use in a regex
  */
 function regexQuote(s: string) {
-  return s.replace(/[.?*+^$[\]\\(){}|-]/g, "\\$&");
+  return s.replace(/[.?*+^$[\]\\(){}|-]/g, '\\$&');
 }

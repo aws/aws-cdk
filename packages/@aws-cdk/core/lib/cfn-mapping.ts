@@ -23,7 +23,7 @@ export interface CfnMappingProps {
 export class CfnMapping extends CfnRefElement {
   private mapping: { [k1: string]: { [k2: string]: any } } = { };
 
-  constructor(scope: Construct, id: string, props: CfnMappingProps = {}) {
+  public constructor(scope: Construct, id: string, props: CfnMappingProps = {}) {
     super(scope, id);
     this.mapping = props.mapping || { };
   }

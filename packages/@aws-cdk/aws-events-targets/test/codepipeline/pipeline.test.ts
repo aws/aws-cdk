@@ -35,15 +35,15 @@ describe('CodePipeline event target', () => {
         artifactBounds: { minInputs: 1, maxInputs: 1 , minOutputs: 1, maxOutputs: 1, }})]
     });
     pipelineArn = {
-      "Fn::Join": [ "", [
-        "arn:",
-        { Ref: "AWS::Partition" },
-        ":codepipeline:",
-        { Ref: "AWS::Region" },
-        ":",
-        { Ref: "AWS::AccountId" },
-        ":",
-        { Ref: "PipelineC660917D" }]
+      'Fn::Join': [ '', [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':codepipeline:',
+        { Ref: 'AWS::Region' },
+        ':',
+        { Ref: 'AWS::AccountId' },
+        ':',
+        { Ref: 'PipelineC660917D' }]
       ]
     };
   });
@@ -67,8 +67,8 @@ describe('CodePipeline event target', () => {
           Targets: [
             {
               Arn: pipelineArn,
-              Id: "Target0",
-              RoleArn: { "Fn::GetAtt": [ "PipelineEventsRole46BEEA7C", "Arn" ] },
+              Id: 'Target0',
+              RoleArn: { 'Fn::GetAtt': [ 'PipelineEventsRole46BEEA7C', 'Arn' ] },
             },
           ],
         }));
@@ -79,12 +79,12 @@ describe('CodePipeline event target', () => {
           PolicyDocument: {
             Statement: [
               {
-                Action: "codepipeline:StartPipelineExecution",
-                Effect: "Allow",
+                Action: 'codepipeline:StartPipelineExecution',
+                Effect: 'Allow',
                 Resource: pipelineArn,
               }
             ],
-            Version: "2012-10-17"
+            Version: '2012-10-17'
           }
         }));
       });
@@ -108,7 +108,7 @@ describe('CodePipeline event target', () => {
           Targets: [
             {
               Arn: pipelineArn,
-              RoleArn: { "Fn::GetAtt": ["MyRole", "Arn"] },
+              RoleArn: { 'Fn::GetAtt': ['MyRole', 'Arn'] },
             },
           ],
         }));
@@ -118,12 +118,12 @@ describe('CodePipeline event target', () => {
 });
 
 class TestAction implements codepipeline.IAction {
-  constructor(public readonly actionProperties: codepipeline.ActionProperties) {
+  public constructor(public readonly actionProperties: codepipeline.ActionProperties) {
     // nothing to do
   }
 
   public bind(_scope: Construct, _stage: codepipeline.IStage, _options: codepipeline.ActionBindOptions):
-      codepipeline.ActionConfig {
+  codepipeline.ActionConfig {
     return {};
   }
 

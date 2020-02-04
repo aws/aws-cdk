@@ -25,7 +25,7 @@ export interface InterfaceWithPrimitives {
   //
   // intentionally left blank (to check that description is omitted)
   //
-  readonly mapOfNumbers: { [key: string]: number }
+  readonly mapOfNumbers: { [key: string]: number };
 }
 
 export enum MyNormalEnum {

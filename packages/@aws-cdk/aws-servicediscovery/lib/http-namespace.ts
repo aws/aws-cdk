@@ -3,7 +3,9 @@ import { BaseNamespaceProps, INamespace, NamespaceType } from './namespace';
 import { BaseServiceProps, Service } from './service';
 import { CfnHttpNamespace } from './servicediscovery.generated';
 
-export interface HttpNamespaceProps extends BaseNamespaceProps {}
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface HttpNamespaceProps extends BaseNamespaceProps { }
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface IHttpNamespace extends INamespace { }
 export interface HttpNamespaceAttributes {
   /**
@@ -57,7 +59,7 @@ export class HttpNamespace extends Resource implements IHttpNamespace {
    */
   public readonly type: NamespaceType;
 
-  constructor(scope: Construct, id: string, props: HttpNamespaceProps) {
+  public constructor(scope: Construct, id: string, props: HttpNamespaceProps) {
     super(scope, id);
 
     const ns = new CfnHttpNamespace(this, 'Resource', {

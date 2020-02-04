@@ -2,7 +2,7 @@ import * as cdk from '@aws-cdk/core';
 import * as ec2 from '../lib';
 
 class NatInstanceStack extends cdk.Stack {
-  constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
+  public constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
     /// !show

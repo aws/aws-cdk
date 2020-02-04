@@ -123,7 +123,7 @@ export class Alias extends AliasBase {
   public readonly aliasName: string;
   public readonly aliasTargetKey: IKey;
 
-  constructor(scope: Construct, id: string, props: AliasProps) {
+  public constructor(scope: Construct, id: string, props: AliasProps) {
     let aliasName = props.aliasName;
 
     if (!Token.isUnresolved(aliasName)) {
@@ -140,7 +140,7 @@ export class Alias extends AliasBase {
       }
 
       if (!aliasName.match(/^[a-zA-Z0-9:/_-]{1,256}$/)) {
-        throw new Error(`Alias name must be between 1 and 256 characters in a-zA-Z0-9:/_-`);
+        throw new Error('Alias name must be between 1 and 256 characters in a-zA-Z0-9:/_-');
       }
     }
 

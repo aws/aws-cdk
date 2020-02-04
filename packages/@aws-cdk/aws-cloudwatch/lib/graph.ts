@@ -1,8 +1,8 @@
 import * as cdk from '@aws-cdk/core';
-import { IAlarm } from "./alarm";
-import { IMetric } from "./metric-types";
+import { IAlarm } from './alarm';
+import { IMetric } from './metric-types';
 import { allMetricsGraphJson } from './private/rendering';
-import { ConcreteWidget } from "./widget";
+import { ConcreteWidget } from './widget';
 
 /**
  * Basic properties for widgets that display metrics
@@ -89,7 +89,7 @@ export interface AlarmWidgetProps extends MetricWidgetProps {
 export class AlarmWidget extends ConcreteWidget {
   private readonly props: AlarmWidgetProps;
 
-  constructor(props: AlarmWidgetProps) {
+  public constructor(props: AlarmWidgetProps) {
     super(props.width || 6, props.height || 6);
     this.props = props;
   }
@@ -162,7 +162,7 @@ export interface GraphWidgetProps extends MetricWidgetProps {
 export class GraphWidget extends ConcreteWidget {
   private readonly props: GraphWidgetProps;
 
-  constructor(props: GraphWidgetProps) {
+  public constructor(props: GraphWidgetProps) {
     super(props.width || 6, props.height || 6);
     this.props = props;
   }
@@ -216,7 +216,7 @@ export interface SingleValueWidgetProps extends MetricWidgetProps {
 export class SingleValueWidget extends ConcreteWidget {
   private readonly props: SingleValueWidgetProps;
 
-  constructor(props: SingleValueWidgetProps) {
+  public constructor(props: SingleValueWidgetProps) {
     super(props.width || 6, props.height || 3);
     this.props = props;
   }
@@ -295,7 +295,5 @@ export enum Shading {
 }
 
 function mapAnnotation(yAxis: string): ((x: HorizontalAnnotation) => any) {
-  return (a: HorizontalAnnotation) => {
-    return { ...a, yAxis };
-  };
+  return (a: HorizontalAnnotation) => ({ ...a, yAxis });
 }

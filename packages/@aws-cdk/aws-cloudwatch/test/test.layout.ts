@@ -49,12 +49,6 @@ export = {
       test.equal(21, row.width);
       test.equal(5, row.height);
 
-      function assertWidgetPos(x: number, y: number, w: IWidget) {
-        const json = w.toJson()[0];
-        test.equal(x, json.x);
-        test.equal(y, json.y);
-      }
-
       assertWidgetPos(1000, 1000, widgets[0]);
       assertWidgetPos(1007, 1000, widgets[1]);
       assertWidgetPos(1014, 1000, widgets[2]);
@@ -62,6 +56,12 @@ export = {
     }
 
     test.done();
+
+    function assertWidgetPos(x: number, y: number, w: IWidget) {
+      const json = w.toJson()[0];
+      test.equal(x, json.x);
+      test.equal(y, json.y);
+    }
   },
 
   'row can fit exactly 3 8-wide widgets without wrapping'(test: Test) {

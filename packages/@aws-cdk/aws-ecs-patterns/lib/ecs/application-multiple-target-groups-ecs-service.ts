@@ -78,7 +78,7 @@ export class ApplicationMultipleTargetGroupsEc2Service extends ApplicationMultip
   /**
    * Constructs a new instance of the ApplicationMultipleTargetGroupsEc2Service class.
    */
-  constructor(scope: Construct, id: string, props: ApplicationMultipleTargetGroupsEc2ServiceProps = {}) {
+  public constructor(scope: Construct, id: string, props: ApplicationMultipleTargetGroupsEc2ServiceProps = {}) {
     super(scope, id, props);
 
     if (props.taskDefinition && props.taskImageOptions) {
@@ -134,7 +134,7 @@ export class ApplicationMultipleTargetGroupsEc2Service extends ApplicationMultip
   }
 
   private createEc2Service(props: ApplicationMultipleTargetGroupsEc2ServiceProps): Ec2Service {
-    return new Ec2Service(this, "Service", {
+    return new Ec2Service(this, 'Service', {
       cluster: this.cluster,
       desiredCount: this.desiredCount,
       taskDefinition: this.taskDefinition,

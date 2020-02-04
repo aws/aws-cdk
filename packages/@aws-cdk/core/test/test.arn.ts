@@ -15,7 +15,7 @@ export = {
     const pseudo = new ScopedAws(stack);
 
     test.deepEqual(stack.resolve(arn),
-                   stack.resolve(`arn:${pseudo.partition}:sqs:${pseudo.region}:${pseudo.accountId}:myqueuename`));
+      stack.resolve(`arn:${pseudo.partition}:sqs:${pseudo.region}:${pseudo.accountId}:myqueuename`));
     test.done();
   },
 
@@ -32,7 +32,7 @@ export = {
     });
 
     test.deepEqual(stack.resolve(arn),
-                   'arn:aws-cn:dynamodb:us-east-1:123456789012:table/mytable/stream/label');
+      'arn:aws-cn:dynamodb:us-east-1:123456789012:table/mytable/stream/label');
     test.done();
   },
 
@@ -48,7 +48,7 @@ export = {
     });
 
     test.deepEqual(stack.resolve(arn),
-                   'arn:aws-cn:s3:::my-bucket');
+      'arn:aws-cn:s3:::my-bucket');
 
     test.done();
   },
@@ -66,7 +66,7 @@ export = {
     const pseudo = new ScopedAws(stack);
 
     test.deepEqual(stack.resolve(arn),
-                   stack.resolve(`arn:${pseudo.partition}:codedeploy:${pseudo.region}:${pseudo.accountId}:application:WordPress_App`));
+      stack.resolve(`arn:${pseudo.partition}:codedeploy:${pseudo.region}:${pseudo.accountId}:application:WordPress_App`));
     test.done();
   },
 
@@ -83,7 +83,7 @@ export = {
     const pseudo = new ScopedAws(stack);
 
     test.deepEqual(stack.resolve(arn),
-                   stack.resolve(`arn:${pseudo.partition}:ssm:${pseudo.region}:${pseudo.accountId}:parameter/parameter-name`));
+      stack.resolve(`arn:${pseudo.partition}:ssm:${pseudo.region}:${pseudo.accountId}:parameter/parameter-name`));
     test.done();
   },
 
@@ -99,10 +99,10 @@ export = {
 
   'Arn.parse(s)': {
 
-    'fails': {
+    fails: {
       'if doesn\'t start with "arn:"'(test: Test) {
         const stack = new Stack();
-        test.throws(() => stack.parseArn("barn:foo:x:a:1:2"), /ARNs must start with "arn:": barn:foo/);
+        test.throws(() => stack.parseArn('barn:foo:x:a:1:2'), /ARNs must start with "arn:": barn:foo/);
         test.done();
       },
 

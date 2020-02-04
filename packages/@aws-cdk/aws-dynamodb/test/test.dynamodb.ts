@@ -98,15 +98,15 @@ export = {
       });
 
       expect(stack).to(haveResource('AWS::DynamoDB::Table', {
-              AttributeDefinitions: [
-                { AttributeName: 'hashKey', AttributeType: 'S' },
-                { AttributeName: 'sortKey', AttributeType: 'N' }
-              ],
-              KeySchema: [
-                { AttributeName: 'hashKey', KeyType: 'HASH' },
-                { AttributeName: 'sortKey', KeyType: 'RANGE' }
-              ],
-              ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
+        AttributeDefinitions: [
+          { AttributeName: 'hashKey', AttributeType: 'S' },
+          { AttributeName: 'sortKey', AttributeType: 'N' }
+        ],
+        KeySchema: [
+          { AttributeName: 'hashKey', KeyType: 'HASH' },
+          { AttributeName: 'sortKey', KeyType: 'RANGE' }
+        ],
+        ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
       }));
       test.done();
     },
@@ -1122,9 +1122,9 @@ export = {
     expect(stack).to(haveResource('AWS::ApplicationAutoScaling::ScalableTarget', {
       ScheduledActions: [
         {
-          ScalableTargetAction: { "MaxCapacity": 10 },
-          Schedule: "cron(* * * * ? *)",
-          ScheduledActionName: "SaveMoneyByNotScalingUp"
+          ScalableTargetAction: { 'MaxCapacity': 10 },
+          Schedule: 'cron(* * * * ? *)',
+          ScheduledActionName: 'SaveMoneyByNotScalingUp'
         }
       ]
     }));
@@ -1169,17 +1169,17 @@ export = {
 
       // THEN
       expect(stack).to(haveResource('AWS::IAM::Policy', {
-        "PolicyDocument": {
-          "Statement": [
+        'PolicyDocument': {
+          'Statement': [
             {
-              "Action": "dynamodb:ListStreams",
-              "Effect": "Allow",
-              "Resource": "*"
+              'Action': 'dynamodb:ListStreams',
+              'Effect': 'Allow',
+              'Resource': '*'
             }
           ],
-          "Version": "2012-10-17"
+          'Version': '2012-10-17'
         },
-        "Users": [ { "Ref": "user2C2B57AE" } ]
+        'Users': [ { 'Ref': 'user2C2B57AE' } ]
       }));
       test.done();
     },
@@ -1218,17 +1218,17 @@ export = {
 
       // THEN
       expect(stack).to(haveResource('AWS::IAM::Policy', {
-        "PolicyDocument": {
-          "Statement": [
+        'PolicyDocument': {
+          'Statement': [
             {
-              "Action": "dynamodb:ListStreams",
-              "Effect": "Allow",
-              "Resource": { "Fn::Join": [ "", [ { "Fn::GetAtt": [ "mytable0324D45C", "Arn" ] }, "/stream/*" ] ] }
+              'Action': 'dynamodb:ListStreams',
+              'Effect': 'Allow',
+              'Resource': { 'Fn::Join': [ '', [ { 'Fn::GetAtt': [ 'mytable0324D45C', 'Arn' ] }, '/stream/*' ] ] }
             }
           ],
-          "Version": "2012-10-17"
+          'Version': '2012-10-17'
         },
-        "Users": [ { "Ref": "user2C2B57AE" } ]
+        'Users': [ { 'Ref': 'user2C2B57AE' } ]
       }));
       test.done();
     },
@@ -1267,31 +1267,31 @@ export = {
 
       // THEN
       expect(stack).to(haveResource('AWS::IAM::Policy', {
-        "PolicyDocument": {
-          "Statement": [
+        'PolicyDocument': {
+          'Statement': [
             {
-              "Action": "dynamodb:ListStreams",
-              "Effect": "Allow",
-              "Resource": { "Fn::Join": [ "", [ { "Fn::GetAtt": [ "mytable0324D45C", "Arn" ] }, "/stream/*" ] ] }
+              'Action': 'dynamodb:ListStreams',
+              'Effect': 'Allow',
+              'Resource': { 'Fn::Join': [ '', [ { 'Fn::GetAtt': [ 'mytable0324D45C', 'Arn' ] }, '/stream/*' ] ] }
             },
             {
-              "Action": [
-                "dynamodb:DescribeStream",
-                "dynamodb:GetRecords",
-                "dynamodb:GetShardIterator"
+              'Action': [
+                'dynamodb:DescribeStream',
+                'dynamodb:GetRecords',
+                'dynamodb:GetShardIterator'
               ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "mytable0324D45C",
-                  "StreamArn"
+              'Effect': 'Allow',
+              'Resource': {
+                'Fn::GetAtt': [
+                  'mytable0324D45C',
+                  'StreamArn'
                 ]
               }
             }
           ],
-          "Version": "2012-10-17"
+          'Version': '2012-10-17'
         },
-        "Users": [ { "Ref": "user2C2B57AE" } ]
+        'Users': [ { 'Ref': 'user2C2B57AE' } ]
       }));
       test.done();
     },
@@ -1308,10 +1308,10 @@ export = {
 
       // THEN
       expect(stack).to(haveResource('AWS::IAM::Policy', {
-        "PolicyDocument": {
-          "Statement": [
+        'PolicyDocument': {
+          'Statement': [
             {
-              "Action": [
+              'Action': [
                 'dynamodb:BatchGetItem',
                 'dynamodb:GetRecords',
                 'dynamodb:GetShardIterator',
@@ -1319,16 +1319,16 @@ export = {
                 'dynamodb:GetItem',
                 'dynamodb:Scan'
               ],
-              "Effect": "Allow",
-              "Resource": [
-                { "Fn::GetAtt": ["mytable0324D45C", "Arn"] },
-                { "Fn::Join": [ "", [ { "Fn::GetAtt": [ "mytable0324D45C", "Arn" ] }, "/index/*" ] ] }
+              'Effect': 'Allow',
+              'Resource': [
+                { 'Fn::GetAtt': ['mytable0324D45C', 'Arn'] },
+                { 'Fn::Join': [ '', [ { 'Fn::GetAtt': [ 'mytable0324D45C', 'Arn' ] }, '/index/*' ] ] }
               ]
             }
           ],
-          "Version": "2012-10-17"
+          'Version': '2012-10-17'
         },
-        "Users": [ { "Ref": "user2C2B57AE" } ]
+        'Users': [ { 'Ref': 'user2C2B57AE' } ]
       }));
       test.done();
     }
@@ -1357,10 +1357,10 @@ export = {
 
       // it is possible to obtain a permission statement for a ref
       expect(stack).to(haveResource('AWS::IAM::Policy', {
-        "PolicyDocument": {
-          "Statement": [
+        'PolicyDocument': {
+          'Statement': [
             {
-              "Action": [
+              'Action': [
                 'dynamodb:BatchGetItem',
                 'dynamodb:GetRecords',
                 'dynamodb:GetShardIterator',
@@ -1368,17 +1368,17 @@ export = {
                 'dynamodb:GetItem',
                 'dynamodb:Scan'
               ],
-              "Effect": "Allow",
-              "Resource": [
+              'Effect': 'Allow',
+              'Resource': [
                 tableArn,
-                { "Ref": "AWS::NoValue" }
+                { 'Ref': 'AWS::NoValue' }
               ]
             }
           ],
-          "Version": "2012-10-17"
+          'Version': '2012-10-17'
         },
-        "PolicyName": 'NewRoleDefaultPolicy90E8F49D',
-        "Roles": [ { "Ref": 'NewRole99763075' } ]
+        'PolicyName': 'NewRoleDefaultPolicy90E8F49D',
+        'Roles': [ { 'Ref': 'NewRole99763075' } ]
       }));
 
       test.deepEqual(table.tableArn, tableArn);
@@ -1398,10 +1398,10 @@ export = {
 
       // it is possible to obtain a permission statement for a ref
       expect(stack).to(haveResource('AWS::IAM::Policy', {
-        "PolicyDocument": {
-          "Statement": [
+        'PolicyDocument': {
+          'Statement': [
             {
-              "Action": [
+              'Action': [
                 'dynamodb:BatchGetItem',
                 'dynamodb:GetRecords',
                 'dynamodb:GetShardIterator',
@@ -1413,38 +1413,38 @@ export = {
                 'dynamodb:UpdateItem',
                 'dynamodb:DeleteItem'
               ],
-              "Effect": "Allow",
-              "Resource": [
+              'Effect': 'Allow',
+              'Resource': [
                 {
-                  "Fn::Join": [
-                    "",
+                  'Fn::Join': [
+                    '',
                     [
-                      "arn:",
+                      'arn:',
                       {
-                        "Ref": "AWS::Partition"
+                        'Ref': 'AWS::Partition'
                       },
-                      ":dynamodb:",
+                      ':dynamodb:',
                       {
-                        "Ref": "AWS::Region"
+                        'Ref': 'AWS::Region'
                       },
-                      ":",
+                      ':',
                       {
-                        "Ref": "AWS::AccountId"
+                        'Ref': 'AWS::AccountId'
                       },
-                      ":table/MyTable"
+                      ':table/MyTable'
                     ]
                   ]
                 },
                 {
-                  "Ref": "AWS::NoValue"
+                  'Ref': 'AWS::NoValue'
                 }
               ]
             }
           ],
-          "Version": "2012-10-17"
+          'Version': '2012-10-17'
         },
-        "PolicyName": 'NewRoleDefaultPolicy90E8F49D',
-        "Roles": [ { "Ref": 'NewRole99763075' } ]
+        'PolicyName': 'NewRoleDefaultPolicy90E8F49D',
+        'Roles': [ { 'Ref': 'NewRole99763075' } ]
       }));
 
       test.deepEqual(table.tableArn, 'arn:${Token[AWS::Partition.3]}:dynamodb:${Token[AWS::Region.4]}:${Token[AWS::AccountId.0]}:table/MyTable');
@@ -1466,20 +1466,20 @@ function testGrant(test: Test, expectedActions: string[], invocation: (user: iam
   // THEN
   const action = expectedActions.length > 1 ? expectedActions.map(a => `dynamodb:${a}`) : `dynamodb:${expectedActions[0]}`;
   expect(stack).to(haveResource('AWS::IAM::Policy', {
-    "PolicyDocument": {
-      "Statement": [
+    'PolicyDocument': {
+      'Statement': [
         {
-          "Action": action,
-          "Effect": "Allow",
-          "Resource": [
-            { "Fn::GetAtt": [ "mytable0324D45C", "Arn" ] },
-            { "Ref" : "AWS::NoValue" }
+          'Action': action,
+          'Effect': 'Allow',
+          'Resource': [
+            { 'Fn::GetAtt': [ 'mytable0324D45C', 'Arn' ] },
+            { 'Ref' : 'AWS::NoValue' }
           ]
         }
       ],
-      "Version": "2012-10-17"
+      'Version': '2012-10-17'
     },
-    "Users": [ { "Ref": "user2C2B57AE" } ]
+    'Users': [ { 'Ref': 'user2C2B57AE' } ]
   }));
   test.done();
 }

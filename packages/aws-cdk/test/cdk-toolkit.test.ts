@@ -18,7 +18,8 @@ describe('deploy', () => {
       });
 
       // WHEN
-      toolkit.deploy({ stackNames: ['Test-Stack-A', 'Test-Stack-B'], sdk: new SDK() });
+      return expect(toolkit.deploy({ stackNames: ['Test-Stack-A', 'Test-Stack-B'], sdk: new SDK() }))
+        .resolves.not.toThrow();
     });
 
     test('with sns notification arns', () => {
@@ -33,17 +34,17 @@ describe('deploy', () => {
       });
 
       // WHEN
-      toolkit.deploy({
+      return expect(toolkit.deploy({
         stackNames: ['Test-Stack-A', 'Test-Stack-B'],
         notificationArns,
         sdk: new SDK()
-      });
+      })).resolves.not.toThrow();
     });
   });
 });
 
 class MockStack {
-  constructor(
+  public constructor(
     public readonly stackName: string,
     public readonly template: any = { Resources: { TempalteName: stackName } },
     public readonly templateFile: string = `fake/stack/${stackName}.json`,
@@ -57,7 +58,7 @@ class TestAppStacks extends AppStacks {
   public static readonly MOCK_STACK_A = new MockStack('Test-Stack-A');
   public static readonly MOCK_STACK_B = new MockStack('Test-Stack-B');
 
-  constructor() {
+  public constructor() {
     super(undefined as any);
   }
 
@@ -103,7 +104,7 @@ class TestProvisioner implements IDeploymentTarget {
   private readonly expectedTags: { [stackName: string]: Tag[] } = {};
   private readonly expectedNotificationArns?: string[];
 
-  constructor(
+  public constructor(
     expectedTags: { [stackName: string]: { [key: string]: string } } = {},
     expectedNotificationArns?: string[],
   ) {

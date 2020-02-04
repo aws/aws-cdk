@@ -43,8 +43,8 @@ export = {
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::Listener', {
       DefaultActions: [
         {
-          TargetGroupArn: { Ref: "TargetGroup3D7CD9B8" },
-          Type: "forward"
+          TargetGroupArn: { Ref: 'TargetGroup3D7CD9B8' },
+          Type: 'forward'
         }
       ],
     }));
@@ -69,17 +69,17 @@ export = {
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::Listener', {
       DefaultActions: [
         {
-          TargetGroupArn: { Ref: "LBListenerTargetsGroup76EF81E8" },
-          Type: "forward"
+          TargetGroupArn: { Ref: 'LBListenerTargetsGroup76EF81E8' },
+          Type: 'forward'
         }
       ],
     }));
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
-      VpcId: { Ref: "Stack8A423254" },
+      VpcId: { Ref: 'Stack8A423254' },
       Port: 80,
-      Protocol: "TCP",
+      Protocol: 'TCP',
       Targets: [
-        { Id: "i-12345" }
+        { Id: 'i-12345' }
       ]
     }));
 
@@ -128,12 +128,12 @@ export = {
     expect(stack).toMatch({
       Resources: {
         MyResource: {
-          Type: "Test::Resource",
+          Type: 'Test::Resource',
           DependsOn: [
             // 2nd dependency is there because of the structure of the construct tree.
             // It does not harm.
-            "LBListenerGroupGroup79B304FF",
-            "LBListener49E825B4",
+            'LBListenerGroupGroup79B304FF',
+            'LBListener49E825B4',
           ]
         }
       }
@@ -165,9 +165,9 @@ export = {
       Protocol: 'TLS',
       Port: 443,
       Certificates: [
-        { CertificateArn: { Ref: "Certificate4E7ABB08" } }
+        { CertificateArn: { Ref: 'Certificate4E7ABB08' } }
       ],
-      SslPolicy: "ELBSecurityPolicy-TLS-1-2-2017-01"
+      SslPolicy: 'ELBSecurityPolicy-TLS-1-2-2017-01'
     }));
 
     test.done();
@@ -200,7 +200,7 @@ export = {
     });
 
     const validationErrors: string[] = (targetGroup as any).validate();
-    const intervalError = validationErrors.find((err) => /Health check interval '60' not supported. Must be one of the following values/.test(err));
+    const intervalError = validationErrors.find(err => /Health check interval '60' not supported. Must be one of the following values/.test(err));
     test.notEqual(intervalError, undefined, 'Failed to return health check interval validation error');
 
     test.done();
@@ -278,7 +278,7 @@ export = {
     // THEN
     const validationErrors: string[] = (targetGroup as any).validate();
     test.deepEqual(validationErrors, [
-      "Custom health check timeouts are not supported for Network Load Balancer health checks. Expected 6 seconds for HTTP, got 10"
+      'Custom health check timeouts are not supported for Network Load Balancer health checks. Expected 6 seconds for HTTP, got 10'
     ]);
 
     test.done();
@@ -318,7 +318,7 @@ export = {
 };
 
 class ResourceWithLBDependency extends cdk.CfnResource {
-  constructor(scope: cdk.Construct, id: string, targetGroup: elbv2.ITargetGroup) {
+  public constructor(scope: cdk.Construct, id: string, targetGroup: elbv2.ITargetGroup) {
     super(scope, id, { type: 'Test::Resource' });
     this.node.addDependency(targetGroup.loadBalancerAttached);
   }

@@ -49,9 +49,9 @@ export class EcsDeploymentGroup {
    * @returns a Construct representing a reference to an existing Deployment Group
    */
   public static fromEcsDeploymentGroupAttributes(
-      scope: cdk.Construct,
-      id: string,
-      attrs: EcsDeploymentGroupAttributes): IEcsDeploymentGroup {
+    scope: cdk.Construct,
+    id: string,
+    attrs: EcsDeploymentGroupAttributes): IEcsDeploymentGroup {
     return new ImportedEcsDeploymentGroup(scope, id, attrs);
   }
 
@@ -92,7 +92,7 @@ class ImportedEcsDeploymentGroup extends cdk.Resource implements IEcsDeploymentG
   public readonly deploymentGroupArn: string;
   public readonly deploymentConfig: IEcsDeploymentConfig;
 
-  constructor(scope: cdk.Construct, id: string, props: EcsDeploymentGroupAttributes) {
+  public constructor(scope: cdk.Construct, id: string, props: EcsDeploymentGroupAttributes) {
     super(scope, id);
     this.application = props.application;
     this.deploymentGroupName = props.deploymentGroupName;

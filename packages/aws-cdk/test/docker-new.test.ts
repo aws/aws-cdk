@@ -19,7 +19,8 @@ test('fails if "repositoryName" and "imageTag" are not specified', async () => {
 
   // THEN
   await expect(prepareContainerAsset('.', asset, toolkit, false))
-    .rejects.toEqual(new Error(`invalid docker image asset configuration\. "repositoryName" and "imageTag" are required and "imageNameParameter" is not allowed`));
+    // eslint-disable-next-line max-len
+    .rejects.toEqual(new Error('invalid docker image asset configuration. "repositoryName" and "imageTag" are required and "imageNameParameter" is not allowed'));
 });
 
 test('fails if "repositoryName" is not specified', async () => {
@@ -37,7 +38,8 @@ test('fails if "repositoryName" is not specified', async () => {
 
   // THEN
   await expect(prepareContainerAsset('.', asset, toolkit, false))
-    .rejects.toEqual(new Error(`invalid docker image asset configuration\. "repositoryName" and "imageTag" are required and "imageNameParameter" is not allowed`));
+    // eslint-disable-next-line max-len
+    .rejects.toEqual(new Error('invalid docker image asset configuration. "repositoryName" and "imageTag" are required and "imageNameParameter" is not allowed'));
 });
 
 test('creates repository with given name', async () => {
@@ -148,7 +150,7 @@ test('passes the correct target to docker build', async () => {
   }
 
   // THEN
-  const command = [ 'docker', 'build', '--tag', `uri:some-tag`, '--target', 'a-target', '--build-arg', 'a=b', '--build-arg', 'c=d', '/foo' ];
+  const command = [ 'docker', 'build', '--tag', 'uri:some-tag', '--target', 'a-target', '--build-arg', 'a=b', '--build-arg', 'c=d', '/foo' ];
   sinon.assert.calledWith(shellStub, command);
 
   prepareEcrRepositoryStub.restore();
@@ -185,7 +187,7 @@ test('passes the correct args to docker build', async () => {
   }
 
   // THEN
-  const command = ['docker', 'build', '--tag', `uri:some-tag`, '--build-arg', 'a=b', '--build-arg', 'c=d', '/foo'];
+  const command = ['docker', 'build', '--tag', 'uri:some-tag', '--build-arg', 'a=b', '--build-arg', 'c=d', '/foo'];
   sinon.assert.calledWith(shellStub, command);
 
   prepareEcrRepositoryStub.restore();
@@ -221,7 +223,7 @@ test('passes the correct docker file name if specified', async () => {
   }
 
   // THEN
-  const command = ['docker', 'build', '--tag', `uri:some-tag`, '--file', '/foo/CustomDockerfile', '--build-arg', 'a=b', '--build-arg', 'c=d', '/foo'];
+  const command = ['docker', 'build', '--tag', 'uri:some-tag', '--file', '/foo/CustomDockerfile', '--build-arg', 'a=b', '--build-arg', 'c=d', '/foo'];
   sinon.assert.calledWith(shellStub, command);
 
   prepareEcrRepositoryStub.restore();
@@ -257,7 +259,7 @@ test('relative path', async () => {
   }
 
   // THEN
-  const command = ['docker', 'build', '--tag', `uri:some-tag`, '--build-arg', 'a=b', '--build-arg', 'c=d', '/assembly/dir/root/relative-to-assembly'];
+  const command = ['docker', 'build', '--tag', 'uri:some-tag', '--build-arg', 'a=b', '--build-arg', 'c=d', '/assembly/dir/root/relative-to-assembly'];
   sinon.assert.calledWith(shellStub, command);
 
   prepareEcrRepositoryStub.restore();

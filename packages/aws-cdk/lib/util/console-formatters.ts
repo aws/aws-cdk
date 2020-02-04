@@ -33,7 +33,7 @@ export function formatAsBanner(msgs: string[]): string[] {
   bannerLines.push('*'.repeat(bannerWidth));
 
   // Improvement: If any 'msg' is wider than the terminal width, wrap message across lines.
-  msgs.forEach((msg) => {
+  msgs.forEach(msg => {
     const padding = ' '.repeat(bannerWidth - (printLen(msg) + printLen(leftPad) + printLen(rightPad)));
     bannerLines.push(''.concat(leftPad, msg, padding, rightPad));
   });

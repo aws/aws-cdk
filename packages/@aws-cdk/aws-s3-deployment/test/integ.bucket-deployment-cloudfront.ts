@@ -5,7 +5,7 @@ import * as path from 'path';
 import * as s3deploy from '../lib';
 
 class TestBucketDeployment extends cdk.Stack {
-  constructor(scope: cdk.App, id: string) {
+  public constructor(scope: cdk.App, id: string) {
     super(scope, id);
 
     const bucket = new s3.Bucket(this, 'Destination3', {

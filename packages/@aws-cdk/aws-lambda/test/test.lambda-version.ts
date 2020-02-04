@@ -20,10 +20,10 @@ export = {
     expect(stack).toMatch({
       Outputs: {
         ARN: {
-          Value: "arn:aws:lambda:region:account-id:function:function-name:version"
+          Value: 'arn:aws:lambda:region:account-id:function:function-name:version'
         },
         Name: {
-          Value: "function-name:version"
+          Value: 'function-name:version'
         }
       }
     });

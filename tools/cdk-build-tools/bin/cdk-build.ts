@@ -23,11 +23,6 @@ async function main() {
       desc: 'Specify a different eslint executable',
       defaultDescription: 'eslint provided by node dependencies'
     })
-    .option('eslint', {
-      type: 'string',
-      desc: 'Specify a different eslint executable',
-      defaultDescription: 'eslint provided by node dependencies'
-    })
     .argv;
 
   const options = cdkBuildOptions();
@@ -45,7 +40,7 @@ async function main() {
     await shell(['cfn2ts', ...options.cloudformation.map(scope => `--scope=${scope}`)], { timers });
   }
 
-  await compileCurrentPackage(timers, options, { eslint: args.eslint, jsii: args.jsii, tsc: args.tsc, tslint: args.tslint });
+  await compileCurrentPackage(timers, options, { eslint: args.eslint, jsii: args.jsii, tsc: args.tsc });
 }
 
 const timers = new Timers();
@@ -57,6 +52,6 @@ main().then(() => {
   buildTimer.end();
   process.stderr.write(`${e.toString()}\n`);
   process.stderr.write(`Build failed. ${timers.display()}\n`);
-  process.stderr.write(`!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n`);
+  process.stderr.write('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n');
   process.exit(1);
 });

@@ -1,7 +1,7 @@
-import { IBucket } from "@aws-cdk/aws-s3";
-import { Aws, Fn } from "@aws-cdk/core";
-import { CfnProject } from "./codebuild.generated";
-import { IProject } from "./project";
+import { IBucket } from '@aws-cdk/aws-s3';
+import { Aws, Fn } from '@aws-cdk/core';
+import { CfnProject } from './codebuild.generated';
+import { IProject } from './project';
 
 export interface BucketCacheOptions {
   /**
@@ -37,7 +37,7 @@ export enum LocalCacheMode {
  */
 export abstract class Cache {
   public static none(): Cache {
-    return { _toCloudFormation: () => undefined, _bind: () => { return; } };
+    return { _toCloudFormation: () => undefined, _bind: () => undefined };
   }
 
   /**
@@ -50,7 +50,7 @@ export abstract class Cache {
         type: 'LOCAL',
         modes
       }),
-      _bind: () => { return; }
+      _bind: () => undefined
     };
   }
 
@@ -65,7 +65,7 @@ export abstract class Cache {
         type: 'S3',
         location: Fn.join('/', [bucket.bucketName, options && options.prefix || Aws.NO_VALUE])
       }),
-      _bind: (project) => {
+      _bind: project => {
         bucket.grantReadWrite(project);
       }
     };

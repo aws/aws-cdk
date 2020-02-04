@@ -5,7 +5,7 @@ export class Timer {
   public timeMs?: number;
   private startTime: number;
 
-  constructor(public readonly label: string) {
+  public constructor(public readonly label: string) {
     this.startTime = Date.now();
   }
 
