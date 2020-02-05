@@ -62,7 +62,7 @@
     "@types/nodeunit": "^0.0.30",
     "cdk-build-tools": "1.22.0",
     "cdk-integ-tools": "1.22.0",
-    "fast-check": "^1.21.0",
+    "fast-check": "^1.22.1",
     "nodeunit": "^0.11.3",
     "pkglint": "1.22.0"
   },

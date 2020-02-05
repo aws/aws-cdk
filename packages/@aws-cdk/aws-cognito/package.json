@@ -67,7 +67,8 @@
     "cdk-build-tools": "1.22.0",
     "cfn2ts": "1.22.0",
     "nodeunit": "^0.11.3",
-    "pkglint": "1.22.0"
+    "pkglint": "1.22.0",
+    "jest": "^24.9.0"
   },
   "dependencies": {
     "@aws-cdk/aws-iam": "1.22.0",
@@ -80,6 +81,7 @@
     "@aws-cdk/aws-lambda": "1.22.0",
     "@aws-cdk/core": "1.22.0"
   },
+  "jest": {},
   "engines": {
     "node": ">= 10.3.0"
   },
