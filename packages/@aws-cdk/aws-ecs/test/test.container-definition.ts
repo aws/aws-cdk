@@ -1,8 +1,10 @@
 import { expect, haveResource, haveResourceLike, InspectionFailure } from '@aws-cdk/assert';
+import * as ecr_assets from '@aws-cdk/aws-ecr-assets';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as ssm from '@aws-cdk/aws-ssm';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
+import * as path from 'path';
 import * as ecs from '../lib';
 
 export = {
@@ -1293,5 +1295,100 @@ export = {
       test.done();
     }
   },
-  // render extra hosts test
+
+  'can use a DockerImageAsset directly for a container image'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+    const asset = new ecr_assets.DockerImageAsset(stack, 'MyDockerImage', {
+      directory: path.join(__dirname, 'demo-image')
+    });
+
+    // WHEN
+    taskDefinition.addContainer('default', {
+      image: ecs.ContainerImage.fromDockerImageAsset(asset),
+      memoryLimitMiB: 1024
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          Essential: true,
+          Image: {
+            "Fn::Join": [
+              "",
+              [
+                { Ref: "AWS::AccountId" },
+                ".dkr.ecr.",
+                { Ref: "AWS::Region" },
+                ".",
+                { Ref: "AWS::URLSuffix" },
+                "/aws-cdk/assets:baa2d6eb2a17c75424df631c8c70ff39f2d5f3bee8b9e1a109ee24ca17300540"
+              ]
+            ]
+          },
+          Memory: 1024,
+          Name: "default"
+        }
+      ]
+    }));
+    expect(stack).to(haveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              "ecr:BatchCheckLayerAvailability",
+              "ecr:GetDownloadUrlForLayer",
+              "ecr:BatchGetImage"
+            ],
+            Effect: "Allow",
+            Resource: {
+              "Fn::Join": [
+                "",
+                [ "arn:", { Ref: "AWS::Partition" }, ":ecr:", { Ref: "AWS::Region" }, ":", { Ref: "AWS::AccountId" }, ":repository/aws-cdk/assets" ]
+              ]
+            }
+          },
+          {
+            Action: "ecr:GetAuthorizationToken",
+            Effect: "Allow",
+            Resource: "*"
+          }
+        ],
+        Version: "2012-10-17"
+      }
+    }));
+    test.done();
+  },
+
+  'docker image asset options can be used when using container image'(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'MyStack');
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+    // WHEN
+    taskDefinition.addContainer('default', {
+      memoryLimitMiB: 1024,
+      image: ecs.ContainerImage.fromAsset(path.join(__dirname, 'demo-image'), {
+        file: 'index.py', // just because it's there already
+        target: 'build-target'
+      })
+    });
+
+    // THEN
+    const asm = app.synth();
+    test.deepEqual(asm.getStackArtifact(stack.artifactId).assets[0], {
+      repositoryName: 'aws-cdk/assets',
+      imageTag: 'f9014d1df7c8f5a5e7abaf18eb5bc895e82f8b06eeed6f75a40cf1bc2a78955a',
+      id: 'f9014d1df7c8f5a5e7abaf18eb5bc895e82f8b06eeed6f75a40cf1bc2a78955a',
+      packaging: 'container-image',
+      path: 'asset.f9014d1df7c8f5a5e7abaf18eb5bc895e82f8b06eeed6f75a40cf1bc2a78955a',
+      sourceHash: 'f9014d1df7c8f5a5e7abaf18eb5bc895e82f8b06eeed6f75a40cf1bc2a78955a',
+      target: 'build-target',
+      file: 'index.py'
+    });
+    test.done();
+  }
 };
