@@ -418,6 +418,199 @@ export class LambdaDataSource extends BaseDataSource {
     }
 }
 
+function concatAndDedup<T>(left: T[], right: T[]): T[] {
+    return left.concat(right).filter((elem, index, self) => {
+        return index === self.indexOf(elem);
+    });
+}
+
+/**
+ * Utility class to represent DynamoDB key conditions.
+ */
+abstract class BaseKeyCondition {
+    public and(cond: BaseKeyCondition): BaseKeyCondition {
+        return new (class extends BaseKeyCondition {
+            constructor(private readonly left: BaseKeyCondition, private readonly right: BaseKeyCondition) {
+                super();
+            }
+
+            public renderCondition(): string {
+                return `${this.left.renderCondition()} AND ${this.right.renderCondition()}`;
+            }
+
+            public keyNames(): string[] {
+                return concatAndDedup(this.left.keyNames(), this.right.keyNames());
+            }
+
+            public args(): string[] {
+                return concatAndDedup(this.left.args(), this.right.args());
+            }
+        })(this, cond);
+    }
+
+    public renderExpressionNames(): string {
+        return this.keyNames()
+            .map((keyName: string) => {
+                return `"#${keyName}" : "${keyName}"`;
+            })
+            .join(", ");
+    }
+
+    public renderExpressionValues(): string {
+        return this.args()
+            .map((arg: string) => {
+                return `":${arg}" : $util.dynamodb.toDynamoDBJson($ctx.args.${arg})`;
+            })
+            .join(", ");
+    }
+
+    public abstract renderCondition(): string;
+    public abstract keyNames(): string[];
+    public abstract args(): string[];
+}
+
+/**
+ * Utility class to represent DynamoDB "begins_with" key conditions.
+ */
+class BeginsWith extends BaseKeyCondition {
+    constructor(private readonly keyName: string, private readonly arg: string) {
+        super();
+    }
+
+    public renderCondition(): string {
+        return `begins_with(#${this.keyName}, :${this.arg})`;
+    }
+
+    public keyNames(): string[] {
+        return [this.keyName];
+    }
+
+    public args(): string[] {
+        return [this.arg];
+    }
+}
+
+/**
+ * Utility class to represent DynamoDB binary key conditions.
+ */
+class BinaryCondition extends BaseKeyCondition {
+    constructor(private readonly keyName: string, private readonly op: string, private readonly arg: string) {
+        super();
+    }
+
+    public renderCondition(): string {
+        return `#${this.keyName} ${this.op} :${this.arg}`;
+    }
+
+    public keyNames(): string[] {
+        return [this.keyName];
+    }
+
+    public args(): string[] {
+        return [this.arg];
+    }
+}
+
+/**
+ * Utility class to represent DynamoDB "between" key conditions.
+ */
+class Between extends BaseKeyCondition {
+    constructor(private readonly keyName: string, private readonly arg1: string, private readonly arg2: string) {
+        super();
+    }
+
+    public renderCondition(): string {
+        return `#${this.keyName} BETWEEN :${this.arg1} AND :${this.arg2}`;
+    }
+
+    public keyNames(): string[] {
+        return [this.keyName];
+    }
+
+    public args(): string[] {
+        return [this.arg1, this.arg2];
+    }
+}
+
+/**
+ * Factory class for DynamoDB key conditions.
+ */
+export class KeyCondition {
+
+    /**
+     * Condition k = arg, true if the key attribute k is equal to the Query argument
+     */
+    public static eq(keyName: string, arg: string): KeyCondition {
+        return new KeyCondition(new BinaryCondition(keyName, '=', arg));
+    }
+
+    /**
+     * Condition k < arg, true if the key attribute k is less than the Query argument
+     */
+    public static lt(keyName: string, arg: string): KeyCondition {
+        return new KeyCondition(new BinaryCondition(keyName, '<', arg));
+    }
+
+    /**
+     * Condition k <= arg, true if the key attribute k is less than or equal to the Query argument
+     */
+    public static le(keyName: string, arg: string): KeyCondition {
+        return new KeyCondition(new BinaryCondition(keyName, '<=', arg));
+    }
+
+    /**
+     * Condition k > arg, true if the key attribute k is greater than the the Query argument
+     */
+    public static gt(keyName: string, arg: string): KeyCondition {
+        return new KeyCondition(new BinaryCondition(keyName, '>', arg));
+    }
+
+    /**
+     * Condition k >= arg, true if the key attribute k is greater or equal to the Query argument
+     */
+    public static ge(keyName: string, arg: string): KeyCondition {
+        return new KeyCondition(new BinaryCondition(keyName, '>=', arg));
+    }
+
+    /**
+     * Condition (k, arg). True if the key attribute k begins with the Query argument.
+     */
+    public static beginsWith(keyName: string, arg: string): KeyCondition {
+        return new KeyCondition(new BeginsWith(keyName, arg));
+    }
+
+    /**
+     * Condition k BETWEEN arg1 AND arg2, true if k >= arg1 and k <= arg2.
+     */
+    public static between(keyName: string, arg1: string, arg2: string): KeyCondition {
+        return new KeyCondition(new Between(keyName, arg1, arg2));
+    }
+
+    private constructor(private readonly cond: BaseKeyCondition) { }
+
+    /**
+     * Conjunction between two conditions.
+     */
+    public and(keyCond: KeyCondition): KeyCondition {
+        return new KeyCondition(this.cond.and(keyCond.cond));
+    }
+
+    /**
+     * Renders the key condition to a VTL string.
+     */
+    public renderTemplate(): string {
+        return `"query" : {
+            "expression" : "${this.cond.renderCondition()}",
+            "expressionNames" : {
+                ${this.cond.renderExpressionNames()}
+            },
+            "expressionValues" : {
+                ${this.cond.renderExpressionValues()}
+            }
+        }`;
+    }
+}
+
 /**
  * MappingTemplates for AppSync resolvers
  */
@@ -456,6 +649,15 @@ export abstract class MappingTemplate {
      */
     public static dynamoDbScanTable(): MappingTemplate {
         return this.fromString('{"version" : "2017-02-28", "operation" : "Scan"}');
+    }
+
+    /**
+     * Mapping template to query a set of items from a DynamoDB table
+     *
+     * @param cond the key condition for the query
+     */
+    public static dynamoDbQuery(cond: KeyCondition): MappingTemplate {
+        return this.fromString(`{"version" : "2017-02-28", "operation" : "Query", ${cond.renderTemplate()}}`);
     }
 
     /**
