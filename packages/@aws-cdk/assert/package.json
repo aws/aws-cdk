@@ -15,23 +15,12 @@
     "build+test": "npm run build && npm test"
   },
   "jest": {
-    "collectCoverage": true,
-    "coverageReporters": [
-      "lcov",
-      "html",
-      "text-summary"
-    ],
     "coverageThreshold": {
       "global": {
         "statements": 75,
         "branches": 65
       }
-    },
-    "preset": "ts-jest",
-    "testMatch": [
-      "**/__tests__/**/*.ts?(x)",
-      "**/?(*.)+(spec|test).ts?(x)"
-    ]
+    }
   },
   "author": {
     "name": "Amazon Web Services",

@@ -21,16 +21,7 @@
         "lines": 60,
         "branches": 55
       }
-    },
-    "preset": "ts-jest",
-    "testMatch": [
-      "**/__tests__/**/*.ts?(x)",
-      "**/?(*.)+(spec|test).ts?(x)"
-    ],
-    "moduleFileExtensions": [
-      "js",
-      "ts"
-    ]
+    }
   },
   "author": {
     "name": "Amazon Web Services",

@@ -102,11 +102,9 @@
   },
   "stability": "stable",
   "jest": {
-    "collectCoverage": true,
-    "coverageReporters": [
-      "lcov",
-      "html",
-      "text-summary"
+    "moduleFileExtensions": [
+      "js",
+      "ts"
     ],
     "coverageThreshold": {
       "global": {
