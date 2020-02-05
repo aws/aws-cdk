@@ -132,10 +132,10 @@ export class EventSourceMapping extends cdk.Resource {
       throw new Error(`parallelizationFactor must be between 1 and 10 inclusive, got ${props.parallelizationFactor}`);
     }
 
-    let onFailure;
+    let destinationConfig;
 
     if (props.onFailure) {
-      onFailure = {
+      destinationConfig = {
         onFailure: props.onFailure.bind(this, props.target, { type: DestinationType.FAILURE })
       };
     }
@@ -143,7 +143,7 @@ export class EventSourceMapping extends cdk.Resource {
     new CfnEventSourceMapping(this, 'Resource', {
       batchSize: props.batchSize,
       bisectBatchOnFunctionError: props.bisectBatchOnError,
-      destinationConfig: onFailure,
+      destinationConfig,
       enabled: props.enabled,
       eventSourceArn: props.eventSourceArn,
       functionName: props.target.functionName,
