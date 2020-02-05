@@ -29,6 +29,30 @@ export = {
 
     expect(stack).to(haveResource("AWS::SQS::Queue"));
 
+    expect(stack).to(haveResource("AWS::IAM::Policy",  {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              "sqs:ReceiveMessage",
+              "sqs:ChangeMessageVisibility",
+              "sqs:GetQueueUrl",
+              "sqs:DeleteMessage",
+              "sqs:GetQueueAttributes"
+            ],
+            Effect: "Allow",
+            Resource: {
+              "Fn::GetAtt": [
+                "ServiceEcsProcessingQueueC266885C",
+                "Arn"
+              ]
+            }
+          }
+        ],
+        Version: "2012-10-17"
+      }
+    }));
+
     expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
