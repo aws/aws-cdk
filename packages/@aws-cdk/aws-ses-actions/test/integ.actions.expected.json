@@ -162,9 +162,7 @@
             {
               "Action": [
                 "km:Encrypt",
-                "kms:GenerateDataKey",
-                "kms:TagResource",
-                "kms:UntagResource"
+                "kms:GenerateDataKey"
               ],
               "Condition": {
                 "Null": {
