@@ -8,7 +8,7 @@ import { FollowMode } from './follow-mode';
  * exclusion glob patterns.
  *
  * @param exclude  exclusion patterns
- * @param filePath file apth to be assessed against the pattern
+ * @param filePath file path to be assessed against the pattern
  *
  * @returns `true` if the file should be excluded
  */
