@@ -2,6 +2,3 @@
 *.d.ts
 !deps.js
 !gen.js
-test/fixture/.jsii
-cdk.schema.json
-src/
