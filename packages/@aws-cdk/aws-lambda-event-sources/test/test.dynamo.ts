@@ -429,7 +429,7 @@ export = {
     test.done();
   },
 
-  'specific maximumRecordAgeInSeconds'(test: Test) {
+  'specific maxRecordAge'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new TestFunction(stack, 'Fn');
