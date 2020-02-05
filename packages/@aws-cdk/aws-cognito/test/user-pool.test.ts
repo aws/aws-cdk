@@ -1,50 +1,46 @@
-import { expect, haveResourceLike } from '@aws-cdk/assert';
+import '@aws-cdk/assert/jest';
 import * as lambda from '@aws-cdk/aws-lambda';
-import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
-import * as cognito from '../lib';
+import { Stack, Tag } from '@aws-cdk/core';
+import { SignInType, UserPool, UserPoolAttribute } from '../lib';
 
-export = {
-  'default setup'(test: Test) {
+describe('User Pool', () => {
+  test('default setup', () => {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = new Stack();
 
     // WHEN
-    new cognito.UserPool(stack, 'Pool', {
+    new UserPool(stack, 'Pool', {
       userPoolName: 'myPool',
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::Cognito::UserPool', {
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
       UserPoolName: 'myPool'
-    }));
+    });
+  });
 
-    test.done();
-  },
-  'support tags'(test: Test) {
+  test('support tags', () => {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = new Stack();
 
     // WHEN
-    const pool = new cognito.UserPool(stack, 'Pool', {
+    const pool = new UserPool(stack, 'Pool', {
       userPoolName: 'myPool',
     });
-    cdk.Tag.add(pool, "PoolTag", "PoolParty");
+    Tag.add(pool, "PoolTag", "PoolParty");
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::Cognito::UserPool', {
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
       UserPoolName: 'myPool',
       UserPoolTags: {
         PoolTag: "PoolParty",
       }
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'lambda triggers are defined'(test: Test) {
+  test('lambda triggers are defined', () => {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = new Stack();
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
@@ -52,7 +48,7 @@ export = {
     });
 
     // WHEN
-    const pool = new cognito.UserPool(stack, 'Pool', {
+    const pool = new UserPool(stack, 'Pool', {
       lambdaTriggers: {
         preSignUp: fn
       }
@@ -60,19 +56,17 @@ export = {
     pool.addCustomMessageTrigger(fn);
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::Cognito::UserPool', {
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
       LambdaConfig: {
         PreSignUp: stack.resolve(fn.functionArn),
         CustomMessage: stack.resolve(fn.functionArn)
       }
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'on* API correctly appends triggers'(test: Test) {
+  test('on* API correctly appends triggers', () => {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = new Stack();
 
     const createAuthChallengeLambdaFn = new lambda.Function(stack, 'createAuthChallengeLambda', {
       code: new lambda.InlineCode('foo'),
@@ -135,7 +129,7 @@ export = {
     });
 
     // WHEN
-    const pool = new cognito.UserPool(stack, 'Pool', { });
+    const pool = new UserPool(stack, 'Pool', { });
     pool.addCreateAuthChallengeTrigger(createAuthChallengeLambdaFn);
     pool.addCustomMessageTrigger(customMessageLambdaFn);
     pool.addDefineAuthChallengeTrigger(defineAuthChallengeLambdaFn);
@@ -148,7 +142,7 @@ export = {
     pool.addVerifyAuthChallengeResponseTrigger(verifyAuthChallengeResponseLambdaFn);
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::Cognito::UserPool', {
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
       LambdaConfig: {
         CreateAuthChallenge: stack.resolve(createAuthChallengeLambdaFn.functionArn),
         CustomMessage: stack.resolve(customMessageLambdaFn.functionArn),
@@ -161,14 +155,12 @@ export = {
         UserMigration: stack.resolve(userMigrationLambdaFn.functionArn),
         VerifyAuthChallengeResponse: stack.resolve(verifyAuthChallengeResponseLambdaFn.functionArn)
       }
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'lambdas are given cognito service grant'(test: Test) {
+  test('lambdas are given cognito service grant', () => {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = new Stack();
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
@@ -176,88 +168,66 @@ export = {
     });
 
     // WHEN
-    new cognito.UserPool(stack, 'Pool', {
+    new UserPool(stack, 'Pool', {
       lambdaTriggers: {
         preSignUp: fn
       }
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::Lambda::Permission', {
+    expect(stack).toHaveResourceLike('AWS::Lambda::Permission', {
       FunctionName: stack.resolve(fn.functionArn),
       Principal: 'cognito-idp.amazonaws.com'
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'set sign in type'(test: Test) {
+  test('set sign in type', () => {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = new Stack();
 
     // WHEN
-    new cognito.UserPool(stack, 'Pool', {
-      signInType: cognito.SignInType.EMAIL,
-      autoVerifiedAttributes: [cognito.UserPoolAttribute.EMAIL]
+    new UserPool(stack, 'Pool', {
+      signInType: SignInType.EMAIL,
+      autoVerifiedAttributes: [ UserPoolAttribute.EMAIL ]
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::Cognito::UserPool', {
-      UsernameAttributes: ['email'],
-      AutoVerifiedAttributes: ['email']
-    }));
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+      UsernameAttributes: [ 'email' ],
+      AutoVerifiedAttributes: [ 'email' ]
+    });
+  });
 
-    test.done();
-  },
+  test('usernameAliasAttributes require signInType of USERNAME', () => {
+    const stack = new Stack();
 
-  'usernameAliasAttributes require signInType of USERNAME'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-
-    // WHEN
-    const toThrow = () => {
-      new cognito.UserPool(stack, 'Pool', {
-        signInType: cognito.SignInType.EMAIL,
-        usernameAliasAttributes: [cognito.UserPoolAttribute.PREFERRED_USERNAME]
+    expect(() => {
+      new UserPool(stack, 'Pool', {
+        signInType: SignInType.EMAIL,
+        usernameAliasAttributes: [ UserPoolAttribute.PREFERRED_USERNAME ]
       });
-    };
+    }).toThrow(/'usernameAliasAttributes' can only be set with a signInType of 'USERNAME'/);
+  });
 
-    // THEN
-    test.throws(() => toThrow(), /'usernameAliasAttributes' can only be set with a signInType of 'USERNAME'/);
-    test.done();
-  },
+  test('usernameAliasAttributes must be one or more of EMAIL, PHONE_NUMBER, or PREFERRED_USERNAME', () => {
+    const stack = new Stack();
 
-  'usernameAliasAttributes must be one or more of EMAIL, PHONE_NUMBER, or PREFERRED_USERNAME'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-
-    // WHEN
-    const toThrow = () => {
-      new cognito.UserPool(stack, 'Pool', {
-        signInType: cognito.SignInType.USERNAME,
-        usernameAliasAttributes: [cognito.UserPoolAttribute.GIVEN_NAME]
+    expect(() => {
+      new UserPool(stack, 'Pool', {
+        signInType: SignInType.USERNAME,
+        usernameAliasAttributes: [ UserPoolAttribute.GIVEN_NAME ]
       });
-    };
+    }).toThrow(/'usernameAliasAttributes' can only include EMAIL, PHONE_NUMBER, or PREFERRED_USERNAME/);
+  });
 
-    // THEN
-    test.throws(() => toThrow(), /'usernameAliasAttributes' can only include EMAIL, PHONE_NUMBER, or PREFERRED_USERNAME/);
-    test.done();
-  },
+  test('autoVerifiedAttributes must be one or more of EMAIL or PHONE_NUMBER', () => {
+    const stack = new Stack();
 
-  'autoVerifiedAttributes must be one or more of EMAIL or PHONE_NUMBER'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-
-    // WHEN
-    const toThrow = () => {
-      new cognito.UserPool(stack, 'Pool', {
-        signInType: cognito.SignInType.EMAIL,
-        autoVerifiedAttributes: [cognito.UserPoolAttribute.EMAIL, cognito.UserPoolAttribute.GENDER]
+    expect(() => {
+      new UserPool(stack, 'Pool', {
+        signInType: SignInType.EMAIL,
+        autoVerifiedAttributes: [ UserPoolAttribute.EMAIL, UserPoolAttribute.GENDER ]
       });
-    };
-
-    // THEN
-    test.throws(() => toThrow(), /'autoVerifiedAttributes' can only include EMAIL or PHONE_NUMBER/);
-    test.done();
-  }
-};
+    }).toThrow(/'autoVerifiedAttributes' can only include EMAIL or PHONE_NUMBER/);
+  });
+});

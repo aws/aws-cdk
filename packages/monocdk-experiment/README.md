@@ -9,6 +9,6 @@ use this module.
 
 - [ ] Consider if we want core types to be available under the root namespace
 - [ ] jsii support
-- [ ] Bundle all code outside of `lib`
+- [x] Bundle all code outside of `lib`
 - [ ] Run unit tests
 
