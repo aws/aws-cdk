@@ -120,8 +120,8 @@ export interface ApplicationLoadBalancedServiceBaseProps {
 
   /**
    * The application load balancer that will serve traffic to the service.
-   * The VPC attribute of an imported load balancer must be specified in order
-   * to be used to create a new service with this pattern.
+   * The VPC attribute of a load balancer must be specified for it to be used
+   * to create a new service with this pattern.
    *
    * [disable-awslint:ref-via-interface]
    *

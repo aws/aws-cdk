@@ -40,7 +40,7 @@ export interface NetworkLoadBalancerAttributes {
   readonly loadBalancerDnsName?: string;
 
   /**
-   * The VPC to associate with the imported load balancer.
+   * The VPC to associate with the load balancer.
    *
    * @default - When not provided, listeners cannot be created on imported load
    * balancers.

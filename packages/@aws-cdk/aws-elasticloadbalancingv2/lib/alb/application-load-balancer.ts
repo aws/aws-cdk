@@ -484,7 +484,7 @@ export interface IApplicationLoadBalancer extends ILoadBalancerV2, ec2.IConnecta
   /**
    * The VPC this load balancer has been created in (if available).
    * If this interface is the result of an import call to fromApplicationLoadBalancerAttributes,
-   * the vpc attribute will be undefined unles specified in the optional properties of that method.
+   * the vpc attribute will be undefined unless specified in the optional properties of that method.
    */
   readonly vpc?: ec2.IVpc;
 
