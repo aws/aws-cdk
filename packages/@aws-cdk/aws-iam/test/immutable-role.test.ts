@@ -62,17 +62,39 @@ describe('ImmutableRole', () => {
   });
 
   test('ignores calls to addToPolicy', () => {
-    mutableRole.addToPolicy(new iam.PolicyStatement({
-      resources: ['*'],
-      actions: ['s3:*'],
-    }));
-
     immutableRole.addToPolicy(new iam.PolicyStatement({
       resources: ['*'],
       actions: ['iam:*'],
     }));
 
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    mutableRole.addToPolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      actions: ['s3:*'],
+    }));
+
+    expect(stack).toHaveResource('AWS::IAM::Policy', {
+      "PolicyDocument": {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Resource": "*",
+            "Action": "s3:*",
+            "Effect": "Allow",
+          },
+        ],
+      },
+    });
+  });
+
+  test('ignores grants', () => {
+
+    iam.Grant.addToPrincipal({
+      grantee: immutableRole,
+      actions: ['s3:*'],
+      resourceArns: ['*'],
+    });
+
+    expect(stack).not.toHaveResourceLike('AWS::IAM::Policy', {
       "PolicyDocument": {
         "Statement": [
           {
