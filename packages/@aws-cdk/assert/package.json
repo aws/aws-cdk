@@ -15,23 +15,12 @@
     "build+test": "npm run build && npm test"
   },
   "jest": {
-    "collectCoverage": true,
-    "coverageReporters": [
-      "lcov",
-      "html",
-      "text-summary"
-    ],
     "coverageThreshold": {
       "global": {
         "statements": 75,
         "branches": 65
       }
-    },
-    "preset": "ts-jest",
-    "testMatch": [
-      "**/__tests__/**/*.ts?(x)",
-      "**/?(*.)+(spec|test).ts?(x)"
-    ]
+    }
   },
   "author": {
     "name": "Amazon Web Services",
@@ -40,11 +29,11 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/jest": "^24.9.0",
+    "@types/jest": "^25.1.1",
     "cdk-build-tools": "1.22.0",
     "jest": "^24.9.0",
     "pkglint": "1.22.0",
-    "ts-jest": "^24.3.0"
+    "ts-jest": "^25.2.0"
   },
   "dependencies": {
     "@aws-cdk/cloudformation-diff": "1.22.0",

@@ -73,7 +73,7 @@ export interface AppProps {
  * CloudFormation templates and assets that are needed to deploy this app into
  * the AWS cloud.
  *
- * @see https://docs.aws.amazon.com/cdk/latest/guide/apps_and_stacks.html
+ * @see https://docs.aws.amazon.com/cdk/latest/guide/apps.html
  */
 export class App extends Construct {
 

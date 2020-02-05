@@ -64,12 +64,12 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "1.22.0",
-    "@types/jest": "^24.9.0",
+    "@types/jest": "^25.1.1",
     "cdk-build-tools": "1.22.0",
     "cfn2ts": "1.22.0",
     "jest": "^24.9.0",
     "pkglint": "1.22.0",
-    "ts-jest": "^24.3.0"
+    "ts-jest": "^25.2.0"
   },
   "dependencies": {
     "@aws-cdk/core": "1.22.0"
@@ -78,23 +78,6 @@
     "@aws-cdk/core": "1.22.0"
   },
   "jest": {
-    "collectCoverage": true,
-    "coverageReporters": [
-      "lcov",
-      "html",
-      "text-summary"
-    ],
-    "coverageThreshold": {
-      "global": {
-        "statements": 0,
-        "branches": 0
-      }
-    },
-    "preset": "ts-jest",
-    "testMatch": [
-      "**/__tests__/**/*.ts?(x)",
-      "**/?(*.)+(spec|test).ts?(x)"
-    ]
   },
   "engines": {
     "node": ">= 10.3.0"

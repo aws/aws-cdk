@@ -77,7 +77,8 @@
     "@aws-cdk/aws-lambda": "1.22.0",
     "@aws-cdk/aws-s3": "1.22.0",
     "@aws-cdk/core": "1.22.0",
-    "@aws-cdk/cx-api": "1.22.0"
+    "@aws-cdk/cx-api": "1.22.0",
+    "minimatch": "^3.0.4"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -96,10 +97,8 @@
   "engines": {
     "node": ">= 10.3.0"
   },
-  "stability": "experimental",
-  "awslint": {
-    "exclude": [
-      "docs-public-apis:@aws-cdk/aws-ecr-assets.DockerImageAssetProps"
-    ]
-  }
+  "bundledDependencies": [
+    "minimatch"
+  ],
+  "stability": "experimental"
 }
