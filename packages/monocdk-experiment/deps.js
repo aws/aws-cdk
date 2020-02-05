@@ -6,7 +6,8 @@ const fs = require('fs');
 const path = require('path');
 
 const pkg = require('./package.json');
-const deps = pkg.devDependencies || (pkg.devDependencies = {});
+const pkgDevDeps = pkg.devDependencies || { };
+pkg.devDependencies = pkgDevDeps;
 
 const root = path.resolve('..', '..', 'packages', '@aws-cdk');
 const modules = fs.readdirSync(root);
@@ -19,16 +20,18 @@ for (const dir of modules) {
     continue;
   }
 
-  const exists = deps[meta.name];
+  const exists = pkgDevDeps[meta.name];
 
   if (meta.deprecated) {
     if (exists) {
       console.error(`spurious dependency on deprecated: ${meta.name}`);
       errors = true;
     }
-    delete deps[meta.name];
+    delete pkgDevDeps[meta.name];
     continue;
   }
+
+
 
   if (!exists) {
     console.error(`missing dependency: ${meta.name}`);
@@ -42,12 +45,12 @@ for (const dir of modules) {
     errors = true;
   }
 
-  deps[meta.name] = requirement;
+  pkgDevDeps[meta.name] = requirement;
 }
 
 fs.writeFileSync(path.join(__dirname, 'package.json'), JSON.stringify(pkg, undefined, 2) + '\n');
 
 if (errors) {
-  console.error('errors found. updated package.json');
+  console.error('errors found. updated package.json. delete node_modules and rerun "lerna bootstrap"');
   process.exit(1);
 }
