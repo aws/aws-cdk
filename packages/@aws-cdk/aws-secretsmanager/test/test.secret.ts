@@ -383,20 +383,6 @@ export = {
     test.done();
   },
 
-  'throws when specifying secretStringTemplate but not generateStringKey'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-
-    // THEN
-    test.throws(() => new secretsmanager.Secret(stack, 'Secret', {
-      generateSecretString: {
-        secretStringTemplate: JSON.stringify({ username: 'username' })
-      }
-    }), /`secretStringTemplate`.+`generateStringKey`/);
-
-    test.done();
-  },
-
   'throws when specifying generateStringKey but not secretStringTemplate'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
