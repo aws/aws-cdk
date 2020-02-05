@@ -442,9 +442,11 @@ export class RestApi extends Resource implements IRestApi {
       throw new Error('Only one of the RestApi props, endpointTypes or endpointConfiguration, is allowed');
     }
     if (props.endpointConfiguration) {
+      const vpcEndpointIds = (props.endpointConfiguration.vpcEndpoints) ?
+        props.endpointConfiguration.vpcEndpoints.map(vpcEndpoint => vpcEndpoint.vpcEndpointId) : undefined;
       return {
         types: props.endpointConfiguration.types,
-        vpcEndpointIds: props.endpointConfiguration.vpcEndpoints.map(vpcEndpoint => vpcEndpoint.vpcEndpointId),
+        vpcEndpointIds
       };
     }
     if (props.endpointTypes) {
@@ -468,11 +470,11 @@ export interface EndpointConfiguration {
   readonly types: EndpointType[];
 
   /**
-   * A list of VPC endpoint IDs of an API against which to create Route53 ALIASes
+   * A list of VPC Endpoints against which to create Route53 ALIASes
    *
    * @default - no ALIASes are created for the endpoint.
    */
-  readonly vpcEndpoints: IVpcEndpoint[];
+  readonly vpcEndpoints?: IVpcEndpoint[];
 }
 
 export enum ApiKeySourceType {

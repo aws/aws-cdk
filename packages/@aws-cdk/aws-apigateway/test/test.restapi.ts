@@ -484,7 +484,29 @@ export = {
     test.done();
   },
 
-  '"endpointConfiguration" can be used to specify endpoint configuration for the api'(test: Test) {
+  '"endpointConfiguration" can be used to specify endpoint types for the api'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const api = new apigw.RestApi(stack, 'api', {
+      endpointConfiguration: {
+        types: [ apigw.EndpointType.EDGE, apigw.EndpointType.PRIVATE ]
+      }
+    });
+
+    api.root.addMethod('GET');
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::RestApi', {
+      EndpointConfiguration: {
+        Types: [ "EDGE", "PRIVATE" ]
+      }
+    }));
+    test.done();
+  },
+
+  '"endpointConfiguration" can be used to specify vpc endpoints on the API'(test: Test) {
     // GIVEN
     const stack = new Stack();
 
