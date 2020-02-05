@@ -5,12 +5,10 @@ import * as fs from 'fs';
 import * as minimatch from 'minimatch';
 import * as path from 'path';
 
-export interface DockerImageAssetProps extends assets.FingerprintOptions {
-  /**
-   * The directory where the Dockerfile is stored
-   */
-  readonly directory: string;
-
+/**
+ * Options for DockerImageAsset
+ */
+export interface DockerImageAssetOptions extends assets.FingerprintOptions {
   /**
    * ECR repository name
    *
@@ -49,6 +47,16 @@ export interface DockerImageAssetProps extends assets.FingerprintOptions {
    * @default 'Dockerfile'
    */
   readonly file?: string;
+}
+
+/**
+ * Props for DockerImageAssets
+ */
+export interface DockerImageAssetProps extends DockerImageAssetOptions {
+  /**
+   * The directory where the Dockerfile is stored
+   */
+  readonly directory: string;
 }
 
 /**
