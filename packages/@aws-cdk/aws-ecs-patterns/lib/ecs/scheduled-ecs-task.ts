@@ -64,7 +64,7 @@ export interface ScheduledEc2TaskImageOptions extends ScheduledTaskImageProps {
 /**
  * The properties for the ScheduledEc2Task using a task definition.
  */
-export interface ScheduledEc2TaskDefinitionOptions extends ScheduledTaskBaseProps {
+export interface ScheduledEc2TaskDefinitionOptions {
   /**
    * The task definition to use for tasks in the service. One of image or taskDefinition must be specified.
    *
