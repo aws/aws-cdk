@@ -109,7 +109,7 @@ The following example configures the read capacity of a DynamoDB table
 to be around 60% utilization:
 
 ```ts
-const readCapacity = table.autosScaleReadCapacity({
+const readCapacity = table.autoScaleReadCapacity({
   minCapacity: 10,
   maxCapacity: 1000
 });
