@@ -1,4 +1,4 @@
-import { DockerImageAsset } from '@aws-cdk/aws-ecr-assets';
+import { DockerImageAsset, DockerImageAssetOptions } from '@aws-cdk/aws-ecr-assets';
 import * as cdk from '@aws-cdk/core';
 import { ContainerDefinition } from '../container-definition';
 import { ContainerImage, ContainerImageConfig } from '../container-image';
@@ -6,28 +6,7 @@ import { ContainerImage, ContainerImageConfig } from '../container-image';
 /**
  * The properties for building an AssetImage.
  */
-export interface AssetImageProps {
-  /**
-   * The arguments to pass to the `docker build` command
-   *
-   * @default none
-   */
-  readonly buildArgs?: { [key: string]: string };
-
-  /**
-   * Docker target to build to
-   *
-   * @default none
-   */
-  readonly target?: string;
-
-  /**
-   * Path to the Dockerfile (relative to the directory).
-   *
-   * @default 'Dockerfile'
-   */
-  readonly file?: string;
-
+export interface AssetImageProps extends DockerImageAssetOptions {
 }
 
 /**
@@ -46,10 +25,9 @@ export class AssetImage extends ContainerImage {
   public bind(scope: cdk.Construct, containerDefinition: ContainerDefinition): ContainerImageConfig {
     const asset = new DockerImageAsset(scope, 'AssetImage', {
       directory: this.directory,
-      buildArgs: this.props.buildArgs,
-      target: this.props.target,
-      file: this.props.file,
+      ...this.props,
     });
+
     asset.repository.grantPull(containerDefinition.taskDefinition.obtainExecutionRole());
 
     return {
