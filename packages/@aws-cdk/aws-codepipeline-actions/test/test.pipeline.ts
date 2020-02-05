@@ -371,22 +371,6 @@ export = {
     test.done();
   },
 
-  'manual approval Action': {
-    'allows passing an SNS Topic when constructing it'(test: Test) {
-      const stack = new Stack();
-      const topic = new sns.Topic(stack, 'Topic');
-      const manualApprovalAction = new cpactions.ManualApprovalAction({
-        actionName: 'Approve',
-        notificationTopic: topic,
-      });
-      stageForTesting(stack).addAction(manualApprovalAction);
-
-      test.equal(manualApprovalAction.notificationTopic, topic);
-
-      test.done();
-    },
-  },
-
   'PipelineProject': {
     'with a custom Project Name': {
       'sets the source and artifacts to CodePipeline'(test: Test) {
@@ -977,8 +961,3 @@ export = {
     },
   },
 };
-
-function stageForTesting(stack: Stack): codepipeline.IStage {
-  const pipeline = new codepipeline.Pipeline(stack, 'pipeline');
-  return pipeline.addStage({ stageName: 'stage' });
-}
