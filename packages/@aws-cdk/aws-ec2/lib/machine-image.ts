@@ -15,6 +15,73 @@ export interface IMachineImage {
 }
 
 /**
+ * Factory functions for standard Amazon Machine Image objects.
+ */
+export abstract class MachineImage {
+  /**
+   * A Windows image that is automatically kept up-to-date
+   *
+   * This Machine Image automatically updates to the latest version on every
+   * deployment. Be aware this will cause your instances to be replaced when a
+   * new version of the image becomes available. Do not store stateful information
+   * on the instance if you are using this image.
+   */
+  public static latestWindows(version: WindowsVersion, props?: WindowsImageProps): IMachineImage {
+    return new WindowsImage(version, props);
+  }
+
+  /**
+   * An Amazon Linux image that is automatically kept up-to-date
+   *
+   * This Machine Image automatically updates to the latest version on every
+   * deployment. Be aware this will cause your instances to be replaced when a
+   * new version of the image becomes available. Do not store stateful information
+   * on the instance if you are using this image.
+   */
+  public static latestAmazonLinux(props?: AmazonLinuxImageProps): IMachineImage {
+    return new AmazonLinuxImage(props);
+  }
+
+  /**
+   * A Linux image where you specify the AMI ID for every region
+   *
+   * @param amiMap For every region where you are deploying the stack,
+   * specify the AMI ID for that region.
+   * @param props Customize the image by supplying additional props
+   */
+  public static genericLinux(amiMap: Record<string, string>, props?: GenericLinuxImageProps): IMachineImage {
+    return new GenericLinuxImage(amiMap, props);
+  }
+
+  /**
+   * A Windows image where you specify the AMI ID for every region
+   *
+   * @param amiMap For every region where you are deploying the stack,
+   * specify the AMI ID for that region.
+   * @param props Customize the image by supplying additional props
+   */
+  public static genericWindows(amiMap: Record<string, string>, props?: GenericWindowsImageProps): IMachineImage {
+    return new GenericWindowsImage(amiMap, props);
+  }
+
+  /**
+   * Look up a shared Machine Image using DescribeImages
+   *
+   * The most recent, available, launchable image matching the given filter
+   * criteria will be used. Looking up AMIs may take a long time; specify
+   * as many filter criteria as possible to narrow down the search.
+   *
+   * The AMI selected will be cached in `cdk.context.json` and the same value
+   * will be used on future runs. To refresh the AMI lookup, you will have to
+   * evict the value from the cache using the `cdk context` command. See
+   * https://docs.aws.amazon.com/cdk/latest/guide/context.html for more information.
+   */
+  public static lookup(props: LookupMachineImageProps): IMachineImage {
+    return new LookupMachineImage(props);
+  }
+}
+
+/**
  * Configuration for a machine image
  */
 export interface MachineImageConfig {
@@ -50,6 +117,11 @@ export interface WindowsImageProps {
 
 /**
  * Select the latest version of the indicated Windows version
+ *
+ * This Machine Image automatically updates to the latest version on every
+ * deployment. Be aware this will cause your instances to be replaced when a
+ * new version of the image becomes available. Do not store stateful information
+ * on the instance if you are using this image.
  *
  * The AMI ID is selected using the values published to the SSM parameter store.
  *
@@ -122,6 +194,11 @@ export interface AmazonLinuxImageProps {
 
 /**
  * Selects the latest version of Amazon Linux
+ *
+ * This Machine Image automatically updates to the latest version on every
+ * deployment. Be aware this will cause your instances to be replaced when a
+ * new version of the image becomes available. Do not store stateful information
+ * on the instance if you are using this image.
  *
  * The AMI ID is selected using the values published to the SSM parameter store.
  */
