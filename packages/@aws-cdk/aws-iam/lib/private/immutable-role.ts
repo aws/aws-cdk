@@ -22,7 +22,7 @@ import { IRole } from '../role';
 export class ImmutableRole implements IRole {
   public readonly assumeRoleAction = this.role.assumeRoleAction;
   public readonly policyFragment = this.role.policyFragment;
-  public readonly grantPrincipal = this.role.grantPrincipal;
+  public readonly grantPrincipal = this;
   public readonly roleArn = this.role.roleArn;
   public readonly roleName = this.role.roleName;
   public readonly node = this.role.node;
