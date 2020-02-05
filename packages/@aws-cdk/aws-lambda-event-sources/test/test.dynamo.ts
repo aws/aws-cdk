@@ -487,7 +487,7 @@ export = {
     test.done();
   },
 
-  'fails if maximumRecordAgeInSeconds > 604800'(test: Test) {
+  'fails if maxRecordAge > 7 days'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new TestFunction(stack, 'Fn');
