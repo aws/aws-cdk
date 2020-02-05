@@ -110,7 +110,7 @@ CloudWatch.
 ### DynamoDB Streams
 
 You can write Lambda functions to process change events from a DynamoDB Table. An event is emitted to a DynamoDB stream (if configured) whenever a write (Put, Delete, Update)
-operation is performed against the table. See [Using AWS Lambda with Amazon DynamoDB](https://docs.aws.amazon.com/lambda/latest/dg/with-ddb.html) for more information.
+operation is performed against the table. See [Using AWS Lambda with Amazon DynamoDB](https://docs.aws.amazon.com/lambda/latest/dg/with-ddb.html) for more information about configuring Lambda function event sources with DynamoDB.
 
 To process events with a Lambda function, first create or update a DynamoDB table and enable a `stream` specification. Then, create a `DynamoEventSource`
 and add it to your Lambda function. The following parameters will impact Amazon DynamoDB's polling behavior:
@@ -118,7 +118,7 @@ and add it to your Lambda function. The following parameters will impact Amazon 
 * __batchSize__: Determines how many records are buffered before invoking your lambda function - could impact your function's memory usage (if too high) and ability to keep up with incoming data velocity (if too low).
 * __bisectBatchOnError__: If a batch encounters an error, this will cause the batch to be split in two and have each new smaller batch retried, allowing the records in error to be isolated.
 * __maxBatchingWindow__: The maximum amount of time to gather records before invoking the lambda. This increases the likelihood of a full batch at the cost of delayed processing.
-* __maxRecordAge__: The maximum age of a record that will be sent to the function for processing.
+* __maxRecordAge__: The maximum age of a record that will be sent to the function for processing. Records that exceed the max age will be treated as failures.
 * __onFailure__: In the event a record fails after all retries or if the record age has exceeded the configured value, the record will be sent to SQS queue or SNS topic that is specified here
 * __parallelizationFactor__: The number of batches to concurrently process on each shard.
 * __retryAttempts__: The maximum number of times a record should be retried in the event of failure.
@@ -149,9 +149,9 @@ function.addEventSource(new DynamoEventSource(table, {
 
 ### Kinesis
 
-You can write Lambda functions to process streaming data in Amazon Kinesis Streams. For more information about Amazon SQS, see [Amazon Kinesis
-Service](https://aws.amazon.com/kinesis/data-streams/). To view a sample event,
-see [Amazon SQS Event](https://docs.aws.amazon.com/lambda/latest/dg/eventsources.html#eventsources-kinesis-streams).
+You can write Lambda functions to process streaming data in Amazon Kinesis Streams. For more information about Amazon Kinesis, see [Amazon Kinesis
+Service](https://aws.amazon.com/kinesis/data-streams/). To learn more about configuring Lambda function event sources with kinesis and view a sample event,
+see [Amazon Kinesis Event](https://docs.aws.amazon.com/lambda/latest/dg/with-kinesis.html).
 
 To set up Amazon Kinesis as an event source for AWS Lambda, you
 first create or update an Amazon Kinesis stream and select custom values for the
@@ -161,7 +161,7 @@ behavior:
 * __batchSize__: Determines how many records are buffered before invoking your lambnda function - could impact your function's memory usage (if too high) and ability to keep up with incoming data velocity (if too low).
 * __bisectBatchOnError__: If a batch encounters an error, this will cause the batch to be split in two and have each new smaller batch retried, allowing the records in error to be isolated.
 * __maxBatchingWindow__: The maximum amount of time to gather records before invoking the lambda. This increases the likelihood of a full batch at the cost of possibly delaying processing.
-* __maxRecordAge__: The maximum age of a record that will be sent to the function for processing.
+* __maxRecordAge__: The maximum age of a record that will be sent to the function for processing. Records that exceed the max age will be treated as failures.
 * __onFailure__: In the event a record fails and consumes all retries, the record will be sent to SQS queue or SNS topic that is specified here
 * __parallelizationFactor__: The number of batches to concurrently process on each shard.
 * __retryAttempts__: The maximum number of times a record should be retried in the event of failure.
