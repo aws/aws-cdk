@@ -347,7 +347,9 @@ export class UserPool extends Resource implements IUserPool {
   private triggers: CfnUserPool.LambdaConfigProperty = { };
 
   constructor(scope: Construct, id: string, props: UserPoolProps = {}) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.userPoolName,
+    });
 
     let aliasAttributes: UserPoolAttribute[] | undefined;
     let usernameAttributes: UserPoolAttribute[] | undefined;
@@ -401,15 +403,19 @@ export class UserPool extends Resource implements IUserPool {
     }
 
     const userPool = new CfnUserPool(this, 'Resource', {
-      userPoolName: props.userPoolName,
+      userPoolName: this.physicalName,
       usernameAttributes,
       aliasAttributes,
       autoVerifiedAttributes: props.autoVerifiedAttributes,
       lambdaConfig: Lazy.anyValue({ produce: () => this.triggers })
     });
 
-    this.userPoolId = userPool.ref;
-    this.userPoolArn = userPool.attrArn;
+    this.userPoolId = this.getResourceNameAttribute(userPool.ref);
+    this.userPoolArn = this.getResourceArnAttribute(userPool.attrArn, {
+      service: 'cognito',
+      resource: 'userpool',
+      resourceName: this.physicalName,
+    });
 
     this.userPoolProviderName = userPool.attrProviderName;
     this.userPoolProviderUrl = userPool.attrProviderUrl;
