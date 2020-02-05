@@ -35,13 +35,20 @@ async function main() {
   }
 
   const testFiles = await unitTestFiles();
-  const useJest = 'jest' in currentPackageJson();
+  const packageJson = currentPackageJson();
+  const useJest = 'jest' in packageJson;
 
   if (useJest) {
     if (testFiles.length > 0) {
       throw new Error(`Jest is enabled, but ${testFiles.length} nodeunit tests were found!`);
     }
-    await shell([args.jest, '--testEnvironment=node', '--coverage', '--coverageReporters', 'html', 'lcov', 'text-summary'], { timers });
+    const globalJestConfig = JSON.parse(await fs.readFile(configFilePath('jest.config.json'), 'utf-8'));
+    const jestConfig = { ...globalJestConfig, ...packageJson.jest };
+
+    const jestConfigFile = 'jest.config.gen.json';
+    await fs.writeFile(jestConfigFile, JSON.stringify(jestConfig));
+
+    await shell([args.jest, '--config', jestConfigFile], { timers });
   } else if (testFiles.length > 0) {
     const testCommand: string[] = [];
 
