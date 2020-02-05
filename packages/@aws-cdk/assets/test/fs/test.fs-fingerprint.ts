@@ -68,13 +68,11 @@ export = {
       const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'copy-tests'));
       libfs.copyDirectory(srcdir, outdir);
 
-      const options = { exclude: ['*.ignoreme'] };
-
       // WHEN
-      const hashSrc = libfs.fingerprint(srcdir, options);
+      const hashSrc = libfs.fingerprint(srcdir, { exclude: ['*.ignoreme'] });
 
       fs.writeFileSync(path.join(outdir, `${hashSrc}.ignoreme`), 'Ignore me!');
-      const hashCopy = libfs.fingerprint(outdir, options);
+      const hashCopy = libfs.fingerprint(outdir, { exclude: ['*.ignoreme'] });
 
       // THEN
       test.deepEqual(hashSrc, hashCopy);

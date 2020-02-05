@@ -76,7 +76,7 @@ export = {
       // THEN
       expect(stack).to(haveResource('AWS::Lambda::Function', {
         Metadata: {
-          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.d0c1458e15ef69fc6ce6f58f012bc64cdd5d770b856bbe586bc46f6ab7a251f3',
+          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232',
           [cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY]: 'Code'
         }
       }, ResourcePart.CompleteDefinition));

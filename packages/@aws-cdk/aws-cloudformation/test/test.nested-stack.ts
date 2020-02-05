@@ -747,19 +747,19 @@ export = {
 
     // two sets of asset parameters: one for the nested stack itself and one as a proxy for the asset within the stack
     test.deepEqual(template.Parameters, {
-      AssetParametersa1ad79fd38a1d1aa2ecdde7b0beff68bcdf6739803000a2e373e2a22a1d61021S3Bucket242E770C: { Type: 'String', Description: 'S3 bucket for asset "a1ad79fd38a1d1aa2ecdde7b0beff68bcdf6739803000a2e373e2a22a1d61021"' },
-      AssetParametersa1ad79fd38a1d1aa2ecdde7b0beff68bcdf6739803000a2e373e2a22a1d61021S3VersionKeyCFE826FE: { Type: 'String', Description: 'S3 key for asset version "a1ad79fd38a1d1aa2ecdde7b0beff68bcdf6739803000a2e373e2a22a1d61021"' },
-      AssetParametersa1ad79fd38a1d1aa2ecdde7b0beff68bcdf6739803000a2e373e2a22a1d61021ArtifactHashB044B3D9: { Type: 'String', Description: 'Artifact hash for asset "a1ad79fd38a1d1aa2ecdde7b0beff68bcdf6739803000a2e373e2a22a1d61021"' },
-      AssetParametersf44feb6a51b97bf14740854164c525c6c0c200a0937cf4e2f7014711e831c7f1S3BucketF984168C: { Type: 'String', Description: 'S3 bucket for asset "f44feb6a51b97bf14740854164c525c6c0c200a0937cf4e2f7014711e831c7f1"' },
-      AssetParametersf44feb6a51b97bf14740854164c525c6c0c200a0937cf4e2f7014711e831c7f1S3VersionKeyD66EC12C: { Type: 'String', Description: 'S3 key for asset version "f44feb6a51b97bf14740854164c525c6c0c200a0937cf4e2f7014711e831c7f1"' },
-      AssetParametersf44feb6a51b97bf14740854164c525c6c0c200a0937cf4e2f7014711e831c7f1ArtifactHashD290F0B8: { Type: 'String', Description: 'Artifact hash for asset "f44feb6a51b97bf14740854164c525c6c0c200a0937cf4e2f7014711e831c7f1"' }
+      AssetParametersdb01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281S3BucketC188F637: { Type: 'String', Description: 'S3 bucket for asset "db01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281"' },
+      AssetParametersdb01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281S3VersionKeyC7F4DBF2: { Type: 'String', Description: 'S3 key for asset version "db01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281"' },
+      AssetParametersdb01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281ArtifactHash373B14D2: { Type: 'String', Description: 'Artifact hash for asset "db01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281"' },
+      AssetParameters46b107d6db798ca46046b8669d057a4debcbdbaaddb6170400748c2f9e4f9d71S3Bucket3C4265E9: { Type: 'String', Description: 'S3 bucket for asset "46b107d6db798ca46046b8669d057a4debcbdbaaddb6170400748c2f9e4f9d71"' },
+      AssetParameters46b107d6db798ca46046b8669d057a4debcbdbaaddb6170400748c2f9e4f9d71S3VersionKey8E981535: { Type: 'String', Description: 'S3 key for asset version "46b107d6db798ca46046b8669d057a4debcbdbaaddb6170400748c2f9e4f9d71"' },
+      AssetParameters46b107d6db798ca46046b8669d057a4debcbdbaaddb6170400748c2f9e4f9d71ArtifactHash45A28583: { Type: 'String', Description: 'Artifact hash for asset "46b107d6db798ca46046b8669d057a4debcbdbaaddb6170400748c2f9e4f9d71"' }
     });
 
     // asset proxy parameters are passed to the nested stack
     expect(parent).to(haveResource('AWS::CloudFormation::Stack', {
       Parameters: {
-        referencetoParentStackAssetParametersa1ad79fd38a1d1aa2ecdde7b0beff68bcdf6739803000a2e373e2a22a1d61021S3Bucket6617D4BFRef: { Ref: "AssetParametersa1ad79fd38a1d1aa2ecdde7b0beff68bcdf6739803000a2e373e2a22a1d61021S3Bucket242E770C" },
-        referencetoParentStackAssetParametersa1ad79fd38a1d1aa2ecdde7b0beff68bcdf6739803000a2e373e2a22a1d61021S3VersionKey5E68EA0ARef: { Ref: "AssetParametersa1ad79fd38a1d1aa2ecdde7b0beff68bcdf6739803000a2e373e2a22a1d61021S3VersionKeyCFE826FE" },
+        referencetoParentStackAssetParametersdb01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281S3Bucket82C55B96Ref: { Ref: "AssetParametersdb01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281S3BucketC188F637" },
+        referencetoParentStackAssetParametersdb01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281S3VersionKeyA43C3CC6Ref: { Ref: "AssetParametersdb01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281S3VersionKeyC7F4DBF2" },
       }
     }));
 

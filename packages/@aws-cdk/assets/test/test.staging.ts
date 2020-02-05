@@ -14,9 +14,9 @@ export = {
     // WHEN
     const staging = new Staging(stack, 's1', { sourcePath });
 
-    test.deepEqual(staging.sourceHash, '7ee2394b37e9721efb4f8c86c8818c37816e3f5126ded36d980bb2ef4103c594');
+    test.deepEqual(staging.sourceHash, '2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00');
     test.deepEqual(staging.sourcePath, sourcePath);
-    test.deepEqual(stack.resolve(staging.stagedPath), 'asset.7ee2394b37e9721efb4f8c86c8818c37816e3f5126ded36d980bb2ef4103c594');
+    test.deepEqual(stack.resolve(staging.stagedPath), 'asset.2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00');
     test.done();
   },
 
@@ -29,7 +29,7 @@ export = {
     // WHEN
     const staging = new Staging(stack, 's1', { sourcePath });
 
-    test.deepEqual(staging.sourceHash, '7ee2394b37e9721efb4f8c86c8818c37816e3f5126ded36d980bb2ef4103c594');
+    test.deepEqual(staging.sourceHash, '2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00');
     test.deepEqual(staging.sourcePath, sourcePath);
     test.deepEqual(stack.resolve(staging.stagedPath), sourcePath);
     test.done();
@@ -49,8 +49,8 @@ export = {
     // THEN
     const assembly = app.synth();
     test.deepEqual(fs.readdirSync(assembly.directory), [
-      'asset.0d3b44cd2202f06ede070775a83958085330d8b3cd56b990b381834099cb5854.gz',
-      'asset.7ee2394b37e9721efb4f8c86c8818c37816e3f5126ded36d980bb2ef4103c594',
+      'asset.2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00',
+      'asset.af10ac04b3b607b0f8659c8f0cee8c343025ee75baf0b146f10f0e5311d2c46b.gz',
       'cdk.out',
       'manifest.json',
       'stack.template.json',
@@ -71,8 +71,8 @@ export = {
 
     // THEN
     test.notEqual(withoutExtra.sourceHash, withExtra.sourceHash);
-    test.deepEqual(withoutExtra.sourceHash, '7ee2394b37e9721efb4f8c86c8818c37816e3f5126ded36d980bb2ef4103c594');
-    test.deepEqual(withExtra.sourceHash, 'a35af8e7b62048d35f6928e9445ef2cac507cd0d065c5b36b2d55480bdbc4609');
+    test.deepEqual(withoutExtra.sourceHash, '2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00');
+    test.deepEqual(withExtra.sourceHash, 'c95c915a5722bb9019e2c725d11868e5a619b55f36172f76bcbcaa8bb2d10c5f');
     test.done();
   }
 };

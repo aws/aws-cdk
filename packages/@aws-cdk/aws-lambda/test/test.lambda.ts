@@ -299,12 +299,12 @@ export = {
     expect(stack).to(haveResource('AWS::Lambda::Function', {
       "Code": {
         "S3Bucket": {
-          "Ref": "AssetParametersd0c1458e15ef69fc6ce6f58f012bc64cdd5d770b856bbe586bc46f6ab7a251f3S3Bucket9AF5FCDE"
+          "Ref": "AssetParameters9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232S3Bucket1354C645"
         },
         "S3Key": {
           "Fn::Join": ["", [
-            { "Fn::Select": [0, { "Fn::Split": ["||", { "Ref": "AssetParametersd0c1458e15ef69fc6ce6f58f012bc64cdd5d770b856bbe586bc46f6ab7a251f3S3VersionKey0C645A20" }] }] },
-            { "Fn::Select": [1, { "Fn::Split": ["||", { "Ref": "AssetParametersd0c1458e15ef69fc6ce6f58f012bc64cdd5d770b856bbe586bc46f6ab7a251f3S3VersionKey0C645A20" }] }] },
+            { "Fn::Select": [0, { "Fn::Split": ["||", { "Ref": "AssetParameters9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232S3VersionKey5D873FAC" }] }] },
+            { "Fn::Select": [1, { "Fn::Split": ["||", { "Ref": "AssetParameters9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232S3VersionKey5D873FAC" }] }] },
           ]]
         }
       },

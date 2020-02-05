@@ -87,7 +87,7 @@ export = testCase({
     // THEN
     expect(stack).to(haveResource('AWS::Lambda::LayerVersion', {
       Metadata: {
-        'aws:asset:path': 'asset.317642a1eedd8e9d73da76b1242be64e30196aa456d3df89f0d0f63ecb7f35da',
+        'aws:asset:path': 'asset.45f085ecc03a1a22cf003fba3fab28e660c92bcfcd4d0c01b62c7cd191070a2d',
         'aws:asset:property': 'Content'
       }
     }, ResourcePart.CompleteDefinition));

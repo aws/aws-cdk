@@ -31,7 +31,9 @@ export function fingerprint(fileOrDirectory: string, options: FingerprintOptions
     ? fileOrDirectory
     : path.dirname(fileOrDirectory);
   const exclude = options.exclude || [];
-  _hashField(hash, 'options.exclude', exclude.toString());
+  if (exclude.length) {
+    _hashField(hash, 'options.exclude', JSON.stringify(exclude));
+  }
   _processFileOrDirectory(fileOrDirectory);
 
   return hash.digest('hex');
