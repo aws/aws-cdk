@@ -15,12 +15,6 @@
     "build+test": "npm run build && npm test"
   },
   "jest": {
-    "collectCoverage": true,
-    "coverageReporters": [
-      "lcov",
-      "html",
-      "text-summary"
-    ],
     "coverageThreshold": {
       "global": {
         "statements": 60,
@@ -32,6 +26,10 @@
     "testMatch": [
       "**/__tests__/**/*.ts?(x)",
       "**/?(*.)+(spec|test).ts?(x)"
+    ],
+    "moduleFileExtensions": [
+      "js",
+      "ts"
     ]
   },
   "author": {
