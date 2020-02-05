@@ -1,3 +1,4 @@
+import { IVpcEndpoint } from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import { CfnOutput, Construct, IResource as IResourceBase, Resource, Stack } from '@aws-cdk/core';
 import { ApiKey, IApiKey } from './api-key';
@@ -99,6 +100,15 @@ export interface RestApiProps extends ResourceOptions {
    * @default - No endpoint configuration
    */
   readonly endpointConfiguration?: EndpointConfiguration;
+
+  /**
+   * A list of the endpoint types of the API. Use this property when creating
+   * an API.
+   *
+   * @default - No endpoint types.
+   * @deprecated this property is deprecated, use endpointConfiguration instead
+   */
+  readonly endpointTypes?: EndpointType[];
 
   /**
    * The source of the API key for metering requests according to a usage
@@ -228,7 +238,7 @@ export class RestApi extends Resource implements IRestApi {
       failOnWarnings: props.failOnWarnings,
       minimumCompressionSize: props.minimumCompressionSize,
       binaryMediaTypes: props.binaryMediaTypes,
-      endpointConfiguration: props.endpointConfiguration,
+      endpointConfiguration: this.configureEndpointConfiguration(props),
       apiKeySourceType: props.apiKeySourceType,
       cloneFrom: props.cloneFrom ? props.cloneFrom.restApiId : undefined,
       parameters: props.parameters
@@ -426,6 +436,22 @@ export class RestApi extends Resource implements IRestApi {
 
     resource.node.addDependency(apiResource);
   }
+
+  private configureEndpointConfiguration(props: RestApiProps): CfnRestApi.EndpointConfigurationProperty | undefined {
+    if (props.endpointTypes && props.endpointConfiguration) {
+      throw new Error('Only one of the RestApi props, endpointTypes or endpointConfiguration, is allowed');
+    }
+    if (props.endpointConfiguration) {
+      return {
+        types: props.endpointConfiguration.types,
+        vpcEndpointIds: props.endpointConfiguration.vpcEndpoints.map(vpcEndpoint => vpcEndpoint.vpcEndpointId),
+      };
+    }
+    if (props.endpointTypes) {
+      return { types: props.endpointTypes };
+    }
+    return undefined;
+  }
 }
 
 /**
@@ -446,7 +472,7 @@ export interface EndpointConfiguration {
    *
    * @default - no ALIASes are created for the endpoint.
    */
-  readonly vpcEndpointIds: string[];
+  readonly vpcEndpoints: IVpcEndpoint[];
 }
 
 export enum ApiKeySourceType {
