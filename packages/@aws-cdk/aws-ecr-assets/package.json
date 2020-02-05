@@ -100,10 +100,5 @@
   "bundledDependencies": [
     "minimatch"
   ],
-  "stability": "experimental",
-  "awslint": {
-    "exclude": [
-      "docs-public-apis:@aws-cdk/aws-ecr-assets.DockerImageAssetProps"
-    ]
-  }
+  "stability": "experimental"
 }
