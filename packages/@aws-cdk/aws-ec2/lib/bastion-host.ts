@@ -1,8 +1,9 @@
 import { IPrincipal, IRole, PolicyStatement } from "@aws-cdk/aws-iam";
 import { CfnOutput, Construct, Stack } from "@aws-cdk/core";
-import { AmazonLinuxGeneration, AmazonLinuxImage, InstanceClass, InstanceSize, InstanceType } from ".";
+import { AmazonLinuxGeneration, InstanceClass, InstanceSize, InstanceType } from ".";
 import { Connections } from "./connections";
 import { IInstance, Instance } from "./instance";
+import { IMachineImage, MachineImage } from "./machine-image";
 import { IPeer } from "./peer";
 import { Port } from "./port";
 import { ISecurityGroup } from "./security-group";
@@ -56,6 +57,13 @@ export interface BastionHostLinuxProps {
    */
   readonly instanceType?: InstanceType;
 
+  /**
+   * The machine image to use
+   *
+   * @default - An Amazon Linux 2 image which is kept up-to-date automatically (the instance
+   * may be replaced on every deployment).
+   */
+  readonly machineImage?: IMachineImage;
 }
 
 /**
@@ -125,10 +133,10 @@ export class BastionHostLinux extends Construct implements IInstance {
       vpc: props.vpc,
       availabilityZone: props.availabilityZone,
       securityGroup: props.securityGroup,
-      instanceName: props.instanceName || 'BastionHost',
-      instanceType: props.instanceType || InstanceType.of(InstanceClass.T3, InstanceSize.NANO),
-      machineImage: new AmazonLinuxImage({ generation: AmazonLinuxGeneration.AMAZON_LINUX_2 }),
-      vpcSubnets: props.subnetSelection || { subnetType: SubnetType.PRIVATE },
+      instanceName: props.instanceName ?? 'BastionHost',
+      instanceType: props.instanceType ?? InstanceType.of(InstanceClass.T3, InstanceSize.NANO),
+      machineImage: props.machineImage ?? MachineImage.latestAmazonLinux({ generation: AmazonLinuxGeneration.AMAZON_LINUX_2 }),
+      vpcSubnets: props.subnetSelection ?? { subnetType: SubnetType.PRIVATE },
     });
     this.instance.addToRolePolicy(new PolicyStatement({
       actions: [

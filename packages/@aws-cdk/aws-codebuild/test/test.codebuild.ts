@@ -865,6 +865,71 @@ export = {
     },
   },
 
+  'secondary source versions': {
+    'allow secondary source versions'(test: Test) {
+      const stack = new cdk.Stack();
+      const bucket = new s3.Bucket(stack, 'MyBucket');
+      const project = new codebuild.Project(stack, 'MyProject', {
+        source: codebuild.Source.s3({
+          bucket,
+          path: 'some/path',
+        }),
+      });
+
+      project.addSecondarySource(codebuild.Source.s3({
+        bucket,
+        path: 'another/path',
+        identifier: 'source1',
+        version: 'someversion'
+      }));
+
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        "SecondarySources": [
+          {
+            "SourceIdentifier": "source1",
+            "Type": "S3",
+          },
+        ],
+        "SecondarySourceVersions": [
+          {
+            "SourceIdentifier": "source1",
+            "SourceVersion": "someversion"
+          }
+        ]
+      }));
+
+      test.done();
+    },
+
+    'allow not to specify secondary source versions'(test: Test) {
+      const stack = new cdk.Stack();
+      const bucket = new s3.Bucket(stack, 'MyBucket');
+      const project = new codebuild.Project(stack, 'MyProject', {
+        source: codebuild.Source.s3({
+          bucket,
+          path: 'some/path',
+        }),
+      });
+
+      project.addSecondarySource(codebuild.Source.s3({
+        bucket,
+        path: 'another/path',
+        identifier: 'source1',
+      }));
+
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        "SecondarySources": [
+          {
+            "SourceIdentifier": "source1",
+            "Type": "S3",
+          },
+        ]
+      }));
+
+      test.done();
+    },
+  },
+
   'secondary artifacts': {
     'require providing an identifier when creating a Project'(test: Test) {
       const stack = new cdk.Stack();
