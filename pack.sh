@@ -7,6 +7,7 @@ export PATH=$PWD/node_modules/.bin:$PATH
 export NODE_OPTIONS="--max-old-space-size=4096 ${NODE_OPTIONS:-}"
 root=$PWD
 
+PACMAK=${PACMAK:-jsii-pacmak}
 TMPDIR=${TMPDIR:-$(dirname $(mktemp -u))}
 distdir="$PWD/dist"
 rm -fr ${distdir}
@@ -36,7 +37,7 @@ node --experimental-worker $(which jsii-rosetta) \
 
 # Jsii packaging (all at once using jsii-pacmak)
 echo "Packaging jsii modules" >&2
-jsii-pacmak \
+$PACMAK \
   --verbose \
   --rosetta-tablet samples.tabl.json \
   $(cat $TMPDIR/jsii.txt)

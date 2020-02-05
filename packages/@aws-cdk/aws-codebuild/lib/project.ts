@@ -654,6 +654,7 @@ export class Project extends ProjectBase {
   private readonly source: ISource;
   private readonly buildImage: IBuildImage;
   private readonly _secondarySources: CfnProject.SourceProperty[];
+  private readonly _secondarySourceVersions: CfnProject.ProjectSourceVersionProperty[];
   private readonly _secondaryArtifacts: CfnProject.ArtifactsProperty[];
   private _encryptionKey?: kms.IKey;
 
@@ -698,6 +699,7 @@ export class Project extends ProjectBase {
     }
 
     this._secondarySources = [];
+    this._secondarySourceVersions = [];
     for (const secondarySource of props.secondarySources || []) {
       this.addSecondarySource(secondarySource);
     }
@@ -725,8 +727,10 @@ export class Project extends ProjectBase {
       name: this.physicalName,
       timeoutInMinutes: props.timeout && props.timeout.toMinutes(),
       secondarySources: Lazy.anyValue({ produce: () => this.renderSecondarySources() }),
+      secondarySourceVersions: Lazy.anyValue({ produce: () => this.renderSecondarySourceVersions() }),
       secondaryArtifacts: Lazy.anyValue({ produce: () => this.renderSecondaryArtifacts() }),
       triggers: sourceConfig.buildTriggers,
+      sourceVersion: sourceConfig.sourceVersion,
       vpcConfig: this.configureVpc(props),
     });
 
@@ -756,7 +760,14 @@ export class Project extends ProjectBase {
     if (!secondarySource.identifier) {
       throw new Error('The identifier attribute is mandatory for secondary sources');
     }
-    this._secondarySources.push(secondarySource.bind(this, this).sourceProperty);
+    const secondarySourceConfig = secondarySource.bind(this, this);
+    this._secondarySources.push(secondarySourceConfig.sourceProperty);
+    if (secondarySourceConfig.sourceVersion) {
+      this._secondarySourceVersions.push({
+        sourceIdentifier: secondarySource.identifier,
+        sourceVersion: secondarySourceConfig.sourceVersion,
+      });
+    }
   }
 
   /**
@@ -891,6 +902,12 @@ export class Project extends ProjectBase {
     return this._secondarySources.length === 0
       ? undefined
       : this._secondarySources;
+  }
+
+  private renderSecondarySourceVersions(): CfnProject.ProjectSourceVersionProperty[] | undefined {
+    return this._secondarySourceVersions.length === 0
+      ? undefined
+      : this._secondarySourceVersions;
   }
 
   private renderSecondaryArtifacts(): CfnProject.ArtifactsProperty[] | undefined {

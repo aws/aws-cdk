@@ -10,16 +10,11 @@
   },
   "stability": "experimental",
   "scripts": {
-    "build": "node deps.js && node gen.js && tsc",
-    "test": "cdk-test",
-    "package": "mkdir -p dist/js && cd dist/js && npm pack ../../",
+    "build": "node deps.js && ./build.sh",
+    "test": "echo done",
+    "package": "echo done",
     "build+test": "npm run build && npm test",
     "build+test+package": "npm run build+test && npm run package"
-  },
-  "jest": {
-    "moduleFileExtensions": [
-      "js"
-    ]
   },
   "author": {
     "name": "Amazon Web Services",
@@ -28,10 +23,12 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
+    "@types/node": "^10.17.14",
     "@aws-cdk/alexa-ask": "1.22.0",
     "@aws-cdk/app-delivery": "1.22.0",
     "@aws-cdk/assets": "1.22.0",
     "@aws-cdk/aws-accessanalyzer": "1.22.0",
+    "@aws-cdk/aws-acmpca": "1.22.0",
     "@aws-cdk/aws-amazonmq": "1.22.0",
     "@aws-cdk/aws-amplify": "1.22.0",
     "@aws-cdk/aws-apigateway": "1.22.0",
@@ -159,13 +156,7 @@
     "@aws-cdk/core": "1.22.0",
     "@aws-cdk/custom-resources": "1.22.0",
     "@aws-cdk/cx-api": "1.22.0",
-    "@aws-cdk/region-info": "1.22.0",
-    "@types/fs-extra": "^8.0.1",
-    "@types/jest": "^25.1.0",
-    "fs-extra": "^8.1.0",
-    "glob": "^7.1.6",
-    "jest": "^25.1.0",
-    "@aws-cdk/aws-acmpca": "1.22.0"
+    "@aws-cdk/region-info": "1.22.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
