@@ -13,5 +13,6 @@ export * from './environment';
 export * from './metadata';
 export * from './features';
 export * from './future';
+export * from './asset-manifest';
 
 export { CLOUD_ASSEMBLY_VERSION } from './versioning';
