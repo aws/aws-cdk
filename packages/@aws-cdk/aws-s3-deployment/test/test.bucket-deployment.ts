@@ -218,6 +218,7 @@ export = {
       retainOnDelete: true,
     });
 
+    // THEN
     expect(stack).to(haveResource('Custom::CDKBucketDeployment', {
       RetainOnDelete: true
     }));
@@ -225,7 +226,7 @@ export = {
     test.done();
   },
 
-  'object metadata can be given'(test: Test) {
+  'user metadata is correctly transformed'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const bucket = new s3.Bucket(stack, 'Dest');
@@ -234,12 +235,15 @@ export = {
     new s3deploy.BucketDeployment(stack, 'Deploy', {
       sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website.zip'))],
       destinationBucket: bucket,
-      metadata: { "A": "1", "b": "2" },
+      metadata: {
+        A: '1',
+        B: '2'
+      }
     });
 
     // THEN
     expect(stack).to(haveResource('Custom::CDKBucketDeployment', {
-      UserMetadata: { 'x-amzn-meta-a': '1', 'x-amzn-meta-b': '2' }
+      UserMetadata: { 'x-amzn-meta-a': '1', 'x-amzn-meta-b': '2' },
     }));
 
     test.done();
@@ -263,7 +267,7 @@ export = {
       serverSideEncryptionCustomerAlgorithm: "rot13",
       websiteRedirectLocation: "example",
       cacheControl: [s3deploy.CacheControl.setPublic(), s3deploy.CacheControl.maxAge(cdk.Duration.hours(1))],
-      expires: s3deploy.Expires.after(cdk.Duration.hours(12)),
+      expires: s3deploy.Expires.after(cdk.Duration.hours(12))
     });
 
     // THEN
@@ -281,6 +285,41 @@ export = {
         'website-redirect': 'example'
       }
     }));
+
+    test.done();
+  },
+
+  'expires type has correct values'(test: Test) {
+    test.equal(s3deploy.Expires.atDate(new Date('Sun, 26 Jan 2020 00:53:20 GMT')).value, 'Sun, 26 Jan 2020 00:53:20 GMT');
+    test.equal(s3deploy.Expires.atTimestamp(1580000000000).value, 'Sun, 26 Jan 2020 00:53:20 GMT');
+    test.ok(Math.abs(new Date(s3deploy.Expires.after(cdk.Duration.minutes(10)).value).getTime() - (Date.now() + 600000)) < 15000, "Expires.after accurate to within 15 seconds");
+    test.equal(s3deploy.Expires.fromString('Tue, 04 Feb 2020 08:45:33 GMT').value, 'Tue, 04 Feb 2020 08:45:33 GMT');
+
+    test.done();
+  },
+
+  'cache control type has correct values'(test: Test) {
+    test.equal(s3deploy.CacheControl.mustRevalidate().value, 'must-revalidate');
+    test.equal(s3deploy.CacheControl.noCache().value, 'no-cache');
+    test.equal(s3deploy.CacheControl.noTransform().value, 'no-transform');
+    test.equal(s3deploy.CacheControl.setPublic().value, 'public');
+    test.equal(s3deploy.CacheControl.setPrivate().value, 'private');
+    test.equal(s3deploy.CacheControl.proxyRevalidate().value, 'proxy-revalidate');
+    test.equal(s3deploy.CacheControl.maxAge(cdk.Duration.minutes(1)).value, 'max-age=60');
+    test.equal(s3deploy.CacheControl.sMaxAge(cdk.Duration.minutes(1)).value, 's-max-age=60');
+    test.equal(s3deploy.CacheControl.fromString('only-if-cached').value, 'only-if-cached');
+
+    test.done();
+  },
+
+  'storage class type has correct values'(test: Test) {
+    test.equal(s3deploy.StorageClass.STANDARD, 'STANDARD');
+    test.equal(s3deploy.StorageClass.REDUCED_REDUNDANCY, 'REDUCED_REDUNDANCY');
+    test.equal(s3deploy.StorageClass.STANDARD_IA, 'STANDARD_IA');
+    test.equal(s3deploy.StorageClass.ONEZONE_IA, 'ONEZONE_IA');
+    test.equal(s3deploy.StorageClass.INTELLIGENT_TIERING, 'INTELLIGENT_TIERING');
+    test.equal(s3deploy.StorageClass.GLACIER, 'GLACIER');
+    test.equal(s3deploy.StorageClass.DEEP_ARCHIVE, 'DEEP_ARCHIVE');
 
     test.done();
   },

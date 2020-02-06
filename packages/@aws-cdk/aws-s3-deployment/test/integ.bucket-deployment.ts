@@ -27,6 +27,17 @@ class TestBucketDeployment extends cdk.Stack {
       destinationKeyPrefix: 'deploy/here/',
       retainOnDelete: false, // default is true, which will block the integration test cleanup
     });
+
+    const bucket3 = new s3.Bucket(this, 'Destination3');
+
+    new s3deploy.BucketDeployment(this, 'DeployWithMetadata', {
+      sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+      destinationBucket: bucket3,
+      retainOnDelete: false, // default is true, which will block the integration test cleanup
+      cacheControl: [s3deploy.CacheControl.setPublic(), s3deploy.CacheControl.maxAge(cdk.Duration.minutes(1))],
+      contentType: 'text/html',
+      metadata: { A: 'aaa', B: 'bbb', C: 'ccc' }
+    });
   }
 }
 
