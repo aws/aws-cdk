@@ -1,4 +1,4 @@
-import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
+import {expect, haveResource, ResourcePart} from '@aws-cdk/assert';
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as iam from '@aws-cdk/aws-iam';
 import { CfnDeletionPolicy, ConstructNode, RemovalPolicy, Stack, Tag } from '@aws-cdk/core';
@@ -1128,6 +1128,24 @@ export = {
         }
       ]
     }));
+
+    test.done();
+  },
+
+  'Can use metricSystemErrors on a Dynamodb Table'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const table = new Table(stack, 'Table', {
+      partitionKey: {name: 'id', type: AttributeType.STRING}
+    });
+
+    // THEN
+    test.deepEqual(stack.resolve(table.metricSystemErrors()), {
+      dimensions: { FunctionName: { Ref: 'TableCD117FA1' } },
+      namespace: 'AWS/DynamoDB',
+      metricName: 'SystemErrors',
+      statistic: 'Sum',
+    });
 
     test.done();
   },
