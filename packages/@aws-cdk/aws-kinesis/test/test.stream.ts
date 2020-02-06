@@ -372,7 +372,8 @@ export = {
                       "Action": [
                         "kinesis:DescribeStream",
                         "kinesis:GetRecords",
-                        "kinesis:GetShardIterator"
+                        "kinesis:GetShardIterator",
+                        "kinesis:ListShards"
                       ],
                       "Effect": "Allow",
                       "Resource": {
@@ -662,6 +663,7 @@ export = {
                         "kinesis:DescribeStream",
                         "kinesis:GetRecords",
                         "kinesis:GetShardIterator",
+                        "kinesis:ListShards",
                         "kinesis:PutRecord",
                         "kinesis:PutRecords"
                       ],
@@ -734,7 +736,8 @@ export = {
                       "Action": [
                         "kinesis:DescribeStream",
                         "kinesis:GetRecords",
-                        "kinesis:GetShardIterator"
+                        "kinesis:GetShardIterator",
+                        "kinesis:ListShards"
                       ],
                       "Effect": "Allow",
                       "Resource": {
@@ -843,6 +846,7 @@ export = {
                         "kinesis:DescribeStream",
                         "kinesis:GetRecords",
                         "kinesis:GetShardIterator",
+                        "kinesis:ListShards",
                         "kinesis:PutRecord",
                         "kinesis:PutRecords"
                       ],
@@ -921,7 +925,8 @@ export = {
                     "Action": [
                       "kinesis:DescribeStream",
                       "kinesis:GetRecords",
-                      "kinesis:GetShardIterator"
+                      "kinesis:GetShardIterator",
+                      "kinesis:ListShards"
                     ],
                     "Effect": "Allow",
                     "Resource": {

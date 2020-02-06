@@ -109,7 +109,7 @@ abstract class StreamBase extends Resource implements IStream {
    * contents of the stream will also be granted.
    */
   public grantRead(grantee: iam.IGrantable) {
-    const ret = this.grant(grantee, 'kinesis:DescribeStream', 'kinesis:GetRecords', 'kinesis:GetShardIterator');
+    const ret = this.grant(grantee, 'kinesis:DescribeStream', 'kinesis:GetRecords', 'kinesis:GetShardIterator', 'kinesis:ListShards');
 
     if (this.encryptionKey) {
       this.encryptionKey.grantDecrypt(grantee);
@@ -148,6 +148,7 @@ abstract class StreamBase extends Resource implements IStream {
         'kinesis:DescribeStream',
         'kinesis:GetRecords',
         'kinesis:GetShardIterator',
+        'kinesis:ListShards',
         'kinesis:PutRecord',
         'kinesis:PutRecords');
 
@@ -158,7 +159,10 @@ abstract class StreamBase extends Resource implements IStream {
     return ret;
   }
 
-  private grant(grantee: iam.IGrantable, ...actions: string[]) {
+  /**
+   * Grant the indicated permissions on this key to the given IAM principal (Role/Group/User).
+   */
+  public grant(grantee: iam.IGrantable, ...actions: string[]) {
     return iam.Grant.addToPrincipal({
       grantee,
       actions,
