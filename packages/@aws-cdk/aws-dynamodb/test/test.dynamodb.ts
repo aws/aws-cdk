@@ -1141,7 +1141,8 @@ export = {
 
     // THEN
     test.deepEqual(stack.resolve(table.metricSystemErrors()), {
-      dimensions: { FunctionName: { Ref: 'TableCD117FA1' } },
+      period: { amount: 5, unit: { label: 'minutes', inSeconds: 60 }},
+      dimensions: { TableName: { Ref: 'TableCD117FA1' } },
       namespace: 'AWS/DynamoDB',
       metricName: 'SystemErrors',
       statistic: 'Sum',
