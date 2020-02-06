@@ -1,4 +1,5 @@
-import { AssetManifest, ManifestEntry, StandardManifestEntries } from "@aws-cdk/cx-api";
+import { AssetManifest, ManifestEntry } from "../asset-manifest";
+import { StandardManifestEntries } from "../asset-manifest/standard-manifest-entries";
 import { IAws } from "../aws-operations";
 import { IAssetHandler, MessageSink } from "../private/asset-handler";
 import { ContainerImageAssetHandler } from "./container-images";

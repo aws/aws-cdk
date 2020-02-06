@@ -1,7 +1,6 @@
+import { AssetManifestSchema, ManifestFile } from '@aws-cdk/asset-manifest-schema';
 import * as fs from 'fs';
 import * as path from 'path';
-import { schema } from './private/manifest-file-schema';
-import { expectKey } from './private/schema-helpers';
 
 /**
  * A manifest of assets
@@ -27,9 +26,9 @@ export class AssetManifest {
    */
   public static fromFile(fileName: string) {
     try {
-      const obj = validateManifestFile(JSON.parse(fs.readFileSync(fileName, { encoding: 'utf-8' })));
+      const obj = AssetManifestSchema.validate(JSON.parse(fs.readFileSync(fileName, { encoding: 'utf-8' })));
 
-      return new AssetManifest(path.dirname(fileName), obj.assets);
+      return new AssetManifest(path.dirname(fileName), obj);
     } catch (e) {
       throw new Error(`Canot read asset manifest '${fileName}': ${e.message}`);
     }
@@ -58,7 +57,7 @@ export class AssetManifest {
    */
   public readonly directory: string;
 
-  private constructor(directory: string, private readonly _assets: Record<string, schema.GenericAsset>) {
+  constructor(directory: string, private readonly manifest: ManifestFile) {
     this.directory = directory;
   }
 
@@ -72,17 +71,20 @@ export class AssetManifest {
   public select(selection?: DestinationPattern[]): AssetManifest {
     if (selection === undefined) { return this; }
 
-    const ret: Record<string, schema.GenericAsset> = {};
-    for (const [assetId, asset] of Object.entries(this._assets)) {
-      const filteredDestinations =  filterDict(
-        asset.destinations,
-        (_, destId) => selection.some(sel => sel.matches(new DestinationIdentifier(assetId, destId))));
+    const ret: ManifestFile = { version: this.manifest.version, dockerImages: {}, files: {} };
 
-      if (Object.keys(filteredDestinations).length > 0) {
-        ret[assetId] = {
-          ...asset,
-          destinations: filteredDestinations,
-        };
+    for (const assetType of ASSET_TYPES) {
+      for (const [assetId, asset] of Object.entries(this.manifest[assetType])) {
+        const filteredDestinations =  filterDict(
+          asset.destinations,
+          (_, destId) => selection.some(sel => sel.matches(new DestinationIdentifier(assetId, destId))));
+
+        if (Object.keys(filteredDestinations).length > 0) {
+          ret[assetType][assetId] = {
+            ...asset,
+            destinations: filteredDestinations,
+          };
+        }
       }
     }
 
@@ -93,14 +95,24 @@ export class AssetManifest {
    * Describe the asset manifest as a list of strings
    */
   public list() {
-    const ret = new Array<string>();
-    for (const [assetId, asset] of Object.entries(this._assets)) {
-      ret.push(`${assetId} ${asset.type} ${JSON.stringify(asset.source)}`);
+    const files = describeAssets('file', this.manifest.files || {});
+    const dockerImages = describeAssets('dockerImage', this.manifest.files || {});
 
-      const destStrings = Object.entries(asset.destinations).map(([destId, dest]) => ` ${assetId}:${destId} ${JSON.stringify(dest)}`);
-      ret.push(...prefixTreeChars(destStrings, '  '));
+    return [
+      ...files.length > 0 ? ['files', ...prefixTreeChars(files, '  ')] : [],
+      ...dockerImages.length > 0 ? ['docker images', ...prefixTreeChars(dockerImages, '  ')] : []
+    ];
+
+    function describeAssets(type: string, assets: Record<string, { source: any, destinations: Record<string, any> }>) {
+      const ret = new Array<string>();
+      for (const [assetId, asset] of Object.entries(assets || {})) {
+        ret.push(`${assetId} ${type} ${JSON.stringify(asset.source)}`);
+
+        const destStrings = Object.entries(asset.destinations).map(([destId, dest]) => ` ${assetId}:${destId} ${JSON.stringify(dest)}`);
+        ret.push(...prefixTreeChars(destStrings, '  '));
+      }
+      return ret;
     }
-    return ret;
   }
 
   /**
@@ -108,26 +120,30 @@ export class AssetManifest {
    */
   public get entries(): ManifestEntry[] {
     const ret = new Array<ManifestEntry>();
-    for (const [assetId, asset] of Object.entries(this._assets)) {
-      for (const [destId, destination] of Object.entries(asset.destinations)) {
-        const id = new DestinationIdentifier(assetId, destId);
+    for (const assetType of ASSET_TYPES) {
+      for (const [assetId, asset] of Object.entries(this.manifest[assetType])) {
+        for (const [destId, destination] of Object.entries(asset.destinations)) {
+          const id = new DestinationIdentifier(assetId, destId);
 
-        ret.push({
-          id,
-          type: asset.type,
-          source: asset.source,
-          destination,
-        });
+          ret.push({
+            id,
+            type: assetType,
+            source: asset.source,
+            destination,
+          });
+        }
       }
     }
     return ret;
   }
 }
 
+type AssetType = 'files' | 'dockerImages';
+
+const ASSET_TYPES: AssetType[] = ['files', 'dockerImages'];
+
 /**
- * A single asset from an asset manifest
- *
- * Describes a single (source, destination) pair.
+ * A single asset from an asset manifest'
  */
 export interface ManifestEntry {
   /**
@@ -236,19 +252,6 @@ export class DestinationPattern {
   public toString() {
     return `${this.assetId ?? '*'}:${this.destinationId ?? '*'}`;
   }
-}
-
-function validateManifestFile(obj: any): schema.ManifestFile {
-  if (obj.version !== schema.CURRENT_VERSION) {
-    throw new Error(`Expected schema version '${schema.CURRENT_VERSION}', got '${obj.version}'`);
-  }
-  expectKey(obj, 'assets', 'object');
-  for (const asset of Object.values(obj.assets)) {
-    expectKey(asset, 'type', 'string');
-    expectKey(asset, 'source', 'object');
-    expectKey(asset, 'destinations', 'object');
-  }
-  return obj;
 }
 
 /**

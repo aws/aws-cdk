@@ -42,7 +42,7 @@
     "pkglint": "1.22.0"
   },
   "dependencies": {
-    "@aws-cdk/cx-api": "1.22.0",
+    "@aws-cdk/asset-manifest-schema": "1.22.0",
     "archiver": "^3.1.1",
     "aws-sdk": "^2.601.0",
     "fs-extra": "^8.1.0",

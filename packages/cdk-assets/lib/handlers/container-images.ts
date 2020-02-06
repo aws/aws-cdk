@@ -1,5 +1,5 @@
-import { DockerImageManifestEntry } from "@aws-cdk/cx-api";
 import * as path from 'path';
+import { DockerImageManifestEntry } from '../asset-manifest/docker-entry';
 import { IAws } from "../aws-operations";
 import { IAssetHandler, MessageSink } from "../private/asset-handler";
 import { Docker } from "../private/docker";
