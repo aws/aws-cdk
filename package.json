@@ -17,7 +17,7 @@
     "fs-extra": "^8.1.0",
     "jsii-diff": "^0.21.2",
     "jsii-pacmak": "^0.21.2",
-    "jsii-rosetta": "^0.21.2",
+    "jsii-rosetta": "^0.22.0",
     "lerna": "^3.20.2",
     "typescript": "~3.7.5"
   },
