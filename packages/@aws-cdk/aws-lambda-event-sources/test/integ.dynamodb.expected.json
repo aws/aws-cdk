@@ -112,6 +112,7 @@
           "Ref": "FC4345940"
         },
         "BatchSize": 5,
+        "Enabled": false,
         "StartingPosition": "TRIM_HORIZON"
       }
     },
@@ -138,8 +139,8 @@
           "StreamViewType": "NEW_IMAGE"
         }
       },
-      "DeletionPolicy": "Delete",
-      "UpdateReplacePolicy": "Delete"
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     }
   }
 }

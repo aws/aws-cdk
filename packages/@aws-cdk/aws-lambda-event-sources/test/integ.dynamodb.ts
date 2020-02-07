@@ -20,7 +20,8 @@ class DynamoEventSourceTest extends cdk.Stack {
 
     fn.addEventSource(new DynamoEventSource(queue, {
       batchSize: 5,
-      startingPosition: lambda.StartingPosition.TRIM_HORIZON
+      startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+      enabled: false
     }));
   }
 }

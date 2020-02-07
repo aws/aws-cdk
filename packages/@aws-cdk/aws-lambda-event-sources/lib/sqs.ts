@@ -12,6 +12,13 @@ export interface SqsEventSourceProps {
    * @default 10
    */
   readonly batchSize?: number;
+
+  /**
+   * Disables the event source mapping to pause polling and invocation.
+   *
+   * @default true
+   */
+  readonly enabled?: boolean;
 }
 
 /**
@@ -30,6 +37,7 @@ export class SqsEventSource implements lambda.IEventSource {
     const eventSourceMapping = target.addEventSourceMapping(`SqsEventSource:${this.queue.node.uniqueId}`, {
       batchSize: this.props.batchSize,
       eventSourceArn: this.queue.queueArn,
+      enabled: this.props.enabled
     });
     this._eventSourceMappingId = eventSourceMapping.eventSourceMappingId;
 

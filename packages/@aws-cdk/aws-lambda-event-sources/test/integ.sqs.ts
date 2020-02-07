@@ -11,7 +11,8 @@ class SqsEventSourceTest extends cdk.Stack {
     const queue = new sqs.Queue(this, 'Q');
 
     fn.addEventSource(new SqsEventSource(queue, {
-      batchSize: 5
+      batchSize: 5,
+      enabled: false
     }));
   }
 }

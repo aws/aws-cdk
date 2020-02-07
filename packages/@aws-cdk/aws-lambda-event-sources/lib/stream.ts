@@ -33,6 +33,13 @@ export interface StreamEventSourceProps {
    * @default Duration.seconds(0)
    */
   readonly maxBatchingWindow?: Duration;
+
+  /**
+   * Disables the event source mapping to pause polling and invocation.
+   *
+   * @default true
+   */
+  readonly enabled?: boolean;
 }
 
 /**
@@ -50,6 +57,7 @@ export abstract class StreamEventSource implements lambda.IEventSource {
       batchSize: this.props.batchSize || 100,
       startingPosition: this.props.startingPosition,
       maxBatchingWindow: this.props.maxBatchingWindow,
+      enabled: this.props.enabled
     };
   }
 }

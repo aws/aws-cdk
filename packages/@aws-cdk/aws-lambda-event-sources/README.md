@@ -53,6 +53,7 @@ behavior:
 * __receiveMessageWaitTime__: Will determine [long
   poll](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-long-polling.html)
   duration. The default value is 20 seconds.
+* __enabled__: Disables or enables the event source mapping to pause/start polling and invocation.
 
 ```ts
 import sqs = require('@aws-cdk/aws-sqs');
@@ -137,6 +138,7 @@ and add it to your Lambda function. The following parameters will impact Amazon 
 
 * __batchSize__: Determines how many records are buffered before invoking your lambda function - could impact your function's memory usage (if too high) and ability to keep up with incoming data velocity (if too low).
 * __startingPosition__: Will determine where to being consumption, either at the most recent ('LATEST') record or the oldest record ('TRIM_HORIZON'). 'TRIM_HORIZON' will ensure you process all available data, while 'LATEST' will ignore all records that arrived prior to attaching the event source.
+* __enabled__: Disables or enables the event source mapping to pause/start polling and invocation.
 
 ```ts
 import dynamodb = require('@aws-cdk/aws-dynamodb');
@@ -167,6 +169,7 @@ behavior:
 
 * __batchSize__: Determines how many records are buffered before invoking your lambda function - could impact your function's memory usage (if too high) and ability to keep up with incoming data velocity (if too low).
 * __startingPosition__: Will determine where to being consumption, either at the most recent ('LATEST') record or the oldest record ('TRIM_HORIZON'). 'TRIM_HORIZON' will ensure you process all available data, while 'LATEST' will ignore all records that arrived prior to attaching the event source.
+* __enabled__: Disables or enables the event source mapping to pause/start polling and invocation.
 
 ```ts
 import lambda = require('@aws-cdk/aws-lambda');

@@ -183,4 +183,34 @@ export = {
     test.throws(() => eventSource.eventSourceMappingId, /KinesisEventSource is not yet bound to an event source mapping/);
     test.done();
   },
+
+  'initialize event source disabled'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const stream = new kinesis.Stream(stack, 'S');
+
+    // WHEN
+    fn.addEventSource(new sources.KinesisEventSource(stream, {
+      startingPosition: lambda.StartingPosition.LATEST,
+      enabled: false
+    }));
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
+      "EventSourceArn": {
+        "Fn::GetAtt": [
+          "S509448A1",
+          "Arn"
+        ]
+      },
+      "FunctionName":  {
+        "Ref": "Fn9270CBC0"
+      },
+      "Enabled": false,
+      "StartingPosition": "LATEST"
+    }));
+
+    test.done();
+  },
 };

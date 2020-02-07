@@ -94,6 +94,7 @@
           "Ref": "FC4345940"
         },
         "BatchSize": 100,
+        "Enabled": false,
         "StartingPosition": "TRIM_HORIZON"
       }
     },

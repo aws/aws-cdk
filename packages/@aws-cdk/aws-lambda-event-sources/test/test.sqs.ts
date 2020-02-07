@@ -138,4 +138,30 @@ export = {
     test.throws(() => eventSource.eventSourceMappingId, /SqsEventSource is not yet bound to an event source mapping/);
     test.done();
   },
+
+  'initialize event source disabled'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const q = new sqs.Queue(stack, 'Q');
+
+    // WHEN
+    fn.addEventSource(new sources.SqsEventSource(q, {enabled: false}));
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
+      "EventSourceArn": {
+        "Fn::GetAtt": [
+          "Q63C6E3AB",
+          "Arn"
+        ]
+      },
+      "FunctionName": {
+        "Ref": "Fn9270CBC0"
+      },
+      "Enabled": false
+    }));
+
+    test.done();
+  }
 };
