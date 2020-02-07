@@ -12,6 +12,14 @@ removed:@aws-cdk/aws-apigateway.HttpIntegration.props
 removed:@aws-cdk/aws-apigateway.Integration.props
 removed:@aws-cdk/aws-apigateway.LambdaIntegration.props
 removed:@aws-cdk/aws-apigateway.MockIntegration.props
+removed:@aws-cdk/aws-ecs-patterns.ScheduledEc2TaskDefinitionOptions.schedule
+removed:@aws-cdk/aws-ecs-patterns.ScheduledEc2TaskDefinitionOptions.cluster
+removed:@aws-cdk/aws-ecs-patterns.ScheduledEc2TaskDefinitionOptions.desiredTaskCount
+removed:@aws-cdk/aws-ecs-patterns.ScheduledEc2TaskDefinitionOptions.vpc
+removed:@aws-cdk/aws-ecs-patterns.ScheduledFargateTaskDefinitionOptions.schedule
+removed:@aws-cdk/aws-ecs-patterns.ScheduledFargateTaskDefinitionOptions.cluster
+removed:@aws-cdk/aws-ecs-patterns.ScheduledFargateTaskDefinitionOptions.desiredTaskCount
+removed:@aws-cdk/aws-ecs-patterns.ScheduledFargateTaskDefinitionOptions.vpc
 incompatible-argument:@aws-cdk/aws-lambda.Function.<initializer>
 incompatible-argument:@aws-cdk/aws-lambda.SingletonFunction.<initializer>
 incompatible-argument:@aws-cdk/aws-lambda.Function.addEnvironment
