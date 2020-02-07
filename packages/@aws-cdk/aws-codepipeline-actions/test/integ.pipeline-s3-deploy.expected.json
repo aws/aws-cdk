@@ -119,6 +119,7 @@
     "PipelineArtifactsBucket22248F97": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
+        "PublicAccessBlockConfiguration" : {"BlockPublicAcls":true,"BlockPublicPolicy":true,"IgnorePublicAcls":true,"RestrictPublicBuckets":true},
         "BucketEncryption": {
           "ServerSideEncryptionConfiguration": [
             {
@@ -310,7 +311,7 @@
                     "Ref": "DeployBucket67E2C076"
                   },
                   "Extract": "true",
-                  "CannedACL": "PublicRead",
+                  "CannedACL": "public-read",
                   "CacheControl": "public, max-age: 43200"
                 },
                 "InputArtifacts": [
