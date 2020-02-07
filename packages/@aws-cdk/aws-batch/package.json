@@ -79,18 +79,18 @@
     "moduleFileExtensions": [
       "js"
     ],
-    "collectCoverageFrom": [
-      "lib/**/*.{js,ts}",
-      "!lib/**/*.generated.{js,ts}"
-    ],
-    "coverageReporters": [ "lcov", "html", "text-summary" ],
-    "collectCoverage": true,
     "coverageThreshold": {
       "global": {
         "branches": 60,
         "statements": 80
       }
-    }
+    },
+    "collectCoverage": true,
+    "coverageReporters": [
+      "lcov",
+      "html",
+      "text-summary"
+    ]
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
