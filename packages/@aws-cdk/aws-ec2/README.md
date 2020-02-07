@@ -98,9 +98,9 @@ property, as follows:
 [using NAT instances](test/integ.nat-instances.lit.ts)
 
 The construct will automatically search for the most recent NAT gateway AMI.
-If you prefer to use a custom AMI, pass a `GenericLinuxImage` instance
-for the instance's `machineImage` parameter and configure the right AMI ID
-for the regions you want to deploy to.
+If you prefer to use a custom AMI, use `machineImage:
+MachineImage.genericLinux({ ... })` and configure the right AMI ID for the
+regions you want to deploy to.
 
 ### Advanced Subnet Configuration
 
@@ -355,7 +355,7 @@ examples of things you might want to use:
 
 [example of creating images](test/example.images.lit.ts)
 
-> NOTE: The AMIs selected by `AmazonLinuxImage` or `LookupImage` will be cached in
+> NOTE: The AMIs selected by `MachineImage.lookup()` will be cached in
 > `cdk.context.json`, so that your AutoScalingGroup instances aren't replaced while
 > you are making unrelated changes to your CDK app.
 >

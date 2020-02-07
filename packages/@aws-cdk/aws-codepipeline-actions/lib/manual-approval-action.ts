@@ -76,13 +76,15 @@ export class ManualApprovalAction extends Action {
     }
 
     return {
-      configuration: this._notificationTopic
-        ? {
-          NotificationArn: this._notificationTopic.topicArn,
-          CustomData: this.props.additionalInformation,
-          ExternalEntityLink: this.props.externalEntityLink,
-        }
-        : undefined,
+      configuration: undefinedIfAllValuesAreEmpty({
+        NotificationArn: this._notificationTopic?.topicArn,
+        CustomData: this.props.additionalInformation,
+        ExternalEntityLink: this.props.externalEntityLink,
+      }),
     };
   }
+}
+
+function undefinedIfAllValuesAreEmpty(object: object): object | undefined {
+  return Object.values(object).some(v => v !== undefined) ? object : undefined;
 }
