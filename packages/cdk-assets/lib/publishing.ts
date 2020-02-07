@@ -1,4 +1,4 @@
-import { AssetManifest, ManifestEntry } from './asset-manifest';
+import { AssetManifest, IManifestEntry } from './asset-manifest';
 import { IAws } from "./aws-operations";
 import { makeAssetHandler } from "./handlers";
 
@@ -11,7 +11,7 @@ export interface IPublishProgressListener {
 
 export interface IPublishProgress {
   readonly message: string;
-  readonly currentAsset?: ManifestEntry;
+  readonly currentAsset?: IManifestEntry;
   readonly percentComplete: number;
 
   /**
@@ -48,9 +48,9 @@ export interface AssetPublishingOptions {
 
 export class AssetPublishing implements IPublishProgress {
   public message: string = 'Starting';
-  public currentAsset?: ManifestEntry;
-  public readonly failedAssets = new Array<ManifestEntry>();
-  private readonly assets: ManifestEntry[];
+  public currentAsset?: IManifestEntry;
+  public readonly failedAssets = new Array<IManifestEntry>();
+  private readonly assets: IManifestEntry[];
   private readonly errors = new Array<Error>();
 
   private readonly totalOperations: number;

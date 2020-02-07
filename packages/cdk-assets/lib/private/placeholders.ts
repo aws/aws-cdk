@@ -4,7 +4,7 @@ import { IAws } from "../aws-operations";
 /**
  * Replace the {ACCOUNT} and {REGION} placeholders in all strings found in a complex object.
  */
-export async function replaceAwsPlaceholders<A extends { region: string }>(object: A, aws: IAws): Promise<A> {
+export async function replaceAwsPlaceholders<A extends { region?: string }>(object: A, aws: IAws): Promise<A> {
   let region: string | undefined;
   let account: string | undefined;
 

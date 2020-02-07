@@ -47,17 +47,19 @@
     "nohoist": [
       "**/jszip",
       "**/jszip/**",
+      "@aws-cdk/asset-manifest-schema/semver",
+      "@aws-cdk/asset-manifest-schema/semver/**",
       "@aws-cdk/assets/minimatch",
       "@aws-cdk/assets/minimatch/**",
       "@aws-cdk/aws-codepipeline-actions/case",
       "@aws-cdk/aws-codepipeline-actions/case/**",
       "@aws-cdk/aws-ecr-assets/minimatch",
       "@aws-cdk/aws-ecr-assets/minimatch/**",
+      "@aws-cdk/aws-lambda-nodejs/parcel-bundler",
+      "@aws-cdk/aws-lambda-nodejs/parcel-bundler/**",
       "@aws-cdk/cx-api/semver",
       "@aws-cdk/cx-api/semver/**",
-      "@aws-cdk/cx-api/semver/**",
-      "@aws-cdk/aws-lambda-nodejs/parcel-bundler",
-      "@aws-cdk/aws-lambda-nodejs/parcel-bundler/**"
+      "@aws-cdk/cx-api/semver/**"
     ]
   }
 }

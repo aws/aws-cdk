@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { DockerImageManifestEntry } from '../asset-manifest/docker-entry';
+import { DockerImageManifestEntry } from '../asset-manifest';
 import { IAws } from "../aws-operations";
 import { IAssetHandler, MessageSink } from "../private/asset-handler";
 import { Docker } from "../private/docker";

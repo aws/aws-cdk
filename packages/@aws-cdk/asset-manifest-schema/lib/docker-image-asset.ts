@@ -5,12 +5,12 @@ export interface DockerImageAsset {
   /**
    * Source description for file assets
    */
-  source: DockerImageSource;
+  readonly source: DockerImageSource;
 
   /**
    * Destinations for this file asset
    */
-  destinations: Record<string, DockerImageDestination>;
+  readonly destinations: Record<string, DockerImageDestination>;
 }
 
 /**
@@ -51,7 +51,7 @@ export interface DockerImageDestination {
   /**
    * The region where this asset will need to be published
    */
-  readonly region: string;
+  readonly region?: string;
 
   /**
    * The role that needs to be assumed while publishing this asset

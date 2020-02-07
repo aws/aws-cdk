@@ -1,4 +1,4 @@
-import { AssetManifestSchema, ManifestFile } from '@aws-cdk/asset-manifest-schema';
+import { AssetManifestSchema, DockerImageDestination, DockerImageSource, FileDestination, FileSource, ManifestFile } from '@aws-cdk/asset-manifest-schema';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -95,12 +95,9 @@ export class AssetManifest {
    * Describe the asset manifest as a list of strings
    */
   public list() {
-    const files = describeAssets('file', this.manifest.files || {});
-    const dockerImages = describeAssets('dockerImage', this.manifest.files || {});
-
     return [
-      ...files.length > 0 ? ['files', ...prefixTreeChars(files, '  ')] : [],
-      ...dockerImages.length > 0 ? ['docker images', ...prefixTreeChars(dockerImages, '  ')] : []
+      ...describeAssets('file', this.manifest.files || {}),
+      ...describeAssets('docker-image', this.manifest.dockerImages || {})
     ];
 
     function describeAssets(type: string, assets: Record<string, { source: any, destinations: Record<string, any> }>) {
@@ -118,23 +115,24 @@ export class AssetManifest {
   /**
    * List of assets, splat out to destinations
    */
-  public get entries(): ManifestEntry[] {
-    const ret = new Array<ManifestEntry>();
-    for (const assetType of ASSET_TYPES) {
-      for (const [assetId, asset] of Object.entries(this.manifest[assetType])) {
-        for (const [destId, destination] of Object.entries(asset.destinations)) {
-          const id = new DestinationIdentifier(assetId, destId);
+  public get entries(): IManifestEntry[] {
+    return [
+      ...makeEntries(this.manifest.files || {}, FileManifestEntry),
+      ...makeEntries(this.manifest.dockerImages || {}, DockerImageManifestEntry),
+    ];
 
-          ret.push({
-            id,
-            type: assetType,
-            source: asset.source,
-            destination,
-          });
+    function makeEntries<A, B, C>(
+      assets: Record<string, { source: A, destinations: Record<string, B> }>,
+      ctor: new (id: DestinationIdentifier, source: A, destination: B) => C): C[] {
+
+      const ret = new Array<C>();
+      for (const [assetId, asset] of Object.entries(assets)) {
+        for (const [destId, destination] of Object.entries(asset.destinations)) {
+          ret.push(new ctor(new DestinationIdentifier(assetId, destId), asset.source, destination));
         }
       }
+      return ret;
     }
-    return ret;
   }
 }
 
@@ -145,7 +143,7 @@ const ASSET_TYPES: AssetType[] = ['files', 'dockerImages'];
 /**
  * A single asset from an asset manifest'
  */
-export interface ManifestEntry {
+export interface IManifestEntry {
   /**
    * The identifier of the asset
    */
@@ -157,18 +155,56 @@ export interface ManifestEntry {
   readonly type: string;
 
   /**
-   * Properties for how to build the asset.
-   *
-   * How these properties should be interpreted depends on the asset type.
+   * Type-dependent source data
    */
-  readonly source: any;
+  readonly genericSource: unknown;
 
   /**
-   * Properties for where to publish the asset.
-   *
-   * How these properties should be interpreted depends on the asset type.
+   * Type-dependent destination data
    */
-  readonly destination: any;
+  readonly genericDestination: unknown;
+}
+
+/**
+ * A manifest entry for a file asset
+ */
+export class FileManifestEntry implements IManifestEntry {
+  public readonly genericSource: unknown;
+  public readonly genericDestination: unknown;
+  public readonly type = 'file';
+
+  constructor(
+    /** Identifier for this asset */
+    public readonly id: DestinationIdentifier,
+    /** Source of the file asset */
+    public readonly source: FileSource,
+    /** Destination for the file asset */
+    public readonly destination: FileDestination,
+  ) {
+    this.genericSource = source;
+    this.genericDestination = destination;
+  }
+}
+
+/**
+ * A manifest entry for a docker image asset
+ */
+export class DockerImageManifestEntry implements IManifestEntry {
+  public readonly genericSource: unknown;
+  public readonly genericDestination: unknown;
+  public readonly type = 'docker-image';
+
+  constructor(
+    /** Identifier for this asset */
+    public readonly id: DestinationIdentifier,
+    /** Source of the file asset */
+    public readonly source: DockerImageSource,
+    /** Destination for the file asset */
+    public readonly destination: DockerImageDestination,
+  ) {
+    this.genericSource = source;
+    this.genericDestination = destination;
+  }
 }
 
 /**

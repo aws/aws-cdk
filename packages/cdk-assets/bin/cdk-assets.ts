@@ -1,10 +1,9 @@
-import { AssetManifest, DestinationPattern } from '@aws-cdk/cx-api';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import * as winston from 'winston';
 import * as yargs from 'yargs';
-import { AssetPublishing, IPublishProgress, IPublishProgressListener } from '../lib';
+import { AssetManifest, AssetPublishing, DestinationPattern, IPublishProgress, IPublishProgressListener } from '../lib';
 import { ClientOptions, IAws } from '../lib/aws-operations';
 
 const VERSION = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'package.json'), { encoding: 'utf-8' })).version;

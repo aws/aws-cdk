@@ -67,10 +67,9 @@ An asset manifest looks like this:
 
 ```
 {
-  "version": "assets-1.0",
-  "assets": {
+  "version": "1.22.0",
+  "files": {
     "7aac5b80b050e7e4e168f84feffa5893": {
-      "type": "file",
       "source": {
         "path": "some_directory",
         "packaging": "zip"
@@ -84,8 +83,9 @@ An asset manifest looks like this:
         }
       }
     },
+  },
+  "dockerImages": {
     "b48783c58a86f7b8c68a4591c4f9be31": {
-      "type": "docker-image",
       "source": {
         "directory": "dockerdir",
       },

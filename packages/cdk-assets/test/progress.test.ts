@@ -1,16 +1,15 @@
-import { AssetManifest } from '@aws-cdk/cx-api';
+import { AssetManifestSchema } from '@aws-cdk/asset-manifest-schema';
 import * as mockfs from 'mock-fs';
-import { AssetPublishing, IPublishProgress, IPublishProgressListener } from '../lib';
+import { AssetManifest, AssetPublishing, IPublishProgress, IPublishProgressListener } from '../lib';
 import { mockAws, mockedApiFailure, mockPutObject } from './mock-aws';
 
 let aws: ReturnType<typeof mockAws>;
 beforeEach(() => {
   mockfs({
     '/simple/cdk.out/assets.json': JSON.stringify({
-      version: 'assets-1.0',
-      assets: {
+      version: AssetManifestSchema.currentVersion(),
+      files: {
         theAsset: {
-          type: 'file',
           source: {
             path: 'some_file'
           },

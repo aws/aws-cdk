@@ -11,7 +11,7 @@
         "package": "software.amazon.awscdk.assetmanifestschema",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "asset-manifest-schema"
+          "artifactId": "cdk-asset-manifest-schema"
         }
       },
       "dotnet": {

@@ -5,12 +5,12 @@ export interface FileAsset {
   /**
    * Source description for file assets
    */
-  source: FileSource;
+  readonly source: FileSource;
 
   /**
    * Destinations for this file asset
    */
-  destinations: Record<string, FileDestination>;
+  readonly destinations: Record<string, FileDestination>;
 }
 
 /**
@@ -52,7 +52,7 @@ export interface FileDestination {
   /**
    * The region where this asset will need to be published
    */
-  readonly region: string;
+  readonly region?: string;
 
   /**
    * The role that needs to be assumed while publishing this asset

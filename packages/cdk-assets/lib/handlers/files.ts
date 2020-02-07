@@ -1,7 +1,7 @@
 import { FileAssetPackaging } from '@aws-cdk/asset-manifest-schema';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { FileManifestEntry } from '../asset-manifest/file-entry';
+import { FileManifestEntry } from '../asset-manifest';
 import { IAws } from "../aws-operations";
 import { zipDirectory } from '../private/archive';
 import { IAssetHandler, MessageSink } from "../private/asset-handler";

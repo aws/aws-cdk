@@ -1,10 +1,12 @@
-import * as fs from 'fs';
 import * as path from 'path';
 import * as semver from 'semver';
 import { DockerImageAsset } from './docker-image-asset';
 import { FileAsset } from './file-asset';
 import { ManifestFile } from "./file-schema";
 import { assertIsObject, expectKey, isMapOf, isObjectAnd, isString } from './private/schema-helpers';
+
+// tslint:disable-next-line:no-var-requires
+const PACKAGE_VERSION = require(path.join(__dirname, '..', 'package.json')).version;
 
 /**
  * Static class with loader routines
@@ -44,7 +46,7 @@ export class AssetManifestSchema {
    * Return the version of the schema module
    */
   public static currentVersion(): string {
-    return JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'package.json'), { encoding: 'utf-8' })).version;
+    return PACKAGE_VERSION;
   }
 }
 

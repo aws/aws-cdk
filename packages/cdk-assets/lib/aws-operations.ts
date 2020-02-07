@@ -12,7 +12,7 @@ export interface IAws {
 }
 
 export interface ClientOptions {
-  region: string;
+  region?: string;
   assumeRoleArn?: string;
   assumeRoleExternalId?: string;
 }
