@@ -36,7 +36,7 @@
   "devDependencies": {
     "@types/fs-extra": "^8.0.1",
     "@types/semver": "^7.1.0",
-    "@types/yargs": "^15.0.2"
+    "@types/yargs": "^15.0.3"
   },
   "dependencies": {
     "case": "^1.6.2",
