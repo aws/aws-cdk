@@ -724,7 +724,9 @@ export interface VpcProps {
   /**
    * Where to propagate VPN routes.
    *
-   * @default - On the route tables associated with private subnets.
+   * @default - On the route tables associated with private subnets. If no
+   * private subnets exists, isolated subnets are used. If no isolated subnets
+   * exists, public subnets are used.
    */
   readonly vpnRoutePropagation?: SubnetSelection[]
 
@@ -1084,7 +1086,7 @@ export class Vpc extends VpcBase {
       this.vpnGatewayId = vpnGateway.ref;
 
       // Propagate routes on route tables associated with the right subnets
-      const vpnRoutePropagation = props.vpnRoutePropagation || [{ subnetType: SubnetType.PRIVATE }];
+      const vpnRoutePropagation = props.vpnRoutePropagation ?? [{}];
       const routeTableIds = allRouteTableIds(...vpnRoutePropagation.map(s => this.selectSubnets(s)));
       const routePropagation = new CfnVPNGatewayRoutePropagation(this, 'RoutePropagation', {
         routeTableIds,
