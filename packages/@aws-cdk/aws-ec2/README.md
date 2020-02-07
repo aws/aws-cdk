@@ -401,8 +401,8 @@ vpc.addVpnConnection('Dynamic', {
 ```
 
 By default, routes will be propagated on the route tables associated with the private subnets. If no
-private subnets exists, isolated subnets are used. Use the `Vpc` prop `vpnRoutePropagation` to customize
-this behavior.
+private subnets exists, isolated subnets are used. If no isolated subnets exists, public subnets are
+used. Use the `Vpc` property `vpnRoutePropagation` to customize this behavior.
 
 VPN connections expose [metrics (cloudwatch.Metric)](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-cloudwatch/README.md) across all tunnels in the account/region and per connection:
 
