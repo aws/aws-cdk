@@ -16,7 +16,7 @@ All notable changes to this project will be documented in this file. See [standa
 * **ecs:** Firelens log driver support ([#5457](https://github.com/aws/aws-cdk/issues/5457)) ([4acf0f7](https://github.com/aws/aws-cdk/commit/4acf0f7441eafdc7dc93d6d44a0f4bfb2e8fb47e))
 * **lambda:** avail function log group in the CDK ([#5878](https://github.com/aws/aws-cdk/issues/5878)) ([fd54a17](https://github.com/aws/aws-cdk/commit/fd54a17a82605ac1301e5776aa68f03bbfb63910)), closes [#3838](https://github.com/aws/aws-cdk/issues/3838)
 * **lambda:** higher level construct for Node.js ([#5532](https://github.com/aws/aws-cdk/issues/5532)) ([02d0e2a](https://github.com/aws/aws-cdk/commit/02d0e2aa0075eec5e42b6b6a10ddd7a0e53b97c6))
-* bump JSII to version 0.22.0 ([#6154](https://github.com/aws/aws-cdk/pull/6154)) ([01ed4d5](https://github.com/aws/aws-cdk/commit/01ed4d5938612ac634d83d1f3562b98213cd1239))
+
 
 
 ### Bug Fixes
