@@ -1,7 +1,17 @@
 import * as colors from 'colors/safe';
+import { Writable } from 'stream';
 import * as util from 'util';
 
-// tslint:disable:no-console the whole point of those methods is precisely to output to the console...
+type StyleFn = (str: string) => string;
+const { stdout, stderr } = process;
+
+const logger = (stream: Writable, styles?: StyleFn[]) => (fmt: string, ...args: any[]) => {
+  let str = util.format(fmt, ...args);
+  if (styles && styles.length) {
+    str = styles.reduce((a, style) => style(a), str);
+  }
+  stream.write(str + '\n');
+};
 
 export let isVerbose = false;
 
@@ -9,35 +19,15 @@ export function setVerbose(enabled = true) {
   isVerbose = enabled;
 }
 
-export function error(fmt: string, ...args: any[]) {
-  console.error(colors.red(util.format(fmt, ...args)));
-}
+const _debug = logger(stderr, [colors.gray]);
 
-export function debug(fmt: string, ...args: any[]) {
-  if (isVerbose) {
-    console.error(colors.gray(util.format(fmt, ...args)));
-  }
-}
-
-export function highlight(fmt: string, ...args: any[]) {
-  console.error(colors.bold(colors.white(util.format(fmt, ...args))));
-}
-
-export function success(fmt: string, ...args: any[]) {
-  console.error(colors.green(util.format(fmt, ...args)));
-}
-
-export function warning(fmt: string, ...args: any[]) {
-  console.error(colors.yellow(util.format(fmt, ...args)));
-}
-
-export function print(fmt: string, ...args: any[]) {
-  console.error(colors.white(util.format(fmt, ...args)));
-}
-
-export function data(fmt: string, ...args: any[]) {
-  console.log(util.format(fmt, ...args));
-}
+export const debug = (fmt: string, ...args: any[]) => isVerbose && _debug(fmt, ...args);
+export const error = logger(stderr, [colors.red]);
+export const warning = logger(stderr, [colors.yellow]);
+export const success = logger(stderr, [colors.green]);
+export const highlight = logger(stderr, [colors.bold]);
+export const print = logger(stderr);
+export const data = logger(stdout);
 
 export type LoggerFunction = (fmt: string, ...args: any[]) => void;
 
