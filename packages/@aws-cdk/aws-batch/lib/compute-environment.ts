@@ -1,6 +1,6 @@
-import ec2 = require('@aws-cdk/aws-ec2');
-import iam = require('@aws-cdk/aws-iam');
-import { Construct, IResource, Resource, Stack, Tag, Aws } from '@aws-cdk/core';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as iam from '@aws-cdk/aws-iam';
+import { Aws, Construct, IResource, Resource, Stack, Tag } from '@aws-cdk/core';
 import { CfnComputeEnvironment } from './batch.generated';
 
 /**

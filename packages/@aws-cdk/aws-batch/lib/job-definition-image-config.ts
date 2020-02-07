@@ -4,22 +4,14 @@ import * as cdk from '@aws-cdk/core';
 import { JobDefinitionContainer } from './job-definition-container';
 
 /**
- * An interface representing a job definition image config
- * for binding a container image to a batch job definition.
- */
-export interface JobDefinitionImageName {
-  /**
-   * Specifies the name of the container image.
-   */
-  readonly imageName: string;
-}
-
-/**
  * TaskDefinitionRole
  *
  * Defines the required properties of a Batch Job Definition.
  */
 export interface TaskDefinitionProps {
+  /**
+   * Defines the IAM role used when executing this task definition
+   */
   readonly executionRole: iam.IRole;
 }
 
@@ -30,14 +22,18 @@ export interface TaskDefinitionProps {
  * those of an {@link ecs.ContainerDefinition}. This class is a wrapper on that structure.
  */
 export class TaskDefinition {
+  /**
+   * The IAM role used during execution of the task definition. This IAM role should
+   * contain the relevant access required to interact with resources your application needs to perform.
+   */
   public readonly executionRole: iam.IRole;
   constructor(props: TaskDefinitionProps) {
     this.executionRole = props.executionRole;
   }
 
-  // tslint:disable-next-line: no-empty
-  public _linkContainer(_container: ecs.ContainerDefinition) {}
-
+  /**
+   * Retrieves the execution role for this task definition
+   */
   public obtainExecutionRole(): iam.IRole {
     return this.executionRole;
   }
@@ -46,7 +42,10 @@ export class TaskDefinition {
 /**
  * The configuration for creating a batch container image.
  */
-export class JobDefinitionImageConfig implements JobDefinitionImageName {
+export class JobDefinitionImageConfig {
+  /**
+   * Specifies the name of the container image
+   */
   public readonly imageName: string;
 
   constructor(scope: cdk.Construct, container: JobDefinitionContainer) {

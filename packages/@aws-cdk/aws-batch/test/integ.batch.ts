@@ -1,8 +1,7 @@
-import ec2 = require('@aws-cdk/aws-ec2');
-import ecr = require('@aws-cdk/aws-ecr');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as ecr from '@aws-cdk/aws-ecr';
 import * as ecs from '@aws-cdk/aws-ecs';
-import cdk = require('@aws-cdk/core');
-
+import * as cdk from '@aws-cdk/core';
 import * as batch from '../lib/';
 
 export const app = new cdk.App();

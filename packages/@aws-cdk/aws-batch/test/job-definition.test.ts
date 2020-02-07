@@ -4,9 +4,8 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecr from '@aws-cdk/aws-ecr';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
-import { Duration } from '@aws-cdk/core';
-import cdk = require('@aws-cdk/core');
-import batch = require('../lib');
+import * as cdk from '@aws-cdk/core';
+import * as batch from '../lib';
 
 describe('Batch Job Definition', () => {
   let stack: cdk.Stack;
@@ -54,7 +53,7 @@ describe('Batch Job Definition', () => {
         foo: 'bar',
       },
       retryAttempts: 2,
-      timeout: Duration.seconds(30),
+      timeout: cdk.Duration.seconds(30),
     };
   });
 
