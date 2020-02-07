@@ -1132,6 +1132,123 @@ export = {
     test.done();
   },
 
+  'metrics': {
+    'Can use metricConsumedReadCapacityUnits on a Dynamodb Table'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const table = new Table(stack, 'Table', {
+        partitionKey: { name: 'id', type: AttributeType.STRING }
+      });
+
+      // THEN
+      test.deepEqual(stack.resolve(table.metricConsumedReadCapacityUnits()), {
+        period: { amount: 5, unit: { label: 'minutes', inSeconds: 60 } },
+        dimensions: { TableName: { Ref: 'TableCD117FA1' } },
+        namespace: 'AWS/DynamoDB',
+        metricName: 'ConsumedReadCapacityUnits',
+        statistic: 'Sum',
+      });
+
+      test.done();
+    },
+
+    'Can use metricConsumedWriteCapacityUnits on a Dynamodb Table'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const table = new Table(stack, 'Table', {
+        partitionKey: { name: 'id', type: AttributeType.STRING }
+      });
+
+      // THEN
+      test.deepEqual(stack.resolve(table.metricConsumedWriteCapacityUnits()), {
+        period: { amount: 5, unit: { label: 'minutes', inSeconds: 60 } },
+        dimensions: { TableName: { Ref: 'TableCD117FA1' } },
+        namespace: 'AWS/DynamoDB',
+        metricName: 'ConsumedWriteCapacityUnits',
+        statistic: 'Sum',
+      });
+
+      test.done();
+    },
+
+    'Can use metricSystemErrors on a Dynamodb Table'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const table = new Table(stack, 'Table', {
+        partitionKey: { name: 'id', type: AttributeType.STRING }
+      });
+
+      // THEN
+      test.deepEqual(stack.resolve(table.metricSystemErrors()), {
+        period: { amount: 5, unit: { label: 'minutes', inSeconds: 60 } },
+        dimensions: { TableName: { Ref: 'TableCD117FA1' } },
+        namespace: 'AWS/DynamoDB',
+        metricName: 'SystemErrors',
+        statistic: 'Sum',
+      });
+
+      test.done();
+    },
+
+    'Can use metricUserErrors on a Dynamodb Table'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const table = new Table(stack, 'Table', {
+        partitionKey: { name: 'id', type: AttributeType.STRING }
+      });
+
+      // THEN
+      test.deepEqual(stack.resolve(table.metricUserErrors()), {
+        period: { amount: 5, unit: { label: 'minutes', inSeconds: 60 } },
+        dimensions: { TableName: { Ref: 'TableCD117FA1' } },
+        namespace: 'AWS/DynamoDB',
+        metricName: 'UserErrors',
+        statistic: 'Sum',
+      });
+
+      test.done();
+    },
+
+    'Can use metricConditionalCheckFailedRequests on a Dynamodb Table'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const table = new Table(stack, 'Table', {
+        partitionKey: { name: 'id', type: AttributeType.STRING }
+      });
+
+      // THEN
+      test.deepEqual(stack.resolve(table.metricConditionalCheckFailedRequests()), {
+        period: { amount: 5, unit: { label: 'minutes', inSeconds: 60 } },
+        dimensions: { TableName: { Ref: 'TableCD117FA1' } },
+        namespace: 'AWS/DynamoDB',
+        metricName: 'ConditionalCheckFailedRequests',
+        statistic: 'Sum',
+      });
+
+      test.done();
+    },
+
+    'Can use metricSuccessfulRequestLatency on a Dynamodb Table'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const table = new Table(stack, 'Table', {
+        partitionKey: { name: 'id', type: AttributeType.STRING }
+      });
+
+      // THEN
+      test.deepEqual(stack.resolve(table.metricSuccessfulRequestLatency()), {
+        period: { amount: 5, unit: { label: 'minutes', inSeconds: 60 } },
+        dimensions: { TableName: { Ref: 'TableCD117FA1' } },
+        namespace: 'AWS/DynamoDB',
+        metricName: 'SuccessfulRequestLatency',
+        statistic: 'Average',
+      });
+
+      test.done();
+    },
+
+  },
+
   'grants': {
 
     '"grant" allows adding arbitrary actions associated with this table resource'(test: Test) {

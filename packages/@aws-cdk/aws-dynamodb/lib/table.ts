@@ -1,4 +1,5 @@
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import { Aws, Construct, IResource, Lazy, RemovalPolicy, Resource, Stack } from '@aws-cdk/core';
 import { CfnTable } from './dynamodb.generated';
@@ -236,6 +237,53 @@ export interface ITable extends IResource {
    * @param grantee The principal to grant access to
    */
   grantReadWriteData(grantee: iam.IGrantable): iam.Grant;
+
+  /**
+   * Metric for the number of Errors executing all Lambdas
+   */
+  metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Metric for the consumed read capacity units
+   *
+   * @param props properties of a metric
+   */
+  metricConsumedReadCapacityUnits(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Metric for the consumed write capacity units
+   *
+   * @param props properties of a metric
+   */
+  metricConsumedWriteCapacityUnits(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Metric for the system errors
+   *
+   * @param props properties of a metric
+   */
+  metricSystemErrors(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Metric for the user errors
+   *
+   * @param props properties of a metric
+   */
+  metricUserErrors(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Metric for the conditional check failed requests
+   *
+   * @param props properties of a metric
+   */
+  metricConditionalCheckFailedRequests(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Metric for the successful request latency
+   *
+   * @param props properties of a metric
+   */
+  metricSuccessfulRequestLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 }
 
 /**
@@ -337,6 +385,74 @@ abstract class TableBase extends Resource implements ITable {
    */
   public grantFullAccess(grantee: iam.IGrantable) {
     return this.grant(grantee, 'dynamodb:*');
+  }
+
+  /**
+   * Return the given named metric for this Table
+   */
+  public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      namespace: 'AWS/DynamoDB',
+      metricName,
+      dimensions: {
+        TableName: this.tableName,
+      },
+      ...props
+    });
+  }
+
+  /**
+   * Metric for the consumed read capacity units this table
+   *
+   * @default sum over a minute
+   */
+  public metricConsumedReadCapacityUnits(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.metric('ConsumedReadCapacityUnits', { statistic: 'sum', ...props});
+  }
+
+  /**
+   * Metric for the consumed write capacity units this table
+   *
+   * @default sum over a minute
+   */
+  public metricConsumedWriteCapacityUnits(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.metric('ConsumedWriteCapacityUnits', { statistic: 'sum', ...props});
+  }
+
+  /**
+   * Metric for the system errors this table
+   *
+   * @default sum over a minute
+   */
+  public metricSystemErrors(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.metric('SystemErrors', { statistic: 'sum', ...props});
+  }
+
+  /**
+   * Metric for the user errors this table
+   *
+   * @default sum over a minute
+   */
+  public metricUserErrors(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.metric('UserErrors', { statistic: 'sum', ...props});
+  }
+
+  /**
+   * Metric for the conditional check failed requests this table
+   *
+   * @default sum over a minute
+   */
+  public metricConditionalCheckFailedRequests(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.metric('ConditionalCheckFailedRequests', { statistic: 'sum', ...props});
+  }
+
+  /**
+   * Metric for the successful request latency this table
+   *
+   * @default avg over a minute
+   */
+  public metricSuccessfulRequestLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.metric('SuccessfulRequestLatency', { statistic: 'avg', ...props});
   }
 
   protected abstract get hasIndex(): boolean;

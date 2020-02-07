@@ -72,12 +72,14 @@
   },
   "dependencies": {
     "@aws-cdk/aws-applicationautoscaling": "1.23.0",
+    "@aws-cdk/aws-cloudwatch": "1.23.0",
     "@aws-cdk/aws-iam": "1.23.0",
     "@aws-cdk/core": "1.23.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/aws-applicationautoscaling": "1.23.0",
+    "@aws-cdk/aws-cloudwatch": "1.23.0",
     "@aws-cdk/aws-iam": "1.23.0",
     "@aws-cdk/core": "1.23.0"
   },
