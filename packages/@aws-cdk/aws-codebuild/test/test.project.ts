@@ -103,6 +103,47 @@ export = {
       test.done();
     },
 
+    'can set a branch as the SourceVersion'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      new codebuild.Project(stack, 'Project', {
+        source: codebuild.Source.gitHub({
+          owner: 'testowner',
+          repo: 'testrepo',
+          branchOrRef: 'testbranch',
+        })
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::CodeBuild::Project', {
+        SourceVersion: 'testbranch',
+      }));
+
+      test.done();
+    },
+
+    'can set the SourceVersion for a gitHubEnterprise'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      new codebuild.Project(stack, 'Project', {
+        source: codebuild.Source.gitHubEnterprise({
+          httpsCloneUrl: 'https://mygithub-enterprise.com/myuser/myrepo',
+          branchOrRef: 'testbranch',
+        })
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::CodeBuild::Project', {
+        SourceVersion: 'testbranch',
+      }));
+
+      test.done();
+    },
+
     'can explicitly set reportBuildStatus to false'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
@@ -166,6 +207,27 @@ export = {
     },
   },
 
+  'project with bitbucket and SourceVersion'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new codebuild.Project(stack, 'Project', {
+      source: codebuild.Source.bitBucket({
+        owner: 'testowner',
+        repo: 'testrepo',
+        branchOrRef: 'testbranch',
+      })
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::CodeBuild::Project', {
+      SourceVersion: 'testbranch',
+    }));
+
+    test.done();
+  },
+
   'project with s3 cache bucket'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -197,6 +259,29 @@ export = {
           ]
         }
       },
+    }));
+
+    test.done();
+  },
+
+  's3 codebuild project with sourceVersion'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new codebuild.Project(stack, 'Project', {
+      source: codebuild.Source.s3({
+        bucket: new s3.Bucket(stack, 'Bucket'),
+        path: 'path',
+        version: 's3version'
+      }),
+      cache: codebuild.Cache.local(codebuild.LocalCacheMode.CUSTOM, codebuild.LocalCacheMode.DOCKER_LAYER,
+        codebuild.LocalCacheMode.SOURCE)
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::CodeBuild::Project', {
+      SourceVersion: 's3version',
     }));
 
     test.done();

@@ -56,7 +56,7 @@ granting permissions to other AWS accounts or organizations.
 
 [Example of Lambda Layer usage](test/integ.layer-version.lit.ts)
 
-## Event Rule Target
+### Event Rule Target
 
 You can use an AWS Lambda function as a target for an Amazon CloudWatch event
 rule:
@@ -144,6 +144,7 @@ const fn = new lambda.Function(this, 'MyFunction', {
     tracing: lambda.Tracing.ACTIVE
 });
 ```
+
 See [the AWS documentation](https://docs.aws.amazon.com/lambda/latest/dg/lambda-x-ray.html)
 to learn more about AWS Lambda's X-Ray support.
 
@@ -159,5 +160,43 @@ const fn = new lambda.Function(this, 'MyFunction', {
     reservedConcurrentExecutions: 100
 });
 ```
+
 See [the AWS documentation](https://docs.aws.amazon.com/lambda/latest/dg/concurrent-executions.html)
 managing concurrency.
+
+### Log Group
+
+Lambda functions automatically create a log group with the name `/aws/lambda/<function-name>` upon first execution with
+log data set to never expire.
+
+The `logRetention` property can be used to set a different expiration period.
+
+It is possible to obtain the function's log group as a `logs.ILogGroup` by calling the `logGroup` property of the
+`Function` construct.
+
+*Note* that, if either `logRetention` is set or `logGroup` property is called, a [CloudFormation custom
+resource](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cfn-customresource.html) is added
+to the stack that pre-creates the log group as part of the stack deployment, if it already doesn't exist, and sets the
+correct log retention period (never expire, by default).
+
+*Further note* that, if the log group already exists and the `logRetention` is not set, the custom resource will reset
+the log retention to never expire even if it was configured with a different value.
+
+### Singleton Function
+
+The `SingletonFunction` construct is a way to guarantee that a lambda function will be guaranteed to be part of the stack,
+once and only once, irrespective of how many times the construct is declared to be part of the stack. This is guaranteed
+as long as the `uuid` property and the optional `lambdaPurpose` property stay the same whenever they're declared into the
+stack.
+
+A typical use case of this function is when a higher level construct needs to declare a Lambda function as part of it but
+needs to guarantee that the function is declared once. However, a user of this higher level construct can declare it any
+number of times and with different properties. Using `SingletonFunction` here with a fixed `uuid` will guarantee this.
+
+For example, the `LogRetention` construct requires only one single lambda function for all different log groups whose
+retention it seeks to manage.
+
+### Language-specific APIs
+Language-specific higher level constructs are provided in separate modules:
+
+* Node.js: [`@aws-cdk/aws-lambda-nodejs`](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-lambda-nodejs)

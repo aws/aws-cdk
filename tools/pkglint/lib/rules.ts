@@ -935,39 +935,6 @@ export class Cfn2Ts extends ValidationRule {
   }
 }
 
-export class JestCoverageTarget extends ValidationRule {
-  public readonly name = 'jest-coverage-target';
-
-  public validate(pkg: PackageJson) {
-    if (pkg.json.jest) {
-      // We enforce the key exists, but the value is just a default
-      const defaults: { [key: string]: number } = {
-        branches: 80,
-        statements: 80
-      };
-
-      // Coverage collection must be enabled
-      expectJSON(this.name, pkg, 'jest.collectCoverage', true);
-      // The correct coverage reporters must be enabled
-      expectJSON(this.name, pkg, 'jest.coverageReporters', ['lcov', 'html', 'text-summary']);
-
-      for (const key of Object.keys(defaults)) {
-        const deepPath = ['coverageThreshold', 'global', key];
-        const setting = deepGet(pkg.json.jest, deepPath);
-        if (setting == null) {
-          pkg.report({
-            ruleName: this.name,
-            message: `When jest is used, jest.coverageThreshold.global.${key} must be set`,
-            fix: () => {
-              deepSet(pkg.json.jest, deepPath, defaults[key]);
-            },
-          });
-        }
-      }
-    }
-  }
-}
-
 /**
  * Packages inside JSII packages (typically used for embedding Lambda handles)
  * must only have dev dependencies and their node_modules must have been

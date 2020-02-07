@@ -670,6 +670,11 @@ export = {
             }
           },
           {
+            Action: "ec2:DescribeSubnets",
+            Effect: "Allow",
+            Resource: "*",
+          },
+          {
             Action: [
               "eks:CreateCluster",
               "eks:DescribeCluster",
@@ -756,6 +761,11 @@ export = {
                 "Arn"
               ]
             }
+          },
+          {
+            Action: "ec2:DescribeSubnets",
+            Effect: "Allow",
+            Resource: "*",
           },
           {
             Action: [

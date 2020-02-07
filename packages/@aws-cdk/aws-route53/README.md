@@ -88,7 +88,7 @@ allowed to issue certificates for a domain to Amazon only.
 If you know the ID and Name of a Hosted Zone, you can import it directly:
 
 ```ts
-const zone = HostedZone.import(this, 'MyZone', {
+const zone = HostedZone.fromHostedZoneAttributes(this, 'MyZone', {
   zoneName: 'example.com',
   hostedZoneId: 'ZOJJZC49E0EPZ',
 });

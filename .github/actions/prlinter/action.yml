@@ -1,0 +1,9 @@
+name: Pull Request Linter
+description: Execute validation rules on GitHub Pull Requests
+inputs:
+  check:
+    description: "Which check to execute. Choose one of: [MANDATORY_CHANGES]"
+    required: true    
+runs:
+  using: node12
+  main: index.js

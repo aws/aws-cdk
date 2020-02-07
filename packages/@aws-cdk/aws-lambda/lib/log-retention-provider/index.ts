@@ -79,7 +79,10 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
       StackId: event.StackId,
       RequestId: event.RequestId,
       LogicalResourceId: event.LogicalResourceId,
-      Data: {}
+      Data: {
+        // Add log group name as part of the response so that it's available via Fn::GetAtt
+        LogGroupName: event.ResourceProperties.LogGroupName,
+      },
     });
 
     console.log('Responding', responseBody);

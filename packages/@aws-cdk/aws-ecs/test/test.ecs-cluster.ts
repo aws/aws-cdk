@@ -1,4 +1,4 @@
-import { countResources, expect, haveResource } from '@aws-cdk/assert';
+import { countResources, expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
@@ -1311,6 +1311,48 @@ export = {
     }));
 
     // THEN
+    test.done();
+  },
+
+  "enable container insights"(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+
+    new ecs.Cluster(stack, 'EcsCluster', { containerInsights: true });
+
+    // THEN
+    expect(stack).to(haveResource("AWS::ECS::Cluster", {
+      ClusterSettings: [
+        {
+            Name: "containerInsights",
+            Value: "enabled"
+        }
+      ]
+    }, ResourcePart.Properties));
+
+    test.done();
+  },
+
+  "default container insights undefined"(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+
+    new ecs.Cluster(stack, 'EcsCluster');
+
+    // THEN
+    const assembly = app.synth();
+    const stackAssembly = assembly.getStackByName(stack.stackName);
+    const template = stackAssembly.template;
+
+    test.equal(
+      template.Resources.EcsCluster97242B84.Properties === undefined ||
+      template.Resources.EcsCluster97242B84.Properties.ClusterSettings === undefined,
+      true,
+      "ClusterSettings should not be defined"
+    );
+
     test.done();
   },
 };

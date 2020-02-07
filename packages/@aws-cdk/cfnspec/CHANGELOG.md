@@ -1,3 +1,32 @@
+# CloudFormation Resource Specification v10.4.0
+
+## New Resource Types
+
+* AWS::ACMPCA::Certificate
+* AWS::ACMPCA::CertificateAuthority
+* AWS::ACMPCA::CertificateAuthorityActivation
+
+## Attribute Changes
+
+* AWS::Athena::NamedQuery NamedQueryId (__added__)
+* AWS::Transfer::Server VpcEndpointId (__added__)
+
+## Property Changes
+
+* AWS::Cognito::UserPool AccountRecoverySetting (__added__)
+
+## Property Type Changes
+
+* AWS::Cognito::UserPool.AccountRecoverySetting (__added__)
+* AWS::Cognito::UserPool.RecoveryOption (__added__)
+* AWS::Transfer::Server.EndpointDetails AddressAllocationIds (__added__)
+* AWS::Transfer::Server.EndpointDetails SubnetIds (__added__)
+* AWS::Transfer::Server.EndpointDetails VpcId (__added__)
+* AWS::Transfer::Server.EndpointDetails VpcEndpointId.Required (__changed__)
+  * Old: true
+  * New: false
+
+
 # CloudFormation Resource Specification v10.3.0
 
 ## New Resource Types

@@ -263,5 +263,37 @@ export = {
     test.equal(request.isDone(), true);
 
     test.done();
-  }
+  },
+
+  async 'response data contains the log group name'(test: Test) {
+    AWS.mock('CloudWatchLogs', 'createLogGroup', sinon.fake.resolves({}));
+    AWS.mock('CloudWatchLogs', 'putRetentionPolicy', sinon.fake.resolves({}));
+    AWS.mock('CloudWatchLogs', 'deleteRetentionPolicy', sinon.fake.resolves({}));
+
+    const event = {
+      ...eventCommon,
+      ResourceProperties: {
+          ServiceToken: 'token',
+          RetentionInDays: '30',
+          LogGroupName: 'group'
+      }
+    };
+
+    async function withOperation(operation: string) {
+      const request = nock('https://localhost')
+        .put('/', (body: AWSLambda.CloudFormationCustomResourceResponse) => body.Data?.LogGroupName === 'group')
+        .reply(200);
+
+      const opEvent = { ...event, RequestType: operation };
+      await provider.handler(opEvent as AWSLambda.CloudFormationCustomResourceCreateEvent, context);
+
+      test.equal(request.isDone(), true);
+    }
+
+    await withOperation('Create');
+    await withOperation('Update');
+    await withOperation('Delete');
+
+    test.done();
+  },
 };

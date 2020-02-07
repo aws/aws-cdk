@@ -104,7 +104,7 @@ export enum UserPoolAttribute {
   /**
    * The End-User's time zone
    */
-  TIMEZONE = 'timezone',
+  TIMEZONE = 'zoneinfo',
 
   /**
    * Time the End-User's information was last updated.
@@ -347,9 +347,7 @@ export class UserPool extends Resource implements IUserPool {
   private triggers: CfnUserPool.LambdaConfigProperty = { };
 
   constructor(scope: Construct, id: string, props: UserPoolProps = {}) {
-    super(scope, id, {
-      physicalName: props.userPoolName,
-    });
+    super(scope, id);
 
     let aliasAttributes: UserPoolAttribute[] | undefined;
     let usernameAttributes: UserPoolAttribute[] | undefined;
@@ -403,19 +401,15 @@ export class UserPool extends Resource implements IUserPool {
     }
 
     const userPool = new CfnUserPool(this, 'Resource', {
-      userPoolName: this.physicalName,
+      userPoolName: props.userPoolName,
       usernameAttributes,
       aliasAttributes,
       autoVerifiedAttributes: props.autoVerifiedAttributes,
       lambdaConfig: Lazy.anyValue({ produce: () => this.triggers })
     });
 
-    this.userPoolId = this.getResourceNameAttribute(userPool.ref);
-    this.userPoolArn = this.getResourceArnAttribute(userPool.attrArn, {
-      service: 'cognito',
-      resource: 'userpool',
-      resourceName: this.physicalName,
-    });
+    this.userPoolId = userPool.ref;
+    this.userPoolArn = userPool.attrArn;
 
     this.userPoolProviderName = userPool.attrProviderName;
     this.userPoolProviderUrl = userPool.attrProviderUrl;

@@ -7,9 +7,21 @@ input SaveCustomerInput {
     name: String!
 }
 
+type Order {
+    customer: String!
+    order: String!
+}
+
 type Query {
     getCustomers: [Customer]
     getCustomer(id: String): Customer
+    getCustomerOrdersEq(customer: String): Order
+    getCustomerOrdersLt(customer: String): Order
+    getCustomerOrdersLe(customer: String): Order
+    getCustomerOrdersGt(customer: String): Order
+    getCustomerOrdersGe(customer: String): Order
+    getCustomerOrdersFilter(customer: String, order: String): Order
+    getCustomerOrdersBetween(customer: String, order1: String, order2: String): Order
 }
 
 type Mutation {

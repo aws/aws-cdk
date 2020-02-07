@@ -96,7 +96,7 @@ new s3deploy.BucketDeployment(this, 'DeployWebsite', {
   sources: [s3deploy.Source.asset('./website-dist')],
   destinationBucket: websiteBucket,
   destinationKeyPrefix: 'web/static', // optional prefix in destination bucket
-  userMetadata: { "A": "1", "b": "2" }, // user-defined metadata
+  metadata: { A: "1", b: "2" }, // user-defined metadata
 
   // system-defined metadata
   contentType: "text/html",

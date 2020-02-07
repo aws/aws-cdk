@@ -29,6 +29,7 @@ pull_request_rules:
       - "#changes-requested-reviews-by=0"
       - status-success~=AWS CodeBuild us-east-1
       - status-success=Semantic Pull Request
+      - status-success=mandatory-changes
   - name: remove stale reviews
     actions:
       dismiss_reviews: {}

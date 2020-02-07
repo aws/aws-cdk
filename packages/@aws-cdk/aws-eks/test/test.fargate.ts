@@ -129,7 +129,7 @@ export = {
     test.done();
   },
 
-  'fails if therer are no selectors or if there are more than 5'(test: Test) {
+  'fails if there are no selectors or if there are more than 5'(test: Test) {
     // GIVEN
     const stack = new Stack();
     const cluster = new eks.Cluster(stack, 'MyCluster');
@@ -181,6 +181,71 @@ export = {
         selectors: [
           { namespace: "default" },
           { namespace: "kube-system" }
+        ]
+      }
+    }));
+    test.done();
+  },
+
+  'can create FargateCluster with a custom profile'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new eks.FargateCluster(stack, 'FargateCluster', {
+      defaultProfile: {
+        fargateProfileName: 'my-app', selectors: [{namespace: 'foo'}, {namespace: 'bar'}]
+      }
+    });
+
+    // THEN
+    expect(stack).to(haveResource('Custom::AWSCDK-EKS-FargateProfile', {
+      Config: {
+        clusterName: {
+          Ref: "FargateCluster019F03E8"
+        },
+        fargateProfileName: "my-app",
+        podExecutionRoleArn: {
+          "Fn::GetAtt": [
+            "FargateClusterfargateprofilemyappPodExecutionRole875B4635",
+            "Arn"
+          ]
+        },
+        selectors: [
+          { namespace: "foo" },
+          { namespace: "bar" }
+        ]
+      }
+    }));
+    test.done();
+  },
+
+  'custom profile name is "custom" if no custom profile name is provided'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new eks.FargateCluster(stack, 'FargateCluster', {
+      defaultProfile: {
+        selectors: [{namespace: 'foo'}, {namespace: 'bar'}]
+      }
+    });
+
+    // THEN
+    expect(stack).to(haveResource('Custom::AWSCDK-EKS-FargateProfile', {
+      Config: {
+        clusterName: {
+          Ref: "FargateCluster019F03E8"
+        },
+        podExecutionRoleArn: {
+          "Fn::GetAtt": [
+            "FargateClusterfargateprofilecustomPodExecutionRoleDB415F19",
+            "Arn"
+          ]
+        },
+        selectors: [
+          { namespace: "foo" },
+          { namespace: "bar" }
         ]
       }
     }));

@@ -40,6 +40,13 @@ export interface ClusterProps {
    * @default - no EC2 capacity will be added, you can use `addCapacity` to add capacity later.
    */
   readonly capacity?: AddCapacityOptions;
+
+  /**
+   * If true CloudWatch Container Insights will be enabled for the cluster
+   *
+   * @default - Container Insights will be disabled for this cluser.
+   */
+  readonly containerInsights?: boolean;
 }
 
 /**
@@ -96,8 +103,12 @@ export class Cluster extends Resource implements ICluster {
       physicalName: props.clusterName,
     });
 
+    const containerInsights = props.containerInsights !== undefined ? props.containerInsights : false;
+    const clusterSettings = containerInsights ? [{name: "containerInsights", value: "enabled"}] : undefined;
+
     const cluster = new CfnCluster(this, 'Resource', {
       clusterName: this.physicalName,
+      clusterSettings,
     });
 
     this.clusterArn = this.getResourceArnAttribute(cluster.attrArn, {

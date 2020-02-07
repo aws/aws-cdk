@@ -345,10 +345,31 @@ export = {
 
       // THEN
       expect(stack).to(haveResource('AWS::EC2::VPCEndpoint', {
-        ServiceName: "com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc"
+        ServiceName: "com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc",
+        PrivateDnsEnabled: false
       }));
 
       test.done();
     },
+    'marketplace partner service interface endpoint'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VpcNetwork');
+
+      // WHEN
+      vpc.addInterfaceEndpoint('YourService', {
+        service: {name: "com.amazonaws.vpce.us-east-1.vpce-svc-mktplacesvcwprdns",
+                  port: 443,
+                  privateDnsDefault: true}
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::EC2::VPCEndpoint', {
+        ServiceName: "com.amazonaws.vpce.us-east-1.vpce-svc-mktplacesvcwprdns",
+        PrivateDnsEnabled: true
+      }));
+
+      test.done();
+    }
   }
 };

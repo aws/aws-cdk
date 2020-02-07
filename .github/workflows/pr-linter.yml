@@ -1,0 +1,23 @@
+# https://octokit.github.io/rest.js
+# https://github.com/actions/toolkit/blob/master/packages/github/src/context.ts
+
+name: PR Linter
+on: pull_request
+
+jobs:
+  mandatory-changes:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install packages
+        run: cd .github/actions/prlinter && npm ci
+
+      - name: Validate
+        uses: ./.github/actions/prlinter
+        with:
+          check: MANDATORY_CHANGES
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
