@@ -132,7 +132,7 @@ export class SplunkLogDriver extends LogDriver {
         'splunk-token': this.props.token,
         'splunk-url': this.props.url,
         'splunk-source': this.props.source,
-        'splunk-sourceType': this.props.sourceType,
+        'splunk-sourcetype': this.props.sourceType,
         'splunk-index': this.props.index,
         'splunk-capath': this.props.caPath,
         'splunk-caname': this.props.caName,

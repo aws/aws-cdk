@@ -10,11 +10,11 @@
     "test": "jest"
   },
   "devDependencies": {
-    "@aws-cdk/assert": "^%cdk-version%",
-    "aws-cdk": "^%cdk-version%",
+    "@aws-cdk/assert": "%cdk-version%",
+    "aws-cdk": "%cdk-version%",
     "jest": "^24.9.0"
   },
   "dependencies": {
-    "@aws-cdk/core": "^%cdk-version%"
+    "@aws-cdk/core": "%cdk-version%"
   }
 }
