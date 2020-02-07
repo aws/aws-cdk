@@ -452,7 +452,7 @@ abstract class TableBase extends Resource implements ITable {
    * @default avg over a minute
    */
   public metricSuccessfulRequestLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('ConditionalCheckFailedRequests', { statistic: 'avg', ...props});
+    return this.metric('SuccessfulRequestLatency', { statistic: 'avg', ...props});
   }
 
   protected abstract get hasIndex(): boolean;
