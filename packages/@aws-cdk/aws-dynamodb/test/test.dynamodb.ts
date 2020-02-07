@@ -1,4 +1,4 @@
-import {expect, haveResource, ResourcePart} from '@aws-cdk/assert';
+import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as iam from '@aws-cdk/aws-iam';
 import { CfnDeletionPolicy, ConstructNode, RemovalPolicy, Stack, Tag } from '@aws-cdk/core';
