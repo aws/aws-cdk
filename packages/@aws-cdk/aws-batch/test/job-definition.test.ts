@@ -196,7 +196,7 @@ describe('Batch Job Definition', () => {
     'arn:aws:batch:us-east-1:123456789012:job-definition/job-def-name:1');
 
     // THEN
-    expect(importedJob.jobDefinitionName).toEqual('job-definition');
+    expect(importedJob.jobDefinitionName).toEqual('job-def-name:1');
     expect(importedJob.jobDefinitionArn).toEqual('arn:aws:batch:us-east-1:123456789012:job-definition/job-def-name:1');
   });
 });

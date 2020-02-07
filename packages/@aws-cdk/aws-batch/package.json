@@ -82,7 +82,7 @@
     "coverageThreshold": {
       "global": {
         "branches": 60,
-        "statements": 80
+        "statements": 60
       }
     },
     "collectCoverage": true,

@@ -68,7 +68,7 @@ describe('Batch Compute Evironment', () => {
             vpc,
           },
         });
-      }, new Error('It is not allowed to set computeResources on an AWS managed compute environment'));
+      });
     });
 
     test('should deny if creating an unmanged environment with no provided compute resource props', () => {
@@ -78,7 +78,7 @@ describe('Batch Compute Evironment', () => {
         new batch.ComputeEnvironment(stack, 'test-compute-env', {
           managed: false,
         });
-      }, new Error('computeResources is missing but required on an unmanaged compute environment'));
+      });
     });
   });
 
@@ -102,7 +102,11 @@ describe('Batch Compute Evironment', () => {
             'Fn::Join': [
               '',
               [
-                'arn:aws:iam::',
+                'arn',
+                {
+                  Ref: 'AWS::Partition'
+                },
+                'iam::',
                 {
                   Ref: 'AWS::AccountId'
                 },
@@ -127,7 +131,7 @@ describe('Batch Compute Evironment', () => {
               bidPercentage: -1,
             },
           });
-        }, new Error('Bid percentage can only be a value between 0 and 100'));
+        });
       });
 
       test('should deny my bid if above 100', () => {
@@ -142,7 +146,7 @@ describe('Batch Compute Evironment', () => {
               bidPercentage: 101,
             },
           });
-        }, new Error('Bid percentage can only be a value between 0 and 100'));
+        });
       });
     });
   });
@@ -277,7 +281,7 @@ describe('Batch Compute Evironment', () => {
               minvCpus: -1,
             },
           });
-        }, new Error('Minimum vCpus for a batch compute environment cannot be less than 0'));
+        });
       });
 
       test('cannot be greater than the max vcpu value', () => {
@@ -291,7 +295,7 @@ describe('Batch Compute Evironment', () => {
               maxvCpus: 1,
             },
           });
-        }, new Error('Minimum vCpus cannot be greater than the maximum vCpus'));
+        });
       });
     });
 
