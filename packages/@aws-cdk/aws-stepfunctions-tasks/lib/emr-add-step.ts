@@ -68,6 +68,8 @@ export interface EmrAddStepProps {
    * The name of the main class in the specified Java file. If not specified, the JAR file should specify a Main-Class in its manifest file.
    *
    * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_HadoopJarStepConfig.html
+   *
+   * @default No mainClass
    */
   readonly mainClass?: string;
 
@@ -75,6 +77,8 @@ export interface EmrAddStepProps {
    * A list of command line arguments passed to the JAR file's main function when executed.
    *
    * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_HadoopJarStepConfig.html
+   *
+   * @default No args
    */
   readonly args?: string[];
 
@@ -82,6 +86,8 @@ export interface EmrAddStepProps {
    * A list of Java properties that are set when the step runs. You can use these properties to pass key value pairs to your main function.
    *
    * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_HadoopJarStepConfig.html
+   *
+   * @default No properties
    */
   readonly properties?: { [key: string]: string };
 

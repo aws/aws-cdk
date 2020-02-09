@@ -24,7 +24,7 @@ export interface EmrCreateClusterProps {
    * This attribute has been renamed from jobFlowRole to clusterRole to align with other ERM/StepFunction integration parameters.
    * A Role will be created if one is not provided.
    *
-   * @default None
+   * @default No clusterRole
    */
   readonly clusterRole?: iam.IRole;
 
@@ -37,74 +37,98 @@ export interface EmrCreateClusterProps {
    * The IAM role that will be assumed by the Amazon EMR service to access AWS resources on your behalf. A Role will be created if
    * one is not provided.
    *
-   * @default None
+   * @default No serviceRole
    */
   readonly serviceRole?: iam.IRole;
 
   /**
    * A JSON string for selecting additional features.
+   *
+   * @default No additionalInfo
    */
   readonly additionalInfo?: string;
 
   /**
    * A case-insensitive list of applications for Amazon EMR to install and configure when launching the cluster.
+   *
+   * @default EMR selected default
    */
   readonly applications?: EmrCreateCluster.ApplicationConfigProperty[];
 
   /**
    * An IAM role for automatic scaling policies. A Role will be created if one is not provided.
    *
-   * @default None
+   * @default No autoScalingRole
    */
   readonly autoScalingRole?: iam.IRole;
 
   /**
    * A list of bootstrap actions to run before Hadoop starts on the cluster nodes.
+   *
+   * @default No bootstrapActions
    */
   readonly bootstrapActions?: EmrCreateCluster.BootstrapActionConfigProperty[];
 
   /**
    * The list of configurations supplied for the EMR cluster you are creating.
+   *
+   * @default No configurations
    */
   readonly configurations?: EmrCreateCluster.ConfigurationProperty[];
 
   /**
    * The ID of a custom Amazon EBS-backed Linux AMI.
+   *
+   * @default No customAmiId
    */
   readonly customAmiId?: string;
 
   /**
    * The size, in GiB, of the EBS root device volume of the Linux AMI that is used for each EC2 instance.
+   *
+   * @default EMR selected default
    */
   readonly ebsRootVolumeSize?: number;
 
   /**
    * Attributes for Kerberos configuration when Kerberos authentication is enabled using a security configuration.
+   *
+   * @default No kerberosAttributes
    */
   readonly kerberosAttributes?: EmrCreateCluster.KerberosAttributesProperty;
 
   /**
    * The location in Amazon S3 to write the log files of the job flow.
+   *
+   * @default No logUri
    */
   readonly logUri?: string;
 
   /**
    * The Amazon EMR release label, which determines the version of open-source application packages installed on the cluster.
+   *
+   * @default EMR selected default
    */
   readonly releaseLabel?: string;
 
   /**
    * Specifies the way that individual Amazon EC2 instances terminate when an automatic scale-in activity occurs or an instance group is resized.
+   *
+   * @default EMR selected default
    */
   readonly scaleDownBehavior?: EmrCreateCluster.EmrClusterScaleDownBehavior;
 
   /**
    * The name of a security configuration to apply to the cluster.
+   *
+   * @default No securityConfiguration
    */
   readonly securityConfiguration?: string;
 
   /**
    * A list of tags to associate with a cluster and propagate to Amazon EC2 instances.
+   *
+   * @default No Tags
    */
   readonly tags?: cdk.CfnTag[];
 
@@ -369,14 +393,37 @@ export namespace EmrCreateCluster {
    * @experimental
    */
   export enum InstanceRoleType {
+    /**
+     * Master Node
+     */
     MASTER = 'MASTER',
+    /**
+     * Core Node
+     */
     CORE = 'CORE',
+    /**
+     * Task Node
+     */
     TASK = 'TASK'
   }
 
+  /**
+   * EBS Volume Types
+   *
+   * @experimental
+   */
   export enum EbsBlockDeviceVolumeType {
+    /**
+     * gp2 Volume Type
+     */
     GP2 = 'gp2',
+    /**
+     * io1 Volume Type
+     */
     IO1 = 'io1',
+    /**
+     * Standard Volume Type
+     */
     STANDARD = 'standard'
   }
 
@@ -391,6 +438,8 @@ export namespace EmrCreateCluster {
   export interface VolumeSpecificationProperty {
     /**
      * The number of I/O operations per second (IOPS) that the volume supports.
+     *
+     * @default EMR selected default
      */
     readonly iops?: number;
 
@@ -422,6 +471,8 @@ export namespace EmrCreateCluster {
 
     /**
      * Number of EBS volumes with a specific volume configuration that will be associated with every instance in the instance group
+     *
+     * @default EMR selected default
      */
     readonly volumesPerInstance?: number;
   }
@@ -452,11 +503,15 @@ export namespace EmrCreateCluster {
   export interface EbsConfigurationProperty {
     /**
      * An array of Amazon EBS volume specifications attached to a cluster instance.
+     *
+     * @default No ebsBlockDeviceConfigs
      */
     readonly ebsBlockDeviceConfigs?: EbsBlockDeviceConfigProperty[];
 
     /**
      * Indicates whether an Amazon EBS volume is EBS-optimized.
+     *
+     * @default EMR selected default
      */
     readonly ebsOptimized?: boolean;
   }
@@ -484,22 +539,30 @@ export namespace EmrCreateCluster {
   export interface InstanceTypeConfigProperty {
     /**
      * The bid price for each EC2 Spot instance type as defined by InstanceType. Expressed in USD.
+     *
+     * @default No bidPrice
      */
     readonly bidPrice?: string;
 
     /**
      * The bid price, as a percentage of On-Demand price.
+     *
+     * @default No bidPriceAsPercentageOfOnDemandPrice
      */
     readonly bidPriceAsPercentageOfOnDemandPrice?: number;
 
     /**
      * A configuration classification that applies when provisioning cluster instances, which can include configurations for applications
      * and software that run on the cluster.
+     *
+     * @default No configurations
      */
     readonly configurations?: ConfigurationProperty[];
 
     /**
      * The configuration of Amazon Elastic Block Storage (EBS) attached to each instance as defined by InstanceType.
+     *
+     * @default No ebsConfiguration
      */
     readonly ebsConfiguration?: EbsConfigurationProperty;
 
@@ -511,6 +574,8 @@ export namespace EmrCreateCluster {
     /**
      * The number of units that a provisioned instance of this type provides toward fulfilling the target capacities defined
      * in the InstanceFleetConfig.
+     *
+     * @default No weightedCapacity
      */
     readonly weightedCapacity?: number;
   }
@@ -539,7 +604,13 @@ export namespace EmrCreateCluster {
    * @experimental
    */
   export enum SpotTimeoutAction {
+    /**\
+     * SWITCH_TO_ON_DEMAND
+     */
     SWITCH_TO_ON_DEMAND = 'SWITCH_TO_ON_DEMAND',
+    /**
+     * TERMINATE_CLUSTER
+     */
     TERMINATE_CLUSTER = 'TERMINATE_CLUSTER'
   }
 
@@ -553,6 +624,8 @@ export namespace EmrCreateCluster {
   export interface SpotProvisioningSpecificationProperty {
     /**
      * The defined duration for Spot instances (also known as Spot blocks) in minutes.
+     *
+     * @default No blockDurationMinutes
      */
     readonly blockDurationMinutes?: number;
 
@@ -611,26 +684,36 @@ export namespace EmrCreateCluster {
 
     /**
      * The instance type configurations that define the EC2 instances in the instance fleet.
+     *
+     * @default No instanceTpeConfigs
      */
     readonly instanceTypeConfigs?: InstanceTypeConfigProperty[];
 
     /**
      * The launch specification for the instance fleet.
+     *
+     * @default No launchSpecifications
      */
     readonly launchSpecifications?: InstanceFleetProvisioningSpecificationsProperty;
 
     /**
      * The friendly name of the instance fleet.
+     *
+     * @default No name
      */
     readonly name?: string;
 
     /**
      * The target capacity of On-Demand units for the instance fleet, which determines how many On-Demand instances to provision.
+     *
+     * @default No targetOnDemandCapacity
      */
     readonly targetOnDemandCapacity?: number;
 
     /**
      * The target capacity of Spot units for the instance fleet, which determines how many Spot instances to provision
+     *
+     * @default No targetSpotCapacity
      */
     readonly targetSpotCapacity?: number;
   }
@@ -655,55 +738,169 @@ export namespace EmrCreateCluster {
 
   /**
    * CloudWatch Alarm Comparison Operators
+   *
+   * @experimental
    */
   export enum CloudWatchAlarmComparisonOperator {
+    /**
+     * GREATER_THAN_OR_EQUAL
+     */
     GREATER_THAN_OR_EQUAL = 'GREATER_THAN_OR_EQUAL',
+    /**
+     * GREATER_THAN
+     */
     GREATER_THAN = 'GREATER_THAN',
+    /**
+     * LESS_THAN
+     */
     LESS_THAN = 'LESS_THAN',
+    /**
+     * LESS_THAN_OR_EQUAL
+     */
     LESS_THAN_OR_EQUAL = 'LESS_THAN_OR_EQUAL'
   }
 
   /**
    * CloudWatch Alarm Statistics
+   *
+   * @experimental
    */
   export enum CloudWatchAlarmStatistic {
+    /**
+     * SAMPLE_COUNT
+     */
     SAMPLE_COUNT = 'SAMPLE_COUNT',
+    /**
+     * AVERAGE
+     */
     AVERAGE = 'AVERAGE',
+    /**
+     * SUM
+     */
     SUM = 'SUM',
+    /**
+     * MINIMUM
+     */
     MINIMUM = 'MINIMUM',
+    /**
+     * MAXIMUM
+     */
     MAXIMUM = 'MAXIMUM'
   }
 
   /**
    * CloudWatch Alarm Units
+   *
+   * @experimental
    */
   export enum CloudWatchAlarmUnit {
+    /**
+     * NONE
+     */
     NONE = 'NONE',
+    /**
+     * SECONDS
+     */
     SECONDS = 'SECONDS',
+    /**
+     * MICRO_SECONDS
+     */
     MICRO_SECONDS = 'MICRO_SECONDS',
+    /**
+     * MILLI_SECONDS
+     */
     MILLI_SECONDS = 'MILLI_SECONDS',
+    /**
+     * BYTES
+     */
     BYTES = 'BYTES',
+    /**
+     * KILO_BYTES
+     */
     KILO_BYTES = 'KILO_BYTES',
+    /**
+     * MEGA_BYTES
+     */
     MEGA_BYTES = 'MEGA_BYTES',
+    /**
+     * GIGA_BYTES
+     */
     GIGA_BYTES = 'GIGA_BYTES',
+    /**
+     * TERA_BYTES
+     */
     TERA_BYTES = 'TERA_BYTES',
+    /**
+     * BITS
+     */
     BITS = 'BITS',
+    /**
+     * KILO_BITS
+     */
     KILO_BITS = 'KILO_BITS',
+    /**
+     * MEGA_BITS
+     */
     MEGA_BITS = 'MEGA_BITS',
+    /**
+     * GIGA_BITS
+     */
     GIGA_BITS = 'GIGA_BITS',
+    /**
+     * TERA_BITS
+     */
     TERA_BITS = 'TERA_BITS',
+    /**
+     * PERCENT
+     */
     PERCENT = 'PERCENT',
+    /**
+     * COUNT
+     */
     COUNT = 'COUNT',
+    /**
+     * BYTES_PER_SECOND
+     */
     BYTES_PER_SECOND = 'BYTES_PER_SECOND',
+    /**
+     * KILO_BYTES_PER_SECOND
+     */
     KILO_BYTES_PER_SECOND = 'KILO_BYTES_PER_SECOND',
+    /**
+     * MEGA_BYTES_PER_SECOND
+     */
     MEGA_BYTES_PER_SECOND = 'MEGA_BYTES_PER_SECOND',
+    /**
+     * GIGA_BYTES_PER_SECOND
+     */
     GIGA_BYTES_PER_SECOND = 'GIGA_BYTES_PER_SECOND',
+    /**
+     * TERA_BYTES_PER_SECOND
+     */
     TERA_BYTES_PER_SECOND = 'TERA_BYTES_PER_SECOND',
+    /**
+     * BITS_PER_SECOND
+     */
     BITS_PER_SECOND = 'BITS_PER_SECOND',
+    /**
+     * KILO_BITS_PER_SECOND
+     */
     KILO_BITS_PER_SECOND = 'KILO_BITS_PER_SECOND',
+    /**
+     * MEGA_BITS_PER_SECOND
+     */
     MEGA_BITS_PER_SECOND = 'MEGA_BITS_PER_SECOND',
+    /**
+     * GIGA_BITS_PER_SECOND
+     */
     GIGA_BITS_PER_SECOND = 'GIGA_BITS_PER_SECOND',
+    /**
+     * TERA_BITS_PER_SECOND
+     */
     TERA_BITS_PER_SECOND = 'TERA_BITS_PER_SECOND',
+    /**
+     * COUNT_PER_SECOND
+     */
     COUNT_PER_SECOND = 'COUNT_PER_SECOND'
   }
 
@@ -755,13 +952,17 @@ export namespace EmrCreateCluster {
     readonly comparisonOperator: CloudWatchAlarmComparisonOperator;
 
     /**
-     * A CloudWatch metric dimension.
+     * A CloudWatch metric dimension
+     *
+     * @default No dimensions
      */
     readonly dimensions?: MetricDimensionProperty[];
 
     /**
      * The number of periods, in five-minute increments, during which the alarm condition must exist before the alarm triggers automatic
      * scaling activity. The default value is 1.
+     *
+     * @default No evaluationPeriods
      */
     readonly evalutionPeriods?: number;
 
@@ -772,6 +973,8 @@ export namespace EmrCreateCluster {
 
     /**
      * The namespace for the CloudWatch metric. The default is AWS/ElasticMapReduce.
+     *
+     * @default No nampespace
      */
     readonly namespace?: string;
 
@@ -783,17 +986,23 @@ export namespace EmrCreateCluster {
 
     /**
      * The statistic to apply to the metric associated with the alarm. The default is AVERAGE.
+     *
+     * @default No statistic
      */
     readonly statistic?: CloudWatchAlarmStatistic;
 
     /**
      * The value against which the specified statistic is compared.
+     *
+     * @default No threshold
      */
     readonly threshold?: number;
 
     /**
      * The unit of measure associated with the CloudWatch metric being watched. The value specified for Unit must correspond to the units
      * specified in the CloudWatch metric.
+     *
+     * @default No unit
      */
     readonly unit?: CloudWatchAlarmUnit;
   }
@@ -837,18 +1046,37 @@ export namespace EmrCreateCluster {
 
   /**
    * EC2 Instance Market
+   *
+   * @experimental
    */
   export enum InstanceMarket {
+    /**
+     * On Demand Instance
+     */
     ON_DEMAND = 'ON_DEMAND',
+    /**
+     * Spot Instance
+     */
     SPOT = 'SPOT'
   }
 
   /**
    * AutoScaling Adjustment Type
+   *
+   * @experimental
    */
   export enum ScalingAdjustmentType {
+    /**
+     * CHANGE_IN_CAPACITY
+     */
     CHANGE_IN_CAPACITY = 'CHANGE_IN_CAPACITY',
+    /**
+     * PERCENT_CHANGE_IN_CAPACITY
+     */
     PERCENT_CHANGE_IN_CAPACITY = 'PERCENT_CHANGE_IN_CAPACITY',
+    /**
+     * EXACT_CAPACITY
+     */
     EXACT_CAPACITY = 'EXACT_CAPACITY'
   }
 
@@ -864,12 +1092,16 @@ export namespace EmrCreateCluster {
     /**
      * The way in which EC2 instances are added (if ScalingAdjustment is a positive number) or terminated (if ScalingAdjustment is a negative
      * number) each time the scaling activity is triggered.
+     *
+     * @default No adjustmentType
      */
     readonly adjustmentType?: ScalingAdjustmentType;
 
     /**
      * The amount of time, in seconds, after a scaling activity completes before any further trigger-related scaling activities can start.
      * The default value is 0.
+     *
+     * @default No coolDown
      */
     readonly coolDown?: number;
 
@@ -893,6 +1125,8 @@ export namespace EmrCreateCluster {
   export interface ScalingActionProperty {
     /**
      * Not available for instance groups. Instance groups use the market type specified for the group.
+     *
+     * @default EMR selected default
      */
     readonly market?: InstanceMarket;
 
@@ -934,6 +1168,8 @@ export namespace EmrCreateCluster {
 
     /**
      * A friendly, more verbose description of the automatic scaling rule.
+     *
+     * @default No description
      */
     readonly description?: string;
 
@@ -1029,21 +1265,29 @@ export namespace EmrCreateCluster {
   export interface InstanceGroupConfigProperty {
     /**
      * An automatic scaling policy for a core instance group or task instance group in an Amazon EMR cluster.
+     *
+     * @default No autoScalingPolicy
      */
     readonly autoScalingPolicy?: AutoScalingPolicyProperty;
 
     /**
      * The bid price for each EC2 Spot instance type as defined by InstanceType. Expressed in USD.
+     *
+     * @default No bidPrice
      */
     readonly bidPrice?: string;
 
     /**
      * The list of configurations supplied for an EMR cluster instance group.
+     *
+     * @default No configurations
      */
     readonly configurations?: ConfigurationProperty[];
 
     /**
      * EBS configurations that will be attached to each EC2 instance in the instance group.
+     *
+     * @default No ebsConfiguration
      */
     readonly ebsConfiguration?: EbsConfigurationProperty;
 
@@ -1064,11 +1308,15 @@ export namespace EmrCreateCluster {
 
     /**
      * Market type of the EC2 instances used to create a cluster node.
+     *
+     * @default EMR selected default
      */
     readonly market?: InstanceMarket;
 
     /**
      * Friendly name given to the instance group.
+     *
+     * @default No name
      */
     readonly name?: string;
   }
@@ -1107,12 +1355,16 @@ export namespace EmrCreateCluster {
     /**
      * The Amazon EC2 Availability Zone for the cluster. AvailabilityZone is used for uniform instance groups, while AvailabilityZones
      * (plural) is used for instance fleets.
+     *
+     * @default EMR selected default
      */
     readonly availabilityZone?: string;
 
     /**
      * When multiple Availability Zones are specified, Amazon EMR evaluates them and launches instances in the optimal Availability Zone.
      * AvailabilityZones is used for instance fleets, while AvailabilityZone (singular) is used for uniform instance groups.
+     *
+     * @default EMR selected default
      */
     readonly availabilityZones?: string[];
   }
@@ -1141,84 +1393,116 @@ export namespace EmrCreateCluster {
   export interface InstancesConfigProperty {
     /**
      * A list of additional Amazon EC2 security group IDs for the master node.
+     *
+     * @default No additionalMasterSecurityGroups
      */
     readonly additionalMasterSecurityGroups?: string[];
 
     /**
      * A list of additional Amazon EC2 security group IDs for the core and task nodes.
+     *
+     * @default No additionalSlaveSecurityGroups
      */
     readonly additionalSlaveSecurityGroups?: string[];
 
     /**
      * The name of the EC2 key pair that can be used to ssh to the master node as the user called "hadoop."
+     *
+     * @default No ec2KeyName
      */
     readonly ec2KeyName?: string;
 
     /**
      * Applies to clusters that use the uniform instance group configuration. To launch the cluster in Amazon Virtual Private Cloud (Amazon VPC),
      * set this parameter to the identifier of the Amazon VPC subnet where you want the cluster to launch.
+     *
+     * @default EMR selected default
      */
     readonly ec2SubnetId?: string;
 
     /**
      * Applies to clusters that use the instance fleet configuration. When multiple EC2 subnet IDs are specified, Amazon EMR evaluates them and
      * launches instances in the optimal subnet.
+     *
+     * @default EMR selected default
      */
     readonly ec2SubnetIds?: string[];
 
     /**
      * The identifier of the Amazon EC2 security group for the master node.
+     *
+     * @default No emrManagedMasterSecurityGroup
      */
     readonly emrManagedMasterSecurityGroup?: string;
 
     /**
      * The identifier of the Amazon EC2 security group for the core and task nodes.
+     *
+     * @default No emrManagedSlaveSecurityGroup
      */
     readonly emrManagedSlaveSecurityGroup?: string;
 
     /**
      * Applies only to Amazon EMR release versions earlier than 4.0. The Hadoop version for the cluster.
+     *
+     * @default No hadoopVersion
      */
     readonly hadoopVersion?: string;
 
     /**
      * The number of EC2 instances in the cluster.
+     *
+     * @default No instanceCount
      */
     readonly instanceCount?: number;
 
     /**
      * Describes the EC2 instances and instance configurations for clusters that use the instance fleet configuration.
+     *
+     * @default No instanceFleets
      */
     readonly instanceFleets?: InstanceFleetConfigProperty[];
 
     /**
      * Configuration for the instance groups in a cluster.
+     *
+     * @default No instanceGroups
      */
     readonly instanceGroups?: InstanceGroupConfigProperty[];
 
     /**
      * The EC2 instance type of the master node.
+     *
+     * @default No masterInstanceType
      */
     readonly masterInstanceType?: string;
 
     /**
      * The Availability Zone in which the cluster runs.
+     *
+     * @default EMR selected default
      */
     readonly placement?: PlacementTypeProperty;
 
     /**
      * The identifier of the Amazon EC2 security group for the Amazon EMR service to access clusters in VPC private subnets.
+     *
+     * @default No serviceAccessSecurityGroup
      */
     readonly serviceAccessSecurityGroup?: string;
 
     /**
      * The EC2 instance type of the core and task nodes.
+     *
+     * @default No slaveInstanceThpe
      */
     readonly slaveInstanceType?: string;
 
     /**
      * Specifies whether to lock the cluster to prevent the Amazon EC2 instances from being terminated by API call, user intervention,
      * or in the event of a job-flow error.
+     *
+     * @default EMR selected default (false)
      */
     readonly terminationProtected?: boolean;
   }
@@ -1268,11 +1552,15 @@ export namespace EmrCreateCluster {
     /**
      * This option is for advanced users only. This is meta information about third-party applications that third-party vendors use
      * for testing purposes.
+     *
+     * @default No additionalInfo
      */
     readonly additionalInfo?: {[key: string]: string};
 
     /**
      * Arguments for Amazon EMR to pass to the application.
+     *
+     * @default No args
      */
     readonly args?: string[];
 
@@ -1283,6 +1571,8 @@ export namespace EmrCreateCluster {
 
     /**
      * The version of the application.
+     *
+     * @default No version
      */
     readonly version?: string;
   }
@@ -1316,6 +1606,8 @@ export namespace EmrCreateCluster {
 
     /**
      * A list of command line arguments to pass to the bootstrap action script.
+     *
+     * @default No args
      */
     readonly args?: string[];
   }
@@ -1369,16 +1661,22 @@ export namespace EmrCreateCluster {
   export interface ConfigurationProperty {
     /**
      * The classification within a configuration.
+     *
+     * @default No classification
      */
     readonly classification?: string;
 
     /**
      * A set of properties specified within a configuration classification.
+     *
+     * @default No properties
      */
     readonly properties?: {[key: string]: string};
 
     /**
      * A list of additional configurations to apply within a configuration object.
+     *
+     * @default No configurations
      */
     readonly configurations?: ConfigurationProperty[];
   }
@@ -1408,24 +1706,32 @@ export namespace EmrCreateCluster {
   export interface KerberosAttributesProperty {
     /**
      * The Active Directory password for ADDomainJoinUser.
+     *
+     * @default No adDomainJoinPassword
      */
     readonly adDomainJoinPassword?: string;
 
     /**
      * Required only when establishing a cross-realm trust with an Active Directory domain. A user with sufficient privileges to join
      * resources to the domain.
+     *
+     * @default No adDomainJoinUser
      */
     readonly adDomainJoinUser?: string;
 
     /**
      * Required only when establishing a cross-realm trust with a KDC in a different realm. The cross-realm principal password, which
      * must be identical across realms.
+     *
+     * @default No crossRealmTrustPrincipalPassword
      */
     readonly crossRealmTrustPrincipalPassword?: string;
 
     /**
      * The password used within the cluster for the kadmin service on the cluster-dedicated KDC, which maintains Kerberos principals,
      * password policies, and keytabs for the cluster.
+     *
+     * @default No kdcAdminPassword
      */
     readonly kdcAdminPassword?: string;
 
