@@ -84,6 +84,26 @@ expect(stack).to(haveResource('AWS::CertificateManager::Certificate', {
 
 `ABSENT` is a magic value to assert that a particular key in an object is *not* set (or set to `undefined`).
 
+### Check number of resources
+
+If you want to assert that `n` number of resources of a particular type exist, with or without specific properties:
+
+```ts
+countResource(type, count)
+countResourceLike(type, count, props)
+```
+
+Example:
+
+```ts
+expect(stack).to(countResources('AWS::ApiGateway::Method', 3));
+expect(stack).to(countResourcesLike('AWS::ApiGateway::Method', 1, {
+  HttpMethod: 'GET',
+  ResourceId: {
+    "Ref": "MyResource01234"
+  }
+}));
+```
 
 ### Check existence of an output
 `haveOutput` assertion can be used to check that a stack contains specific output.
