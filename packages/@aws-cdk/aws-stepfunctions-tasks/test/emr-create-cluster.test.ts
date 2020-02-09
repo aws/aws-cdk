@@ -788,7 +788,34 @@ test('Create Cluster with InstanceGroup', () => {
                 evalutionPeriods: 1,
                 metricName: 'Name',
                 namespace: 'Namespace',
-                period: 1,
+                period: cdk.Duration.seconds(300),
+                statistic: tasks.EmrCreateCluster.CloudWatchAlarmStatistic.AVERAGE,
+                threshold: 1,
+                unit: tasks.EmrCreateCluster.CloudWatchAlarmUnit.NONE
+              }
+            }
+          }, {
+            action: {
+              market: tasks.EmrCreateCluster.InstanceMarket.ON_DEMAND,
+              simpleScalingPolicyConfiguration: {
+                adjustmentType: tasks.EmrCreateCluster.ScalingAdjustmentType.CHANGE_IN_CAPACITY,
+                coolDown: 1,
+                scalingAdjustment: 1
+              }
+            },
+            description: 'Description',
+            name: 'Name',
+            trigger: {
+              cloudWatchAlarmDefinition: {
+                comparisonOperator: tasks.EmrCreateCluster.CloudWatchAlarmComparisonOperator.GREATER_THAN,
+                dimensions: [{
+                  key: 'Key',
+                  value: 'Value'
+                }],
+                evalutionPeriods: 1,
+                metricName: 'Name',
+                namespace: 'Namespace',
+                period: cdk.Duration.seconds(sfn.Data.numberAt('$.CloudWatchPeriod')),
                 statistic: tasks.EmrCreateCluster.CloudWatchAlarmStatistic.AVERAGE,
                 threshold: 1,
                 unit: tasks.EmrCreateCluster.CloudWatchAlarmUnit.NONE
@@ -875,10 +902,37 @@ test('Create Cluster with InstanceGroup', () => {
                   EvaluationPeriods: 1,
                   MetricName: 'Name',
                   Namespace: 'Namespace',
-                  Period: 1,
+                  Period: 300,
                   Statistic: 'AVERAGE',
                   Threshold: 1,
                   Unit: 'NONE'
+                }
+              }
+            }, {
+              Action: {
+                Market: 'ON_DEMAND',
+                SimpleScalingPolicyConfiguration: {
+                  AdjustmentType: 'CHANGE_IN_CAPACITY',
+                  CoolDown: 1,
+                  ScalingAdjustment: 1
+                }
+              },
+              Description: 'Description',
+              Name: 'Name',
+              Trigger: {
+                CloudWatchAlarmDefinition: {
+                  'ComparisonOperator': 'GREATER_THAN',
+                  'Dimensions': [{
+                    Key: 'Key',
+                    Value: 'Value'
+                  }],
+                  'EvaluationPeriods': 1,
+                  'MetricName': 'Name',
+                  'Namespace': 'Namespace',
+                  'Period.$': '$.CloudWatchPeriod',
+                  'Statistic': 'AVERAGE',
+                  'Threshold': 1,
+                  'Unit': 'NONE'
                 }
               }
             }]

@@ -779,7 +779,7 @@ export namespace EmrCreateCluster {
      * The period, in seconds, over which the statistic is applied. EMR CloudWatch metrics are emitted every five minutes (300 seconds), so if
      * an EMR CloudWatch metric is specified, specify 300.
      */
-    readonly period: number;
+    readonly period: cdk.Duration;
 
     /**
      * The statistic to apply to the metric associated with the alarm. The default is AVERAGE.
@@ -827,7 +827,7 @@ export namespace EmrCreateCluster {
         EvaluationPeriods: cdk.numberToCloudFormation(property.cloudWatchAlarmDefinition.evalutionPeriods),
         MetricName: cdk.stringToCloudFormation(property.cloudWatchAlarmDefinition.metricName),
         Namespace: cdk.stringToCloudFormation(property.cloudWatchAlarmDefinition.namespace),
-        Period: cdk.numberToCloudFormation(property.cloudWatchAlarmDefinition.period),
+        Period: cdk.numberToCloudFormation(property.cloudWatchAlarmDefinition.period.toSeconds()),
         Statistic: cdk.stringToCloudFormation(property.cloudWatchAlarmDefinition.statistic?.valueOf()),
         Threshold: cdk.numberToCloudFormation(property.cloudWatchAlarmDefinition.threshold),
         Unit: cdk.stringToCloudFormation(property.cloudWatchAlarmDefinition.unit?.valueOf())

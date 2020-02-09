@@ -83,7 +83,7 @@ export namespace EmrModifyInstanceGroupByName {
     /**
      * Decommissioning timeout override for the specific list of instances to be terminated.
      */
-    readonly instanceTerminationTimeout?: number;
+    readonly instanceTerminationTimeout?: cdk.Duration;
   }
 
   /**
@@ -95,7 +95,7 @@ export namespace EmrModifyInstanceGroupByName {
     return {
       InstancesToProtect: cdk.listMapper(cdk.stringToCloudFormation)(property.instancesToProtect),
       InstancesToTerminate: cdk.listMapper(cdk.stringToCloudFormation)(property.instancesToTerminate),
-      InstanceTerminationTimeout: cdk.numberToCloudFormation(property.instanceTerminationTimeout)
+      InstanceTerminationTimeout: cdk.numberToCloudFormation(property.instanceTerminationTimeout?.toSeconds())
     };
   }
 
@@ -110,7 +110,7 @@ export namespace EmrModifyInstanceGroupByName {
     /**
      * The desired timeout for decommissioning an instance. Overrides the default YARN decommissioning timeout.
      */
-    readonly decommissionTimeout?: number;
+    readonly decommissionTimeout?: cdk.Duration;
 
     /**
      * Custom policy for requesting termination protection or termination of specific instances when shrinking an instance group.
@@ -125,7 +125,7 @@ export namespace EmrModifyInstanceGroupByName {
    */
   export function ShrinkPolicyPropertyToJson(property: ShrinkPolicyProperty) {
     return {
-      DecommissionTimeout: cdk.numberToCloudFormation(property.decommissionTimeout),
+      DecommissionTimeout: cdk.numberToCloudFormation(property.decommissionTimeout?.toSeconds()),
       InstanceResizePolicy: (property.instanceResizePolicy === undefined) ?
         property.instanceResizePolicy :
         InstanceResizePolicyPropertyToJson(property.instanceResizePolicy)

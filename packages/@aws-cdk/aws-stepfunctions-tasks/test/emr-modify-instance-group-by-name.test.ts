@@ -25,9 +25,9 @@ test('Modify an InstanceGroup with static ClusterId, InstanceGroupName, and Inst
           eC2InstanceIdsToTerminate: ['InstanceToTerminate'],
           instanceCount: 1,
           shrinkPolicy: {
-            decommissionTimeout: 1,
+            decommissionTimeout: cdk.Duration.seconds(1),
             instanceResizePolicy: {
-              instanceTerminationTimeout: 1,
+              instanceTerminationTimeout: cdk.Duration.seconds(1),
               instancesToProtect: ['InstanceToProtect'],
               instancesToTerminate: ['InstanceToTerminate']
             }
