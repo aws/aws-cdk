@@ -1,4 +1,5 @@
 import { AwsLogDriver, AwsLogDriverProps } from './aws-log-driver';
+import { FireLensLogDriver, FireLensLogDriverProps } from './firelens-log-driver';
 import { FluentdLogDriver, FluentdLogDriverProps } from './fluentd-log-driver';
 import { GelfLogDriver, GelfLogDriverProps } from './gelf-log-driver';
 import { JournaldLogDriver, JournaldLogDriverProps } from './journald-log-driver';
@@ -58,5 +59,14 @@ export class LogDrivers {
    */
   public static syslog(props?: SyslogLogDriverProps): LogDriver {
     return new SyslogLogDriver(props);
+  }
+
+  /**
+   * Creates a log driver configuration that sends log information to firelens log router.
+   * For detail configurations, please refer to Amazon ECS FireLens Examples:
+   * https://github.com/aws-samples/amazon-ecs-firelens-examples
+   */
+  public static firelens(props: FireLensLogDriverProps): LogDriver {
+    return new FireLensLogDriver(props);
   }
 }

@@ -72,4 +72,35 @@ export = {
 
     test.done();
   },
+
+  "create a splunk log driver using splunk with sourcetype defined"(test: Test) {
+    // WHEN
+    td.addContainer('Container', {
+      image,
+      logging: ecs.LogDrivers.splunk({
+        token: cdk.SecretValue.secretsManager('my-splunk-token'),
+        url: 'my-splunk-url',
+        sourceType: 'my-source-type'
+      }),
+      memoryLimitMiB: 128
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          LogConfiguration: {
+            LogDriver: 'splunk',
+            Options: {
+              'splunk-token': '{{resolve:secretsmanager:my-splunk-token:SecretString:::}}',
+              'splunk-url': 'my-splunk-url',
+              'splunk-sourcetype': 'my-source-type'
+            }
+          }
+        }
+      ]
+    }));
+
+    test.done();
+  },
 };

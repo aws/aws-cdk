@@ -724,7 +724,9 @@ export interface VpcProps {
   /**
    * Where to propagate VPN routes.
    *
-   * @default - On the route tables associated with private subnets.
+   * @default - On the route tables associated with private subnets. If no
+   * private subnets exists, isolated subnets are used. If no isolated subnets
+   * exists, public subnets are used.
    */
   readonly vpnRoutePropagation?: SubnetSelection[]
 
@@ -859,12 +861,14 @@ export class Vpc extends VpcBase {
    * application. If you are looking to share a VPC between stacks, you can
    * pass the `Vpc` object between stacks and use it as normal.
    *
-   * See the package-level documentation of this package for constraints
-   * on importing existing VPCs.
-   *
    * Calling this method will lead to a lookup when the CDK CLI is executed.
    * You can therefore not use any values that will only be available at
    * CloudFormation execution time (i.e., Tokens).
+   *
+   * The VPC information will be cached in `cdk.context.json` and the same VPC
+   * will be used on future runs. To refresh the lookup, you will have to
+   * evict the value from the cache using the `cdk context` command. See
+   * https://docs.aws.amazon.com/cdk/latest/guide/context.html for more information.
    */
   public static fromLookup(scope: Construct, id: string, options: VpcLookupOptions): IVpc {
     if (Token.isUnresolved(options.vpcId)
@@ -1082,7 +1086,7 @@ export class Vpc extends VpcBase {
       this.vpnGatewayId = vpnGateway.ref;
 
       // Propagate routes on route tables associated with the right subnets
-      const vpnRoutePropagation = props.vpnRoutePropagation || [{ subnetType: SubnetType.PRIVATE }];
+      const vpnRoutePropagation = props.vpnRoutePropagation ?? [{}];
       const routeTableIds = allRouteTableIds(...vpnRoutePropagation.map(s => this.selectSubnets(s)));
       const routePropagation = new CfnVPNGatewayRoutePropagation(this, 'RoutePropagation', {
         routeTableIds,
