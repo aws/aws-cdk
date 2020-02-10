@@ -73,11 +73,16 @@ export interface IFargateService extends IService {
 export class FargateService extends BaseService implements IFargateService {
 
   /**
-   * Import a task definition from the specified task definition ARN.
+   * Import a service definition from the specified task definition ARN.
    */
   public static fromFargateServiceArn(scope: cdk.Construct, id: string, fargateServiceArn: string): IFargateService {
+    const serviceName = cdk.Stack.of(scope).parseArn(fargateServiceArn).serviceName;
+    if (!serviceName) {
+      throw new Error(`ECS ARN must be in the format 'arn:aws:ecs:<region>:<account>:service/<serviceName>', got: '${fargateServiceArn}'`);
+    }
     class Import extends cdk.Resource implements IFargateService {
       public readonly serviceArn = fargateServiceArn;
+      public readonly serviceName = serviceName;
     }
     return new Import(scope, id);
   }

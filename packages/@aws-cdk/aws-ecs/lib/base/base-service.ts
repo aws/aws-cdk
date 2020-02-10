@@ -22,6 +22,13 @@ export interface IService extends IResource {
    * @attribute
    */
   readonly serviceArn: string;
+
+  /**
+   * The name of the service.
+   *
+   * @attribute
+   */
+  readonly serviceName: string;
 }
 
 /**

@@ -1,4 +1,5 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
+import * as cdk from '@aws-cdk/core';
 import { Construct, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { BaseService, BaseServiceOptions, IService, LaunchType, PropagatedTagSource } from '../base/base-service';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
@@ -98,9 +99,15 @@ export class Ec2Service extends BaseService implements IEc2Service {
    * Imports from the specified service ARN.
    */
   public static fromEc2ServiceArn(scope: Construct, id: string, ec2ServiceArn: string): IEc2Service {
-    class Import extends Resource implements IEc2Service {
-      public readonly serviceArn = ec2ServiceArn;
+    const serviceName = cdk.Stack.of(scope).parseArn(ec2ServiceArn).serviceName;
+    if (!serviceName) {
+      throw new Error(`ECS ARN must be in the format 'arn:aws:ecs:<region>:<account>:service/<serviceName>', got: '${ec2ServiceArn}'`);
     }
+    class Import extends cdk.Resource implements IEc2Service {
+      public readonly serviceArn = ec2ServiceArn;
+      public readonly serviceName = serviceName;
+    }
+
     return new Import(scope, id);
   }
 
