@@ -47,21 +47,12 @@
     "compat": "cdk-compat"
   },
   "jest": {
-    "moduleFileExtensions": [
-      "js"
-    ],
     "coverageThreshold": {
       "global": {
         "branches": 65,
         "statements": 80
       }
-    },
-    "collectCoverage": true,
-    "coverageReporters": [
-      "lcov",
-      "html",
-      "text-summary"
-    ]
+    }
   },
   "keywords": [
     "aws",

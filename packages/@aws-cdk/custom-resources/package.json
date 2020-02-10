@@ -103,21 +103,12 @@
     "@aws-cdk/core": "1.23.0"
   },
   "jest": {
-    "moduleFileExtensions": [
-      "js"
-    ],
     "coverageThreshold": {
       "global": {
         "branches": 70,
         "statements": 80
       }
-    },
-    "collectCoverage": true,
-    "coverageReporters": [
-      "lcov",
-      "html",
-      "text-summary"
-    ]
+    }
   },
   "engines": {
     "node": ">= 10.3.0"
