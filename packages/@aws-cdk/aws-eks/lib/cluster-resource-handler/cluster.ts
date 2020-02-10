@@ -181,8 +181,7 @@ export class ClusterResourceHandler extends ResourceHandler {
           Name: cluster.name,
           Endpoint: cluster.endpoint,
           Arn: cluster.arn,
-          CertificateAuthorityData: cluster.certificateAuthority?.data,
-          OpenIDConnectIssuerUrl: cluster.identity?.oidc?.issuer
+          CertificateAuthorityData: cluster.certificateAuthority?.data
         }
       };
     }

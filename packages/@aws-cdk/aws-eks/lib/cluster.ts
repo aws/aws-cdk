@@ -5,8 +5,6 @@ import * as ssm from '@aws-cdk/aws-ssm';
 import { CfnOutput, Construct, IResource, Resource, Stack, Tag, Token } from '@aws-cdk/core';
 import { AwsAuth } from './aws-auth';
 import { clusterArnComponents, ClusterResource } from './cluster-resource';
-import { OPENIDCONNECT_PROVIDER_RESOURCE_TYPE } from './cluster-resource-handler/consts';
-import { ClusterResourceProvider } from './cluster-resource-provider';
 import { CfnCluster, CfnClusterProps } from './eks.generated';
 import { FargateProfile, FargateProfileOptions } from './fargate-profile';
 import { HelmChart, HelmChartOptions } from './helm-chart';
@@ -14,7 +12,6 @@ import { KubernetesPatch } from './k8s-patch';
 import { KubernetesResource } from './k8s-resource';
 import { spotInterruptHandler } from './spot-interrupt-handler';
 import { renderUserData } from './user-data';
-import { CustomResource } from '@aws-cdk/aws-cloudformation';
 
 // defaults are based on https://eksctl.io
 const DEFAULT_CAPACITY_COUNT = 2;
@@ -294,13 +291,6 @@ export class Cluster extends Resource implements ICluster {
   public readonly clusterCertificateAuthorityData: string;
 
   /**
-   * The issuer URL for the OpenID Connect endpoint
-   *
-   * @example https://5E1D0CEXAMPLEA591B746AFC5AB30262.yl4.us-west-2.eks.amazonaws.com
-   */
-  public readonly openIDConnectIssuerUrl: string;
-
-  /**
    * Manages connection rules (Security Group Rules) for the cluster
    *
    * @type {ec2.Connections}
@@ -404,7 +394,6 @@ export class Cluster extends Resource implements ICluster {
 
     this.clusterEndpoint = resource.attrEndpoint;
     this.clusterCertificateAuthorityData = resource.attrCertificateAuthorityData;
-    this.openIDConnectIssuerUrl = resource.attrOpenIDConnectIssuerUrl;
 
     const updateConfigCommandPrefix = `aws eks update-kubeconfig --name ${this.clusterName}`;
     const getTokenCommandPrefix = `aws eks get-token --cluster-name ${this.clusterName}`;
@@ -635,29 +624,6 @@ export class Cluster extends Resource implements ICluster {
     }
 
     return this._clusterResource.getCreationRoleArn(assumedBy);
-  }
-
-  /**
-   * Ensures that the cluster is registered as OpenID Connect provider
-   * using the cluster's issuers URL.
-   *
-   * @internal
-   */
-  public _enableOpenIDConnectIAMProvider() {
-    const resource = this.node.tryFindChild('OpenIDConnectProviderResource');
-    if (!resource) {
-      const provider = ClusterResourceProvider.getOrCreate(this);
-      new CustomResource(this, 'OpenIDConnectProviderResource', {
-        provider: provider.provider,
-        resourceType: OPENIDCONNECT_PROVIDER_RESOURCE_TYPE,
-        properties: {
-          AssumeRoleArn: this._getKubectlCreationRoleArn(),
-          Config: {
-            clusterName: this.clusterName
-          }
-        }
-      });
-    }
   }
 
   /**

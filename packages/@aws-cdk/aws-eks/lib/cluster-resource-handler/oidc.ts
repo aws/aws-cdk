@@ -30,7 +30,8 @@ export class OpenIDConnectResourceHandler extends ResourceHandler {
     return {
       PhysicalResourceId: createOpenIDConnectProviderResponse.OpenIDConnectProviderArn,
       Data: {
-        OpenIDConnectIssuerUrl: issuerUrl
+        openIDConnectSubject: issuerUrl.substring(8) + ":sub",
+        openIDConnectProviderArn: createOpenIDConnectProviderResponse.OpenIDConnectProviderArn
       }
     };
   }
@@ -98,9 +99,9 @@ export class OpenIDConnectResourceHandler extends ResourceHandler {
       this.log({ getOpenIDConnectProviderResponse });
       return true;
     } catch (getOpenIDConnectProviderError) {
-      if (getOpenIDConnectProviderError.code === "ResourceNotFoundException") {
+      if (getOpenIDConnectProviderError.code === "NoSuchEntity") {
         this.log(
-          "received ResourceNotFoundException, this means the profile has been deleted (or never existed)"
+          "received NoSuchEntityFoundException, this means the profile has been deleted (or never existed)"
         );
         return false;
       }
