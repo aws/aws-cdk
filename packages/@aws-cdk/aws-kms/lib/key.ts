@@ -352,7 +352,9 @@ export class Key extends KeyBase {
       "kms:Delete*",
       "kms:ScheduleKeyDeletion",
       "kms:CancelKeyDeletion",
-      "kms:GenerateDataKey"
+      "kms:GenerateDataKey",
+      "kms:TagResource",
+      "kms:UntagResource"
     ];
 
     this.addToResourcePolicy(new iam.PolicyStatement({
