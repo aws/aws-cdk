@@ -1,5 +1,6 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
+import { ServiceConfigurationOptions } from 'aws-sdk/lib/service';
 import * as child_process from 'child_process';
 import * as fs from 'fs-extra';
 import * as https from 'https';
@@ -109,58 +110,28 @@ export class SDK implements ISDK {
     this.credentialsCache = new CredentialsCache(this.defaultAwsAccount, defaultCredentialProvider);
   }
 
-  public async cloudFormation(account: string | undefined, region: string | undefined, mode: Mode): Promise<AWS.CloudFormation> {
-    const environment = await this.resolveEnvironment(account, region);
-    return new AWS.CloudFormation({
-      ...this.retryOptions,
-      region: environment.region,
-      credentials: await this.credentialsCache.get(environment.account, mode)
-    });
+  public cloudFormation(account: string | undefined, region: string | undefined, mode: Mode): Promise<AWS.CloudFormation> {
+    return this.service(AWS.CloudFormation, account, region, mode);
   }
 
-  public async ec2(account: string | undefined, region: string | undefined, mode: Mode): Promise<AWS.EC2> {
-    const environment = await this.resolveEnvironment(account, region);
-    return new AWS.EC2({
-      ...this.retryOptions,
-      region: environment.region,
-      credentials: await this.credentialsCache.get(environment.account, mode)
-    });
+  public ec2(account: string | undefined, region: string | undefined, mode: Mode): Promise<AWS.EC2> {
+    return this.service(AWS.EC2, account, region, mode);
   }
 
-  public async ssm(account: string | undefined, region: string | undefined, mode: Mode): Promise<AWS.SSM> {
-    const environment = await this.resolveEnvironment(account, region);
-    return new AWS.SSM({
-      ...this.retryOptions,
-      region: environment.region,
-      credentials: await this.credentialsCache.get(environment.account, mode)
-    });
+  public ssm(account: string | undefined, region: string | undefined, mode: Mode): Promise<AWS.SSM> {
+    return this.service(AWS.SSM, account, region, mode);
   }
 
-  public async s3(account: string | undefined, region: string | undefined, mode: Mode): Promise<AWS.S3> {
-    const environment = await this.resolveEnvironment(account, region);
-    return new AWS.S3({
-      ...this.retryOptions,
-      region: environment.region,
-      credentials: await this.credentialsCache.get(environment.account, mode)
-    });
+  public s3(account: string | undefined, region: string | undefined, mode: Mode): Promise<AWS.S3> {
+    return this.service(AWS.S3, account, region, mode);
   }
 
-  public async route53(account: string | undefined, region: string | undefined, mode: Mode): Promise<AWS.Route53> {
-    const environment = await this.resolveEnvironment(account, region);
-    return new AWS.Route53({
-      ...this.retryOptions,
-      region: environment.region,
-      credentials: await this.credentialsCache.get(environment.account, mode),
-    });
+  public route53(account: string | undefined, region: string | undefined, mode: Mode): Promise<AWS.Route53> {
+    return this.service(AWS.Route53, account, region, mode);
   }
 
-  public async ecr(account: string | undefined, region: string | undefined, mode: Mode): Promise<AWS.ECR> {
-    const environment = await this.resolveEnvironment(account, region);
-    return new AWS.ECR({
-      ...this.retryOptions,
-      region: environment.region,
-      credentials: await this.credentialsCache.get(environment.account, mode)
-    });
+  public ecr(account: string | undefined, region: string | undefined, mode: Mode): Promise<AWS.ECR> {
+    return this.service(AWS.ECR, account, region, mode);
   }
 
   public async defaultRegion(): Promise<string | undefined> {
@@ -169,6 +140,19 @@ export class SDK implements ISDK {
 
   public defaultAccount(): Promise<string | undefined> {
     return this.defaultAwsAccount.get();
+  }
+
+  private async service<T extends AWS.Service>(
+    ctor: new <O extends ServiceConfigurationOptions>(opts?: O) => T,
+    account: string | undefined,
+    region: string | undefined,
+    mode: Mode): Promise<T> {
+    const environment = await this.resolveEnvironment(account, region);
+    return new ctor({
+      ...this.retryOptions,
+      region: environment.region,
+      credentials: await this.credentialsCache.get(environment.account, mode)
+    });
   }
 
   private async resolveEnvironment(account: string | undefined, region: string | undefined, ) {
