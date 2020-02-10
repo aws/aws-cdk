@@ -32,12 +32,10 @@ class CountResourcesAssertion extends Assertion<StackInspector> {
     for (const logicalId of Object.keys(inspector.value.Resources || {})) {
       const resource = inspector.value.Resources[logicalId];
       if (resource.Type === this.resourceType) {
-        if (this.props) {
-          if (resource.Properties) {
-            if (isSuperObject(resource.Properties, this.props, [], true)) {
-              counted++;
-              this.inspected += 1;
-            }
+        if (this.props && resource.Properties) {
+          if (isSuperObject(resource.Properties, this.props, [], true)) {
+            counted++;
+            this.inspected += 1;
           }
         } else {
           counted++;
