@@ -461,7 +461,7 @@ export class RestApi extends Resource implements IRestApi {
 }
 
 /**
- * The EndpointConfiguration property type specifies the endpoint types of a REST API.
+* The endpoint configuration of a REST API, including VPCs and endpoint types.
  *
  * EndpointConfiguration is a property of the AWS::ApiGateway::RestApi resource.
  */
