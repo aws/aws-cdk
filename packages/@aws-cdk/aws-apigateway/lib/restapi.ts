@@ -212,7 +212,11 @@ export class RestApi extends Resource implements IRestApi {
    */
   public deploymentStage!: Stage;
 
-  private readonly methods = new Array<Method>();
+  /**
+   * The list of methods bound to this RestApi
+   */
+  public readonly methods = new Array<Method>();
+
   private _domainName?: DomainName;
   private _latestDeployment: Deployment | undefined;
 
