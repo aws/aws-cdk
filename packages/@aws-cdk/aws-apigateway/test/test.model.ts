@@ -32,7 +32,8 @@ export = {
         title: "test",
         type: "object",
         properties: { message: { type: "string" } }
-      }
+      },
+      ContentType: 'application/json'
     }));
 
     test.done();
