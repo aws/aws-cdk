@@ -1613,6 +1613,7 @@ export = {
           'eu-west-2',
           'eu-central-1'
         ],
+        billingMode: BillingMode.PROVISIONED,
       }), /`PAY_PER_REQUEST`/);
 
       test.done();

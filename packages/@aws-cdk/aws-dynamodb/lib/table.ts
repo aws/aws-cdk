@@ -82,7 +82,8 @@ export interface TableOptions {
 
   /**
    * Specify how you are charged for read and write throughput and how you manage capacity.
-   * @default Provisioned
+   *
+   * @default PROVISIONED if `replicationRegions` is not specified, PAY_PER_REQUEST otherwise
    */
   readonly billingMode?: BillingMode;
 
@@ -610,9 +611,10 @@ export class Table extends TableBase {
       }
       streamSpecification = { streamViewType: StreamViewType.NEW_AND_OLD_IMAGES };
 
-      if (props.billingMode !== BillingMode.PAY_PER_REQUEST) {
+      if (props.billingMode && props.billingMode !== BillingMode.PAY_PER_REQUEST) {
         throw new Error('The `PAY_PER_REQUEST` billing mode must be used when specifying `replicationRegions`');
       }
+      this.billingMode = BillingMode.PAY_PER_REQUEST;
     } else if (props.stream) {
       streamSpecification = { streamViewType : props.stream };
     } else {
@@ -627,7 +629,7 @@ export class Table extends TableBase {
       localSecondaryIndexes: Lazy.anyValue({ produce: () => this.localSecondaryIndexes }, { omitEmptyArray: true }),
       pointInTimeRecoverySpecification: props.pointInTimeRecovery ? { pointInTimeRecoveryEnabled: props.pointInTimeRecovery } : undefined,
       billingMode: this.billingMode === BillingMode.PAY_PER_REQUEST ? this.billingMode : undefined,
-      provisionedThroughput: props.billingMode === BillingMode.PAY_PER_REQUEST ? undefined : {
+      provisionedThroughput: this.billingMode === BillingMode.PAY_PER_REQUEST ? undefined : {
         readCapacityUnits: props.readCapacity || 5,
         writeCapacityUnits: props.writeCapacity || 5
       },
