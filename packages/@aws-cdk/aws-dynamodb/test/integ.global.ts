@@ -12,7 +12,7 @@ class TestStack extends Stack {
       },
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
       removalPolicy: RemovalPolicy.DESTROY,
-      replicaRegions: [
+      replicationRegions: [
         'eu-west-2',
         'eu-central-1'
       ],

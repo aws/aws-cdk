@@ -108,7 +108,7 @@ export interface TableOptions {
    * When an item in the table is modified, StreamViewType determines what information
    * is written to the stream for this table.
    *
-   * @default - streams are disabled unless `replicaRegions` is specified
+   * @default - streams are disabled unless `replicationRegions` is specified
    */
   readonly stream?: StreamViewType;
 
@@ -124,7 +124,7 @@ export interface TableOptions {
    *
    * @default - no replica tables are created
    */
-  readonly replicaRegions?: string[];
+  readonly replicationRegions?: string[];
 }
 
 export interface TableProps extends TableOptions {
@@ -604,14 +604,14 @@ export class Table extends TableBase {
     this.validateProvisioning(props);
 
     let streamSpecification: CfnTable.StreamSpecificationProperty | undefined;
-    if (props.replicaRegions) {
+    if (props.replicationRegions) {
       if (props.stream && props.stream !== StreamViewType.NEW_AND_OLD_IMAGES) {
-        throw new Error('`stream` must be set to `NEW_AND_OLD_IMAGES` when specifying `replicaRegions`');
+        throw new Error('`stream` must be set to `NEW_AND_OLD_IMAGES` when specifying `replicationRegions`');
       }
       streamSpecification = { streamViewType: StreamViewType.NEW_AND_OLD_IMAGES };
 
       if (props.billingMode !== BillingMode.PAY_PER_REQUEST) {
-        throw new Error('The `PAY_PER_REQUEST` billing mode must be used when specifying `replicaRegions`');
+        throw new Error('The `PAY_PER_REQUEST` billing mode must be used when specifying `replicationRegions`');
       }
     } else if (props.stream) {
       streamSpecification = { streamViewType : props.stream };
@@ -658,8 +658,8 @@ export class Table extends TableBase {
       this.tableSortKey = props.sortKey;
     }
 
-    if (props.replicaRegions) {
-      this.createReplicaTables(props.replicaRegions);
+    if (props.replicationRegions) {
+      this.createReplicaTables(props.replicationRegions);
     }
   }
 
@@ -1021,7 +1021,7 @@ export class Table extends TableBase {
     const stack = Stack.of(this);
 
     if (!Token.isUnresolved(stack.region) && regions.includes(stack.region)) {
-      throw new Error('`replicaRegions` cannot include the region where this stack is deployed.');
+      throw new Error('`replicationRegions` cannot include the region where this stack is deployed.');
     }
 
     const provider = ReplicaProvider.getOrCreate(this);

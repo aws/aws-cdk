@@ -1582,7 +1582,7 @@ export = {
           type: AttributeType.STRING
         },
         billingMode: BillingMode.PAY_PER_REQUEST,
-        replicaRegions: [
+        replicationRegions: [
           'eu-west-2',
           'eu-central-1'
         ],
@@ -1609,7 +1609,7 @@ export = {
           name: 'id',
           type: AttributeType.STRING
         },
-        replicaRegions: [
+        replicationRegions: [
           'eu-west-2',
           'eu-central-1'
         ],
@@ -1629,7 +1629,7 @@ export = {
           type: AttributeType.STRING
         },
         billingMode: BillingMode.PAY_PER_REQUEST,
-        replicaRegions: [
+        replicationRegions: [
           'eu-west-2',
           'eu-central-1'
         ],
@@ -1653,12 +1653,12 @@ export = {
           type: AttributeType.STRING
         },
         billingMode: BillingMode.PAY_PER_REQUEST,
-        replicaRegions: [
+        replicationRegions: [
           'eu-west-1',
           'us-east-1',
           'eu-west-2',
         ],
-      }), /`replicaRegions` cannot include the region where this stack is deployed/);
+      }), /`replicationRegions` cannot include the region where this stack is deployed/);
 
       test.done();
     }
