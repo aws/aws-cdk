@@ -29,6 +29,11 @@ export interface IService extends IResource {
    * @attribute
    */
   readonly serviceName: string;
+
+}
+
+export interface IBaseService extends IService {
+  readonly cluster: ICluster;
 }
 
 /**

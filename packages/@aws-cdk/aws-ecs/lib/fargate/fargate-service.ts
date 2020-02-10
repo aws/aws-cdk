@@ -1,6 +1,13 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
-import { BaseService, BaseServiceOptions, IService, LaunchType, PropagatedTagSource } from '../base/base-service';
+import {
+  BaseService,
+  BaseServiceOptions,
+  IBaseService,
+  IService,
+  LaunchType,
+  PropagatedTagSource
+} from '../base/base-service';
 import { TaskDefinition } from '../base/task-definition';
 
 /**
@@ -86,6 +93,20 @@ export class FargateService extends BaseService implements IFargateService {
     }
     return new Import(scope, id);
   }
+
+  /**
+   * Import a service definition from the specified service attributes.
+   */
+  public static fromFargateServiceAttributes(scope: cdk.Construct, id: string, attributes: string): IBaseService {
+    const matcher = new RegExp(/arn:[^:]+:ecs:[^:]+[^:]+:[^:]+:service\/(.*)/);
+    class Import extends cdk.Resource implements IBaseService {
+      public readonly cluster = ;
+      public readonly serviceArn = fargateServiceArn;
+      public readonly serviceName = matcher.exec(fargateServiceArn)[0];
+    }
+    return new Import(scope, id);
+  }
+
 
   /**
    * Constructs a new instance of the FargateService class.
