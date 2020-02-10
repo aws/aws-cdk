@@ -94,7 +94,9 @@ test('if the queue is encrypted with a custom kms key, the key resource policy i
             "kms:Delete*",
             "kms:ScheduleKeyDeletion",
             "kms:CancelKeyDeletion",
-            "kms:GenerateDataKey"
+            "kms:GenerateDataKey",
+            "kms:TagResource",
+            "kms:UntagResource"
           ],
           Effect: "Allow",
           Principal: {
