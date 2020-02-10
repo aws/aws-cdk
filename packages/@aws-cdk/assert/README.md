@@ -89,8 +89,8 @@ expect(stack).to(haveResource('AWS::CertificateManager::Certificate', {
 If you want to assert that `n` number of resources of a particular type exist, with or without specific properties:
 
 ```ts
-countResource(type, count)
-countResourceLike(type, count, props)
+countResources(type, count)
+countResourcesLike(type, count, props)
 ```
 
 Example:
