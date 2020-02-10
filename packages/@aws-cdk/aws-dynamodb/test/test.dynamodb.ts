@@ -1581,7 +1581,6 @@ export = {
           name: 'id',
           type: AttributeType.STRING
         },
-        billingMode: BillingMode.PAY_PER_REQUEST,
         replicationRegions: [
           'eu-west-2',
           'eu-central-1'
@@ -1629,7 +1628,6 @@ export = {
           name: 'id',
           type: AttributeType.STRING
         },
-        billingMode: BillingMode.PAY_PER_REQUEST,
         replicationRegions: [
           'eu-west-2',
           'eu-central-1'
@@ -1653,7 +1651,6 @@ export = {
           name: 'id',
           type: AttributeType.STRING
         },
-        billingMode: BillingMode.PAY_PER_REQUEST,
         replicationRegions: [
           'eu-west-1',
           'us-east-1',
