@@ -71,7 +71,7 @@ export interface S3DownloadOptions {
 }
 
 /**
- * Options when executing a file. 
+ * Options when executing a file.
  */
 export interface ExecuteFileOptions {
 
