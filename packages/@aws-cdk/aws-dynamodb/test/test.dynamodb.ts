@@ -1,7 +1,7 @@
 import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as iam from '@aws-cdk/aws-iam';
-import { CfnDeletionPolicy, ConstructNode, RemovalPolicy, Stack, Tag } from '@aws-cdk/core';
+import { App, CfnDeletionPolicy, ConstructNode, RemovalPolicy, Stack, Tag } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import {
   Attribute,
@@ -1569,6 +1569,98 @@ export = {
       test.done();
     },
   },
+
+  'global': {
+    'create replicas'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      new Table(stack, 'Table', {
+        partitionKey: {
+          name: 'id',
+          type: AttributeType.STRING
+        },
+        replicationRegions: [
+          'eu-west-2',
+          'eu-central-1'
+        ],
+      });
+
+      // THEN
+      expect(stack).to(haveResource('Custom::DynamoDBReplica', {
+        Region: 'eu-west-2'
+      }));
+      expect(stack).to(haveResource('Custom::DynamoDBReplica', {
+        Region: 'eu-central-1'
+      }));
+
+      test.done();
+    },
+
+    'throws with PROVISIONED billing mode'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+
+      // THEN
+      test.throws(() => new Table(stack, 'Table', {
+        partitionKey: {
+          name: 'id',
+          type: AttributeType.STRING
+        },
+        replicationRegions: [
+          'eu-west-2',
+          'eu-central-1'
+        ],
+        billingMode: BillingMode.PROVISIONED,
+      }), /`PAY_PER_REQUEST`/);
+
+      test.done();
+    },
+
+    'throws when stream is set and not set to NEW_AND_OLD_IMAGES'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+
+      // THEN
+      test.throws(() => new Table(stack, 'Table', {
+        partitionKey: {
+          name: 'id',
+          type: AttributeType.STRING
+        },
+        replicationRegions: [
+          'eu-west-2',
+          'eu-central-1'
+        ],
+        stream: StreamViewType.OLD_IMAGE,
+      }), /`NEW_AND_OLD_IMAGES`/);
+
+      test.done();
+    },
+
+    'throws with replica in same region as stack'(test: Test) {
+      // GIVEN
+      const app = new App();
+      const stack = new Stack(app, 'Stack', {
+        env: { region: 'us-east-1' }
+      });
+
+      // THEN
+      test.throws(() => new Table(stack, 'Table', {
+        partitionKey: {
+          name: 'id',
+          type: AttributeType.STRING
+        },
+        replicationRegions: [
+          'eu-west-1',
+          'us-east-1',
+          'eu-west-2',
+        ],
+      }), /`replicationRegions` cannot include the region where this stack is deployed/);
+
+      test.done();
+    }
+  }
 };
 
 function testGrant(test: Test, expectedActions: string[], invocation: (user: iam.IPrincipal, table: Table) => void) {
