@@ -58,6 +58,25 @@ export = {
     test.done();
   },
 
+  async 'on event does not call updateTable for Update requests'(test: Test) {
+    const updateTableMock = sinon.fake.resolves({});
+
+    AWS.mock('DynamoDB', 'updateTable', updateTableMock);
+
+    const data = await onEventHandler({
+      ...createEvent,
+      RequestType: 'Update',
+    });
+
+    sinon.assert.notCalled(updateTableMock);
+
+    test.deepEqual(data, {
+      PhysicalResourceId: 'eu-west-2'
+    });
+
+    test.done();
+  },
+
   async 'is complete for create returns false without replicas'(test: Test) {
     const describeTableMock = sinon.fake.resolves({
       Table: {}
@@ -93,6 +112,28 @@ export = {
     test.done();
   },
 
+  async 'is complete for create returns false when table is not active'(test: Test) {
+    const describeTableMock = sinon.fake.resolves({
+      Table: {
+        Replicas: [
+          {
+            RegionName: 'eu-west-2',
+            ReplicaStatus: 'ACTIVE'
+          }
+        ],
+        TableStatus: 'UPDATING',
+      }
+    });
+
+    AWS.mock('DynamoDB', 'describeTable', describeTableMock);
+
+    const data = await isCompleteHandler(createEvent);
+
+    test.deepEqual(data, { IsComplete: false });
+
+    test.done();
+  },
+
   async 'is complete for create returns true when replica is active'(test: Test) {
     const describeTableMock = sinon.fake.resolves({
       Table: {
@@ -101,7 +142,8 @@ export = {
             RegionName: 'eu-west-2',
             ReplicaStatus: 'ACTIVE'
           }
-        ]
+        ],
+        TableStatus: 'ACTIVE',
       }
     });
 
@@ -122,7 +164,8 @@ export = {
             RegionName: 'eu-west-1',
             ReplicaStatus: 'ACTIVE'
           }
-        ]
+        ],
+        TableStatus: 'ACTIVE',
       }
     });
 
