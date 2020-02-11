@@ -278,7 +278,9 @@ export = {
                     "kms:Delete*",
                     "kms:ScheduleKeyDeletion",
                     "kms:CancelKeyDeletion",
-                    "kms:GenerateDataKey"
+                    "kms:GenerateDataKey",
+                    "kms:TagResource",
+                    "kms:UntagResource"
                   ],
                   "Effect": "Allow",
                   "Principal": {
@@ -827,7 +829,8 @@ export = {
           "Statement": [
             {
               "Action": ["kms:Create*", "kms:Describe*", "kms:Enable*", "kms:List*", "kms:Put*", "kms:Update*",
-                "kms:Revoke*", "kms:Disable*", "kms:Get*", "kms:Delete*", "kms:ScheduleKeyDeletion", "kms:CancelKeyDeletion", "kms:GenerateDataKey"],
+                "kms:Revoke*", "kms:Disable*", "kms:Get*", "kms:Delete*", "kms:ScheduleKeyDeletion", "kms:CancelKeyDeletion",
+                "kms:GenerateDataKey", "kms:TagResource", "kms:UntagResource"],
               "Effect": "Allow",
               "Principal": {
                 "AWS": {
@@ -882,7 +885,9 @@ export = {
                       "kms:Delete*",
                       "kms:ScheduleKeyDeletion",
                       "kms:CancelKeyDeletion",
-                      "kms:GenerateDataKey"
+                      "kms:GenerateDataKey",
+                      "kms:TagResource",
+                      "kms:UntagResource"
                     ],
                     "Effect": "Allow",
                     "Principal": {
