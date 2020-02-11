@@ -179,6 +179,10 @@ export class ApplicationListenerRule extends cdk.Construct {
       throw new Error(`'${providedActions}' specified together, specify only one`);
     }
 
+    if (props.priority <= 0) {
+      throw new Error('Priority must have value greater than or equal to 1');
+    }
+
     this.listener = props.listener;
 
     const resource = new CfnListenerRule(this, 'Resource', {

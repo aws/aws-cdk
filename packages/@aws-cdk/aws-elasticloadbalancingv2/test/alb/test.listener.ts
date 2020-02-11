@@ -773,6 +773,30 @@ export = {
     test.done();
   },
 
+  'Throws when specifying priority 0'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'LoadBalancer', {
+      vpc
+    });
+    const listener = lb.addListener('Listener', {
+      port: 80
+    });
+
+    // THEN
+    test.throws(() => new elbv2.ApplicationListenerRule(stack, 'Rule', {
+      listener,
+      priority: 0,
+      pathPattern: '/hello',
+      fixedResponse: {
+        statusCode: '500'
+      }
+    }), Error, 'Priority must have value greater than or equal to 1');
+
+    test.done();
+  },
+
   'Throws when specifying both target groups and redirect reponse'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
