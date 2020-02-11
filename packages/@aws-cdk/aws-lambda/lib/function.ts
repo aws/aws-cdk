@@ -407,6 +407,11 @@ export class Function extends FunctionBase {
    */
   public readonly grantPrincipal: iam.IPrincipal;
 
+  /**
+   * The DLQ associated with this Lambda Function (this is an optional attribute).
+   */
+  public readonly deadLetterQueue?: sqs.IQueue;
+
   public readonly permissionsNode = this.node;
 
   protected readonly canCreatePermissions = true;
@@ -450,6 +455,8 @@ export class Function extends FunctionBase {
     const code = props.code.bind(this);
     verifyCodeConfig(code, props.runtime);
 
+    this.deadLetterQueue = this.buildDeadLetterQueue(props);
+
     const resource: CfnFunction = new CfnFunction(this, 'Resource', {
       functionName: this.physicalName,
       description: props.description,
@@ -467,7 +474,7 @@ export class Function extends FunctionBase {
       environment: Lazy.anyValue({ produce: () => this.renderEnvironment() }),
       memorySize: props.memorySize,
       vpcConfig: this.configureVpc(props),
-      deadLetterConfig: this.buildDeadLetterConfig(props),
+      deadLetterConfig: this.buildDeadLetterConfig(this.deadLetterQueue),
       tracingConfig: this.buildTracingConfig(props),
       reservedConcurrentExecutions: props.reservedConcurrentExecutions
     });
@@ -668,7 +675,7 @@ export class Function extends FunctionBase {
     };
   }
 
-  private buildDeadLetterConfig(props: FunctionProps) {
+  private buildDeadLetterQueue(props: FunctionProps) {
     if (props.deadLetterQueue && props.deadLetterQueueEnabled === false) {
       throw Error('deadLetterQueue defined but deadLetterQueueEnabled explicitly set to false');
     }
@@ -686,9 +693,17 @@ export class Function extends FunctionBase {
       resources: [deadLetterQueue.queueArn]
     }));
 
-    return {
-      targetArn: deadLetterQueue.queueArn
-    };
+    return deadLetterQueue;
+  }
+
+  private buildDeadLetterConfig(deadLetterQueue?: sqs.IQueue) {
+    if (deadLetterQueue) {
+      return {
+        targetArn: deadLetterQueue.queueArn
+      };
+    } else {
+      return undefined;
+    }
   }
 
   private buildTracingConfig(props: FunctionProps) {

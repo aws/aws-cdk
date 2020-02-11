@@ -240,7 +240,9 @@ test('add s3 action', () => {
             'kms:Delete*',
             'kms:ScheduleKeyDeletion',
             'kms:CancelKeyDeletion',
-            "kms:GenerateDataKey"
+            "kms:GenerateDataKey",
+            "kms:TagResource",
+            "kms:UntagResource"
           ],
           Effect: 'Allow',
           Principal: {
