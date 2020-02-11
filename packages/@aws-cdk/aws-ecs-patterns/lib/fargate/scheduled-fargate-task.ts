@@ -62,7 +62,7 @@ export interface ScheduledFargateTaskImageOptions extends ScheduledTaskImageProp
 /**
  * The properties for the ScheduledFargateTask using a task definition.
  */
-export interface ScheduledFargateTaskDefinitionOptions extends ScheduledTaskBaseProps {
+export interface ScheduledFargateTaskDefinitionOptions {
   /**
    * The task definition to use for tasks in the service. Image or taskDefinition must be specified, but not both.
    *
