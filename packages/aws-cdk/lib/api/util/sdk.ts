@@ -375,7 +375,7 @@ async function makeCLICompatibleCredentialProvider(profile: string | undefined, 
     () => new AWS.EnvironmentCredentials('AWS'),
     () => new AWS.EnvironmentCredentials('AMAZON'),
   ];
-  if (fs.pathExists(filename)) {
+  if (await fs.pathExists(filename)) {
     sources.push(() => new AWS.SharedIniFileCredentials({ profile, filename }));
   }
 
