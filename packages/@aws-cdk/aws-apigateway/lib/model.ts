@@ -61,7 +61,7 @@ export interface ModelOptions {
    * The content type for the model. You can also force a
    * content type in the request or response model mapping.
    *
-   * @default -
+   * @default 'application/json'
    */
   readonly contentType?: string;
 
@@ -167,7 +167,7 @@ export class Model extends Resource implements IModel {
     const modelProps: CfnModelProps = {
       name: this.physicalName,
       restApiId: props.restApi.restApiId,
-      contentType: props.contentType,
+      contentType: props.contentType ?? 'application/json',
       description: props.description,
       schema: util.JsonSchemaMapper.toCfnJsonSchema(props.schema)
     };
