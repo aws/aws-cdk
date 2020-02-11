@@ -618,8 +618,6 @@ export class Table extends TableBase {
       this.billingMode = BillingMode.PAY_PER_REQUEST;
     } else if (props.stream) {
       streamSpecification = { streamViewType : props.stream };
-    } else {
-      streamSpecification = undefined;
     }
 
     this.table = new CfnTable(this, 'Resource', {
