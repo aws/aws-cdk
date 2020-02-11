@@ -8,7 +8,7 @@ import { Test } from 'nodeunit';
 import * as ecsPatterns from '../../lib';
 
 export = {
-  'setting loadBalancerType to Network creates an NLB'(test: Test) {
+  'setting loadBalancerType to Network creates an NLB Public'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -24,7 +24,32 @@ export = {
 
     // THEN
     expect(stack).to(haveResourceLike('AWS::ElasticLoadBalancingV2::LoadBalancer', {
-      Type: 'network'
+      Type: 'network',
+      Scheme: "internet-facing"
+    }));
+
+    test.done();
+  },
+
+  'setting loadBalancerType to Network and publicLoadBalancer to false creates an NLB Private'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // WHEN
+    new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'Service', {
+      cluster,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app")
+      },
+      publicLoadBalancer: false,
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      Type: 'network',
+      Scheme: "internal"
     }));
 
     test.done();
