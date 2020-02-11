@@ -1,7 +1,7 @@
 import { AttributeType, BillingMode, Table } from '@aws-cdk/aws-dynamodb';
 import { App, Stack } from '@aws-cdk/core';
 import { join } from 'path';
-import { GraphQLApi, KeyCondition, MappingTemplate } from '../lib';
+import { GraphQLApi, KeyCondition, MappingTemplate, PrimaryKey, Values } from '../lib';
 
 const app = new App();
 const stack = new Stack(app, 'aws-appsync-integ');
@@ -48,13 +48,13 @@ customerDS.createResolver({
 customerDS.createResolver({
     typeName: 'Mutation',
     fieldName: 'addCustomer',
-    requestMappingTemplate: MappingTemplate.dynamoDbPutItem('id', 'customer'),
+    requestMappingTemplate: MappingTemplate.dynamoDbPutItem(PrimaryKey.partition('id').auto(), Values.projecting('customer')),
     responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
 });
 customerDS.createResolver({
     typeName: 'Mutation',
     fieldName: 'saveCustomer',
-    requestMappingTemplate: MappingTemplate.dynamoDbPutItem('id', 'customer', 'id'),
+    requestMappingTemplate: MappingTemplate.dynamoDbPutItem(PrimaryKey.partition('id').is('id'), Values.projecting('customer')),
     responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
 });
 customerDS.createResolver({
