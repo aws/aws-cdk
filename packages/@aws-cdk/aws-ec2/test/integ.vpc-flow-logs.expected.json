@@ -514,7 +514,7 @@
         }
       }
     },
-    "VPCFlowLogsS3S3BucketAEB8DB17": {
+    "VPCFlowLogsS3BucketFB7DC2BE": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
         "Tags": [
@@ -537,7 +537,7 @@
         "TrafficType": "ALL",
         "LogDestination": {
           "Fn::GetAtt": [
-            "VPCFlowLogsS3S3BucketAEB8DB17",
+            "VPCFlowLogsS3BucketFB7DC2BE",
             "Arn"
           ]
         },
@@ -561,15 +561,7 @@
         }
       }
     },
-    "FlowLogsCWLogGroup0398E8F8": {
-      "Type": "AWS::Logs::LogGroup",
-      "Properties": {
-        "RetentionInDays": 731
-      },
-      "UpdateReplacePolicy": "Retain",
-      "DeletionPolicy": "Retain"
-    },
-    "FlowLogsCWPolicy0FA339D1": {
+    "FlowLogsCWIAMRoleDefaultPolicy943C8A20": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -601,13 +593,21 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "FlowLogsCWPolicy0FA339D1",
+        "PolicyName": "FlowLogsCWIAMRoleDefaultPolicy943C8A20",
         "Roles": [
           {
             "Ref": "FlowLogsCWIAMRole017AD736"
           }
         ]
       }
+    },
+    "FlowLogsCWLogGroup0398E8F8": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "RetentionInDays": 731
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
     },
     "FlowLogsCWFlowLog9CED86DA": {
       "Type": "AWS::EC2::FlowLog",

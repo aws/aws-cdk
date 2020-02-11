@@ -1,4 +1,7 @@
 import { countResources, expect, haveResource } from '@aws-cdk/assert';
+import * as iam from '@aws-cdk/aws-iam';
+import * as s3 from '@aws-cdk/aws-s3';
+import * as logs from '@aws-cdk/aws-logs';
 import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { FlowLog, FlowLogDestination, FlowLogResourceType, Vpc } from '../lib';
@@ -32,6 +35,50 @@ export = {
     expect(stack).notTo(haveResource('AWS::S3::Bucket'));
     test.done();
   },
+  'with cloudwatch logs as the destination, allows use of existing resources'(test: Test) {
+    const stack = getTestStack();
+
+    new FlowLog(stack, 'FlowLogs', {
+      resourceType: FlowLogResourceType.fromNetworkInterfaceId('eni-123456'),
+      destination: FlowLogDestination.toCloudWatchLogs(
+        new logs.LogGroup(stack, 'TestLogGroup', {
+          retention: logs.RetentionDays.FIVE_DAYS
+        }),
+        new iam.Role(stack, 'TestRole', {
+          roleName: 'TestName',
+          assumedBy: new iam.ServicePrincipal('vpc-flow-logs.amazonaws.com')
+        })
+      )
+    });
+
+    expect(stack).to(haveResource('AWS::Logs::LogGroup', {
+      RetentionInDays: 5
+    }));
+    expect(stack).to(haveResource('AWS::IAM::Role', {
+      RoleName: 'TestName'
+    }));
+    expect(stack).notTo(haveResource('AWS::S3::Bucket'));
+    test.done();
+  },
+  'with s3 as the destination, allows use of existing resources'(test: Test) {
+    const stack = getTestStack();
+
+    new FlowLog(stack, 'FlowLogs', {
+      resourceType: FlowLogResourceType.fromNetworkInterfaceId('eni-123456'),
+      destination: FlowLogDestination.toS3(
+        new s3.Bucket(stack, 'TestBucket', {
+          bucketName: 'testbucket'
+        })
+      )
+    });
+
+    expect(stack).notTo(haveResource('AWS::Logs::LogGroup'));
+    expect(stack).notTo(haveResource('AWS::IAM::Role'));
+    expect(stack).to(haveResource('AWS::S3::Bucket', {
+      BucketName: 'testbucket'
+    }));
+    test.done();
+  },
   'with s3 as the destination and all the defaults set, it successfully creates all the resources'(
     test: Test
   ) {
@@ -48,7 +95,7 @@ export = {
         TrafficType: 'ALL',
         ResourceId: 'eni-123456',
         LogDestination: {
-          'Fn::GetAtt': ['FlowLogsS3Bucket274C7752', 'Arn']
+          'Fn::GetAtt': ['FlowLogsBucket87F67F60', 'Arn']
         }
       })
     );
