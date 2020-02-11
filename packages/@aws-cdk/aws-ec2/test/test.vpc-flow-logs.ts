@@ -1,7 +1,7 @@
 import { countResources, expect, haveResource } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
-import * as s3 from '@aws-cdk/aws-s3';
 import * as logs from '@aws-cdk/aws-logs';
+import * as s3 from '@aws-cdk/aws-s3';
 import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { FlowLog, FlowLogDestination, FlowLogResourceType, Vpc } from '../lib';
