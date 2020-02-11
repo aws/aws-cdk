@@ -7,7 +7,7 @@ export class ExampleConstruct extends cdk.Construct {
 
     /// !show
     const group = new Group(this, 'MyGroup');
-    group.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('policy/AdministratorAccess'));
+    group.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'));
     /// !hide
   }
 }

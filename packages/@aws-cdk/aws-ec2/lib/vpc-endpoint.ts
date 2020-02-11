@@ -201,6 +201,37 @@ export interface IInterfaceVpcEndpointService {
    * The port of the service.
    */
   readonly port: number;
+
+  /**
+   * Whether Private DNS is supported by default.
+   */
+  readonly privateDnsDefault?: boolean;
+}
+
+/**
+ * A custom-hosted service for an interface VPC endpoint.
+ */
+export class InterfaceVpcEndpointService implements IInterfaceVpcEndpointService {
+
+  /**
+   * The name of the service.
+   */
+  public readonly name: string;
+
+  /**
+   * The port of the service.
+   */
+  public readonly port: number;
+
+  /**
+   * Whether Private DNS is supported by default.
+   */
+  public readonly privateDnsDefault?: boolean = false;
+
+  constructor(name: string, port?: number) {
+    this.name = name;
+    this.port = port || 443;
+  }
 }
 
 /**
@@ -258,6 +289,11 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
    */
   public readonly port: number;
 
+  /**
+   * Whether Private DNS is supported by default.
+   */
+  public readonly privateDnsDefault?: boolean = true;
+
   constructor(name: string, prefix?: string, port?: number) {
     this.name = `${prefix || 'com.amazonaws'}.${Aws.REGION}.${name}`;
     this.port = port || 443;
@@ -277,7 +313,8 @@ export interface InterfaceVpcEndpointOptions {
    * Whether to associate a private hosted zone with the specified VPC. This
    * allows you to make requests to the service using its default DNS hostname.
    *
-   * @default true
+   * @default set by the instance of IInterfaceVpcEndpointService, or true if
+   * not defined by the instance of IInterfaceVpcEndpointService
    */
   readonly privateDnsEnabled?: boolean;
 
@@ -408,7 +445,7 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
     const subnetIds = subnets.subnetIds;
 
     const endpoint = new CfnVPCEndpoint(this, 'Resource', {
-      privateDnsEnabled: props.privateDnsEnabled !== undefined ? props.privateDnsEnabled : true,
+      privateDnsEnabled: props.privateDnsEnabled ?? props.service.privateDnsDefault ?? true,
       policyDocument: Lazy.anyValue({ produce: () => this.policyDocument }),
       securityGroupIds: securityGroups.map(s => s.securityGroupId),
       serviceName: props.service.name,

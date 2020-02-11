@@ -1,4 +1,6 @@
+import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
+import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
 import * as _ from 'lodash';
 import {Test, testCase} from 'nodeunit';
@@ -85,5 +87,86 @@ export = testCase({
       code: lambda.Code.fromInline('')
     }), /Lambda inline code cannot be empty/);
     test.done();
-  }
+  },
+
+  'logGroup is correctly returned'(test: Test) {
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'fn', {
+      handler: 'foo',
+      runtime: lambda.Runtime.NODEJS_10_X,
+      code: lambda.Code.fromInline('foo'),
+    });
+    const logGroup = fn.logGroup;
+    test.ok(logGroup.logGroupName);
+    test.ok(logGroup.logGroupArn);
+    test.done();
+  },
+
+  'dlq is returned when provided by user'(test: Test) {
+    const stack = new cdk.Stack();
+
+    const dlQueue = new sqs.Queue(stack, 'DeadLetterQueue', {
+      queueName: 'MyLambda_DLQ',
+      retentionPeriod: cdk.Duration.days(14)
+    });
+
+    const fn = new lambda.Function(stack, 'fn', {
+      handler: 'foo',
+      runtime: lambda.Runtime.NODEJS_10_X,
+      code: lambda.Code.fromInline('foo'),
+      deadLetterQueue: dlQueue,
+    });
+    const deadLetterQueue = fn.deadLetterQueue;
+    test.ok(deadLetterQueue?.queueArn);
+    test.ok(deadLetterQueue?.queueName);
+    test.ok(deadLetterQueue?.queueUrl);
+    test.done();
+  },
+
+  'dlq is returned when setup by cdk'(test: Test) {
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'fn', {
+      handler: 'foo',
+      runtime: lambda.Runtime.NODEJS_10_X,
+      code: lambda.Code.fromInline('foo'),
+      deadLetterQueueEnabled: true,
+    });
+    const deadLetterQueue = fn.deadLetterQueue;
+    test.ok(deadLetterQueue?.queueArn);
+    test.ok(deadLetterQueue?.queueName);
+    test.ok(deadLetterQueue?.queueUrl);
+    test.done();
+  },
+
+  'dlq is undefined when not setup'(test: Test) {
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'fn', {
+      handler: 'foo',
+      runtime: lambda.Runtime.NODEJS_10_X,
+      code: lambda.Code.fromInline('foo'),
+    });
+    const deadLetterQueue = fn.deadLetterQueue;
+    test.ok(deadLetterQueue === undefined);
+    test.done();
+  },
+
+  'one and only one child LogRetention construct will be created'(test: Test) {
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'fn', {
+      handler: 'foo',
+      runtime: lambda.Runtime.NODEJS_10_X,
+      code: lambda.Code.fromInline('foo'),
+      logRetention: logs.RetentionDays.FIVE_DAYS,
+    });
+
+    // tslint:disable:no-unused-expression
+    // Call logGroup a few times. If more than one instance of LogRetention was created,
+    // the second call will fail on duplicate constructs.
+    fn.logGroup;
+    fn.logGroup;
+    fn.logGroup;
+    // tslint:enable:no-unused-expression
+
+    test.done();
+  },
 });

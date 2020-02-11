@@ -56,7 +56,7 @@ def kubectl(verb, file):
             output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as exc:
             output = exc.output
-            if 'i/o timeout' in output and retry > 0:
+            if b'i/o timeout' in output and retry > 0:
                 logger.info("kubectl timed out, retries left: %s" % retry)
                 retry = retry - 1
             else:

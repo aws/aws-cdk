@@ -1,7 +1,7 @@
 {
   "name": "cdk-build-tools",
   "private": true,
-  "version": "1.20.0",
+  "version": "1.23.0",
   "description": "Tools package with shared build scripts for CDK packages",
   "main": "lib/index.js",
   "repository": {
@@ -32,28 +32,28 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/fs-extra": "^8.0.1",
-    "@types/jest": "^24.0.25",
-    "@types/yargs": "^13.0.4",
-    "pkglint": "1.20.0"
+    "@types/jest": "^25.1.1",
+    "@types/yargs": "^15.0.3",
+    "pkglint": "1.23.0"
   },
   "dependencies": {
-    "@typescript-eslint/eslint-plugin": "^2.15.0",
-    "@typescript-eslint/parser": "^2.14.0",
-    "awslint": "1.20.0",
+    "@typescript-eslint/eslint-plugin": "^2.19.0",
+    "@typescript-eslint/parser": "^2.19.0",
+    "awslint": "1.23.0",
     "colors": "^1.4.0",
     "eslint": "^6.8.0",
-    "eslint-import-resolver-node": "^0.3.2",
+    "eslint-import-resolver-node": "^0.3.3",
     "eslint-import-resolver-typescript": "^2.0.0",
-    "eslint-plugin-import": "^2.19.1",
+    "eslint-plugin-import": "^2.20.1",
     "fs-extra": "^8.1.0",
     "jest": "^24.9.0",
-    "jsii": "^0.21.1",
-    "jsii-pacmak": "^0.21.1",
+    "jsii": "^0.22.0",
+    "jsii-pacmak": "^0.22.0",
     "nodeunit": "^0.11.3",
     "nyc": "^15.0.0",
-    "ts-jest": "^24.2.0",
+    "ts-jest": "^25.2.0",
     "tslint": "^5.20.1",
-    "typescript": "~3.7.4",
+    "typescript": "~3.7.5",
     "yargs": "^15.1.0"
   },
   "keywords": [

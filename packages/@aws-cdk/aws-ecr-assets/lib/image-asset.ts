@@ -2,15 +2,13 @@ import * as assets from '@aws-cdk/assets';
 import * as ecr from '@aws-cdk/aws-ecr';
 import { Construct, Stack, Token } from '@aws-cdk/core';
 import * as fs from 'fs';
+import * as minimatch from 'minimatch';
 import * as path from 'path';
-import { AdoptedRepository } from './adopted-repository';
 
-export interface DockerImageAssetProps extends assets.FingerprintOptions {
-  /**
-   * The directory where the Dockerfile is stored
-   */
-  readonly directory: string;
-
+/**
+ * Options for DockerImageAsset
+ */
+export interface DockerImageAssetOptions extends assets.FingerprintOptions {
   /**
    * ECR repository name
    *
@@ -18,7 +16,10 @@ export interface DockerImageAssetProps extends assets.FingerprintOptions {
    * from a Kubernetes Pod. Note, this is only the repository name, without the
    * registry and the tag parts.
    *
-   * @default - automatically derived from the asset's ID.
+   * @default - the default ECR repository for CDK assets
+   * @deprecated to control the location of docker image assets, please override
+   * `Stack.addDockerImageAsset`. this feature will be removed in future
+   * releases.
    */
   readonly repositoryName?: string;
 
@@ -46,6 +47,16 @@ export interface DockerImageAssetProps extends assets.FingerprintOptions {
    * @default 'Dockerfile'
    */
   readonly file?: string;
+}
+
+/**
+ * Props for DockerImageAssets
+ */
+export interface DockerImageAssetProps extends DockerImageAssetOptions {
+  /**
+   * The directory where the Dockerfile is stored
+   */
+  readonly directory: string;
 }
 
 /**
@@ -93,6 +104,17 @@ export class DockerImageAsset extends Construct implements assets.IAsset {
       exclude = [...exclude, ...fs.readFileSync(ignore).toString().split('\n').filter(e => !!e)];
     }
 
+    // make sure the docker file and the dockerignore file end up in the staging area
+    // see https://github.com/aws/aws-cdk/issues/6004
+    exclude = exclude.filter(ignoreExpression => {
+      return !(minimatch(file, ignoreExpression, { matchBase: true }) ||
+             minimatch(ignore, ignoreExpression, { matchBase: true }));
+    });
+
+    if (props.repositoryName) {
+      this.node.addWarning(`DockerImageAsset.repositoryName is deprecated. Override "core.Stack.addDockerImageAsset" to control asset locations`);
+    }
+
     // include build context in "extra" so it will impact the hash
     const extraHash: { [field: string]: any } = { };
     if (props.extraHash)      { extraHash.user = props.extraHash; }
@@ -100,6 +122,11 @@ export class DockerImageAsset extends Construct implements assets.IAsset {
     if (props.target)         { extraHash.target = props.target; }
     if (props.file)           { extraHash.file = props.file; }
     if (props.repositoryName) { extraHash.repositoryName = props.repositoryName; }
+
+    // add "salt" to the hash in order to invalidate the image in the upgrade to
+    // 1.21.0 which removes the AdoptedRepository resource (and will cause the
+    // deletion of the ECR repository the app used).
+    extraHash.version = '1.21.0';
 
     const staging = new assets.Staging(this, 'Staging', {
       ...props,
@@ -117,18 +144,12 @@ export class DockerImageAsset extends Construct implements assets.IAsset {
       directoryName: staging.stagedPath,
       dockerBuildArgs: props.buildArgs,
       dockerBuildTarget: props.target,
-      dockerFile: file,
-      repositoryName: props.repositoryName || `cdk/${this.node.uniqueId.replace(/[:/]/g, '-').toLowerCase()}`,
-      sourceHash: staging.sourceHash
+      dockerFile: props.file,
+      repositoryName: props.repositoryName,
+      sourceHash: staging.sourceHash,
     });
 
-    // Require that repository adoption happens first, so we route the
-    // input ARN into the Custom Resource and then get the URI which we use to
-    // refer to the image FROM the Custom Resource.
-    //
-    // If adoption fails (because the repository might be twice-adopted), we
-    // haven't already started using the image.
-    this.repository = new AdoptedRepository(this, 'AdoptRepository', { repositoryName: location.repositoryName });
+    this.repository = ecr.Repository.fromRepositoryName(this, 'Repository', location.repositoryName);
     this.imageUri = location.imageUri;
   }
 }

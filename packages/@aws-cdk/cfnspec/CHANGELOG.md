@@ -1,3 +1,111 @@
+# CloudFormation Resource Specification v10.4.0
+
+## New Resource Types
+
+* AWS::ACMPCA::Certificate
+* AWS::ACMPCA::CertificateAuthority
+* AWS::ACMPCA::CertificateAuthorityActivation
+
+## Attribute Changes
+
+* AWS::Athena::NamedQuery NamedQueryId (__added__)
+* AWS::Transfer::Server VpcEndpointId (__added__)
+
+## Property Changes
+
+* AWS::Cognito::UserPool AccountRecoverySetting (__added__)
+
+## Property Type Changes
+
+* AWS::Cognito::UserPool.AccountRecoverySetting (__added__)
+* AWS::Cognito::UserPool.RecoveryOption (__added__)
+* AWS::Transfer::Server.EndpointDetails AddressAllocationIds (__added__)
+* AWS::Transfer::Server.EndpointDetails SubnetIds (__added__)
+* AWS::Transfer::Server.EndpointDetails VpcId (__added__)
+* AWS::Transfer::Server.EndpointDetails VpcEndpointId.Required (__changed__)
+  * Old: true
+  * New: false
+
+
+# CloudFormation Resource Specification v10.3.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::AppStream::Fleet Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::AppStream::ImageBuilder Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::EC2::Instance HibernationOptions (__added__)
+* AWS::EC2::Instance HostResourceGroupArn (__added__)
+* AWS::IoTEvents::DetectorModel EvaluationMethod (__added__)
+* AWS::RDS::DBInstance CACertificateIdentifier (__added__)
+* AWS::SSM::ResourceDataSync S3Destination (__added__)
+* AWS::SSM::ResourceDataSync SyncSource (__added__)
+* AWS::SSM::ResourceDataSync SyncType (__added__)
+* AWS::SSM::ResourceDataSync BucketName.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::SSM::ResourceDataSync BucketRegion.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::SSM::ResourceDataSync SyncFormat.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Transfer::User HomeDirectoryMappings (__added__)
+* AWS::Transfer::User HomeDirectoryType (__added__)
+* AWS::WAFv2::IPSet Addresses.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::IPSet IPAddressVersion.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::IPSet Name.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::WAFv2::RegexPatternSet Name.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::WAFv2::RegexPatternSet RegularExpressionList.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::RuleGroup Capacity.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::RuleGroup Name.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::WAFv2::RuleGroup VisibilityConfig.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::WebACL DefaultAction.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::WebACL Name.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::WAFv2::WebACL VisibilityConfig.Required (__changed__)
+  * Old: false
+  * New: true
+
+## Property Type Changes
+
+* AWS::EC2::Instance.HibernationOptions (__added__)
+* AWS::SSM::ResourceDataSync.AwsOrganizationsSource (__added__)
+* AWS::SSM::ResourceDataSync.S3Destination (__added__)
+* AWS::SSM::ResourceDataSync.SyncSource (__added__)
+* AWS::Transfer::User.HomeDirectoryMapEntry (__added__)
+* AWS::AutoScaling::AutoScalingGroup.LaunchTemplateOverrides WeightedCapacity (__added__)
+* AWS::SageMaker::Model.ContainerDefinition Mode (__added__)
+
+
 # CloudFormation Resource Specification v10.2.0
 
 ## New Resource Types

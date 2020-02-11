@@ -1,6 +1,6 @@
-import { expect, haveResource, SynthUtils } from '@aws-cdk/assert';
+import { expect, haveResource } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
-import { App, Construct, Lazy, Resource, Stack } from '@aws-cdk/core';
+import { App, Lazy, Stack } from '@aws-cdk/core';
 import { ASSET_METADATA } from '@aws-cdk/cx-api';
 import * as fs from 'fs';
 import { Test } from 'nodeunit';
@@ -12,7 +12,8 @@ import { DockerImageAsset } from '../lib';
 export = {
   'test instantiating Asset Image'(test: Test) {
     // GIVEN
-    const stack = new Stack();
+    const app = new App();
+    const stack = new Stack(app, 'test-stack');
 
     // WHEN
     new DockerImageAsset(stack, 'Image', {
@@ -20,33 +21,19 @@ export = {
     });
 
     // THEN
-    const template = SynthUtils.synthesize(stack).template;
-    test.deepEqual(template.Parameters.AssetParameters1a17a141505ac69144931fe263d130f4612251caa4bbbdaf68a44ed0f405439cImageName1ADCADB3, {
-      Type: 'String',
-      Description: 'ECR repository name and tag for asset "1a17a141505ac69144931fe263d130f4612251caa4bbbdaf68a44ed0f405439c"'
-    });
-
-    test.done();
-  },
-
-  'repository name is derived from node unique id'(test: Test) {
-    // GIVEN
-    const stack = new Stack();
-    class CoolConstruct extends Resource {
-      constructor(scope: Construct, id: string) {
-        super(scope, id);
+    const asm = app.synth();
+    const artifact = asm.getStackArtifact(stack.artifactId);
+    test.deepEqual(artifact.template, {}, 'template is empty');
+    test.deepEqual(artifact.assets, [
+      {
+        repositoryName: 'aws-cdk/assets',
+        imageTag: 'baa2d6eb2a17c75424df631c8c70ff39f2d5f3bee8b9e1a109ee24ca17300540',
+        id: 'baa2d6eb2a17c75424df631c8c70ff39f2d5f3bee8b9e1a109ee24ca17300540',
+        packaging: 'container-image',
+        path: 'asset.baa2d6eb2a17c75424df631c8c70ff39f2d5f3bee8b9e1a109ee24ca17300540',
+        sourceHash: 'baa2d6eb2a17c75424df631c8c70ff39f2d5f3bee8b9e1a109ee24ca17300540'
       }
-    }
-    const coolConstruct = new CoolConstruct(stack, 'CoolConstruct');
-
-    // WHEN
-    new DockerImageAsset(coolConstruct, 'Image', {
-      directory: path.join(__dirname, 'demo-image'),
-    });
-
-    // THEN
-    const assetMetadata = stack.node.metadata.find(({ type }) => type === ASSET_METADATA);
-    test.deepEqual(assetMetadata && assetMetadata.data.repositoryName, 'cdk/coolconstructimage78ab38fc');
+    ]);
     test.done();
   },
 
@@ -100,7 +87,7 @@ export = {
 
     // THEN
     const assetMetadata = stack.node.metadata.find(({ type }) => type === ASSET_METADATA);
-    test.deepEqual(assetMetadata && assetMetadata.data.file, path.join(directoryPath, 'Dockerfile.Custom'));
+    test.deepEqual(assetMetadata && assetMetadata.data.file, 'Dockerfile.Custom');
     test.done();
   },
 
@@ -131,13 +118,18 @@ export = {
                 "",
                 [
                   "arn:",
-                  { "Ref": "AWS::Partition" },
+                  {
+                    "Ref": "AWS::Partition"
+                  },
                   ":ecr:",
-                  { "Ref": "AWS::Region" },
+                  {
+                    "Ref": "AWS::Region"
+                  },
                   ":",
-                  { "Ref": "AWS::AccountId" },
-                  ":repository/",
-                  { "Fn::GetAtt": ["ImageAdoptRepositoryE1E84E35", "RepositoryName"] }
+                  {
+                    "Ref": "AWS::AccountId"
+                  },
+                  ":repository/aws-cdk/assets"
                 ]
               ]
             }
@@ -156,51 +148,6 @@ export = {
           "Ref": "MyUserDC45028B"
         }
       ]
-    }));
-
-    test.done();
-  },
-
-  'asset.repository.addToResourcePolicy can be used to modify the ECR resource policy via the adoption custom resource'(test: Test) {
-    // GIVEN
-    const stack = new Stack();
-    const asset = new DockerImageAsset(stack, 'Image', {
-      directory: path.join(__dirname, 'demo-image')
-    });
-
-    // WHEN
-    asset.repository.addToResourcePolicy(new iam.PolicyStatement({
-      actions: ['BAM:BOOM'],
-      principals: [new iam.ServicePrincipal('test.service')]
-    }));
-
-    // THEN
-    expect(stack).to(haveResource('Custom::ECRAdoptedRepository', {
-      "RepositoryName": {
-        "Fn::Select": [
-          0,
-          {
-            "Fn::Split": [
-              "@sha256:",
-              {
-                "Ref": "AssetParameters1a17a141505ac69144931fe263d130f4612251caa4bbbdaf68a44ed0f405439cImageName1ADCADB3"
-              }
-            ]
-          }
-        ]
-      },
-      "PolicyDocument": {
-        "Statement": [
-          {
-            "Action": "BAM:BOOM",
-            "Effect": "Allow",
-            "Principal": {
-              "Service": "test.service"
-            }
-          }
-        ],
-        "Version": "2012-10-17"
-      }
     }));
 
     test.done();
@@ -350,13 +297,13 @@ export = {
     const asset6 = new DockerImageAsset(stack, 'Asset6', { directory, extraHash: 'random-extra' });
     const asset7 = new DockerImageAsset(stack, 'Asset7', { directory, repositoryName: 'foo' });
 
-    test.deepEqual(asset1.sourceHash, 'b84a5001da0f5714e484134e2471213d7e987e22ee6219469029f1779370cc2a');
-    test.deepEqual(asset2.sourceHash, 'c6568a7946e92a408c60278f70834b901638e71237d470ed1e5e6d707c55c0c9');
-    test.deepEqual(asset3.sourceHash, '963a5329c170c54bc667fddab8d9cc4cec4bffb65ce3a1f323bb5fbc1d268732');
-    test.deepEqual(asset4.sourceHash, '0e3eb87273509e0f0d45d67d40fa3080566aa22abd7f976e1ce7ea60a8ccd0a8');
-    test.deepEqual(asset5.sourceHash, 'de0fd4b2bff8c9f180351fd59c6f2e9409fa21366453e1e0b75fedbd93dda1fc');
-    test.deepEqual(asset6.sourceHash, '00879adf80f97271bf6d7e214b4fac8a043fc6e2661912cbf4d898ccb317d46c');
-    test.deepEqual(asset7.sourceHash, 'b8abda995e51bd1a47b2705fa40021f3e9619a334bddb96866e808b09303eff7');
+    test.deepEqual(asset1.sourceHash, 'c555ab9f74e32ce24cd04ddeaa4d7b1b11c5740b9873a3f250e03bf73b28ce39');
+    test.deepEqual(asset2.sourceHash, '273bd9a95dbe346ad5b116736d44a350e90f57e2b9ba7fd3d334b61d0420f9fd');
+    test.deepEqual(asset3.sourceHash, '81a4b3fd058876c7705597500e7259ff436e521580f0bcb503a303dcac7e2a41');
+    test.deepEqual(asset4.sourceHash, '10259531feb68a3967d5d25b70ec9a37a6a8e1f5b04083fada3d0a084291a698');
+    test.deepEqual(asset5.sourceHash, '30e083bf51483a031759bc7fb35f69345de69fdbc511eec88bd3d1724b5ac0a9');
+    test.deepEqual(asset6.sourceHash, '594ae5a5d23367d18468fefca5a4e56ca83b077d1274a1f812f55c8c9ead9eaa');
+    test.deepEqual(asset7.sourceHash, 'bc007f81fe1dd0f0bbb24af898eba3f4f15edbff19b7abb3fac928439486d667');
     test.done();
   }
 };
