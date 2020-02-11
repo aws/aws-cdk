@@ -23,22 +23,6 @@ async function run() {
     
     } catch (error) {
 
-        if (error instanceof linter.LinterError) {            
-    
-            // only post a comment if its an actual validation error.
-            // otherwise its probably a bug and we should look at the build log to fix it.
-
-            gh = new github.GitHub(process.env.GITHUB_TOKEN);
-    
-            await gh.issues.createComment({
-                owner: "aws",
-                repo: "aws-cdk",
-                issue_number: number,
-                body: `🚫 ${error.message}`
-            });
-    
-        } 
-
         core.setFailed(error.message);
     }
 
