@@ -72,20 +72,20 @@
   },
   "dependencies": {
     "@aws-cdk/aws-certificatemanager": "1.23.0",
+    "@aws-cdk/aws-ec2": "1.23.0",
     "@aws-cdk/aws-elasticloadbalancingv2": "1.23.0",
     "@aws-cdk/aws-iam": "1.23.0",
     "@aws-cdk/aws-lambda": "1.23.0",
-    "@aws-cdk/core": "1.23.0",
-    "@aws-cdk/aws-ec2": "1.23.0"
+    "@aws-cdk/core": "1.23.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/aws-certificatemanager": "1.23.0",
+    "@aws-cdk/aws-ec2": "1.23.0",
     "@aws-cdk/aws-elasticloadbalancingv2": "1.23.0",
     "@aws-cdk/aws-iam": "1.23.0",
     "@aws-cdk/aws-lambda": "1.23.0",
-    "@aws-cdk/core": "1.23.0",
-    "@aws-cdk/aws-ec2": "1.23.0"
+    "@aws-cdk/core": "1.23.0"
   },
   "engines": {
     "node": ">= 10.3.0"

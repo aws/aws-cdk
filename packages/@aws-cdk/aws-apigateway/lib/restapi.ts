@@ -446,11 +446,9 @@ export class RestApi extends Resource implements IRestApi {
       throw new Error('Only one of the RestApi props, endpointTypes or endpointConfiguration, is allowed');
     }
     if (props.endpointConfiguration) {
-      const vpcEndpointIds = (props.endpointConfiguration.vpcEndpoints) ?
-        props.endpointConfiguration.vpcEndpoints.map(vpcEndpoint => vpcEndpoint.vpcEndpointId) : undefined;
       return {
         types: props.endpointConfiguration.types,
-        vpcEndpointIds
+        vpcEndpointIds: props.endpointConfiguration?.vpcEndpoints?.map(vpcEndpoint => vpcEndpoint.vpcEndpointId)
       };
     }
     if (props.endpointTypes) {
@@ -461,7 +459,7 @@ export class RestApi extends Resource implements IRestApi {
 }
 
 /**
-* The endpoint configuration of a REST API, including VPCs and endpoint types.
+ * The endpoint configuration of a REST API, including VPCs and endpoint types.
  *
  * EndpointConfiguration is a property of the AWS::ApiGateway::RestApi resource.
  */

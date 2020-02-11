@@ -583,7 +583,7 @@ See [#906](https://github.com/aws/aws-cdk/issues/906) for a list of CORS
 features which are not yet supported.
 
 ### Endpoint Configuration
-To define an endpoint type for the API gateway, use `endpointConfiguration` property:
+API gateway allows us to specify an [API Endpoint Type](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-api-endpoint-types.html). To define an endpoint type for the API gateway, use `endpointConfiguration` property:
 
 ```ts
 const api = new apigw.RestApi(stack, 'api', {
@@ -594,20 +594,22 @@ const api = new apigw.RestApi(stack, 'api', {
 ```
 
 You can also create an association between your Rest Api and a Vpc Endpoint. By doing so,
-Api Gateway will generate a new Route53 Alias DNS record which you can use to invoke your private
-APIs. Here is an example:
+Api Gateway will generate a new Route53 Alias DNS record which you can use to invoke your private APIs. More info can be found [here](https://docs.aws.amazon.com/apigateway/latest/developerguide/associate-private-api-with-vpc-endpoint.html).
+
+Here is an example:
 
 ```ts
 const someEndpoint: IVpcEndpoint = /* Get or Create endpoint here */
 const api = new apigw.RestApi(stack, 'api', {
   endpointConfiguration: {
     types: [ apigw.EndpointType.PRIVATE ],
-    vpcEndpoints: [someEndpoint]
+    vpcEndpoints: [ someEndpoint ]
   }
 });
 ```
 
 By performing this association, we can invoke the api gateway using the following format:
+
 ```
 https://{rest-api-id}-{vpce-id}.execute-api.{region}.amazonaws.com/{stage}
 ```
