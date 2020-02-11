@@ -1,7 +1,0 @@
-node_modules/
-
-dist
-.LAST_PACKAGE
-.LAST_BUILD
-*.snk
-!*.js
