@@ -1,3 +1,4 @@
+import { Bucket } from '@aws-cdk/aws-s3';
 import { Test } from 'nodeunit';
 import { Stack } from "../../core/lib";
 import * as ec2 from '../lib';
@@ -59,48 +60,52 @@ export = {
     );
     test.done();
   },
-  'can windows userdata download and execute S3 files'(test: Test) {
+  'can windows userdata download S3 files'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const userData = ec2.UserData.forWindows();
+    const bucket = Bucket.fromBucketName( stack, "testBucket", "test" );
+    const bucket2 = Bucket.fromBucketName( stack, "testBucket2", "test2" );
+
+    // WHEN
+    userData.addS3DownloadCommand({
+      bucket,
+      bucketKey: "filename.bat"
+    } );
+    userData.addS3DownloadCommand({
+      bucket: bucket2,
+      bucketKey: "filename2.bat",
+      localFile: "c:\\test\\location\\otherScript.bat"
+    } );
+
+    // THEN
+    const rendered = userData.render();
+    test.equals(rendered, '<powershell>mkdir (Split-Path -Path \'C:/temp/filename.bat\' ) -ea 0\n' +
+      'Read-S3Object -BucketName \'test\' -key \'filename.bat\' -file \'C:/temp/filename.bat\' -ErrorAction Stop\n' +
+      'mkdir (Split-Path -Path \'c:\\test\\location\\otherScript.bat\' ) -ea 0\n' +
+      'Read-S3Object -BucketName \'test2\' -key \'filename2.bat\' -file \'c:\\test\\location\\otherScript.bat\' -ErrorAction Stop</powershell>'
+    );
+    test.done();
+  },
+  'can windows userdata execute files'(test: Test) {
     // GIVEN
     const userData = ec2.UserData.forWindows();
 
     // WHEN
-    userData.addDownloadAndExecuteS3FileCommand({
-      bucketName: "test",
-      bucketKey: "filename.bat"
+    userData.addExecuteFileCommand({
+      filePath: "C:\\test\\filename.bat",
     } );
-    userData.addDownloadAndExecuteS3FileCommand({
-      bucketName: "test2",
-      bucketKey: "filename2.bat",
-      localFile: ".\\otherScript.sh"
-    } );
-    userData.addDownloadAndExecuteS3FileCommand({
-      bucketName: "test3",
-      bucketKey: "filename3.bat",
-      localFile: ".\\thirdScript.sh",
+    userData.addExecuteFileCommand({
+      filePath: "C:\\test\\filename2.bat",
       arguments: "arg1 arg2 -arg $variable"
     } );
 
     // THEN
     const rendered = userData.render();
-    test.equals(rendered, '<powershell>function download_and_execute_s3_file{\n' +
-        'Param(\n' +
-        '  [Parameter(Mandatory=$True)]\n' +
-        '  $bucketName,\n' +
-        '  [Parameter(Mandatory=$True)]\n' +
-        '  $bucketKey,\n' +
-        '  [Parameter(Mandatory=$True)]\n' +
-        '  $localFile,\n' +
-        '  [parameter(mandatory=$false,ValueFromRemainingArguments=$true)]\n' +
-        '  $arguments\n' +
-        ')\n' +
-        'mkdir (Split-Path -Path $localFile ) -ea 0\n' +
-        'Read-S3Object -BucketName $bucketName -key $bucketKey -file $localFile -ErrorAction Stop\n' +
-        '&"$localFile" @arguments\n' +
-        'if (!$?) { Write-Error \'Failed to execute file\' -ErrorAction Stop }\n' +
-        '}\n' +
-        'download_and_execute_s3_file test filename.bat C:/temp/filename.bat \n' +
-        'download_and_execute_s3_file test2 filename2.bat .\\otherScript.sh \n' +
-        'download_and_execute_s3_file test3 filename3.bat .\\thirdScript.sh arg1 arg2 -arg $variable</powershell>'
+    test.equals(rendered, '<powershell>&\'C:\\test\\filename.bat\' undefined\n' +
+      'if (!$?) { Write-Error \'Failed to execute the file "C:\\test\\filename.bat"\' -ErrorAction Stop }\n' +
+      '&\'C:\\test\\filename2.bat\' arg1 arg2 -arg $variable\n' +
+      'if (!$?) { Write-Error \'Failed to execute the file "C:\\test\\filename2.bat"\' -ErrorAction Stop }</powershell>'
     );
     test.done();
   },
@@ -158,45 +163,57 @@ export = {
         'command1');
     test.done();
   },
-  'can linux userdata download and execute S3 files'(test: Test) {
+  'can linux userdata download S3 files'(test: Test) {
     // GIVEN
+    const stack = new Stack();
     const userData = ec2.UserData.forLinux();
+    const bucket = Bucket.fromBucketName( stack, "testBucket", "test" );
+    const bucket2 = Bucket.fromBucketName( stack, "testBucket2", "test2" );
 
     // WHEN
-    userData.addDownloadAndExecuteS3FileCommand({
-      bucketName: "test",
-      bucketKey: "filename.sh" } );
-    userData.addDownloadAndExecuteS3FileCommand({
-      bucketName: "test2",
-      bucketKey: "filename2.sh",
-      localFile: "~/otherScript.sh"
+    userData.addS3DownloadCommand({
+      bucket,
+      bucketKey: "filename.sh"
     } );
-    userData.addDownloadAndExecuteS3FileCommand({
-      bucketName: "test3",
-      bucketKey: "filename3.sh",
-      localFile: "~/thirdScript.sh",
-      arguments: "arg1 arg2 $variable"
+    userData.addS3DownloadCommand({
+      bucket: bucket2,
+      bucketKey: "filename2.sh",
+      localFile: "c:\\test\\location\\otherScript.sh"
     } );
 
     // THEN
     const rendered = userData.render();
     test.equals(rendered, '#!/bin/bash\n' +
-        'download_and_execute_s3_file () {\n' +
-        'local s3Path=$1;\n' +
-        'local path=$2;\n' +
-        'shift;shift;\n' +
-        'echo "Downloading file ${s3Path} to ${path}";\n' +
-        'mkdir -p $(dirname ${path}) ;\n' +
-        'aws s3 cp ${s3Path} ${path};\n' +
-        'if [ $? -ne 0 ]; then exit 1;fi;\n' +
-        'chmod +x ${path};\n' +
-        'if [ $? -ne 0 ]; then exit 1;fi;\n' +
-        '${path} "$@"\n' +
-        'if [ $? -ne 0 ]; then exit 1;fi;\n' +
-        '}\n' +
-        'download_and_execute_s3_file s3://test/filename.sh /tmp/filename.sh \n' +
-        'download_and_execute_s3_file s3://test2/filename2.sh ~/otherScript.sh \n' +
-        'download_and_execute_s3_file s3://test3/filename3.sh ~/thirdScript.sh arg1 arg2 $variable');
+      'mkdir -p $(dirname \'/tmp/filename.sh\')\n' +
+      'aws s3 cp \'s3://test/filename.sh\' \'/tmp/filename.sh\'\n' +
+      'mkdir -p $(dirname \'c:\\test\\location\\otherScript.sh\')\n' +
+      'aws s3 cp \'s3://test2/filename2.sh\' \'c:\\test\\location\\otherScript.sh\''
+    );
+    test.done();
+  },
+  'can linux userdata execute files'(test: Test) {
+    // GIVEN
+    const userData = ec2.UserData.forLinux();
+
+    // WHEN
+    userData.addExecuteFileCommand({
+      filePath: "/tmp/filename.sh",
+    } );
+    userData.addExecuteFileCommand({
+      filePath: "/test/filename2.sh",
+      arguments: "arg1 arg2 -arg $variable"
+    } );
+
+    // THEN
+    const rendered = userData.render();
+    test.equals(rendered, '#!/bin/bash\n' +
+      'set -e\n' +
+      'chmod +x \'/tmp/filename.sh\'\n' +
+      '\'/tmp/filename.sh\' undefined\n' +
+      'set -e\n' +
+      'chmod +x \'/test/filename2.sh\'\n' +
+      '\'/test/filename2.sh\' arg1 arg2 -arg $variable'
+    );
     test.done();
   },
   'can create Custom user data'(test: Test) {
@@ -210,4 +227,50 @@ export = {
     test.equals(rendered, 'Some\nmultiline\ncontent');
     test.done();
   },
+  'Custom user data throws when adding on exit commands'(test: Test) {
+    // GIVEN
+    // WHEN
+    const userData = ec2.UserData.custom("");
+
+    // THEN
+    test.throws(() => userData.addOnExitCommands( "a command goes here" ));
+    test.done();
+  },
+  'Custom user data throws when adding signal command'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const resource = new ec2.Vpc(stack, 'RESOURCE');
+
+    // WHEN
+    const userData = ec2.UserData.custom("");
+
+    // THEN
+    test.throws(() => userData.addSignalOnExitCommand( resource ));
+    test.done();
+  },
+  'Custom user data throws when downloading file'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const userData = ec2.UserData.custom("");
+    const bucket = Bucket.fromBucketName( stack, "testBucket", "test" );
+    // WHEN
+    // THEN
+    test.throws(() => userData.addS3DownloadCommand({
+      bucket,
+      bucketKey: "filename.sh"
+    } ));
+    test.done();
+  },
+  'Custom user data throws when executing file'(test: Test) {
+    // GIVEN
+    const userData = ec2.UserData.custom("");
+    // WHEN
+    // THEN
+    test.throws(() =>
+    userData.addExecuteFileCommand({
+      filePath: "/tmp/filename.sh",
+    } ));
+    test.done();
+  },
+
 };

@@ -1,3 +1,4 @@
+import { IBucket } from "@aws-cdk/aws-s3";
 import { CfnElement, Resource, Stack } from "@aws-cdk/core";
 import { OperatingSystemType } from "./machine-image";
 
@@ -21,7 +22,7 @@ export interface S3DownloadAndExecuteOptions {
   /**
    * Name of the bucket to download from
    */
-  readonly bucketName: string;
+  readonly bucket: IBucket;
 
   /**
    * The key of the file to download
@@ -42,6 +43,48 @@ export interface S3DownloadAndExecuteOptions {
    * @default no arguments.
    */
   readonly arguments?: string
+}
+
+/**
+ * Options when downloading files from S3
+ */
+export interface S3DownloadOptions {
+
+  /**
+   * Name of the S3 bucket to download from
+   */
+  readonly bucket: IBucket;
+
+  /**
+   * The key of the file to download
+   */
+  readonly bucketKey: string;
+
+  /**
+   * The name of the local file.
+   *
+   * @default Linux   - /tmp/bucketKey
+   *          Windows - %TEMP%/bucketKey
+   */
+  readonly localFile?: string;
+
+}
+
+/**
+ * Options when executing a file. 
+ */
+export interface ExecuteFileOptions {
+
+  /**
+   * The path to the file.
+   */
+  readonly filePath: string;
+
+  /**
+   * The arguments to be passed to the file.
+   */
+  readonly arguments?: string;
+
 }
 
 /**
@@ -94,9 +137,14 @@ export abstract class UserData {
   public abstract render(): string;
 
   /**
-   * Adds a command to download a file from S3
+   * Adds commands to download a file from S3
    */
-  public abstract addDownloadAndExecuteS3FileCommand(params: S3DownloadAndExecuteOptions): void;
+  public abstract addS3DownloadCommand(params: S3DownloadOptions): string;
+
+  /**
+   * Adds commands to execute a file
+   */
+  public abstract addExecuteFileCommand( params: ExecuteFileOptions): void;
 
   /**
    * Adds a command which will send a cfn-signal when the user data script ends
@@ -111,7 +159,6 @@ export abstract class UserData {
 class LinuxUserData extends UserData {
   private readonly lines: string[] = [];
   private readonly onExitLines: string[] = [];
-  private readonly functionsAdded = new Set<string>();
 
   constructor(private readonly props: LinuxUserDataOptions = {}) {
     super();
@@ -130,30 +177,23 @@ class LinuxUserData extends UserData {
     return [shebang, ...(this.renderOnExitLines()), ...this.lines].join('\n');
   }
 
-  public addDownloadAndExecuteS3FileCommand( params: S3DownloadAndExecuteOptions ): void {
-    if (!this.functionsAdded.has('download_and_execute_s3_file')) {
-      this.addCommands("download_and_execute_s3_file () {\n" +
-          "local s3Path=$1;\n" +
-          "local path=$2;\n" +
-          "shift;shift;\n" +
-          "echo \"Downloading file ${s3Path} to ${path}\";\n" +
-          "mkdir -p $(dirname ${path}) ;\n" +
-          "aws s3 cp ${s3Path} ${path};\n" +
-          "if [ $? -ne 0 ]; then exit 1;fi;\n" +
-          "chmod +x ${path};\n" +
-          "if [ $? -ne 0 ]; then exit 1;fi;\n" +
-          "${path} \"$@\"\n" +
-          "if [ $? -ne 0 ]; then exit 1;fi;\n" +
-          "}");
-      this.functionsAdded.add('download_and_execute_s3_file');
-    }
-    const args = [
-        `s3://${params.bucketName}/${params.bucketKey}`,
-        (params.localFile && params.localFile.length !== 0) ? params.localFile : `/tmp/${ params.bucketKey }`,
-        params.arguments || ""
-    ];
+  public addS3DownloadCommand(params: S3DownloadOptions): string {
+    const s3Path = `s3://${params.bucket.bucketName}/${params.bucketKey}`;
+    const localPath = ( params.localFile && params.localFile.length !== 0 ) ? params.localFile : `/tmp/${ params.bucketKey }`;
+    this.addCommands(
+      `mkdir -p $(dirname '${localPath}')`,
+      `aws s3 cp '${s3Path}' '${localPath}'`
+    );
 
-    this.addCommands(`download_and_execute_s3_file ${ args.join(' ') }` );
+    return localPath;
+  }
+
+  public addExecuteFileCommand( params: ExecuteFileOptions): void {
+    this.addCommands(
+      `set -e`,
+      `chmod +x '${params.filePath}'`,
+      `'${params.filePath}' ${params.arguments}`
+    );
   }
 
   public addSignalOnExitCommand( resource: Resource ): void {
@@ -176,7 +216,6 @@ class LinuxUserData extends UserData {
 class WindowsUserData extends UserData {
   private readonly lines: string[] = [];
   private readonly onExitLines: string[] = [];
-  private readonly functionsAdded = new Set<string>();
 
   constructor() {
     super();
@@ -199,35 +238,20 @@ class WindowsUserData extends UserData {
     }</powershell>`;
   }
 
-  public addDownloadAndExecuteS3FileCommand( params: S3DownloadAndExecuteOptions ): void {
-    if (!this.functionsAdded.has('download_and_execute_s3_file')) {
-      this.addCommands("function download_and_execute_s3_file{\n" +
-        "Param(\n" +
-        "  [Parameter(Mandatory=$True)]\n" +
-        "  $bucketName,\n" +
-        "  [Parameter(Mandatory=$True)]\n" +
-        "  $bucketKey,\n" +
-        "  [Parameter(Mandatory=$True)]\n" +
-        "  $localFile,\n" +
-        "  [parameter(mandatory=$false,ValueFromRemainingArguments=$true)]\n" +
-        "  $arguments\n" +
-        ")\n" +
-        "mkdir (Split-Path -Path $localFile ) -ea 0\n" +
-        "Read-S3Object -BucketName $bucketName -key $bucketKey -file $localFile -ErrorAction Stop\n" +
-        "&\"$localFile\" @arguments\n" +
-        "if (!$?) { Write-Error 'Failed to execute file' -ErrorAction Stop }\n" +
-        "}");
-      this.functionsAdded.add('download_and_execute_s3_file');
-    }
+  public addS3DownloadCommand(params: S3DownloadOptions): string {
+    const localPath = ( params.localFile && params.localFile.length !== 0 ) ? params.localFile : `C:/temp/${ params.bucketKey }`;
+    this.addCommands(
+      `mkdir (Split-Path -Path '${localPath}' ) -ea 0`,
+      `Read-S3Object -BucketName '${params.bucket.bucketName}' -key '${params.bucketKey}' -file '${localPath}' -ErrorAction Stop`
+    );
+    return localPath;
+  }
 
-    const args = [
-        params.bucketName,
-        params.bucketKey,
-        params.localFile || "C:/temp/" + params.bucketKey,
-        params.arguments || ""
-    ];
-
-    this.addCommands(`download_and_execute_s3_file ${ args.join(' ') }` );
+  public addExecuteFileCommand( params: ExecuteFileOptions): void {
+    this.addCommands(
+      `&'${params.filePath}' ${params.arguments}`,
+      `if (!$?) { Write-Error 'Failed to execute the file "${params.filePath}"' -ErrorAction Stop }`
+    );
   }
 
   public addSignalOnExitCommand( resource: Resource ): void {
@@ -250,7 +274,6 @@ class WindowsUserData extends UserData {
  */
 class CustomUserData extends UserData {
   private readonly lines: string[] = [];
-  private readonly onExitLines: string[] = [];
 
   constructor() {
     super();
@@ -260,19 +283,23 @@ class CustomUserData extends UserData {
     this.lines.push(...commands);
   }
 
-  public addOnExitCommands(...commands: string[]): void {
-    this.onExitLines.push(...commands);
+  public addOnExitCommands(): void {
+    throw new Error("CustomUserData does not support addOnExitCommands, use UserData.forLinux() or UserData.forWindows() instead.");
   }
 
   public render(): string {
-    return [...this.lines, ...this.onExitLines].join('\n');
+    return this.lines.join('\n');
   }
 
-  public addDownloadAndExecuteS3FileCommand(): void {
-    throw new Error("Method not implemented.");
+  public addS3DownloadCommand(): string {
+    throw new Error("CustomUserData does not support addS3DownloadCommand, use UserData.forLinux() or UserData.forWindows() instead.");
   }
 
-  public addSignalOnExitCommand( ): void {
-    throw new Error("Method not implemented.");
+  public addExecuteFileCommand(): void {
+    throw new Error("CustomUserData does not support addExecuteFileCommand, use UserData.forLinux() or UserData.forWindows() instead.");
+  }
+
+  public addSignalOnExitCommand(): void {
+    throw new Error("CustomUserData does not support addSignalOnExitCommand, use UserData.forLinux() or UserData.forWindows() instead.");
   }
 }

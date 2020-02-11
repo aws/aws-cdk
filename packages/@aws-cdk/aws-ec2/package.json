@@ -73,6 +73,7 @@
   "dependencies": {
     "@aws-cdk/aws-cloudwatch": "1.22.0",
     "@aws-cdk/aws-iam": "1.22.0",
+    "@aws-cdk/aws-s3": "1.22.0",
     "@aws-cdk/aws-ssm": "1.22.0",
     "@aws-cdk/core": "1.22.0",
     "@aws-cdk/cx-api": "1.22.0"
