@@ -122,6 +122,13 @@ export interface RoleProps {
    * @default Duration.hours(1)
    */
   readonly maxSessionDuration?: Duration;
+
+  /**
+   * A description of the role. It can be up to 1000 characters long.
+   *
+   * @default - No description.
+   */
+  readonly description?: string;
 }
 
 /**
@@ -293,6 +300,11 @@ export class Role extends Resource implements IRole {
     this.permissionsBoundary = props.permissionsBoundary;
     const maxSessionDuration = props.maxSessionDuration && props.maxSessionDuration.toSeconds();
     validateMaxSessionDuration(maxSessionDuration);
+    const description = (props.description && props.description?.length > 0) ? props.description : undefined;
+
+    if (description && description.length > 1000) {
+      throw new Error('Role description must be no longer than 1000 characters.');
+    }
 
     const role = new CfnRole(this, 'Resource', {
       assumeRolePolicyDocument: this.assumeRolePolicy as any,
@@ -302,6 +314,7 @@ export class Role extends Resource implements IRole {
       permissionsBoundary: this.permissionsBoundary ? this.permissionsBoundary.managedPolicyArn : undefined,
       roleName: this.physicalName,
       maxSessionDuration,
+      description
     });
 
     this.roleId = role.attrRoleId;
