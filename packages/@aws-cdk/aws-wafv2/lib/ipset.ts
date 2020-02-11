@@ -87,7 +87,7 @@ export class IPSet extends IPSetBase {
 
         this.addAddresses(...props.addresses || []);
 
-        const resource: waf.CfnIPSet = new waf.CfnIPSet(this, 'IPSet', {
+        const resource: waf.CfnIPSet = new waf.CfnIPSet(this, 'Resource', {
             addresses: {
                 ipAddresses: cdk.Lazy.listValue({ produce: () => this.addresses }, { omitEmpty: true })
             },
