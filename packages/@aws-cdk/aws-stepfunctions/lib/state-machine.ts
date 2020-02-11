@@ -249,4 +249,12 @@ export interface IStateMachine extends IResource {
      * @attribute
      */
     readonly stateMachineArn: string;
+
+    /**
+     * Grant the given identity permissions to start an execution of this state
+     * machine.
+     *
+     * @param identity The principal
+     */
+    grantStartExecution(identity: iam.IGrantable): iam.Grant;
 }
