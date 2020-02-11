@@ -10,4 +10,4 @@
 ---
 <!--END STABILITY BANNER-->
 
-This module has been deprecated. Use `@aws-cdk/aws-dynamodb.Table` with `replicaRegions` instead.
+This module has been deprecated. Use `@aws-cdk/aws-dynamodb.Table` with `replicationRegions` instead.
