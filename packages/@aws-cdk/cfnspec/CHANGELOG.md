@@ -1,3 +1,52 @@
+# CloudFormation Resource Specification v10.5.0
+
+## New Resource Types
+
+* AWS::AppConfig::Application
+* AWS::AppConfig::ConfigurationProfile
+* AWS::AppConfig::Deployment
+* AWS::AppConfig::DeploymentStrategy
+* AWS::AppConfig::Environment
+* AWS::WAFv2::WebACLAssociation
+
+## Attribute Changes
+
+* AWS::Athena::NamedQuery NamedQueryId (__deleted__)
+* AWS::Transfer::Server VpcEndpointId (__deleted__)
+
+## Property Changes
+
+* AWS::ACMPCA::Certificate Validity.PrimitiveType (__deleted__)
+* AWS::ACMPCA::Certificate Validity.Type (__added__)
+* AWS::ACMPCA::CertificateAuthority RevocationConfiguration.PrimitiveType (__deleted__)
+* AWS::ACMPCA::CertificateAuthority RevocationConfiguration.Type (__added__)
+* AWS::ACMPCA::CertificateAuthority Subject.PrimitiveType (__deleted__)
+* AWS::ACMPCA::CertificateAuthority Subject.Type (__added__)
+* AWS::AppSync::GraphQLApi XrayEnabled (__added__)
+* AWS::EC2::ClientVpnEndpoint VpnPort (__added__)
+* AWS::OpsWorksCM::Server Tags (__added__)
+
+## Property Type Changes
+
+* AWS::ACMPCA::Certificate.Validity (__added__)
+* AWS::ACMPCA::CertificateAuthority.CrlConfiguration (__added__)
+* AWS::ACMPCA::CertificateAuthority.RevocationConfiguration (__added__)
+* AWS::ACMPCA::CertificateAuthority.Subject (__added__)
+* AWS::Backup::BackupPlan.CopyActionResourceType (__added__)
+* AWS::EC2::LaunchTemplate.MetadataOptions (__added__)
+* AWS::MediaLive::Channel.MultiplexProgramChannelDestinationSettings (__added__)
+* AWS::Backup::BackupPlan.BackupRuleResourceType CopyActions (__added__)
+* AWS::EC2::LaunchTemplate.LaunchTemplateData MetadataOptions (__added__)
+* AWS::EC2::LaunchTemplate.LaunchTemplateElasticInferenceAccelerator Count (__added__)
+* AWS::EC2::LaunchTemplate.Placement HostResourceGroupArn (__added__)
+* AWS::EC2::LaunchTemplate.Placement PartitionNumber (__added__)
+* AWS::EC2::LaunchTemplate.Placement SpreadDomain (__added__)
+* AWS::MediaLive::Channel.OutputDestination MultiplexSettings (__added__)
+* AWS::Transfer::Server.EndpointDetails AddressAllocationIds.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Conditional
+
+
 # CloudFormation Resource Specification v10.4.0
 
 ## New Resource Types
