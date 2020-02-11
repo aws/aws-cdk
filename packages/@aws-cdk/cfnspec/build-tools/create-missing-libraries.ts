@@ -167,17 +167,7 @@ async function main() {
         url: "https://aws.amazon.com",
         organization: true
       },
-      jest: {
-        moduleFileExtensions: [
-          "js"
-        ],
-        coverageThreshold: {
-          global: {
-            branches: 60,
-            statements: 80
-          }
-        }
-      },
+      jest: {},
       license: "Apache-2.0",
       devDependencies: {
         "@aws-cdk/assert": version,
