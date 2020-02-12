@@ -17,6 +17,7 @@ export * from './vpc-endpoint';
 export * from './vpc-endpoint-service';
 export * from './user-data';
 export * from './windows-versions';
+export * from './vpc-flow-logs';
 
 // AWS::EC2 CloudFormation Resources:
 export * from './ec2.generated';
