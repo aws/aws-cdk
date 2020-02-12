@@ -216,7 +216,7 @@ export = {
     const nlbArn = "arn:aws:elasticloadbalancing::000000000000::dummyloadbalancer";
     const nlb = elbv2.NetworkLoadBalancer.fromNetworkLoadBalancerAttributes(stack, 'NLB', {
       loadBalancerArn: nlbArn,
-      loadBalancerVpc: vpc,
+      vpc,
     });
     // WHEN
     const listener = nlb.addListener('Listener', {port: 80});

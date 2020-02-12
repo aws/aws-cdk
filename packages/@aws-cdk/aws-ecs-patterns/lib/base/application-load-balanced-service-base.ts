@@ -255,7 +255,12 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
   /**
    * The Application Load Balancer for the service.
    */
-  public readonly loadBalancer: ApplicationLoadBalancer;
+  public get loadBalancer(): ApplicationLoadBalancer {
+    if (!this._applicationLoadBalancer) {
+      throw new Error('.loadBalancer can only be accessed if the class was constructed with an owned, not imported, load balancer');
+    }
+    return this._applicationLoadBalancer;
+  }
 
   /**
    * The listener for the service.
@@ -276,6 +281,8 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
    * The cluster that hosts the service.
    */
   public readonly cluster: ICluster;
+
+  private readonly _applicationLoadBalancer?: ApplicationLoadBalancer;
 
   /**
    * Constructs a new instance of the ApplicationLoadBalancedServiceBase class.
@@ -300,20 +307,20 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
       internetFacing
     };
 
-    this.loadBalancer = props.loadBalancer !== undefined ? props.loadBalancer as ApplicationLoadBalancer
+    const loadBalancer = props.loadBalancer !== undefined ? props.loadBalancer
                         : new ApplicationLoadBalancer(this, 'LB', lbProps);
 
     if (props.certificate !== undefined && props.protocol !== undefined && props.protocol !== ApplicationProtocol.HTTPS) {
       throw new Error('The HTTPS protocol must be used when a certificate is given');
     }
     const protocol = props.protocol !== undefined ? props.protocol :
-    (props.certificate ? ApplicationProtocol.HTTPS : ApplicationProtocol.HTTP);
+      (props.certificate ? ApplicationProtocol.HTTPS : ApplicationProtocol.HTTP);
 
     const targetProps = {
       port: 80
     };
 
-    this.listener = this.loadBalancer.addListener('PublicListener', {
+    this.listener = loadBalancer.addListener('PublicListener', {
       protocol,
       port: props.listenerPort,
       open: true
@@ -338,7 +345,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
       this.listener.addCertificates('Arns', [ListenerCertificate.fromCertificateManager(this.certificate)]);
     }
 
-    let domainName = this.loadBalancer.loadBalancerDnsName;
+    let domainName = loadBalancer.loadBalancerDnsName;
     if (typeof props.domainName !== 'undefined') {
       if (typeof props.domainZone === 'undefined') {
         throw new Error('A Route53 hosted domain zone name is required to configure the specified domain name');
@@ -347,13 +354,17 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
       const record = new ARecord(this, "DNS", {
         zone: props.domainZone,
         recordName: props.domainName,
-        target: RecordTarget.fromAlias(new LoadBalancerTarget(this.loadBalancer)),
+        target: RecordTarget.fromAlias(new LoadBalancerTarget(loadBalancer)),
       });
 
       domainName = record.domainName;
     }
 
-    new cdk.CfnOutput(this, 'LoadBalancerDNS', { value: this.loadBalancer.loadBalancerDnsName });
+    if (loadBalancer instanceof ApplicationLoadBalancer) {
+      this._applicationLoadBalancer = loadBalancer;
+    }
+
+    new cdk.CfnOutput(this, 'LoadBalancerDNS', { value: loadBalancer.loadBalancerDnsName });
     new cdk.CfnOutput(this, 'ServiceURL', { value: protocol.toLowerCase() + '://' + domainName });
   }
 

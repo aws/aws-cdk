@@ -230,7 +230,12 @@ export abstract class NetworkLoadBalancedServiceBase extends cdk.Construct {
   /**
    * The Network Load Balancer for the service.
    */
-  public readonly loadBalancer: NetworkLoadBalancer;
+  public get loadBalancer(): NetworkLoadBalancer {
+    if (!this._networkLoadBalancer) {
+      throw new Error(".loadBalancer can only be accessed if the class was constructed with an owned, not imported, load balancer");
+    }
+    return this._networkLoadBalancer;
+  }
 
   /**
    * The listener for the service.
@@ -247,6 +252,7 @@ export abstract class NetworkLoadBalancedServiceBase extends cdk.Construct {
    */
   public readonly cluster: ICluster;
 
+  private readonly _networkLoadBalancer?: NetworkLoadBalancer;
   /**
    * Constructs a new instance of the NetworkLoadBalancedServiceBase class.
    */
@@ -270,7 +276,8 @@ export abstract class NetworkLoadBalancedServiceBase extends cdk.Construct {
       internetFacing
     };
 
-    this.loadBalancer = props.loadBalancer !== undefined ? props.loadBalancer as NetworkLoadBalancer : new NetworkLoadBalancer(this, 'LB', lbProps);
+    const loadBalancer = props.loadBalancer !== undefined ? props.loadBalancer :
+      new NetworkLoadBalancer(this, 'LB', lbProps);
 
     const listenerPort = props.listenerPort !== undefined ? props.listenerPort : 80;
 
@@ -278,7 +285,7 @@ export abstract class NetworkLoadBalancedServiceBase extends cdk.Construct {
       port: 80
     };
 
-    this.listener = this.loadBalancer.addListener('PublicListener', { port: listenerPort });
+    this.listener = loadBalancer.addListener('PublicListener', { port: listenerPort });
     this.targetGroup = this.listener.addTargets('ECS', targetProps);
 
     if (typeof props.domainName !== 'undefined') {
@@ -289,8 +296,12 @@ export abstract class NetworkLoadBalancedServiceBase extends cdk.Construct {
       new ARecord(this, "DNS", {
         zone: props.domainZone,
         recordName: props.domainName,
-        target: RecordTarget.fromAlias(new LoadBalancerTarget(this.loadBalancer)),
+        target: RecordTarget.fromAlias(new LoadBalancerTarget(loadBalancer)),
       });
+    }
+
+    if (loadBalancer instanceof NetworkLoadBalancer) {
+      this._networkLoadBalancer = loadBalancer;
     }
 
     if (props.loadBalancer === undefined) {

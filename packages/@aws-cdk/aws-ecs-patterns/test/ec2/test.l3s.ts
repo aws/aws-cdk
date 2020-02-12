@@ -941,7 +941,7 @@ export = {
      cluster.addCapacity("Capacity", {instanceType: new ec2.InstanceType('t2.micro')});
      const nlb  = NetworkLoadBalancer.fromNetworkLoadBalancerAttributes(stack, "NLB", {
        loadBalancerArn: nlbArn,
-       loadBalancerVpc: vpc,
+       vpc,
      });
      const taskDef = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
      const container = taskDef.addContainer('Container', {

@@ -45,7 +45,7 @@ export interface NetworkLoadBalancerAttributes {
    * @default - When not provided, listeners cannot be created on imported load
    * balancers.
    */
-  readonly loadBalancerVpc?: ec2.IVpc;
+  readonly vpc?: ec2.IVpc;
 }
 
 /**
@@ -57,7 +57,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
   public static fromNetworkLoadBalancerAttributes(scope: Construct, id: string, attrs: NetworkLoadBalancerAttributes): INetworkLoadBalancer {
     class Import extends Resource implements INetworkLoadBalancer {
       public readonly loadBalancerArn = attrs.loadBalancerArn;
-      public readonly vpc?: ec2.IVpc = attrs.loadBalancerVpc;
+      public readonly vpc?: ec2.IVpc = attrs.vpc;
       public addListener(lid: string, props: BaseNetworkListenerProps): NetworkListener {
         return new NetworkListener(this, lid, {
           loadBalancer: this,

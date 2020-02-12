@@ -511,7 +511,7 @@ export = {
     // WHEN
     const nlb2 = NetworkLoadBalancer.fromNetworkLoadBalancerAttributes(stack2, "ImportedNLB", {
       loadBalancerArn: nlbArn,
-      loadBalancerVpc: vpc1,
+      vpc: vpc1,
     });
     const taskDef = new ecs.FargateTaskDefinition(stack2, 'TaskDef', {
       cpu: 1024,
