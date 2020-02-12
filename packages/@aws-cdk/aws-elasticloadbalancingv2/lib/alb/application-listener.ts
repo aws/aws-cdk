@@ -614,7 +614,7 @@ export interface AddApplicationTargetsProps extends AddRuleProps {
    * After this period, the cookie is considered stale. The minimum value is
    * 1 second and the maximum value is 7 days (604800 seconds).
    *
-   * @default Duration.days(1)
+   * @default Stickiness disabled
    */
   readonly stickinessCookieDuration?: Duration;
 
