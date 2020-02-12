@@ -400,9 +400,9 @@ depending on where the defaults were specified.
 #### Lambda-based request authorizer
 
 This module provides support for request-based Lambda authorizers. When a client makes a request to an API's methods configured with such
-an authorizer, API Gateway calls the Lambda authorizer, which takes the caller's identity as input and returns an IAM policy as output. 
-A request-based Lambda authorizer (also called a request authorizer) receives the caller's identity in a series of values pulled from
-the request, from the headers, query strings, etc.
+an authorizer, API Gateway calls the Lambda authorizer, which takes specified parts of the request, known as identity sources,
+as input and returns an IAM policy as output. A request-based Lambda authorizer (also called a request authorizer) receives 
+the identity sources in a series of values pulled from the request, from the headers, stage variables, query strings, and the context.
 
 API Gateway interacts with the authorizer Lambda function handler by passing input and expecting the output in a specific format.
 The event object that the handler is called with contains the body of the request and the `methodArn` from the request to the
