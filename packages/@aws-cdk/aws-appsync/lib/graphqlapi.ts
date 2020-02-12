@@ -7,6 +7,11 @@ import { readFileSync } from "fs";
 import { CfnApiKey, CfnDataSource, CfnGraphQLApi, CfnGraphQLSchema, CfnResolver } from "./appsync.generated";
 
 /**
+ * Marker interface for the different authorization modes.
+ */
+export interface AuthMode { }
+
+/**
  * enum with all possible values for Cognito user-pool default actions
  */
 export enum UserPoolDefaultAction {
@@ -23,7 +28,7 @@ export enum UserPoolDefaultAction {
 /**
  * Configuration for Cognito user-pools in AppSync
  */
-export interface UserPoolConfig {
+export interface UserPoolConfig extends AuthMode {
 
     /**
      * The Cognito user pool to use as identity source
@@ -50,7 +55,7 @@ function isUserPoolConfig(obj: unknown): obj is UserPoolConfig {
 /**
  * Configuration for API Key authorization in AppSync
  */
-export interface ApiKeyConfig {
+export interface ApiKeyConfig extends AuthMode {
     /**
      * Unique description of the API key
      */
@@ -69,10 +74,8 @@ function isApiKeyConfig(obj: unknown): obj is ApiKeyConfig {
     return (obj as ApiKeyConfig).apiKeyDesc !== undefined;
 }
 
-type AuthModes = UserPoolConfig | ApiKeyConfig;
-
 /**
- * Marker interface for the different authorization modes.
+ * Configuration of the API authorization modes.
  */
 export interface AuthorizationConfig {
     /**
@@ -80,7 +83,14 @@ export interface AuthorizationConfig {
      *
      * @default - API Key authorization
      */
-    readonly defaultAuthorization?: AuthModes;
+    readonly defaultAuthorization?: AuthMode;
+
+    /**
+     * Additional authorization modes
+     *
+     * @default - No other modes
+     */
+    readonly additionalAuthorizationModes?: [AuthMode]
 }
 
 /**
@@ -267,6 +277,15 @@ export class GraphQLApi extends Construct {
             this.api.userPoolConfig = userPoolConfig;
         } else if (isApiKeyConfig(auth.defaultAuthorization)) {
             this.api.authenticationType = this.apiKeyDesc(auth.defaultAuthorization).authenticationType;
+        }
+
+        this.api.additionalAuthenticationProviders = [];
+        for (const mode of (auth.additionalAuthorizationModes || [])) {
+            if (isUserPoolConfig(mode)) {
+                this.api.additionalAuthenticationProviders.push(this.userPoolDescFrom(mode));
+            } else if (isApiKeyConfig(mode)) {
+                this.api.additionalAuthenticationProviders.push(this.apiKeyDesc(mode));
+            }
         }
     }
 
