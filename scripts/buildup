@@ -4,13 +4,13 @@ scriptdir=$(cd $(dirname $0) && pwd)
 
 echo "************************************************************"
 echo " buildup usage:"
-echo " - execute 'buildup' again to resume after failure"
-echo " - execute 'buildup --restart' to restart"
+echo " - execute 'buildup --resume' to resume after failure"
+echo " - execute 'buildup' to restart the build from the start"
 echo ""
 echo " for advanced usage, see ${scriptdir}/foreach.sh"
 echo "************************************************************"
 
-if [ "${1:-}" == "--restart" ] || [ "${1:-}" == "--reset" ]; then
+if [ "${1:-}" != "--resume" ]; then
   ${scriptdir}/foreach.sh --reset
 fi
 
