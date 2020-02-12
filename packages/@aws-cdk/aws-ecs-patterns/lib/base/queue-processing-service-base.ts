@@ -239,6 +239,14 @@ export abstract class QueueProcessingServiceBase extends Construct {
   }
 
   /**
+   * Grant SQS permissions to an ECS service.
+   * @param service the ECS/Fargate service to which to grant SQS permissions
+   */
+  protected grantPermissionsToService(service: BaseService) {
+    this.sqsQueue.grantConsumeMessages(service.taskDefinition.taskRole);
+  }
+
+  /**
    * Returns the default cluster.
    */
   protected getDefaultCluster(scope: Construct, vpc?: IVpc): Cluster {
