@@ -497,6 +497,7 @@ export interface CodeCommitSourceProps extends GitSourceProps {
  * CodeCommit Source definition for a CodeBuild project.
  */
 class CodeCommitSource extends GitSource {
+  public readonly badgeSupported = true;
   public readonly type = CODECOMMIT_SOURCE_TYPE;
   private readonly repo: codecommit.IRepository;
 
