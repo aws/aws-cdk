@@ -77,8 +77,7 @@
   "peerDependencies": {
     "@aws-cdk/core": "1.23.0"
   },
-  "jest": {
-  },
+  "jest": "default",
   "engines": {
     "node": ">= 10.3.0"
   },

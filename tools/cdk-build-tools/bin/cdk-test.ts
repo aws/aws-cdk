@@ -43,7 +43,15 @@ async function main() {
       throw new Error(`Jest is enabled, but ${testFiles.length} nodeunit tests were found!`);
     }
     const globalJestConfig = JSON.parse(await fs.readFile(configFilePath('jest.config.json'), 'utf-8'));
-    const jestConfig = { ...globalJestConfig, ...packageJson.jest };
+    let jestConfig;
+    if (typeof(packageJson.jest) === 'string' && packageJson.jest === 'default') {
+      jestConfig = globalJestConfig;
+    } else if (Object.keys(packageJson.jest).length === 0) {
+      throw new Error('"jest" key in package.json cannot be empty. '
+        + 'It should be set to either "default" or valid jest config values');
+    } else {
+      jestConfig = { ...globalJestConfig, ...packageJson.jest };
+    }
 
     const jestConfigFile = 'jest.config.gen.json';
     await fs.writeFile(jestConfigFile, JSON.stringify(jestConfig));

@@ -47,8 +47,7 @@
   "dependencies": {
     "semver": "^7.1.2"
   },
-  "jest": {
-  },
+  "jest": "default",
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/jest": "^25.1.1",

@@ -167,8 +167,7 @@ async function main() {
         url: "https://aws.amazon.com",
         organization: true
       },
-      jest: {
-      },
+      jest: "default",
       license: "Apache-2.0",
       devDependencies: {
         "@aws-cdk/assert": version,
