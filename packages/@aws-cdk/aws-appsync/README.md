@@ -70,9 +70,11 @@ export class ApiStack extends Stack {
       logConfig: {
         fieldLogLevel: FieldLogLevel.ALL,
       },
-      userPoolConfig: {
-        userPool,
-        defaultAction: UserPoolDefaultAction.ALLOW,
+      authorizationConfig: {
+        defaultAuthorization: {
+          userPool,
+          defaultAction: UserPoolDefaultAction.ALLOW,
+        },
       },
       schemaDefinitionFile: './schema.graphql',
     });

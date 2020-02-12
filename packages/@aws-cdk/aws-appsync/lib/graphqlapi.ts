@@ -2,9 +2,9 @@ import { IUserPool } from "@aws-cdk/aws-cognito";
 import { Table } from '@aws-cdk/aws-dynamodb';
 import { IGrantable, IPrincipal, IRole, ManagedPolicy, Role, ServicePrincipal } from "@aws-cdk/aws-iam";
 import { IFunction } from "@aws-cdk/aws-lambda";
-import { Construct, IResolvable } from "@aws-cdk/core";
+import { Construct, Duration, IResolvable } from "@aws-cdk/core";
 import { readFileSync } from "fs";
-import { CfnDataSource, CfnGraphQLApi, CfnGraphQLSchema, CfnResolver } from "./appsync.generated";
+import { CfnApiKey, CfnDataSource, CfnGraphQLApi, CfnGraphQLSchema, CfnResolver } from "./appsync.generated";
 
 /**
  * enum with all possible values for Cognito user-pool default actions
@@ -41,6 +41,46 @@ export interface UserPoolConfig {
      * @default ALLOW
      */
     readonly defaultAction?: UserPoolDefaultAction;
+}
+
+function isUserPoolConfig(obj: unknown): obj is UserPoolConfig {
+    return (obj as UserPoolConfig).userPool !== undefined;
+}
+
+/**
+ * Configuration for API Key authorization in AppSync
+ */
+export interface ApiKeyConfig {
+    /**
+     * Unique description of the API key
+     */
+    readonly apiKeyDesc: string;
+
+    /**
+     * The time from creation time after which the API key expires, using RFC3339 representation.
+     * It must be a minimum of 1 day and a maximum of 365 days from date of creation.
+     * Rounded down to the nearest hour.
+     * @default - 7 days from creation time
+     */
+    readonly expires?: string;
+}
+
+function isApiKeyConfig(obj: unknown): obj is ApiKeyConfig {
+    return (obj as ApiKeyConfig).apiKeyDesc !== undefined;
+}
+
+type AuthModes = UserPoolConfig | ApiKeyConfig;
+
+/**
+ * Marker interface for the different authorization modes.
+ */
+export interface AuthorizationConfig {
+    /**
+     * Optional authorization configuration
+     *
+     * @default - API Key authorization
+     */
+    readonly defaultAuthorization?: AuthModes;
 }
 
 /**
@@ -90,11 +130,11 @@ export interface GraphQLApiProps {
     readonly name: string;
 
     /**
-     * Optional user pool authorizer configuration
+     * Optional authorization configuration
      *
-     * @default - Do not use Cognito auth
+     * @default - API Key authorization
      */
-    readonly userPoolConfig?: UserPoolConfig;
+    readonly authorizationConfig?: AuthorizationConfig;
 
     /**
      * Logging configuration for this api
@@ -145,7 +185,6 @@ export class GraphQLApi extends Construct {
     public readonly schema: CfnGraphQLSchema;
 
     private api: CfnGraphQLApi;
-    private authenticationType: string;
 
     constructor(scope: Construct, id: string, props: GraphQLApiProps) {
         super(scope, id);
@@ -156,22 +195,9 @@ export class GraphQLApi extends Construct {
             apiLogsRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSAppSyncPushToCloudWatchLogs'));
         }
 
-        if (props.userPoolConfig) {
-            this.authenticationType = 'AMAZON_COGNITO_USER_POOLS';
-        } else {
-            this.authenticationType = 'API_KEY';
-        }
-
         this.api = new CfnGraphQLApi(this, 'Resource', {
             name: props.name,
-            authenticationType: this.authenticationType,
-            ...props.userPoolConfig && {
-                userPoolConfig: {
-                    userPoolId: props.userPoolConfig.userPool.userPoolId,
-                    awsRegion: props.userPoolConfig.userPool.stack.region,
-                    defaultAction: props.userPoolConfig.defaultAction ? props.userPoolConfig.defaultAction.toString() : 'ALLOW',
-                },
-            },
+            authenticationType: 'API_KEY',
             ...props.logConfig && {
                 logConfig: {
                     cloudWatchLogsRoleArn: apiLogsRole ? apiLogsRole.roleArn : undefined,
@@ -185,6 +211,10 @@ export class GraphQLApi extends Construct {
         this.arn = this.api.attrArn;
         this.graphQlUrl = this.api.attrGraphQlUrl;
         this.name = this.api.name;
+
+        if (props.authorizationConfig) {
+            this.setupAuth(props.authorizationConfig);
+        }
 
         let definition;
         if (props.schemaDefinition) {
@@ -230,6 +260,46 @@ export class GraphQLApi extends Construct {
         });
     }
 
+    private setupAuth(auth: AuthorizationConfig) {
+        if (isUserPoolConfig(auth.defaultAuthorization)) {
+            const { authenticationType, userPoolConfig } = this.userPoolDescFrom(auth.defaultAuthorization);
+            this.api.authenticationType = authenticationType;
+            this.api.userPoolConfig = userPoolConfig;
+        } else if (isApiKeyConfig(auth.defaultAuthorization)) {
+            this.api.authenticationType = this.apiKeyDesc(auth.defaultAuthorization).authenticationType;
+        }
+    }
+
+    private userPoolDescFrom(upConfig: UserPoolConfig): { authenticationType: string; userPoolConfig: CfnGraphQLApi.UserPoolConfigProperty } {
+        return {
+            authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+            userPoolConfig: {
+                appIdClientRegex: upConfig.appIdClientRegex,
+                userPoolId: upConfig.userPool.userPoolId,
+                awsRegion: upConfig.userPool.stack.region,
+                defaultAction: upConfig.defaultAction ? upConfig.defaultAction.toString() : 'ALLOW',
+            }
+        };
+    }
+
+    private apiKeyDesc(akConfig: ApiKeyConfig): { authenticationType: string } {
+        let expires: number | undefined;
+        if (akConfig.expires) {
+            expires = new Date(akConfig.expires).valueOf();
+            const now = Date.now();
+            const days = (d: number) => now + Duration.days(d).toMilliseconds();
+            if (expires < days(1) || expires > days(365)) {
+                throw Error("API key expiration must be between 1 and 365 days.");
+            }
+            expires = Math.round(expires / 1000);
+        }
+        new CfnApiKey(this, `${akConfig.apiKeyDesc || ''}ApiKey`, {
+            expires,
+            description: akConfig.apiKeyDesc,
+            apiId: this.apiId,
+        });
+        return { authenticationType: 'API_KEY' };
+    }
 }
 
 /**
