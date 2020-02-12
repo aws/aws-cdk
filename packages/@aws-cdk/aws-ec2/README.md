@@ -500,15 +500,15 @@ A user data could be configured to run a script found in an asset through the fo
 ```ts
 const asset = new Asset(this, 'Asset', {path: path.join(__dirname, 'configure.sh')});
 const instance = new ec2.Instance(this, 'Instance', {
-    // ...
-    });
+  // ...
+  });
 const localPath = instance.userData.addS3DownloadCommand({
-      bucket:asset.bucket,
-      bucketKey:asset.s3ObjectKey,
-    } );
+  bucket:asset.bucket,
+  bucketKey:asset.s3ObjectKey,
+});
 instance.userData.addExecuteFileCommand({
   filePath:localPath,
   arguments: '--verbose -y'
-  });
+});
 asset.grantRead( instance.role );
 ``` 

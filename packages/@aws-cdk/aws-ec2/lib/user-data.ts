@@ -17,37 +17,6 @@ export interface LinuxUserDataOptions {
 /**
  * Options when downloading files from S3
  */
-export interface S3DownloadAndExecuteOptions {
-
-  /**
-   * Name of the bucket to download from
-   */
-  readonly bucket: IBucket;
-
-  /**
-   * The key of the file to download
-   */
-  readonly bucketKey: string;
-
-  /**
-   * The name of the local file.
-   *
-   * @default Linux   - ~/bucketKey
-   *          Windows - %TEMP%/bucketKey
-   */
-  readonly localFile?: string;
-
-  /**
-   * The arguments to be used when executing the file
-   *
-   * @default no arguments.
-   */
-  readonly arguments?: string
-}
-
-/**
- * Options when downloading files from S3
- */
 export interface S3DownloadOptions {
 
   /**
@@ -138,6 +107,8 @@ export abstract class UserData {
 
   /**
    * Adds commands to download a file from S3
+   *
+   * @returns: The local path that the file will be downloaded to
    */
   public abstract addS3DownloadCommand(params: S3DownloadOptions): string;
 
