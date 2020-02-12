@@ -382,7 +382,7 @@ const authFn = new lambda.Function(this, 'booksAuthorizerLambda', {
 });
 
 const auth = new apigateway.TokenAuthorizer(this, 'booksAuthorizer', {
-  function: authFn
+  handler: authFn
 });
 
 books.addMethod('GET', new apigateway.HttpIntegration('http://amazon.com'), {
@@ -420,7 +420,7 @@ const authFn = new lambda.Function(this, 'booksAuthorizerLambda', {
 });
 
 const auth = new apigateway.RequestAuthorizer(this, 'booksAuthorizer', {
-  function: authFn,
+  handler: authFn,
 });
 
 books.addMethod('GET', new apigateway.HttpIntegration('http://amazon.com'), {

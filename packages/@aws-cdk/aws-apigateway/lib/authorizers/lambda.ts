@@ -53,7 +53,6 @@ abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
 
   /**
    * The ARN of the authorizer to be used in permission policies, such as IAM and resource-based grants.
-   * @attribute
    */
   public readonly authorizerArn: string;
 
@@ -68,7 +67,7 @@ abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
 
     const restApiId = Lazy.stringValue({ produce: () => this.restApiId });
 
-    this.authorizerId = this.getResource(props).ref;
+    this.authorizerId = this.createResource(props).ref;
 
     this.authorizerArn = Stack.of(this).formatArn({
       service: 'execute-api',
@@ -105,7 +104,7 @@ abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
     this.restApiId = restApi.restApiId;
   }
 
-  protected abstract getResource<T extends LambdaAuthorizerProps>(props: T): CfnAuthorizer;
+  protected abstract createResource<T extends LambdaAuthorizerProps>(props: T): CfnAuthorizer;
 }
 
 /**
@@ -142,7 +141,7 @@ export class TokenAuthorizer extends LambdaAuthorizer {
     super(scope, id, props);
   }
 
-  protected getResource(props: TokenAuthorizerProps): CfnAuthorizer {
+  protected createResource(props: TokenAuthorizerProps): CfnAuthorizer {
     const restApiId = Lazy.stringValue({ produce: () => this.restApiId });
 
     return new CfnAuthorizer(this, 'Resource', {
@@ -189,7 +188,7 @@ export class RequestAuthorizer extends LambdaAuthorizer {
     }
   }
 
-  protected getResource(props: RequestAuthorizerProps): CfnAuthorizer {
+  protected createResource(props: RequestAuthorizerProps): CfnAuthorizer {
     const restApiId = Lazy.stringValue({ produce: () => this.restApiId });
 
     return new CfnAuthorizer(this, 'Resource', {
