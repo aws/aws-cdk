@@ -90,7 +90,7 @@ export = {
 
     // THEN
     const errors = cdk.ConstructNode.validate(stack.node);
-    test.deepEqual(errors.map(e => e.message), ['HTTPS Listener needs at least one certificate (call addCertificateArns)']);
+    test.deepEqual(errors.map(e => e.message), ['HTTPS Listener needs at least one certificate (call addCertificates)']);
 
     test.done();
   },
