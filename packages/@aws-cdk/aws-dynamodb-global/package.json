@@ -86,6 +86,6 @@
   },
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
-  "deprecated": true,
+  "deprecated": "This module has been deprecated. Use @aws-cdk/aws-dynamodb.Table with replicationRegions instead",
   "stability": "deprecated"
 }
