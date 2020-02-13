@@ -1,11 +1,11 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import * as dynamodb from '@aws-cdk/aws-dynamodb';
 import * as lambda from '@aws-cdk/aws-lambda';
-import * as destinations from '@aws-cdk/aws-lambda-destinations';
 import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as sources from '../lib';
+import { SqsDLQ } from '../lib/sqs-dlq';
 import { TestFunction } from './test-function';
 
 // tslint:disable:object-literal-key-quotes
@@ -524,7 +524,7 @@ export = {
 
     // WHEN
     fn.addEventSource(new sources.DynamoEventSource(table, {
-      onFailure: new destinations.SqsDestination(queue),
+      onFailure: new SqsDLQ(queue),
       startingPosition: lambda.StartingPosition.LATEST
     }));
 
