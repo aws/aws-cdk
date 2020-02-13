@@ -190,7 +190,7 @@ export class RequestAuthorizer extends LambdaAuthorizer {
     super(scope, id, props);
 
     if (props.resultsCacheTtl && props.identitySource?.length === 0) {
-      throw new Error(`At least one Identity Source is required for a REQUEST-based Lambda authorizer.`);
+      throw new Error(`At least one Identity Source is required for a REQUEST-based Lambda authorizer if caching is enabled.`);
     }
   }
 
