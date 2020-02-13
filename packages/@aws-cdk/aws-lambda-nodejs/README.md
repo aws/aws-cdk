@@ -50,6 +50,6 @@ The `NodejsFunction` construct exposes some [Parcel](https://parceljs.org/) opti
 `buildDir` and `cacheDir`.
 
 Parcel transpiles your code (every internal module) with [@babel/preset-env](https://babeljs.io/docs/en/babel-preset-env) and uses the
-`engines.node` defined in `package.json` as target (defaults to Node.js 8).
+runtime version of your Lambda function as target.
 
 Configuring Babel with Parcel is possible via a `.babelrc` or a `babel` config in `package.json`.
