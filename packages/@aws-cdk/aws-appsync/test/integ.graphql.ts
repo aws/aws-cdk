@@ -59,6 +59,18 @@ customerDS.createResolver({
 });
 customerDS.createResolver({
     typeName: 'Mutation',
+    fieldName: 'saveCustomerWithFirstOrder',
+    requestMappingTemplate: MappingTemplate.dynamoDbPutItem(
+        PrimaryKey
+            .partition('order').auto()
+            .sort('customer').is('customer.id'),
+        Values
+            .projecting('order')
+            .attribute('referral').is('referral')),
+    responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
+});
+customerDS.createResolver({
+    typeName: 'Mutation',
     fieldName: 'removeCustomer',
     requestMappingTemplate: MappingTemplate.dynamoDbDeleteItem('id', 'id'),
     responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
