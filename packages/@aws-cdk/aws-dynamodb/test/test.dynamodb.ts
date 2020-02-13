@@ -1,7 +1,7 @@
 import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as iam from '@aws-cdk/aws-iam';
-import { CfnDeletionPolicy, ConstructNode, RemovalPolicy, Stack, Tag } from '@aws-cdk/core';
+import { App, CfnDeletionPolicy, ConstructNode, RemovalPolicy, Stack, Tag } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import {
   Attribute,
@@ -1132,6 +1132,123 @@ export = {
     test.done();
   },
 
+  'metrics': {
+    'Can use metricConsumedReadCapacityUnits on a Dynamodb Table'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const table = new Table(stack, 'Table', {
+        partitionKey: { name: 'id', type: AttributeType.STRING }
+      });
+
+      // THEN
+      test.deepEqual(stack.resolve(table.metricConsumedReadCapacityUnits()), {
+        period: { amount: 5, unit: { label: 'minutes', inSeconds: 60 } },
+        dimensions: { TableName: { Ref: 'TableCD117FA1' } },
+        namespace: 'AWS/DynamoDB',
+        metricName: 'ConsumedReadCapacityUnits',
+        statistic: 'Sum',
+      });
+
+      test.done();
+    },
+
+    'Can use metricConsumedWriteCapacityUnits on a Dynamodb Table'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const table = new Table(stack, 'Table', {
+        partitionKey: { name: 'id', type: AttributeType.STRING }
+      });
+
+      // THEN
+      test.deepEqual(stack.resolve(table.metricConsumedWriteCapacityUnits()), {
+        period: { amount: 5, unit: { label: 'minutes', inSeconds: 60 } },
+        dimensions: { TableName: { Ref: 'TableCD117FA1' } },
+        namespace: 'AWS/DynamoDB',
+        metricName: 'ConsumedWriteCapacityUnits',
+        statistic: 'Sum',
+      });
+
+      test.done();
+    },
+
+    'Can use metricSystemErrors on a Dynamodb Table'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const table = new Table(stack, 'Table', {
+        partitionKey: { name: 'id', type: AttributeType.STRING }
+      });
+
+      // THEN
+      test.deepEqual(stack.resolve(table.metricSystemErrors()), {
+        period: { amount: 5, unit: { label: 'minutes', inSeconds: 60 } },
+        dimensions: { TableName: { Ref: 'TableCD117FA1' } },
+        namespace: 'AWS/DynamoDB',
+        metricName: 'SystemErrors',
+        statistic: 'Sum',
+      });
+
+      test.done();
+    },
+
+    'Can use metricUserErrors on a Dynamodb Table'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const table = new Table(stack, 'Table', {
+        partitionKey: { name: 'id', type: AttributeType.STRING }
+      });
+
+      // THEN
+      test.deepEqual(stack.resolve(table.metricUserErrors()), {
+        period: { amount: 5, unit: { label: 'minutes', inSeconds: 60 } },
+        dimensions: { TableName: { Ref: 'TableCD117FA1' } },
+        namespace: 'AWS/DynamoDB',
+        metricName: 'UserErrors',
+        statistic: 'Sum',
+      });
+
+      test.done();
+    },
+
+    'Can use metricConditionalCheckFailedRequests on a Dynamodb Table'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const table = new Table(stack, 'Table', {
+        partitionKey: { name: 'id', type: AttributeType.STRING }
+      });
+
+      // THEN
+      test.deepEqual(stack.resolve(table.metricConditionalCheckFailedRequests()), {
+        period: { amount: 5, unit: { label: 'minutes', inSeconds: 60 } },
+        dimensions: { TableName: { Ref: 'TableCD117FA1' } },
+        namespace: 'AWS/DynamoDB',
+        metricName: 'ConditionalCheckFailedRequests',
+        statistic: 'Sum',
+      });
+
+      test.done();
+    },
+
+    'Can use metricSuccessfulRequestLatency on a Dynamodb Table'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const table = new Table(stack, 'Table', {
+        partitionKey: { name: 'id', type: AttributeType.STRING }
+      });
+
+      // THEN
+      test.deepEqual(stack.resolve(table.metricSuccessfulRequestLatency()), {
+        period: { amount: 5, unit: { label: 'minutes', inSeconds: 60 } },
+        dimensions: { TableName: { Ref: 'TableCD117FA1' } },
+        namespace: 'AWS/DynamoDB',
+        metricName: 'SuccessfulRequestLatency',
+        statistic: 'Average',
+      });
+
+      test.done();
+    },
+
+  },
+
   'grants': {
 
     '"grant" allows adding arbitrary actions associated with this table resource'(test: Test) {
@@ -1452,6 +1569,98 @@ export = {
       test.done();
     },
   },
+
+  'global': {
+    'create replicas'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      new Table(stack, 'Table', {
+        partitionKey: {
+          name: 'id',
+          type: AttributeType.STRING
+        },
+        replicationRegions: [
+          'eu-west-2',
+          'eu-central-1'
+        ],
+      });
+
+      // THEN
+      expect(stack).to(haveResource('Custom::DynamoDBReplica', {
+        Region: 'eu-west-2'
+      }));
+      expect(stack).to(haveResource('Custom::DynamoDBReplica', {
+        Region: 'eu-central-1'
+      }));
+
+      test.done();
+    },
+
+    'throws with PROVISIONED billing mode'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+
+      // THEN
+      test.throws(() => new Table(stack, 'Table', {
+        partitionKey: {
+          name: 'id',
+          type: AttributeType.STRING
+        },
+        replicationRegions: [
+          'eu-west-2',
+          'eu-central-1'
+        ],
+        billingMode: BillingMode.PROVISIONED,
+      }), /`PAY_PER_REQUEST`/);
+
+      test.done();
+    },
+
+    'throws when stream is set and not set to NEW_AND_OLD_IMAGES'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+
+      // THEN
+      test.throws(() => new Table(stack, 'Table', {
+        partitionKey: {
+          name: 'id',
+          type: AttributeType.STRING
+        },
+        replicationRegions: [
+          'eu-west-2',
+          'eu-central-1'
+        ],
+        stream: StreamViewType.OLD_IMAGE,
+      }), /`NEW_AND_OLD_IMAGES`/);
+
+      test.done();
+    },
+
+    'throws with replica in same region as stack'(test: Test) {
+      // GIVEN
+      const app = new App();
+      const stack = new Stack(app, 'Stack', {
+        env: { region: 'us-east-1' }
+      });
+
+      // THEN
+      test.throws(() => new Table(stack, 'Table', {
+        partitionKey: {
+          name: 'id',
+          type: AttributeType.STRING
+        },
+        replicationRegions: [
+          'eu-west-1',
+          'us-east-1',
+          'eu-west-2',
+        ],
+      }), /`replicationRegions` cannot include the region where this stack is deployed/);
+
+      test.done();
+    }
+  }
 };
 
 function testGrant(test: Test, expectedActions: string[], invocation: (user: iam.IPrincipal, table: Table) => void) {
