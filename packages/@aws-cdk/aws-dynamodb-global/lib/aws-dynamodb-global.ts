@@ -23,6 +23,7 @@ export interface GlobalTableProps extends cdk.StackProps, dynamodb.TableOptions 
 /**
  * This class works by deploying an AWS DynamoDB table into each region specified in  GlobalTableProps.regions[],
  * then triggering a CloudFormation Custom Resource Lambda to link them all together to create linked AWS Global DynamoDB tables.
+ * @deprecated
  */
 export class GlobalTable extends cdk.Construct {
   /**
@@ -37,6 +38,9 @@ export class GlobalTable extends cdk.Construct {
 
   constructor(scope: cdk.Construct, id: string, props: GlobalTableProps) {
     super(scope, id);
+
+    this.node.addWarning(`The @aws-cdk/aws-dynamodb-global module has been deprecated in favor of @aws-cdk/aws-dynamodb.Table.replicationRegions`);
+
     this._regionalTables = [];
 
     if (props.stream != null && props.stream !== dynamodb.StreamViewType.NEW_AND_OLD_IMAGES) {
