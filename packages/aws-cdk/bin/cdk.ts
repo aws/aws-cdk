@@ -387,11 +387,11 @@ initCommandLine()
     if (typeof value === 'string') {
       data(value);
     } else if (typeof value === 'number') {
-      process.exit(value);
+      process.exitCode = value;
     }
   })
   .catch(err => {
     error(err.message);
     debug(err.stack);
-    process.exit(1);
+    process.exitCode = 1;
   });
