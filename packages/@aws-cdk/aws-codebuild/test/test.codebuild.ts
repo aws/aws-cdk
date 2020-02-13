@@ -1369,7 +1369,7 @@ export = {
 
     interface BadgeValidationTestCase {
       source: codebuild.Source,
-      shouldPassValidation: boolean
+      allowsBadge: boolean
     }
 
     const repo = new codecommit.Repository(stack, 'MyRepo', {
@@ -1378,22 +1378,22 @@ export = {
     const bucket = new s3.Bucket(stack, 'MyBucket');
 
     const cases: BadgeValidationTestCase[] = [
-      { source: new NoSource(), shouldPassValidation: false },
-      { source: new CodePipelineSource(), shouldPassValidation: false },
-      { source: codebuild.Source.codeCommit({ repository: repo }), shouldPassValidation: false },
-      { source: codebuild.Source.s3({ bucket, path: 'path/to/source.zip' }), shouldPassValidation: false },
-      { source: codebuild.Source.gitHub({ owner: 'awslabs', repo: 'aws-cdk' }), shouldPassValidation: true },
-      { source: codebuild.Source.gitHubEnterprise({ httpsCloneUrl: 'url' }), shouldPassValidation: true },
-      { source: codebuild.Source.bitBucket({ owner: 'awslabs', repo: 'aws-cdk' }), shouldPassValidation: true }
+      { source: new NoSource(), allowsBadge: false },
+      { source: new CodePipelineSource(), allowsBadge: false },
+      { source: codebuild.Source.codeCommit({ repository: repo }), allowsBadge: true },
+      { source: codebuild.Source.s3({ bucket, path: 'path/to/source.zip' }), allowsBadge: false },
+      { source: codebuild.Source.gitHub({ owner: 'awslabs', repo: 'aws-cdk' }), allowsBadge: true },
+      { source: codebuild.Source.gitHubEnterprise({ httpsCloneUrl: 'url' }), allowsBadge: true },
+      { source: codebuild.Source.bitBucket({ owner: 'awslabs', repo: 'aws-cdk' }), allowsBadge: true },
     ];
 
     cases.forEach(testCase => {
       const source = testCase.source;
       const validationBlock = () => { new codebuild.Project(stack, `MyProject-${source.type}`, { source, badge: true }); };
-      if (testCase.shouldPassValidation) {
-        test.doesNotThrow(validationBlock, Error, `Badge is not supported for source type ${source.type}`);
+      if (testCase.allowsBadge) {
+        test.doesNotThrow(validationBlock);
       } else {
-        test.throws(validationBlock, Error, `Badge is not supported for source type ${source.type}`);
+        test.throws(validationBlock, /Badge is not supported for source type /);
       }
     });
 

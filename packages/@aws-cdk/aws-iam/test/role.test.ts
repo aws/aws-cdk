@@ -345,4 +345,65 @@ describe('IAM role', () => {
       }
     });
   });
+
+  test('can have a description', () => {
+    const stack = new Stack();
+
+    new Role(stack, 'MyRole', {
+      assumedBy: new ServicePrincipal('sns.amazonaws.com'),
+      description: "This is a role description."
+    });
+
+    expect(stack).toMatchTemplate({ Resources:
+      { MyRoleF48FFE04:
+         { Type: 'AWS::IAM::Role',
+         Properties:
+          { AssumeRolePolicyDocument:
+           { Statement:
+            [ { Action: 'sts:AssumeRole',
+              Effect: 'Allow',
+              Principal: { Service: 'sns.amazonaws.com' } } ],
+              Version: '2012-10-17' },
+            Description: 'This is a role description.' } } } });
+  });
+
+  test('should not have an empty description', () => {
+    const stack = new Stack();
+
+    new Role(stack, 'MyRole', {
+      assumedBy: new ServicePrincipal('sns.amazonaws.com'),
+      description: ""
+    });
+
+    expect(stack).toMatchTemplate({ Resources:
+      { MyRoleF48FFE04:
+         { Type: 'AWS::IAM::Role',
+         Properties:
+          { AssumeRolePolicyDocument:
+           { Statement:
+            [ { Action: 'sts:AssumeRole',
+              Effect: 'Allow',
+              Principal: { Service: 'sns.amazonaws.com' } } ],
+              Version: '2012-10-17' }} } } });
+  });
+
+  test('description can only be 1000 characters long', () => {
+    const stack = new Stack();
+
+    expect(() => {
+      new Role(stack, 'MyRole', {
+        assumedBy: new ServicePrincipal('sns.amazonaws.com'),
+        description: "1000+ character long description: Lorem ipsum dolor sit amet, consectetuer adipiscing elit. \
+        Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, \
+        nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat \
+        massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, \
+        imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. \
+        Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, \
+        eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus \
+        varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. \
+        Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing \
+        sem neque sed ipsum."
+      });
+    }).toThrow(/Role description must be no longer than 1000 characters./);
+  });
 });

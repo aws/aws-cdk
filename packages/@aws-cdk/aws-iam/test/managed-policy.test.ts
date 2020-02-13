@@ -35,6 +35,12 @@ describe('managed policy', () => {
     });
   });
 
+  test('managed policy by arn', () => {
+    const mp = ManagedPolicy.fromManagedPolicyArn(stack, 'MyManagedPolicyByArn', "arn:aws:iam::1234:policy/my-policy");
+
+    expect(stack.resolve(mp.managedPolicyArn)).toEqual("arn:aws:iam::1234:policy/my-policy");
+  });
+
   test('managed policy with statements', () => {
     const policy = new ManagedPolicy(stack, 'MyManagedPolicy', { managedPolicyName: 'MyManagedPolicyName' });
     policy.addStatements(new PolicyStatement({ resources: ['*'], actions: ['sqs:SendMessage'] }));

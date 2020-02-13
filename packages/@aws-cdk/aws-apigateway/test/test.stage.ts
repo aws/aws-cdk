@@ -18,49 +18,52 @@ export = {
     expect(stack).toMatch({
       Resources: {
         testapiD6451F70: {
-        Type: "AWS::ApiGateway::RestApi",
-        Properties: {
-          Name: "test-api"
-        }
+          Type: "AWS::ApiGateway::RestApi",
+          Properties: {
+            Name: "test-api"
+          }
         },
         testapiGETD8DE4ED1: {
-        Type: "AWS::ApiGateway::Method",
-        Properties: {
-          HttpMethod: "GET",
-          ResourceId: {
-          "Fn::GetAtt": [
-            "testapiD6451F70",
-            "RootResourceId"
-          ]
-          },
-          RestApiId: {
-          Ref: "testapiD6451F70"
-          },
-          AuthorizationType: "NONE",
-          Integration: {
-          Type: "MOCK"
+          Type: "AWS::ApiGateway::Method",
+          Properties: {
+            HttpMethod: "GET",
+            ResourceId: {
+              "Fn::GetAtt": [
+                "testapiD6451F70",
+                "RootResourceId"
+              ]
+            },
+            RestApiId: {
+              Ref: "testapiD6451F70"
+            },
+            AuthorizationType: "NONE",
+            Integration: {
+              Type: "MOCK"
+            }
           }
-        }
         },
         mydeployment71ED3B4B: {
-        Type: "AWS::ApiGateway::Deployment",
-        Properties: {
-          RestApiId: {
-          Ref: "testapiD6451F70"
-          }
-        }
+          Type: "AWS::ApiGateway::Deployment",
+          Properties: {
+            RestApiId: {
+              Ref: "testapiD6451F70"
+            }
+          },
+          DependsOn: [
+            "testapiGETD8DE4ED1"
+          ]
         },
         mystage7483BE9A: {
-        Type: "AWS::ApiGateway::Stage",
-        Properties: {
-          RestApiId: {
-          Ref: "testapiD6451F70"
-          },
-          DeploymentId: {
-          Ref: "mydeployment71ED3B4B"
-          },
-          StageName: "prod"
-        }
+          Type: "AWS::ApiGateway::Stage",
+          Properties: {
+            RestApiId: {
+              Ref: "testapiD6451F70"
+            },
+            DeploymentId: {
+              Ref: "mydeployment71ED3B4B"
+            },
+            StageName: "prod"
+          }
         }
       }
     });

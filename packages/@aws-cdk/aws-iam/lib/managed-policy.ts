@@ -107,6 +107,19 @@ export class ManagedPolicy extends Resource implements IManagedPolicy {
   }
 
   /**
+   * Constructs a managed policy from an ARN.
+   *
+   * For this managed policy, you only need to know the ARN to be able to use it. This can be useful if you got the ARN in a Cloudformation Export.
+   *
+   */
+  public static fromManagedPolicyArn(scope: Construct, id: string, managedPolicyArn: string): IManagedPolicy {
+    class Import extends Resource implements IManagedPolicy {
+      public readonly managedPolicyArn = managedPolicyArn;
+    }
+    return new Import(scope, id);
+  }
+
+  /**
    * Construct a managed policy from one of the policies that AWS manages
    *
    * For this managed policy, you only need to know the name to be able to use it.
