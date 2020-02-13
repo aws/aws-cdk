@@ -1,16 +1,145 @@
-import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import { beASupersetOfTemplate, expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
 import * as ecs from '../../lib';
 import { LaunchType } from '../../lib/base/base-service';
 
 export = {
   "When creating a Fargate Service": {
+    "with service id renamed to resource (with feature flag enabled)"(test: Test) {
+      // GIVEN
+      const app = new cdk.App({
+        context: { [cxapi.ENABLE_CFN_SERVICE_RESOURCE_RENAME]: 'true' }
+      });
+      const stack = new cdk.Stack(app, 'FeatureStack');
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+
+      taskDefinition.addContainer("web", {
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+      });
+
+      new ecs.FargateService(stack, "Fargate", {
+        cluster,
+        taskDefinition,
+      });
+
+      // THEN
+      expect(stack).to(beASupersetOfTemplate({
+        Fargate001516A4: {
+          Type: "AWS::ECS::Service",
+          Properties: {
+            Cluster: {
+              Ref: "EcsCluster97242B84"
+            },
+            DeploymentConfiguration: {
+              MaximumPercent: 200,
+              MinimumHealthyPercent: 50
+            },
+            DesiredCount: 1,
+            EnableECSManagedTags: false,
+            LaunchType: "FARGATE",
+            NetworkConfiguration: {
+              AwsvpcConfiguration: {
+                AssignPublicIp: "DISABLED",
+                SecurityGroups: [
+                  {
+                    "Fn::GetAtt": [
+                      "FargateSecurityGroup953082A8",
+                      "GroupId"
+                    ]
+                  }
+                ],
+                Subnets: [
+                  {
+                    Ref: "MyVpcPrivateSubnet1Subnet5057CF7E"
+                  },
+                  {
+                    Ref: "MyVpcPrivateSubnet2Subnet0040C983"
+                  }
+                ]
+              }
+            },
+            TaskDefinition: {
+              Ref: "FargateTaskDefC6FB60B4"
+            }
+          }
+        }
+      }));
+
+      test.done();
+    },
+    "with service id renamed to resource (with feature flag disabled)"(test: Test) {
+      // GIVEN
+      const app = new cdk.App({
+        context: { [cxapi.ENABLE_CFN_SERVICE_RESOURCE_RENAME]: 'false' }
+      });
+      const stack = new cdk.Stack(app, 'FeatureStack');
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+
+      taskDefinition.addContainer("web", {
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+      });
+
+      new ecs.FargateService(stack, "Fargate", {
+        cluster,
+        taskDefinition,
+      });
+
+      // THEN
+      expect(stack).to(beASupersetOfTemplate({
+        FargateService7B4DE80D: {
+          Type: "AWS::ECS::Service",
+          Properties: {
+            Cluster: {
+              Ref: "EcsCluster97242B84"
+            },
+            DeploymentConfiguration: {
+              MaximumPercent: 200,
+              MinimumHealthyPercent: 50
+            },
+            DesiredCount: 1,
+            EnableECSManagedTags: false,
+            LaunchType: "FARGATE",
+            NetworkConfiguration: {
+              AwsvpcConfiguration: {
+                AssignPublicIp: "DISABLED",
+                SecurityGroups: [
+                  {
+                    "Fn::GetAtt": [
+                      "FargateSecurityGroup953082A8",
+                      "GroupId"
+                    ]
+                  }
+                ],
+                Subnets: [
+                  {
+                    Ref: "MyVpcPrivateSubnet1Subnet5057CF7E"
+                  },
+                  {
+                    Ref: "MyVpcPrivateSubnet2Subnet0040C983"
+                  }
+                ]
+              }
+            },
+            TaskDefinition: {
+              Ref: "FargateTaskDefC6FB60B4"
+            }
+          }
+        }
+      }));
+
+      test.done();
+    },
     "with only required properties set, it correctly sets default properties"(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();

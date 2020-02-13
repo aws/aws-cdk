@@ -6,6 +6,7 @@ import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import { Construct, Duration, IResolvable, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { LoadBalancerTargetOptions, NetworkMode, TaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
 import { Protocol } from '../container-definition';
@@ -318,7 +319,11 @@ export abstract class BaseService extends Resource
 
     this.taskDefinition = taskDefinition;
 
-    this.resource = new CfnService(this, "Service", {
+    const cfnServiceId =  this.node.tryGetContext(cxapi.ENABLE_CFN_SERVICE_RESOURCE_RENAME)
+      ? "Resource"
+      : "Service";
+
+    this.resource = new CfnService(this, cfnServiceId, {
       desiredCount: props.desiredCount,
       serviceName: this.physicalName,
       loadBalancers: Lazy.anyValue({ produce: () => this.loadBalancers }, { omitEmptyArray: true }),
