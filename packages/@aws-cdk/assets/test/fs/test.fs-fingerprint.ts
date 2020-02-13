@@ -69,7 +69,7 @@ export = {
       libfs.copyDirectory(srcdir, outdir);
 
       // WHEN
-      const hashSrc = libfs.fingerprint(srcdir);
+      const hashSrc = libfs.fingerprint(srcdir, { exclude: ['*.ignoreme'] });
 
       fs.writeFileSync(path.join(outdir, `${hashSrc}.ignoreme`), 'Ignore me!');
       const hashCopy = libfs.fingerprint(outdir, { exclude: ['*.ignoreme'] });
@@ -154,5 +154,21 @@ export = {
       test.deepEqual(afterRevert, original);
       test.done();
     }
+  },
+  exclude: {
+    'encodes exclude patterns'(test: Test) {
+      // GIVEN
+      const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'fingerprint-tests'));
+      const options1 = {path: dir, exclude: ["**", "!file.py"], sourcePath: dir};
+      const options2 = {path: dir, exclude: ["**", "!otherfile.py"], sourcePath: dir};
+
+      // WHEN
+      const f1 = libfs.fingerprint(dir, options1);
+      const f2 = libfs.fingerprint(dir, options2);
+
+      // THEN
+      test.notDeepEqual(f1, f2);
+      test.done();
+    },
   }
 };
