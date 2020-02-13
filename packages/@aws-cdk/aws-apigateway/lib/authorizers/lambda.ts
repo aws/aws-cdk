@@ -149,8 +149,8 @@ export class TokenAuthorizer extends LambdaAuthorizer {
       restApiId,
       type: 'TOKEN',
       authorizerUri: `arn:aws:apigateway:${Stack.of(this).region}:lambda:path/2015-03-31/functions/${props.handler.functionArn}/invocations`,
-      authorizerCredentials: props.assumeRole ? props.assumeRole.roleArn : undefined,
-      authorizerResultTtlInSeconds: props.resultsCacheTtl && props.resultsCacheTtl.toSeconds(),
+      authorizerCredentials: props.assumeRole?.roleArn,
+      authorizerResultTtlInSeconds: props.resultsCacheTtl?.toSeconds() ?? 0,
       identitySource: props.identitySource || 'method.request.header.Authorization',
       identityValidationExpression: props.validationRegex,
     });
@@ -202,8 +202,8 @@ export class RequestAuthorizer extends LambdaAuthorizer {
       restApiId,
       type: 'REQUEST',
       authorizerUri: `arn:aws:apigateway:${Stack.of(this).region}:lambda:path/2015-03-31/functions/${props.handler.functionArn}/invocations`,
-      authorizerCredentials: props.assumeRole ? props.assumeRole.roleArn : undefined,
-      authorizerResultTtlInSeconds: props.resultsCacheTtl && props.resultsCacheTtl.toSeconds(),
+      authorizerCredentials: props.assumeRole?.roleArn,
+      authorizerResultTtlInSeconds: props.resultsCacheTtl?.toSeconds() ?? 0,
       identitySource: props.identitySource?.join(','),
     });
   }

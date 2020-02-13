@@ -1,8 +1,9 @@
 // tslint:disable:no-console
 
 export const handler = async (event: any, _context: any = {}): Promise<any> => {
-  const arn = event.methodArn;
-  if (arn) {
+  const httpMethod: string = event.requestContext.httpMethod;
+  console.log(`event.requestContext.httpMethod = ${httpMethod}`);
+  if (httpMethod === 'GET') {
     return {
       principalId: 'user',
       policyDocument: {
@@ -11,7 +12,7 @@ export const handler = async (event: any, _context: any = {}): Promise<any> => {
           {
             Action: "execute-api:Invoke",
             Effect: 'Allow',
-            Resource: arn,
+            Resource: event.methodArn
           }
         ]
       }
