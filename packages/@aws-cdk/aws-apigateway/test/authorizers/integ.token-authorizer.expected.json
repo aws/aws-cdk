@@ -85,6 +85,46 @@
         "MyAuthorizerFunctionServiceRole8A34C19E"
       ]
     },
+    "MyAuthorizerFunctionTokenAuthorizerIntegMyAuthorizer793B1D5FPermissions7557AE26": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "MyAuthorizerFunction70F1223E",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "MyRestApi2D1F47A9"
+              },
+              "/authorizers/",
+              {
+                "Ref": "MyAuthorizer6575980E"
+              }
+            ]
+          ]
+        }
+      }
+    },
     "MyRestApi2D1F47A9": {
       "Type": "AWS::ApiGateway::RestApi",
       "Properties": {
@@ -199,11 +239,11 @@
     "MyAuthorizer6575980E": {
       "Type": "AWS::ApiGateway::Authorizer",
       "Properties": {
-        "Name": "TokenAuthorizerIntegMyAuthorizer793B1D5F",
         "RestApiId": {
           "Ref": "MyRestApi2D1F47A9"
         },
         "Type": "TOKEN",
+        "AuthorizerResultTtlInSeconds": 0,
         "AuthorizerUri": {
           "Fn::Join": [
             "",
@@ -223,47 +263,8 @@
             ]
           ]
         },
-        "IdentitySource": "method.request.header.Authorization"
-      }
-    },
-    "MyAuthorizerFunctionTokenAuthorizerIntegMyAuthorizer793B1D5FPermissions7557AE26": {
-      "Type": "AWS::Lambda::Permission",
-      "Properties": {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": {
-          "Fn::GetAtt": [
-            "MyAuthorizerFunction70F1223E",
-            "Arn"
-          ]
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": {
-          "Fn::Join": [
-            "",
-            [
-              "arn:",
-              {
-                "Ref": "AWS::Partition"
-              },
-              ":execute-api:",
-              {
-                "Ref": "AWS::Region"
-              },
-              ":",
-              {
-                "Ref": "AWS::AccountId"
-              },
-              ":",
-              {
-                "Ref": "MyRestApi2D1F47A9"
-              },
-              "/authorizers/",
-              {
-                "Ref": "MyAuthorizer6575980E"
-              }
-            ]
-          ]
-        }
+        "IdentitySource": "method.request.header.Authorization",
+        "Name": "TokenAuthorizerIntegMyAuthorizer793B1D5F"
       }
     }
   },
