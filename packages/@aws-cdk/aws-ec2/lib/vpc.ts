@@ -416,8 +416,7 @@ abstract class VpcBase extends Resource implements IVpc {
     let subnets = allSubnets[subnetType];
 
     if (onePerAz && subnets.length > 0) {
-      // Restrict to at most one subnet group
-      subnets = subnets.filter(s => subnetGroupNameFromConstructId(s) === subnetGroupNameFromConstructId(subnets[0]));
+      subnets = retainOnePerAz(subnets);
     }
 
     // Force merge conflict here with https://github.com/aws/aws-cdk/pull/4089
@@ -460,6 +459,15 @@ abstract class VpcBase extends Resource implements IVpc {
 
     return placement;
   }
+}
+
+function retainOnePerAz(subnets: ISubnet[]): ISubnet[] {
+  const azsSeen = new Set<string>();
+  return subnets.filter(subnet => {
+    if (azsSeen.has(subnet.availabilityZone)) { return false; }
+    azsSeen.add(subnet.availabilityZone);
+    return true;
+  });
 }
 
 /**
