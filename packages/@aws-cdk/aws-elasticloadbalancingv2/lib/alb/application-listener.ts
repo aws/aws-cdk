@@ -234,7 +234,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
   public addTargets(id: string, props: AddApplicationTargetsProps): ApplicationTargetGroup {
     if (!this.loadBalancer.vpc) {
       // tslint:disable-next-line:max-line-length
-      throw new Error('Can only call addTargets() when using a constructed Load Balancer; construct a new TargetGroup and use addTargetGroup');
+      throw new Error('Can only call addTargets() when using a constructed Load Balancer or an imported Load Balancer with specified vpc; construct a new TargetGroup and use addTargetGroup');
     }
 
     const group = new ApplicationTargetGroup(this, id + 'Group', {
@@ -334,7 +334,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
   protected validate(): string[] {
     const errors = super.validate();
     if (this.protocol === ApplicationProtocol.HTTPS && this.certificateArns.length === 0) {
-      errors.push('HTTPS Listener needs at least one certificate (call addCertificateArns)');
+      errors.push('HTTPS Listener needs at least one certificate (call addCertificates)');
     }
     return errors;
   }
@@ -614,7 +614,7 @@ export interface AddApplicationTargetsProps extends AddRuleProps {
    * After this period, the cookie is considered stale. The minimum value is
    * 1 second and the maximum value is 7 days (604800 seconds).
    *
-   * @default Duration.days(1)
+   * @default Stickiness disabled
    */
   readonly stickinessCookieDuration?: Duration;
 
