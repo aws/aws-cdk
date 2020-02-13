@@ -1,5 +1,5 @@
 import { AttributeType, BillingMode, Table } from '@aws-cdk/aws-dynamodb';
-import { App, Stack } from '@aws-cdk/core';
+import { App, RemovalPolicy, Stack } from '@aws-cdk/core';
 import { join } from 'path';
 import { GraphQLApi, KeyCondition, MappingTemplate, PrimaryKey, Values } from '../lib';
 
@@ -17,6 +17,7 @@ const customerTable = new Table(stack, 'CustomerTable', {
         name: 'id',
         type: AttributeType.STRING,
     },
+    removalPolicy: RemovalPolicy.DESTROY,
 });
 const orderTable = new Table(stack, 'OrderTable', {
     billingMode: BillingMode.PAY_PER_REQUEST,
@@ -27,7 +28,8 @@ const orderTable = new Table(stack, 'OrderTable', {
     sortKey: {
         name: 'order',
         type: AttributeType.STRING,
-    }
+    },
+    removalPolicy: RemovalPolicy.DESTROY,
 });
 
 const customerDS = api.addDynamoDbDataSource('Customer', 'The customer data source', customerTable);
