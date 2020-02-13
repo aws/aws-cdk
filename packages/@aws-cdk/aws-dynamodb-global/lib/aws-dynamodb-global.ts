@@ -23,7 +23,8 @@ export interface GlobalTableProps extends cdk.StackProps, dynamodb.TableOptions 
 /**
  * This class works by deploying an AWS DynamoDB table into each region specified in  GlobalTableProps.regions[],
  * then triggering a CloudFormation Custom Resource Lambda to link them all together to create linked AWS Global DynamoDB tables.
- * @deprecated
+ *
+ * @deprecated use `@aws-cdk/aws-dynamodb.Table.replicationRegions` instead
  */
 export class GlobalTable extends cdk.Construct {
   /**
