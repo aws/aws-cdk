@@ -50,6 +50,17 @@ export = {
       // THEN
       expect(stack).to(haveResource(eks.HelmChart.RESOURCE_TYPE, { Values: '{\"foo\":123}' }));
       test.done();
+    },
+    'should support waiting until everything is completed before marking release as successful'(test: Test) {
+      // GIVEN
+      const { stack, cluster } = testFixtureCluster();
+
+      // WHEN
+      new eks.HelmChart(stack, 'MyWaitingChart', { cluster, chart: 'chart', wait: true });
+
+      // THEN
+      expect(stack).to(haveResource(eks.HelmChart.RESOURCE_TYPE, { Wait: true }));
+      test.done();
     }
   }
 };

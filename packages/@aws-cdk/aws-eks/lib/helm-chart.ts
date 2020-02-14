@@ -42,6 +42,13 @@ export interface HelmChartOptions {
    * @default - No values are provided to the chart.
    */
   readonly values?: {[key: string]: any};
+
+  /**
+   * Whether or not Helm should wait until all Pods, PVCs, Services, and minimum number of Pods of a
+   * Deployment, StatefulSet, or ReplicaSet are in a ready state before marking the release as successful.
+   * @default - Helm will not wait before marking release as successful
+   */
+  readonly wait?: boolean;
 }
 
 /**
@@ -83,6 +90,7 @@ export class HelmChart extends Construct {
         Release: props.release || this.node.uniqueId.slice(-53).toLowerCase(), // Helm has a 53 character limit for the name
         Chart: props.chart,
         Version: props.version,
+        Wait: props.wait || false,
         Values: (props.values ? stack.toJsonString(props.values) : undefined),
         Namespace: props.namespace || 'default',
         Repository: props.repository
