@@ -30,7 +30,6 @@ test('NodejsFunction with .ts handler', () => {
   expect(build).toHaveBeenCalledWith(expect.objectContaining({
     entry: expect.stringContaining('function.test.handler1.ts'), // Automatically finds .ts handler file
     global: 'handler',
-    nodeVersion: '12',
     outDir: expect.stringContaining(buildDir)
   }));
 
