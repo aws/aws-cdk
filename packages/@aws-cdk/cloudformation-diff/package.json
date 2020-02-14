@@ -43,7 +43,7 @@
     "@types/string-width": "^4.0.1",
     "@types/table": "^4.0.7",
     "cdk-build-tools": "1.24.0",
-    "fast-check": "^1.22.1",
+    "fast-check": "^1.22.2",
     "jest": "^24.9.0",
     "pkglint": "1.24.0",
     "ts-jest": "^25.2.0"
