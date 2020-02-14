@@ -26,7 +26,9 @@ const ACTIONS: string[] = [
   "kms:Delete*",
   "kms:ScheduleKeyDeletion",
   "kms:CancelKeyDeletion",
-  "kms:GenerateDataKey"
+  "kms:GenerateDataKey",
+  "kms:TagResource",
+  "kms:UntagResource",
 ];
 
 export = {
