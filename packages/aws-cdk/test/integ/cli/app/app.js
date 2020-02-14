@@ -7,6 +7,8 @@ const sns = require('@aws-cdk/aws-sns');
 const lambda = require('@aws-cdk/aws-lambda');
 const docker = require('@aws-cdk/aws-ecr-assets');
 
+const stackPrefix = process.env.STACK_NAME_PREFIX || 'cdk-toolkit-integration';
+
 class MyStack extends cdk.Stack {
   constructor(parent, id, props) {
     super(parent, id, props);
@@ -115,7 +117,7 @@ class DockerStackWithCustomFile extends cdk.Stack {
 }
 
 const VPC_TAG_NAME = 'custom-tag';
-const VPC_TAG_VALUE = 'bazinga!';
+const VPC_TAG_VALUE = `${stackPrefix}-bazinga!`;
 
 class DefineVpcStack extends cdk.Stack {
   constructor(parent, id, props) {
@@ -145,8 +147,6 @@ class ConditionalResourceStack extends cdk.Stack {
     }
   }
 }
-
-const stackPrefix = process.env.STACK_NAME_PREFIX || 'cdk-toolkit-integration';
 
 const app = new cdk.App();
 
