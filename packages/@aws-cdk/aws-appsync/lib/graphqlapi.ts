@@ -707,6 +707,13 @@ export abstract class MappingTemplate {
     }
 
     /**
+     * Mapping template to invoke a Lambda function with all available context fields
+     */
+    public static lambdaFullRequest(): MappingTemplate {
+        return this.fromString('{"version": "2017-02-28", "operation": "Invoke", "payload": $util.toJson($ctx)}');
+    }
+
+    /**
      * Mapping template to return the Lambda result to the caller
      */
     public static lambdaResult(): MappingTemplate {
