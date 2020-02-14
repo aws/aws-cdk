@@ -1,7 +1,7 @@
 import * as cdk from '@aws-cdk/core';
 import * as cx from '@aws-cdk/cx-api';
 
-import { countResources, exist, expect as cdkExpect, haveType, MatchStyle, matchTemplate } from '../lib/index';
+import { countResources, countResourcesLike, exist, expect as cdkExpect, haveType, MatchStyle, matchTemplate } from '../lib/index';
 
 passingExample('expect <synthStack> at <some path> to have <some type>', () => {
   const resourceType = 'Test::Resource';
@@ -235,6 +235,75 @@ failingExample('expect <synthStack> to count resources - less than expected', ()
   });
 
   cdkExpect(synthStack).to(countResources(resourceType, 0));
+});
+
+// countResourcesLike
+
+passingExample('expect <synthStack> to count resources like props - as expected', () => {
+  const synthStack = synthesizedStack(stack => {
+    new TestResource(stack, 'R1', { type: 'Bar', properties: { parentId: 123, name: "A" } });
+    new TestResource(stack, 'R2', { type: 'Bar', properties: { parentId: 123, name: "B" } });
+    new TestResource(stack, 'R3', { type: 'Foo', properties: { parentId: 123 } });
+  });
+
+  cdkExpect(synthStack).to(countResourcesLike('Bar', 2, { parentId: 123 }));
+  cdkExpect(synthStack).to(countResourcesLike('Foo', 1, { parentId: 123 }));
+});
+
+passingExample('expect <stack> to count resources like props - expected no resources', () => {
+  const resourceType = 'Test::Resource';
+  const stack = new cdk.Stack();
+  cdkExpect(stack).to(countResourcesLike(resourceType, 0, { parentId: 123 }));
+});
+
+passingExample('expect <stack> to count resources like props - expected no resources', () => {
+  const resourceType = 'Test::Resource';
+  const synthStack = synthesizedStack(stack => {
+    new TestResource(stack, 'R1', { type: resourceType, properties: { parentId: 123, name: "A" } });
+    new TestResource(stack, 'R2', { type: resourceType });
+    new TestResource(stack, 'R3', { type: 'Foo', properties: { parentId: 456} });
+  });
+  cdkExpect(synthStack).to(countResourcesLike(resourceType, 0, { parentId: 456 }));
+});
+
+failingExample('expect <synthStack> to count resources like props - more than expected', () => {
+  const resourceType = 'Test::Resource';
+  const synthStack = synthesizedStack(stack => {
+    new TestResource(stack, 'R1', { type: resourceType, properties: { parentId: 123 } });
+    new TestResource(stack, 'R2', { type: resourceType, properties: { parentId: 123 } });
+  });
+
+  cdkExpect(synthStack).to(countResourcesLike(resourceType, 1, { parentId: 123 }));
+});
+
+failingExample('expect <synthStack> to count resources like props - nested props out of order', () => {
+  const resourceType = 'Test::Resource';
+  const synthStack = synthesizedStack(stack => {
+    new TestResource(stack, 'R1', { type: resourceType, properties: { id: 987, parentInfo: { id: 123, name: "A" } } });
+    new TestResource(stack, 'R2', { type: resourceType, properties: { id: 456, parentInfo: { name: "A", id: 123 } } });
+  });
+
+  cdkExpect(synthStack).to(countResourcesLike(resourceType, 2, { parentInfo: { id: 123, name: "A" } }));
+});
+
+failingExample('expect <synthStack> to count resources like props - nested props incomplete', () => {
+  const resourceType = 'Test::Resource';
+  const synthStack = synthesizedStack(stack => {
+    new TestResource(stack, 'R1', { type: resourceType, properties: { id: 987, parentInfo: { id: 123, name: "A" } } });
+    new TestResource(stack, 'R2', { type: resourceType, properties: { id: 456, parentInfo: { name: "A", id: 123 } } });
+  });
+
+  cdkExpect(synthStack).to(countResourcesLike(resourceType, 2, { parentInfo: { id: 123 } }));
+});
+
+failingExample('expect <synthStack> to count resources like props - less than expected', () => {
+  const resourceType = 'Test::Resource';
+  const synthStack = synthesizedStack(stack => {
+    new TestResource(stack, 'R1', { type: resourceType, properties: { parentId: 123 } });
+    new TestResource(stack, 'R2', { type: resourceType, properties: { parentId: 123 } });
+  });
+
+  cdkExpect(synthStack).to(countResourcesLike(resourceType, 0, { parentId: 123 }));
 });
 
 function passingExample(title: string, cb: () => void) {

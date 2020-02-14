@@ -29,7 +29,8 @@ The CDK is available in the following languages:
 [Getting Started](https://docs.aws.amazon.com/cdk/latest/guide/getting_started.html) |
 [API Reference](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-construct-library.html) |
 [Examples](https://github.com/aws-samples/aws-cdk-examples) |
-[Getting Help](#getting-help)
+[Getting Help](#getting-help) |
+[RFCs](https://github.com/aws/aws-cdk-rfcs)
 
 Developers use the [CDK framework] in one of the
 supported programming languages to define reusable cloud components called [constructs], which

@@ -122,6 +122,13 @@ export interface RoleProps {
    * @default Duration.hours(1)
    */
   readonly maxSessionDuration?: Duration;
+
+  /**
+   * A description of the role. It can be up to 1000 characters long.
+   *
+   * @default - No description.
+   */
+  readonly description?: string;
 }
 
 /**
@@ -147,6 +154,14 @@ export interface FromRoleArnOptions {
 export class Role extends Resource implements IRole {
   /**
    * Imports an external role by ARN.
+   *
+   * If the imported Role ARN is a Token (such as a
+   * `CfnParameter.valueAsString` or a `Fn.importValue()`) *and* the referenced
+   * role has a `path` (like `arn:...:role/AdminRoles/Alice`), the
+   * `role.roleName` property will not resolve to the correct value. Instead it
+   * will resolve to the first path component. We unfortunately cannot express
+   * the correct calculation of the full path name as a CloudFormation
+   * expression.
    *
    * @param scope construct scope
    * @param id construct id
@@ -285,6 +300,11 @@ export class Role extends Resource implements IRole {
     this.permissionsBoundary = props.permissionsBoundary;
     const maxSessionDuration = props.maxSessionDuration && props.maxSessionDuration.toSeconds();
     validateMaxSessionDuration(maxSessionDuration);
+    const description = (props.description && props.description?.length > 0) ? props.description : undefined;
+
+    if (description && description.length > 1000) {
+      throw new Error('Role description must be no longer than 1000 characters.');
+    }
 
     const role = new CfnRole(this, 'Resource', {
       assumeRolePolicyDocument: this.assumeRolePolicy as any,
@@ -294,6 +314,7 @@ export class Role extends Resource implements IRole {
       permissionsBoundary: this.permissionsBoundary ? this.permissionsBoundary.managedPolicyArn : undefined,
       roleName: this.physicalName,
       maxSessionDuration,
+      description
     });
 
     this.roleId = role.attrRoleId;
