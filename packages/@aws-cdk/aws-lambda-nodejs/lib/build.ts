@@ -1,5 +1,6 @@
 import { spawnSync } from 'child_process';
 import * as fs from 'fs';
+import * as path from 'path';
 import { findPkgPath, updatePkg } from './util';
 
 /**
@@ -72,7 +73,12 @@ export function build(options: BuildOptions): void {
         : [],
     ].filter(Boolean) as string[];
 
-    const parcel = spawnSync('parcel', args);
+    const parcelPkgPath = require.resolve('parcel-bundler/package.json'); // eslint-disable-line @typescript-eslint/no-require-imports
+    const parcelDir = path.dirname(parcelPkgPath);
+    const parcelPkg = require(parcelPkgPath); // eslint-disable-line @typescript-eslint/no-require-imports
+    const binPath = path.join(parcelDir, parcelPkg.bin.parcel);
+
+    const parcel = spawnSync(binPath, args);
 
     if (parcel.error) {
       throw parcel.error;

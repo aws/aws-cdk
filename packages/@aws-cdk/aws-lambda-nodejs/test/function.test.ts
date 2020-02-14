@@ -31,7 +31,7 @@ test('NodejsFunction', () => {
   // THEN
   const { spawnSync } = require('child_process'); // eslint-disable-line @typescript-eslint/no-require-imports
 
-  expect(spawnSync).toHaveBeenCalledWith('parcel', expect.arrayContaining([
+  expect(spawnSync).toHaveBeenCalledWith(expect.stringContaining('parcel-bundler'), expect.arrayContaining([
     'build',
     expect.stringContaining('function.test.handler1.ts'), // Automatically finds .ts handler file
     '--out-dir',
@@ -50,7 +50,7 @@ test('NodejsFunction', () => {
   ]));
 
   // Automatically finds .js handler file
-  expect(spawnSync).toHaveBeenCalledWith('parcel', expect.arrayContaining([
+  expect(spawnSync).toHaveBeenCalledWith(expect.stringContaining('parcel-bundler'), expect.arrayContaining([
     expect.stringContaining('function.test.handler2.js'),
   ]));
 
