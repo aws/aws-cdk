@@ -957,6 +957,101 @@ export = {
     test.done();
   },
 
+  'allows create mixed asg'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+
+    // WHEN
+    new autoscaling.AutoScalingGroup(stack, 'MyStack', {
+      vpc,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MICRO),
+      maxCapacity: 2,
+      minCapacity: 2,
+      machineImage: new ec2.AmazonLinuxImage({ generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 }),
+      mixedInstancesPolicy: {
+        instanceDistribution: {
+          onDemandBaseCapacity: 0,
+          onDemandPercentageAboveBaseCapacity: 0,
+          spotAllocationStrategy: autoscaling.SpotAllocationStrategy.LOWESTPRICE,
+          spotInstancePools: 10,
+        },
+        overrideInstanceTypes: [
+          ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MEDIUM),
+          ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.LARGE),
+          ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
+        ]
+      }
+    });
+
+    // THEN
+    expect(stack).to(haveResource("AWS::EC2::LaunchTemplate"));
+    expect(stack).to(haveResource("AWS::EC2::LaunchTemplate"));
+    expect(stack).notTo(haveResource("AWS::AutoScaling::LaunchConfiguration"));
+    expect(stack).to(haveResourceLike("AWS::AutoScaling::AutoScalingGroup", {
+      "MaxSize": "2",
+      "MinSize": "2",
+      "MixedInstancesPolicy": {
+        "InstancesDistribution": {
+          "OnDemandBaseCapacity": 0,
+          "OnDemandPercentageAboveBaseCapacity": 0,
+          "SpotAllocationStrategy": "lowest-price",
+          "SpotInstancePools": 10
+        },
+        "LaunchTemplate": {
+          "LaunchTemplateSpecification": {
+            "LaunchTemplateId": {
+            },
+            "Version": "1"
+          },
+          "Overrides": [
+            {
+              "InstanceType": "t3.medium"
+            },
+            {
+              "InstanceType": "t3.large"
+            },
+            {
+              "InstanceType": "t3.small"
+            }
+          ]
+        }
+      },
+    }));
+    test.done();
+  },
+
+  'throws error when spotAllocationStrategy is not lowest-price while spotInstancePools is configured '(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+
+    // THEN
+    test.throws(() => {
+      new autoscaling.AutoScalingGroup(stack, 'MyStack', {
+        vpc,
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MICRO),
+        maxCapacity: 2,
+        minCapacity: 2,
+        machineImage: new ec2.AmazonLinuxImage({ generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 }),
+        mixedInstancesPolicy: {
+          instanceDistribution: {
+            onDemandBaseCapacity: 0,
+            onDemandPercentageAboveBaseCapacity: 0,
+            spotAllocationStrategy: autoscaling.SpotAllocationStrategy.CAPACITYOPTIMIZED,
+            spotInstancePools: 10,
+          },
+          overrideInstanceTypes: [
+            ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MEDIUM),
+            ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.LARGE),
+            ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
+          ]
+        }
+      });
+    }, /spotInstancePools is only available when spotAllocationStrategy is lowest-price/);
+    test.done();
+  },
+
 };
 
 function mockVpc(stack: cdk.Stack) {

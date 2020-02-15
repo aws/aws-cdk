@@ -11,6 +11,7 @@ import {
 } from '@aws-cdk/core';
 import { CfnAutoScalingGroup, CfnAutoScalingGroupProps, CfnLaunchConfiguration } from './autoscaling.generated';
 import { BasicLifecycleHookProps, LifecycleHook } from './lifecycle-hook';
+import { MixedInstancesPolicy, SpotAllocationStrategy } from './mixed-autoscaling-group';
 import { BasicScheduledActionProps, ScheduledAction } from './scheduled-action';
 import { BasicStepScalingPolicyProps, StepScalingPolicy } from './step-scaling-policy';
 import { BaseTargetTrackingProps, PredefinedMetric, TargetTrackingScalingPolicy } from './target-tracking-scaling-policy';
@@ -230,6 +231,14 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
    * @default - Uses the block device mapping of the AMI
    */
   readonly blockDevices?: BlockDevice[];
+
+  /**
+   * `MixedInstancesPolicy` is a property of AutoScalingGroup that describes a mixed instances policy for an Amazon EC2 Auto Scaling group.
+   *
+   * @default - No mixed instances policy and will create launch configuration instead
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscaling-autoscalinggroup-mixedinstancespolicy.html
+   */
+  readonly mixedInstancesPolicy?: MixedInstancesPolicy;
 }
 
 abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGroup {
@@ -444,24 +453,41 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     const userDataToken = Lazy.stringValue({ produce: () => Fn.base64(this.userData.render()) });
     const securityGroupsToken = Lazy.listValue({ produce: () => this.securityGroups.map(sg => sg.securityGroupId) });
 
-    const launchConfig = new CfnLaunchConfiguration(this, 'LaunchConfig', {
-      imageId: imageConfig.imageId,
-      keyName: props.keyName,
-      instanceType: props.instanceType.toString(),
-      securityGroups: securityGroupsToken,
-      iamInstanceProfile: iamProfile.ref,
-      userData: userDataToken,
-      associatePublicIpAddress: props.associatePublicIpAddress,
-      spotPrice: props.spotPrice,
-      blockDeviceMappings: (props.blockDevices !== undefined ?
-        synthesizeBlockDeviceMappings(this, props.blockDevices).map<CfnLaunchConfiguration.BlockDeviceMappingProperty>(
-          ({ deviceName, ebs, virtualName, noDevice }) => ({
-            deviceName, ebs, virtualName, noDevice: noDevice ? true : undefined
-          })
-        ) : undefined),
-    });
+    let launchConfig: CfnLaunchConfiguration | undefined;
+    let launchTemplate: ec2.CfnLaunchTemplate | undefined;
 
-    launchConfig.node.addDependency(this.role);
+    // create launch template for mixed autoscaling group if mixedInstancesPolicy is defined
+    if (props.mixedInstancesPolicy) {
+      launchTemplate = new ec2.CfnLaunchTemplate(this, "LaunchTemplate", {
+        launchTemplateData: {
+          userData: userDataToken,
+          securityGroupIds: securityGroupsToken,
+          iamInstanceProfile: { arn: iamProfile.attrArn },
+          imageId: imageConfig.imageId,
+          instanceType: props.instanceType.toString(),
+          keyName: props.keyName
+        }
+      });
+    } else {
+      launchConfig = new CfnLaunchConfiguration(this, 'LaunchConfig', {
+        imageId: imageConfig.imageId,
+        keyName: props.keyName,
+        instanceType: props.instanceType.toString(),
+        securityGroups: securityGroupsToken,
+        iamInstanceProfile: iamProfile.ref,
+        userData: userDataToken,
+        associatePublicIpAddress: props.associatePublicIpAddress,
+        spotPrice: props.spotPrice,
+        blockDeviceMappings: (props.blockDevices !== undefined ?
+          synthesizeBlockDeviceMappings(this, props.blockDevices).map<CfnLaunchConfiguration.BlockDeviceMappingProperty>(
+            ({ deviceName, ebs, virtualName, noDevice }) => ({
+              deviceName, ebs, virtualName, noDevice: noDevice ? true : undefined
+            })
+          ) : undefined),
+      });
+
+      launchConfig.node.addDependency(this.role);
+    }
 
     // desiredCapacity just reflects what the user has supplied.
     const desiredCapacity = props.desiredCapacity;
@@ -497,7 +523,26 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       minSize: Tokenization.stringifyNumber(minCapacity),
       maxSize: Tokenization.stringifyNumber(maxCapacity),
       desiredCapacity: desiredCapacity !== undefined ? Tokenization.stringifyNumber(desiredCapacity) : undefined,
-      launchConfigurationName: launchConfig.ref,
+      launchConfigurationName:  launchConfig ? launchConfig.ref : undefined,
+      mixedInstancesPolicy: (launchTemplate && props.mixedInstancesPolicy) ? {
+        launchTemplate: {
+          launchTemplateSpecification: {
+            launchTemplateId: launchTemplate.ref,
+            launchTemplateName: launchTemplate.launchTemplateName,
+            version: '1'
+          },
+          overrides: props.mixedInstancesPolicy.overrideInstanceTypes.map(t => ({ instanceType: t.toString() })),
+        },
+        instancesDistribution: {
+          // onDemandAllocationStrategy: OnDemandAllocationStrategy.PRIORITIZED,
+          onDemandBaseCapacity: props.mixedInstancesPolicy.instanceDistribution.onDemandBaseCapacity ?? 0,
+          onDemandPercentageAboveBaseCapacity: props.mixedInstancesPolicy.instanceDistribution.onDemandPercentageAboveBaseCapacity ?? 0,
+          spotAllocationStrategy: props.mixedInstancesPolicy.instanceDistribution.spotAllocationStrategy ?? SpotAllocationStrategy.LOWESTPRICE,
+          spotInstancePools: props.mixedInstancesPolicy.instanceDistribution.spotAllocationStrategy === SpotAllocationStrategy.LOWESTPRICE ?
+          props.mixedInstancesPolicy.instanceDistribution.spotInstancePools ?? 2 : undefined,
+          spotMaxPrice: props.mixedInstancesPolicy.instanceDistribution.spotMaxPrice,
+        }
+      } : undefined,
       loadBalancerNames: Lazy.listValue({ produce: () => this.loadBalancerNames }, { omitEmpty: true }),
       targetGroupArns: Lazy.listValue({ produce: () => this.targetGroupArns }, { omitEmpty: true }),
       notificationConfigurations: !props.notificationsTopic ? undefined : [
@@ -518,6 +563,13 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
 
     if (!hasPublic && props.associatePublicIpAddress) {
       throw new Error("To set 'associatePublicIpAddress: true' you must select Public subnets (vpcSubnets: { subnetType: SubnetType.PUBLIC })");
+    }
+
+    if (launchTemplate && props.mixedInstancesPolicy &&
+      props.mixedInstancesPolicy.instanceDistribution.spotAllocationStrategy !== SpotAllocationStrategy.LOWESTPRICE &&
+      props.mixedInstancesPolicy.instanceDistribution.spotInstancePools
+      ) {
+      throw new Error("spotInstancePools is only available when spotAllocationStrategy is lowest-price)");
     }
 
     this.autoScalingGroup = new CfnAutoScalingGroup(this, 'ASG', asgProps);

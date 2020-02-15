@@ -218,6 +218,39 @@ autoScalingGroup.scaleOnSchedule('AllowDownscalingAtNight', {
 See the documentation of the `@aws-cdk/aws-ec2` package for more information
 about allowing connections between resources backed by instances.
 
+
+### Mixed Autoscaling Group
+
+To created autoscaling group with [multiple instance types and purchase options](https://docs.aws.amazon.com/autoscaling/ec2/userguide/asg-purchase-options.html), specify `mixedInstancesPolicy` in the `autoscaling.AutoScalingGroupProps`. This will create an autoscaling group and launch template with custom instances distribution strategy.
+
+The following example creates a mixed autoscaling group with custom instance distribution across multiple different instance types.
+
+```ts
+new autoscaling.AutoScalingGroup(stack, 'ASG', {
+  vpc,
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MICRO),
+  maxCapacity: 10,
+  minCapacity: 5,
+  machineImage: new ec2.AmazonLinuxImage({ generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 }),
+  mixedInstancesPolicy: {
+    instanceDistribution: {
+      onDemandBaseCapacity: 1,
+      onDemandPercentageAboveBaseCapacity: 50,
+      spotAllocationStrategy: autoscaling.SpotAllocationStrategy.LOWESTPRICE,
+      spotInstancePools: 10,
+    },
+    overrideInstanceTypes: [
+      ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MEDIUM),
+      ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.LARGE),
+      ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
+    ]
+  }
+});
+
+```
+
+
+
 ### Future work
 
 - [ ] CloudWatch Events (impossible to add currently as the AutoScalingGroup ARN is
