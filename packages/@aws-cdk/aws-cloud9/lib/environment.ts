@@ -117,7 +117,8 @@ export class EnvironmentEC2 extends cdk.Resource implements IEnvironmentEC2 {
       description: props.description,
       instanceType: props.instanceType ? props.instanceType.toString() :
         ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO).toString(),
-      subnetId: props.subnetId ?? props.vpc ? props.vpc!.publicSubnets[0].subnetId.toString() :
+      subnetId: props.subnetId ? props.subnetId :
+      props.vpc ? props.vpc!.publicSubnets[0].subnetId.toString() :
         new ec2.Vpc(this, 'Vpc', { maxAzs: 2 }).publicSubnets[0].subnetId.toString(),
     });
 
