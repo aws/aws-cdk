@@ -93,7 +93,9 @@
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/core": "1.24.0"
+    "@aws-cdk/core": "1.24.0",
+    "@aws-cdk/aws-ec2": "1.24.0",
+    "@aws-cdk/aws-iam": "1.24.0"
   },
   "engines": {
     "node": ">= 10.3.0"
