@@ -87,6 +87,8 @@ permissions to trigger the expected targets, do the following:
 ```ts
 const role = new iam.Role(this, 'Role', {
   assumedBy: new iam.ServicePrincipal('codepipeline.amazonaws.com'),
+  // custom description if desired
+  description: 'This is a custom role...',
 });
 
 new codepipeline.Pipeline(this, 'Pipeline', {
