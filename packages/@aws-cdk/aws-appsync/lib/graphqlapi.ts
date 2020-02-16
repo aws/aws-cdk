@@ -312,7 +312,7 @@ export abstract class BaseDataSource extends Construct implements IGrantable {
      */
     public readonly name: string;
     /**
-     * the underlying CFNN data source resource
+     * the underlying CFN data source resource
      */
     public readonly ds: CfnDataSource;
 
@@ -700,17 +700,12 @@ export abstract class MappingTemplate {
 
     /**
      * Mapping template to invoke a Lambda function
-     * @param payload the VTL template snippet of the payload to send to the lambda
+     *
+     * @param payload the VTL template snippet of the payload to send to the lambda.
+     * If no payload is provided all available context fields are sent to the Lambda function
      */
-    public static lambdaRequest(payload: string): MappingTemplate {
-        return this.fromString(`{"version": "2017-02-28", "operation": "Invoke", "payload": ${payload}}`);
-    }
-
-    /**
-     * Mapping template to invoke a Lambda function with all available context fields
-     */
-    public static lambdaFullRequest(): MappingTemplate {
-        return this.fromString('{"version": "2017-02-28", "operation": "Invoke", "payload": $util.toJson($ctx)}');
+    public static lambdaRequest(payload?: string): MappingTemplate {
+        return this.fromString(`{"version": "2017-02-28", "operation": "Invoke", "payload": ${payload ?? '$util.toJson($ctx)'}}`);
     }
 
     /**
