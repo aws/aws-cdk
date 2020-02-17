@@ -1,4 +1,4 @@
-# asset-manifest-schema
+# cdk-assets-schema
 
 <!--BEGIN STABILITY BANNER-->
 

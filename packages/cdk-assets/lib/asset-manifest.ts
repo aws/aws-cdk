@@ -1,4 +1,4 @@
-import { AssetManifestSchema, DockerImageDestination, DockerImageSource, FileDestination, FileSource, ManifestFile } from '@aws-cdk/asset-manifest-schema';
+import { AssetManifestSchema, DockerImageDestination, DockerImageSource, FileDestination, FileSource, ManifestFile } from '@aws-cdk/cdk-assets-schema';
 import * as fs from 'fs';
 import * as path from 'path';
 

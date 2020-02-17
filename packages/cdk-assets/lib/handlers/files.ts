@@ -1,4 +1,4 @@
-import { FileAssetPackaging } from '@aws-cdk/asset-manifest-schema';
+import { FileAssetPackaging } from '@aws-cdk/cdk-assets-schema';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { FileManifestEntry } from '../asset-manifest';

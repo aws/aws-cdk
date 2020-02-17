@@ -1,4 +1,4 @@
-import { AssetManifestSchema } from '@aws-cdk/asset-manifest-schema';
+import { AssetManifestSchema } from '@aws-cdk/cdk-assets-schema';
 import * as mockfs from 'mock-fs';
 import { AssetManifest, AssetPublishing, IPublishProgress, IPublishProgressListener } from '../lib';
 import { mockAws, mockedApiFailure, mockPutObject } from './mock-aws';
