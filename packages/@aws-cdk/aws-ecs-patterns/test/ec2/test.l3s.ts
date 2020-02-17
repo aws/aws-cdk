@@ -464,9 +464,9 @@ export = {
     // THEN - stack contains a load balancer, a service, and a certificate
     expect(stack).to(haveResource('AWS::CloudFormation::CustomResource', {
       ServiceToken: {
-      'Fn::GetAtt': [
-        'ServiceCertificateCertificateRequestorFunctionB69CD117',
-        'Arn'
+        'Fn::GetAtt': [
+          'CertificateRequestorb29a7990a6bf43f48718473fce8ae384183C2B9B',
+          'Arn'
         ]
       },
       DomainName: 'api.example.com',

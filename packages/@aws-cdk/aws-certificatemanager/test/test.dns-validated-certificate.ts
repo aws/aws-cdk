@@ -22,7 +22,7 @@ export = {
       DomainName: 'test.example.com',
       ServiceToken: {
         'Fn::GetAtt': [
-          'CertificateCertificateRequestorFunction5E845413',
+          'CertificateRequestorb29a7990a6bf43f48718473fce8ae384183C2B9B',
           'Arn'
         ]
       },
@@ -36,10 +36,10 @@ export = {
       Timeout: 900,
     }));
     expect(stack).to(haveResource('AWS::IAM::Policy', {
-      PolicyName: 'CertificateCertificateRequestorFunctionServiceRoleDefaultPolicy3C8845BC',
+      PolicyName: 'CertificateRequestorb29a7990a6bf43f48718473fce8ae384ServiceRoleDefaultPolicy029EA878',
       Roles: [
         {
-          Ref: 'CertificateCertificateRequestorFunctionServiceRoleC04C13DA',
+          Ref: 'CertificateRequestorb29a7990a6bf43f48718473fce8ae384ServiceRoleD8B5CD2A',
         }
       ],
       PolicyDocument: {
@@ -113,7 +113,7 @@ export = {
     expect(stack).to(haveResource('AWS::CloudFormation::CustomResource', {
         ServiceToken: {
         'Fn::GetAtt': [
-          'CertCertificateRequestorFunction98FDF273',
+          'CertificateRequestorb29a7990a6bf43f48718473fce8ae384183C2B9B',
           'Arn'
           ]
         },
@@ -145,7 +145,7 @@ export = {
     expect(stack).to(haveResource('AWS::CloudFormation::CustomResource', {
         ServiceToken: {
         'Fn::GetAtt': [
-          'CertCertificateRequestorFunction98FDF273',
+          'CertificateRequestorb29a7990a6bf43f48718473fce8ae384183C2B9B',
           'Arn'
           ]
         },

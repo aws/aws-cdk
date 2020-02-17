@@ -58,7 +58,9 @@ export class DnsValidatedCertificate extends cdk.Resource implements ICertificat
         // Remove any `/hostedzone/` prefix from the Hosted Zone ID
         this.hostedZoneId = props.hostedZone.hostedZoneId.replace(/^\/hostedzone\//, '');
 
-        const requestorFunction = new lambda.Function(this, 'CertificateRequestorFunction', {
+        const requestorFunction = new lambda.SingletonFunction(this, 'CertificateRequestorFunction', {
+            lambdaPurpose: 'CertificateRequestor',
+            uuid: 'b29a7990-a6bf-43f4-8718-473fce8ae384',
             code: lambda.Code.fromAsset(path.resolve(__dirname, '..', 'lambda-packages', 'dns_validated_certificate_handler', 'lib')),
             handler: 'index.certificateRequestHandler',
             runtime: lambda.Runtime.NODEJS_10_X,
