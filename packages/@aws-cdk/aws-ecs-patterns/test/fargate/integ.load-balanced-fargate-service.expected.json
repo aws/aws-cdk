@@ -597,7 +597,7 @@
       ]
     },
     "myServiceCertificateCertificateRequestorResource76DB9304": {
-      "Type": "AWS::CloudFormation::CustomResource",
+      "Type": "Custom::DnsValidatedCertificate",
       "Properties": {
         "ServiceToken": {
           "Fn::GetAtt": [

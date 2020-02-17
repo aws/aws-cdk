@@ -18,7 +18,7 @@ export = {
       hostedZone: exampleDotComZone,
     });
 
-    expect(stack).to(haveResource('AWS::CloudFormation::CustomResource', {
+    expect(stack).to(haveResource('Custom::DnsValidatedCertificate', {
       DomainName: 'test.example.com',
       ServiceToken: {
         'Fn::GetAtt': [
@@ -110,7 +110,7 @@ export = {
       hostedZone: exampleDotComZone,
     });
 
-    expect(stack).to(haveResource('AWS::CloudFormation::CustomResource', {
+    expect(stack).to(haveResource('Custom::DnsValidatedCertificate', {
         ServiceToken: {
         'Fn::GetAtt': [
           'CertificateRequestorb29a7990a6bf43f48718473fce8ae384183C2B9B',
@@ -142,7 +142,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::CloudFormation::CustomResource', {
+    expect(stack).to(haveResource('Custom::DnsValidatedCertificate', {
         ServiceToken: {
         'Fn::GetAtt': [
           'CertificateRequestorb29a7990a6bf43f48718473fce8ae384183C2B9B',

@@ -81,6 +81,7 @@ export class DnsValidatedCertificate extends cdk.Resource implements ICertificat
         }));
 
         const certificate = new cfn.CustomResource(this, 'CertificateRequestorResource', {
+            resourceType: `Custom::${this.constructor.name}`,
             provider: cfn.CustomResourceProvider.lambda(requestorFunction),
             properties: {
                 DomainName: props.domainName,
