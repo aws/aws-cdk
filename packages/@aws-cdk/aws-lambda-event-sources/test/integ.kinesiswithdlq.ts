@@ -3,7 +3,6 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as sqs from '@aws-cdk/aws-sqs';
 import { App, Stack } from "@aws-cdk/core";
 import { KinesisEventSource } from '../lib';
-import { SqsDLQ } from '../lib/sqs-dlq';
 
 /*
  * Stack verification steps:
@@ -34,7 +33,7 @@ class KinesisWithDLQTest extends Stack {
 
         fn.addEventSource(new KinesisEventSource(stream, {
             startingPosition: lambda.StartingPosition.TRIM_HORIZON,
-            onFailure: new SqsDLQ(dlq),
+            onFailure: new lambda.SqsDLQ(dlq),
             retryAttempts: 2
         }));
 

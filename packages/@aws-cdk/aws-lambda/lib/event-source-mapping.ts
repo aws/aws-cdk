@@ -1,5 +1,5 @@
 import * as cdk from '@aws-cdk/core';
-import { IEventSourceDLQ } from '@aws-cdk/aws-lambda-event-sources';
+import { IEventSourceDLQ } from './dlq';
 import { IFunction } from './function-base';
 import { CfnEventSourceMapping } from './lambda.generated';
 

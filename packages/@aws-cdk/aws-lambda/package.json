@@ -90,6 +90,7 @@
     "@aws-cdk/aws-logs": "1.23.0",
     "@aws-cdk/aws-s3": "1.23.0",
     "@aws-cdk/aws-s3-assets": "1.23.0",
+    "@aws-cdk/aws-sns": "1.23.0",
     "@aws-cdk/aws-sqs": "1.23.0",
     "@aws-cdk/core": "1.23.0",
     "@aws-cdk/cx-api": "1.23.0"
@@ -103,6 +104,7 @@
     "@aws-cdk/aws-logs": "1.23.0",
     "@aws-cdk/aws-s3": "1.23.0",
     "@aws-cdk/aws-s3-assets": "1.23.0",
+    "@aws-cdk/aws-sns": "1.23.0",
     "@aws-cdk/aws-sqs": "1.23.0",
     "@aws-cdk/core": "1.23.0",
     "@aws-cdk/cx-api": "1.23.0"

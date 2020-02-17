@@ -1,6 +1,5 @@
 export * from './api';
 export * from './dynamodb';
-export * from './dlq';
 export * from './kinesis';
 export * from './s3';
 export * from './sns';

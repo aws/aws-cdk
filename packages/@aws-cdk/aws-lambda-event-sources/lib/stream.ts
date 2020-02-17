@@ -1,6 +1,5 @@
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Duration } from '@aws-cdk/core';
-import { IEventSourceDLQ } from './dlq';
 
 /**
  * The set of properties for event sources that follow the streaming model,
@@ -34,7 +33,7 @@ export interface StreamEventSourceProps {
    *
    * @default discarded records are ignored
    */
-  readonly onFailure?: IEventSourceDLQ;
+  readonly onFailure?: lambda.IEventSourceDLQ;
 
   /**
    * The maximum age of a record that Lambda sends to a function for processing.

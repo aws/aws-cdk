@@ -1,4 +1,5 @@
 export * from './alias';
+export * from './dlq';
 export * from './function-base';
 export * from './function';
 export * from './layers';
@@ -6,7 +7,9 @@ export * from './permission';
 export * from './runtime';
 export * from './code';
 export * from './lambda-version';
+export * from './sns-dlq';
 export * from './singleton-lambda';
+export * from './sqs-dlq';
 export * from './event-source';
 export * from './event-source-mapping';
 export * from './destination';
