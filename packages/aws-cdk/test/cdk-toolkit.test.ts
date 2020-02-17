@@ -126,6 +126,7 @@ class TestProvisioner implements IDeploymentTarget {
       stackArn: `arn:aws:cloudformation:::stack/${options.stack.stackName}/MockedOut`,
       noOp: false,
       outputs: { StackName: options.stack.stackName },
+      stackArtifact: options.stack,
     });
   }
 

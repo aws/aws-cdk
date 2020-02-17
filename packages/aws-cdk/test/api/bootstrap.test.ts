@@ -3,6 +3,12 @@ import { bootstrapEnvironment } from '../../lib';
 import { fromYAML } from '../../lib/serialize';
 import { MockSDK } from '../util/mock-sdk';
 
+const env = {
+  account: '123456789012',
+  region: 'us-east-1',
+  name: 'mock',
+};
+
 test('do bootstrap', async () => {
   // GIVEN
   const sdk = new MockSDK();
@@ -39,11 +45,7 @@ test('do bootstrap', async () => {
   });
 
   // WHEN
-  const ret = await bootstrapEnvironment({
-    account: '123456789012',
-    region: 'us-east-1',
-    name: 'mock',
-  }, sdk, 'mockStack', undefined);
+  const ret = await bootstrapEnvironment(env, sdk, 'mockStack', undefined);
 
   // THEN
   expect(ret.noOp).toBeFalsy();
@@ -86,11 +88,7 @@ test('do bootstrap using custom bucket name', async () => {
   });
 
   // WHEN
-  const ret = await bootstrapEnvironment({
-    account: '123456789012',
-    region: 'us-east-1',
-    name: 'mock',
-  }, sdk, 'mockStack', undefined, {
+  const ret = await bootstrapEnvironment(env, sdk, 'mockStack', undefined, {
     bucketName: 'foobar',
   });
 
@@ -134,11 +132,7 @@ test('do bootstrap using KMS CMK', async () => {
   });
 
   // WHEN
-  const ret = await bootstrapEnvironment({
-    account: '123456789012',
-    region: 'us-east-1',
-    name: 'mock',
-  }, sdk, 'mockStack', undefined, {
+  const ret = await bootstrapEnvironment(env, sdk, 'mockStack', undefined, {
     kmsKeyId: 'myKmsKey',
   });
 
@@ -182,15 +176,31 @@ test('do bootstrap with custom tags for toolkit stack', async () => {
   });
 
   // WHEN
-  const ret = await bootstrapEnvironment({
-    account: '123456789012',
-    region: 'us-east-1',
-    name: 'mock',
-  }, sdk, 'mockStack', undefined, {
+  const ret = await bootstrapEnvironment(env, sdk, 'mockStack', undefined, {
     tags: [{ Key: 'Foo', Value: 'Bar' }]
   });
 
   // THEN
   expect(ret.noOp).toBeFalsy();
   expect(executed).toBeTruthy();
+});
+
+test('passing trusted accounts to the old bootstrapping results in an error', async () => {
+  const sdk = new MockSDK();
+
+  await expect(bootstrapEnvironment(env, sdk, 'mockStack', undefined, {
+    trustedAccounts: ['0123456789012'],
+  }))
+  .rejects
+  .toThrow('--trust can only be passed for the new bootstrap experience!');
+});
+
+test('passing CFN execution policies to the old bootstrapping results in an error', async () => {
+  const sdk = new MockSDK();
+
+  await expect(bootstrapEnvironment(env, sdk, 'mockStack', undefined, {
+    cloudFormationExecutionPolicies: ['arn:aws:iam::aws:policy/AdministratorAccess'],
+  }))
+  .rejects
+  .toThrow('--cloudformation-execution-policies can only be passed for the new bootstrap experience!');
 });
