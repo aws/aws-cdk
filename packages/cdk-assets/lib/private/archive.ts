@@ -1,5 +1,5 @@
 import * as archiver from 'archiver';
-import * as fs from 'fs-extra';
+import { createWriteStream, promises as fs } from 'fs';
 import * as glob from 'glob';
 import * as path from 'path';
 
@@ -16,7 +16,7 @@ export function zipDirectory(directory: string, outputFile: string): Promise<voi
     };
     const files = glob.sync('**', globOptions); // The output here is already sorted
 
-    const output = fs.createWriteStream(outputFile);
+    const output = createWriteStream(outputFile);
 
     const archive = archiver('zip');
     archive.on('warning', fail);

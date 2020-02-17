@@ -54,7 +54,7 @@ afterEach(() => {
 });
 
 test('check that placeholders are replaced', async () => {
-  const pub = new AssetPublishing({ aws, manifest: AssetManifest.fromPath('/simple/cdk.out') });
+  const pub = new AssetPublishing(AssetManifest.fromPath('/simple/cdk.out'), { aws });
   aws.mockS3.headObject = mockedApiResult({ /* No error == file exists */ });
   aws.mockEcr.describeImages = mockedApiResult({ /* No error == image exists */ });
 

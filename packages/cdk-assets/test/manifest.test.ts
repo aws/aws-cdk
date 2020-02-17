@@ -98,6 +98,15 @@ test('pattern must have two components', () => {
   }).toThrow(/Asset identifier must contain at most 2/);
 });
 
+test('parse ASSET:* the same as ASSET and ASSET:', () => {
+  expect(DestinationPattern.parse('a:*')).toEqual(DestinationPattern.parse('a'));
+  expect(DestinationPattern.parse('a:*')).toEqual(DestinationPattern.parse('a:'));
+});
+
+test('parse *:DEST the same as :DEST', () => {
+  expect(DestinationPattern.parse('*:a')).toEqual(DestinationPattern.parse(':a'));
+});
+
 function f(obj: unknown, ...keys: string[]): any {
   for (const k of keys) {
     if (typeof obj === 'object' && obj !== null && k in obj) {

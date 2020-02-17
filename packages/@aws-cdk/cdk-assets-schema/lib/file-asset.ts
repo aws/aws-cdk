@@ -1,3 +1,5 @@
+import { AwsDestination } from "./aws-destination";
+
 /**
  * A file asset
  */
@@ -34,6 +36,8 @@ export enum FileAssetPackaging {
 export interface FileSource {
   /**
    * The filesystem object to upload
+   *
+   * This path is relative to the asset manifest location.
    */
   readonly path: string;
 
@@ -48,26 +52,7 @@ export interface FileSource {
 /**
  * Where in S3 a file asset needs to be published
  */
-export interface FileDestination {
-  /**
-   * The region where this asset will need to be published
-   */
-  readonly region?: string;
-
-  /**
-   * The role that needs to be assumed while publishing this asset
-   *
-   * @default - No role will be assumed
-   */
-  readonly assumeRoleArn?: string;
-
-  /**
-   * The ExternalId that needs to be supplied while assuming this role
-   *
-   * @default - No ExternalId will be supplied
-   */
-  readonly assumeRoleExternalId?: string;
-
+export interface FileDestination extends AwsDestination {
   /**
    * The name of the bucket
    */

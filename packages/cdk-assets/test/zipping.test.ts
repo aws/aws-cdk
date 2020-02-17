@@ -41,7 +41,7 @@ afterEach(() => {
 });
 
 test('Take a zipped upload', async () => {
-  const pub = new AssetPublishing({ aws, manifest: AssetManifest.fromPath(bockfs.path('/simple/cdk.out')) });
+  const pub = new AssetPublishing(AssetManifest.fromPath(bockfs.path('/simple/cdk.out')), { aws });
 
   await pub.publish();
 

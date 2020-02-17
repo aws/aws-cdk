@@ -22,8 +22,8 @@
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
-        "distName": "aws-cdk.cdk-assets.schema",
-        "module": "aws_cdk.cdk_assets.schema"
+        "distName": "aws-cdk.cdk-assets-schema",
+        "module": "aws_cdk.cdk_assets_schema"
       }
     }
   },

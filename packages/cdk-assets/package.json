@@ -29,12 +29,10 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/archiver": "^3.0.0",
-    "@types/fs-extra": "^8.0.1",
     "@types/glob": "^7.1.1",
     "@types/jest": "^24.0.25",
     "@types/node": "^10.17.13",
     "@types/mock-fs": "^4.10.0",
-    "@types/winston": "^2.4.4",
     "@types/yargs": "^15.0.0",
     "cdk-build-tools": "1.22.0",
     "jest": "^24.9.0",
@@ -45,9 +43,7 @@
     "@aws-cdk/cdk-assets-schema": "1.22.0",
     "archiver": "^3.1.1",
     "aws-sdk": "^2.601.0",
-    "fs-extra": "^8.1.0",
     "glob": "^7.1.6",
-    "winston": "^3.2.1",
     "yargs": "^15.0.2"
   },
   "repository": {

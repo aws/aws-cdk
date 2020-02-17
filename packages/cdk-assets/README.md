@@ -1,6 +1,6 @@
 # cdk-assets
 
-A tool for publishing assets for CDK applications to the right cloud locations.
+A tool for publishing CDK assets to AWS environments.
 
 <!--BEGIN STABILITY BANNER-->
 
@@ -22,7 +22,7 @@ A tool for publishing assets for CDK applications to the right cloud locations.
 
 `cdk-assets` requires an asset manifest file called `assets.json`, in a CDK
 CloudAssembly (`cdk.out/assets.json`). It will take the assets listed in the
-manifest, package them as required and upload them to the locations indicated in
+manifest, prepare them as required and upload them to the locations indicated in
 the manifest.
 
 Currently the following asset types are supported:

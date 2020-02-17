@@ -1,5 +1,5 @@
 import { AssetManifest } from "../asset-manifest";
-import { IAws } from "../aws-operations";
+import { IAws } from "../aws";
 
 /**
  * Replace the {ACCOUNT} and {REGION} placeholders in all strings found in a complex object.
@@ -33,13 +33,13 @@ export async function replaceAwsPlaceholders<A extends { region?: string }>(obje
 
   async function ensureRegion() {
     if (region === undefined) {
-      region = object.region ?? await aws.defaultRegion();
+      region = object.region ?? await aws.discoverDefaultRegion();
     }
   }
 
   async function ensureAccount() {
     if (account === undefined) {
-      account = await aws.currentAccount();
+      account = await aws.discoverCurrentAccount();
     }
   }
 }

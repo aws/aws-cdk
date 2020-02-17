@@ -1,7 +1,8 @@
 // A not-so-fake filesystem mock similar to mock-fs
-import * as fs from 'fs-extra';
+import * as fs from 'fs';
 import * as os from 'os';
 import * as path_ from 'path';
+import { emptyDirSync } from '../lib/private/fs-extra';
 
 const bockFsRoot = path_.join(os.tmpdir(), 'bockfs');
 
@@ -14,7 +15,7 @@ function bockfs(files: Record<string, string>) {
 namespace bockfs {
   export function write(fileName: string, contents: string) {
     const fullPath = path(fileName);
-    fs.mkdirpSync(path_.dirname(fullPath));
+    fs.mkdirSync(path_.dirname(fullPath), { recursive: true });
     fs.writeFileSync(fullPath, contents, { encoding: 'utf-8' });
   }
 
@@ -24,7 +25,7 @@ namespace bockfs {
   }
 
   export function restore() {
-    fs.emptyDirSync(bockFsRoot);
+    emptyDirSync(bockFsRoot);
     fs.rmdirSync(bockFsRoot);
   }
 }

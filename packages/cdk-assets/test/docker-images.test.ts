@@ -39,7 +39,7 @@ afterEach(() => {
 });
 
 test('pass destination properties to AWS client', async () => {
-  const pub = new AssetPublishing({ aws, manifest: AssetManifest.fromPath('/simple/cdk.out'), throwOnError: false });
+  const pub = new AssetPublishing(AssetManifest.fromPath('/simple/cdk.out'), { aws, throwOnError: false });
 
   await pub.publish();
 
@@ -52,7 +52,7 @@ test('pass destination properties to AWS client', async () => {
 describe('with a complete manifest', () => {
   let pub: AssetPublishing;
   beforeEach(() => {
-    pub = new AssetPublishing({ aws, manifest: AssetManifest.fromPath('/simple/cdk.out') });
+    pub = new AssetPublishing(AssetManifest.fromPath('/simple/cdk.out'), { aws });
   });
 
   test('Do nothing if docker image already exists', async () => {

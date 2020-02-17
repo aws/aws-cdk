@@ -1,52 +1,53 @@
 import * as path from 'path';
-import { DockerImageManifestEntry } from '../asset-manifest';
-import { IAws } from "../aws-operations";
-import { IAssetHandler, MessageSink } from "../private/asset-handler";
-import { Docker } from "../private/docker";
-import { replaceAwsPlaceholders } from "../private/placeholders";
+import { DockerImageManifestEntry } from '../../asset-manifest';
+import { EventType } from '../../progress';
+import { IAssetHandler, IHandlerHost } from "../asset-handler";
+import { Docker } from "../docker";
+import { replaceAwsPlaceholders } from "../placeholders";
 
 export class ContainerImageAssetHandler implements IAssetHandler {
   private readonly localTagName: string;
-  private readonly docker = new Docker(this.message);
+  private readonly docker = new Docker(m => this.host.emitMessage(EventType.DEBUG, m));
 
   constructor(
-    private readonly root: string,
+    private readonly workDir: string,
     private readonly asset: DockerImageManifestEntry,
-    private readonly aws: IAws,
-    private readonly message: MessageSink) {
+    private readonly host: IHandlerHost) {
 
     this.localTagName = `cdkasset-${this.asset.id.assetId.toLowerCase()}`;
   }
 
   public async publish(): Promise<void> {
-    const destination = await replaceAwsPlaceholders(this.asset.destination, this.aws);
+    const destination = await replaceAwsPlaceholders(this.asset.destination, this.host.aws);
 
-    const ecr = this.aws.ecrClient(destination);
+    const ecr = this.host.aws.ecrClient(destination);
 
-    this.message(`Check ${destination.imageUri}`);
+    this.host.emitMessage(EventType.CHECK, `Check ${destination.imageUri}`);
     if (await imageExists(ecr, destination.repositoryName, destination.imageTag)) {
-      this.message(`Found ${destination.imageUri}`);
+      this.host.emitMessage(EventType.FOUND, `Found ${destination.imageUri}`);
       return;
     }
 
-    await this.package();
+    if (this.host.aborted) { return; }
+    await this.buildImage();
 
-    this.message(`Push ${destination.imageUri}`);
+    this.host.emitMessage(EventType.UPLOAD, `Push ${destination.imageUri}`);
+    if (this.host.aborted) { return; }
     await this.docker.tag(this.localTagName, destination.imageUri);
     await this.docker.login(ecr);
     await this.docker.push(destination.imageUri);
   }
 
-  public async package(): Promise<void> {
+  private async buildImage(): Promise<void> {
     if (await this.docker.exists(this.localTagName)) {
-      this.message(`Cached ${this.localTagName}`);
+      this.host.emitMessage(EventType.CACHED, `Cached ${this.localTagName}`);
       return;
     }
 
     const source = this.asset.source;
 
-    const fullPath = path.join(this.root, source.directory);
-    this.message(`Building Docker image at ${fullPath}`);
+    const fullPath = path.join(this.workDir, source.directory);
+    this.host.emitMessage(EventType.BUILD, `Building Docker image at ${fullPath}`);
 
     await this.docker.build({
       directory: fullPath,

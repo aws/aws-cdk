@@ -1,3 +1,5 @@
+import { AwsDestination } from "./aws-destination";
+
 /**
  * A file asset
  */
@@ -18,7 +20,9 @@ export interface DockerImageAsset {
  */
 export interface DockerImageSource {
   /**
-   * The directory containing the Docker image build instructions
+   * The directory containing the Docker image build instructions.
+   *
+   * This path is relative to the asset manifest location.
    */
   readonly directory: string;
 
@@ -47,26 +51,7 @@ export interface DockerImageSource {
 /**
  * Where to publish docker images
  */
-export interface DockerImageDestination {
-  /**
-   * The region where this asset will need to be published
-   */
-  readonly region?: string;
-
-  /**
-   * The role that needs to be assumed while publishing this asset
-   *
-   * @default - No role will be assumed
-   */
-  readonly assumeRoleArn?: string;
-
-  /**
-   * The ExternalId that needs to be supplied while assuming this role
-   *
-   * @default - No ExternalId will be supplied
-   */
-  readonly assumeRoleExternalId?: string;
-
+export interface DockerImageDestination extends AwsDestination {
   /**
    * Name of the ECR repository to publish to
    */

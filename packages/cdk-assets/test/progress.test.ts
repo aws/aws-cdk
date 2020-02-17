@@ -1,6 +1,6 @@
 import { AssetManifestSchema } from '@aws-cdk/cdk-assets-schema';
 import * as mockfs from 'mock-fs';
-import { AssetManifest, AssetPublishing, IPublishProgress, IPublishProgressListener } from '../lib';
+import { AssetManifest, AssetPublishing, EventType, IPublishProgress, IPublishProgressListener } from '../lib';
 import { mockAws, mockedApiFailure, mockPutObject } from './mock-aws';
 
 let aws: ReturnType<typeof mockAws>;
@@ -47,7 +47,7 @@ afterEach(() => {
 test('test listener', async () => {
   const progressListener = new FakeListener();
 
-  const pub = new AssetPublishing({ aws, manifest: AssetManifest.fromPath('/simple/cdk.out'), progressListener });
+  const pub = new AssetPublishing(AssetManifest.fromPath('/simple/cdk.out'), { aws, progressListener });
   await pub.publish();
 
   const allMessages = progressListener.messages.join('\n');
@@ -60,7 +60,7 @@ test('test listener', async () => {
 test('test abort', async () => {
   const progressListener = new FakeListener(true);
 
-  const pub = new AssetPublishing({ aws, manifest: AssetManifest.fromPath('/simple/cdk.out'), progressListener });
+  const pub = new AssetPublishing(AssetManifest.fromPath('/simple/cdk.out'), { aws, progressListener });
   await pub.publish();
 
   const allMessages = progressListener.messages.join('\n');
@@ -75,23 +75,11 @@ class FakeListener implements IPublishProgressListener {
   constructor(private readonly doAbort = false) {
   }
 
-  public onAssetStart(event: IPublishProgress): void {
+  public onPublishEvent(_type: EventType, event: IPublishProgress): void {
     this.messages.push(event.message);
 
     if (this.doAbort) {
       event.abort();
     }
-  }
-
-  public onAssetEnd(event: IPublishProgress): void {
-    this.messages.push(event.message);
-  }
-
-  public onEvent(event: IPublishProgress): void {
-    this.messages.push(event.message);
-  }
-
-  public onError(event: IPublishProgress): void {
-    this.messages.push(event.message);
   }
 }

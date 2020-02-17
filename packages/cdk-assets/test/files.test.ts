@@ -35,7 +35,7 @@ afterEach(() => {
 });
 
 test('pass destination properties to AWS client', async () => {
-  const pub = new AssetPublishing({ aws, manifest: AssetManifest.fromPath('/simple/cdk.out'), throwOnError: false });
+  const pub = new AssetPublishing(AssetManifest.fromPath('/simple/cdk.out'), { aws, throwOnError: false });
 
   await pub.publish();
 
@@ -46,7 +46,7 @@ test('pass destination properties to AWS client', async () => {
 });
 
 test('Do nothing if file already exists', async () => {
-  const pub = new AssetPublishing({ aws, manifest: AssetManifest.fromPath('/simple/cdk.out') });
+  const pub = new AssetPublishing(AssetManifest.fromPath('/simple/cdk.out') , { aws, });
 
   aws.mockS3.headObject = mockedApiResult({ /* No error == file exists */ });
 
@@ -59,7 +59,7 @@ test('Do nothing if file already exists', async () => {
 });
 
 test('upload file if new', async () => {
-  const pub = new AssetPublishing({ aws, manifest: AssetManifest.fromPath('/simple/cdk.out') });
+  const pub = new AssetPublishing(AssetManifest.fromPath('/simple/cdk.out'), { aws });
 
   aws.mockS3.headObject = mockedApiFailure('NotFound', 'File does not exist');
   aws.mockS3.putObject = mockPutObject();

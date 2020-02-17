@@ -2,18 +2,22 @@ import * as path from 'path';
 import * as semver from 'semver';
 import { DockerImageAsset } from './docker-image-asset';
 import { FileAsset } from './file-asset';
-import { ManifestFile } from "./file-schema";
+import { ManifestFile } from "./manifest-schema";
 import { assertIsObject, expectKey, isMapOf, isObjectAnd, isString } from './private/schema-helpers';
 
-// tslint:disable-next-line:no-var-requires
+// tslint:disable:no-var-requires
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const PACKAGE_VERSION = require(path.join(__dirname, '..', 'package.json')).version;
+// tslint:enable:no-var-requires
 
 /**
  * Static class with loader routines
  *
- * This class mostly exists to put the schema structs into output position
- * (returned from functions), so that the jsii-diff checker will make sure all
- * structs are only allowed to be strengthened in future updates.
+ * This class mostly exists to put the schema structs into input position
+ * (taken into a function), so that the jsii-diff checker will make sure all
+ * structs are only allowed to be weakened in future updates. For example,
+ * it is now allowed to add new required fields, since old CDK frameworks
+ * would not be emitting those fields yet.
  *
  * At the same time, we might as well validate the structure so code doesn't
  * barf on invalid disk input.
@@ -22,7 +26,7 @@ export class AssetManifestSchema {
   /**
    * Validate the given structured object as a valid ManifestFile schema
    */
-  public static validate(file: any): ManifestFile {
+  public static validate(file: any): asserts file is ManifestFile {
     const obj: unknown = file;
 
     if (typeof obj !== 'object' || obj === null) {
@@ -38,8 +42,16 @@ export class AssetManifestSchema {
 
     expectKey(obj, 'files', isMapOf(isObjectAnd(isFileAsset)), true);
     expectKey(obj, 'dockerImages', isMapOf(isObjectAnd(isDockerImageAsset)), true);
+  }
 
-    return obj;
+  /**
+   * Take a ManifestFile as input
+   *
+   * The presence of this method makes sure the struct is only ever weakened
+   * in future releases.
+   */
+  public static input(file: ManifestFile) {
+    this.validate(file);
   }
 
   /**

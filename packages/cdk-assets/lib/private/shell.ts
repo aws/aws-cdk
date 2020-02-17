@@ -3,9 +3,9 @@ import * as child_process from 'child_process';
 export type Logger = (x: string) => void;
 
 export interface ShellOptions extends child_process.SpawnOptions {
-  quiet?: boolean;
-  logger?: Logger;
-  input?: string;
+  readonly quiet?: boolean;
+  readonly logger?: Logger;
+  readonly input?: string;
 }
 
 /**

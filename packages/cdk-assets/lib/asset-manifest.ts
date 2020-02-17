@@ -1,4 +1,5 @@
-import { AssetManifestSchema, DockerImageDestination, DockerImageSource, FileDestination, FileSource, ManifestFile } from '@aws-cdk/cdk-assets-schema';
+import { AssetManifestSchema, DockerImageDestination, DockerImageSource, FileDestination,
+  FileSource, ManifestFile } from '@aws-cdk/cdk-assets-schema';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -26,7 +27,9 @@ export class AssetManifest {
    */
   public static fromFile(fileName: string) {
     try {
-      const obj = AssetManifestSchema.validate(JSON.parse(fs.readFileSync(fileName, { encoding: 'utf-8' })));
+      const obj = JSON.parse(fs.readFileSync(fileName, { encoding: 'utf-8' }));
+
+      AssetManifestSchema.validate(obj);
 
       return new AssetManifest(path.dirname(fileName), obj);
     } catch (e) {
@@ -71,10 +74,11 @@ export class AssetManifest {
   public select(selection?: DestinationPattern[]): AssetManifest {
     if (selection === undefined) { return this; }
 
-    const ret: ManifestFile = { version: this.manifest.version, dockerImages: {}, files: {} };
+    const ret: ManifestFile & Required<Pick<ManifestFile, AssetType>>
+     = { version: this.manifest.version, dockerImages: {}, files: {} };
 
     for (const assetType of ASSET_TYPES) {
-      for (const [assetId, asset] of Object.entries(this.manifest[assetType])) {
+      for (const [assetId, asset] of Object.entries(this.manifest[assetType] || {})) {
         const filteredDestinations =  filterDict(
           asset.destinations,
           (_, destId) => selection.some(sel => sel.matches(new DestinationIdentifier(assetId, destId))));
@@ -253,7 +257,7 @@ export class DestinationPattern {
    */
   public static parse(s: string) {
     if (!s) { throw new Error('Empty string is not a valid destination identifier'); }
-    const parts = s.split(':');
+    const parts = s.split(':').map(x => x !== '*' ? x : undefined);
     if (parts.length === 1) { return new DestinationPattern(parts[0]); }
     if (parts.length === 2) { return new DestinationPattern(parts[0] || undefined, parts[1] || undefined); }
     throw new Error(`Asset identifier must contain at most 2 ':'-separated parts, got '${s}'`);

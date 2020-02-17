@@ -2,15 +2,15 @@
 import { Logger, shell, ShellOptions } from "./shell";
 
 interface BuildOptions {
-  directory: string;
+  readonly directory: string;
 
   /**
    * Tag the image with a given repoName:tag combination
    */
-  tag: string;
-  target?: string;
-  file?: string;
-  buildArgs?: Record<string, string>;
+  readonly tag: string;
+  readonly target?: string;
+  readonly file?: string;
+  readonly buildArgs?: Record<string, string>;
 }
 
 export class Docker {
