@@ -24,7 +24,7 @@ import wafv2 = require('@aws-cdk/aws-wafv2');
 
 ### IpSet
 
-Use an AWS::WAFv2::IPSet to identify web requests that originate from specific IP addresses or ranges of IP addresses. For example, if you're receiving a lot of requests from a ranges of IP addresses, you can configure AWS WAF to block them using an IP set that lists those IP addresses.
+Use an `IpSet` to identify web requests that originate from specific IP addresses or ranges of IP addresses. For example, if you're receiving a lot of requests from a ranges of IP addresses, you can configure AWS WAF to block them using an IP set that lists those IP addresses.
 
 Example:
 
