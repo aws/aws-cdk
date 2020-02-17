@@ -168,10 +168,36 @@ const requestCertificate = async function(requestId, domainName, subjectAlternat
  *
  * @param {string} arn The certificate ARN
  */
-const deleteCertificate = async function(arn, region) {
+const deleteCertificate = async function(arn, hostedZoneId, region) {
   const acm = new aws.ACM({ region });
+  const route53 = new aws.Route53();
 
   try {
+    const { Certificate } = await acm.describeCertificate({
+      CertificateArn: arn
+    }).promise();
+    const options = Certificate.DomainValidationOptions || [];
+    const record = options[0] && options[0].ResourceRecord;
+    if (record) {
+      console.log(`Deleting DNS validation record from the zone ${hostedZoneId}: ${record.Name}`);
+      const changeBatch = await route53.changeResourceRecordSets({
+        ChangeBatch: {
+          Changes: [{
+            Action: 'DELETE',
+            ResourceRecordSet: {
+              Name: record.Name,
+              Type: record.Type,
+              TTL: 60,
+              ResourceRecords: [{
+                Value: record.Value
+              }]
+            }
+          }]
+        },
+        HostedZoneId: hostedZoneId
+      }).promise();
+    }
+
     console.log(`Waiting for certificate ${arn} to become unused`);
 
     let inUseByResources;
@@ -235,7 +261,11 @@ exports.certificateRequestHandler = async function(event, context) {
         // If the resource didn't create correctly, the physical resource ID won't be the
         // certificate ARN, so don't try to delete it in that case.
         if (physicalResourceId.startsWith('arn:')) {
-          await deleteCertificate(physicalResourceId, event.ResourceProperties.Region);
+          await deleteCertificate(
+            physicalResourceId,
+            event.ResourceProperties.HostedZoneId,
+            event.ResourceProperties.Region
+          );
         }
         break;
       default:

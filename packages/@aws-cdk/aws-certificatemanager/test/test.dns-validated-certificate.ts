@@ -60,7 +60,7 @@ export = {
             Resource: '*'
           },
           {
-            Action: 'route53:changeResourceRecordSets',
+            Action: 'route53:ChangeResourceRecordSets',
             Effect: 'Allow',
             Resource: {
               'Fn::Join': [
@@ -68,8 +68,7 @@ export = {
                 [
                   'arn:',
                   { Ref: 'AWS::Partition' },
-                  ':route53:::hostedzone/',
-                  { Ref: 'ExampleDotCom4D1B83AA' }
+                  ':route53:::hostedzone/*'
                 ]
               ]
             }
