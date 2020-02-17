@@ -67,6 +67,7 @@ node ${scriptdir}/create-missing-libraries.js || {
 
 # update decdk dep list
 (cd ${scriptdir}/../../../decdk && node ./deps.js || true)
+(cd ${scriptdir}/../../../monocdk-experiment && node ./deps.js || true)
 
 # append old changelog after new and replace as the last step because otherwise we will not be idempotent
 cat CHANGELOG.md >> CHANGELOG.md.new

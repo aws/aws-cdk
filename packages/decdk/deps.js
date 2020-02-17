@@ -14,10 +14,13 @@ let errors = false;
 
 for (const dir of modules) {
   const module = path.resolve(root, dir);
-  if (!fs.existsSync(path.join(module, '.jsii'))) {
+  const meta = require(path.join(module, 'package.json'));
+
+  // skip non-jsii modules
+  if (!meta.jsii) {
     continue;
   }
-  const meta = require(path.join(module, 'package.json'));
+
   const exists = deps[meta.name];
 
   if (meta.deprecated) {

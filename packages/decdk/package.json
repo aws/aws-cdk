@@ -90,6 +90,7 @@
     "@aws-cdk/aws-events": "1.24.0",
     "@aws-cdk/aws-events-targets": "1.24.0",
     "@aws-cdk/aws-eventschemas": "1.24.0",
+    "@aws-cdk/aws-fms": "1.24.0",
     "@aws-cdk/aws-fsx": "1.24.0",
     "@aws-cdk/aws-gamelift": "1.24.0",
     "@aws-cdk/aws-glue": "1.24.0",

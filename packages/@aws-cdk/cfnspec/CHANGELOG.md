@@ -1,3 +1,36 @@
+# CloudFormation Resource Specification v11.0.0
+
+## New Resource Types
+
+* AWS::Config::ConformancePack
+* AWS::Config::OrganizationConformancePack
+* AWS::EC2::LocalGatewayRoute
+* AWS::EC2::LocalGatewayRouteTableVPCAssociation
+* AWS::FMS::NotificationChannel
+* AWS::FMS::Policy
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Neptune::DBCluster DeletionProtection (__added__)
+* AWS::Neptune::DBCluster EngineVersion (__added__)
+
+## Property Type Changes
+
+* AWS::ElasticLoadBalancingV2::Listener.ForwardConfig (__added__)
+* AWS::ElasticLoadBalancingV2::Listener.TargetGroupStickinessConfig (__added__)
+* AWS::ElasticLoadBalancingV2::Listener.TargetGroupTuple (__added__)
+* AWS::ElasticLoadBalancingV2::ListenerRule.ForwardConfig (__added__)
+* AWS::ElasticLoadBalancingV2::ListenerRule.TargetGroupStickinessConfig (__added__)
+* AWS::ElasticLoadBalancingV2::ListenerRule.TargetGroupTuple (__added__)
+* AWS::ElasticLoadBalancingV2::Listener.Action ForwardConfig (__added__)
+* AWS::ElasticLoadBalancingV2::ListenerRule.Action ForwardConfig (__added__)
+* AWS::FSx::FileSystem.LustreConfiguration DeploymentType (__added__)
+* AWS::FSx::FileSystem.LustreConfiguration PerUnitStorageThroughput (__added__)
+
+
 # CloudFormation Resource Specification v10.5.0
 
 ## New Resource Types
