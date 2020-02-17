@@ -7788,7 +7788,12 @@ mkdirp-promise@^5.0.1:
   dependencies:
     mkdirp "*"
 
-mkdirp@*, mkdirp@0.x, mkdirp@^0.5.0, mkdirp@^0.5.1, mkdirp@~0.5.1:
+mkdirp@*, mkdirp@^1.0.0:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/mkdirp/-/mkdirp-1.0.3.tgz#4cf2e30ad45959dddea53ad97d518b6c8205e1ea"
+  integrity sha512-6uCP4Qc0sWsgMLy1EOqqS/3rjDHOEnsStVr/4vtAIK2Y5i2kA7lFFejYrpIyiN9w0pYf4ckeCYT9f1r1P9KX5g==
+
+mkdirp@0.x, mkdirp@^0.5.0, mkdirp@^0.5.1, mkdirp@~0.5.1:
   version "0.5.1"
   resolved "https://registry.yarnpkg.com/mkdirp/-/mkdirp-0.5.1.tgz#30057438eac6cf7f8c4767f38648d6697d75c903"
   integrity sha1-MAV0OOrGz3+MR2fzhkjWaX11yQM=
@@ -7925,15 +7930,15 @@ nise@^3.0.1:
     lolex "^5.0.1"
     path-to-regexp "^1.7.0"
 
-nock@^11.8.2:
-  version "11.8.2"
-  resolved "https://registry.yarnpkg.com/nock/-/nock-11.8.2.tgz#7845608d57769f41375b63521a7e6b554f4cdbb2"
-  integrity sha512-udrFXJ/aqPM9NmrKOcNJ67lvrs/zroNq2sbumhaMPW5JLNy/6LsWiZEwU9DiQIUHOcOCR4MPeqIG7uQNbDGExA==
+nock@^12.0.0:
+  version "12.0.0"
+  resolved "https://registry.yarnpkg.com/nock/-/nock-12.0.0.tgz#f405309bbf305d9a5bba2e9718aab4463edc9572"
+  integrity sha512-aTzDlXFH/Xq4m2V5x5nV13RTvYX8RXXcurCx6z4+y8IsloFMizZsDe/189GX1pSMJ99HBFZAokS5sMiMX/qfaQ==
   dependencies:
     debug "^4.1.0"
     json-stringify-safe "^5.0.1"
     lodash "^4.17.13"
-    mkdirp "^0.5.0"
+    mkdirp "^1.0.0"
     propagate "^2.0.0"
 
 node-addon-api@^1.7.1:
