@@ -51,7 +51,7 @@ export interface PolicyProps {
 
   /**
    * Initial set of permissions to add to this policy document.
-   * You can also use `addPermission(statement)` to add permissions later.
+   * You can also use `addStatements(...statement)` to add permissions later.
    *
    * @default - No statements.
    */
