@@ -16,7 +16,7 @@
             "ApiId"
           ]
         },
-        "Definition": "type Customer {\n    id: String!\n    name: String!\n}\n\ninput SaveCustomerInput {\n    name: String!\n}\n\ntype Order {\n    customer: String!\n    order: String!\n}\n\ntype Query {\n    getCustomers: [Customer]\n    getCustomer(id: String): Customer\n    getCustomerOrdersEq(customer: String): Order\n    getCustomerOrdersLt(customer: String): Order\n    getCustomerOrdersLe(customer: String): Order\n    getCustomerOrdersGt(customer: String): Order\n    getCustomerOrdersGe(customer: String): Order\n    getCustomerOrdersFilter(customer: String, order: String): Order\n    getCustomerOrdersBetween(customer: String, order1: String, order2: String): Order\n}\n\ntype Mutation {\n    addCustomer(customer: SaveCustomerInput!): Customer\n    saveCustomer(id: String!, customer: SaveCustomerInput!): Customer\n    removeCustomer(id: String!): Customer\n}"
+        "Definition": "type Customer {\n    id: String!\n    name: String!\n}\n\ninput SaveCustomerInput {\n    name: String!\n}\n\ntype Order {\n    customer: String!\n    order: String!\n}\n\ntype Query {\n    getCustomers: [Customer]\n    getCustomer(id: String): Customer\n    getCustomerOrdersEq(customer: String): Order\n    getCustomerOrdersLt(customer: String): Order\n    getCustomerOrdersLe(customer: String): Order\n    getCustomerOrdersGt(customer: String): Order\n    getCustomerOrdersGe(customer: String): Order\n    getCustomerOrdersFilter(customer: String, order: String): Order\n    getCustomerOrdersBetween(customer: String, order1: String, order2: String): Order\n}\n\ninput FirstOrderInput {\n    product: String!\n    quantity: Int!\n}\n\ntype Mutation {\n    addCustomer(customer: SaveCustomerInput!): Customer\n    saveCustomer(id: String!, customer: SaveCustomerInput!): Customer\n    removeCustomer(id: String!): Customer\n    saveCustomerWithFirstOrder(customer: SaveCustomerInput!, order: FirstOrderInput!, referral: String): Order\n}"
       }
     },
     "ApiCustomerDSServiceRoleA929BCF7": {
@@ -161,7 +161,7 @@
         "TypeName": "Mutation",
         "DataSourceName": "Customer",
         "Kind": "UNIT",
-        "RequestMappingTemplate": "{\n            \"version\" : \"2017-02-28\",\n            \"operation\" : \"PutItem\",\n            \"key\" : {\n                \"id\": $util.dynamodb.toDynamoDBJson($util.autoId()),\n            },\n            \"attributeValues\" : $util.dynamodb.toMapValuesJson($ctx.args.customer)\n        }",
+        "RequestMappingTemplate": "{\n            \"version\" : \"2017-02-28\",\n            \"operation\" : \"PutItem\",\n            \"key\" : {\n            \"id\" : $util.dynamodb.toDynamoDBJson($util.autoId())\n        },\n            \n            #set($input = $ctx.args.customer)\n            \n            \"attributeValues\": $util.dynamodb.toMapValuesJson($input)\n        }",
         "ResponseMappingTemplate": "$util.toJson($ctx.result)"
       },
       "DependsOn": [
@@ -182,7 +182,28 @@
         "TypeName": "Mutation",
         "DataSourceName": "Customer",
         "Kind": "UNIT",
-        "RequestMappingTemplate": "{\n            \"version\" : \"2017-02-28\",\n            \"operation\" : \"PutItem\",\n            \"key\" : {\n                \"id\": $util.dynamodb.toDynamoDBJson($ctx.args.id),\n            },\n            \"attributeValues\" : $util.dynamodb.toMapValuesJson($ctx.args.customer)\n        }",
+        "RequestMappingTemplate": "{\n            \"version\" : \"2017-02-28\",\n            \"operation\" : \"PutItem\",\n            \"key\" : {\n            \"id\" : $util.dynamodb.toDynamoDBJson($ctx.args.id)\n        },\n            \n            #set($input = $ctx.args.customer)\n            \n            \"attributeValues\": $util.dynamodb.toMapValuesJson($input)\n        }",
+        "ResponseMappingTemplate": "$util.toJson($ctx.result)"
+      },
+      "DependsOn": [
+        "ApiCustomerDS8C23CB2D",
+        "ApiSchema510EECD7"
+      ]
+    },
+    "ApiCustomerDSMutationsaveCustomerWithFirstOrderResolver8B1277A8": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Fn::GetAtt": [
+            "ApiF70053CD",
+            "ApiId"
+          ]
+        },
+        "FieldName": "saveCustomerWithFirstOrder",
+        "TypeName": "Mutation",
+        "DataSourceName": "Customer",
+        "Kind": "UNIT",
+        "RequestMappingTemplate": "{\n            \"version\" : \"2017-02-28\",\n            \"operation\" : \"PutItem\",\n            \"key\" : {\n            \"order\" : $util.dynamodb.toDynamoDBJson($util.autoId()),\"customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer.id)\n        },\n            \n            #set($input = $ctx.args.order)\n            $util.qr($input.put(\"referral\", \"referral\"))\n            \"attributeValues\": $util.dynamodb.toMapValuesJson($input)\n        }",
         "ResponseMappingTemplate": "$util.toJson($ctx.result)"
       },
       "DependsOn": [
