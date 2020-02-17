@@ -1,8 +1,8 @@
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
-import { CustomResource } from '@aws-cdk/aws-cloudformation';
+import { CfnCustomResource, CustomResource } from '@aws-cdk/aws-cloudformation';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
-import { Aws, Construct, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
+import { Aws, CfnCondition, Construct, Fn, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
 import { CfnTable } from './dynamodb.generated';
 import { ReplicaProvider } from './replica-provider';
 import { EnableScalingProps, IScalableTableAttribute } from './scalable-attribute-api';
@@ -1057,6 +1057,17 @@ export class Table extends TableBase {
           Region: region,
         }
       });
+
+      // Deploy time check to prevent from creating a replica in the region
+      // where this stack is deployed. Only needed for environment agnostic
+      // stacks.
+      if (Token.isUnresolved(stack.region)) {
+        const createReplica = new CfnCondition(this, `StackRegionNotEquals${region}`, {
+          expression: Fn.conditionNot(Fn.conditionEquals(region, Aws.REGION))
+        });
+        const cfnCustomResource = currentRegion.node.defaultChild as CfnCustomResource;
+        cfnCustomResource.cfnOptions.condition = createReplica;
+      }
 
       // We need to create/delete regions sequentially because we cannot
       // have multiple table updates at the same time. The `isCompleteHandler`
