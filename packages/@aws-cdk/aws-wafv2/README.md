@@ -22,7 +22,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 import wafv2 = require('@aws-cdk/aws-wafv2');
 ```
 
-### IPSet
+### IpSet
 
 Use an AWS::WAFv2::IPSet to identify web requests that originate from specific IP addresses or ranges of IP addresses. For example, if you're receiving a lot of requests from a ranges of IP addresses, you can configure AWS WAF to block them using an IP set that lists those IP addresses.
 
@@ -31,9 +31,9 @@ Example:
 ```ts
 import waf = require('@aws-cdk/aws-wafv2');
 
-new waf.IPSet(this, 'MyIPSet', {
+new waf.IpSet(this, 'MyIpSet', {
     addresses: [
-        '192.168.1.1/32
+        '192.168.1.1/32'
     ],
     name: 'MyIPSet'
 })

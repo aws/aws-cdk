@@ -4,12 +4,12 @@ import * as waf from '../lib';
 
 test('IPV4 IP Set', () => {
     const stack = new cdk.Stack();
-    new waf.IPSet(stack, 'IPSet', {
+    new waf.IpSet(stack, 'IpSet', {
         addresses: [
             '192.168.1.1'
         ],
-        scope: waf.IPSetScope.CLOUDFRONT,
-        ipAddressVersion: waf.IPAddressVersion.IPV4
+        scope: waf.IpSetScope.CLOUDFRONT,
+        ipAddressVersion: waf.IpAddressVersion.IPV4
     });
 
     expect(stack).toMatch({
@@ -30,12 +30,12 @@ test('IPV4 IP Set', () => {
 
 test('IPV6 IP Set', () => {
     const stack = new cdk.Stack();
-    new waf.IPSet(stack, 'IPSet', {
+    new waf.IpSet(stack, 'IpSet', {
         addresses: [
             '2001:0db8:85a3:0000:0000:8a2e:0370:7334'
         ],
-        scope: waf.IPSetScope.CLOUDFRONT,
-        ipAddressVersion: waf.IPAddressVersion.IPV6
+        scope: waf.IpSetScope.CLOUDFRONT,
+        ipAddressVersion: waf.IpAddressVersion.IPV6
     });
 
     expect(stack).toMatch({
@@ -59,11 +59,11 @@ test('IPV6 IP Set', () => {
 test('addAddresses method with name and description', () => {
     const stack = new cdk.Stack();
 
-    const ipSet = new waf.IPSet(stack, 'IPSet', {
-        scope: waf.IPSetScope.CLOUDFRONT,
-        ipAddressVersion: waf.IPAddressVersion.IPV6,
-        name: 'MyIPSet',
-        description: 'MyIPSet Description'
+    const ipSet = new waf.IpSet(stack, 'IpSet', {
+        scope: waf.IpSetScope.CLOUDFRONT,
+        ipAddressVersion: waf.IpAddressVersion.IPV6,
+        name: 'MyIpSet',
+        description: 'MyIpSet Description'
     });
 
     ipSet.addAddresses('2001:0db8:85a3:0000:0000:8a2e:0370:7334');
@@ -80,7 +80,7 @@ test('addAddresses method with name and description', () => {
                     },
                     IPAddressVersion: "IPV6",
                     Scope: "CLOUDFRONT",
-                    Name: "MyIPSet",
+                    Name: "MyIpSet",
                     Description: "MyIPSet Description"
                 }
             }
