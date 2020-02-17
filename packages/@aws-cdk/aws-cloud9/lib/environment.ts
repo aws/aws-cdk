@@ -115,11 +115,9 @@ export class EnvironmentEC2 extends cdk.Resource implements IEnvironmentEC2 {
     const c9env = new CfnEnvironmentEC2(this, 'Resource', {
       name: props.environmentEc2Name ?? this.physicalName,
       description: props.description,
-      instanceType: props.instanceType ? props.instanceType.toString() :
-        ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO).toString(),
-      subnetId: props.subnetId ? props.subnetId :
-      props.vpc ? props.vpc!.publicSubnets[0].subnetId.toString() :
-        new ec2.Vpc(this, 'Vpc', { maxAzs: 2 }).publicSubnets[0].subnetId.toString(),
+      instanceType: props.instanceType?.toString() ?? ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO).toString(),
+      subnetId: props.subnetId ?? props.vpc?.publicSubnets[0].subnetId.toString() ??
+      new ec2.Vpc(this, 'Vpc', { maxAzs: 2 }).publicSubnets[0].subnetId.toString(),
     });
 
     this.logicalId = c9env.logicalId;
