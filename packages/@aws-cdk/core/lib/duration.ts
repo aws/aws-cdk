@@ -6,7 +6,7 @@ import { Token } from "./token";
  * The amount can be specified either as a literal value (e.g: `10`) which
  * cannot be negative, or as an unresolved number token.
  *
- * Whent he amount is passed as an token, unit conversion is not possible.
+ * When the amount is passed as a token, unit conversion is not possible.
  */
 export class Duration {
   /**
