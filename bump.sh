@@ -31,4 +31,4 @@ npx lerna version ${version} --yes --exact --force-publish=* --no-git-tag-versio
 /bin/bash scripts/fix-peer-deps.sh
 
 # Generate CHANGELOG and create a commit
-npx standard-version --release --skip.tag=true --commit-all
+npx standard-version --release --commit-all
