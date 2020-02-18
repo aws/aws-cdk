@@ -88,16 +88,13 @@
     "cdk-build-tools": "1.24.0",
     "cdk-integ-tools": "1.24.0",
     "fs-extra": "^8.1.0",
+    "parcel-bundler": "^1.12.4",
     "pkglint": "1.24.0"
   },
   "dependencies": {
     "@aws-cdk/aws-lambda": "1.24.0",
-    "@aws-cdk/core": "1.24.0",
-    "parcel-bundler": "^1.12.4"
+    "@aws-cdk/core": "1.24.0"
   },
-  "bundledDependencies": [
-    "parcel-bundler"
-  ],
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/aws-lambda": "1.24.0",

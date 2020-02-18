@@ -1,5 +1,17 @@
 import { spawnSync } from 'child_process';
-import { build } from '../lib/build';
+import * as fs from 'fs-extra';
+import { Builder } from '../lib/builder';
+
+let parcelPkgPath: string;
+let parcelPkg: Buffer;
+beforeAll(() => {
+  parcelPkgPath = require.resolve('parcel-bundler/package.json');
+  parcelPkg = fs.readFileSync(parcelPkgPath);
+});
+
+afterEach(() => {
+  fs.writeFileSync(parcelPkgPath, parcelPkg);
+});
 
 jest.mock('child_process', () => ({
   spawnSync: jest.fn((_cmd: string, args: string[]) => {
@@ -16,12 +28,13 @@ jest.mock('child_process', () => ({
 }));
 
 test('calls parcel with the correct args', () => {
-  build({
+  const builder = new Builder({
     entry: 'entry',
     global: 'handler',
     outDir: 'out-dir',
     cacheDir: 'cache-dir',
   });
+  builder.build();
 
   expect(spawnSync).toHaveBeenCalledWith(expect.stringContaining('parcel-bundler'), expect.arrayContaining([
     'build', 'entry',
@@ -38,17 +51,31 @@ test('calls parcel with the correct args', () => {
 });
 
 test('throws in case of error', () => {
-  expect(() => build({
+  const builder = new Builder({
     entry: 'error',
     global: 'handler',
     outDir: 'out-dir'
-  })).toThrow('parcel-error');
+  });
+  expect(() => builder.build()).toThrow('parcel-error');
 });
 
 test('throws if status is not 0', () => {
-  expect(() => build({
+  const builder = new Builder({
     entry: 'status',
     global: 'handler',
     outDir: 'out-dir'
-  })).toThrow('status-error');
+  });
+  expect(() => builder.build()).toThrow('status-error');
+});
+
+test('throws when parcel-bundler is not 1.x', () => {
+  fs.writeFileSync(parcelPkgPath, JSON.stringify({
+    ...JSON.parse(parcelPkg.toString()),
+    version: '2.3.4'
+  }));
+  expect(() => new Builder({
+    entry: 'entry',
+    global: 'handler',
+    outDir: 'out-dur'
+  })).toThrow(/This module has a peer dependency on parcel-bundler v1.x. Got v2.3.4./);
 });
