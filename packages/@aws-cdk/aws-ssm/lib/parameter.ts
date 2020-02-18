@@ -400,6 +400,14 @@ export class StringParameter extends ParameterBase implements IStringParameter {
       _assertValidValue(props.stringValue, props.allowedPattern);
     }
 
+    if (this.physicalName.length > 2048) {
+      throw new Error('Name cannot be longer than 2048 characters.');
+    }
+
+    if (props.description && props.description?.length > 1024) {
+      throw new Error('Description cannot be longer than 1024 characters.');
+    }
+
     const resource = new ssm.CfnParameter(this, 'Resource', {
       allowedPattern: props.allowedPattern,
       description: props.description,
@@ -456,6 +464,14 @@ export class StringListParameter extends ParameterBase implements IStringListPar
 
     if (props.allowedPattern && !Token.isUnresolved(props.stringListValue)) {
       props.stringListValue.forEach(str => _assertValidValue(str, props.allowedPattern!));
+    }
+
+    if (this.physicalName.length > 2048) {
+      throw new Error('Name cannot be longer than 2048 characters.');
+    }
+
+    if (props.description && props.description?.length > 1024) {
+      throw new Error('Description cannot be longer than 1024 characters.');
     }
 
     const resource = new ssm.CfnParameter(this, 'Resource', {
