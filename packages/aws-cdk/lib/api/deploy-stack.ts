@@ -23,6 +23,7 @@ export interface DeployStackResult {
   readonly noOp: boolean;
   readonly outputs: { [name: string]: string };
   readonly stackArn: string;
+  readonly stackArtifact: cxapi.CloudFormationStackArtifact;
 }
 
 /** @experimental */
@@ -42,6 +43,17 @@ export interface DeployStackOptions {
    * @default true
    */
   execute?: boolean;
+
+  /**
+   * The collection of extra parameters
+   * (in addition to those used for assets)
+   * to pass to the deployed template.
+   * Note that parameters with `undefined` or empty values will be ignored,
+   * and not passed to the template.
+   *
+   * @default - no additional parameters will be passed to the template
+   */
+  parameters?: { [name: string]: string | undefined };
 }
 
 const LARGE_TEMPLATE_SIZE_KB = 50;
@@ -53,6 +65,16 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
   }
 
   const params = await prepareAssets(options.stack, options.toolkitInfo, options.reuseAssets);
+
+  // add passed CloudFormation parameters
+  for (const [paramName, paramValue] of Object.entries((options.parameters || {}))) {
+    if (paramValue) {
+      params.push({
+        ParameterKey: paramName,
+        ParameterValue: paramValue,
+      });
+    }
+  }
 
   const deployName = options.deployName || options.stack.stackName;
 
@@ -94,7 +116,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
   if (changeSetHasNoChanges(changeSetDescription)) {
     debug('No changes are to be performed on %s.', deployName);
     await cfn.deleteChangeSet({ StackName: deployName, ChangeSetName: changeSetName }).promise();
-    return { noOp: true, outputs: await getStackOutputs(cfn, deployName), stackArn: changeSet.StackId! };
+    return { noOp: true, outputs: await getStackOutputs(cfn, deployName), stackArn: changeSet.StackId!, stackArtifact: options.stack };
   }
 
   const execute = options.execute === undefined ? true : options.execute;
@@ -112,7 +134,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
   } else {
     print(`Changeset %s created and waiting in review for manual execution (--no-execute)`, changeSetName);
   }
-  return { noOp: false, outputs: await getStackOutputs(cfn, deployName), stackArn: changeSet.StackId! };
+  return { noOp: false, outputs: await getStackOutputs(cfn, deployName), stackArn: changeSet.StackId!, stackArtifact: options.stack };
 }
 
 /** @experimental */
