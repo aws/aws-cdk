@@ -12,11 +12,15 @@ export interface ManifestFile {
 
   /**
    * The file assets in this manifest
+   *
+   * @default - No files
    */
   readonly files?: Record<string, FileAsset>;
 
   /**
    * The Docker image assets in this manifest
+   *
+   * @default - No Docker images
    */
   readonly dockerImages?: Record<string, DockerImageAsset>;
 }
