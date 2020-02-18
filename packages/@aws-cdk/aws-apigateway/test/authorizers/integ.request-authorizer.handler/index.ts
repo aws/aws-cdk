@@ -1,8 +1,11 @@
 // tslint:disable:no-console
 
 export const handler = async (event: any, _context: any = {}): Promise<any> => {
-  const arn = event.methodArn;
-  if (arn) {
+  const authToken: string = event.headers.Authorization;
+  const authQueryString: string = event.queryStringParameters.allow;
+  console.log(`event.headers.Authorization = ${authToken}`);
+  console.log(`event.queryStringParameters.allow = ${authQueryString}`);
+  if ((authToken === 'allow' || authToken === 'deny') && authQueryString === 'yes') {
     return {
       principalId: 'user',
       policyDocument: {
@@ -10,8 +13,8 @@ export const handler = async (event: any, _context: any = {}): Promise<any> => {
         Statement: [
           {
             Action: "execute-api:Invoke",
-            Effect: 'Allow',
-            Resource: arn,
+            Effect: authToken,
+            Resource: event.methodArn
           }
         ]
       }

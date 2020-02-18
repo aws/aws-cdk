@@ -421,6 +421,7 @@ const authFn = new lambda.Function(this, 'booksAuthorizerLambda', {
 
 const auth = new apigateway.RequestAuthorizer(this, 'booksAuthorizer', {
   handler: authFn,
+  identitySources: [IdentitySource.header('Authorization')]
 });
 
 books.addMethod('GET', new apigateway.HttpIntegration('http://amazon.com'), {

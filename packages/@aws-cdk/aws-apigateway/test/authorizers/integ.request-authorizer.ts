@@ -3,11 +3,12 @@ import { App, Stack } from '@aws-cdk/core';
 import * as path from 'path';
 import { MockIntegration, PassthroughBehavior, RestApi } from '../../lib';
 import {RequestAuthorizer} from '../../lib/authorizers';
+import {IdentitySource} from '../../lib/authorizers/identity-source';
 
 // Against the RestApi endpoint from the stack output, run
 // `curl -s -o /dev/null -w "%{http_code}" <url>` should return 401
-// `curl -s -o /dev/null -w "%{http_code}" -H 'Authorization: deny' <url>` should return 403
-// `curl -s -o /dev/null -w "%{http_code}" -H 'Authorization: allow' <url>` should return 200
+// `curl -s -o /dev/null -w "%{http_code}" -H 'Authorization: deny' <url>?allow=yes` should return 403
+// `curl -s -o /dev/null -w "%{http_code}" -H 'Authorization: allow' <url>?allow=yes` should return 200
 
 const app = new App();
 const stack = new Stack(app, 'RequestAuthorizerInteg');
@@ -22,6 +23,7 @@ const restapi = new RestApi(stack, 'MyRestApi');
 
 const authorizer = new RequestAuthorizer(stack, 'MyAuthorizer', {
   handler: authorizerFn,
+  identitySources: [IdentitySource.header('Authorization'), IdentitySource.queryString('allow')],
 });
 
 restapi.root.addMethod('ANY', new MockIntegration({

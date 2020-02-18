@@ -4,6 +4,7 @@ import { Construct, Duration, Lazy, Stack } from '@aws-cdk/core';
 import { CfnAuthorizer } from '../apigateway.generated';
 import { Authorizer, IAuthorizer } from '../authorizer';
 import { RestApi } from '../restapi';
+import { IdentitySource } from './identity-source';
 
 /**
  * Base properties for all lambda authorizers
@@ -49,46 +50,33 @@ abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
    * The id of the authorizer.
    * @attribute
    */
-  public readonly authorizerId: string;
+  public abstract readonly authorizerId: string;
 
   /**
    * The ARN of the authorizer to be used in permission policies, such as IAM and resource-based grants.
    */
-  public readonly authorizerArn: string;
+  public abstract readonly authorizerArn: string;
+
+  /**
+   * The Lambda function handler that this authorizer uses.
+   */
+  protected readonly handler: lambda.IFunction;
+
+  /**
+   * The IAM role that the API Gateway service assumes while invoking the Lambda function.
+   */
+  protected readonly role?: iam.IRole;
 
   protected restApiId?: string;
 
   protected constructor(scope: Construct, id: string, props: LambdaAuthorizerProps) {
     super(scope, id);
 
+    this.handler = props.handler;
+    this.role = props.assumeRole;
+
     if (props.resultsCacheTtl && props.resultsCacheTtl.toSeconds() > 3600) {
       throw new Error(`Lambda authorizer property 'resultsCacheTtl' must not be greater than 3600 seconds (1 hour)`);
-    }
-
-    const restApiId = Lazy.stringValue({ produce: () => this.restApiId });
-
-    this.authorizerId = this.createResource(props).ref;
-
-    this.authorizerArn = Stack.of(this).formatArn({
-      service: 'execute-api',
-      resource: restApiId,
-      resourceName: `authorizers/${this.authorizerId}`
-    });
-
-    if (!props.assumeRole) {
-      props.handler.addPermission(`${this.node.uniqueId}:Permissions`, {
-        principal: new iam.ServicePrincipal('apigateway.amazonaws.com'),
-        sourceArn: this.authorizerArn
-      });
-    } else if (props.assumeRole instanceof iam.Role) { // i.e., not imported
-      props.assumeRole.attachInlinePolicy(new iam.Policy(this, 'authorizerInvokePolicy', {
-        statements: [
-          new iam.PolicyStatement({
-            resources: [ props.handler.functionArn ],
-            actions: [ 'lambda:InvokeFunction' ],
-          })
-        ]
-      }));
     }
   }
 
@@ -104,7 +92,26 @@ abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
     this.restApiId = restApi.restApiId;
   }
 
-  protected abstract createResource<T extends LambdaAuthorizerProps>(props: T): CfnAuthorizer;
+  /**
+   * Sets up the permissions necessary for the API Gateway service to invoke the Lambda function.
+   */
+  protected setupPermissions() {
+    if (!this.role) {
+      this.handler.addPermission(`${this.node.uniqueId}:Permissions`, {
+        principal: new iam.ServicePrincipal('apigateway.amazonaws.com'),
+        sourceArn: this.authorizerArn
+      });
+    } else if (this.role instanceof iam.Role) { // i.e. not imported
+      this.role.attachInlinePolicy(new iam.Policy(this, 'authorizerInvokePolicy', {
+        statements: [
+          new iam.PolicyStatement({
+            resources: [ this.handler.functionArn ],
+            actions: [ 'lambda:InvokeFunction' ],
+          })
+        ]
+      }));
+    }
+  }
 }
 
 /**
@@ -123,7 +130,7 @@ export interface TokenAuthorizerProps extends LambdaAuthorizerProps {
    * The request header mapping expression for the bearer token. This is typically passed as part of the header, in which case
    * this should be `method.request.header.Authorizer` where Authorizer is the header containing the bearer token.
    * @see https://docs.aws.amazon.com/apigateway/api-reference/link-relation/authorizer-create/#identitySource
-   * @default 'method.request.header.Authorization'
+   * @default `IdentitySource.header('Authorization')`
    */
   readonly identitySource?: string;
 }
@@ -137,34 +144,44 @@ export interface TokenAuthorizerProps extends LambdaAuthorizerProps {
  */
 export class TokenAuthorizer extends LambdaAuthorizer {
 
+  public readonly authorizerId: string;
+
+  public readonly authorizerArn: string;
+
   constructor(scope: Construct, id: string, props: TokenAuthorizerProps) {
     super(scope, id, props);
-  }
 
-  protected createResource(props: TokenAuthorizerProps): CfnAuthorizer {
     const restApiId = Lazy.stringValue({ produce: () => this.restApiId });
-
-    return new CfnAuthorizer(this, 'Resource', {
+    const resource = new CfnAuthorizer(this, 'Resource', {
       name: props.authorizerName ?? this.node.uniqueId,
       restApiId,
       type: 'TOKEN',
       authorizerUri: `arn:aws:apigateway:${Stack.of(this).region}:lambda:path/2015-03-31/functions/${props.handler.functionArn}/invocations`,
       authorizerCredentials: props.assumeRole?.roleArn,
-      authorizerResultTtlInSeconds: props.resultsCacheTtl?.toSeconds() ?? 0,
+      authorizerResultTtlInSeconds: props.resultsCacheTtl?.toSeconds() ?? Duration.minutes(5).toSeconds(),
       identitySource: props.identitySource || 'method.request.header.Authorization',
       identityValidationExpression: props.validationRegex,
     });
+
+    this.authorizerId = resource.ref;
+    this.authorizerArn = Stack.of(this).formatArn({
+      service: 'execute-api',
+      resource: restApiId,
+      resourceName: `authorizers/${this.authorizerId}`
+    });
+
+    this.setupPermissions();
   }
 }
 
 /**
- * Properties for RequestAuthorizerProps
+ * Properties for RequestAuthorizer
  */
 export interface RequestAuthorizerProps extends LambdaAuthorizerProps {
   /**
    * An array of request header mapping expressions for identities. Supported parameter types are
    * Header, Query String, Stage Variable, and Context. For instance, extracting an authorization
-   * token from a header would use the identity source `method.request.header.Authorizer`.
+   * token from a header would use the identity source `IdentitySource.header('Authorizer')`.
    *
    * Note: API Gateway uses the specified identity sources as the request authorizer caching key. When caching is
    * enabled, API Gateway calls the authorizer's Lambda function only after successfully verifying that all the
@@ -172,9 +189,8 @@ export interface RequestAuthorizerProps extends LambdaAuthorizerProps {
    * API Gateway returns a 401 Unauthorized response without calling the authorizer Lambda function.
    *
    * @see https://docs.aws.amazon.com/apigateway/api-reference/link-relation/authorizer-create/#identitySource
-   * @default no identity sources
    */
-  readonly identitySource?: string[];
+  readonly identitySources: IdentitySource[];
 }
 
 /**
@@ -186,25 +202,35 @@ export interface RequestAuthorizerProps extends LambdaAuthorizerProps {
  */
 export class RequestAuthorizer extends LambdaAuthorizer {
 
+  public readonly authorizerId: string;
+
+  public readonly authorizerArn: string;
+
   constructor(scope: Construct, id: string, props: RequestAuthorizerProps) {
     super(scope, id, props);
 
-    if (props.resultsCacheTtl && props.identitySource?.length === 0) {
+    if (props.resultsCacheTtl?.toSeconds() !== 0 && props.identitySources.length === 0) {
       throw new Error(`At least one Identity Source is required for a REQUEST-based Lambda authorizer if caching is enabled.`);
     }
-  }
 
-  protected createResource(props: RequestAuthorizerProps): CfnAuthorizer {
     const restApiId = Lazy.stringValue({ produce: () => this.restApiId });
-
-    return new CfnAuthorizer(this, 'Resource', {
+    const resource = new CfnAuthorizer(this, 'Resource', {
       name: props.authorizerName ?? this.node.uniqueId,
       restApiId,
       type: 'REQUEST',
       authorizerUri: `arn:aws:apigateway:${Stack.of(this).region}:lambda:path/2015-03-31/functions/${props.handler.functionArn}/invocations`,
       authorizerCredentials: props.assumeRole?.roleArn,
-      authorizerResultTtlInSeconds: props.resultsCacheTtl?.toSeconds() ?? 0,
-      identitySource: props.identitySource?.join(','),
+      authorizerResultTtlInSeconds: props.resultsCacheTtl?.toSeconds() ?? Duration.minutes(5).toSeconds(),
+      identitySource: props.identitySources.map(is => is.toString()).join(','),
     });
+
+    this.authorizerId = resource.ref;
+    this.authorizerArn = Stack.of(this).formatArn({
+      service: 'execute-api',
+      resource: restApiId,
+      resourceName: `authorizers/${this.authorizerId}`
+    });
+
+    this.setupPermissions();
   }
 }

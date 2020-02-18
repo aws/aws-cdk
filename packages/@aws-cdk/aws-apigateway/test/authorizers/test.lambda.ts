@@ -5,6 +5,7 @@ import { Duration, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { AuthorizationType, RestApi, TokenAuthorizer } from '../../lib';
 import {RequestAuthorizer} from '../../lib/authorizers';
+import {IdentitySource} from '../../lib/authorizers/identity-source';
 
 export = {
   'default token authorizer'(test: Test) {
@@ -52,7 +53,9 @@ export = {
     });
 
     const auth = new RequestAuthorizer(stack, 'myauthorizer', {
-      handler: func
+      handler: func,
+      resultsCacheTtl: Duration.seconds(0),
+      identitySources: [],
     });
 
     const restApi = new RestApi(stack, 'myrestapi');
@@ -122,7 +125,7 @@ export = {
 
     const auth = new RequestAuthorizer(stack, 'myauthorizer', {
       handler: func,
-      identitySource: ['method.request.header.whoami'],
+      identitySources: [IdentitySource.header('whoami')],
       authorizerName: 'myauthorizer',
       resultsCacheTtl: Duration.minutes(1),
     });
@@ -212,7 +215,9 @@ export = {
 
     const auth = new RequestAuthorizer(stack, 'myauthorizer', {
       handler: func,
-      assumeRole: role
+      assumeRole: role,
+      resultsCacheTtl: Duration.seconds(0),
+      identitySources: []
     });
 
     const restApi = new RestApi(stack, 'myrestapi');
