@@ -72,7 +72,7 @@
   },
   "dependencies": {
     "@aws-cdk/aws-certificatemanager": "1.24.0",
-    "@aws-cdk/aws-ec2": "1.24.0,
+    "@aws-cdk/aws-ec2": "1.24.0",
     "@aws-cdk/aws-elasticloadbalancingv2": "1.24.0",
     "@aws-cdk/aws-iam": "1.24.0",
     "@aws-cdk/aws-lambda": "1.24.0",

@@ -242,7 +242,7 @@ export class RestApi extends Resource implements IRestApi {
       failOnWarnings: props.failOnWarnings,
       minimumCompressionSize: props.minimumCompressionSize,
       binaryMediaTypes: props.binaryMediaTypes,
-      endpointConfiguration: this.configureEndpointConfiguration(props),
+      endpointConfiguration: this.configureEndpoints(props),
       apiKeySourceType: props.apiKeySourceType,
       cloneFrom: props.cloneFrom ? props.cloneFrom.restApiId : undefined,
       parameters: props.parameters
@@ -441,7 +441,7 @@ export class RestApi extends Resource implements IRestApi {
     resource.node.addDependency(apiResource);
   }
 
-  private configureEndpointConfiguration(props: RestApiProps): CfnRestApi.EndpointConfigurationProperty | undefined {
+  private configureEndpoints(props: RestApiProps): CfnRestApi.EndpointConfigurationProperty | undefined {
     if (props.endpointTypes && props.endpointConfiguration) {
       throw new Error('Only one of the RestApi props, endpointTypes or endpointConfiguration, is allowed');
     }
