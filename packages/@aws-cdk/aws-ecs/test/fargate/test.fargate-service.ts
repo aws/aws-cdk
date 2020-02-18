@@ -14,6 +14,14 @@ export = {
   "When creating a Fargate Service": {
     "with service id renamed to resource (with feature flag enabled)"(test: Test) {
       // GIVEN
+      class NestedService extends cdk.Construct {
+        constructor(scope: cdk.Construct, id: string, props: ecs.FargateServiceProps) {
+          super(scope, id);
+
+          new ecs.FargateService(this, "Resource", props);
+        }
+      }
+
       const app = new cdk.App({
         context: { [cxapi.ENABLE_CFN_SERVICE_RESOURCE_RENAME]: 'true' }
       });
@@ -31,110 +39,53 @@ export = {
         taskDefinition,
       });
 
-      // THEN
-      expect(stack).to(beASupersetOfTemplate({
-        Fargate001516A4: {
-          Type: "AWS::ECS::Service",
-          Properties: {
-            Cluster: {
-              Ref: "EcsCluster97242B84"
-            },
-            DeploymentConfiguration: {
-              MaximumPercent: 200,
-              MinimumHealthyPercent: 50
-            },
-            DesiredCount: 1,
-            EnableECSManagedTags: false,
-            LaunchType: "FARGATE",
-            NetworkConfiguration: {
-              AwsvpcConfiguration: {
-                AssignPublicIp: "DISABLED",
-                SecurityGroups: [
-                  {
-                    "Fn::GetAtt": [
-                      "FargateSecurityGroup953082A8",
-                      "GroupId"
-                    ]
-                  }
-                ],
-                Subnets: [
-                  {
-                    Ref: "MyVpcPrivateSubnet1Subnet5057CF7E"
-                  },
-                  {
-                    Ref: "MyVpcPrivateSubnet2Subnet0040C983"
-                  }
-                ]
-              }
-            },
-            TaskDefinition: {
-              Ref: "FargateTaskDefC6FB60B4"
-            }
-          }
-        }
-      }));
-
-      test.done();
-    },
-    "with service id renamed to resource (with feature flag disabled)"(test: Test) {
-      // GIVEN
-      const app = new cdk.App({
-        context: { [cxapi.ENABLE_CFN_SERVICE_RESOURCE_RENAME]: 'false' }
-      });
-      const stack = new cdk.Stack(app, 'FeatureStack');
-      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
-      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
-
-      taskDefinition.addContainer("web", {
-        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
-      });
-
-      new ecs.FargateService(stack, "Fargate", {
+      new NestedService(stack, "Service", {
         cluster,
-        taskDefinition,
+        taskDefinition
       });
 
       // THEN
       expect(stack).to(beASupersetOfTemplate({
-        FargateService7B4DE80D: {
-          Type: "AWS::ECS::Service",
-          Properties: {
-            Cluster: {
-              Ref: "EcsCluster97242B84"
-            },
-            DeploymentConfiguration: {
-              MaximumPercent: 200,
-              MinimumHealthyPercent: 50
-            },
-            DesiredCount: 1,
-            EnableECSManagedTags: false,
-            LaunchType: "FARGATE",
-            NetworkConfiguration: {
-              AwsvpcConfiguration: {
-                AssignPublicIp: "DISABLED",
-                SecurityGroups: [
-                  {
-                    "Fn::GetAtt": [
-                      "FargateSecurityGroup953082A8",
-                      "GroupId"
-                    ]
-                  }
-                ],
-                Subnets: [
-                  {
-                    Ref: "MyVpcPrivateSubnet1Subnet5057CF7E"
-                  },
-                  {
-                    Ref: "MyVpcPrivateSubnet2Subnet0040C983"
-                  }
-                ]
+        Resources: {
+          Fargate001516A4: {
+            Type: "AWS::ECS::Service",
+            Properties: {
+              Cluster: {
+                Ref: "EcsCluster97242B84"
+              },
+              DeploymentConfiguration: {
+                MaximumPercent: 200,
+                MinimumHealthyPercent: 50
+              },
+              DesiredCount: 1,
+              EnableECSManagedTags: false,
+              LaunchType: "FARGATE",
+              NetworkConfiguration: {
+                AwsvpcConfiguration: {
+                  AssignPublicIp: "DISABLED",
+                  SecurityGroups: [
+                    {
+                      "Fn::GetAtt": [
+                        "FargateSecurityGroup953082A8",
+                        "GroupId"
+                      ]
+                    }
+                  ],
+                  Subnets: [
+                    {
+                      Ref: "MyVpcPrivateSubnet1Subnet5057CF7E"
+                    },
+                    {
+                      Ref: "MyVpcPrivateSubnet2Subnet0040C983"
+                    }
+                  ]
+                }
+              },
+              TaskDefinition: {
+                Ref: "FargateTaskDefC6FB60B4"
               }
-            },
-            TaskDefinition: {
-              Ref: "FargateTaskDefC6FB60B4"
             }
-          }
+          },
         }
       }));
 
