@@ -263,4 +263,14 @@ export enum ServiceNamespace {
    * Custom Resource
    */
   CUSTOM_RESOURCE = 'custom-resource',
+
+  /**
+   * Lambda
+   */
+  LAMBDA = 'lambda',
+
+  /**
+   * Comprehend
+   */
+  COMPREHEND = 'comprehend',
 }
