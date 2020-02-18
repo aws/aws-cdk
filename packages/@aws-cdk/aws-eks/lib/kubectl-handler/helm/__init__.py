@@ -24,6 +24,7 @@ def helm_handler(event, context):
     release      = props['Release']
     chart        = props['Chart']
     version      = props.get('Version', None)
+    wait         = props.get('Wait', False)
     namespace    = props.get('Namespace', None)
     repository   = props.get('Repository', None)
     values_text  = props.get('Values', None)
@@ -51,7 +52,7 @@ def helm_handler(event, context):
         except Exception as e:
             logger.info("delete error: %s" % e)
 
-def helm(verb, release, chart = None, repo = None, file = None, namespace = None, version = None):
+def helm(verb, release, chart = None, repo = None, file = None, namespace = None, version = None, wait = False):
     import subprocess
     try:
         cmnd = ['helm', verb, release]
@@ -67,6 +68,8 @@ def helm(verb, release, chart = None, repo = None, file = None, namespace = None
             cmnd.extend(['--version', version])
         if not namespace is None:
             cmnd.extend(['--namespace', namespace])
+        if wait:
+            cmnd.append('--wait')
         cmnd.extend(['--kubeconfig', kubeconfig])
         output = subprocess.check_output(cmnd, stderr=subprocess.STDOUT, cwd=outdir)
         logger.info(output)
