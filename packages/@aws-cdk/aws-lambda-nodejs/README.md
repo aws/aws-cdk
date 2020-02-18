@@ -17,6 +17,8 @@
 
 This library provides constructs for Node.js Lambda functions.
 
+⚠️ This module has a peer dependency on [`parcel-bundler`](https://www.npmjs.com/package/parcel-bundler) v1.x.
+
 ### Node.js Function
 Define a `NodejsFunction`:
 
