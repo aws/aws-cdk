@@ -1,7 +1,6 @@
 import * as path from 'path';
 
 // tslint:disable:no-var-requires
-// eslint-disable @typescript-eslint/no-require-imports
 
 /**
  * Get my package JSON.
@@ -13,6 +12,7 @@ export function loadMyPackageJson(): any {
   let dir = path.resolve(__dirname, '..', '..');
   while (true) {
     try {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       return require(path.join(dir, 'package.json'));
     } catch (e) {
       if (e.code !== 'MODULE_NOT_FOUND') { throw e; }
