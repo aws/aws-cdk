@@ -704,8 +704,8 @@ export abstract class MappingTemplate {
      * @param payload the VTL template snippet of the payload to send to the lambda.
      * If no payload is provided all available context fields are sent to the Lambda function
      */
-    public static lambdaRequest(payload?: string): MappingTemplate {
-        return this.fromString(`{"version": "2017-02-28", "operation": "Invoke", "payload": ${payload ?? '$util.toJson($ctx)'}}`);
+    public static lambdaRequest(payload: string = '$util.toJson($ctx)'): MappingTemplate {
+        return this.fromString(`{"version": "2017-02-28", "operation": "Invoke", "payload": ${payload}}`);
     }
 
     /**
