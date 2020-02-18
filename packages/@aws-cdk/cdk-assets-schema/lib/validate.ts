@@ -1,14 +1,11 @@
-import * as path from 'path';
 import * as semver from 'semver';
 import { DockerImageAsset } from './docker-image-asset';
 import { FileAsset } from './file-asset';
 import { ManifestFile } from "./manifest-schema";
+import { loadMyPackageJson } from './private/my-package-json';
 import { assertIsObject, expectKey, isMapOf, isObjectAnd, isString } from './private/schema-helpers';
 
-// tslint:disable:no-var-requires
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const PACKAGE_VERSION = require(path.join(__dirname, '..', 'package.json')).version;
-// tslint:enable:no-var-requires
+const PACKAGE_VERSION = loadMyPackageJson().version;
 
 /**
  * Static class with loader routines
