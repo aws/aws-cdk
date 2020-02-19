@@ -27,7 +27,21 @@ export = {
       LaunchType: "FARGATE",
     }));
 
-    expect(stack).to(haveResource("AWS::SQS::Queue"));
+    expect(stack).to(haveResource("AWS::SQS::Queue", {
+      RedrivePolicy: {
+        deadLetterTargetArn: {
+          "Fn::GetAtt": [
+            "ServiceEcsProcessingDeadLetterQueue4A89196E",
+            "Arn"
+          ]
+        },
+        maxReceiveCount: 5
+      }
+    }));
+
+    expect(stack).to(haveResource("AWS::SQS::Queue", {
+      MessageRetentionPeriod: 1209600
+    }));
 
     expect(stack).to(haveResource("AWS::IAM::Policy",  {
       PolicyDocument: {
