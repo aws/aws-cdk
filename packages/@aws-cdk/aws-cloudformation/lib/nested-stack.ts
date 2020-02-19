@@ -1,5 +1,6 @@
 import * as sns from '@aws-cdk/aws-sns';
-import { Aws, CfnOutput, CfnParameter, CfnResource, Construct, Duration, Fn, IResolvable, IResolveContext, Lazy, Reference, Stack, Token } from '@aws-cdk/core';
+import { Aws, CfnOutput, CfnParameter, CfnResource, Construct, Duration, Fn, IResolvable, IResolveContext, Lazy,
+  NestedStackDeploymentEnvironment, Reference, Stack, Token } from '@aws-cdk/core';
 import { CfnStack } from './cloudformation.generated';
 
 const NESTED_STACK_SYMBOL = Symbol.for('@aws-cdk/aws-cloudformation.NestedStack');
@@ -86,7 +87,10 @@ export class NestedStack extends Stack {
   constructor(scope: Construct, id: string, props: NestedStackProps = { }) {
     const parentStack = findParentStack(scope);
 
-    super(scope, id, { env: { account: parentStack.account, region: parentStack.region } });
+    super(scope, id, {
+      env: { account: parentStack.account, region: parentStack.region },
+      deploymentEnvironment: new NestedStackDeploymentEnvironment(parentStack.deploymentEnvironment),
+    });
 
     // @deprecate: remove this in v2.0 (redundent)
     const parentScope = new Construct(scope, id + '.NestedStack');

@@ -114,7 +114,8 @@
       "docs-public-apis:@aws-cdk/core.RemovalPolicyOptions",
       "docs-public-apis:@aws-cdk/core.StackProps",
       "docs-public-apis:@aws-cdk/core.RemovalPolicy",
-      "docs-public-apis:@aws-cdk/core.TagType"
+      "docs-public-apis:@aws-cdk/core.TagType",
+      "integ-return-type:@aws-cdk/core.IDeploymentEnvironment.bind"
     ]
   },
   "scripts": {

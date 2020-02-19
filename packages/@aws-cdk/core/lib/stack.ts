@@ -6,7 +6,6 @@ import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation , F
 import { Construct, ConstructNode, IConstruct, ISynthesisSession } from './construct';
 import { ContextProvider } from './context-provider';
 import { Environment } from './environment';
-import { FileAssetParameters } from './private/asset-parameters';
 import { CLOUDFORMATION_TOKEN_RESOLVER, CloudFormationLang } from './private/cloudformation-lang';
 import { LogicalIDs } from './private/logical-id';
 import { findTokens , resolve } from './private/resolve';
@@ -16,21 +15,6 @@ const STACK_SYMBOL = Symbol.for('@aws-cdk/core.Stack');
 const MY_STACK_CACHE = Symbol.for('@aws-cdk/core.Stack.myStack');
 
 const VALID_STACK_NAME_REGEX = /^[A-Za-z][A-Za-z0-9-]*$/;
-
-/**
- * The well-known name for the docker image asset ECR repository. All docker
- * image assets will be pushed into this repository with an image tag based on
- * the source hash.
- */
-const ASSETS_ECR_REPOSITORY_NAME = "aws-cdk/assets";
-
-/**
- * This allows users to work around the fact that the ECR repository is
- * (currently) not configurable by setting this context key to their desired
- * repository name. The CLI will auto-create this ECR repository if it's not
- * already created.
- */
-const ASSETS_ECR_REPOSITORY_NAME_OVERRIDE_CONTEXT_KEY = "assets-ecr-repository-name";
 
 export interface StackProps {
   /**
@@ -61,6 +45,13 @@ export interface StackProps {
    * @default {}
    */
   readonly tags?: { [key: string]: string };
+
+  /**
+   * Deployment environment to use while deploying this stack
+   *
+   * @default - Convention mode deployments if the 'aws-cdk:conventionModeDeployments' flag is set, legacy mode otherwise
+   */
+  readonly deploymentEnvironment?: IDeploymentEnvironment;
 }
 
 /**
@@ -211,6 +202,15 @@ export class Stack extends Construct implements ITaggable {
   public readonly artifactId: string;
 
   /**
+   * The deployment environment for this stack.
+   *
+   * TODO: Does this need to be public?
+   *
+   * @experimental
+   */
+  public readonly deploymentEnvironment: IDeploymentEnvironment;
+
+  /**
    * Logical ID generation strategy
    */
   private readonly _logicalIds: LogicalIDs;
@@ -227,19 +227,8 @@ export class Stack extends Construct implements ITaggable {
    */
   private readonly _missingContext = new Array<cxapi.MissingContext>();
 
-  /**
-   * Includes all parameters synthesized for assets (lazy).
-   */
-  private _assetParameters?: Construct;
-
   private _templateUrl?: string;
   private readonly _stackName: string;
-
-  /**
-   * The image ID of all the docker image assets that were already added to this
-   * stack (to avoid duplication).
-   */
-  private readonly addedImageAssets = new Set<string>();
 
   /**
    * Creates a new stack.
@@ -291,6 +280,11 @@ export class Stack extends Construct implements ITaggable {
 
     this.templateFile = `${this.artifactId}.template.json`;
     this.templateUrl = Lazy.stringValue({ produce: () => this._templateUrl || '<unresolved>' });
+
+    this.deploymentEnvironment = props.deploymentEnvironment ?? (this.node.tryGetContext(cxapi.CONVENTION_MODE_DEPLOYMENTS_CONTEXT)
+      ? new ConventionModeDeploymentEnvironment()
+      : new LegacyDeploymentEnvironment());
+    this.deploymentEnvironment.bind(this);
   }
 
   /**
@@ -528,78 +522,24 @@ export class Stack extends Construct implements ITaggable {
     return value;
   }
 
+  /**
+   * Register a file asset on this Stack
+   *
+   * @deprecated - Use `stack.deploymentEnvironment.addFileAsset()` if you are calling,
+   * and a different IDeploymentEnvironment class if you are implementing.
+   */
   public addFileAsset(asset: FileAssetSource): FileAssetLocation {
-
-    // assets are always added at the top-level stack
-    if (this.nestedStackParent) {
-      return this.nestedStackParent.addFileAsset(asset);
-    }
-
-    let params = this.assetParameters.node.tryFindChild(asset.sourceHash) as FileAssetParameters;
-    if (!params) {
-      params = new FileAssetParameters(this.assetParameters, asset.sourceHash);
-
-      const metadata: cxapi.FileAssetMetadataEntry = {
-        path: asset.fileName,
-        id: asset.sourceHash,
-        packaging: asset.packaging,
-        sourceHash: asset.sourceHash,
-
-        s3BucketParameter: params.bucketNameParameter.logicalId,
-        s3KeyParameter: params.objectKeyParameter.logicalId,
-        artifactHashParameter: params.artifactHashParameter.logicalId,
-      };
-
-      this.node.addMetadata(cxapi.ASSET_METADATA, metadata);
-    }
-
-    const bucketName = params.bucketNameParameter.valueAsString;
-
-    // key is prefix|postfix
-    const encodedKey = params.objectKeyParameter.valueAsString;
-
-    const s3Prefix = Fn.select(0, Fn.split(cxapi.ASSET_PREFIX_SEPARATOR, encodedKey));
-    const s3Filename = Fn.select(1, Fn.split(cxapi.ASSET_PREFIX_SEPARATOR, encodedKey));
-    const objectKey = `${s3Prefix}${s3Filename}`;
-
-    const s3Url = `https://s3.${this.region}.${this.urlSuffix}/${bucketName}/${objectKey}`;
-
-    return { bucketName, objectKey, s3Url };
+    return this.deploymentEnvironment.addFileAsset(asset);
   }
 
+  /**
+   * Register a docker image asset on this Stack
+   *
+   * @deprecated - Use `stack.deploymentEnvironment.addDockerImageAsset()` if you are calling,
+   * and a different `IDeploymentEnvironment` class if you are implementing.
+   */
   public addDockerImageAsset(asset: DockerImageAssetSource): DockerImageAssetLocation {
-    if (this.nestedStackParent) {
-      return this.nestedStackParent.addDockerImageAsset(asset);
-    }
-
-    // check if we have an override from context
-    const repositoryNameOverride = this.node.tryGetContext(ASSETS_ECR_REPOSITORY_NAME_OVERRIDE_CONTEXT_KEY);
-    const repositoryName = asset.repositoryName ?? repositoryNameOverride ?? ASSETS_ECR_REPOSITORY_NAME;
-    const imageTag = asset.sourceHash;
-    const assetId = asset.sourceHash;
-
-    // only add every image (identified by source hash) once for each stack that uses it.
-    if (!this.addedImageAssets.has(assetId)) {
-      const metadata: cxapi.ContainerImageAssetMetadataEntry = {
-        repositoryName,
-        imageTag,
-        id: assetId,
-        packaging: 'container-image',
-        path: asset.directoryName,
-        sourceHash: asset.sourceHash,
-        buildArgs: asset.dockerBuildArgs,
-        target: asset.dockerBuildTarget,
-        file: asset.dockerFile,
-      };
-
-      this.node.addMetadata(cxapi.ASSET_METADATA, metadata);
-      this.addedImageAssets.add(assetId);
-    }
-
-    return {
-      imageUri: `${this.account}.dkr.ecr.${this.region}.${this.urlSuffix}/${repositoryName}:${imageTag}`,
-      repositoryName
-    };
+    return this.deploymentEnvironment.addDockerImageAsset(asset);
   }
 
   /**
@@ -1049,13 +989,6 @@ export class Stack extends Construct implements ITaggable {
     return exportName;
   }
 
-  private get assetParameters() {
-    if (!this._assetParameters) {
-      this._assetParameters = new Construct(this, 'AssetParameters');
-    }
-    return this._assetParameters;
-  }
-
   private determineCrossReferenceFactory(target: Stack) {
     // unsupported: stacks from different apps
     if (target.node.root !== this.node.root) {
@@ -1191,6 +1124,7 @@ import { Fn } from './cfn-fn';
 import { CfnOutput } from './cfn-output';
 import { Aws, ScopedAws } from './cfn-pseudo';
 import { CfnResource, TagType } from './cfn-resource';
+import { ConventionModeDeploymentEnvironment, IDeploymentEnvironment, LegacyDeploymentEnvironment } from './deployment-environment';
 import { addDependency } from './deps';
 import { Lazy } from './lazy';
 import { CfnReference } from './private/cfn-reference';
