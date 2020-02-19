@@ -1,5 +1,5 @@
 import { spawnSync } from 'child_process';
-import * as fs from 'fs-extra';
+import * as fs from 'fs';
 import { Builder } from '../lib/builder';
 
 let parcelPkgPath: string;
