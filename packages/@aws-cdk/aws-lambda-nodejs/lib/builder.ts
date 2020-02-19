@@ -50,7 +50,12 @@ export class Builder {
   private readonly parcelBinPath: string;
 
   constructor(private readonly options: BuilderOptions) {
-    const parcelPkgPath = require.resolve('parcel-bundler/package.json'); // This will throw if `parcel-bundler` cannot be found
+    let parcelPkgPath: string;
+    try {
+      parcelPkgPath = require.resolve('parcel-bundler/package.json'); // This will throw if `parcel-bundler` cannot be found
+    } catch (err) {
+      throw new Error('It looks like parcel-bundler is not installed. Please install v1.x of parcel-bundler with yarn or npm.');
+    }
     const parcelDir = path.dirname(parcelPkgPath);
     const parcelPkg = JSON.parse(fs.readFileSync(parcelPkgPath, 'utf8'));
 
