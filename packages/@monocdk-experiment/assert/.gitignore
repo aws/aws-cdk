@@ -1,0 +1,10 @@
+lib/
+test/
+README.md
+LICENSE
+NOTICE
+node_modules
+.npmignore
+
+*.js
+*.d.ts
