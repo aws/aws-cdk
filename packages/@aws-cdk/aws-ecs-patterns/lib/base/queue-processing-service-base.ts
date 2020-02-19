@@ -152,7 +152,7 @@ export abstract class QueueProcessingServiceBase extends Construct {
   public readonly sqsQueue: IQueue;
 
   /**
-   * The dead letter queue for the SQS queue that the service will process from
+   * The dead letter queue for the primary SQS queue
    */
   public readonly deadLetterQueue?: IQueue;
 
@@ -204,7 +204,7 @@ export abstract class QueueProcessingServiceBase extends Construct {
     }
     this.cluster = props.cluster || this.getDefaultCluster(this, props.vpc);
 
-    // Create the SQS queue if one is not provided, when creating SQS queue setup DLQ
+    // Create the SQS queue and it's corresponding DLQ if one is not provided
     if (props.queue) {
       this.sqsQueue = props.queue;
     } else {
