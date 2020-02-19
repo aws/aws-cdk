@@ -575,7 +575,7 @@
               {
                 "Ref": "AWS::Region"
               },
-              ".sns"
+              ".execute-api"
             ]
           ]
         },
