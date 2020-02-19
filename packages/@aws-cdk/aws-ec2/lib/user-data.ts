@@ -51,6 +51,8 @@ export interface ExecuteFileOptions {
 
   /**
    * The arguments to be passed to the file.
+   *
+   * @default No arguments are passed to the file.
    */
   readonly arguments?: string;
 
