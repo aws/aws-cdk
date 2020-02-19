@@ -6,6 +6,9 @@ source ${scriptdir}/common.bash
 
 setup
 
+echo "Making sure we are clean before starting."
+ENABLE_VPC_TESTING="DEFINE" cdk destroy -f ${STACK_NAME_PREFIX}-define-vpc
+
 echo "Setting up: creating a VPC with known tags"
 ENABLE_VPC_TESTING="DEFINE" cdk deploy ${STACK_NAME_PREFIX}-define-vpc
 echo "Setup complete!"

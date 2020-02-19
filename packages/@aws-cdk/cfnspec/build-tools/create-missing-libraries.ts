@@ -76,10 +76,7 @@ async function main() {
       : `${moduleFamily.toLocaleLowerCase()}-${lowcaseModuleName}`;
 
     // python names
-    const pythonDistSubName = moduleFamily === 'AWS'
-      ? lowcaseModuleName
-      : `${moduleFamily.toLocaleLowerCase()}.${lowcaseModuleName}`;
-    const pythonDistName = `aws-cdk.${pythonDistSubName}`;
+    const pythonDistName = `aws-cdk.${moduleName}`;
     const pythonModuleName = pythonDistName.replace(/-/g, "_");
 
     async function write(relativePath: string, contents: string[] | string | object) {
@@ -135,7 +132,7 @@ async function main() {
       repository: {
         type: "git",
         url: "https://github.com/aws/aws-cdk.git",
-        directory: `packages/@aws-cdk/${packageName}`,
+        directory: `packages/${packageName}`,
       },
       homepage: "https://github.com/aws/aws-cdk",
       scripts: {
@@ -204,6 +201,7 @@ async function main() {
       '.nycrc',
       '.LAST_PACKAGE',
       '*.snk',
+      'nyc.config.js'
     ]);
 
     await write('.npmignore', [

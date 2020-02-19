@@ -18,8 +18,35 @@ pull_request_rules:
         strict_method: merge
       delete_head_branch: {}
     conditions:
+      - base!=release
+      - -title~=(WIP|wip)
+      - -label~=(blocked|do-not-merge|no-squash)
+      - -merged
+      - -closed
+      - author!=dependabot[bot]
+      - author!=dependabot-preview[bot]
+      - "#approved-reviews-by>=1"
+      - -approved-reviews-by~=author
+      - "#changes-requested-reviews-by=0"
+      - status-success~=AWS CodeBuild us-east-1
+      - status-success=Semantic Pull Request
+      - status-success=mandatory-changes
+  - name: automatic merge
+    actions:
+      comment:
+        message: Thank you for contributing! Your pull request is now being automatically merged without squashing.
+      merge:
+        strict: smart
+        # Merge instead of squash
+        method: merge
+        strict_method: merge
+      delete_head_branch: {}
+    conditions:
+      - base!=release
       - -title~=(WIP|wip)
       - -label~=(blocked|do-not-merge)
+      # Only if no-squash is set
+      - label~=no-squash
       - -merged
       - -closed
       - author!=dependabot[bot]

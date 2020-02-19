@@ -414,7 +414,8 @@ $ cd packages/@aws-cdk/aws-ec2
 $ ../../../scripts/buildup
 ```
 
-Note that `buildup` uses `foreach.sh`, which means it's resumable. If your build fails and you wish to resume, just run `buildup` again. If you wish to restart, run `buildup --restart`.
+Note that `buildup` uses `foreach.sh`, which means it's resumable. If your build fails and you wish to resume, just run
+`buildup --resume`. If you wish to restart, run `buildup` again.
 
 ### Quick Iteration
 

@@ -142,6 +142,22 @@ The most important properties to set while creating an Alarms are:
 - `evaluationPeriods`: how many consecutive periods the metric has to be
   breaching the the threshold for the alarm to trigger.
 
+### Alarm Actions
+
+To add actions to an alarm, use the integration classes from the
+`@aws-cdk/aws-cloudwatch-actions` package. For example, to post a message to
+an SNS topic when an alarm breaches, do the following:
+
+```ts
+import * as cw_actions from '@aws-cdk/aws-cloudwatch-actions';
+
+// ...
+const topic = new sns.Topic(stack, 'Topic');
+const alarm = new cloudwatch.Alarm(stack, 'Alarm', { /* ... */ });
+
+alarm.addAlarmAction(new cw_actions.SnsAction(topic));
+```
+
 ### A note on units
 
 In CloudWatch, Metrics datums are emitted with units, such as `seconds` or
