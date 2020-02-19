@@ -269,6 +269,8 @@ const queueProcessingFargateService = new QueueProcessingFargateService(stack, '
 });
 ```
 
+when queue not provided by user, CDK with create a primary queue and dead letter queue with default redrive policy and attach permission to the task to be able to acces the primary queue.
+
 ## Scheduled Tasks
 
 To define a task that runs periodically, instantiate an `ScheduledEc2Task`:
