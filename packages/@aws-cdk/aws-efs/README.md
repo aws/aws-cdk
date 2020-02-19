@@ -15,4 +15,29 @@
 ---
 <!--END STABILITY BANNER-->
 
+This construct library allows you to set up AWS Elastic File System (EFS).
+
+```ts
+import efs = require('@aws-cdk/aws-efs');
+
+const myVpc = new ec2.Vpc(this, 'VPC');
+const fileSystem = new efs.EfsFileSystem(this, 'MyEfsFileSystem', {
+    vpc: myVpc,
+    encrypted: true,
+    lifecyclePolicy: EfsLifecyclePolicyProperty.AFTER_14_DAYS,
+    performanceMode: EfsPerformanceMode.GENERAL_PURPOSE,
+    throughputMode: EfsThroughputMode.BURSTING
+});
+```
+
+### Connecting
+
+To control who can access the EFS, use the `.connections` attribute. EFS has
+a fixed default port, so you don't need to specify the port:
+
+```ts
+fileSystem.connections.allowDefaultPortFrom(instance);
+```
+
+
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
