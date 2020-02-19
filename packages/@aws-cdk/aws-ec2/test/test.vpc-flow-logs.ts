@@ -7,7 +7,7 @@ import { Test } from 'nodeunit';
 import { FlowLog, FlowLogDestination, FlowLogResourceType, Vpc } from '../lib';
 
 export = {
-  'with cloudwatch logs as the destination and all the defaults set, it successfully creates all the resources'(
+  'with defaults set, it successfully creates with cloudwatch logs destination'(
     test: Test
   ) {
     const stack = getTestStack();

@@ -525,3 +525,34 @@ vpc.addFlowLog('FlowLogCloudWatch', {
   trafficType: ec2.FlowLogTrafficType.REJECT
 });
 ```
+
+By default the CDK will create the necessary resources for the destination. For the CloudWatch Logs destination
+it will create a CloudWatch Logs Log Group as well as the IAM role with the necessary permissions to publish to
+the log group. In the case of an S3 destination, it will create the S3 bucket.
+
+If you want to customize any of the destination resources you can provide your own as part of the `destination`.
+
+*CloudWatch Logs*
+```ts
+const logGroup = new logs.LogGroup(this, 'MyCustomLogGroup');
+
+const role = new iam.Role(this, 'MyCustomRole', {
+  assumedBy: new iam.ServicePrincipal('vpc-flow-logs.amazonaws.com')
+});
+
+new ec2.FlowLog(this, 'FlowLog', {
+  resourceType: ec2.FlowLogResourceType.fromVpc(vpc),
+  destination: ec2.FlowLogDestination.toCloudWatchLogs(logGroup, role)
+});
+```
+
+*S3*
+```ts
+
+const bucket = new s3.Bucket(this, 'MyCustomBucket');
+
+new ec2.FlowLog(this, 'FlowLog', {
+  resourceType: ec2.FlowLogResourceType.fromVpc(vpc),
+  destination: ec2.FlowLogDestination.toS3(bucket)
+});
+```
