@@ -1,4 +1,5 @@
 import { expect, haveResource, haveResourceLike, ResourcePart, SynthUtils } from '@aws-cdk/assert';
+import { GatewayVpcEndpoint } from '@aws-cdk/aws-ec2';
 import { App, CfnElement, CfnResource, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as apigw from '../lib';
@@ -474,12 +475,82 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::RestApi', {
       EndpointConfiguration: {
-      Types: [
-        "EDGE",
-        "PRIVATE"
-      ]
+        Types: [
+          "EDGE",
+          "PRIVATE"
+        ]
       }
     }));
+    test.done();
+  },
+
+  '"endpointConfiguration" can be used to specify endpoint types for the api'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const api = new apigw.RestApi(stack, 'api', {
+      endpointConfiguration: {
+        types: [ apigw.EndpointType.EDGE, apigw.EndpointType.PRIVATE ]
+      }
+    });
+
+    api.root.addMethod('GET');
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::RestApi', {
+      EndpointConfiguration: {
+        Types: [ "EDGE", "PRIVATE" ]
+      }
+    }));
+    test.done();
+  },
+
+  '"endpointConfiguration" can be used to specify vpc endpoints on the API'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const api = new apigw.RestApi(stack, 'api', {
+      endpointConfiguration: {
+        types: [ apigw.EndpointType.EDGE, apigw.EndpointType.PRIVATE ],
+        vpcEndpoints: [
+          GatewayVpcEndpoint.fromGatewayVpcEndpointId(stack, 'ImportedEndpoint', 'vpcEndpoint'),
+          GatewayVpcEndpoint.fromGatewayVpcEndpointId(stack, 'ImportedEndpoint2', 'vpcEndpoint2'),
+        ]
+      }
+    });
+
+    api.root.addMethod('GET');
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::RestApi', {
+      EndpointConfiguration: {
+        Types: [
+          "EDGE",
+          "PRIVATE"
+        ],
+        VpcEndpointIds: [
+          "vpcEndpoint",
+          "vpcEndpoint2"
+        ]
+      }
+    }));
+    test.done();
+  },
+
+  '"endpointTypes" and "endpointConfiguration" can NOT both be used to specify endpoint configuration for the api'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // THEN
+    test.throws(() => new apigw.RestApi(stack, 'api', {
+      endpointConfiguration: {
+        types: [ apigw.EndpointType.PRIVATE ],
+        vpcEndpoints: [ GatewayVpcEndpoint.fromGatewayVpcEndpointId(stack, 'ImportedEndpoint', 'vpcEndpoint')]
+      },
+      endpointTypes: [ apigw.EndpointType.PRIVATE ]
+    }), /Only one of the RestApi props, endpointTypes or endpointConfiguration, is allowed/);
     test.done();
   },
 
