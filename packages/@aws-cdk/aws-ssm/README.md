@@ -39,6 +39,16 @@ a CDK app. These are public (not secret) values. Parameters of type
 to provision secrets automatically, use Secrets Manager Secrets (see the
 `@aws-cdk/aws-secretsmanager` package).
 
+```ts
+new ssm.StringParameter(stack, 'Parameter', {
+  allowedPattern: '.*',
+  description: 'The value Foo',
+  parameterName: 'FooParameter',
+  stringValue: 'Foo',
+  tier: ssm.ParameterTier.ADVANCED,
+});
+```
+
 [creating SSM parameters](test/integ.parameter.lit.ts)
 
 When specifying an `allowedPattern`, the values provided as string literals
