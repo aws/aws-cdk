@@ -269,7 +269,7 @@ const queueProcessingFargateService = new QueueProcessingFargateService(stack, '
 });
 ```
 
-when queue not provided by user, CDK with create a primary queue and dead letter queue with default redrive policy and attach permission to the task to be able to acces the primary queue.
+when queue not provided by user, CDK will create a primary queue and a dead letter queue with default redrive policy and attach permission to the task to be able to acces the primary queue.
 
 ## Scheduled Tasks
 
