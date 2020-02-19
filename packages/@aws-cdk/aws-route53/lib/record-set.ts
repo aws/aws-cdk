@@ -380,7 +380,6 @@ export class CaaAmazonRecord extends CaaRecord {
           value: 'amazon.com'
         }
       ],
-      recordName: props.zone.zoneName
     });
   }
 }
