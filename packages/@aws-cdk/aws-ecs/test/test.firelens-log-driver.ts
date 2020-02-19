@@ -14,7 +14,6 @@ export = {
 
     cb();
   },
-
   'create a firelens log driver with default options'(test: Test) {
     // WHEN
     td.addContainer('Container', {
@@ -191,5 +190,43 @@ export = {
 
       test.done();
     },
+
+    "fluent-bit log router with file config type"(test: Test) {
+      // GIVEN
+      td.addFirelensLogRouter('log_router', {
+        image: ecs.obtainDefaultFluentBitECRImage(td, undefined, '2.1.0'),
+        firelensConfig: {
+          type: ecs.FirelensLogRouterType.FLUENTBIT,
+          options: {
+            enableECSLogMetadata: false,
+            configFileType: ecs.FirelensConfigFileType.FILE,
+            configFileValue: '/my/working/dir/firelens/config'
+          }
+        },
+        logging: new ecs.AwsLogDriver({streamPrefix: 'firelens'}),
+        memoryReservationMiB: 50,
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+        ContainerDefinitions: [
+          {
+            Essential: true,
+            MemoryReservation: 50,
+            Name: 'log_router',
+            FirelensConfiguration: {
+              Type: 'fluentbit',
+              Options: {
+                'enable-ecs-log-metadata': 'false',
+                'config-file-type': 'file',
+                'config-file-value': '/my/working/dir/firelens/config'
+              }
+            },
+          }
+        ]
+      }));
+
+      test.done();
+    }
   },
 };
