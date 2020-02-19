@@ -140,4 +140,18 @@ export = {
 
     test.done();
   },
+
+  'test service namespace enum'(test: Test) {
+    test.equals(appscaling.ServiceNamespace.APPSTREAM, 'appstream');
+    test.equals(appscaling.ServiceNamespace.COMPREHEND, 'comprehend');
+    test.equals(appscaling.ServiceNamespace.CUSTOM_RESOURCE, 'custom-resource');
+    test.equals(appscaling.ServiceNamespace.DYNAMODB, 'dynamodb');
+    test.equals(appscaling.ServiceNamespace.EC2, 'ec2');
+    test.equals(appscaling.ServiceNamespace.ECS, 'ecs');
+    test.equals(appscaling.ServiceNamespace.ELASTIC_MAP_REDUCE, 'elasticmapreduce');
+    test.equals(appscaling.ServiceNamespace.LAMBDA, 'lambda');
+    test.equals(appscaling.ServiceNamespace.RDS, 'rds');
+    test.equals(appscaling.ServiceNamespace.SAGEMAKER, 'sagemaker');
+    test.done();
+  },
 };
