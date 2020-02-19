@@ -31,15 +31,26 @@ input SaveCustomerInput {
     name: String!
 }
 
+type Order {
+    customer: String!
+    order: String!
+}
+
 type Query {
     getCustomers: [Customer]
     getCustomer(id: String): Customer
+}
+
+input FirstOrderInput {
+    product: String!
+    quantity: Int!
 }
 
 type Mutation {
     addCustomer(customer: SaveCustomerInput!): Customer
     saveCustomer(id: String!, customer: SaveCustomerInput!): Customer
     removeCustomer(id: String!): Customer
+    saveCustomerWithFirstOrder(customer: SaveCustomerInput!, order: FirstOrderInput!, referral: String): Order
 }
 ```
 
@@ -89,13 +100,29 @@ export class ApiStack extends Stack {
     customerDS.createResolver({
       typeName: 'Mutation',
       fieldName: 'addCustomer',
-      requestMappingTemplate: MappingTemplate.dynamoDbPutItem('id', 'customer'),
+      requestMappingTemplate: MappingTemplate.dynamoDbPutItem(
+          PrimaryKey.partition('id').auto(),
+          Values.projecting('customer')),
       responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
     });
     customerDS.createResolver({
       typeName: 'Mutation',
       fieldName: 'saveCustomer',
-      requestMappingTemplate: MappingTemplate.dynamoDbPutItem('id', 'customer', 'id'),
+      requestMappingTemplate: MappingTemplate.dynamoDbPutItem(
+          PrimaryKey.partition('id').is('id'),
+          Values.projecting('customer')),
+      responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
+    });
+    customerDS.createResolver({
+      typeName: 'Mutation',
+      fieldName: 'saveCustomerWithFirstOrder',
+      requestMappingTemplate: MappingTemplate.dynamoDbPutItem(
+          PrimaryKey
+              .partition('order').auto()
+              .sort('customer').is('customer.id'),
+          Values
+              .projecting('order')
+              .attribute('referral').is('referral')),
       responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
     });
     customerDS.createResolver({

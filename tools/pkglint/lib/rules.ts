@@ -496,7 +496,8 @@ function cdkModuleName(name: string) {
       isLegacyCdkPkg ? 'cdk'
         : isCdkPkg ? 'core'
           : name.startsWith('aws-') || name.startsWith('alexa-') ? name.replace(/^aws-/, '')
-            : `cdk-${name}`,
+            : name.startsWith('cdk-') ? name
+              : `cdk-${name}`,
     dotnetNamespace: `Amazon.CDK${isCdkPkg ? '' : `.${dotnetSuffix}`}`,
     python: {
       distName: `aws-cdk.${pythonName}`,

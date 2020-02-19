@@ -85,7 +85,7 @@ export function build(options: BuildOptions): void {
     }
 
     if (parcel.status !== 0) {
-      throw new Error(parcel.stderr.toString().trim());
+      throw new Error(parcel.stdout.toString().trim());
     }
   } catch (err) {
     throw new Error(`Failed to build file at ${options.entry}: ${err}`);
