@@ -31,6 +31,26 @@ export = {
     test.done();
   },
 
+  'expect String SSM Parameter to have tier properly set'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new ssm.StringParameter(stack, 'Parameter', {
+      allowedPattern: '.*',
+      description: 'The value Foo',
+      parameterName: 'FooParameter',
+      stringValue: 'Foo',
+      tier: ssm.ParameterTier.ADVANCED,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::SSM::Parameter', {
+      Tier: 'Advanced',
+    }));
+    test.done();
+  },
+
   'String SSM Parameter rejects invalid values'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();

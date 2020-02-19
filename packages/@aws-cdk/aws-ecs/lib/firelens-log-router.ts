@@ -201,7 +201,7 @@ export class FirelensLogRouter extends ContainerDefinition {
     const options = props.firelensConfig.options;
     if (options) {
       const enableECSLogMetadata = options.enableECSLogMetadata || options.enableECSLogMetadata === undefined;
-      const configFileType = options.configFileType ||
+      const configFileType = (options.configFileType === undefined || options.configFileType === FirelensConfigFileType.S3) &&
         (cdk.Token.isUnresolved(options.configFileValue) || /arn:aws[a-zA-Z-]*:s3:::.+/.test(options.configFileValue))
         ? FirelensConfigFileType.S3 : FirelensConfigFileType.FILE;
       this.firelensConfig = {

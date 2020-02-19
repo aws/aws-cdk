@@ -111,6 +111,13 @@ export interface ParameterOptions {
    * @default - auto-detect based on `parameterName`
    */
   readonly simpleName?: boolean;
+
+  /**
+   * The tier of the string parameter
+   *
+   * @default - undefined
+   */
+  readonly tier?: ParameterTier;
 }
 
 /**
@@ -207,6 +214,24 @@ export enum ParameterType {
 }
 
 /**
+ * SSM parameter tier
+ */
+export enum ParameterTier {
+  /**
+   * String
+   */
+  ADVANCED = 'Advanced',
+  /**
+   * String
+   */
+  INTELLIGENT_TIERING = 'Intelligent-Tiering',
+  /**
+   * String
+   */
+  STANDARD = 'Standard',
+}
+
+/**
  * Common attributes for string parameters.
  */
 export interface CommonStringParameterAttributes {
@@ -271,6 +296,7 @@ export interface SecureStringParameterAttributes extends CommonStringParameterAt
    * @default - default master key
    */
   readonly encryptionKey?: kms.IKey;
+
 }
 
 /**
@@ -404,6 +430,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
       allowedPattern: props.allowedPattern,
       description: props.description,
       name: this.physicalName,
+      tier: props.tier,
       type: props.type || ParameterType.STRING,
       value: props.stringValue,
     });
@@ -462,6 +489,7 @@ export class StringListParameter extends ParameterBase implements IStringListPar
       allowedPattern: props.allowedPattern,
       description: props.description,
       name: this.physicalName,
+      tier: props.tier,
       type: ParameterType.STRING_LIST,
       value: props.stringListValue.join(','),
     });
