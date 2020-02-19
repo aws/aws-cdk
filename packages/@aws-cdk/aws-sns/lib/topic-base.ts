@@ -1,5 +1,5 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { IResource, Resource } from '@aws-cdk/core';
+import { Construct, IResource, Resource, Token } from '@aws-cdk/core';
 import { TopicPolicy } from './policy';
 import { ITopicSubscription } from './subscriber';
 import { Subscription } from './subscription';
@@ -59,7 +59,10 @@ export abstract class TopicBase extends Resource implements ITopic {
     const subscriptionConfig = subscription.bind(this);
 
     const scope = subscriptionConfig.subscriberScope || this;
-    const id = subscriptionConfig.subscriberId;
+    let id = subscriptionConfig.subscriberId;
+    if (Token.isUnresolved(subscriptionConfig.subscriberId)) {
+      id = this.getNextTokenId(scope);
+    }
 
     // We use the subscriber's id as the construct id. There's no meaning
     // to subscribing the same subscriber twice on the same topic.
@@ -100,6 +103,20 @@ export abstract class TopicBase extends Resource implements ITopic {
       resourceArns: [this.topicArn],
       resource: this,
     });
+  }
+
+  private getNextTokenId(scope: Construct) {
+    let nextToken = 1;
+    const re = /TokenSubscription:([\d]*)/gm;
+    // Search for previous subscriptions with unresolved tokens
+    for (const source of scope.node.findAll()) {
+      // Used regex to find the next available suffix
+      const m = re.exec(source.node.id);
+      if (m && +m[1] >= nextToken) {
+        nextToken = +m[1] + 1;
+      }
+    }
+    return `TokenSubscription:${nextToken}`;
   }
 
 }

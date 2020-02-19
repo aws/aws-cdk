@@ -85,7 +85,42 @@ test('url subscription (unresolved url with protocol)', () => {
           "TopicName": "topicName"
         }
       },
-      "MyTopicUnresolvedUrlBA127FB3": {
+      "MyTopicTokenSubscription141DD1BE2": {
+        "Type": "AWS::SNS::Subscription",
+        "Properties": {
+          "Endpoint": "{{resolve:secretsmanager:my-secret:SecretString:::}}",
+          "Protocol": "https",
+          "TopicArn": { "Ref": "MyTopic86869434" },
+        }
+      }
+    }
+  });
+});
+
+test('url subscription (double unresolved url with protocol)', () => {
+  const secret = SecretValue.secretsManager('my-secret');
+  const url = secret.toString();
+  topic.addSubscription(new subs.UrlSubscription(url, {protocol: sns.SubscriptionProtocol.HTTPS}));
+  topic.addSubscription(new subs.UrlSubscription(url, {protocol: sns.SubscriptionProtocol.HTTPS}));
+
+  expect(stack).toMatchTemplate({
+    "Resources": {
+      "MyTopic86869434": {
+        "Type": "AWS::SNS::Topic",
+        "Properties": {
+          "DisplayName": "displayName",
+          "TopicName": "topicName"
+        }
+      },
+      "MyTopicTokenSubscription141DD1BE2": {
+        "Type": "AWS::SNS::Subscription",
+        "Properties": {
+          "Endpoint": "{{resolve:secretsmanager:my-secret:SecretString:::}}",
+          "Protocol": "https",
+          "TopicArn": { "Ref": "MyTopic86869434" },
+        }
+      },
+      "MyTopicTokenSubscription293BFE3F9": {
         "Type": "AWS::SNS::Subscription",
         "Properties": {
           "Endpoint": "{{resolve:secretsmanager:my-secret:SecretString:::}}",
@@ -319,6 +354,134 @@ test('email subscription', () => {
         "Type": "AWS::SNS::Subscription",
         "Properties": {
           "Endpoint": "foo@bar.com",
+          "Protocol": "email",
+          "TopicArn": {
+            "Ref": "MyTopic86869434"
+          }
+        }
+      }
+    }
+  });
+});
+
+test('email subscription with unresolved', () => {
+  const secret = SecretValue.secretsManager('my-secret');
+  const email = secret.toString();
+  topic.addSubscription(new subs.EmailSubscription(email));
+
+  expect(stack).toMatchTemplate({
+    "Resources": {
+      "MyTopic86869434": {
+        "Type": "AWS::SNS::Topic",
+        "Properties": {
+          "DisplayName": "displayName",
+          "TopicName": "topicName"
+        }
+      },
+      "MyTopicTokenSubscription141DD1BE2": {
+        "Type": "AWS::SNS::Subscription",
+        "Properties": {
+          "Endpoint": "{{resolve:secretsmanager:my-secret:SecretString:::}}",
+          "Protocol": "email",
+          "TopicArn": {
+            "Ref": "MyTopic86869434"
+          }
+        }
+      }
+    }
+  });
+});
+
+test('email subscription with unresolved - two subscriptions', () => {
+  const secret = SecretValue.secretsManager('my-secret');
+  const email = secret.toString();
+  topic.addSubscription(new subs.EmailSubscription(email));
+  topic.addSubscription(new subs.EmailSubscription(email));
+
+  expect(stack).toMatchTemplate({
+    "Resources": {
+      "MyTopic86869434": {
+        "Type": "AWS::SNS::Topic",
+        "Properties": {
+          "DisplayName": "displayName",
+          "TopicName": "topicName"
+        }
+      },
+      "MyTopicTokenSubscription141DD1BE2": {
+        "Type": "AWS::SNS::Subscription",
+        "Properties": {
+          "Endpoint": "{{resolve:secretsmanager:my-secret:SecretString:::}}",
+          "Protocol": "email",
+          "TopicArn": {
+            "Ref": "MyTopic86869434"
+          }
+        }
+      },
+      "MyTopicTokenSubscription293BFE3F9": {
+        "Type": "AWS::SNS::Subscription",
+        "Properties": {
+          "Endpoint": "{{resolve:secretsmanager:my-secret:SecretString:::}}",
+          "Protocol": "email",
+          "TopicArn": {
+            "Ref": "MyTopic86869434"
+          }
+        }
+      }
+    }
+  });
+});
+
+test('email subscription with unresolved - four subscriptions', () => {
+  const secret = SecretValue.secretsManager('my-secret');
+  const email = secret.toString();
+  topic.addSubscription(new subs.EmailSubscription(email));
+  topic.addSubscription(new subs.EmailSubscription(email));
+  topic.addSubscription(new subs.EmailSubscription(email));
+  topic.addSubscription(new subs.EmailSubscription(email));
+
+  expect(stack).toMatchTemplate({
+    "Resources": {
+      "MyTopic86869434": {
+        "Type": "AWS::SNS::Topic",
+        "Properties": {
+          "DisplayName": "displayName",
+          "TopicName": "topicName"
+        }
+      },
+      "MyTopicTokenSubscription141DD1BE2": {
+        "Type": "AWS::SNS::Subscription",
+        "Properties": {
+          "Endpoint": "{{resolve:secretsmanager:my-secret:SecretString:::}}",
+          "Protocol": "email",
+          "TopicArn": {
+            "Ref": "MyTopic86869434"
+          }
+        }
+      },
+      "MyTopicTokenSubscription293BFE3F9": {
+        "Type": "AWS::SNS::Subscription",
+        "Properties": {
+          "Endpoint": "{{resolve:secretsmanager:my-secret:SecretString:::}}",
+          "Protocol": "email",
+          "TopicArn": {
+            "Ref": "MyTopic86869434"
+          }
+        }
+      },
+      "MyTopicTokenSubscription335C2B4CA": {
+        "Type": "AWS::SNS::Subscription",
+        "Properties": {
+          "Endpoint": "{{resolve:secretsmanager:my-secret:SecretString:::}}",
+          "Protocol": "email",
+          "TopicArn": {
+            "Ref": "MyTopic86869434"
+          }
+        }
+      },
+      "MyTopicTokenSubscription4DBE52A3F": {
+        "Type": "AWS::SNS::Subscription",
+        "Properties": {
+          "Endpoint": "{{resolve:secretsmanager:my-secret:SecretString:::}}",
           "Protocol": "email",
           "TopicArn": {
             "Ref": "MyTopic86869434"
