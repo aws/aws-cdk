@@ -47,6 +47,11 @@ export = {
     test.done();
   },
 
+  'secretsManager with a non-ARN ID that has colon'(test: Test) {
+    test.throws(() => SecretValue.secretsManager('not:an:arn'), /cannot contain :/);
+    test.done();
+  },
+
   'ssmSecure'(test: Test) {
     // GIVEN
     const stack = new Stack();
