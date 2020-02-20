@@ -3,9 +3,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Duration, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { AuthorizationType, RestApi, TokenAuthorizer } from '../../lib';
-import {RequestAuthorizer} from '../../lib/authorizers';
-import {IdentitySource} from '../../lib/authorizers/identity-source';
+import { AuthorizationType, IdentitySource, RequestAuthorizer, RestApi, TokenAuthorizer } from '../../lib';
 
 export = {
   'default token authorizer'(test: Test) {
@@ -75,6 +73,24 @@ export = {
     }));
 
     test.ok(auth.authorizerArn.endsWith(`/authorizers/${auth.authorizerId}`), 'Malformed authorizer ARN');
+
+    test.done();
+  },
+
+  'invalid request authorizer config'(test: Test) {
+    const stack = new Stack();
+
+    const func = new lambda.Function(stack, 'myfunction', {
+      handler: 'handler',
+      code: lambda.Code.fromInline('foo'),
+      runtime: lambda.Runtime.NODEJS_12_X,
+    });
+
+    test.throws(() => new RequestAuthorizer(stack, 'myauthorizer', {
+      handler: func,
+      resultsCacheTtl: Duration.seconds(1),
+      identitySources: [],
+    }), Error, 'At least one Identity Source is required for a REQUEST-based Lambda authorizer if caching is enabled.');
 
     test.done();
   },

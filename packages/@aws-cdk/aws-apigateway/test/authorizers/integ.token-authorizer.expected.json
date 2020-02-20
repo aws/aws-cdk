@@ -243,7 +243,6 @@
           "Ref": "MyRestApi2D1F47A9"
         },
         "Type": "TOKEN",
-        "AuthorizerResultTtlInSeconds": 300,
         "AuthorizerUri": {
           "Fn::Join": [
             "",

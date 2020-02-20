@@ -75,7 +75,7 @@ abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
     this.handler = props.handler;
     this.role = props.assumeRole;
 
-    if (props.resultsCacheTtl && props.resultsCacheTtl.toSeconds() > 3600) {
+    if (props.resultsCacheTtl && props.resultsCacheTtl?.toSeconds() > 3600) {
       throw new Error(`Lambda authorizer property 'resultsCacheTtl' must not be greater than 3600 seconds (1 hour)`);
     }
   }
@@ -158,7 +158,7 @@ export class TokenAuthorizer extends LambdaAuthorizer {
       type: 'TOKEN',
       authorizerUri: `arn:aws:apigateway:${Stack.of(this).region}:lambda:path/2015-03-31/functions/${props.handler.functionArn}/invocations`,
       authorizerCredentials: props.assumeRole?.roleArn,
-      authorizerResultTtlInSeconds: props.resultsCacheTtl?.toSeconds() ?? Duration.minutes(5).toSeconds(),
+      authorizerResultTtlInSeconds: props.resultsCacheTtl?.toSeconds(),
       identitySource: props.identitySource || 'method.request.header.Authorization',
       identityValidationExpression: props.validationRegex,
     });
@@ -209,7 +209,7 @@ export class RequestAuthorizer extends LambdaAuthorizer {
   constructor(scope: Construct, id: string, props: RequestAuthorizerProps) {
     super(scope, id, props);
 
-    if (props.resultsCacheTtl?.toSeconds() !== 0 && props.identitySources.length === 0) {
+    if ((props.resultsCacheTtl === undefined || props.resultsCacheTtl.toSeconds() !== 0) && props.identitySources.length === 0) {
       throw new Error(`At least one Identity Source is required for a REQUEST-based Lambda authorizer if caching is enabled.`);
     }
 
@@ -220,7 +220,7 @@ export class RequestAuthorizer extends LambdaAuthorizer {
       type: 'REQUEST',
       authorizerUri: `arn:aws:apigateway:${Stack.of(this).region}:lambda:path/2015-03-31/functions/${props.handler.functionArn}/invocations`,
       authorizerCredentials: props.assumeRole?.roleArn,
-      authorizerResultTtlInSeconds: props.resultsCacheTtl?.toSeconds() ?? Duration.minutes(5).toSeconds(),
+      authorizerResultTtlInSeconds: props.resultsCacheTtl?.toSeconds(),
       identitySource: props.identitySources.map(is => is.toString()).join(','),
     });
 
