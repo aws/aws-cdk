@@ -48,10 +48,10 @@
     "@monocdk-experiment/rewrite-imports": "1.25.0"
   },
   "dependencies": {
-    "@aws-cdk/cloudformation-diff": "1.25.0",
-    "monocdk-experiment": "1.25.0"
+    "@aws-cdk/cloudformation-diff": "1.25.0"
   },
   "peerDependencies": {
+    "monocdk-experiment": "1.25.0",
     "jest": "^24.9.0"
   },
   "repository": {
