@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // tslint:disable: no-console
 import * as fs from 'fs';
-import ts from "typescript";
+import * as path from 'path';
+import ts from 'typescript';
 
 function compile(fileNames: string[], options: ts.CompilerOptions): void {
   const program = ts.createProgram(fileNames, options);
@@ -9,8 +10,7 @@ function compile(fileNames: string[], options: ts.CompilerOptions): void {
   program.getSourceFiles()
     .filter(file => !file.fileName.endsWith('.d.ts'))
     .forEach(file => {
-      if (!fileNames.includes(file.fileName)) {
-        console.log(`skipping ${file.fileName}`);
+      if (!fileNames.find(x => path.resolve(x) === path.resolve(file.fileName))) {
         return;
       }
 
