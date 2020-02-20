@@ -143,7 +143,8 @@ export class CdkToolkit {
           notificationArns: options.notificationArns,
           tags,
           execute: options.execute,
-          force: options.force
+          force: options.force,
+          parameters: options.parameters
         });
 
         const message = result.noOp
@@ -315,6 +316,12 @@ export interface DeployOptions {
    * @default false
    */
   force?: boolean;
+
+  /**
+   * Additional parameters for CloudFormation at deploy time
+   * @default {}
+   */
+  parameters?: { [name: string]: string | undefined };
 }
 
 export interface DestroyOptions {
