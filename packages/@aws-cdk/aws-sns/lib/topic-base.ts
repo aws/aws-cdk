@@ -61,7 +61,7 @@ export abstract class TopicBase extends Resource implements ITopic {
     const scope = subscriptionConfig.subscriberScope || this;
     let id = subscriptionConfig.subscriberId;
     if (Token.isUnresolved(subscriptionConfig.subscriberId)) {
-      id = this.getNextTokenId(scope);
+      id = this.nextTokenId(scope);
     }
 
     // We use the subscriber's id as the construct id. There's no meaning
@@ -105,7 +105,7 @@ export abstract class TopicBase extends Resource implements ITopic {
     });
   }
 
-  private getNextTokenId(scope: Construct) {
+  private nextTokenId(scope: Construct) {
     let nextToken = 1;
     const re = /TokenSubscription:([\d]*)/gm;
     // Search for previous subscriptions with unresolved tokens
