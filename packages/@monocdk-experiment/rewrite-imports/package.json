@@ -3,9 +3,9 @@
   "version": "1.25.0",
   "description": "Rewrites typescript 'import' statements from @aws-cdk/xxx to monocdk-experiment",
   "bin": {
-    "rewrite-imports": "./index.js"
+    "rewrite-imports": "bin/rewrite-imports"
   },
-  "main": "index.js",
+  "main": "bin/rewrite-imports.js",
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
