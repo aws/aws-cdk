@@ -169,4 +169,14 @@ export = testCase({
 
     test.done();
   },
+
+  'fails when inline code is specified on an incompatible runtime'(test: Test) {
+    const stack = new cdk.Stack();
+    test.throws(() => new lambda.Function(stack, 'fn', {
+      handler: 'foo',
+      runtime: lambda.Runtime.PROVIDED,
+      code: lambda.Code.fromInline('foo')
+    }), /Inline source not allowed for/);
+    test.done();
+  }
 });
