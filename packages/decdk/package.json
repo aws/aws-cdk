@@ -167,7 +167,7 @@
     "jsonschema": "^1.2.5",
     "yaml": "1.7.2",
     "yargs": "^15.1.0",
-    "@aws-cdk/cdk-assets-schema": "1.24.0"
+    "@aws-cdk/cdk-assets-schema": "1.25.0"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.1.0",
