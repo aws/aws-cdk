@@ -36,7 +36,10 @@ export abstract class Code {
   }
 
   /**
-   * Loads the function code from a local disk asset.
+   * Loads the function code from a local disk path.
+   *
+   * This is a convenience wrapper around fromAssetObject(new s3_assets.Asset(...)).
+   *
    * @param path Either a directory with the Lambda code bundle or a .zip file
    */
   public static fromAsset(path: string, options?: s3_assets.AssetOptions): AssetCode {

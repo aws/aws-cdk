@@ -23,6 +23,11 @@ export enum ArtifactType {
    * The artifact contains metadata generated out of the CDK application.
    */
   CDK_TREE = 'cdk:tree',
+
+  /**
+   * Manifest for all assets in the Cloud Assembly
+   */
+  ASSET_MANIFEST = 'cdk:asset-manifest',
 }
 
 /**

@@ -1,9 +1,14 @@
+import * as asset_schema from '@aws-cdk/cdk-assets-schema';
 import * as cxapi from '@aws-cdk/cx-api';
+import * as fs from 'fs';
+import * as path from 'path';
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from "./assets";
 import { Fn } from './cfn-fn';
-import { Construct } from "./construct";
+import { Construct, ISynthesisSession } from "./construct";
 import { FileAssetParameters } from './private/asset-parameters';
+import { TemplatedString } from './private/templated-string';
 import { Stack } from "./stack";
+import { Token } from './token';
 
 /**
  * The well-known name for the docker image asset ECR repository. All docker
@@ -49,6 +54,25 @@ export interface IDeploymentEnvironment {
    * Access the stack deployment configuration
    */
   stackDeploymentConfig(): StackDeploymentConfig;
+
+  /**
+   * Synthesize additional artifacts into the session
+   *
+   * @experimental
+   */
+  synthesize(session: ISynthesisSession): DeploymentEnvironmentSynthesisResult;
+}
+
+/**
+ * Result of synthesis
+ */
+export interface DeploymentEnvironmentSynthesisResult {
+  /**
+   * Artifact names that got generated that the stack should depend on
+   *
+   * @default - No additional dependencies
+   */
+  readonly additionalStackDependencies?: string[];
 }
 
 /**
@@ -114,6 +138,13 @@ export interface ConventionModeDeploymentEnvironmentProps {
   readonly assetPublishingRoleName?: string;
 
   /**
+   * External ID to use when assuming role for asset publishing
+   *
+   * @default - No external ID
+   */
+  readonly assetPublishingExternalId?: string;
+
+  /**
    * The role to assume to execute
    *
    * You must supply this if you have given a non-standard name to the publishing role.
@@ -161,8 +192,31 @@ export interface ConventionModeDeploymentEnvironmentProps {
  */
 export class ConventionModeDeploymentEnvironment implements IDeploymentEnvironment {
   private stack!: Stack;
+  private readonly bucketName: TemplatedString<DeployPlaceholders>;
+  private readonly repositoryName: TemplatedString<DeployPlaceholders>;
+  private readonly deployActionRoleName: TemplatedString<DeployPlaceholders>;
+  private readonly cloudFormationPassRoleArn: TemplatedString<DeployPlaceholders>;
+  private readonly assetPublishingRoleName: TemplatedString<DeployPlaceholders>;
+  private readonly qualifier: string;
+
+  private readonly assets: asset_schema.ManifestFile = {
+    version: asset_schema.AssetManifestSchema.currentVersion(),
+    files: {},
+    dockerImages: {},
+  };
 
   constructor(private readonly props: ConventionModeDeploymentEnvironmentProps = {}) {
+    const TPL = (s: string) => new TemplatedString<DeployPlaceholders>(s);
+
+    this.qualifier = this.props.qualifier ?? "hnb659fds",
+
+    // tslint:disable:max-line-length
+    this.bucketName = TPL(this.props.stagingBucketName ?? 'cdk-bootstrap-${Qualifier}-assets-${AWS::AccountId}-${AWS::Region}');
+    this.repositoryName = TPL(this.props.ecrRepositoryName ?? 'cdk-bootstrap-${Qualifier}-container-assets-${AWS::AccountId}-${AWS::Region}');
+    this.deployActionRoleName = TPL(this.props.deployActionRoleName ?? 'cdk-bootstrap-deploy-action-role-${AWS::AccountId}-${AWS::Region}');
+    this.cloudFormationPassRoleArn = TPL(this.props.cloudFormationExecutionRole ?? 'cdk-bootstrap-cfn-exec-role-${AWS::AccountId}-${AWS::Region}');
+    this.assetPublishingRoleName = TPL(this.props.assetPublishingRoleName ?? 'cdk-bootstrap-publishing-role-${AWS::AccountId}-${AWS::Region}');
+    // tslint:enable:max-line-length
   }
 
   public bind(stack: Stack): void {
@@ -170,11 +224,27 @@ export class ConventionModeDeploymentEnvironment implements IDeploymentEnvironme
   }
 
   public addFileAsset(asset: FileAssetSource): FileAssetLocation {
-    const bucketName = this.unplaceHold(this.props.stagingBucketName ?? 'cdk-bootstrap-${Qualifier}-assets-${AWS::AccountId}-${AWS::Region}');
     const objectKey = asset.sourceHash + '.zip';
 
-    // FIXME: collect for adding to manifest
+    // Add to manifest
+    this.assets.files![asset.sourceHash] = {
+      source: {
+        path: asset.fileName,
+        packaging: asset.packaging
+      },
+      destinations: {
+        [this.manifestEnvName]: {
+          bucketName: this.manifestSub(this.bucketName),
+          objectKey,
+          region: resolvedOr(this.stack.region, undefined),
+          assumeRoleArn: this.manifestSub(this.assetPublishingRoleName),
+          assumeRoleExternalId: this.props.assetPublishingExternalId,
+        }
+      },
+    };
 
+    // Return CFN expression
+    const bucketName = this.cfnSub(this.bucketName);
     return {
       bucketName,
       objectKey,
@@ -184,10 +254,25 @@ export class ConventionModeDeploymentEnvironment implements IDeploymentEnvironme
 
   public addDockerImageAsset(asset: DockerImageAssetSource): DockerImageAssetLocation {
     const imageTag = asset.sourceHash;
-    const repositoryName = this.unplaceHold(this.props.ecrRepositoryName ?? 'cdk-bootstrap-${Qualifier}-container-assets-${AWS::AccountId}-${AWS::Region}');
 
-    // FIXME: collect to manifest
+    // Add to manifest
+    this.assets.dockerImages![asset.sourceHash] = {
+      source: {
+        directory: asset.directoryName,
+        dockerBuildArgs: asset.dockerBuildArgs,
+        dockerBuildTarget: asset.dockerBuildTarget,
+        dockerFile: asset.dockerFile
+      },
+      destinations: {
+        [this.manifestEnvName]: {
+          repositoryName: this.manifestSub(this.repositoryName),
+          imageTag,
+        }
+      },
+    };
 
+    // Return CFN expression
+    const repositoryName = this.cfnSub(this.repositoryName);
     return {
       repositoryName,
       imageUri: `${this.stack.account}.dkr.ecr.${this.stack.region}.${this.stack.urlSuffix}/${repositoryName}:${imageTag}`,
@@ -196,20 +281,73 @@ export class ConventionModeDeploymentEnvironment implements IDeploymentEnvironme
 
   public stackDeploymentConfig(): StackDeploymentConfig {
     return {
-      assumeRoleArn: this.unplaceHold(this.props.deployActionRoleName ?? 'cdk-bootstrap-deploy-action-role-${AWS::AccountId}-${AWS::Region}'),
-      cloudFormationPassRoleArn: this.unplaceHold(this.props.cloudFormationExecutionRole ?? 'cdk-bootstrap-cfn-exec-role-${AWS::AccountId}-${AWS::Region}'),
+      assumeRoleArn: this.cfnSub(this.deployActionRoleName),
+      cloudFormationPassRoleArn: this.cfnSub(this.cloudFormationPassRoleArn),
     };
   }
 
-  private unplaceHold(s: string) {
-    return replacePlaceholders(s, {
-      qualifier: this.props.qualifier ?? "hnb659fds",
-      region: this.stack.region,
-      account: this.stack.account
+  public synthesize(session: ISynthesisSession): DeploymentEnvironmentSynthesisResult {
+    if (Object.keys(this.assets.files!).length + Object.keys(this.assets.dockerImages!).length === 0) {
+      // Nothing to do
+      return { };
+    }
+
+    const artifactId = `${this.stack.artifactId}.assets`;
+    const manifestFile = `${artifactId}.json`;
+    const outPath = path.join(session.assembly.outdir, manifestFile);
+    const text = JSON.stringify(this.assets, undefined, 2);
+    fs.writeFileSync(outPath, text);
+
+    session.assembly.addArtifact(artifactId, {
+      type: cxapi.ArtifactType.AWS_CLOUDFORMATION_STACK,
+    });
+
+    return {
+      additionalStackDependencies: [artifactId]
+    };
+  }
+
+  /**
+   * Substitute placeholders in a TemplatedString out for values usable in CFN
+   */
+  private cfnSub(s: TemplatedString<DeployPlaceholders>) {
+    return s.sub({
+      'Qualifier': this.qualifier,
+      'AWS::Region': this.stack.region,
+      'AWS::AccountId': this.stack.account
     });
   }
 
+  /**
+   * Substitute placeholders in a TemplatedString out for values usable in the asset manifest
+   */
+  private manifestSub(s: TemplatedString<DeployPlaceholders>) {
+    return s.sub({
+      'Qualifier': this.qualifier,
+      'AWS::Region': resolvedOr(this.stack.region, asset_schema.Placeholders.CURRENT_REGION),
+      'AWS::AccountId': resolvedOr(this.stack.account, asset_schema.Placeholders.CURRENT_ACCOUNT),
+    });
+  }
+
+  private get manifestEnvName(): string {
+    return [
+      resolvedOr(this.stack.account, 'current_account'),
+      resolvedOr(this.stack.region, 'current_region'),
+    ].join('-');
+  }
 }
+
+/**
+ * Return the given value if resolved or fall back to a default
+ */
+function resolvedOr<A>(x: string, def: A): string | A {
+  return Token.isUnresolved(x) ? def : x;
+}
+
+/**
+ * Placeholders that can occur in a template string for deployment targets
+ */
+export type DeployPlaceholders = 'Qualifier' | 'AWS::AccountId' | 'AWS::Region';
 
 /**
  * Use the original deployment environment
@@ -277,6 +415,10 @@ export class LegacyDeploymentEnvironment implements IDeploymentEnvironment {
 
   public stackDeploymentConfig(): StackDeploymentConfig {
     return { /* Legacy mode always uses current credentials */ };
+  }
+
+  public synthesize(_session: ISynthesisSession): DeploymentEnvironmentSynthesisResult {
+    return {};
   }
 
   private doAddDockerImageAsset(asset: DockerImageAssetSource): DockerImageAssetLocation {
@@ -379,19 +521,12 @@ export class NestedStackDeploymentEnvironment implements IDeploymentEnvironment 
   public stackDeploymentConfig(): StackDeploymentConfig {
     throw new Error('NestedStackDeploymentEnvironment cannot be directly deployed. Deploy the parent stack instead.');
   }
+
+  public synthesize(_session: ISynthesisSession): DeploymentEnvironmentSynthesisResult {
+    throw new Error('NestedStackDeploymentEnvironment cannot be directly synthesized. Deploy the parent stack instead.');
+  }
 }
 
 // TODO: lambda.Code.fromAsset() and for ContainerImage as well.
 // TODO: cdk-assets placeholders needs to retrieve base of imageUri from the repository
 // TODO: roles in Bootstrap Stack V2 also need the qualifier
-
-function replacePlaceholders(s: string, replacements: {
-    qualifier: string,
-    account: string,
-    region: string,
-  }) {
-
-  return s.replace(/\$\{Qualifier\}/g, replacements.qualifier)
-    .replace(/\$\{AWS::Region\}/g, replacements.region)
-    .replace(/\$\{AWS::AccountId\}/g, replacements.account);
-}

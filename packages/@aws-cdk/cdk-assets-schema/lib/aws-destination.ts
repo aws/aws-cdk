@@ -22,5 +22,19 @@ export interface AwsDestination {
    * @default - No ExternalId will be supplied
    */
   readonly assumeRoleExternalId?: string;
+}
 
+/**
+ * Placeholders which can be used in the destinations
+ */
+export class Placeholders {
+  /**
+   * Insert this into the destination fields to be replaced with the current region
+   */
+  public static readonly CURRENT_REGION = '${AWS::Region}';
+
+  /**
+   * Insert this into the destination fields to be replaced with the current account
+   */
+  public static readonly CURRENT_ACCOUNT = '${AWS::AccountId}';
 }

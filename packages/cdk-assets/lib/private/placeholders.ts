@@ -1,4 +1,4 @@
-import { AssetManifest } from "../asset-manifest";
+import { Placeholders } from "@aws-cdk/cdk-assets-schema";
 import { IAws } from "../aws";
 
 /**
@@ -12,11 +12,11 @@ export async function replaceAwsPlaceholders<A extends { region?: string }>(obje
 
   async function recurse(value: any): Promise<any> {
     if (typeof value === 'string') {
-      if (value.indexOf(AssetManifest.CURRENT_REGION_PLACEHOLDER) > -1) { await ensureRegion(); }
-      if (value.indexOf(AssetManifest.CURRENT_ACCOUNT_PLACEHOLDER) > -1) { await ensureAccount(); }
+      if (value.indexOf(Placeholders.CURRENT_REGION) > -1) { await ensureRegion(); }
+      if (value.indexOf(Placeholders.CURRENT_ACCOUNT) > -1) { await ensureAccount(); }
 
-      value = replaceAll(value, AssetManifest.CURRENT_REGION_PLACEHOLDER, region ?? '*');
-      value = replaceAll(value, AssetManifest.CURRENT_ACCOUNT_PLACEHOLDER, account ?? '*');
+      value = replaceAll(value, Placeholders.CURRENT_REGION, region ?? '*');
+      value = replaceAll(value, Placeholders.CURRENT_ACCOUNT, account ?? '*');
 
       return value;
     }

@@ -761,7 +761,12 @@ export class Stack extends Construct implements ITaggable {
       return;
     }
 
-    const deps = this.dependencies.map(s => s.artifactId);
+    const deploySynth = this.deploymentEnvironment.synthesize(session);
+
+    const deps = [
+      ...this.dependencies.map(s => s.artifactId),
+      ...deploySynth.additionalStackDependencies || []
+    ];
     const meta = this.collectMetadata();
 
     // backwards compatibility since originally artifact ID was always equal to
