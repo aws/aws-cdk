@@ -14,6 +14,17 @@
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test"
   },
+  "cdk-build": {
+    "eslint": {
+      "disable": true
+    },
+    "tslint": {
+      "disable": true
+    },
+    "pkglint": {
+      "disable": true
+    }
+  },
   "jest": {
     "coverageThreshold": {
       "global": {
