@@ -7,7 +7,7 @@ src="../../@aws-cdk/assert"
 rsync -av $src/lib/ lib/
 rsync -av $src/test/ test/
 
-files="README.md LICENSE NOTICE .npmignore"
+files="README.md LICENSE NOTICE .npmignore jest.ts"
 
 for file in ${files}; do
   cp $src/$file .

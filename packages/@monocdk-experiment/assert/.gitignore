@@ -4,6 +4,7 @@ README.md
 LICENSE
 NOTICE
 node_modules
+jest.ts
 .npmignore
 
 *.js
