@@ -35,7 +35,7 @@ export = {
             "Arn"
           ]
         },
-        maxReceiveCount: 5
+        maxReceiveCount: 3
       }
     }));
 

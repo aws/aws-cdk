@@ -90,7 +90,7 @@ export interface QueueProcessingServiceBaseProps {
    * The maximum number of times that a message can be received by consumers.
    * When this value is exceeded for a message the message will be automatically sent to the Dead Letter Queue.
    *
-   * @default 5
+   * @default 3
    */
   readonly maxReceiveCount?: number;
 
@@ -214,7 +214,7 @@ export abstract class QueueProcessingServiceBase extends Construct {
       this.sqsQueue = new Queue(this, 'EcsProcessingQueue', {
         deadLetterQueue: {
           queue: this.deadLetterQueue,
-          maxReceiveCount: props.maxReceiveCount || 5
+          maxReceiveCount: props.maxReceiveCount || 3
         }
       });
 
