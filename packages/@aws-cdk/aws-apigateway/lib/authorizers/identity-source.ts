@@ -12,7 +12,7 @@ export class IdentitySource {
    * @returns a new `IdentitySource` representing `headerName` from the request.
    */
   public static header(headerName: string): IdentitySource {
-    return new IdentitySource(headerName, SourceType.Header);
+    return IdentitySource.toString(headerName, 'method.request.header');
   }
 
   /**
@@ -20,7 +20,7 @@ export class IdentitySource {
    * @returns a new `IdentitySource` representing `queryString` from the request.
    */
   public static queryString(queryString: string): IdentitySource {
-    return new IdentitySource(queryString, SourceType.QueryString);
+    return IdentitySource.toString(queryString, 'method.request.querystring');
   }
 
   /**
@@ -28,7 +28,7 @@ export class IdentitySource {
    * @returns a new `IdentitySource` representing `stageVariable` from the API Gateway.
    */
   public static stageVariable(stageVariable: string): IdentitySource {
-    return new IdentitySource(stageVariable, SourceType.StageVariable);
+    return IdentitySource.toString(stageVariable, 'stageVariables');
   }
 
   /**
@@ -36,41 +36,14 @@ export class IdentitySource {
    * @returns a new `IdentitySource` representing `context` from the request context.
    */
   public static context(context: string): IdentitySource {
-    return new IdentitySource(context, SourceType.Context);
+    return IdentitySource.toString(context, 'context');
   }
 
-  private readonly source: string;
-  private readonly type: SourceType;
-
-  private constructor(source: string, type: SourceType) {
+  private static toString(source: string, type: string) {
     if (!Token.isUnresolved(source) && source === '') {
       throw new Error(`IdentitySources cannot be empty. Received: ${source}`);
     }
 
-    this.source = source;
-    this.type = type;
-  }
-
-  /**
-   * Returns a string representation of this `IdentitySource` that is also a Token that cannot be successfully resolved. This
-   * protects users against inadvertently stringifying an `IdentitySource` object, when they should have called one of the
-   * `to*` methods instead.
-   */
-  public toString() {
-    return `${this.type.toString()}.${this.source}`;
-  }
-}
-
-class SourceType {
-  public static readonly Header = new SourceType('method.request.header');
-  public static readonly QueryString = new SourceType('method.request.querystring');
-  public static readonly StageVariable = new SourceType('stageVariables');
-  public static readonly Context = new SourceType('context');
-
-  private constructor(public readonly label: string) {
-  }
-
-  public toString() {
-    return this.label;
+    return `${type}.${source}`;
   }
 }
