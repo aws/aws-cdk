@@ -42,7 +42,7 @@
   "devDependencies": {
     "@aws-cdk/core": "1.24.0",
     "@types/archiver": "^3.0.0",
-    "@types/fs-extra": "^8.0.1",
+    "@types/fs-extra": "^8.1.0",
     "@types/glob": "^7.1.1",
     "@types/jest": "^25.1.2",
     "@types/jszip": "^3.1.7",
