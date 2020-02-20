@@ -65,6 +65,41 @@ export = {
     test.done();
   },
 
+  'accepts different security policies'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
+
+    // WHEN
+    new apigw.DomainName(stack, 'my-domain', {
+      domainName: 'old.example.com',
+      certificate: cert,
+      securityPolicy: apigw.SecurityPolicy.TLS_1_0
+    });
+
+    new apigw.DomainName(stack, 'your-domain', {
+      domainName: 'new.example.com',
+      certificate: cert,
+      securityPolicy: apigw.SecurityPolicy.TLS_1_2
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::DomainName', {
+      "DomainName": "old.example.com",
+      "EndpointConfiguration": { "Types": [ "REGIONAL" ] },
+      "RegionalCertificateArn": { "Ref": "Cert5C9FAEC1" },
+      "SecurityPolicy": "TLS_1_0"
+    }));
+
+    expect(stack).to(haveResource('AWS::ApiGateway::DomainName', {
+      "DomainName": "new.example.com",
+      "EndpointConfiguration": { "Types": [ "REGIONAL" ] },
+      "RegionalCertificateArn": { "Ref": "Cert5C9FAEC1" },
+      "SecurityPolicy": "TLS_1_2"
+    }));
+    test.done();
+  },
+
   '"mapping" can be used to automatically map this domain to the deployment stage of an API'(test: Test) {
     // GIVEN
     const stack = new Stack();
