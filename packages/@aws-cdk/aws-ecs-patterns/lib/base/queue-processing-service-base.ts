@@ -95,6 +95,13 @@ export interface QueueProcessingServiceBaseProps {
   readonly maxReceiveCount?: number;
 
   /**
+   * The number of seconds that Dead Letter Queue retains a message.
+   *
+   * @default Duration.days(14)
+   */
+  readonly retentionPeriod?: Duration;
+
+  /**
    * Maximum capacity to scale to.
    *
    * @default (desiredTaskCount * 2)
@@ -209,7 +216,7 @@ export abstract class QueueProcessingServiceBase extends Construct {
       this.sqsQueue = props.queue;
     } else {
       this.deadLetterQueue = new Queue(this, "EcsProcessingDeadLetterQueue", {
-        retentionPeriod: Duration.days(14)
+        retentionPeriod: props.retentionPeriod || Duration.days(14)
       });
       this.sqsQueue = new Queue(this, 'EcsProcessingQueue', {
         deadLetterQueue: {
