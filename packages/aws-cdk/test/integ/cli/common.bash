@@ -78,6 +78,7 @@ function prepare_fixture() {
         @aws-cdk/aws-lambda \
         @aws-cdk/aws-ssm \
         @aws-cdk/aws-ecr-assets \
+        @aws-cdk/aws-cloudformation \
         @aws-cdk/aws-ec2
 
     echo "| setup complete at: $PWD"
@@ -91,6 +92,7 @@ function cleanup() {
   cleanup_stack ${STACK_NAME_PREFIX}-test-1
   cleanup_stack ${STACK_NAME_PREFIX}-test-2
   cleanup_stack ${STACK_NAME_PREFIX}-iam-test
+  cleanup_stack ${STACK_NAME_PREFIX}-with-nested-stack
 }
 
 function setup() {
