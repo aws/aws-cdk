@@ -1,12 +1,19 @@
-import * as ts from "typescript";
+#!/usr/bin/env node
+// tslint:disable: no-console
 import * as fs from 'fs';
+import ts from "typescript";
 
 function compile(fileNames: string[], options: ts.CompilerOptions): void {
-  let program = ts.createProgram(fileNames, options);
+  const program = ts.createProgram(fileNames, options);
 
   program.getSourceFiles()
     .filter(file => !file.fileName.endsWith('.d.ts'))
     .forEach(file => {
+      if (!fileNames.includes(file.fileName)) {
+        console.log(`skipping ${file.fileName}`);
+        return;
+      }
+
       process.stdout.write(`${file.fileName}: `);
       const newSource = rewriteFile(file);
 
@@ -23,7 +30,7 @@ function compile(fileNames: string[], options: ts.CompilerOptions): void {
 interface Span {
   readonly start: number,
   readonly end: number;
-};
+}
 
 function findImports(nodes: ReadonlyArray<ts.Node>): Span {
   let start = 0;

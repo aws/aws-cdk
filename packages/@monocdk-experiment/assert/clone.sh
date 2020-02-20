@@ -12,3 +12,9 @@ files="README.md LICENSE NOTICE .npmignore jest.ts"
 for file in ${files}; do
   cp $src/$file .
 done
+
+npx rewrite-imports ./lib/*.ts
+npx rewrite-imports ./test/*.ts
+npx rewrite-imports jest.ts
+
+
