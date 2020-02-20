@@ -514,7 +514,8 @@ export abstract class BaseService extends Resource
       namespace: sdNamespace,
       name: options.name,
       dnsRecordType: dnsRecordType!,
-      customHealthCheck: { failureThreshold: options.failureThreshold || 1 }
+      customHealthCheck: { failureThreshold: options.failureThreshold || 1 },
+      dnsTtl: options.dnsTtl,
     });
 
     const serviceArn = cloudmapService.serviceArn;
