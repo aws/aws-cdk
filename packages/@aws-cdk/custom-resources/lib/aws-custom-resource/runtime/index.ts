@@ -98,6 +98,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
       case 'Update':
       case 'Delete':
         physicalResourceId = event.ResourceProperties[event.RequestType]?.physicalResourceId ?? event.PhysicalResourceId;
+      break;
     }
 
     let flatData: { [key: string]: string } = {};
