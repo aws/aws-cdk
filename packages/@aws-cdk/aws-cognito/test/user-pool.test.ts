@@ -3,7 +3,7 @@ import { ABSENT } from '@aws-cdk/assert/lib/assertions/have-resource';
 import { Role } from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Stack, Tag } from '@aws-cdk/core';
-import { SignInType, UserPool, UserPoolAttribute, VerificationEmailStyle } from '../lib';
+import { AutoVerifiedAttrs, SignInAlias, UserPool, VerificationEmailStyle } from '../lib';
 
 describe('User Pool', () => {
   test('default setup', () => {
@@ -152,6 +152,30 @@ describe('User Pool', () => {
         SnsCallerArn: role.roleArn
       }
     });
+  });
+
+  test('import using id', () => {
+    // GIVEN
+    const stack = new Stack(undefined, undefined, {
+      env: { region: 'some-region-1', account: '0123456789012' }
+    });
+    const userPoolId = 'test-user-pool';
+
+    // WHEN
+    const pool = UserPool.fromUserPoolId(stack, 'userpool', userPoolId);
+    expect(pool.userPoolId).toEqual(userPoolId);
+    expect(pool.userPoolArn).toMatch(/cognito-idp:some-region-1:0123456789012:userpool\/test-user-pool/);
+  });
+
+  test('import using arn', () => {
+    // GIVEN
+    const stack = new Stack();
+    const userPoolArn = 'arn:aws:cognito-idp:us-east-1:0123456789012:userpool/test-user-pool';
+
+    // WHEN
+    const pool = UserPool.fromUserPoolArn(stack, 'userpool', userPoolArn);
+    expect(pool.userPoolId).toEqual('test-user-pool');
+    expect(pool.userPoolArn).toEqual(userPoolArn);
   });
 
   test('support tags', () => {
@@ -316,53 +340,97 @@ describe('User Pool', () => {
     });
   });
 
-  test('set sign in type', () => {
+  test('no username aliases specified', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'Pool');
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+      UsernameAttributes: ABSENT,
+      AliasAttributes: ABSENT,
+    });
+  });
+
+  test('fails when preferred_username is used without username', () => {
+    const stack = new Stack();
+    expect(() => new UserPool(stack, 'Pool', {
+      signInAliases: [ SignInAlias.PREFERRED_USERNAME ]
+    })).toThrow('signInAliases must contain USERNAME if PREFERRED_USERNAME is specified');
+  });
+
+  test('username and email are specified as the username aliases', () => {
     // GIVEN
     const stack = new Stack();
 
     // WHEN
     new UserPool(stack, 'Pool', {
-      signInType: SignInType.EMAIL,
-      autoVerifiedAttributes: [ UserPoolAttribute.EMAIL ]
+      signInAliases: [ SignInAlias.USERNAME, SignInAlias.EMAIL ]
     });
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
-      UsernameAttributes: [ 'email' ],
-      AutoVerifiedAttributes: [ 'email' ]
+      UsernameAttributes: ABSENT,
+      AliasAttributes: [ 'email' ],
     });
   });
 
-  test('usernameAliasAttributes require signInType of USERNAME', () => {
+  test('email and phone number are specified as the username aliases', () => {
+    // GIVEN
     const stack = new Stack();
 
-    expect(() => {
-      new UserPool(stack, 'Pool', {
-        signInType: SignInType.EMAIL,
-        usernameAliasAttributes: [ UserPoolAttribute.PREFERRED_USERNAME ]
-      });
-    }).toThrow(/'usernameAliasAttributes' can only be set with a signInType of 'USERNAME'/);
+    // WHEN
+    new UserPool(stack, 'Pool', {
+      signInAliases: [ SignInAlias.EMAIL, SignInAlias.PHONE ]
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+      UsernameAttributes: [ 'email', 'phone_number' ],
+      AliasAttributes: ABSENT,
+    });
   });
 
-  test('usernameAliasAttributes must be one or more of EMAIL, PHONE_NUMBER, or PREFERRED_USERNAME', () => {
+  test('email and phone number are auto-verified, by default, if they are sign in types', () => {
+    // GIVEN
     const stack = new Stack();
 
-    expect(() => {
-      new UserPool(stack, 'Pool', {
-        signInType: SignInType.USERNAME,
-        usernameAliasAttributes: [ UserPoolAttribute.GIVEN_NAME ]
-      });
-    }).toThrow(/'usernameAliasAttributes' can only include EMAIL, PHONE_NUMBER, or PREFERRED_USERNAME/);
+    // WHEN
+    new UserPool(stack, 'Pool1', {
+      userPoolName: 'Pool1',
+      signInAliases: [ SignInAlias.EMAIL ]
+    });
+    new UserPool(stack, 'Pool2', {
+      userPoolName: 'Pool2',
+      signInAliases: [ SignInAlias.EMAIL, SignInAlias.PHONE ]
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+      UserPoolName: 'Pool1',
+      AutoVerifiedAttributes: [ 'email' ],
+    });
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+      UserPoolName: 'Pool2',
+      AutoVerifiedAttributes: [ 'email', 'phone_number' ],
+    });
   });
 
-  test('autoVerifiedAttributes must be one or more of EMAIL or PHONE_NUMBER', () => {
+  test('explicit auto-verified attributes are correctly picked up', () => {
+    // GIVEN
     const stack = new Stack();
 
-    expect(() => {
-      new UserPool(stack, 'Pool', {
-        signInType: SignInType.EMAIL,
-        autoVerifiedAttributes: [ UserPoolAttribute.EMAIL, UserPoolAttribute.GENDER ]
-      });
-    }).toThrow(/'autoVerifiedAttributes' can only include EMAIL or PHONE_NUMBER/);
+    // WHEN
+    new UserPool(stack, 'Pool', {
+      signInAliases: [ SignInAlias.USERNAME ],
+      autoVerifiedAttributes: [ AutoVerifiedAttrs.EMAIL, AutoVerifiedAttrs.PHONE ]
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+      AutoVerifiedAttributes: [ 'email', 'phone_number' ],
+    });
   });
 });
