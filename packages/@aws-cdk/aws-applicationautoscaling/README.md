@@ -157,3 +157,43 @@ capacity.scaleOnSchedule('AllowDownscalingAtNight', {
   schedule: autoscaling.Schedule.cron({ hour: '20', minute: '0' }),
   minCapacity: 1
 });
+```
+
+## Examples
+
+### Lambda Provisioned Concurrency Auto Scaling
+
+```ts
+   const handler = new lambda.Function(this, 'MyFunction', {
+      runtime: lambda.Runtime.PYTHON_3_7,
+      handler: 'index.handler',
+      code: new lambda.InlineCode(`
+import json, time
+def handler(event, context):
+    time.sleep(1)
+    return {
+        'statusCode': 200,
+        'body': json.dumps('Hello CDK from Lambda!')
+    }`),
+      reservedConcurrentExecutions: 100,
+    });
+    
+    const fnVer = handler.addVersion('CDKLambdaVersion', undefined, 'demo alias', 10);
+
+    new apigateway.LambdaRestApi(this, 'API', { handler: fnVer })
+
+    const target = new applicationautoscaling.ScalableTarget(this, 'ScalableTarget', {
+      serviceNamespace: applicationautoscaling.ServiceNamespace.LAMBDA,
+      maxCapacity: 100,
+      minCapacity: 10,
+      resourceId: `function:${handler.functionName}:${fnVer.version}`,
+      scalableDimension: 'lambda:function:ProvisionedConcurrency',
+    })
+
+    target.scaleToTrackMetric('PceTracking', {
+      targetValue: 1.0,
+      predefinedMetric: applicationautoscaling.PredefinedMetric.LAMBDA_PROVISIONED_CONCURRENCY_UTILIZATION,
+    })
+  }
+  ```
+
