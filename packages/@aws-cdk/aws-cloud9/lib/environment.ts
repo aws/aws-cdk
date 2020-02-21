@@ -35,7 +35,7 @@ export interface EnvironmentEC2Props {
    * The subnetSelection of the VPC that AWS Cloud9 will use to communicate with
    * the Amazon EC2 instance.
    *
-   * @default - { subnetType: ec2.SubnetType.PUBLIC }
+   * @default - all public subnets of the VPC are selected.
    */
   readonly subnetSelection?: ec2.SubnetSelection;
 
@@ -112,8 +112,12 @@ export class EnvironmentEC2 extends cdk.Resource implements IEnvironmentEC2 {
     // }
 
     // if (!props.subnetSelection && this.vpc.selectSubnets({ subnetType: ec2.SubnetType.PUBLIC } ).subnetIds.length === 0) {
-    //   throw new Error('no subnetSelection specified and no public subnet found in the vpc');
+    //   throw new Error('no subnetSelection specified and no public subnet found in the vpc, please specify subnetSelection.');
     // }
+
+    if (!props.subnetSelection && this.vpc.publicSubnets.length === 0) {
+      throw new Error('no subnetSelection specified and no public subnet found in the vpc, please specify subnetSelection');
+    }
     const c9env = new CfnEnvironmentEC2(this, 'Resource', {
       name: props.environmentEc2Name,
       description: props.description,
