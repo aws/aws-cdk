@@ -218,8 +218,10 @@ async function initCommandLine() {
       case 'deploy':
         const parameterMap: { [name: string]: string | undefined } = {};
         for (const parameter of args.parameters) {
-          const keyValue = parameter.split('=', 2);
-          parameterMap[keyValue[0]] = keyValue[1];
+          if (typeof parameter === 'string') {
+            const keyValue = (parameter as string).split('=', 2);
+            parameterMap[keyValue[0]] = keyValue[1];
+          }
         }
         return await cli.deploy({
           stackNames: args.STACKS,
