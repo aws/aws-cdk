@@ -194,6 +194,6 @@ export class CloudArtifact {
 }
 
 // needs to be defined at the end to avoid a cyclic dependency
+import { AssetManifestArtifact } from './asset-manifest-artifact';
 import { CloudFormationStackArtifact } from './cloudformation-artifact';
-import { TreeCloudArtifact } from './tree-cloud-artifact';import { AssetManifestArtifact } from './asset-manifest-artifact';
-
+import { TreeCloudArtifact } from './tree-cloud-artifact';

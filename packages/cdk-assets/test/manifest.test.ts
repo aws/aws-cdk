@@ -52,8 +52,8 @@ test('.entries() iterates over all destinations', () => {
   expect(manifest.entries).toEqual([
     new FileManifestEntry(new DestinationIdentifier('asset1', 'dest1'), { path: 'S1' }, { bucketName: 'D1', objectKey: 'X' }),
     new FileManifestEntry(new DestinationIdentifier('asset1', 'dest2'), { path: 'S1' }, { bucketName: 'D2', objectKey: 'X' }),
-    new DockerImageManifestEntry(new DestinationIdentifier('asset2', 'dest1'), { directory: 'S2' }, { repositoryName: 'D3', imageTag: 'X', imageUri: 'X' }),
-    new DockerImageManifestEntry(new DestinationIdentifier('asset2', 'dest2'), { directory: 'S2' }, { repositoryName: 'D4', imageTag: 'X', imageUri: 'X' }),
+    new DockerImageManifestEntry(new DestinationIdentifier('asset2', 'dest1'), { directory: 'S2' }, { repositoryName: 'D3', imageTag: 'X' }),
+    new DockerImageManifestEntry(new DestinationIdentifier('asset2', 'dest2'), { directory: 'S2' }, { repositoryName: 'D4', imageTag: 'X' }),
   ]);
 });
 
