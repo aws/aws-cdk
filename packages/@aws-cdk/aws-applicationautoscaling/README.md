@@ -189,9 +189,9 @@ def handler(event, context):
       resourceId: `function:${handler.functionName}:${fnVer.version}`,
       scalableDimension: 'lambda:function:ProvisionedConcurrency',
     })
-
+s
     target.scaleToTrackMetric('PceTracking', {
-      targetValue: 1.0,
+      targetValue: 0.9,
       predefinedMetric: applicationautoscaling.PredefinedMetric.LAMBDA_PROVISIONED_CONCURRENCY_UTILIZATION,
     })
   }
