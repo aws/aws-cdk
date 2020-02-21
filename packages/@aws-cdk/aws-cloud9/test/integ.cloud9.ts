@@ -2,30 +2,29 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import * as cloud9 from '../lib';
 
-// const app = new cdk.App();
-
-// const stack = new cdk.Stack(app, 'aws-cdk-cloud9-integ');
-
-// const c9env = new cloud9.EnvironmentEC2(stack, 'C9Env');
-
-// new cdk.CfnOutput(stack, 'URL', { value: c9env.ideUrl });
-
 export class Cloud9Env extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
+    const vpc = new ec2.Vpc(this, 'VPC', {
+      maxAzs: 2,
+      natGateways: 1
+    });
+
     // create a cloud9 ec2 environment in a new VPC
-    new cloud9.EnvironmentEC2(this, 'C9Env');
+    const c9env = new cloud9.EnvironmentEC2(this, 'C9Env', { vpc });
+
+    new cdk.CfnOutput(this, 'URL', { value: c9env.ideUrl });
+    new cdk.CfnOutput(this, 'ARN', { value: c9env.environmentEc2Arn });
 
     // create the cloud9 environment in my default VPC
-    const vpc = ec2.Vpc.fromLookup(this, 'VPC', { isDefault: true });
-    const c9env = new cloud9.EnvironmentEC2(this, 'C9Env2', {
-      vpc,
+    const vpc2 = ec2.Vpc.fromLookup(this, 'VPC2', { isDefault: true });
+    const c9env2 = new cloud9.EnvironmentEC2(this, 'C9Env2', {
+      vpc: vpc2,
       instanceType: new ec2.InstanceType('t3.large')
-     });
+    });
 
-     // print the IDE URL in the output
-    new cdk.CfnOutput(this, 'URL', { value: c9env.ideUrl });
+    new cdk.CfnOutput(this, 'URL2', { value: c9env2.ideUrl });
 
   }
 }
