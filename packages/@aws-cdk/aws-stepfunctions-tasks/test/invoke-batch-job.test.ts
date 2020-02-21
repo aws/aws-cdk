@@ -1,7 +1,6 @@
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
 import * as tasks from '../lib';
-import { Aws } from '@aws-cdk/core';
 
 let stack: cdk.Stack;
 
@@ -50,7 +49,7 @@ test('Task with all the parameters', () => {
     task: new tasks.InvokeBatchJob({
       jobDefinition: 'JobArn',
       jobName: 'JobName',
-      jobQueue: `arn:aws:batch:${Aws.REGION}:${Aws.ACCOUNT_ID}:job-queue/QueueArn`,
+      jobQueue: `arn:aws:batch:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:job-queue/QueueArn`,
       payload: {
         foo: sfn.Data.stringAt('$.bar')
       },

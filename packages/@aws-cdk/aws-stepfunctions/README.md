@@ -127,6 +127,7 @@ couple of the tasks available are:
 * `tasks.InvokeActivity` -- start an Activity (Activities represent a work
   queue that you poll on a compute fleet you manage yourself)
 * `tasks.InvokeFunction` -- invoke a Lambda function with function ARN
+* `tasks.InvokeBatchJob` -- invoke a Batch job
 * `tasks.RunLambdaTask` -- call Lambda as integrated service with magic ARN
 * `tasks.RunGlueJobTask` -- call Glue Job as integrated service
 * `tasks.PublishToTopic` -- publish a message to an SNS topic

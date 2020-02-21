@@ -3,6 +3,11 @@ import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Aws } from '@aws-cdk/core';
 import { getResourceArn } from './resource-arn-suffix';
 
+/**
+ * Properties for InvokeBatchJob
+ *
+ * @experimental
+ */
 export interface InvokeBatchJobProps {
   /**
    * The job definition used by this job.
@@ -37,11 +42,16 @@ export interface InvokeBatchJobProps {
   /**
    * The payload to be passed as parametrs to the batch job
    *
-   * @default undefined
+   * @default - No parameters are passed
    */
   readonly payload?: { [key: string]: any };
 }
 
+/**
+ * A Step Functions Task to invoke AWS Batch
+ *
+ * @experimental
+ */
 export class InvokeBatchJob implements sfn.IStepFunctionsTask {
   private readonly integrationPattern: sfn.ServiceIntegrationPattern;
 
