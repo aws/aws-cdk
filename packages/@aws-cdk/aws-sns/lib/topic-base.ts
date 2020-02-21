@@ -108,14 +108,14 @@ export abstract class TopicBase extends Resource implements ITopic {
   private nextTokenId(scope: Construct) {
     let nextSuffix = 1;
     const re = /TokenSubscription:([\d]*)/gm;
-    // Search through the construct and all of its children 
+    // Search through the construct and all of its children
     // for previous subscriptions that match our regex pattern
     for (const source of scope.node.findAll()) {
       const m = re.exec(source.node.id); // Use regex to find a match
       if (m !== null) { // if we found a match
-        const matchSuffix = parseInt(m[1]) // get the suffix for that match (as integer)
+        const matchSuffix = parseInt(m[1], 10); // get the suffix for that match (as integer)
         if (matchSuffix >= nextSuffix) { // check if the match suffix is larger or equal to currently proposed suffix
-          nextSuffix = matchSuffix + 1; // increment the suffix 
+          nextSuffix = matchSuffix + 1; // increment the suffix
         }
       }
     }
