@@ -312,7 +312,7 @@ export abstract class BaseDataSource extends Construct implements IGrantable {
      */
     public readonly name: string;
     /**
-     * the underlying CFNN data source resource
+     * the underlying CFN data source resource
      */
     public readonly ds: CfnDataSource;
 
@@ -612,6 +612,177 @@ export class KeyCondition {
 }
 
 /**
+ * Utility class representing the assigment of a value to an attribute.
+ */
+export class Assign {
+    constructor(private readonly attr: string, private readonly arg: string) { }
+
+    /**
+     * Renders the assignment as a VTL string.
+     */
+    public renderAsAssignment(): string {
+        return `"${this.attr}" : $util.dynamodb.toDynamoDBJson(${this.arg})`;
+    }
+
+    /**
+     * Renders the assignment as a map element.
+     */
+    public putInMap(map: string): string {
+        return `$util.qr($${map}.put("${this.attr}", "${this.arg}"))`;
+    }
+}
+
+/**
+ * Utility class to allow assigning a value or an auto-generated id
+ * to a partition key.
+ */
+export class PartitionKeyStep {
+    constructor(private readonly key: string) { }
+
+    /**
+     * Assign an auto-generated value to the partition key.
+     */
+    public is(val: string): PartitionKey {
+        return new PartitionKey(new Assign(this.key, `$ctx.args.${val}`));
+    }
+
+    /**
+     * Assign an auto-generated value to the partition key.
+     */
+    public auto(): PartitionKey {
+        return new PartitionKey(new Assign(this.key, '$util.autoId()'));
+    }
+}
+
+/**
+ * Utility class to allow assigning a value or an auto-generated id
+ * to a sort key.
+ */
+export class SortKeyStep {
+   constructor(private readonly pkey: Assign, private readonly skey: string) { }
+
+    /**
+     * Assign an auto-generated value to the sort key.
+     */
+    public is(val: string): PrimaryKey {
+        return new PrimaryKey(this.pkey, new Assign(this.skey, `$ctx.args.${val}`));
+    }
+
+    /**
+     * Assign an auto-generated value to the sort key.
+     */
+    public auto(): PrimaryKey {
+        return new PrimaryKey(this.pkey, new Assign(this.skey, '$util.autoId()'));
+    }
+}
+
+/**
+ * Specifies the assignment to the primary key. It either
+ * contains the full primary key or only the partition key.
+ */
+export class PrimaryKey {
+    /**
+     * Allows assigning a value to the partition key.
+     */
+    public static partition(key: string): PartitionKeyStep {
+        return new PartitionKeyStep(key);
+    }
+
+    constructor(protected readonly pkey: Assign, private readonly skey?: Assign) { }
+
+    /**
+     * Renders the key assignment to a VTL string.
+     */
+    public renderTemplate(): string {
+        const assignments = [this.pkey.renderAsAssignment()];
+        if (this.skey) {
+            assignments.push(this.skey.renderAsAssignment());
+        }
+        return `"key" : {
+            ${assignments.join(",")}
+        }`;
+    }
+}
+
+/**
+ * Specifies the assignment to the partition key. It can be
+ * enhanced with the assignment of the sort key.
+ */
+export class PartitionKey extends PrimaryKey {
+    constructor(pkey: Assign) {
+        super(pkey);
+    }
+
+    /**
+     * Allows assigning a value to the sort key.
+     */
+    public sort(key: string): SortKeyStep {
+        return new SortKeyStep(this.pkey, key);
+    }
+}
+
+/**
+ * Specifies the attribute value assignments.
+ */
+export class AttributeValues {
+    constructor(private readonly container: string, private readonly assignments: Assign[] = []) { }
+
+    /**
+     * Allows assigning a value to the specified attribute.
+     */
+    public attribute(attr: string): AttributeValuesStep {
+        return new AttributeValuesStep(attr, this.container, this.assignments);
+    }
+
+    /**
+     * Renders the attribute value assingments to a VTL string.
+     */
+    public renderTemplate(): string {
+        return `
+            #set($input = ${this.container})
+            ${this.assignments.map(a => a.putInMap("input")).join("\n")}
+            "attributeValues": $util.dynamodb.toMapValuesJson($input)`;
+    }
+}
+
+/**
+ * Utility class to allow assigning a value to an attribute.
+ */
+export class AttributeValuesStep {
+    constructor(private readonly attr: string, private readonly container: string, private readonly assignments: Assign[]) { }
+
+    /**
+     * Assign the value to the current attribute.
+     */
+    public is(val: string): AttributeValues  {
+        this.assignments.push(new Assign(this.attr, val));
+        return new AttributeValues(this.container, this.assignments);
+    }
+}
+
+/**
+ * Factory class for attribute value assignments.
+ */
+export class Values {
+    /**
+     * Treats the specified object as a map of assignments, where the property
+     * names represent attribute names. It’s opinionated about how it represents
+     * some of the nested objects: e.g., it will use lists (“L”) rather than sets
+     * (“SS”, “NS”, “BS”). By default it projects the argument container ("$ctx.args").
+     */
+    public static projecting(arg?: string): AttributeValues {
+        return new AttributeValues('$ctx.args' + (arg ? `.${arg}` : ''));
+    }
+
+    /**
+     * Allows assigning a value to the specified attribute.
+     */
+    public static attribute(attr: string): AttributeValuesStep {
+        return new AttributeValues('{}').attribute(attr);
+    }
+}
+
+/**
  * MappingTemplates for AppSync resolvers
  */
 export abstract class MappingTemplate {
@@ -683,26 +854,25 @@ export abstract class MappingTemplate {
     /**
      * Mapping template to save a single item to a DynamoDB table
      *
-     * @param keyName the name of the hash key field
-     * @param valueArg the name of the Mutation argument to use as attributes. By default it uses all arguments
-     * @param idArg the name of the Mutation argument to use as id value. By default it generates a new id
+     * @param key the assigment of Mutation values to the primary key
+     * @param values the assignment of Mutation values to the table attributes
      */
-    public static dynamoDbPutItem(keyName: string, valueArg?: string, idArg?: string): MappingTemplate {
+    public static dynamoDbPutItem(key: PrimaryKey, values: AttributeValues): MappingTemplate {
         return this.fromString(`{
             "version" : "2017-02-28",
             "operation" : "PutItem",
-            "key" : {
-                "${keyName}": $util.dynamodb.toDynamoDBJson(${idArg ? `$ctx.args.${idArg}` : '$util.autoId()'}),
-            },
-            "attributeValues" : $util.dynamodb.toMapValuesJson(${valueArg ? `$ctx.args.${valueArg}` : '$ctx.args'})
+            ${key.renderTemplate()},
+            ${values.renderTemplate()}
         }`);
     }
 
     /**
      * Mapping template to invoke a Lambda function
-     * @param payload the VTL template snippet of the payload to send to the lambda
+     *
+     * @param payload the VTL template snippet of the payload to send to the lambda.
+     * If no payload is provided all available context fields are sent to the Lambda function
      */
-    public static lambdaRequest(payload: string): MappingTemplate {
+    public static lambdaRequest(payload: string = '$util.toJson($ctx)'): MappingTemplate {
         return this.fromString(`{"version": "2017-02-28", "operation": "Invoke", "payload": ${payload}}`);
     }
 
