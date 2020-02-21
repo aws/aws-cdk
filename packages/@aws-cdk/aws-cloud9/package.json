@@ -83,7 +83,6 @@
     "cdk-build-tools": "1.25.0",
     "cdk-integ-tools": "1.25.0",
     "cfn2ts": "1.25.0",
-    "nodeunit": "^0.11.3",
     "pkglint": "1.25.0"
   },
   "dependencies": {
@@ -97,7 +96,9 @@
   "peerDependencies": {
     "@aws-cdk/core": "1.25.0",
     "@aws-cdk/aws-ec2": "1.25.0",
-    "@aws-cdk/aws-iam": "1.25.0"
+    "@aws-cdk/aws-iam": "1.25.0",
+    "cfn2ts": "1.25.0",
+    "pkglint": "1.25.0"
   },
   "engines": {
     "node": ">= 10.3.0"
