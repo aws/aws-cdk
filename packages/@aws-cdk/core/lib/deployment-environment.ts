@@ -211,8 +211,8 @@ export class ConventionModeDeploymentEnvironment implements IDeploymentEnvironme
     this.qualifier = this.props.qualifier ?? "hnb659fds",
 
     // tslint:disable:max-line-length
-    this.bucketName = TPL(this.props.stagingBucketName ?? 'arn:aws:iam::${AWS::AccountId}:role/cdk-bootstrap-${Qualifier}-assets-${AWS::AccountId}-${AWS::Region}');
-    this.repositoryName = TPL(this.props.ecrRepositoryName ?? 'arn:aws:iam::${AWS::AccountId}:role/cdk-bootstrap-${Qualifier}-container-assets-${AWS::AccountId}-${AWS::Region}');
+    this.bucketName = TPL(this.props.stagingBucketName ?? 'cdk-bootstrap-${Qualifier}-assets-${AWS::AccountId}-${AWS::Region}');
+    this.repositoryName = TPL(this.props.ecrRepositoryName ?? 'cdk-bootstrap-${Qualifier}-container-assets-${AWS::AccountId}-${AWS::Region}');
     this.deployActionRoleArn = TPL(this.props.deployActionRoleArn ?? 'arn:aws:iam::${AWS::AccountId}:role/cdk-bootstrap-deploy-action-role-${AWS::AccountId}-${AWS::Region}');
     this.cloudFormationPassRoleArn = TPL(this.props.cloudFormationExecutionRole ?? 'arn:aws:iam::${AWS::AccountId}:role/cdk-bootstrap-cfn-exec-role-${AWS::AccountId}-${AWS::Region}');
     this.assetPublishingRoleArn = TPL(this.props.assetPublishingRoleArn ?? 'arn:aws:iam::${AWS::AccountId}:role/cdk-bootstrap-publishing-role-${AWS::AccountId}-${AWS::Region}');
