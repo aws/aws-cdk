@@ -10,22 +10,23 @@ export class TemplatedString<H extends string> {
   constructor(private readonly template: string) {
   }
 
-  public sub<K extends {[key in H]: string}>(replacements: K): string;
-  public sub<K extends Partial<{[key in H]: string}>>(replacements: K): TemplatedString<Exclude<H, keyof K>>;
-  public sub<K extends {[key in H]: string}>(replacements: object): TemplatedString<Exclude<H, keyof K>> | string {
+  public sub<K extends Partial<{[key in H]: string}>>(replacements: K): TemplatedString<Exclude<H, keyof K>> {
     let tpl = this.template;
     for (const [k, v] of Object.entries(replacements)) {
       tpl = tpl.replace(new RegExp('\\$\\{' + k + '\\}', 'g'), v as string);
     }
 
-    if (tpl.indexOf('${') > -1) {
-      return new TemplatedString(tpl);
-    }
-    return tpl;
+    return new TemplatedString(tpl);
   }
 
-  public get() {
-    return this.template;
+  /**
+   * Get the inner string out, but only if there are no replacements left
+   *
+   * The return type of 'unknown' will prevent assigning this where 'string' is
+   * expected.
+   */
+  public get(): H extends never ? string : unknown {
+    return this.template as any;
   }
 
   public toString() {

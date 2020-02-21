@@ -98,6 +98,8 @@ export class CloudArtifact {
         return new CloudFormationStackArtifact(assembly, id, artifact);
       case ArtifactType.CDK_TREE:
         return new TreeCloudArtifact(assembly, id, artifact);
+      case ArtifactType.ASSET_MANIFEST:
+        return new AssetManifestArtifact(assembly, id, artifact);
       default:
         return undefined;
     }
@@ -193,4 +195,5 @@ export class CloudArtifact {
 
 // needs to be defined at the end to avoid a cyclic dependency
 import { CloudFormationStackArtifact } from './cloudformation-artifact';
-import { TreeCloudArtifact } from './tree-cloud-artifact';
+import { TreeCloudArtifact } from './tree-cloud-artifact';import { AssetManifestArtifact } from './asset-manifest-artifact';
+

@@ -133,9 +133,9 @@ export interface ConventionModeDeploymentEnvironmentProps {
    * be replaced with the values of qualifier and the stack's account and region,
    * respectively.
    *
-   * @default "cdk-bootstrap-publishing-role-${AWS::AccountId}-${AWS::Region}"
+   * @default "arn:aws:iam::${AWS::AccountId}:role/cdk-bootstrap-publishing-role-${AWS::AccountId}-${AWS::Region}"
    */
-  readonly assetPublishingRoleName?: string;
+  readonly assetPublishingRoleArn?: string;
 
   /**
    * External ID to use when assuming role for asset publishing
@@ -153,9 +153,9 @@ export interface ConventionModeDeploymentEnvironmentProps {
    * be replaced with the values of qualifier and the stack's account and region,
    * respectively.
    *
-   * @default "cdk-bootstrap-deploy-action-role-${AWS::AccountId}-${AWS::Region}"
+   * @default "arn:aws:iam::${AWS::AccountId}:role/cdk-bootstrap-deploy-action-role-${AWS::AccountId}-${AWS::Region}"
    */
-  readonly deployActionRoleName?: string;
+  readonly deployActionRoleArn?: string;
 
   /**
    * The role CloudFormation will assume when deploying the Stack
@@ -166,7 +166,7 @@ export interface ConventionModeDeploymentEnvironmentProps {
    * be replaced with the values of qualifier and the stack's account and region,
    * respectively.
    *
-   * @default "cdk-bootstrap-cfn-exec-role-${AWS::AccountId}-${AWS::Region}"
+   * @default "arn:aws:iam::${AWS::AccountId}:role/cdk-bootstrap-cfn-exec-role-${AWS::AccountId}-${AWS::Region}"
    */
   readonly cloudFormationExecutionRole?: string;
 
@@ -194,9 +194,9 @@ export class ConventionModeDeploymentEnvironment implements IDeploymentEnvironme
   private stack!: Stack;
   private readonly bucketName: TemplatedString<DeployPlaceholders>;
   private readonly repositoryName: TemplatedString<DeployPlaceholders>;
-  private readonly deployActionRoleName: TemplatedString<DeployPlaceholders>;
+  private readonly deployActionRoleArn: TemplatedString<DeployPlaceholders>;
   private readonly cloudFormationPassRoleArn: TemplatedString<DeployPlaceholders>;
-  private readonly assetPublishingRoleName: TemplatedString<DeployPlaceholders>;
+  private readonly assetPublishingRoleArn: TemplatedString<DeployPlaceholders>;
   private readonly qualifier: string;
 
   private readonly assets: asset_schema.ManifestFile = {
@@ -211,11 +211,11 @@ export class ConventionModeDeploymentEnvironment implements IDeploymentEnvironme
     this.qualifier = this.props.qualifier ?? "hnb659fds",
 
     // tslint:disable:max-line-length
-    this.bucketName = TPL(this.props.stagingBucketName ?? 'cdk-bootstrap-${Qualifier}-assets-${AWS::AccountId}-${AWS::Region}');
-    this.repositoryName = TPL(this.props.ecrRepositoryName ?? 'cdk-bootstrap-${Qualifier}-container-assets-${AWS::AccountId}-${AWS::Region}');
-    this.deployActionRoleName = TPL(this.props.deployActionRoleName ?? 'cdk-bootstrap-deploy-action-role-${AWS::AccountId}-${AWS::Region}');
-    this.cloudFormationPassRoleArn = TPL(this.props.cloudFormationExecutionRole ?? 'cdk-bootstrap-cfn-exec-role-${AWS::AccountId}-${AWS::Region}');
-    this.assetPublishingRoleName = TPL(this.props.assetPublishingRoleName ?? 'cdk-bootstrap-publishing-role-${AWS::AccountId}-${AWS::Region}');
+    this.bucketName = TPL(this.props.stagingBucketName ?? 'arn:aws:iam::${AWS::AccountId}:role/cdk-bootstrap-${Qualifier}-assets-${AWS::AccountId}-${AWS::Region}');
+    this.repositoryName = TPL(this.props.ecrRepositoryName ?? 'arn:aws:iam::${AWS::AccountId}:role/cdk-bootstrap-${Qualifier}-container-assets-${AWS::AccountId}-${AWS::Region}');
+    this.deployActionRoleArn = TPL(this.props.deployActionRoleArn ?? 'arn:aws:iam::${AWS::AccountId}:role/cdk-bootstrap-deploy-action-role-${AWS::AccountId}-${AWS::Region}');
+    this.cloudFormationPassRoleArn = TPL(this.props.cloudFormationExecutionRole ?? 'arn:aws:iam::${AWS::AccountId}:role/cdk-bootstrap-cfn-exec-role-${AWS::AccountId}-${AWS::Region}');
+    this.assetPublishingRoleArn = TPL(this.props.assetPublishingRoleArn ?? 'arn:aws:iam::${AWS::AccountId}:role/cdk-bootstrap-publishing-role-${AWS::AccountId}-${AWS::Region}');
     // tslint:enable:max-line-length
   }
 
@@ -237,7 +237,7 @@ export class ConventionModeDeploymentEnvironment implements IDeploymentEnvironme
           bucketName: this.manifestSub(this.bucketName),
           objectKey,
           region: resolvedOr(this.stack.region, undefined),
-          assumeRoleArn: this.manifestSub(this.assetPublishingRoleName),
+          assumeRoleArn: this.manifestSub(this.assetPublishingRoleArn),
           assumeRoleExternalId: this.props.assetPublishingExternalId,
         }
       },
@@ -281,7 +281,7 @@ export class ConventionModeDeploymentEnvironment implements IDeploymentEnvironme
 
   public stackDeploymentConfig(): StackDeploymentConfig {
     return {
-      assumeRoleArn: this.cfnSub(this.deployActionRoleName),
+      assumeRoleArn: this.cfnSub(this.deployActionRoleArn),
       cloudFormationPassRoleArn: this.cfnSub(this.cloudFormationPassRoleArn),
     };
   }
@@ -299,7 +299,10 @@ export class ConventionModeDeploymentEnvironment implements IDeploymentEnvironme
     fs.writeFileSync(outPath, text);
 
     session.assembly.addArtifact(artifactId, {
-      type: cxapi.ArtifactType.AWS_CLOUDFORMATION_STACK,
+      type: cxapi.ArtifactType.ASSET_MANIFEST,
+      properties: {
+        file: manifestFile
+      },
     });
 
     return {
@@ -310,23 +313,23 @@ export class ConventionModeDeploymentEnvironment implements IDeploymentEnvironme
   /**
    * Substitute placeholders in a TemplatedString out for values usable in CFN
    */
-  private cfnSub(s: TemplatedString<DeployPlaceholders>) {
+  private cfnSub(s: TemplatedString<DeployPlaceholders>): string {
     return s.sub({
       'Qualifier': this.qualifier,
       'AWS::Region': this.stack.region,
       'AWS::AccountId': this.stack.account
-    });
+    }).get();
   }
 
   /**
    * Substitute placeholders in a TemplatedString out for values usable in the asset manifest
    */
-  private manifestSub(s: TemplatedString<DeployPlaceholders>) {
+  private manifestSub(s: TemplatedString<DeployPlaceholders>): string {
     return s.sub({
       'Qualifier': this.qualifier,
       'AWS::Region': resolvedOr(this.stack.region, asset_schema.Placeholders.CURRENT_REGION),
       'AWS::AccountId': resolvedOr(this.stack.account, asset_schema.Placeholders.CURRENT_ACCOUNT),
-    });
+    }).get();
   }
 
   private get manifestEnvName(): string {
@@ -528,5 +531,5 @@ export class NestedStackDeploymentEnvironment implements IDeploymentEnvironment 
 }
 
 // TODO: lambda.Code.fromAsset() and for ContainerImage as well.
-// TODO: cdk-assets placeholders needs to retrieve base of imageUri from the repository
 // TODO: roles in Bootstrap Stack V2 also need the qualifier
+// TODO: support ${AWS::Partition} in cdk-assets
