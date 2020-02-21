@@ -43,19 +43,19 @@ test('Invoke glue job with full properties', () => {
   const jobArguments = {
     key: "value"
   };
-  const allocatedCapacity = 100;
-  const timeout = Duration.minutes(1440);
+  const timeoutMinutes = 1440;
+  const timeout = Duration.minutes(timeoutMinutes);
   const securityConfiguration = "securityConfiguration";
-  const notificationProperty = { notifyDelayAfter: 10 };
+  const notifyDelayAfterMinutes = 10;
+  const notifyDelayAfter = Duration.minutes(notifyDelayAfterMinutes);
   const task = new sfn.Task(stack, 'Task', {
     task: new tasks.RunGlueJobTask(jobName, {
       integrationPattern: sfn.ServiceIntegrationPattern.SYNC,
       jobRunId,
       arguments: jobArguments,
-      allocatedCapacity,
       timeout,
       securityConfiguration,
-      notificationProperty
+      notifyDelayAfter
     })
   });
   new sfn.StateMachine(stack, 'SM', {
@@ -81,10 +81,11 @@ test('Invoke glue job with full properties', () => {
       JobName: jobName,
       JobRunId: jobRunId,
       Arguments: jobArguments,
-      AllocatedCapacity: allocatedCapacity,
-      Timeout: timeout,
+      Timeout: timeoutMinutes,
       SecurityConfiguration: securityConfiguration,
-      NotificationProperty: notificationProperty
+      NotificationProperty: {
+	NotifyDelayAfter: notifyDelayAfterMinutes
+      }
     },
   });
 });

@@ -1,0 +1,185 @@
+{
+  "Parameters": {
+    "AssetParameters00e9009a1958b2a7ac277352874efb747a15aebd9bd8fb3c1e8b5a4a12f16819S3BucketCE4DD78A": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"00e9009a1958b2a7ac277352874efb747a15aebd9bd8fb3c1e8b5a4a12f16819\""
+    },
+    "AssetParameters00e9009a1958b2a7ac277352874efb747a15aebd9bd8fb3c1e8b5a4a12f16819S3VersionKeyBC9A77D3": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"00e9009a1958b2a7ac277352874efb747a15aebd9bd8fb3c1e8b5a4a12f16819\""
+    },
+    "AssetParameters00e9009a1958b2a7ac277352874efb747a15aebd9bd8fb3c1e8b5a4a12f16819ArtifactHash34012B55": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"00e9009a1958b2a7ac277352874efb747a15aebd9bd8fb3c1e8b5a4a12f16819\""
+    }
+  },
+  "Resources": {
+    "GlueJobRole1CD031E0": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "glue.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSGlueServiceRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "GlueJob": {
+      "Type": "AWS::Glue::Job",
+      "Properties": {
+	"Name": "My Glue Job",
+        "Command": {
+          "Name": "glueetl",
+          "PythonVersion": "3",
+          "ScriptLocation": {
+            "Fn::Join": [
+              "",
+              [
+                "s3://",
+                {
+                  "Ref": "AssetParameters00e9009a1958b2a7ac277352874efb747a15aebd9bd8fb3c1e8b5a4a12f16819S3BucketCE4DD78A"
+                },
+                "/",
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters00e9009a1958b2a7ac277352874efb747a15aebd9bd8fb3c1e8b5a4a12f16819S3VersionKeyBC9A77D3"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters00e9009a1958b2a7ac277352874efb747a15aebd9bd8fb3c1e8b5a4a12f16819S3VersionKeyBC9A77D3"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "GlueJobRole1CD031E0",
+            "Arn"
+          ]
+        },
+        "GlueVersion": "1.0"
+      }
+    },
+    "StateMachineRole543B9670": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "states.",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ".amazonaws.com"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "StateMachineRoleDefaultPolicyDA5F7DA8": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "glue:StartJobRun",
+                "glue:GetJobRun",
+                "glue:GetJobRuns",
+                "glue:BatchStopJobRun"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "StateMachineRoleDefaultPolicyDA5F7DA8",
+        "Roles": [
+          {
+            "Ref": "StateMachineRole543B9670"
+          }
+        ]
+      }
+    },
+    "StateMachine81935E76": {
+      "Type": "AWS::StepFunctions::StateMachine",
+      "Properties": {
+        "DefinitionString": {
+          "Fn::Join": [
+            "",
+            [
+              "{\"StartAt\":\"Start Task\",\"States\":{\"Start Task\":{\"Type\":\"Pass\",\"Next\":\"Glue Job Task\"},\"Glue Job Task\":{\"Next\":\"End Task\",\"Parameters\":{\"JobName\":\"My Glue Job\",\"Arguments\":{\"--enable-metrics\":\"true\"}},\"Type\":\"Task\",\"Resource\":\"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":states:::glue:startJobRun.sync\"},\"End Task\":{\"Type\":\"Pass\",\"End\":true}}}"
+            ]
+          ]
+        },
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "StateMachineRole543B9670",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "StateMachineRoleDefaultPolicyDA5F7DA8",
+        "StateMachineRole543B9670"
+      ]
+    }
+  }
+}

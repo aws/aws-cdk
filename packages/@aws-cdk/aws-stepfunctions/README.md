@@ -190,7 +190,7 @@ task.next(nextState);
 
 ```ts
   const task = new sfn.Task(stack, 'ETL', {
-    task: new tasks.RunGlueJobTask(glueJobArn, {
+    task: new tasks.RunGlueJobTask(glueJobName, {
       integrationPattern: sfn.ServiceIntegrationPattern.SYNC,
       arguments: {
         "--table-prefix": "myTable"

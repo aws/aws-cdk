@@ -1,4 +1,3 @@
-import * as glue from '@aws-cdk/aws-glue';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Duration } from '@aws-cdk/core';
@@ -29,22 +28,16 @@ export interface RunGlueJobTaskProps {
    * The job arguments specifically for this run. For this job run, they replace the
    * default arguments set in the job definition itself.
    *
-   * @default - Only arguments consumed by Glue
+   * @default - Default arguments set in the job definition
    */
   readonly arguments?: { [key: string]: string };
 
   /**
-   * The number of AWS Glue data processing units (DPUs) to allocate to this JobRun.
+   * The job run timeout. This is the maximum time that a job run can consume
+   * resources before it is terminated and enters TIMEOUT status. Must be at least 1
+   * minute.
    *
-   * @default - 10
-   */
-  readonly allocatedCapacity?: number;
-
-  /**
-   * The JobRun timeout in minutes. This is the maximum time that a job run can consume
-   * resources before it is terminated and enters TIMEOUT status.
-   *
-   * @default - 2,880 (48 hours)
+   * @default Duration.hours(48)
    */
   readonly timeout?: Duration;
 
@@ -56,11 +49,12 @@ export interface RunGlueJobTaskProps {
   readonly securityConfiguration?: string;
 
   /**
-   * Specifies configuration properties of a job run notification.
+   * After a job run starts, the number of minutes to wait before sending a job run delay
+   * notification. Must be at least 1 minute.
    *
-   * @default - No configuration
+   * @default - No delay
    */
-  readonly notificationProperty?: glue.CfnJob.NotificationPropertyProperty;
+  readonly notifyDelayAfter?: Duration;
 }
 
 /**
@@ -88,6 +82,7 @@ export class RunGlueJobTask implements sfn.IStepFunctionsTask {
   }
 
   public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
+    const notificationProperty = this.props.notifyDelayAfter ? { NotifyDelayAfter: this.props.notifyDelayAfter.toMinutes() } : null
     return {
       resourceArn: getResourceArn("glue", "startJobRun", this.integrationPattern),
       policyStatements: [new iam.PolicyStatement({
@@ -106,10 +101,9 @@ export class RunGlueJobTask implements sfn.IStepFunctionsTask {
         JobName: this.glueJobName,
         JobRunId: this.props.jobRunId,
         Arguments: this.props.arguments,
-        AllocatedCapacity: this.props.allocatedCapacity,
-        Timeout: this.props.timeout,
+        Timeout: this.props.timeout?.toMinutes(),
         SecurityConfiguration: this.props.securityConfiguration,
-        NotificationProperty: this.props.notificationProperty
+        NotificationProperty: notificationProperty
       }
     };
   }
