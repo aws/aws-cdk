@@ -63,7 +63,7 @@
     "jszip": "^3.2.2",
     "mockery": "^2.1.0",
     "pkglint": "1.25.0",
-    "sinon": "^8.1.0",
+    "sinon": "^9.0.0",
     "ts-jest": "^25.2.0"
   },
   "dependencies": {
@@ -71,7 +71,7 @@
     "@aws-cdk/cx-api": "1.25.0",
     "@aws-cdk/region-info": "1.25.0",
     "archiver": "^3.1.1",
-    "aws-sdk": "^2.620.0",
+    "aws-sdk": "^2.623.0",
     "camelcase": "^5.3.1",
     "colors": "^1.4.0",
     "decamelize": "^4.0.0",
