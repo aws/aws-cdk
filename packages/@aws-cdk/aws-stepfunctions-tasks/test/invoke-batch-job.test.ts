@@ -49,10 +49,24 @@ test('Task with all the parameters', () => {
     task: new tasks.InvokeBatchJob({
       jobDefinition: 'JobArn',
       jobName: 'JobName',
-      jobQueue: `arn:aws:batch:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:job-queue/QueueArn`,
+      jobQueue: `JobQueue`,
+      arrayProperties: {
+        Size: 15
+      },
+      containerOverrides: {
+        Command: ['sudo', 'rm'],
+        Environment: [{ Name: 'key', Value: 'value' }],
+        InstanceType: 'MULTI',
+        Memory: 1024,
+        ResourceRequirements: [{ Type: 'GPU', Value: '1' }],
+        Vcpus: 10
+      },
+      dependsOn: [{ JobId: '1234', Type: 'some_type' }],
       payload: {
         foo: sfn.Data.stringAt('$.bar')
       },
+      retryStrategy: { Attempts: 3 },
+      timeout: { AttemptDurationSeconds: 30 },
       integrationPattern: sfn.ServiceIntegrationPattern.FIRE_AND_FORGET
     })
   });
@@ -76,25 +90,20 @@ test('Task with all the parameters', () => {
     Parameters: {
       JobDefinition: 'JobArn',
       JobName: 'JobName',
-      JobQueue: {
-        'Fn::Join': [
-          '',
-          [
-            'arn:aws:batch:',
-            {
-              Ref: 'AWS::Region'
-            },
-            ':',
-            {
-              Ref: 'AWS::AccountId'
-            },
-            ':job-queue/QueueArn'
-          ]
-        ]
+      JobQueue: 'JobQueue',
+      ArrayProperties: { Size: 15 },
+      ContainerOverrides: {
+        Command: ['sudo', 'rm'],
+        Environment: [{ Name: 'key', Value: 'value' }],
+        InstanceType: 'MULTI',
+        Memory: 1024,
+        ResourceRequirements: [{ Type: 'GPU', Value: '1' }],
+        Vcpus: 10
       },
-      Parameter: {
-        'foo.$': '$.bar'
-      }
+      DependsOn: [{ JobId: '1234', Type: 'some_type' }],
+      Parameters: { 'foo.$': '$.bar' },
+      RetryStrategy: { Attempts: 3 },
+      Timeout: { AttemptDurationSeconds: 30 }
     }
   });
 });

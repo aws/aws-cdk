@@ -165,7 +165,7 @@
           "Fn::Join": [
             "",
             [
-              "{\"StartAt\":\"Start\",\"States\":{\"Start\":{\"Type\":\"Pass\",\"Result\":{\"SomeKey\":\"SomeValue\"},\"Next\":\"Submit Job\"},\"Submit Job\":{\"End\":true,\"Parameters\":{\"JobDefinition\":\"SfnJob\",\"JobName\":\"MyJob\",\"JobQueue\":\"SfnJobQueue\"},\"Type\":\"Task\",\"Resource\":\"arn:",
+              "{\"StartAt\":\"Start\",\"States\":{\"Start\":{\"Type\":\"Pass\",\"Result\":{\"SomeKey\":\"SomeValue\"},\"Next\":\"Submit Job\"},\"Submit Job\":{\"End\":true,\"Parameters\":{\"JobDefinition\":\"SfnJob\",\"JobName\":\"MyJob\",\"JobQueue\":\"SfnJobQueue\",\"ArrayProperties\":{\"Size\":15},\"ContainerOverrides\":{\"Command\":[\"sudo\",\"rm\"],\"Environment\":[{\"Name\":\"key\",\"Value\":\"value\"}],\"InstanceType\":\"MULTI\",\"Memory\":1024,\"ResourceRequirements\":[{\"Type\":\"GPU\",\"Value\":\"1\"}],\"Vcpus\":10},\"DependsOn\":[{\"JobId\":\"1234\",\"Type\":\"some_type\"}],\"Parameters\":{\"foo.$\":\"$.bar\"},\"RetryStrategy\":{\"Attempts\":3},\"Timeout\":{\"AttemptDurationSeconds\":30}},\"Type\":\"Task\",\"Resource\":\"arn:",
               {
                 "Ref": "AWS::Partition"
               },

@@ -54,7 +54,24 @@ class InvokeBatchStack extends cdk.Stack {
       task: new tasks.InvokeBatchJob({
         jobDefinition: `${batchJob.jobDefinitionName}`,
         jobName: 'MyJob',
-        jobQueue: `${batchQueue.jobQueueName}`
+        jobQueue: `${batchQueue.jobQueueName}`,
+        arrayProperties: {
+          Size: 15
+        },
+        containerOverrides: {
+          Command: ['sudo', 'rm'],
+          Environment: [{ Name: 'key', Value: 'value' }],
+          InstanceType: 'MULTI',
+          Memory: 1024,
+          ResourceRequirements: [{ Type: 'GPU', Value: '1' }],
+          Vcpus: 10
+        },
+        dependsOn: [{ JobId: '1234', Type: 'some_type' }],
+        payload: {
+          foo: sfn.Data.stringAt('$.bar')
+        },
+        retryStrategy: { Attempts: 3 },
+        timeout: { AttemptDurationSeconds: 30 }
       })
     });
 
