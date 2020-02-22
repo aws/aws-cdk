@@ -572,4 +572,24 @@ describe('IAM polocy document', () => {
 
     expect(stack.resolve(doc1)).toEqual(stack.resolve(doc2));
   });
+
+  test('from JSON', () => {
+    const stack = new Stack();
+
+    const s = new PolicyStatement();
+    s.addActions('service:action1', 'service:action2');
+    s.addAllResources();
+    s.addArnPrincipal('arn');
+    s.addCondition('key', { equals: 'value' });
+
+    const doc1 = new PolicyDocument();
+    doc1.addStatements(s);
+
+    const obj = doc1.toJSON();
+    const doc2 = PolicyDocument.fromJSON(obj);
+
+    expect(stack.resolve(doc2)).toEqual(stack.resolve(doc1));
+
+  });
+
 });
