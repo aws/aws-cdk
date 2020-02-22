@@ -1,6 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import { Aws } from '@aws-cdk/core';
+import { Aws, Duration } from '@aws-cdk/core';
 import { getResourceArn } from './resource-arn-suffix';
 
 /**
@@ -12,7 +12,7 @@ export interface ArrayProperties {
    *
    * @default - No size
    */
-  readonly Size?: number;
+  readonly size?: number;
 }
 
 /**
@@ -25,7 +25,7 @@ export interface KeyValuePair {
    *
    * @default - No name
    */
-  Name?: string;
+  readonly name?: string;
 
   /**
    * The value of the key-value pair.
@@ -33,7 +33,7 @@ export interface KeyValuePair {
    *
    * @default - No value
    */
-  Value?: string;
+  readonly value?: string;
 }
 
 /**
@@ -45,7 +45,7 @@ export interface ResourceRequirement {
    * The type of resource to assign to a container.
    * Currently, the only supported resource type is GPU.
    */
-  readonly Type: string;
+  readonly type: string;
 
   /**
    * The number of physical GPUs to reserve for the container.
@@ -53,7 +53,7 @@ export interface ResourceRequirement {
    * should not exceed the number of available GPUs on the compute
    * resource that the job is launched on.
    */
-  readonly Value: string;
+  readonly value: string;
 }
 
 /**
@@ -66,7 +66,7 @@ export interface ContainerOverrides {
    *
    * @default - No command overrides
    */
-  readonly Command?: string[];
+  readonly command?: string[];
 
   /**
    * The environment variables to send to the container.
@@ -76,7 +76,7 @@ export interface ContainerOverrides {
    *
    * @default - No environment overrides
    */
-  readonly Environment?: KeyValuePair[];
+  readonly environment?: KeyValuePair[];
 
   /**
    * The instance type to use for a multi-node parallel job.
@@ -84,7 +84,7 @@ export interface ContainerOverrides {
    *
    * @default - No instance type overrides
    */
-  readonly InstanceType?: string;
+  readonly instanceType?: string;
 
   /**
    * The number of MiB of memory reserved for the job.
@@ -92,7 +92,7 @@ export interface ContainerOverrides {
    *
    * @default - No memory overrides
    */
-  readonly Memory?: number;
+  readonly memory?: number;
 
   /**
    * The type and amount of a resource to assign to a container.
@@ -101,7 +101,7 @@ export interface ContainerOverrides {
    *
    * @default - No resource requirements overrides
    */
-  readonly ResourceRequirements?: ResourceRequirement[];
+  readonly resourceRequirements?: ResourceRequirement[];
 
   /**
    * The number of vCPUs to reserve for the container.
@@ -109,7 +109,7 @@ export interface ContainerOverrides {
    *
    * @default - No vCPUs overrides
    */
-  readonly Vcpus?: number;
+  readonly vcpus?: number;
 }
 
 /**
@@ -121,14 +121,14 @@ export interface JobDependency {
    *
    * @default - No jobId
    */
-  readonly JobId?: string;
+  readonly jobId?: string;
 
   /**
    * The type of the job dependency.
    *
    * @default - No type
    */
-  readonly Type?: string;
+  readonly type?: string;
 }
 
 /**
@@ -143,21 +143,7 @@ export interface RetryStrategy {
    *
    * @default - No attempts
    */
-  readonly Attempts?: number;
-}
-
-/**
- * An object representing a job timeout configuration.
- */
-export interface JobTimeout {
-  /**
-   * The time duration in seconds
-   * (measured from the job attempt's startedAt timestamp)
-   * after which AWS Batch terminates your jobs if they have not finished.
-   *
-   * @default - No timeout seconds
-   */
-  readonly AttemptDurationSeconds?: number;
+  readonly attempts?: number;
 }
 
 /**
@@ -244,7 +230,7 @@ export interface InvokeBatchJobProps {
    *
    * @default - No timeout
    */
-  readonly timeout?: JobTimeout;
+  readonly timeout?: Duration;
 
   /**
    * The service integration pattern indicates different ways to call TerminateCluster.
@@ -311,12 +297,47 @@ export class InvokeBatchJob implements sfn.IStepFunctionsTask {
         JobDefinition: this.props.jobDefinition,
         JobName: this.props.jobName,
         JobQueue: this.props.jobQueue,
-        ArrayProperties: this.props.arrayProperties,
-        ContainerOverrides: this.props.containerOverrides,
-        DependsOn: this.props.dependsOn,
         Parameters: this.props.payload,
-        RetryStrategy: this.props.retryStrategy,
-        Timeout: this.props.timeout
+
+        ...(this.props.arrayProperties && {
+          ArrayProperties: {
+            Size: this.props.arrayProperties.size
+          }
+        }),
+
+        ...(this.props.containerOverrides && {
+          ContainerOverrides: {
+            Command: this.props.containerOverrides.command,
+            Environment: this.props.containerOverrides.environment?.map(
+              env => ({ Name: env.name, Value: env.value })
+            ),
+            InstanceType: this.props.containerOverrides.instanceType,
+            Memory: this.props.containerOverrides.memory,
+            ResourceRequirements: this.props.containerOverrides.resourceRequirements?.map(
+              resReq => ({ Type: resReq.type, Value: resReq.value })
+            ),
+            Vcpus: this.props.containerOverrides.vcpus
+          }
+        }),
+
+        ...(this.props.dependsOn && {
+          DependsOn: this.props.dependsOn.map(jobDependency => ({
+            JobId: jobDependency.jobId,
+            Type: jobDependency.type
+          }))
+        }),
+
+        ...(this.props.retryStrategy && {
+          RetryStrategy: {
+            Attempts: this.props.retryStrategy.attempts
+          }
+        }),
+
+        ...(this.props.timeout && {
+          Timeout: {
+            AttemptDurationSeconds: this.props.timeout.toSeconds()
+          }
+        })
       }
     };
   }

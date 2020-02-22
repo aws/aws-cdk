@@ -51,22 +51,22 @@ test('Task with all the parameters', () => {
       jobName: 'JobName',
       jobQueue: `JobQueue`,
       arrayProperties: {
-        Size: 15
+        size: 15
       },
       containerOverrides: {
-        Command: ['sudo', 'rm'],
-        Environment: [{ Name: 'key', Value: 'value' }],
-        InstanceType: 'MULTI',
-        Memory: 1024,
-        ResourceRequirements: [{ Type: 'GPU', Value: '1' }],
-        Vcpus: 10
+        command: ['sudo', 'rm'],
+        environment: [{ name: 'key', value: 'value' }],
+        instanceType: 'MULTI',
+        memory: 1024,
+        resourceRequirements: [{ type: 'GPU', value: '1' }],
+        vcpus: 10
       },
-      dependsOn: [{ JobId: '1234', Type: 'some_type' }],
+      dependsOn: [{ jobId: '1234', type: 'some_type' }],
       payload: {
         foo: sfn.Data.stringAt('$.bar')
       },
-      retryStrategy: { Attempts: 3 },
-      timeout: { AttemptDurationSeconds: 30 },
+      retryStrategy: { attempts: 3 },
+      timeout: cdk.Duration.seconds(30),
       integrationPattern: sfn.ServiceIntegrationPattern.FIRE_AND_FORGET
     })
   });
