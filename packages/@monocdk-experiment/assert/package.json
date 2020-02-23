@@ -45,7 +45,8 @@
     "jest": "^24.9.0",
     "pkglint": "1.25.0",
     "ts-jest": "^25.2.0",
-    "@monocdk-experiment/rewrite-imports": "1.25.0"
+    "@monocdk-experiment/rewrite-imports": "1.25.0",
+    "monocdk-experiment": "1.25.0"
   },
   "dependencies": {
     "@aws-cdk/cloudformation-diff": "1.25.0"
