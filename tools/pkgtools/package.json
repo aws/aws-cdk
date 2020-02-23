@@ -1,7 +1,7 @@
 {
   "name": "pkgtools",
   "private": true,
-  "version": "1.25.0",
+  "version": "999.999.999",
   "description": "Tools for generating cross-package artifacts",
   "main": "index.js",
   "repository": {
@@ -31,8 +31,8 @@
   "devDependencies": {
     "@types/fs-extra": "^8.1.0",
     "@types/yargs": "^15.0.3",
-    "cdk-build-tools": "1.25.0",
-    "pkglint": "1.25.0"
+    "cdk-build-tools": "999.999.999",
+    "pkglint": "999.999.999"
   },
   "dependencies": {
     "fs-extra": "^8.1.0",

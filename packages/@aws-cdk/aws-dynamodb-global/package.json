@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-dynamodb-global",
-  "version": "1.25.0",
+  "version": "999.999.999",
   "description": "Build a global dynamodb table",
   "deprecated": "This module has been deprecated. Use @aws-cdk/aws-dynamodb.Table with replicationRegions instead",
   "license": "Apache-2.0",
@@ -46,27 +46,27 @@
     "global"
   ],
   "dependencies": {
-    "@aws-cdk/aws-cloudformation": "1.25.0",
-    "@aws-cdk/aws-dynamodb": "1.25.0",
-    "@aws-cdk/aws-iam": "1.25.0",
-    "@aws-cdk/aws-lambda": "1.25.0",
-    "@aws-cdk/core": "1.25.0"
+    "@aws-cdk/aws-cloudformation": "999.999.999",
+    "@aws-cdk/aws-dynamodb": "999.999.999",
+    "@aws-cdk/aws-iam": "999.999.999",
+    "@aws-cdk/aws-lambda": "999.999.999",
+    "@aws-cdk/core": "999.999.999"
   },
   "devDependencies": {
-    "@aws-cdk/assert": "1.25.0",
+    "@aws-cdk/assert": "^999.999.999",
     "@types/nodeunit": "^0.0.30",
-    "cdk-build-tools": "1.25.0",
-    "cdk-integ-tools": "1.25.0",
-    "cfn2ts": "1.25.0",
+    "cdk-build-tools": "999.999.999",
+    "cdk-integ-tools": "999.999.999",
+    "cfn2ts": "^999.999.999",
     "nodeunit": "^0.11.3",
-    "pkglint": "1.25.0"
+    "pkglint": "999.999.999"
   },
   "peerDependencies": {
-    "@aws-cdk/aws-cloudformation": "1.25.0",
-    "@aws-cdk/aws-dynamodb": "1.25.0",
-    "@aws-cdk/aws-iam": "1.25.0",
-    "@aws-cdk/aws-lambda": "1.25.0",
-    "@aws-cdk/core": "1.25.0"
+    "@aws-cdk/aws-cloudformation": "999.999.999",
+    "@aws-cdk/aws-dynamodb": "999.999.999",
+    "@aws-cdk/aws-iam": "999.999.999",
+    "@aws-cdk/aws-lambda": "999.999.999",
+    "@aws-cdk/core": "999.999.999"
   },
   "scripts": {
     "build": "cdk-build",

@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-lambda-destinations",
-  "version": "1.25.0",
+  "version": "999.999.999",
   "description": "CDK Destinations Constructs for AWS Lambda",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -76,29 +76,29 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "1.25.0",
-    "cdk-build-tools": "1.25.0",
-    "cdk-integ-tools": "1.25.0",
-    "cfn2ts": "1.25.0",
+    "@aws-cdk/assert": "^999.999.999",
+    "cdk-build-tools": "999.999.999",
+    "cdk-integ-tools": "999.999.999",
+    "cfn2ts": "^999.999.999",
     "jest": "^24.9.0",
-    "pkglint": "1.25.0"
+    "pkglint": "999.999.999"
   },
   "dependencies": {
-    "@aws-cdk/aws-events": "1.25.0",
-    "@aws-cdk/aws-events-targets": "1.25.0",
-    "@aws-cdk/aws-lambda": "1.25.0",
-    "@aws-cdk/aws-sns": "1.25.0",
-    "@aws-cdk/aws-sqs": "1.25.0",
-    "@aws-cdk/core": "1.25.0"
+    "@aws-cdk/aws-events": "999.999.999",
+    "@aws-cdk/aws-events-targets": "999.999.999",
+    "@aws-cdk/aws-lambda": "999.999.999",
+    "@aws-cdk/aws-sns": "999.999.999",
+    "@aws-cdk/aws-sqs": "999.999.999",
+    "@aws-cdk/core": "999.999.999"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-events": "1.25.0",
-    "@aws-cdk/aws-events-targets": "1.25.0",
-    "@aws-cdk/aws-lambda": "1.25.0",
-    "@aws-cdk/aws-sns": "1.25.0",
-    "@aws-cdk/aws-sqs": "1.25.0",
-    "@aws-cdk/core": "1.25.0"
+    "@aws-cdk/aws-events": "999.999.999",
+    "@aws-cdk/aws-events-targets": "999.999.999",
+    "@aws-cdk/aws-lambda": "999.999.999",
+    "@aws-cdk/aws-sns": "999.999.999",
+    "@aws-cdk/aws-sqs": "999.999.999",
+    "@aws-cdk/core": "999.999.999"
   },
   "engines": {
     "node": ">= 10.3.0"

@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/cdk-assets-schema",
-  "version": "1.25.0",
+  "version": "999.999.999",
   "description": "Schema definition for the Asset Manifest",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -67,9 +67,9 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/jest": "^25.1.2",
-    "cdk-build-tools": "1.25.0",
+    "cdk-build-tools": "999.999.999",
     "jest": "^24.9.0",
-    "pkglint": "1.25.0"
+    "pkglint": "999.999.999"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
