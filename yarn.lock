@@ -2394,6 +2394,11 @@ anymatch@^3.0.3:
     normalize-path "^3.0.0"
     picomatch "^2.0.4"
 
+app-root-path@^2.2.1:
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/app-root-path/-/app-root-path-2.2.1.tgz#d0df4a682ee408273583d43f6f79e9892624bc9a"
+  integrity sha512-91IFKeKk7FjfmezPKkwtaRvSpnUc4gDwPAjA1YZ9Gn0q0PPeW+vbeUsZuyDwjI7+QTHhcLen2v25fi/AmhvbJA==
+
 app-root-path@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/app-root-path/-/app-root-path-3.0.0.tgz#210b6f43873227e18a4b810a032283311555d5ad"
@@ -7355,6 +7360,19 @@ lambda-leak@^2.0.0:
   resolved "https://registry.yarnpkg.com/lambda-leak/-/lambda-leak-2.0.0.tgz#771985d3628487f6e885afae2b54510dcfb2cd7e"
   integrity sha1-dxmF02KEh/boha+uK1RRDc+yzX4=
 
+lambda-tester@^3.6.0:
+  version "3.6.0"
+  resolved "https://registry.yarnpkg.com/lambda-tester/-/lambda-tester-3.6.0.tgz#ceb7d4f4f0da768487a05cff37dcd088508b5247"
+  integrity sha512-F2ZTGWCLyIR95o/jWK46V/WnOCFAEUG/m/V7/CLhPJ7PCM+pror1rZ6ujP3TkItSGxUfpJi0kqwidw+M/nEqWw==
+  dependencies:
+    app-root-path "^2.2.1"
+    dotenv "^8.0.0"
+    dotenv-json "^1.0.0"
+    lambda-leak "^2.0.0"
+    semver "^6.1.1"
+    uuid "^3.3.2"
+    vandium-utils "^1.1.1"
+
 lambda-tester@^4.0.1:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/lambda-tester/-/lambda-tester-4.0.1.tgz#91f0fc1266cdceae09a5ddbbdbc209c214beb98c"
@@ -11946,7 +11964,7 @@ validate-npm-package-name@^3.0.0:
   dependencies:
     builtins "^1.0.3"
 
-vandium-utils@^1.2.0:
+vandium-utils@^1.1.1, vandium-utils@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/vandium-utils/-/vandium-utils-1.2.0.tgz#44735de4b7641a05de59ebe945f174e582db4f59"
   integrity sha1-RHNd5LdkGgXeWevpRfF05YLbT1k=
