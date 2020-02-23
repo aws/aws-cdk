@@ -37,7 +37,7 @@ export interface LambdaRestApiProps extends RestApiProps {
 /**
  * Defines an API Gateway REST API with AWS Lambda proxy integration.
  *
- * Use the `proxyPath` property to define a greedy proxy ("{proxy+}") and "ANY"
+ * Use the `proxy` property to define a greedy proxy ("{proxy+}") and "ANY"
  * method from the specified path. If not defined, you will need to explicity
  * add resources and methods to the API.
  */
