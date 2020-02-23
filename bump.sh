@@ -17,18 +17,13 @@ version=${1:-minor}
 
 echo "Starting ${version} version bump"
 
-export NODE_OPTIONS="--max-old-space-size=4096 ${NODE_OPTIONS:-}"
-
-/bin/bash ./install.sh
-
-npx lerna version ${version} --yes --exact --force-publish=* --no-git-tag-version --no-push
-
-# Another round of install to fix package-lock.jsons
-/bin/bash ./install.sh
-
-# align "peerDependencies" to actual dependencies after bump
-# this is technically only required for major version bumps, but in the meantime we shall do it in every bump
-/bin/bash scripts/fix-peer-deps.sh
+# /bin/bash ./install.sh
 
 # Generate CHANGELOG and create a commit
-npx standard-version --release --skip.tag=true --commit-all
+# --skip.tag because we create the tag as part of creating the github release
+npx standard-version \
+  --bumpFiles package.json \
+  --release-as ${version} \
+  --skip.tag=true \
+  --commit-all
+
