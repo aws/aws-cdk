@@ -80,7 +80,7 @@
     "cdk-build-tools": "1.25.0",
     "cdk-integ-tools": "1.25.0",
     "cfn2ts": "1.25.0",
-    "jest": "^24.9.0",
+    "jest": "^25.1.0",
     "pkglint": "1.25.0"
   },
   "dependencies": {
