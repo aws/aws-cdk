@@ -26,7 +26,9 @@ export async function compileCurrentPackage(timers: Timers, options: CDKBuildOpt
     `--resolve-plugins-relative-to=${__dirname}`,
     ...options.eslint?.["ignore-pattern"]?.map(pattern => `--ignore-pattern=${pattern}`) || []
   ], { timers });
-  await shell([compilers.tslint || require.resolve('tslint/bin/tslint'), '--project', '.'], { timers });
+
+  const tslintConfig = path.join(__dirname, '..', 'config', 'tslint.json');
+  await shell([compilers.tslint || require.resolve('tslint/bin/tslint'), '--project', '.', '--config', tslintConfig], { timers });
   await shell(['pkglint'], { timers });
   await shell([ path.join(__dirname, '..', 'bin', 'cdk-awslint') ], { timers });
 }
