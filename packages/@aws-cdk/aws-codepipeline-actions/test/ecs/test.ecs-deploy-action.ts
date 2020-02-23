@@ -80,6 +80,21 @@ export = {
 
       test.done();
     },
+
+    'can be created just by serviceArn'(test: Test) {
+      const service = anyIService();
+      const artifact = new codepipeline.Artifact('Artifact');
+
+      test.doesNotThrow(() => {
+        new cpactions.EcsDeployAction({
+          actionName: 'ECS',
+          service,
+          imageFile: artifact.atPath('imageFile.json'),
+        });
+      });
+
+      test.done();
+    },
   },
 };
 
@@ -97,4 +112,9 @@ function anyEcsService(): ecs.FargateService {
     cluster,
     taskDefinition,
   });
+}
+
+function anyIService(): ecs.IService {
+  const stack = new cdk.Stack();
+  return ecs.FargateService.fromFargateServiceArn(stack, 'FargateService', 'serviceArn');
 }
