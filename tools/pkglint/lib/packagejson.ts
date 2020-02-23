@@ -198,7 +198,7 @@ export class PackageJson {
    * @param predicate the predicate to select dependencies to be extracted
    * @returns the list of dependencies matching a pattern.
    */
-  public getDependencies(predicate: (s: string) => boolean): Array<{ name: string, version: string }> {
+  public getDependencies(predicate: (s: string) => boolean): { name: string, version: string }[] {
     return Object.keys(this.json.dependencies || {}).filter(predicate).map(name => ({ name, version: this.json.dependencies[name] }));
   }
 
