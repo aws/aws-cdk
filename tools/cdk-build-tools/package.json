@@ -37,7 +37,7 @@
     "pkglint": "999.0.0"
   },
   "dependencies": {
-    "@typescript-eslint/eslint-plugin": "^2.20.0",
+    "@typescript-eslint/eslint-plugin": "^2.21.0",
     "@typescript-eslint/parser": "^2.19.2",
     "awslint": "999.0.0",
     "colors": "^1.4.0",
