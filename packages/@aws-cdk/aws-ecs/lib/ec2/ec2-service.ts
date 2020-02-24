@@ -98,12 +98,16 @@ export interface Ec2ServiceAttributes {
   readonly cluster: ICluster;
   /**
    * The service ARN.
+   *
+   * @default - generated from serviceName
    */
-  readonly serviceArn: string?;
+  readonly serviceArn?: string;
   /**
    * The name of the service.
+   *
+   * @default - generated from serviceArn
    */
-  readonly serviceName: string?;
+  readonly serviceName?: string;
 }
 
 /**
@@ -132,9 +136,10 @@ export class Ec2Service extends BaseService implements IEc2Service {
       throw new Error('You can only specify either serviceArn or serviceName.');
     }
     const stack = Stack.of(scope);
-    let name, arn: string;
+    let name: string;
+    let arn: string;
     if (attrs.serviceName) {
-      name = attrs.serviceName;
+      name = attrs.serviceName as string;
       arn = stack.formatArn({
         partition: stack.partition,
         service: 'ecs',
@@ -144,7 +149,7 @@ export class Ec2Service extends BaseService implements IEc2Service {
         resourceName: name,
       });
     } else {
-      arn = attrs.serviceArn;
+      arn = attrs.serviceArn as string;
       name = stack.parseArn(arn).resourceName as string;
     }
     class Import extends Resource implements IBaseService {
