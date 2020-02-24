@@ -1,6 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
-import { BaseService, BaseServiceOptions, ServiceAttributes, IService, LaunchType, PropagatedTagSource } from '../base/base-service';
+import { BaseService, BaseServiceOptions, IService, LaunchType, PropagatedTagSource, ServiceAttributes } from '../base/base-service';
 import { TaskDefinition } from '../base/task-definition';
 
 /**

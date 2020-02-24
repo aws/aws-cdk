@@ -365,7 +365,7 @@ export abstract class BaseService extends Resource
     this.serviceName = this.getResourceNameAttribute(this.resource.attrName);
 
     this.cluster = props.cluster;
-    this.clusterName = props.cluster.clusterName
+    this.clusterName = props.cluster.clusterName;
 
     if (props.cloudMapOptions) {
       this.enableCloudMap(props.cloudMapOptions);
