@@ -18,13 +18,6 @@ export interface RunGlueJobTaskProps {
   readonly integrationPattern?: sfn.ServiceIntegrationPattern;
 
   /**
-   * The ID of a previous JobRun to retry.
-   *
-   * @default - Creates new run
-   */
-  readonly jobRunId?: string;
-
-  /**
    * The job arguments specifically for this run. For this job run, they replace the
    * default arguments set in the job definition itself.
    *
@@ -37,14 +30,14 @@ export interface RunGlueJobTaskProps {
    * resources before it is terminated and enters TIMEOUT status. Must be at least 1
    * minute.
    *
-   * @default Duration.hours(48)
+   * @default - Default timeout set in the job definition
    */
   readonly timeout?: Duration;
 
   /**
    * The name of the SecurityConfiguration structure to be used with this job run.
    *
-   * @default - No configuration
+   * @default - Default configuration set in the job definition
    */
   readonly securityConfiguration?: string;
 
@@ -52,7 +45,7 @@ export interface RunGlueJobTaskProps {
    * After a job run starts, the number of minutes to wait before sending a job run delay
    * notification. Must be at least 1 minute.
    *
-   * @default - No delay
+   * @default - Default delay set in the job definition
    */
   readonly notifyDelayAfter?: Duration;
 }
@@ -99,7 +92,6 @@ export class RunGlueJobTask implements sfn.IStepFunctionsTask {
       metricDimensions: { GlueJobName: this.glueJobName },
       parameters: {
         JobName: this.glueJobName,
-        JobRunId: this.props.jobRunId,
         Arguments: this.props.arguments,
         Timeout: this.props.timeout?.toMinutes(),
         SecurityConfiguration: this.props.securityConfiguration,

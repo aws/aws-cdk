@@ -39,7 +39,6 @@ test('Invoke glue job with just job ARN', () => {
 });
 
 test('Invoke glue job with full properties', () => {
-  const jobRunId = "jobRunId";
   const jobArguments = {
     key: "value"
   };
@@ -51,7 +50,6 @@ test('Invoke glue job with full properties', () => {
   const task = new sfn.Task(stack, 'Task', {
     task: new tasks.RunGlueJobTask(jobName, {
       integrationPattern: sfn.ServiceIntegrationPattern.SYNC,
-      jobRunId,
       arguments: jobArguments,
       timeout,
       securityConfiguration,
@@ -79,7 +77,6 @@ test('Invoke glue job with full properties', () => {
     End: true,
     Parameters: {
       JobName: jobName,
-      JobRunId: jobRunId,
       Arguments: jobArguments,
       Timeout: timeoutMinutes,
       SecurityConfiguration: securityConfiguration,
