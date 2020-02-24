@@ -2,7 +2,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import { Construct, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { BaseService, BaseServiceOptions, IBaseService, IService, LaunchType, PropagatedTagSource } from '../base/base-service';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
-import { Cluster } from '../cluster';
+import { ICluster } from '../cluster';
 import { CfnService } from '../ecs.generated';
 import { PlacementConstraint, PlacementStrategy } from '../placement';
 
@@ -93,13 +93,17 @@ export interface IEc2Service extends IService {
  */
 export interface Ec2ServiceAttributes {
   /**
-   * The name of the cluster that hosts the service.
+   * The cluster that hosts the service.
    */
-  readonly clusterName: string;
+  readonly cluster: ICluster;
   /**
    * The service ARN.
    */
-  readonly serviceArn: string;
+  readonly serviceArn: string?;
+  /**
+   * The name of the service.
+   */
+  readonly serviceName: string?;
 }
 
 /**
@@ -124,15 +128,29 @@ export class Ec2Service extends BaseService implements IEc2Service {
    * Imports from the specified service attrributes.
    */
   public static fromEc2ServiceAttributes(scope: Construct, id: string, attrs: Ec2ServiceAttributes): IBaseService {
+    if ((attrs.serviceArn && attrs.serviceName) || (!attrs.serviceArn && !attrs.serviceName)) {
+      throw new Error('You can only specify either serviceArn or serviceName.');
+    }
     const stack = Stack.of(scope);
-    const serviceName = stack.parseArn(attrs.serviceArn).resourceName as string;
-
-    class Import extends Resource implements IBaseService {
-      public readonly serviceArn = attrs.serviceArn;
-      public readonly serviceName = serviceName;
-      public readonly cluster = new Cluster(stack, serviceName, {
-        clusterName: attrs.clusterName,
+    let name, arn: string;
+    if (attrs.serviceName) {
+      name = attrs.serviceName;
+      arn = stack.formatArn({
+        partition: stack.partition,
+        service: 'ecs',
+        region: stack.region,
+        account: stack.account,
+        resource: 'service',
+        resourceName: name,
       });
+    } else {
+      arn = attrs.serviceArn;
+      name = stack.parseArn(arn).resourceName as string;
+    }
+    class Import extends Resource implements IBaseService {
+      public readonly serviceArn = arn;
+      public readonly serviceName = name;
+      public readonly cluster = attrs.cluster;
     }
     return new Import(scope, id);
   }

@@ -4,6 +4,7 @@ import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as cpactions from '../../lib';
+import { Cluster } from '@aws-cdk/aws-ecs';
 
 export = {
   'ECS deploy Action': {
@@ -82,7 +83,7 @@ export = {
     },
 
     'can be created just by serviceArn'(test: Test) {
-      const service = anyIService();
+      const service = anyIBaseService();
       const artifact = new codepipeline.Artifact('Artifact');
 
       test.doesNotThrow(() => {
@@ -114,10 +115,12 @@ function anyEcsService(): ecs.FargateService {
   });
 }
 
-function anyIService(): ecs.IBaseService {
+function anyIBaseService(): ecs.IBaseService {
   const stack = new cdk.Stack();
   return ecs.FargateService.fromFargateServiceAttributes(stack, 'FargateService', {
     serviceArn: 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service',
-    clusterName: 'clusterName',
+    cluster: new Cluster(stack, 'Cluster', {
+      clusterName: 'cluster',
+    }),
   });
 }

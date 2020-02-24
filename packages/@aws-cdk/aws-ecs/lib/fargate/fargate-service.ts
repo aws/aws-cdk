@@ -2,7 +2,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import { BaseService, BaseServiceOptions, IBaseService, IService, LaunchType, PropagatedTagSource } from '../base/base-service';
 import { TaskDefinition } from '../base/task-definition';
-import { Cluster } from '../cluster';
+import { ICluster } from '../cluster';
 
 /**
  * The properties for defining a service using the Fargate launch type.
@@ -71,13 +71,17 @@ export interface IFargateService extends IService {
  */
 export interface FargateServiceAttributes {
   /**
-   * The name of the cluster that hosts the service.
+   * The cluster that hosts the service.
    */
-  readonly clusterName: string;
+  readonly cluster: ICluster;
   /**
    * The service ARN.
    */
-  readonly serviceArn: string;
+  readonly serviceArn: string?;
+  /**
+   * The name of the service.
+   */
+  readonly serviceName: string?;
 }
 
 /**
@@ -102,15 +106,29 @@ export class FargateService extends BaseService implements IFargateService {
    * Imports from the specified service attrributes.
    */
   public static fromFargateServiceAttributes(scope: cdk.Construct, id: string, attrs: FargateServiceAttributes): IBaseService {
+    if ((attrs.serviceArn && attrs.serviceName) || (!attrs.serviceArn && !attrs.serviceName)) {
+      throw new Error('You can only specify either serviceArn or serviceName.');
+    }
     const stack = cdk.Stack.of(scope);
-    const serviceName = stack.parseArn(attrs.serviceArn).resourceName as string;
-
-    class Import extends cdk.Resource implements IBaseService {
-      public readonly serviceArn = attrs.serviceArn;
-      public readonly serviceName = serviceName;
-      public readonly cluster = new Cluster(stack, serviceName, {
-        clusterName: attrs.clusterName,
+    let name, arn: string;
+    if (attrs.serviceName) {
+      name = attrs.serviceName;
+      arn = stack.formatArn({
+        partition: stack.partition,
+        service: 'ecs',
+        region: stack.region,
+        account: stack.account,
+        resource: 'service',
+        resourceName: name,
       });
+    } else {
+      arn = attrs.serviceArn;
+      name = stack.parseArn(arn).resourceName as string;
+    }
+    class Import extends cdk.Resource implements IBaseService {
+      public readonly serviceArn = arn;
+      public readonly serviceName = name;
+      public readonly cluster = attrs.cluster;
     }
     return new Import(scope, id);
   }
