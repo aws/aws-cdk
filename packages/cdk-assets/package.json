@@ -36,7 +36,7 @@
     "@types/yargs": "^15.0.0",
     "cdk-build-tools": "999.0.0",
     "jest": "^24.9.0",
-    "mock-fs": "^4.10.4",
+    "mock-fs": "^4.11.0",
     "pkglint": "999.0.0"
   },
   "dependencies": {
