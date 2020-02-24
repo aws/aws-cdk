@@ -1,9 +1,11 @@
 // tslint:disable:no-console
 
 export const handler = async (event: any, _context: any = {}): Promise<any> => {
-  const authToken: string = event.authorizationToken;
-  console.log(`event.authorizationToken = ${authToken}`);
-  if (authToken === 'allow' || authToken === 'deny') {
+  const authToken: string = event.headers.Authorization;
+  const authQueryString: string = event.queryStringParameters.allow;
+  console.log(`event.headers.Authorization = ${authToken}`);
+  console.log(`event.queryStringParameters.allow = ${authQueryString}`);
+  if ((authToken === 'allow' || authToken === 'deny') && authQueryString === 'yes') {
     return {
       principalId: 'user',
       policyDocument: {
