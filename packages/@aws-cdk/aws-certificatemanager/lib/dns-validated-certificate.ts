@@ -25,6 +25,20 @@ export interface DnsValidatedCertificateProps extends CertificateProps {
     readonly region?: string;
 
     /**
+     * An endpoint of Route53 service, which is not necessary as AWS SDK could figure
+     * out the right endpoints for most regions, but for some regions such as those in
+     * aws-cn partition, the default endpoint is not working now, hence the right endpoint
+     * need to be specified through this prop.
+     *
+     * Route53 is not been offically launched in China, it is only available for AWS
+     * internal accounts now. To make DnsValidatedCertificate work for internal accounts
+     * now, a special endpoint needs to be provided.
+     *
+     * @default null
+     */
+    readonly route53Endpoint?: string;
+
+    /**
      * Role to use for the custom resource that creates the validated certificate
      *
      * @default - A new role will be created
@@ -85,6 +99,7 @@ export class DnsValidatedCertificate extends cdk.Resource implements ICertificat
                 SubjectAlternativeNames: cdk.Lazy.listValue({ produce: () => props.subjectAlternativeNames }, { omitEmpty: true }),
                 HostedZoneId: this.hostedZoneId,
                 Region: props.region,
+                Route53Endpoint: props.route53Endpoint,
             }
         });
 
