@@ -10,6 +10,7 @@
     "build": "./build.sh",
     "pack": "./pack.sh",
     "compat": "./scripts/check-api-compatibility.sh",
+    "bump": "./bump.sh",
     "build-all": "tsc -b"
   },
   "devDependencies": {
@@ -25,9 +26,6 @@
   "repository": {
     "type": "git",
     "url": "git://github.com/aws/aws-cdk"
-  },
-  "standard-version": {
-    "releaseCommitMessageFormat": "v{{currentTag}}"
   },
   "license": "Apache-2.0",
   "author": {
