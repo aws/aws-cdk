@@ -4,7 +4,6 @@ import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as cpactions from '../../lib';
-import { Cluster } from '@aws-cdk/aws-ecs';
 
 export = {
   'ECS deploy Action': {
@@ -119,7 +118,7 @@ function anyIBaseService(): ecs.IBaseService {
   const stack = new cdk.Stack();
   return ecs.FargateService.fromFargateServiceAttributes(stack, 'FargateService', {
     serviceArn: 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service',
-    cluster: new Cluster(stack, 'Cluster', {
+    cluster: new ecs.Cluster(stack, 'Cluster', {
       clusterName: 'cluster',
     }),
   });
