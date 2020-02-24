@@ -436,7 +436,7 @@ Now to test, you can either use `lr test` or invoke nodeunit directory (faster, 
 
 ```console
 $ cd packages/@aws-cdk/aws-iam
-$ nodeunit test/test.*.js
+$ nodeunit test/**/test.*.js
 <BOOM>
 ```
 
