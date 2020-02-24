@@ -31,12 +31,19 @@ const myTopic = new sns.Topic(this, 'MyTopic');
 
 ### HTTPS
 
-Add an HTTPS Subscription to your topic:
+Add an HTTP or HTTPS Subscription to your topic:
 
 ```ts
 import subscriptions = require('@aws-cdk/aws-sns-subscriptions');
 
 myTopic.addSubscription(new subscriptions.UrlSubscription('https://foobar.com/'));
+```
+
+URL Subscriptions utilizing parameters are also supported:
+
+```ts
+const url = new CfnParameter(this, 'url-param');
+myTopic.addSubscription(new subscriptions.UrlSubscription(url.valueAsString));
 ```
 
 ### Amazon SQS
@@ -80,6 +87,13 @@ Subscribe an email address to your topic:
 import subscriptions = require('@aws-cdk/aws-sns-subscriptions');
 
 myTopic.addSubscription(new subscriptions.EmailSubscription('foo@bar.com'));
+```
+
+Email Subscriptions utilizing parameters are also supported:
+
+```ts
+const emailAddress = new CfnParameter(this, 'email-param');
+myTopic.addSubscription(new subscriptions.EmailSubscription(emailAddress.valueAsString));
 ```
 
 Note that email subscriptions require confirmation by visiting the link sent to the
