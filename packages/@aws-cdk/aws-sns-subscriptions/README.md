@@ -39,11 +39,14 @@ import subscriptions = require('@aws-cdk/aws-sns-subscriptions');
 myTopic.addSubscription(new subscriptions.UrlSubscription('https://foobar.com/'));
 ```
 
-URL Subscriptions utilizing parameters are also supported:
+The URL being subscribed can also be [tokens](https://docs.aws.amazon.com/cdk/latest/guide/tokens.html), that resolve
+to a URL during deployment. A typical use case is when the URL is passed in as a [CloudFormation
+parameter](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html). The
+following code defines a CloudFormation parameter and uses it in a URL subscription.
 
 ```ts
 const url = new CfnParameter(this, 'url-param');
-myTopic.addSubscription(new subscriptions.UrlSubscription(url.valueAsString));
+myTopic.addSubscription(new subscriptions.UrlSubscription(url.valueAsString()));
 ```
 
 ### Amazon SQS
@@ -89,11 +92,14 @@ import subscriptions = require('@aws-cdk/aws-sns-subscriptions');
 myTopic.addSubscription(new subscriptions.EmailSubscription('foo@bar.com'));
 ```
 
-Email Subscriptions utilizing parameters are also supported:
+The email being subscribed can also be [tokens](https://docs.aws.amazon.com/cdk/latest/guide/tokens.html), that resolve
+to an email address during deployment. A typical use case is when the email address is passed in as a [CloudFormation
+parameter](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html). The
+following code defines a CloudFormation parameter and uses it in an email subscription.
 
 ```ts
 const emailAddress = new CfnParameter(this, 'email-param');
-myTopic.addSubscription(new subscriptions.EmailSubscription(emailAddress.valueAsString));
+myTopic.addSubscription(new subscriptions.EmailSubscription(emailAddress.valueAsString()));
 ```
 
 Note that email subscriptions require confirmation by visiting the link sent to the
