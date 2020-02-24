@@ -19,7 +19,7 @@ npx lerna version ${version} --yes --exact --force-publish=* --no-git-tag-versio
 find . -name package.json | grep -v node_modules | xargs node ${scriptdir}/sync-peer-deps.js
 
 # validation
-if find . -name package.json | grep -v node_modules | xargs grep "999.999.999"; then
-  echo "ERROR: unexpected version marker 999.999.999 in a package.json file"
+if find . -name package.json | grep -v node_modules | xargs grep "999.0.0"; then
+  echo "ERROR: unexpected version marker 999.0.0 in a package.json file"
   exit 1
 fi
