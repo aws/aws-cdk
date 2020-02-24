@@ -83,7 +83,7 @@
     "cdk-build-tools": "999.0.0",
     "cdk-integ-tools": "999.0.0",
     "cfn2ts": "999.0.0",
-    "jest": "25.1.0",
+    "jest": "^24.9.0",
     "pkglint": "999.0.0"
   },
   "dependencies": {
