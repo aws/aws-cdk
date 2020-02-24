@@ -361,7 +361,11 @@
         "RestApiId": {
           "Ref": "lambdarestapiF559E4F2"
         }
-      }
+      },
+      "DependsOn": [
+        "lambdarestapiproxyANYC900233F",
+        "lambdarestapiANYB9BB3FB2"
+      ]
     },
     "stage0661E4AC": {
       "Type": "AWS::ApiGateway::Stage",

@@ -227,6 +227,8 @@ obtained from either DockerHub or from ECR repositories, or built directly from 
   to start. If no tag is provided, "latest" is assumed.
 * `ecs.ContainerImage.fromAsset('./image')`: build and upload an
   image directly from a `Dockerfile` in your source directory.
+* `ecs.ContainerImage.fromDockerImageAsset(asset)`: uses an existing
+  `@aws-cdk/aws-ecr-assets.DockerImageAsset` as a container image.
 
 ### Environment variables
 
