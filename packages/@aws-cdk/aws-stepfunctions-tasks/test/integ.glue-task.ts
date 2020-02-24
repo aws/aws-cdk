@@ -1,7 +1,7 @@
 import * as glue from '@aws-cdk/aws-glue';
 import * as iam from '@aws-cdk/aws-iam';
-import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as assets from '@aws-cdk/aws-s3-assets';
+import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
 import * as path from 'path';
 import * as tasks from '../lib';
@@ -52,4 +52,4 @@ new sfn.StateMachine(stack, 'State Machine', {
   definition: sfn.Chain.start(startTask).next(jobTask).next(endTask)
 });
 
-app.synth()
+app.synth();

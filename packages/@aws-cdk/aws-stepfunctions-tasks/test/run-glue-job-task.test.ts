@@ -81,7 +81,7 @@ test('Invoke glue job with full properties', () => {
       Timeout: timeoutMinutes,
       SecurityConfiguration: securityConfiguration,
       NotificationProperty: {
-	NotifyDelayAfter: notifyDelayAfterMinutes
+        NotifyDelayAfter: notifyDelayAfterMinutes
       }
     },
   });

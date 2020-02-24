@@ -75,7 +75,7 @@ export class RunGlueJobTask implements sfn.IStepFunctionsTask {
   }
 
   public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
-    const notificationProperty = this.props.notifyDelayAfter ? { NotifyDelayAfter: this.props.notifyDelayAfter.toMinutes() } : null
+    const notificationProperty = this.props.notifyDelayAfter ? { NotifyDelayAfter: this.props.notifyDelayAfter.toMinutes() } : null;
     return {
       resourceArn: getResourceArn("glue", "startJobRun", this.integrationPattern),
       policyStatements: [new iam.PolicyStatement({
