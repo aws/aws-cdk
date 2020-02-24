@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-cognito",
-  "version": "1.24.0",
+  "version": "999.0.0",
   "description": "The CDK Construct Library for AWS::Cognito",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -62,24 +62,25 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "1.24.0",
+    "@aws-cdk/assert": "999.0.0",
     "@types/nodeunit": "^0.0.30",
-    "cdk-build-tools": "1.24.0",
-    "cfn2ts": "1.24.0",
+    "cdk-build-tools": "999.0.0",
+    "cdk-integ-tools": "999.0.0",
+    "cfn2ts": "999.0.0",
     "jest": "^24.9.0",
     "nodeunit": "^0.11.3",
-    "pkglint": "1.24.0"
+    "pkglint": "999.0.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-iam": "1.24.0",
-    "@aws-cdk/aws-lambda": "1.24.0",
-    "@aws-cdk/core": "1.24.0"
+    "@aws-cdk/aws-iam": "999.0.0",
+    "@aws-cdk/aws-lambda": "999.0.0",
+    "@aws-cdk/core": "999.0.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-iam": "1.24.0",
-    "@aws-cdk/aws-lambda": "1.24.0",
-    "@aws-cdk/core": "1.24.0"
+    "@aws-cdk/aws-iam": "999.0.0",
+    "@aws-cdk/aws-lambda": "999.0.0",
+    "@aws-cdk/core": "999.0.0"
   },
   "jest": {},
   "engines": {
@@ -104,7 +105,6 @@
       "docs-public-apis:@aws-cdk/aws-cognito.UserPoolClient.userPoolClientClientSecret",
       "docs-public-apis:@aws-cdk/aws-cognito.UserPoolClient.userPoolClientId",
       "docs-public-apis:@aws-cdk/aws-cognito.UserPoolClient.userPoolClientName",
-      "docs-public-apis:@aws-cdk/aws-cognito.UserPoolProps",
       "docs-public-apis:@aws-cdk/aws-cognito.UserPoolAttributes",
       "docs-public-apis:@aws-cdk/aws-cognito.UserPoolClientProps"
     ]
