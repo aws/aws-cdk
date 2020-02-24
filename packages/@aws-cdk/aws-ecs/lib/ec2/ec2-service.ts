@@ -1,7 +1,8 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { Construct, Lazy, Resource, Stack } from '@aws-cdk/core';
-import { BaseService, BaseServiceOptions, IService, LaunchType, PropagatedTagSource } from '../base/base-service';
+import { BaseService, BaseServiceOptions, IBaseService, IService, LaunchType, PropagatedTagSource } from '../base/base-service';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
+import { Cluster } from '../cluster';
 import { CfnService } from '../ecs.generated';
 import { PlacementConstraint, PlacementStrategy } from '../placement';
 
@@ -96,9 +97,9 @@ export interface Ec2ServiceAttributes {
    */
   readonly clusterName: string;
   /**
-   * The name of the service.
+   * The service ARN.
    */
-  readonly serviceName: string;
+  readonly serviceArn: string;
 }
 
 /**
@@ -109,12 +110,29 @@ export interface Ec2ServiceAttributes {
 export class Ec2Service extends BaseService implements IEc2Service {
 
   /**
+   * Imports from the specified service ARN.
+   */
+  public static fromEc2ServiceArn(scope: Construct, id: string, ec2ServiceArn: string): IEc2Service {
+    class Import extends Resource implements IEc2Service {
+      public readonly serviceArn = ec2ServiceArn;
+      public readonly serviceName = Stack.of(scope).parseArn(ec2ServiceArn).resourceName as string;
+    }
+    return new Import(scope, id);
+  }
+
+  /**
    * Imports from the specified service attrributes.
    */
-  public static fromEc2ServiceAttributes(scope: Construct, id: string, attrs: Ec2ServiceAttributes): IEc2Service {
-    class Import extends Resource implements IEc2Service {
-      public readonly serviceName = attrs.serviceName;
-      public readonly clusterName = attrs.clusterName;
+  public static fromEc2ServiceAttributes(scope: Construct, id: string, attrs: Ec2ServiceAttributes): IBaseService {
+    const stack = Stack.of(scope);
+    const serviceName = stack.parseArn(attrs.serviceArn).resourceName as string;
+
+    class Import extends Resource implements IBaseService {
+      public readonly serviceArn = attrs.serviceArn;
+      public readonly serviceName = serviceName;
+      public readonly cluster = new Cluster(stack, serviceName, {
+        clusterName: attrs.clusterName,
+      });
     }
     return new Import(scope, id);
   }

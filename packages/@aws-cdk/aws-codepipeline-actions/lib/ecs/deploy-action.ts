@@ -39,7 +39,7 @@ export interface EcsDeployActionProps extends codepipeline.CommonAwsActionProps 
   /**
    * The ECS Service to deploy.
    */
-  readonly service: ecs.IService;
+  readonly service: ecs.IBaseService;
 }
 
 /**
@@ -94,7 +94,7 @@ export class EcsDeployAction extends Action {
 
     return {
       configuration: {
-        ClusterName: this.props.service.clusterName,
+        ClusterName: this.props.service.cluster.clusterName,
         ServiceName: this.props.service.serviceName,
         FileName: this.props.imageFile && this.props.imageFile.fileName,
       },

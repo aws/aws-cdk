@@ -114,10 +114,10 @@ function anyEcsService(): ecs.FargateService {
   });
 }
 
-function anyIService(): ecs.IService {
+function anyIService(): ecs.IBaseService {
   const stack = new cdk.Stack();
   return ecs.FargateService.fromFargateServiceAttributes(stack, 'FargateService', {
-    serviceName: 'serviceName',
+    serviceArn: 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service',
     clusterName: 'clusterName',
   });
 }

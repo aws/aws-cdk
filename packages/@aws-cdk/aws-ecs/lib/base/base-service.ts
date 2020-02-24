@@ -17,9 +17,11 @@ import { ScalableTaskCount } from './scalable-task-count';
  */
 export interface IService extends IResource {
   /**
-   * The name of the cluster that hosts the service.
+   * The Amazon Resource Name (ARN) of the service.
+   *
+   * @attribute
    */
-  readonly clusterName: string;
+  readonly serviceArn: string;
   /**
    * The name of the service.
    *
@@ -250,6 +252,16 @@ class NetworkListenerConfig extends ListenerConfig {
 }
 
 /**
+ * The interface for BaseService.
+ */
+export interface IBaseService extends IService {
+  /**
+   * The cluster that hosts the service.
+   */
+  readonly cluster: ICluster;
+}
+
+/**
  * The base class for Ec2Service and FargateService services.
  */
 export abstract class BaseService extends Resource
@@ -262,8 +274,6 @@ export abstract class BaseService extends Resource
 
   /**
    * The Amazon Resource Name (ARN) of the service.
-   *
-   * @attribute
    */
   public readonly serviceArn: string;
 
@@ -283,10 +293,6 @@ export abstract class BaseService extends Resource
    * The cluster that hosts the service.
    */
   public readonly cluster: ICluster;
-  /**
-   * The cluster name that hosts the service.
-   */
-  public readonly clusterName: string;
 
   /**
    * The details of the AWS Cloud Map service.
@@ -355,7 +361,6 @@ export abstract class BaseService extends Resource
     this.serviceName = this.getResourceNameAttribute(this.resource.attrName);
 
     this.cluster = props.cluster;
-    this.clusterName = props.cluster.clusterName;
 
     if (props.cloudMapOptions) {
       this.enableCloudMap(props.cloudMapOptions);

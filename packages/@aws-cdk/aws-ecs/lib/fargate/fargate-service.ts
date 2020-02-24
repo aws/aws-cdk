@@ -1,7 +1,8 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
-import { BaseService, BaseServiceOptions, IService, LaunchType, PropagatedTagSource } from '../base/base-service';
+import { BaseService, BaseServiceOptions, IBaseService, IService, LaunchType, PropagatedTagSource } from '../base/base-service';
 import { TaskDefinition } from '../base/task-definition';
+import { Cluster } from '../cluster';
 
 /**
  * The properties for defining a service using the Fargate launch type.
@@ -74,9 +75,9 @@ export interface FargateServiceAttributes {
    */
   readonly clusterName: string;
   /**
-   * The name of the service.
+   * The service ARN.
    */
-  readonly serviceName: string;
+  readonly serviceArn: string;
 }
 
 /**
@@ -87,12 +88,29 @@ export interface FargateServiceAttributes {
 export class FargateService extends BaseService implements IFargateService {
 
   /**
+   * Imports from the specified service ARN.
+   */
+  public static fromFargateServiceArn(scope: cdk.Construct, id: string, fargateServiceArn: string): IFargateService {
+    class Import extends cdk.Resource implements IFargateService {
+      public readonly serviceArn = fargateServiceArn;
+      public readonly serviceName = cdk.Stack.of(scope).parseArn(fargateServiceArn).resourceName as string;
+    }
+    return new Import(scope, id);
+  }
+
+  /**
    * Imports from the specified service attrributes.
    */
-  public static fromFargateServiceAttributes(scope: cdk.Construct, id: string, attrs: FargateServiceAttributes): IFargateService {
-    class Import extends cdk.Resource implements IFargateService {
-      public readonly serviceName = attrs.serviceName;
-      public readonly clusterName = attrs.clusterName;
+  public static fromFargateServiceAttributes(scope: cdk.Construct, id: string, attrs: FargateServiceAttributes): IBaseService {
+    const stack = cdk.Stack.of(scope);
+    const serviceName = stack.parseArn(attrs.serviceArn).resourceName as string;
+
+    class Import extends cdk.Resource implements IBaseService {
+      public readonly serviceArn = attrs.serviceArn;
+      public readonly serviceName = serviceName;
+      public readonly cluster = new Cluster(stack, serviceName, {
+        clusterName: attrs.clusterName,
+      });
     }
     return new Import(scope, id);
   }
