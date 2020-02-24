@@ -7,10 +7,17 @@ export async function publish(args: {
   assets?: string[];
   profile?: string;
   }) {
-  const manifest = AssetManifest.fromPath(args.path);
-  const selection = args.assets && args.assets.length > 0 ? args.assets.map(a => DestinationPattern.parse(a)) : undefined;
 
-  const pub = new AssetPublishing(manifest.select(selection), {
+  let manifest = AssetManifest.fromPath(args.path);
+  log('verbose', `Loaded manifest from ${args.path}: ${manifest.entries.length} assets found`);
+
+  if (args.assets && args.assets.length > 0) {
+    const selection =  args.assets.map(a => DestinationPattern.parse(a));
+    manifest = manifest.select(selection);
+    log('verbose', `Applied selection: ${manifest.entries.length} assets selected.`);
+  }
+
+  const pub = new AssetPublishing(manifest, {
     aws: new DefaultAwsClient(args.profile),
     progressListener: new ConsoleProgress(),
     throwOnError: false,
