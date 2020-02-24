@@ -46,8 +46,19 @@ export function makeUniqueId(components: string[]) {
   // top-level resources will simply use the `name` as-is in order to support
   // transparent migration of cloudformation templates to the CDK without the
   // need to rename all resources.
-  if (components.length === 1 && components[0].length < MAX_ID_LEN) {
-    return removeNonAlphanumeric(components[0]);
+  if (components.length === 1) {
+    // we filter out non-alpha characters but that is actually a bad idea
+    // because it could create conflicts ("A-B" and "AB" will render the same
+    // logical ID). sadly, changing it in the 1.x version line is impossible
+    // because it will be a breaking change. we should consider for v2.0.
+    // https://github.com/aws/aws-cdk/issues/6421
+    const candidate = removeNonAlphanumeric(components[0]);
+
+    // if our candidate is short enough, use it as is. otherwise, fall back to
+    // the normal mode.
+    if (candidate.length <= MAX_ID_LEN) {
+      return candidate;
+    }
   }
 
   const hash = pathHash(components);
