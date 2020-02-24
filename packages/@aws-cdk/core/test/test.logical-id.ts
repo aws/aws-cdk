@@ -35,6 +35,18 @@ export = {
     test.done();
   },
 
+  'if resource is top-level and logical id is longer than allowed, it is trimmed with a hash'(test: Test) {
+    // GIVEN
+    const stack = new Stack(undefined, 'TestStack');
+
+    // WHEN
+    const r = new CfnResource(stack, 'x'.repeat(256), { type: 'Resource' });
+
+    // THEN
+    test.equals(stack.resolve(r.logicalId), 'x'.repeat(240) + `C7A139A2`);
+    test.done();
+  },
+
   'Logical IDs can be renamed at the stack level'(test: Test) {
     // GIVEN
     const stack = new Stack();

@@ -19,6 +19,7 @@ const PATH_SEP = '/';
 
 const HASH_LEN = 8;
 const MAX_HUMAN_LEN = 240; // max ID len is 255
+const MAX_ID_LEN = 255;
 
 /**
  * Calculates a unique ID for a set of textual components.
@@ -45,7 +46,7 @@ export function makeUniqueId(components: string[]) {
   // top-level resources will simply use the `name` as-is in order to support
   // transparent migration of cloudformation templates to the CDK without the
   // need to rename all resources.
-  if (components.length === 1) {
+  if (components.length === 1 && components[0].length < MAX_ID_LEN) {
     return removeNonAlphanumeric(components[0]);
   }
 
