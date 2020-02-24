@@ -36,7 +36,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParametersbb857fcbb64420f49c6bead2b96595eacd5fb9f9d8ea0301a3617a0091c744ddS3Bucket7D65DBAC"
+            "Ref": "AssetParameters1aae6dca4c69aacfac5abba2d62571e892f6748d8d14b11a197f80159ab832f4S3BucketC6C6A669"
           },
           "S3Key": {
             "Fn::Join": [
@@ -49,7 +49,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersbb857fcbb64420f49c6bead2b96595eacd5fb9f9d8ea0301a3617a0091c744ddS3VersionKey97EAAAFF"
+                          "Ref": "AssetParameters1aae6dca4c69aacfac5abba2d62571e892f6748d8d14b11a197f80159ab832f4S3VersionKeyBB6680D1"
                         }
                       ]
                     }
@@ -62,7 +62,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersbb857fcbb64420f49c6bead2b96595eacd5fb9f9d8ea0301a3617a0091c744ddS3VersionKey97EAAAFF"
+                          "Ref": "AssetParameters1aae6dca4c69aacfac5abba2d62571e892f6748d8d14b11a197f80159ab832f4S3VersionKeyBB6680D1"
                         }
                       ]
                     }
@@ -85,83 +85,44 @@
         "MyAuthorizerFunctionServiceRole8A34C19E"
       ]
     },
-    "authorizerRole06E70703": {
-      "Type": "AWS::IAM::Role",
+    "MyAuthorizerFunctionRequestAuthorizerIntegMyAuthorizer5D9D41C5PermissionsCB8B246E": {
+      "Type": "AWS::Lambda::Permission",
       "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "apigateway.amazonaws.com"
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        }
-      }
-    },
-    "MyAuthorizer6575980E": {
-      "Type": "AWS::ApiGateway::Authorizer",
-      "Properties": {
-        "RestApiId": {
-          "Ref": "MyRestApi2D1F47A9"
-        },
-        "Type": "TOKEN",
-        "AuthorizerCredentials": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
           "Fn::GetAtt": [
-            "authorizerRole06E70703",
+            "MyAuthorizerFunction70F1223E",
             "Arn"
           ]
         },
-        "AuthorizerUri": {
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
           "Fn::Join": [
             "",
             [
-              "arn:aws:apigateway:",
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
               {
                 "Ref": "AWS::Region"
               },
-              ":lambda:path/2015-03-31/functions/",
+              ":",
               {
-                "Fn::GetAtt": [
-                  "MyAuthorizerFunction70F1223E",
-                  "Arn"
-                ]
+                "Ref": "AWS::AccountId"
               },
-              "/invocations"
+              ":",
+              {
+                "Ref": "MyRestApi2D1F47A9"
+              },
+              "/authorizers/",
+              {
+                "Ref": "MyAuthorizer6575980E"
+              }
             ]
           ]
-        },
-        "IdentitySource": "method.request.header.Authorization",
-        "Name": "TokenAuthorizerIAMRoleIntegMyAuthorizer1DFDE3B5"
-      }
-    },
-    "MyAuthorizerauthorizerInvokePolicy0F88B8E1": {
-      "Type": "AWS::IAM::Policy",
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": "lambda:InvokeFunction",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "MyAuthorizerFunction70F1223E",
-                  "Arn"
-                ]
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "PolicyName": "MyAuthorizerauthorizerInvokePolicy0F88B8E1",
-        "Roles": [
-          {
-            "Ref": "authorizerRole06E70703"
-          }
-        ]
+        }
       }
     },
     "MyRestApi2D1F47A9": {
@@ -274,20 +235,50 @@
           }
         ]
       }
+    },
+    "MyAuthorizer6575980E": {
+      "Type": "AWS::ApiGateway::Authorizer",
+      "Properties": {
+        "RestApiId": {
+          "Ref": "MyRestApi2D1F47A9"
+        },
+        "Type": "REQUEST",
+        "AuthorizerUri": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:aws:apigateway:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":lambda:path/2015-03-31/functions/",
+              {
+                "Fn::GetAtt": [
+                  "MyAuthorizerFunction70F1223E",
+                  "Arn"
+                ]
+              },
+              "/invocations"
+            ]
+          ]
+        },
+        "IdentitySource": "method.request.header.Authorization,method.request.querystring.allow",
+        "Name": "RequestAuthorizerIntegMyAuthorizer5D9D41C5"
+      }
     }
   },
   "Parameters": {
-    "AssetParametersbb857fcbb64420f49c6bead2b96595eacd5fb9f9d8ea0301a3617a0091c744ddS3Bucket7D65DBAC": {
+    "AssetParameters1aae6dca4c69aacfac5abba2d62571e892f6748d8d14b11a197f80159ab832f4S3BucketC6C6A669": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"bb857fcbb64420f49c6bead2b96595eacd5fb9f9d8ea0301a3617a0091c744dd\""
+      "Description": "S3 bucket for asset \"1aae6dca4c69aacfac5abba2d62571e892f6748d8d14b11a197f80159ab832f4\""
     },
-    "AssetParametersbb857fcbb64420f49c6bead2b96595eacd5fb9f9d8ea0301a3617a0091c744ddS3VersionKey97EAAAFF": {
+    "AssetParameters1aae6dca4c69aacfac5abba2d62571e892f6748d8d14b11a197f80159ab832f4S3VersionKeyBB6680D1": {
       "Type": "String",
-      "Description": "S3 key for asset version \"bb857fcbb64420f49c6bead2b96595eacd5fb9f9d8ea0301a3617a0091c744dd\""
+      "Description": "S3 key for asset version \"1aae6dca4c69aacfac5abba2d62571e892f6748d8d14b11a197f80159ab832f4\""
     },
-    "AssetParametersbb857fcbb64420f49c6bead2b96595eacd5fb9f9d8ea0301a3617a0091c744ddArtifactHashCA306BF0": {
+    "AssetParameters1aae6dca4c69aacfac5abba2d62571e892f6748d8d14b11a197f80159ab832f4ArtifactHashA6CE14CB": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"bb857fcbb64420f49c6bead2b96595eacd5fb9f9d8ea0301a3617a0091c744dd\""
+      "Description": "Artifact hash for asset \"1aae6dca4c69aacfac5abba2d62571e892f6748d8d14b11a197f80159ab832f4\""
     }
   },
   "Outputs": {
