@@ -40,7 +40,7 @@ export class SecretValue extends Intrinsic {
     }
 
     if (!secretId.startsWith('arn:') && secretId.includes(':')) {
-      throw new Error(`when secretId is not an ARN it cannot contain :`);
+      throw new Error(`secret id "${secretId}" is not an ARN but contains ":"`);
     }
 
     const parts = [
