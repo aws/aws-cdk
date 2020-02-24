@@ -116,5 +116,8 @@ function anyEcsService(): ecs.FargateService {
 
 function anyIService(): ecs.IService {
   const stack = new cdk.Stack();
-  return ecs.FargateService.fromFargateServiceArn(stack, 'FargateService', 'serviceArn');
+  return ecs.FargateService.fromFargateServiceAttributes(stack, 'FargateService', {
+    serviceName: 'serviceName',
+    clusterName: 'clusterName',
+  });
 }

@@ -13,15 +13,31 @@ import { CfnService } from '../ecs.generated';
 import { ScalableTaskCount } from './scalable-task-count';
 
 /**
+ * The properties to import from the ECS cluster.
+ */
+export interface ServiceAttributes {
+  /**
+   * The name of the cluster that hosts the service.
+   */
+  readonly clusterName: string;
+  /**
+   * The name of the service.
+   */
+  readonly serviceName: string;
+}
+
+/**
  * The interface for a service.
  */
 export interface IService extends IResource {
   /**
-   * The Amazon Resource Name (ARN) of the service.
-   *
-   * @attribute
+   * The name of the cluster that hosts the service.
    */
-  readonly serviceArn: string;
+  readonly clusterName: string;
+  /**
+   * The name of the service.
+   */
+  readonly serviceName: string;
 }
 
 /**
@@ -277,6 +293,10 @@ export abstract class BaseService extends Resource
    * The cluster that hosts the service.
    */
   public readonly cluster: ICluster;
+  /**
+   * The cluster name that hosts the service.
+   */
+  public readonly clusterName: string;
 
   /**
    * The details of the AWS Cloud Map service.
@@ -345,6 +365,7 @@ export abstract class BaseService extends Resource
     this.serviceName = this.getResourceNameAttribute(this.resource.attrName);
 
     this.cluster = props.cluster;
+    this.clusterName = props.cluster.clusterName
 
     if (props.cloudMapOptions) {
       this.enableCloudMap(props.cloudMapOptions);

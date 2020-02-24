@@ -1,6 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { Construct, Lazy, Resource, Stack } from '@aws-cdk/core';
-import { BaseService, BaseServiceOptions, IService, LaunchType, PropagatedTagSource } from '../base/base-service';
+import { BaseService, BaseServiceOptions, ServiceAttributes, IService, LaunchType, PropagatedTagSource } from '../base/base-service';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
 import { CfnService } from '../ecs.generated';
 import { PlacementConstraint, PlacementStrategy } from '../placement';
@@ -97,9 +97,10 @@ export class Ec2Service extends BaseService implements IEc2Service {
   /**
    * Imports from the specified service ARN.
    */
-  public static fromEc2ServiceArn(scope: Construct, id: string, ec2ServiceArn: string): IEc2Service {
+  public static fromEc2ServiceAttributes(scope: Construct, id: string, attrs: ServiceAttributes): IEc2Service {
     class Import extends Resource implements IEc2Service {
-      public readonly serviceArn = ec2ServiceArn;
+      public readonly serviceName = attrs.serviceName;
+      public readonly clusterName = attrs.clusterName;
     }
     return new Import(scope, id);
   }

@@ -1,6 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
-import { BaseService, BaseServiceOptions, IService, LaunchType, PropagatedTagSource } from '../base/base-service';
+import { BaseService, BaseServiceOptions, ServiceAttributes, IService, LaunchType, PropagatedTagSource } from '../base/base-service';
 import { TaskDefinition } from '../base/task-definition';
 
 /**
@@ -75,9 +75,10 @@ export class FargateService extends BaseService implements IFargateService {
   /**
    * Import a task definition from the specified task definition ARN.
    */
-  public static fromFargateServiceArn(scope: cdk.Construct, id: string, fargateServiceArn: string): IFargateService {
+  public static fromFargateServiceAttributes(scope: cdk.Construct, id: string, attrs: ServiceAttributes): IFargateService {
     class Import extends cdk.Resource implements IFargateService {
-      public readonly serviceArn = fargateServiceArn;
+      public readonly serviceName = attrs.serviceName;
+      public readonly clusterName = attrs.clusterName;
     }
     return new Import(scope, id);
   }

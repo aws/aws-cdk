@@ -94,7 +94,7 @@ export class EcsDeployAction extends Action {
 
     return {
       configuration: {
-        ClusterName: this.props.service.cluster.clusterName,
+        ClusterName: this.props.service.clusterName,
         ServiceName: this.props.service.serviceName,
         FileName: this.props.imageFile && this.props.imageFile.fileName,
       },
