@@ -1,6 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
-import { BaseService, BaseServiceOptions, IService, LaunchType, PropagatedTagSource, ServiceAttributes } from '../base/base-service';
+import { BaseService, BaseServiceOptions, IService, LaunchType, PropagatedTagSource } from '../base/base-service';
 import { TaskDefinition } from '../base/task-definition';
 
 /**
@@ -66,6 +66,20 @@ export interface IFargateService extends IService {
 }
 
 /**
+ * The properties to import from the service using the Fargate launch type.
+ */
+export interface FargateServiceAttributes {
+  /**
+   * The name of the cluster that hosts the service.
+   */
+  readonly clusterName: string;
+  /**
+   * The name of the service.
+   */
+  readonly serviceName: string;
+}
+
+/**
  * This creates a service using the Fargate launch type on an ECS cluster.
  *
  * @resource AWS::ECS::Service
@@ -73,9 +87,9 @@ export interface IFargateService extends IService {
 export class FargateService extends BaseService implements IFargateService {
 
   /**
-   * Import a task definition from the specified task definition ARN.
+   * Imports from the specified service attrributes.
    */
-  public static fromFargateServiceAttributes(scope: cdk.Construct, id: string, attrs: ServiceAttributes): IFargateService {
+  public static fromFargateServiceAttributes(scope: cdk.Construct, id: string, attrs: FargateServiceAttributes): IFargateService {
     class Import extends cdk.Resource implements IFargateService {
       public readonly serviceName = attrs.serviceName;
       public readonly clusterName = attrs.clusterName;

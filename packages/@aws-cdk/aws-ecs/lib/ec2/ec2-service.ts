@@ -1,6 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { Construct, Lazy, Resource, Stack } from '@aws-cdk/core';
-import { BaseService, BaseServiceOptions, IService, LaunchType, PropagatedTagSource, ServiceAttributes } from '../base/base-service';
+import { BaseService, BaseServiceOptions, IService, LaunchType, PropagatedTagSource } from '../base/base-service';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
 import { CfnService } from '../ecs.generated';
 import { PlacementConstraint, PlacementStrategy } from '../placement';
@@ -88,6 +88,20 @@ export interface IEc2Service extends IService {
 }
 
 /**
+ * The properties to import from the service using the EC2 launch type.
+ */
+export interface Ec2ServiceAttributes {
+  /**
+   * The name of the cluster that hosts the service.
+   */
+  readonly clusterName: string;
+  /**
+   * The name of the service.
+   */
+  readonly serviceName: string;
+}
+
+/**
  * This creates a service using the EC2 launch type on an ECS cluster.
  *
  * @resource AWS::ECS::Service
@@ -95,9 +109,9 @@ export interface IEc2Service extends IService {
 export class Ec2Service extends BaseService implements IEc2Service {
 
   /**
-   * Imports from the specified service ARN.
+   * Imports from the specified service attrributes.
    */
-  public static fromEc2ServiceAttributes(scope: Construct, id: string, attrs: ServiceAttributes): IEc2Service {
+  public static fromEc2ServiceAttributes(scope: Construct, id: string, attrs: Ec2ServiceAttributes): IEc2Service {
     class Import extends Resource implements IEc2Service {
       public readonly serviceName = attrs.serviceName;
       public readonly clusterName = attrs.clusterName;
