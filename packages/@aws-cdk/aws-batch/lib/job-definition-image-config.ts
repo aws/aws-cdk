@@ -1,14 +1,14 @@
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import { JobDefinitionContainer } from './job-definition-container';
+import { JobDefinitionContainer } from './job-definition';
 
 /**
  * TaskDefinitionRole
  *
  * Defines the required properties of a Batch Job Definition.
  */
-export interface TaskDefinitionProps {
+interface TaskDefinitionProps {
   /**
    * Defines the IAM role used when executing this task definition
    */
@@ -21,12 +21,13 @@ export interface TaskDefinitionProps {
  * Defines a Batch Job Task Definition. The properties of this task definition mirrors
  * those of an {@link ecs.ContainerDefinition}. This class is a wrapper on that structure.
  */
-export class TaskDefinition {
+class TaskDefinition {
   /**
    * The IAM role used during execution of the task definition. This IAM role should
    * contain the relevant access required to interact with resources your application needs to perform.
    */
   public readonly executionRole: iam.IRole;
+
   constructor(props: TaskDefinitionProps) {
     this.executionRole = props.executionRole;
   }

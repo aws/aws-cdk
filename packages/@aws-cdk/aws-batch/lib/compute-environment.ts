@@ -440,18 +440,19 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
    * @param props - the compute environment construct properties
    */
   private getSpotFleetRole(props: ComputeEnvironmentProps): iam.IRole | undefined {
-    const spotFleetArn = `arn${Aws.PARTITION}iam::${this.stack.account}:role/aws-service-role/spotfleet.amazonaws.com/AWSServiceRoleForEC2SpotFleet`;
-    let role = props.computeResources ? props.computeResources.spotFleetRole : undefined;
-
     if (props.allocationStrategy && props.allocationStrategy !== AllocationStrategy.BEST_FIT) {
-      return;
+      return undefined;
     }
 
-    if (props.computeResources && props.computeResources.type && role === undefined &&
-        props.computeResources.type === ComputeResourceType.SPOT) {
-      role = iam.Role.fromRoleArn(this, 'Resource-SpotFleet-Role', spotFleetArn);
+    if (props.computeResources) {
+      if (props.computeResources.spotFleetRole) {
+        return props.computeResources.spotFleetRole;
+      } else if (props.computeResources.type === ComputeResourceType.SPOT) {
+        return iam.Role.fromRoleArn(this, 'Resource-SpotFleet-Role',
+          `arn${Aws.PARTITION}iam::${this.stack.account}:role/aws-service-role/spotfleet.amazonaws.com/AWSServiceRoleForEC2SpotFleet`);
+      }
     }
 
-    return role;
+    return undefined;
   }
 }
