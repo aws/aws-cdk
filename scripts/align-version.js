@@ -5,12 +5,7 @@
 const fs = require('fs');
 
 const marker = '999.0.0';
-const versionFile = require('../.versionrc.json').packageFiles[0].filename;
-if (!versionFile) {
-  throw new Error(`unable to determine version filename from .versionrc.json at the root of the repo`);
-}
-
-const repoVersion = require(`../${versionFile}`).version;
+const repoVersion = require('./get-version');
 
 for (const file of process.argv.splice(2)) {
   const pkg = JSON.parse(fs.readFileSync(file).toString());
