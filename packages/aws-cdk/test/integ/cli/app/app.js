@@ -124,17 +124,10 @@ class FailedStack extends cdk.Stack {
   constructor(parent, id, props) {
     super(parent, id, props);
 
-    var bucketName = `cli-integ-failed-stack-bucket-${new Date().getTime()}`
-
-    new s3.Bucket(this, 'MyBucket1', {
-      bucketName: bucketName,
-      removalPolicy: core.RemovalPolicy.DESTROY
-    });
-
-    new s3.Bucket(this, 'MyBucket2', {
-      bucketName: bucketName,
-      removalPolicy: core.RemovalPolicy.DESTROY
-    });
+    // fails on 'Property PolicyDocument cannot be empty'.
+    new core.CfnResource(this, 'EmptyPolicy', {
+      type: 'AWS::IAM::Policy'
+    })
 
   }
 
