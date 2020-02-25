@@ -72,7 +72,7 @@
     "@aws-cdk/aws-ssm": "999.0.0",
     "@types/aws-lambda": "^8.10.39",
     "@types/fs-extra": "^8.1.0",
-    "@types/sinon": "^7.5.0",
+    "@types/sinon": "^7.5.2",
     "aws-sdk": "^2.625.0",
     "aws-sdk-mock": "^5.0.0",
     "cdk-build-tools": "999.0.0",

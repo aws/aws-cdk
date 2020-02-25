@@ -70,7 +70,7 @@
     "@types/aws-lambda": "^8.10.39",
     "@types/lodash": "^4.14.149",
     "@types/nodeunit": "^0.0.30",
-    "@types/sinon": "^7.5.0",
+    "@types/sinon": "^7.5.2",
     "aws-sdk": "^2.625.0",
     "aws-sdk-mock": "^5.0.0",
     "cdk-build-tools": "999.0.0",

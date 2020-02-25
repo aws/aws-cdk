@@ -52,7 +52,7 @@
     "@types/promptly": "^3.0.0",
     "@types/request": "^2.48.4",
     "@types/semver": "^7.1.0",
-    "@types/sinon": "^7.5.0",
+    "@types/sinon": "^7.5.2",
     "@types/table": "^4.0.7",
     "@types/uuid": "^7.0.0",
     "@types/yaml": "^1.2.0",
