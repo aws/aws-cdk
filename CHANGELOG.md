@@ -8,9 +8,7 @@ All notable changes to this project will be documented in this file. See [standa
 ### ⚠ BREAKING CHANGES
 
 * **apigateway:** the interface now accepts endpointconfiguration property instead of endpoint type as defined by cfn
-* **lambda-nodejs:** parcel-bundler v1.x is now a peer dependency of @aws-cdk/aws-lambda-nodejs. Please add it to your package.json.
-* **lambda-nodejs:** `parcel-bundler` v1.x is now a peer dependency of `@aws-cdk/aws-lambda-nodejs`.
-Please add it to your `package.json`.
+* **lambda-nodejs:** `parcel-bundler` v1.x is now a peer dependency of `@aws-cdk/aws-lambda-nodejs`. Please add it to your `package.json`.
 
 ### Features
 
