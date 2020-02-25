@@ -1,7 +1,7 @@
 // tslint:disable: no-console
 import * as fs from 'fs';
 import * as path from 'path';
-import ts from 'typescript';
+import * as ts from 'typescript';
 
 function compile(fileNames: string[], options: ts.CompilerOptions): void {
   const program = ts.createProgram(fileNames, options);
@@ -227,17 +227,6 @@ function rewriteFile(file: ts.SourceFile) {
     + originalSource.substring(imports[imports.length - 1].getEnd()));
 
   return source;
-}
-
-function printNode(node: ts.Node, indent = '') {
-  const hint = firstLine(ts.createPrinter().printNode(ts.EmitHint.Unspecified, node, ts.createSourceFile('test.ts', '', ts.ScriptTarget.Latest)));
-  console.log(`${indent}${ts.SyntaxKind[node.kind]} "${hint}"`);
-
-  node.forEachChild(child => printNode(child, indent + '  '));
-}
-
-function firstLine(s: string) {
-  return s.split('\n')[0];
 }
 
 compile(process.argv.slice(2), {
