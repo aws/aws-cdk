@@ -7,6 +7,7 @@ const sns = require('@aws-cdk/aws-sns');
 const lambda = require('@aws-cdk/aws-lambda');
 const docker = require('@aws-cdk/aws-ecr-assets');
 const s3 = require('@aws-cdk/aws-s3')
+const core = require('@aws-cdk/core')
 const { StackWithNestedStack } = require('./nested-stack');
 
 const stackPrefix = process.env.STACK_NAME_PREFIX || 'cdk-toolkit-integration';
@@ -123,12 +124,16 @@ class FailedStack extends cdk.Stack {
   constructor(parent, id, props) {
     super(parent, id, props);
 
+    var bucketName = `cli-integ-failed-stack-bucket-${new Date().getTime()}`
+
     new s3.Bucket(this, 'MyBucket1', {
-      bucketName: 'one-will-fail'
+      bucketName: bucketName,
+      removalPolicy: core.RemovalPolicy.DESTROY
     });
 
     new s3.Bucket(this, 'MyBucket2', {
-      bucketName: 'one-will-fail'
+      bucketName: bucketName,
+      removalPolicy: core.RemovalPolicy.DESTROY
     });
 
   }
