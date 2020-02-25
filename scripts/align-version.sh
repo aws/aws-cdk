@@ -9,14 +9,8 @@ scriptdir=$(cd $(dirname $0) && pwd)
 # go to repo root
 cd ${scriptdir}/..
 
-# extract version from the root package.json which is the source of truth
-version="$(node -p "require('./package.json').version")"
-
-# align all package.json files
-npx lerna version ${version} --yes --exact --force-publish=* --no-git-tag-version --no-push
-
-# align all peer-deps based on deps
-find . -name package.json | grep -v node_modules | xargs node ${scriptdir}/sync-peer-deps.js
+files="lerna.json $(find . -name package.json | grep -v node_modules | grep -v "^./package.json" | xargs)"
+${scriptdir}/align-version.js ${files}
 
 # validation
 if find . -name package.json | grep -v node_modules | xargs grep "999.0.0"; then
