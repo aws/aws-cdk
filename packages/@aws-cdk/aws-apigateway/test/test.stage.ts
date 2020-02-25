@@ -246,4 +246,110 @@ export = {
 
     test.done();
   },
+
+  'if the custom log destination arn is set'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'test-api', {cloudWatchRole: false, deploy: false});
+    const deployment = new apigateway.Deployment(stack, 'my-deployment', {api});
+    api.root.addMethod('GET');
+
+    // WHEN
+    const testGroupArn = 'arn:aws:logs:us-east-1:123456789012:log-group:test_group_name';
+    new apigateway.Stage(stack, 'my-stage', {
+      deployment,
+      accessLogSetting: {
+        destinationArn: testGroupArn
+      }
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::Stage', {
+      AccessLogSetting: {
+        DestinationArn: testGroupArn
+      },
+      StageName: "prod"
+    }));
+
+    test.done();
+  },
+
+  'if the custom log format is set'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
+    const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
+    api.root.addMethod('GET');
+
+    // WHEN
+    const testFormat = JSON.stringify({
+      requestId: "$context.requestId",
+      ip: "$context.identity.sourceIp",
+      caller: "$context.identity.caller",
+      user: "$context.identity.user",
+      requestTime: "$context.requestTime",
+      httpMethod: "$context.httpMethod",
+      resourcePath: "$context.resourcePath",
+      status: "$context.status",
+      protocol: "$context.protocol",
+      responseLength: "$context.responseLength"
+    });
+    new apigateway.Stage(stack, 'my-stage', {
+      deployment,
+      accessLogSetting: {
+        format: testFormat
+      }
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::Stage', {
+      AccessLogSetting: {
+        Format: testFormat
+      },
+      StageName: "prod"
+    }));
+
+    test.done();
+  },
+
+  'if the custom log destination arn and format is set'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'test-api', {cloudWatchRole: false, deploy: false});
+    const deployment = new apigateway.Deployment(stack, 'my-deployment', {api});
+    api.root.addMethod('GET');
+
+    // WHEN
+    const testGroupArn = 'arn:aws:logs:us-east-1:123456789012:log-group:test_group_name';
+    const testFormat = JSON.stringify({
+      requestId: "$context.requestId",
+      ip: "$context.identity.sourceIp",
+      caller: "$context.identity.caller",
+      user: "$context.identity.user",
+      requestTime: "$context.requestTime",
+      httpMethod: "$context.httpMethod",
+      resourcePath: "$context.resourcePath",
+      status: "$context.status",
+      protocol: "$context.protocol",
+      responseLength: "$context.responseLength"
+    });
+    new apigateway.Stage(stack, 'my-stage', {
+      deployment,
+      accessLogSetting: {
+        destinationArn: testGroupArn,
+        format: testFormat
+      }
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::Stage', {
+      AccessLogSetting: {
+        DestinationArn: testGroupArn,
+        Format: testFormat
+      },
+      StageName: "prod"
+    }));
+
+    test.done();
+  }
 };

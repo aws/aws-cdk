@@ -477,6 +477,30 @@ const api = new apigateway.RestApi(this, 'books', {
 })
 ```
 
+The following example will configure API Gateway to enable custom access logging
+
+```ts
+const api = new apigateway.RestApi(this, 'books', {
+  deployOptions: {
+    accessLogSetting: {
+        destinationArn: 'arn:aws:logs:us-east-1:123456789012:log-group:sample_group_name',
+        format: JSON.stringify({
+            requestId: "$context.requestId",
+            ip: "$context.identity.sourceIp",
+            caller: "$context.identity.caller",
+            user: "$context.identity.user",
+            requestTime: "$context.requestTime",
+            httpMethod: "$context.httpMethod",
+            resourcePath: "$context.resourcePath",
+            status: "$context.status",
+            protocol: "$context.protocol",
+            responseLength: "$context.responseLength"
+        })
+    }
+  }
+})
+```
+
 #### Deeper dive: invalidation of deployments
 
 API Gateway deployments are an immutable snapshot of the API. This means that we

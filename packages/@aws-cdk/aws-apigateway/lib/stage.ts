@@ -14,6 +14,11 @@ export interface StageOptions extends MethodDeploymentOptions {
   readonly stageName?: string;
 
   /**
+   * Specifies settings for logging access in this stage.
+   */
+  readonly accessLogSetting?: AccessLogSetting
+
+  /**
    * Specifies whether Amazon X-Ray tracing is enabled for this method.
    *
    * @default false
@@ -166,12 +171,17 @@ export class Stage extends Resource {
   public readonly restApi: IRestApi;
   private enableCacheCluster?: boolean;
 
+  private readonly accessLogSetting?: AccessLogSetting;
+
   constructor(scope: Construct, id: string, props: StageProps) {
     super(scope, id);
 
     this.enableCacheCluster = props.cacheClusterEnabled;
 
     const methodSettings = this.renderMethodSettings(props); // this can mutate `this.cacheClusterEnabled`
+
+    // custom access logging
+    this.accessLogSetting = props.accessLogSetting;
 
     // enable cache cluster if cacheClusterSize is set
     if (props.cacheClusterSize !== undefined) {
@@ -185,6 +195,7 @@ export class Stage extends Resource {
     const cacheClusterSize = this.enableCacheCluster ? (props.cacheClusterSize || '0.5') : undefined;
     const resource = new CfnStage(this, 'Resource', {
       stageName: props.stageName || 'prod',
+      accessLogSetting: this.accessLogSetting,
       cacheClusterEnabled: this.enableCacheCluster,
       cacheClusterSize,
       clientCertificateId: props.clientCertificateId,
@@ -266,4 +277,20 @@ export class Stage extends Resource {
       };
     }
   }
+}
+
+export interface AccessLogSetting {
+  /**
+   * The ARN of the CloudWatch Logs log group or Kinesis Data Firehose delivery stream.
+   * If you specify a Kinesis Data Firehose delivery stream. the stream name must begin
+   * with `amazon-apigateway-`.
+   */
+  readonly destinationArn?: string;
+
+  /**
+   * A single line format of access logs of data, as specified by selected $content variables.
+   * https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html#context-variable-reference
+   * The format must include at least `$context.requestId`.
+   */
+  readonly format?: string;
 }
