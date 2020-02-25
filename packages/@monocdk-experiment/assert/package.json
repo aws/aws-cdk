@@ -1,11 +1,11 @@
 {
-  "name": "@aws-cdk/cloudformation-diff",
+  "name": "@monocdk-experiment/assert",
   "version": "999.0.0",
-  "description": "Utilities to diff CDK stacks against CloudFormation templates",
+  "description": "An assertion library for use with CDK Apps",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "build": "cdk-build",
+    "build": "./clone.sh && cdk-build",
     "watch": "cdk-watch",
     "lint": "cdk-lint",
     "test": "cdk-test",
@@ -14,12 +14,22 @@
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test"
   },
+  "cdk-build": {
+    "eslint": {
+      "disable": true
+    },
+    "tslint": {
+      "disable": true
+    },
+    "pkglint": {
+      "disable": true
+    }
+  },
   "jest": {
     "coverageThreshold": {
       "global": {
-        "statements": 60,
-        "lines": 60,
-        "branches": 55
+        "statements": 75,
+        "branches": 65
       }
     }
   },
@@ -29,28 +39,26 @@
     "organization": true
   },
   "license": "Apache-2.0",
-  "dependencies": {
-    "@aws-cdk/cfnspec": "999.0.0",
-    "colors": "^1.4.0",
-    "diff": "^4.0.2",
-    "fast-deep-equal": "^3.1.1",
-    "string-width": "^4.2.0",
-    "table": "^5.4.6"
-  },
   "devDependencies": {
     "@types/jest": "^25.1.2",
-    "@types/string-width": "^4.0.1",
-    "@types/table": "^4.0.7",
     "cdk-build-tools": "999.0.0",
-    "fast-check": "^1.22.2",
     "jest": "^24.9.0",
     "pkglint": "999.0.0",
-    "ts-jest": "^25.2.0"
+    "ts-jest": "^25.2.0",
+    "@monocdk-experiment/rewrite-imports": "999.0.0",
+    "monocdk-experiment": "999.0.0"
+  },
+  "dependencies": {
+    "@aws-cdk/cloudformation-diff": "999.0.0"
+  },
+  "peerDependencies": {
+    "jest": "^24.9.0",
+    "monocdk-experiment": "^999.0.0"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
     "type": "git",
-    "directory": "packages/@aws-cdk/cloudformation-diff"
+    "directory": "packages/@monocdk-experiment/assert"
   },
   "keywords": [
     "aws",

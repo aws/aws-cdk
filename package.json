@@ -36,6 +36,7 @@
     "packages": [
       "packages/*",
       "packages/@aws-cdk/*",
+      "packages/@monocdk-experiment/*",
       "packages/@aws-cdk/*/lambda-packages/*",
       "tools/*"
     ],
