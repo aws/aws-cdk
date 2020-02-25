@@ -75,6 +75,8 @@ pull_request_rules:
       - author!=NGL321
       - author!=Jerry-AWS
       - author!=SomayaB
+      - author!=NetaNir
+      - author!=illapolo
       - base=master
       - -merged
       - -closed
