@@ -111,6 +111,13 @@ export interface ParameterOptions {
    * @default - auto-detect based on `parameterName`
    */
   readonly simpleName?: boolean;
+
+  /**
+   * The tier of the string parameter
+   *
+   * @default - undefined
+   */
+  readonly tier?: ParameterTier;
 }
 
 /**
@@ -148,6 +155,11 @@ abstract class ParameterBase extends Resource implements IParameter {
   public abstract readonly parameterName: string;
   public abstract readonly parameterType: string;
 
+  /**
+   * The encryption key that is used to encrypt this parameter.
+   *
+   * * @default - default master key
+   */
   public readonly encryptionKey?: kms.IKey;
 
   public grantRead(grantee: iam.IGrantable): iam.Grant {
@@ -202,6 +214,24 @@ export enum ParameterType {
 }
 
 /**
+ * SSM parameter tier
+ */
+export enum ParameterTier {
+  /**
+   * String
+   */
+  ADVANCED = 'Advanced',
+  /**
+   * String
+   */
+  INTELLIGENT_TIERING = 'Intelligent-Tiering',
+  /**
+   * String
+   */
+  STANDARD = 'Standard',
+}
+
+/**
  * Common attributes for string parameters.
  */
 export interface CommonStringParameterAttributes {
@@ -230,6 +260,11 @@ export interface CommonStringParameterAttributes {
   readonly simpleName?: boolean;
 }
 
+/**
+ * Attributes for parameters of various types of string.
+ *
+ * @see ParameterType
+ */
 export interface StringParameterAttributes extends CommonStringParameterAttributes {
   /**
    * The version number of the value you wish to retrieve.
@@ -246,6 +281,9 @@ export interface StringParameterAttributes extends CommonStringParameterAttribut
   readonly type?: ParameterType;
 }
 
+/**
+ * Attributes for secure string parameters.
+ */
 export interface SecureStringParameterAttributes extends CommonStringParameterAttributes {
   /**
    * The version number of the value you wish to retrieve. This is required for secure strings.
@@ -258,6 +296,7 @@ export interface SecureStringParameterAttributes extends CommonStringParameterAt
    * @default - default master key
    */
   readonly encryptionKey?: kms.IKey;
+
 }
 
 /**
@@ -387,10 +426,19 @@ export class StringParameter extends ParameterBase implements IStringParameter {
       _assertValidValue(props.stringValue, props.allowedPattern);
     }
 
+    if (this.physicalName.length > 2048) {
+      throw new Error('Name cannot be longer than 2048 characters.');
+    }
+
+    if (props.description && props.description?.length > 1024) {
+      throw new Error('Description cannot be longer than 1024 characters.');
+    }
+
     const resource = new ssm.CfnParameter(this, 'Resource', {
       allowedPattern: props.allowedPattern,
       description: props.description,
       name: this.physicalName,
+      tier: props.tier,
       type: props.type || ParameterType.STRING,
       value: props.stringValue,
     });
@@ -445,10 +493,19 @@ export class StringListParameter extends ParameterBase implements IStringListPar
       props.stringListValue.forEach(str => _assertValidValue(str, props.allowedPattern!));
     }
 
+    if (this.physicalName.length > 2048) {
+      throw new Error('Name cannot be longer than 2048 characters.');
+    }
+
+    if (props.description && props.description?.length > 1024) {
+      throw new Error('Description cannot be longer than 1024 characters.');
+    }
+
     const resource = new ssm.CfnParameter(this, 'Resource', {
       allowedPattern: props.allowedPattern,
       description: props.description,
       name: this.physicalName,
+      tier: props.tier,
       type: ParameterType.STRING_LIST,
       value: props.stringListValue.join(','),
     });

@@ -407,11 +407,18 @@ export class Function extends FunctionBase {
    */
   public readonly grantPrincipal: iam.IPrincipal;
 
+  /**
+   * The DLQ associated with this Lambda Function (this is an optional attribute).
+   */
+  public readonly deadLetterQueue?: sqs.IQueue;
+
   public readonly permissionsNode = this.node;
 
   protected readonly canCreatePermissions = true;
 
   private readonly layers: ILayerVersion[] = [];
+
+  private _logGroup?: logs.ILogGroup;
 
   /**
    * Environment variables for this function
@@ -448,6 +455,8 @@ export class Function extends FunctionBase {
     const code = props.code.bind(this);
     verifyCodeConfig(code, props.runtime);
 
+    this.deadLetterQueue = this.buildDeadLetterQueue(props);
+
     const resource: CfnFunction = new CfnFunction(this, 'Resource', {
       functionName: this.physicalName,
       description: props.description,
@@ -465,7 +474,7 @@ export class Function extends FunctionBase {
       environment: Lazy.anyValue({ produce: () => this.renderEnvironment() }),
       memorySize: props.memorySize,
       vpcConfig: this.configureVpc(props),
-      deadLetterConfig: this.buildDeadLetterConfig(props),
+      deadLetterConfig: this.buildDeadLetterConfig(this.deadLetterQueue),
       tracingConfig: this.buildTracingConfig(props),
       reservedConcurrentExecutions: props.reservedConcurrentExecutions
     });
@@ -492,11 +501,12 @@ export class Function extends FunctionBase {
 
     // Log retention
     if (props.logRetention) {
-      new LogRetention(this, 'LogRetention', {
+      const logretention = new LogRetention(this, 'LogRetention', {
         logGroupName: `/aws/lambda/${this.functionName}`,
         retention: props.logRetention,
         role: props.logRetentionRole
       });
+      this._logGroup = logs.LogGroup.fromLogGroupArn(this, 'LogGroup', logretention.logGroupArn);
     }
 
     props.code.bindToResource(resource);
@@ -576,6 +586,27 @@ export class Function extends FunctionBase {
     });
   }
 
+  /**
+   * The LogGroup where the Lambda function's logs are made available.
+   *
+   * If either `logRetention` is set or this property is called, a CloudFormation custom resource is added to the stack that
+   * pre-creates the log group as part of the stack deployment, if it already doesn't exist, and sets the correct log retention
+   * period (never expire, by default).
+   *
+   * Further, if the log group already exists and the `logRetention` is not set, the custom resource will reset the log retention
+   * to never expire even if it was configured with a different value.
+   */
+  public get logGroup(): logs.ILogGroup {
+    if (!this._logGroup) {
+      const logretention = new LogRetention(this, 'LogRetention', {
+        logGroupName: `/aws/lambda/${this.functionName}`,
+        retention: logs.RetentionDays.INFINITE,
+      });
+      this._logGroup = logs.LogGroup.fromLogGroupArn(this, `${this.node.id}-LogGroup`, logretention.logGroupArn);
+    }
+    return this._logGroup;
+  }
+
   private renderEnvironment() {
     if (!this.environment || Object.keys(this.environment).length === 0) {
       return undefined;
@@ -644,7 +675,7 @@ export class Function extends FunctionBase {
     };
   }
 
-  private buildDeadLetterConfig(props: FunctionProps) {
+  private buildDeadLetterQueue(props: FunctionProps) {
     if (props.deadLetterQueue && props.deadLetterQueueEnabled === false) {
       throw Error('deadLetterQueue defined but deadLetterQueueEnabled explicitly set to false');
     }
@@ -662,9 +693,17 @@ export class Function extends FunctionBase {
       resources: [deadLetterQueue.queueArn]
     }));
 
-    return {
-      targetArn: deadLetterQueue.queueArn
-    };
+    return deadLetterQueue;
+  }
+
+  private buildDeadLetterConfig(deadLetterQueue?: sqs.IQueue) {
+    if (deadLetterQueue) {
+      return {
+        targetArn: deadLetterQueue.queueArn
+      };
+    } else {
+      return undefined;
+    }
   }
 
   private buildTracingConfig(props: FunctionProps) {

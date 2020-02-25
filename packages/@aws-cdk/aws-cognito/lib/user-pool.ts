@@ -1,4 +1,4 @@
-import * as iam from '@aws-cdk/aws-iam';
+import { IRole, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
 import { CfnUserPool } from './cognito.generated';
@@ -104,7 +104,7 @@ export enum UserPoolAttribute {
   /**
    * The End-User's time zone
    */
-  TIMEZONE = 'timezone',
+  TIMEZONE = 'zoneinfo',
 
   /**
    * Time the End-User's information was last updated.
@@ -212,6 +212,78 @@ export interface UserPoolTriggers {
   [trigger: string]: lambda.IFunction | undefined;
 }
 
+/**
+ * The email verification style
+ */
+export enum VerificationEmailStyle {
+  /** Verify email via code */
+  CODE = 'CONFIRM_WITH_CODE',
+  /** Verify email via link */
+  LINK = 'CONFIRM_WITH_LINK',
+}
+
+/**
+ * User pool configuration for user self sign up.
+ */
+export interface UserVerificationConfig {
+  /**
+   * The email subject template for the verification email sent to the user upon sign up.
+   * See https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-settings-message-templates.html to
+   * learn more about message templates.
+   * @default 'Verify your new account'
+   */
+  readonly emailSubject?: string;
+
+  /**
+   * The email body template for the verification email sent to the user upon sign up.
+   * See https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-settings-message-templates.html to
+   * learn more about message templates.
+   * @default 'Hello {username}, Your verification code is {####}'
+   */
+  readonly emailBody?: string;
+
+  /**
+   * Emails can be verified either using a code or a link.
+   * Learn more at https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-settings-email-verification-message-customization.html
+   * @default VerificationEmailStyle.CODE
+   */
+  readonly emailStyle?: VerificationEmailStyle;
+
+  /**
+   * The message template for the verification SMS sent to the user upon sign up.
+   * See https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-settings-message-templates.html to
+   * learn more about message templates.
+   * @default 'The verification code to your new account is {####}'
+   */
+  readonly smsMessage?: string;
+}
+
+/**
+ * User pool configuration when administrators sign users up.
+ */
+export interface UserInvitationConfig {
+  /**
+   * The template to the email subject that is sent to the user when an administrator signs them up to the user pool.
+   * @default 'Your temporary password'
+   */
+  readonly emailSubject?: string;
+
+  /**
+   * The template to the email body that is sent to the user when an administrator signs them up to the user pool.
+   * @default 'Your username is {username} and temporary password is {####}.'
+   */
+  readonly emailBody?: string;
+
+  /**
+   * The template to the SMS message that is sent to the user when an administrator signs them up to the user pool.
+   * @default 'Your username is {username} and temporary password is {####}'
+   */
+  readonly smsMessage?: string;
+}
+
+/**
+ * Props for the UserPool construct
+ */
 export interface UserPoolProps {
   /**
    * Name of the user pool
@@ -219,6 +291,40 @@ export interface UserPoolProps {
    * @default - automatically generated name by CloudFormation at deploy time
    */
   readonly userPoolName?: string;
+
+  /**
+   * Whether self sign up should be enabled. This can be further configured via the `selfSignUp` property.
+   * @default false
+   */
+  readonly selfSignUpEnabled?: boolean;
+
+  /**
+   * Configuration around users signing themselves up to the user pool.
+   * Enable or disable self sign-up via the `selfSignUpEnabled` property.
+   * @default - see defaults in UserVerificationConfig
+   */
+  readonly userVerification?: UserVerificationConfig;
+
+  /**
+   * Configuration around admins signing up users into a user pool.
+   * @default - see defaults in UserInvitationConfig
+   */
+  readonly userInvitation?: UserInvitationConfig;
+
+  /**
+   * The IAM role that Cognito will assume while sending SMS messages.
+   * @default - a new IAM role is created
+   */
+  readonly smsRole?: IRole;
+
+  /**
+   * The 'ExternalId' that Cognito service must using when assuming the `smsRole`, if the role is restricted with an 'sts:ExternalId' conditional.
+   * Learn more about ExternalId here - https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_create_for-user_externalid.html
+   *
+   * This property will be ignored if `smsRole` is not specified.
+   * @default - No external id will be configured
+   */
+  readonly smsRoleExternalId?: string;
 
   /**
    * Method used for user registration & sign in.
@@ -347,9 +453,7 @@ export class UserPool extends Resource implements IUserPool {
   private triggers: CfnUserPool.LambdaConfigProperty = { };
 
   constructor(scope: Construct, id: string, props: UserPoolProps = {}) {
-    super(scope, id, {
-      physicalName: props.userPoolName,
-    });
+    super(scope, id);
 
     let aliasAttributes: UserPoolAttribute[] | undefined;
     let usernameAttributes: UserPoolAttribute[] | undefined;
@@ -402,20 +506,51 @@ export class UserPool extends Resource implements IUserPool {
       }
     }
 
+    const emailVerificationSubject = props.userVerification?.emailSubject ?? 'Verify your new account';
+    const emailVerificationMessage = props.userVerification?.emailBody ?? 'Hello {username}, Your verification code is {####}';
+    const smsVerificationMessage = props.userVerification?.smsMessage ?? 'The verification code to your new account is {####}';
+
+    const defaultEmailOption = props.userVerification?.emailStyle ?? VerificationEmailStyle.CODE;
+    const verificationMessageTemplate: CfnUserPool.VerificationMessageTemplateProperty =
+      (defaultEmailOption === VerificationEmailStyle.CODE) ? {
+        defaultEmailOption,
+        emailMessage: emailVerificationMessage,
+        emailSubject: emailVerificationSubject,
+        smsMessage: smsVerificationMessage,
+      } : {
+        defaultEmailOption,
+        emailMessageByLink: emailVerificationMessage,
+        emailSubjectByLink: emailVerificationSubject,
+        smsMessage: smsVerificationMessage
+      };
+
+    const inviteMessageTemplate: CfnUserPool.InviteMessageTemplateProperty = {
+      emailMessage: props.userInvitation?.emailBody,
+      emailSubject: props.userInvitation?.emailSubject,
+      smsMessage: props.userInvitation?.smsMessage,
+    };
+    const selfSignUpEnabled = props.selfSignUpEnabled !== undefined ? props.selfSignUpEnabled : false;
+    const adminCreateUserConfig: CfnUserPool.AdminCreateUserConfigProperty = {
+      allowAdminCreateUserOnly: !selfSignUpEnabled,
+      inviteMessageTemplate: props.userInvitation !== undefined ? inviteMessageTemplate : undefined,
+    };
+
     const userPool = new CfnUserPool(this, 'Resource', {
-      userPoolName: this.physicalName,
+      userPoolName: props.userPoolName,
       usernameAttributes,
       aliasAttributes,
       autoVerifiedAttributes: props.autoVerifiedAttributes,
-      lambdaConfig: Lazy.anyValue({ produce: () => this.triggers })
+      lambdaConfig: Lazy.anyValue({ produce: () => this.triggers }),
+      smsConfiguration: this.smsConfiguration(props),
+      adminCreateUserConfig,
+      emailVerificationMessage,
+      emailVerificationSubject,
+      smsVerificationMessage,
+      verificationMessageTemplate,
     });
 
-    this.userPoolId = this.getResourceNameAttribute(userPool.ref);
-    this.userPoolArn = this.getResourceArnAttribute(userPool.attrArn, {
-      service: 'cognito',
-      resource: 'userpool',
-      resourceName: this.physicalName,
-    });
+    this.userPoolId = userPool.ref;
+    this.userPoolArn = userPool.attrArn;
 
     this.userPoolProviderName = userPool.attrProviderName;
     this.userPoolProviderUrl = userPool.attrProviderUrl;
@@ -534,8 +669,45 @@ export class UserPool extends Resource implements IUserPool {
   private addLambdaPermission(fn: lambda.IFunction, name: string): void {
     const normalize = name.charAt(0).toUpperCase() + name.slice(1);
     fn.addPermission(`${normalize}Cognito`, {
-      principal: new iam.ServicePrincipal('cognito-idp.amazonaws.com'),
+      principal: new ServicePrincipal('cognito-idp.amazonaws.com'),
       sourceArn: this.userPoolArn
     });
+  }
+
+  private smsConfiguration(props: UserPoolProps): CfnUserPool.SmsConfigurationProperty {
+    if (props.smsRole) {
+      return {
+        snsCallerArn: props.smsRole.roleArn,
+        externalId: props.smsRoleExternalId
+      };
+    } else {
+      const smsRoleExternalId = this.node.uniqueId.substr(0, 1223); // sts:ExternalId max length of 1224
+      const smsRole = props.smsRole ?? new Role(this, 'smsRole', {
+        assumedBy: new ServicePrincipal('cognito-idp.amazonaws.com', {
+          conditions: {
+            StringEquals: { 'sts:ExternalId': smsRoleExternalId }
+          }
+        }),
+        inlinePolicies: {
+          /*
+           * The UserPool is very particular that it must contain an 'sns:Publish' action as an inline policy.
+           * Ideally, a conditional that restricts this action to 'sms' protocol needs to be attached, but the UserPool deployment fails validation.
+           * Seems like a case of being excessively strict.
+           */
+          'sns-publish': new PolicyDocument({
+            statements: [
+              new PolicyStatement({
+                actions: [ 'sns:Publish' ],
+                resources: [ '*' ],
+              })
+            ]
+          })
+        }
+      });
+      return {
+        externalId: smsRoleExternalId,
+        snsCallerArn: smsRole.roleArn
+      };
+    }
   }
 }

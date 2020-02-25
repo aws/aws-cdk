@@ -297,13 +297,13 @@ export = {
     const asset6 = new DockerImageAsset(stack, 'Asset6', { directory, extraHash: 'random-extra' });
     const asset7 = new DockerImageAsset(stack, 'Asset7', { directory, repositoryName: 'foo' });
 
-    test.deepEqual(asset1.sourceHash, '31959f03fcdf1bddec1420d315dddedfccf559e87e95c85854a01f2cac103fc8');
-    test.deepEqual(asset2.sourceHash, 'a42cd51ab2bc5e2a4399c4bc41f7df761ff19877b54bce52d69c6e8d628f16fd');
-    test.deepEqual(asset3.sourceHash, '9efbc91d5c2f43782e49b27e784caad32d8619a0cecf806a6e55cf70f1cfbc22');
-    test.deepEqual(asset4.sourceHash, '2907224e59cb720ba5810a624f1c1267f547377e8a23c50d72286dd81dc8435e');
-    test.deepEqual(asset5.sourceHash, 'd718928111c650564240141b156188ebdbb93d3c5f1448dd1afe823ae7f742a5');
-    test.deepEqual(asset6.sourceHash, 'fe3ef82c91b6321ac17bc3a14c75845fa1ddbafe550e0a04d5cf680015903a2d');
-    test.deepEqual(asset7.sourceHash, '80f586ed82faacec8a285dd99c7ee52e06525fee1721bc80bc846d1a8266fe36');
+    test.deepEqual(asset1.sourceHash, 'c555ab9f74e32ce24cd04ddeaa4d7b1b11c5740b9873a3f250e03bf73b28ce39');
+    test.deepEqual(asset2.sourceHash, '273bd9a95dbe346ad5b116736d44a350e90f57e2b9ba7fd3d334b61d0420f9fd');
+    test.deepEqual(asset3.sourceHash, '81a4b3fd058876c7705597500e7259ff436e521580f0bcb503a303dcac7e2a41');
+    test.deepEqual(asset4.sourceHash, '10259531feb68a3967d5d25b70ec9a37a6a8e1f5b04083fada3d0a084291a698');
+    test.deepEqual(asset5.sourceHash, '30e083bf51483a031759bc7fb35f69345de69fdbc511eec88bd3d1724b5ac0a9');
+    test.deepEqual(asset6.sourceHash, '594ae5a5d23367d18468fefca5a4e56ca83b077d1274a1f812f55c8c9ead9eaa');
+    test.deepEqual(asset7.sourceHash, 'bc007f81fe1dd0f0bbb24af898eba3f4f15edbff19b7abb3fac928439486d667');
     test.done();
   }
 };

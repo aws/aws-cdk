@@ -7,6 +7,8 @@ export PATH=$PWD/node_modules/.bin:$PATH
 export NODE_OPTIONS="--max-old-space-size=4096 ${NODE_OPTIONS:-}"
 root=$PWD
 
+PACMAK=${PACMAK:-jsii-pacmak}
+ROSETTA=${ROSETTA:-jsii-rosetta}
 TMPDIR=${TMPDIR:-$(dirname $(mktemp -u))}
 distdir="$PWD/dist"
 rm -fr ${distdir}
@@ -28,7 +30,7 @@ function lerna_scopes() {
 # Compile examples with respect to "decdk" directory, as all packages will
 # be symlinked there so they can all be included.
 echo "Extracting code samples" >&2
-node --experimental-worker $(which jsii-rosetta) \
+node --experimental-worker $(which $ROSETTA) \
   --compile \
   --output samples.tabl.json \
   --directory packages/decdk \
@@ -36,7 +38,7 @@ node --experimental-worker $(which jsii-rosetta) \
 
 # Jsii packaging (all at once using jsii-pacmak)
 echo "Packaging jsii modules" >&2
-jsii-pacmak \
+$PACMAK \
   --verbose \
   --rosetta-tablet samples.tabl.json \
   $(cat $TMPDIR/jsii.txt)
