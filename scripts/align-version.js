@@ -5,7 +5,7 @@
 const fs = require('fs');
 
 const marker = '999.0.0';
-const repoVersion = require('../package.json').version;
+const repoVersion = require('./get-version');
 
 for (const file of process.argv.splice(2)) {
   const pkg = JSON.parse(fs.readFileSync(file).toString());
@@ -20,6 +20,7 @@ for (const file of process.argv.splice(2)) {
   processSection(pkg.devDependencies || { });
   processSection(pkg.peerDependencies || { });
 
+  console.error(`${file} => ${repoVersion}`);
   fs.writeFileSync(file, JSON.stringify(pkg, undefined, 2));
 }
 
