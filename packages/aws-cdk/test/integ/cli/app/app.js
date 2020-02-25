@@ -6,7 +6,6 @@ const iam = require('@aws-cdk/aws-iam');
 const sns = require('@aws-cdk/aws-sns');
 const lambda = require('@aws-cdk/aws-lambda');
 const docker = require('@aws-cdk/aws-ecr-assets');
-const s3 = require('@aws-cdk/aws-s3')
 const core = require('@aws-cdk/core')
 const { StackWithNestedStack } = require('./nested-stack');
 
