@@ -153,16 +153,11 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     debug('Execution of changeset %s on stack %s has started; waiting for the update to complete...', changeSetName, deployName);
     try {
       await waitForStack(cfn, deployName);
-    } catch (e) {
+    } finally {
       // stop the stack activity monitor if it's running as the stack ended in an error state
       if (monitor) {
         await monitor.stop();
       }
-      throw e;
-    }
-
-    if (monitor) {
-      await monitor.stop();
     }
     debug('Stack %s has completed updating', deployName);
   } else {
