@@ -47,7 +47,7 @@ export class Runtime {
   public static readonly DOTNET_CORE_2 =  new Runtime('dotnetcore2.0',  RuntimeFamily.DOTNET_CORE);
   public static readonly DOTNET_CORE_2_1 = new Runtime('dotnetcore2.1',  RuntimeFamily.DOTNET_CORE);
   public static readonly GO_1_X =         new Runtime('go1.x',          RuntimeFamily.GO);
-  public static readonly RUBY_2_5 =       new Runtime('ruby2.5',        RuntimeFamily.RUBY, { supportsInlineCode: true });
+  public static readonly RUBY_2_5 =       new Runtime('ruby2.5',        RuntimeFamily.RUBY);
   public static readonly PROVIDED =     new Runtime('provided',       RuntimeFamily.OTHER);
 
   /**
