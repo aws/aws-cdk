@@ -1,7 +1,7 @@
 import * as cdk from '@aws-cdk/core';
 import {
-  AccountPrincipal, AccountRootPrincipal, Anyone, ArnPrincipal, CanonicalUserPrincipal,
-  FederatedPrincipal, IPrincipal, ServicePrincipal, ServicePrincipalOpts
+  AccountPrincipal, AccountRootPrincipal, Anyone, ArnPrincipal, CanonicalUserPrincipal, FederatedPrincipal, IPrincipal,
+  ServicePrincipal, ServicePrincipalOpts
 } from './principals';
 import { mergePrincipal } from './util';
 
@@ -9,6 +9,58 @@ import { mergePrincipal } from './util';
  * Represents a statement in an IAM policy document.
  */
 export class PolicyStatement {
+  /**
+   * Statement ID for this statement
+   */
+  public sid?: string;
+  public effect: Effect;
+  private readonly action = new Array<any>();
+  private readonly notAction = new Array<any>();
+  private readonly principal: { [key: string]: any[] } = {};
+  private readonly notPrincipal: { [key: string]: any[] } = {};
+  private readonly resource = new Array<any>();
+  private readonly notResource = new Array<any>();
+  private readonly condition: { [key: string]: any } = {};
+
+  constructor(props: PolicyStatementProps = {}) {
+    // Validate actions
+    for (const action of [...props.actions || [], ...props.notActions || []]) {
+      if (!/^(\*|[a-zA-Z0-9-]+:[a-zA-Z0-9*]+)$/.test(action)) {
+        throw new Error(`Action '${action}' is invalid. An action string consists of a service namespace, a colon, and the name of an action. Action names can include wildcards.`);
+      }
+    }
+
+    this.effect = props.effect || Effect.ALLOW;
+
+    this.addActions(...props.actions || []);
+    this.addNotActions(...props.notActions || []);
+    this.addPrincipals(...props.principals || []);
+    this.addNotPrincipals(...props.notPrincipals || []);
+    this.addResources(...props.resources || []);
+    this.addNotResources(...props.notResources || []);
+    if (props.conditions !== undefined) {
+      this.addConditions(props.conditions);
+    }
+  }
+
+  /**
+   * Indicates if this permission has a "Principal" section.
+   */
+  public get hasPrincipal() {
+    return Object.keys(this.principal).length > 0 || Object.keys(this.notPrincipal).length > 0;
+  }
+
+  //
+  // Actions
+  //
+
+  /**
+   * Indicates if this permission as at least one resource associated with it.
+   */
+  public get hasResource() {
+    return this.resource && this.resource.length > 0;
+  }
+
   /**
    * Creates a new PolicyStatement based on the object provided.
    * This will accept an object created from the `.toJSON()` call
@@ -20,8 +72,8 @@ export class PolicyStatement {
       resources: obj.Resource,
       conditions: obj.Condition,
       effect: obj.Effect,
-      notActions: typeof(obj.NotAction) === "string" ? [obj.NotAction] : obj.NotAction,
-      notResources: typeof(obj.NotResource) === "string" ? [obj.NotResource] : obj.NotResource
+      notActions: typeof (obj.NotAction) === "string" ? [obj.NotAction] : obj.NotAction,
+      notResources: typeof (obj.NotResource) === "string" ? [obj.NotResource] : obj.NotResource
     });
 
     if (obj.Principal && obj.Principal.AWS) {
@@ -46,43 +98,9 @@ export class PolicyStatement {
 
     return statement;
   }
-  /**
-   * Statement ID for this statement
-   */
-  public sid?: string;
-  public effect: Effect;
-
-  private readonly action = new Array<any>();
-  private readonly notAction = new Array<any>();
-  private readonly principal: { [key: string]: any[] } = {};
-  private readonly notPrincipal: { [key: string]: any[] } = {};
-  private readonly resource = new Array<any>();
-  private readonly notResource = new Array<any>();
-  private readonly condition: { [key: string]: any } = { };
-
-  constructor(props: PolicyStatementProps = {}) {
-    // Validate actions
-    for (const action of [...props.actions || [], ...props.notActions || []]) {
-      if (!/^(\*|[a-zA-Z0-9-]+:[a-zA-Z0-9*]+)$/.test(action)) {
-        throw new Error(`Action '${action}' is invalid. An action string consists of a service namespace, a colon, and the name of an action. Action names can include wildcards.`);
-      }
-    }
-
-    this.effect = props.effect || Effect.ALLOW;
-
-    this.addActions(...props.actions || []);
-    this.addNotActions(...props.notActions || []);
-    this.addPrincipals(...props.principals || []);
-    this.addNotPrincipals(...props.notPrincipals || []);
-    this.addResources(...props.resources || []);
-    this.addNotResources(...props.notResources || []);
-    if (props.conditions !== undefined) {
-      this.addConditions(props.conditions);
-    }
-  }
 
   //
-  // Actions
+  // Principal
   //
 
   public addActions(...actions: string[]) {
@@ -97,17 +115,6 @@ export class PolicyStatement {
       throw new Error(`Cannot add 'NotActions' to policy statement if 'Actions' have been added`);
     }
     this.notAction.push(...notActions);
-  }
-
-  //
-  // Principal
-  //
-
-  /**
-   * Indicates if this permission has a "Principal" section.
-   */
-  public get hasPrincipal() {
-    return Object.keys(this.principal).length > 0 || Object.keys(this.notPrincipal).length > 0;
   }
 
   public addPrincipals(...principals: IPrincipal[]) {
@@ -150,7 +157,7 @@ export class PolicyStatement {
     this.addPrincipals(new ServicePrincipal(service, opts));
   }
 
-  public addFederatedPrincipal(federated: any, conditions: {[key: string]: any}) {
+  public addFederatedPrincipal(federated: any, conditions: { [key: string]: any }) {
     this.addPrincipals(new FederatedPrincipal(federated, conditions));
   }
 
@@ -162,13 +169,13 @@ export class PolicyStatement {
     this.addPrincipals(new CanonicalUserPrincipal(canonicalUserId));
   }
 
-  public addAnyPrincipal() {
-    this.addPrincipals(new Anyone());
-  }
-
   //
   // Resources
   //
+
+  public addAnyPrincipal() {
+    this.addPrincipals(new Anyone());
+  }
 
   public addResources(...arns: string[]) {
     if (arns.length > 0 && this.notResource.length > 0) {
@@ -191,13 +198,6 @@ export class PolicyStatement {
     this.addResources('*');
   }
 
-  /**
-   * Indicates if this permission as at least one resource associated with it.
-   */
-  public get hasResource() {
-    return this.resource && this.resource.length > 0;
-  }
-
   //
   // Condition
   //
@@ -212,7 +212,7 @@ export class PolicyStatement {
   /**
    * Add multiple conditions to the Policy
    */
-  public addConditions(conditions: {[key: string]: any}) {
+  public addConditions(conditions: { [key: string]: any }) {
     Object.keys(conditions).map(key => {
       this.addCondition(key, conditions[key]);
     });
@@ -240,7 +240,7 @@ export class PolicyStatement {
 
     function _norm(values: any) {
 
-      if (typeof(values) === 'undefined') {
+      if (typeof (values) === 'undefined') {
         return undefined;
       }
 
@@ -260,7 +260,7 @@ export class PolicyStatement {
         return values;
       }
 
-      if (typeof(values) === 'object') {
+      if (typeof (values) === 'object') {
         if (Object.keys(values).length === 0) {
           return undefined;
         }
@@ -271,7 +271,9 @@ export class PolicyStatement {
 
     function _normPrincipal(principal: { [key: string]: any[] }) {
       const keys = Object.keys(principal);
-      if (keys.length === 0) { return undefined; }
+      if (keys.length === 0) {
+        return undefined;
+      }
       const result: any = {};
       for (const key of keys) {
         const normVal = _norm(principal[key]);
@@ -358,7 +360,7 @@ export interface PolicyStatementProps {
    *
    * @default - no condition
    */
-  readonly conditions?: {[key: string]: any};
+  readonly conditions?: { [key: string]: any };
 
   /**
    * Whether to allow or deny the actions in this statement
