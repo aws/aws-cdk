@@ -53,9 +53,9 @@ e.g. checklist of links to feature requests, bugs, and PRs that are in scope for
 <!-- 
 Labels to add:
     - package/[name] (create new labels if they don’t already exist)
-    - status/needs-design (if cfn-only)
+    - needs-design (if cfn-only)
     - management/roadmap (when added to the roadmap)
-    - status/in-progress (when added to “working on it” column of the roadmap)
+    - in-progress (when added to “working on it” column of the roadmap)
 -->
 --- 
 This is a  📊Tracking Issue
