@@ -1,6 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
-import { BaseService, BaseServiceOptions, IBaseService, IService, LaunchType, PropagatedTagSource } from '../base/base-service';
+import { BaseService, BaseServiceOptions, IService, LaunchType, PropagatedTagSource } from '../base/base-service';
 import { TaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
 
@@ -67,28 +67,6 @@ export interface IFargateService extends IService {
 }
 
 /**
- * The properties to import from the service using the Fargate launch type.
- */
-export interface FargateServiceAttributes {
-  /**
-   * The cluster that hosts the service.
-   */
-  readonly cluster: ICluster;
-  /**
-   * The service ARN.
-   *
-   * @default - generated from serviceName
-   */
-  readonly serviceArn?: string;
-  /**
-   * The name of the service.
-   *
-   * @default - generated from serviceArn
-   */
-  readonly serviceName?: string;
-}
-
-/**
  * This creates a service using the Fargate launch type on an ECS cluster.
  *
  * @resource AWS::ECS::Service
@@ -102,38 +80,6 @@ export class FargateService extends BaseService implements IFargateService {
     class Import extends cdk.Resource implements IFargateService {
       public readonly serviceArn = fargateServiceArn;
       public readonly serviceName = cdk.Stack.of(scope).parseArn(fargateServiceArn).resourceName as string;
-    }
-    return new Import(scope, id);
-  }
-
-  /**
-   * Imports from the specified service attrributes.
-   */
-  public static fromFargateServiceAttributes(scope: cdk.Construct, id: string, attrs: FargateServiceAttributes): IBaseService {
-    if ((attrs.serviceArn && attrs.serviceName) || (!attrs.serviceArn && !attrs.serviceName)) {
-      throw new Error('You can only specify either serviceArn or serviceName.');
-    }
-    const stack = cdk.Stack.of(scope);
-    let name: string;
-    let arn: string;
-    if (attrs.serviceName) {
-      name = attrs.serviceName as string;
-      arn = stack.formatArn({
-        partition: stack.partition,
-        service: 'ecs',
-        region: stack.region,
-        account: stack.account,
-        resource: 'service',
-        resourceName: name,
-      });
-    } else {
-      arn = attrs.serviceArn as string;
-      name = stack.parseArn(arn).resourceName as string;
-    }
-    class Import extends cdk.Resource implements IBaseService {
-      public readonly serviceArn = arn;
-      public readonly serviceName = name;
-      public readonly cluster = attrs.cluster;
     }
     return new Import(scope, id);
   }

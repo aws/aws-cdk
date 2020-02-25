@@ -22,6 +22,7 @@ export interface IService extends IResource {
    * @attribute
    */
   readonly serviceArn: string;
+
   /**
    * The name of the service.
    *
@@ -259,6 +260,80 @@ export interface IBaseService extends IService {
    * The cluster that hosts the service.
    */
   readonly cluster: ICluster;
+}
+
+/**
+ * The properties to import from the service.
+ */
+export interface BaseServiceAttributes {
+  /**
+   * The cluster that hosts the service.
+   */
+  readonly cluster: ICluster;
+
+  /**
+   * The service ARN.
+   *
+   * @default - generated from serviceName
+   */
+  readonly serviceArn?: string;
+
+  /**
+   * The name of the service.
+   *
+   * @default - generated from serviceArn
+   */
+  readonly serviceName?: string;
+}
+
+/**
+ * A Service that has been imported
+ */
+export class ImportedBaseService extends Resource implements IBaseService {
+  /**
+   * The cluster that hosts the service.
+   */
+  public readonly cluster: ICluster;
+
+  /**
+   * The service ARN.
+   */
+  public readonly serviceArn: string;
+
+  /**
+   * The name of the service.
+   */
+  public readonly serviceName: string;
+
+  /**
+   * Constructs a new instance of the ImportedBaseService class.
+   */
+  constructor(scope: Construct, id: string, props: BaseServiceAttributes) {
+    super(scope, id);
+    if ((props.serviceArn && props.serviceName) || (!props.serviceArn && !props.serviceName)) {
+      throw new Error('You can only specify either serviceArn or serviceName.');
+    }
+    const stack = Stack.of(scope);
+    let name: string;
+    let arn: string;
+    if (props.serviceName) {
+      name = props.serviceName as string;
+      arn = stack.formatArn({
+        partition: stack.partition,
+        service: 'ecs',
+        region: stack.region,
+        account: stack.account,
+        resource: 'service',
+        resourceName: name,
+      });
+    } else {
+      arn = props.serviceArn as string;
+      name = stack.parseArn(arn).resourceName as string;
+    }
+    this.serviceArn = arn;
+    this.serviceName = name;
+    this.cluster = props.cluster;
+  }
 }
 
 /**

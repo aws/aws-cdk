@@ -1,6 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { Construct, Lazy, Resource, Stack } from '@aws-cdk/core';
-import { BaseService, BaseServiceOptions, IBaseService, IService, LaunchType, PropagatedTagSource } from '../base/base-service';
+import { BaseService, BaseServiceOptions, IService, LaunchType, PropagatedTagSource } from '../base/base-service';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
 import { CfnService } from '../ecs.generated';
@@ -89,28 +89,6 @@ export interface IEc2Service extends IService {
 }
 
 /**
- * The properties to import from the service using the EC2 launch type.
- */
-export interface Ec2ServiceAttributes {
-  /**
-   * The cluster that hosts the service.
-   */
-  readonly cluster: ICluster;
-  /**
-   * The service ARN.
-   *
-   * @default - generated from serviceName
-   */
-  readonly serviceArn?: string;
-  /**
-   * The name of the service.
-   *
-   * @default - generated from serviceArn
-   */
-  readonly serviceName?: string;
-}
-
-/**
  * This creates a service using the EC2 launch type on an ECS cluster.
  *
  * @resource AWS::ECS::Service
@@ -124,38 +102,6 @@ export class Ec2Service extends BaseService implements IEc2Service {
     class Import extends Resource implements IEc2Service {
       public readonly serviceArn = ec2ServiceArn;
       public readonly serviceName = Stack.of(scope).parseArn(ec2ServiceArn).resourceName as string;
-    }
-    return new Import(scope, id);
-  }
-
-  /**
-   * Imports from the specified service attrributes.
-   */
-  public static fromEc2ServiceAttributes(scope: Construct, id: string, attrs: Ec2ServiceAttributes): IBaseService {
-    if ((attrs.serviceArn && attrs.serviceName) || (!attrs.serviceArn && !attrs.serviceName)) {
-      throw new Error('You can only specify either serviceArn or serviceName.');
-    }
-    const stack = Stack.of(scope);
-    let name: string;
-    let arn: string;
-    if (attrs.serviceName) {
-      name = attrs.serviceName as string;
-      arn = stack.formatArn({
-        partition: stack.partition,
-        service: 'ecs',
-        region: stack.region,
-        account: stack.account,
-        resource: 'service',
-        resourceName: name,
-      });
-    } else {
-      arn = attrs.serviceArn as string;
-      name = stack.parseArn(arn).resourceName as string;
-    }
-    class Import extends Resource implements IBaseService {
-      public readonly serviceArn = arn;
-      public readonly serviceName = name;
-      public readonly cluster = attrs.cluster;
     }
     return new Import(scope, id);
   }

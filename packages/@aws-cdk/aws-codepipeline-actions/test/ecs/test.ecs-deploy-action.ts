@@ -81,7 +81,7 @@ export = {
       test.done();
     },
 
-    'can be created just by serviceArn'(test: Test) {
+    'can be created by serviceArn'(test: Test) {
       const service = anyIBaseService();
       const artifact = new codepipeline.Artifact('Artifact');
 
@@ -116,8 +116,8 @@ function anyEcsService(): ecs.FargateService {
 
 function anyIBaseService(): ecs.IBaseService {
   const stack = new cdk.Stack();
-  return ecs.FargateService.fromFargateServiceAttributes(stack, 'FargateService', {
-    serviceArn: 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service',
+  return new ecs.ImportedBaseService(stack, 'FargateService', {
+    serviceName: 'my-http-service',
     cluster: new ecs.Cluster(stack, 'Cluster', {
       clusterName: 'cluster',
     }),
