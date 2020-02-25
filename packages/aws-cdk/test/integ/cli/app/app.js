@@ -6,6 +6,8 @@ const iam = require('@aws-cdk/aws-iam');
 const sns = require('@aws-cdk/aws-sns');
 const lambda = require('@aws-cdk/aws-lambda');
 const docker = require('@aws-cdk/aws-ecr-assets');
+const core = require('@aws-cdk/core')
+const { StackWithNestedStack } = require('./nested-stack');
 
 const stackPrefix = process.env.STACK_NAME_PREFIX || 'cdk-toolkit-integration';
 
@@ -116,6 +118,20 @@ class DockerStackWithCustomFile extends cdk.Stack {
 
 }
 
+class FailedStack extends cdk.Stack {
+
+  constructor(parent, id, props) {
+    super(parent, id, props);
+
+    // fails on 'Property PolicyDocument cannot be empty'.
+    new core.CfnResource(this, 'EmptyPolicy', {
+      type: 'AWS::IAM::Policy'
+    })
+
+  }
+
+}
+
 const VPC_TAG_NAME = 'custom-tag';
 const VPC_TAG_VALUE = `${stackPrefix}-bazinga!`;
 
@@ -168,6 +184,7 @@ new MissingSSMParameterStack(app, `${stackPrefix}-missing-ssm-parameter`, { env:
 new LambdaStack(app, `${stackPrefix}-lambda`);
 new DockerStack(app, `${stackPrefix}-docker`);
 new DockerStackWithCustomFile(app, `${stackPrefix}-docker-with-custom-file`);
+new FailedStack(app, `${stackPrefix}-failed`)
 
 if (process.env.ENABLE_VPC_TESTING) { // Gating so we don't do context fetching unless that's what we are here for
   const env = { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION };
@@ -178,5 +195,7 @@ if (process.env.ENABLE_VPC_TESTING) { // Gating so we don't do context fetching 
 }
 
 new ConditionalResourceStack(app, `${stackPrefix}-conditional-resource`)
+
+new StackWithNestedStack(app, `${stackPrefix}-with-nested-stack`);
 
 app.synth();

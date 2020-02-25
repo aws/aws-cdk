@@ -100,7 +100,7 @@ heading "${next}: ${command} (${remaining} remaining)"
   # that script (similar to how "lerna run" behaves)
   if [[ "${command}" == "npm run "* ]] || [[ "${command}" == "yarn run "* ]]; then
     script="$(echo ${command} | cut -d" " -f3)"
-    exists=$(node -pe "require('./package.json').scripts['${script}'] || ''")
+    exists=$(node -pe "(require('./package.json').scripts && require('./package.json').scripts['${script}']) || ''")
     if [ -z "${exists}" ]; then
       echo "skipping (no "${script}" script in package.json)"
       exit 0
