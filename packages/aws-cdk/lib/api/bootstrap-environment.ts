@@ -1,7 +1,7 @@
-import cxapi = require('@aws-cdk/cx-api');
-import fs = require('fs-extra');
-import os = require('os');
-import path = require('path');
+import * as cxapi from '@aws-cdk/cx-api';
+import * as fs from 'fs-extra';
+import * as os from 'os';
+import * as path from 'path';
 import {Tag} from "./cxapp/stacks";
 import { deployStack, DeployStackResult } from './deploy-stack';
 import { ISDK } from './util/sdk';
@@ -38,10 +38,32 @@ export interface BootstrapEnvironmentProps {
    * @default true
    */
   readonly execute?: boolean;
+
+  /**
+   * The list of AWS account IDs that are trusted to deploy into the environment being bootstrapped.
+   *
+   * @default - only the bootstrapped account can deploy into this environment
+   */
+  readonly trustedAccounts?: string[];
+
+  /**
+   * The ARNs of the IAM managed policies that should be attached to the role performing CloudFormation deployments.
+   * In most cases, this will be the AdministratorAccess policy.
+   * At least one policy is required if {@link trustedAccounts} were passed.
+   *
+   * @default - the role will have no policies attached
+   */
+  readonly cloudFormationExecutionPolicies?: string[];
 }
 
 /** @experimental */
 export async function bootstrapEnvironment(environment: cxapi.Environment, aws: ISDK, toolkitStackName: string, roleArn: string | undefined, props: BootstrapEnvironmentProps = {}): Promise<DeployStackResult> {
+  if (props.trustedAccounts?.length) {
+    throw new Error('--trust can only be passed for the new bootstrap experience!');
+  }
+  if (props.cloudFormationExecutionPolicies?.length) {
+    throw new Error('--cloudformation-execution-policies can only be passed for the new bootstrap experience!');
+  }
 
   const template = {
     Description: "The CDK Toolkit Stack. It was created by `cdk bootstrap` and manages resources necessary for managing your Cloud Applications with AWS CDK.",

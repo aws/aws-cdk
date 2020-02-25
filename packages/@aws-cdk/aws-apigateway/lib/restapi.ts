@@ -1,4 +1,5 @@
-import iam = require('@aws-cdk/aws-iam');
+import { IVpcEndpoint } from '@aws-cdk/aws-ec2';
+import * as iam from '@aws-cdk/aws-iam';
 import { CfnOutput, Construct, IResource as IResourceBase, Resource, Stack } from '@aws-cdk/core';
 import { ApiKey, IApiKey } from './api-key';
 import { CfnAccount, CfnRestApi } from './apigateway.generated';
@@ -93,6 +94,23 @@ export interface RestApiProps extends ResourceOptions {
   readonly description?: string;
 
   /**
+   * The EndpointConfiguration property type specifies the endpoint types of a REST API
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-restapi-endpointconfiguration.html
+   *
+   * @default - No endpoint configuration
+   */
+  readonly endpointConfiguration?: EndpointConfiguration;
+
+  /**
+   * A list of the endpoint types of the API. Use this property when creating
+   * an API.
+   *
+   * @default - No endpoint types.
+   * @deprecated this property is deprecated, use endpointConfiguration instead
+   */
+  readonly endpointTypes?: EndpointType[];
+
+  /**
    * The source of the API key for metering requests according to a usage
    * plan.
    *
@@ -107,14 +125,6 @@ export interface RestApiProps extends ResourceOptions {
    * @default - RestApi supports only UTF-8-encoded text payloads.
    */
   readonly binaryMediaTypes?: string[];
-
-  /**
-   * A list of the endpoint types of the API. Use this property when creating
-   * an API.
-   *
-   * @default - No endpoint types.
-   */
-  readonly endpointTypes?: EndpointType[];
 
   /**
    * Indicates whether to roll back the resource if a warning occurs while API
@@ -213,12 +223,11 @@ export class RestApi extends Resource implements IRestApi {
   public deploymentStage!: Stage;
 
   /**
-   * The domain name mapped to this API, if defined through the `domainName`
-   * configuration prop.
+   * The list of methods bound to this RestApi
    */
-  public readonly domainName?: DomainName;
+  public readonly methods = new Array<Method>();
 
-  private readonly methods = new Array<Method>();
+  private _domainName?: DomainName;
   private _latestDeployment: Deployment | undefined;
 
   constructor(scope: Construct, id: string, props: RestApiProps = { }) {
@@ -233,7 +242,7 @@ export class RestApi extends Resource implements IRestApi {
       failOnWarnings: props.failOnWarnings,
       minimumCompressionSize: props.minimumCompressionSize,
       binaryMediaTypes: props.binaryMediaTypes,
-      endpointConfiguration: props.endpointTypes ? { types: props.endpointTypes } : undefined,
+      endpointConfiguration: this.configureEndpoints(props),
       apiKeySourceType: props.apiKeySourceType,
       cloneFrom: props.cloneFrom ? props.cloneFrom.restApiId : undefined,
       parameters: props.parameters
@@ -253,8 +262,16 @@ export class RestApi extends Resource implements IRestApi {
     this.restApiRootResourceId = resource.attrRootResourceId;
 
     if (props.domainName) {
-      this.domainName = this.addDomainName('CustomDomain', props.domainName);
+      this.addDomainName('CustomDomain', props.domainName);
     }
+  }
+
+  /**
+   * The first domain name mapped to this API, if defined through the `domainName`
+   * configuration prop, or added via `addDomainName`
+   */
+  public get domainName() {
+    return this._domainName;
   }
 
   /**
@@ -292,10 +309,14 @@ export class RestApi extends Resource implements IRestApi {
    * @param options custom domain options
    */
   public addDomainName(id: string, options: DomainNameOptions): DomainName {
-    return new DomainName(this, id, {
+    const domainName = new DomainName(this, id, {
       ...options,
       mapping: this
     });
+    if (!this._domainName) {
+      this._domainName = domainName;
+    }
+    return domainName;
   }
 
   /**
@@ -419,6 +440,43 @@ export class RestApi extends Resource implements IRestApi {
 
     resource.node.addDependency(apiResource);
   }
+
+  private configureEndpoints(props: RestApiProps): CfnRestApi.EndpointConfigurationProperty | undefined {
+    if (props.endpointTypes && props.endpointConfiguration) {
+      throw new Error('Only one of the RestApi props, endpointTypes or endpointConfiguration, is allowed');
+    }
+    if (props.endpointConfiguration) {
+      return {
+        types: props.endpointConfiguration.types,
+        vpcEndpointIds: props.endpointConfiguration?.vpcEndpoints?.map(vpcEndpoint => vpcEndpoint.vpcEndpointId)
+      };
+    }
+    if (props.endpointTypes) {
+      return { types: props.endpointTypes };
+    }
+    return undefined;
+  }
+}
+
+/**
+ * The endpoint configuration of a REST API, including VPCs and endpoint types.
+ *
+ * EndpointConfiguration is a property of the AWS::ApiGateway::RestApi resource.
+ */
+export interface EndpointConfiguration {
+  /**
+   * A list of endpoint types of an API or its custom domain name.
+   *
+   * @default - no endpoint types.
+   */
+  readonly types: EndpointType[];
+
+  /**
+   * A list of VPC Endpoints against which to create Route53 ALIASes
+   *
+   * @default - no ALIASes are created for the endpoint.
+   */
+  readonly vpcEndpoints?: IVpcEndpoint[];
 }
 
 export enum ApiKeySourceType {

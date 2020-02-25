@@ -1,11 +1,12 @@
 import { DnsValidatedCertificate, ICertificate } from '@aws-cdk/aws-certificatemanager';
 import { IVpc } from '@aws-cdk/aws-ec2';
 import { AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerImage, ICluster, LogDriver, PropagatedTagSource, Secret } from '@aws-cdk/aws-ecs';
-import { ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationTargetGroup } from '@aws-cdk/aws-elasticloadbalancingv2';
+import { ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationTargetGroup,
+  IApplicationLoadBalancer, ListenerCertificate} from '@aws-cdk/aws-elasticloadbalancingv2';
 import { IRole } from '@aws-cdk/aws-iam';
-import { AddressRecordTarget, ARecord, IHostedZone } from '@aws-cdk/aws-route53';
+import { ARecord, IHostedZone, RecordTarget } from '@aws-cdk/aws-route53';
 import { LoadBalancerTarget } from '@aws-cdk/aws-route53-targets';
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 
 /**
  * The properties for the base ApplicationLoadBalancedEc2Service or ApplicationLoadBalancedFargateService service.
@@ -100,13 +101,33 @@ export interface ApplicationLoadBalancedServiceBaseProps {
   readonly healthCheckGracePeriod?: cdk.Duration;
 
   /**
+   * The maximum number of tasks, specified as a percentage of the Amazon ECS
+   * service's DesiredCount value, that can run in a service during a
+   * deployment.
+   *
+   * @default - 100 if daemon, otherwise 200
+   */
+  readonly maxHealthyPercent?: number;
+
+  /**
+   * The minimum number of tasks, specified as a percentage of
+   * the Amazon ECS service's DesiredCount value, that must
+   * continue to run and remain healthy during a deployment.
+   *
+   * @default - 0 if daemon, otherwise 50
+   */
+  readonly minHealthyPercent?: number;
+
+  /**
    * The application load balancer that will serve traffic to the service.
+   * The VPC attribute of a load balancer must be specified for it to be used
+   * to create a new service with this pattern.
    *
    * [disable-awslint:ref-via-interface]
    *
    * @default - a new load balancer will be created.
    */
-  readonly loadBalancer?: ApplicationLoadBalancer;
+  readonly loadBalancer?: IApplicationLoadBalancer;
 
   /**
    * Listener port of the application load balancer that will serve traffic to the service.
@@ -234,7 +255,12 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
   /**
    * The Application Load Balancer for the service.
    */
-  public readonly loadBalancer: ApplicationLoadBalancer;
+  public get loadBalancer(): ApplicationLoadBalancer {
+    if (!this._applicationLoadBalancer) {
+      throw new Error('.loadBalancer can only be accessed if the class was constructed with an owned, not imported, load balancer');
+    }
+    return this._applicationLoadBalancer;
+  }
 
   /**
    * The listener for the service.
@@ -255,6 +281,8 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
    * The cluster that hosts the service.
    */
   public readonly cluster: ICluster;
+
+  private readonly _applicationLoadBalancer?: ApplicationLoadBalancer;
 
   /**
    * Constructs a new instance of the ApplicationLoadBalancedServiceBase class.
@@ -279,18 +307,20 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
       internetFacing
     };
 
-    this.loadBalancer = props.loadBalancer !== undefined ? props.loadBalancer : new ApplicationLoadBalancer(this, 'LB', lbProps);
+    const loadBalancer = props.loadBalancer !== undefined ? props.loadBalancer
+                        : new ApplicationLoadBalancer(this, 'LB', lbProps);
 
     if (props.certificate !== undefined && props.protocol !== undefined && props.protocol !== ApplicationProtocol.HTTPS) {
       throw new Error('The HTTPS protocol must be used when a certificate is given');
     }
-    const protocol = props.protocol !== undefined ? props.protocol : (props.certificate ? ApplicationProtocol.HTTPS : ApplicationProtocol.HTTP);
+    const protocol = props.protocol !== undefined ? props.protocol :
+      (props.certificate ? ApplicationProtocol.HTTPS : ApplicationProtocol.HTTP);
 
     const targetProps = {
       port: 80
     };
 
-    this.listener = this.loadBalancer.addListener('PublicListener', {
+    this.listener = loadBalancer.addListener('PublicListener', {
       protocol,
       port: props.listenerPort,
       open: true
@@ -312,10 +342,10 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
       }
     }
     if (this.certificate !== undefined) {
-      this.listener.addCertificateArns('Arns', [this.certificate.certificateArn]);
+      this.listener.addCertificates('Arns', [ListenerCertificate.fromCertificateManager(this.certificate)]);
     }
 
-    let domainName = this.loadBalancer.loadBalancerDnsName;
+    let domainName = loadBalancer.loadBalancerDnsName;
     if (typeof props.domainName !== 'undefined') {
       if (typeof props.domainZone === 'undefined') {
         throw new Error('A Route53 hosted domain zone name is required to configure the specified domain name');
@@ -324,13 +354,17 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
       const record = new ARecord(this, "DNS", {
         zone: props.domainZone,
         recordName: props.domainName,
-        target: AddressRecordTarget.fromAlias(new LoadBalancerTarget(this.loadBalancer)),
+        target: RecordTarget.fromAlias(new LoadBalancerTarget(loadBalancer)),
       });
 
       domainName = record.domainName;
     }
 
-    new cdk.CfnOutput(this, 'LoadBalancerDNS', { value: this.loadBalancer.loadBalancerDnsName });
+    if (loadBalancer instanceof ApplicationLoadBalancer) {
+      this._applicationLoadBalancer = loadBalancer;
+    }
+
+    new cdk.CfnOutput(this, 'LoadBalancerDNS', { value: loadBalancer.loadBalancerDnsName });
     new cdk.CfnOutput(this, 'ServiceURL', { value: protocol.toLowerCase() + '://' + domainName });
   }
 

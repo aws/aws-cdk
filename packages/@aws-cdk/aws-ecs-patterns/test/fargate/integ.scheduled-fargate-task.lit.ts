@@ -1,8 +1,8 @@
-import ec2 = require('@aws-cdk/aws-ec2');
-import ecs = require('@aws-cdk/aws-ecs');
-import events = require('@aws-cdk/aws-events');
-import cdk = require('@aws-cdk/core');
-import path = require('path');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as ecs from '@aws-cdk/aws-ecs';
+import * as events from '@aws-cdk/aws-events';
+import * as cdk from '@aws-cdk/core';
+import * as path from 'path';
 
 import { ScheduledFargateTask } from '../../lib';
 

@@ -1,9 +1,9 @@
-import cfn = require('@aws-cdk/aws-cloudformation');
-import iam = require('@aws-cdk/aws-iam');
-import lambda = require('@aws-cdk/aws-lambda');
-import route53 = require('@aws-cdk/aws-route53');
-import cdk = require('@aws-cdk/core');
-import path = require('path');
+import * as cfn from '@aws-cdk/aws-cloudformation';
+import * as iam from '@aws-cdk/aws-iam';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as route53 from '@aws-cdk/aws-route53';
+import * as cdk from '@aws-cdk/core';
+import * as path from 'path';
 import { CertificateProps, ICertificate } from './certificate';
 
 /**
@@ -75,7 +75,7 @@ export class DnsValidatedCertificate extends cdk.Resource implements ICertificat
         }));
         requestorFunction.addToRolePolicy(new iam.PolicyStatement({
             actions: ['route53:changeResourceRecordSets'],
-            resources: [`arn:aws:route53:::hostedzone/${this.hostedZoneId}`],
+            resources: [`arn:${cdk.Stack.of(requestorFunction).partition}:route53:::hostedzone/${this.hostedZoneId}`],
         }));
 
         const certificate = new cfn.CustomResource(this, 'CertificateRequestorResource', {

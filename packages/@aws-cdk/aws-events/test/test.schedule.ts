@@ -1,6 +1,6 @@
 import { Duration } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import events = require('../lib');
+import * as events from '../lib';
 
 export = {
   'cron expressions day and dow are mutex: given weekday'(test: Test) {

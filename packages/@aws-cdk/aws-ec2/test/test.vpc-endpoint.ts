@@ -1,9 +1,9 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import { AnyPrincipal, PolicyStatement } from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 // tslint:disable-next-line:max-line-length
-import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, InterfaceVpcEndpoint, InterfaceVpcEndpointAwsService, SecurityGroup, SubnetType, Vpc } from '../lib';
+import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, InterfaceVpcEndpoint, InterfaceVpcEndpointAwsService, InterfaceVpcEndpointService, SecurityGroup, SubnetType, Vpc } from '../lib';
 
 export = {
   'gateway endpoint': {
@@ -305,6 +305,68 @@ export = {
       // THEN
       expect(stack).to(haveResource('AWS::EC2::VPCEndpoint', {
         SecurityGroupIds: ['existing-id'],
+      }));
+
+      test.done();
+    },
+    'security group has ingress by default'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VpcNetwork');
+
+      // WHEN
+      vpc.addInterfaceEndpoint('SecretsManagerEndpoint', {
+        service: InterfaceVpcEndpointAwsService.SECRETS_MANAGER,
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::EC2::SecurityGroup', {
+        SecurityGroupIngress: [
+          {
+            CidrIp: { "Fn::GetAtt": [ "VpcNetworkB258E83A", "CidrBlock" ] },
+            FromPort: 443,
+            IpProtocol: "tcp",
+            ToPort: 443
+          }
+        ]
+      }, ));
+
+      test.done();
+    },
+    'non-AWS service interface endpoint'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VpcNetwork');
+
+      // WHEN
+      vpc.addInterfaceEndpoint('YourService', {
+        service: new InterfaceVpcEndpointService("com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc", 443)
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::EC2::VPCEndpoint', {
+        ServiceName: "com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc",
+        PrivateDnsEnabled: false
+      }));
+
+      test.done();
+    },
+    'marketplace partner service interface endpoint'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VpcNetwork');
+
+      // WHEN
+      vpc.addInterfaceEndpoint('YourService', {
+        service: {name: "com.amazonaws.vpce.us-east-1.vpce-svc-mktplacesvcwprdns",
+                  port: 443,
+                  privateDnsDefault: true}
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::EC2::VPCEndpoint', {
+        ServiceName: "com.amazonaws.vpce.us-east-1.vpce-svc-mktplacesvcwprdns",
+        PrivateDnsEnabled: true
       }));
 
       test.done();

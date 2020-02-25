@@ -1,8 +1,6 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
-import iam = require('@aws-cdk/aws-iam');
-import { ServicePrincipal } from '@aws-cdk/aws-iam';
-import cdk = require('@aws-cdk/core');
-import { CfnResource, Stack } from '@aws-cdk/core';
+import * as iam from '@aws-cdk/aws-iam';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { EventBus, EventField, IRule, IRuleTarget, RuleTargetConfig, RuleTargetInput, Schedule } from '../lib';
 import { Rule } from '../lib/rule';
@@ -37,7 +35,7 @@ export = {
       schedule: Schedule.rate(cdk.Duration.minutes(10)),
     });
 
-    new CfnResource(stack, 'Res', {
+    new cdk.CfnResource(stack, 'Res', {
       type: 'Test::Resource',
       properties: {
         RuleName: rule.ruleName
@@ -328,7 +326,7 @@ export = {
     });
 
     const role = new iam.Role(stack, 'SomeRole', {
-      assumedBy: new ServicePrincipal('nobody')
+      assumedBy: new iam.ServicePrincipal('nobody')
     });
 
     // a plain string should just be stringified (i.e. double quotes added and escaped)
@@ -383,7 +381,7 @@ export = {
 
   'fromEventRuleArn'(test: Test) {
     // GIVEN
-    const stack = new Stack();
+    const stack = new cdk.Stack();
 
     // WHEN
     const importedRule = Rule.fromEventRuleArn(stack, 'ImportedRule', 'arn:aws:events:us-east-2:123456789012:rule/example');

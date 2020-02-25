@@ -1,7 +1,8 @@
-import iam = require('@aws-cdk/aws-iam');
+import * as iam from '@aws-cdk/aws-iam';
 import { Aws, Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
 import { Connections, IConnectable } from './connections';
 import { CfnVPCEndpoint } from './ec2.generated';
+import { Peer } from './peer';
 import { Port } from './port';
 import { ISecurityGroup, SecurityGroup } from './security-group';
 import { allRouteTableIds } from './util';
@@ -200,6 +201,37 @@ export interface IInterfaceVpcEndpointService {
    * The port of the service.
    */
   readonly port: number;
+
+  /**
+   * Whether Private DNS is supported by default.
+   */
+  readonly privateDnsDefault?: boolean;
+}
+
+/**
+ * A custom-hosted service for an interface VPC endpoint.
+ */
+export class InterfaceVpcEndpointService implements IInterfaceVpcEndpointService {
+
+  /**
+   * The name of the service.
+   */
+  public readonly name: string;
+
+  /**
+   * The port of the service.
+   */
+  public readonly port: number;
+
+  /**
+   * Whether Private DNS is supported by default.
+   */
+  public readonly privateDnsDefault?: boolean = false;
+
+  constructor(name: string, port?: number) {
+    this.name = name;
+    this.port = port || 443;
+  }
 }
 
 /**
@@ -210,7 +242,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly CLOUDFORMATION = new InterfaceVpcEndpointAwsService('cloudformation');
   public static readonly CLOUDTRAIL = new InterfaceVpcEndpointAwsService('cloudtrail');
   public static readonly CODEBUILD = new InterfaceVpcEndpointAwsService('codebuild');
-  public static readonly CODEBUILD_FIPS = new InterfaceVpcEndpointAwsService('codebuil-fips');
+  public static readonly CODEBUILD_FIPS = new InterfaceVpcEndpointAwsService('codebuild-fips');
   public static readonly CODECOMMIT = new InterfaceVpcEndpointAwsService('codecommit');
   public static readonly CODECOMMIT_FIPS = new InterfaceVpcEndpointAwsService('codecommit-fips');
   public static readonly CODEPIPELINE = new InterfaceVpcEndpointAwsService('codepipeline');
@@ -244,6 +276,8 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly STS = new InterfaceVpcEndpointAwsService('sts');
   public static readonly TRANSFER = new InterfaceVpcEndpointAwsService('transfer.server');
   public static readonly STORAGE_GATEWAY = new InterfaceVpcEndpointAwsService('storagegateway');
+  public static readonly REKOGNITION = new InterfaceVpcEndpointAwsService('rekognition');
+  public static readonly REKOGNITION_FIPS = new InterfaceVpcEndpointAwsService('rekognition-fips');
 
   /**
    * The name of the service.
@@ -254,6 +288,11 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
    * The port of the service.
    */
   public readonly port: number;
+
+  /**
+   * Whether Private DNS is supported by default.
+   */
+  public readonly privateDnsDefault?: boolean = true;
 
   constructor(name: string, prefix?: string, port?: number) {
     this.name = `${prefix || 'com.amazonaws'}.${Aws.REGION}.${name}`;
@@ -274,7 +313,8 @@ export interface InterfaceVpcEndpointOptions {
    * Whether to associate a private hosted zone with the specified VPC. This
    * allows you to make requests to the service using its default DNS hostname.
    *
-   * @default true
+   * @default set by the instance of IInterfaceVpcEndpointService, or true if
+   * not defined by the instance of IInterfaceVpcEndpointService
    */
   readonly privateDnsEnabled?: boolean;
 
@@ -292,6 +332,16 @@ export interface InterfaceVpcEndpointOptions {
    * @default - a new security group is created
    */
   readonly securityGroups?: ISecurityGroup[];
+
+  /**
+   * Whether to automatically allow VPC traffic to the endpoint
+   *
+   * If enabled, all traffic to the endpoint from within the VPC will be
+   * automatically allowed. This is done based on the VPC's CIDR range.
+   *
+   * @default true
+   */
+  readonly open?: boolean;
 }
 
 /**
@@ -380,17 +430,22 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
     const securityGroups = props.securityGroups || [new SecurityGroup(this, 'SecurityGroup', {
       vpc: props.vpc
     })];
+
     this.securityGroupId = securityGroups[0].securityGroupId;
     this.connections = new Connections({
       defaultPort: Port.tcp(props.service.port),
       securityGroups
     });
 
+    if (props.open !== false) {
+      this.connections.allowDefaultPortFrom(Peer.ipv4(props.vpc.vpcCidrBlock));
+    }
+
     const subnets = props.vpc.selectSubnets({ ...props.subnets, onePerAz: true });
     const subnetIds = subnets.subnetIds;
 
     const endpoint = new CfnVPCEndpoint(this, 'Resource', {
-      privateDnsEnabled: props.privateDnsEnabled !== undefined ? props.privateDnsEnabled : true,
+      privateDnsEnabled: props.privateDnsEnabled ?? props.service.privateDnsDefault ?? true,
       policyDocument: Lazy.anyValue({ produce: () => this.policyDocument }),
       securityGroupIds: securityGroups.map(s => s.securityGroupId),
       serviceName: props.service.name,

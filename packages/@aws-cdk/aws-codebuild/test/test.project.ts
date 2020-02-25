@@ -1,11 +1,10 @@
-import { expect, haveResource, haveResourceLike, not } from '@aws-cdk/assert';
-import ec2 = require('@aws-cdk/aws-ec2');
-import iam = require('@aws-cdk/aws-iam');
-import s3 = require('@aws-cdk/aws-s3');
-import { Bucket } from '@aws-cdk/aws-s3';
-import cdk = require('@aws-cdk/core');
+import { countResources, expect, haveResource, haveResourceLike, not, ResourcePart } from '@aws-cdk/assert';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as iam from '@aws-cdk/aws-iam';
+import * as s3 from '@aws-cdk/aws-s3';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import codebuild = require('../lib');
+import * as codebuild from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -17,7 +16,7 @@ export = {
     // WHEN
     new codebuild.Project(stack, 'Project', {
       source: codebuild.Source.s3({
-        bucket: new Bucket(stack, 'Bucket'),
+        bucket: new s3.Bucket(stack, 'Bucket'),
         path: 'path',
       }),
       buildSpec: codebuild.BuildSpec.fromSourceFilename('hello.yml'),
@@ -104,6 +103,47 @@ export = {
       test.done();
     },
 
+    'can set a branch as the SourceVersion'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      new codebuild.Project(stack, 'Project', {
+        source: codebuild.Source.gitHub({
+          owner: 'testowner',
+          repo: 'testrepo',
+          branchOrRef: 'testbranch',
+        })
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::CodeBuild::Project', {
+        SourceVersion: 'testbranch',
+      }));
+
+      test.done();
+    },
+
+    'can set the SourceVersion for a gitHubEnterprise'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      new codebuild.Project(stack, 'Project', {
+        source: codebuild.Source.gitHubEnterprise({
+          httpsCloneUrl: 'https://mygithub-enterprise.com/myuser/myrepo',
+          branchOrRef: 'testbranch',
+        })
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::CodeBuild::Project', {
+        SourceVersion: 'testbranch',
+      }));
+
+      test.done();
+    },
+
     'can explicitly set reportBuildStatus to false'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
@@ -167,6 +207,27 @@ export = {
     },
   },
 
+  'project with bitbucket and SourceVersion'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new codebuild.Project(stack, 'Project', {
+      source: codebuild.Source.bitBucket({
+        owner: 'testowner',
+        repo: 'testrepo',
+        branchOrRef: 'testbranch',
+      })
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::CodeBuild::Project', {
+      SourceVersion: 'testbranch',
+    }));
+
+    test.done();
+  },
+
   'project with s3 cache bucket'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -174,10 +235,10 @@ export = {
     // WHEN
     new codebuild.Project(stack, 'Project', {
       source: codebuild.Source.s3({
-        bucket: new Bucket(stack, 'SourceBucket'),
+        bucket: new s3.Bucket(stack, 'SourceBucket'),
         path: 'path',
       }),
-      cache: codebuild.Cache.bucket(new Bucket(stack, 'Bucket'), {
+      cache: codebuild.Cache.bucket(new s3.Bucket(stack, 'Bucket'), {
         prefix: "cache-prefix"
       })
     });
@@ -203,6 +264,29 @@ export = {
     test.done();
   },
 
+  's3 codebuild project with sourceVersion'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new codebuild.Project(stack, 'Project', {
+      source: codebuild.Source.s3({
+        bucket: new s3.Bucket(stack, 'Bucket'),
+        path: 'path',
+        version: 's3version'
+      }),
+      cache: codebuild.Cache.local(codebuild.LocalCacheMode.CUSTOM, codebuild.LocalCacheMode.DOCKER_LAYER,
+        codebuild.LocalCacheMode.SOURCE)
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::CodeBuild::Project', {
+      SourceVersion: 's3version',
+    }));
+
+    test.done();
+  },
+
   'project with local cache modes'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -210,7 +294,7 @@ export = {
     // WHEN
     new codebuild.Project(stack, 'Project', {
       source: codebuild.Source.s3({
-        bucket: new Bucket(stack, 'Bucket'),
+        bucket: new s3.Bucket(stack, 'Bucket'),
         path: 'path',
       }),
       cache: codebuild.Cache.local(codebuild.LocalCacheMode.CUSTOM, codebuild.LocalCacheMode.DOCKER_LAYER,
@@ -239,7 +323,7 @@ export = {
     // WHEN
     new codebuild.Project(stack, 'Project', {
       source: codebuild.Source.s3({
-        bucket: new Bucket(stack, 'Bucket'),
+        bucket: new s3.Bucket(stack, 'Bucket'),
         path: 'path',
       }),
     });
@@ -269,6 +353,66 @@ export = {
     expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
       // no need to do any assertions
     }));
+
+    test.done();
+  },
+
+  'can use an imported Role with mutable = false for a Project within a VPC'(test: Test) {
+    const stack = new cdk.Stack();
+
+    const importedRole = iam.Role.fromRoleArn(stack, 'Role',
+        'arn:aws:iam::1234567890:role/service-role/codebuild-bruiser-service-role', {
+      mutable: false,
+    });
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    new codebuild.Project(stack, 'Project', {
+      source: codebuild.Source.gitHubEnterprise({
+        httpsCloneUrl: 'https://mygithub-enterprise.com/myuser/myrepo',
+      }),
+      role: importedRole,
+      vpc,
+    });
+
+    expect(stack).to(countResources('AWS::IAM::Policy', 0));
+
+    // Check that the CodeBuild project does not have a DependsOn
+    expect(stack).to(haveResource('AWS::CodeBuild::Project', (res: any) => {
+      if (res.DependsOn && res.DependsOn.length > 0) {
+        throw new Error(`CodeBuild project should have no DependsOn, but got: ${JSON.stringify(res, undefined, 2)}`);
+      }
+      return true;
+    }, ResourcePart.CompleteDefinition));
+
+    test.done();
+  },
+
+  'can use an ImmutableRole for a Project within a VPC'(test: Test) {
+    const stack = new cdk.Stack();
+
+    const role = new iam.Role(stack, 'Role', {
+      assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com')
+    });
+
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    new codebuild.Project(stack, 'Project', {
+      source: codebuild.Source.gitHubEnterprise({
+        httpsCloneUrl: 'https://mygithub-enterprise.com/myuser/myrepo',
+      }),
+      role: role.withoutPolicyUpdates(),
+      vpc,
+    });
+
+    expect(stack).to(countResources('AWS::IAM::Policy', 0));
+
+    // Check that the CodeBuild project does not have a DependsOn
+    expect(stack).to(haveResource('AWS::CodeBuild::Project', (res: any) => {
+      if (res.DependsOn && res.DependsOn.length > 0) {
+        throw new Error(`CodeBuild project should have no DependsOn, but got: ${JSON.stringify(res, undefined, 2)}`);
+      }
+      return true;
+    }, ResourcePart.CompleteDefinition));
 
     test.done();
   },

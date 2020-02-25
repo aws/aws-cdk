@@ -1,7 +1,7 @@
-import caseUtils = require('case');
-import fs = require('fs');
-import path = require('path');
-import semver = require('semver');
+import * as caseUtils from 'case';
+import * as fs from 'fs';
+import * as path from 'path';
+import * as semver from 'semver';
 import { LICENSE, NOTICE } from './licensing';
 import { PackageJson, ValidationRule } from './packagejson';
 import {
@@ -302,17 +302,6 @@ export class CDKKeywords extends ValidationRule {
   }
 }
 
-export class DeveloperPreviewVersionLabels extends ValidationRule {
-  public readonly name = 'jsii/developer-preview-version-label';
-
-  public validate(pkg: PackageJson): void {
-    if (!isJSII(pkg)) { return; }
-
-    expectJSON(this.name, pkg, 'jsii.targets.java.maven.versionSuffix', '.DEVPREVIEW');
-    expectJSON(this.name, pkg, 'jsii.targets.dotnet.versionSuffix', '-devpreview');
-  }
-}
-
 /**
  * JSII Java package is required and must look sane
  */
@@ -507,7 +496,8 @@ function cdkModuleName(name: string) {
       isLegacyCdkPkg ? 'cdk'
         : isCdkPkg ? 'core'
           : name.startsWith('aws-') || name.startsWith('alexa-') ? name.replace(/^aws-/, '')
-            : `cdk-${name}`,
+            : name.startsWith('cdk-') ? name
+              : `cdk-${name}`,
     dotnetNamespace: `Amazon.CDK${isCdkPkg ? '' : `.${dotnetSuffix}`}`,
     python: {
       distName: `aws-cdk.${pythonName}`,
@@ -667,17 +657,45 @@ export class RegularDependenciesMustSatisfyPeerDependencies extends ValidationRu
 }
 
 /**
- * Check that dependencies on @aws-cdk/ packages use point versions (not version ranges).
+ * Check that dependencies on @aws-cdk/ packages use point versions (not version ranges)
+ * and that they are also defined in `peerDependencies`.
  */
 export class MustDependonCdkByPointVersions extends ValidationRule {
   public readonly name = 'dependencies/cdk-point-dependencies';
 
   public validate(pkg: PackageJson): void {
     const expectedVersion = monoRepoVersion();
+    const ignore = [
+      '@aws-cdk/cloudformation-diff',
+      '@aws-cdk/cfnspec',
+      '@aws-cdk/cdk-assets-schema',
+      '@aws-cdk/cx-api',
+      '@aws-cdk/region-info'
+    ];
 
     for (const [depName, depVersion] of Object.entries(pkg.dependencies)) {
-      if (isCdkModuleName(depName) && depVersion !== expectedVersion) {
+      if (!isCdkModuleName(depName) || ignore.includes(depName)) {
+        continue;
+      }
 
+      const peerDep = pkg.peerDependencies[depName];
+      if (!peerDep) {
+        pkg.report({
+          ruleName: this.name,
+          message: `dependency ${depName} must also appear in peerDependencies`,
+          fix: () => pkg.addPeerDependency(depName, expectedVersion)
+        });
+      }
+
+      if (peerDep !== expectedVersion) {
+        pkg.report({
+          ruleName: this.name,
+          message: `peer dependency ${depName} should have the version ${expectedVersion}`,
+          fix: () => pkg.addPeerDependency(depName, expectedVersion)
+        });
+      }
+
+      if (depVersion !== expectedVersion) {
         pkg.report({
           ruleName: this.name,
           message: `dependency ${depName}: dependency version must be ${expectedVersion}`,
@@ -715,36 +733,6 @@ export class NpmIgnoreForJsiiModules extends ValidationRule {
 }
 
 /**
- * nodeunit and @types/nodeunit must appear in devDependencies if
- * the test script uses "nodeunit"
- */
-export class GlobalDevDependencies extends ValidationRule {
-  public readonly name = 'dependencies/global-dev';
-
-  public validate(pkg: PackageJson): void {
-
-    const deps = [
-      'typescript',
-      'tslint',
-      'nodeunit',
-      '@types/nodeunit',
-      // '@types/node', // we tend to get @types/node 12.x from transitive closures now, it breaks builds.
-      'nyc'
-    ];
-
-    for (const dep of deps) {
-      if (pkg.getDevDependency(dep)) {
-        pkg.report({
-          ruleName: this.name,
-          message: `devDependency ${dep} is defined at the repo level`,
-          fix: () => pkg.removeDevDependency(dep)
-        });
-      }
-    }
-  }
-}
-
-/**
  * Must use 'cdk-watch' command
  */
 export class MustUseCDKWatch extends ValidationRule {
@@ -773,7 +761,7 @@ export class MustUseCDKTest extends ValidationRule {
     // files in .gitignore.
     fileShouldContain(this.name, pkg, '.gitignore', '.nyc_output');
     fileShouldContain(this.name, pkg, '.gitignore', 'coverage');
-    fileShouldContain(this.name, pkg, '.gitignore', '.nycrc');
+    fileShouldContain(this.name, pkg, '.gitignore', 'nyc.config.js');
   }
 }
 
@@ -884,7 +872,7 @@ export class AllVersionsTheSame extends ValidationRule {
   private readonly usedDeps: {[pkg: string]: VersionCount[]} = {};
 
   public prepare(pkg: PackageJson): void {
-    this.ourPackages[pkg.json.name] = `^${pkg.json.version}`;
+    this.ourPackages[pkg.json.name] = pkg.json.version;
     this.recordDeps(pkg.json.dependencies);
     this.recordDeps(pkg.json.devDependencies);
   }
@@ -973,33 +961,6 @@ export class Cfn2Ts extends ValidationRule {
     }
 
     expectJSON(this.name, pkg, 'scripts.cfn2ts', 'cfn2ts');
-  }
-}
-
-export class JestCoverageTarget extends ValidationRule {
-  public readonly name = 'jest-coverage-target';
-
-  public validate(pkg: PackageJson) {
-    if (pkg.json.jest) {
-      // We enforce the key exists, but the value is just a default
-      const defaults: { [key: string]: number } = {
-        branches: 80,
-        statements: 80
-      };
-      for (const key of Object.keys(defaults)) {
-        const deepPath = ['coverageThreshold', 'global', key];
-        const setting = deepGet(pkg.json.jest, deepPath);
-        if (setting == null) {
-          pkg.report({
-            ruleName: this.name,
-            message: `When jest is used, jest.coverageThreshold.global.${key} must be set`,
-            fix: () => {
-              deepSet(pkg.json.jest, deepPath, defaults[key]);
-            },
-          });
-        }
-      }
-    }
   }
 }
 

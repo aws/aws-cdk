@@ -1,5 +1,5 @@
-import ec2 = require('@aws-cdk/aws-ec2');
-import ecs = require('@aws-cdk/aws-ecs');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as ecs from '@aws-cdk/aws-ecs';
 import { CommonEcsRunTaskProps, EcsRunTaskBase } from './run-ecs-task-base';
 
 /**

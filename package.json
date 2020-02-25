@@ -1,6 +1,6 @@
 {
   "name": "aws-cdk",
-  "version": "1.17.1",
+  "version": "1.25.0",
   "private": true,
   "pkglint": {
     "include": "dependencies/node-version"
@@ -10,35 +10,22 @@
     "build": "./build.sh",
     "pack": "./pack.sh",
     "compat": "./scripts/check-api-compatibility.sh",
+    "bump": "./bump.sh",
     "build-all": "tsc -b"
   },
   "devDependencies": {
-    "@types/jest": "^24.0.23",
-    "@types/node": "^10.17.5",
-    "@types/nodeunit": "^0.0.30",
-    "conventional-changelog-cli": "^2.0.28",
+    "conventional-changelog-cli": "^2.0.31",
     "fs-extra": "^8.1.0",
-    "jest": "^24.9.0",
-    "jsii-diff": "^0.20.7",
-    "jsii-pacmak": "^0.20.7",
-    "lerna": "^3.18.4",
-    "nodeunit": "^0.11.3",
-    "nyc": "^14.1.1",
-    "standard-version": "^7.0.1",
-    "ts-jest": "^24.1.0",
-    "tslint": "^5.20.1",
-    "typescript": "~3.6.4"
+    "jsii-diff": "^1.0.0",
+    "jsii-pacmak": "^0.22.0",
+    "jsii-rosetta": "^0.22.0",
+    "lerna": "^3.20.2",
+    "standard-version": "^7.1.0",
+    "typescript": "~3.8.2"
   },
   "repository": {
     "type": "git",
     "url": "git://github.com/aws/aws-cdk"
-  },
-  "standard-version": {
-    "releaseCommitMessageFormat": "v{{currentTag}}",
-    "scripts": {
-      "prebump": "echo $(node -pe \"require('./lerna.json').version\")",
-      "precommit": "git add ."
-    }
   },
   "license": "Apache-2.0",
   "author": {
@@ -49,15 +36,25 @@
     "packages": [
       "packages/*",
       "packages/@aws-cdk/*",
+      "packages/@monocdk-experiment/*",
       "packages/@aws-cdk/*/lambda-packages/*",
       "tools/*"
     ],
     "nohoist": [
       "**/jszip",
       "**/jszip/**",
+      "@aws-cdk/cdk-assets-schema/semver",
+      "@aws-cdk/cdk-assets-schema/semver/**",
       "@aws-cdk/assets/minimatch",
       "@aws-cdk/assets/minimatch/**",
+      "@aws-cdk/aws-codepipeline-actions/case",
+      "@aws-cdk/aws-codepipeline-actions/case/**",
+      "@aws-cdk/aws-ecr-assets/minimatch",
+      "@aws-cdk/aws-ecr-assets/minimatch/**",
+      "@aws-cdk/aws-lambda-nodejs/parcel-bundler",
+      "@aws-cdk/aws-lambda-nodejs/parcel-bundler/**",
       "@aws-cdk/cx-api/semver",
+      "@aws-cdk/cx-api/semver/**",
       "@aws-cdk/cx-api/semver/**"
     ]
   }

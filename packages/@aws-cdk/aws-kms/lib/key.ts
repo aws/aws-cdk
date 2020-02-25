@@ -1,5 +1,4 @@
-import iam = require('@aws-cdk/aws-iam');
-import { PolicyDocument, PolicyStatement } from '@aws-cdk/aws-iam';
+import * as iam from '@aws-cdk/aws-iam';
 import { Construct, IResource, RemovalPolicy, Resource, Stack } from '@aws-cdk/core';
 import { Alias } from './alias';
 import { CfnKey } from './kms.generated';
@@ -35,7 +34,7 @@ export interface IKey extends IResource {
    * defined (i.e. external key), the operation will fail. Otherwise, it will
    * no-op.
    */
-  addToResourcePolicy(statement: PolicyStatement, allowNoOp?: boolean): void;
+  addToResourcePolicy(statement: iam.PolicyStatement, allowNoOp?: boolean): void;
 
   /**
    * Grant the indicated permissions on this key to the given principal
@@ -72,7 +71,15 @@ abstract class KeyBase extends Resource implements IKey {
    * If specified, addToResourcePolicy can be used to edit this policy.
    * Otherwise this method will no-op.
    */
-  protected abstract readonly policy?: PolicyDocument;
+  protected abstract readonly policy?: iam.PolicyDocument;
+
+  /**
+   * Optional property to control trusting account identities.
+   *
+   * If specified grants will default identity policies instead of to both
+   * resource and identity policies.
+   */
+  protected abstract readonly trustAccountIdentities: boolean;
 
   /**
    * Collection of aliases added to the key
@@ -100,7 +107,7 @@ abstract class KeyBase extends Resource implements IKey {
    * defined (i.e. external key), the operation will fail. Otherwise, it will
    * no-op.
    */
-  public addToResourcePolicy(statement: PolicyStatement, allowNoOp = true) {
+  public addToResourcePolicy(statement: iam.PolicyStatement, allowNoOp = true) {
     const stack = Stack.of(this);
 
     if (!this.policy) {
@@ -131,19 +138,25 @@ abstract class KeyBase extends Resource implements IKey {
     const crossAccountAccess = this.isGranteeFromAnotherAccount(grantee);
     const crossRegionAccess = this.isGranteeFromAnotherRegion(grantee);
     const crossEnvironment = crossAccountAccess || crossRegionAccess;
-    return iam.Grant.addToPrincipalAndResource({
+    const grantOptions: iam.GrantWithResourceOptions = {
       grantee,
       actions,
       resource: this,
-      resourcePolicyPrincipal: principal,
-
-      // if the key is used in a cross-environment matter,
-      // we can't access the Key ARN (they don't have physical names),
-      // so fall back to using '*'. ToDo we need to make this better... somehow
-      resourceArns: crossEnvironment ? ['*'] : [this.keyArn],
-
+      resourceArns: [this.keyArn],
       resourceSelfArns: crossEnvironment ? undefined : ['*'],
-    });
+    };
+    if (this.trustAccountIdentities) {
+      return iam.Grant.addToPrincipalOrResource(grantOptions);
+    } else {
+      return iam.Grant.addToPrincipalAndResource({
+        ...grantOptions,
+        // if the key is used in a cross-environment matter,
+        // we can't access the Key ARN (they don't have physical names),
+        // so fall back to using '*'. ToDo we need to make this better... somehow
+        resourceArns: crossEnvironment ? ['*'] : [this.keyArn],
+        resourcePolicyPrincipal: principal,
+      });
+    }
   }
 
   /**
@@ -260,7 +273,7 @@ export interface KeyProps {
    * @default - A policy document with permissions for the account root to
    * administer the key will be created.
    */
-  readonly policy?: PolicyDocument;
+  readonly policy?: iam.PolicyDocument;
 
   /**
    * Whether the encryption key should be retained when it is removed from the Stack. This is useful when one wants to
@@ -269,6 +282,18 @@ export interface KeyProps {
    * @default RemovalPolicy.Retain
    */
   readonly removalPolicy?: RemovalPolicy;
+
+  /**
+   * Whether the key usage can be granted by IAM policies
+   *
+   * Setting this to true adds a default statement which delegates key
+   * access control completely to the identity's IAM policy (similar
+   * to how it works for other AWS resources).
+   *
+   * @default false
+   * @see https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html#key-policy-default-allow-root-enable-iam
+   */
+  readonly trustAccountIdentities?: boolean;
 }
 
 /**
@@ -289,6 +314,10 @@ export class Key extends KeyBase {
       public readonly keyArn = keyArn;
       public readonly keyId: string;
       protected readonly policy?: iam.PolicyDocument | undefined = undefined;
+      // defaulting true: if we are importing the key the key policy is
+      // undefined and impossible to change here; this means updating identity
+      // policies is really the only option
+      protected readonly trustAccountIdentities: boolean = true;
 
       constructor(keyId: string) {
         super(scope, id);
@@ -307,15 +336,17 @@ export class Key extends KeyBase {
 
   public readonly keyArn: string;
   public readonly keyId: string;
-  protected readonly policy?: PolicyDocument;
+  protected readonly policy?: iam.PolicyDocument;
+  protected readonly trustAccountIdentities: boolean;
 
   constructor(scope: Construct, id: string, props: KeyProps = {}) {
     super(scope, id);
 
-    if (props.policy) {
-      this.policy = props.policy;
+    this.policy = props.policy || new iam.PolicyDocument();
+    this.trustAccountIdentities = props.trustAccountIdentities || false;
+    if (this.trustAccountIdentities) {
+      this.allowAccountIdentitiesToControl();
     } else {
-      this.policy = new PolicyDocument();
       this.allowAccountToAdmin();
     }
 
@@ -335,8 +366,17 @@ export class Key extends KeyBase {
     }
   }
 
+  private allowAccountIdentitiesToControl() {
+    this.addToResourcePolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      actions: ['kms:*'],
+      principals: [new iam.AccountRootPrincipal()]
+    }));
+
+  }
   /**
-   * Let users from this account admin this key.
+   * Let users or IAM policies from this account admin this key.
+   * @link https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html#key-policy-default
    * @link https://aws.amazon.com/premiumsupport/knowledge-center/update-key-policy-future/
    */
   private allowAccountToAdmin() {
@@ -353,10 +393,12 @@ export class Key extends KeyBase {
       "kms:Delete*",
       "kms:ScheduleKeyDeletion",
       "kms:CancelKeyDeletion",
-      "kms:GenerateDataKey"
+      "kms:GenerateDataKey",
+      "kms:TagResource",
+      "kms:UntagResource"
     ];
 
-    this.addToResourcePolicy(new PolicyStatement({
+    this.addToResourcePolicy(new iam.PolicyStatement({
       resources: ['*'],
       actions,
       principals: [new iam.AccountRootPrincipal()]

@@ -1,10 +1,11 @@
-import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import cdk = require('@aws-cdk/core');
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as cdk from '@aws-cdk/core';
 import { Chain } from '../chain';
 import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';
 import { IStepFunctionsTask, StepFunctionsTaskConfig } from '../step-functions-task';
 import { CatchProps, IChainable, INextable, RetryProps } from '../types';
+import { noEmptyObject } from '../util';
 import { StateType } from './private/state-type';
 import { renderJsonPath, State } from './state';
 
@@ -55,12 +56,26 @@ export interface TaskProps {
     readonly resultPath?: string;
 
     /**
-     * Parameters pass a collection of key-value pairs, either static values or JSONPath expressions that select from the input.
+     * Parameters to invoke the task with
+     *
+     * It is not recommended to use this field. The object that is passed in
+     * the `task` property will take care of returning the right values for the
+     * `Parameters` field in the Step Functions definition.
+     *
+     * The various classes that implement `IStepFunctionsTask` will take a
+     * properties which make sense for the task type. For example, for
+     * `InvokeFunction` the field that populates the `parameters` field will be
+     * called `payload`, and for the `PublishToTopic` the `parameters` field
+     * will be populated via a combination of the referenced topic, subject and
+     * message.
+     *
+     * If passed anyway, the keys in this map will override the parameters
+     * returned by the task object.
      *
      * @see
      * https://docs.aws.amazon.com/step-functions/latest/dg/input-output-inputpath-params.html#input-output-parameters
      *
-     * @default No parameters
+     * @default - Use the parameters implied by the `task` property
      */
     readonly parameters?: { [name: string]: any };
 
@@ -93,7 +108,12 @@ export class Task extends State implements INextable {
         super(scope, id, props);
 
         this.timeout = props.timeout;
-        this.taskProps = props.task.bind(this);
+        const taskProps = props.task.bind(this);
+
+        this.taskProps = {
+            ...taskProps,
+            parameters: noEmptyObject({ ...taskProps.parameters || {}, ...props.parameters || {} }),
+        };
         this.endStates = [this];
     }
 
@@ -157,7 +177,7 @@ export class Task extends State implements INextable {
             dimensions: this.taskProps.metricDimensions,
             statistic: 'sum',
             ...props
-        });
+        }).attachTo(this);
     }
 
     /**

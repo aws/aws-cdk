@@ -1,5 +1,5 @@
-import autoscaling = require('@aws-cdk/aws-autoscaling');
-import sqs = require('@aws-cdk/aws-sqs');
+import * as autoscaling from '@aws-cdk/aws-autoscaling';
+import * as sqs from '@aws-cdk/aws-sqs';
 import { Construct } from '@aws-cdk/core';
 
 /**

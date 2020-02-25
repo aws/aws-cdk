@@ -1,8 +1,10 @@
-import fs = require('fs-extra');
-import util = require('util');
+import * as fs from 'fs-extra';
+import * as util from 'util';
 
+/* eslint-disable @typescript-eslint/no-require-imports */
 // tslint:disable-next-line:no-var-requires
 const jsonDiff = require('json-diff').diff;
+/* eslint-enable */
 
 function line(fmt: string = '', ...param: any[]) {
   process.stdout.write(util.format(fmt, ...param));
@@ -87,7 +89,8 @@ async function main() {
       return;
     }
 
-    pushDownFirstAdditions(update);
+    pushDownCompleteChanges(update);
+
     for (const key of Object.keys(update)) {
       switch (key) {
       case 'Properties':
@@ -144,15 +147,38 @@ async function main() {
     }
   }
 
-  function pushDownFirstAdditions(update: any) {
-    for (const key of Object.keys(update)) {
-      const added = isAdded(key);
-      if (!added) { continue; }
-      const data = update[key];
-      delete update[key];
-      update[added] = {};
-      for (const subKey of Object.keys(data)) {
-        update[added][`${subKey}__added`] = data[subKey];
+  /**
+   * Push down mass changes to attributes or properties to the individual properties.
+   *
+   * An example will explain this best. JSON-diff will make the smallest diff, so if there
+   * are new properties it will report:
+   *
+   * "Properties__added": {
+   *    "Property1": { ... },
+   *    "Property2": { ... },
+   * }
+   *
+   * But we want to see this as:
+   *
+   * "Properties": {
+   *    "Property1__added": { ... },
+   *    "Property2__added": { ... },
+   * }
+   *
+   * Same (but in reverse) for deletions.
+   */
+  function pushDownCompleteChanges(update: Record<string, Record<string, any>>) {
+    for (const [category, entries] of Object.entries(update)) {
+      const addedKey = isAdded(category);
+      if (addedKey) {
+        delete update[category];
+        update[addedKey] = suffixKeys('__added', entries);
+      }
+
+      const deletedKey = isDeleted(category);
+      if (deletedKey) {
+        delete update[category];
+        update[deletedKey] = suffixKeys('__deleted', entries);
       }
     }
   }
@@ -168,6 +194,14 @@ async function main() {
   function isSuffix(key: string, suffix: string) {
     const index = key.indexOf(suffix);
     return index === -1 ? undefined : key.substr(0, index);
+  }
+
+  function suffixKeys(suffix: string, xs: Record<string, any>): Record<string, any> {
+    const ret: Record<string, any> = {};
+    for (const [key, value] of Object.entries(xs)) {
+      ret[key + suffix] = value;
+    }
+    return ret;
   }
 
   function describeChanges(namespace: string, prefix: string, update: any) {

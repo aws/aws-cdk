@@ -7,6 +7,8 @@ export PATH=$PWD/node_modules/.bin:$PATH
 export NODE_OPTIONS="--max-old-space-size=4096 ${NODE_OPTIONS:-}"
 root=$PWD
 
+PACMAK=${PACMAK:-jsii-pacmak}
+ROSETTA=${ROSETTA:-jsii-rosetta}
 TMPDIR=${TMPDIR:-$(dirname $(mktemp -u))}
 distdir="$PWD/dist"
 rm -fr ${distdir}
@@ -25,22 +27,31 @@ function lerna_scopes() {
   done
 }
 
-echo "Packaging jsii modules" >&2
+# Compile examples with respect to "decdk" directory, as all packages will
+# be symlinked there so they can all be included.
+echo "Extracting code samples" >&2
+node --experimental-worker $(which $ROSETTA) \
+  --compile \
+  --output samples.tabl.json \
+  --directory packages/decdk \
+  $(cat $TMPDIR/jsii.txt)
 
 # Jsii packaging (all at once using jsii-pacmak)
-jsii-pacmak \
+echo "Packaging jsii modules" >&2
+$PACMAK \
   --verbose \
-  --outdir $distdir/ \
+  --rosetta-tablet samples.tabl.json \
   $(cat $TMPDIR/jsii.txt)
 
 # Non-jsii packaging, which means running 'package' in every individual
-# module and rsync'ing the result to the shared dist directory.
+# module
 echo "Packaging non-jsii modules" >&2
 lerna run $(lerna_scopes $(cat $TMPDIR/nonjsii.txt)) --sort --concurrency=1 --stream package
 
+# Finally rsync all 'dist' directories together into a global 'dist' directory
 for dir in $(find packages -name dist | grep -v node_modules | grep -v run-wrappers); do
-  echo "Merging ${dir} into ${distdir}"
-  rsync -av $dir/ ${distdir}/
+  echo "Merging ${dir} into ${distdir}" >&2
+  rsync -a $dir/ ${distdir}/
 done
 
 # Remove a JSII aggregate POM that may have snuk past

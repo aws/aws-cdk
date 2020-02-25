@@ -1,8 +1,8 @@
-import lambda = require('@aws-cdk/aws-lambda');
+import * as lambda from '@aws-cdk/aws-lambda';
 import { Duration, Stack } from "@aws-cdk/core";
-import path = require('path');
-import cr = require('../../lib');
-import util = require('../../lib/provider-framework/util');
+import * as path from 'path';
+import * as cr from '../../lib';
+import * as util from '../../lib/provider-framework/util';
 
 import '@aws-cdk/assert/jest';
 

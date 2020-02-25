@@ -5,6 +5,7 @@ export * from './base/task-definition';
 export * from './container-definition';
 export * from './container-image';
 export * from './cluster';
+export * from './firelens-log-router';
 export * from './placement';
 
 export * from './ec2/ec2-service';
@@ -21,6 +22,7 @@ export * from './images/ecr';
 
 export * from './log-drivers/aws-log-driver';
 export * from './log-drivers/base-log-driver';
+export * from './log-drivers/firelens-log-driver';
 export * from './log-drivers/fluentd-log-driver';
 export * from './log-drivers/gelf-log-driver';
 export * from './log-drivers/journald-log-driver';

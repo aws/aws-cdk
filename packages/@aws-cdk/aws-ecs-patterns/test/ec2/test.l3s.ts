@@ -1,14 +1,13 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import { Certificate } from '@aws-cdk/aws-certificatemanager';
-import ec2 = require('@aws-cdk/aws-ec2');
-import ecs = require('@aws-cdk/aws-ecs');
-import { AwsLogDriver } from '@aws-cdk/aws-ecs';
-import { ApplicationProtocol } from '@aws-cdk/aws-elasticloadbalancingv2';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as ecs from '@aws-cdk/aws-ecs';
+import { ApplicationLoadBalancer, ApplicationProtocol, NetworkLoadBalancer } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { PublicHostedZone } from '@aws-cdk/aws-route53';
-import cloudmap = require('@aws-cdk/aws-servicediscovery');
-import cdk = require('@aws-cdk/core');
+import * as cloudmap from '@aws-cdk/aws-servicediscovery';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import ecsPatterns = require('../../lib');
+import * as ecsPatterns from '../../lib';
 
 export = {
   'test ECS loadbalanced construct'(test: Test) {
@@ -385,7 +384,8 @@ export = {
 
     test.done();
   },
-  'test Fargateloadbalanced construct with TLS'(test: Test) {
+
+  'test Fargate loadbalanced construct with TLS'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -585,7 +585,7 @@ export = {
           TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
           TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
         },
-        logDriver: new AwsLogDriver({
+        logDriver: new ecs.AwsLogDriver({
           streamPrefix: "TestStream"
         }),
       },
@@ -620,6 +620,7 @@ export = {
 
     test.done();
   },
+
   'test Fargate loadbalanced construct with logging enabled'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -668,6 +669,7 @@ export = {
 
     test.done();
   },
+
   'test Fargate loadbalanced construct with both image and taskDefinition provided'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -697,6 +699,7 @@ export = {
 
     test.done();
   },
+
   'test Fargate application loadbalanced construct with taskDefinition provided'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -782,4 +785,268 @@ export = {
 
     test.done();
   },
+  'ALBFargate - having *HealthyPercent properties'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, "ALB123Service", {
+      cluster,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+      },
+      minHealthyPercent: 100,
+      maxHealthyPercent: 200
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+      DeploymentConfiguration: {
+        MinimumHealthyPercent: 100,
+        MaximumPercent: 200
+      },
+    }));
+
+    test.done();
+  },
+
+  'NLBFargate - having *HealthyPercent properties'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // WHEN
+    new ecsPatterns.NetworkLoadBalancedFargateService(stack, "Service", {
+      cluster,
+      memoryLimitMiB: 1024,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+      },
+      desiredCount: 1,
+      minHealthyPercent: 100,
+      maxHealthyPercent: 200
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+      DeploymentConfiguration: {
+        MinimumHealthyPercent: 100,
+        MaximumPercent: 200,
+      },
+    }));
+
+    test.done();
+  },
+
+  'ALB - having *HealthyPercent properties'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedEc2Service(stack, "Service", {
+      cluster,
+      memoryLimitMiB: 1024,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+      },
+      desiredCount: 1,
+      minHealthyPercent: 100,
+      maxHealthyPercent: 200
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+      DeploymentConfiguration: {
+        MinimumHealthyPercent: 100,
+        MaximumPercent: 200,
+      },
+    }));
+
+    test.done();
+  },
+
+  'NLB - having *HealthyPercent properties'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+
+    // WHEN
+    new ecsPatterns.NetworkLoadBalancedEc2Service(stack, "Service", {
+      cluster,
+      memoryLimitMiB: 1024,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+      },
+      desiredCount: 1,
+      minHealthyPercent: 100,
+      maxHealthyPercent: 200
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+      DeploymentConfiguration: {
+        MinimumHealthyPercent: 100,
+        MaximumPercent: 200,
+      },
+    }));
+
+    test.done();
+  },
+
+  'NetworkLoadbalancedEC2Service accepts previously created load balancer'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const cluster = new ecs.Cluster(stack, "Cluster", {vpc, clusterName: "MyCluster" });
+    cluster.addCapacity("Capacity", {instanceType: new ec2.InstanceType('t2.micro')});
+    const nlb = new NetworkLoadBalancer(stack, 'NLB', { vpc });
+    const taskDef = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+    const container = taskDef.addContainer('Container', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      memoryLimitMiB: 1024,
+    });
+    container.addPortMappings({ containerPort: 80 });
+
+    // WHEN
+    new ecsPatterns.NetworkLoadBalancedEc2Service(stack, 'Service', {
+      cluster,
+      loadBalancer: nlb,
+      taskDefinition: taskDef,
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+      LaunchType: 'EC2'
+    }));
+    expect(stack).to(haveResourceLike('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      Type: 'network',
+    }));
+    test.done();
+  },
+
+  'NetworkLoadBalancedEC2Service accepts imported load balancer'(test: Test) {
+     // GIVEN
+     const stack = new cdk.Stack();
+     const nlbArn = "arn:aws:elasticloadbalancing::000000000000::dummyloadbalancer";
+     const vpc = new ec2.Vpc(stack, "Vpc");
+     const cluster = new ecs.Cluster(stack, "Cluster", {vpc, clusterName: "MyCluster" });
+     cluster.addCapacity("Capacity", {instanceType: new ec2.InstanceType('t2.micro')});
+     const nlb  = NetworkLoadBalancer.fromNetworkLoadBalancerAttributes(stack, "NLB", {
+       loadBalancerArn: nlbArn,
+       vpc,
+     });
+     const taskDef = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+     const container = taskDef.addContainer('Container', {
+       image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+       memoryLimitMiB: 1024,
+     });
+     container.addPortMappings({
+       containerPort: 80,
+     });
+
+     // WHEN
+     new ecsPatterns.NetworkLoadBalancedEc2Service(stack, "Service", {
+       cluster,
+       loadBalancer: nlb,
+       desiredCount: 1,
+       taskDefinition: taskDef
+     });
+
+     // THEN
+     expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+       LaunchType: 'EC2',
+       LoadBalancers: [{ContainerName: 'Container', ContainerPort: 80}]
+     }));
+     expect(stack).to(haveResourceLike('AWS::ElasticLoadBalancingV2::TargetGroup'));
+     expect(stack).to(haveResourceLike('AWS::ElasticLoadBalancingV2::Listener', {
+       LoadBalancerArn: nlb.loadBalancerArn,
+       Port: 80,
+     }));
+     test.done();
+   },
+
+   'ApplicationLoadBalancedEC2Service accepts previously created load balancer'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const cluster = new ecs.Cluster(stack, "Cluster", {vpc, clusterName: "MyCluster" });
+    cluster.addCapacity("Capacity", {instanceType: new ec2.InstanceType('t2.micro')});
+    const sg = new ec2.SecurityGroup(stack, 'SG', { vpc });
+    const alb = new ApplicationLoadBalancer(stack, 'NLB', {
+      vpc,
+      securityGroup: sg,
+    });
+    const taskDef = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+    const container = taskDef.addContainer('Container', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      memoryLimitMiB: 1024,
+    });
+    container.addPortMappings({ containerPort: 80 });
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedEc2Service(stack, 'Service', {
+      cluster,
+      loadBalancer: alb,
+      taskDefinition: taskDef,
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+      LaunchType: 'EC2'
+    }));
+    expect(stack).to(haveResourceLike('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      Type: 'application'
+    }));
+    test.done();
+   },
+
+   'ApplicationLoadBalancedEC2Service accepts imported load balancer'(test: Test) {
+     // GIVEN
+     const stack = new cdk.Stack();
+     const albArn = "arn:aws:elasticloadbalancing::000000000000::dummyloadbalancer";
+     const vpc = new ec2.Vpc(stack, "Vpc");
+     const cluster = new ecs.Cluster(stack, "Cluster", {vpc, clusterName: "MyCluster" });
+     cluster.addCapacity("Capacity", {instanceType: new ec2.InstanceType('t2.micro')});
+     const sg = new ec2.SecurityGroup(stack, "SG", { vpc, });
+     const alb = ApplicationLoadBalancer.fromApplicationLoadBalancerAttributes(stack, 'ALB', {
+       loadBalancerArn: albArn,
+       vpc,
+       securityGroupId: sg.securityGroupId,
+       loadBalancerDnsName: "MyName"
+     });
+     const taskDef = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+     const container = taskDef.addContainer('Container', {
+       image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+       memoryLimitMiB: 1024,
+     });
+     container.addPortMappings({
+       containerPort: 80,
+     });
+     // WHEN
+     new ecsPatterns.ApplicationLoadBalancedEc2Service(stack, "Service", {
+       cluster,
+       loadBalancer: alb,
+       taskDefinition: taskDef,
+     });
+     // THEN
+     expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+       LaunchType: 'EC2',
+       LoadBalancers: [{ContainerName: 'Container', ContainerPort: 80}]
+     }));
+     expect(stack).to(haveResourceLike('AWS::ElasticLoadBalancingV2::TargetGroup'));
+     expect(stack).to(haveResourceLike('AWS::ElasticLoadBalancingV2::Listener', {
+       LoadBalancerArn: alb.loadBalancerArn,
+       Port: 80,
+     }));
+
+     test.done();
+   },
 };

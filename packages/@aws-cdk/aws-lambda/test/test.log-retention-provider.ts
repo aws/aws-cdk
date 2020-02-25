@@ -1,9 +1,9 @@
-import AWSSDK = require('aws-sdk');
-import AWS = require('aws-sdk-mock');
-import nock = require('nock');
+import * as AWSSDK from 'aws-sdk';
+import * as AWS from 'aws-sdk-mock';
+import * as nock from 'nock';
 import { Test } from 'nodeunit';
-import sinon = require('sinon');
-import provider = require('../lib/log-retention-provider');
+import * as sinon from 'sinon';
+import * as provider from '../lib/log-retention-provider';
 
 AWS.setSDK(require.resolve('aws-sdk'));
 
@@ -263,5 +263,37 @@ export = {
     test.equal(request.isDone(), true);
 
     test.done();
-  }
+  },
+
+  async 'response data contains the log group name'(test: Test) {
+    AWS.mock('CloudWatchLogs', 'createLogGroup', sinon.fake.resolves({}));
+    AWS.mock('CloudWatchLogs', 'putRetentionPolicy', sinon.fake.resolves({}));
+    AWS.mock('CloudWatchLogs', 'deleteRetentionPolicy', sinon.fake.resolves({}));
+
+    const event = {
+      ...eventCommon,
+      ResourceProperties: {
+          ServiceToken: 'token',
+          RetentionInDays: '30',
+          LogGroupName: 'group'
+      }
+    };
+
+    async function withOperation(operation: string) {
+      const request = nock('https://localhost')
+        .put('/', (body: AWSLambda.CloudFormationCustomResourceResponse) => body.Data?.LogGroupName === 'group')
+        .reply(200);
+
+      const opEvent = { ...event, RequestType: operation };
+      await provider.handler(opEvent as AWSLambda.CloudFormationCustomResourceCreateEvent, context);
+
+      test.equal(request.isDone(), true);
+    }
+
+    await withOperation('Create');
+    await withOperation('Update');
+    await withOperation('Delete');
+
+    test.done();
+  },
 };

@@ -2,6 +2,7 @@ import { Construct, Duration, IResource, Resource } from '@aws-cdk/core';
 import { BaseListener } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
 import { Protocol, SslPolicy } from '../shared/enums';
+import { IListenerCertificate } from '../shared/listener-certificate';
 import { INetworkLoadBalancer } from './network-load-balancer';
 import { INetworkLoadBalancerTarget, INetworkTargetGroup, NetworkTargetGroup } from './network-target-group';
 
@@ -33,7 +34,7 @@ export interface BaseNetworkListenerProps {
    *
    * @default - No certificates.
    */
-  readonly certificates?: INetworkListenerCertificateProps[];
+  readonly certificates?: IListenerCertificate[];
 
   /**
    * SSL Policy
@@ -45,12 +46,12 @@ export interface BaseNetworkListenerProps {
 
 /**
  * Properties for adding a certificate to a listener
+ *
+ * This interface exists for backwards compatibility.
+ *
+ * @deprecated Use IListenerCertificate instead
  */
-export interface INetworkListenerCertificateProps {
-  /**
-   * Certificate ARN from ACM
-   */
-  readonly certificateArn: string
+export interface INetworkListenerCertificateProps extends IListenerCertificate {
 }
 
 /**
@@ -136,7 +137,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
   public addTargets(id: string, props: AddNetworkTargetsProps): NetworkTargetGroup {
     if (!this.loadBalancer.vpc) {
       // tslint:disable-next-line:max-line-length
-      throw new Error('Can only call addTargets() when using a constructed Load Balancer; construct a new TargetGroup and use addTargetGroup');
+      throw new Error('Can only call addTargets() when using a constructed Load Balancer or imported Load Balancer with specified VPC; construct a new TargetGroup and use addTargetGroup');
     }
 
     const group = new NetworkTargetGroup(this, id + 'Group', {

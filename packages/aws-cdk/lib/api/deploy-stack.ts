@@ -1,11 +1,11 @@
-import cxapi = require('@aws-cdk/cx-api');
-import aws = require('aws-sdk');
-import colors = require('colors/safe');
-import uuid = require('uuid');
+import * as cxapi from '@aws-cdk/cx-api';
+import * as aws from 'aws-sdk';
+import * as colors from 'colors/safe';
+import * as uuid from 'uuid';
 import { Tag } from "../api/cxapp/stacks";
 import { prepareAssets } from '../assets';
 import { debug, error, print } from '../logging';
-import { toYAML } from '../serialize';
+import { deserializeStructure, toYAML } from '../serialize';
 import { Mode } from './aws-auth/credentials';
 import { ToolkitInfo } from './toolkit-info';
 import { changeSetHasNoChanges, describeStack, stackExists, stackFailedCreating, waitForChangeSet, waitForStack  } from './util/cloudformation';
@@ -23,6 +23,7 @@ export interface DeployStackResult {
   readonly noOp: boolean;
   readonly outputs: { [name: string]: string };
   readonly stackArn: string;
+  readonly stackArtifact: cxapi.CloudFormationStackArtifact;
 }
 
 /** @experimental */
@@ -34,7 +35,6 @@ export interface DeployStackOptions {
   notificationArns?: string[];
   deployName?: string;
   quiet?: boolean;
-  ci?: boolean;
   reuseAssets?: string[];
   tags?: Tag[];
 
@@ -43,6 +43,23 @@ export interface DeployStackOptions {
    * @default true
    */
   execute?: boolean;
+
+  /**
+   * The collection of extra parameters
+   * (in addition to those used for assets)
+   * to pass to the deployed template.
+   * Note that parameters with `undefined` or empty values will be ignored,
+   * and not passed to the template.
+   *
+   * @default - no additional parameters will be passed to the template
+   */
+  parameters?: { [name: string]: string | undefined };
+
+  /**
+   * Deploy even if the deployed template is identical to the one we are about to deploy.
+   * @default false
+   */
+  force?: boolean;
 }
 
 const LARGE_TEMPLATE_SIZE_KB = 50;
@@ -53,13 +70,42 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     throw new Error(`The stack ${options.stack.displayName} does not have an environment`);
   }
 
-  const params = await prepareAssets(options.stack, options.toolkitInfo, options.ci, options.reuseAssets);
-
+  const cfn = await options.sdk.cloudFormation(options.stack.environment.account, options.stack.environment.region, Mode.ForWriting);
   const deployName = options.deployName || options.stack.stackName;
+
+  if (!options.force) {
+    debug(`checking if we can skip this stack based on the currently deployed template (use --force to override)`);
+    const deployed = await getDeployedTemplate(cfn, deployName);
+    if (deployed && JSON.stringify(options.stack.template) === JSON.stringify(deployed.template)) {
+      debug(`${deployName}: no change in template, skipping (use --force to override)`);
+      return {
+        noOp: true,
+        outputs: await getStackOutputs(cfn, deployName),
+        stackArn: deployed.stackId,
+        stackArtifact: options.stack
+      };
+    } else {
+      debug(`${deployName}: template changed, deploying...`);
+    }
+  }
+
+  // bail out if the current template is exactly the same as the one we are about to deploy
+  // in cdk-land, this means nothing changed because assets (and therefore nested stacks) are immutable.
+
+  const params = await prepareAssets(options.stack, options.toolkitInfo, options.reuseAssets);
+
+  // add passed CloudFormation parameters
+  for (const [paramName, paramValue] of Object.entries((options.parameters || {}))) {
+    if (paramValue) {
+      params.push({
+        ParameterKey: paramName,
+        ParameterValue: paramValue,
+      });
+    }
+  }
 
   const executionId = uuid.v4();
 
-  const cfn = await options.sdk.cloudFormation(options.stack.environment.account, options.stack.environment.region, Mode.ForWriting);
   const bodyParameter = await makeBodyParameter(options.stack, options.toolkitInfo);
 
   if (await stackFailedCreating(cfn, deployName)) {
@@ -95,7 +141,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
   if (changeSetHasNoChanges(changeSetDescription)) {
     debug('No changes are to be performed on %s.', deployName);
     await cfn.deleteChangeSet({ StackName: deployName, ChangeSetName: changeSetName }).promise();
-    return { noOp: true, outputs: await getStackOutputs(cfn, deployName), stackArn: changeSet.StackId! };
+    return { noOp: true, outputs: await getStackOutputs(cfn, deployName), stackArn: changeSet.StackId!, stackArtifact: options.stack };
   }
 
   const execute = options.execute === undefined ? true : options.execute;
@@ -105,15 +151,16 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     // tslint:disable-next-line:max-line-length
     const monitor = options.quiet ? undefined : new StackActivityMonitor(cfn, deployName, options.stack, (changeSetDescription.Changes || []).length).start();
     debug('Execution of changeset %s on stack %s has started; waiting for the update to complete...', changeSetName, deployName);
-    await waitForStack(cfn, deployName);
-    if (monitor) {
-      await monitor.stop();
+    try {
+      await waitForStack(cfn, deployName);
+    } finally {
+      await monitor?.stop();
     }
     debug('Stack %s has completed updating', deployName);
   } else {
     print(`Changeset %s created and waiting in review for manual execution (--no-execute)`, changeSetName);
   }
-  return { noOp: false, outputs: await getStackOutputs(cfn, deployName), stackArn: changeSet.StackId! };
+  return { noOp: false, outputs: await getStackOutputs(cfn, deployName), stackArn: changeSet.StackId!, stackArtifact: options.stack };
 }
 
 /** @experimental */
@@ -190,4 +237,47 @@ export async function destroyStack(options: DestroyStackOptions) {
     throw new Error(`Failed to destroy ${deployName}: ${status}`);
   }
   return;
+}
+
+async function getDeployedTemplate(cfn: aws.CloudFormation, stackName: string): Promise<{ template: any, stackId: string } | undefined> {
+  const stackId = await getStackId(cfn, stackName);
+  if (!stackId) {
+    return undefined;
+  }
+
+  const template = await readCurrentTemplate(cfn, stackName);
+  return { stackId, template };
+}
+
+export async function readCurrentTemplate(cfn: aws.CloudFormation, stackName: string) {
+  try {
+    const response = await cfn.getTemplate({ StackName: stackName, TemplateStage: 'Original' }).promise();
+    return (response.TemplateBody && deserializeStructure(response.TemplateBody)) || {};
+  } catch (e) {
+    if (e.code === 'ValidationError' && e.message === `Stack with id ${stackName} does not exist`) {
+      return {};
+    } else {
+      throw e;
+    }
+  }
+}
+
+async function getStackId(cfn: aws.CloudFormation, stackName: string): Promise<string | undefined> {
+  try {
+    const stacks = await cfn.describeStacks({ StackName: stackName }).promise();
+    if (!stacks.Stacks) {
+      return undefined;
+    }
+    if (stacks.Stacks.length !== 1) {
+      return undefined;
+    }
+
+    return stacks.Stacks[0].StackId!;
+
+  } catch (e) {
+    if (e.message.includes('does not exist')) {
+      return undefined;
+    }
+    throw e;
+  }
 }

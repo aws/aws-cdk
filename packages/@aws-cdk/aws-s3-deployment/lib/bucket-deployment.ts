@@ -1,13 +1,12 @@
-import cloudformation = require("@aws-cdk/aws-cloudformation");
-import cloudfront = require("@aws-cdk/aws-cloudfront");
-import iam = require("@aws-cdk/aws-iam");
-import lambda = require("@aws-cdk/aws-lambda");
-import s3 = require("@aws-cdk/aws-s3");
-import cdk = require("@aws-cdk/core");
-import { Token } from "@aws-cdk/core";
-import crypto = require('crypto');
-import fs = require('fs');
-import path = require("path");
+import * as cloudformation from '@aws-cdk/aws-cloudformation';
+import * as cloudfront from '@aws-cdk/aws-cloudfront';
+import * as iam from '@aws-cdk/aws-iam';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as s3 from '@aws-cdk/aws-s3';
+import * as cdk from '@aws-cdk/core';
+import * as crypto from 'crypto';
+import * as fs from 'fs';
+import * as path from 'path';
 import { ISource, SourceConfig } from "./source";
 
 const now = Date.now();
@@ -148,8 +147,9 @@ export interface BucketDeploymentProps {
   readonly serverSideEncryptionAwsKmsKeyId?: string;
   /**
    * System-defined x-amz-server-side-encryption-customer-algorithm metadata to be set on all objects in the deployment.
+   * Warning: This is not a useful parameter until this bug is fixed: https://github.com/aws/aws-cdk/issues/6080
    * @default - Not set.
-   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/ServerSideEncryptionCustomerKeys.html#sse-c-how-to-programmatically-intro
    */
   readonly serverSideEncryptionCustomerAlgorithm?: string;
 }
@@ -163,8 +163,6 @@ export class BucketDeployment extends cdk.Construct {
     }
 
     const sourceHash = calcSourceHash(handlerSourceDirectory);
-    // tslint:disable-next-line: no-console
-    console.error({sourceHash});
 
     const handler = new lambda.SingletonFunction(this, 'CustomResourceHandler', {
       uuid: this.renderSingletonUuid(props.memoryLimit),
@@ -213,7 +211,7 @@ export class BucketDeployment extends cdk.Construct {
     // with this configuration. otherwise, it won't be possible to use multiple
     // configurations since we have a singleton.
     if (memoryLimit) {
-      if (Token.isUnresolved(memoryLimit)) {
+      if (cdk.Token.isUnresolved(memoryLimit)) {
         throw new Error(`Can't use tokens when specifying "memoryLimit" since we use it to identify the singleton custom resource handler`);
       }
 
@@ -265,11 +263,11 @@ function mapSystemMetadata(metadata: BucketDeploymentProps) {
   if (metadata.contentEncoding) { res["content-encoding"] = metadata.contentEncoding; }
   if (metadata.contentLanguage) { res["content-language"] = metadata.contentLanguage; }
   if (metadata.contentType) { res["content-type"] = metadata.contentType; }
-  if (metadata.serverSideEncryption) { res["server-side-encryption"] = metadata.serverSideEncryption; }
+  if (metadata.serverSideEncryption) { res.sse = metadata.serverSideEncryption; }
   if (metadata.storageClass) { res["storage-class"] = metadata.storageClass; }
-  if (metadata.websiteRedirectLocation) { res["website-redirect-location"] = metadata.websiteRedirectLocation; }
-  if (metadata.serverSideEncryptionAwsKmsKeyId) { res["ssekms-key-id"] = metadata.serverSideEncryptionAwsKmsKeyId; }
-  if (metadata.serverSideEncryptionCustomerAlgorithm) { res["sse-customer-algorithm"] = metadata.serverSideEncryptionCustomerAlgorithm; }
+  if (metadata.websiteRedirectLocation) { res["website-redirect"] = metadata.websiteRedirectLocation; }
+  if (metadata.serverSideEncryptionAwsKmsKeyId) { res["sse-kms-key-id"] = metadata.serverSideEncryptionAwsKmsKeyId; }
+  if (metadata.serverSideEncryptionCustomerAlgorithm) { res["sse-c-copy-source"] = metadata.serverSideEncryptionCustomerAlgorithm; }
 
   return Object.keys(res).length === 0 ? undefined : res;
 }

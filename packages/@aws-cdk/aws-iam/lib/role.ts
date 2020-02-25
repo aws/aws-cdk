@@ -7,6 +7,7 @@ import { Policy } from './policy';
 import { PolicyDocument } from './policy-document';
 import { PolicyStatement } from './policy-statement';
 import { ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
+import { ImmutableRole } from './private/immutable-role';
 import { AttachedPolicies } from './util';
 
 export interface RoleProps {
@@ -121,6 +122,13 @@ export interface RoleProps {
    * @default Duration.hours(1)
    */
   readonly maxSessionDuration?: Duration;
+
+  /**
+   * A description of the role. It can be up to 1000 characters long.
+   *
+   * @default - No description.
+   */
+  readonly description?: string;
 }
 
 /**
@@ -147,6 +155,14 @@ export class Role extends Resource implements IRole {
   /**
    * Imports an external role by ARN.
    *
+   * If the imported Role ARN is a Token (such as a
+   * `CfnParameter.valueAsString` or a `Fn.importValue()`) *and* the referenced
+   * role has a `path` (like `arn:...:role/AdminRoles/Alice`), the
+   * `role.roleName` property will not resolve to the correct value. Instead it
+   * will resolve to the first path component. We unfortunately cannot express
+   * the correct calculation of the full path name as a CloudFormation
+   * expression.
+   *
    * @param scope construct scope
    * @param id construct id
    * @param roleArn the ARN of the role to import
@@ -155,18 +171,39 @@ export class Role extends Resource implements IRole {
   public static fromRoleArn(scope: Construct, id: string, roleArn: string, options: FromRoleArnOptions = {}): IRole {
     const scopeStack = Stack.of(scope);
     const parsedArn = scopeStack.parseArn(roleArn);
-    const roleName = parsedArn.resourceName!;
+    const resourceName = parsedArn.resourceName!;
+    // service roles have an ARN like 'arn:aws:iam::<account>:role/service-role/<roleName>'
+    // we want to support these as well, so strip out the 'service-role/' prefix if we see it
+    const roleName = resourceName.startsWith('service-role/')
+      ? resourceName.slice('service-role/'.length)
+      : resourceName;
 
-    abstract class Import extends Resource implements IRole {
+    class Import extends Resource implements IRole {
       public readonly grantPrincipal: IPrincipal = this;
       public readonly assumeRoleAction: string = 'sts:AssumeRole';
       public readonly policyFragment = new ArnPrincipal(roleArn).policyFragment;
       public readonly roleArn = roleArn;
       public readonly roleName = roleName;
+      private readonly attachedPolicies = new AttachedPolicies();
+      private defaultPolicy?: Policy;
 
-      public abstract addToPolicy(statement: PolicyStatement): boolean;
+      public addToPolicy(statement: PolicyStatement): boolean {
+        if (!this.defaultPolicy) {
+          this.defaultPolicy = new Policy(this, 'Policy');
+          this.attachInlinePolicy(this.defaultPolicy);
+        }
+        this.defaultPolicy.addStatements(statement);
+        return true;
+      }
 
-      public abstract attachInlinePolicy(policy: Policy): void;
+      public attachInlinePolicy(policy: Policy): void {
+        const policyAccount = Stack.of(policy).account;
+
+        if (accountsAreEqualOrOneIsUnresolved(policyAccount, roleAccount)) {
+          this.attachedPolicies.attach(policy);
+          policy.attachToRole(this);
+        }
+      }
 
       public addManagedPolicy(_policy: IManagedPolicy): void {
         // FIXME: Add warning that we're ignoring this
@@ -194,44 +231,11 @@ export class Role extends Resource implements IRole {
 
     const roleAccount = parsedArn.account;
 
-    class MutableImport extends Import {
-      private readonly attachedPolicies = new AttachedPolicies();
-      private defaultPolicy?: Policy;
-
-      public addToPolicy(statement: PolicyStatement): boolean {
-        if (!this.defaultPolicy) {
-          this.defaultPolicy = new Policy(this, 'Policy');
-          this.attachInlinePolicy(this.defaultPolicy);
-        }
-        this.defaultPolicy.addStatements(statement);
-        return true;
-      }
-
-      public attachInlinePolicy(policy: Policy): void {
-        const policyAccount = Stack.of(policy).account;
-
-        if (accountsAreEqualOrOneIsUnresolved(policyAccount, roleAccount)) {
-          this.attachedPolicies.attach(policy);
-          policy.attachToRole(this);
-        }
-      }
-    }
-
-    class ImmutableImport extends Import {
-      public addToPolicy(_statement: PolicyStatement): boolean {
-        return false;
-      }
-
-      public attachInlinePolicy(_policy: Policy): void {
-        // do nothing
-      }
-    }
-
     const scopeAccount = scopeStack.account;
 
     return options.mutable !== false && accountsAreEqualOrOneIsUnresolved(scopeAccount, roleAccount)
-      ? new MutableImport(scope, id)
-      : new ImmutableImport(scope, id);
+      ? new Import(scope, id)
+      : new ImmutableRole(new Import(scope, id));
 
     function accountsAreEqualOrOneIsUnresolved(account1: string | undefined,
                                                account2: string | undefined): boolean {
@@ -296,6 +300,11 @@ export class Role extends Resource implements IRole {
     this.permissionsBoundary = props.permissionsBoundary;
     const maxSessionDuration = props.maxSessionDuration && props.maxSessionDuration.toSeconds();
     validateMaxSessionDuration(maxSessionDuration);
+    const description = (props.description && props.description?.length > 0) ? props.description : undefined;
+
+    if (description && description.length > 1000) {
+      throw new Error('Role description must be no longer than 1000 characters.');
+    }
 
     const role = new CfnRole(this, 'Resource', {
       assumeRolePolicyDocument: this.assumeRolePolicy as any,
@@ -305,6 +314,7 @@ export class Role extends Resource implements IRole {
       permissionsBoundary: this.permissionsBoundary ? this.permissionsBoundary.managedPolicyArn : undefined,
       roleName: this.physicalName,
       maxSessionDuration,
+      description
     });
 
     this.roleId = role.attrRoleId;
@@ -380,6 +390,19 @@ export class Role extends Resource implements IRole {
   public grantPassRole(identity: IPrincipal) {
     return this.grant(identity, 'iam:PassRole');
   }
+
+  /**
+   * Return a copy of this Role object whose Policies will not be updated
+   *
+   * Use the object returned by this method if you want this Role to be used by
+   * a construct without it automatically updating the Role's Policies.
+   *
+   * If you do, you are responsible for adding the correct statements to the
+   * Role's policies yourself.
+   */
+  public withoutPolicyUpdates(): IRole {
+    return new ImmutableRole(this);
+  }
 }
 
 /**
@@ -412,7 +435,7 @@ export interface IRole extends IIdentity {
 }
 
 function createAssumeRolePolicy(principal: IPrincipal, externalIds: string[]) {
-  const statement = new PolicyStatement();
+  const statement = new AwsStarStatement();
   statement.addPrincipals(principal);
   statement.addActions(principal.assumeRoleAction);
 
@@ -432,5 +455,23 @@ function validateMaxSessionDuration(duration?: number) {
 
   if (duration < 3600 || duration > 43200) {
     throw new Error(`maxSessionDuration is set to ${duration}, but must be >= 3600sec (1hr) and <= 43200sec (12hrs)`);
+  }
+}
+
+/**
+ * A PolicyStatement that normalizes its Principal field differently
+ *
+ * Normally, "anyone" is normalized to "Principal: *", but this statement
+ * normalizes to "Principal: { AWS: * }".
+ */
+class AwsStarStatement extends PolicyStatement {
+  public toStatementJson(): any {
+    const stat = super.toStatementJson();
+
+    if (stat.Principal === '*') {
+      stat.Principal = { AWS: '*' };
+    }
+
+    return stat;
   }
 }

@@ -1,9 +1,9 @@
 import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
-import cdk = require('@aws-cdk/core');
-import cxapi = require('@aws-cdk/cx-api');
+import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
-import path = require('path');
-import lambda = require('../lib');
+import * as path from 'path';
+import * as lambda from '../lib';
 
 // tslint:disable:no-string-literal
 

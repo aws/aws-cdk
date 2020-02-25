@@ -1,6 +1,6 @@
 import { ConcreteDependable, Construct, ContextProvider, DependableTrait, IConstruct,
     IDependable, IResource, Lazy, Resource, Stack, Tag, Token } from '@aws-cdk/core';
-import cxapi = require('@aws-cdk/cx-api');
+import * as cxapi from '@aws-cdk/cx-api';
 import {
   CfnEIP, CfnInternetGateway, CfnNatGateway, CfnRoute, CfnRouteTable, CfnSubnet,
   CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCGatewayAttachment, CfnVPNGateway, CfnVPNGatewayRoutePropagation } from './ec2.generated';
@@ -9,6 +9,7 @@ import { INetworkAcl, NetworkAcl, SubnetNetworkAclAssociation } from './network-
 import { NetworkBuilder } from './network-util';
 import { allRouteTableIds, defaultSubnetName, ImportSubnetGroup, subnetGroupNameFromConstructId, subnetId  } from './util';
 import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, GatewayVpcEndpointOptions, InterfaceVpcEndpoint, InterfaceVpcEndpointOptions } from './vpc-endpoint';
+import { FlowLog, FlowLogOptions, FlowLogResourceType } from './vpc-flow-logs';
 import { VpcLookupOptions } from './vpc-lookup';
 import { VpnConnection, VpnConnectionOptions, VpnConnectionType } from './vpn';
 
@@ -62,6 +63,13 @@ export interface IVpc extends IResource {
   readonly vpcId: string;
 
   /**
+   * CIDR range for this VPC
+   *
+   * @attribute
+   */
+  readonly vpcCidrBlock: string;
+
+  /**
    * List of public subnets in this VPC
    */
   readonly publicSubnets: ISubnet[];
@@ -112,6 +120,11 @@ export interface IVpc extends IResource {
    * Adds a new interface endpoint to this VPC
    */
   addInterfaceEndpoint(id: string, options: InterfaceVpcEndpointOptions): InterfaceVpcEndpoint
+
+  /**
+   * Adds a new Flow Log to this VPC
+   */
+  addFlowLog(id: string, options?: FlowLogOptions): FlowLog
 }
 
 /**
@@ -261,6 +274,11 @@ abstract class VpcBase extends Resource implements IVpc {
   public abstract readonly vpcId: string;
 
   /**
+   * CIDR range for this VPC
+   */
+  public abstract readonly vpcCidrBlock: string;
+
+  /**
    * List of public subnets in this VPC
    */
   public abstract readonly publicSubnets: ISubnet[];
@@ -349,6 +367,16 @@ abstract class VpcBase extends Resource implements IVpc {
   }
 
   /**
+   * Adds a new flow log to this VPC
+   */
+  public addFlowLog(id: string, options?: FlowLogOptions): FlowLog {
+    return new FlowLog(this, id, {
+      resourceType: FlowLogResourceType.fromVpc(this),
+      ...options
+    });
+  }
+
+  /**
    * Return the subnets appropriate for the placement strategy
    */
   protected selectSubnetObjects(selection: SubnetSelection = {}): ISubnet[] {
@@ -388,8 +416,7 @@ abstract class VpcBase extends Resource implements IVpc {
     let subnets = allSubnets[subnetType];
 
     if (onePerAz && subnets.length > 0) {
-      // Restrict to at most one subnet group
-      subnets = subnets.filter(s => subnetGroupNameFromConstructId(s) === subnetGroupNameFromConstructId(subnets[0]));
+      subnets = retainOnePerAz(subnets);
     }
 
     // Force merge conflict here with https://github.com/aws/aws-cdk/pull/4089
@@ -434,6 +461,15 @@ abstract class VpcBase extends Resource implements IVpc {
   }
 }
 
+function retainOnePerAz(subnets: ISubnet[]): ISubnet[] {
+  const azsSeen = new Set<string>();
+  return subnets.filter(subnet => {
+    if (azsSeen.has(subnet.availabilityZone)) { return false; }
+    azsSeen.add(subnet.availabilityZone);
+    return true;
+  });
+}
+
 /**
  * Properties that reference an external Vpc
  */
@@ -442,6 +478,13 @@ export interface VpcAttributes {
    * VPC's identifier
    */
   readonly vpcId: string;
+
+  /**
+   * VPC's CIDR range
+   *
+   * @default - Retrieving the CIDR from the VPC will fail
+   */
+  readonly vpcCidrBlock?: string;
 
   /**
    * List of availability zones for the subnets in this VPC.
@@ -655,23 +698,25 @@ export interface VpcProps {
    * subnet in each AZ provide the following:
    *
    * ```ts
-   * subnetConfiguration: [
-   *    {
-   *      cidrMask: 24,
-   *      name: 'ingress',
-   *      subnetType: SubnetType.PUBLIC,
-   *    },
-   *    {
-   *      cidrMask: 24,
-   *      name: 'application',
-   *      subnetType: SubnetType.PRIVATE,
-   *    },
-   *    {
-   *      cidrMask: 28,
-   *      name: 'rds',
-   *      subnetType: SubnetType.ISOLATED,
-   *    }
-   * ]
+   * new ec2.Vpc(this, 'VPC', {
+   *   subnetConfiguration: [
+   *      {
+   *        cidrMask: 24,
+   *        name: 'ingress',
+   *        subnetType: ec2.SubnetType.PUBLIC,
+   *      },
+   *      {
+   *        cidrMask: 24,
+   *        name: 'application',
+   *        subnetType: ec2.SubnetType.PRIVATE,
+   *      },
+   *      {
+   *        cidrMask: 28,
+   *        name: 'rds',
+   *        subnetType: ec2.SubnetType.ISOLATED,
+   *      }
+   *   ]
+   * });
    * ```
    *
    * @default - The VPC CIDR will be evenly divided between 1 public and 1
@@ -682,7 +727,7 @@ export interface VpcProps {
   /**
    * Indicates whether a VPN gateway should be created and attached to this VPC.
    *
-   * @default - true when vpnGatewayAsn or vpnConnections is specified.
+   * @default - true when vpnGatewayAsn or vpnConnections is specified
    */
   readonly vpnGateway?: boolean;
 
@@ -703,7 +748,9 @@ export interface VpcProps {
   /**
    * Where to propagate VPN routes.
    *
-   * @default - On the route tables associated with private subnets.
+   * @default - On the route tables associated with private subnets. If no
+   * private subnets exists, isolated subnets are used. If no isolated subnets
+   * exists, public subnets are used.
    */
   readonly vpnRoutePropagation?: SubnetSelection[]
 
@@ -713,6 +760,13 @@ export interface VpcProps {
    * @default - None.
    */
   readonly gatewayEndpoints?: { [id: string]: GatewayVpcEndpointOptions }
+
+  /**
+   * Flow logs to add to this VPC.
+   *
+   * @default - No flow logs.
+   */
+  readonly flowLogs?: { [id: string]: FlowLogOptions }
 }
 
 /**
@@ -784,15 +838,13 @@ export interface SubnetConfiguration {
  * For example:
  *
  * ```ts
- * import { SubnetType, Vpc } from '@aws-cdk/aws-ec2'
- *
- * const vpc = new Vpc(this, 'TheVPC', {
+ * const vpc = new ec2.Vpc(this, 'TheVPC', {
  *   cidr: "10.0.0.0/16"
  * })
  *
  * // Iterate the private subnets
  * const selection = vpc.selectSubnets({
- *   subnetType: SubnetType.PRIVATE
+ *   subnetType: ec2.SubnetType.PRIVATE
  * });
  *
  * for (const subnet of selection.subnets) {
@@ -840,12 +892,14 @@ export class Vpc extends VpcBase {
    * application. If you are looking to share a VPC between stacks, you can
    * pass the `Vpc` object between stacks and use it as normal.
    *
-   * See the package-level documentation of this package for constraints
-   * on importing existing VPCs.
-   *
    * Calling this method will lead to a lookup when the CDK CLI is executed.
    * You can therefore not use any values that will only be available at
    * CloudFormation execution time (i.e., Tokens).
+   *
+   * The VPC information will be cached in `cdk.context.json` and the same VPC
+   * will be used on future runs. To refresh the lookup, you will have to
+   * evict the value from the cache using the `cdk context` command. See
+   * https://docs.aws.amazon.com/cdk/latest/guide/context.html for more information.
    */
   public static fromLookup(scope: Construct, id: string, options: VpcLookupOptions): IVpc {
     if (Token.isUnresolved(options.vpcId)
@@ -1063,7 +1117,7 @@ export class Vpc extends VpcBase {
       this.vpnGatewayId = vpnGateway.ref;
 
       // Propagate routes on route tables associated with the right subnets
-      const vpnRoutePropagation = props.vpnRoutePropagation || [{ subnetType: SubnetType.PRIVATE }];
+      const vpnRoutePropagation = props.vpnRoutePropagation ?? [{}];
       const routeTableIds = allRouteTableIds(...vpnRoutePropagation.map(s => this.selectSubnets(s)));
       const routePropagation = new CfnVPNGatewayRoutePropagation(this, 'RoutePropagation', {
         routeTableIds,
@@ -1088,6 +1142,14 @@ export class Vpc extends VpcBase {
       const gatewayEndpoints = props.gatewayEndpoints || {};
       for (const [endpointId, endpoint] of Object.entries(gatewayEndpoints)) {
         this.addGatewayEndpoint(endpointId, endpoint);
+      }
+    }
+
+    // Add flow logs to the VPC
+    if (props.flowLogs) {
+      const flowLogs = props.flowLogs || {};
+      for (const [flowLogId, flowLog] of Object.entries(flowLogs)) {
+        this.addFlowLog(flowLogId, flowLog);
       }
     }
   }
@@ -1396,7 +1458,7 @@ export class Subnet extends Resource implements ISubnet {
     const route = new CfnRoute(this, id, {
       routeTableId: this.routeTable.routeTableId,
       destinationCidrBlock: options.destinationCidrBlock || (options.destinationIpv6CidrBlock === undefined ? '0.0.0.0/0' : undefined),
-      destinationIpv6CidrBlock: options.destinationCidrBlock,
+      destinationIpv6CidrBlock: options.destinationIpv6CidrBlock,
       [routerTypeToPropName(options.routerType)]: options.routerId,
     });
 
@@ -1578,11 +1640,13 @@ class ImportedVpc extends VpcBase {
   public readonly availabilityZones: string[];
   public readonly vpnGatewayId?: string;
   public readonly internetConnectivityEstablished: IDependable = new ConcreteDependable();
+  private readonly cidr?: string | undefined;
 
   constructor(scope: Construct, id: string, props: VpcAttributes, isIncomplete: boolean) {
     super(scope, id);
 
     this.vpcId = props.vpcId;
+    this.cidr = props.vpcCidrBlock;
     this.availabilityZones = props.availabilityZones;
     this.vpnGatewayId = props.vpnGatewayId;
     this.incompleteSubnetDefinition = isIncomplete;
@@ -1597,6 +1661,13 @@ class ImportedVpc extends VpcBase {
     this.privateSubnets = priv.import(this);
     this.isolatedSubnets = iso.import(this);
   }
+
+  public get vpcCidrBlock(): string {
+    if (this.cidr === undefined) {
+      throw new Error(`Cannot perform this operation: 'vpcCidrBlock' was not supplied when creating this VPC`);
+    }
+    return this.cidr;
+  }
 }
 
 class LookedUpVpc extends VpcBase {
@@ -1607,11 +1678,13 @@ class LookedUpVpc extends VpcBase {
   public readonly publicSubnets: ISubnet[];
   public readonly privateSubnets: ISubnet[];
   public readonly isolatedSubnets: ISubnet[];
+  private readonly cidr?: string | undefined;
 
   constructor(scope: Construct, id: string, props: cxapi.VpcContextResponse, isIncomplete: boolean) {
     super(scope, id);
 
     this.vpcId = props.vpcId;
+    this.cidr = props.vpcCidrBlock;
     this.vpnGatewayId = props.vpnGatewayId;
     this.incompleteSubnetDefinition = isIncomplete;
 
@@ -1625,6 +1698,15 @@ class LookedUpVpc extends VpcBase {
     this.publicSubnets = this.extractSubnetsOfType(subnetGroups, cxapi.VpcSubnetGroupType.PUBLIC);
     this.privateSubnets = this.extractSubnetsOfType(subnetGroups, cxapi.VpcSubnetGroupType.PRIVATE);
     this.isolatedSubnets = this.extractSubnetsOfType(subnetGroups, cxapi.VpcSubnetGroupType.ISOLATED);
+  }
+
+  public get vpcCidrBlock(): string {
+    if (this.cidr === undefined) {
+      // Value might be cached from an old CLI version, so bumping the CX API protocol to
+      // force the value to exist would not have helped.
+      throw new Error(`Cannot perform this operation: 'vpcCidrBlock' was not found when looking up this VPC. Use a newer version of the CDK CLI and clear the old context value.`);
+    }
+    return this.cidr;
   }
 
   private extractSubnetsOfType(subnetGroups: cxapi.VpcSubnetGroup[], subnetGroupType: cxapi.VpcSubnetGroupType): ISubnet[] {
@@ -1758,6 +1840,7 @@ function determineNatGatewayCount(requestedCount: number | undefined, subnetConf
  */
 const DUMMY_VPC_PROPS: cxapi.VpcContextResponse = {
   availabilityZones: [],
+  vpcCidrBlock: '1.2.3.4/5',
   isolatedSubnetIds: undefined,
   isolatedSubnetNames: undefined,
   isolatedSubnetRouteTableIds: undefined,
@@ -1776,11 +1859,13 @@ const DUMMY_VPC_PROPS: cxapi.VpcContextResponse = {
           availabilityZone: 'dummy-1a',
           subnetId: 's-12345',
           routeTableId: 'rtb-12345s',
+          cidr: '1.2.3.4/5',
         },
         {
           availabilityZone: 'dummy-1b',
           subnetId: 's-67890',
           routeTableId: 'rtb-67890s',
+          cidr: '1.2.3.4/5',
         },
       ],
     },
@@ -1792,11 +1877,13 @@ const DUMMY_VPC_PROPS: cxapi.VpcContextResponse = {
           availabilityZone: 'dummy-1a',
           subnetId: 'p-12345',
           routeTableId: 'rtb-12345p',
+          cidr: '1.2.3.4/5',
         },
         {
           availabilityZone: 'dummy-1b',
           subnetId: 'p-67890',
           routeTableId: 'rtb-57890p',
+          cidr: '1.2.3.4/5',
         },
       ],
     },

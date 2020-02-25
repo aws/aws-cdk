@@ -2,7 +2,7 @@ import { countResources, expect, haveResource, haveResourceLike, isSuperObject, 
 import { CfnOutput, Lazy, Stack, Tag } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { AclCidr, AclTraffic, CfnSubnet, CfnVPC, DefaultInstanceTenancy, GenericLinuxImage, InstanceType,
-  NatProvider, NetworkAcl, NetworkAclEntry, PrivateSubnet, Subnet, SubnetType, TrafficDirection, Vpc } from '../lib';
+  NatProvider, NetworkAcl, NetworkAclEntry, PrivateSubnet, PublicSubnet, RouterType, Subnet, SubnetType, TrafficDirection, Vpc } from '../lib';
 
 export = {
   "When creating a VPC": {
@@ -569,6 +569,63 @@ export = {
 
       test.done();
     },
+    'route propagation defaults to isolated subnets when there are no private subnets'(test: Test) {
+      const stack = getTestStack();
+      new Vpc(stack, 'VPC', {
+        subnetConfiguration: [
+          { subnetType: SubnetType.PUBLIC, name: 'Public' },
+          { subnetType: SubnetType.ISOLATED, name: 'Isolated' },
+        ],
+        vpnGateway: true,
+      });
+
+      expect(stack).to(haveResource('AWS::EC2::VPNGatewayRoutePropagation', {
+        RouteTableIds: [
+          {
+            Ref: 'VPCIsolatedSubnet1RouteTableEB156210'
+          },
+          {
+            Ref: 'VPCIsolatedSubnet2RouteTable9B4F78DC'
+          },
+          {
+            Ref: 'VPCIsolatedSubnet3RouteTableCB6A1FDA'
+          }
+        ],
+        VpnGatewayId: {
+          Ref: 'VPCVpnGatewayB5ABAE68'
+        }
+      }));
+
+      test.done();
+    },
+    'route propagation defaults to public subnets when there are no private/isolated subnets'(test: Test) {
+      const stack = getTestStack();
+      new Vpc(stack, 'VPC', {
+        subnetConfiguration: [
+          { subnetType: SubnetType.PUBLIC, name: 'Public' },
+        ],
+        vpnGateway: true,
+      });
+
+      expect(stack).to(haveResource('AWS::EC2::VPNGatewayRoutePropagation', {
+        RouteTableIds: [
+          {
+            Ref: 'VPCPublicSubnet1RouteTableFEE4B781'
+          },
+          {
+            Ref: 'VPCPublicSubnet2RouteTable6F1A15F1'
+          },
+          {
+            Ref: 'VPCPublicSubnet3RouteTable98AE0E14'
+          }
+        ],
+        VpnGatewayId: {
+          Ref: 'VPCVpnGatewayB5ABAE68'
+        }
+      }));
+
+      test.done();
+    },
     'fails when specifying vpnConnections with vpnGateway set to false'(test: Test) {
       // GIVEN
       const stack = new Stack();
@@ -618,6 +675,58 @@ export = {
 
       test.done();
     },
+
+    'Default NAT gateway provider'(test: Test) {
+      const stack = new Stack();
+      const natGatewayProvider = NatProvider.gateway();
+      new Vpc(stack, 'VpcNetwork', { natGatewayProvider });
+
+      test.ok(natGatewayProvider.configuredGateways.length > 0);
+
+      test.done();
+    },
+    'Can add an IPv6 route'(test: Test) {
+      // GIVEN
+      const stack = getTestStack();
+
+      // WHEN
+      const vpc = new Vpc(stack, 'VPC');
+      (vpc.publicSubnets[0] as PublicSubnet).addRoute('SomeRoute', {
+        destinationIpv6CidrBlock: '2001:4860:4860::8888/32',
+        routerId: 'router-1',
+        routerType: RouterType.NETWORK_INTERFACE
+      });
+
+      // THEN
+
+      expect(stack).to(haveResourceLike("AWS::EC2::Route", {
+        DestinationIpv6CidrBlock: '2001:4860:4860::8888/32',
+        NetworkInterfaceId: 'router-1'
+      }));
+
+      test.done();
+    },
+    'Can add an IPv4 route'(test: Test) {
+      // GIVEN
+      const stack = getTestStack();
+
+      // WHEN
+      const vpc = new Vpc(stack, 'VPC');
+      (vpc.publicSubnets[0] as PublicSubnet).addRoute('SomeRoute', {
+        destinationCidrBlock: '0.0.0.0/0',
+        routerId: 'router-1',
+        routerType: RouterType.NETWORK_INTERFACE
+      });
+
+      // THEN
+
+      expect(stack).to(haveResourceLike("AWS::EC2::Route", {
+        DestinationCidrBlock: '0.0.0.0/0',
+        NetworkInterfaceId: 'router-1'
+      }));
+
+      test.done();
+    },
   },
 
   'NAT instances': {
@@ -626,14 +735,13 @@ export = {
       const stack = getTestStack();
 
       // WHEN
-      new Vpc(stack, 'TheVPC', {
-        natGatewayProvider: NatProvider.instance({
-          instanceType: new InstanceType('q86.mega'),
-          machineImage: new GenericLinuxImage({
-            'us-east-1': 'ami-1'
-          })
+      const natGatewayProvider = NatProvider.instance({
+        instanceType: new InstanceType('q86.mega'),
+        machineImage: new GenericLinuxImage({
+          'us-east-1': 'ami-1'
         })
       });
+      new Vpc(stack, 'TheVPC', { natGatewayProvider });
 
       // THEN
       expect(stack).to(countResources('AWS::EC2::Instance', 3));
@@ -671,6 +779,7 @@ export = {
 
       test.done();
     },
+
   },
 
   'Network ACL association': {
@@ -959,6 +1068,7 @@ export = {
       test.deepEqual(subnetIds[0], subnet.subnetId);
       test.done();
     }
+
   },
 };
 

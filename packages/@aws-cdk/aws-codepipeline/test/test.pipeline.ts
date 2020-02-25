@@ -1,10 +1,10 @@
 import { expect, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
-import iam = require('@aws-cdk/aws-iam');
-import kms = require('@aws-cdk/aws-kms');
-import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/core');
+import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
+import * as s3 from '@aws-cdk/aws-s3';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import codepipeline = require('../lib');
+import * as codepipeline from '../lib';
 import { FakeBuildAction } from './fake-build-action';
 import { FakeSourceAction } from './fake-source-action';
 

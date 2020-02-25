@@ -20,7 +20,7 @@ PutObject
           "type": "AWS::S3::Bucket"
         }
       ],
-      "eventTime": "2019-05-22T08:38:05Z",
+      "eventTime": "2020-05-22T08:38:05Z",
       "userAgent": "[aws-cli/1.16.96 Python/2.7.12 Linux/4.4.0-146-generic botocore/1.12.86]",
       "readOnly": false,
       "recipientAccountId": "123456789012",
@@ -47,7 +47,7 @@ PutObject
         "sessionContext": {
           "attributes": {
             "mfaAuthenticated": "false",
-            "creationDate": "2019-05-22T08:10:21Z"
+            "creationDate": "2020-05-22T08:10:21Z"
           },
           "sessionIssuer": {
             "accountId": "123456789012",

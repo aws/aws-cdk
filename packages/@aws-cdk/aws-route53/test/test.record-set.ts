@@ -1,7 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import { Duration, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import route53 = require('../lib');
+import * as route53 from '../lib';
 
 export = {
   'with default ttl'(test: Test) {
@@ -108,7 +108,7 @@ export = {
     new route53.ARecord(stack, 'A', {
       zone,
       recordName: 'www',
-      target: route53.AddressRecordTarget.fromIpAddresses('1.2.3.4', '5.6.7.8'),
+      target: route53.RecordTarget.fromIpAddresses('1.2.3.4', '5.6.7.8'),
     });
 
     // THEN
@@ -179,7 +179,7 @@ export = {
     new route53.AaaaRecord(stack, 'AAAA', {
       zone,
       recordName: 'www',
-      target: route53.AddressRecordTarget.fromIpAddresses('2001:0db8:85a3:0000:0000:8a2e:0370:7334'),
+      target: route53.RecordTarget.fromIpAddresses('2001:0db8:85a3:0000:0000:8a2e:0370:7334'),
     });
 
     // THEN
@@ -375,12 +375,40 @@ export = {
     // WHEN
     new route53.CaaAmazonRecord(stack, 'CAAAmazon', {
       zone,
-      recordName: 'www', // should have no effect
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::Route53::RecordSet', {
       Name: "myzone.",
+      Type: "CAA",
+      HostedZoneId: {
+        Ref: "HostedZoneDB99F866"
+      },
+      ResourceRecords: [
+        '0 issue "amazon.com"'
+      ],
+      TTL: "1800"
+    }));
+    test.done();
+  },
+
+  'CAA Amazon record with record name'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    const zone = new route53.HostedZone(stack, 'HostedZone', {
+      zoneName: 'myzone'
+    });
+
+    // WHEN
+    new route53.CaaAmazonRecord(stack, 'CAAAmazon', {
+      zone,
+      recordName: 'www',
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Route53::RecordSet', {
+      Name: "www.myzone.",
       Type: "CAA",
       HostedZoneId: {
         Ref: "HostedZoneDB99F866"

@@ -16,6 +16,7 @@ pack/
 .tools/
 coverage/
 .nyc_output
+.nycrc
 .LAST_BUILD
 *.sw[a-z]
 *~
@@ -28,4 +29,10 @@ coverage/
 cdk.context.json
 .cdk.staging/
 cdk.out/
+*.tabl.json
 
+# Yarn error log
+yarn-error.log
+
+# Generated jest config
+jest.config.gen.json

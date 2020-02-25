@@ -1,11 +1,13 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 
-import colors = require('colors/safe');
-import path = require('path');
-import yargs = require('yargs');
+import * as cxapi from '@aws-cdk/cx-api';
+import * as colors from 'colors/safe';
+import * as path from 'path';
+import * as yargs from 'yargs';
 
 import { bootstrapEnvironment, BootstrapEnvironmentProps, SDK } from '../lib';
+import { bootstrapEnvironment2 } from '../lib/api/bootstrap/bootstrap-environment2';
 import { environmentsFromDescriptors, globEnvironmentsFromStacks } from '../lib/api/cxapp/environments';
 import { execProgram } from '../lib/api/cxapp/exec';
 import { AppStacks, DefaultSelection, ExtendedStackSelection } from '../lib/api/cxapp/stacks';
@@ -17,7 +19,7 @@ import { data, debug, error, print, setVerbose, success } from '../lib/logging';
 import { PluginHost } from '../lib/plugin';
 import { serializeStructure } from '../lib/serialize';
 import { Configuration, Settings } from '../lib/settings';
-import version = require('../lib/version');
+import * as version from '../lib/version';
 
 // tslint:disable:no-shadowed-variable max-line-length
 async function parseCommandLineArguments() {
@@ -35,6 +37,7 @@ async function parseCommandLineArguments() {
     .option('verbose', { type: 'boolean', alias: 'v', desc: 'Show debug logs', default: false })
     .option('profile', { type: 'string', desc: 'Use the indicated AWS profile as the default environment', requiresArg: true })
     .option('proxy', { type: 'string', desc: 'Use the indicated proxy. Will read from HTTPS_PROXY environment variable if not specified.', requiresArg: true })
+    .option('ca-bundle-path', { type: 'string', desc: 'Path to CA certificate to use when validating HTTPS requests. Will read from AWS_CA_BUNDLE environment variable if not specified.', requiresArg: true })
     .option('ec2creds', { type: 'boolean', alias: 'i', default: undefined, desc: 'Force trying to fetch EC2 instance credentials. Default: guess EC2 instance status.' })
     .option('version-reporting', { type: 'boolean', desc: 'Include the "AWS::CDK::Metadata" resource in synthesized templates (enabled by default)', default: undefined })
     .option('path-metadata', { type: 'boolean', desc: 'Include "aws:cdk:path" CloudFormation metadata for each resource (enabled by default)', default: true })
@@ -54,15 +57,18 @@ async function parseCommandLineArguments() {
       .option('bootstrap-kms-key-id', { type: 'string', desc: 'AWS KMS master key ID used for the SSE-KMS encryption', default: undefined })
       .option('tags', { type: 'array', alias: 't', desc: 'Tags to add for the stack (KEY=VALUE)', nargs: 1, requiresArg: true, default: [] })
       .option('execute', {type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)', default: true})
+      .option('trust', { type: 'array', desc: 'The (space-separated) list of AWS account IDs that should be trusted to perform deployments into this environment', default: [], hidden: true })
+      .option('cloudformation-execution-policies', { type: 'array', desc: 'The (space-separated) list of Managed Policy ARNs that should be attached to the role performing deployments into this environment. Required if --trust was passed', default: [], hidden: true })
     )
     .command('deploy [STACKS..]', 'Deploys the stack(s) named STACKS into your AWS account', yargs => yargs
       .option('build-exclude', { type: 'array', alias: 'E', nargs: 1, desc: 'Do not rebuild asset with the given ID. Can be specified multiple times.', default: [] })
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only deploy requested stacks, don\'t include dependencies' })
       .option('require-approval', { type: 'string', choices: [RequireApproval.Never, RequireApproval.AnyChange, RequireApproval.Broadening], desc: 'What security-sensitive changes need manual approval' })
-      .option('ci', { type: 'boolean', desc: 'Force CI detection. Use --no-ci to disable CI autodetection.', default: process.env.CI !== undefined })
+      .option('ci', { type: 'boolean', desc: 'Force CI detection (deprecated)', default: process.env.CI !== undefined })
       .option('notification-arns', {type: 'array', desc: 'ARNs of SNS topics that CloudFormation will notify with stack related events', nargs: 1, requiresArg: true})
       .option('tags', { type: 'array', alias: 't', desc: 'Tags to add to the stack (KEY=VALUE)', nargs: 1, requiresArg: true })
-      .option('execute', {type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)', default: true})
+      .option('execute', { type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)', default: true })
+      .option('force', { alias: 'f', type: 'boolean', desc: 'Always deploy stack even if templates are identical', default: false })
     )
     .command('destroy [STACKS..]', 'Destroy the stack(s) named STACKS', yargs => yargs
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only destroy requested stacks, don\'t include dependees' })
@@ -72,6 +78,7 @@ async function parseCommandLineArguments() {
       .option('context-lines', { type: 'number', desc: 'Number of context lines to include in arbitrary JSON diff rendering', default: 3, requiresArg: true })
       .option('template', { type: 'string', desc: 'The path to the CloudFormation template to compare with', requiresArg: true })
       .option('strict', { type: 'boolean', desc: 'Do not filter out AWS::CDK::Metadata resources', default: false }))
+      .option('fail', { type: 'boolean', desc: 'Fail with exit code 1 in case of diff', default: false })
     .command('metadata [STACK]', 'Returns all metadata associated with this stack')
     .command('init [TEMPLATE]', 'Create a new, empty CDK project from a template. Invoked without TEMPLATE, the app template will be used.', yargs => yargs
       .option('language', { type: 'string', alias: 'l', desc: 'The language to be used for the new project (default can be configured in ~/.cdk.json)', choices: initTemplateLanuages })
@@ -81,6 +88,7 @@ async function parseCommandLineArguments() {
     .commandDir('../lib/commands', { exclude: /^_.*/ })
     .version(version.DISPLAY_VERSION)
     .demandCommand(1, '') // just print help
+    .recommendCommands()
     .help()
     .alias('h', 'help')
     .epilogue([
@@ -105,6 +113,7 @@ async function initCommandLine() {
   const aws = new SDK({
     profile: argv.profile,
     proxyAddress: argv.proxy,
+    caBundlePath: argv['ca-bundle-path'],
     ec2creds: argv.ec2creds,
   });
 
@@ -191,15 +200,18 @@ async function initCommandLine() {
           exclusively: args.exclusively,
           templatePath: args.template,
           strict: args.strict,
-          contextLines: args.contextLines
+          contextLines: args.contextLines,
+          fail: args.fail || !configuration.context.get(cxapi.ENABLE_DIFF_NO_FAIL),
         });
 
       case 'bootstrap':
-        return await cliBootstrap(args.ENVIRONMENTS, toolkitStackName, args.roleArn, {
+        return await cliBootstrap(args.ENVIRONMENTS, toolkitStackName, args.roleArn, !!process.env.CDK_NEW_BOOTSTRAP, {
           bucketName: configuration.settings.get(['toolkitBucket', 'bucketName']),
           kmsKeyId: configuration.settings.get(['toolkitBucket', 'kmsKeyId']),
           tags: configuration.settings.get(['tags']),
-          execute: args.execute
+          execute: args.execute,
+          trustedAccounts: args.trust,
+          cloudFormationExecutionPolicies: args.cloudformationExecutionPolicies,
         });
 
       case 'deploy':
@@ -210,11 +222,11 @@ async function initCommandLine() {
           roleArn: args.roleArn,
           notificationArns: args.notificationArns,
           requireApproval: configuration.settings.get(['requireApproval']),
-          ci: args.ci,
           reuseAssets: args['build-exclude'],
           tags: configuration.settings.get(['tags']),
           sdk: aws,
-          execute: args.execute
+          execute: args.execute,
+          force: args.force,
         });
 
       case 'destroy':
@@ -235,11 +247,10 @@ async function initCommandLine() {
 
       case 'init':
         const language = configuration.settings.get(['language']);
-        const generateOnly = configuration.settings.get(['generate-only']);
         if (args.list) {
           return await printAvailableTemplates(language);
         } else {
-          return await cliInit(args.TEMPLATE, language, undefined, generateOnly);
+          return await cliInit(args.TEMPLATE, language, undefined, args.generateOnly);
         }
       case 'version':
         return data(version.DISPLAY_VERSION);
@@ -262,7 +273,8 @@ async function initCommandLine() {
    *             all stacks are implicitly selected.
    * @param toolkitStackName the name to be used for the CDK Toolkit stack.
    */
-  async function cliBootstrap(environmentGlobs: string[], toolkitStackName: string, roleArn: string | undefined, props: BootstrapEnvironmentProps): Promise<void> {
+  async function cliBootstrap(environmentGlobs: string[], toolkitStackName: string, roleArn: string | undefined,
+                              useNewBootstrapping: boolean, props: BootstrapEnvironmentProps): Promise<void> {
     // Two modes of operation.
     //
     // If there is an '--app' argument, we select the environments from the app. Otherwise we just take the user
@@ -275,7 +287,9 @@ async function initCommandLine() {
     await Promise.all(environments.map(async (environment) => {
       success(' ⏳  Bootstrapping environment %s...', colors.blue(environment.name));
       try {
-        const result = await bootstrapEnvironment(environment, aws, toolkitStackName, roleArn, props);
+        const result = useNewBootstrapping
+          ? await bootstrapEnvironment2(environment, aws, toolkitStackName, roleArn, props)
+          : await bootstrapEnvironment(environment, aws, toolkitStackName, roleArn, props);
         const message = result.noOp ? ' ✅  Environment %s bootstrapped (no changes).'
                       : ' ✅  Environment %s bootstrapped.';
         success(message, colors.blue(environment.name));
@@ -383,11 +397,11 @@ initCommandLine()
     if (typeof value === 'string') {
       data(value);
     } else if (typeof value === 'number') {
-      process.exit(value);
+      process.exitCode = value;
     }
   })
   .catch(err => {
     error(err.message);
     debug(err.stack);
-    process.exit(1);
+    process.exitCode = 1;
   });

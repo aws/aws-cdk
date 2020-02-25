@@ -1,4 +1,4 @@
-import iam = require('@aws-cdk/aws-iam');
+import * as iam from '@aws-cdk/aws-iam';
 import { ActionArtifactBounds, ActionCategory, ActionConfig, IAction } from './action';
 import { Artifact } from './artifact';
 
@@ -13,6 +13,7 @@ export interface FullActionDescriptorProps {
  * This class is private to the aws-codepipeline package.
  */
 export class FullActionDescriptor {
+  public readonly action: IAction;
   public readonly actionName: string;
   public readonly category: ActionCategory;
   public readonly owner: string;
@@ -20,6 +21,7 @@ export class FullActionDescriptor {
   public readonly version: string;
   public readonly runOrder: number;
   public readonly artifactBounds: ActionArtifactBounds;
+  public readonly namespace?: string;
   public readonly inputs: Artifact[];
   public readonly outputs: Artifact[];
   public readonly region?: string;
@@ -27,6 +29,7 @@ export class FullActionDescriptor {
   public readonly configuration: any;
 
   constructor(props: FullActionDescriptorProps) {
+    this.action = props.action;
     const actionProperties = props.action.actionProperties;
     this.actionName = actionProperties.actionName;
     this.category = actionProperties.category;
@@ -35,6 +38,7 @@ export class FullActionDescriptor {
     this.version = actionProperties.version || '1';
     this.runOrder = actionProperties.runOrder === undefined ? 1 : actionProperties.runOrder;
     this.artifactBounds = actionProperties.artifactBounds;
+    this.namespace = actionProperties.variablesNamespace;
     this.inputs = deduplicateArtifacts(actionProperties.inputs);
     this.outputs = deduplicateArtifacts(actionProperties.outputs);
     this.region = props.actionRegion || actionProperties.region;

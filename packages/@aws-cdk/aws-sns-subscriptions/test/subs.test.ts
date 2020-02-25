@@ -1,9 +1,9 @@
 import '@aws-cdk/assert/jest';
-import lambda = require('@aws-cdk/aws-lambda');
-import sns = require('@aws-cdk/aws-sns');
-import sqs = require('@aws-cdk/aws-sqs');
-import { CfnParameter, SecretValue, Stack } from '@aws-cdk/core';
-import subs = require('../lib');
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as sns from '@aws-cdk/aws-sns';
+import * as sqs from '@aws-cdk/aws-sqs';
+import { CfnParameter, Stack, Token } from '@aws-cdk/core';
+import * as subs from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -72,9 +72,8 @@ test('url subscription (with raw delivery)', () => {
 });
 
 test('url subscription (unresolved url with protocol)', () => {
-  const secret = SecretValue.secretsManager('my-secret');
-  const url = secret.toString();
-  topic.addSubscription(new subs.UrlSubscription(url, {protocol: sns.SubscriptionProtocol.HTTPS}));
+  const urlToken = Token.asString({ Ref : "my-url-1" });
+  topic.addSubscription(new subs.UrlSubscription(urlToken, {protocol: sns.SubscriptionProtocol.HTTPS}));
 
   expect(stack).toMatchTemplate({
     "Resources": {
@@ -85,10 +84,52 @@ test('url subscription (unresolved url with protocol)', () => {
           "TopicName": "topicName"
         }
       },
-      "MyTopicUnresolvedUrlBA127FB3": {
+      "MyTopicTokenSubscription141DD1BE2": {
         "Type": "AWS::SNS::Subscription",
         "Properties": {
-          "Endpoint": "{{resolve:secretsmanager:my-secret:SecretString:::}}",
+          "Endpoint": {
+            "Ref": "my-url-1"
+          },
+          "Protocol": "https",
+          "TopicArn": { "Ref": "MyTopic86869434" },
+        }
+      }
+    }
+  });
+});
+
+test('url subscription (double unresolved url with protocol)', () => {
+  const urlToken1 = Token.asString({ Ref : "my-url-1" });
+  const urlToken2 = Token.asString({ Ref : "my-url-2" });
+
+  topic.addSubscription(new subs.UrlSubscription(urlToken1, {protocol: sns.SubscriptionProtocol.HTTPS}));
+  topic.addSubscription(new subs.UrlSubscription(urlToken2, {protocol: sns.SubscriptionProtocol.HTTPS}));
+
+  expect(stack).toMatchTemplate({
+    "Resources": {
+      "MyTopic86869434": {
+        "Type": "AWS::SNS::Topic",
+        "Properties": {
+          "DisplayName": "displayName",
+          "TopicName": "topicName"
+        }
+      },
+      "MyTopicTokenSubscription141DD1BE2": {
+        "Type": "AWS::SNS::Subscription",
+        "Properties": {
+          "Endpoint": {
+            "Ref" : "my-url-1"
+          },
+          "Protocol": "https",
+          "TopicArn": { "Ref": "MyTopic86869434" },
+        }
+      },
+      "MyTopicTokenSubscription293BFE3F9": {
+        "Type": "AWS::SNS::Subscription",
+        "Properties": {
+          "Endpoint": {
+            "Ref" : "my-url-2"
+          },
           "Protocol": "https",
           "TopicArn": { "Ref": "MyTopic86869434" },
         }
@@ -103,9 +144,9 @@ test('url subscription (unknown protocol)', () => {
 });
 
 test('url subscription (unresolved url without protocol)', () => {
-  const secret = SecretValue.secretsManager('my-secret');
-  const url = secret.toString();
-  expect(() => topic.addSubscription(new subs.UrlSubscription(url)))
+  const urlToken = Token.asString({ Ref : "my-url-1" });
+
+  expect(() => topic.addSubscription(new subs.UrlSubscription(urlToken)))
    .toThrowError(/Must provide protocol if url is unresolved/);
 });
 
@@ -202,7 +243,7 @@ test('queue subscription (with raw delivery)', () => {
 
 test('lambda subscription', () => {
   const fction = new lambda.Function(stack, 'MyFunc', {
-    runtime: lambda.Runtime.NODEJS_8_10,
+    runtime: lambda.Runtime.NODEJS_10_X,
     handler: 'index.handler',
     code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }')
   });
@@ -262,7 +303,7 @@ test('lambda subscription', () => {
               "Arn"
             ]
           },
-          "Runtime": "nodejs8.10"
+          "Runtime": "nodejs10.x"
         },
         "DependsOn": [
           "MyFuncServiceRole54065130"
@@ -329,10 +370,154 @@ test('email subscription', () => {
   });
 });
 
+test('email subscription with unresolved', () => {
+  const emailToken = Token.asString({ Ref : "my-email-1" });
+  topic.addSubscription(new subs.EmailSubscription(emailToken));
+
+  expect(stack).toMatchTemplate({
+    "Resources": {
+      "MyTopic86869434": {
+        "Type": "AWS::SNS::Topic",
+        "Properties": {
+          "DisplayName": "displayName",
+          "TopicName": "topicName"
+        }
+      },
+      "MyTopicTokenSubscription141DD1BE2": {
+        "Type": "AWS::SNS::Subscription",
+        "Properties": {
+          "Endpoint": {
+            "Ref" : "my-email-1"
+          },
+          "Protocol": "email",
+          "TopicArn": {
+            "Ref": "MyTopic86869434"
+          }
+        }
+      }
+    }
+  });
+});
+
+test('email and url subscriptions with unresolved', () => {
+  const emailToken = Token.asString({ Ref : "my-email-1" });
+  const urlToken = Token.asString({ Ref : "my-url-1" });
+  topic.addSubscription(new subs.EmailSubscription(emailToken));
+  topic.addSubscription(new subs.UrlSubscription(urlToken, {protocol: sns.SubscriptionProtocol.HTTPS}));
+
+  expect(stack).toMatchTemplate({
+    "Resources": {
+      "MyTopic86869434": {
+        "Type": "AWS::SNS::Topic",
+        "Properties": {
+          "DisplayName": "displayName",
+          "TopicName": "topicName"
+        }
+      },
+      "MyTopicTokenSubscription141DD1BE2": {
+        "Type": "AWS::SNS::Subscription",
+        "Properties": {
+          "Endpoint": {
+            "Ref" : "my-email-1"
+          },
+          "Protocol": "email",
+          "TopicArn": {
+            "Ref": "MyTopic86869434"
+          }
+        }
+      },
+      "MyTopicTokenSubscription293BFE3F9": {
+        "Type": "AWS::SNS::Subscription",
+        "Properties": {
+          "Endpoint": {
+            "Ref" : "my-url-1"
+          },
+          "Protocol": "https",
+          "TopicArn": {
+            "Ref": "MyTopic86869434"
+          }
+        }
+      }
+    }
+  });
+});
+
+test('email and url subscriptions with unresolved - four subscriptions', () => {
+  const emailToken1 = Token.asString({ Ref : "my-email-1" });
+  const emailToken2 = Token.asString({ Ref : "my-email-2" });
+  const emailToken3 = Token.asString({ Ref : "my-email-3" });
+  const emailToken4 = Token.asString({ Ref : "my-email-4" });
+
+  topic.addSubscription(new subs.EmailSubscription(emailToken1));
+  topic.addSubscription(new subs.EmailSubscription(emailToken2));
+  topic.addSubscription(new subs.EmailSubscription(emailToken3));
+  topic.addSubscription(new subs.EmailSubscription(emailToken4));
+
+  expect(stack).toMatchTemplate({
+    "Resources": {
+      "MyTopic86869434": {
+        "Type": "AWS::SNS::Topic",
+        "Properties": {
+          "DisplayName": "displayName",
+          "TopicName": "topicName"
+        }
+      },
+      "MyTopicTokenSubscription141DD1BE2": {
+        "Type": "AWS::SNS::Subscription",
+        "Properties": {
+          "Endpoint": {
+            "Ref" : "my-email-1"
+          },
+          "Protocol": "email",
+          "TopicArn": {
+            "Ref": "MyTopic86869434"
+          }
+        }
+      },
+      "MyTopicTokenSubscription293BFE3F9": {
+        "Type": "AWS::SNS::Subscription",
+        "Properties": {
+          "Endpoint": {
+            "Ref" : "my-email-2"
+          },
+          "Protocol": "email",
+          "TopicArn": {
+            "Ref": "MyTopic86869434"
+          }
+        }
+      },
+      "MyTopicTokenSubscription335C2B4CA": {
+        "Type": "AWS::SNS::Subscription",
+        "Properties": {
+          "Endpoint": {
+            "Ref" : "my-email-3"
+          },
+          "Protocol": "email",
+          "TopicArn": {
+            "Ref": "MyTopic86869434"
+          }
+        }
+      },
+      "MyTopicTokenSubscription4DBE52A3F": {
+        "Type": "AWS::SNS::Subscription",
+        "Properties": {
+          "Endpoint": {
+            "Ref" : "my-email-4"
+          },
+          "Protocol": "email",
+          "TopicArn": {
+            "Ref": "MyTopic86869434"
+          }
+        }
+      }
+    }
+  });
+});
+
 test('multiple subscriptions', () => {
   const queue = new sqs.Queue(stack, 'MyQueue');
   const func = new lambda.Function(stack, 'MyFunc', {
-    runtime: lambda.Runtime.NODEJS_8_10,
+    runtime: lambda.Runtime.NODEJS_10_X,
     handler: 'index.handler',
     code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }')
   });
@@ -446,7 +631,7 @@ test('multiple subscriptions', () => {
               "Arn"
             ]
           },
-          "Runtime": "nodejs8.10"
+          "Runtime": "nodejs10.x"
         },
         "DependsOn": [
           "MyFuncServiceRole54065130"

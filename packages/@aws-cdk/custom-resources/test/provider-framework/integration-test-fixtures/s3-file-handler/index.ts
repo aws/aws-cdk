@@ -1,6 +1,6 @@
 // tslint:disable: no-console
-import AWS = require('aws-sdk');
-import api = require('./api');
+import * as AWS from 'aws-sdk';
+import * as api from './api';
 
 const s3 = new AWS.S3();
 

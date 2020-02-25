@@ -1,7 +1,6 @@
 import { App, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import ec2 = require('../lib');
-import { LookupMachineImage } from '../lib';
+import * as ec2 from '../lib';
 
 export = {
   'can make and use a Windows image'(test: Test) {
@@ -53,7 +52,7 @@ export = {
     });
 
     // WHEN
-    new LookupMachineImage({ name: 'bla*', owners: ['amazon'] }).getImage(stack);
+    new ec2.LookupMachineImage({ name: 'bla*', owners: ['amazon'] }).getImage(stack);
 
     // THEN
     const missing = app.synth().manifest.missing || [];

@@ -1,12 +1,11 @@
 // tslint:disable: max-line-length
 
 import { expect, haveResource } from '@aws-cdk/assert';
-import iam = require('@aws-cdk/aws-iam');
-import kms = require('@aws-cdk/aws-kms');
-import cdk = require('@aws-cdk/core');
-import { App, CfnParameter, Stack } from '@aws-cdk/core';
+import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import ssm = require('../lib');
+import * as ssm from '../lib';
 
 export = {
   'creating a String SSM Parameter'(test: Test) {
@@ -28,6 +27,26 @@ export = {
       Name: 'FooParameter',
       Type: 'String',
       Value: 'Foo',
+    }));
+    test.done();
+  },
+
+  'expect String SSM Parameter to have tier properly set'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new ssm.StringParameter(stack, 'Parameter', {
+      allowedPattern: '.*',
+      description: 'The value Foo',
+      parameterName: 'FooParameter',
+      stringValue: 'Foo',
+      tier: ssm.ParameterTier.ADVANCED,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::SSM::Parameter', {
+      Tier: 'Advanced',
     }));
     test.done();
   },
@@ -76,6 +95,120 @@ export = {
       Type: 'StringList',
       Value: 'Foo,Bar',
     }));
+    test.done();
+  },
+
+  'String SSM Parameter throws on long descriptions'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // THEN
+    test.throws(() => {
+      new ssm.StringParameter(stack, 'Parameter', {
+        stringValue: 'Foo',
+        description: '1024+ character long description: Lorem ipsum dolor sit amet, consectetuer adipiscing elit. \
+        Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, \
+        nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat \
+        massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, \
+        imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. \
+        Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, \
+        eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus \
+        varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. \
+        Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing \
+        sem neque sed ipsum.'
+      });
+    }, /Description cannot be longer than 1024 characters./);
+
+    test.done();
+  },
+
+  'String SSM Parameter throws on long names'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // THEN
+    test.throws(() => {
+      new ssm.StringParameter(stack, 'Parameter', {
+        stringValue: 'Foo',
+        parameterName: '2048+ character long name: Lorem ipsum dolor sit amet, consectetuer adipiscing elit. \
+        Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, \
+        nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat \
+        massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, \
+        imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. \
+        Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, \
+        eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus \
+        varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. \
+        Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing \
+        sem neque sed ipsum. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. \
+        Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, \
+        nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat \
+        massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, \
+        imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. \
+        Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, \
+        eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus \
+        varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. \
+        Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing \
+        sem neque sed ipsum.'
+      });
+    }, /Name cannot be longer than 2048 characters./);
+
+    test.done();
+  },
+
+  'StringList SSM Parameter throws on long descriptions'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // THEN
+    test.throws(() => {
+      new ssm.StringListParameter(stack, 'Parameter', {
+        stringListValue: ['Foo', 'Bar'],
+        description: '1024+ character long description: Lorem ipsum dolor sit amet, consectetuer adipiscing elit. \
+        Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, \
+        nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat \
+        massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, \
+        imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. \
+        Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, \
+        eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus \
+        varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. \
+        Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing \
+        sem neque sed ipsum.'
+      });
+    }, /Description cannot be longer than 1024 characters./);
+
+    test.done();
+  },
+
+  'StringList SSM Parameter throws on long names'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // THEN
+    test.throws(() => {
+      new ssm.StringListParameter(stack, 'Parameter', {
+        stringListValue: ['Foo', 'Bar'],
+        parameterName: '2048+ character long name: Lorem ipsum dolor sit amet, consectetuer adipiscing elit. \
+        Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, \
+        nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat \
+        massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, \
+        imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. \
+        Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, \
+        eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus \
+        varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. \
+        Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing \
+        sem neque sed ipsum. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. \
+        Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, \
+        nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat \
+        massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, \
+        imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. \
+        Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, \
+        eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus \
+        varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. \
+        Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing \
+        sem neque sed ipsum.'
+      });
+    }, /Name cannot be longer than 2048 characters./);
+
     test.done();
   },
 
@@ -152,7 +285,7 @@ export = {
 
   'StringParameter.fromStringParameterName'(test: Test) {
     // GIVEN
-    const stack = new Stack();
+    const stack = new cdk.Stack();
 
     // WHEN
     const param = ssm.StringParameter.fromStringParameterName(stack, 'MyParamName', 'MyParamName');
@@ -184,7 +317,7 @@ export = {
 
   'StringParameter.fromStringParameterAttributes'(test: Test) {
     // GIVEN
-    const stack = new Stack();
+    const stack = new cdk.Stack();
 
     // WHEN
     const param = ssm.StringParameter.fromStringParameterAttributes(stack, 'MyParamName', {
@@ -211,7 +344,7 @@ export = {
 
   'StringParameter.fromSecureStringParameterAttributes'(test: Test) {
     // GIVEN
-    const stack = new Stack();
+    const stack = new cdk.Stack();
 
     // WHEN
     const param = ssm.StringParameter.fromSecureStringParameterAttributes(stack, 'MyParamName', {
@@ -238,7 +371,7 @@ export = {
 
   'StringParameter.fromSecureStringParameterAttributes with encryption key creates the correct policy for grantRead'(test: Test) {
     // GIVEN
-    const stack = new Stack();
+    const stack = new cdk.Stack();
     const key = kms.Key.fromKeyArn(stack, 'CustomKey', 'arn:aws:kms:us-east-1:123456789012:key/xyz');
     const role = new iam.Role(stack, 'Role', {
       assumedBy: new iam.AccountRootPrincipal(),
@@ -300,7 +433,7 @@ export = {
 
   'StringParameter.fromSecureStringParameterAttributes with encryption key creates the correct policy for grantWrite'(test: Test) {
     // GIVEN
-    const stack = new Stack();
+    const stack = new cdk.Stack();
     const key = kms.Key.fromKeyArn(stack, 'CustomKey', 'arn:aws:kms:us-east-1:123456789012:key/xyz');
     const role = new iam.Role(stack, 'Role', {
       assumedBy: new iam.AccountRootPrincipal(),
@@ -361,7 +494,7 @@ export = {
 
   'StringListParameter.fromName'(test: Test) {
     // GIVEN
-    const stack = new Stack();
+    const stack = new cdk.Stack();
 
     // WHEN
     const param = ssm.StringListParameter.fromStringListParameterName(stack, 'MyParamName', 'MyParamName');
@@ -385,8 +518,8 @@ export = {
 
   'fromLookup will use the SSM context provider to read value during synthesis'(test: Test) {
     // GIVEN
-    const app = new App();
-    const stack = new Stack(app, 'my-staq', { env: { region: 'us-east-1', account: '12344' } });
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'my-staq', { env: { region: 'us-east-1', account: '12344' } });
 
     // WHEN
     const value = ssm.StringParameter.valueFromLookup(stack, 'my-param-name');
@@ -411,7 +544,7 @@ export = {
 
     'returns a token that represents the SSM parameter value'(test: Test) {
       // GIVEN
-      const stack = new Stack();
+      const stack = new cdk.Stack();
 
       // WHEN
       const value = ssm.StringParameter.valueForStringParameter(stack, 'my-param-name');
@@ -431,7 +564,7 @@ export = {
 
     'de-dup based on parameter name'(test: Test) {
       // GIVEN
-      const stack = new Stack();
+      const stack = new cdk.Stack();
 
       // WHEN
       ssm.StringParameter.valueForStringParameter(stack, 'my-param-name');
@@ -457,7 +590,7 @@ export = {
 
     'can query actual SSM Parameter Names, multiple times'(test: Test) {
       // GIVEN
-      const stack = new Stack();
+      const stack = new cdk.Stack();
 
       // WHEN
       ssm.StringParameter.valueForStringParameter(stack, '/my/param/name');
@@ -468,8 +601,8 @@ export = {
   },
 
   'rendering of parameter arns'(test: Test) {
-    const stack = new Stack();
-    const param = new CfnParameter(stack, 'param');
+    const stack = new cdk.Stack();
+    const param = new cdk.CfnParameter(stack, 'param');
     const expectedA = { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter/bam'] ] };
     const expectedB = { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter/', { Ref: 'param' } ] ] };
     const expectedC = { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter', { Ref: 'param' } ] ] };
@@ -519,8 +652,8 @@ export = {
 
   'if parameterName is a token separator must be specified'(test: Test) {
     // GIVEN
-    const stack = new Stack();
-    const param = new CfnParameter(stack, 'param');
+    const stack = new cdk.Stack();
+    const param = new cdk.CfnParameter(stack, 'param');
     let i = 0;
 
     // WHEN
@@ -538,8 +671,8 @@ export = {
 
   'fails if name is a token and no explicit separator'(test: Test) {
     // GIVEN
-    const stack = new Stack();
-    const param = new CfnParameter(stack, 'param');
+    const stack = new cdk.Stack();
+    const param = new cdk.CfnParameter(stack, 'param');
     let i = 0;
 
     // THEN
@@ -553,7 +686,7 @@ export = {
 
   'fails if simpleName is wrong based on a concrete physical name'(test: Test) {
     // GIVEN
-    const stack = new Stack();
+    const stack = new cdk.Stack();
     let i = 0;
 
     // THEN
@@ -564,7 +697,7 @@ export = {
 
   'fails if parameterName is undefined and simpleName is "false"'(test: Test) {
     // GIVEN
-    const stack = new Stack();
+    const stack = new cdk.Stack();
 
     // THEN
     test.throws(() => new ssm.StringParameter(stack, 'p', { simpleName: false, stringValue: 'foo' }), /If "parameterName" is not explicitly defined, "simpleName" must be "true" or undefined since auto-generated parameter names always have simple names/);

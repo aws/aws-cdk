@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 import { Grant } from './grant';
 import { IManagedPolicy } from './managed-policy';
 import { Policy } from './policy';

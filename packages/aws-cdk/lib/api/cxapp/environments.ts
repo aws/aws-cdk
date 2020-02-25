@@ -1,5 +1,5 @@
-import cxapi = require('@aws-cdk/cx-api');
-import minimatch = require('minimatch');
+import * as cxapi from '@aws-cdk/cx-api';
+import * as minimatch from 'minimatch';
 import { ISDK } from '../util/sdk';
 import { AppStacks } from './stacks';
 

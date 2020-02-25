@@ -1,5 +1,5 @@
 import '@aws-cdk/assert/jest';
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 import { Group, ManagedPolicy, PolicyStatement, Role, ServicePrincipal, User } from '../lib';
 
 describe('managed policy', () => {
@@ -33,6 +33,12 @@ describe('managed policy', () => {
         ':iam::1234:policy/SomeCustomerPolicy'
       ]]
     });
+  });
+
+  test('managed policy by arn', () => {
+    const mp = ManagedPolicy.fromManagedPolicyArn(stack, 'MyManagedPolicyByArn', "arn:aws:iam::1234:policy/my-policy");
+
+    expect(stack.resolve(mp.managedPolicyArn)).toEqual("arn:aws:iam::1234:policy/my-policy");
   });
 
   test('managed policy with statements', () => {

@@ -26,17 +26,18 @@ const trail = new cloudtrail.Trail(this, 'CloudTrail');
 ```
 
 You can instantiate the CloudTrail construct with no arguments - this will by default:
-    * Create a new S3 Bucket and associated Policy that allows CloudTrail to write to it
-    * Create a CloudTrail with the following configuration:
-        * Logging Enabled
-        * Log file validation enabled
-        * Multi Region set to true
-        * Global Service Events set to true
-        * The created S3 bucket
-        * CloudWatch Logging Disabled
-        * No SNS configuartion
-        * No tags
-        * No fixed name
+
+ * Create a new S3 Bucket and associated Policy that allows CloudTrail to write to it
+ * Create a CloudTrail with the following configuration:
+     * Logging Enabled
+     * Log file validation enabled
+     * Multi Region set to true
+     * Global Service Events set to true
+     * The created S3 bucket
+     * CloudWatch Logging Disabled
+     * No SNS configuartion
+     * No tags
+     * No fixed name
 
 You can override any of these properties using the `CloudTrailProps` configuraiton object.
 

@@ -1,7 +1,7 @@
-import lambda = require('@aws-cdk/aws-lambda');
-import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/core');
-import cloudfront = require('../lib');
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as s3 from '@aws-cdk/aws-s3';
+import * as cdk from '@aws-cdk/core';
+import * as cloudfront from '../lib';
 
 const app = new cdk.App();
 

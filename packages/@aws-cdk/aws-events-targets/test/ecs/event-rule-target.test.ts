@@ -1,9 +1,9 @@
 import '@aws-cdk/assert/jest';
-import ec2 = require('@aws-cdk/aws-ec2');
-import ecs = require('@aws-cdk/aws-ecs');
-import events = require('@aws-cdk/aws-events');
-import cdk = require('@aws-cdk/core');
-import targets = require('../../lib');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as ecs from '@aws-cdk/aws-ecs';
+import * as events from '@aws-cdk/aws-events';
+import * as cdk from '@aws-cdk/core';
+import * as targets from '../../lib';
 
 test("Can use EC2 taskdef as EventRule target", () => {
   // GIVEN

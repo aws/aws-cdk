@@ -38,7 +38,7 @@ function update-spec() {
     node build-tools/spec-diff.js "${title}" "${target}" "${intermediate}" >> CHANGELOG.md.new
     echo "" >> CHANGELOG.md.new
 
-    echo >&2 "Updarting source spec..."
+    echo >&2 "Updating source spec..."
     rm -f ${target}
     cp ${intermediate} ${target}
 }
@@ -67,6 +67,7 @@ node ${scriptdir}/create-missing-libraries.js || {
 
 # update decdk dep list
 (cd ${scriptdir}/../../../decdk && node ./deps.js || true)
+(cd ${scriptdir}/../../../monocdk-experiment && node ./deps.js || true)
 
 # append old changelog after new and replace as the last step because otherwise we will not be idempotent
 cat CHANGELOG.md >> CHANGELOG.md.new

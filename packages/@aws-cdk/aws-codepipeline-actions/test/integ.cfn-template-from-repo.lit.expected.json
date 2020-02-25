@@ -25,7 +25,9 @@
                 "kms:Delete*",
                 "kms:ScheduleKeyDeletion",
                 "kms:CancelKeyDeletion",
-                "kms:GenerateDataKey"
+                "kms:GenerateDataKey",
+                "kms:TagResource",
+                "kms:UntagResource"
               ],
               "Effect": "Allow",
               "Principal": {
@@ -95,6 +97,22 @@
               "Principal": {
                 "AWS": {
                   "Fn::GetAtt": [
+                    "PipelineDeployPrepareChangesRoleD28C853C",
+                    "Arn"
+                  ]
+                }
+              },
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "kms:Decrypt",
+                "kms:DescribeKey"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::GetAtt": [
                     "PipelineDeployPrepareChangesCodePipelineActionRole41931444",
                     "Arn"
                   ]
@@ -112,6 +130,7 @@
     "PipelineArtifactsBucket22248F97": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
+        "PublicAccessBlockConfiguration" : {"BlockPublicAcls":true,"BlockPublicPolicy":true,"IgnorePublicAcls":true,"RestrictPublicBuckets":true},
         "BucketEncryption": {
           "ServerSideEncryptionConfiguration": [
             {
@@ -681,6 +700,49 @@
       "Properties": {
         "PolicyDocument": {
           "Statement": [
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "PipelineArtifactsBucket22248F97",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "PipelineArtifactsBucket22248F97",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "kms:Decrypt",
+                "kms:DescribeKey"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "PipelineArtifactsBucketEncryptionKey01D58D69",
+                  "Arn"
+                ]
+              }
+            },
             {
               "Action": "*",
               "Effect": "Allow",

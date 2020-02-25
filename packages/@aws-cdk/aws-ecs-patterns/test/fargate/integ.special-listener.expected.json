@@ -83,7 +83,13 @@
     "VpcPublicSubnet1EIPD7E02669": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
-        "Domain": "vpc"
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/Vpc/PublicSubnet1"
+          }
+        ]
       }
     },
     "VpcPublicSubnet1NATGateway4D7517AA": {
@@ -174,7 +180,13 @@
     "VpcPublicSubnet2EIP3C605A87": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
-        "Domain": "vpc"
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/Vpc/PublicSubnet2"
+          }
+        ]
       }
     },
     "VpcPublicSubnet2NATGateway9182C01D": {
@@ -514,9 +526,6 @@
     "FargateNlbService65A9DBF8": {
       "Type": "AWS::ECS::Service",
       "Properties": {
-        "TaskDefinition": {
-          "Ref": "FargateNlbServiceTaskDef03021E9A"
-        },
         "Cluster": {
           "Ref": "ClusterEB0386A7"
         },
@@ -557,6 +566,9 @@
               }
             ]
           }
+        },
+        "TaskDefinition": {
+          "Ref": "FargateNlbServiceTaskDef03021E9A"
         }
       },
       "DependsOn": [
@@ -795,9 +807,6 @@
     "FargateAlbServiceB466E994": {
       "Type": "AWS::ECS::Service",
       "Properties": {
-        "TaskDefinition": {
-          "Ref": "FargateAlbServiceTaskDef291471C0"
-        },
         "Cluster": {
           "Ref": "ClusterEB0386A7"
         },
@@ -838,6 +847,9 @@
               }
             ]
           }
+        },
+        "TaskDefinition": {
+          "Ref": "FargateAlbServiceTaskDef291471C0"
         }
       },
       "DependsOn": [

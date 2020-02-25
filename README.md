@@ -17,10 +17,10 @@ infrastructure definition and share it without worrying about boilerplate logic.
 
 The CDK is available in the following languages:
 
-* JavaScript, TypeScript (GA, [Node.js ≥ 10.3.0](https://nodejs.org/download/release/latest-v10.x/))
-* Python (GA, [Python ≥ 3.6](https://www.python.org/downloads/))
-* Java (Developer Preview, [Java ≥ 8](https://www.oracle.com/technetwork/java/javase/downloads/index.html) and [Maven ≥ 3.5.4](https://maven.apache.org/download.cgi))
-* .NET (Developer Preview, [.NET Core ≥ 2.0](https://dotnet.microsoft.com/download))
+* JavaScript, TypeScript ([Node.js ≥ 10.3.0](https://nodejs.org/download/release/latest-v10.x/))
+* Python ([Python ≥ 3.6](https://www.python.org/downloads/))
+* Java ([Java ≥ 8](https://www.oracle.com/technetwork/java/javase/downloads/index.html) and [Maven ≥ 3.5.4](https://maven.apache.org/download.cgi))
+* .NET ([.NET Core ≥ 3.0](https://dotnet.microsoft.com/download))
 
 -------
 
@@ -29,7 +29,8 @@ The CDK is available in the following languages:
 [Getting Started](https://docs.aws.amazon.com/cdk/latest/guide/getting_started.html) |
 [API Reference](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-construct-library.html) |
 [Examples](https://github.com/aws-samples/aws-cdk-examples) |
-[Getting Help](#getting-help)
+[Getting Help](#getting-help) |
+[RFCs](https://github.com/aws/aws-cdk-rfcs)
 
 Developers use the [CDK framework] in one of the
 supported programming languages to define reusable cloud components called [constructs], which
@@ -51,7 +52,7 @@ on AWS.
 [apps]: https://docs.aws.amazon.com/cdk/latest/guide/apps_and_stacks.html#apps
 [Developer Guide]: https://docs.aws.amazon.com/cdk/latest/guide
 [AWS CDK CLI]: https://docs.aws.amazon.com/cdk/latest/guide/tools.html
-[AWS Construct Library]: https://docs.aws.amazon.com/cdk/latest/guide/aws_construct_lib.html
+[AWS Construct Library]: https://docs.aws.amazon.com/cdk/api/latest/docs/aws-construct-library.html
 
 ## At a glance
 

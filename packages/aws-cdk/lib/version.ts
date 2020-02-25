@@ -1,9 +1,9 @@
 import { exec as _exec } from 'child_process';
-import colors = require('colors/safe');
-import fs = require('fs-extra');
-import os = require('os');
-import path = require('path');
-import semver = require('semver');
+import * as colors from 'colors/safe';
+import * as fs from 'fs-extra';
+import * as os from 'os';
+import * as path from 'path';
+import * as semver from 'semver';
 import { promisify } from 'util';
 import { debug, print } from '../lib/logging';
 import { formatAsBanner } from '../lib/util/console-formatters';
@@ -15,10 +15,12 @@ const exec = promisify(_exec);
 export const DISPLAY_VERSION = `${versionNumber()} (build ${commit()})`;
 
 export function versionNumber(): string {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   return require('../package.json').version.replace(/\+[0-9a-f]+$/, '');
 }
 
 function commit(): string {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   return require('../build-info.json').commit;
 }
 

@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 import { CfnListenerRule } from '../elasticloadbalancingv2.generated';
 import { IApplicationListener } from './application-listener';
 import { IApplicationTargetGroup } from './application-target-group';
@@ -177,6 +177,10 @@ export class ApplicationListenerRule extends cdk.Construct {
     const providedActions = possibleActions.filter(action => props[action] !== undefined);
     if (providedActions.length > 1) {
       throw new Error(`'${providedActions}' specified together, specify only one`);
+    }
+
+    if (props.priority <= 0) {
+      throw new Error('Priority must have value greater than or equal to 1');
     }
 
     this.listener = props.listener;

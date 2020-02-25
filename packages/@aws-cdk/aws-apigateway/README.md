@@ -332,6 +332,110 @@ const proxy = resource.addProxy({
 });
 ```
 
+### Authorizers
+
+API Gateway [supports several different authorization types](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-control-access-to-api.html)
+that can be used for controlling access to your REST APIs.
+
+#### IAM-based authorizer
+
+The following CDK code provides 'excecute-api' permission to an IAM user, via IAM policies, for the 'GET' method on the `books` resource:
+
+```ts
+const getBooks = books.addMethod('GET', new apigateway.HttpIntegration('http://amazon.com'), {
+  authorizationType: apigateway.AuthorizationType.IAM
+});
+
+iamUser.attachInlinePolicy(new iam.Policy(this, 'AllowBooks', {
+  statements: [
+    new iam.PolicyStatement({
+      actions: [ 'execute-api:Invoke' ],
+      effect: iam.Effect.Allow,
+      resources: [ getBooks.methodArn() ]
+    })
+  ]
+}))
+```
+
+#### Lambda-based token authorizer
+
+API Gateway also allows [lambda functions to be used as authorizers](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-use-lambda-authorizer.html).
+
+This module provides support for token-based Lambda authorizers. When a client makes a request to an API's methods configured with such
+an authorizer, API Gateway calls the Lambda authorizer, which takes the caller's identity as input and returns an IAM policy as output. 
+A token-based Lambda authorizer (also called a token authorizer) receives the caller's identity in a bearer token, such as
+a JSON Web Token (JWT) or an OAuth token. 
+
+API Gateway interacts with the authorizer Lambda function handler by passing input and expecting the output in a specific format.
+The event object that the handler is called with contains the `authorizationToken` and the `methodArn` from the request to the
+API Gateway endpoint. The handler is expected to return the `principalId` (i.e. the client identifier) and a `policyDocument` stating
+what the client is authorizer to perform.
+See [here](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-use-lambda-authorizer.html) for a detailed specification on
+inputs and outputs of the Lambda handler.
+
+The following code attaches a token-based Lambda authorizer to the 'GET' Method of the Book resource:
+
+```ts
+const authFn = new lambda.Function(this, 'booksAuthorizerLambda', {
+  // ...
+  // ...
+});
+
+const auth = new apigateway.TokenAuthorizer(this, 'booksAuthorizer', {
+  handler: authFn
+});
+
+books.addMethod('GET', new apigateway.HttpIntegration('http://amazon.com'), {
+  authorizer: auth
+});
+```
+
+By default, the `TokenAuthorizer` looks for the authorization token in the request header with the key 'Authorization'. This can,
+however, be modified by changing the `identitySource` property.
+
+Authorizers can also be passed via the `defaultMethodOptions` property within the `RestApi` construct or the `Method` construct. Unless
+explicitly overridden, the specified defaults will be applied across all `Method`s across the `RestApi` or across all `Resource`s,
+depending on where the defaults were specified.
+
+#### Lambda-based request authorizer
+
+This module provides support for request-based Lambda authorizers. When a client makes a request to an API's methods configured with such
+an authorizer, API Gateway calls the Lambda authorizer, which takes specified parts of the request, known as identity sources,
+as input and returns an IAM policy as output. A request-based Lambda authorizer (also called a request authorizer) receives 
+the identity sources in a series of values pulled from the request, from the headers, stage variables, query strings, and the context.
+
+API Gateway interacts with the authorizer Lambda function handler by passing input and expecting the output in a specific format.
+The event object that the handler is called with contains the body of the request and the `methodArn` from the request to the
+API Gateway endpoint. The handler is expected to return the `principalId` (i.e. the client identifier) and a `policyDocument` stating
+what the client is authorizer to perform.
+See [here](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-use-lambda-authorizer.html) for a detailed specification on
+inputs and outputs of the Lambda handler.
+
+The following code attaches a request-based Lambda authorizer to the 'GET' Method of the Book resource:
+
+```ts
+const authFn = new lambda.Function(this, 'booksAuthorizerLambda', {
+  // ...
+  // ...
+});
+
+const auth = new apigateway.RequestAuthorizer(this, 'booksAuthorizer', {
+  handler: authFn,
+  identitySources: [IdentitySource.header('Authorization')]
+});
+
+books.addMethod('GET', new apigateway.HttpIntegration('http://amazon.com'), {
+  authorizer: auth
+});
+```
+
+By default, the `RequestAuthorizer` does not pass any kind of information from the request. This can,
+however, be modified by changing the `identitySource` property, and is required when specifying a value for caching.
+
+Authorizers can also be passed via the `defaultMethodOptions` property within the `RestApi` construct or the `Method` construct. Unless
+explicitly overridden, the specified defaults will be applied across all `Method`s across the `RestApi` or across all `Resource`s,
+depending on where the defaults were specified.
+
 ### Deployments
 
 By default, the `RestApi` construct will automatically create an API Gateway
@@ -419,7 +523,7 @@ CNAME records only for subdomains.)
 ```ts
 new route53.ARecord(this, 'CustomDomainAliasRecord', {
   zone: hostedZoneForExampleCom,
-  target: route53.AddressRecordTarget.fromAlias(new route53_targets.ApiGateway(api))
+  target: route53.RecordTarget.fromAlias(new route53_targets.ApiGateway(api))
 });
 ```
 
@@ -462,7 +566,7 @@ If you wish to setup this domain with an Amazon Route53 alias, use the `route53_
 ```ts
 new route53.ARecord(this, 'CustomDomainAliasRecord', {
   zone: hostedZoneForExampleCom,
-  target: route53.AddressRecordTarget.fromAlias(new route53_targets.ApiGatewayDomain(domainName))
+  target: route53.RecordTarget.fromAlias(new route53_targets.ApiGatewayDomain(domainName))
 });
 ```
 
@@ -474,7 +578,8 @@ running at one origin, access to selected resources from a different origin. A
 web application executes a cross-origin HTTP request when it requests a resource
 that has a different origin (domain, protocol, or port) from its own.
 
-You can add the CORS [preflight](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS#Preflighted_requests) OPTIONS HTTP method to any API resource via the `defaultCorsPreflightOptions` option or by calling the `addCorsPreflight` on a specific resource.
+You can add the CORS [preflight](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS#Preflighted_requests) OPTIONS 
+HTTP method to any API resource via the `defaultCorsPreflightOptions` option or by calling the `addCorsPreflight` on a specific resource.
 
 The following example will enable CORS for all methods and all origins on all resources of the API:
 
@@ -516,6 +621,51 @@ OPTIONS added to them.
 
 See [#906](https://github.com/aws/aws-cdk/issues/906) for a list of CORS
 features which are not yet supported.
+
+### Endpoint Configuration
+API gateway allows you to specify an 
+[API Endpoint Type](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-api-endpoint-types.html). 
+To define an endpoint type for the API gateway, use `endpointConfiguration` property:
+
+```ts
+const api = new apigw.RestApi(stack, 'api', {
+  endpointConfiguration: {
+    types: [ apigw.EndpointType.EDGE ]
+  }
+});
+```
+
+You can also create an association between your Rest API and a VPC endpoint. By doing so,
+API Gateway will generate a new
+Route53 Alias DNS record which you can use to invoke your private APIs. More info can be found
+[here](https://docs.aws.amazon.com/apigateway/latest/developerguide/associate-private-api-with-vpc-endpoint.html).
+
+Here is an example:
+
+```ts
+const someEndpoint: IVpcEndpoint = /* Get or Create endpoint here */
+const api = new apigw.RestApi(stack, 'api', {
+  endpointConfiguration: {
+    types: [ apigw.EndpointType.PRIVATE ],
+    vpcEndpoints: [ someEndpoint ]
+  }
+});
+```
+
+By performing this association, we can invoke the API gateway using the following format:
+
+```
+https://{rest-api-id}-{vpce-id}.execute-api.{region}.amazonaws.com/{stage}
+```
+
+## APIGateway v2
+
+APIGateway v2 APIs are now moved to its own package named `aws-apigatewayv2`. For backwards compatibility, existing
+APIGateway v2 "CFN resources" (such as `CfnApi`) that were previously exported as part of this package, are still
+exported from here and have been marked deprecated. However, updates to these CloudFormation resources, such as new
+properties and new resource types will not be available.
+
+Move to using `aws-apigatewayv2` to get the latest APIs and updates.
 
 ----
 

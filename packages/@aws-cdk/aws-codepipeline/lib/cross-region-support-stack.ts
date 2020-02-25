@@ -1,6 +1,6 @@
-import kms = require('@aws-cdk/aws-kms');
-import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/core');
+import * as kms from '@aws-cdk/aws-kms';
+import * as s3 from '@aws-cdk/aws-s3';
+import * as cdk from '@aws-cdk/core';
 
 const REQUIRED_ALIAS_PREFIX = 'alias/';
 

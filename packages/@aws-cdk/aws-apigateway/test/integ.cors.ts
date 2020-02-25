@@ -1,7 +1,7 @@
-import lambda = require('@aws-cdk/aws-lambda');
+import * as lambda from '@aws-cdk/aws-lambda';
 import { App, Construct, Stack, StackProps } from '@aws-cdk/core';
-import path = require('path');
-import apigw = require('../lib');
+import * as path from 'path';
+import * as apigw from '../lib';
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {

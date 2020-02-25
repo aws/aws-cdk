@@ -1,5 +1,4 @@
-import cxapi = require('@aws-cdk/cx-api');
-import { CloudAssembly } from '@aws-cdk/cx-api';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Construct, ConstructNode } from './construct';
 import { collectRuntimeInformation } from './private/runtime-info';
 import { TreeMetadata } from './private/tree-metadata';
@@ -74,7 +73,7 @@ export interface AppProps {
  * CloudFormation templates and assets that are needed to deploy this app into
  * the AWS cloud.
  *
- * @see https://docs.aws.amazon.com/cdk/latest/guide/apps_and_stacks.html
+ * @see https://docs.aws.amazon.com/cdk/latest/guide/apps.html
  */
 export class App extends Construct {
 
@@ -87,7 +86,7 @@ export class App extends Construct {
     return APP_SYMBOL in obj;
   }
 
-  private _assembly?: CloudAssembly;
+  private _assembly?: cxapi.CloudAssembly;
   private readonly runtimeInfo: boolean;
   private readonly outdir?: string;
 
@@ -133,7 +132,7 @@ export class App extends Construct {
    * @returns a `CloudAssembly` which can be used to inspect synthesized
    * artifacts such as CloudFormation templates and assets.
    */
-  public synth(): CloudAssembly {
+  public synth(): cxapi.CloudAssembly {
     // we already have a cloud assembly, no-op for you
     if (this._assembly) {
       return this._assembly;

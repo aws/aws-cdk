@@ -1,10 +1,9 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import iam = require('@aws-cdk/aws-iam');
-import kms = require('@aws-cdk/aws-kms');
+import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import { Duration, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import sqs = require('../lib');
-import { Queue } from '../lib';
+import * as sqs from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -165,7 +164,7 @@ export = {
 
     'grants also work on imported queues'(test: Test) {
       const stack = new Stack();
-      const queue = Queue.fromQueueAttributes(stack, 'Import', {
+      const queue = sqs.Queue.fromQueueAttributes(stack, 'Import', {
         queueArn: 'arn:aws:sqs:us-east-1:123456789012:queue1',
         queueUrl: 'https://queue-url'
       });
@@ -291,7 +290,7 @@ export = {
 
   'test ".fifo" suffixed queues register as fifo'(test: Test) {
     const stack = new Stack();
-    const queue = new Queue(stack, 'Queue', {
+    const queue = new sqs.Queue(stack, 'Queue', {
       queueName: 'MyQueue.fifo'
     });
 
@@ -314,7 +313,7 @@ export = {
 
   'test a fifo queue is observed when the "fifo" property is specified'(test: Test) {
     const stack = new Stack();
-    const queue = new Queue(stack, 'Queue', {
+    const queue = new sqs.Queue(stack, 'Queue', {
       fifo: true
     });
 
@@ -337,7 +336,7 @@ export = {
   'test metrics'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const queue = new Queue(stack, 'Queue');
+    const queue = new sqs.Queue(stack, 'Queue');
 
     // THEN
     test.deepEqual(stack.resolve(queue.metricNumberOfMessagesSent()), {
@@ -360,9 +359,9 @@ export = {
   }
 };
 
-function testGrant(action: (q: Queue, principal: iam.IPrincipal) => void, ...expectedActions: string[]) {
+function testGrant(action: (q: sqs.Queue, principal: iam.IPrincipal) => void, ...expectedActions: string[]) {
   const stack = new Stack();
-  const queue = new Queue(stack, 'MyQueue');
+  const queue = new sqs.Queue(stack, 'MyQueue');
   const principal = new iam.User(stack, 'User');
 
   action(queue, principal);

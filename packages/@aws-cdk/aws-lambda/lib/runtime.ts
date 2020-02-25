@@ -35,7 +35,7 @@ export class Runtime {
   /** @deprecated Use {@link NODEJS_10_X} */
   public static readonly NODEJS_8_10 =    new Runtime('nodejs8.10',     RuntimeFamily.NODEJS, { supportsInlineCode: true });
   public static readonly NODEJS_10_X =    new Runtime('nodejs10.x',     RuntimeFamily.NODEJS, { supportsInlineCode: true });
-  public static readonly NODEJS_12_X =    new Runtime('nodejs12.x',     RuntimeFamily.NODEJS);
+  public static readonly NODEJS_12_X =    new Runtime('nodejs12.x',     RuntimeFamily.NODEJS, { supportsInlineCode: true });
   public static readonly PYTHON_2_7 =     new Runtime('python2.7',      RuntimeFamily.PYTHON, { supportsInlineCode: true });
   public static readonly PYTHON_3_6 =     new Runtime('python3.6',      RuntimeFamily.PYTHON, { supportsInlineCode: true });
   public static readonly PYTHON_3_7 =     new Runtime('python3.7',      RuntimeFamily.PYTHON, { supportsInlineCode: true });
@@ -47,7 +47,7 @@ export class Runtime {
   public static readonly DOTNET_CORE_2 =  new Runtime('dotnetcore2.0',  RuntimeFamily.DOTNET_CORE);
   public static readonly DOTNET_CORE_2_1 = new Runtime('dotnetcore2.1',  RuntimeFamily.DOTNET_CORE);
   public static readonly GO_1_X =         new Runtime('go1.x',          RuntimeFamily.GO);
-  public static readonly RUBY_2_5 =       new Runtime('ruby2.5',        RuntimeFamily.RUBY, { supportsInlineCode: true });
+  public static readonly RUBY_2_5 =       new Runtime('ruby2.5',        RuntimeFamily.RUBY);
   public static readonly PROVIDED =     new Runtime('provided',       RuntimeFamily.OTHER);
 
   /**

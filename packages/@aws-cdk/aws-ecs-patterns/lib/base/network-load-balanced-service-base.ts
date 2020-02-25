@@ -1,10 +1,10 @@
 import { IVpc } from '@aws-cdk/aws-ec2';
 import { AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerImage, ICluster, LogDriver, PropagatedTagSource, Secret } from '@aws-cdk/aws-ecs';
-import { NetworkListener, NetworkLoadBalancer, NetworkTargetGroup } from '@aws-cdk/aws-elasticloadbalancingv2';
+import { INetworkLoadBalancer, NetworkListener, NetworkLoadBalancer, NetworkTargetGroup } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { IRole } from '@aws-cdk/aws-iam';
-import { AddressRecordTarget, ARecord, IHostedZone } from '@aws-cdk/aws-route53';
+import { ARecord, IHostedZone, RecordTarget } from '@aws-cdk/aws-route53';
 import { LoadBalancerTarget } from '@aws-cdk/aws-route53-targets';
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 
 /**
  * The properties for the base NetworkLoadBalancedEc2Service or NetworkLoadBalancedFargateService service.
@@ -78,13 +78,33 @@ export interface NetworkLoadBalancedServiceBaseProps {
   readonly healthCheckGracePeriod?: cdk.Duration;
 
   /**
+   * The maximum number of tasks, specified as a percentage of the Amazon ECS
+   * service's DesiredCount value, that can run in a service during a
+   * deployment.
+   *
+   * @default - 100 if daemon, otherwise 200
+   */
+  readonly maxHealthyPercent?: number;
+
+  /**
+   * The minimum number of tasks, specified as a percentage of
+   * the Amazon ECS service's DesiredCount value, that must
+   * continue to run and remain healthy during a deployment.
+   *
+   * @default - 0 if daemon, otherwise 50
+   */
+  readonly minHealthyPercent?: number;
+
+  /**
    * The network load balancer that will serve traffic to the service.
+   * If the load balancer has been imported, the vpc attribute must be specified
+   * in the call to fromNetworkLoadBalancerAttributes().
    *
    * [disable-awslint:ref-via-interface]
    *
    * @default - a new load balancer will be created.
    */
-  readonly loadBalancer?: NetworkLoadBalancer;
+  readonly loadBalancer?: INetworkLoadBalancer;
 
   /**
    * Listener port of the network load balancer that will serve traffic to the service.
@@ -210,7 +230,12 @@ export abstract class NetworkLoadBalancedServiceBase extends cdk.Construct {
   /**
    * The Network Load Balancer for the service.
    */
-  public readonly loadBalancer: NetworkLoadBalancer;
+  public get loadBalancer(): NetworkLoadBalancer {
+    if (!this._networkLoadBalancer) {
+      throw new Error(".loadBalancer can only be accessed if the class was constructed with an owned, not imported, load balancer");
+    }
+    return this._networkLoadBalancer;
+  }
 
   /**
    * The listener for the service.
@@ -227,6 +252,7 @@ export abstract class NetworkLoadBalancedServiceBase extends cdk.Construct {
    */
   public readonly cluster: ICluster;
 
+  private readonly _networkLoadBalancer?: NetworkLoadBalancer;
   /**
    * Constructs a new instance of the NetworkLoadBalancedServiceBase class.
    */
@@ -250,7 +276,8 @@ export abstract class NetworkLoadBalancedServiceBase extends cdk.Construct {
       internetFacing
     };
 
-    this.loadBalancer = props.loadBalancer !== undefined ? props.loadBalancer : new NetworkLoadBalancer(this, 'LB', lbProps);
+    const loadBalancer = props.loadBalancer !== undefined ? props.loadBalancer :
+      new NetworkLoadBalancer(this, 'LB', lbProps);
 
     const listenerPort = props.listenerPort !== undefined ? props.listenerPort : 80;
 
@@ -258,7 +285,7 @@ export abstract class NetworkLoadBalancedServiceBase extends cdk.Construct {
       port: 80
     };
 
-    this.listener = this.loadBalancer.addListener('PublicListener', { port: listenerPort });
+    this.listener = loadBalancer.addListener('PublicListener', { port: listenerPort });
     this.targetGroup = this.listener.addTargets('ECS', targetProps);
 
     if (typeof props.domainName !== 'undefined') {
@@ -269,11 +296,17 @@ export abstract class NetworkLoadBalancedServiceBase extends cdk.Construct {
       new ARecord(this, "DNS", {
         zone: props.domainZone,
         recordName: props.domainName,
-        target: AddressRecordTarget.fromAlias(new LoadBalancerTarget(this.loadBalancer)),
+        target: RecordTarget.fromAlias(new LoadBalancerTarget(loadBalancer)),
       });
     }
 
-    new cdk.CfnOutput(this, 'LoadBalancerDNS', { value: this.loadBalancer.loadBalancerDnsName });
+    if (loadBalancer instanceof NetworkLoadBalancer) {
+      this._networkLoadBalancer = loadBalancer;
+    }
+
+    if (props.loadBalancer === undefined) {
+      new cdk.CfnOutput(this, 'LoadBalancerDNS', { value: this.loadBalancer.loadBalancerDnsName });
+    }
   }
 
   /**

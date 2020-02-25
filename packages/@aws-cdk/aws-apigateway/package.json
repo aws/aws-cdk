@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-apigateway",
-  "version": "1.17.1",
+  "version": "999.0.0",
   "description": "The CDK Construct Library for AWS::ApiGateway",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -11,8 +11,7 @@
         "package": "software.amazon.awscdk.services.apigateway",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "apigateway",
-          "versionSuffix": ".DEVPREVIEW"
+          "artifactId": "apigateway"
         }
       },
       "dotnet": {
@@ -20,7 +19,6 @@
         "packageId": "Amazon.CDK.AWS.APIGateway",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "versionSuffix": "-devpreview",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
@@ -49,10 +47,7 @@
     "compat": "cdk-compat"
   },
   "cdk-build": {
-    "cloudformation": [
-      "AWS::ApiGateway",
-      "AWS::ApiGatewayV2"
-    ]
+    "cloudformation": "AWS::ApiGateway"
   },
   "keywords": [
     "aws",
@@ -67,30 +62,41 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "1.17.1",
-    "@aws-cdk/aws-ec2": "1.17.1",
-    "cdk-build-tools": "1.17.1",
-    "cdk-integ-tools": "1.17.1",
-    "cfn2ts": "1.17.1",
-    "pkglint": "1.17.1"
+    "@aws-cdk/assert": "999.0.0",
+    "@types/nodeunit": "^0.0.30",
+    "cdk-build-tools": "999.0.0",
+    "cdk-integ-tools": "999.0.0",
+    "cfn2ts": "999.0.0",
+    "nodeunit": "^0.11.3",
+    "pkglint": "999.0.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-certificatemanager": "1.17.1",
-    "@aws-cdk/aws-elasticloadbalancingv2": "1.17.1",
-    "@aws-cdk/aws-iam": "1.17.1",
-    "@aws-cdk/aws-lambda": "1.17.1",
-    "@aws-cdk/core": "1.17.1"
+    "@aws-cdk/aws-certificatemanager": "999.0.0",
+    "@aws-cdk/aws-ec2": "999.0.0",
+    "@aws-cdk/aws-elasticloadbalancingv2": "999.0.0",
+    "@aws-cdk/aws-iam": "999.0.0",
+    "@aws-cdk/aws-lambda": "999.0.0",
+    "@aws-cdk/core": "999.0.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-certificatemanager": "1.17.1",
-    "@aws-cdk/aws-elasticloadbalancingv2": "1.17.1",
-    "@aws-cdk/aws-iam": "1.17.1",
-    "@aws-cdk/aws-lambda": "1.17.1",
-    "@aws-cdk/core": "1.17.1"
+    "@aws-cdk/aws-certificatemanager": "999.0.0",
+    "@aws-cdk/aws-ec2": "999.0.0",
+    "@aws-cdk/aws-elasticloadbalancingv2": "999.0.0",
+    "@aws-cdk/aws-iam": "999.0.0",
+    "@aws-cdk/aws-lambda": "999.0.0",
+    "@aws-cdk/core": "999.0.0"
   },
   "engines": {
     "node": ">= 10.3.0"
+  },
+  "nyc": {
+    "exclude": [
+      "coverage/**",
+      "test/**",
+      "lib/*.generated.js",
+      "lib/apigatewayv2.js"
+    ]
   },
   "awslint": {
     "exclude": [
@@ -285,7 +291,10 @@
       "props-default-doc:@aws-cdk/aws-apigateway.MethodOptions.operationName",
       "props-default-doc:@aws-cdk/aws-apigateway.MethodOptions.requestModels",
       "props-default-doc:@aws-cdk/aws-apigateway.MethodOptions.requestValidator",
-      "docs-public-apis:@aws-cdk/aws-apigateway.ResourceBase.url"
+      "docs-public-apis:@aws-cdk/aws-apigateway.ResourceBase.url",
+      "attribute-tag:@aws-cdk/aws-apigateway.LambdaAuthorizer.authorizerArn",
+      "attribute-tag:@aws-cdk/aws-apigateway.RequestAuthorizer.authorizerArn",
+      "attribute-tag:@aws-cdk/aws-apigateway.TokenAuthorizer.authorizerArn"
     ]
   },
   "stability": "stable"

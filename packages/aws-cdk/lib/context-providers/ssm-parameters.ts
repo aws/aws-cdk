@@ -1,4 +1,4 @@
-import AWS = require('aws-sdk');
+import * as AWS from 'aws-sdk';
 import { ISDK, Mode } from '../api';
 import { debug } from '../logging';
 import { ContextProviderPlugin } from './provider';

@@ -1,5 +1,5 @@
-import jsiiReflect = require('jsii-reflect');
-import util = require('util');
+import * as jsiiReflect from 'jsii-reflect';
+import * as util from 'util';
 
 // tslint:disable:no-console
 
