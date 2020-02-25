@@ -154,7 +154,6 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     try {
       await waitForStack(cfn, deployName);
     } finally {
-      // stop the stack activity monitor if it's running as the stack ended in an error state
       if (monitor) {
         await monitor.stop();
       }
