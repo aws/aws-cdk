@@ -496,7 +496,8 @@ function cdkModuleName(name: string) {
       isLegacyCdkPkg ? 'cdk'
         : isCdkPkg ? 'core'
           : name.startsWith('aws-') || name.startsWith('alexa-') ? name.replace(/^aws-/, '')
-            : `cdk-${name}`,
+            : name.startsWith('cdk-') ? name
+              : `cdk-${name}`,
     dotnetNamespace: `Amazon.CDK${isCdkPkg ? '' : `.${dotnetSuffix}`}`,
     python: {
       distName: `aws-cdk.${pythonName}`,
@@ -656,17 +657,45 @@ export class RegularDependenciesMustSatisfyPeerDependencies extends ValidationRu
 }
 
 /**
- * Check that dependencies on @aws-cdk/ packages use point versions (not version ranges).
+ * Check that dependencies on @aws-cdk/ packages use point versions (not version ranges)
+ * and that they are also defined in `peerDependencies`.
  */
 export class MustDependonCdkByPointVersions extends ValidationRule {
   public readonly name = 'dependencies/cdk-point-dependencies';
 
   public validate(pkg: PackageJson): void {
     const expectedVersion = monoRepoVersion();
+    const ignore = [
+      '@aws-cdk/cloudformation-diff',
+      '@aws-cdk/cfnspec',
+      '@aws-cdk/cdk-assets-schema',
+      '@aws-cdk/cx-api',
+      '@aws-cdk/region-info'
+    ];
 
     for (const [depName, depVersion] of Object.entries(pkg.dependencies)) {
-      if (isCdkModuleName(depName) && depVersion !== expectedVersion) {
+      if (!isCdkModuleName(depName) || ignore.includes(depName)) {
+        continue;
+      }
 
+      const peerDep = pkg.peerDependencies[depName];
+      if (!peerDep) {
+        pkg.report({
+          ruleName: this.name,
+          message: `dependency ${depName} must also appear in peerDependencies`,
+          fix: () => pkg.addPeerDependency(depName, expectedVersion)
+        });
+      }
+
+      if (peerDep !== expectedVersion) {
+        pkg.report({
+          ruleName: this.name,
+          message: `peer dependency ${depName} should have the version ${expectedVersion}`,
+          fix: () => pkg.addPeerDependency(depName, expectedVersion)
+        });
+      }
+
+      if (depVersion !== expectedVersion) {
         pkg.report({
           ruleName: this.name,
           message: `dependency ${depName}: dependency version must be ${expectedVersion}`,
@@ -843,7 +872,7 @@ export class AllVersionsTheSame extends ValidationRule {
   private readonly usedDeps: {[pkg: string]: VersionCount[]} = {};
 
   public prepare(pkg: PackageJson): void {
-    this.ourPackages[pkg.json.name] = `^${pkg.json.version}`;
+    this.ourPackages[pkg.json.name] = pkg.json.version;
     this.recordDeps(pkg.json.dependencies);
     this.recordDeps(pkg.json.devDependencies);
   }

@@ -1,0 +1,28 @@
+{
+    "compilerOptions": {
+        "target": "ES2018",
+        "module": "commonjs",
+        "lib": ["es2018", "dom"],
+        "strict": true,
+        "alwaysStrict": true,
+        "declaration": true,
+        "inlineSourceMap": true,
+        "inlineSources": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "noImplicitReturns": true,
+        "noFallthroughCasesInSwitch": true,
+        "resolveJsonModule": true,
+        "composite": true,
+        "incremental": true
+      },
+    "include": [
+        "**/*.ts",
+        "**/*.d.ts",
+        "lib/init-templates/*/*/add-project.hook.ts"
+    ],
+    "exclude": [
+        "lib/init-templates/*/typescript/**/*.ts"
+    ]
+}
+

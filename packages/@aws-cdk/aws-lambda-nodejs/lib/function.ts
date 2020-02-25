@@ -3,7 +3,7 @@ import * as cdk from '@aws-cdk/core';
 import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
-import { build } from './build';
+import { Builder } from './builder';
 import { nodeMajorVersion, parseStackTrace } from './util';
 
 /**
@@ -86,7 +86,7 @@ export class NodejsFunction extends lambda.Function {
     const runtime = props.runtime || defaultRunTime;
 
     // Build with Parcel
-    build({
+    const builder = new Builder({
       entry,
       outDir: handlerDir,
       global: handler,
@@ -95,6 +95,7 @@ export class NodejsFunction extends lambda.Function {
       cacheDir: props.cacheDir,
       nodeVersion: extractVersion(runtime),
     });
+    builder.build();
 
     super(scope, id, {
       ...props,

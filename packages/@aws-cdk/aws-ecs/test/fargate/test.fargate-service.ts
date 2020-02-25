@@ -1334,7 +1334,7 @@ export = {
       test.done();
     },
 
-    'creates AWS Cloud Map service for Private DNS namespace with SRV records'(test: Test) {
+    'creates AWS Cloud Map service for Private DNS namespace with SRV records with proper defaults'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1359,7 +1359,7 @@ export = {
         taskDefinition,
         cloudMapOptions: {
           name: 'myApp',
-          dnsRecordType: cloudmap.DnsRecordType.SRV
+          dnsRecordType: cloudmap.DnsRecordType.SRV,
         }
       });
 
@@ -1369,6 +1369,68 @@ export = {
           DnsRecords: [
             {
               TTL: 60,
+              Type: "SRV"
+            }
+          ],
+          NamespaceId: {
+            'Fn::GetAtt': [
+              'EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F',
+              'Id'
+            ]
+          },
+          RoutingPolicy: 'MULTIVALUE'
+        },
+        HealthCheckCustomConfig: {
+          FailureThreshold: 1
+        },
+        Name: "myApp",
+        NamespaceId: {
+          'Fn::GetAtt': [
+            'EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F',
+            'Id'
+          ]
+        }
+      }));
+
+      test.done();
+    },
+
+    'creates AWS Cloud Map service for Private DNS namespace with SRV records with overriden defaults'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+      const container = taskDefinition.addContainer('MainContainer', {
+        image: ecs.ContainerImage.fromRegistry('hello'),
+        memoryLimitMiB: 512
+      });
+      container.addPortMappings({ containerPort: 8000 });
+
+      // WHEN
+      cluster.addDefaultCloudMapNamespace({
+        name: 'foo.com',
+        type: cloudmap.NamespaceType.DNS_PRIVATE
+      });
+
+      new ecs.FargateService(stack, 'Service', {
+        cluster,
+        taskDefinition,
+        cloudMapOptions: {
+          name: 'myApp',
+          dnsRecordType: cloudmap.DnsRecordType.SRV,
+          dnsTtl: cdk.Duration.seconds(10),
+        }
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::ServiceDiscovery::Service', {
+        DnsConfig: {
+          DnsRecords: [
+            {
+              TTL: 10,
               Type: "SRV"
             }
           ],

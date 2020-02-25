@@ -258,13 +258,6 @@ class CloudWatchLogsDestination extends FlowLogDestination {
  */
 export interface FlowLogOptions {
   /**
-   * The options for creating a CloudWatch log group
-   *
-   * @default - will use logs.LogGroupProps defaults
-   */
-  readonly logGroupOptions?: logs.LogGroupProps;
-
-  /**
    * The type of traffic to log. You can log traffic that the resource accepts or rejects, or all traffic.
    *
    * @default ALL

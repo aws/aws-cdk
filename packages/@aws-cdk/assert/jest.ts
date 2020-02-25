@@ -1,4 +1,4 @@
-import { Stack } from '@aws-cdk/core';
+import * as core from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { JestFriendlyAssertion } from './lib/assertion';
 import { haveOutput, HaveOutputProperties } from './lib/assertions/have-output';
@@ -28,7 +28,7 @@ declare global {
 
 expect.extend({
   toMatchTemplate(
-    actual: cxapi.CloudFormationStackArtifact | Stack,
+    actual: cxapi.CloudFormationStackArtifact | core.Stack,
     template: any,
     matchStyle?: MatchStyle) {
 
@@ -49,7 +49,7 @@ expect.extend({
   },
 
   toHaveResource(
-      actual: cxapi.CloudFormationStackArtifact | Stack,
+      actual: cxapi.CloudFormationStackArtifact | core.Stack,
       resourceType: string,
       properties?: any,
       comparison?: ResourcePart) {
@@ -59,7 +59,7 @@ expect.extend({
   },
 
   toHaveResourceLike(
-      actual: cxapi.CloudFormationStackArtifact | Stack,
+      actual: cxapi.CloudFormationStackArtifact | core.Stack,
       resourceType: string,
       properties?: any,
       comparison?: ResourcePart) {
@@ -69,14 +69,14 @@ expect.extend({
   },
 
   toHaveOutput(
-    actual: cxapi.CloudFormationStackArtifact | Stack,
+    actual: cxapi.CloudFormationStackArtifact | core.Stack,
     props: HaveOutputProperties) {
 
     return applyAssertion(haveOutput(props), actual);
   }
 });
 
-function applyAssertion(assertion: JestFriendlyAssertion<StackInspector>, actual: cxapi.CloudFormationStackArtifact | Stack) {
+function applyAssertion(assertion: JestFriendlyAssertion<StackInspector>, actual: cxapi.CloudFormationStackArtifact | core.Stack) {
   const inspector = ourExpect(actual);
   const pass = assertion.assertUsing(inspector);
   if (pass) {

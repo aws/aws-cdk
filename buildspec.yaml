@@ -13,6 +13,7 @@ phases:
       - /bin/bash ./fetch-dotnet-snk.sh
   build:
     commands:
+      - /bin/bash ./scripts/align-version.sh
       - /bin/bash ./build.sh
   post_build:
     commands:
