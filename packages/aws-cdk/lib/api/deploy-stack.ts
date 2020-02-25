@@ -154,9 +154,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     try {
       await waitForStack(cfn, deployName);
     } finally {
-      if (monitor) {
-        await monitor.stop();
-      }
+      await monitor?.stop();
     }
     debug('Stack %s has completed updating', deployName);
   } else {
