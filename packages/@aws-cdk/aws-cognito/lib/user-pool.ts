@@ -121,34 +121,50 @@ export enum UserPoolAttribute {
 }
 
 /**
- * The attributes (and aliases) that users of this pool can use to sign up or sign in.
+ * The different ways in which users of this pool can sign up or sign in.
  */
-export enum SignInAlias {
-  /** Sign up or sign in with a username */
-  USERNAME = 'username',
-
-  /** Sign up or sign in with an email address */
-  EMAIL = 'email',
-
-  /** Sign up or sign in with a phone number */
-  PHONE = 'phone_number',
+export interface SignInAliases {
+  /**
+   * Whether user is allowed to sign up or sign in with a username
+   * @default true
+   */
+  readonly username?: boolean;
 
   /**
-   * Sign in with a secondary username, that can be set and modified after sign up.
-   * Can only be used in conjunction with `USERNAME`.
+   * Whether a user is allowed to sign up or sign in with an email address
+   * @default false
    */
-  PREFERRED_USERNAME = 'preferred_username'
+  readonly email?: boolean;
+
+  /**
+   * Whether a user is allowed to sign up or sign in with a phone number
+   * @default false
+   */
+  readonly phone?: boolean;
+
+  /**
+   * Whether a user is allowed to ign in with a secondary username, that can be set and modified after sign up.
+   * Can only be used in conjunction with `USERNAME`.
+   * @default false
+   */
+  readonly preferredUsername?: boolean;
 }
 
 /**
- * The set of attributes that can be automatically verified for users in a user pool.
+ * Attributes that can be automatically verified for users in a user pool.
  */
-export enum AutoVerifiedAttrs {
-  /** email address */
-  EMAIL = 'email',
+export interface AutoVerifiedAttrs {
+  /**
+   * Whether the email address of the user should be auto verified at sign up.
+   * @default - true, if email is turned on for `signIn`. false, otherwise.
+   */
+  readonly email?: boolean;
 
-  /** phone number */
-  PHONE = 'phone_number',
+  /**
+   * Whether the phone number of the user should be auto verified at sign up.
+   * @default - true, if phone is turned on for `signIn`. false, otherwise.
+   */
+  readonly phone?: boolean;
 }
 
 export interface UserPoolTriggers {
@@ -339,21 +355,22 @@ export interface UserPoolProps {
    * Read the sections on usernames and aliases to learn more -
    * https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html
    *
-   * To match with 'Option 1' in the above link, with a verified email, this property should be set to `[ UsernameAlias.USERNAME,
-   * UsernameAlias.EMAIL ]`. To match with 'Option 2' in the above link with both a verified email and phone number, this property should be set to
-   * `[ UsernameAlias.EMAIL, UsernameAlias.PHONE ]`.
+   * To match with 'Option 1' in the above link, with a verified email, this property should be set to
+   * `{ username: true, email: true }`. To match with 'Option 2' in the above link with both a verified email and phone
+   * number, this property should be set to `{ email: true, phone: true }`.
    *
-   * @default SignInAlias.USERNAME
+   * @default { username: true }
    */
-  readonly signInAliases?: SignInAlias[];
+  readonly signInAliases?: SignInAliases;
 
   /**
    * Attributes which Cognito will look to verify automatically upon user sign up.
    * EMAIL and PHONE are the only available options.
    *
-   * @default - If `signInAliases` include email and/or phone, they will be included in `autoVerifiedAttributes` by default.
+   * @default - If `signIn` include email and/or phone, they will be included in `autoVerifiedAttributes` by default.
+   * If absent, no attributes will be auto-verified.
    */
-  readonly autoVerifiedAttributes?: AutoVerifiedAttrs[];
+  readonly autoVerify?: AutoVerifiedAttrs;
 
   /**
    * Lambda functions to use for supported Cognito triggers.
@@ -437,29 +454,7 @@ export class UserPool extends Resource implements IUserPool {
   constructor(scope: Construct, id: string, props: UserPoolProps = {}) {
     super(scope, id);
 
-    let aliasAttributes: string[] | undefined;
-    let usernameAttributes: string[] | undefined;
-    let autoVerifiedAttributes: AutoVerifiedAttrs[] | undefined;
-
-    function exists(arr: any[], item: any) {
-      return arr.indexOf(item) > -1;
-    }
-
-    if (props.signInAliases && props.signInAliases.length > 0) {
-      const aliases = props.signInAliases;
-      if (exists(aliases, SignInAlias.PREFERRED_USERNAME) && !exists(aliases, SignInAlias.USERNAME)) {
-        throw new Error('signInAliases must contain USERNAME if PREFERRED_USERNAME is specified');
-      }
-
-      if (exists(aliases, SignInAlias.USERNAME)) {
-        aliasAttributes = [ SignInAlias.EMAIL, SignInAlias.PHONE, SignInAlias.PREFERRED_USERNAME ].filter((a) => exists(aliases, a));
-      } else {
-        usernameAttributes = [ SignInAlias.EMAIL, SignInAlias.PHONE ].filter((ua) => exists(aliases, ua));
-      }
-
-      autoVerifiedAttributes = props.autoVerifiedAttributes ??
-        [ AutoVerifiedAttrs.EMAIL, AutoVerifiedAttrs.PHONE ].filter((a) => exists(aliases, a));
-    }
+    const signIn = this.signInConfiguration(props);
 
     if (props.lambdaTriggers) {
       for (const t of Object.keys(props.lambdaTriggers)) {
@@ -502,9 +497,9 @@ export class UserPool extends Resource implements IUserPool {
 
     const userPool = new CfnUserPool(this, 'Resource', {
       userPoolName: props.userPoolName,
-      usernameAttributes,
-      aliasAttributes,
-      autoVerifiedAttributes,
+      usernameAttributes: signIn.usernameAttrs,
+      aliasAttributes: signIn.aliasAttrs,
+      autoVerifiedAttributes: signIn.autoVerifyAttrs,
       lambdaConfig: Lazy.anyValue({ produce: () => this.triggers }),
       smsConfiguration: this.smsConfiguration(props),
       adminCreateUserConfig,
@@ -637,6 +632,42 @@ export class UserPool extends Resource implements IUserPool {
       principal: new ServicePrincipal('cognito-idp.amazonaws.com'),
       sourceArn: this.userPoolArn
     });
+  }
+
+  private signInConfiguration(props: UserPoolProps) {
+    let aliasAttrs: string[] | undefined;
+    let usernameAttrs: string[] | undefined;
+    let autoVerifyAttrs: string[] | undefined;
+
+    const signIn: SignInAliases = props.signInAliases ?? { username: true };
+
+    if (signIn.preferredUsername && !signIn.username) {
+      throw new Error('username signIn must be enabled if preferredUsername is enabled');
+    }
+
+    if (signIn.username) {
+      aliasAttrs = [];
+      if (signIn.email) { aliasAttrs.push(UserPoolAttribute.EMAIL); }
+      if (signIn.phone) { aliasAttrs.push(UserPoolAttribute.PHONE_NUMBER); }
+      if (signIn.preferredUsername) { aliasAttrs.push(UserPoolAttribute.PREFERRED_USERNAME); }
+      if (aliasAttrs.length === 0) { aliasAttrs = undefined; }
+    } else {
+      usernameAttrs = [];
+      if (signIn.email) { usernameAttrs.push(UserPoolAttribute.EMAIL); }
+      if (signIn.phone) { usernameAttrs.push(UserPoolAttribute.PHONE_NUMBER); }
+    }
+
+    if (props.autoVerify) {
+      autoVerifyAttrs = [];
+      if (props.autoVerify.email) { autoVerifyAttrs.push(UserPoolAttribute.EMAIL); }
+      if (props.autoVerify.phone) { autoVerifyAttrs.push(UserPoolAttribute.PHONE_NUMBER); }
+    } else if (signIn.email || signIn.phone) {
+      autoVerifyAttrs = [];
+      if (signIn.email) { autoVerifyAttrs.push(UserPoolAttribute.EMAIL); }
+      if (signIn.phone) { autoVerifyAttrs.push(UserPoolAttribute.PHONE_NUMBER); }
+    }
+
+    return { usernameAttrs, aliasAttrs, autoVerifyAttrs };
   }
 
   private smsConfiguration(props: UserPoolProps): CfnUserPool.SmsConfigurationProperty {

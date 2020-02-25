@@ -3,7 +3,7 @@ import { ABSENT } from '@aws-cdk/assert/lib/assertions/have-resource';
 import { Role } from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Stack, Tag } from '@aws-cdk/core';
-import { AutoVerifiedAttrs, SignInAlias, UserPool, VerificationEmailStyle } from '../lib';
+import { UserPool, VerificationEmailStyle } from '../lib';
 
 describe('User Pool', () => {
   test('default setup', () => {
@@ -36,7 +36,7 @@ describe('User Pool', () => {
       }
     });
 
-    expect(stack).toHaveResourceLike('AWS::IAM::Role', {
+    expect(stack).toHaveResource('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Statement: [
           {
@@ -51,7 +51,8 @@ describe('User Pool', () => {
               Service: 'cognito-idp.amazonaws.com'
             }
           }
-        ]
+        ],
+        Version: '2012-10-17'
       },
       Policies: [
         {
@@ -62,8 +63,10 @@ describe('User Pool', () => {
                 Effect: 'Allow',
                 Resource: '*'
               }
-            ]
-          }
+            ],
+            Version: '2012-10-17'
+          },
+          PolicyName: 'sns-publish'
         }
       ]
     });
@@ -354,11 +357,11 @@ describe('User Pool', () => {
     });
   });
 
-  test('fails when preferred_username is used without username', () => {
+  test('fails when preferredUsername is used without username', () => {
     const stack = new Stack();
     expect(() => new UserPool(stack, 'Pool', {
-      signInAliases: [ SignInAlias.PREFERRED_USERNAME ]
-    })).toThrow('signInAliases must contain USERNAME if PREFERRED_USERNAME is specified');
+      signInAliases: { preferredUsername: true }
+    })).toThrow(/username/);
   });
 
   test('username and email are specified as the username aliases', () => {
@@ -367,7 +370,7 @@ describe('User Pool', () => {
 
     // WHEN
     new UserPool(stack, 'Pool', {
-      signInAliases: [ SignInAlias.USERNAME, SignInAlias.EMAIL ]
+      signInAliases: { username: true, email: true }
     });
 
     // THEN
@@ -383,7 +386,7 @@ describe('User Pool', () => {
 
     // WHEN
     new UserPool(stack, 'Pool', {
-      signInAliases: [ SignInAlias.EMAIL, SignInAlias.PHONE ]
+      signInAliases: { email: true, phone: true }
     });
 
     // THEN
@@ -393,18 +396,18 @@ describe('User Pool', () => {
     });
   });
 
-  test('email and phone number are auto-verified, by default, if they are sign in types', () => {
+  test('email and phone number are autoverified, by default, if they are specified as signIn', () => {
     // GIVEN
     const stack = new Stack();
 
     // WHEN
     new UserPool(stack, 'Pool1', {
       userPoolName: 'Pool1',
-      signInAliases: [ SignInAlias.EMAIL ]
+      signInAliases: { email: true }
     });
     new UserPool(stack, 'Pool2', {
       userPoolName: 'Pool2',
-      signInAliases: [ SignInAlias.EMAIL, SignInAlias.PHONE ]
+      signInAliases: { email: true, phone: true }
     });
 
     // THEN
@@ -418,14 +421,14 @@ describe('User Pool', () => {
     });
   });
 
-  test('explicit auto-verified attributes are correctly picked up', () => {
+  test('explicit autoverify are correctly picked up', () => {
     // GIVEN
     const stack = new Stack();
 
     // WHEN
     new UserPool(stack, 'Pool', {
-      signInAliases: [ SignInAlias.USERNAME ],
-      autoVerifiedAttributes: [ AutoVerifiedAttrs.EMAIL, AutoVerifiedAttrs.PHONE ]
+      signInAliases: { username: true },
+      autoVerify: { email: true, phone: true },
     });
 
     // THEN
