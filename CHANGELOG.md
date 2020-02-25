@@ -8,25 +8,6 @@ All notable changes to this project will be documented in this file. See [standa
 ### ⚠ BREAKING CHANGES
 
 * **apigateway:** the interface now accepts endpointconfiguration property instead of endpoint type as defined by cfn
-
-* feature(apigateway): support private vpc endpoints
-
-* feature(apigateway): support private vpc endpoints
-
-* fix(apigateway): documentation changes for the endpoint configuration
-
-proposed changes
-
-Co-Authored-By: Niranjan Jayakar <16217941+nija-at@users.noreply.github.com>
-
-* fix(apigateway): apply recommended changes
-
-* fix(apigateway): adding requested changes and integration test
-
-* fix(apigateway): incorrect vpc endpoint in integration test
-
-Co-authored-by: Niranjan Jayakar <16217941+nija-at@users.noreply.github.com>
-Co-authored-by: mergify[bot] <37929162+mergify[bot]@users.noreply.github.com>
 * **lambda-nodejs:** parcel-bundler v1.x is now a peer dependency of @aws-cdk/aws-lambda-nodejs. Please add it to your package.json.
 * **lambda-nodejs:** `parcel-bundler` v1.x is now a peer dependency of `@aws-cdk/aws-lambda-nodejs`.
 Please add it to your `package.json`.
@@ -40,7 +21,7 @@ Please add it to your `package.json`.
 * **batch:** add JobQueue, ComputeEnvironment and JobDefinition constructs ([c8a22b1](https://github.com/aws/aws-cdk/commit/c8a22b176cdee7da2cde15c38a6fc107686cf2d0))
 * **cdk-assets:** asset uploading tool ([c505348](https://github.com/aws/aws-cdk/commit/c5053480b057b307c4ebf33d2792839f07a09bb6))
 * **cli:** faster "no-op" deployments ([#6346](https://github.com/aws/aws-cdk/issues/6346)) ([d4a132b](https://github.com/aws/aws-cdk/commit/d4a132bff91ab8e78ed38dc5ee41842554347ecf)), closes [#6046](https://github.com/aws/aws-cdk/issues/6046) [#2553](https://github.com/aws/aws-cdk/issues/2553) [#6216](https://github.com/aws/aws-cdk/issues/6216)
-* CloudFormation Resource Specification 11.1.0 ([#6424](https://github.com/aws/aws-cdk/issues/6424)) ([ab9b77c](https://github.com/aws/aws-cdk/commit/ab9b77cc9857b5ea34952d4efb3f67c1d8a51311))
+* **cfn:** CloudFormation Resource Specification 11.1.0 ([#6424](https://github.com/aws/aws-cdk/issues/6424)) ([ab9b77c](https://github.com/aws/aws-cdk/commit/ab9b77cc9857b5ea34952d4efb3f67c1d8a51311))
 * **cognito:** user pool verification and invitation messages ([#6282](https://github.com/aws/aws-cdk/issues/6282)) ([faf6693](https://github.com/aws/aws-cdk/commit/faf6693e2590fbe7332be8737afd35874f6719f1))
 * **ecs-patterns:** create dlq when queue is not provided for QueueProcessingService ([#6356](https://github.com/aws/aws-cdk/issues/6356)) ([e307d7f](https://github.com/aws/aws-cdk/commit/e307d7fa721a54ee54d8ad8e4b3f13e6c45c342a))
 * **kms:** `trustAccountIdentities` avoids cyclic stack dependencies ([03f4ef2](https://github.com/aws/aws-cdk/commit/03f4ef27408822d288c75790c8d1270e007a0842))
