@@ -160,6 +160,39 @@ When the `smsRole` property is specified, the `smsRoleExternalId` may also be sp
 assume role policy should be configured to accept this value as the ExternalId. Learn more about [ExternalId
 here](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_create_for-user_externalid.html).
 
+### Attributes
+
+Attributes represent the various properties of each user that's collected and stored in the user pool. Cognito
+provides a set of standard attributes that are available for all user pools. Users are allowed to select any of these
+standard attributes to be required. Users will not be able to sign up to the user pool without providing the required
+attributes. Besides these, additional attributes can be further defined, and are known as custom attributes.
+
+Learn more on [attributes in Cognito's
+documentation](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html).
+
+The following code sample configures a user pool with two standard attributes (name and address) as required, and adds
+four optional attributes.
+
+```ts
+new UserPool(this, 'myuserpool', {
+  // ...
+  // ...
+  attributes: {
+    required: [ StandardAttrs.address, StandardAttrs.name ],
+    custom: {
+      'myappid': new StringAttr({ minLen: 5, maxLen: 15 }),
+      'callingcode': new NumberAttr({ min: 1, max: 3 }),
+      'isEmployee': new BooleanAttr(),
+      'joinedOn': new DateTimeAttr()
+    },
+  }
+});
+```
+
+As shown in the code snippet, there are data types that are available for custom attributes. The 'String' and 'Number'
+data types allow for further constraints on their length and values, respectively. Custom attributes cannot be marked
+as required.
+
 ### Importing User Pools
 
 Any user pool that has been created outside of this stack, can be imported into the CDK app. Importing a user pool

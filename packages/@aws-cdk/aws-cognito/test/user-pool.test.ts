@@ -3,7 +3,7 @@ import { ABSENT } from '@aws-cdk/assert/lib/assertions/have-resource';
 import { Role } from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Stack, Tag } from '@aws-cdk/core';
-import { UserPool, VerificationEmailStyle } from '../lib';
+import { NumberAttr, StandardAttrs, StringAttr, UserPool, VerificationEmailStyle } from '../lib';
 
 describe('User Pool', () => {
   test('default setup', () => {
@@ -434,6 +434,120 @@ describe('User Pool', () => {
     // THEN
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
       AutoVerifiedAttributes: [ 'email', 'phone_number' ],
+    });
+  });
+
+  test('required attributes', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'Pool', {
+      requiredAttrs: [ StandardAttrs.NAME, StandardAttrs.TIMEZONE ]
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+      Schema: [
+        {
+          Name: 'name',
+          Required: true
+        },
+        {
+          Name: 'zoneinfo',
+          Required: true
+        },
+      ]
+    });
+  });
+
+  test('schema is absent when no required attributes are specified', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'Pool1', {
+      userPoolName: 'Pool1',
+    });
+    new UserPool(stack, 'Pool2', {
+      userPoolName: 'Pool2',
+      requiredAttrs: []
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+      UserPoolName: 'Pool1',
+      Schema: ABSENT
+    });
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+      UserPoolName: 'Pool2',
+      Schema: ABSENT
+    });
+  });
+
+  test('custom attributes with default constraints', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'Pool', {
+      customAttrs: {
+        'custom-string-attr': new StringAttr(),
+        'custom-number-attr': new NumberAttr(),
+      }
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+      Schema: [
+        {
+          Name: 'custom-string-attr',
+          AttributeDataType: 'String',
+          StringAttributeConstraints: ABSENT,
+          NumberAttributeConstraints: ABSENT,
+        },
+        {
+          Name: 'custom-number-attr',
+          AttributeDataType: 'Number',
+          StringAttributeConstraints: ABSENT,
+          NumberAttributeConstraints: ABSENT,
+        }
+      ]
+    });
+  });
+
+  test('custom attributes with constraints', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'Pool', {
+      customAttrs: {
+        'custom-string-attr': new StringAttr({ minLen: 5, maxLen: 50 }),
+        'custom-number-attr': new NumberAttr({ min: 500, max: 2000 }),
+      }
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+      Schema: [
+        {
+          AttributeDataType: 'String',
+          Name: 'custom-string-attr',
+          StringAttributeConstraints: {
+            MaxLength: '50',
+            MinLength: '5',
+          }
+        },
+        {
+          AttributeDataType: 'Number',
+          Name: 'custom-number-attr',
+          NumberAttributeConstraints: {
+            MaxValue: '2000',
+            MinValue: '500',
+          }
+        }
+      ]
     });
   });
 });

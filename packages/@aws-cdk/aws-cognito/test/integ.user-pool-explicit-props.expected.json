@@ -58,6 +58,48 @@
         "EmailVerificationMessage": "verification email body from the integ test. Code is {####}.",
         "EmailVerificationSubject": "verification email subject from the integ test",
         "LambdaConfig": {},
+        "Schema": [
+          {
+            "Name": "name",
+            "Required": true
+          },
+          {
+            "Name": "email",
+            "Required": true
+          },
+          {
+            "AttributeDataType": "String",
+            "Name": "some-string-attr"
+          },
+          {
+            "AttributeDataType": "String",
+            "Name": "another-string-attr",
+            "StringAttributeConstraints": {
+              "MaxLength": "100",
+              "MinLength": "4"
+            }
+          },
+          {
+            "AttributeDataType": "Number",
+            "Name": "some-number-attr"
+          },
+          {
+            "AttributeDataType": "Number",
+            "Name": "another-number-attr",
+            "NumberAttributeConstraints": {
+              "MaxValue": "50",
+              "MinValue": "10"
+            }
+          },
+          {
+            "AttributeDataType": "Boolean",
+            "Name": "some-boolean-attr"
+          },
+          {
+            "AttributeDataType": "DateTime",
+            "Name": "some-datetime-attr"
+          }
+        ],
         "SmsConfiguration": {
           "ExternalId": "integuserpoolmyuserpoolDA38443C",
           "SnsCallerArn": {
@@ -75,6 +117,13 @@
           "EmailSubject": "verification email subject from the integ test",
           "SmsMessage": "verification sms message from the integ test. Code is {####}."
         }
+      }
+    }
+  },
+  "Outputs": {
+    "userpoolId": {
+      "Value": {
+        "Ref": "myuserpool01998219"
       }
     }
   }
