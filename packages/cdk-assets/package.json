@@ -28,7 +28,7 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/archiver": "^3.0.0",
+    "@types/archiver": "^3.1.0",
     "@types/glob": "^7.1.1",
     "@types/jest": "^24.0.25",
     "@types/mock-fs": "^4.10.0",
