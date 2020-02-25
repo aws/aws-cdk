@@ -1,32 +1,6 @@
-## AWS::APIGatewayv2 Construct Library
-<!--BEGIN STABILITY BANNER-->
-
----
-
-![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
-
-> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
-> future breaking changes.**
->
-> This API is still under active development and subject to non-backward
-> compatible changes or removal in any future version. Use of the API is not recommended in production
-> environments. Experimental APIs are not subject to the Semantic Versioning model.
-
----
-<!--END STABILITY BANNER-->
-
-This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
-
-`aws-apigatewayv2` supports the `HTTP` API for Amazon API Gateway.
-
-## Examples:
-
-### HTTP API with Lambda proxy integration as the `$default` route
-
-```ts
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
-import * as apigatewayv2 from '@aws-cdk/aws-apigatewayv2';
+import * as apigatewayv2 from '../lib';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'ApiagtewayV2HttpApi');
@@ -43,26 +17,6 @@ def handler(event, context):
       }`),
 });
 
-// Create a HTTP API with Lambda Proxy Integration as $default route
-const api = new apigatewayv2.LambdaProxyApi(stack, 'LambdaProxyApi', {
-  handler
-});
-```
-### HTTP API with HTTP proxy integration as the `$default` route
-
-```ts
-new apigatewayv2.HttpProxyApi(stack, 'HttpProxyApi', {
-  url: 'https://aws.amazon.com'
-});
-```
-
-## Root Route
-
-Create the `root(/)` route of the API
-
-```ts
-
-// prepare the root handler function
 const rootHandler = new lambda.Function(stack, 'RootFunc', {
   runtime: lambda.Runtime.PYTHON_3_7,
   handler: 'index.handler',
@@ -81,20 +35,18 @@ def handler(event, context):
   },
 });
 
-
-// create a HTTP API with Lambda Proxy Integration as $default route
+// Create a HTTP API with Lambda Proxy Integration as $default route
 const api = new apigatewayv2.LambdaProxyApi(stack, 'LambdaProxyApi', {
   handler
 });
 
-// create the root route(/) with HTTP ANY method and Lambda integration
+// Create the root route(/) with HTTP ANY method and Lambda integration
 api.root = new apigatewayv2.LambdaRoute(stack, 'RootRoute', {
   api,
   handler: rootHandler,
   httpPath: '/',
 });
 
-// create child routes from the root
 api.root
   // HTTP GET /foo
   .addLambdaRoute('foo', 'Foo', {
@@ -106,32 +58,29 @@ api.root
     targetUrl: 'https://checkip.amazonaws.com',
     method: apigatewayv2.HttpMethod.ANY
   });
-```
 
-## Create any route with no `root`
+// api.root
+//   // HTTP GET /bar
+//   .addLambdaRoute('bar', 'Bar', {
+//     target: handler2,
+//     method: apigatewayv2.HttpMethod.ANY
+//   });
 
-If we just need a specific route like `/some/very/deep/route/path` without the `root(/)` and make all requests to other paths go to the `$default`, we can simply create it like this:
-
-```ts
-// create a HTTP API with HTTP Proxy Integration as the $default
+// Create a HTTP API with HTTP Proxy Integration
 new apigatewayv2.HttpProxyApi(stack, 'HttpProxyApi', {
   url: 'https://aws.amazon.com'
 });
 
-
-// create a specific route
 const someDeepLambdaRoute = new apigatewayv2.LambdaRoute(stack, 'SomeLambdaRoute', {
   api,
   handler,
   httpPath: '/some/very/deep/route/path',
 });
 
-// print the full http url for this route
-new cdk.CfnOutput(stack, 'RouteURL', {
-  value: someDeepLambdaRoute.fullUrl
-});
+// new cdk.CfnOutput(stack, 'RouteURL', {
+//   value: someDeepLambdaRoute.fullUrl
+// });
 
-// and build even more child routes from here
 someDeepLambdaRoute
   // HTTP ANY /some/very/deep/route/path/bar
   .addLambdaRoute('bar', 'SomeDeepPathBar', {
@@ -143,4 +92,7 @@ someDeepLambdaRoute
     targetUrl: 'https://checkip.amazonaws.com',
     method: apigatewayv2.HttpMethod.ANY
   });
-```
+
+new cdk.CfnOutput(stack, 'SomeDeepLambdaRouteURL', {
+  value: someDeepLambdaRoute.fullUrl
+});
