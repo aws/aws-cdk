@@ -151,7 +151,16 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     // tslint:disable-next-line:max-line-length
     const monitor = options.quiet ? undefined : new StackActivityMonitor(cfn, deployName, options.stack, (changeSetDescription.Changes || []).length).start();
     debug('Execution of changeset %s on stack %s has started; waiting for the update to complete...', changeSetName, deployName);
-    await waitForStack(cfn, deployName);
+    try {
+      await waitForStack(cfn, deployName);
+    } catch (e) {
+      // stop the stack activity monitor if it's running as the stack ended in an error state
+      if (monitor) {
+        await monitor.stop();
+      }
+      throw e;
+    }
+
     if (monitor) {
       await monitor.stop();
     }
