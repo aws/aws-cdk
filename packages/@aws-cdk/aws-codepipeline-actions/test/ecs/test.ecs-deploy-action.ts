@@ -81,7 +81,7 @@ export = {
       test.done();
     },
 
-    'can be created by serviceArn'(test: Test) {
+    'can be created by ImportedBaseService'(test: Test) {
       const service = anyIBaseService();
       const artifact = new codepipeline.Artifact('Artifact');
 
