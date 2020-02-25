@@ -15,6 +15,8 @@ export interface StageOptions extends MethodDeploymentOptions {
 
   /**
    * Specifies settings for logging access in this stage.
+   *
+   * @default - No setting
    */
   readonly accessLogSetting?: AccessLogSetting
 
@@ -284,6 +286,8 @@ export interface AccessLogSetting {
    * The ARN of the CloudWatch Logs log group or Kinesis Data Firehose delivery stream.
    * If you specify a Kinesis Data Firehose delivery stream. the stream name must begin
    * with `amazon-apigateway-`.
+   *
+   * @default - No destination arn
    */
   readonly destinationArn?: string;
 
@@ -291,6 +295,8 @@ export interface AccessLogSetting {
    * A single line format of access logs of data, as specified by selected $content variables.
    * https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html#context-variable-reference
    * The format must include at least `$context.requestId`.
+   *
+   * @default - No format
    */
   readonly format?: string;
 }
