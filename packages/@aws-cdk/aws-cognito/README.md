@@ -91,11 +91,11 @@ here](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-poo
 Users registering or signing in into your application can do so with multiple identifiers. There are 4 options
 available:
 
-* `USERNAME`: Allow signing in using the one time immutable user name that the user chose at the time of sign up.
-* `EMAIL`: Allow signing in using the email address that is associated with the account.
-* `PHONE_NUMBER`: Allow signing in using the phone number that is associated with the account.
-* `PREFERRED_USERNAME`: Allow signing in with an alternate user name that the user can change at any time. However, this
-  is not available if the USERNAME option is not chosen.
+* `username`: Allow signing in using the one time immutable user name that the user chose at the time of sign up.
+* `email`: Allow signing in using the email address that is associated with the account.
+* `phone`: Allow signing in using the phone number that is associated with the account.
+* `preferredUsername`: Allow signing in with an alternate user name that the user can change at any time. However, this
+  is not available if the `username` option is not chosen.
 
 The following code sets up a user pool so that the user can sign in with either their username or their email address -
 
@@ -103,24 +103,27 @@ The following code sets up a user pool so that the user can sign in with either 
 new UserPool(this, 'myuserpool', {
   // ...
   // ...
-  signInAliases: [ SignInAlias.USERNAME, SignInAlias.EMAIL ],
+  signInAliases: {
+    username: true,
+    email: true
+  },
 });
 ```
 
-User pools can either be configured so `USERNAME` is primary sign in form, but also allows for the other three to be
+User pools can either be configured so that user name is primary sign in form, but also allows for the other three to be
 used additionally; or it can be configured so that email and/or phone numbers are the only ways a user can register and
 sign in. Read more about this
 [here](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html#user-pool-settings-aliases-settings).
 
-To match with 'Option 1' in the above link, with a verified email, this property should be set to
-`[ UsernameAlias.USERNAME, UsernameAlias.EMAIL ]`. To match with 'Option 2' in the above link with both a verified
-email and phone number, this property should be set to `[ UsernameAlias.EMAIL, UsernameAlias.PHONE ]`.
+To match with 'Option 1' in the above link, with a verified email, `signInAliases` should be set to
+`{ username: true, email: true }`. To match with 'Option 2' in the above link with both a verified
+email and phone number, this property should be set to `{ email: true, phone: true }`.
 
 Cognito recommends that email and phone number be automatically verified, if they are one of the sign in methods for
 the user pool. Read more about that
 [here](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html#user-pool-settings-aliases).
 The CDK does this by default, when email and/or phone number are specified as part of `signInAliases`. This can be
-overridden by specifying the `autoVerifiedAttributes` property.
+overridden by specifying the `autoVerify` property.
 
 The following code snippet sets up only email as a sign in alias, but both email and phone number to be auto-verified.
 
@@ -128,8 +131,8 @@ The following code snippet sets up only email as a sign in alias, but both email
 new UserPool(this, 'myuserpool', {
   // ...
   // ...
-  signInAliases: [ SignInAlias.USERNAME, SignInAlias.EMAIL ],
-  autoVerifiedAttributes: [ AutoVerifiedAttrs.EMAIL, AutoVerifiedAttrs.PHONE ]
+  signInAliases: { username: true, email: true },
+  autoVerify: { email: true, phone: true }
 });
 ```
 
