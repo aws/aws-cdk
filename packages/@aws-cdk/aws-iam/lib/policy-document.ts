@@ -25,6 +25,17 @@ export interface PolicyDocumentProps {
  */
 export class PolicyDocument implements cdk.IResolvable {
 
+  /**
+   * Creates a new PolicyDocument based on the object provided.
+   * This will accept an object created from the `.toJSON()` call
+   * @param obj the PolicyDocument in object form.
+   */
+  public static fromJSON(obj: any): PolicyDocument {
+    const policyDocument = new PolicyDocument();
+    policyDocument.addStatements(...obj.Statement.map(PolicyStatement.fromJSON));
+    return policyDocument;
+  }
+
   public readonly creationStack: string[];
   private readonly statements = new Array<PolicyStatement>();
   private readonly autoAssignSids: boolean;
@@ -46,17 +57,6 @@ export class PolicyDocument implements cdk.IResolvable {
    */
   public get statementCount(): number {
     return this.statements.length;
-  }
-
-  /**
-   * Creates a new PolicyDocument based on the object provided.
-   * This will accept an object created from the `.toJSON()` call
-   * @param obj the PolicyDocument in object form.
-   */
-  public static fromJSON(obj: any): PolicyDocument {
-    const policyDocument = new PolicyDocument();
-    policyDocument.addStatements(...obj.Statement.map(PolicyStatement.fromJSON));
-    return policyDocument;
   }
 
   public resolve(context: cdk.IResolveContext): any {

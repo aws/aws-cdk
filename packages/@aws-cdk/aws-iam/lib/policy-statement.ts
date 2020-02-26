@@ -9,6 +9,45 @@ import { mergePrincipal } from './util';
  * Represents a statement in an IAM policy document.
  */
 export class PolicyStatement {
+
+  /**
+   * Creates a new PolicyStatement based on the object provided.
+   * This will accept an object created from the `.toJSON()` call
+   * @param obj the PolicyStatement in object form.
+   */
+  public static fromJSON(obj: any): PolicyStatement {
+    const statement = new PolicyStatement({
+      actions: obj.Action,
+      resources: obj.Resource,
+      conditions: obj.Condition,
+      effect: obj.Effect,
+      notActions: typeof (obj.NotAction) === "string" ? [obj.NotAction] : obj.NotAction,
+      notResources: typeof (obj.NotResource) === "string" ? [obj.NotResource] : obj.NotResource
+    });
+
+    if (obj.Principal && obj.Principal.AWS) {
+      statement.addArnPrincipal(obj.Principal.AWS);
+    }
+
+    if (obj.Principal === "*") {
+      statement.addAnyPrincipal();
+    }
+
+    if (obj.Principal && obj.Principal.CanonicalUser) {
+      statement.addCanonicalUserPrincipal(obj.Principal.CanonicalUser);
+    }
+
+    if (obj.Principal && obj.Principal.Federated) {
+      statement.addFederatedPrincipal(obj.Principal.Federated, {});
+    }
+
+    if (obj.Principal && obj.Principal.Service) {
+      statement.addServicePrincipal(obj.Principal.Service.replace(/.amazonaws.com/i, ''));
+    }
+
+    return statement;
+  }
+  
   /**
    * Statement ID for this statement
    */
@@ -59,44 +98,6 @@ export class PolicyStatement {
    */
   public get hasResource() {
     return this.resource && this.resource.length > 0;
-  }
-
-  /**
-   * Creates a new PolicyStatement based on the object provided.
-   * This will accept an object created from the `.toJSON()` call
-   * @param obj the PolicyStatement in object form.
-   */
-  public static fromJSON(obj: any): PolicyStatement {
-    const statement = new PolicyStatement({
-      actions: obj.Action,
-      resources: obj.Resource,
-      conditions: obj.Condition,
-      effect: obj.Effect,
-      notActions: typeof (obj.NotAction) === "string" ? [obj.NotAction] : obj.NotAction,
-      notResources: typeof (obj.NotResource) === "string" ? [obj.NotResource] : obj.NotResource
-    });
-
-    if (obj.Principal && obj.Principal.AWS) {
-      statement.addArnPrincipal(obj.Principal.AWS);
-    }
-
-    if (obj.Principal === "*") {
-      statement.addAnyPrincipal();
-    }
-
-    if (obj.Principal && obj.Principal.CanonicalUser) {
-      statement.addCanonicalUserPrincipal(obj.Principal.CanonicalUser);
-    }
-
-    if (obj.Principal && obj.Principal.Federated) {
-      statement.addFederatedPrincipal(obj.Principal.Federated, {});
-    }
-
-    if (obj.Principal && obj.Principal.Service) {
-      statement.addServicePrincipal(obj.Principal.Service.replace(/.amazonaws.com/i, ''));
-    }
-
-    return statement;
   }
 
   //
