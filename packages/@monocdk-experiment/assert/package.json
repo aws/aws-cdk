@@ -1,6 +1,6 @@
 {
   "name": "@monocdk-experiment/assert",
-  "version": "999.0.0",
+  "version": "0.0.0",
   "description": "An assertion library for use with CDK Apps",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -41,19 +41,19 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/jest": "^25.1.2",
-    "cdk-build-tools": "999.0.0",
+    "cdk-build-tools": "0.0.0",
     "jest": "^24.9.0",
-    "pkglint": "999.0.0",
+    "pkglint": "0.0.0",
     "ts-jest": "^25.2.0",
-    "@monocdk-experiment/rewrite-imports": "999.0.0",
-    "monocdk-experiment": "999.0.0"
+    "@monocdk-experiment/rewrite-imports": "0.0.0",
+    "monocdk-experiment": "0.0.0"
   },
   "dependencies": {
-    "@aws-cdk/cloudformation-diff": "999.0.0"
+    "@aws-cdk/cloudformation-diff": "0.0.0"
   },
   "peerDependencies": {
     "jest": "^24.9.0",
-    "monocdk-experiment": "^999.0.0"
+    "monocdk-experiment": "^0.0.0"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
