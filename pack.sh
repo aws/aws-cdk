@@ -59,7 +59,6 @@ rm -rf dist/java/software/amazon/jsii
 
 # Get version
 version="$(node -p "require('./scripts/get-version')")"
-marker=$(node -p "require('./scripts/get-version-marker')")
 
 # Ensure we don't publish anything beyond 1.x for now
 if [[ ! "${version}" == "1."* ]]; then
@@ -89,6 +88,7 @@ cp CHANGELOG.md ${distdir}/
 # defensive: make sure our artifacts don't use the version marker (this means
 # that "pack" will always fails when building in a dev environment)
 # when we get to 10.0.0, we can fix this...
+marker=$(node -p "require('./scripts/get-version-marker')")
 if find dist/ | grep "${marker}"; then
   echo "ERROR: build artifacts use the version marker '${marker}' instead of a real version."
   echo "This is expected for builds in a development environment but should not happen in CI builds!"
