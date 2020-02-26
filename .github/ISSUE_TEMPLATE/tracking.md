@@ -5,7 +5,7 @@ about: Add a module tracking issue (internal use only)
 labels: management/tracking
 ---
 
-### Add your +1 👍  to help us prioritize high-level constructs for this service
+Add your +1 👍  to help us prioritize high-level constructs for this service
 --- 
 
 ### Overview:
@@ -37,7 +37,7 @@ Checklist of use cases, constructs, features (such as grant methods) that will s
 
 
 
-### Related Issues:
+### Issue list:
 <!-- 
 e.g. checklist of links to feature requests, bugs, and PRs that are in scope for GA release of this module 
 (not required until the issues is added to the public roadmap)
