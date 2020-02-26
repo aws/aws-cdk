@@ -4,14 +4,14 @@
 //
 const fs = require('fs');
 
-const marker = '999.0.0';
+const marker = require('./get-version-marker');
 const repoVersion = require('./get-version');
 
 for (const file of process.argv.splice(2)) {
   const pkg = JSON.parse(fs.readFileSync(file).toString());
 
   if (pkg.version !== marker) {
-    throw new Error(`unexpected - all package.json files in this repo should have a version of 999.0.0: ${file}`);
+    throw new Error(`unexpected - all package.json files in this repo should have a version of ${marker}: ${file}`);
   }
 
   pkg.version = repoVersion;
