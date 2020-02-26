@@ -235,7 +235,6 @@ async function initCommandLine() {
           exclusively: args.exclusively,
           force: args.force,
           roleArn: args.roleArn,
-          sdk: aws,
         });
 
       case 'synthesize':

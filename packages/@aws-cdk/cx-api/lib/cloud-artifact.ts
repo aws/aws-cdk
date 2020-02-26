@@ -79,6 +79,20 @@ export interface AwsCloudFormationStackProperties {
    * @default - name derived from artifact ID
    */
   readonly stackName?: string;
+
+  /**
+   * The role that needs to be assumed to deploy the stack
+   *
+   * @default - No role is assumed (current credentials are used)
+   */
+  readonly assumeRoleArn?: string;
+
+  /**
+   * The role that is passed to CloudFormation to execute the change set
+   *
+   * @default - No role is passed (currently assumed role/credentials are used)
+   */
+  readonly cloudFormationExecutionRoleArn?: string;
 }
 
 /**

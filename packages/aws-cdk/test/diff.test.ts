@@ -3,7 +3,7 @@ import { Writable } from 'stream';
 import { NodeStringDecoder, StringDecoder  } from 'string_decoder';
 import { DeployStackOptions, DeployStackResult } from '../lib';
 import { AppStacks } from '../lib/api/cxapp/stacks';
-import { IDeploymentTarget, Template } from '../lib/api/deployment-target';
+import { DestroyStackOptions, IDeploymentTarget, StackExistsOptions, Template } from '../lib/api/deployment-target';
 import { SDK } from '../lib/api/util/sdk';
 import { CdkToolkit } from '../lib/cdk-toolkit';
 import { Configuration } from '../lib/settings';
@@ -48,6 +48,12 @@ test('diff can diff multiple stacks', async () => {
     },
     async deployStack(options: DeployStackOptions): Promise<DeployStackResult> {
       return { noOp: true, outputs: {}, stackArn: '', stackArtifact: options.stack };
+    },
+    destroyStack(_options: DestroyStackOptions): Promise<void> {
+      throw new Error("Method not implemented.");
+    },
+    stackExists(_options: StackExistsOptions): Promise<boolean> {
+      throw new Error("Method not implemented.");
     }
   };
   const toolkit = new CdkToolkit({ appStacks, provisioner });
@@ -75,6 +81,12 @@ test('exits with 1 with diffs and fail set to true', async () => {
     },
     async deployStack(options: DeployStackOptions): Promise<DeployStackResult> {
       return { noOp: true, outputs: {}, stackArn: '', stackArtifact: options.stack };
+    },
+    destroyStack(_options: DestroyStackOptions): Promise<void> {
+      throw new Error("Method not implemented.");
+    },
+    stackExists(_options: StackExistsOptions): Promise<boolean> {
+      throw new Error("Method not implemented.");
     }
   };
   const toolkit = new CdkToolkit({ appStacks, provisioner });
@@ -99,6 +111,12 @@ test('throws an error during diffs on stack with error metadata', async () => {
     },
     async deployStack(options: DeployStackOptions): Promise<DeployStackResult> {
       return { noOp: true, outputs: {}, stackArn: '', stackArtifact: options.stack };
+    },
+    destroyStack(_options: DestroyStackOptions): Promise<void> {
+      throw new Error("Method not implemented.");
+    },
+    stackExists(_options: StackExistsOptions): Promise<boolean> {
+      throw new Error("Method not implemented.");
     }
   };
   const toolkit = new CdkToolkit({ appStacks, provisioner });

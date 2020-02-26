@@ -2,8 +2,9 @@ import { CloudFormationStackArtifact } from '@aws-cdk/cx-api';
 import { Tag } from "../api/cxapp/stacks";
 import { debug } from '../logging';
 import { Mode } from './aws-auth/credentials';
-import { deployStack, DeployStackResult, readCurrentTemplate } from './deploy-stack';
+import { deployStack, DeployStackResult, destroyStack, readCurrentTemplate } from './deploy-stack';
 import { loadToolkitInfo } from './toolkit-info';
+import { stackExists } from './util/cloudformation';
 import { ISDK } from './util/sdk';
 
 export const DEFAULT_TOOLKIT_STACK_NAME = 'CDKToolkit';
@@ -18,6 +19,8 @@ export type Template = { [key: string]: any };
 export interface IDeploymentTarget {
   readCurrentTemplate(stack: CloudFormationStackArtifact): Promise<Template>;
   deployStack(options: DeployStackOptions): Promise<DeployStackResult>;
+  destroyStack(options: DestroyStackOptions): Promise<void>;
+  stackExists(options: StackExistsOptions): Promise<boolean>;
 }
 
 export interface DeployStackOptions {
@@ -38,6 +41,19 @@ export interface DeployStackOptions {
   force?: boolean;
 }
 
+export interface DestroyStackOptions {
+  stack: CloudFormationStackArtifact;
+  deployName?: string;
+  roleArn?: string;
+  quiet?: boolean;
+  force?: boolean;
+}
+
+export interface StackExistsOptions {
+  stack: CloudFormationStackArtifact;
+  deployName?: string;
+}
+
 export interface ProvisionerProps {
   aws: ISDK;
 }
@@ -54,24 +70,64 @@ export class CloudFormationDeploymentTarget implements IDeploymentTarget {
 
   public async readCurrentTemplate(stack: CloudFormationStackArtifact): Promise<Template> {
     debug(`Reading existing template for stack ${stack.displayName}.`);
-    const cfn = await this.aws.cloudFormation(stack.environment.account, stack.environment.region, Mode.ForReading);
+    const { sdk } = await this.cloudFormationOptionsFor(stack);
+
+    const cfn = await sdk.cloudFormation(stack.environment.account, stack.environment.region, Mode.ForReading);
     return readCurrentTemplate(cfn, stack.stackName);
   }
 
   public async deployStack(options: DeployStackOptions): Promise<DeployStackResult> {
     const toolkitInfo = await loadToolkitInfo(options.stack.environment, this.aws, options.toolkitStackName || DEFAULT_TOOLKIT_STACK_NAME);
+
+    const { sdk, roleArn } = await this.cloudFormationOptionsFor(options.stack, options.roleArn);
+
     return deployStack({
       stack: options.stack,
       deployName: options.deployName,
-      roleArn: options.roleArn,
       notificationArns: options.notificationArns,
       quiet: options.quiet,
-      sdk: this.aws,
+      sdk,
+      roleArn,
       reuseAssets: options.reuseAssets,
       toolkitInfo,
       tags: options.tags,
       execute: options.execute,
       force: options.force
     });
+  }
+
+  public async destroyStack(options: DestroyStackOptions): Promise<void> {
+    const { sdk, roleArn } = await this.cloudFormationOptionsFor(options.stack, options.roleArn);
+
+    return destroyStack({
+      sdk,
+      roleArn,
+      stack: options.stack,
+      deployName: options.deployName,
+      quiet: options.quiet,
+    });
+  }
+
+  public async stackExists(options: StackExistsOptions): Promise<boolean> {
+    const { sdk } = await this.cloudFormationOptionsFor(options.stack);
+    const cfn = await sdk.cloudFormation(options.stack.environment.account, options.stack.environment.region, Mode.ForReading);
+    return stackExists(cfn, options.deployName ?? options.stack.stackName);
+  }
+
+  /**
+   * Return CloudFormation options for touching the given stack
+   *
+   * Return an SDK with the right credentials, and return the CloudFormation Execution Role
+   */
+  private async cloudFormationOptionsFor(stack: CloudFormationStackArtifact, roleArn?: string) {
+    let sdk = this.aws;
+    if (stack.assumeRoleArn) {
+      sdk = await sdk.assumeRole(stack.assumeRoleArn, stack.environment.region);
+    }
+
+    // Use the override if given, otherwise use the field from the stack
+    const cloudFormationRoleArn = roleArn ?? stack.cloudFormationExecutionRoleArn;
+
+    return { sdk, roleArn: cloudFormationRoleArn };
   }
 }

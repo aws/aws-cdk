@@ -91,7 +91,7 @@ export interface StackDeploymentConfig {
    *
    * @default - No role is passed (current role/credentials are used)
    */
-  readonly cloudFormationPassRoleArn?: string;
+  readonly cloudFormationExecutionRoleArn?: string;
 }
 
 /**
@@ -145,7 +145,7 @@ export interface ConventionModeDeploymentEnvironmentProps {
   readonly assetPublishingExternalId?: string;
 
   /**
-   * The role to assume to execute
+   * The role to assume to initiate a deployment in this environment
    *
    * You must supply this if you have given a non-standard name to the publishing role.
    *
@@ -195,7 +195,7 @@ export class ConventionModeDeploymentEnvironment implements IDeploymentEnvironme
   private readonly bucketName: TemplatedString<DeployPlaceholders>;
   private readonly repositoryName: TemplatedString<DeployPlaceholders>;
   private readonly deployActionRoleArn: TemplatedString<DeployPlaceholders>;
-  private readonly cloudFormationPassRoleArn: TemplatedString<DeployPlaceholders>;
+  private readonly cloudFormationExecutionRoleArn: TemplatedString<DeployPlaceholders>;
   private readonly assetPublishingRoleArn: TemplatedString<DeployPlaceholders>;
   private readonly qualifier: string;
 
@@ -214,7 +214,7 @@ export class ConventionModeDeploymentEnvironment implements IDeploymentEnvironme
     this.bucketName = TPL(this.props.stagingBucketName ?? 'cdk-bootstrap-${Qualifier}-assets-${AWS::AccountId}-${AWS::Region}');
     this.repositoryName = TPL(this.props.ecrRepositoryName ?? 'cdk-bootstrap-${Qualifier}-container-assets-${AWS::AccountId}-${AWS::Region}');
     this.deployActionRoleArn = TPL(this.props.deployActionRoleArn ?? 'arn:aws:iam::${AWS::AccountId}:role/cdk-bootstrap-deploy-action-role-${AWS::AccountId}-${AWS::Region}');
-    this.cloudFormationPassRoleArn = TPL(this.props.cloudFormationExecutionRole ?? 'arn:aws:iam::${AWS::AccountId}:role/cdk-bootstrap-cfn-exec-role-${AWS::AccountId}-${AWS::Region}');
+    this.cloudFormationExecutionRoleArn = TPL(this.props.cloudFormationExecutionRole ?? 'arn:aws:iam::${AWS::AccountId}:role/cdk-bootstrap-cfn-exec-role-${AWS::AccountId}-${AWS::Region}');
     this.assetPublishingRoleArn = TPL(this.props.assetPublishingRoleArn ?? 'arn:aws:iam::${AWS::AccountId}:role/cdk-bootstrap-publishing-role-${AWS::AccountId}-${AWS::Region}');
     // tslint:enable:max-line-length
   }
@@ -282,7 +282,7 @@ export class ConventionModeDeploymentEnvironment implements IDeploymentEnvironme
   public stackDeploymentConfig(): StackDeploymentConfig {
     return {
       assumeRoleArn: this.cfnSub(this.deployActionRoleArn),
-      cloudFormationPassRoleArn: this.cfnSub(this.cloudFormationPassRoleArn),
+      cloudFormationExecutionRoleArn: this.cfnSub(this.cloudFormationExecutionRoleArn),
     };
   }
 
@@ -350,7 +350,7 @@ function resolvedOr<A>(x: string, def: A): string | A {
 /**
  * Placeholders that can occur in a template string for deployment targets
  */
-export type DeployPlaceholders = 'Qualifier' | 'AWS::AccountId' | 'AWS::Region';
+type DeployPlaceholders = 'Qualifier' | 'AWS::AccountId' | 'AWS::Region';
 
 /**
  * Use the original deployment environment

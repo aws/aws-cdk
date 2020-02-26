@@ -762,6 +762,7 @@ export class Stack extends Construct implements ITaggable {
     }
 
     const deploySynth = this.deploymentEnvironment.synthesize(session);
+    const deployConfig = this.deploymentEnvironment.stackDeploymentConfig();
 
     const deps = [
       ...this.dependencies.map(s => s.artifactId),
@@ -782,6 +783,8 @@ export class Stack extends Construct implements ITaggable {
 
     const properties: cxapi.AwsCloudFormationStackProperties = {
       templateFile: this.templateFile,
+      assumeRoleArn: deployConfig.assumeRoleArn,
+      cloudFormationExecutionRoleArn: deployConfig.cloudFormationExecutionRoleArn,
       ...stackNameProperty
     };
 

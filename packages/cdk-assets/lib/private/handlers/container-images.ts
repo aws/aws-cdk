@@ -20,7 +20,7 @@ export class ContainerImageAssetHandler implements IAssetHandler {
   public async publish(): Promise<void> {
     const destination = await replaceAwsPlaceholders(this.asset.destination, this.host.aws);
 
-    const ecr = this.host.aws.ecrClient(destination);
+    const ecr = await this.host.aws.ecrClient(destination);
 
     const uri = await repositoryUri(ecr, destination.repositoryName);
     if (!uri) {

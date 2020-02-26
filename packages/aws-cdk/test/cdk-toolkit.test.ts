@@ -1,7 +1,7 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { AppStacks, Tag } from '../lib/api/cxapp/stacks';
 import { DeployStackResult } from '../lib/api/deploy-stack';
-import { DeployStackOptions, IDeploymentTarget, Template } from '../lib/api/deployment-target';
+import { DeployStackOptions, DestroyStackOptions, IDeploymentTarget, StackExistsOptions, Template } from '../lib/api/deployment-target';
 import { SDK } from '../lib/api/util/sdk';
 import { CdkToolkit } from '../lib/cdk-toolkit';
 
@@ -139,5 +139,13 @@ class TestProvisioner implements IDeploymentTarget {
       default:
         return Promise.reject(`Not an expected mock stack: ${stack.stackName}`);
     }
+  }
+
+  public destroyStack(_options: DestroyStackOptions): Promise<void> {
+    throw new Error("Method not implemented.");
+  }
+
+  public stackExists(_options: StackExistsOptions): Promise<boolean> {
+    throw new Error("Method not implemented.");
   }
 }

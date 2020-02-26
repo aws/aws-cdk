@@ -2,11 +2,8 @@ import * as colors from 'colors/safe';
 import * as fs from 'fs-extra';
 import * as promptly from 'promptly';
 import { format } from 'util';
-import { Mode } from './api/aws-auth/credentials';
 import { AppStacks, DefaultSelection, ExtendedStackSelection, Tag } from "./api/cxapp/stacks";
-import { destroyStack } from './api/deploy-stack';
 import { IDeploymentTarget } from './api/deployment-target';
-import { stackExists } from './api/util/cloudformation';
 import { ISDK } from './api/util/sdk';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
 import { data, error, highlight, print, success, warning } from './logging';
@@ -93,8 +90,7 @@ export class CdkToolkit {
       }
 
       if (Object.keys(stack.template.Resources || {}).length === 0) { // The generated stack has no resources
-        const cfn = await options.sdk.cloudFormation(stack.environment.account, stack.environment.region, Mode.ForReading);
-        if (!await stackExists(cfn, stack.stackName)) {
+        if (!await this.provisioner.stackExists({ stack }))  {
           warning('%s: stack has no resources, skipping deployment.', colors.bold(stack.displayName));
         } else {
           warning('%s: stack has no resources, deleting existing stack.', colors.bold(stack.displayName));
@@ -103,7 +99,6 @@ export class CdkToolkit {
             exclusively: true,
             force: true,
             roleArn: options.roleArn,
-            sdk: options.sdk,
             fromDeploy: true,
           });
         }
@@ -192,7 +187,11 @@ export class CdkToolkit {
     for (const stack of stacks) {
       success('%s: destroying...', colors.blue(stack.displayName));
       try {
-        await destroyStack({ stack, sdk: options.sdk, deployName: stack.stackName, roleArn: options.roleArn });
+        await this.provisioner.destroyStack({
+          stack,
+          deployName: stack.stackName,
+          roleArn: options.roleArn
+        });
         success(`\n ✅  %s: ${action}ed`, colors.blue(stack.displayName));
       } catch (e) {
         error(`\n ❌  %s: ${action} failed`, colors.blue(stack.displayName), e);
@@ -337,11 +336,6 @@ export interface DestroyOptions {
    * The arn of the IAM role to use
    */
   roleArn?: string;
-
-  /**
-   * AWS SDK
-   */
-  sdk: ISDK;
 
   /**
    * Whether the destroy request came from a deploy.

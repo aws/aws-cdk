@@ -7,8 +7,8 @@ export interface IAws {
   discoverDefaultRegion(): Promise<string>;
   discoverCurrentAccount(): Promise<string>;
 
-  s3Client(options: ClientOptions): AWS.S3;
-  ecrClient(options: ClientOptions): AWS.ECR;
+  s3Client(options: ClientOptions): Promise<AWS.S3>;
+  ecrClient(options: ClientOptions): Promise<AWS.ECR>;
 }
 
 export interface ClientOptions {

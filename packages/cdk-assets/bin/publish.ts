@@ -26,6 +26,11 @@ export async function publish(args: {
   await pub.publish();
 
   if (pub.hasFailures) {
+    for (const failure of pub.failures) {
+      // tslint:disable-next-line:no-console
+      console.error('Failure:', failure.error.stack);
+    }
+
     process.exitCode = 1;
   }
 }
@@ -63,12 +68,12 @@ class DefaultAwsClient implements IAws {
     this.AWS = require('aws-sdk');
   }
 
-  public s3Client(options: ClientOptions) {
-    return new this.AWS.S3(this.awsOptions(options));
+  public async s3Client(options: ClientOptions) {
+    return new this.AWS.S3(await this.awsOptions(options));
   }
 
-  public ecrClient(options: ClientOptions) {
-    return new this.AWS.ECR(this.awsOptions(options));
+  public async ecrClient(options: ClientOptions) {
+    return new this.AWS.ECR(await this.awsOptions(options));
   }
 
   public async discoverDefaultRegion(): Promise<string> {
@@ -85,21 +90,11 @@ class DefaultAwsClient implements IAws {
     return response.Account || '????????';
   }
 
-  private awsOptions(options: ClientOptions) {
+  private async awsOptions(options: ClientOptions) {
     let credentials;
 
     if (options.assumeRoleArn) {
-      credentials = new this.AWS.TemporaryCredentials({
-        RoleArn: options.assumeRoleArn,
-        ExternalId: options.assumeRoleExternalId,
-        RoleSessionName: `cdk-assets-${os.userInfo().username}`,
-      });
-
-      const msg = [`Assume ${options.assumeRoleArn}`];
-      if (options.assumeRoleExternalId) {
-        msg.push(`(ExternalId ${options.assumeRoleExternalId})`);
-      }
-      log('verbose', msg.join(' '));
+      credentials = await this.assumeRole(options.assumeRoleArn, options.assumeRoleExternalId);
     }
 
     return {
@@ -107,5 +102,34 @@ class DefaultAwsClient implements IAws {
       customUserAgent: `cdk-assets/${VERSION}`,
       credentials,
     };
+  }
+
+  /**
+   * Explicit manual AssumeRole call
+   *
+   * Necessary since I can't seem to get the built-in support for ChainableTemporaryCredentials to work.
+   *
+   * It needs an explicit configuration of `masterCredentials`, we need to put
+   * a `DefaultCredentialProverChain()` in there but that is not possible.
+   */
+  private async assumeRole(roleArn: string, externalId?: string): Promise<AWS.Credentials> {
+    const msg = [`Assume ${roleArn}`];
+    if (externalId) {
+      msg.push(`(ExternalId ${externalId})`);
+    }
+    log('verbose', msg.join(' '));
+
+    const sts = new this.AWS.STS();
+    const response = await sts.assumeRole({
+      RoleArn: roleArn,
+      ExternalId: externalId,
+      RoleSessionName: `cdk-assets-${os.userInfo().username}`,
+    }).promise();
+
+    return new this.AWS.Credentials({
+      accessKeyId: response.Credentials!.AccessKeyId,
+      secretAccessKey: response.Credentials!.SecretAccessKey,
+      sessionToken: response.Credentials!.SessionToken,
+    });
   }
 }

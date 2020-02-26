@@ -1,5 +1,6 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
+import { ConfigurationOptions } from 'aws-sdk/lib/config';
 import { ServiceConfigurationOptions } from 'aws-sdk/lib/service';
 import * as child_process from 'child_process';
 import * as fs from 'fs-extra';
@@ -27,34 +28,20 @@ export interface ISDK {
 
   ecr(account: string | undefined, region: string | undefined, mode: Mode): Promise<AWS.ECR>;
 
+  assumeRole(arn: string, region: string): Promise<ISDK>;
+
   defaultRegion(): Promise<string | undefined>;
 
   defaultAccount(): Promise<string | undefined>;
 }
 
-export interface SDKOptions {
-  /**
-   * Profile name to use
-   *
-   * @default No profile
-   */
-  profile?: string;
-
+export interface SDKBaseOptions {
   /**
    * Proxy address to use
    *
    * @default No proxy
    */
   proxyAddress?: string;
-
-  /**
-   * Whether we should try instance credentials
-   *
-   * True/false to force/disable. Default is to guess.
-   *
-   * @default Automatically determine.
-   */
-  ec2creds?: boolean;
 
   /**
    * A path to a certificate bundle that contains a cert to be trusted.
@@ -64,7 +51,7 @@ export interface SDKOptions {
   caBundlePath?: string;
 
   /**
-   * The custom suer agent to use.
+   * The custom user agent to use.
    *
    * @default - <package-name>/<package-version>
    */
@@ -72,20 +59,10 @@ export interface SDKOptions {
 }
 
 /**
- * Source for SDK client objects
- *
- * Credentials are first obtained from the SDK defaults (using environment variables and the
- * ~/.aws/{config,credentials} files).
- *
- * If those don't suffice, a list of CredentialProviderSources is interrogated for access
- * to the requested account.
- *
- * @experimental
+ * Base functionality of SDK without credential fetching
  */
-export class SDK implements ISDK {
-  private readonly defaultAwsAccount: DefaultAWSAccount;
-  private readonly credentialsCache: CredentialsCache;
-  private readonly profile?: string;
+abstract class SDKBase implements ISDK {
+  private readonly config: ConfigurationOptions;
 
   /**
    * Default retry options for SDK clients
@@ -99,15 +76,8 @@ export class SDK implements ISDK {
    */
   private readonly retryOptions = { maxRetries: 6, retryDelayOptions: { base: 300 }};
 
-  constructor(options: SDKOptions = {}) {
-    this.profile = options.profile;
-
-    const defaultCredentialProvider = makeCLICompatibleCredentialProvider(options.profile, options.ec2creds);
-
-    this.configureSDKHttpOptions(options);
-
-    this.defaultAwsAccount = new DefaultAWSAccount(defaultCredentialProvider, getCLICompatibleDefaultRegionGetter(this.profile));
-    this.credentialsCache = new CredentialsCache(this.defaultAwsAccount, defaultCredentialProvider);
+  constructor(protected readonly options: SDKBaseOptions = {}) {
+    this.config = this.configureSDKHttpOptions(options);
   }
 
   public cloudFormation(account: string | undefined, region: string | undefined, mode: Mode): Promise<AWS.CloudFormation> {
@@ -134,15 +104,34 @@ export class SDK implements ISDK {
     return this.service(AWS.ECR, account, region, mode);
   }
 
-  public async defaultRegion(): Promise<string | undefined> {
-    return await getCLICompatibleDefaultRegionGetter(this.profile)();
+  /**
+   * Obtain an SDK initialized by assuming a role
+   *
+   * WARNING: This does not refresh any credentials, because I don't understand
+   * the applicable building blocks of the JS SDK well enough. There is a
+   * discrepancy between TemporaryCredentials and CredentialProviders that I
+   * don't fully grok.
+   */
+  public async assumeRole(arn: string, region: string): Promise<ISDK> {
+    debug(`Assuming role '${arn}'`);
+    const sts = await this.service(AWS.STS, await this.defaultAccount(), region, Mode.ForWriting);
+    const response = await sts.assumeRole({
+      RoleArn: arn,
+      RoleSessionName: `aws-cdk-${os.userInfo().username}`,
+    }).promise();
+
+    return new FixedCredentialsSDK(this, new AWS.Credentials({
+      accessKeyId: response.Credentials!.AccessKeyId,
+      secretAccessKey: response.Credentials!.SecretAccessKey,
+      sessionToken: response.Credentials?.SessionToken,
+    }));
   }
 
-  public defaultAccount(): Promise<string | undefined> {
-    return this.defaultAwsAccount.get();
-  }
+  public abstract defaultRegion(): Promise<string | undefined>;
 
-  private async service<T extends AWS.Service>(
+  public abstract defaultAccount(): Promise<string | undefined>;
+
+  protected async service<T extends AWS.Service>(
     ctor: new <O extends ServiceConfigurationOptions>(opts?: O) => T,
     account: string | undefined,
     region: string | undefined,
@@ -150,12 +139,15 @@ export class SDK implements ISDK {
     const environment = await this.resolveEnvironment(account, region);
     return new ctor({
       ...this.retryOptions,
+      ...this.config,
       region: environment.region,
-      credentials: await this.credentialsCache.get(environment.account, mode)
+      credentials: await this.obtainCredentials(environment.account, mode)
     });
   }
 
-  private async resolveEnvironment(account: string | undefined, region: string | undefined, ) {
+  protected abstract obtainCredentials(account: string, mode: Mode): Promise<AWS.Credentials>;
+
+  private async resolveEnvironment(account: string | undefined, region: string | undefined) {
     if (region === cxapi.UNKNOWN_REGION) {
       region = await this.defaultRegion();
     }
@@ -179,8 +171,8 @@ export class SDK implements ISDK {
     return environment;
   }
 
-  private configureSDKHttpOptions(options: SDKOptions) {
-    const config: {[k: string]: any} = {};
+  private configureSDKHttpOptions(options: SDKBaseOptions) {
+    const config: ConfigurationOptions = {};
     config.httpOptions = {};
 
     let userAgent = options.userAgent;
@@ -216,7 +208,75 @@ export class SDK implements ISDK {
       });
     }
 
-    AWS.config.update(config);
+    return config;
+  }
+}
+
+export interface SDKOptions extends SDKBaseOptions {
+  /**
+   * Profile name to use
+   *
+   * @default No profile
+   */
+  profile?: string;
+
+  /**
+   * Whether we should try instance credentials
+   *
+   * True/false to force/disable. Default is to guess.
+   *
+   * @default Automatically determine.
+   */
+  ec2creds?: boolean;
+}
+
+/**
+ * Implementation of SDK with logic for obtaining credentials
+ */
+export class SDK extends SDKBase {
+  private readonly defaultAwsAccount: DefaultAWSAccount;
+  private readonly credentialsCache: CredentialsCache;
+  private readonly profile?: string;
+
+  constructor(options: SDKOptions = {}) {
+    super();
+
+    this.profile = options.profile;
+
+    const defaultCredentialProvider = makeCLICompatibleCredentialProvider(options.profile, options.ec2creds);
+
+    this.defaultAwsAccount = new DefaultAWSAccount(defaultCredentialProvider, getCLICompatibleDefaultRegionGetter(this.profile));
+    this.credentialsCache = new CredentialsCache(this.defaultAwsAccount, defaultCredentialProvider);
+  }
+
+  public async defaultRegion(): Promise<string | undefined> {
+    return await getCLICompatibleDefaultRegionGetter(this.profile)();
+  }
+
+  public defaultAccount(): Promise<string | undefined> {
+    return this.defaultAwsAccount.get();
+  }
+
+  protected obtainCredentials(account: string, mode: Mode): Promise<AWS.Credentials> {
+    return this.credentialsCache.get(account, mode);
+  }
+}
+
+class FixedCredentialsSDK extends SDKBase {
+  constructor(protected readonly inner: SDKBase, private readonly credentials: AWS.Credentials) {
+    super((inner as any).options); // TypeScript is not Java and won't let me access the protected otherwise
+  }
+
+  public async defaultRegion(): Promise<string | undefined> {
+    return this.inner.defaultRegion();
+  }
+
+  public defaultAccount(): Promise<string | undefined> {
+    return this.inner.defaultAccount();
+  }
+
+  protected async obtainCredentials(_account: string, _mode: Mode): Promise<AWS.Credentials> {
+    return this.credentials;
   }
 }
 

@@ -11,6 +11,7 @@ const mockSDK: ISDK = {
   route53: () => { throw new Error('Not Mocked'); },
   s3: () => { throw new Error('Not Mocked'); },
   ssm: () => { throw new Error('Not Mocked'); },
+  assumeRole: () => { throw new Error('Not Mocked'); },
 };
 
 test('errors are reported into the context value', async () => {

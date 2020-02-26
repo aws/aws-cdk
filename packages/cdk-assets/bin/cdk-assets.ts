@@ -63,6 +63,6 @@ function wrapHandler<A extends { verbose?: number }, R>(handler: (x: A) => Promi
 
 main().catch(e => {
   // tslint:disable-next-line:no-console
-  console.error(e);
+  console.error(e.stack);
   process.exitCode = 1;
 });

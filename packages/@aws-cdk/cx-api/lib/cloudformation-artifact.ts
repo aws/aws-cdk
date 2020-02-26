@@ -54,6 +54,20 @@ export class CloudFormationStackArtifact extends CloudArtifact {
    */
   public readonly environment: Environment;
 
+  /**
+   * The role that needs to be assumed to deploy the stack
+   *
+   * @default - No role is assumed (current credentials are used)
+   */
+  public readonly assumeRoleArn?: string;
+
+  /**
+   * The role that is passed to CloudFormation to execute the change set
+   *
+   * @default - No role is passed (currently assumed role/credentials are used)
+   */
+  public readonly cloudFormationExecutionRoleArn?: string;
+
   constructor(assembly: CloudAssembly, artifactId: string, artifact: ArtifactManifest) {
     super(assembly, artifactId, artifact);
 
@@ -67,6 +81,8 @@ export class CloudFormationStackArtifact extends CloudArtifact {
     const properties = (this.manifest.properties || {}) as AwsCloudFormationStackProperties;
     this.templateFile = properties.templateFile;
     this.parameters = properties.parameters || { };
+    this.assumeRoleArn = properties.assumeRoleArn;
+    this.cloudFormationExecutionRoleArn = properties.cloudFormationExecutionRoleArn;
 
     this.stackName = properties.stackName || artifactId;
     this.template = JSON.parse(fs.readFileSync(path.join(this.assembly.directory, this.templateFile), 'utf-8'));
