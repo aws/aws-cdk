@@ -1,6 +1,6 @@
 {
   "name": "@monocdk-experiment/rewrite-imports",
-  "version": "999.0.0",
+  "version": "0.0.0",
   "description": "Rewrites typescript 'import' statements from @aws-cdk/xxx to monocdk-experiment",
   "bin": {
     "rewrite-imports": "bin/rewrite-imports"
@@ -16,7 +16,9 @@
     "build+test": "npm run build && npm test"
   },
   "keywords": [
-    "aws", "cdk", "awscdk"  
+    "aws",
+    "cdk",
+    "awscdk"
   ],
   "author": {
     "name": "Amazon Web Services",
@@ -28,8 +30,8 @@
     "typescript": "^3.7.5"
   },
   "devDependencies": {
-    "cdk-build-tools": "999.0.0",
-    "pkglint": "999.0.0",
+    "cdk-build-tools": "0.0.0",
+    "pkglint": "0.0.0",
     "@types/node": "^13.7.1"
   }
 }
