@@ -1,16 +1,16 @@
 {
   "Parameters": {
-    "AssetParameters00e9009a1958b2a7ac277352874efb747a15aebd9bd8fb3c1e8b5a4a12f16819S3BucketCE4DD78A": {
+    "AssetParameters634604e16697683c518163141aefd2814b73b010e143b29dfbecc48dc98c3c54S3BucketB960DFE2": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"00e9009a1958b2a7ac277352874efb747a15aebd9bd8fb3c1e8b5a4a12f16819\""
+      "Description": "S3 bucket for asset \"634604e16697683c518163141aefd2814b73b010e143b29dfbecc48dc98c3c54\""
     },
-    "AssetParameters00e9009a1958b2a7ac277352874efb747a15aebd9bd8fb3c1e8b5a4a12f16819S3VersionKeyBC9A77D3": {
+    "AssetParameters634604e16697683c518163141aefd2814b73b010e143b29dfbecc48dc98c3c54S3VersionKeyF9932D20": {
       "Type": "String",
-      "Description": "S3 key for asset version \"00e9009a1958b2a7ac277352874efb747a15aebd9bd8fb3c1e8b5a4a12f16819\""
+      "Description": "S3 key for asset version \"634604e16697683c518163141aefd2814b73b010e143b29dfbecc48dc98c3c54\""
     },
-    "AssetParameters00e9009a1958b2a7ac277352874efb747a15aebd9bd8fb3c1e8b5a4a12f16819ArtifactHash34012B55": {
+    "AssetParameters634604e16697683c518163141aefd2814b73b010e143b29dfbecc48dc98c3c54ArtifactHash5EEBE9B2": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"00e9009a1958b2a7ac277352874efb747a15aebd9bd8fb3c1e8b5a4a12f16819\""
+      "Description": "Artifact hash for asset \"634604e16697683c518163141aefd2814b73b010e143b29dfbecc48dc98c3c54\""
     }
   },
   "Resources": {
@@ -45,10 +45,66 @@
         ]
       }
     },
+    "GlueJobRoleDefaultPolicy3D94D6F1": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":s3:::",
+                      {
+                        "Ref": "AssetParameters634604e16697683c518163141aefd2814b73b010e143b29dfbecc48dc98c3c54S3BucketB960DFE2"
+                      }
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":s3:::",
+                      {
+                        "Ref": "AssetParameters634604e16697683c518163141aefd2814b73b010e143b29dfbecc48dc98c3c54S3BucketB960DFE2"
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "GlueJobRoleDefaultPolicy3D94D6F1",
+        "Roles": [
+          {
+            "Ref": "GlueJobRole1CD031E0"
+          }
+        ]
+      }
+    },
     "GlueJob": {
       "Type": "AWS::Glue::Job",
       "Properties": {
-	"Name": "My Glue Job",
         "Command": {
           "Name": "glueetl",
           "PythonVersion": "3",
@@ -58,7 +114,7 @@
               [
                 "s3://",
                 {
-                  "Ref": "AssetParameters00e9009a1958b2a7ac277352874efb747a15aebd9bd8fb3c1e8b5a4a12f16819S3BucketCE4DD78A"
+                  "Ref": "AssetParameters634604e16697683c518163141aefd2814b73b010e143b29dfbecc48dc98c3c54S3BucketB960DFE2"
                 },
                 "/",
                 {
@@ -68,7 +124,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters00e9009a1958b2a7ac277352874efb747a15aebd9bd8fb3c1e8b5a4a12f16819S3VersionKeyBC9A77D3"
+                          "Ref": "AssetParameters634604e16697683c518163141aefd2814b73b010e143b29dfbecc48dc98c3c54S3VersionKeyF9932D20"
                         }
                       ]
                     }
@@ -81,7 +137,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters00e9009a1958b2a7ac277352874efb747a15aebd9bd8fb3c1e8b5a4a12f16819S3VersionKeyBC9A77D3"
+                          "Ref": "AssetParameters634604e16697683c518163141aefd2814b73b010e143b29dfbecc48dc98c3c54S3VersionKeyF9932D20"
                         }
                       ]
                     }
@@ -97,7 +153,8 @@
             "Arn"
           ]
         },
-        "GlueVersion": "1.0"
+        "GlueVersion": "1.0",
+        "Name": "My Glue Job"
       }
     },
     "StateMachineRole543B9670": {
@@ -180,6 +237,13 @@
         "StateMachineRoleDefaultPolicyDA5F7DA8",
         "StateMachineRole543B9670"
       ]
+    }
+  },
+  "Outputs": {
+    "StateMachineARNOutput": {
+      "Value": {
+        "Ref": "StateMachine81935E76"
+      }
     }
   }
 }

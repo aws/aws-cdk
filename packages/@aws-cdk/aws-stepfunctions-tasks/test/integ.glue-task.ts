@@ -9,6 +9,8 @@ import * as tasks from '../lib';
 /*
  * Stack verification steps:
  * * aws stepfunctions start-execution --state-machine-arn <deployed state machine arn>
+ * * aws stepfunctions describe-execution --execution-arn <execution arn created above>
+ * * should eventually return status "SUCCEEDED"
  */
 
 const app = new cdk.App();
@@ -24,6 +26,7 @@ const jobRole = new iam.Role(stack, 'Glue Job Role', {
     iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSGlueServiceRole')
   ]
 });
+codeAsset.grantRead(jobRole);
 
 const job = new glue.CfnJob(stack, 'Glue Job', {
   name: 'My Glue Job',
@@ -48,8 +51,12 @@ const jobTask = new sfn.Task(stack, 'Glue Job Task', {
 const startTask = new sfn.Pass(stack, 'Start Task');
 const endTask = new sfn.Pass(stack, 'End Task');
 
-new sfn.StateMachine(stack, 'State Machine', {
+const stateMachine = new sfn.StateMachine(stack, 'State Machine', {
   definition: sfn.Chain.start(startTask).next(jobTask).next(endTask)
+});
+
+new cdk.CfnOutput(stack, 'State Machine ARN Output', {
+  value: stateMachine.stateMachineArn
 });
 
 app.synth();
