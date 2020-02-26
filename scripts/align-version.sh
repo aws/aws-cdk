@@ -13,7 +13,8 @@ files="$(find . -name package.json | grep -v node_modules | xargs)"
 ${scriptdir}/align-version.js ${files}
 
 # validation
-if find . -name package.json | grep -v node_modules | xargs grep "999.0.0"; then
-  echo "ERROR: unexpected version marker 999.0.0 in a package.json file"
+marker=$(node -p "require('./scripts/get-version-marker')")
+if find . -name package.json | grep -v node_modules | xargs grep "[^0-9]${marker}"; then
+  echo "ERROR: unexpected version marker ${marker} in a package.json file"
   exit 1
 fi
