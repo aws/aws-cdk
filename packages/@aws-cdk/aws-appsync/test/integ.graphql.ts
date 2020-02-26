@@ -1,14 +1,32 @@
+import { UserPool } from '@aws-cdk/aws-cognito';
 import { AttributeType, BillingMode, Table } from '@aws-cdk/aws-dynamodb';
 import { App, Stack } from '@aws-cdk/core';
 import { join } from 'path';
-import { GraphQLApi, KeyCondition, MappingTemplate } from '../lib';
+import { GraphQLApi, KeyCondition, MappingTemplate, PrimaryKey, UserPoolDefaultAction, Values } from '../lib';
 
 const app = new App();
 const stack = new Stack(app, 'aws-appsync-integ');
 
+const userPool = new UserPool(stack, 'Pool', {
+    userPoolName: 'myPool',
+});
+
 const api = new GraphQLApi(stack, 'Api', {
     name: `demoapi`,
     schemaDefinitionFile: join(__dirname, 'schema.graphql'),
+    authorizationConfig: {
+        defaultAuthorization: {
+            userPool,
+            defaultAction: UserPoolDefaultAction.ALLOW,
+        },
+        additionalAuthorizationModes: [
+            {
+                apiKeyDesc: 'My API Key',
+                // Can't specify a date because it will inevitably be in the past.
+                // expires: '2019-02-05T12:00:00Z',
+            },
+        ],
+    },
 });
 
 const customerTable = new Table(stack, 'CustomerTable', {
@@ -48,13 +66,25 @@ customerDS.createResolver({
 customerDS.createResolver({
     typeName: 'Mutation',
     fieldName: 'addCustomer',
-    requestMappingTemplate: MappingTemplate.dynamoDbPutItem('id', 'customer'),
+    requestMappingTemplate: MappingTemplate.dynamoDbPutItem(PrimaryKey.partition('id').auto(), Values.projecting('customer')),
     responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
 });
 customerDS.createResolver({
     typeName: 'Mutation',
     fieldName: 'saveCustomer',
-    requestMappingTemplate: MappingTemplate.dynamoDbPutItem('id', 'customer', 'id'),
+    requestMappingTemplate: MappingTemplate.dynamoDbPutItem(PrimaryKey.partition('id').is('id'), Values.projecting('customer')),
+    responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
+});
+customerDS.createResolver({
+    typeName: 'Mutation',
+    fieldName: 'saveCustomerWithFirstOrder',
+    requestMappingTemplate: MappingTemplate.dynamoDbPutItem(
+        PrimaryKey
+            .partition('order').auto()
+            .sort('customer').is('customer.id'),
+        Values
+            .projecting('order')
+            .attribute('referral').is('referral')),
     responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
 });
 customerDS.createResolver({
