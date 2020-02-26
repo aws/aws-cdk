@@ -592,7 +592,7 @@ describe('IAM policy document', () => {
     expect(stack.resolve(doc1)).toEqual(stack.resolve(doc2));
   });
 
-  describe('from JSON', () => {
+  describe('fromJson', () => {
     test('no principal', () => {
       const stack = new Stack();
 
