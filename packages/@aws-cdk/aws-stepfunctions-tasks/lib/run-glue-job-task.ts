@@ -18,17 +18,19 @@ export interface RunGlueJobTaskProps {
   readonly integrationPattern?: sfn.ServiceIntegrationPattern;
 
   /**
-   * The job arguments specifically for this run. For this job run, they replace the
-   * default arguments set in the job definition itself.
+   * The job arguments specifically for this run.
+   *
+   * For this job run, they replace the default arguments set in the job definition itself.
    *
    * @default - Default arguments set in the job definition
    */
   readonly arguments?: { [key: string]: string };
 
   /**
-   * The job run timeout. This is the maximum time that a job run can consume
-   * resources before it is terminated and enters TIMEOUT status. Must be at least 1
-   * minute.
+   * The job run timeout.
+   *
+   * This is the maximum time that a job run can consume resources before it is terminated and enters TIMEOUT status.
+   * Must be at least 1 minute.
    *
    * @default - Default timeout set in the job definition
    */
@@ -37,13 +39,17 @@ export interface RunGlueJobTaskProps {
   /**
    * The name of the SecurityConfiguration structure to be used with this job run.
    *
+   * This must match the Glue API
+   * [single-line string pattern](https://docs.aws.amazon.com/glue/latest/dg/aws-glue-api-common.html#aws-glue-api-regex-oneLine).
+   *
    * @default - Default configuration set in the job definition
    */
   readonly securityConfiguration?: string;
 
   /**
-   * After a job run starts, the number of minutes to wait before sending a job run delay
-   * notification. Must be at least 1 minute.
+   * After a job run starts, the number of minutes to wait before sending a job run delay notification.
+   *
+   * Must be at least 1 minute.
    *
    * @default - Default delay set in the job definition
    */

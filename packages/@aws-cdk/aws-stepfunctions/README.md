@@ -199,6 +199,8 @@ task.next(nextState);
   });
 ```
 
+[Example CDK app](../aws-stepfunctions-tasks/test/integ.glue-task.ts)
+
 #### SNS example
 
 ```ts
