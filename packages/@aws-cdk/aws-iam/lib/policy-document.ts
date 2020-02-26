@@ -30,7 +30,7 @@ export class PolicyDocument implements cdk.IResolvable {
    * This will accept an object created from the `.toJSON()` call
    * @param obj the PolicyDocument in object form.
    */
-  public static fromJSON(obj: any): PolicyDocument {
+  public static fromJson(obj: any): PolicyDocument {
     const policyDocument = new PolicyDocument();
     policyDocument.addStatements(...obj.Statement.map(PolicyStatement.fromJSON));
     return policyDocument;
