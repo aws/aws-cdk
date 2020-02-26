@@ -15,7 +15,7 @@ export class PolicyStatement {
    * This will accept an object created from the `.toJSON()` call
    * @param obj the PolicyStatement in object form.
    */
-  public static fromJSON(obj: any): PolicyStatement {
+  public static fromJson(obj: any): PolicyStatement {
     const statement = new PolicyStatement({
       actions: obj.Action,
       resources: obj.Resource,
