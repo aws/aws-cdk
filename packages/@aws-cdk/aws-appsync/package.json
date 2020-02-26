@@ -103,5 +103,12 @@
   "engines": {
     "node": ">= 10.3.0"
   },
+  "awslint": {
+    "exclude": [
+      "no-unused-type:@aws-cdk/aws-appsync.ApiKeyConfig",
+      "no-unused-type:@aws-cdk/aws-appsync.UserPoolConfig",
+      "no-unused-type:@aws-cdk/aws-appsync.UserPoolDefaultAction"
+    ]
+  },
   "stability": "experimental"
 }
