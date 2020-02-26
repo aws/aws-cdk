@@ -80,14 +80,14 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     if (deployed?.tags && options.tags) {
       if (deployed.tags.length !== options.tags.length) {
         tagsIdentical = false;
-      }
+      } else {
+        for (const optionsTag of options.tags) {
+          const deployedTag = deployed.tags.find(tag => tag.Key === optionsTag.Key);
 
-      for (const optionsTag of options.tags) {
-        const deployedTag = deployed.tags.find(tag => tag.Key === optionsTag.Key);
-
-        if (!deployedTag || deployedTag.Value !== optionsTag.Value) {
-          tagsIdentical = false;
-          break;
+          if (!deployedTag || deployedTag.Value !== optionsTag.Value) {
+            tagsIdentical = false;
+            break;
+          }
         }
       }
     }
