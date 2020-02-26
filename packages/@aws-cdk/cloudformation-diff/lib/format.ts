@@ -1,4 +1,3 @@
-import * as cxapi from '@aws-cdk/cx-api';
 import * as colors from 'colors/safe';
 import { format } from 'util';
 import { Difference, isPropertyDifference, ResourceDifference, ResourceImpact } from './diff-template';
@@ -7,6 +6,9 @@ import { deepEqual } from './diff/util';
 import { formatTable } from './format-table';
 import { IamChanges } from './iam/iam-changes';
 import { SecurityGroupChanges } from './network/security-group-changes';
+
+// from cx-api
+const PATH_METADATA_KEY = 'aws:cdk:path';
 
 /* eslint-disable @typescript-eslint/no-require-imports */
 // tslint:disable-next-line:no-var-requires
@@ -301,12 +303,12 @@ class Formatter {
     for (const [logicalId, resourceDiff] of Object.entries(templateDiff.resources)) {
       if (!resourceDiff) { continue; }
 
-      const oldPathMetadata = resourceDiff.oldValue && resourceDiff.oldValue.Metadata && resourceDiff.oldValue.Metadata[cxapi.PATH_METADATA_KEY];
+      const oldPathMetadata = resourceDiff.oldValue && resourceDiff.oldValue.Metadata && resourceDiff.oldValue.Metadata[PATH_METADATA_KEY];
       if (oldPathMetadata && !(logicalId in this.logicalToPathMap)) {
         this.logicalToPathMap[logicalId] = oldPathMetadata;
       }
 
-      const newPathMetadata = resourceDiff.newValue && resourceDiff.newValue.Metadata && resourceDiff.newValue.Metadata[cxapi.PATH_METADATA_KEY];
+      const newPathMetadata = resourceDiff.newValue && resourceDiff.newValue.Metadata && resourceDiff.newValue.Metadata[PATH_METADATA_KEY];
       if (newPathMetadata && !(logicalId in this.logicalToPathMap)) {
         this.logicalToPathMap[logicalId] = newPathMetadata;
       }
