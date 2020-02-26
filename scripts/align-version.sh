@@ -9,7 +9,7 @@ scriptdir=$(cd $(dirname $0) && pwd)
 # go to repo root
 cd ${scriptdir}/..
 
-files="lerna.json $(find . -name package.json | grep -v node_modules | grep -v "^./package.json" | xargs)"
+files="$(find . -name package.json | grep -v node_modules | xargs)"
 ${scriptdir}/align-version.js ${files}
 
 # validation
