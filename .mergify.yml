@@ -11,7 +11,7 @@ pull_request_rules:
   - name: automatic merge
     actions:
       comment:
-        message: Thank you for contributing! Your pull request is now being automatically merged.
+        message: Thank you for contributing! Your pull request will be updated from master and then merged automatically (do not update manually, and be sure to [allow changes to be pushed to your fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/allowing-changes-to-a-pull-request-branch-created-from-a-fork)).
       merge:
         strict: smart
         method: squash
@@ -34,7 +34,7 @@ pull_request_rules:
   - name: automatic merge
     actions:
       comment:
-        message: Thank you for contributing! Your pull request is now being automatically merged without squashing.
+        message: Thank you for contributing! Your pull request will be updated from master and then merged automatically without squashing (do not update manually, and be sure to [allow changes to be pushed to your fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/allowing-changes-to-a-pull-request-branch-created-from-a-fork)).
       merge:
         strict: smart
         # Merge instead of squash
