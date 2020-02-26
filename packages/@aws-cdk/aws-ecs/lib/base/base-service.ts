@@ -263,62 +263,6 @@ export interface IBaseService extends IService {
 }
 
 /**
- * The properties to import from the service.
- */
-export interface ImportedBaseServiceProps {
-  /**
-   * The cluster that hosts the service.
-   */
-  readonly cluster: ICluster;
-
-  /**
-   * The name of the service.
-   */
-  readonly serviceName: string;
-}
-
-/**
- * A Service that has been imported
- *
- * @resource AWS::ECS::Service
- */
-export class ImportedBaseService extends Resource implements IBaseService {
-  /**
-   * The cluster that hosts the service.
-   */
-  public readonly cluster: ICluster;
-
-  /**
-   * The service ARN.
-   */
-  public readonly serviceArn: string;
-
-  /**
-   * The name of the service.
-   */
-  public readonly serviceName: string;
-
-  /**
-   * Constructs a new instance of the ImportedBaseService class.
-   */
-  constructor(scope: Construct, id: string, props: ImportedBaseServiceProps) {
-    super(scope, id);
-    const stack = Stack.of(scope);
-    const arn: string = stack.formatArn({
-      partition: stack.partition,
-      service: 'ecs',
-      region: stack.region,
-      account: stack.account,
-      resource: 'service',
-      resourceName: props.serviceName,
-    });
-    this.serviceArn = arn;
-    this.serviceName = props.serviceName;
-    this.cluster = props.cluster;
-  }
-}
-
-/**
  * The base class for Ec2Service and FargateService services.
  */
 export abstract class BaseService extends Resource

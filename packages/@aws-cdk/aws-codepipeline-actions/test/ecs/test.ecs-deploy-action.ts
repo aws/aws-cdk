@@ -1,4 +1,6 @@
+import { expect, haveResourceLike } from '@aws-cdk/assert';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import { FakeSourceAction } from '@aws-cdk/aws-codepipeline/test/fake-source-action';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';
@@ -81,17 +83,72 @@ export = {
       test.done();
     },
 
-    'can be created by ImportedBaseService'(test: Test) {
-      const service = anyIBaseService();
+    'can be created by existing service'(test: Test) {
+      const stack = new cdk.Stack();
+      const service = ecs.FargateService.fromFargateServiceAttributes(stack, 'FargateService', {
+        serviceName: 'my-http-service',
+        cluster: new ecs.Cluster(stack, 'Cluster', {
+          clusterName: 'cluster',
+        }),
+      });
       const artifact = new codepipeline.Artifact('Artifact');
 
       test.doesNotThrow(() => {
-        new cpactions.EcsDeployAction({
+        const action = new cpactions.EcsDeployAction({
           actionName: 'ECS',
           service,
           imageFile: artifact.atPath('imageFile.json'),
         });
+        new codepipeline.Pipeline(stack, 'Pipeline', {
+          stages: [
+            {
+              stageName: 'Source',
+              actions: [new FakeSourceAction({
+                actionName: 'Source',
+                output: artifact,
+              })],
+            },
+            {
+              stageName: 'Deploy',
+              actions: [action],
+            }
+          ],
+        });
       });
+
+      expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+        Stages: [
+          {
+            Actions: [
+              {
+                Name: 'Source',
+                ActionTypeId: {
+                  Category: "Source",
+                  Provider: "Fake"
+                },
+              }
+            ]
+          },
+          {
+            Actions: [
+              {
+                Name: 'ECS',
+                ActionTypeId: {
+                  Category: "Deploy",
+                  Provider: "ECS"
+                },
+                Configuration: {
+                  ClusterName: {
+                    Ref: "ClusterEB0386A7",
+                  },
+                  ServiceName: "my-http-service",
+                  FileName: "imageFile.json"
+                }
+              }
+            ]
+          }
+        ]
+      }));
 
       test.done();
     },
@@ -111,15 +168,5 @@ function anyEcsService(): ecs.FargateService {
   return new ecs.FargateService(stack, 'FargateService', {
     cluster,
     taskDefinition,
-  });
-}
-
-function anyIBaseService(): ecs.IBaseService {
-  const stack = new cdk.Stack();
-  return new ecs.ImportedBaseService(stack, 'FargateService', {
-    serviceName: 'my-http-service',
-    cluster: new ecs.Cluster(stack, 'Cluster', {
-      clusterName: 'cluster',
-    }),
   });
 }
