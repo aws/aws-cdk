@@ -1,6 +1,6 @@
 import { IRole, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
+import { Construct, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { CfnUserPool } from './cognito.generated';
 
 /**
@@ -121,28 +121,50 @@ export enum UserPoolAttribute {
 }
 
 /**
- * Methods of user sign-in
+ * The different ways in which users of this pool can sign up or sign in.
  */
-export enum SignInType {
+export interface SignInAliases {
   /**
-   * End-user will sign in with a username, with optional aliases
+   * Whether user is allowed to sign up or sign in with a username
+   * @default true
    */
-  USERNAME,
+  readonly username?: boolean;
 
   /**
-   * End-user will sign in using an email address
+   * Whether a user is allowed to sign up or sign in with an email address
+   * @default false
    */
-  EMAIL,
+  readonly email?: boolean;
 
   /**
-   * End-user will sign in using a phone number
+   * Whether a user is allowed to sign up or sign in with a phone number
+   * @default false
    */
-  PHONE,
+  readonly phone?: boolean;
 
   /**
-   * End-user will sign in using either an email address or phone number
+   * Whether a user is allowed to ign in with a secondary username, that can be set and modified after sign up.
+   * Can only be used in conjunction with `USERNAME`.
+   * @default false
    */
-  EMAIL_OR_PHONE
+  readonly preferredUsername?: boolean;
+}
+
+/**
+ * Attributes that can be automatically verified for users in a user pool.
+ */
+export interface AutoVerifiedAttrs {
+  /**
+   * Whether the email address of the user should be auto verified at sign up.
+   * @default - true, if email is turned on for `signIn`. false, otherwise.
+   */
+  readonly email?: boolean;
+
+  /**
+   * Whether the phone number of the user should be auto verified at sign up.
+   * @default - true, if phone is turned on for `signIn`. false, otherwise.
+   */
+  readonly phone?: boolean;
 }
 
 export interface UserPoolTriggers {
@@ -327,28 +349,28 @@ export interface UserPoolProps {
   readonly smsRoleExternalId?: string;
 
   /**
-   * Method used for user registration & sign in.
+   * Methods in which a user registers or signs in to a user pool.
    * Allows either username with aliases OR sign in with email, phone, or both.
    *
-   * @default SignInType.Username
+   * Read the sections on usernames and aliases to learn more -
+   * https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html
+   *
+   * To match with 'Option 1' in the above link, with a verified email, this property should be set to
+   * `{ username: true, email: true }`. To match with 'Option 2' in the above link with both a verified email and phone
+   * number, this property should be set to `{ email: true, phone: true }`.
+   *
+   * @default { username: true }
    */
-  readonly signInType?: SignInType;
+  readonly signInAliases?: SignInAliases;
 
   /**
-   * Attributes to allow as username alias.
-   * Only valid if signInType is USERNAME
+   * Attributes which Cognito will look to verify automatically upon user sign up.
+   * EMAIL and PHONE are the only available options.
    *
-   * @default - No alias.
+   * @default - If `signIn` include email and/or phone, they will be included in `autoVerifiedAttributes` by default.
+   * If absent, no attributes will be auto-verified.
    */
-  readonly usernameAliasAttributes?: UserPoolAttribute[];
-
-  /**
-   * Attributes which Cognito will automatically send a verification message to.
-   * Must be either EMAIL, PHONE, or both.
-   *
-   * @default - No auto verification.
-   */
-  readonly autoVerifiedAttributes?: UserPoolAttribute[];
+  readonly autoVerify?: AutoVerifiedAttrs;
 
   /**
    * Lambda functions to use for supported Cognito triggers.
@@ -358,28 +380,9 @@ export interface UserPoolProps {
   readonly lambdaTriggers?: UserPoolTriggers;
 }
 
-export interface UserPoolAttributes {
-  /**
-   * The ID of an existing user pool
-   */
-  readonly userPoolId: string;
-
-  /**
-   * The ARN of the imported user pool
-   */
-  readonly userPoolArn: string;
-
-  /**
-   * The provider name of the imported user pool
-   */
-  readonly userPoolProviderName: string;
-
-  /**
-   * The URL of the imported user pool
-   */
-  readonly userPoolProviderUrl: string;
-}
-
+/**
+ * Represents a Cognito UserPool
+ */
 export interface IUserPool extends IResource {
   /**
    * The physical ID of this user pool resource
@@ -392,18 +395,6 @@ export interface IUserPool extends IResource {
    * @attribute
    */
   readonly userPoolArn: string;
-
-  /**
-   * The provider name of this user pool resource
-   * @attribute
-   */
-  readonly userPoolProviderName: string;
-
-  /**
-   * The provider URL of this user pool resource
-   * @attribute
-   */
-  readonly userPoolProviderUrl: string;
 }
 
 /**
@@ -411,22 +402,28 @@ export interface IUserPool extends IResource {
  */
 export class UserPool extends Resource implements IUserPool {
   /**
-   * Import an existing user pool resource
-   * @param scope Parent construct
-   * @param id Construct ID
-   * @param attrs Imported user pool properties
+   * Import an existing user pool based on its id.
    */
-  public static fromUserPoolAttributes(scope: Construct, id: string, attrs: UserPoolAttributes): IUserPool {
-    /**
-     * Define a user pool which has been declared in another stack
-     */
+  public static fromUserPoolId(scope: Construct, id: string, userPoolId: string): IUserPool {
     class Import extends Resource implements IUserPool {
-      public readonly userPoolId = attrs.userPoolId;
-      public readonly userPoolArn = attrs.userPoolArn;
-      public readonly userPoolProviderName = attrs.userPoolProviderName;
-      public readonly userPoolProviderUrl = attrs.userPoolProviderUrl;
+      public readonly userPoolId = userPoolId;
+      public readonly userPoolArn = Stack.of(this).formatArn({
+        service: 'cognito-idp',
+        resource: 'userpool',
+        resourceName: userPoolId,
+      });
     }
+    return new Import(scope, id);
+  }
 
+  /**
+   * Import an existing user pool based on its ARN.
+   */
+  public static fromUserPoolArn(scope: Construct, id: string, userPoolArn: string): IUserPool {
+    class Import extends Resource implements IUserPool {
+      public readonly userPoolArn = userPoolArn;
+      public readonly userPoolId = Stack.of(this).parseArn(userPoolArn).resourceName!;
+    }
     return new Import(scope, id);
   }
 
@@ -442,11 +439,13 @@ export class UserPool extends Resource implements IUserPool {
 
   /**
    * User pool provider name
+   * @attribute
    */
   public readonly userPoolProviderName: string;
 
   /**
    * User pool provider URL
+   * @attribute
    */
   public readonly userPoolProviderUrl: string;
 
@@ -455,46 +454,7 @@ export class UserPool extends Resource implements IUserPool {
   constructor(scope: Construct, id: string, props: UserPoolProps = {}) {
     super(scope, id);
 
-    let aliasAttributes: UserPoolAttribute[] | undefined;
-    let usernameAttributes: UserPoolAttribute[] | undefined;
-
-    if (props.usernameAliasAttributes != null && props.signInType !== SignInType.USERNAME) {
-      throw new Error(`'usernameAliasAttributes' can only be set with a signInType of 'USERNAME'`);
-    }
-
-    if (props.usernameAliasAttributes
-      && !props.usernameAliasAttributes.every(a => {
-        return a === UserPoolAttribute.EMAIL || a === UserPoolAttribute.PHONE_NUMBER || a === UserPoolAttribute.PREFERRED_USERNAME;
-      })) {
-      throw new Error(`'usernameAliasAttributes' can only include EMAIL, PHONE_NUMBER, or PREFERRED_USERNAME`);
-    }
-
-    if (props.autoVerifiedAttributes
-      && !props.autoVerifiedAttributes.every(a => a === UserPoolAttribute.EMAIL || a === UserPoolAttribute.PHONE_NUMBER)) {
-      throw new Error(`'autoVerifiedAttributes' can only include EMAIL or PHONE_NUMBER`);
-    }
-
-    switch (props.signInType) {
-      case SignInType.USERNAME:
-        aliasAttributes = props.usernameAliasAttributes;
-        break;
-
-      case SignInType.EMAIL:
-        usernameAttributes = [UserPoolAttribute.EMAIL];
-        break;
-
-      case SignInType.PHONE:
-        usernameAttributes = [UserPoolAttribute.PHONE_NUMBER];
-        break;
-
-      case SignInType.EMAIL_OR_PHONE:
-        usernameAttributes = [UserPoolAttribute.EMAIL, UserPoolAttribute.PHONE_NUMBER];
-        break;
-
-      default:
-        aliasAttributes = props.usernameAliasAttributes;
-        break;
-    }
+    const signIn = this.signInConfiguration(props);
 
     if (props.lambdaTriggers) {
       for (const t of Object.keys(props.lambdaTriggers)) {
@@ -537,9 +497,9 @@ export class UserPool extends Resource implements IUserPool {
 
     const userPool = new CfnUserPool(this, 'Resource', {
       userPoolName: props.userPoolName,
-      usernameAttributes,
-      aliasAttributes,
-      autoVerifiedAttributes: props.autoVerifiedAttributes,
+      usernameAttributes: signIn.usernameAttrs,
+      aliasAttributes: signIn.aliasAttrs,
+      autoVerifiedAttributes: signIn.autoVerifyAttrs,
       lambdaConfig: Lazy.anyValue({ produce: () => this.triggers }),
       smsConfiguration: this.smsConfiguration(props),
       adminCreateUserConfig,
@@ -672,6 +632,42 @@ export class UserPool extends Resource implements IUserPool {
       principal: new ServicePrincipal('cognito-idp.amazonaws.com'),
       sourceArn: this.userPoolArn
     });
+  }
+
+  private signInConfiguration(props: UserPoolProps) {
+    let aliasAttrs: string[] | undefined;
+    let usernameAttrs: string[] | undefined;
+    let autoVerifyAttrs: string[] | undefined;
+
+    const signIn: SignInAliases = props.signInAliases ?? { username: true };
+
+    if (signIn.preferredUsername && !signIn.username) {
+      throw new Error('username signIn must be enabled if preferredUsername is enabled');
+    }
+
+    if (signIn.username) {
+      aliasAttrs = [];
+      if (signIn.email) { aliasAttrs.push(UserPoolAttribute.EMAIL); }
+      if (signIn.phone) { aliasAttrs.push(UserPoolAttribute.PHONE_NUMBER); }
+      if (signIn.preferredUsername) { aliasAttrs.push(UserPoolAttribute.PREFERRED_USERNAME); }
+      if (aliasAttrs.length === 0) { aliasAttrs = undefined; }
+    } else {
+      usernameAttrs = [];
+      if (signIn.email) { usernameAttrs.push(UserPoolAttribute.EMAIL); }
+      if (signIn.phone) { usernameAttrs.push(UserPoolAttribute.PHONE_NUMBER); }
+    }
+
+    if (props.autoVerify) {
+      autoVerifyAttrs = [];
+      if (props.autoVerify.email) { autoVerifyAttrs.push(UserPoolAttribute.EMAIL); }
+      if (props.autoVerify.phone) { autoVerifyAttrs.push(UserPoolAttribute.PHONE_NUMBER); }
+    } else if (signIn.email || signIn.phone) {
+      autoVerifyAttrs = [];
+      if (signIn.email) { autoVerifyAttrs.push(UserPoolAttribute.EMAIL); }
+      if (signIn.phone) { autoVerifyAttrs.push(UserPoolAttribute.PHONE_NUMBER); }
+    }
+
+    return { usernameAttrs, aliasAttrs, autoVerifyAttrs };
   }
 
   private smsConfiguration(props: UserPoolProps): CfnUserPool.SmsConfigurationProperty {
