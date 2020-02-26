@@ -172,8 +172,9 @@ export async function prepareContainerAssetNew(assemblyDir: string,
 
   buildCommand.push(contextPath);
 
+  // Login to ECR before build to allow building images that reference other docker assets
   try {
-    await shell(buildCommand);
+    await dockerLogin(toolkitInfo);
   } catch (e) {
     if (e.code === 'ENOENT') {
       throw new Error('Unable to execute "docker" in order to build a container asset. Please install "docker" and try again.');
@@ -181,8 +182,7 @@ export async function prepareContainerAssetNew(assemblyDir: string,
     throw e;
   }
 
-  // login to ECR
-  await dockerLogin(toolkitInfo);
+  await shell(buildCommand);
 
   // There's no way to make this quiet, so we can't use a PleaseHold. Print a header message.
   print(` ⌛ Pushing Docker image for ${contextPath}; this may take a while.`);
