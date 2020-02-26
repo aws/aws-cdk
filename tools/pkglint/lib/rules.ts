@@ -11,7 +11,6 @@ import {
   fileShouldNotContain,
   findInnerPackages,
   monoRepoRoot,
-  monoRepoVersion,
 } from './util';
 
 // tslint:disable-next-line: no-var-requires
@@ -664,7 +663,9 @@ export class MustDependonCdkByPointVersions extends ValidationRule {
   public readonly name = 'dependencies/cdk-point-dependencies';
 
   public validate(pkg: PackageJson): void {
-    const expectedVersion = monoRepoVersion();
+    // yes, ugly, but we have a bunch of references to other files in the repo
+    // here anyway, and it's not different than reading the root lerna.json
+    const expectedVersion = require('../../../scripts/get-version-marker');
     const ignore = [
       '@aws-cdk/cloudformation-diff',
       '@aws-cdk/cfnspec',
