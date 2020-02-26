@@ -16,17 +16,17 @@ for (const file of process.argv.splice(2)) {
 
   pkg.version = repoVersion;
 
-  processSection(pkg.dependencies || { });
-  processSection(pkg.devDependencies || { });
-  processSection(pkg.peerDependencies || { });
+  processSection(pkg.dependencies || { }, file);
+  processSection(pkg.devDependencies || { }, file);
+  processSection(pkg.peerDependencies || { }, file);
 
   console.error(`${file} => ${repoVersion}`);
   fs.writeFileSync(file, JSON.stringify(pkg, undefined, 2));
 }
 
-function processSection(section) {
+function processSection(section, file) {
   for (const [ name, version ] of Object.entries(section)) {
-    if (version.includes(marker)) {
+    if (version === marker || version === '^' + marker) {
       section[name] = version.replace(marker, repoVersion);
     }
   }
