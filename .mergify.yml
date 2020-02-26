@@ -34,7 +34,7 @@ pull_request_rules:
   - name: automatic merge
     actions:
       comment:
-        message: Thank you for contributing! Your pull request will be updated from master and then merged automatically without sqaushing (do not update manually).
+        message: Thank you for contributing! Your pull request will be updated from master and then merged automatically without squashing (do not update manually).
       merge:
         strict: smart
         # Merge instead of squash
