@@ -86,6 +86,56 @@ All email subjects, bodies and SMS messages for both invitation and verification
 Learn more about [message templates
 here](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-settings-message-templates.html).
 
+### Sign In
+
+Users registering or signing in into your application can do so with multiple identifiers. There are 4 options
+available:
+
+* `username`: Allow signing in using the one time immutable user name that the user chose at the time of sign up.
+* `email`: Allow signing in using the email address that is associated with the account.
+* `phone`: Allow signing in using the phone number that is associated with the account.
+* `preferredUsername`: Allow signing in with an alternate user name that the user can change at any time. However, this
+  is not available if the `username` option is not chosen.
+
+The following code sets up a user pool so that the user can sign in with either their username or their email address -
+
+```ts
+new UserPool(this, 'myuserpool', {
+  // ...
+  // ...
+  signInAliases: {
+    username: true,
+    email: true
+  },
+});
+```
+
+User pools can either be configured so that user name is primary sign in form, but also allows for the other three to be
+used additionally; or it can be configured so that email and/or phone numbers are the only ways a user can register and
+sign in. Read more about this
+[here](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html#user-pool-settings-aliases-settings).
+
+To match with 'Option 1' in the above link, with a verified email, `signInAliases` should be set to
+`{ username: true, email: true }`. To match with 'Option 2' in the above link with both a verified
+email and phone number, this property should be set to `{ email: true, phone: true }`.
+
+Cognito recommends that email and phone number be automatically verified, if they are one of the sign in methods for
+the user pool. Read more about that
+[here](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html#user-pool-settings-aliases).
+The CDK does this by default, when email and/or phone number are specified as part of `signInAliases`. This can be
+overridden by specifying the `autoVerify` property.
+
+The following code snippet sets up only email as a sign in alias, but both email and phone number to be auto-verified.
+
+```ts
+new UserPool(this, 'myuserpool', {
+  // ...
+  // ...
+  signInAliases: { username: true, email: true },
+  autoVerify: { email: true, phone: true }
+});
+```
+
 ### Security
 
 Cognito sends various messages to its users via SMS, for different actions, ranging from account verification to
@@ -109,3 +159,23 @@ When the `smsRole` property is specified, the `smsRoleExternalId` may also be sp
 `smsRoleExternalId` will be used as the `sts:ExternalId` when the Cognito service assumes the role. In turn, the role's
 assume role policy should be configured to accept this value as the ExternalId. Learn more about [ExternalId
 here](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_create_for-user_externalid.html).
+
+### Importing User Pools
+
+Any user pool that has been created outside of this stack, can be imported into the CDK app. Importing a user pool
+allows for it to be used in other parts of the CDK app that reference an `IUserPool`. However, imported user pools have
+limited configurability. As a rule of thumb, none of the properties that is are part of the
+[`AWS::Cognito::UserPool`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-userpool.html)
+CloudFormation resource can be configured.
+
+User pools can be imported either using their id via the `UserPool.fromUserPoolId()`, or by using their ARN, via the
+`UserPool.fromUserPoolArn()` API.
+
+```ts
+const stack = new Stack(app, 'my-stack');
+
+const awesomePool = UserPool.fromUserPoolId(stack, 'awesome-user-pool', 'us-east-1_oiuR12Abd');
+
+const otherAwesomePool = UserPool.fromUserPoolArn(stack, 'other-awesome-user-pool',
+  'arn:aws:cognito-idp:eu-west-1:123456789012:userpool/us-east-1_mtRyYQ14D');
+```
