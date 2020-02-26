@@ -64,7 +64,7 @@
   "devDependencies": {
     "@aws-cdk/assert": "999.0.0",
     "@types/nodeunit": "^0.0.30",
-    "aws-sdk": "^2.625.0",
+    "aws-sdk": "^2.626.0",
     "aws-sdk-mock": "^5.0.0",
     "cdk-build-tools": "999.0.0",
     "cdk-integ-tools": "999.0.0",
