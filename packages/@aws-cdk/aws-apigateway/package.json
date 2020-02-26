@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-apigateway",
-  "version": "1.23.0",
+  "version": "999.0.0",
   "description": "The CDK Construct Library for AWS::ApiGateway",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -62,29 +62,30 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "1.23.0",
-    "@aws-cdk/aws-ec2": "1.23.0",
+    "@aws-cdk/assert": "999.0.0",
     "@types/nodeunit": "^0.0.30",
-    "cdk-build-tools": "1.23.0",
-    "cdk-integ-tools": "1.23.0",
-    "cfn2ts": "1.23.0",
+    "cdk-build-tools": "999.0.0",
+    "cdk-integ-tools": "999.0.0",
+    "cfn2ts": "999.0.0",
     "nodeunit": "^0.11.3",
-    "pkglint": "1.23.0"
+    "pkglint": "999.0.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-certificatemanager": "1.23.0",
-    "@aws-cdk/aws-elasticloadbalancingv2": "1.23.0",
-    "@aws-cdk/aws-iam": "1.23.0",
-    "@aws-cdk/aws-lambda": "1.23.0",
-    "@aws-cdk/core": "1.23.0"
+    "@aws-cdk/aws-certificatemanager": "999.0.0",
+    "@aws-cdk/aws-ec2": "999.0.0",
+    "@aws-cdk/aws-elasticloadbalancingv2": "999.0.0",
+    "@aws-cdk/aws-iam": "999.0.0",
+    "@aws-cdk/aws-lambda": "999.0.0",
+    "@aws-cdk/core": "999.0.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-certificatemanager": "1.23.0",
-    "@aws-cdk/aws-elasticloadbalancingv2": "1.23.0",
-    "@aws-cdk/aws-iam": "1.23.0",
-    "@aws-cdk/aws-lambda": "1.23.0",
-    "@aws-cdk/core": "1.23.0"
+    "@aws-cdk/aws-certificatemanager": "999.0.0",
+    "@aws-cdk/aws-ec2": "999.0.0",
+    "@aws-cdk/aws-elasticloadbalancingv2": "999.0.0",
+    "@aws-cdk/aws-iam": "999.0.0",
+    "@aws-cdk/aws-lambda": "999.0.0",
+    "@aws-cdk/core": "999.0.0"
   },
   "engines": {
     "node": ">= 10.3.0"
@@ -291,6 +292,8 @@
       "props-default-doc:@aws-cdk/aws-apigateway.MethodOptions.requestModels",
       "props-default-doc:@aws-cdk/aws-apigateway.MethodOptions.requestValidator",
       "docs-public-apis:@aws-cdk/aws-apigateway.ResourceBase.url",
+      "attribute-tag:@aws-cdk/aws-apigateway.LambdaAuthorizer.authorizerArn",
+      "attribute-tag:@aws-cdk/aws-apigateway.RequestAuthorizer.authorizerArn",
       "attribute-tag:@aws-cdk/aws-apigateway.TokenAuthorizer.authorizerArn"
     ]
   },

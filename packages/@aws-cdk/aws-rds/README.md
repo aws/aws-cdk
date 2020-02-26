@@ -36,7 +36,7 @@ const cluster = new DatabaseCluster(this, 'Database', {
     }
 });
 ```
-By default, the master password will be generated and stored in AWS Secrets Manager.
+By default, the master password will be generated and stored in AWS Secrets Manager with auto-generated description.
 
 Your cluster will be empty by default. To add a default database upon construction, specify the
 `defaultDatabaseName` attribute.
