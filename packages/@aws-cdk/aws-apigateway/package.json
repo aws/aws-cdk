@@ -294,7 +294,8 @@
       "docs-public-apis:@aws-cdk/aws-apigateway.ResourceBase.url",
       "attribute-tag:@aws-cdk/aws-apigateway.LambdaAuthorizer.authorizerArn",
       "attribute-tag:@aws-cdk/aws-apigateway.RequestAuthorizer.authorizerArn",
-      "attribute-tag:@aws-cdk/aws-apigateway.TokenAuthorizer.authorizerArn"
+      "attribute-tag:@aws-cdk/aws-apigateway.TokenAuthorizer.authorizerArn",
+      "docs-public-apis:@aws-cdk/aws-apigateway.AccessLogSetting"
     ]
   },
   "stability": "stable"
