@@ -663,9 +663,12 @@ export class MustDependonCdkByPointVersions extends ValidationRule {
   public readonly name = 'dependencies/cdk-point-dependencies';
 
   public validate(pkg: PackageJson): void {
-    // yes, ugly, but we have a bunch of references to other files in the repo
-    // here anyway, and it's not different than reading the root lerna.json
-    const expectedVersion = require('../../../scripts/get-version-marker');
+    // yes, ugly, but we have a bunch of references to other files in the repo.
+    // we use the root package.json to determine what should be the version
+    // across the repo: in local builds, this should be 0.0.0 and in CI builds
+    // this would be the actual version of the repo after it's been aligned
+    // using scripts/align-version.sh
+    const expectedVersion = require('../../../package.json').version;
     const ignore = [
       '@aws-cdk/cloudformation-diff',
       '@aws-cdk/cfnspec',
