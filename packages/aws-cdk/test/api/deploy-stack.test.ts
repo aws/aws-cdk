@@ -145,6 +145,143 @@ test('deploy is skipped if template did not change', async () => {
   expect(getTemplateInput!).toStrictEqual({ StackName: 'withouterrors', TemplateStage: 'Original' });
 });
 
+test('deploy is skipped if template and tags did not change', async () => {
+  const sdk = new MockSDK();
+  let describeStacksInput: AWS.CloudFormation.DescribeStacksInput;
+  let getTemplateInput: AWS.CloudFormation.GetTemplateInput;
+  let createChangeSetCalled = false;
+  let executeChangeSetCalled = false;
+
+  sdk.stubCloudFormation({
+    getTemplate(input) {
+      getTemplateInput = input;
+      return {
+        TemplateBody: JSON.stringify(FAKE_TEMPLATE)
+      };
+    },
+    describeStacks(input) {
+      describeStacksInput = input;
+      return {
+        Stacks: [
+          {
+            StackName: 'mock-stack-name',
+            StackId: 'mock-stack-id',
+            CreationTime: new Date(),
+            StackStatus: 'CREATE_COMPLETE',
+            Tags: [
+              {
+                Key: 'Key1',
+                Value: 'Value1'
+              },
+              {
+                Key: 'Key2',
+                Value: 'Value2'
+              }
+            ]
+          }
+        ]
+      };
+    },
+    createChangeSet() {
+      createChangeSetCalled = true;
+      return { };
+    },
+    executeChangeSet() {
+      executeChangeSetCalled = true;
+      return { };
+    }
+  });
+
+  await deployStack({
+    stack: FAKE_STACK,
+    tags: [
+      {
+        Key: 'Key1',
+        Value: 'Value1'
+      },
+      {
+        Key: 'Key2',
+        Value: 'Value2'
+      }
+    ],
+    sdk
+  });
+
+  expect(createChangeSetCalled).toBeFalsy();
+  expect(executeChangeSetCalled).toBeFalsy();
+  expect(describeStacksInput!).toStrictEqual({ StackName: 'withouterrors' });
+  expect(getTemplateInput!).toStrictEqual({ StackName: 'withouterrors', TemplateStage: 'Original' });
+});
+
+test('deploy not skipped if template did not changed but tags changed', async () => {
+  const sdk = new MockSDK();
+  let describeStacksInput: AWS.CloudFormation.DescribeStacksInput;
+  let getTemplateInput: AWS.CloudFormation.GetTemplateInput;
+  let createChangeSetCalled = false;
+  let executeChangeSetCalled = false;
+  let describeChangeSetCalled = false;
+
+  sdk.stubCloudFormation({
+    getTemplate(input) {
+      getTemplateInput = input;
+      return {
+        TemplateBody: JSON.stringify(FAKE_TEMPLATE)
+      };
+    },
+    describeStacks(input) {
+      describeStacksInput = input;
+      return {
+        Stacks: [
+          {
+            StackName: 'mock-stack-name',
+            StackId: 'mock-stack-id',
+            CreationTime: new Date(),
+            StackStatus: 'CREATE_COMPLETE',
+            Tags: [
+              {
+                Key: 'Key',
+                Value: 'Value'
+              },
+            ]
+          }
+        ]
+      };
+    },
+    createChangeSet() {
+      createChangeSetCalled = true;
+      return { };
+    },
+    executeChangeSet() {
+      executeChangeSetCalled = true;
+      return { };
+    },
+    describeChangeSet() {
+      describeChangeSetCalled = true;
+      return {
+        Status: 'CREATE_COMPLETE',
+        Changes: [],
+      };
+    }
+  });
+
+  await deployStack({
+    stack: FAKE_STACK,
+    sdk,
+    tags: [
+      {
+        Key: 'Key',
+        Value: 'NewValue'
+      }
+    ]
+  });
+
+  expect(createChangeSetCalled).toBeTruthy();
+  expect(executeChangeSetCalled).toBeTruthy();
+  expect(describeChangeSetCalled).toBeTruthy();
+  expect(describeStacksInput!).toStrictEqual({ StackName: "withouterrors" });
+  expect(getTemplateInput!).toStrictEqual({ StackName: 'withouterrors', TemplateStage: 'Original' });
+});
+
 test('deploy not skipped if template did not change and --force is applied', async () => {
   const sdk = new MockSDK();
   let describeStacksInput: AWS.CloudFormation.DescribeStacksInput;
@@ -250,13 +387,12 @@ test('deploy not skipped if template changed', async () => {
 
   await deployStack({
     stack: FAKE_STACK,
-    sdk,
-    force: true
+    sdk
   });
 
   expect(createChangeSetCalled).toBeTruthy();
   expect(executeChangeSetCalled).toBeTruthy();
   expect(describeChangeSetCalled).toBeTruthy();
-  expect(getTemplateInput!).toBeUndefined();
   expect(describeStacksInput!).toStrictEqual({ StackName: "withouterrors" });
+  expect(getTemplateInput!).toStrictEqual({ StackName: 'withouterrors', TemplateStage: 'Original' });
 });
