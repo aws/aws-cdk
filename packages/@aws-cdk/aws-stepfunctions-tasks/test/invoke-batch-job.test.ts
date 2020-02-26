@@ -1,21 +1,36 @@
+import * as batch from '@aws-cdk/aws-batch';
+import * as ecs from '@aws-cdk/aws-ecs';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
+import * as path from 'path';
 import * as tasks from '../lib';
 
 let stack: cdk.Stack;
+let batchJobDefinition: batch.IJobDefinition;
+let batchJobQueue: batch.IJobQueue;
 
 beforeEach(() => {
   // GIVEN
   stack = new cdk.Stack();
+
+  batchJobDefinition = new batch.JobDefinition(stack, 'JobDefinition', {
+    container: {
+      image: ecs.ContainerImage.fromAsset(
+        path.join(__dirname, 'batchjob-image')
+      )
+    }
+  });
+
+  batchJobQueue = new batch.JobQueue(stack, 'JobQueue');
 });
 
 test('Task with only the required parameters', () => {
   // WHEN
   const task = new sfn.Task(stack, 'Task', {
     task: new tasks.InvokeBatchJob({
-      jobDefinition: 'JobArn',
+      jobDefinition: batchJobDefinition,
       jobName: 'JobName',
-      jobQueue: 'QueueArn'
+      jobQueue: batchJobQueue
     })
   });
 
@@ -36,9 +51,9 @@ test('Task with only the required parameters', () => {
     },
     End: true,
     Parameters: {
-      JobDefinition: 'JobArn',
+      JobDefinition: { Ref: 'JobDefinition24FFE3ED' },
       JobName: 'JobName',
-      JobQueue: 'QueueArn'
+      JobQueue: { Ref: 'JobQueueEE3AD499' }
     }
   });
 });
@@ -47,9 +62,9 @@ test('Task with all the parameters', () => {
   // WHEN
   const task = new sfn.Task(stack, 'Task', {
     task: new tasks.InvokeBatchJob({
-      jobDefinition: 'JobArn',
+      jobDefinition: batchJobDefinition,
       jobName: 'JobName',
-      jobQueue: `JobQueue`,
+      jobQueue: batchJobQueue,
       arrayProperties: {
         size: 15
       },
@@ -88,9 +103,9 @@ test('Task with all the parameters', () => {
     },
     End: true,
     Parameters: {
-      JobDefinition: 'JobArn',
+      JobDefinition: { Ref: 'JobDefinition24FFE3ED' },
       JobName: 'JobName',
-      JobQueue: 'JobQueue',
+      JobQueue: { Ref: 'JobQueueEE3AD499' },
       ArrayProperties: { Size: 15 },
       ContainerOverrides: {
         Command: ['sudo', 'rm'],
@@ -112,9 +127,9 @@ test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration patt
   expect(() => {
     new sfn.Task(stack, 'Task', {
       task: new tasks.InvokeBatchJob({
-        jobDefinition: 'JobArn',
+        jobDefinition: batchJobDefinition,
         jobName: 'JobName',
-        jobQueue: 'QueueArn',
+        jobQueue: batchJobQueue,
         integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN
       })
     });

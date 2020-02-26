@@ -204,6 +204,30 @@ task.next(nextState);
 
 [Example CDK app](../aws-stepfunctions-tasks/test/integ.glue-task.ts)
 
+#### Batch example
+
+```ts
+import batch = require('@aws-cdk/aws-batch');
+
+const batchQueue = new batch.JobQueue(this, 'JobQueue');
+
+const batchJobDefinition = new batch.JobDefinition(this, 'JobDefinition', {
+  container: {
+    image: ecs.ContainerImage.fromAsset(
+      path.resolve(__dirname, 'batchjob-image')
+    )
+  }
+});
+
+const task = new sfn.Task(this, 'Submit Job', {
+  task: new tasks.InvokeBatchJob({
+    jobDefinition: batchJobDefinition,
+    jobName: 'MyJob',
+    jobQueue: batchQueue
+  })
+});
+```
+
 #### SNS example
 
 ```ts

@@ -1,3 +1,4 @@
+import * as batch from '@aws-cdk/aws-batch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Aws, Duration } from '@aws-cdk/core';
@@ -154,10 +155,8 @@ export interface RetryStrategy {
 export interface InvokeBatchJobProps {
   /**
    * The job definition used by this job.
-   * This value can be one of name, name:revision, or the Amazon Resource Name (ARN) for the job definition.
-   * If name is specified without a revision then the latest active revision is used
    */
-  readonly jobDefinition: string;
+  readonly jobDefinition: batch.IJobDefinition;
 
   /**
    * The name of the job.
@@ -168,10 +167,8 @@ export interface InvokeBatchJobProps {
 
   /**
    * The job queue into which the job is submitted.
-   * You can specify either the name or the Amazon Resource Name (ARN) of the queue.
-   *
    */
-  readonly jobQueue: string;
+  readonly jobQueue: batch.IJobQueue;
 
   /**
    * The array properties for the submitted job, such as the size of the array.
@@ -294,9 +291,9 @@ export class InvokeBatchJob implements sfn.IStepFunctionsTask {
         })
       ],
       parameters: {
-        JobDefinition: this.props.jobDefinition,
+        JobDefinition: this.props.jobDefinition.jobDefinitionArn,
         JobName: this.props.jobName,
-        JobQueue: this.props.jobQueue,
+        JobQueue: this.props.jobQueue.jobQueueArn,
         Parameters: this.props.payload,
 
         ...(this.props.arrayProperties && {
