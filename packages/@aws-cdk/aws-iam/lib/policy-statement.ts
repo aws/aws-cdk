@@ -13,7 +13,15 @@ export class PolicyStatement {
    * @param obj the PolicyStatement in object form.
    */
   public static fromJson(obj: any) {
-    const ensureArrayOrUndefined = (field: any) => field === undefined ? field : [].concat(field);
+    const ensureArrayOrUndefined = (field: any) => {
+      if (field === undefined) {
+        return undefined;
+      }
+      if (typeof (field) !== "string" && !Array.isArray(field)) {
+        throw new Error("Fields must be either a string or an array of strings");
+      }
+      return Array.isArray(field) ? field : [field];
+    };
 
     const statement = new PolicyStatement({
       actions: ensureArrayOrUndefined(obj.Action),
