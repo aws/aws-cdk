@@ -76,21 +76,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
   if (!options.force) {
     debug(`checking if we can skip this stack based on the currently deployed template and tags (use --force to override)`);
     const deployed = await getDeployedStack(cfn, deployName);
-    let tagsIdentical = true;
-    if (deployed?.tags && options.tags) {
-      if (deployed.tags.length !== options.tags.length) {
-        tagsIdentical = false;
-      } else {
-        for (const optionsTag of options.tags) {
-          const deployedTag = deployed.tags.find(tag => tag.Key === optionsTag.Key);
-
-          if (!deployedTag || deployedTag.Value !== optionsTag.Value) {
-            tagsIdentical = false;
-            break;
-          }
-        }
-      }
-    }
+    const tagsIdentical = compareTags(deployed?.tags ?? [], options.tags ?? []);
     if (deployed && JSON.stringify(options.stack.template) === JSON.stringify(deployed.template) && tagsIdentical) {
       debug(`${deployName}: no change in template and tags, skipping (use --force to override)`);
       return {
@@ -303,4 +289,20 @@ async function getStack(cfn: aws.CloudFormation, stackName: string): Promise<aws
     }
     throw e;
   }
+}
+
+function compareTags(a: Tag[], b: Tag[]): boolean {
+  if (a.length !== b.length) {
+    return false;
+  }
+
+  for (const aTag of a) {
+    const bTag = b.find(tag => tag.Key === aTag.Key);
+
+    if (!bTag || bTag.Value !== aTag.Value) {
+      return false;
+    }
+  }
+
+  return true;
 }
