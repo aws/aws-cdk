@@ -188,6 +188,46 @@ const role = new iam.Role(this, 'MyRole', {
 });
 ```
 
+### Parsing JSON Policy Documents
+
+The `PolicyDocument.fromJson` and `PolicyStatement.fromJSON` static methods can be used to parse JSON objects. For example:
+
+```ts
+const policyDocument = {
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "FirstStatement",
+      "Effect": "Allow",
+      "Action": ["iam:ChangePassword"],
+      "Resource": "*"
+    },
+    {
+      "Sid": "SecondStatement",
+      "Effect": "Allow",
+      "Action": "s3:ListAllMyBuckets",
+      "Resource": "*"
+    },
+    {
+      "Sid": "ThirdStatement",
+      "Effect": "Allow",
+      "Action": [
+        "s3:List*",
+        "s3:Get*"
+      ],
+      "Resource": [
+        "arn:aws:s3:::confidential-data",
+        "arn:aws:s3:::confidential-data/*"
+      ],
+      "Condition": {"Bool": {"aws:MultiFactorAuthPresent": "true"}}
+    }
+  ]
+};
+
+const newPolicyDocument = PolicyDocument.fromJson(policyDocument);
+
+```
+
 ### Features
 
  * Policy name uniqueness is enforced. If two policies by the same name are attached to the same
