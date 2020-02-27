@@ -45,6 +45,16 @@ if [ "${changeset3}" == "${changeset1}" ]; then
     exit 1
 fi
 
+echo "============================================================"
+echo " deploying the same stack again with different tags"
+echo "============================================================"
+cdk deploy -v ${stack_name} --tags key=value
+changeset4=$(get_last_changeset)
+if [ "${changeset4}" == "${changeset1}" ]; then
+    echo "TEST FAILED: expected tags to create a new changeset"
+    exit 1
+fi
+
 # destroy
 cdk destroy -f ${stack_name}
 
