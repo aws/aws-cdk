@@ -135,7 +135,7 @@ async function populateDefaultEnvironmentIfNeeded(aws: ISDK, env: { [key: string
   env[cxapi.DEFAULT_REGION_ENV] = await aws.defaultRegion();
   debug(`Setting "${cxapi.DEFAULT_REGION_ENV}" environment variable to`, env[cxapi.DEFAULT_REGION_ENV]);
 
-  env[cxapi.DEFAULT_ACCOUNT_ENV] = await aws.defaultAccount();
+  env[cxapi.DEFAULT_ACCOUNT_ENV] = (await aws.defaultAccount())?.accountId;
   debug(`Setting "${cxapi.DEFAULT_ACCOUNT_ENV}" environment variable to`, env[cxapi.DEFAULT_ACCOUNT_ENV]);
 }
 

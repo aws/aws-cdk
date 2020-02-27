@@ -27,7 +27,7 @@ export async function globEnvironmentsFromStacks(appStacks: AppStacks, environme
 }
 
 async function parseEnvironment(sdk: ISDK, env: cxapi.Environment): Promise<cxapi.Environment> {
-  const account = env.account === cxapi.UNKNOWN_ACCOUNT ? await sdk.defaultAccount() : env.account;
+  const account = env.account === cxapi.UNKNOWN_ACCOUNT ? (await sdk.defaultAccount())?.accountId : env.account;
   const region = env.region === cxapi.UNKNOWN_REGION ? await sdk.defaultRegion() : env.region;
 
   if (!account || !region) {

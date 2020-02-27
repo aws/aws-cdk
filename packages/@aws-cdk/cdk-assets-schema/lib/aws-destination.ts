@@ -37,4 +37,9 @@ export class Placeholders {
    * Insert this into the destination fields to be replaced with the current account
    */
   public static readonly CURRENT_ACCOUNT = '${AWS::AccountId}';
+
+  /**
+   * Insert this into the destination fields to be replaced with the current partition
+   */
+  public static readonly CURRENT_PARTITION = '${AWS::Partition}';
 }

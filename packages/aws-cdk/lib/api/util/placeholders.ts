@@ -1,5 +1,5 @@
-import { Placeholders } from "@aws-cdk/cdk-assets-schema";
-import { Account, IAws } from "../aws";
+import { CloudFormationStackArtifact } from "@aws-cdk/cx-api";
+import { Account, ISDK } from "./sdk";
 
 /**
  * Replace the {ACCOUNT} and {REGION} placeholders in all strings found in a complex object.
@@ -7,7 +7,7 @@ import { Account, IAws } from "../aws";
  * Duplicated between cdk-assets and aws-cdk CLI because we don't have a good single place to put it
  * (they're nominally independent tools).
  */
-export async function replaceAwsPlaceholders<A extends { region?: string }>(object: A, aws: IAws): Promise<A> {
+export async function replaceAwsPlaceholders<A extends { }>(object: A, aws: ISDK): Promise<A> {
   let region: string | undefined;
   let account: Account | undefined;
 
@@ -15,13 +15,13 @@ export async function replaceAwsPlaceholders<A extends { region?: string }>(obje
 
   async function recurse(value: any): Promise<any> {
     if (typeof value === 'string') {
-      if (value.indexOf(Placeholders.CURRENT_REGION) > -1) { await ensureRegion(); }
-      if (value.indexOf(Placeholders.CURRENT_ACCOUNT) > -1) { await ensureAccount(); }
-      if (value.indexOf(Placeholders.CURRENT_PARTITION) > -1) { await ensureAccount(); }
+      if (value.indexOf(CloudFormationStackArtifact.CURRENT_REGION) > -1) { await ensureRegion(); }
+      if (value.indexOf(CloudFormationStackArtifact.CURRENT_ACCOUNT) > -1) { await ensureAccount(); }
+      if (value.indexOf(CloudFormationStackArtifact.CURRENT_PARTITION) > -1) { await ensureAccount(); }
 
-      value = replaceAll(value, Placeholders.CURRENT_REGION, region! ?? '');
-      value = replaceAll(value, Placeholders.CURRENT_ACCOUNT, account!.accountId ?? '');
-      value = replaceAll(value, Placeholders.CURRENT_PARTITION, account!.partition ?? '');
+      value = replaceAll(value, CloudFormationStackArtifact.CURRENT_REGION, region! ?? '');
+      value = replaceAll(value, CloudFormationStackArtifact.CURRENT_ACCOUNT, account!.accountId ?? '');
+      value = replaceAll(value, CloudFormationStackArtifact.CURRENT_PARTITION, account!.partition ?? '');
 
       return value;
     }
@@ -38,13 +38,13 @@ export async function replaceAwsPlaceholders<A extends { region?: string }>(obje
 
   async function ensureRegion() {
     if (region === undefined) {
-      region = object.region ?? await aws.discoverDefaultRegion();
+      region = await aws.defaultRegion();
     }
   }
 
   async function ensureAccount() {
     if (account === undefined) {
-      account = await aws.discoverCurrentAccount();
+      account = await aws.defaultAccount();
     }
   }
 }

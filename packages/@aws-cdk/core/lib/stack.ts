@@ -762,7 +762,7 @@ export class Stack extends Construct implements ITaggable {
     }
 
     const deploySynth = this.deploymentEnvironment.synthesize(session);
-    const deployConfig = this.deploymentEnvironment.stackDeploymentConfig();
+    const deployConfig = this.deploymentEnvironment.stackDeploymentConfig(ConfigVariant.CLOUD_ASSEMBLY);
 
     const deps = [
       ...this.dependencies.map(s => s.artifactId),
@@ -1132,7 +1132,7 @@ import { Fn } from './cfn-fn';
 import { CfnOutput } from './cfn-output';
 import { Aws, ScopedAws } from './cfn-pseudo';
 import { CfnResource, TagType } from './cfn-resource';
-import { ConventionModeDeploymentEnvironment, IDeploymentEnvironment, LegacyDeploymentEnvironment } from './deployment-environment';
+import { ConfigVariant, ConventionModeDeploymentEnvironment, IDeploymentEnvironment, LegacyDeploymentEnvironment } from './deployment-environment';
 import { addDependency } from './deps';
 import { Lazy } from './lazy';
 import { CfnReference } from './private/cfn-reference';

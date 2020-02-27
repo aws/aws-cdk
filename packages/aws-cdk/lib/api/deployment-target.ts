@@ -5,6 +5,7 @@ import { Mode } from './aws-auth/credentials';
 import { deployStack, DeployStackResult, destroyStack, readCurrentTemplate } from './deploy-stack';
 import { loadToolkitInfo } from './toolkit-info';
 import { stackExists } from './util/cloudformation';
+import { replaceAwsPlaceholders } from './util/placeholders';
 import { ISDK } from './util/sdk';
 
 export const DEFAULT_TOOLKIT_STACK_NAME = 'CDKToolkit';
@@ -120,14 +121,19 @@ export class CloudFormationDeploymentTarget implements IDeploymentTarget {
    * Return an SDK with the right credentials, and return the CloudFormation Execution Role
    */
   private async cloudFormationOptionsFor(stack: CloudFormationStackArtifact, roleArn?: string) {
+    // Substitute any placeholders with information about the current environment
+    const arns = await replaceAwsPlaceholders({
+      assumeRoleArn: stack.assumeRoleArn,
+
+      // Use the override if given, otherwise use the field from the stack
+      cloudFormationRoleArn: roleArn ?? stack.cloudFormationExecutionRoleArn
+    }, this.aws);
+
     let sdk = this.aws;
-    if (stack.assumeRoleArn) {
-      sdk = await sdk.assumeRole(stack.assumeRoleArn, stack.environment.region);
+    if (arns.assumeRoleArn) {
+      sdk = await sdk.assumeRole(arns.assumeRoleArn, stack.environment.region);
     }
 
-    // Use the override if given, otherwise use the field from the stack
-    const cloudFormationRoleArn = roleArn ?? stack.cloudFormationExecutionRoleArn;
-
-    return { sdk, roleArn: cloudFormationRoleArn };
+    return { sdk, roleArn: arns.cloudFormationRoleArn };
   }
 }

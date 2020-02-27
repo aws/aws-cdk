@@ -7,7 +7,7 @@ export function mockAws() {
   return {
     mockEcr,
     mockS3,
-    discoverCurrentAccount: jest.fn(() => Promise.resolve('current_account')),
+    discoverCurrentAccount: jest.fn(() => Promise.resolve({ accountId: 'current_account', partition: 'swa' })),
     discoverDefaultRegion: jest.fn(() => Promise.resolve('current_region')),
     ecrClient: jest.fn(() => Promise.resolve(mockEcr)),
     s3Client: jest.fn(() => Promise.resolve(mockS3)),

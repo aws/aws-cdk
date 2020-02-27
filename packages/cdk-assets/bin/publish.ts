@@ -1,5 +1,6 @@
 import * as os from 'os';
 import { AssetManifest, AssetPublishing, ClientOptions, DestinationPattern, EventType, IAws, IPublishProgress, IPublishProgressListener } from "../lib";
+import { Account } from '../lib/aws';
 import { log, VERSION } from "./logging";
 
 export async function publish(args: {
@@ -55,6 +56,7 @@ class ConsoleProgress implements IPublishProgressListener {
  */
 class DefaultAwsClient implements IAws {
   private readonly AWS: typeof import('aws-sdk');
+  private account?: Account;
 
   constructor(profile?: string) {
     // Force AWS SDK to look in ~/.aws/credentials and potentially use the configured profile.
@@ -80,14 +82,21 @@ class DefaultAwsClient implements IAws {
     return this.AWS.config.region || 'us-east-1';
   }
 
-  public async discoverCurrentAccount(): Promise<string> {
-    const sts = new this.AWS.STS();
-    const response = await sts.getCallerIdentity().promise();
-    if (!response.Account) {
-      log('error', `Unrecognized reponse from STS: '${JSON.stringify(response)}'`);
-      throw new Error('Unrecognized reponse from STS');
+  public async discoverCurrentAccount(): Promise<Account> {
+    if (this.account === undefined) {
+      const sts = new this.AWS.STS();
+      const response = await sts.getCallerIdentity().promise();
+      if (!response.Account || !response.Arn) {
+        log('error', `Unrecognized reponse from STS: '${JSON.stringify(response)}'`);
+        throw new Error('Unrecognized reponse from STS');
+      }
+      this.account = {
+        accountId: response.Account!,
+        partition: response.Arn!.split(':')[1],
+      };
     }
-    return response.Account || '????????';
+
+    return this.account;
   }
 
   private async awsOptions(options: ClientOptions) {

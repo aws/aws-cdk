@@ -6,7 +6,7 @@ import { VpcNetworkContextProviderPlugin } from '../../lib/context-providers/vpc
 AWS.setSDK(require.resolve('aws-sdk'));
 
 const mockSDK: ISDK = {
-  defaultAccount: () => Promise.resolve('123456789012'),
+  defaultAccount: () => Promise.resolve({ accountId: '123456789012', partition: 'aws' }),
   defaultRegion: () => Promise.resolve('bermuda-triangle-1337'),
   cloudFormation: () => { throw new Error('Not Mocked'); },
   ec2: () => Promise.resolve(new aws.EC2()),

@@ -3,7 +3,7 @@ import * as contextproviders from '../../lib/context-providers';
 import { Context, TRANSIENT_CONTEXT_KEY } from '../../lib/settings';
 
 const mockSDK: ISDK = {
-  defaultAccount: () => Promise.resolve('123456789012'),
+  defaultAccount: () => Promise.resolve({ accountId: '123456789012', partition: 'aws' }),
   defaultRegion: () => Promise.resolve('bermuda-triangle-1337'),
   cloudFormation: () => { throw new Error('Not Mocked'); },
   ec2: () => { throw new Error('Not Mocked'); },

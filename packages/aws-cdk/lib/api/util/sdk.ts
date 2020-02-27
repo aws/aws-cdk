@@ -32,7 +32,25 @@ export interface ISDK {
 
   defaultRegion(): Promise<string | undefined>;
 
-  defaultAccount(): Promise<string | undefined>;
+  defaultAccount(): Promise<Account | undefined>;
+}
+
+/**
+ * An AWS account
+ *
+ * An AWS account always exists in only one partition. Usually we don't care about
+ * the partition, but when we need to form ARNs we do.
+ */
+export interface Account {
+  /**
+   * The account number
+   */
+  readonly accountId: string;
+
+  /**
+   * The partition ('aws' or 'aws-cn' or otherwise)
+   */
+  readonly partition: string;
 }
 
 export interface SDKBaseOptions {
@@ -41,21 +59,21 @@ export interface SDKBaseOptions {
    *
    * @default No proxy
    */
-  proxyAddress?: string;
+  readonly proxyAddress?: string;
 
   /**
    * A path to a certificate bundle that contains a cert to be trusted.
    *
    * @default No certificate bundle
    */
-  caBundlePath?: string;
+  readonly caBundlePath?: string;
 
   /**
    * The custom user agent to use.
    *
    * @default - <package-name>/<package-version>
    */
-  userAgent?: string;
+  readonly userAgent?: string;
 }
 
 /**
@@ -114,7 +132,7 @@ abstract class SDKBase implements ISDK {
    */
   public async assumeRole(arn: string, region: string): Promise<ISDK> {
     debug(`Assuming role '${arn}'`);
-    const sts = await this.service(AWS.STS, await this.defaultAccount(), region, Mode.ForWriting);
+    const sts = await this.service(AWS.STS, (await this.defaultAccount())?.accountId, region, Mode.ForWriting);
     const response = await sts.assumeRole({
       RoleArn: arn,
       RoleSessionName: `aws-cdk-${os.userInfo().username}`,
@@ -129,7 +147,7 @@ abstract class SDKBase implements ISDK {
 
   public abstract defaultRegion(): Promise<string | undefined>;
 
-  public abstract defaultAccount(): Promise<string | undefined>;
+  public abstract defaultAccount(): Promise<Account | undefined>;
 
   protected async service<T extends AWS.Service>(
     ctor: new <O extends ServiceConfigurationOptions>(opts?: O) => T,
@@ -147,25 +165,25 @@ abstract class SDKBase implements ISDK {
 
   protected abstract obtainCredentials(account: string, mode: Mode): Promise<AWS.Credentials>;
 
-  private async resolveEnvironment(account: string | undefined, region: string | undefined) {
+  private async resolveEnvironment(accountId: string | undefined, region: string | undefined) {
     if (region === cxapi.UNKNOWN_REGION) {
       region = await this.defaultRegion();
     }
 
-    if (account === cxapi.UNKNOWN_ACCOUNT) {
-      account = await this.defaultAccount();
+    if (accountId === cxapi.UNKNOWN_ACCOUNT) {
+      accountId = (await this.defaultAccount())?.accountId;
     }
 
     if (!region) {
       throw new Error(`AWS region must be configured either when you configure your CDK stack or through the environment`);
     }
 
-    if (!account) {
+    if (!accountId) {
       throw new Error(`Unable to resolve AWS account to use. It must be either configured when you define your CDK or through the environment`);
     }
 
     const environment: cxapi.Environment = {
-      region, account, name: cxapi.EnvironmentUtils.format(account, region)
+      region, account: accountId, name: cxapi.EnvironmentUtils.format(accountId, region)
     };
 
     return environment;
@@ -178,7 +196,7 @@ abstract class SDKBase implements ISDK {
     let userAgent = options.userAgent;
     if (userAgent == null) {
       // Find the package.json from the main toolkit
-      const pkg = (require.main as any).require('../package.json');
+      const pkg = (require.main as any).require(path.join(__dirname, '..', '..', '..', 'package.json'));
       userAgent = `${pkg.name}/${pkg.version}`;
     }
     config.customUserAgent = userAgent;
@@ -253,7 +271,7 @@ export class SDK extends SDKBase {
     return await getCLICompatibleDefaultRegionGetter(this.profile)();
   }
 
-  public defaultAccount(): Promise<string | undefined> {
+  public defaultAccount(): Promise<Account | undefined> {
     return this.defaultAwsAccount.get();
   }
 
@@ -271,7 +289,7 @@ class FixedCredentialsSDK extends SDKBase {
     return this.inner.defaultRegion();
   }
 
-  public defaultAccount(): Promise<string | undefined> {
+  public defaultAccount(): Promise<Account | undefined> {
     return this.inner.defaultAccount();
   }
 
@@ -312,7 +330,7 @@ class CredentialsCache {
     // If requested account is undefined or equal to default account, use default credentials provider.
     // (Note that we ignore the mode in this case, if you preloaded credentials they better be correct!)
     const defaultAccount = await this.defaultAwsAccount.get();
-    if (!awsAccountId || awsAccountId === defaultAccount || awsAccountId === cxapi.UNKNOWN_ACCOUNT) {
+    if (!awsAccountId || awsAccountId === defaultAccount?.accountId || awsAccountId === cxapi.UNKNOWN_ACCOUNT) {
       debug(`Using default AWS SDK credentials for account ${awsAccountId}`);
 
       // CredentialProviderChain extends Credentials, but that is a lie.
@@ -356,7 +374,7 @@ class CredentialsCache {
  */
 class DefaultAWSAccount {
   private defaultAccountFetched = false;
-  private defaultAccountId?: string = undefined;
+  private defaultAccount?: Account = undefined;
   private readonly accountCache = new AccountAccessKeyCache();
 
   constructor(
@@ -367,15 +385,15 @@ class DefaultAWSAccount {
   /**
    * Return the default account
    */
-  public async get(): Promise<string | undefined> {
+  public async get(): Promise<Account | undefined> {
     if (!this.defaultAccountFetched) {
-      this.defaultAccountId = await this.lookupDefaultAccount();
+      this.defaultAccount = await this.lookupDefaultAccount();
       this.defaultAccountFetched = true;
     }
-    return this.defaultAccountId;
+    return this.defaultAccount;
   }
 
-  private async lookupDefaultAccount(): Promise<string | undefined> {
+  private async lookupDefaultAccount(): Promise<Account | undefined> {
     try {
       // There just is *NO* way to do AssumeRole credentials as long as AWS_SDK_LOAD_CONFIG is not set. The SDK
       // crash if the file does not exist though. So set the environment variable if we can find that file.
@@ -390,20 +408,21 @@ class DefaultAWSAccount {
         throw new Error('Unable to resolve AWS credentials (setup with "aws configure")');
       }
 
-      const accountId = await this.accountCache.fetch(creds.accessKeyId, async () => {
+      const account = await this.accountCache.fetch(creds.accessKeyId, async () => {
         // if we don't have one, resolve from STS and store in cache.
         debug('Looking up default account ID from STS');
         const result = await new AWS.STS({ credentials: creds, region: await this.region() }).getCallerIdentity().promise();
-        const aid = result.Account;
-        if (!aid) {
+        const accountId = result.Account;
+        const partition = result.Arn!.split(':')[1];
+        if (!accountId) {
           debug('STS didn\'t return an account ID');
           return undefined;
         }
-        debug('Default account ID:', aid);
-        return aid;
+        debug('Default account ID:', accountId);
+        return { accountId, partition };
       });
 
-      return accountId;
+      return account;
     } catch (e) {
       debug('Unable to determine the default AWS account (did you configure "aws configure"?):', e);
       return undefined;

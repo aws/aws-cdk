@@ -7,6 +7,21 @@ import { Environment, EnvironmentUtils } from './environment';
 
 export class CloudFormationStackArtifact extends CloudArtifact {
   /**
+   * Insert this into the deployment role ARNs to be replaced with the current region
+   */
+  public static readonly CURRENT_REGION = '${AWS::Region}';
+
+  /**
+   * Insert this into the deployment role ARNs to be replaced with the current account
+   */
+  public static readonly CURRENT_ACCOUNT = '${AWS::AccountId}';
+
+  /**
+   * Insert this into the deployment role ARNs to be replaced with the current partition
+   */
+  public static readonly CURRENT_PARTITION = '${AWS::Partition}';
+
+  /**
    * The CloudFormation template for this stack.
    */
   public readonly template: any;
