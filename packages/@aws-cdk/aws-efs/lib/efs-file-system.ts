@@ -290,9 +290,7 @@ export class EfsFileSystem extends EfsFileSystemBase {
         });
       this.mountTargets.push(efsMountTarget);
       this.mountTargetIdentifiers.push(efsMountTarget.ref);
-      if (efsMountTarget.ipAddress !== undefined) {
-        this.mountTargetIpAddress.push(efsMountTarget.ipAddress);
-      }
+      this.mountTargetIpAddress.push(efsMountTarget.attrIpAddress);
     });
   }
 }
