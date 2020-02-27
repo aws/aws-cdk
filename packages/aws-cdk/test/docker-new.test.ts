@@ -5,6 +5,18 @@ import { prepareContainerAsset } from '../lib/docker';
 import * as os from '../lib/os';
 import { MockSDK } from './util/mock-sdk';
 
+const shellFake = async (args: string[]) => {
+  if (args[1] === 'login') {
+    return 'LOGIN';
+  }
+
+  if (args[1] === 'build') {
+    throw new Error('STOPTEST');
+  }
+
+  throw new Error('UNEXPECTED');
+};
+
 test('fails if "repositoryName" and "imageTag" are not specified', async () => {
   // GIVEN
   const toolkit = newMockToolkitInfo();
@@ -118,13 +130,62 @@ test('configures image scanning', async () => {
   });
 });
 
+test('calls docker login with the corrects args and before docker build', async () => {
+  // GIVEN
+  const toolkit = newMockToolkitInfo();
+
+  const prepareEcrRepositoryStub = sinon.stub(toolkit, 'prepareEcrRepository').resolves({ repositoryUri: 'uri' });
+  const checkEcrImageStub = sinon.stub(toolkit, 'checkEcrImage').resolves(false);
+  const shellStub = sinon.stub(os, 'shell').callsFake(shellFake);
+  const getEcrCredentialsStub = sinon.stub(toolkit, 'getEcrCredentials').resolves({
+    username: 'username',
+    password: 'password',
+    endpoint: 'endpoint'
+  });
+
+  // WHEN
+  const asset: cxapi.ContainerImageAssetMetadataEntry = {
+    id: 'assetId',
+    packaging: 'container-image',
+    path: '/foo',
+    sourceHash: '1234567890abcdef',
+    repositoryName: 'some-name',
+    imageTag: 'some-tag',
+    buildArgs: {
+      a: 'b',
+      c: 'd'
+    },
+    target: 'a-target',
+  };
+
+  try {
+    await prepareContainerAsset('.', asset, toolkit, false);
+  } catch (e) {
+    if (!/STOPTEST/.test(e.toString())) { throw e; }
+  }
+
+  // THEN
+  const command = ['docker', 'login', '--username', 'username', '--password', 'password', 'endpoint'];
+  sinon.assert.calledWith(shellStub.firstCall, command);
+
+  prepareEcrRepositoryStub.restore();
+  shellStub.restore();
+  checkEcrImageStub.restore();
+  getEcrCredentialsStub.restore();
+});
+
 test('passes the correct target to docker build', async () => {
   // GIVEN
   const toolkit = newMockToolkitInfo();
 
   const prepareEcrRepositoryStub = sinon.stub(toolkit, 'prepareEcrRepository').resolves({ repositoryUri: 'uri' });
   const checkEcrImageStub = sinon.stub(toolkit, 'checkEcrImage').resolves(false);
-  const shellStub = sinon.stub(os, 'shell').rejects('STOPTEST');
+  const shellStub = sinon.stub(os, 'shell').callsFake(shellFake);
+  const getEcrCredentialsStub = sinon.stub(toolkit, 'getEcrCredentials').resolves({
+    username: 'username',
+    password: 'password',
+    endpoint: 'endpoint'
+  });
 
   // WHEN
   const asset: cxapi.ContainerImageAssetMetadataEntry = {
@@ -154,6 +215,7 @@ test('passes the correct target to docker build', async () => {
   prepareEcrRepositoryStub.restore();
   shellStub.restore();
   checkEcrImageStub.restore();
+  getEcrCredentialsStub.restore();
 });
 
 test('passes the correct args to docker build', async () => {
@@ -162,7 +224,12 @@ test('passes the correct args to docker build', async () => {
 
   const prepareEcrRepositoryStub = sinon.stub(toolkit, 'prepareEcrRepository').resolves({ repositoryUri: 'uri' });
   const checkEcrImageStub = sinon.stub(toolkit, 'checkEcrImage').resolves(false);
-  const shellStub = sinon.stub(os, 'shell').rejects('STOPTEST');
+  const shellStub = sinon.stub(os, 'shell').callsFake(shellFake);
+  const getEcrCredentialsStub = sinon.stub(toolkit, 'getEcrCredentials').resolves({
+    username: 'username',
+    password: 'password',
+    endpoint: 'endpoint'
+  });
 
   // WHEN
   const asset: cxapi.ContainerImageAssetMetadataEntry = {
@@ -191,13 +258,19 @@ test('passes the correct args to docker build', async () => {
   prepareEcrRepositoryStub.restore();
   checkEcrImageStub.restore();
   shellStub.restore();
+  getEcrCredentialsStub.restore();
 });
 
 test('passes the correct docker file name if specified', async () => {
   const toolkit = newMockToolkitInfo();
   const prepareEcrRepositoryStub = sinon.stub(toolkit, 'prepareEcrRepository').resolves({ repositoryUri: 'uri' });
   const checkEcrImageStub = sinon.stub(toolkit, 'checkEcrImage').resolves(false);
-  const shellStub = sinon.stub(os, 'shell').rejects('STOPTEST');
+  const shellStub = sinon.stub(os, 'shell').callsFake(shellFake);
+  const getEcrCredentialsStub = sinon.stub(toolkit, 'getEcrCredentials').resolves({
+    username: 'username',
+    password: 'password',
+    endpoint: 'endpoint'
+  });
 
   // WHEN
   const asset: cxapi.ContainerImageAssetMetadataEntry = {
@@ -227,6 +300,7 @@ test('passes the correct docker file name if specified', async () => {
   prepareEcrRepositoryStub.restore();
   checkEcrImageStub.restore();
   shellStub.restore();
+  getEcrCredentialsStub.restore();
 });
 
 test('relative path', async () => {
@@ -234,7 +308,12 @@ test('relative path', async () => {
   const toolkit = newMockToolkitInfo();
   const prepareEcrRepositoryStub = sinon.stub(toolkit, 'prepareEcrRepository').resolves({ repositoryUri: 'uri' });
   const checkEcrImageStub = sinon.stub(toolkit, 'checkEcrImage').resolves(false);
-  const shellStub = sinon.stub(os, 'shell').rejects('STOPTEST');
+  const shellStub = sinon.stub(os, 'shell').callsFake(shellFake);
+  const getEcrCredentialsStub = sinon.stub(toolkit, 'getEcrCredentials').resolves({
+    username: 'username',
+    password: 'password',
+    endpoint: 'endpoint'
+  });
 
   // WHEN
   const asset: cxapi.ContainerImageAssetMetadataEntry = {
@@ -263,6 +342,7 @@ test('relative path', async () => {
   prepareEcrRepositoryStub.restore();
   checkEcrImageStub.restore();
   shellStub.restore();
+  getEcrCredentialsStub.restore();
 });
 
 test('skips build & push if image already exists in the ECR repo', async () => {
