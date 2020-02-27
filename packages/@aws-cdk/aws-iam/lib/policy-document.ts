@@ -24,6 +24,16 @@ export interface PolicyDocumentProps {
  * A PolicyDocument is a collection of statements
  */
 export class PolicyDocument implements cdk.IResolvable {
+
+  /**
+   * Creates a new PolicyDocument based on the object provided.
+   * This will accept an object created from the `.toJSON()` call
+   * @param obj the PolicyDocument in object form.
+   */
+  public static fromJson(obj: any): PolicyDocument {
+    return obj;
+  }
+
   public readonly creationStack: string[];
   private readonly statements = new Array<PolicyStatement>();
   private readonly autoAssignSids: boolean;
