@@ -182,6 +182,20 @@ correct log retention period (never expire, by default).
 *Further note* that, if the log group already exists and the `logRetention` is not set, the custom resource will reset
 the log retention to never expire even if it was configured with a different value.
 
+### Singleton Function
+
+The `SingletonFunction` construct is a way to guarantee that a lambda function will be guaranteed to be part of the stack,
+once and only once, irrespective of how many times the construct is declared to be part of the stack. This is guaranteed
+as long as the `uuid` property and the optional `lambdaPurpose` property stay the same whenever they're declared into the
+stack.
+
+A typical use case of this function is when a higher level construct needs to declare a Lambda function as part of it but
+needs to guarantee that the function is declared once. However, a user of this higher level construct can declare it any
+number of times and with different properties. Using `SingletonFunction` here with a fixed `uuid` will guarantee this.
+
+For example, the `LogRetention` construct requires only one single lambda function for all different log groups whose
+retention it seeks to manage.
+
 ### Language-specific APIs
 Language-specific higher level constructs are provided in separate modules:
 

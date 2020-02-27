@@ -9,6 +9,7 @@ import { INetworkAcl, NetworkAcl, SubnetNetworkAclAssociation } from './network-
 import { NetworkBuilder } from './network-util';
 import { allRouteTableIds, defaultSubnetName, ImportSubnetGroup, subnetGroupNameFromConstructId, subnetId  } from './util';
 import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, GatewayVpcEndpointOptions, InterfaceVpcEndpoint, InterfaceVpcEndpointOptions } from './vpc-endpoint';
+import { FlowLog, FlowLogOptions, FlowLogResourceType } from './vpc-flow-logs';
 import { VpcLookupOptions } from './vpc-lookup';
 import { VpnConnection, VpnConnectionOptions, VpnConnectionType } from './vpn';
 
@@ -119,6 +120,11 @@ export interface IVpc extends IResource {
    * Adds a new interface endpoint to this VPC
    */
   addInterfaceEndpoint(id: string, options: InterfaceVpcEndpointOptions): InterfaceVpcEndpoint
+
+  /**
+   * Adds a new Flow Log to this VPC
+   */
+  addFlowLog(id: string, options?: FlowLogOptions): FlowLog
 }
 
 /**
@@ -361,6 +367,16 @@ abstract class VpcBase extends Resource implements IVpc {
   }
 
   /**
+   * Adds a new flow log to this VPC
+   */
+  public addFlowLog(id: string, options?: FlowLogOptions): FlowLog {
+    return new FlowLog(this, id, {
+      resourceType: FlowLogResourceType.fromVpc(this),
+      ...options
+    });
+  }
+
+  /**
    * Return the subnets appropriate for the placement strategy
    */
   protected selectSubnetObjects(selection: SubnetSelection = {}): ISubnet[] {
@@ -400,8 +416,7 @@ abstract class VpcBase extends Resource implements IVpc {
     let subnets = allSubnets[subnetType];
 
     if (onePerAz && subnets.length > 0) {
-      // Restrict to at most one subnet group
-      subnets = subnets.filter(s => subnetGroupNameFromConstructId(s) === subnetGroupNameFromConstructId(subnets[0]));
+      subnets = retainOnePerAz(subnets);
     }
 
     // Force merge conflict here with https://github.com/aws/aws-cdk/pull/4089
@@ -444,6 +459,15 @@ abstract class VpcBase extends Resource implements IVpc {
 
     return placement;
   }
+}
+
+function retainOnePerAz(subnets: ISubnet[]): ISubnet[] {
+  const azsSeen = new Set<string>();
+  return subnets.filter(subnet => {
+    if (azsSeen.has(subnet.availabilityZone)) { return false; }
+    azsSeen.add(subnet.availabilityZone);
+    return true;
+  });
 }
 
 /**
@@ -724,7 +748,9 @@ export interface VpcProps {
   /**
    * Where to propagate VPN routes.
    *
-   * @default - On the route tables associated with private subnets.
+   * @default - On the route tables associated with private subnets. If no
+   * private subnets exists, isolated subnets are used. If no isolated subnets
+   * exists, public subnets are used.
    */
   readonly vpnRoutePropagation?: SubnetSelection[]
 
@@ -734,6 +760,13 @@ export interface VpcProps {
    * @default - None.
    */
   readonly gatewayEndpoints?: { [id: string]: GatewayVpcEndpointOptions }
+
+  /**
+   * Flow logs to add to this VPC.
+   *
+   * @default - No flow logs.
+   */
+  readonly flowLogs?: { [id: string]: FlowLogOptions }
 }
 
 /**
@@ -859,12 +892,14 @@ export class Vpc extends VpcBase {
    * application. If you are looking to share a VPC between stacks, you can
    * pass the `Vpc` object between stacks and use it as normal.
    *
-   * See the package-level documentation of this package for constraints
-   * on importing existing VPCs.
-   *
    * Calling this method will lead to a lookup when the CDK CLI is executed.
    * You can therefore not use any values that will only be available at
    * CloudFormation execution time (i.e., Tokens).
+   *
+   * The VPC information will be cached in `cdk.context.json` and the same VPC
+   * will be used on future runs. To refresh the lookup, you will have to
+   * evict the value from the cache using the `cdk context` command. See
+   * https://docs.aws.amazon.com/cdk/latest/guide/context.html for more information.
    */
   public static fromLookup(scope: Construct, id: string, options: VpcLookupOptions): IVpc {
     if (Token.isUnresolved(options.vpcId)
@@ -1082,7 +1117,7 @@ export class Vpc extends VpcBase {
       this.vpnGatewayId = vpnGateway.ref;
 
       // Propagate routes on route tables associated with the right subnets
-      const vpnRoutePropagation = props.vpnRoutePropagation || [{ subnetType: SubnetType.PRIVATE }];
+      const vpnRoutePropagation = props.vpnRoutePropagation ?? [{}];
       const routeTableIds = allRouteTableIds(...vpnRoutePropagation.map(s => this.selectSubnets(s)));
       const routePropagation = new CfnVPNGatewayRoutePropagation(this, 'RoutePropagation', {
         routeTableIds,
@@ -1107,6 +1142,14 @@ export class Vpc extends VpcBase {
       const gatewayEndpoints = props.gatewayEndpoints || {};
       for (const [endpointId, endpoint] of Object.entries(gatewayEndpoints)) {
         this.addGatewayEndpoint(endpointId, endpoint);
+      }
+    }
+
+    // Add flow logs to the VPC
+    if (props.flowLogs) {
+      const flowLogs = props.flowLogs || {};
+      for (const [flowLogId, flowLog] of Object.entries(flowLogs)) {
+        this.addFlowLog(flowLogId, flowLog);
       }
     }
   }

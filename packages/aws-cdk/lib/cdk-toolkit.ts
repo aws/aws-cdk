@@ -142,7 +142,8 @@ export class CdkToolkit {
           reuseAssets: options.reuseAssets,
           notificationArns: options.notificationArns,
           tags,
-          execute: options.execute
+          execute: options.execute,
+          force: options.force
         });
 
         const message = result.noOp
@@ -308,6 +309,12 @@ export interface DeployOptions {
    * @default true
    */
   execute?: boolean;
+
+  /**
+   * Always deploy, even if templates are identical.
+   * @default false
+   */
+  force?: boolean;
 }
 
 export interface DestroyOptions {
