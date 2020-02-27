@@ -133,6 +133,12 @@ currently deployed stack to the template that is about to be deployed and will
 skip deployment if they are identical. Use `--force` to override this behavior
 and always deploy the stack.
 
+In order to pass parameters to your template during deployment, you can use `--parameters
+(STACK:KEY=VALUE)`. This will apply the value `VALUE` to the key `KEY` for stack `STACK`. The stack
+name can either be `*` or omitted in order to apply to all stacks.
+Note: The parameters will not propagate to NestedStacks. These has to be sent with the constructor
+of these.
+
 #### `cdk destroy`
 Deletes a stack from it's environment. This will cause the resources in the stack to be destroyed (unless they were
 configured with a `DeletionPolicy` of `Retain`). During the stack destruction, the command will output progress

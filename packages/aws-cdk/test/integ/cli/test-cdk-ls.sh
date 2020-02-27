@@ -19,6 +19,7 @@ ${STACK_NAME_PREFIX}-param-test-2
 ${STACK_NAME_PREFIX}-test-1
 ${STACK_NAME_PREFIX}-test-2
 ${STACK_NAME_PREFIX}-with-nested-stack
+${STACK_NAME_PREFIX}-with-nested-stack-using-parameters
 ${STACK_NAME_PREFIX}-order-consuming
 HERE
 
