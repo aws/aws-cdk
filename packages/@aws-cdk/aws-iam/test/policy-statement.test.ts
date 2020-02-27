@@ -6,6 +6,7 @@ describe('IAM policy statement', () => {
 
   describe('from JSON', () => {
     test('parses with no principal', () => {
+      // given
       const stack = new Stack();
 
       const s = new PolicyStatement();
@@ -16,14 +17,11 @@ describe('IAM policy statement', () => {
       const doc1 = new PolicyDocument();
       doc1.addStatements(s);
 
+      // when
       const doc2 = PolicyDocument.fromJson(doc1.toJSON());
 
-      const resolvedDoc1 = stack.resolve(doc1);
-      console.log(resolvedDoc1);
-      const resolvedDoc2 = stack.resolve(doc2);
-      console.log(resolvedDoc2);
-      expect(resolvedDoc2).toEqual(resolvedDoc1);
-
+      // then
+      expect(stack.resolve(doc2)).toEqual(stack.resolve(doc1));
     });
 
     test('parses a given arnPrincipal', () => {

@@ -8,6 +8,48 @@ import { mergePrincipal } from './util';
  */
 export class PolicyStatement {
   /**
+   * Creates a new PolicyStatement based on the object provided.
+   * This will accept an object created from the `.toJSON()` call
+   * @param obj the PolicyStatement in object form.
+   */
+  static fromJson(obj: any) {
+    const toArray = (field: any) => Array.isArray(field) ? field : field ? [field] : undefined;
+
+    const statement = new PolicyStatement({
+      actions: toArray(obj.Action),
+      resources: toArray(obj.Resource),
+      conditions: obj.Condition,
+      effect: obj.Effect,
+      notActions: toArray(obj.NotAction),
+      notResources: toArray(obj.NotResource)
+    });
+
+    // Since the principals are a more complex object, not just a string or an array of strings,
+    // then just passing them through on the constructor doesn't work.
+    if (obj.Principal && obj.Principal.AWS) {
+      statement.addArnPrincipal(obj.Principal.AWS);
+    }
+
+    if (obj.Principal === "*") {
+      statement.addAnyPrincipal();
+    }
+
+    if (obj.Principal && obj.Principal.CanonicalUser) {
+      statement.addCanonicalUserPrincipal(obj.Principal.CanonicalUser);
+    }
+
+    if (obj.Principal && obj.Principal.Federated) {
+      statement.addFederatedPrincipal(obj.Principal.Federated, {});
+    }
+
+    if (obj.Principal && obj.Principal.Service) {
+      statement.addServicePrincipal(obj.Principal.Service.replace(/.amazonaws.com/i, ''));
+    }
+
+    return statement;
+
+  }
+  /**
    * Statement ID for this statement
    */
   public sid?: string;
