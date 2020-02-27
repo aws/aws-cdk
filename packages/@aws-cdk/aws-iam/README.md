@@ -190,7 +190,7 @@ const role = new iam.Role(this, 'MyRole', {
 
 ### Parsing JSON Policy Documents
 
-The `PolicyDocument.fromJson` and `PolicyStatement.fromJSON` static methods can be used to parse JSON objects. For example:
+The `PolicyDocument.fromJson` and `PolicyStatement.fromJson` static methods can be used to parse JSON objects. For example:
 
 ```ts
 const policyDocument = {
