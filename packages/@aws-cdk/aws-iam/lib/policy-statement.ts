@@ -12,38 +12,30 @@ export class PolicyStatement {
    * This will accept an object created from the `.toJSON()` call
    * @param obj the PolicyStatement in object form.
    */
-  static fromJson(obj: any) {
-    const toArray = (field: any) => Array.isArray(field) ? field : field ? [field] : undefined;
+  public static fromJson(obj: any) {
+    const ensureArrayOrUndefined = (field: any) => field === undefined ? field : [].concat(field);
 
     const statement = new PolicyStatement({
-      actions: toArray(obj.Action),
-      resources: toArray(obj.Resource),
+      actions: ensureArrayOrUndefined(obj.Action),
+      resources: ensureArrayOrUndefined(obj.Resource),
       conditions: obj.Condition,
       effect: obj.Effect,
-      notActions: toArray(obj.NotAction),
-      notResources: toArray(obj.NotResource)
+      notActions: ensureArrayOrUndefined(obj.NotAction),
+      notResources: ensureArrayOrUndefined(obj.NotResource)
     });
+
+    statement.sid = obj.Sid;
 
     // Since the principals are a more complex object, not just a string or an array of strings,
     // then just passing them through on the constructor doesn't work.
-    if (obj.Principal && obj.Principal.AWS) {
-      statement.addArnPrincipal(obj.Principal.AWS);
-    }
-
-    if (obj.Principal === "*") {
-      statement.addAnyPrincipal();
-    }
-
-    if (obj.Principal && obj.Principal.CanonicalUser) {
-      statement.addCanonicalUserPrincipal(obj.Principal.CanonicalUser);
-    }
-
-    if (obj.Principal && obj.Principal.Federated) {
-      statement.addFederatedPrincipal(obj.Principal.Federated, {});
-    }
-
-    if (obj.Principal && obj.Principal.Service) {
-      statement.addServicePrincipal(obj.Principal.Service.replace(/.amazonaws.com/i, ''));
+    if (obj.Principal) {
+      /* tslint:disable:no-unused-expression */
+      obj.Principal === "*" && statement.addAnyPrincipal();
+      obj.Principal.AWS && statement.addArnPrincipal(obj.Principal.AWS);
+      obj.Principal.CanonicalUser && statement.addCanonicalUserPrincipal(obj.Principal.CanonicalUser);
+      obj.Principal.Federated && statement.addFederatedPrincipal(obj.Principal.Federated, {});
+      obj.Principal.Service && statement.addServicePrincipal(obj.Principal.Service.replace(/.amazonaws.com/i, ''));
+      /* tslint:enable:no-unused-expression */
     }
 
     return statement;
