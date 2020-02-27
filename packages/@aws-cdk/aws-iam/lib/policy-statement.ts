@@ -20,6 +20,9 @@ export class PolicyStatement {
       if (typeof (field) !== "string" && !Array.isArray(field)) {
         throw new Error("Fields must be either a string or an array of strings");
       }
+      if (Array.isArray(field) && !field.reduce((acc: boolean, f: any) => (acc && typeof (f) === "string"), true)) {
+        throw new Error("Fields must be either a string or an array of strings");
+      }
       return Array.isArray(field) ? field : [field];
     };
 

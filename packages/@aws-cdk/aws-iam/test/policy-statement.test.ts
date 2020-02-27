@@ -237,6 +237,21 @@ describe('IAM policy statement', () => {
       expect(stack.resolve(doc)).toEqual(policyDocument);
     });
 
+    test('throws error with field data being object', () => {
+      expect(() => {
+        PolicyStatement.fromJson({
+          Action: {}
+        });
+      }).toThrow(/Fields must be either a string or an array of strings/);
+    });
+
+    test('throws error with field data being object', () => {
+      expect(() => {
+        PolicyStatement.fromJson({
+          Action: [{}]
+        });
+      }).toThrow(/Fields must be either a string or an array of strings/);
+    });
   });
 
 });
