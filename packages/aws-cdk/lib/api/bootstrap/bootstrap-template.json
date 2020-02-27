@@ -343,6 +343,17 @@
                   "Effect": "Allow"
                 },
                 {
+                  "Action": [
+                    "cloudformation:DescribeStackEvents",
+                    "cloudformation:GetTemplate",
+                    "cloudformation:DeleteStack",
+                    "sts:GetCallerIdentity"
+                  ],
+                  "Resource": "*",
+                  "Effect": "Allow",
+                  "Sid": "CLI_Permissions"
+                },
+                {
                   "Action": "iam:PassRole",
                   "Resource": {
                     "Fn::Sub": "${CloudFormationExecutionRole.Arn}"
