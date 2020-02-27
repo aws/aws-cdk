@@ -5,7 +5,7 @@ import * as cdk from '@aws-cdk/core';
 import * as path from 'path';
 import * as tasks from '../lib';
 
-class InvokeBatchStack extends cdk.Stack {
+class RunBatchStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props: cdk.StackProps = {}) {
     super(scope, id, props);
 
@@ -20,7 +20,7 @@ class InvokeBatchStack extends cdk.Stack {
     });
 
     const submitJob = new sfn.Task(this, 'Submit Job', {
-      task: new tasks.InvokeBatchJob({
+      task: new tasks.RunBatchJob({
         jobDefinition: batchJobDefinition,
         jobName: 'MyJob',
         jobQueue: batchQueue,
@@ -59,5 +59,5 @@ class InvokeBatchStack extends cdk.Stack {
 }
 
 const app = new cdk.App();
-new InvokeBatchStack(app, 'aws-stepfunctions-integ');
+new RunBatchStack(app, 'aws-stepfunctions-integ');
 app.synth();

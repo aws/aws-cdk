@@ -148,11 +148,11 @@ export interface RetryStrategy {
 }
 
 /**
- * Properties for InvokeBatchJob
+ * Properties for RunBatchJob
  *
  * @experimental
  */
-export interface InvokeBatchJobProps {
+export interface RunBatchJobProps {
   /**
    * The job definition used by this job.
    */
@@ -240,14 +240,14 @@ export interface InvokeBatchJobProps {
 }
 
 /**
- * A Step Functions Task to invoke AWS Batch
+ * A Step Functions Task to run AWS Batch
  *
  * @experimental
  */
-export class InvokeBatchJob implements sfn.IStepFunctionsTask {
+export class RunBatchJob implements sfn.IStepFunctionsTask {
   private readonly integrationPattern: sfn.ServiceIntegrationPattern;
 
-  constructor(private readonly props: InvokeBatchJobProps) {
+  constructor(private readonly props: RunBatchJobProps) {
     this.integrationPattern =
       props.integrationPattern || sfn.ServiceIntegrationPattern.SYNC;
 
@@ -258,7 +258,7 @@ export class InvokeBatchJob implements sfn.IStepFunctionsTask {
 
     if (!supportedPatterns.includes(this.integrationPattern)) {
       throw new Error(
-        `Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call InvokeBatchJob.`
+        `Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call RunBatchJob.`
       );
     }
   }

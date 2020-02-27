@@ -20,4 +20,4 @@ export * from './emr-cancel-step';
 export * from './emr-modify-instance-fleet-by-name';
 export * from './emr-modify-instance-group-by-name';
 export * from './run-glue-job-task';
-export * from './invoke-batch-job';
+export * from './run-batch-job';

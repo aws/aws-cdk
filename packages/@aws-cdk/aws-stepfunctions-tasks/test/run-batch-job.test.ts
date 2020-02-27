@@ -27,7 +27,7 @@ beforeEach(() => {
 test('Task with only the required parameters', () => {
   // WHEN
   const task = new sfn.Task(stack, 'Task', {
-    task: new tasks.InvokeBatchJob({
+    task: new tasks.RunBatchJob({
       jobDefinition: batchJobDefinition,
       jobName: 'JobName',
       jobQueue: batchJobQueue
@@ -61,7 +61,7 @@ test('Task with only the required parameters', () => {
 test('Task with all the parameters', () => {
   // WHEN
   const task = new sfn.Task(stack, 'Task', {
-    task: new tasks.InvokeBatchJob({
+    task: new tasks.RunBatchJob({
       jobDefinition: batchJobDefinition,
       jobName: 'JobName',
       jobQueue: batchJobQueue,
@@ -126,7 +126,7 @@ test('Task with all the parameters', () => {
 test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration pattern', () => {
   expect(() => {
     new sfn.Task(stack, 'Task', {
-      task: new tasks.InvokeBatchJob({
+      task: new tasks.RunBatchJob({
         jobDefinition: batchJobDefinition,
         jobName: 'JobName',
         jobQueue: batchJobQueue,
@@ -134,6 +134,6 @@ test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration patt
       })
     });
   }).toThrow(
-    /Invalid Service Integration Pattern: WAIT_FOR_TASK_TOKEN is not supported to call InvokeBatchJob./i
+    /Invalid Service Integration Pattern: WAIT_FOR_TASK_TOKEN is not supported to call RunBatchJob./i
   );
 });
