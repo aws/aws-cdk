@@ -112,4 +112,30 @@ export = {
 
     test.done();
   },
+
+  'contains eventSourceMappingId after lambda binding'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const q = new sqs.Queue(stack, 'Q');
+    const eventSource = new sources.SqsEventSource(q);
+
+    // WHEN
+    fn.addEventSource(eventSource);
+
+    // THEN
+    test.ok(eventSource.eventSourceMappingId);
+    test.done();
+  },
+
+  'eventSourceMappingId throws error before binding to lambda'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const q = new sqs.Queue(stack, 'Q');
+    const eventSource = new sources.SqsEventSource(q);
+
+    // WHEN/THEN
+    test.throws(() => eventSource.eventSourceMappingId, /SqsEventSource is not yet bound to an event source mapping/);
+    test.done();
+  },
 };
