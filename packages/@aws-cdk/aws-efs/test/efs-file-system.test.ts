@@ -1,7 +1,7 @@
 import {expect as expectCDK, haveResource} from '@aws-cdk/assert';
 import * as ec2 from "@aws-cdk/aws-ec2";
 import * as kms from "@aws-cdk/aws-kms";
-import {Stack, Tag} from "@aws-cdk/core";
+import {Stack} from "@aws-cdk/core";
 import {WARNING_METADATA_KEY} from "@aws-cdk/cx-api";
 import {EfsFileSystem, EfsLifecyclePolicyProperty, EfsPerformanceMode, EfsThroughputMode} from "../lib/efs-file-system";
 
@@ -15,13 +15,16 @@ beforeEach( () => {
 
 test('default file system is created correctly', () => {
     // WHEN
-    new EfsFileSystem(stack, 'EfsFileSystem', {
+    const efs = new EfsFileSystem(stack, 'EfsFileSystem', {
         vpc,
     });
     // THEN
     expectCDK(stack).to(haveResource('AWS::EFS::FileSystem'));
     expectCDK(stack).to(haveResource('AWS::EFS::MountTarget'));
     expectCDK(stack).to(haveResource('AWS::EC2::SecurityGroup'));
+
+    expect(efs.mountTargetIpAddress.length).toEqual(vpc.selectSubnets().subnetIds.length);
+    expect(efs.mountTargetIdentifiers.length).toEqual(vpc.selectSubnets().subnetIds.length);
 });
 
 test('unencrypted file system is created correctly with default KMS', () => {
@@ -70,21 +73,6 @@ test('encrypted file system is created correctly with custom KMS', () => {
         KmsKeyId: {
             Ref: 'customKeyFSDDB87C6D'
         }
-    }));
-});
-
-test('file system is created correctly with tags', () => {
-    // WHEN
-    new EfsFileSystem(stack, 'EfsFileSystem', {
-        vpc,
-        fileSystemTags: [new Tag("key1", "value1")]
-    });
-    // THEN
-    expectCDK(stack).to(haveResource('AWS::EFS::FileSystem', {
-        FileSystemTags: [{
-            Key: "key1",
-            Value: "value1"
-        }]
     }));
 });
 

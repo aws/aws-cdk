@@ -38,6 +38,36 @@ a fixed default port, so you don't need to specify the port:
 ```ts
 fileSystem.connections.allowDefaultPortFrom(instance);
 ```
+### Mounting the file system using User Data
 
+In order to automatically mount this file system during instance launch, 
+following code can be used as reference:
+```
+const inst = new Instance(this, 'inst', {
+    instanceType: InstanceType.of(InstanceClass.T2, InstanceSize.LARGE),
+    machineImage: new AmazonLinuxImage({
+        generation: AmazonLinuxGeneration.AMAZON_LINUX_2
+    }),
+    vpc,
+    vpcSubnets: {
+        subnetType: SubnetType.PUBLIC,
+    },
+});
+
+inst.userData.addCommands("yum check-update -y",
+    "yum upgrade -y",
+    "apt-get -y update",
+    "apt-get -y upgrade",
+    "yum install -y amazon-efs-utils",
+    "apt-get -y install amazon-efs-utils",
+    "yum install -y nfs-utils",
+    "apt-get -y install nfs-common",
+    "file_system_id_1=" + fileSystem.fileSystemID,
+    "efs_mount_point_1=/mnt/efs/fs1",
+    "mkdir -p \"${efs_mount_point_1}\"",
+    "test -f \"/sbin/mount.efs\" && echo \"${file_system_id_1}:/ ${efs_mount_point_1} efs defaults,_netdev\" >> /etc/fstab || " +
+    "echo \"${file_system_id_1}.efs." + cdk.Stack.of(this).region + ".amazonaws.com:/ ${efs_mount_point_1} nfs4 nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport,_netdev 0 0\" >> /etc/fstab",
+    "mount -a -t efs,nfs4 defaults");
+```
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
