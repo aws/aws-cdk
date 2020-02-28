@@ -10,11 +10,9 @@ import * as tasks from '../lib';
  * Stack verification steps:
  * * aws stepfunctions start-execution --state-machine-arn <deployed state machine arn>
  * * aws stepfunctions describe-execution --execution-arn <execution arn created above>
- * The "describe-execution" call should eventually return status "SUCCEEDED", but it may take up to
- * 15 minutes to do so. This is because the cold start time for AWS Glue (as of 02/2020) is around
- * 10-15 minutes and so even a job with a functional 20 second runtime (as this job is) can take
- * that long to complete. There can also be a delay between the job finishing and the step functions
- * task registering its complation but this delay is dominated by the above cold start time.
+ * The "describe-execution" call should eventually return status "SUCCEEDED".
+ * NOTE: It will take up to 15 minutes for the step function to completem due to the cold start time
+ * for AWS Glue, which as of 02/2020, is around 10-15 minutes.
  */
 
 const app = new cdk.App();
