@@ -82,6 +82,17 @@ export class RunGlueJobTask implements sfn.IStepFunctionsTask {
 
   public bind(task: sfn.Task): sfn.StepFunctionsTaskConfig {
     const notificationProperty = this.props.notifyDelayAfter ? { NotifyDelayAfter: this.props.notifyDelayAfter.toMinutes() } : null;
+    let iamActions: string[] | undefined;
+    if (this.integrationPattern === sfn.ServiceIntegrationPattern.FIRE_AND_FORGET) {
+      iamActions = ["glue:StartJobRun"];
+    } else if (this.integrationPattern === sfn.ServiceIntegrationPattern.SYNC) {
+      iamActions = [
+        "glue:StartJobRun",
+        "glue:GetJobRun",
+        "glue:GetJobRuns",
+        "glue:BatchStopJobRun"
+      ];
+    }
     return {
       resourceArn: getResourceArn("glue", "startJobRun", this.integrationPattern),
       policyStatements: [new iam.PolicyStatement({
@@ -92,12 +103,7 @@ export class RunGlueJobTask implements sfn.IStepFunctionsTask {
             resourceName: this.glueJobName
           })
         ],
-        actions: [
-          "glue:StartJobRun",
-          "glue:GetJobRun",
-          "glue:GetJobRuns",
-          "glue:BatchStopJobRun"
-        ],
+        actions: iamActions
       })],
       metricPrefixSingular: 'GlueJob',
       metricPrefixPlural: 'GlueJobs',

@@ -87,6 +87,49 @@ test('Invoke glue job with full properties', () => {
   });
 });
 
+test('permitted role actions limited to start job run if service integration pattern is FIRE_AND_FORGET', () => {
+  const task = new sfn.Task(stack, 'Task', {
+    task: new tasks.RunGlueJobTask(jobName, {
+      integrationPattern: sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
+    })
+  });
+  new sfn.StateMachine(stack, 'SM', {
+    definition: task
+  });
+
+  expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [{
+        Action: "glue:StartJobRun"
+      }]
+    }
+  });
+});
+
+test('permitted role actions include start, get, and stop job run if service integration pattern is SYNC', () => {
+  const task = new sfn.Task(stack, 'Task', {
+    task: new tasks.RunGlueJobTask(jobName, {
+      integrationPattern: sfn.ServiceIntegrationPattern.SYNC,
+    })
+  });
+  new sfn.StateMachine(stack, 'SM', {
+    definition: task
+  });
+
+  expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [{
+        Action: [
+          "glue:StartJobRun",
+          "glue:GetJobRun",
+          "glue:GetJobRuns",
+          "glue:BatchStopJobRun"
+        ]
+      }]
+    }
+  });
+});
+
 test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration pattern', () => {
   expect(() => {
     new sfn.Task(stack, 'Task', {
