@@ -128,9 +128,9 @@ bootstrapped (using `cdk bootstrap`), only stacks that are not using assets and 
 $ cdk deploy --app='node bin/main.js' MyStackName
 ```
 
-Before creating a change set, `cdk deploy` will compare the template of the
-currently deployed stack to the template that is about to be deployed and will
-skip deployment if they are identical. Use `--force` to override this behavior
+Before creating a change set, `cdk deploy` will compare the template and tags of the
+currently deployed stack to the template and tags that are about to be deployed and
+will skip deployment if they are identical. Use `--force` to override this behavior
 and always deploy the stack.
 
 #### `cdk destroy`
