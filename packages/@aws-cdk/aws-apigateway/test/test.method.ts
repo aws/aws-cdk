@@ -694,5 +694,56 @@ export = {
     }, /Authorization type is set to NONE which is different from what is required by the authorizer/);
 
     test.done();
+  },
+  'method has Auth Scopes'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigw.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
+
+    // WHEN
+    new apigw.Method(stack, 'my-method', {
+      httpMethod: 'POST',
+      resource: api.root,
+      options: {
+        apiKeyRequired: true,
+        authorizationScopes: ['AuthScope1', 'AuthScope2'],
+      }
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+      ApiKeyRequired: true,
+      authorizationScopes: ['AuthScope1', 'AuthScope2']
+    }));
+
+    test.done();
+  },
+  'use default Auth Scopes'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigw.RestApi(stack, 'test-api', {
+      cloudWatchRole: false,
+      deploy: false,
+      defaultMethodOptions: {
+        authorizationScopes: ['DefaultAuth']
+      }
+    });
+
+    // WHEN
+    new apigw.Method(stack, 'defaultAuthScopes', {
+      httpMethod: 'POST',
+      resource: api.root,
+      options: {
+        operationName: 'defaultAuthScopes'
+      }
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+      OperationName: 'defaultAuthScopes',
+      authorizationScopes: ['DefaultAuth']
+    }));
+
+    test.done();
   }
 };

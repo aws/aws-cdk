@@ -75,6 +75,12 @@ export interface MethodOptions {
    * The ID of the associated request validator.
    */
   readonly requestValidator?: IRequestValidator;
+
+  /**
+   * The authorizationScopes for the method
+   * @default none
+   */
+  readonly authorizationScopes?: string[]
 }
 
 export interface MethodProps {
@@ -152,7 +158,8 @@ export class Method extends Resource {
       integration: this.renderIntegration(props.integration),
       methodResponses: this.renderMethodResponses(options.methodResponses),
       requestModels: this.renderRequestModels(options.requestModels),
-      requestValidatorId: options.requestValidator ? options.requestValidator.requestValidatorId : undefined
+      requestValidatorId: options.requestValidator ? options.requestValidator.requestValidatorId : undefined,
+      authorizationScopes: options.authorizationScopes || defaultMethodOptions.authorizationScopes
     };
 
     const resource = new CfnMethod(this, 'Resource', methodProps);
