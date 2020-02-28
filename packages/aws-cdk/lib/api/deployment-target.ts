@@ -1,6 +1,6 @@
 import { CloudFormationStackArtifact } from '@aws-cdk/cx-api';
 import { Tag } from "../api/cxapp/stacks";
-import { debug } from '../logging';
+import { debug, warning } from '../logging';
 import { Mode } from './aws-auth/credentials';
 import { deployStack, DeployStackResult, destroyStack, readCurrentTemplate } from './deploy-stack';
 import { loadToolkitInfo } from './toolkit-info';
@@ -131,7 +131,12 @@ export class CloudFormationDeploymentTarget implements IDeploymentTarget {
 
     let sdk = this.aws;
     if (arns.assumeRoleArn) {
-      sdk = await sdk.assumeRole(arns.assumeRoleArn, stack.environment.region);
+      try {
+        sdk = await sdk.assumeRole(arns.assumeRoleArn, stack.environment.region);
+      } catch (e) {
+        warning(`Could not assume deployment role for stack '${stack.stackName}'. Make sure the account and region have been bootstrapped and a trust relationship with your own source account have been added ('cdk bootstrap --trust=....').`);
+        throw e;
+      }
     }
 
     return { sdk, roleArn: arns.cloudFormationRoleArn };
