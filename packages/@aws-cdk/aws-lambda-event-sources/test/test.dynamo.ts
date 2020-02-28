@@ -231,4 +231,46 @@ export = {
     test.done();
   },
 
+  'contains eventSourceMappingId after lambda binding'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const table = new dynamodb.Table(stack, 'T', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING
+      },
+      stream: dynamodb.StreamViewType.NEW_IMAGE
+    });
+    const eventSource = new sources.DynamoEventSource(table, {
+      startingPosition: lambda.StartingPosition.TRIM_HORIZON
+    });
+
+    // WHEN
+    fn.addEventSource(eventSource);
+
+    // THEN
+    test.ok(eventSource.eventSourceMappingId);
+    test.done();
+  },
+
+  'eventSourceMappingId throws error before binding to lambda'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const table = new dynamodb.Table(stack, 'T', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING
+      },
+      stream: dynamodb.StreamViewType.NEW_IMAGE
+    });
+    const eventSource = new sources.DynamoEventSource(table, {
+      startingPosition: lambda.StartingPosition.TRIM_HORIZON
+    });
+
+    // WHEN/THEN
+    test.throws(() => eventSource.eventSourceMappingId, /DynamoEventSource is not yet bound to an event source mapping/);
+    test.done();
+  },
+
 };
