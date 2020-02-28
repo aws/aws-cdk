@@ -203,8 +203,9 @@ async function objectExists(s3: aws.S3, bucket: string, key: string) {
 }
 
 /** @experimental */
-export async function loadToolkitInfo(environment: cxapi.Environment, sdk: ISDK, stackName: string): Promise<ToolkitInfo | undefined> {
-  const cfn = await sdk.cloudFormation(environment.account, environment.region, Mode.ForReading);
+// tslint:disable-next-line:max-line-length
+export async function loadToolkitInfo(environment: cxapi.Environment, deploySdk: ISDK, uploadSdk: ISDK, stackName: string): Promise<ToolkitInfo | undefined> {
+  const cfn = await deploySdk.cloudFormation(environment.account, environment.region, Mode.ForReading);
   const stack = await waitForStack(cfn, stackName);
   if (!stack) {
     debug('The environment %s doesn\'t have the CDK toolkit stack (%s) installed. Use %s to setup your environment for use with the toolkit.',
@@ -212,7 +213,7 @@ export async function loadToolkitInfo(environment: cxapi.Environment, sdk: ISDK,
     return undefined;
   }
   return new ToolkitInfo({
-    sdk, environment,
+    sdk: uploadSdk, environment,
     bucketName: getOutputValue(stack, BUCKET_NAME_OUTPUT),
     bucketEndpoint: getOutputValue(stack, BUCKET_DOMAIN_NAME_OUTPUT)
   });

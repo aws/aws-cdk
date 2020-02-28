@@ -124,7 +124,7 @@ async function deployCdkApp(outdir: string, env: cxapi.Environment,
   const assembly = app.synth();
 
   // now deploy the synthesized app
-  const toolkitInfo = await loadToolkitInfo(env, sdk, bootstrapStackName);
+  const toolkitInfo = await loadToolkitInfo(env, sdk, sdk, bootstrapStackName);
   const testStack = assembly.stacks[0]; // we assume there's just one stack
   await deployStack({
     stack: testStack,

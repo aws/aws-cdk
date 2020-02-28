@@ -80,7 +80,8 @@ export class CloudFormationDeploymentTarget implements IDeploymentTarget {
   public async deployStack(options: DeployStackOptions): Promise<DeployStackResult> {
     const { deploySdk, uploadSdk, roleArn } = await this.cloudFormationOptionsFor(options.stack, options.roleArn);
 
-    const toolkitInfo = await loadToolkitInfo(options.stack.environment, uploadSdk, options.toolkitStackName || DEFAULT_TOOLKIT_STACK_NAME);
+    // tslint:disable-next-line:max-line-length
+    const toolkitInfo = await loadToolkitInfo(options.stack.environment, deploySdk, uploadSdk, options.toolkitStackName || DEFAULT_TOOLKIT_STACK_NAME);
 
     return deployStack({
       stack: options.stack,
