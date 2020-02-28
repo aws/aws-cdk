@@ -233,12 +233,13 @@ export class StabilitySetting extends ValidationRule {
       case 'experimental':
         return _div(
           { label: 'Experimental', color: 'important' },
-          '**This is a _developer preview_ (public beta) module. Releases might lack important features and might have',
-          'future breaking changes.**',
+          '**This is a _developer preview_ (public beta) module.**',
           '',
-          'This API is still under active development and subject to non-backward',
-          'compatible changes or removal in any future version. Use of the API is not recommended in production',
-          'environments. Experimental APIs are not subject to the Semantic Versioning model.',
+          'The [_CFN Resources_](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib) or classes with the `Cfn` prefix are '
+          + 'auto-generated from CloudFormation. They are stable and safe to use.',
+          '',
+          'However, all other classes, i.e., higher level constructs, are under active development and subject to non-backward',
+          'compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model.',
         );
       case 'stable':
         return _div(
