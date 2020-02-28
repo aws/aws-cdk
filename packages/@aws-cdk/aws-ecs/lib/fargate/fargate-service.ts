@@ -79,14 +79,14 @@ export interface FargateServiceAttributes {
   /**
    * The service ARN.
    *
-   * @default - generated from serviceName
+   * @default - {@link serviceName}, is required
    */
   readonly serviceArn?: string;
 
   /**
    * The name of the service.
    *
-   * @default - generated from serviceArn
+   * @default - {@link serviceArn}, is required
    */
   readonly serviceName?: string;
 }

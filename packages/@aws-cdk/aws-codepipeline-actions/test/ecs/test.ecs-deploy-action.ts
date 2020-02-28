@@ -1,8 +1,8 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
-import { FakeSourceAction } from '@aws-cdk/aws-codepipeline/test/fake-source-action';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
+import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as cpactions from '../../lib';
@@ -86,49 +86,43 @@ export = {
     'can be created by existing service'(test: Test) {
       const stack = new cdk.Stack();
       const service = ecs.FargateService.fromFargateServiceAttributes(stack, 'FargateService', {
-        serviceName: 'my-http-service',
+        serviceName: 'service-name',
         cluster: new ecs.Cluster(stack, 'Cluster', {
-          clusterName: 'cluster',
+          clusterName: 'cluster-name',
         }),
       });
       const artifact = new codepipeline.Artifact('Artifact');
-
-      test.doesNotThrow(() => {
-        const action = new cpactions.EcsDeployAction({
-          actionName: 'ECS',
-          service,
-          imageFile: artifact.atPath('imageFile.json'),
-        });
-        new codepipeline.Pipeline(stack, 'Pipeline', {
-          stages: [
-            {
-              stageName: 'Source',
-              actions: [new FakeSourceAction({
-                actionName: 'Source',
-                output: artifact,
-              })],
-            },
-            {
-              stageName: 'Deploy',
-              actions: [action],
-            }
-          ],
-        });
+      const bucket = new s3.Bucket(stack, 'PipelineBucket', {
+        versioned: true,
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
+      });
+      const source = new cpactions.S3SourceAction({
+        actionName: 'Source',
+        output: artifact,
+        bucket,
+        bucketKey: 'key',
+      });
+      const action = new cpactions.EcsDeployAction({
+        actionName: 'ECS',
+        service,
+        imageFile: artifact.atPath('imageFile.json'),
+      });
+      new codepipeline.Pipeline(stack, 'Pipeline', {
+        stages: [
+          {
+            stageName: 'Source',
+            actions: [source],
+          },
+          {
+            stageName: 'Deploy',
+            actions: [action],
+          }
+        ],
       });
 
       expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
         Stages: [
-          {
-            Actions: [
-              {
-                Name: 'Source',
-                ActionTypeId: {
-                  Category: "Source",
-                  Provider: "Fake"
-                },
-              }
-            ]
-          },
+          {},
           {
             Actions: [
               {
@@ -141,7 +135,7 @@ export = {
                   ClusterName: {
                     Ref: "ClusterEB0386A7",
                   },
-                  ServiceName: "my-http-service",
+                  ServiceName: "service-name",
                   FileName: "imageFile.json"
                 }
               }
