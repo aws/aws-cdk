@@ -1,6 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import { Duration } from '@aws-cdk/core';
+import { Duration, Stack } from '@aws-cdk/core';
 import { getResourceArn } from './resource-arn-suffix';
 
 /**
@@ -80,12 +80,18 @@ export class RunGlueJobTask implements sfn.IStepFunctionsTask {
     }
   }
 
-  public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
+  public bind(task: sfn.Task): sfn.StepFunctionsTaskConfig {
     const notificationProperty = this.props.notifyDelayAfter ? { NotifyDelayAfter: this.props.notifyDelayAfter.toMinutes() } : null;
     return {
       resourceArn: getResourceArn("glue", "startJobRun", this.integrationPattern),
       policyStatements: [new iam.PolicyStatement({
-        resources: ["*"],
+        resources: [
+          Stack.of(task).formatArn({
+            service: "glue",
+            resource: "job",
+            resourceName: this.glueJobName
+          })
+        ],
         actions: [
           "glue:StartJobRun",
           "glue:GetJobRun",

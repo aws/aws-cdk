@@ -198,7 +198,26 @@
                 "glue:BatchStopJobRun"
               ],
               "Effect": "Allow",
-              "Resource": "*"
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":glue:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":job/My Glue Job"
+                  ]
+                ]
+              }
             }
           ],
           "Version": "2012-10-17"
