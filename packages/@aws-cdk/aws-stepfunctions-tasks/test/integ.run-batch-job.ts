@@ -24,22 +24,20 @@ class RunBatchStack extends cdk.Stack {
         jobDefinition: batchJobDefinition,
         jobName: 'MyJob',
         jobQueue: batchQueue,
-        arrayProperties: {
-          size: 15
-        },
+        array: { size: 15 },
         containerOverrides: {
           command: ['sudo', 'rm'],
           environment: [{ name: 'key', value: 'value' }],
           instanceType: 'MULTI',
           memory: 1024,
-          resourceRequirements: [{ type: 'GPU', value: '1' }],
+          gpuCount: 1,
           vcpus: 10
         },
         dependsOn: [{ jobId: '1234', type: 'some_type' }],
         payload: {
           foo: sfn.Data.stringAt('$.bar')
         },
-        retryStrategy: { attempts: 3 },
+        retryAttempts: 3,
         timeout: cdk.Duration.seconds(30)
       })
     });

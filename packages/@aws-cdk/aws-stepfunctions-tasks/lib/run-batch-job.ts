@@ -17,47 +17,6 @@ export interface ArrayProperties {
 }
 
 /**
- * A key-value pair object.
- */
-export interface KeyValuePair {
-  /**
-   * The name of the key-value pair.
-   * For environment variables, this is the name of the environment variable.
-   *
-   * @default - No name
-   */
-  readonly name?: string;
-
-  /**
-   * The value of the key-value pair.
-   * For environment variables, this is the value of the environment variable.
-   *
-   * @default - No value
-   */
-  readonly value?: string;
-}
-
-/**
- * The type and amount of a resource to assign to a container.
- * Currently, the only supported resource type is GPU.
- */
-export interface ResourceRequirement {
-  /**
-   * The type of resource to assign to a container.
-   * Currently, the only supported resource type is GPU.
-   */
-  readonly type: string;
-
-  /**
-   * The number of physical GPUs to reserve for the container.
-   * The number of GPUs reserved for all containers in a job
-   * should not exceed the number of available GPUs on the compute
-   * resource that the job is launched on.
-   */
-  readonly value: string;
-}
-
-/**
  * The overrides that should be sent to a container.
  */
 export interface ContainerOverrides {
@@ -77,7 +36,7 @@ export interface ContainerOverrides {
    *
    * @default - No environment overrides
    */
-  readonly environment?: KeyValuePair[];
+  readonly environment?: Array<{ name: string; value: string }>;
 
   /**
    * The instance type to use for a multi-node parallel job.
@@ -96,13 +55,14 @@ export interface ContainerOverrides {
   readonly memory?: number;
 
   /**
-   * The type and amount of a resource to assign to a container.
-   * This value overrides the value set in the job definition.
-   * Currently, the only supported resource is GPU.
+   * The number of physical GPUs to reserve for the container.
+   * The number of GPUs reserved for all containers in a job
+   * should not exceed the number of available GPUs on the compute
+   * resource that the job is launched on.
    *
-   * @default - No resource requirements overrides
+   * @default - No GPU reservation
    */
-  readonly resourceRequirements?: ResourceRequirement[];
+  readonly gpuCount?: number;
 
   /**
    * The number of vCPUs to reserve for the container.
@@ -133,24 +93,7 @@ export interface JobDependency {
 }
 
 /**
- * The retry strategy associated with a job.
- */
-export interface RetryStrategy {
-  /**
-   * The number of times to move a job to the RUNNABLE status.
-   * You may specify between 1 and 10 attempts.
-   * If the value of attempts is greater than one,
-   * the job is retried on failure the same number of attempts as the value.
-   *
-   * @default - No attempts
-   */
-  readonly attempts?: number;
-}
-
-/**
  * Properties for RunBatchJob
- *
- * @experimental
  */
 export interface RunBatchJobProps {
   /**
@@ -178,7 +121,7 @@ export interface RunBatchJobProps {
    *
    * @default - No array properties
    */
-  readonly arrayProperties?: ArrayProperties;
+  readonly array?: ArrayProperties;
 
   /**
    * A list of container overrides in JSON format that specify the name of a
@@ -214,13 +157,14 @@ export interface RunBatchJobProps {
   readonly payload?: { [key: string]: any };
 
   /**
-   * The retry strategy to use for failed jobs from this SubmitJob operation.
-   * When a retry strategy is specified here,
-   * it overrides the retry strategy defined in the job definition.
+   * The number of times to move a job to the RUNNABLE status.
+   * You may specify between 1 and 10 attempts.
+   * If the value of attempts is greater than one,
+   * the job is retried on failure the same number of attempts as the value.
    *
-   * @default - No retry strategy
+   * @default - No attempts
    */
-  readonly retryStrategy?: RetryStrategy;
+  readonly retryAttempts?: number;
 
   /**
    * The timeout configuration for this SubmitJob operation.
@@ -241,8 +185,6 @@ export interface RunBatchJobProps {
 
 /**
  * A Step Functions Task to run AWS Batch
- *
- * @experimental
  */
 export class RunBatchJob implements sfn.IStepFunctionsTask {
   private readonly integrationPattern: sfn.ServiceIntegrationPattern;
@@ -261,6 +203,18 @@ export class RunBatchJob implements sfn.IStepFunctionsTask {
         `Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call RunBatchJob.`
       );
     }
+
+    // This is reuqired since environment variables must not start with AWS_BATCH;
+    // this naming convention is reserved for variables that are set by the AWS Batch service.
+    if (props.containerOverrides?.environment) {
+      props.containerOverrides.environment.forEach(env => {
+        if (env.name.match(/^AWS_BATCH/)) {
+          throw new Error(
+            `Invalid environment variable name: ${env.name}. Environment variable names starting with 'AWS_BATCH' are reserved.`
+          );
+        }
+      });
+    }
   }
 
   public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
@@ -271,6 +225,8 @@ export class RunBatchJob implements sfn.IStepFunctionsTask {
         this.integrationPattern
       ),
       policyStatements: [
+        // Resource-level access control is not supported by Batch
+        // https://docs.aws.amazon.com/step-functions/latest/dg/batch-iam.html
         new iam.PolicyStatement({
           resources: ['*'],
           actions: [
@@ -296,9 +252,9 @@ export class RunBatchJob implements sfn.IStepFunctionsTask {
         JobQueue: this.props.jobQueue.jobQueueArn,
         Parameters: this.props.payload,
 
-        ...(this.props.arrayProperties && {
+        ...(this.props.array && {
           ArrayProperties: {
-            Size: this.props.arrayProperties.size
+            Size: this.props.array.size
           }
         }),
 
@@ -310,9 +266,9 @@ export class RunBatchJob implements sfn.IStepFunctionsTask {
             ),
             InstanceType: this.props.containerOverrides.instanceType,
             Memory: this.props.containerOverrides.memory,
-            ResourceRequirements: this.props.containerOverrides.resourceRequirements?.map(
-              resReq => ({ Type: resReq.type, Value: resReq.value })
-            ),
+            ResourceRequirements: this.props.containerOverrides.gpuCount
+              ? [{ Type: 'GPU', Value: this.props.containerOverrides.gpuCount }]
+              : undefined,
             Vcpus: this.props.containerOverrides.vcpus
           }
         }),
@@ -324,9 +280,9 @@ export class RunBatchJob implements sfn.IStepFunctionsTask {
           }))
         }),
 
-        ...(this.props.retryStrategy && {
+        ...(this.props.retryAttempts && {
           RetryStrategy: {
-            Attempts: this.props.retryStrategy.attempts
+            Attempts: this.props.retryAttempts
           }
         }),
 
