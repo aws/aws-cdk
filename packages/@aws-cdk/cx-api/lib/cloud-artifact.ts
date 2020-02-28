@@ -93,6 +93,13 @@ export interface AwsCloudFormationStackProperties {
    * @default - No role is passed (currently assumed role/credentials are used)
    */
   readonly cloudFormationExecutionRoleArn?: string;
+
+  /**
+   * The role that should be used to upload the template before starting CloudFormation
+   *
+   * @default - No role is passed (currently assumed role/credentials are used)
+   */
+  readonly templatePublishingRoleArn?: string;
 }
 
 /**

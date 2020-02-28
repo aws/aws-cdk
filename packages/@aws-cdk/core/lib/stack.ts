@@ -785,6 +785,7 @@ export class Stack extends Construct implements ITaggable {
       templateFile: this.templateFile,
       assumeRoleArn: deployConfig.assumeRoleArn,
       cloudFormationExecutionRoleArn: deployConfig.cloudFormationExecutionRoleArn,
+      templatePublishingRoleArn: deployConfig.templatePublishingRoleArn,
       ...stackNameProperty
     };
 
