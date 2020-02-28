@@ -32,7 +32,7 @@ class RunBatchStack extends cdk.Stack {
         jobQueue: batchQueue,
         array: { size: 15 },
         containerOverrides: {
-          environment: [{ name: 'key', value: 'value' }],
+          environment: { key: 'value' },
           memory: 256,
           vcpus: 1
         },

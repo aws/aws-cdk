@@ -37,7 +37,7 @@ export interface ContainerOverrides {
    *
    * @default - No environment overrides
    */
-  readonly environment?: Array<{ name: string; value: string }>;
+  readonly environment?: { [key: string]: string };
 
   /**
    * The instance type to use for a multi-node parallel job.
@@ -208,10 +208,10 @@ export class RunBatchJob implements sfn.IStepFunctionsTask {
     // This is reuqired since environment variables must not start with AWS_BATCH;
     // this naming convention is reserved for variables that are set by the AWS Batch service.
     if (props.containerOverrides?.environment) {
-      props.containerOverrides.environment.forEach(env => {
-        if (env.name.match(/^AWS_BATCH/)) {
+      Object.keys(props.containerOverrides.environment).forEach(key => {
+        if (key.match(/^AWS_BATCH/)) {
           throw new Error(
-            `Invalid environment variable name: ${env.name}. Environment variable names starting with 'AWS_BATCH' are reserved.`
+            `Invalid environment variable name: ${key}. Environment variable names starting with 'AWS_BATCH' are reserved.`
           );
         }
       });
@@ -258,9 +258,14 @@ export class RunBatchJob implements sfn.IStepFunctionsTask {
         ...(this.props.containerOverrides && {
           ContainerOverrides: {
             Command: this.props.containerOverrides.command,
-            Environment: this.props.containerOverrides.environment?.map(
-              env => ({ Name: env.name, Value: env.value })
-            ),
+            Environment: this.props.containerOverrides.environment
+              ? Object.entries(this.props.containerOverrides.environment).map(
+                  ([key, value]) => ({
+                    Name: key,
+                    Value: value
+                  })
+                )
+              : undefined,
             InstanceType: this.props.containerOverrides.instanceType?.toString(),
             Memory: this.props.containerOverrides.memory,
             ResourceRequirements: this.props.containerOverrides.gpuCount

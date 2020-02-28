@@ -69,7 +69,7 @@ test('Task with all the parameters', () => {
       array: { size: 15 },
       containerOverrides: {
         command: ['sudo', 'rm'],
-        environment: [{ name: 'key', value: 'value' }],
+        environment: { key: 'value' },
         instanceType: new ec2.InstanceType('MULTI'),
         memory: 1024,
         gpuCount: 1,
@@ -145,7 +145,7 @@ test('Task throws if environment in containerOverrides contain env with name sta
         jobName: 'JobName',
         jobQueue: batchJobQueue,
         containerOverrides: {
-          environment: [{ name: 'AWS_BATCH_MY_NAME', value: 'MY_VALUE' }]
+          environment: { AWS_BATCH_MY_NAME: 'MY_VALUE' }
         }
       })
     });
