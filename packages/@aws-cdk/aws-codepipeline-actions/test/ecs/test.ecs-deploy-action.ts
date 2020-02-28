@@ -85,9 +85,12 @@ export = {
 
     'can be created by existing service'(test: Test) {
       const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Vpc');
       const service = ecs.FargateService.fromFargateServiceAttributes(stack, 'FargateService', {
         serviceName: 'service-name',
-        cluster: new ecs.Cluster(stack, 'Cluster', {
+        cluster: ecs.Cluster.fromClusterAttributes(stack, 'Cluster', {
+          vpc,
+          securityGroups: [],
           clusterName: 'cluster-name',
         }),
       });
@@ -132,9 +135,7 @@ export = {
                   Provider: "ECS"
                 },
                 Configuration: {
-                  ClusterName: {
-                    Ref: "ClusterEB0386A7",
-                  },
+                  ClusterName: "cluster-name",
                   ServiceName: "service-name",
                   FileName: "imageFile.json"
                 }

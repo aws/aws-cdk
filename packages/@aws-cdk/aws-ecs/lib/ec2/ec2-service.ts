@@ -101,14 +101,14 @@ export interface Ec2ServiceAttributes {
   /**
    * The service ARN.
    *
-   * @default - {@link serviceName}, is required
+   * @default - either this, or {@link serviceName}, is required
    */
   readonly serviceArn?: string;
 
   /**
    * The name of the service.
    *
-   * @default - {@link serviceArn}, is required
+   * @default - either this, or {@link serviceArn}, is required
    */
   readonly serviceName?: string;
 }
