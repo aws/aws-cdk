@@ -32,6 +32,6 @@
   "devDependencies": {
     "cdk-build-tools": "0.0.0",
     "pkglint": "0.0.0",
-    "@types/node": "^13.7.1"
+    "@types/node": "^10.17.17"
   }
 }

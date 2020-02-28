@@ -158,7 +158,7 @@
     "@aws-cdk/custom-resources": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
-    "@types/node": "^10.17.15"
+    "@types/node": "^10.17.17"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
