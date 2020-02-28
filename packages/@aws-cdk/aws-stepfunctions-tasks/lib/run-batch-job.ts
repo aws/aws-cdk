@@ -1,4 +1,5 @@
 import * as batch from '@aws-cdk/aws-batch';
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Aws, Duration } from '@aws-cdk/core';
@@ -44,7 +45,7 @@ export interface ContainerOverrides {
    *
    * @default - No instance type overrides
    */
-  readonly instanceType?: string;
+  readonly instanceType?: ec2.InstanceType;
 
   /**
    * The number of MiB of memory reserved for the job.
@@ -229,11 +230,7 @@ export class RunBatchJob implements sfn.IStepFunctionsTask {
         // https://docs.aws.amazon.com/step-functions/latest/dg/batch-iam.html
         new iam.PolicyStatement({
           resources: ['*'],
-          actions: [
-            'batch:SubmitJob',
-            'batch:DescribeJobs',
-            'batch:TerminateJob'
-          ]
+          actions: ['batch:SubmitJob']
         }),
         new iam.PolicyStatement({
           resources: [
@@ -264,10 +261,15 @@ export class RunBatchJob implements sfn.IStepFunctionsTask {
             Environment: this.props.containerOverrides.environment?.map(
               env => ({ Name: env.name, Value: env.value })
             ),
-            InstanceType: this.props.containerOverrides.instanceType,
+            InstanceType: this.props.containerOverrides.instanceType?.toString(),
             Memory: this.props.containerOverrides.memory,
             ResourceRequirements: this.props.containerOverrides.gpuCount
-              ? [{ Type: 'GPU', Value: this.props.containerOverrides.gpuCount }]
+              ? [
+                  {
+                    Type: 'GPU',
+                    Value: `${this.props.containerOverrides.gpuCount}`
+                  }
+                ]
               : undefined,
             Vcpus: this.props.containerOverrides.vcpus
           }
