@@ -572,4 +572,14 @@ describe('IAM polocy document', () => {
 
     expect(stack.resolve(doc1)).toEqual(stack.resolve(doc2));
   });
+
+  describe('fromJson', () => {
+    test("throws error when Statement isn't an array", () => {
+      expect(() => {
+        PolicyDocument.fromJson({
+          Statement: ''
+        });
+      }).toThrow(/Statement must be an array/);
+    });
+  });
 });
