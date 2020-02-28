@@ -153,6 +153,34 @@ plan.addApiStage({
 });
 ```
 
+The following example shows how to use a rate limited api key :
+```ts
+const hello = new lambda.Function(this, 'hello', {
+  runtime: lambda.Runtime.NODEJS_10_X,
+  handler: 'hello.handler',
+  code: lambda.Code.fromAsset('lambda')
+});
+
+const api = new apigateway.RestApi(this, 'hello-api', { });
+const integration = new apigateway.LambdaIntegration(hello);
+
+const v1 = api.root.addResource('v1');
+const echo = v1.addResource('echo');
+const echoMethod = echo.addMethod('GET', integration, { apiKeyRequired: true });
+
+const key = new apigateway.RateLimitedApiKey(this, 'rate-limited-api-key', {
+  customerId: 'hello-customer',
+  resources: [api],
+  rateLimitingSettings: {
+    quota: {
+      limit: 10000,
+      period: apigateway.Period.MONTH
+    }
+  }
+});
+
+```
+
 ### Working with models
 
 When you work with Lambda integrations that are not Proxy integrations, you
