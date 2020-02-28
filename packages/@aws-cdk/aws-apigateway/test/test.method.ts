@@ -713,7 +713,7 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
       ApiKeyRequired: true,
-      authorizationScopes: ['AuthScope1', 'AuthScope2']
+      AuthorizationScopes: ['AuthScope1', 'AuthScope2']
     }));
 
     test.done();
@@ -741,7 +741,7 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
       OperationName: 'defaultAuthScopes',
-      authorizationScopes: ['DefaultAuth']
+      AuthorizationScopes: ['DefaultAuth']
     }));
 
     test.done();
