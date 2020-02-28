@@ -71,7 +71,7 @@ export interface IntegrationOptions {
    * the key, and the template is the value (specified as a string), such as
    * the following snippet:
    *
-   *   { "application/json": "{\n  \"statusCode\": 200\n}" }
+   *   `{ "application/json": "{\n  \"statusCode\": 200\n}" }`
    *
    * @see http://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html
    */
