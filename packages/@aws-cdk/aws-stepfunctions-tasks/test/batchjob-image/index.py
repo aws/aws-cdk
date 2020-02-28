@@ -2,5 +2,5 @@
 import os
 import pprint
 
-print('Hello from ECS!')
+print('Hello from Batch!')
 pprint.pprint(dict(os.environ))

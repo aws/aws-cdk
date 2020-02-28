@@ -1,4 +1,5 @@
 import * as batch from '@aws-cdk/aws-batch';
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
@@ -69,7 +70,7 @@ test('Task with all the parameters', () => {
       containerOverrides: {
         command: ['sudo', 'rm'],
         environment: [{ name: 'key', value: 'value' }],
-        instanceType: 'MULTI',
+        instanceType: new ec2.InstanceType('MULTI'),
         memory: 1024,
         gpuCount: 1,
         vcpus: 10
@@ -133,5 +134,22 @@ test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration patt
     });
   }).toThrow(
     /Invalid Service Integration Pattern: WAIT_FOR_TASK_TOKEN is not supported to call RunBatchJob./i
+  );
+});
+
+test('Task throws if environment in containerOverrides contain env with name starting with AWS_BATCH', () => {
+  expect(() => {
+    new sfn.Task(stack, 'Task', {
+      task: new tasks.RunBatchJob({
+        jobDefinition: batchJobDefinition,
+        jobName: 'JobName',
+        jobQueue: batchJobQueue,
+        containerOverrides: {
+          environment: [{ name: 'AWS_BATCH_MY_NAME', value: 'MY_VALUE' }]
+        }
+      })
+    });
+  }).toThrow(
+    /Invalid environment variable name: AWS_BATCH_MY_NAME. Environment variable names starting with 'AWS_BATCH' are reserved./i
   );
 });

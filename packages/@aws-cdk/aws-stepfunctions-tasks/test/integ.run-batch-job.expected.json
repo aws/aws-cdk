@@ -79,7 +79,7 @@
                 {
                   "Ref": "AWS::URLSuffix"
                 },
-                "/aws-cdk/assets:1f37178655533422f6654c973b99eadec99a723c7181c912e4fb0976187c687c"
+                "/aws-cdk/assets:4ba4a660dbcc1e71f0bf07105626a5bc65d95ae71724dc57bbb94c8e14202342"
               ]
             ]
           },
@@ -134,11 +134,7 @@
         "PolicyDocument": {
           "Statement": [
             {
-              "Action": [
-                "batch:SubmitJob",
-                "batch:DescribeJobs",
-                "batch:TerminateJob"
-              ],
+              "Action": "batch:SubmitJob",
               "Effect": "Allow",
               "Resource": "*"
             },
@@ -190,7 +186,7 @@
           "Fn::Join": [
             "",
             [
-              "{\"StartAt\":\"Start\",\"States\":{\"Start\":{\"Type\":\"Pass\",\"Result\":{\"SomeKey\":\"SomeValue\"},\"Next\":\"Submit Job\"},\"Submit Job\":{\"End\":true,\"Parameters\":{\"JobDefinition\":\"",
+              "{\"StartAt\":\"Start\",\"States\":{\"Start\":{\"Type\":\"Pass\",\"Result\":{\"bar\":\"SomeValue\"},\"Next\":\"Submit Job\"},\"Submit Job\":{\"End\":true,\"Parameters\":{\"JobDefinition\":\"",
               {
                 "Ref": "JobDefinition24FFE3ED"
               },
@@ -198,11 +194,11 @@
               {
                 "Ref": "JobQueueEE3AD499"
               },
-              "\",\"Parameters\":{\"foo.$\":\"$.bar\"},\"ArrayProperties\":{\"Size\":15},\"ContainerOverrides\":{\"Command\":[\"sudo\",\"rm\"],\"Environment\":[{\"Name\":\"key\",\"Value\":\"value\"}],\"InstanceType\":\"MULTI\",\"Memory\":1024,\"ResourceRequirements\":[{\"Type\":\"GPU\",\"Value\":\"1\"}],\"Vcpus\":10},\"DependsOn\":[{\"JobId\":\"1234\",\"Type\":\"some_type\"}],\"RetryStrategy\":{\"Attempts\":3},\"Timeout\":{\"AttemptDurationSeconds\":30}},\"Type\":\"Task\",\"Resource\":\"arn:",
+              "\",\"Parameters\":{\"foo.$\":\"$.bar\"},\"ArrayProperties\":{\"Size\":15},\"ContainerOverrides\":{\"Environment\":[{\"Name\":\"key\",\"Value\":\"value\"}],\"Memory\":256,\"Vcpus\":1},\"RetryStrategy\":{\"Attempts\":3},\"Timeout\":{\"AttemptDurationSeconds\":60}},\"Type\":\"Task\",\"Resource\":\"arn:",
               {
                 "Ref": "AWS::Partition"
               },
-              ":states:::batch:submitJob.sync\"}},\"TimeoutSeconds\":30}"
+              ":states:::batch:submitJob.sync\"}}}"
             ]
           ]
         },
