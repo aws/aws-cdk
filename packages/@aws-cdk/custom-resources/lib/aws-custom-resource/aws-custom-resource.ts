@@ -17,6 +17,28 @@ export type AwsSdkMetadata = {[key: string]: any};
 const awsSdkMetadata: AwsSdkMetadata = metadata;
 
 /**
+ * Physical ID of the custom resource.
+ */
+export class PhysicalResourceId {
+
+  /**
+   * Construct a resource id from the path to the data in the API call response.
+   */
+  public static fromResponsePath(responsePath: string): PhysicalResourceId {
+    return new PhysicalResourceId(responsePath, undefined);
+  }
+
+  /**
+   * Construct a resource id from an explicit id.
+   */
+  public static fromId(id: string): PhysicalResourceId {
+    return new PhysicalResourceId(undefined, id);
+  }
+
+  private constructor(public readonly responsePath?: string, public readonly id?: string) { }
+}
+
+/**
  * An AWS SDK call.
  */
 export interface AwsSdkCall {
@@ -42,22 +64,12 @@ export interface AwsSdkCall {
   readonly parameters?: any;
 
   /**
-   * The path to the data in the API call response to use as the physical
-   * resource id. Either `physicalResourceId` or `physicalResourceIdPath`
-   * must be specified for onCreate or onUpdate calls.
-   *
-   * @default - no path
-   */
-  readonly physicalResourceIdPath?: string;
-
-  /**
-   * The physical resource id of the custom resource for this call. Either
-   * `physicalResourceId` or `physicalResourceIdPath` must be specified for
-   * onCreate or onUpdate calls.
+   * The physical resource id of the custom resource for this call.
+   * Mandatory for onCreate or onUpdate calls.
    *
    * @default - no physical resource id
    */
-  readonly physicalResourceId?: string;
+  readonly physicalResourceId?: PhysicalResourceId;
 
   /**
    * The regex pattern to use to catch API errors. The `code` property of the
@@ -174,8 +186,8 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
     }
 
     for (const call of [props.onCreate, props.onUpdate]) {
-      if (call && !call.physicalResourceId && !call.physicalResourceIdPath) {
-        throw new Error('Either `physicalResourceId` or `physicalResourceIdPath` must be specified for onCreate and onUpdate calls.');
+      if (call && !call.physicalResourceId) {
+        throw new Error('`physicalResourceId` must be specified for onCreate and onUpdate calls.');
       }
     }
 
