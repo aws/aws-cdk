@@ -10,39 +10,35 @@ export enum StandardAttribute {
   ADDRESS = 'address',
 
   /**
-   * End-User's birthday, represented as an ISO 8601:2004 [ISO8601‑2004] YYYY-MM-DD format.
+   * User's birthday, represented as an ISO 8601:2004 [ISO8601‑2004] YYYY-MM-DD format.
    * The year MAY be 0000, indicating that it is omitted.
    * To represent only the year, YYYY format is allowed.
    */
   BIRTHDATE = 'birthdate',
 
   /**
-   * End-User's preferred e-mail address.
+   * User's preferred e-mail address.
    * Its value MUST conform to the RFC 5322 [RFC5322] addr-spec syntax.
    */
   EMAIL = 'email',
 
   /**
-   * Surname(s) or last name(s) of the End-User.
-   * Note that in some cultures, people can have multiple family names or no family name;
-   * all can be present, with the names being separated by space characters.
+   * Surname or last name of the user.
    */
   FAMILY_NAME = 'family_name',
 
   /**
-   * End-User's gender.
+   * User's gender.
    */
   GENDER = 'gender',
 
   /**
-   * Given name(s) or first name(s) of the End-User.
-   * Note that in some cultures, people can have multiple given names;
-   * all can be present, with the names being separated by space characters.
+   * Given name or first name of the user.
    */
   GIVEN_NAME = 'given_name',
 
   /**
-   * End-User's locale, represented as a BCP47 [RFC5646] language tag.
+   * User's locale, represented as a BCP47 [RFC5646] language tag.
    * This is typically an ISO 639-1 Alpha-2 [ISO639‑1] language code in lowercase
    * and an ISO 3166-1 Alpha-2 [ISO3166‑1] country code in uppercase, separated by a dash.
    * For example, en-US or fr-CA.
@@ -50,27 +46,22 @@ export enum StandardAttribute {
   LOCALE = 'locale',
 
   /**
-   * Middle name(s) of the End-User.
-   * Note that in some cultures, people can have multiple middle names;
-   * all can be present, with the names being separated by space characters.
-   * Also note that in some cultures, middle names are not used.
+   * Middle name of the user.
    */
   MIDDLE_NAME = 'middle_name',
 
   /**
-   * End-User's full name in displayable form including all name parts,
-   * possibly including titles and suffixes, ordered according to the End-User's locale and preferences.
+   * User's full name in displayable form including all name parts, possibly including titles and suffixes.
    */
   NAME = 'name',
 
   /**
-   * Casual name of the End-User that may or may not be the same as the given_name.
-   * For instance, a nickname value of Mike might be returned alongside a given_name value of Michael.
+   * Casual name of the user that may or may not be the same as the given_name.
    */
   NICKNAME = 'nickname',
 
   /**
-   * End-User's preferred telephone number.
+   * User's preferred telephone number.
    *
    * Phone numbers must follow these formatting rules: A phone number must start with a plus (+) sign, followed
    * immediately by the country code. A phone number can only contain the + sign and digits. You must remove any other
@@ -80,38 +71,35 @@ export enum StandardAttribute {
   PHONE_NUMBER = 'phone_number',
 
   /**
-   * URL of the End-User's profile picture.
-   * This URL MUST refer to an image file (for example, a PNG, JPEG, or GIF image file),
-   * rather than to a Web page containing an image.
-   * Note that this URL SHOULD specifically reference a profile photo of the End-User
-   * suitable for displaying when describing the End-User, rather than an arbitrary photo taken by the End-User
+   * URL of the user's profile picture.
+   * This URL must refer to an image file (for example, a PNG, JPEG, or GIF image file).
    */
   PICTURE = 'picture',
 
   /**
-   * Shorthand name by which the End-User wishes to be referred to.
+   * Shorthand name by which the user wishes to be referred to.
    */
   PREFERRED_USERNAME = 'preferred_username',
 
   /**
-   * URL of the End-User's profile page. The contents of this Web page SHOULD be about the End-User.
+   * URL of the user's profile page.
    */
   PROFILE = 'profile',
 
   /**
-   * The End-User's time zone
+   * The user's time zone
    */
   TIMEZONE = 'zoneinfo',
 
   /**
-   * Time the End-User's information was last updated.
+   * Time the user's information was last updated.
    * Its value is a JSON number representing the number of seconds from 1970-01-01T0:0:0Z
    * as measured in UTC until the date/time.
    */
   UPDATED_AT = 'updated_at',
 
   /**
-   * URL of the End-User's Web page or blog.
+   * URL of the user's web page or blog.
    */
   WEBSITE = 'website'
 }
