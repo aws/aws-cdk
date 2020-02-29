@@ -129,8 +129,16 @@ export interface AwsCustomResourceProps {
   readonly onDelete?: AwsSdkCall;
 
   /**
+   * Allow using '*' (star) as the resources for the SDK calls auto-generated policy statements.
+   *
+   * @default false
+   */
+  readonly allowStarPermissions?: boolean;
+
+  /**
    * The IAM policy statements to allow the different calls. Use only if
-   * resource restriction is needed.
+   * resource restriction is needed. Otherwise, set 'allowStarPermissions' to true in order
+   * for the CDK to auto-generate policies based on the configured SDK calls.
    *
    * The custom resource also implements `iam.IGrantable`, making it possible
    * to use the `grantXxx()` methods.
@@ -194,7 +202,14 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
       for (const statement of props.policyStatements) {
         provider.addToRolePolicy(statement);
       }
-    } else { // Derive statements from AWS SDK calls
+    } else {
+
+      if (!props.allowStarPermissions) {
+        throw new Error('`allowStarPermissions` must be set to true when '
+        + '`policyStatements` is undefined, to allow auto-generation of policies.');
+      }
+
+      // Derive statements from AWS SDK calls
       for (const call of [props.onCreate, props.onUpdate, props.onDelete]) {
         if (call) {
           provider.addToRolePolicy(new iam.PolicyStatement({

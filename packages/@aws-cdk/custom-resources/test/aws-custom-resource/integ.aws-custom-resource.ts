@@ -20,7 +20,8 @@ const snsPublish = new AwsCustomResource(stack, 'Publish', {
       TopicArn: topic.topicArn
     },
     physicalResourceId: topic.topicArn,
-  }
+  },
+  allowStarPermissions: true
 });
 
 const listTopics = new AwsCustomResource(stack, 'ListTopics', {
@@ -28,7 +29,8 @@ const listTopics = new AwsCustomResource(stack, 'ListTopics', {
     service: 'SNS',
     action: 'listTopics',
     physicalResourceIdPath: 'Topics.0.TopicArn'
-  }
+  },
+  allowStarPermissions: true
 });
 listTopics.node.addDependency(topic);
 
@@ -45,7 +47,8 @@ const getParameter = new AwsCustomResource(stack, 'GetParameter', {
       WithDecryption: true
     },
     physicalResourceIdPath: 'Parameter.ARN'
-  }
+  },
+  allowStarPermissions: true
 });
 
 new cdk.CfnOutput(stack, 'MessageId', { value: snsPublish.getDataString('MessageId') });

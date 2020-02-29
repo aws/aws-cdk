@@ -27,7 +27,8 @@ test('aws sdk js custom resource with onCreate and onDelete', () => {
         parameters: {
           logGroupName: '/aws/lambda/loggroup',
         }
-      }
+      },
+      allowStarPermissions: true
     });
 
     // THEN
@@ -86,6 +87,7 @@ test('onCreate defaults to onUpdate', () => {
       },
       physicalResourceIdPath: 'ETag'
     },
+    allowStarPermissions: true
   });
 
   // THEN
@@ -157,6 +159,21 @@ test('fails when no calls are specified', () => {
   expect(() => new AwsCustomResource(stack, 'AwsSdk', {})).toThrow(/`onCreate`.+`onUpdate`.+`onDelete`/);
 });
 
+test('fails when policy statements is undefined and star permissions are not allowed', () => {
+  const stack = new cdk.Stack();
+  expect(() => new AwsCustomResource(stack, 'AwsSdk', {
+    onUpdate: {
+      service: 'CloudWatchLogs',
+      action: 'putRetentionPolicy',
+      parameters: {
+        logGroupName: '/aws/lambda/loggroup',
+        retentionInDays: 90
+      },
+      physicalResourceId: 'id'
+    }
+  })).toThrow(/`allowStarPermissions` must be set to true/);
+});
+
 test('fails when no physical resource method is specified', () => {
   const stack = new cdk.Stack();
 
@@ -168,7 +185,8 @@ test('fails when no physical resource method is specified', () => {
         logGroupName: '/aws/lambda/loggroup',
         retentionInDays: 90
       }
-    }
+    },
+    allowStarPermissions: true
   })).toThrow(/`physicalResourceId`.+`physicalResourceIdPath`/);
 });
 
@@ -190,6 +208,7 @@ test('encodes booleans', () => {
       },
       physicalResourceId: 'id'
     },
+    allowStarPermissions: true
   });
 
   // THEN
@@ -218,7 +237,8 @@ test('timeout defaults to 2 minutes', () => {
       service: 'service',
       action: 'action',
       physicalResourceId: 'id'
-    }
+    },
+    allowStarPermissions: true
   });
 
   // THEN
@@ -238,7 +258,8 @@ test('can specify timeout', () => {
       action: 'action',
       physicalResourceId: 'id'
     },
-    timeout: cdk.Duration.minutes(15)
+    timeout: cdk.Duration.minutes(15),
+    allowStarPermissions: true
   });
 
   // THEN
@@ -258,7 +279,8 @@ test('implements IGrantable', () => {
       service: 'service',
       action: 'action',
       physicalResourceId: 'id'
-    }
+    },
+    allowStarPermissions: true
   });
 
   // WHEN
@@ -300,7 +322,8 @@ test('can use existing role', () => {
       action: 'action',
       physicalResourceId: 'id'
     },
-    role
+    role,
+    allowStarPermissions: true
   });
 
   // THEN
@@ -319,7 +342,8 @@ test('getData', () => {
       service: 'service',
       action: 'action',
       physicalResourceId: 'id'
-    }
+    },
+    allowStarPermissions: true
   });
 
   // WHEN
@@ -342,7 +366,8 @@ test('getDataString', () => {
       service: 'service',
       action: 'action',
       physicalResourceId: 'id'
-    }
+    },
+    allowStarPermissions: true
   });
 
   // WHEN
@@ -354,7 +379,8 @@ test('getDataString', () => {
         a: awsSdk.getDataString('Data')
       },
       physicalResourceId: 'id'
-    }
+    },
+    allowStarPermissions: true
   });
 
   // THEN
