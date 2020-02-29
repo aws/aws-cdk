@@ -1,3 +1,58 @@
+# CloudFormation Resource Specification v11.2.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+* AWS::AppMesh::Mesh MeshOwner (__added__)
+* AWS::AppMesh::Mesh ResourceOwner (__added__)
+* AWS::AppMesh::Route MeshOwner (__added__)
+* AWS::AppMesh::Route ResourceOwner (__added__)
+* AWS::AppMesh::VirtualNode MeshOwner (__added__)
+* AWS::AppMesh::VirtualNode ResourceOwner (__added__)
+* AWS::AppMesh::VirtualRouter MeshOwner (__added__)
+* AWS::AppMesh::VirtualRouter ResourceOwner (__added__)
+* AWS::AppMesh::VirtualService MeshOwner (__added__)
+* AWS::AppMesh::VirtualService ResourceOwner (__added__)
+
+## Property Changes
+
+
+## Property Type Changes
+
+* AWS::AppMesh::VirtualNode.BackendDefaults (__added__)
+* AWS::AppMesh::VirtualNode.ClientPolicy (__added__)
+* AWS::AppMesh::VirtualNode.ClientPolicyTls (__added__)
+* AWS::AppMesh::VirtualNode.ListenerTls (__added__)
+* AWS::AppMesh::VirtualNode.ListenerTlsAcmCertificate (__added__)
+* AWS::AppMesh::VirtualNode.ListenerTlsCertificate (__added__)
+* AWS::AppMesh::VirtualNode.ListenerTlsFileCertificate (__added__)
+* AWS::AppMesh::VirtualNode.TlsValidationContext (__added__)
+* AWS::AppMesh::VirtualNode.TlsValidationContextAcmTrust (__added__)
+* AWS::AppMesh::VirtualNode.TlsValidationContextFileTrust (__added__)
+* AWS::AppMesh::VirtualNode.TlsValidationContextTrust (__added__)
+* AWS::AppMesh::VirtualNode.Listener TLS (__added__)
+* AWS::AppMesh::VirtualNode.VirtualNodeSpec BackendDefaults (__added__)
+* AWS::AppMesh::VirtualNode.VirtualServiceBackend ClientPolicy (__added__)
+
+# Serverless Application Model (SAM) Resource Specification v2016-10-31
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+
+## Property Type Changes
+
+* AWS::Serverless::Function.CloudWatchLogsEvent (__added__)
+* AWS::Serverless::Function.EventSource Properties.Types (__changed__)
+  * Added CloudWatchLogsEvent
+
 # CloudFormation Resource Specification v11.1.0
 
 ## New Resource Types
