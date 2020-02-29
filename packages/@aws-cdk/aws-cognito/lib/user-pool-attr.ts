@@ -3,7 +3,7 @@
  *
  * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html#cognito-user-pools-standard-attributes
  */
-export enum StandardAttrs {
+export enum StandardAttribute {
   /**
    * End-User's preferred postal address.
    */
@@ -119,24 +119,24 @@ export enum StandardAttrs {
 /**
  * Represents a custom attribute type.
  */
-export interface ICustomAttr {
+export interface ICustomAttribute {
   /**
    * Bind this custom attribute type to the values as expected by CloudFormation
    */
-  bind(): CustomAttrConfig;
+  bind(): CustomAttributeConfig;
 }
 
 /**
  * Configuration that will be fed into CloudFormation for any custom attribute type.
  */
-export interface CustomAttrConfig {
+export interface CustomAttributeConfig {
   // tslint:disable:max-line-length
   /**
    * The data type of the custom attribute.
    *
    * @see https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_SchemaAttributeType.html#CognitoUserPools-Type-SchemaAttributeType-AttributeDataType
    */
-  readonly attrDataType: string;
+  readonly dataType: string;
   // tslint:enable:max-line-length
 
   /**
@@ -152,7 +152,7 @@ export interface CustomAttrConfig {
 /**
  * Props for constructing a StringAttr
  */
-export interface StringAttrProps {
+export interface StringAttributeProps {
   /**
    * Minimum length of this attribute.
    * @default 0
@@ -169,11 +169,11 @@ export interface StringAttrProps {
 /**
  * The String custom attribute type.
  */
-export class StringAttr implements ICustomAttr {
+export class StringAttribute implements ICustomAttribute {
   private readonly minLen?: number;
   private readonly maxLen?: number;
 
-  constructor(props: StringAttrProps = {}) {
+  constructor(props: StringAttributeProps = {}) {
     if (props.minLen && props.minLen < 0) {
       throw new Error(`minLen cannot be less than 0 (value: ${props.minLen}).`);
     }
@@ -184,7 +184,7 @@ export class StringAttr implements ICustomAttr {
     this.maxLen = props?.maxLen;
   }
 
-  public bind(): CustomAttrConfig {
+  public bind(): CustomAttributeConfig {
     const constraints = {
       stringAttributeConstraints: {
         minLength: this.minLen?.toString(),
@@ -193,7 +193,7 @@ export class StringAttr implements ICustomAttr {
     };
 
     return {
-      attrDataType: 'String',
+      dataType: 'String',
       constraints: (this.minLen || this.maxLen) ? constraints : undefined,
     };
   }
@@ -202,7 +202,7 @@ export class StringAttr implements ICustomAttr {
 /**
  * Props for NumberAttr
  */
-export interface NumberAttrProps {
+export interface NumberAttributeProps {
   /**
    * Minimum value of this attribute.
    * @default - no minimum value
@@ -219,16 +219,16 @@ export interface NumberAttrProps {
 /**
  * The Number custom attribute type.
  */
-export class NumberAttr implements ICustomAttr {
+export class NumberAttribute implements ICustomAttribute {
   private readonly min?: number;
   private readonly max?: number;
 
-  constructor(props: NumberAttrProps = {}) {
+  constructor(props: NumberAttributeProps = {}) {
     this.min = props?.min;
     this.max = props?.max;
   }
 
-  public bind(): CustomAttrConfig {
+  public bind(): CustomAttributeConfig {
     const constraints = {
       numberAttributeConstraints: {
         minValue: this.min?.toString(),
@@ -237,7 +237,7 @@ export class NumberAttr implements ICustomAttr {
     };
 
     return {
-      attrDataType: 'Number',
+      dataType: 'Number',
       constraints: (this.min || this.max) ? constraints : undefined,
     };
   }
@@ -246,10 +246,10 @@ export class NumberAttr implements ICustomAttr {
 /**
  * The Boolean custom attribute type.
  */
-export class BooleanAttr implements ICustomAttr {
-  public bind(): CustomAttrConfig {
+export class BooleanAttribute implements ICustomAttribute {
+  public bind(): CustomAttributeConfig {
     return {
-      attrDataType: 'Boolean'
+      dataType: 'Boolean'
     };
   }
 }
@@ -257,10 +257,10 @@ export class BooleanAttr implements ICustomAttr {
 /**
  * The DateTime custom attribute type.
  */
-export class DateTimeAttr implements ICustomAttr {
-  public bind(): CustomAttrConfig {
+export class DateTimeAttribute implements ICustomAttribute {
+  public bind(): CustomAttributeConfig {
     return {
-      attrDataType: 'DateTime'
+      dataType: 'DateTime'
     };
   }
 }

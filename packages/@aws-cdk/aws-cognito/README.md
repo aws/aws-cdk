@@ -177,21 +177,20 @@ four optional attributes.
 new UserPool(this, 'myuserpool', {
   // ...
   // ...
-  attributes: {
-    required: [ StandardAttrs.address, StandardAttrs.name ],
-    custom: {
-      'myappid': new StringAttr({ minLen: 5, maxLen: 15 }),
-      'callingcode': new NumberAttr({ min: 1, max: 3 }),
-      'isEmployee': new BooleanAttr(),
-      'joinedOn': new DateTimeAttr()
-    },
-  }
+  requiredAttributes: [ StandardAttribute.address, StandardAttribute.name ],
+  customAttributes: {
+    'myappid': new StringAttribute({ minLen: 5, maxLen: 15 }),
+    'callingcode': new NumberAttribute({ min: 1, max: 3 }),
+    'isEmployee': new BooleanAttribute(),
+    'joinedOn': new DateTimeAttribute()
+  },
 });
 ```
 
 As shown in the code snippet, there are data types that are available for custom attributes. The 'String' and 'Number'
-data types allow for further constraints on their length and values, respectively. Custom attributes cannot be marked
-as required.
+data types allow for further constraints on their length and values, respectively.
+
+Custom attributes cannot be marked as required.
 
 ### Importing User Pools
 

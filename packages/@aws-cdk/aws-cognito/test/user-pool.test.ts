@@ -3,7 +3,7 @@ import { ABSENT } from '@aws-cdk/assert/lib/assertions/have-resource';
 import { Role } from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Stack, Tag } from '@aws-cdk/core';
-import { NumberAttr, StandardAttrs, StringAttr, UserPool, VerificationEmailStyle } from '../lib';
+import { NumberAttribute, StandardAttribute, StringAttribute, UserPool, VerificationEmailStyle } from '../lib';
 
 describe('User Pool', () => {
   test('default setup', () => {
@@ -443,7 +443,7 @@ describe('User Pool', () => {
 
     // WHEN
     new UserPool(stack, 'Pool', {
-      requiredAttrs: [ StandardAttrs.NAME, StandardAttrs.TIMEZONE ]
+      requiredAttributes: [ StandardAttribute.NAME, StandardAttribute.TIMEZONE ]
     });
 
     // THEN
@@ -471,7 +471,7 @@ describe('User Pool', () => {
     });
     new UserPool(stack, 'Pool2', {
       userPoolName: 'Pool2',
-      requiredAttrs: []
+      requiredAttributes: []
     });
 
     // THEN
@@ -491,9 +491,9 @@ describe('User Pool', () => {
 
     // WHEN
     new UserPool(stack, 'Pool', {
-      customAttrs: {
-        'custom-string-attr': new StringAttr(),
-        'custom-number-attr': new NumberAttr(),
+      customAttributes: {
+        'custom-string-attr': new StringAttribute(),
+        'custom-number-attr': new NumberAttribute(),
       }
     });
 
@@ -522,9 +522,9 @@ describe('User Pool', () => {
 
     // WHEN
     new UserPool(stack, 'Pool', {
-      customAttrs: {
-        'custom-string-attr': new StringAttr({ minLen: 5, maxLen: 50 }),
-        'custom-number-attr': new NumberAttr({ min: 500, max: 2000 }),
+      customAttributes: {
+        'custom-string-attr': new StringAttribute({ minLen: 5, maxLen: 50 }),
+        'custom-number-attr': new NumberAttribute({ min: 500, max: 2000 }),
       }
     });
 

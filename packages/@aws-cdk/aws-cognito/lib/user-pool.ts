@@ -2,7 +2,7 @@ import { IRole, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from '
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Construct, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { CfnUserPool } from './cognito.generated';
-import { ICustomAttr, StandardAttrs } from './user-pool-attr';
+import { ICustomAttribute, StandardAttribute } from './user-pool-attr';
 
 /**
  * The different ways in which users of this pool can sign up or sign in.
@@ -262,14 +262,14 @@ export interface UserPoolProps {
    *
    * @default - No attributes are required.
    */
-  readonly requiredAttrs?: StandardAttrs[];
+  readonly requiredAttributes?: StandardAttribute[];
 
   /**
    * Define a set of custom attributes that can be configured for each user in the user pool.
    *
    * @default - No custom attributes.
    */
-  readonly customAttrs?: { [key: string]: ICustomAttr };
+  readonly customAttributes?: { [key: string]: ICustomAttribute };
 
   /**
    * Lambda functions to use for supported Cognito triggers.
@@ -547,24 +547,24 @@ export class UserPool extends Resource implements IUserPool {
 
     if (signIn.username) {
       aliasAttrs = [];
-      if (signIn.email) { aliasAttrs.push(StandardAttrs.EMAIL); }
-      if (signIn.phone) { aliasAttrs.push(StandardAttrs.PHONE_NUMBER); }
-      if (signIn.preferredUsername) { aliasAttrs.push(StandardAttrs.PREFERRED_USERNAME); }
+      if (signIn.email) { aliasAttrs.push(StandardAttribute.EMAIL); }
+      if (signIn.phone) { aliasAttrs.push(StandardAttribute.PHONE_NUMBER); }
+      if (signIn.preferredUsername) { aliasAttrs.push(StandardAttribute.PREFERRED_USERNAME); }
       if (aliasAttrs.length === 0) { aliasAttrs = undefined; }
     } else {
       usernameAttrs = [];
-      if (signIn.email) { usernameAttrs.push(StandardAttrs.EMAIL); }
-      if (signIn.phone) { usernameAttrs.push(StandardAttrs.PHONE_NUMBER); }
+      if (signIn.email) { usernameAttrs.push(StandardAttribute.EMAIL); }
+      if (signIn.phone) { usernameAttrs.push(StandardAttribute.PHONE_NUMBER); }
     }
 
     if (props.autoVerify) {
       autoVerifyAttrs = [];
-      if (props.autoVerify.email) { autoVerifyAttrs.push(StandardAttrs.EMAIL); }
-      if (props.autoVerify.phone) { autoVerifyAttrs.push(StandardAttrs.PHONE_NUMBER); }
+      if (props.autoVerify.email) { autoVerifyAttrs.push(StandardAttribute.EMAIL); }
+      if (props.autoVerify.phone) { autoVerifyAttrs.push(StandardAttribute.PHONE_NUMBER); }
     } else if (signIn.email || signIn.phone) {
       autoVerifyAttrs = [];
-      if (signIn.email) { autoVerifyAttrs.push(StandardAttrs.EMAIL); }
-      if (signIn.phone) { autoVerifyAttrs.push(StandardAttrs.PHONE_NUMBER); }
+      if (signIn.email) { autoVerifyAttrs.push(StandardAttribute.EMAIL); }
+      if (signIn.phone) { autoVerifyAttrs.push(StandardAttribute.PHONE_NUMBER); }
     }
 
     return { usernameAttrs, aliasAttrs, autoVerifyAttrs };
@@ -610,18 +610,18 @@ export class UserPool extends Resource implements IUserPool {
   private schemaConfiguration(props: UserPoolProps): CfnUserPool.SchemaAttributeProperty[] | undefined {
     const schema: CfnUserPool.SchemaAttributeProperty[] = [];
 
-    if (props.requiredAttrs) {
-      schema.push(...props.requiredAttrs.map((attr) => {
+    if (props.requiredAttributes) {
+      schema.push(...props.requiredAttributes.map((attr) => {
         return { name: attr, required: true };
       }));
     }
 
-    if (props.customAttrs) {
-      const customAttrs = Object.keys(props.customAttrs).map((attrName) => {
-        const attrConfig = props.customAttrs![attrName].bind();
+    if (props.customAttributes) {
+      const customAttrs = Object.keys(props.customAttributes).map((attrName) => {
+        const attrConfig = props.customAttributes![attrName].bind();
         return {
           name: attrName,
-          attributeDataType: attrConfig.attrDataType,
+          attributeDataType: attrConfig.dataType,
           ...attrConfig.constraints,
         };
       });
