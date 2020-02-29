@@ -100,13 +100,15 @@ const requestCertificate = async function (requestId, domainName, subjectAlterna
   console.log('Waiting for ACM to provide DNS records for validation...');
 
   let options = [];
-  for (let attempt = 0; attempt < maxAttempts && !options.length; attempt++) {
+  let ready = false;
+  for (let attempt = 0; attempt < maxAttempts && !ready; attempt++) {
     const { Certificate } = await acm.describeCertificate({
       CertificateArn: reqCertResponse.CertificateArn
     }).promise();
     options = Certificate.DomainValidationOptions || [];
 
-    if (!options.length) {
+    ready = options.length && options.every(opt => opt && !!opt.ResourceRecord);
+    if (!ready) {
       // Exponential backoff with jitter based on 200ms base
       // component of backoff fixed to ensure minimum total wait time on
       // slow targets.
@@ -114,8 +116,8 @@ const requestCertificate = async function (requestId, domainName, subjectAlterna
       await sleep(random() * base * 50 + base * 150);
     }
   }
-  if (!options.length) {
-    throw new Error(`Response from describeCertificate did not contain DomainValidationOptions after ${maxAttempts} attempts.`);
+  if (!ready) {
+    throw new Error(`Response from describeCertificate did not contain all DomainValidationOptions after ${maxAttempts} attempts.`);
   }
 
   const changeBatch = await route53.changeResourceRecordSets({

@@ -258,7 +258,7 @@ describe('DNS Validated Certificate Handler', () => {
 
     const request = nock(ResponseURL).put('/', body => {
       return body.Status === 'FAILED' &&
-        body.Reason.startsWith('Response from describeCertificate did not contain DomainValidationOptions');
+        body.Reason.startsWith('Response from describeCertificate did not contain all DomainValidationOptions');
     }).reply(200);
 
     return LambdaTester(handler.certificateRequestHandler)
@@ -299,7 +299,7 @@ describe('DNS Validated Certificate Handler', () => {
 
     const request = nock(ResponseURL).put('/', body => {
       return body.Status === 'FAILED' &&
-        body.Reason.startsWith('Response from describeCertificate did not contain DomainValidationOptions');
+        body.Reason.startsWith('Response from describeCertificate did not contain all DomainValidationOptions');
     }).reply(200);
 
     return LambdaTester(handler.certificateRequestHandler)
