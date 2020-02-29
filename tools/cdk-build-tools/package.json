@@ -53,7 +53,7 @@
     "nyc": "^15.0.0",
     "ts-jest": "^25.2.0",
     "tslint": "^5.20.1",
-    "typescript": "~3.8.2",
+    "typescript": "~3.8.3",
     "yargs": "^15.1.0"
   },
   "keywords": [

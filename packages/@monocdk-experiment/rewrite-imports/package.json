@@ -27,11 +27,11 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "typescript": "^3.7.5"
+    "typescript": "^3.8.3"
   },
   "devDependencies": {
     "cdk-build-tools": "0.0.0",
     "pkglint": "0.0.0",
-    "@types/node": "^13.7.1"
+    "@types/node": "^10.17.17"
   }
 }
