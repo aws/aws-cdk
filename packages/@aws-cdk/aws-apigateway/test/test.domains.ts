@@ -1,5 +1,5 @@
 // tslint:disable:object-literal-key-quotes
-import { expect, haveResource } from '@aws-cdk/assert';
+import { ABSENT, expect, haveResource } from '@aws-cdk/assert';
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
@@ -83,6 +83,11 @@ export = {
       securityPolicy: apigw.SecurityPolicy.TLS_1_2
     });
 
+    new apigw.DomainName(stack, 'default-domain', {
+      domainName: 'default.example.com',
+      certificate: cert
+    });
+
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::DomainName', {
       "DomainName": "old.example.com",
@@ -96,6 +101,13 @@ export = {
       "EndpointConfiguration": { "Types": [ "REGIONAL" ] },
       "RegionalCertificateArn": { "Ref": "Cert5C9FAEC1" },
       "SecurityPolicy": "TLS_1_2"
+    }));
+
+    expect(stack).to(haveResource('AWS::ApiGateway::DomainName', {
+      "DomainName": "default.example.com",
+      "EndpointConfiguration": { "Types": [ "REGIONAL" ] },
+      "RegionalCertificateArn": { "Ref": "Cert5C9FAEC1" },
+      "SecurityPolicy": ABSENT
     }));
     test.done();
   },

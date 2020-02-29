@@ -5,10 +5,12 @@ import { BasePathMapping, BasePathMappingOptions } from './base-path-mapping';
 import { EndpointType, IRestApi } from './restapi';
 
 /**
- * The minimum version of the SSL protocol that you want Api Gateway to use for HTTPS connections.
+ * The minimum version of the SSL protocol that you want API Gateway to use for HTTPS connections.
  */
 export enum SecurityPolicy {
+  /** Cipher suite TLS 1.0 */
   TLS_1_0 = 'TLS_1_0',
+  /** Cipher suite TLS 1.2 */
   TLS_1_2 = 'TLS_1_2'
 }
 

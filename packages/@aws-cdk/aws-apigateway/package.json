@@ -174,8 +174,6 @@
       "docs-public-apis:@aws-cdk/aws-apigateway.Stage",
       "docs-public-apis:@aws-cdk/aws-apigateway.Stage.restApi",
       "docs-public-apis:@aws-cdk/aws-apigateway.Stage.stageName",
-      "docs-public-apis:@aws-cdk/aws-apigateway.SecurityPolicy.TLS_1_0",
-      "docs-public-apis:@aws-cdk/aws-apigateway.SecurityPolicy.TLS_1_2",
       "docs-public-apis:@aws-cdk/aws-apigateway.UsagePlan",
       "docs-public-apis:@aws-cdk/aws-apigateway.UsagePlan.usagePlanId",
       "docs-public-apis:@aws-cdk/aws-apigateway.VpcLink.addTargets",
