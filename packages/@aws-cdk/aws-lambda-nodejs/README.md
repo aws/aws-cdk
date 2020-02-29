@@ -54,7 +54,7 @@ new lambda.NodejsFunction(this, 'MyFunction', {
 
 All other properties of `lambda.Function` are supported, see also the [AWS Lambda construct library](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-lambda).
 
-### Configuring Parcel
+#### Configuring Parcel
 The `NodejsFunction` construct exposes some [Parcel](https://parceljs.org/) options via properties: `minify`, `sourceMaps`,
 `buildDir` and `cacheDir`.
 
@@ -62,3 +62,27 @@ Parcel transpiles your code (every internal module) with [@babel/preset-env](htt
 runtime version of your Lambda function as target.
 
 Configuring Babel with Parcel is possible via a `.babelrc` or a `babel` config in `package.json`.
+
+### Node.js inline function
+Use the `NodejsInlineFunction` to write inline runtime code next to infrastructure code.
+
+```ts
+new NodejsInlineFunction(stack, 'Inline', {
+  handler: async (event: any) => {
+    console.log('Event: %j', event);
+    // Do something with the event...
+    const s3 = new AWS.S3(); // `aws-sdk` is available here under `AWS`
+    // more code here...
+    return event;
+  }
+});
+```
+
+By default, the `aws-sdk` module is available under the name `AWS`. The `cfn-response` module
+can be made available under the name `response` by setting `requireCfnResponse` to `true`.
+
+Do not reference variables out of the scope of your handler. This function is part of the runtime
+code. Use environment variables if you need to reference variables of your infrastructure code.
+
+The 4096 characters limit for Lambda inline code applies here. A very basic minifier applied to
+your code tries to mitigate this limitation.
