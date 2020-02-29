@@ -10,20 +10,23 @@ const ResponseURL = 'https://cloudwatch-response-mock.example.com/';
 AWS.setSDK(require.resolve('aws-sdk'));
 
 describe('DNS Validated Certificate Handler', () => {
-  let origLog = console.log;
+  const origLog = console.log;
   const testRequestId = 'f4ef1b10-c39a-44e3-99c0-fbf7e53c3943';
   const testDomainName = 'test.example.com';
+  const testAltDomainName = 'alt.example.com';
   const testHostedZoneId = '/hostedzone/Z3P5QSUBK4POTI';
   const testCertificateArn = 'arn:aws:acm:region:123456789012:certificate/12345678-1234-1234-1234-123456789012';
-  const testRRName = '_3639ac514e785e898d2646601fa951d5.example.com';
+  const testRRName = '_3639ac514e785e898d2646601fa951d5.test.example.com';
   const testRRValue = '_x2.acm-validations.aws';
-  const spySleep = sinon.spy(function(ms) {
+  const testAltRRName = '_a8c35a069a0b1879bf9965d06710b752.alt.example.com';
+  const testAltRRValue = '_x3.acm-validations.aws';
+  const spySleep = sinon.spy(function (ms) {
     return Promise.resolve();
   });
 
   beforeEach(() => {
     handler.withDefaultResponseURL(ResponseURL);
-    handler.withWaiter(function() {
+    handler.withWaiter(function () {
       // Mock waiter is merely a self-fulfilling promise
       return {
         promise: () => {
@@ -34,7 +37,7 @@ describe('DNS Validated Certificate Handler', () => {
       };
     });
     handler.withSleep(spySleep);
-    console.log = function() { };
+    console.log = function () { };
   });
   afterEach(() => {
     // Restore waiters and logger
@@ -73,7 +76,7 @@ describe('DNS Validated Certificate Handler', () => {
 
   test('Create operation requests a certificate', () => {
     const requestCertificateFake = sinon.fake.resolves({
-      CertificateArn: testCertificateArn,
+      CertificateArn: testCertificateArn
     });
 
     const describeCertificateFake = sinon.stub();
@@ -117,7 +120,7 @@ describe('DNS Validated Certificate Handler', () => {
         ResourceProperties: {
           DomainName: testDomainName,
           HostedZoneId: testHostedZoneId,
-          Region: 'us-east-1',
+          Region: 'us-east-1'
         }
       })
       .expectResolve(() => {
@@ -145,10 +148,103 @@ describe('DNS Validated Certificate Handler', () => {
       });
   });
 
+  test('Create operation with SubjectAlternativeNames property requests a certificate with multiple DNS records', () => {
+    const requestCertificateFake = sinon.fake.resolves({
+      CertificateArn: testCertificateArn
+    });
+
+    const describeCertificateFake = sinon.stub();
+    describeCertificateFake.onFirstCall().resolves({
+      Certificate: {
+        CertificateArn: testCertificateArn
+      }
+    });
+    describeCertificateFake.resolves({
+      Certificate: {
+        CertificateArn: testCertificateArn,
+        DomainValidationOptions: [{
+          ValidationStatus: 'SUCCESS',
+          ResourceRecord: {
+            Name: testRRName,
+            Type: 'CNAME',
+            Value: testRRValue
+          }
+        }, {
+          ValidationStatus: 'SUCCESS',
+          ResourceRecord: {
+            Name: testAltRRName,
+            Type: 'CNAME',
+            Value: testAltRRValue
+          }
+        }]
+      }
+    });
+
+    const changeResourceRecordSetsFake = sinon.fake.resolves({
+      ChangeInfo: {
+        Id: 'bogus'
+      }
+    });
+
+    AWS.mock('ACM', 'requestCertificate', requestCertificateFake);
+    AWS.mock('ACM', 'describeCertificate', describeCertificateFake);
+    AWS.mock('Route53', 'changeResourceRecordSets', changeResourceRecordSetsFake);
+
+    const request = nock(ResponseURL).put('/', body => {
+      return body.Status === 'SUCCESS';
+    }).reply(200);
+
+    return LambdaTester(handler.certificateRequestHandler)
+      .event({
+        RequestType: 'Create',
+        RequestId: testRequestId,
+        ResourceProperties: {
+          DomainName: testDomainName,
+          SubjectAlternativeNames: [testAltDomainName],
+          HostedZoneId: testHostedZoneId,
+          Region: 'us-east-1'
+        }
+      })
+      .expectResolve(() => {
+        sinon.assert.calledWith(requestCertificateFake, sinon.match({
+          DomainName: testDomainName,
+          ValidationMethod: 'DNS',
+          SubjectAlternativeNames: [testAltDomainName]
+        }));
+        sinon.assert.calledWith(changeResourceRecordSetsFake, sinon.match({
+          ChangeBatch: {
+            Changes: [{
+              Action: 'UPSERT',
+              ResourceRecordSet: {
+                Name: testRRName,
+                Type: 'CNAME',
+                TTL: 60,
+                ResourceRecords: [{
+                  Value: testRRValue
+                }]
+              }
+            }, {
+              Action: 'UPSERT',
+              ResourceRecordSet: {
+                Name: testAltRRName,
+                Type: 'CNAME',
+                TTL: 60,
+                ResourceRecords: [{
+                  Value: testAltRRValue
+                }]
+              }
+            }]
+          },
+          HostedZoneId: testHostedZoneId
+        }));
+        expect(request.isDone()).toBe(true);
+      });
+  });
+
   test('Create operation fails after more than 60s if certificate has no DomainValidationOptions', () => {
     handler.withRandom(() => 0);
     const requestCertificateFake = sinon.fake.resolves({
-      CertificateArn: testCertificateArn,
+      CertificateArn: testCertificateArn
     });
 
     const describeCertificateFake = sinon.fake.resolves({
@@ -172,7 +268,7 @@ describe('DNS Validated Certificate Handler', () => {
         ResourceProperties: {
           DomainName: testDomainName,
           HostedZoneId: testHostedZoneId,
-          Region: 'us-east-1',
+          Region: 'us-east-1'
         }
       })
       .expectResolve(() => {
@@ -189,7 +285,7 @@ describe('DNS Validated Certificate Handler', () => {
   test('Create operation fails within 360s and 10 attempts if certificate has no DomainValidationOptions', () => {
     handler.withRandom(() => 1);
     const requestCertificateFake = sinon.fake.resolves({
-      CertificateArn: testCertificateArn,
+      CertificateArn: testCertificateArn
     });
 
     const describeCertificateFake = sinon.fake.resolves({
@@ -213,7 +309,7 @@ describe('DNS Validated Certificate Handler', () => {
         ResourceProperties: {
           DomainName: testDomainName,
           HostedZoneId: testHostedZoneId,
-          Region: 'us-east-1',
+          Region: 'us-east-1'
         }
       })
       .expectResolve(() => {
@@ -232,7 +328,7 @@ describe('DNS Validated Certificate Handler', () => {
     handler.withMaxAttempts(1);
 
     const requestCertificateFake = sinon.fake.resolves({
-      CertificateArn: testCertificateArn,
+      CertificateArn: testCertificateArn
     });
     AWS.mock('ACM', 'requestCertificate', requestCertificateFake);
 
@@ -269,13 +365,13 @@ describe('DNS Validated Certificate Handler', () => {
         ResourceProperties: {
           DomainName: testDomainName,
           HostedZoneId: testHostedZoneId,
-          Region: 'us-east-1',
+          Region: 'us-east-1'
         }
       })
       .expectResolve(() => {
         sinon.assert.calledOnce(describeCertificateFake);
         sinon.assert.calledWith(describeCertificateFake, sinon.match({
-          CertificateArn: testCertificateArn,
+          CertificateArn: testCertificateArn
         }));
         expect(request.isDone()).toBe(true);
       });
@@ -284,7 +380,7 @@ describe('DNS Validated Certificate Handler', () => {
   test('Delete operation deletes the certificate', () => {
     const describeCertificateFake = sinon.fake.resolves({
       Certificate: {
-        CertificateArn: testCertificateArn,
+        CertificateArn: testCertificateArn
       }
     });
     AWS.mock('ACM', 'describeCertificate', describeCertificateFake);
@@ -302,7 +398,7 @@ describe('DNS Validated Certificate Handler', () => {
         RequestId: testRequestId,
         PhysicalResourceId: testCertificateArn,
         ResourceProperties: {
-          Region: 'us-east-1',
+          Region: 'us-east-1'
         }
       })
       .expectResolve(() => {
@@ -336,7 +432,7 @@ describe('DNS Validated Certificate Handler', () => {
         RequestId: testRequestId,
         PhysicalResourceId: testCertificateArn,
         ResourceProperties: {
-          Region: 'us-east-1',
+          Region: 'us-east-1'
         }
       })
       .expectResolve(() => {
@@ -357,13 +453,13 @@ describe('DNS Validated Certificate Handler', () => {
     describeCertificateFake.onFirstCall().resolves({
       Certificate: {
         CertificateArn: testCertificateArn,
-        InUseBy: [usedByArn],
+        InUseBy: [usedByArn]
       }
     });
     describeCertificateFake.resolves({
       Certificate: {
         CertificateArn: testCertificateArn,
-        InUseBy: [],
+        InUseBy: []
       }
     });
 
@@ -382,7 +478,7 @@ describe('DNS Validated Certificate Handler', () => {
         RequestId: testRequestId,
         PhysicalResourceId: testCertificateArn,
         ResourceProperties: {
-          Region: 'us-east-1',
+          Region: 'us-east-1'
         }
       })
       .expectResolve(() => {
@@ -402,7 +498,7 @@ describe('DNS Validated Certificate Handler', () => {
     const describeCertificateFake = sinon.fake.resolves({
       Certificate: {
         CertificateArn: testCertificateArn,
-        InUseBy: [usedByArn],
+        InUseBy: [usedByArn]
       }
     });
     AWS.mock('ACM', 'describeCertificate', describeCertificateFake);
@@ -422,7 +518,7 @@ describe('DNS Validated Certificate Handler', () => {
         RequestId: testRequestId,
         PhysicalResourceId: testCertificateArn,
         ResourceProperties: {
-          Region: 'us-east-1',
+          Region: 'us-east-1'
         }
       })
       .expectResolve(() => {
@@ -459,7 +555,7 @@ describe('DNS Validated Certificate Handler', () => {
         RequestId: testRequestId,
         PhysicalResourceId: testCertificateArn,
         ResourceProperties: {
-          Region: 'us-east-1',
+          Region: 'us-east-1'
         }
       })
       .expectResolve(() => {
@@ -496,7 +592,7 @@ describe('DNS Validated Certificate Handler', () => {
         RequestId: testRequestId,
         PhysicalResourceId: testCertificateArn,
         ResourceProperties: {
-          Region: 'us-east-1',
+          Region: 'us-east-1'
         }
       })
       .expectResolve(() => {
@@ -515,7 +611,7 @@ describe('DNS Validated Certificate Handler', () => {
 
     const describeCertificateFake = sinon.fake.resolves({
       Certificate: {
-        CertificateArn: testCertificateArn,
+        CertificateArn: testCertificateArn
       }
     });
     AWS.mock('ACM', 'describeCertificate', describeCertificateFake);
@@ -533,7 +629,7 @@ describe('DNS Validated Certificate Handler', () => {
         RequestId: testRequestId,
         PhysicalResourceId: testCertificateArn,
         ResourceProperties: {
-          Region: 'us-east-1',
+          Region: 'us-east-1'
         }
       })
       .expectResolve(() => {
