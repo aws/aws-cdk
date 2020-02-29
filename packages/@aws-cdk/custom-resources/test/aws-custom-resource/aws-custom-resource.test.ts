@@ -19,7 +19,7 @@ test('aws sdk js custom resource with onCreate and onDelete', () => {
           logGroupName: '/aws/lambda/loggroup',
           retentionInDays: 90
         },
-        physicalResourceId: PhysicalResourceId.fromId('loggroup')
+        physicalResourceId: PhysicalResourceId.fromLiteralString('loggroup')
       },
       onDelete: {
         service: 'CloudWatchLogs',
@@ -217,7 +217,7 @@ test('timeout defaults to 2 minutes', () => {
     onCreate: {
       service: 'service',
       action: 'action',
-      physicalResourceId: PhysicalResourceId.fromId('id')
+      physicalResourceId: PhysicalResourceId.fromLiteralString('id')
     }
   });
 
@@ -236,7 +236,7 @@ test('can specify timeout', () => {
     onCreate: {
       service: 'service',
       action: 'action',
-      physicalResourceId: PhysicalResourceId.fromId('id')
+      physicalResourceId: PhysicalResourceId.fromLiteralString('id')
     },
     timeout: cdk.Duration.minutes(15)
   });
@@ -257,7 +257,7 @@ test('implements IGrantable', () => {
     onCreate: {
       service: 'service',
       action: 'action',
-      physicalResourceId: PhysicalResourceId.fromId('id')
+      physicalResourceId: PhysicalResourceId.fromLiteralString('id')
     }
   });
 
@@ -298,7 +298,7 @@ test('can use existing role', () => {
     onCreate: {
       service: 'service',
       action: 'action',
-      physicalResourceId: PhysicalResourceId.fromId('id')
+      physicalResourceId: PhysicalResourceId.fromLiteralString('id')
     },
     role
   });
@@ -318,7 +318,7 @@ test('getData', () => {
     onCreate: {
       service: 'service',
       action: 'action',
-      physicalResourceId: PhysicalResourceId.fromId('id')
+      physicalResourceId: PhysicalResourceId.fromLiteralString('id')
     }
   });
 
@@ -341,7 +341,7 @@ test('getDataString', () => {
     onCreate: {
       service: 'service',
       action: 'action',
-      physicalResourceId: PhysicalResourceId.fromId('id')
+      physicalResourceId: PhysicalResourceId.fromLiteralString('id')
     }
   });
 
@@ -353,7 +353,7 @@ test('getDataString', () => {
       parameters: {
         a: awsSdk.getDataString('Data')
       },
-      physicalResourceId: PhysicalResourceId.fromId('id')
+      physicalResourceId: PhysicalResourceId.fromLiteralString('id')
     }
   });
 

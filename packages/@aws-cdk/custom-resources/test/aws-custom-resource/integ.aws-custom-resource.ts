@@ -19,7 +19,7 @@ const snsPublish = new AwsCustomResource(stack, 'Publish', {
       Message: 'hello',
       TopicArn: topic.topicArn
     },
-    physicalResourceId: PhysicalResourceId.fromId(topic.topicArn),
+    physicalResourceId: PhysicalResourceId.fromLiteralString(topic.topicArn),
   }
 });
 
