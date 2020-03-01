@@ -22,7 +22,7 @@ const awsSdkMetadata: AwsSdkMetadata = metadata;
 export class PhysicalResourceId {
 
   /**
-   * Construct a resource id from the path to the data in the API call response.
+   * Construct a resource id from the path (dot notation) to the data in the API call response.
    */
   public static fromResponsePath(responsePath: string): PhysicalResourceId {
     return new PhysicalResourceId(responsePath, undefined);
