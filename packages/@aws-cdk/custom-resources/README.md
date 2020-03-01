@@ -339,7 +339,7 @@ be `Items.0.Title.S`.
 
 You must provide the `policy` property defining the IAM Policy that will be applied to the API calls. The library provides two factory methods to quickly configure this:
 
-- **`AwsCustomResourcePolicy.fromSdkCalls`** - Use this to auto-generate IAM Policy statements based on the configured SDK calls. Note that you will have to either provide specific ARN's, or explicitly use '*' to allow access to any resource by using the `AwsCustomResourcePolicy.ANY_RESOURCE` constant.
+- **`AwsCustomResourcePolicy.fromSdkCalls`** - Use this to auto-generate IAM Policy statements based on the configured SDK calls. Note that you will have to either provide specific ARN's, or explicitly use `AwsCustomResourcePolicy.ANY_RESOURCE` to allow access to any resource.
 - **`AwsCustomResourcePolicy.fromStatements`** - Use this to specify your own custom statements.
 
 The custom resource also implements `iam.IGrantable`, making it possible to use the `grantXxx()` methods.
