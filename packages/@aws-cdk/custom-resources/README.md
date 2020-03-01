@@ -356,7 +356,7 @@ const awsCustom1 = new AwsCustomResource(this, 'API1', {
     action: '...',
     physicalResourceId: PhysicalResourceId.of('...')
   },
-  policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ALL_RESOURCES})
+  policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ANY_RESOURCE})
 });
 
 const awsCustom2 = new AwsCustomResource(this, 'API2', {
@@ -368,7 +368,7 @@ const awsCustom2 = new AwsCustomResource(this, 'API2', {
     },
     physicalResourceId: PhysicalResourceId.of('...')
   },
-  policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ALL_RESOURCES})
+  policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ANY_RESOURCE})
 })
 ```
 
@@ -386,7 +386,7 @@ const verifyDomainIdentity = new AwsCustomResource(this, 'VerifyDomainIdentity',
     },
     physicalResourceId: PhysicalResourceId.fromResponse('VerificationToken') // Use the token returned by the call as physical id
   },
-  policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ALL_RESOURCES})
+  policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ANY_RESOURCE})
 });
 
 new route53.TxtRecord(this, 'SESVerificationRecord', {
@@ -409,7 +409,7 @@ const getParameter = new AwsCustomResource(this, 'GetParameter', {
     },
     physicalResourceId: PhysicalResourceId.of(Date.now().toString()) // Update physical id to always fetch the latest version
   },
-  policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ALL_RESOURCES})
+  policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ANY_RESOURCE})
 });
 
 // Use the value in another construct with
