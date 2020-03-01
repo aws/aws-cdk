@@ -62,7 +62,7 @@ test('create event with physical resource id path', async () => {
         parameters: {
           Bucket: 'my-bucket'
         },
-        physicalResourceId: PhysicalResourceId.fromResponsePath('Contents.1.ETag')
+        physicalResourceId: PhysicalResourceId.fromResponse('Contents.1.ETag')
       } as AwsSdkCall
     }
   };
@@ -133,7 +133,7 @@ test('delete event', async () => {
         parameters: {
           Bucket: 'my-bucket'
         },
-        physicalResourceId: PhysicalResourceId.fromResponsePath('Contents.1.ETag')
+        physicalResourceId: PhysicalResourceId.fromResponse('Contents.1.ETag')
       } as AwsSdkCall
     }
   };

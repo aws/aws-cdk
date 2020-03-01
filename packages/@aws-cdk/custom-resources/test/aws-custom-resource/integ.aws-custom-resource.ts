@@ -27,7 +27,7 @@ const listTopics = new AwsCustomResource(stack, 'ListTopics', {
   onUpdate: {
     service: 'SNS',
     action: 'listTopics',
-    physicalResourceId: PhysicalResourceId.fromResponsePath('Topics.0.TopicArn')
+    physicalResourceId: PhysicalResourceId.fromResponse('Topics.0.TopicArn')
   }
 });
 listTopics.node.addDependency(topic);
@@ -44,7 +44,7 @@ const getParameter = new AwsCustomResource(stack, 'GetParameter', {
       Name: ssmParameter.parameterName,
       WithDecryption: true
     },
-    physicalResourceId: PhysicalResourceId.fromResponsePath('Parameter.ARN')
+    physicalResourceId: PhysicalResourceId.fromResponse('Parameter.ARN')
   }
 });
 

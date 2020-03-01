@@ -86,7 +86,7 @@ test('onCreate defaults to onUpdate', () => {
         Key: 'my-key',
         Body: 'my-body'
       },
-      physicalResourceId: PhysicalResourceId.fromResponsePath('ETag')
+      physicalResourceId: PhysicalResourceId.fromResponse('ETag')
     },
   });
 
@@ -133,7 +133,7 @@ test('with custom policyStatements', () => {
         Key: 'my-key',
         Body: 'my-body'
       },
-      physicalResourceId: PhysicalResourceId.fromResponsePath('ETag')
+      physicalResourceId: PhysicalResourceId.fromResponse('ETag')
     },
     policyStatements: [
       new iam.PolicyStatement({
