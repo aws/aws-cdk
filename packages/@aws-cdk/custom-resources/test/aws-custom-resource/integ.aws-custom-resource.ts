@@ -2,7 +2,7 @@
 import * as sns from '@aws-cdk/aws-sns';
 import * as ssm from '@aws-cdk/aws-ssm';
 import * as cdk from '@aws-cdk/core';
-import { AwsCustomResource } from '../../lib';
+import { AwsCustomResource, PhysicalResourceId } from '../../lib';
 
 const app = new cdk.App();
 
@@ -19,7 +19,7 @@ const snsPublish = new AwsCustomResource(stack, 'Publish', {
       Message: 'hello',
       TopicArn: topic.topicArn
     },
-    physicalResourceId: topic.topicArn,
+    physicalResourceId: PhysicalResourceId.of(topic.topicArn),
   }
 });
 
@@ -27,7 +27,7 @@ const listTopics = new AwsCustomResource(stack, 'ListTopics', {
   onUpdate: {
     service: 'SNS',
     action: 'listTopics',
-    physicalResourceIdPath: 'Topics.0.TopicArn'
+    physicalResourceId: PhysicalResourceId.fromResponse('Topics.0.TopicArn')
   }
 });
 listTopics.node.addDependency(topic);
@@ -44,7 +44,7 @@ const getParameter = new AwsCustomResource(stack, 'GetParameter', {
       Name: ssmParameter.parameterName,
       WithDecryption: true
     },
-    physicalResourceIdPath: 'Parameter.ARN'
+    physicalResourceId: PhysicalResourceId.fromResponse('Parameter.ARN')
   }
 });
 
