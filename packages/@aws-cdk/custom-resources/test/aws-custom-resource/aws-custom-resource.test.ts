@@ -1,7 +1,7 @@
 import '@aws-cdk/assert/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import { AwsCustomResource, AwsCustomResourcePolicy } from '../../lib';
+import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '../../lib';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -19,7 +19,7 @@ test('aws sdk js custom resource with onCreate and onDelete', () => {
           logGroupName: '/aws/lambda/loggroup',
           retentionInDays: 90
         },
-        physicalResourceId: 'loggroup'
+        physicalResourceId: PhysicalResourceId.of('loggroup')
       },
       onDelete: {
         service: 'CloudWatchLogs',
@@ -40,7 +40,9 @@ test('aws sdk js custom resource with onCreate and onDelete', () => {
           "logGroupName": "/aws/lambda/loggroup",
           "retentionInDays": 90
         },
-        "physicalResourceId": "loggroup"
+        "physicalResourceId": {
+          "id": "loggroup"
+        }
       },
       "Delete": {
         "service": "CloudWatchLogs",
@@ -85,7 +87,7 @@ test('onCreate defaults to onUpdate', () => {
         Key: 'my-key',
         Body: 'my-body'
       },
-      physicalResourceIdPath: 'ETag'
+      physicalResourceId: PhysicalResourceId.fromResponse('ETag')
     },
     policy: AwsCustomResourcePolicy.fromSdkCalls(AwsCustomResourcePolicy.ALL_RESOURCES)
   });
@@ -100,7 +102,9 @@ test('onCreate defaults to onUpdate', () => {
         "Key": "my-key",
         "Body": "my-body"
       },
-      "physicalResourceIdPath": "ETag"
+      "physicalResourceId": {
+        "responsePath": "ETag"
+      }
     },
     "Update": {
       "service": "s3",
@@ -110,7 +114,9 @@ test('onCreate defaults to onUpdate', () => {
         "Key": "my-key",
         "Body": "my-body"
       },
-      "physicalResourceIdPath": "ETag"
+      "physicalResourceId": {
+        "responsePath": "ETag"
+      }
     },
   });
 });
@@ -129,7 +135,7 @@ test('with custom policyStatements', () => {
         Key: 'my-key',
         Body: 'my-body'
       },
-      physicalResourceIdPath: 'ETag'
+      physicalResourceId: PhysicalResourceId.fromResponse('ETag')
     },
     policy: AwsCustomResourcePolicy.fromStatements([
       new iam.PolicyStatement({
@@ -174,7 +180,7 @@ test('fails when no physical resource method is specified', () => {
       }
     },
     policy: AwsCustomResourcePolicy.fromSdkCalls(AwsCustomResourcePolicy.ALL_RESOURCES)
-  })).toThrow(/`physicalResourceId`.+`physicalResourceIdPath`/);
+  })).toThrow(/`physicalResourceId`/);
 });
 
 test('encodes booleans', () => {
@@ -193,7 +199,7 @@ test('encodes booleans', () => {
         falseBoolean: false,
         falseString: 'false'
       },
-      physicalResourceId: 'id'
+      physicalResourceId: PhysicalResourceId.of('id')
     },
     policy: AwsCustomResourcePolicy.fromSdkCalls(AwsCustomResourcePolicy.ALL_RESOURCES)
   });
@@ -209,7 +215,9 @@ test('encodes booleans', () => {
         "falseBoolean": "FALSE:BOOLEAN",
         "falseString": "false"
       },
-      "physicalResourceId": "id"
+      "physicalResourceId": {
+        "id": "id"
+      }
     },
   });
 });
@@ -223,7 +231,7 @@ test('timeout defaults to 2 minutes', () => {
     onCreate: {
       service: 'service',
       action: 'action',
-      physicalResourceId: 'id'
+      physicalResourceId: PhysicalResourceId.of('id')
     },
     policy: AwsCustomResourcePolicy.fromSdkCalls(AwsCustomResourcePolicy.ALL_RESOURCES)
   });
@@ -243,7 +251,7 @@ test('can specify timeout', () => {
     onCreate: {
       service: 'service',
       action: 'action',
-      physicalResourceId: 'id'
+      physicalResourceId: PhysicalResourceId.of('id')
     },
     timeout: cdk.Duration.minutes(15),
     policy: AwsCustomResourcePolicy.fromSdkCalls(AwsCustomResourcePolicy.ALL_RESOURCES)
@@ -265,7 +273,7 @@ test('implements IGrantable', () => {
     onCreate: {
       service: 'service',
       action: 'action',
-      physicalResourceId: 'id'
+      physicalResourceId: PhysicalResourceId.of('id')
     },
     policy: AwsCustomResourcePolicy.fromSdkCalls(AwsCustomResourcePolicy.ALL_RESOURCES)
   });
@@ -307,7 +315,7 @@ test('can use existing role', () => {
     onCreate: {
       service: 'service',
       action: 'action',
-      physicalResourceId: 'id'
+      physicalResourceId: PhysicalResourceId.of('id')
     },
     role,
     policy: AwsCustomResourcePolicy.fromSdkCalls(AwsCustomResourcePolicy.ALL_RESOURCES)
@@ -328,7 +336,7 @@ test('getData', () => {
     onCreate: {
       service: 'service',
       action: 'action',
-      physicalResourceId: 'id'
+      physicalResourceId: PhysicalResourceId.of('id')
     },
     policy: AwsCustomResourcePolicy.fromSdkCalls(AwsCustomResourcePolicy.ALL_RESOURCES)
   });
@@ -352,7 +360,7 @@ test('getDataString', () => {
     onCreate: {
       service: 'service',
       action: 'action',
-      physicalResourceId: 'id'
+      physicalResourceId: PhysicalResourceId.of('id')
     },
     policy: AwsCustomResourcePolicy.fromSdkCalls(AwsCustomResourcePolicy.ALL_RESOURCES)
   });
@@ -365,7 +373,7 @@ test('getDataString', () => {
       parameters: {
         a: awsSdk.getDataString('Data')
       },
-      physicalResourceId: 'id'
+      physicalResourceId: PhysicalResourceId.of('id')
     },
     policy: AwsCustomResourcePolicy.fromSdkCalls(AwsCustomResourcePolicy.ALL_RESOURCES)
   });
@@ -383,7 +391,9 @@ test('getDataString', () => {
           ]
         }
       },
-      physicalResourceId: 'id'
+      physicalResourceId: {
+        "id": 'id'
+      }
     }
   });
 });
