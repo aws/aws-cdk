@@ -98,6 +98,34 @@ export interface AwsSdkCall {
   readonly outputPath?: string;
 }
 
+/**
+ * The IAM Policy that will be applied to the different calls.
+ */
+export class AwsCustomResourcePolicy {
+
+  /**
+   * Explicit IAM Policy Statements.
+   */
+  public static fromStatements(statements: iam.PolicyStatement[]) {
+    return new AwsCustomResourcePolicy(statements, false);
+  }
+
+  /**
+   * Generate IAM Policy Statements from the configured SDK calls.
+   *
+   * Each SDK call with be translated to an IAM Policy Statement in the form of: `call.service:call.action` (e.g `s3:PutObject`).
+   *
+   * **IMPORTANT: This uses '*' for the resources specification of the statements.**
+   * If you want to specify explicit resource ARN's, use `fromStatements`.
+   *
+   */
+  public static generateStarStatements() {
+    return new AwsCustomResourcePolicy([], true);
+  }
+
+  private constructor(public readonly statements: iam.PolicyStatement[], public readonly generate: boolean) {}
+}
+
 export interface AwsCustomResourceProps {
   /**
    * Cloudformation Resource type.
@@ -129,17 +157,7 @@ export interface AwsCustomResourceProps {
   readonly onDelete?: AwsSdkCall;
 
   /**
-   * Allow using '*' (star) as the resources of the policy statements that are auto-generated from SDK calls.
-   * Has no affect if custom policy statements are passed via the `policyStatements` property.
-   *
-   * @default false
-   */
-  readonly allowStarPermissions?: boolean;
-
-  /**
-   * The IAM policy statements to allow the different calls. Use only if
-   * resource restriction is needed. Otherwise, set 'allowStarPermissions' to true in order
-   * for the CDK to auto-generate policies based on the configured SDK calls.
+   * The policy to apply to the resource.
    *
    * The custom resource also implements `iam.IGrantable`, making it possible
    * to use the `grantXxx()` methods.
@@ -148,9 +166,10 @@ export interface AwsCustomResourceProps {
    * to note the that function's role will eventually accumulate the
    * permissions/grants from all resources.
    *
-   * @default - extract the permissions from the calls
+   * @see Policy.fromStatements
+   * @see Policy.fromSdkCalls
    */
-  readonly policyStatements?: iam.PolicyStatement[];
+  readonly policy: AwsCustomResourcePolicy;
 
   /**
    * The execution role for the Lambda function implementing this custom
@@ -199,17 +218,7 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
     });
     this.grantPrincipal = provider.grantPrincipal;
 
-    if (props.policyStatements) {
-      for (const statement of props.policyStatements) {
-        provider.addToRolePolicy(statement);
-      }
-    } else {
-
-      if (!props.allowStarPermissions) {
-        throw new Error('`allowStarPermissions` must be set to true when '
-        + '`policyStatements` is undefined, to allow auto-generation of policies.');
-      }
-
+    if (props.policy.generate) {
       // Derive statements from AWS SDK calls
       for (const call of [props.onCreate, props.onUpdate, props.onDelete]) {
         if (call) {
@@ -218,6 +227,11 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
             resources: ['*']
           }));
         }
+      }
+    } else {
+      // Use custom statements provided by the user
+      for (const statement of props.policy.statements) {
+        provider.addToRolePolicy(statement);
       }
     }
 
