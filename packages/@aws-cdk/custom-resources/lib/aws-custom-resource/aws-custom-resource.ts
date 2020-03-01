@@ -115,14 +115,32 @@ export interface AwsSdkCall {
 }
 
 /**
+ * Options for the auto-generation of policies based on the configured SDK calls.
+ */
+export interface SdkCallsPolicyOptions {
+
+  /**
+   * The resources that the calls will have access to.
+   *
+   * It is best to use specific resource ARN's when possible. However, you can also use `AwsCustomResourcePolicy.ANY_RESOURCE`
+   * to allow access to all resources. For example, when `onCreate` is used to create a resource which you don't
+   * know the physical name of in advance.
+   *
+   * Note that will apply to ALL SDK calls.
+   */
+  readonly resources: string[]
+
+}
+
+/**
  * The IAM Policy that will be applied to the different calls.
  */
 export class AwsCustomResourcePolicy {
 
   /**
-   * Use this constant to configure access to ALL resources.
+   * Use this constant to configure access to any resource.
    */
-  public static readonly ALL_RESOURCES = ['*'];
+  public static readonly ANY_RESOURCE = ['*'];
 
   /**
    * Explicit IAM Policy Statements.
@@ -137,15 +155,11 @@ export class AwsCustomResourcePolicy {
    * Generate IAM Policy Statements from the configured SDK calls.
    *
    * Each SDK call with be translated to an IAM Policy Statement in the form of: `call.service:call.action` (e.g `s3:PutObject`).
-   * The `resources` of the statement will all be the same and are configured using the `resources` param.
    *
-   * Its best to use specific resource ARN's when possible. However, you can also use `AwsCustomResourcePolicy.ALL_RESOURCES`
-   * to allow access to all resources, for example when `onCreate` is used to create a physical resource.
-   *
-   * @param resources the resources that the calls will have access to.
+   * @param options options for the policy generation
    */
-  public static fromSdkCalls(resources: string[]) {
-    return new AwsCustomResourcePolicy([], resources);
+  public static fromSdkCalls(options: SdkCallsPolicyOptions) {
+    return new AwsCustomResourcePolicy([], options.resources);
   }
 
   /**
@@ -247,7 +261,12 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
     });
     this.grantPrincipal = provider.grantPrincipal;
 
-    if (props.policy.resources) {
+    if (props.policy.statements.length !== 0) {
+      // Use custom statements provided by the user
+      for (const statement of props.policy.statements) {
+        provider.addToRolePolicy(statement);
+      }
+    } else {
       // Derive statements from AWS SDK calls
       for (const call of [props.onCreate, props.onUpdate, props.onDelete]) {
         if (call) {
@@ -257,11 +276,7 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
           }));
         }
       }
-    } else {
-      // Use custom statements provided by the user
-      for (const statement of props.policy.statements) {
-        provider.addToRolePolicy(statement);
-      }
+
     }
 
     const create = props.onCreate || props.onUpdate;
