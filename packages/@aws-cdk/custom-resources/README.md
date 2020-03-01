@@ -381,7 +381,7 @@ const verifyDomainIdentity = new AwsCustomResource(this, 'VerifyDomainIdentity',
     parameters: {
       Domain: 'example.com'
     },
-    physicalResourceId: PhysicalResourceId.fromResponsePath('VerificationToken') // Use the token returned by the call as physical id
+    physicalResourceId: PhysicalResourceId.fromResponse('VerificationToken') // Use the token returned by the call as physical id
   }
 });
 
