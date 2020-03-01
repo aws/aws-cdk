@@ -129,7 +129,8 @@ export interface AwsCustomResourceProps {
   readonly onDelete?: AwsSdkCall;
 
   /**
-   * Allow using '*' (star) as the resources for the SDK calls auto-generated policy statements.
+   * Allow using '*' (star) as the resources of the policy statements that are auto-generated from SDK calls.
+   * Has no affect if custom policy statements are passed via the `policyStatements` property.
    *
    * @default false
    */
