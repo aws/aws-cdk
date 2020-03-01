@@ -90,14 +90,14 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     let physicalResourceId: string;
     switch (event.RequestType) {
       case 'Create':
-        physicalResourceId = event.ResourceProperties.Create?.physicalResourceId.id ??
-                             event.ResourceProperties.Update?.physicalResourceId.id ??
-                             event.ResourceProperties.Delete?.physicalResourceId.id ??
+        physicalResourceId = event.ResourceProperties.Create?.physicalResourceId?.id ??
+                             event.ResourceProperties.Update?.physicalResourceId?.id ??
+                             event.ResourceProperties.Delete?.physicalResourceId?.id ??
                              event.LogicalResourceId;
         break;
       case 'Update':
       case 'Delete':
-        physicalResourceId = event.ResourceProperties[event.RequestType]?.physicalResourceId.id ?? event.PhysicalResourceId;
+        physicalResourceId = event.ResourceProperties[event.RequestType]?.physicalResourceId?.id ?? event.PhysicalResourceId;
         break;
     }
 

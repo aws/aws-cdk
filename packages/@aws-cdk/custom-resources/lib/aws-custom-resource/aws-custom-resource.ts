@@ -31,15 +31,15 @@ export class PhysicalResourceId {
   /**
    * Construct a resource id from an explicit id.
    */
-  public static fromLiteralString(literalId: string): PhysicalResourceId {
-    return new PhysicalResourceId(undefined, literalId);
+  public static of(id: string): PhysicalResourceId {
+    return new PhysicalResourceId(undefined, id);
   }
 
   /**
    * @param responsePath Path to a response data element to be used as the physical id.
-   * @param literalId Literal string to be used as the physical id.
+   * @param id Literal string to be used as the physical id.
    */
-  private constructor(public readonly responsePath?: string, public readonly literalId?: string) { }
+  private constructor(public readonly responsePath?: string, public readonly id?: string) { }
 }
 
 /**

@@ -19,7 +19,7 @@ test('aws sdk js custom resource with onCreate and onDelete', () => {
           logGroupName: '/aws/lambda/loggroup',
           retentionInDays: 90
         },
-        physicalResourceId: PhysicalResourceId.fromLiteralString('loggroup')
+        physicalResourceId: PhysicalResourceId.of('loggroup')
       },
       onDelete: {
         service: 'CloudWatchLogs',
@@ -39,7 +39,9 @@ test('aws sdk js custom resource with onCreate and onDelete', () => {
           "logGroupName": "/aws/lambda/loggroup",
           "retentionInDays": 90
         },
-        "physicalResourceId": "loggroup"
+        "physicalResourceId": {
+          "id": "loggroup"
+        }
       },
       "Delete": {
         "service": "CloudWatchLogs",
@@ -98,7 +100,9 @@ test('onCreate defaults to onUpdate', () => {
         "Key": "my-key",
         "Body": "my-body"
       },
-      "physicalResourceIdPath": "ETag"
+      "physicalResourceId": {
+        "responsePath": "ETag"
+      }
     },
     "Update": {
       "service": "s3",
@@ -108,7 +112,9 @@ test('onCreate defaults to onUpdate', () => {
         "Key": "my-key",
         "Body": "my-body"
       },
-      "physicalResourceIdPath": "ETag"
+      "physicalResourceId": {
+        "responsePath": "ETag"
+      }
     },
   });
 });
@@ -188,7 +194,7 @@ test('encodes booleans', () => {
         falseBoolean: false,
         falseString: 'false'
       },
-      physicalResourceId: PhysicalResourceId.fromResponsePath('id')
+      physicalResourceId: PhysicalResourceId.of('id')
     },
   });
 
@@ -203,7 +209,9 @@ test('encodes booleans', () => {
         "falseBoolean": "FALSE:BOOLEAN",
         "falseString": "false"
       },
-      "physicalResourceId": "id"
+      "physicalResourceId": {
+        "id": "id"
+      }
     },
   });
 });
@@ -217,7 +225,7 @@ test('timeout defaults to 2 minutes', () => {
     onCreate: {
       service: 'service',
       action: 'action',
-      physicalResourceId: PhysicalResourceId.fromLiteralString('id')
+      physicalResourceId: PhysicalResourceId.of('id')
     }
   });
 
@@ -236,7 +244,7 @@ test('can specify timeout', () => {
     onCreate: {
       service: 'service',
       action: 'action',
-      physicalResourceId: PhysicalResourceId.fromLiteralString('id')
+      physicalResourceId: PhysicalResourceId.of('id')
     },
     timeout: cdk.Duration.minutes(15)
   });
@@ -257,7 +265,7 @@ test('implements IGrantable', () => {
     onCreate: {
       service: 'service',
       action: 'action',
-      physicalResourceId: PhysicalResourceId.fromLiteralString('id')
+      physicalResourceId: PhysicalResourceId.of('id')
     }
   });
 
@@ -298,7 +306,7 @@ test('can use existing role', () => {
     onCreate: {
       service: 'service',
       action: 'action',
-      physicalResourceId: PhysicalResourceId.fromLiteralString('id')
+      physicalResourceId: PhysicalResourceId.of('id')
     },
     role
   });
@@ -318,7 +326,7 @@ test('getData', () => {
     onCreate: {
       service: 'service',
       action: 'action',
-      physicalResourceId: PhysicalResourceId.fromLiteralString('id')
+      physicalResourceId: PhysicalResourceId.of('id')
     }
   });
 
@@ -341,7 +349,7 @@ test('getDataString', () => {
     onCreate: {
       service: 'service',
       action: 'action',
-      physicalResourceId: PhysicalResourceId.fromLiteralString('id')
+      physicalResourceId: PhysicalResourceId.of('id')
     }
   });
 
@@ -353,7 +361,7 @@ test('getDataString', () => {
       parameters: {
         a: awsSdk.getDataString('Data')
       },
-      physicalResourceId: PhysicalResourceId.fromLiteralString('id')
+      physicalResourceId: PhysicalResourceId.of('id')
     }
   });
 
@@ -370,7 +378,9 @@ test('getDataString', () => {
           ]
         }
       },
-      physicalResourceId: 'id'
+      physicalResourceId: {
+        "id": 'id'
+      }
     }
   });
 });
