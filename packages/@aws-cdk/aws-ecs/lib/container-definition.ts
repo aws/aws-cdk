@@ -28,14 +28,14 @@ export abstract class Secret {
    * Manager.
    *
    * @param secret the secret stored in AWS Secrets Manager
-   * @param key the name of the key in a key-value pair with the value that you
-   * want to set as the environment variable value.  Only values in JSON format
-   * are supported. If you do not specify a JSON key, then the full contents of
-   * the secret is used.
+   * @param field the name of the field with the value that you want to set as
+   * the environment variable value.  Only values in JSON format are supported.
+   * If you do not specify a JSON field, then the full content of the secret is
+   * used.
    */
-  public static fromSecretsManager(secret: secretsmanager.ISecret, key?: string): Secret {
+  public static fromSecretsManager(secret: secretsmanager.ISecret, field?: string): Secret {
     return {
-      arn: key ? `${secret.secretArn}:${key}::` : secret.secretArn,
+      arn: field ? `${secret.secretArn}:${field}::` : secret.secretArn,
       grantRead: grantee => secret.grantRead(grantee),
     };
   }
