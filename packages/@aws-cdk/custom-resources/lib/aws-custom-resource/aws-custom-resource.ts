@@ -29,7 +29,7 @@ export class PhysicalResourceId {
   }
 
   /**
-   * Construct a resource id from an explicit id.
+   * Explicit physical resource id.
    */
   public static of(id: string): PhysicalResourceId {
     return new PhysicalResourceId(undefined, id);
