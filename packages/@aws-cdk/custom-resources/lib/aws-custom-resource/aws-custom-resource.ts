@@ -119,11 +119,11 @@ export class AwsCustomResourcePolicy {
    * If you want to specify explicit resource ARN's, use `fromStatements`.
    *
    */
-  public static generateStarStatements() {
-    return new AwsCustomResourcePolicy([], true);
+  public static fromSdkCalls(resources: string) {
+    return new AwsCustomResourcePolicy([], resources);
   }
 
-  private constructor(public readonly statements: iam.PolicyStatement[], public readonly generate: boolean) {}
+  private constructor(public readonly statements: iam.PolicyStatement[], public readonly resources: string) {}
 }
 
 export interface AwsCustomResourceProps {
