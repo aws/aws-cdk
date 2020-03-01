@@ -331,7 +331,7 @@ test('getData', () => {
   });
 
   // WHEN
-  const token = awsSdk.getData('Data');
+  const token = awsSdk.getResponseField('Data');
 
   // THEN
   expect(stack.resolve(token)).toEqual({
@@ -359,7 +359,7 @@ test('getDataString', () => {
       service: 'service',
       action: 'action',
       parameters: {
-        a: awsSdk.getDataString('Data')
+        a: awsSdk.getResponseDataString('Data')
       },
       physicalResourceId: PhysicalResourceId.of('id')
     }

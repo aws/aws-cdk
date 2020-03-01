@@ -257,7 +257,7 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
    *
    * @param dataPath the path to the data
    */
-  public getData(dataPath: string) {
+  public getResponseField(dataPath: string) {
     return this.customResource.getAtt(dataPath);
   }
 
@@ -268,7 +268,7 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
    *
    * @param dataPath the path to the data
    */
-  public getDataString(dataPath: string): string {
+  public getResponseDataString(dataPath: string): string {
     return this.customResource.getAttString(dataPath);
   }
 }
