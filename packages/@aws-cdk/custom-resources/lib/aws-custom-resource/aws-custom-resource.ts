@@ -104,26 +104,39 @@ export interface AwsSdkCall {
 export class AwsCustomResourcePolicy {
 
   /**
+   * Use this constant to configure access to ALL resources.
+   */
+  public static readonly ALL_RESOURCES = ['*'];
+
+  /**
    * Explicit IAM Policy Statements.
+   *
+   * @param statements the statements to propagate to the SDK calls.
    */
   public static fromStatements(statements: iam.PolicyStatement[]) {
-    return new AwsCustomResourcePolicy(statements, false);
+    return new AwsCustomResourcePolicy(statements, undefined);
   }
 
   /**
    * Generate IAM Policy Statements from the configured SDK calls.
    *
    * Each SDK call with be translated to an IAM Policy Statement in the form of: `call.service:call.action` (e.g `s3:PutObject`).
+   * The `resources` of the statement will all be the same and are configured using the `resources` param.
    *
-   * **IMPORTANT: This uses '*' for the resources specification of the statements.**
-   * If you want to specify explicit resource ARN's, use `fromStatements`.
+   * Its best to use specific resource ARN's when possible. However, you can also use `AwsCustomResourcePolicy.ALL_RESOURCES`
+   * to allow access to all resources, for example when `onCreate` is used to create a physical resource.
    *
+   * @param resources the resources that the calls will have access to.
    */
-  public static fromSdkCalls(resources: string) {
+  public static fromSdkCalls(resources: string[]) {
     return new AwsCustomResourcePolicy([], resources);
   }
 
-  private constructor(public readonly statements: iam.PolicyStatement[], public readonly resources: string) {}
+  /**
+   * @param statements statements for explicit policy.
+   * @param resources resources for auto-generated from SDK calls.
+   */
+  private constructor(public readonly statements: iam.PolicyStatement[], public readonly resources?: string[]) {}
 }
 
 export interface AwsCustomResourceProps {
@@ -218,13 +231,13 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
     });
     this.grantPrincipal = provider.grantPrincipal;
 
-    if (props.policy.generate) {
+    if (props.policy.resources) {
       // Derive statements from AWS SDK calls
       for (const call of [props.onCreate, props.onUpdate, props.onDelete]) {
         if (call) {
           provider.addToRolePolicy(new iam.PolicyStatement({
             actions: [awsSdkToIamAction(call.service, call.action)],
-            resources: ['*']
+            resources: props.policy.resources
           }));
         }
       }

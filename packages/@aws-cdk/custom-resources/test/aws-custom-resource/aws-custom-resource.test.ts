@@ -1,7 +1,7 @@
 import '@aws-cdk/assert/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import { AwsCustomResource } from '../../lib';
+import { AwsCustomResource, AwsCustomResourcePolicy } from '../../lib';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -28,7 +28,7 @@ test('aws sdk js custom resource with onCreate and onDelete', () => {
           logGroupName: '/aws/lambda/loggroup',
         }
       },
-      allowStarPermissions: true
+      policy: AwsCustomResourcePolicy.fromSdkCalls(AwsCustomResourcePolicy.ALL_RESOURCES)
     });
 
     // THEN
@@ -87,7 +87,7 @@ test('onCreate defaults to onUpdate', () => {
       },
       physicalResourceIdPath: 'ETag'
     },
-    allowStarPermissions: true
+    policy: AwsCustomResourcePolicy.fromSdkCalls(AwsCustomResourcePolicy.ALL_RESOURCES)
   });
 
   // THEN
@@ -131,12 +131,12 @@ test('with custom policyStatements', () => {
       },
       physicalResourceIdPath: 'ETag'
     },
-    policy: [
+    policy: AwsCustomResourcePolicy.fromStatements([
       new iam.PolicyStatement({
         actions: ['s3:PutObject'],
         resources: ['arn:aws:s3:::my-bucket/my-key']
       })
-    ]
+    ])
   });
 
   // THEN
@@ -156,22 +156,9 @@ test('with custom policyStatements', () => {
 
 test('fails when no calls are specified', () => {
   const stack = new cdk.Stack();
-  expect(() => new AwsCustomResource(stack, 'AwsSdk', {})).toThrow(/`onCreate`.+`onUpdate`.+`onDelete`/);
-});
-
-test('fails when policy statements is undefined and star permissions are not allowed', () => {
-  const stack = new cdk.Stack();
   expect(() => new AwsCustomResource(stack, 'AwsSdk', {
-    onUpdate: {
-      service: 'CloudWatchLogs',
-      action: 'putRetentionPolicy',
-      parameters: {
-        logGroupName: '/aws/lambda/loggroup',
-        retentionInDays: 90
-      },
-      physicalResourceId: 'id'
-    }
-  })).toThrow(/`allowStarPermissions` must be set to true/);
+    policy: AwsCustomResourcePolicy.fromSdkCalls(AwsCustomResourcePolicy.ALL_RESOURCES)
+  })).toThrow(/`onCreate`.+`onUpdate`.+`onDelete`/);
 });
 
 test('fails when no physical resource method is specified', () => {
@@ -186,7 +173,7 @@ test('fails when no physical resource method is specified', () => {
         retentionInDays: 90
       }
     },
-    allowStarPermissions: true
+    policy: AwsCustomResourcePolicy.fromSdkCalls(AwsCustomResourcePolicy.ALL_RESOURCES)
   })).toThrow(/`physicalResourceId`.+`physicalResourceIdPath`/);
 });
 
@@ -208,7 +195,7 @@ test('encodes booleans', () => {
       },
       physicalResourceId: 'id'
     },
-    allowStarPermissions: true
+    policy: AwsCustomResourcePolicy.fromSdkCalls(AwsCustomResourcePolicy.ALL_RESOURCES)
   });
 
   // THEN
@@ -238,7 +225,7 @@ test('timeout defaults to 2 minutes', () => {
       action: 'action',
       physicalResourceId: 'id'
     },
-    allowStarPermissions: true
+    policy: AwsCustomResourcePolicy.fromSdkCalls(AwsCustomResourcePolicy.ALL_RESOURCES)
   });
 
   // THEN
@@ -259,7 +246,7 @@ test('can specify timeout', () => {
       physicalResourceId: 'id'
     },
     timeout: cdk.Duration.minutes(15),
-    allowStarPermissions: true
+    policy: AwsCustomResourcePolicy.fromSdkCalls(AwsCustomResourcePolicy.ALL_RESOURCES)
   });
 
   // THEN
@@ -280,7 +267,7 @@ test('implements IGrantable', () => {
       action: 'action',
       physicalResourceId: 'id'
     },
-    allowStarPermissions: true
+    policy: AwsCustomResourcePolicy.fromSdkCalls(AwsCustomResourcePolicy.ALL_RESOURCES)
   });
 
   // WHEN
@@ -323,7 +310,7 @@ test('can use existing role', () => {
       physicalResourceId: 'id'
     },
     role,
-    allowStarPermissions: true
+    policy: AwsCustomResourcePolicy.fromSdkCalls(AwsCustomResourcePolicy.ALL_RESOURCES)
   });
 
   // THEN
@@ -343,7 +330,7 @@ test('getData', () => {
       action: 'action',
       physicalResourceId: 'id'
     },
-    allowStarPermissions: true
+    policy: AwsCustomResourcePolicy.fromSdkCalls(AwsCustomResourcePolicy.ALL_RESOURCES)
   });
 
   // WHEN
@@ -367,7 +354,7 @@ test('getDataString', () => {
       action: 'action',
       physicalResourceId: 'id'
     },
-    allowStarPermissions: true
+    policy: AwsCustomResourcePolicy.fromSdkCalls(AwsCustomResourcePolicy.ALL_RESOURCES)
   });
 
   // WHEN
@@ -380,7 +367,7 @@ test('getDataString', () => {
       },
       physicalResourceId: 'id'
     },
-    allowStarPermissions: true
+    policy: AwsCustomResourcePolicy.fromSdkCalls(AwsCustomResourcePolicy.ALL_RESOURCES)
   });
 
   // THEN

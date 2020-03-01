@@ -2,7 +2,7 @@
 import * as sns from '@aws-cdk/aws-sns';
 import * as ssm from '@aws-cdk/aws-ssm';
 import * as cdk from '@aws-cdk/core';
-import { AwsCustomResource } from '../../lib';
+import { AwsCustomResource, AwsCustomResourcePolicy } from '../../lib';
 
 const app = new cdk.App();
 
@@ -21,7 +21,7 @@ const snsPublish = new AwsCustomResource(stack, 'Publish', {
     },
     physicalResourceId: topic.topicArn,
   },
-  allowStarPermissions: true
+  policy: AwsCustomResourcePolicy.fromSdkCalls(AwsCustomResourcePolicy.ALL_RESOURCES)
 });
 
 const listTopics = new AwsCustomResource(stack, 'ListTopics', {
@@ -30,7 +30,7 @@ const listTopics = new AwsCustomResource(stack, 'ListTopics', {
     action: 'listTopics',
     physicalResourceIdPath: 'Topics.0.TopicArn'
   },
-  allowStarPermissions: true
+  policy: AwsCustomResourcePolicy.fromSdkCalls(AwsCustomResourcePolicy.ALL_RESOURCES)
 });
 listTopics.node.addDependency(topic);
 
@@ -48,7 +48,7 @@ const getParameter = new AwsCustomResource(stack, 'GetParameter', {
     },
     physicalResourceIdPath: 'Parameter.ARN'
   },
-  allowStarPermissions: true
+  policy: AwsCustomResourcePolicy.fromSdkCalls(AwsCustomResourcePolicy.ALL_RESOURCES)
 });
 
 new cdk.CfnOutput(stack, 'MessageId', { value: snsPublish.getDataString('MessageId') });
