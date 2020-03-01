@@ -7937,7 +7937,7 @@ mkdirp-promise@^5.0.1:
   dependencies:
     mkdirp "*"
 
-mkdirp@*, mkdirp@^1.0.0:
+mkdirp@*:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/mkdirp/-/mkdirp-1.0.3.tgz#4cf2e30ad45959dddea53ad97d518b6c8205e1ea"
   integrity sha512-6uCP4Qc0sWsgMLy1EOqqS/3rjDHOEnsStVr/4vtAIK2Y5i2kA7lFFejYrpIyiN9w0pYf4ckeCYT9f1r1P9KX5g==
@@ -8096,15 +8096,14 @@ nise@^4.0.1:
     just-extend "^4.0.2"
     path-to-regexp "^1.7.0"
 
-nock@^12.0.1:
-  version "12.0.1"
-  resolved "https://registry.yarnpkg.com/nock/-/nock-12.0.1.tgz#6d497d01f23cb52c733545c97e09e8318f6af801"
-  integrity sha512-f5u5k7O5D2YXH2WEFQVLLPa36D5C0dxU9Lrg6KOuaFCMDt7yd1W4S3hbZClCMczxc4EZ0k1bEhPeMWSewrxYNw==
+nock@^12.0.2:
+  version "12.0.2"
+  resolved "https://registry.yarnpkg.com/nock/-/nock-12.0.2.tgz#47617b34738e026b29d2294b4579e35b27e6a4d3"
+  integrity sha512-pTckyfP8QHvwXP/oX+zQuSIL3S/mWTd84ba4pOGZlS/FgRZyljv4C3ZyOjgMilvkydSaERML/aJEF13EBUuDTQ==
   dependencies:
     debug "^4.1.0"
     json-stringify-safe "^5.0.1"
     lodash "^4.17.13"
-    mkdirp "^1.0.0"
     propagate "^2.0.0"
 
 node-addon-api@^1.7.1:
