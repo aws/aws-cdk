@@ -32,11 +32,11 @@ export class PolicyDocument implements cdk.IResolvable {
    */
   public static fromJson(obj: any): PolicyDocument {
     const newPolicyDocument = new PolicyDocument();
-    if (obj.Statement && Array.isArray(obj.Statement)) {
-      newPolicyDocument.addStatements(...obj.Statement.map((statement: any) => PolicyStatement.fromJson(statement)));
-    } else {
+    const statement = obj.Statement ?? [];
+    if (statement && !Array.isArray(statement)) {
       throw new Error('Statement must be an array');
     }
+    newPolicyDocument.addStatements(...obj.Statement.map((s: any) => PolicyStatement.fromJson(s)));
     return newPolicyDocument;
   }
 
