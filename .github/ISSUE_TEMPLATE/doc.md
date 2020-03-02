@@ -1,7 +1,7 @@
 ---
 name: "📕 Documentation issue"
 about: Issue in the reference documentation or developer guide
-labels: feature-request, status/needs-triage
+labels: feature-request, needs-triage
 ---
 
 <!-- 

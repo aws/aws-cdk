@@ -36,7 +36,7 @@ const cluster = new DatabaseCluster(this, 'Database', {
     }
 });
 ```
-By default, the master password will be generated and stored in AWS Secrets Manager.
+By default, the master password will be generated and stored in AWS Secrets Manager with auto-generated description.
 
 Your cluster will be empty by default. To add a default database upon construction, specify the
 `defaultDatabaseName` attribute.
@@ -119,7 +119,7 @@ instance.addRotationSingleUser(); // Will rotate automatically after 30 days
 The multi user rotation scheme is also available:
 ```ts
 instance.addRotationMultiUser('MyUser', {
-  secret: myImportedSecret
+  secret: myImportedSecret // This secret must have the `masterarn` key
 });
 ```
 
@@ -127,6 +127,7 @@ It's also possible to create user credentials together with the instance/cluster
 ```ts
 const myUserSecret = new rds.DatabaseSecret(this, 'MyUserSecret', {
   username: 'myuser'
+  masterSecret: instance.secret
 });
 const myUserSecretAttached = myUserSecret.attach(instance); // Adds DB connections information in the secret
 

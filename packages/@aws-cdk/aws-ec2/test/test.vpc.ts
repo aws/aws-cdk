@@ -569,6 +569,63 @@ export = {
 
       test.done();
     },
+    'route propagation defaults to isolated subnets when there are no private subnets'(test: Test) {
+      const stack = getTestStack();
+      new Vpc(stack, 'VPC', {
+        subnetConfiguration: [
+          { subnetType: SubnetType.PUBLIC, name: 'Public' },
+          { subnetType: SubnetType.ISOLATED, name: 'Isolated' },
+        ],
+        vpnGateway: true,
+      });
+
+      expect(stack).to(haveResource('AWS::EC2::VPNGatewayRoutePropagation', {
+        RouteTableIds: [
+          {
+            Ref: 'VPCIsolatedSubnet1RouteTableEB156210'
+          },
+          {
+            Ref: 'VPCIsolatedSubnet2RouteTable9B4F78DC'
+          },
+          {
+            Ref: 'VPCIsolatedSubnet3RouteTableCB6A1FDA'
+          }
+        ],
+        VpnGatewayId: {
+          Ref: 'VPCVpnGatewayB5ABAE68'
+        }
+      }));
+
+      test.done();
+    },
+    'route propagation defaults to public subnets when there are no private/isolated subnets'(test: Test) {
+      const stack = getTestStack();
+      new Vpc(stack, 'VPC', {
+        subnetConfiguration: [
+          { subnetType: SubnetType.PUBLIC, name: 'Public' },
+        ],
+        vpnGateway: true,
+      });
+
+      expect(stack).to(haveResource('AWS::EC2::VPNGatewayRoutePropagation', {
+        RouteTableIds: [
+          {
+            Ref: 'VPCPublicSubnet1RouteTableFEE4B781'
+          },
+          {
+            Ref: 'VPCPublicSubnet2RouteTable6F1A15F1'
+          },
+          {
+            Ref: 'VPCPublicSubnet3RouteTable98AE0E14'
+          }
+        ],
+        VpnGatewayId: {
+          Ref: 'VPCVpnGatewayB5ABAE68'
+        }
+      }));
+
+      test.done();
+    },
     'fails when specifying vpnConnections with vpnGateway set to false'(test: Test) {
       // GIVEN
       const stack = new Stack();

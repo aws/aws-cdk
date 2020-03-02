@@ -128,6 +128,11 @@ bootstrapped (using `cdk bootstrap`), only stacks that are not using assets and 
 $ cdk deploy --app='node bin/main.js' MyStackName
 ```
 
+Before creating a change set, `cdk deploy` will compare the template and tags of the
+currently deployed stack to the template and tags that are about to be deployed and
+will skip deployment if they are identical. Use `--force` to override this behavior
+and always deploy the stack.
+
 #### `cdk destroy`
 Deletes a stack from it's environment. This will cause the resources in the stack to be destroyed (unless they were
 configured with a `DeletionPolicy` of `Retain`). During the stack destruction, the command will output progress

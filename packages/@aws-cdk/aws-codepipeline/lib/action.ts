@@ -187,7 +187,7 @@ export interface IStage {
 export interface CommonActionProps {
   /**
    * The physical, human-readable name of the Action.
-   * Not that Action names must be unique within a single Stage.
+   * Note that Action names must be unique within a single Stage.
    */
   readonly actionName: string;
 

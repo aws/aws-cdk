@@ -28,10 +28,26 @@ export = {
 
     // WHEN
     const r = new CfnResource(stack, 'MyAwesomeness', { type: 'Resource' });
+    const r2 = new CfnResource(stack, 'x'.repeat(255), { type: 'Resource' }); // max length
+    const r3 = new CfnResource(stack, '*y-'.repeat(255), { type: 'Resource' }); // non-alpha are filtered out (yes, I know it might conflict)
 
     // THEN
     test.equal(stack.resolve(r.logicalId), 'MyAwesomeness');
+    test.equal(stack.resolve(r2.logicalId), 'x'.repeat(255));
+    test.equal(stack.resolve(r3.logicalId), 'y'.repeat(255));
 
+    test.done();
+  },
+
+  'if resource is top-level and logical id is longer than allowed, it is trimmed with a hash'(test: Test) {
+    // GIVEN
+    const stack = new Stack(undefined, 'TestStack');
+
+    // WHEN
+    const r = new CfnResource(stack, 'x'.repeat(256), { type: 'Resource' });
+
+    // THEN
+    test.equals(stack.resolve(r.logicalId), 'x'.repeat(240) + `C7A139A2`);
     test.done();
   },
 
