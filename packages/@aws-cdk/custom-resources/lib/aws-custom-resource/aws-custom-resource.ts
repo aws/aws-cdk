@@ -17,6 +17,32 @@ export type AwsSdkMetadata = {[key: string]: any};
 const awsSdkMetadata: AwsSdkMetadata = metadata;
 
 /**
+ * Physical ID of the custom resource.
+ */
+export class PhysicalResourceId {
+
+  /**
+   * Extract the physical resource id from the path (dot notation) to the data in the API call response.
+   */
+  public static fromResponse(responsePath: string): PhysicalResourceId {
+    return new PhysicalResourceId(responsePath, undefined);
+  }
+
+  /**
+   * Explicit physical resource id.
+   */
+  public static of(id: string): PhysicalResourceId {
+    return new PhysicalResourceId(undefined, id);
+  }
+
+  /**
+   * @param responsePath Path to a response data element to be used as the physical id.
+   * @param id Literal string to be used as the physical id.
+   */
+  private constructor(public readonly responsePath?: string, public readonly id?: string) { }
+}
+
+/**
  * An AWS SDK call.
  */
 export interface AwsSdkCall {
@@ -37,27 +63,18 @@ export interface AwsSdkCall {
   /**
    * The parameters for the service action
    *
+   * @default - no paramters
    * @see https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/index.html
    */
   readonly parameters?: any;
 
   /**
-   * The path to the data in the API call response to use as the physical
-   * resource id. Either `physicalResourceId` or `physicalResourceIdPath`
-   * must be specified for onCreate or onUpdate calls.
-   *
-   * @default - no path
-   */
-  readonly physicalResourceIdPath?: string;
-
-  /**
-   * The physical resource id of the custom resource for this call. Either
-   * `physicalResourceId` or `physicalResourceIdPath` must be specified for
-   * onCreate or onUpdate calls.
+   * The physical resource id of the custom resource for this call.
+   * Mandatory for onCreate or onUpdate calls.
    *
    * @default - no physical resource id
    */
-  readonly physicalResourceId?: string;
+  readonly physicalResourceId?: PhysicalResourceId;
 
   /**
    * The regex pattern to use to catch API errors. The `code` property of the
@@ -98,6 +115,11 @@ export interface AwsSdkCall {
   readonly outputPath?: string;
 }
 
+/**
+ * Properties for AwsCustomResource.
+ *
+ * Note that at least onCreate, onUpdate or onDelete must be specified.
+ */
 export interface AwsCustomResourceProps {
   /**
    * Cloudformation Resource type.
@@ -108,7 +130,6 @@ export interface AwsCustomResourceProps {
 
   /**
    * The AWS SDK call to make when the resource is created.
-   * At least onCreate, onUpdate or onDelete must be specified.
    *
    * @default - the call when the resource is updated
    */
@@ -161,11 +182,20 @@ export interface AwsCustomResourceProps {
   readonly timeout?: cdk.Duration
 }
 
+/**
+ * Defines a custom resource that is materialized using specific AWS API calls.
+ *
+ * Use this to bridge any gap that might exist in the CloudFormation Coverage.
+ * You can specify exactly which calls are invoked for the 'CREATE', 'UPDATE' and 'DELETE' life cycle events.
+ *
+ */
 export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
   public readonly grantPrincipal: iam.IPrincipal;
 
   private readonly customResource: CustomResource;
 
+  // 'props' cannot be optional, even though all its properties are optional.
+  // this is because at least one sdk call must be provided.
   constructor(scope: cdk.Construct, id: string, props: AwsCustomResourceProps) {
     super(scope, id);
 
@@ -174,8 +204,8 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
     }
 
     for (const call of [props.onCreate, props.onUpdate]) {
-      if (call && !call.physicalResourceId && !call.physicalResourceIdPath) {
-        throw new Error('Either `physicalResourceId` or `physicalResourceIdPath` must be specified for onCreate and onUpdate calls.');
+      if (call && !call.physicalResourceId) {
+        throw new Error('`physicalResourceId` must be specified for onCreate and onUpdate calls.');
       }
     }
 
