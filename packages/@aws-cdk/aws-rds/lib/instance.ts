@@ -678,8 +678,9 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
     this.singleUserRotationApplication = props.engine.singleUserRotationApplication;
     this.multiUserRotationApplication = props.engine.multiUserRotationApplication;
 
-    if (props.timezone && props.engine !== DatabaseInstanceEngine.SQL_SERVER_EE && props.engine !== DatabaseInstanceEngine.SQL_SERVER_EX
-      && props.engine !== DatabaseInstanceEngine.SQL_SERVER_SE && props.engine !== DatabaseInstanceEngine.SQL_SERVER_WEB) {
+    const timezoneSupport = [ DatabaseInstanceEngine.SQL_SERVER_EE, DatabaseInstanceEngine.SQL_SERVER_EX,
+      DatabaseInstanceEngine.SQL_SERVER_SE, DatabaseInstanceEngine.SQL_SERVER_WEB ];
+    if (props.timezone && !timezoneSupport.includes(props.engine)) {
       throw new Error(`timezone property can be configured only for Microsoft SQL Server, not ${props.engine.name}`);
     }
 

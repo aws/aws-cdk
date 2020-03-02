@@ -689,47 +689,32 @@ export = {
   'throws when timezone is set for non-sqlserver database engine'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const dbConfig = {
-      instanceClass: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.SMALL),
-      masterUsername: 'master',
-      timezone: 'Europe/Zurich',
-      vpc: new ec2.Vpc(stack, 'myvpc'),
-    };
+    const vpc = new ec2.Vpc(stack, 'vpc');
+    const tzSupportedEngines = [ rds.DatabaseInstanceEngine.SQL_SERVER_EE, rds.DatabaseInstanceEngine.SQL_SERVER_EX,
+      rds.DatabaseInstanceEngine.SQL_SERVER_SE, rds.DatabaseInstanceEngine.SQL_SERVER_WEB ];
+    const tzUnsupportedEngines = [ rds.DatabaseInstanceEngine.MYSQL, rds.DatabaseInstanceEngine.POSTGRES,
+      rds.DatabaseInstanceEngine.ORACLE_EE, rds.DatabaseInstanceEngine.MARIADB ];
 
     // THEN
-    test.ok(new rds.DatabaseInstance(stack, 'sqlserver-ee-db', {
-      engine: rds.DatabaseInstanceEngine.SQL_SERVER_EE,
-      ...dbConfig
-    }));
-    test.ok(new rds.DatabaseInstance(stack, 'sqlserver-ex-db', {
-      engine: rds.DatabaseInstanceEngine.SQL_SERVER_EX,
-      ...dbConfig
-    }));
-    test.ok(new rds.DatabaseInstance(stack, 'sqlserver-se-db', {
-      engine: rds.DatabaseInstanceEngine.SQL_SERVER_SE,
-      ...dbConfig
-    }));
-    test.ok(new rds.DatabaseInstance(stack, 'sqlserver-web-db', {
-      engine: rds.DatabaseInstanceEngine.SQL_SERVER_WEB,
-      ...dbConfig
-    }));
+    tzSupportedEngines.forEach((engine) => {
+      test.ok(new rds.DatabaseInstance(stack, `${engine.name}-db`, {
+        engine,
+        instanceClass: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.SMALL),
+        masterUsername: 'master',
+        timezone: 'Europe/Zurich',
+        vpc,
+      }));
+    });
 
-    test.throws(() => new rds.DatabaseInstance(stack, 'mysql-db', {
-      engine: rds.DatabaseInstanceEngine.MYSQL,
-      ...dbConfig
-    }), /timezone property can be configured only for Microsoft SQL Server/);
-    test.throws(() => new rds.DatabaseInstance(stack, 'postgres-db', {
-      engine: rds.DatabaseInstanceEngine.POSTGRES,
-      ...dbConfig
-    }), /timezone property can be configured only for Microsoft SQL Server/);
-    test.throws(() => new rds.DatabaseInstance(stack, 'oracle-ee-db', {
-      engine: rds.DatabaseInstanceEngine.ORACLE_EE,
-      ...dbConfig
-    }), /timezone property can be configured only for Microsoft SQL Server/);
-    test.throws(() => new rds.DatabaseInstance(stack, 'maria-db', {
-      engine: rds.DatabaseInstanceEngine.MARIADB,
-      ...dbConfig
-    }), /timezone property can be configured only for Microsoft SQL Server/);
+    tzUnsupportedEngines.forEach((engine) => {
+      test.throws(() => new rds.DatabaseInstance(stack, `${engine.name}-db`, {
+        engine,
+        instanceClass: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.SMALL),
+        masterUsername: 'master',
+        timezone: 'Europe/Zurich',
+        vpc,
+      }), /timezone property can be configured only for Microsoft SQL Server/);
+    });
 
     test.done();
   }
