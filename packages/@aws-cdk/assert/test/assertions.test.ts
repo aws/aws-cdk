@@ -276,7 +276,7 @@ failingExample('expect <synthStack> to count resources like props - more than ex
   cdkExpect(synthStack).to(countResourcesLike(resourceType, 1, { parentId: 123 }));
 });
 
-failingExample('expect <synthStack> to count resources like props - nested props out of order', () => {
+passingExample('expect <synthStack> to count resources like props - nested props out of order', () => {
   const resourceType = 'Test::Resource';
   const synthStack = synthesizedStack(stack => {
     new TestResource(stack, 'R1', { type: resourceType, properties: { id: 987, parentInfo: { id: 123, name: "A" } } });
@@ -286,7 +286,7 @@ failingExample('expect <synthStack> to count resources like props - nested props
   cdkExpect(synthStack).to(countResourcesLike(resourceType, 2, { parentInfo: { id: 123, name: "A" } }));
 });
 
-failingExample('expect <synthStack> to count resources like props - nested props incomplete', () => {
+passingExample('expect <synthStack> to count resources like props - nested props incomplete', () => {
   const resourceType = 'Test::Resource';
   const synthStack = synthesizedStack(stack => {
     new TestResource(stack, 'R1', { type: resourceType, properties: { id: 987, parentInfo: { id: 123, name: "A" } } });

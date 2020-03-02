@@ -100,9 +100,23 @@ export interface CDKBuildOptions {
    */
   eslint?: {
     /**
+     * Disable linting
+     * @default false
+     */
+    disable?: boolean;
+
+    /**
      * Patterns to be ignored.
      */
     "ignore-pattern"?: string[];
+  };
+
+  tslint?: {
+    disable?: boolean;
+  };
+
+  pkglint?: {
+    disable?: boolean;
   };
 
   /**
