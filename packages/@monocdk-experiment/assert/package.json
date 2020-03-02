@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "build": "./clone.sh && cdk-build",
+    "build": "cdk-build",
     "watch": "cdk-watch",
     "lint": "cdk-lint",
     "test": "cdk-test",
