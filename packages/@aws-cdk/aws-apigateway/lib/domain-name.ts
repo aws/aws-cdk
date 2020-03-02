@@ -35,8 +35,8 @@ export interface DomainNameOptions {
 
   /**
    * The Transport Layer Security (TLS) version + cipher suite for this domain name.
-   * @default undefined. This field is optional in AWS::ApiGateway::DomainName SecurityPolicy
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-domainname.html
+   * @default SecurityPolicy.TLS_1_0
    */
   readonly securityPolicy?: SecurityPolicy
 }
