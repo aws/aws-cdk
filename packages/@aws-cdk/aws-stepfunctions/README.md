@@ -128,6 +128,7 @@ couple of the tasks available are:
   queue that you poll on a compute fleet you manage yourself)
 * `tasks.InvokeFunction` -- invoke a Lambda function with function ARN
 * `tasks.RunLambdaTask` -- call Lambda as integrated service with magic ARN
+* `tasks.RunGlueJobTask` -- call Glue Job as integrated service
 * `tasks.PublishToTopic` -- publish a message to an SNS topic
 * `tasks.SendToQueue` -- send a message to an SQS queue
 * `tasks.RunEcsFargateTask`/`ecs.RunEcsEc2Task` -- run a container task,
@@ -186,6 +187,21 @@ task.next(nextState);
     })
   });
 ```
+
+#### Glue Job example
+
+```ts
+  const task = new sfn.Task(stack, 'ETL', {
+    task: new tasks.RunGlueJobTask(glueJobName, {
+      integrationPattern: sfn.ServiceIntegrationPattern.SYNC,
+      arguments: {
+        "--table-prefix": "myTable"
+      }
+    })
+  });
+```
+
+[Example CDK app](../aws-stepfunctions-tasks/test/integ.glue-task.ts)
 
 #### SNS example
 

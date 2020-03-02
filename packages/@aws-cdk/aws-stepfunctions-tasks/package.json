@@ -80,6 +80,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
+    "@aws-cdk/aws-s3-assets": "0.0.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "jest": "^24.9.0",
@@ -92,6 +93,7 @@
     "@aws-cdk/aws-ecr": "0.0.0",
     "@aws-cdk/aws-ecr-assets": "0.0.0",
     "@aws-cdk/aws-ecs": "0.0.0",
+    "@aws-cdk/aws-glue": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-kms": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
@@ -109,6 +111,7 @@
     "@aws-cdk/aws-ecr": "0.0.0",
     "@aws-cdk/aws-ecr-assets": "0.0.0",
     "@aws-cdk/aws-ecs": "0.0.0",
+    "@aws-cdk/aws-glue": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-kms": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
