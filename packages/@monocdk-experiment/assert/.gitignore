@@ -9,7 +9,3 @@ jest.ts
 
 *.js
 *.d.ts
-dist
-.LAST_PACKAGE
-.LAST_BUILD
-*.snk
