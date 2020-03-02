@@ -2,7 +2,7 @@ import * as sns from '@aws-cdk/aws-sns';
 import { DlqDestinationConfig, IEventSourceDlq } from "./dlq";
 
 /**
- * An SNS dead letter queue destination configuration
+ * An SNS dead letter queue destination configuration for a Lambda event source
  */
 export class SnsDlq implements IEventSourceDlq {
     constructor(private readonly topic: sns.ITopic) {

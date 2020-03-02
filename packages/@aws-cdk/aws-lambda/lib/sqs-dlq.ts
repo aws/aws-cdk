@@ -2,7 +2,7 @@ import * as sqs from '@aws-cdk/aws-sqs';
 import { DlqDestinationConfig, IEventSourceDlq } from "./dlq";
 
 /**
- * An SQS dead letter queue destination configuration
+ * An SQS dead letter queue destination configuration for a Lambda event source
  */
 export class SqsDlq implements IEventSourceDlq {
     constructor(private readonly queue: sqs.IQueue) {
