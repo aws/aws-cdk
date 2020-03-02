@@ -83,7 +83,7 @@ export interface AwsSdkCall {
    *
    * @default - do not catch errors
    */
-  readonly catchErrorPattern?: string;
+  readonly ignoreErrorCodesMatching?: string;
 
   /**
    * API version to use for the service
