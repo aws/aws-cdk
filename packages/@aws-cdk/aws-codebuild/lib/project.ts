@@ -508,6 +508,16 @@ export interface CommonProjectProps {
    * @default true
    */
   readonly allowAllOutbound?: boolean;
+
+  /**
+   * An  ProjectFileSystemLocation objects for a CodeBuild build project.
+   *
+   * A ProjectFileSystemLocation object specifies the identifier, location, mountOptions, mountPoint,
+   * and type of a file system created using Amazon Elastic File System.
+   *
+   * @default false
+   */
+  readonly fileSystemLocations?: IFileSystemLocation[];
 }
 
 export interface ProjectProps extends CommonProjectProps {
@@ -657,6 +667,7 @@ export class Project extends ProjectBase {
   private readonly _secondarySourceVersions: CfnProject.ProjectSourceVersionProperty[];
   private readonly _secondaryArtifacts: CfnProject.ArtifactsProperty[];
   private _encryptionKey?: kms.IKey;
+  private readonly _fileSystemLocations: CfnProject.ProjectFileSystemLocationProperty[];
 
   constructor(scope: Construct, id: string, props: ProjectProps) {
     super(scope, id, {
@@ -700,6 +711,7 @@ export class Project extends ProjectBase {
 
     this._secondarySources = [];
     this._secondarySourceVersions = [];
+    this._fileSystemLocations = [];
     for (const secondarySource of props.secondarySources || []) {
       this.addSecondarySource(secondarySource);
     }
@@ -711,6 +723,11 @@ export class Project extends ProjectBase {
 
     this.validateCodePipelineSettings(artifacts);
 
+    for (const fileSystemLocation of props.fileSystemLocations || []) {
+      this.validateFileSystemLocation(fileSystemLocation);
+      this.addFileSystemLocations(fileSystemLocation);
+    }
+
     const resource = new CfnProject(this, 'Resource', {
       description: props.description,
       source: {
@@ -720,6 +737,7 @@ export class Project extends ProjectBase {
       artifacts: artifactsConfig.artifactsProperty,
       serviceRole: this.role.roleArn,
       environment: this.renderEnvironment(props.environment, environmentVariables),
+      fileSystemLocations: this.renderFileSystemLocations(),
       // lazy, because we have a setter for it in setEncryptionKey
       encryptionKey: Lazy.stringValue({ produce: () => this._encryptionKey && this._encryptionKey.keyArn }),
       badgeEnabled: props.badge,
@@ -768,6 +786,15 @@ export class Project extends ProjectBase {
         sourceVersion: secondarySourceConfig.sourceVersion,
       });
     }
+  }
+
+  /**
+   * Adds a fileSystemLocation to the Project.
+   *
+   * @param fileSystemLocation the fileSystemLocation to add
+   */
+  public addFileSystemLocations(fileSystemLocation: IFileSystemLocation): void {
+    this._fileSystemLocations.push(fileSystemLocation);
   }
 
   /**
@@ -898,6 +925,12 @@ export class Project extends ProjectBase {
     };
   }
 
+  private renderFileSystemLocations(): CfnProject.ProjectFileSystemLocationProperty[] | undefined {
+    return this._fileSystemLocations.length === 0
+      ? undefined
+      : this._fileSystemLocations;
+  }
+
   private renderSecondarySources(): CfnProject.SourceProperty[] | undefined {
     return this._secondarySources.length === 0
       ? undefined
@@ -1003,6 +1036,12 @@ export class Project extends ProjectBase {
         artifactsType === CODEPIPELINE_SOURCE_ARTIFACTS_TYPE) &&
         (sourceType !== artifactsType)) {
       throw new Error('Both source and artifacts must be set to CodePipeline');
+    }
+  }
+
+  private validateFileSystemLocation(fileSystemLocation: IFileSystemLocation) {
+    if (fileSystemLocation.type !== "EFS") {
+      throw new Error('The only supported type for fileSystemLocation is EFS');
     }
   }
 }
@@ -1514,4 +1553,15 @@ export enum BuildEnvironmentVariableType {
    * An environment variable stored in AWS Secrets Manager.
    */
   SECRETS_MANAGER = 'SECRETS_MANAGER'
+}
+
+/**
+ * The abstract interface of a CodeBuild FileSystemLocation.
+ */
+export interface IFileSystemLocation {
+  readonly identifier: string;
+  readonly location: string;
+  readonly mountOptions?: string;
+  readonly mountPoint: string;
+  readonly type: string;
 }

@@ -203,7 +203,12 @@
       "docs-public-apis:@aws-cdk/aws-codebuild.S3SourceProps.path",
       "docs-public-apis:@aws-cdk/aws-codebuild.SourceConfig.sourceProperty",
       "docs-public-apis:@aws-cdk/aws-codebuild.SourceConfig.buildTriggers",
-      "props-default-doc:@aws-cdk/aws-codebuild.SourceConfig.buildTriggers"
+      "props-default-doc:@aws-cdk/aws-codebuild.SourceConfig.buildTriggers",
+      "docs-public-apis:@aws-cdk/aws-codebuild.IFileSystemLocation.identifier",
+      "docs-public-apis:@aws-cdk/aws-codebuild.IFileSystemLocation.location",
+      "docs-public-apis:@aws-cdk/aws-codebuild.IFileSystemLocation.mountPoint",
+      "docs-public-apis:@aws-cdk/aws-codebuild.IFileSystemLocation.type",
+      "docs-public-apis:@aws-cdk/aws-codebuild.IFileSystemLocation.mountOptions"
     ]
   },
   "stability": "stable"
