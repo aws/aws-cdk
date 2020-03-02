@@ -235,8 +235,8 @@ export class StabilitySetting extends ValidationRule {
           { label: 'Experimental', color: 'important' },
           '**This is a _developer preview_ (public beta) module.**',
           '',
-          'All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) are '
-          + 'auto-generated from CloudFormation. They are stable and safe to use.',
+          'All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib))',
+          'are auto-generated from CloudFormation. They are stable and safe to use.',
           '',
           'However, all other classes, i.e., higher level constructs, are under active development and subject to non-backward',
           'compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model.',
