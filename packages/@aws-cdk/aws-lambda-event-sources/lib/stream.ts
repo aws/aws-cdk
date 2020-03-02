@@ -33,7 +33,7 @@ export interface StreamEventSourceProps {
    *
    * @default discarded records are ignored
    */
-  readonly onFailure?: lambda.IEventSourceDLQ;
+  readonly onFailure?: lambda.IEventSourceDlq;
 
   /**
    * The maximum age of a record that Lambda sends to a function for processing.

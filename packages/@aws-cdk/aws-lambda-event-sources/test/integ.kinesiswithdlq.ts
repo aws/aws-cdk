@@ -33,7 +33,7 @@ class KinesisWithDLQTest extends Stack {
 
         fn.addEventSource(new KinesisEventSource(stream, {
             startingPosition: lambda.StartingPosition.TRIM_HORIZON,
-            onFailure: new lambda.SqsDLQ(dlq),
+            onFailure: new lambda.SqsDlq(dlq),
             retryAttempts: 2
         }));
 

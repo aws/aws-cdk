@@ -1,5 +1,5 @@
 import * as cdk from '@aws-cdk/core';
-import { IEventSourceDLQ } from './dlq';
+import { IEventSourceDlq } from './dlq';
 import { IFunction } from './function-base';
 import { CfnEventSourceMapping } from './lambda.generated';
 
@@ -34,7 +34,7 @@ export interface EventSourceMappingOptions {
    *
    * @default discarded records are ignored
    */
-  readonly onFailure?: IEventSourceDLQ;
+  readonly onFailure?: IEventSourceDlq;
 
   /**
    * Set to false to disable the event source upon creation.

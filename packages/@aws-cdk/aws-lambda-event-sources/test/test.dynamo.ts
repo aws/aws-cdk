@@ -523,7 +523,7 @@ export = {
 
     // WHEN
     fn.addEventSource(new sources.DynamoEventSource(table, {
-      onFailure: new lambda.SqsDLQ(queue),
+      onFailure: new lambda.SqsDlq(queue),
       startingPosition: lambda.StartingPosition.LATEST
     }));
 

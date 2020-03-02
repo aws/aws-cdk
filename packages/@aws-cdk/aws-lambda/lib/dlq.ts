@@ -1,7 +1,7 @@
 /**
  * A destination configuration
  */
-export interface DLQDestinationConfig {
+export interface DlqDestinationConfig {
     /**
      * The Amazon Resource Name (ARN) of the destination resource
      */
@@ -11,9 +11,9 @@ export interface DLQDestinationConfig {
 /**
  * A DLQ for an event source
  */
-export interface IEventSourceDLQ {
+export interface IEventSourceDlq {
     /**
      * Returns the DLQ destination config of the DLQ
      */
-    bind(): DLQDestinationConfig;
+    bind(): DlqDestinationConfig;
 }
