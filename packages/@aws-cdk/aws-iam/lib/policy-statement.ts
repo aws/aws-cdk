@@ -3,29 +3,30 @@ import { AccountPrincipal, AccountRootPrincipal, Anyone, ArnPrincipal, Canonical
   FederatedPrincipal, IPrincipal, ServicePrincipal, ServicePrincipalOpts } from './principals';
 import { mergePrincipal } from './util';
 
+const ensureArrayOrUndefined = (field: any) => {
+  if (field === undefined) {
+    return undefined;
+  }
+  if (typeof (field) !== "string" && !Array.isArray(field)) {
+    throw new Error("Fields must be either a string or an array of strings");
+  }
+  if (Array.isArray(field) && !!field.find((f: any) => typeof (f) !== "string")) {
+    throw new Error("Fields must be either a string or an array of strings");
+  }
+  return Array.isArray(field) ? field : [field];
+};
+
 /**
  * Represents a statement in an IAM policy document.
  */
 export class PolicyStatement {
+
   /**
    * Creates a new PolicyStatement based on the object provided.
    * This will accept an object created from the `.toJSON()` call
    * @param obj the PolicyStatement in object form.
    */
   public static fromJson(obj: any) {
-    const ensureArrayOrUndefined = (field: any) => {
-      if (field === undefined) {
-        return undefined;
-      }
-      if (typeof (field) !== "string" && !Array.isArray(field)) {
-        throw new Error("Fields must be either a string or an array of strings");
-      }
-      if (Array.isArray(field) && !!field.find((f: any) => typeof (f) !== "string")) {
-        throw new Error("Fields must be either a string or an array of strings");
-      }
-      return Array.isArray(field) ? field : [field];
-    };
-
     const statement = new PolicyStatement({
       actions: ensureArrayOrUndefined(obj.Action),
       resources: ensureArrayOrUndefined(obj.Resource),

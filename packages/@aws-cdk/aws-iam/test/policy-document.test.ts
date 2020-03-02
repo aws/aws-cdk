@@ -577,7 +577,7 @@ describe('IAM polocy document', () => {
     test("throws error when Statement isn't an array", () => {
       expect(() => {
         PolicyDocument.fromJson({
-          Statement: ''
+          Statement: 'asdf'
         });
       }).toThrow(/Statement must be an array/);
     });
