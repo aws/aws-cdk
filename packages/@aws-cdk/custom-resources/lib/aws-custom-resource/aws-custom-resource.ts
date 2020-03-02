@@ -209,6 +209,12 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
       }
     }
 
+    for (const call of [props.onCreate, props.onUpdate, props.onDelete]) {
+      if (call && call.ignoreErrorCodesMatching && call.physicalResourceId?.responsePath) {
+        throw new Error('`PhysicalResourceId.fromResponse` cannot be used along with `ignoreErrorCodesMatching`.');
+      }
+    }
+
     const provider = new lambda.SingletonFunction(this, 'Provider', {
       code: lambda.Code.fromAsset(path.join(__dirname, 'runtime')),
       runtime: lambda.Runtime.NODEJS_12_X,
