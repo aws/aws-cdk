@@ -616,7 +616,7 @@ export interface DatabaseInstanceSourceProps extends DatabaseInstanceNewProps {
   readonly allowMajorVersionUpgrade?: boolean;
 
   /**
-   * The time zone of the instance.
+   * The time zone of the instance. This is currently supported only by Microsoft Sql Server.
    *
    * @default - RDS default timezone
    */
@@ -677,6 +677,11 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
 
     this.singleUserRotationApplication = props.engine.singleUserRotationApplication;
     this.multiUserRotationApplication = props.engine.multiUserRotationApplication;
+
+    if (props.timezone && props.engine !== DatabaseInstanceEngine.SQL_SERVER_EE && props.engine !== DatabaseInstanceEngine.SQL_SERVER_EX
+      && props.engine !== DatabaseInstanceEngine.SQL_SERVER_SE && props.engine !== DatabaseInstanceEngine.SQL_SERVER_WEB) {
+      throw new Error(`timezone property can be configured only for Microsoft SQL Server, not ${props.engine.name}`);
+    }
 
     this.sourceCfnProps = {
       ...this.newCfnProps,
