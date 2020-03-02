@@ -342,6 +342,54 @@ test('getData', () => {
   });
 });
 
+test('fails when getData is used with `ignoreErrorCodesMatching`', () => {
+
+  const stack = new cdk.Stack();
+  expect(() => {
+
+    const resource = new AwsCustomResource(stack, 'AwsSdk', {
+      onUpdate: {
+        service: 'CloudWatchLogs',
+        action: 'putRetentionPolicy',
+        parameters: {
+          logGroupName: '/aws/lambda/loggroup',
+          retentionInDays: 90
+        },
+        ignoreErrorCodesMatching: ".*",
+        physicalResourceId: PhysicalResourceId.of("Id")
+      }
+    });
+
+    resource.getData("ShouldFail");
+
+  }).toThrow(/`getData`.+`ignoreErrorCodesMatching`/);
+
+});
+
+test('fails when getDataString is used with `ignoreErrorCodesMatching`', () => {
+
+  const stack = new cdk.Stack();
+  expect(() => {
+
+    const resource = new AwsCustomResource(stack, 'AwsSdk', {
+      onUpdate: {
+        service: 'CloudWatchLogs',
+        action: 'putRetentionPolicy',
+        parameters: {
+          logGroupName: '/aws/lambda/loggroup',
+          retentionInDays: 90
+        },
+        ignoreErrorCodesMatching: ".*",
+        physicalResourceId: PhysicalResourceId.of("Id")
+      }
+    });
+
+    resource.getDataString("ShouldFail");
+
+  }).toThrow(/`getDataString`.+`ignoreErrorCodesMatching`/);
+
+});
+
 test('fail when `PhysicalResourceId.fromResponse` is used with `ignoreErrorCodesMatching', () => {
 
   const stack = new cdk.Stack();

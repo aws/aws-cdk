@@ -193,6 +193,7 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
   public readonly grantPrincipal: iam.IPrincipal;
 
   private readonly customResource: CustomResource;
+  private readonly props: AwsCustomResourceProps;
 
   // 'props' cannot be optional, even though all its properties are optional.
   // this is because at least one sdk call must be provided.
@@ -214,6 +215,8 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
         throw new Error('`PhysicalResourceId.fromResponse` cannot be used along with `ignoreErrorCodesMatching`.');
       }
     }
+
+    this.props = props;
 
     const provider = new lambda.SingletonFunction(this, 'Provider', {
       code: lambda.Code.fromAsset(path.join(__dirname, 'runtime')),
@@ -261,9 +264,14 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
    * Use `Token.asXxx` to encode the returned `Reference` as a specific type or
    * use the convenience `getDataString` for string attributes.
    *
+   * Note that you cannot use this method if `ignoreErrorCodesMatching`
+   * is configured for any of the SDK calls. This is because in such a case,
+   * the response data might not exist, and will cause a CloudFormation deploy time error.
+   *
    * @param dataPath the path to the data
    */
   public getData(dataPath: string) {
+    this.breakIgnoreErrorsCircuit("getData");
     return this.customResource.getAtt(dataPath);
   }
 
@@ -272,10 +280,25 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
    *
    * Example for S3 / listBucket : 'Buckets.0.Name'
    *
+   * Note that you cannot use this method if `ignoreErrorCodesMatching`
+   * is configured for any of the SDK calls. This is because in such a case,
+   * the response data might not exist, and will cause a CloudFormation deploy time error.
+   *
    * @param dataPath the path to the data
    */
   public getDataString(dataPath: string): string {
+    this.breakIgnoreErrorsCircuit("getDataString");
     return this.customResource.getAttString(dataPath);
+  }
+
+  private breakIgnoreErrorsCircuit(caller: string) {
+
+    for (const call of [this.props.onCreate, this.props.onUpdate, this.props.onDelete]) {
+      if (call && call.ignoreErrorCodesMatching) {
+        throw new Error(`\`${caller}\`` + ' cannot be called along with `ignoreErrorCodesMatching`.');
+      }
+    }
+
   }
 }
 
