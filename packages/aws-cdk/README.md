@@ -133,17 +133,37 @@ currently deployed stack to the template and tags that are about to be deployed 
 will skip deployment if they are identical. Use `--force` to override this behavior
 and always deploy the stack.
 
-In order to pass parameters to your template during deployment, you can use `--parameters
-(STACK:KEY=VALUE)`. This will apply the value `VALUE` to the key `KEY` for stack `STACK`. The stack
-name can either be `*` or omitted in order to apply to all stacks.
-Note: The parameters will not propagate to NestedStacks. These must be sent with the constructor
-of these.
+##### Parameters
 
-An example of this could be:
+Pass parameters to your template during deployment by using `--parameters
+(STACK:KEY=VALUE)`. This will apply the value `VALUE` to the key `KEY` for stack `STACK`.
 
-```console
-$ cdk deploy --app='node bin/main.js' --parameters 'MyStackName:MyKey=HelloWorld'
+Example of providing an attrbute value for an SNS Topic through a parameter in TypeScript:
+
+Usage of parameter in CDK Stack:
+```ts
+new sns.Topic(this, 'TopicParameter', {
+     topicName : new cdk.CfnParameter(this, 'TopicNameParam').value.toString()
+    });
 ```
+
+Parameter values as a part of `cdk deploy`
+```console
+$ cdk deploy --parameters "MyStackName:TopicNameParam=parameterized"
+```
+
+Parameter values can be overwritten by supplying the `--force` flag.
+Example of overwriting the topic name from a previous interview
+```console
+$  cdk deploy --parameters "ParametersStack:TopicNameParam=blahagain" --force
+```
+
+⚠️ Parameters will be applied to all stacks if a stack name is not specified or `*` is provided. Parameters provided to Stacks that do not make use of the parameter will not successfully deploy.
+
+⚠️ Parameters do not propagate to NestedStacks. These must be sent with the constructor
+
+Example
+
 
 #### `cdk destroy`
 Deletes a stack from it's environment. This will cause the resources in the stack to be destroyed (unless they were
