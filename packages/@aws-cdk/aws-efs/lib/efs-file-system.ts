@@ -1,6 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
-import {Construct, IResource, Resource} from "@aws-cdk/core";
+import {Construct, Resource} from "@aws-cdk/core";
 import {CfnFileSystem, CfnMountTarget} from "./efs.generated";
 
 // tslint:disable: max-line-length
@@ -74,7 +74,7 @@ export enum EfsThroughputMode {
 /**
  * Interface to implement AWS File Systems.
  */
-export interface IEfsFileSystem extends IResource, ec2.IConnectable {
+export interface IEfsFileSystem extends ec2.IConnectable {
   /**
    * The ID of the file system, assigned by Amazon EFS.
    *
@@ -253,7 +253,7 @@ export class EfsFileSystem extends EfsFileSystemBase {
       }
     }
 
-    this.efsFileSystem = new CfnFileSystem(this, "FileSystem", {
+    this.efsFileSystem = new CfnFileSystem(this, "Resource", {
       encrypted: props.encrypted,
       kmsKeyId: (props.kmsKey ? props.kmsKey.keyId : undefined),
       lifecyclePolicies: (props.lifecyclePolicy ? Array.of({

@@ -103,7 +103,9 @@
   "awslint": {
     "exclude": [
       "props-physical-name:@aws-cdk/aws-efs.EfsFileSystemProps",
-      "resource-interface:@aws-cdk/aws-efs.EfsFileSystem"
+      "resource-interface:@aws-cdk/aws-efs.EfsFileSystem",
+      "construct-interface-extends-iconstruct:@aws-cdk/aws-efs.IEfsFileSystem",
+      "resource-interface-extends-resource:@aws-cdk/aws-efs.IEfsFileSystem"
     ]
   },
   "stability": "experimental"
