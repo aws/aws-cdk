@@ -339,11 +339,14 @@ be `Items.0.Title.S`.
 
 ### Execution Policy
 
-IAM policy statements required to make the API calls are derived from the calls
-and allow by default the actions to be made on all resources (`*`). You can
-restrict the permissions by specifying your own list of statements with the
-`policyStatements` prop. The custom resource also implements `iam.IGrantable`,
-making it possible to use the `grantXxx()` methods.
+You must provide the `policy` property defining the IAM Policy that will be applied to the API calls.
+The library provides two factory methods to quickly configure this:
+
+- **`AwsCustomResourcePolicy.fromSdkCalls`** - Use this to auto-generate IAM Policy statements based on the configured SDK calls.
+Note that you will have to either provide specific ARN's, or explicitly use `AwsCustomResourcePolicy.ANY_RESOURCE` to allow access to any resource.
+- **`AwsCustomResourcePolicy.fromStatements`** - Use this to specify your own custom statements.
+
+The custom resource also implements `iam.IGrantable`, making it possible to use the `grantXxx()` methods.
 
 As this custom resource uses a singleton Lambda function, it's important to note
 that the function's role will eventually accumulate the permissions/grants from all
@@ -356,7 +359,8 @@ const awsCustom1 = new AwsCustomResource(this, 'API1', {
     service: '...',
     action: '...',
     physicalResourceId: PhysicalResourceId.of('...')
-  }
+  },
+  policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ANY_RESOURCE})
 });
 
 const awsCustom2 = new AwsCustomResource(this, 'API2', {
@@ -367,7 +371,8 @@ const awsCustom2 = new AwsCustomResource(this, 'API2', {
       text: awsCustom1.getDataString('Items.0.text')
     },
     physicalResourceId: PhysicalResourceId.of('...')
-  }
+  },
+  policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ANY_RESOURCE})
 })
 ```
 
@@ -384,7 +389,8 @@ const verifyDomainIdentity = new AwsCustomResource(this, 'VerifyDomainIdentity',
       Domain: 'example.com'
     },
     physicalResourceId: PhysicalResourceId.fromResponse('VerificationToken') // Use the token returned by the call as physical id
-  }
+  },
+  policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ANY_RESOURCE})
 });
 
 new route53.TxtRecord(this, 'SESVerificationRecord', {
@@ -406,7 +412,8 @@ const getParameter = new AwsCustomResource(this, 'GetParameter', {
       WithDecryption: true
     },
     physicalResourceId: PhysicalResourceId.of(Date.now().toString()) // Update physical id to always fetch the latest version
-  }
+  },
+  policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ANY_RESOURCE})
 });
 
 // Use the value in another construct with
@@ -418,3 +425,4 @@ getParameter.getData('Parameter.Value')
 ---
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
+
