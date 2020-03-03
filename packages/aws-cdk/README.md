@@ -160,9 +160,7 @@ $  cdk deploy --parameters "ParametersStack:TopicNameParam=blahagain" --force
 
 ⚠️ Parameters will be applied to all stacks if a stack name is not specified or `*` is provided. Parameters provided to Stacks that do not make use of the parameter will not successfully deploy.
 
-⚠️ Parameters do not propagate to NestedStacks. These must be sent with the constructor
-
-Example
+⚠️ Parameters do not propagate to NestedStacks. These must be sent with the constructor. See Nested Stack [documentation](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-cloudformation.NestedStack.html)
 
 
 #### `cdk destroy`
