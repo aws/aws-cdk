@@ -48,7 +48,7 @@
     "@types/jszip": "^3.1.7",
     "@types/minimatch": "^3.0.3",
     "@types/mockery": "^1.4.29",
-    "@types/node": "^10.17.15",
+    "@types/node": "^10.17.17",
     "@types/promptly": "^3.0.0",
     "@types/request": "^2.48.4",
     "@types/semver": "^7.1.0",
@@ -71,7 +71,7 @@
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
     "archiver": "^3.1.1",
-    "aws-sdk": "^2.628.0",
+    "aws-sdk": "^2.631.0",
     "camelcase": "^5.3.1",
     "colors": "^1.4.0",
     "decamelize": "^4.0.0",
@@ -87,7 +87,7 @@
     "table": "^5.4.6",
     "uuid": "^7.0.1",
     "yaml": "^1.7.2",
-    "yargs": "^15.0.2"
+    "yargs": "^15.2.0"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
