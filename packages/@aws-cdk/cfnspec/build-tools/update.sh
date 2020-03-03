@@ -49,6 +49,10 @@ update-spec \
     spec-source/000_CloudFormationResourceSpecification.json \
     true
 
+echo >&2 "Recording new version..."
+rm -f cfn.version
+node build-tools/spec-version.js spec-source/000_CloudFormationResourceSpecification.json > cfn.version
+
 update-spec \
     "Serverless Application Model (SAM) Resource Specification" \
     "https://raw.githubusercontent.com/awslabs/goformation/master/generate/sam-2016-10-31.json" \

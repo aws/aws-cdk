@@ -1,8 +1,14 @@
 # AWS CDK CloudFormation Tools
 
-To update the CloudFormation spec to the latest version, run:
+To update the CloudFormation spec, from the root of the CDK repo run
 
-    npm run update
+```
+./scripts/update-cfnspec.sh
+```
 
-Any JSON hashes are alpha-sorted to make sure that only actual changes appear in
-diffs.
+However, if you have CDK dependencies installed and the cfnspec module built, instead run
+
+```
+yarn update
+```
+
