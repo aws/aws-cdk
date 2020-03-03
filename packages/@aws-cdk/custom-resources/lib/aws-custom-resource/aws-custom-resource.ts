@@ -190,6 +190,17 @@ export interface AwsCustomResourceProps {
  *
  */
 export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
+
+  private static breakIgnoreErrorsCircuit(sdkCalls: Array<AwsSdkCall | undefined>, caller: string) {
+
+    for (const call of sdkCalls) {
+      if (call && call.ignoreErrorCodesMatching) {
+        throw new Error(`\`${caller}\`` + ' cannot be called along with `ignoreErrorCodesMatching`.');
+      }
+    }
+
+  }
+
   public readonly grantPrincipal: iam.IPrincipal;
 
   private readonly customResource: CustomResource;
@@ -211,8 +222,8 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
     }
 
     for (const call of [props.onCreate, props.onUpdate, props.onDelete]) {
-      if (call && call.ignoreErrorCodesMatching && call.physicalResourceId?.responsePath) {
-        throw new Error('`PhysicalResourceId.fromResponse` cannot be used along with `ignoreErrorCodesMatching`.');
+      if (call && call.physicalResourceId?.responsePath) {
+        AwsCustomResource.breakIgnoreErrorsCircuit([call], "PhysicalResourceId.fromResponse");
       }
     }
 
@@ -271,7 +282,7 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
    * @param dataPath the path to the data
    */
   public getData(dataPath: string) {
-    this.breakIgnoreErrorsCircuit("getData");
+    AwsCustomResource.breakIgnoreErrorsCircuit([this.props.onCreate, this.props.onUpdate], "getData");
     return this.customResource.getAtt(dataPath);
   }
 
@@ -287,19 +298,10 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
    * @param dataPath the path to the data
    */
   public getDataString(dataPath: string): string {
-    this.breakIgnoreErrorsCircuit("getDataString");
+    AwsCustomResource.breakIgnoreErrorsCircuit([this.props.onCreate, this.props.onUpdate], "getDataString");
     return this.customResource.getAttString(dataPath);
   }
 
-  private breakIgnoreErrorsCircuit(caller: string) {
-
-    for (const call of [this.props.onCreate, this.props.onUpdate, this.props.onDelete]) {
-      if (call && call.ignoreErrorCodesMatching) {
-        throw new Error(`\`${caller}\`` + ' cannot be called along with `ignoreErrorCodesMatching`.');
-      }
-    }
-
-  }
 }
 
 /**
