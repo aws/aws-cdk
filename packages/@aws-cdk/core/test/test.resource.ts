@@ -682,6 +682,28 @@ export = {
 
     test.done();
   },
+
+  'enableVersionUpgrade can be set on a resource'(test: Test) {
+    const stack = new Stack();
+    const r1 = new CfnResource(stack, 'Resource', { type: 'Type' });
+
+    r1.cfnOptions.updatePolicy = {
+      enableVersionUpgrade: true
+    };
+
+    test.deepEqual(toCloudFormation(stack), {
+      Resources: {
+        Resource: {
+          Type: 'Type',
+          UpdatePolicy: {
+            EnableVersionUpgrade: true
+          }
+        }
+      }
+    });
+
+    test.done();
+  },
 };
 
 interface CounterProps {
