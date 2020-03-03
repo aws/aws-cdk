@@ -10,3 +10,4 @@ fi
 cd packages/@aws-cdk/cfnspec
 ../../../scripts/buildup
 yarn update
+git commit -a -m "feat: cloudformation spec v$(cat cfn.version)" || true # don't fail if there are no updates

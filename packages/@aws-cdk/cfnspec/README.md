@@ -3,7 +3,7 @@
 To update the CloudFormation spec, from the root of the CDK repo run
 
 ```
-./scripts/update-cfnspec.sh
+./scripts/bump-cfnspec.sh
 ```
 
 However, if you have CDK dependencies installed and the cfnspec module built, instead run

@@ -74,7 +74,8 @@ node ${scriptdir}/create-missing-libraries.js || {
 (cd ${scriptdir}/../../../monocdk-experiment && node ./deps.js || true)
 
 # append old changelog after new and replace as the last step because otherwise we will not be idempotent
-cat CHANGELOG.md >> CHANGELOG.md.new
-cp CHANGELOG.md.new CHANGELOG.md
-
-
+_changelog_contents=$(cat CHANGELOG.md.new)
+if [ -n "${_changelog_contents}" ]; then
+    cat CHANGELOG.md >> CHANGELOG.md.new
+    cp CHANGELOG.md.new CHANGELOG.md
+fi
