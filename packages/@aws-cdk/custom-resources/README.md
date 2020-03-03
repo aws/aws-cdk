@@ -32,7 +32,7 @@ and powerful custom resources and includes the following capabilities:
 * Handles responses to AWS CloudFormation and protects against blocked
   deployments
 * Validates handler return values to help with correct handler implementation
-* Supports asynchronous handlers to enable long operations which can exceed the AWS Lambda timeout
+* Supports asynchronous handlers to enable operations that require a long waiting period for a resource, which can exceed the AWS Lambda timeout
 * Implements default behavior for physical resource IDs.
 
 The following code shows how the `Provider` construct is used in conjunction
