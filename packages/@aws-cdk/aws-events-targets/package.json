@@ -106,6 +106,7 @@
     "@aws-cdk/aws-sns-subscriptions": "1.23.0",
     "@aws-cdk/aws-sqs": "1.23.0",
     "@aws-cdk/aws-stepfunctions": "1.23.0",
+    "@aws-cdk/aws-batch": "1.23.0",
     "@aws-cdk/core": "1.23.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
@@ -122,6 +123,7 @@
     "@aws-cdk/aws-sns-subscriptions": "1.23.0",
     "@aws-cdk/aws-sqs": "1.23.0",
     "@aws-cdk/aws-stepfunctions": "1.23.0",
+    "@aws-cdk/aws-batch": "1.23.0",
     "@aws-cdk/core": "1.23.0"
   },
   "engines": {
