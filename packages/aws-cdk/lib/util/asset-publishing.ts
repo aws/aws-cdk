@@ -1,25 +1,27 @@
-import * as asset_schema from '@aws-cdk/cdk-assets-schema';
 import * as AWS from 'aws-sdk';
 import * as cdk_assets from 'cdk-assets';
+import { ISDK } from '../api';
 import { debug, error } from '../logging';
 
 /**
  * Use cdk-assets to publish all assets in the given manifest.
  */
-export async function publishAssets(manifestDirectory: string, manifestData: asset_schema.ManifestFile) {
-  const manifest = new cdk_assets.AssetManifest(manifestDirectory, manifestData);
+export async function publishAssets(manifest: cdk_assets.AssetManifest, sdk: ISDK) {
   const publisher = new cdk_assets.AssetPublishing(manifest, {
-    aws: new PublishingAws(),
+    aws: new PublishingAws(sdk),
     progressListener: new PublishingProgressListener(),
     throwOnError: false,
   });
 }
 
 class PublishingAws implements cdk_assets.IAws {
-  public discoverDefaultRegion(): Promise<string> {
-    throw new Error("Method not implemented.");
-
+  constructor(private readonly sdk: ISDK) {
   }
+
+  public async discoverDefaultRegion(): Promise<string> {
+    return await this.sdk.defaultRegion() ?? 'us-east-1';
+  }
+
   public discoverCurrentAccount(): Promise<cdk_assets.Account> {
     throw new Error("Method not implemented.");
   }

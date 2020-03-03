@@ -1,7 +1,8 @@
 import * as asset_schema from '@aws-cdk/cdk-assets-schema';
+import * as cdk_assets from 'cdk-assets';
 
 export class AssetManifestBuilder {
-  public readonly manifest: asset_schema.ManifestFile = {
+  private readonly manifest: asset_schema.ManifestFile = {
     version: asset_schema.AssetManifestSchema.currentVersion(),
     files: {},
     dockerImages: {},
@@ -23,5 +24,9 @@ export class AssetManifestBuilder {
         current: destination
       }
     };
+  }
+
+  public toManifest(directory: string): cdk_assets.AssetManifest {
+    return new cdk_assets.AssetManifest(directory, this.manifest);
   }
 }

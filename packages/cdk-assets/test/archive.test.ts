@@ -1,11 +1,12 @@
 import { exec as _exec } from 'child_process';
 import * as crypto from 'crypto';
-import * as fs from 'fs-extra';
+import { constants, promises as fs } from 'fs';
 import * as jszip from 'jszip';
 import * as os from 'os';
 import * as path from 'path';
 import { promisify } from 'util';
 import { zipDirectory } from '../lib/private/archive';
+import { rmRfSync } from '../lib/private/fs-extra';
 const exec = promisify(_exec);
 
 test('zipDirectory can take a directory and produce a zip from it', async () => {
@@ -31,11 +32,11 @@ test('zipDirectory can take a directory and produce a zip from it', async () => 
     // check that mode is preserved
     const stat = await fs.stat(path.join(extractDir, 'executable.txt'));
     // tslint:disable-next-line:no-bitwise
-    const isExec = (stat.mode & fs.constants.S_IXUSR) || (stat.mode & fs.constants.S_IXGRP) || (stat.mode & fs.constants.S_IXOTH);
+    const isExec = (stat.mode & constants.S_IXUSR) || (stat.mode & constants.S_IXGRP) || (stat.mode & constants.S_IXOTH);
     expect(isExec).toBeTruthy();
   } finally {
-    await fs.remove(stagingDir);
-    await fs.remove(extractDir);
+    rmRfSync(stagingDir);
+    rmRfSync(extractDir);
   }
 });
 
@@ -65,8 +66,8 @@ test('zipDirectory follows symlinks', async () => {
     await expect(exec(`unzip ${zipFile}`, { cwd: extractDir })).resolves.toBeDefined();
     await expect(exec(`diff -bur ${originalDir} ${extractDir}`)).resolves.toBeDefined();
   } finally {
-    await fs.remove(stagingDir);
-    await fs.remove(extractDir);
+    rmRfSync(stagingDir);
+    rmRfSync(extractDir);
   }
 });
 

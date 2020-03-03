@@ -3,10 +3,11 @@ import * as aws from 'aws-sdk';
 import * as colors from 'colors/safe';
 import * as uuid from 'uuid';
 import { Tag } from "../api/cxapp/stacks";
-import { addMetadataAssetsToManifest, publishAssets } from '../assets';
+import { addMetadataAssetsToManifest } from '../assets';
 import { debug, error, print } from '../logging';
 import { deserializeStructure, toYAML } from '../serialize';
 import { AssetManifestBuilder } from '../util/asset-manifest-builder';
+import { publishAssets } from '../util/asset-publishing';
 import { contentHash } from '../util/content-hash';
 import { Mode } from './aws-auth/credentials';
 import { ToolkitInfo } from './toolkit-info';
@@ -123,7 +124,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
 
   const update = await stackExists(cfn, deployName);
 
-  await publishAssets(assets.manifest);
+  await publishAssets(assets.toManifest(options.stack.assembly.directory));
 
   const changeSetName = `CDK-${executionId}`;
   debug(`Attempting to create ChangeSet ${changeSetName} to ${update ? 'update' : 'create'} stack ${deployName}`);
