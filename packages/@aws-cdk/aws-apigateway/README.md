@@ -525,9 +525,12 @@ as `example.com`, and for subdomains, such as `www.example.com`. (You can create
 CNAME records only for subdomains.)
 
 ```ts
+import * as route53 from '@aws-cdk/aws-route53';
+import * as targets from '@aws-cdk/aws-route53-targets';
+
 new route53.ARecord(this, 'CustomDomainAliasRecord', {
   zone: hostedZoneForExampleCom,
-  target: route53.RecordTarget.fromAlias(new route53_targets.ApiGateway(api))
+  target: route53.RecordTarget.fromAlias(new targets.ApiGateway(api))
 });
 ```
 
@@ -537,7 +540,8 @@ You can also define a `DomainName` resource directly in order to customize the d
 new apigw.DomainName(this, 'custom-domain', {
   domainName: 'example.com',
   certificate: acmCertificateForExampleCom,
-  endpointType: apigw.EndpointType.EDGE // default is REGIONAL
+  endpointType: apigw.EndpointType.EDGE, // default is REGIONAL
+  securityPolicy: apigw.SecurityPolicy.TLS_1_2
 });
 ```
 
@@ -565,12 +569,15 @@ domain.addBasePathMapping(api);
 This can also be achieved through the `mapping` configuration when defining the
 domain as demonstrated above.
 
-If you wish to setup this domain with an Amazon Route53 alias, use the `route53_targets.ApiGatewayDomain`:
+If you wish to setup this domain with an Amazon Route53 alias, use the `targets.ApiGatewayDomain`:
 
 ```ts
+import * as route53 from '@aws-cdk/aws-route53';
+import * as targets from '@aws-cdk/aws-route53-targets';
+
 new route53.ARecord(this, 'CustomDomainAliasRecord', {
   zone: hostedZoneForExampleCom,
-  target: route53.RecordTarget.fromAlias(new route53_targets.ApiGatewayDomain(domainName))
+  target: route53.RecordTarget.fromAlias(new targets.ApiGatewayDomain(domainName))
 });
 ```
 
