@@ -1,10 +1,9 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import * as aws from 'aws-sdk';
 import * as colors from 'colors/safe';
-import { contentHash } from '../archive';
 import { debug } from '../logging';
 import { Mode } from './aws-auth/credentials';
-import { BUCKET_DOMAIN_NAME_OUTPUT, BUCKET_NAME_OUTPUT  } from './bootstrap-environment';
+import { BUCKET_DOMAIN_NAME_OUTPUT, BUCKET_NAME_OUTPUT, REPOSITORY_NAME_OUTPUT  } from './bootstrap-environment';
 import { waitForStack } from './util/cloudformation';
 import { ISDK } from './util/sdk';
 
@@ -27,15 +26,11 @@ export interface Uploaded {
 export class ToolkitInfo {
   public readonly sdk: ISDK;
 
-  /**
-   * A cache of previous uploads done in this session
-   */
-  private readonly previousUploads: {[key: string]: Uploaded} = {};
-
   constructor(private readonly props: {
     sdk: ISDK,
     bucketName: string,
     bucketEndpoint: string,
+    repositoryName: string | undefined,
     environment: cxapi.Environment
   }) {
     this.sdk = props.sdk;
@@ -47,57 +42,6 @@ export class ToolkitInfo {
 
   public get bucketName() {
     return this.props.bucketName;
-  }
-
-  /**
-   * Uploads a data blob to S3 under the specified key prefix.
-   * Uses a hash to render the full key and skips upload if an object
-   * already exists by this key.
-   */
-  public async uploadIfChanged(data: string | Buffer | DataView, props: UploadProps): Promise<Uploaded> {
-    const s3 = await this.props.sdk.s3(this.props.environment.account, this.props.environment.region, Mode.ForWriting);
-
-    const s3KeyPrefix = props.s3KeyPrefix || '';
-    const s3KeySuffix = props.s3KeySuffix || '';
-
-    const bucket = this.props.bucketName;
-
-    const hash = contentHash(data);
-    const filename = `${hash}${s3KeySuffix}`;
-    const key = `${s3KeyPrefix}${filename}`;
-    const url = `s3://${bucket}/${key}`;
-
-    debug(`${url}: checking if already exists`);
-    if (await objectExists(s3, bucket, key)) {
-      debug(`${url}: found (skipping upload)`);
-      return { filename, key, hash, changed: false };
-    }
-
-    const uploaded = { filename, key, hash, changed: true };
-
-    // Upload if it's new or server-side copy if it was already uploaded previously
-    const previous = this.previousUploads[hash];
-    if (previous) {
-      debug(`${url}: copying`);
-      await s3.copyObject({
-        Bucket: bucket,
-        Key: key,
-        CopySource: `${bucket}/${previous.key}`
-      }).promise();
-      debug(`${url}: copy complete`);
-    } else {
-      debug(`${url}: uploading`);
-      await s3.putObject({
-        Bucket: bucket,
-        Key: key,
-        Body: data,
-        ContentType: props.contentType
-      }).promise();
-      debug(`${url}: upload complete`);
-      this.previousUploads[hash] = uploaded;
-    }
-
-    return uploaded;
   }
 
   /**
@@ -189,19 +133,6 @@ export interface EcrCredentials {
   endpoint: string;
 }
 
-async function objectExists(s3: aws.S3, bucket: string, key: string) {
-  try {
-    await s3.headObject({ Bucket: bucket, Key: key }).promise();
-    return true;
-  } catch (e) {
-    if (e.code === 'NotFound') {
-      return false;
-    }
-
-    throw e;
-  }
-}
-
 /** @experimental */
 export async function loadToolkitInfo(environment: cxapi.Environment, sdk: ISDK, stackName: string): Promise<ToolkitInfo | undefined> {
   const cfn = await sdk.cloudFormation(environment.account, environment.region, Mode.ForReading);
@@ -211,21 +142,35 @@ export async function loadToolkitInfo(environment: cxapi.Environment, sdk: ISDK,
         environment.name, stackName, colors.blue(`cdk bootstrap "${environment.name}"`));
     return undefined;
   }
+
+  const outputs = stackOutputs(stack);
+
   return new ToolkitInfo({
     sdk, environment,
-    bucketName: getOutputValue(stack, BUCKET_NAME_OUTPUT),
-    bucketEndpoint: getOutputValue(stack, BUCKET_DOMAIN_NAME_OUTPUT)
+    bucketName: requireOutput(BUCKET_NAME_OUTPUT),
+    bucketEndpoint: requireOutput(BUCKET_DOMAIN_NAME_OUTPUT),
+    repositoryName: outputs[REPOSITORY_NAME_OUTPUT],
   });
+
+  function requireOutput(output: string): string {
+    if (!(output in outputs)) {
+      throw new Error(`The CDK toolkit stack (${stack!.StackName}) does not have an output named ${output}. Use 'cdk bootstrap' to correct this.`);
+    }
+    return outputs[output];
+  }
 }
 
-function getOutputValue(stack: aws.CloudFormation.Stack, output: string): string {
-  let result: string | undefined;
-  if (stack.Outputs) {
-    const found = stack.Outputs.find(o => o.OutputKey === output);
-    result = found && found.OutputValue;
+/**
+ * Return the stack outputs as a map
+ */
+function stackOutputs(stack: aws.CloudFormation.Stack): Record<string, string> {
+  const ret: Record<string, string> = {};
+
+  for (const output of stack.Outputs || []) {
+    if (output.OutputKey) {
+      ret[output.OutputKey] = output.OutputValue ?? '';
+    }
   }
-  if (result === undefined) {
-    throw new Error(`The CDK toolkit stack (${stack.StackName}) does not have an output named ${output}. Use 'cdk bootstrap' to correct this.`);
-  }
-  return result;
+
+  return ret;
 }

@@ -1,10 +1,11 @@
 import { exec as _exec } from 'child_process';
+import * as crypto from 'crypto';
 import * as fs from 'fs-extra';
 import * as jszip from 'jszip';
 import * as os from 'os';
 import * as path from 'path';
 import { promisify } from 'util';
-import { contentHash, zipDirectory } from '../lib/archive';
+import { zipDirectory } from '../lib/private/archive';
 const exec = promisify(_exec);
 
 test('zipDirectory can take a directory and produce a zip from it', async () => {
@@ -68,3 +69,7 @@ test('zipDirectory follows symlinks', async () => {
     await fs.remove(extractDir);
   }
 });
+
+export function contentHash(data: string | Buffer | DataView) {
+  return crypto.createHash('sha256').update(data).digest('hex');
+}

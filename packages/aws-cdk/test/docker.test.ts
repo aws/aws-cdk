@@ -1,9 +1,8 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import * as sinon from 'sinon';
-import { ToolkitInfo } from '../lib';
 import { prepareContainerAsset } from '../lib/docker';
 import * as os from '../lib/os';
-import { MockSDK } from './util/mock-sdk';
+import { MockSDK, mockToolkitInfo } from './util/mock-sdk';
 
 test('creates repository with given name', async () => {
   // GIVEN
@@ -24,12 +23,7 @@ test('creates repository with given name', async () => {
     },
   });
 
-  const toolkit = new ToolkitInfo({
-    sdk,
-    bucketName: 'BUCKET_NAME',
-    bucketEndpoint: 'BUCKET_ENDPOINT',
-    environment: { name: 'env', account: '1234', region: 'abc' }
-  });
+  const toolkit = mockToolkitInfo();
 
   // WHEN
   const asset: cxapi.ContainerImageAssetMetadataEntry = {
@@ -70,12 +64,7 @@ test('derives repository name from asset id', async () => {
     },
   });
 
-  const toolkit = new ToolkitInfo({
-    sdk,
-    bucketName: 'BUCKET_NAME',
-    bucketEndpoint: 'BUCKET_ENDPOINT',
-    environment: { name: 'env', account: '1234', region: 'abc' }
-  });
+  const toolkit = mockToolkitInfo();
 
   // WHEN
   const asset: cxapi.ContainerImageAssetMetadataEntry = {
@@ -122,12 +111,7 @@ test('configures image scanning', async () => {
     }
   });
 
-  const toolkit = new ToolkitInfo({
-    sdk,
-    bucketName: 'BUCKET_NAME',
-    bucketEndpoint: 'BUCKET_ENDPOINT',
-    environment: { name: 'env', account: '1234', region: 'abc' }
-  });
+  const toolkit = mockToolkitInfo();
 
   // WHEN
   const asset: cxapi.ContainerImageAssetMetadataEntry = {
@@ -155,12 +139,7 @@ test('configures image scanning', async () => {
 
 test('passes the correct target to docker build', async () => {
   // GIVEN
-  const toolkit = new ToolkitInfo({
-    sdk: new MockSDK(),
-    bucketName: 'BUCKET_NAME',
-    bucketEndpoint: 'BUCKET_ENDPOINT',
-    environment: { name: 'env', account: '1234', region: 'abc' }
-  });
+  const toolkit = mockToolkitInfo();
 
   const prepareEcrRepositoryStub = sinon.stub(toolkit, 'prepareEcrRepository').resolves({
     repositoryUri: 'uri',
@@ -199,12 +178,7 @@ test('passes the correct target to docker build', async () => {
 
 test('passes the correct args to docker build', async () => {
   // GIVEN
-  const toolkit = new ToolkitInfo({
-    sdk: new MockSDK(),
-    bucketName: 'BUCKET_NAME',
-    bucketEndpoint: 'BUCKET_ENDPOINT',
-    environment: { name: 'env', account: '1234', region: 'abc' }
-  });
+  const toolkit = mockToolkitInfo();
 
   const prepareEcrRepositoryStub = sinon.stub(toolkit, 'prepareEcrRepository').resolves({
     repositoryUri: 'uri',
@@ -242,12 +216,7 @@ test('passes the correct args to docker build', async () => {
 
 test('relative path', async () => {
   // GIVEN
-  const toolkit = new ToolkitInfo({
-    sdk: new MockSDK(),
-    bucketName: 'BUCKET_NAME',
-    bucketEndpoint: 'BUCKET_ENDPOINT',
-    environment: { name: 'env', account: '1234', region: 'abc' }
-  });
+  const toolkit = mockToolkitInfo();
 
   const prepareEcrRepositoryStub = sinon.stub(toolkit, 'prepareEcrRepository').resolves({
     repositoryUri: 'uri',
@@ -285,12 +254,7 @@ test('relative path', async () => {
 
 test('passes the correct file to docker build', async () => {
   // GIVEN
-  const toolkit = new ToolkitInfo({
-    sdk: new MockSDK(),
-    bucketName: 'BUCKET_NAME',
-    bucketEndpoint: 'BUCKET_ENDPOINT',
-    environment: { name: 'env', account: '1234', region: 'abc' }
-  });
+  const toolkit = mockToolkitInfo();
 
   const prepareEcrRepositoryStub = sinon.stub(toolkit, 'prepareEcrRepository').resolves({
     repositoryUri: 'uri',
@@ -333,12 +297,7 @@ test('passes the correct file to docker build', async () => {
 // it's probably not going to be used.
 test('"imageTag" is used instead of "latest"', async () => {
   // GIVEN
-  const toolkit = new ToolkitInfo({
-    sdk: new MockSDK(),
-    bucketName: 'BUCKET_NAME',
-    bucketEndpoint: 'BUCKET_ENDPOINT',
-    environment: { name: 'env', account: '1234', region: 'abc' }
-  });
+  const toolkit = mockToolkitInfo();
 
   const prepareEcrRepositoryStub = sinon.stub(toolkit, 'prepareEcrRepository').resolves({
     repositoryUri: 'uri',

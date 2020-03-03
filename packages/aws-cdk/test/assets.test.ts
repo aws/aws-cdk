@@ -1,5 +1,5 @@
 import { Uploaded, UploadProps } from '../lib';
-import { prepareAssets } from '../lib/assets';
+import { addMetadataAssetsToManifest } from '../lib/assets';
 import { testAssembly, testStack } from './util';
 
 test('prepare assets', async () => {
@@ -31,7 +31,7 @@ test('prepare assets', async () => {
   const toolkit = new FakeToolkit();
 
   // WHEN
-  const params = await prepareAssets(assembly.getStackByName('SomeStack'), toolkit as any);
+  const params = await addMetadataAssetsToManifest(assembly.getStackByName('SomeStack'), toolkit as any);
 
   // THEN
   expect(params).toEqual([
@@ -67,7 +67,7 @@ test('prepare assets with reuse', async () => {
   const toolkit = new FakeToolkit();
 
   // WHEN
-  const params = await prepareAssets(stack, toolkit as any, ['SomeStackSomeResource4567']);
+  const params = await addMetadataAssetsToManifest(stack, toolkit as any, ['SomeStackSomeResource4567']);
 
   // THEN
   expect(params).toEqual([
@@ -101,7 +101,7 @@ test('prepare container asset with reuse', async () => {
   const toolkit = new FakeToolkit();
 
   // WHEN
-  const params = await prepareAssets(stack, toolkit as any, ['SomeStackSomeResource4567']);
+  const params = await addMetadataAssetsToManifest(stack, toolkit as any, ['SomeStackSomeResource4567']);
 
   // THEN
   expect(params).toEqual([

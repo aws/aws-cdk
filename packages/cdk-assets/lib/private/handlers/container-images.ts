@@ -20,22 +20,27 @@ export class ContainerImageAssetHandler implements IAssetHandler {
   public async publish(): Promise<void> {
     const destination = await replaceAwsPlaceholders(this.asset.destination, this.host.aws);
 
-    const ecr = this.host.aws.ecrClient(destination);
+    const ecr = await this.host.aws.ecrClient(destination);
 
-    this.host.emitMessage(EventType.CHECK, `Check ${destination.imageUri}`);
+    const uri = await repositoryUri(ecr, destination.repositoryName);
+    if (!uri) {
+      throw new Error(`No ECR repository with name '${destination.repositoryName}' in account. Is this account bootstrapped?`);
+    }
+
+    this.host.emitMessage(EventType.CHECK, `Check ${uri}`);
     if (await imageExists(ecr, destination.repositoryName, destination.imageTag)) {
-      this.host.emitMessage(EventType.FOUND, `Found ${destination.imageUri}`);
+      this.host.emitMessage(EventType.FOUND, `Found ${uri}`);
       return;
     }
 
     if (this.host.aborted) { return; }
     await this.buildImage();
 
-    this.host.emitMessage(EventType.UPLOAD, `Push ${destination.imageUri}`);
+    this.host.emitMessage(EventType.UPLOAD, `Push ${uri}`);
     if (this.host.aborted) { return; }
-    await this.docker.tag(this.localTagName, destination.imageUri);
+    await this.docker.tag(this.localTagName, uri);
     await this.docker.login(ecr);
-    await this.docker.push(destination.imageUri);
+    await this.docker.push(uri);
   }
 
   private async buildImage(): Promise<void> {
@@ -66,5 +71,20 @@ async function imageExists(ecr: AWS.ECR, repositoryName: string, imageTag: strin
   } catch (e) {
     if (e.code !== 'ImageNotFoundException') { throw e; }
     return false;
+  }
+}
+
+/**
+ * Return the URI for the repository with the given name
+ *
+ * Returns undefined if the repository does not exist.
+ */
+async function repositoryUri(ecr: AWS.ECR, repositoryName: string): Promise<string | undefined> {
+  try {
+    const response = await ecr.describeRepositories({ repositoryNames: [repositoryName] }).promise();
+    return (response.repositories || [])[0]?.repositoryUri;
+  } catch (e) {
+    if (e.code !== 'RepositoryNotFoundException') { throw e; }
+    return undefined;
   }
 }

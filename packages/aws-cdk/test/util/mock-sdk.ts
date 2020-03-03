@@ -1,5 +1,6 @@
 import * as AWS from 'aws-sdk';
 import * as sinon from 'sinon';
+import { ToolkitInfo } from '../../lib';
 import { SDK } from "../../lib/api/util/sdk";
 
 /**
@@ -104,4 +105,14 @@ class FakeAWSResponse<T> {
   public promise(): Promise<T> {
     return Promise.resolve(this.x);
   }
+}
+
+export function mockToolkitInfo() {
+  return new ToolkitInfo({
+    sdk: new MockSDK(),
+    bucketName: 'BUCKET_NAME',
+    bucketEndpoint: 'BUCKET_ENDPOINT',
+    repositoryName: 'REPOSITORY_NAME',
+    environment: { name: 'env', account: '1234', region: 'abc' }
+  });
 }

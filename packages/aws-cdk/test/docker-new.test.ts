@@ -379,6 +379,7 @@ function newMockToolkitInfo(sdk: MockSDK = new MockSDK()) {
     sdk,
     bucketName: 'BUCKET_NAME',
     bucketEndpoint: 'BUCKET_ENDPOINT',
+    repositoryName: 'REPOSITORY_NAME',
     environment: { name: 'env', account: '1234', region: 'abc' }
   });
 }

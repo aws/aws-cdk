@@ -397,6 +397,10 @@
       "Description": "The domain name of the S3 bucket owned by the CDK toolkit stack",
       "Value": { "Fn::Sub":  "${StagingBucket.RegionalDomainName}" }
     },
+    "RepositoryName": {
+      "Description": "The name of the ECR repository used to push Docker Image assets",
+      "Value": { "Ref": "ContainerAssetsRepository" }
+    },
     "BootstrapVersion": {
       "Description": "The version of the bootstrap resources that are currently mastered in this stack",
       "Value": "1",

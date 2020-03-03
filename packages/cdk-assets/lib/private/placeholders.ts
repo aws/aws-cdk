@@ -1,22 +1,27 @@
-import { AssetManifest } from "../asset-manifest";
-import { IAws } from "../aws";
+import { Placeholders } from "@aws-cdk/cdk-assets-schema";
+import { Account, IAws } from "../aws";
 
 /**
  * Replace the {ACCOUNT} and {REGION} placeholders in all strings found in a complex object.
+ *
+ * Duplicated between cdk-assets and aws-cdk CLI because we don't have a good single place to put it
+ * (they're nominally independent tools).
  */
 export async function replaceAwsPlaceholders<A extends { region?: string }>(object: A, aws: IAws): Promise<A> {
   let region: string | undefined;
-  let account: string | undefined;
+  let account: Account | undefined;
 
   return await recurse(object);
 
   async function recurse(value: any): Promise<any> {
     if (typeof value === 'string') {
-      if (value.indexOf(AssetManifest.CURRENT_REGION_PLACEHOLDER) > -1) { await ensureRegion(); }
-      if (value.indexOf(AssetManifest.CURRENT_ACCOUNT_PLACEHOLDER) > -1) { await ensureAccount(); }
+      if (value.indexOf(Placeholders.CURRENT_REGION) > -1) { await ensureRegion(); }
+      if (value.indexOf(Placeholders.CURRENT_ACCOUNT) > -1) { await ensureAccount(); }
+      if (value.indexOf(Placeholders.CURRENT_PARTITION) > -1) { await ensureAccount(); }
 
-      value = replaceAll(value, AssetManifest.CURRENT_REGION_PLACEHOLDER, region ?? '*');
-      value = replaceAll(value, AssetManifest.CURRENT_ACCOUNT_PLACEHOLDER, account ?? '*');
+      value = replaceAll(value, Placeholders.CURRENT_REGION, region! ?? '');
+      value = replaceAll(value, Placeholders.CURRENT_ACCOUNT, account!.accountId ?? '');
+      value = replaceAll(value, Placeholders.CURRENT_PARTITION, account!.partition ?? '');
 
       return value;
     }

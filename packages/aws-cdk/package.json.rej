@@ -1,0 +1,17 @@
+--- packages/aws-cdk/package.json
++++ packages/aws-cdk/package.json
+@@ -67,12 +67,14 @@
+     "ts-jest": "^25.2.0"
+   },
+   "dependencies": {
++    "@aws-cdk/cdk-assets-schema": "0.0.0",
+     "@aws-cdk/cloudformation-diff": "0.0.0",
+     "@aws-cdk/cx-api": "0.0.0",
+     "@aws-cdk/region-info": "0.0.0",
+     "archiver": "^3.1.1",
+     "aws-sdk": "^2.630.0",
+     "camelcase": "^5.3.1",
++    "cdk-assets": "0.0.0",
+     "colors": "^1.4.0",
+     "decamelize": "^4.0.0",
+     "fs-extra": "^8.1.0",

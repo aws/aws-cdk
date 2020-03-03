@@ -11,6 +11,8 @@ import { ISDK } from './util/sdk';
 /** @experimental */
 export const BUCKET_NAME_OUTPUT = 'BucketName';
 /** @experimental */
+export const REPOSITORY_NAME_OUTPUT = 'RepositoryName';
+/** @experimental */
 export const BUCKET_DOMAIN_NAME_OUTPUT = 'BucketDomainName';
 
 export interface BootstrapEnvironmentProps {

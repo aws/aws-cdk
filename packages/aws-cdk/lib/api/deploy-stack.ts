@@ -3,9 +3,11 @@ import * as aws from 'aws-sdk';
 import * as colors from 'colors/safe';
 import * as uuid from 'uuid';
 import { Tag } from "../api/cxapp/stacks";
-import { prepareAssets } from '../assets';
+import { addMetadataAssetsToManifest, publishAssets } from '../assets';
 import { debug, error, print } from '../logging';
 import { deserializeStructure, toYAML } from '../serialize';
+import { AssetManifestBuilder } from '../util/asset-manifest-builder';
+import { contentHash } from '../util/content-hash';
 import { Mode } from './aws-auth/credentials';
 import { ToolkitInfo } from './toolkit-info';
 import { changeSetHasNoChanges, describeStack, stackExists, stackFailedCreating, waitForChangeSet, waitForStack  } from './util/cloudformation';
@@ -74,6 +76,8 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
   const deployName = options.deployName || options.stack.stackName;
 
   if (!options.force) {
+    // bail out if the current template is exactly the same as the one we are about to deploy
+    // in cdk-land, this means nothing changed because assets (and therefore nested stacks) are immutable.
     debug(`checking if we can skip this stack based on the currently deployed template and tags (use --force to override)`);
     const deployed = await getDeployedStack(cfn, deployName);
     const tagsIdentical = compareTags(deployed?.tags ?? [], options.tags ?? []);
@@ -90,10 +94,9 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     }
   }
 
-  // bail out if the current template is exactly the same as the one we are about to deploy
-  // in cdk-land, this means nothing changed because assets (and therefore nested stacks) are immutable.
+  const assets = new AssetManifestBuilder();
 
-  const params = await prepareAssets(options.stack, options.toolkitInfo, options.reuseAssets);
+  const params = await addMetadataAssetsToManifest(options.stack, assets, options.toolkitInfo, options.reuseAssets);
 
   // add passed CloudFormation parameters
   for (const [paramName, paramValue] of Object.entries((options.parameters || {}))) {
@@ -107,7 +110,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
 
   const executionId = uuid.v4();
 
-  const bodyParameter = await makeBodyParameter(options.stack, options.toolkitInfo);
+  const bodyParameter = await makeBodyParameter(options.stack, assets, options.toolkitInfo);
 
   if (await stackFailedCreating(cfn, deployName)) {
     debug(`Found existing stack ${deployName} that had previously failed creation. Deleting it before attempting to re-create it.`);
@@ -119,6 +122,8 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
   }
 
   const update = await stackExists(cfn, deployName);
+
+  await publishAssets(assets.manifest);
 
   const changeSetName = `CDK-${executionId}`;
   debug(`Attempting to create ChangeSet ${changeSetName} to ${update ? 'update' : 'create'} stack ${deployName}`);
@@ -177,26 +182,29 @@ async function getStackOutputs(cfn: aws.CloudFormation, stackName: string): Prom
 }
 
 /**
- * Prepares the body parameter for +CreateChangeSet+, putting the generated CloudFormation template in the toolkit-provided
- * S3 bucket if present, otherwise using in-line template argument. If no +ToolkitInfo+ is provided and the template is
- * larger than 50,200 bytes, an +Error+ will be raised.
+ * Prepares the body parameter for +CreateChangeSet+.
+ *
+ * If the template is small enough to be inlined into the API call, just return
+ * it immediately.
+ *
+ * Otherwise, add it to the asset manifest to get uploaded to the staging
+ * bucket and return its coordinates. If there is no staging bucket, an error
+ * is thrown.
  *
  * @param stack     the synthesized stack that provides the CloudFormation template
- * @param sdk     an AWS SDK to use when interacting with S3
  * @param toolkitInfo information about the toolkit stack
  */
-async function makeBodyParameter(stack: cxapi.CloudFormationStackArtifact, toolkitInfo?: ToolkitInfo): Promise<TemplateBodyParameter> {
+async function makeBodyParameter(
+  stack: cxapi.CloudFormationStackArtifact,
+  assetManifest: AssetManifestBuilder,
+  toolkitInfo?: ToolkitInfo): Promise<TemplateBodyParameter> {
   const templateJson = toYAML(stack.template);
-  if (toolkitInfo) {
-    const s3KeyPrefix = `cdk/${stack.id}/`;
-    const s3KeySuffix = '.yml';
-    const { key } = await toolkitInfo.uploadIfChanged(templateJson, {
-      s3KeyPrefix, s3KeySuffix, contentType: 'application/x-yaml'
-    });
-    const templateURL = `${toolkitInfo.bucketUrl}/${key}`;
-    debug('Stored template in S3 at:', templateURL);
-    return { TemplateURL: templateURL };
-  } else if (templateJson.length > LARGE_TEMPLATE_SIZE_KB * 1024) {
+
+  if (templateJson.length <= LARGE_TEMPLATE_SIZE_KB * 1024) {
+    return { TemplateBody: templateJson };
+  }
+
+  if (!toolkitInfo) {
     error(
       `The template for stack "${stack.displayName}" is ${Math.round(templateJson.length / 1024)}KiB. ` +
       `Templates larger than ${LARGE_TEMPLATE_SIZE_KB}KiB must be uploaded to S3.\n` +
@@ -204,9 +212,21 @@ async function makeBodyParameter(stack: cxapi.CloudFormationStackArtifact, toolk
       colors.blue(`\t$ cdk bootstrap ${stack.environment!.name}\n`));
 
     throw new Error(`Template too large to deploy ("cdk bootstrap" is required)`);
-  } else {
-    return { TemplateBody: templateJson };
   }
+
+  const templateHash = contentHash(templateJson);
+  const key = `cdk/${stack.id}/${templateHash}.yml`;
+  const templateURL = `${toolkitInfo.bucketUrl}/${key}`;
+
+  assetManifest.addFileAsset(templateHash, {
+    path: stack.templateFile,
+  }, {
+    bucketName: toolkitInfo.bucketName,
+    objectKey: key,
+  });
+
+  debug('Storing template in S3 at:', templateURL);
+  return { TemplateURL: templateURL };
 }
 
 /** @experimental */

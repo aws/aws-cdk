@@ -22,8 +22,13 @@ export class FileAssetHandler implements IAssetHandler {
     const destination = await replaceAwsPlaceholders(this.asset.destination, this.host.aws);
     const s3Url = `s3://${destination.bucketName}/${destination.objectKey}`;
 
-    const s3 = this.host.aws.s3Client(destination);
+    const s3 = await this.host.aws.s3Client(destination);
     this.host.emitMessage(EventType.CHECK, `Check ${s3Url}`);
+
+    if (!await bucketExist(s3, destination.bucketName)) {
+      throw new Error(`No bucket with name ${destination.bucketName} in account. Is this account bootstrapped?`);
+    }
+
     if (await objectExists(s3, destination.bucketName, destination.objectKey)) {
       this.host.emitMessage(EventType.FOUND, `Found ${s3Url}`);
       return;
@@ -61,6 +66,18 @@ export class FileAssetHandler implements IAssetHandler {
     } else {
       return fullPath;
     }
+  }
+}
+
+async function bucketExist(s3: AWS.S3, bucket: string) {
+  try {
+    await s3.getBucketLocation({ Bucket: bucket });
+    return true;
+  } catch (e) {
+    if (['NoSuchBucket', 'AccessDenied', 'AllAccessDisabled'].includes(e.code)) {
+      return false;
+    }
+    throw e;
   }
 }
 
