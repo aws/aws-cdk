@@ -45,6 +45,12 @@ export interface RuleTargetConfig {
    * The Amazon ECS task definition and task count to use, if the event target
    * is an Amazon ECS task.
    */
+  readonly batchParameters?: CfnRule.BatchParametersProperty;
+
+  /**
+   * The Amazon ECS task definition and task count to use, if the event target
+   * is an Amazon ECS task.
+   */
   readonly ecsParameters?: CfnRule.EcsParametersProperty;
 
   /**
