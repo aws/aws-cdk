@@ -136,6 +136,12 @@ export interface CfnUpdatePolicy {
    */
   readonly useOnlineResharding?: boolean;
 
+  /**
+   * To upgrade an Amazon ES domain to a new version of Elasticsearch rather than replacing the entire
+   * AWS::Elasticsearch::Domain resource, use the EnableVersionUpgrade update policy.
+   */
+  readonly enableVersionUpgrade?: boolean;
+
 }
 
 /**

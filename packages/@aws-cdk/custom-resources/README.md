@@ -1,20 +1,22 @@
 # AWS CDK Custom Resources
-
 <!--BEGIN STABILITY BANNER-->
 
 ---
 
 ![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
 
-> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
-> future breaking changes.**
+> **This is a _developer preview_ (public beta) module.**
 >
-> This API is still under active development and subject to non-backward
-> compatible changes or removal in any future version. Use of the API is not recommended in production
-> environments. Experimental APIs are not subject to the Semantic Versioning model.
+> All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib))
+> are auto-generated from CloudFormation. They are stable and safe to use.
+>
+> However, all other classes, i.e., higher level constructs, are under active development and subject to non-backward
+> compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model.
+> This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
 
 ---
 <!--END STABILITY BANNER-->
+
 
 ## Provider Framework
 
@@ -63,7 +65,7 @@ The following example is a skeleton for a Python implementation of `onEvent`:
 
 ```py
 def on_event(event, context):
-  print(event)  
+  print(event)
   request_type = event['RequestType']
   if request_type == 'Create': return on_create(event)
   if request_type == 'Update': return on_update(event)
@@ -76,9 +78,9 @@ def on_create(event):
 
   # add your create code here...
   physical_id = ...
-  
+
   return { 'PhysicalResourceId': physical_id }
-  
+
 def on_update(event):
   physical_id = event["PhysicalResourceId"]
   props = event["ResourceProperties"]
@@ -104,8 +106,8 @@ def is_complete(event, context):
   request_type = event["RequestType"]
 
   # check if resource is stable based on request_type
-  is_ready = ... 
-  
+  is_ready = ...
+
   return { 'IsComplete': is_ready }
 ```
 
@@ -121,7 +123,7 @@ If `onEvent` returns successfully, the framework will submit a "SUCCESS" respons
 to AWS CloudFormation for this resource operation.  If the provider is
 [asynchronous](#asynchronous-providers-iscomplete) (`isCompleteHandler` is
 defined), the framework will only submit a response based on the result of
-`isComplete`. 
+`isComplete`.
 
 If `onEvent` throws an error, the framework will submit a "FAILED" response to
 AWS CloudFormation.
@@ -153,10 +155,10 @@ The return value from `onEvent` must be a JSON object with the following fields:
 
 It is not uncommon for the provisioning of resources to be an asynchronous
 operation, which means that the operation does not immediately finish, and we
-need to "wait" until the resource stabilizes. 
+need to "wait" until the resource stabilizes.
 
 The provider framework makes it easy to implement "waiters" by allowing users to
-specify an additional AWS Lambda function in `isCompleteHandler`. 
+specify an additional AWS Lambda function in `isCompleteHandler`.
 
 The framework will repeatedly invoke the handler every `queryInterval`. When
 `isComplete` returns with `IsComplete: true`, the framework will submit a
@@ -230,7 +232,7 @@ lifecycle events:
 ### Execution Policy
 
 Similarly to any AWS Lambda function, if the user-defined handlers require
-access to AWS resources, you will have to define these permissions  
+access to AWS resources, you will have to define these permissions
 by calling "grant" methods such as `myBucket.grantRead(myHandler)`), using `myHandler.addToRolePolicy`
 or specifying an `initialPolicy` when defining the function.
 
@@ -353,7 +355,7 @@ const awsCustom1 = new AwsCustomResource(this, 'API1', {
   onCreate: {
     service: '...',
     action: '...',
-    physicalResourceId: '...'
+    physicalResourceId: PhysicalResourceId.of('...')
   }
 });
 
@@ -364,7 +366,7 @@ const awsCustom2 = new AwsCustomResource(this, 'API2', {
     parameters: {
       text: awsCustom1.getDataString('Items.0.text')
     },
-    physicalResourceId: '...'
+    physicalResourceId: PhysicalResourceId.of('...')
   }
 })
 ```
@@ -381,7 +383,7 @@ const verifyDomainIdentity = new AwsCustomResource(this, 'VerifyDomainIdentity',
     parameters: {
       Domain: 'example.com'
     },
-    physicalResourceIdPath: 'VerificationToken' // Use the token returned by the call as physical id
+    physicalResourceId: PhysicalResourceId.fromResponse('VerificationToken') // Use the token returned by the call as physical id
   }
 });
 
@@ -403,7 +405,7 @@ const getParameter = new AwsCustomResource(this, 'GetParameter', {
       Name: 'my-parameter',
       WithDecryption: true
     },
-    physicalResourceId: Date.now().toString() // Update physical id to always fetch the latest version
+    physicalResourceId: PhysicalResourceId.of(Date.now().toString()) // Update physical id to always fetch the latest version
   }
 });
 
