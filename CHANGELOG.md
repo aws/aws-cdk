@@ -20,10 +20,14 @@ All notable changes to this project will be documented in this file. See [standa
 * **cognito:** The property `autoVerifiedAttributes` for `UserPool` is
   now renamed to `autoVerify` and its default has now changed. The new
   default is now determined by the value of `signInAliases`.
-* **appsync:**     Configuration the user pool authorization is now done through the
-    authorizationConfig property. This allows us to specify a default
-    authorization mode out of the supported ones, currently limited to
-    Cognito user pools and API keys.
+* **appsync:** Configuration the user pool authorization is now done through the
+  authorizationConfig property. This allows us to specify a default
+  authorization mode out of the supported ones, currently limited to
+  Cognito user pools and API keys.
+* **custom-resources:** `physicalResourceId` and `physicalResourceIdPath`
+  were unified to a concrete type under the `physicalResourceId` property.
+  Use `PhysicalResourceId.fromResponse` and `PhysicalResourceId.of` factory
+  functions to specify it.
 
 ### Features
 
