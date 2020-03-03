@@ -3,6 +3,9 @@ import * as batch from '@aws-cdk/aws-batch';
 import * as iam from '@aws-cdk/aws-iam';
 import { singletonEventRole } from './util';
 
+/**
+ * Customize the Batch Job Event Target
+ */
 export interface BatchJobProps {
   /**
    * The event to send to the Lambda
@@ -30,13 +33,20 @@ export interface BatchJobProps {
   readonly attempts?: number;
 }
 
+/**
+ * Use an AWS Batch Job / Queue as an event rule target.
+ */
 export class BatchJob implements events.IRuleTarget {
   constructor(
     public readonly jobQueue: batch.IJobQueue,
     public readonly jobDefinition: batch.IJobDefinition,
     private readonly props: BatchJobProps = {}
   ) { }
-
+  
+  /**
+   * Returns a RuleTarget that can be used to trigger queue this batch job as a
+   * result from a CloudWatch event.
+   */
   public bind(rule: events.IRule, _id?: string): events.RuleTargetConfig {
     let batchParameters: events.CfnRule.BatchParametersProperty = {
       jobDefinition: this.jobDefinition.jobDefinitionArn
