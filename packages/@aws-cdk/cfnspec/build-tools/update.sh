@@ -51,7 +51,7 @@ update-spec \
 
 echo >&2 "Recording new version..."
 rm -f cfn.version
-node build-tools/spec-version.js spec-source/000_CloudFormationResourceSpecification.json > cfn.version
+node -p "require('${scriptdir}/../spec-source/000_CloudFormationResourceSpecification.json').ResourceSpecificationVersion" > cfn.version
 
 update-spec \
     "Serverless Application Model (SAM) Resource Specification" \

@@ -1,12 +1,13 @@
 # AWS CDK CloudFormation Tools
 
-To update the CloudFormation spec, from the root of the CDK repo run
+To update the CloudFormation spec, you can run `bump-cfnspec.sh` from a clean repo, as so -
 
 ```
 ./scripts/bump-cfnspec.sh
 ```
 
-However, if you have CDK dependencies installed and the cfnspec module built, instead run
+If you wish to only update the CFN spec, make sure to install all dependencies and build the `cfnspec` module,
+and then you can just run:
 
 ```
 yarn update
