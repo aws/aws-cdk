@@ -80,6 +80,7 @@ only if the requested host in the request is `example.com`:
 ```ts
 listener.addTargets('Example.Com Fleet', {
     priority: 10,
+    pathPattern: ['/ok', '/path'],
     hostHeader: 'example.com',
     port: 8080,
     targets: [asg]
@@ -88,6 +89,8 @@ listener.addTargets('Example.Com Fleet', {
 
 `priority` is a required field when you add targets with conditions. The lowest
 number wins.
+
+The `pathPattern` condition can both be a single string and an array of strings to allow for multiple paths to have the same target.
 
 Every listener must have at least one target without conditions.
 

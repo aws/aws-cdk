@@ -937,6 +937,52 @@ export = {
 
     test.done();
   },
+
+  'Can add multiple path patterns to listener rule'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+
+    // WHEN
+    const listener = lb.addListener('Listener', {
+      port: 443,
+      certificateArns: ['cert1', 'cert2'],
+      defaultTargetGroups: [new elbv2.ApplicationTargetGroup(stack, 'Group', { vpc, port: 80 })]
+    });
+
+    listener.addTargets('Target1', {
+      priority: 10,
+      pathPattern: ['/test/path/1', '/test/path/2']
+    });
+
+    listener.addTargets('Target2', {
+      priority: 20,
+      pathPattern: '/test/path/3'
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::ListenerRule', {
+      Priority: 10,
+      Conditions: [
+        {
+          Field: 'path-pattern',
+          Values: ['/test/path/1', '/test/path/2']
+        }
+      ]
+    }));
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::ListenerRule', {
+      Priority: 20,
+      Conditions: [
+        {
+          Field: 'path-pattern',
+          Values: ['/test/path/3']
+        }
+      ]
+    }));
+
+    test.done();
+  },
 };
 
 class ResourceWithLBDependency extends cdk.CfnResource {

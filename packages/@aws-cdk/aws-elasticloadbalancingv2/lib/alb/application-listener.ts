@@ -565,7 +565,7 @@ export interface AddRuleProps {
    *
    * @default No path condition
    */
-  readonly pathPattern?: string;
+  readonly pathPattern?: string | string[];
 }
 
 /**

@@ -60,7 +60,7 @@ export interface BaseApplicationListenerRuleProps {
    *
    * @default - No path condition.
    */
-  readonly pathPattern?: string;
+  readonly pathPattern?: string | string[];
 }
 
 /**
@@ -196,7 +196,8 @@ export class ApplicationListenerRule extends cdk.Construct {
       this.setCondition('host-header', [props.hostHeader]);
     }
     if (props.pathPattern) {
-      this.setCondition('path-pattern', [props.pathPattern]);
+      const pathPattern = Array.isArray(props.pathPattern) ? props.pathPattern : [props.pathPattern];
+      this.setCondition('path-pattern', pathPattern);
     }
 
     (props.targetGroups || []).forEach(this.addTargetGroup.bind(this));
