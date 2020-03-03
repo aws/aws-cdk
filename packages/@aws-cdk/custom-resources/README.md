@@ -1,20 +1,22 @@
 # AWS CDK Custom Resources
-
 <!--BEGIN STABILITY BANNER-->
 
 ---
 
 ![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
 
-> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
-> future breaking changes.**
+> **This is a _developer preview_ (public beta) module.**
 >
-> This API is still under active development and subject to non-backward
-> compatible changes or removal in any future version. Use of the API is not recommended in production
-> environments. Experimental APIs are not subject to the Semantic Versioning model.
+> All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib))
+> are auto-generated from CloudFormation. They are stable and safe to use.
+>
+> However, all other classes, i.e., higher level constructs, are under active development and subject to non-backward
+> compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model.
+> This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
 
 ---
 <!--END STABILITY BANNER-->
+
 
 ## Provider Framework
 
@@ -30,7 +32,7 @@ and powerful custom resources and includes the following capabilities:
 * Handles responses to AWS CloudFormation and protects against blocked
   deployments
 * Validates handler return values to help with correct handler implementation
-* Supports asynchronous handlers to enable long operations which can exceed the AWS Lambda timeout
+* Supports asynchronous handlers to enable operations that require a long waiting period for a resource, which can exceed the AWS Lambda timeout
 * Implements default behavior for physical resource IDs.
 
 The following code shows how the `Provider` construct is used in conjunction
@@ -63,7 +65,7 @@ The following example is a skeleton for a Python implementation of `onEvent`:
 
 ```py
 def on_event(event, context):
-  print(event)  
+  print(event)
   request_type = event['RequestType']
   if request_type == 'Create': return on_create(event)
   if request_type == 'Update': return on_update(event)
@@ -76,9 +78,9 @@ def on_create(event):
 
   # add your create code here...
   physical_id = ...
-  
+
   return { 'PhysicalResourceId': physical_id }
-  
+
 def on_update(event):
   physical_id = event["PhysicalResourceId"]
   props = event["ResourceProperties"]
@@ -104,8 +106,8 @@ def is_complete(event, context):
   request_type = event["RequestType"]
 
   # check if resource is stable based on request_type
-  is_ready = ... 
-  
+  is_ready = ...
+
   return { 'IsComplete': is_ready }
 ```
 
@@ -121,7 +123,7 @@ If `onEvent` returns successfully, the framework will submit a "SUCCESS" respons
 to AWS CloudFormation for this resource operation.  If the provider is
 [asynchronous](#asynchronous-providers-iscomplete) (`isCompleteHandler` is
 defined), the framework will only submit a response based on the result of
-`isComplete`. 
+`isComplete`.
 
 If `onEvent` throws an error, the framework will submit a "FAILED" response to
 AWS CloudFormation.
@@ -153,10 +155,10 @@ The return value from `onEvent` must be a JSON object with the following fields:
 
 It is not uncommon for the provisioning of resources to be an asynchronous
 operation, which means that the operation does not immediately finish, and we
-need to "wait" until the resource stabilizes. 
+need to "wait" until the resource stabilizes.
 
 The provider framework makes it easy to implement "waiters" by allowing users to
-specify an additional AWS Lambda function in `isCompleteHandler`. 
+specify an additional AWS Lambda function in `isCompleteHandler`.
 
 The framework will repeatedly invoke the handler every `queryInterval`. When
 `isComplete` returns with `IsComplete: true`, the framework will submit a
@@ -230,7 +232,7 @@ lifecycle events:
 ### Execution Policy
 
 Similarly to any AWS Lambda function, if the user-defined handlers require
-access to AWS resources, you will have to define these permissions  
+access to AWS resources, you will have to define these permissions
 by calling "grant" methods such as `myBucket.grantRead(myHandler)`), using `myHandler.addToRolePolicy`
 or specifying an `initialPolicy` when defining the function.
 
@@ -337,11 +339,14 @@ be `Items.0.Title.S`.
 
 ### Execution Policy
 
-IAM policy statements required to make the API calls are derived from the calls
-and allow by default the actions to be made on all resources (`*`). You can
-restrict the permissions by specifying your own list of statements with the
-`policyStatements` prop. The custom resource also implements `iam.IGrantable`,
-making it possible to use the `grantXxx()` methods.
+You must provide the `policy` property defining the IAM Policy that will be applied to the API calls.
+The library provides two factory methods to quickly configure this:
+
+- **`AwsCustomResourcePolicy.fromSdkCalls`** - Use this to auto-generate IAM Policy statements based on the configured SDK calls.
+Note that you will have to either provide specific ARN's, or explicitly use `AwsCustomResourcePolicy.ANY_RESOURCE` to allow access to any resource.
+- **`AwsCustomResourcePolicy.fromStatements`** - Use this to specify your own custom statements.
+
+The custom resource also implements `iam.IGrantable`, making it possible to use the `grantXxx()` methods.
 
 As this custom resource uses a singleton Lambda function, it's important to note
 that the function's role will eventually accumulate the permissions/grants from all
@@ -353,8 +358,9 @@ const awsCustom1 = new AwsCustomResource(this, 'API1', {
   onCreate: {
     service: '...',
     action: '...',
-    physicalResourceId: '...'
-  }
+    physicalResourceId: PhysicalResourceId.of('...')
+  },
+  policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ANY_RESOURCE})
 });
 
 const awsCustom2 = new AwsCustomResource(this, 'API2', {
@@ -364,8 +370,9 @@ const awsCustom2 = new AwsCustomResource(this, 'API2', {
     parameters: {
       text: awsCustom1.getDataString('Items.0.text')
     },
-    physicalResourceId: '...'
-  }
+    physicalResourceId: PhysicalResourceId.of('...')
+  },
+  policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ANY_RESOURCE})
 })
 ```
 
@@ -381,8 +388,9 @@ const verifyDomainIdentity = new AwsCustomResource(this, 'VerifyDomainIdentity',
     parameters: {
       Domain: 'example.com'
     },
-    physicalResourceIdPath: 'VerificationToken' // Use the token returned by the call as physical id
-  }
+    physicalResourceId: PhysicalResourceId.fromResponse('VerificationToken') // Use the token returned by the call as physical id
+  },
+  policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ANY_RESOURCE})
 });
 
 new route53.TxtRecord(this, 'SESVerificationRecord', {
@@ -403,8 +411,9 @@ const getParameter = new AwsCustomResource(this, 'GetParameter', {
       Name: 'my-parameter',
       WithDecryption: true
     },
-    physicalResourceId: Date.now().toString() // Update physical id to always fetch the latest version
-  }
+    physicalResourceId: PhysicalResourceId.of(Date.now().toString()) // Update physical id to always fetch the latest version
+  },
+  policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ANY_RESOURCE})
 });
 
 // Use the value in another construct with
@@ -416,3 +425,4 @@ getParameter.getData('Parameter.Value')
 ---
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
+
