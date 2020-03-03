@@ -86,7 +86,21 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     console.log(JSON.stringify(event));
     console.log('AWS SDK VERSION: ' + AWS.VERSION);
 
-    let physicalResourceId = (event as any).PhysicalResourceId;
+    // Default physical resource id
+    let physicalResourceId: string;
+    switch (event.RequestType) {
+      case 'Create':
+        physicalResourceId = event.ResourceProperties.Create?.physicalResourceId?.id ??
+                             event.ResourceProperties.Update?.physicalResourceId?.id ??
+                             event.ResourceProperties.Delete?.physicalResourceId?.id ??
+                             event.LogicalResourceId;
+        break;
+      case 'Update':
+      case 'Delete':
+        physicalResourceId = event.ResourceProperties[event.RequestType]?.physicalResourceId?.id ?? event.PhysicalResourceId;
+        break;
+    }
+
     let flatData: { [key: string]: string } = {};
     let data: { [key: string]: string } = {};
     const call: AwsSdkCall | undefined = event.ResourceProperties[event.RequestType];
@@ -113,9 +127,9 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
         }
       }
 
-      physicalResourceId = call.physicalResourceIdPath
-        ? flatData[call.physicalResourceIdPath]
-        : call.physicalResourceId || (event as any).PhysicalResourceId;
+      if (call.physicalResourceId?.responsePath) {
+        physicalResourceId = flatData[call.physicalResourceId.responsePath];
+      }
     }
 
     await respond('SUCCESS', 'OK', physicalResourceId, data);

@@ -63,9 +63,10 @@ export class Stage implements IStage {
 
       for (const outputArtifact of outputArtifacts) {
         if (!outputArtifact.artifactName) {
-          const artifactName = `Artifact_${this.stageName}_${action.actionName}` + (unnamedOutputs.length === 1
+          const unsanitizedArtifactName = `Artifact_${this.stageName}_${action.actionName}` + (unnamedOutputs.length === 1
             ? ''
             : '_' + (unnamedOutputs.indexOf(outputArtifact) + 1));
+          const artifactName = sanitizeArtifactName(unsanitizedArtifactName);
           (outputArtifact as any)._setName(artifactName);
         }
       }
@@ -166,4 +167,10 @@ export class Stage implements IStage {
       .filter(a => a.artifactName)
       .map(a => ({ name: a.artifactName! }));
   }
+}
+
+function sanitizeArtifactName(artifactName: string): string {
+  // strip out some characters that are legal in Stage and Action names,
+  // but not in Artifact names
+  return artifactName.replace(/[@.]/g, '');
 }

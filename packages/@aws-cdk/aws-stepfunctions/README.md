@@ -5,12 +5,14 @@
 
 ![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
 
-> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
-> future breaking changes.**
+> **This is a _developer preview_ (public beta) module.**
 >
-> This API is still under active development and subject to non-backward
-> compatible changes or removal in any future version. Use of the API is not recommended in production
-> environments. Experimental APIs are not subject to the Semantic Versioning model.
+> All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib))
+> are auto-generated from CloudFormation. They are stable and safe to use.
+>
+> However, all other classes, i.e., higher level constructs, are under active development and subject to non-backward
+> compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model.
+> This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
 
 ---
 <!--END STABILITY BANNER-->
@@ -126,6 +128,7 @@ couple of the tasks available are:
   queue that you poll on a compute fleet you manage yourself)
 * `tasks.InvokeFunction` -- invoke a Lambda function with function ARN
 * `tasks.RunLambdaTask` -- call Lambda as integrated service with magic ARN
+* `tasks.RunGlueJobTask` -- call Glue Job as integrated service
 * `tasks.PublishToTopic` -- publish a message to an SNS topic
 * `tasks.SendToQueue` -- send a message to an SQS queue
 * `tasks.RunEcsFargateTask`/`ecs.RunEcsEc2Task` -- run a container task,
@@ -184,6 +187,21 @@ task.next(nextState);
     })
   });
 ```
+
+#### Glue Job example
+
+```ts
+  const task = new sfn.Task(stack, 'ETL', {
+    task: new tasks.RunGlueJobTask(glueJobName, {
+      integrationPattern: sfn.ServiceIntegrationPattern.SYNC,
+      arguments: {
+        "--table-prefix": "myTable"
+      }
+    })
+  });
+```
+
+[Example CDK app](../aws-stepfunctions-tasks/test/integ.glue-task.ts)
 
 #### SNS example
 

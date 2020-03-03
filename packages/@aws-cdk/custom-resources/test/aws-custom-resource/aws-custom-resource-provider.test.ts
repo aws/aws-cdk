@@ -3,7 +3,7 @@ import * as AWS from 'aws-sdk-mock';
 import * as fs from 'fs-extra';
 import * as nock from 'nock';
 import * as sinon from 'sinon';
-import { AwsSdkCall } from '../../lib';
+import { AwsSdkCall, PhysicalResourceId } from '../../lib';
 import { flatten, handler } from '../../lib/aws-custom-resource/runtime';
 
 AWS.setSDK(require.resolve('aws-sdk'));
@@ -62,7 +62,7 @@ test('create event with physical resource id path', async () => {
         parameters: {
           Bucket: 'my-bucket'
         },
-        physicalResourceIdPath: 'Contents.1.ETag'
+        physicalResourceId: PhysicalResourceId.fromResponse('Contents.1.ETag')
       } as AwsSdkCall
     }
   };
@@ -101,7 +101,7 @@ test('update event with physical resource id', async () => {
           Message: 'hello',
           TopicArn: 'topicarn'
         },
-        physicalResourceId: 'topicarn'
+        physicalResourceId: PhysicalResourceId.of('topicarn')
       } as AwsSdkCall
     }
   };
@@ -133,7 +133,7 @@ test('delete event', async () => {
         parameters: {
           Bucket: 'my-bucket'
         },
-        physicalResourceIdPath: 'Contents.1.ETag'
+        physicalResourceId: PhysicalResourceId.fromResponse('Contents.1.ETag')
       } as AwsSdkCall
     }
   };
@@ -186,6 +186,38 @@ test('delete event with Delete call and no physical resource id in call', async 
   expect(request.isDone()).toBeTruthy();
 });
 
+test('create event with Delete call only', async () => {
+  const deleteParameterFake = sinon.fake.resolves({});
+
+  AWS.mock('SSM', 'deleteParameter', deleteParameterFake);
+
+  const event: AWSLambda.CloudFormationCustomResourceCreateEvent = {
+    ...eventCommon,
+    RequestType: 'Create',
+    ResourceProperties: {
+      ServiceToken: 'token',
+      Delete: {
+        service: 'SSM',
+        action: 'deleteParameter',
+        parameters: {
+          Name: 'my-param'
+        },
+      } as AwsSdkCall
+    }
+  };
+
+  const request = createRequest(body =>
+    body.Status === 'SUCCESS' &&
+    body.PhysicalResourceId === 'logicalResourceId'
+  );
+
+  await handler(event, {} as AWSLambda.Context);
+
+  sinon.assert.notCalled(deleteParameterFake);
+
+  expect(request.isDone()).toBeTruthy();
+});
+
 test('catch errors', async () => {
   const error: NodeJS.ErrnoException = new Error();
   error.code = 'NoSuchBucket';
@@ -204,7 +236,7 @@ test('catch errors', async () => {
         parameters: {
           Bucket: 'my-bucket'
         },
-        physicalResourceId: 'physicalResourceId',
+        physicalResourceId: PhysicalResourceId.of('physicalResourceId'),
         catchErrorPattern: 'NoSuchBucket'
       } as AwsSdkCall
     }
@@ -251,7 +283,7 @@ test('decodes booleans', async () => {
             },
           }
         },
-        physicalResourceId: 'put-item'
+        physicalResourceId: PhysicalResourceId.of('put-item')
       } as AwsSdkCall
     }
   };
@@ -310,7 +342,7 @@ test('restrict output path', async () => {
         parameters: {
           Bucket: 'my-bucket'
         },
-        physicalResourceId: 'id',
+        physicalResourceId: PhysicalResourceId.of('id'),
         outputPath: 'Contents.0'
       } as AwsSdkCall
     }
@@ -347,7 +379,7 @@ test('can specify apiVersion and region', async () => {
         },
         apiVersion: '2010-03-31',
         region: 'eu-west-1',
-        physicalResourceId: 'id',
+        physicalResourceId: PhysicalResourceId.of('id'),
       } as AwsSdkCall
     }
   };
@@ -401,7 +433,7 @@ test('installs the latest SDK', async () => {
           Message: 'message',
           TopicArn: 'topic'
         },
-        physicalResourceId: 'id',
+        physicalResourceId: PhysicalResourceId.of('id'),
       } as AwsSdkCall
     }
   };

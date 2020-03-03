@@ -137,15 +137,6 @@ export function deepSet(x: any, jsonPath: string[], value: any) {
   x[jsonPath[0]] = value;
 }
 
-/**
- * Find 'lerna.json' and read the global package version from there
- */
-export function monoRepoVersion() {
-  const found = findLernaJSON();
-  const lernaJson = require(found);
-  return lernaJson.version;
-}
-
 export function findUpward(dir: string, pred: (x: string) => boolean): string | undefined {
   while (true) {
     if (pred(dir)) { return dir; }
@@ -165,10 +156,6 @@ export function monoRepoRoot() {
     throw new Error('Could not find lerna.json');
   }
   return ret;
-}
-
-function findLernaJSON() {
-  return path.join(monoRepoRoot(), 'lerna.json');
 }
 
 export function* findInnerPackages(dir: string): IterableIterator<string> {

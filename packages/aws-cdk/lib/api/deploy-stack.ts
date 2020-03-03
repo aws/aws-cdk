@@ -74,10 +74,11 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
   const deployName = options.deployName || options.stack.stackName;
 
   if (!options.force) {
-    debug(`checking if we can skip this stack based on the currently deployed template (use --force to override)`);
-    const deployed = await getDeployedTemplate(cfn, deployName);
-    if (deployed && JSON.stringify(options.stack.template) === JSON.stringify(deployed.template)) {
-      debug(`${deployName}: no change in template, skipping (use --force to override)`);
+    debug(`checking if we can skip this stack based on the currently deployed template and tags (use --force to override)`);
+    const deployed = await getDeployedStack(cfn, deployName);
+    const tagsIdentical = compareTags(deployed?.tags ?? [], options.tags ?? []);
+    if (deployed && JSON.stringify(options.stack.template) === JSON.stringify(deployed.template) && tagsIdentical) {
+      debug(`${deployName}: no change in template and tags, skipping (use --force to override)`);
       return {
         noOp: true,
         outputs: await getStackOutputs(cfn, deployName),
@@ -239,14 +240,22 @@ export async function destroyStack(options: DestroyStackOptions) {
   return;
 }
 
-async function getDeployedTemplate(cfn: aws.CloudFormation, stackName: string): Promise<{ template: any, stackId: string } | undefined> {
-  const stackId = await getStackId(cfn, stackName);
-  if (!stackId) {
+async function getDeployedStack(cfn: aws.CloudFormation, stackName: string): Promise<{ stackId: string, template: any, tags: Tag[] } | undefined> {
+  const stack = await getStack(cfn, stackName);
+  if (!stack) {
+    return undefined;
+  }
+
+  if (!stack.StackId) {
     return undefined;
   }
 
   const template = await readCurrentTemplate(cfn, stackName);
-  return { stackId, template };
+  return {
+    stackId: stack.StackId,
+    tags: stack.Tags ?? [],
+    template
+  };
 }
 
 export async function readCurrentTemplate(cfn: aws.CloudFormation, stackName: string) {
@@ -262,7 +271,7 @@ export async function readCurrentTemplate(cfn: aws.CloudFormation, stackName: st
   }
 }
 
-async function getStackId(cfn: aws.CloudFormation, stackName: string): Promise<string | undefined> {
+async function getStack(cfn: aws.CloudFormation, stackName: string): Promise<aws.CloudFormation.Stack | undefined> {
   try {
     const stacks = await cfn.describeStacks({ StackName: stackName }).promise();
     if (!stacks.Stacks) {
@@ -272,7 +281,7 @@ async function getStackId(cfn: aws.CloudFormation, stackName: string): Promise<s
       return undefined;
     }
 
-    return stacks.Stacks[0].StackId!;
+    return stacks.Stacks[0];
 
   } catch (e) {
     if (e.message.includes('does not exist')) {
@@ -280,4 +289,20 @@ async function getStackId(cfn: aws.CloudFormation, stackName: string): Promise<s
     }
     throw e;
   }
+}
+
+function compareTags(a: Tag[], b: Tag[]): boolean {
+  if (a.length !== b.length) {
+    return false;
+  }
+
+  for (const aTag of a) {
+    const bTag = b.find(tag => tag.Key === aTag.Key);
+
+    if (!bTag || bTag.Value !== aTag.Value) {
+      return false;
+    }
+  }
+
+  return true;
 }

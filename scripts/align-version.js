@@ -4,28 +4,29 @@
 //
 const fs = require('fs');
 
-const marker = '999.0.0';
-const repoVersion = require('../package.json').version;
+const marker = require('./get-version-marker');
+const repoVersion = require('./get-version');
 
 for (const file of process.argv.splice(2)) {
   const pkg = JSON.parse(fs.readFileSync(file).toString());
 
   if (pkg.version !== marker) {
-    throw new Error(`unexpected - all package.json files in this repo should have a version of 999.0.0: ${file}`);
+    throw new Error(`unexpected - all package.json files in this repo should have a version of ${marker}: ${file}`);
   }
 
   pkg.version = repoVersion;
 
-  processSection(pkg.dependencies || { });
-  processSection(pkg.devDependencies || { });
-  processSection(pkg.peerDependencies || { });
+  processSection(pkg.dependencies || { }, file);
+  processSection(pkg.devDependencies || { }, file);
+  processSection(pkg.peerDependencies || { }, file);
 
+  console.error(`${file} => ${repoVersion}`);
   fs.writeFileSync(file, JSON.stringify(pkg, undefined, 2));
 }
 
-function processSection(section) {
+function processSection(section, file) {
   for (const [ name, version ] of Object.entries(section)) {
-    if (version.includes(marker)) {
+    if (version === marker || version === '^' + marker) {
       section[name] = version.replace(marker, repoVersion);
     }
   }

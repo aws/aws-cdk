@@ -19,12 +19,5 @@ echo "Starting ${version} version bump"
 
 # /bin/bash ./install.sh
 
-# Generate CHANGELOG and create a commit
-# --skip.tag because we create the tag as part of creating the github release
-npx standard-version \
-  --bumpFiles package.json \
-  --release-as ${version} \
-  --skip.tag=true \
-  --releaseCommitMessageFormat="chore(release): v{{currentTag}}" \
-  --commit-all
-
+# Generate CHANGELOG and create a commit (see .versionrc.json)
+npx standard-version --release-as ${version}
