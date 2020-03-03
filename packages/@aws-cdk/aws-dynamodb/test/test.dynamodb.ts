@@ -1,4 +1,4 @@
-import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
+import { expect, haveResource, ResourcePart, SynthUtils } from '@aws-cdk/assert';
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as iam from '@aws-cdk/aws-iam';
 import { App, CfnDeletionPolicy, ConstructNode, RemovalPolicy, Stack, Tag } from '@aws-cdk/core';
@@ -1589,11 +1589,49 @@ export = {
 
       // THEN
       expect(stack).to(haveResource('Custom::DynamoDBReplica', {
-        Region: 'eu-west-2'
-      }));
+        Properties: {
+          ServiceToken: {
+            'Fn::GetAtt': [
+              'awscdkawsdynamodbReplicaProviderNestedStackawscdkawsdynamodbReplicaProviderNestedStackResource18E3F12D',
+              'Outputs.awscdkawsdynamodbReplicaProviderframeworkonEventF9504691Arn'
+            ]
+          },
+          TableName: {
+            Ref: 'TableCD117FA1'
+          },
+          Region: 'eu-west-2'
+        },
+        Condition: 'TableStackRegionNotEqualseuwest2A03859E7'
+      }, ResourcePart.CompleteDefinition));
+
       expect(stack).to(haveResource('Custom::DynamoDBReplica', {
-        Region: 'eu-central-1'
-      }));
+        Properties: {
+          ServiceToken: {
+            'Fn::GetAtt': [
+              'awscdkawsdynamodbReplicaProviderNestedStackawscdkawsdynamodbReplicaProviderNestedStackResource18E3F12D',
+              'Outputs.awscdkawsdynamodbReplicaProviderframeworkonEventF9504691Arn'
+            ]
+          },
+          TableName: {
+            Ref: 'TableCD117FA1'
+          },
+          Region: 'eu-central-1'
+        },
+        Condition: 'TableStackRegionNotEqualseucentral199D46FC0'
+      }, ResourcePart.CompleteDefinition));
+
+      test.deepEqual(SynthUtils.toCloudFormation(stack).Conditions, {
+        TableStackRegionNotEqualseuwest2A03859E7: {
+          'Fn::Not': [
+            { 'Fn::Equals': [ 'eu-west-2', { Ref: 'AWS::Region' } ] }
+          ]
+        },
+        TableStackRegionNotEqualseucentral199D46FC0: {
+          'Fn::Not': [
+            { 'Fn::Equals': [ 'eu-central-1', { Ref: 'AWS::Region' } ] }
+          ]
+        }
+      });
 
       test.done();
     },
@@ -1659,7 +1697,32 @@ export = {
       }), /`replicationRegions` cannot include the region where this stack is deployed/);
 
       test.done();
-    }
+    },
+
+    'no conditions when region is known'(test: Test) {
+      // GIVEN
+      const app = new App();
+      const stack = new Stack(app, 'Stack', {
+        env: { region: 'eu-west-1' }
+      });
+
+      // WHEN
+      new Table(stack, 'Table', {
+        partitionKey: {
+          name: 'id',
+          type: AttributeType.STRING
+        },
+        replicationRegions: [
+          'eu-west-2',
+          'eu-central-1'
+        ],
+      });
+
+      // THEN
+      test.equal(SynthUtils.toCloudFormation(stack).Conditions, undefined);
+
+      test.done();
+    },
   }
 };
 
