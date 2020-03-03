@@ -39,6 +39,11 @@ export class Data {
     return new JsonPathToken('$').toString();
   }
 
+  /**
+   * Determines if the indicated string is an encoded JSON path
+   *
+   * @param value String to be evaluated
+   */
   public static isJsonPathString(value: string): boolean {
     return !!jsonPathString(value);
   }

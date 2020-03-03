@@ -4,6 +4,9 @@ import { IChainable, INextable } from '../types';
 import { StateType } from './private/state-type';
 import { State } from './state';
 
+/**
+ * TODO
+ */
 export class WaitTime {
     /**
      * Wait a fixed amount of time.

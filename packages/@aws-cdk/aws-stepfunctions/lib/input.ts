@@ -45,6 +45,12 @@ export class TaskInput {
     return new TaskInput(InputType.TEXT, Context.stringAt(path));
   }
 
+  /**
+   *
+   * @param type type of task input
+   * @param value payload for the corresponding input type.
+   * It can be a JSON-encoded object, context, data, etc.
+   */
   private constructor(public readonly type: InputType, public readonly value: any) {
   }
 }
@@ -53,6 +59,14 @@ export class TaskInput {
  * The type of task input
  */
 export enum InputType {
+  /**
+   * Use a literal string
+   * This might be a JSON-encoded object, or just text.
+   */
   TEXT,
+  /**
+   * Use an object which may contain Data and Context fields
+   * as object values, if desired.
+   */
   OBJECT
 }
