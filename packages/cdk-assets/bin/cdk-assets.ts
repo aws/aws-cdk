@@ -29,7 +29,6 @@ async function main() {
   .command('publish [ASSET..]', 'Publish assets in the given manifest', command => command
     .option('profile', { type: 'string', describe: 'Profile to use from AWS Credentials file' })
     .positional('ASSET', { type: 'string', array: true, describe: 'Assets to publish (format: "ASSET[:DEST]"), default all' })
-    .array('ASSET')
   , wrapHandler(async args => {
     await publish({
       path: args.path,
