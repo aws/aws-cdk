@@ -93,11 +93,15 @@ export interface ComputeResources {
   readonly launchTemplate?: LaunchTemplateSpecification;
 
   /**
-   * The IAM role applied to EC2 resources in the compute environment.
+   * The Amazon ECS instance profile applied to Amazon EC2 instances in a compute environment. You can specify
+   * the short name or full Amazon Resource Name (ARN) of an instance profile. For example, ecsInstanceRole or
+   * arn:aws:iam::<aws_account_id>:instance-profile/ecsInstanceRole . For more information, see Amazon ECS
+   * Instance Role in the AWS Batch User Guide.
    *
    * @default a new role will be created.
+   * @link https://docs.aws.amazon.com/batch/latest/userguide/instance_IAM_role.html
    */
-  readonly instanceRole?: iam.IRole;
+  readonly instanceRole?: string;
 
   /**
    * The types of EC2 instances that may be launched in the compute environment. You can specify instance
@@ -342,8 +346,8 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
         desiredvCpus: props.computeResources.desiredvCpus,
         ec2KeyPair: props.computeResources.ec2KeyPair,
         imageId: props.computeResources.image && props.computeResources.image.getImage(this).imageId,
-        instanceRole:  props.computeResources.instanceRole
-          ? props.computeResources.instanceRole.roleArn
+        instanceRole: props.computeResources.instanceRole
+          ? props.computeResources.instanceRole
           : new iam.CfnInstanceProfile(this, 'Instance-Profile', {
               roles: [ new iam.Role(this, 'Ecs-Instance-Role', {
                 assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
