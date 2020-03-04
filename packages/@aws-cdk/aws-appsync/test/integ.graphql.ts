@@ -1,14 +1,32 @@
+import { UserPool } from '@aws-cdk/aws-cognito';
 import { AttributeType, BillingMode, Table } from '@aws-cdk/aws-dynamodb';
 import { App, Stack } from '@aws-cdk/core';
 import { join } from 'path';
-import { GraphQLApi, MappingTemplate } from '../lib';
+import { GraphQLApi, KeyCondition, MappingTemplate, PrimaryKey, UserPoolDefaultAction, Values } from '../lib';
 
 const app = new App();
 const stack = new Stack(app, 'aws-appsync-integ');
 
+const userPool = new UserPool(stack, 'Pool', {
+    userPoolName: 'myPool',
+});
+
 const api = new GraphQLApi(stack, 'Api', {
     name: `demoapi`,
     schemaDefinitionFile: join(__dirname, 'schema.graphql'),
+    authorizationConfig: {
+        defaultAuthorization: {
+            userPool,
+            defaultAction: UserPoolDefaultAction.ALLOW,
+        },
+        additionalAuthorizationModes: [
+            {
+                apiKeyDesc: 'My API Key',
+                // Can't specify a date because it will inevitably be in the past.
+                // expires: '2019-02-05T12:00:00Z',
+            },
+        ],
+    },
 });
 
 const customerTable = new Table(stack, 'CustomerTable', {
@@ -18,7 +36,21 @@ const customerTable = new Table(stack, 'CustomerTable', {
         type: AttributeType.STRING,
     },
 });
+const orderTable = new Table(stack, 'OrderTable', {
+    billingMode: BillingMode.PAY_PER_REQUEST,
+    partitionKey: {
+        name: 'customer',
+        type: AttributeType.STRING,
+    },
+    sortKey: {
+        name: 'order',
+        type: AttributeType.STRING,
+    }
+});
+
 const customerDS = api.addDynamoDbDataSource('Customer', 'The customer data source', customerTable);
+const orderDS = api.addDynamoDbDataSource('Order', 'The irder data source', orderTable);
+
 customerDS.createResolver({
     typeName: 'Query',
     fieldName: 'getCustomers',
@@ -34,13 +66,25 @@ customerDS.createResolver({
 customerDS.createResolver({
     typeName: 'Mutation',
     fieldName: 'addCustomer',
-    requestMappingTemplate: MappingTemplate.dynamoDbPutItem('id', 'customer'),
+    requestMappingTemplate: MappingTemplate.dynamoDbPutItem(PrimaryKey.partition('id').auto(), Values.projecting('customer')),
     responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
 });
 customerDS.createResolver({
     typeName: 'Mutation',
     fieldName: 'saveCustomer',
-    requestMappingTemplate: MappingTemplate.dynamoDbPutItem('id', 'customer', 'id'),
+    requestMappingTemplate: MappingTemplate.dynamoDbPutItem(PrimaryKey.partition('id').is('id'), Values.projecting('customer')),
+    responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
+});
+customerDS.createResolver({
+    typeName: 'Mutation',
+    fieldName: 'saveCustomerWithFirstOrder',
+    requestMappingTemplate: MappingTemplate.dynamoDbPutItem(
+        PrimaryKey
+            .partition('order').auto()
+            .sort('customer').is('customer.id'),
+        Values
+            .projecting('order')
+            .attribute('referral').is('referral')),
     responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
 });
 customerDS.createResolver({
@@ -48,6 +92,36 @@ customerDS.createResolver({
     fieldName: 'removeCustomer',
     requestMappingTemplate: MappingTemplate.dynamoDbDeleteItem('id', 'id'),
     responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
+});
+
+const ops = [
+    { suffix: "Eq", op: KeyCondition.eq},
+    { suffix: "Lt", op: KeyCondition.lt},
+    { suffix: "Le", op: KeyCondition.le},
+    { suffix: "Gt", op: KeyCondition.gt},
+    { suffix: "Ge", op: KeyCondition.ge},
+];
+for (const {suffix, op} of ops) {
+    orderDS.createResolver({
+        typeName: 'Query',
+        fieldName: 'getCustomerOrders' + suffix,
+        requestMappingTemplate: MappingTemplate.dynamoDbQuery(op('customer', 'customer')),
+        responseMappingTemplate: MappingTemplate.dynamoDbResultList(),
+    });
+}
+orderDS.createResolver({
+    typeName: 'Query',
+    fieldName: 'getCustomerOrdersFilter',
+    requestMappingTemplate: MappingTemplate.dynamoDbQuery(
+        KeyCondition.eq('customer', 'customer').and(KeyCondition.beginsWith('order', 'order'))),
+    responseMappingTemplate: MappingTemplate.dynamoDbResultList(),
+});
+orderDS.createResolver({
+    typeName: 'Query',
+    fieldName: 'getCustomerOrdersBetween',
+    requestMappingTemplate: MappingTemplate.dynamoDbQuery(
+        KeyCondition.eq('customer', 'customer').and(KeyCondition.between('order', 'order1', 'order2'))),
+    responseMappingTemplate: MappingTemplate.dynamoDbResultList(),
 });
 
 app.synth();

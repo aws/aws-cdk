@@ -11,7 +11,7 @@
 
 **Application AutoScaling** is used to configure autoscaling for all
 services other than scaling EC2 instances. For example, you will use this to
-scale ECS tasks, DynamoDB capacity, Spot Fleet sizes and more.
+scale ECS tasks, DynamoDB capacity, Spot Fleet sizes, Comprehend document classification endpoints, Lambda function provisioned concurrency and more.
 
 As a CDK user, you will probably not have to interact with this library
 directly; instead, it will be used by other construct libraries to
@@ -109,7 +109,7 @@ The following example configures the read capacity of a DynamoDB table
 to be around 60% utilization:
 
 ```ts
-const readCapacity = table.autosScaleReadCapacity({
+const readCapacity = table.autoScaleReadCapacity({
   minCapacity: 10,
   maxCapacity: 1000
 });

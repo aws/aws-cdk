@@ -1,0 +1,80 @@
+{
+  "name": "cdk-assets",
+  "description": "CDK Asset Publishing Tool",
+  "version": "0.0.0",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "bin": {
+    "cdk-assets": "bin/cdk-assets"
+  },
+  "scripts": {
+    "build": "cdk-build",
+    "integ": "cdk-integ",
+    "lint": "cdk-lint",
+    "package": "cdk-package",
+    "awslint": "cdk-awslint",
+    "pkglint": "pkglint -f",
+    "test": "cdk-test",
+    "watch": "cdk-watch",
+    "cfn2ts": "cfn2ts",
+    "build+test": "npm run build && npm test",
+    "build+test+package": "npm run build+test && npm run package",
+    "compat": "cdk-compat"
+  },
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@types/archiver": "^3.1.0",
+    "@types/glob": "^7.1.1",
+    "@types/jest": "^24.0.25",
+    "@types/mock-fs": "^4.10.0",
+    "@types/node": "^10.17.17",
+    "@types/yargs": "^15.0.4",
+    "cdk-build-tools": "0.0.0",
+    "jest": "^24.9.0",
+    "mock-fs": "^4.11.0",
+    "pkglint": "0.0.0"
+  },
+  "dependencies": {
+    "@aws-cdk/cdk-assets-schema": "0.0.0",
+    "archiver": "^3.1.1",
+    "aws-sdk": "^2.632.0",
+    "glob": "^7.1.6",
+    "yargs": "^15.2.0"
+  },
+  "repository": {
+    "url": "https://github.com/aws/aws-cdk.git",
+    "type": "git",
+    "directory": "packages/cdk-assets"
+  },
+  "keywords": [
+    "aws",
+    "cdk"
+  ],
+  "homepage": "https://github.com/aws/aws-cdk",
+  "engines": {
+    "node": ">= 10.3.0"
+  },
+  "stability": "experimental",
+  "jest": {
+    "moduleFileExtensions": [
+      "js"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 60,
+        "statements": 80
+      }
+    },
+    "collectCoverage": true,
+    "coverageReporters": [
+      "lcov",
+      "html",
+      "text-summary"
+    ]
+  }
+}

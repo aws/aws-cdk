@@ -1,3 +1,564 @@
+# CloudFormation Resource Specification v11.1.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::CodeBuild::Project FileSystemLocations (__added__)
+* AWS::Cognito::UserPool UsernameConfiguration (__added__)
+* AWS::Config::AggregationAuthorization Tags (__added__)
+* AWS::Config::ConfigurationAggregator Tags (__added__)
+* AWS::WAFv2::IPSet Addresses.PrimitiveItemType (__added__)
+* AWS::WAFv2::IPSet Addresses.Type (__changed__)
+  * Old: IPAddresses
+  * New: List
+* AWS::WAFv2::IPSet Tags.ItemType (__added__)
+* AWS::WAFv2::IPSet Tags.Type (__changed__)
+  * Old: TagList
+  * New: List
+* AWS::WAFv2::RegexPatternSet RegularExpressionList.PrimitiveItemType (__added__)
+* AWS::WAFv2::RegexPatternSet RegularExpressionList.Type (__changed__)
+  * Old: RegularExpressionList
+  * New: List
+* AWS::WAFv2::RegexPatternSet Tags.ItemType (__added__)
+* AWS::WAFv2::RegexPatternSet Tags.Type (__changed__)
+  * Old: TagList
+  * New: List
+* AWS::WAFv2::RuleGroup Rules.ItemType (__added__)
+* AWS::WAFv2::RuleGroup Rules.Type (__changed__)
+  * Old: Rules
+  * New: List
+* AWS::WAFv2::RuleGroup Tags.ItemType (__added__)
+* AWS::WAFv2::RuleGroup Tags.Type (__changed__)
+  * Old: TagList
+  * New: List
+* AWS::WAFv2::WebACL Rules.ItemType (__added__)
+* AWS::WAFv2::WebACL Rules.Type (__changed__)
+  * Old: Rules
+  * New: List
+* AWS::WAFv2::WebACL Tags.ItemType (__added__)
+* AWS::WAFv2::WebACL Tags.Type (__changed__)
+  * Old: TagList
+  * New: List
+
+## Property Type Changes
+
+* AWS::WAFv2::IPSet.IPAddresses (__removed__)
+* AWS::WAFv2::IPSet.TagList (__removed__)
+* AWS::WAFv2::RegexPatternSet.Regex (__removed__)
+* AWS::WAFv2::RegexPatternSet.RegularExpressionList (__removed__)
+* AWS::WAFv2::RegexPatternSet.TagList (__removed__)
+* AWS::WAFv2::RuleGroup.AllQueryArguments (__removed__)
+* AWS::WAFv2::RuleGroup.AllowAction (__removed__)
+* AWS::WAFv2::RuleGroup.BlockAction (__removed__)
+* AWS::WAFv2::RuleGroup.Body (__removed__)
+* AWS::WAFv2::RuleGroup.CountAction (__removed__)
+* AWS::WAFv2::RuleGroup.CountryCodes (__removed__)
+* AWS::WAFv2::RuleGroup.Method (__removed__)
+* AWS::WAFv2::RuleGroup.QueryString (__removed__)
+* AWS::WAFv2::RuleGroup.Rules (__removed__)
+* AWS::WAFv2::RuleGroup.SingleHeader (__removed__)
+* AWS::WAFv2::RuleGroup.SingleQueryArgument (__removed__)
+* AWS::WAFv2::RuleGroup.StatementThrees (__removed__)
+* AWS::WAFv2::RuleGroup.StatementTwos (__removed__)
+* AWS::WAFv2::RuleGroup.TagList (__removed__)
+* AWS::WAFv2::RuleGroup.TextTransformations (__removed__)
+* AWS::WAFv2::RuleGroup.UriPath (__removed__)
+* AWS::WAFv2::WebACL.AllQueryArguments (__removed__)
+* AWS::WAFv2::WebACL.AllowAction (__removed__)
+* AWS::WAFv2::WebACL.BlockAction (__removed__)
+* AWS::WAFv2::WebACL.Body (__removed__)
+* AWS::WAFv2::WebACL.CountAction (__removed__)
+* AWS::WAFv2::WebACL.CountryCodes (__removed__)
+* AWS::WAFv2::WebACL.ExcludedRules (__removed__)
+* AWS::WAFv2::WebACL.Method (__removed__)
+* AWS::WAFv2::WebACL.NoneAction (__removed__)
+* AWS::WAFv2::WebACL.QueryString (__removed__)
+* AWS::WAFv2::WebACL.Rules (__removed__)
+* AWS::WAFv2::WebACL.SingleHeader (__removed__)
+* AWS::WAFv2::WebACL.SingleQueryArgument (__removed__)
+* AWS::WAFv2::WebACL.StatementThrees (__removed__)
+* AWS::WAFv2::WebACL.StatementTwos (__removed__)
+* AWS::WAFv2::WebACL.TagList (__removed__)
+* AWS::WAFv2::WebACL.TextTransformations (__removed__)
+* AWS::WAFv2::WebACL.UriPath (__removed__)
+* AWS::CodeBuild::Project.ProjectFileSystemLocation (__added__)
+* AWS::Cognito::UserPool.UsernameConfiguration (__added__)
+* AWS::WAFv2::RuleGroup.AndStatementOne Statements.ItemType (__added__)
+* AWS::WAFv2::RuleGroup.AndStatementOne Statements.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::RuleGroup.AndStatementOne Statements.Type (__changed__)
+  * Old: StatementTwos
+  * New: List
+* AWS::WAFv2::RuleGroup.AndStatementTwo Statements.ItemType (__added__)
+* AWS::WAFv2::RuleGroup.AndStatementTwo Statements.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::RuleGroup.AndStatementTwo Statements.Type (__changed__)
+  * Old: StatementThrees
+  * New: List
+* AWS::WAFv2::RuleGroup.ByteMatchStatement FieldToMatch.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::RuleGroup.ByteMatchStatement PositionalConstraint.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::RuleGroup.ByteMatchStatement SearchString.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::RuleGroup.ByteMatchStatement TextTransformations.ItemType (__added__)
+* AWS::WAFv2::RuleGroup.ByteMatchStatement TextTransformations.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::RuleGroup.ByteMatchStatement TextTransformations.Type (__changed__)
+  * Old: TextTransformations
+  * New: List
+* AWS::WAFv2::RuleGroup.FieldToMatch AllQueryArguments.Type (__deleted__)
+* AWS::WAFv2::RuleGroup.FieldToMatch AllQueryArguments.PrimitiveType (__added__)
+* AWS::WAFv2::RuleGroup.FieldToMatch Body.Type (__deleted__)
+* AWS::WAFv2::RuleGroup.FieldToMatch Body.PrimitiveType (__added__)
+* AWS::WAFv2::RuleGroup.FieldToMatch Method.Type (__deleted__)
+* AWS::WAFv2::RuleGroup.FieldToMatch Method.PrimitiveType (__added__)
+* AWS::WAFv2::RuleGroup.FieldToMatch QueryString.Type (__deleted__)
+* AWS::WAFv2::RuleGroup.FieldToMatch QueryString.PrimitiveType (__added__)
+* AWS::WAFv2::RuleGroup.FieldToMatch SingleHeader.Type (__deleted__)
+* AWS::WAFv2::RuleGroup.FieldToMatch SingleHeader.PrimitiveType (__added__)
+* AWS::WAFv2::RuleGroup.FieldToMatch SingleQueryArgument.Type (__deleted__)
+* AWS::WAFv2::RuleGroup.FieldToMatch SingleQueryArgument.PrimitiveType (__added__)
+* AWS::WAFv2::RuleGroup.FieldToMatch UriPath.Type (__deleted__)
+* AWS::WAFv2::RuleGroup.FieldToMatch UriPath.PrimitiveType (__added__)
+* AWS::WAFv2::RuleGroup.GeoMatchStatement CountryCodes.PrimitiveItemType (__added__)
+* AWS::WAFv2::RuleGroup.GeoMatchStatement CountryCodes.Type (__changed__)
+  * Old: CountryCodes
+  * New: List
+* AWS::WAFv2::RuleGroup.IPSetReferenceStatement Arn.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::RuleGroup.NotStatementOne Statement.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::RuleGroup.NotStatementTwo Statement.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::RuleGroup.OrStatementOne Statements.ItemType (__added__)
+* AWS::WAFv2::RuleGroup.OrStatementOne Statements.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::RuleGroup.OrStatementOne Statements.Type (__changed__)
+  * Old: StatementTwos
+  * New: List
+* AWS::WAFv2::RuleGroup.OrStatementTwo Statements.ItemType (__added__)
+* AWS::WAFv2::RuleGroup.OrStatementTwo Statements.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::RuleGroup.OrStatementTwo Statements.Type (__changed__)
+  * Old: StatementThrees
+  * New: List
+* AWS::WAFv2::RuleGroup.RateBasedStatementOne AggregateKeyType.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::RuleGroup.RateBasedStatementOne Limit.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::RuleGroup.RateBasedStatementTwo AggregateKeyType.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::RuleGroup.RateBasedStatementTwo Limit.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::RuleGroup.RegexPatternSetReferenceStatement Arn.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::RuleGroup.RegexPatternSetReferenceStatement FieldToMatch.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::RuleGroup.RegexPatternSetReferenceStatement TextTransformations.ItemType (__added__)
+* AWS::WAFv2::RuleGroup.RegexPatternSetReferenceStatement TextTransformations.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::RuleGroup.RegexPatternSetReferenceStatement TextTransformations.Type (__changed__)
+  * Old: TextTransformations
+  * New: List
+* AWS::WAFv2::RuleGroup.Rule Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::RuleGroup.Rule Priority.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::RuleGroup.Rule Statement.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::RuleGroup.Rule VisibilityConfig.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::RuleGroup.RuleAction Allow.Type (__deleted__)
+* AWS::WAFv2::RuleGroup.RuleAction Allow.PrimitiveType (__added__)
+* AWS::WAFv2::RuleGroup.RuleAction Block.Type (__deleted__)
+* AWS::WAFv2::RuleGroup.RuleAction Block.PrimitiveType (__added__)
+* AWS::WAFv2::RuleGroup.RuleAction Count.Type (__deleted__)
+* AWS::WAFv2::RuleGroup.RuleAction Count.PrimitiveType (__added__)
+* AWS::WAFv2::RuleGroup.SizeConstraintStatement ComparisonOperator.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::RuleGroup.SizeConstraintStatement FieldToMatch.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::RuleGroup.SizeConstraintStatement Size.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::RuleGroup.SizeConstraintStatement TextTransformations.ItemType (__added__)
+* AWS::WAFv2::RuleGroup.SizeConstraintStatement TextTransformations.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::RuleGroup.SizeConstraintStatement TextTransformations.Type (__changed__)
+  * Old: TextTransformations
+  * New: List
+* AWS::WAFv2::RuleGroup.SqliMatchStatement FieldToMatch.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::RuleGroup.SqliMatchStatement TextTransformations.ItemType (__added__)
+* AWS::WAFv2::RuleGroup.SqliMatchStatement TextTransformations.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::RuleGroup.SqliMatchStatement TextTransformations.Type (__changed__)
+  * Old: TextTransformations
+  * New: List
+* AWS::WAFv2::RuleGroup.TextTransformation Priority.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::RuleGroup.TextTransformation Type.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::RuleGroup.VisibilityConfig CloudWatchMetricsEnabled.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::RuleGroup.VisibilityConfig MetricName.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::RuleGroup.VisibilityConfig SampledRequestsEnabled.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::RuleGroup.XssMatchStatement FieldToMatch.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::RuleGroup.XssMatchStatement TextTransformations.ItemType (__added__)
+* AWS::WAFv2::RuleGroup.XssMatchStatement TextTransformations.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::RuleGroup.XssMatchStatement TextTransformations.Type (__changed__)
+  * Old: TextTransformations
+  * New: List
+* AWS::WAFv2::WebACL.AndStatementOne Statements.ItemType (__added__)
+* AWS::WAFv2::WebACL.AndStatementOne Statements.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::WebACL.AndStatementOne Statements.Type (__changed__)
+  * Old: StatementTwos
+  * New: List
+* AWS::WAFv2::WebACL.AndStatementTwo Statements.ItemType (__added__)
+* AWS::WAFv2::WebACL.AndStatementTwo Statements.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::WebACL.AndStatementTwo Statements.Type (__changed__)
+  * Old: StatementThrees
+  * New: List
+* AWS::WAFv2::WebACL.ByteMatchStatement FieldToMatch.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::WebACL.ByteMatchStatement PositionalConstraint.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::WebACL.ByteMatchStatement SearchString.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::WebACL.ByteMatchStatement TextTransformations.ItemType (__added__)
+* AWS::WAFv2::WebACL.ByteMatchStatement TextTransformations.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::WebACL.ByteMatchStatement TextTransformations.Type (__changed__)
+  * Old: TextTransformations
+  * New: List
+* AWS::WAFv2::WebACL.DefaultAction Allow.Type (__deleted__)
+* AWS::WAFv2::WebACL.DefaultAction Allow.PrimitiveType (__added__)
+* AWS::WAFv2::WebACL.DefaultAction Block.Type (__deleted__)
+* AWS::WAFv2::WebACL.DefaultAction Block.PrimitiveType (__added__)
+* AWS::WAFv2::WebACL.ExcludedRule Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::WebACL.FieldToMatch AllQueryArguments.Type (__deleted__)
+* AWS::WAFv2::WebACL.FieldToMatch AllQueryArguments.PrimitiveType (__added__)
+* AWS::WAFv2::WebACL.FieldToMatch Body.Type (__deleted__)
+* AWS::WAFv2::WebACL.FieldToMatch Body.PrimitiveType (__added__)
+* AWS::WAFv2::WebACL.FieldToMatch Method.Type (__deleted__)
+* AWS::WAFv2::WebACL.FieldToMatch Method.PrimitiveType (__added__)
+* AWS::WAFv2::WebACL.FieldToMatch QueryString.Type (__deleted__)
+* AWS::WAFv2::WebACL.FieldToMatch QueryString.PrimitiveType (__added__)
+* AWS::WAFv2::WebACL.FieldToMatch SingleHeader.Type (__deleted__)
+* AWS::WAFv2::WebACL.FieldToMatch SingleHeader.PrimitiveType (__added__)
+* AWS::WAFv2::WebACL.FieldToMatch SingleQueryArgument.Type (__deleted__)
+* AWS::WAFv2::WebACL.FieldToMatch SingleQueryArgument.PrimitiveType (__added__)
+* AWS::WAFv2::WebACL.FieldToMatch UriPath.Type (__deleted__)
+* AWS::WAFv2::WebACL.FieldToMatch UriPath.PrimitiveType (__added__)
+* AWS::WAFv2::WebACL.GeoMatchStatement CountryCodes.PrimitiveItemType (__added__)
+* AWS::WAFv2::WebACL.GeoMatchStatement CountryCodes.Type (__changed__)
+  * Old: CountryCodes
+  * New: List
+* AWS::WAFv2::WebACL.IPSetReferenceStatement Arn.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::WebACL.ManagedRuleGroupStatement ExcludedRules.ItemType (__added__)
+* AWS::WAFv2::WebACL.ManagedRuleGroupStatement ExcludedRules.Type (__changed__)
+  * Old: ExcludedRules
+  * New: List
+* AWS::WAFv2::WebACL.ManagedRuleGroupStatement Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::WebACL.ManagedRuleGroupStatement VendorName.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::WebACL.NotStatementOne Statement.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::WebACL.NotStatementTwo Statement.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::WebACL.OrStatementOne Statements.ItemType (__added__)
+* AWS::WAFv2::WebACL.OrStatementOne Statements.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::WebACL.OrStatementOne Statements.Type (__changed__)
+  * Old: StatementTwos
+  * New: List
+* AWS::WAFv2::WebACL.OrStatementTwo Statements.ItemType (__added__)
+* AWS::WAFv2::WebACL.OrStatementTwo Statements.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::WebACL.OrStatementTwo Statements.Type (__changed__)
+  * Old: StatementThrees
+  * New: List
+* AWS::WAFv2::WebACL.OverrideAction Count.Type (__deleted__)
+* AWS::WAFv2::WebACL.OverrideAction Count.PrimitiveType (__added__)
+* AWS::WAFv2::WebACL.OverrideAction None.Type (__deleted__)
+* AWS::WAFv2::WebACL.OverrideAction None.PrimitiveType (__added__)
+* AWS::WAFv2::WebACL.RateBasedStatementOne AggregateKeyType.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::WebACL.RateBasedStatementOne Limit.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::WebACL.RateBasedStatementTwo AggregateKeyType.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::WebACL.RateBasedStatementTwo Limit.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::WebACL.RegexPatternSetReferenceStatement Arn.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::WebACL.RegexPatternSetReferenceStatement FieldToMatch.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::WebACL.RegexPatternSetReferenceStatement TextTransformations.ItemType (__added__)
+* AWS::WAFv2::WebACL.RegexPatternSetReferenceStatement TextTransformations.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::WebACL.RegexPatternSetReferenceStatement TextTransformations.Type (__changed__)
+  * Old: TextTransformations
+  * New: List
+* AWS::WAFv2::WebACL.Rule Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::WebACL.Rule Priority.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::WebACL.Rule Statement.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::WebACL.Rule VisibilityConfig.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::WebACL.RuleAction Allow.Type (__deleted__)
+* AWS::WAFv2::WebACL.RuleAction Allow.PrimitiveType (__added__)
+* AWS::WAFv2::WebACL.RuleAction Block.Type (__deleted__)
+* AWS::WAFv2::WebACL.RuleAction Block.PrimitiveType (__added__)
+* AWS::WAFv2::WebACL.RuleAction Count.Type (__deleted__)
+* AWS::WAFv2::WebACL.RuleAction Count.PrimitiveType (__added__)
+* AWS::WAFv2::WebACL.RuleGroupReferenceStatement Arn.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::WebACL.RuleGroupReferenceStatement ExcludedRules.ItemType (__added__)
+* AWS::WAFv2::WebACL.RuleGroupReferenceStatement ExcludedRules.Type (__changed__)
+  * Old: ExcludedRules
+  * New: List
+* AWS::WAFv2::WebACL.SizeConstraintStatement ComparisonOperator.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::WebACL.SizeConstraintStatement FieldToMatch.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::WebACL.SizeConstraintStatement Size.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::WebACL.SizeConstraintStatement TextTransformations.ItemType (__added__)
+* AWS::WAFv2::WebACL.SizeConstraintStatement TextTransformations.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::WebACL.SizeConstraintStatement TextTransformations.Type (__changed__)
+  * Old: TextTransformations
+  * New: List
+* AWS::WAFv2::WebACL.SqliMatchStatement FieldToMatch.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::WebACL.SqliMatchStatement TextTransformations.ItemType (__added__)
+* AWS::WAFv2::WebACL.SqliMatchStatement TextTransformations.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::WebACL.SqliMatchStatement TextTransformations.Type (__changed__)
+  * Old: TextTransformations
+  * New: List
+* AWS::WAFv2::WebACL.TextTransformation Priority.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::WebACL.TextTransformation Type.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::WebACL.VisibilityConfig CloudWatchMetricsEnabled.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::WebACL.VisibilityConfig MetricName.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::WebACL.VisibilityConfig SampledRequestsEnabled.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::WebACL.XssMatchStatement FieldToMatch.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::WebACL.XssMatchStatement TextTransformations.ItemType (__added__)
+* AWS::WAFv2::WebACL.XssMatchStatement TextTransformations.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::WAFv2::WebACL.XssMatchStatement TextTransformations.Type (__changed__)
+  * Old: TextTransformations
+  * New: List
+
+
+# CloudFormation Resource Specification v11.0.0
+
+## New Resource Types
+
+* AWS::Config::ConformancePack
+* AWS::Config::OrganizationConformancePack
+* AWS::EC2::LocalGatewayRoute
+* AWS::EC2::LocalGatewayRouteTableVPCAssociation
+* AWS::FMS::NotificationChannel
+* AWS::FMS::Policy
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Neptune::DBCluster DeletionProtection (__added__)
+* AWS::Neptune::DBCluster EngineVersion (__added__)
+
+## Property Type Changes
+
+* AWS::ElasticLoadBalancingV2::Listener.ForwardConfig (__added__)
+* AWS::ElasticLoadBalancingV2::Listener.TargetGroupStickinessConfig (__added__)
+* AWS::ElasticLoadBalancingV2::Listener.TargetGroupTuple (__added__)
+* AWS::ElasticLoadBalancingV2::ListenerRule.ForwardConfig (__added__)
+* AWS::ElasticLoadBalancingV2::ListenerRule.TargetGroupStickinessConfig (__added__)
+* AWS::ElasticLoadBalancingV2::ListenerRule.TargetGroupTuple (__added__)
+* AWS::ElasticLoadBalancingV2::Listener.Action ForwardConfig (__added__)
+* AWS::ElasticLoadBalancingV2::ListenerRule.Action ForwardConfig (__added__)
+* AWS::FSx::FileSystem.LustreConfiguration DeploymentType (__added__)
+* AWS::FSx::FileSystem.LustreConfiguration PerUnitStorageThroughput (__added__)
+
+
+# CloudFormation Resource Specification v10.5.0
+
+## New Resource Types
+
+* AWS::AppConfig::Application
+* AWS::AppConfig::ConfigurationProfile
+* AWS::AppConfig::Deployment
+* AWS::AppConfig::DeploymentStrategy
+* AWS::AppConfig::Environment
+* AWS::WAFv2::WebACLAssociation
+
+## Attribute Changes
+
+* AWS::Athena::NamedQuery NamedQueryId (__deleted__)
+* AWS::Transfer::Server VpcEndpointId (__deleted__)
+
+## Property Changes
+
+* AWS::ACMPCA::Certificate Validity.PrimitiveType (__deleted__)
+* AWS::ACMPCA::Certificate Validity.Type (__added__)
+* AWS::ACMPCA::CertificateAuthority RevocationConfiguration.PrimitiveType (__deleted__)
+* AWS::ACMPCA::CertificateAuthority RevocationConfiguration.Type (__added__)
+* AWS::ACMPCA::CertificateAuthority Subject.PrimitiveType (__deleted__)
+* AWS::ACMPCA::CertificateAuthority Subject.Type (__added__)
+* AWS::AppSync::GraphQLApi XrayEnabled (__added__)
+* AWS::EC2::ClientVpnEndpoint VpnPort (__added__)
+* AWS::OpsWorksCM::Server Tags (__added__)
+
+## Property Type Changes
+
+* AWS::ACMPCA::Certificate.Validity (__added__)
+* AWS::ACMPCA::CertificateAuthority.CrlConfiguration (__added__)
+* AWS::ACMPCA::CertificateAuthority.RevocationConfiguration (__added__)
+* AWS::ACMPCA::CertificateAuthority.Subject (__added__)
+* AWS::Backup::BackupPlan.CopyActionResourceType (__added__)
+* AWS::EC2::LaunchTemplate.MetadataOptions (__added__)
+* AWS::MediaLive::Channel.MultiplexProgramChannelDestinationSettings (__added__)
+* AWS::Backup::BackupPlan.BackupRuleResourceType CopyActions (__added__)
+* AWS::EC2::LaunchTemplate.LaunchTemplateData MetadataOptions (__added__)
+* AWS::EC2::LaunchTemplate.LaunchTemplateElasticInferenceAccelerator Count (__added__)
+* AWS::EC2::LaunchTemplate.Placement HostResourceGroupArn (__added__)
+* AWS::EC2::LaunchTemplate.Placement PartitionNumber (__added__)
+* AWS::EC2::LaunchTemplate.Placement SpreadDomain (__added__)
+* AWS::MediaLive::Channel.OutputDestination MultiplexSettings (__added__)
+* AWS::Transfer::Server.EndpointDetails AddressAllocationIds.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Conditional
+
+
+# CloudFormation Resource Specification v10.4.0
+
+## New Resource Types
+
+* AWS::ACMPCA::Certificate
+* AWS::ACMPCA::CertificateAuthority
+* AWS::ACMPCA::CertificateAuthorityActivation
+
+## Attribute Changes
+
+* AWS::Athena::NamedQuery NamedQueryId (__added__)
+* AWS::Transfer::Server VpcEndpointId (__added__)
+
+## Property Changes
+
+* AWS::Cognito::UserPool AccountRecoverySetting (__added__)
+
+## Property Type Changes
+
+* AWS::Cognito::UserPool.AccountRecoverySetting (__added__)
+* AWS::Cognito::UserPool.RecoveryOption (__added__)
+* AWS::Transfer::Server.EndpointDetails AddressAllocationIds (__added__)
+* AWS::Transfer::Server.EndpointDetails SubnetIds (__added__)
+* AWS::Transfer::Server.EndpointDetails VpcId (__added__)
+* AWS::Transfer::Server.EndpointDetails VpcEndpointId.Required (__changed__)
+  * Old: true
+  * New: false
+
+
 # CloudFormation Resource Specification v10.3.0
 
 ## New Resource Types

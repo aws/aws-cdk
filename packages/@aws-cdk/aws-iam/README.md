@@ -87,6 +87,8 @@ permissions to trigger the expected targets, do the following:
 ```ts
 const role = new iam.Role(this, 'Role', {
   assumedBy: new iam.ServicePrincipal('codepipeline.amazonaws.com'),
+  // custom description if desired
+  description: 'This is a custom role...',
 });
 
 new codepipeline.Pipeline(this, 'Pipeline', {
@@ -118,7 +120,7 @@ const role = iam.Role.fromRoleArn(this, 'Role', 'arn:aws:iam::123456789012:role/
 
 ### Configuring an ExternalId
 
-If you need to create Roles that will be assumed by 4rd parties, it is generally a good idea to [require an `ExternalId`
+If you need to create Roles that will be assumed by third parties, it is generally a good idea to [require an `ExternalId`
 to assume them](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_create_for-user_externalid.html).  Configuring
 an `ExternalId` works like this:
 

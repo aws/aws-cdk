@@ -49,6 +49,10 @@ update-spec \
     spec-source/000_CloudFormationResourceSpecification.json \
     true
 
+echo >&2 "Recording new version..."
+rm -f cfn.version
+node -p "require('${scriptdir}/../spec-source/000_CloudFormationResourceSpecification.json').ResourceSpecificationVersion" > cfn.version
+
 update-spec \
     "Serverless Application Model (SAM) Resource Specification" \
     "https://raw.githubusercontent.com/awslabs/goformation/master/generate/sam-2016-10-31.json" \
@@ -67,9 +71,11 @@ node ${scriptdir}/create-missing-libraries.js || {
 
 # update decdk dep list
 (cd ${scriptdir}/../../../decdk && node ./deps.js || true)
+(cd ${scriptdir}/../../../monocdk-experiment && node ./deps.js || true)
 
 # append old changelog after new and replace as the last step because otherwise we will not be idempotent
-cat CHANGELOG.md >> CHANGELOG.md.new
-cp CHANGELOG.md.new CHANGELOG.md
-
-
+_changelog_contents=$(cat CHANGELOG.md.new)
+if [ -n "${_changelog_contents}" ]; then
+    cat CHANGELOG.md >> CHANGELOG.md.new
+    cp CHANGELOG.md.new CHANGELOG.md
+fi

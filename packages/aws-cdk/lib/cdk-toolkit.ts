@@ -85,6 +85,21 @@ export class CdkToolkit {
 
     this.appStacks.processMetadata(stacks);
 
+    const parameterMap: { [name: string]: { [name: string]: string | undefined } } = {'*': {}};
+    for (const key in options.parameters) {
+      if (options.parameters.hasOwnProperty(key)) {
+        const [stack, parameter] = key.split(':', 2);
+        if (!parameter) {
+          parameterMap['*'][stack] = options.parameters[key];
+        } else {
+          if (!parameterMap[stack]) {
+            parameterMap[stack] = {};
+          }
+          parameterMap[stack][parameter] = options.parameters[key];
+        }
+      }
+    }
+
     for (const stack of stacks) {
       if (stacks.length !== 1) { highlight(stack.displayName); }
       if (!stack.environment) {
@@ -142,7 +157,9 @@ export class CdkToolkit {
           reuseAssets: options.reuseAssets,
           notificationArns: options.notificationArns,
           tags,
-          execute: options.execute
+          execute: options.execute,
+          force: options.force,
+          parameters: Object.assign({}, parameterMap['*'], parameterMap[stack.stackName])
         });
 
         const message = result.noOp
@@ -308,6 +325,18 @@ export interface DeployOptions {
    * @default true
    */
   execute?: boolean;
+
+  /**
+   * Always deploy, even if templates are identical.
+   * @default false
+   */
+  force?: boolean;
+
+  /**
+   * Additional parameters for CloudFormation at deploy time
+   * @default {}
+   */
+  parameters?: { [name: string]: string | undefined };
 }
 
 export interface DestroyOptions {
