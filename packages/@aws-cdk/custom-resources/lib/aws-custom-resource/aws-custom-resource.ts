@@ -116,6 +116,61 @@ export interface AwsSdkCall {
 }
 
 /**
+ * Options for the auto-generation of policies based on the configured SDK calls.
+ */
+export interface SdkCallsPolicyOptions {
+
+  /**
+   * The resources that the calls will have access to.
+   *
+   * It is best to use specific resource ARN's when possible. However, you can also use `AwsCustomResourcePolicy.ANY_RESOURCE`
+   * to allow access to all resources. For example, when `onCreate` is used to create a resource which you don't
+   * know the physical name of in advance.
+   *
+   * Note that will apply to ALL SDK calls.
+   */
+  readonly resources: string[]
+
+}
+
+/**
+ * The IAM Policy that will be applied to the different calls.
+ */
+export class AwsCustomResourcePolicy {
+
+  /**
+   * Use this constant to configure access to any resource.
+   */
+  public static readonly ANY_RESOURCE = ['*'];
+
+  /**
+   * Explicit IAM Policy Statements.
+   *
+   * @param statements the statements to propagate to the SDK calls.
+   */
+  public static fromStatements(statements: iam.PolicyStatement[]) {
+    return new AwsCustomResourcePolicy(statements, undefined);
+  }
+
+  /**
+   * Generate IAM Policy Statements from the configured SDK calls.
+   *
+   * Each SDK call with be translated to an IAM Policy Statement in the form of: `call.service:call.action` (e.g `s3:PutObject`).
+   *
+   * @param options options for the policy generation
+   */
+  public static fromSdkCalls(options: SdkCallsPolicyOptions) {
+    return new AwsCustomResourcePolicy([], options.resources);
+  }
+
+  /**
+   * @param statements statements for explicit policy.
+   * @param resources resources for auto-generated from SDK calls.
+   */
+  private constructor(public readonly statements: iam.PolicyStatement[], public readonly resources?: string[]) {}
+}
+
+/**
  * Properties for AwsCustomResource.
  *
  * Note that at least onCreate, onUpdate or onDelete must be specified.
@@ -150,8 +205,7 @@ export interface AwsCustomResourceProps {
   readonly onDelete?: AwsSdkCall;
 
   /**
-   * The IAM policy statements to allow the different calls. Use only if
-   * resource restriction is needed.
+   * The policy to apply to the resource.
    *
    * The custom resource also implements `iam.IGrantable`, making it possible
    * to use the `grantXxx()` methods.
@@ -160,9 +214,10 @@ export interface AwsCustomResourceProps {
    * to note the that function's role will eventually accumulate the
    * permissions/grants from all resources.
    *
-   * @default - extract the permissions from the calls
+   * @see Policy.fromStatements
+   * @see Policy.fromSdkCalls
    */
-  readonly policyStatements?: iam.PolicyStatement[];
+  readonly policy: AwsCustomResourcePolicy;
 
   /**
    * The execution role for the Lambda function implementing this custom
@@ -240,19 +295,22 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
     });
     this.grantPrincipal = provider.grantPrincipal;
 
-    if (props.policyStatements) {
-      for (const statement of props.policyStatements) {
+    if (props.policy.statements.length !== 0) {
+      // Use custom statements provided by the user
+      for (const statement of props.policy.statements) {
         provider.addToRolePolicy(statement);
       }
-    } else { // Derive statements from AWS SDK calls
+    } else {
+      // Derive statements from AWS SDK calls
       for (const call of [props.onCreate, props.onUpdate, props.onDelete]) {
         if (call) {
           provider.addToRolePolicy(new iam.PolicyStatement({
             actions: [awsSdkToIamAction(call.service, call.action)],
-            resources: ['*']
+            resources: props.policy.resources
           }));
         }
       }
+
     }
 
     const create = props.onCreate || props.onUpdate;
