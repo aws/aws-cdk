@@ -161,26 +161,10 @@ Examples:
 * [integ.destinations.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-lambda-destinations/test/integ.destinations.ts#L7)
 * [integ.token-authorizer.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-apigateway/test/authorizers/integ.token-authorizer.ts#L6)
 
-### Step 4: Commit
-
-* Commit message should indicate which issues are fixed: `fixes #<issue>` or `closes #<issue>`.
-
-* Shout out to collaborators.
-
-* If not obvious (i.e. from unit tests), describe how you verified that your change works.
-
-* If this commit includes breaking changes, they must be listed at the end in the following format (notice how multiple breaking changes should be formatted):
-
-```
-BREAKING CHANGE: Description of what broke and how to achieve this behavior now
-* **module-name:** Another breaking change
-* **module-name:** Yet another breaking change
-```
-
 ### Step 4: Pull Request
 
 * Push to a GitHub fork or to a branch (naming convention: `<user>/<feature-bug-name>`)
-* Submit a Pull Request on GitHub and assign the PR for a review to the "awslabs/aws-cdk" team. The title and description will be used to construct the commit message when its merged to master. This in turn, will translate to CHANGELOG entries.
+* Submit a Pull Request on GitHub and assign the PR for a review to the "awslabs/aws-cdk" team. The title and description will be used to format the commit message when its merged to master. This in turn, will translate to CHANGELOG entries. It is therefore important we be consistent and informative.
 
   ##### PR Title
 
@@ -193,7 +177,8 @@ BREAKING CHANGE: Description of what broke and how to achieve this behavior now
 
   ##### PR Description
 
-  The description should describe _motivation_. Think about your code reviewers and what information they need in order to understand what you did. If it's a big commit (hopefully not), try to provide some good entry points so it will be easier to follow.
+  The description should describe _motivation_. Think about your code reviewers and what information they need in order to understand what you did.
+  If it's a big commit (hopefully not), try to provide some good entry points so it will be easier to follow.
 
   - Should include the following section:
 
@@ -205,7 +190,23 @@ BREAKING CHANGE: Description of what broke and how to achieve this behavior now
     ## End Commit Message
     ```
 
-  - If your change introduces a breaking change. add `BREAKING CHANGE: {describe-breaking-changes-in-a-single-paragraph}` as the last paragraph of the `Commit Message` section.
+  - If your change introduces a breaking change, describe it as the last paragraph in the `Commit Message` section like so:
+
+    ```
+    BREAKING CHANGE: Description of what broke and how to achieve this behavior now
+    * **module-name:** Another breaking change
+    * **module-name:** Yet another breaking change
+    ```
+
+    > Notice how multiple breaking changes should be formatted.
+
+  - Should indicate which issues are fixed: `fixes #<issue>` or `closes #<issue>`.
+  - Shout out to collaborators.
+  - If not obvious (i.e. from unit tests), describe how you verified that your change works. This should be separate from the `Commit Message` section, as its only intended for the review process.
+
+  Here is an example PR you should use as a reference: https://github.com/aws/aws-cdk/pull/6553.
+
+  > **We validate this format automatically as part of our PR checks, so don't worry, you can't get this wrong :)**
 
 * Please follow the PR checklist written below. We trust our contributors to self-check, and this helps that process!
 * Discuss review comments and iterate until you get at least one “Approve”. When iterating, push new commits to the
