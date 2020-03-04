@@ -367,7 +367,8 @@ test('fails when getData is used with `ignoreErrorCodesMatching`', () => {
       },
       ignoreErrorCodesMatching: ".*",
       physicalResourceId: PhysicalResourceId.of("Id")
-    }
+    },
+    policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ANY_RESOURCE}),
   });
 
   expect(() => resource.getData("ShouldFail")).toThrow(/`getData`.+`ignoreErrorCodesMatching`/);
@@ -387,8 +388,9 @@ test('fails when getDataString is used with `ignoreErrorCodesMatching`', () => {
         retentionInDays: 90
       },
       ignoreErrorCodesMatching: ".*",
-      physicalResourceId: PhysicalResourceId.of("Id")
-    }
+      physicalResourceId: PhysicalResourceId.of("Id"),
+    },
+    policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ANY_RESOURCE}),
   });
 
   expect(() => resource.getDataString("ShouldFail")).toThrow(/`getDataString`.+`ignoreErrorCodesMatching`/);
@@ -408,7 +410,8 @@ test('fail when `PhysicalResourceId.fromResponse` is used with `ignoreErrorCodes
       },
       ignoreErrorCodesMatching: ".*",
       physicalResourceId: PhysicalResourceId.fromResponse("Response")
-    }
+    },
+    policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ANY_RESOURCE}),
   })).toThrow(/`PhysicalResourceId.fromResponse`.+`ignoreErrorCodesMatching`/);
 
   expect(() => new AwsCustomResource(stack, 'AwsSdkOnCreate', {
@@ -421,7 +424,8 @@ test('fail when `PhysicalResourceId.fromResponse` is used with `ignoreErrorCodes
       },
       ignoreErrorCodesMatching: ".*",
       physicalResourceId: PhysicalResourceId.fromResponse("Response")
-    }
+    },
+    policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ANY_RESOURCE}),
   })).toThrow(/`PhysicalResourceId.fromResponse`.+`ignoreErrorCodesMatching`/);
 
   expect(() => new AwsCustomResource(stack, 'AwsSdkOnDelete', {
@@ -434,7 +438,8 @@ test('fail when `PhysicalResourceId.fromResponse` is used with `ignoreErrorCodes
       },
       ignoreErrorCodesMatching: ".*",
       physicalResourceId: PhysicalResourceId.fromResponse("Response")
-    }
+    },
+    policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ANY_RESOURCE}),
   })).toThrow(/`PhysicalResourceId.fromResponse`.+`ignoreErrorCodesMatching`/);
 
 });
