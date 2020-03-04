@@ -122,10 +122,10 @@
   "engines": {
     "node": ">= 10.3.0"
   },
-  "stability": "experimental",
+  "stability": "stable",
   "awslint": {
     "exclude": [
       "construct-ctor-props-optional:@aws-cdk/custom-resources.AwsCustomResource"
     ]
-  }    
+  }
 }
