@@ -113,6 +113,12 @@ export interface EventSourceMappingProps extends EventSourceMappingOptions {
  * modify the Lambda's execution role so it can consume messages from the queue.
  */
 export class EventSourceMapping extends cdk.Resource {
+  /**
+   * The identifier for this EventSourceMapping
+   * @attribute
+   */
+  public readonly eventSourceMappingId: string;
+
   constructor(scope: cdk.Construct, id: string, props: EventSourceMappingProps) {
     super(scope, id);
 
@@ -140,7 +146,7 @@ export class EventSourceMapping extends cdk.Resource {
       };
     }
 
-    new CfnEventSourceMapping(this, 'Resource', {
+    const cfnEventSourceMapping = new CfnEventSourceMapping(this, 'Resource', {
       batchSize: props.batchSize,
       bisectBatchOnFunctionError: props.bisectBatchOnError,
       destinationConfig,
@@ -153,6 +159,7 @@ export class EventSourceMapping extends cdk.Resource {
       maximumRetryAttempts: props.retryAttempts,
       parallelizationFactor: props.parallelizationFactor
     });
+    this.eventSourceMappingId = cfnEventSourceMapping.ref;
   }
 }
 
