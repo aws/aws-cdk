@@ -153,13 +153,10 @@ plan.addApiStage({
 });
 ```
 
-<<<<<<< HEAD
-=======
 In scenarios where you need to create a single api key and configure rate limiting for it, you can use RateLimitedApiKey.
 This construct lets you specify rate limiting properties which should be applied only to the api key being created.
 Internally, it automatically creates a usage plan with the specified rate limiting properties for this api key.
 
->>>>>>> feat(apigateway): Adds construct which allow configuring ratelimiting at api key level
 The following example shows how to use a rate limited api key :
 ```ts
 const hello = new lambda.Function(this, 'hello', {
@@ -178,17 +175,9 @@ const echoMethod = echo.addMethod('GET', integration, { apiKeyRequired: true });
 const key = new apigateway.RateLimitedApiKey(this, 'rate-limited-api-key', {
   customerId: 'hello-customer',
   resources: [api],
-<<<<<<< HEAD
-  rateLimitingSettings: {
-    quota: {
-      limit: 10000,
-      period: apigateway.Period.MONTH
-    }
-=======
   quota: {
     limit: 10000,
     period: apigateway.Period.MONTH
->>>>>>> feat(apigateway): Adds construct which allow configuring ratelimiting at api key level
   }
 });
 
