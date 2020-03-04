@@ -194,7 +194,7 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
   private static breakIgnoreErrorsCircuit(sdkCalls: Array<AwsSdkCall | undefined>, caller: string) {
 
     for (const call of sdkCalls) {
-      if (call && call.ignoreErrorCodesMatching) {
+      if (call?.ignoreErrorCodesMatching) {
         throw new Error(`\`${caller}\`` + ' cannot be called along with `ignoreErrorCodesMatching`.');
       }
     }
@@ -216,13 +216,13 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
     }
 
     for (const call of [props.onCreate, props.onUpdate]) {
-      if (call && !call.physicalResourceId) {
+      if (!call?.physicalResourceId) {
         throw new Error('`physicalResourceId` must be specified for onCreate and onUpdate calls.');
       }
     }
 
     for (const call of [props.onCreate, props.onUpdate, props.onDelete]) {
-      if (call && call.physicalResourceId?.responsePath) {
+      if (call?.physicalResourceId?.responsePath) {
         AwsCustomResource.breakIgnoreErrorsCircuit([call], "PhysicalResourceId.fromResponse");
       }
     }
