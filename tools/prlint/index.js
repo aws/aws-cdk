@@ -121,9 +121,20 @@ async function commitMessage(number) {
 
     console.log(`⌛  Fetching PR number ${number}`)
     const issue = (await issues.getIssue(number)).data;
+    console.log(JSON.stringify(issue));
+
+    const noSquash = issue.labels.some(function (l) {
+        return l.name.includes("no-squash");
+    });
 
     if (issue.user.login === "dependabot[bot]" || issue.user.login === "dependabot-preview[bot]") {
+        // dependabot PR's are ok even without following this convention because they only contain
+        // a single commit in conventional commit form.
         console.log("⏭️   Validation skipped because its a dependabot PR");
+    } else if (noSquash) {
+        // if the PR isn't merged as a squash commit, all this validation is irrelevant.
+        // this is the case for our automatic PR's to the 'release' branch.
+        console.log("⏭️   Validation skipped because the PR is labeled with 'no-squash'");
     } else {
         console.log("⌛  Validating...");
         validate();
