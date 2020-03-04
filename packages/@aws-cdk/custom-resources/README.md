@@ -1,20 +1,22 @@
 # AWS CDK Custom Resources
-
 <!--BEGIN STABILITY BANNER-->
 
 ---
 
 ![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
 
-> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
-> future breaking changes.**
+> **This is a _developer preview_ (public beta) module.**
 >
-> This API is still under active development and subject to non-backward
-> compatible changes or removal in any future version. Use of the API is not recommended in production
-> environments. Experimental APIs are not subject to the Semantic Versioning model.
+> All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib))
+> are auto-generated from CloudFormation. They are stable and safe to use.
+>
+> However, all other classes, i.e., higher level constructs, are under active development and subject to non-backward
+> compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model.
+> This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
 
 ---
 <!--END STABILITY BANNER-->
+
 
 ## Provider Framework
 
@@ -30,7 +32,7 @@ and powerful custom resources and includes the following capabilities:
 * Handles responses to AWS CloudFormation and protects against blocked
   deployments
 * Validates handler return values to help with correct handler implementation
-* Supports asynchronous handlers to enable long operations which can exceed the AWS Lambda timeout
+* Supports asynchronous handlers to enable operations that require a long waiting period for a resource, which can exceed the AWS Lambda timeout
 * Implements default behavior for physical resource IDs.
 
 The following code shows how the `Provider` construct is used in conjunction
@@ -337,11 +339,14 @@ be `Items.0.Title.S`.
 
 ### Execution Policy
 
-IAM policy statements required to make the API calls are derived from the calls
-and allow by default the actions to be made on all resources (`*`). You can
-restrict the permissions by specifying your own list of statements with the
-`policyStatements` prop. The custom resource also implements `iam.IGrantable`,
-making it possible to use the `grantXxx()` methods.
+You must provide the `policy` property defining the IAM Policy that will be applied to the API calls.
+The library provides two factory methods to quickly configure this:
+
+- **`AwsCustomResourcePolicy.fromSdkCalls`** - Use this to auto-generate IAM Policy statements based on the configured SDK calls.
+Note that you will have to either provide specific ARN's, or explicitly use `AwsCustomResourcePolicy.ANY_RESOURCE` to allow access to any resource.
+- **`AwsCustomResourcePolicy.fromStatements`** - Use this to specify your own custom statements.
+
+The custom resource also implements `iam.IGrantable`, making it possible to use the `grantXxx()` methods.
 
 As this custom resource uses a singleton Lambda function, it's important to note
 that the function's role will eventually accumulate the permissions/grants from all
@@ -354,7 +359,8 @@ const awsCustom1 = new AwsCustomResource(this, 'API1', {
     service: '...',
     action: '...',
     physicalResourceId: PhysicalResourceId.of('...')
-  }
+  },
+  policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ANY_RESOURCE})
 });
 
 const awsCustom2 = new AwsCustomResource(this, 'API2', {
@@ -365,9 +371,23 @@ const awsCustom2 = new AwsCustomResource(this, 'API2', {
       text: awsCustom1.getResponseFieldString('Items.0.text')
     },
     physicalResourceId: PhysicalResourceId.of('...')
-  }
+  },
+  policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ANY_RESOURCE})
 })
 ```
+
+### Error Handling
+
+Every error produced by the API call is treated as is and will cause a "FAILED" response to be submitted to CloudFormation.
+You can ignore some errors by specifying the `ignoreErrorCodesMatching` property, which accepts a regular expression that is
+tested against the `code` property of the response. If matched, a "SUCCESS" response is submitted.
+Note that in such a case, the call response data and the `Data` key submitted to CloudFormation would both be an empty JSON object.
+Since a successful resource provisioning might or might not produce outputs, this presents us with some limitations:
+
+- `PhysicalResourceId.fromResponse` - Since the call response data might be empty, we cannot use it to extract the physical id.
+- `getData` and `getDataString` - Since the `Data` key is empty, the resource will not have any attributes, and therefore, invoking these functions will result in an error.
+
+In both the cases, you will get a synth time error if you attempt to use it in conjunction with `ignoreErrorCodesMatching`.
 
 ### Examples
 
@@ -382,7 +402,8 @@ const verifyDomainIdentity = new AwsCustomResource(this, 'VerifyDomainIdentity',
       Domain: 'example.com'
     },
     physicalResourceId: PhysicalResourceId.fromResponse('VerificationToken') // Use the token returned by the call as physical id
-  }
+  },
+  policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ANY_RESOURCE})
 });
 
 new route53.TxtRecord(this, 'SESVerificationRecord', {
@@ -404,7 +425,8 @@ const getParameter = new AwsCustomResource(this, 'GetParameter', {
       WithDecryption: true
     },
     physicalResourceId: PhysicalResourceId.of(Date.now().toString()) // Update physical id to always fetch the latest version
-  }
+  },
+  policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ANY_RESOURCE})
 });
 
 // Use the value in another construct with
@@ -416,3 +438,4 @@ getParameter.getResponseField('Parameter.Value')
 ---
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
+
