@@ -385,7 +385,7 @@ Note that in such a case, the call response data and the `Data` key submitted to
 Since a successful resource provisioning might or might not produce outputs, this presents us with some limitations:
 
 - `PhysicalResourceId.fromResponse` - Since the call response data might be empty, we cannot use it to extract the physical id.
-- `getData` and `getDataString` - Since the `Data` key is empty, the resource will not have any attributes, and therefore, invoking these functions will result in an error.
+- `getResponseField` and `getResponseFieldReference` - Since the `Data` key is empty, the resource will not have any attributes, and therefore, invoking these functions will result in an error.
 
 In both the cases, you will get a synth time error if you attempt to use it in conjunction with `ignoreErrorCodesMatching`.
 
