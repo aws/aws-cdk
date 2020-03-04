@@ -359,7 +359,7 @@ const awsCustom2 = new AwsCustomResource(this, 'API2', {
     service: '...',
     action: '...'
     parameters: {
-      text: awsCustom1.getDataString('Items.0.text')
+      text: awsCustom1.getResponseField('Items.0.text')
     },
     physicalResourceId: PhysicalResourceId.of('...')
   },
@@ -376,7 +376,7 @@ Note that in such a case, the call response data and the `Data` key submitted to
 Since a successful resource provisioning might or might not produce outputs, this presents us with some limitations:
 
 - `PhysicalResourceId.fromResponse` - Since the call response data might be empty, we cannot use it to extract the physical id.
-- `getData` and `getDataString` - Since the `Data` key is empty, the resource will not have any attributes, and therefore, invoking these functions will result in an error.
+- `getResponseField` and `getResponseFieldReference` - Since the `Data` key is empty, the resource will not have any attributes, and therefore, invoking these functions will result in an error.
 
 In both the cases, you will get a synth time error if you attempt to use it in conjunction with `ignoreErrorCodesMatching`.
 
@@ -400,7 +400,7 @@ const verifyDomainIdentity = new AwsCustomResource(this, 'VerifyDomainIdentity',
 new route53.TxtRecord(this, 'SESVerificationRecord', {
   zone,
   recordName: `_amazonses.example.com`,
-  values: [verifyDomainIdentity.getDataString('VerificationToken')]
+  values: [verifyDomainIdentity.getResponseField('VerificationToken')]
 });
 ```
 
@@ -421,7 +421,7 @@ const getParameter = new AwsCustomResource(this, 'GetParameter', {
 });
 
 // Use the value in another construct with
-getParameter.getData('Parameter.Value')
+getParameter.getResponseField('Parameter.Value')
 ```
 
 
