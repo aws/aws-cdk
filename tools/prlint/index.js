@@ -87,7 +87,9 @@ async function commitMessage(number) {
 
     function validate() {
 
-        const commitMessageSection = issue.body.match(/## Commit Message([\s|\S]*)## End Commit Message/);
+        // this is the commit message mergify will use.
+        // see https://doc.mergify.io/actions.html#commit-message-and-squash-method.
+        const commitMessageSection = issue.body.match(/## Commit Message([\s|\S]*)##/);
 
         if (!commitMessageSection || commitMessageSection.length !== 2) {
             throw new LinterError("Your PR description doesn't specify the commit"
@@ -95,6 +97,7 @@ async function commitMessage(number) {
         }
 
         const commitMessage = commitMessageSection[1].trim();
+
         const paragraphs = commitMessage.split(/\r\n\r\n|\n\n/);
         const title = paragraphs[0];
         const expectedCommitTitle = `${issue.title} (#${number})`
@@ -121,7 +124,6 @@ async function commitMessage(number) {
 
     console.log(`⌛  Fetching PR number ${number}`)
     const issue = (await issues.getIssue(number)).data;
-    console.log(JSON.stringify(issue));
 
     const noSquash = issue.labels.some(function (l) {
         return l.name.includes("no-squash");
