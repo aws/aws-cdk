@@ -106,7 +106,7 @@ export interface UsagePlanPerApiStage {
 
 export interface UsagePlanProps {
   /**
-   * API Stages to be associated which the usage plan.
+   * API Stages to be associated with the usage plan.
    * @default none
    */
   readonly apiStages?: UsagePlanPerApiStage[];
