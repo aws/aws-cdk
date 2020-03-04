@@ -342,7 +342,7 @@ test('getData', () => {
   });
 
   // WHEN
-  const token = awsSdk.getResponseField('Data');
+  const token = awsSdk.getResponseFieldReference('Data');
 
   // THEN
   expect(stack.resolve(token)).toEqual({
@@ -371,7 +371,7 @@ test('fails when getData is used with `ignoreErrorCodesMatching`', () => {
     policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ANY_RESOURCE}),
   });
 
-  expect(() => resource.getResponseField("ShouldFail")).toThrow(/`getData`.+`ignoreErrorCodesMatching`/);
+  expect(() => resource.getResponseFieldReference("ShouldFail")).toThrow(/`getData`.+`ignoreErrorCodesMatching`/);
 
 });
 
@@ -393,7 +393,7 @@ test('fails when getDataString is used with `ignoreErrorCodesMatching`', () => {
     policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ANY_RESOURCE}),
   });
 
-  expect(() => resource.getResponseFieldString("ShouldFail")).toThrow(/`getDataString`.+`ignoreErrorCodesMatching`/);
+  expect(() => resource.getResponseField("ShouldFail")).toThrow(/`getDataString`.+`ignoreErrorCodesMatching`/);
 
 });
 
@@ -462,7 +462,7 @@ test('getDataString', () => {
       service: 'service',
       action: 'action',
       parameters: {
-        a: awsSdk.getResponseFieldString('Data')
+        a: awsSdk.getResponseField('Data')
       },
       physicalResourceId: PhysicalResourceId.of('id')
     },
