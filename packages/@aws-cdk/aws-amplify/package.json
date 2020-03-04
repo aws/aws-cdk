@@ -68,7 +68,7 @@
     ],
     "coverageThreshold": {
       "global": {
-        "branches": 60,
+        "branches": 70,
         "statements": 80
       }
     },
@@ -83,17 +83,31 @@
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
     "cdk-build-tools": "0.0.0",
+    "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
     "pkglint": "0.0.0"
   },
   "dependencies": {
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-kms": "0.0.0",
+    "@aws-cdk/aws-codebuild": "0.0.0",
+    "@aws-cdk/aws-secretsmanager": "0.0.0",
     "@aws-cdk/core": "0.0.0"
   },
   "peerDependencies": {
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-kms": "0.0.0",
+    "@aws-cdk/aws-codebuild": "0.0.0",
+    "@aws-cdk/aws-secretsmanager": "0.0.0",
     "@aws-cdk/core": "0.0.0"
   },
   "engines": {
     "node": ">= 10.3.0"
   },
-  "stability": "experimental"
+  "stability": "experimental",
+  "awslint": {
+    "exclude": [
+      "construct-ctor-props-optional:@aws-cdk/aws-amplify.App"
+    ]
+  }
 }
