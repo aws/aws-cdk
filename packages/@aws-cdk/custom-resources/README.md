@@ -368,7 +368,7 @@ const awsCustom2 = new AwsCustomResource(this, 'API2', {
     service: '...',
     action: '...'
     parameters: {
-      text: awsCustom1.getResponseFieldString('Items.0.text')
+      text: awsCustom1.getResponseField('Items.0.text')
     },
     physicalResourceId: PhysicalResourceId.of('...')
   },
@@ -409,7 +409,7 @@ const verifyDomainIdentity = new AwsCustomResource(this, 'VerifyDomainIdentity',
 new route53.TxtRecord(this, 'SESVerificationRecord', {
   zone,
   recordName: `_amazonses.example.com`,
-  values: [verifyDomainIdentity.getResponseFieldString('VerificationToken')]
+  values: [verifyDomainIdentity.getResponseField('VerificationToken')]
 });
 ```
 
