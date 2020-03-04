@@ -182,6 +182,24 @@ test('Task throws if arraySize is out of limits 2-10000', () => {
   );
 });
 
+test('Task throws if dependencies exceeds 20', () => {
+  expect(() => {
+    new sfn.Task(stack, 'Task', {
+      task: new tasks.RunBatchJob({
+        jobDefinition: batchJobDefinition,
+        jobName: 'JobName',
+        jobQueue: batchJobQueue,
+        dependsOn: [...Array(21).keys()].map(i => ({
+          jobId: `${i}`,
+          type: `some_type-${i}`
+        }))
+      })
+    });
+  }).toThrow(
+    /Invalid number of dependencies. A job can depend upon a maximum of 20 jobs./i
+  );
+});
+
 test('Task throws if attempts is out of limits 1-10', () => {
   expect(() => {
     new sfn.Task(stack, 'Task', {

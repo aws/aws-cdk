@@ -112,6 +112,9 @@ export interface RunBatchJobProps {
   readonly arraySize?: number;
 
   /**
+   * A list of container overrides in JSON format that specify the name of a container
+   * in the specified job definition and the overrides it should receive.
+   *
    * @see https://docs.aws.amazon.com/batch/latest/APIReference/API_SubmitJob.html#Batch-SubmitJob-request-containerOverrides
    *
    * @default - No container overrides
@@ -119,6 +122,9 @@ export interface RunBatchJobProps {
   readonly containerOverrides?: ContainerOverrides;
 
   /**
+   * A list of dependencies for the job.
+   * A job can depend upon a maximum of 20 jobs.
+   *
    * @see https://docs.aws.amazon.com/batch/latest/APIReference/API_SubmitJob.html#Batch-SubmitJob-request-dependsOn
    *
    * @default - No dependencies
@@ -194,6 +200,13 @@ export class RunBatchJob implements sfn.IStepFunctionsTask {
       );
     }
 
+    // validate dependency size
+    if (props.dependsOn && props.dependsOn.length > 20) {
+      throw new Error(
+        `Invalid number of dependencies. A job can depend upon a maximum of 20 jobs.`
+      );
+    }
+
     // validate attempts
     if (
       props.attempts !== undefined &&
@@ -222,31 +235,6 @@ export class RunBatchJob implements sfn.IStepFunctionsTask {
         }
       });
     }
-  }
-
-  private configureContainerOverrides(containerOverrides: ContainerOverrides) {
-    return {
-      Command: containerOverrides.command,
-      Environment: containerOverrides.environment
-        ? Object.entries(containerOverrides.environment).map(
-            ([key, value]) => ({
-              Name: key,
-              Value: value
-            })
-          )
-        : undefined,
-      InstanceType: containerOverrides.instanceType?.toString(),
-      Memory: containerOverrides.memory,
-      ResourceRequirements: containerOverrides.gpuCount
-        ? [
-            {
-              Type: 'GPU',
-              Value: `${containerOverrides.gpuCount}`
-            }
-          ]
-        : undefined,
-      Vcpus: containerOverrides.vcpus
-    };
   }
 
   public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
@@ -308,6 +296,31 @@ export class RunBatchJob implements sfn.IStepFunctionsTask {
           ? { AttemptDurationSeconds: this.props.timeout.toSeconds() }
           : undefined
       }
+    };
+  }
+
+  private configureContainerOverrides(containerOverrides: ContainerOverrides) {
+    return {
+      Command: containerOverrides.command,
+      Environment: containerOverrides.environment
+        ? Object.entries(containerOverrides.environment).map(
+            ([key, value]) => ({
+              Name: key,
+              Value: value
+            })
+          )
+        : undefined,
+      InstanceType: containerOverrides.instanceType?.toString(),
+      Memory: containerOverrides.memory,
+      ResourceRequirements: containerOverrides.gpuCount
+        ? [
+            {
+              Type: 'GPU',
+              Value: `${containerOverrides.gpuCount}`
+            }
+          ]
+        : undefined,
+      Vcpus: containerOverrides.vcpus
     };
   }
 }
