@@ -19,9 +19,9 @@ export async function replaceAwsPlaceholders<A extends { region?: string }>(obje
       if (value.indexOf(Placeholders.CURRENT_ACCOUNT) > -1) { await ensureAccount(); }
       if (value.indexOf(Placeholders.CURRENT_PARTITION) > -1) { await ensureAccount(); }
 
-      value = replaceAll(value, Placeholders.CURRENT_REGION, region! ?? '');
-      value = replaceAll(value, Placeholders.CURRENT_ACCOUNT, account!.accountId ?? '');
-      value = replaceAll(value, Placeholders.CURRENT_PARTITION, account!.partition ?? '');
+      value = replaceAll(value, Placeholders.CURRENT_REGION, region ?? '');
+      value = replaceAll(value, Placeholders.CURRENT_ACCOUNT, account?.accountId ?? '');
+      value = replaceAll(value, Placeholders.CURRENT_PARTITION, account?.partition ?? '');
 
       return value;
     }
