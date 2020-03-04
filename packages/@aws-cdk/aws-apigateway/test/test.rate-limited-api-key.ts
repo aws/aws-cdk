@@ -28,7 +28,7 @@ export = {
     test.done();
   },
 
-  'only api key is created when rateLimitingSettings are not provided'(test: Test) {
+  'only api key is created when rate limiting properties are not provided'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: true, deployOptions: { stageName: 'test' } });
@@ -58,7 +58,7 @@ export = {
     test.done();
   },
 
-  'api key and usage plan are created and linked when rateLimitingSettings are provided'(test: Test) {
+  'api key and usage plan are created and linked when rate limiting properties are provided'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: true, deployOptions: { stageName: 'test' } });
@@ -68,11 +68,9 @@ export = {
     new apigateway.RateLimitedApiKey(stack, 'test-api-key', {
       customerId: 'test-customer',
       resources: [api],
-      rateLimitingSettings: {
-        quota: {
-          limit: 10000,
-          period: apigateway.Period.MONTH
-        }
+      quota: {
+        limit: 10000,
+        period: apigateway.Period.MONTH
       }
     });
 
