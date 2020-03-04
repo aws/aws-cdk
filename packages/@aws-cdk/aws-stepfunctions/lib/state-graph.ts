@@ -56,8 +56,8 @@ export class StateGraph {
     private superGraph?: StateGraph;
 
     /**
-     *
      * @param startState state that gets executed when the state machine is launched
+     * @param graphDescription description of the state machine
      */
     constructor(public readonly startState: State, private readonly graphDescription: string) {
         this.allStates.add(startState);

@@ -42,7 +42,7 @@ export class Data {
   /**
    * Determines if the indicated string is an encoded JSON path
    *
-   * @param value String to be evaluated
+   * @param value string to be evaluated
    */
   public static isJsonPathString(value: string): boolean {
     return !!jsonPathString(value);
