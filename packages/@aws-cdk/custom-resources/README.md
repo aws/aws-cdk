@@ -3,20 +3,11 @@
 
 ---
 
-![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
+![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
 
-> **This is a _developer preview_ (public beta) module.**
->
-> All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib))
-> are auto-generated from CloudFormation. They are stable and safe to use.
->
-> However, all other classes, i.e., higher level constructs, are under active development and subject to non-backward
-> compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model.
-> This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
 
 ---
 <!--END STABILITY BANNER-->
-
 
 ## Provider Framework
 
@@ -368,13 +359,26 @@ const awsCustom2 = new AwsCustomResource(this, 'API2', {
     service: '...',
     action: '...'
     parameters: {
-      text: awsCustom1.getDataString('Items.0.text')
+      text: awsCustom1.getResponseField('Items.0.text')
     },
     physicalResourceId: PhysicalResourceId.of('...')
   },
   policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ANY_RESOURCE})
 })
 ```
+
+### Error Handling
+
+Every error produced by the API call is treated as is and will cause a "FAILED" response to be submitted to CloudFormation.
+You can ignore some errors by specifying the `ignoreErrorCodesMatching` property, which accepts a regular expression that is
+tested against the `code` property of the response. If matched, a "SUCCESS" response is submitted.
+Note that in such a case, the call response data and the `Data` key submitted to CloudFormation would both be an empty JSON object.
+Since a successful resource provisioning might or might not produce outputs, this presents us with some limitations:
+
+- `PhysicalResourceId.fromResponse` - Since the call response data might be empty, we cannot use it to extract the physical id.
+- `getResponseField` and `getResponseFieldReference` - Since the `Data` key is empty, the resource will not have any attributes, and therefore, invoking these functions will result in an error.
+
+In both the cases, you will get a synth time error if you attempt to use it in conjunction with `ignoreErrorCodesMatching`.
 
 ### Examples
 
@@ -396,7 +400,7 @@ const verifyDomainIdentity = new AwsCustomResource(this, 'VerifyDomainIdentity',
 new route53.TxtRecord(this, 'SESVerificationRecord', {
   zone,
   recordName: `_amazonses.example.com`,
-  values: [verifyDomainIdentity.getDataString('VerificationToken')]
+  values: [verifyDomainIdentity.getResponseField('VerificationToken')]
 });
 ```
 
@@ -417,7 +421,7 @@ const getParameter = new AwsCustomResource(this, 'GetParameter', {
 });
 
 // Use the value in another construct with
-getParameter.getData('Parameter.Value')
+getParameter.getResponseField('Parameter.Value')
 ```
 
 
