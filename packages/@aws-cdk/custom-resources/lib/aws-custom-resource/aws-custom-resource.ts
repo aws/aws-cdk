@@ -339,7 +339,7 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
    *
    * @param dataPath the path to the data
    */
-  public getData(dataPath: string) {
+  public getResponseFieldReference(dataPath: string) {
     AwsCustomResource.breakIgnoreErrorsCircuit([this.props.onCreate, this.props.onUpdate], "getData");
     return this.customResource.getAtt(dataPath);
   }
@@ -355,7 +355,7 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
    *
    * @param dataPath the path to the data
    */
-  public getDataString(dataPath: string): string {
+  public getResponseField(dataPath: string): string {
     AwsCustomResource.breakIgnoreErrorsCircuit([this.props.onCreate, this.props.onUpdate], "getDataString");
     return this.customResource.getAttString(dataPath);
   }
