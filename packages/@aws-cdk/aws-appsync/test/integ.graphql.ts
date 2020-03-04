@@ -1,14 +1,32 @@
+import { UserPool } from '@aws-cdk/aws-cognito';
 import { AttributeType, BillingMode, Table } from '@aws-cdk/aws-dynamodb';
 import { App, RemovalPolicy, Stack } from '@aws-cdk/core';
 import { join } from 'path';
-import { GraphQLApi, KeyCondition, MappingTemplate, PrimaryKey, Values } from '../lib';
+import { GraphQLApi, KeyCondition, MappingTemplate, PrimaryKey, UserPoolDefaultAction, Values } from '../lib';
 
 const app = new App();
 const stack = new Stack(app, 'aws-appsync-integ');
 
+const userPool = new UserPool(stack, 'Pool', {
+    userPoolName: 'myPool',
+});
+
 const api = new GraphQLApi(stack, 'Api', {
     name: `demoapi`,
     schemaDefinitionFile: join(__dirname, 'schema.graphql'),
+    authorizationConfig: {
+        defaultAuthorization: {
+            userPool,
+            defaultAction: UserPoolDefaultAction.ALLOW,
+        },
+        additionalAuthorizationModes: [
+            {
+                apiKeyDesc: 'My API Key',
+                // Can't specify a date because it will inevitably be in the past.
+                // expires: '2019-02-05T12:00:00Z',
+            },
+        ],
+    },
 });
 
 const customerTable = new Table(stack, 'CustomerTable', {

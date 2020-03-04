@@ -128,10 +128,40 @@ bootstrapped (using `cdk bootstrap`), only stacks that are not using assets and 
 $ cdk deploy --app='node bin/main.js' MyStackName
 ```
 
-Before creating a change set, `cdk deploy` will compare the template of the
-currently deployed stack to the template that is about to be deployed and will
-skip deployment if they are identical. Use `--force` to override this behavior
+Before creating a change set, `cdk deploy` will compare the template and tags of the
+currently deployed stack to the template and tags that are about to be deployed and
+will skip deployment if they are identical. Use `--force` to override this behavior
 and always deploy the stack.
+
+##### Parameters
+
+Pass parameters to your template during deployment by using `--parameters
+(STACK:KEY=VALUE)`. This will apply the value `VALUE` to the key `KEY` for stack `STACK`.
+
+Example of providing an attrbute value for an SNS Topic through a parameter in TypeScript:
+
+Usage of parameter in CDK Stack:
+```ts
+new sns.Topic(this, 'TopicParameter', {
+     topicName : new cdk.CfnParameter(this, 'TopicNameParam').value.toString()
+    });
+```
+
+Parameter values as a part of `cdk deploy`
+```console
+$ cdk deploy --parameters "MyStackName:TopicNameParam=parameterized"
+```
+
+Parameter values can be overwritten by supplying the `--force` flag.
+Example of overwriting the topic name from a previous interview
+```console
+$  cdk deploy --parameters "ParametersStack:TopicNameParam=blahagain" --force
+```
+
+⚠️ Parameters will be applied to all stacks if a stack name is not specified or `*` is provided. Parameters provided to Stacks that do not make use of the parameter will not successfully deploy.
+
+⚠️ Parameters do not propagate to NestedStacks. These must be sent with the constructor. See Nested Stack [documentation](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-cloudformation.NestedStack.html)
+
 
 #### `cdk destroy`
 Deletes a stack from it's environment. This will cause the resources in the stack to be destroyed (unless they were

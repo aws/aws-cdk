@@ -11,7 +11,6 @@ import {
   fileShouldNotContain,
   findInnerPackages,
   monoRepoRoot,
-  monoRepoVersion,
 } from './util';
 
 // tslint:disable-next-line: no-var-requires
@@ -234,12 +233,14 @@ export class StabilitySetting extends ValidationRule {
       case 'experimental':
         return _div(
           { label: 'Experimental', color: 'important' },
-          '**This is a _developer preview_ (public beta) module. Releases might lack important features and might have',
-          'future breaking changes.**',
+          '**This is a _developer preview_ (public beta) module.**',
           '',
-          'This API is still under active development and subject to non-backward',
-          'compatible changes or removal in any future version. Use of the API is not recommended in production',
-          'environments. Experimental APIs are not subject to the Semantic Versioning model.',
+          'All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib))',
+          'are auto-generated from CloudFormation. They are stable and safe to use.',
+          '',
+          'However, all other classes, i.e., higher level constructs, are under active development and subject to non-backward',
+          'compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model.',
+          'This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.',
         );
       case 'stable':
         return _div(
@@ -657,17 +658,50 @@ export class RegularDependenciesMustSatisfyPeerDependencies extends ValidationRu
 }
 
 /**
- * Check that dependencies on @aws-cdk/ packages use point versions (not version ranges).
+ * Check that dependencies on @aws-cdk/ packages use point versions (not version ranges)
+ * and that they are also defined in `peerDependencies`.
  */
 export class MustDependonCdkByPointVersions extends ValidationRule {
   public readonly name = 'dependencies/cdk-point-dependencies';
 
   public validate(pkg: PackageJson): void {
-    const expectedVersion = monoRepoVersion();
+    // yes, ugly, but we have a bunch of references to other files in the repo.
+    // we use the root package.json to determine what should be the version
+    // across the repo: in local builds, this should be 0.0.0 and in CI builds
+    // this would be the actual version of the repo after it's been aligned
+    // using scripts/align-version.sh
+    const expectedVersion = require('../../../package.json').version;
+    const ignore = [
+      '@aws-cdk/cloudformation-diff',
+      '@aws-cdk/cfnspec',
+      '@aws-cdk/cdk-assets-schema',
+      '@aws-cdk/cx-api',
+      '@aws-cdk/region-info'
+    ];
 
     for (const [depName, depVersion] of Object.entries(pkg.dependencies)) {
-      if (isCdkModuleName(depName) && depVersion !== expectedVersion) {
+      if (!isCdkModuleName(depName) || ignore.includes(depName)) {
+        continue;
+      }
 
+      const peerDep = pkg.peerDependencies[depName];
+      if (!peerDep) {
+        pkg.report({
+          ruleName: this.name,
+          message: `dependency ${depName} must also appear in peerDependencies`,
+          fix: () => pkg.addPeerDependency(depName, expectedVersion)
+        });
+      }
+
+      if (peerDep !== expectedVersion) {
+        pkg.report({
+          ruleName: this.name,
+          message: `peer dependency ${depName} should have the version ${expectedVersion}`,
+          fix: () => pkg.addPeerDependency(depName, expectedVersion)
+        });
+      }
+
+      if (depVersion !== expectedVersion) {
         pkg.report({
           ruleName: this.name,
           message: `dependency ${depName}: dependency version must be ${expectedVersion}`,
@@ -844,7 +878,7 @@ export class AllVersionsTheSame extends ValidationRule {
   private readonly usedDeps: {[pkg: string]: VersionCount[]} = {};
 
   public prepare(pkg: PackageJson): void {
-    this.ourPackages[pkg.json.name] = `^${pkg.json.version}`;
+    this.ourPackages[pkg.json.name] = pkg.json.version;
     this.recordDeps(pkg.json.dependencies);
     this.recordDeps(pkg.json.devDependencies);
   }
