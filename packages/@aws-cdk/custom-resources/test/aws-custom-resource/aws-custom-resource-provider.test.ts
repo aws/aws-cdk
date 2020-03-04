@@ -237,7 +237,7 @@ test('catch errors', async () => {
           Bucket: 'my-bucket'
         },
         physicalResourceId: PhysicalResourceId.of('physicalResourceId'),
-        catchErrorPattern: 'NoSuchBucket'
+        ignoreErrorCodesMatching: 'NoSuchBucket'
       } as AwsSdkCall
     }
   };
