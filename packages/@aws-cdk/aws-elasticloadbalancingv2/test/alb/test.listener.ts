@@ -953,12 +953,7 @@ export = {
 
     listener.addTargets('Target1', {
       priority: 10,
-      pathPattern: ['/test/path/1', '/test/path/2']
-    });
-
-    listener.addTargets('Target2', {
-      priority: 20,
-      pathPattern: '/test/path/3'
+      pathPatterns: ['/test/path/1', '/test/path/2']
     });
 
     // THEN
@@ -971,15 +966,29 @@ export = {
         }
       ]
     }));
-    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::ListenerRule', {
-      Priority: 20,
-      Conditions: [
-        {
-          Field: 'path-pattern',
-          Values: ['/test/path/3']
-        }
-      ]
-    }));
+
+    test.done();
+  },
+
+  'Cannot add pathPattern and pathPatterns to listener rule'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+
+    // WHEN
+    const listener = lb.addListener('Listener', {
+      port: 443,
+      certificateArns: ['cert1', 'cert2'],
+      defaultTargetGroups: [new elbv2.ApplicationTargetGroup(stack, 'Group', { vpc, port: 80 })]
+    });
+
+    // THEN
+    test.throws(() => listener.addTargets('Target1', {
+      priority: 10,
+      pathPatterns: ['/test/path/1', '/test/path/2'],
+      pathPattern: '/test/path/3'
+    }), Error, `At least one of 'hostHeader', 'pathPattern' or 'pathPatterns' is required when defining a load balancing rule.`);
 
     test.done();
   },

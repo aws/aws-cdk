@@ -209,6 +209,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
         listener: this,
         hostHeader: props.hostHeader,
         pathPattern: props.pathPattern,
+        pathPatterns: props.pathPatterns,
         priority: props.priority,
         targetGroups: props.targetGroups
       });
@@ -252,6 +253,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
     this.addTargetGroups(id, {
       hostHeader: props.hostHeader,
       pathPattern: props.pathPattern,
+      pathPatterns: props.pathPatterns,
       priority: props.priority,
       targetGroups: [group],
     });
@@ -480,9 +482,7 @@ class ImportedApplicationListener extends Resource implements IApplicationListen
    * At least one TargetGroup must be added without conditions.
    */
   public addTargetGroups(id: string, props: AddApplicationTargetGroupsProps): void {
-    if ((props.hostHeader !== undefined || props.pathPattern !== undefined) !== (props.priority !== undefined)) {
-      throw new Error(`Setting 'pathPattern' or 'hostHeader' also requires 'priority', and vice versa`);
-    }
+    checkAddRuleProps(props);
 
     if (props.priority !== undefined) {
       // New rule
@@ -565,7 +565,16 @@ export interface AddRuleProps {
    *
    * @default No path condition
    */
-  readonly pathPattern?: string | string[];
+  readonly pathPattern?: string;
+
+  /**
+   * Rule applies if the requested path matches any of the given patterns.
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html#path-conditions
+   *
+   * @default - No path condition.
+   */
+  readonly pathPatterns?: string[];
 }
 
 /**
@@ -667,7 +676,7 @@ export interface AddRedirectResponseProps extends AddRuleProps, RedirectResponse
 }
 
 function checkAddRuleProps(props: AddRuleProps) {
-  if ((props.hostHeader !== undefined || props.pathPattern !== undefined) !== (props.priority !== undefined)) {
+  if ((props.hostHeader !== undefined || props.pathPattern !== undefined || props.pathPatterns !== undefined) !== (props.priority !== undefined)) {
     throw new Error(`Setting 'pathPattern' or 'hostHeader' also requires 'priority', and vice versa`);
   }
 }

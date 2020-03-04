@@ -60,7 +60,16 @@ export interface BaseApplicationListenerRuleProps {
    *
    * @default - No path condition.
    */
-  readonly pathPattern?: string | string[];
+  readonly pathPattern?: string;
+
+  /**
+   * Rule applies if the requested path matches any of the given patterns.
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html#path-conditions
+   *
+   * @default - No path condition.
+   */
+  readonly pathPatterns?: string[];
 }
 
 /**
@@ -169,8 +178,9 @@ export class ApplicationListenerRule extends cdk.Construct {
   constructor(scope: cdk.Construct, id: string, props: ApplicationListenerRuleProps) {
     super(scope, id);
 
-    if (!props.hostHeader && !props.pathPattern) {
-      throw new Error(`At least one of 'hostHeader' or 'pathPattern' is required when defining a load balancing rule.`);
+    const hasPathPatterns = props.pathPatterns || props.pathPattern;
+    if (!props.hostHeader && !hasPathPatterns) {
+      throw new Error(`At least one of 'hostHeader', 'pathPattern' or 'pathPatterns' is required when defining a load balancing rule.`);
     }
 
     const possibleActions: Array<keyof ApplicationListenerRuleProps> = ['targetGroups', 'fixedResponse', 'redirectResponse'];
@@ -195,8 +205,12 @@ export class ApplicationListenerRule extends cdk.Construct {
     if (props.hostHeader) {
       this.setCondition('host-header', [props.hostHeader]);
     }
-    if (props.pathPattern) {
-      const pathPattern = Array.isArray(props.pathPattern) ? props.pathPattern : [props.pathPattern];
+
+    if (props.pathPattern || props.pathPatterns) {
+      if (props.pathPattern && props.pathPatterns) {
+        throw new Error('Both `pathPatterns` and `pathPattern` are specified, specify only one');
+      }
+      const pathPattern = props.pathPattern ? [props.pathPattern] : props.pathPatterns;
       this.setCondition('path-pattern', pathPattern);
     }
 
