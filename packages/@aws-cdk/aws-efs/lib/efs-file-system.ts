@@ -220,21 +220,10 @@ export class EfsFileSystem extends EfsFileSystemBase {
   public readonly connections: ec2.Connections;
 
   /**
-   * Identifiers of the mount targets
-   */
-  public readonly mountTargetIdentifiers: string[] = [];
-
-  /**
-   * IP Addresses of the mount targets
-   */
-  public readonly mountTargetIpAddress: string[] = [];
-
-  /**
    * @attribute
    */
   public readonly fileSystemId: string;
 
-  private readonly mountTargets: CfnMountTarget[] = [];
   private readonly efsFileSystem: CfnFileSystem;
 
   /**
@@ -281,16 +270,13 @@ export class EfsFileSystem extends EfsFileSystemBase {
     // We now have to create the mount target for each of the mentioned subnet
     let mountTargetCount = 0;
     subnets.subnetIds.forEach((subnetId: string) => {
-      const efsMountTarget = new CfnMountTarget(this,
+      new CfnMountTarget(this,
         "EfsMountTarget" + (++mountTargetCount),
         {
           fileSystemId: this.fileSystemId,
           securityGroups: Array.of(securityGroup.securityGroupId),
           subnetId
         });
-      this.mountTargets.push(efsMountTarget);
-      this.mountTargetIdentifiers.push(efsMountTarget.ref);
-      this.mountTargetIpAddress.push(efsMountTarget.attrIpAddress);
     });
   }
 }

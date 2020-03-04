@@ -15,16 +15,13 @@ beforeEach( () => {
 
 test('default file system is created correctly', () => {
     // WHEN
-    const efs = new EfsFileSystem(stack, 'EfsFileSystem', {
+    new EfsFileSystem(stack, 'EfsFileSystem', {
         vpc,
     });
     // THEN
     expectCDK(stack).to(haveResource('AWS::EFS::FileSystem'));
     expectCDK(stack).to(haveResource('AWS::EFS::MountTarget'));
     expectCDK(stack).to(haveResource('AWS::EC2::SecurityGroup'));
-
-    expect(efs.mountTargetIpAddress.length).toEqual(vpc.selectSubnets().subnetIds.length);
-    expect(efs.mountTargetIdentifiers.length).toEqual(vpc.selectSubnets().subnetIds.length);
 });
 
 test('unencrypted file system is created correctly with default KMS', () => {
