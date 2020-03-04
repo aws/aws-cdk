@@ -5,17 +5,28 @@
 
 ![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
 
-> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
-> future breaking changes.**
+> **This is a _developer preview_ (public beta) module.**
 >
-> This API is still under active development and subject to non-backward
-> compatible changes or removal in any future version. Use of the API is not recommended in production
-> environments. Experimental APIs are not subject to the Semantic Versioning model.
+> All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib))
+> are auto-generated from CloudFormation. They are stable and safe to use.
+>
+> However, all other classes, i.e., higher level constructs, are under active development and subject to non-backward
+> compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model.
+> This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
 
 ---
 <!--END STABILITY BANNER-->
 
 This library provides constructs for Node.js Lambda functions.
+
+To use this module, you will need to add a dependency on `parcel-bundler` in your
+`package.json`:
+
+```
+yarn add parcel-bundler@^1
+# or
+npm install parcel-bundler@^1
+```
 
 ### Node.js Function
 Define a `NodejsFunction`:

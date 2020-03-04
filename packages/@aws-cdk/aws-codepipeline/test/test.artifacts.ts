@@ -172,6 +172,63 @@ export = {
 
       test.done();
     },
+
+    'without a name, sanitize the auto stage-action derived name'(test: Test) {
+      const stack = new cdk.Stack();
+
+      const sourceOutput = new codepipeline.Artifact();
+      new codepipeline.Pipeline(stack, 'Pipeline', {
+        stages: [
+          {
+            stageName: 'Source.@', // @ and . are not allowed in Artifact names!
+            actions: [
+              new FakeSourceAction({
+                actionName: 'source1',
+                output: sourceOutput,
+              }),
+            ],
+          },
+          {
+            stageName: 'Build',
+            actions: [
+              new FakeBuildAction({
+                actionName: 'build1',
+                input: sourceOutput,
+              }),
+            ],
+          },
+        ],
+      });
+
+      expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+        "Stages": [
+          {
+            "Name": "Source.@",
+            "Actions": [
+              {
+                "Name": "source1",
+                "OutputArtifacts": [
+                  { "Name": "Artifact_Source_source1" },
+                ],
+              },
+            ],
+          },
+          {
+            "Name": "Build",
+            "Actions": [
+              {
+                "Name": "build1",
+                "InputArtifacts": [
+                  { "Name": "Artifact_Source_source1" },
+                ],
+              },
+            ],
+          },
+        ],
+      }));
+
+      test.done();
+    },
   },
 };
 

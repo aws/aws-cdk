@@ -76,10 +76,7 @@ async function main() {
       : `${moduleFamily.toLocaleLowerCase()}-${lowcaseModuleName}`;
 
     // python names
-    const pythonDistSubName = moduleFamily === 'AWS'
-      ? lowcaseModuleName
-      : `${moduleFamily.toLocaleLowerCase()}.${lowcaseModuleName}`;
-    const pythonDistName = `aws-cdk.${pythonDistSubName}`;
+    const pythonDistName = `aws-cdk.${moduleName}`;
     const pythonModuleName = pythonDistName.replace(/-/g, "_");
 
     async function write(relativePath: string, contents: string[] | string | object) {
@@ -135,7 +132,7 @@ async function main() {
       repository: {
         type: "git",
         url: "https://github.com/aws/aws-cdk.git",
-        directory: `packages/@aws-cdk/${packageName}`,
+        directory: `packages/${packageName}`,
       },
       homepage: "https://github.com/aws/aws-cdk",
       scripts: {
@@ -204,6 +201,7 @@ async function main() {
       '.nycrc',
       '.LAST_PACKAGE',
       '*.snk',
+      'nyc.config.js'
     ]);
 
     await write('.npmignore', [
@@ -251,12 +249,14 @@ async function main() {
       '',
       '![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)',
       '',
-      '> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have',
-      '> future breaking changes.**',
+      '> **This is a _developer preview_ (public beta) module.**',
       '>',
-      '> This API is still under active development and subject to non-backward',
-      '> compatible changes or removal in any future version. Use of the API is not recommended in production',
-      '> environments. Experimental APIs are not subject to the Semantic Versioning model.',
+      '> All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib))',
+      '> are auto-generated from CloudFormation. They are stable and safe to use.',
+      '>',
+      '> However, all other classes, i.e., higher level constructs, are under active development and subject to non-backward',
+      '> compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model.',
+      '> This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.',
       '',
       '---',
       '<!--END STABILITY BANNER-->',

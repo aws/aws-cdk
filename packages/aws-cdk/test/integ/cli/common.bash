@@ -66,19 +66,20 @@ function prepare_fixture() {
     cp -R app/* $integ_test_dir
     cd $integ_test_dir
 
-    # if this directory is missing, but exists in any of the 
+    # if this directory is missing, but exists in any of the
     # parent directories, npm will install these packages there. lets make sure
     # we install locally.
     mkdir -p node_modules
 
     npm install \
-        @aws-cdk/core \
-        @aws-cdk/aws-sns \
-        @aws-cdk/aws-iam \
-        @aws-cdk/aws-lambda \
-        @aws-cdk/aws-ssm \
-        @aws-cdk/aws-ecr-assets \
-        @aws-cdk/aws-ec2
+        @aws-cdk/core@^1 \
+        @aws-cdk/aws-sns@^1 \
+        @aws-cdk/aws-iam@^1 \
+        @aws-cdk/aws-lambda@^1 \
+        @aws-cdk/aws-ssm@^1 \
+        @aws-cdk/aws-ecr-assets@^1 \
+        @aws-cdk/aws-cloudformation@^1 \
+        @aws-cdk/aws-ec2@^1
 
     echo "| setup complete at: $PWD"
     echo "| 'cdk' is: $(type -p cdk)"
@@ -91,6 +92,7 @@ function cleanup() {
   cleanup_stack ${STACK_NAME_PREFIX}-test-1
   cleanup_stack ${STACK_NAME_PREFIX}-test-2
   cleanup_stack ${STACK_NAME_PREFIX}-iam-test
+  cleanup_stack ${STACK_NAME_PREFIX}-with-nested-stack
 }
 
 function setup() {
