@@ -7,36 +7,44 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Construct, Duration } from '@aws-cdk/core';
 
+/**
+ * Task to train a machine learning model using Amazon SageMaker
+ */
 export interface ISageMakerTask extends sfn.IStepFunctionsTask, iam.IGrantable {}
 
-//
-// Create Training Job types
-//
-
 /**
+ * Specify the training algorithm and algorithm-specific metadata
  * @experimental
  */
 export interface AlgorithmSpecification {
 
     /**
      * Name of the algorithm resource to use for the training job.
+     * This must be an algorithm resource that you created or subscribe to on AWS Marketplace.
+     * If you specify a value for this parameter, you can't specify a value for TrainingImage.
+     *
+     * @default - No algorithm is specified
      */
     readonly algorithmName?: string;
 
     /**
      * List of metric definition objects. Each object specifies the metric name and regular expressions used to parse algorithm logs.
+     *
+     * @default - No metrics
      */
     readonly metricDefinitions?: MetricDefinition[];
 
     /**
      * Registry path of the Docker image that contains the training algorithm.
+     *
+     * @default - No Docker image is specified
      */
     readonly trainingImage?: DockerImage;
 
     /**
      * Input mode that the algorithm supports.
      *
-     * @default is 'File' mode
+     * @default 'File' mode
      */
     readonly trainingInputMode?: InputMode;
 }
@@ -55,31 +63,43 @@ export interface Channel {
 
     /**
      * Compression type if training data is compressed
+     *
+     * @default - None
      */
     readonly compressionType?: CompressionType;
 
     /**
-     * Content type
+     * The MIME type of the data.
+     *
+     * @default - None
      */
     readonly contentType?: string;
 
     /**
-     * Location of the data channel
+     * Location of the channel data.
      */
     readonly dataSource: DataSource;
 
     /**
      * Input mode to use for the data channel in a training job.
+     *
+     * @default - None
      */
     readonly inputMode?: InputMode;
 
     /**
-     * Record wrapper type
+     * Specify RecordIO as the value when input data is in raw format but the training algorithm requires the RecordIO format.
+     * In this case, Amazon SageMaker wraps each individual S3 object in a RecordIO record.
+     * If the input data is already in RecordIO format, you don't need to set this attribute.
+     *
+     * @default - None
      */
     readonly recordWrapperType?: RecordWrapperType;
 
     /**
      * Shuffle config option for input data in a channel.
+     *
+     * @default - None
      */
     readonly shuffleConfig?: ShuffleConfig;
 }
@@ -111,21 +131,29 @@ export interface DataSource {
 /**
  * S3 location of the channel data.
  *
+ * @see https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_S3DataSource.html
+ *
  * @experimental
  */
 export interface S3DataSource {
     /**
      * List of one or more attribute names to use that are found in a specified augmented manifest file.
+     *
+     * @default - No attribute names
      */
     readonly attributeNames?: string[];
 
     /**
      * S3 Data Distribution Type
+     *
+     * @default - None
      */
     readonly s3DataDistributionType?: S3DataDistributionType;
 
     /**
      * S3 Data Type
+     *
+     * @default S3_PREFIX
      */
     readonly s3DataType?: S3DataType;
 
@@ -136,11 +164,14 @@ export interface S3DataSource {
 }
 
 /**
+ * Configures the S3 bucket where SageMaker will save the result of model training
  * @experimental
  */
 export interface OutputDataConfig {
   /**
    * Optional KMS encryption key that Amazon SageMaker uses to encrypt the model artifacts at rest using Amazon S3 server-side encryption.
+   *
+   * @default - Amazon SageMaker uses the default KMS key for Amazon S3 for your role's account
    */
   readonly encryptionKey?: kms.IKey;
 
@@ -151,16 +182,21 @@ export interface OutputDataConfig {
 }
 
 /**
+ * Specifies a limit to how long a model training job can run.
+ * When the job reaches the time limit, Amazon SageMaker ends the training job.
+ *
  * @experimental
  */
 export interface StoppingCondition {
     /**
      * The maximum length of time, in seconds, that the training or compilation job can run.
      */
-    readonly maxRuntime?: Duration;
+    readonly maxRuntime: Duration;
 }
 
 /**
+ * Specifies the resources, ML compute instances, and ML storage volumes to deploy for model training.
+ *
  * @experimental
  */
 export interface ResourceConfig {
@@ -181,6 +217,8 @@ export interface ResourceConfig {
 
     /**
      * KMS key that Amazon SageMaker uses to encrypt data on the storage volume attached to the ML compute instance(s) that run the training job.
+     *
+     * @default - Amazon SageMaker uses the default KMS key for Amazon S3 for your role's account
      */
     readonly volumeEncryptionKey?: kms.IKey;
 
@@ -193,17 +231,20 @@ export interface ResourceConfig {
 }
 
 /**
+ * Specifies the VPC that you want your Amazon SageMaker training job to connect to.
  *
  * @experimental
  */
 export interface VpcConfig {
     /**
-     * VPC id
+     * VPC ID
      */
     readonly vpc: ec2.IVpc;
 
     /**
      * VPC subnets.
+     *
+     * @default - Private Subnets are selected
      */
     readonly subnets?: ec2.SubnetSelection;
 }
@@ -227,9 +268,15 @@ export interface MetricDefinition {
 }
 
 /**
+ * Stores information about the location of an object in Amazon S3
+ *
  * @experimental
  */
 export interface S3LocationConfig {
+
+    /**
+     * Uniquely identifies the resource in Amazon S3
+     */
     readonly uri: string;
 }
 
@@ -458,11 +505,15 @@ export interface TransformInput {
 
     /**
      * The compression type of the transform data.
+     *
+     * @default NONE
      */
     readonly compressionType?: CompressionType;
 
     /**
      * Multipurpose internet mail extension (MIME) type of the data.
+     *
+     * @default - None
      */
     readonly contentType?: string;
 
@@ -473,6 +524,8 @@ export interface TransformInput {
 
     /**
      * Method to use to split the transform job's data files into smaller batches.
+     *
+     * @default NONE
      */
     readonly splitType?: SplitType;
 }
@@ -519,16 +572,22 @@ export interface TransformOutput {
 
     /**
      * MIME type used to specify the output data.
+     *
+     * @default - None
      */
     readonly accept?: string;
 
     /**
      * Defines how to assemble the results of the transform job as a single S3 object.
+     *
+     * @default - None
      */
     readonly assembleWith?: AssembleWith;
 
     /**
      * AWS KMS key that Amazon SageMaker uses to encrypt the model artifacts at rest using Amazon S3 server-side encryption.
+     *
+     * @default - default KMS key for Amazon S3 for your role's account.
      */
     readonly encryptionKey?: kms.Key;
 
@@ -546,7 +605,7 @@ export interface TransformOutput {
 export interface TransformResources {
 
     /**
-     * Nmber of ML compute instances to use in the transform job
+     * Number of ML compute instances to use in the transform job
      */
     readonly instanceCount: number;
 
@@ -557,6 +616,8 @@ export interface TransformResources {
 
     /**
      * AWS KMS key that Amazon SageMaker uses to encrypt data on the storage volume attached to the ML compute instance(s).
+     *
+     * @default - None
      */
     readonly volumeKmsKeyId?: kms.Key;
 }
