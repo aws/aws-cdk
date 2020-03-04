@@ -216,7 +216,7 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
     }
 
     for (const call of [props.onCreate, props.onUpdate]) {
-      if (!call?.physicalResourceId) {
+      if (call && !call.physicalResourceId) {
         throw new Error('`physicalResourceId` must be specified for onCreate and onUpdate calls.');
       }
     }
