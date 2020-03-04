@@ -112,11 +112,11 @@ async function commitMessage(number) {
     const expectedCommitTitle = `${issue.title} (#${number})`
 
     if (title !== expectedCommitTitle) {
-        throw new LinterError("First line of '## Commit Message' section"
+        throw new LinterError("First paragraph of '## Commit Message' section"
             + ` must be: '${expectedCommitTitle}'`)
     }
 
-    for (i = 0; i < paragraphs.length; i++) {
+    for (i in paragraphs) {
         if (i != paragraphs.length - 1 && paragraphs[i].startsWith("BREAKING CHANGE:")) {
             throw new LinterError("'BREAKING CHANGE:' must be specified as the last paragraph");
         }
