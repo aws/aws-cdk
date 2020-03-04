@@ -19,9 +19,9 @@ export async function replaceAwsPlaceholders<A extends { }>(object: A, aws: ISDK
       if (value.indexOf(CloudFormationStackArtifact.CURRENT_ACCOUNT) > -1) { await ensureAccount(); }
       if (value.indexOf(CloudFormationStackArtifact.CURRENT_PARTITION) > -1) { await ensureAccount(); }
 
-      value = replaceAll(value, CloudFormationStackArtifact.CURRENT_REGION, region! ?? '');
-      value = replaceAll(value, CloudFormationStackArtifact.CURRENT_ACCOUNT, account!.accountId ?? '');
-      value = replaceAll(value, CloudFormationStackArtifact.CURRENT_PARTITION, account!.partition ?? '');
+      value = replaceAll(value, CloudFormationStackArtifact.CURRENT_REGION, region ?? '');
+      value = replaceAll(value, CloudFormationStackArtifact.CURRENT_ACCOUNT, account?.accountId ?? '');
+      value = replaceAll(value, CloudFormationStackArtifact.CURRENT_PARTITION, account?.partition ?? '');
 
       return value;
     }
