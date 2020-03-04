@@ -120,13 +120,7 @@
           ],
           "Version": "2012-10-17"
         }
-      },
-      "DependsOn": [
-        "JobDefinition24FFE3ED",
-        "JobQueueEE3AD499",
-        "JobQueueResourceBatchComputeEnvironment289552C3",
-        "JobQueueResourceBatchComputeEnvironmentResourceServiceInstanceRole84C4772D"
-      ]
+      }
     },
     "StateMachineRoleDefaultPolicyDF1E6607": {
       "Type": "AWS::IAM::Policy",
@@ -149,7 +143,11 @@
                 "Fn::Join": [
                   "",
                   [
-                    "arn:aws:events:",
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":events:",
                     {
                       "Ref": "AWS::Region"
                     },
@@ -171,13 +169,7 @@
             "Ref": "StateMachineRoleB840431D"
           }
         ]
-      },
-      "DependsOn": [
-        "JobDefinition24FFE3ED",
-        "JobQueueEE3AD499",
-        "JobQueueResourceBatchComputeEnvironment289552C3",
-        "JobQueueResourceBatchComputeEnvironmentResourceServiceInstanceRole84C4772D"
-      ]
+      }
     },
     "StateMachine2E01A3A5": {
       "Type": "AWS::StepFunctions::StateMachine",
@@ -194,7 +186,7 @@
               {
                 "Ref": "JobQueueEE3AD499"
               },
-              "\",\"Parameters\":{\"foo.$\":\"$.bar\"},\"ArrayProperties\":{\"Size\":15},\"ContainerOverrides\":{\"Environment\":[{\"Name\":\"key\",\"Value\":\"value\"}],\"Memory\":256,\"Vcpus\":1},\"RetryStrategy\":{\"Attempts\":3},\"Timeout\":{\"AttemptDurationSeconds\":60}},\"Type\":\"Task\",\"Resource\":\"arn:",
+              "\",\"Parameters\":{\"foo.$\":\"$.bar\"},\"ContainerOverrides\":{\"Environment\":[{\"Name\":\"key\",\"Value\":\"value\"}],\"Memory\":256,\"Vcpus\":1},\"RetryStrategy\":{\"Attempts\":3},\"Timeout\":{\"AttemptDurationSeconds\":60}},\"Type\":\"Task\",\"Resource\":\"arn:",
               {
                 "Ref": "AWS::Partition"
               },
@@ -210,13 +202,21 @@
         }
       },
       "DependsOn": [
-        "JobDefinition24FFE3ED",
-        "JobQueueEE3AD499",
-        "JobQueueResourceBatchComputeEnvironment289552C3",
-        "JobQueueResourceBatchComputeEnvironmentResourceServiceInstanceRole84C4772D",
         "StateMachineRoleDefaultPolicyDF1E6607",
         "StateMachineRoleB840431D"
       ]
+    }
+  },
+  "Outputs": {
+    "JobQueueArn": {
+      "Value": {
+        "Ref": "JobQueueEE3AD499"
+      }
+    },
+    "StateMachineArn": {
+      "Value": {
+        "Ref": "StateMachine2E01A3A5"
+      }
     }
   }
 }

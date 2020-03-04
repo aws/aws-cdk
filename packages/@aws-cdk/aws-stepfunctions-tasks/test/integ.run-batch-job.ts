@@ -8,14 +8,14 @@ import * as tasks from '../lib';
 /*
  * Stack verification steps:
  * * aws stepfunctions start-execution --state-machine-arn <deployed state machine arn> : should return execution arn
- * * aws batch list-jobs --job-queue <deployed job queue name or arn> : should return jobs-list with size greater than 0
+ * * aws batch list-jobs --job-queue <deployed job queue name or arn> --job-status RUNNABLE : should return jobs-list with size greater than 0
  */
 
 class RunBatchStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props: cdk.StackProps = {}) {
     super(scope, id, props);
 
-    const batchQueue = new batch.JobQueue(this, 'JobQueue', {});
+    const batchQueue = new batch.JobQueue(this, 'JobQueue');
 
     const batchJobDefinition = new batch.JobDefinition(this, 'JobDefinition', {
       container: {
@@ -30,7 +30,6 @@ class RunBatchStack extends cdk.Stack {
         jobDefinition: batchJobDefinition,
         jobName: 'MyJob',
         jobQueue: batchQueue,
-        array: { size: 15 },
         containerOverrides: {
           environment: { key: 'value' },
           memory: 256,
@@ -39,7 +38,7 @@ class RunBatchStack extends cdk.Stack {
         payload: {
           foo: sfn.Data.stringAt('$.bar')
         },
-        retryAttempts: 3,
+        attempts: 3,
         timeout: cdk.Duration.seconds(60)
       })
     });
@@ -52,8 +51,12 @@ class RunBatchStack extends cdk.Stack {
       definition
     });
 
-    stateMachine.node.addDependency(batchQueue);
-    stateMachine.node.addDependency(batchJobDefinition);
+    new cdk.CfnOutput(this, 'JobQueueArn', {
+      value: batchQueue.jobQueueArn
+    });
+    new cdk.CfnOutput(this, 'StateMachineArn', {
+      value: stateMachine.stateMachineArn
+    });
   }
 }
 

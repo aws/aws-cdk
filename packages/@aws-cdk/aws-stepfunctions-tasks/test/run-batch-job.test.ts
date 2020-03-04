@@ -66,7 +66,7 @@ test('Task with all the parameters', () => {
       jobDefinition: batchJobDefinition,
       jobName: 'JobName',
       jobQueue: batchJobQueue,
-      array: { size: 15 },
+      arraySize: 15,
       containerOverrides: {
         command: ['sudo', 'rm'],
         environment: { key: 'value' },
@@ -79,8 +79,8 @@ test('Task with all the parameters', () => {
       payload: {
         foo: sfn.Data.stringAt('$.bar')
       },
-      retryAttempts: 3,
-      timeout: cdk.Duration.seconds(30),
+      attempts: 3,
+      timeout: cdk.Duration.seconds(60),
       integrationPattern: sfn.ServiceIntegrationPattern.FIRE_AND_FORGET
     })
   });
@@ -117,7 +117,7 @@ test('Task with all the parameters', () => {
       DependsOn: [{ JobId: '1234', Type: 'some_type' }],
       Parameters: { 'foo.$': '$.bar' },
       RetryStrategy: { Attempts: 3 },
-      Timeout: { AttemptDurationSeconds: 30 }
+      Timeout: { AttemptDurationSeconds: 60 }
     }
   });
 });
@@ -151,5 +151,76 @@ test('Task throws if environment in containerOverrides contain env with name sta
     });
   }).toThrow(
     /Invalid environment variable name: AWS_BATCH_MY_NAME. Environment variable names starting with 'AWS_BATCH' are reserved./i
+  );
+});
+
+test('Task throws if arraySize is out of limits 2-10000', () => {
+  expect(() => {
+    new sfn.Task(stack, 'Task', {
+      task: new tasks.RunBatchJob({
+        jobDefinition: batchJobDefinition,
+        jobName: 'JobName',
+        jobQueue: batchJobQueue,
+        arraySize: 1
+      })
+    });
+  }).toThrow(
+    /Invalid value of arraySize. The array size can be between 2 and 10,000./i
+  );
+
+  expect(() => {
+    new sfn.Task(stack, 'Task', {
+      task: new tasks.RunBatchJob({
+        jobDefinition: batchJobDefinition,
+        jobName: 'JobName',
+        jobQueue: batchJobQueue,
+        arraySize: 10001
+      })
+    });
+  }).toThrow(
+    /Invalid value of arraySize. The array size can be between 2 and 10,000./i
+  );
+});
+
+test('Task throws if attempts is out of limits 1-10', () => {
+  expect(() => {
+    new sfn.Task(stack, 'Task', {
+      task: new tasks.RunBatchJob({
+        jobDefinition: batchJobDefinition,
+        jobName: 'JobName',
+        jobQueue: batchJobQueue,
+        attempts: 0
+      })
+    });
+  }).toThrow(
+    /Invalid value of attempts. You may specify between 1 and 10 attempts./i
+  );
+
+  expect(() => {
+    new sfn.Task(stack, 'Task', {
+      task: new tasks.RunBatchJob({
+        jobDefinition: batchJobDefinition,
+        jobName: 'JobName',
+        jobQueue: batchJobQueue,
+        attempts: 11
+      })
+    });
+  }).toThrow(
+    /Invalid value of attempts. You may specify between 1 and 10 attempts./i
+  );
+});
+
+test('Task throws if timeout is less than 60 sec', () => {
+  expect(() => {
+    new sfn.Task(stack, 'Task', {
+      task: new tasks.RunBatchJob({
+        jobDefinition: batchJobDefinition,
+        jobName: 'JobName',
+        jobQueue: batchJobQueue,
+        timeout: cdk.Duration.seconds(59)
+      })
+    });
+  }).toThrow(
+    /Invalid value of timrout. The minimum value for the timeout is 60 seconds./i
   );
 });

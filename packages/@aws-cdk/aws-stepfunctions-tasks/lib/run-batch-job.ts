@@ -2,20 +2,8 @@ import * as batch from '@aws-cdk/aws-batch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import { Aws, Duration } from '@aws-cdk/core';
+import { Duration, Stack } from '@aws-cdk/core';
 import { getResourceArn } from './resource-arn-suffix';
-
-/**
- * An object representing an AWS Batch array job.
- */
-export interface ArrayProperties {
-  /**
-   * The size of the array job.
-   *
-   * @default - No size
-   */
-  readonly size?: number;
-}
 
 /**
  * The overrides that should be sent to a container.
@@ -115,36 +103,23 @@ export interface RunBatchJobProps {
   readonly jobQueue: batch.IJobQueue;
 
   /**
-   * The array properties for the submitted job, such as the size of the array.
    * The array size can be between 2 and 10,000.
    * If you specify array properties for a job, it becomes an array job.
    * For more information, see Array Jobs in the AWS Batch User Guide.
    *
-   * @default - No array properties
+   * @default - No array size
    */
-  readonly array?: ArrayProperties;
+  readonly arraySize?: number;
 
   /**
-   * A list of container overrides in JSON format that specify the name of a
-   * container in the specified job definition and the overrides it
-   * should receive. You can override the default command for a container
-   * (that is specified in the job definition or the Docker image) with a
-   * command override. You can also override existing environment variables
-   * (that are specified in the job definition or Docker image) on a container
-   * or add new environment variables to it with an environment override.
+   * @see https://docs.aws.amazon.com/batch/latest/APIReference/API_SubmitJob.html#Batch-SubmitJob-request-containerOverrides
    *
    * @default - No container overrides
    */
   readonly containerOverrides?: ContainerOverrides;
 
   /**
-   * A list of dependencies for the job.
-   * A job can depend upon a maximum of 20 jobs. You can specify a SEQUENTIAL
-   * type dependency without specifying a job ID for array jobs so that each
-   * child array job completes sequentially, starting at index 0.
-   * You can also specify an N_TO_N type dependency with a job ID for array jobs.
-   * In that case, each index child of this job must wait for the corresponding
-   * index child of each dependency to complete before it can begin.
+   * @see https://docs.aws.amazon.com/batch/latest/APIReference/API_SubmitJob.html#Batch-SubmitJob-request-dependsOn
    *
    * @default - No dependencies
    */
@@ -163,12 +138,15 @@ export interface RunBatchJobProps {
    * If the value of attempts is greater than one,
    * the job is retried on failure the same number of attempts as the value.
    *
-   * @default - No attempts
+   * @default - 1
    */
-  readonly retryAttempts?: number;
+  readonly attempts?: number;
 
   /**
    * The timeout configuration for this SubmitJob operation.
+   * The minimum value for the timeout is 60 seconds.
+   *
+   * @see https://docs.aws.amazon.com/batch/latest/APIReference/API_SubmitJob.html#Batch-SubmitJob-request-timeout
    *
    * @default - No timeout
    */
@@ -191,6 +169,7 @@ export class RunBatchJob implements sfn.IStepFunctionsTask {
   private readonly integrationPattern: sfn.ServiceIntegrationPattern;
 
   constructor(private readonly props: RunBatchJobProps) {
+    // validate integrationPattern
     this.integrationPattern =
       props.integrationPattern || sfn.ServiceIntegrationPattern.SYNC;
 
@@ -205,6 +184,33 @@ export class RunBatchJob implements sfn.IStepFunctionsTask {
       );
     }
 
+    // validate arraySize limits
+    if (
+      props.arraySize !== undefined &&
+      (props.arraySize < 2 || props.arraySize > 10000)
+    ) {
+      throw new Error(
+        `Invalid value of arraySize. The array size can be between 2 and 10,000.`
+      );
+    }
+
+    // validate attempts
+    if (
+      props.attempts !== undefined &&
+      (props.attempts < 1 || props.attempts > 10)
+    ) {
+      throw new Error(
+        `Invalid value of attempts. You may specify between 1 and 10 attempts.`
+      );
+    }
+
+    // validate timeout
+    if (props.timeout && props.timeout.toSeconds() < 60) {
+      throw new Error(
+        `Invalid value of timrout. The minimum value for the timeout is 60 seconds.`
+      );
+    }
+
     // This is reuqired since environment variables must not start with AWS_BATCH;
     // this naming convention is reserved for variables that are set by the AWS Batch service.
     if (props.containerOverrides?.environment) {
@@ -216,6 +222,31 @@ export class RunBatchJob implements sfn.IStepFunctionsTask {
         }
       });
     }
+  }
+
+  private configureContainerOverrides(containerOverrides: ContainerOverrides) {
+    return {
+      Command: containerOverrides.command,
+      Environment: containerOverrides.environment
+        ? Object.entries(containerOverrides.environment).map(
+            ([key, value]) => ({
+              Name: key,
+              Value: value
+            })
+          )
+        : undefined,
+      InstanceType: containerOverrides.instanceType?.toString(),
+      Memory: containerOverrides.memory,
+      ResourceRequirements: containerOverrides.gpuCount
+        ? [
+            {
+              Type: 'GPU',
+              Value: `${containerOverrides.gpuCount}`
+            }
+          ]
+        : undefined,
+      Vcpus: containerOverrides.vcpus
+    };
   }
 
   public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
@@ -234,7 +265,10 @@ export class RunBatchJob implements sfn.IStepFunctionsTask {
         }),
         new iam.PolicyStatement({
           resources: [
-            `arn:aws:events:${Aws.REGION}:${Aws.ACCOUNT_ID}:rule/StepFunctionsGetEventsForBatchJobsRule`
+            Stack.of(_task).formatArn({
+              service: 'events',
+              resource: 'rule/StepFunctionsGetEventsForBatchJobsRule'
+            })
           ],
           actions: [
             'events:PutTargets',
@@ -249,55 +283,30 @@ export class RunBatchJob implements sfn.IStepFunctionsTask {
         JobQueue: this.props.jobQueue.jobQueueArn,
         Parameters: this.props.payload,
 
-        ...(this.props.array && {
-          ArrayProperties: {
-            Size: this.props.array.size
-          }
-        }),
+        ArrayProperties:
+          this.props.arraySize !== undefined
+            ? { Size: this.props.arraySize }
+            : undefined,
 
-        ...(this.props.containerOverrides && {
-          ContainerOverrides: {
-            Command: this.props.containerOverrides.command,
-            Environment: this.props.containerOverrides.environment
-              ? Object.entries(this.props.containerOverrides.environment).map(
-                  ([key, value]) => ({
-                    Name: key,
-                    Value: value
-                  })
-                )
-              : undefined,
-            InstanceType: this.props.containerOverrides.instanceType?.toString(),
-            Memory: this.props.containerOverrides.memory,
-            ResourceRequirements: this.props.containerOverrides.gpuCount
-              ? [
-                  {
-                    Type: 'GPU',
-                    Value: `${this.props.containerOverrides.gpuCount}`
-                  }
-                ]
-              : undefined,
-            Vcpus: this.props.containerOverrides.vcpus
-          }
-        }),
+        ContainerOverrides: this.props.containerOverrides
+          ? this.configureContainerOverrides(this.props.containerOverrides)
+          : undefined,
 
-        ...(this.props.dependsOn && {
-          DependsOn: this.props.dependsOn.map(jobDependency => ({
-            JobId: jobDependency.jobId,
-            Type: jobDependency.type
-          }))
-        }),
+        DependsOn: this.props.dependsOn
+          ? this.props.dependsOn.map(jobDependency => ({
+              JobId: jobDependency.jobId,
+              Type: jobDependency.type
+            }))
+          : undefined,
 
-        ...(this.props.retryAttempts && {
-          RetryStrategy: {
-            Attempts: this.props.retryAttempts
-          }
-        }),
+        RetryStrategy:
+          this.props.attempts !== undefined
+            ? { Attempts: this.props.attempts }
+            : undefined,
 
-        ...(this.props.timeout && {
-          Timeout: {
-            AttemptDurationSeconds: this.props.timeout.toSeconds()
-          }
-        })
+        Timeout: this.props.timeout
+          ? { AttemptDurationSeconds: this.props.timeout.toSeconds() }
+          : undefined
       }
     };
   }
