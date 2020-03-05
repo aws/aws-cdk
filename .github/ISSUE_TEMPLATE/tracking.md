@@ -21,7 +21,13 @@ service’s CDK Construct Library API reference page.
 
 
 [AWS Docs](url)  <!-- replace `url` with link to the relevant AWS Docs -->
-[CDK API Reference](url) <!-- replace `url` with link to the service's CDK API reference -->
+
+### Maturity: CloudFormation Resources Only
+<!--
+The valid maturity states are: CloudFormation Resources Only, Experimental, Developer Preview, Stable
+-->
+
+See the [AWS Construct Library Module Lifecycle doc](https://github.com/aws/aws-cdk-rfcs/blob/master/text/0107-construct-library-module-lifecycle.md) for more information about maturity levels.
 
 
 ### Implementation:
@@ -31,6 +37,7 @@ Checklist of use cases, constructs, features (such as grant methods) that will s
 - [ ] 
 - [ ]
 -->
+[CDK API Reference](url) <!-- replace `url` with link to the service's CDK API reference -->
 
 
 
