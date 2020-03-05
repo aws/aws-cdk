@@ -10,22 +10,6 @@ const stack = new cdk.Stack(app, 'batch-stack');
 
 const vpc = new ec2.Vpc(stack, 'vpc');
 
-const launchTemplate = new ec2.CfnLaunchTemplate(stack, 'ec2-launch-template', {
-  launchTemplateName: 'EC2LaunchTemplate',
-  launchTemplateData: {
-    blockDeviceMappings: [
-      {
-        deviceName: '/dev/xvdcz',
-        ebs: {
-          encrypted: true,
-          volumeSize: 100,
-          volumeType: 'gp2'
-        }
-      }
-    ]
-  }
-});
-
 new batch.JobQueue(stack, 'batch-job-queue', {
   computeEnvironments: [
     {
@@ -40,9 +24,6 @@ new batch.JobQueue(stack, 'batch-job-queue', {
         computeResources: {
           type: batch.ComputeResourceType.ON_DEMAND,
           vpc,
-          launchTemplate: {
-            launchTemplateName: launchTemplate.launchTemplateName as string,
-          },
         },
       }),
       order: 2,
