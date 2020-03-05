@@ -514,24 +514,6 @@
         }
       }
     },
-    "ec2launchtemplate": {
-      "Type": "AWS::EC2::LaunchTemplate",
-      "Properties": {
-        "LaunchTemplateData": {
-          "BlockDeviceMappings": [
-            {
-              "DeviceName": "/dev/xvdcz",
-              "Ebs": {
-                "Encrypted": true,
-                "VolumeSize": 100,
-                "VolumeType": "gp2"
-              }
-            }
-          ]
-        },
-        "LaunchTemplateName": "EC2LaunchTemplate"
-      }
-    },
     "batchunmanagedcomputeenvResourceServiceInstanceRoleCA40AF77": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -835,9 +817,6 @@
           "InstanceTypes": [
             "optimal"
           ],
-          "LaunchTemplate": {
-            "LaunchTemplateName": "EC2LaunchTemplate"
-          },
           "MaxvCpus": 256,
           "MinvCpus": 0,
           "SecurityGroupIds": [
