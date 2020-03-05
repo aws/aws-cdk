@@ -9,12 +9,12 @@ import { deserializeStructure, toYAML } from '../serialize';
 import { AssetManifestBuilder } from '../util/asset-manifest-builder';
 import { publishAssets } from '../util/asset-publishing';
 import { contentHash } from '../util/content-hash';
+import { SdkProvider } from './aws-auth';
 import { Mode } from './aws-auth/credentials';
 import { ToolkitInfo } from './toolkit-info';
 import { changeSetHasNoChanges, describeStack, stackExists, stackFailedCreating, waitForChangeSet, waitForStack  } from './util/cloudformation';
 import { StackActivityMonitor } from './util/cloudformation/stack-activity-monitor';
 import { StackStatus } from './util/cloudformation/stack-status';
-import { ISDK } from './util/sdk';
 
 type TemplateBodyParameter = {
   TemplateBody?: string
@@ -32,7 +32,7 @@ export interface DeployStackResult {
 /** @experimental */
 export interface DeployStackOptions {
   stack: cxapi.CloudFormationStackArtifact;
-  sdk: ISDK;
+  sdk: SdkProvider;
   toolkitInfo?: ToolkitInfo;
   roleArn?: string;
   notificationArns?: string[];
@@ -73,7 +73,10 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     throw new Error(`The stack ${options.stack.displayName} does not have an environment`);
   }
 
-  const cfn = await options.sdk.cloudFormation(options.stack.environment.account, options.stack.environment.region, Mode.ForWriting);
+  // Translate symbolic/unknown environment references to concrete environment references
+  const stackEnv = await options.sdk.resolveEnvironment(options.stack.environment.account, options.stack.environment.region);
+
+  const cfn = (await options.sdk.forEnvironment(stackEnv.account, stackEnv.region, Mode.ForWriting)).cloudFormation();
   const deployName = options.deployName || options.stack.stackName;
 
   if (!options.force) {
@@ -124,7 +127,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
 
   const update = await stackExists(cfn, deployName);
 
-  await publishAssets(assets.toManifest(options.stack.assembly.directory));
+  await publishAssets(assets.toManifest(options.stack.assembly.directory), options.sdk, stackEnv);
 
   const changeSetName = `CDK-${executionId}`;
   debug(`Attempting to create ChangeSet ${changeSetName} to ${update ? 'update' : 'create'} stack ${deployName}`);
@@ -233,7 +236,7 @@ async function makeBodyParameter(
 /** @experimental */
 export interface DestroyStackOptions {
   stack: cxapi.CloudFormationStackArtifact;
-  sdk: ISDK;
+  sdk: SdkProvider;
   roleArn?: string;
   deployName?: string;
   quiet?: boolean;
@@ -246,7 +249,8 @@ export async function destroyStack(options: DestroyStackOptions) {
   }
 
   const deployName = options.deployName || options.stack.stackName;
-  const cfn = await options.sdk.cloudFormation(options.stack.environment.account, options.stack.environment.region, Mode.ForWriting);
+  const { account, region } = options.stack.environment;
+  const cfn = (await options.sdk.forEnvironment(account, region, Mode.ForWriting)).cloudFormation();
   if (!await stackExists(cfn, deployName)) {
     return;
   }

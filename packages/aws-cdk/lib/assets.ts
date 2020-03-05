@@ -86,7 +86,8 @@ function prepareFileAsset(
 
   const extension = packaging === asset_schema.FileAssetPackaging.ZIP_DIRECTORY ? '.zip' : path.extname(asset.path);
   const baseName = `${asset.sourceHash}${extension}`;
-  const key = `assets/${asset.id}/${baseName}`;
+  const s3Prefix = `assets/${asset.id}/`;
+  const key = `${s3Prefix}${baseName}`;
   const s3url = `s3://${toolkitInfo.bucketName}/${key}`;
 
   debug(`Storing asset ${asset.path} at ${s3url}`);
@@ -101,7 +102,7 @@ function prepareFileAsset(
 
   return [
     { ParameterKey: asset.s3BucketParameter, ParameterValue: toolkitInfo.bucketName },
-    { ParameterKey: asset.s3KeyParameter, ParameterValue: `${key}${cxapi.ASSET_PREFIX_SEPARATOR}${baseName}` },
+    { ParameterKey: asset.s3KeyParameter, ParameterValue: `${s3Prefix}${cxapi.ASSET_PREFIX_SEPARATOR}${baseName}` },
     { ParameterKey: asset.artifactHashParameter, ParameterValue: asset.sourceHash },
   ];
 }
@@ -120,12 +121,16 @@ async function prepareDockerImageAsset(
   // Pre-1.21.0, repositoryName can be specified by the user or can be left out, in which case we make
   // a per-asset repository which will get adopted and cleaned up along with the stack.
   // Post-1.21.0, repositoryName will always be specified and it will be a shared repository between
-  // all assets.
+  // all assets, and asset will have imageTag specified as well. Validate the combination.
+  if (!asset.imageNameParameter && (!asset.repositoryName || !asset.imageTag)) {
+    throw new Error(`Invalid Docker image asset configuration: "repositoryName" and "imageTag" are required when "imageNameParameter" is left out`);
+  }
+
   const repositoryName = asset.repositoryName ?? 'cdk/' + asset.id.replace(/[:/]/g, '-').toLowerCase();
 
   // Make sure the repository exists, since the 'cdk-assets' tool will not create it for us.
-  const repositoryUri = await toolkitInfo.prepareEcrRepository(repositoryName);
-  const imageTag = asset.sourceHash;
+  const { repositoryUri } = await toolkitInfo.prepareEcrRepository(repositoryName);
+  const imageTag = asset.imageTag ?? asset.sourceHash;
 
   assetManifest.addDockerImageAsset(asset.sourceHash, {
     directory: asset.path,

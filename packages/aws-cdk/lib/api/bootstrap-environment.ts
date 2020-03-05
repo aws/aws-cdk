@@ -2,9 +2,9 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as path from 'path';
+import { SdkProvider } from './aws-auth';
 import {Tag} from "./cxapp/stacks";
 import { deployStack, DeployStackResult } from './deploy-stack';
-import { ISDK } from './util/sdk';
 
 // tslint:disable:max-line-length
 
@@ -59,7 +59,7 @@ export interface BootstrapEnvironmentProps {
 }
 
 /** @experimental */
-export async function bootstrapEnvironment(environment: cxapi.Environment, aws: ISDK, toolkitStackName: string, roleArn: string | undefined, props: BootstrapEnvironmentProps = {}): Promise<DeployStackResult> {
+export async function bootstrapEnvironment(environment: cxapi.Environment, aws: SdkProvider, toolkitStackName: string, roleArn: string | undefined, props: BootstrapEnvironmentProps = {}): Promise<DeployStackResult> {
   if (props.trustedAccounts?.length) {
     throw new Error('--trust can only be passed for the new bootstrap experience!');
   }

@@ -1,7 +1,5 @@
 import * as AWS from 'aws-sdk';
-import * as sinon from 'sinon';
-import { ToolkitInfo } from '../../lib';
-import { SDK } from "../../lib/api/util/sdk";
+import { Account, ISDK, SDK, SdkProvider, ToolkitInfo } from '../../lib';
 
 /**
  * An SDK that allows replacing (some of) the clients
@@ -9,25 +7,40 @@ import { SDK } from "../../lib/api/util/sdk";
  * Its the responsibility of the consumer to replace all calls that
  * actually will be called.
  */
-export class MockSDK extends SDK {
-  private readonly sandbox: sinon.SinonSandbox;
+export class MockSDK extends SdkProvider {
+  private readonly sdk: ISDK;
+
   constructor() {
-    super({ userAgent: 'aws-cdk/jest' });
-    this.sandbox = sinon.createSandbox();
+    super(new AWS.CredentialProviderChain([]), 'bermuda-triangle-1337', { customUserAgent: 'aws-cdk/jest' });
+
+    // SDK contains a real SDK, since some test use 'AWS-mock' to replace the underlying
+    // AWS calls which a real SDK would do, and some tests use the 'stub' functionality below.
+    this.sdk = new SDK(
+      new AWS.Credentials({ accessKeyId: 'ACCESS', secretAccessKey: 'SECRET', sessionToken: 'TOKEN '}),
+      this.defaultRegion,
+      { customUserAgent: 'aws-cdk/jest' });
+  }
+
+  public defaultAccount(): Promise<Account | undefined> {
+    return Promise.resolve({ accountId: '123456789012', partition: 'aws' });
+  }
+
+  public forEnvironment(): Promise<ISDK> {
+    return Promise.resolve(this.sdk);
   }
 
   /**
    * Replace the CloudFormation client with the given object
    */
   public stubCloudFormation(stubs: SyncHandlerSubsetOf<AWS.CloudFormation>) {
-    this.sandbox.stub(this, 'cloudFormation').returns(Promise.resolve(partialAwsService<AWS.CloudFormation>(stubs)));
+    (this.sdk as any).cloudFormation = jest.fn().mockReturnValue(partialAwsService<AWS.CloudFormation>(stubs));
   }
 
   /**
    * Replace the ECR client with the given object
    */
   public stubEcr(stubs: SyncHandlerSubsetOf<AWS.ECR>) {
-    this.sandbox.stub(this, 'ecr').returns(Promise.resolve(partialAwsService<AWS.ECR>(stubs)));
+    (this.sdk as any).ecr = jest.fn().mockReturnValue(partialAwsService<AWS.ECR>(stubs));
   }
 }
 

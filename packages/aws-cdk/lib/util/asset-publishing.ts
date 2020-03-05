@@ -1,37 +1,64 @@
+import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
 import * as cdk_assets from 'cdk-assets';
-import { ISDK } from '../api';
-import { debug, error } from '../logging';
+import { ISDK, Mode, SdkProvider } from '../api';
+import { debug, error, print } from '../logging';
 
 /**
  * Use cdk-assets to publish all assets in the given manifest.
  */
-export async function publishAssets(manifest: cdk_assets.AssetManifest, sdk: ISDK) {
+export async function publishAssets(manifest: cdk_assets.AssetManifest, sdk: SdkProvider, targetEnv: cxapi.Environment) {
   const publisher = new cdk_assets.AssetPublishing(manifest, {
-    aws: new PublishingAws(sdk),
+    aws: new PublishingAws(sdk, targetEnv),
     progressListener: new PublishingProgressListener(),
     throwOnError: false,
   });
+  await publisher.publish();
 }
 
 class PublishingAws implements cdk_assets.IAws {
-  constructor(private readonly sdk: ISDK) {
+  constructor(
+    /**
+     * The base SDK to work with
+     */
+    private readonly aws: SdkProvider,
+
+    /**
+     * Environment where the stack we're deploying is going
+     */
+    private readonly targetEnv: cxapi.Environment) {
   }
 
   public async discoverDefaultRegion(): Promise<string> {
-    return await this.sdk.defaultRegion() ?? 'us-east-1';
+    return this.aws.defaultRegion;
   }
 
-  public discoverCurrentAccount(): Promise<cdk_assets.Account> {
-    throw new Error("Method not implemented.");
+  public async discoverCurrentAccount(): Promise<cdk_assets.Account> {
+    const account = await this.aws.defaultAccount();
+    if (!account) {
+      throw new Error('AWS credentials are required to upload assets. Please configure environment variables or ~/.aws/credentials.');
+    }
+    return account;
   }
 
-  public s3Client(options: cdk_assets.ClientOptions): Promise<AWS.S3> {
-    throw new Error("Method not implemented.");
+  public async s3Client(options: cdk_assets.ClientOptions): Promise<AWS.S3> {
+    return (await this.sdk(options)).s3();
   }
 
-  public ecrClient(options: cdk_assets.ClientOptions): Promise<AWS.ECR> {
-    throw new Error("Method not implemented.");
+  public async ecrClient(options: cdk_assets.ClientOptions): Promise<AWS.ECR> {
+    return (await this.sdk(options)).ecr();
+  }
+
+  /**
+   * Get an SDK appropriate for the given client options
+   */
+  private sdk(options: cdk_assets.ClientOptions): Promise<ISDK> {
+    const region = options.region ?? this.targetEnv.region; // Default: same region as the stack
+
+    return options.assumeRoleArn
+      ? this.aws.withAssumedRole(options.assumeRoleArn, options.assumeRoleExternalId, region)
+      : this.aws.forEnvironment(this.targetEnv.account, region, Mode.ForWriting);
+
   }
 }
 

@@ -3,7 +3,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { bootstrapEnvironment, deployStack, destroyStack, ISDK, loadToolkitInfo, SDK } from '../../../lib/api';
+import { bootstrapEnvironment, deployStack, destroyStack, loadToolkitInfo, Mode, SdkProvider } from '../../../lib/api';
 import { bootstrapEnvironment2 } from '../../../lib/api/bootstrap/bootstrap-environment2';
 import { ExampleAsset, MyTestCdkStack } from './example-cdk-app/my-test-cdk-stack';
 
@@ -16,18 +16,20 @@ describe('Bootstrapping', () => {
   const region = requireEnvVariable('TEST_REGION');
   let s3: AWS.S3;
   let env: cxapi.Environment;
-  let sdk: ISDK;
+  let sdk: SdkProvider;
 
-  beforeAll(() => {
-    s3 = new AWS.S3();
+  beforeAll(async () => {
     env = {
       name: 'aws-cdk-bootstrap-integ-test',
       account,
       region,
     };
-    sdk = new SDK({
-      userAgent: 'aws-cdk-bootstrap-integ-test',
+    sdk = await SdkProvider.withDefaultCredentials({
+      httpOptions: {
+        userAgent: 'aws-cdk-bootstrap-integ-test',
+      }
     });
+    s3 = (await sdk.forEnvironment(cxapi.UNKNOWN_ACCOUNT, cxapi.UNKNOWN_REGION, Mode.ForWriting)).s3();
   });
 
   describe('deploys the legacy bootstrap stack', () => {
@@ -114,7 +116,7 @@ function requireEnvVariable(variableName: string): string {
 }
 
 async function deployCdkApp(outdir: string, env: cxapi.Environment,
-                            sdk: ISDK, bootstrapStackName: string, cdkCode: (app: core.App) => void) {
+                            sdk: SdkProvider, bootstrapStackName: string, cdkCode: (app: core.App) => void) {
   // clean the output directory, just to make 100% sure there is no junk left there
   await fs.remove(outdir);
 

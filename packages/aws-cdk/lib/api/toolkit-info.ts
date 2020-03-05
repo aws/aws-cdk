@@ -2,32 +2,17 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as aws from 'aws-sdk';
 import * as colors from 'colors/safe';
 import { debug } from '../logging';
+import { SdkProvider } from './aws-auth';
 import { Mode } from './aws-auth/credentials';
 import { BUCKET_DOMAIN_NAME_OUTPUT, BUCKET_NAME_OUTPUT, REPOSITORY_NAME_OUTPUT  } from './bootstrap-environment';
 import { waitForStack } from './util/cloudformation';
-import { ISDK } from './util/sdk';
-
-/** @experimental */
-export interface UploadProps {
-  s3KeyPrefix?: string,
-  s3KeySuffix?: string,
-  contentType?: string,
-}
-
-/** @experimental */
-export interface Uploaded {
-  filename: string;
-  key: string;
-  hash: string;
-  changed: boolean;
-}
 
 /** @experimental */
 export class ToolkitInfo {
-  public readonly sdk: ISDK;
+  public readonly sdk: SdkProvider;
 
   constructor(private readonly props: {
-    sdk: ISDK,
+    readonly sdk: SdkProvider,
     bucketName: string,
     bucketEndpoint: string,
     repositoryName: string | undefined,
@@ -50,7 +35,7 @@ export class ToolkitInfo {
    * @experimental
    */
   public async prepareEcrRepository(repositoryName: string): Promise<EcrRepositoryInfo> {
-    const ecr = await this.props.sdk.ecr(this.props.environment.account, this.props.environment.region, Mode.ForWriting);
+    const ecr = await this.ecr();
 
     // check if repo already exists
     try {
@@ -80,44 +65,8 @@ export class ToolkitInfo {
     return { repositoryUri };
   }
 
-  /**
-   * Get ECR credentials
-   */
-  public async getEcrCredentials(): Promise<EcrCredentials> {
-    const ecr = await this.props.sdk.ecr(this.props.environment.account, this.props.environment.region, Mode.ForReading);
-
-    debug(`Fetching ECR authorization token`);
-    const authData =  (await ecr.getAuthorizationToken({ }).promise()).authorizationData || [];
-    if (authData.length === 0) {
-      throw new Error('No authorization data received from ECR');
-    }
-    const token = Buffer.from(authData[0].authorizationToken!, 'base64').toString('ascii');
-    const [username, password] = token.split(':');
-
-    return {
-      username,
-      password,
-      endpoint: authData[0].proxyEndpoint!,
-    };
-  }
-
-  /**
-   * Check if image already exists in ECR repository
-   */
-  public async checkEcrImage(repositoryName: string, imageTag: string): Promise<boolean> {
-    const ecr = await this.props.sdk.ecr(this.props.environment.account, this.props.environment.region, Mode.ForReading);
-
-    try {
-      debug(`${repositoryName}: checking for image ${imageTag}`);
-      await ecr.describeImages({ repositoryName, imageIds: [{ imageTag }] }).promise();
-
-      // If we got here, the image already exists. Nothing else needs to be done.
-      return true;
-    } catch (e) {
-      if (e.code !== 'ImageNotFoundException') { throw e; }
-    }
-
-    return false;
+  private async ecr() {
+    return (await this.props.sdk.forEnvironment(this.props.environment.account, this.props.environment.region, Mode.ForWriting)).ecr();
   }
 }
 
@@ -134,8 +83,8 @@ export interface EcrCredentials {
 }
 
 /** @experimental */
-export async function loadToolkitInfo(environment: cxapi.Environment, sdk: ISDK, stackName: string): Promise<ToolkitInfo | undefined> {
-  const cfn = await sdk.cloudFormation(environment.account, environment.region, Mode.ForReading);
+export async function loadToolkitInfo(environment: cxapi.Environment, sdk: SdkProvider, stackName: string): Promise<ToolkitInfo | undefined> {
+  const cfn = (await sdk.forEnvironment(environment.account, environment.region, Mode.ForReading)).cloudFormation();
   const stack = await waitForStack(cfn, stackName);
   if (!stack) {
     debug('The environment %s doesn\'t have the CDK toolkit stack (%s) installed. Use %s to setup your environment for use with the toolkit.',

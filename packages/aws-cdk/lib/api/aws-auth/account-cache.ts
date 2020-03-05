@@ -2,7 +2,7 @@ import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as path from 'path';
 import { debug } from '../../logging';
-import { Account } from '../util/sdk';
+import { Account } from './sdk-provider';
 
 /**
  * Disk cache which maps access key IDs to account IDs.
