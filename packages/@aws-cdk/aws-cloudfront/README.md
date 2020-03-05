@@ -49,7 +49,7 @@ You can customize the default certificate aliases. This is intended to be used i
 
 Example:
 
-[create a distrubution with an default certificiate example](test/example.default-cert-alias.lit.ts)
+[create a distribution with an default certificate example](test/example.default-cert-alias.lit.ts)
 
 #### ACM certificate
 
@@ -60,7 +60,7 @@ For more information, see [the aws-certificatemanager module documentation](http
 
 Example:
 
-[create a distrubution with an acm certificate example](test/example.acm-cert-alias.lit.ts)
+[create a distribution with an acm certificate example](test/example.acm-cert-alias.lit.ts)
 
 #### IAM certificate
 
@@ -70,4 +70,4 @@ See [Importing an SSL/TLS Certificate](https://docs.aws.amazon.com/AmazonCloudFr
 
 Example:
 
-[create a distrubution with an iam certificate example](test/example.iam-cert-alias.lit.ts)
+[create a distribution with an iam certificate example](test/example.iam-cert-alias.lit.ts)

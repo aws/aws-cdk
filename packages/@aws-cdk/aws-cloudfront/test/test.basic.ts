@@ -572,6 +572,7 @@ export = {
             "Aliases": [],
             "ViewerCertificate": {
               "AcmCertificateArn": "arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d",
+              "MinimumProtocolVersion": "TLSv1.1_2016",
               "SslSupportMethod": "sni-only"
             }
           }
@@ -633,6 +634,7 @@ export = {
             "Aliases": [],
             "ViewerCertificate": {
               "IamCertificateId": "test",
+              "MinimumProtocolVersion": "TLSv1.1_2016",
               "SslSupportMethod": "sni-only"
             }
           }

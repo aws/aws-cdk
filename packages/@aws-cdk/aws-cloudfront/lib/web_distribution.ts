@@ -67,7 +67,7 @@ export interface AliasConfiguration {
    * CloudFront serves your objects only to browsers or devices that support at
    * least the SSL version that you specify.
    *
-   * @default - SSLv3 if sslMethod VIP, TLSv1 if sslMethod SNI
+   * @default - SSLv3 if sslMethod VIP, TLS_V1_1_2016 if sslMethod SNI
    */
   readonly securityPolicy?: SecurityPolicyProtocol;
 }
@@ -414,7 +414,7 @@ export interface ViewerCertificateOptions {
    * CloudFront serves your objects only to browsers or devices that support at
    * least the SSL version that you specify.
    *
-   * @default - SSLv3 if sslMethod VIP, TLSv1 if sslMethod SNI
+   * @default - SSLv3 if sslMethod VIP, TLS_V1_1_2016 if sslMethod SNI
    */
   readonly securityPolicy?: SecurityPolicyProtocol;
 
@@ -799,6 +799,12 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
           // tslint:disable-next-line:max-line-length
           throw new Error(`${minimumProtocolVersion} is not compabtible with sslMethod ${sslSupportMethod}.\n\tValid Protocols are: ${validProtocols.join(", ")}`);
         }
+      }
+
+      if (minimumProtocolVersion == null && sslSupportMethod === SSLMethod.SNI) {
+        Object.assign(distributionConfig.viewerCertificate, {
+          minimumProtocolVersion: SecurityPolicyProtocol.TLS_V1_1_2016
+        });
       }
     } else {
       distributionConfig = { ...distributionConfig,
