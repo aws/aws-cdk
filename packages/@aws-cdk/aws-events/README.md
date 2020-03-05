@@ -114,7 +114,6 @@ The following targets are supported:
 * `targets.SqsQueue`: Send a message to an Amazon SQS Queue
 * `targets.SfnStateMachine`: Trigger an AWS Step Functions state machine
 * `targets.AwsApi`: Make an AWS API call
-* `targets.BatchJob`: COMING SOON
 
 ### Cross-account targets
 
