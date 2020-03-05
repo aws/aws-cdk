@@ -2,9 +2,14 @@ import { IUserPool } from "@aws-cdk/aws-cognito";
 import { Table } from '@aws-cdk/aws-dynamodb';
 import { IGrantable, IPrincipal, IRole, ManagedPolicy, Role, ServicePrincipal } from "@aws-cdk/aws-iam";
 import { IFunction } from "@aws-cdk/aws-lambda";
-import { Construct, IResolvable } from "@aws-cdk/core";
+import { Construct, Duration, IResolvable } from "@aws-cdk/core";
 import { readFileSync } from "fs";
-import { CfnDataSource, CfnGraphQLApi, CfnGraphQLSchema, CfnResolver } from "./appsync.generated";
+import { CfnApiKey, CfnDataSource, CfnGraphQLApi, CfnGraphQLSchema, CfnResolver } from "./appsync.generated";
+
+/**
+ * Marker interface for the different authorization modes.
+ */
+export interface AuthMode { }
 
 /**
  * enum with all possible values for Cognito user-pool default actions
@@ -23,7 +28,7 @@ export enum UserPoolDefaultAction {
 /**
  * Configuration for Cognito user-pools in AppSync
  */
-export interface UserPoolConfig {
+export interface UserPoolConfig extends AuthMode {
 
     /**
      * The Cognito user pool to use as identity source
@@ -41,6 +46,51 @@ export interface UserPoolConfig {
      * @default ALLOW
      */
     readonly defaultAction?: UserPoolDefaultAction;
+}
+
+function isUserPoolConfig(obj: unknown): obj is UserPoolConfig {
+    return (obj as UserPoolConfig).userPool !== undefined;
+}
+
+/**
+ * Configuration for API Key authorization in AppSync
+ */
+export interface ApiKeyConfig extends AuthMode {
+    /**
+     * Unique description of the API key
+     */
+    readonly apiKeyDesc: string;
+
+    /**
+     * The time from creation time after which the API key expires, using RFC3339 representation.
+     * It must be a minimum of 1 day and a maximum of 365 days from date of creation.
+     * Rounded down to the nearest hour.
+     * @default - 7 days from creation time
+     */
+    readonly expires?: string;
+}
+
+function isApiKeyConfig(obj: unknown): obj is ApiKeyConfig {
+    return (obj as ApiKeyConfig).apiKeyDesc !== undefined;
+}
+
+/**
+ * Configuration of the API authorization modes.
+ */
+export interface AuthorizationConfig {
+    /**
+     * Optional authorization configuration
+     *
+     * @default - API Key authorization
+     */
+    readonly defaultAuthorization?: AuthMode;
+
+    /**
+     * Additional authorization modes
+     *
+     * @default - No other modes
+     */
+    readonly additionalAuthorizationModes?: [AuthMode]
 }
 
 /**
@@ -90,11 +140,11 @@ export interface GraphQLApiProps {
     readonly name: string;
 
     /**
-     * Optional user pool authorizer configuration
+     * Optional authorization configuration
      *
-     * @default - Do not use Cognito auth
+     * @default - API Key authorization
      */
-    readonly userPoolConfig?: UserPoolConfig;
+    readonly authorizationConfig?: AuthorizationConfig;
 
     /**
      * Logging configuration for this api
@@ -145,7 +195,6 @@ export class GraphQLApi extends Construct {
     public readonly schema: CfnGraphQLSchema;
 
     private api: CfnGraphQLApi;
-    private authenticationType: string;
 
     constructor(scope: Construct, id: string, props: GraphQLApiProps) {
         super(scope, id);
@@ -156,22 +205,9 @@ export class GraphQLApi extends Construct {
             apiLogsRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSAppSyncPushToCloudWatchLogs'));
         }
 
-        if (props.userPoolConfig) {
-            this.authenticationType = 'AMAZON_COGNITO_USER_POOLS';
-        } else {
-            this.authenticationType = 'API_KEY';
-        }
-
         this.api = new CfnGraphQLApi(this, 'Resource', {
             name: props.name,
-            authenticationType: this.authenticationType,
-            ...props.userPoolConfig && {
-                userPoolConfig: {
-                    userPoolId: props.userPoolConfig.userPool.userPoolId,
-                    awsRegion: props.userPoolConfig.userPool.stack.region,
-                    defaultAction: props.userPoolConfig.defaultAction ? props.userPoolConfig.defaultAction.toString() : 'ALLOW',
-                },
-            },
+            authenticationType: 'API_KEY',
             ...props.logConfig && {
                 logConfig: {
                     cloudWatchLogsRoleArn: apiLogsRole ? apiLogsRole.roleArn : undefined,
@@ -185,6 +221,10 @@ export class GraphQLApi extends Construct {
         this.arn = this.api.attrArn;
         this.graphQlUrl = this.api.attrGraphQlUrl;
         this.name = this.api.name;
+
+        if (props.authorizationConfig) {
+            this.setupAuth(props.authorizationConfig);
+        }
 
         let definition;
         if (props.schemaDefinition) {
@@ -230,6 +270,55 @@ export class GraphQLApi extends Construct {
         });
     }
 
+    private setupAuth(auth: AuthorizationConfig) {
+        if (isUserPoolConfig(auth.defaultAuthorization)) {
+            const { authenticationType, userPoolConfig } = this.userPoolDescFrom(auth.defaultAuthorization);
+            this.api.authenticationType = authenticationType;
+            this.api.userPoolConfig = userPoolConfig;
+        } else if (isApiKeyConfig(auth.defaultAuthorization)) {
+            this.api.authenticationType = this.apiKeyDesc(auth.defaultAuthorization).authenticationType;
+        }
+
+        this.api.additionalAuthenticationProviders = [];
+        for (const mode of (auth.additionalAuthorizationModes || [])) {
+            if (isUserPoolConfig(mode)) {
+                this.api.additionalAuthenticationProviders.push(this.userPoolDescFrom(mode));
+            } else if (isApiKeyConfig(mode)) {
+                this.api.additionalAuthenticationProviders.push(this.apiKeyDesc(mode));
+            }
+        }
+    }
+
+    private userPoolDescFrom(upConfig: UserPoolConfig): { authenticationType: string; userPoolConfig: CfnGraphQLApi.UserPoolConfigProperty } {
+        return {
+            authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+            userPoolConfig: {
+                appIdClientRegex: upConfig.appIdClientRegex,
+                userPoolId: upConfig.userPool.userPoolId,
+                awsRegion: upConfig.userPool.stack.region,
+                defaultAction: upConfig.defaultAction ? upConfig.defaultAction.toString() : 'ALLOW',
+            }
+        };
+    }
+
+    private apiKeyDesc(akConfig: ApiKeyConfig): { authenticationType: string } {
+        let expires: number | undefined;
+        if (akConfig.expires) {
+            expires = new Date(akConfig.expires).valueOf();
+            const now = Date.now();
+            const days = (d: number) => now + Duration.days(d).toMilliseconds();
+            if (expires < days(1) || expires > days(365)) {
+                throw Error("API key expiration must be between 1 and 365 days.");
+            }
+            expires = Math.round(expires / 1000);
+        }
+        new CfnApiKey(this, `${akConfig.apiKeyDesc || ''}ApiKey`, {
+            expires,
+            description: akConfig.apiKeyDesc,
+            apiId: this.apiId,
+        });
+        return { authenticationType: 'API_KEY' };
+    }
 }
 
 /**
@@ -312,7 +401,7 @@ export abstract class BaseDataSource extends Construct implements IGrantable {
      */
     public readonly name: string;
     /**
-     * the underlying CFNN data source resource
+     * the underlying CFN data source resource
      */
     public readonly ds: CfnDataSource;
 
@@ -612,6 +701,177 @@ export class KeyCondition {
 }
 
 /**
+ * Utility class representing the assigment of a value to an attribute.
+ */
+export class Assign {
+    constructor(private readonly attr: string, private readonly arg: string) { }
+
+    /**
+     * Renders the assignment as a VTL string.
+     */
+    public renderAsAssignment(): string {
+        return `"${this.attr}" : $util.dynamodb.toDynamoDBJson(${this.arg})`;
+    }
+
+    /**
+     * Renders the assignment as a map element.
+     */
+    public putInMap(map: string): string {
+        return `$util.qr($${map}.put("${this.attr}", "${this.arg}"))`;
+    }
+}
+
+/**
+ * Utility class to allow assigning a value or an auto-generated id
+ * to a partition key.
+ */
+export class PartitionKeyStep {
+    constructor(private readonly key: string) { }
+
+    /**
+     * Assign an auto-generated value to the partition key.
+     */
+    public is(val: string): PartitionKey {
+        return new PartitionKey(new Assign(this.key, `$ctx.args.${val}`));
+    }
+
+    /**
+     * Assign an auto-generated value to the partition key.
+     */
+    public auto(): PartitionKey {
+        return new PartitionKey(new Assign(this.key, '$util.autoId()'));
+    }
+}
+
+/**
+ * Utility class to allow assigning a value or an auto-generated id
+ * to a sort key.
+ */
+export class SortKeyStep {
+   constructor(private readonly pkey: Assign, private readonly skey: string) { }
+
+    /**
+     * Assign an auto-generated value to the sort key.
+     */
+    public is(val: string): PrimaryKey {
+        return new PrimaryKey(this.pkey, new Assign(this.skey, `$ctx.args.${val}`));
+    }
+
+    /**
+     * Assign an auto-generated value to the sort key.
+     */
+    public auto(): PrimaryKey {
+        return new PrimaryKey(this.pkey, new Assign(this.skey, '$util.autoId()'));
+    }
+}
+
+/**
+ * Specifies the assignment to the primary key. It either
+ * contains the full primary key or only the partition key.
+ */
+export class PrimaryKey {
+    /**
+     * Allows assigning a value to the partition key.
+     */
+    public static partition(key: string): PartitionKeyStep {
+        return new PartitionKeyStep(key);
+    }
+
+    constructor(protected readonly pkey: Assign, private readonly skey?: Assign) { }
+
+    /**
+     * Renders the key assignment to a VTL string.
+     */
+    public renderTemplate(): string {
+        const assignments = [this.pkey.renderAsAssignment()];
+        if (this.skey) {
+            assignments.push(this.skey.renderAsAssignment());
+        }
+        return `"key" : {
+            ${assignments.join(",")}
+        }`;
+    }
+}
+
+/**
+ * Specifies the assignment to the partition key. It can be
+ * enhanced with the assignment of the sort key.
+ */
+export class PartitionKey extends PrimaryKey {
+    constructor(pkey: Assign) {
+        super(pkey);
+    }
+
+    /**
+     * Allows assigning a value to the sort key.
+     */
+    public sort(key: string): SortKeyStep {
+        return new SortKeyStep(this.pkey, key);
+    }
+}
+
+/**
+ * Specifies the attribute value assignments.
+ */
+export class AttributeValues {
+    constructor(private readonly container: string, private readonly assignments: Assign[] = []) { }
+
+    /**
+     * Allows assigning a value to the specified attribute.
+     */
+    public attribute(attr: string): AttributeValuesStep {
+        return new AttributeValuesStep(attr, this.container, this.assignments);
+    }
+
+    /**
+     * Renders the attribute value assingments to a VTL string.
+     */
+    public renderTemplate(): string {
+        return `
+            #set($input = ${this.container})
+            ${this.assignments.map(a => a.putInMap("input")).join("\n")}
+            "attributeValues": $util.dynamodb.toMapValuesJson($input)`;
+    }
+}
+
+/**
+ * Utility class to allow assigning a value to an attribute.
+ */
+export class AttributeValuesStep {
+    constructor(private readonly attr: string, private readonly container: string, private readonly assignments: Assign[]) { }
+
+    /**
+     * Assign the value to the current attribute.
+     */
+    public is(val: string): AttributeValues  {
+        this.assignments.push(new Assign(this.attr, val));
+        return new AttributeValues(this.container, this.assignments);
+    }
+}
+
+/**
+ * Factory class for attribute value assignments.
+ */
+export class Values {
+    /**
+     * Treats the specified object as a map of assignments, where the property
+     * names represent attribute names. It’s opinionated about how it represents
+     * some of the nested objects: e.g., it will use lists (“L”) rather than sets
+     * (“SS”, “NS”, “BS”). By default it projects the argument container ("$ctx.args").
+     */
+    public static projecting(arg?: string): AttributeValues {
+        return new AttributeValues('$ctx.args' + (arg ? `.${arg}` : ''));
+    }
+
+    /**
+     * Allows assigning a value to the specified attribute.
+     */
+    public static attribute(attr: string): AttributeValuesStep {
+        return new AttributeValues('{}').attribute(attr);
+    }
+}
+
+/**
  * MappingTemplates for AppSync resolvers
  */
 export abstract class MappingTemplate {
@@ -683,26 +943,25 @@ export abstract class MappingTemplate {
     /**
      * Mapping template to save a single item to a DynamoDB table
      *
-     * @param keyName the name of the hash key field
-     * @param valueArg the name of the Mutation argument to use as attributes. By default it uses all arguments
-     * @param idArg the name of the Mutation argument to use as id value. By default it generates a new id
+     * @param key the assigment of Mutation values to the primary key
+     * @param values the assignment of Mutation values to the table attributes
      */
-    public static dynamoDbPutItem(keyName: string, valueArg?: string, idArg?: string): MappingTemplate {
+    public static dynamoDbPutItem(key: PrimaryKey, values: AttributeValues): MappingTemplate {
         return this.fromString(`{
             "version" : "2017-02-28",
             "operation" : "PutItem",
-            "key" : {
-                "${keyName}": $util.dynamodb.toDynamoDBJson(${idArg ? `$ctx.args.${idArg}` : '$util.autoId()'}),
-            },
-            "attributeValues" : $util.dynamodb.toMapValuesJson(${valueArg ? `$ctx.args.${valueArg}` : '$ctx.args'})
+            ${key.renderTemplate()},
+            ${values.renderTemplate()}
         }`);
     }
 
     /**
      * Mapping template to invoke a Lambda function
-     * @param payload the VTL template snippet of the payload to send to the lambda
+     *
+     * @param payload the VTL template snippet of the payload to send to the lambda.
+     * If no payload is provided all available context fields are sent to the Lambda function
      */
-    public static lambdaRequest(payload: string): MappingTemplate {
+    public static lambdaRequest(payload: string = '$util.toJson($ctx)'): MappingTemplate {
         return this.fromString(`{"version": "2017-02-28", "operation": "Invoke", "payload": ${payload}}`);
     }
 
