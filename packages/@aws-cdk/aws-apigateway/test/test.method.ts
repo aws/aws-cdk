@@ -719,6 +719,7 @@ export = {
 
     test.done();
   },
+
   'use default Auth Scopes'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
