@@ -695,6 +695,7 @@ export = {
 
     test.done();
   },
+
   'method has Auth Scopes'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
