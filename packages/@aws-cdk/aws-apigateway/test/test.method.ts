@@ -1,4 +1,4 @@
-import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import { ABSENT, expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as iam from '@aws-cdk/aws-iam';
@@ -744,6 +744,62 @@ export = {
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
       OperationName: 'defaultAuthScopes',
       AuthorizationScopes: ['DefaultAuth']
+    }));
+
+    test.done();
+  },
+
+  'Method options Auth Scopes is picked up'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigw.RestApi(stack, 'test-api', {
+      cloudWatchRole: false,
+      deploy: false,
+      defaultMethodOptions: {
+        authorizationScopes: ['DefaultAuth']
+      }
+    });
+
+    // WHEN
+    new apigw.Method(stack, 'MethodAuthScopeUsed', {
+      httpMethod: 'POST',
+      resource: api.root,
+      options: {
+        apiKeyRequired: true,
+        authorizationScopes: ['MethodAuthScope'],
+      }
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+      ApiKeyRequired: true,
+      AuthorizationScopes: ['MethodAuthScope']
+    }));
+
+    test.done();
+  },
+
+  'Auth Scopes absent'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigw.RestApi(stack, 'test-api', {
+      cloudWatchRole: false,
+      deploy: false
+    });
+
+    // WHEN
+    new apigw.Method(stack, 'authScopesAbsent', {
+      httpMethod: 'POST',
+      resource: api.root,
+      options: {
+        operationName: 'authScopesAbsent'
+      }
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+      OperationName: 'authScopesAbsent',
+      AuthorizationScopes: ABSENT
     }));
 
     test.done();
