@@ -333,7 +333,6 @@ export = {
 
   'fails if maximumRetryAttempts > 10000'(test: Test) {
     // GIVEN
-    
     const stack = new cdk.Stack();
     const fn = new TestFunction(stack, 'Fn');
     const table = new dynamodb.Table(stack, 'T', {
@@ -565,7 +564,7 @@ export = {
 
     // WHEN
     fn.addEventSource(new sources.DynamoEventSource(table, {
-      onFailure: new lambda.SqsDlq(queue),
+      onFailure: new sources.SqsDlq(queue),
       startingPosition: lambda.StartingPosition.LATEST
     }));
 

@@ -1,5 +1,5 @@
+import { DlqDestinationConfig, IEventSourceDlq } from "@aws-cdk/aws-lambda";
 import * as sns from '@aws-cdk/aws-sns';
-import { DlqDestinationConfig, IEventSourceDlq } from "./dlq";
 
 /**
  * An SNS dead letter queue destination configuration for a Lambda event source
