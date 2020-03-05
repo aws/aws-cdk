@@ -73,13 +73,13 @@
     "@types/aws-lambda": "^8.10.39",
     "@types/fs-extra": "^8.1.0",
     "@types/sinon": "^7.5.2",
-    "aws-sdk": "^2.630.0",
+    "aws-sdk": "^2.633.0",
     "aws-sdk-mock": "^5.0.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
     "fs-extra": "^8.1.0",
-    "nock": "^12.0.1",
+    "nock": "^12.0.2",
     "pkglint": "0.0.0",
     "sinon": "^9.0.0"
   },
@@ -122,14 +122,10 @@
   "engines": {
     "node": ">= 10.3.0"
   },
-  "stability": "experimental",
+  "stability": "stable",
   "awslint": {
     "exclude": [
-      "construct-ctor-props-optional:@aws-cdk/custom-resources.AwsCustomResource",
-      "props-physical-name:@aws-cdk/custom-resources.AsyncCustomResourceProps",
-      "docs-public-apis:@aws-cdk/custom-resources.AwsCustomResource",
-      "docs-public-apis:@aws-cdk/custom-resources.AwsCustomResourceProps",
-      "props-default-doc:@aws-cdk/custom-resources.AwsSdkCall.parameters"
+      "construct-ctor-props-optional:@aws-cdk/custom-resources.AwsCustomResource"
     ]
   }
 }
