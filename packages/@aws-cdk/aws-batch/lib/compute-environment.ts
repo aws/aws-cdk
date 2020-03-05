@@ -47,50 +47,26 @@ export enum AllocationStrategy {
 }
 
 /**
- * Launch template property specification
- */
-export interface LaunchTemplateSpecification {
-  /**
-   * The Launch template name
-   */
-  readonly launchTemplateName: string;
-  /**
-   * The launch template version to be used (optional).
-   *
-   * @default the default version of the launch template
-   */
-  readonly version?: string;
-}
-
-/**
  * Properties for defining the structure of the batch compute cluster.
  */
 export interface ComputeResources {
   /**
    * The allocation strategy to use for the compute resource in case not enough instances of the best
    * fitting instance type can be allocated. This could be due to availability of the instance type in
-   * the region or Amazon EC2 service limits. If this is not specified, the default is BEST_FIT, which
-   * will use only the best fitting instance type, waiting for additional capacity if it's not available.
-   * This allocation strategy keeps costs lower but can limit scaling. If you are using Spot Fleets with
-   * BEST_FIT then the Spot Fleet IAM Role must be specified. BEST_FIT_PROGRESSIVE will select an additional
-   * instance type that is large enough to meet the requirements of the jobs in the queue, with a preference
-   * for an instance type with a lower cost. SPOT_CAPACITY_OPTIMIZED is only available for Spot Instance
-   * compute resources and will select an additional instance type that is large enough to meet the requirements
-   * of the jobs in the queue, with a preference for an instance type that is less likely to be interrupted.
+   * the region or Amazon EC2 service limits. If this is not specified, the default for the EC2
+   * ComputeResourceType is BEST_FIT, which will use only the best fitting instance type, waiting for
+   * additional capacity if it's not available. This allocation strategy keeps costs lower but can limit
+   * scaling. If you are using Spot Fleets with BEST_FIT then the Spot Fleet IAM Role must be specified.
+   * BEST_FIT_PROGRESSIVE will select an additional instance type that is large enough to meet the
+   * requirements of the jobs in the queue, with a preference for an instance type with a lower cost.
+   * The default value for the SPOT instance type is SPOT_CAPACITY_OPTIMIZED, which is only available for
+   * for this type of compute resources and will select an additional instance type that is large enough
+   * to meet the requirements of the jobs in the queue, with a preference for an instance type that is
+   * less likely to be interrupted.
    *
    * @default AllocationStrategy.BEST_FIT
    */
   readonly allocationStrategy?: AllocationStrategy;
-
-  /**
-   * An optional launch template to associate with your compute resources. To use a launch template, you must
-   * specify either the launch template ID or launch template name in the request, but not both.
-   * For more information, see Launch Template Support.
-   *
-   * @default no custom launch template will be used
-   * @link https://docs.aws.amazon.com/batch/latest/userguide/launch-templates.html
-   */
-  readonly launchTemplate?: LaunchTemplateSpecification;
 
   /**
    * The Amazon ECS instance profile applied to Amazon EC2 instances in a compute environment. You can specify
@@ -98,7 +74,7 @@ export interface ComputeResources {
    * arn:aws:iam::<aws_account_id>:instance-profile/ecsInstanceRole . For more information, see Amazon ECS
    * Instance Role in the AWS Batch User Guide.
    *
-   * @default a new role will be created.
+   * @default - a new role will be created.
    * @link https://docs.aws.amazon.com/batch/latest/userguide/instance_IAM_role.html
    */
   readonly instanceRole?: string;
@@ -116,7 +92,7 @@ export interface ComputeResources {
   /**
    * The EC2 security group(s) associated with instances launched in the compute environment.
    *
-   * @default AWS default security group.
+   * @default - AWS default security group.
    */
   readonly securityGroups?: ec2.ISecurityGroup[];
 
@@ -128,7 +104,7 @@ export interface ComputeResources {
   /**
    * The VPC subnets into which the compute resources are launched.
    *
-   * @default private subnets of the supplied VPC.
+   * @default - private subnets of the supplied VPC.
    */
   readonly vpcSubnets?: ec2.SubnetSelection;
 
@@ -155,7 +131,7 @@ export interface ComputeResources {
   /**
    * The desired number of EC2 vCPUS in the compute environment.
    *
-   * @default no desired vcpu value will be used.
+   * @default - no desired vcpu value will be used.
    */
   readonly desiredvCpus?: number;
 
@@ -179,14 +155,14 @@ export interface ComputeResources {
    * The EC2 key pair that is used for instances launched in the compute environment.
    * If no key is defined, then SSH access is not allowed to provisioned compute resources.
    *
-   * @default No SSH access will be possible.
+   * @default - no SSH access will be possible.
    */
   readonly ec2KeyPair?: string;
 
   /**
    * The Amazon Machine Image (AMI) ID used for instances launched in the compute environment.
    *
-   * @default no image will be used.
+   * @default - no image will be used.
    */
   readonly image?: ec2.IMachineImage;
 
@@ -197,7 +173,7 @@ export interface ComputeResources {
    * For more information, see Amazon EC2 Spot Fleet Role in the AWS Batch User Guide.
    *
    * @link https://docs.aws.amazon.com/batch/latest/userguide/spot_fleet_IAM_role.html
-   * @default no fleet role will be used.
+   * @default - no fleet role will be used.
    */
   readonly spotFleetRole?: iam.IRole;
 
@@ -206,7 +182,7 @@ export interface ComputeResources {
    * For AWS Batch, these take the form of "String1": "String2", where String1 is the tag key and
    * String2 is the tag value—for example, { "Name": "AWS Batch Instance - C4OnDemand" }.
    *
-   * @default no tags will be assigned on compute resources.
+   * @default - no tags will be assigned on compute resources.
    */
   readonly computeResourcesTags?: Tag;
 }
@@ -220,19 +196,19 @@ export interface ComputeEnvironmentProps {
    *
    * Up to 128 letters (uppercase and lowercase), numbers, hyphens, and underscores are allowed.
    *
-   * @default Cloudformation-generated name
+   * @default - CloudFormation-generated name
    */
   readonly computeEnvironmentName?: string;
 
   /**
    * The details of the required compute resources for the managed compute environment.
    *
-   * If specified, and this is an unmanaged compute environment, the property will be ignored.
+   * If specified, and this is an unmanaged compute environment, will throw an error.
    *
    * By default, AWS Batch managed compute environments use a recent, approved version of the
    * Amazon ECS-optimized AMI for compute resources.
    *
-   * @default Cfn defaults
+   * @default - CloudFormation defaults
    * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html
    */
   readonly computeResources?: ComputeResources;
@@ -252,7 +228,7 @@ export interface ComputeEnvironmentProps {
    *
    * @link https://docs.aws.amazon.com/batch/latest/userguide/service_IAM_role.html
    *
-   * @default Role using the 'service-role/AWSBatchServiceRole' policy.
+   * @default - Role using the 'service-role/AWSBatchServiceRole' policy.
    */
   readonly serviceRole?: iam.IRole,
 
@@ -357,7 +333,6 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
               }).roleName]
           }).attrArn,
         instanceTypes: this.buildInstanceTypes(props.computeResources.instanceTypes),
-        launchTemplate: props.computeResources.launchTemplate || undefined,
         maxvCpus: props.computeResources.maxvCpus || 256,
         minvCpus: props.computeResources.minvCpus || 0,
         securityGroupIds: this.buildSecurityGroupIds(props.computeResources.vpc, props.computeResources.securityGroups),
