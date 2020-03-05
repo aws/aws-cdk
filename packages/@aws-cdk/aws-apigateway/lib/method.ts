@@ -77,7 +77,9 @@ export interface MethodOptions {
   readonly requestValidator?: IRequestValidator;
 
   /**
-   * The authorizationScopes for the method
+   * A list of authorization scopes configured on the method. The scopes are used with 
+   * a COGNITO_USER_POOLS authorizer to authorize the method invocation.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-method.html#cfn-apigateway-method-authorizationscopes
    * @default none
    */
   readonly authorizationScopes?: string[]
