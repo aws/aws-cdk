@@ -34,7 +34,8 @@ The CDK is available in the following languages:
 [Roadmap](https://github.com/aws/aws-cdk/ROADMAP.md)
 
 Developers use the [CDK framework] in one of the
-supported programming languages to define reusable cloud components called [constructs], which are composed together into [stacks], forming a "CDK app".
+supported programming languages to define reusable cloud components called [constructs], which
+are composed together into [stacks], forming a "CDK app".
 
 They then use the [AWS CDK CLI] to interact with their CDK app. The CLI allows developers to
 synthesize artifacts such as AWS CloudFormation Templates, deploy stacks to development AWS accounts and "diff"
@@ -98,8 +99,8 @@ $ cdk deploy
 
 Use the `cdk` command-line toolkit to interact with your project:
 
-* `cdk deploy`: deploys your app into an AWS account
-* `cdk synth`: synthesizes an AWS CloudFormation template for your app
+ * `cdk deploy`: deploys your app into an AWS account
+ * `cdk synth`: synthesizes an AWS CloudFormation template for your app
  * `cdk diff`: compares your app with the deployed stack
 
 For a detailed walkthrough, see the [tutorial] in the AWS CDK [Developer Guide].
