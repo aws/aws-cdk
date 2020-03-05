@@ -161,7 +161,7 @@ export class Method extends Resource {
       methodResponses: this.renderMethodResponses(options.methodResponses),
       requestModels: this.renderRequestModels(options.requestModels),
       requestValidatorId: options.requestValidator ? options.requestValidator.requestValidatorId : undefined,
-      authorizationScopes: options.authorizationScopes || defaultMethodOptions.authorizationScopes
+      authorizationScopes: options.authorizationScopes ?? defaultMethodOptions.authorizationScopes,
     };
 
     const resource = new CfnMethod(this, 'Resource', methodProps);
