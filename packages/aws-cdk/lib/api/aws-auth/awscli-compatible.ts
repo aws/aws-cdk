@@ -5,24 +5,32 @@ import * as os from 'os';
 import * as path from 'path';
 import * as util from 'util';
 import { debug } from '../../logging';
+import { SharedIniFile } from "./sdk_ini_file";
 
 /**
- * Build an AWS CLI-compatible credential chain provider
+ * Behaviors to match AWS CLI
  *
- * This is similar to the default credential provider chain created by the SDK
- * except:
+ * See these links:
  *
- * 1. Accepts profile argument in the constructor (the SDK must have it prepopulated
- *    in the environment).
- * 2. Conditionally checks EC2 credentials, because checking for EC2
- *    credentials on a non-EC2 machine may lead to long delays (in the best case)
- *    or an exception (in the worst case).
- * 3. Respects $AWS_SHARED_CREDENTIALS_FILE.
- * 4. Respects $AWS_DEFAULT_PROFILE in addition to $AWS_PROFILE.
+ * https://docs.aws.amazon.com/cli/latest/topic/config-vars.html
+ * https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-envvars.html
  */
-
-export class AwsCliCompatibleCredentialProvider extends AWS.CredentialProviderChain {
-  public static async create(profile: string | undefined, ec2creds: boolean | undefined) {
+export class AwsCliCompatible {
+  /**
+   * Build an AWS CLI-compatible credential chain provider
+   *
+   * This is similar to the default credential provider chain created by the SDK
+   * except:
+   *
+   * 1. Accepts profile argument in the constructor (the SDK must have it prepopulated
+   *    in the environment).
+   * 2. Conditionally checks EC2 credentials, because checking for EC2
+   *    credentials on a non-EC2 machine may lead to long delays (in the best case)
+   *    or an exception (in the worst case).
+   * 3. Respects $AWS_SHARED_CREDENTIALS_FILE.
+   * 4. Respects $AWS_DEFAULT_PROFILE in addition to $AWS_PROFILE.
+   */
+  public static async credentialChain(profile: string | undefined, ec2creds: boolean | undefined) {
     profile = profile || process.env.AWS_PROFILE || process.env.AWS_DEFAULT_PROFILE || 'default';
 
     // Need to construct filename ourselves, without appropriate environment variables
@@ -51,11 +59,51 @@ export class AwsCliCompatibleCredentialProvider extends AWS.CredentialProviderCh
       }
     }
 
-    return new AwsCliCompatibleCredentialProvider(sources);
+    return new AWS.CredentialProviderChain(sources);
   }
 
-  protected constructor(sources: Array<() => AWS.Credentials>) {
-    super(sources);
+  /**
+   * Return the default region in a CLI-compatible way
+   *
+   * Mostly copied from node_loader.js, but with the following differences to make it
+   * AWS CLI compatible:
+   *
+   * 1. Takes a profile name as an argument (instead of forcing it to be taken from $AWS_PROFILE).
+   *    This requires having made a copy of the SDK's `SharedIniFile` (the original
+   *    does not take an argument).
+   * 2. $AWS_DEFAULT_PROFILE and $AWS_DEFAULT_REGION are also respected.
+   *
+   * Lambda and CodeBuild set the $AWS_REGION variable.
+   *
+   * FIXME: EC2 instances require querying the metadata service to determine the current region.
+   */
+  public static async region(profile: string | undefined): Promise<string> {
+    profile = profile || process.env.AWS_PROFILE || process.env.AWS_DEFAULT_PROFILE || 'default';
+
+    // Defaults inside constructor
+    const toCheck = [
+      {filename: process.env.AWS_SHARED_CREDENTIALS_FILE, profile },
+      {isConfig: true, filename: process.env.AWS_CONFIG_FILE, profile },
+      {isConfig: true, filename: process.env.AWS_CONFIG_FILE, profile: 'default' },
+    ];
+
+    let region = process.env.AWS_REGION || process.env.AMAZON_REGION ||
+      process.env.AWS_DEFAULT_REGION || process.env.AMAZON_DEFAULT_REGION;
+
+    while (!region && toCheck.length > 0) {
+      const options = toCheck.shift()!;
+      const configFile = new SharedIniFile(options);
+      const section = await configFile.getProfile(options.profile);
+      region = section && section.region;
+    }
+
+    if (!region) {
+      const usedProfile = !profile ? '' : ` (profile: "${profile}")`;
+      region = 'us-east-1'; // This is what the AWS CLI does
+      debug(`Unable to determine AWS region from environment or AWS configuration${usedProfile}, defaulting to '${region}'`);
+    }
+
+    return region;
   }
 }
 

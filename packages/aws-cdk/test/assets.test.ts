@@ -36,7 +36,7 @@ describe('file assets', () => {
     // THEN
     expect(params).toEqual([
       { ParameterKey: 'BucketParameter', ParameterValue: 'bucket' },
-      { ParameterKey: 'KeyParameter', ParameterValue: 'assets/SomeStackSomeResource4567/||source-hash.ts' },
+      { ParameterKey: 'KeyParameter', ParameterValue: 'assets/SomeStackSomeResource4567/||source-hash.js' },
       { ParameterKey: 'ArtifactHashParameter', ParameterValue: 'source-hash' },
     ]);
 
@@ -44,7 +44,7 @@ describe('file assets', () => {
       expect.objectContaining({
         destination: {
           bucketName: "bucket",
-          objectKey: "assets/SomeStackSomeResource4567/source-hash.ts",
+          objectKey: "assets/SomeStackSomeResource4567/source-hash.js",
         },
         source: {
           packaging: "file",
@@ -76,7 +76,7 @@ describe('file assets', () => {
       expect.objectContaining({
         destination: {
           bucketName: 'bucket',
-          objectKey: "assets/source-hash.ts",
+          objectKey: "assets/source-hash.js",
         },
       })
     ]);

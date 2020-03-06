@@ -7,11 +7,10 @@ import * as os from 'os';
 import * as path from 'path';
 import { debug } from '../../logging';
 import { cached } from '../../util/functions';
-import { AwsCliCompatibleCredentialProvider } from "../aws-auth/awscli-compatible-cred-chain";
-import { getAwsCliCompatibleDefaultRegion } from "../aws-auth/awscli-compatible-region";
 import { CredentialPlugins } from '../aws-auth/credential-plugins';
 import { Mode } from "../aws-auth/credentials";
 import { AccountAccessKeyCache } from './account-cache';
+import { AwsCliCompatible } from './awscli-compatible';
 import { ISDK, SDK } from './sdk';
 
 /**
@@ -65,6 +64,7 @@ export interface SdkHttpOptions {
 }
 
 const CACHED_ACCOUNT = Symbol();
+const CACHED_DEFAULT_CREDENTIALS = Symbol();
 
 /**
  * Creates instances of the AWS SDK appropriate for a given account/region
@@ -76,30 +76,35 @@ const CACHED_ACCOUNT = Symbol();
  */
 export class SdkProvider {
   /**
-   * Create a new SdkProvider using default options
+   * Create a new SdkProvider which gets its defaults in a way that haves like the AWS CLI does
+   *
+   * The AWS SDK for JS behaves slightly differently from the AWS CLI in a number of ways; see the
+   * class `AwsCliCompatible` for the details.
    */
-  public static async withDefaultCredentials(options: SdkProviderOptions = {}) {
+  public static async withAwsCliCompatibleDefaults(options: SdkProviderOptions = {}) {
     // There just is *NO* way to do AssumeRole credentials as long as AWS_SDK_LOAD_CONFIG is not set. The SDK
     // crashes if the file does not exist though. So set the environment variable if we can find that file.
     await setConfigVariable();
 
-    const chain = await AwsCliCompatibleCredentialProvider.create(options.profile, options.ec2creds);
-    const region = await getAwsCliCompatibleDefaultRegion(options.profile);
+    const chain = await AwsCliCompatible.credentialChain(options.profile, options.ec2creds);
+    const region = await AwsCliCompatible.region(options.profile);
 
-    return new SdkProvider(chain, region, defaultHttpOptions(options.httpOptions || {}));
+    return new SdkProvider(chain, region, options.httpOptions);
   }
 
-  private _defaultCredentials: AWS.Credentials | undefined;
   private readonly accountCache = new AccountAccessKeyCache();
   private readonly plugins = new CredentialPlugins();
+  private readonly httpOptions: ConfigurationOptions;
 
-  protected constructor(
+  public constructor(
     private readonly defaultChain: AWS.CredentialProviderChain,
     /**
      * Default region
      */
     public readonly defaultRegion: string,
-    private readonly httpOptions: ConfigurationOptions = {}) { }
+    httpOptions: SdkHttpOptions = {}) {
+      this.httpOptions = defaultHttpOptions(httpOptions);
+    }
 
   /**
    * Return an SDK which can do operations in the given environment
@@ -114,7 +119,7 @@ export class SdkProvider {
   }
 
   /**
-   * Create a new SDK using assumed role credentials
+   * Return an SDK which uses assumed role credentials
    *
    * The base credentials used to retrieve the assumed role credentials will be the
    * current credentials (no plugin lookup will be done!).
@@ -235,14 +240,12 @@ export class SdkProvider {
   /**
    * Resolve the default chain to the first set of credentials that is available
    */
-  private async defaultCredentials(): Promise<AWS.Credentials> {
-    if (!this._defaultCredentials) {
+  private defaultCredentials(): Promise<AWS.Credentials> {
+    return cached(this, CACHED_DEFAULT_CREDENTIALS, () => {
       debug('Resolving default credentials');
-      this._defaultCredentials = await this.defaultChain.resolvePromise();
-    }
-    return this._defaultCredentials;
+      return this.defaultChain.resolvePromise();
+    });
   }
-
 }
 
 async function setConfigVariable() {
@@ -284,7 +287,7 @@ function defaultHttpOptions(options: SdkHttpOptions) {
   let userAgent = options.userAgent;
   if (userAgent == null) {
     // Find the package.json from the main toolkit
-    const pkg = (require.main as any).require(path.join(__dirname, '..', '..', '..', 'package.json'));
+    const pkg = JSON.parse(readIfPossible(path.join(__dirname, '..', '..', '..', 'package.json')) ?? '{}');
     userAgent = `${pkg.name}/${pkg.version}`;
   }
   config.customUserAgent = userAgent;

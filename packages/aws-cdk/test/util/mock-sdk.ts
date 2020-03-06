@@ -11,7 +11,7 @@ export class MockSDK extends SdkProvider {
   private readonly sdk: ISDK;
 
   constructor() {
-    super(new AWS.CredentialProviderChain([]), 'bermuda-triangle-1337', { customUserAgent: 'aws-cdk/jest' });
+    super(new AWS.CredentialProviderChain([]), 'bermuda-triangle-1337', { userAgent: 'aws-cdk/jest' });
 
     // SDK contains a real SDK, since some test use 'AWS-mock' to replace the underlying
     // AWS calls which a real SDK would do, and some tests use the 'stub' functionality below.

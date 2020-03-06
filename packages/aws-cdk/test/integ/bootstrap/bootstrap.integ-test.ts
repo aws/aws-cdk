@@ -24,7 +24,7 @@ describe('Bootstrapping', () => {
       account,
       region,
     };
-    sdk = await SdkProvider.withDefaultCredentials({
+    sdk = await SdkProvider.withAwsCliCompatibleDefaults({
       httpOptions: {
         userAgent: 'aws-cdk-bootstrap-integ-test',
       }

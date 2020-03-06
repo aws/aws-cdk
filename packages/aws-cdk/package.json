@@ -13,7 +13,7 @@
     "lint": "cdk-lint",
     "pkglint": "pkglint -f",
     "test": "cdk-test",
-    "integ": "jest --testMatch '**/?(*.)+(integ-test).ts'",
+    "integ": "jest --testMatch '**/?(*.)+(integ-test).js'",
     "package": "cdk-package",
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test",
@@ -72,9 +72,9 @@
     "archiver": "^3.1.1",
     "aws-sdk": "^2.631.0",
     "camelcase": "^5.3.1",
+    "cdk-assets": "0.0.0",
     "colors": "^1.4.0",
     "decamelize": "^4.0.0",
-    "cdk-assets": "0.0.0",
     "fs-extra": "^8.1.0",
     "glob": "^7.1.6",
     "json-diff": "^0.5.4",
@@ -105,8 +105,7 @@
   "stability": "stable",
   "jest": {
     "moduleFileExtensions": [
-      "js",
-      "ts"
+      "js"
     ],
     "coverageThreshold": {
       "global": {
@@ -114,9 +113,8 @@
         "statements": 60
       }
     },
-    "preset": "ts-jest",
     "testMatch": [
-      "**/?(*.)+(spec|test).ts?(x)"
+      "**/?(*.)+(spec|test).js?(x)"
     ]
   }
 }

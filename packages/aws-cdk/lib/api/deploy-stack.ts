@@ -4,7 +4,7 @@ import * as colors from 'colors/safe';
 import * as uuid from 'uuid';
 import { Tag } from "../api/cxapp/stacks";
 import { addMetadataAssetsToManifest } from '../assets';
-import { debug, error, print, warning } from '../logging';
+import { debug, error, print } from '../logging';
 import { deserializeStructure, toYAML } from '../serialize';
 import { AssetManifestBuilder } from '../util/asset-manifest-builder';
 import { publishAssets } from '../util/asset-publishing';

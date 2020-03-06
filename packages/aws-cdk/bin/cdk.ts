@@ -111,7 +111,7 @@ async function initCommandLine() {
   debug('CDK toolkit version:', version.DISPLAY_VERSION);
   debug('Command line arguments:', argv);
 
-  const aws = await SdkProvider.withDefaultCredentials({
+  const aws = await SdkProvider.withAwsCliCompatibleDefaults({
     profile: argv.profile,
     ec2creds: argv.ec2creds,
     httpOptions: {
