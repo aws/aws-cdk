@@ -9,6 +9,7 @@ import { Construct, Duration } from '@aws-cdk/core';
 
 /**
  * Task to train a machine learning model using Amazon SageMaker
+ * @experimental
  */
 export interface ISageMakerTask extends sfn.IStepFunctionsTask, iam.IGrantable {}
 
@@ -190,8 +191,10 @@ export interface OutputDataConfig {
 export interface StoppingCondition {
     /**
      * The maximum length of time, in seconds, that the training or compilation job can run.
+     *
+     * @default - 1 hour
      */
-    readonly maxRuntime: Duration;
+    readonly maxRuntime?: Duration;
 }
 
 /**
@@ -237,7 +240,7 @@ export interface ResourceConfig {
  */
 export interface VpcConfig {
     /**
-     * VPC ID
+     * VPC
      */
     readonly vpc: ec2.IVpc;
 
