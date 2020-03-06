@@ -86,7 +86,8 @@ function prepareFileAsset(
 
   const extension = packaging === asset_schema.FileAssetPackaging.ZIP_DIRECTORY ? '.zip' : path.extname(asset.path);
   const baseName = `${asset.sourceHash}${extension}`;
-  const s3Prefix = `assets/${asset.id}/`;
+  // Simplify key: assets/abcdef/abcdef.zip is kinda silly and unnecessary, so if they're the same just pick one component.
+  const s3Prefix = asset.id === asset.sourceHash ? 'assets/' : `assets/${asset.id}/`;
   const key = `${s3Prefix}${baseName}`;
   const s3url = `s3://${toolkitInfo.bucketName}/${key}`;
 

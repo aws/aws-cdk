@@ -4,7 +4,7 @@ import * as colors from 'colors/safe';
 import * as uuid from 'uuid';
 import { Tag } from "../api/cxapp/stacks";
 import { addMetadataAssetsToManifest } from '../assets';
-import { debug, error, print } from '../logging';
+import { debug, error, print, warning } from '../logging';
 import { deserializeStructure, toYAML } from '../serialize';
 import { AssetManifestBuilder } from '../util/asset-manifest-builder';
 import { publishAssets } from '../util/asset-publishing';
@@ -69,15 +69,17 @@ const LARGE_TEMPLATE_SIZE_KB = 50;
 
 /** @experimental */
 export async function deployStack(options: DeployStackOptions): Promise<DeployStackResult> {
-  if (!options.stack.environment) {
-    throw new Error(`The stack ${options.stack.displayName} does not have an environment`);
+  const stack = options.stack;
+
+  if (!stack.environment) {
+    throw new Error(`The stack ${stack.displayName} does not have an environment`);
   }
 
   // Translate symbolic/unknown environment references to concrete environment references
-  const stackEnv = await options.sdk.resolveEnvironment(options.stack.environment.account, options.stack.environment.region);
+  const stackEnv = await options.sdk.resolveEnvironment(stack.environment.account, stack.environment.region);
 
   const cfn = (await options.sdk.forEnvironment(stackEnv.account, stackEnv.region, Mode.ForWriting)).cloudFormation();
-  const deployName = options.deployName || options.stack.stackName;
+  const deployName = options.deployName || stack.stackName;
 
   if (!options.force) {
     // bail out if the current template is exactly the same as the one we are about to deploy
@@ -85,13 +87,13 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     debug(`checking if we can skip this stack based on the currently deployed template and tags (use --force to override)`);
     const deployed = await getDeployedStack(cfn, deployName);
     const tagsIdentical = compareTags(deployed?.tags ?? [], options.tags ?? []);
-    if (deployed && JSON.stringify(options.stack.template) === JSON.stringify(deployed.template) && tagsIdentical) {
+    if (deployed && JSON.stringify(stack.template) === JSON.stringify(deployed.template) && tagsIdentical) {
       debug(`${deployName}: no change in template and tags, skipping (use --force to override)`);
       return {
         noOp: true,
         outputs: await getStackOutputs(cfn, deployName),
         stackArn: deployed.stackId,
-        stackArtifact: options.stack
+        stackArtifact: stack
       };
     } else {
       debug(`${deployName}: template changed, deploying...`);
@@ -100,7 +102,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
 
   const assets = new AssetManifestBuilder();
 
-  const params = await addMetadataAssetsToManifest(options.stack, assets, options.toolkitInfo, options.reuseAssets);
+  const params = await addMetadataAssetsToManifest(stack, assets, options.toolkitInfo, options.reuseAssets);
 
   // add passed CloudFormation parameters
   for (const [paramName, paramValue] of Object.entries((options.parameters || {}))) {
@@ -114,7 +116,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
 
   const executionId = uuid.v4();
 
-  const bodyParameter = await makeBodyParameter(options.stack, assets, options.toolkitInfo);
+  const bodyParameter = await makeBodyParameter(stack, assets, options.toolkitInfo);
 
   if (await stackFailedCreating(cfn, deployName)) {
     debug(`Found existing stack ${deployName} that had previously failed creation. Deleting it before attempting to re-create it.`);
@@ -127,7 +129,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
 
   const update = await stackExists(cfn, deployName);
 
-  await publishAssets(assets.toManifest(options.stack.assembly.directory), options.sdk, stackEnv);
+  await publishAssets(assets.toManifest(stack.assembly.directory), options.sdk, stackEnv);
 
   const changeSetName = `CDK-${executionId}`;
   debug(`Attempting to create ChangeSet ${changeSetName} to ${update ? 'update' : 'create'} stack ${deployName}`);
@@ -151,7 +153,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
   if (changeSetHasNoChanges(changeSetDescription)) {
     debug('No changes are to be performed on %s.', deployName);
     await cfn.deleteChangeSet({ StackName: deployName, ChangeSetName: changeSetName }).promise();
-    return { noOp: true, outputs: await getStackOutputs(cfn, deployName), stackArn: changeSet.StackId!, stackArtifact: options.stack };
+    return { noOp: true, outputs: await getStackOutputs(cfn, deployName), stackArn: changeSet.StackId!, stackArtifact: stack };
   }
 
   const execute = options.execute === undefined ? true : options.execute;
@@ -159,7 +161,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     debug('Initiating execution of changeset %s on stack %s', changeSetName, deployName);
     await cfn.executeChangeSet({StackName: deployName, ChangeSetName: changeSetName}).promise();
     // tslint:disable-next-line:max-line-length
-    const monitor = options.quiet ? undefined : new StackActivityMonitor(cfn, deployName, options.stack, (changeSetDescription.Changes || []).length).start();
+    const monitor = options.quiet ? undefined : new StackActivityMonitor(cfn, deployName, stack, (changeSetDescription.Changes || []).length).start();
     debug('Execution of changeset %s on stack %s has started; waiting for the update to complete...', changeSetName, deployName);
     try {
       await waitForStack(cfn, deployName);
@@ -170,7 +172,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
   } else {
     print(`Changeset %s created and waiting in review for manual execution (--no-execute)`, changeSetName);
   }
-  return { noOp: false, outputs: await getStackOutputs(cfn, deployName), stackArn: changeSet.StackId!, stackArtifact: options.stack };
+  return { noOp: false, outputs: await getStackOutputs(cfn, deployName), stackArn: changeSet.StackId!, stackArtifact: stack };
 }
 
 /** @experimental */

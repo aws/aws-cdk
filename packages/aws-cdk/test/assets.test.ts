@@ -54,6 +54,34 @@ describe('file assets', () => {
     ]);
   });
 
+  test('hash and ID the same => only one path component', async () => {
+    // GIVEN
+    const stack = stackWithAssets([
+      {
+        sourceHash: 'source-hash',
+        path: __filename,
+        id: 'source-hash',
+        packaging: 'file',
+        s3BucketParameter: 'BucketParameter',
+        s3KeyParameter: 'KeyParameter',
+        artifactHashParameter: 'ArtifactHashParameter',
+      }
+    ]);
+
+    // WHEN
+    await addMetadataAssetsToManifest(stack, assets, toolkit);
+
+    // THEN
+    expect(assets.toManifest('.').entries).toEqual([
+      expect.objectContaining({
+        destination: {
+          bucketName: 'bucket',
+          objectKey: "assets/source-hash.ts",
+        },
+      })
+    ]);
+  });
+
   test('reuse', async () => {
     // GIVEN
     const stack = stackWithAssets([

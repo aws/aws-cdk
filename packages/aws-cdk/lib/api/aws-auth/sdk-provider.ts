@@ -6,6 +6,7 @@ import * as https from 'https';
 import * as os from 'os';
 import * as path from 'path';
 import { debug } from '../../logging';
+import { cached } from '../../util/functions';
 import { AwsCliCompatibleCredentialProvider } from "../aws-auth/awscli-compatible-cred-chain";
 import { getAwsCliCompatibleDefaultRegion } from "../aws-auth/awscli-compatible-region";
 import { CredentialPlugins } from '../aws-auth/credential-plugins';
@@ -62,6 +63,8 @@ export interface SdkHttpOptions {
    */
   readonly userAgent?: string;
 }
+
+const CACHED_ACCOUNT = Symbol();
 
 /**
  * Creates instances of the AWS SDK appropriate for a given account/region
@@ -168,34 +171,36 @@ export class SdkProvider {
    *
    * Uses a cache to avoid STS calls if we don't need 'em.
    */
-  public async defaultAccount(): Promise<Account | undefined> {
-    try {
-      const creds = await this.defaultCredentials();
+  public defaultAccount(): Promise<Account | undefined> {
+    return cached(this, CACHED_ACCOUNT, async () => {
+      try {
+        const creds = await this.defaultCredentials();
 
-      const accessKeyId = creds.accessKeyId;
-      if (!accessKeyId) {
-        throw new Error('Unable to resolve AWS credentials (setup with "aws configure")');
-      }
-
-      const account = await this.accountCache.fetch(creds.accessKeyId, async () => {
-        // if we don't have one, resolve from STS and store in cache.
-        debug('Looking up default account ID from STS');
-        const result = await new AWS.STS({ ...this.httpOptions, credentials: creds, region: this.defaultRegion }).getCallerIdentity().promise();
-        const accountId = result.Account;
-        const partition = result.Arn!.split(':')[1];
-        if (!accountId) {
-          debug('STS didn\'t return an account ID');
-          return undefined;
+        const accessKeyId = creds.accessKeyId;
+        if (!accessKeyId) {
+          throw new Error('Unable to resolve AWS credentials (setup with "aws configure")');
         }
-        debug('Default account ID:', accountId);
-        return { accountId, partition };
-      });
 
-      return account;
-    } catch (e) {
-      debug('Unable to determine the default AWS account (did you configure "aws configure"?):', e);
-      return undefined;
-    }
+        const account = await this.accountCache.fetch(creds.accessKeyId, async () => {
+          // if we don't have one, resolve from STS and store in cache.
+          debug('Looking up default account ID from STS');
+          const result = await new AWS.STS({ ...this.httpOptions, credentials: creds, region: this.defaultRegion }).getCallerIdentity().promise();
+          const accountId = result.Account;
+          const partition = result.Arn!.split(':')[1];
+          if (!accountId) {
+            debug('STS didn\'t return an account ID');
+            return undefined;
+          }
+          debug('Default account ID:', accountId);
+          return { accountId, partition };
+        });
+
+        return account;
+      } catch (e) {
+        debug('Unable to determine the default AWS account (did you configure "aws configure"?):', e);
+        return undefined;
+      }
+    });
   }
 
   /**

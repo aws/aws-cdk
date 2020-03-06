@@ -14,6 +14,9 @@ export async function publishAssets(manifest: cdk_assets.AssetManifest, sdk: Sdk
     throwOnError: false,
   });
   await publisher.publish();
+  if (publisher.hasFailures) {
+    throw new Error(`Failed to publish one or more assets. See the error messages above for more information.`);
+  }
 }
 
 class PublishingAws implements cdk_assets.IAws {
