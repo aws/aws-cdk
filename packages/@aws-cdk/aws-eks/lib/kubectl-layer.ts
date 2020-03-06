@@ -23,10 +23,6 @@ export interface KubectlLayerProps {
  */
 export class KubectlLayer extends Construct implements lambda.ILayerVersion {
 
-  public get stack() {
-    return Stack.of(this);
-  }
-
   /**
    * Gets or create a singleton instance of this construct.
    */
@@ -72,6 +68,10 @@ export class KubectlLayer extends Construct implements lambda.ILayerVersion {
     });
 
     this.layerVersionArn = Token.asString(resource.getAtt('Outputs.LayerVersionArn'));
+  }
+
+  public get stack() {
+    return Stack.of(this);
   }
 
   public addPermission(_id: string, _permission: lambda.LayerVersionPermission): void {
