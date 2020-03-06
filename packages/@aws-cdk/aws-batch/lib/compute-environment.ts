@@ -51,11 +51,33 @@ export enum AllocationStrategy {
  */
 export interface ComputeResources {
   /**
-   * The IAM role applied to EC2 resources in the compute environment.
+   * The allocation strategy to use for the compute resource in case not enough instances of the best
+   * fitting instance type can be allocated. This could be due to availability of the instance type in
+   * the region or Amazon EC2 service limits. If this is not specified, the default for the EC2
+   * ComputeResourceType is BEST_FIT, which will use only the best fitting instance type, waiting for
+   * additional capacity if it's not available. This allocation strategy keeps costs lower but can limit
+   * scaling. If you are using Spot Fleets with BEST_FIT then the Spot Fleet IAM Role must be specified.
+   * BEST_FIT_PROGRESSIVE will select an additional instance type that is large enough to meet the
+   * requirements of the jobs in the queue, with a preference for an instance type with a lower cost.
+   * The default value for the SPOT instance type is SPOT_CAPACITY_OPTIMIZED, which is only available for
+   * for this type of compute resources and will select an additional instance type that is large enough
+   * to meet the requirements of the jobs in the queue, with a preference for an instance type that is
+   * less likely to be interrupted.
+   *
+   * @default AllocationStrategy.BEST_FIT
+   */
+  readonly allocationStrategy?: AllocationStrategy;
+
+  /**
+   * The Amazon ECS instance profile applied to Amazon EC2 instances in a compute environment. You can specify
+   * the short name or full Amazon Resource Name (ARN) of an instance profile. For example, ecsInstanceRole or
+   * arn:aws:iam::<aws_account_id>:instance-profile/ecsInstanceRole . For more information, see Amazon ECS
+   * Instance Role in the AWS Batch User Guide.
    *
    * @default - a new role will be created.
+   * @link https://docs.aws.amazon.com/batch/latest/userguide/instance_IAM_role.html
    */
-  readonly instanceRole?: iam.IRole;
+  readonly instanceRole?: string;
 
   /**
    * The types of EC2 instances that may be launched in the compute environment. You can specify instance
@@ -70,7 +92,7 @@ export interface ComputeResources {
   /**
    * The EC2 security group(s) associated with instances launched in the compute environment.
    *
-   * @default AWS default security group.
+   * @default - AWS default security group.
    */
   readonly securityGroups?: ec2.ISecurityGroup[];
 
@@ -133,7 +155,7 @@ export interface ComputeResources {
    * The EC2 key pair that is used for instances launched in the compute environment.
    * If no key is defined, then SSH access is not allowed to provisioned compute resources.
    *
-   * @default - No SSH access will be possible.
+   * @default - no SSH access will be possible.
    */
   readonly ec2KeyPair?: string;
 
@@ -170,39 +192,24 @@ export interface ComputeResources {
  */
 export interface ComputeEnvironmentProps {
   /**
-   * The allocation strategy to use for the compute resource in case not enough instances ofthe best
-   * fitting instance type can be allocated. This could be due to availability of the instance type in
-   * the region or Amazon EC2 service limits. If this is not specified, the default is BEST_FIT, which
-   * will use only the best fitting instance type, waiting for additional capacity if it's not available.
-   * This allocation strategy keeps costs lower but can limit scaling. If you are using Spot Fleets with
-   * BEST_FIT then the Spot Fleet IAM Role must be specified. BEST_FIT_PROGRESSIVE will select an additional
-   * instance type that is large enough to meet the requirements of the jobs in the queue, with a preference
-   * for an instance type with a lower cost. SPOT_CAPACITY_OPTIMIZED is only available for Spot Instance
-   * compute resources and will select an additional instance type that is large enough to meet the requirements
-   * of the jobs in the queue, with a preference for an instance type that is less likely to be interrupted.
-   *
-   * @default AllocationStrategy.BEST_FIT
-   */
-  readonly allocationStrategy?: AllocationStrategy;
-
-  /**
    * A name for the compute environment.
    *
    * Up to 128 letters (uppercase and lowercase), numbers, hyphens, and underscores are allowed.
    *
-   * @default Cloudformation-generated name
+   * @default - CloudFormation-generated name
    */
   readonly computeEnvironmentName?: string;
 
   /**
-   * The details of the compute resources managed by this environment.
+   * The details of the required compute resources for the managed compute environment.
    *
-   * If specified, and this is an managed compute environment, the property will be ignored.
+   * If specified, and this is an unmanaged compute environment, will throw an error.
    *
    * By default, AWS Batch managed compute environments use a recent, approved version of the
    * Amazon ECS-optimized AMI for compute resources.
    *
-   * @default - AWS-managed compute resources
+   * @default - CloudFormation defaults
+   * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html
    */
   readonly computeResources?: ComputeResources;
 
@@ -302,19 +309,29 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
     const spotFleetRole = this.getSpotFleetRole(props);
     let computeResources: CfnComputeEnvironment.ComputeResourcesProperty | undefined;
 
-    // Only allow compute resources to be set when using UNMANAGED type
-    if (props.computeResources && !this.isManaged(props)) {
+    // Only allow compute resources to be set when using MANAGED type
+    if (props.computeResources && this.isManaged(props)) {
       computeResources = {
-        allocationStrategy: props.allocationStrategy || AllocationStrategy.BEST_FIT,
+        allocationStrategy: props.computeResources.allocationStrategy
+         || (
+             props.computeResources.type === ComputeResourceType.SPOT
+             ? AllocationStrategy.SPOT_CAPACITY_OPTIMIZED
+             : AllocationStrategy.BEST_FIT
+            ),
         bidPercentage: props.computeResources.bidPercentage,
         desiredvCpus: props.computeResources.desiredvCpus,
         ec2KeyPair: props.computeResources.ec2KeyPair,
         imageId: props.computeResources.image && props.computeResources.image.getImage(this).imageId,
         instanceRole: props.computeResources.instanceRole
-          ? props.computeResources.instanceRole.roleArn
-          : new iam.Role(this, 'Resource-Instance-Role', {
-            assumedBy: new iam.ServicePrincipal('batch.amazonaws.com'),
-          }).roleArn,
+          ? props.computeResources.instanceRole
+          : new iam.CfnInstanceProfile(this, 'Instance-Profile', {
+              roles: [ new iam.Role(this, 'Ecs-Instance-Role', {
+                assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+                managedPolicies: [
+                    iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonEC2ContainerServiceforEC2Role')
+                    ]
+              }).roleName]
+          }).attrArn,
         instanceTypes: this.buildInstanceTypes(props.computeResources.instanceTypes),
         maxvCpus: props.computeResources.maxvCpus || 256,
         minvCpus: props.computeResources.minvCpus || 0,
@@ -338,7 +355,7 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
           assumedBy: new iam.ServicePrincipal('batch.amazonaws.com'),
         }).roleArn,
       state: props.enabled === undefined ? 'ENABLED' : (props.enabled ? 'ENABLED' : 'DISABLED'),
-      type: this.isManaged(props) ? 'UNMANAGED' : 'MANAGED',
+      type: this.isManaged(props) ? 'MANAGED' : 'UNMANAGED',
     });
 
     if (props.computeResources && props.computeResources.vpc) {
@@ -365,12 +382,12 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
       return;
     }
 
-    if (this.isManaged(props) && props.computeResources !== undefined) {
-      throw new Error('It is not allowed to set computeResources on an AWS managed compute environment');
+    if (!this.isManaged(props) && props.computeResources !== undefined) {
+      throw new Error('It is not allowed to set computeResources on an AWS unmanaged compute environment');
     }
 
-    if (!this.isManaged(props) && props.computeResources === undefined) {
-      throw new Error('computeResources is missing but required on an unmanaged compute environment');
+    if (this.isManaged(props) && props.computeResources === undefined) {
+      throw new Error('computeResources is missing but required on a managed compute environment');
     }
 
     // Setting a bid percentage is only allowed on SPOT resources +
@@ -385,7 +402,7 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
         }
 
         // SPOT_CAPACITY_OPTIMIZED allocation is not allowed
-        if (props.allocationStrategy && props.allocationStrategy === AllocationStrategy.SPOT_CAPACITY_OPTIMIZED) {
+        if (props.computeResources.allocationStrategy && props.computeResources.allocationStrategy === AllocationStrategy.SPOT_CAPACITY_OPTIMIZED) {
           throw new Error('The SPOT_CAPACITY_OPTIMIZED allocation strategy is only allowed if the environment is a SPOT type compute environment');
         }
       } else {
@@ -440,7 +457,7 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
    * @param props - the compute environment construct properties
    */
   private getSpotFleetRole(props: ComputeEnvironmentProps): iam.IRole | undefined {
-    if (props.allocationStrategy && props.allocationStrategy !== AllocationStrategy.BEST_FIT) {
+    if (props.computeResources?.allocationStrategy && props.computeResources.allocationStrategy !== AllocationStrategy.BEST_FIT) {
       return undefined;
     }
 
