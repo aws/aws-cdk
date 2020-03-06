@@ -43,6 +43,7 @@ export interface RuleTargetConfig {
 
   /**
    * Parameters used when the rule invokes Amazon AWS Batch Job/Queue
+   * @default no parameters set
    */
   readonly batchParameters?: CfnRule.BatchParametersProperty;
 

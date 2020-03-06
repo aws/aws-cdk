@@ -1,5 +1,6 @@
-import * as events from '@aws-cdk/aws-events';
 import * as batch from '@aws-cdk/aws-batch';
+import { ContainerImage } from '@aws-cdk/aws-ecs';
+import * as events from '@aws-cdk/aws-events';
 import * as cdk from '@aws-cdk/core';
 import * as targets from '../../lib';
 
@@ -8,7 +9,11 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'batch-events');
 
 const queue = new batch.JobQueue(stack, 'MyQueue');
-const job = new batch.JobDefinition(stack, 'MyJob');
+const job = new batch.JobDefinition(stack, 'MyJob', {
+  container: {
+    image: ContainerImage.fromRegistry('test-repo')
+  }
+});
 
 const timer = new events.Rule(stack, 'Timer', {
   schedule: events.Schedule.rate(cdk.Duration.minutes(1)),

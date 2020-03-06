@@ -1,6 +1,51 @@
 {
     "Resources": {
-      "MyFuncServiceRole54065130": {
+      "MyJob8719E923": {
+        "Type": "AWS::Batch::JobDefinition",
+        "Properties": {
+          "ContainerProperties": {
+            "Image": "test-repo",
+            "Memory": 4,
+            "Privileged": false,
+            "ReadonlyRootFilesystem": false,
+            "Vcpus": 1
+          },
+          "RetryStrategy": {
+            "Attempts": 1
+          },
+          "Timeout": {},
+          "Type": "container"
+        }
+      },
+      "MyQueueE6CA6235": {
+        "Type": "AWS::Batch::JobQueue",
+        "Properties": {
+          "ComputeEnvironmentOrder": [
+            {
+              "ComputeEnvironment": {
+                "Ref": "MyQueueResourceBatchComputeEnvironment03CD666B"
+              },
+              "Order": 1
+            }
+          ],
+          "Priority": 1,
+          "State": "ENABLED"
+        }
+      },
+      "MyQueueResourceBatchComputeEnvironment03CD666B": {
+        "Type": "AWS::Batch::ComputeEnvironment",
+        "Properties": {
+          "ServiceRole": {
+            "Fn::GetAtt": [
+              "MyQueueResourceBatchComputeEnvironmentResourceServiceInstanceRole527D247A",
+              "Arn"
+            ]
+          },
+          "State": "ENABLED",
+          "Type": "UNMANAGED"
+        }
+      },
+      "MyJobEventsRoleCF43C336": {
         "Type": "AWS::IAM::Role",
         "Properties": {
           "AssumeRolePolicyDocument": {
@@ -9,7 +54,24 @@
                 "Action": "sts:AssumeRole",
                 "Effect": "Allow",
                 "Principal": {
-                  "Service": "lambda.amazonaws.com"
+                  "Service": "events.amazonaws.com"
+                }
+              }
+            ],
+            "Version": "2012-10-17"
+          }
+        }
+      },
+      "MyQueueResourceBatchComputeEnvironmentResourceServiceInstanceRole527D247A": {
+        "Type": "AWS::IAM::Role",
+        "Properties": {
+          "AssumeRolePolicyDocument": {
+            "Statement": [
+              {
+                "Action": "sts:AssumeRole",
+                "Effect": "Allow",
+                "Principal": {
+                  "Service": "batch.amazonaws.com"
                 }
               }
             ],
@@ -24,68 +86,34 @@
                   {
                     "Ref": "AWS::Partition"
                   },
-                  ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                  ":iam::aws:policy/service-role/AWSBatchServiceRole"
                 ]
               ]
             }
           ]
         }
       },
-      "MyFunc8A243A2C": {
-        "Type": "AWS::Lambda::Function",
+      "MyJobEventsRoleDefaultPolicy7266D3A7": {
+        "Type": "AWS::IAM::Policy",
         "Properties": {
-          "Code": {
-            "ZipFile": "exports.handler = function handler(event, _context, callback) {\n    console.log(JSON.stringify(event, undefined, 2));\n    return callback();\n}"
+          "PolicyDocument": {
+            "Statement": [
+              {
+                "Action": "batch:SubmitJob",
+                "Effect": "Allow",
+                "Resource": {
+                  "Ref": "MyJob8719E923"
+                }
+              }
+            ],
+            "Version": "2012-10-17"
           },
-          "Handler": "index.handler",
-          "Role": {
-            "Fn::GetAtt": [
-              "MyFuncServiceRole54065130",
-              "Arn"
-            ]
-          },
-          "Runtime": "nodejs10.x"
-        },
-        "DependsOn": [
-          "MyFuncServiceRole54065130"
-        ]
-      },
-      "MyFuncAllowEventRulelambdaeventsTimer0E6AB6D8E3B334A3": {
-        "Type": "AWS::Lambda::Permission",
-        "Properties": {
-          "Action": "lambda:InvokeFunction",
-          "FunctionName": {
-            "Fn::GetAtt": [
-              "MyFunc8A243A2C",
-              "Arn"
-            ]
-          },
-          "Principal": "events.amazonaws.com",
-          "SourceArn": {
-            "Fn::GetAtt": [
-              "TimerBF6F831F",
-              "Arn"
-            ]
-          }
-        }
-      },
-      "MyFuncAllowEventRulelambdaeventsTimer27F866A1E0669C645": {
-        "Type": "AWS::Lambda::Permission",
-        "Properties": {
-          "Action": "lambda:InvokeFunction",
-          "FunctionName": {
-            "Fn::GetAtt": [
-              "MyFunc8A243A2C",
-              "Arn"
-            ]
-          },
-          "Principal": "events.amazonaws.com",
-          "SourceArn": {
-            "Fn::GetAtt": [
-              "Timer2B6F162E9",
-              "Arn"
-            ]
-          }
+          "PolicyName": "MyJobEventsRoleDefaultPolicy7266D3A7",
+          "Roles": [
+            {
+              "Ref": "MyJobEventsRoleCF43C336"
+            }
+          ]
         }
       },
       "TimerBF6F831F": {
@@ -96,12 +124,15 @@
           "Targets": [
             {
               "Arn": {
+                "Ref": "MyQueueE6CA6235"
+              },
+              "Id": "Target0",
+              "RoleArn": {
                 "Fn::GetAtt": [
-                  "MyFunc8A243A2C",
+                  "MyJobEventsRoleCF43C336",
                   "Arn"
                 ]
-              },
-              "Id": "Target0"
+              }
             }
           ]
         }
@@ -114,12 +145,15 @@
           "Targets": [
             {
               "Arn": {
+                "Ref": "MyQueueE6CA6235"
+              },
+              "Id": "Target0",
+              "RoleArn": {
                 "Fn::GetAtt": [
-                  "MyFunc8A243A2C",
+                  "MyJobEventsRoleCF43C336",
                   "Arn"
                 ]
-              },
-              "Id": "Target0"
+              }
             }
           ]
         }

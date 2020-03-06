@@ -1,5 +1,5 @@
-import * as events from '@aws-cdk/aws-events';
 import * as batch from '@aws-cdk/aws-batch';
+import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import { singletonEventRole } from './util';
 
@@ -19,17 +19,17 @@ export interface BatchJobProps {
 
   /**
    * The size of the array, if this is an array batch job.
-   * 
+   *
    * Valid values are integers between 2 and 10,000.
-   * 
-   * @default undefined
+   *
+   * @default no arrayProperties are set
    */
   readonly size?: number;
 
   /**
-   * The number of times to attempt to retry, if the job fails. Valid values are 1–10. 
-   * 
-   * @default undefined
+   * The number of times to attempt to retry, if the job fails. Valid values are 1–10.
+   *
+   * @default no retryStrategy is set
    */
   readonly attempts?: number;
 }
@@ -40,31 +40,36 @@ export interface BatchJobProps {
  */
 export class BatchJob implements events.IRuleTarget {
   constructor(
-    public readonly jobQueue: batch.IJobQueue,
-    public readonly jobDefinition: batch.IJobDefinition,
+    private readonly jobQueue: batch.IJobQueue,
+    private readonly jobDefinition: batch.IJobDefinition,
     private readonly props: BatchJobProps = {}
   ) { }
-  
+
   /**
    * Returns a RuleTarget that can be used to trigger queue this batch job as a
    * result from a CloudWatch event.
    */
-  public bind(rule: events.IRule, _id?: string): events.RuleTargetConfig {
-    let batchParameters: events.CfnRule.BatchParametersProperty = {
-      jobDefinition: this.jobDefinition.jobDefinitionArn
-    }
+  public bind(_rule: events.IRule, _id?: string): events.RuleTargetConfig {
+    const baseBatchParameters: any = {
+      jobDefinition: this.jobDefinition.jobDefinitionArn,
+      jobName: this.jobDefinition.jobDefinitionName
+    };
 
     if (this.props.size) {
-      batchParameters['arrayProperties'] = {
+      const arrayPropertyKey = 'arrayProperties';
+      baseBatchParameters[arrayPropertyKey] = {
         size: this.props.size
-      }
+      };
     }
 
     if (this.props.attempts) {
-      batchParameters['retryStrategy'] = {
+      const retryStrategyKey = 'retryStrategy';
+      baseBatchParameters[retryStrategyKey] = {
         attempts: this.props.attempts
-      }
+      };
     }
+
+    const batchParameters: events.CfnRule.BatchParametersProperty = baseBatchParameters;
 
     return {
       id: '',
