@@ -35,7 +35,21 @@ const cluster = new DatabaseCluster(this, 'Database', {
             subnetType: ec2.SubnetType.PUBLIC,
         },
         vpc
-    },
+    }
+});
+```
+By default, the master password will be generated and stored in AWS Secrets Manager with auto-generated description.
+
+Your cluster will be empty by default. To add a default database upon construction, specify the
+`defaultDatabaseName` attribute.
+
+### Adding associated roles to a cluster
+
+To add associated roles to a clustered database, add IAM role references to the associatedRoles property on the DatabaseCluster construct. Associated roles are used to enable features that access other services, for example S3 integration.
+
+```ts
+const cluster = new DatabaseCluster(this, 'Database', {
+    ...
     associatedRoles: [
         {
             role: s3AccessRole
@@ -43,10 +57,6 @@ const cluster = new DatabaseCluster(this, 'Database', {
     ]
 });
 ```
-By default, the master password will be generated and stored in AWS Secrets Manager with auto-generated description.
-
-Your cluster will be empty by default. To add a default database upon construction, specify the
-`defaultDatabaseName` attribute.
 
 ### Starting an Instance Database
 To set up a instance database, define a `DatabaseInstance`. You must
