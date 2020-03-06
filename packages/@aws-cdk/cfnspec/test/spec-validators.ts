@@ -120,7 +120,7 @@ function validateAttributes(typeName: string,
                             specification: schema.Specification) {
   for (const name of Object.keys(attributes)) {
     const attribute = attributes[name];
-    test.ok(('Type' in attribute) !== ('PrimitiveType' in attribute));
+    test.ok(('Type' in attribute) !== ('PrimitiveType' in attribute), 'One of, and only one of, Type or PrimitiveType must be present');
     if (schema.isPrimitiveAttribute(attribute)) {
       test.ok(!schema.isListAttribute(attribute), `${typeName}.Attributes.${name} is only a Primitive type`);
       test.ok(schema.isPrimitiveType(attribute.PrimitiveType), `${typeName}.Attributes.${name} has a valid PrimitiveType`);
