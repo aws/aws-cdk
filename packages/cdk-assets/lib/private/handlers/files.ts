@@ -39,7 +39,7 @@ export class FileAssetHandler implements IAssetHandler {
     const contentType = this.asset.source.packaging === FileAssetPackaging.ZIP_DIRECTORY ? 'application/zip' : undefined;
 
     this.host.emitMessage(EventType.UPLOAD, `Upload ${s3Url}`);
-    await s3.putObject({
+    await s3.upload({
       Bucket: destination.bucketName,
       Key: destination.objectKey,
       Body: createReadStream(publishFile),
@@ -71,7 +71,7 @@ export class FileAssetHandler implements IAssetHandler {
 
 async function bucketExist(s3: AWS.S3, bucket: string) {
   try {
-    await s3.getBucketLocation({ Bucket: bucket });
+    await s3.getBucketLocation({ Bucket: bucket }).promise();
     return true;
   } catch (e) {
     if (['NoSuchBucket', 'AccessDenied', 'AllAccessDisabled'].includes(e.code)) {

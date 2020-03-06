@@ -22,25 +22,27 @@ export class ContainerImageAssetHandler implements IAssetHandler {
 
     const ecr = await this.host.aws.ecrClient(destination);
 
-    const uri = await repositoryUri(ecr, destination.repositoryName);
-    if (!uri) {
+    const repoUri = await repositoryUri(ecr, destination.repositoryName);
+    if (!repoUri) {
       throw new Error(`No ECR repository with name '${destination.repositoryName}' in account. Is this account bootstrapped?`);
     }
 
-    this.host.emitMessage(EventType.CHECK, `Check ${uri}`);
+    const imageUri = `${repoUri}:${destination.imageTag}`;
+
+    this.host.emitMessage(EventType.CHECK, `Check ${imageUri}`);
     if (await imageExists(ecr, destination.repositoryName, destination.imageTag)) {
-      this.host.emitMessage(EventType.FOUND, `Found ${uri}`);
+      this.host.emitMessage(EventType.FOUND, `Found ${imageUri}`);
       return;
     }
 
     if (this.host.aborted) { return; }
+    await this.docker.login(ecr);
     await this.buildImage();
 
-    this.host.emitMessage(EventType.UPLOAD, `Push ${uri}`);
+    this.host.emitMessage(EventType.UPLOAD, `Push ${imageUri}`);
     if (this.host.aborted) { return; }
-    await this.docker.tag(this.localTagName, uri);
-    await this.docker.login(ecr);
-    await this.docker.push(uri);
+    await this.docker.tag(this.localTagName, imageUri);
+    await this.docker.push(imageUri);
   }
 
   private async buildImage(): Promise<void> {
