@@ -2,6 +2,7 @@ import * as kinesis from '@aws-cdk/aws-kinesis';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sqs from '@aws-cdk/aws-sqs';
 import { App, Stack } from "@aws-cdk/core";
+import * as path from 'path';
 import { KinesisEventSource, SqsDlq } from '../lib';
 
 /*
@@ -40,21 +41,7 @@ class KinesisWithDLQTest extends Stack {
         new lambda.Function(this, 'FP', {
             runtime: lambda.Runtime.NODEJS_10_X,
             handler: 'index.handler',
-            code: lambda.Code.fromInline(`
-var AWS = require('aws-sdk');
-exports.handler = event => {
-    const kinesis = new AWS.Kinesis();
-    kinesis.putRecord({
-        Data: 'Hello World',
-        PartitionKey: 'Hello Key',
-        StreamName: '${stream.streamName}'
-    }, (err, data) => {
-        if (err) {
-            console.log(\`Error: \${err}\`);
-        }
-    })
-}
-            `)
+            code: lambda.AssetCode.fromAsset(path.join(__dirname, 'integ.kinesiswithdlq.handler'))
         });
     }
 }
