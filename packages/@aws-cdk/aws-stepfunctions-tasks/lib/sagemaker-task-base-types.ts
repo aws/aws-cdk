@@ -626,51 +626,54 @@ export enum AssembleWith {
 
 }
 
-
 /**
  * Specifies the containers in the inference pipeline.
- * 
+ *
  * @experimental
  */
 export interface ModelContainer {
-    
-    /**
-    * This parameter is ignored for models that contain only a PrimaryContainer
-    */ 
-    readonly ContainerHostname?: string
 
     /**
-     * The environment variables to set in the Docker container. Each key and value in the Environment string to string map can have length of up to 1024. We support up to 16 entries in the map.
+     * This parameter is ignored for models that contain only a PrimaryContainer
      */
-    readonly Environment?: {[key: string]: string}
+    readonly containerHostname?: string
+
+    /**
+     * The environment variables to set in the Docker container.
+     * Each key and value in the Environment string to string map can have length of up to 1024.
+     * We support up to 16 entries in the map.
+     */
+    readonly environment?: {[key: string]: string}
 
     /**
      * The Amazon EC2 Container Registry (Amazon ECR) path where inference code is stored.
      */
-    readonly Image: DockerImage
+    readonly image: DockerImage
 
     /**
      * Whether the container hosts a single model or multiple models.
      */
-    readonly Mode?: ModelContainerMode
+    readonly mode?: ModelContainerMode
 
     /**
-     * The S3 path where the model artifacts, which result from model training, are stored. This path must point to a single gzip compressed tar archive (.tar.gz suffix). The S3 path is required for Amazon SageMaker built-in algorithms, but not if you use your own algorithms.
+     * The S3 path where the model artifacts, which result from model training, are stored.
+     * This path must point to a single gzip compressed tar archive (.tar.gz suffix).
+     * The S3 path is required for Amazon SageMaker built-in algorithms, but not if you use your own algorithms.
      */
-    readonly ModelDataUrl?: string
+    readonly modelDataUrl?: string
 
     /**
      * The name or Amazon Resource Name (ARN) of the model package to use to create the model.
      */
-    readonly ModelPackageName?: string
+    readonly modelPackageName?: string
 
 }
 
 /**
-* Whether the container hosts a single model or multiple models
-* 
-* @experimental
-*/
+ * Whether the container hosts a single model or multiple models
+ *
+ * @experimental
+ */
 export enum ModelContainerMode {
     SINGLEMODEL = 'SingleModel',
     MULTIMODEL = 'MultiModel'
@@ -678,111 +681,124 @@ export enum ModelContainerMode {
 
 /**
  * Specifies the containers in the inference pipeline.
- * 
+ *
  * @experimental
  */
 export interface ProductionVariants {
-    
+
     /**
-    * The size of the Elastic Inference (EI) instance to use for the production variant. EI instances provide on-demand GPU computing for inference.
-    */ 
-    readonly AcceleratorType?: string
+     * The size of the Elastic Inference (EI) instance to use for the production variant. EI instances provide on-demand GPU computing for inference.
+     */
+    readonly acceleratorType?: string
 
     /**
      * Number of instances to launch initially
-     * 
+     *
      * @default 1 instance.
      */
-    readonly InitialInstanceCount: number
+    readonly initialInstanceCount: number
 
     /**
      * The Determines initial traffic distribution among all of the models that you specify in the endpoint configuration.
+     *
+     * @default 1
      */
-    readonly InitialVariantWeight?: number
+    readonly initialVariantWeight?: number
 
     /**
      * The ML compute instance type.
      */
-    readonly InstanceType: ec2.InstanceType
+    readonly instanceType: ec2.InstanceType
 
     /**
      * The name of the model that you want to host. This is the name that you specified when creating the model.
      */
-    readonly ModelName: string
+    readonly modelName: string
 
     /**
      * The name of the production variant.
      */
-    readonly VariantName: string
+    readonly variantName: string
 
 }
 
 /**
- * Specifies the containers in the inference pipeline.
- * 
+ * See https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_DataCaptureConfig.html
+ *
  * @experimental
  */
 export interface DataCaptureConfig {
-    
     /**
-    * The size of the Elastic Inference (EI) instance to use for the production variant. EI instances provide on-demand GPU computing for inference.
-    */ 
-    readonly CaptureContentTypeHeader?: CaptureContentTypeHeader
+     * The size of the Elastic Inference (EI) instance to use for the production variant. EI instances provide on-demand GPU computing for inference.
+     */
+    readonly captureContentTypeHeader?: CaptureContentTypeHeader
 
     /**
      * Number of instances to launch initially
-     * 
+     *
      * @default 1 instance.
      */
-    readonly CaptureOptions: CaptureOptions[]
+    readonly captureOptions: CaptureOptions[]
 
     /**
      * The Determines initial traffic distribution among all of the models that you specify in the endpoint configuration.
      */
-    readonly DestinationS3Uri: string
+    readonly destinationS3Uri: string
 
     /**
      * The ML compute instance type.
      */
-    readonly EnableCapture?: boolean
+    readonly enableCapture?: boolean
 
     /**
      * The name of the model that you want to host. This is the name that you specified when creating the model.
      */
-    readonly InitialSamplingPercentage: number
+    readonly initialSamplingPercentage: number
 
     /**
      * The name of the production variant.
      */
-    readonly KmsKeyId?: string
+    readonly kmsKeyId?: string
 
 }
-
-
-export interface CaptureContentTypeHeader {
-    readonly CsvContentTypes?: string
-    readonly JsonContentTypes?: string
-}
-
 
 /**
-* Whether the container hosts a single model or multiple models
-* 
-* @experimental
-*/
+ * https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_CaptureContentTypeHeader.html
+ *
+ * @experimental
+ */
+export interface CaptureContentTypeHeader {
+    readonly csvContentTypes?: string
+    readonly jsonContentTypes?: string
+}
+
+/**
+ * Whether the container hosts a single model or multiple models
+ *
+ * @experimental
+ */
 export enum CaptureMode {
     INPUT = 'Input',
     OUTPUT = 'Output'
 }
 
+/**
+ * Specifies a production variant property type for an Endpoint
+ * @experimental
+ */
 export enum VariantPropertyType {
-    DESIRED_INSTANCE_COUNT='DesiredInstanceCount',
-    DESIRED_WEIGHT='DesiredWeight',
-    DATA_CAPTURE_CONFIG='DataCaptureConfig'
+    DESIRED_INSTANCE_COUNT = 'DesiredInstanceCount',
+    DESIRED_WEIGHT = 'DesiredWeight',
+    DATA_CAPTURE_CONFIG = 'DataCaptureConfig'
 }
 
+/**
+ * Specifies a production variant property type for an Endpoint
+ *
+ * @experimental
+ */
 export interface CaptureOptions {
-    readonly CaptureMode: CaptureMode
+    readonly captureMode: CaptureMode
 }
 
 class StandardDockerImage extends DockerImage {

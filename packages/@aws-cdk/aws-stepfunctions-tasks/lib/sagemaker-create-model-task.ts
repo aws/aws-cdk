@@ -3,13 +3,12 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Lazy, Stack } from '@aws-cdk/core';
 import { getResourceArn } from './resource-arn-suffix';
-import { VpcConfig, ModelContainer } from './sagemaker-task-base-types';
+import { ModelContainer, VpcConfig } from './sagemaker-task-base-types';
 
 /**
  *  @experimental
  */
 export interface SagemakerCreateModelTaskProps {
-
 
     /**
      * Specifies the containers in the inference pipeline.
@@ -22,7 +21,8 @@ export interface SagemakerCreateModelTaskProps {
     readonly EnableNetworkIsolation?: boolean;
 
     /**
-     * The Amazon Resource Name (ARN) of the IAM role that Amazon SageMaker can assume to access model artifacts and docker image for deployment on ML compute instances or for batch transform jobs. 
+     * The Amazon Resource Name (ARN) of the IAM role that Amazon SageMaker can assume to access model artifacts and
+     * docker image for deployment on ML compute instances or for batch transform jobs.
      */
     readonly ExecutionRoleArn?: string;
 
@@ -32,7 +32,8 @@ export interface SagemakerCreateModelTaskProps {
     readonly ModelName: string;
 
     /**
-     * The location of the primary docker image containing inference code, associated artifacts, and custom environment map that the inference code uses when the model is deployed for predictions.
+     * The location of the primary docker image containing inference code, associated artifacts, and
+     * custom environment map that the inference code uses when the model is deployed for predictions.
      */
     readonly PrimaryContainer?: ModelContainer;
 
@@ -41,12 +42,10 @@ export interface SagemakerCreateModelTaskProps {
      */
     readonly tags?: {[key: string]: string};
 
-
     /**
      * A VpcConfig object that specifies the VPC that you want your model to connect to.
      */
     readonly vpcConfig?: VpcConfig;
-
 
     /**
      * An execution role that you can pass in a CreateModel API request
@@ -205,21 +204,21 @@ export class SagemakerCreateModelTask implements iam.IGrantable, ec2.IConnectabl
     }
 
     private renderContainers(config: ModelContainer[] | undefined): {[key: string]: any} {
-        return (config) ? { Containers: config.map(container => (this.renderContainer(container)))}: {} 
+        return (config) ? { Containers: config.map(container => (this.renderContainer(container)))} : {};
     }
 
     private renderPrimaryContainer(config: ModelContainer | undefined): {[key: string]: any} {
-        return (config) ? {PrimaryContainer: this.renderContainer(config)}:{}
+        return (config) ? {PrimaryContainer: this.renderContainer(config)} : {};
     }
 
     private renderContainer(container: ModelContainer): {[key: string]: any} {
-        return (container)? {
-            ...(container.ContainerHostname) ? { ContainerHostname: container.ContainerHostname }: {},
-            ...(container.Image) ? { Image: container.Image.bind(this).imageUri }: {},
-            ...(container.Mode) ? { Mode: container.Mode }: {},
-            ...(container.ModelDataUrl) ? { ModelDataUrl: container.ModelDataUrl }: {},
-            ...(container.ModelPackageName) ? { ModelPackageName: container.ModelPackageName }: {},
-        } : {}
+        return (container) ? {
+            ...(container.containerHostname) ? { ContainerHostname: container.containerHostname } : {},
+            ...(container.image) ? { Image: container.image.bind(this).imageUri } : {},
+            ...(container.mode) ? { Mode: container.mode } : {},
+            ...(container.modelDataUrl) ? { ModelDataUrl: container.modelDataUrl } : {},
+            ...(container.modelPackageName) ? { ModelPackageName: container.modelPackageName } : {},
+        } : {};
     }
 
     private renderTags(tags: {[key: string]: any} | undefined): {[key: string]: any} {
@@ -234,7 +233,7 @@ export class SagemakerCreateModelTask implements iam.IGrantable, ec2.IConnectabl
     }
 
     private makePolicyStatements(task: sfn.Task): iam.PolicyStatement[] {
-        const stack = Stack.of(task);
+        Stack.of(task);
 
         // https://docs.aws.amazon.com/step-functions/latest/dg/sagemaker-iam.html
         const policyStatements = [

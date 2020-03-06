@@ -18,7 +18,6 @@ export interface SagemakerCreateEndpointTaskProps {
      */
     readonly EndpointName: string;
 
-
     /**
      * Tags to be applied to the Endpoint.
      */
@@ -56,7 +55,6 @@ export class SagemakerCreateEndpointTask implements sfn.IStepFunctionsTask {
         }
     }
 
-
     public bind(task: sfn.Task): sfn.StepFunctionsTaskConfig  {
 
         return {
@@ -79,7 +77,7 @@ export class SagemakerCreateEndpointTask implements sfn.IStepFunctionsTask {
     }
 
     private makePolicyStatements(task: sfn.Task): iam.PolicyStatement[] {
-        const stack = Stack.of(task);
+        Stack.of(task);
 
         // https://docs.aws.amazon.com/step-functions/latest/dg/sagemaker-iam.html
         const policyStatements = [

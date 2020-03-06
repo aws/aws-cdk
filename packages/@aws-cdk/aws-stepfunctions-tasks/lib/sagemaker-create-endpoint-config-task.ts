@@ -2,13 +2,12 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Stack } from '@aws-cdk/core';
 import { getResourceArn } from './resource-arn-suffix';
-import { ProductionVariants, DataCaptureConfig } from './sagemaker-task-base-types';
+import { DataCaptureConfig, ProductionVariants } from './sagemaker-task-base-types';
 
 /**
  *  @experimental
  */
 export interface SagemakerCreateEndpointConfigTaskProps {
-
 
     /**
      * The request accepts the following data in JSON format.
@@ -26,7 +25,8 @@ export interface SagemakerCreateEndpointConfigTaskProps {
     readonly KmsKeyId?: string;
 
     /**
-     * The Amazon Resource Name (ARN) of the IAM role that Amazon SageMaker can assume to access model artifacts and docker image for deployment on ML compute instances or for batch transform jobs. 
+     * The Amazon Resource Name (ARN) of the IAM role that Amazon SageMaker can assume to access model artifacts and
+     * docker image for deployment on ML compute instances or for batch transform jobs.
      */
     readonly ProductionVariants: ProductionVariants[];
 
@@ -63,7 +63,8 @@ export class SagemakerCreateEndpointConfigTask implements sfn.IStepFunctionsTask
         ];
 
         if (!supportedPatterns.includes(this.integrationPattern)) {
-            throw new Error(`Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call SageMaker:CreateEndpointConfig.`);
+            throw new Error(`Invalid Service Integration Pattern: ${this.integrationPattern}
+            is not supported to call SageMaker:CreateEndpointConfig.`);
         }
     }
 
@@ -88,37 +89,37 @@ export class SagemakerCreateEndpointConfigTask implements sfn.IStepFunctionsTask
 
     private renderDataCaptureConfig(config: DataCaptureConfig | undefined): {[key: string]: any} {
         return (config) ? { DataCaptureConfig: {
-            DestinationS3Uri: config.DestinationS3Uri,  
-            InitialSamplingPercentage: config.InitialSamplingPercentage,
-            ...(config.KmsKeyId) ? {KmsKeyId: config.KmsKeyId} : {},
-            ...(config.EnableCapture) ? {EnableCapture: config.EnableCapture} : {},
-            ...(config.CaptureOptions) ? { CaptureOptions: config.CaptureOptions.map(
+            DestinationS3Uri: config.destinationS3Uri,
+            InitialSamplingPercentage: config.initialSamplingPercentage,
+            ...(config.kmsKeyId) ? {KmsKeyId: config.kmsKeyId} : {},
+            ...(config.enableCapture) ? {EnableCapture: config.enableCapture} : {},
+            ...(config.captureOptions) ? { CaptureOptions: config.captureOptions.map(
                 captureOption => ({
-                    CaptureMode: captureOption.CaptureMode
+                    CaptureMode: captureOption.captureMode
                 })
             )} : {},
-            ...(config.CaptureContentTypeHeader) ? {
+            ...(config.captureContentTypeHeader) ? {
                 CaptureContentTypeHeader: {
-                    CsvContentTypes: config.CaptureContentTypeHeader.CsvContentTypes,
-                    JsonContentTypes: config.CaptureContentTypeHeader.JsonContentTypes
+                    CsvContentTypes: config.captureContentTypeHeader.csvContentTypes,
+                    JsonContentTypes: config.captureContentTypeHeader.jsonContentTypes
                 }
             } : {}
-        } } : {}
+        } } : {};
     }
 
     private renderKmsKeyId(config: string | undefined): {[key: string]: any} {
-        return (config) ? {KmsKeyId: config} : {}
+        return (config) ? {KmsKeyId: config} : {};
     }
 
     private renderProductionVariants(configs: ProductionVariants[]): {[key: string]: any} {
-        return (configs)? { ProductionVariants: configs.map(config => ({
-                ...(config.AcceleratorType) ? { AcceleratorType: config.AcceleratorType }: {},
-                ...(config.InitialInstanceCount) ? { InitialInstanceCount: config.InitialInstanceCount }: {},
-                ...(config.InitialVariantWeight) ? { InitialVariantWeight: config.InitialVariantWeight }: {},
-                ...(config.InstanceType) ? { InstanceType: 'ml.' + config.InstanceType.toString() }: {},
-                ...(config.ModelName) ? { ModelName: config.ModelName }: {},
-                ...(config.VariantName) ? { VariantName: config.VariantName }: {},
-            }))}: {}
+        return (configs) ? { ProductionVariants: configs.map(config => ({
+                ...(config.acceleratorType) ? { AcceleratorType: config.acceleratorType } : {},
+                ...(config.initialInstanceCount) ? { InitialInstanceCount: config.initialInstanceCount } : {},
+                ...(config.initialVariantWeight) ? { InitialVariantWeight: config.initialVariantWeight } : {},
+                ...(config.instanceType) ? { InstanceType: 'ml.' + config.instanceType.toString() } : {},
+                ...(config.modelName) ? { ModelName: config.modelName } : {},
+                ...(config.variantName) ? { VariantName: config.variantName } : {},
+            }))} : {};
     }
 
     private renderTags(tags: {[key: string]: any} | undefined): {[key: string]: any} {
@@ -126,7 +127,7 @@ export class SagemakerCreateEndpointConfigTask implements sfn.IStepFunctionsTask
     }
 
     private makePolicyStatements(task: sfn.Task): iam.PolicyStatement[] {
-        const stack = Stack.of(task);
+        Stack.of(task);
 
         // https://docs.aws.amazon.com/step-functions/latest/dg/sagemaker-iam.html
         const policyStatements = [

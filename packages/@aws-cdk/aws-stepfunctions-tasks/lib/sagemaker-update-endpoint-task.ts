@@ -24,7 +24,6 @@ export interface SagemakerUpdateEndpointTaskProps {
      */
     readonly ExcludeRetainedVariantProperties?: VariantPropertyType[];
 
-
     /**
      * When updating endpoint resources, enables or disables the retention of variant properties, such as the instance count or the variant weight. .
      */
@@ -81,17 +80,17 @@ export class SagemakerUpdateEndpointTask implements sfn.IStepFunctionsTask {
     }
 
     private renderRetainAllVariantProperties(config: boolean | undefined): {[key: string]: any} {
-        return (config) ? {RetainAllVariantProperties: config} : {}
+        return (config) ? {RetainAllVariantProperties: config} : {};
     }
 
     private renderProductionVariants(configs: VariantPropertyType[] | undefined): {[key: string]: any} {
-        return (configs)? { ExcludeRetainedVariantProperties: configs.map(config => ({
+        return (configs) ? { ExcludeRetainedVariantProperties: configs.map(config => ({
              VariantPropertyType: config }
-        ))}: {}
+        ))} : {};
     }
 
     private makePolicyStatements(task: sfn.Task): iam.PolicyStatement[] {
-        const stack = Stack.of(task);
+        Stack.of(task);
 
         // https://docs.aws.amazon.com/step-functions/latest/dg/sagemaker-iam.html
         const policyStatements = [
