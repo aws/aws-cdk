@@ -1,4 +1,5 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
+import { IRole } from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { Duration, SecretValue } from '@aws-cdk/core';
@@ -158,4 +159,22 @@ export interface RotationMultiUserOptions {
    * @default Duration.days(30)
    */
   readonly automaticallyAfter?: Duration;
+}
+
+/**
+ * Describes an AWS Identity and Access Management (IAM) role that is associated with a DB cluster.
+ */
+export interface DatabaseClusterRole {
+  /**
+   * The name of the feature associated with the AWS Identity and Access Management (IAM) role.
+   *
+   * Example: 's3Import'
+   *
+   * @default no feature name
+   */
+  readonly featureName?: string;
+  /**
+   * The IAM role that is associated with the DB cluster.
+   */
+  readonly role: IRole;
 }

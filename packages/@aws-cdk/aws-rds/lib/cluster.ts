@@ -7,7 +7,7 @@ import { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { IParameterGroup } from './parameter-group';
-import { BackupProps, DatabaseClusterEngine, InstanceProps, Login, RotationMultiUserOptions } from './props';
+import { BackupProps, DatabaseClusterEngine, DatabaseClusterRole, InstanceProps, Login, RotationMultiUserOptions } from './props';
 import { CfnDBCluster, CfnDBInstance, CfnDBSubnetGroup } from './rds.generated';
 
 /**
@@ -141,6 +141,13 @@ export interface DatabaseClusterProps {
    * @default - A role is automatically created for you
    */
   readonly monitoringRole?: IRole;
+
+  /**
+   * Roles that will be associated with this DB cluster to enable features such as S3 import and export for Aurora.
+   *
+   * @default - No roles are associated with this DB cluster.
+   */
+  readonly associatedRoles?: DatabaseClusterRole[];
 }
 
 /**
@@ -317,6 +324,10 @@ export class DatabaseCluster extends DatabaseClusterBase {
       vpcSecurityGroupIds: [this.securityGroupId],
       port: props.port,
       dbClusterParameterGroupName: props.parameterGroup && props.parameterGroup.parameterGroupName,
+      associatedRoles: props.associatedRoles ? props.associatedRoles.map(associatedRole => ({
+        featureName: associatedRole.featureName,
+        roleArn: associatedRole.role.roleArn
+      })) : undefined,
       // Admin
       masterUsername: secret ? secret.secretValueFromJson('username').toString() : props.masterUser.username,
       masterUserPassword: secret

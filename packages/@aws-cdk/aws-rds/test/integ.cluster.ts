@@ -1,4 +1,5 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
+import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
 import { DatabaseCluster, DatabaseClusterEngine } from '../lib';
@@ -18,6 +19,11 @@ const params = new ClusterParameterGroup(stack, 'Params', {
 });
 
 const kmsKey = new kms.Key(stack, 'DbSecurity');
+
+const associatedRole = new iam.Role(stack, 'AssociatedRole', {
+  assumedBy: new iam.ServicePrincipal('rds.amazonaws.com'),
+});
+
 const cluster = new DatabaseCluster(stack, 'Database', {
   engine: DatabaseClusterEngine.AURORA,
   masterUser: {
@@ -31,6 +37,11 @@ const cluster = new DatabaseCluster(stack, 'Database', {
   },
   parameterGroup: params,
   kmsKey,
+  associatedRoles: [
+    {
+      role: associatedRole
+    }
+  ]
 });
 
 cluster.connections.allowDefaultPortFromAnyIpv4('Open to the world');
