@@ -13,12 +13,14 @@ const vpc = new ec2.Vpc(stack, 'vpc');
 new batch.JobQueue(stack, 'batch-job-queue', {
   computeEnvironments: [
     {
-      computeEnvironment: new batch.ComputeEnvironment(stack, 'batch-managed-compute-env'),
+      computeEnvironment: new batch.ComputeEnvironment(stack, 'batch-unmanaged-compute-env', {
+        managed: false
+      }),
       order: 1,
     },
     {
-      computeEnvironment: new batch.ComputeEnvironment(stack, 'batch-demand-compute-env', {
-        managed: false,
+      computeEnvironment: new batch.ComputeEnvironment(stack, 'batch-demand-compute-env-launch-template', {
+        managed: true,
         computeResources: {
           type: batch.ComputeResourceType.ON_DEMAND,
           vpc,
@@ -28,7 +30,7 @@ new batch.JobQueue(stack, 'batch-job-queue', {
     },
     {
       computeEnvironment: new batch.ComputeEnvironment(stack, 'batch-spot-compute-env', {
-        managed: false,
+        managed: true,
         computeResources: {
           type: batch.ComputeResourceType.SPOT,
           vpc,

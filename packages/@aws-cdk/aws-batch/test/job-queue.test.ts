@@ -9,7 +9,9 @@ describe('Batch Job Queue', () => {
 
   beforeEach(() => {
     stack = new cdk.Stack();
-    computeEnvironment = new batch.ComputeEnvironment(stack, 'test-compute-env');
+    computeEnvironment = new batch.ComputeEnvironment(stack, 'test-compute-env', {
+      managed: false
+    });
   });
 
   it('can be imported from an ARN', () => {
