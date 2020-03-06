@@ -437,7 +437,7 @@ class ImportedFoo extends FooBase {
 - [ ] Metrics (`metricXxx`)
 - [ ] Events (`onXxx`)
 - [ ] Security Groups (`connections`)
-- [ ] Pipeline Actions (`addToPipline`)
+- [ ] Pipeline Actions (`addToPipeline`)
 - [ ] SNS Targets
 - [ ] `_asFooTarget`
 - [ ] TODO: other cross AWS patterns
