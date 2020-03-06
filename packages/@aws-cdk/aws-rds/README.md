@@ -35,12 +35,7 @@ const cluster = new DatabaseCluster(this, 'Database', {
             subnetType: ec2.SubnetType.PUBLIC,
         },
         vpc
-    },
-    associatedRoles: [
-        {
-            role: s3AccessRole
-        }
-    ]
+    }
 });
 ```
 By default, the master password will be generated and stored in AWS Secrets Manager with auto-generated description.
