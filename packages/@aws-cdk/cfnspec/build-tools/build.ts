@@ -26,15 +26,19 @@ async function main() {
     }
   }
 
-  detectScrutinyTypes(spec);
-  replaceIncompleteTypes(spec);
-  dropTypelessAttributes(spec);
+  massageSpec(spec);
 
   spec.Fingerprint = md5(JSON.stringify(normalize(spec)));
 
   const outDir = path.join(process.cwd(), 'spec');
   await fs.mkdirp(outDir);
   await fs.writeJson(path.join(outDir, 'specification.json'), spec, { spaces: 2 });
+}
+
+export function massageSpec(spec: schema.Specification) {
+  detectScrutinyTypes(spec);
+  replaceIncompleteTypes(spec);
+  dropTypelessAttributes(spec);
 }
 
 function forEachSection(spec: schema.Specification, data: any, cb: (spec: any, fragment: any, path: string[]) => void) {
