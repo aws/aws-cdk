@@ -28,6 +28,7 @@ async function main() {
 
   detectScrutinyTypes(spec);
   replaceIncompleteTypes(spec);
+  dropTypelessAttributes(spec);
 
   spec.Fingerprint = md5(JSON.stringify(normalize(spec)));
 
@@ -72,6 +73,23 @@ function replaceIncompleteTypes(spec: schema.Specification) {
       (definition as unknown as schema.RecordProperty).Properties = {};
     }
   }
+}
+
+/**
+ * Drop Attributes specified with the different ResourceTypes that have
+ * no type specified.
+ */
+function dropTypelessAttributes(spec: schema.Specification) {
+  const resourceTypes = spec.ResourceTypes;
+  Object.values(resourceTypes).forEach((resourceType) => {
+    const attributes = resourceType.Attributes ?? {};
+    Object.keys(attributes).forEach((attrKey) => {
+      const attrVal = attributes[attrKey];
+      if (Object.keys(attrVal).length === 0) {
+        delete attributes[attrKey];
+      }
+    });
+  });
 }
 
 function merge(spec: any, fragment: any, jsonPath: string[]) {
