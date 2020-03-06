@@ -516,6 +516,48 @@ export = {
 
     test.done();
   },
+
+  'create a cluster with associated role'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, "VPC");
+
+    const associatedRole = new Role(stack, 'AssociatedRole', {
+      assumedBy: new ServicePrincipal('rds.amazonaws.com'),
+    });
+
+    // WHEN
+    new DatabaseCluster(stack, "Database", {
+      engine: DatabaseClusterEngine.AURORA,
+      instances: 1,
+      masterUser: {
+        username: "admin"
+      },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc
+      },
+      associatedRoles: [
+        {
+          role: associatedRole
+        }
+      ]
+    });
+
+    // THEN
+    expect(stack).to(haveResource("AWS::RDS::DBCluster", {
+      AssociatedRoles: [{
+        RoleArn: {
+          "Fn::GetAtt": [
+            "AssociatedRole824CFCD3",
+            "Arn"
+          ]
+        }
+      }]
+    }, ResourcePart.Properties));
+
+    test.done();
+  },
 };
 
 function testStack() {

@@ -416,6 +416,23 @@
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"
     },
+    "AssociatedRole824CFCD3": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "rds.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
     "DatabaseSubnets56F17B9A": {
       "Type": "AWS::RDS::DBSubnetGroup",
       "Properties": {
@@ -476,6 +493,16 @@
       "Type": "AWS::RDS::DBCluster",
       "Properties": {
         "Engine": "aurora",
+        "AssociatedRoles": [
+          {
+            "RoleArn": {
+              "Fn::GetAtt": [
+                "AssociatedRole824CFCD3",
+                "Arn"
+              ]
+            }
+          }
+        ],
         "DBClusterParameterGroupName": {
           "Ref": "ParamsA8366201"
         },
