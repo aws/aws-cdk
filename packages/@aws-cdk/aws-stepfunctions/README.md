@@ -209,7 +209,16 @@ task.next(nextState);
 ```ts
 import batch = require('@aws-cdk/aws-batch');
 
-const batchQueue = new batch.JobQueue(this, 'JobQueue');
+const batchQueue = new batch.JobQueue(this, 'JobQueue', {
+  computeEnvironments: [
+    {
+      order: 1,
+      computeEnvironment: new batch.ComputeEnvironment(this, 'ComputeEnv', {
+        computeResources: { vpc }
+      })
+    }
+  ]
+});
 
 const batchJobDefinition = new batch.JobDefinition(this, 'JobDefinition', {
   container: {
