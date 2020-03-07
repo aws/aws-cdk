@@ -197,12 +197,17 @@ export class Stage extends Resource {
     const methodSettings = this.renderMethodSettings(props); // this can mutate `this.cacheClusterEnabled`
 
     // custom access logging
+    let accessLogSetting: CfnStage.AccessLogSettingProperty | undefined;
     this.accessLogDestination = props.accessLogDestination;
     this.accessLogFormat = props.accessLogFormat;
-    const accessLogSetting: CfnStage.AccessLogSettingProperty = {
-      destinationArn: this.accessLogDestination?.bind().destinationArn,
-      format: this.accessLogFormat
-    };
+    if (this.accessLogDestination == null && this.accessLogFormat == null) {
+      accessLogSetting = undefined;
+    } else {
+      accessLogSetting = {
+        destinationArn: this.accessLogDestination?.bind().destinationArn,
+        format: this.accessLogFormat
+      };
+    }
 
     // enable cache cluster if cacheClusterSize is set
     if (props.cacheClusterSize !== undefined) {
