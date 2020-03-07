@@ -664,7 +664,7 @@ export = {
               protocol: ecs.Protocol.TCP
             })]
           });
-        }, /Container 'FargateTaskDef\/MainContainer' has no mapping for port 8001 and protocol tcp. Did you call "container.addPortMapping\(\)"\?/);
+        }, /Container 'FargateTaskDef\/MainContainer' has no mapping for port 8001 and protocol tcp. Did you call "container.addPortMappings\(\)"\?/);
 
         test.done();
       },
@@ -699,7 +699,7 @@ export = {
               containerPort: 8002,
             })]
           });
-        }, /Container 'FargateTaskDef\/MainContainer' has no mapping for port 8002 and protocol tcp. Did you call "container.addPortMapping\(\)"\?/);
+        }, /Container 'FargateTaskDef\/MainContainer' has no mapping for port 8002 and protocol tcp. Did you call "container.addPortMappings\(\)"\?/);
 
         test.done();
       },
