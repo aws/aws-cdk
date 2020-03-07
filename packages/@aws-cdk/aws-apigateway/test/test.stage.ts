@@ -267,7 +267,12 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::Stage', {
       AccessLogSetting: {
-        DestinationArn: testLogGroup.logGroupArn
+        DestinationArn: {
+          "Fn::GetAtt": [
+            "LogGroupF5B46931",
+            "Arn"
+          ]
+        }
       },
       StageName: "prod"
     }));
@@ -283,7 +288,7 @@ export = {
     api.root.addMethod('GET');
 
     // WHEN
-    const testDeliveryStreamArn = 'arn:aws:firehose:us-east-1:123456789012:deliverystream/test-delivery-stream-name';
+    const testDeliveryStreamArn = 'arn:aws:firehose:us-east-1:123456789012:deliverystream/amazon-apigateway-test-delivery-stream-name';
     new apigateway.Stage(stack, 'my-stage', {
       deployment,
       accessLogDestination: new apigateway.KinesisDataFirehoseDestination(testDeliveryStreamArn),
@@ -366,8 +371,13 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::Stage', {
       AccessLogSetting: {
-        DestinationArn: testLogGroup.logGroupArn,
-        Format: testFormat
+        DestinationArn: {
+          'Fn::GetAtt': [
+            'LogGroupF5B46931',
+            'Arn'
+          ]
+        },
+        Format: "{\"requestId\":\"$context.requestId\",\"ip\":\"$context.identity.sourceIp\",\"caller\":\"$context.identity.caller\",\"user\":\"$context.identity.user\",\"requestTime\":\"$context.requestTime\",\"httpMethod\":\"$context.httpMethod\",\"resourcePath\":\"$context.resourcePath\",\"status\":\"$context.status\",\"protocol\":\"$context.protocol\",\"responseLength\":\"$context.responseLength\"}"
       },
       StageName: "prod"
     }));
@@ -383,7 +393,7 @@ export = {
     api.root.addMethod('GET');
 
     // WHEN
-    const testDeliveryStreamArn = 'arn:aws:firehose:us-east-1:123456789012:deliverystream/test-delivery-stream-name';
+    const testDeliveryStreamArn = 'arn:aws:firehose:us-east-1:123456789012:deliverystream/amazon-apigateway-test-delivery-stream-name';
     const testFormat = JSON.stringify({
       requestId: '$context.requestId',
       ip: '$context.identity.sourceIp',
