@@ -480,6 +480,7 @@ const api = new apigateway.RestApi(this, 'books', {
   }
 })
 ```
+### Access Logging
 
 The following example will configure API Gateway to enable custom access logging
 
