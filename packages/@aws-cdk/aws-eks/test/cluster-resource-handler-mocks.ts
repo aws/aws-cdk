@@ -1,6 +1,5 @@
 import * as sdk from 'aws-sdk';
 import { EksClient } from '../lib/cluster-resource-handler/common';
-import { Response } from 'aws-sdk';
 
 /**
  * Request objects will be assigned when a request of the relevant type will be
@@ -123,7 +122,7 @@ export const client: EksClient = {
 
   deleteOpenIDConnectProvider: async req => {
     actualRequest.deleteOpenIDConnectProvider = req;
-    return { $response: new Response() };
+    return { $response: new sdk.Response() };
   },
 
   getOpenIDConnectProvider: async req => {

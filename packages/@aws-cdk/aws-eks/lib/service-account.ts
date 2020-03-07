@@ -1,6 +1,6 @@
 import { CustomResource } from "@aws-cdk/aws-cloudformation";
 import { FederatedPrincipal, PolicyStatement, Role } from "@aws-cdk/aws-iam";
-import { Construct } from "@aws-cdk/core";
+import { Construct, Lazy } from "@aws-cdk/core";
 import { Cluster } from "./cluster";
 import { OPENIDCONNECT_PROVIDER_RESOURCE_TYPE } from "./cluster-resource-handler/consts";
 import { ClusterResourceProvider } from "./cluster-resource-provider";
@@ -32,7 +32,7 @@ export class ServiceAccount extends Construct {
     this.enableOpenIDConnectIAMProvider(cluster);
     // Create IAM Role
     const condition: { [id: string]: any; } = {};
-    condition[this.openIDConnectSubject!] = `system:serviceaccount:${namespace}:${name}`;
+    condition[Lazy.stringValue({ produce: () => this.openIDConnectSubject})] = `system:serviceaccount:${namespace}:${name}`;
     this.role = new Role(this, "Role", {
       assumedBy: new FederatedPrincipal(
         this.openIdConnectProviderArn!, { StringEquals: condition }, "sts:AssumeRoleWithWebIdentity"
