@@ -1,5 +1,6 @@
 import * as sdk from 'aws-sdk';
 import { EksClient } from '../lib/cluster-resource-handler/common';
+import { Response } from 'aws-sdk';
 
 /**
  * Request objects will be assigned when a request of the relevant type will be
