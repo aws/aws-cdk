@@ -76,6 +76,7 @@
     "@aws-cdk/aws-elasticloadbalancingv2": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
+    "@aws-cdk/aws-logs": "0.0.0",
     "@aws-cdk/core": "0.0.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
@@ -85,6 +86,7 @@
     "@aws-cdk/aws-elasticloadbalancingv2": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
+    "@aws-cdk/aws-logs": "0.0.0",
     "@aws-cdk/core": "0.0.0"
   },
   "engines": {

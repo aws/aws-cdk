@@ -1,4 +1,6 @@
+import { ILogGroup } from '@aws-cdk/aws-logs';
 import { Construct, Duration, Resource, Stack } from '@aws-cdk/core';
+
 import { CfnStage } from './apigateway.generated';
 import { Deployment } from './deployment';
 import { IRestApi } from './restapi';
@@ -14,11 +16,22 @@ export interface StageOptions extends MethodDeploymentOptions {
   readonly stageName?: string;
 
   /**
-   * Specifies settings for logging access in this stage.
+   * The CloudWatch Logs log group or Kinesis Data Firehose delivery stream.
+   * If you specify a Kinesis Data Firehose delivery stream. the stream name must begin
+   * with `amazon-apigateway-`.
    *
-   * @default - No setting
+   * @default - No destination
    */
-  readonly accessLogSetting?: AccessLogSetting
+  readonly accessLogDestination?: IAccessLogDestination;
+
+  /**
+   * A single line format of access logs of data, as specified by selected $content variables.
+   * https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html#context-variable-reference
+   * The format must include at least `$context.requestId`.
+   *
+   * @default - No format
+   */
+  readonly accessLogFormat?: string;
 
   /**
    * Specifies whether Amazon X-Ray tracing is enabled for this method.
@@ -173,7 +186,8 @@ export class Stage extends Resource {
   public readonly restApi: IRestApi;
   private enableCacheCluster?: boolean;
 
-  private readonly accessLogSetting?: AccessLogSetting;
+  private readonly accessLogDestination?: IAccessLogDestination;
+  private readonly accessLogFormat?: string;
 
   constructor(scope: Construct, id: string, props: StageProps) {
     super(scope, id);
@@ -183,7 +197,12 @@ export class Stage extends Resource {
     const methodSettings = this.renderMethodSettings(props); // this can mutate `this.cacheClusterEnabled`
 
     // custom access logging
-    this.accessLogSetting = props.accessLogSetting;
+    this.accessLogDestination = props.accessLogDestination;
+    this.accessLogFormat = props.accessLogFormat;
+    const accessLogSetting: CfnStage.AccessLogSettingProperty = {
+      destinationArn: this.accessLogDestination?.bind().destinationArn,
+      format: this.accessLogFormat
+    };
 
     // enable cache cluster if cacheClusterSize is set
     if (props.cacheClusterSize !== undefined) {
@@ -197,7 +216,7 @@ export class Stage extends Resource {
     const cacheClusterSize = this.enableCacheCluster ? (props.cacheClusterSize || '0.5') : undefined;
     const resource = new CfnStage(this, 'Resource', {
       stageName: props.stageName || 'prod',
-      accessLogSetting: this.accessLogSetting,
+      accessLogSetting,
       cacheClusterEnabled: this.enableCacheCluster,
       cacheClusterSize,
       clientCertificateId: props.clientCertificateId,
@@ -207,7 +226,7 @@ export class Stage extends Resource {
       documentationVersion: props.documentationVersion,
       variables: props.variables,
       tracingEnabled: props.tracingEnabled,
-      methodSettings,
+      methodSettings
     });
 
     this.stageName = resource.ref;
@@ -275,28 +294,68 @@ export class Stage extends Resource {
         loggingLevel: options.loggingLevel,
         metricsEnabled: options.metricsEnabled,
         throttlingBurstLimit: options.throttlingBurstLimit,
-        throttlingRateLimit: options.throttlingRateLimit,
+        throttlingRateLimit: options.throttlingRateLimit
       };
     }
   }
 }
 
-export interface AccessLogSetting {
+/**
+ * A API Gateway custom access log destination.
+ */
+export interface IAccessLogDestination {
   /**
-   * The ARN of the CloudWatch Logs log group or Kinesis Data Firehose delivery stream.
-   * If you specify a Kinesis Data Firehose delivery stream. the stream name must begin
-   * with `amazon-apigateway-`.
-   *
-   * @default - No destination arn
+   * Binds destination.
    */
-  readonly destinationArn?: string;
+  bind(): AccessLogDestinationConfig
+}
+
+/**
+ * Options when binding a destination to a API Gateway
+ */
+export interface AccessLogDestinationConfig {
+  /**
+   * The Amazon Resource Name (ARN) of the destination resource
+   */
+  readonly destinationArn: string;
+}
+
+/**
+ * Use CloudWatch Logs as a custom access log destination for API Gateway.
+ */
+export class CloudWatchLogsDestination implements IAccessLogDestination {
+  constructor(private readonly logGroup: ILogGroup) {
+  }
 
   /**
-   * A single line format of access logs of data, as specified by selected $content variables.
-   * https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html#context-variable-reference
-   * The format must include at least `$context.requestId`.
-   *
-   * @default - No format
+   * Binds this destination to the CloudWatch Logs.
    */
-  readonly format?: string;
+  public bind(): AccessLogDestinationConfig {
+    return {
+      destinationArn: this.logGroup.logGroupArn
+    };
+  }
+}
+
+/**
+ * Use Kinesis Data Firehose as a custom access log destination for API Gateway.
+ */
+export class KinesisDataFirehoseDestination implements IAccessLogDestination {
+  constructor(private readonly deliveryStreamArn: string) {
+  }
+
+  /**
+   * Binds this destination to the Kinesis Data Firehose.
+   */
+  public bind(): AccessLogDestinationConfig {
+    const pattern = 'amazon-apigateway-';
+    const deliveryStreamName = this.deliveryStreamArn.split('/')[1];
+    if (deliveryStreamName.indexOf(pattern)) {
+      throw new Error(`Delivery stream name must begin with ${pattern}.`);
+    }
+
+    return {
+      destinationArn: this.deliveryStreamArn
+    };
+  }
 }
