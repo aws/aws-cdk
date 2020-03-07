@@ -22,7 +22,16 @@ beforeEach(() => {
     }
   });
 
-  batchJobQueue = new batch.JobQueue(stack, 'JobQueue');
+  batchJobQueue = new batch.JobQueue(stack, 'JobQueue', {
+    computeEnvironments: [
+      {
+        order: 1,
+        computeEnvironment: new batch.ComputeEnvironment(stack, 'ComputeEnv', {
+          computeResources: { vpc: new ec2.Vpc(stack, 'vpc') }
+        })
+      }
+    ]
+  });
 });
 
 test('Task with only the required parameters', () => {

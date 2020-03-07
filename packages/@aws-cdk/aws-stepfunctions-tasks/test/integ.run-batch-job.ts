@@ -1,4 +1,5 @@
 import * as batch from '@aws-cdk/aws-batch';
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
@@ -9,13 +10,29 @@ import * as tasks from '../lib';
  * Stack verification steps:
  * * aws stepfunctions start-execution --state-machine-arn <deployed state machine arn> : should return execution arn
  * * aws batch list-jobs --job-queue <deployed job queue name or arn> --job-status RUNNABLE : should return jobs-list with size greater than 0
+ * *
+ * * wait for the batch-job to finish executing
+ * *
+ * * aws batch describe-jobs --jobs <job-id returned by list-jobs>: should return object with status as SUCCEEDED
+ * * aws stepfunctions describe-execution --execution-arn <exection-arn generated before>: should return object with status as SUCCEEDED
  */
 
 class RunBatchStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props: cdk.StackProps = {}) {
     super(scope, id, props);
 
-    const batchQueue = new batch.JobQueue(this, 'JobQueue');
+    const vpc = new ec2.Vpc(this, 'vpc');
+
+    const batchQueue = new batch.JobQueue(this, 'JobQueue', {
+      computeEnvironments: [
+        {
+          order: 1,
+          computeEnvironment: new batch.ComputeEnvironment(this, 'ComputeEnv', {
+            computeResources: { vpc }
+          })
+        }
+      ]
+    });
 
     const batchJobDefinition = new batch.JobDefinition(this, 'JobDefinition', {
       container: {
