@@ -89,7 +89,7 @@ async function commitMessage(number) {
 
         // this is the commit message mergify will use.
         // see https://doc.mergify.io/actions.html#commit-message-and-squash-method.
-        const commitMessageSection = issue.body.match(/## Commit Message([\s|\S]*)##/);
+        const commitMessageSection = issue.body.match(/## Commit Message([\s|\S]*)## End Commit Message/);
 
         if (!commitMessageSection || commitMessageSection.length !== 2) {
             throw new LinterError("Your PR description doesn't specify the commit"

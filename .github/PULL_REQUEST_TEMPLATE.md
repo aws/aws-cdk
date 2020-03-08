@@ -23,7 +23,9 @@ BREAKING CHANGE: Description of what broke and how to achieve this behavior now<
 \* **module-name:** Yet another breaking change
 -->
 
-## <!--DO NOT REMOVE (used as the commit message terminator)-->
+<!--IMPORTANT: This section cannot contain any additional markdown headers (#)-->
+
+## End Commit Message
 
 ----
 
