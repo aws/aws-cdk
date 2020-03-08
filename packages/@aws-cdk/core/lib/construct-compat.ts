@@ -16,6 +16,7 @@ import { IAspect } from './aspect';
 import { IDependable } from './dependency';
 
 const ORIGINAL_CONSTRUCT_NODE_SYMBOL = Symbol.for('@aws-cdk/core.ConstructNode');
+const CONSTRUCT_SYMBOL = Symbol.for('@aws-cdk/core.Construct');
 
 /**
  * Represents a construct.
@@ -48,7 +49,14 @@ export interface ISynthesisSession {
  * All constructs besides the root construct must be created within the scope of
  * another construct.
  */
-export class Construct extends constructs.Construct {
+export class Construct extends constructs.Construct implements IConstruct {
+  /**
+   * Return whether the given object is a Construct
+   */
+  public static isConstruct(x: any): x is Construct {
+    return typeof x === 'object' && x !== null && CONSTRUCT_SYMBOL in x;
+  }
+
   /**
    * The construct tree node associated with this construct.
    */
@@ -61,6 +69,7 @@ export class Construct extends constructs.Construct {
       }
     });
 
+    Object.defineProperty(this, CONSTRUCT_SYMBOL, { value: true });
     this.node = ConstructNode._unwrap(constructs.ConstructNode.of(this));
 
     const disableTrace = this.node.tryGetContext(cxapi.DISABLE_METADATA_STACK_TRACE);

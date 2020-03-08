@@ -5,7 +5,6 @@ import { captureStackTrace } from './private/stack-trace';
 import { makeUniqueId } from './private/uniqueid';
 import { Token } from './token';
 
-const CONSTRUCT_SYMBOL = Symbol.for('constructs.Construct');
 const CONSTRUCT_NODE_PROPERTY_SYMBOL = Symbol.for('constructs.Construct.node');
 
 /**
@@ -86,7 +85,7 @@ export class ConstructNode {
 
     // Use .reverse() to achieve post-order traversal
     for (const construct of constructs.reverse()) {
-      if (Construct.isConstruct(construct)) {
+      if (construct instanceof Construct) {
         (construct as any).prepareConstruct(); // "as any" is needed because we want to keep "prepare" protected
       }
     }
@@ -530,13 +529,6 @@ export class ConstructNode {
  */
 export class Construct implements IConstruct {
   /**
-   * Return whether the given object is a Construct
-   */
-  public static isConstruct(x: any): x is Construct {
-    return typeof x === 'object' && x !== null && CONSTRUCT_SYMBOL in x;
-  }
-
-  /**
    * Creates a new construct node.
    *
    * @param scope The scope in which to define this construct
@@ -545,8 +537,6 @@ export class Construct implements IConstruct {
    * dash `--`.
    */
   constructor(scope: Construct, id: string, options: ConstructOptions = { }) {
-    Object.defineProperty(this, CONSTRUCT_SYMBOL, { value: true });
-
     const nodeFactory = options.nodeFactory || new DefaultNodeFactory();
 
     Object.defineProperty(this, CONSTRUCT_NODE_PROPERTY_SYMBOL, {
