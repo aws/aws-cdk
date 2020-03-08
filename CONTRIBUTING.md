@@ -164,9 +164,24 @@ Examples:
 ### Step 4: Pull Request
 
 * Push to a GitHub fork or to a branch (naming convention: `<user>/<feature-bug-name>`)
-* Submit a Pull Request on GitHub and assign the PR for a review to the "aws/aws-cdk-core" team. The title and description will be used to format the commit message when its merged to master. This in turn, will translate to CHANGELOG entries. It is therefore important we be consistent and informative. Simply follow the PR template carefully.
+* Submit a Pull Request on GitHub and assign the PR for a review to the "aws/aws-cdk-team" team. The title and description will be used to format the commit message when its merged to master. This in turn, will translate to CHANGELOG entries. It is therefore important we be consistent and informative. Here is an example PR you should use as a reference: https://github.com/aws/aws-cdk/pull/6553.
 
-  Here is an example PR you should use as a reference: https://github.com/aws/aws-cdk/pull/6553.
+  ### Title
+
+  * Must adhere to [conventionalcommits](https://www.conventionalcommits.org).
+  * The title must begin with one of:
+    - `feat(module): title`
+    - `fix(module): title`
+    - `refactor(module): title`
+    - `chore(module): title`
+  * Should be lowercase.
+  * No period at the end.
+
+
+  ### Description
+
+  * Simply follow the PR template carefully.
+
 
 * Please follow the PR checklist written below. We trust our contributors to self-check, and this helps that process!
 * Discuss review comments and iterate until you get at least one “Approve”. When iterating, push new commits to the
