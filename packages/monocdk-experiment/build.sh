@@ -2,6 +2,8 @@
 set -euo pipefail
 scriptdir=$(cd $(dirname $0) && pwd)
 
+constructs_module="${scriptdir}/../constructs"
+
 rm -fr dist/js
 
 echo "collecting all modules..."
@@ -11,6 +13,9 @@ cd ${outdir}
 
 echo "installing dependencies for bundling..."
 npm install
+
+echo "symlinking 'constructs' since it's a peer dependency..."
+ln -s ${constructs_module} node_modules/constructs
 
 echo "compiling..."
 tsc
@@ -22,7 +27,7 @@ tarball=$PWD/monocdk-experiment-*.tgz
 echo "verifying package..."
 cd $(mktemp -d)
 npm init -y
-npm install ${tarball}
+npm install ${constructs_module} ${tarball}
 node -e "require('monocdk-experiment')"
 unpacked=$(node -p 'path.dirname(require.resolve("monocdk-experiment/package.json"))')
 
