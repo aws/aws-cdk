@@ -392,6 +392,7 @@ export class ConstructNode {
   }
 
   /**
+   * Returns the root of the construct tree.
    * @returns The root of the construct tree.
    */
   public get root() {
@@ -518,20 +519,6 @@ export class ConstructNode {
       descendants.forEach(member => aspect.visit(member));
       this.invokedAspects.push(aspect);
     }
-  }
-}
-
-export interface ConstructOptions {
-  readonly nodeFactory?: INodeFactory;
-}
-
-export interface INodeFactory {
-  createNode(host: Construct, scope: IConstruct, id: string): ConstructNode;
-}
-
-class DefaultNodeFactory implements INodeFactory {
-  public createNode(host: Construct, scope: IConstruct, id: string) {
-    return new ConstructNode(host, scope, id);
   }
 }
 
@@ -666,7 +653,7 @@ export interface Dependency {
 }
 
 /**
- * Represents a single session of synthesis. Passed into `Construct.synthesize()` methods.
+ * Represents a single session of synthesis. Passed into `construct.synthesizeConstruct()` methods.
  */
 export interface ISynthesisSession {
   /**
@@ -698,6 +685,7 @@ export interface SynthesisOptions {
 
   /**
    * Additional context passed into the synthesis session object when `construct.synth` is called.
+   * @default - no additional context is passed to `synthesizeConstruct`
    */
   readonly sessionContext?: { [key: string]: any };
 }
@@ -715,4 +703,34 @@ const PATH_SEP_REGEX = new RegExp(`${ConstructNode.PATH_SEP}`, 'g');
 function sanitizeId(id: string) {
   // Escape path seps as double dashes
   return id.replace(PATH_SEP_REGEX, '--');
+}
+
+/**
+ * Options for creating constructs.
+ */
+export interface ConstructOptions {
+  /**
+   * A factory for attaching `ConstructNode`s to the construct.
+   * @default - the default `ConstructNode` is associated
+   */
+  readonly nodeFactory?: INodeFactory;
+}
+
+/**
+ * A factory for attaching `ConstructNode`s to the construct.
+ */
+export interface INodeFactory {
+  /**
+   * Returns a new `ConstructNode` associated with `host`.
+   * @param host the associated construct
+   * @param scope the construct's scope (parent)
+   * @param id the construct id
+   */
+  createNode(host: Construct, scope: IConstruct, id: string): ConstructNode;
+}
+
+class DefaultNodeFactory implements INodeFactory {
+  public createNode(host: Construct, scope: IConstruct, id: string) {
+    return new ConstructNode(host, scope, id);
+  }
 }

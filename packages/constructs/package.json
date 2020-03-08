@@ -31,7 +31,8 @@
   "nyc": {
     "reporter": "html",
     "check-coverage": true,
-    "lines": 80
+    "lines": 80,
+    "statements": 79
   },
   "repository": {
     "type": "git",

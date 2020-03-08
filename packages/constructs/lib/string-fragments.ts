@@ -13,32 +13,54 @@ type Fragment =  LiteralFragment | TokenFragment | IntrinsicFragment;
 
 /**
  * Fragments of a concatenated string containing stringified Tokens
+ * @experimental
  */
 export class TokenizedStringFragments {
   private readonly fragments = new Array<Fragment>();
 
+  /**
+   * Returns the first token.
+   */
   public get firstToken(): IResolvable | undefined {
     const first = this.fragments[0];
     if (first.type === 'token') { return first.token; }
     return undefined;
   }
 
+  /**
+   * Returns the first value.
+   */
   public get firstValue(): any {
     return fragmentValue(this.fragments[0]);
   }
 
+  /**
+   * Returns the number of fragments.
+   */
   public get length() {
     return this.fragments.length;
   }
 
+  /**
+   * Adds a literal fragment
+   * @param lit the literal to add
+   */
   public addLiteral(lit: any) {
     this.fragments.push({ type: 'literal', lit });
   }
 
+  /**
+   * Adds a token fragment
+   * @param token the token to add
+   */
   public addToken(token: IResolvable) {
     this.fragments.push({ type: 'token', token });
   }
 
+  /**
+   * Adds an intrinsic fragment
+   * @param value the intrinsic value to add
+   */
   public addIntrinsic(value: any) {
     this.fragments.push({ type: 'intrinsic', value });
   }

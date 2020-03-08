@@ -99,18 +99,37 @@ export interface LazyAnyValueOptions {
  * will only be calculated later, during synthesis.
  */
 export class Lazy {
+  /**
+   * Returns a stringified token for a lazy value.
+   * @param producer The producer
+   * @param options Options
+   */
   public static stringValue(producer: IStringProducer, options: LazyStringValueOptions = {}) {
     return Token.asString(new LazyString(producer), options);
   }
 
+  /**
+   * Returns a numberified token for a lazy value.
+   * @param producer The producer
+   */
   public static numberValue(producer: INumberProducer) {
     return Token.asNumber(new LazyNumber(producer));
   }
 
+  /**
+   * Returns a list-ified token for a lazy value.
+   * @param producer The producer
+   * @param options Options
+   */
   public static listValue(producer: IListProducer, options: LazyListValueOptions = {}) {
     return Token.asList(new LazyList(producer, options), options);
   }
 
+  /**
+   * Produces a lazy token from an untyped value.
+   * @param producer The lazy producer
+   * @param options Options
+   */
   public static anyValue(producer: IAnyProducer, options: LazyAnyValueOptions = {}): IResolvable {
     return new LazyAny(producer, options);
   }
