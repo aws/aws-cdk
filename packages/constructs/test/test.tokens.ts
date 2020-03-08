@@ -1,7 +1,7 @@
 import { Test } from 'nodeunit';
 import { Lazy, Token, Tokenization } from '../lib';
-import { Intrinsic } from '../lib/intrinsic';
 import { createTokenDouble, extractTokenDouble } from '../lib/private/encoding';
+import { Intrinsic } from '../lib/private/intrinsic';
 import { findTokens } from '../lib/private/resolve';
 import { DefaultTokenResolver, IResolvable } from '../lib/resolvable';
 import { evaluateCFN } from './evaluate-cfn';

@@ -1,6 +1,6 @@
-import { IResolvable, IResolveContext } from "./resolvable";
+import { IResolvable, IResolveContext } from "../resolvable";
+import { Token } from "../token";
 import { captureStackTrace } from "./stack-trace";
-import { Token } from "./token";
 
 /**
  * Token subclass that represents values intrinsic to the target document language

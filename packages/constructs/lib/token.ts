@@ -1,7 +1,7 @@
 import { IConstruct } from "./construct";
-import { Intrinsic } from "./intrinsic";
 import { Lazy } from "./lazy";
 import { unresolved } from "./private/encoding";
+import { Intrinsic } from "./private/intrinsic";
 import { resolve } from "./private/resolve";
 import { TokenMap } from "./private/token-map";
 import { IResolvable, ITokenResolver } from "./resolvable";

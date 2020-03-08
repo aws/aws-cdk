@@ -1,8 +1,8 @@
 import { IAspect } from './aspect';
 import { ConstructMetadata, MetadataEntry } from './metadata';
 import { DependableTrait } from './private/dependency';
+import { captureStackTrace } from './private/stack-trace';
 import { makeUniqueId } from './private/uniqueid';
-import { captureStackTrace } from './stack-trace';
 import { Token } from './token';
 
 const CONSTRUCT_SYMBOL = Symbol.for('constructs.Construct');

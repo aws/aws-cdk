@@ -1,5 +1,5 @@
+import { captureStackTrace } from './private/stack-trace';
 import { IResolvable, IResolveContext } from "./resolvable";
-import { captureStackTrace } from './stack-trace';
 import { Token } from "./token";
 
 /**
