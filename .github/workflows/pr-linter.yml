@@ -2,13 +2,7 @@
 # https://github.com/actions/toolkit/blob/master/packages/github/src/context.ts
 
 name: PR Linter
-on:
-  pull_request:
-    types:
-      - opened
-      - reopened
-      - synchronize
-      - edited
+on: pull_request
 
 jobs:
   mandatory-changes:
