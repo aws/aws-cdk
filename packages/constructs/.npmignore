@@ -1,0 +1,23 @@
+# Don't include original .ts files when doing `npm pack`
+*.ts
+!*.d.ts
+coverage
+.nyc_output
+*.tgz
+
+dist
+.LAST_PACKAGE
+.LAST_BUILD
+!*.js
+
+# Include .jsii
+!.jsii
+
+*.snk
+
+# Work around npm@6.8.0 ignoring 'core' by default -- https://github.com/npm/npm-packlist/issues/24
+!core
+
+*.tsbuildinfo
+
+tsconfig.json
