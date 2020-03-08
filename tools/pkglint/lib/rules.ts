@@ -312,6 +312,9 @@ export class JSIIJavaPackageIsRequired extends ValidationRule {
   public validate(pkg: PackageJson): void {
     if (!isJSII(pkg)) { return; }
 
+    // special naming
+    if (pkg.packageName === 'constructs') { return; }
+
     const moduleName = cdkModuleName(pkg.json.name);
 
     expectJSON(this.name, pkg, 'jsii.targets.java.maven.groupId', 'software.amazon.awscdk');
@@ -338,6 +341,9 @@ export class JSIIPythonTarget extends ValidationRule {
 
   public validate(pkg: PackageJson): void {
     if (!isJSII(pkg)) { return; }
+
+    // special naming
+    if (pkg.packageName === 'constructs') { return; }
 
     const moduleName = cdkModuleName(pkg.json.name);
 
@@ -519,6 +525,9 @@ export class JSIIDotNetNamespaceIsRequired extends ValidationRule {
     // skip the legacy @aws-cdk/cdk because we actually did not rename
     // the .NET module, so we are not publishing the deprecated one
     if (pkg.packageName === '@aws-cdk/cdk') { return; }
+
+    // special naming
+    if (pkg.packageName === 'constructs') { return; }
 
     const dotnet = deepGet(pkg.json, ['jsii', 'targets', 'dotnet', 'namespace']) as string | undefined;
     const moduleName = cdkModuleName(pkg.json.name);
