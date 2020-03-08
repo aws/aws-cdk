@@ -509,6 +509,33 @@ const api = new apigateway.RestApi(this, 'books', {
 })
 ```
 
+#### Kinesis Data Firehose
+
+```ts
+const deliveryStream = new firehose.CfnDeliveryStream(this, 'ApiGatewayAccessLogs', {
+  // ...
+});
+const api = new apigateway.RestApi(this, 'books', {
+  deployOptions: {
+    accessLogSetting: {
+        destinationArn: new apigateway.CloudWatchLogsDestination(deliveryStream.attrArn),
+        format: JSON.stringify({
+            requestId: "$context.requestId",
+            ip: "$context.identity.sourceIp",
+            caller: "$context.identity.caller",
+            user: "$context.identity.user",
+            requestTime: "$context.requestTime",
+            httpMethod: "$context.httpMethod",
+            resourcePath: "$context.resourcePath",
+            status: "$context.status",
+            protocol: "$context.protocol",
+            responseLength: "$context.responseLength"
+        })
+    }
+  }
+})
+```
+
 #### Deeper dive: invalidation of deployments
 
 API Gateway deployments are an immutable snapshot of the API. This means that we
