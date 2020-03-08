@@ -32,7 +32,7 @@
     "reporter": "html",
     "check-coverage": true,
     "lines": 80,
-    "statements": 79
+    "statements": 78
   },
   "repository": {
     "type": "git",
