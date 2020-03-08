@@ -117,3 +117,9 @@ tmp/
 temp/
 
 # End of https://www.gitignore.io/api/node
+
+dist
+.LAST_PACKAGE
+.LAST_BUILD
+*.snk
+nyc.config.js

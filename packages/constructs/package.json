@@ -2,6 +2,7 @@
   "name": "constructs",
   "version": "0.0.0",
   "description": "A programming model for composable configuration",
+  "stability": "stable",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
@@ -18,7 +19,7 @@
         "namespace": "Constructs",
         "packageId": "Constructs",
         "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../key.snk",
+        "assemblyOriginatorKeyFile": "../../key.snk",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
@@ -38,14 +39,18 @@
     "directory": "packages/constructs"
   },
   "scripts": {
-    "build": "jsii",
-    "watch": "jsii -w",
+    "build": "cdk-build",
+    "watch": "cdk-watch",
     "lint": "eslint",
-    "test": "nyc nodeunit test/test.*.js",
+    "test": "cdk-test",
     "pkglint": "pkglint -f",
-    "package": "jsii-pacmak"
+    "package": "cdk-package",
+    "compat": "cdk-compat",
+    "build+test": "npm run build && npm test",
+    "build+test+package": "npm run build+test && npm run package"
   },
   "keywords": [
+    "aws",
     "constructs",
     "cdk",
     "jsii"
@@ -57,17 +62,15 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/node": "12.12.2",
+    "@types/node": "^10.17.17",
     "@types/nodeunit": "^0.0.30",
-    "jsii": "^0.22.0",
-    "jsii-pacmak": "^0.22.0",
     "pkglint": "0.0.0",
     "nodeunit": "^0.11.3",
-    "nyc": "^15.0.0"
+    "nyc": "^15.0.0",
+    "cdk-build-tools": "0.0.0"
   },
-  "homepage": "https://github.com/aws/aws-cdk/tree/master/packages/constructs",
+  "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
     "node": ">= 10.3.0"
-  },
-  "stability": "stable"
+  }
 }
