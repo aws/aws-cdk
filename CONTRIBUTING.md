@@ -168,8 +168,6 @@ Examples:
 
   Here is an example PR you should use as a reference: https://github.com/aws/aws-cdk/pull/6553.
 
-  > **We validate the PR format automatically as part of our PR checks, so don't worry, you can't get this wrong :)**
-
 * Please follow the PR checklist written below. We trust our contributors to self-check, and this helps that process!
 * Discuss review comments and iterate until you get at least one “Approve”. When iterating, push new commits to the
   same branch. Usually all these are going to be squashed when you merge to master. The commit messages should be hints
