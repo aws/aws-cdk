@@ -22,6 +22,10 @@ function createGitHubClient() {
     return new GitHub({'token': token});
 }
 
+function isPkgCfnspec(issue) {
+    return issue.title.indexOf("(cfnspec)") > -1;
+}
+
 function isFeature(issue) {
     return issue.title.startsWith("feat")
 }
@@ -39,7 +43,7 @@ function readmeChanged(files) {
 }
 
 function featureContainsReadme(issue, files) {
-    if (isFeature(issue) && !readmeChanged(files)) {
+    if (isFeature(issue) && !readmeChanged(files) && !isPkgCfnspec(issue)) {
         throw new LinterError("Features must contain a change to a README file");
     };
 };
