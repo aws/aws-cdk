@@ -482,13 +482,16 @@ const api = new apigateway.RestApi(this, 'books', {
 ```
 ### Access Logging
 
-The following example will configure API Gateway to enable custom access logging
+The following example will configure API Gateway to enable custom access logging.
+
+#### CloudWatch Logs
 
 ```ts
+const logGroup = new cwlogs.LogGroup(this, "ApiGatewayAccessLogs");
 const api = new apigateway.RestApi(this, 'books', {
   deployOptions: {
     accessLogSetting: {
-        destinationArn: 'arn:aws:logs:us-east-1:123456789012:log-group:sample_group_name',
+        destinationArn: new apigateway.CloudWatchLogsDestination(logGroup),
         format: JSON.stringify({
             requestId: "$context.requestId",
             ip: "$context.identity.sourceIp",
