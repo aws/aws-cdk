@@ -31,7 +31,6 @@ pull_request_rules:
       - status-success~=AWS CodeBuild us-east-1
       - status-success=Semantic Pull Request
       - status-success=mandatory-changes
-      - status-success=commit-message
   - name: automatic merge
     actions:
       comment:
@@ -57,7 +56,6 @@ pull_request_rules:
       - status-success~=AWS CodeBuild us-east-1
       - status-success=Semantic Pull Request
       - status-success=mandatory-changes
-      - status-success=commit-message
   - name: remove stale reviews
     actions:
       dismiss_reviews: {}
@@ -113,4 +111,3 @@ pull_request_rules:
       - status-success~=AWS CodeBuild us-east-1
       - status-success=Semantic Pull Request
       - status-success=mandatory-changes
-      - status-success=commit-message
