@@ -38,17 +38,7 @@ export class RateLimitedApiKey extends Resource implements IApiKey {
       physicalName: props.apiKeyName,
     });
 
-    const resource = new ApiKey(this, 'Resource', {
-      apiKeyName: props.apiKeyName,
-      customerId: props.customerId,
-      defaultCorsPreflightOptions: props.defaultCorsPreflightOptions,
-      defaultIntegration: props.defaultIntegration,
-      defaultMethodOptions: props.defaultMethodOptions,
-      description: props.description,
-      enabled: props.enabled,
-      generateDistinctId: props.generateDistinctId,
-      resources: props.resources
-    });
+const resource = new ApiKey(this, 'Resource', props);
 
     if (props.apiStages || props.quota || props.throttle) {
       new UsagePlan(this, 'UsagePlanResource', {

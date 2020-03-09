@@ -153,9 +153,9 @@ plan.addApiStage({
 });
 ```
 
-In scenarios where you need to create a single api key and configure rate limiting for it, you can use RateLimitedApiKey.
+In scenarios where you need to create a single api key and configure rate limiting for it, you can use `RateLimitedApiKey`.
 This construct lets you specify rate limiting properties which should be applied only to the api key being created.
-Internally, it automatically creates a usage plan with the specified rate limiting properties for this api key.
+The API key created has the specified rate limits, such as quota and throttles, applied.
 
 The following example shows how to use a rate limited api key :
 ```ts
