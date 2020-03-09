@@ -8,7 +8,14 @@ const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'batch-events');
 
-const queue = new batch.JobQueue(stack, 'MyQueue');
+const queue = new batch.JobQueue(stack, 'MyQueue', {
+  computeEnvironments: [
+    {
+      computeEnvironment: new batch.ComputeEnvironment(stack, 'ComputeEnvironment'),
+      order: 1
+    }
+  ]
+});
 const job = new batch.JobDefinition(stack, 'MyJob', {
   container: {
     image: ContainerImage.fromRegistry('test-repo')
