@@ -15,7 +15,6 @@ export class ToolkitInfo {
     readonly sdk: SdkProvider,
     bucketName: string,
     bucketEndpoint: string,
-    repositoryName: string | undefined,
     environment: cxapi.Environment
   }) {
     this.sdk = props.sdk;
@@ -98,7 +97,6 @@ export async function loadToolkitInfo(environment: cxapi.Environment, sdk: SdkPr
     sdk, environment,
     bucketName: requireOutput(BUCKET_NAME_OUTPUT),
     bucketEndpoint: requireOutput(BUCKET_DOMAIN_NAME_OUTPUT),
-    repositoryName: outputs[REPOSITORY_NAME_OUTPUT],
   });
 
   function requireOutput(output: string): string {
