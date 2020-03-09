@@ -18,3 +18,38 @@
 <!--END STABILITY BANNER-->
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
+
+## Launch template support
+
+### Usage
+Simply define your Launch Template:
+```typescript
+    const myLaunchTemplate = new ec2.CfnLaunchTemplate(this, 'LaunchTemplate', {
+      launchTemplateName: 'extra-storage-template',
+      launchTemplateData: {
+        blockDeviceMappings: [
+          {
+            deviceName: '/dev/xvdcz',
+            ebs: {
+              encrypted: true,
+              volumeSize: 100,
+              volumeType: 'gp2'
+            }
+          }
+        ]
+      }
+    });
+```
+and use it:
+
+```typescript
+    const myComputeEnv = new batch.ComputeEnvironment(this, 'ComputeEnv', {
+      computeResources: {
+        launchTemplate: {
+          launchTemplateName: myLaunchTemplate.launchTemplateName as string, //or simply use an existing template name
+        },
+        vpc,
+      },
+      computeEnvironmentName: 'MyStorageCapableComputeEnvironment',
+    });
+```
