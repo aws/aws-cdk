@@ -325,7 +325,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
       port: props.port,
       dbClusterParameterGroupName: props.parameterGroup && props.parameterGroup.parameterGroupName,
       associatedRoles: props.associatedRoles ? props.associatedRoles.map(associatedRole => {
-        if(!associatedRole.role) {
+        if (!associatedRole.role) {
           throw new Error('Property role must be defined on associated roles.');
         }
         return {
