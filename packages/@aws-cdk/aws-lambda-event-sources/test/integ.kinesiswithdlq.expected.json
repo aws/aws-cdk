@@ -131,91 +131,6 @@
     },
     "Q63C6E3AB": {
       "Type": "AWS::SQS::Queue"
-    },
-    "FPServiceRoleB1957CC2": {
-      "Type": "AWS::IAM::Role",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "lambda.amazonaws.com"
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "ManagedPolicyArns": [
-          {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition"
-                },
-                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-              ]
-            ]
-          }
-        ]
-      }
-    },
-    "FP85AE6139": {
-      "Type": "AWS::Lambda::Function",
-      "Properties": {
-        "Code": {
-          "S3Bucket": {
-            "Ref": "AssetParameters013549436de3944a6176501ce5de71aef355a25e669d5af45fd69f29785df604S3BucketF010E518"
-          },
-          "S3Key": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Fn::Select": [
-                    0,
-                    {
-                      "Fn::Split": [
-                        "||",
-                        {
-                          "Ref": "AssetParameters013549436de3944a6176501ce5de71aef355a25e669d5af45fd69f29785df604S3VersionKeyB38C926C"
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "Fn::Select": [
-                    1,
-                    {
-                      "Fn::Split": [
-                        "||",
-                        {
-                          "Ref": "AssetParameters013549436de3944a6176501ce5de71aef355a25e669d5af45fd69f29785df604S3VersionKeyB38C926C"
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            ]
-          }
-        },
-        "Handler": "index.handler",
-        "Role": {
-          "Fn::GetAtt": [
-            "FPServiceRoleB1957CC2",
-            "Arn"
-          ]
-        },
-        "Runtime": "nodejs10.x"
-      },
-      "DependsOn": [
-        "FPServiceRoleB1957CC2"
-      ]
     }
   },
   "Outputs": {
@@ -228,20 +143,13 @@
       "Value": {
         "Ref": "Q63C6E3AB"
       }
-    }
+    },
+    "FunctionArn": {
+      "Value":{
+        "Fn::GetAtt":["FC4345940","Arn"]
+        }
+      }
   },
   "Parameters": {
-    "AssetParameters013549436de3944a6176501ce5de71aef355a25e669d5af45fd69f29785df604S3BucketF010E518": {
-      "Type": "String",
-      "Description": "S3 bucket for asset \"013549436de3944a6176501ce5de71aef355a25e669d5af45fd69f29785df604\""
-    },
-    "AssetParameters013549436de3944a6176501ce5de71aef355a25e669d5af45fd69f29785df604S3VersionKeyB38C926C": {
-      "Type": "String",
-      "Description": "S3 key for asset version \"013549436de3944a6176501ce5de71aef355a25e669d5af45fd69f29785df604\""
-    },
-    "AssetParameters013549436de3944a6176501ce5de71aef355a25e669d5af45fd69f29785df604ArtifactHash5300B2A6": {
-      "Type": "String",
-      "Description": "Artifact hash for asset \"013549436de3944a6176501ce5de71aef355a25e669d5af45fd69f29785df604\""
-    }
   }
 }
