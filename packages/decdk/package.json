@@ -169,7 +169,6 @@
     "yaml": "1.8.0",
     "yargs": "^15.3.0",
     "constructs": "0.0.0"
-    "yargs": "^15.3.0"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.1.0",
