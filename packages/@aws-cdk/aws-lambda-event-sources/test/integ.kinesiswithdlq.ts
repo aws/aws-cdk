@@ -1,19 +1,18 @@
 import * as kinesis from '@aws-cdk/aws-kinesis';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { App, Stack } from "@aws-cdk/core";
-import * as path from 'path';
+import { App, CfnOutput, Stack } from "@aws-cdk/core";
 import { KinesisEventSource, SqsDlq } from '../lib';
 
 /*
  * Stack verification steps:
- * * aws lambda invoke --function-name <deployed 'FP' function name> --invocation-type Event --payload '"Event"' response.json
- * * Validate two executions of fn lambda
- * * Validate one message in dlq
+ * * aws kinesis put-record --stream-name <value of stack output: InputKinesisStreamName> --partition-key 123 --data testdata
+ * * aws sqs receive-message --queue-url <value of stack output: DlqSqsQueueUrl> --max-number-of-messages 1 --query 'Messages[0].Body'
+ * The last command should return a string that contains the Lambda function ARN in it.
  */
 
-// tslint:disable:no-console
 async function handler(event: any) {
+  // tslint:disable-next-line:no-console
   console.log('event:', JSON.stringify(event, undefined, 2));
   throw new Error();
 }
@@ -27,22 +26,19 @@ class KinesisWithDLQTest extends Stack {
       handler: 'index.handler',
       code: lambda.Code.fromInline(`exports.handler = ${handler.toString()}`)
     });
+    new CfnOutput(this, 'FunctionArn', { value: fn.functionArn });
 
     const stream = new kinesis.Stream(this, 'S');
+    new CfnOutput(this, 'InputKinesisStreamName', { value: stream.streamName });
 
     const dlq = new sqs.Queue(this, 'Q');
+    new CfnOutput(this, 'DlqSqsQueueUrl', { value: dlq.queueUrl });
 
     fn.addEventSource(new KinesisEventSource(stream, {
       startingPosition: lambda.StartingPosition.TRIM_HORIZON,
       onFailure: new SqsDlq(dlq),
-      retryAttempts: 2
+      retryAttempts: 0,
     }));
-
-    new lambda.Function(this, 'FP', {
-      runtime: lambda.Runtime.NODEJS_10_X,
-      handler: 'index.handler',
-      code: lambda.AssetCode.fromAsset(path.join(__dirname, 'integ.kinesiswithdlq.handler'))
-    });
   }
 }
 

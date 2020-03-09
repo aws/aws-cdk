@@ -79,7 +79,7 @@
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
-          "ZipFile": "exports.handler = async function handler(event) {\n    console.log('event:', JSON.stringify(event, undefined, 2));\n    throw new Error();\n}"
+          "ZipFile": "exports.handler = async function handler(event) {\n    // tslint:disable-next-line:no-console\n    console.log('event:', JSON.stringify(event, undefined, 2));\n    throw new Error();\n}"
         },
         "Handler": "index.handler",
         "Role": {
@@ -118,7 +118,7 @@
             }
           }
         },
-        "MaximumRetryAttempts": 2,
+        "MaximumRetryAttempts": 0,
         "StartingPosition": "TRIM_HORIZON"
       }
     },
@@ -216,6 +216,18 @@
       "DependsOn": [
         "FPServiceRoleB1957CC2"
       ]
+    }
+  },
+  "Outputs": {
+    "InputKinesisStreamName": {
+      "Value": {
+        "Ref": "S509448A1"
+      }
+    },
+    "DlqSqsQueueUrl": {
+      "Value": {
+        "Ref": "Q63C6E3AB"
+      }
     }
   },
   "Parameters": {
