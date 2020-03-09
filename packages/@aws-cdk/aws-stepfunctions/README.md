@@ -134,6 +134,10 @@ couple of the tasks available are:
 * `tasks.RunEcsFargateTask`/`ecs.RunEcsEc2Task` -- run a container task,
   depending on the type of capacity.
 * `tasks.SagemakerTrainTask` -- run a SageMaker training job
+* `tasks.SagemakerCreateModelTask` -- create a SageMaker model
+* `tasks.SagemakerCreateEndpointConfigTask` -- create a SageMaker Endpoint Config
+* `tasks.SagemakerCreateEndpointTask` -- create a new SageMaker Endpoint
+* `tasks.SagemakerUpdateEndpointTask` -- update an existing SageMaker Endpoint
 * `tasks.SagemakerTransformTask` -- run a SageMaker transform job
 * `tasks.StartExecution` -- call StartExecution to a state machine of Step Functions
 * `tasks.EvaluateExpression` -- evaluate an expression referencing state paths
