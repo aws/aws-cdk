@@ -70,6 +70,7 @@ async function parseCommandLineArguments() {
       .option('tags', { type: 'array', alias: 't', desc: 'Tags to add to the stack (KEY=VALUE)', nargs: 1, requiresArg: true })
       .option('execute', { type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)', default: true })
       .option('force', { alias: 'f', type: 'boolean', desc: 'Always deploy stack even if templates are identical', default: false })
+      .option('parameters', { type: 'array', desc: 'Additional parameters passed to CloudFormation at deploy time (STACK:KEY=VALUE)', nargs: 1, requiresArg: true, default: {} })
     )
     .command('destroy [STACKS..]', 'Destroy the stack(s) named STACKS', yargs => yargs
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only destroy requested stacks, don\'t include dependees' })
@@ -218,6 +219,13 @@ async function initCommandLine() {
         });
 
       case 'deploy':
+        const parameterMap: { [name: string]: string | undefined } = {};
+        for (const parameter of args.parameters) {
+          if (typeof parameter === 'string') {
+            const keyValue = (parameter as string).split('=', 2);
+            parameterMap[keyValue[0]] = keyValue[1];
+          }
+        }
         return await cli.deploy({
           stackNames: args.STACKS,
           exclusively: args.exclusively,
@@ -230,6 +238,7 @@ async function initCommandLine() {
           sdk: aws,
           execute: args.execute,
           force: args.force,
+          parameters: parameterMap
         });
 
       case 'destroy':

@@ -73,7 +73,7 @@
     "@types/aws-lambda": "^8.10.39",
     "@types/fs-extra": "^8.1.0",
     "@types/sinon": "^7.5.2",
-    "aws-sdk": "^2.631.0",
+    "aws-sdk": "^2.634.0",
     "aws-sdk-mock": "^5.0.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
@@ -122,10 +122,10 @@
   "engines": {
     "node": ">= 10.3.0"
   },
-  "stability": "experimental",
+  "stability": "stable",
   "awslint": {
     "exclude": [
       "construct-ctor-props-optional:@aws-cdk/custom-resources.AwsCustomResource"
     ]
-  }    
+  }
 }

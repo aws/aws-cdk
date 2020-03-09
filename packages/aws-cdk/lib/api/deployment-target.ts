@@ -35,6 +35,12 @@ export interface DeployStackOptions {
    * @default false deployment will be skipped if the template is identical
    */
   force?: boolean;
+
+  /**
+   * Extra parameters for CloudFormation
+   * @default - no additional parameters will be passed to the template
+   */
+  parameters?: { [name: string]: string | undefined };
 }
 
 export interface ProvisionerProps {
@@ -70,7 +76,8 @@ export class CloudFormationDeploymentTarget implements IDeploymentTarget {
       toolkitInfo,
       tags: options.tags,
       execute: options.execute,
-      force: options.force
+      force: options.force,
+      parameters: options.parameters
     });
   }
 }
