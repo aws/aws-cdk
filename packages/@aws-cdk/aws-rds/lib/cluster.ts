@@ -324,10 +324,15 @@ export class DatabaseCluster extends DatabaseClusterBase {
       vpcSecurityGroupIds: [this.securityGroupId],
       port: props.port,
       dbClusterParameterGroupName: props.parameterGroup && props.parameterGroup.parameterGroupName,
-      associatedRoles: props.associatedRoles ? props.associatedRoles.map(associatedRole => ({
-        featureName: associatedRole.featureName,
-        roleArn: associatedRole.role.roleArn
-      })) : undefined,
+      associatedRoles: props.associatedRoles ? props.associatedRoles.map(associatedRole => {
+        if(!associatedRole.role) {
+          throw new Error('Property roleArn must be defined on associated roles.');
+        }
+        return {
+          featureName: associatedRole.featureName,
+          roleArn: associatedRole.role.roleArn
+        };
+      }) : undefined,
       // Admin
       masterUsername: secret ? secret.secretValueFromJson('username').toString() : props.masterUser.username,
       masterUserPassword: secret
