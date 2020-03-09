@@ -38,7 +38,7 @@ export class RateLimitedApiKey extends Resource implements IApiKey {
       physicalName: props.apiKeyName,
     });
 
-const resource = new ApiKey(this, 'Resource', props);
+    const resource = new ApiKey(this, 'Resource', props);
 
     if (props.apiStages || props.quota || props.throttle) {
       new UsagePlan(this, 'UsagePlanResource', {
