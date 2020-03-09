@@ -273,6 +273,7 @@ export = {
     test.throws(() => eventSource.eventSourceMappingId, /DynamoEventSource is not yet bound to an event source mapping/);
     test.done();
   },
+
   'specific maximumRetryAttempts'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();

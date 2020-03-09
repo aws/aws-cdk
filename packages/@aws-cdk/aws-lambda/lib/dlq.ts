@@ -2,18 +2,18 @@
  * A destination configuration
  */
 export interface DlqDestinationConfig {
-    /**
-     * The Amazon Resource Name (ARN) of the destination resource
-     */
-    readonly destination: string;
-  }
+  /**
+   * The Amazon Resource Name (ARN) of the destination resource
+   */
+  readonly destination: string;
+}
 
 /**
  * A DLQ for an event source
  */
 export interface IEventSourceDlq {
-    /**
-     * Returns the DLQ destination config of the DLQ
-     */
-    bind(): DlqDestinationConfig;
+  /**
+   * Returns the DLQ destination config of the DLQ
+   */
+  bind(): DlqDestinationConfig;
 }
