@@ -4,7 +4,7 @@ import * as colors from 'colors/safe';
 import { debug } from '../logging';
 import { SdkProvider } from './aws-auth';
 import { Mode } from './aws-auth/credentials';
-import { BUCKET_DOMAIN_NAME_OUTPUT, BUCKET_NAME_OUTPUT, REPOSITORY_NAME_OUTPUT  } from './bootstrap-environment';
+import { BUCKET_DOMAIN_NAME_OUTPUT, BUCKET_NAME_OUTPUT  } from './bootstrap-environment';
 import { waitForStack } from './util/cloudformation';
 
 /** @experimental */
