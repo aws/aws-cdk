@@ -142,7 +142,7 @@ export class EventSourceMapping extends cdk.Resource {
 
     if (props.onFailure) {
       destinationConfig = {
-        onFailure: props.onFailure.bind(props.target)
+        onFailure: props.onFailure.bind(this, props.target)
       };
     }
 

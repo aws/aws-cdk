@@ -1,3 +1,4 @@
+import { IResource } from '@aws-cdk/core';
 import { IFunction } from './function-base';
 
 /**
@@ -17,5 +18,5 @@ export interface IEventSourceDlq {
   /**
    * Returns the DLQ destination config of the DLQ
    */
-  bind(target: IFunction): DlqDestinationConfig;
+  bind(target: IResource, targetHandler: IFunction): DlqDestinationConfig;
 }

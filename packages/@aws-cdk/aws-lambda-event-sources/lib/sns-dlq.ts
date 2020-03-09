@@ -1,5 +1,6 @@
 import { DlqDestinationConfig, IEventSourceDlq, IFunction } from "@aws-cdk/aws-lambda";
 import * as sns from '@aws-cdk/aws-sns';
+import { IResource } from "@aws-cdk/core";
 
 /**
  * An SNS dead letter queue destination configuration for a Lambda event source
@@ -11,8 +12,8 @@ export class SnsDlq implements IEventSourceDlq {
   /**
    * Returns a destination configuration for the DLQ
    */
-  public bind(target: IFunction): DlqDestinationConfig {
-    this.topic.grantPublish(target);
+  public bind(_target: IResource, targetHandler: IFunction): DlqDestinationConfig {
+    this.topic.grantPublish(targetHandler);
 
     return {
       destination: this.topic.topicArn

@@ -523,7 +523,7 @@ export = {
       fn.addEventSource(new sources.DynamoEventSource(table, {
         maxRecordAge: cdk.Duration.seconds(59),
         startingPosition: lambda.StartingPosition.LATEST
-      })), /maxRecordAge must be between 60 and 604800 seconds inclusive, got 59/);
+      })), /maxRecordAge must be between 60 seconds and 7 days inclusive/);
 
     test.done();
   },
@@ -545,7 +545,7 @@ export = {
       fn.addEventSource(new sources.DynamoEventSource(table, {
         maxRecordAge: cdk.Duration.seconds(604801),
         startingPosition: lambda.StartingPosition.LATEST
-      })), /maxRecordAge must be between 60 and 604800 seconds inclusive, got 604801/);
+      })), /maxRecordAge must be between 60 seconds and 7 days inclusive/);
 
     test.done();
   },
