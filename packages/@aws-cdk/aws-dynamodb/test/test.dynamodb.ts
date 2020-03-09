@@ -1461,7 +1461,7 @@ export = {
 
       test.done();
     },
-    'static import(ref) allows importing an external/existing table from arn'(test: Test) {
+    'static fromTableArn(arn) allows importing an external/existing table from arn'(test: Test) {
       const stack = new Stack();
 
       const tableArn = 'arn:aws:dynamodb:us-east-1:11111111:table/MyTable';
@@ -1502,7 +1502,7 @@ export = {
       test.deepEqual(stack.resolve(table.tableName), 'MyTable');
       test.done();
     },
-    'static import(ref) allows importing an external/existing table from table name'(test: Test) {
+    'static fromTableName(name) allows importing an external/existing table from table name'(test: Test) {
       const stack = new Stack();
 
       const tableName = 'MyTable';
@@ -1568,6 +1568,88 @@ export = {
       test.deepEqual(stack.resolve(table.tableName), tableName);
       test.done();
     },
+    'stream permissions on imported tables': {
+      'throw if no tableStreamArn is specified'(test: Test) {
+        const stack = new Stack();
+
+        const tableName = 'MyTable';
+        const table = Table.fromTableAttributes(stack, 'ImportedTable', { tableName });
+
+        const role =  new iam.Role(stack, 'NewRole', {
+          assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+        });
+
+        test.throws(() => table.grantTableListStreams(role), /DynamoDB Streams must be enabled on the table/);
+        test.throws(() => table.grantStreamRead(role), /DynamoDB Streams must be enabled on the table/);
+
+        test.done();
+      },
+
+      'creates the correct list streams grant'(test: Test) {
+        const stack = new Stack();
+
+        const tableName = 'MyTable';
+        const tableStreamArn = 'arn:foo:bar:baz:TrustMeThisIsATableStream';
+        const table = Table.fromTableAttributes(stack, 'ImportedTable', { tableName, tableStreamArn });
+
+        const role =  new iam.Role(stack, 'NewRole', {
+          assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+        });
+
+        test.notEqual(table.grantTableListStreams(role), null);
+
+        expect(stack).to(haveResource('AWS::IAM::Policy', {
+          PolicyDocument: {
+            Statement: [
+              {
+                Action: "dynamodb:ListStreams",
+                Effect: 'Allow',
+                Resource: stack.resolve(`${table.tableArn}/stream/*`),
+              },
+            ],
+            Version: '2012-10-17'
+          },
+          Roles: [stack.resolve(role.roleName)]
+        }));
+
+        test.done();
+      },
+
+      'creates the correct stream read grant'(test: Test) {
+        const stack = new Stack();
+
+        const tableName = 'MyTable';
+        const tableStreamArn = 'arn:foo:bar:baz:TrustMeThisIsATableStream';
+        const table = Table.fromTableAttributes(stack, 'ImportedTable', { tableName, tableStreamArn });
+
+        const role =  new iam.Role(stack, 'NewRole', {
+          assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+        });
+
+        test.notEqual(table.grantStreamRead(role), null);
+
+        expect(stack).to(haveResource('AWS::IAM::Policy', {
+          PolicyDocument: {
+            Statement: [
+              {
+                Action: "dynamodb:ListStreams",
+                Effect: 'Allow',
+                Resource: stack.resolve(`${table.tableArn}/stream/*`),
+              },
+              {
+                Action: ['dynamodb:DescribeStream', 'dynamodb:GetRecords', 'dynamodb:GetShardIterator'],
+                Effect: 'Allow',
+                Resource: tableStreamArn,
+              }
+            ],
+            Version: '2012-10-17'
+          },
+          Roles: [stack.resolve(role.roleName)]
+        }));
+
+        test.done();
+      },
+    }
   },
 
   'global': {
