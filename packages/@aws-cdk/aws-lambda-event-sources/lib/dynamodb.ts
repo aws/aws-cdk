@@ -11,7 +11,7 @@ export interface DynamoEventSourceProps extends StreamEventSourceProps {
 export class DynamoEventSource extends StreamEventSource {
   private _eventSourceMappingId?: string = undefined;
 
-  constructor(private readonly table: dynamodb.Table, props: DynamoEventSourceProps) {
+  constructor(private readonly table: dynamodb.ITable, props: DynamoEventSourceProps) {
     super(props);
 
     if (this.props.batchSize !== undefined && (this.props.batchSize < 1 || this.props.batchSize > 1000)) {
