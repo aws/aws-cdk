@@ -73,14 +73,14 @@ listener.addFixedResponse('Fixed', {
 #### Conditions
 
 It's possible to route traffic to targets based on conditions in the incoming
-HTTP request. Path- and host-based conditions are supported. For example,
-the following will route requests to the indicated AutoScalingGroup
-only if the requested host in the request is `example.com`:
+HTTP request. Path- and host-based conditions are supported. For example, the
+following will route requests to the indicated AutoScalingGroup only if the
+requested host in the request is either for `example.com/ok` or
+`example.com/path`:
 
 ```ts
 listener.addTargets('Example.Com Fleet', {
     priority: 10,
-    pathPatterns: '/ok',
     pathPatterns: ['/ok', '/path'],
     hostHeader: 'example.com',
     port: 8080,
@@ -88,14 +88,13 @@ listener.addTargets('Example.Com Fleet', {
 });
 ```
 
-`priority` is a required field when you add targets with conditions. The lowest
-number wins.
+A target with a condition contains either `pathPatterns` or `hostHeader`, or
+both. If both are specified, both conditions must be met for the requests to
+be routed to the given target. `priority` is a required field when you add
+targets with conditions. The lowest number wins.
 
-The `pathPattern` condition routes a certain path to the target. Cannot be combined with `pathPatterns`.
-
-The `pathPatterns` condition allows for multiple paths to route to a target. Cannot be combined with `pathPattern`.
-
-Every listener must have at least one target without conditions.
+Every listener must have at least one target without conditions, which is
+where all requests that didn't match any of the conditions will be sent.
 
 ### Defining a Network Load Balancer
 

@@ -562,16 +562,19 @@ export interface AddRuleProps {
    * Requires that priority is set.
    *
    * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html#path-conditions
-   *
    * @default No path condition
+   * @deprecated Use `pathPatterns` instead.
    */
   readonly pathPattern?: string;
 
   /**
    * Rule applies if the requested path matches any of the given patterns.
    *
-   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html#path-conditions
+   * May contain up to three '*' wildcards.
    *
+   * Requires that priority is set.
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html#path-conditions
    * @default - No path condition.
    */
   readonly pathPatterns?: string[];

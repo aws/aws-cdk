@@ -54,20 +54,19 @@ export interface BaseApplicationListenerRuleProps {
   /**
    * Rule applies if the requested path matches the given path pattern
    *
-   * May contain up to three '*' wildcards.
-   *
    * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html#path-conditions
-   *
    * @default - No path condition.
+   * @deprecated Use `pathPatterns` instead.
    */
   readonly pathPattern?: string;
 
   /**
    * Rule applies if the requested path matches any of the given patterns.
    *
-   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html#path-conditions
+   * Paths may contain up to three '*' wildcards.
    *
-   * @default - No path condition.
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html#path-conditions
+   * @default - No path conditions.
    */
   readonly pathPatterns?: string[];
 }
@@ -206,7 +205,7 @@ export class ApplicationListenerRule extends cdk.Construct {
       this.setCondition('host-header', [props.hostHeader]);
     }
 
-    if (props.pathPattern || props.pathPatterns) {
+    if (hasPathPatterns) {
       if (props.pathPattern && props.pathPatterns) {
         throw new Error('Both `pathPatterns` and `pathPattern` are specified, specify only one');
       }
