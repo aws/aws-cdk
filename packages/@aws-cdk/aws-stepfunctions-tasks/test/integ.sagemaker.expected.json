@@ -53,7 +53,7 @@
               "Principal": {
                 "AWS": {
                   "Fn::GetAtt": [
-                    "TrainTaskSagemakerRole0A9B1CDD",
+                    "CreateTrainingJobSagemakerRole94B2D053",
                     "Arn"
                   ]
                 }
@@ -70,7 +70,7 @@
               "Principal": {
                 "AWS": {
                   "Fn::GetAtt": [
-                    "TrainTaskSagemakerRole0A9B1CDD",
+                    "CreateTrainingJobSagemakerRole94B2D053",
                     "Arn"
                   ]
                 }
@@ -106,7 +106,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
-    "TrainTaskSagemakerRole0A9B1CDD": {
+    "CreateTrainingJobSagemakerRole94B2D053": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -145,7 +145,7 @@
         ]
       }
     },
-    "TrainTaskSagemakerRoleDefaultPolicyA28F72FA": {
+    "CreateTrainingJobSagemakerRoleDefaultPolicyD48AFF95": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -240,10 +240,53 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "TrainTaskSagemakerRoleDefaultPolicyA28F72FA",
+        "PolicyName": "CreateTrainingJobSagemakerRoleDefaultPolicyD48AFF95",
         "Roles": [
           {
-            "Ref": "TrainTaskSagemakerRole0A9B1CDD"
+            "Ref": "CreateTrainingJobSagemakerRole94B2D053"
+          }
+        ]
+      }
+    },
+    "CreateModelSagemakerRoleC2E07FC0": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "sagemaker.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "cloudwatch:PutMetricData",
+                    "logs:CreateLogStream",
+                    "logs:PutLogEvents",
+                    "logs:CreateLogGroup",
+                    "logs:DescribeLogStreams",
+                    "s3:GetObject",
+                    "ecr:GetAuthorizationToken",
+                    "ecr:BatchCheckLayerAvailability",
+                    "ecr:GetDownloadUrlForLayer",
+                    "ecr:BatchGetImage"
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "*"
+                }
+              ],
+              "Version": "2012-10-17"
+            },
+            "PolicyName": "CreateModel"
           }
         ]
       }
@@ -324,10 +367,45 @@
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "TrainTaskSagemakerRole0A9B1CDD",
+                  "CreateTrainingJobSagemakerRole94B2D053",
                   "Arn"
                 ]
               }
+            },
+            {
+              "Action": "sagemaker:CreateModel",
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": "iam:PassRole",
+              "Condition": {
+                "StringEquals": {
+                  "iam:PassedToService": "sagemaker.amazonaws.com"
+                }
+              },
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "CreateModelSagemakerRoleC2E07FC0",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "sagemaker:CreateEndpointConfig",
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": "sagemaker:createEndpoint",
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": "sagemaker:updateEndpoint",
+              "Effect": "Allow",
+              "Resource": "*"
             }
           ],
           "Version": "2012-10-17"
@@ -347,10 +425,10 @@
           "Fn::Join": [
             "",
             [
-              "{\"StartAt\":\"TrainTask\",\"States\":{\"TrainTask\":{\"End\":true,\"Parameters\":{\"TrainingJobName\":\"MyTrainingJob\",\"RoleArn\":\"",
+              "{\"StartAt\":\"Create Training Job\",\"States\":{\"Create Training Job\":{\"Next\":\"Create Model\",\"Parameters\":{\"TrainingJobName\":\"MyTrainingJob\",\"RoleArn\":\"",
               {
                 "Fn::GetAtt": [
-                  "TrainTaskSagemakerRole0A9B1CDD",
+                  "CreateTrainingJobSagemakerRole94B2D053",
                   "Arn"
                 ]
               },
@@ -382,7 +460,30 @@
               {
                 "Ref": "AWS::Partition"
               },
-              ":states:::sagemaker:createTrainingJob\"}}}"
+              ":states:::sagemaker:createTrainingJob\",\"ResultPath\":\"$.TrainingJob\"},\"Create Model\":{\"Next\":\"Create Endpoint Config\",\"Parameters\":{\"ExecutionRoleArn\":\"",
+              {
+                "Fn::GetAtt": [
+                  "CreateModelSagemakerRoleC2E07FC0",
+                  "Arn"
+                ]
+              },
+              "\",\"ModelName\":\"MyModel\",\"PrimaryContainer\":{\"Image.$\":\"$.TrainingJob.image_name\",\"Mode\":\"SingleModel\",\"ModelDataUrl.$\":\"$.TrainingJob.ModelArtifacts.S3ModelArtifacts\"}},\"Type\":\"Task\",\"Resource\":\"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":states:::sagemaker:createModel\",\"ResultPath\":\"$.Model\"},\"Create Endpoint Config\":{\"Next\":\"Create Endpoint\",\"Parameters\":{\"EndpointConfigName.$\":\"$.endpoint.endpoint_config\",\"ProductionVariants\":[{\"InitialInstanceCount.$\":\"$.endpoint.instance_config.instance_count\",\"InstanceType\":\"ml.m5.xlarge\",\"ModelName.$\":\"$.training.training_name\",\"VariantName\":\"default-variant-name\"}]},\"Type\":\"Task\",\"Resource\":\"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":states:::sagemaker:createEndpointConfig\",\"ResultPath\":\"$.EndpointConfig\"},\"Create Endpoint\":{\"End\":true,\"Catch\":[{\"ErrorEquals\":[\"States.TaskFailed\"],\"ResultPath\":\"$.Deploy\",\"Next\":\"Update Endpoint\"}],\"Parameters\":{\"EndpointConfigName.$\":\"$.endpoint.endpoint_config\",\"EndpointName.$\":\"$.endpoint.endpoint_name\"},\"Type\":\"Task\",\"Resource\":\"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":states:::sagemaker:createEndpoint\",\"ResultPath\":\"$.Deploy\"},\"Update Endpoint\":{\"End\":true,\"Parameters\":{\"EndpointConfigName.$\":\"$.endpoint.endpoint_config\",\"EndpointName.$\":\"$.endpoint.endpoint_name\"},\"Type\":\"Task\",\"Resource\":\"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":states:::sagemaker:updateEndpoint\",\"ResultPath\":\"$.Deploy\"}}}"
             ]
           ]
         },

@@ -12,22 +12,26 @@ export interface SagemakerUpdateEndpointTaskProps {
     /**
      * The name of an endpoint configuration. For more information, see CreateEndpointConfig.
      */
-    readonly EndpointConfigName: string;
+    readonly endpointConfigName: string;
 
     /**
      * The name of the endpoint. The name must be unique within an AWS Region in your AWS account.
      */
-    readonly EndpointName: string;
+    readonly endpointName: string;
 
     /**
      * The name of the endpoint. The name must be unique within an AWS Region in your AWS account.
+     *
+     * @default - None
      */
-    readonly ExcludeRetainedVariantProperties?: VariantPropertyType[];
+    readonly excludeRetainedVariantProperties?: VariantPropertyType[];
 
     /**
-     * When updating endpoint resources, enables or disables the retention of variant properties, such as the instance count or the variant weight. .
+     * When updating endpoint resources, enables or disables the retention of variant properties, such as the instance count or the variant weight.
+     *
+     * @default false
      */
-    readonly RetainAllVariantProperties?: boolean;
+    readonly retainAllVariantProperties?: boolean;
 
     /**
      * The service integration pattern indicates different ways to call SageMaker APIs.
@@ -72,10 +76,10 @@ export class SagemakerUpdateEndpointTask implements sfn.IStepFunctionsTask {
 
     private renderParameters(): {[key: string]: any} {
         return {
-            EndpointConfigName: this.props.EndpointConfigName,
-            EndpointName: this.props.EndpointName,
-            ...(this.renderProductionVariants(this.props.ExcludeRetainedVariantProperties)),
-            ...(this.renderRetainAllVariantProperties(this.props.RetainAllVariantProperties)),
+            EndpointConfigName: this.props.endpointConfigName,
+            EndpointName: this.props.endpointName,
+            ...(this.renderProductionVariants(this.props.excludeRetainedVariantProperties)),
+            ...(this.renderRetainAllVariantProperties(this.props.retainAllVariantProperties)),
         };
     }
 

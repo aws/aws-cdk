@@ -12,38 +12,48 @@ export interface SagemakerCreateModelTaskProps {
 
     /**
      * Specifies the containers in the inference pipeline.
+     *
+     * @default - None
      */
-    readonly Containers?: ModelContainer[];
+    readonly containers?: ModelContainer[];
 
     /**
      * Isolates the model container. No inbound or outbound network calls can be made to or from the model container.
+     *
+     * @default false
      */
-    readonly EnableNetworkIsolation?: boolean;
+    readonly enableNetworkIsolation?: boolean;
 
     /**
      * The Amazon Resource Name (ARN) of the IAM role that Amazon SageMaker can assume to access model artifacts and
      * docker image for deployment on ML compute instances or for batch transform jobs.
+     *
+     * @default - a role with appropriate permissions will be created
      */
-    readonly ExecutionRoleArn?: string;
+    readonly executionRoleArn?: string;
 
     /**
      * The name of the new model.
      */
-    readonly ModelName: string;
+    readonly modelName: string;
 
     /**
      * The location of the primary docker image containing inference code, associated artifacts, and
      * custom environment map that the inference code uses when the model is deployed for predictions.
      */
-    readonly PrimaryContainer?: ModelContainer;
+    readonly primaryContainer?: ModelContainer;
 
     /**
      * Tags to be applied to the model.
+     *
+     * @default - None
      */
     readonly tags?: {[key: string]: string};
 
     /**
      * A VpcConfig object that specifies the VPC that you want your model to connect to.
+     *
+     * @default - None
      */
     readonly vpcConfig?: VpcConfig;
 
@@ -193,11 +203,11 @@ export class SagemakerCreateModelTask implements iam.IGrantable, ec2.IConnectabl
 
     private renderParameters(): {[key: string]: any} {
         return {
-            EnableNetworkIsolation: this.props.EnableNetworkIsolation,
-            ExecutionRoleArn: (this.props.ExecutionRoleArn) ? this.props.ExecutionRoleArn : this.role.roleArn,
-            ModelName: this.props.ModelName,
-            ...(this.renderContainers(this.props.Containers)),
-            ...(this.renderPrimaryContainer(this.props.PrimaryContainer)),
+            EnableNetworkIsolation: this.props.enableNetworkIsolation,
+            ExecutionRoleArn: (this.props.executionRoleArn) ? this.props.executionRoleArn : this.role.roleArn,
+            ModelName: this.props.modelName,
+            ...(this.renderContainers(this.props.containers)),
+            ...(this.renderPrimaryContainer(this.props.primaryContainer)),
             ...(this.renderTags(this.props.tags)),
             ...(this.renderVpcConfig(this.props.vpcConfig))
         };

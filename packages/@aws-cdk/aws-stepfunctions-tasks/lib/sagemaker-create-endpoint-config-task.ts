@@ -11,27 +11,33 @@ export interface SagemakerCreateEndpointConfigTaskProps {
 
     /**
      * The request accepts the following data in JSON format.
+     *
+     * @default - None
      */
-    readonly DataCaptureConfig?: DataCaptureConfig;
+    readonly dataCaptureConfig?: DataCaptureConfig;
 
     /**
      * The name of the endpoint configuration. You specify this name in a CreateEndpoint request.
      */
-    readonly EndpointConfigName: string;
+    readonly endpointConfigName: string;
 
     /**
      * Isolates the model container. No inbound or outbound network calls can be made to or from the model container.
+     *
+     * @default - None
      */
-    readonly KmsKeyId?: string;
+    readonly kmsKeyId?: string;
 
     /**
      * The Amazon Resource Name (ARN) of the IAM role that Amazon SageMaker can assume to access model artifacts and
      * docker image for deployment on ML compute instances or for batch transform jobs.
      */
-    readonly ProductionVariants: ProductionVariants[];
+    readonly productionVariants: ProductionVariants[];
 
     /**
      * Tags to be applied to the model.
+     *
+     * @default - No tags
      */
     readonly tags?: {[key: string]: string};
 
@@ -79,10 +85,10 @@ export class SagemakerCreateEndpointConfigTask implements sfn.IStepFunctionsTask
 
     private renderParameters(): {[key: string]: any} {
         return {
-            EndpointConfigName: this.props.EndpointConfigName,
-            ...(this.renderProductionVariants(this.props.ProductionVariants)),
-            ...(this.renderDataCaptureConfig(this.props.DataCaptureConfig)),
-            ...(this.renderKmsKeyId(this.props.KmsKeyId)),
+            EndpointConfigName: this.props.endpointConfigName,
+            ...(this.renderProductionVariants(this.props.productionVariants)),
+            ...(this.renderDataCaptureConfig(this.props.dataCaptureConfig)),
+            ...(this.renderKmsKeyId(this.props.kmsKeyId)),
             ...(this.renderTags(this.props.tags)),
         };
     }

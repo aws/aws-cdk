@@ -11,15 +11,17 @@ export interface SagemakerCreateEndpointTaskProps {
     /**
      * The name of an endpoint configuration. For more information, see CreateEndpointConfig.
      */
-    readonly EndpointConfigName: string;
+    readonly endpointConfigName: string;
 
     /**
      * The name of the endpoint. The name must be unique within an AWS Region in your AWS account.
      */
-    readonly EndpointName: string;
+    readonly endpointName: string;
 
     /**
      * Tags to be applied to the Endpoint.
+     *
+     * @default - No Tags
      */
     readonly tags?: {[key: string]: string};
 
@@ -66,8 +68,8 @@ export class SagemakerCreateEndpointTask implements sfn.IStepFunctionsTask {
 
     private renderParameters(): {[key: string]: any} {
         return {
-            EndpointConfigName: this.props.EndpointConfigName,
-            EndpointName: this.props.EndpointName,
+            EndpointConfigName: this.props.endpointConfigName,
+            EndpointName: this.props.endpointName,
             ...(this.renderTags(this.props.tags)),
         };
     }

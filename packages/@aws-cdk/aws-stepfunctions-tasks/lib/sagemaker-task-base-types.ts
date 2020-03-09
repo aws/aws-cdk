@@ -743,7 +743,7 @@ export interface DataCaptureConfig {
     /**
      * The Determines initial traffic distribution among all of the models that you specify in the endpoint configuration.
      */
-    readonly destinationS3Uri: string
+    readonly destinationS3Uri: S3Location
 
     /**
      * The ML compute instance type.
