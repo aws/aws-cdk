@@ -56,7 +56,7 @@ export class BatchJob implements events.IRuleTarget {
     };
 
     if (this.props.size) {
-      baseBatchParameters.arrayPropertyKey = {
+      baseBatchParameters.arrayProperties = {
         size: this.props.size
       };
     }
