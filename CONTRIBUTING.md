@@ -11,9 +11,8 @@ and let us know if it's not up-to-date (even better, submit a PR with your  corr
   - [Step 1: Open Issue](#step-1-open-issue)
   - [Step 2: Design (optional)](#step-2-design-optional)
   - [Step 3: Work your Magic](#step-3-work-your-magic)
-  - [Step 4: Commit](#step-4-commit)
-  - [Step 5: Pull Request](#step-5-pull-request)
-  - [Step 6: Merge](#step-6-merge)
+  - [Step 4: Pull Request](#step-4-pull-request)
+  - [Step 5: Merge](#step-5-merge)
 - [Tools](#tools)
   - [Main build scripts](#main-build-scripts)
   - [Partial build tools](#partial-build-tools)
@@ -53,7 +52,7 @@ For day-to-day development and normal contributions, the following SDKs and tool
  - [.NET Core SDK 3.0](https://www.microsoft.com/net/download)
  - [Python 3.6.5](https://www.python.org/downloads/release/python-365/)
  - [Ruby 2.5.1](https://www.ruby-lang.org/en/news/2018/03/28/ruby-2-5-1-released/)
- 
+
 The basic commands to get the repository cloned and built locally follow:
 
 ```console
@@ -142,7 +141,7 @@ Integration tests perform a few functions in the CDK code base -
 3. (Optionally) Acts as a way to validate that constructs set up the CloudFormation resources as expected. A successful
    CloudFormation deployment does not mean that the resources are set up correctly.
 
-If you are working on a new feature that is using previously unused CloudFormation resource types, or involves 
+If you are working on a new feature that is using previously unused CloudFormation resource types, or involves
 configuring resource types across services, you need to write integration tests that use these resource types or
 features.
 
@@ -162,48 +161,37 @@ Examples:
 * [integ.destinations.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-lambda-destinations/test/integ.destinations.ts#L7)
 * [integ.token-authorizer.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-apigateway/test/authorizers/integ.token-authorizer.ts#L6)
 
-### Step 4: Commit
-
-Create a commit with the proposed change changes:
-
-* Commit title and message (and PR title and description) must adhere to [conventionalcommits](https://www.conventionalcommits.org).
-  * The title must begin with `feat(module): title`, `fix(module): title`, `refactor(module): title` or
-    `chore(module): title`.
-  * Title should be lowercase.
-  * No period at the end of the title.
-
-* Commit message should describe _motivation_. Think about your code reviewers and what information they need in
-  order to understand what you did. If it's a big commit (hopefully not), try to provide some good entry points so
-  it will be easier to follow.
-
-* Commit message should indicate which issues are fixed: `fixes #<issue>` or `closes #<issue>`.
-
-* Shout out to collaborators.
-
-* If not obvious (i.e. from unit tests), describe how you verified that your change works.
-
-* If this commit includes breaking changes, they must be listed at the end in the following format (notice how multiple breaking changes should be formatted):
-
-```
-BREAKING CHANGE: Description of what broke and how to achieve this behavior now
-* **module-name:** Another breaking change
-* **module-name:** Yet another breaking change
-```
-
-### Step 5: Pull Request
+### Step 4: Pull Request
 
 * Push to a GitHub fork or to a branch (naming convention: `<user>/<feature-bug-name>`)
-* Submit a Pull Requests on GitHub and assign the PR for a review to the "awslabs/aws-cdk" team.
+* Submit a Pull Request on GitHub and assign the PR for a review to the "aws/aws-cdk-team" team. The title and description will be used to format the commit message when its merged to master. This in turn, will translate to CHANGELOG entries. It is therefore important we be consistent and informative. Here is an example PR you should use as a reference: https://github.com/aws/aws-cdk/pull/6553.
+
+  ### Title
+
+  * Must adhere to [conventionalcommits](https://www.conventionalcommits.org).
+  * The title must begin with one of:
+    - `feat(module): title`
+    - `fix(module): title`
+    - `refactor(module): title`
+    - `chore(module): title`
+  * Should be lowercase.
+  * No period at the end.
+
+
+  ### Description
+
+  * Simply follow the PR template carefully.
+
+
 * Please follow the PR checklist written below. We trust our contributors to self-check, and this helps that process!
 * Discuss review comments and iterate until you get at least one “Approve”. When iterating, push new commits to the
   same branch. Usually all these are going to be squashed when you merge to master. The commit messages should be hints
   for you when you finalize your merge commit message.
-* Make sure to update the PR title/description if things change. The PR title/description are going to be used as the
-  commit title/message and will appear in the CHANGELOG, so maintain them all the way throughout the process.
+* Make sure to update the PR title/description if things change.
 
 
 
-### Step 6: Merge
+### Step 5: Merge
 
 * Make sure your PR builds successfully (we have CodeBuild setup to automatically build all PRs)
 * Once approved and tested, a maintainer will squash-merge to master and will use your PR title/description as the
