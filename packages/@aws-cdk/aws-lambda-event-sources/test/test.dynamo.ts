@@ -274,7 +274,7 @@ export = {
     test.done();
   },
 
-  'specific maximumRetryAttempts'(test: Test) {
+  'specific retryAttempts'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new TestFunction(stack, 'Fn');
@@ -310,7 +310,7 @@ export = {
     test.done();
   },
 
-  'fails if maximumRetryAttempts < 0'(test: Test) {
+  'fails if retryAttempts < 0'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new TestFunction(stack, 'Fn');
@@ -327,12 +327,12 @@ export = {
       fn.addEventSource(new sources.DynamoEventSource(table, {
         retryAttempts: -1,
         startingPosition: lambda.StartingPosition.LATEST
-      })), /maximumRetryAttempts must be between 0 and 10000 inclusive, got -1/);
+      })), /retryAttempts must be between 0 and 10000 inclusive, got -1/);
 
     test.done();
   },
 
-  'fails if maximumRetryAttempts > 10000'(test: Test) {
+  'fails if retryAttempts > 10000'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new TestFunction(stack, 'Fn');
@@ -349,7 +349,7 @@ export = {
       fn.addEventSource(new sources.DynamoEventSource(table, {
         retryAttempts: 10001,
         startingPosition: lambda.StartingPosition.LATEST
-      })), /maximumRetryAttempts must be between 0 and 10000 inclusive, got 10001/);
+      })), /retryAttempts must be between 0 and 10000 inclusive, got 10001/);
 
     test.done();
   },
@@ -523,7 +523,7 @@ export = {
       fn.addEventSource(new sources.DynamoEventSource(table, {
         maxRecordAge: cdk.Duration.seconds(59),
         startingPosition: lambda.StartingPosition.LATEST
-      })), /maximumRecordAge must be between 60 and 604800 seconds inclusive, got 59/);
+      })), /maxRecordAge must be between 60 and 604800 seconds inclusive, got 59/);
 
     test.done();
   },
@@ -545,7 +545,7 @@ export = {
       fn.addEventSource(new sources.DynamoEventSource(table, {
         maxRecordAge: cdk.Duration.seconds(604801),
         startingPosition: lambda.StartingPosition.LATEST
-      })), /maximumRecordAge must be between 60 and 604800 seconds inclusive, got 604801/);
+      })), /maxRecordAge must be between 60 and 604800 seconds inclusive, got 604801/);
 
     test.done();
   },

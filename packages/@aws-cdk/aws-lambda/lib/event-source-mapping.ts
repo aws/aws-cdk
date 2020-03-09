@@ -127,11 +127,11 @@ export class EventSourceMapping extends cdk.Resource {
     }
 
     if (props.maxRecordAge && (props.maxRecordAge.toSeconds() < 60 || props.maxRecordAge.toDays({integral: false}) > 7)) {
-      throw new Error(`maximumRecordAge must be between 60 and 604800 seconds inclusive, got ${props.maxRecordAge.toSeconds()}`);
+      throw new Error(`maxRecordAge must be between 60 and 604800 seconds inclusive, got ${props.maxRecordAge.toSeconds()}`);
     }
 
     if (props.retryAttempts && (props.retryAttempts < 0 || props.retryAttempts > 10000)) {
-      throw new Error(`maximumRetryAttempts must be between 0 and 10000 inclusive, got ${props.retryAttempts}`);
+      throw new Error(`retryAttempts must be between 0 and 10000 inclusive, got ${props.retryAttempts}`);
     }
 
     if ((props.parallelizationFactor || props.parallelizationFactor === 0) && (props.parallelizationFactor < 1 || props.parallelizationFactor > 10)) {
