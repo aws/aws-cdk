@@ -56,15 +56,13 @@ export class BatchJob implements events.IRuleTarget {
     };
 
     if (this.props.size) {
-      const arrayPropertyKey = 'arrayProperties';
-      baseBatchParameters[arrayPropertyKey] = {
+      baseBatchParameters.arrayPropertyKey = {
         size: this.props.size
       };
     }
 
     if (this.props.attempts) {
-      const retryStrategyKey = 'retryStrategy';
-      baseBatchParameters[retryStrategyKey] = {
+      baseBatchParameters.retryStrategy = {
         attempts: this.props.attempts
       };
     }
