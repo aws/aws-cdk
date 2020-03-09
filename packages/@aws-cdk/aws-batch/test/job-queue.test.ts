@@ -32,7 +32,7 @@ describe('Batch Job Queue', () => {
     expect(jobQFromArn.jobQueueArn).toEqual(existingJobQ.jobQueueArn);
   });
 
-  it('renders the correct cloudformation properties', () => {
+  it('renders the correct CloudFormation properties', () => {
     // WHEN
     const props: batch.JobQueueProps = {
       priority: 1,
