@@ -4,6 +4,10 @@ import { IChainable, INextable } from '../types';
 import { StateType } from './private/state-type';
 import { State } from './state';
 
+/**
+ * Represents the Wait state which delays a state machine from continuing for a specified time
+ * @see https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-wait-state.html
+ */
 export class WaitTime {
     /**
      * Wait a fixed amount of time.
