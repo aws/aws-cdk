@@ -67,8 +67,15 @@ beforeEach(() => {
     name: 'test plugin',
   });
 
+  // Set environment variables that we want
   process.env.AWS_CONFIG_FILE = bockfs.path('/home/me/.bxt/config');
   process.env.AWS_SHARED_CREDENTIALS_FILE = bockfs.path('/home/me/.bxt/credentials');
+  // Scrub some environment variables that might be set if we're running on CodeBuild which will interfere with the tests.
+  process.env.AWS_REGION = undefined;
+  process.env.AWS_DEFAULT_REGION = undefined;
+  process.env.AWS_ACCESS_KEY_ID = undefined;
+  process.env.AWS_SECRET_ACCESS_KEY = undefined;
+  process.env.AWS_SESSION_TOKEN = undefined;
 });
 
 afterEach(() => {
