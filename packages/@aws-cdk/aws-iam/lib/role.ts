@@ -9,6 +9,7 @@ import { PolicyStatement } from './policy-statement';
 import { ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
 import { ImmutableRole } from './private/immutable-role';
 import { AttachedPolicies } from './util';
+import { warning } from './logging';
 
 export interface RoleProps {
   /**
@@ -207,6 +208,7 @@ export class Role extends Resource implements IRole {
 
       public addManagedPolicy(_policy: IManagedPolicy): void {
         // FIXME: Add warning that we're ignoring this
+        warning('We are ignoreing addManagedPolicy(_policy: IManagedPolicy) !!!');  
       }
 
       /**
