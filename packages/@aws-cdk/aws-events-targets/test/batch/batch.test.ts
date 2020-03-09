@@ -8,7 +8,14 @@ import * as targets from '../../lib';
 test('use aws batch job as an eventrule target', () => {
   // GIVEN
   const stack = new Stack();
-  const jobQueue = new batch.JobQueue(stack, 'MyQueue');
+  const jobQueue = new batch.JobQueue(stack, 'MyQueue', {
+    computeEnvironments: [
+      {
+        computeEnvironment: new batch.ComputeEnvironment(stack, 'ComputeEnvironment'),
+        order: 1
+      }
+    ]
+  });
   const jobDefinition = new batch.JobDefinition(stack, 'MyJob', {
     container: {
       image: ContainerImage.fromRegistry('test-repo')
