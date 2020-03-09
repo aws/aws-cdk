@@ -148,7 +148,7 @@ and add it to your Lambda function. The following parameters will impact Amazon 
 import dynamodb = require('@aws-cdk/aws-dynamodb');
 import lambda = require('@aws-cdk/aws-lambda');
 import sqs = require('@aws-cdk/aws-sqs');
-import { DynamoEventSource } from '@aws-cdk/aws-lambda-event-sources';
+import { DynamoEventSource, SqsDlq } from '@aws-cdk/aws-lambda-event-sources';
 
 const table = new dynamodb.Table(..., {
   partitionKey: ...,
@@ -162,7 +162,7 @@ function.addEventSource(new DynamoEventSource(table, {
   startingPosition: lambda.StartingPosition.TRIM_HORIZON,
   batchSize: 5,
   bisectBatchOnError: true,
-  onFailure: deadLetterQueue,
+  onFailure: new SqsDlq(deadLetterQueue),
   retryAttempts: 10
 }));
 ```
