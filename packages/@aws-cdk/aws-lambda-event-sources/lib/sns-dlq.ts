@@ -1,4 +1,4 @@
-import { DlqDestinationConfig, IEventSourceDlq } from "@aws-cdk/aws-lambda";
+import { DlqDestinationConfig, IEventSourceDlq, IFunction } from "@aws-cdk/aws-lambda";
 import * as sns from '@aws-cdk/aws-sns';
 
 /**
@@ -11,7 +11,9 @@ export class SnsDlq implements IEventSourceDlq {
   /**
    * Returns a destination configuration for the DLQ
    */
-  public bind(): DlqDestinationConfig {
+  public bind(target: IFunction): DlqDestinationConfig {
+    this.topic.grantPublish(target);
+
     return {
       destination: this.topic.topicArn
     };

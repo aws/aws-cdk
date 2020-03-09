@@ -1,4 +1,4 @@
-import { DlqDestinationConfig, IEventSourceDlq } from "@aws-cdk/aws-lambda";
+import { DlqDestinationConfig, IEventSourceDlq, IFunction } from "@aws-cdk/aws-lambda";
 import * as sqs from '@aws-cdk/aws-sqs';
 
 /**
@@ -11,7 +11,9 @@ export class SqsDlq implements IEventSourceDlq {
   /**
    * Returns a destination configuration for the DLQ
    */
-  public bind(): DlqDestinationConfig {
+  public bind(target: IFunction): DlqDestinationConfig {
+    this.queue.grantSendMessages(target);
+
     return {
       destination: this.queue.queueArn
     };

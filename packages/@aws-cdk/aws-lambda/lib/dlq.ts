@@ -1,3 +1,5 @@
+import { IFunction } from './function-base';
+
 /**
  * A destination configuration
  */
@@ -15,5 +17,5 @@ export interface IEventSourceDlq {
   /**
    * Returns the DLQ destination config of the DLQ
    */
-  bind(): DlqDestinationConfig;
+  bind(target: IFunction): DlqDestinationConfig;
 }

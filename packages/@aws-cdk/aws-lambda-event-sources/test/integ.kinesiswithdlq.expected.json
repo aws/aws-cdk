@@ -38,6 +38,20 @@
           "Statement": [
             {
               "Action": [
+                "sqs:SendMessage",
+                "sqs:GetQueueAttributes",
+                "sqs:GetQueueUrl"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "Q63C6E3AB",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": [
                 "kinesis:DescribeStream",
                 "kinesis:GetRecords",
                 "kinesis:GetShardIterator"
