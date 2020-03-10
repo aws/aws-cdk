@@ -81,6 +81,9 @@ beforeEach(() => {
   process.env.AWS_ACCESS_KEY_ID = undefined;
   process.env.AWS_SECRET_ACCESS_KEY = undefined;
   process.env.AWS_SESSION_TOKEN = undefined;
+
+  // tslint:disable-next-line:no-console
+  console.error(process.env);
 });
 
 afterEach(() => {
