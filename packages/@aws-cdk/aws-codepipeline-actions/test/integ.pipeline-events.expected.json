@@ -19,7 +19,9 @@
                 "kms:Delete*",
                 "kms:ScheduleKeyDeletion",
                 "kms:CancelKeyDeletion",
-                "kms:GenerateDataKey"
+                "kms:GenerateDataKey",
+                "kms:TagResource",
+                "kms:UntagResource"
               ],
               "Effect": "Allow",
               "Principal": {
@@ -127,6 +129,7 @@
     "MyPipelineArtifactsBucket727923DD": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
+        "PublicAccessBlockConfiguration" : {"BlockPublicAcls":true,"BlockPublicPolicy":true,"IgnorePublicAcls":true,"RestrictPublicBuckets":true},
         "BucketEncryption": {
           "ServerSideEncryptionConfiguration": [
             {

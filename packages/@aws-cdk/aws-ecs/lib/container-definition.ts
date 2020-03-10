@@ -331,13 +331,16 @@ export class ContainerDefinition extends cdk.Construct {
   public readonly taskDefinition: TaskDefinition;
 
   /**
+   * The log configuration specification for the container.
+   */
+  public readonly logDriverConfig?: LogDriverConfig;
+
+  /**
    * The configured container links
    */
   private readonly links = new Array<string>();
 
   private readonly imageConfig: ContainerImageConfig;
-
-  private readonly logDriverConfig?: LogDriverConfig;
 
   /**
    * Constructs a new instance of the ContainerDefinition class.

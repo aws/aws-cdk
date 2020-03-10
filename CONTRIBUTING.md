@@ -11,9 +11,8 @@ and let us know if it's not up-to-date (even better, submit a PR with your  corr
   - [Step 1: Open Issue](#step-1-open-issue)
   - [Step 2: Design (optional)](#step-2-design-optional)
   - [Step 3: Work your Magic](#step-3-work-your-magic)
-  - [Step 4: Commit](#step-4-commit)
-  - [Step 5: Pull Request](#step-5-pull-request)
-  - [Step 6: Merge](#step-6-merge)
+  - [Step 4: Pull Request](#step-4-pull-request)
+  - [Step 5: Merge](#step-5-merge)
 - [Tools](#tools)
   - [Main build scripts](#main-build-scripts)
   - [Partial build tools](#partial-build-tools)
@@ -38,6 +37,7 @@ and let us know if it's not up-to-date (even better, submit a PR with your  corr
   - [API Compatibility Checks](#api-compatibility-checks)
   - [Examples](#examples)
   - [Feature Flags](#feature-flags)
+  - [Versioning](#versioning)
 - [Troubleshooting](#troubleshooting)
 - [Debugging](#debugging)
   - [Connecting the VS Code Debugger](#connecting-the-vs-code-debugger)
@@ -52,7 +52,7 @@ For day-to-day development and normal contributions, the following SDKs and tool
  - [.NET Core SDK 3.0](https://www.microsoft.com/net/download)
  - [Python 3.6.5](https://www.python.org/downloads/release/python-365/)
  - [Ruby 2.5.1](https://www.ruby-lang.org/en/news/2018/03/28/ruby-2-5-1-released/)
- 
+
 The basic commands to get the repository cloned and built locally follow:
 
 ```console
@@ -130,48 +130,68 @@ Work your magic. Here are some guidelines:
    changes along the way, but try to avoid conflating multiple features. Eventually all these are going to go into a
    single commit, so you can use that to frame your scope.
 
-### Step 4: Commit
+#### Integration Tests
 
-Create a commit with the proposed change changes:
+Integration tests perform a few functions in the CDK code base -
+1. Acts as a regression detector. It does this by running `cdk synth` on the integration test and comparing it against
+   the `*.expected.json` file. This highlights how a change affects the synthesized stacks.
+2. Allows for a way to verify if the stacks are still valid CloudFormation templates, as part of an intrusive change.
+   This is done by running `yarn integ` which will run `cdk deploy` across all of the integration tests in that package.
+   Remember to set up AWS credentials before doing this.
+3. (Optionally) Acts as a way to validate that constructs set up the CloudFormation resources as expected. A successful
+   CloudFormation deployment does not mean that the resources are set up correctly.
 
-* Commit title and message (and PR title and description) must adhere to [conventionalcommits](https://www.conventionalcommits.org).
-  * The title must begin with `feat(module): title`, `fix(module): title`, `refactor(module): title` or
-    `chore(module): title`.
-  * Title should be lowercase.
-  * No period at the end of the title.
+If you are working on a new feature that is using previously unused CloudFormation resource types, or involves
+configuring resource types across services, you need to write integration tests that use these resource types or
+features.
 
-* Commit message should describe _motivation_. Think about your code reviewers and what information they need in
-  order to understand what you did. If it's a big commit (hopefully not), try to provide some good entry points so
-  it will be easier to follow.
+To the extent possible, include a section (like below) in the integration test file that specifies how the successfully
+deployed stack can be verified for correctness. Correctness here implies that the resources have been set up correctly.
+The steps here are usually AWS CLI commands but they need not be.
 
-* Commit message should indicate which issues are fixed: `fixes #<issue>` or `closes #<issue>`.
-
-* Shout out to collaborators.
-
-* If not obvious (i.e. from unit tests), describe how you verified that your change works.
-
-* If this commit includes breaking changes, they must be listed at the end in the following format (notice how multiple breaking changes should be formatted):
-
+```ts
+/*
+ * Stack verification steps:
+ * * <step-1>
+ * * <step-2>
+ */
 ```
-BREAKING CHANGE: Description of what broke and how to achieve this behavior now
-* **module-name:** Another breaking change
-* **module-name:** Yet another breaking change
-```
 
-### Step 5: Pull Request
+Examples:
+* [integ.destinations.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-lambda-destinations/test/integ.destinations.ts#L7)
+* [integ.token-authorizer.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-apigateway/test/authorizers/integ.token-authorizer.ts#L6)
+
+### Step 4: Pull Request
 
 * Push to a GitHub fork or to a branch (naming convention: `<user>/<feature-bug-name>`)
-* Submit a Pull Requests on GitHub and assign the PR for a review to the "awslabs/aws-cdk" team.
+* Submit a Pull Request on GitHub and assign the PR for a review to the "aws/aws-cdk-team" team. The title and description will be used to format the commit message when its merged to master. This in turn, will translate to CHANGELOG entries. It is therefore important we be consistent and informative. Here is an example PR you should use as a reference: https://github.com/aws/aws-cdk/pull/6553.
+
+  ### Title
+
+  * Must adhere to [conventionalcommits](https://www.conventionalcommits.org).
+  * The title must begin with one of:
+    - `feat(module): title`
+    - `fix(module): title`
+    - `refactor(module): title`
+    - `chore(module): title`
+  * Should be lowercase.
+  * No period at the end.
+
+
+  ### Description
+
+  * Simply follow the PR template carefully.
+
+
 * Please follow the PR checklist written below. We trust our contributors to self-check, and this helps that process!
 * Discuss review comments and iterate until you get at least one “Approve”. When iterating, push new commits to the
   same branch. Usually all these are going to be squashed when you merge to master. The commit messages should be hints
   for you when you finalize your merge commit message.
-* Make sure to update the PR title/description if things change. The PR title/description are going to be used as the
-  commit title/message and will appear in the CHANGELOG, so maintain them all the way throughout the process.
+* Make sure to update the PR title/description if things change.
 
 
 
-### Step 6: Merge
+### Step 5: Merge
 
 * Make sure your PR builds successfully (we have CodeBuild setup to automatically build all PRs)
 * Once approved and tested, a maintainer will squash-merge to master and will use your PR title/description as the
@@ -350,6 +370,12 @@ If you also wish to package to all languages, make sure you have all the [toolch
 $ ./pack.sh
 ```
 
+> NOTE: in local builds, pack.sh will finish but will fail with an error
+> indicating the build artifacts use the marker version (`0.0.0`). This is
+> normal, and you can trust the output in `dist/` despite the failure. This is a
+> protection we have to make sure we don't accidentally release artifacts with
+> the marker version.
+
 ### Full Docker build
 
 Clone the repo:
@@ -383,7 +409,8 @@ $ cd packages/@aws-cdk/aws-ec2
 $ ../../../scripts/buildup
 ```
 
-Note that `buildup` uses `foreach.sh`, which means it's resumable. If your build fails and you wish to resume, just run `buildup` again. If you wish to restart, run `buildup --restart`.
+Note that `buildup` uses `foreach.sh`, which means it's resumable. If your build fails and you wish to resume, just run
+`buildup --resume`. If you wish to restart, run `buildup` again.
 
 ### Quick Iteration
 
@@ -604,8 +631,8 @@ The pattern is simple:
    form `module.Type:feature` (e.g. `@aws-cdk/core:enableStackNameDuplicates`).
 2. Use `node.tryGetContext(cxapi.ENABLE_XXX)` to check if this feature is enabled
    in your code. If it is not defined, revert to the legacy behavior.
-3. Add your feature flag to
-   [cx-api/lib/future.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/cx-api/lib/future.ts).
+3. Add your feature flag to the `FUTURE_FLAGS` map in
+   [cx-api/lib/features.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/cx-api/lib/features.ts).
    This map is inserted to generated `cdk.json` files for new projects created
    through `cdk init`.
 4. In your PR title (which goes into CHANGELOG), add a `(under feature flag)` suffix. e.g:
@@ -626,6 +653,25 @@ In the [next major version of the
 CDK](https://github.com/aws/aws-cdk/issues/3398) we will either remove the
 legacy behavior or flip the logic for all these features and then
 reset the `FEATURE_FLAGS` map for the next cycle.
+
+### Versioning
+
+All `package.json` files in this repo use a stable marker version of `0.0.0`.
+This means that when you declare dependencies, you should always use `0.0.0`.
+This makes it easier for us to bump a new version (the `bump.sh` script will
+just update the central version and create a CHANGELOG entry) and also reduces
+the chance of merge conflicts after a new version is released.
+
+Additional scripts that take part in the versioning mechanism:
+
+- `scripts/get-version.js` can be used to obtain the actual version of the repo.
+  You can use either from JavaScript code by `require('./scripts/get-version')`
+  or from a shell script `node -p "require('./scripts/get-version')"`.
+- `scripts/get-version-marker.js` returns `0.0.0` and used to DRY the version
+  marker.
+- `scripts/align-version.sh` and `scripts/align-version.js` are used to align
+  all package.json files in the repo to the official version. This script is
+  invoked in CI builds and should not be used inside a development environment.
 
 ## Troubleshooting
 
@@ -755,4 +801,3 @@ To debug your CDK application along with the CDK repository,
 * [Workshop](https://github.com/aws-samples/aws-cdk-intro-workshop): source for https://cdkworkshop.com
 * [Developer Guide](https://github.com/awsdocs/aws-cdk-guide): markdown source for developer guide
 * [jsii](https://github.com/aws/jsii): the technology we use for multi-language support. If you are looking to help us support new languages, start there.
-

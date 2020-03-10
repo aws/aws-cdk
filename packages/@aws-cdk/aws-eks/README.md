@@ -5,12 +5,14 @@
 
 ![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
 
-> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
-> future breaking changes.**
+> **This is a _developer preview_ (public beta) module.**
 >
-> This API is still under active development and subject to non-backward
-> compatible changes or removal in any future version. Use of the API is not recommended in production
-> environments. Experimental APIs are not subject to the Semantic Versioning model.
+> All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib))
+> are auto-generated from CloudFormation. They are stable and safe to use.
+>
+> However, all other classes, i.e., higher level constructs, are under active development and subject to non-backward
+> compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model.
+> This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
 
 ---
 <!--END STABILITY BANNER-->
@@ -92,6 +94,49 @@ cluster.addCapacity('frontend-nodes', {
   vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC }
 });
 ```
+
+### Fargate
+
+AWS Fargate is a technology that provides on-demand, right-sized compute
+capacity for containers. With AWS Fargate, you no longer have to provision,
+configure, or scale groups of virtual machines to run containers. This removes
+the need to choose server types, decide when to scale your node groups, or
+optimize cluster packing. 
+
+You can control which pods start on Fargate and how they run with Fargate
+Profiles, which are defined as part of your Amazon EKS cluster.
+
+See [Fargate
+Considerations](https://docs.aws.amazon.com/eks/latest/userguide/fargate.html#fargate-considerations)
+in the AWS EKS User Guide.
+
+You can add Fargate Profiles to any EKS cluster defined in your CDK app
+through the `addFargateProfile()` method. The following example adds a profile
+that will match all pods from the "default" namespace:
+
+```ts
+cluster.addFargateProfile('MyProfile', {
+  selectors: [ { namespace: 'default' } ]
+});
+```
+
+To create an EKS cluster that **only** uses Fargate capacity, you can use
+`FargateCluster`.
+
+The following code defines an Amazon EKS cluster without EC2 capacity and a default
+Fargate Profile that matches all pods from the "kube-system" and "default" namespaces. It is also configured to [run CoreDNS on Fargate](https://docs.aws.amazon.com/eks/latest/userguide/fargate-getting-started.html#fargate-gs-coredns) through the `coreDnsComputeType` cluster option.
+
+```ts
+const cluster = new eks.FargateCluster(this, 'MyCluster');
+
+ // apply k8s resources on this cluster
+cluster.addResource(...);
+```
+
+**NOTE**: Classic Load Balancers and Network Load Balancers are not supported on
+pods running on Fargate. For ingress, we recommend that you use the [ALB Ingress
+Controller](https://docs.aws.amazon.com/eks/latest/userguide/alb-ingress.html)
+on Amazon EKS (minimum version v1.1.4).
 
 ### Spot Capacity
 

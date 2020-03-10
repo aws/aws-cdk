@@ -15,7 +15,7 @@ export interface HelmChartOptions {
 
   /**
    * The name of the release.
-   * @default - If no release name is given, it will use the last 63 characters of the node's unique id.
+   * @default - If no release name is given, it will use the last 53 characters of the node's unique id.
    */
   readonly release?: string;
 
@@ -42,6 +42,13 @@ export interface HelmChartOptions {
    * @default - No values are provided to the chart.
    */
   readonly values?: {[key: string]: any};
+
+  /**
+   * Whether or not Helm should wait until all Pods, PVCs, Services, and minimum number of Pods of a
+   * Deployment, StatefulSet, or ReplicaSet are in a ready state before marking the release as successful.
+   * @default - Helm will not wait before marking release as successful
+   */
+  readonly wait?: boolean;
 }
 
 /**
@@ -70,10 +77,6 @@ export class HelmChart extends Construct {
   constructor(scope: Construct, id: string, props: HelmChartProps) {
     super(scope, id);
 
-    if (!props.cluster._clusterResource) {
-      throw new Error(`Cannot define a Helm chart on a cluster with kubectl disabled`);
-    }
-
     const stack = Stack.of(this);
 
     const provider = KubectlProvider.getOrCreate(this);
@@ -83,10 +86,11 @@ export class HelmChart extends Construct {
       resourceType: HelmChart.RESOURCE_TYPE,
       properties: {
         ClusterName: props.cluster.clusterName,
-        RoleArn: props.cluster._clusterResource.getCreationRoleArn(provider.role),
-        Release: props.release || this.node.uniqueId.slice(-63).toLowerCase(), // Helm has a 63 character limit for the name
+        RoleArn: props.cluster._getKubectlCreationRoleArn(provider.role),
+        Release: props.release || this.node.uniqueId.slice(-53).toLowerCase(), // Helm has a 53 character limit for the name
         Chart: props.chart,
         Version: props.version,
+        Wait: props.wait || false,
         Values: (props.values ? stack.toJsonString(props.values) : undefined),
         Namespace: props.namespace || 'default',
         Repository: props.repository

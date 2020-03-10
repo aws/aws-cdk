@@ -232,6 +232,7 @@ export class Pipeline extends PipelineBase {
         bucketName: PhysicalName.GENERATE_IF_NEEDED,
         encryptionKey,
         encryption: s3.BucketEncryption.KMS,
+        blockPublicAccess: new s3.BlockPublicAccess(s3.BlockPublicAccess.BLOCK_ALL),
         removalPolicy: RemovalPolicy.RETAIN
       });
       // add an alias to make finding the key in the console easier
@@ -540,8 +541,14 @@ export class Pipeline extends PipelineBase {
     if (action.actionProperties.role) {
       if (this.isAwsOwned(action)) {
         // the role has to be deployed before the pipeline
-        const roleStack = Stack.of(action.actionProperties.role);
-        pipelineStack.addDependency(roleStack);
+        // (our magical cross-stack dependencies will not work,
+        // because the role might be from a different environment),
+        // but _only_ if it's a new Role -
+        // an imported Role should not add the dependency
+        if (action.actionProperties.role instanceof iam.Role) {
+          const roleStack = Stack.of(action.actionProperties.role);
+          pipelineStack.addDependency(roleStack);
+        }
 
         return action.actionProperties.role;
       } else {

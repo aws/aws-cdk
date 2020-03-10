@@ -94,5 +94,6 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
       enableECSManagedTags: props.enableECSManagedTags,
     });
     this.configureAutoscalingForService(this.service);
+    this.grantPermissionsToService(this.service);
   }
 }

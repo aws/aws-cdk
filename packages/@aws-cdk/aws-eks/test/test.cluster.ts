@@ -200,10 +200,10 @@ export = {
     const cluster = new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: false, defaultCapacity: 0 });
 
     test.throws(() => cluster.awsAuth, /Cannot define aws-auth mappings if kubectl is disabled/);
-    test.throws(() => cluster.addResource('foo', {}), /Cannot define a KubernetesManifest resource on a cluster with kubectl disabled/);
+    test.throws(() => cluster.addResource('foo', {}), /Unable to perform this operation since kubectl is not enabled for this cluster/);
     test.throws(() => cluster.addCapacity('boo', { instanceType: new ec2.InstanceType('r5d.24xlarge'), mapRole: true }),
       /Cannot map instance IAM role to RBAC if kubectl is disabled for the cluster/);
-    test.throws(() => new eks.HelmChart(stack, 'MyChart', { cluster, chart: 'chart' }), /Cannot define a Helm chart on a cluster with kubectl disabled/);
+    test.throws(() => new eks.HelmChart(stack, 'MyChart', { cluster, chart: 'chart' }), /Unable to perform this operation since kubectl is not enabled for this cluster/);
     test.done();
   },
 
@@ -670,15 +670,69 @@ export = {
             }
           },
           {
+            Action: "ec2:DescribeSubnets",
+            Effect: "Allow",
+            Resource: "*",
+          },
+          {
             Action: [
               "eks:CreateCluster",
               "eks:DescribeCluster",
               "eks:DeleteCluster",
               "eks:UpdateClusterVersion",
-              "eks:UpdateClusterConfig"
+              "eks:UpdateClusterConfig",
+              "eks:CreateFargateProfile"
             ],
             Effect: "Allow",
-            Resource: { "Fn::Join": [ "", [ "arn:", { Ref: "AWS::Partition" }, ":eks:us-east-1:", { Ref: "AWS::AccountId" }, ":cluster/my-cluster-name" ] ] }
+            Resource: {
+              "Fn::Join": [
+                "",
+                [
+                  "arn:",
+                  {
+                    Ref: "AWS::Partition"
+                  },
+                  ":eks:us-east-1:",
+                  {
+                    Ref: "AWS::AccountId"
+                  },
+                  ":cluster/my-cluster-name"
+                ]
+              ]
+            }
+          },
+          {
+            Action: [
+              "eks:DescribeFargateProfile",
+              "eks:DeleteFargateProfile"
+            ],
+            Effect: "Allow",
+            Resource: {
+              "Fn::Join": [
+                "",
+                [
+                  "arn:",
+                  {
+                    Ref: "AWS::Partition"
+                  },
+                  ":eks:us-east-1:",
+                  {
+                    Ref: "AWS::AccountId"
+                  },
+                  ":fargateprofile/my-cluster-name/*"
+                ]
+              ]
+            }
+          },
+          {
+            Action: "iam:GetRole",
+            Effect: "Allow",
+            Resource: "*"
+          },
+          {
+            Action: "iam:CreateServiceLinkedRole",
+            Effect: "Allow",
+            Resource: "*"
           }
         ],
         Version: "2012-10-17"
@@ -709,13 +763,37 @@ export = {
             }
           },
           {
+            Action: "ec2:DescribeSubnets",
+            Effect: "Allow",
+            Resource: "*",
+          },
+          {
             Action: [
               "eks:CreateCluster",
               "eks:DescribeCluster",
               "eks:DeleteCluster",
               "eks:UpdateClusterVersion",
-              "eks:UpdateClusterConfig"
+              "eks:UpdateClusterConfig",
+              "eks:CreateFargateProfile"
             ],
+            Effect: "Allow",
+            Resource: "*"
+          },
+          {
+            Action: [
+              "eks:DescribeFargateProfile",
+              "eks:DeleteFargateProfile"
+            ],
+            Effect: "Allow",
+            Resource: "*"
+          },
+          {
+            Action: "iam:GetRole",
+            Effect: "Allow",
+            Resource: "*"
+          },
+          {
+            Action: "iam:CreateServiceLinkedRole",
             Effect: "Allow",
             Resource: "*"
           }
@@ -779,6 +857,34 @@ export = {
           }
         ],
         Version: "2012-10-17"
+      }
+    }));
+    test.done();
+  },
+
+  'coreDnsComputeType will patch the coreDNS configuration to use a "fargate" compute type and restore to "ec2" upon removal'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new eks.Cluster(stack, 'MyCluster', {
+      coreDnsComputeType: eks.CoreDnsComputeType.FARGATE
+    });
+
+    // THEN
+    expect(stack).to(haveResource('Custom::AWSCDK-EKS-KubernetesPatch', {
+      ResourceName: "deployment/coredns",
+      ResourceNamespace: "kube-system",
+      ApplyPatchJson: "{\"spec\":{\"template\":{\"metadata\":{\"annotations\":{\"eks.amazonaws.com/compute-type\":\"fargate\"}}}}}",
+      RestorePatchJson: "{\"spec\":{\"template\":{\"metadata\":{\"annotations\":{\"eks.amazonaws.com/compute-type\":\"ec2\"}}}}}",
+      ClusterName: {
+        Ref: "MyCluster8AD82BF8"
+      },
+      RoleArn: {
+        "Fn::GetAtt": [
+          "MyClusterCreationRoleB5FA4FF3",
+          "Arn"
+        ]
       }
     }));
     test.done();

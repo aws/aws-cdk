@@ -1,6 +1,7 @@
 import * as cfn from '@aws-cdk/aws-cloudformation';
 import * as iam from '@aws-cdk/aws-iam';
 import { ArnComponents, Construct, Lazy, Stack, Token } from '@aws-cdk/core';
+import { CLUSTER_RESOURCE_TYPE } from './cluster-resource-handler/consts';
 import { ClusterResourceProvider } from './cluster-resource-provider';
 import { CfnClusterProps } from './eks.generated';
 
@@ -15,11 +16,6 @@ import { CfnClusterProps } from './eks.generated';
  * manifest and IAM role/user RBAC mapping.
  */
 export class ClusterResource extends Construct {
-  /**
-   * The AWS CloudFormation resource type used for this resource.
-   */
-  public static readonly RESOURCE_TYPE = 'Custom::AWSCDK-EKS-Cluster';
-
   public readonly attrEndpoint: string;
   public readonly attrArn: string;
   public readonly attrCertificateAuthorityData: string;
@@ -67,13 +63,39 @@ export class ClusterResource extends Construct {
         : '*'
     });
 
+    const fargateProfileResourceArn = Lazy.stringValue({
+      produce: () => stack.resolve(props.name)
+        ? stack.formatArn({ service: 'eks', resource: 'fargateprofile', resourceName: stack.resolve(props.name) + '/*' })
+        : '*'
+    });
+
     this.creationRole.addToPolicy(new iam.PolicyStatement({
-      actions: [ 'eks:CreateCluster', 'eks:DescribeCluster', 'eks:DeleteCluster', 'eks:UpdateClusterVersion', 'eks:UpdateClusterConfig' ],
+      actions: [ 'ec2:DescribeSubnets' ],
+      resources: [ '*' ],
+    }));
+
+    this.creationRole.addToPolicy(new iam.PolicyStatement({
+      actions: [ 'eks:CreateCluster', 'eks:DescribeCluster', 'eks:DeleteCluster', 'eks:UpdateClusterVersion', 'eks:UpdateClusterConfig', 'eks:CreateFargateProfile' ],
       resources: [ resourceArn ]
     }));
 
+    this.creationRole.addToPolicy(new iam.PolicyStatement({
+      actions: [ 'eks:DescribeFargateProfile', 'eks:DeleteFargateProfile' ],
+      resources: [ fargateProfileResourceArn ]
+    }));
+
+    this.creationRole.addToPolicy(new iam.PolicyStatement({
+      actions: [ 'iam:GetRole' ],
+      resources: [ '*' ],
+    }));
+
+    this.creationRole.addToPolicy(new iam.PolicyStatement({
+      actions: [ 'iam:CreateServiceLinkedRole' ],
+      resources: [ '*' ],
+    }));
+
     const resource = new cfn.CustomResource(this, 'Resource', {
-      resourceType: ClusterResource.RESOURCE_TYPE,
+      resourceType: CLUSTER_RESOURCE_TYPE,
       provider: provider.provider,
       properties: {
         Config: props,
@@ -93,7 +115,12 @@ export class ClusterResource extends Construct {
    * Returns the ARN of the cluster creation role and grants `trustedRole`
    * permissions to assume this role.
    */
-  public getCreationRoleArn(trustedRole: iam.IRole): string {
+  public getCreationRoleArn(trustedRole?: iam.IRole): string {
+
+    if (!trustedRole) {
+      return this.creationRole.roleArn;
+    }
+
     if (!this.trustedPrincipals.includes(trustedRole.roleArn)) {
       if (!this.creationRole.assumeRolePolicy) {
         throw new Error(`unexpected: cluster creation role must have trust policy`);

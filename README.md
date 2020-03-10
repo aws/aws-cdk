@@ -29,7 +29,9 @@ The CDK is available in the following languages:
 [Getting Started](https://docs.aws.amazon.com/cdk/latest/guide/getting_started.html) |
 [API Reference](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-construct-library.html) |
 [Examples](https://github.com/aws-samples/aws-cdk-examples) |
-[Getting Help](#getting-help)
+[Getting Help](#getting-help) |
+[RFCs](https://github.com/aws/aws-cdk-rfcs) |
+[Roadmap](https://github.com/aws/aws-cdk/ROADMAP.md)
 
 Developers use the [CDK framework] in one of the
 supported programming languages to define reusable cloud components called [constructs], which
@@ -51,7 +53,7 @@ on AWS.
 [apps]: https://docs.aws.amazon.com/cdk/latest/guide/apps_and_stacks.html#apps
 [Developer Guide]: https://docs.aws.amazon.com/cdk/latest/guide
 [AWS CDK CLI]: https://docs.aws.amazon.com/cdk/latest/guide/tools.html
-[AWS Construct Library]: https://docs.aws.amazon.com/cdk/latest/guide/aws_construct_lib.html
+[AWS Construct Library]: https://docs.aws.amazon.com/cdk/api/latest/docs/aws-construct-library.html
 
 ## At a glance
 
@@ -120,6 +122,13 @@ for tracking bugs and feature requests.
 We welcome community contributions and pull requests. See
 [CONTRIBUTING](./CONTRIBUTING.md) for information on how to set up a development
 environment and submit code.
+
+## Roadmap
+
+The [AWS CDK Roadmap project board] lets developers know about our upcoming features and priorities to help them plan how to best leverage the CDK and identify opportunities to contribute to the project. See [ROADMAP] for more information and FAQs.
+
+[AWS CDK Roadmap project board]: https://github.com/orgs/aws/projects/7
+[Roadmap]: (https://github.com/aws/aws-cdk/ROADMAP.md)
 
 ## License
 
