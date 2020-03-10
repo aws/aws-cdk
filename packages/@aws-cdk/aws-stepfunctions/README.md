@@ -127,6 +127,7 @@ couple of the tasks available are:
 * `tasks.InvokeActivity` -- start an Activity (Activities represent a work
   queue that you poll on a compute fleet you manage yourself)
 * `tasks.InvokeFunction` -- invoke a Lambda function with function ARN
+* `tasks.RunBatchJob` -- run a Batch job
 * `tasks.RunLambdaTask` -- call Lambda as integrated service with magic ARN
 * `tasks.RunGlueJobTask` -- call Glue Job as integrated service
 * `tasks.PublishToTopic` -- publish a message to an SNS topic
@@ -206,6 +207,39 @@ task.next(nextState);
 ```
 
 [Example CDK app](../aws-stepfunctions-tasks/test/integ.glue-task.ts)
+
+#### Batch example
+
+```ts
+import batch = require('@aws-cdk/aws-batch');
+
+const batchQueue = new batch.JobQueue(this, 'JobQueue', {
+  computeEnvironments: [
+    {
+      order: 1,
+      computeEnvironment: new batch.ComputeEnvironment(this, 'ComputeEnv', {
+        computeResources: { vpc }
+      })
+    }
+  ]
+});
+
+const batchJobDefinition = new batch.JobDefinition(this, 'JobDefinition', {
+  container: {
+    image: ecs.ContainerImage.fromAsset(
+      path.resolve(__dirname, 'batchjob-image')
+    )
+  }
+});
+
+const task = new sfn.Task(this, 'Submit Job', {
+  task: new tasks.RunBatchJob({
+    jobDefinition: batchJobDefinition,
+    jobName: 'MyJob',
+    jobQueue: batchQueue
+  })
+});
+```
 
 #### SNS example
 
