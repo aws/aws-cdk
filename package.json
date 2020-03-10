@@ -17,7 +17,7 @@
     "conventional-changelog-cli": "^2.0.31",
     "fs-extra": "^8.1.0",
     "jsii-diff": "^1.0.0",
-    "jsii-pacmak": "^0.22.0",
+    "jsii-pacmak": "^1.0.0",
     "jsii-rosetta": "^0.22.0",
     "lerna": "^3.20.2",
     "standard-version": "^7.1.0",

@@ -3385,15 +3385,6 @@ code-point-at@^1.0.0:
   resolved "https://registry.yarnpkg.com/code-point-at/-/code-point-at-1.1.0.tgz#0d070b4d043a5bea33a2f1a40e2edb3d9a4ccf77"
   integrity sha1-DQcLTQQ6W+ozovGkDi7bPZpMz3c=
 
-codemaker@^0.22.0:
-  version "0.22.0"
-  resolved "https://registry.yarnpkg.com/codemaker/-/codemaker-0.22.0.tgz#259d616962222f959e3b9716fa774871b25a0c78"
-  integrity sha512-3WQV/Fpa77nvzjUlc+0u53uIroJyyMB2Qwl++aXpAiDIsrsiAQq4uCURwdRBRX+eLkOTIAmT0L4qna3T7+2pUg==
-  dependencies:
-    camelcase "^5.3.1"
-    decamelize "^1.2.0"
-    fs-extra "^8.1.0"
-
 codemaker@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/codemaker/-/codemaker-1.0.0.tgz#0f9ba60601735e0ff313c45d3bfd4853b1f9fdb8"
@@ -7103,34 +7094,23 @@ jsii-diff@^1.0.0:
     typescript "~3.7.5"
     yargs "^15.1.0"
 
-jsii-pacmak@^0.22.0:
-  version "0.22.0"
-  resolved "https://registry.yarnpkg.com/jsii-pacmak/-/jsii-pacmak-0.22.0.tgz#8e67623cb077963da35a77edc8f3c337d4f100b3"
-  integrity sha512-TIrjA8UNRn529W4gwIM5KcwxjcfAlDNcQrfMjOOBo/VTAjr/I0+N5RjbMZqOA1M3jPaCGLY5mu3jZgZlZfiPmw==
+jsii-pacmak@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/jsii-pacmak/-/jsii-pacmak-1.0.0.tgz#7531758bbc38f4b031272e8626b50fa5e35aa726"
+  integrity sha512-hf5Nqr5ezK+fn4/O/tO834nCGVTxmRNAMV6ipC3xgCoIbHaKwEr4q+3z8jWy/TnqHwi3SOehuEQtYQclREgeOw==
   dependencies:
-    "@jsii/spec" "^0.22.0"
+    "@jsii/spec" "^1.0.0"
     camelcase "^5.1.3"
     clone "^2.1.2"
-    codemaker "^0.22.0"
+    codemaker "^1.0.0"
     commonmark "^0.29.1"
     escape-string-regexp "^2.0.0"
     fs-extra "^8.1.0"
-    jsii-reflect "^0.22.0"
-    jsii-rosetta "^0.22.0"
-    semver "^7.1.2"
+    jsii-reflect "^1.0.0"
+    jsii-rosetta "^1.0.0"
+    semver "^7.1.3"
     spdx-license-list "^6.1.0"
-    xmlbuilder "^13.0.2"
-    yargs "^15.1.0"
-
-jsii-reflect@^0.22.0:
-  version "0.22.0"
-  resolved "https://registry.yarnpkg.com/jsii-reflect/-/jsii-reflect-0.22.0.tgz#c4188495a5d6db27cf73af1ead9bb78950d322df"
-  integrity sha512-39z6m0lyd91R88F0vJrU+lR9xyF3v/6BIydCsto3pfCwEzP3+/73GDbYoWdTMMQHEDb6mpZ27tGWipFjUyKVmg==
-  dependencies:
-    "@jsii/spec" "^0.22.0"
-    colors "^1.4.0"
-    fs-extra "^8.1.0"
-    oo-ascii-tree "^0.22.0"
+    xmlbuilder "^14.0.0"
     yargs "^15.1.0"
 
 jsii-reflect@^1.0.0:
@@ -7150,6 +7130,18 @@ jsii-rosetta@^0.22.0:
   integrity sha512-3G6idoZ0RPCsnwYJbi0CcErFh7AJqLjTgOGKozalxBzz/c03O9cOuf52LFPczi/t5uX9FbWYnYzsJPUFgrGlvQ==
   dependencies:
     "@jsii/spec" "^0.22.0"
+    commonmark "^0.29.1"
+    fs-extra "^8.1.0"
+    typescript "~3.7.5"
+    xmldom "^0.2.1"
+    yargs "^15.1.0"
+
+jsii-rosetta@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/jsii-rosetta/-/jsii-rosetta-1.0.0.tgz#0fe086eaff63de370c351f2ba52fa63dec94316d"
+  integrity sha512-0F5NuTHiJFaL48ID9k1ObSz/QbgGPK3KvGuqkUvo0C3hnHPcpQsX3dvGlVisb8Ve5DzNl2wZyqYMqfyatQ5CKw==
+  dependencies:
+    "@jsii/spec" "^1.0.0"
     commonmark "^0.29.1"
     fs-extra "^8.1.0"
     typescript "~3.7.5"
@@ -8522,11 +8514,6 @@ onetime@^5.1.0:
   integrity sha512-5NcSkPHhwTVFIQN+TUqXoS5+dlElHXdpAWu9I0HP20YOtIi+aZ0Ct82jdlILDxjLEAWwvm+qj1m6aEtsDVmm6Q==
   dependencies:
     mimic-fn "^2.1.0"
-
-oo-ascii-tree@^0.22.0:
-  version "0.22.0"
-  resolved "https://registry.yarnpkg.com/oo-ascii-tree/-/oo-ascii-tree-0.22.0.tgz#a2e9a959036cc20b803f05ae84b48f7495e1cbeb"
-  integrity sha512-J+RleN39z6UHpmlyedLC93Sgx4SS2IYwmZ7kbNwmV3hbZ7ir0qXqpduAfEakjfHEfI1qPyppymZSdd5AwP8HcA==
 
 oo-ascii-tree@^1.0.0:
   version "1.0.0"
@@ -12130,10 +12117,10 @@ xml2js@0.4.19:
     sax ">=0.6.0"
     xmlbuilder "~9.0.1"
 
-xmlbuilder@^13.0.2:
-  version "13.0.2"
-  resolved "https://registry.yarnpkg.com/xmlbuilder/-/xmlbuilder-13.0.2.tgz#02ae33614b6a047d1c32b5389c1fdacb2bce47a7"
-  integrity sha512-Eux0i2QdDYKbdbA6AM6xE4m6ZTZr4G4xF9kahI2ukSEMCzwce2eX9WlTI5J3s+NU7hpasFsr8hWIONae7LluAQ==
+xmlbuilder@^14.0.0:
+  version "14.0.0"
+  resolved "https://registry.yarnpkg.com/xmlbuilder/-/xmlbuilder-14.0.0.tgz#876b5aec4f05ffd5feb97b0a871c855d16fbeb8c"
+  integrity sha512-ts+B2rSe4fIckR6iquDjsKbQFK2NlUk6iG5nf14mDEyldgoc2nEKZ3jZWMPTxGQwVgToSjt6VGIho1H8/fNFTg==
 
 xmlbuilder@~9.0.1:
   version "9.0.7"
