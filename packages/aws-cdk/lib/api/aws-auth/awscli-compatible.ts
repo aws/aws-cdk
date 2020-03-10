@@ -33,14 +33,12 @@ export class AwsCliCompatible {
   public static async credentialChain(profile: string | undefined, ec2creds: boolean | undefined, containerCreds: boolean | undefined) {
     profile = profile || process.env.AWS_PROFILE || process.env.AWS_DEFAULT_PROFILE || 'default';
 
-    // Need to construct filename ourselves, without appropriate environment variables
-    // no defaults used by JS SDK.
-    const filename = process.env.AWS_SHARED_CREDENTIALS_FILE || path.join(os.homedir(), '.aws', 'credentials');
-
     const sources = [
       () => new AWS.EnvironmentCredentials('AWS'),
       () => new AWS.EnvironmentCredentials('AMAZON'),
     ];
+
+    const filename = credentialsFileName();
     if (await fs.pathExists(filename)) {
       sources.push(() => new AWS.SharedIniFileCredentials({ profile, filename }));
     }
@@ -77,9 +75,9 @@ export class AwsCliCompatible {
 
     // Defaults inside constructor
     const toCheck = [
-      { filename: process.env.AWS_SHARED_CREDENTIALS_FILE, profile },
-      { isConfig: true, filename: process.env.AWS_CONFIG_FILE, profile },
-      { isConfig: true, filename: process.env.AWS_CONFIG_FILE, profile: 'default' },
+      { filename: credentialsFileName(), profile },
+      { isConfig: true, filename: configFileName(), profile },
+      { isConfig: true, filename: configFileName(), profile: 'default' },
     ];
 
     let region = process.env.AWS_REGION || process.env.AMAZON_REGION ||
@@ -87,9 +85,11 @@ export class AwsCliCompatible {
 
     while (!region && toCheck.length > 0) {
       const options = toCheck.shift()!;
-      const configFile = new SharedIniFile(options);
-      const section = await configFile.getProfile(options.profile);
-      region = section && section.region;
+      if (await fs.pathExists(options.filename)) {
+        const configFile = new SharedIniFile(options);
+        const section = await configFile.getProfile(options.profile);
+        region = section?.region;
+      }
     }
 
     if (!region) {
@@ -145,6 +145,14 @@ async function hasEc2Credentials() {
 
   debug(instance ? 'Looks like EC2 instance.' : 'Does not look like EC2 instance.');
   return instance;
+}
+
+function credentialsFileName() {
+  return process.env.AWS_SHARED_CREDENTIALS_FILE || path.join(os.homedir(), '.aws', 'credentials');
+}
+
+function configFileName() {
+  return process.env.AWS_CONFIG_FILE || path.join(os.homedir(), '.aws', 'config');
 }
 
 function matchesRegex(re: RegExp, s: string | undefined) {
