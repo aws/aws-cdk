@@ -7156,6 +7156,18 @@ jsii-rosetta@^0.22.0:
     xmldom "^0.2.1"
     yargs "^15.1.0"
 
+jsii-rosetta@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/jsii-rosetta/-/jsii-rosetta-1.0.0.tgz#0fe086eaff63de370c351f2ba52fa63dec94316d"
+  integrity sha512-0F5NuTHiJFaL48ID9k1ObSz/QbgGPK3KvGuqkUvo0C3hnHPcpQsX3dvGlVisb8Ve5DzNl2wZyqYMqfyatQ5CKw==
+  dependencies:
+    "@jsii/spec" "^1.0.0"
+    commonmark "^0.29.1"
+    fs-extra "^8.1.0"
+    typescript "~3.7.5"
+    xmldom "^0.2.1"
+    yargs "^15.1.0"
+
 jsii@^0.22.0:
   version "0.22.0"
   resolved "https://registry.yarnpkg.com/jsii/-/jsii-0.22.0.tgz#d0ad0c857d98874b607f2669d9c4d23d573e346b"
