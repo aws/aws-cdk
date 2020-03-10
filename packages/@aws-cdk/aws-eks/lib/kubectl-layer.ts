@@ -79,6 +79,7 @@ export class KubectlLayer extends Construct implements lambda.ILayerVersion {
   }
 
   public isChina(): boolean {
-    return this.stack.region.startsWith('cn-');
+    const region = this.stack.region;
+    return !Token.isUnresolved(region) && region.startsWith('cn-');
   }
 }
