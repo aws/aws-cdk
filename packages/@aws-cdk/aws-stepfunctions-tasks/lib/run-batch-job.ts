@@ -244,27 +244,7 @@ export class RunBatchJob implements sfn.IStepFunctionsTask {
         'submitJob',
         this.integrationPattern
       ),
-      policyStatements: [
-        // Resource-level access control is not supported by Batch
-        // https://docs.aws.amazon.com/step-functions/latest/dg/batch-iam.html
-        new iam.PolicyStatement({
-          resources: ['*'],
-          actions: ['batch:SubmitJob']
-        }),
-        new iam.PolicyStatement({
-          resources: [
-            Stack.of(_task).formatArn({
-              service: 'events',
-              resource: 'rule/StepFunctionsGetEventsForBatchJobsRule'
-            })
-          ],
-          actions: [
-            'events:PutTargets',
-            'events:PutRule',
-            'events:DescribeRule'
-          ]
-        })
-      ],
+      policyStatements: this.configurePolicyStatements(_task),
       parameters: {
         JobDefinition: this.props.jobDefinition.jobDefinitionArn,
         JobName: this.props.jobName,
@@ -299,27 +279,61 @@ export class RunBatchJob implements sfn.IStepFunctionsTask {
     };
   }
 
+  private configurePolicyStatements(task: sfn.Task): iam.PolicyStatement[] {
+    return [
+      // Resource level access control for job-definition requires revision which batch does not support yet
+      // Using the alternative permissions as mentioned here:
+      // https://docs.aws.amazon.com/batch/latest/userguide/batch-supported-iam-actions-resources.html
+      new iam.PolicyStatement({
+        resources: [
+          Stack.of(task).formatArn({
+            service: 'batch',
+            resource: 'job-definition',
+            resourceName: '*'
+          }),
+          this.props.jobQueue.jobQueueArn
+        ],
+        actions: ['batch:SubmitJob']
+      }),
+      new iam.PolicyStatement({
+        resources: [
+          Stack.of(task).formatArn({
+            service: 'events',
+            resource: 'rule/StepFunctionsGetEventsForBatchJobsRule'
+          })
+        ],
+        actions: ['events:PutTargets', 'events:PutRule', 'events:DescribeRule']
+      })
+    ];
+  }
+
   private configureContainerOverrides(containerOverrides: ContainerOverrides) {
+    let environment;
+    if (containerOverrides.environment) {
+      environment = Object.entries(containerOverrides.environment).map(
+        ([key, value]) => ({
+          Name: key,
+          Value: value
+        })
+      );
+    }
+
+    let resources;
+    if (containerOverrides.gpuCount) {
+      resources = [
+        {
+          Type: 'GPU',
+          Value: `${containerOverrides.gpuCount}`
+        }
+      ];
+    }
+
     return {
       Command: containerOverrides.command,
-      Environment: containerOverrides.environment
-        ? Object.entries(containerOverrides.environment).map(
-            ([key, value]) => ({
-              Name: key,
-              Value: value
-            })
-          )
-        : undefined,
+      Environment: environment,
       InstanceType: containerOverrides.instanceType?.toString(),
       Memory: containerOverrides.memory,
-      ResourceRequirements: containerOverrides.gpuCount
-        ? [
-            {
-              Type: 'GPU',
-              Value: `${containerOverrides.gpuCount}`
-            }
-          ]
-        : undefined,
+      ResourceRequirements: resources,
       Vcpus: containerOverrides.vcpus
     };
   }

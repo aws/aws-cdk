@@ -920,7 +920,31 @@
             {
               "Action": "batch:SubmitJob",
               "Effect": "Allow",
-              "Resource": "*"
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":batch:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":job-definition/*"
+                    ]
+                  ]
+                },
+                {
+                  "Ref": "JobQueueEE3AD499"
+                }
+              ]
             },
             {
               "Action": [
