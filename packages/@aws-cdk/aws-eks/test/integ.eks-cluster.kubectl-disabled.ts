@@ -7,7 +7,6 @@ class EksClusterStack extends TestStack {
   constructor(scope: cdk.App, id: string) {
     super(scope, id);
 
-    /// !show
     const vpc = new ec2.Vpc(this, 'VPC');
 
     const cluster = new eks.Cluster(this, 'EKSCluster', {
@@ -20,7 +19,6 @@ class EksClusterStack extends TestStack {
       instanceType: new ec2.InstanceType('t2.medium'),
       minCapacity: 1,  // Raise this number to add more nodes
     });
-    /// !hide
   }
 }
 
