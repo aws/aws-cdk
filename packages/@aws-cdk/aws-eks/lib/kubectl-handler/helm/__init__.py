@@ -54,24 +54,34 @@ def helm_handler(event, context):
 
 def helm(verb, release, chart = None, repo = None, file = None, namespace = None, version = None, wait = False):
     import subprocess
-    try:
-        cmnd = ['helm', verb, release]
-        if not chart is None:
-            cmnd.append(chart)
-        if verb == 'upgrade':
-            cmnd.append('--install')
-        if not repo is None:
-            cmnd.extend(['--repo', repo])
-        if not file is None:
-            cmnd.extend(['--values', file])
-        if not version is None:
-            cmnd.extend(['--version', version])
-        if not namespace is None:
-            cmnd.extend(['--namespace', namespace])
-        if wait:
-            cmnd.append('--wait')
-        cmnd.extend(['--kubeconfig', kubeconfig])
-        output = subprocess.check_output(cmnd, stderr=subprocess.STDOUT, cwd=outdir)
-        logger.info(output)
-    except subprocess.CalledProcessError as exc:
-        raise Exception(exc.output)
+
+    cmnd = ['helm', verb, release]
+    if not chart is None:
+        cmnd.append(chart)
+    if verb == 'upgrade':
+        cmnd.append('--install')
+    if not repo is None:
+        cmnd.extend(['--repo', repo])
+    if not file is None:
+        cmnd.extend(['--values', file])
+    if not version is None:
+        cmnd.extend(['--version', version])
+    if not namespace is None:
+        cmnd.extend(['--namespace', namespace])
+    if wait:
+        cmnd.append('--wait')
+    cmnd.extend(['--kubeconfig', kubeconfig])
+
+    retry = 3
+    while retry > 0:
+        try:
+            output = subprocess.check_output(cmnd, stderr=subprocess.STDOUT, cwd=outdir)
+            logger.info(output)
+            return
+        except subprocess.CalledProcessError as exc:
+            output = exc.output
+            if b'Broken pipe' in output:
+                logger.info("Broken pipe, retries left: %s" % retry)
+                retry = retry - 1
+            else:
+                raise Exception(output)
