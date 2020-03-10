@@ -10,7 +10,7 @@ import { State } from "./states/state";
  * a Parallel's branches: those are their own StateGraphs, but the graphs
  * themselves have a hierarchical relationship as well.
  *
- * By assigning states to a definintive StateGraph, we verify that no state
+ * By assigning states to a definitive StateGraph, we verify that no state
  * machines are constructed. In particular:
  *
  * - Every state object can only ever be in 1 StateGraph, and not inadvertently
@@ -55,6 +55,10 @@ export class StateGraph {
      */
     private superGraph?: StateGraph;
 
+    /**
+     * @param startState state that gets executed when the state machine is launched
+     * @param graphDescription description of the state machine
+     */
     constructor(public readonly startState: State, private readonly graphDescription: string) {
         this.allStates.add(startState);
         startState.bindToGraph(this);
