@@ -81,9 +81,6 @@ beforeEach(() => {
   delete process.env.AWS_ACCESS_KEY_ID;
   delete process.env.AWS_SECRET_ACCESS_KEY;
   delete process.env.AWS_SESSION_TOKEN;
-
-  // tslint:disable-next-line:no-console
-  console.error(process.env);
 });
 
 afterEach(() => {

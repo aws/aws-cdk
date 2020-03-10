@@ -31,6 +31,8 @@ export class AwsCliCompatible {
    * 4. Respects $AWS_DEFAULT_PROFILE in addition to $AWS_PROFILE.
    */
   public static async credentialChain(profile: string | undefined, ec2creds: boolean | undefined, containerCreds: boolean | undefined) {
+    await forceSdkToReadConfigIfPresent();
+
     profile = profile || process.env.AWS_PROFILE || process.env.AWS_DEFAULT_PROFILE || 'default';
 
     const sources = [
@@ -38,9 +40,12 @@ export class AwsCliCompatible {
       () => new AWS.EnvironmentCredentials('AMAZON'),
     ];
 
-    const filename = credentialsFileName();
-    if (await fs.pathExists(filename)) {
-      sources.push(() => new AWS.SharedIniFileCredentials({ profile, filename }));
+    if (await fs.pathExists(credentialsFileName())) {
+      sources.push(() => new AWS.SharedIniFileCredentials({ profile, filename: credentialsFileName() }));
+    }
+
+    if (await fs.pathExists(configFileName())) {
+      sources.push(() => new AWS.SharedIniFileCredentials({ profile, filename: credentialsFileName() }));
     }
 
     if (containerCreds ?? hasEcsCredentials()) {
@@ -147,12 +152,31 @@ async function hasEc2Credentials() {
   return instance;
 }
 
+function homeDir() {
+  return process.env.HOME || process.env.USERPROFILE
+    || (process.env.HOMEPATH ? ((process.env.HOMEDRIVE || 'C:/') + process.env.HOMEPATH) : null) || os.homedir();
+}
+
 function credentialsFileName() {
-  return process.env.AWS_SHARED_CREDENTIALS_FILE || path.join(os.homedir(), '.aws', 'credentials');
+  return process.env.AWS_SHARED_CREDENTIALS_FILE || path.join(homeDir(), '.aws', 'credentials');
 }
 
 function configFileName() {
-  return process.env.AWS_CONFIG_FILE || path.join(os.homedir(), '.aws', 'config');
+  return process.env.AWS_CONFIG_FILE || path.join(homeDir(), '.aws', 'config');
+}
+
+/**
+ * Force the JS SDK to honor the ~/.aws/config file (and various settings therein)
+ *
+ * For example, ther is just *NO* way to do AssumeRole credentials as long as AWS_SDK_LOAD_CONFIG is not set,
+ * or read credentials from that file.
+ *
+ * The SDK crashes if the variable is set but the file does not exist, so conditionally set it.
+ */
+async function forceSdkToReadConfigIfPresent() {
+  if (await fs.pathExists(configFileName())) {
+    process.env.AWS_SDK_LOAD_CONFIG = '1';
+  }
 }
 
 function matchesRegex(re: RegExp, s: string | undefined) {

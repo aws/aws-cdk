@@ -89,10 +89,6 @@ export class SdkProvider {
    * class `AwsCliCompatible` for the details.
    */
   public static async withAwsCliCompatibleDefaults(options: SdkProviderOptions = {}) {
-    // There just is *NO* way to do AssumeRole credentials as long as AWS_SDK_LOAD_CONFIG is not set. The SDK
-    // crashes if the file does not exist though. So set the environment variable if we can find that file.
-    await setConfigVariable();
-
     const chain = await AwsCliCompatible.credentialChain(options.profile, options.ec2creds, options.containerCreds);
     const region = await AwsCliCompatible.region(options.profile);
 
@@ -252,15 +248,6 @@ export class SdkProvider {
       debug('Resolving default credentials');
       return this.defaultChain.resolvePromise();
     });
-  }
-}
-
-async function setConfigVariable() {
-  const homeDir = process.env.HOME || process.env.USERPROFILE
-    || (process.env.HOMEPATH ? ((process.env.HOMEDRIVE || 'C:/') + process.env.HOMEPATH) : null) || os.homedir();
-
-  if (await fs.pathExists(path.resolve(homeDir, '.aws', 'config'))) {
-    process.env.AWS_SDK_LOAD_CONFIG = '1';
   }
 }
 
