@@ -64,13 +64,13 @@
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
     "@types/nodeunit": "^0.0.30",
-    "aws-sdk": "^2.634.0",
+    "aws-sdk": "^2.636.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
     "nodeunit": "^0.11.3",
     "pkglint": "0.0.0",
-    "sinon": "^9.0.0"
+    "sinon": "^9.0.1"
   },
   "dependencies": {
     "@aws-cdk/aws-autoscaling": "0.0.0",
