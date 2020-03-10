@@ -42,7 +42,7 @@ describe('IAM policy statement', () => {
 
     });
 
-    test('parses a given arnPrincipal', () => {
+    test('parses a given notPrincipal', () => {
       const stack = new Stack();
 
       const s = new PolicyStatement();
