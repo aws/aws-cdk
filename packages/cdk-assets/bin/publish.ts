@@ -106,7 +106,7 @@ class DefaultAwsClient implements IAws {
     let credentials;
 
     if (options.assumeRoleArn) {
-      credentials = await this.assumeRole(options.assumeRoleArn, options.assumeRoleExternalId);
+      credentials = await this.assumeRole(options.region, options.assumeRoleArn, options.assumeRoleExternalId);
     }
 
     return {
@@ -124,24 +124,23 @@ class DefaultAwsClient implements IAws {
    * It needs an explicit configuration of `masterCredentials`, we need to put
    * a `DefaultCredentialProverChain()` in there but that is not possible.
    */
-  private async assumeRole(roleArn: string, externalId?: string): Promise<AWS.Credentials> {
-    const msg = [`Assume ${roleArn}`];
-    if (externalId) {
-      msg.push(`(ExternalId ${externalId})`);
-    }
+  private async assumeRole(region: string | undefined, roleArn: string, externalId?: string): Promise<AWS.Credentials> {
+    const msg = [
+      `Assume ${roleArn}`,
+      ...externalId ? [`(ExternalId ${externalId})`] : []
+    ];
     log('verbose', msg.join(' '));
 
-    const sts = new this.AWS.STS();
-    const response = await sts.assumeRole({
-      RoleArn: roleArn,
-      ExternalId: externalId,
-      RoleSessionName: `cdk-assets-${os.userInfo().username}`,
-    }).promise();
-
-    return new this.AWS.Credentials({
-      accessKeyId: response.Credentials!.AccessKeyId,
-      secretAccessKey: response.Credentials!.SecretAccessKey,
-      sessionToken: response.Credentials!.SessionToken,
+    return new this.AWS.ChainableTemporaryCredentials({
+      params: {
+        RoleArn: roleArn,
+        ExternalId: externalId,
+        RoleSessionName: `cdk-assets-${os.userInfo().username}`,
+      },
+      stsConfig: {
+        region,
+        customUserAgent: `cdk-assets/${VERSION}`,
+      },
     });
   }
 }
