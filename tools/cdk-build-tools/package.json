@@ -47,7 +47,7 @@
     "eslint-plugin-import": "^2.20.1",
     "fs-extra": "^8.1.0",
     "jest": "^24.9.0",
-    "jsii": "^0.22.0",
+    "jsii": "^1.0.0",
     "jsii-pacmak": "^0.22.0",
     "nodeunit": "^0.11.3",
     "nyc": "^15.0.0",
