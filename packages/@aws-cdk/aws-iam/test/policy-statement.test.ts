@@ -1,6 +1,6 @@
 import '@aws-cdk/assert/jest';
 import { Stack } from '@aws-cdk/core';
-import { PolicyDocument, PolicyStatement } from '../lib';
+import {AnyPrincipal, PolicyDocument, PolicyStatement} from '../lib';
 
 describe('IAM policy statement', () => {
 
@@ -24,7 +24,7 @@ describe('IAM policy statement', () => {
       expect(stack.resolve(doc2)).toEqual(stack.resolve(doc1));
     });
 
-    test('parses a given arnPrincipal', () => {
+    test('parses a given Principal', () => {
       const stack = new Stack();
 
       const s = new PolicyStatement();
@@ -42,85 +42,13 @@ describe('IAM policy statement', () => {
 
     });
 
-    test('parses a given anyPrincipal', () => {
+    test('parses a given arnPrincipal', () => {
       const stack = new Stack();
 
       const s = new PolicyStatement();
       s.addActions('service:action1', 'service:action2');
       s.addAllResources();
-      s.addAnyPrincipal();
-      s.addCondition('key', { equals: 'value' });
-
-      const doc1 = new PolicyDocument();
-      doc1.addStatements(s);
-
-      const doc2 = PolicyDocument.fromJson(doc1.toJSON());
-
-      expect(stack.resolve(doc2)).toEqual(stack.resolve(doc1));
-
-    });
-
-    test('parses an awsAccountPrincipal', () => {
-      const stack = new Stack();
-
-      const s = new PolicyStatement();
-      s.addActions('service:action1', 'service:action2');
-      s.addAllResources();
-      s.addAwsAccountPrincipal('someaccountid');
-      s.addCondition('key', { equals: 'value' });
-
-      const doc1 = new PolicyDocument();
-      doc1.addStatements(s);
-
-      const doc2 = PolicyDocument.fromJson(doc1.toJSON());
-
-      expect(stack.resolve(doc2)).toEqual(stack.resolve(doc1));
-
-    });
-
-    test('parses a given canonicalUserPrincipal', () => {
-      const stack = new Stack();
-
-      const s = new PolicyStatement();
-      s.addActions('service:action1', 'service:action2');
-      s.addAllResources();
-      s.addCanonicalUserPrincipal('someconnonicaluser');
-      s.addCondition('key', { equals: 'value' });
-
-      const doc1 = new PolicyDocument();
-      doc1.addStatements(s);
-
-      const doc2 = PolicyDocument.fromJson(doc1.toJSON());
-
-      expect(stack.resolve(doc2)).toEqual(stack.resolve(doc1));
-
-    });
-
-    test('parses a given federatedPrincipal', () => {
-      const stack = new Stack();
-
-      const s = new PolicyStatement();
-      s.addActions('service:action1', 'service:action2');
-      s.addAllResources();
-      s.addFederatedPrincipal('federated', {});
-      s.addCondition('key', { equals: 'value' });
-
-      const doc1 = new PolicyDocument();
-      doc1.addStatements(s);
-
-      const doc2 = PolicyDocument.fromJson(doc1.toJSON());
-
-      expect(stack.resolve(doc2)).toEqual(stack.resolve(doc1));
-
-    });
-
-    test('parses a given servicePrincipal', () => {
-      const stack = new Stack();
-
-      const s = new PolicyStatement();
-      s.addActions('service:action1', 'service:action2');
-      s.addAllResources();
-      s.addServicePrincipal('serviceprincipal', { conditions: { one: "two" }, region: 'us-west-2' });
+      s.addNotPrincipals(new AnyPrincipal());
       s.addCondition('key', { equals: 'value' });
 
       const doc1 = new PolicyDocument();

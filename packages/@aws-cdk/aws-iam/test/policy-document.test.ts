@@ -580,20 +580,21 @@ describe('IAM polocy document', () => {
           Statement: 'asdf'
         });
       }).toThrow(/Statement must be an array/);
+    });
   });
 
-      
   test('adding another condition with the same operator does not delete the original', () => {
     const stack = new Stack();
 
     const p = new PolicyStatement();
 
-    p.addCondition('StringEquals', { 'kms:ViaService': 'service' });
+    p.addCondition('StringEquals', {'kms:ViaService': 'service'});
 
     p.addAccountCondition('12221121221');
 
     expect(stack.resolve(p.toStatementJson())).toEqual({
       Effect: 'Allow',
-      Condition: { StringEquals: { 'kms:ViaService': 'service', 'sts:ExternalId': '12221121221' } }
+      Condition: {StringEquals: {'kms:ViaService': 'service', 'sts:ExternalId': '12221121221'}}
+    });
   });
 });

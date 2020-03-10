@@ -313,6 +313,8 @@ export interface PolicyStatementProps {
    * statement array. In services that let you specify an ID element, such as
    * SQS and SNS, the Sid value is just a sub-ID of the policy document's ID. In
    * IAM, the Sid value must be unique within a JSON policy.
+   *
+   * @default - no sid
    */
   readonly sid?: string;
 
