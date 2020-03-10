@@ -787,7 +787,9 @@
                 "eks:CreateFargateProfile"
               ],
               "Effect": "Allow",
-              "Resource": "*"
+              "Resource": [
+                "*"
+              ]
             },
             {
               "Action": [
