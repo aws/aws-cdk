@@ -4,7 +4,6 @@ import { Construct, Duration, Lazy, Stack } from '@aws-cdk/core';
 import { CfnAuthorizer } from '../apigateway.generated';
 import { Authorizer, IAuthorizer } from '../authorizer';
 import { RestApi } from '../restapi';
-import { IdentitySource } from './identity-source';
 
 /**
  * Base properties for all lambda authorizers
@@ -190,7 +189,7 @@ export interface RequestAuthorizerProps extends LambdaAuthorizerProps {
    *
    * @see https://docs.aws.amazon.com/apigateway/api-reference/link-relation/authorizer-create/#identitySource
    */
-  readonly identitySources: IdentitySource[];
+  readonly identitySources: string[];
 }
 
 /**
