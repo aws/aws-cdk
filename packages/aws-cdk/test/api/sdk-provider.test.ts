@@ -13,6 +13,11 @@ logging.setVerbose(true);
 
 type AwsCallback<T> = (err: Error | null, val: T) => void;
 
+const defaultCredOptions = {
+  ec2creds: false,
+  containerCreds: false,
+};
+
 // Account cache buster
 let uid: string;
 let pluginQueried = false;
@@ -86,7 +91,7 @@ afterEach(() => {
 describe('CLI compatible credentials loading', () => {
   test('default config credentials', async () => {
     // WHEN
-    const provider = await SdkProvider.withAwsCliCompatibleDefaults({ ec2creds: false });
+    const provider = await SdkProvider.withAwsCliCompatibleDefaults({ ...defaultCredOptions });
 
     // THEN
     expect(provider.defaultRegion).toEqual('eu-bla-5');
@@ -98,7 +103,7 @@ describe('CLI compatible credentials loading', () => {
 
   test('unknown account and region uses current', async () => {
     // WHEN
-    const provider = await SdkProvider.withAwsCliCompatibleDefaults({ ec2creds: false });
+    const provider = await SdkProvider.withAwsCliCompatibleDefaults({ ...defaultCredOptions });
 
     // THEN
     const sdk = await provider.forEnvironment(cxapi.UNKNOWN_ACCOUNT, cxapi.UNKNOWN_REGION, Mode.ForReading);
@@ -108,7 +113,7 @@ describe('CLI compatible credentials loading', () => {
 
   test('mixed profile credentials', async () => {
     // WHEN
-    const provider = await SdkProvider.withAwsCliCompatibleDefaults({ ec2creds: false, profile: 'foo' });
+    const provider = await SdkProvider.withAwsCliCompatibleDefaults({ ...defaultCredOptions, profile: 'foo' });
 
     // THEN
     expect(provider.defaultRegion).toEqual('eu-west-1');
@@ -119,7 +124,7 @@ describe('CLI compatible credentials loading', () => {
 
   test('pure config credentials', async () => {
     // WHEN
-    const provider = await SdkProvider.withAwsCliCompatibleDefaults({ ec2creds: false, profile: 'boo' });
+    const provider = await SdkProvider.withAwsCliCompatibleDefaults({ ...defaultCredOptions, profile: 'boo' });
 
     // THEN
     expect(provider.defaultRegion).toEqual('eu-bla-5');  // Fall back to default config
@@ -129,7 +134,7 @@ describe('CLI compatible credentials loading', () => {
   });
 
   test('different account throws', async () => {
-    const provider = await SdkProvider.withAwsCliCompatibleDefaults({ ec2creds: false, profile: 'boo' });
+    const provider = await SdkProvider.withAwsCliCompatibleDefaults({ ...defaultCredOptions, profile: 'boo' });
 
     expect(provider.forEnvironment(`${uid}some_account_#`, 'def', Mode.ForReading)).rejects.toThrow('Need to perform AWS calls');
   });
@@ -137,13 +142,13 @@ describe('CLI compatible credentials loading', () => {
 
 describe('Plugins', () => {
   test('does not use plugins if current credentials are for expected account', async () => {
-    const provider = await SdkProvider.withAwsCliCompatibleDefaults({ ec2creds: false });
+    const provider = await SdkProvider.withAwsCliCompatibleDefaults({ ...defaultCredOptions });
     await provider.forEnvironment(`${uid}the_account_#`, 'def', Mode.ForReading);
     expect(pluginQueried).toEqual(false);
   });
 
   test('uses plugin for other account', async () => {
-    const provider = await SdkProvider.withAwsCliCompatibleDefaults({ ec2creds: false });
+    const provider = await SdkProvider.withAwsCliCompatibleDefaults({ ...defaultCredOptions });
     await provider.forEnvironment(`${uid}plugin_account_#`, 'def', Mode.ForReading);
     expect(pluginQueried).toEqual(true);
   });

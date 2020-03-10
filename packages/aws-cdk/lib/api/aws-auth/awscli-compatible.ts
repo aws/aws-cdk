@@ -30,7 +30,7 @@ export class AwsCliCompatible {
    * 3. Respects $AWS_SHARED_CREDENTIALS_FILE.
    * 4. Respects $AWS_DEFAULT_PROFILE in addition to $AWS_PROFILE.
    */
-  public static async credentialChain(profile: string | undefined, ec2creds: boolean | undefined) {
+  public static async credentialChain(profile: string | undefined, ec2creds: boolean | undefined, containerCreds: boolean | undefined) {
     profile = profile || process.env.AWS_PROFILE || process.env.AWS_DEFAULT_PROFILE || 'default';
 
     // Need to construct filename ourselves, without appropriate environment variables
@@ -45,18 +45,13 @@ export class AwsCliCompatible {
       sources.push(() => new AWS.SharedIniFileCredentials({ profile, filename }));
     }
 
-    if (hasEcsCredentials()) {
+    if (containerCreds ?? hasEcsCredentials()) {
       sources.push(() => new AWS.ECSCredentials());
-    } else {
+    } else if (ec2creds ?? await hasEc2Credentials()) {
       // else if: don't get EC2 creds if we should have gotten ECS creds--ECS instances also
       // run on EC2 boxes but the creds represent something different. Same behavior as
       // upstream code.
-
-      if (ec2creds === undefined) { ec2creds = await hasEc2Credentials(); }
-
-      if (ec2creds) {
-        sources.push(() => new AWS.EC2MetadataCredentials());
-      }
+      sources.push(() => new AWS.EC2MetadataCredentials());
     }
 
     return new AWS.CredentialProviderChain(sources);
@@ -82,9 +77,9 @@ export class AwsCliCompatible {
 
     // Defaults inside constructor
     const toCheck = [
-      {filename: process.env.AWS_SHARED_CREDENTIALS_FILE, profile },
-      {isConfig: true, filename: process.env.AWS_CONFIG_FILE, profile },
-      {isConfig: true, filename: process.env.AWS_CONFIG_FILE, profile: 'default' },
+      { filename: process.env.AWS_SHARED_CREDENTIALS_FILE, profile },
+      { isConfig: true, filename: process.env.AWS_CONFIG_FILE, profile },
+      { isConfig: true, filename: process.env.AWS_CONFIG_FILE, profile: 'default' },
     ];
 
     let region = process.env.AWS_REGION || process.env.AMAZON_REGION ||
@@ -110,7 +105,7 @@ export class AwsCliCompatible {
 /**
  * Return whether it looks like we'll have ECS credentials available
  */
-function hasEcsCredentials() {
+function hasEcsCredentials(): boolean {
   return (AWS.ECSCredentials.prototype as any).isConfiguredForEcsCredentials();
 }
 

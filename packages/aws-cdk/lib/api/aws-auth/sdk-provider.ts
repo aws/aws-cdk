@@ -32,6 +32,13 @@ export interface SdkProviderOptions {
   readonly ec2creds?: boolean;
 
   /**
+   * Whether we should check for container credentials
+   *
+   * @default - Autodetect
+   */
+  readonly containerCreds?: boolean;
+
+  /**
    * HTTP options for SDK
    */
   readonly httpOptions?: SdkHttpOptions;
@@ -86,7 +93,7 @@ export class SdkProvider {
     // crashes if the file does not exist though. So set the environment variable if we can find that file.
     await setConfigVariable();
 
-    const chain = await AwsCliCompatible.credentialChain(options.profile, options.ec2creds);
+    const chain = await AwsCliCompatible.credentialChain(options.profile, options.ec2creds, options.containerCreds);
     const region = await AwsCliCompatible.region(options.profile);
 
     return new SdkProvider(chain, region, options.httpOptions);
