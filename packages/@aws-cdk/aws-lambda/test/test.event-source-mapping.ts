@@ -142,5 +142,14 @@ export = {
         }), /parallelizationFactor must be between 1 and 10 inclusive, got 11/);
 
     test.done();
-  }
+  },
+
+  'import event source mapping'(test: Test) {
+    const stack = new cdk.Stack(undefined, undefined, { stackName: 'test-stack' });
+    const imported = EventSourceMapping.fromEventSourceMappingId(stack, 'imported', '14e0db71-5d35-4eb5-b481-8945cf9d10c2');
+
+    test.equals(imported.eventSourceMappingId, '14e0db71-5d35-4eb5-b481-8945cf9d10c2');
+    test.equals(imported.stack.stackName, 'test-stack');
+    test.done();
+  },
 };

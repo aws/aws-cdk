@@ -93,11 +93,26 @@ export interface EventSourceMappingOptions {
   readonly parallelizationFactor?: number;
 }
 
+/**
+ * Properties for declaring a new event source mapping.
+ */
 export interface EventSourceMappingProps extends EventSourceMappingOptions {
   /**
    * The target AWS Lambda function.
    */
   readonly target: IFunction;
+}
+
+/**
+ * Represents an event source mapping for a lambda function.
+ * @see https://docs.aws.amazon.com/lambda/latest/dg/invocation-eventsourcemapping.html
+ */
+export interface IEventSourceMapping extends cdk.IResource {
+  /**
+   * The identifier for this EventSourceMapping
+   * @attribute
+   */
+  readonly eventSourceMappingId: string;
 }
 
 /**
@@ -112,11 +127,18 @@ export interface EventSourceMappingProps extends EventSourceMappingOptions {
  * The `SqsEventSource` class will automatically create the mapping, and will also
  * modify the Lambda's execution role so it can consume messages from the queue.
  */
-export class EventSourceMapping extends cdk.Resource {
+export class EventSourceMapping extends cdk.Resource implements IEventSourceMapping {
+
   /**
-   * The identifier for this EventSourceMapping
-   * @attribute
+   * Import an event source into this stack from its event source id.
    */
+  public static fromEventSourceMappingId(scope: cdk.Construct, id: string, eventSourceMappingId: string): IEventSourceMapping {
+    class Import extends cdk.Resource implements IEventSourceMapping {
+      public readonly eventSourceMappingId = eventSourceMappingId;
+    }
+    return new Import(scope, id);
+  }
+
   public readonly eventSourceMappingId: string;
 
   constructor(scope: cdk.Construct, id: string, props: EventSourceMappingProps) {
