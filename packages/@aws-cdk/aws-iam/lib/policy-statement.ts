@@ -201,7 +201,8 @@ export class PolicyStatement {
    * Add a condition to the Policy
    */
   public addCondition(key: string, value: any) {
-    this.condition[key] = value;
+    const existingValue = this.condition[key];
+    this.condition[key] = existingValue ? { ...existingValue, ...value } : value;
   }
 
   /**

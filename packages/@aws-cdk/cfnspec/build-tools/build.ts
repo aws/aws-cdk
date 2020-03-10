@@ -26,14 +26,19 @@ async function main() {
     }
   }
 
-  detectScrutinyTypes(spec);
-  replaceIncompleteTypes(spec);
+  massageSpec(spec);
 
   spec.Fingerprint = md5(JSON.stringify(normalize(spec)));
 
   const outDir = path.join(process.cwd(), 'spec');
   await fs.mkdirp(outDir);
   await fs.writeJson(path.join(outDir, 'specification.json'), spec, { spaces: 2 });
+}
+
+export function massageSpec(spec: schema.Specification) {
+  detectScrutinyTypes(spec);
+  replaceIncompleteTypes(spec);
+  dropTypelessAttributes(spec);
 }
 
 function forEachSection(spec: schema.Specification, data: any, cb: (spec: any, fragment: any, path: string[]) => void) {
@@ -72,6 +77,23 @@ function replaceIncompleteTypes(spec: schema.Specification) {
       (definition as unknown as schema.RecordProperty).Properties = {};
     }
   }
+}
+
+/**
+ * Drop Attributes specified with the different ResourceTypes that have
+ * no type specified.
+ */
+function dropTypelessAttributes(spec: schema.Specification) {
+  const resourceTypes = spec.ResourceTypes;
+  Object.values(resourceTypes).forEach((resourceType) => {
+    const attributes = resourceType.Attributes ?? {};
+    Object.keys(attributes).forEach((attrKey) => {
+      const attrVal = attributes[attrKey];
+      if (Object.keys(attrVal).length === 0) {
+        delete attributes[attrKey];
+      }
+    });
+  });
 }
 
 function merge(spec: any, fragment: any, jsonPath: string[]) {
