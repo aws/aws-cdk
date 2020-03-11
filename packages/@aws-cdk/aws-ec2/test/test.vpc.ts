@@ -1084,7 +1084,7 @@ export = {
 
       // THEN
       test.deepEqual(subnet.subnetId, 'pub-1');
-      test.undefined(subnet.availabilityZone);
+      test.deepEqual(subnet.availabilityZone, '');
       test.done();
     }
 
