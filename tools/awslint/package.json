@@ -21,13 +21,13 @@
     "colors": "^1.4.0",
     "fs-extra": "^8.1.0",
     "jsii-reflect": "^1.0.0",
-    "yargs": "^15.1.0"
+    "yargs": "^15.3.0"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.1.0",
     "@types/yargs": "^15.0.4",
     "tslint": "^5.20.1",
-    "typescript": "~3.8.2"
+    "typescript": "~3.8.3"
   },
   "repository": {
     "type": "git",

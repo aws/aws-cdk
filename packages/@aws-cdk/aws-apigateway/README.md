@@ -570,7 +570,8 @@ You can also define a `DomainName` resource directly in order to customize the d
 new apigw.DomainName(this, 'custom-domain', {
   domainName: 'example.com',
   certificate: acmCertificateForExampleCom,
-  endpointType: apigw.EndpointType.EDGE // default is REGIONAL
+  endpointType: apigw.EndpointType.EDGE, // default is REGIONAL
+  securityPolicy: apigw.SecurityPolicy.TLS_1_2
 });
 ```
 
