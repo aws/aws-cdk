@@ -1021,10 +1021,10 @@
   dependencies:
     jsonschema "^1.2.5"
 
-"@jsii/spec@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@jsii/spec/-/spec-1.0.0.tgz#b5b9e0d67dad9b0e1e5e1e10e7724f67372b2870"
-  integrity sha512-suMnXDiLLaYg2oBycOIIKJ7ke0DrQOZFQgU4kK/5NEwnfI3YWKyv/VnXAs+QXXr9LYlOQMgkRhhEUyMMc3bBOw==
+"@jsii/spec@^1.0.0", "@jsii/spec@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@jsii/spec/-/spec-1.1.0.tgz#1e7093807d191970bf2b22c537b905e298091d1f"
+  integrity sha512-zi5/k1oqkCGwoWutm9ZXnC9pZXILREvtLOMg4dci8jeotHYxnrAk7Wk6FskLD9StzHzf0hzewa8cJPqfPiZ+ZA==
   dependencies:
     jsonschema "^1.2.5"
 
