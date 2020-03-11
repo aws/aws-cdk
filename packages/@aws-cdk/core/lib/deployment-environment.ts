@@ -298,6 +298,9 @@ export class ConventionModeDeploymentEnvironment implements IDeploymentEnvironme
         [this.manifestEnvName]: {
           repositoryName: this.repositoryName,
           imageTag,
+          region: resolvedOr(this.stack.region, undefined),
+          assumeRoleArn: this.assetPublishingRoleArn,
+          assumeRoleExternalId: this.props.assetPublishingExternalId,
         }
       },
     };
