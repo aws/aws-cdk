@@ -231,7 +231,7 @@
       "docs-public-apis:@aws-cdk/aws-ec2.Subnet.subnetNetworkAclAssociationId",
       "docs-public-apis:@aws-cdk/aws-ec2.Subnet.subnetVpcId",
       "docs-public-apis:@aws-cdk/aws-ec2.Subnet.fromSubnetAttributes",
-      "docs-public-apis:@aws-cdk/aws-ec2.Subnet.fromSubnetId",
+      "docs-public-apis:@aws-cdk/aws-ec2.Subnet.fromSubId",
       "docs-public-apis:@aws-cdk/aws-ec2.Subnet.isVpcSubnet",
       "docs-public-apis:@aws-cdk/aws-ec2.SubnetNetworkAclAssociation",
       "docs-public-apis:@aws-cdk/aws-ec2.SubnetNetworkAclAssociation.fromSubnetNetworkAclAssociationAssociationId",

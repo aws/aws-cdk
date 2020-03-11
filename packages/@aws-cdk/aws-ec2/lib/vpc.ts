@@ -1321,8 +1321,8 @@ export class Subnet extends Resource implements ISubnet {
     return new ImportedSubnet(scope, id, attrs);
   }
 
-  public static fromSubnetId(scope: Construct, id: string, subnetId: string): ISubnet {
-    return this.fromSubnetAttributes(scope, id, { subnetId });
+  public static fromSubId(scope: Construct, id: string, subId: string): ISubnet {
+    return this.fromSubnetAttributes(scope, id, { subnetId: subId });
   }
 
   /**

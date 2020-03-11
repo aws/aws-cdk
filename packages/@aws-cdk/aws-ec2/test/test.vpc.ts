@@ -1074,7 +1074,7 @@ export = {
       const stack = getTestStack();
 
       // WHEN
-      const subnet = Subnet.fromSubnetId(stack, 'subnet1', 'pub-1');
+      const subnet = Subnet.fromSubId(stack, 'subnet1', 'pub-1');
 
       // THEN
       test.deepEqual(subnet.subnetId, 'pub-1');
