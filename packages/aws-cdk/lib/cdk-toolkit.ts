@@ -2,12 +2,12 @@ import * as colors from 'colors/safe';
 import * as fs from 'fs-extra';
 import * as promptly from 'promptly';
 import { format } from 'util';
+import { SdkProvider } from './api/aws-auth';
 import { Mode } from './api/aws-auth/credentials';
 import { AppStacks, DefaultSelection, ExtendedStackSelection, Tag } from "./api/cxapp/stacks";
 import { destroyStack } from './api/deploy-stack';
 import { IDeploymentTarget } from './api/deployment-target';
 import { stackExists } from './api/util/cloudformation';
-import { ISDK } from './api/util/sdk';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
 import { data, error, highlight, print, success, warning } from './logging';
 import { deserializeStructure } from './serialize';
@@ -108,7 +108,7 @@ export class CdkToolkit {
       }
 
       if (Object.keys(stack.template.Resources || {}).length === 0) { // The generated stack has no resources
-        const cfn = await options.sdk.cloudFormation(stack.environment.account, stack.environment.region, Mode.ForReading);
+        const cfn = await (await options.sdk.forEnvironment(stack.environment.account, stack.environment.region, Mode.ForReading)).cloudFormation();
         if (!await stackExists(cfn, stack.stackName)) {
           warning('%s: stack has no resources, skipping deployment.', colors.bold(stack.displayName));
         } else {
@@ -317,7 +317,7 @@ export interface DeployOptions {
   /**
    * AWS SDK
    */
-  sdk: ISDK;
+  sdk: SdkProvider;
 
   /**
    * Whether to execute the ChangeSet
@@ -363,7 +363,7 @@ export interface DestroyOptions {
   /**
    * AWS SDK
    */
-  sdk: ISDK;
+  sdk: SdkProvider;
 
   /**
    * Whether the destroy request came from a deploy.
