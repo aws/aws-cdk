@@ -24,14 +24,17 @@ async function main() {
   })
   .command('ls', 'List assets from the given manifest', command => command
   , wrapHandler(async args => {
-    list(args);
+    await list(args);
   }))
   .command('publish [ASSET..]', 'Publish assets in the given manifest', command => command
     .option('profile', { type: 'string', describe: 'Profile to use from AWS Credentials file' })
     .positional('ASSET', { type: 'string', array: true, describe: 'Assets to publish (format: "ASSET[:DEST]"), default all' })
-    .array('ASSET')
   , wrapHandler(async args => {
-    publish(args);
+    await publish({
+      path: args.path,
+      assets: args.ASSET,
+      profile: args.profile
+    });
   }))
   .demandCommand()
   .help()
@@ -59,6 +62,6 @@ function wrapHandler<A extends { verbose?: number }, R>(handler: (x: A) => Promi
 
 main().catch(e => {
   // tslint:disable-next-line:no-console
-  console.error(e);
-  process.exit(1);
+  console.error(e.stack);
+  process.exitCode = 1;
 });
