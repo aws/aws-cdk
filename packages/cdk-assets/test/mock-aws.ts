@@ -4,6 +4,15 @@ import * as AWS from 'aws-sdk';
 export function mockAws() {
   const mockEcr = new AWS.ECR();
   const mockS3 = new AWS.S3();
+
+  // Sane defaults which can be overridden
+  mockS3.getBucketLocation = mockedApiResult({});
+  mockEcr.describeRepositories = mockedApiResult({ repositories: [
+    {
+      repositoryUri: '12345.amazonaws.com/repo'
+    }
+  ] });
+
   return {
     mockEcr,
     mockS3,
@@ -33,10 +42,10 @@ export function mockedApiFailure(code: string, message: string) {
 }
 
 /**
- * Mock putObject, draining the stream that we get before returning
+ * Mock upload, draining the stream that we get before returning
  * so no race conditions happen with the uninstallation of mock-fs.
  */
-export function mockPutObject() {
+export function mockUpload() {
   return jest.fn().mockImplementation(request => ({
     promise: () => new Promise((ok, ko) => {
       const bodyStream: NodeJS.ReadableStream = request.Body;

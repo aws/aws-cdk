@@ -1,13 +1,13 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { Writable } from 'stream';
 import { NodeStringDecoder, StringDecoder  } from 'string_decoder';
-import { DeployStackOptions, DeployStackResult } from '../lib';
+import { DeployStackOptions, DeployStackResult, DestroyStackOptions } from '../lib';
 import { AppStacks } from '../lib/api/cxapp/stacks';
-import { DestroyStackOptions, IDeploymentTarget, StackExistsOptions, Template } from '../lib/api/deployment-target';
-import { SDK } from '../lib/api/util/sdk';
+import { IDeploymentTarget, StackExistsOptions, Template } from '../lib/api/deployment-target';
 import { CdkToolkit } from '../lib/cdk-toolkit';
 import { Configuration } from '../lib/settings';
 import { testAssembly } from './util';
+import { MockSDK } from './util/mock-sdk';
 
 const FIXED_RESULT = testAssembly({
   stacks: [{
@@ -36,7 +36,7 @@ const FIXED_RESULT = testAssembly({
 
 const appStacks = new AppStacks({
   configuration: new Configuration(),
-  aws: new SDK(),
+  aws: new MockSDK(),
   synthesizer: async () => FIXED_RESULT,
 });
 

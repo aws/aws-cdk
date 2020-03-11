@@ -1,7 +1,7 @@
 import * as os from 'os';
 import { AssetManifest, AssetPublishing, ClientOptions, DestinationPattern, EventType, IAws, IPublishProgress, IPublishProgressListener } from "../lib";
 import { Account } from '../lib/aws';
-import { log, VERSION } from "./logging";
+import { log, LogLevel, VERSION } from "./logging";
 
 export async function publish(args: {
   path: string;
@@ -36,18 +36,21 @@ export async function publish(args: {
   }
 }
 
+const EVENT_TO_LEVEL: Record<EventType, LogLevel> = {
+  build: 'verbose',
+  cached: 'verbose',
+  check: 'verbose',
+  debug: 'verbose',
+  fail: 'error',
+  found: 'verbose',
+  start: 'info',
+  success: 'info',
+  upload: 'verbose',
+};
+
 class ConsoleProgress implements IPublishProgressListener {
-  public onAssetStart(event: IPublishProgress): void {
-    log('info', `[${event.percentComplete}%] ${event.message}`);
-  }
-  public onAssetEnd(event: IPublishProgress): void {
-    log('info', `[${event.percentComplete}%] ${event.message}`);
-  }
   public onPublishEvent(type: EventType, event: IPublishProgress): void {
-    log('verbose', `[${event.percentComplete}%] ${type}: ${event.message}`);
-  }
-  public onError(event: IPublishProgress): void {
-    log('error', `${event.message}`);
+    log(EVENT_TO_LEVEL[type], `[${event.percentComplete}%] ${type}: ${event.message}`);
   }
 }
 
@@ -103,7 +106,7 @@ class DefaultAwsClient implements IAws {
     let credentials;
 
     if (options.assumeRoleArn) {
-      credentials = await this.assumeRole(options.assumeRoleArn, options.assumeRoleExternalId);
+      credentials = await this.assumeRole(options.region, options.assumeRoleArn, options.assumeRoleExternalId);
     }
 
     return {
@@ -121,24 +124,23 @@ class DefaultAwsClient implements IAws {
    * It needs an explicit configuration of `masterCredentials`, we need to put
    * a `DefaultCredentialProverChain()` in there but that is not possible.
    */
-  private async assumeRole(roleArn: string, externalId?: string): Promise<AWS.Credentials> {
-    const msg = [`Assume ${roleArn}`];
-    if (externalId) {
-      msg.push(`(ExternalId ${externalId})`);
-    }
+  private async assumeRole(region: string | undefined, roleArn: string, externalId?: string): Promise<AWS.Credentials> {
+    const msg = [
+      `Assume ${roleArn}`,
+      ...externalId ? [`(ExternalId ${externalId})`] : []
+    ];
     log('verbose', msg.join(' '));
 
-    const sts = new this.AWS.STS();
-    const response = await sts.assumeRole({
-      RoleArn: roleArn,
-      ExternalId: externalId,
-      RoleSessionName: `cdk-assets-${os.userInfo().username}`,
-    }).promise();
-
-    return new this.AWS.Credentials({
-      accessKeyId: response.Credentials!.AccessKeyId,
-      secretAccessKey: response.Credentials!.SecretAccessKey,
-      sessionToken: response.Credentials!.SessionToken,
+    return new this.AWS.ChainableTemporaryCredentials({
+      params: {
+        RoleArn: roleArn,
+        ExternalId: externalId,
+        RoleSessionName: `cdk-assets-${os.userInfo().username}`,
+      },
+      stsConfig: {
+        region,
+        customUserAgent: `cdk-assets/${VERSION}`,
+      },
     });
   }
 }

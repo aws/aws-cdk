@@ -62,7 +62,7 @@ In other words, *Logical IDs* are expected to match the following regular expres
 ```
 
 ### Droplet
-Clouds are made of Droplets. Thet are the building blocks of *Cloud Assemblies*. They model a part of the
+Clouds are made of Droplets. They are the building blocks of *Cloud Assemblies*. They model a part of the
 *cloud application* that can be deployed independently, provided its dependencies are fulfilled. Droplets are specified
 using [JSON] objects that **MUST** conform to the following schema:
 
@@ -197,7 +197,7 @@ Key   |Type    |Description
 Here is a schematic example:
 ```js
 {
-  // When this attestation doucment was created
+  // When this attestation document was created
   "timestamp": "2018-11-15T11:08:52",
   // The hashing algorithm for the attestation is SHA256
   "algorithm": "SHA256",
@@ -216,7 +216,7 @@ Here is a schematic example:
 ```
 
 Once the attestation is ready, it is digitally *signed* using the configured [PGP][RFC 4880] key. The key **MUST** be
-valid as of the `timestamp` field included in the attestation. The siganture **MUST** not be detached, and is
+valid as of the `timestamp` field included in the attestation. The signature **MUST** not be detached, and is
 **RECOMMENDED** to use the *cleartext signature framework* described in section 7 of [RFC 4880] so the attestation can
 be read by a human.
 
@@ -229,7 +229,7 @@ Deployment systems that support verifying signed *Cloud Assemblies*:
   be returned when attempting to deploy an un-signed *Cloud Assembly*.
 * **MUST** verify the integrity and authenticity of signed *Cloud Assemblies* prior to attempting to load any file
   included in it, except for `signature.asc`.
-  * An error **MUST** be raised if the *Cloud Assembly*'s integirty is not verified by the signature.
+  * An error **MUST** be raised if the *Cloud Assembly*'s integrity is not verified by the signature.
   * An error **MUST** be raised if the [PGP][RFC 4880] key has expired according to the signature timestamp.
   * An error **MUST** be raised if the [PGP][RFC 4880] key is known to have been revoked. Deployment systems **MAY**
     trust locally available information pertaining to the key's validity.

@@ -322,7 +322,7 @@ export class TaskDefinition extends TaskDefinitionBase {
     const portMapping = targetContainer.findPortMapping(targetContainerPort, targetProtocol);
     if (portMapping === undefined) {
       // tslint:disable-next-line:max-line-length
-      throw new Error(`Container '${targetContainer}' has no mapping for port ${options.containerPort} and protocol ${targetProtocol}. Did you call "container.addPortMapping()"?`);
+      throw new Error(`Container '${targetContainer}' has no mapping for port ${options.containerPort} and protocol ${targetProtocol}. Did you call "container.addPortMappings()"?`);
     }
     return {
       containerName: options.containerName,

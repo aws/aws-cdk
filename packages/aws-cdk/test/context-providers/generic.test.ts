@@ -1,18 +1,8 @@
-import { ISDK } from '../../lib/api/util/sdk';
 import * as contextproviders from '../../lib/context-providers';
 import { Context, TRANSIENT_CONTEXT_KEY } from '../../lib/settings';
+import { MockSDK } from '../util/mock-sdk';
 
-const mockSDK: ISDK = {
-  defaultAccount: () => Promise.resolve({ accountId: '123456789012', partition: 'aws' }),
-  defaultRegion: () => Promise.resolve('bermuda-triangle-1337'),
-  cloudFormation: () => { throw new Error('Not Mocked'); },
-  ec2: () => { throw new Error('Not Mocked'); },
-  ecr: () => { throw new Error('Not Mocked'); },
-  route53: () => { throw new Error('Not Mocked'); },
-  s3: () => { throw new Error('Not Mocked'); },
-  ssm: () => { throw new Error('Not Mocked'); },
-  assumeRole: () => { throw new Error('Not Mocked'); },
-};
+const mockSDK = new MockSDK();
 
 test('errors are reported into the context value', async () => {
   // GIVEN

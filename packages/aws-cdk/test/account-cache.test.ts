@@ -1,6 +1,6 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { AccountAccessKeyCache } from '../lib/api/util/account-cache';
+import { AccountAccessKeyCache } from '../lib/api/aws-auth/account-cache';
 
 async function makeCache() {
   const dir = await fs.mkdtemp('/tmp/account-cache-test');

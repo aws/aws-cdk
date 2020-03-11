@@ -25,8 +25,14 @@ export class FileAssetHandler implements IAssetHandler {
     const s3 = await this.host.aws.s3Client(destination);
     this.host.emitMessage(EventType.CHECK, `Check ${s3Url}`);
 
-    if (!await bucketExist(s3, destination.bucketName)) {
-      throw new Error(`No bucket with name ${destination.bucketName} in account. Is this account bootstrapped?`);
+    const account = await this.host.aws.discoverCurrentAccount();
+    switch (await bucketOwnership(s3, destination.bucketName)) {
+      case BucketOwnership.MINE:
+        break;
+      case BucketOwnership.DOES_NOT_EXIST:
+        throw new Error(`No bucket named '${destination.bucketName}'. Is account ${account} bootstrapped?`);
+      case BucketOwnership.SOMEONE_ELSES_OR_NO_ACCESS:
+        throw new Error(`Bucket named '${destination.bucketName}' exists, but not in account ${account}. Wrong account?`);
     }
 
     if (await objectExists(s3, destination.bucketName, destination.objectKey)) {
@@ -39,7 +45,7 @@ export class FileAssetHandler implements IAssetHandler {
     const contentType = this.asset.source.packaging === FileAssetPackaging.ZIP_DIRECTORY ? 'application/zip' : undefined;
 
     this.host.emitMessage(EventType.UPLOAD, `Upload ${s3Url}`);
-    await s3.putObject({
+    await s3.upload({
       Bucket: destination.bucketName,
       Key: destination.objectKey,
       Body: createReadStream(publishFile),
@@ -69,14 +75,19 @@ export class FileAssetHandler implements IAssetHandler {
   }
 }
 
-async function bucketExist(s3: AWS.S3, bucket: string) {
+enum BucketOwnership {
+  DOES_NOT_EXIST,
+  MINE,
+  SOMEONE_ELSES_OR_NO_ACCESS
+}
+
+async function bucketOwnership(s3: AWS.S3, bucket: string): Promise<BucketOwnership> {
   try {
-    await s3.getBucketLocation({ Bucket: bucket });
-    return true;
+    await s3.getBucketLocation({ Bucket: bucket }).promise();
+    return BucketOwnership.MINE;
   } catch (e) {
-    if (['NoSuchBucket', 'AccessDenied', 'AllAccessDisabled'].includes(e.code)) {
-      return false;
-    }
+    if (e.code === 'NoSuchBucket') { return BucketOwnership.DOES_NOT_EXIST; }
+    if (['AccessDenied', 'AllAccessDisabled'].includes(e.code)) { return BucketOwnership.SOMEONE_ELSES_OR_NO_ACCESS; }
     throw e;
   }
 }
