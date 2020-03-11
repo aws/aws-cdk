@@ -62,7 +62,7 @@
     "jest": "^24.9.0",
     "mockery": "^2.1.0",
     "pkglint": "0.0.0",
-    "sinon": "^9.0.0",
+    "sinon": "^9.0.1",
     "ts-jest": "^25.2.0"
   },
   "dependencies": {
@@ -71,7 +71,7 @@
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
     "archiver": "^3.1.1",
-    "aws-sdk": "^2.636.0",
+    "aws-sdk": "^2.637.0",
     "camelcase": "^5.3.1",
     "cdk-assets": "0.0.0",
     "colors": "^1.4.0",
@@ -87,7 +87,7 @@
     "source-map-support": "^0.5.16",
     "table": "^5.4.6",
     "uuid": "^7.0.2",
-    "yaml": "^1.8.0",
+    "yaml": "^1.8.2",
     "yargs": "^15.3.0"
   },
   "repository": {
