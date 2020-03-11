@@ -22,7 +22,6 @@ beforeEach(() => {
               assumeRoleArn: 'arn:aws:role',
               repositoryName: 'repo',
               imageTag: 'abcdef',
-              imageUri: '12345.amazonaws.com/repo:abcdef',
             },
           },
         },
@@ -75,9 +74,9 @@ describe('with a complete manifest', () => {
     });
 
     mockSpawn(
+      { commandLine: ['docker', 'login', '--username', 'user', '--password-stdin', 'https://proxy.com/'] },
       { commandLine: ['docker', 'inspect', 'cdkasset-theasset'] },
       { commandLine: ['docker', 'tag', 'cdkasset-theasset', '12345.amazonaws.com/repo:abcdef'] },
-      { commandLine: ['docker', 'login', '--username', 'user', '--password-stdin', 'https://proxy.com/'] },
       { commandLine: ['docker', 'push', '12345.amazonaws.com/repo:abcdef'] },
       );
 
@@ -93,10 +92,10 @@ describe('with a complete manifest', () => {
     });
 
     mockSpawn(
+      { commandLine: ['docker', 'login', '--username', 'user', '--password-stdin', 'https://proxy.com/'] },
       { commandLine: ['docker', 'inspect', 'cdkasset-theasset'], exitCode: 1 },
       { commandLine: ['docker', 'build', '--tag', 'cdkasset-theasset', '/simple/cdk.out/dockerdir'] },
       { commandLine: ['docker', 'tag', 'cdkasset-theasset', '12345.amazonaws.com/repo:abcdef'] },
-      { commandLine: ['docker', 'login', '--username', 'user', '--password-stdin', 'https://proxy.com/'] },
       { commandLine: ['docker', 'push', '12345.amazonaws.com/repo:abcdef'] },
     );
 
