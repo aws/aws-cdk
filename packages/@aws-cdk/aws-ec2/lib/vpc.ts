@@ -417,7 +417,7 @@ abstract class VpcBase extends Resource implements IVpc {
 
     if (onePerAz && subnets.length > 0) {
       subnets = subnets.filter(s => s.availabilityZone);
-       if(subnets.length === 0) {
+      if (subnets.length === 0) {
         throw new Error(`Must Specify availabilityZone if you want to select subnets onePerAz`);
       }
       subnets = retainOnePerAz(subnets);
@@ -1320,8 +1320,8 @@ export class Subnet extends Resource implements ISubnet {
     return new ImportedSubnet(scope, id, attrs);
   }
 
-  public static fromSubnetId(scope: Construct, id: string, subnetId: string): ISubnet {
-    return this.fromSubnetAttributes(scope, id, { subnetId: subnetId })
+  public static fromSubnetId(scope: Construct, id: string, sbId: string): ISubnet {
+    return this.fromSubnetAttributes(scope, id, { subnetId: sbId });
   }
 
   /**
