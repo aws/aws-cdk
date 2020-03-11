@@ -9,6 +9,32 @@ import { waitForStack } from './util/cloudformation';
 
 /** @experimental */
 export class ToolkitInfo {
+  /** @experimental */
+  public static async lookup(environment: cxapi.Environment, sdk: SdkProvider, stackName: string): Promise<ToolkitInfo | undefined> {
+    const cfn = (await sdk.forEnvironment(environment.account, environment.region, Mode.ForReading)).cloudFormation();
+    const stack = await waitForStack(cfn, stackName);
+    if (!stack) {
+      debug('The environment %s doesn\'t have the CDK toolkit stack (%s) installed. Use %s to setup your environment for use with the toolkit.',
+          environment.name, stackName, colors.blue(`cdk bootstrap "${environment.name}"`));
+      return undefined;
+    }
+
+    const outputs = stackOutputs(stack);
+
+    return new ToolkitInfo({
+      sdk, environment,
+      bucketName: requireOutput(BUCKET_NAME_OUTPUT),
+      bucketEndpoint: requireOutput(BUCKET_DOMAIN_NAME_OUTPUT),
+    });
+
+    function requireOutput(output: string): string {
+      if (!(output in outputs)) {
+        throw new Error(`The CDK toolkit stack (${stack!.StackName}) does not have an output named ${output}. Use 'cdk bootstrap' to correct this.`);
+      }
+      return outputs[output];
+    }
+  }
+
   public readonly sdk: SdkProvider;
 
   constructor(private readonly props: {
@@ -79,32 +105,6 @@ export interface EcrCredentials {
   username: string;
   password: string;
   endpoint: string;
-}
-
-/** @experimental */
-export async function loadToolkitInfo(environment: cxapi.Environment, sdk: SdkProvider, stackName: string): Promise<ToolkitInfo | undefined> {
-  const cfn = (await sdk.forEnvironment(environment.account, environment.region, Mode.ForReading)).cloudFormation();
-  const stack = await waitForStack(cfn, stackName);
-  if (!stack) {
-    debug('The environment %s doesn\'t have the CDK toolkit stack (%s) installed. Use %s to setup your environment for use with the toolkit.',
-        environment.name, stackName, colors.blue(`cdk bootstrap "${environment.name}"`));
-    return undefined;
-  }
-
-  const outputs = stackOutputs(stack);
-
-  return new ToolkitInfo({
-    sdk, environment,
-    bucketName: requireOutput(BUCKET_NAME_OUTPUT),
-    bucketEndpoint: requireOutput(BUCKET_DOMAIN_NAME_OUTPUT),
-  });
-
-  function requireOutput(output: string): string {
-    if (!(output in outputs)) {
-      throw new Error(`The CDK toolkit stack (${stack!.StackName}) does not have an output named ${output}. Use 'cdk bootstrap' to correct this.`);
-    }
-    return outputs[output];
-  }
 }
 
 /**

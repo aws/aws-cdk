@@ -1,5 +1,5 @@
 import { CloudFormationStackArtifact } from "@aws-cdk/cx-api";
-import { Account, ISDK } from "./sdk";
+import { Account, SdkProvider } from "../aws-auth";
 
 /**
  * Replace the {ACCOUNT} and {REGION} placeholders in all strings found in a complex object.
@@ -7,7 +7,7 @@ import { Account, ISDK } from "./sdk";
  * Duplicated between cdk-assets and aws-cdk CLI because we don't have a good single place to put it
  * (they're nominally independent tools).
  */
-export async function replaceAwsPlaceholders<A extends { }>(object: A, aws: ISDK): Promise<A> {
+export async function replaceAwsPlaceholders<A extends { }>(object: A, aws: SdkProvider): Promise<A> {
   let region: string | undefined;
   let account: Account | undefined;
 
@@ -19,9 +19,9 @@ export async function replaceAwsPlaceholders<A extends { }>(object: A, aws: ISDK
       if (value.indexOf(CloudFormationStackArtifact.CURRENT_ACCOUNT) > -1) { await ensureAccount(); }
       if (value.indexOf(CloudFormationStackArtifact.CURRENT_PARTITION) > -1) { await ensureAccount(); }
 
-      value = replaceAll(value, CloudFormationStackArtifact.CURRENT_REGION, region ?? '');
-      value = replaceAll(value, CloudFormationStackArtifact.CURRENT_ACCOUNT, account?.accountId ?? '');
-      value = replaceAll(value, CloudFormationStackArtifact.CURRENT_PARTITION, account?.partition ?? '');
+      value = replaceAll(value, CloudFormationStackArtifact.CURRENT_REGION, region ?? 'WONTHAPPEN');
+      value = replaceAll(value, CloudFormationStackArtifact.CURRENT_ACCOUNT, account?.accountId ?? 'WONTHAPPEN');
+      value = replaceAll(value, CloudFormationStackArtifact.CURRENT_PARTITION, account?.partition ?? 'WONTHAPPEN');
 
       return value;
     }
@@ -38,7 +38,7 @@ export async function replaceAwsPlaceholders<A extends { }>(object: A, aws: ISDK
 
   async function ensureRegion() {
     if (region === undefined) {
-      region = await aws.defaultRegion();
+      region = aws.defaultRegion;
     }
   }
 

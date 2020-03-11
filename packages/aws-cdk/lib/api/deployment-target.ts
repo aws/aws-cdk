@@ -1,9 +1,9 @@
 import { CloudFormationStackArtifact } from '@aws-cdk/cx-api';
 import { Tag } from "../api/cxapp/stacks";
-import { debug, warning } from '../logging';
+import { debug } from '../logging';
 import { Mode, SdkProvider } from './aws-auth';
 import { deployStack, DeployStackResult, destroyStack, readCurrentTemplate } from './deploy-stack';
-import { loadToolkitInfo } from './toolkit-info';
+import { ToolkitInfo } from './toolkit-info';
 import { stackExists } from './util/cloudformation';
 import { replaceAwsPlaceholders } from './util/placeholders';
 
@@ -81,18 +81,18 @@ export class CloudFormationDeploymentTarget implements IDeploymentTarget {
   }
 
   public async deployStack(options: DeployStackOptions): Promise<DeployStackResult> {
-    const { deploySdk, uploadSdk, roleArn } = await this.cloudFormationOptionsFor(options.stack, options.roleArn);
+    const { sdk, cloudFormationRoleArn } = await this.cloudFormationOptionsFor(options.stack, options.roleArn);
 
     // tslint:disable-next-line:max-line-length
-    const toolkitInfo = await loadToolkitInfo(options.stack.environment, deploySdk, uploadSdk, options.toolkitStackName || DEFAULT_TOOLKIT_STACK_NAME);
+    const toolkitInfo = await ToolkitInfo.lookup(options.stack.environment, this.aws, options.toolkitStackName || DEFAULT_TOOLKIT_STACK_NAME);
 
     return deployStack({
       stack: options.stack,
       deployName: options.deployName,
       notificationArns: options.notificationArns,
       quiet: options.quiet,
-      sdk: deploySdk,
-      roleArn,
+      sdk: this.aws,
+      roleArn: cloudFormationRoleArn,
       reuseAssets: options.reuseAssets,
       toolkitInfo,
       tags: options.tags,
@@ -103,10 +103,10 @@ export class CloudFormationDeploymentTarget implements IDeploymentTarget {
   }
 
   public async destroyStack(options: DestroyStackOptions): Promise<void> {
-    const { deploySdk, roleArn } = await this.cloudFormationOptionsFor(options.stack, options.roleArn);
+    const { sdk, cloudFormationRoleArn: roleArn } = await this.cloudFormationOptionsFor(options.stack, options.roleArn);
 
     return destroyStack({
-      sdk: deploySdk,
+      sdk: this.aws,
       roleArn,
       stack: options.stack,
       deployName: options.deployName,
@@ -115,8 +115,8 @@ export class CloudFormationDeploymentTarget implements IDeploymentTarget {
   }
 
   public async stackExists(options: StackExistsOptions): Promise<boolean> {
-    const { deploySdk } = await this.cloudFormationOptionsFor(options.stack);
-    const cfn = await deploySdk.cloudFormation(options.stack.environment.account, options.stack.environment.region, Mode.ForReading);
+    const { sdk } = await this.cloudFormationOptionsFor(options.stack);
+    const cfn = await sdk.cloudFormation();
     return stackExists(cfn, options.deployName ?? options.stack.stackName);
   }
 
@@ -125,36 +125,26 @@ export class CloudFormationDeploymentTarget implements IDeploymentTarget {
    *
    * Return an SDK with the right credentials, and return the CloudFormation Execution Role
    */
-  private async cloudFormationOptionsFor(stack: CloudFormationStackArtifact, roleArn?: string) {
+  private async cloudFormationOptionsFor(stack: CloudFormationStackArtifact, roleArn?: string, mode = Mode.ForWriting) {
     // Substitute any placeholders with information about the current environment
     const arns = await replaceAwsPlaceholders({
       assumeRoleArn: stack.assumeRoleArn,
+      templatePublishingRoleArn: stack.templatePublishingRoleArn,
 
       // Use the override if given, otherwise use the field from the stack
       cloudFormationRoleArn: roleArn ?? stack.cloudFormationExecutionRoleArn,
-      templatePublishingRoleArn: stack.templatePublishingRoleArn,
     }, this.aws);
 
-    let deploySdk = this.aws;
-    if (arns.assumeRoleArn) {
-      try {
-        deploySdk = await deploySdk.assumeRole(arns.assumeRoleArn, stack.environment.region);
-      } catch (e) {
-        warning(`Could not assume deployment role for stack '${stack.stackName}'. Make sure the account and region have been bootstrapped and a trust relationship with your own source account have been added ('cdk bootstrap --trust=....').`);
-        throw e;
-      }
-    }
+    const environment = await this.aws.resolveEnvironment(stack.environment.account, stack.environment.region);
 
-    let uploadSdk = this.aws;
-    if (arns.templatePublishingRoleArn) {
-      try {
-        uploadSdk = await uploadSdk.assumeRole(arns.templatePublishingRoleArn, stack.environment.region);
-      } catch (e) {
-        warning(`Could not assume publishing role for stack '${stack.stackName}'. Make sure the account and region have been bootstrapped and a trust relationship with your own source account have been added ('cdk bootstrap --trust=....').`);
-        throw e;
-      }
-    }
+    const sdk = arns.assumeRoleArn
+      ? await this.aws.withAssumedRole(arns.assumeRoleArn, undefined, environment.region)
+      : await this.aws.forEnvironment(stack.environment.account, stack.environment.region, mode);
 
-    return { deploySdk, uploadSdk, roleArn: arns.cloudFormationRoleArn };
+    return {
+      sdk,
+      cloudFormationRoleArn: arns.cloudFormationRoleArn,
+      templatePublishingRoleArn: arns.templatePublishingRoleArn
+    };
   }
 }

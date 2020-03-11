@@ -1,7 +1,7 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { AppStacks, Tag } from '../lib/api/cxapp/stacks';
 import { DeployStackResult } from '../lib/api/deploy-stack';
-import { DeployStackOptions, IDeploymentTarget, Template } from '../lib/api/deployment-target';
+import { DeployStackOptions, DestroyStackOptions, IDeploymentTarget, StackExistsOptions, Template } from '../lib/api/deployment-target';
 import { CdkToolkit } from '../lib/cdk-toolkit';
 import { MockSDK } from './util/mock-sdk';
 

@@ -3,7 +3,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { bootstrapEnvironment, deployStack, destroyStack, loadToolkitInfo, Mode, SdkProvider } from '../../../lib/api';
+import { bootstrapEnvironment, deployStack, destroyStack, Mode, SdkProvider, ToolkitInfo } from '../../../lib/api';
 import { bootstrapEnvironment2 } from '../../../lib/api/bootstrap/bootstrap-environment2';
 import { ExampleAsset, MyTestCdkStack } from './example-cdk-app/my-test-cdk-stack';
 
@@ -126,7 +126,7 @@ async function deployCdkApp(outdir: string, env: cxapi.Environment,
   const assembly = app.synth();
 
   // now deploy the synthesized app
-  const toolkitInfo = await loadToolkitInfo(env, sdk, sdk, bootstrapStackName);
+  const toolkitInfo = await ToolkitInfo.lookup(env, sdk, bootstrapStackName);
   const testStack = assembly.stacks[0]; // we assume there's just one stack
   await deployStack({
     stack: testStack,
