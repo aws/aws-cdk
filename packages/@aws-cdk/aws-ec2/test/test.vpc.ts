@@ -1101,7 +1101,7 @@ export = {
 
       // WHEN
       const subnet = Subnet.fromSubnetAttributes(stack, 'subnet1', { subnetId : 'pub-1', availabilityZone: 'az-1234' });
-         
+      
       // THEN
       test.deepEqual(subnet.subnetId, 'pub-1');
       test.deepEqual(subnet.availabilityZone, 'az-1234');
