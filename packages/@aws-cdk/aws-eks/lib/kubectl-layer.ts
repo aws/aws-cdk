@@ -3,6 +3,8 @@ import { CfnResource, Construct, Stack, Token } from '@aws-cdk/core';
 import * as crypto from 'crypto';
 
 const KUBECTL_APP_ARN = 'arn:aws:serverlessrepo:us-east-1:903779448426:applications/lambda-layer-kubectl';
+const KUBECTL_APP_CN_ARN = 'arn:aws-cn:serverlessrepo:cn-north-1:487369736442:applications/lambda-layer-kubectl';
+
 const KUBECTL_APP_VERSION = '1.13.7';
 
 export interface KubectlLayerProps {
@@ -56,7 +58,7 @@ export class KubectlLayer extends Construct implements lambda.ILayerVersion {
       type: 'AWS::Serverless::Application',
       properties: {
         Location: {
-          ApplicationId: KUBECTL_APP_ARN,
+          ApplicationId: this.isChina() ? KUBECTL_APP_CN_ARN :  KUBECTL_APP_ARN,
           SemanticVersion: version
         },
         Parameters: {
@@ -74,5 +76,10 @@ export class KubectlLayer extends Construct implements lambda.ILayerVersion {
 
   public addPermission(_id: string, _permission: lambda.LayerVersionPermission): void {
     return;
+  }
+
+  public isChina(): boolean {
+    const region = this.stack.region;
+    return !Token.isUnresolved(region) && region.startsWith('cn-');
   }
 }
