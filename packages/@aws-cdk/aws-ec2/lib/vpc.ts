@@ -572,6 +572,7 @@ export interface SubnetAttributes {
 
   /**
    * The Availability Zone the subnet is located in
+   * @default - empty string
    */
   readonly availabilityZone?: string;
 
@@ -1320,8 +1321,8 @@ export class Subnet extends Resource implements ISubnet {
     return new ImportedSubnet(scope, id, attrs);
   }
 
-  public static fromSubnetId(scope: Construct, id: string, sbId: string): ISubnet {
-    return this.fromSubnetAttributes(scope, id, { subnetId: sbId });
+  public static fromSubnetId(scope: Construct, id: string, subnetId: string): ISubnet {
+    return this.fromSubnetAttributes(scope, id, { subnetId });
   }
 
   /**
