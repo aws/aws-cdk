@@ -1069,15 +1069,9 @@ export = {
       test.done();
     },
 
-    'select subnet from subnetId'(test: Test) {
+    'AZ does not have value when subnet created from subnetId'(test: Test) {
       // GIVEN
       const stack = getTestStack();
-      const vpc = Vpc.fromVpcAttributes(stack, 'VPC', {
-        vpcId: 'vpc-1234',
-        availabilityZones: ['dummy1a', 'dummy1b', 'dummy1c'],
-        publicSubnetIds: ['pub-1', 'pub-2', 'pub-3'],
-        publicSubnetRouteTableIds: ['rt-1', 'rt-2', 'rt-3'],
-      });
 
       // WHEN
       const subnet = Subnet.fromSubnetId(stack, 'subnet1', 'pub-1');
@@ -1085,6 +1079,35 @@ export = {
       // THEN
       test.deepEqual(subnet.subnetId, 'pub-1');
       test.deepEqual(subnet.availabilityZone, '');
+      test.done();
+    },
+
+    'AZ does not have value when subnet created from attributes without az'(test: Test) {
+      // GIVEN
+      const stack = getTestStack();
+
+      // WHEN
+      const subnet = Subnet.fromSubnetAttributes(stack, 'subnet1', { subnetId : 'pub-1' });
+
+      // THEN
+      test.deepEqual(subnet.subnetId, 'pub-1');
+      test.deepEqual(subnet.availabilityZone, '');
+      test.done();
+    },
+
+    'AZ have value when subnet created from attributes with az'(test: Test) {
+      // GIVEN
+      const stack = getTestStack();
+
+      // WHEN
+      const subnet = Subnet.fromSubnetAttributes(stack, 'subnet1', { 
+        subnetId : 'pub-1',
+      availabilityZone:'az-1234'
+     });
+
+      // THEN
+      test.deepEqual(subnet.subnetId, 'pub-1');
+      test.deepEqual(subnet.availabilityZone, 'az-1234');
       test.done();
     }
 
