@@ -167,10 +167,30 @@ abstract class RuleNew extends RuleBase {
  * The maximum frequency at which the AWS Config rule runs evaluations.
  */
 export enum MaximumExecutionFrequency {
+
+  /**
+   * 1 hour.
+   */
   ONE_HOUR = 'One_Hour',
+
+  /**
+   * 3 hours.
+   */
   THREE_HOURS = 'Three_Hours',
+
+  /**
+   * 6 hours.
+   */
   SIX_HOURS = 'Six_Hours',
+
+  /**
+   * 12 hours.
+   */
   TWELVE_HOURS = 'Twelve_Hours',
+
+  /**
+   * 24 hours.
+   */
   TWENTY_FOUR_HOURS = 'TwentyFour_Hours'
 }
 
