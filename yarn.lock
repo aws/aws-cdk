@@ -1851,14 +1851,6 @@
   dependencies:
     "@sinonjs/commons" "^1.7.0"
 
-"@sinonjs/formatio@^4.0.1":
-  version "4.0.1"
-  resolved "https://registry.yarnpkg.com/@sinonjs/formatio/-/formatio-4.0.1.tgz#50ac1da0c3eaea117ca258b06f4f88a471668bdb"
-  integrity sha512-asIdlLFrla/WZybhm0C8eEzaDNNrzymiTqHMeJl6zPW2881l3uuVRpm0QlRQEjqYWv6CcKMGYME3LbrLJsORBw==
-  dependencies:
-    "@sinonjs/commons" "^1"
-    "@sinonjs/samsam" "^4.2.0"
-
 "@sinonjs/formatio@^5.0.1":
   version "5.0.1"
   resolved "https://registry.yarnpkg.com/@sinonjs/formatio/-/formatio-5.0.1.tgz#f13e713cb3313b1ab965901b01b0828ea6b77089"
@@ -1866,15 +1858,6 @@
   dependencies:
     "@sinonjs/commons" "^1"
     "@sinonjs/samsam" "^5.0.2"
-
-"@sinonjs/samsam@^4.2.0", "@sinonjs/samsam@^4.2.2":
-  version "4.2.2"
-  resolved "https://registry.yarnpkg.com/@sinonjs/samsam/-/samsam-4.2.2.tgz#0f6cb40e467865306d8a20a97543a94005204e23"
-  integrity sha512-z9o4LZUzSD9Hl22zV38aXNykgFeVj8acqfFabCY6FY83n/6s/XwNJyYYldz6/9lBJanpno9h+oL6HTISkviweA==
-  dependencies:
-    "@sinonjs/commons" "^1.6.0"
-    lodash.get "^4.4.2"
-    type-detect "^4.0.8"
 
 "@sinonjs/samsam@^5.0.2", "@sinonjs/samsam@^5.0.3":
   version "5.0.3"
@@ -2629,16 +2612,16 @@ atob@^2.1.2:
   resolved "https://registry.yarnpkg.com/atob/-/atob-2.1.2.tgz#6d9517eb9e030d2436666651e86bd9f6f13533c9"
   integrity sha512-Wm6ukoaOGJi/73p/cl2GvLjTI5JM1k/O14isD73YML8StrH/7/lRFgmg8nICZgD3bZZvjwCGxtMOD3wWNAu8cg==
 
-aws-sdk-mock@^5.0.0:
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/aws-sdk-mock/-/aws-sdk-mock-5.0.0.tgz#2d2e9b6fbdb757c2e8f3787b60589759dcb2d49d"
-  integrity sha512-8vSdiRj4dEu3z4kkmIqHhP5Wrfiucgu0PaZxuT3KDSpuQIHMtw/SsuRsREkDQRBdkMtBg4BuddLZA8pWOs6QmQ==
+aws-sdk-mock@^5.1.0:
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk-mock/-/aws-sdk-mock-5.1.0.tgz#6f2c0bd670d7f378c906a8dd806f812124db71aa"
+  integrity sha512-Wa5eCSo8HX0Snqb7FdBylaXMmfrAWoWZ+d7MFhiYsgHPvNvMEGjV945FF2qqE1U0Tolr1ALzik1fcwgaOhqUWQ==
   dependencies:
-    aws-sdk "^2.596.0"
-    sinon "^8.0.1"
+    aws-sdk "^2.637.0"
+    sinon "^9.0.1"
     traverse "^0.6.6"
 
-aws-sdk@^2.596.0, aws-sdk@^2.637.0:
+aws-sdk@^2.637.0:
   version "2.637.0"
   resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.637.0.tgz#810e25e53acf2250d35fc74498f9d4492e154217"
   integrity sha512-e7EYX5rNtQyEaleQylUtLSNKXOmvOwfifQ4bYkfF80mFsVI3DSydczLHXrqPzXoEJaS/GI/9HqVnlQcPs6Q3ew==
@@ -7556,13 +7539,6 @@ log4js@^6.1.1, log4js@^6.1.2:
     rfdc "^1.1.4"
     streamroller "^2.2.3"
 
-lolex@^5.0.1, lolex@^5.1.2:
-  version "5.1.2"
-  resolved "https://registry.yarnpkg.com/lolex/-/lolex-5.1.2.tgz#953694d098ce7c07bc5ed6d0e42bc6c0c6d5a367"
-  integrity sha512-h4hmjAvHTmd+25JSwrtTIuwbKdwg5NzZVRMLn9saij4SZaepCrTCxPr35H/3bjwfMJtN+t3CX8672UIkglz28A==
-  dependencies:
-    "@sinonjs/commons" "^1.7.0"
-
 loose-envify@^1.0.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/loose-envify/-/loose-envify-1.4.0.tgz#71ee51fa7be4caec1a63839f7e682d8132d30caf"
@@ -8063,18 +8039,6 @@ nice-try@^1.0.4:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/nice-try/-/nice-try-1.0.5.tgz#a3378a7696ce7d223e88fc9b764bd7ef1089e366"
   integrity sha512-1nh45deeb5olNY7eX82BkPO7SSxR5SSYJiPTrTdFUVYwAl8CKMA5N9PjTYkHiRjisVcxcQ1HXdLhx2qxxJzLNQ==
-
-nise@^3.0.1:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/nise/-/nise-3.0.1.tgz#0659982af515e5aac15592226246243e8da0013d"
-  integrity sha512-fYcH9y0drBGSoi88kvhpbZEsenX58Yr+wOJ4/Mi1K4cy+iGP/a73gNoyNhu5E9QxPdgTlVChfIaAlnyOy/gHUA==
-  dependencies:
-    "@sinonjs/commons" "^1.7.0"
-    "@sinonjs/formatio" "^4.0.1"
-    "@sinonjs/text-encoding" "^0.7.1"
-    just-extend "^4.0.2"
-    lolex "^5.0.1"
-    path-to-regexp "^1.7.0"
 
 nise@^4.0.1:
   version "4.0.2"
@@ -10475,19 +10439,6 @@ simple-swizzle@^0.2.2:
   dependencies:
     is-arrayish "^0.3.1"
 
-sinon@^8.0.1:
-  version "8.1.1"
-  resolved "https://registry.yarnpkg.com/sinon/-/sinon-8.1.1.tgz#21fffd5ad0a2d072a8aa7f8a3cf7ed2ced497497"
-  integrity sha512-E+tWr3acRdoe1nXbHMu86SSqA1WGM7Yw3jZRLvlCMnXwTHP8lgFFVn5BnKnF26uc5SfZ3D7pA9sN7S3Y2jG4Ew==
-  dependencies:
-    "@sinonjs/commons" "^1.7.0"
-    "@sinonjs/formatio" "^4.0.1"
-    "@sinonjs/samsam" "^4.2.2"
-    diff "^4.0.2"
-    lolex "^5.1.2"
-    nise "^3.0.1"
-    supports-color "^7.1.0"
-
 sinon@^9.0.1:
   version "9.0.1"
   resolved "https://registry.yarnpkg.com/sinon/-/sinon-9.0.1.tgz#dbb18f7d8f5835bcf91578089c0a97b2fffdd73b"
@@ -12180,10 +12131,10 @@ yallist@^3.0.0, yallist@^3.0.2, yallist@^3.0.3:
   resolved "https://registry.yarnpkg.com/yallist/-/yallist-3.1.1.tgz#dbb7daf9bfd8bac9ab45ebf602b8cbad0d5d08fd"
   integrity sha512-a4UGQaWPH59mOXUYnAG2ewncQS4i4F43Tv3JoAM+s2VDAmS9NsK8GpDMLrCHPksFT7h3K6TOoUNn2pb7RoXx4g==
 
-yaml@1.8.0, yaml@^1.8.0:
-  version "1.8.0"
-  resolved "https://registry.yarnpkg.com/yaml/-/yaml-1.8.0.tgz#169fbcfa2081302dc9441d02b0b6fe667e4f74c9"
-  integrity sha512-6qI/tTx7OVtA4qNqD0OyutbM6Z9EKu4rxWm/2Y3FDEBQ4/2X2XAnyuRXMzAE2+1BPyqzksJZtrIwblOHg0IEzA==
+yaml@1.8.2, yaml@^1.8.2:
+  version "1.8.2"
+  resolved "https://registry.yarnpkg.com/yaml/-/yaml-1.8.2.tgz#a29c03f578faafd57dcb27055f9a5d569cb0c3d9"
+  integrity sha512-omakb0d7FjMo3R1D2EbTKVIk6dAVLRxFXdLZMEUToeAvuqgG/YuHMuQOZ5fgk+vQ8cx+cnGKwyg+8g8PNT0xQg==
   dependencies:
     "@babel/runtime" "^7.8.7"
 
