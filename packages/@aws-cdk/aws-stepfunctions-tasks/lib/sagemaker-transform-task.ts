@@ -6,6 +6,8 @@ import { getResourceArn } from './resource-arn-suffix';
 import { BatchStrategy, S3DataType, TransformInput, TransformOutput, TransformResources } from './sagemaker-task-base-types';
 
 /**
+ * Properties for creating an Amazon SageMaker training job task
+ *
  *  @experimental
  */
 export interface SagemakerTransformProps {
@@ -16,7 +18,9 @@ export interface SagemakerTransformProps {
     readonly transformJobName: string;
 
     /**
-     * Role for thte Training Job.
+     * Role for the Training Job.
+     *
+     * @default - A role is created with `AmazonSageMakerFullAccess` managed policy
      */
     readonly role?: iam.IRole;
 
@@ -31,21 +35,30 @@ export interface SagemakerTransformProps {
 
     /**
      * Number of records to include in a mini-batch for an HTTP inference request.
+     *
+     * @default - No batch strategy
      */
     readonly batchStrategy?: BatchStrategy;
 
     /**
      * Environment variables to set in the Docker container.
+     *
+     * @default - No environment variables
      */
     readonly environment?: {[key: string]: string};
 
     /**
      * Maximum number of parallel requests that can be sent to each instance in a transform job.
+     *
+     * @default - Amazon SageMaker checks the optional execution-parameters to determine the settings for your chosen algorithm.
+     * If the execution-parameters endpoint is not enabled, the default value is 1.
      */
     readonly maxConcurrentTransforms?: number;
 
     /**
      * Maximum allowed size of the payload, in MB.
+     *
+     * @default 6
      */
     readonly maxPayloadInMB?: number;
 
@@ -56,6 +69,8 @@ export interface SagemakerTransformProps {
 
     /**
      * Tags to be applied to the train job.
+     *
+     * @default - No tags
      */
     readonly tags?: {[key: string]: string};
 
@@ -71,6 +86,8 @@ export interface SagemakerTransformProps {
 
     /**
      * ML compute instances for the transform job.
+     *
+     * @default - 1 instance of type M4.XLarge
      */
     readonly transformResources?: TransformResources;
 }

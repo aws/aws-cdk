@@ -1,3 +1,7 @@
+/**
+ * A list of container overrides that specify the name of a container
+ * and the overrides it should receive.
+ */
 export interface ContainerOverride {
   /**
    * Name of the container inside the task definition
@@ -7,33 +11,38 @@ export interface ContainerOverride {
   /**
    * Command to run inside the container
    *
-   * @default Default command
+   * @default - Default command from the Docker image or the task definition
    */
   readonly command?: string[];
 
   /**
-   * Variables to set in the container's environment
+   * The environment variables to send to the container.
+   *
+   * You can add new environment variables, which are added to the container at launch,
+   * or you can override the existing environment variables from the Docker image or the task definition.
+   *
+   * @default - The existing environment variables from the Docker image or the task definition
    */
   readonly environment?: TaskEnvironmentVariable[];
 
   /**
    * The number of cpu units reserved for the container
    *
-   * @Default The default value from the task definition.
+   * @default - The default value from the task definition.
    */
   readonly cpu?: number;
 
   /**
-   * Hard memory limit on the container
+   * The hard limit (in MiB) of memory to present to the container
    *
-   * @Default The default value from the task definition.
+   * @default - The default value from the task definition.
    */
   readonly memoryLimit?: number;
 
   /**
-   * Soft memory limit on the container
+   * The soft limit (in MiB) of memory to reserve for the container
    *
-   * @Default The default value from the task definition.
+   * @default - The default value from the task definition.
    */
   readonly memoryReservation?: number;
 }

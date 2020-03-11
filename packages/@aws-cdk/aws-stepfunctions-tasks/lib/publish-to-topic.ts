@@ -21,11 +21,15 @@ export interface PublishToTopicProps {
    * being sent to every subscription type.
    *
    * @see https://docs.aws.amazon.com/sns/latest/api/API_Publish.html#API_Publish_RequestParameters
+   * @default false
    */
   readonly messagePerSubscriptionType?: boolean;
 
   /**
-   * Message subject
+   * Used as the "Subject" line when the message is delivered to email endpoints.
+   * Also included, if present, in the standard JSON messages delivered to other endpoints.
+   *
+   * @default - No subject
    */
   readonly subject?: string;
 
