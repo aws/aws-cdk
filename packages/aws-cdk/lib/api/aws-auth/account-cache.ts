@@ -2,6 +2,7 @@ import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as path from 'path';
 import { debug } from '../../logging';
+import { Account } from './sdk-provider';
 
 /**
  * Disk cache which maps access key IDs to account IDs.
@@ -21,7 +22,7 @@ export class AccountAccessKeyCache {
    * @param filePath Path to the cache file
    */
   constructor(filePath?: string) {
-    this.cacheFile = filePath || path.join(os.homedir(), '.cdk', 'cache', 'accounts.json');
+    this.cacheFile = filePath || path.join(os.homedir(), '.cdk', 'cache', 'accounts_partitions.json');
   }
 
   /**
@@ -38,31 +39,32 @@ export class AccountAccessKeyCache {
    * @param accessKeyId
    * @param resolver
    */
-  public async fetch(accessKeyId: string, resolver: () => Promise<string | undefined>) {
+  public async fetch(accessKeyId: string, resolver: () => Promise<Account | undefined>) {
     // try to get account ID based on this access key ID from disk.
     const cached = await this.get(accessKeyId);
     if (cached) {
-      debug(`Retrieved account ID ${cached} from disk cache`);
+
+      debug(`Retrieved account ID ${cached.accountId} from disk cache`);
       return cached;
     }
 
     // if it's not in the cache, resolve and put in cache.
-    const accountId = await resolver();
-    if (accountId) {
-      await this.put(accessKeyId, accountId);
+    const account = await resolver();
+    if (account) {
+      await this.put(accessKeyId, account);
     }
 
-    return accountId;
+    return account;
   }
 
   /** Get the account ID from an access key or undefined if not in cache */
-  public async get(accessKeyId: string): Promise<string | undefined> {
+  public async get(accessKeyId: string): Promise<Account | undefined> {
     const map = await this.loadMap();
     return map[accessKeyId];
   }
 
   /** Put a mapping betweenn access key and account ID */
-  public async put(accessKeyId: string, accountId: string) {
+  public async put(accessKeyId: string, account: Account) {
     let map = await this.loadMap();
 
     // nuke cache if it's too big.
@@ -70,11 +72,11 @@ export class AccountAccessKeyCache {
       map = { };
     }
 
-    map[accessKeyId] = accountId;
+    map[accessKeyId] = account;
     await this.saveMap(map);
   }
 
-  private async loadMap(): Promise<{ [accessKeyId: string]: string }> {
+  private async loadMap(): Promise<{ [accessKeyId: string]: Account }> {
     if (!(await fs.pathExists(this.cacheFile))) {
       return { };
     }
@@ -82,7 +84,7 @@ export class AccountAccessKeyCache {
     return await fs.readJson(this.cacheFile);
   }
 
-  private async saveMap(map: { [accessKeyId: string]: string }) {
+  private async saveMap(map: { [accessKeyId: string]: Account }) {
     if (!(await fs.pathExists(this.cacheFile))) {
       await fs.mkdirs(path.dirname(this.cacheFile));
     }
