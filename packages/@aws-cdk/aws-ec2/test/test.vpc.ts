@@ -1067,6 +1067,25 @@ export = {
       test.deepEqual(subnetIds.length, 1);
       test.deepEqual(subnetIds[0], subnet.subnetId);
       test.done();
+    },
+
+    'select subnet from subnetId'(test: Test) {
+      // GIVEN
+      const stack = getTestStack();
+      const vpc = Vpc.fromVpcAttributes(stack, 'VPC', {
+        vpcId: 'vpc-1234',
+        availabilityZones: ['dummy1a', 'dummy1b', 'dummy1c'],
+        publicSubnetIds: ['pub-1', 'pub-2', 'pub-3'],
+        publicSubnetRouteTableIds: ['rt-1', 'rt-2', 'rt-3'],
+      });
+
+      // WHEN
+      const subnet = Subnet.fromSubnetId(stack, 'subnet1', 'pub-1');
+
+      // THEN
+      test.deepEqual(subnet.subnetId, 'pub-1');
+      test.undefined(subnet.availabilityZone);
+      test.done();
     }
 
   },

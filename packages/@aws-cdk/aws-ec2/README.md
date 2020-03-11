@@ -576,4 +576,9 @@ instance.userData.addExecuteFileCommand({
   arguments: '--verbose -y'
 });
 asset.grantRead( instance.role );
-``` 
+```
+
+## Importing existing subnet
+Import existing subnet using `Subnet.fromSubnetId()` with limitation of not selecting subnets onePerAz.
+Making AZ property optional for `SubnetAttributes`.
+Use this when do not want to select subnets based on AZ.

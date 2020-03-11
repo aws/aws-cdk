@@ -416,6 +416,10 @@ abstract class VpcBase extends Resource implements IVpc {
     let subnets = allSubnets[subnetType];
 
     if (onePerAz && subnets.length > 0) {
+      subnets = subnets.filter(s => s.availabilityZone);
+      if(subnets.length === 0){
+        throw new Error(`Must Specify availabilityZone if you want to select subnets onePerAz`);
+      }
       subnets = retainOnePerAz(subnets);
     }
 
@@ -562,14 +566,14 @@ export interface VpcAttributes {
 
 export interface SubnetAttributes {
   /**
-   * The Availability Zone the subnet is located in
-   */
-  readonly availabilityZone: string;
-
-  /**
    * The subnetId for this particular subnet
    */
   readonly subnetId: string;
+
+  /**
+   * The Availability Zone the subnet is located in
+   */
+  readonly availabilityZone?: string;
 
   /**
    * The ID of the route table for this particular subnet
@@ -1314,6 +1318,10 @@ export class Subnet extends Resource implements ISubnet {
 
   public static fromSubnetAttributes(scope: Construct, id: string, attrs: SubnetAttributes): ISubnet {
     return new ImportedSubnet(scope, id, attrs);
+  }
+
+  public static fromSubnetId(scope: Construct, id: string, subnetId: string): ISubnet {
+    return this.fromSubnetAttributes(scope, id, { subnetId })
   }
 
   /**
