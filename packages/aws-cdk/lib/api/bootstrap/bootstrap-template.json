@@ -273,12 +273,19 @@
             },
             {
               "Action": [
-                "ecr:PutImage",        "ecr:InitiateLayerUpload",
-                "ecr:UploadLayerPart", "ecr:CompleteLayerUpload"
+                "ecr:PutImage",             "ecr:InitiateLayerUpload",
+                "ecr:UploadLayerPart",      "ecr:CompleteLayerUpload",
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:DescribeRepositories", "ecr:DescribeImages"
               ],
               "Resource": {
                 "Fn::Sub": "${ContainerAssetsRepository.Arn}"
               },
+              "Effect": "Allow"
+            },
+            {
+              "Action": ["ecr:GetAuthorizationToken"],
+              "Resource": "*",
               "Effect": "Allow"
             }
           ],
