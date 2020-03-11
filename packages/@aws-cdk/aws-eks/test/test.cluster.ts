@@ -728,7 +728,7 @@ export = {
               "eks:CreateFargateProfile"
             ],
             Effect: "Allow",
-            Resource: {
+            Resource: [ {
               "Fn::Join": [
                 "",
                 [
@@ -743,7 +743,22 @@ export = {
                   ":cluster/my-cluster-name"
                 ]
               ]
-            }
+            }, {
+              "Fn::Join": [
+                "",
+                [
+                  "arn:",
+                  {
+                    Ref: "AWS::Partition"
+                  },
+                  ":eks:us-east-1:",
+                  {
+                    Ref: "AWS::AccountId"
+                  },
+                  ":cluster/my-cluster-name/*"
+                ]
+              ]
+            } ]
           },
           {
             Action: [
@@ -821,7 +836,7 @@ export = {
               "eks:CreateFargateProfile"
             ],
             Effect: "Allow",
-            Resource: "*"
+            Resource: [ "*" ]
           },
           {
             Action: [

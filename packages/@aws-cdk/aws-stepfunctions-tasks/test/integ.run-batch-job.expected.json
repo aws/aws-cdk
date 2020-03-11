@@ -10,7 +10,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "batch-stack/vpc"
+            "Value": "aws-stepfunctions-integ/vpc"
           }
         ]
       }
@@ -27,7 +27,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "batch-stack/vpc/PublicSubnet1"
+            "Value": "aws-stepfunctions-integ/vpc/PublicSubnet1"
           },
           {
             "Key": "aws-cdk:subnet-name",
@@ -49,7 +49,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "batch-stack/vpc/PublicSubnet1"
+            "Value": "aws-stepfunctions-integ/vpc/PublicSubnet1"
           }
         ]
       }
@@ -87,7 +87,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "batch-stack/vpc/PublicSubnet1"
+            "Value": "aws-stepfunctions-integ/vpc/PublicSubnet1"
           }
         ]
       }
@@ -107,7 +107,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "batch-stack/vpc/PublicSubnet1"
+            "Value": "aws-stepfunctions-integ/vpc/PublicSubnet1"
           }
         ]
       }
@@ -124,7 +124,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "batch-stack/vpc/PublicSubnet2"
+            "Value": "aws-stepfunctions-integ/vpc/PublicSubnet2"
           },
           {
             "Key": "aws-cdk:subnet-name",
@@ -146,7 +146,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "batch-stack/vpc/PublicSubnet2"
+            "Value": "aws-stepfunctions-integ/vpc/PublicSubnet2"
           }
         ]
       }
@@ -184,7 +184,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "batch-stack/vpc/PublicSubnet2"
+            "Value": "aws-stepfunctions-integ/vpc/PublicSubnet2"
           }
         ]
       }
@@ -204,7 +204,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "batch-stack/vpc/PublicSubnet2"
+            "Value": "aws-stepfunctions-integ/vpc/PublicSubnet2"
           }
         ]
       }
@@ -221,7 +221,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "batch-stack/vpc/PublicSubnet3"
+            "Value": "aws-stepfunctions-integ/vpc/PublicSubnet3"
           },
           {
             "Key": "aws-cdk:subnet-name",
@@ -243,7 +243,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "batch-stack/vpc/PublicSubnet3"
+            "Value": "aws-stepfunctions-integ/vpc/PublicSubnet3"
           }
         ]
       }
@@ -281,7 +281,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "batch-stack/vpc/PublicSubnet3"
+            "Value": "aws-stepfunctions-integ/vpc/PublicSubnet3"
           }
         ]
       }
@@ -301,7 +301,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "batch-stack/vpc/PublicSubnet3"
+            "Value": "aws-stepfunctions-integ/vpc/PublicSubnet3"
           }
         ]
       }
@@ -318,7 +318,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "batch-stack/vpc/PrivateSubnet1"
+            "Value": "aws-stepfunctions-integ/vpc/PrivateSubnet1"
           },
           {
             "Key": "aws-cdk:subnet-name",
@@ -340,7 +340,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "batch-stack/vpc/PrivateSubnet1"
+            "Value": "aws-stepfunctions-integ/vpc/PrivateSubnet1"
           }
         ]
       }
@@ -380,7 +380,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "batch-stack/vpc/PrivateSubnet2"
+            "Value": "aws-stepfunctions-integ/vpc/PrivateSubnet2"
           },
           {
             "Key": "aws-cdk:subnet-name",
@@ -402,7 +402,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "batch-stack/vpc/PrivateSubnet2"
+            "Value": "aws-stepfunctions-integ/vpc/PrivateSubnet2"
           }
         ]
       }
@@ -442,7 +442,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "batch-stack/vpc/PrivateSubnet3"
+            "Value": "aws-stepfunctions-integ/vpc/PrivateSubnet3"
           },
           {
             "Key": "aws-cdk:subnet-name",
@@ -464,7 +464,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "batch-stack/vpc/PrivateSubnet3"
+            "Value": "aws-stepfunctions-integ/vpc/PrivateSubnet3"
           }
         ]
       }
@@ -498,7 +498,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "batch-stack/vpc"
+            "Value": "aws-stepfunctions-integ/vpc"
           }
         ]
       }
@@ -514,69 +514,7 @@
         }
       }
     },
-    "ec2launchtemplate": {
-      "Type": "AWS::EC2::LaunchTemplate",
-      "Properties": {
-        "LaunchTemplateData": {
-          "BlockDeviceMappings": [
-            {
-              "DeviceName": "/dev/xvdcz",
-              "Ebs": {
-                "Encrypted": true,
-                "VolumeSize": 100,
-                "VolumeType": "gp2"
-              }
-            }
-          ]
-        },
-        "LaunchTemplateName": "EC2LaunchTemplate"
-      }
-    },
-    "batchunmanagedcomputeenvResourceServiceInstanceRoleCA40AF77": {
-      "Type": "AWS::IAM::Role",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "batch.amazonaws.com"
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "ManagedPolicyArns": [
-          {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition"
-                },
-                ":iam::aws:policy/service-role/AWSBatchServiceRole"
-              ]
-            ]
-          }
-        ]
-      }
-    },
-    "batchunmanagedcomputeenvED550298": {
-      "Type": "AWS::Batch::ComputeEnvironment",
-      "Properties": {
-        "ServiceRole": {
-          "Fn::GetAtt": [
-            "batchunmanagedcomputeenvResourceServiceInstanceRoleCA40AF77",
-            "Arn"
-          ]
-        },
-        "Type": "UNMANAGED",
-        "State": "ENABLED"
-      }
-    },
-    "batchdemandcomputeenvlaunchtemplateEcsInstanceRole24D4E799": {
+    "ComputeEnvEcsInstanceRoleCFB290F9": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -652,12 +590,12 @@
         "vpcVPCGW7984C166"
       ]
     },
-    "batchdemandcomputeenvlaunchtemplateInstanceProfile2DEC3A97": {
+    "ComputeEnvInstanceProfile81AFCCF2": {
       "Type": "AWS::IAM::InstanceProfile",
       "Properties": {
         "Roles": [
           {
-            "Ref": "batchdemandcomputeenvlaunchtemplateEcsInstanceRole24D4E799"
+            "Ref": "ComputeEnvEcsInstanceRoleCFB290F9"
           }
         ]
       },
@@ -697,10 +635,10 @@
         "vpcVPCGW7984C166"
       ]
     },
-    "batchdemandcomputeenvlaunchtemplateResourceSecurityGroup23599B84": {
+    "ComputeEnvResourceSecurityGroupB84CF86B": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
-        "GroupDescription": "batch-stack/batch-demand-compute-env-launch-template/Resource-Security-Group",
+        "GroupDescription": "aws-stepfunctions-integ/ComputeEnv/Resource-Security-Group",
         "SecurityGroupEgress": [
           {
             "CidrIp": "0.0.0.0/0",
@@ -748,7 +686,7 @@
         "vpcVPCGW7984C166"
       ]
     },
-    "batchdemandcomputeenvlaunchtemplateResourceServiceInstanceRole76AD99CC": {
+    "ComputeEnvResourceServiceInstanceRoleCF89E9E1": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -814,12 +752,12 @@
         "vpcVPCGW7984C166"
       ]
     },
-    "batchdemandcomputeenvlaunchtemplateF8A5B233": {
+    "ComputeEnv2C40ACC2": {
       "Type": "AWS::Batch::ComputeEnvironment",
       "Properties": {
         "ServiceRole": {
           "Fn::GetAtt": [
-            "batchdemandcomputeenvlaunchtemplateResourceServiceInstanceRole76AD99CC",
+            "ComputeEnvResourceServiceInstanceRoleCF89E9E1",
             "Arn"
           ]
         },
@@ -828,22 +766,19 @@
           "AllocationStrategy": "BEST_FIT",
           "InstanceRole": {
             "Fn::GetAtt": [
-              "batchdemandcomputeenvlaunchtemplateInstanceProfile2DEC3A97",
+              "ComputeEnvInstanceProfile81AFCCF2",
               "Arn"
             ]
           },
           "InstanceTypes": [
             "optimal"
           ],
-          "LaunchTemplate": {
-            "LaunchTemplateName": "EC2LaunchTemplate"
-          },
           "MaxvCpus": 256,
           "MinvCpus": 0,
           "SecurityGroupIds": [
             {
               "Fn::GetAtt": [
-                "batchdemandcomputeenvlaunchtemplateResourceSecurityGroup23599B84",
+                "ComputeEnvResourceSecurityGroupB84CF86B",
                 "GroupId"
               ]
             }
@@ -899,7 +834,57 @@
         "vpcVPCGW7984C166"
       ]
     },
-    "batchspotcomputeenvEcsInstanceRoleE976826B": {
+    "JobQueueEE3AD499": {
+      "Type": "AWS::Batch::JobQueue",
+      "Properties": {
+        "ComputeEnvironmentOrder": [
+          {
+            "ComputeEnvironment": {
+              "Ref": "ComputeEnv2C40ACC2"
+            },
+            "Order": 1
+          }
+        ],
+        "Priority": 1,
+        "State": "ENABLED"
+      }
+    },
+    "JobDefinition24FFE3ED": {
+      "Type": "AWS::Batch::JobDefinition",
+      "Properties": {
+        "Type": "container",
+        "ContainerProperties": {
+          "Image": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Ref": "AWS::AccountId"
+                },
+                ".dkr.ecr.",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ".",
+                {
+                  "Ref": "AWS::URLSuffix"
+                },
+                "/aws-cdk/assets:4ba4a660dbcc1e71f0bf07105626a5bc65d95ae71724dc57bbb94c8e14202342"
+              ]
+            ]
+          },
+          "Memory": 4,
+          "Privileged": false,
+          "ReadonlyRootFilesystem": false,
+          "Vcpus": 1
+        },
+        "RetryStrategy": {
+          "Attempts": 1
+        },
+        "Timeout": {}
+      }
+    },
+    "StateMachineRoleB840431D": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -912,10 +897,11 @@
                   "Fn::Join": [
                     "",
                     [
-                      "ec2.",
+                      "states.",
                       {
-                        "Ref": "AWS::URLSuffix"
-                      }
+                        "Ref": "AWS::Region"
+                      },
+                      ".amazonaws.com"
                     ]
                   ]
                 }
@@ -923,431 +909,127 @@
             }
           ],
           "Version": "2012-10-17"
-        },
-        "ManagedPolicyArns": [
-          {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition"
-                },
-                ":iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
-              ]
-            ]
-          }
-        ]
-      },
-      "DependsOn": [
-        "vpcIGWE57CBDCA",
-        "vpcPrivateSubnet1DefaultRoute1AA8E2E5",
-        "vpcPrivateSubnet1RouteTableB41A48CC",
-        "vpcPrivateSubnet1RouteTableAssociation67945127",
-        "vpcPrivateSubnet1Subnet934893E8",
-        "vpcPrivateSubnet2DefaultRouteB0E07F99",
-        "vpcPrivateSubnet2RouteTable7280F23E",
-        "vpcPrivateSubnet2RouteTableAssociation007E94D3",
-        "vpcPrivateSubnet2Subnet7031C2BA",
-        "vpcPrivateSubnet3DefaultRoute30C45F47",
-        "vpcPrivateSubnet3RouteTable24DA79A0",
-        "vpcPrivateSubnet3RouteTableAssociationC58B3C2C",
-        "vpcPrivateSubnet3Subnet985AC459",
-        "vpcPublicSubnet1DefaultRoute10708846",
-        "vpcPublicSubnet1EIPDA49DCBE",
-        "vpcPublicSubnet1NATGateway9C16659E",
-        "vpcPublicSubnet1RouteTable48A2DF9B",
-        "vpcPublicSubnet1RouteTableAssociation5D3F4579",
-        "vpcPublicSubnet1Subnet2E65531E",
-        "vpcPublicSubnet2DefaultRouteA1EC0F60",
-        "vpcPublicSubnet2EIP9B3743B1",
-        "vpcPublicSubnet2NATGateway9B8AE11A",
-        "vpcPublicSubnet2RouteTableEB40D4CB",
-        "vpcPublicSubnet2RouteTableAssociation21F81B59",
-        "vpcPublicSubnet2Subnet009B674F",
-        "vpcPublicSubnet3DefaultRoute3F356A11",
-        "vpcPublicSubnet3EIP2C3B9D91",
-        "vpcPublicSubnet3NATGateway82F6CA9E",
-        "vpcPublicSubnet3RouteTableA3C00665",
-        "vpcPublicSubnet3RouteTableAssociationD102D1C4",
-        "vpcPublicSubnet3Subnet11B92D7C",
-        "vpcA2121C38",
-        "vpcVPCGW7984C166"
-      ]
-    },
-    "batchspotcomputeenvInstanceProfileFA613AC2": {
-      "Type": "AWS::IAM::InstanceProfile",
-      "Properties": {
-        "Roles": [
-          {
-            "Ref": "batchspotcomputeenvEcsInstanceRoleE976826B"
-          }
-        ]
-      },
-      "DependsOn": [
-        "vpcIGWE57CBDCA",
-        "vpcPrivateSubnet1DefaultRoute1AA8E2E5",
-        "vpcPrivateSubnet1RouteTableB41A48CC",
-        "vpcPrivateSubnet1RouteTableAssociation67945127",
-        "vpcPrivateSubnet1Subnet934893E8",
-        "vpcPrivateSubnet2DefaultRouteB0E07F99",
-        "vpcPrivateSubnet2RouteTable7280F23E",
-        "vpcPrivateSubnet2RouteTableAssociation007E94D3",
-        "vpcPrivateSubnet2Subnet7031C2BA",
-        "vpcPrivateSubnet3DefaultRoute30C45F47",
-        "vpcPrivateSubnet3RouteTable24DA79A0",
-        "vpcPrivateSubnet3RouteTableAssociationC58B3C2C",
-        "vpcPrivateSubnet3Subnet985AC459",
-        "vpcPublicSubnet1DefaultRoute10708846",
-        "vpcPublicSubnet1EIPDA49DCBE",
-        "vpcPublicSubnet1NATGateway9C16659E",
-        "vpcPublicSubnet1RouteTable48A2DF9B",
-        "vpcPublicSubnet1RouteTableAssociation5D3F4579",
-        "vpcPublicSubnet1Subnet2E65531E",
-        "vpcPublicSubnet2DefaultRouteA1EC0F60",
-        "vpcPublicSubnet2EIP9B3743B1",
-        "vpcPublicSubnet2NATGateway9B8AE11A",
-        "vpcPublicSubnet2RouteTableEB40D4CB",
-        "vpcPublicSubnet2RouteTableAssociation21F81B59",
-        "vpcPublicSubnet2Subnet009B674F",
-        "vpcPublicSubnet3DefaultRoute3F356A11",
-        "vpcPublicSubnet3EIP2C3B9D91",
-        "vpcPublicSubnet3NATGateway82F6CA9E",
-        "vpcPublicSubnet3RouteTableA3C00665",
-        "vpcPublicSubnet3RouteTableAssociationD102D1C4",
-        "vpcPublicSubnet3Subnet11B92D7C",
-        "vpcA2121C38",
-        "vpcVPCGW7984C166"
-      ]
-    },
-    "batchspotcomputeenvResourceSecurityGroup07B09BF9": {
-      "Type": "AWS::EC2::SecurityGroup",
-      "Properties": {
-        "GroupDescription": "batch-stack/batch-spot-compute-env/Resource-Security-Group",
-        "SecurityGroupEgress": [
-          {
-            "CidrIp": "0.0.0.0/0",
-            "Description": "Allow all outbound traffic by default",
-            "IpProtocol": "-1"
-          }
-        ],
-        "VpcId": {
-          "Ref": "vpcA2121C38"
         }
-      },
-      "DependsOn": [
-        "vpcIGWE57CBDCA",
-        "vpcPrivateSubnet1DefaultRoute1AA8E2E5",
-        "vpcPrivateSubnet1RouteTableB41A48CC",
-        "vpcPrivateSubnet1RouteTableAssociation67945127",
-        "vpcPrivateSubnet1Subnet934893E8",
-        "vpcPrivateSubnet2DefaultRouteB0E07F99",
-        "vpcPrivateSubnet2RouteTable7280F23E",
-        "vpcPrivateSubnet2RouteTableAssociation007E94D3",
-        "vpcPrivateSubnet2Subnet7031C2BA",
-        "vpcPrivateSubnet3DefaultRoute30C45F47",
-        "vpcPrivateSubnet3RouteTable24DA79A0",
-        "vpcPrivateSubnet3RouteTableAssociationC58B3C2C",
-        "vpcPrivateSubnet3Subnet985AC459",
-        "vpcPublicSubnet1DefaultRoute10708846",
-        "vpcPublicSubnet1EIPDA49DCBE",
-        "vpcPublicSubnet1NATGateway9C16659E",
-        "vpcPublicSubnet1RouteTable48A2DF9B",
-        "vpcPublicSubnet1RouteTableAssociation5D3F4579",
-        "vpcPublicSubnet1Subnet2E65531E",
-        "vpcPublicSubnet2DefaultRouteA1EC0F60",
-        "vpcPublicSubnet2EIP9B3743B1",
-        "vpcPublicSubnet2NATGateway9B8AE11A",
-        "vpcPublicSubnet2RouteTableEB40D4CB",
-        "vpcPublicSubnet2RouteTableAssociation21F81B59",
-        "vpcPublicSubnet2Subnet009B674F",
-        "vpcPublicSubnet3DefaultRoute3F356A11",
-        "vpcPublicSubnet3EIP2C3B9D91",
-        "vpcPublicSubnet3NATGateway82F6CA9E",
-        "vpcPublicSubnet3RouteTableA3C00665",
-        "vpcPublicSubnet3RouteTableAssociationD102D1C4",
-        "vpcPublicSubnet3Subnet11B92D7C",
-        "vpcA2121C38",
-        "vpcVPCGW7984C166"
-      ]
+      }
     },
-    "batchspotcomputeenvResourceServiceInstanceRole8B0DF5A7": {
-      "Type": "AWS::IAM::Role",
+    "StateMachineRoleDefaultPolicyDF1E6607": {
+      "Type": "AWS::IAM::Policy",
       "Properties": {
-        "AssumeRolePolicyDocument": {
+        "PolicyDocument": {
           "Statement": [
             {
-              "Action": "sts:AssumeRole",
+              "Action": "batch:SubmitJob",
               "Effect": "Allow",
-              "Principal": {
-                "Service": "batch.amazonaws.com"
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":batch:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":job-definition/*"
+                    ]
+                  ]
+                },
+                {
+                  "Ref": "JobQueueEE3AD499"
+                }
+              ]
+            },
+            {
+              "Action": [
+                "events:PutTargets",
+                "events:PutRule",
+                "events:DescribeRule"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":events:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":rule/StepFunctionsGetEventsForBatchJobsRule"
+                  ]
+                ]
               }
             }
           ],
           "Version": "2012-10-17"
         },
-        "ManagedPolicyArns": [
+        "PolicyName": "StateMachineRoleDefaultPolicyDF1E6607",
+        "Roles": [
           {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition"
-                },
-                ":iam::aws:policy/service-role/AWSBatchServiceRole"
-              ]
-            ]
+            "Ref": "StateMachineRoleB840431D"
           }
         ]
-      },
-      "DependsOn": [
-        "vpcIGWE57CBDCA",
-        "vpcPrivateSubnet1DefaultRoute1AA8E2E5",
-        "vpcPrivateSubnet1RouteTableB41A48CC",
-        "vpcPrivateSubnet1RouteTableAssociation67945127",
-        "vpcPrivateSubnet1Subnet934893E8",
-        "vpcPrivateSubnet2DefaultRouteB0E07F99",
-        "vpcPrivateSubnet2RouteTable7280F23E",
-        "vpcPrivateSubnet2RouteTableAssociation007E94D3",
-        "vpcPrivateSubnet2Subnet7031C2BA",
-        "vpcPrivateSubnet3DefaultRoute30C45F47",
-        "vpcPrivateSubnet3RouteTable24DA79A0",
-        "vpcPrivateSubnet3RouteTableAssociationC58B3C2C",
-        "vpcPrivateSubnet3Subnet985AC459",
-        "vpcPublicSubnet1DefaultRoute10708846",
-        "vpcPublicSubnet1EIPDA49DCBE",
-        "vpcPublicSubnet1NATGateway9C16659E",
-        "vpcPublicSubnet1RouteTable48A2DF9B",
-        "vpcPublicSubnet1RouteTableAssociation5D3F4579",
-        "vpcPublicSubnet1Subnet2E65531E",
-        "vpcPublicSubnet2DefaultRouteA1EC0F60",
-        "vpcPublicSubnet2EIP9B3743B1",
-        "vpcPublicSubnet2NATGateway9B8AE11A",
-        "vpcPublicSubnet2RouteTableEB40D4CB",
-        "vpcPublicSubnet2RouteTableAssociation21F81B59",
-        "vpcPublicSubnet2Subnet009B674F",
-        "vpcPublicSubnet3DefaultRoute3F356A11",
-        "vpcPublicSubnet3EIP2C3B9D91",
-        "vpcPublicSubnet3NATGateway82F6CA9E",
-        "vpcPublicSubnet3RouteTableA3C00665",
-        "vpcPublicSubnet3RouteTableAssociationD102D1C4",
-        "vpcPublicSubnet3Subnet11B92D7C",
-        "vpcA2121C38",
-        "vpcVPCGW7984C166"
-      ]
+      }
     },
-    "batchspotcomputeenv2CE4DFD9": {
-      "Type": "AWS::Batch::ComputeEnvironment",
+    "StateMachine2E01A3A5": {
+      "Type": "AWS::StepFunctions::StateMachine",
       "Properties": {
-        "ServiceRole": {
-          "Fn::GetAtt": [
-            "batchspotcomputeenvResourceServiceInstanceRole8B0DF5A7",
-            "Arn"
+        "DefinitionString": {
+          "Fn::Join": [
+            "",
+            [
+              "{\"StartAt\":\"Start\",\"States\":{\"Start\":{\"Type\":\"Pass\",\"Result\":{\"bar\":\"SomeValue\"},\"Next\":\"Submit Job\"},\"Submit Job\":{\"End\":true,\"Parameters\":{\"JobDefinition\":\"",
+              {
+                "Ref": "JobDefinition24FFE3ED"
+              },
+              "\",\"JobName\":\"MyJob\",\"JobQueue\":\"",
+              {
+                "Ref": "JobQueueEE3AD499"
+              },
+              "\",\"Parameters\":{\"foo.$\":\"$.bar\"},\"ContainerOverrides\":{\"Environment\":[{\"Name\":\"key\",\"Value\":\"value\"}],\"Memory\":256,\"Vcpus\":1},\"RetryStrategy\":{\"Attempts\":3},\"Timeout\":{\"AttemptDurationSeconds\":60}},\"Type\":\"Task\",\"Resource\":\"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":states:::batch:submitJob.sync\"}}}"
+            ]
           ]
         },
-        "Type": "MANAGED",
-        "ComputeResources": {
-          "AllocationStrategy": "SPOT_CAPACITY_OPTIMIZED",
-          "BidPercentage": 80,
-          "InstanceRole": {
-            "Fn::GetAtt": [
-              "batchspotcomputeenvInstanceProfileFA613AC2",
-              "Arn"
-            ]
-          },
-          "InstanceTypes": [
-            "optimal"
-          ],
-          "MaxvCpus": 256,
-          "MinvCpus": 0,
-          "SecurityGroupIds": [
-            {
-              "Fn::GetAtt": [
-                "batchspotcomputeenvResourceSecurityGroup07B09BF9",
-                "GroupId"
-              ]
-            }
-          ],
-          "SpotIamFleetRole": {
-            "Fn::Join": [
-              "",
-              [
-                "arn",
-                {
-                  "Ref": "AWS::Partition"
-                },
-                "iam::",
-                {
-                  "Ref": "AWS::AccountId"
-                },
-                ":role/aws-service-role/spotfleet.amazonaws.com/AWSServiceRoleForEC2SpotFleet"
-              ]
-            ]
-          },
-          "Subnets": [
-            {
-              "Ref": "vpcPrivateSubnet1Subnet934893E8"
-            },
-            {
-              "Ref": "vpcPrivateSubnet2Subnet7031C2BA"
-            },
-            {
-              "Ref": "vpcPrivateSubnet3Subnet985AC459"
-            }
-          ],
-          "Type": "SPOT"
-        },
-        "State": "ENABLED"
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "StateMachineRoleB840431D",
+            "Arn"
+          ]
+        }
       },
       "DependsOn": [
-        "vpcIGWE57CBDCA",
-        "vpcPrivateSubnet1DefaultRoute1AA8E2E5",
-        "vpcPrivateSubnet1RouteTableB41A48CC",
-        "vpcPrivateSubnet1RouteTableAssociation67945127",
-        "vpcPrivateSubnet1Subnet934893E8",
-        "vpcPrivateSubnet2DefaultRouteB0E07F99",
-        "vpcPrivateSubnet2RouteTable7280F23E",
-        "vpcPrivateSubnet2RouteTableAssociation007E94D3",
-        "vpcPrivateSubnet2Subnet7031C2BA",
-        "vpcPrivateSubnet3DefaultRoute30C45F47",
-        "vpcPrivateSubnet3RouteTable24DA79A0",
-        "vpcPrivateSubnet3RouteTableAssociationC58B3C2C",
-        "vpcPrivateSubnet3Subnet985AC459",
-        "vpcPublicSubnet1DefaultRoute10708846",
-        "vpcPublicSubnet1EIPDA49DCBE",
-        "vpcPublicSubnet1NATGateway9C16659E",
-        "vpcPublicSubnet1RouteTable48A2DF9B",
-        "vpcPublicSubnet1RouteTableAssociation5D3F4579",
-        "vpcPublicSubnet1Subnet2E65531E",
-        "vpcPublicSubnet2DefaultRouteA1EC0F60",
-        "vpcPublicSubnet2EIP9B3743B1",
-        "vpcPublicSubnet2NATGateway9B8AE11A",
-        "vpcPublicSubnet2RouteTableEB40D4CB",
-        "vpcPublicSubnet2RouteTableAssociation21F81B59",
-        "vpcPublicSubnet2Subnet009B674F",
-        "vpcPublicSubnet3DefaultRoute3F356A11",
-        "vpcPublicSubnet3EIP2C3B9D91",
-        "vpcPublicSubnet3NATGateway82F6CA9E",
-        "vpcPublicSubnet3RouteTableA3C00665",
-        "vpcPublicSubnet3RouteTableAssociationD102D1C4",
-        "vpcPublicSubnet3Subnet11B92D7C",
-        "vpcA2121C38",
-        "vpcVPCGW7984C166"
+        "StateMachineRoleDefaultPolicyDF1E6607",
+        "StateMachineRoleB840431D"
       ]
-    },
-    "batchjobqueueE3C528F2": {
-      "Type": "AWS::Batch::JobQueue",
-      "Properties": {
-        "ComputeEnvironmentOrder": [
-          {
-            "ComputeEnvironment": {
-              "Ref": "batchunmanagedcomputeenvED550298"
-            },
-            "Order": 1
-          },
-          {
-            "ComputeEnvironment": {
-              "Ref": "batchdemandcomputeenvlaunchtemplateF8A5B233"
-            },
-            "Order": 2
-          },
-          {
-            "ComputeEnvironment": {
-              "Ref": "batchspotcomputeenv2CE4DFD9"
-            },
-            "Order": 3
-          }
-        ],
-        "Priority": 1,
-        "State": "ENABLED"
+    }
+  },
+  "Outputs": {
+    "JobQueueArn": {
+      "Value": {
+        "Ref": "JobQueueEE3AD499"
       }
     },
-    "batchjobrepo4C508C51": {
-      "Type": "AWS::ECR::Repository",
-      "UpdateReplacePolicy": "Retain",
-      "DeletionPolicy": "Retain"
-    },
-    "batchjobdeffromecrE0E30DAD": {
-      "Type": "AWS::Batch::JobDefinition",
-      "Properties": {
-        "Type": "container",
-        "ContainerProperties": {
-          "Image": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Fn::Select": [
-                    4,
-                    {
-                      "Fn::Split": [
-                        ":",
-                        {
-                          "Fn::GetAtt": [
-                            "batchjobrepo4C508C51",
-                            "Arn"
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                },
-                ".dkr.ecr.",
-                {
-                  "Fn::Select": [
-                    3,
-                    {
-                      "Fn::Split": [
-                        ":",
-                        {
-                          "Fn::GetAtt": [
-                            "batchjobrepo4C508C51",
-                            "Arn"
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                },
-                ".",
-                {
-                  "Ref": "AWS::URLSuffix"
-                },
-                "/",
-                {
-                  "Ref": "batchjobrepo4C508C51"
-                },
-                ":latest"
-              ]
-            ]
-          },
-          "Memory": 4,
-          "Privileged": false,
-          "ReadonlyRootFilesystem": false,
-          "Vcpus": 1
-        },
-        "RetryStrategy": {
-          "Attempts": 1
-        },
-        "Timeout": {}
-      }
-    },
-    "batchjobdeffrom4007378D": {
-      "Type": "AWS::Batch::JobDefinition",
-      "Properties": {
-        "Type": "container",
-        "ContainerProperties": {
-          "Image": "docker/whalesay",
-          "Memory": 4,
-          "Privileged": false,
-          "ReadonlyRootFilesystem": false,
-          "Vcpus": 1
-        },
-        "RetryStrategy": {
-          "Attempts": 1
-        },
-        "Timeout": {}
+    "StateMachineArn": {
+      "Value": {
+        "Ref": "StateMachine2E01A3A5"
       }
     }
   }
