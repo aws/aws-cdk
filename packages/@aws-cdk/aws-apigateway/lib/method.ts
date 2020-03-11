@@ -75,14 +75,6 @@ export interface MethodOptions {
    * The ID of the associated request validator.
    */
   readonly requestValidator?: IRequestValidator;
-
-  /**
-   * A list of authorization scopes configured on the method. The scopes are used with
-   * a COGNITO_USER_POOLS authorizer to authorize the method invocation.
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-method.html#cfn-apigateway-method-authorizationscopes
-   * @default - no authorization scopes
-   */
-  readonly authorizationScopes?: string[]
 }
 
 export interface MethodProps {
@@ -160,8 +152,7 @@ export class Method extends Resource {
       integration: this.renderIntegration(props.integration),
       methodResponses: this.renderMethodResponses(options.methodResponses),
       requestModels: this.renderRequestModels(options.requestModels),
-      requestValidatorId: options.requestValidator ? options.requestValidator.requestValidatorId : undefined,
-      authorizationScopes: options.authorizationScopes ?? defaultMethodOptions.authorizationScopes,
+      requestValidatorId: options.requestValidator ? options.requestValidator.requestValidatorId : undefined
     };
 
     const resource = new CfnMethod(this, 'Resource', methodProps);
