@@ -4,4 +4,4 @@ export * from './aws-auth/credentials';
 export * from './bootstrap-environment';
 export * from './deploy-stack';
 export * from './toolkit-info';
-export * from './util/sdk';
+export * from './aws-auth';
