@@ -3,8 +3,7 @@ const github = require('@actions/github');
 const linter = require('prlint')
 
 const checks = {
-    "MANDATORY_CHANGES": linter.mandatoryChanges,
-    "COMMIT_MESSAGE": linter.commitMessage
+    "MANDATORY_CHANGES": linter.mandatoryChanges
 }
 
 async function run() {
@@ -21,7 +20,7 @@ async function run() {
         }
 
         await check(number);
-
+    
     } catch (error) {
 
         core.setFailed(error.message);

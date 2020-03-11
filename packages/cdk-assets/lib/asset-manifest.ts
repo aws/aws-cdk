@@ -13,16 +13,6 @@ export class AssetManifest {
   public static readonly DEFAULT_FILENAME = 'assets.json';
 
   /**
-   * Insert this into the destination fields to be replaced with the current region
-   */
-  public static readonly CURRENT_REGION_PLACEHOLDER = '${AWS::Region}';
-
-  /**
-   * Insert this into the destination fields to be replaced with the current account
-   */
-  public static readonly CURRENT_ACCOUNT_PLACEHOLDER = '${AWS::AccountId}';
-
-  /**
    * Load an asset manifest from the given file
    */
   public static fromFile(fileName: string) {

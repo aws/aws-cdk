@@ -166,7 +166,7 @@
     "fs-extra": "^8.1.0",
     "jsii-reflect": "^1.0.0",
     "jsonschema": "^1.2.5",
-    "yaml": "1.8.0",
+    "yaml": "1.8.2",
     "yargs": "^15.3.0"
   },
   "devDependencies": {
