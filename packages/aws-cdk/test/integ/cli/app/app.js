@@ -7,7 +7,7 @@ const sns = require('@aws-cdk/aws-sns');
 const lambda = require('@aws-cdk/aws-lambda');
 const docker = require('@aws-cdk/aws-ecr-assets');
 const core = require('@aws-cdk/core')
-const { StackWithNestedStack } = require('./nested-stack');
+const { StackWithNestedStack, StackWithNestedStackUsingParameters } = require('./nested-stack');
 
 const stackPrefix = process.env.STACK_NAME_PREFIX || 'cdk-toolkit-integration';
 
@@ -38,6 +38,26 @@ class YourStack extends cdk.Stack {
     super(parent, id, props);
     new sns.Topic(this, 'topic1');
     new sns.Topic(this, 'topic2');
+  }
+}
+
+class ParameterStack extends cdk.Stack {
+  constructor(parent, id, props) {
+    super(parent, id, props);
+
+    new sns.Topic(this, 'TopicParameter', {
+      topicName: new cdk.CfnParameter(this, 'TopicNameParam')
+    });
+  }
+}
+
+class OtherParameterStack extends cdk.Stack {
+  constructor(parent, id, props) {
+    super(parent, id, props);
+
+    new sns.Topic(this, 'TopicParameter', {
+      topicName: new cdk.CfnParameter(this, 'OtherTopicNameParam')
+    });
   }
 }
 
@@ -103,6 +123,12 @@ class DockerStack extends cdk.Stack {
     new docker.DockerImageAsset(this, 'image', {
       directory: path.join(__dirname, 'docker')
     });
+
+    // Add at least a single resource (WaitConditionHandle), otherwise this stack will never
+    // be deployed (and its assets never built)
+    new core.CfnResource(this, 'Handle', {
+      type: 'AWS::CloudFormation::WaitConditionHandle'
+    });
   }
 }
 
@@ -114,8 +140,13 @@ class DockerStackWithCustomFile extends cdk.Stack {
       directory: path.join(__dirname, 'docker'),
       file: 'Dockerfile.Custom'
     });
-  }
 
+    // Add at least a single resource (WaitConditionHandle), otherwise this stack will never
+    // be deployed (and its assets never built)
+    new core.CfnResource(this, 'Handle', {
+      type: 'AWS::CloudFormation::WaitConditionHandle'
+    });
+  }
 }
 
 class FailedStack extends cdk.Stack {
@@ -174,6 +205,9 @@ const defaultEnv = {
 // Deploy all does a wildcard ${stackPrefix}-test-*
 new MyStack(app, `${stackPrefix}-test-1`, { env: defaultEnv });
 new YourStack(app, `${stackPrefix}-test-2`);
+// Deploy wildcard with parameters does ${stackPrefix}-param-test-*
+new ParameterStack(app, `${stackPrefix}-param-test-1`);
+new OtherParameterStack(app, `${stackPrefix}-param-test-2`);
 // Not included in wildcard
 new IamStack(app, `${stackPrefix}-iam-test`);
 const providing = new ProvidingStack(app, `${stackPrefix}-order-providing`);
@@ -197,5 +231,6 @@ if (process.env.ENABLE_VPC_TESTING) { // Gating so we don't do context fetching 
 new ConditionalResourceStack(app, `${stackPrefix}-conditional-resource`)
 
 new StackWithNestedStack(app, `${stackPrefix}-with-nested-stack`);
+new StackWithNestedStackUsingParameters(app, `${stackPrefix}-with-nested-stack-using-parameters`);
 
 app.synth();
