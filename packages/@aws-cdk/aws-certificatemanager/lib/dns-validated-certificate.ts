@@ -34,7 +34,7 @@ export interface DnsValidatedCertificateProps extends CertificateProps {
      * internal accounts now. To make DnsValidatedCertificate work for internal accounts
      * now, a special endpoint needs to be provided.
      *
-     * @default null
+     * @default - The AWS SDK will determine the Route53 endpoint to use based on region
      */
     readonly route53Endpoint?: string;
 
