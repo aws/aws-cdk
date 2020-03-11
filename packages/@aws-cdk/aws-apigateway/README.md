@@ -153,6 +153,36 @@ plan.addApiStage({
 });
 ```
 
+In scenarios where you need to create a single api key and configure rate limiting for it, you can use `RateLimitedApiKey`.
+This construct lets you specify rate limiting properties which should be applied only to the api key being created.
+The API key created has the specified rate limits, such as quota and throttles, applied.
+
+The following example shows how to use a rate limited api key :
+```ts
+const hello = new lambda.Function(this, 'hello', {
+  runtime: lambda.Runtime.NODEJS_10_X,
+  handler: 'hello.handler',
+  code: lambda.Code.fromAsset('lambda')
+});
+
+const api = new apigateway.RestApi(this, 'hello-api', { });
+const integration = new apigateway.LambdaIntegration(hello);
+
+const v1 = api.root.addResource('v1');
+const echo = v1.addResource('echo');
+const echoMethod = echo.addMethod('GET', integration, { apiKeyRequired: true });
+
+const key = new apigateway.RateLimitedApiKey(this, 'rate-limited-api-key', {
+  customerId: 'hello-customer',
+  resources: [api],
+  quota: {
+    limit: 10000,
+    period: apigateway.Period.MONTH
+  }
+});
+
+```
+
 ### Working with models
 
 When you work with Lambda integrations that are not Proxy integrations, you
@@ -343,7 +373,7 @@ that can be used for controlling access to your REST APIs.
 
 #### IAM-based authorizer
 
-The following CDK code provides 'excecute-api' permission to an IAM user, via IAM policies, for the 'GET' method on the `books` resource:
+The following CDK code provides 'execute-api' permission to an IAM user, via IAM policies, for the 'GET' method on the `books` resource:
 
 ```ts
 const getBooks = books.addMethod('GET', new apigateway.HttpIntegration('http://amazon.com'), {
