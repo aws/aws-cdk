@@ -86,7 +86,7 @@
     "source-map-support": "^0.5.16",
     "table": "^5.4.6",
     "uuid": "^7.0.2",
-    "yaml": "^1.8.1",
+    "yaml": "^1.8.2",
     "yargs": "^15.3.0"
   },
   "repository": {
