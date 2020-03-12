@@ -64,11 +64,11 @@ export class Duration {
     if (!days && !hours && !minutes && !seconds) {
       throw new Error(`Not a valid ISO duration: ${duration}`);
     }
-    return Duration.seconds(
-      _toInt(seconds)
-      + (_toInt(minutes) * TimeUnit.Minutes.inSeconds)
-      + (_toInt(hours) * TimeUnit.Hours.inSeconds)
-      + (_toInt(days) * TimeUnit.Days.inSeconds)
+    return Duration.millis(
+      _toInt(seconds) * TimeUnit.Seconds.inMillis
+      + (_toInt(minutes) * TimeUnit.Minutes.inMillis)
+      + (_toInt(hours) * TimeUnit.Hours.inMillis)
+      + (_toInt(days) * TimeUnit.Days.inMillis)
     );
 
     function _toInt(str: string): number {
@@ -144,6 +144,36 @@ export class Duration {
   }
 
   /**
+   * Turn this duration into a human-readable string
+   */
+  public toHumanString(): string {
+    if (this.amount === 0) { return fmtUnit(0, this.unit); }
+    if (Token.isUnresolved(this.amount)) { return `<token> ${this.unit.label}`; }
+
+    let millis = convert(this.amount, this.unit, TimeUnit.Milliseconds, { integral: false });
+    const parts = new Array<string>();
+
+    for (const unit of [TimeUnit.Days, TimeUnit.Hours, TimeUnit.Hours, TimeUnit.Minutes, TimeUnit.Seconds, TimeUnit.Milliseconds]) {
+      const wholeCount = Math.floor(convert(millis, TimeUnit.Milliseconds, unit, { integral: false }));
+      if (wholeCount > 0) {
+        parts.push(fmtUnit(wholeCount, unit));
+        millis -= wholeCount * unit.inMillis;
+      }
+    }
+
+    // 2 significant parts, that's totally enough for humans
+    return parts.slice(0, 2).join(' ');
+
+    function fmtUnit(amount: number, unit: TimeUnit) {
+      if (amount === 1) {
+        // All of the labels end in 's'
+        return `${amount} ${unit.label.substring(0, unit.label.length - 1)}`;
+      }
+      return `${amount} ${unit.label}`;
+    }
+  }
+
+  /**
    * Returns a string representation of this `Duration` that is also a Token that cannot be successfully resolved. This
    * protects users against inadvertently stringifying a `Duration` object, when they should have called one of the
    * `to*` methods instead.
@@ -183,13 +213,16 @@ export interface TimeConversionOptions {
 }
 
 class TimeUnit {
-  public static readonly Milliseconds = new TimeUnit('millis', 0.001);
-  public static readonly Seconds = new TimeUnit('seconds', 1);
-  public static readonly Minutes = new TimeUnit('minutes', 60);
-  public static readonly Hours = new TimeUnit('hours', 3_600);
-  public static readonly Days = new TimeUnit('days', 86_400);
+  public static readonly Milliseconds = new TimeUnit('millis', 1);
+  public static readonly Seconds = new TimeUnit('seconds', 1_000);
+  public static readonly Minutes = new TimeUnit('minutes', 60_000);
+  public static readonly Hours = new TimeUnit('hours', 3_600_000);
+  public static readonly Days = new TimeUnit('days', 86_400_000);
 
-  private constructor(public readonly label: string, public readonly inSeconds: number) {
+  private constructor(public readonly label: string, public readonly inMillis: number) {
+    // MAX_SAFE_INTEGER is 2^53, so by representing our duration in millis (the lowest
+    // common unit) the highest duration we can represent is
+    // 2^53 / 86*10^6 ~= 104 * 10^6 days (about 100 million days).
   }
 
   public toString() {
@@ -198,8 +231,8 @@ class TimeUnit {
 }
 
 function convert(amount: number, fromUnit: TimeUnit, toUnit: TimeUnit, { integral = true }: TimeConversionOptions) {
-  if (fromUnit.inSeconds === toUnit.inSeconds) { return amount; }
-  const multiplier = fromUnit.inSeconds / toUnit.inSeconds;
+  if (fromUnit.inMillis === toUnit.inMillis) { return amount; }
+  const multiplier = fromUnit.inMillis / toUnit.inMillis;
 
   if (Token.isUnresolved(amount)) {
     throw new Error(`Unable to perform time unit conversion on un-resolved token ${amount}.`);
