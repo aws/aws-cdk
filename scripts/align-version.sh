@@ -9,17 +9,12 @@ scriptdir=$(cd $(dirname $0) && pwd)
 # go to repo root
 cd ${scriptdir}/..
 
-# extract version from the root package.json which is the source of truth
-version="$(node -p "require('./package.json').version")"
-
-# align all package.json files
-npx lerna version ${version} --yes --exact --force-publish=* --no-git-tag-version --no-push
-
-# align all peer-deps based on deps
-find . -name package.json | grep -v node_modules | xargs node ${scriptdir}/sync-peer-deps.js
+files="$(find . -name package.json | grep -v node_modules | xargs)"
+${scriptdir}/align-version.js ${files}
 
 # validation
-if find . -name package.json | grep -v node_modules | xargs grep "999.0.0"; then
-  echo "ERROR: unexpected version marker 999.0.0 in a package.json file"
+marker=$(node -p "require('./scripts/get-version-marker')")
+if find . -name package.json | grep -v node_modules | xargs grep "[^0-9]${marker}"; then
+  echo "ERROR: unexpected version marker ${marker} in a package.json file"
   exit 1
 fi

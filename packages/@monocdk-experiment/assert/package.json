@@ -1,0 +1,72 @@
+{
+  "name": "@monocdk-experiment/assert",
+  "version": "0.0.0",
+  "description": "An assertion library for use with CDK Apps",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "build": "./clone.sh && cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
+    "pkglint": "pkglint -f",
+    "package": "cdk-package",
+    "build+test+package": "npm run build+test && npm run package",
+    "build+test": "npm run build && npm test"
+  },
+  "cdk-build": {
+    "eslint": {
+      "disable": true
+    },
+    "tslint": {
+      "disable": true
+    },
+    "pkglint": {
+      "disable": true
+    }
+  },
+  "jest": {
+    "coverageThreshold": {
+      "global": {
+        "statements": 75,
+        "branches": 65
+      }
+    }
+  },
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@types/jest": "^25.1.4",
+    "cdk-build-tools": "0.0.0",
+    "jest": "^24.9.0",
+    "pkglint": "0.0.0",
+    "ts-jest": "^25.2.0",
+    "@monocdk-experiment/rewrite-imports": "0.0.0",
+    "monocdk-experiment": "0.0.0"
+  },
+  "dependencies": {
+    "@aws-cdk/cloudformation-diff": "0.0.0"
+  },
+  "peerDependencies": {
+    "jest": "^24.9.0",
+    "monocdk-experiment": "^0.0.0"
+  },
+  "repository": {
+    "url": "https://github.com/aws/aws-cdk.git",
+    "type": "git",
+    "directory": "packages/@monocdk-experiment/assert"
+  },
+  "keywords": [
+    "aws",
+    "cdk"
+  ],
+  "homepage": "https://github.com/aws/aws-cdk",
+  "engines": {
+    "node": ">= 10.3.0"
+  },
+  "stability": "experimental"
+}
