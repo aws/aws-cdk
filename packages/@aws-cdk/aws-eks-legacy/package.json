@@ -106,6 +106,7 @@
       "module-name:@aws-cdk/aws-eks-legacy",
       "props-no-arn-refs:@aws-cdk/aws-eks-legacy.ClusterProps.outputMastersRoleArn",
       "resource-attribute:@aws-cdk/aws-eks-legacy.Cluster.clusterSecurityGroupId",
+      "resource-attribute:@aws-cdk/aws-eks-legacy.Cluster.clusterEncryptionConfigKeyArn",
       "props-default-doc:@aws-cdk/aws-eks-legacy.AutoScalingGroupOptions.bootstrapOptions",
       "docs-public-apis:@aws-cdk/aws-eks-legacy.AwsAuthProps",
       "docs-public-apis:@aws-cdk/aws-eks-legacy.BootstrapOptions",
