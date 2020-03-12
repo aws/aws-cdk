@@ -2606,7 +2606,7 @@ aws-sdk-mock@^5.0.0, aws-sdk-mock@^5.1.0:
     sinon "^9.0.1"
     traverse "^0.6.6"
 
-aws-sdk@^2.637.0, aws-sdk@^2.638.0:
+aws-sdk@^2.596.0, aws-sdk@^2.637.0, aws-sdk@^2.638.0:
   version "2.638.0"
   resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.638.0.tgz#43df5a956696177c577b841ea21b4007a81dbdaa"
   integrity sha512-DOSwedH2YkPVs3c2AQezK6FHuGRIDffgULGvmpY9ZmZ/x45Sw+p7WHCYPgWfw/Z1fJWzMjaIpu531xG7pyJV4A==
@@ -3540,10 +3540,15 @@ constants-browserify@^1.0.0:
   resolved "https://registry.yarnpkg.com/constants-browserify/-/constants-browserify-1.0.0.tgz#c20b96d8c617748aaf1c16021760cd27fcb8cb75"
   integrity sha1-wguW2MYXdIqvHBYCF2DNJ/y4y3U=
 
-constructs@1.1.0, constructs@^1.1.0:
+constructs@1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/constructs/-/constructs-1.1.0.tgz#7f4c6cdeba9a53c6e708acf8a777244a3c627b02"
   integrity sha512-7zB9YuUJhTrnrpG6AC006wPrLKAG4mwQzb9t6f/f0+wlhfyMBoojrTgumlp6Y7EgykgSPt2ljnW4lh+PJa5ulA==
+
+constructs@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.npmjs.org/constructs/-/constructs-1.1.1.tgz#1f6f287c07e286f485dc6cad53e2b7da65054d1e"
+  integrity sha512-VeiOqn8fB0rU5zybEdBsJSpqInvxt7TY+2AGopTiZxPLzWVBQ2Qn+o5SfVo7+HjQY4Ih6c4F0mDRX2wVFfnH6A==
 
 contains-path@^0.1.0:
   version "0.1.0"
