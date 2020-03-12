@@ -50,8 +50,9 @@ export class Duration {
   }
 
   /**
-   * Parse a period formatted according to the ISO 8601 standard (see https://www.iso.org/fr/standard/70907.html).
+   * Parse a period formatted according to the ISO 8601 standard
    *
+   * @see https://www.iso.org/fr/standard/70907.html
    * @param duration an ISO-formtted duration to be parsed.
    * @returns the parsed `Duration`.
    */
@@ -125,9 +126,12 @@ export class Duration {
   }
 
   /**
-   * @returns an ISO 8601 representation of this period (see https://www.iso.org/fr/standard/70907.html).
+   * Return an ISO 8601 representation of this period
+   *
+   * @returns a string starting with 'PT' describing the period
+   * @see https://www.iso.org/fr/standard/70907.html
    */
-  public toISOString(): string {
+  public toIsoString(): string {
     if (this.amount === 0) { return 'PT0S'; }
     switch (this.unit) {
       case TimeUnit.Seconds:
@@ -141,6 +145,17 @@ export class Duration {
       default:
         throw new Error(`Unexpected time unit: ${this.unit}`);
     }
+  }
+
+  /**
+   * Return an ISO 8601 representation of this period
+   *
+   * @returns a string starting with 'PT' describing the period
+   * @see https://www.iso.org/fr/standard/70907.html
+   * @deprecated Use `toIsoString()` instead.
+   */
+  public toISOString(): string {
+    return this.toIsoString();
   }
 
   /**
