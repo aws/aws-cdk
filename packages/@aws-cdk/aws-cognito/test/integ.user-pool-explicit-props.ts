@@ -1,5 +1,5 @@
-import { App, Stack } from '@aws-cdk/core';
-import { UserPool } from '../lib';
+import { App, Duration, Stack } from '@aws-cdk/core';
+import { MfaEnforcement, UserPool } from '../lib';
 
 const app = new App();
 const stack = new Stack(app, 'integ-user-pool');
@@ -24,5 +24,22 @@ new UserPool(stack, 'myuserpool', {
   autoVerify: {
     email: true,
     phone: true,
+  },
+  mfaEnforcement: MfaEnforcement.REQUIRED,
+  mfaTypes: {
+    sms: true,
+    oneTimePassword: true,
+  },
+  passwordPolicy: {
+    tempPasswordValidity: Duration.days(10),
+    minLength: 12,
+    requireDigits: true,
+    requireLowercase: true,
+    requireUppercase: true,
+    requireSymbols: true,
+  },
+  emailTransmission: {
+    from: 'noreply@myawesomeapp.com',
+    replyTo: 'support@myawesomeapp.com',
   },
 });
