@@ -168,12 +168,17 @@ export class Duration {
     let millis = convert(this.amount, this.unit, TimeUnit.Milliseconds, { integral: false });
     const parts = new Array<string>();
 
-    for (const unit of [TimeUnit.Days, TimeUnit.Hours, TimeUnit.Hours, TimeUnit.Minutes, TimeUnit.Seconds, TimeUnit.Milliseconds]) {
+    for (const unit of [TimeUnit.Days, TimeUnit.Hours, TimeUnit.Hours, TimeUnit.Minutes, TimeUnit.Seconds]) {
       const wholeCount = Math.floor(convert(millis, TimeUnit.Milliseconds, unit, { integral: false }));
       if (wholeCount > 0) {
         parts.push(fmtUnit(wholeCount, unit));
         millis -= wholeCount * unit.inMillis;
       }
+    }
+
+    // Remainder in millis
+    if (millis > 0) {
+      parts.push(fmtUnit(millis, TimeUnit.Milliseconds));
     }
 
     // 2 significant parts, that's totally enough for humans

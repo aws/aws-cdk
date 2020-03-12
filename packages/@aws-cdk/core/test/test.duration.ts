@@ -139,6 +139,8 @@ export = nodeunit.testCase({
     test.equal(Duration.millis(3000).toHumanString(), '3 seconds');
     test.equal(Duration.millis(3666).toHumanString(), '3 seconds 666 millis');
 
+    test.equal(Duration.millis(3.6).toHumanString(), '3.6 millis');
+
     test.done();
   },
 });
