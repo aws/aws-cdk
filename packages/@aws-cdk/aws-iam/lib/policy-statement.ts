@@ -1,12 +1,45 @@
 import * as cdk from '@aws-cdk/core';
 import { AccountPrincipal, AccountRootPrincipal, Anyone, ArnPrincipal, CanonicalUserPrincipal,
-  FederatedPrincipal, IPrincipal, ServicePrincipal, ServicePrincipalOpts } from './principals';
+  FederatedPrincipal, IPrincipal, PrincipalBase, PrincipalPolicyFragment, ServicePrincipal, ServicePrincipalOpts } from './principals';
 import { mergePrincipal } from './util';
+
+const ensureArrayOrUndefined = (field: any) => {
+  if (field === undefined) {
+    return undefined;
+  }
+  if (typeof (field) !== "string" && !Array.isArray(field)) {
+    throw new Error("Fields must be either a string or an array of strings");
+  }
+  if (Array.isArray(field) && !!field.find((f: any) => typeof (f) !== "string")) {
+    throw new Error("Fields must be either a string or an array of strings");
+  }
+  return Array.isArray(field) ? field : [field];
+};
 
 /**
  * Represents a statement in an IAM policy document.
  */
 export class PolicyStatement {
+
+  /**
+   * Creates a new PolicyStatement based on the object provided.
+   * This will accept an object created from the `.toJSON()` call
+   * @param obj the PolicyStatement in object form.
+   */
+  public static fromJson(obj: any) {
+    return new PolicyStatement({
+      sid: obj.Sid,
+      actions: ensureArrayOrUndefined(obj.Action),
+      resources: ensureArrayOrUndefined(obj.Resource),
+      conditions: obj.Condition,
+      effect: obj.Effect,
+      notActions: ensureArrayOrUndefined(obj.NotAction),
+      notResources: ensureArrayOrUndefined(obj.NotResource),
+      principals: obj.Principal ? [ new JsonPrincipal(obj.Principal) ] : undefined,
+      notPrincipals: obj.NotPrincipal ? [ new JsonPrincipal(obj.NotPrincipal) ] : undefined
+    });
+  }
+
   /**
    * Statement ID for this statement
    */
@@ -29,6 +62,7 @@ export class PolicyStatement {
       }
     }
 
+    this.sid = props.sid;
     this.effect = props.effect || Effect.ALLOW;
 
     this.addActions(...props.actions || []);
@@ -274,6 +308,17 @@ export enum Effect {
  */
 export interface PolicyStatementProps {
   /**
+   * The Sid (statement ID) is an optional identifier that you provide for the
+   * policy statement. You can assign a Sid value to each statement in a
+   * statement array. In services that let you specify an ID element, such as
+   * SQS and SNS, the Sid value is just a sub-ID of the policy document's ID. In
+   * IAM, the Sid value must be unique within a JSON policy.
+   *
+   * @default - no sid
+   */
+  readonly sid?: string;
+
+  /**
    * List of actions to add to the statement
    *
    * @default - no actions
@@ -338,4 +383,22 @@ function noUndef(x: any): any {
     }
   }
   return ret;
+}
+
+class JsonPrincipal extends PrincipalBase {
+  public readonly policyFragment: PrincipalPolicyFragment;
+
+  constructor(json: any = { }) {
+    super();
+
+    // special case: if principal is a string, turn it into an "AWS" principal
+    if (typeof(json) === 'string') {
+      json = { AWS: json };
+    }
+
+    this.policyFragment = {
+      principalJson: json,
+      conditions: []
+    };
+  }
 }

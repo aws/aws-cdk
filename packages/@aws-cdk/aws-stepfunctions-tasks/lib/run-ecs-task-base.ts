@@ -28,6 +28,8 @@ export interface CommonEcsRunTaskProps {
    *
    * Key is the name of the container to override, value is the
    * values you want to override.
+   *
+   * @default - No overrides
    */
   readonly containerOverrides?: ContainerOverride[];
 
@@ -47,6 +49,8 @@ export interface CommonEcsRunTaskProps {
 export interface EcsRunTaskBaseProps extends CommonEcsRunTaskProps {
   /**
    * Additional parameters to pass to the base task
+   *
+   * @default - No additional parameters passed
    */
   readonly parameters?: {[key: string]: any};
 }
