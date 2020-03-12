@@ -83,7 +83,7 @@
     "@aws-cdk/aws-kms": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^1.1.1"
+    "constructs": "^1.1.2"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -92,7 +92,7 @@
     "@aws-cdk/aws-kms": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^1.1.1"
+    "constructs": "^1.1.2"
   },
   "engines": {
     "node": ">= 10.3.0"

@@ -47,7 +47,7 @@
     "ts-jest": "^25.2.0",
     "@monocdk-experiment/rewrite-imports": "0.0.0",
     "monocdk-experiment": "0.0.0",
-    "constructs": "^1.1.1"
+    "constructs": "^1.1.2"
   },
   "dependencies": {
     "@aws-cdk/cloudformation-diff": "0.0.0"
