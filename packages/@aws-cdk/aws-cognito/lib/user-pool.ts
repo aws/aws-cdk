@@ -619,10 +619,20 @@ export class UserPool extends Resource implements IUserPool {
     if (props.customAttributes) {
       const customAttrs = Object.keys(props.customAttributes).map((attrName) => {
         const attrConfig = props.customAttributes![attrName].bind();
+        const numberConstraints: CfnUserPool.NumberAttributeConstraintsProperty = {
+          minValue: attrConfig.numberConstraints?.min?.toString(),
+          maxValue: attrConfig.numberConstraints?.max?.toString(),
+        };
+        const stringConstraints: CfnUserPool.StringAttributeConstraintsProperty = {
+          minLength: attrConfig.stringConstraints?.minLen?.toString(),
+          maxLength: attrConfig.stringConstraints?.maxLen?.toString(),
+        };
+
         return {
           name: attrName,
           attributeDataType: attrConfig.dataType,
-          ...attrConfig.constraints,
+          numberAttributeConstraints: (attrConfig.numberConstraints) ? numberConstraints : undefined,
+          stringAttributeConstraints: (attrConfig.stringConstraints) ? stringConstraints : undefined,
         };
       });
       schema.push(...customAttrs);

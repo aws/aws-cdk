@@ -128,19 +128,22 @@ export interface CustomAttributeConfig {
   // tslint:enable:max-line-length
 
   /**
-   * The constraints attached to this custom attribute.
-   * The structure here would be the fragment of `CfnUserPool.SchemaAttributeProperty` associated with this data type.
-   * For example, in the case of the 'String' data type, this would be `{ "stringAttributeConstraints": { "minLength": "..", "maxLength": ".." } }`.
-   * @see https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_SchemaAttributeType.html
-   * @default - no constraints
+   * The constraints for a custom attribute of 'String' data type.
+   * @default - None.
    */
-  readonly constraints?: { [key: string]: any };
+  readonly stringConstraints?: StringAttributeConstraints;
+
+  /**
+   * The constraints for a custom attribute of the 'Number' data type.
+   * @default - None.
+   */
+  readonly numberConstraints?: NumberAttributeConstraints;
 }
 
 /**
- * Props for constructing a StringAttr
+ * Constraints that can be applied to a custom attribute of string type.
  */
-export interface StringAttributeProps {
+export interface StringAttributeConstraints {
   /**
    * Minimum length of this attribute.
    * @default 0
@@ -152,6 +155,12 @@ export interface StringAttributeProps {
    * @default 2048
    */
   readonly maxLen?: number;
+}
+
+/**
+ * Props for constructing a StringAttr
+ */
+export interface StringAttributeProps extends StringAttributeConstraints {
 }
 
 /**
@@ -173,24 +182,25 @@ export class StringAttribute implements ICustomAttribute {
   }
 
   public bind(): CustomAttributeConfig {
-    const constraints = {
-      stringAttributeConstraints: {
-        minLength: this.minLen?.toString(),
-        maxLength: this.maxLen?.toString(),
-      }
-    };
+    let stringConstraints: StringAttributeConstraints | undefined;
+    if (this.minLen || this.maxLen) {
+      stringConstraints = {
+        minLen: this.minLen,
+        maxLen: this.maxLen,
+      };
+    }
 
     return {
       dataType: 'String',
-      constraints: (this.minLen || this.maxLen) ? constraints : undefined,
+      stringConstraints,
     };
   }
 }
 
 /**
- * Props for NumberAttr
+ * Constraints that can be applied to a custom attribute of number type.
  */
-export interface NumberAttributeProps {
+export interface NumberAttributeConstraints {
   /**
    * Minimum value of this attribute.
    * @default - no minimum value
@@ -202,6 +212,12 @@ export interface NumberAttributeProps {
    * @default - no maximum value
    */
   readonly max?: number;
+}
+
+/**
+ * Props for NumberAttr
+ */
+export interface NumberAttributeProps extends NumberAttributeConstraints {
 }
 
 /**
@@ -217,16 +233,17 @@ export class NumberAttribute implements ICustomAttribute {
   }
 
   public bind(): CustomAttributeConfig {
-    const constraints = {
-      numberAttributeConstraints: {
-        minValue: this.min?.toString(),
-        maxValue: this.max?.toString(),
-      }
-    };
+    let numberConstraints: NumberAttributeConstraints | undefined;
+    if (this.min || this.max) {
+      numberConstraints = {
+        min: this.min,
+        max: this.max,
+      };
+    }
 
     return {
       dataType: 'Number',
-      constraints: (this.min || this.max) ? constraints : undefined,
+      numberConstraints,
     };
   }
 }

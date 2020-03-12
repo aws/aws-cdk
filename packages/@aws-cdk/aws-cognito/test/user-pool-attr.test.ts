@@ -12,7 +12,8 @@ describe('User Pool Attributes', () => {
 
       // THEN
       expect(bound.dataType).toEqual('String');
-      expect(bound.constraints).toBeUndefined();
+      expect(bound.stringConstraints).toBeUndefined();
+      expect(bound.numberConstraints).toBeUndefined();
     });
 
     test('specified constraints are recognized', () => {
@@ -23,12 +24,11 @@ describe('User Pool Attributes', () => {
       const bound = attr.bind();
 
       // THEN
-      expect(bound.constraints).toEqual({
-        stringAttributeConstraints: {
-          minLength: '10',
-          maxLength: '60',
-        }
+      expect(bound.stringConstraints).toEqual({
+        minLen: 10,
+        maxLen: 60,
       });
+      expect(bound.numberConstraints).toBeUndefined();
     });
 
     test('throws error when crossing limits', () => {
@@ -49,7 +49,8 @@ describe('User Pool Attributes', () => {
 
       // THEN
       expect(bound.dataType).toEqual('Number');
-      expect(bound.constraints).toBeUndefined();
+      expect(bound.stringConstraints).toBeUndefined();
+      expect(bound.numberConstraints).toBeUndefined();
     });
 
     test('specified constraints are recognized', () => {
@@ -60,12 +61,11 @@ describe('User Pool Attributes', () => {
       const bound = attr.bind();
 
       // THEN
-      expect(bound.constraints).toEqual({
-        numberAttributeConstraints: {
-          minValue: '5',
-          maxValue: '600',
-        }
+      expect(bound.numberConstraints).toEqual({
+        min: 5,
+        max: 600,
       });
+      expect(bound.stringConstraints).toBeUndefined();
     });
   });
 
@@ -79,7 +79,8 @@ describe('User Pool Attributes', () => {
 
       // THEN
       expect(bound.dataType).toEqual('Boolean');
-      expect(bound.constraints).toBeUndefined();
+      expect(bound.stringConstraints).toBeUndefined();
+      expect(bound.numberConstraints).toBeUndefined();
     });
   });
 
@@ -93,7 +94,8 @@ describe('User Pool Attributes', () => {
 
       // THEN
       expect(bound.dataType).toEqual('DateTime');
-      expect(bound.constraints).toBeUndefined();
+      expect(bound.stringConstraints).toBeUndefined();
+      expect(bound.numberConstraints).toBeUndefined();
     });
   });
 });
