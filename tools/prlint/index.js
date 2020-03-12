@@ -61,8 +61,16 @@ function fixContainsTest(issue, files) {
 };
 
 function shouldExemptReadme(issue) {
+    return hasLabel(issue, 'pr-linter/exempt-readme');
+}
+
+function shouldExemptTest(issue) {
+    return hasLabel(issue, 'pr-linter/exempt-test');
+}
+
+function hasLabel(issue, labelName) {
     return issue.labels.some(function (l) {
-        return l.name === 'pr-linter/exempt-readme';
+        return l.name === labelName;
     })
 }
 
@@ -89,8 +97,10 @@ async function mandatoryChanges(number) {
         featureContainsReadme(issue, files);
     }
 
-    featureContainsTest(issue, files);
-    fixContainsTest(issue, files);
+    if (!shouldExemptTest(issue)) {
+        featureContainsTest(issue, files);
+        fixContainsTest(issue, files);
+    }
 
     console.log("✅  Success")
 
