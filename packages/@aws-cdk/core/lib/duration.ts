@@ -10,6 +10,8 @@ import { Token } from "./token";
  */
 export class Duration {
   /**
+   * Create a Duration representing an amount of milliseconds
+   *
    * @param amount the amount of Milliseconds the `Duration` will represent.
    * @returns a new `Duration` representing `amount` ms.
    */
@@ -18,6 +20,8 @@ export class Duration {
   }
 
   /**
+   * Create a Duration representing an amount of seconds
+   *
    * @param amount the amount of Seconds the `Duration` will represent.
    * @returns a new `Duration` representing `amount` Seconds.
    */
@@ -26,6 +30,8 @@ export class Duration {
   }
 
   /**
+   * Create a Duration representing an amount of minutes
+   *
    * @param amount the amount of Minutes the `Duration` will represent.
    * @returns a new `Duration` representing `amount` Minutes.
    */
@@ -34,6 +40,8 @@ export class Duration {
   }
 
   /**
+   * Create a Duration representing an amount of hours
+   *
    * @param amount the amount of Hours the `Duration` will represent.
    * @returns a new `Duration` representing `amount` Hours.
    */
@@ -42,6 +50,8 @@ export class Duration {
   }
 
   /**
+   * Create a Duration representing an amount of days
+   *
    * @param amount the amount of Days the `Duration` will represent.
    * @returns a new `Duration` representing `amount` Days.
    */
@@ -91,6 +101,8 @@ export class Duration {
   }
 
   /**
+   * Return the total number of milliseconds in this Duration
+   *
    * @returns the value of this `Duration` expressed in Milliseconds.
    */
   public toMilliseconds(opts: TimeConversionOptions = {}): number {
@@ -98,6 +110,8 @@ export class Duration {
   }
 
   /**
+   * Return the total number of seconds in this Duration
+   *
    * @returns the value of this `Duration` expressed in Seconds.
    */
   public toSeconds(opts: TimeConversionOptions = {}): number {
@@ -105,6 +119,8 @@ export class Duration {
   }
 
   /**
+   * Return the total number of minutes in this Duration
+   *
    * @returns the value of this `Duration` expressed in Minutes.
    */
   public toMinutes(opts: TimeConversionOptions = {}): number {
@@ -112,6 +128,8 @@ export class Duration {
   }
 
   /**
+   * Return the total number of hours in this Duration
+   *
    * @returns the value of this `Duration` expressed in Hours.
    */
   public toHours(opts: TimeConversionOptions = {}): number {
@@ -119,6 +137,8 @@ export class Duration {
   }
 
   /**
+   * Return the total number of days in this Duration
+   *
    * @returns the value of this `Duration` expressed in Days.
    */
   public toDays(opts: TimeConversionOptions = {}): number {
