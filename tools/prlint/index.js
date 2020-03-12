@@ -3,6 +3,8 @@ const GitHub = require("github-api")
 
 const OWNER = "aws"
 const REPO = "aws-cdk"
+const EXEMPT_README = 'pr-linter/exempt-readme'
+const EXEMPT_TEST = 'pr-linter/exempt-test'
 
 class LinterError extends Error {
     constructor(message) {
@@ -18,7 +20,7 @@ function createGitHubClient() {
     } else {
         console.log("Creating un-authenticated GitHub Client")
     }
-    
+
     return new GitHub({'token': token});
 }
 
@@ -60,6 +62,20 @@ function fixContainsTest(issue, files) {
     };
 };
 
+function shouldExemptReadme(issue) {
+    return hasLabel(issue, EXEMPT_README);
+}
+
+function shouldExemptTest(issue) {
+    return hasLabel(issue, EXEMPT_TEST);
+}
+
+function hasLabel(issue, labelName) {
+    return issue.labels.some(function (l) {
+        return l.name === labelName;
+    })
+}
+
 async function mandatoryChanges(number) {
 
     if (!number) {
@@ -67,10 +83,10 @@ async function mandatoryChanges(number) {
     }
 
     const gh = createGitHubClient();
-    
+
     const issues = gh.getIssues(OWNER, REPO);
     const repo = gh.getRepo(OWNER, REPO);
-    
+
     console.log(`⌛  Fetching PR number ${number}`)
     const issue = (await issues.getIssue(number)).data;
 
@@ -79,12 +95,21 @@ async function mandatoryChanges(number) {
 
     console.log("⌛  Validating...");
 
-    featureContainsReadme(issue, files);
-    featureContainsTest(issue, files);
-    fixContainsTest(issue, files);
+    if (shouldExemptReadme(issue)) {
+        console.log(`Not validating README changes since the PR is labeled with '${EXEMPT_README}'`)
+    } else {
+        featureContainsReadme(issue, files);
+    }
+
+    if (shouldExemptTest(issue)) {
+        console.log(`Not validating test changes since the PR is labeled with '${EXEMPT_TEST}'`)
+    } else {
+        featureContainsTest(issue, files);
+        fixContainsTest(issue, files);
+    }
 
     console.log("✅  Success")
-        
+
 }
 
 // we don't use the 'export' prefix because github actions
