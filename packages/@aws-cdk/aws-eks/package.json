@@ -99,7 +99,9 @@
   "awslint": {
     "exclude": [
       "resource-attribute:@aws-cdk/aws-eks.FargateCluster.clusterSecurityGroupId",
+      "resource-attribute:@aws-cdk/aws-eks.FargateCluster.clusterEncryptionConfigKeyArn",
       "resource-attribute:@aws-cdk/aws-eks.Cluster.clusterSecurityGroupId",
+      "resource-attribute:@aws-cdk/aws-eks.Cluster.clusterEncryptionConfigKeyArn",
       "props-no-arn-refs:@aws-cdk/aws-eks.ClusterProps.outputMastersRoleArn",
       "resource-attribute:@aws-cdk/aws-eks.Cluster.clusterSecurityGroupId"
     ]
