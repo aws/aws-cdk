@@ -1294,16 +1294,12 @@ export class Bucket extends BucketBase {
   }
 
   private parseServerAccessLogs(props: BucketProps): CfnBucket.LoggingConfigurationProperty | undefined {
-    if (props.serverAccessLogsPrefix && !props.serverAccessLogsBucket) {
-      throw new Error('"serverAccessLogsBucket" is required if "serverAccessLogsPrefix" is set');
-    }
-
-    if (!props.serverAccessLogsBucket) {
+    if (!props.serverAccessLogsBucket && !props.serverAccessLogsPrefix) {
       return undefined;
     }
 
     return {
-      destinationBucketName: props.serverAccessLogsBucket.bucketName,
+      destinationBucketName: props.serverAccessLogsBucket?.bucketName,
       logFilePrefix: props.serverAccessLogsPrefix,
     };
   }
