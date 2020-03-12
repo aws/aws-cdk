@@ -7,7 +7,7 @@ import { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { IParameterGroup } from './parameter-group';
-import { BackupProps, DatabaseClusterEngine, DatabaseClusterRole, InstanceProps, Login, RotationMultiUserOptions } from './props';
+import { BackupProps, DatabaseClusterEngine, InstanceProps, Login, RotationMultiUserOptions } from './props';
 import { CfnDBCluster, CfnDBInstance, CfnDBSubnetGroup } from './rds.generated';
 
 /**
@@ -143,11 +143,11 @@ export interface DatabaseClusterProps {
   readonly monitoringRole?: IRole;
 
   /**
-   * Roles that will be associated with this DB cluster to enable features such as S3 import and export for Aurora.
+   * Role that will be associated with this DB cluster to enable S3 integration
    *
-   * @default - No roles are associated with this DB cluster.
+   * @default - No role is associated with this DB cluster
    */
-  readonly associatedRoles?: DatabaseClusterRole[];
+  readonly s3ImportRole?: IRole;
 }
 
 /**
@@ -324,15 +324,9 @@ export class DatabaseCluster extends DatabaseClusterBase {
       vpcSecurityGroupIds: [this.securityGroupId],
       port: props.port,
       dbClusterParameterGroupName: props.parameterGroup && props.parameterGroup.parameterGroupName,
-      associatedRoles: props.associatedRoles ? props.associatedRoles.map(associatedRole => {
-        if (!associatedRole.role) {
-          throw new Error('Property role must be defined on associated roles.');
-        }
-        return {
-          featureName: associatedRole.featureName,
-          roleArn: associatedRole.role.roleArn
-        };
-      }) : undefined,
+      associatedRoles: props.s3ImportRole
+        ? [{ roleArn: props.s3ImportRole.roleArn }]
+        : undefined,
       // Admin
       masterUsername: secret ? secret.secretValueFromJson('username').toString() : props.masterUser.username,
       masterUserPassword: secret

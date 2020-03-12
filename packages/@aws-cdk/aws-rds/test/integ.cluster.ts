@@ -37,11 +37,7 @@ const cluster = new DatabaseCluster(stack, 'Database', {
   },
   parameterGroup: params,
   kmsKey,
-  associatedRoles: [
-    {
-      role: associatedRole
-    }
-  ]
+  s3ImportRole: associatedRole
 });
 
 cluster.connections.allowDefaultPortFromAnyIpv4('Open to the world');

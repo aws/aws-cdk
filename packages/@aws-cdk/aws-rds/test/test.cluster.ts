@@ -537,11 +537,7 @@ export = {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         vpc
       },
-      associatedRoles: [
-        {
-          role: associatedRole
-        }
-      ]
+      s3ImportRole: associatedRole
     });
 
     // THEN
