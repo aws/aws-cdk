@@ -1,5 +1,5 @@
 import * as nodeunit from 'nodeunit';
-import { Duration, Stack, Token } from '../lib';
+import { Duration, Lazy, Stack, Token } from '../lib';
 
 export = nodeunit.testCase({
   'negative amount'(test: nodeunit.Test) {
@@ -93,6 +93,22 @@ export = nodeunit.testCase({
     test.done();
   },
 
+  'toIsoString'(test: nodeunit.Test) {
+    test.equal(Duration.seconds(0).toIsoString(), 'PT0S');
+    test.equal(Duration.minutes(0).toIsoString(), 'PT0S');
+    test.equal(Duration.hours(0).toIsoString(), 'PT0S');
+    test.equal(Duration.days(0).toIsoString(), 'PT0S');
+
+    test.equal(Duration.seconds(5).toIsoString(), 'PT5S');
+    test.equal(Duration.minutes(5).toIsoString(), 'PT5M');
+    test.equal(Duration.hours(5).toIsoString(), 'PT5H');
+    test.equal(Duration.days(5).toIsoString(), 'PT5D');
+
+    test.equal(Duration.seconds(1 + 60 * (1 + 60 * (1 + 24))).toIsoString(), 'PT1D1H1M1S');
+
+    test.done();
+  },
+
   'parse'(test: nodeunit.Test) {
     test.equal(Duration.parse('PT0S').toSeconds(), 0);
     test.equal(Duration.parse('PT0M').toSeconds(), 0);
@@ -107,7 +123,26 @@ export = nodeunit.testCase({
     test.equal(Duration.parse('PT1D1H1M1S').toSeconds(), 1 + 60 * (1 + 60 * (1 + 24)));
 
     test.done();
-  }
+  },
+
+  'to human string'(test: nodeunit.Test) {
+    test.equal(Duration.minutes(0).toHumanString(), '0 minutes');
+    test.equal(Duration.minutes(Lazy.numberValue({ produce: () => 5 })).toHumanString(), '<token> minutes');
+
+    test.equal(Duration.minutes(10).toHumanString(), '10 minutes');
+    test.equal(Duration.minutes(1).toHumanString(), '1 minute');
+
+    test.equal(Duration.minutes(62).toHumanString(), '1 hour 2 minutes');
+
+    test.equal(Duration.seconds(3666).toHumanString(), '1 hour 1 minute');
+
+    test.equal(Duration.millis(3000).toHumanString(), '3 seconds');
+    test.equal(Duration.millis(3666).toHumanString(), '3 seconds 666 millis');
+
+    test.equal(Duration.millis(3.6).toHumanString(), '3.6 millis');
+
+    test.done();
+  },
 });
 
 function floatEqual(test: nodeunit.Test, actual: number, expected: number) {

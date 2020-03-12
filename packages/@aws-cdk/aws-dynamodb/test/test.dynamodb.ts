@@ -1,7 +1,7 @@
 import { expect, haveResource, ResourcePart, SynthUtils } from '@aws-cdk/assert';
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as iam from '@aws-cdk/aws-iam';
-import { App, CfnDeletionPolicy, ConstructNode, RemovalPolicy, Stack, Tag } from '@aws-cdk/core';
+import { App, CfnDeletionPolicy, ConstructNode, Duration, RemovalPolicy, Stack, Tag } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import {
   Attribute,
@@ -1142,7 +1142,7 @@ export = {
 
       // THEN
       test.deepEqual(stack.resolve(table.metricConsumedReadCapacityUnits()), {
-        period: { amount: 5, unit: { label: 'minutes', inSeconds: 60 } },
+        period: Duration.minutes(5),
         dimensions: { TableName: { Ref: 'TableCD117FA1' } },
         namespace: 'AWS/DynamoDB',
         metricName: 'ConsumedReadCapacityUnits',
@@ -1161,7 +1161,7 @@ export = {
 
       // THEN
       test.deepEqual(stack.resolve(table.metricConsumedWriteCapacityUnits()), {
-        period: { amount: 5, unit: { label: 'minutes', inSeconds: 60 } },
+        period: Duration.minutes(5),
         dimensions: { TableName: { Ref: 'TableCD117FA1' } },
         namespace: 'AWS/DynamoDB',
         metricName: 'ConsumedWriteCapacityUnits',
@@ -1180,7 +1180,7 @@ export = {
 
       // THEN
       test.deepEqual(stack.resolve(table.metricSystemErrors()), {
-        period: { amount: 5, unit: { label: 'minutes', inSeconds: 60 } },
+        period: Duration.minutes(5),
         dimensions: { TableName: { Ref: 'TableCD117FA1' } },
         namespace: 'AWS/DynamoDB',
         metricName: 'SystemErrors',
@@ -1199,7 +1199,7 @@ export = {
 
       // THEN
       test.deepEqual(stack.resolve(table.metricUserErrors()), {
-        period: { amount: 5, unit: { label: 'minutes', inSeconds: 60 } },
+        period: Duration.minutes(5),
         dimensions: { TableName: { Ref: 'TableCD117FA1' } },
         namespace: 'AWS/DynamoDB',
         metricName: 'UserErrors',
@@ -1218,7 +1218,7 @@ export = {
 
       // THEN
       test.deepEqual(stack.resolve(table.metricConditionalCheckFailedRequests()), {
-        period: { amount: 5, unit: { label: 'minutes', inSeconds: 60 } },
+        period: Duration.minutes(5),
         dimensions: { TableName: { Ref: 'TableCD117FA1' } },
         namespace: 'AWS/DynamoDB',
         metricName: 'ConditionalCheckFailedRequests',
@@ -1237,7 +1237,7 @@ export = {
 
       // THEN
       test.deepEqual(stack.resolve(table.metricSuccessfulRequestLatency()), {
-        period: { amount: 5, unit: { label: 'minutes', inSeconds: 60 } },
+        period: Duration.minutes(5),
         dimensions: { TableName: { Ref: 'TableCD117FA1' } },
         namespace: 'AWS/DynamoDB',
         metricName: 'SuccessfulRequestLatency',
