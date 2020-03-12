@@ -3,6 +3,8 @@ const GitHub = require("github-api")
 
 const OWNER = "aws"
 const REPO = "aws-cdk"
+const EXEMPT_README = 'pr-linter/exempt-readme'
+const EXEMPT_TEST = 'pr-linter/exempt-test'
 
 class LinterError extends Error {
     constructor(message) {
@@ -61,11 +63,11 @@ function fixContainsTest(issue, files) {
 };
 
 function shouldExemptReadme(issue) {
-    return hasLabel(issue, 'pr-linter/exempt-readme');
+    return hasLabel(issue, EXEMPT_README);
 }
 
 function shouldExemptTest(issue) {
-    return hasLabel(issue, 'pr-linter/exempt-test');
+    return hasLabel(issue, EXEMPT_TEST);
 }
 
 function hasLabel(issue, labelName) {
@@ -93,11 +95,15 @@ async function mandatoryChanges(number) {
 
     console.log("⌛  Validating...");
 
-    if (!shouldExemptReadme(issue)) {
+    if (shouldExemptReadme(issue)) {
+        console.log(`Not validating README changes since the PR is labeled with '${EXEMPT_README}'`)
+    } else {
         featureContainsReadme(issue, files);
     }
 
-    if (!shouldExemptTest(issue)) {
+    if (shouldExemptTest(issue)) {
+        console.log(`Not validating test changes since the PR is labeled with '${EXEMPT_TEST}'`)
+    } else {
         featureContainsTest(issue, files);
         fixContainsTest(issue, files);
     }
