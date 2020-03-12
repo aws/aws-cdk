@@ -43,18 +43,14 @@ By default, the master password will be generated and stored in AWS Secrets Mana
 Your cluster will be empty by default. To add a default database upon construction, specify the
 `defaultDatabaseName` attribute.
 
-### Adding associated roles to a cluster
+### Enabling S3 integration to a cluster
 
-To add associated roles to a clustered database, add IAM role references to the associatedRoles property on the DatabaseCluster construct. Associated roles are used to enable features that access other services, for example S3 integration.
+To enable S3 integration on a clustered database, set an IAM role with the required S3 policies to the s3ImportRole property. Remember to also set this role as the aws_default_s3_role, aurora_load_from_s3_role and/or aurora_select_into_s3_role in the cluster's parameter group.
 
 ```ts
 const cluster = new DatabaseCluster(this, 'Database', {
     ...
-    associatedRoles: [
-        {
-            role: s3AccessRole
-        }
-    ]
+    s3ImportRole: s3AccessRole
 });
 ```
 
