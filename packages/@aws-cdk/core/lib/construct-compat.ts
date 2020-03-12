@@ -70,7 +70,7 @@ export class Construct extends constructs.Construct implements IConstruct {
     });
 
     Object.defineProperty(this, CONSTRUCT_SYMBOL, { value: true });
-    this.node = ConstructNode._unwrap(constructs.ConstructNode.of(this));
+    this.node = ConstructNode._unwrap(constructs.Node.of(this));
 
     const disableTrace = this.node.tryGetContext(cxapi.DISABLE_METADATA_STACK_TRACE);
     if (disableTrace) {
@@ -204,7 +204,7 @@ export class ConstructNode {
    *
    * @internal
    */
-  public static _unwrap(c: constructs.ConstructNode): ConstructNode {
+  public static _unwrap(c: constructs.Node): ConstructNode {
     const x = (c as any)[ORIGINAL_CONSTRUCT_NODE_SYMBOL];
     if (!x) {
       throw new Error(`invalid ConstructNode type`);
@@ -221,7 +221,7 @@ export class ConstructNode {
   public static synth(root: ConstructNode, options: SynthesisOptions = { }): cxapi.CloudAssembly {
     const builder = new cxapi.CloudAssemblyBuilder(options.outdir);
 
-    constructs.ConstructNode.synthesizeNode(root._actualNode, {
+    root._actualNode.synthesize({
       outdir: builder.outdir,
       skipValidation: options.skipValidation,
       sessionContext: {
@@ -237,7 +237,7 @@ export class ConstructNode {
    * @param node The root node
    */
   public static prepare(node: ConstructNode) {
-    return constructs.ConstructNode.prepareNode(node._actualNode);
+    return node._actualNode.prepare();
   }
 
   /**
@@ -247,16 +247,16 @@ export class ConstructNode {
    * @param node The root node
    */
   public static validate(node: ConstructNode): ValidationError[] {
-    return constructs.ConstructNode.validateNode(node._actualNode).map(e => ({ source: e.source as Construct, message: e.message }));
+    return node._actualNode.validate().map(e => ({ source: e.source as Construct, message: e.message }));
   }
 
   /**
    * @internal
    */
-  public readonly _actualNode: constructs.ConstructNode;
+  public readonly _actualNode: constructs.Node;
 
   constructor(host: Construct, scope: IConstruct, id: string) {
-    this._actualNode = new constructs.ConstructNode(host, scope, id);
+    this._actualNode = new constructs.Node(host, scope, id);
 
     // store a back reference on _actualNode so we can our ConstructNode from it
     Object.defineProperty(this._actualNode, ORIGINAL_CONSTRUCT_NODE_SYMBOL, {
