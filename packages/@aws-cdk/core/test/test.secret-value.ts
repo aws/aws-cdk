@@ -48,7 +48,7 @@ export = {
   },
 
   'secretsManager with a non-ARN ID that has colon'(test: Test) {
-    test.throws(() => SecretValue.secretsManager('not:an:arn'), /cannot contain :/);
+    test.throws(() => SecretValue.secretsManager('not:an:arn'), /is not an ARN but contains ":"/);
     test.done();
   },
 
