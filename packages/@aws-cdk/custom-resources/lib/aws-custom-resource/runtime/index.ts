@@ -90,14 +90,14 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     let physicalResourceId: string;
     switch (event.RequestType) {
       case 'Create':
-        physicalResourceId = event.ResourceProperties.Create?.physicalResourceId ??
-                             event.ResourceProperties.Update?.physicalResourceId ??
-                             event.ResourceProperties.Delete?.physicalResourceId ??
+        physicalResourceId = event.ResourceProperties.Create?.physicalResourceId?.id ??
+                             event.ResourceProperties.Update?.physicalResourceId?.id ??
+                             event.ResourceProperties.Delete?.physicalResourceId?.id ??
                              event.LogicalResourceId;
         break;
       case 'Update':
       case 'Delete':
-        physicalResourceId = event.ResourceProperties[event.RequestType]?.physicalResourceId ?? event.PhysicalResourceId;
+        physicalResourceId = event.ResourceProperties[event.RequestType]?.physicalResourceId?.id ?? event.PhysicalResourceId;
         break;
     }
 
@@ -122,13 +122,13 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
           ? filterKeys(flatData, k => k.startsWith(call.outputPath!))
           : flatData;
       } catch (e) {
-        if (!call.catchErrorPattern || !new RegExp(call.catchErrorPattern).test(e.code)) {
+        if (!call.ignoreErrorCodesMatching || !new RegExp(call.ignoreErrorCodesMatching).test(e.code)) {
           throw e;
         }
       }
 
-      if (call.physicalResourceIdPath) {
-        physicalResourceId = flatData[call.physicalResourceIdPath];
+      if (call.physicalResourceId?.responsePath) {
+        physicalResourceId = flatData[call.physicalResourceId.responsePath];
       }
     }
 
