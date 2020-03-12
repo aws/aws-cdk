@@ -18,7 +18,7 @@ function createGitHubClient() {
     } else {
         console.log("Creating un-authenticated GitHub Client")
     }
-    
+
     return new GitHub({'token': token});
 }
 
@@ -60,6 +60,12 @@ function fixContainsTest(issue, files) {
     };
 };
 
+function shouldExemptReadme(issue) {
+    return issue.labels.some(function (l) {
+        return l.name === 'pr-linter/exempt-readme';
+    })
+}
+
 async function mandatoryChanges(number) {
 
     if (!number) {
@@ -67,10 +73,10 @@ async function mandatoryChanges(number) {
     }
 
     const gh = createGitHubClient();
-    
+
     const issues = gh.getIssues(OWNER, REPO);
     const repo = gh.getRepo(OWNER, REPO);
-    
+
     console.log(`⌛  Fetching PR number ${number}`)
     const issue = (await issues.getIssue(number)).data;
 
@@ -79,12 +85,15 @@ async function mandatoryChanges(number) {
 
     console.log("⌛  Validating...");
 
-    featureContainsReadme(issue, files);
+    if (!shouldExemptReadme(issue)) {
+        featureContainsReadme(issue, files);
+    }
+
     featureContainsTest(issue, files);
     fixContainsTest(issue, files);
 
     console.log("✅  Success")
-        
+
 }
 
 // we don't use the 'export' prefix because github actions
