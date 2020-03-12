@@ -4,7 +4,7 @@ import { ResourceHandler } from "./common";
 import * as aws from "aws-sdk";
 import * as https from "https";
 
-export class OpenIDConnectResourceHandler extends ResourceHandler {
+export class OpenIDConnectProviderResourceHandler extends ResourceHandler {
   protected async onCreate() {
     const clusterName = this.event.ResourceProperties.Config.clusterName;
 

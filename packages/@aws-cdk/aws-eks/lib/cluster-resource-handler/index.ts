@@ -7,7 +7,8 @@ import { ClusterResourceHandler } from './cluster';
 import { EksClient } from './common';
 import * as consts from './consts';
 import { FargateProfileResourceHandler } from './fargate';
-import { OpenIDConnectResourceHandler } from './oidc';
+import { OpenIDConnectProviderResourceHandler } from './oidcprovider';
+import { OpenIDConnectRoleResourceHandler } from './oidcrole';
 
 aws.config.logger = console;
 
@@ -26,6 +27,8 @@ const defaultEksClient: EksClient = {
   createOpenIDConnectProvider: req => getIamClient().createOpenIDConnectProvider(req).promise(),
   deleteOpenIDConnectProvider: req => getIamClient().deleteOpenIDConnectProvider(req).promise(),
   getOpenIDConnectProvider: req => getIamClient().getOpenIDConnectProvider(req).promise(),
+  getRole: req => getIamClient().getRole(req).promise(),
+  updateRole: req => getIamClient().updateRole(req).promise(),
   configureAssumeRole: req => {
     console.log(JSON.stringify({ assumeRole: req }, undefined, 2));
     const creds = new aws.ChainableTemporaryCredentials({
@@ -67,7 +70,8 @@ function createResourceHandler(event: AWSLambda.CloudFormationCustomResourceEven
   switch (event.ResourceType) {
     case consts.CLUSTER_RESOURCE_TYPE: return new ClusterResourceHandler(defaultEksClient, event);
     case consts.FARGATE_PROFILE_RESOURCE_TYPE: return new FargateProfileResourceHandler(defaultEksClient, event);
-    case consts.OPENIDCONNECT_PROVIDER_RESOURCE_TYPE: return new OpenIDConnectResourceHandler(defaultEksClient, event);
+    case consts.OPENIDCONNECT_PROVIDER_RESOURCE_TYPE: return new OpenIDConnectProviderResourceHandler(defaultEksClient, event);
+    case consts.OPENIDCONNECT_ROLE_RESOURCE_TYPE: return new OpenIDConnectRoleResourceHandler(defaultEksClient, event);
     default:
       throw new Error(`Unsupported resource type "${event.ResourceType}`);
   }

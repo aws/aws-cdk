@@ -1,6 +1,5 @@
 import * as sdk from 'aws-sdk';
 import { EksClient } from '../lib/cluster-resource-handler/common';
-import { Response } from 'aws-sdk';
 
 /**
  * Request objects will be assigned when a request of the relevant type will be
@@ -19,6 +18,8 @@ export let actualRequest: {
   createOpenIDConnectProvider?: sdk.IAM.CreateOpenIDConnectProviderRequest;
   deleteOpenIDConnectProvider?: sdk.IAM.DeleteOpenIDConnectProviderRequest;
   getOpenIDConnectProvider?: sdk.IAM.GetOpenIDConnectProviderRequest;
+  getRole?: sdk.IAM.GetRoleRequest;
+  updateRole?: sdk.IAM.UpdateRoleRequest;
 } = { };
 
 /**
@@ -128,6 +129,16 @@ export const client: EksClient = {
 
   getOpenIDConnectProvider: async req => {
     actualRequest.getOpenIDConnectProvider = req;
+    return { };
+  },
+  getRole: async req => {
+    actualRequest.getRole = req;
+    return {
+      Role: { Path: '/', RoleName: 'Role', RoleId: 'role', Arn: 'arn:role', CreateDate: new Date() }
+    };
+  },
+  updateRole: async req => {
+    actualRequest.updateRole = req;
     return { };
   },
 };

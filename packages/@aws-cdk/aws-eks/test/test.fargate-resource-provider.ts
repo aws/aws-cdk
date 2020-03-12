@@ -300,6 +300,8 @@ function newEksClientMock() {
     describeFargateProfile: sinon.fake.throws('not implemented'),
     createOpenIDConnectProvider: sinon.fake(),
     deleteOpenIDConnectProvider: sinon.fake(),
-    getOpenIDConnectProvider: sinon.fake()
+    getOpenIDConnectProvider: sinon.fake(),
+    getRole: sinon.fake(),
+    updateRole: sinon.fake()
   };
 }

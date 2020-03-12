@@ -1,27 +1,51 @@
 import { CustomResource } from "@aws-cdk/aws-cloudformation";
 import { FederatedPrincipal, PolicyStatement, Role } from "@aws-cdk/aws-iam";
-import { Construct, Lazy } from "@aws-cdk/core";
+import { Construct } from "@aws-cdk/core";
 import { Cluster } from "./cluster";
 import { OPENIDCONNECT_PROVIDER_RESOURCE_TYPE } from "./cluster-resource-handler/consts";
 import { ClusterResourceProvider } from "./cluster-resource-provider";
 
+/**
+ * Service Account
+ */
 export interface ServiceAccountOptions {
+  /**
+   * The cluster to apply the patch to.
+   */
   readonly name: string;
+  /**
+   * The cluster to apply the patch to.
+   */
   readonly namespace: string;
+  /**
+   * The cluster to apply the patch to.
+   * @default No additional policies are applied
+   */
   readonly policyStatements?: PolicyStatement[];
 }
 
+/**
+ * Service Account
+ */
 export interface ServiceAccountProps extends ServiceAccountOptions {
+  /**
+   * The cluster to apply the patch to.
+   * [disable-awslint:ref-via-interface]
+   */
   readonly cluster: Cluster;
 }
 
+/**
+ * Service Account
+ */
 export class ServiceAccount extends Construct {
-
+  /**
+   * The cluster to apply the patch to.
+   */
   public readonly serviceAccountName: string;
 
   private readonly role: Role;
 
-  private openIDConnectSubject: string | undefined;
   private openIdConnectProviderArn: string | undefined;
 
   constructor(scope: Construct, id: string, props: ServiceAccountProps) {
@@ -31,11 +55,9 @@ export class ServiceAccount extends Construct {
     // Ensure OpenIDConnect association
     this.enableOpenIDConnectIAMProvider(cluster);
     // Create IAM Role
-    const condition: { [id: string]: any; } = {};
-    condition[Lazy.stringValue({ produce: () => this.openIDConnectSubject})] = `system:serviceaccount:${namespace}:${name}`;
     this.role = new Role(this, "Role", {
       assumedBy: new FederatedPrincipal(
-        this.openIdConnectProviderArn!, { StringEquals: condition }, "sts:AssumeRoleWithWebIdentity"
+        this.openIdConnectProviderArn!, { }, "sts:AssumeRoleWithWebIdentity"
       )
     });
     policyStatements?.forEach(this.role.addToPolicy);
@@ -58,6 +80,9 @@ export class ServiceAccount extends Construct {
     this.serviceAccountName = name;
   }
 
+  /**
+   * The cluster to apply the patch to.
+   */
   public addToPolicy(statements: PolicyStatement) {
     this.role.addToPolicy(statements);
   }
@@ -79,7 +104,7 @@ export class ServiceAccount extends Construct {
         }
       });
     }
-    this.openIDConnectSubject = resource.getAtt("openIDConnectSubject").toString();
+    // this.openIDConnectSubject = resource.getAtt("openIDConnectSubject").toString();
     this.openIdConnectProviderArn = resource.ref;
   }
 }
