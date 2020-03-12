@@ -3540,12 +3540,7 @@ constants-browserify@^1.0.0:
   resolved "https://registry.yarnpkg.com/constants-browserify/-/constants-browserify-1.0.0.tgz#c20b96d8c617748aaf1c16021760cd27fcb8cb75"
   integrity sha1-wguW2MYXdIqvHBYCF2DNJ/y4y3U=
 
-constructs@0.0.0:
-  version "0.0.0"
-  resolved "https://registry.yarnpkg.com/constructs/-/constructs-0.0.0.tgz#531d9ee3e9678641637d17811e6fef9def3165b5"
-  integrity sha512-ZhKarI/SGgbBjLTSPjIC2a8X7H7M1Ixx7+PVO3zyg74/XTy8X4CIbqEdJNUxPXwdIZbRzI2ofb632iG0t3eIQA==
-
-constructs@1.1.0:
+constructs@1.1.0, constructs@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/constructs/-/constructs-1.1.0.tgz#7f4c6cdeba9a53c6e708acf8a777244a3c627b02"
   integrity sha512-7zB9YuUJhTrnrpG6AC006wPrLKAG4mwQzb9t6f/f0+wlhfyMBoojrTgumlp6Y7EgykgSPt2ljnW4lh+PJa5ulA==
