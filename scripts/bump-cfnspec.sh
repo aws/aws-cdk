@@ -6,8 +6,22 @@ if [ ! -f "lerna.json" ]; then
   exit 1
 fi
 
-./install.sh
-./build.sh
-cd packages/@aws-cdk/cfnspec
+pwd=$(pwd)
+
+${pwd}/install.sh
+
+# cfn2ts is invoked by cfnspec when a new module is created.
+# However, cfnspec module is a dependency of the cfn2ts module.
+# 'Building up' cfn2ts will build both cfnspec and cfn2ts
+cd tools/cfn2ts
+${pwd}/scripts/buildup
+
+# Run the cfnspec update
+cd ${pwd}/packages/@aws-cdk/cfnspec
 yarn update
-git commit -a -m "feat: cloudformation spec v$(cat cfn.version)" || true # don't fail if there are no updates
+version=$(cat cfn.version)
+
+# Come back to root, add all files to git and commit
+cd ${pwd}
+git add .
+git commit -a -m "feat: cloudformation spec v${version}" || true # don't fail if there are no updates
