@@ -93,6 +93,22 @@ export = nodeunit.testCase({
     test.done();
   },
 
+  'toIsoString'(test: nodeunit.Test) {
+    test.equal(Duration.seconds(0).toIsoString(), 'PT0S');
+    test.equal(Duration.minutes(0).toIsoString(), 'PT0S');
+    test.equal(Duration.hours(0).toIsoString(), 'PT0S');
+    test.equal(Duration.days(0).toIsoString(), 'PT0S');
+
+    test.equal(Duration.seconds(5).toIsoString(), 'PT5S');
+    test.equal(Duration.minutes(5).toIsoString(), 'PT5M');
+    test.equal(Duration.hours(5).toIsoString(), 'PT5H');
+    test.equal(Duration.days(5).toIsoString(), 'PT5D');
+
+    test.equal(Duration.seconds(1 + 60 * (1 + 60 * (1 + 24))).toIsoString(), 'PT1D1H1M1S');
+
+    test.done();
+  },
+
   'parse'(test: nodeunit.Test) {
     test.equal(Duration.parse('PT0S').toSeconds(), 0);
     test.equal(Duration.parse('PT0M').toSeconds(), 0);
