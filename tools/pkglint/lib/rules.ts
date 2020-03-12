@@ -312,9 +312,6 @@ export class JSIIJavaPackageIsRequired extends ValidationRule {
   public validate(pkg: PackageJson): void {
     if (!isJSII(pkg)) { return; }
 
-    // special naming
-    if (pkg.packageName === 'constructs') { return; }
-
     const moduleName = cdkModuleName(pkg.json.name);
 
     expectJSON(this.name, pkg, 'jsii.targets.java.maven.groupId', 'software.amazon.awscdk');
@@ -341,9 +338,6 @@ export class JSIIPythonTarget extends ValidationRule {
 
   public validate(pkg: PackageJson): void {
     if (!isJSII(pkg)) { return; }
-
-    // special naming
-    if (pkg.packageName === 'constructs') { return; }
 
     const moduleName = cdkModuleName(pkg.json.name);
 
@@ -1064,7 +1058,17 @@ export class ConstructsDependency extends ValidationRule {
   public readonly name = 'constructs/dependency';
 
   public validate(pkg: PackageJson) {
-    const REQUIRED_VERSION = '^1.1.0';
+    const REQUIRED_VERSION = '^1.1.1';
+
+    if (pkg.devDependencies?.constructs && pkg.devDependencies?.constructs !== REQUIRED_VERSION) {
+      pkg.report({
+        ruleName: this.name,
+        message: `"constructs" must have a version requirement ${REQUIRED_VERSION}`,
+        fix: () => {
+          pkg.addDevDependency('constructs', REQUIRED_VERSION);
+        }
+      });
+    }
 
     if (pkg.dependencies.constructs && pkg.dependencies.constructs !== REQUIRED_VERSION) {
       pkg.report({
