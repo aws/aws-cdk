@@ -2,17 +2,22 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as aws from 'aws-sdk';
 import * as colors from 'colors/safe';
 import { debug } from '../logging';
-import { SdkProvider } from './aws-auth';
-import { Mode } from './aws-auth/credentials';
+import { ISDK } from './aws-auth';
 import { BUCKET_DOMAIN_NAME_OUTPUT, BUCKET_NAME_OUTPUT  } from './bootstrap-environment';
 import { waitForStack } from './util/cloudformation';
 
+export const DEFAULT_TOOLKIT_STACK_NAME = 'CDKToolkit';
+
 /** @experimental */
 export class ToolkitInfo {
+  public static determineName(overrideName?: string) {
+    return overrideName ?? DEFAULT_TOOLKIT_STACK_NAME;
+  }
+
   /** @experimental */
-  public static async lookup(environment: cxapi.Environment, sdk: SdkProvider, stackName: string): Promise<ToolkitInfo | undefined> {
-    const cfn = (await sdk.forEnvironment(environment.account, environment.region, Mode.ForReading)).cloudFormation();
-    const stack = await waitForStack(cfn, stackName);
+  public static async lookup(environment: cxapi.Environment, sdk: ISDK, stackName: string | undefined): Promise<ToolkitInfo | undefined> {
+    const cfn = sdk.cloudFormation();
+    const stack = await waitForStack(cfn, stackName ?? DEFAULT_TOOLKIT_STACK_NAME);
     if (!stack) {
       debug('The environment %s doesn\'t have the CDK toolkit stack (%s) installed. Use %s to setup your environment for use with the toolkit.',
           environment.name, stackName, colors.blue(`cdk bootstrap "${environment.name}"`));
@@ -35,10 +40,10 @@ export class ToolkitInfo {
     }
   }
 
-  public readonly sdk: SdkProvider;
+  public readonly sdk: ISDK;
 
   constructor(private readonly props: {
-    readonly sdk: SdkProvider,
+    readonly sdk: ISDK,
     bucketName: string,
     bucketEndpoint: string,
     environment: cxapi.Environment
@@ -91,7 +96,7 @@ export class ToolkitInfo {
   }
 
   private async ecr() {
-    return (await this.props.sdk.forEnvironment(this.props.environment.account, this.props.environment.region, Mode.ForWriting)).ecr();
+    return this.sdk.ecr();
   }
 }
 

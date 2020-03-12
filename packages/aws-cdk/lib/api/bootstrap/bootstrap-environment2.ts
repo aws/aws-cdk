@@ -3,9 +3,9 @@ import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as path from 'path';
 import { BootstrapEnvironmentProps, deployStack, DeployStackResult } from '..';
-import { SdkProvider } from '../aws-auth';
+import { Mode, SdkProvider } from '../aws-auth';
 
-export async function bootstrapEnvironment2(environment: cxapi.Environment, sdk: SdkProvider,
+export async function bootstrapEnvironment2(environment: cxapi.Environment, sdkProvider: SdkProvider,
                                             toolkitStackName: string, roleArn: string | undefined,
                                             props: BootstrapEnvironmentProps = {}): Promise<DeployStackResult> {
   if (props.trustedAccounts?.length && !props.cloudFormationExecutionPolicies?.length) {
@@ -28,10 +28,14 @@ export async function bootstrapEnvironment2(environment: cxapi.Environment, sdk:
     },
   });
 
+  const resolvedEnvironment = await sdkProvider.resolveEnvironment(environment.account, environment.region);
+
   const assembly = builder.buildAssembly();
   return await deployStack({
     stack: assembly.getStackByName(toolkitStackName),
-    sdk,
+    resolvedEnvironment,
+    sdk: await sdkProvider.forEnvironment(environment.account, environment.region, Mode.ForWriting),
+    sdkProvider,
     roleArn,
     tags: props.tags,
     execute: props.execute,

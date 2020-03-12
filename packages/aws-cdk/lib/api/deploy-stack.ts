@@ -9,8 +9,7 @@ import { deserializeStructure, toYAML } from '../serialize';
 import { AssetManifestBuilder } from '../util/asset-manifest-builder';
 import { publishAssets } from '../util/asset-publishing';
 import { contentHash } from '../util/content-hash';
-import { SdkProvider } from './aws-auth';
-import { Mode } from './aws-auth/credentials';
+import { ISDK, SdkProvider } from './aws-auth';
 import { ToolkitInfo } from './toolkit-info';
 import { changeSetHasNoChanges, describeStack, stackExists, stackFailedCreating, waitForChangeSet, waitForStack  } from './util/cloudformation';
 import { StackActivityMonitor } from './util/cloudformation/stack-activity-monitor';
@@ -31,18 +30,88 @@ export interface DeployStackResult {
 
 /** @experimental */
 export interface DeployStackOptions {
+  /**
+   * The stack to be deployed
+   */
   stack: cxapi.CloudFormationStackArtifact;
-  sdk: SdkProvider;
+
+  /**
+   * The environment to deploy this stack in
+   *
+   * The environment on the stack artifact may be unresolved, this one
+   * must be resolved.
+   */
+  resolvedEnvironment: cxapi.Environment;
+
+  /**
+   * The SDK to use for deploying the stack
+   *
+   * Should have been initialized with the correct role with which
+   * stack operations should be performed.
+   */
+  sdk: ISDK;
+
+  /**
+   * SDK provider (seeded with default credentials)
+   *
+   * Will be used by asset publishing to assume publishing credentials
+   * (which must start out from current credentials regardless of whether
+   * we've assumed a role to touch the stack or not)
+   */
+  sdkProvider: SdkProvider;
+
+  /**
+   * Information about the bootstrap stack found in the target environment
+   *
+   * @default - Assume there is no bootstrap stack
+   */
   toolkitInfo?: ToolkitInfo;
+
+  /**
+   * Role to pass to CloudFormation to execute the change set
+   *
+   * @default - Role specified on stack, otherwise current
+   */
   roleArn?: string;
+
+  /**
+   * Notification ARNs to pass to CloudFormation to notify when the change set has completed
+   *
+   * @default - No notifications
+   */
   notificationArns?: string[];
+
+  /**
+   * Name to deploy the stack under
+   *
+   * @default - Name from assembly
+   */
   deployName?: string;
+
+  /**
+   * Quiet or verbose deployment
+   *
+   * @default false
+   */
   quiet?: boolean;
+
+  /**
+   * List of asset IDs which shouldn't be built
+   *
+   * @default - Build all assets
+   */
   reuseAssets?: string[];
+
+  /**
+   * Tags to pass to CloudFormation to add to stack
+   *
+   * @default - No tags
+   */
   tags?: Tag[];
 
   /**
    * Whether to execute the changeset or leave it in review.
+   *
    * @default true
    */
   execute?: boolean;
@@ -71,14 +140,9 @@ const LARGE_TEMPLATE_SIZE_KB = 50;
 export async function deployStack(options: DeployStackOptions): Promise<DeployStackResult> {
   const stack = options.stack;
 
-  if (!stack.environment) {
-    throw new Error(`The stack ${stack.displayName} does not have an environment`);
-  }
+  const stackEnv = options.resolvedEnvironment;
 
-  // Translate symbolic/unknown environment references to concrete environment references
-  const stackEnv = await options.sdk.resolveEnvironment(stack.environment.account, stack.environment.region);
-
-  const cfn = (await options.sdk.forEnvironment(stackEnv.account, stackEnv.region, Mode.ForWriting)).cloudFormation();
+  const cfn = options.sdk.cloudFormation();
   const deployName = options.deployName || stack.stackName;
 
   if (!options.force) {
@@ -116,7 +180,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
 
   const executionId = uuid.v4();
 
-  const bodyParameter = await makeBodyParameter(stack, assets, options.toolkitInfo);
+  const bodyParameter = await makeBodyParameter(stack, options.resolvedEnvironment, assets, options.toolkitInfo);
 
   if (await stackFailedCreating(cfn, deployName)) {
     debug(`Found existing stack ${deployName} that had previously failed creation. Deleting it before attempting to re-create it.`);
@@ -129,7 +193,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
 
   const update = await stackExists(cfn, deployName);
 
-  await publishAssets(assets.toManifest(stack.assembly.directory), options.sdk, stackEnv);
+  await publishAssets(assets.toManifest(stack.assembly.directory), options.sdkProvider, stackEnv);
 
   const changeSetName = `CDK-${executionId}`;
   debug(`Attempting to create ChangeSet ${changeSetName} to ${update ? 'update' : 'create'} stack ${deployName}`);
@@ -202,6 +266,7 @@ async function getStackOutputs(cfn: aws.CloudFormation, stackName: string): Prom
  */
 async function makeBodyParameter(
   stack: cxapi.CloudFormationStackArtifact,
+  resolvedEnvironment: cxapi.Environment,
   assetManifest: AssetManifestBuilder,
   toolkitInfo?: ToolkitInfo): Promise<TemplateBodyParameter> {
   const templateJson = toYAML(stack.template);
@@ -215,7 +280,7 @@ async function makeBodyParameter(
       `The template for stack "${stack.displayName}" is ${Math.round(templateJson.length / 1024)}KiB. ` +
       `Templates larger than ${LARGE_TEMPLATE_SIZE_KB}KiB must be uploaded to S3.\n` +
       'Run the following command in order to setup an S3 bucket in this environment, and then re-deploy:\n\n',
-      colors.blue(`\t$ cdk bootstrap ${stack.environment!.name}\n`));
+      colors.blue(`\t$ cdk bootstrap ${resolvedEnvironment.name}\n`));
 
     throw new Error(`Template too large to deploy ("cdk bootstrap" is required)`);
   }
@@ -237,8 +302,12 @@ async function makeBodyParameter(
 
 /** @experimental */
 export interface DestroyStackOptions {
+  /**
+   * The stack to be destroyed
+   */
   stack: cxapi.CloudFormationStackArtifact;
-  sdk: SdkProvider;
+
+  sdk: ISDK;
   roleArn?: string;
   deployName?: string;
   quiet?: boolean;
@@ -246,13 +315,8 @@ export interface DestroyStackOptions {
 
 /** @experimental */
 export async function destroyStack(options: DestroyStackOptions) {
-  if (!options.stack.environment) {
-    throw new Error(`The stack ${options.stack.displayName} does not have an environment`);
-  }
-
   const deployName = options.deployName || options.stack.stackName;
-  const { account, region } = options.stack.environment;
-  const cfn = (await options.sdk.forEnvironment(account, region, Mode.ForWriting)).cloudFormation();
+  const cfn = options.sdk.cloudFormation();
   if (!await stackExists(cfn, deployName)) {
     return;
   }

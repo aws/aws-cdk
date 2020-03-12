@@ -1,6 +1,6 @@
 import { deployStack } from '../../lib';
 import { testStack } from '../util';
-import { MockSDK } from '../util/mock-sdk';
+import { mockResolvedEnvironment, MockSdk, MockSdkProvider } from '../util/mock-sdk';
 
 const FAKE_TEMPLATE = { resource: 'noerrorresource' };
 
@@ -9,9 +9,15 @@ const FAKE_STACK = testStack({
   template: FAKE_TEMPLATE,
 });
 
+let sdk: MockSdk;
+let sdkProvider: MockSdkProvider;
+beforeEach(() => {
+  sdkProvider = new MockSdkProvider();
+  sdk = new MockSdk();
+});
+
 test('do deploy executable change set with 0 changes', async () => {
   // GIVEN
-  const sdk = new MockSDK();
 
   let executed = false;
 
@@ -42,7 +48,9 @@ test('do deploy executable change set with 0 changes', async () => {
   // WHEN
   const ret = await deployStack({
     stack: FAKE_STACK,
+    resolvedEnvironment: mockResolvedEnvironment(),
     sdk,
+    sdkProvider,
   });
 
   // THEN
@@ -52,8 +60,6 @@ test('do deploy executable change set with 0 changes', async () => {
 
 test('correctly passes CFN parameters, ignoring ones with empty values', async () => {
   // GIVEN
-  const sdk = new MockSDK();
-
   let parameters: any[] | undefined;
 
   sdk.stubCloudFormation({
@@ -84,6 +90,8 @@ test('correctly passes CFN parameters, ignoring ones with empty values', async (
   await deployStack({
     stack: FAKE_STACK,
     sdk,
+    sdkProvider,
+    resolvedEnvironment: mockResolvedEnvironment(),
     parameters: {
       A: 'A-value',
       B: undefined,
@@ -98,7 +106,6 @@ test('correctly passes CFN parameters, ignoring ones with empty values', async (
 });
 
 test('deploy is skipped if template did not change', async () => {
-  const sdk = new MockSDK();
   let describeStacksInput: AWS.CloudFormation.DescribeStacksInput;
   let getTemplateInput: AWS.CloudFormation.GetTemplateInput;
   let createChangeSetCalled = false;
@@ -136,7 +143,9 @@ test('deploy is skipped if template did not change', async () => {
 
   await deployStack({
     stack: FAKE_STACK,
-    sdk
+    sdk,
+    sdkProvider,
+    resolvedEnvironment: mockResolvedEnvironment(),
   });
 
   expect(createChangeSetCalled).toBeFalsy();
@@ -146,7 +155,6 @@ test('deploy is skipped if template did not change', async () => {
 });
 
 test('deploy is skipped if template and tags did not change', async () => {
-  const sdk = new MockSDK();
   let describeStacksInput: AWS.CloudFormation.DescribeStacksInput;
   let getTemplateInput: AWS.CloudFormation.GetTemplateInput;
   let createChangeSetCalled = false;
@@ -204,7 +212,9 @@ test('deploy is skipped if template and tags did not change', async () => {
         Value: 'Value2'
       }
     ],
-    sdk
+    sdk,
+    sdkProvider,
+    resolvedEnvironment: mockResolvedEnvironment(),
   });
 
   expect(createChangeSetCalled).toBeFalsy();
@@ -214,7 +224,6 @@ test('deploy is skipped if template and tags did not change', async () => {
 });
 
 test('deploy not skipped if template did not change but tags changed', async () => {
-  const sdk = new MockSDK();
   let describeStacksInput: AWS.CloudFormation.DescribeStacksInput;
   let getTemplateInput: AWS.CloudFormation.GetTemplateInput;
   let createChangeSetCalled = false;
@@ -267,6 +276,8 @@ test('deploy not skipped if template did not change but tags changed', async () 
   await deployStack({
     stack: FAKE_STACK,
     sdk,
+    sdkProvider,
+    resolvedEnvironment: mockResolvedEnvironment(),
     tags: [
       {
         Key: 'Key',
@@ -283,7 +294,6 @@ test('deploy not skipped if template did not change but tags changed', async () 
 });
 
 test('deploy not skipped if template did not change but one tag removed', async () => {
-  const sdk = new MockSDK();
   let describeStacksInput: AWS.CloudFormation.DescribeStacksInput;
   let getTemplateInput: AWS.CloudFormation.GetTemplateInput;
   let createChangeSetCalled = false;
@@ -340,6 +350,8 @@ test('deploy not skipped if template did not change but one tag removed', async 
   await deployStack({
     stack: FAKE_STACK,
     sdk,
+    sdkProvider,
+    resolvedEnvironment: mockResolvedEnvironment(),
     tags: [
       {
         Key: 'Key1',
@@ -356,7 +368,6 @@ test('deploy not skipped if template did not change but one tag removed', async 
 });
 
 test('deploy not skipped if template did not change and --force is applied', async () => {
-  const sdk = new MockSDK();
   let describeStacksInput: AWS.CloudFormation.DescribeStacksInput;
   let getTemplateInput: AWS.CloudFormation.GetTemplateInput;
   let createChangeSetCalled = false;
@@ -403,6 +414,8 @@ test('deploy not skipped if template did not change and --force is applied', asy
   await deployStack({
     stack: FAKE_STACK,
     sdk,
+    sdkProvider,
+    resolvedEnvironment: mockResolvedEnvironment(),
     force: true
   });
 
@@ -414,7 +427,6 @@ test('deploy not skipped if template did not change and --force is applied', asy
 });
 
 test('deploy not skipped if template changed', async () => {
-  const sdk = new MockSDK();
   let describeStacksInput: AWS.CloudFormation.DescribeStacksInput;
   let getTemplateInput: AWS.CloudFormation.GetTemplateInput;
   let createChangeSetCalled = false;
@@ -460,7 +472,9 @@ test('deploy not skipped if template changed', async () => {
 
   await deployStack({
     stack: FAKE_STACK,
-    sdk
+    sdk,
+    sdkProvider,
+    resolvedEnvironment: mockResolvedEnvironment(),
   });
 
   expect(createChangeSetCalled).toBeTruthy();

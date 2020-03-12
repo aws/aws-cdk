@@ -1,7 +1,7 @@
 import { CreateChangeSetInput } from 'aws-sdk/clients/cloudformation';
 import { bootstrapEnvironment } from '../../lib';
 import { fromYAML } from '../../lib/serialize';
-import { MockSDK } from '../util/mock-sdk';
+import { MockSdkProvider } from '../util/mock-sdk';
 
 const env = {
   account: '123456789012',
@@ -11,7 +11,7 @@ const env = {
 
 test('do bootstrap', async () => {
   // GIVEN
-  const sdk = new MockSDK();
+  const sdk = new MockSdkProvider();
 
   let executed = false;
 
@@ -54,7 +54,7 @@ test('do bootstrap', async () => {
 
 test('do bootstrap using custom bucket name', async () => {
   // GIVEN
-  const sdk = new MockSDK();
+  const sdk = new MockSdkProvider();
 
   let executed = false;
 
@@ -98,7 +98,7 @@ test('do bootstrap using custom bucket name', async () => {
 });
 test('do bootstrap using KMS CMK', async () => {
   // GIVEN
-  const sdk = new MockSDK();
+  const sdk = new MockSdkProvider();
 
   let executed = false;
 
@@ -142,7 +142,7 @@ test('do bootstrap using KMS CMK', async () => {
 });
 test('do bootstrap with custom tags for toolkit stack', async () => {
   // GIVEN
-  const sdk = new MockSDK();
+  const sdk = new MockSdkProvider();
 
   let executed = false;
 
@@ -186,7 +186,7 @@ test('do bootstrap with custom tags for toolkit stack', async () => {
 });
 
 test('passing trusted accounts to the old bootstrapping results in an error', async () => {
-  const sdk = new MockSDK();
+  const sdk = new MockSdkProvider();
 
   await expect(bootstrapEnvironment(env, sdk, 'mockStack', undefined, {
     trustedAccounts: ['0123456789012'],
@@ -196,7 +196,7 @@ test('passing trusted accounts to the old bootstrapping results in an error', as
 });
 
 test('passing CFN execution policies to the old bootstrapping results in an error', async () => {
-  const sdk = new MockSDK();
+  const sdk = new MockSdkProvider();
 
   await expect(bootstrapEnvironment(env, sdk, 'mockStack', undefined, {
     cloudFormationExecutionPolicies: ['arn:aws:iam::aws:policy/AdministratorAccess'],

@@ -1,3 +1,4 @@
+import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
 import { Account, ISDK, SDK, SdkProvider, ToolkitInfo } from '../../lib';
 
@@ -7,7 +8,7 @@ import { Account, ISDK, SDK, SdkProvider, ToolkitInfo } from '../../lib';
  * Its the responsibility of the consumer to replace all calls that
  * actually will be called.
  */
-export class MockSDK extends SdkProvider {
+export class MockSdkProvider extends SdkProvider {
   private readonly sdk: ISDK;
 
   constructor() {
@@ -41,6 +42,34 @@ export class MockSDK extends SdkProvider {
    */
   public stubEcr(stubs: SyncHandlerSubsetOf<AWS.ECR>) {
     (this.sdk as any).ecr = jest.fn().mockReturnValue(partialAwsService<AWS.ECR>(stubs));
+  }
+}
+
+export class MockSdk implements ISDK {
+  public readonly currentRegion: string = 'bermuda-triangle-1337';
+  public readonly cloudFormation = jest.fn();
+  public readonly ec2 = jest.fn();
+  public readonly ssm = jest.fn();
+  public readonly s3 = jest.fn();
+  public readonly route53 = jest.fn();
+  public readonly ecr = jest.fn();
+
+  public currentAccount(): Promise<Account> {
+    return Promise.resolve({ accountId: '123456789012', partition: 'aws' });
+  }
+
+  /**
+   * Replace the CloudFormation client with the given object
+   */
+  public stubCloudFormation(stubs: SyncHandlerSubsetOf<AWS.CloudFormation>) {
+    this.cloudFormation.mockReturnValue(partialAwsService<AWS.CloudFormation>(stubs));
+  }
+
+  /**
+   * Replace the ECR client with the given object
+   */
+  public stubEcr(stubs: SyncHandlerSubsetOf<AWS.ECR>) {
+    this.ecr.mockReturnValue(partialAwsService<AWS.ECR>(stubs));
   }
 }
 
@@ -122,9 +151,17 @@ class FakeAWSResponse<T> {
 
 export function mockToolkitInfo() {
   return new ToolkitInfo({
-    sdk: new MockSDK(),
+    sdk: new MockSdk(),
     bucketName: 'BUCKET_NAME',
     bucketEndpoint: 'BUCKET_ENDPOINT',
     environment: { name: 'env', account: '1234', region: 'abc' }
   });
+}
+
+export function mockResolvedEnvironment(): cxapi.Environment {
+  return {
+    account: '123456789',
+    region: 'bermuda-triangle-1337',
+    name: 'aws://123456789/bermuda-triangle-1337',
+  };
 }

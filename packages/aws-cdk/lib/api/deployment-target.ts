@@ -7,8 +7,6 @@ import { ToolkitInfo } from './toolkit-info';
 import { stackExists } from './util/cloudformation';
 import { replaceAwsPlaceholders } from './util/placeholders';
 
-export const DEFAULT_TOOLKIT_STACK_NAME = 'CDKToolkit';
-
 export type Template = { [key: string]: any };
 
 /**
@@ -61,37 +59,40 @@ export interface StackExistsOptions {
 }
 
 export interface ProvisionerProps {
-  aws: SdkProvider;
+  sdkProvider: SdkProvider;
 }
 
 /**
  * Default provisioner (applies to CloudFormation).
  */
 export class CloudFormationDeploymentTarget implements IDeploymentTarget {
-  private readonly aws: SdkProvider;
+  private readonly sdkProvider: SdkProvider;
 
   constructor(props: ProvisionerProps) {
-    this.aws = props.aws;
+    this.sdkProvider = props.sdkProvider;
   }
 
   public async readCurrentTemplate(stack: CloudFormationStackArtifact): Promise<Template> {
     debug(`Reading existing template for stack ${stack.displayName}.`);
-    const cfn = (await this.aws.forEnvironment(stack.environment.account, stack.environment.region, Mode.ForReading)).cloudFormation();
+    const { stackSdk } = await this.prepareSdkFor(stack, undefined, Mode.ForReading);
+    const cfn = stackSdk.cloudFormation();
     return readCurrentTemplate(cfn, stack.stackName);
   }
 
   public async deployStack(options: DeployStackOptions): Promise<DeployStackResult> {
-    const { sdk, cloudFormationRoleArn } = await this.cloudFormationOptionsFor(options.stack, options.roleArn);
+    const { stackSdk, resolvedEnvironment, cloudFormationRoleArn } = await this.prepareSdkFor(options.stack, options.roleArn);
 
     // tslint:disable-next-line:max-line-length
-    const toolkitInfo = await ToolkitInfo.lookup(options.stack.environment, this.aws, options.toolkitStackName || DEFAULT_TOOLKIT_STACK_NAME);
+    const toolkitInfo = await ToolkitInfo.lookup(resolvedEnvironment, stackSdk, options.toolkitStackName);
 
     return deployStack({
       stack: options.stack,
+      resolvedEnvironment,
       deployName: options.deployName,
       notificationArns: options.notificationArns,
       quiet: options.quiet,
-      sdk: this.aws,
+      sdk: stackSdk,
+      sdkProvider: this.sdkProvider,
       roleArn: cloudFormationRoleArn,
       reuseAssets: options.reuseAssets,
       toolkitInfo,
@@ -103,10 +104,10 @@ export class CloudFormationDeploymentTarget implements IDeploymentTarget {
   }
 
   public async destroyStack(options: DestroyStackOptions): Promise<void> {
-    const { sdk, cloudFormationRoleArn: roleArn } = await this.cloudFormationOptionsFor(options.stack, options.roleArn);
+    const { stackSdk, cloudFormationRoleArn: roleArn } = await this.prepareSdkFor(options.stack, options.roleArn);
 
     return destroyStack({
-      sdk: this.aws,
+      sdk: stackSdk,
       roleArn,
       stack: options.stack,
       deployName: options.deployName,
@@ -115,36 +116,39 @@ export class CloudFormationDeploymentTarget implements IDeploymentTarget {
   }
 
   public async stackExists(options: StackExistsOptions): Promise<boolean> {
-    const { sdk } = await this.cloudFormationOptionsFor(options.stack);
-    const cfn = await sdk.cloudFormation();
+    const { stackSdk } = await this.prepareSdkFor(options.stack, undefined, Mode.ForReading);
+    const cfn = stackSdk.cloudFormation();
     return stackExists(cfn, options.deployName ?? options.stack.stackName);
   }
 
   /**
-   * Return CloudFormation options for touching the given stack
+   * Return the SDK and CloudFormation options for touching the given stack
    *
-   * Return an SDK with the right credentials, and return the CloudFormation Execution Role
+   * Return an SDK with the right credentials, the resolved environment, and
+   * return the CloudFormation Execution Role.
    */
-  private async cloudFormationOptionsFor(stack: CloudFormationStackArtifact, roleArn?: string, mode = Mode.ForWriting) {
+  private async prepareSdkFor(stack: CloudFormationStackArtifact, roleArn?: string, mode = Mode.ForWriting) {
     // Substitute any placeholders with information about the current environment
     const arns = await replaceAwsPlaceholders({
       assumeRoleArn: stack.assumeRoleArn,
-      templatePublishingRoleArn: stack.templatePublishingRoleArn,
 
       // Use the override if given, otherwise use the field from the stack
       cloudFormationRoleArn: roleArn ?? stack.cloudFormationExecutionRoleArn,
-    }, this.aws);
+    }, this.sdkProvider);
 
-    const environment = await this.aws.resolveEnvironment(stack.environment.account, stack.environment.region);
+    if (!stack.environment) {
+      throw new Error(`The stack ${stack.displayName} does not have an environment`);
+    }
+    const resolvedEnvironment = await this.sdkProvider.resolveEnvironment(stack.environment.account, stack.environment.region);
 
-    const sdk = arns.assumeRoleArn
-      ? await this.aws.withAssumedRole(arns.assumeRoleArn, undefined, environment.region)
-      : await this.aws.forEnvironment(stack.environment.account, stack.environment.region, mode);
+    const stackSdk = arns.assumeRoleArn
+      ? await this.sdkProvider.withAssumedRole(arns.assumeRoleArn, undefined, resolvedEnvironment.region)
+      : await this.sdkProvider.forEnvironment(stack.environment.account, stack.environment.region, mode);
 
     return {
-      sdk,
+      stackSdk,
+      resolvedEnvironment,
       cloudFormationRoleArn: arns.cloudFormationRoleArn,
-      templatePublishingRoleArn: arns.templatePublishingRoleArn
     };
   }
 }

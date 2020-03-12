@@ -3,7 +3,7 @@ import { AppStacks, Tag } from '../lib/api/cxapp/stacks';
 import { DeployStackResult } from '../lib/api/deploy-stack';
 import { DeployStackOptions, DestroyStackOptions, IDeploymentTarget, StackExistsOptions, Template } from '../lib/api/deployment-target';
 import { CdkToolkit } from '../lib/cdk-toolkit';
-import { MockSDK } from './util/mock-sdk';
+import { MockSdkProvider } from './util/mock-sdk';
 
 describe('deploy', () => {
   describe('makes correct CloudFormation calls', () => {
@@ -18,7 +18,7 @@ describe('deploy', () => {
       });
 
       // WHEN
-      toolkit.deploy({ stackNames: ['Test-Stack-A', 'Test-Stack-B'], sdk: new MockSDK() });
+      toolkit.deploy({ stackNames: ['Test-Stack-A', 'Test-Stack-B'], sdk: new MockSdkProvider() });
     });
 
     test('with sns notification arns', () => {
@@ -36,7 +36,7 @@ describe('deploy', () => {
       toolkit.deploy({
         stackNames: ['Test-Stack-A', 'Test-Stack-B'],
         notificationArns,
-        sdk: new MockSDK()
+        sdk: new MockSdkProvider()
       });
     });
   });

@@ -6,13 +6,13 @@ import * as colors from 'colors/safe';
 import * as path from 'path';
 import * as yargs from 'yargs';
 
-import { bootstrapEnvironment, BootstrapEnvironmentProps } from '../lib';
+import { bootstrapEnvironment, BootstrapEnvironmentProps, ToolkitInfo } from '../lib';
 import { SdkProvider } from '../lib/api/aws-auth';
 import { bootstrapEnvironment2 } from '../lib/api/bootstrap/bootstrap-environment2';
 import { environmentsFromDescriptors, globEnvironmentsFromStacks } from '../lib/api/cxapp/environments';
 import { execProgram } from '../lib/api/cxapp/exec';
 import { AppStacks, DefaultSelection, ExtendedStackSelection } from '../lib/api/cxapp/stacks';
-import { CloudFormationDeploymentTarget, DEFAULT_TOOLKIT_STACK_NAME } from '../lib/api/deployment-target';
+import { CloudFormationDeploymentTarget } from '../lib/api/deployment-target';
 import { CdkToolkit } from '../lib/cdk-toolkit';
 import { RequireApproval } from '../lib/diff';
 import { availableInitLanguages, cliInit, printAvailableTemplates } from '../lib/init';
@@ -124,7 +124,7 @@ async function initCommandLine() {
   const configuration = new Configuration(argv);
   await configuration.load();
 
-  const provisioner = new CloudFormationDeploymentTarget({ aws });
+  const provisioner = new CloudFormationDeploymentTarget({ sdkProvider: aws });
 
   const appStacks = new AppStacks({
     verbose: argv.trace || argv.verbose,
@@ -182,11 +182,8 @@ async function initCommandLine() {
   }
 
   async function main(command: string, args: any): Promise<number | string | {} | void> {
-    const toolkitStackName: string = configuration.settings.get(['toolkitStackName']) || DEFAULT_TOOLKIT_STACK_NAME;
-
-    if (toolkitStackName !== DEFAULT_TOOLKIT_STACK_NAME) {
-      print(`Toolkit stack: ${colors.bold(toolkitStackName)}`);
-    }
+    const toolkitStackName: string = ToolkitInfo.determineName(configuration.settings.get(['toolkitStackName']));
+    debug(`Toolkit stack: ${colors.bold(toolkitStackName)}`);
 
     args.STACKS = args.STACKS || [];
     args.ENVIRONMENTS = args.ENVIRONMENTS || [];

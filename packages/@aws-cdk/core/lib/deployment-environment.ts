@@ -111,13 +111,6 @@ export interface StackDeploymentConfig {
    * @default - No role is passed (current role/credentials are used)
    */
   readonly cloudFormationExecutionRoleArn?: string;
-
-  /**
-   * The role that should be used to upload the template before starting CloudFormation
-   *
-   * @default - No role is passed (currently assumed role/credentials are used)
-   */
-  readonly templatePublishingRoleArn?: string;
 }
 
 /**
@@ -319,7 +312,6 @@ export class ConventionModeDeploymentEnvironment implements IDeploymentEnvironme
     return {
       assumeRoleArn: resolve(this.deployActionRoleArn),
       cloudFormationExecutionRoleArn: resolve(this.cloudFormationExecutionRoleArn),
-      templatePublishingRoleArn: resolve(this.assetPublishingRoleArn),
     };
   }
 
@@ -341,6 +333,8 @@ export class ConventionModeDeploymentEnvironment implements IDeploymentEnvironme
         file: manifestFile
       },
     });
+
+    // FIXME: Add stack template as file asset
 
     return {
       additionalStackDependencies: [artifactId]

@@ -7,7 +7,7 @@ import { IDeploymentTarget, StackExistsOptions, Template } from '../lib/api/depl
 import { CdkToolkit } from '../lib/cdk-toolkit';
 import { Configuration } from '../lib/settings';
 import { testAssembly } from './util';
-import { MockSDK } from './util/mock-sdk';
+import { MockSdkProvider } from './util/mock-sdk';
 
 const FIXED_RESULT = testAssembly({
   stacks: [{
@@ -36,7 +36,7 @@ const FIXED_RESULT = testAssembly({
 
 const appStacks = new AppStacks({
   configuration: new Configuration(),
-  aws: new MockSDK(),
+  aws: new MockSdkProvider(),
   synthesizer: async () => FIXED_RESULT,
 });
 
