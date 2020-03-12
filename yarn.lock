@@ -2033,11 +2033,6 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-13.1.8.tgz#1d590429fe8187a02707720ecf38a6fe46ce294b"
   integrity sha512-6XzyyNM9EKQW4HKuzbo/CkOIjn/evtCmsU+MUM1xDfJ+3/rNjBttM1NgN7AOQvN6tP1Sl1D1PIKMreTArnxM9A==
 
-"@types/node@12.12.2":
-  version "12.12.2"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-12.12.2.tgz#e84a8a664633a7615645b1b2dc0cfddb2e564b02"
-  integrity sha512-Dt624lmxSFhjor3/QoBAJyqKbPgPnJETqG+eUSxOYwwq5HeHh9hel1c4YAcFmCsClMESmMqcTBbfkjWK+ytCsg==
-
 "@types/node@^10.17.17":
   version "10.17.17"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-10.17.17.tgz#7a183163a9e6ff720d86502db23ba4aade5999b8"
@@ -2622,7 +2617,7 @@ atob@^2.1.2:
   resolved "https://registry.yarnpkg.com/atob/-/atob-2.1.2.tgz#6d9517eb9e030d2436666651e86bd9f6f13533c9"
   integrity sha512-Wm6ukoaOGJi/73p/cl2GvLjTI5JM1k/O14isD73YML8StrH/7/lRFgmg8nICZgD3bZZvjwCGxtMOD3wWNAu8cg==
 
-aws-sdk-mock@^5.1.0:
+aws-sdk-mock@^5.0.0, aws-sdk-mock@^5.1.0:
   version "5.1.0"
   resolved "https://registry.yarnpkg.com/aws-sdk-mock/-/aws-sdk-mock-5.1.0.tgz#6f2c0bd670d7f378c906a8dd806f812124db71aa"
   integrity sha512-Wa5eCSo8HX0Snqb7FdBylaXMmfrAWoWZ+d7MFhiYsgHPvNvMEGjV945FF2qqE1U0Tolr1ALzik1fcwgaOhqUWQ==
@@ -2630,6 +2625,21 @@ aws-sdk-mock@^5.1.0:
     aws-sdk "^2.637.0"
     sinon "^9.0.1"
     traverse "^0.6.6"
+
+aws-sdk@^2.596.0:
+  version "2.638.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.638.0.tgz#43df5a956696177c577b841ea21b4007a81dbdaa"
+  integrity sha512-DOSwedH2YkPVs3c2AQezK6FHuGRIDffgULGvmpY9ZmZ/x45Sw+p7WHCYPgWfw/Z1fJWzMjaIpu531xG7pyJV4A==
+  dependencies:
+    buffer "4.9.1"
+    events "1.1.1"
+    ieee754 "1.1.13"
+    jmespath "0.15.0"
+    querystring "0.2.0"
+    sax "1.2.1"
+    url "0.10.3"
+    uuid "3.3.2"
+    xml2js "0.4.19"
 
 aws-sdk@^2.637.0:
   version "2.637.0"
@@ -3564,6 +3574,16 @@ constants-browserify@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/constants-browserify/-/constants-browserify-1.0.0.tgz#c20b96d8c617748aaf1c16021760cd27fcb8cb75"
   integrity sha1-wguW2MYXdIqvHBYCF2DNJ/y4y3U=
+
+constructs@0.0.0:
+  version "0.0.0"
+  resolved "https://registry.yarnpkg.com/constructs/-/constructs-0.0.0.tgz#531d9ee3e9678641637d17811e6fef9def3165b5"
+  integrity sha512-ZhKarI/SGgbBjLTSPjIC2a8X7H7M1Ixx7+PVO3zyg74/XTy8X4CIbqEdJNUxPXwdIZbRzI2ofb632iG0t3eIQA==
+
+constructs@1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/constructs/-/constructs-1.1.0.tgz#7f4c6cdeba9a53c6e708acf8a777244a3c627b02"
+  integrity sha512-7zB9YuUJhTrnrpG6AC006wPrLKAG4mwQzb9t6f/f0+wlhfyMBoojrTgumlp6Y7EgykgSPt2ljnW4lh+PJa5ulA==
 
 contains-path@^0.1.0:
   version "0.1.0"

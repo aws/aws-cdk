@@ -39,12 +39,12 @@
     "@aws-cdk/cloudformation-diff": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
-    "constructs": "0.0.0"
+    "constructs": "1.1.0"
   },
   "peerDependencies": {
     "@aws-cdk/core": "0.0.0",
     "jest": "^24.9.0",
-    "constructs": "0.0.0"
+    "constructs": "1.1.0"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
