@@ -20,6 +20,7 @@ export interface IApiKey extends IResourceBase {
  */
 export interface ApiKeyProps extends ResourceOptions {
   /**
+   * [disable-awslint:ref-via-interface]
    * A list of resources this api key is associated with.
    * @default none
    */
