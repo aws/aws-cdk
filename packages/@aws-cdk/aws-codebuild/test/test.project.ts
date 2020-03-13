@@ -191,12 +191,8 @@ export = {
       const stack = new cdk.Stack();
 
       // WHEN
-      new codebuild.Project(stack, 'Project', {
-        source: codebuild.Source.gitHub({
-          owner: 'testowner',
-          repo: 'testrepo',
-          accessToken: cdk.SecretValue.plainText('my-access-token'),
-        }),
+      new codebuild.GitHubSourceCredentials(stack, 'GitHubSourceCredentials', {
+        accessToken: cdk.SecretValue.plainText('my-access-token'),
       });
 
       // THEN
@@ -236,11 +232,8 @@ export = {
       const stack = new cdk.Stack();
 
       // WHEN
-      new codebuild.Project(stack, 'Project', {
-        source: codebuild.Source.gitHubEnterprise({
-          httpsCloneUrl: 'https://mygithub-enterprise.com/myuser/myrepo',
-          accessToken: cdk.SecretValue.plainText('my-access-token'),
-        }),
+      new codebuild.GitHubEnterpriseSourceCredentials(stack, 'GitHubEnterpriseSourceCredentials', {
+        accessToken: cdk.SecretValue.plainText('my-access-token'),
       });
 
       // THEN
@@ -281,15 +274,9 @@ export = {
       const stack = new cdk.Stack();
 
       // WHEN
-      new codebuild.Project(stack, 'Project', {
-        source: codebuild.Source.bitBucket({
-          owner: 'testowner',
-          repo: 'testrepo',
-          credentials: {
-            username: cdk.SecretValue.plainText('my-username'),
-            password: cdk.SecretValue.plainText('password'),
-          },
-        }),
+      new codebuild.BitBucketSourceCredentials(stack, 'BitBucketSourceCredentials', {
+        username: cdk.SecretValue.plainText('my-username'),
+        password: cdk.SecretValue.plainText('password'),
       });
 
       // THEN
