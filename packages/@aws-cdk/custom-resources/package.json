@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/custom-resources",
-  "version": "999.0.0",
+  "version": "0.0.0",
   "description": "Constructs for implementing CDK custom resources",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -66,41 +66,43 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "999.0.0",
-    "@aws-cdk/aws-events": "999.0.0",
-    "@aws-cdk/aws-s3": "999.0.0",
-    "@aws-cdk/aws-ssm": "999.0.0",
+    "@aws-cdk/assert": "0.0.0",
+    "@aws-cdk/aws-events": "0.0.0",
+    "@aws-cdk/aws-s3": "0.0.0",
+    "@aws-cdk/aws-ssm": "0.0.0",
     "@types/aws-lambda": "^8.10.39",
     "@types/fs-extra": "^8.1.0",
-    "@types/sinon": "^7.5.0",
-    "aws-sdk": "^2.625.0",
-    "aws-sdk-mock": "^5.0.0",
-    "cdk-build-tools": "999.0.0",
-    "cdk-integ-tools": "999.0.0",
-    "cfn2ts": "999.0.0",
+    "@types/sinon": "^7.5.2",
+    "aws-sdk": "^2.639.0",
+    "aws-sdk-mock": "^5.1.0",
+    "cdk-build-tools": "0.0.0",
+    "cdk-integ-tools": "0.0.0",
+    "cfn2ts": "0.0.0",
     "fs-extra": "^8.1.0",
-    "nock": "^12.0.1",
-    "pkglint": "999.0.0",
-    "sinon": "^9.0.0"
+    "nock": "^12.0.2",
+    "pkglint": "0.0.0",
+    "sinon": "^9.0.1"
   },
   "dependencies": {
-    "@aws-cdk/aws-cloudformation": "999.0.0",
-    "@aws-cdk/aws-iam": "999.0.0",
-    "@aws-cdk/aws-lambda": "999.0.0",
-    "@aws-cdk/aws-sns": "999.0.0",
-    "@aws-cdk/aws-stepfunctions": "999.0.0",
-    "@aws-cdk/aws-stepfunctions-tasks": "999.0.0",
-    "@aws-cdk/core": "999.0.0"
+    "@aws-cdk/aws-cloudformation": "0.0.0",
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-lambda": "0.0.0",
+    "@aws-cdk/aws-logs": "0.0.0",
+    "@aws-cdk/aws-sns": "0.0.0",
+    "@aws-cdk/aws-stepfunctions": "0.0.0",
+    "@aws-cdk/aws-stepfunctions-tasks": "0.0.0",
+    "@aws-cdk/core": "0.0.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-cloudformation": "999.0.0",
-    "@aws-cdk/aws-iam": "999.0.0",
-    "@aws-cdk/aws-lambda": "999.0.0",
-    "@aws-cdk/aws-sns": "999.0.0",
-    "@aws-cdk/aws-stepfunctions": "999.0.0",
-    "@aws-cdk/aws-stepfunctions-tasks": "999.0.0",
-    "@aws-cdk/core": "999.0.0"
+    "@aws-cdk/aws-cloudformation": "0.0.0",
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-lambda": "0.0.0",
+    "@aws-cdk/aws-logs": "0.0.0",
+    "@aws-cdk/aws-sns": "0.0.0",
+    "@aws-cdk/aws-stepfunctions": "0.0.0",
+    "@aws-cdk/aws-stepfunctions-tasks": "0.0.0",
+    "@aws-cdk/core": "0.0.0"
   },
   "jest": {
     "moduleFileExtensions": [
@@ -122,14 +124,10 @@
   "engines": {
     "node": ">= 10.3.0"
   },
-  "stability": "experimental",
+  "stability": "stable",
   "awslint": {
     "exclude": [
-      "construct-ctor-props-optional:@aws-cdk/custom-resources.AwsCustomResource",
-      "props-physical-name:@aws-cdk/custom-resources.AsyncCustomResourceProps",
-      "docs-public-apis:@aws-cdk/custom-resources.AwsCustomResource",
-      "docs-public-apis:@aws-cdk/custom-resources.AwsCustomResourceProps",
-      "props-default-doc:@aws-cdk/custom-resources.AwsSdkCall.parameters"
+      "construct-ctor-props-optional:@aws-cdk/custom-resources.AwsCustomResource"
     ]
   }
 }

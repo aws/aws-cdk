@@ -132,7 +132,11 @@ const key = api.addApiKey('ApiKey');
 
 const plan = api.addUsagePlan('UsagePlan', {
   name: 'Easy',
-  apiKey: key
+  apiKey: key,
+  throttle: {
+    rateLimit: 10,
+    burstLimit: 2
+  }
 });
 
 plan.addApiStage({
@@ -147,6 +151,36 @@ plan.addApiStage({
     }
   ]
 });
+```
+
+In scenarios where you need to create a single api key and configure rate limiting for it, you can use `RateLimitedApiKey`.
+This construct lets you specify rate limiting properties which should be applied only to the api key being created.
+The API key created has the specified rate limits, such as quota and throttles, applied.
+
+The following example shows how to use a rate limited api key :
+```ts
+const hello = new lambda.Function(this, 'hello', {
+  runtime: lambda.Runtime.NODEJS_10_X,
+  handler: 'hello.handler',
+  code: lambda.Code.fromAsset('lambda')
+});
+
+const api = new apigateway.RestApi(this, 'hello-api', { });
+const integration = new apigateway.LambdaIntegration(hello);
+
+const v1 = api.root.addResource('v1');
+const echo = v1.addResource('echo');
+const echoMethod = echo.addMethod('GET', integration, { apiKeyRequired: true });
+
+const key = new apigateway.RateLimitedApiKey(this, 'rate-limited-api-key', {
+  customerId: 'hello-customer',
+  resources: [api],
+  quota: {
+    limit: 10000,
+    period: apigateway.Period.MONTH
+  }
+});
+
 ```
 
 ### Working with models
@@ -339,7 +373,7 @@ that can be used for controlling access to your REST APIs.
 
 #### IAM-based authorizer
 
-The following CDK code provides 'excecute-api' permission to an IAM user, via IAM policies, for the 'GET' method on the `books` resource:
+The following CDK code provides 'execute-api' permission to an IAM user, via IAM policies, for the 'GET' method on the `books` resource:
 
 ```ts
 const getBooks = books.addMethod('GET', new apigateway.HttpIntegration('http://amazon.com'), {
@@ -521,9 +555,12 @@ as `example.com`, and for subdomains, such as `www.example.com`. (You can create
 CNAME records only for subdomains.)
 
 ```ts
+import * as route53 from '@aws-cdk/aws-route53';
+import * as targets from '@aws-cdk/aws-route53-targets';
+
 new route53.ARecord(this, 'CustomDomainAliasRecord', {
   zone: hostedZoneForExampleCom,
-  target: route53.RecordTarget.fromAlias(new route53_targets.ApiGateway(api))
+  target: route53.RecordTarget.fromAlias(new targets.ApiGateway(api))
 });
 ```
 
@@ -533,7 +570,8 @@ You can also define a `DomainName` resource directly in order to customize the d
 new apigw.DomainName(this, 'custom-domain', {
   domainName: 'example.com',
   certificate: acmCertificateForExampleCom,
-  endpointType: apigw.EndpointType.EDGE // default is REGIONAL
+  endpointType: apigw.EndpointType.EDGE, // default is REGIONAL
+  securityPolicy: apigw.SecurityPolicy.TLS_1_2
 });
 ```
 
@@ -561,12 +599,15 @@ domain.addBasePathMapping(api);
 This can also be achieved through the `mapping` configuration when defining the
 domain as demonstrated above.
 
-If you wish to setup this domain with an Amazon Route53 alias, use the `route53_targets.ApiGatewayDomain`:
+If you wish to setup this domain with an Amazon Route53 alias, use the `targets.ApiGatewayDomain`:
 
 ```ts
+import * as route53 from '@aws-cdk/aws-route53';
+import * as targets from '@aws-cdk/aws-route53-targets';
+
 new route53.ARecord(this, 'CustomDomainAliasRecord', {
   zone: hostedZoneForExampleCom,
-  target: route53.RecordTarget.fromAlias(new route53_targets.ApiGatewayDomain(domainName))
+  target: route53.RecordTarget.fromAlias(new targets.ApiGatewayDomain(domainName))
 });
 ```
 
