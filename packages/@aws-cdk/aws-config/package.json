@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-config",
-  "version": "1.25.0",
+  "version": "0.0.0",
   "description": "The CDK Construct Library for AWS::Config",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -62,41 +62,32 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "1.25.0",
-    "@aws-cdk/aws-events-targets": "1.25.0",
+    "@aws-cdk/assert": "0.0.0",
+    "@aws-cdk/aws-events-targets": "0.0.0",
     "@types/nodeunit": "^0.0.30",
-    "cdk-build-tools": "1.25.0",
-    "cdk-integ-tools": "1.25.0",
-    "cfn2ts": "1.25.0",
+    "cdk-build-tools": "0.0.0",
+    "cdk-integ-tools": "0.0.0",
+    "cfn2ts": "0.0.0",
     "nodeunit": "^0.11.3",
-    "pkglint": "1.25.0"
+    "pkglint": "0.0.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-events": "1.25.0",
-    "@aws-cdk/aws-iam": "1.25.0",
-    "@aws-cdk/aws-lambda": "1.25.0",
-    "@aws-cdk/aws-sns": "1.25.0",
-    "@aws-cdk/core": "1.25.0"
+    "@aws-cdk/aws-events": "0.0.0",
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-lambda": "0.0.0",
+    "@aws-cdk/aws-sns": "0.0.0",
+    "@aws-cdk/core": "0.0.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-events": "1.25.0",
-    "@aws-cdk/aws-iam": "1.25.0",
-    "@aws-cdk/aws-lambda": "1.25.0",
-    "@aws-cdk/aws-sns": "1.25.0",
-    "@aws-cdk/core": "1.25.0"
+    "@aws-cdk/aws-events": "0.0.0",
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-lambda": "0.0.0",
+    "@aws-cdk/aws-sns": "0.0.0",
+    "@aws-cdk/core": "0.0.0"
   },
   "engines": {
     "node": ">= 10.3.0"
   },
-  "stability": "experimental",
-  "awslint": {
-    "exclude": [
-      "docs-public-apis:@aws-cdk/aws-config.MaximumExecutionFrequency.TWENTY_FOUR_HOURS",
-      "docs-public-apis:@aws-cdk/aws-config.MaximumExecutionFrequency.ONE_HOUR",
-      "docs-public-apis:@aws-cdk/aws-config.MaximumExecutionFrequency.THREE_HOURS",
-      "docs-public-apis:@aws-cdk/aws-config.MaximumExecutionFrequency.SIX_HOURS",
-      "docs-public-apis:@aws-cdk/aws-config.MaximumExecutionFrequency.TWELVE_HOURS"
-    ]
-  }
+  "stability": "experimental"
 }

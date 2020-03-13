@@ -1,7 +1,7 @@
 {
   "name": "cdk-build-tools",
   "private": true,
-  "version": "1.25.0",
+  "version": "0.0.0",
   "description": "Tools package with shared build scripts for CDK packages",
   "main": "lib/index.js",
   "repository": {
@@ -32,14 +32,14 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/fs-extra": "^8.1.0",
-    "@types/jest": "^25.1.2",
-    "@types/yargs": "^15.0.3",
-    "pkglint": "1.25.0"
+    "@types/jest": "^25.1.4",
+    "@types/yargs": "^15.0.4",
+    "pkglint": "0.0.0"
   },
   "dependencies": {
-    "@typescript-eslint/eslint-plugin": "^2.20.0",
+    "@typescript-eslint/eslint-plugin": "^2.23.0",
     "@typescript-eslint/parser": "^2.19.2",
-    "awslint": "1.25.0",
+    "awslint": "0.0.0",
     "colors": "^1.4.0",
     "eslint": "^6.8.0",
     "eslint-import-resolver-node": "^0.3.3",
@@ -53,8 +53,8 @@
     "nyc": "^15.0.0",
     "ts-jest": "^25.2.0",
     "tslint": "^5.20.1",
-    "typescript": "~3.8.2",
-    "yargs": "^15.1.0"
+    "typescript": "~3.8.3",
+    "yargs": "^15.3.0"
   },
   "keywords": [
     "aws",

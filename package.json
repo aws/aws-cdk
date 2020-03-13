@@ -1,6 +1,6 @@
 {
   "name": "aws-cdk",
-  "version": "1.25.0",
+  "version": "0.0.0",
   "private": true,
   "pkglint": {
     "include": "dependencies/node-version"
@@ -10,27 +10,22 @@
     "build": "./build.sh",
     "pack": "./pack.sh",
     "compat": "./scripts/check-api-compatibility.sh",
+    "bump": "./bump.sh",
     "build-all": "tsc -b"
   },
   "devDependencies": {
     "conventional-changelog-cli": "^2.0.31",
     "fs-extra": "^8.1.0",
-    "jsii-diff": "^1.0.0",
+    "jsii-diff": "^1.1.0",
     "jsii-pacmak": "^0.22.0",
     "jsii-rosetta": "^0.22.0",
     "lerna": "^3.20.2",
-    "typescript": "~3.8.2"
+    "standard-version": "^7.1.0",
+    "typescript": "~3.8.3"
   },
   "repository": {
     "type": "git",
     "url": "git://github.com/aws/aws-cdk"
-  },
-  "standard-version": {
-    "releaseCommitMessageFormat": "v{{currentTag}}",
-    "scripts": {
-      "prebump": "echo $(node -pe \"require('./lerna.json').version\")",
-      "precommit": "git add ."
-    }
   },
   "license": "Apache-2.0",
   "author": {
@@ -41,6 +36,7 @@
     "packages": [
       "packages/*",
       "packages/@aws-cdk/*",
+      "packages/@monocdk-experiment/*",
       "packages/@aws-cdk/*/lambda-packages/*",
       "tools/*"
     ],
