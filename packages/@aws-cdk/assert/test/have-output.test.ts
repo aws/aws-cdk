@@ -1,4 +1,5 @@
 import * as cxapi from '@aws-cdk/cx-api';
+import * as cxprotocol from '@aws-cdk/cx-protocol';
 import { unlink, writeFileSync } from 'fs';
 import { join } from 'path';
 import '../jest';
@@ -187,7 +188,7 @@ function mkStack(template: any): cxapi.CloudFormationStackArtifact {
   const assembly = new cxapi.CloudAssemblyBuilder();
 
   assembly.addArtifact(stackName, {
-    type: cxapi.ArtifactType.AWS_CLOUDFORMATION_STACK,
+    type: cxprotocol.ArtifactType.AWS_CLOUDFORMATION_STACK,
     environment: cxapi.EnvironmentUtils.format('123456789012', 'bermuda-triangle-1'),
     properties: {
       templateFile: templateFileName

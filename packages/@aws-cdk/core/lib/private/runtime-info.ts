@@ -1,10 +1,10 @@
-import * as cxapi from '@aws-cdk/cx-api';
+import * as cxprotocol from '@aws-cdk/cx-protocol';
 import { major as nodeMajorVersion } from './node-version';
 
 /**
  * Returns a list of loaded modules and their versions.
  */
-export function collectRuntimeInformation(): cxapi.RuntimeInfo {
+export function collectRuntimeInformation(): cxprotocol.RuntimeInfo {
   const libraries: { [name: string]: string } = {};
 
   for (const fileName of Object.keys(require.cache)) {

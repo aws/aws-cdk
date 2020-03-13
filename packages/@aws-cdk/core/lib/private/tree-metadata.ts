@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-import { ArtifactType } from '@aws-cdk/cx-api';
+import { ArtifactType } from '@aws-cdk/cx-protocol';
 import { Construct, IConstruct, ISynthesisSession } from '../construct';
 import { Stack } from '../stack';
 import { IInspectable, TreeInspector } from '../tree';

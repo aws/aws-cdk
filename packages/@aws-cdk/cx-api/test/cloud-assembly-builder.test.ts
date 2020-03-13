@@ -1,7 +1,8 @@
+import * as cxprotocol from '@aws-cdk/cx-protocol';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { ArtifactType, CloudAssemblyBuilder } from '../lib';
+import { CloudAssemblyBuilder } from '../lib';
 import { CLOUD_ASSEMBLY_VERSION } from '../lib/versioning';
 
 test('cloud assembly builder', () => {
@@ -12,7 +13,7 @@ test('cloud assembly builder', () => {
 
   // WHEN
   session.addArtifact('my-first-artifact', {
-    type: ArtifactType.AWS_CLOUDFORMATION_STACK,
+    type: cxprotocol.ArtifactType.AWS_CLOUDFORMATION_STACK,
     environment: 'aws://1222344/us-east-1',
     dependencies: ['minimal-artifact'],
     metadata: {
@@ -28,7 +29,7 @@ test('cloud assembly builder', () => {
   });
 
   session.addArtifact('tree-artifact', {
-    type: ArtifactType.CDK_TREE,
+    type: cxprotocol.ArtifactType.CDK_TREE,
     properties: {
       file: 'foo.tree.json'
     }
@@ -44,7 +45,7 @@ test('cloud assembly builder', () => {
   });
 
   session.addArtifact('minimal-artifact', {
-    type: ArtifactType.AWS_CLOUDFORMATION_STACK,
+    type: cxprotocol.ArtifactType.AWS_CLOUDFORMATION_STACK,
     environment: 'aws://111/helo-world',
     properties: {
       templateFile

@@ -1,6 +1,7 @@
 // tslint:disable-next-line:max-line-length
 import * as asset_schema from '@aws-cdk/cdk-assets-schema';
 import * as cxapi from '@aws-cdk/cx-api';
+import * as cxprotocol from '@aws-cdk/cx-protocol';
 import { CloudFormation } from 'aws-sdk';
 import * as colors from 'colors';
 import * as path from 'path';
@@ -51,7 +52,7 @@ export async function addMetadataAssetsToManifest(stack: cxapi.CloudFormationSta
 }
 
 // tslint:disable-next-line:max-line-length
-async function prepareAsset(asset: cxapi.AssetMetadataEntry, assetManifest: AssetManifestBuilder, toolkitInfo: ToolkitInfo, reuse: boolean): Promise<CloudFormation.Parameter[]> {
+async function prepareAsset(asset: cxprotocol.AssetMetadataEntry, assetManifest: AssetManifestBuilder, toolkitInfo: ToolkitInfo, reuse: boolean): Promise<CloudFormation.Parameter[]> {
   switch (asset.packaging) {
     case 'zip':
     case 'file':
@@ -70,7 +71,7 @@ async function prepareAsset(asset: cxapi.AssetMetadataEntry, assetManifest: Asse
 }
 
 function prepareFileAsset(
-    asset: cxapi.FileAssetMetadataEntry,
+    asset: cxprotocol.FileAssetMetadataEntry,
     assetManifest: AssetManifestBuilder,
     toolkitInfo: ToolkitInfo,
     packaging: asset_schema.FileAssetPackaging,
@@ -109,7 +110,7 @@ function prepareFileAsset(
 }
 
 async function prepareDockerImageAsset(
-    asset: cxapi.ContainerImageAssetMetadataEntry,
+    asset: cxprotocol.ContainerImageAssetMetadataEntry,
     assetManifest: AssetManifestBuilder,
     toolkitInfo: ToolkitInfo,
     reuse: boolean): Promise<CloudFormation.Parameter[]> {

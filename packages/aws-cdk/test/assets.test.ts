@@ -1,4 +1,4 @@
-import { AssetMetadataEntry } from '@aws-cdk/cx-api';
+import { AssetMetadataEntry } from '@aws-cdk/cx-protocol';
 import { ToolkitInfo } from '../lib';
 import { addMetadataAssetsToManifest } from '../lib/assets';
 import { AssetManifestBuilder } from '../lib/util/asset-manifest-builder';

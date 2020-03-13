@@ -1,4 +1,5 @@
 import * as cxapi from '@aws-cdk/cx-api';
+import * as cxprotocol from '@aws-cdk/cx-protocol';
 import { SdkProvider } from '../api';
 import { debug } from '../logging';
 import { Context, TRANSIENT_CONTEXT_KEY } from '../settings';
@@ -16,7 +17,7 @@ export type ProviderMap = {[name: string]: ProviderConstructor};
  * Iterate over the list of missing context values and invoke the appropriate providers from the map to retrieve them
  */
 export async function provideContextValues(
-  missingValues: cxapi.MissingContext[],
+  missingValues: cxprotocol.MissingContext[],
   context: Context,
   sdk: SdkProvider) {
 

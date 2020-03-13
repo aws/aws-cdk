@@ -1,3 +1,4 @@
+import * as cxprotocol from '@aws-cdk/cx-protocol';
 
 /**
  * Metadata key used to print INFO-level messages by the toolkit when an app is syntheized.
@@ -34,27 +35,8 @@ export enum SynthesisMessageLevel {
   WARNING = 'warning',
   ERROR = 'error'
 }
-/**
- * An metadata entry in the construct.
- */
-export interface MetadataEntry {
-  /**
-   * The type of the metadata entry.
-   */
-  readonly type: string;
 
-  /**
-   * The data.
-   */
-  readonly data?: any;
-
-  /**
-   * A stack trace for when the entry was created.
-   */
-  readonly trace?: string[];
-}
-
-export interface MetadataEntryResult extends MetadataEntry {
+export interface MetadataEntryResult extends cxprotocol.MetadataEntry {
   /**
    * The path in which this entry was defined.
    */
@@ -64,10 +46,10 @@ export interface MetadataEntryResult extends MetadataEntry {
 /**
  * Metadata associated with the objects in the stack's Construct tree
  */
-export type StackMetadata = { [path: string]: MetadataEntry[] };
+export type StackMetadata = { [path: string]: cxprotocol.MetadataEntry[] };
 
 export interface SynthesisMessage {
   readonly level: SynthesisMessageLevel;
   readonly id: string;
-  readonly entry: MetadataEntry;
+  readonly entry: cxprotocol.MetadataEntry;
 }

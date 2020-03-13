@@ -18,6 +18,7 @@
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test",
     "integ-cli": "test/integ/run-against-repo test/integ/cli/test.sh",
+    "integ-cli-backwards": "test/integ/run-against-repo test/integ/test-cli-backwards.sh",
     "integ-init": "test/integ/run-against-dist test/integ/init/test-all.sh"
   },
   "cdk-build": {
@@ -45,7 +46,6 @@
     "@types/fs-extra": "^8.1.0",
     "@types/glob": "^7.1.1",
     "@types/jest": "^25.1.2",
-    "@types/jest": "^25.1.4",
     "@types/minimatch": "^3.0.3",
     "@types/mockery": "^1.4.29",
     "@types/node": "^10.17.17",
@@ -68,9 +68,10 @@
     "@aws-cdk/cdk-assets-schema": "0.0.0",
     "@aws-cdk/cloudformation-diff": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
+    "@aws-cdk/cx-protocol": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
     "archiver": "^3.1.1",
-    "aws-sdk": "^2.638.0",
+    "aws-sdk": "^2.639.0",
     "camelcase": "^5.3.1",
     "cdk-assets": "0.0.0",
     "colors": "^1.4.0",

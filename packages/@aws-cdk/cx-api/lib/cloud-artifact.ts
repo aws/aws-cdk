@@ -1,59 +1,12 @@
+import * as cxprotocol from '@aws-cdk/cx-protocol';
 import { CloudAssembly } from './cloud-assembly';
 import {
   ERROR_METADATA_KEY,
   INFO_METADATA_KEY,
-  MetadataEntry,
   MetadataEntryResult,
   SynthesisMessage,
   SynthesisMessageLevel,
   WARNING_METADATA_KEY } from './metadata';
-
-/**
- * Type of cloud artifact.
- */
-export enum ArtifactType {
-  NONE = 'none', // required due to a jsii bug
-
-  /**
-   * The artifact is an AWS CloudFormation stack.
-   */
-  AWS_CLOUDFORMATION_STACK = 'aws:cloudformation:stack',
-
-  /**
-   * The artifact contains metadata generated out of the CDK application.
-   */
-  CDK_TREE = 'cdk:tree',
-}
-
-/**
- * A manifest for a single artifact within the cloud assembly.
- */
-export interface ArtifactManifest {
-  /**
-   * The type of artifact.
-   */
-  readonly type: ArtifactType;
-
-  /**
-   * The environment into which this artifact is deployed.
-   */
-  readonly environment?: string; // format: aws://account/region
-
-  /**
-   * Associated metadata.
-   */
-  readonly metadata?: { [path: string]: MetadataEntry[] };
-
-  /**
-   * IDs of artifacts that must be deployed before this artifact.
-   */
-  readonly dependencies?: string[];
-
-  /**
-   * The set of properties for this artifact (depends on type)
-   */
-  readonly properties?: { [name: string]: any };
-}
 
 /**
  * Artifact properties for CloudFormation stacks.
@@ -87,11 +40,11 @@ export class CloudArtifact {
    * @param artifact The artifact manifest
    * @returns the `CloudArtifact` that matches the artifact type or `undefined` if it's an artifact type that is unrecognized by this module.
    */
-  public static fromManifest(assembly: CloudAssembly, id: string, artifact: ArtifactManifest): CloudArtifact | undefined {
+  public static fromManifest(assembly: CloudAssembly, id: string, artifact: cxprotocol.ArtifactManifest): CloudArtifact | undefined {
     switch (artifact.type) {
-      case ArtifactType.AWS_CLOUDFORMATION_STACK:
+      case cxprotocol.ArtifactType.AWS_CLOUDFORMATION_STACK:
         return new CloudFormationStackArtifact(assembly, id, artifact);
-      case ArtifactType.CDK_TREE:
+      case cxprotocol.ArtifactType.CDK_TREE:
         return new TreeCloudArtifact(assembly, id, artifact);
       default:
         return undefined;
@@ -101,7 +54,7 @@ export class CloudArtifact {
   /**
    * The artifact's manifest
    */
-  public readonly manifest: ArtifactManifest;
+  public readonly manifest: cxprotocol.ArtifactManifest;
 
   /**
    * The set of messages extracted from the artifact's metadata.
@@ -119,7 +72,7 @@ export class CloudArtifact {
    */
   private _deps?: CloudArtifact[];
 
-  protected constructor(public readonly assembly: CloudAssembly, public readonly id: string, manifest: ArtifactManifest) {
+  protected constructor(public readonly assembly: CloudAssembly, public readonly id: string, manifest: cxprotocol.ArtifactManifest) {
     this.manifest = manifest;
     this.messages = this.renderMessages();
     this._dependencyIDs = manifest.dependencies || [];

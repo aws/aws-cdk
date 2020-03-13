@@ -1,4 +1,5 @@
 import * as cxapi from '@aws-cdk/cx-api';
+import * as cxprotocol from '@aws-cdk/cx-protocol';
 import { RegionInfo } from '@aws-cdk/region-info';
 import * as colors from 'colors/safe';
 import * as minimatch from 'minimatch';
@@ -265,7 +266,7 @@ export class AppStacks {
       this.assembly = assembly;
       return assembly;
 
-      function formatModules(runtime: cxapi.RuntimeInfo): string {
+      function formatModules(runtime: cxprotocol.RuntimeInfo): string {
         const modules = new Array<string>();
 
         // inject toolkit version to list of modules
@@ -322,7 +323,7 @@ export class AppStacks {
     }
   }
 
-  private printMessage(logFn: (s: string) => void, prefix: string, id: string, entry: cxapi.MetadataEntry) {
+  private printMessage(logFn: (s: string) => void, prefix: string, id: string, entry: cxprotocol.MetadataEntry) {
     logFn(`[${prefix} at ${id}] ${entry.data}`);
 
     if (this.props.verbose && entry.trace) {
@@ -432,7 +433,7 @@ export interface Tag {
 /**
  * Return all keys of misisng context items
  */
-function missingContextKeys(missing?: cxapi.MissingContext[]): Set<string> {
+function missingContextKeys(missing?: cxprotocol.MissingContext[]): Set<string> {
   return new Set((missing || []).map(m => m.key));
 }
 

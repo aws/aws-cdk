@@ -1,4 +1,5 @@
 import * as cxapi from '@aws-cdk/cx-api';
+import * as cxprotocol from '@aws-cdk/cx-protocol';
 import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -225,7 +226,7 @@ export class Stack extends Construct implements ITaggable {
    * This is returned when the stack is synthesized under the 'missing' attribute
    * and allows tooling to obtain the context and re-synthesize.
    */
-  private readonly _missingContext = new Array<cxapi.MissingContext>();
+  private readonly _missingContext = new Array<cxprotocol.MissingContext>();
 
   /**
    * Includes all parameters synthesized for assets (lazy).
@@ -320,7 +321,7 @@ export class Stack extends Construct implements ITaggable {
    *
    * @param report The set of parameters needed to obtain the context
    */
-  public reportMissingContext(report: cxapi.MissingContext) {
+  public reportMissingContext(report: cxprotocol.MissingContext) {
     this._missingContext.push(report);
   }
 
@@ -539,7 +540,7 @@ export class Stack extends Construct implements ITaggable {
     if (!params) {
       params = new FileAssetParameters(this.assetParameters, asset.sourceHash);
 
-      const metadata: cxapi.FileAssetMetadataEntry = {
+      const metadata: cxprotocol.FileAssetMetadataEntry = {
         path: asset.fileName,
         id: asset.sourceHash,
         packaging: asset.packaging,
@@ -580,7 +581,7 @@ export class Stack extends Construct implements ITaggable {
 
     // only add every image (identified by source hash) once for each stack that uses it.
     if (!this.addedImageAssets.has(assetId)) {
-      const metadata: cxapi.ContainerImageAssetMetadataEntry = {
+      const metadata: cxprotocol.ContainerImageAssetMetadataEntry = {
         repositoryName,
         imageTag,
         id: assetId,
@@ -842,7 +843,7 @@ export class Stack extends Construct implements ITaggable {
 
     // add an artifact that represents this stack
     builder.addArtifact(this.artifactId, {
-      type: cxapi.ArtifactType.AWS_CLOUDFORMATION_STACK,
+      type: cxprotocol.ArtifactType.AWS_CLOUDFORMATION_STACK,
       environment: this.environment,
       properties,
       dependencies: deps.length > 0 ? deps : undefined,
@@ -983,7 +984,7 @@ export class Stack extends Construct implements ITaggable {
   }
 
   private collectMetadata() {
-    const output: { [id: string]: cxapi.MetadataEntry[] } = { };
+    const output: { [id: string]: cxprotocol.MetadataEntry[] } = { };
     const stack = this;
 
     visit(this);
@@ -999,7 +1000,7 @@ export class Stack extends Construct implements ITaggable {
 
       if (node.node.metadata.length > 0) {
         // Make the path absolute
-        output[ConstructNode.PATH_SEP + node.node.path] = node.node.metadata.map(md => stack.resolve(md) as cxapi.MetadataEntry);
+        output[ConstructNode.PATH_SEP + node.node.path] = node.node.metadata.map(md => stack.resolve(md) as cxprotocol.MetadataEntry);
       }
 
       for (const child of node.node.children) {

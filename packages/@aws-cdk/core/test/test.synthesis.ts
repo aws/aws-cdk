@@ -1,4 +1,5 @@
 import * as cxapi from '@aws-cdk/cx-api';
+import * as cxprotocol from '@aws-cdk/cx-protocol';
 import * as fs from 'fs';
 import { Test } from 'nodeunit';
 import * as os from 'os';
@@ -74,7 +75,7 @@ export = {
       protected synthesize(s: cdk.ISynthesisSession) {
         writeJson(s.assembly.outdir, 'foo.json', { bar: 123 });
         s.assembly.addArtifact('my-random-construct', {
-          type: cxapi.ArtifactType.AWS_CLOUDFORMATION_STACK,
+          type: cxprotocol.ArtifactType.AWS_CLOUDFORMATION_STACK,
           environment: 'aws://12345/bar',
           properties: {
             templateFile: 'foo.json'
@@ -127,7 +128,7 @@ export = {
         calls.push('synthesize');
 
         session.assembly.addArtifact('art', {
-          type: cxapi.ArtifactType.AWS_CLOUDFORMATION_STACK,
+          type: cxprotocol.ArtifactType.AWS_CLOUDFORMATION_STACK,
           properties: {
             templateFile: 'hey.json',
             parameters: {

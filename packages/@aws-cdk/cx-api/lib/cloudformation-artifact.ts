@@ -1,7 +1,8 @@
+import * as cxprotocol from '@aws-cdk/cx-protocol';
 import * as fs from 'fs';
 import * as path from 'path';
-import { ASSET_METADATA, AssetMetadataEntry } from './assets';
-import { ArtifactManifest, AwsCloudFormationStackProperties, CloudArtifact } from './cloud-artifact';
+import { ASSET_METADATA } from './assets';
+import { AwsCloudFormationStackProperties, CloudArtifact } from './cloud-artifact';
 import { CloudAssembly } from './cloud-assembly';
 import { Environment, EnvironmentUtils } from './environment';
 
@@ -24,7 +25,7 @@ export class CloudFormationStackArtifact extends CloudArtifact {
   /**
    * Any assets associated with this stack.
    */
-  public readonly assets: AssetMetadataEntry[];
+  public readonly assets: cxprotocol.AssetMetadataEntry[];
 
   /**
    * CloudFormation parameters to pass to the stack.
@@ -54,7 +55,7 @@ export class CloudFormationStackArtifact extends CloudArtifact {
    */
   public readonly environment: Environment;
 
-  constructor(assembly: CloudAssembly, artifactId: string, artifact: ArtifactManifest) {
+  constructor(assembly: CloudAssembly, artifactId: string, artifact: cxprotocol.ArtifactManifest) {
     super(assembly, artifactId, artifact);
 
     if (!artifact.properties || !artifact.properties.templateFile) {

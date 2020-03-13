@@ -1,4 +1,5 @@
 import * as cxapi from '@aws-cdk/cx-api';
+import * as cxprotocol from '@aws-cdk/cx-protocol';
 import { AppStacks, Tag } from '../lib/api/cxapp/stacks';
 import { DeployStackResult } from '../lib/api/deploy-stack';
 import { DeployStackOptions, IDeploymentTarget, Template } from '../lib/api/deployment-target';
@@ -47,7 +48,7 @@ class MockStack {
     public readonly stackName: string,
     public readonly template: any = { Resources: { TempalteName: stackName } },
     public readonly templateFile: string = `fake/stack/${stackName}.json`,
-    public readonly assets: cxapi.AssetMetadataEntry[] = [],
+    public readonly assets: cxprotocol.AssetMetadataEntry[] = [],
     public readonly parameters: { [id: string]: string } = {},
     public readonly environment: cxapi.Environment = { name: 'MockEnv', account: '123456789012', region: 'bermuda-triangle-1' },
   ) {}

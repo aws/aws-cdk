@@ -1,5 +1,5 @@
+import { AssemblyManifest } from '@aws-cdk/cx-protocol';
 import * as semver from 'semver';
-import { AssemblyManifest } from './cloud-assembly';
 
 // ----------------------------------------------------------------------
 //

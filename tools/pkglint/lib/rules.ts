@@ -676,6 +676,7 @@ export class MustDependonCdkByPointVersions extends ValidationRule {
       '@aws-cdk/cfnspec',
       '@aws-cdk/cdk-assets-schema',
       '@aws-cdk/cx-api',
+      '@aws-cdk/cx-protocol',
       '@aws-cdk/region-info'
     ];
 

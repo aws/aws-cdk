@@ -64,7 +64,7 @@
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
     "@types/nodeunit": "^0.0.30",
-    "aws-sdk": "^2.638.0",
+    "aws-sdk": "^2.639.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
@@ -99,7 +99,9 @@
   "awslint": {
     "exclude": [
       "resource-attribute:@aws-cdk/aws-eks.FargateCluster.clusterSecurityGroupId",
+      "resource-attribute:@aws-cdk/aws-eks.FargateCluster.clusterEncryptionConfigKeyArn",
       "resource-attribute:@aws-cdk/aws-eks.Cluster.clusterSecurityGroupId",
+      "resource-attribute:@aws-cdk/aws-eks.Cluster.clusterEncryptionConfigKeyArn",
       "props-no-arn-refs:@aws-cdk/aws-eks.ClusterProps.outputMastersRoleArn",
       "resource-attribute:@aws-cdk/aws-eks.Cluster.clusterSecurityGroupId"
     ]

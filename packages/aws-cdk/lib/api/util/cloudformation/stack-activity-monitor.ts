@@ -1,4 +1,5 @@
 import * as cxapi from '@aws-cdk/cx-api';
+import * as cxprotocol from '@aws-cdk/cx-protocol';
 import * as aws from 'aws-sdk';
 import * as colors from 'colors/safe';
 import * as util from 'util';
@@ -236,7 +237,7 @@ export class StackActivityMonitor {
     this.lastPrintTime = +Infinity;
   }
 
-  private findMetadataFor(logicalId: string | undefined): { entry: cxapi.MetadataEntry, path: string } | undefined {
+  private findMetadataFor(logicalId: string | undefined): { entry: cxprotocol.MetadataEntry, path: string } | undefined {
     const metadata = this.stack.manifest.metadata;
     if (!logicalId || !metadata) { return undefined; }
     for (const path of Object.keys(metadata)) {
