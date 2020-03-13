@@ -47,7 +47,7 @@ const api = new apigatewayv2.LambdaProxyApi(stack, 'LambdaProxyApi', {
 });
 ```
 
-To create `HTTP APIs` with Lambda proxy integration, use `HttpProxyApi` instead.
+To create `HTTP APIs` with `HTTP Proxy Integration`, use `HttpProxyApi` instead.
 
 ```ts
 // Create a HTTP API with HTTP Proxy Integration
@@ -59,12 +59,12 @@ new apigatewayv2.HttpProxyApi(stack, 'HttpProxyApi', {
 
 ### WebSocket API
 
-The WebSocket APIs are not supported yet in this L2 construct library, however, as `Api` class is provided, it's still possible to create the Websocket APIs with the `Api` class.
+The WebSocket API is not implemented yet in this L2 construct library, however, as `Api` class is provided, it's still possible to create the Websocket APIs with the `Api` class.
 
 
 ## Route
 
-Routes direct incoming API requests to backend resources. Routes consist of two parts: an HTTP method and a resource path. For example, `GET /pets`. You can define specific HTTP methods for your route, or use the ANY method to match all methods that you haven't defined for a resource. You can create a `$default route` that acts as a catch-all for requests that don’t match any other routes. See [Working with Routes for HTTP APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-routes.html).
+`Routes` direct incoming API requests to backend resources. `Routes` consist of two parts: an HTTP method and a resource path—for example, `GET /pets`. You can define specific HTTP methods for your route, or use the `ANY` method to match all methods that you haven't defined for a resource. You can create a `$default route` that acts as a catch-all for requests that don’t match any other routes. See [Working with Routes for HTTP APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-routes.html).
 
 When you create HTTP APIs with either `Lambda Proxy Integration` or `HTTP Proxy Integration`, the `$default route` will be created as well.
 
