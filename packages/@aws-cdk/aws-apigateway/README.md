@@ -482,11 +482,11 @@ const api = new apigateway.RestApi(this, 'books', {
 ```
 ### Access Logging
 
+This is in addition to the detailed execution logs already provided by Amazon CloudWatch for API requests made to your APIs.
+The access logging feature lets you generate access logs in different formats such as CLF (Common Log Format), JSON, XML, and CSV.
+More info can be found [here](https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-logging.html).
+
 The following example will configure API Gateway to enable custom access logging.
-
-#### CloudWatch Logs
-
-The following CDK code provides custom access log with JSON format.
 
 ```ts
 const logGroup = new cwlogs.LogGroup(this, "ApiGatewayAccessLogs");
@@ -511,7 +511,7 @@ const api = new apigateway.RestApi(this, 'books', {
 })
 ```
 
-The following CDK code provides custom access log with CLF format.
+The access log can be structured freely. The following will configure CLF format.
 
 ```ts
 const logGroup = new cwlogs.LogGroup(this, "ApiGatewayAccessLogs");
@@ -519,17 +519,9 @@ const api = new apigateway.RestApi(this, 'books', {
   deployOptions: {
     accessLogSetting: {
         destinationArn: new apigateway.CloudWatchLogsDestination(logGroup),
-        format: JSON.stringify({
-          requestId: apigateway.AccessLogFormat.contextRequestId(),
-          ip: apigateway.AccessLogFormat.contextIdentitySourceIp(),
-          caller: apigateway.AccessLogFormat.contextIdentityCaller(),
-          user: apigateway.AccessLogFormat.contextIdentityUser(),
-          requestTime: apigateway.AccessLogFormat.contextRequestTime(),
-          httpMethod: apigateway.AccessLogFormat.contextHttpMethod(),
-          resourcePath: apigateway.AccessLogFormat.contextResourcePath(),
-          status: apigateway.AccessLogFormat.contextStatus(),
-          protocol: apigateway.AccessLogFormat.contextProtocol(),
-          responseLength: apigateway.AccessLogFormat.contextResponseLength()
+        format: `${apigateway.AccessLogFormat.contextIdentitySourceIp()} ${apigateway.AccessLogFormat.contextIdentityCaller()} ${apigateway.AccessLogFormat.contextIdentityUser()} \
+[${apigateway.AccessLogFormat.contextRequestTime()}] "${apigateway.AccessLogFormat.contextHttpMethod()} ${apigateway.AccessLogFormat.contextResourcePath()} ${apigateway.AccessLogFormat.contextProtocol()}" \
+${apigateway.AccessLogFormat.contextStatus()} ${apigateway.AccessLogFormat.contextResponseLength()} ${apigateway.AccessLogFormat.contextRequestId()}`;
         })
     }
   }
