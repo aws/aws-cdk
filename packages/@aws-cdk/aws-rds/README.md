@@ -43,9 +43,15 @@ By default, the master password will be generated and stored in AWS Secrets Mana
 Your cluster will be empty by default. To add a default database upon construction, specify the
 `defaultDatabaseName` attribute.
 
-### Enabling S3 integration to a cluster
+### Enabling S3 integration to a cluster (non-serverless Aurora only)
 
-To enable S3 integration on a clustered database, set an IAM role with the required S3 policies to the s3ImportRole property. Remember to also set this role as the aws_default_s3_role, aurora_load_from_s3_role and/or aurora_select_into_s3_role in the cluster's parameter group.
+To enable S3 integration on a clustered database, set an IAM role with the required S3 policies to the s3ImportRole
+property. Remember to also set this role as the aws_default_s3_role, aurora_load_from_s3_role and/or 
+aurora_select_into_s3_role in the cluster's parameter group.
+
+Read more about loading data from S3 [here](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Integrating.LoadFromS3.html).
+
+Read more about saving data into S3 [here](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Integrating.SaveIntoS3.html).
 
 ```ts
 const cluster = new DatabaseCluster(this, 'Database', {
