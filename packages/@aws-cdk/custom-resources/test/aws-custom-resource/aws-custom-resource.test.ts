@@ -1,5 +1,6 @@
 import '@aws-cdk/assert/jest';
 import * as iam from '@aws-cdk/aws-iam';
+import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '../../lib';
 
@@ -486,5 +487,37 @@ test('getDataString', () => {
         "id": 'id'
       }
     }
+  });
+});
+
+test('can specify log retention', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  new AwsCustomResource(stack, 'AwsSdk', {
+    onCreate: {
+      service: 'service',
+      action: 'action',
+      physicalResourceId: PhysicalResourceId.of('id')
+    },
+    logRetention: logs.RetentionDays.ONE_WEEK,
+    policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE })
+  });
+
+  // THEN
+  expect(stack).toHaveResource('Custom::LogRetention', {
+    LogGroupName: {
+      'Fn::Join': [
+        '',
+        [
+          '/aws/lambda/',
+          {
+            Ref: 'AWS679f53fac002430cb0da5b7982bd22872D164C4C'
+          }
+        ]
+      ]
+    },
+    RetentionInDays: 7
   });
 });
