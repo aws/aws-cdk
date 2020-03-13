@@ -31,6 +31,8 @@ This construct library at this moment implements API resources from [AWS::ApiGat
 
 For more information about WebSocket APIs, see [About WebSocket APIs in API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-overview.html) in the _API Gateway Developer Guide_. For more information about HTTP APIs, see [HTTP APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api.html) in the _API Gateway Developer Guide_.
 
+To create [REST APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-rest-api.html), use `@aws-cdk/aws-apigateway` instead.
+
 
 ### HTTP API
 
