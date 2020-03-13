@@ -352,6 +352,21 @@ const book = books.addResource('{book_id}');
 book.addMethod('GET');   // integrated with `booksBackend`
 ```
 
+A Method can be configured with authorization scopes. Authorization scopes are
+used in conjunction with an [authorizer that uses Amazon Cognito user
+pools](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-integrate-with-cognito.html#apigateway-enable-cognito-user-pool).
+Read more about authorization scopes
+[here](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-method.html#cfn-apigateway-method-authorizationscopes).
+
+Authorization scopes for a Method can be configured using the `authorizationScopes` property as shown below -
+
+```ts
+books.addMethod('GET', new apigateway.HttpIntegration('http://amazon.com'), {
+  authorizationType: AuthorizationType.COGNITO,
+  authorizationScopes: ['Scope1','Scope2']
+});
+```
+
 ### Proxy Routes
 
 The `addProxy` method can be used to install a greedy `{proxy+}` resource
