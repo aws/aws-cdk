@@ -1,6 +1,7 @@
 import { CustomResource, CustomResourceProvider } from '@aws-cdk/aws-cloudformation';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
+import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -235,6 +236,14 @@ export interface AwsCustomResourceProps {
    * @default Duration.minutes(2)
    */
   readonly timeout?: cdk.Duration
+
+  /**
+   * The number of days log events of the Lambda function implementing
+   * this custom resource are kept in CloudWatch Logs.
+   *
+   * @default logs.RetentionDays.INFINITE
+   */
+  readonly logRetention?: logs.RetentionDays;
 }
 
 /**
@@ -292,6 +301,7 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
       lambdaPurpose: 'AWS',
       timeout: props.timeout || cdk.Duration.minutes(2),
       role: props.role,
+      logRetention: props.logRetention,
     });
     this.grantPrincipal = provider.grantPrincipal;
 
