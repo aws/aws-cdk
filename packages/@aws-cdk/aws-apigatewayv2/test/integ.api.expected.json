@@ -415,7 +415,7 @@
         "ApiId": {
           "Ref": "LambdaProxyApi67594471"
         },
-        "RouteKey": "ANY /some/very/deep/route/path",
+        "RouteKey": "GET /some/very/deep/route/path",
         "Target": {
           "Fn::Join": [
             "",
