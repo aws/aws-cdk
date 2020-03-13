@@ -486,6 +486,8 @@ The following example will configure API Gateway to enable custom access logging
 
 #### CloudWatch Logs
 
+The following CDK code provides custom access log with JSON format.
+
 ```ts
 const logGroup = new cwlogs.LogGroup(this, "ApiGatewayAccessLogs");
 const api = new apigateway.RestApi(this, 'books', {
@@ -493,16 +495,41 @@ const api = new apigateway.RestApi(this, 'books', {
     accessLogSetting: {
         destinationArn: new apigateway.CloudWatchLogsDestination(logGroup),
         format: JSON.stringify({
-            requestId: "$context.requestId",
-            ip: "$context.identity.sourceIp",
-            caller: "$context.identity.caller",
-            user: "$context.identity.user",
-            requestTime: "$context.requestTime",
-            httpMethod: "$context.httpMethod",
-            resourcePath: "$context.resourcePath",
-            status: "$context.status",
-            protocol: "$context.protocol",
-            responseLength: "$context.responseLength"
+          requestId: apigateway.AccessLogFormat.contextRequestId(),
+          ip: apigateway.AccessLogFormat.contextIdentitySourceIp(),
+          caller: apigateway.AccessLogFormat.contextIdentityCaller(),
+          user: apigateway.AccessLogFormat.contextIdentityUser(),
+          requestTime: apigateway.AccessLogFormat.contextRequestTime(),
+          httpMethod: apigateway.AccessLogFormat.contextHttpMethod(),
+          resourcePath: apigateway.AccessLogFormat.contextResourcePath(),
+          status: apigateway.AccessLogFormat.contextStatus(),
+          protocol: apigateway.AccessLogFormat.contextProtocol(),
+          responseLength: apigateway.AccessLogFormat.contextResponseLength()
+        })
+    }
+  }
+})
+```
+
+The following CDK code provides custom access log with CLF format.
+
+```ts
+const logGroup = new cwlogs.LogGroup(this, "ApiGatewayAccessLogs");
+const api = new apigateway.RestApi(this, 'books', {
+  deployOptions: {
+    accessLogSetting: {
+        destinationArn: new apigateway.CloudWatchLogsDestination(logGroup),
+        format: JSON.stringify({
+          requestId: apigateway.AccessLogFormat.contextRequestId(),
+          ip: apigateway.AccessLogFormat.contextIdentitySourceIp(),
+          caller: apigateway.AccessLogFormat.contextIdentityCaller(),
+          user: apigateway.AccessLogFormat.contextIdentityUser(),
+          requestTime: apigateway.AccessLogFormat.contextRequestTime(),
+          httpMethod: apigateway.AccessLogFormat.contextHttpMethod(),
+          resourcePath: apigateway.AccessLogFormat.contextResourcePath(),
+          status: apigateway.AccessLogFormat.contextStatus(),
+          protocol: apigateway.AccessLogFormat.contextProtocol(),
+          responseLength: apigateway.AccessLogFormat.contextResponseLength()
         })
     }
   }
@@ -520,16 +547,16 @@ const api = new apigateway.RestApi(this, 'books', {
     accessLogSetting: {
         destinationArn: new apigateway.CloudWatchLogsDestination(deliveryStream.attrArn),
         format: JSON.stringify({
-            requestId: "$context.requestId",
-            ip: "$context.identity.sourceIp",
-            caller: "$context.identity.caller",
-            user: "$context.identity.user",
-            requestTime: "$context.requestTime",
-            httpMethod: "$context.httpMethod",
-            resourcePath: "$context.resourcePath",
-            status: "$context.status",
-            protocol: "$context.protocol",
-            responseLength: "$context.responseLength"
+          requestId: apigateway.AccessLogFormat.contextRequestId(),
+          ip: apigateway.AccessLogFormat.contextIdentitySourceIp(),
+          caller: apigateway.AccessLogFormat.contextIdentityCaller(),
+          user: apigateway.AccessLogFormat.contextIdentityUser(),
+          requestTime: apigateway.AccessLogFormat.contextRequestTime(),
+          httpMethod: apigateway.AccessLogFormat.contextHttpMethod(),
+          resourcePath: apigateway.AccessLogFormat.contextResourcePath(),
+          status: apigateway.AccessLogFormat.contextStatus(),
+          protocol: apigateway.AccessLogFormat.contextProtocol(),
+          responseLength: apigateway.AccessLogFormat.contextResponseLength()
         })
     }
   }
