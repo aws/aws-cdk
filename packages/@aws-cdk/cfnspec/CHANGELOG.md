@@ -1,3 +1,25 @@
+# CloudFormation Resource Specification v11.4.0
+
+## New Resource Types
+
+* AWS::Athena::WorkGroup
+* AWS::Chatbot::SlackChannelConfiguration
+* AWS::CodeStarConnections::Connection
+
+## Attribute Changes
+
+* AWS::EKS::Cluster EncryptionConfigKeyArn (__added__)
+
+## Property Changes
+
+* AWS::EKS::Cluster EncryptionConfig (__added__)
+
+## Property Type Changes
+
+* AWS::EKS::Cluster.EncryptionConfig (__added__)
+* AWS::EKS::Cluster.Provider (__added__)
+
+
 # CloudFormation Resource Specification v11.3.0
 
 ## New Resource Types
