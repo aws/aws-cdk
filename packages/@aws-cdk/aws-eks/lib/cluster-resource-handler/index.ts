@@ -28,7 +28,7 @@ const defaultEksClient: EksClient = {
   deleteOpenIDConnectProvider: req => getIamClient().deleteOpenIDConnectProvider(req).promise(),
   getOpenIDConnectProvider: req => getIamClient().getOpenIDConnectProvider(req).promise(),
   getRole: req => getIamClient().getRole(req).promise(),
-  updateRole: req => getIamClient().updateRole(req).promise(),
+  updateAssumeRolePolicy: req => getIamClient().updateAssumeRolePolicy(req).promise(),
   configureAssumeRole: req => {
     console.log(JSON.stringify({ assumeRole: req }, undefined, 2));
     const creds = new aws.ChainableTemporaryCredentials({

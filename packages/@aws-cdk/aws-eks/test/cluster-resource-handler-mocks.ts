@@ -19,7 +19,7 @@ export let actualRequest: {
   deleteOpenIDConnectProvider?: sdk.IAM.DeleteOpenIDConnectProviderRequest;
   getOpenIDConnectProvider?: sdk.IAM.GetOpenIDConnectProviderRequest;
   getRole?: sdk.IAM.GetRoleRequest;
-  updateRole?: sdk.IAM.UpdateRoleRequest;
+  updateAssumeRolePolicy?: sdk.IAM.UpdateAssumeRolePolicyRequest;
 } = { };
 
 /**
@@ -137,9 +137,9 @@ export const client: EksClient = {
       Role: { Path: '/', RoleName: 'Role', RoleId: 'role', Arn: 'arn:role', CreateDate: new Date() }
     };
   },
-  updateRole: async req => {
-    actualRequest.updateRole = req;
-    return { };
+  updateAssumeRolePolicy: async req => {
+    actualRequest.updateAssumeRolePolicy = req;
+    return { $response: new sdk.Response() };
   },
 };
 

@@ -302,6 +302,6 @@ function newEksClientMock() {
     deleteOpenIDConnectProvider: sinon.fake(),
     getOpenIDConnectProvider: sinon.fake(),
     getRole: sinon.fake(),
-    updateRole: sinon.fake()
+    updateAssumeRolePolicy: sinon.fake()
   };
 }

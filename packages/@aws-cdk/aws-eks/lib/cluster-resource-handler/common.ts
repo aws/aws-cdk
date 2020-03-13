@@ -75,5 +75,5 @@ export interface EksClient {
   deleteOpenIDConnectProvider(request: aws.IAM.DeleteOpenIDConnectProviderRequest): Promise<{ $response: aws.Response<{}, aws.AWSError>; }>;
   getOpenIDConnectProvider(request: aws.IAM.GetOpenIDConnectProviderRequest): Promise<aws.IAM.GetOpenIDConnectProviderResponse>;
   getRole(request: aws.IAM.GetRoleRequest): Promise<aws.IAM.GetRoleResponse>;
-  updateRole(request: aws.IAM.UpdateRoleRequest): Promise<aws.IAM.UpdateRoleResponse>;
+  updateAssumeRolePolicy(request: aws.IAM.UpdateAssumeRolePolicyRequest): Promise<{ $response: aws.Response<{}, aws.AWSError>; }>;
 }

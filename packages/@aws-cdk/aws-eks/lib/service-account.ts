@@ -1,8 +1,9 @@
 import { CustomResource } from "@aws-cdk/aws-cloudformation";
 import { FederatedPrincipal, PolicyStatement, Role } from "@aws-cdk/aws-iam";
 import { Construct } from "@aws-cdk/core";
+import { Provider } from "@aws-cdk/custom-resources";
 import { Cluster } from "./cluster";
-import { OPENIDCONNECT_PROVIDER_RESOURCE_TYPE } from "./cluster-resource-handler/consts";
+import { OPENIDCONNECT_PROVIDER_RESOURCE_TYPE, OPENIDCONNECT_ROLE_RESOURCE_TYPE } from "./cluster-resource-handler/consts";
 import { ClusterResourceProvider } from "./cluster-resource-provider";
 
 /**
@@ -47,13 +48,15 @@ export class ServiceAccount extends Construct {
   private readonly role: Role;
 
   private openIdConnectProviderArn: string | undefined;
+  private openIdConnectProviderIssuerUrl: string | undefined;
 
   constructor(scope: Construct, id: string, props: ServiceAccountProps) {
     super(scope, id);
 
     const { cluster, name, namespace, policyStatements } = props;
     // Ensure OpenIDConnect association
-    this.enableOpenIDConnectIAMProvider(cluster);
+    const provider = ClusterResourceProvider.getOrCreate(this).provider;
+    this.enableOpenIDConnectIAMProvider(provider, cluster);
     // Create IAM Role
     this.role = new Role(this, "Role", {
       assumedBy: new FederatedPrincipal(
@@ -76,6 +79,7 @@ export class ServiceAccount extends Construct {
         }
       }
     });
+    this.linkIAMRoleToOpenIDConnect(provider, cluster, this.role.roleName, this.openIdConnectProviderIssuerUrl!, name, namespace);
 
     this.serviceAccountName = name;
   }
@@ -87,14 +91,13 @@ export class ServiceAccount extends Construct {
     this.role.addToPolicy(statements);
   }
 
-  private enableOpenIDConnectIAMProvider(cluster: Cluster) {
+  private enableOpenIDConnectIAMProvider(provider: Provider, cluster: Cluster) {
     let resource = cluster.node.tryFindChild(
       "OpenIDConnectProviderResource"
     ) as CustomResource;
     if (!resource) {
-      const provider = ClusterResourceProvider.getOrCreate(this);
       resource = new CustomResource(cluster, "OpenIDConnectProviderResource", {
-        provider: provider.provider,
+        provider,
         resourceType: OPENIDCONNECT_PROVIDER_RESOURCE_TYPE,
         properties: {
           AssumeRoleArn: cluster._getKubectlCreationRoleArn(),
@@ -104,7 +107,22 @@ export class ServiceAccount extends Construct {
         }
       });
     }
-    // this.openIDConnectSubject = resource.getAtt("openIDConnectSubject").toString();
+    this.openIdConnectProviderIssuerUrl = resource.getAtt("openIDConnectIssuerUrl").toString();
     this.openIdConnectProviderArn = resource.ref;
+  }
+
+  private linkIAMRoleToOpenIDConnect(provider: Provider, cluster: Cluster,
+                                     roleName: string, issuerUrl: string,
+                                     serviceAccountName: string, serviceAccountNamespace: string) {
+    new CustomResource(this, "OpenIDConnectRoleResource", {
+      provider,
+      resourceType: OPENIDCONNECT_ROLE_RESOURCE_TYPE,
+      properties: {
+        AssumeRoleArn: cluster._getKubectlCreationRoleArn(),
+        Config: {
+          roleName, issuerUrl, serviceAccountName, serviceAccountNamespace
+        }
+      }
+    });
   }
 }

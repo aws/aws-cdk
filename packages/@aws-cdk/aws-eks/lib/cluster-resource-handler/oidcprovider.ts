@@ -22,7 +22,7 @@ export class OpenIDConnectProviderResourceHandler extends ResourceHandler {
     const createOpenIDConnectProviderResponse = await this.eks.createOpenIDConnectProvider(
       {
         Url: issuerUrl,
-        ClientIDList: ["sts.amazon.com"],
+        ClientIDList: ["sts.amazonaws.com"],
         ThumbprintList: [thumbprint]
       }
     );
@@ -30,7 +30,7 @@ export class OpenIDConnectProviderResourceHandler extends ResourceHandler {
     return {
       PhysicalResourceId: createOpenIDConnectProviderResponse.OpenIDConnectProviderArn,
       Data: {
-        openIDConnectSubject: issuerUrl.substring(8) + ":sub",
+        openIDConnectIssuerUrl: issuerUrl.substring(8), // Strip https:// from the issuer
         openIDConnectProviderArn: createOpenIDConnectProviderResponse.OpenIDConnectProviderArn
       }
     };

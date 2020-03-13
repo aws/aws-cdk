@@ -89,17 +89,12 @@ export class ClusterResource extends Construct {
     }));
 
     this.creationRole.addToPolicy(new iam.PolicyStatement({
-      actions: [ 'iam:GetRole' ],
+      actions: [ 'iam:GetRole', 'iam:UpdateAssumeRolePolicy' ],
       resources: [ '*' ],
     }));
 
     this.creationRole.addToPolicy(new iam.PolicyStatement({
-      actions: [ 'iam:CreateOpenIDConnectProvider', 'iam:DeleteOpenIDConnectProvider', 'iam:GetOpenIDConnectProvider' ],
-      resources: [ '*' ],
-    }));
-
-    this.creationRole.addToPolicy(new iam.PolicyStatement({
-      actions: [ 'iam:CreateServiceLinkedRole' ],
+      actions: [ 'iam:CreateOpenIDConnectProvider', 'iam:DeleteOpenIDConnectProvider', 'iam:GetOpenIDConnectProvider', 'iam:CreateServiceLinkedRole' ],
       resources: [ '*' ],
     }));
 
