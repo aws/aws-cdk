@@ -1,6 +1,6 @@
 {
   "Resources": {
-    "C9EnvVpc8A91FB4E": {
+    "VPCB9E5F0B4": {
       "Type": "AWS::EC2::VPC",
       "Properties": {
         "CidrBlock": "10.0.0.0/16",
@@ -10,24 +10,24 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-cloud9-integ/C9Env/Vpc"
+            "Value": "C9Stack/VPC"
           }
         ]
       }
     },
-    "C9EnvVpcPublicSubnet1Subnet6CAA08D7": {
+    "VPCPublicSubnet1SubnetB4246D30": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
         "CidrBlock": "10.0.0.0/18",
         "VpcId": {
-          "Ref": "C9EnvVpc8A91FB4E"
+          "Ref": "VPCB9E5F0B4"
         },
         "AvailabilityZone": "test-region-1a",
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-cloud9-integ/C9Env/Vpc/PublicSubnet1"
+            "Value": "C9Stack/VPC/PublicSubnet1"
           },
           {
             "Key": "aws-cdk:subnet-name",
@@ -40,91 +40,91 @@
         ]
       }
     },
-    "C9EnvVpcPublicSubnet1RouteTableA03AED32": {
+    "VPCPublicSubnet1RouteTableFEE4B781": {
       "Type": "AWS::EC2::RouteTable",
       "Properties": {
         "VpcId": {
-          "Ref": "C9EnvVpc8A91FB4E"
+          "Ref": "VPCB9E5F0B4"
         },
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-cloud9-integ/C9Env/Vpc/PublicSubnet1"
+            "Value": "C9Stack/VPC/PublicSubnet1"
           }
         ]
       }
     },
-    "C9EnvVpcPublicSubnet1RouteTableAssociation37CF4393": {
+    "VPCPublicSubnet1RouteTableAssociation0B0896DC": {
       "Type": "AWS::EC2::SubnetRouteTableAssociation",
       "Properties": {
         "RouteTableId": {
-          "Ref": "C9EnvVpcPublicSubnet1RouteTableA03AED32"
+          "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
         },
         "SubnetId": {
-          "Ref": "C9EnvVpcPublicSubnet1Subnet6CAA08D7"
+          "Ref": "VPCPublicSubnet1SubnetB4246D30"
         }
       }
     },
-    "C9EnvVpcPublicSubnet1DefaultRoute3484CD83": {
+    "VPCPublicSubnet1DefaultRoute91CEF279": {
       "Type": "AWS::EC2::Route",
       "Properties": {
         "RouteTableId": {
-          "Ref": "C9EnvVpcPublicSubnet1RouteTableA03AED32"
+          "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
         },
         "DestinationCidrBlock": "0.0.0.0/0",
         "GatewayId": {
-          "Ref": "C9EnvVpcIGW16525AD3"
+          "Ref": "VPCIGWB7E252D3"
         }
       },
       "DependsOn": [
-        "C9EnvVpcVPCGWE62906C0"
+        "VPCVPCGW99B986DC"
       ]
     },
-    "C9EnvVpcPublicSubnet1EIP02BD504E": {
+    "VPCPublicSubnet1EIP6AD938E8": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
         "Domain": "vpc",
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-cloud9-integ/C9Env/Vpc/PublicSubnet1"
+            "Value": "C9Stack/VPC/PublicSubnet1"
           }
         ]
       }
     },
-    "C9EnvVpcPublicSubnet1NATGateway907AF81D": {
+    "VPCPublicSubnet1NATGatewayE0556630": {
       "Type": "AWS::EC2::NatGateway",
       "Properties": {
         "AllocationId": {
           "Fn::GetAtt": [
-            "C9EnvVpcPublicSubnet1EIP02BD504E",
+            "VPCPublicSubnet1EIP6AD938E8",
             "AllocationId"
           ]
         },
         "SubnetId": {
-          "Ref": "C9EnvVpcPublicSubnet1Subnet6CAA08D7"
+          "Ref": "VPCPublicSubnet1SubnetB4246D30"
         },
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-cloud9-integ/C9Env/Vpc/PublicSubnet1"
+            "Value": "C9Stack/VPC/PublicSubnet1"
           }
         ]
       }
     },
-    "C9EnvVpcPublicSubnet2SubnetAC8ABAF2": {
+    "VPCPublicSubnet2Subnet74179F39": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
         "CidrBlock": "10.0.64.0/18",
         "VpcId": {
-          "Ref": "C9EnvVpc8A91FB4E"
+          "Ref": "VPCB9E5F0B4"
         },
         "AvailabilityZone": "test-region-1b",
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-cloud9-integ/C9Env/Vpc/PublicSubnet2"
+            "Value": "C9Stack/VPC/PublicSubnet2"
           },
           {
             "Key": "aws-cdk:subnet-name",
@@ -137,91 +137,59 @@
         ]
       }
     },
-    "C9EnvVpcPublicSubnet2RouteTable5AEECAD3": {
+    "VPCPublicSubnet2RouteTable6F1A15F1": {
       "Type": "AWS::EC2::RouteTable",
       "Properties": {
         "VpcId": {
-          "Ref": "C9EnvVpc8A91FB4E"
+          "Ref": "VPCB9E5F0B4"
         },
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-cloud9-integ/C9Env/Vpc/PublicSubnet2"
+            "Value": "C9Stack/VPC/PublicSubnet2"
           }
         ]
       }
     },
-    "C9EnvVpcPublicSubnet2RouteTableAssociation0BF5EF87": {
+    "VPCPublicSubnet2RouteTableAssociation5A808732": {
       "Type": "AWS::EC2::SubnetRouteTableAssociation",
       "Properties": {
         "RouteTableId": {
-          "Ref": "C9EnvVpcPublicSubnet2RouteTable5AEECAD3"
+          "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
         },
         "SubnetId": {
-          "Ref": "C9EnvVpcPublicSubnet2SubnetAC8ABAF2"
+          "Ref": "VPCPublicSubnet2Subnet74179F39"
         }
       }
     },
-    "C9EnvVpcPublicSubnet2DefaultRoute8B4D8D5A": {
+    "VPCPublicSubnet2DefaultRouteB7481BBA": {
       "Type": "AWS::EC2::Route",
       "Properties": {
         "RouteTableId": {
-          "Ref": "C9EnvVpcPublicSubnet2RouteTable5AEECAD3"
+          "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
         },
         "DestinationCidrBlock": "0.0.0.0/0",
         "GatewayId": {
-          "Ref": "C9EnvVpcIGW16525AD3"
+          "Ref": "VPCIGWB7E252D3"
         }
       },
       "DependsOn": [
-        "C9EnvVpcVPCGWE62906C0"
+        "VPCVPCGW99B986DC"
       ]
     },
-    "C9EnvVpcPublicSubnet2EIP52F6B8B6": {
-      "Type": "AWS::EC2::EIP",
-      "Properties": {
-        "Domain": "vpc",
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": "aws-cdk-cloud9-integ/C9Env/Vpc/PublicSubnet2"
-          }
-        ]
-      }
-    },
-    "C9EnvVpcPublicSubnet2NATGateway5D228FBA": {
-      "Type": "AWS::EC2::NatGateway",
-      "Properties": {
-        "AllocationId": {
-          "Fn::GetAtt": [
-            "C9EnvVpcPublicSubnet2EIP52F6B8B6",
-            "AllocationId"
-          ]
-        },
-        "SubnetId": {
-          "Ref": "C9EnvVpcPublicSubnet2SubnetAC8ABAF2"
-        },
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": "aws-cdk-cloud9-integ/C9Env/Vpc/PublicSubnet2"
-          }
-        ]
-      }
-    },
-    "C9EnvVpcPrivateSubnet1SubnetCDFBD5DC": {
+    "VPCPrivateSubnet1Subnet8BCA10E0": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
         "CidrBlock": "10.0.128.0/18",
         "VpcId": {
-          "Ref": "C9EnvVpc8A91FB4E"
+          "Ref": "VPCB9E5F0B4"
         },
         "AvailabilityZone": "test-region-1a",
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-cloud9-integ/C9Env/Vpc/PrivateSubnet1"
+            "Value": "C9Stack/VPC/PrivateSubnet1"
           },
           {
             "Key": "aws-cdk:subnet-name",
@@ -234,56 +202,56 @@
         ]
       }
     },
-    "C9EnvVpcPrivateSubnet1RouteTable0D89A291": {
+    "VPCPrivateSubnet1RouteTableBE8A6027": {
       "Type": "AWS::EC2::RouteTable",
       "Properties": {
         "VpcId": {
-          "Ref": "C9EnvVpc8A91FB4E"
+          "Ref": "VPCB9E5F0B4"
         },
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-cloud9-integ/C9Env/Vpc/PrivateSubnet1"
+            "Value": "C9Stack/VPC/PrivateSubnet1"
           }
         ]
       }
     },
-    "C9EnvVpcPrivateSubnet1RouteTableAssociationECFC200C": {
+    "VPCPrivateSubnet1RouteTableAssociation347902D1": {
       "Type": "AWS::EC2::SubnetRouteTableAssociation",
       "Properties": {
         "RouteTableId": {
-          "Ref": "C9EnvVpcPrivateSubnet1RouteTable0D89A291"
+          "Ref": "VPCPrivateSubnet1RouteTableBE8A6027"
         },
         "SubnetId": {
-          "Ref": "C9EnvVpcPrivateSubnet1SubnetCDFBD5DC"
+          "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
         }
       }
     },
-    "C9EnvVpcPrivateSubnet1DefaultRoute6FE68040": {
+    "VPCPrivateSubnet1DefaultRouteAE1D6490": {
       "Type": "AWS::EC2::Route",
       "Properties": {
         "RouteTableId": {
-          "Ref": "C9EnvVpcPrivateSubnet1RouteTable0D89A291"
+          "Ref": "VPCPrivateSubnet1RouteTableBE8A6027"
         },
         "DestinationCidrBlock": "0.0.0.0/0",
         "NatGatewayId": {
-          "Ref": "C9EnvVpcPublicSubnet1NATGateway907AF81D"
+          "Ref": "VPCPublicSubnet1NATGatewayE0556630"
         }
       }
     },
-    "C9EnvVpcPrivateSubnet2SubnetFFF15407": {
+    "VPCPrivateSubnet2SubnetCFCDAA7A": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
         "CidrBlock": "10.0.192.0/18",
         "VpcId": {
-          "Ref": "C9EnvVpc8A91FB4E"
+          "Ref": "VPCB9E5F0B4"
         },
         "AvailabilityZone": "test-region-1b",
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-cloud9-integ/C9Env/Vpc/PrivateSubnet2"
+            "Value": "C9Stack/VPC/PrivateSubnet2"
           },
           {
             "Key": "aws-cdk:subnet-name",
@@ -296,62 +264,62 @@
         ]
       }
     },
-    "C9EnvVpcPrivateSubnet2RouteTableAD92E980": {
+    "VPCPrivateSubnet2RouteTable0A19E10E": {
       "Type": "AWS::EC2::RouteTable",
       "Properties": {
         "VpcId": {
-          "Ref": "C9EnvVpc8A91FB4E"
+          "Ref": "VPCB9E5F0B4"
         },
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-cloud9-integ/C9Env/Vpc/PrivateSubnet2"
+            "Value": "C9Stack/VPC/PrivateSubnet2"
           }
         ]
       }
     },
-    "C9EnvVpcPrivateSubnet2RouteTableAssociation2E869828": {
+    "VPCPrivateSubnet2RouteTableAssociation0C73D413": {
       "Type": "AWS::EC2::SubnetRouteTableAssociation",
       "Properties": {
         "RouteTableId": {
-          "Ref": "C9EnvVpcPrivateSubnet2RouteTableAD92E980"
+          "Ref": "VPCPrivateSubnet2RouteTable0A19E10E"
         },
         "SubnetId": {
-          "Ref": "C9EnvVpcPrivateSubnet2SubnetFFF15407"
+          "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
         }
       }
     },
-    "C9EnvVpcPrivateSubnet2DefaultRoute140866AA": {
+    "VPCPrivateSubnet2DefaultRouteF4F5CFD2": {
       "Type": "AWS::EC2::Route",
       "Properties": {
         "RouteTableId": {
-          "Ref": "C9EnvVpcPrivateSubnet2RouteTableAD92E980"
+          "Ref": "VPCPrivateSubnet2RouteTable0A19E10E"
         },
         "DestinationCidrBlock": "0.0.0.0/0",
         "NatGatewayId": {
-          "Ref": "C9EnvVpcPublicSubnet2NATGateway5D228FBA"
+          "Ref": "VPCPublicSubnet1NATGatewayE0556630"
         }
       }
     },
-    "C9EnvVpcIGW16525AD3": {
+    "VPCIGWB7E252D3": {
       "Type": "AWS::EC2::InternetGateway",
       "Properties": {
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-cloud9-integ/C9Env/Vpc"
+            "Value": "C9Stack/VPC"
           }
         ]
       }
     },
-    "C9EnvVpcVPCGWE62906C0": {
+    "VPCVPCGW99B986DC": {
       "Type": "AWS::EC2::VPCGatewayAttachment",
       "Properties": {
         "VpcId": {
-          "Ref": "C9EnvVpc8A91FB4E"
+          "Ref": "VPCB9E5F0B4"
         },
         "InternetGatewayId": {
-          "Ref": "C9EnvVpcIGW16525AD3"
+          "Ref": "VPCIGWB7E252D3"
         }
       }
     },
@@ -360,8 +328,15 @@
       "Properties": {
         "InstanceType": "t2.micro",
         "SubnetId": {
-          "Ref": "C9EnvVpcPublicSubnet1Subnet6CAA08D7"
+          "Ref": "VPCPublicSubnet1SubnetB4246D30"
         }
+      }
+    },
+    "C9Env243CB6E51": {
+      "Type": "AWS::Cloud9::EnvironmentEC2",
+      "Properties": {
+        "InstanceType": "t3.large",
+        "SubnetId": "subnet-e19455ca"
       }
     }
   },
@@ -371,13 +346,30 @@
         "Fn::Join": [
           "",
           [
-            "https://",
-            {
-              "Ref": "AWS::Region"
-            },
-            ".console.aws.amazon.com/cloud9/ide/",
+            "https://test-region.console.aws.amazon.com/cloud9/ide/",
             {
               "Ref": "C9EnvF05FC3BE"
+            }
+          ]
+        ]
+      }
+    },
+    "ARN": {
+      "Value": {
+        "Fn::GetAtt": [
+          "C9EnvF05FC3BE",
+          "Arn"
+        ]
+      }
+    },
+    "URL2": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://test-region.console.aws.amazon.com/cloud9/ide/",
+            {
+              "Ref": "C9Env243CB6E51"
             }
           ]
         ]

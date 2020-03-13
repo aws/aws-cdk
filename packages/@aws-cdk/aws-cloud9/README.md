@@ -23,13 +23,22 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 import * as cloud9 from '@aws-cdk/aws-cloud9';
 
 // create a cloud9 ec2 environment in a new VPC
-new cloud9.EnvironmentEC2(this, 'Cloud9Env');
+const vpc = new ec2.Vpc(this, 'VPC', { maxAzs: 3});
+new cloud9.EnvironmentEC2(this, 'Cloud9Env', { vpc });
 
-// or create the cloud9 environment in my default VPC
+// or create the cloud9 environment in the default VPC with specific instanceType
 const vpc = ec2.Vpc.fromLookup(this, 'VPC', { isDefault: true });
-const c9env = new cloud9.EnvironmentEC2(this, 'Cloud9Env2', {
+new cloud9.EnvironmentEC2(this, 'Cloud9Env2', {
   vpc,
   instanceType: new ec2.InstanceType('t3.large')
+});
+
+// or specify in a different subnetSelection 
+const c9env = new cloud9.EnvironmentEC2(this, 'Cloud9Env3', {
+    vpc,
+    subnetSelection: {
+      subnetType: ec2.SubnetType.PRIVATE
+    }
 });
 
 // print the Cloud9 IDE URL in the output

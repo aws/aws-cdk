@@ -32,27 +32,23 @@ export interface EnvironmentEC2Props {
   readonly instanceType?: ec2.InstanceType;
 
   /**
-   * The ID of the subnet in Amazon Virtual Private Cloud (Amazon VPC) that AWS Cloud9 will use to communicate with
-   * the Amazon Elastic Compute Cloud (Amazon EC2) instance. If you specify both `subnetId` and `vpc` properties,
-   * the `vpc` property will be ignored.
+   * The subnetSelection of the VPC that AWS Cloud9 will use to communicate with
+   * the Amazon EC2 instance.
    *
-   * @default - the first public subnet of the default VPC
+   * @default - all public subnets of the VPC are selected.
    */
-  readonly subnetId?: string;
+  readonly subnetSelection?: ec2.SubnetSelection;
 
   /**
-   * The AWS VPC that AWS Cloud9 will use to communicate with the Amazon Elastic Compute Cloud (Amazon EC2) instance.
-   * The first public subnet of the provided VPC will be selected. However, if you specify `subnetId` as well,
-   * the `vpc` property will be ignored.
+   * The VPC that AWS Cloud9 will use to communicate with the Amazon Elastic Compute Cloud (Amazon EC2) instance.
    *
-   * @default - first public subnet of the VPC provided
    */
-  readonly vpc?: ec2.IVpc;
+  readonly vpc: ec2.IVpc;
 
   /**
    * Name of the environment
    *
-   * @default none
+   * @default - automatically generated name
    */
   readonly environmentEc2Name?: string;
 
@@ -94,36 +90,45 @@ export class EnvironmentEC2 extends cdk.Resource implements IEnvironmentEC2 {
   public readonly environmentEc2Arn: string;
 
   /**
-   * The logical ID of this Cloud9 environment in cloudformation
-   */
-  public readonly logicalId: string;
-
-  /**
    * The environment ID of this Cloud9 environment
    */
   public readonly environmentId: string;
+
+  /**
+   * VPC ID
+   */
+  public readonly vpc: ec2.IVpc;
 
   /**
    * The complete IDE URL of this Cloud9 environment
    */
   public readonly ideUrl: string;
 
-  constructor(scope: cdk.Construct, id: string, props: EnvironmentEC2Props = {}) {
-    super(scope, id, {
-      physicalName: props.environmentEc2Name
-    });
+  constructor(scope: cdk.Construct, id: string, props: EnvironmentEC2Props) {
+    super(scope, id);
+    this.vpc = props.vpc;
+    // if (props.subnetSelection && this.vpc.selectSubnets(props.subnetSelection).subnetIds.length === 0) {
+    //   throw new Error('no subnet found with provided subnetSelection');
+    // }
+
+    // if (!props.subnetSelection && this.vpc.selectSubnets({ subnetType: ec2.SubnetType.PUBLIC } ).subnetIds.length === 0) {
+    //   throw new Error('no subnetSelection specified and no public subnet found in the vpc, please specify subnetSelection.');
+    // }
+
+    if (!props.subnetSelection && this.vpc.publicSubnets.length === 0) {
+      throw new Error('no subnetSelection specified and no public subnet found in the vpc, please specify subnetSelection');
+    }
     const c9env = new CfnEnvironmentEC2(this, 'Resource', {
-      name: props.environmentEc2Name ?? this.physicalName,
+      name: props.environmentEc2Name,
       description: props.description,
       instanceType: props.instanceType?.toString() ?? ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO).toString(),
-      subnetId: props.subnetId ?? props.vpc?.publicSubnets[0].subnetId.toString() ??
-      new ec2.Vpc(this, 'Vpc', { maxAzs: 2 }).publicSubnets[0].subnetId.toString(),
+      subnetId: props.subnetSelection ? this.vpc.selectSubnets(props.subnetSelection).subnetIds[0] :
+        this.vpc.selectSubnets({ subnetType: ec2.SubnetType.PUBLIC }).subnetIds[0] ,
     });
-
-    this.logicalId = c9env.logicalId;
-    this.environmentId = cdk.Fn.ref(this.logicalId);
+    this.environmentId = c9env.ref;
     this.environmentEc2Arn = c9env.getAtt('Arn').toString();
     this.environmentEc2Name = c9env.getAtt('Name').toString();
     this.ideUrl = `https://${this.stack.region}.console.aws.amazon.com/cloud9/ide/${this.environmentId}`;
+    // new cdk.CfnOutput(this, 'ARN', { value: c9env.attrArn});
   }
 }
