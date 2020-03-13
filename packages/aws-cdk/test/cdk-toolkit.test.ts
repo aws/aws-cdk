@@ -93,10 +93,6 @@ class TestAppStacks extends AppStacks {
   public synthesizeStack(): never {
     throw new Error('Not Implemented');
   }
-
-  public synthesizeStacks(): never {
-    throw new Error('Not Implemented');
-  }
 }
 
 class TestProvisioner implements IDeploymentTarget {

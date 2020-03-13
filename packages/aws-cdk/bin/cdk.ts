@@ -9,9 +9,10 @@ import * as yargs from 'yargs';
 import { bootstrapEnvironment, BootstrapEnvironmentProps, ToolkitInfo } from '../lib';
 import { SdkProvider } from '../lib/api/aws-auth';
 import { bootstrapEnvironment2 } from '../lib/api/bootstrap/bootstrap-environment2';
+import { DefaultSelection, ExtendedStackSelection } from '../lib/api/cxapp/cloud-assembly';
 import { environmentsFromDescriptors, globEnvironmentsFromStacks } from '../lib/api/cxapp/environments';
 import { execProgram } from '../lib/api/cxapp/exec';
-import { AppStacks, DefaultSelection, ExtendedStackSelection } from '../lib/api/cxapp/stacks';
+import { AppStacks } from '../lib/api/cxapp/stacks';
 import { CloudFormationDeploymentTarget } from '../lib/api/deployment-target';
 import { CdkToolkit } from '../lib/cdk-toolkit';
 import { RequireApproval } from '../lib/diff';
@@ -112,7 +113,7 @@ async function initCommandLine() {
   debug('CDK toolkit version:', version.DISPLAY_VERSION);
   debug('Command line arguments:', argv);
 
-  const aws = await SdkProvider.withAwsCliCompatibleDefaults({
+  const sdkProvider = await SdkProvider.withAwsCliCompatibleDefaults({
     profile: argv.profile,
     ec2creds: argv.ec2creds,
     httpOptions: {
@@ -124,14 +125,14 @@ async function initCommandLine() {
   const configuration = new Configuration(argv);
   await configuration.load();
 
-  const provisioner = new CloudFormationDeploymentTarget({ sdkProvider: aws });
+  const provisioner = new CloudFormationDeploymentTarget({ sdkProvider });
 
   const appStacks = new AppStacks({
     verbose: argv.trace || argv.verbose,
     ignoreErrors: argv['ignore-errors'],
     strict: argv.strict,
     configuration,
-    aws,
+    aws: sdkProvider,
     synthesizer: execProgram,
   });
 
@@ -164,7 +165,7 @@ async function initCommandLine() {
   const cmd = argv._[0];
 
   // Bundle up global objects so the commands have access to them
-  const commandOptions = { args: argv, appStacks, configuration, aws };
+  const commandOptions = { args: argv, appStacks, configuration, aws: sdkProvider };
 
   try {
     const returnValue = argv.commandHandler
@@ -232,7 +233,7 @@ async function initCommandLine() {
           requireApproval: configuration.settings.get(['requireApproval']),
           reuseAssets: args['build-exclude'],
           tags: configuration.settings.get(['tags']),
-          sdk: aws,
+          sdk: sdkProvider,
           execute: args.execute,
           force: args.force,
           parameters: parameterMap
@@ -290,14 +291,14 @@ async function initCommandLine() {
 
     const app = configuration.settings.get(['app']);
 
-    const environments = app ? await globEnvironmentsFromStacks(appStacks, environmentGlobs, aws) : environmentsFromDescriptors(environmentGlobs);
+    const environments = app ? await globEnvironmentsFromStacks(appStacks, environmentGlobs, sdkProvider) : environmentsFromDescriptors(environmentGlobs);
 
     await Promise.all(environments.map(async (environment) => {
       success(' ⏳  Bootstrapping environment %s...', colors.blue(environment.name));
       try {
         const result = useNewBootstrapping
-          ? await bootstrapEnvironment2(environment, aws, toolkitStackName, roleArn, props)
-          : await bootstrapEnvironment(environment, aws, toolkitStackName, roleArn, props);
+          ? await bootstrapEnvironment2(environment, sdkProvider, toolkitStackName, roleArn, props)
+          : await bootstrapEnvironment(environment, sdkProvider, toolkitStackName, roleArn, props);
         const message = result.noOp ? ' ✅  Environment %s bootstrapped (no changes).'
                       : ' ✅  Environment %s bootstrapped.';
         success(message, colors.blue(environment.name));

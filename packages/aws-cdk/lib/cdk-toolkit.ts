@@ -3,11 +3,12 @@ import * as fs from 'fs-extra';
 import * as promptly from 'promptly';
 import { format } from 'util';
 import { SdkProvider } from './api/aws-auth';
-import { AppStacks, DefaultSelection, ExtendedStackSelection, Tag } from "./api/cxapp/stacks";
+import { AppStacks, Tag } from "./api/cxapp/stacks";
 import { IDeploymentTarget } from './api/deployment-target';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
 import { data, error, highlight, print, success, warning } from './logging';
 import { deserializeStructure } from './serialize';
+import { ExtendedStackSelection, DefaultSelection } from './api/cxapp/cloud-assembly';
 
 export interface CdkToolkitProps {
   /**
@@ -51,7 +52,7 @@ export class CdkToolkit {
     let diffs = 0;
     if (options.templatePath !== undefined) {
       // Compare single stack against fixed template
-      if (stacks.length !== 1) {
+      if (stacks.stackCount !== 1) {
         throw new Error('Can only select one stack when comparing to fixed template. Use --exclusively to avoid selecting multiple stacks.');
       }
 
@@ -59,7 +60,7 @@ export class CdkToolkit {
         throw new Error(`There is no file at ${options.templatePath}`);
       }
       const template = deserializeStructure(await fs.readFile(options.templatePath, { encoding: 'UTF-8' }));
-      diffs = printStackDiff(template, stacks[0], strict, contextLines, stream);
+      diffs = printStackDiff(template, stacks.firstStack, strict, contextLines, stream);
     } else {
       // Compare N stacks against deployed templates
       for (const stack of stacks) {
@@ -98,7 +99,7 @@ export class CdkToolkit {
     }
 
     for (const stack of stacks) {
-      if (stacks.length !== 1) { highlight(stack.displayName); }
+      if (stacks.stackCount !== 1) { highlight(stack.displayName); }
       if (!stack.environment) {
         // tslint:disable-next-line:max-line-length
         throw new Error(`Stack ${stack.displayName} does not define an environment, and AWS credentials could not be obtained from standard locations or no region was configured.`);
