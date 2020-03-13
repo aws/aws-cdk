@@ -280,31 +280,6 @@ export = {
     test.done();
   },
 
-  'if the custom log destination delivery stream arn is set'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const api = new apigateway.RestApi(stack, 'test-api', {cloudWatchRole: false, deploy: false});
-    const deployment = new apigateway.Deployment(stack, 'my-deployment', {api});
-    api.root.addMethod('GET');
-
-    // WHEN
-    const testDeliveryStreamArn = 'arn:aws:firehose:us-east-1:123456789012:deliverystream/amazon-apigateway-test-delivery-stream-name';
-    new apigateway.Stage(stack, 'my-stage', {
-      deployment,
-      accessLogDestination: new apigateway.KinesisDataFirehoseDestination(testDeliveryStreamArn),
-    });
-
-    // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::Stage', {
-      AccessLogSetting: {
-        DestinationArn: testDeliveryStreamArn
-      },
-      StageName: "prod"
-    }));
-
-    test.done();
-  },
-
   'if the custom log format is set(json)'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -412,42 +387,4 @@ ${apigateway.AccessLogFormat.contextStatus()} ${apigateway.AccessLogFormat.conte
     test.done();
   },
 
-  'if the custom log destination delivery stream arn and format is set'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const api = new apigateway.RestApi(stack, 'test-api', {cloudWatchRole: false, deploy: false});
-    const deployment = new apigateway.Deployment(stack, 'my-deployment', {api});
-    api.root.addMethod('GET');
-
-    // WHEN
-    const testDeliveryStreamArn = 'arn:aws:firehose:us-east-1:123456789012:deliverystream/amazon-apigateway-test-delivery-stream-name';
-    const testFormat = JSON.stringify({
-      requestId: apigateway.AccessLogFormat.contextRequestId(),
-      ip: apigateway.AccessLogFormat.contextIdentitySourceIp(),
-      caller: apigateway.AccessLogFormat.contextIdentityCaller(),
-      user: apigateway.AccessLogFormat.contextIdentityUser(),
-      requestTime: apigateway.AccessLogFormat.contextRequestTime(),
-      httpMethod: apigateway.AccessLogFormat.contextHttpMethod(),
-      resourcePath: apigateway.AccessLogFormat.contextResourcePath(),
-      status: apigateway.AccessLogFormat.contextStatus(),
-      protocol: apigateway.AccessLogFormat.contextProtocol(),
-      responseLength: apigateway.AccessLogFormat.contextResponseLength()
-    });
-    new apigateway.Stage(stack, 'my-stage', {
-      deployment,
-      accessLogDestination: new apigateway.KinesisDataFirehoseDestination(testDeliveryStreamArn),
-      accessLogFormat: testFormat,
-    });
-
-    // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::Stage', {
-      AccessLogSetting: {
-        DestinationArn: testDeliveryStreamArn,
-        Format: testFormat,
-      },
-      StageName: 'prod',
-    }));
-
-    test.done();
-  },
 };

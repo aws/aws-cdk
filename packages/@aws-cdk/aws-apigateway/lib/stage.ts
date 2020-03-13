@@ -16,9 +16,7 @@ export interface StageOptions extends MethodDeploymentOptions {
   readonly stageName?: string;
 
   /**
-   * The CloudWatch Logs log group or Kinesis Data Firehose delivery stream.
-   * If you specify a Kinesis Data Firehose delivery stream. the stream name must begin
-   * with `amazon-apigateway-`.
+   * The CloudWatch Logs log group.
    *
    * @default - No destination
    */
@@ -338,29 +336,6 @@ export class CloudWatchLogsDestination implements IAccessLogDestination {
   public bind(): AccessLogDestinationConfig {
     return {
       destinationArn: this.logGroup.logGroupArn
-    };
-  }
-}
-
-/**
- * Use Kinesis Data Firehose as a custom access log destination for API Gateway.
- */
-export class KinesisDataFirehoseDestination implements IAccessLogDestination {
-  constructor(private readonly deliveryStreamArn: string) {
-  }
-
-  /**
-   * Binds this destination to the Kinesis Data Firehose.
-   */
-  public bind(): AccessLogDestinationConfig {
-    const pattern = 'amazon-apigateway-';
-    const deliveryStreamName = this.deliveryStreamArn.split('/')[1];
-    if (deliveryStreamName.indexOf(pattern)) {
-      throw new Error(`Delivery stream name must begin with ${pattern}.`);
-    }
-
-    return {
-      destinationArn: this.deliveryStreamArn
     };
   }
 }
