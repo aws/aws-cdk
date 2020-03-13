@@ -172,6 +172,10 @@ export class SdkProvider {
     return environment;
   }
 
+  public async resolveEnvironmentObject(env: cxapi.Environment) {
+    return this.resolveEnvironment(env.account, env.region);
+  }
+
   /**
    * Use the default credentials to lookup our account number using STS.
    *

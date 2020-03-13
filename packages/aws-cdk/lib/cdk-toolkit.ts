@@ -1,4 +1,5 @@
 import * as cxapi from '@aws-cdk/cx-api';
+import { AssetManifest } from 'cdk-assets';
 import * as colors from 'colors/safe';
 import * as fs from 'fs-extra';
 import * as path from 'path';
@@ -15,6 +16,7 @@ import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
 import { data, error, highlight, print, success, warning } from './logging';
 import { deserializeStructure } from './serialize';
 import { Configuration } from './settings';
+import { publishAssets } from './util/asset-publishing';
 
 export interface CdkToolkitProps {
 
@@ -169,10 +171,13 @@ export class CdkToolkit {
 
       let tags = options.tags;
       if (!tags || tags.length === 0) {
-        tags = tagsFromStack(stack);
+        tags = tagsForStack(stack);
       }
 
       try {
+        // Publish assets here
+        await this.publishStackAssets(stack);
+
         const result = await this.props.cloudFormation.deployStack({
           stack,
           deployName: stack.stackName,
@@ -212,10 +217,10 @@ export class CdkToolkit {
   }
 
   public async destroy(options: DestroyOptions) {
-    const stacks = await this.selectStacksForDestroy(options.stackNames, options.exclusively);
+    let stacks = await this.selectStacksForDestroy(options.stackNames, options.exclusively);
 
     // The stacks will have been ordered for deployment, so reverse them for deletion.
-    stacks.reverse();
+    stacks = stacks.reversed();
 
     if (!options.force) {
       // tslint:disable-next-line:max-line-length
@@ -419,6 +424,19 @@ export class CdkToolkit {
   private assembly(): Promise<CloudAssembly> {
     return this.props.cloudExecutable.synthesize();
   }
+
+  /**
+   * Publish all asset manifests that are referenced by the given stack
+   */
+  private async publishStackAssets(stack: cxapi.CloudFormationStackArtifact) {
+    const stackEnv = await this.props.sdkProvider.resolveEnvironmentObject(stack.environment);
+    const assetArtifacts = stack.dependencies.filter(isAssetManifestArtifact);
+
+    for (const assetArtifact of assetArtifacts) {
+      const manifest = AssetManifest.fromFile(assetArtifact.file);
+      await publishAssets(manifest, this.props.sdkProvider, stackEnv);
+    }
+  }
 }
 
 export interface DiffOptions {
@@ -567,7 +585,7 @@ export interface DestroyOptions {
 /**
  * @returns an array with the tags available in the stack metadata.
  */
-function tagsFromStack(stack: cxapi.CloudFormationStackArtifact): Tag[] {
+function tagsForStack(stack: cxapi.CloudFormationStackArtifact): Tag[] {
   const tagLists = stack.findMetadataByType(cxapi.STACK_TAGS_METADATA_KEY).map(x => x.data);
   return Array.prototype.concat([], ...tagLists);
 }
@@ -575,4 +593,8 @@ function tagsFromStack(stack: cxapi.CloudFormationStackArtifact): Tag[] {
 export interface Tag {
   readonly Key: string;
   readonly Value: string;
+}
+
+function isAssetManifestArtifact(art: cxapi.CloudArtifact): art is cxapi.AssetManifestArtifact {
+  return art instanceof cxapi.AssetManifestArtifact;
 }

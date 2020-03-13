@@ -1,6 +1,83 @@
 import { CloudFormation } from 'aws-sdk';
 import { debug } from '../../logging';
+import { deserializeStructure } from '../../serialize';
 import { StackStatus } from './cloudformation/stack-status';
+
+export type Template = {
+  Parameters?: Record<string, TemplateParameter>;
+  [key: string]: any
+};
+
+interface TemplateParameter {
+  Default?: any;
+}
+
+/**
+ * Represents an existing class in CloudFormation
+ *
+ * Bundle and cache some information that we need during deployment (so we don't have to make
+ * repeated calls to CloudFormation).
+ */
+export class CloudFormationStack {
+  public static async lookup(cfn: CloudFormation, stackName: string): Promise<CloudFormationStack> {
+    try {
+      const response = await cfn.describeStacks({ StackName: stackName }).promise();
+      return new CloudFormationStack(cfn, stackName, response.Stacks && response.Stacks[0]);
+    } catch (e) {
+      if (e.code === 'ValidationError' && e.message === `Stack with id ${stackName} does not exist`) {
+        return new CloudFormationStack(cfn, stackName, undefined);
+      }
+      throw e;
+    }
+  }
+
+  private _template: any;
+
+  protected constructor(private readonly cfn: CloudFormation, private readonly stackName: string, private readonly stack?: CloudFormation.Stack) {
+  }
+
+  public async template() {
+    if (this._template === undefined) {
+      const response = await this.cfn.getTemplate({ StackName: this.stackName, TemplateStage: 'Original' }).promise();
+      this._template = (response.TemplateBody && deserializeStructure(response.TemplateBody)) || {};
+    }
+    return this._template;
+  }
+
+  public get exists() {
+    return this.stack !== undefined;
+  }
+
+  public get stackId() {
+    this.assertExists();
+    return this.stack!.StackId!;
+  }
+
+  public get outputs(): Record<string, string> {
+    this.assertExists();
+    const result: { [name: string]: string } = {};
+    (this.stack!.Outputs || []).forEach(output => {
+      result[output.OutputKey!] = output.OutputValue!;
+    });
+    return result;
+  }
+
+  public get stackStatus(): StackStatus {
+    this.assertExists();
+    return StackStatus.fromStackDescription(this.stack!);
+  }
+
+  public get tags(): CloudFormation.Tags {
+    this.assertExists();
+    return this.stack!.Tags || [];
+  }
+
+  private assertExists() {
+    if (!this.exists) {
+      throw new Error(`No stack named '${this.stackName}'`);
+    }
+  }
+}
 
 /**
  * Describe a changeset in CloudFormation, regardless of it's current state.
@@ -146,15 +223,15 @@ export function changeSetHasNoChanges(description: CloudFormation.DescribeChange
  */
 export async function waitForStack(cfn: CloudFormation,
                                    stackName: string,
-                                   failOnDeletedStack: boolean = true): Promise<CloudFormation.Stack | undefined> {
+                                   failOnDeletedStack: boolean = true): Promise<CloudFormationStack | undefined> {
   debug('Waiting for stack %s to finish creating or updating...', stackName);
   return waitFor(async () => {
-    const description = await describeStack(cfn, stackName);
-    if (!description) {
+    const stack = await CloudFormationStack.lookup(cfn, stackName);
+    if (!stack.exists) {
       debug('Stack %s does not exist', stackName);
       return null;
     }
-    const status = StackStatus.fromStackDescription(description);
+    const status = stack.stackStatus;
     if (!status.isStable) {
       debug('Stack %s is still not stable (%s)', stackName, status);
       return undefined;
@@ -167,6 +244,6 @@ export async function waitForStack(cfn: CloudFormation,
       if (failOnDeletedStack) { throw new Error(`The stack named ${stackName} was deleted`); }
       return null;
     }
-    return description;
+    return stack;
   });
 }

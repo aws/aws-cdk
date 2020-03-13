@@ -1,19 +1,17 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import * as aws from 'aws-sdk';
 import * as colors from 'colors/safe';
 import * as uuid from 'uuid';
-import { Tag } from "../api/cxapp/stacks";
 import { addMetadataAssetsToManifest } from '../assets';
+import { Tag } from '../cdk-toolkit';
 import { debug, error, print } from '../logging';
-import { deserializeStructure, toYAML } from '../serialize';
+import { toYAML } from '../serialize';
 import { AssetManifestBuilder } from '../util/asset-manifest-builder';
 import { publishAssets } from '../util/asset-publishing';
 import { contentHash } from '../util/content-hash';
 import { ISDK, SdkProvider } from './aws-auth';
 import { ToolkitInfo } from './toolkit-info';
-import { changeSetHasNoChanges, describeStack, stackExists, stackFailedCreating, waitForChangeSet, waitForStack  } from './util/cloudformation';
+import { changeSetHasNoChanges, CloudFormationStack, stackExists, stackFailedCreating, waitForChangeSet, waitForStack  } from './util/cloudformation';
 import { StackActivityMonitor } from './util/cloudformation/stack-activity-monitor';
-import { StackStatus } from './util/cloudformation/stack-status';
 
 type TemplateBodyParameter = {
   TemplateBody?: string
@@ -138,26 +136,26 @@ const LARGE_TEMPLATE_SIZE_KB = 50;
 
 /** @experimental */
 export async function deployStack(options: DeployStackOptions): Promise<DeployStackResult> {
-  const stack = options.stack;
+  const stackArtifact = options.stack;
 
   const stackEnv = options.resolvedEnvironment;
 
   const cfn = options.sdk.cloudFormation();
-  const deployName = options.deployName || stack.stackName;
+  const deployName = options.deployName || stackArtifact.stackName;
+  let cloudFormationStack = await CloudFormationStack.lookup(cfn, deployName);
 
-  if (!options.force) {
+  if (!options.force && cloudFormationStack.exists) {
     // bail out if the current template is exactly the same as the one we are about to deploy
     // in cdk-land, this means nothing changed because assets (and therefore nested stacks) are immutable.
     debug(`checking if we can skip this stack based on the currently deployed template and tags (use --force to override)`);
-    const deployed = await getDeployedStack(cfn, deployName);
-    const tagsIdentical = compareTags(deployed?.tags ?? [], options.tags ?? []);
-    if (deployed && JSON.stringify(stack.template) === JSON.stringify(deployed.template) && tagsIdentical) {
+    const tagsIdentical = compareTags(cloudFormationStack.tags, options.tags ?? []);
+    if (JSON.stringify(stackArtifact.template) === JSON.stringify(await cloudFormationStack.template()) && tagsIdentical) {
       debug(`${deployName}: no change in template and tags, skipping (use --force to override)`);
       return {
         noOp: true,
-        outputs: await getStackOutputs(cfn, deployName),
-        stackArn: deployed.stackId,
-        stackArtifact: stack
+        outputs: cloudFormationStack.outputs,
+        stackArn: cloudFormationStack.stackId,
+        stackArtifact,
       };
     } else {
       debug(`${deployName}: template changed, deploying...`);
@@ -166,7 +164,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
 
   const assets = new AssetManifestBuilder();
 
-  const params = await addMetadataAssetsToManifest(stack, assets, options.toolkitInfo, options.reuseAssets);
+  const params = await addMetadataAssetsToManifest(stackArtifact, assets, options.toolkitInfo, options.reuseAssets);
 
   // add passed CloudFormation parameters
   for (const [paramName, paramValue] of Object.entries((options.parameters || {}))) {
@@ -180,22 +178,22 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
 
   const executionId = uuid.v4();
 
-  const bodyParameter = await makeBodyParameter(stack, options.resolvedEnvironment, assets, options.toolkitInfo);
+  const bodyParameter = await makeBodyParameter(stackArtifact, options.resolvedEnvironment, assets, options.toolkitInfo);
 
   if (await stackFailedCreating(cfn, deployName)) {
     debug(`Found existing stack ${deployName} that had previously failed creation. Deleting it before attempting to re-create it.`);
     await cfn.deleteStack({ StackName: deployName }).promise();
     const deletedStack = await waitForStack(cfn, deployName, false);
-    if (deletedStack && deletedStack.StackStatus !== 'DELETE_COMPLETE') {
-      throw new Error(`Failed deleting stack ${deployName} that had previously failed creation (current state: ${deletedStack.StackStatus})`);
+    if (deletedStack && deletedStack.stackStatus.name !== 'DELETE_COMPLETE') {
+      throw new Error(`Failed deleting stack ${deployName} that had previously failed creation (current state: ${deletedStack.stackStatus})`);
     }
   }
 
-  const update = await stackExists(cfn, deployName);
-
-  await publishAssets(assets.toManifest(stack.assembly.directory), options.sdkProvider, stackEnv);
+  await publishAssets(assets.toManifest(stackArtifact.assembly.directory), options.sdkProvider, stackEnv);
 
   const changeSetName = `CDK-${executionId}`;
+  const update = cloudFormationStack.exists;
+
   debug(`Attempting to create ChangeSet ${changeSetName} to ${update ? 'update' : 'create'} stack ${deployName}`);
   print(`%s: creating CloudFormation changeset...`, colors.bold(deployName));
   const changeSet = await cfn.createChangeSet({
@@ -217,7 +215,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
   if (changeSetHasNoChanges(changeSetDescription)) {
     debug('No changes are to be performed on %s.', deployName);
     await cfn.deleteChangeSet({ StackName: deployName, ChangeSetName: changeSetName }).promise();
-    return { noOp: true, outputs: await getStackOutputs(cfn, deployName), stackArn: changeSet.StackId!, stackArtifact: stack };
+    return { noOp: true, outputs: cloudFormationStack.outputs, stackArn: changeSet.StackId!, stackArtifact };
   }
 
   const execute = options.execute === undefined ? true : options.execute;
@@ -225,10 +223,12 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     debug('Initiating execution of changeset %s on stack %s', changeSetName, deployName);
     await cfn.executeChangeSet({StackName: deployName, ChangeSetName: changeSetName}).promise();
     // tslint:disable-next-line:max-line-length
-    const monitor = options.quiet ? undefined : new StackActivityMonitor(cfn, deployName, stack, (changeSetDescription.Changes || []).length).start();
+    const monitor = options.quiet ? undefined : new StackActivityMonitor(cfn, deployName, stackArtifact, (changeSetDescription.Changes || []).length).start();
     debug('Execution of changeset %s on stack %s has started; waiting for the update to complete...', changeSetName, deployName);
     try {
-      await waitForStack(cfn, deployName);
+      const finalStack = await waitForStack(cfn, deployName);
+      if (!finalStack) { throw new Error('Stack deploy failed'); } // This should only happen very rarely
+      cloudFormationStack = finalStack;
     } finally {
       await monitor?.stop();
     }
@@ -236,19 +236,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
   } else {
     print(`Changeset %s created and waiting in review for manual execution (--no-execute)`, changeSetName);
   }
-  return { noOp: false, outputs: await getStackOutputs(cfn, deployName), stackArn: changeSet.StackId!, stackArtifact: stack };
-}
-
-/** @experimental */
-async function getStackOutputs(cfn: aws.CloudFormation, stackName: string): Promise<{ [name: string]: string }> {
-  const description = await describeStack(cfn, stackName);
-  const result: { [name: string]: string } = {};
-  if (description && description.Outputs) {
-    description.Outputs.forEach(output => {
-      result[output.OutputKey!] = output.OutputValue!;
-    });
-  }
-  return result;
+  return { noOp: false, outputs: cloudFormationStack.outputs, stackArn: changeSet.StackId!, stackArtifact };
 }
 
 /**
@@ -324,62 +312,10 @@ export async function destroyStack(options: DestroyStackOptions) {
   await cfn.deleteStack({ StackName: deployName, RoleARN: options.roleArn }).promise().catch(e => { throw e; });
   const destroyedStack = await waitForStack(cfn, deployName, false);
   if (monitor) { await monitor.stop(); }
-  if (destroyedStack && destroyedStack.StackStatus !== 'DELETE_COMPLETE') {
-    const status = StackStatus.fromStackDescription(destroyedStack);
-    throw new Error(`Failed to destroy ${deployName}: ${status}`);
+  if (destroyedStack && destroyedStack.stackStatus.name !== 'DELETE_COMPLETE') {
+    throw new Error(`Failed to destroy ${deployName}: ${destroyedStack.stackStatus}`);
   }
   return;
-}
-
-async function getDeployedStack(cfn: aws.CloudFormation, stackName: string): Promise<{ stackId: string, template: any, tags: Tag[] } | undefined> {
-  const stack = await getStack(cfn, stackName);
-  if (!stack) {
-    return undefined;
-  }
-
-  if (!stack.StackId) {
-    return undefined;
-  }
-
-  const template = await readCurrentTemplate(cfn, stackName);
-  return {
-    stackId: stack.StackId,
-    tags: stack.Tags ?? [],
-    template
-  };
-}
-
-export async function readCurrentTemplate(cfn: aws.CloudFormation, stackName: string) {
-  try {
-    const response = await cfn.getTemplate({ StackName: stackName, TemplateStage: 'Original' }).promise();
-    return (response.TemplateBody && deserializeStructure(response.TemplateBody)) || {};
-  } catch (e) {
-    if (e.code === 'ValidationError' && e.message === `Stack with id ${stackName} does not exist`) {
-      return {};
-    } else {
-      throw e;
-    }
-  }
-}
-
-async function getStack(cfn: aws.CloudFormation, stackName: string): Promise<aws.CloudFormation.Stack | undefined> {
-  try {
-    const stacks = await cfn.describeStacks({ StackName: stackName }).promise();
-    if (!stacks.Stacks) {
-      return undefined;
-    }
-    if (stacks.Stacks.length !== 1) {
-      return undefined;
-    }
-
-    return stacks.Stacks[0];
-
-  } catch (e) {
-    if (e.message.includes('does not exist')) {
-      return undefined;
-    }
-    throw e;
-  }
 }
 
 function compareTags(a: Tag[], b: Tag[]): boolean {

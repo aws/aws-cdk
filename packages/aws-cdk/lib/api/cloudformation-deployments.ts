@@ -2,12 +2,10 @@ import { CloudFormationStackArtifact } from '@aws-cdk/cx-api';
 import { Tag } from '../cdk-toolkit';
 import { debug } from '../logging';
 import { Mode, SdkProvider } from './aws-auth';
-import { deployStack, DeployStackResult, destroyStack, readCurrentTemplate } from './deploy-stack';
+import { deployStack, DeployStackResult, destroyStack } from './deploy-stack';
 import { ToolkitInfo } from './toolkit-info';
-import { stackExists } from './util/cloudformation';
+import { CloudFormationStack, stackExists, Template } from './util/cloudformation';
 import { replaceAwsPlaceholders } from './util/placeholders';
-
-export type Template = { [key: string]: any };
 
 export interface DeployStackOptions {
   stack: CloudFormationStackArtifact;
@@ -60,11 +58,13 @@ export class CloudFormationDeployments {
     this.sdkProvider = props.sdkProvider;
   }
 
-  public async readCurrentTemplate(stack: CloudFormationStackArtifact): Promise<Template> {
-    debug(`Reading existing template for stack ${stack.displayName}.`);
-    const { stackSdk } = await this.prepareSdkFor(stack, undefined, Mode.ForReading);
+  public async readCurrentTemplate(stackArtifact: CloudFormationStackArtifact): Promise<Template> {
+    debug(`Reading existing template for stack ${stackArtifact.displayName}.`);
+    const { stackSdk } = await this.prepareSdkFor(stackArtifact, undefined, Mode.ForReading);
     const cfn = stackSdk.cloudFormation();
-    return readCurrentTemplate(cfn, stack.stackName);
+
+    const stack = await CloudFormationStack.lookup(cfn, stackArtifact.stackName);
+    return stack.template();
   }
 
   public async deployStack(options: DeployStackOptions): Promise<DeployStackResult> {
