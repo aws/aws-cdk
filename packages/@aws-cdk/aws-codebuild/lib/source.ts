@@ -1,8 +1,8 @@
 import * as codecommit from '@aws-cdk/aws-codecommit';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
-import { Construct } from '@aws-cdk/core';
-import { CfnProject } from './codebuild.generated';
+import { Construct, SecretValue } from '@aws-cdk/core';
+import { CfnProject, CfnSourceCredential } from './codebuild.generated';
 import { IProject } from './project';
 import {
   BITBUCKET_SOURCE_TYPE,
@@ -586,6 +586,17 @@ export interface GitHubSourceProps extends ThirdPartyGitSourceProps {
    * @example 'aws-cdk'
    */
   readonly repo: string;
+
+  /**
+   * The personal access token to use when contacting the GitHub API.
+   *
+   * **Note**: CodeBuild only allows a single personal access token for GitHub
+   * to be saved in a given AWS account in a given region -
+   * any attempt to add more than one will result in an error.
+   *
+   * @default - no personal access token will be used
+   */
+  readonly accessToken?: SecretValue;
 }
 
 /**
@@ -594,14 +605,26 @@ export interface GitHubSourceProps extends ThirdPartyGitSourceProps {
 class GitHubSource extends ThirdPartyGitSource {
   public readonly type = GITHUB_SOURCE_TYPE;
   private readonly httpsCloneUrl: string;
+  private readonly accessToken?: SecretValue;
 
   constructor(props: GitHubSourceProps) {
     super(props);
+
     this.httpsCloneUrl = `https://github.com/${props.owner}/${props.repo}.git`;
+    this.accessToken = props.accessToken;
   }
 
-  public bind(_scope: Construct, project: IProject): SourceConfig {
-    const superConfig = super.bind(_scope, project);
+  public bind(scope: Construct, project: IProject): SourceConfig {
+    // add the SourceCredential resource
+    if (this.accessToken) {
+      new CfnSourceCredential(scope, 'GitHubEnterpriseSourceCredential', {
+        serverType: 'GITHUB',
+        authType: 'PERSONAL_ACCESS_TOKEN',
+        token: this.accessToken.toString(),
+      });
+    }
+
+    const superConfig = super.bind(scope, project);
     return {
       sourceProperty: {
         ...superConfig.sourceProperty,
@@ -628,6 +651,17 @@ export interface GitHubEnterpriseSourceProps extends ThirdPartyGitSourceProps {
    * @default false
    */
   readonly ignoreSslErrors?: boolean;
+
+  /**
+   * The personal access token to use when contacting the instance of the GitHub Enterprise API.
+   *
+   * **Note**: CodeBuild only allows a single personal access token for GitHub Enterprise
+   * to be saved in a given AWS account in a given region -
+   * any attempt to add more than one will result in an error.
+   *
+   * @default - no personal access token will be used
+   */
+  readonly accessToken?: SecretValue;
 }
 
 /**
@@ -637,15 +671,27 @@ class GitHubEnterpriseSource extends ThirdPartyGitSource {
   public readonly type = GITHUB_ENTERPRISE_SOURCE_TYPE;
   private readonly httpsCloneUrl: string;
   private readonly ignoreSslErrors?: boolean;
+  private readonly accessToken?: SecretValue;
 
   constructor(props: GitHubEnterpriseSourceProps) {
     super(props);
+
     this.httpsCloneUrl = props.httpsCloneUrl;
     this.ignoreSslErrors = props.ignoreSslErrors;
+    this.accessToken = props.accessToken;
   }
 
-  public bind(_scope: Construct, _project: IProject): SourceConfig {
-    const superConfig = super.bind(_scope, _project);
+  public bind(scope: Construct, _project: IProject): SourceConfig {
+    // add the SourceCredential resource
+    if (this.accessToken) {
+      new CfnSourceCredential(scope, 'GitHubEnterpriseSourceCredential', {
+        serverType: 'GITHUB_ENTERPRISE',
+        authType: 'PERSONAL_ACCESS_TOKEN',
+        token: this.accessToken.toString(),
+      });
+    }
+
+    const superConfig = super.bind(scope, _project);
     return {
       sourceProperty: {
         ...superConfig.sourceProperty,
@@ -656,6 +702,18 @@ class GitHubEnterpriseSource extends ThirdPartyGitSource {
       buildTriggers: superConfig.buildTriggers,
     };
   }
+}
+
+/**
+ * The BitBucket source credentials provided in the
+ * {@link BitBucketSourceProps.credentials} property.
+ */
+export interface BitBucketSourceCredentials {
+  /** Your BitBucket username. */
+  readonly username: SecretValue;
+
+  /** Your BitBucket application password. */
+  readonly password: SecretValue;
 }
 
 /**
@@ -675,6 +733,17 @@ export interface BitBucketSourceProps extends ThirdPartyGitSourceProps {
    * @example 'aws-cdk'
    */
   readonly repo: string;
+
+  /**
+   * The source credentials used when contacting the BitBucket API.
+   *
+   * **Note**: CodeBuild only allows a single credential for BitBucket
+   * to be saved in a given AWS account in a given region -
+   * any attempt to add more than one will result in an error.
+   *
+   * @default - no credentials will be used
+   */
+  readonly credentials?: BitBucketSourceCredentials;
 }
 
 /**
@@ -683,13 +752,16 @@ export interface BitBucketSourceProps extends ThirdPartyGitSourceProps {
 class BitBucketSource extends ThirdPartyGitSource {
   public readonly type = BITBUCKET_SOURCE_TYPE;
   private readonly httpsCloneUrl: any;
+  private readonly credentials?: BitBucketSourceCredentials;
 
   constructor(props: BitBucketSourceProps) {
     super(props);
+
     this.httpsCloneUrl = `https://bitbucket.org/${props.owner}/${props.repo}.git`;
+    this.credentials = props.credentials;
   }
 
-  public bind(_scope: Construct, _project: IProject): SourceConfig {
+  public bind(scope: Construct, _project: IProject): SourceConfig {
     // BitBucket sources don't support the PULL_REQUEST_REOPENED event action
     if (this.anyWebhookFilterContainsPrReopenedEventAction()) {
       throw new Error('BitBucket sources do not support the PULL_REQUEST_REOPENED webhook event action');
@@ -700,7 +772,17 @@ class BitBucketSource extends ThirdPartyGitSource {
       throw new Error('BitBucket sources do not support file path conditions for webhook filters');
     }
 
-    const superConfig = super.bind(_scope, _project);
+    // add the SourceCredential resource
+    if (this.credentials) {
+      new CfnSourceCredential(scope, 'BitBucketSourceCredential', {
+        serverType: 'BITBUCKET',
+        authType: 'BASIC_AUTH',
+        username: this.credentials.username.toString(),
+        token: this.credentials.password.toString(),
+      });
+    }
+
+    const superConfig = super.bind(scope, _project);
     return {
       sourceProperty: {
         ...superConfig.sourceProperty,
