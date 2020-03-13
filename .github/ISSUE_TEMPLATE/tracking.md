@@ -37,7 +37,7 @@ Checklist of use cases, constructs, features (such as grant methods) that will s
 - [ ] 
 - [ ]
 -->
-[CDK API Reference](url) <!-- replace `url` with link to the service's CDK API reference -->
+See the [CDK API Reference](url) for more implementation details.<!-- replace `url` with link to the service's CDK API reference -->
 
 
 
