@@ -75,6 +75,7 @@ const someDeepLambdaRoute = new apigatewayv2.LambdaRoute(stack, 'SomeLambdaRoute
   api,
   handler,
   httpPath: '/some/very/deep/route/path',
+  httpMethod: apigatewayv2.HttpMethod.GET
 });
 
 // new cdk.CfnOutput(stack, 'RouteURL', {

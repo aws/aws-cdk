@@ -237,28 +237,3 @@ export class HttpProxyApi extends Api implements IHttpProxyApi  {
     });
   }
 }
-
-// class RootRoute extends apigatewayv2.Route {
-//   public readonly parentRoute?: apigatewayv2.IRoute;
-//   public readonly api: apigatewayv2.Api;
-//   public readonly routeKey: string;
-//   public readonly httpPath: string;
-//   public readonly target?: string;
-//   public readonly fullUrl: string;
-//   public readonly routeId: string;
-
-//   constructor(scope: cdk.Construct, id: string,  api: apigatewayv2.Api, props: ApiProps) {
-//     super(scope, id, {
-//       api,
-//       httpPath: '/',
-//       target: props.target
-//     });
-//     this.parentRoute = undefined;
-//     this.api = api;
-//     this.routeKey = '$default';
-//     this.httpPath = '/';
-//     this.target = props.target;
-//     this.fullUrl = this.api.url;
-//     this.routeId = 'root';
-//   }
-// }
