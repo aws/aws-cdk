@@ -486,29 +486,42 @@ This is in addition to the detailed execution logs already provided by Amazon Cl
 The access logging feature lets you generate access logs in different formats such as CLF (Common Log Format), JSON, XML, and CSV.
 More info can be found [here](https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-logging.html).
 
+Access logs can be configured to be sent to a specific CloudWatch log group. This can either be configured either for all stages of the RestApi or to specific stages.
 The following example will configure API Gateway to enable custom access logging.
 
 ```ts
-const logGroup = new cwlogs.LogGroup(this, "ApiGatewayAccessLogs");
+const format = JSON.stringify({
+  requestId: apigateway.AccessLogFormat.contextRequestId(),
+  ip: apigateway.AccessLogFormat.contextIdentitySourceIp(),
+  caller: apigateway.AccessLogFormat.contextIdentityCaller(),
+  user: apigateway.AccessLogFormat.contextIdentityUser(),
+  requestTime: apigateway.AccessLogFormat.contextRequestTime(),
+  httpMethod: apigateway.AccessLogFormat.contextHttpMethod(),
+  resourcePath: apigateway.AccessLogFormat.contextResourcePath(),
+  status: apigateway.AccessLogFormat.contextStatus(),
+  protocol: apigateway.AccessLogFormat.contextProtocol(),
+  responseLength: apigateway.AccessLogFormat.contextResponseLength()
+});
+
+// production stage
+const prdLogGroup = new cwlogs.LogGroup(this, "PrdLogs");
 const api = new apigateway.RestApi(this, 'books', {
   deployOptions: {
     accessLogSetting: {
-        destinationArn: new apigateway.CloudWatchLogsDestination(logGroup),
-        format: JSON.stringify({
-          requestId: apigateway.AccessLogFormat.contextRequestId(),
-          ip: apigateway.AccessLogFormat.contextIdentitySourceIp(),
-          caller: apigateway.AccessLogFormat.contextIdentityCaller(),
-          user: apigateway.AccessLogFormat.contextIdentityUser(),
-          requestTime: apigateway.AccessLogFormat.contextRequestTime(),
-          httpMethod: apigateway.AccessLogFormat.contextHttpMethod(),
-          resourcePath: apigateway.AccessLogFormat.contextResourcePath(),
-          status: apigateway.AccessLogFormat.contextStatus(),
-          protocol: apigateway.AccessLogFormat.contextProtocol(),
-          responseLength: apigateway.AccessLogFormat.contextResponseLength()
-        })
+        destinationArn: new apigateway.CloudWatchLogsDestination(prdLogGroup),
+        format
     }
   }
 })
+const deployment = new apigateway.Deployment(stack, 'Deployment', {api});
+
+// development stage
+const devLogGroup = new cwlogs.LogGroup(this, "DevLogs");
+new apigateway.Stage(this, 'dev', {
+  deployment,
+  accessLogDestination: new apigateway.CloudWatchLogsDestination(devLogGroup),
+  accessLogFormat: format
+});
 ```
 
 The access log can be structured freely. The following will configure CLF format.
