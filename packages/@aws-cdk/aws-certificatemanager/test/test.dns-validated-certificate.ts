@@ -139,6 +139,7 @@ export = {
     new DnsValidatedCertificate(stack, 'Cert', {
       domainName: 'mydomain.com',
       hostedZone: imported,
+      route53Endpoint: "https://api.route53.xxx.com",
     });
 
     // THEN
@@ -150,7 +151,8 @@ export = {
           ]
         },
         DomainName: 'mydomain.com',
-        HostedZoneId: 'DUMMY'
+        HostedZoneId: 'DUMMY',
+        Route53Endpoint: 'https://api.route53.xxx.com'
       }));
 
     test.done();
