@@ -32,13 +32,29 @@ export interface CloudExecutableProps {
  * Represent the Cloud Executable and the synthesis we can do on it
  */
 export class CloudExecutable {
+  private _cloudAssembly?: CloudAssembly;
+
   constructor(private readonly props: CloudExecutableProps) {
+  }
+
+  /**
+   * Return whether there is an app command from the configuration
+   */
+  public get hasApp() {
+    return !!this.props.configuration.settings.get(['app']);
   }
 
   /**
    * Synthesize a set of stacks
    */
   public async synthesize(): Promise<CloudAssembly> {
+    if (!this._cloudAssembly) {
+      this._cloudAssembly = await this.doSynthesize();
+    }
+    return this._cloudAssembly;
+  }
+
+  private async doSynthesize(): Promise<CloudAssembly> {
     const trackVersions: boolean = this.props.configuration.settings.get(['versionReporting']);
 
     // We may need to run the cloud executable multiple times in order to satisfy all missing context

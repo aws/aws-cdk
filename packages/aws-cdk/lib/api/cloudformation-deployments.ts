@@ -1,5 +1,5 @@
 import { CloudFormationStackArtifact } from '@aws-cdk/cx-api';
-import { Tag } from "../api/cxapp/stacks";
+import { Tag } from '../cdk-toolkit';
 import { debug } from '../logging';
 import { Mode, SdkProvider } from './aws-auth';
 import { deployStack, DeployStackResult, destroyStack, readCurrentTemplate } from './deploy-stack';
@@ -8,18 +8,6 @@ import { stackExists } from './util/cloudformation';
 import { replaceAwsPlaceholders } from './util/placeholders';
 
 export type Template = { [key: string]: any };
-
-/**
- * Interface for provisioners
- *
- * Provisioners apply templates to the cloud infrastructure.
- */
-export interface IDeploymentTarget {
-  readCurrentTemplate(stack: CloudFormationStackArtifact): Promise<Template>;
-  deployStack(options: DeployStackOptions): Promise<DeployStackResult>;
-  destroyStack(options: DestroyStackOptions): Promise<void>;
-  stackExists(options: StackExistsOptions): Promise<boolean>;
-}
 
 export interface DeployStackOptions {
   stack: CloudFormationStackArtifact;
@@ -65,7 +53,7 @@ export interface ProvisionerProps {
 /**
  * Default provisioner (applies to CloudFormation).
  */
-export class CloudFormationDeploymentTarget implements IDeploymentTarget {
+export class CloudFormationDeployments {
   private readonly sdkProvider: SdkProvider;
 
   constructor(props: ProvisionerProps) {

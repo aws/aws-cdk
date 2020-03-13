@@ -61,7 +61,13 @@ export enum ExtendedStackSelection {
  * A single Cloud Assembly and the operations we do on it to deploy the artifacts inside
  */
 export class CloudAssembly {
+  /**
+   * The directory this CloudAssembly was read from
+   */
+  public readonly directory: string;
+
   constructor(public readonly assembly: cxapi.CloudAssembly) {
+    this.directory = assembly.directory;
   }
 
   public async selectStacks(selectors: string[], options: SelectStacksOptions): Promise<StackCollection> {
@@ -129,6 +135,13 @@ export class CloudAssembly {
   }
 
   /**
+   * Select a single stack by its ID
+   */
+  public stackById(stackId: string) {
+    return new StackCollection(this, [this.assembly.getStackArtifact(stackId)]);
+  }
+
+  /**
    * Return a collection of Cloud Artifacts for the given set of stacks.
    *
    * Include the non-stack dependencies ordered before the stacks that depend
@@ -146,7 +159,7 @@ export class CloudAssembly {
       // Then include the stack itself
       artifacts.push(stack);
     }
-    return new StackCollection(artifacts);
+    return new StackCollection(this, artifacts);
   }
 }
 
@@ -158,15 +171,28 @@ export class CloudAssembly {
  * bundles cannot.
  */
 export class StackCollection {
-  constructor(private readonly artifacts: cxapi.CloudArtifact[]) {
+  /**
+   * The assembly this collection belongs to
+   */
+  public readonly assembly: CloudAssembly;
+
+  constructor(assembly: CloudAssembly, private readonly artifacts: cxapi.CloudArtifact[]) {
+    this.assembly = assembly;
   }
 
   public get stackCount() {
-    return this.stacks.length;
+    return this.stackArtifacts.length;
   }
 
   public get firstStack() {
-    return this.stacks[0];
+    if (this.stackCount < 1) {
+      throw new Error(`Stack Collection contains no stacks`);
+    }
+    return this.stackArtifacts[0];
+  }
+
+  public get stackIds(): string[] {
+    return this.stackArtifacts.map(s => s.id);
   }
 
   /**
@@ -176,7 +202,7 @@ export class StackCollection {
     let warnings = false;
     let errors = false;
 
-    for (const stack of this.stacks) {
+    for (const stack of this.stackArtifacts) {
       for (const message of stack.messages) {
         switch (message.level) {
           case cxapi.SynthesisMessageLevel.WARNING:
@@ -211,7 +237,7 @@ export class StackCollection {
     }
   }
 
-  private get stacks(): cxapi.CloudFormationStackArtifact[] {
+  public get stackArtifacts(): cxapi.CloudFormationStackArtifact[] {
     return this.artifacts.filter(isStackArtifact);
   }
 
