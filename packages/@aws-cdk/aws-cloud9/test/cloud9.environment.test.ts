@@ -3,8 +3,8 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import * as cloud9 from '../lib';
 
-let stack = new cdk.Stack();
-let vpc = new ec2.Vpc(stack, 'VPC');
+let stack: cdk.Stack;
+let vpc: ec2.IVpc;
 
 beforeEach(() => {
   stack = new cdk.Stack();
@@ -13,14 +13,14 @@ beforeEach(() => {
 
 test('create resource correctly with only vpc provide', () => {
   // WHEN
-  new cloud9.EnvironmentEC2(stack, 'C9Env', { vpc });
+  new cloud9.EnvironmentEc2(stack, 'C9Env', { vpc });
   // THEN
   expectCDK(stack).to(haveResource('AWS::Cloud9::EnvironmentEC2'));
 });
 
 test('create resource correctly with both vpc and subnetSelectio', () => {
   // WHEN
-  new cloud9.EnvironmentEC2(stack, 'C9Env', {
+  new cloud9.EnvironmentEc2(stack, 'C9Env', {
     vpc,
     subnetSelection: {
       subnetType: ec2.SubnetType.PRIVATE
@@ -32,14 +32,14 @@ test('create resource correctly with both vpc and subnetSelectio', () => {
 
 test('import correctly from existing environment', () => {
   // WHEN
-  const c9env = cloud9.EnvironmentEC2.fromEnvironmentEC2Name(stack, 'ImportedEnv', 'existingEnvName');
+  const c9env = cloud9.EnvironmentEc2.fromEnvironmentEc2Name(stack, 'ImportedEnv', 'existingEnvName');
   // THEN
   expect(c9env).toHaveProperty('environmentEc2Name');
 });
 
 test('create correctly with instanceType specified', () => {
   // WHEN
-  new cloud9.EnvironmentEC2(stack, 'C9Env', {
+  new cloud9.EnvironmentEc2(stack, 'C9Env', {
     vpc,
     instanceType: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.LARGE)
    });
@@ -61,7 +61,7 @@ test('throw error when subnetSelection not specified and the provided VPC has no
   });
   // THEN
   expect(() => {
-    new cloud9.EnvironmentEC2(stack, 'C9Env', {
+    new cloud9.EnvironmentEc2(stack, 'C9Env', {
       vpc: privateOnlyVpc,
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.LARGE)
     });
