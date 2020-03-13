@@ -352,11 +352,14 @@ const book = books.addResource('{book_id}');
 book.addMethod('GET');   // integrated with `booksBackend`
 ```
 
-A method can be configured with authorization scopes. The scopes are used with a COGNITO_USER_POOLS authorizer to
-authorize the method invocation. When the method scope is configured, the client must provide an access token instead
-of an identity token for authorization purposes. Read more about authorization scopes
+A Method can be configured with authorization scopes. Authorization scopes are
+used in conjunction with an [authorizer that uses Amazon Cognito user
+pools](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-integrate-with-cognito.html#apigateway-enable-cognito-user-pool).
+Read more about authorization scopes
 [here](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-method.html#cfn-apigateway-method-authorizationscopes).
-Authorization scopes for a Method can be configured via the `authorizationScopes` property as shown below -
+
+Authorization scopes for a Method can be configured using the `authorizationScopes` property as shown below -
+
 ```ts
 books.addMethod('GET', new apigateway.HttpIntegration('http://amazon.com'), {
   authorizationType: AuthorizationType.COGNITO,
