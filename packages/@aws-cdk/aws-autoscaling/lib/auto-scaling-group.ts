@@ -22,6 +22,58 @@ import { BlockDevice, EbsDeviceVolumeType } from './volume';
 const NAME_TAG: string = 'Name';
 
 /**
+ * Describes the group metrics that an Amazon EC2 Auto Scaling group sends to Amazon CloudWatch.
+ * These metrics describe the group rather than any of its instances.
+ * For more information, see  Monitoring Your Auto Scaling Groups and Instances Using Amazon CloudWatch in the Amazon EC2 Auto Scaling User Guide.
+ * https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-instance-monitoring.html
+ */
+export interface AutoScalingGroupMetric {
+  /**
+   * The frequency at which Amazon EC2 Auto Scaling sends aggregated data to CloudWatch.
+   */
+  readonly granularity: MetricGranularity,
+
+  /**
+   * The list of Auto Scaling group metrics to collect. If you specify Granularity and don't specify any metrics, all metrics are enabled.
+   */
+  readonly metrics: GroupMetric[],
+}
+
+/**
+ * The frequency at which Amazon EC2 Auto Scaling sends aggregated data to CloudWatch.
+ */
+export type MetricGranularity = "1Minute";
+
+/**
+ * Auto Scaling group metrics
+ */
+export enum GroupMetric {
+  /** GroupMinSize */
+  MIN_SIZE = "GroupMinSize",
+
+  /** GroupMaxSize */
+  MAX_SIZE = "GroupMaxSize",
+
+  /** GroupDesiredCapacity */
+  DESIRED_CAPACITY = "GroupDesiredCapacity",
+
+  /** GroupInServiceInstances */
+  IN_SERVICE_INSTANCES = "GroupInServiceInstances",
+
+  /** GroupPendingInstances */
+  PENDING_INSTANCES = "GroupPendingInstances",
+
+  /** GroupStandbyInstances */
+  STANDBY_INSTANCES = "GroupStandbyInstances",
+
+  /** GroupTerminatingInstances */
+  TERMINATING_INSTANCES = "GroupTerminatingInstances",
+
+  /** GroupTotalInstances */
+  TOTAL_INSTANCES = "GroupTotalInstances",
+}
+
+/**
  * Basic properties of an AutoScalingGroup, except the exact machines to run and where they should run
  *
  * Constructs that want to create AutoScalingGroups can inherit
@@ -171,6 +223,13 @@ export interface CommonAutoScalingGroupProps {
    * @default - HealthCheck.ec2 with no grace period
    */
   readonly healthCheck?: HealthCheck;
+
+  /**
+   * Enables the monitoring of group metrics of an Auto Scaling group.
+   *
+   * @default - metrics collection is disabled.
+   */
+  readonly metricsCollection?: AutoScalingGroupMetric[]
 }
 
 /**
@@ -514,6 +573,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       vpcZoneIdentifier: subnetIds,
       healthCheckType: props.healthCheck && props.healthCheck.type,
       healthCheckGracePeriod: props.healthCheck && props.healthCheck.gracePeriod && props.healthCheck.gracePeriod.toSeconds(),
+      metricsCollection: props.metricsCollection || undefined,
     };
 
     if (!hasPublic && props.associatePublicIpAddress) {
