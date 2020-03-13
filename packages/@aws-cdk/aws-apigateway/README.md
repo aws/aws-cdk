@@ -322,6 +322,18 @@ const book = books.addResource('{book_id}');
 book.addMethod('GET');   // integrated with `booksBackend`
 ```
 
+A method can be configured with authorization scopes. The scopes are used with a COGNITO_USER_POOLS authorizer to
+authorize the method invocation. When the method scope is configured, the client must provide an access token instead
+of an identity token for authorization purposes. Read more about authorization scopes
+[here](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-method.html#cfn-apigateway-method-authorizationscopes).
+Authorization scopes for a Method can be configured via the `authorizationScopes` property as shown below -
+```ts
+books.addMethod('GET', new apigateway.HttpIntegration('http://amazon.com'), {
+  authorizationType: AuthorizationType.COGNITO,
+  authorizationScopes: ['Scope1','Scope2']
+});
+```
+
 ### Proxy Routes
 
 The `addProxy` method can be used to install a greedy `{proxy+}` resource
@@ -678,15 +690,6 @@ properties and new resource types will not be available.
 
 Move to using `aws-apigatewayv2` to get the latest APIs and updates.
 
-## Configure AuthorizationScopes for a method
-AuthorizationScopes are used with COGNITO_USER_POOLS to authorize method invocation. More info about AuthorizationScopes can be found [here] https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-method.html#cfn-apigateway-method-authorizationscopes
-
-```ts
-books.addMethod('GET', new apigateway.HttpIntegration('http://amazon.com'), {
-  authorizationType: AuthorizationType.COGNITO,
-  authorizationScopes: ['Scope1','Scope2']
-});
-```
 ----
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
