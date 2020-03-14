@@ -119,9 +119,13 @@ export class HttpApi extends ApiBase implements IHttpApi {
       physicalName: props?.apiName || id,
     });
 
-    if ((!props) ||
-    (props!.targetHandler && props!.targetUrl) ||
-    (props!.targetHandler === undefined && props!.targetUrl === undefined)) {
+    // if ((!props) ||
+    // (props!.targetHandler && props!.targetUrl) ||
+    // (props!.targetHandler === undefined && props!.targetUrl === undefined)) {
+    //   throw new Error('You must specify either a targetHandler or targetUrl, use at most one');
+    // }
+
+    if (props?.targetHandler && props?.targetUrl) {
       throw new Error('You must specify either a targetHandler or targetUrl, use at most one');
     }
 
@@ -132,15 +136,15 @@ export class HttpApi extends ApiBase implements IHttpApi {
 
     const apiProps: CfnApiProps = {
       name: this.physicalName,
-      protocolType: props!.protocol ?? ProtocolType.HTTP,
-      target: props!.targetHandler ? props.targetHandler.functionArn : props!.targetUrl
+      protocolType: props?.protocol ?? ProtocolType.HTTP,
+      target: props?.targetHandler ? props?.targetHandler.functionArn : props?.targetUrl ?? undefined
     };
     const api = new apigatewayv2.CfnApi(this, 'Resource', apiProps );
     this.httpApiId = api.ref;
 
     this.url = `https://${this.httpApiId}.execute-api.${this.region}.${this.awsdn}`;
 
-    if (props!.targetHandler) {
+    if (props?.targetHandler) {
       new lambda.CfnPermission(this, 'Permission', {
         action: 'lambda:InvokeFunction',
         principal: 'apigateway.amazonaws.com',
