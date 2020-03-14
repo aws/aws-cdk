@@ -4,12 +4,7 @@ import * as apigatewayv2 from '../lib';
 
 const app = new cdk.App();
 
-const env = {
-  region: process.env.CDK_DEFAULT_REGION,
-  account: process.env.CDK_DEFAULT_ACCOUNT
-};
-
-const stack = new cdk.Stack(app, 'ApiagtewayV2HttpApi', { env });
+const stack = new cdk.Stack(app, 'ApiagtewayV2HttpApi');
 
 const handler = new lambda.Function(stack, 'MyFunc', {
   runtime: lambda.Runtime.PYTHON_3_7,
@@ -45,15 +40,13 @@ const checkIpUrl = 'https://checkip.amazonaws.com';
 const awsUrl = 'https://aws.amazon.com';
 
 // Create a basic HTTP API
-const httpApi = new apigatewayv2.HttpApi(stack, 'HttpApi', {
+new apigatewayv2.HttpApi(stack, 'HttpApi', {
   targetUrl: checkIpUrl
 });
-new cdk.CfnOutput(stack, 'URL', { value: httpApi.url} );
 
 const httpApi2 = new apigatewayv2.HttpApi(stack, 'HttpApi2', {
   targetHandler: handler
 });
-new cdk.CfnOutput(stack, 'URL2', { value: httpApi2.url });
 
 const integRootHandler = new apigatewayv2.LambdaProxyIntegration(stack, 'IntegRootHandler', {
   api: httpApi2,
@@ -83,7 +76,3 @@ httpApi2.root
     targetUrl: checkIpUrl,
     method: apigatewayv2.HttpMethod.ANY
   });
-
-new cdk.CfnOutput(stack, 'Region', {
-  value: stack.region
-});
