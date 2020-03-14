@@ -53,7 +53,23 @@ test('create a HTTP API with no props correctly', () => {
   expectCDK(stack).to(countResources('AWS::ApiGatewayV2::Api', 1));
 });
 
-test('create a basic HTTP API correctly', () => {
+test('create a HTTP API with empty props correctly', () => {
+  // WHEN
+  new apigatewayv2.HttpApi(stack, 'HttpApi', {});
+  // THEN
+  expectCDK(stack).to(countResources('AWS::ApiGatewayV2::Api', 1));
+});
+
+test('create a basic HTTP API correctly with targetUrl', () => {
+  // WHEN
+  new apigatewayv2.HttpApi(stack, 'HttpApi', {
+    targetUrl: checkIpUrl,
+  });
+  // THEN
+  expectCDK(stack).to(countResources('AWS::ApiGatewayV2::Api', 1));
+});
+
+test('create a basic HTTP API correctly with targetUrl and protocol', () => {
   // WHEN
   new apigatewayv2.HttpApi(stack, 'HttpApi', {
     targetUrl: checkIpUrl,

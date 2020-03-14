@@ -125,7 +125,7 @@ export class HttpApi extends ApiBase implements IHttpApi {
     //   throw new Error('You must specify either a targetHandler or targetUrl, use at most one');
     // }
 
-    if (props?.targetHandler && props?.targetUrl) {
+    if (props?.targetHandler && props.targetUrl) {
       throw new Error('You must specify either a targetHandler or targetUrl, use at most one');
     }
 
@@ -137,7 +137,7 @@ export class HttpApi extends ApiBase implements IHttpApi {
     const apiProps: CfnApiProps = {
       name: this.physicalName,
       protocolType: props?.protocol ?? ProtocolType.HTTP,
-      target: props?.targetHandler ? props?.targetHandler.functionArn : props?.targetUrl ?? undefined
+      target: props?.targetHandler ? props.targetHandler.functionArn : props?.targetUrl ?? undefined
     };
     const api = new apigatewayv2.CfnApi(this, 'Resource', apiProps );
     this.httpApiId = api.ref;
