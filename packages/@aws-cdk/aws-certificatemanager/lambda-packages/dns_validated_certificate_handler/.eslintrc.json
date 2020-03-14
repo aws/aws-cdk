@@ -8,6 +8,9 @@
             "imports": "never",
             "exports": "never",
             "functions": "never"
+        }],
+        "array-bracket-newline": ["error", {
+            "multiline": true
         }]
     },
     "env": {

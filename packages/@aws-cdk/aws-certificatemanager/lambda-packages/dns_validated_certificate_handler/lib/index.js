@@ -130,9 +130,7 @@ const requestCertificate = async function (requestId, domainName, subjectAlterna
             Name: record.Name,
             Type: record.Type,
             TTL: 60,
-            ResourceRecords: [{
-              Value: record.Value,
-            }],
+            ResourceRecords: [{ Value: record.Value }],
           },
         };
       }),
