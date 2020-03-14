@@ -1,5 +1,5 @@
 // import '@aws-cdk/assert/jest';
-import { countResources, expect as expectCDK, haveOutput, haveResource } from '@aws-cdk/assert';
+import { countResources, expect as expectCDK } from '@aws-cdk/assert';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import * as apigatewayv2 from '../lib';
