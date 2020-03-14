@@ -22,97 +22,223 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 
 ## Introduction
 
-Amazon API Gateway is an AWS service for creating, publishing, maintaining, monitoring, and securing REST, HTTP, and WebSocket APIs at any scale. API developers can create APIs that access AWS or other web services, as well as data stored in the AWS Cloud. As an API Gateway API developer, you can create APIs for use in your own client applications. Or you can make your APIs available to third-party app developers. For more infomation, read the [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/welcome.html).
+Amazon API Gateway is an AWS service for creating, publishing, maintaining, monitoring, and securing REST, HTTP, and WebSocket 
+APIs at any scale. API developers can create APIs that access AWS or other web services, as well as data stored in the AWS Cloud. 
+As an API Gateway API developer, you can create APIs for use in your own client applications. Read the 
+[Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/welcome.html).
 
+This module supports features under [API Gateway v2](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_ApiGatewayV2.html) 
+that lets users set up Websocket and HTTP APIs.
 
 ## API
 
-This construct library at this moment implements API resources from [AWS::ApiGatewayV2::Api](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigatewayv2-api.html), which supports both `WebSocket APIs` and `HTTP APIs`.
+Amazon API Gateway supports `HTTP APIs`, `WebSocket APIs` and `REST APIs`. For more information about `WebSocket APIs` and `HTTP APIs`, 
+see [About WebSocket APIs in API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-overview.html) 
+and [HTTP APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api.html). 
 
-For more information about WebSocket APIs, see [About WebSocket APIs in API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-overview.html) in the _API Gateway Developer Guide_. For more information about HTTP APIs, see [HTTP APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api.html) in the _API Gateway Developer Guide_.
-
-To create [REST APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-rest-api.html), use `@aws-cdk/aws-apigateway` instead.
+For more information about `REST APIs`, see [Working with REST APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-rest-api.html). To create [REST APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-rest-api.html) with AWS CDK, use `@aws-cdk/aws-apigateway` instead.
 
 
 ### HTTP API
 
-`CfnApi` is the L1 construct to create either `WebSocket APIs` or `HTTP APIs`. At this moment, `HTTP APIs` supports both `Lambda Proxy Integration` and `HTTP Proxy Integration`. See [Working with AWS Lambda Proxy Integrations for HTTP APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html) and [Working with HTTP Proxy Integrations for HTTP APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-http.html) for more information.
+
+HTTP APIs enable you to create RESTful APIs with lower latency and lower cost than REST APIs.
+
+You can use HTTP APIs to send requests to AWS Lambda functions or to any routable HTTP endpoint.
+
+For example, you can create an HTTP API that integrates with a Lambda function on the backend. When a client calls your API, 
+API Gateway sends the request to the Lambda function and returns the function's response to the client. 
+
+HTTP API supports both `Lambda Proxy Integration` and `HTTP Proxy Integration`. 
+See [Working with AWS Lambda Proxy Integrations for HTTP APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html) 
+and [Working with HTTP Proxy Integrations for HTTP APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-http.html) 
+for more information.
 
 
-To create `HTTP APIs` with `Lambda Proxy Integration`, simply use  `LambdaProxyApi`.
+
+Use `HttpApi` to create HTTP APIs with Lambda or HTTP proxy integration.
 
 
 ```ts
 // Create a HTTP API with Lambda Proxy Integration as its $default route
-const api = new apigatewayv2.LambdaProxyApi(stack, 'LambdaProxyApi', {
-  handler
+const httpApi = new apigatewayv2.HttpApi(stack, 'HttpApi', {
+  targetHandler: handler
+});
+
+// Create a HTTP API with HTTP Proxy Integration as its $default route
+const httpApi2 = new apigatewayv2.HttpApi(stack, 'HttpApi2', {
+  targetUrl: checkIpUrl
 });
 ```
-
-To create `HTTP APIs` with `HTTP Proxy Integration`, use `HttpProxyApi` instead.
-
-```ts
-// Create a HTTP API with HTTP Proxy Integration
-new apigatewayv2.HttpProxyApi(stack, 'HttpProxyApi', {
-  url: 'https://aws.amazon.com'
-});
-```
-
-
-### WebSocket API
-
-The WebSocket API is not implemented yet in this L2 construct library, however, as `Api` class is provided, it's still possible to create the Websocket APIs with the `Api` class.
 
 
 ## Route
 
-`Routes` direct incoming API requests to backend resources. `Routes` consist of two parts: an HTTP method and a resource path—for example, `GET /pets`. You can define specific HTTP methods for your route, or use the `ANY` method to match all methods that you haven't defined for a resource. You can create a `$default route` that acts as a catch-all for requests that don’t match any other routes. See [Working with Routes for HTTP APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-routes.html).
+`Routes` direct incoming API requests to backend resources. `Routes` consist of two parts: an HTTP method and a resource path—for example, 
+`GET /pets`. You can define specific HTTP methods for your route, or use the `ANY` method to match all methods that you haven't defined for a resource. 
+You can create a `$default route` that acts as a catch-all for requests that don’t match any other routes. See 
+[Working with Routes for HTTP APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-routes.html).
 
 When you create HTTP APIs with either `Lambda Proxy Integration` or `HTTP Proxy Integration`, the `$default route` will be created as well.
 
-To create a specific route for an existing `Api` resource, specify the `httpPath` and an optional `httpMethod` property.
+To create a root route for an existing `Api` resource
 
 ```ts
-// create a specific 'GET /some/very/deep/route/path' route with Lambda proxy integration for an existing HTTP API
-const someDeepLambdaRoute = new apigatewayv2.LambdaRoute(stack, 'SomeLambdaRoute', {
-  api,
-  handler,
-  httpPath: '/some/very/deep/route/path',
-  // optional
-  httpMethod: HttpMethod.GET 
+// create a root route for the API
+httpApi.root = new apigatewayv2.Route(stack, 'RootRoute', {
+  api: httpApi,
+  httpPath: '/',
+  integration: integRootHandler
 });
 ```
-
-### `addLambdaRoute` and `addHttpRoute`
-
-To extend the routes from an existing HTTP API, use `addLambdaRoute` for Lambda proxy integration or `addHttpRoute` for HTTP Proxy Intgegration.
-
-Consider the providewd example above
+And extend different routes from the root route
 
 ```ts
-// create a specific 'GET /some/very/deep/route/path' route with Lambda proxy integration for an existing HTTP API
-const someDeepLambdaRoute = new apigatewayv2.LambdaRoute(stack, 'SomeLambdaRoute', {
-  api,
-  handler,
-  httpPath: '/some/very/deep/route/path',
-  httpMethod: HttpMethod.GET
-});
+const checkIpUrl = 'https://checkip.amazonaws.com';
+const awsUrl = 'https://aws.amazon.com';
 
-someDeepLambdaRoute
-  // HTTP ANY /some/very/deep/route/path/bar
-  .addLambdaRoute('bar', 'SomeDeepPathBar', {
+httpApi.root
+  // HTTP GET /foo
+  .addLambdaRoute('foo', 'Foo', {
     target: handler,
     method: apigatewayv2.HttpMethod.GET
   })
-  // HTTP ANY /some/very/deep/route/path/bar/checkip
-  .addHttpRoute('checkip', 'SomeDeepPathBarCheckIp', {
-    targetUrl: 'https://checkip.amazonaws.com',
+  // HTTP ANY /foo/aws
+  .addHttpRoute('aws',  'AwsPage', {
+    targetUrl: awsUrl,
+    method: apigatewayv2.HttpMethod.ANY
+  })
+  // HTTP ANY /foo/aws/checkip
+  .addHttpRoute('checkip', 'CheckIp', {
+    targetUrl: checkIpUrl,
     method: apigatewayv2.HttpMethod.ANY
   });
+```
 
-// print the full URL in the Outputs
-new cdk.CfnOutput(stack, 'SomeDeepLambdaRouteURL', {
-  value: someDeepLambdaRoute.fullUrl
+To create a specific route directly rather than building it from the root
+
+```ts
+// Option 1. create a specific 'GET /some/very/deep/route/path' route with Lambda proxy integration for an existing HTTP API
+const someDeepRoute = new apigatewayv2.Route(stack, 'SomeDeepRoute', {
+  api: httpApi,
+  httpPath: '/some/very/deep/route/path',
+  targetHandler
+});
+
+// Option 2. with HTTP proxy integration
+const someDeepRoute = new apigatewayv2.Route(stack, 'SomeDeepRoute', {
+  api: httpApi,
+  httpPath: '/some/very/deep/route/path',
+  targetUrl
+});
+
+// Option 3. with existing integration resource
+const someDeepRoute = new apigatewayv2.Route(stack, 'SomeDeepRoute', {
+  api: httpApi,
+  httpPath: '/some/very/deep/route/path',
+  integration
 });
 ```
 
+## Integration
+
+Integrations connect a route to backend resources. HTTP APIs support Lambda proxy and HTTP proxy integrations. 
+For example, you can configure a POST request to the /signup route of your API to integrate with a Lambda function 
+that handles signing up customers. 
+
+Use `Integration` to create the integration resources
+
+```ts
+// create API
+const api = new apigatewayv2.HttpApi(stack, 'HttpApi', {
+  targetHandler
+});
+// create Integration
+const integ = new apigatewayv2.Integration(stack, 'IntegRootHandler', {
+  apiId: api.httpApiId,
+  integrationMethod: apigatewayv2.HttpMethod.ANY,
+  integrationType: apigatewayv2.IntegrationType.HTTP_PROXY,
+  integrationUri: awsUrl
+});
+// create a specific route with the integration above for the API
+new apigatewayv2.Route(stack, 'SomeDeepRoute', {
+  api: httpApi,
+  httpPath: '/some/very/deep/route/path',
+  integration
+});
+
+```
+
+You may also use `LambdaProxyIntegraion` or `HttpProxyIntegration` to easily create the integrations.
+
+```ts
+// create a Lambda proxy integration
+new apigatewayv2.LambdaProxyIntegration(stack, 'IntegRootHandler', {
+  api
+  targetHandler
+});
+
+// or create a Http proxy integration
+new apigatewayv2.HttpProxyIntegration(stack, 'IntegRootHandler', {
+  api
+  targetUrl
+});
+```
+
+## Samples
+
+
+```ts
+// create a HTTP API with HTTP proxy integration as the $default route
+const httpApi = new apigatewayv2.HttpApi(stack, 'HttpApi', {
+  targetUrl: checkIpUrl
+});
+// print the API URL 
+new cdk.CfnOutput(stack, 'URL', { value: httpApi.url} );
+
+// create another HTTP API with Lambda proxy integration as the $default route
+const httpApi2 = new apigatewayv2.HttpApi(stack, 'HttpApi2', {
+  targetHandler: handler
+});
+// print the API URL 
+new cdk.CfnOutput(stack, 'URL2', { value: httpApi2.url });
+
+// create a Lambda proxy integration
+const integRootHandler = new apigatewayv2.LambdaProxyIntegration(stack, 'IntegRootHandler', {
+  api: httpApi2,
+  targetHandler: rootHandler
+});
+
+// create a root route for the API with the integration we created above and assign the route resource
+// as a 'root' property to the API
+httpApi2.root = new apigatewayv2.Route(stack, 'RootRoute', {
+  api: httpApi2,
+  httpPath: '/',
+  integration: integRootHandler,
+});
+
+// Now, extend the route tree from the root
+httpApi2.root
+  // HTTP ANY /foo
+  .addLambdaRoute('foo', 'Foo', {
+    target: handler,
+  })
+  // HTTP ANY /foo/aws
+  .addHttpRoute('aws',  'AwsPage', {
+    targetUrl: awsUrl,
+    method: apigatewayv2.HttpMethod.ANY
+  })
+  // HTTP GET /foo/aws/checkip
+  .addHttpRoute('checkip', 'CheckIp', {
+    targetUrl: checkIpUrl,
+    method: apigatewayv2.HttpMethod.GET
+  });
+
+// And create a specific route for it as well
+// HTTP ANY /some/very/deep/route/path
+new apigatewayv2.Route(stack, 'SomeDeepRoute', {
+  api: httpApi,
+  httpPath: '/some/very/deep/route/path',
+  targetHandler
+});
+```
