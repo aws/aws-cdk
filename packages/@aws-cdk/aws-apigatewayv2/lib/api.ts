@@ -6,37 +6,19 @@ import { CfnApiProps } from './apigatewayv2.generated';
 /**
  * the HTTP API interface
  */
-export interface IApi extends cdk.IResource {
+export interface IHttpApi extends cdk.IResource {
   /**
    * The ID of this API Gateway HTTP Api.
    * @attribute
    */
-  readonly apiId: string;
-}
-/**
- * the ApiBase interface
- */
-export interface IApiBase extends IApi {
-  /**
-   * http url of this api
-   */
-  readonly url: string
+  readonly httpApiId: string;
 }
 
-/**
- * HttpProxyApi interface
- */
-export interface IHttpProxyApi extends IApi {}
-/**
- * LambdaProxyApi interface
- */
-export interface ILambdaProxyApi extends IApi { }
-
-abstract class ApiBase extends cdk.Resource implements IApi {
+abstract class ApiBase extends cdk.Resource implements IHttpApi {
   /**
    * API ID
    */
-  public abstract readonly apiId: string;
+  public abstract readonly httpApiId: string;
   /**
    * API URL
    */
@@ -46,28 +28,38 @@ abstract class ApiBase extends cdk.Resource implements IApi {
 /**
  * API properties
  */
-export interface ApiProps extends cdk.StackProps {
+export interface HttpApiProps extends cdk.StackProps {
   /**
-   * API Name
-   * @default - the logic ID of the API
+   * A name for the HTTP API resoruce
+   *
+   * @default - ID of the HttpApi construct.
    */
   readonly apiName?: string;
   /**
    * API protocol
+   *
    * @default HTTP
    */
-  readonly protocol?: ApiProtocol;
+  readonly protocol?: ProtocolType;
   /**
-   * the default integration target of this API
+   * target lambda function for lambda proxy integration.
+   *
+   * @default - None. Specify either `targetHandler` or `targetUrl`
    */
-  readonly target: string;
+  readonly targetHandler?: lambda.IFunction;
 
+  /**
+   * target URL for HTTP proxy integration.
+   *
+   * @default - None. Specify either `targetHandler` or `targetUrl`
+   */
+  readonly targetUrl?: string;
 }
 
 /**
- * API protocols
+ * protocol types for the Amazon API Gateway HTTP API
  */
-export enum ApiProtocol {
+export enum ProtocolType {
   /**
    * HTTP protocol
    */
@@ -79,23 +71,24 @@ export enum ApiProtocol {
 }
 
 /**
- * Api Resource Class
+ * HTTPApi Resource Class
+ *
+ * @resource AWS::ApiGatewayV2::Api
  */
-export class Api extends ApiBase implements IApi {
+export class HttpApi extends ApiBase implements IHttpApi {
   /**
    * import from ApiId
    */
-  public static fromApiId(scope: cdk.Construct, id: string, apiId: string): IApi {
-    class Import extends cdk.Resource implements IApi {
-      public readonly apiId = apiId;
+  public static fromApiId(scope: cdk.Construct, id: string, httpApiId: string): IHttpApi {
+    class Import extends cdk.Resource implements IHttpApi {
+      public readonly httpApiId = httpApiId;
     }
-
     return new Import(scope, id);
   }
   /**
    * the API identifer
    */
-  public readonly apiId: string;
+  public readonly httpApiId: string;
   /**
    * AWS partition either `aws` or `aws-cn`
    */
@@ -116,124 +109,49 @@ export class Api extends ApiBase implements IApi {
    * the full URL of this API
    */
   public readonly url: string;
+  /**
+   * root route
+   */
+  public root?: apigatewayv2.IRouteBase;
 
-  constructor(scope: cdk.Construct, id: string, props?: ApiProps) {
+  constructor(scope: cdk.Construct, id: string, props?: HttpApiProps) {
     super(scope, id, {
       physicalName: props?.apiName || id,
     });
 
+    if ((!props) ||
+    (props!.targetHandler && props!.targetUrl) ||
+    (props!.targetHandler === undefined && props!.targetUrl === undefined)) {
+      throw new Error('You must specify either a targetHandler or targetUrl, use at most one');
+    }
+
     this.region = cdk.Stack.of(this).region;
-    this.partition = this.region.startsWith('cn-') ? 'aws-cn' : 'aws';
+    this.partition = this.isChina() ? 'aws-cn' : 'aws';
     this.account = cdk.Stack.of(this).account;
-    this.awsdn = this.partition === 'aws-cn' ? 'amazonaws.com.cn' : 'amazonaws.com';
+    this.awsdn = this.isChina() ? 'amazonaws.com.cn' : 'amazonaws.com';
 
     const apiProps: CfnApiProps = {
       name: this.physicalName,
-      protocolType: props?.protocol ?? ApiProtocol.HTTP,
-      target: props?.target
+      protocolType: props!.protocol ?? ProtocolType.HTTP,
+      target: props!.targetHandler ? props.targetHandler.functionArn : props!.targetUrl
     };
     const api = new apigatewayv2.CfnApi(this, 'Resource', apiProps );
-    this.apiId = api.ref;
-    this.url = `https://${this.apiId}.execute-api.${this.region}.${this.awsdn}`;
-  }
+    this.httpApiId = api.ref;
 
-}
+    this.url = `https://${this.httpApiId}.execute-api.${this.region}.${this.awsdn}`;
 
-/**
- * LambdaProxyApi properties interface
- */
-export interface LambdaProxyApiProps  {
-  /**
-   * API name
-   * @default - the logic ID of the API
-   */
-  readonly apiName?: string,
-  /**
-   * Lambda handler function
-   */
-  readonly handler: lambda.IFunction
-}
-
-/**
- * HttpProxyApi properties interface
- */
-export interface HttpProxyApiProps  {
-  /**
-   * API Name
-   * @default - the logic ID of the API
-   */
-  readonly apiName?: string,
-  /**
-   * API URL
-   */
-  readonly url: string
-}
-
-/**
- * API with Lambda Proxy integration as the default route
- */
-export class LambdaProxyApi extends Api implements ILambdaProxyApi {
-  /**
-   * import from api id
-   */
-  public static fromLambdaProxyApiId(scope: cdk.Construct, id: string, lambdaProxyApiId: string): ILambdaProxyApi {
-    class Import extends cdk.Resource implements ILambdaProxyApi {
-      public readonly apiId = lambdaProxyApiId;
+    if (props!.targetHandler) {
+      new lambda.CfnPermission(this, 'Permission', {
+        action: 'lambda:InvokeFunction',
+        principal: 'apigateway.amazonaws.com',
+        functionName: props!.targetHandler.functionName,
+        sourceArn: `arn:${this.partition}:execute-api:${this.region}:${this.account}:${this.httpApiId}/*/*`,
+      });
     }
-    return new Import(scope, id);
-  }
-  /**
-   * the root route of the API
-   */
-  public root?: apigatewayv2.IRouteBase;
-  constructor(scope: cdk.Construct, id: string, props: LambdaProxyApiProps) {
-    super(scope, id, {
-      target: props.handler.functionArn
-    });
-
-    new lambda.CfnPermission(this, 'Permission', {
-      action: 'lambda:InvokeFunction',
-      principal: 'apigateway.amazonaws.com',
-      functionName: props.handler.functionName,
-      sourceArn: `arn:${this.partition}:execute-api:${this.region}:${this.account}:${this.apiId}/*/*`,
-    });
-
-    // this.root = new RootRoute(this, 'RootRoute', this, {
-    //   target: props.handler.functionArn,
-    // });
-
-    new cdk.CfnOutput(this, 'LambdaProxyApiUrl', {
-      value: this.url
-    });
-  }
-}
-
-/**
- * API with HTTP Proxy integration as the default route
- */
-export class HttpProxyApi extends Api implements IHttpProxyApi  {
-  /**
-   * import from api id
-   */
-  public static fromHttpProxyApiId(scope: cdk.Construct, id: string, httpProxyApiId: string): IHttpProxyApi {
-    class Import extends cdk.Resource implements IHttpProxyApi {
-      public readonly apiId = httpProxyApiId;
-    }
-    return new Import(scope, id);
   }
 
-  /**
-   * the root route of the API
-   */
-  public root?: apigatewayv2.IRouteBase;
-  constructor(scope: cdk.Construct, id: string, props: HttpProxyApiProps) {
-    super(scope, id, {
-      target: props.url,
-      apiName: props.apiName ?? id
-    });
-
-    new cdk.CfnOutput(this, 'HttpProxyApiUrl', {
-      value: this.url
-    });
+  private isChina(): boolean {
+    const region = this.stack.region;
+    return !cdk.Token.isUnresolved(region) && region.startsWith('cn-');
   }
 }

@@ -2,3 +2,4 @@
 export * from './apigatewayv2.generated';
 export * from './api';
 export * from './route';
+export * from './integration';

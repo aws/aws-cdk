@@ -1,7 +1,6 @@
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import * as apigatewayv2 from '../lib';
-import { CfnRouteProps } from './apigatewayv2.generated';
 
 /**
  * the interface of the Route of API Gateway HTTP API
@@ -15,26 +14,6 @@ export interface IRoute extends cdk.IResource {
 }
 
 /**
- * HttpRoute interface
- */
-export interface IHttpRoute extends IRoute {}
-/**
- * LambdaRoute interface
- */
-export interface ILambdaRoute extends IRoute { }
-
-/**
- * the interface of the route attributes
- */
-export interface RouteAttributes {
-  /**
-   * ID of this Route
-   * @attribute
-   */
-  readonly routeId: string;
-}
-
-/**
  * the interface of the RouteBase
  */
 export interface IRouteBase extends IRoute {
@@ -42,7 +21,7 @@ export interface IRouteBase extends IRoute {
    * the ID of this API Gateway HttpApi.
    * @attribute
    */
-  readonly api: apigatewayv2.IApiBase;
+  readonly api: apigatewayv2.IHttpApi;
   /**
    * the key of this route
    * @attribute
@@ -58,11 +37,6 @@ export interface IRouteBase extends IRoute {
   readonly httpPath: string;
 
   /**
-   * full URL of this route
-   */
-  readonly fullUrl: string;
-
-  /**
    * add a child route with HTTP integration for this parent route
    */
   addHttpRoute(pathPart: string, id: string, options: HttpRouteOptions): Route;
@@ -74,14 +48,20 @@ export interface IRouteBase extends IRoute {
 }
 
 /**
- * the interface of the RouteOptionsBase
+ * the interface of the route attributes
  */
-export interface RouteOptionsBase {}
+export interface RouteAttributes {
+  /**
+   * ID of this Route
+   * @attribute
+   */
+  readonly routeId: string;
+}
 
 /**
  * options of HttpRoute
  */
-export interface HttpRouteOptions extends RouteOptionsBase {
+export interface HttpRouteOptions  {
   /**
    * URL of the integration target
    */
@@ -103,7 +83,7 @@ export interface HttpRouteOptions extends RouteOptionsBase {
 /**
  * Options for the Route with Lambda integration
  */
-export interface LambdaRouteOptions extends RouteOptionsBase {
+export interface LambdaRouteOptions {
   /**
    * target lambda function
    */
@@ -120,51 +100,6 @@ export interface LambdaRouteOptions extends RouteOptionsBase {
    * @default HttpMethod.ANY
    */
   readonly integrationMethod?: HttpMethod;
-}
-
-abstract class RouteBase extends cdk.Resource implements IRouteBase {
-  public abstract readonly api: apigatewayv2.IApiBase;
-  public abstract readonly routeKey: string;
-  public abstract readonly httpPath: string;
-  public abstract readonly routeId: string;
-  public abstract readonly fullUrl: string;
-
-  /**
-   * create a child route with Lambda proxy integration
-   */
-  public addLambdaRoute(pathPart: string, id: string, options: LambdaRouteOptions): Route {
-    const httpPath = `${this.httpPath.replace(/\/+$/, "")}/${pathPart}`;
-    const httpMethod = options.method;
-    // const routeKey = `${httpMethod} ${httpPath}`;
-
-    return new LambdaRoute(this, id, {
-      api: this.api,
-      handler: options.target,
-      httpPath,
-      httpMethod,
-      parent: this,
-      pathPart,
-    });
-  }
-
-  /**
-   * create a child route with HTTP proxy integration
-   */
-  public addHttpRoute(pathPart: string, id: string, options: HttpRouteOptions): Route {
-    const httpPath = `${this.httpPath.replace(/\/+$/, "")}/${pathPart}`;
-    const httpMethod = options.method;
-    // const routeKey = `${httpMethod} ${httpPath}`;
-
-    return new HttpRoute(this, id, {
-      api: this.api,
-      targetUrl: options.targetUrl,
-      httpPath,
-      httpMethod,
-      parent: this,
-      pathPart,
-    });
-  }
-
 }
 
 /**
@@ -194,9 +129,9 @@ export enum HttpMethod {
 }
 
 /**
- * Route base properties
+ * Route properties
  */
-export interface RouteBaseProps extends cdk.StackProps {
+export interface RouteProps extends cdk.StackProps {
   /**
    * route name
    * @default - the logic ID of this route
@@ -205,7 +140,7 @@ export interface RouteBaseProps extends cdk.StackProps {
   /**
    * the API the route is associated with
    */
-  readonly api: apigatewayv2.IApiBase;
+  readonly api: apigatewayv2.IHttpApi;
   /**
    * HTTP method of this route
    * @default HttpMethod.ANY
@@ -219,45 +154,47 @@ export interface RouteBaseProps extends cdk.StackProps {
    * parent of this route
    * @default - undefinied if no parentroute d
    */
-  readonly parent?: IRouteBase
+  readonly parent?: IRoute
   /**
    * path part of this route
    * @default ''
    */
   readonly pathPart?: string;
-
-}
-
-/**
- * Route properties
- */
-export interface RouteProps extends RouteBaseProps {
   /**
-   * target of this route
+   * HTTP URL target of this route
+   * @default - None. Specify one of `targetUrl`, `targetHandler` or `integration`
    */
-  readonly target: string;
-
+  readonly targetUrl?: string;
+  /**
+   * Lambda handler target of this route
+   * @default - None. Specify one of `targetUrl`, `targetHandler` or `integration`
+   */
+  readonly targetHandler?: lambda.IFunction;
+  /**
+   * Integration
+   * @default - None. Specify one of `targetUrl`, `targetHandler` or `integration`
+   */
+  readonly integration?: apigatewayv2.IIntegration;
 }
 
 /**
  * Route class that creates the Route for API Gateway HTTP API
  */
-export class Route extends RouteBase {
-
+export class Route extends cdk.Resource implements IRouteBase {
   /**
-   * import from route attributes
+   * import from route id
    */
-  public static fromRouteAttributes(scope: cdk.Construct, id: string, attrs: RouteAttributes): IRoute {
+  public static fromRouteId(scope: cdk.Construct, id: string, routeId: string): IRoute {
     class Import extends cdk.Resource implements IRoute {
-      public routeId = attrs.routeId;
+      public routeId = routeId;
     }
     return new Import(scope, id);
   }
-  public readonly fullUrl: string;
+  // public readonly fullUrl: string;
   /**
-   * the api interface of this route
+   * the api ID of this route
    */
-  public readonly api: apigatewayv2.IApiBase;
+  public readonly api: apigatewayv2.IHttpApi;
   /**
    * the route key of this route
    */
@@ -274,134 +211,89 @@ export class Route extends RouteBase {
    * route id from the `Ref` function
    */
   public readonly routeId: string;
+  /**
+   * integration ID
+   */
+  public readonly integId: string;
 
   constructor(scope: cdk.Construct, id: string, props: RouteProps) {
     super(scope, id);
 
+    if ((props.targetHandler && props.targetUrl) ||
+      (props.targetHandler && props.integration) ||
+      (props.targetUrl && props.integration)) {
+      throw new Error('You must specify targetHandler, targetUrl or integration, use at most one');
+    }
+
     this.api = props.api;
     this.httpPath = props.httpPath;
     this.httpMethod = props.httpMethod ?? HttpMethod.ANY;
+    this.routeKey = `${this.httpMethod} ${this.httpPath}`;
 
-    this.routeKey = `${props.httpMethod} ${props.httpPath}`;
-    const routeProps: CfnRouteProps = {
-      apiId: this.api.apiId,
+    if (props.integration) {
+      this.integId = props.integration.integrationId;
+    } else if (props.targetUrl) {
+        // create a HTTP Proxy integration
+      const integ = new apigatewayv2.HttpProxyIntegration(scope, `${id}/HttpProxyIntegration`, {
+        api: this.api,
+        targetUrl: props.targetUrl
+      });
+      this.integId = integ.integrationId;
+    } else if (props.targetHandler) {
+      // create a Lambda Proxy integration
+      const integ = new apigatewayv2.LambdaProxyIntegration(scope, `${id}/LambdaProxyIntegration`, {
+        api: this.api,
+        targetHandler: props.targetHandler
+      });
+      this.integId = integ.integrationId;
+    } else {
+      throw new Error('You must specify either a integration, targetHandler or targetUrl');
+    }
+
+    const routeProps: apigatewayv2.CfnRouteProps = {
+      apiId: this.api.httpApiId,
       routeKey: this.routeKey,
-      target: props.target
+      target: `integrations/${this.integId}`,
     };
-    const route = new apigatewayv2.CfnRoute(this, 'Resoruce', routeProps);
+
+    const route = new apigatewayv2.CfnRoute(this, 'Resource', routeProps);
     this.routeId = route.ref;
-    this.fullUrl = `${this.api.url}${this.httpPath}`;
+    // this.url = `${this.api.url}${this.httpPath}`;
   }
-}
 
-/**
- * Lambda route properties
- */
-export interface LambdaRouteProps extends RouteBaseProps {
   /**
-   * Lambda handler function
+   * create a child route with Lambda proxy integration
    */
-  readonly handler: lambda.IFunction
-}
+  public addLambdaRoute(pathPart: string, id: string, options: LambdaRouteOptions): Route {
+    const httpPath = `${this.httpPath.replace(/\/+$/, "")}/${pathPart}`;
+    const httpMethod = options.method;
+    // const routeKey = `${httpMethod} ${httpPath}`;
 
-/**
- * HTTP route properties
- */
-export interface HttpRouteProps extends RouteBaseProps {
-  /**
-   * target URL
-   */
-  readonly targetUrl: string,
-  /**
-   * integration method
-   * @default HttpMethod.ANY
-   */
-  readonly integrationMethod?: HttpMethod
-}
-
-enum IntegrationType {
-  AWS_PROXY = 'AWS_PROXY',
-  HTTP_PROXY = 'HTTP_PROXY'
-}
-
-/**
- * Route with Lambda Proxy integration
- */
-export class LambdaRoute extends Route implements ILambdaRoute {
-  /**
-   * import from lambdaRouteId
-   */
-  public static fromLambdaRouteId(scope: cdk.Construct, id: string, lambdaRouteId: string): ILambdaRoute {
-    class Import extends cdk.Resource implements ILambdaRoute {
-      public readonly routeId = lambdaRouteId;
-    }
-    return new Import(scope, id);
-  }
-  constructor(scope: cdk.Construct, id: string, props: LambdaRouteProps) {
-    const region = cdk.Stack.of(scope).region;
-    const account = cdk.Stack.of(scope).account;
-    const partition = region.startsWith('cn-') ? 'aws-cn' : 'aws';
-    const httpMethod = props.httpMethod ?? HttpMethod.ANY;
-
-    // create a Lambda Proxy integration
-    const integ = new apigatewayv2.CfnIntegration(scope, `Integration-${id}`, {
-      apiId: props.api.apiId,
-      integrationMethod: HttpMethod.POST,
-      integrationType:  IntegrationType.AWS_PROXY,
-      payloadFormatVersion: '1.0',
-      integrationUri: `arn:${partition}:apigateway:${region}:lambda:path/2015-03-31/functions/${props.handler.functionArn}/invocations`
-    });
-
-    // create permission
-    new lambda.CfnPermission(scope, `Permission-${id}`, {
-      action: 'lambda:InvokeFunction',
-      principal: 'apigateway.amazonaws.com',
-      functionName: props.handler.functionName,
-      sourceArn: `arn:${partition}:execute-api:${region}:${account}:${props.api.apiId}/*/*`,
-    });
-
-    super(scope, id, {
-      api: props.api,
+    return new Route(this, id, {
+      api: this.api,
+      targetHandler: options.target,
+      httpPath,
       httpMethod,
-      httpPath: props.httpPath,
-      target: `integrations/${integ.ref}`,
-      parent: props.parent,
-      pathPart: props.pathPart ?? ''
+      parent: this,
+      pathPart,
     });
   }
-}
 
-/**
- * Route with HTTP Proxy integration
- */
-export class HttpRoute extends Route implements IHttpRoute {
   /**
-   * import from httpRouteId
+   * create a child route with HTTP proxy integration
    */
-  public static fromHttpRouteId(scope: cdk.Construct, id: string, httpRouteId: string): IHttpRoute {
-    class Import extends cdk.Resource implements IHttpRoute {
-      public readonly routeId = httpRouteId;
-    }
-    return new Import(scope, id);
-  }
-  constructor(scope: cdk.Construct, id: string, props: HttpRouteProps) {
-    const httpMethod = props.httpMethod ?? HttpMethod.ANY;
+  public addHttpRoute(pathPart: string, id: string, options: HttpRouteOptions): Route {
+    const httpPath = `${this.httpPath.replace(/\/+$/, "")}/${pathPart}`;
+    const httpMethod = options.method;
+    // const routeKey = `${httpMethod} ${httpPath}`;
 
-    // create a HTTP Proxy integration
-    const integ = new apigatewayv2.CfnIntegration(scope, `Integration${id}`, {
-      apiId: props.api.apiId,
-      integrationMethod: props.integrationMethod ?? HttpMethod.ANY,
-      integrationType: IntegrationType.HTTP_PROXY,
-      payloadFormatVersion: '1.0',
-      integrationUri: props.targetUrl
-    });
-    super(scope, id, {
-      api: props.api,
+    return new Route(this, id, {
+      api: this.api,
+      targetUrl: options.targetUrl,
+      httpPath,
       httpMethod,
-      httpPath: props.httpPath,
-      target: `integrations/${integ.ref}`,
-      parent: props.parent,
-      pathPart: props.pathPart
+      parent: this,
+      pathPart,
     });
   }
 }

@@ -3,7 +3,13 @@ import * as cdk from '@aws-cdk/core';
 import * as apigatewayv2 from '../lib';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'ApiagtewayV2HttpApi');
+
+const env = {
+  region: process.env.CDK_DEFAULT_REGION,
+  account: process.env.CDK_DEFAULT_ACCOUNT
+};
+
+const stack = new cdk.Stack(app, 'ApiagtewayV2HttpApi', { env });
 
 const handler = new lambda.Function(stack, 'MyFunc', {
   runtime: lambda.Runtime.PYTHON_3_7,
@@ -35,65 +41,49 @@ def handler(event, context):
   },
 });
 
-// Create a HTTP API with Lambda Proxy Integration as $default route
-const api = new apigatewayv2.LambdaProxyApi(stack, 'LambdaProxyApi', {
-  handler
+const checkIpUrl = 'https://checkip.amazonaws.com';
+const awsUrl = 'https://aws.amazon.com';
+
+// Create a basic HTTP API
+const httpApi = new apigatewayv2.HttpApi(stack, 'HttpApi', {
+  targetUrl: checkIpUrl
+});
+new cdk.CfnOutput(stack, 'URL', { value: httpApi.url} );
+
+const httpApi2 = new apigatewayv2.HttpApi(stack, 'HttpApi2', {
+  targetHandler: handler
+});
+new cdk.CfnOutput(stack, 'URL2', { value: httpApi2.url });
+
+const integRootHandler = new apigatewayv2.LambdaProxyIntegration(stack, 'IntegRootHandler', {
+  api: httpApi2,
+  targetHandler: rootHandler
 });
 
-// Create the root route(/) with HTTP ANY method and Lambda integration
-api.root = new apigatewayv2.LambdaRoute(stack, 'RootRoute', {
-  api,
-  handler: rootHandler,
+// create a root route for the API
+httpApi2.root = new apigatewayv2.Route(stack, 'RootRoute', {
+  api: httpApi2,
   httpPath: '/',
+  integration: integRootHandler
 });
 
-api.root
+httpApi2.root
   // HTTP GET /foo
   .addLambdaRoute('foo', 'Foo', {
     target: handler,
     method: apigatewayv2.HttpMethod.GET
   })
-  // HTTP ANY /foo/checkip
-  .addHttpRoute('checkip',  'FooCheckIp', {
-    targetUrl: 'https://checkip.amazonaws.com',
+  // HTTP ANY /foo/aws
+  .addHttpRoute('aws',  'AwsPage', {
+    targetUrl: awsUrl,
     method: apigatewayv2.HttpMethod.ANY
-  });
-
-// api.root
-//   // HTTP GET /bar
-//   .addLambdaRoute('bar', 'Bar', {
-//     target: handler2,
-//     method: apigatewayv2.HttpMethod.ANY
-//   });
-
-// Create a HTTP API with HTTP Proxy Integration
-new apigatewayv2.HttpProxyApi(stack, 'HttpProxyApi', {
-  url: 'https://aws.amazon.com'
-});
-
-const someDeepLambdaRoute = new apigatewayv2.LambdaRoute(stack, 'SomeLambdaRoute', {
-  api,
-  handler,
-  httpPath: '/some/very/deep/route/path',
-  httpMethod: apigatewayv2.HttpMethod.GET
-});
-
-// new cdk.CfnOutput(stack, 'RouteURL', {
-//   value: someDeepLambdaRoute.fullUrl
-// });
-
-someDeepLambdaRoute
-  // HTTP ANY /some/very/deep/route/path/bar
-  .addLambdaRoute('bar', 'SomeDeepPathBar', {
-    target: handler,
-    method: apigatewayv2.HttpMethod.GET
   })
-  // HTTP ANY /some/very/deep/route/path/bar/checkip
-  .addHttpRoute('checkip', 'SomeDeepPathBarCheckIp', {
-    targetUrl: 'https://checkip.amazonaws.com',
+  // HTTP ANY /foo/aws/checkip
+  .addHttpRoute('checkip', 'CheckIp', {
+    targetUrl: checkIpUrl,
     method: apigatewayv2.HttpMethod.ANY
   });
 
-new cdk.CfnOutput(stack, 'SomeDeepLambdaRouteURL', {
-  value: someDeepLambdaRoute.fullUrl
+new cdk.CfnOutput(stack, 'Region', {
+  value: stack.region
 });
