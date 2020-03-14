@@ -1,4 +1,5 @@
 import * as cxapi from '@aws-cdk/cx-api';
+import * as cxprotocol from '@aws-cdk/cx-protocol';
 import { Writable } from 'stream';
 import { NodeStringDecoder, StringDecoder  } from 'string_decoder';
 import { DeployStackOptions, DeployStackResult } from '../lib';
@@ -26,7 +27,7 @@ const FIXED_RESULT = testAssembly({
     metadata: {
       '/resource': [
         {
-          type: cxapi.ERROR_METADATA_KEY,
+          type: cxprotocol.ArtifactMetadataEntryType.ERROR,
           data: 'this is an error'
         }
       ]

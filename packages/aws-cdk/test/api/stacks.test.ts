@@ -1,4 +1,5 @@
 import * as cxapi from '@aws-cdk/cx-api';
+import * as cxprotocol from '@aws-cdk/cx-protocol';
 import { AppStacks, DefaultSelection } from '../../lib/api/cxapp/stacks';
 import { registerContextProvider } from '../../lib/context-providers';
 import { Configuration } from '../../lib/settings';
@@ -152,7 +153,7 @@ function testStacks({ env, versionReporting = true }: { env?: string, versionRep
         metadata: {
           '/resource': [
             {
-              type: cxapi.ERROR_METADATA_KEY,
+              type: cxprotocol.ArtifactMetadataEntryType.ERROR,
               data: 'this is an error'
             }
           ]

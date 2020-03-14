@@ -1,12 +1,9 @@
 import * as cxprotocol from '@aws-cdk/cx-protocol';
 import { CloudAssembly } from './cloud-assembly';
 import {
-  ERROR_METADATA_KEY,
-  INFO_METADATA_KEY,
   MetadataEntryResult,
   SynthesisMessage,
-  SynthesisMessageLevel,
-  WARNING_METADATA_KEY } from './metadata';
+  SynthesisMessageLevel } from './metadata';
 
 /**
  * Artifact properties for CloudFormation stacks.
@@ -99,7 +96,7 @@ export class CloudArtifact {
    * @returns all the metadata entries of a specific type in this artifact.
    * @param type
    */
-  public findMetadataByType(type: string) {
+  public findMetadataByType(type: string): MetadataEntryResult[] {
     const result = new Array<MetadataEntryResult>();
     for (const path of Object.keys(this.manifest.metadata || {})) {
       for (const entry of (this.manifest.metadata || {})[path]) {
@@ -118,13 +115,13 @@ export class CloudArtifact {
       for (const entry of metadata) {
         let level: SynthesisMessageLevel;
         switch (entry.type) {
-          case WARNING_METADATA_KEY:
+          case cxprotocol.ArtifactMetadataEntryType.WARN:
             level = SynthesisMessageLevel.WARNING;
             break;
-          case ERROR_METADATA_KEY:
+          case cxprotocol.ArtifactMetadataEntryType.ERROR:
             level = SynthesisMessageLevel.ERROR;
             break;
-          case INFO_METADATA_KEY:
+          case cxprotocol.ArtifactMetadataEntryType.INFO:
             level = SynthesisMessageLevel.INFO;
             break;
           default:

@@ -110,22 +110,24 @@ export interface ContainerImageAssetMetadataEntry extends BaseAssetMetadataEntry
 }
 
 /**
- * [aws:cdk:asset]
+ * @see ArtifactMetadataEntryType.ASSET
  */
 export type AssetMetadataEntry = FileAssetMetadataEntry | ContainerImageAssetMetadataEntry;
 
 /**
- * [aws:cdk:info, aws:cdk:warn, aws:cdk:error]
+ * @see ArtifactMetadataEntryType.INFO
+ * @see ArtifactMetadataEntryType.WARN
+ * @see ArtifactMetadataEntryType.ERROR
  */
 export type LogMessageMetadataEntry = string;
 
 /**
- * [aws:cdk:logicalId]
+ * @see ArtifactMetadataEntryType.LOGICAL_ID
  */
 export type LogicalIdMetadataEntry = string;
 
 /**
- * [aws:cdk:stack-tags]
+ * @see ArtifactMetadataEntryType.STACK_TAGS
  */
 export type StackTagsMetadataEntry = Tag[];
 
@@ -133,6 +135,39 @@ export type StackTagsMetadataEntry = Tag[];
  * Union type for all metadata entries that might exist in the manifest.
  */
 export type MetadataEntryData = AssetMetadataEntry | LogMessageMetadataEntry | LogicalIdMetadataEntry | StackTagsMetadataEntry;
+
+export enum ArtifactMetadataEntryType {
+
+    /**
+     * Asset in metadata.
+     */
+    ASSET = 'aws:cdk:asset',
+
+    /**
+     * Metadata key used to print INFO-level messages by the toolkit when an app is syntheized.
+     */
+    INFO = 'aws:cdk:info',
+
+    /**
+     * Metadata key used to print WARNING-level messages by the toolkit when an app is syntheized.
+     */
+    WARN = 'aws:cdk:warn',
+
+    /**
+     * Metadata key used to print ERROR-level messages by the toolkit when an app is syntheized.
+     */
+    ERROR = 'aws:cdk:error',
+
+    /**
+     * Represents the CloudFormation logical ID of a resource at a certain path.
+     */
+    LOGICAL_ID = 'aws:cdk:logicalId',
+
+    /**
+     * Tag metadata key.
+     */
+    STACK_TAGS = 'aws:cdk:stack-tags'
+}
 
 /**
  * Type of cloud artifact.
@@ -230,7 +265,7 @@ export interface ArtifactManifest {
     /**
      * The environment into which this artifact is deployed.
      *
-     * @default - no envrionment. (// TODO what should be here?)
+     * @default - no envrionment.
      */
     readonly environment?: string; // format: aws://account/region
 
@@ -268,7 +303,7 @@ export interface AssemblyManifest {
     /**
      * The set of artifacts in this assembly.
      *
-     * @default - no artifacts (// TODO what should be here?)
+     * @default - no artifacts.
      */
     readonly artifacts?: { [id: string]: ArtifactManifest };
 

@@ -242,7 +242,7 @@ export class StackActivityMonitor {
     if (!logicalId || !metadata) { return undefined; }
     for (const path of Object.keys(metadata)) {
       const entry = metadata[path]
-        .filter(e => e.type === cxapi.LOGICAL_ID_METADATA_KEY)
+        .filter(e => e.type === cxprotocol.ArtifactMetadataEntryType.LOGICAL_ID)
         .find(e => e.data === logicalId);
       if (entry) {
         return { entry, path };

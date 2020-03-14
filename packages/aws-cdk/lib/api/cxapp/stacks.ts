@@ -286,7 +286,7 @@ export class AppStacks {
    * @returns an array with the tags available in the stack metadata.
    */
   public getTagsFromStackMetadata(stack: cxapi.CloudFormationStackArtifact): cxprotocol.Tag[] {
-    return flatMap(stack.findMetadataByType(cxapi.STACK_TAGS_METADATA_KEY), x => x.data as cxprotocol.Tag[]);
+    return flatMap(stack.findMetadataByType(cxprotocol.ArtifactMetadataEntryType.STACK_TAGS), x => x.data as cxprotocol.Tag[]);
   }
 
   /**

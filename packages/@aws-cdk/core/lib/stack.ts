@@ -785,7 +785,7 @@ export class Stack extends Construct implements ITaggable {
     }
 
     if (this.tags.hasTags()) {
-      this.node.addMetadata(cxapi.STACK_TAGS_METADATA_KEY, this.tags.renderTags());
+      this.node.addMetadata(cxprotocol.ArtifactMetadataEntryType.STACK_TAGS, this.tags.renderTags());
     }
 
     if (this.nestedStackParent) {

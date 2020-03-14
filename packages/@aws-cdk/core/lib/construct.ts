@@ -331,7 +331,7 @@ export class ConstructNode {
    * @param message The info message.
    */
   public addInfo(message: string): void {
-    this.addMetadata(cxapi.INFO_METADATA_KEY, message);
+    this.addMetadata(cxprotocol.ArtifactMetadataEntryType.INFO, message);
   }
 
   /**
@@ -341,7 +341,7 @@ export class ConstructNode {
    * @param message The warning message.
    */
   public addWarning(message: string): void {
-    this.addMetadata(cxapi.WARNING_METADATA_KEY, message);
+    this.addMetadata(cxprotocol.ArtifactMetadataEntryType.WARN, message);
   }
 
   /**
@@ -350,7 +350,7 @@ export class ConstructNode {
    * @param message The error message.
    */
   public addError(message: string) {
-    this.addMetadata(cxapi.ERROR_METADATA_KEY, message);
+    this.addMetadata(cxprotocol.ArtifactMetadataEntryType.ERROR, message);
   }
 
   /**
