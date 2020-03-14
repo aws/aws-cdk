@@ -86,7 +86,7 @@ function difRequiresApproval(diff: cfnDiff.TemplateDiff, requireApproval: Requir
 function buildLogicalToPathMap(stack: cxapi.CloudFormationStackArtifact) {
   const map: { [id: string]: string } = {};
   for (const md of stack.findMetadataByType(cxapi.LOGICAL_ID_METADATA_KEY)) {
-    map[md.data] = md.path;
+    map[md.data as string] = md.path;
   }
   return map;
 }

@@ -17,7 +17,7 @@ test('cloud assembly builder', () => {
     environment: 'aws://1222344/us-east-1',
     dependencies: ['minimal-artifact'],
     metadata: {
-      foo: [ { data: 123, type: 'foo', trace: [] } ]
+      foo: [ { data: "123", type: 'foo', trace: [] } ]
     },
     properties: {
       templateFile,

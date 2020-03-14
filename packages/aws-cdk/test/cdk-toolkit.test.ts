@@ -1,6 +1,6 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import * as cxprotocol from '@aws-cdk/cx-protocol';
-import { AppStacks, Tag } from '../lib/api/cxapp/stacks';
+import { AppStacks } from '../lib/api/cxapp/stacks';
 import { DeployStackResult } from '../lib/api/deploy-stack';
 import { DeployStackOptions, IDeploymentTarget, Template } from '../lib/api/deployment-target';
 import { CdkToolkit } from '../lib/cdk-toolkit';
@@ -62,7 +62,7 @@ class TestAppStacks extends AppStacks {
     super(undefined as any);
   }
 
-  public getTagsFromStackMetadata(stack: cxapi.CloudFormationStackArtifact): Tag[] {
+  public getTagsFromStackMetadata(stack: cxapi.CloudFormationStackArtifact): cxprotocol.Tag[] {
     switch (stack.stackName) {
       case TestAppStacks.MOCK_STACK_A.stackName:
         return [{ Key: 'Foo', Value: 'Bar' }];
@@ -101,7 +101,7 @@ class TestAppStacks extends AppStacks {
 }
 
 class TestProvisioner implements IDeploymentTarget {
-  private readonly expectedTags: { [stackName: string]: Tag[] } = {};
+  private readonly expectedTags: { [stackName: string]: cxprotocol.Tag[] } = {};
   private readonly expectedNotificationArns?: string[];
 
   constructor(

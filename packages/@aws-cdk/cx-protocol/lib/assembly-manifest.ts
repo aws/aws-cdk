@@ -109,7 +109,30 @@ export interface ContainerImageAssetMetadataEntry extends BaseAssetMetadataEntry
 
 }
 
+/**
+ * [aws:cdk:asset]
+ */
 export type AssetMetadataEntry = FileAssetMetadataEntry | ContainerImageAssetMetadataEntry;
+
+/**
+ * [aws:cdk:info, aws:cdk:warn, aws:cdk:error]
+ */
+export type LogMessageMetadataEntry = string;
+
+/**
+ * [aws:cdk:logicalId]
+ */
+export type LogicalIdMetadataEntry = string;
+
+/**
+ * [aws:cdk:stack-tags]
+ */
+export type StackTagsMetadataEntry = Tag[];
+
+/**
+ * Union type for all metadata entries that might exist in the manifest.
+ */
+export type MetadataEntryData = AssetMetadataEntry | LogMessageMetadataEntry | LogicalIdMetadataEntry | StackTagsMetadataEntry;
 
 /**
  * Type of cloud artifact.
@@ -132,6 +155,11 @@ export enum ArtifactType {
     CDK_TREE = 'cdk:tree',
 }
 
+export interface Tag {
+    readonly Key: string;
+    readonly Value: string;
+  }
+
 /**
  * An metadata entry in the construct.
  */
@@ -146,7 +174,7 @@ export interface MetadataEntry {
      *
      * @default - no data.
      */
-    readonly data?: any;
+    readonly data?: MetadataEntryData;
 
     /**
      * A stack trace for when the entry was created.

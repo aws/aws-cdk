@@ -1,10 +1,11 @@
+import { Tag } from '@aws-cdk/cx-protocol';
 import * as colors from 'colors/safe';
 import * as fs from 'fs-extra';
 import * as promptly from 'promptly';
 import { format } from 'util';
 import { SdkProvider } from './api/aws-auth';
 import { Mode } from './api/aws-auth/credentials';
-import { AppStacks, DefaultSelection, ExtendedStackSelection, Tag } from "./api/cxapp/stacks";
+import { AppStacks, DefaultSelection, ExtendedStackSelection } from "./api/cxapp/stacks";
 import { destroyStack } from './api/deploy-stack';
 import { IDeploymentTarget } from './api/deployment-target';
 import { stackExists } from './api/util/cloudformation';

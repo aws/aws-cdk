@@ -2,6 +2,7 @@ import { expect, haveResource } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
 import { App, Lazy, Stack } from '@aws-cdk/core';
 import { ASSET_METADATA } from '@aws-cdk/cx-api';
+import * as cxprotocol from '@aws-cdk/cx-protocol';
 import * as fs from 'fs';
 import { Test } from 'nodeunit';
 import * as path from 'path';
@@ -51,7 +52,7 @@ export = {
 
     // THEN
     const assetMetadata = stack.node.metadata.find(({ type }) => type === ASSET_METADATA);
-    test.deepEqual(assetMetadata && assetMetadata.data.buildArgs, { a: 'b' });
+    test.deepEqual(assetMetadata && (assetMetadata.data as cxprotocol.ContainerImageAssetMetadataEntry).buildArgs, { a: 'b' });
     test.done();
   },
 
@@ -70,7 +71,7 @@ export = {
 
     // THEN
     const assetMetadata = stack.node.metadata.find(({ type }) => type === ASSET_METADATA);
-    test.deepEqual(assetMetadata && assetMetadata.data.target, 'a-target');
+    test.deepEqual(assetMetadata && (assetMetadata.data as cxprotocol.ContainerImageAssetMetadataEntry).target, 'a-target');
     test.done();
   },
 
@@ -87,7 +88,7 @@ export = {
 
     // THEN
     const assetMetadata = stack.node.metadata.find(({ type }) => type === ASSET_METADATA);
-    test.deepEqual(assetMetadata && assetMetadata.data.file, 'Dockerfile.Custom');
+    test.deepEqual(assetMetadata && (assetMetadata.data as cxprotocol.ContainerImageAssetMetadataEntry).file, 'Dockerfile.Custom');
     test.done();
   },
 

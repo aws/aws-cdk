@@ -4,7 +4,6 @@ import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as path from 'path';
 import { SdkProvider } from './aws-auth';
-import {Tag} from "./cxapp/stacks";
 import { deployStack, DeployStackResult } from './deploy-stack';
 
 // tslint:disable:max-line-length
@@ -35,7 +34,7 @@ export interface BootstrapEnvironmentProps {
    *
    * @default - None.
    */
-  readonly tags?: Tag[];
+  readonly tags?: cxprotocol.Tag[];
   /**
    * Whether to execute the changeset or only create it and leave it in review.
    * @default true

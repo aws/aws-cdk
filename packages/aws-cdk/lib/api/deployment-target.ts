@@ -1,5 +1,5 @@
 import { CloudFormationStackArtifact } from '@aws-cdk/cx-api';
-import { Tag } from "../api/cxapp/stacks";
+import { Tag } from "@aws-cdk/cx-protocol";
 import { debug } from '../logging';
 import { Mode, SdkProvider } from './aws-auth';
 import { deployStack, DeployStackResult, readCurrentTemplate } from './deploy-stack';

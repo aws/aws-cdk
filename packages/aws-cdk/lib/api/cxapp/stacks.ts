@@ -285,8 +285,8 @@ export class AppStacks {
   /**
    * @returns an array with the tags available in the stack metadata.
    */
-  public getTagsFromStackMetadata(stack: cxapi.CloudFormationStackArtifact): Tag[] {
-    return flatMap(stack.findMetadataByType(cxapi.STACK_TAGS_METADATA_KEY), x => x.data);
+  public getTagsFromStackMetadata(stack: cxapi.CloudFormationStackArtifact): cxprotocol.Tag[] {
+    return flatMap(stack.findMetadataByType(cxapi.STACK_TAGS_METADATA_KEY), x => x.data as cxprotocol.Tag[]);
   }
 
   /**
@@ -423,11 +423,6 @@ export interface SelectedStack extends cxapi.CloudFormationStackArtifact {
    * The original name of the stack before renaming
    */
   originalName: string;
-}
-
-export interface Tag {
-  readonly Key: string;
-  readonly Value: string;
 }
 
 /**

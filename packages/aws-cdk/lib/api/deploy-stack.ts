@@ -1,8 +1,8 @@
 import * as cxapi from '@aws-cdk/cx-api';
+import * as cxprotocol from '@aws-cdk/cx-protocol';
 import * as aws from 'aws-sdk';
 import * as colors from 'colors/safe';
 import * as uuid from 'uuid';
-import { Tag } from "../api/cxapp/stacks";
 import { addMetadataAssetsToManifest } from '../assets';
 import { debug, error, print } from '../logging';
 import { deserializeStructure, toYAML } from '../serialize';
@@ -39,7 +39,7 @@ export interface DeployStackOptions {
   deployName?: string;
   quiet?: boolean;
   reuseAssets?: string[];
-  tags?: Tag[];
+  tags?: cxprotocol.Tag[];
 
   /**
    * Whether to execute the changeset or leave it in review.
@@ -267,7 +267,8 @@ export async function destroyStack(options: DestroyStackOptions) {
   return;
 }
 
-async function getDeployedStack(cfn: aws.CloudFormation, stackName: string): Promise<{ stackId: string, template: any, tags: Tag[] } | undefined> {
+async function getDeployedStack(cfn: aws.CloudFormation, stackName: string):
+  Promise<{ stackId: string, template: any, tags: cxprotocol.Tag[] } | undefined> {
   const stack = await getStack(cfn, stackName);
   if (!stack) {
     return undefined;
@@ -318,7 +319,7 @@ async function getStack(cfn: aws.CloudFormation, stackName: string): Promise<aws
   }
 }
 
-function compareTags(a: Tag[], b: Tag[]): boolean {
+function compareTags(a: cxprotocol.Tag[], b: cxprotocol.Tag[]): boolean {
   if (a.length !== b.length) {
     return false;
   }
