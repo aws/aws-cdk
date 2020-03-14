@@ -77,10 +77,10 @@ let report = function (event, context, responseStatus, physicalResourceId, respo
  * @param {string} hostedZoneId the Route53 Hosted Zone ID
  * @returns {string} Validated certificate ARN
  */
-const requestCertificate = async function (requestId, domainName, subjectAlternativeNames, hostedZoneId, region) {
+const requestCertificate = async function (requestId, domainName, subjectAlternativeNames, hostedZoneId, region, route53Endpoint) {
   const crypto = require('crypto');
   const acm = new aws.ACM({ region });
-  const route53 = new aws.Route53();
+  const route53 = route53Endpoint ? new aws.Route53({ endpoint: route53Endpoint }) : new aws.Route53();
   if (waiter) {
     // Used by the test suite, since waiters aren't mockable yet
     route53.waitFor = acm.waitFor = waiter;
@@ -227,7 +227,8 @@ exports.certificateRequestHandler = async function (event, context) {
           event.ResourceProperties.DomainName,
           event.ResourceProperties.SubjectAlternativeNames,
           event.ResourceProperties.HostedZoneId,
-          event.ResourceProperties.Region
+          event.ResourceProperties.Region,
+          event.ResourceProperties.Route53Endpoint
         );
         responseData.Arn = physicalResourceId = certificateArn;
         break;
