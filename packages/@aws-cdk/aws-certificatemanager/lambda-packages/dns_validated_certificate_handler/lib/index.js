@@ -36,7 +36,7 @@ let report = function (event, context, responseStatus, physicalResourceId, respo
       StackId: event.StackId,
       RequestId: event.RequestId,
       LogicalResourceId: event.LogicalResourceId,
-      Data: responseData
+      Data: responseData,
     });
 
     const parsedUrl = new URL(event.ResponseURL || defaultResponseURL);
@@ -47,8 +47,8 @@ let report = function (event, context, responseStatus, physicalResourceId, respo
       method: 'PUT',
       headers: {
         'Content-Type': '',
-        'Content-Length': responseBody.length
-      }
+        'Content-Length': responseBody.length,
+      },
     };
 
     https.request(options)
@@ -92,7 +92,7 @@ const requestCertificate = async function (requestId, domainName, subjectAlterna
     DomainName: domainName,
     SubjectAlternativeNames: subjectAlternativeNames,
     IdempotencyToken: crypto.createHash('sha256').update(requestId).digest('hex').substr(0, 32),
-    ValidationMethod: 'DNS'
+    ValidationMethod: 'DNS',
   }).promise();
 
   console.log(`Certificate ARN: ${reqCertResponse.CertificateArn}`);
@@ -103,7 +103,7 @@ const requestCertificate = async function (requestId, domainName, subjectAlterna
   let ready = false;
   for (let attempt = 0; attempt < maxAttempts && !ready; attempt++) {
     const { Certificate } = await acm.describeCertificate({
-      CertificateArn: reqCertResponse.CertificateArn
+      CertificateArn: reqCertResponse.CertificateArn,
     }).promise();
     options = Certificate.DomainValidationOptions || [];
 
@@ -131,13 +131,13 @@ const requestCertificate = async function (requestId, domainName, subjectAlterna
             Type: record.Type,
             TTL: 60,
             ResourceRecords: [{
-              Value: record.Value
-            }]
-          }
+              Value: record.Value,
+            }],
+          },
         };
-      })
+      }),
     },
-    HostedZoneId: hostedZoneId
+    HostedZoneId: hostedZoneId,
   }).promise();
 
   console.log('Waiting for DNS records to commit...');
@@ -145,9 +145,9 @@ const requestCertificate = async function (requestId, domainName, subjectAlterna
     // Wait up to 5 minutes
     $waiter: {
       delay: 30,
-      maxAttempts: 10
+      maxAttempts: 10,
     },
-    Id: changeBatch.ChangeInfo.Id
+    Id: changeBatch.ChangeInfo.Id,
   }).promise();
 
   console.log('Waiting for validation...');
@@ -155,9 +155,9 @@ const requestCertificate = async function (requestId, domainName, subjectAlterna
     // Wait up to 9 minutes and 30 seconds
     $waiter: {
       delay: 30,
-      maxAttempts: 19
+      maxAttempts: 19,
     },
-    CertificateArn: reqCertResponse.CertificateArn
+    CertificateArn: reqCertResponse.CertificateArn,
   }).promise();
 
   return reqCertResponse.CertificateArn;
@@ -178,7 +178,7 @@ const deleteCertificate = async function (arn, region) {
     let inUseByResources;
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
       const { Certificate } = await acm.describeCertificate({
-        CertificateArn: arn
+        CertificateArn: arn,
       }).promise();
 
       inUseByResources = Certificate.InUseBy || [];
@@ -201,7 +201,7 @@ const deleteCertificate = async function (arn, region) {
     console.log(`Deleting certificate ${arn}`);
 
     await acm.deleteCertificate({
-      CertificateArn: arn
+      CertificateArn: arn,
     }).promise();
   } catch (err) {
     if (err.name !== 'ResourceNotFoundException') {
