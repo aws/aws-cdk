@@ -3,7 +3,6 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import { CloudAssemblyBuilder } from '../lib';
-import { CLOUD_ASSEMBLY_VERSION } from '../lib/versioning';
 
 test('cloud assembly builder', () => {
   // GIVEN
@@ -66,7 +65,7 @@ test('cloud assembly builder', () => {
   // THEN
   // verify the manifest looks right
   expect(manifest).toStrictEqual({
-    version: CLOUD_ASSEMBLY_VERSION,
+    version: "0.0.0",
     missing: [
       { key: 'foo', provider: 'context-provider', props: { a: 'A', b: 2 } }
     ],
@@ -81,7 +80,7 @@ test('cloud assembly builder', () => {
         type: 'aws:cloudformation:stack',
         environment: 'aws://1222344/us-east-1',
         dependencies: ['minimal-artifact'],
-        metadata: { foo: [ { data: 123, type: 'foo', trace: [] } ] },
+        metadata: { foo: [ { data: "123", type: 'foo', trace: [] } ] },
         properties: {
           templateFile: 'foo.template.json',
           parameters: {

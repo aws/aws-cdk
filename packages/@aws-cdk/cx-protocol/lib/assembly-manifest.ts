@@ -151,7 +151,7 @@ export enum ArtifactMetadataEntryType {
     /**
      * Metadata key used to print WARNING-level messages by the toolkit when an app is syntheized.
      */
-    WARN = 'aws:cdk:warn',
+    WARN = 'aws:cdk:warning',
 
     /**
      * Metadata key used to print ERROR-level messages by the toolkit when an app is syntheized.

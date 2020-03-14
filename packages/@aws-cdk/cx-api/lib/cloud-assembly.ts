@@ -6,7 +6,6 @@ import { CloudArtifact } from './cloud-artifact';
 import { CloudFormationStackArtifact } from './cloudformation-artifact';
 import { topologicalSort } from './toposort';
 import { TreeCloudArtifact } from './tree-cloud-artifact';
-import { CLOUD_ASSEMBLY_VERSION, upgradeAssemblyManifest, verifyManifestVersion } from './versioning';
 
 /**
  * The name of the root manifest file of the assembly.
@@ -49,12 +48,8 @@ export class CloudAssembly {
   constructor(directory: string) {
     this.directory = directory;
 
-    const manifest = cxprotocol.Manifest.load(path.join(directory, MANIFEST_FILE));
-    this.manifest = upgradeAssemblyManifest(manifest);
-
+    this.manifest = cxprotocol.Manifest.load(path.join(directory, MANIFEST_FILE));
     this.version = this.manifest.version;
-    verifyManifestVersion(this.version);
-
     this.artifacts = this.renderArtifacts();
     this.runtime = this.manifest.runtime || { libraries: { } };
 
@@ -251,7 +246,7 @@ export class CloudAssemblyBuilder {
     // "backwards compatibility": in order for the old CLI to tell the user they
     // need a new version, we'll emit the legacy manifest with only "version".
     // this will result in an error "CDK Toolkit >= CLOUD_ASSEMBLY_VERSION is required in order to interact with this program."
-    fs.writeFileSync(path.join(this.outdir, 'cdk.out'), JSON.stringify({ version: CLOUD_ASSEMBLY_VERSION }));
+    fs.writeFileSync(path.join(this.outdir, 'cdk.out'), JSON.stringify({ version: manifest.version }));
 
     return new CloudAssembly(this.outdir);
   }
