@@ -236,7 +236,7 @@ export class CloudAssemblyBuilder {
     // explicitly initializing this type will help us detect
     // breaking changes. (For example adding a required property will break compilation).
     let manifest: cxprotocol.AssemblyManifest = {
-      version: CLOUD_ASSEMBLY_VERSION,
+      version: this.versionNumber(),
       artifacts: this.artifacts,
       runtime: options.runtimeInfo,
       missing: this.missing.length > 0 ? this.missing : undefined
@@ -255,6 +255,12 @@ export class CloudAssemblyBuilder {
 
     return new CloudAssembly(this.outdir);
   }
+
+  private versionNumber(): string {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    return require('../package.json').version.replace(/\+[0-9a-f]+$/, '');
+  }
+
 }
 
 export interface AssemblyBuildOptions {
