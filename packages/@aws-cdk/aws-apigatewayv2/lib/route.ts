@@ -48,17 +48,6 @@ export interface IRouteBase extends IRoute {
 }
 
 /**
- * the interface of the route attributes
- */
-export interface RouteAttributes {
-  /**
-   * ID of this Route
-   * @attribute
-   */
-  readonly routeId: string;
-}
-
-/**
  * options of HttpRoute
  */
 export interface HttpRouteOptions  {
