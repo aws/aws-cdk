@@ -2,6 +2,8 @@ set -eu
 scriptdir=$(cd $(dirname $0) && pwd)
 cd ${scriptdir}
 
+USE_PUBLISHED_FRAMEWORK_VERSION=${USE_PUBLISHED_FRAMEWORK_VERSION:-}
+
 if [[ -z "${CREDS_SET:-}" ]]; then
     # Check that credentials are configured (will error & abort if not)
     creds=$(aws sts get-caller-identity)

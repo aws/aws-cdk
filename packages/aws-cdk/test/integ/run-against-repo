@@ -8,6 +8,14 @@ set -eu
 cli_dir=$(cd $(dirname $0)/../.. && pwd)
 repo_root=$(cd $cli_dir/../.. && pwd)
 
+function unpatch_cli_version {
+  sed -i '' -e 's/"version": "999.0.0"/"version": "0.0.0"/g' ${cli_dir}/package.json
+}
+
+function patch_cli_version {
+  sed -i '' -e 's/"version": "0.0.0"/"version": "999.0.0"/g' ${cli_dir}/package.json
+}
+
 if [[ ! -f $repo_root/package.json ]]; then
     echo "$repo_root does not seem to be the root of the aws-cdk repository." >&2
     exit 1
@@ -18,4 +26,11 @@ export ORIGINAL_NPM="$(type -p npm)"
 
 export PATH="$cli_dir/bin:$cli_dir/test/integ/run-wrappers/repo:$PATH"
 hash -r
+
+trap unpatch_cli_version INT EXIT
+
+# path cli version so simulate published state where cli >= framework.
+# this is really nasty, not sure of a reasonable better solution for now.
+patch_cli_version
+
 exec "$@"
