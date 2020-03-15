@@ -12,6 +12,6 @@ stack_arn=$(cdk deploy -v ${stack} --require-approval=never)
 echo "Stack deployed successfully"
 
 # # destroy
-cdk destroy -f ${stack}
+# cdk destroy -f ${STACK_NAME_PREFIX}-test-2
 
 echo "✅  success"
