@@ -146,7 +146,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     RoleARN: options.roleArn,
     NotificationARNs: options.notificationArns,
     Capabilities: [ 'CAPABILITY_IAM', 'CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND' ],
-    Tags: options.tags ? cxprotocol.Manifest.toCloudFormationTags(options.tags) : options.tags
+    Tags: options.tags ? toCloudFormationTags(options.tags) : options.tags
   }).promise();
   debug('Initiated creation of changeset: %s; waiting for it to finish creating...', changeSet.Id);
   const changeSetDescription = await waitForChangeSet(cfn, deployName, changeSetName);
@@ -291,6 +291,12 @@ function toCxProtocolTags(tags: Tags): cxprotocol.Tag[] {
   return tags.map(t => {
     return { key: t.Key, value: t.Value };
   });
+}
+
+function toCloudFormationTags(tags: cxprotocol.Tag[]): Tags {
+    return tags.map(t => {
+        return { Key: t.key, Value: t.value };
+    });
 }
 
 export async function readCurrentTemplate(cfn: aws.CloudFormation, stackName: string) {
