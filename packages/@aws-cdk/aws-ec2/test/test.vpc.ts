@@ -1074,7 +1074,7 @@ export = {
       const stack = getTestStack();
 
       // WHEN
-      const subnet = Subnet.fromSubId(stack, 'subnet1', 'pub-1');
+      const subnet = Subnet.fromSubnetId(stack, 'subnet1', 'pub-1');
 
       // THEN
       test.deepEqual(subnet.subnetId, 'pub-1');
@@ -1087,7 +1087,7 @@ export = {
       const stack = getTestStack();
 
       // WHEN
-      const subnet = Subnet.fromSubnetAttributes(stack, 'subnet1', { subnetId : 'pub-1' });
+      const subnet = Subnet.fromSubnetAttributes(stack, 'subnet1', { subnetId : 'pub-1', availabilityZone: '' });
 
       // THEN
       test.deepEqual(subnet.subnetId, 'pub-1');
