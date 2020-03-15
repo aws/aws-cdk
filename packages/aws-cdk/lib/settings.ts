@@ -1,7 +1,7 @@
+import { Tag } from '@aws-cdk/cx-protocol';
 import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as fs_path from 'path';
-import { Tag } from './api/cxapp/stacks';
 import { debug, warning } from './logging';
 import * as util from './util';
 
@@ -270,8 +270,8 @@ export class Settings {
       if (parts.length === 2) {
         debug('CLI argument tags: %s=%s', parts[0], parts[1]);
         tags.push({
-         Key: parts[0],
-         Value: parts[1]
+         key: parts[0],
+         value: parts[1]
         });
       } else {
         warning('Tags argument is not an assignment (key=value): %s', assignment);

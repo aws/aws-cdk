@@ -1,4 +1,4 @@
-import * as cxapi from '@aws-cdk/cx-api';
+import * as cxprotocol from '@aws-cdk/cx-protocol';
 import { Test } from 'nodeunit';
 import { FileAssetPackaging, Stack } from '../lib';
 import { toCloudFormation } from './util';
@@ -16,12 +16,15 @@ export = {
     });
 
     // THEN
-    const assetMetadata = stack.node.metadata.find(({ type }) => type === cxapi.ASSET_METADATA);
+    const assetMetadata = stack.node.metadata.find(({ type }) => type === cxprotocol.ArtifactMetadataEntryType.ASSET);
 
-    test.equal(assetMetadata && assetMetadata.data.path, 'file-name');
-    test.equal(assetMetadata && assetMetadata.data.id, 'source-hash');
-    test.equal(assetMetadata && assetMetadata.data.packaging, FileAssetPackaging.ZIP_DIRECTORY);
-    test.equal(assetMetadata && assetMetadata.data.sourceHash, 'source-hash');
+    if (assetMetadata && assetMetadata.data) {
+      const data = assetMetadata.data as cxprotocol.AssetMetadataEntry;
+      test.equal(data.path, 'file-name');
+      test.equal(data.id, 'source-hash');
+      test.equal(data.packaging, FileAssetPackaging.ZIP_DIRECTORY);
+      test.equal(data.sourceHash, 'source-hash');
+    }
 
     test.deepEqual(toCloudFormation(stack), {
       Parameters: {
@@ -56,13 +59,16 @@ export = {
     });
 
     // THEN
-    const assetMetadata = stack.node.metadata.find(({ type }) => type === cxapi.ASSET_METADATA);
+    const assetMetadata = stack.node.metadata.find(({ type }) => type === cxprotocol.ArtifactMetadataEntryType.ASSET);
 
-    test.equal(assetMetadata && assetMetadata.data.packaging, 'container-image');
-    test.equal(assetMetadata && assetMetadata.data.path, 'directory-name');
-    test.equal(assetMetadata && assetMetadata.data.sourceHash, 'source-hash');
-    test.equal(assetMetadata && assetMetadata.data.repositoryName, 'repository-name');
-    test.equal(assetMetadata && assetMetadata.data.imageTag, 'source-hash');
+    if (assetMetadata && assetMetadata.data) {
+      const data = assetMetadata.data as cxprotocol.ContainerImageAssetMetadataEntry;
+      test.equal(data.packaging, 'container-image');
+      test.equal(data.path, 'directory-name');
+      test.equal(data.sourceHash, 'source-hash');
+      test.equal(data.repositoryName, 'repository-name');
+      test.equal(data.imageTag, 'source-hash');
+    }
 
     test.deepEqual(toCloudFormation(stack), { });
     test.done();
@@ -79,13 +85,16 @@ export = {
     });
 
     // THEN
-    const assetMetadata = stack.node.metadata.find(({ type }) => type === cxapi.ASSET_METADATA);
+    const assetMetadata = stack.node.metadata.find(({ type }) => type === cxprotocol.ArtifactMetadataEntryType.ASSET);
 
-    test.equal(assetMetadata && assetMetadata.data.packaging, 'container-image');
-    test.equal(assetMetadata && assetMetadata.data.path, 'directory-name');
-    test.equal(assetMetadata && assetMetadata.data.sourceHash, 'source-hash');
-    test.equal(assetMetadata && assetMetadata.data.repositoryName, 'aws-cdk/assets');
-    test.equal(assetMetadata && assetMetadata.data.imageTag, 'source-hash');
+    if (assetMetadata && assetMetadata.data) {
+      const data = assetMetadata.data as cxprotocol.ContainerImageAssetMetadataEntry;
+      test.equal(data.packaging, 'container-image');
+      test.equal(data.path, 'directory-name');
+      test.equal(data.sourceHash, 'source-hash');
+      test.equal(data.repositoryName, 'aws-cdk/assets');
+      test.equal(data.imageTag, 'source-hash');
+    }
 
     test.deepEqual(toCloudFormation(stack), { });
     test.done();
@@ -103,13 +112,16 @@ export = {
     });
 
     // THEN
-    const assetMetadata = stack.node.metadata.find(({ type }) => type === cxapi.ASSET_METADATA);
+    const assetMetadata = stack.node.metadata.find(({ type }) => type === cxprotocol.ArtifactMetadataEntryType.ASSET);
 
-    test.equal(assetMetadata && assetMetadata.data.packaging, 'container-image');
-    test.equal(assetMetadata && assetMetadata.data.path, 'directory-name');
-    test.equal(assetMetadata && assetMetadata.data.sourceHash, 'source-hash');
-    test.equal(assetMetadata && assetMetadata.data.repositoryName, 'my-custom-repo-name');
-    test.equal(assetMetadata && assetMetadata.data.imageTag, 'source-hash');
+    if (assetMetadata && assetMetadata.data) {
+      const data = assetMetadata.data as cxprotocol.ContainerImageAssetMetadataEntry;
+      test.equal(data.packaging, 'container-image');
+      test.equal(data.path, 'directory-name');
+      test.equal(data.sourceHash, 'source-hash');
+      test.equal(data.repositoryName, 'my-custom-repo-name');
+      test.equal(data.imageTag, 'source-hash');
+    }
 
     test.deepEqual(toCloudFormation(stack), { });
     test.done();

@@ -1,4 +1,4 @@
-import * as cxapi from '@aws-cdk/cx-api';
+import * as cxprotocol from '@aws-cdk/cx-protocol';
 import { Construct } from "./construct";
 import { Lazy } from "./lazy";
 import { Token } from './token';
@@ -61,7 +61,7 @@ export abstract class CfnElement extends Construct {
       displayHint: `${notTooLong(this.node.path)}.LogicalID`
     });
 
-    this.node.addMetadata(cxapi.LOGICAL_ID_METADATA_KEY, this.logicalId, this.constructor);
+    this.node.addMetadata(cxprotocol.ArtifactMetadataEntryType.LOGICAL_ID, this.logicalId, this.constructor);
   }
 
   /**
@@ -78,7 +78,7 @@ export abstract class CfnElement extends Construct {
    *      node +internal+ entries filtered.
    */
   public get creationStack(): string[] {
-    const trace = this.node.metadata.find(md => md.type === cxapi.LOGICAL_ID_METADATA_KEY)!.trace;
+    const trace = this.node.metadata.find(md => md.type === cxprotocol.ArtifactMetadataEntryType.LOGICAL_ID)!.trace;
     if (!trace) {
       return [];
     }

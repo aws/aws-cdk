@@ -4,7 +4,7 @@ import * as cpactions from '@aws-cdk/aws-codepipeline-actions';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import * as cxapi from '@aws-cdk/cx-api';
+import * as cxprotocol from '@aws-cdk/cx-protocol';
 
 export interface PipelineDeployStackActionProps {
   /**
@@ -101,7 +101,7 @@ export class PipelineDeployStackAction implements codepipeline.IAction {
 
   constructor(props: PipelineDeployStackActionProps) {
     this.stack = props.stack;
-    const assets = this.stack.node.metadata.filter(md => md.type === cxapi.ASSET_METADATA);
+    const assets = this.stack.node.metadata.filter(md => md.type === cxprotocol.ArtifactMetadataEntryType.ASSET);
     if (assets.length > 0) {
       // FIXME: Implement the necessary actions to publish assets
       throw new Error(`Cannot deploy the stack ${this.stack.stackName} because it references ${assets.length} asset(s)`);

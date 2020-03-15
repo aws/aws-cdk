@@ -95,7 +95,7 @@ export = {
 
     test.deepEqual(readJson(session.directory, 'foo.json'), { bar: 123 });
     test.deepEqual(session.manifest, {
-      version: cxapi.CLOUD_ASSEMBLY_VERSION,
+      version: "0.0.0",
       artifacts: {
         'Tree': {
           type: 'cdk:tree',

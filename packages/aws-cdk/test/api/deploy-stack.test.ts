@@ -196,12 +196,12 @@ test('deploy is skipped if template and tags did not change', async () => {
     stack: FAKE_STACK,
     tags: [
       {
-        Key: 'Key1',
-        Value: 'Value1'
+        key: 'Key1',
+        value: 'Value1'
       },
       {
-        Key: 'Key2',
-        Value: 'Value2'
+        key: 'Key2',
+        value: 'Value2'
       }
     ],
     sdk
@@ -269,8 +269,8 @@ test('deploy not skipped if template did not change but tags changed', async () 
     sdk,
     tags: [
       {
-        Key: 'Key',
-        Value: 'NewValue'
+        key: 'Key',
+        value: 'NewValue'
       }
     ]
   });
@@ -342,8 +342,8 @@ test('deploy not skipped if template did not change but one tag removed', async 
     sdk,
     tags: [
       {
-        Key: 'Key1',
-        Value: 'Value1'
+        key: 'Key1',
+        value: 'Value1'
       }
     ]
   });

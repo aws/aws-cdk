@@ -28,7 +28,7 @@ export function testAssembly(assembly: TestAssembly): cxapi.CloudAssembly {
 
     for (const asset of stack.assets || []) {
       metadata[asset.id] = [
-        { type: cxapi.ASSET_METADATA, data: asset }
+        { type: cxprotocol.ArtifactMetadataEntryType.ASSET, data: asset }
       ];
     }
 

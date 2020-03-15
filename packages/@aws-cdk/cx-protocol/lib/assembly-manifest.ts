@@ -136,6 +136,9 @@ export type StackTagsMetadataEntry = Tag[];
  */
 export type MetadataEntryData = AssetMetadataEntry | LogMessageMetadataEntry | LogicalIdMetadataEntry | StackTagsMetadataEntry;
 
+/**
+ * Type of artifact metadata entry.
+ */
 export enum ArtifactMetadataEntryType {
 
     /**
@@ -190,9 +193,20 @@ export enum ArtifactType {
     CDK_TREE = 'cdk:tree',
 }
 
+/**
+ * Key Value Tag.
+ */
 export interface Tag {
-    readonly Key: string;
-    readonly Value: string;
+
+    /**
+     * Tag key.
+     */
+    readonly key: string;
+
+    /**
+     * Tag value.
+     */
+    readonly value: string;
   }
 
 /**

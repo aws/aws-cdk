@@ -551,7 +551,7 @@ export class Stack extends Construct implements ITaggable {
         artifactHashParameter: params.artifactHashParameter.logicalId,
       };
 
-      this.node.addMetadata(cxapi.ASSET_METADATA, metadata);
+      this.node.addMetadata(cxprotocol.ArtifactMetadataEntryType.ASSET, metadata);
     }
 
     const bucketName = params.bucketNameParameter.valueAsString;
@@ -593,7 +593,7 @@ export class Stack extends Construct implements ITaggable {
         file: asset.dockerFile,
       };
 
-      this.node.addMetadata(cxapi.ASSET_METADATA, metadata);
+      this.node.addMetadata(cxprotocol.ArtifactMetadataEntryType.ASSET, metadata);
       this.addedImageAssets.add(assetId);
     }
 

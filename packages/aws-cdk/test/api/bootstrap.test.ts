@@ -177,7 +177,7 @@ test('do bootstrap with custom tags for toolkit stack', async () => {
 
   // WHEN
   const ret = await bootstrapEnvironment(env, sdk, 'mockStack', undefined, {
-    tags: [{ Key: 'Foo', Value: 'Bar' }]
+    tags: [{ key: 'Foo', value: 'Bar' }]
   });
 
   // THEN

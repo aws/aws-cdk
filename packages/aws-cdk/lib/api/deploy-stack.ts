@@ -1,6 +1,7 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import * as cxprotocol from '@aws-cdk/cx-protocol';
 import * as aws from 'aws-sdk';
+import { Tags } from 'aws-sdk/clients/cloudformation';
 import * as colors from 'colors/safe';
 import * as uuid from 'uuid';
 import { addMetadataAssetsToManifest } from '../assets';
@@ -145,7 +146,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     RoleARN: options.roleArn,
     NotificationARNs: options.notificationArns,
     Capabilities: [ 'CAPABILITY_IAM', 'CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND' ],
-    Tags: options.tags
+    Tags: options.tags ? cxprotocol.Manifest.toCloudFormationTags(options.tags) : options.tags
   }).promise();
   debug('Initiated creation of changeset: %s; waiting for it to finish creating...', changeSet.Id);
   const changeSetDescription = await waitForChangeSet(cfn, deployName, changeSetName);
@@ -281,9 +282,15 @@ async function getDeployedStack(cfn: aws.CloudFormation, stackName: string):
   const template = await readCurrentTemplate(cfn, stackName);
   return {
     stackId: stack.StackId,
-    tags: stack.Tags ?? [],
+    tags: stack.Tags ? toCxProtocolTags(stack.Tags) : [],
     template
   };
+}
+
+function toCxProtocolTags(tags: Tags): cxprotocol.Tag[] {
+  return tags.map(t => {
+    return { key: t.Key, value: t.Value };
+  });
 }
 
 export async function readCurrentTemplate(cfn: aws.CloudFormation, stackName: string) {
@@ -325,9 +332,9 @@ function compareTags(a: cxprotocol.Tag[], b: cxprotocol.Tag[]): boolean {
   }
 
   for (const aTag of a) {
-    const bTag = b.find(tag => tag.Key === aTag.Key);
+    const bTag = b.find(tag => tag.key === aTag.key);
 
-    if (!bTag || bTag.Value !== aTag.Value) {
+    if (!bTag || bTag.value !== aTag.value) {
       return false;
     }
   }

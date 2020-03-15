@@ -1,7 +1,6 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
 import { App, Lazy, Stack } from '@aws-cdk/core';
-import { ASSET_METADATA } from '@aws-cdk/cx-api';
 import * as cxprotocol from '@aws-cdk/cx-protocol';
 import * as fs from 'fs';
 import { Test } from 'nodeunit';
@@ -51,7 +50,7 @@ export = {
     });
 
     // THEN
-    const assetMetadata = stack.node.metadata.find(({ type }) => type === ASSET_METADATA);
+    const assetMetadata = stack.node.metadata.find(({ type }) => type === cxprotocol.ArtifactMetadataEntryType.ASSET);
     test.deepEqual(assetMetadata && (assetMetadata.data as cxprotocol.ContainerImageAssetMetadataEntry).buildArgs, { a: 'b' });
     test.done();
   },
@@ -70,7 +69,7 @@ export = {
     });
 
     // THEN
-    const assetMetadata = stack.node.metadata.find(({ type }) => type === ASSET_METADATA);
+    const assetMetadata = stack.node.metadata.find(({ type }) => type === cxprotocol.ArtifactMetadataEntryType.ASSET);
     test.deepEqual(assetMetadata && (assetMetadata.data as cxprotocol.ContainerImageAssetMetadataEntry).target, 'a-target');
     test.done();
   },
@@ -87,7 +86,7 @@ export = {
     });
 
     // THEN
-    const assetMetadata = stack.node.metadata.find(({ type }) => type === ASSET_METADATA);
+    const assetMetadata = stack.node.metadata.find(({ type }) => type === cxprotocol.ArtifactMetadataEntryType.ASSET);
     test.deepEqual(assetMetadata && (assetMetadata.data as cxprotocol.ContainerImageAssetMetadataEntry).file, 'Dockerfile.Custom');
     test.done();
   },

@@ -53,6 +53,8 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
   debug('context:', context);
   env[cxapi.CONTEXT_ENV] = JSON.stringify(context);
 
+  const cliVersion = versionNumber();
+
   const app = config.settings.get(['app']);
   if (!app) {
     throw new Error(`--app is required either in command-line, in ${PROJECT_CONFIG} or in ${USER_DEFAULTS}`);
@@ -76,8 +78,7 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
   env[cxapi.OUTDIR_ENV] = outdir;
 
   // Send version information
-  env[cxapi.CLI_ASM_VERSION_ENV] = cxapi.CLOUD_ASSEMBLY_VERSION;
-  env[cxapi.CLI_VERSION_ENV] = versionNumber();
+  env[cxapi.CLI_VERSION_ENV] = cliVersion;
 
   debug('env:', env);
 
@@ -103,11 +104,11 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
       return ver;
     }
 
-    const cliVersion = _parseVersion(versionNumber());
-    const manifestVersion = _parseVersion(cloudAssembly.manifest.version);
+    const cliSem = _parseVersion(cliVersion);
+    const manifestSem = _parseVersion(cloudAssembly.manifest.version);
 
-    if (semver.gt(manifestVersion, cliVersion)) {
-      throw new Error(`A newer version of the CDK CLI (>= ${manifestVersion}) is necessary to interact with this app`);
+    if (semver.gt(manifestSem, cliSem)) {
+      throw new Error(`A newer version of the CDK CLI (>= ${manifestSem}) is necessary to interact with this app`);
     }
 
   }

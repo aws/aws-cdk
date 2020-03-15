@@ -1,7 +1,6 @@
 import * as cxprotocol from '@aws-cdk/cx-protocol';
 import * as fs from 'fs';
 import * as path from 'path';
-import { ASSET_METADATA } from './assets';
 import { AwsCloudFormationStackProperties, CloudArtifact } from './cloud-artifact';
 import { CloudAssembly } from './cloud-assembly';
 import { Environment, EnvironmentUtils } from './environment';
@@ -71,7 +70,7 @@ export class CloudFormationStackArtifact extends CloudArtifact {
 
     this.stackName = properties.stackName || artifactId;
     this.template = JSON.parse(fs.readFileSync(path.join(this.assembly.directory, this.templateFile), 'utf-8'));
-    this.assets = this.findMetadataByType(ASSET_METADATA).map(e => e.data as cxprotocol.AssetMetadataEntry);
+    this.assets = this.findMetadataByType(cxprotocol.ArtifactMetadataEntryType.ASSET).map(e => e.data as cxprotocol.AssetMetadataEntry);
 
     this.displayName = this.stackName === artifactId
       ? this.stackName

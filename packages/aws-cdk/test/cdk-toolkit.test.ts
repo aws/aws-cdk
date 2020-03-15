@@ -65,9 +65,9 @@ class TestAppStacks extends AppStacks {
   public getTagsFromStackMetadata(stack: cxapi.CloudFormationStackArtifact): cxprotocol.Tag[] {
     switch (stack.stackName) {
       case TestAppStacks.MOCK_STACK_A.stackName:
-        return [{ Key: 'Foo', Value: 'Bar' }];
+        return [{ key: 'Foo', value: 'Bar' }];
       case TestAppStacks.MOCK_STACK_B.stackName:
-        return [{ Key: 'Baz', Value: 'Zinga!' }];
+        return [{ key: 'Baz', value: 'Zinga!' }];
       default:
         throw new Error(`Not an expected mock stack: ${stack.stackName}`);
     }
@@ -110,8 +110,8 @@ class TestProvisioner implements IDeploymentTarget {
   ) {
     for (const [stackName, tags] of Object.entries(expectedTags)) {
       this.expectedTags[stackName] =
-        Object.entries(tags).map(([Key, Value]) => ({ Key, Value }))
-          .sort((l, r) =>  l.Key.localeCompare(r.Key));
+        Object.entries(tags).map(([key, value]) => ({ key, value }))
+          .sort((l, r) =>  l.key.localeCompare(r.key));
     }
     if (expectedNotificationArns) {
       this.expectedNotificationArns = expectedNotificationArns;

@@ -1,5 +1,3 @@
-export const ASSET_METADATA = 'aws:cdk:asset';
-
 /**
  * If this is set in the context, the aws:asset:xxx metadata entries will not be
  * added to the template. This is used, for example, when we run integrationt
