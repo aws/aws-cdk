@@ -18,7 +18,7 @@ function download_latest_release_json {
         github_headers="Authorization: token ${GITHUB_TOKEN}"
     fi
 
-    curl -Ss --dump-header headers.txt -H "$github_headers" https://api.github.com/repos/aws/aws-cdk/releases/latest > release.json
+    curl -Ss --dump-header /dev/null -H "$github_headers" https://api.github.com/repos/aws/aws-cdk/releases/latest > release.json
 }
 
 trap cleanup INT EXIT
