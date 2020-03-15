@@ -343,7 +343,9 @@ export class Cluster extends Resource implements ICluster {
     const stack = Stack.of(this);
 
     this.vpc = props.vpc || new ec2.Vpc(this, 'DefaultVpc');
-    this.version = props.version;
+    this.version = props.version ?? LATEST_KUBERNETES_VERSION;
+
+    new CfnOutput(this, 'Version', { value: this.version });
 
     this.tagSubnets();
 
@@ -373,7 +375,7 @@ export class Cluster extends Resource implements ICluster {
     const clusterProps: CfnClusterProps = {
       name: this.physicalName,
       roleArn: this.role.roleArn,
-      version: props.version,
+      version:  this.version,
       resourcesVpcConfig: {
         securityGroupIds: [securityGroup.securityGroupId],
         subnetIds
@@ -902,7 +904,7 @@ export class EksOptimizedImage implements ec2.IMachineImage {
 }
 
 // MAINTAINERS: use ./scripts/kube_bump.sh to update LATEST_KUBERNETES_VERSION
-const LATEST_KUBERNETES_VERSION = '1.14';
+const LATEST_KUBERNETES_VERSION = '1.15';
 
 /**
  * Whether the worker nodes should support GPU or just standard instances
