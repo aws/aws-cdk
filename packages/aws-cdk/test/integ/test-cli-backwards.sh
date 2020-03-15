@@ -30,4 +30,4 @@ echo "Checking out integration tests from version ${latest_version}"
 pushd ${repo_root} && git checkout ${latest_version} -- packages/aws-cdk/test/integ/cli && popd
 
 echo "Running integration tests from version ${latest_version}"
-# ${integdir}/cli/test.sh
+${integdir}/cli/test.sh
