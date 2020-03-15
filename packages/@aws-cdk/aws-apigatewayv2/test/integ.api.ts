@@ -40,8 +40,14 @@ const checkIpUrl = 'https://checkip.amazonaws.com';
 const awsUrl = 'https://aws.amazon.com';
 
 // Create a basic HTTP API
-new apigatewayv2.HttpApi(stack, 'HttpApi', {
+const httpApi = new apigatewayv2.HttpApi(stack, 'HttpApi', {
   targetUrl: checkIpUrl
+});
+
+// addLambdaRoute from this API
+// HTTP ANY /fn
+httpApi.addLambdaRoute('/fn', 'LambdaRoute', {
+  target: handler
 });
 
 const httpApi2 = new apigatewayv2.HttpApi(stack, 'HttpApi2', {

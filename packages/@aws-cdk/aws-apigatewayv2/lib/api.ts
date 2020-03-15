@@ -1,7 +1,6 @@
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
-import * as apigatewayv2 from '../lib';
-import { CfnApiProps } from './apigatewayv2.generated';
+import { CfnApi, CfnApiProps,  HttpRouteOptions, IRouteBase, LambdaRouteOptions, Route  } from '../lib';
 
 /**
  * the HTTP API interface
@@ -112,7 +111,7 @@ export class HttpApi extends ApiBase implements IHttpApi {
   /**
    * root route
    */
-  public root?: apigatewayv2.IRouteBase;
+  public root?: IRouteBase;
 
   constructor(scope: cdk.Construct, id: string, props?: HttpApiProps) {
     super(scope, id, {
@@ -139,7 +138,7 @@ export class HttpApi extends ApiBase implements IHttpApi {
       protocolType: props?.protocol ?? ProtocolType.HTTP,
       target: props?.targetHandler ? props.targetHandler.functionArn : props?.targetUrl ?? undefined
     };
-    const api = new apigatewayv2.CfnApi(this, 'Resource', apiProps );
+    const api = new CfnApi(this, 'Resource', apiProps );
     this.httpApiId = api.ref;
 
     this.url = `https://${this.httpApiId}.execute-api.${this.region}.${this.awsdn}`;
@@ -152,6 +151,32 @@ export class HttpApi extends ApiBase implements IHttpApi {
         sourceArn: `arn:${this.partition}:execute-api:${this.region}:${this.account}:${this.httpApiId}/*/*`,
       });
     }
+  }
+
+  /**
+   * create a child route with Lambda proxy integration
+   */
+  public addLambdaRoute(httpPath: string, id: string, options: LambdaRouteOptions): Route {
+    const httpMethod = options.method;
+    return new Route(this, id, {
+      api: this,
+      targetHandler: options.target,
+      httpPath,
+      httpMethod
+    });
+  }
+
+  /**
+   * create a child route with HTTP proxy integration
+   */
+  public addHttpRoute(httpPath: string, id: string, options: HttpRouteOptions): Route {
+    const httpMethod = options.method;
+    return new Route(this, id, {
+      api: this,
+      targetUrl: options.targetUrl,
+      httpPath,
+      httpMethod
+    });
   }
 
   private isChina(): boolean {

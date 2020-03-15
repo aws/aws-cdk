@@ -83,6 +83,8 @@ You can create a `$default route` that acts as a catch-all for requests that don
 
 When you create HTTP APIs with either `Lambda Proxy Integration` or `HTTP Proxy Integration`, the `$default route` will be created as well.
 
+
+
 To create a root route for an existing `Api` resource
 
 ```ts
@@ -139,6 +141,17 @@ const someDeepRoute = new apigatewayv2.Route(stack, 'SomeDeepRoute', {
   api: httpApi,
   httpPath: '/some/very/deep/route/path',
   integration
+});
+
+// Option 3. with addLambdaRoute or addHttpRoute from the HttpApi resource
+httpApi.addLambdaRoute('/foo/bar', 'FooBar', {
+  target: handler,
+  method: apigatewayv2.HttpMethod.GET
+});
+
+httpApi.addHttpRoute('/foo/bar', 'FooBar', {
+  targetUrl: awsUrl,
+  method: apigatewayv2.HttpMethod.ANY
 });
 ```
 

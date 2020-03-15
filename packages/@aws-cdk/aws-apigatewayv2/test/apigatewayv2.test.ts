@@ -1,5 +1,5 @@
 // import '@aws-cdk/assert/jest';
-import { countResources, expect as expectCDK } from '@aws-cdk/assert';
+import { countResources, expect as expectCDK, haveResourceLike } from '@aws-cdk/assert';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import * as apigatewayv2 from '../lib';
@@ -175,7 +175,7 @@ test('import route from route ID correctly', () => {
   ).not.toThrowError();
 });
 
-test('addLambdaRoute correctly', () => {
+test('addLambdaRoute correctly from a Route', () => {
   // WHEN
   const httpApi = new apigatewayv2.HttpApi(stack, 'HttpApi', {
     targetHandler: handler
@@ -199,7 +199,7 @@ test('addLambdaRoute correctly', () => {
   expectCDK(stack).to(countResources('AWS::ApiGatewayV2::Route', 2));
 });
 
-test('addHttpRoute correctly', () => {
+test('addHttpRoute correctly from a Route', () => {
   // WHEN
   const httpApi = new apigatewayv2.HttpApi(stack, 'HttpApi', {
     targetHandler: handler
@@ -221,6 +221,66 @@ test('addHttpRoute correctly', () => {
   expectCDK(stack).to(countResources('AWS::ApiGatewayV2::Api', 1));
   expectCDK(stack).to(countResources('AWS::ApiGatewayV2::Integration', 2));
   expectCDK(stack).to(countResources('AWS::ApiGatewayV2::Route', 2));
+});
+
+test('addLambdaRoute correctly from a HttpApi', () => {
+  // WHEN
+  const httpApi = new apigatewayv2.HttpApi(stack, 'HttpApi', {
+    targetHandler: handler
+  });
+  httpApi.addLambdaRoute('/foo/bar', 'FooBar', {
+    target: handler,
+    method: apigatewayv2.HttpMethod.GET
+  });
+  // THEN
+  expectCDK(stack).to(countResources('AWS::ApiGatewayV2::Api', 1));
+  expectCDK(stack).to(haveResourceLike('AWS::ApiGatewayV2::Route', {
+    ApiId: {
+      Ref: "HttpApiF5A9A8A7"
+    },
+    RouteKey: "GET /foo/bar",
+    Target: {
+      "Fn::Join": [
+        "",
+        [
+          "integrations/",
+          {
+            Ref: "HttpApiFooBarLambdaProxyIntegration2FFCA7FC"
+          }
+        ]
+      ]
+    }
+  }));
+});
+
+test('addHttpRoute correctly from a HttpApi', () => {
+  // WHEN
+  const httpApi = new apigatewayv2.HttpApi(stack, 'HttpApi', {
+    targetHandler: handler
+  });
+  httpApi.addHttpRoute('/foo/bar', 'FooBar', {
+    targetUrl: awsUrl,
+    method: apigatewayv2.HttpMethod.ANY
+  });
+  // THEN
+  expectCDK(stack).to(countResources('AWS::ApiGatewayV2::Api', 1));
+  expectCDK(stack).to(haveResourceLike('AWS::ApiGatewayV2::Route', {
+    ApiId: {
+      Ref: "HttpApiF5A9A8A7"
+    },
+    RouteKey: "ANY /foo/bar",
+    Target: {
+      "Fn::Join": [
+        "",
+        [
+          "integrations/",
+          {
+            Ref: "HttpApiFooBarHttpProxyIntegration80C34C6B"
+          }
+        ]
+      ]
+    }
+  }));
 });
 
 test('throws when both targetHandler and targetUrl are specified', () => {
