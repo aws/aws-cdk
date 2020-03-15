@@ -1,5 +1,5 @@
 process.stdout.write(JSON.stringify({
-  "version": "1.10.0",
+  "version": "0.0.0",
   "artifacts": {
     "InitStack": {
       "type": "aws:cloudformation:stack",
