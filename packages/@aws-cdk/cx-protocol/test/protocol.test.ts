@@ -45,17 +45,37 @@ test('test stack-tags are deserialized properly', () => {
   fs.writeFileSync(manifestFile, JSON.stringify({
     version: "version",
     artifacts: {
+      Tree: {
+        type: "cdk:tree",
+        properties: {
+          file: "tree.json"
+        }
+      },
       stack: {
         type: "aws:cloudformation:stack",
         metadata: {
-          AwsCdkPlaygroundBatch: [{
-            type: "aws:cdk:stack-tags",
-            data: [{
-              Key: "hello",
-              Value: "world"
-            }],
-            trace: ["trace"]
-          }]
+          AwsCdkPlaygroundBatch: [
+            {
+              type: "aws:cdk:stack-tags",
+              data: [{
+                Key: "hello",
+                Value: "world"
+              }],
+              trace: ["trace"]
+            },
+            {
+              type: "aws:cdk:asset",
+              data: {
+                repositoryName: "MyRepo",
+                imageTag: "71e25186b635876c7a79be28e67d4ec49eb88ec417d64e16eaba11920ab159c0",
+                id: "71e25186b635876c7a79be28e67d4ec49eb88ec417d64e16eaba11920ab159c0",
+                packaging: "container-image",
+                path: "asset.71e25186b635876c7a79be28e67d4ec49eb88ec417d64e16eaba11920ab159c0",
+                sourceHash: "71e25186b635876c7a79be28e67d4ec49eb88ec417d64e16eaba11920ab159c0"
+              },
+              trace: ["trace"]
+            },
+          ]
         }
       }
     },

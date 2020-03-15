@@ -252,8 +252,18 @@ export class CloudAssemblyBuilder {
   }
 
   private versionNumber(): string {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    return require('../package.json').version.replace(/\+[0-9a-f]+$/, '');
+
+    function extract(packageJson: string) {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      return require(packageJson).version.replace(/\+[0-9a-f]+$/, '');
+    }
+
+    try {
+      return extract('../package.json');
+    } catch (err) {
+      // monocdk support
+      return extract('../../../package.json');
+    }
   }
 
 }
