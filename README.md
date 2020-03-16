@@ -105,6 +105,25 @@ Use the `cdk` command-line toolkit to interact with your project:
 
 For a detailed walkthrough, see the [tutorial] in the AWS CDK [Developer Guide].
 
+## Compatibility Model
+
+The CDK consists of two components:
+
+1. CLI - Provides all the `cdk` commands. Installed via the nodejs `aws-cdk` package.
+2. Framework - Provides all the construct libraries API. Installed via the language specific package managers. For example: `npm install @aws-cdk/aws-s3`.
+
+These two components can be installed independently, and as such, declare the following compatibility promise between them:
+
+*CLI versions must be greater or equal to framework version*.
+
+That is, if your CLI version is for example `1.27.0`, and you install version `1.28.0` of the `@aws-cdk/aws-s3` module, you will get the following error message:
+
+```console
+A newer version of the CDK CLI (>= 1.28.0) is necessary to interact with this app
+```
+
+Forcing you to upgrade the CLI version.
+
 ## Getting Help
 
 Please use these community resources for getting help. We use the GitHub issues
