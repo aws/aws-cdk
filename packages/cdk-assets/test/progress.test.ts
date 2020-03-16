@@ -1,7 +1,7 @@
 import { AssetManifestSchema } from '@aws-cdk/cdk-assets-schema';
 import * as mockfs from 'mock-fs';
 import { AssetManifest, AssetPublishing, EventType, IPublishProgress, IPublishProgressListener } from '../lib';
-import { mockAws, mockedApiFailure, mockPutObject } from './mock-aws';
+import { mockAws, mockedApiFailure, mockedApiResult, mockUpload } from './mock-aws';
 
 let aws: ReturnType<typeof mockAws>;
 beforeEach(() => {
@@ -36,8 +36,9 @@ beforeEach(() => {
   aws = mockAws();
 
   // Accept all S3 uploads as new
+  aws.mockS3.getBucketLocation = mockedApiResult({});
   aws.mockS3.headObject = mockedApiFailure('NotFound', 'File does not exist');
-  aws.mockS3.putObject = mockPutObject();
+  aws.mockS3.upload = mockUpload();
 });
 
 afterEach(() => {

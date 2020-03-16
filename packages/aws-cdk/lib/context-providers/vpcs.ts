@@ -1,19 +1,19 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
-import { ISDK, Mode } from '../api';
+import { Mode, SdkProvider } from '../api';
 import { debug } from '../logging';
 import { ContextProviderPlugin } from './provider';
 
 export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
 
-  constructor(private readonly aws: ISDK) {
+  constructor(private readonly aws: SdkProvider) {
   }
 
   public async getValue(args: cxapi.VpcContextQuery) {
     const account: string = args.account!;
     const region: string = args.region!;
 
-    const ec2 = await this.aws.ec2(account, region, Mode.ForReading);
+    const ec2 = (await this.aws.forEnvironment(account, region, Mode.ForReading)).ec2();
 
     const vpcId = await this.findVpc(ec2, args);
 

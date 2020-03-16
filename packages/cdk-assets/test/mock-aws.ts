@@ -4,13 +4,22 @@ import * as AWS from 'aws-sdk';
 export function mockAws() {
   const mockEcr = new AWS.ECR();
   const mockS3 = new AWS.S3();
+
+  // Sane defaults which can be overridden
+  mockS3.getBucketLocation = mockedApiResult({});
+  mockEcr.describeRepositories = mockedApiResult({ repositories: [
+    {
+      repositoryUri: '12345.amazonaws.com/repo'
+    }
+  ] });
+
   return {
     mockEcr,
     mockS3,
-    discoverCurrentAccount: jest.fn(() => Promise.resolve('current_account')),
+    discoverCurrentAccount: jest.fn(() => Promise.resolve({ accountId: 'current_account', partition: 'swa' })),
     discoverDefaultRegion: jest.fn(() => Promise.resolve('current_region')),
-    ecrClient: jest.fn(() => mockEcr),
-    s3Client: jest.fn(() => mockS3),
+    ecrClient: jest.fn().mockReturnValue(Promise.resolve(mockEcr)),
+    s3Client: jest.fn().mockReturnValue(Promise.resolve(mockS3)),
   };
 }
 
@@ -33,16 +42,24 @@ export function mockedApiFailure(code: string, message: string) {
 }
 
 /**
- * Mock putObject, draining the stream that we get before returning
+ * Mock upload, draining the stream that we get before returning
  * so no race conditions happen with the uninstallation of mock-fs.
  */
-export function mockPutObject() {
+export function mockUpload(expectContent?: string) {
   return jest.fn().mockImplementation(request => ({
     promise: () => new Promise((ok, ko) => {
+      const didRead = new Array<string>();
+
       const bodyStream: NodeJS.ReadableStream = request.Body;
-      bodyStream.on('data', () => { /* ignore */ }); // This listener must exist
+      bodyStream.on('data', (chunk) => { didRead.push(chunk.toString()); }); // This listener must exist
       bodyStream.on('error', ko);
-      bodyStream.on('close', ok);
+      bodyStream.on('close', () => {
+        const actualContent = didRead.join('');
+        if (expectContent !== undefined && expectContent !== actualContent) {
+          throw new Error(`Expected to read '${expectContent}' but read: '${actualContent}'`);
+        }
+        ok();
+      });
     })
   }));
 }
