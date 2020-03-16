@@ -165,7 +165,7 @@ export async function waitForStack(cfn: CloudFormation,
       throw new Error(`The stack named ${stackName} is in a failed state: ${status}`);
     } else if (status.isDeleted) {
       if (failOnDeletedStack) { throw new Error(`The stack named ${stackName} was deleted`); }
-      return null;
+      return undefined;
     }
     return description;
   });
