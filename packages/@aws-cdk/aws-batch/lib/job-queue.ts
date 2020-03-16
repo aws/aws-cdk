@@ -1,6 +1,6 @@
 import { Construct, IResource, Resource, Stack } from '@aws-cdk/core';
 import { CfnJobQueue } from './batch.generated';
-import { ComputeEnvironment, IComputeEnvironment } from './compute-environment';
+import { IComputeEnvironment } from './compute-environment';
 
 /**
  * Properties for mapping a compute environment to a job queue.
@@ -26,7 +26,7 @@ export interface JobQueueProps {
    *
    * Up to 128 letters (uppercase and lowercase), numbers, hyphens, and underscores are allowed.
    *
-   * @default Cloudformation-generated name
+   * @default - Cloudformation-generated name
    */
   readonly jobQueueName?: string;
 
@@ -35,9 +35,8 @@ export interface JobQueueProps {
    * determine which compute environment should execute a given job. Compute environments must be in the VALID state before you can associate them
    * with a job queue. You can associate up to three compute environments with a job queue.
    *
-   * @default Default-Compute-Environment
    */
-  readonly computeEnvironments?: JobQueueComputeEnvironment[];
+  readonly computeEnvironments: JobQueueComputeEnvironment[];
 
   /**
    * The priority of the job queue. Job queues with a higher priority (or a higher integer value for the priority parameter) are evaluated first
@@ -106,24 +105,20 @@ export class JobQueue extends Resource implements IJobQueue {
   public readonly jobQueueArn: string;
   public readonly jobQueueName: string;
 
-  constructor(scope: Construct, id: string, props: JobQueueProps = {}) {
+  constructor(scope: Construct, id: string, props: JobQueueProps) {
     super(scope, id, {
       physicalName: props.jobQueueName,
     });
 
+    if (props.computeEnvironments.length === 0) {
+      throw new Error('computeEnvironments must be non-empty');
+    }
+
     const jobQueue = new CfnJobQueue(this, 'Resource', {
-      computeEnvironmentOrder: props.computeEnvironments
-        ? props.computeEnvironments.map(cp => ({
+      computeEnvironmentOrder: props.computeEnvironments.map(cp => ({
           computeEnvironment: cp.computeEnvironment.computeEnvironmentArn,
           order: cp.order,
-        } as CfnJobQueue.ComputeEnvironmentOrderProperty))
-        : [
-            {
-              // Get an AWS Managed Compute Environment
-              computeEnvironment: new ComputeEnvironment(this, 'Resource-Batch-Compute-Environment').computeEnvironmentArn,
-              order: 1,
-            },
-          ],
+        } as CfnJobQueue.ComputeEnvironmentOrderProperty)),
       jobQueueName: this.physicalName,
       priority: props.priority || 1,
       state: props.enabled === undefined ? 'ENABLED' : (props.enabled ? 'ENABLED' : 'DISABLED'),
