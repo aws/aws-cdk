@@ -268,12 +268,45 @@ export class CloudAssemblyBuilder {
 
 }
 
+/**
+ * Backwards compatibility for version <= 1.28.0 where `RuntimeInfo`
+ * was defined here. This is necessary because its used as an input in the stable
+ * @aws-cdk/core library.
+ *
+ * @see core.ConstructNode.synth
+ */
+export interface RuntimeInfo extends cxprotocol.RuntimeInfo {
+
+}
+
+/**
+ * Backwards compatibility for version <= 1.28.0 where `MetadataEntry`
+ * was defined here. This is necessary because its used as an input in the stable
+ * @aws-cdk/core library.
+ *
+ * @see core.ConstructNode.metadata
+ */
+export interface MetadataEntry extends cxprotocol.MetadataEntry {
+
+}
+
+/**
+ * Backwards compatibility for version <= 1.28.0 where `MissingContext`
+ * was defined here. This is necessary because its used as an input in the stable
+ * @aws-cdk/core library.
+ *
+ * @see core.Stack.reportMissingContext
+ */
+export interface MissingContext extends cxprotocol.MissingContext {
+
+}
+
 export interface AssemblyBuildOptions {
   /**
    * Include the specified runtime information (module versions) in manifest.
    * @default - if this option is not specified, runtime info will not be included
    */
-  readonly runtimeInfo?: cxprotocol.RuntimeInfo;
+  readonly runtimeInfo?: RuntimeInfo;
 }
 
 /**

@@ -321,7 +321,7 @@ export class Stack extends Construct implements ITaggable {
    *
    * @param report The set of parameters needed to obtain the context
    */
-  public reportMissingContext(report: cxprotocol.MissingContext) {
+  public reportMissingContext(report: cxapi.MissingContext) {
     this._missingContext.push(report);
   }
 

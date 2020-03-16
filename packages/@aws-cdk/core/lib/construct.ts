@@ -119,7 +119,7 @@ export class ConstructNode {
   private readonly _aspects: IAspect[] = [];
   private readonly _children: { [id: string]: IConstruct } = { };
   private readonly _context: { [key: string]: any } = { };
-  private readonly _metadata = new Array<cxprotocol.MetadataEntry>();
+  private readonly _metadata = new Array<cxapi.MetadataEntry>();
   private readonly _dependencies = new Set<IDependable>();
   private readonly invokedAspects: IAspect[] = [];
   private _defaultChild: IConstruct | undefined;
