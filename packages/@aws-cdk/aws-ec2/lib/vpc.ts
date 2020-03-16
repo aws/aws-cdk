@@ -563,6 +563,7 @@ export interface VpcAttributes {
 export interface SubnetAttributes {
   /**
    * The Availability Zone the subnet is located in
+   * @default - No availabilityZone
    */
   readonly availabilityZone?: string;
 
