@@ -1,12 +1,13 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
-import { IRole, ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
+import { IRole, ManagedPolicy, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
+import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { Construct, Duration, RemovalPolicy, Resource, Token } from '@aws-cdk/core';
 import { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
-import { IParameterGroup } from './parameter-group';
+import { ClusterParameterGroup, IParameterGroup } from './parameter-group';
 import { BackupProps, DatabaseClusterEngine, InstanceProps, Login, RotationMultiUserOptions } from './props';
 import { CfnDBCluster, CfnDBInstance, CfnDBSubnetGroup } from './rds.generated';
 
@@ -143,11 +144,32 @@ export interface DatabaseClusterProps {
   readonly monitoringRole?: IRole;
 
   /**
+   * Role that will be associated with this DB cluster to enable S3 import through the LOAD DATA FROM S3 command
+   *
+   * @default - A role is created for you if the s3ImportBuckets property is set
+   */
+  readonly s3ImportRole?: IRole;
+
+  /**
+   * S3 buckets that you want to load data from
+   *
+   * @default - A role is created for you if the s3ImportBuckets property is set
+   */
+  readonly s3ImportBuckets?: s3.IBucket[];
+
+  /**
    * Role that will be associated with this DB cluster to enable S3 integration
    *
    * @default - No role is associated with this DB cluster
    */
-  readonly s3ImportRole?: IRole;
+  readonly s3ExportRole?: IRole;
+
+  /**
+   * S3 buckets that you want to load data from
+   *
+   * @default - A role is created for you if the s3ImportBuckets property is set
+   */
+  readonly s3ExportBuckets?: s3.IBucket[];
 }
 
 /**
@@ -315,6 +337,80 @@ export class DatabaseCluster extends DatabaseClusterBase {
     this.singleUserRotationApplication = props.engine.singleUserRotationApplication;
     this.multiUserRotationApplication = props.engine.multiUserRotationApplication;
 
+    let s3ImportRole = props.s3ImportRole;
+    if (props.s3ImportBuckets && props.s3ImportBuckets.length > 0) {
+      if (props.s3ImportRole) {
+        throw new Error(`Property s3ImportRole should not be specified when specifying s3ImportBuckets. A role with permissions for these buckets will be created automatically`);
+      }
+
+      s3ImportRole = new Role(this, "S3ImportRole", {
+        assumedBy: new ServicePrincipal("rds.amazonaws.com"),
+        inlinePolicies: {
+          ReadS3Files: new PolicyDocument({
+            statements: [
+              new PolicyStatement({
+                  actions: [
+                    's3:GetObject',
+                    's3:GetObjectVersion'
+                  ],
+                  resources: getBucketArns(props.s3ImportBuckets)
+              })
+            ]
+          }),
+        }
+      });
+    }
+
+    let s3ExportRole = props.s3ExportRole;
+    if (props.s3ExportBuckets && props.s3ExportBuckets.length > 0) {
+      if (props.s3ExportRole) {
+        throw new Error(`Property s3ExportRole should not be specified when specifying s3ExportBuckets. A role with permissions for these buckets will be created automatically`);
+      }
+
+      s3ExportRole = new Role(this, "S3ExportRole", {
+        assumedBy: new ServicePrincipal("rds.amazonaws.com"),
+        inlinePolicies: {
+          WriteS3Files: new PolicyDocument({
+            statements: [
+              new PolicyStatement({
+                  actions: [
+                    's3:AbortMultipartUpload',
+                    's3:DeleteObject',
+                    's3:GetObject',
+                    's3:ListMultipartUploadParts',
+                    's3:PutObject'
+                  ],
+                  resources: getBucketArns(props.s3ExportBuckets)
+              })
+            ]
+          }),
+        }
+      });
+    }
+
+    let clusterParameterGroup = props.parameterGroup;
+    const clusterAssociatedRoles = [];
+    if (s3ImportRole || s3ExportRole) {
+      if (s3ImportRole) {
+        clusterAssociatedRoles.push({ roleArn: s3ImportRole.roleArn });
+      }
+      if (s3ExportRole) {
+        clusterAssociatedRoles.push({ roleArn: s3ExportRole.roleArn });
+      }
+
+      if (clusterParameterGroup) {
+        this.node.addWarning('Can not set S3 role(s) to your custom cluster parameter group. Make sure to set aurora_load_from_s3_role and/or aurora_select_into_s3_role parameters manually.');
+      } else {
+        clusterParameterGroup = new ClusterParameterGroup(this, "ClusterParameterGroup", {
+          family: getClusterParameterGroupFamily(props.engine, props.engineVersion),
+          parameters: {
+            aurora_load_from_s3_role: s3ImportRole ? s3ImportRole.roleArn : '',
+            aurora_select_into_s3_role: s3ExportRole ? s3ExportRole.roleArn : ''
+          }
+        });
+      }
+    }
+
     const cluster = new CfnDBCluster(this, 'Resource', {
       // Basic
       engine: props.engine.name,
@@ -323,9 +419,9 @@ export class DatabaseCluster extends DatabaseClusterBase {
       dbSubnetGroupName: subnetGroup.ref,
       vpcSecurityGroupIds: [this.securityGroupId],
       port: props.port,
-      dbClusterParameterGroupName: props.parameterGroup && props.parameterGroup.parameterGroupName,
-      associatedRoles: props.s3ImportRole
-        ? [{ roleArn: props.s3ImportRole.roleArn }]
+      dbClusterParameterGroupName: clusterParameterGroup && clusterParameterGroup.parameterGroupName,
+      associatedRoles: clusterAssociatedRoles.length > 0
+        ? clusterAssociatedRoles
         : undefined,
       // Admin
       masterUsername: secret ? secret.secretValueFromJson('username').toString() : props.masterUser.username,
@@ -468,4 +564,39 @@ export class DatabaseCluster extends DatabaseClusterBase {
  */
 function databaseInstanceType(instanceType: ec2.InstanceType) {
   return 'db.' + instanceType.toString();
+}
+
+/**
+ * Get bucket and object-level ARN's for specified S3 buckets
+ */
+function getBucketArns(buckets: s3.IBucket[]): string[] {
+  const arns: string[] = [];
+  for (const bucket of buckets) {
+    arns.push(bucket.bucketArn);
+    arns.push(bucket.arnForObjects('*'));
+  }
+  return arns;
+}
+
+/**
+ * Get default parameter group family for given engine and version
+ */
+function getClusterParameterGroupFamily(engine: DatabaseClusterEngine, engineVersion: string | undefined): string {
+  if (engine === DatabaseClusterEngine.AURORA) {
+    return 'aurora5.6';
+  } else if (engine === DatabaseClusterEngine.AURORA_MYSQL) {
+    return 'aurora-mysql5.7';
+  } else if (engine === DatabaseClusterEngine.AURORA_POSTGRESQL) {
+    if (engineVersion) {
+      if (engineVersion.startsWith('9')) {
+        return "aurora-postgresql9.6";
+      } else if (engineVersion.startsWith('10')) {
+        return "aurora-postgresql10";
+      } else if (engineVersion.startsWith('11')) {
+        return "aurora-postgresql11";
+      }
+    }
+    return "aurora-postgresql11";
+  }
+  throw new Error(`Unknown database engine: ${engine.name}`);
 }

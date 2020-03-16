@@ -2,6 +2,7 @@ import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
+import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { ClusterParameterGroup, DatabaseCluster, DatabaseClusterEngine, ParameterGroup } from '../lib';
@@ -517,7 +518,7 @@ export = {
     test.done();
   },
 
-  'create a cluster with associated role'(test: Test) {
+  'create a cluster with s3 import role'(test: Test) {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, "VPC");
@@ -550,6 +551,202 @@ export = {
           ]
         }
       }]
+    }, ResourcePart.Properties));
+
+    test.done();
+  },
+  'create a cluster with s3 import buckets'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, "VPC");
+
+    const bucket = new s3.Bucket(stack, 'Bucket');
+
+    // WHEN
+    new DatabaseCluster(stack, "Database", {
+      engine: DatabaseClusterEngine.AURORA,
+      instances: 1,
+      masterUser: {
+        username: "admin"
+      },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc
+      },
+      s3ImportBuckets: [bucket]
+    });
+
+    // THEN
+    expect(stack).to(haveResource("AWS::RDS::DBCluster", {
+      AssociatedRoles: [{
+        RoleArn: {
+          "Fn::GetAtt": [
+            "DatabaseS3ImportRole377BC9C0",
+            "Arn"
+          ]
+        }
+      }]
+    }, ResourcePart.Properties));
+
+    expect(stack).to(haveResource("AWS::RDS::DBClusterParameterGroup", {
+      Family: 'aurora5.6',
+      Parameters: {
+        aurora_load_from_s3_role: {
+          "Fn::GetAtt": [
+            "DatabaseS3ImportRole377BC9C0",
+            "Arn"
+          ]
+        },
+        aurora_select_into_s3_role: ''
+      }
+    }, ResourcePart.Properties));
+
+    test.done();
+  },
+  'create a cluster with s3 export role'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, "VPC");
+
+    const associatedRole = new Role(stack, 'AssociatedRole', {
+      assumedBy: new ServicePrincipal('rds.amazonaws.com'),
+    });
+
+    // WHEN
+    new DatabaseCluster(stack, "Database", {
+      engine: DatabaseClusterEngine.AURORA,
+      instances: 1,
+      masterUser: {
+        username: "admin"
+      },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc
+      },
+      s3ExportRole: associatedRole
+    });
+
+    // THEN
+    expect(stack).to(haveResource("AWS::RDS::DBCluster", {
+      AssociatedRoles: [{
+        RoleArn: {
+          "Fn::GetAtt": [
+            "AssociatedRole824CFCD3",
+            "Arn"
+          ]
+        }
+      }]
+    }, ResourcePart.Properties));
+
+    test.done();
+  },
+  'create a cluster with s3 export buckets'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, "VPC");
+
+    const bucket = new s3.Bucket(stack, 'Bucket');
+
+    // WHEN
+    new DatabaseCluster(stack, "Database", {
+      engine: DatabaseClusterEngine.AURORA,
+      instances: 1,
+      masterUser: {
+        username: "admin"
+      },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc
+      },
+      s3ExportBuckets: [bucket]
+    });
+
+    // THEN
+    expect(stack).to(haveResource("AWS::RDS::DBCluster", {
+      AssociatedRoles: [{
+        RoleArn: {
+          "Fn::GetAtt": [
+            "DatabaseS3ExportRole9E328562",
+            "Arn"
+          ]
+        }
+      }]
+    }, ResourcePart.Properties));
+
+    expect(stack).to(haveResource("AWS::RDS::DBClusterParameterGroup", {
+      Family: 'aurora5.6',
+      Parameters: {
+        aurora_load_from_s3_role: '',
+        aurora_select_into_s3_role: {
+          "Fn::GetAtt": [
+            "DatabaseS3ExportRole9E328562",
+            "Arn"
+          ]
+        }
+      }
+    }, ResourcePart.Properties));
+
+    test.done();
+  },
+  'create a cluster with s3 import and export buckets'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, "VPC");
+
+    const importBucket = new s3.Bucket(stack, 'ImportBucket');
+    const exportBucket = new s3.Bucket(stack, 'ExportBucket');
+
+    // WHEN
+    new DatabaseCluster(stack, "Database", {
+      engine: DatabaseClusterEngine.AURORA,
+      instances: 1,
+      masterUser: {
+        username: "admin"
+      },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc
+      },
+      s3ImportBuckets: [importBucket],
+      s3ExportBuckets: [exportBucket]
+    });
+
+    // THEN
+    expect(stack).to(haveResource("AWS::RDS::DBCluster", {
+      AssociatedRoles: [{
+        RoleArn: {
+          "Fn::GetAtt": [
+            "DatabaseS3ImportRole377BC9C0",
+            "Arn"
+          ]
+        }
+      },
+      {
+        RoleArn: {
+          "Fn::GetAtt": [
+            "DatabaseS3ExportRole9E328562",
+            "Arn"
+          ]
+        }
+      }]
+    }, ResourcePart.Properties));
+
+    expect(stack).to(haveResource("AWS::RDS::DBClusterParameterGroup", {
+      Family: 'aurora5.6',
+      Parameters: {
+        aurora_load_from_s3_role: {
+          "Fn::GetAtt": [
+            "DatabaseS3ImportRole377BC9C0",
+            "Arn"
+          ]
+        },
+        aurora_select_into_s3_role: {
+          "Fn::GetAtt": [
+            "DatabaseS3ExportRole9E328562",
+            "Arn"
+          ]
+        }
+      }
     }, ResourcePart.Properties));
 
     test.done();
