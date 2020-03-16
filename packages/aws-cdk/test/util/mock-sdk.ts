@@ -1,5 +1,6 @@
 import * as AWS from 'aws-sdk';
-import { Account, ISDK, SDK, SdkProvider, ToolkitInfo } from '../../lib';
+import * as sinon from 'sinon';
+import { SDK } from "../../lib/api/util/sdk";
 
 /**
  * An SDK that allows replacing (some of) the clients
@@ -7,40 +8,25 @@ import { Account, ISDK, SDK, SdkProvider, ToolkitInfo } from '../../lib';
  * Its the responsibility of the consumer to replace all calls that
  * actually will be called.
  */
-export class MockSDK extends SdkProvider {
-  private readonly sdk: ISDK;
-
+export class MockSDK extends SDK {
+  private readonly sandbox: sinon.SinonSandbox;
   constructor() {
-    super(new AWS.CredentialProviderChain([]), 'bermuda-triangle-1337', { userAgent: 'aws-cdk/jest' });
-
-    // SDK contains a real SDK, since some test use 'AWS-mock' to replace the underlying
-    // AWS calls which a real SDK would do, and some tests use the 'stub' functionality below.
-    this.sdk = new SDK(
-      new AWS.Credentials({ accessKeyId: 'ACCESS', secretAccessKey: 'SECRET', sessionToken: 'TOKEN '}),
-      this.defaultRegion,
-      { customUserAgent: 'aws-cdk/jest' });
-  }
-
-  public defaultAccount(): Promise<Account | undefined> {
-    return Promise.resolve({ accountId: '123456789012', partition: 'aws' });
-  }
-
-  public forEnvironment(): Promise<ISDK> {
-    return Promise.resolve(this.sdk);
+    super({ userAgent: 'aws-cdk/jest' });
+    this.sandbox = sinon.createSandbox();
   }
 
   /**
    * Replace the CloudFormation client with the given object
    */
   public stubCloudFormation(stubs: SyncHandlerSubsetOf<AWS.CloudFormation>) {
-    (this.sdk as any).cloudFormation = jest.fn().mockReturnValue(partialAwsService<AWS.CloudFormation>(stubs));
+    this.sandbox.stub(this, 'cloudFormation').returns(Promise.resolve(partialAwsService<AWS.CloudFormation>(stubs)));
   }
 
   /**
    * Replace the ECR client with the given object
    */
   public stubEcr(stubs: SyncHandlerSubsetOf<AWS.ECR>) {
-    (this.sdk as any).ecr = jest.fn().mockReturnValue(partialAwsService<AWS.ECR>(stubs));
+    this.sandbox.stub(this, 'ecr').returns(Promise.resolve(partialAwsService<AWS.ECR>(stubs)));
   }
 }
 
@@ -118,13 +104,4 @@ class FakeAWSResponse<T> {
   public promise(): Promise<T> {
     return Promise.resolve(this.x);
   }
-}
-
-export function mockToolkitInfo() {
-  return new ToolkitInfo({
-    sdk: new MockSDK(),
-    bucketName: 'BUCKET_NAME',
-    bucketEndpoint: 'BUCKET_ENDPOINT',
-    environment: { name: 'env', account: '1234', region: 'abc' }
-  });
 }

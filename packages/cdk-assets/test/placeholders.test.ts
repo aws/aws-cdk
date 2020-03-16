@@ -37,6 +37,7 @@ beforeEach(() => {
               assumeRoleArn: 'arn:aws:role-${AWS::AccountId}',
               repositoryName: 'repo-${AWS::AccountId}-${AWS::Region}',
               imageTag: 'abcdef',
+              imageUri: '12345.amazonaws.com/repo:abcdef',
             },
           },
         },
@@ -54,7 +55,6 @@ afterEach(() => {
 
 test('check that placeholders are replaced', async () => {
   const pub = new AssetPublishing(AssetManifest.fromPath('/simple/cdk.out'), { aws });
-  aws.mockS3.getBucketLocation = mockedApiResult({});
   aws.mockS3.headObject = mockedApiResult({ /* No error == file exists */ });
   aws.mockEcr.describeImages = mockedApiResult({ /* No error == image exists */ });
 
