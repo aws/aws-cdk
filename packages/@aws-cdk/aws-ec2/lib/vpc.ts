@@ -1316,9 +1316,11 @@ export class Subnet extends Resource implements ISubnet {
     return new ImportedSubnet(scope, id, attrs);
   }
 
+  // tslint:disable:no-shadowed-variable
   public static fromSubnetId(scope: Construct, id: string, subnetId: string): ISubnet {
     return this.fromSubnetAttributes(scope, id, { subnetId, availabilityZone: '' });
   }
+  // tslint:enable:no-shadowed-variable
 
   /**
    * The Availability Zone the subnet is located in
@@ -1775,7 +1777,7 @@ function tap<T>(x: T, fn: (x: T) => void): T {
 class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivateSubnet {
   public readonly internetConnectivityEstablished: IDependable = new ConcreteDependable();
   public get availabilityZone(): string {
-    if(!this._availabilityZone){
+    if (!this._availabilityZone) {
       // tslint:disable-next-line: max-line-length
       throw new Error("You cannot reference a Subnet's availability zone if it was not supplied. Add the availabilityZone when importing using Subnet.fromSubnetAttributes()");
     }
