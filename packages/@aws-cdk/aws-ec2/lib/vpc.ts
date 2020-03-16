@@ -416,10 +416,6 @@ abstract class VpcBase extends Resource implements IVpc {
     let subnets = allSubnets[subnetType];
 
     if (onePerAz && subnets.length > 0) {
-      subnets = subnets.filter(s => s.availabilityZone);
-      if (subnets.length === 0) {
-        throw new Error(`Must Specify availabilityZone if you want to select subnets onePerAz`);
-      }
       subnets = retainOnePerAz(subnets);
     }
 
@@ -1778,9 +1774,16 @@ function tap<T>(x: T, fn: (x: T) => void): T {
 
 class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivateSubnet {
   public readonly internetConnectivityEstablished: IDependable = new ConcreteDependable();
-  public readonly availabilityZone: string;
+  public get availabilityZone(): string {
+    if(!this._availabilityZone){
+      // tslint:disable-next-line: max-line-length
+      throw new Error("You cannot reference a Subnet's availability zone if it was not supplied. Add the availabilityZone when importing using Subnet.fromSubnetAttributes()");
+    }
+    return this._availabilityZone;
+  }
   public readonly subnetId: string;
   public readonly routeTable: IRouteTable;
+  private readonly _availabilityZone?: string;
 
   constructor(scope: Construct, id: string, attrs: SubnetAttributes) {
     super(scope, id);
@@ -1793,7 +1796,7 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
       scope.node.addWarning(`No routeTableId was provided to the subnet ${ref}. Attempting to read its .routeTable.routeTableId will return null/undefined. (More info: https://github.com/aws/aws-cdk/pull/3171)`);
     }
 
-    this.availabilityZone = attrs.availabilityZone;
+    this._availabilityZone = attrs.availabilityZone;
     this.subnetId = attrs.subnetId;
     this.routeTable = {
       // Forcing routeTableId to pretend non-null to maintain backwards-compatibility. See https://github.com/aws/aws-cdk/pull/3171

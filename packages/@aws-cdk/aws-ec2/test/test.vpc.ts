@@ -1069,7 +1069,7 @@ export = {
       test.done();
     },
 
-    'AZ does not have value when subnet created from subnetId'(test: Test) {
+    'subnet created from subnetId'(test: Test) {
       // GIVEN
       const stack = getTestStack();
 
@@ -1078,11 +1078,22 @@ export = {
 
       // THEN
       test.deepEqual(subnet.subnetId, 'pub-1');
-      test.deepEqual(subnet.availabilityZone, '');
       test.done();
     },
 
-    'AZ does not have value when subnet created from attributes without az'(test: Test) {
+    'Referencing AZ throws error when subnet created from subnetId'(test: Test) {
+      // GIVEN
+      const stack = getTestStack();
+
+      // WHEN
+      const subnet = Subnet.fromSubnetId(stack, 'subnet1', 'pub-1');
+
+      // THEN
+      test.throws(subnet.availabilityZone);
+      test.done();
+    },
+
+    'Referencing AZ throws error when subnet created from attributes without az'(test: Test) {
       // GIVEN
       const stack = getTestStack();
 
@@ -1091,7 +1102,7 @@ export = {
 
       // THEN
       test.deepEqual(subnet.subnetId, 'pub-1');
-      test.deepEqual(subnet.availabilityZone, '');
+      test.throws(subnet.availabilityZone);
       test.done();
     },
 
