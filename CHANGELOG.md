@@ -7,39 +7,10 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### ⚠ BREAKING CHANGES
 
-* Description of what broke and how to achieve this behavior now<br>
-\* **module-name:** Another breaking change<br>
-\* **module-name:** Yet another breaking change
--->
-
-<!--IMPORTANT: This section cannot contain any additional markdown headers (#)-->
-* Description of what broke and how to achieve this behavior now<br>
-\* **module-name:** Another breaking change<br>
-\* **module-name:** Yet another breaking change
--->
-
-<!--IMPORTANT: This section cannot contain any additional markdown headers (#)-->
-* Description of what broke and how to achieve this behavior now<br>
-\* **module-name:** Another breaking change<br>
-\* **module-name:** Yet another breaking change
--->
-
-<!--IMPORTANT: This section cannot contain any additional markdown headers (#)-->
-* Description of what broke and how to achieve this behavior now<br>
-\* **module-name:** Another breaking change<br>
-\* **module-name:** Yet another breaking change
--->
-
-<!--IMPORTANT: This section cannot contain any additional markdown headers (#)-->
-* **iam:** Description of what broke and how to achieve this behavior now<br>
-\* **module-name:** Another breaking change<br>
-\* **module-name:** Yet another breaking change
--->
-
-<!--IMPORTANT: This section cannot contain any additional markdown headers (#)-->
 * **batch:** `computeEnvironments` is now required
 * **batch:** the `allocationStrategy` property was moved from `ComputeEnvironmentProps` to the `ComputeResources` interface, which is where it semantically belongs.
-* **custom-resources:** `getDataString` was renamed to `getResponseField` and `getData` was renamed to `getResponseFieldReference`
+* **custom-resources:** `getDataString` was renamed to `getResponseField`.
+* **custom-resources:** `getData` was renamed to `getResponseFieldReference`.
 * **custom-resources:** `catchErrorPattern` was renamed to `ignoreErrorCodesMatching`. In addition, a few synth time validations were added when using this property. See [Error Handling](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/custom-resources#error-handling-1) for details.
 * **custom-resources:** `policyStatements` property was removed in favor of a required `policy` property. Refer to [Execution Policy](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/custom-resources#execution-policy-1) for more details.
 
@@ -79,13 +50,6 @@ All notable changes to this project will be documented in this file. See [standa
 * **eks:** cannot upgrade version of clusters with an explicit name ([#6064](https://github.com/aws/aws-cdk/issues/6064)) ([1dd7104](https://github.com/aws/aws-cdk/commit/1dd7104ff4510005a0b6ff14372846747c572ed1))
 * **eks:** sporadic broken pipe when deploying helm charts ([#6522](https://github.com/aws/aws-cdk/issues/6522)) ([03df1f1](https://github.com/aws/aws-cdk/commit/03df1f1c5f152ff0a14e872095df3b97b0d25fa0)), closes [#6381](https://github.com/aws/aws-cdk/issues/6381)
 * **iam:** cannot add multiple conditions using same operator ([348a952](https://github.com/aws/aws-cdk/commit/348a952db68c838d73258cd8355322e151ae1080))
-
-
-* **batch:** include breaking change in previous PR ([#6621](https://github.com/aws/aws-cdk/issues/6621)) ([a5c9d4e](https://github.com/aws/aws-cdk/commit/a5c9d4e23a84d31e65b04bbc9bcea0fddcde371a))
-* <!--Simply copy paste from the PR title and replace the necessary parts--> ([0fc966c](https://github.com/aws/aws-cdk/commit/0fc966c7b048fdb6c713dc0041cabc16eec8c291))
-* <!--Simply copy paste from the PR title and replace the necessary parts--> ([2203ec2](https://github.com/aws/aws-cdk/commit/2203ec245bf9a9a1b7d509df7753841383e375e4)), closes [#6677](https://github.com/aws/aws-cdk/issues/6677) [#6652](https://github.com/aws/aws-cdk/issues/6652)
-* <!--Simply copy paste from the PR title and replace the necessary parts--> ([fa334ce](https://github.com/aws/aws-cdk/commit/fa334ceed19ec4473313e3e95b54be1ac60d24bb)), closes [#6651](https://github.com/aws/aws-cdk/issues/6651)
-* <!--Simply copy paste from the PR title and replace the necessary parts--> ([8e802f4](https://github.com/aws/aws-cdk/commit/8e802f478379ed0afb67950086697756b3ec1889)), closes [#6671](https://github.com/aws/aws-cdk/issues/6671)
 
 ## [1.27.0](https://github.com/aws/aws-cdk/compare/v1.26.0...v1.27.0) (2020-03-03)
 
