@@ -16,7 +16,7 @@ const include_non_jsii = [
 
 const include_dev_deps = [
   d => d === 'aws-sdk',
-  d => d.startsWith('@types/'),
+  d => d.startsWith('@types/')
 ];
 
 const exclude_files = [
