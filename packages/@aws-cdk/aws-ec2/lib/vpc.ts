@@ -1318,7 +1318,7 @@ export class Subnet extends Resource implements ISubnet {
 
   /**
    * Import existing subnet from id.
-  */
+   */
   // tslint:disable:no-shadowed-variable
   public static fromSubnetId(scope: Construct, id: string, subnetId: string): ISubnet {
     return this.fromSubnetAttributes(scope, id, { subnetId });
