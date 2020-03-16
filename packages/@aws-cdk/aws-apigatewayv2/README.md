@@ -119,31 +119,35 @@ httpApi.root
   });
 ```
 
-To create a specific route directly rather than building it from the root
+To create a specific route directly rather than building it from the root, just create the `Route` resource with `targetHandler`, `targetUrl` or `integration`.
 
 ```ts
-// Option 1. create a specific 'GET /some/very/deep/route/path' route with Lambda proxy integration for an existing HTTP API
+// create a specific 'GET /some/very/deep/route/path' route with Lambda proxy integration for an existing HTTP API
 const someDeepRoute = new apigatewayv2.Route(stack, 'SomeDeepRoute', {
   api: httpApi,
   httpPath: '/some/very/deep/route/path',
   targetHandler
 });
 
-// Option 2. with HTTP proxy integration
+// with HTTP proxy integration
 const someDeepRoute = new apigatewayv2.Route(stack, 'SomeDeepRoute', {
   api: httpApi,
   httpPath: '/some/very/deep/route/path',
   targetUrl
 });
 
-// Option 3. with existing integration resource
+// with existing integration resource
 const someDeepRoute = new apigatewayv2.Route(stack, 'SomeDeepRoute', {
   api: httpApi,
   httpPath: '/some/very/deep/route/path',
   integration
 });
+```
 
-// Option 3. with addLambdaRoute or addHttpRoute from the HttpApi resource
+You may also `addLambdaRoute` or `addHttpRoute` from the `HttpAppi` resource.
+
+```ts
+// addLambdaRoute or addHttpRoute from the HttpApi resource
 httpApi.addLambdaRoute('/foo/bar', 'FooBar', {
   target: handler,
   method: apigatewayv2.HttpMethod.GET
@@ -184,7 +188,7 @@ new apigatewayv2.Route(stack, 'SomeDeepRoute', {
 
 ```
 
-You may also use `LambdaProxyIntegraion` or `HttpProxyIntegration` to easily create the integrations.
+You may use `LambdaProxyIntegraion` or `HttpProxyIntegration` to easily create the integrations.
 
 ```ts
 // create a Lambda proxy integration
@@ -218,19 +222,11 @@ const httpApi2 = new apigatewayv2.HttpApi(stack, 'HttpApi2', {
 // print the API URL 
 new cdk.CfnOutput(stack, 'URL2', { value: httpApi2.url });
 
-// create a Lambda proxy integration
-const integRootHandler = new apigatewayv2.LambdaProxyIntegration(stack, 'IntegRootHandler', {
-  api: httpApi2,
-  targetHandler: rootHandler
-});
-
 // create a root route for the API with the integration we created above and assign the route resource
 // as a 'root' property to the API
-httpApi2.root = new apigatewayv2.Route(stack, 'RootRoute', {
-  api: httpApi2,
-  httpPath: '/',
-  integration: integRootHandler,
-});
+httpApi2.root = httpApi2.addLambdaRoute('/', 'RootRoute', {
+  target: rootHandler
+})
 
 // Now, extend the route tree from the root
 httpApi2.root
@@ -251,9 +247,7 @@ httpApi2.root
 
 // And create a specific route for it as well
 // HTTP ANY /some/very/deep/route/path
-new apigatewayv2.Route(stack, 'SomeDeepRoute', {
-  api: httpApi,
-  httpPath: '/some/very/deep/route/path',
-  targetHandler
+httpApi2.addLambdaRoute('/some/very/deep/route/path', 'FooBar', {
+  target: handler
 });
 ```
