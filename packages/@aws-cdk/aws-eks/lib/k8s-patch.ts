@@ -3,7 +3,8 @@ import { Construct, Stack } from "@aws-cdk/core";
 import { Cluster } from "./cluster";
 import { KubectlProvider } from "./kubectl-provider";
 
-export interface CoreDnsComputeTypeProps {
+export interface CoreDnsComputeTypeProps extends KubernetesPatchProps {}
+export interface KubernetesPatchProps {
   /**
    * The cluster to apply the patch to.
    */
@@ -30,6 +31,20 @@ export interface CoreDnsComputeTypeProps {
    * @default "default"
    */
   readonly resourceNamespace?: string;
+
+  /**
+   * The patch type to pass to `kubectl patch`.
+   * The default type used by `kubectl patch` is "strategic".
+   *
+   * @default "strategic"
+   */
+  readonly patchType?: PatchType;
+}
+
+export enum PatchType {
+  JSON = "json",
+  MERGE = "merge",
+  STRATEGIC = "strategic"
 }
 
 /**
@@ -37,7 +52,7 @@ export interface CoreDnsComputeTypeProps {
  * Kubernetes resource.
  */
 export class KubernetesPatch extends Construct {
-  constructor(scope: Construct, id: string, props: CoreDnsComputeTypeProps) {
+  constructor(scope: Construct, id: string, props: KubernetesPatchProps) {
     super(scope, id);
 
     const stack = Stack.of(this);
@@ -52,7 +67,8 @@ export class KubernetesPatch extends Construct {
         ApplyPatchJson: stack.toJsonString(props.applyPatch),
         RestorePatchJson: stack.toJsonString(props.restorePatch),
         ClusterName: props.cluster.clusterName,
-        RoleArn: props.cluster._getKubectlCreationRoleArn(provider.role)
+        RoleArn: props.cluster._getKubectlCreationRoleArn(provider.role),
+        PatchType: props.patchType ?? PatchType.STRATEGIC
       }
     });
   }
