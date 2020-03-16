@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as events from '@aws-cdk/aws-events';
@@ -245,6 +245,49 @@ export = {
             }
           },
           Name: "ScheduledContainer"
+        }
+      ]
+    }));
+
+    test.done();
+  },
+
+  "Scheduled Fargate Task - with subnetSelection defined"(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc', {
+      maxAzs: 1,
+      subnetConfiguration: [
+        { name: 'Public', cidrMask: 28, subnetType: ec2.SubnetType.PUBLIC }
+      ],
+    });
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+    new ScheduledFargateTask(stack, 'ScheduledFargateTask', {
+      cluster,
+      scheduledFargateTaskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('henk'),
+      },
+      subnetSelection: { subnetType: ec2.SubnetType.PUBLIC },
+      schedule: events.Schedule.expression('rate(1 minute)')
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::Events::Rule', {
+      Targets: [
+        {
+          EcsParameters: {
+            NetworkConfiguration: {
+              AwsVpcConfiguration: {
+                AssignPublicIp: 'ENABLED',
+                Subnets: [
+                  {
+                    Ref: 'VpcPublicSubnet1Subnet5C2D37C4'
+                  }
+                ]
+              }
+            },
+          }
         }
       ]
     }));
