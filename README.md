@@ -109,12 +109,10 @@ For a detailed walkthrough, see the [tutorial] in the AWS CDK [Developer Guide].
 
 The CDK consists of two components:
 
-1. CLI - Provides all the `cdk` commands. Installed via the nodejs `aws-cdk` package.
-2. Framework - Provides all the construct libraries API. Installed via the language specific package managers. For example: `npm install @aws-cdk/aws-s3`.
+1. **CLI** - Provides all the `cdk` commands. Installed via the nodejs `aws-cdk` package.
+2. **Framework** - Provides all the construct libraries API. Installed via the language specific package managers. For example: `npm install @aws-cdk/aws-s3`.
 
-These two components can be installed independently, and as such, declare the following compatibility promise between them:
-
-*CLI versions must be greater or equal to framework version*.
+These two components can be installed independently, and as such, declare the following compatibility promise between them: **CLI versions must be greater or equal to framework version**.
 
 That is, if your CLI version is for example `1.27.0`, and you install version `1.28.0` of the `@aws-cdk/aws-s3` module, you will get the following error message:
 
