@@ -1,6 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import * as dynamodb from '@aws-cdk/aws-dynamodb';
 import * as lambda from '@aws-cdk/aws-lambda';
+import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as sources from '../lib';
@@ -273,4 +274,326 @@ export = {
     test.done();
   },
 
+  'specific retryAttempts'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const table = new dynamodb.Table(stack, 'T', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING
+      },
+      stream: dynamodb.StreamViewType.NEW_IMAGE
+    });
+
+    // WHEN
+    fn.addEventSource(new sources.DynamoEventSource(table, {
+      retryAttempts: 10,
+      startingPosition: lambda.StartingPosition.LATEST
+    }));
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
+      "EventSourceArn": {
+        "Fn::GetAtt": [
+          "TD925BC7E",
+          "StreamArn"
+        ]
+      },
+      "FunctionName":  {
+        "Ref": "Fn9270CBC0"
+      },
+      "MaximumRetryAttempts": 10,
+      "StartingPosition": "LATEST"
+    }));
+
+    test.done();
+  },
+
+  'fails if retryAttempts < 0'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const table = new dynamodb.Table(stack, 'T', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING
+      },
+      stream: dynamodb.StreamViewType.NEW_IMAGE
+    });
+
+    // THEN
+    test.throws(() =>
+      fn.addEventSource(new sources.DynamoEventSource(table, {
+        retryAttempts: -1,
+        startingPosition: lambda.StartingPosition.LATEST
+      })), /retryAttempts must be between 0 and 10000 inclusive, got -1/);
+
+    test.done();
+  },
+
+  'fails if retryAttempts > 10000'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const table = new dynamodb.Table(stack, 'T', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING
+      },
+      stream: dynamodb.StreamViewType.NEW_IMAGE
+    });
+
+    // THEN
+    test.throws(() =>
+      fn.addEventSource(new sources.DynamoEventSource(table, {
+        retryAttempts: 10001,
+        startingPosition: lambda.StartingPosition.LATEST
+      })), /retryAttempts must be between 0 and 10000 inclusive, got 10001/);
+
+    test.done();
+  },
+
+  'specific bisectBatchOnFunctionError'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const table = new dynamodb.Table(stack, 'T', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING
+      },
+      stream: dynamodb.StreamViewType.NEW_IMAGE
+    });
+
+    // WHEN
+    fn.addEventSource(new sources.DynamoEventSource(table, {
+      bisectBatchOnError: true,
+      startingPosition: lambda.StartingPosition.LATEST
+    }));
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
+      "EventSourceArn": {
+        "Fn::GetAtt": [
+          "TD925BC7E",
+          "StreamArn"
+        ]
+      },
+      "FunctionName":  {
+        "Ref": "Fn9270CBC0"
+      },
+      "BisectBatchOnFunctionError": true,
+      "StartingPosition": "LATEST"
+    }));
+
+    test.done();
+  },
+
+  'specific parallelizationFactor'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const table = new dynamodb.Table(stack, 'T', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING
+      },
+      stream: dynamodb.StreamViewType.NEW_IMAGE
+    });
+
+    // WHEN
+    fn.addEventSource(new sources.DynamoEventSource(table, {
+      parallelizationFactor: 5,
+      startingPosition: lambda.StartingPosition.LATEST
+    }));
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
+      "EventSourceArn": {
+        "Fn::GetAtt": [
+          "TD925BC7E",
+          "StreamArn"
+        ]
+      },
+      "FunctionName":  {
+        "Ref": "Fn9270CBC0"
+      },
+      "ParallelizationFactor": 5,
+      "StartingPosition": "LATEST"
+    }));
+
+    test.done();
+  },
+
+  'fails if parallelizationFactor < 1'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const table = new dynamodb.Table(stack, 'T', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING
+      },
+      stream: dynamodb.StreamViewType.NEW_IMAGE
+    });
+
+    // THEN
+    test.throws(() =>
+      fn.addEventSource(new sources.DynamoEventSource(table, {
+        parallelizationFactor: 0,
+        startingPosition: lambda.StartingPosition.LATEST
+      })), /parallelizationFactor must be between 1 and 10 inclusive, got 0/);
+
+    test.done();
+  },
+
+  'fails if parallelizationFactor > 10'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const table = new dynamodb.Table(stack, 'T', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING
+      },
+      stream: dynamodb.StreamViewType.NEW_IMAGE
+    });
+
+    // THEN
+    test.throws(() =>
+      fn.addEventSource(new sources.DynamoEventSource(table, {
+        parallelizationFactor: 11,
+        startingPosition: lambda.StartingPosition.LATEST
+      })), /parallelizationFactor must be between 1 and 10 inclusive, got 11/);
+
+    test.done();
+  },
+
+  'specific maxRecordAge'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const table = new dynamodb.Table(stack, 'T', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING
+      },
+      stream: dynamodb.StreamViewType.NEW_IMAGE
+    });
+
+    // WHEN
+    fn.addEventSource(new sources.DynamoEventSource(table, {
+      maxRecordAge: cdk.Duration.seconds(100),
+      startingPosition: lambda.StartingPosition.LATEST
+    }));
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
+      "EventSourceArn": {
+        "Fn::GetAtt": [
+          "TD925BC7E",
+          "StreamArn"
+        ]
+      },
+      "FunctionName":  {
+        "Ref": "Fn9270CBC0"
+      },
+      "MaximumRecordAgeInSeconds": 100,
+      "StartingPosition": "LATEST"
+    }));
+
+    test.done();
+  },
+
+  'fails if maxRecordAge < 60 seconds'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const table = new dynamodb.Table(stack, 'T', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING
+      },
+      stream: dynamodb.StreamViewType.NEW_IMAGE
+    });
+
+    // THEN
+    test.throws(() =>
+      fn.addEventSource(new sources.DynamoEventSource(table, {
+        maxRecordAge: cdk.Duration.seconds(59),
+        startingPosition: lambda.StartingPosition.LATEST
+      })), /maxRecordAge must be between 60 seconds and 7 days inclusive/);
+
+    test.done();
+  },
+
+  'fails if maxRecordAge > 7 days'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const table = new dynamodb.Table(stack, 'T', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING
+      },
+      stream: dynamodb.StreamViewType.NEW_IMAGE
+    });
+
+    // THEN
+    test.throws(() =>
+      fn.addEventSource(new sources.DynamoEventSource(table, {
+        maxRecordAge: cdk.Duration.seconds(604801),
+        startingPosition: lambda.StartingPosition.LATEST
+      })), /maxRecordAge must be between 60 seconds and 7 days inclusive/);
+
+    test.done();
+  },
+
+  'specific destinationConfig'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const queue = new sqs.Queue(stack, 'Queue');
+    const table = new dynamodb.Table(stack, 'T', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING
+      },
+      stream: dynamodb.StreamViewType.NEW_IMAGE
+    });
+
+    // WHEN
+    fn.addEventSource(new sources.DynamoEventSource(table, {
+      onFailure: new sources.SqsDlq(queue),
+      startingPosition: lambda.StartingPosition.LATEST
+    }));
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
+      "EventSourceArn": {
+        "Fn::GetAtt": [
+          "TD925BC7E",
+          "StreamArn"
+        ]
+      },
+      "FunctionName":  {
+        "Ref": "Fn9270CBC0"
+      },
+      "DestinationConfig": {
+        "OnFailure": {
+          "Destination": {
+            "Fn::GetAtt": [
+              "Queue4A7E3555",
+              "Arn"
+            ]
+          }
+
+        }
+      },
+      "StartingPosition": "LATEST"
+    }));
+
+    test.done();
+  },
 };

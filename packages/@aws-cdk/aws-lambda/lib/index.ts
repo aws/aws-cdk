@@ -1,4 +1,5 @@
 export * from './alias';
+export * from './dlq';
 export * from './function-base';
 export * from './function';
 export * from './layers';

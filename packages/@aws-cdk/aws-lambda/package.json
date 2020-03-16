@@ -164,7 +164,6 @@
       "props-default-doc:@aws-cdk/aws-lambda.CodeConfig.inlineCode",
       "props-default-doc:@aws-cdk/aws-lambda.CodeConfig.s3Location",
       "docs-public-apis:@aws-cdk/aws-lambda.EventSourceMappingOptions",
-      "docs-public-apis:@aws-cdk/aws-lambda.EventSourceMappingProps",
       "props-default-doc:@aws-cdk/aws-lambda.FunctionAttributes.role",
       "props-default-doc:@aws-cdk/aws-lambda.FunctionAttributes.securityGroup",
       "props-default-doc:@aws-cdk/aws-lambda.FunctionAttributes.securityGroupId",
