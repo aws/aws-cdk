@@ -345,8 +345,6 @@ export class Cluster extends Resource implements ICluster {
     this.vpc = props.vpc || new ec2.Vpc(this, 'DefaultVpc');
     this.version = props.version ?? LATEST_KUBERNETES_VERSION;
 
-    new CfnOutput(this, 'Version', { value: this.version });
-
     this.tagSubnets();
 
     // this is the role used by EKS when interacting with AWS resources
