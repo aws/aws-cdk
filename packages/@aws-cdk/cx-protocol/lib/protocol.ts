@@ -7,7 +7,7 @@ import { ArtifactMetadataEntryType, ArtifactType, AssemblyManifest } from './ass
 export class Manifest {
 
     /**
-     * Savel manifest to to file.
+     * Save manifest to to file.
      *
      * @param manifest - manifest.
      */

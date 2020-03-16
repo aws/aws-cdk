@@ -207,7 +207,7 @@ export interface Tag {
      * Tag value.
      */
     readonly value: string;
-  }
+}
 
 /**
  * An metadata entry in the construct.
