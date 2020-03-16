@@ -564,7 +564,7 @@ export interface SubnetAttributes {
   /**
    * The Availability Zone the subnet is located in
    */
-  readonly availabilityZone: string;
+  readonly availabilityZone?: string;
 
   /**
    * The subnetId for this particular subnet
@@ -1316,9 +1316,12 @@ export class Subnet extends Resource implements ISubnet {
     return new ImportedSubnet(scope, id, attrs);
   }
 
+  /**
+   * Import existing subnet from id.
+  */
   // tslint:disable:no-shadowed-variable
   public static fromSubnetId(scope: Construct, id: string, subnetId: string): ISubnet {
-    return this.fromSubnetAttributes(scope, id, { subnetId, availabilityZone: '' });
+    return this.fromSubnetAttributes(scope, id, { subnetId });
   }
   // tslint:enable:no-shadowed-variable
 
@@ -1776,13 +1779,6 @@ function tap<T>(x: T, fn: (x: T) => void): T {
 
 class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivateSubnet {
   public readonly internetConnectivityEstablished: IDependable = new ConcreteDependable();
-  public get availabilityZone(): string {
-    if (!this._availabilityZone) {
-      // tslint:disable-next-line: max-line-length
-      throw new Error("You cannot reference a Subnet's availability zone if it was not supplied. Add the availabilityZone when importing using Subnet.fromSubnetAttributes()");
-    }
-    return this._availabilityZone;
-  }
   public readonly subnetId: string;
   public readonly routeTable: IRouteTable;
   private readonly _availabilityZone?: string;
@@ -1804,6 +1800,14 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
       // Forcing routeTableId to pretend non-null to maintain backwards-compatibility. See https://github.com/aws/aws-cdk/pull/3171
       routeTableId: attrs.routeTableId!
     };
+  }
+
+  public get availabilityZone(): string {
+    if (!this._availabilityZone) {
+      // tslint:disable-next-line: max-line-length
+      throw new Error("You cannot reference a Subnet's availability zone if it was not supplied. Add the availabilityZone when importing using Subnet.fromSubnetAttributes()");
+    }
+    return this._availabilityZone;
   }
 
   public associateNetworkAcl(id: string, networkAcl: INetworkAcl): void {

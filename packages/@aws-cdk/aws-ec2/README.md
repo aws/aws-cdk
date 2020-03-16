@@ -579,6 +579,19 @@ asset.grantRead( instance.role );
 ```
 
 ## Importing existing subnet
-Import existing subnet using `Subnet.fromSubId()` with limitation of not selecting subnets onePerAz.
-Making AZ property optional for `SubnetAttributes`.
-Use this when do not want to select subnets based on AZ.
+Import existing subnet from subnet attributes like subnetId, availabilityZone and routeTableId.
+availabilityZone and routeTableId are optional attributes. If you want to use availabilityZone or route table
+of `ISubnet` than you need to pass availabilityZone and routeTableId.
+```ts
+const subnet = Subnet.fromSubnetAttributes(this,'SubnetFromAttributes',{
+  subnetId: 'id',
+  availabilityZone: 'pub-az-4465',
+  routeTableId: 'rt-145'
+});
+```
+
+Existing Subnet can also be imported using `Subnet.fromSubnetId`. If you are importing subnet from id
+you will not be able to use availabilityZone and route table.
+```ts
+const subnet = Subnet.fromSubnetId(this,'SubnetFromId','subnetId');
+```

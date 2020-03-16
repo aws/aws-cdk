@@ -1089,7 +1089,8 @@ export = {
       const subnet = Subnet.fromSubnetId(stack, 'subnet1', 'pub-1');
 
       // THEN
-      test.throws(() => subnet.availabilityZone);
+      // tslint:disable-next-line: max-line-length
+      test.throws(() => subnet.availabilityZone, "You cannot reference a Subnet's availability zone if it was not supplied. Add the availabilityZone when importing using Subnet.fromSubnetAttributes()");
       test.done();
     },
 
@@ -1102,7 +1103,8 @@ export = {
 
       // THEN
       test.deepEqual(subnet.subnetId, 'pub-1');
-      test.throws(() => subnet.availabilityZone);
+      // tslint:disable-next-line: max-line-length
+      test.throws(() => subnet.availabilityZone, "You cannot reference a Subnet's availability zone if it was not supplied. Add the availabilityZone when importing using Subnet.fromSubnetAttributes()");
       test.done();
     },
 
