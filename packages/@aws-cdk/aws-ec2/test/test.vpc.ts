@@ -1089,7 +1089,7 @@ export = {
       const subnet = Subnet.fromSubnetId(stack, 'subnet1', 'pub-1');
 
       // THEN
-      test.throws(subnet.availabilityZone);
+      test.throws(() => subnet.availabilityZone);
       test.done();
     },
 
@@ -1102,7 +1102,7 @@ export = {
 
       // THEN
       test.deepEqual(subnet.subnetId, 'pub-1');
-      test.throws(subnet.availabilityZone);
+      test.throws(() => subnet.availabilityZone);
       test.done();
     },
 
