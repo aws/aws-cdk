@@ -1,4 +1,3 @@
-import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as fs from 'fs';
 import * as os from 'os';
@@ -9,17 +8,27 @@ import { execProgram } from '../../lib/api/cxapp/exec';
 import { Configuration, Settings } from '../../lib/settings';
 import * as cli from '../../lib/version';
 
+function createApp(outdir: string): cdk.App {
+
+    const app = new cdk.App({outdir});
+    const stack = new cdk.Stack(app, 'Stack');
+
+    new cdk.CfnResource(stack, "Role", {
+        type: "AWS::IAM::Role",
+        properties: {
+            RoleName: "Role"
+        }
+    });
+
+    return app;
+}
+
 test('execProgram throws when framework version > cli version', async () => {
 
     const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'exec-tests'));
     const manifestFilePath = path.join(outdir, 'manifest.json');
 
-    const app = new cdk.App({outdir});
-    const stack = new cdk.Stack(app, 'Stack');
-
-    new iam.Role(stack, "Role", {
-        assumedBy: new iam.ServicePrincipal("service")
-    });
+    const app = createApp(outdir);
 
     app.synth();
 
@@ -50,12 +59,7 @@ test('execProgram does not throw when framework version = cli version', async ()
 
     const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'exec-tests'));
 
-    const app = new cdk.App({outdir});
-    const stack = new cdk.Stack(app, 'Stack');
-
-    new iam.Role(stack, "Role", {
-        assumedBy: new iam.ServicePrincipal("service")
-    });
+    const app = createApp(outdir);
 
     app.synth();
 
@@ -79,12 +83,7 @@ test('execProgram does not throw when framework version < cli version', async ()
     const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'exec-tests'));
     const manifestFilePath = path.join(outdir, 'manifest.json');
 
-    const app = new cdk.App({outdir});
-    const stack = new cdk.Stack(app, 'Stack');
-
-    new iam.Role(stack, "Role", {
-        assumedBy: new iam.ServicePrincipal("service")
-    });
+    const app = createApp(outdir);
 
     app.synth();
 
