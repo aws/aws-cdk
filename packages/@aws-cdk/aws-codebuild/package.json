@@ -205,7 +205,10 @@
       "docs-public-apis:@aws-cdk/aws-codebuild.S3SourceProps.path",
       "docs-public-apis:@aws-cdk/aws-codebuild.SourceConfig.sourceProperty",
       "docs-public-apis:@aws-cdk/aws-codebuild.SourceConfig.buildTriggers",
-      "props-default-doc:@aws-cdk/aws-codebuild.SourceConfig.buildTriggers"
+      "props-default-doc:@aws-cdk/aws-codebuild.SourceConfig.buildTriggers",
+      "props-physical-name:@aws-cdk/aws-codebuild.BitBucketSourceCredentialsProps",
+      "props-physical-name:@aws-cdk/aws-codebuild.GitHubSourceCredentialsProps",
+      "props-physical-name:@aws-cdk/aws-codebuild.GitHubEnterpriseSourceCredentialsProps"
     ]
   },
   "stability": "stable"
