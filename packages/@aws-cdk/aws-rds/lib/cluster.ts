@@ -153,21 +153,21 @@ export interface DatabaseClusterProps {
   /**
    * S3 buckets that you want to load data from
    *
-   * @default - A role is created for you if the s3ImportBuckets property is set
+   * @default - No S3 import functionality is enabled
    */
   readonly s3ImportBuckets?: s3.IBucket[];
 
   /**
-   * Role that will be associated with this DB cluster to enable S3 integration
+   * Role that will be associated with this DB cluster to enable S3 export through the SELECT INTO S3 command
    *
-   * @default - No role is associated with this DB cluster
+   * @default - A role is created for you if the s3ExportBuckets property is set
    */
   readonly s3ExportRole?: IRole;
 
   /**
-   * S3 buckets that you want to load data from
+   * S3 buckets that you want to load data into
    *
-   * @default - A role is created for you if the s3ImportBuckets property is set
+   * @default - No S3 export functionality is enabled
    */
   readonly s3ExportBuckets?: s3.IBucket[];
 }
