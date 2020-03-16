@@ -65,7 +65,8 @@ export class Construct extends constructs.Construct implements IConstruct {
   constructor(scope: Construct, id: string) {
     super(scope, id, {
       nodeFactory: {
-        createNode: (h, s, i) => new ConstructNode(h as Construct, s as IConstruct, i)._actualNode
+        createNode: (h: constructs.Construct, s: constructs.IConstruct, i: string) =>
+          new ConstructNode(h as Construct, s as IConstruct, i)._actualNode
       }
     });
 

@@ -16,7 +16,8 @@ const include_non_jsii = [
 
 const include_dev_deps = [
   d => d === 'aws-sdk',
-  d => d.startsWith('@types/')
+  d => d === 'constructs',
+  d => d.startsWith('@types/'),
 ];
 
 const exclude_files = [
@@ -52,7 +53,8 @@ async function main() {
     throw new Error(`@types/node must be defined in devDependencies`);
   }
   const devDeps = manifest.devDependencies = {
-    '@types/node': nodeTypes
+    '@types/node': nodeTypes,
+    'constructs': manifest.devDependencies['constructs']
   };
 
   if (manifest.dependencies) {
@@ -110,7 +112,6 @@ async function main() {
     const shouldIncludeDevDep = d => include_dev_deps.find(pred => pred(d));
 
     for (const [ devDep, devDepVersion ] of Object.entries(meta.devDependencies || {})) {
-
       if (!shouldIncludeDevDep(devDep)) {
         continue;
       }
