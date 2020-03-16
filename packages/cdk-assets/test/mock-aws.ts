@@ -4,22 +4,13 @@ import * as AWS from 'aws-sdk';
 export function mockAws() {
   const mockEcr = new AWS.ECR();
   const mockS3 = new AWS.S3();
-
-  // Sane defaults which can be overridden
-  mockS3.getBucketLocation = mockedApiResult({});
-  mockEcr.describeRepositories = mockedApiResult({ repositories: [
-    {
-      repositoryUri: '12345.amazonaws.com/repo'
-    }
-  ] });
-
   return {
     mockEcr,
     mockS3,
-    discoverCurrentAccount: jest.fn(() => Promise.resolve({ accountId: 'current_account', partition: 'swa' })),
+    discoverCurrentAccount: jest.fn(() => Promise.resolve('current_account')),
     discoverDefaultRegion: jest.fn(() => Promise.resolve('current_region')),
-    ecrClient: jest.fn().mockReturnValue(Promise.resolve(mockEcr)),
-    s3Client: jest.fn().mockReturnValue(Promise.resolve(mockS3)),
+    ecrClient: jest.fn(() => mockEcr),
+    s3Client: jest.fn(() => mockS3),
   };
 }
 
@@ -42,10 +33,10 @@ export function mockedApiFailure(code: string, message: string) {
 }
 
 /**
- * Mock upload, draining the stream that we get before returning
+ * Mock putObject, draining the stream that we get before returning
  * so no race conditions happen with the uninstallation of mock-fs.
  */
-export function mockUpload() {
+export function mockPutObject() {
   return jest.fn().mockImplementation(request => ({
     promise: () => new Promise((ok, ko) => {
       const bodyStream: NodeJS.ReadableStream = request.Body;

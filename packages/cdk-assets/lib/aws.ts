@@ -5,32 +5,14 @@ import * as AWS from 'aws-sdk';
  */
 export interface IAws {
   discoverDefaultRegion(): Promise<string>;
-  discoverCurrentAccount(): Promise<Account>;
+  discoverCurrentAccount(): Promise<string>;
 
-  s3Client(options: ClientOptions): Promise<AWS.S3>;
-  ecrClient(options: ClientOptions): Promise<AWS.ECR>;
+  s3Client(options: ClientOptions): AWS.S3;
+  ecrClient(options: ClientOptions): AWS.ECR;
 }
 
 export interface ClientOptions {
   region?: string;
   assumeRoleArn?: string;
   assumeRoleExternalId?: string;
-}
-
-/**
- * An AWS account
- *
- * An AWS account always exists in only one partition. Usually we don't care about
- * the partition, but when we need to form ARNs we do.
- */
-export interface Account {
-  /**
-   * The account number
-   */
-  readonly accountId: string;
-
-  /**
-   * The partition ('aws' or 'aws-cn' or otherwise)
-   */
-  readonly partition: string;
 }

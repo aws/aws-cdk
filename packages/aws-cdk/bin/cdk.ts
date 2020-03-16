@@ -6,8 +6,7 @@ import * as colors from 'colors/safe';
 import * as path from 'path';
 import * as yargs from 'yargs';
 
-import { bootstrapEnvironment, BootstrapEnvironmentProps } from '../lib';
-import { SdkProvider } from '../lib/api/aws-auth';
+import { bootstrapEnvironment, BootstrapEnvironmentProps, SDK } from '../lib';
 import { bootstrapEnvironment2 } from '../lib/api/bootstrap/bootstrap-environment2';
 import { environmentsFromDescriptors, globEnvironmentsFromStacks } from '../lib/api/cxapp/environments';
 import { execProgram } from '../lib/api/cxapp/exec';
@@ -112,13 +111,11 @@ async function initCommandLine() {
   debug('CDK toolkit version:', version.DISPLAY_VERSION);
   debug('Command line arguments:', argv);
 
-  const aws = await SdkProvider.withAwsCliCompatibleDefaults({
+  const aws = new SDK({
     profile: argv.profile,
+    proxyAddress: argv.proxy,
+    caBundlePath: argv['ca-bundle-path'],
     ec2creds: argv.ec2creds,
-    httpOptions: {
-      proxyAddress: argv.proxy,
-      caBundlePath: argv['ca-bundle-path'],
-    }
   });
 
   const configuration = new Configuration(argv);

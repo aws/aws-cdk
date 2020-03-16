@@ -21,8 +21,8 @@ beforeEach(() => {
           type: 'thing',
           source: { directory: 'S2' },
           destinations: {
-            dest1: { repositoryName: 'D3', imageTag: 'X' },
-            dest2: { repositoryName: 'D4', imageTag: 'X' },
+            dest1: { repositoryName: 'D3', imageTag: 'X', imageUri: 'X' },
+            dest2: { repositoryName: 'D4', imageTag: 'X', imageUri: 'X' },
           },
         },
       },
@@ -41,8 +41,8 @@ asset1 file {\"path\":\"S1\"}
   ├ asset1:dest1 {\"bucketName\":\"D1\",\"objectKey\":\"X\"}
   └ asset1:dest2 {\"bucketName\":\"D2\",\"objectKey\":\"X\"}
 asset2 docker-image {\"directory\":\"S2\"}
-  ├ asset2:dest1 {\"repositoryName\":\"D3\",\"imageTag\":\"X\"}
-  └ asset2:dest2 {\"repositoryName\":\"D4\",\"imageTag\":\"X\"}
+  ├ asset2:dest1 {\"repositoryName\":\"D3\",\"imageTag\":\"X\",\"imageUri\":\"X\"}
+  └ asset2:dest2 {\"repositoryName\":\"D4\",\"imageTag\":\"X\",\"imageUri\":\"X\"}
 `.trim());
 });
 
@@ -52,8 +52,8 @@ test('.entries() iterates over all destinations', () => {
   expect(manifest.entries).toEqual([
     new FileManifestEntry(new DestinationIdentifier('asset1', 'dest1'), { path: 'S1' }, { bucketName: 'D1', objectKey: 'X' }),
     new FileManifestEntry(new DestinationIdentifier('asset1', 'dest2'), { path: 'S1' }, { bucketName: 'D2', objectKey: 'X' }),
-    new DockerImageManifestEntry(new DestinationIdentifier('asset2', 'dest1'), { directory: 'S2' }, { repositoryName: 'D3', imageTag: 'X' }),
-    new DockerImageManifestEntry(new DestinationIdentifier('asset2', 'dest2'), { directory: 'S2' }, { repositoryName: 'D4', imageTag: 'X' }),
+    new DockerImageManifestEntry(new DestinationIdentifier('asset2', 'dest1'), { directory: 'S2' }, { repositoryName: 'D3', imageTag: 'X', imageUri: 'X' }),
+    new DockerImageManifestEntry(new DestinationIdentifier('asset2', 'dest2'), { directory: 'S2' }, { repositoryName: 'D4', imageTag: 'X', imageUri: 'X' }),
   ]);
 });
 

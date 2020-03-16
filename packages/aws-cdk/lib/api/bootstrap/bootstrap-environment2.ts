@@ -2,10 +2,9 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as path from 'path';
-import { BootstrapEnvironmentProps, deployStack, DeployStackResult } from '..';
-import { SdkProvider } from '../aws-auth';
+import { BootstrapEnvironmentProps, deployStack, DeployStackResult, ISDK } from '..';
 
-export async function bootstrapEnvironment2(environment: cxapi.Environment, sdk: SdkProvider,
+export async function bootstrapEnvironment2(environment: cxapi.Environment, sdk: ISDK,
                                             toolkitStackName: string, roleArn: string | undefined,
                                             props: BootstrapEnvironmentProps = {}): Promise<DeployStackResult> {
   if (props.trustedAccounts?.length && !props.cloudFormationExecutionPolicies?.length) {

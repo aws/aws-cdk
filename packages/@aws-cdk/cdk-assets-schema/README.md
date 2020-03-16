@@ -1,4 +1,5 @@
 # cdk-assets-schema
+
 <!--BEGIN STABILITY BANNER-->
 
 ---

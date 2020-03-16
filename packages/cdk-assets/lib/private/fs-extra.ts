@@ -24,8 +24,3 @@ export function emptyDirSync(dir: string) {
     }
   });
 }
-
-export function rmRfSync(dir: string) {
-  emptyDirSync(dir);
-  fs.rmdirSync(dir);
-}
