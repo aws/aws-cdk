@@ -373,7 +373,7 @@ export class Cluster extends Resource implements ICluster {
     const clusterProps: CfnClusterProps = {
       name: this.physicalName,
       roleArn: this.role.roleArn,
-      version:  props.version,
+      version: props.version,
       resourcesVpcConfig: {
         securityGroupIds: [securityGroup.securityGroupId],
         subnetIds
