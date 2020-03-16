@@ -2,7 +2,7 @@
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path_ from 'path';
-import { rmRfSync } from '../lib/private/fs-extra';
+import { emptyDirSync } from '../lib/private/fs-extra';
 
 const bockFsRoot = path_.join(os.tmpdir(), 'bockfs');
 
@@ -25,7 +25,8 @@ namespace bockfs {
   }
 
   export function restore() {
-    rmRfSync(bockFsRoot);
+    emptyDirSync(bockFsRoot);
+    fs.rmdirSync(bockFsRoot);
   }
 }
 
