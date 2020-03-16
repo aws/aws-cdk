@@ -28,6 +28,24 @@ beforeEach(() => {
       },
     }),
     '/simple/cdk.out/dockerdir/Dockerfile': 'FROM scratch',
+    '/abs/cdk.out/assets.json': JSON.stringify({
+      version: AssetManifestSchema.currentVersion(),
+      dockerImages: {
+        theAsset: {
+          source: {
+            directory: '/simple/cdk.out/dockerdir'
+          },
+          destinations: {
+            theDestination: {
+              region: 'us-north-50',
+              assumeRoleArn: 'arn:aws:role',
+              repositoryName: 'repo',
+              imageTag: 'abcdef',
+            },
+          },
+        },
+      },
+    }),
   });
 
   aws = mockAws();
@@ -101,4 +119,26 @@ describe('with a complete manifest', () => {
 
     await pub.publish();
   });
+});
+
+test('correctly identify Docker directory if path is absolute', async () => {
+  const pub = new AssetPublishing(AssetManifest.fromPath('/abs/cdk.out'), { aws });
+
+  aws.mockEcr.describeImages = mockedApiFailure('ImageNotFoundException', 'File does not exist');
+  aws.mockEcr.getAuthorizationToken = mockedApiResult({
+    authorizationData: [
+      { authorizationToken: 'dXNlcjpwYXNz', proxyEndpoint: 'https://proxy.com/' }
+    ]
+  });
+
+  mockSpawn(
+    // Only care about the 'build' command line
+    { commandLine: ['docker', 'login'], prefix: true, },
+    { commandLine: ['docker', 'inspect'], exitCode: 1, prefix: true },
+    { commandLine: ['docker', 'build', '--tag', 'cdkasset-theasset', '/simple/cdk.out/dockerdir'] },
+    { commandLine: ['docker', 'tag'], prefix: true },
+    { commandLine: ['docker', 'push'], prefix: true },
+  );
+
+  await pub.publish();
 });
