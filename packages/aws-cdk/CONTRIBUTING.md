@@ -25,7 +25,7 @@ Run:
 
 ```
 npm run integ-cli-backwards # run against latest CLI and Framework.
-npm run integ-cli-framework # run against latest CLI and previous framework.
+npm run integ-cli-framework # run against latest CLI and previous Framework.
 ```
 
 ### Init template integration tests
