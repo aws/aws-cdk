@@ -21,15 +21,19 @@ const table = new dynamodb.Table(this, 'Table', {
 
 ### Importing existing tables
 
-To import an existing table into your CDK application, use the `Table.fromTableName` or `Table.fromTableArn` 
+To import an existing table into your CDK application, use the `Table.fromTableName`, `Table.fromTableArn` or `Table.fromTableAttributes`
 factory method. This method accepts table name or table ARN which describes the properties of an already
 existing table:
 
 ```ts
-const table = Table.fromTableArn(this, 'ImportedTable', 'arn:aws:dynamodb:us-east-1:111111111:table/my-table'); 
+const table = Table.fromTableArn(this, 'ImportedTable', 'arn:aws:dynamodb:us-east-1:111111111:table/my-table');
 // now you can just call methods on the table
 table.grantReadWriteData(user);
 ```
+
+If you intend to use the `tableStreamArn` (including indirectly, for example by creating an
+`@aws-cdk/aws-lambda-event-source.DynamoEventSource` on the imported table), you *must* use the
+`Table.fromTableAttributes` method and the `tableStreamArn` property *must* be populated.
 
 ### Keys
 

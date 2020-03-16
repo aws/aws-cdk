@@ -9,6 +9,8 @@ import { getResourceArn } from './resource-arn-suffix';
 export interface RunLambdaTaskProps {
   /**
    * The JSON that you want to provide to your Lambda function as input.
+   *
+   * @default - No payload
    */
   readonly payload?: { [key: string]: any };
 

@@ -153,6 +153,36 @@ plan.addApiStage({
 });
 ```
 
+In scenarios where you need to create a single api key and configure rate limiting for it, you can use `RateLimitedApiKey`.
+This construct lets you specify rate limiting properties which should be applied only to the api key being created.
+The API key created has the specified rate limits, such as quota and throttles, applied.
+
+The following example shows how to use a rate limited api key :
+```ts
+const hello = new lambda.Function(this, 'hello', {
+  runtime: lambda.Runtime.NODEJS_10_X,
+  handler: 'hello.handler',
+  code: lambda.Code.fromAsset('lambda')
+});
+
+const api = new apigateway.RestApi(this, 'hello-api', { });
+const integration = new apigateway.LambdaIntegration(hello);
+
+const v1 = api.root.addResource('v1');
+const echo = v1.addResource('echo');
+const echoMethod = echo.addMethod('GET', integration, { apiKeyRequired: true });
+
+const key = new apigateway.RateLimitedApiKey(this, 'rate-limited-api-key', {
+  customerId: 'hello-customer',
+  resources: [api],
+  quota: {
+    limit: 10000,
+    period: apigateway.Period.MONTH
+  }
+});
+
+```
+
 ### Working with models
 
 When you work with Lambda integrations that are not Proxy integrations, you
@@ -236,14 +266,30 @@ You can define models for your responses (and requests)
 const responseModel = api.addModel('ResponseModel', {
   contentType: 'application/json',
   modelName: 'ResponseModel',
-  schema: { '$schema': 'http://json-schema.org/draft-04/schema#', 'title': 'pollResponse', 'type': 'object', 'properties': { 'state': { 'type': 'string' }, 'greeting': { 'type': 'string' } } }
+  schema: {
+    schema: JsonSchemaVersion.DRAFT4,
+    title: 'pollResponse',
+    type: JsonSchemaType.OBJECT,
+    properties: {
+      state: { type: JsonSchemaType.STRING },
+      greeting: { type: JsonSchemaType.STRING }
+    }
+  }
 });
 
 // We define the JSON Schema for the transformed error response
 const errorResponseModel = api.addModel('ErrorResponseModel', {
   contentType: 'application/json',
   modelName: 'ErrorResponseModel',
-  schema: { '$schema': 'http://json-schema.org/draft-04/schema#', 'title': 'errorResponse', 'type': 'object', 'properties': { 'state': { 'type': 'string' }, 'message': { 'type': 'string' } } }
+  schema: {
+    schema: JsonSchemaVersion.DRAFT4,
+    title: 'errorResponse',
+    type: JsonSchemaType.OBJECT,
+    properties: {
+      state: { type: JsonSchemaType.STRING },
+      message: { type: JsonSchemaType.STRING }
+    }
+  }
 });
 
 ```
@@ -322,6 +368,21 @@ const book = books.addResource('{book_id}');
 book.addMethod('GET');   // integrated with `booksBackend`
 ```
 
+A Method can be configured with authorization scopes. Authorization scopes are
+used in conjunction with an [authorizer that uses Amazon Cognito user
+pools](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-integrate-with-cognito.html#apigateway-enable-cognito-user-pool).
+Read more about authorization scopes
+[here](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-method.html#cfn-apigateway-method-authorizationscopes).
+
+Authorization scopes for a Method can be configured using the `authorizationScopes` property as shown below -
+
+```ts
+books.addMethod('GET', new apigateway.HttpIntegration('http://amazon.com'), {
+  authorizationType: AuthorizationType.COGNITO,
+  authorizationScopes: ['Scope1','Scope2']
+});
+```
+
 ### Proxy Routes
 
 The `addProxy` method can be used to install a greedy `{proxy+}` resource
@@ -343,7 +404,7 @@ that can be used for controlling access to your REST APIs.
 
 #### IAM-based authorizer
 
-The following CDK code provides 'excecute-api' permission to an IAM user, via IAM policies, for the 'GET' method on the `books` resource:
+The following CDK code provides 'execute-api' permission to an IAM user, via IAM policies, for the 'GET' method on the `books` resource:
 
 ```ts
 const getBooks = books.addMethod('GET', new apigateway.HttpIntegration('http://amazon.com'), {
@@ -540,7 +601,8 @@ You can also define a `DomainName` resource directly in order to customize the d
 new apigw.DomainName(this, 'custom-domain', {
   domainName: 'example.com',
   certificate: acmCertificateForExampleCom,
-  endpointType: apigw.EndpointType.EDGE // default is REGIONAL
+  endpointType: apigw.EndpointType.EDGE, // default is REGIONAL
+  securityPolicy: apigw.SecurityPolicy.TLS_1_2
 });
 ```
 

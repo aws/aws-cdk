@@ -416,4 +416,21 @@ export = {
 
     test.done();
   },
+
+  'metric method generates a valid CloudWatch metric'(test: Test) {
+    const stack = new cdk.Stack();
+
+    const project = new codebuild.Project(stack, 'Project', {
+      source: codebuild.Source.gitHubEnterprise({
+        httpsCloneUrl: 'https://mygithub-enterprise.com/myuser/myrepo',
+      })
+    });
+
+    const metric = project.metric('Builds');
+    test.equal(metric.metricName, 'Builds');
+    test.equal(metric.period.toSeconds(), cdk.Duration.minutes(5).toSeconds());
+    test.equal(metric.statistic, 'Average');
+
+    test.done();
+  }
 };

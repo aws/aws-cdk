@@ -39,7 +39,7 @@ export interface EcsDeployActionProps extends codepipeline.CommonAwsActionProps 
   /**
    * The ECS Service to deploy.
    */
-  readonly service: ecs.BaseService;
+  readonly service: ecs.IBaseService;
 }
 
 /**

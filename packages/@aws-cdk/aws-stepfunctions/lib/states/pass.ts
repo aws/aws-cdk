@@ -43,6 +43,10 @@ export class Result {
         return new Result(value);
     }
 
+    /**
+     *
+     * @param value result of the Pass operation
+     */
     protected constructor(public readonly value: any) {
     }
 }

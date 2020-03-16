@@ -7,7 +7,9 @@ import { AlgorithmSpecification, Channel, InputMode, OutputDataConfig, ResourceC
          S3DataType, StoppingCondition, VpcConfig,  } from './sagemaker-task-base-types';
 
 /**
- *  @experimental
+ * Properties for creating an Amazon SageMaker training job
+ *
+ * @experimental
  */
 export interface SagemakerTrainTaskProps {
 
@@ -41,7 +43,11 @@ export interface SagemakerTrainTaskProps {
     readonly algorithmSpecification: AlgorithmSpecification;
 
     /**
-     * Hyperparameters to be used for the train job.
+     * Algorithm-specific parameters that influence the quality of the model. Set hyperparameters before you start the learning process.
+     * For a list of hyperparameters provided by Amazon SageMaker
+     * @see https://docs.aws.amazon.com/sagemaker/latest/dg/algos.html
+     *
+     * @default - No hyperparameters
      */
     readonly hyperparameters?: {[key: string]: any};
 
@@ -52,6 +58,8 @@ export interface SagemakerTrainTaskProps {
 
     /**
      * Tags to be applied to the train job.
+     *
+     * @default - No tags
      */
     readonly tags?: {[key: string]: string};
 
@@ -61,17 +69,23 @@ export interface SagemakerTrainTaskProps {
     readonly outputDataConfig: OutputDataConfig;
 
     /**
-     * Identifies the resources, ML compute instances, and ML storage volumes to deploy for model training.
+     * Specifies the resources, ML compute instances, and ML storage volumes to deploy for model training.
+     *
+     * @default - 1 instance of EC2 `M4.XLarge` with `10GB` volume
      */
     readonly resourceConfig?: ResourceConfig;
 
     /**
      * Sets a time limit for training.
+     *
+     * @default - max runtime of 1 hour
      */
     readonly stoppingCondition?: StoppingCondition;
 
     /**
      * Specifies the VPC that you want your training job to connect to.
+     *
+     * @default - No VPC
      */
     readonly vpcConfig?: VpcConfig;
 }

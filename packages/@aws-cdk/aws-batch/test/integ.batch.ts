@@ -10,25 +10,46 @@ const stack = new cdk.Stack(app, 'batch-stack');
 
 const vpc = new ec2.Vpc(stack, 'vpc');
 
+const launchTemplate = new ec2.CfnLaunchTemplate(stack, 'ec2-launch-template', {
+  launchTemplateName: 'EC2LaunchTemplate',
+  launchTemplateData: {
+    blockDeviceMappings: [
+      {
+        deviceName: '/dev/xvdcz',
+        ebs: {
+          encrypted: true,
+          volumeSize: 100,
+          volumeType: 'gp2'
+        }
+      }
+    ]
+  }
+});
+
 new batch.JobQueue(stack, 'batch-job-queue', {
   computeEnvironments: [
     {
-      computeEnvironment: new batch.ComputeEnvironment(stack, 'batch-managed-compute-env'),
+      computeEnvironment: new batch.ComputeEnvironment(stack, 'batch-unmanaged-compute-env', {
+        managed: false
+      }),
       order: 1,
     },
     {
-      computeEnvironment: new batch.ComputeEnvironment(stack, 'batch-demand-compute-env', {
-        managed: false,
+      computeEnvironment: new batch.ComputeEnvironment(stack, 'batch-demand-compute-env-launch-template', {
+        managed: true,
         computeResources: {
           type: batch.ComputeResourceType.ON_DEMAND,
           vpc,
+          launchTemplate: {
+            launchTemplateName: launchTemplate.launchTemplateName as string,
+          },
         },
       }),
       order: 2,
     },
     {
       computeEnvironment: new batch.ComputeEnvironment(stack, 'batch-spot-compute-env', {
-        managed: false,
+        managed: true,
         computeResources: {
           type: batch.ComputeResourceType.SPOT,
           vpc,

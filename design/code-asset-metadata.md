@@ -56,8 +56,8 @@ well as through the key `assetMetadata` in `cdk.json`. Very similar design to ho
 
 We considered alternatives that will "enforce" the embedding of metadata when an asset is referenced by a resource. Since
 a single asset can be referenced by multiple resources, it means that the _relationship_ is what should trigger the
-metadata addition. There currently isn't support in the framework for such hooks, but there is a possiblility that
-the changes in [#1436](https://github.com/aws/aws-cdk/pull/1436) might enable hooking into the relationnship, and then we might be able to use this mechanism to produce the metadata.
+metadata addition. There currently isn't support in the framework for such hooks, but there is a possibility that
+the changes in [#1436](https://github.com/aws/aws-cdk/pull/1436) might enable hooking into the relationship, and then we might be able to use this mechanism to produce the metadata.
 
 Having said that, the need to embed asset metadata on resources is mainly confined to authors of L2 constructs, and not applicable for the general user population, so the value of automation is not high.
 

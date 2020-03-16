@@ -73,20 +73,21 @@
     "@types/aws-lambda": "^8.10.39",
     "@types/fs-extra": "^8.1.0",
     "@types/sinon": "^7.5.2",
-    "aws-sdk": "^2.631.0",
-    "aws-sdk-mock": "^5.0.0",
+    "aws-sdk": "^2.639.0",
+    "aws-sdk-mock": "^5.1.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
     "fs-extra": "^8.1.0",
     "nock": "^12.0.2",
     "pkglint": "0.0.0",
-    "sinon": "^9.0.0"
+    "sinon": "^9.0.1"
   },
   "dependencies": {
     "@aws-cdk/aws-cloudformation": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
+    "@aws-cdk/aws-logs": "0.0.0",
     "@aws-cdk/aws-sns": "0.0.0",
     "@aws-cdk/aws-stepfunctions": "0.0.0",
     "@aws-cdk/aws-stepfunctions-tasks": "0.0.0",
@@ -97,6 +98,7 @@
     "@aws-cdk/aws-cloudformation": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
+    "@aws-cdk/aws-logs": "0.0.0",
     "@aws-cdk/aws-sns": "0.0.0",
     "@aws-cdk/aws-stepfunctions": "0.0.0",
     "@aws-cdk/aws-stepfunctions-tasks": "0.0.0",
@@ -122,10 +124,10 @@
   "engines": {
     "node": ">= 10.3.0"
   },
-  "stability": "experimental",
+  "stability": "stable",
   "awslint": {
     "exclude": [
       "construct-ctor-props-optional:@aws-cdk/custom-resources.AwsCustomResource"
     ]
-  }    
+  }
 }

@@ -21,3 +21,4 @@ jobs:
           check: MANDATORY_CHANGES
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+

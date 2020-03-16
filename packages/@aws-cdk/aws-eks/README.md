@@ -47,8 +47,6 @@ cluster.addResource('mypod', {
 });
 ```
 
-Here is a [complete sample](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-eks/test/integ.eks-kubectl.lit.ts).
-
 ### Capacity
 
 By default, `eks.Cluster` is created with x2 `m5.large` instances.

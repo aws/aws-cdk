@@ -36,6 +36,7 @@ export interface IChainable {
 
 /**
  * Predefined error strings
+ * Error names in Amazon States Language - https://docs.aws.amazon.com/step-functions/latest/dg/concepts-error-handling.html
  */
 export class Errors {
     /**

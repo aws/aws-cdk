@@ -5,7 +5,6 @@
  * have an AWS construct library.
  */
 
-import * as child_process from 'child_process';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as cfnspec from '../lib';
@@ -273,12 +272,8 @@ async function main() {
       await fs.copy(path.join(templateDir, file), path.join(packagePath, file));
     }
 
-    // build the package
-    const lerna = path.join(path.dirname(require.resolve('lerna/package.json')), 'cli.js');
-    await exec(`${lerna} run --progress build --scope ${packageName}`);
-
     // update decdk
-    const decdkPkgJsonPath = path.join(require.resolve('decdk'), '..', '..', 'package.json');
+    const decdkPkgJsonPath = path.join(__dirname, '..', '..', '..', 'decdk', 'package.json');
     const decdkPkg = JSON.parse(await fs.readFile(decdkPkgJsonPath, 'utf8'));
     const unorderedDeps = {
       ...decdkPkg.dependencies,
@@ -296,20 +291,3 @@ main().catch(e => {
   console.error(e);
   process.exit(1);
 });
-
-async function exec(command: string) {
-  const child = child_process.spawn(command, [], {
-    stdio: [ 'ignore', 'inherit', 'inherit' ],
-    shell: true
-  });
-  return new Promise((ok, fail) => {
-    child.once('error', e => fail(e));
-    child.once('exit', code => {
-      if (code === 0) {
-        return ok();
-      } else {
-        return fail(new Error('non-zero exit code: ' + code));
-      }
-    });
-  });
-}

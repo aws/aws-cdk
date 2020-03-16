@@ -4,6 +4,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as eks from '../lib';
+import { KubectlLayer } from '../lib/kubectl-layer';
 import { spotInterruptHandler } from '../lib/spot-interrupt-handler';
 import { testFixture, testFixtureNoVpc } from './util';
 
@@ -29,6 +30,49 @@ export = {
       }
     }));
 
+    test.done();
+  },
+
+  'create custom cluster correctly in any aws region'(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'stack', { env: { region: 'us-east-1' } });
+
+    // WHEN
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: true, defaultCapacity: 0 });
+    const layer = KubectlLayer.getOrCreate(stack, {});
+
+    // THEN
+    expect(stack).to(haveResource('Custom::AWSCDK-EKS-Cluster'));
+    expect(stack).to(haveResourceLike('AWS::Serverless::Application', {
+      Location: {
+        ApplicationId: 'arn:aws:serverlessrepo:us-east-1:903779448426:applications/lambda-layer-kubectl',
+      }
+    }));
+    test.equal(layer.isChina(), false);
+    test.done();
+  },
+
+  'create custom cluster correctly in any aws region in china'(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'stack', { env: { region: 'cn-north-1' } });
+
+    // WHEN
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: true, defaultCapacity: 0 });
+    new KubectlLayer(stack, 'NewLayer');
+    const layer = KubectlLayer.getOrCreate(stack);
+
+    // THEN
+    expect(stack).to(haveResource('Custom::AWSCDK-EKS-Cluster'));
+    expect(stack).to(haveResourceLike('AWS::Serverless::Application', {
+      Location:  {
+        ApplicationId: 'arn:aws-cn:serverlessrepo:cn-north-1:487369736442:applications/lambda-layer-kubectl',
+      }
+    }));
+    test.equal(layer.isChina(), true);
     test.done();
   },
 
@@ -684,7 +728,7 @@ export = {
               "eks:CreateFargateProfile"
             ],
             Effect: "Allow",
-            Resource: {
+            Resource: [ {
               "Fn::Join": [
                 "",
                 [
@@ -699,7 +743,22 @@ export = {
                   ":cluster/my-cluster-name"
                 ]
               ]
-            }
+            }, {
+              "Fn::Join": [
+                "",
+                [
+                  "arn:",
+                  {
+                    Ref: "AWS::Partition"
+                  },
+                  ":eks:us-east-1:",
+                  {
+                    Ref: "AWS::AccountId"
+                  },
+                  ":cluster/my-cluster-name/*"
+                ]
+              ]
+            } ]
           },
           {
             Action: [
@@ -777,7 +836,7 @@ export = {
               "eks:CreateFargateProfile"
             ],
             Effect: "Allow",
-            Resource: "*"
+            Resource: [ "*" ]
           },
           {
             Action: [

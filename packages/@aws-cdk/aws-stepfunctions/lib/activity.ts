@@ -2,17 +2,20 @@ import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import { Construct, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { CfnActivity } from './stepfunctions.generated';
 
+/**
+ * Properties for defining a new Step Functions Activity
+ */
 export interface ActivityProps {
     /**
      * The name for this activity.
      *
-     * @default If not supplied, a name is generated
+     * @default - If not supplied, a name is generated
      */
     readonly activityName?: string;
 }
 
 /**
- * Define a new StepFunctions activity
+ * Define a new Step Functions Activity
  */
 export class Activity extends Resource implements IActivity {
     /**
@@ -175,6 +178,10 @@ export class Activity extends Resource implements IActivity {
     }
 }
 
+/**
+ * Represents a Step Functions Activity
+ * https://docs.aws.amazon.com/step-functions/latest/dg/concepts-activities.html
+ */
 export interface IActivity extends IResource {
     /**
      * The ARN of the activity

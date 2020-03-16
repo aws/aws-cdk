@@ -1,11 +1,11 @@
-import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
+import {expect, haveResource, haveResourceLike, ResourcePart} from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import { throws } from 'assert';
-import * as batch from '../lib';
+import {throws} from 'assert';
+import * as batch from "../lib";
 
 describe('Batch Compute Evironment', () => {
   let expectedManagedDefaultComputeProps: any;
@@ -34,7 +34,7 @@ describe('Batch Compute Evironment', () => {
           AllocationStrategy: batch.AllocationStrategy.BEST_FIT,
           InstanceRole: {
             'Fn::GetAtt': [
-              'testcomputeenvResourceInstanceRole7FD819B9',
+              'testcomputeenvInstanceProfileCBD87EAB',
               'Arn'
             ]
           },
@@ -59,37 +59,39 @@ describe('Batch Compute Evironment', () => {
   });
 
   describe('when validating props', () => {
-    test('should deny setting compute resources when using type managed', () => {
-      // THEN
-      throws(() => {
-        // WHEN
-        new batch.ComputeEnvironment(stack, 'test-compute-env', {
-          computeResources: {
-            vpc,
-          },
-        });
-      });
-    });
-
-    test('should deny if creating an unmanged environment with no provided compute resource props', () => {
+    test('should deny setting compute resources when using type unmanaged', () => {
       // THEN
       throws(() => {
         // WHEN
         new batch.ComputeEnvironment(stack, 'test-compute-env', {
           managed: false,
+          computeResources: {
+            vpc
+          },
+        });
+      });
+    });
+
+    test('should deny if creating a managed environment with no provided compute resource props', () => {
+      // THEN
+      throws(() => {
+        // WHEN
+        new batch.ComputeEnvironment(stack, 'test-compute-env', {
+          managed: true,
         });
       });
     });
   });
 
   describe('using spot resources', () => {
-    test('should provide a spotfleet role if one is not given', () => {
+    test('should provide a spot fleet role if one is not given and allocationStrategy is BEST_FIT', () => {
       // WHEN
       new batch.ComputeEnvironment(stack, 'test-compute-env', {
-        managed: false,
+        managed: true,
         computeResources: {
           type: batch.ComputeResourceType.SPOT,
-          vpc,
+          allocationStrategy: batch.AllocationStrategy.BEST_FIT,
+          vpc
         },
       });
 
@@ -124,7 +126,7 @@ describe('Batch Compute Evironment', () => {
         throws(() => {
           // WHEN
           new batch.ComputeEnvironment(stack, 'test-compute-env', {
-            managed: false,
+            managed: true,
             computeResources: {
               vpc,
               type: batch.ComputeResourceType.SPOT,
@@ -139,7 +141,7 @@ describe('Batch Compute Evironment', () => {
         throws(() => {
           // WHEN
           new batch.ComputeEnvironment(stack, 'test-compute-env', {
-            managed: false,
+            managed: true,
             computeResources: {
               vpc,
               type: batch.ComputeResourceType.SPOT,
@@ -155,9 +157,9 @@ describe('Batch Compute Evironment', () => {
     test('renders the correct cloudformation properties', () => {
       // WHEN
       const props = {
-        allocationStrategy: batch.AllocationStrategy.BEST_FIT,
         computeEnvironmentName: 'my-test-compute-env',
         computeResources: {
+          allocationStrategy: batch.AllocationStrategy.BEST_FIT,
           vpc,
           computeResourcesTags: new cdk.Tag('foo', 'bar'),
           desiredvCpus: 1,
@@ -166,9 +168,14 @@ describe('Batch Compute Evironment', () => {
             generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
             hardwareType: ecs.AmiHardwareType.STANDARD,
           }),
-          instanceRole: new iam.Role(stack, 'test-compute-env-instance-role', {
-            assumedBy: new iam.ServicePrincipal('batch.amazonaws.com'),
-          }),
+          instanceRole:  new iam.CfnInstanceProfile(stack, 'Instance-Profile', {
+            roles: [ new iam.Role(stack, 'Ecs-Instance-Role', {
+              assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+              managedPolicies: [
+                iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonEC2ContainerServiceforEC2Role')
+              ]
+            }).roleName]
+          }).attrArn,
           instanceTypes: [
             ec2.InstanceType.of(ec2.InstanceClass.T2, ec2.InstanceSize.MICRO),
           ],
@@ -186,7 +193,7 @@ describe('Batch Compute Evironment', () => {
           },
         } as batch.ComputeResources,
         enabled: false,
-        managed: false,
+        managed: true,
       };
 
       new batch.ComputeEnvironment(stack, 'test-compute-env', props);
@@ -211,7 +218,7 @@ describe('Batch Compute Evironment', () => {
           },
           InstanceRole: {
             'Fn::GetAtt': [
-              props.computeResources.instanceRole ? `${props.computeResources.instanceRole.node.uniqueId}F3B86D94` : '',
+              props.computeResources.instanceRole ? "InstanceProfile" : '',
               'Arn'
             ]
           },
@@ -251,7 +258,7 @@ describe('Batch Compute Evironment', () => {
       test('should default to a best_fit strategy', () => {
         // WHEN
         new batch.ComputeEnvironment(stack, 'test-compute-env', {
-          managed: false,
+          managed: true,
           computeResources: {
             vpc,
           },
@@ -303,7 +310,7 @@ describe('Batch Compute Evironment', () => {
       test('should default to 0', () => {
         // WHEN
         new batch.ComputeEnvironment(stack, 'test-compute-env', {
-          managed: false,
+          managed: true,
           computeResources: {
             vpc,
           },
@@ -323,7 +330,7 @@ describe('Batch Compute Evironment', () => {
       test('should default to 256', () => {
         // WHEN
         new batch.ComputeEnvironment(stack, 'test-compute-env', {
-          managed: false,
+          managed: true,
           computeResources: {
             vpc,
           },
@@ -342,7 +349,7 @@ describe('Batch Compute Evironment', () => {
       test('should generate a role for me', () => {
         // WHEN
         new batch.ComputeEnvironment(stack, 'test-compute-env', {
-          managed: false,
+          managed: true,
           computeResources: {
             vpc,
           },
@@ -358,7 +365,7 @@ describe('Batch Compute Evironment', () => {
       test('should default to optimal matching', () => {
         // WHEN
         new batch.ComputeEnvironment(stack, 'test-compute-env', {
-          managed: false,
+          managed: true,
           computeResources: {
             vpc,
           },
@@ -377,7 +384,7 @@ describe('Batch Compute Evironment', () => {
       test('should default to EC2', () => {
         // WHEN
         new batch.ComputeEnvironment(stack, 'test-compute-env', {
-          managed: false,
+          managed: true,
           computeResources: {
             vpc,
           },
