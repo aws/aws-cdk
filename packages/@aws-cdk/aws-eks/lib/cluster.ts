@@ -343,7 +343,7 @@ export class Cluster extends Resource implements ICluster {
     const stack = Stack.of(this);
 
     this.vpc = props.vpc || new ec2.Vpc(this, 'DefaultVpc');
-    this.version = props.version ?? LATEST_KUBERNETES_VERSION;
+    this.version = props.version;
 
     this.tagSubnets();
 
@@ -373,7 +373,7 @@ export class Cluster extends Resource implements ICluster {
     const clusterProps: CfnClusterProps = {
       name: this.physicalName,
       roleArn: this.role.roleArn,
-      version:  this.version,
+      version:  props.version,
       resourcesVpcConfig: {
         securityGroupIds: [securityGroup.securityGroupId],
         subnetIds
