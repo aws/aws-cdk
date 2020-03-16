@@ -86,7 +86,7 @@ export class Construct extends constructs.Construct implements IConstruct {
    *
    * @returns An array of validation error messages, or an empty array if there the construct is valid.
    */
-  protected validateConstruct(): string[] {
+  protected onValidate(): string[] {
     return this.validate();
   }
 
@@ -100,7 +100,7 @@ export class Construct extends constructs.Construct implements IConstruct {
    * This is an advanced framework feature. Only use this if you
    * understand the implications.
    */
-  protected prepareConstruct(): void {
+  protected onPrepare(): void {
     this.prepare();
   }
 
@@ -112,7 +112,7 @@ export class Construct extends constructs.Construct implements IConstruct {
    *
    * @param session The synthesis session.
    */
-  protected synthesizeConstruct(session: constructs.ISynthesisSession): void {
+  protected onSynthesize(session: constructs.ISynthesisSession): void {
     this.synthesize({
       outdir: session.outdir,
       assembly: session.assembly!
