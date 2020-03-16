@@ -1,5 +1,5 @@
 import * as AWS from 'aws-sdk';
-import { Mode, SdkProvider } from '../api';
+import { ISDK, Mode } from '../api';
 import { debug } from '../logging';
 import { ContextProviderPlugin } from './provider';
 
@@ -7,7 +7,7 @@ import { ContextProviderPlugin } from './provider';
  * Plugin to read arbitrary SSM parameter names
  */
 export class SSMContextProviderPlugin implements ContextProviderPlugin {
-  constructor(private readonly aws: SdkProvider) {
+  constructor(private readonly aws: ISDK) {
   }
 
   public async getValue(args: {[key: string]: any}) {
@@ -37,7 +37,7 @@ export class SSMContextProviderPlugin implements ContextProviderPlugin {
    * @throws Error if a service error (other than ``ParameterNotFound``) occurs.
    */
   private async getSsmParameterValue(account: string, region: string, parameterName: string): Promise<AWS.SSM.GetParameterResult> {
-    const ssm = (await this.aws.forEnvironment(account, region, Mode.ForReading)).ssm();
+    const ssm = await this.aws.ssm(account, region, Mode.ForReading);
     try {
       return await ssm.getParameter({ Name: parameterName }).promise();
     } catch (e) {

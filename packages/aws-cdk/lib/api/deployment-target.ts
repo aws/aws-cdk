@@ -1,9 +1,10 @@
 import { CloudFormationStackArtifact } from '@aws-cdk/cx-api';
 import { Tag } from "../api/cxapp/stacks";
 import { debug } from '../logging';
-import { Mode, SdkProvider } from './aws-auth';
+import { Mode } from './aws-auth/credentials';
 import { deployStack, DeployStackResult, readCurrentTemplate } from './deploy-stack';
 import { loadToolkitInfo } from './toolkit-info';
+import { ISDK } from './util/sdk';
 
 export const DEFAULT_TOOLKIT_STACK_NAME = 'CDKToolkit';
 
@@ -44,14 +45,14 @@ export interface DeployStackOptions {
 }
 
 export interface ProvisionerProps {
-  aws: SdkProvider;
+  aws: ISDK;
 }
 
 /**
  * Default provisioner (applies to CloudFormation).
  */
 export class CloudFormationDeploymentTarget implements IDeploymentTarget {
-  private readonly aws: SdkProvider;
+  private readonly aws: ISDK;
 
   constructor(props: ProvisionerProps) {
     this.aws = props.aws;
@@ -59,7 +60,7 @@ export class CloudFormationDeploymentTarget implements IDeploymentTarget {
 
   public async readCurrentTemplate(stack: CloudFormationStackArtifact): Promise<Template> {
     debug(`Reading existing template for stack ${stack.displayName}.`);
-    const cfn = (await this.aws.forEnvironment(stack.environment.account, stack.environment.region, Mode.ForReading)).cloudFormation();
+    const cfn = await this.aws.cloudFormation(stack.environment.account, stack.environment.region, Mode.ForReading);
     return readCurrentTemplate(cfn, stack.stackName);
   }
 

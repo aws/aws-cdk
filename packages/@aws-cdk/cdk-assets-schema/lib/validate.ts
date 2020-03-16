@@ -97,6 +97,7 @@ function isDockerImageAsset(entry: object): DockerImageAsset {
     expectKey(destination, 'assumeRoleExternalId', isString, true);
     expectKey(destination, 'repositoryName', isString);
     expectKey(destination, 'imageTag', isString);
+    expectKey(destination, 'imageUri', isString);
     return destination;
   }));
 
