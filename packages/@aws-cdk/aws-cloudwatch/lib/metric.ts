@@ -63,7 +63,8 @@ export interface CommonMetricOptions {
   readonly label?: string;
 
   /**
-   * Color for this metric when added to a Graph in a Dashboard
+   * The hex color code, prefixed with '#' (e.g. '#00ff00'), to use when this metric is rendered on a graph.
+   * You can also use GraphColour to find a set of commonly used colours.
    */
   readonly color?: string;
 
@@ -227,7 +228,7 @@ export class Metric implements IMetric {
   }
 
   /**
-   * Return a copy of Metric with properties changed.
+   * Return a copy of Metric `with` properties changed.
    *
    * All properties except namespace and metricName can be changed.
    *
@@ -427,7 +428,8 @@ export class MathExpression implements IMetric {
   public readonly label?: string;
 
   /**
-   * Color for this metric when added to a Graph.
+   * The hex color code, prefixed with '#' (e.g. '#00ff00'), to use when this metric is rendered on a graph.
+   * You can also use GraphColour to find a set of commonly used colours.
    */
   public readonly color?: string;
 

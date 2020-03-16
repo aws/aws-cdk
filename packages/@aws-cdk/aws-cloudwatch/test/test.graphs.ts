@@ -1,6 +1,6 @@
 import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { Alarm, AlarmWidget, GraphWidget, Metric, Shading, SingleValueWidget } from '../lib';
+import { Alarm, AlarmWidget, GraphColor, GraphWidget, Metric, Shading, SingleValueWidget } from '../lib';
 
 export = {
   'add stacked property to graphs'(test: Test) {
@@ -341,6 +341,26 @@ export = {
       ["CDK", "Test", { visible: false }]
     );
 
+    test.done();
+  },
+
+  'GraphColor is correctly converted into the correct hexcode'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const metric = new Metric({ namespace: 'CDK', metricName: 'Test' });
+
+    // WHEN
+    const widget = new GraphWidget({
+      left: [metric.with({
+        color: GraphColor.BLUE,
+      })],
+      leftAnnotations: [
+        { color: GraphColor.RED, value: 100, },
+      ]
+    });
+
+    test.deepEqual(stack.resolve(widget.toJson())[0].properties.metrics[0], [ 'CDK', 'Test', { color: '#1f77b4' } ]);
+    test.deepEqual(stack.resolve(widget.toJson())[0].properties.annotations.horizontal[0], { yAxis: 'left', value: 100, color: '#d62728' });
     test.done();
   },
 };

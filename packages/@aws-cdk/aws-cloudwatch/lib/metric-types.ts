@@ -312,7 +312,8 @@ export interface MetricRenderingProperties {
   readonly label?: string;
 
   /**
-   * Color for the graph line
+   * The hex color code, prefixed with '#' (e.g. '#00ff00'), to use when this metric is rendered on a graph.
+   * You can also use GraphColour to find a set of commonly used colours.
    */
   readonly color?: string;
 

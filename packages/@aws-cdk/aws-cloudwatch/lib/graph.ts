@@ -251,14 +251,15 @@ export interface HorizontalAnnotation {
   /**
    * Label for the annotation
    *
-   * @default No label
+   * @default - No label
    */
   readonly label?: string;
 
   /**
-   * Hex color code to be used for the annotation
+   * The hex color code, prefixed with '#' (e.g. '#00ff00'), to be used for the annotation.
+   * You can also use GraphColour to find a set of commonly used colours.
    *
-   * @default Automatic color
+   * @default - Automatic color
    */
   readonly color?: string;
 
@@ -292,6 +293,35 @@ export enum Shading {
    * Add shading below the annotation
    */
   BELOW = 'below'
+}
+
+/**
+ * A set of standard colours that can be used in annotations in a GraphWidget.
+ */
+export enum GraphColor {
+  /** blue - hex #1f77b4 */
+  BLUE = '#1f77b4',
+
+  /** brown - hex #8c564b */
+  BROWN = '#8c564b',
+
+  /** green - hex #2ca02c */
+  GREEN = '#2ca02c',
+
+  /** grey - hex #7f7f7f */
+  GREY = '#7f7f7f',
+
+  /** orange - hex #ff7f0e */
+  ORANGE = '#ff7f0e',
+
+  /** pink - hex #e377c2 */
+  PINK = '#e377c2',
+
+  /** purple - hex #9467bd */
+  PURPLE = '#9467bd',
+
+  /** red - hex #d62728 */
+  RED = '#d62728',
 }
 
 function mapAnnotation(yAxis: string): ((x: HorizontalAnnotation) => any) {
