@@ -1,7 +1,9 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { Construct, Lazy, Resource, Stack } from '@aws-cdk/core';
-import { BaseService, BaseServiceOptions, IService, LaunchType, PropagatedTagSource } from '../base/base-service';
+import { BaseService, BaseServiceOptions, IBaseService, IService, LaunchType, PropagatedTagSource } from '../base/base-service';
+import { fromServiceAtrributes } from '../base/from-service-attributes';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
+import { ICluster } from '../cluster';
 import { CfnService } from '../ecs.generated';
 import { PlacementConstraint, PlacementStrategy } from '../placement';
 
@@ -88,6 +90,30 @@ export interface IEc2Service extends IService {
 }
 
 /**
+ * The properties to import from the service using the EC2 launch type.
+ */
+export interface Ec2ServiceAttributes {
+  /**
+   * The cluster that hosts the service.
+   */
+  readonly cluster: ICluster;
+
+  /**
+   * The service ARN.
+   *
+   * @default - either this, or {@link serviceName}, is required
+   */
+  readonly serviceArn?: string;
+
+  /**
+   * The name of the service.
+   *
+   * @default - either this, or {@link serviceArn}, is required
+   */
+  readonly serviceName?: string;
+}
+
+/**
  * This creates a service using the EC2 launch type on an ECS cluster.
  *
  * @resource AWS::ECS::Service
@@ -100,8 +126,16 @@ export class Ec2Service extends BaseService implements IEc2Service {
   public static fromEc2ServiceArn(scope: Construct, id: string, ec2ServiceArn: string): IEc2Service {
     class Import extends Resource implements IEc2Service {
       public readonly serviceArn = ec2ServiceArn;
+      public readonly serviceName = Stack.of(scope).parseArn(ec2ServiceArn).resourceName as string;
     }
     return new Import(scope, id);
+  }
+
+  /**
+   * Imports from the specified service attrributes.
+   */
+  public static fromEc2ServiceAttributes(scope: Construct, id: string, attrs: Ec2ServiceAttributes): IBaseService {
+    return fromServiceAtrributes(scope, id, attrs);
   }
 
   private readonly constraints: CfnService.PlacementConstraintProperty[];

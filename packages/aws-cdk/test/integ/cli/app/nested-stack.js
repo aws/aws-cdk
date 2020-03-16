@@ -1,6 +1,6 @@
 const cfn = require('@aws-cdk/aws-cloudformation');
 const sns = require('@aws-cdk/aws-sns');
-const { Stack } = require('@aws-cdk/core');
+const { Stack, CfnParameter } = require('@aws-cdk/core');
 
 class StackWithNestedStack extends Stack {
   constructor(scope, id) {
@@ -17,4 +17,25 @@ class MyNestedStack extends cfn.NestedStack {
   }
 }
 
+class StackWithNestedStackUsingParameters extends Stack {
+  constructor(scope, id) {
+    super(scope, id);
+    new CfnParameter(this, 'MyTopicParam');
+    new MyNestedStackUsingParameters(this, 'MyNested', {
+      parameters: {'MyTopicParam': 'ThereIsASpoon'}
+    });
+  }
+}
+
+class MyNestedStackUsingParameters extends cfn.NestedStack {
+  constructor(scope, id, props) {
+    super(scope, id, props);
+
+    new sns.Topic(this, 'MyTopic', {
+      topicName: new CfnParameter(this, 'MyTopicParam')
+    });
+  }
+}
+
 exports.StackWithNestedStack = StackWithNestedStack;
+exports.StackWithNestedStackUsingParameters = StackWithNestedStackUsingParameters;
