@@ -123,12 +123,6 @@ class DockerStack extends cdk.Stack {
     new docker.DockerImageAsset(this, 'image', {
       directory: path.join(__dirname, 'docker')
     });
-
-    // Add at least a single resource (WaitConditionHandle), otherwise this stack will never
-    // be deployed (and its assets never built)
-    new core.CfnResource(this, 'Handle', {
-      type: 'AWS::CloudFormation::WaitConditionHandle'
-    });
   }
 }
 
@@ -140,13 +134,8 @@ class DockerStackWithCustomFile extends cdk.Stack {
       directory: path.join(__dirname, 'docker'),
       file: 'Dockerfile.Custom'
     });
-
-    // Add at least a single resource (WaitConditionHandle), otherwise this stack will never
-    // be deployed (and its assets never built)
-    new core.CfnResource(this, 'Handle', {
-      type: 'AWS::CloudFormation::WaitConditionHandle'
-    });
   }
+
 }
 
 class FailedStack extends cdk.Stack {
