@@ -16,7 +16,6 @@ const include_non_jsii = [
 
 const include_dev_deps = [
   d => d === 'aws-sdk',
-  d => d === 'constructs',
   d => d.startsWith('@types/'),
 ];
 
