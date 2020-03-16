@@ -61,15 +61,4 @@ export interface DockerImageDestination extends AwsDestination {
    * Tag of the image to publish
    */
   readonly imageTag: string;
-
-  /**
-   * Full Docker tag coordinates (registry and repository and tag)
-   *
-   * Example:
-   *
-   * ```
-   * 1234.dkr.ecr.REGION.amazonaws.com/REPO:TAG
-   * ```
-   */
-  readonly imageUri: string;
 }

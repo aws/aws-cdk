@@ -34,6 +34,8 @@
     "@types/mock-fs": "^4.10.0",
     "@types/node": "^10.17.17",
     "@types/yargs": "^15.0.4",
+    "@types/jszip": "^3.1.7",
+    "jszip": "^3.2.2",
     "cdk-build-tools": "0.0.0",
     "jest": "^24.9.0",
     "mock-fs": "^4.11.0",
@@ -42,9 +44,9 @@
   "dependencies": {
     "@aws-cdk/cdk-assets-schema": "0.0.0",
     "archiver": "^3.1.1",
-    "aws-sdk": "^2.634.0",
+    "aws-sdk": "^2.639.0",
     "glob": "^7.1.6",
-    "yargs": "^15.3.0"
+    "yargs": "^15.3.1"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
