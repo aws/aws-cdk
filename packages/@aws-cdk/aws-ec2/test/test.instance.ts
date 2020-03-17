@@ -1,7 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import { StringParameter } from '@aws-cdk/aws-ssm';
-import { Stack } from '@aws-cdk/core';
 import * as cxprotocol from '@aws-cdk/cloud-assembly-schema';
+import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { AmazonLinuxImage, BlockDeviceVolume, EbsDeviceVolumeType, Instance, InstanceClass, InstanceSize, InstanceType, Vpc } from "../lib";
 
