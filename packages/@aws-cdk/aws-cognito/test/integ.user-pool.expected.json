@@ -65,5 +65,12 @@
         }
       }
     }
+  },
+  "Outputs": {
+    "userpoolid": {
+      "Value": {
+        "Ref": "myuserpool01998219"
+      }
+    }
   }
 }
