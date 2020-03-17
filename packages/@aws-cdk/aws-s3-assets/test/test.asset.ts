@@ -1,8 +1,8 @@
 import { expect, haveResource, ResourcePart, SynthUtils } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
+import * as cxprotocol from '@aws-cdk/cloud-assembly-schema';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import * as cxprotocol from '@aws-cdk/cloud-assembly-schema';
 import * as fs from 'fs';
 import { Test } from 'nodeunit';
 import * as os from 'os';
