@@ -144,12 +144,16 @@ export interface DatabaseClusterProps {
   readonly monitoringRole?: IRole;
 
   /**
-   * Role that will be associated with this DB cluster to enable S3 import through the LOAD DATA FROM S3 command.
+   * Role that will be associated with this DB cluster to enable S3 import.
    * This feature is only supported by the Aurora database engine.
    *
    * Setting this property means the s3ImportBuckets property should not be used.
    *
+   * For MySQL:
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Integrating.LoadFromS3.html
+   *
+   * For PostgreSQL:
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraPostgreSQL.Migrating.html
    *
    * @default - A role is created for you if the s3ImportBuckets property is set
    */
@@ -160,19 +164,27 @@ export interface DatabaseClusterProps {
    *
    * Setting this property means the s3ImportRole property should not be used.
    *
+   * For MySQL:
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Integrating.LoadFromS3.html
+   *
+   * For PostgreSQL:
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraPostgreSQL.Migrating.html
    *
    * @default - No S3 import functionality is enabled
    */
   readonly s3ImportBuckets?: s3.IBucket[];
 
   /**
-   * Role that will be associated with this DB cluster to enable S3 export through the SELECT INTO S3 command.
+   * Role that will be associated with this DB cluster to enable S3 export.
    * This feature is only supported by the Aurora database engine.
    *
    * Setting this property means the s3ExportBuckets property should not be used.
    *
+   * For MySQL:
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Integrating.SaveIntoS3.html
+   *
+   * For PostgreSQL:
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/postgresql-s3-export.html
    *
    * @default - A role is created for you if the s3ExportBuckets property is set
    */
@@ -183,7 +195,11 @@ export interface DatabaseClusterProps {
    *
    * Setting this property means the s3ExportRole property should not be used.
    *
+   * For MySQL:
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Integrating.SaveIntoS3.html
+   *
+   * For PostgreSQL:
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/postgresql-s3-export.html
    *
    * @default - No S3 export functionality is enabled
    */
@@ -411,20 +427,27 @@ export class DatabaseCluster extends DatabaseClusterBase {
     let clusterParameterGroup = props.parameterGroup;
     const clusterAssociatedRoles = [];
     if (s3ImportRole || s3ExportRole) {
-      if (!clusterParameterGroup) {
-        clusterParameterGroup = new ClusterParameterGroup(this, "ClusterParameterGroup", {
-          family: getClusterParameterGroupFamily(props.engine, props.engineVersion),
-          parameters: {}
-        });
-      }
-
       if (s3ImportRole) {
         clusterAssociatedRoles.push({ roleArn: s3ImportRole.roleArn });
-        clusterParameterGroup.addParameter('aurora_load_from_s3_role', s3ImportRole.roleArn);
       }
       if (s3ExportRole) {
         clusterAssociatedRoles.push({ roleArn: s3ExportRole.roleArn });
-        clusterParameterGroup.addParameter('aurora_select_into_s3_role', s3ExportRole.roleArn);
+      }
+
+      if (props.engine === DatabaseClusterEngine.AURORA || props.engine === DatabaseClusterEngine.AURORA_MYSQL) {
+        if (!clusterParameterGroup) {
+          clusterParameterGroup = new ClusterParameterGroup(this, "ClusterParameterGroup", {
+            family: getClusterParameterGroupFamily(props.engine, props.engineVersion),
+            parameters: {}
+          });
+        }
+
+        if (s3ImportRole) {
+          clusterParameterGroup.addParameter('aurora_load_from_s3_role', s3ImportRole.roleArn);
+        }
+        if (s3ExportRole) {
+          clusterParameterGroup.addParameter('aurora_select_into_s3_role', s3ExportRole.roleArn);
+        }
       }
     }
 

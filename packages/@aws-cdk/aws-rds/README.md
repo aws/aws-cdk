@@ -51,9 +51,13 @@ one or both of these properties will make sure the required IAM Roles are create
 parameter group to access these S3 buckets. Additionaly the s3ImportRole and s3ExportRole properties can be set 
 directly if you have created the required roles or parameter group manually.
 
-Read more about [loading data from
+For Aurora MySQL, read more about [loading data from
 S3](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Integrating.LoadFromS3.html) and [saving
 data into S3](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Integrating.SaveIntoS3.html).
+
+For Aurora PostgreSQL, read more about [loading data from
+S3](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraPostgreSQL.Migrating.html) and [saving 
+data into S3](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/postgresql-s3-export.html).
 
 The following snippet sets up a database cluster with different S3 buckets where the data is imported and exported - 
 ```ts
