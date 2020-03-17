@@ -266,14 +266,30 @@ You can define models for your responses (and requests)
 const responseModel = api.addModel('ResponseModel', {
   contentType: 'application/json',
   modelName: 'ResponseModel',
-  schema: { '$schema': 'http://json-schema.org/draft-04/schema#', 'title': 'pollResponse', 'type': 'object', 'properties': { 'state': { 'type': 'string' }, 'greeting': { 'type': 'string' } } }
+  schema: {
+    schema: JsonSchemaVersion.DRAFT4,
+    title: 'pollResponse',
+    type: JsonSchemaType.OBJECT,
+    properties: {
+      state: { type: JsonSchemaType.STRING },
+      greeting: { type: JsonSchemaType.STRING }
+    }
+  }
 });
 
 // We define the JSON Schema for the transformed error response
 const errorResponseModel = api.addModel('ErrorResponseModel', {
   contentType: 'application/json',
   modelName: 'ErrorResponseModel',
-  schema: { '$schema': 'http://json-schema.org/draft-04/schema#', 'title': 'errorResponse', 'type': 'object', 'properties': { 'state': { 'type': 'string' }, 'message': { 'type': 'string' } } }
+  schema: {
+    schema: JsonSchemaVersion.DRAFT4,
+    title: 'errorResponse',
+    type: JsonSchemaType.OBJECT,
+    properties: {
+      state: { type: JsonSchemaType.STRING },
+      message: { type: JsonSchemaType.STRING }
+    }
+  }
 });
 
 ```
@@ -350,6 +366,21 @@ books.addMethod('POST'); // integrated with `booksBackend`
 
 const book = books.addResource('{book_id}');
 book.addMethod('GET');   // integrated with `booksBackend`
+```
+
+A Method can be configured with authorization scopes. Authorization scopes are
+used in conjunction with an [authorizer that uses Amazon Cognito user
+pools](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-integrate-with-cognito.html#apigateway-enable-cognito-user-pool).
+Read more about authorization scopes
+[here](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-method.html#cfn-apigateway-method-authorizationscopes).
+
+Authorization scopes for a Method can be configured using the `authorizationScopes` property as shown below -
+
+```ts
+books.addMethod('GET', new apigateway.HttpIntegration('http://amazon.com'), {
+  authorizationType: AuthorizationType.COGNITO,
+  authorizationScopes: ['Scope1','Scope2']
+});
 ```
 
 ### Proxy Routes

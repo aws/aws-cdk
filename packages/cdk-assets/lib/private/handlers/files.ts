@@ -55,7 +55,7 @@ export class FileAssetHandler implements IAssetHandler {
 
   private async packageFile(): Promise<string> {
     const source = this.asset.source;
-    const fullPath = path.join(this.workDir, this.asset.source.path);
+    const fullPath = path.resolve(this.workDir, this.asset.source.path);
 
     if (source.packaging === FileAssetPackaging.ZIP_DIRECTORY) {
       await fs.mkdir(this.fileCacheRoot, { recursive: true });
