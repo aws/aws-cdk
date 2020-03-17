@@ -1,5 +1,5 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import * as cxprotocol from '@aws-cdk/cx-protocol';
+import * as cxprotocol from '@aws-cdk/cloud-assembly-schema';
 import { Writable } from 'stream';
 import { NodeStringDecoder, StringDecoder  } from 'string_decoder';
 import { DeployStackOptions, DeployStackResult } from '../lib';

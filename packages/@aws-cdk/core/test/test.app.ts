@@ -294,7 +294,7 @@ export = {
   test.deepEqual(libs, {
     '@aws-cdk/core': version,
     '@aws-cdk/cx-api': version,
-    '@aws-cdk/cx-protocol': version,
+    '@aws-cdk/cloud-assembly-schema': version,
     'jsii-runtime': `node.js/${process.version}`
   });
 

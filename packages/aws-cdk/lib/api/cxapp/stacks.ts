@@ -1,5 +1,5 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import * as cxprotocol from '@aws-cdk/cx-protocol';
+import * as cxprotocol from '@aws-cdk/cloud-assembly-schema';
 import { RegionInfo } from '@aws-cdk/region-info';
 import * as colors from 'colors/safe';
 import * as minimatch from 'minimatch';

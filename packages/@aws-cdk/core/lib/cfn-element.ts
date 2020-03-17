@@ -1,4 +1,4 @@
-import * as cxprotocol from '@aws-cdk/cx-protocol';
+import * as cxprotocol from '@aws-cdk/cloud-assembly-schema';
 import { Construct } from "./construct";
 import { Lazy } from "./lazy";
 import { Token } from './token';

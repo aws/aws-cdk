@@ -1,4 +1,4 @@
-import * as cxprotocol from '@aws-cdk/cx-protocol';
+import * as cxprotocol from '@aws-cdk/cloud-assembly-schema';
 import { Test } from 'nodeunit';
 import { App as Root, Aws, Construct, ConstructNode, ConstructOrder, IConstruct, Lazy, ValidationError } from '../lib';
 

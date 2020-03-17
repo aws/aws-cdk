@@ -1,7 +1,7 @@
 // tslint:disable-next-line:max-line-length
 import * as asset_schema from '@aws-cdk/cdk-assets-schema';
 import * as cxapi from '@aws-cdk/cx-api';
-import * as cxprotocol from '@aws-cdk/cx-protocol';
+import * as cxprotocol from '@aws-cdk/cloud-assembly-schema';
 import { CloudFormation } from 'aws-sdk';
 import * as colors from 'colors';
 import * as path from 'path';

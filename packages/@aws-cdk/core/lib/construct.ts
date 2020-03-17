@@ -1,5 +1,5 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import * as cxprotocol from '@aws-cdk/cx-protocol';
+import * as cxprotocol from '@aws-cdk/cloud-assembly-schema';
 import { IAspect } from './aspect';
 import { DependableTrait, IDependable } from './dependency';
 import { makeUniqueId } from './private/uniqueid';

@@ -1,4 +1,4 @@
-import * as cxprotocol from '@aws-cdk/cx-protocol';
+import * as cxprotocol from '@aws-cdk/cloud-assembly-schema';
 import { CloudAssembly } from './cloud-assembly';
 import {
   MetadataEntryResult,

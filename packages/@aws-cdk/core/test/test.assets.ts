@@ -1,4 +1,4 @@
-import * as cxprotocol from '@aws-cdk/cx-protocol';
+import * as cxprotocol from '@aws-cdk/cloud-assembly-schema';
 import { Test } from 'nodeunit';
 import { FileAssetPackaging, Stack } from '../lib';
 import { toCloudFormation } from './util';

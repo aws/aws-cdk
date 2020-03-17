@@ -1,5 +1,5 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import * as cxprotocol from '@aws-cdk/cx-protocol';
+import * as cxprotocol from '@aws-cdk/cloud-assembly-schema';
 import { AppStacks, DefaultSelection } from '../../lib/api/cxapp/stacks';
 import { registerContextProvider } from '../../lib/context-providers';
 import { Configuration } from '../../lib/settings';

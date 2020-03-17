@@ -147,12 +147,12 @@
   },
   "dependencies": {
     "@aws-cdk/cx-api": "0.0.0",
-    "@aws-cdk/cx-protocol": "0.0.0"
+    "@aws-cdk/cloud-assembly-schema": "0.0.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/cx-api": "0.0.0",
-    "@aws-cdk/cx-protocol": "0.0.0"
+    "@aws-cdk/cloud-assembly-schema": "0.0.0"
   },
   "engines": {
     "node": ">= 10.3.0"

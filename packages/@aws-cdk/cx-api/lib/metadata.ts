@@ -1,4 +1,4 @@
-import * as cxprotocol from '@aws-cdk/cx-protocol';
+import * as cxprotocol from '@aws-cdk/cloud-assembly-schema';
 
 /**
  * The key used when CDK path is embedded in **CloudFormation template** metadata (not cdk metadata).

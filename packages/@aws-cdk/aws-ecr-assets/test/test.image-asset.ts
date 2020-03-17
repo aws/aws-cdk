@@ -1,7 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
 import { App, Lazy, Stack } from '@aws-cdk/core';
-import * as cxprotocol from '@aws-cdk/cx-protocol';
+import * as cxprotocol from '@aws-cdk/cloud-assembly-schema';
 import * as fs from 'fs';
 import { Test } from 'nodeunit';
 import * as path from 'path';

@@ -1,4 +1,4 @@
-import { Tag } from '@aws-cdk/cx-protocol';
+import { Tag } from '@aws-cdk/cloud-assembly-schema';
 import * as colors from 'colors/safe';
 import * as fs from 'fs-extra';
 import * as promptly from 'promptly';

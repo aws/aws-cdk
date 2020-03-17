@@ -39,7 +39,7 @@
     "@aws-cdk/cloudformation-diff": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
-    "@aws-cdk/cx-protocol": "0.0.0"
+    "@aws-cdk/cloud-assembly-schema": "0.0.0"
   },
   "peerDependencies": {
     "@aws-cdk/core": "0.0.0",

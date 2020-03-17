@@ -1,4 +1,4 @@
-import { Tag } from '@aws-cdk/cx-protocol';
+import { Tag } from '@aws-cdk/cloud-assembly-schema';
 import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as fs_path from 'path';

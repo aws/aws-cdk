@@ -48,7 +48,7 @@
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
-    "@aws-cdk/cx-protocol": "0.0.0"
+    "@aws-cdk/cloud-assembly-schema": "0.0.0"
   },
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
@@ -85,7 +85,7 @@
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
-    "@aws-cdk/cx-protocol": "0.0.0"
+    "@aws-cdk/cloud-assembly-schema": "0.0.0"
   },
   "engines": {
     "node": ">= 10.3.0"

@@ -159,7 +159,7 @@
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
     "@types/node": "^10.17.17",
-    "@aws-cdk/cx-protocol": "0.0.0",
+    "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/aws-chatbot": "0.0.0",
     "@aws-cdk/aws-codestarconnections": "0.0.0"
   },

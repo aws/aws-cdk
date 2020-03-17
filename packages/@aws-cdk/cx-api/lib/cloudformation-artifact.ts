@@ -1,4 +1,4 @@
-import * as cxprotocol from '@aws-cdk/cx-protocol';
+import * as cxprotocol from '@aws-cdk/cloud-assembly-schema';
 import * as fs from 'fs';
 import * as path from 'path';
 import { AwsCloudFormationStackProperties, CloudArtifact } from './cloud-artifact';

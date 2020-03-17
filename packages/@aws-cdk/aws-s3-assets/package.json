@@ -69,7 +69,7 @@
     "pkglint": "0.0.0",
     "sinon": "^9.0.1",
     "ts-mock-imports": "^1.2.6",
-    "@aws-cdk/cx-protocol": "0.0.0"
+    "@aws-cdk/cloud-assembly-schema": "0.0.0"
   },
   "dependencies": {
     "@aws-cdk/assets": "0.0.0",
