@@ -25,7 +25,7 @@ export function zipDirectory(directory: string, outputFile: string): Promise<voi
 
     // Append files serially to ensure file order
     for (const file of files) {
-      const fullPath = path.join(directory, file);
+      const fullPath = path.resolve(directory, file);
       const [data, stat] = await Promise.all([fs.readFile(fullPath), fs.stat(fullPath)]);
       archive.append(data, {
         name: file,
