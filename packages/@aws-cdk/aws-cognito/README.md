@@ -29,6 +29,16 @@ other AWS services.
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
+## Table of Contents
+
+- [User Pools](#user-pools)
+  - [Sign Up](#sign-up)
+  - [Sign In](#sign-in)
+  - [Security](#security)
+    - [Multi-factor Authentication](#multi-factor-authentication)
+  - [Emails](#emails)
+  - [Import](#importing-user-pools)
+
 ## User Pools
 
 User pools allow creating and managing your own directory of users that can sign up and sign in. They enable easy
@@ -162,15 +172,18 @@ When the `smsRole` property is specified, the `smsRoleExternalId` may also be sp
 assume role policy should be configured to accept this value as the ExternalId. Learn more about [ExternalId
 here](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_create_for-user_externalid.html).
 
-User pools can be configured to enable MFA. It can either be turned off, set to optional or made required. Setting MFA
-to optional means that individual users can choose to enable it.
+#### Multi-factor Authentication (MFA)
+
+User pools can be configured to enable multi-factor authentication (MFA). It can either be turned off, set to optional
+or made required. Setting MFA to optional means that individual users can choose to enable it.
 Additionally, the MFA code can be sent either via SMS text message or via a time-based software token.
 See the [documentation on MFA](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-mfa.html) to
 learn more.
 
 The following code snippet marks MFA for the user pool as required. This means that all users are required to
 configure an MFA token and use it for sign in. It also allows for the users to use both SMS based MFA, as well,
-time-based one time password.
+[time-based one time password
+(TOTP)](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-mfa-totp.html).
 
 ```ts
 new UserPool(this, 'myuserpool', {
@@ -206,12 +219,13 @@ new UserPool(this, 'myuserpool', {
 });
 ```
 
-Note that, `tempPasswordValidity` can be specified only in days.
+Note that, `tempPasswordValidity` can be specified only in whole days. Specifying fractional days would throw an error.
 
 ### Emails
 
 Cognito sends emails to users in the user pool, when particular actions take place, such as welcome emails, invitation
 emails, password resets, etc. The address from which these emails are sent can be configured on the user pool.
+Read more about [email settings here](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-email.html).
 
 ```ts
 new UserPool(this, 'myuserpool', {
@@ -224,9 +238,9 @@ new UserPool(this, 'myuserpool', {
 ```
 
 By default, user pools are configured to use Cognito's built-in email capability, but it can also be configured to use
-Amazon SES, however, support for Amazon SES is not available in the CDK yet. You may use the [cfn
-layer](https://docs.aws.amazon.com/cdk/latest/guide/cfn_layer.html) to configure this. Read more about [email settings
-here](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-email.html).
+Amazon SES, however, support for Amazon SES is not available in the CDK yet. If you would like this to be implemented,
+give [this issue](https://github.com/aws/aws-cdk/issues/6768) a +1. Until then, you can use the [cfn
+layer](https://docs.aws.amazon.com/cdk/latest/guide/cfn_layer.html) to configure this.
 
 ### Importing User Pools
 
