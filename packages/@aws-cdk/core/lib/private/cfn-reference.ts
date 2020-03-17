@@ -127,7 +127,7 @@ export class CfnReference extends Reference {
 }
 
 import { CfnElement } from "../cfn-element";
-import { Construct, IConstruct } from "../construct";
+import { Construct, IConstruct } from "../construct-compat";
 import { IResolvable, IResolveContext } from "../resolvable";
 import { Stack } from "../stack";
 import { Token } from "../token";

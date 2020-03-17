@@ -258,7 +258,7 @@ export = {
     test.deepEqual(con.node.metadata[0].data, 'value');
     test.deepEqual(con.node.metadata[1].data, 103);
     test.deepEqual(con.node.metadata[2].data, [ 123, 456 ]);
-    test.ok(con.node.metadata[0].trace && con.node.metadata[0].trace[0].indexOf('FIND_ME') !== -1, 'First stack line should include this function\s name');
+    test.ok(con.node.metadata[0].trace && con.node.metadata[0].trace[1].indexOf('FIND_ME') !== -1, 'First stack line should include this function\s name');
     test.done();
   },
 
@@ -381,11 +381,11 @@ export = {
 
     class LockableConstruct extends Construct {
       public lockMe() {
-        (this.node as any)._lock();
+        (this.node._actualNode as any)._lock();
       }
 
       public unlockMe() {
-        (this.node as any)._unlock();
+        (this.node._actualNode as any)._unlock();
       }
     }
 

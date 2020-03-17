@@ -1,5 +1,5 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { Construct } from "./construct";
+import { Construct } from "./construct-compat";
 import { Lazy } from "./lazy";
 import { Token } from './token';
 
