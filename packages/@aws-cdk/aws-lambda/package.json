@@ -71,13 +71,13 @@
     "@types/lodash": "^4.14.149",
     "@types/nodeunit": "^0.0.30",
     "@types/sinon": "^7.5.2",
-    "aws-sdk": "^2.639.0",
+    "aws-sdk": "^2.640.0",
     "aws-sdk-mock": "^5.1.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
     "lodash": "^4.17.15",
-    "nock": "^12.0.2",
+    "nock": "^12.0.3",
     "nodeunit": "^0.11.3",
     "pkglint": "0.0.0",
     "sinon": "^9.0.1"
@@ -92,7 +92,8 @@
     "@aws-cdk/aws-s3-assets": "0.0.0",
     "@aws-cdk/aws-sqs": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "@aws-cdk/cx-api": "0.0.0"
+    "@aws-cdk/cx-api": "0.0.0",
+    "constructs": "^1.1.2"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -105,7 +106,8 @@
     "@aws-cdk/aws-s3-assets": "0.0.0",
     "@aws-cdk/aws-sqs": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "@aws-cdk/cx-api": "0.0.0"
+    "@aws-cdk/cx-api": "0.0.0",
+    "constructs": "^1.1.2"
   },
   "engines": {
     "node": ">= 10.3.0"
