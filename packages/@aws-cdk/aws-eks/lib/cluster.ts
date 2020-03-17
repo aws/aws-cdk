@@ -10,6 +10,7 @@ import { FargateProfile, FargateProfileOptions } from './fargate-profile';
 import { HelmChart, HelmChartOptions } from './helm-chart';
 import { KubernetesPatch } from './k8s-patch';
 import { KubernetesResource } from './k8s-resource';
+import { Nodegroup, NodegroupOps  } from './managed-nodegroup';
 import { spotInterruptHandler } from './spot-interrupt-handler';
 import { renderUserData } from './user-data';
 
@@ -468,6 +469,22 @@ export class Cluster extends Resource implements ICluster {
     });
 
     return asg;
+  }
+
+  /**
+   * Add managed nodegroup to this Amazon EKS cluster
+   *
+   * This method will create a new managed nodegroup and add into the capacity.
+   *
+   * @see https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html
+   * @param id The ID of the nodegroup
+   * @param options options for creating a new nodegroup
+   */
+  public addNodegroup(id: string, options?: NodegroupOps): Nodegroup {
+    return new Nodegroup(this, id, {
+      cluster: this,
+      ...options,
+    });
   }
 
   /**
