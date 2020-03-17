@@ -24,6 +24,15 @@ class EksClusterStack extends TestStack {
 
     const ng = cluster.addNodegroup('NG');
 
+    cluster.addNodegroup('nodegroup', {
+      instanceTypes: [
+        new ec2.InstanceType('m5.large'),
+        new ec2.InstanceType('c5.large'),
+        new ec2.InstanceType('t3.large'),
+      ],
+      minSize: 4,
+    });
+
     new CfnOutput(this, 'ClusterEndpoint', { value: cluster.clusterEndpoint });
     new CfnOutput(this, 'ClusterArn', { value: cluster.clusterArn });
     new CfnOutput(this, 'ClusterName', { value: cluster.clusterName });

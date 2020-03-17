@@ -1,4 +1,4 @@
-import { InstanceType, SubnetSelection, SubnetType } from '@aws-cdk/aws-ec2';
+import { InstanceType, SubnetSelection } from '@aws-cdk/aws-ec2';
 import { IRole, ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { CfnOutput, Construct, IResource, Resource } from '@aws-cdk/core';
 import { Cluster } from './cluster';
@@ -9,7 +9,7 @@ import { CfnNodegroup } from './eks.generated';
  */
 export interface INodegroup extends IResource {
   /**
-   * The name of the nodegroup
+   * Name of the nodegroup
    * @attribute
    */
   readonly nodegroupName: string
@@ -20,7 +20,7 @@ export interface INodegroup extends IResource {
  */
 export interface NodegroupAttributes {
   /**
-   * The ID of the nodegroup
+   * Name of the nodegroup
    */
   readonly nodegroupName: string;
 }
@@ -38,32 +38,6 @@ export enum AmiType {
    *  Amazon EKS-optimized Linux AMI with GPU support
    */
   AL2_X86_64_GPU = 'AL2_x86_64_GPU'
-}
-
-/**
- * The scaling configuration details for the Auto Scaling group that is created for your node group.
- *
- * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-eks-nodegroup-scalingconfig.html
- */
-export interface ScaleConfig {
-  /**
-   * The current number of worker nodes that the managed node group should maintain.
-   *
-   * @default 2
-   */
-  readonly desiredSize?: number,
-  /**
-   * The maximum number of worker nodes that the managed node group can scale out to. Managed node groups can support up to 100 nodes by default.
-   *
-   * @default 2
-   */
-  readonly maxSize?: number,
-  /**
-   * The minimum number of worker nodes that the managed node group can scale in to. This number must be greater than zero.
-   *
-   * @default 1
-   */
-  readonly minSize?: number
 }
 
 /**
@@ -90,10 +64,16 @@ export interface RemoteAccess {
  */
 export interface NodegroupOps {
   /**
+   * Name of the Nodegroup
+   *
+   * @default - resource ID
+   */
+  readonly nodegroupName?: string;
+  /**
    * The subnets to use for the Auto Scaling group that is created for your node group. These subnets must have the tag key
    * `kubernetes.io/cluster/CLUSTER_NAME` with a value of `shared`, where `CLUSTER_NAME` is replaced with the name of your cluster.
    *
-   *   * @default - private subnets
+   * @default - private subnets
    */
   readonly subnets?: SubnetSelection;
   /**
@@ -110,6 +90,25 @@ export interface NodegroupOps {
    */
   readonly diskSize?: number;
   /**
+   * The current number of worker nodes that the managed node group should maintain. If not specified, the nodewgroup will initially
+   * create `minSize` instances.
+   *
+   * @default - 2
+   */
+  readonly desiredSize?: number,
+  /**
+   * The maximum number of worker nodes that the managed node group can scale out to. Managed node groups can support up to 100 nodes by default.
+   *
+   * @default - desiredSize
+   */
+  readonly maxSize?: number,
+  /**
+   * The minimum number of worker nodes that the managed node group can scale in to. This number must be greater than zero.
+   *
+   * @default - 1
+   */
+  readonly minSize?: number
+  /**
    * Force the update if the existing node group's pods are unable to be drained due to a pod disruption budget issue. If an update fails
    * because pods could not be drained, you can force the update after it fails to terminate the old node whether or not any pods are
    * running on the node.
@@ -123,7 +122,7 @@ export interface NodegroupOps {
    *
    * @default - t3.medium
    */
-  readonly instanceTypes?: InstanceType[];
+  readonly instanceType?: InstanceType;
   /**
    * The Kubernetes labels to be applied to the nodes in the node group when they are created.
    *
@@ -153,12 +152,6 @@ export interface NodegroupOps {
    * @default - disabled
    */
   readonly remoteAccess?: RemoteAccess;
-  /**
-   * The scaling configuration details for the Auto Scaling group that is created for your node group.
-   *
-   * @default - maxSize: 2, minSize: 1, desiredSize: 2
-   */
-  readonly scaleConfig?: ScaleConfig;
   /**
    * The metadata to apply to the node group to assist with categorization and organization. Each tag consists of a key and an optional
    * value, both of which you define. Node group tags do not propagate to any other resources associated with the node group, such as the
@@ -219,20 +212,15 @@ export class Nodegroup extends Resource implements INodegroup {
   private readonly desiredSize: number;
   private readonly maxSize: number;
   private readonly minSize: number;
-  private readonly subnetSelection: SubnetSelection;
 
   constructor(scope: Construct, id: string, props: NodegroupProps ) {
     super(scope, id);
 
     this.cluster = props.cluster;
 
-    this.desiredSize = props.scaleConfig && props.scaleConfig.desiredSize ? props.scaleConfig.desiredSize : 2;
-    this.maxSize = props.scaleConfig && props.scaleConfig.maxSize ? props.scaleConfig.maxSize : 2;
-    this.minSize = props.scaleConfig && props.scaleConfig.minSize ? props.scaleConfig.minSize : 1;
-    // this.nodegroupName = props.nodegroupName ?? id;
-    this.subnetSelection = props.subnets ?? {
-      subnetType: SubnetType.PRIVATE
-    };
+    this.desiredSize = props.desiredSize ?? props.minSize ?? 2;
+    this.maxSize = props.maxSize ?? this.desiredSize;
+    this.minSize = props.minSize ?? 1;
 
     if (this.desiredSize > this.maxSize) {
       throw new Error(`desired capacity ${this.desiredSize} can't be greater than max size ${this.maxSize}`);
@@ -251,16 +239,21 @@ export class Nodegroup extends Resource implements INodegroup {
 
     const resource = new CfnNodegroup(this, id, {
       clusterName: this.cluster.clusterName,
+      nodegroupName: props.nodegroupName,
       nodeRole: ngRole.roleArn,
-      subnets: this.cluster.vpc.selectSubnets(this.subnetSelection).subnetIds,
+      subnets: this.cluster.vpc.selectSubnets(props.subnets).subnetIds,
       amiType: props.amiType,
       diskSize: props.diskSize,
       forceUpdateEnabled: props.forceUpdateEnabled ?? true,
-      instanceTypes: props.instanceTypes?.map(m => m.toString()),
+      instanceTypes: props.instanceType ? [props.instanceType?.toString()] : undefined,
       labels: props.labels,
       releaseVersion: props.releaseVersion,
       remoteAccess: props.remoteAccess,
-      scalingConfig: props.scaleConfig,
+      scalingConfig: {
+        desiredSize: this.desiredSize,
+        maxSize: this.maxSize,
+        minSize: this.minSize
+      },
       tags: props.tags
     });
 

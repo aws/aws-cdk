@@ -93,6 +93,25 @@ cluster.addCapacity('frontend-nodes', {
 });
 ```
 
+### Managed Node Groups
+
+Amazon EKS managed node groups automate the provisioning and lifecycle management of nodes (Amazon EC2 instances) 
+for Amazon EKS Kubernetes clusters. By default, `eks.Nodegroup` create a nodegroup with x2 `t3.medium` instances. 
+
+```ts
+new eks.Nodegroup(stack, 'nodegroup', { cluster });
+```
+
+You can add customized node group through `cluster.addNodegroup()`:
+
+```ts
+cluster.addNodegroup('nodegroup', {
+  instanceTypes: new ec2.InstanceType('m5.large'),
+  minSize: 4,
+});
+```
+
+
 ### Fargate
 
 AWS Fargate is a technology that provides on-demand, right-sized compute
