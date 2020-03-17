@@ -29,6 +29,17 @@ other AWS services.
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
+## Table of Contents
+
+- [User Pools](#user-pools)
+  - [Sign Up](#sign-up)
+  - [Sign In](#sign-in)
+  - [Attributes](#attributes)
+  - [Security](#security)
+    - [Multi-factor Authentication](#multi-factor-authentication-mfa)
+  - [Emails](#emails)
+  - [Import](#importing-user-pools)
+
 ## User Pools
 
 User pools allow creating and managing your own directory of users that can sign up and sign in. They enable easy
@@ -138,6 +149,40 @@ new UserPool(this, 'myuserpool', {
 });
 ```
 
+### Attributes
+
+Attributes represent the various properties of each user that's collected and stored in the user pool. Cognito
+provides a set of standard attributes that are available for all user pools. Users are allowed to select any of these
+standard attributes to be required. Users will not be able to sign up to the user pool without providing the required
+attributes. Besides these, additional attributes can be further defined, and are known as custom attributes.
+
+Learn more on [attributes in Cognito's
+documentation](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html).
+
+The following code sample configures a user pool with two standard attributes (name and address) as required, and adds
+four optional attributes.
+
+```ts
+new UserPool(this, 'myuserpool', {
+  // ...
+  requiredAttributes: {
+    fullname: true,
+    address: true,
+  },
+  customAttributes: {
+    'myappid': new StringAttribute({ minLen: 5, maxLen: 15 }),
+    'callingcode': new NumberAttribute({ min: 1, max: 3 }),
+    'isEmployee': new BooleanAttribute(),
+    'joinedOn': new DateTimeAttribute(),
+  },
+});
+```
+
+As shown in the code snippet, there are data types that are available for custom attributes. The 'String' and 'Number'
+data types allow for further constraints on their length and values, respectively.
+
+Custom attributes cannot be marked as required.
+
 ### Security
 
 Cognito sends various messages to its users via SMS, for different actions, ranging from account verification to
@@ -162,40 +207,75 @@ When the `smsRole` property is specified, the `smsRoleExternalId` may also be sp
 assume role policy should be configured to accept this value as the ExternalId. Learn more about [ExternalId
 here](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_create_for-user_externalid.html).
 
-### Attributes
+#### Multi-factor Authentication (MFA)
 
-Attributes represent the various properties of each user that's collected and stored in the user pool. Cognito
-provides a set of standard attributes that are available for all user pools. Users are allowed to select any of these
-standard attributes to be required. Users will not be able to sign up to the user pool without providing the required
-attributes. Besides these, additional attributes can be further defined, and are known as custom attributes.
+User pools can be configured to enable multi-factor authentication (MFA). It can either be turned off, set to optional
+or made required. Setting MFA to optional means that individual users can choose to enable it.
+Additionally, the MFA code can be sent either via SMS text message or via a time-based software token.
+See the [documentation on MFA](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-mfa.html) to
+learn more.
 
-Learn more on [attributes in Cognito's
-documentation](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html).
-
-The following code sample configures a user pool with two standard attributes (name and address) as required, and adds
-four optional attributes.
+The following code snippet marks MFA for the user pool as required. This means that all users are required to
+configure an MFA token and use it for sign in. It also allows for the users to use both SMS based MFA, as well,
+[time-based one time password
+(TOTP)](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-mfa-totp.html).
 
 ```ts
 new UserPool(this, 'myuserpool', {
   // ...
-  // ...
-  requiredAttributes: {
-    fullname: true,
-    address: true,
-  },
-  customAttributes: {
-    'myappid': new StringAttribute({ minLen: 5, maxLen: 15 }),
-    'callingcode': new NumberAttribute({ min: 1, max: 3 }),
-    'isEmployee': new BooleanAttribute(),
-    'joinedOn': new DateTimeAttribute(),
+  mfa: Mfa.REQUIRED,
+  mfaSecondFactor: {
+    sms: true,
+    otp: true,
   },
 });
 ```
 
-As shown in the code snippet, there are data types that are available for custom attributes. The 'String' and 'Number'
-data types allow for further constraints on their length and values, respectively.
+User pools can be configured with policies around a user's password. This includes the password length and the
+character sets that they must contain.
 
-Custom attributes cannot be marked as required.
+Further to this, it can also be configured with the validity of the auto-generated temporary password. A temporary
+password is generated by the user pool either when an admin signs up a user or when a password reset is requested.
+The validity of this password dictates how long to give the user to use this password before expiring it.
+
+The following code snippet configures these properties -
+
+```ts
+new UserPool(this, 'myuserpool', {
+  // ...
+  passwordPolicy: {
+    minLength: 12,
+    requireLowercase: true,
+    requireUppercase: true,
+    requireDigits: true,
+    requireSymbols: true,
+    tempPasswordValidity: Duration.days(3),
+  },
+});
+```
+
+Note that, `tempPasswordValidity` can be specified only in whole days. Specifying fractional days would throw an error.
+
+### Emails
+
+Cognito sends emails to users in the user pool, when particular actions take place, such as welcome emails, invitation
+emails, password resets, etc. The address from which these emails are sent can be configured on the user pool.
+Read more about [email settings here](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-email.html).
+
+```ts
+new UserPool(this, 'myuserpool', {
+  // ...
+  emailTransmission: {
+    from: 'noreply@myawesomeapp.com',
+    replyTo: 'support@myawesomeapp.com',
+  },
+});
+```
+
+By default, user pools are configured to use Cognito's built-in email capability, but it can also be configured to use
+Amazon SES, however, support for Amazon SES is not available in the CDK yet. If you would like this to be implemented,
+give [this issue](https://github.com/aws/aws-cdk/issues/6768) a +1. Until then, you can use the [cfn
+layer](https://docs.aws.amazon.com/cdk/latest/guide/cfn_layer.html) to configure this.
 
 ### Importing User Pools
 
