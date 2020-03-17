@@ -14,6 +14,29 @@ function createModernApp() {
   });
 }
 
+/**
+ * This method is intentionally duplicated from cloud-assembly.ts
+ * because I doesn't seem right exposing it just for the sake of the test.
+ * Also, this makes sure that if a bug is intorduced in the way the version number
+ * is extracted in cloud-assembly.ts, this test will fail.
+ *
+ * (Assuming here that this is correct)
+ */
+function versionNumber(): string {
+
+  function extract(packageJson: string) {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    return require(packageJson).version.replace(/\+[0-9a-f]+$/, '');
+  }
+
+  try {
+    return extract('../package.json');
+  } catch (err) {
+    // monocdk support
+    return extract('../../../package.json');
+  }
+}
+
 export = {
   'synthesis with an empty app'(test: Test) {
     // GIVEN
@@ -95,7 +118,7 @@ export = {
 
     test.deepEqual(readJson(session.directory, 'foo.json'), { bar: 123 });
     test.deepEqual(session.manifest, {
-      version: "0.0.0",
+      version: versionNumber(),
       artifacts: {
         'Tree': {
           type: 'cdk:tree',

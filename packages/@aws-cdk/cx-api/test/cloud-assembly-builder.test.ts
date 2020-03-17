@@ -20,10 +20,10 @@ function versionNumber(): string {
   }
 
   try {
-    return extract('../../package.json');
+    return extract('../package.json');
   } catch (err) {
     // monocdk support
-    return extract('../../../../package.json');
+    return extract('../../../package.json');
   }
 }
 
