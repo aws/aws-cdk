@@ -1067,6 +1067,58 @@ export = {
       test.deepEqual(subnetIds.length, 1);
       test.deepEqual(subnetIds[0], subnet.subnetId);
       test.done();
+    },
+
+    'subnet created from subnetId'(test: Test) {
+      // GIVEN
+      const stack = getTestStack();
+
+      // WHEN
+      const subnet = Subnet.fromSubnetId(stack, 'subnet1', 'pub-1');
+
+      // THEN
+      test.deepEqual(subnet.subnetId, 'pub-1');
+      test.done();
+    },
+
+    'Referencing AZ throws error when subnet created from subnetId'(test: Test) {
+      // GIVEN
+      const stack = getTestStack();
+
+      // WHEN
+      const subnet = Subnet.fromSubnetId(stack, 'subnet1', 'pub-1');
+
+      // THEN
+      // tslint:disable-next-line: max-line-length
+      test.throws(() => subnet.availabilityZone, "You cannot reference a Subnet's availability zone if it was not supplied. Add the availabilityZone when importing using Subnet.fromSubnetAttributes()");
+      test.done();
+    },
+
+    'Referencing AZ throws error when subnet created from attributes without az'(test: Test) {
+      // GIVEN
+      const stack = getTestStack();
+
+      // WHEN
+      const subnet = Subnet.fromSubnetAttributes(stack, 'subnet1', { subnetId : 'pub-1', availabilityZone: '' });
+
+      // THEN
+      test.deepEqual(subnet.subnetId, 'pub-1');
+      // tslint:disable-next-line: max-line-length
+      test.throws(() => subnet.availabilityZone, "You cannot reference a Subnet's availability zone if it was not supplied. Add the availabilityZone when importing using Subnet.fromSubnetAttributes()");
+      test.done();
+    },
+
+    'AZ have value when subnet created from attributes with az'(test: Test) {
+      // GIVEN
+      const stack = getTestStack();
+
+      // WHEN
+      const subnet = Subnet.fromSubnetAttributes(stack, 'subnet1', { subnetId : 'pub-1', availabilityZone: 'az-1234' });
+
+      // THEN
+      test.deepEqual(subnet.subnetId, 'pub-1');
+      test.deepEqual(subnet.availabilityZone, 'az-1234');
+      test.done();
     }
 
   },
