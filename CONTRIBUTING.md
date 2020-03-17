@@ -38,6 +38,7 @@ and let us know if it's not up-to-date (even better, submit a PR with your  corr
   - [API Compatibility Checks](#api-compatibility-checks)
   - [Examples](#examples)
   - [Feature Flags](#feature-flags)
+  - [Versioning](#versioning)
 - [Troubleshooting](#troubleshooting)
 - [Debugging](#debugging)
   - [Connecting the VS Code Debugger](#connecting-the-vs-code-debugger)
@@ -381,6 +382,12 @@ If you also wish to package to all languages, make sure you have all the [toolch
 $ ./pack.sh
 ```
 
+> NOTE: in local builds, pack.sh will finish but will fail with an error
+> indicating the build artifacts use the marker version (`0.0.0`). This is
+> normal, and you can trust the output in `dist/` despite the failure. This is a
+> protection we have to make sure we don't accidentally release artifacts with
+> the marker version.
+
 ### Full Docker build
 
 Clone the repo:
@@ -414,7 +421,8 @@ $ cd packages/@aws-cdk/aws-ec2
 $ ../../../scripts/buildup
 ```
 
-Note that `buildup` uses `foreach.sh`, which means it's resumable. If your build fails and you wish to resume, just run `buildup` again. If you wish to restart, run `buildup --restart`.
+Note that `buildup` uses `foreach.sh`, which means it's resumable. If your build fails and you wish to resume, just run
+`buildup --resume`. If you wish to restart, run `buildup` again.
 
 ### Quick Iteration
 
@@ -635,8 +643,8 @@ The pattern is simple:
    form `module.Type:feature` (e.g. `@aws-cdk/core:enableStackNameDuplicates`).
 2. Use `node.tryGetContext(cxapi.ENABLE_XXX)` to check if this feature is enabled
    in your code. If it is not defined, revert to the legacy behavior.
-3. Add your feature flag to
-   [cx-api/lib/future.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/cx-api/lib/future.ts).
+3. Add your feature flag to the `FUTURE_FLAGS` map in
+   [cx-api/lib/features.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/cx-api/lib/features.ts).
    This map is inserted to generated `cdk.json` files for new projects created
    through `cdk init`.
 4. In your PR title (which goes into CHANGELOG), add a `(under feature flag)` suffix. e.g:
@@ -657,6 +665,25 @@ In the [next major version of the
 CDK](https://github.com/aws/aws-cdk/issues/3398) we will either remove the
 legacy behavior or flip the logic for all these features and then
 reset the `FEATURE_FLAGS` map for the next cycle.
+
+### Versioning
+
+All `package.json` files in this repo use a stable marker version of `0.0.0`.
+This means that when you declare dependencies, you should always use `0.0.0`.
+This makes it easier for us to bump a new version (the `bump.sh` script will
+just update the central version and create a CHANGELOG entry) and also reduces
+the chance of merge conflicts after a new version is released.
+
+Additional scripts that take part in the versioning mechanism:
+
+- `scripts/get-version.js` can be used to obtain the actual version of the repo.
+  You can use either from JavaScript code by `require('./scripts/get-version')`
+  or from a shell script `node -p "require('./scripts/get-version')"`.
+- `scripts/get-version-marker.js` returns `0.0.0` and used to DRY the version
+  marker.
+- `scripts/align-version.sh` and `scripts/align-version.js` are used to align
+  all package.json files in the repo to the official version. This script is
+  invoked in CI builds and should not be used inside a development environment.
 
 ## Troubleshooting
 

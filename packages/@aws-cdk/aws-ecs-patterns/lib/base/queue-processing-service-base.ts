@@ -2,7 +2,7 @@ import { ScalingInterval } from '@aws-cdk/aws-applicationautoscaling';
 import { IVpc } from '@aws-cdk/aws-ec2';
 import { AwsLogDriver, BaseService, Cluster, ContainerImage, ICluster, LogDriver, PropagatedTagSource, Secret } from '@aws-cdk/aws-ecs';
 import { IQueue, Queue } from '@aws-cdk/aws-sqs';
-import { CfnOutput, Construct, Stack } from '@aws-cdk/core';
+import { CfnOutput, Construct, Duration, Stack } from '@aws-cdk/core';
 
 /**
  * The properties for the base QueueProcessingEc2Service or QueueProcessingFargateService service.
@@ -87,6 +87,21 @@ export interface QueueProcessingServiceBaseProps {
   readonly queue?: IQueue;
 
   /**
+   * The maximum number of times that a message can be received by consumers.
+   * When this value is exceeded for a message the message will be automatically sent to the Dead Letter Queue.
+   *
+   * @default 3
+   */
+  readonly maxReceiveCount?: number;
+
+  /**
+   * The number of seconds that Dead Letter Queue retains a message.
+   *
+   * @default Duration.days(14)
+   */
+  readonly retentionPeriod?: Duration;
+
+  /**
    * Maximum capacity to scale to.
    *
    * @default (desiredTaskCount * 2)
@@ -144,6 +159,11 @@ export abstract class QueueProcessingServiceBase extends Construct {
   public readonly sqsQueue: IQueue;
 
   /**
+   * The dead letter queue for the primary SQS queue
+   */
+  public readonly deadLetterQueue?: IQueue;
+
+  /**
    * The cluster where your service will be deployed
    */
   public readonly cluster: ICluster;
@@ -191,8 +211,23 @@ export abstract class QueueProcessingServiceBase extends Construct {
     }
     this.cluster = props.cluster || this.getDefaultCluster(this, props.vpc);
 
-    // Create the SQS queue if one is not provided
-    this.sqsQueue = props.queue !== undefined ? props.queue : new Queue(this, 'EcsProcessingQueue', {});
+    // Create the SQS queue and it's corresponding DLQ if one is not provided
+    if (props.queue) {
+      this.sqsQueue = props.queue;
+    } else {
+      this.deadLetterQueue = new Queue(this, "EcsProcessingDeadLetterQueue", {
+        retentionPeriod: props.retentionPeriod || Duration.days(14)
+      });
+      this.sqsQueue = new Queue(this, 'EcsProcessingQueue', {
+        deadLetterQueue: {
+          queue: this.deadLetterQueue,
+          maxReceiveCount: props.maxReceiveCount || 3
+        }
+      });
+
+      new CfnOutput(this, 'SQSDeadLetterQueue', { value: this.deadLetterQueue.queueName });
+      new CfnOutput(this, 'SQSDeadLetterQueueArn', { value: this.deadLetterQueue.queueArn });
+    }
 
     // Setup autoscaling scaling intervals
     const defaultScalingSteps = [{ upper: 0, change: -1 }, { lower: 100, change: +1 }, { lower: 500, change: +5 }];
@@ -236,6 +271,14 @@ export abstract class QueueProcessingServiceBase extends Construct {
       metric: this.sqsQueue.metricApproximateNumberOfMessagesVisible(),
       scalingSteps: this.scalingSteps
     });
+  }
+
+  /**
+   * Grant SQS permissions to an ECS service.
+   * @param service the ECS/Fargate service to which to grant SQS permissions
+   */
+  protected grantPermissionsToService(service: BaseService) {
+    this.sqsQueue.grantConsumeMessages(service.taskDefinition.taskRole);
   }
 
   /**

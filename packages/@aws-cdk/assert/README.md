@@ -5,12 +5,14 @@
 
 ![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
 
-> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
-> future breaking changes.**
+> **This is a _developer preview_ (public beta) module.**
 >
-> This API is still under active development and subject to non-backward
-> compatible changes or removal in any future version. Use of the API is not recommended in production
-> environments. Experimental APIs are not subject to the Semantic Versioning model.
+> All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib))
+> are auto-generated from CloudFormation. They are stable and safe to use.
+>
+> However, all other classes, i.e., higher level constructs, are under active development and subject to non-backward
+> compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model.
+> This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
 
 ---
 <!--END STABILITY BANNER-->
@@ -84,6 +86,26 @@ expect(stack).to(haveResource('AWS::CertificateManager::Certificate', {
 
 `ABSENT` is a magic value to assert that a particular key in an object is *not* set (or set to `undefined`).
 
+### Check number of resources
+
+If you want to assert that `n` number of resources of a particular type exist, with or without specific properties:
+
+```ts
+countResources(type, count)
+countResourcesLike(type, count, props)
+```
+
+Example:
+
+```ts
+expect(stack).to(countResources('AWS::ApiGateway::Method', 3));
+expect(stack).to(countResourcesLike('AWS::ApiGateway::Method', 1, {
+  HttpMethod: 'GET',
+  ResourceId: {
+    "Ref": "MyResource01234"
+  }
+}));
+```
 
 ### Check existence of an output
 `haveOutput` assertion can be used to check that a stack contains specific output.

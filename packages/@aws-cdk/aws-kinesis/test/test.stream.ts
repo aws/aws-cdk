@@ -132,7 +132,9 @@ export = {
                     "kms:Delete*",
                     "kms:ScheduleKeyDeletion",
                     "kms:CancelKeyDeletion",
-                    "kms:GenerateDataKey"
+                    "kms:GenerateDataKey",
+                    "kms:TagResource",
+                    "kms:UntagResource"
                   ],
                   "Effect": "Allow",
                   "Principal": {
@@ -217,7 +219,9 @@ export = {
                     "kms:Delete*",
                     "kms:ScheduleKeyDeletion",
                     "kms:CancelKeyDeletion",
-                    "kms:GenerateDataKey"
+                    "kms:GenerateDataKey",
+                    "kms:TagResource",
+                    "kms:UntagResource"
                   ],
                   "Effect": "Allow",
                   "Principal": {
@@ -301,7 +305,9 @@ export = {
                         "kms:Delete*",
                         "kms:ScheduleKeyDeletion",
                         "kms:CancelKeyDeletion",
-                        "kms:GenerateDataKey"
+                        "kms:GenerateDataKey",
+                        "kms:TagResource",
+                        "kms:UntagResource"
                       ],
                       "Effect": "Allow",
                       "Principal": {
@@ -439,7 +445,9 @@ export = {
                         "kms:Delete*",
                         "kms:ScheduleKeyDeletion",
                         "kms:CancelKeyDeletion",
-                        "kms:GenerateDataKey"
+                        "kms:GenerateDataKey",
+                        "kms:TagResource",
+                        "kms:UntagResource"
                       ],
                       "Effect": "Allow",
                       "Principal": {
@@ -585,7 +593,9 @@ export = {
                         "kms:Delete*",
                         "kms:ScheduleKeyDeletion",
                         "kms:CancelKeyDeletion",
-                        "kms:GenerateDataKey"
+                        "kms:GenerateDataKey",
+                        "kms:TagResource",
+                        "kms:UntagResource"
                       ],
                       "Effect": "Allow",
                       "Principal": {

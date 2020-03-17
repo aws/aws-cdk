@@ -371,22 +371,6 @@ export = {
     test.done();
   },
 
-  'manual approval Action': {
-    'allows passing an SNS Topic when constructing it'(test: Test) {
-      const stack = new Stack();
-      const topic = new sns.Topic(stack, 'Topic');
-      const manualApprovalAction = new cpactions.ManualApprovalAction({
-        actionName: 'Approve',
-        notificationTopic: topic,
-      });
-      stageForTesting(stack).addAction(manualApprovalAction);
-
-      test.equal(manualApprovalAction.notificationTopic, topic);
-
-      test.done();
-    },
-  },
-
   'PipelineProject': {
     'with a custom Project Name': {
       'sets the source and artifacts to CodePipeline'(test: Test) {
@@ -975,10 +959,168 @@ export = {
 
       test.done();
     },
+
+    'adds a dependency on the Stack containing a new action Role'(test: Test) {
+      const region = 'us-west-2';
+      const pipelineAccount = '123456789012';
+      const buildAccount = '901234567890';
+      const app = new App();
+
+      const buildStack = new Stack(app, 'BuildStack', {
+        env: { account: buildAccount, region },
+      });
+      const actionRolePhysicalName = 'ProjectRolePhysicalName';
+      const actionRoleInOtherAccount = new iam.Role(buildStack, 'ProjectRole', {
+        assumedBy: new iam.AccountPrincipal(pipelineAccount),
+        roleName: actionRolePhysicalName,
+      });
+      const projectPhysicalName = 'ProjectPhysicalName';
+      const project = codebuild.Project.fromProjectName(buildStack, 'Project',
+        projectPhysicalName);
+
+      const pipelineStack = new Stack(app, 'PipelineStack', {
+        env: { account: pipelineAccount, region },
+      });
+      const bucket = new s3.Bucket(pipelineStack, 'ArtifactBucket', {
+        bucketName: 'source-bucket',
+        encryption: s3.BucketEncryption.KMS,
+      });
+      const sourceOutput = new codepipeline.Artifact();
+      new codepipeline.Pipeline(pipelineStack, 'Pipeline', {
+        artifactBucket: bucket,
+        stages: [
+          {
+            stageName: 'Source',
+            actions: [
+              new cpactions.S3SourceAction({
+                actionName: 'S3',
+                bucket,
+                bucketKey: 'path/to/file.zip',
+                output: sourceOutput,
+              }),
+            ],
+          },
+          {
+            stageName: 'Build',
+            actions: [
+              new cpactions.CodeBuildAction({
+                actionName: 'CodeBuild',
+                project,
+                input: sourceOutput,
+                role: actionRoleInOtherAccount,
+              }),
+            ],
+          },
+        ],
+      });
+
+      expect(pipelineStack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+        "Stages": [
+          {
+            "Name": "Source",
+          },
+          {
+            "Name": "Build",
+            "Actions": [
+              {
+                "Name": "CodeBuild",
+                "Configuration": {
+                  "ProjectName": projectPhysicalName,
+                },
+                "RoleArn": {
+                  "Fn::Join": ["", [
+                    "arn:",
+                    { "Ref": "AWS::Partition" },
+                    `:iam::${buildAccount}:role/${actionRolePhysicalName}`,
+                  ]],
+                },
+              },
+            ],
+          },
+        ],
+      }));
+
+      test.equal(pipelineStack.dependencies.length, 1);
+
+      test.done();
+    },
+
+    'does not add a dependency on the Stack containing an imported action Role'(test: Test) {
+      const region = 'us-west-2';
+      const pipelineAccount = '123456789012';
+      const buildAccount = '901234567890';
+      const app = new App();
+
+      const buildStack = new Stack(app, 'BuildStack', {
+        env: { account: buildAccount, region },
+      });
+      const actionRolePhysicalName = 'ProjectRolePhysicalName';
+      const actionRoleInOtherAccount = iam.Role.fromRoleArn(buildStack, 'ProjectRole',
+        `arn:aws:iam::${buildAccount}:role/${actionRolePhysicalName}`);
+      const projectPhysicalName = 'ProjectPhysicalName';
+      const project = new codebuild.PipelineProject(buildStack, 'Project', {
+        projectName: projectPhysicalName,
+      });
+
+      const pipelineStack = new Stack(app, 'PipelineStack', {
+        env: { account: pipelineAccount, region },
+      });
+      const bucket = new s3.Bucket(pipelineStack, 'ArtifactBucket', {
+        bucketName: 'source-bucket',
+        encryption: s3.BucketEncryption.KMS,
+      });
+      const sourceOutput = new codepipeline.Artifact();
+      new codepipeline.Pipeline(pipelineStack, 'Pipeline', {
+        artifactBucket: bucket,
+        stages: [
+          {
+            stageName: 'Source',
+            actions: [
+              new cpactions.S3SourceAction({
+                actionName: 'S3',
+                bucket,
+                bucketKey: 'path/to/file.zip',
+                output: sourceOutput,
+              }),
+            ],
+          },
+          {
+            stageName: 'Build',
+            actions: [
+              new cpactions.CodeBuildAction({
+                actionName: 'CodeBuild',
+                project,
+                input: sourceOutput,
+                role: actionRoleInOtherAccount,
+              }),
+            ],
+          },
+        ],
+      });
+
+      expect(pipelineStack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+        "Stages": [
+          {
+            "Name": "Source",
+          },
+          {
+            "Name": "Build",
+            "Actions": [
+              {
+                "Name": "CodeBuild",
+                "Configuration": {
+                  "ProjectName": projectPhysicalName,
+                },
+                "RoleArn": `arn:aws:iam::${buildAccount}:role/${actionRolePhysicalName}`,
+              },
+            ],
+          },
+        ],
+      }));
+
+      test.equal(pipelineStack.dependencies.length, 0);
+
+      test.done();
+    },
   },
 };
-
-function stageForTesting(stack: Stack): codepipeline.IStage {
-  const pipeline = new codepipeline.Pipeline(stack, 'pipeline');
-  return pipeline.addStage({ stageName: 'stage' });
-}

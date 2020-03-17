@@ -2,8 +2,8 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { AppStacks, Tag } from '../lib/api/cxapp/stacks';
 import { DeployStackResult } from '../lib/api/deploy-stack';
 import { DeployStackOptions, IDeploymentTarget, Template } from '../lib/api/deployment-target';
-import { SDK } from '../lib/api/util/sdk';
 import { CdkToolkit } from '../lib/cdk-toolkit';
+import { MockSDK } from './util/mock-sdk';
 
 describe('deploy', () => {
   describe('makes correct CloudFormation calls', () => {
@@ -18,7 +18,7 @@ describe('deploy', () => {
       });
 
       // WHEN
-      toolkit.deploy({ stackNames: ['Test-Stack-A', 'Test-Stack-B'], sdk: new SDK() });
+      toolkit.deploy({ stackNames: ['Test-Stack-A', 'Test-Stack-B'], sdk: new MockSDK() });
     });
 
     test('with sns notification arns', () => {
@@ -36,7 +36,7 @@ describe('deploy', () => {
       toolkit.deploy({
         stackNames: ['Test-Stack-A', 'Test-Stack-B'],
         notificationArns,
-        sdk: new SDK()
+        sdk: new MockSDK()
       });
     });
   });
@@ -126,6 +126,7 @@ class TestProvisioner implements IDeploymentTarget {
       stackArn: `arn:aws:cloudformation:::stack/${options.stack.stackName}/MockedOut`,
       noOp: false,
       outputs: { StackName: options.stack.stackName },
+      stackArtifact: options.stack,
     });
   }
 

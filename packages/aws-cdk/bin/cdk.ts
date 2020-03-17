@@ -6,7 +6,9 @@ import * as colors from 'colors/safe';
 import * as path from 'path';
 import * as yargs from 'yargs';
 
-import { bootstrapEnvironment, BootstrapEnvironmentProps, SDK } from '../lib';
+import { bootstrapEnvironment, BootstrapEnvironmentProps } from '../lib';
+import { SdkProvider } from '../lib/api/aws-auth';
+import { bootstrapEnvironment2 } from '../lib/api/bootstrap/bootstrap-environment2';
 import { environmentsFromDescriptors, globEnvironmentsFromStacks } from '../lib/api/cxapp/environments';
 import { execProgram } from '../lib/api/cxapp/exec';
 import { AppStacks, DefaultSelection, ExtendedStackSelection } from '../lib/api/cxapp/stacks';
@@ -56,6 +58,8 @@ async function parseCommandLineArguments() {
       .option('bootstrap-kms-key-id', { type: 'string', desc: 'AWS KMS master key ID used for the SSE-KMS encryption', default: undefined })
       .option('tags', { type: 'array', alias: 't', desc: 'Tags to add for the stack (KEY=VALUE)', nargs: 1, requiresArg: true, default: [] })
       .option('execute', {type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)', default: true})
+      .option('trust', { type: 'array', desc: 'The (space-separated) list of AWS account IDs that should be trusted to perform deployments into this environment', default: [], hidden: true })
+      .option('cloudformation-execution-policies', { type: 'array', desc: 'The (space-separated) list of Managed Policy ARNs that should be attached to the role performing deployments into this environment. Required if --trust was passed', default: [], hidden: true })
     )
     .command('deploy [STACKS..]', 'Deploys the stack(s) named STACKS into your AWS account', yargs => yargs
       .option('build-exclude', { type: 'array', alias: 'E', nargs: 1, desc: 'Do not rebuild asset with the given ID. Can be specified multiple times.', default: [] })
@@ -64,7 +68,9 @@ async function parseCommandLineArguments() {
       .option('ci', { type: 'boolean', desc: 'Force CI detection (deprecated)', default: process.env.CI !== undefined })
       .option('notification-arns', {type: 'array', desc: 'ARNs of SNS topics that CloudFormation will notify with stack related events', nargs: 1, requiresArg: true})
       .option('tags', { type: 'array', alias: 't', desc: 'Tags to add to the stack (KEY=VALUE)', nargs: 1, requiresArg: true })
-      .option('execute', {type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)', default: true})
+      .option('execute', { type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)', default: true })
+      .option('force', { alias: 'f', type: 'boolean', desc: 'Always deploy stack even if templates are identical', default: false })
+      .option('parameters', { type: 'array', desc: 'Additional parameters passed to CloudFormation at deploy time (STACK:KEY=VALUE)', nargs: 1, requiresArg: true, default: {} })
     )
     .command('destroy [STACKS..]', 'Destroy the stack(s) named STACKS', yargs => yargs
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only destroy requested stacks, don\'t include dependees' })
@@ -106,11 +112,13 @@ async function initCommandLine() {
   debug('CDK toolkit version:', version.DISPLAY_VERSION);
   debug('Command line arguments:', argv);
 
-  const aws = new SDK({
+  const aws = await SdkProvider.withAwsCliCompatibleDefaults({
     profile: argv.profile,
-    proxyAddress: argv.proxy,
-    caBundlePath: argv['ca-bundle-path'],
     ec2creds: argv.ec2creds,
+    httpOptions: {
+      proxyAddress: argv.proxy,
+      caBundlePath: argv['ca-bundle-path'],
+    }
   });
 
   const configuration = new Configuration(argv);
@@ -201,14 +209,23 @@ async function initCommandLine() {
         });
 
       case 'bootstrap':
-        return await cliBootstrap(args.ENVIRONMENTS, toolkitStackName, args.roleArn, {
+        return await cliBootstrap(args.ENVIRONMENTS, toolkitStackName, args.roleArn, !!process.env.CDK_NEW_BOOTSTRAP, {
           bucketName: configuration.settings.get(['toolkitBucket', 'bucketName']),
           kmsKeyId: configuration.settings.get(['toolkitBucket', 'kmsKeyId']),
           tags: configuration.settings.get(['tags']),
-          execute: args.execute
+          execute: args.execute,
+          trustedAccounts: args.trust,
+          cloudFormationExecutionPolicies: args.cloudformationExecutionPolicies,
         });
 
       case 'deploy':
+        const parameterMap: { [name: string]: string | undefined } = {};
+        for (const parameter of args.parameters) {
+          if (typeof parameter === 'string') {
+            const keyValue = (parameter as string).split('=', 2);
+            parameterMap[keyValue[0]] = keyValue[1];
+          }
+        }
         return await cli.deploy({
           stackNames: args.STACKS,
           exclusively: args.exclusively,
@@ -219,7 +236,9 @@ async function initCommandLine() {
           reuseAssets: args['build-exclude'],
           tags: configuration.settings.get(['tags']),
           sdk: aws,
-          execute: args.execute
+          execute: args.execute,
+          force: args.force,
+          parameters: parameterMap
         });
 
       case 'destroy':
@@ -266,7 +285,8 @@ async function initCommandLine() {
    *             all stacks are implicitly selected.
    * @param toolkitStackName the name to be used for the CDK Toolkit stack.
    */
-  async function cliBootstrap(environmentGlobs: string[], toolkitStackName: string, roleArn: string | undefined, props: BootstrapEnvironmentProps): Promise<void> {
+  async function cliBootstrap(environmentGlobs: string[], toolkitStackName: string, roleArn: string | undefined,
+                              useNewBootstrapping: boolean, props: BootstrapEnvironmentProps): Promise<void> {
     // Two modes of operation.
     //
     // If there is an '--app' argument, we select the environments from the app. Otherwise we just take the user
@@ -279,7 +299,9 @@ async function initCommandLine() {
     await Promise.all(environments.map(async (environment) => {
       success(' ⏳  Bootstrapping environment %s...', colors.blue(environment.name));
       try {
-        const result = await bootstrapEnvironment(environment, aws, toolkitStackName, roleArn, props);
+        const result = useNewBootstrapping
+          ? await bootstrapEnvironment2(environment, aws, toolkitStackName, roleArn, props)
+          : await bootstrapEnvironment(environment, aws, toolkitStackName, roleArn, props);
         const message = result.noOp ? ' ✅  Environment %s bootstrapped (no changes).'
                       : ' ✅  Environment %s bootstrapped.';
         success(message, colors.blue(environment.name));
@@ -387,11 +409,11 @@ initCommandLine()
     if (typeof value === 'string') {
       data(value);
     } else if (typeof value === 'number') {
-      process.exit(value);
+      process.exitCode = value;
     }
   })
   .catch(err => {
     error(err.message);
     debug(err.stack);
-    process.exit(1);
+    process.exitCode = 1;
   });

@@ -9,6 +9,7 @@ import { INetworkAcl, NetworkAcl, SubnetNetworkAclAssociation } from './network-
 import { NetworkBuilder } from './network-util';
 import { allRouteTableIds, defaultSubnetName, ImportSubnetGroup, subnetGroupNameFromConstructId, subnetId  } from './util';
 import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, GatewayVpcEndpointOptions, InterfaceVpcEndpoint, InterfaceVpcEndpointOptions } from './vpc-endpoint';
+import { FlowLog, FlowLogOptions, FlowLogResourceType } from './vpc-flow-logs';
 import { VpcLookupOptions } from './vpc-lookup';
 import { VpnConnection, VpnConnectionOptions, VpnConnectionType } from './vpn';
 
@@ -119,6 +120,11 @@ export interface IVpc extends IResource {
    * Adds a new interface endpoint to this VPC
    */
   addInterfaceEndpoint(id: string, options: InterfaceVpcEndpointOptions): InterfaceVpcEndpoint
+
+  /**
+   * Adds a new Flow Log to this VPC
+   */
+  addFlowLog(id: string, options?: FlowLogOptions): FlowLog
 }
 
 /**
@@ -361,6 +367,16 @@ abstract class VpcBase extends Resource implements IVpc {
   }
 
   /**
+   * Adds a new flow log to this VPC
+   */
+  public addFlowLog(id: string, options?: FlowLogOptions): FlowLog {
+    return new FlowLog(this, id, {
+      resourceType: FlowLogResourceType.fromVpc(this),
+      ...options
+    });
+  }
+
+  /**
    * Return the subnets appropriate for the placement strategy
    */
   protected selectSubnetObjects(selection: SubnetSelection = {}): ISubnet[] {
@@ -400,8 +416,7 @@ abstract class VpcBase extends Resource implements IVpc {
     let subnets = allSubnets[subnetType];
 
     if (onePerAz && subnets.length > 0) {
-      // Restrict to at most one subnet group
-      subnets = subnets.filter(s => subnetGroupNameFromConstructId(s) === subnetGroupNameFromConstructId(subnets[0]));
+      subnets = retainOnePerAz(subnets);
     }
 
     // Force merge conflict here with https://github.com/aws/aws-cdk/pull/4089
@@ -444,6 +459,15 @@ abstract class VpcBase extends Resource implements IVpc {
 
     return placement;
   }
+}
+
+function retainOnePerAz(subnets: ISubnet[]): ISubnet[] {
+  const azsSeen = new Set<string>();
+  return subnets.filter(subnet => {
+    if (azsSeen.has(subnet.availabilityZone)) { return false; }
+    azsSeen.add(subnet.availabilityZone);
+    return true;
+  });
 }
 
 /**
@@ -539,8 +563,10 @@ export interface VpcAttributes {
 export interface SubnetAttributes {
   /**
    * The Availability Zone the subnet is located in
+   *
+   * @default - No AZ information, cannot use AZ selection features
    */
-  readonly availabilityZone: string;
+  readonly availabilityZone?: string;
 
   /**
    * The subnetId for this particular subnet
@@ -549,6 +575,8 @@ export interface SubnetAttributes {
 
   /**
    * The ID of the route table for this particular subnet
+   *
+   * @default - No route table information, cannot create VPC endpoints
    */
   readonly routeTableId?: string;
 }
@@ -724,7 +752,9 @@ export interface VpcProps {
   /**
    * Where to propagate VPN routes.
    *
-   * @default - On the route tables associated with private subnets.
+   * @default - On the route tables associated with private subnets. If no
+   * private subnets exists, isolated subnets are used. If no isolated subnets
+   * exists, public subnets are used.
    */
   readonly vpnRoutePropagation?: SubnetSelection[]
 
@@ -734,6 +764,13 @@ export interface VpcProps {
    * @default - None.
    */
   readonly gatewayEndpoints?: { [id: string]: GatewayVpcEndpointOptions }
+
+  /**
+   * Flow logs to add to this VPC.
+   *
+   * @default - No flow logs.
+   */
+  readonly flowLogs?: { [id: string]: FlowLogOptions }
 }
 
 /**
@@ -859,12 +896,14 @@ export class Vpc extends VpcBase {
    * application. If you are looking to share a VPC between stacks, you can
    * pass the `Vpc` object between stacks and use it as normal.
    *
-   * See the package-level documentation of this package for constraints
-   * on importing existing VPCs.
-   *
    * Calling this method will lead to a lookup when the CDK CLI is executed.
    * You can therefore not use any values that will only be available at
    * CloudFormation execution time (i.e., Tokens).
+   *
+   * The VPC information will be cached in `cdk.context.json` and the same VPC
+   * will be used on future runs. To refresh the lookup, you will have to
+   * evict the value from the cache using the `cdk context` command. See
+   * https://docs.aws.amazon.com/cdk/latest/guide/context.html for more information.
    */
   public static fromLookup(scope: Construct, id: string, options: VpcLookupOptions): IVpc {
     if (Token.isUnresolved(options.vpcId)
@@ -1082,7 +1121,7 @@ export class Vpc extends VpcBase {
       this.vpnGatewayId = vpnGateway.ref;
 
       // Propagate routes on route tables associated with the right subnets
-      const vpnRoutePropagation = props.vpnRoutePropagation || [{ subnetType: SubnetType.PRIVATE }];
+      const vpnRoutePropagation = props.vpnRoutePropagation ?? [{}];
       const routeTableIds = allRouteTableIds(...vpnRoutePropagation.map(s => this.selectSubnets(s)));
       const routePropagation = new CfnVPNGatewayRoutePropagation(this, 'RoutePropagation', {
         routeTableIds,
@@ -1107,6 +1146,14 @@ export class Vpc extends VpcBase {
       const gatewayEndpoints = props.gatewayEndpoints || {};
       for (const [endpointId, endpoint] of Object.entries(gatewayEndpoints)) {
         this.addGatewayEndpoint(endpointId, endpoint);
+      }
+    }
+
+    // Add flow logs to the VPC
+    if (props.flowLogs) {
+      const flowLogs = props.flowLogs || {};
+      for (const [flowLogId, flowLog] of Object.entries(flowLogs)) {
+        this.addFlowLog(flowLogId, flowLog);
       }
     }
   }
@@ -1272,6 +1319,15 @@ export class Subnet extends Resource implements ISubnet {
   public static fromSubnetAttributes(scope: Construct, id: string, attrs: SubnetAttributes): ISubnet {
     return new ImportedSubnet(scope, id, attrs);
   }
+
+  /**
+   * Import existing subnet from id.
+   */
+  // tslint:disable:no-shadowed-variable
+  public static fromSubnetId(scope: Construct, id: string, subnetId: string): ISubnet {
+    return this.fromSubnetAttributes(scope, id, { subnetId });
+  }
+  // tslint:enable:no-shadowed-variable
 
   /**
    * The Availability Zone the subnet is located in
@@ -1727,9 +1783,9 @@ function tap<T>(x: T, fn: (x: T) => void): T {
 
 class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivateSubnet {
   public readonly internetConnectivityEstablished: IDependable = new ConcreteDependable();
-  public readonly availabilityZone: string;
   public readonly subnetId: string;
   public readonly routeTable: IRouteTable;
+  private readonly _availabilityZone?: string;
 
   constructor(scope: Construct, id: string, attrs: SubnetAttributes) {
     super(scope, id);
@@ -1742,12 +1798,20 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
       scope.node.addWarning(`No routeTableId was provided to the subnet ${ref}. Attempting to read its .routeTable.routeTableId will return null/undefined. (More info: https://github.com/aws/aws-cdk/pull/3171)`);
     }
 
-    this.availabilityZone = attrs.availabilityZone;
+    this._availabilityZone = attrs.availabilityZone;
     this.subnetId = attrs.subnetId;
     this.routeTable = {
       // Forcing routeTableId to pretend non-null to maintain backwards-compatibility. See https://github.com/aws/aws-cdk/pull/3171
       routeTableId: attrs.routeTableId!
     };
+  }
+
+  public get availabilityZone(): string {
+    if (!this._availabilityZone) {
+      // tslint:disable-next-line: max-line-length
+      throw new Error("You cannot reference a Subnet's availability zone if it was not supplied. Add the availabilityZone when importing using Subnet.fromSubnetAttributes()");
+    }
+    return this._availabilityZone;
   }
 
   public associateNetworkAcl(id: string, networkAcl: INetworkAcl): void {

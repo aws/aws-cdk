@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-eks-legacy",
-  "version": "1.22.0",
+  "version": "0.0.0",
   "description": "The CDK Construct Library for AWS::EKS (Legacy)",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -62,32 +62,32 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "1.22.0",
+    "@aws-cdk/assert": "0.0.0",
     "@types/nodeunit": "^0.0.30",
-    "cdk-build-tools": "1.22.0",
-    "cdk-integ-tools": "1.22.0",
-    "cfn2ts": "1.22.0",
+    "cdk-build-tools": "0.0.0",
+    "cdk-integ-tools": "0.0.0",
+    "cfn2ts": "0.0.0",
     "nodeunit": "^0.11.3",
-    "pkglint": "1.22.0"
+    "pkglint": "0.0.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-autoscaling": "1.22.0",
-    "@aws-cdk/aws-cloudformation": "1.22.0",
-    "@aws-cdk/aws-ec2": "1.22.0",
-    "@aws-cdk/aws-iam": "1.22.0",
-    "@aws-cdk/aws-lambda": "1.22.0",
-    "@aws-cdk/aws-ssm": "1.22.0",
-    "@aws-cdk/core": "1.22.0"
+    "@aws-cdk/aws-autoscaling": "0.0.0",
+    "@aws-cdk/aws-cloudformation": "0.0.0",
+    "@aws-cdk/aws-ec2": "0.0.0",
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-lambda": "0.0.0",
+    "@aws-cdk/aws-ssm": "0.0.0",
+    "@aws-cdk/core": "0.0.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-autoscaling": "1.22.0",
-    "@aws-cdk/aws-cloudformation": "1.22.0",
-    "@aws-cdk/aws-ec2": "1.22.0",
-    "@aws-cdk/aws-iam": "1.22.0",
-    "@aws-cdk/aws-lambda": "1.22.0",
-    "@aws-cdk/aws-ssm": "1.22.0",
-    "@aws-cdk/core": "1.22.0"
+    "@aws-cdk/aws-autoscaling": "0.0.0",
+    "@aws-cdk/aws-cloudformation": "0.0.0",
+    "@aws-cdk/aws-ec2": "0.0.0",
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-lambda": "0.0.0",
+    "@aws-cdk/aws-ssm": "0.0.0",
+    "@aws-cdk/core": "0.0.0"
   },
   "engines": {
     "node": ">= 10.3.0"
@@ -106,6 +106,7 @@
       "module-name:@aws-cdk/aws-eks-legacy",
       "props-no-arn-refs:@aws-cdk/aws-eks-legacy.ClusterProps.outputMastersRoleArn",
       "resource-attribute:@aws-cdk/aws-eks-legacy.Cluster.clusterSecurityGroupId",
+      "resource-attribute:@aws-cdk/aws-eks-legacy.Cluster.clusterEncryptionConfigKeyArn",
       "props-default-doc:@aws-cdk/aws-eks-legacy.AutoScalingGroupOptions.bootstrapOptions",
       "docs-public-apis:@aws-cdk/aws-eks-legacy.AwsAuthProps",
       "docs-public-apis:@aws-cdk/aws-eks-legacy.BootstrapOptions",

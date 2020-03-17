@@ -865,6 +865,71 @@ export = {
     },
   },
 
+  'secondary source versions': {
+    'allow secondary source versions'(test: Test) {
+      const stack = new cdk.Stack();
+      const bucket = new s3.Bucket(stack, 'MyBucket');
+      const project = new codebuild.Project(stack, 'MyProject', {
+        source: codebuild.Source.s3({
+          bucket,
+          path: 'some/path',
+        }),
+      });
+
+      project.addSecondarySource(codebuild.Source.s3({
+        bucket,
+        path: 'another/path',
+        identifier: 'source1',
+        version: 'someversion'
+      }));
+
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        "SecondarySources": [
+          {
+            "SourceIdentifier": "source1",
+            "Type": "S3",
+          },
+        ],
+        "SecondarySourceVersions": [
+          {
+            "SourceIdentifier": "source1",
+            "SourceVersion": "someversion"
+          }
+        ]
+      }));
+
+      test.done();
+    },
+
+    'allow not to specify secondary source versions'(test: Test) {
+      const stack = new cdk.Stack();
+      const bucket = new s3.Bucket(stack, 'MyBucket');
+      const project = new codebuild.Project(stack, 'MyProject', {
+        source: codebuild.Source.s3({
+          bucket,
+          path: 'some/path',
+        }),
+      });
+
+      project.addSecondarySource(codebuild.Source.s3({
+        bucket,
+        path: 'another/path',
+        identifier: 'source1',
+      }));
+
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        "SecondarySources": [
+          {
+            "SourceIdentifier": "source1",
+            "Type": "S3",
+          },
+        ]
+      }));
+
+      test.done();
+    },
+  },
+
   'secondary artifacts': {
     'require providing an identifier when creating a Project'(test: Test) {
       const stack = new cdk.Stack();
@@ -1304,7 +1369,7 @@ export = {
 
     interface BadgeValidationTestCase {
       source: codebuild.Source,
-      shouldPassValidation: boolean
+      allowsBadge: boolean
     }
 
     const repo = new codecommit.Repository(stack, 'MyRepo', {
@@ -1313,22 +1378,22 @@ export = {
     const bucket = new s3.Bucket(stack, 'MyBucket');
 
     const cases: BadgeValidationTestCase[] = [
-      { source: new NoSource(), shouldPassValidation: false },
-      { source: new CodePipelineSource(), shouldPassValidation: false },
-      { source: codebuild.Source.codeCommit({ repository: repo }), shouldPassValidation: false },
-      { source: codebuild.Source.s3({ bucket, path: 'path/to/source.zip' }), shouldPassValidation: false },
-      { source: codebuild.Source.gitHub({ owner: 'awslabs', repo: 'aws-cdk' }), shouldPassValidation: true },
-      { source: codebuild.Source.gitHubEnterprise({ httpsCloneUrl: 'url' }), shouldPassValidation: true },
-      { source: codebuild.Source.bitBucket({ owner: 'awslabs', repo: 'aws-cdk' }), shouldPassValidation: true }
+      { source: new NoSource(), allowsBadge: false },
+      { source: new CodePipelineSource(), allowsBadge: false },
+      { source: codebuild.Source.codeCommit({ repository: repo }), allowsBadge: true },
+      { source: codebuild.Source.s3({ bucket, path: 'path/to/source.zip' }), allowsBadge: false },
+      { source: codebuild.Source.gitHub({ owner: 'awslabs', repo: 'aws-cdk' }), allowsBadge: true },
+      { source: codebuild.Source.gitHubEnterprise({ httpsCloneUrl: 'url' }), allowsBadge: true },
+      { source: codebuild.Source.bitBucket({ owner: 'awslabs', repo: 'aws-cdk' }), allowsBadge: true },
     ];
 
     cases.forEach(testCase => {
       const source = testCase.source;
       const validationBlock = () => { new codebuild.Project(stack, `MyProject-${source.type}`, { source, badge: true }); };
-      if (testCase.shouldPassValidation) {
-        test.doesNotThrow(validationBlock, Error, `Badge is not supported for source type ${source.type}`);
+      if (testCase.allowsBadge) {
+        test.doesNotThrow(validationBlock);
       } else {
-        test.throws(validationBlock, Error, `Badge is not supported for source type ${source.type}`);
+        test.throws(validationBlock, /Badge is not supported for source type /);
       }
     });
 

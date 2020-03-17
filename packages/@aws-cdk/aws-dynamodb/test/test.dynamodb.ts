@@ -1,7 +1,7 @@
-import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
+import { expect, haveResource, ResourcePart, SynthUtils } from '@aws-cdk/assert';
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as iam from '@aws-cdk/aws-iam';
-import { CfnDeletionPolicy, ConstructNode, RemovalPolicy, Stack, Tag } from '@aws-cdk/core';
+import { App, CfnDeletionPolicy, ConstructNode, Duration, RemovalPolicy, Stack, Tag } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import {
   Attribute,
@@ -1132,6 +1132,123 @@ export = {
     test.done();
   },
 
+  'metrics': {
+    'Can use metricConsumedReadCapacityUnits on a Dynamodb Table'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const table = new Table(stack, 'Table', {
+        partitionKey: { name: 'id', type: AttributeType.STRING }
+      });
+
+      // THEN
+      test.deepEqual(stack.resolve(table.metricConsumedReadCapacityUnits()), {
+        period: Duration.minutes(5),
+        dimensions: { TableName: { Ref: 'TableCD117FA1' } },
+        namespace: 'AWS/DynamoDB',
+        metricName: 'ConsumedReadCapacityUnits',
+        statistic: 'Sum',
+      });
+
+      test.done();
+    },
+
+    'Can use metricConsumedWriteCapacityUnits on a Dynamodb Table'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const table = new Table(stack, 'Table', {
+        partitionKey: { name: 'id', type: AttributeType.STRING }
+      });
+
+      // THEN
+      test.deepEqual(stack.resolve(table.metricConsumedWriteCapacityUnits()), {
+        period: Duration.minutes(5),
+        dimensions: { TableName: { Ref: 'TableCD117FA1' } },
+        namespace: 'AWS/DynamoDB',
+        metricName: 'ConsumedWriteCapacityUnits',
+        statistic: 'Sum',
+      });
+
+      test.done();
+    },
+
+    'Can use metricSystemErrors on a Dynamodb Table'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const table = new Table(stack, 'Table', {
+        partitionKey: { name: 'id', type: AttributeType.STRING }
+      });
+
+      // THEN
+      test.deepEqual(stack.resolve(table.metricSystemErrors()), {
+        period: Duration.minutes(5),
+        dimensions: { TableName: { Ref: 'TableCD117FA1' } },
+        namespace: 'AWS/DynamoDB',
+        metricName: 'SystemErrors',
+        statistic: 'Sum',
+      });
+
+      test.done();
+    },
+
+    'Can use metricUserErrors on a Dynamodb Table'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const table = new Table(stack, 'Table', {
+        partitionKey: { name: 'id', type: AttributeType.STRING }
+      });
+
+      // THEN
+      test.deepEqual(stack.resolve(table.metricUserErrors()), {
+        period: Duration.minutes(5),
+        dimensions: { TableName: { Ref: 'TableCD117FA1' } },
+        namespace: 'AWS/DynamoDB',
+        metricName: 'UserErrors',
+        statistic: 'Sum',
+      });
+
+      test.done();
+    },
+
+    'Can use metricConditionalCheckFailedRequests on a Dynamodb Table'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const table = new Table(stack, 'Table', {
+        partitionKey: { name: 'id', type: AttributeType.STRING }
+      });
+
+      // THEN
+      test.deepEqual(stack.resolve(table.metricConditionalCheckFailedRequests()), {
+        period: Duration.minutes(5),
+        dimensions: { TableName: { Ref: 'TableCD117FA1' } },
+        namespace: 'AWS/DynamoDB',
+        metricName: 'ConditionalCheckFailedRequests',
+        statistic: 'Sum',
+      });
+
+      test.done();
+    },
+
+    'Can use metricSuccessfulRequestLatency on a Dynamodb Table'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const table = new Table(stack, 'Table', {
+        partitionKey: { name: 'id', type: AttributeType.STRING }
+      });
+
+      // THEN
+      test.deepEqual(stack.resolve(table.metricSuccessfulRequestLatency()), {
+        period: Duration.minutes(5),
+        dimensions: { TableName: { Ref: 'TableCD117FA1' } },
+        namespace: 'AWS/DynamoDB',
+        metricName: 'SuccessfulRequestLatency',
+        statistic: 'Average',
+      });
+
+      test.done();
+    },
+
+  },
+
   'grants': {
 
     '"grant" allows adding arbitrary actions associated with this table resource'(test: Test) {
@@ -1344,7 +1461,7 @@ export = {
 
       test.done();
     },
-    'static import(ref) allows importing an external/existing table from arn'(test: Test) {
+    'static fromTableArn(arn) allows importing an external/existing table from arn'(test: Test) {
       const stack = new Stack();
 
       const tableArn = 'arn:aws:dynamodb:us-east-1:11111111:table/MyTable';
@@ -1385,7 +1502,7 @@ export = {
       test.deepEqual(stack.resolve(table.tableName), 'MyTable');
       test.done();
     },
-    'static import(ref) allows importing an external/existing table from table name'(test: Test) {
+    'static fromTableName(name) allows importing an external/existing table from table name'(test: Test) {
       const stack = new Stack();
 
       const tableName = 'MyTable';
@@ -1451,7 +1568,244 @@ export = {
       test.deepEqual(stack.resolve(table.tableName), tableName);
       test.done();
     },
+    'stream permissions on imported tables': {
+      'throw if no tableStreamArn is specified'(test: Test) {
+        const stack = new Stack();
+
+        const tableName = 'MyTable';
+        const table = Table.fromTableAttributes(stack, 'ImportedTable', { tableName });
+
+        const role =  new iam.Role(stack, 'NewRole', {
+          assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+        });
+
+        test.throws(() => table.grantTableListStreams(role), /DynamoDB Streams must be enabled on the table/);
+        test.throws(() => table.grantStreamRead(role), /DynamoDB Streams must be enabled on the table/);
+
+        test.done();
+      },
+
+      'creates the correct list streams grant'(test: Test) {
+        const stack = new Stack();
+
+        const tableName = 'MyTable';
+        const tableStreamArn = 'arn:foo:bar:baz:TrustMeThisIsATableStream';
+        const table = Table.fromTableAttributes(stack, 'ImportedTable', { tableName, tableStreamArn });
+
+        const role =  new iam.Role(stack, 'NewRole', {
+          assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+        });
+
+        test.notEqual(table.grantTableListStreams(role), null);
+
+        expect(stack).to(haveResource('AWS::IAM::Policy', {
+          PolicyDocument: {
+            Statement: [
+              {
+                Action: "dynamodb:ListStreams",
+                Effect: 'Allow',
+                Resource: stack.resolve(`${table.tableArn}/stream/*`),
+              },
+            ],
+            Version: '2012-10-17'
+          },
+          Roles: [stack.resolve(role.roleName)]
+        }));
+
+        test.done();
+      },
+
+      'creates the correct stream read grant'(test: Test) {
+        const stack = new Stack();
+
+        const tableName = 'MyTable';
+        const tableStreamArn = 'arn:foo:bar:baz:TrustMeThisIsATableStream';
+        const table = Table.fromTableAttributes(stack, 'ImportedTable', { tableName, tableStreamArn });
+
+        const role =  new iam.Role(stack, 'NewRole', {
+          assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+        });
+
+        test.notEqual(table.grantStreamRead(role), null);
+
+        expect(stack).to(haveResource('AWS::IAM::Policy', {
+          PolicyDocument: {
+            Statement: [
+              {
+                Action: "dynamodb:ListStreams",
+                Effect: 'Allow',
+                Resource: stack.resolve(`${table.tableArn}/stream/*`),
+              },
+              {
+                Action: ['dynamodb:DescribeStream', 'dynamodb:GetRecords', 'dynamodb:GetShardIterator'],
+                Effect: 'Allow',
+                Resource: tableStreamArn,
+              }
+            ],
+            Version: '2012-10-17'
+          },
+          Roles: [stack.resolve(role.roleName)]
+        }));
+
+        test.done();
+      },
+    }
   },
+
+  'global': {
+    'create replicas'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      new Table(stack, 'Table', {
+        partitionKey: {
+          name: 'id',
+          type: AttributeType.STRING
+        },
+        replicationRegions: [
+          'eu-west-2',
+          'eu-central-1'
+        ],
+      });
+
+      // THEN
+      expect(stack).to(haveResource('Custom::DynamoDBReplica', {
+        Properties: {
+          ServiceToken: {
+            'Fn::GetAtt': [
+              'awscdkawsdynamodbReplicaProviderNestedStackawscdkawsdynamodbReplicaProviderNestedStackResource18E3F12D',
+              'Outputs.awscdkawsdynamodbReplicaProviderframeworkonEventF9504691Arn'
+            ]
+          },
+          TableName: {
+            Ref: 'TableCD117FA1'
+          },
+          Region: 'eu-west-2'
+        },
+        Condition: 'TableStackRegionNotEqualseuwest2A03859E7'
+      }, ResourcePart.CompleteDefinition));
+
+      expect(stack).to(haveResource('Custom::DynamoDBReplica', {
+        Properties: {
+          ServiceToken: {
+            'Fn::GetAtt': [
+              'awscdkawsdynamodbReplicaProviderNestedStackawscdkawsdynamodbReplicaProviderNestedStackResource18E3F12D',
+              'Outputs.awscdkawsdynamodbReplicaProviderframeworkonEventF9504691Arn'
+            ]
+          },
+          TableName: {
+            Ref: 'TableCD117FA1'
+          },
+          Region: 'eu-central-1'
+        },
+        Condition: 'TableStackRegionNotEqualseucentral199D46FC0'
+      }, ResourcePart.CompleteDefinition));
+
+      test.deepEqual(SynthUtils.toCloudFormation(stack).Conditions, {
+        TableStackRegionNotEqualseuwest2A03859E7: {
+          'Fn::Not': [
+            { 'Fn::Equals': [ 'eu-west-2', { Ref: 'AWS::Region' } ] }
+          ]
+        },
+        TableStackRegionNotEqualseucentral199D46FC0: {
+          'Fn::Not': [
+            { 'Fn::Equals': [ 'eu-central-1', { Ref: 'AWS::Region' } ] }
+          ]
+        }
+      });
+
+      test.done();
+    },
+
+    'throws with PROVISIONED billing mode'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+
+      // THEN
+      test.throws(() => new Table(stack, 'Table', {
+        partitionKey: {
+          name: 'id',
+          type: AttributeType.STRING
+        },
+        replicationRegions: [
+          'eu-west-2',
+          'eu-central-1'
+        ],
+        billingMode: BillingMode.PROVISIONED,
+      }), /`PAY_PER_REQUEST`/);
+
+      test.done();
+    },
+
+    'throws when stream is set and not set to NEW_AND_OLD_IMAGES'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+
+      // THEN
+      test.throws(() => new Table(stack, 'Table', {
+        partitionKey: {
+          name: 'id',
+          type: AttributeType.STRING
+        },
+        replicationRegions: [
+          'eu-west-2',
+          'eu-central-1'
+        ],
+        stream: StreamViewType.OLD_IMAGE,
+      }), /`NEW_AND_OLD_IMAGES`/);
+
+      test.done();
+    },
+
+    'throws with replica in same region as stack'(test: Test) {
+      // GIVEN
+      const app = new App();
+      const stack = new Stack(app, 'Stack', {
+        env: { region: 'us-east-1' }
+      });
+
+      // THEN
+      test.throws(() => new Table(stack, 'Table', {
+        partitionKey: {
+          name: 'id',
+          type: AttributeType.STRING
+        },
+        replicationRegions: [
+          'eu-west-1',
+          'us-east-1',
+          'eu-west-2',
+        ],
+      }), /`replicationRegions` cannot include the region where this stack is deployed/);
+
+      test.done();
+    },
+
+    'no conditions when region is known'(test: Test) {
+      // GIVEN
+      const app = new App();
+      const stack = new Stack(app, 'Stack', {
+        env: { region: 'eu-west-1' }
+      });
+
+      // WHEN
+      new Table(stack, 'Table', {
+        partitionKey: {
+          name: 'id',
+          type: AttributeType.STRING
+        },
+        replicationRegions: [
+          'eu-west-2',
+          'eu-central-1'
+        ],
+      });
+
+      // THEN
+      test.equal(SynthUtils.toCloudFormation(stack).Conditions, undefined);
+
+      test.done();
+    },
+  }
 };
 
 function testGrant(test: Test, expectedActions: string[], invocation: (user: iam.IPrincipal, table: Table) => void) {
