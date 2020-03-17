@@ -159,7 +159,7 @@ export interface NodegroupOps {
    *
    * @default - None
    */
-  readonly tags?: any;
+  readonly tags?: { [name: string]: string };
 }
 
 /**
