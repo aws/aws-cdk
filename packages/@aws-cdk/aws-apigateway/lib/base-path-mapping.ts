@@ -15,7 +15,8 @@ export interface BasePathMappingOptions {
   readonly basePath?: string;
 
   /**
-   * The Deployment stage name of the rest api
+   * The Deployment stage name of API
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-basepathmapping.html#cfn-apigateway-basepathmapping-stage
    * @default - map to deploymentStage of restApi otherwise stage needs to pass in URL
    */
   readonly stage?: string;
