@@ -1,4 +1,4 @@
-import * as cxprotocol from '@aws-cdk/cloud-assembly-schema';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { Construct } from "./construct";
 import { Lazy } from "./lazy";
 import { Token } from './token';
@@ -61,7 +61,7 @@ export abstract class CfnElement extends Construct {
       displayHint: `${notTooLong(this.node.path)}.LogicalID`
     });
 
-    this.node.addMetadata(cxprotocol.ArtifactMetadataEntryType.LOGICAL_ID, this.logicalId, this.constructor);
+    this.node.addMetadata(cxschema.ArtifactMetadataEntryType.LOGICAL_ID, this.logicalId, this.constructor);
   }
 
   /**
@@ -78,7 +78,7 @@ export abstract class CfnElement extends Construct {
    *      node +internal+ entries filtered.
    */
   public get creationStack(): string[] {
-    const trace = this.node.metadata.find(md => md.type === cxprotocol.ArtifactMetadataEntryType.LOGICAL_ID)!.trace;
+    const trace = this.node.metadata.find(md => md.type === cxschema.ArtifactMetadataEntryType.LOGICAL_ID)!.trace;
     if (!trace) {
       return [];
     }

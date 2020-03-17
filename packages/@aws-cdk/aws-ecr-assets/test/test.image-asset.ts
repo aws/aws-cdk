@@ -1,6 +1,6 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
-import * as cxprotocol from '@aws-cdk/cloud-assembly-schema';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { App, Lazy, Stack } from '@aws-cdk/core';
 import * as fs from 'fs';
 import { Test } from 'nodeunit';
@@ -50,8 +50,8 @@ export = {
     });
 
     // THEN
-    const assetMetadata = stack.node.metadata.find(({ type }) => type === cxprotocol.ArtifactMetadataEntryType.ASSET);
-    test.deepEqual(assetMetadata && (assetMetadata.data as cxprotocol.ContainerImageAssetMetadataEntry).buildArgs, { a: 'b' });
+    const assetMetadata = stack.node.metadata.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
+    test.deepEqual(assetMetadata && (assetMetadata.data as cxschema.ContainerImageAssetMetadataEntry).buildArgs, { a: 'b' });
     test.done();
   },
 
@@ -69,8 +69,8 @@ export = {
     });
 
     // THEN
-    const assetMetadata = stack.node.metadata.find(({ type }) => type === cxprotocol.ArtifactMetadataEntryType.ASSET);
-    test.deepEqual(assetMetadata && (assetMetadata.data as cxprotocol.ContainerImageAssetMetadataEntry).target, 'a-target');
+    const assetMetadata = stack.node.metadata.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
+    test.deepEqual(assetMetadata && (assetMetadata.data as cxschema.ContainerImageAssetMetadataEntry).target, 'a-target');
     test.done();
   },
 
@@ -86,8 +86,8 @@ export = {
     });
 
     // THEN
-    const assetMetadata = stack.node.metadata.find(({ type }) => type === cxprotocol.ArtifactMetadataEntryType.ASSET);
-    test.deepEqual(assetMetadata && (assetMetadata.data as cxprotocol.ContainerImageAssetMetadataEntry).file, 'Dockerfile.Custom');
+    const assetMetadata = stack.node.metadata.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
+    test.deepEqual(assetMetadata && (assetMetadata.data as cxschema.ContainerImageAssetMetadataEntry).file, 'Dockerfile.Custom');
     test.done();
   },
 

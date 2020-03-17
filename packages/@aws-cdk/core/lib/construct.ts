@@ -1,4 +1,4 @@
-import * as cxprotocol from '@aws-cdk/cloud-assembly-schema';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { IAspect } from './aspect';
 import { DependableTrait, IDependable } from './dependency';
@@ -331,7 +331,7 @@ export class ConstructNode {
    * @param message The info message.
    */
   public addInfo(message: string): void {
-    this.addMetadata(cxprotocol.ArtifactMetadataEntryType.INFO, message);
+    this.addMetadata(cxschema.ArtifactMetadataEntryType.INFO, message);
   }
 
   /**
@@ -341,7 +341,7 @@ export class ConstructNode {
    * @param message The warning message.
    */
   public addWarning(message: string): void {
-    this.addMetadata(cxprotocol.ArtifactMetadataEntryType.WARN, message);
+    this.addMetadata(cxschema.ArtifactMetadataEntryType.WARN, message);
   }
 
   /**
@@ -350,7 +350,7 @@ export class ConstructNode {
    * @param message The error message.
    */
   public addError(message: string) {
-    this.addMetadata(cxprotocol.ArtifactMetadataEntryType.ERROR, message);
+    this.addMetadata(cxschema.ArtifactMetadataEntryType.ERROR, message);
   }
 
   /**

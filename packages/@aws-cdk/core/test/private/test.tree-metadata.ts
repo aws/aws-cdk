@@ -1,4 +1,4 @@
-import * as cxprotocol from '@aws-cdk/cloud-assembly-schema';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as fs from 'fs';
 import { Test } from 'nodeunit';
 import * as path from 'path';
@@ -282,7 +282,7 @@ export = {
     const treenode = app.node.findChild('Tree');
 
     const warn = treenode.node.metadata.find((md) => {
-      return md.type === cxprotocol.ArtifactMetadataEntryType.WARN
+      return md.type === cxschema.ArtifactMetadataEntryType.WARN
         && /Forcing an inspect error/.test(md.data as string)
         && /mycfnresource/.test(md.data as string);
     });

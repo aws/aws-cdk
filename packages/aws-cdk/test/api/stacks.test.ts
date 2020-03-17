@@ -1,4 +1,4 @@
-import * as cxprotocol from '@aws-cdk/cloud-assembly-schema';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { AppStacks, DefaultSelection } from '../../lib/api/cxapp/stacks';
 import { registerContextProvider } from '../../lib/context-providers';
@@ -153,7 +153,7 @@ function testStacks({ env, versionReporting = true }: { env?: string, versionRep
         metadata: {
           '/resource': [
             {
-              type: cxprotocol.ArtifactMetadataEntryType.ERROR,
+              type: cxschema.ArtifactMetadataEntryType.ERROR,
               data: 'this is an error'
             }
           ]

@@ -1,4 +1,4 @@
-import * as cxprotocol from '@aws-cdk/cloud-assembly-schema';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { CloudAssembly } from './cloud-assembly';
 import {
   MetadataEntryResult,
@@ -37,11 +37,11 @@ export class CloudArtifact {
    * @param artifact The artifact manifest
    * @returns the `CloudArtifact` that matches the artifact type or `undefined` if it's an artifact type that is unrecognized by this module.
    */
-  public static fromManifest(assembly: CloudAssembly, id: string, artifact: cxprotocol.ArtifactManifest): CloudArtifact | undefined {
+  public static fromManifest(assembly: CloudAssembly, id: string, artifact: cxschema.ArtifactManifest): CloudArtifact | undefined {
     switch (artifact.type) {
-      case cxprotocol.ArtifactType.AWS_CLOUDFORMATION_STACK:
+      case cxschema.ArtifactType.AWS_CLOUDFORMATION_STACK:
         return new CloudFormationStackArtifact(assembly, id, artifact);
-      case cxprotocol.ArtifactType.CDK_TREE:
+      case cxschema.ArtifactType.CDK_TREE:
         return new TreeCloudArtifact(assembly, id, artifact);
       default:
         return undefined;
@@ -51,7 +51,7 @@ export class CloudArtifact {
   /**
    * The artifact's manifest
    */
-  public readonly manifest: cxprotocol.ArtifactManifest;
+  public readonly manifest: cxschema.ArtifactManifest;
 
   /**
    * The set of messages extracted from the artifact's metadata.
@@ -69,7 +69,7 @@ export class CloudArtifact {
    */
   private _deps?: CloudArtifact[];
 
-  protected constructor(public readonly assembly: CloudAssembly, public readonly id: string, manifest: cxprotocol.ArtifactManifest) {
+  protected constructor(public readonly assembly: CloudAssembly, public readonly id: string, manifest: cxschema.ArtifactManifest) {
     this.manifest = manifest;
     this.messages = this.renderMessages();
     this._dependencyIDs = manifest.dependencies || [];
@@ -115,13 +115,13 @@ export class CloudArtifact {
       for (const entry of metadata) {
         let level: SynthesisMessageLevel;
         switch (entry.type) {
-          case cxprotocol.ArtifactMetadataEntryType.WARN:
+          case cxschema.ArtifactMetadataEntryType.WARN:
             level = SynthesisMessageLevel.WARNING;
             break;
-          case cxprotocol.ArtifactMetadataEntryType.ERROR:
+          case cxschema.ArtifactMetadataEntryType.ERROR:
             level = SynthesisMessageLevel.ERROR;
             break;
-          case cxprotocol.ArtifactMetadataEntryType.INFO:
+          case cxschema.ArtifactMetadataEntryType.INFO:
             level = SynthesisMessageLevel.INFO;
             break;
           default:

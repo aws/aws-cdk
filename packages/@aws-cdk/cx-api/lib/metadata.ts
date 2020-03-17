@@ -1,4 +1,4 @@
-import * as cxprotocol from '@aws-cdk/cloud-assembly-schema';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 
 /**
  * The key used when CDK path is embedded in **CloudFormation template** metadata (not cdk metadata).
@@ -11,7 +11,7 @@ export enum SynthesisMessageLevel {
   ERROR = 'error'
 }
 
-export interface MetadataEntryResult extends cxprotocol.MetadataEntry {
+export interface MetadataEntryResult extends cxschema.MetadataEntry {
   /**
    * The path in which this entry was defined.
    */
@@ -21,10 +21,10 @@ export interface MetadataEntryResult extends cxprotocol.MetadataEntry {
 /**
  * Metadata associated with the objects in the stack's Construct tree
  */
-export type StackMetadata = { [path: string]: cxprotocol.MetadataEntry[] };
+export type StackMetadata = { [path: string]: cxschema.MetadataEntry[] };
 
 export interface SynthesisMessage {
   readonly level: SynthesisMessageLevel;
   readonly id: string;
-  readonly entry: cxprotocol.MetadataEntry;
+  readonly entry: cxschema.MetadataEntry;
 }

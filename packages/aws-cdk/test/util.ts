@@ -1,4 +1,4 @@
-import * as cxprotocol from '@aws-cdk/cloud-assembly-schema';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -9,12 +9,12 @@ export interface TestStackArtifact {
   env?: string,
   depends?: string[];
   metadata?: cxapi.StackMetadata;
-  assets?: cxprotocol.AssetMetadataEntry[];
+  assets?: cxschema.AssetMetadataEntry[];
 }
 
 export interface TestAssembly {
   stacks: TestStackArtifact[];
-  missing?: cxprotocol.MissingContext[];
+  missing?: cxschema.MissingContext[];
 }
 
 export function testAssembly(assembly: TestAssembly): cxapi.CloudAssembly {
@@ -24,11 +24,11 @@ export function testAssembly(assembly: TestAssembly): cxapi.CloudAssembly {
     const templateFile = `${stack.stackName}.template.json`;
     fs.writeFileSync(path.join(builder.outdir, templateFile), JSON.stringify(stack.template, undefined, 2));
 
-    const metadata: { [path: string]: cxprotocol.MetadataEntry[] } = { ...stack.metadata };
+    const metadata: { [path: string]: cxschema.MetadataEntry[] } = { ...stack.metadata };
 
     for (const asset of stack.assets || []) {
       metadata[asset.id] = [
-        { type: cxprotocol.ArtifactMetadataEntryType.ASSET, data: asset }
+        { type: cxschema.ArtifactMetadataEntryType.ASSET, data: asset }
       ];
     }
 
@@ -37,7 +37,7 @@ export function testAssembly(assembly: TestAssembly): cxapi.CloudAssembly {
     }
 
     builder.addArtifact(stack.stackName, {
-      type: cxprotocol.ArtifactType.AWS_CLOUDFORMATION_STACK,
+      type: cxschema.ArtifactType.AWS_CLOUDFORMATION_STACK,
       environment: stack.env || 'aws://12345/here',
 
       dependencies: stack.depends,

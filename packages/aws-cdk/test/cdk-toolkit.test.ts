@@ -1,4 +1,4 @@
-import * as cxprotocol from '@aws-cdk/cloud-assembly-schema';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { AppStacks } from '../lib/api/cxapp/stacks';
 import { DeployStackResult } from '../lib/api/deploy-stack';
@@ -48,7 +48,7 @@ class MockStack {
     public readonly stackName: string,
     public readonly template: any = { Resources: { TempalteName: stackName } },
     public readonly templateFile: string = `fake/stack/${stackName}.json`,
-    public readonly assets: cxprotocol.AssetMetadataEntry[] = [],
+    public readonly assets: cxschema.AssetMetadataEntry[] = [],
     public readonly parameters: { [id: string]: string } = {},
     public readonly environment: cxapi.Environment = { name: 'MockEnv', account: '123456789012', region: 'bermuda-triangle-1' },
   ) {}
@@ -62,7 +62,7 @@ class TestAppStacks extends AppStacks {
     super(undefined as any);
   }
 
-  public getTagsFromStackMetadata(stack: cxapi.CloudFormationStackArtifact): cxprotocol.Tag[] {
+  public getTagsFromStackMetadata(stack: cxapi.CloudFormationStackArtifact): cxschema.Tag[] {
     switch (stack.stackName) {
       case TestAppStacks.MOCK_STACK_A.stackName:
         return [{ key: 'Foo', value: 'Bar' }];
@@ -101,7 +101,7 @@ class TestAppStacks extends AppStacks {
 }
 
 class TestProvisioner implements IDeploymentTarget {
-  private readonly expectedTags: { [stackName: string]: cxprotocol.Tag[] } = {};
+  private readonly expectedTags: { [stackName: string]: cxschema.Tag[] } = {};
   private readonly expectedNotificationArns?: string[];
 
   constructor(

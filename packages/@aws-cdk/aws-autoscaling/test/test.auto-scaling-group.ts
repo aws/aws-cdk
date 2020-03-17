@@ -2,7 +2,7 @@ import { ABSENT, expect, haveResource, haveResourceLike, InspectionFailure, Reso
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import * as cxprotocol from '@aws-cdk/cloud-assembly-schema';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as autoscaling from '../lib';
@@ -827,7 +827,7 @@ export = {
     });
 
     // THEN
-    test.deepEqual(asg.node.metadata[0].type, cxprotocol.ArtifactMetadataEntryType.WARN);
+    test.deepEqual(asg.node.metadata[0].type, cxschema.ArtifactMetadataEntryType.WARN);
     test.deepEqual(asg.node.metadata[0].data, 'iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
 
     test.done();
@@ -854,7 +854,7 @@ export = {
     });
 
     // THEN
-    test.deepEqual(asg.node.metadata[0].type, cxprotocol.ArtifactMetadataEntryType.WARN);
+    test.deepEqual(asg.node.metadata[0].type, cxschema.ArtifactMetadataEntryType.WARN);
     test.deepEqual(asg.node.metadata[0].data, 'iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
 
     test.done();

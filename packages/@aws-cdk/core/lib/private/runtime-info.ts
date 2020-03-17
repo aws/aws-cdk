@@ -1,10 +1,10 @@
-import * as cxprotocol from '@aws-cdk/cloud-assembly-schema';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { major as nodeMajorVersion } from './node-version';
 
 /**
  * Returns a list of loaded modules and their versions.
  */
-export function collectRuntimeInformation(): cxprotocol.RuntimeInfo {
+export function collectRuntimeInformation(): cxschema.RuntimeInfo {
   const libraries: { [name: string]: string } = {};
 
   for (const fileName of Object.keys(require.cache)) {

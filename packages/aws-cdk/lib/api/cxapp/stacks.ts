@@ -1,4 +1,4 @@
-import * as cxprotocol from '@aws-cdk/cloud-assembly-schema';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { RegionInfo } from '@aws-cdk/region-info';
 import * as colors from 'colors/safe';
@@ -266,7 +266,7 @@ export class AppStacks {
       this.assembly = assembly;
       return assembly;
 
-      function formatModules(runtime: cxprotocol.RuntimeInfo): string {
+      function formatModules(runtime: cxschema.RuntimeInfo): string {
         const modules = new Array<string>();
 
         // inject toolkit version to list of modules
@@ -285,8 +285,8 @@ export class AppStacks {
   /**
    * @returns an array with the tags available in the stack metadata.
    */
-  public getTagsFromStackMetadata(stack: cxapi.CloudFormationStackArtifact): cxprotocol.Tag[] {
-    return flatMap(stack.findMetadataByType(cxprotocol.ArtifactMetadataEntryType.STACK_TAGS), x => x.data as cxprotocol.Tag[]);
+  public getTagsFromStackMetadata(stack: cxapi.CloudFormationStackArtifact): cxschema.Tag[] {
+    return flatMap(stack.findMetadataByType(cxschema.ArtifactMetadataEntryType.STACK_TAGS), x => x.data as cxschema.Tag[]);
   }
 
   /**
@@ -323,7 +323,7 @@ export class AppStacks {
     }
   }
 
-  private printMessage(logFn: (s: string) => void, prefix: string, id: string, entry: cxprotocol.MetadataEntry) {
+  private printMessage(logFn: (s: string) => void, prefix: string, id: string, entry: cxschema.MetadataEntry) {
     logFn(`[${prefix} at ${id}] ${entry.data}`);
 
     if (this.props.verbose && entry.trace) {
@@ -428,7 +428,7 @@ export interface SelectedStack extends cxapi.CloudFormationStackArtifact {
 /**
  * Return all keys of misisng context items
  */
-function missingContextKeys(missing?: cxprotocol.MissingContext[]): Set<string> {
+function missingContextKeys(missing?: cxschema.MissingContext[]): Set<string> {
   return new Set((missing || []).map(m => m.key));
 }
 

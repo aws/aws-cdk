@@ -1,4 +1,4 @@
-import * as cxprotocol from '@aws-cdk/cloud-assembly-schema';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cfnDiff from '@aws-cdk/cloudformation-diff';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as colors from 'colors/safe';
@@ -86,7 +86,7 @@ function difRequiresApproval(diff: cfnDiff.TemplateDiff, requireApproval: Requir
 
 function buildLogicalToPathMap(stack: cxapi.CloudFormationStackArtifact) {
   const map: { [id: string]: string } = {};
-  for (const md of stack.findMetadataByType(cxprotocol.ArtifactMetadataEntryType.LOGICAL_ID)) {
+  for (const md of stack.findMetadataByType(cxschema.ArtifactMetadataEntryType.LOGICAL_ID)) {
     map[md.data as string] = md.path;
   }
   return map;

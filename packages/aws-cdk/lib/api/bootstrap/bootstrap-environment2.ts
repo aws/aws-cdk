@@ -1,4 +1,4 @@
-import * as cxprotocol from '@aws-cdk/cloud-assembly-schema';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
 import * as os from 'os';
@@ -22,7 +22,7 @@ export async function bootstrapEnvironment2(environment: cxapi.Environment, sdk:
     path.join(builder.outdir, templateFile));
 
   builder.addArtifact(toolkitStackName, {
-    type: cxprotocol.ArtifactType.AWS_CLOUDFORMATION_STACK,
+    type: cxschema.ArtifactType.AWS_CLOUDFORMATION_STACK,
     environment: cxapi.EnvironmentUtils.format(environment.account, environment.region),
     properties: {
       templateFile,

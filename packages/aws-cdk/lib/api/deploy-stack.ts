@@ -1,4 +1,4 @@
-import * as cxprotocol from '@aws-cdk/cloud-assembly-schema';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as aws from 'aws-sdk';
 import { Tags } from 'aws-sdk/clients/cloudformation';
@@ -40,7 +40,7 @@ export interface DeployStackOptions {
   deployName?: string;
   quiet?: boolean;
   reuseAssets?: string[];
-  tags?: cxprotocol.Tag[];
+  tags?: cxschema.Tag[];
 
   /**
    * Whether to execute the changeset or leave it in review.
@@ -269,7 +269,7 @@ export async function destroyStack(options: DestroyStackOptions) {
 }
 
 async function getDeployedStack(cfn: aws.CloudFormation, stackName: string):
-  Promise<{ stackId: string, template: any, tags: cxprotocol.Tag[] } | undefined> {
+  Promise<{ stackId: string, template: any, tags: cxschema.Tag[] } | undefined> {
   const stack = await getStack(cfn, stackName);
   if (!stack) {
     return undefined;
@@ -282,18 +282,18 @@ async function getDeployedStack(cfn: aws.CloudFormation, stackName: string):
   const template = await readCurrentTemplate(cfn, stackName);
   return {
     stackId: stack.StackId,
-    tags: stack.Tags ? toCxProtocolTags(stack.Tags) : [],
+    tags: stack.Tags ? tocxschemaTags(stack.Tags) : [],
     template
   };
 }
 
-function toCxProtocolTags(tags: Tags): cxprotocol.Tag[] {
+function tocxschemaTags(tags: Tags): cxschema.Tag[] {
   return tags.map(t => {
     return { key: t.Key, value: t.Value };
   });
 }
 
-function toCloudFormationTags(tags: cxprotocol.Tag[]): Tags {
+function toCloudFormationTags(tags: cxschema.Tag[]): Tags {
     return tags.map(t => {
         return { Key: t.key, Value: t.value };
     });
@@ -332,7 +332,7 @@ async function getStack(cfn: aws.CloudFormation, stackName: string): Promise<aws
   }
 }
 
-function compareTags(a: cxprotocol.Tag[], b: cxprotocol.Tag[]): boolean {
+function compareTags(a: cxschema.Tag[], b: cxschema.Tag[]): boolean {
   if (a.length !== b.length) {
     return false;
   }

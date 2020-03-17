@@ -8,6 +8,11 @@ import { execProgram } from '../../lib/api/cxapp/exec';
 import { Configuration, Settings } from '../../lib/settings';
 import * as cli from '../../lib/version';
 
+// We need to increase the default 5s jest
+// timeout for async tests because the 'execProgram' invocation
+// might take a while :\
+const FIVE_SECOND_TIMEOUT = 10000;
+
 function createApp(outdir: string): cdk.App {
 
     const app = new cdk.App({outdir});
@@ -53,7 +58,7 @@ test('execProgram throws when framework version > cli version', async () => {
         expect(err.message).toEqual(expectedError);
     }
 
-});
+}, FIVE_SECOND_TIMEOUT);
 
 test('execProgram does not throw when framework version = cli version', async () => {
 
@@ -76,7 +81,7 @@ test('execProgram does not throw when framework version = cli version', async ()
         fail(err.message);
     }
 
-});
+}, FIVE_SECOND_TIMEOUT);
 
 test('execProgram does not throw when framework version < cli version', async () => {
 
@@ -109,4 +114,4 @@ test('execProgram does not throw when framework version < cli version', async ()
         mockVersionNumber.restore();
     }
 
-});
+}, FIVE_SECOND_TIMEOUT);

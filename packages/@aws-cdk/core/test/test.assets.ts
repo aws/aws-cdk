@@ -1,4 +1,4 @@
-import * as cxprotocol from '@aws-cdk/cloud-assembly-schema';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { Test } from 'nodeunit';
 import { FileAssetPackaging, Stack } from '../lib';
 import { toCloudFormation } from './util';
@@ -16,10 +16,10 @@ export = {
     });
 
     // THEN
-    const assetMetadata = stack.node.metadata.find(({ type }) => type === cxprotocol.ArtifactMetadataEntryType.ASSET);
+    const assetMetadata = stack.node.metadata.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
 
     if (assetMetadata && assetMetadata.data) {
-      const data = assetMetadata.data as cxprotocol.AssetMetadataEntry;
+      const data = assetMetadata.data as cxschema.AssetMetadataEntry;
       test.equal(data.path, 'file-name');
       test.equal(data.id, 'source-hash');
       test.equal(data.packaging, FileAssetPackaging.ZIP_DIRECTORY);
@@ -59,10 +59,10 @@ export = {
     });
 
     // THEN
-    const assetMetadata = stack.node.metadata.find(({ type }) => type === cxprotocol.ArtifactMetadataEntryType.ASSET);
+    const assetMetadata = stack.node.metadata.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
 
     if (assetMetadata && assetMetadata.data) {
-      const data = assetMetadata.data as cxprotocol.ContainerImageAssetMetadataEntry;
+      const data = assetMetadata.data as cxschema.ContainerImageAssetMetadataEntry;
       test.equal(data.packaging, 'container-image');
       test.equal(data.path, 'directory-name');
       test.equal(data.sourceHash, 'source-hash');
@@ -85,10 +85,10 @@ export = {
     });
 
     // THEN
-    const assetMetadata = stack.node.metadata.find(({ type }) => type === cxprotocol.ArtifactMetadataEntryType.ASSET);
+    const assetMetadata = stack.node.metadata.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
 
     if (assetMetadata && assetMetadata.data) {
-      const data = assetMetadata.data as cxprotocol.ContainerImageAssetMetadataEntry;
+      const data = assetMetadata.data as cxschema.ContainerImageAssetMetadataEntry;
       test.equal(data.packaging, 'container-image');
       test.equal(data.path, 'directory-name');
       test.equal(data.sourceHash, 'source-hash');
@@ -112,10 +112,10 @@ export = {
     });
 
     // THEN
-    const assetMetadata = stack.node.metadata.find(({ type }) => type === cxprotocol.ArtifactMetadataEntryType.ASSET);
+    const assetMetadata = stack.node.metadata.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
 
     if (assetMetadata && assetMetadata.data) {
-      const data = assetMetadata.data as cxprotocol.ContainerImageAssetMetadataEntry;
+      const data = assetMetadata.data as cxschema.ContainerImageAssetMetadataEntry;
       test.equal(data.packaging, 'container-image');
       test.equal(data.path, 'directory-name');
       test.equal(data.sourceHash, 'source-hash');

@@ -1,4 +1,4 @@
-import * as cxprotocol from '@aws-cdk/cloud-assembly-schema';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as crypto from 'crypto';
 import * as fs from 'fs';
@@ -226,7 +226,7 @@ export class Stack extends Construct implements ITaggable {
    * This is returned when the stack is synthesized under the 'missing' attribute
    * and allows tooling to obtain the context and re-synthesize.
    */
-  private readonly _missingContext = new Array<cxprotocol.MissingContext>();
+  private readonly _missingContext = new Array<cxschema.MissingContext>();
 
   /**
    * Includes all parameters synthesized for assets (lazy).
@@ -540,7 +540,7 @@ export class Stack extends Construct implements ITaggable {
     if (!params) {
       params = new FileAssetParameters(this.assetParameters, asset.sourceHash);
 
-      const metadata: cxprotocol.FileAssetMetadataEntry = {
+      const metadata: cxschema.FileAssetMetadataEntry = {
         path: asset.fileName,
         id: asset.sourceHash,
         packaging: asset.packaging,
@@ -551,7 +551,7 @@ export class Stack extends Construct implements ITaggable {
         artifactHashParameter: params.artifactHashParameter.logicalId,
       };
 
-      this.node.addMetadata(cxprotocol.ArtifactMetadataEntryType.ASSET, metadata);
+      this.node.addMetadata(cxschema.ArtifactMetadataEntryType.ASSET, metadata);
     }
 
     const bucketName = params.bucketNameParameter.valueAsString;
@@ -581,7 +581,7 @@ export class Stack extends Construct implements ITaggable {
 
     // only add every image (identified by source hash) once for each stack that uses it.
     if (!this.addedImageAssets.has(assetId)) {
-      const metadata: cxprotocol.ContainerImageAssetMetadataEntry = {
+      const metadata: cxschema.ContainerImageAssetMetadataEntry = {
         repositoryName,
         imageTag,
         id: assetId,
@@ -593,7 +593,7 @@ export class Stack extends Construct implements ITaggable {
         file: asset.dockerFile,
       };
 
-      this.node.addMetadata(cxprotocol.ArtifactMetadataEntryType.ASSET, metadata);
+      this.node.addMetadata(cxschema.ArtifactMetadataEntryType.ASSET, metadata);
       this.addedImageAssets.add(assetId);
     }
 
@@ -785,7 +785,7 @@ export class Stack extends Construct implements ITaggable {
     }
 
     if (this.tags.hasTags()) {
-      this.node.addMetadata(cxprotocol.ArtifactMetadataEntryType.STACK_TAGS, this.tags.renderTags());
+      this.node.addMetadata(cxschema.ArtifactMetadataEntryType.STACK_TAGS, this.tags.renderTags());
     }
 
     if (this.nestedStackParent) {
@@ -843,7 +843,7 @@ export class Stack extends Construct implements ITaggable {
 
     // add an artifact that represents this stack
     builder.addArtifact(this.artifactId, {
-      type: cxprotocol.ArtifactType.AWS_CLOUDFORMATION_STACK,
+      type: cxschema.ArtifactType.AWS_CLOUDFORMATION_STACK,
       environment: this.environment,
       properties,
       dependencies: deps.length > 0 ? deps : undefined,
@@ -984,7 +984,7 @@ export class Stack extends Construct implements ITaggable {
   }
 
   private collectMetadata() {
-    const output: { [id: string]: cxprotocol.MetadataEntry[] } = { };
+    const output: { [id: string]: cxschema.MetadataEntry[] } = { };
     const stack = this;
 
     visit(this);
@@ -1000,7 +1000,7 @@ export class Stack extends Construct implements ITaggable {
 
       if (node.node.metadata.length > 0) {
         // Make the path absolute
-        output[ConstructNode.PATH_SEP + node.node.path] = node.node.metadata.map(md => stack.resolve(md) as cxprotocol.MetadataEntry);
+        output[ConstructNode.PATH_SEP + node.node.path] = node.node.metadata.map(md => stack.resolve(md) as cxschema.MetadataEntry);
       }
 
       for (const child of node.node.children) {

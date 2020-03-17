@@ -1,4 +1,4 @@
-import * as cxprotocol from '@aws-cdk/cloud-assembly-schema';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
@@ -34,12 +34,12 @@ export class CloudAssembly {
   /**
    * Runtime information such as module versions used to synthesize this assembly.
    */
-  public readonly runtime: cxprotocol.RuntimeInfo;
+  public readonly runtime: cxschema.RuntimeInfo;
 
   /**
    * The raw assembly manifest.
    */
-  public readonly manifest: cxprotocol.AssemblyManifest;
+  public readonly manifest: cxschema.AssemblyManifest;
 
   /**
    * Reads a cloud assembly from the specified directory.
@@ -48,7 +48,7 @@ export class CloudAssembly {
   constructor(directory: string) {
     this.directory = directory;
 
-    this.manifest = cxprotocol.Manifest.load(path.join(directory, MANIFEST_FILE));
+    this.manifest = cxschema.Manifest.load(path.join(directory, MANIFEST_FILE));
     this.version = this.manifest.version;
     this.artifacts = this.renderArtifacts();
     this.runtime = this.manifest.runtime || { libraries: { } };
@@ -122,11 +122,11 @@ export class CloudAssembly {
    * @returns a `TreeCloudArtifact` object if there is one defined in the manifest, `undefined` otherwise.
    */
   public tree(): TreeCloudArtifact | undefined {
-    const trees = this.artifacts.filter(a => a.manifest.type === cxprotocol.ArtifactType.CDK_TREE);
+    const trees = this.artifacts.filter(a => a.manifest.type === cxschema.ArtifactType.CDK_TREE);
     if (trees.length === 0) {
       return undefined;
     } else if (trees.length > 1) {
-      throw new Error(`Multiple artifacts of type ${cxprotocol.ArtifactType.CDK_TREE} found in manifest`);
+      throw new Error(`Multiple artifacts of type ${cxschema.ArtifactType.CDK_TREE} found in manifest`);
     }
     const tree = trees[0];
 
@@ -178,8 +178,8 @@ export class CloudAssemblyBuilder {
    */
   public readonly outdir: string;
 
-  private readonly artifacts: { [id: string]: cxprotocol.ArtifactManifest } = { };
-  private readonly missing = new Array<cxprotocol.MissingContext>();
+  private readonly artifacts: { [id: string]: cxschema.ArtifactManifest } = { };
+  private readonly missing = new Array<cxschema.MissingContext>();
 
   /**
    * Initializes a cloud assembly builder.
@@ -207,7 +207,7 @@ export class CloudAssemblyBuilder {
    * @param id The ID of the artifact.
    * @param manifest The artifact manifest
    */
-  public addArtifact(id: string, manifest: cxprotocol.ArtifactManifest) {
+  public addArtifact(id: string, manifest: cxschema.ArtifactManifest) {
     this.artifacts[id] = filterUndefined(manifest);
   }
 
@@ -215,7 +215,7 @@ export class CloudAssemblyBuilder {
    * Reports that some context is missing in order for this cloud assembly to be fully synthesized.
    * @param missing Missing context information.
    */
-  public addMissing(missing: cxprotocol.MissingContext) {
+  public addMissing(missing: cxschema.MissingContext) {
     if (this.missing.every(m => m.key !== missing.key)) {
       this.missing.push(missing);
     }
@@ -230,7 +230,7 @@ export class CloudAssemblyBuilder {
 
     // explicitly initializing this type will help us detect
     // breaking changes. (For example adding a required property will break compilation).
-    let manifest: cxprotocol.AssemblyManifest = {
+    let manifest: cxschema.AssemblyManifest = {
       version: this.versionNumber(),
       artifacts: this.artifacts,
       runtime: options.runtimeInfo,
@@ -241,7 +241,7 @@ export class CloudAssemblyBuilder {
     manifest = filterUndefined(manifest);
 
     const manifestFilePath = path.join(this.outdir, MANIFEST_FILE);
-    cxprotocol.Manifest.save(manifest, manifestFilePath);
+    cxschema.Manifest.save(manifest, manifestFilePath);
 
     // "backwards compatibility": in order for the old CLI to tell the user they
     // need a new version, we'll emit the legacy manifest with only "version".
@@ -275,7 +275,7 @@ export class CloudAssemblyBuilder {
  *
  * @see core.ConstructNode.synth
  */
-export interface RuntimeInfo extends cxprotocol.RuntimeInfo {
+export interface RuntimeInfo extends cxschema.RuntimeInfo {
 
 }
 
@@ -286,7 +286,7 @@ export interface RuntimeInfo extends cxprotocol.RuntimeInfo {
  *
  * @see core.ConstructNode.metadata
  */
-export interface MetadataEntry extends cxprotocol.MetadataEntry {
+export interface MetadataEntry extends cxschema.MetadataEntry {
 
 }
 
@@ -297,7 +297,7 @@ export interface MetadataEntry extends cxprotocol.MetadataEntry {
  *
  * @see core.Stack.reportMissingContext
  */
-export interface MissingContext extends cxprotocol.MissingContext {
+export interface MissingContext extends cxschema.MissingContext {
 
 }
 
