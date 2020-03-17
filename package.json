@@ -57,5 +57,8 @@
       "@aws-cdk/cx-api/semver/**",
       "@aws-cdk/cx-api/semver/**"
     ]
+  },
+  "dependencies": {
+    "constructs": "^1.1.2"
   }
 }
