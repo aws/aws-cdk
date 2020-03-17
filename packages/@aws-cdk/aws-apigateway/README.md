@@ -615,9 +615,10 @@ domain.addBasePathMapping(api1, { basePath: 'go-to-api1' });
 domain.addBasePathMapping(api2, { basePath: 'boom' });
 ```
 
-The mapping will always be assigned to the APIs
-`deploymentStage`, which will automatically assigned to the latest API
-deployment. If you want to specify stage name you are required to supply stage as below:
+You can specify name of API's stage with base path else default mapping will always be assigned to the APIs
+`deploymentStage`, which will automatically assigned to the latest API deployment.
+More info can be found [here](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-basepathmapping.html#cfn-apigateway-basepathmapping-stage).
+Here is an example to specify stage name:
 ```ts
 domain.addBasePathMapping(api1, { basePath: 'go-to-api1', stage: 'prod' });
 ```

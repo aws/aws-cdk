@@ -16,6 +16,7 @@ export interface BasePathMappingOptions {
 
   /**
    * The Deployment stage name of API
+   * // tslint:disable-next-line: max-line-length
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-basepathmapping.html#cfn-apigateway-basepathmapping-stage
    * @default - map to deploymentStage of restApi otherwise stage needs to pass in URL
    */
