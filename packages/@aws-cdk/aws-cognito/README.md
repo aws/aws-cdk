@@ -178,7 +178,7 @@ new UserPool(this, 'myuserpool', {
   mfaEnforcement: MfaEnforcement.REQUIRED,
   mfaToken: {
     sms: true,
-    oneTimePassword: true,
+    otp: true,
   },
 });
 ```

@@ -28,7 +28,7 @@ new UserPool(stack, 'myuserpool', {
   mfaEnforcement: MfaEnforcement.REQUIRED,
   mfaTypes: {
     sms: true,
-    oneTimePassword: true,
+    otp: true,
   },
   passwordPolicy: {
     tempPasswordValidity: Duration.days(10),

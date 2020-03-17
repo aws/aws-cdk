@@ -446,7 +446,7 @@ describe('User Pool', () => {
       userPoolName: 'Pool1',
       mfaTypes: {
         sms: true,
-        oneTimePassword: true,
+        otp: true,
       }
     });
     new UserPool(stack, 'Pool2', {
@@ -454,7 +454,7 @@ describe('User Pool', () => {
       mfaEnforcement: MfaEnforcement.OFF,
       mfaTypes: {
         sms: true,
-        oneTimePassword: true,
+        otp: true,
       }
     });
 
@@ -507,7 +507,7 @@ describe('User Pool', () => {
       mfaEnforcement: MfaEnforcement.REQUIRED,
       mfaTypes: {
         sms: true,
-        oneTimePassword: true,
+        otp: true,
       }
     });
 
