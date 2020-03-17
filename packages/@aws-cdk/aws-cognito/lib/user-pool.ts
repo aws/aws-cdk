@@ -2,123 +2,7 @@ import { IRole, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from '
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Construct, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { CfnUserPool } from './cognito.generated';
-
-/**
- * Standard attributes
- * Specified following the OpenID Connect spec
- * @see https://openid.net/specs/openid-connect-core-1_0.html#StandardClaims
- */
-export enum UserPoolAttribute {
-  /**
-   * End-User's preferred postal address.
-   */
-  ADDRESS = 'address',
-
-  /**
-   * End-User's birthday, represented as an ISO 8601:2004 [ISO8601‑2004] YYYY-MM-DD format.
-   * The year MAY be 0000, indicating that it is omitted.
-   * To represent only the year, YYYY format is allowed.
-   */
-  BIRTHDATE = 'birthdate',
-
-  /**
-   * End-User's preferred e-mail address.
-   * Its value MUST conform to the RFC 5322 [RFC5322] addr-spec syntax.
-   */
-  EMAIL = 'email',
-
-  /**
-   * Surname(s) or last name(s) of the End-User.
-   * Note that in some cultures, people can have multiple family names or no family name;
-   * all can be present, with the names being separated by space characters.
-   */
-  FAMILY_NAME = 'family_name',
-
-  /**
-   * End-User's gender.
-   */
-  GENDER = 'gender',
-
-  /**
-   * Given name(s) or first name(s) of the End-User.
-   * Note that in some cultures, people can have multiple given names;
-   * all can be present, with the names being separated by space characters.
-   */
-  GIVEN_NAME = 'given_name',
-
-  /**
-   * End-User's locale, represented as a BCP47 [RFC5646] language tag.
-   * This is typically an ISO 639-1 Alpha-2 [ISO639‑1] language code in lowercase
-   * and an ISO 3166-1 Alpha-2 [ISO3166‑1] country code in uppercase, separated by a dash.
-   * For example, en-US or fr-CA.
-   */
-  LOCALE = 'locale',
-
-  /**
-   * Middle name(s) of the End-User.
-   * Note that in some cultures, people can have multiple middle names;
-   * all can be present, with the names being separated by space characters.
-   * Also note that in some cultures, middle names are not used.
-   */
-  MIDDLE_NAME = 'middle_name',
-
-  /**
-   * End-User's full name in displayable form including all name parts,
-   * possibly including titles and suffixes, ordered according to the End-User's locale and preferences.
-   */
-  NAME = 'name',
-
-  /**
-   * Casual name of the End-User that may or may not be the same as the given_name.
-   * For instance, a nickname value of Mike might be returned alongside a given_name value of Michael.
-   */
-  NICKNAME = 'nickname',
-
-  /**
-   * End-User's preferred telephone number.
-   * E.164 [E.164] is RECOMMENDED as the format of this Claim, for example, +1 (425) 555-1212 or +56 (2) 687 2400.
-   * If the phone number contains an extension, it is RECOMMENDED that the extension be represented using the
-   * RFC 3966 [RFC3966] extension syntax, for example, +1 (604) 555-1234;ext=5678.
-   */
-  PHONE_NUMBER = 'phone_number',
-
-  /**
-   * URL of the End-User's profile picture.
-   * This URL MUST refer to an image file (for example, a PNG, JPEG, or GIF image file),
-   * rather than to a Web page containing an image.
-   * Note that this URL SHOULD specifically reference a profile photo of the End-User
-   * suitable for displaying when describing the End-User, rather than an arbitrary photo taken by the End-User
-   */
-  PICTURE = 'picture',
-
-  /**
-   * Shorthand name by which the End-User wishes to be referred to.
-   */
-  PREFERRED_USERNAME = 'preferred_username',
-
-  /**
-   * URL of the End-User's profile page. The contents of this Web page SHOULD be about the End-User.
-   */
-  PROFILE = 'profile',
-
-  /**
-   * The End-User's time zone
-   */
-  TIMEZONE = 'zoneinfo',
-
-  /**
-   * Time the End-User's information was last updated.
-   * Its value is a JSON number representing the number of seconds from 1970-01-01T0:0:0Z
-   * as measured in UTC until the date/time.
-   */
-  UPDATED_AT = 'updated_at',
-
-  /**
-   * URL of the End-User's Web page or blog.
-   * This Web page SHOULD contain information published by the End-User or an organization that the End-User is affiliated with.
-   */
-  WEBSITE = 'website'
-}
+import { ICustomAttribute, RequiredAttributes } from './user-pool-attr';
 
 /**
  * The different ways in which users of this pool can sign up or sign in.
@@ -373,6 +257,21 @@ export interface UserPoolProps {
   readonly autoVerify?: AutoVerifiedAttrs;
 
   /**
+   * The set of attributes that are required for every user in the user pool.
+   * Read more on attributes here - https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html
+   *
+   * @default - No attributes are required.
+   */
+  readonly requiredAttributes?: RequiredAttributes;
+
+  /**
+   * Define a set of custom attributes that can be configured for each user in the user pool.
+   *
+   * @default - No custom attributes.
+   */
+  readonly customAttributes?: { [key: string]: ICustomAttribute };
+
+  /**
    * Lambda functions to use for supported Cognito triggers.
    *
    * @default - No Lambda triggers.
@@ -507,6 +406,7 @@ export class UserPool extends Resource implements IUserPool {
       emailVerificationSubject,
       smsVerificationMessage,
       verificationMessageTemplate,
+      schema: this.schemaConfiguration(props),
     });
 
     this.userPoolId = userPool.ref;
@@ -647,24 +547,24 @@ export class UserPool extends Resource implements IUserPool {
 
     if (signIn.username) {
       aliasAttrs = [];
-      if (signIn.email) { aliasAttrs.push(UserPoolAttribute.EMAIL); }
-      if (signIn.phone) { aliasAttrs.push(UserPoolAttribute.PHONE_NUMBER); }
-      if (signIn.preferredUsername) { aliasAttrs.push(UserPoolAttribute.PREFERRED_USERNAME); }
+      if (signIn.email) { aliasAttrs.push(StandardAttribute.EMAIL); }
+      if (signIn.phone) { aliasAttrs.push(StandardAttribute.PHONE_NUMBER); }
+      if (signIn.preferredUsername) { aliasAttrs.push(StandardAttribute.PREFERRED_USERNAME); }
       if (aliasAttrs.length === 0) { aliasAttrs = undefined; }
     } else {
       usernameAttrs = [];
-      if (signIn.email) { usernameAttrs.push(UserPoolAttribute.EMAIL); }
-      if (signIn.phone) { usernameAttrs.push(UserPoolAttribute.PHONE_NUMBER); }
+      if (signIn.email) { usernameAttrs.push(StandardAttribute.EMAIL); }
+      if (signIn.phone) { usernameAttrs.push(StandardAttribute.PHONE_NUMBER); }
     }
 
     if (props.autoVerify) {
       autoVerifyAttrs = [];
-      if (props.autoVerify.email) { autoVerifyAttrs.push(UserPoolAttribute.EMAIL); }
-      if (props.autoVerify.phone) { autoVerifyAttrs.push(UserPoolAttribute.PHONE_NUMBER); }
+      if (props.autoVerify.email) { autoVerifyAttrs.push(StandardAttribute.EMAIL); }
+      if (props.autoVerify.phone) { autoVerifyAttrs.push(StandardAttribute.PHONE_NUMBER); }
     } else if (signIn.email || signIn.phone) {
       autoVerifyAttrs = [];
-      if (signIn.email) { autoVerifyAttrs.push(UserPoolAttribute.EMAIL); }
-      if (signIn.phone) { autoVerifyAttrs.push(UserPoolAttribute.PHONE_NUMBER); }
+      if (signIn.email) { autoVerifyAttrs.push(StandardAttribute.EMAIL); }
+      if (signIn.phone) { autoVerifyAttrs.push(StandardAttribute.PHONE_NUMBER); }
     }
 
     return { usernameAttrs, aliasAttrs, autoVerifyAttrs };
@@ -706,4 +606,81 @@ export class UserPool extends Resource implements IUserPool {
       };
     }
   }
+
+  private schemaConfiguration(props: UserPoolProps): CfnUserPool.SchemaAttributeProperty[] | undefined {
+    const schema: CfnUserPool.SchemaAttributeProperty[] = [];
+
+    if (props.requiredAttributes) {
+      const stdAttributes: StandardAttribute[] = [];
+
+      if (props.requiredAttributes.address) { stdAttributes.push(StandardAttribute.ADDRESS); }
+      if (props.requiredAttributes.birthdate) { stdAttributes.push(StandardAttribute.BIRTHDATE); }
+      if (props.requiredAttributes.email) { stdAttributes.push(StandardAttribute.EMAIL); }
+      if (props.requiredAttributes.familyName) { stdAttributes.push(StandardAttribute.FAMILY_NAME); }
+      if (props.requiredAttributes.fullname) { stdAttributes.push(StandardAttribute.NAME); }
+      if (props.requiredAttributes.gender) { stdAttributes.push(StandardAttribute.GENDER); }
+      if (props.requiredAttributes.givenName) { stdAttributes.push(StandardAttribute.GIVEN_NAME); }
+      if (props.requiredAttributes.lastUpdateTime) { stdAttributes.push(StandardAttribute.LAST_UPDATE_TIME); }
+      if (props.requiredAttributes.locale) { stdAttributes.push(StandardAttribute.LOCALE); }
+      if (props.requiredAttributes.middleName) { stdAttributes.push(StandardAttribute.MIDDLE_NAME); }
+      if (props.requiredAttributes.nickname) { stdAttributes.push(StandardAttribute.NICKNAME); }
+      if (props.requiredAttributes.phoneNumber) { stdAttributes.push(StandardAttribute.PHONE_NUMBER); }
+      if (props.requiredAttributes.preferredUsername) { stdAttributes.push(StandardAttribute.PREFERRED_USERNAME); }
+      if (props.requiredAttributes.profilePage) { stdAttributes.push(StandardAttribute.PROFILE_URL); }
+      if (props.requiredAttributes.profilePicture) { stdAttributes.push(StandardAttribute.PICTURE_URL); }
+      if (props.requiredAttributes.timezone) { stdAttributes.push(StandardAttribute.TIMEZONE); }
+      if (props.requiredAttributes.website) { stdAttributes.push(StandardAttribute.WEBSITE); }
+
+      schema.push(...stdAttributes.map((attr) => {
+        return { name: attr, required: true };
+      }));
+    }
+
+    if (props.customAttributes) {
+      const customAttrs = Object.keys(props.customAttributes).map((attrName) => {
+        const attrConfig = props.customAttributes![attrName].bind();
+        const numberConstraints: CfnUserPool.NumberAttributeConstraintsProperty = {
+          minValue: attrConfig.numberConstraints?.min?.toString(),
+          maxValue: attrConfig.numberConstraints?.max?.toString(),
+        };
+        const stringConstraints: CfnUserPool.StringAttributeConstraintsProperty = {
+          minLength: attrConfig.stringConstraints?.minLen?.toString(),
+          maxLength: attrConfig.stringConstraints?.maxLen?.toString(),
+        };
+
+        return {
+          name: attrName,
+          attributeDataType: attrConfig.dataType,
+          numberAttributeConstraints: (attrConfig.numberConstraints) ? numberConstraints : undefined,
+          stringAttributeConstraints: (attrConfig.stringConstraints) ? stringConstraints : undefined,
+        };
+      });
+      schema.push(...customAttrs);
+    }
+
+    if (schema.length === 0) {
+      return undefined;
+    }
+    return schema;
+  }
+}
+
+const enum StandardAttribute {
+  ADDRESS = 'address',
+  BIRTHDATE = 'birthdate',
+  EMAIL = 'email',
+  FAMILY_NAME = 'family_name',
+  GENDER = 'gender',
+  GIVEN_NAME = 'given_name',
+  LOCALE = 'locale',
+  MIDDLE_NAME = 'middle_name',
+  NAME = 'name',
+  NICKNAME = 'nickname',
+  PHONE_NUMBER = 'phone_number',
+  PICTURE_URL = 'picture',
+  PREFERRED_USERNAME = 'preferred_username',
+  PROFILE_URL = 'profile',
+  TIMEZONE = 'zoneinfo',
+  LAST_UPDATE_TIME = 'updated_at',
+  WEBSITE = 'website',
 }
