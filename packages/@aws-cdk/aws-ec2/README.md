@@ -560,7 +560,7 @@ new ec2.FlowLog(this, 'FlowLog', {
 ## User Data
 User data enables you to run a script when your instances start up.  In order to configure these scripts you can add commands directly to the script
  or you can use the UserData's convenience functions to aid in the creation of your script.
- 
+
 A user data could be configured to run a script found in an asset through the following:
 ```ts
 const asset = new Asset(this, 'Asset', {path: path.join(__dirname, 'configure.sh')});
@@ -579,19 +579,23 @@ asset.grantRead( instance.role );
 ```
 
 ## Importing existing subnet
-Import existing subnet from subnet attributes like subnetId, availabilityZone and routeTableId.
-availabilityZone and routeTableId are optional attributes. If you want to use availabilityZone or route table
-of `ISubnet` than you need to pass availabilityZone and routeTableId.
+
+To import an existing Subnet, call `Subnet.fromSubnetAttributes()` or
+`Subnet.fromSubnetId()`. Only if you supply the subnet's Availability Zone
+and Route Table Ids when calling `Subnet.fromSubnetAttributes()` will you be
+able to use the CDK features that use these values (such as selecting one
+subnet per AZ).
+
+Importing an existing subnet looks like this:
+
 ```ts
-const subnet = Subnet.fromSubnetAttributes(this,'SubnetFromAttributes',{
-  subnetId: 'id',
+// Supply all properties
+const subnet = Subnet.fromSubnetAttributes(this, 'SubnetFromAttributes', {
+  subnetId: 's-1234',
   availabilityZone: 'pub-az-4465',
   routeTableId: 'rt-145'
 });
-```
 
-Existing Subnet can also be imported using `Subnet.fromSubnetId`. If you are importing subnet from id
-you will not be able to use availabilityZone and route table.
-```ts
-const subnet = Subnet.fromSubnetId(this,'SubnetFromId','subnetId');
+// Supply only subnet id
+const subnet = Subnet.fromSubnetId(this, 'SubnetFromId', 's-1234');
 ```

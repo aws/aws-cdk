@@ -563,7 +563,8 @@ export interface VpcAttributes {
 export interface SubnetAttributes {
   /**
    * The Availability Zone the subnet is located in
-   * @default - No availabilityZone
+   *
+   * @default - No AZ information, cannot use AZ selection features
    */
   readonly availabilityZone?: string;
 
@@ -574,6 +575,8 @@ export interface SubnetAttributes {
 
   /**
    * The ID of the route table for this particular subnet
+   *
+   * @default - No route table information, cannot create VPC endpoints
    */
   readonly routeTableId?: string;
 }
