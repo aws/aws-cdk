@@ -480,7 +480,7 @@ export class Cluster extends Resource implements ICluster {
    * @param id The ID of the nodegroup
    * @param options options for creating a new nodegroup
    */
-  public addNodegroup(id: string, options?: NodegroupOps): Nodegroup {
+  public addNodegroup(id: string, options?: NodegroupOptions): Nodegroup {
     return new Nodegroup(this, id, {
       cluster: this,
       ...options,
