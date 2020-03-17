@@ -1,8 +1,8 @@
 import {expect as expectCDK, haveResource} from '@aws-cdk/assert';
 import * as ec2 from "@aws-cdk/aws-ec2";
 import * as kms from "@aws-cdk/aws-kms";
-import {Stack} from "@aws-cdk/core";
 import * as cxprotocol from "@aws-cdk/cloud-assembly-schema";
+import {Stack} from "@aws-cdk/core";
 import {EfsFileSystem, EfsLifecyclePolicyProperty, EfsPerformanceMode, EfsThroughputMode} from "../lib/efs-file-system";
 
 let stack = new Stack();
