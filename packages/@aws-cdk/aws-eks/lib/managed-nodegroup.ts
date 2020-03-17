@@ -29,7 +29,7 @@ export interface NodegroupAttributes {
  * The AMI type for your node group. GPU instance types should use the `AL2_x86_64_GPU` AMI type, which uses the Amazon EKS-optimized
  * Linux AMI with GPU support. Non-GPU instances should use the `AL2_x86_64` AMI type, which uses the Amazon EKS-optimized Linux AMI.
  */
-export enum AmiType {
+export enum NodegroupAmiType {
   /**
    * Amazon EKS-optimized Linux AMI
    */
