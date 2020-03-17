@@ -1,5 +1,5 @@
-import * as api from '@aws-cdk/cx-api';
 import * as cxprotocol from '@aws-cdk/cloud-assembly-schema';
+import * as api from '@aws-cdk/cx-api';
 import { Assertion, not } from './assertion';
 import { MatchStyle, matchTemplate } from './assertions/match-template';
 

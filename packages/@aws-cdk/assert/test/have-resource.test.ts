@@ -1,5 +1,5 @@
-import * as cxapi from '@aws-cdk/cx-api';
 import * as cxprotocol from '@aws-cdk/cloud-assembly-schema';
+import * as cxapi from '@aws-cdk/cx-api';
 import { writeFileSync } from 'fs';
 import { join } from 'path';
 import { ABSENT, expect as cdkExpect, haveResource } from '../lib/index';
