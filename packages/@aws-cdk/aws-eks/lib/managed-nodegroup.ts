@@ -259,8 +259,6 @@ export class Nodegroup extends Resource implements INodegroup {
 
     // do not attempt to map the role if `kubectl` is not enabled for this
     // cluster or if `mapRole` is set to false. By default this should happen.
-    // const mapRole = options.mapRole === undefined ? true : options.mapRole;
-    // if (mapRole && this.kubectlEnabled) {
     if (this.cluster.kubectlEnabled) {
       // see https://docs.aws.amazon.com/en_us/eks/latest/userguide/add-user-role.html
       this.cluster.awsAuth.addRoleMapping(ngRole, {
