@@ -92,7 +92,8 @@
     "@aws-cdk/aws-s3-assets": "0.0.0",
     "@aws-cdk/aws-sqs": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "@aws-cdk/cx-api": "0.0.0"
+    "@aws-cdk/cx-api": "0.0.0",
+    "constructs": "^1.1.2"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -105,7 +106,8 @@
     "@aws-cdk/aws-s3-assets": "0.0.0",
     "@aws-cdk/aws-sqs": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "@aws-cdk/cx-api": "0.0.0"
+    "@aws-cdk/cx-api": "0.0.0",
+    "constructs": "^1.1.2"
   },
   "engines": {
     "node": ">= 10.3.0"
