@@ -25,6 +25,24 @@ beforeEach(() => {
       },
     }),
     '/simple/cdk.out/some_file': 'FILE_CONTENTS',
+    '/abs/cdk.out/assets.json': JSON.stringify({
+      version: AssetManifestSchema.currentVersion(),
+      files: {
+        theAsset: {
+          source: {
+            path: '/simple/cdk.out/some_file'
+          },
+          destinations: {
+            theDestination: {
+              region: 'us-north-50',
+              assumeRoleArn: 'arn:aws:role',
+              bucketName: 'some_bucket',
+              objectKey: 'some_key',
+            },
+          },
+        },
+      },
+    }),
   });
 
   aws = mockAws();
@@ -62,7 +80,7 @@ test('upload file if new', async () => {
   const pub = new AssetPublishing(AssetManifest.fromPath('/simple/cdk.out'), { aws });
 
   aws.mockS3.headObject = mockedApiFailure('NotFound', 'File does not exist');
-  aws.mockS3.upload = mockUpload();
+  aws.mockS3.upload = mockUpload('FILE_CONTENTS');
 
   await pub.publish();
 
@@ -72,4 +90,13 @@ test('upload file if new', async () => {
   }));
 
   // We'll just have to assume the contents are correct
+});
+
+test('correctly identify asset path if path is absolute', async () => {
+  const pub = new AssetPublishing(AssetManifest.fromPath('/abs/cdk.out'), { aws });
+
+  aws.mockS3.headObject = mockedApiFailure('NotFound', 'File does not exist');
+  aws.mockS3.upload = mockUpload('FILE_CONTENTS');
+
+  await pub.publish();
 });

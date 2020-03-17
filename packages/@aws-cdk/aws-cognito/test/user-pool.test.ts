@@ -2,8 +2,7 @@ import '@aws-cdk/assert/jest';
 import { ABSENT } from '@aws-cdk/assert/lib/assertions/have-resource';
 import { Role } from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Duration, Stack, Tag } from '@aws-cdk/core';
-import { Mfa, UserPool, VerificationEmailStyle } from '../lib';
+import { Mfa, NumberAttribute, StringAttribute, UserPool, VerificationEmailStyle } from '../lib';
 
 describe('User Pool', () => {
   test('default setup', () => {
@@ -437,7 +436,126 @@ describe('User Pool', () => {
     });
   });
 
-  test('mfaTypes is ignored when mfaEnforcement is undefined or set to OFF', () => {
+  test('required attributes', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'Pool', {
+      requiredAttributes: {
+        fullname: true,
+        timezone: true,
+      }
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+      Schema: [
+        {
+          Name: 'name',
+          Required: true
+        },
+        {
+          Name: 'zoneinfo',
+          Required: true
+        },
+      ]
+    });
+  });
+
+  test('schema is absent when required attributes are specified but as false', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'Pool1', {
+      userPoolName: 'Pool1',
+    });
+    new UserPool(stack, 'Pool2', {
+      userPoolName: 'Pool2',
+      requiredAttributes: {
+        familyName: false,
+      }
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+      UserPoolName: 'Pool1',
+      Schema: ABSENT
+    });
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+      UserPoolName: 'Pool2',
+      Schema: ABSENT
+    });
+  });
+
+  test('custom attributes with default constraints', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'Pool', {
+      customAttributes: {
+        'custom-string-attr': new StringAttribute(),
+        'custom-number-attr': new NumberAttribute(),
+      }
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+      Schema: [
+        {
+          Name: 'custom-string-attr',
+          AttributeDataType: 'String',
+          StringAttributeConstraints: ABSENT,
+          NumberAttributeConstraints: ABSENT,
+        },
+        {
+          Name: 'custom-number-attr',
+          AttributeDataType: 'Number',
+          StringAttributeConstraints: ABSENT,
+          NumberAttributeConstraints: ABSENT,
+        }
+      ]
+    });
+  });
+
+  test('custom attributes with constraints', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'Pool', {
+      customAttributes: {
+        'custom-string-attr': new StringAttribute({ minLen: 5, maxLen: 50 }),
+        'custom-number-attr': new NumberAttribute({ min: 500, max: 2000 }),
+      }
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+      Schema: [
+        {
+          AttributeDataType: 'String',
+          Name: 'custom-string-attr',
+          StringAttributeConstraints: {
+            MaxLength: '50',
+            MinLength: '5',
+          }
+        },
+        {
+          AttributeDataType: 'Number',
+          Name: 'custom-number-attr',
+          NumberAttributeConstraints: {
+            MaxValue: '2000',
+            MinValue: '500',
+          }
+        }
+      ]
+    });
+  });
+  
+    test('mfaTypes is ignored when mfaEnforcement is undefined or set to OFF', () => {
     // GIVEN
     const stack = new Stack();
 

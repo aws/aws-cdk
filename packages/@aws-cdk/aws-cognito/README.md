@@ -34,6 +34,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 - [User Pools](#user-pools)
   - [Sign Up](#sign-up)
   - [Sign In](#sign-in)
+  - [Attributes](#attributes)
   - [Security](#security)
     - [Multi-factor Authentication](#multi-factor-authentication-mfa)
   - [Emails](#emails)
@@ -147,6 +148,40 @@ new UserPool(this, 'myuserpool', {
   autoVerify: { email: true, phone: true }
 });
 ```
+
+### Attributes
+
+Attributes represent the various properties of each user that's collected and stored in the user pool. Cognito
+provides a set of standard attributes that are available for all user pools. Users are allowed to select any of these
+standard attributes to be required. Users will not be able to sign up to the user pool without providing the required
+attributes. Besides these, additional attributes can be further defined, and are known as custom attributes.
+
+Learn more on [attributes in Cognito's
+documentation](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html).
+
+The following code sample configures a user pool with two standard attributes (name and address) as required, and adds
+four optional attributes.
+
+```ts
+new UserPool(this, 'myuserpool', {
+  // ...
+  requiredAttributes: {
+    fullname: true,
+    address: true,
+  },
+  customAttributes: {
+    'myappid': new StringAttribute({ minLen: 5, maxLen: 15 }),
+    'callingcode': new NumberAttribute({ min: 1, max: 3 }),
+    'isEmployee': new BooleanAttribute(),
+    'joinedOn': new DateTimeAttribute(),
+  },
+});
+```
+
+As shown in the code snippet, there are data types that are available for custom attributes. The 'String' and 'Number'
+data types allow for further constraints on their length and values, respectively.
+
+Custom attributes cannot be marked as required.
 
 ### Security
 

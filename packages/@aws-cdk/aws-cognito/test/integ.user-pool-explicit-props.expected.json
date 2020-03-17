@@ -66,6 +66,48 @@
           "SOFTWARE_TOKEN_MFA"
         ],
         "LambdaConfig": {},
+        "Schema": [
+          {
+            "Name": "email",
+            "Required": true
+          },
+          {
+            "Name": "name",
+            "Required": true
+          },
+          {
+            "AttributeDataType": "String",
+            "Name": "some-string-attr"
+          },
+          {
+            "AttributeDataType": "String",
+            "Name": "another-string-attr",
+            "StringAttributeConstraints": {
+              "MaxLength": "100",
+              "MinLength": "4"
+            }
+          },
+          {
+            "AttributeDataType": "Number",
+            "Name": "some-number-attr"
+          },
+          {
+            "AttributeDataType": "Number",
+            "Name": "another-number-attr",
+            "NumberAttributeConstraints": {
+              "MaxValue": "50",
+              "MinValue": "10"
+            }
+          },
+          {
+            "AttributeDataType": "Boolean",
+            "Name": "some-boolean-attr"
+          },
+          {
+            "AttributeDataType": "DateTime",
+            "Name": "some-datetime-attr"
+          }
+        ],
         "MfaConfiguration": "ON",
         "Policies": {
           "PasswordPolicy": {
@@ -94,6 +136,13 @@
           "EmailSubject": "verification email subject from the integ test",
           "SmsMessage": "verification sms message from the integ test. Code is {####}."
         }
+      }
+    }
+  },
+  "Outputs": {
+    "userpoolId": {
+      "Value": {
+        "Ref": "myuserpool01998219"
       }
     }
   }

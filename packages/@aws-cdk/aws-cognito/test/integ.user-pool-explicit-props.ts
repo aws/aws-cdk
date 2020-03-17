@@ -1,10 +1,10 @@
-import { App, Duration, Stack } from '@aws-cdk/core';
-import { Mfa, UserPool } from '../lib';
+import { App, CfnOutput, Duration, Stack } from '@aws-cdk/core';
+import { BooleanAttribute, DateTimeAttribute, Mfa, NumberAttribute, StringAttribute, UserPool } from '../lib';
 
 const app = new App();
 const stack = new Stack(app, 'integ-user-pool');
 
-new UserPool(stack, 'myuserpool', {
+const userpool = new UserPool(stack, 'myuserpool', {
   userPoolName: 'MyUserPool',
   userInvitation: {
     emailSubject: 'invitation email subject from the integ test',
@@ -25,6 +25,18 @@ new UserPool(stack, 'myuserpool', {
     email: true,
     phone: true,
   },
+  requiredAttributes: {
+    fullname: true,
+    email: true,
+  },
+  customAttributes: {
+    'some-string-attr': new StringAttribute(),
+    'another-string-attr': new StringAttribute({ minLen: 4, maxLen: 100 }),
+    'some-number-attr': new NumberAttribute(),
+    'another-number-attr': new NumberAttribute({ min: 10, max: 50 }),
+    'some-boolean-attr': new BooleanAttribute(),
+    'some-datetime-attr': new DateTimeAttribute(),
+  },
   mfa: Mfa.REQUIRED,
   mfaSecondFactor: {
     sms: true,
@@ -42,4 +54,8 @@ new UserPool(stack, 'myuserpool', {
     from: 'noreply@myawesomeapp.com',
     replyTo: 'support@myawesomeapp.com',
   },
+});
+
+new CfnOutput(stack, 'userpoolId', {
+  value: userpool.userPoolId
 });
