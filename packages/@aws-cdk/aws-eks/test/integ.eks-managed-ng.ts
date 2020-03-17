@@ -8,7 +8,10 @@ class EksClusterStack extends TestStack {
   constructor(scope: App, id: string) {
     super(scope, id);
 
-    const vpc = ec2.Vpc.fromLookup(this, 'Vpc', { isDefault: true});
+    const vpc = new ec2.Vpc(this, 'Vpc', {
+      maxAzs: 3,
+      natGateways: 1
+    });
 
     // allow all account users to assume this role in order to admin the cluster
     const mastersRole = new iam.Role(this, 'AdminRole', {
@@ -22,14 +25,8 @@ class EksClusterStack extends TestStack {
       version: '1.15'
     });
 
-    const ng = cluster.addNodegroup('NG');
-
-    cluster.addNodegroup('nodegroup', {
-      instanceTypes: [
-        new ec2.InstanceType('m5.large'),
-        new ec2.InstanceType('c5.large'),
-        new ec2.InstanceType('t3.large'),
-      ],
+    const ng = cluster.addNodegroup('nodegroup', {
+      instanceType: new ec2.InstanceType('m5.large'),
       minSize: 4,
     });
 
