@@ -615,10 +615,12 @@ domain.addBasePathMapping(api1, { basePath: 'go-to-api1' });
 domain.addBasePathMapping(api2, { basePath: 'boom' });
 ```
 
-NOTE: currently, the mapping will always be assigned to the APIs
+The mapping will always be assigned to the APIs
 `deploymentStage`, which will automatically assigned to the latest API
-deployment. Raise a GitHub issue if you require more granular control over
-mapping base paths to stages.
+deployment. If you want to specify stage name you are required to supply stage as below:
+```ts
+domain.addBasePathMapping(api1, { basePath: 'go-to-api1', stage: 'prod' });
+```
 
 If you don't specify `basePath`, all URLs under this domain will be mapped
 to the API, and you won't be able to map another API to the same domain:

@@ -13,6 +13,12 @@ export interface BasePathMappingOptions {
    * is undefined, no additional mappings will be allowed on this domain name.
    */
   readonly basePath?: string;
+
+  /**
+   * The Deployment stage name of the rest api
+   * @default - map to deploymentStage of restApi otherwise stage needs to pass in URL
+   */
+  readonly stage?: string;
 }
 
 export interface BasePathMappingProps extends BasePathMappingOptions {
@@ -44,17 +50,17 @@ export class BasePathMapping extends Resource {
       }
     }
 
-    // if this is an owned API and it has a deployment stage, map all requests
+    // if restApi is an owned API and it has a deployment stage, map all requests
     // to that stage. otherwise, the stage will have to be specified in the URL.
-    const stage = props.restApi instanceof RestApi
-      ? props.restApi.deploymentStage
-      : undefined;
+    const stage = props.stage ?? (props.restApi instanceof RestApi
+      ? props.restApi.deploymentStage.stageName
+      : undefined);
 
     new CfnBasePathMapping(this, 'Resource', {
       basePath: props.basePath,
       domainName: props.domainName.domainName,
       restApiId: props.restApi.restApiId,
-      stage: stage && stage.stageName,
+      stage
     });
   }
 }
