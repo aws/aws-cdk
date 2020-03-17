@@ -213,6 +213,37 @@ The following example shows how to define an image from a private docker registr
 
 [Docker Registry example](./test/integ.docker-registry.lit.ts)
 
+## Credentials
+
+CodeBuild allows you to store credentials used when communicating with various sources,
+like GitHub:
+
+```typescript
+new codebuild.GitHubSourceCredentials(this, 'CodeBuildGitHubCreds', {
+  accessToken: cdk.SecretValue.secretsManager('my-token'),
+});
+// GitHub Enterprise is almost the same,
+// except the class is called GitHubEnterpriseSourceCredentials
+```
+
+and BitBucket:
+
+```typescript
+new codebuild.BitBucketSourceCredentials(this, 'CodeBuildBitBucketCreds', {
+  username: cdk.SecretValue.secretsManager('my-bitbucket-creds', { jsonField: 'username' }),
+  password: cdk.SecretValue.secretsManager('my-bitbucket-creds', { jsonField: 'password' }),
+});
+```
+
+**Note**: the credentials are global to a given account in a given region -
+they are not defined per CodeBuild project.
+CodeBuild only allows storing a single credential of a given type
+(GitHub, GitHub Enterprise or BitBucket)
+in a given account in a given region -
+any attempt to save more than one will result in an error.
+You can use the [`list-source-credentials` AWS CLI operation](https://docs.aws.amazon.com/cli/latest/reference/codebuild/list-source-credentials.html)
+to inspect what credentials are stored in your account.
+
 ## Events
 
 CodeBuild projects can be used either as a source for events or be triggered
