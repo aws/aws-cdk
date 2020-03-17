@@ -180,7 +180,7 @@ export class Nodegroup extends Resource implements INodegroup {
   /**
    * Import the Nodegroup from attributes
    */
-  public static fromNodegroupAttributes(scope: Construct, id: string, attrs: NodegroupAttributes): INodegroup {
+  public static fromNodegroupName(scope: Construct, id: string, nodegroupName: string): INodegroup {
     class Import extends Resource implements INodegroup {
       public readonly nodegroupName = attrs.nodegroupName;
     }
