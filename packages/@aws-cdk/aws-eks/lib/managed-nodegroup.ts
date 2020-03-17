@@ -56,7 +56,7 @@ export interface RemoteAccess {
    *
    * @default - port 22 on the worker nodes is opened to the internet (0.0.0.0/0)
    */
-  readonly sourceSecurityGroups?: string[],
+  readonly sourceSecurityGroups?: ISecurityGroup[];
 }
 
 /**
