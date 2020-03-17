@@ -55,8 +55,16 @@
           "email",
           "phone_number"
         ],
+        "EmailConfiguration": {
+          "From": "noreply@myawesomeapp.com",
+          "ReplyToEmailAddress": "support@myawesomeapp.com"
+        },
         "EmailVerificationMessage": "verification email body from the integ test. Code is {####}.",
         "EmailVerificationSubject": "verification email subject from the integ test",
+        "EnabledMfas": [
+          "SMS_MFA",
+          "SOFTWARE_TOKEN_MFA"
+        ],
         "LambdaConfig": {},
         "Schema": [
           {
@@ -100,6 +108,17 @@
             "Name": "some-datetime-attr"
           }
         ],
+        "MfaConfiguration": "ON",
+        "Policies": {
+          "PasswordPolicy": {
+            "MinimumLength": 12,
+            "RequireLowercase": true,
+            "RequireNumbers": true,
+            "RequireSymbols": true,
+            "RequireUppercase": true,
+            "TemporaryPasswordValidityDays": 10
+          }
+        },
         "SmsConfiguration": {
           "ExternalId": "integuserpoolmyuserpoolDA38443C",
           "SnsCallerArn": {

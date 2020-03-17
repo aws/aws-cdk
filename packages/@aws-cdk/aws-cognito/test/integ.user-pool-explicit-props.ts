@@ -1,5 +1,5 @@
-import { App, CfnOutput, Stack } from '@aws-cdk/core';
-import { BooleanAttribute, DateTimeAttribute, NumberAttribute, StringAttribute, UserPool } from '../lib';
+import { App, CfnOutput, Duration, Stack } from '@aws-cdk/core';
+import { BooleanAttribute, DateTimeAttribute, Mfa, NumberAttribute, StringAttribute, UserPool } from '../lib';
 
 const app = new App();
 const stack = new Stack(app, 'integ-user-pool');
@@ -36,7 +36,24 @@ const userpool = new UserPool(stack, 'myuserpool', {
     'another-number-attr': new NumberAttribute({ min: 10, max: 50 }),
     'some-boolean-attr': new BooleanAttribute(),
     'some-datetime-attr': new DateTimeAttribute(),
-  }
+  },
+  mfa: Mfa.REQUIRED,
+  mfaSecondFactor: {
+    sms: true,
+    otp: true,
+  },
+  passwordPolicy: {
+    tempPasswordValidity: Duration.days(10),
+    minLength: 12,
+    requireDigits: true,
+    requireLowercase: true,
+    requireUppercase: true,
+    requireSymbols: true,
+  },
+  emailSettings: {
+    from: 'noreply@myawesomeapp.com',
+    replyTo: 'support@myawesomeapp.com',
+  },
 });
 
 new CfnOutput(stack, 'userpoolId', {
