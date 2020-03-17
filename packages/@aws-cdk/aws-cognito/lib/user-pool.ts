@@ -307,7 +307,7 @@ export interface UserInvitationConfig {
  * The different ways in which a user pool's MFA enforcement can be configured.
  * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-mfa.html
  */
-export enum MfaEnforcement {
+export enum Mfa {
   /** Users are not required to use MFA for sign in, and cannot configure one. */
   OFF = 'OFF',
   /** Users are not required to use MFA for sign in, but can configure one if they so choose to. */
@@ -320,7 +320,7 @@ export enum MfaEnforcement {
  * The different ways in which a user pool can obtain their MFA token for sign in.
  * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-mfa.html
  */
-export interface MfaTypes {
+export interface MfaSecondFactor {
   /**
    * The MFA token is sent to the user via SMS to their verified phone numbers
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-mfa-sms-text-message.html
@@ -468,9 +468,9 @@ export interface UserPoolProps {
   /**
    * Configure on whether users of this user pool can or are required use MFA to sign in.
    *
-   * @default MfaEnforcement.OFF
+   * @default Mfa.OFF
    */
-  readonly mfaEnforcement?: MfaEnforcement;
+  readonly mfa?: Mfa;
 
   /**
    * Configure the MFA types that users can use in this user pool. Ignored if `mfaEnforcement` is set to `OFF`.
@@ -478,7 +478,7 @@ export interface UserPoolProps {
    * @default - { sms: true, oneTimePassword: false }, if `mfaEnforcement` is set to `OPTIONAL` or `REQUIRED`.
    * { sms: false, oneTimePassword: false }, otherwise
    */
-  readonly mfaTypes?: MfaTypes;
+  readonly mfaSecondFactor?: MfaSecondFactor;
 
   /**
    * Password policy for this user pool.
@@ -629,7 +629,7 @@ export class UserPool extends Resource implements IUserPool {
       emailVerificationSubject,
       smsVerificationMessage,
       verificationMessageTemplate,
-      mfaConfiguration: props.mfaEnforcement,
+      mfaConfiguration: props.mfa,
       enabledMfas: this.mfaConfiguration(props),
       policies: passwordPolicy !== undefined ? { passwordPolicy } : undefined,
       emailConfiguration: undefinedIfNoKeys({
@@ -837,18 +837,18 @@ export class UserPool extends Resource implements IUserPool {
   }
 
   private mfaConfiguration(props: UserPoolProps): string[] | undefined {
-    if (props.mfaEnforcement === undefined || props.mfaEnforcement === MfaEnforcement.OFF) {
+    if (props.mfa === undefined || props.mfa === Mfa.OFF) {
       // since default is OFF, treat undefined and OFF the same way
       return undefined;
-    } else if (props.mfaTypes === undefined &&
-      (props.mfaEnforcement === MfaEnforcement.OPTIONAL || props.mfaEnforcement === MfaEnforcement.REQUIRED)) {
+    } else if (props.mfaSecondFactor === undefined &&
+      (props.mfa === Mfa.OPTIONAL || props.mfa === Mfa.REQUIRED)) {
         return [ 'SMS_MFA' ];
     } else {
       const enabledMfas = [];
-      if (props.mfaTypes!.sms) {
+      if (props.mfaSecondFactor!.sms) {
         enabledMfas.push('SMS_MFA');
       }
-      if (props.mfaTypes!.otp) {
+      if (props.mfaSecondFactor!.otp) {
         enabledMfas.push('SOFTWARE_TOKEN_MFA');
       }
       return enabledMfas;

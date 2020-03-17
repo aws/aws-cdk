@@ -188,8 +188,8 @@ configure an MFA token and use it for sign in. It also allows for the users to u
 ```ts
 new UserPool(this, 'myuserpool', {
   // ...
-  mfaEnforcement: MfaEnforcement.REQUIRED,
-  mfaToken: {
+  mfa: Mfa.REQUIRED,
+  mfaSecondFactor: {
     sms: true,
     otp: true,
   },

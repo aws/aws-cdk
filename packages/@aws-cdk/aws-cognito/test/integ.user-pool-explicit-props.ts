@@ -1,5 +1,5 @@
 import { App, Duration, Stack } from '@aws-cdk/core';
-import { MfaEnforcement, UserPool } from '../lib';
+import { Mfa, UserPool } from '../lib';
 
 const app = new App();
 const stack = new Stack(app, 'integ-user-pool');
@@ -25,8 +25,8 @@ new UserPool(stack, 'myuserpool', {
     email: true,
     phone: true,
   },
-  mfaEnforcement: MfaEnforcement.REQUIRED,
-  mfaTypes: {
+  mfa: Mfa.REQUIRED,
+  mfaSecondFactor: {
     sms: true,
     otp: true,
   },

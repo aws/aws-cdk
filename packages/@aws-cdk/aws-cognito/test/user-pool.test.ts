@@ -3,7 +3,7 @@ import { ABSENT } from '@aws-cdk/assert/lib/assertions/have-resource';
 import { Role } from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Duration, Stack, Tag } from '@aws-cdk/core';
-import { MfaEnforcement, UserPool, VerificationEmailStyle } from '../lib';
+import { Mfa, UserPool, VerificationEmailStyle } from '../lib';
 
 describe('User Pool', () => {
   test('default setup', () => {
@@ -444,15 +444,15 @@ describe('User Pool', () => {
     // WHEN
     new UserPool(stack, 'Pool1', {
       userPoolName: 'Pool1',
-      mfaTypes: {
+      mfaSecondFactor: {
         sms: true,
         otp: true,
       }
     });
     new UserPool(stack, 'Pool2', {
       userPoolName: 'Pool2',
-      mfaEnforcement: MfaEnforcement.OFF,
-      mfaTypes: {
+      mfa: Mfa.OFF,
+      mfaSecondFactor: {
         sms: true,
         otp: true,
       }
@@ -478,11 +478,11 @@ describe('User Pool', () => {
     // WHEN
     new UserPool(stack, 'Pool1', {
       userPoolName: 'Pool1',
-      mfaEnforcement: MfaEnforcement.OPTIONAL,
+      mfa: Mfa.OPTIONAL,
     });
     new UserPool(stack, 'Pool2', {
       userPoolName: 'Pool2',
-      mfaEnforcement: MfaEnforcement.REQUIRED,
+      mfa: Mfa.REQUIRED,
     });
 
     // THEN
@@ -504,8 +504,8 @@ describe('User Pool', () => {
 
     // WHEN
     new UserPool(stack, 'Pool', {
-      mfaEnforcement: MfaEnforcement.REQUIRED,
-      mfaTypes: {
+      mfa: Mfa.REQUIRED,
+      mfaSecondFactor: {
         sms: true,
         otp: true,
       }
