@@ -87,9 +87,19 @@ export class IntegrationTest {
       this.deleteCdkContext();
     }
 
+    const cliSwitches = [
+      // This would otherwise trip on every version update
+      '--no-version-reporting',
+      // don't inject cloudformation metadata into template
+      '--no-path-metadata',
+      '--no-asset-metadata',
+      // save a copy step by not staging assets
+      '--no-staging',
+    ];
+
     try {
       const cdk = require.resolve('aws-cdk/bin/cdk');
-      return exec([cdk, '-a', `node ${this.name}`, '--no-version-reporting'].concat(args), {
+      return exec([cdk, '-a', `node ${this.name}`, ...cliSwitches], {
         cwd: this.directory,
         json: options.json,
         verbose: options.verbose,
