@@ -499,7 +499,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
 
     // use delayed evaluation
     const imageConfig = props.machineImage.getImage(this);
-    this.userData = props.userData || imageConfig.userData || ec2.UserData.forOperatingSystem(imageConfig.osType);
+    this.userData = props.userData ?? imageConfig.userData;
     const userDataToken = Lazy.stringValue({ produce: () => Fn.base64(this.userData.render()) });
     const securityGroupsToken = Lazy.listValue({ produce: () => this.securityGroups.map(sg => sg.securityGroupId) });
 
