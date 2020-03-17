@@ -1,9 +1,11 @@
+import { expect, haveResource } from '@aws-cdk/assert';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
 import * as _ from 'lodash';
 import {Test, testCase} from 'nodeunit';
+import * as path from 'path';
 import * as lambda from '../lib';
 
 export = testCase({
@@ -178,5 +180,63 @@ export = testCase({
       code: lambda.Code.fromInline('foo')
     }), /Inline source not allowed for/);
     test.done();
+  },
+
+  'codeHash returns a value for supporting assets and inline code'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const asset = new lambda.Function(stack, 'Asset', {
+      code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
+      runtime: lambda.Runtime.NODEJS_12_X,
+      handler: 'index.handler'
+    });
+    const inline = new lambda.Function(stack, 'Inline', {
+      code: lambda.Code.fromInline('boom bam'),
+      runtime: lambda.Runtime.NODEJS_12_X,
+      handler: 'index.handler'
+    });
+    const params = new lambda.Function(stack, 'CfnParams', {
+      code: lambda.Code.fromCfnParameters(),
+      runtime: lambda.Runtime.NODEJS_12_X,
+      handler: 'index.handler'
+    });
+
+    // THEN
+    test.deepEqual(asset.codeHash, '9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232');
+    test.deepEqual(inline.codeHash, 'e07117e0bca42f0f84f0b2cf044d45352808b2dbdde5358c0b9f770166cb1515');
+    test.deepEqual(params.codeHash, undefined);
+    test.done();
+  },
+
+  'addAlias defines an alias against the latest version of your function'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'MyFunction', {
+      code: lambda.Code.fromInline('inline horray'),
+      runtime: lambda.Runtime.NODEJS_12_X,
+      handler: 'index.handler'
+    });
+
+    // WHEN
+    fn.addAlias('latest');
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::Alias', {
+      FunctionName: {
+        Ref: "MyFunction3BAA72D1"
+      },
+      FunctionVersion: {
+        "Fn::GetAtt": [
+          "MyFunctionVersion756d30f6e614451d9c4fed107d9c1ee3030fabf54768b61af9c54f8b2d90ad0c14F79D34",
+          "Version"
+        ]
+      },
+      Name: "latest"
+    }));
+
+    test.done();
   }
+
 });

@@ -49,6 +49,35 @@ to our CDK project directory. This is especially important when we want to share
 this construct through a library. Different programming languages will have
 different techniques for bundling resources into libraries.
 
+When using `fromAsset` or `fromInline`, you can obtain the hash of source
+through the `function.codeHash` property. This property will return `undefined`
+if the code hash cannot be calculated during synthesis (e.g. when using code
+from an S3 bucket).
+
+### Versions and Aliases
+
+You can define one or more
+[aliases](https://docs.aws.amazon.com/lambda/latest/dg/configuration-aliases.html)
+for your AWS Lambda function. A Lambda alias is like a pointer to a specific
+Lambda function version. Users can access the function version using the alias
+ARN.
+
+To define an alias that points to the latest version of your function's code,
+you can use the `function.addAlias` method like so:
+
+```ts
+const alias = lambdaFunction.addAlias('latest');
+```
+
+This will define an alias that points to a
+[Version](https://docs.aws.amazon.com/lambda/latest/dg/configuration-versions.html)
+resource that will get updated every time your lambda code changes based on your code's hash.
+
+> Automatically creating version objects based on the code's hash is only supported
+> for `lambda.Code.fromAsset` and `lambda.Code.fromInline`. Other types of code
+> providers require that you will maintain the `versionName` explicitly when you
+> define the alias (and update it manually when your code changes). 
+
 ### Layers
 
 The `lambda.LayerVersion` class can be used to define Lambda layers and manage

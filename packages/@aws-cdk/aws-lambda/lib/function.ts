@@ -4,6 +4,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as sqs from '@aws-cdk/aws-sqs';
 import { Construct, Duration, Fn, Lazy } from '@aws-cdk/core';
+import { Alias, AliasOptions } from './alias';
 import { Code, CodeConfig } from './code';
 import { EventInvokeConfigOptions } from './event-invoke-config';
 import { IEventSource } from './event-source';
@@ -414,6 +415,14 @@ export class Function extends FunctionBase {
 
   public readonly permissionsNode = this.node;
 
+  /**
+   * The hash of the AWS Lambda code.
+   *
+   * This only applies to `lambda.Code.fromAsset` and `lambda.Code.fromInline`.
+   * For other code types this will return `undefined`.
+   */
+  public readonly codeHash?: string;
+
   protected readonly canCreatePermissions = true;
 
   private readonly layers: ILayerVersion[] = [];
@@ -456,6 +465,7 @@ export class Function extends FunctionBase {
     verifyCodeConfig(code, props.runtime);
 
     this.deadLetterQueue = this.buildDeadLetterQueue(props);
+    this.codeHash = code.codeHash;
 
     const resource: CfnFunction = new CfnFunction(this, 'Resource', {
       functionName: this.physicalName,
@@ -557,32 +567,66 @@ export class Function extends FunctionBase {
    * Add a new version for this Lambda
    *
    * If you want to deploy through CloudFormation and use aliases, you need to
-   * add a new version (with a new name) to your Lambda every time you want
-   * to deploy an update. An alias can then refer to the newly created Version.
+   * add a new version (with a new name) to your Lambda every time you want to
+   * deploy an update. An alias can then refer to the newly created Version.
    *
    * All versions should have distinct names, and you should not delete versions
    * as long as your Alias needs to refer to them.
    *
-   * @param name A unique name for this version
-   * @param codeSha256 The SHA-256 hash of the most recently deployed Lambda source code, or
-   *  omit to skip validation.
+   * @param name A unique name for this version. The version name is not
+   * specified, a name will automatically be generated based on the code hash of
+   * the lambda. This means that a new version will automatically be created
+   * every time the lambda code changes. This is only supported for
+   * `lambda.Code.fromAsset` and `lambda.Code.fromInline`. Otherwise `name` is
+   * required.
+   *
+   * @param codeSha256 The SHA-256 hash of the most recently deployed Lambda
+   *  source code, or omit to skip validation.
    * @param description A description for this version.
-   * @param provisionedExecutions A provisioned concurrency configuration for a function's version.
-   * @param asyncInvokeConfig configuration for this version when it is invoked asynchronously.
+   * @param provisionedExecutions A provisioned concurrency configuration for a
+   * function's version.
+   * @param asyncInvokeConfig configuration for this version when it is invoked
+   * asynchronously.
    * @returns A new Version object.
    */
   public addVersion(
-    name: string,
+    name?: string,
     codeSha256?: string,
     description?: string,
     provisionedExecutions?: number,
     asyncInvokeConfig: EventInvokeConfigOptions = {}): Version {
+
+    if (!name) {
+      if (!this.codeHash) {
+        throw new Error(`version name must be provided because the the lambda code hash cannot be calculated. Only "lambda.Code.fromAsset" and "lambda.Code.fromInline" support code hash`);
+      }
+
+      name = this.codeHash;
+    }
+
     return new Version(this, 'Version' + name, {
       lambda: this,
       codeSha256,
       description,
       provisionedConcurrentExecutions: provisionedExecutions,
       ...asyncInvokeConfig,
+    });
+  }
+
+  /**
+   * Defines an alias for this function associated with the latest version of
+   * the function.
+   *
+   * @param name The name for this alias.
+   * @param options Options for the alias. If this function uses assets or
+   * inline code, do not specify `versionName`. Otherwise, `versionName` is
+   * required.
+   */
+  public addAlias(name: string, options: AddAliasOptions = { }) {
+    return new Alias(this, `Alias${name}`, {
+      version: this.addVersion(options.versionName),
+      aliasName: name,
+      ...options
     });
   }
 
@@ -749,4 +793,25 @@ export function verifyCodeConfig(code: CodeConfig, runtime: Runtime) {
   if (code.inlineCode && !runtime.supportsInlineCode) {
     throw new Error(`Inline source not allowed for ${runtime.name}`);
   }
+}
+
+/**
+ * Options for `function.addAlias`.
+ */
+export interface AddAliasOptions extends AliasOptions {
+  /**
+   * An explicit name for this version.
+   *
+   * It is not recommeneded to specify a name for the version because you will
+   * need to explicitly update it every time your lambda code changes. If you
+   * leave this undefined, the framework will automatically create a new version
+   * every time your lambda code changes.
+   *
+   * @default - a name will automatically be generated based on the code hash of
+   * the lambda. This means that a new version will automatically be created
+   * every time the lambda code changes. This is only supported for
+   * `lambda.Code.fromAsset` and `lambda.Code.fromInline`. Otherwise `name` is
+   * required.
+   */
+  readonly versionName?: string;
 }

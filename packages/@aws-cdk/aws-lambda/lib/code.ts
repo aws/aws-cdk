@@ -1,6 +1,7 @@
 import * as s3 from '@aws-cdk/aws-s3';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import * as cdk from '@aws-cdk/core';
+import * as crypto from 'crypto';
 
 export abstract class Code {
   /**
@@ -104,6 +105,11 @@ export interface CodeConfig {
    * Inline code (mutually exclusive with `s3Location`).
    */
   readonly inlineCode?: string;
+
+  /**
+   * The hash of the lambda code (if applicable).
+   */
+  readonly codeHash?: string;
 }
 
 /**
@@ -111,6 +117,7 @@ export interface CodeConfig {
  */
 export class S3Code extends Code {
   public readonly isInline = false;
+
   private bucketName: string;
 
   constructor(bucket: s3.IBucket, private key: string, private objectVersion?: string) {
@@ -139,6 +146,7 @@ export class S3Code extends Code {
  */
 export class InlineCode extends Code {
   public readonly isInline = true;
+  private readonly codeHash: string;
 
   constructor(private code: string) {
     super();
@@ -150,11 +158,14 @@ export class InlineCode extends Code {
     if (code.length > 4096) {
       throw new Error("Lambda source is too large, must be <= 4096 but is " + code.length);
     }
+
+    this.codeHash = crypto.createHash('sha256').update(code).digest('hex');
   }
 
   public bind(_scope: cdk.Construct): CodeConfig {
     return {
-      inlineCode: this.code
+      inlineCode: this.code,
+      codeHash: this.codeHash
     };
   }
 }
@@ -164,6 +175,7 @@ export class InlineCode extends Code {
  */
 export class AssetCode extends Code {
   public readonly isInline = false;
+
   private asset?: s3_assets.Asset;
 
   /**
@@ -187,6 +199,7 @@ export class AssetCode extends Code {
     }
 
     return {
+      codeHash: this.asset.sourceHash,
       s3Location: {
         bucketName: this.asset.s3BucketName,
         objectKey: this.asset.s3ObjectKey
@@ -246,6 +259,7 @@ export interface CfnParametersCodeProps {
  */
 export class CfnParametersCode extends Code {
   public readonly isInline = false;
+
   private _bucketNameParam?: cdk.CfnParameter;
   private _objectKeyParam?: cdk.CfnParameter;
 
