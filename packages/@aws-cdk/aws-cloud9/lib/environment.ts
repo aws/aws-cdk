@@ -119,13 +119,13 @@ export class Ec2Environment extends cdk.Resource implements IEc2Environment {
     if (!props.subnetSelection && this.vpc.publicSubnets.length === 0) {
       throw new Error('no subnetSelection specified and no public subnet found in the vpc, please specify subnetSelection');
     }
+
+    const vpcSubnets = props.subnetSelection ?? { subnetType: ec2.SubnetType.PUBLIC };
     const c9env = new CfnEnvironmentEC2(this, 'Resource', {
       name: props.ec2EnvironmentName,
       description: props.description,
       instanceType: props.instanceType?.toString() ?? ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO).toString(),
-      // subnetId: props.vpc.selectSubnets(props.subnetSelection).subnetIds[0],
-      subnetId: props.subnetSelection ? this.vpc.selectSubnets(props.subnetSelection).subnetIds[0] :
-        this.vpc.selectSubnets({ subnetType: ec2.SubnetType.PUBLIC }).subnetIds[0] ,
+      subnetId: this.vpc.selectSubnets(vpcSubnets).subnetIds[0] ,
     });
     this.environmentId = c9env.ref;
     this.ec2EnvironmentArn = c9env.getAtt('Arn').toString();
