@@ -107,7 +107,7 @@ export interface CodeConfig {
   readonly inlineCode?: string;
 
   /**
-   * The hash of the lambda code (if applicable).
+  * The hash of the lambda code (if applicable). `undefined` if it cannot be computed.
    */
   readonly codeHash?: string;
 }
