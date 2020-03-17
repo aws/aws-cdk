@@ -24,8 +24,8 @@ export interface StageOptions extends MethodDeploymentOptions {
 
   /**
    * A single line format of access logs of data, as specified by selected $content variables.
-   * https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html#context-variable-reference
-   * The format must include at least `$context.requestId`.
+   * The format must include at least `AccessLogFormat.contextRequestId()`.
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html#context-variable-reference
    *
    * @default - No format
    */
@@ -201,6 +201,10 @@ export class Stage extends Resource {
     if (this.accessLogDestination == null && this.accessLogFormat == null) {
       accessLogSetting = undefined;
     } else {
+      if (this.accessLogFormat != null && !/.*\$context.requestId.*/.test(this.accessLogFormat)) {
+        throw new Error('The format must include at least `AccessLogFormat.contextRequestId()`');
+      }
+
       accessLogSetting = {
         destinationArn: this.accessLogDestination?.bind().destinationArn,
         format: this.accessLogFormat

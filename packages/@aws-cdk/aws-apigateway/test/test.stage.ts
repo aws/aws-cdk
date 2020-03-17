@@ -387,4 +387,32 @@ ${apigateway.AccessLogFormat.contextStatus()} ${apigateway.AccessLogFormat.conte
     test.done();
   },
 
+  'fails when access log format does not contain `AccessLogFormat.contextRequestId()`'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
+    const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
+    api.root.addMethod('GET');
+
+    // WHEN
+    const testFormat = JSON.stringify({
+      ip: apigateway.AccessLogFormat.contextIdentitySourceIp(),
+      caller: apigateway.AccessLogFormat.contextIdentityCaller(),
+      user: apigateway.AccessLogFormat.contextIdentityUser(),
+      requestTime: apigateway.AccessLogFormat.contextRequestTime(),
+      httpMethod: apigateway.AccessLogFormat.contextHttpMethod(),
+      resourcePath: apigateway.AccessLogFormat.contextResourcePath(),
+      status: apigateway.AccessLogFormat.contextStatus(),
+      protocol: apigateway.AccessLogFormat.contextProtocol(),
+      responseLength: apigateway.AccessLogFormat.contextResponseLength()
+    });
+
+    // THEN
+    test.throws(() => new apigateway.Stage(stack, 'my-stage', {
+      deployment,
+      accessLogFormat: testFormat
+    }), 'The format must include at least `AccessLogFormat.contextRequestId()`');
+
+    test.done();
+  },
 };
