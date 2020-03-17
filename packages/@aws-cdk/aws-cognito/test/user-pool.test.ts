@@ -590,7 +590,7 @@ describe('User Pool', () => {
 
     // WHEN
     new UserPool(stack, 'Pool', {
-      emailTransmission: {
+      emailSettings: {
         from: 'from@myawesomeapp.com',
         replyTo: 'replyTo@myawesomeapp.com'
       }

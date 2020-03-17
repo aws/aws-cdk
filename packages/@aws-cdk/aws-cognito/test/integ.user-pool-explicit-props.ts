@@ -38,7 +38,7 @@ new UserPool(stack, 'myuserpool', {
     requireUppercase: true,
     requireSymbols: true,
   },
-  emailTransmission: {
+  emailSettings: {
     from: 'noreply@myawesomeapp.com',
     replyTo: 'support@myawesomeapp.com',
   },

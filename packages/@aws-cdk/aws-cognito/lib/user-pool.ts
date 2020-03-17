@@ -380,9 +380,9 @@ export interface PasswordPolicy {
 }
 
 /**
- * Email transmission settings for a user pool.
+ * Email settings for the user pool.
  */
-export interface EmailTransmission {
+export interface EmailSettings {
   /**
    * The 'from' address on the emails received by the user.
    * @default noreply@verificationemail.com
@@ -483,15 +483,15 @@ export interface UserPoolProps {
 
   /**
    * Password policy for this user pool.
-   * @default - see defaults on each property of `PasswordPolicy`.
+   * @default - see defaults on each property of PasswordPolicy.
    */
   readonly passwordPolicy?: PasswordPolicy;
 
   /**
-   * Configure the different properties for transmitting email.
-   * @default - see defaults on each property of `EmailTransmission`.
+   * Email settings for a user pool.
+   * @default - see defaults on each property of EmailSettings.
    */
-  readonly emailTransmission?: EmailTransmission;
+  readonly emailSettings?: EmailSettings;
 
   /**
    * Lambda functions to use for supported Cognito triggers.
@@ -634,8 +634,8 @@ export class UserPool extends Resource implements IUserPool {
       enabledMfas: this.mfaConfiguration(props),
       policies: passwordPolicy !== undefined ? { passwordPolicy } : undefined,
       emailConfiguration: undefinedIfNoKeys({
-        from: props.emailTransmission?.from,
-        replyToEmailAddress: props.emailTransmission?.replyTo,
+        from: props.emailSettings?.from,
+        replyToEmailAddress: props.emailSettings?.replyTo,
       }),
     });
 
