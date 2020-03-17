@@ -1,4 +1,4 @@
-import { Construct, IResource, Resource } from '@aws-cdk/core';
+import { Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
 import { CfnDBClusterParameterGroup, CfnDBParameterGroup } from './rds.generated';
 
 /**
@@ -11,6 +11,14 @@ export interface IParameterGroup extends IResource {
    * @attribute
    */
   readonly parameterGroupName: string;
+
+  /**
+   * Add a parameter to this parameter group
+   *
+   * @param key The key of the parameter to be added
+   * @param value The value of the parameter to be added
+   */
+  addParameter(key: string, value: string): void;
 }
 
 /**
@@ -21,7 +29,7 @@ abstract class ParameterGroupBase extends Resource implements IParameterGroup {
    * Imports a parameter group
    */
   public static fromParameterGroupName(scope: Construct, id: string, parameterGroupName: string): IParameterGroup {
-    class Import extends Resource implements IParameterGroup {
+    class Import extends ParameterGroupBase implements IParameterGroup {
       public readonly parameterGroupName = parameterGroupName;
     }
     return new Import(scope, id);
@@ -31,6 +39,15 @@ abstract class ParameterGroupBase extends Resource implements IParameterGroup {
    * The name of the parameter group
    */
   public abstract readonly parameterGroupName: string;
+
+  /**
+   * Parameters of the parameter group
+   */
+  protected parameters: { [key: string]: string } = {};
+
+  public addParameter(key: string, value: string) {
+    this.parameters[key] = value;
+  }
 }
 
 /**
@@ -69,10 +86,12 @@ export class ParameterGroup extends ParameterGroupBase {
   constructor(scope: Construct, id: string, props: ParameterGroupProps) {
     super(scope, id);
 
+    this.parameters = props.parameters;
+
     const resource = new CfnDBParameterGroup(this, 'Resource', {
       description: props.description || `Parameter group for ${props.family}`,
       family: props.family,
-      parameters: props.parameters,
+      parameters: Lazy.anyValue({ produce: () => this.parameters })
     });
 
     this.parameterGroupName = resource.ref;
@@ -100,10 +119,12 @@ export class ClusterParameterGroup extends ParameterGroupBase {
   constructor(scope: Construct, id: string, props: ClusterParameterGroupProps) {
     super(scope, id);
 
+    this.parameters = props.parameters;
+
     const resource = new CfnDBClusterParameterGroup(this, 'Resource', {
       description: props.description || `Cluster parameter group for ${props.family}`,
       family: props.family,
-      parameters: props.parameters,
+      parameters: Lazy.anyValue({ produce: () => this.parameters }),
     });
 
     this.parameterGroupName = resource.ref;

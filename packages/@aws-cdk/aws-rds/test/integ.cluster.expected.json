@@ -493,6 +493,7 @@
               "Statement": [
                 {
                   "Action": [
+                    "s3:ListBucket",
                     "s3:GetObject",
                     "s3:GetObjectVersion"
                   ],
@@ -549,6 +550,7 @@
               "Statement": [
                 {
                   "Action": [
+                    "s3:ListBucket",
                     "s3:AbortMultipartUpload",
                     "s3:DeleteObject",
                     "s3:GetObject",

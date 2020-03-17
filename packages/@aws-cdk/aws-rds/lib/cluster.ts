@@ -144,28 +144,46 @@ export interface DatabaseClusterProps {
   readonly monitoringRole?: IRole;
 
   /**
-   * Role that will be associated with this DB cluster to enable S3 import through the LOAD DATA FROM S3 command
+   * Role that will be associated with this DB cluster to enable S3 import through the LOAD DATA FROM S3 command.
+   * This feature is only supported by the Aurora database engine.
+   *
+   * Setting this property means the s3ImportBuckets property should not be used.
+   *
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Integrating.LoadFromS3.html
    *
    * @default - A role is created for you if the s3ImportBuckets property is set
    */
   readonly s3ImportRole?: IRole;
 
   /**
-   * S3 buckets that you want to load data from
+   * S3 buckets that you want to load data from. This feature is only supported by the Aurora database engine.
+   *
+   * Setting this property means the s3ImportRole property should not be used.
+   *
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Integrating.LoadFromS3.html
    *
    * @default - No S3 import functionality is enabled
    */
   readonly s3ImportBuckets?: s3.IBucket[];
 
   /**
-   * Role that will be associated with this DB cluster to enable S3 export through the SELECT INTO S3 command
+   * Role that will be associated with this DB cluster to enable S3 export through the SELECT INTO S3 command.
+   * This feature is only supported by the Aurora database engine.
+   *
+   * Setting this property means the s3ExportBuckets property should not be used.
+   *
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Integrating.SaveIntoS3.html
    *
    * @default - A role is created for you if the s3ExportBuckets property is set
    */
   readonly s3ExportRole?: IRole;
 
   /**
-   * S3 buckets that you want to load data into
+   * S3 buckets that you want to load data into. This feature is only supported by the Aurora database engine.
+   *
+   * Setting this property means the s3ExportRole property should not be used.
+   *
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Integrating.SaveIntoS3.html
    *
    * @default - No S3 export functionality is enabled
    */
@@ -340,7 +358,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
     let s3ImportRole = props.s3ImportRole;
     if (props.s3ImportBuckets && props.s3ImportBuckets.length > 0) {
       if (props.s3ImportRole) {
-        throw new Error(`Property s3ImportRole should not be specified when specifying s3ImportBuckets. A role with permissions for these buckets will be created automatically`);
+        throw new Error(`Property s3ImportRole should not be specified when specifying s3ImportBuckets.`);
       }
 
       s3ImportRole = new Role(this, "S3ImportRole", {
@@ -350,10 +368,11 @@ export class DatabaseCluster extends DatabaseClusterBase {
             statements: [
               new PolicyStatement({
                   actions: [
+                    's3:ListBucket',
                     's3:GetObject',
                     's3:GetObjectVersion'
                   ],
-                  resources: getBucketArns(props.s3ImportBuckets)
+                  resources: bucketAndObjectArns(props.s3ImportBuckets)
               })
             ]
           }),
@@ -364,7 +383,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
     let s3ExportRole = props.s3ExportRole;
     if (props.s3ExportBuckets && props.s3ExportBuckets.length > 0) {
       if (props.s3ExportRole) {
-        throw new Error(`Property s3ExportRole should not be specified when specifying s3ExportBuckets. A role with permissions for these buckets will be created automatically`);
+        throw new Error(`Property s3ExportRole should not be specified when specifying s3ExportBuckets.`);
       }
 
       s3ExportRole = new Role(this, "S3ExportRole", {
@@ -374,13 +393,14 @@ export class DatabaseCluster extends DatabaseClusterBase {
             statements: [
               new PolicyStatement({
                   actions: [
+                    's3:ListBucket',
                     's3:AbortMultipartUpload',
                     's3:DeleteObject',
                     's3:GetObject',
                     's3:ListMultipartUploadParts',
                     's3:PutObject'
                   ],
-                  resources: getBucketArns(props.s3ExportBuckets)
+                  resources: bucketAndObjectArns(props.s3ExportBuckets)
               })
             ]
           }),
@@ -391,23 +411,20 @@ export class DatabaseCluster extends DatabaseClusterBase {
     let clusterParameterGroup = props.parameterGroup;
     const clusterAssociatedRoles = [];
     if (s3ImportRole || s3ExportRole) {
+      if (!clusterParameterGroup) {
+        clusterParameterGroup = new ClusterParameterGroup(this, "ClusterParameterGroup", {
+          family: getClusterParameterGroupFamily(props.engine, props.engineVersion),
+          parameters: {}
+        });
+      }
+
       if (s3ImportRole) {
         clusterAssociatedRoles.push({ roleArn: s3ImportRole.roleArn });
+        clusterParameterGroup.addParameter('aurora_load_from_s3_role', s3ImportRole.roleArn);
       }
       if (s3ExportRole) {
         clusterAssociatedRoles.push({ roleArn: s3ExportRole.roleArn });
-      }
-
-      if (clusterParameterGroup) {
-        this.node.addWarning('Can not set S3 role(s) to your custom cluster parameter group. Make sure to set aurora_load_from_s3_role and/or aurora_select_into_s3_role parameters manually.');
-      } else {
-        clusterParameterGroup = new ClusterParameterGroup(this, "ClusterParameterGroup", {
-          family: getClusterParameterGroupFamily(props.engine, props.engineVersion),
-          parameters: {
-            aurora_load_from_s3_role: s3ImportRole ? s3ImportRole.roleArn : '',
-            aurora_select_into_s3_role: s3ExportRole ? s3ExportRole.roleArn : ''
-          }
-        });
+        clusterParameterGroup.addParameter('aurora_select_into_s3_role', s3ExportRole.roleArn);
       }
     }
 
@@ -569,7 +586,7 @@ function databaseInstanceType(instanceType: ec2.InstanceType) {
 /**
  * Get bucket and object-level ARN's for specified S3 buckets
  */
-function getBucketArns(buckets: s3.IBucket[]): string[] {
+function bucketAndObjectArns(buckets: s3.IBucket[]): string[] {
   const arns: string[] = [];
   for (const bucket of buckets) {
     arns.push(bucket.bucketArn);

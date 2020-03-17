@@ -496,7 +496,7 @@ export = {
     test.done();
   },
 
-  'throws when trying to add single user rotation multiple timet'(test: Test) {
+  'throws when trying to add single user rotation multiple times'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -553,6 +553,18 @@ export = {
       }]
     }, ResourcePart.Properties));
 
+    expect(stack).to(haveResource("AWS::RDS::DBClusterParameterGroup", {
+      Family: 'aurora5.6',
+      Parameters: {
+        aurora_load_from_s3_role: {
+          "Fn::GetAtt": [
+            "AssociatedRole824CFCD3",
+            "Arn"
+          ]
+        }
+      }
+    }, ResourcePart.Properties));
+
     test.done();
   },
   'create a cluster with s3 import buckets'(test: Test) {
@@ -596,8 +608,7 @@ export = {
             "DatabaseS3ImportRole377BC9C0",
             "Arn"
           ]
-        },
-        aurora_select_into_s3_role: ''
+        }
       }
     }, ResourcePart.Properties));
 
@@ -638,6 +649,18 @@ export = {
       }]
     }, ResourcePart.Properties));
 
+    expect(stack).to(haveResource("AWS::RDS::DBClusterParameterGroup", {
+      Family: 'aurora5.6',
+      Parameters: {
+        aurora_select_into_s3_role: {
+          "Fn::GetAtt": [
+            "AssociatedRole824CFCD3",
+            "Arn"
+          ]
+        }
+      }
+    }, ResourcePart.Properties));
+
     test.done();
   },
   'create a cluster with s3 export buckets'(test: Test) {
@@ -676,7 +699,6 @@ export = {
     expect(stack).to(haveResource("AWS::RDS::DBClusterParameterGroup", {
       Family: 'aurora5.6',
       Parameters: {
-        aurora_load_from_s3_role: '',
         aurora_select_into_s3_role: {
           "Fn::GetAtt": [
             "DatabaseS3ExportRole9E328562",
@@ -748,6 +770,132 @@ export = {
         }
       }
     }, ResourcePart.Properties));
+
+    test.done();
+  },
+  'create a cluster with s3 import and export buckets and custom parameter group'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, "VPC");
+
+    const parameterGroup = new ClusterParameterGroup(stack, 'ParameterGroup', {
+      family: 'family',
+      parameters: {
+        key: 'value'
+      }
+    });
+
+    const importBucket = new s3.Bucket(stack, 'ImportBucket');
+    const exportBucket = new s3.Bucket(stack, 'ExportBucket');
+
+    // WHEN
+    new DatabaseCluster(stack, "Database", {
+      engine: DatabaseClusterEngine.AURORA,
+      instances: 1,
+      masterUser: {
+        username: "admin"
+      },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc
+      },
+      parameterGroup,
+      s3ImportBuckets: [importBucket],
+      s3ExportBuckets: [exportBucket]
+    });
+
+    // THEN
+    expect(stack).to(haveResource("AWS::RDS::DBCluster", {
+      AssociatedRoles: [{
+        RoleArn: {
+          "Fn::GetAtt": [
+            "DatabaseS3ImportRole377BC9C0",
+            "Arn"
+          ]
+        }
+      },
+      {
+        RoleArn: {
+          "Fn::GetAtt": [
+            "DatabaseS3ExportRole9E328562",
+            "Arn"
+          ]
+        }
+      }]
+    }, ResourcePart.Properties));
+
+    expect(stack).to(haveResource("AWS::RDS::DBClusterParameterGroup", {
+      Family: 'family',
+      Parameters: {
+        key: 'value',
+        aurora_load_from_s3_role: {
+          "Fn::GetAtt": [
+            "DatabaseS3ImportRole377BC9C0",
+            "Arn"
+          ]
+        },
+        aurora_select_into_s3_role: {
+          "Fn::GetAtt": [
+            "DatabaseS3ExportRole9E328562",
+            "Arn"
+          ]
+        }
+      }
+    }, ResourcePart.Properties));
+
+    test.done();
+  },
+  'throws when s3ExportRole and s3ExportBuckets properties are both specified'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, "VPC");
+
+    const exportRole = new Role(stack, 'ExportRole', {
+      assumedBy: new ServicePrincipal('rds.amazonaws.com'),
+    });
+    const exportBucket = new s3.Bucket(stack, 'ExportBucket');
+
+    // THEN
+    test.throws(() => new DatabaseCluster(stack, "Database", {
+      engine: DatabaseClusterEngine.AURORA,
+      instances: 1,
+      masterUser: {
+        username: "admin"
+      },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc
+      },
+      s3ExportRole: exportRole,
+      s3ExportBuckets: [exportBucket],
+    }));
+
+    test.done();
+  },
+  'throws when s3ImportRole and s3ImportBuckets properties are both specified'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, "VPC");
+
+    const importRole = new Role(stack, 'ImportRole', {
+      assumedBy: new ServicePrincipal('rds.amazonaws.com'),
+    });
+    const importBucket = new s3.Bucket(stack, 'ImportBucket');
+
+    // THEN
+    test.throws(() => new DatabaseCluster(stack, "Database", {
+      engine: DatabaseClusterEngine.AURORA,
+      instances: 1,
+      masterUser: {
+        username: "admin"
+      },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc
+      },
+      s3ImportRole: importRole,
+      s3ImportBuckets: [importBucket],
+    }));
 
     test.done();
   },
