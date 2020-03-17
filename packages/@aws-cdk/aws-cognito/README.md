@@ -35,7 +35,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
   - [Sign Up](#sign-up)
   - [Sign In](#sign-in)
   - [Security](#security)
-    - [Multi-factor Authentication](#multi-factor-authentication)
+    - [Multi-factor Authentication](#multi-factor-authentication-mfa)
   - [Emails](#emails)
   - [Import](#importing-user-pools)
 
