@@ -87,10 +87,6 @@
   "stability": "experimental",
   "awslint": {
     "exclude": [
-      "docs-public-apis:@aws-cdk/aws-kinesis.Stream.fromStreamArn",
-      "docs-public-apis:@aws-cdk/aws-kinesis.IStream",
-      "props-default-doc:@aws-cdk/aws-kinesis.StreamAttributes.encryptionKey",
-      "docs-public-apis:@aws-cdk/aws-kinesis.StreamProps"
     ]
   }
 }
