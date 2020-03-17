@@ -152,8 +152,7 @@
       "docs-public-apis:@aws-cdk/aws-cloudwatch.Unit.TERABYTES_PER_SECOND",
       "docs-public-apis:@aws-cdk/aws-cloudwatch.Unit.BITS_PER_SECOND",
       "docs-public-apis:@aws-cdk/aws-cloudwatch.Unit.KILOBITS_PER_SECOND",
-      "docs-public-apis:@aws-cdk/aws-cloudwatch.Unit.MEGABITS_PER_SECOND",
-      "no-unused-type:@aws-cdk/aws-cloudwatch.GraphColor"
+      "docs-public-apis:@aws-cdk/aws-cloudwatch.Unit.MEGABITS_PER_SECOND"
     ]
   },
   "engines": {

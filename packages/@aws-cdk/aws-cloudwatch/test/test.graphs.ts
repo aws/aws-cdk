@@ -1,6 +1,6 @@
 import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { Alarm, AlarmWidget, GraphColor, GraphWidget, Metric, Shading, SingleValueWidget } from '../lib';
+import { Alarm, AlarmWidget, Color, GraphWidget, Metric, Shading, SingleValueWidget } from '../lib';
 
 export = {
   'add stacked property to graphs'(test: Test) {
@@ -352,10 +352,10 @@ export = {
     // WHEN
     const widget = new GraphWidget({
       left: [metric.with({
-        color: GraphColor.BLUE,
+        color: Color.BLUE,
       })],
       leftAnnotations: [
-        { color: GraphColor.RED, value: 100, },
+        { color: Color.RED, value: 100, },
       ]
     });
 

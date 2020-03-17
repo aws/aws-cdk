@@ -206,7 +206,7 @@ dashboard.addWidgets(new GraphWidget({
   right: [errorCountMetric.with({
     statistic: "average",
     label: "Error rate",
-    color: GraphColor.GREEN
+    color: Color.GREEN
   })]
 }));
 ```
@@ -219,7 +219,7 @@ dashboard.addWidgets(new GraphWidget({
   // ...
 
   leftAnnotations: [
-    { value: 1800, label: Duration.minutes(30).toHumanString(), color: GraphColor.RED, },
+    { value: 1800, label: Duration.minutes(30).toHumanString(), color: Color.RED, },
     { value: 3600, label: '1 hour', color: '#2ca02c', }
   ],
 }));

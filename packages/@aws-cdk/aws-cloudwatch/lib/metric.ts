@@ -65,7 +65,7 @@ export interface CommonMetricOptions {
 
   /**
    * The hex color code, prefixed with '#' (e.g. '#00ff00'), to use when this metric is rendered on a graph.
-   * You can also use GraphColour to find a set of commonly used colours.
+   * The `Color` class has a set of standard colors that can be used here.
    * @default - Automatic color
    */
   readonly color?: string;
@@ -426,7 +426,7 @@ export class MathExpression implements IMetric {
 
   /**
    * The hex color code, prefixed with '#' (e.g. '#00ff00'), to use when this metric is rendered on a graph.
-   * You can also use GraphColour to find a set of commonly used colours.
+   * The `Color` class has a set of standard colors that can be used here.
    */
   public readonly color?: string;
 
