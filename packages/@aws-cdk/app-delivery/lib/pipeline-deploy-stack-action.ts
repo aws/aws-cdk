@@ -3,8 +3,8 @@ import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as cpactions from '@aws-cdk/aws-codepipeline-actions';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-import * as cdk from '@aws-cdk/core';
 import * as cxprotocol from '@aws-cdk/cloud-assembly-schema';
+import * as cdk from '@aws-cdk/core';
 
 export interface PipelineDeployStackActionProps {
   /**

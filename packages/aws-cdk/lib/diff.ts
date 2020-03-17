@@ -1,6 +1,6 @@
+import * as cxprotocol from '@aws-cdk/cloud-assembly-schema';
 import * as cfnDiff from '@aws-cdk/cloudformation-diff';
 import * as cxapi from '@aws-cdk/cx-api';
-import * as cxprotocol from '@aws-cdk/cloud-assembly-schema';
 import * as colors from 'colors/safe';
 import { print, warning } from './logging';
 

@@ -1,5 +1,5 @@
-import * as cxapi from '@aws-cdk/cx-api';
 import * as cxprotocol from '@aws-cdk/cloud-assembly-schema';
+import * as cxapi from '@aws-cdk/cx-api';
 import { SdkProvider } from '../api';
 import { debug } from '../logging';
 import { Context, TRANSIENT_CONTEXT_KEY } from '../settings';

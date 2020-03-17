@@ -1,5 +1,5 @@
-import * as cxapi from '@aws-cdk/cx-api';
 import * as cxprotocol from '@aws-cdk/cloud-assembly-schema';
+import * as cxapi from '@aws-cdk/cx-api';
 import { AppStacks } from '../lib/api/cxapp/stacks';
 import { DeployStackResult } from '../lib/api/deploy-stack';
 import { DeployStackOptions, IDeploymentTarget, Template } from '../lib/api/deployment-target';

@@ -1,5 +1,5 @@
-import * as cxapi from '@aws-cdk/cx-api';
 import * as cxprotocol from '@aws-cdk/cloud-assembly-schema';
+import * as cxapi from '@aws-cdk/cx-api';
 import * as aws from 'aws-sdk';
 import { Tags } from 'aws-sdk/clients/cloudformation';
 import * as colors from 'colors/safe';
