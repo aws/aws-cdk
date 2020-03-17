@@ -215,7 +215,7 @@ export class Stage extends Resource {
     if (props.cacheClusterSize !== undefined) {
       if (this.enableCacheCluster === undefined) {
         this.enableCacheCluster = true;
-      } else if (this.enableCacheCluster === false) {
+      } else if (!this.enableCacheCluster) {
         throw new Error(`Cannot set "cacheClusterSize" to ${props.cacheClusterSize} and "cacheClusterEnabled" to "false"`);
       }
     }
@@ -285,7 +285,7 @@ export class Stage extends Resource {
       if (options.cachingEnabled) {
         if (self.enableCacheCluster === undefined) {
           self.enableCacheCluster = true;
-        } else if (self.enableCacheCluster === false) {
+        } else if (!self.enableCacheCluster) {
           throw new Error(`Cannot enable caching for method ${path} since cache cluster is disabled on stage`);
         }
       }
