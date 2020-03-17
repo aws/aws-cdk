@@ -72,10 +72,12 @@
     "ts-jest": "^25.2.0"
   },
   "dependencies": {
-    "@aws-cdk/core": "0.0.0"
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^1.1.2"
   },
   "peerDependencies": {
-    "@aws-cdk/core": "0.0.0"
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^1.1.2"
   },
   "jest": {},
   "engines": {
