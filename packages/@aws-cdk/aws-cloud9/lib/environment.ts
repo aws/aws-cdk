@@ -6,25 +6,27 @@ import { CfnEnvironmentEC2 } from '../lib/cloud9.generated';
  * A Cloud9 Environment
  *
  */
-export interface IEnvironmentEc2 extends cdk.IResource {
+export interface IEc2Environment extends cdk.IResource {
   /**
    * The name of the EnvironmentEc2
-   * @attribute
+   *
+   * @attribute environmentEc2Name
    */
-  readonly environmentEc2Name: string;
+  readonly ec2EnvironmentName: string;
 
   /**
    * The arn of the EnvironmentEc2
-   * @attribute
+   *
+   * @attribute environmentE2Arn
    */
-  readonly environmentEc2Arn: string;
+  readonly ec2EnvironmentArn: string;
 
 }
 
 /**
- * Properties for EnvironmentEc2
+ * Properties for Ec2Environment
  */
-export interface EnvironmentEc2Props {
+export interface Ec2EnvironmentProps {
   /**
    * The type of instance to connect to the environment.
    *
@@ -51,7 +53,7 @@ export interface EnvironmentEc2Props {
    *
    * @default - automatically generated name
    */
-  readonly environmentEc2Name?: string;
+  readonly ec2EnvironmentName?: string;
 
   /**
    * Description of the environment
@@ -65,17 +67,17 @@ export interface EnvironmentEc2Props {
  * A Cloud9 Environment with Amazon EC2
  * @resource AWS::Cloud9::EnvironmentEC2
  */
-export class EnvironmentEc2 extends cdk.Resource implements IEnvironmentEc2 {
+export class Ec2Environment extends cdk.Resource implements IEc2Environment {
   /**
    * import from EnvironmentEc2Name
    */
-  public static fromEnvironmentEc2Name(scope: cdk.Construct, id: string, environmentEc2Name: string): IEnvironmentEc2 {
+  public static fromEc2EnvironmentName(scope: cdk.Construct, id: string, ec2EnvironmentName: string): IEc2Environment {
     class Import extends cdk.Resource {
-      public environmentEc2Name = environmentEc2Name;
-      public environmentEc2Arn = cdk.Stack.of(this).formatArn({
+      public ec2EnvironmentName = ec2EnvironmentName;
+      public ec2EnvironmentArn = cdk.Stack.of(this).formatArn({
         service: 'cloud9',
         resource: 'environment',
-        resourceName: this.environmentEc2Name,
+        resourceName: this.ec2EnvironmentName,
       });
     }
     return new Import(scope, id);
@@ -83,13 +85,17 @@ export class EnvironmentEc2 extends cdk.Resource implements IEnvironmentEc2 {
 
   /**
    * The environment name of this Cloud9 environment
+   *
+   * @attribute
    */
-  public readonly environmentEc2Name: string;
+  public readonly ec2EnvironmentName: string;
 
   /**
    * The environment ARN of this Cloud9 environment
+   *
+   * @attribute
    */
-  public readonly environmentEc2Arn: string;
+  public readonly ec2EnvironmentArn: string;
 
   /**
    * The environment ID of this Cloud9 environment
@@ -104,9 +110,9 @@ export class EnvironmentEc2 extends cdk.Resource implements IEnvironmentEc2 {
   /**
    * VPC ID
    */
-   private readonly vpc: ec2.IVpc;
+   public readonly vpc: ec2.IVpc;
 
-  constructor(scope: cdk.Construct, id: string, props: EnvironmentEc2Props) {
+  constructor(scope: cdk.Construct, id: string, props: Ec2EnvironmentProps) {
     super(scope, id);
 
     this.vpc = props.vpc;
@@ -114,7 +120,7 @@ export class EnvironmentEc2 extends cdk.Resource implements IEnvironmentEc2 {
       throw new Error('no subnetSelection specified and no public subnet found in the vpc, please specify subnetSelection');
     }
     const c9env = new CfnEnvironmentEC2(this, 'Resource', {
-      name: props.environmentEc2Name,
+      name: props.ec2EnvironmentName,
       description: props.description,
       instanceType: props.instanceType?.toString() ?? ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO).toString(),
       // subnetId: props.vpc.selectSubnets(props.subnetSelection).subnetIds[0],
@@ -122,9 +128,8 @@ export class EnvironmentEc2 extends cdk.Resource implements IEnvironmentEc2 {
         this.vpc.selectSubnets({ subnetType: ec2.SubnetType.PUBLIC }).subnetIds[0] ,
     });
     this.environmentId = c9env.ref;
-    this.environmentEc2Arn = c9env.getAtt('Arn').toString();
-    this.environmentEc2Name = c9env.getAtt('Name').toString();
+    this.ec2EnvironmentArn = c9env.getAtt('Arn').toString();
+    this.ec2EnvironmentName = c9env.getAtt('Name').toString();
     this.ideUrl = `https://${this.stack.region}.console.aws.amazon.com/cloud9/ide/${this.environmentId}`;
-    // new cdk.CfnOutput(this, 'ARN', { value: c9env.attrArn});
   }
 }

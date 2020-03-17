@@ -24,7 +24,7 @@ AWS Cloud9 is a cloud-based integrated development environment (IDE) that lets y
 
 ### Creating EC2 Environment
 
-EC2 Environments are defined with `EnvironmentEc2`. To create an EC2 environment in the private subnet, specify `subnetSelection` with private `subnetType`, otherwise, the public subnet from the given VPC will be selected.
+EC2 Environments are defined with `Ec2Environment`. To create an EC2 environment in the private subnet, specify `subnetSelection` with private `subnetType`.
 
 
 ```ts
@@ -32,17 +32,17 @@ import * as cloud9 from '@aws-cdk/aws-cloud9';
 
 // create a cloud9 ec2 environment in a new VPC
 const vpc = new ec2.Vpc(this, 'VPC', { maxAzs: 3});
-new cloud9.EnvironmentEc2(this, 'Cloud9Env', { vpc });
+new cloud9.Ec2Environment(this, 'Cloud9Env', { vpc });
 
 // or create the cloud9 environment in the default VPC with specific instanceType
-const vpc = ec2.Vpc.fromLookup(this, 'VPC', { isDefault: true });
-new cloud9.EnvironmentEc2(this, 'Cloud9Env2', {
-  vpc,
+const defaultVpc = ec2.Vpc.fromLookup(this, 'DefaultVPC', { isDefault: true });
+new cloud9.Ec2Environment(this, 'Cloud9Env2', {
+  vpc: defaultVpc,
   instanceType: new ec2.InstanceType('t3.large')
 });
 
 // or specify in a different subnetSelection 
-const c9env = new cloud9.EnvironmentEc2(this, 'Cloud9Env3', {
+const c9env = new cloud9.Ec2Environment(this, 'Cloud9Env3', {
     vpc,
     subnetSelection: {
       subnetType: ec2.SubnetType.PRIVATE

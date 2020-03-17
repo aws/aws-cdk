@@ -331,13 +331,6 @@
           "Ref": "VPCPublicSubnet1SubnetB4246D30"
         }
       }
-    },
-    "C9Env243CB6E51": {
-      "Type": "AWS::Cloud9::EnvironmentEC2",
-      "Properties": {
-        "InstanceType": "t3.large",
-        "SubnetId": "subnet-e19455ca"
-      }
     }
   },
   "Outputs": {
@@ -346,7 +339,11 @@
         "Fn::Join": [
           "",
           [
-            "https://test-region.console.aws.amazon.com/cloud9/ide/",
+            "https://",
+            {
+              "Ref": "AWS::Region"
+            },
+            ".console.aws.amazon.com/cloud9/ide/",
             {
               "Ref": "C9EnvF05FC3BE"
             }
@@ -359,19 +356,6 @@
         "Fn::GetAtt": [
           "C9EnvF05FC3BE",
           "Arn"
-        ]
-      }
-    },
-    "URL2": {
-      "Value": {
-        "Fn::Join": [
-          "",
-          [
-            "https://test-region.console.aws.amazon.com/cloud9/ide/",
-            {
-              "Ref": "C9Env243CB6E51"
-            }
-          ]
         ]
       }
     }

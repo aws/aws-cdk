@@ -98,5 +98,12 @@
   "engines": {
     "node": ">= 10.3.0"
   },
+  "awslint": {
+    "exclude": [
+      "resource-attribute:@aws-cdk/aws-cloud9.Ec2Environment.environmentEc2Arn",
+      "resource-attribute:@aws-cdk/aws-cloud9.Ec2Environment.environmentEc2Name",
+      "props-physical-name:@aws-cdk/aws-cloud9.Ec2EnvironmentProps"
+    ]
+  },
   "stability": "experimental"
 }
