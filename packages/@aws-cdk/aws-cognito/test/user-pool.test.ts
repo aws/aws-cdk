@@ -2,6 +2,7 @@ import '@aws-cdk/assert/jest';
 import { ABSENT } from '@aws-cdk/assert/lib/assertions/have-resource';
 import { Role } from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
+import { Duration, Stack, Tag } from '@aws-cdk/core';
 import { Mfa, NumberAttribute, StringAttribute, UserPool, VerificationEmailStyle } from '../lib';
 
 describe('User Pool', () => {
@@ -554,8 +555,8 @@ describe('User Pool', () => {
       ]
     });
   });
-  
-    test('mfaTypes is ignored when mfaEnforcement is undefined or set to OFF', () => {
+
+  test('mfaTypes is ignored when mfaEnforcement is undefined or set to OFF', () => {
     // GIVEN
     const stack = new Stack();
 

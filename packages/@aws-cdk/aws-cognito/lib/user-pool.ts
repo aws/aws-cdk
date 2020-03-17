@@ -365,7 +365,7 @@ export interface UserPoolProps {
    */
   readonly customAttributes?: { [key: string]: ICustomAttribute };
 
-  /*
+  /**
    * Configure whether users of this user pool can or are required use MFA to sign in.
    *
    * @default Mfa.OFF
@@ -390,7 +390,7 @@ export interface UserPoolProps {
    * Email settings for a user pool.
    * @default - see defaults on each property of EmailSettings.
    */
-  readonly emailSettings?: EmailSettings;  
+  readonly emailSettings?: EmailSettings;
 
   /**
    * Lambda functions to use for supported Cognito triggers.
