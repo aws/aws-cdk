@@ -179,12 +179,15 @@ four optional attributes.
 new UserPool(this, 'myuserpool', {
   // ...
   // ...
-  requiredAttributes: [ StandardAttribute.address, StandardAttribute.name ],
+  requiredAttributes: {
+    fullname: true,
+    address: true,
+  },
   customAttributes: {
     'myappid': new StringAttribute({ minLen: 5, maxLen: 15 }),
     'callingcode': new NumberAttribute({ min: 1, max: 3 }),
     'isEmployee': new BooleanAttribute(),
-    'joinedOn': new DateTimeAttribute()
+    'joinedOn': new DateTimeAttribute(),
   },
 });
 ```

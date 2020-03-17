@@ -1,5 +1,5 @@
 import { App, CfnOutput, Stack } from '@aws-cdk/core';
-import { BooleanAttribute, DateTimeAttribute, NumberAttribute, StandardAttribute, StringAttribute, UserPool } from '../lib';
+import { BooleanAttribute, DateTimeAttribute, NumberAttribute, StringAttribute, UserPool } from '../lib';
 
 const app = new App();
 const stack = new Stack(app, 'integ-user-pool');
@@ -25,7 +25,10 @@ const userpool = new UserPool(stack, 'myuserpool', {
     email: true,
     phone: true,
   },
-  requiredAttributes: [ StandardAttribute.NAME, StandardAttribute.EMAIL ],
+  requiredAttributes: {
+    fullname: true,
+    email: true,
+  },
   customAttributes: {
     'some-string-attr': new StringAttribute(),
     'another-string-attr': new StringAttribute({ minLen: 4, maxLen: 100 }),

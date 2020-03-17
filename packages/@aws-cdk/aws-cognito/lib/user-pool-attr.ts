@@ -1,107 +1,110 @@
 /**
- * Standard attributes
+ * The set of standard attributes that can be marked as required.
  *
  * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html#cognito-user-pools-standard-attributes
  */
-export enum StandardAttribute {
+export interface RequiredAttributes {
   /**
-   * End-User's preferred postal address.
+   * Whether the user's postal address is a required attribute.
+   * @default false
    */
-  ADDRESS = 'address',
+  readonly address?: boolean;
 
   /**
-   * User's birthday, represented as an ISO 8601:2004 [ISO8601‑2004] YYYY-MM-DD format.
-   * The year MAY be 0000, indicating that it is omitted.
-   * To represent only the year, YYYY format is allowed.
+   * Whether the user's birthday, represented as an ISO 8601:2004 format, is a required attribute.
+   * @default false
    */
-  BIRTHDATE = 'birthdate',
+  readonly birthdate?: boolean;
 
   /**
-   * User's preferred e-mail address.
-   * Its value MUST conform to the RFC 5322 [RFC5322] addr-spec syntax.
+   * Whether theb user's e-mail address, represented as an RFC 5322 [RFC5322] addr-spec, is a required attribute.
+   * @default false
    */
-  EMAIL = 'email',
+  readonly email?: boolean;
 
   /**
-   * Surname or last name of the user.
+   * Whether the surname or last name of the user is a required attribute.
+   * @default false
    */
-  FAMILY_NAME = 'family_name',
+  readonly familyName?: boolean;
 
   /**
-   * User's gender.
+   * Whether the user's gender is a required attribute.
+   * @default false
    */
-  GENDER = 'gender',
+  readonly gender?: boolean;
 
   /**
-   * Given name or first name of the user.
+   * Whether the user's first name or give name is a required attribute.
+   * @default false
    */
-  GIVEN_NAME = 'given_name',
+  readonly givenName?: boolean;
 
   /**
-   * User's locale, represented as a BCP47 [RFC5646] language tag.
-   * This is typically an ISO 639-1 Alpha-2 [ISO639‑1] language code in lowercase
-   * and an ISO 3166-1 Alpha-2 [ISO3166‑1] country code in uppercase, separated by a dash.
-   * For example, en-US or fr-CA.
+   * Whether the user's locale, represented as a BCP47 [RFC5646] language tag, is a required attribute.
+   * @default false
    */
-  LOCALE = 'locale',
+  readonly locale?: boolean;
 
   /**
-   * Middle name of the user.
+   * Whether the user's middle name is a required attribute.
+   * @default false
    */
-  MIDDLE_NAME = 'middle_name',
+  readonly middleName?: boolean;
 
   /**
-   * User's full name in displayable form including all name parts, possibly including titles and suffixes.
+   * Whether user's full name in displayable form, including all name parts, titles and suffixes, is a required attibute.
+   * @default false
    */
-  NAME = 'name',
+  readonly fullname?: boolean;
 
   /**
-   * Casual name of the user that may or may not be the same as the given_name.
+   * Whether the user's nickname or casual name is a required attribute.
+   * @default false
    */
-  NICKNAME = 'nickname',
+  readonly nickname?: boolean;
 
   /**
-   * User's preferred telephone number.
-   *
-   * Phone numbers must follow these formatting rules: A phone number must start with a plus (+) sign, followed
-   * immediately by the country code. A phone number can only contain the + sign and digits. You must remove any other
-   * characters from a phone number, such as parentheses, spaces, or dashes (-) before submitting the value to the
-   * service.
+   * Whether the user's telephone number is a required attribute.
+   * @default false
    */
-  PHONE_NUMBER = 'phone_number',
+  readonly phoneNumber?: boolean;
 
   /**
-   * URL of the user's profile picture.
-   * This URL must refer to an image file (for example, a PNG, JPEG, or GIF image file).
+   * Whether the URL to the user's profile picture is a required attribute.
+   * @default false
    */
-  PICTURE = 'picture',
+  readonly profilePicture?: boolean;
 
   /**
-   * Shorthand name by which the user wishes to be referred to.
+   * Whether the user's preffered username, different from the immutable user name, is a required attribute.
+   * @default false
    */
-  PREFERRED_USERNAME = 'preferred_username',
+  readonly preferredUsername?: boolean;
 
   /**
-   * URL of the user's profile page.
+   * Whether the URL to the user's profile page is a required attribute.
+   * @default false
    */
-  PROFILE = 'profile',
+  readonly profilePage?: boolean;
 
   /**
-   * The user's time zone
+   * Whether the user's time zone is a required attribute.
+   * @default false
    */
-  TIMEZONE = 'zoneinfo',
+  readonly timezone?: boolean;
 
   /**
-   * Time the user's information was last updated.
-   * Its value is a JSON number representing the number of seconds from 1970-01-01T0:0:0Z
-   * as measured in UTC until the date/time.
+   * Whether the time, the user's information was last updated, is a required attribute.
+   * @default false
    */
-  UPDATED_AT = 'updated_at',
+  readonly lastUpdateTime?: boolean;
 
   /**
-   * URL of the user's web page or blog.
+   * Whether the URL to the user's web page or blog is a required attribute.
+   * @default false
    */
-  WEBSITE = 'website'
+  readonly website?: boolean;
 }
 
 /**

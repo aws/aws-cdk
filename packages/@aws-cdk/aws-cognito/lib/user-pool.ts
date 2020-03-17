@@ -2,7 +2,7 @@ import { IRole, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from '
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Construct, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { CfnUserPool } from './cognito.generated';
-import { ICustomAttribute, StandardAttribute } from './user-pool-attr';
+import { ICustomAttribute, RequiredAttributes } from './user-pool-attr';
 
 /**
  * The different ways in which users of this pool can sign up or sign in.
@@ -262,7 +262,7 @@ export interface UserPoolProps {
    *
    * @default - No attributes are required.
    */
-  readonly requiredAttributes?: StandardAttribute[];
+  readonly requiredAttributes?: RequiredAttributes;
 
   /**
    * Define a set of custom attributes that can be configured for each user in the user pool.
@@ -611,7 +611,27 @@ export class UserPool extends Resource implements IUserPool {
     const schema: CfnUserPool.SchemaAttributeProperty[] = [];
 
     if (props.requiredAttributes) {
-      schema.push(...props.requiredAttributes.map((attr) => {
+      const stdAttributes: StandardAttribute[] = [];
+
+      if (props.requiredAttributes.address) { stdAttributes.push(StandardAttribute.ADDRESS); }
+      if (props.requiredAttributes.birthdate) { stdAttributes.push(StandardAttribute.BIRTHDATE); }
+      if (props.requiredAttributes.email) { stdAttributes.push(StandardAttribute.EMAIL); }
+      if (props.requiredAttributes.familyName) { stdAttributes.push(StandardAttribute.FAMILY_NAME); }
+      if (props.requiredAttributes.fullname) { stdAttributes.push(StandardAttribute.NAME); }
+      if (props.requiredAttributes.gender) { stdAttributes.push(StandardAttribute.GENDER); }
+      if (props.requiredAttributes.givenName) { stdAttributes.push(StandardAttribute.GIVEN_NAME); }
+      if (props.requiredAttributes.lastUpdateTime) { stdAttributes.push(StandardAttribute.LAST_UPDATE_TIME); }
+      if (props.requiredAttributes.locale) { stdAttributes.push(StandardAttribute.LOCALE); }
+      if (props.requiredAttributes.middleName) { stdAttributes.push(StandardAttribute.MIDDLE_NAME); }
+      if (props.requiredAttributes.nickname) { stdAttributes.push(StandardAttribute.NICKNAME); }
+      if (props.requiredAttributes.phoneNumber) { stdAttributes.push(StandardAttribute.PHONE_NUMBER); }
+      if (props.requiredAttributes.preferredUsername) { stdAttributes.push(StandardAttribute.PREFERRED_USERNAME); }
+      if (props.requiredAttributes.profilePage) { stdAttributes.push(StandardAttribute.PROFILE_URL); }
+      if (props.requiredAttributes.profilePicture) { stdAttributes.push(StandardAttribute.PICTURE_URL); }
+      if (props.requiredAttributes.timezone) { stdAttributes.push(StandardAttribute.TIMEZONE); }
+      if (props.requiredAttributes.website) { stdAttributes.push(StandardAttribute.WEBSITE); }
+
+      schema.push(...stdAttributes.map((attr) => {
         return { name: attr, required: true };
       }));
     }
@@ -643,4 +663,24 @@ export class UserPool extends Resource implements IUserPool {
     }
     return schema;
   }
+}
+
+const enum StandardAttribute {
+  ADDRESS = 'address',
+  BIRTHDATE = 'birthdate',
+  EMAIL = 'email',
+  FAMILY_NAME = 'family_name',
+  GENDER = 'gender',
+  GIVEN_NAME = 'given_name',
+  LOCALE = 'locale',
+  MIDDLE_NAME = 'middle_name',
+  NAME = 'name',
+  NICKNAME = 'nickname',
+  PHONE_NUMBER = 'phone_number',
+  PICTURE_URL = 'picture',
+  PREFERRED_USERNAME = 'preferred_username',
+  PROFILE_URL = 'profile',
+  TIMEZONE = 'zoneinfo',
+  LAST_UPDATE_TIME = 'updated_at',
+  WEBSITE = 'website',
 }

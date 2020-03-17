@@ -60,11 +60,11 @@
         "LambdaConfig": {},
         "Schema": [
           {
-            "Name": "name",
+            "Name": "email",
             "Required": true
           },
           {
-            "Name": "email",
+            "Name": "name",
             "Required": true
           },
           {
