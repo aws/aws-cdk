@@ -86,7 +86,7 @@ export interface MethodOptions {
   readonly authorizationScopes?: string[]
 
   /**
-   * Request validator options
+   * Request validator options to create new validator
    * @default - No validator
    */
   readonly reqValidator?: RequestValidatorOptions;
