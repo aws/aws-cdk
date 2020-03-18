@@ -91,6 +91,8 @@ export const isPositiveInteger = (value: number) => {
  *
  * While the Parallel state executes multiple branches of steps using the same input, a Map state
  * will execute the same steps for multiple entries of an array in the state input.
+ *
+ * @see https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-map-state.html
  */
 export class Map extends State implements INextable {
     public readonly endStates: INextable[];
