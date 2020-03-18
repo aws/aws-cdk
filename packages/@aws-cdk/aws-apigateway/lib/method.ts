@@ -5,7 +5,7 @@ import { ConnectionType, Integration } from './integration';
 import { MockIntegration } from './integrations/mock';
 import { MethodResponse } from './methodresponse';
 import { IModel } from './model';
-import { IRequestValidator, RequestValidatorOptions, RequestValidator } from './requestvalidator';
+import { IRequestValidator, RequestValidatorOptions } from './requestvalidator';
 import { IResource } from './resource';
 import { RestApi } from './restapi';
 import { validateHttpMethod } from './util';
@@ -311,17 +311,13 @@ export class Method extends Resource {
   }
 
   private requestValidatorId(options: MethodOptions): string | undefined {
-    if (!options.requestValidator && !options.reqValidator) {
-      return undefined;
-    }
-
     if (options.reqValidator) {
       const validator = this.restApi.addRequestValidator('validator', options.reqValidator);
       return validator.requestValidatorId;
     }
 
     //For backward compatibility
-    return options.requestValidator.requestValidatorId;
+    return options.requestValidator?.requestValidatorId;
   }
 }
 
