@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## [1.29.0](https://github.com/aws/aws-cdk/compare/v1.28.0...v1.29.0) (2020-03-18)
 
+:rocket: To enable new CDK projects such as [CDK for Kubernetes](https://github.com/awslabs/cdk8s), we have released the **constructs programming model** as an independent library called [constructs](https://github.com/aws/constructs). The `@aws-cdk/core.Construct` class is now a subclass of the base `constructs.Construct`.
 
 ### ⚠ BREAKING CHANGES
 
@@ -27,8 +28,6 @@ required to defined a `UserPool`.
 * **aws-ecs-pattern:** allow ScheduledTaskBase to run on a public subnet ([#6624](https://github.com/aws/aws-cdk/issues/6624)) ([b9a1408](https://github.com/aws/aws-cdk/commit/b9a14087c9d7260c71cce9a96718dcb75ece538e)), closes [#6312](https://github.com/aws/aws-cdk/issues/6312)
 * SecretValue.secretManager validates non-ARN ids do not contain : ([#6371](https://github.com/aws/aws-cdk/issues/6371)) ([7cb8c3f](https://github.com/aws/aws-cdk/commit/7cb8c3fb6d0c150bf4325ca0f51688806c8f29d1))
 * **aws-logs:** remove validation of retentionInDays for unresolved tokens ([#6727](https://github.com/aws/aws-cdk/issues/6727)) ([43a3420](https://github.com/aws/aws-cdk/commit/43a3420c91a3f4989f22d3eda9d7d448658f9aeb)), closes [#6690](https://github.com/aws/aws-cdk/issues/6690)
-
-
 * **ec2:** MachineImages create appropriate UserData ([7a10f0f](https://github.com/aws/aws-cdk/commit/7a10f0f9b9e8e4c9816a4f28335cca77a915b15f))
 
 ## [1.28.0](https://github.com/aws/aws-cdk/compare/v1.27.0...v1.28.0) (2020-03-16)
