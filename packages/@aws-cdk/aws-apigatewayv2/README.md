@@ -56,7 +56,7 @@ Use `HttpApi` to create HTTP APIs with Lambda or HTTP proxy integration.
 
 ```ts
 // Create a vanilla HTTP API with no integration targets
-const httpApi1 = new apigatewayv2.HttpApi(stack, 'HttpApi1');
+new apigatewayv2.HttpApi(stack, 'HttpApi1');
 
 // Create a HTTP API with Lambda Proxy Integration as its $default route
 const httpApi2 = new apigatewayv2.HttpApi(stack, 'HttpApi2', {
