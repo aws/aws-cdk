@@ -230,7 +230,7 @@ export enum PredefinedMetric {
   ECS_SERVICE_AVERAGE_MEMORY_UTILIZATION = 'ECSServiceAverageMemoryUtilization',
   /**
    * LAMBDA_PROVISIONED_CONCURRENCY_UTILIZATION
-   * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
+   * @see https://docs.aws.amazon.com/lambda/latest/dg/monitoring-metrics.html#monitoring-metrics-concurrency
    */
   LAMBDA_PROVISIONED_CONCURRENCY_UTILIZATION = "LambdaProvisionedConcurrencyUtilization",
 }
