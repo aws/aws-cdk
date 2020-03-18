@@ -35,7 +35,9 @@ const submitLambda = new lambda.Function(this, 'SubmitLambda', { ... });
 const getStatusLambda = new lambda.Function(this, 'CheckLambda', { ... });
 
 const submitJob = new sfn.Task(this, 'Submit Job', {
-    task: new tasks.RunLambdaTask(submitLambda),
+    task: new tasks.RunLambdaTask(submitLambda, {
+      integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
+    }),
     // Put Lambda's result here in the execution's state object
     resultPath: '$.guid',
 });
@@ -45,7 +47,11 @@ const waitX = new sfn.Wait(this, 'Wait X Seconds', {
 });
 
 const getStatus = new sfn.Task(this, 'Get Job Status', {
-    task: new tasks.RunLambdaTask(getStatusLambda),
+    task: new tasks.RunLambdaTask(getStatusLambda, {
+      integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
+      invocationType: tasks.InvocationType.REQUEST_RESPONSE,
+
+    }),
     // Pass just the field named "guid" into the Lambda, put the
     // Lambda's result in a field called "status"
     inputPath: '$.guid',
@@ -61,6 +67,7 @@ const finalStatus = new sfn.Task(this, 'Get Final Job Status', {
     task: new tasks.RunLambdaTask(getStatusLambda),
     // Use "guid" field as input, output of the Lambda becomes the
     // entire state machine output.
+    integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
     inputPath: '$.guid',
 });
 
