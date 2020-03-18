@@ -434,6 +434,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
         clusterAssociatedRoles.push({ roleArn: s3ExportRole.roleArn });
       }
 
+      // MySQL requires the associated roles to be specified as cluster parameters as well, PostgreSQL does not
       if (props.engine === DatabaseClusterEngine.AURORA || props.engine === DatabaseClusterEngine.AURORA_MYSQL) {
         if (!clusterParameterGroup) {
           clusterParameterGroup = new ClusterParameterGroup(this, "ClusterParameterGroup", {

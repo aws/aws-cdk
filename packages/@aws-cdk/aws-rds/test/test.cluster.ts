@@ -845,6 +845,43 @@ export = {
 
     test.done();
   },
+  'PostgreSQL cluster with s3 export buckets does not generate custom parameter group'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, "VPC");
+
+    const bucket = new s3.Bucket(stack, 'Bucket');
+
+    // WHEN
+    new DatabaseCluster(stack, "Database", {
+      engine: DatabaseClusterEngine.AURORA_POSTGRESQL,
+      instances: 1,
+      masterUser: {
+        username: "admin"
+      },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc
+      },
+      s3ExportBuckets: [bucket]
+    });
+
+    // THEN
+    expect(stack).to(haveResource("AWS::RDS::DBCluster", {
+      AssociatedRoles: [{
+        RoleArn: {
+          "Fn::GetAtt": [
+            "DatabaseS3ExportRole9E328562",
+            "Arn"
+          ]
+        }
+      }]
+    }, ResourcePart.Properties));
+
+    expect(stack).notTo(haveResource("AWS::RDS::DBClusterParameterGroup"));
+
+    test.done();
+  },
   'throws when s3ExportRole and s3ExportBuckets properties are both specified'(test: Test) {
     // GIVEN
     const stack = testStack();
