@@ -1,4 +1,4 @@
-import { InstanceType, SubnetSelection } from '@aws-cdk/aws-ec2';
+import { InstanceType, ISecurityGroup, SubnetSelection } from '@aws-cdk/aws-ec2';
 import { IRole, ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { CfnOutput, Construct, IResource, Resource } from '@aws-cdk/core';
 import { Cluster } from './cluster';
@@ -16,16 +16,6 @@ export interface INodegroup extends IResource {
 }
 
 /**
- * Nodegroup attributes used for the import
- */
-export interface NodegroupAttributes {
-  /**
-   * Name of the nodegroup
-   */
-  readonly nodegroupName: string;
-}
-
-/**
  * The AMI type for your node group. GPU instance types should use the `AL2_x86_64_GPU` AMI type, which uses the Amazon EKS-optimized
  * Linux AMI with GPU support. Non-GPU instances should use the `AL2_x86_64` AMI type, which uses the Amazon EKS-optimized Linux AMI.
  */
@@ -37,7 +27,7 @@ export enum NodegroupAmiType {
   /**
    *  Amazon EKS-optimized Linux AMI with GPU support
    */
-  AL2_X86_64_GPU = 'AL2_x86_64_GPU'
+  AL2_X86_64_GPU = 'AL2_x86_64_GPU',
 }
 
 /**
@@ -60,9 +50,9 @@ export interface RemoteAccess {
 }
 
 /**
- * The NodeGroupOps for addNodeGroup() method
+ * The Nodegroup Options for addNodeGroup() method
  */
-export interface NodegroupOps {
+export interface NodegroupOptions {
   /**
    * Name of the Nodegroup
    *
@@ -82,7 +72,7 @@ export interface NodegroupOps {
    *
    * @default - AL2_x86_64
    */
-  readonly amiType?: AmiType;
+  readonly amiType?: NodegroupAmiType;
   /**
    * The root device disk size (in GiB) for your node group instances.
    *
@@ -95,19 +85,19 @@ export interface NodegroupOps {
    *
    * @default - 2
    */
-  readonly desiredSize?: number,
+  readonly desiredSize?: number;
   /**
    * The maximum number of worker nodes that the managed node group can scale out to. Managed node groups can support up to 100 nodes by default.
    *
    * @default - desiredSize
    */
-  readonly maxSize?: number,
+  readonly maxSize?: number;
   /**
    * The minimum number of worker nodes that the managed node group can scale in to. This number must be greater than zero.
    *
    * @default - 1
    */
-  readonly minSize?: number
+  readonly minSize?: number;
   /**
    * Force the update if the existing node group's pods are unable to be drained due to a pod disruption budget issue. If an update fails
    * because pods could not be drained, you can force the update after it fails to terminate the old node whether or not any pods are
@@ -128,7 +118,7 @@ export interface NodegroupOps {
    *
    * @default - None
    */
-  readonly labels?: any;
+  readonly labels?: { [name: string]: string };
   /**
    * The IAM role to associate with your node group. The Amazon EKS worker node kubelet daemon
    * makes calls to AWS APIs on your behalf. Worker nodes receive permissions for these API calls through an IAM instance profile
@@ -165,7 +155,7 @@ export interface NodegroupOps {
 /**
  * NodeGroup properties interface
  */
-export interface NodegroupProps extends NodegroupOps {
+export interface NodegroupProps extends NodegroupOptions {
   /**
    * Cluster resource
    * [disable-awslint:ref-via-interface]"
@@ -182,7 +172,7 @@ export class Nodegroup extends Resource implements INodegroup {
    */
   public static fromNodegroupName(scope: Construct, id: string, nodegroupName: string): INodegroup {
     class Import extends Resource implements INodegroup {
-      public readonly nodegroupName = attrs.nodegroupName;
+      public readonly nodegroupName = nodegroupName;
     }
     return new Import(scope, id);
   }
@@ -248,7 +238,10 @@ export class Nodegroup extends Resource implements INodegroup {
       instanceTypes: props.instanceType ? [props.instanceType?.toString()] : undefined,
       labels: props.labels,
       releaseVersion: props.releaseVersion,
-      remoteAccess: props.remoteAccess,
+      remoteAccess: props.remoteAccess ? {
+        ec2SshKey: props.remoteAccess.ec2SshKey,
+        sourceSecurityGroups: props.remoteAccess.sourceSecurityGroups?.map(m => m.securityGroupId)
+      } : undefined,
       scalingConfig: {
         desiredSize: this.desiredSize,
         maxSize: this.maxSize,

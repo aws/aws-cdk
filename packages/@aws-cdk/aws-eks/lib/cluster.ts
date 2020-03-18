@@ -10,7 +10,7 @@ import { FargateProfile, FargateProfileOptions } from './fargate-profile';
 import { HelmChart, HelmChartOptions } from './helm-chart';
 import { KubernetesPatch } from './k8s-patch';
 import { KubernetesResource } from './k8s-resource';
-import { Nodegroup, NodegroupOps  } from './managed-nodegroup';
+import { Nodegroup, NodegroupOptions  } from './managed-nodegroup';
 import { spotInterruptHandler } from './spot-interrupt-handler';
 import { renderUserData } from './user-data';
 
