@@ -44,7 +44,7 @@ For more information about `REST APIs`, see [Working with REST APIs](https://doc
 
 HTTP APIs enable you to create RESTful APIs that integrate with AWS Lambda functions or to any routable HTTP endpoint.
 
-HTTP API supports both `Lambda Proxy Integration` and `HTTP Proxy Integration`. 
+HTTP API supports both Lambda proxy integration and HTTP proxy integration. 
 See [Working with AWS Lambda Proxy Integrations for HTTP APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html) 
 and [Working with HTTP Proxy Integrations for HTTP APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-http.html) 
 for more information.
