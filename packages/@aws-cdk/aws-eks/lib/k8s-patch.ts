@@ -36,7 +36,7 @@ export interface KubernetesPatchProps {
    * The patch type to pass to `kubectl patch`.
    * The default type used by `kubectl patch` is "strategic".
    *
-   * @default "strategic"
+   * @default PatchType.STRATEGIC
    */
   readonly patchType?: PatchType;
 }
