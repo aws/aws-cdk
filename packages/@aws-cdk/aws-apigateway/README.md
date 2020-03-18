@@ -327,7 +327,7 @@ resource.addMethod('GET', integration, {
       },
       // Validate the schema on the response
       responseModels: {
-        'application/json': resp  onseModel
+        'application/json': responseModel
       }
     },
     {
