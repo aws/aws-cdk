@@ -42,12 +42,7 @@ For more information about `REST APIs`, see [Working with REST APIs](https://doc
 ### HTTP API
 
 
-HTTP APIs enable you to create RESTful APIs with lower latency and lower cost than REST APIs.
-
-You can use HTTP APIs to send requests to AWS Lambda functions or to any routable HTTP endpoint.
-
-For example, you can create an HTTP API that integrates with a Lambda function on the backend. When a client calls your API, 
-API Gateway sends the request to the Lambda function and returns the function's response to the client. 
+HTTP APIs enable you to create RESTful APIs that integrate with AWS Lambda functions or to any routable HTTP endpoint.
 
 HTTP API supports both `Lambda Proxy Integration` and `HTTP Proxy Integration`. 
 See [Working with AWS Lambda Proxy Integrations for HTTP APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html) 
