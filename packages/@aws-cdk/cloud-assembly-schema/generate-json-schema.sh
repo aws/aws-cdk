@@ -17,4 +17,5 @@ typescript-json-schema                           \
     --refs             true                      \
     --required         true                      \
     --strictNullChecks true                      \
-    --topRef           true
+    --topRef           true                      \
+    --noExtraProps
