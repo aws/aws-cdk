@@ -99,7 +99,7 @@ export class IntegrationTest {
 
     try {
       const cdk = require.resolve('aws-cdk/bin/cdk');
-      return exec([cdk, '-a', `node ${this.name}`, ...cliSwitches], {
+      return exec([cdk, '-a', `node ${this.name}`, ...cliSwitches, ...args], {
         cwd: this.directory,
         json: options.json,
         verbose: options.verbose,
