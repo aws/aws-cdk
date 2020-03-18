@@ -269,14 +269,6 @@ export class Nodegroup extends Resource implements INodegroup {
       });
     }
 
-    this.cluster.awsAuth.addRoleMapping(ngRole, {
-      username: 'system:node:{{EC2PrivateDNSName}}',
-      groups: [
-        'system:bootstrappers',
-        'system:nodes'
-      ]
-    });
-
     this.nodegroupArn = resource.attrArn;
     this.nodegroupName = resource.ref;
     this.role = ngRole;
