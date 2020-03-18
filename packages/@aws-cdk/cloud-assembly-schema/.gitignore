@@ -13,3 +13,4 @@ tslint.json
 .nyc_output
 coverage
 nyc.config.js
+schema
