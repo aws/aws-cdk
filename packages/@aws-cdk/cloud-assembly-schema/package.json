@@ -44,7 +44,9 @@
     "url": "https://aws.amazon.com",
     "organization": true
   },
-  "dependencies": {},
+  "dependencies": {
+    "jsonschema": "^1.2.5"
+  },
   "jest": {
     "moduleFileExtensions": [
       "js"
@@ -70,7 +72,8 @@
     "cdk-build-tools": "0.0.0",
     "jest": "^24.9.0",
     "mock-fs": "^4.11.0",
-    "pkglint": "0.0.0"
+    "pkglint": "0.0.0",
+    "typescript-json-schema": "^0.42.0"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
