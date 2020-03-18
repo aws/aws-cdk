@@ -146,7 +146,11 @@
           "Fn::Join": [
             "",
             [
-              "arn:aws:apigateway:",
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":apigateway:",
               {
                 "Ref": "AWS::Region"
               },
@@ -164,19 +168,26 @@
         "PayloadFormatVersion": "1.0"
       }
     },
-    "HttpApiPermissionLambdaRouteLambdaProxyIntegrationB7913F51": {
+    "HttpApiIntegPermissionApiagtewayV2HttpApiLambdaRouteLambdaProxyIntegration13D61555AWSPROXYPOST97C13A63": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
-          "Ref": "MyFunc8A243A2C"
+          "Fn::GetAtt": [
+            "MyFunc8A243A2C",
+            "Arn"
+          ]
         },
         "Principal": "apigateway.amazonaws.com",
         "SourceArn": {
           "Fn::Join": [
             "",
             [
-              "arn:aws:execute-api:",
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
               {
                 "Ref": "AWS::Region"
               },
@@ -207,19 +218,26 @@
         }
       }
     },
-    "HttpApi2Permission5FEFB3CB": {
+    "ApiPermissionApiagtewayV2HttpApiHttpApi212E01E71ANY": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
-          "Ref": "MyFunc8A243A2C"
+          "Fn::GetAtt": [
+            "MyFunc8A243A2C",
+            "Arn"
+          ]
         },
         "Principal": "apigateway.amazonaws.com",
         "SourceArn": {
           "Fn::Join": [
             "",
             [
-              "arn:aws:execute-api:",
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
               {
                 "Ref": "AWS::Region"
               },
@@ -249,7 +267,11 @@
           "Fn::Join": [
             "",
             [
-              "arn:aws:apigateway:",
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":apigateway:",
               {
                 "Ref": "AWS::Region"
               },
@@ -267,19 +289,26 @@
         "PayloadFormatVersion": "1.0"
       }
     },
-    "PermissionIntegRootHandler": {
+    "IntegPermissionApiagtewayV2HttpApiIntegRootHandler3D54DAE8AWSPROXYPOST": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
-          "Ref": "RootFuncF39FB174"
+          "Fn::GetAtt": [
+            "RootFuncF39FB174",
+            "Arn"
+          ]
         },
         "Principal": "apigateway.amazonaws.com",
         "SourceArn": {
           "Fn::Join": [
             "",
             [
-              "arn:aws:execute-api:",
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
               {
                 "Ref": "AWS::Region"
               },
@@ -413,7 +442,11 @@
           "Fn::Join": [
             "",
             [
-              "arn:aws:apigateway:",
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":apigateway:",
               {
                 "Ref": "AWS::Region"
               },
@@ -431,19 +464,26 @@
         "PayloadFormatVersion": "1.0"
       }
     },
-    "RootRoutePermissionFooLambdaProxyIntegrationE3A30900": {
+    "RootRouteIntegPermissionApiagtewayV2HttpApiRootRouteFooLambdaProxyIntegration5622B5E6AWSPROXYPOST4694F774": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
-          "Ref": "MyFunc8A243A2C"
+          "Fn::GetAtt": [
+            "MyFunc8A243A2C",
+            "Arn"
+          ]
         },
         "Principal": "apigateway.amazonaws.com",
         "SourceArn": {
           "Fn::Join": [
             "",
             [
-              "arn:aws:execute-api:",
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
               {
                 "Ref": "AWS::Region"
               },
