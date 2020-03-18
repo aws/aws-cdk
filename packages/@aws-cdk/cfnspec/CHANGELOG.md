@@ -1,3 +1,50 @@
+# CloudFormation Resource Specification v11.5.0
+
+## New Resource Types
+
+* AWS::Cassandra::Keyspace
+* AWS::Cassandra::Table
+
+## Attribute Changes
+
+* AWS::AppMesh::Mesh MeshOwner.PrimitiveType (__added__)
+* AWS::AppMesh::Mesh ResourceOwner.PrimitiveType (__added__)
+* AWS::AppMesh::Route MeshOwner.PrimitiveType (__added__)
+* AWS::AppMesh::Route ResourceOwner.PrimitiveType (__added__)
+* AWS::AppMesh::VirtualNode MeshOwner.PrimitiveType (__added__)
+* AWS::AppMesh::VirtualNode ResourceOwner.PrimitiveType (__added__)
+* AWS::AppMesh::VirtualRouter MeshOwner.PrimitiveType (__added__)
+* AWS::AppMesh::VirtualRouter ResourceOwner.PrimitiveType (__added__)
+* AWS::AppMesh::VirtualService MeshOwner.PrimitiveType (__added__)
+* AWS::AppMesh::VirtualService ResourceOwner.PrimitiveType (__added__)
+
+## Property Changes
+
+* AWS::ApiGatewayV2::Integration TlsConfig (__added__)
+* AWS::AppMesh::Route MeshOwner (__added__)
+* AWS::AppMesh::VirtualNode MeshOwner (__added__)
+* AWS::AppMesh::VirtualRouter MeshOwner (__added__)
+* AWS::AppMesh::VirtualService MeshOwner (__added__)
+* AWS::MSK::Cluster LoggingInfo (__added__)
+
+## Property Type Changes
+
+* AWS::ApiGatewayV2::Integration.TlsConfig (__added__)
+* AWS::CloudFront::Distribution.OriginGroup (__added__)
+* AWS::CloudFront::Distribution.OriginGroupFailoverCriteria (__added__)
+* AWS::CloudFront::Distribution.OriginGroupMember (__added__)
+* AWS::CloudFront::Distribution.OriginGroupMembers (__added__)
+* AWS::CloudFront::Distribution.OriginGroups (__added__)
+* AWS::CloudFront::Distribution.StatusCodes (__added__)
+* AWS::MSK::Cluster.BrokerLogs (__added__)
+* AWS::MSK::Cluster.CloudWatchLogs (__added__)
+* AWS::MSK::Cluster.Firehose (__added__)
+* AWS::MSK::Cluster.LoggingInfo (__added__)
+* AWS::MSK::Cluster.S3 (__added__)
+* AWS::CloudFront::Distribution.DistributionConfig OriginGroups (__added__)
+* AWS::CloudFront::Distribution.LambdaFunctionAssociation IncludeBody (__added__)
+
+
 # CloudFormation Resource Specification v11.4.0
 
 ## New Resource Types
