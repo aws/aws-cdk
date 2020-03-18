@@ -478,6 +478,12 @@ export interface DatabaseInstanceNewProps {
    * @default RemovalPolicy.Retain
    */
   readonly removalPolicy?: RemovalPolicy
+
+  /**
+   * Upper limit to which RDS can scale the storage
+   * @default - No default value
+   */
+  readonly maxAllocatedStorage?: number;
 }
 
 /**
@@ -567,7 +573,8 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       processorFeatures: props.processorFeatures && renderProcessorFeatures(props.processorFeatures),
       publiclyAccessible: props.vpcPlacement && props.vpcPlacement.subnetType === ec2.SubnetType.PUBLIC,
       storageType,
-      vpcSecurityGroups: securityGroups.map(s => s.securityGroupId)
+      vpcSecurityGroups: securityGroups.map(s => s.securityGroupId),
+      maxAllocatedStorage: props.maxAllocatedStorage
     };
   }
 

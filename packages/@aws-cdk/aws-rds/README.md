@@ -76,6 +76,21 @@ new DatabaseInstanceReadReplica(stack, 'ReadReplica', {
     vpc
 });
 ```
+
+To use the storage auto scaling option of RDS you can specify the maximum allocated storage.
+This is the upper limit to which RDS can automatically scale the storage. More info can be found
+[here](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html#cfn-rds-dbinstance-maxallocatedstorage)
+Example for max storage configuration:
+```ts
+const instance = new DatabaseInstance(stack, 'Instance', {
+    engine: rds.DatabaseInstanceEngine.ORACLE_SE1,
+    instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+    masterUsername: 'syscdk',
+    vpc,
+    maxAllocatedStorage: 200
+});
+```
+
 Creating a "production" Oracle database instance with option and parameter groups:
 
 [example of setting up a production oracle instance](test/integ.instance.lit.ts)
