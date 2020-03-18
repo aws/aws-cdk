@@ -88,12 +88,13 @@
   },
   "dependencies": {
     "@aws-cdk/core": "0.0.0",
-    "@aws-cdk/aws-lambda": "0.0.0"
-
+    "@aws-cdk/aws-lambda": "0.0.0",
+    "constructs": "^1.1.2"
   },
   "peerDependencies": {
     "@aws-cdk/core": "0.0.0",
-    "@aws-cdk/aws-lambda": "0.0.0"
+    "@aws-cdk/aws-lambda": "0.0.0",
+    "constructs": "^1.1.2"
   },
   "engines": {
     "node": ">= 10.3.0"

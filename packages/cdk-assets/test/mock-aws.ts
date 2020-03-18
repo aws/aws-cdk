@@ -45,13 +45,21 @@ export function mockedApiFailure(code: string, message: string) {
  * Mock upload, draining the stream that we get before returning
  * so no race conditions happen with the uninstallation of mock-fs.
  */
-export function mockUpload() {
+export function mockUpload(expectContent?: string) {
   return jest.fn().mockImplementation(request => ({
     promise: () => new Promise((ok, ko) => {
+      const didRead = new Array<string>();
+
       const bodyStream: NodeJS.ReadableStream = request.Body;
-      bodyStream.on('data', () => { /* ignore */ }); // This listener must exist
+      bodyStream.on('data', (chunk) => { didRead.push(chunk.toString()); }); // This listener must exist
       bodyStream.on('error', ko);
-      bodyStream.on('close', ok);
+      bodyStream.on('close', () => {
+        const actualContent = didRead.join('');
+        if (expectContent !== undefined && expectContent !== actualContent) {
+          throw new Error(`Expected to read '${expectContent}' but read: '${actualContent}'`);
+        }
+        ok();
+      });
     })
   }));
 }
