@@ -175,7 +175,7 @@ def handler(event, context):
         'statusCode': 200,
         'body': json.dumps('Hello CDK from Lambda!')
     }`),
-      reservedConcurrentExecutions: 100,
+      reservedConcurrentExecutions: 2,
     });
     
     const fnVer = handler.addVersion('CDKLambdaVersion', undefined, 'demo alias', 10);
@@ -196,4 +196,3 @@ s
     })
   }
   ```
-
