@@ -21,7 +21,7 @@ const CONSTRUCT_SYMBOL = Symbol.for('@aws-cdk/core.Construct');
 /**
  * Represents a construct.
  */
-export interface IConstruct extends constructs.IConstruct {
+export interface IConstruct extends constructs.IConstruct, IDependable {
   /**
    * The construct tree node for this construct.
    */
