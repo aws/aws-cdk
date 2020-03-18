@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.30.0](https://github.com/aws/aws-cdk/compare/v1.29.0...v1.30.0) (2020-03-18)
+
+
+### Features
+
+* **cloudwatch:** standard set of graph colors ([#6747](https://github.com/aws/aws-cdk/issues/6747)) ([97ae931](https://github.com/aws/aws-cdk/commit/97ae931ea4d8333d1846fc3bc801430b000fa606))
+
+
+### Bug Fixes
+
+* **core:** IConstruct no longer extends IDependable ([#6794](https://github.com/aws/aws-cdk/issues/6794)) ([19bb16a](https://github.com/aws/aws-cdk/commit/19bb16a0feb5b482223dd193354447065ac06f8f)), closes [#6792](https://github.com/aws/aws-cdk/issues/6792)
+
 ## [1.29.0](https://github.com/aws/aws-cdk/compare/v1.28.0...v1.29.0) (2020-03-18)
 
 :rocket: To enable new CDK projects such as [CDK for Kubernetes](https://github.com/awslabs/cdk8s), we have released the **constructs programming model** as an independent library called [constructs](https://github.com/aws/constructs). The `@aws-cdk/core.Construct` class is now a subclass of the base `constructs.Construct`.
