@@ -53,31 +53,34 @@ export interface CommonMetricOptions {
    *
    * CloudWatch does not honor this property for graphs.
    *
-   * @default All metric datums in the given metric stream
+   * @default - All metric datums in the given metric stream
    */
   readonly unit?: Unit;
 
   /**
    * Label for this metric when added to a Graph in a Dashboard
+   * @default - No label
    */
   readonly label?: string;
 
   /**
-   * Color for this metric when added to a Graph in a Dashboard
+   * The hex color code, prefixed with '#' (e.g. '#00ff00'), to use when this metric is rendered on a graph.
+   * The `Color` class has a set of standard colors that can be used here.
+   * @default - Automatic color
    */
   readonly color?: string;
 
   /**
    * Account which this metric comes from.
    *
-   * @default Deployment account.
+   * @default - Deployment account.
    */
   readonly account?: string;
 
   /**
    * Region which this metric comes from.
    *
-   * @default Deployment region.
+   * @default - Deployment region.
    */
   readonly region?: string;
 }
@@ -178,33 +181,28 @@ export class Metric implements IMetric {
     });
   }
 
+  /** Dimensions of this metric */
   public readonly dimensions?: DimensionHash;
+  /** Namespace of this metric */
   public readonly namespace: string;
+  /** Name of this metric */
   public readonly metricName: string;
+  /** Period of this metric */
   public readonly period: cdk.Duration;
+  /** Statistic of this metric */
   public readonly statistic: string;
+  /** Label for this metric when added to a Graph in a Dashboard */
   public readonly label?: string;
+  /** The hex color code used when this metric is rendered on a graph. */
   public readonly color?: string;
 
-  /**
-   * Unit of the metric.
-   *
-   * @default None
-   */
+  /** Unit of the metric. */
   public readonly unit?: Unit;
 
-  /**
-   * Account which this metric comes from.
-   *
-   * @default Deployment account.
-   */
+  /** Account which this metric comes from */
   public readonly account?: string;
 
-  /**
-   * Region which this metric comes from.
-   *
-   * @default Deployment region.
-   */
+  /** Region which this metric comes from. */
   public readonly region?: string;
 
   constructor(props: MetricProps) {
@@ -227,7 +225,7 @@ export class Metric implements IMetric {
   }
 
   /**
-   * Return a copy of Metric with properties changed.
+   * Return a copy of Metric `with` properties changed.
    *
    * All properties except namespace and metricName can be changed.
    *
@@ -427,7 +425,8 @@ export class MathExpression implements IMetric {
   public readonly label?: string;
 
   /**
-   * Color for this metric when added to a Graph.
+   * The hex color code, prefixed with '#' (e.g. '#00ff00'), to use when this metric is rendered on a graph.
+   * The `Color` class has a set of standard colors that can be used here.
    */
   public readonly color?: string;
 
