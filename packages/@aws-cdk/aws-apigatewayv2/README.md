@@ -36,11 +36,11 @@ Amazon API Gateway supports `HTTP APIs`, `WebSocket APIs` and `REST APIs`. For m
 see [About WebSocket APIs in API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-overview.html) 
 and [HTTP APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api.html). 
 
-For more information about `REST APIs`, see [Working with REST APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-rest-api.html). To create [REST APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-rest-api.html) with AWS CDK, use `@aws-cdk/aws-apigateway` instead.
+For more information about `REST APIs`, see [Working with REST APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-rest-api.html). 
+To create [REST APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-rest-api.html) with AWS CDK, use `@aws-cdk/aws-apigateway` instead.
 
 
 ### HTTP API
-
 
 HTTP APIs enable you to create RESTful APIs that integrate with AWS Lambda functions or to any routable HTTP endpoint.
 
@@ -51,7 +51,7 @@ for more information.
 
 
 
-Use `HttpApi` to create HTTP APIs with Lambda or HTTP proxy integration.
+Use `HttpApi` to create HTTP APIs with Lambda or HTTP proxy integration. The $default route will be created as well that acts as a catch-all for requests that don’t match any other routes. 
 
 
 ```ts
@@ -71,7 +71,7 @@ const httpApi3 = new apigatewayv2.HttpApi(stack, 'HttpApi3', {
 
 ## Route
 
-`Routes` direct incoming API requests to backend resources. `Routes` consist of two parts: an HTTP method and a resource path—for example, 
+Routes direct incoming API requests to backend resources. Routes consist of two parts: an HTTP method and a resource path—for example, 
 `GET /pets`. You can define specific HTTP methods for your route, or use the `ANY` method to match all methods that you haven't defined for a resource. 
 You can create a `$default route` that acts as a catch-all for requests that don’t match any other routes. See 
 [Working with Routes for HTTP APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-routes.html).

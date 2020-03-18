@@ -1,11 +1,11 @@
 import * as lambda from '@aws-cdk/aws-lambda';
-import * as cdk from '@aws-cdk/core';
+import { Construct, IResource, Resource } from '@aws-cdk/core';
 import * as apigatewayv2 from '../lib';
 
 /**
  * the interface of the Route of API Gateway HTTP API
  */
-export interface IRoute extends cdk.IResource {
+export interface IRoute extends IResource {
   /**
    * ID of the Route
    * @attribute
@@ -120,7 +120,7 @@ export enum HttpMethod {
 /**
  * Route properties
  */
-export interface RouteProps extends cdk.StackProps {
+export interface RouteProps  {
   /**
    * route name
    * @default - the logic ID of this route
@@ -169,17 +169,16 @@ export interface RouteProps extends cdk.StackProps {
 /**
  * Route class that creates the Route for API Gateway HTTP API
  */
-export class Route extends cdk.Resource implements IRouteBase {
+export class Route extends Resource implements IRouteBase {
   /**
    * import from route id
    */
-  public static fromRouteId(scope: cdk.Construct, id: string, routeId: string): IRoute {
-    class Import extends cdk.Resource implements IRoute {
+  public static fromRouteId(scope: Construct, id: string, routeId: string): IRoute {
+    class Import extends Resource implements IRoute {
       public routeId = routeId;
     }
     return new Import(scope, id);
   }
-  // public readonly fullUrl: string;
   /**
    * the api ID of this route
    */
@@ -205,7 +204,7 @@ export class Route extends cdk.Resource implements IRouteBase {
    */
   public readonly integId: string;
 
-  constructor(scope: cdk.Construct, id: string, props: RouteProps) {
+  constructor(scope: Construct, id: string, props: RouteProps) {
     super(scope, id);
 
     if ((props.targetHandler && props.targetUrl) ||
@@ -247,7 +246,6 @@ export class Route extends cdk.Resource implements IRouteBase {
 
     const route = new apigatewayv2.CfnRoute(this, 'Resource', routeProps);
     this.routeId = route.ref;
-    // this.url = `${this.api.url}${this.httpPath}`;
   }
 
   /**
@@ -256,7 +254,6 @@ export class Route extends cdk.Resource implements IRouteBase {
   public addLambdaRoute(pathPart: string, id: string, options: LambdaRouteOptions): Route {
     const httpPath = `${this.httpPath.replace(/\/+$/, "")}/${pathPart}`;
     const httpMethod = options.method;
-    // const routeKey = `${httpMethod} ${httpPath}`;
 
     return new Route(this, id, {
       api: this.api,
@@ -274,7 +271,6 @@ export class Route extends cdk.Resource implements IRouteBase {
   public addHttpRoute(pathPart: string, id: string, options: HttpRouteOptions): Route {
     const httpPath = `${this.httpPath.replace(/\/+$/, "")}/${pathPart}`;
     const httpMethod = options.method;
-    // const routeKey = `${httpMethod} ${httpPath}`;
 
     return new Route(this, id, {
       api: this.api,

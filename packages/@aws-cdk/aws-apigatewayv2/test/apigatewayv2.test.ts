@@ -1,5 +1,4 @@
-// import '@aws-cdk/assert/jest';
-import { countResources, expect as expectCDK, haveResourceLike } from '@aws-cdk/assert';
+import { countResources, expect as expectCDK, haveOutput, haveResourceLike } from '@aws-cdk/assert';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import * as apigatewayv2 from '../lib';
@@ -22,7 +21,6 @@ def handler(event, context):
         'statusCode': 200,
         'body': json.dumps(event)
       }`),
-    reservedConcurrentExecutions: 10,
   });
 
   rootHandler = new lambda.Function(stack, 'RootFunc', {
@@ -48,9 +46,13 @@ def handler(event, context):
 
 test('create a HTTP API with no props correctly', () => {
   // WHEN
-  new apigatewayv2.HttpApi(stack, 'HttpApi');
+  const api = new apigatewayv2.HttpApi(stack, 'HttpApi');
+  new cdk.CfnOutput(stack, 'URL', { value: api.url });
   // THEN
   expectCDK(stack).to(countResources('AWS::ApiGatewayV2::Api', 1));
+  expectCDK(stack).to(haveOutput({
+    outputName: 'URL'
+  }));
 });
 
 test('create a HTTP API with empty props correctly', () => {
@@ -73,7 +75,6 @@ test('create a basic HTTP API correctly with targetUrl and protocol', () => {
   // WHEN
   new apigatewayv2.HttpApi(stack, 'HttpApi', {
     targetUrl: checkIpUrl,
-    protocol: apigatewayv2.ProtocolType.HTTP
   });
   // THEN
   expectCDK(stack).to(countResources('AWS::ApiGatewayV2::Api', 1));

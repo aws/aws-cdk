@@ -82,3 +82,6 @@ httpApi2.root
     targetUrl: checkIpUrl,
     method: apigatewayv2.HttpMethod.ANY
   });
+
+new cdk.CfnOutput(stack, 'URL', { value: httpApi.url });
+new cdk.CfnOutput(stack, 'URL2', { value: httpApi2.url });

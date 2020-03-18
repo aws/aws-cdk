@@ -1,11 +1,12 @@
+import { ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import * as cdk from '@aws-cdk/core';
+import { Construct, IResource, Resource, Stack, } from '@aws-cdk/core';
 import * as apigatewayv2 from '../lib';
 
 /**
  * The integration interface
  */
-export interface IIntegration extends cdk.IResource {
+export interface IIntegration extends IResource {
 /**
  * The resource ID of the integration
  *
@@ -20,9 +21,9 @@ export interface IIntegration extends cdk.IResource {
  */
 export enum IntegrationType {
   /**
-   * for integrating the route or method request with an AWS service action, includingthe Lambda function-invoking action.
-   * With the Lambda function-invoking action, this is referred to as the Lambda custom integration. With any other AWS service
-   * action, this is known as AWS integration. Supported only for WebSocket APIs.
+   * for integrating the route or method request with an AWS service action, includingthe Lambda function-invoking
+   * action. With the Lambda function-invoking action, this is referred to as the Lambda custom integration. With any
+   * other AWS service action, this is known as AWS integration. Supported only for WebSocket APIs.
    */
   AWS = 'AWS',
   /**
@@ -50,7 +51,7 @@ export enum IntegrationType {
 /**
  * the integration properties
  */
-export interface IntegrationProps extends cdk.StackProps {
+export interface IntegrationProps {
   /**
    * integration name
    * @default - the resource ID of the integration
@@ -77,7 +78,7 @@ export interface IntegrationProps extends cdk.StackProps {
 /**
  * Lambda Proxy integration properties
  */
-export interface LambdaProxyIntegrationProps extends cdk.StackProps {
+export interface LambdaProxyIntegrationProps {
   /**
    * integration name
    * @default - the resource id
@@ -97,7 +98,7 @@ export interface LambdaProxyIntegrationProps extends cdk.StackProps {
 /**
  * HTTP Proxy integration properties
  */
-export interface HttpProxyIntegrationProps extends cdk.StackProps {
+export interface HttpProxyIntegrationProps {
   /**
    * integration name
    * @default - the resource id
@@ -122,19 +123,19 @@ export interface HttpProxyIntegrationProps extends cdk.StackProps {
 /**
  * The integration resource for HTTP API
  */
-export class Integration extends cdk.Resource implements IIntegration {
+export class Integration extends Resource implements IIntegration {
   /**
    * import from integration ID
    */
-  public static fromIntegrationId(scope: cdk.Construct, id: string, integrationId: string): IIntegration {
-    class Import extends cdk.Resource implements IIntegration {
+  public static fromIntegrationId(scope: Construct, id: string, integrationId: string): IIntegration {
+    class Import extends Resource implements IIntegration {
       public readonly integrationId = integrationId;
     }
 
     return new Import(scope, id);
   }
   public readonly integrationId: string;
-  constructor(scope: cdk.Construct, id: string, props: IntegrationProps) {
+  constructor(scope: Construct, id: string, props: IntegrationProps) {
     super(scope, id);
     const integ = new apigatewayv2.CfnIntegration(this, 'Resource', {
       apiId: props.apiId,
@@ -151,35 +152,29 @@ export class Integration extends cdk.Resource implements IIntegration {
  * The Lambda Proxy integration resource for HTTP API
  * @resource AWS::ApiGatewayV2::Integration
  */
-export class LambdaProxyIntegration extends cdk.Resource  implements IIntegration {
+export class LambdaProxyIntegration extends Resource  implements IIntegration {
   public readonly integrationId: string;
-  constructor(scope: cdk.Construct, id: string, props: LambdaProxyIntegrationProps) {
+  constructor(scope: Construct, id: string, props: LambdaProxyIntegrationProps) {
     super(scope, id);
 
-    const partition = this.isChina() ? 'aws-cn' : 'aws';
-    const region = this.stack.region;
-    const account = this.stack.account;
-
     // create integration
+    const integrationType = apigatewayv2.IntegrationType.AWS_PROXY;
+    const integrationMethod = apigatewayv2.HttpMethod.POST;
     const integ = new apigatewayv2.CfnIntegration(this, 'Resource', {
       apiId: props.api.httpApiId,
-      integrationType: apigatewayv2.IntegrationType.AWS_PROXY,
-      integrationMethod: apigatewayv2.HttpMethod.POST,
+      integrationType,
+      integrationMethod,
       payloadFormatVersion: '1.0',
-      integrationUri: `arn:${partition}:apigateway:${region}:lambda:path/2015-03-31/functions/${props.targetHandler.functionArn}/invocations`,
+      integrationUri: `arn:${Stack.of(this).partition}:apigateway:${Stack.of(this).region}:lambda:path/2015-03-31/functions/${props.targetHandler.functionArn}/invocations`,
     });
     this.integrationId = integ.ref;
     // create permission
-    new lambda.CfnPermission(scope, `Permission-${id}`, {
-      action: 'lambda:InvokeFunction',
-      principal: 'apigateway.amazonaws.com',
-      functionName: props.targetHandler.functionName,
-      sourceArn: `arn:${partition}:execute-api:${region}:${account}:${props.api.httpApiId}/*/*`,
+    const desc = `${this.node.uniqueId}.${integrationType}.${integrationMethod}`;
+    props.targetHandler.addPermission(`IntegPermission.${desc}`, {
+      scope,
+      principal: new ServicePrincipal('apigateway.amazonaws.com'),
+      sourceArn: `arn:${Stack.of(this).partition}:execute-api:${Stack.of(this).region}:${Stack.of(this).account}:${props.api.httpApiId}/*/*`,
     });
-  }
-  private isChina(): boolean {
-    const region = this.stack.region;
-    return !cdk.Token.isUnresolved(region) && region.startsWith('cn-');
   }
 }
 
@@ -188,10 +183,10 @@ export class LambdaProxyIntegration extends cdk.Resource  implements IIntegratio
  *
  * @resource AWS::ApiGatewayV2::Integration
  */
-export class HttpProxyIntegration extends cdk.Resource implements IIntegration {
+export class HttpProxyIntegration extends Resource implements IIntegration {
   public readonly integrationId: string;
 
-  constructor(scope: cdk.Construct, id: string, props: HttpProxyIntegrationProps) {
+  constructor(scope: Construct, id: string, props: HttpProxyIntegrationProps) {
     super(scope, id);
 
     // create integration
