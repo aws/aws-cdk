@@ -73,7 +73,7 @@ export interface MethodOptions {
 
   /**
    * The ID of the associated request validator.
-   * @deprecated Use `reqValidator`
+   * @deprecated Use `reqValidator` to pass validator options
    */
   readonly requestValidator?: IRequestValidator;
 
