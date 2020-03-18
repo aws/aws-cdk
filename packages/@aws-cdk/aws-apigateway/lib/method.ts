@@ -87,7 +87,7 @@ export interface MethodOptions {
 
   /**
    * Request validator options
-   * @default 
+   * @default - No validator
    */
   readonly reqValidator?: RequestValidatorOptions;
 }
@@ -316,7 +316,7 @@ export class Method extends Resource {
       return validator.requestValidatorId;
     }
 
-    //For backward compatibility
+    // For backward compatibility
     return options.requestValidator?.requestValidatorId;
   }
 }
