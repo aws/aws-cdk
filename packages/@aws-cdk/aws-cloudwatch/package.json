@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-cloudwatch",
-  "version": "1.25.0",
+  "version": "0.0.0",
   "description": "CDK Constructs for AWS CloudWatch",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -62,22 +62,24 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "1.25.0",
+    "@aws-cdk/assert": "0.0.0",
     "@types/nodeunit": "^0.0.30",
-    "cdk-build-tools": "1.25.0",
-    "cdk-integ-tools": "1.25.0",
-    "cfn2ts": "1.25.0",
+    "cdk-build-tools": "0.0.0",
+    "cdk-integ-tools": "0.0.0",
+    "cfn2ts": "0.0.0",
     "nodeunit": "^0.11.3",
-    "pkglint": "1.25.0"
+    "pkglint": "0.0.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-iam": "1.25.0",
-    "@aws-cdk/core": "1.25.0"
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^1.1.2"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-iam": "1.25.0",
-    "@aws-cdk/core": "1.25.0"
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^1.1.2"
   },
   "awslint": {
     "exclude": [
@@ -131,6 +133,7 @@
       "docs-public-apis:@aws-cdk/aws-cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD",
       "docs-public-apis:@aws-cdk/aws-cloudwatch.ComparisonOperator.LESS_THAN_THRESHOLD",
       "docs-public-apis:@aws-cdk/aws-cloudwatch.ComparisonOperator.LESS_THAN_OR_EQUAL_TO_THRESHOLD",
+      "docs-public-apis:@aws-cdk/aws-cloudwatch.ComparisonOperator.LESS_THAN_LOWER_OR_GREATER_THAN_UPPER_THRESHOLD",
       "docs-public-apis:@aws-cdk/aws-cloudwatch.PeriodOverride",
       "docs-public-apis:@aws-cdk/aws-cloudwatch.PeriodOverride.AUTO",
       "docs-public-apis:@aws-cdk/aws-cloudwatch.PeriodOverride.INHERIT",

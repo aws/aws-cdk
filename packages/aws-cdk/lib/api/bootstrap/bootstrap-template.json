@@ -273,12 +273,19 @@
             },
             {
               "Action": [
-                "ecr:PutImage",        "ecr:InitiateLayerUpload",
-                "ecr:UploadLayerPart", "ecr:CompleteLayerUpload"
+                "ecr:PutImage",             "ecr:InitiateLayerUpload",
+                "ecr:UploadLayerPart",      "ecr:CompleteLayerUpload",
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:DescribeRepositories", "ecr:DescribeImages"
               ],
               "Resource": {
                 "Fn::Sub": "${ContainerAssetsRepository.Arn}"
               },
+              "Effect": "Allow"
+            },
+            {
+              "Action": ["ecr:GetAuthorizationToken"],
+              "Resource": "*",
               "Effect": "Allow"
             }
           ],
@@ -337,7 +344,8 @@
                     "s3:GetObject*",                    "s3:GetBucket*",
                     "s3:List*",                         "s3:Abort*",
                     "s3:DeleteObject*",                 "s3:PutObject*",
-                    "kms:Decrypt",                      "kms:DescribeKey"
+                    "kms:Decrypt",    "kms:DescribeKey",     "kms:Encrypt",
+                    "kms:ReEncrypt*", "kms:GenerateDataKey*"
                   ],
                   "Resource": "*",
                   "Effect": "Allow"
@@ -347,6 +355,17 @@
                   "Resource": {
                     "Fn::Sub": "${CloudFormationExecutionRole.Arn}"
                   },
+                  "Effect": "Allow"
+                },
+                {
+                  "Sid": "CliPermissions",
+                  "Action": [
+                    "cloudformation:DescribeStackEvents",
+                    "cloudformation:GetTemplate",
+                    "cloudformation:DeleteStack",
+                    "sts:GetCallerIdentity"
+                  ],
+                  "Resource": "*",
                   "Effect": "Allow"
                 }
               ],

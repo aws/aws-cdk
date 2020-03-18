@@ -1,10 +1,9 @@
 import { CloudFormationStackArtifact } from '@aws-cdk/cx-api';
 import { Tag } from "../api/cxapp/stacks";
 import { debug } from '../logging';
-import { Mode } from './aws-auth/credentials';
+import { Mode, SdkProvider } from './aws-auth';
 import { deployStack, DeployStackResult, readCurrentTemplate } from './deploy-stack';
 import { loadToolkitInfo } from './toolkit-info';
-import { ISDK } from './util/sdk';
 
 export const DEFAULT_TOOLKIT_STACK_NAME = 'CDKToolkit';
 
@@ -36,17 +35,23 @@ export interface DeployStackOptions {
    * @default false deployment will be skipped if the template is identical
    */
   force?: boolean;
+
+  /**
+   * Extra parameters for CloudFormation
+   * @default - no additional parameters will be passed to the template
+   */
+  parameters?: { [name: string]: string | undefined };
 }
 
 export interface ProvisionerProps {
-  aws: ISDK;
+  aws: SdkProvider;
 }
 
 /**
  * Default provisioner (applies to CloudFormation).
  */
 export class CloudFormationDeploymentTarget implements IDeploymentTarget {
-  private readonly aws: ISDK;
+  private readonly aws: SdkProvider;
 
   constructor(props: ProvisionerProps) {
     this.aws = props.aws;
@@ -54,7 +59,7 @@ export class CloudFormationDeploymentTarget implements IDeploymentTarget {
 
   public async readCurrentTemplate(stack: CloudFormationStackArtifact): Promise<Template> {
     debug(`Reading existing template for stack ${stack.displayName}.`);
-    const cfn = await this.aws.cloudFormation(stack.environment.account, stack.environment.region, Mode.ForReading);
+    const cfn = (await this.aws.forEnvironment(stack.environment.account, stack.environment.region, Mode.ForReading)).cloudFormation();
     return readCurrentTemplate(cfn, stack.stackName);
   }
 
@@ -71,7 +76,8 @@ export class CloudFormationDeploymentTarget implements IDeploymentTarget {
       toolkitInfo,
       tags: options.tags,
       execute: options.execute,
-      force: options.force
+      force: options.force,
+      parameters: options.parameters
     });
   }
 }

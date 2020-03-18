@@ -39,6 +39,11 @@ export class Data {
     return new JsonPathToken('$').toString();
   }
 
+  /**
+   * Determines if the indicated string is an encoded JSON path
+   *
+   * @param value string to be evaluated
+   */
   public static isJsonPathString(value: string): boolean {
     return !!jsonPathString(value);
   }
@@ -129,13 +134,13 @@ export class FieldUtils {
 }
 
 function validateDataPath(path: string) {
-  if (!path.startsWith('$.')) {
-    throw new Error("Data JSON path values must start with '$.'");
+  if (path !== '$' && !path.startsWith('$.')) {
+    throw new Error("Data JSON path values must either be exactly equal to '$' or start with '$.'");
   }
 }
 
 function validateContextPath(path: string) {
-  if (!path.startsWith('$$.')) {
-    throw new Error("Context JSON path values must start with '$$.'");
+  if (path !== '$$' && !path.startsWith('$$.')) {
+    throw new Error("Context JSON path values must either be exactly equal to '$$' or start with '$$.'");
   }
 }

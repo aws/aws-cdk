@@ -5,12 +5,14 @@
 
 ![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
 
-> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
-> future breaking changes.**
+> **This is a _developer preview_ (public beta) module.**
 >
-> This API is still under active development and subject to non-backward
-> compatible changes or removal in any future version. Use of the API is not recommended in production
-> environments. Experimental APIs are not subject to the Semantic Versioning model.
+> All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib))
+> are auto-generated from CloudFormation. They are stable and safe to use.
+>
+> However, all other classes, i.e., higher level constructs, are under active development and subject to non-backward
+> compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model.
+> This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
 
 ---
 <!--END STABILITY BANNER-->
@@ -26,6 +28,17 @@ that provide sign-up and sign-in options for your app users. Identity pools enab
 other AWS services.
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
+
+## Table of Contents
+
+- [User Pools](#user-pools)
+  - [Sign Up](#sign-up)
+  - [Sign In](#sign-in)
+  - [Attributes](#attributes)
+  - [Security](#security)
+    - [Multi-factor Authentication](#multi-factor-authentication-mfa)
+  - [Emails](#emails)
+  - [Import](#importing-user-pools)
 
 ## User Pools
 
@@ -86,6 +99,90 @@ All email subjects, bodies and SMS messages for both invitation and verification
 Learn more about [message templates
 here](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-settings-message-templates.html).
 
+### Sign In
+
+Users registering or signing in into your application can do so with multiple identifiers. There are 4 options
+available:
+
+* `username`: Allow signing in using the one time immutable user name that the user chose at the time of sign up.
+* `email`: Allow signing in using the email address that is associated with the account.
+* `phone`: Allow signing in using the phone number that is associated with the account.
+* `preferredUsername`: Allow signing in with an alternate user name that the user can change at any time. However, this
+  is not available if the `username` option is not chosen.
+
+The following code sets up a user pool so that the user can sign in with either their username or their email address -
+
+```ts
+new UserPool(this, 'myuserpool', {
+  // ...
+  // ...
+  signInAliases: {
+    username: true,
+    email: true
+  },
+});
+```
+
+User pools can either be configured so that user name is primary sign in form, but also allows for the other three to be
+used additionally; or it can be configured so that email and/or phone numbers are the only ways a user can register and
+sign in. Read more about this
+[here](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html#user-pool-settings-aliases-settings).
+
+To match with 'Option 1' in the above link, with a verified email, `signInAliases` should be set to
+`{ username: true, email: true }`. To match with 'Option 2' in the above link with both a verified
+email and phone number, this property should be set to `{ email: true, phone: true }`.
+
+Cognito recommends that email and phone number be automatically verified, if they are one of the sign in methods for
+the user pool. Read more about that
+[here](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html#user-pool-settings-aliases).
+The CDK does this by default, when email and/or phone number are specified as part of `signInAliases`. This can be
+overridden by specifying the `autoVerify` property.
+
+The following code snippet sets up only email as a sign in alias, but both email and phone number to be auto-verified.
+
+```ts
+new UserPool(this, 'myuserpool', {
+  // ...
+  // ...
+  signInAliases: { username: true, email: true },
+  autoVerify: { email: true, phone: true }
+});
+```
+
+### Attributes
+
+Attributes represent the various properties of each user that's collected and stored in the user pool. Cognito
+provides a set of standard attributes that are available for all user pools. Users are allowed to select any of these
+standard attributes to be required. Users will not be able to sign up to the user pool without providing the required
+attributes. Besides these, additional attributes can be further defined, and are known as custom attributes.
+
+Learn more on [attributes in Cognito's
+documentation](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html).
+
+The following code sample configures a user pool with two standard attributes (name and address) as required, and adds
+four optional attributes.
+
+```ts
+new UserPool(this, 'myuserpool', {
+  // ...
+  requiredAttributes: {
+    fullname: true,
+    address: true,
+  },
+  customAttributes: {
+    'myappid': new StringAttribute({ minLen: 5, maxLen: 15 }),
+    'callingcode': new NumberAttribute({ min: 1, max: 3 }),
+    'isEmployee': new BooleanAttribute(),
+    'joinedOn': new DateTimeAttribute(),
+  },
+});
+```
+
+As shown in the code snippet, there are data types that are available for custom attributes. The 'String' and 'Number'
+data types allow for further constraints on their length and values, respectively.
+
+Custom attributes cannot be marked as required.
+
 ### Security
 
 Cognito sends various messages to its users via SMS, for different actions, ranging from account verification to
@@ -109,3 +206,93 @@ When the `smsRole` property is specified, the `smsRoleExternalId` may also be sp
 `smsRoleExternalId` will be used as the `sts:ExternalId` when the Cognito service assumes the role. In turn, the role's
 assume role policy should be configured to accept this value as the ExternalId. Learn more about [ExternalId
 here](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_create_for-user_externalid.html).
+
+#### Multi-factor Authentication (MFA)
+
+User pools can be configured to enable multi-factor authentication (MFA). It can either be turned off, set to optional
+or made required. Setting MFA to optional means that individual users can choose to enable it.
+Additionally, the MFA code can be sent either via SMS text message or via a time-based software token.
+See the [documentation on MFA](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-mfa.html) to
+learn more.
+
+The following code snippet marks MFA for the user pool as required. This means that all users are required to
+configure an MFA token and use it for sign in. It also allows for the users to use both SMS based MFA, as well,
+[time-based one time password
+(TOTP)](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-mfa-totp.html).
+
+```ts
+new UserPool(this, 'myuserpool', {
+  // ...
+  mfa: Mfa.REQUIRED,
+  mfaSecondFactor: {
+    sms: true,
+    otp: true,
+  },
+});
+```
+
+User pools can be configured with policies around a user's password. This includes the password length and the
+character sets that they must contain.
+
+Further to this, it can also be configured with the validity of the auto-generated temporary password. A temporary
+password is generated by the user pool either when an admin signs up a user or when a password reset is requested.
+The validity of this password dictates how long to give the user to use this password before expiring it.
+
+The following code snippet configures these properties -
+
+```ts
+new UserPool(this, 'myuserpool', {
+  // ...
+  passwordPolicy: {
+    minLength: 12,
+    requireLowercase: true,
+    requireUppercase: true,
+    requireDigits: true,
+    requireSymbols: true,
+    tempPasswordValidity: Duration.days(3),
+  },
+});
+```
+
+Note that, `tempPasswordValidity` can be specified only in whole days. Specifying fractional days would throw an error.
+
+### Emails
+
+Cognito sends emails to users in the user pool, when particular actions take place, such as welcome emails, invitation
+emails, password resets, etc. The address from which these emails are sent can be configured on the user pool.
+Read more about [email settings here](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-email.html).
+
+```ts
+new UserPool(this, 'myuserpool', {
+  // ...
+  emailTransmission: {
+    from: 'noreply@myawesomeapp.com',
+    replyTo: 'support@myawesomeapp.com',
+  },
+});
+```
+
+By default, user pools are configured to use Cognito's built-in email capability, but it can also be configured to use
+Amazon SES, however, support for Amazon SES is not available in the CDK yet. If you would like this to be implemented,
+give [this issue](https://github.com/aws/aws-cdk/issues/6768) a +1. Until then, you can use the [cfn
+layer](https://docs.aws.amazon.com/cdk/latest/guide/cfn_layer.html) to configure this.
+
+### Importing User Pools
+
+Any user pool that has been created outside of this stack, can be imported into the CDK app. Importing a user pool
+allows for it to be used in other parts of the CDK app that reference an `IUserPool`. However, imported user pools have
+limited configurability. As a rule of thumb, none of the properties that is are part of the
+[`AWS::Cognito::UserPool`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-userpool.html)
+CloudFormation resource can be configured.
+
+User pools can be imported either using their id via the `UserPool.fromUserPoolId()`, or by using their ARN, via the
+`UserPool.fromUserPoolArn()` API.
+
+```ts
+const stack = new Stack(app, 'my-stack');
+
+const awesomePool = UserPool.fromUserPoolId(stack, 'awesome-user-pool', 'us-east-1_oiuR12Abd');
+
+const otherAwesomePool = UserPool.fromUserPoolArn(stack, 'other-awesome-user-pool',
+  'arn:aws:cognito-idp:eu-west-1:123456789012:userpool/us-east-1_mtRyYQ14D');
+```
