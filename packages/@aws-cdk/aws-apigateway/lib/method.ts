@@ -5,7 +5,7 @@ import { ConnectionType, Integration } from './integration';
 import { MockIntegration } from './integrations/mock';
 import { MethodResponse } from './methodresponse';
 import { IModel } from './model';
-import { IRequestValidator } from './requestvalidator';
+import { IRequestValidator, RequestValidatorOptions, RequestValidator } from './requestvalidator';
 import { IResource } from './resource';
 import { RestApi } from './restapi';
 import { validateHttpMethod } from './util';
@@ -73,6 +73,7 @@ export interface MethodOptions {
 
   /**
    * The ID of the associated request validator.
+   * @deprecated Use `reqValidator`
    */
   readonly requestValidator?: IRequestValidator;
 
@@ -83,6 +84,12 @@ export interface MethodOptions {
    * @default - no authorization scopes
    */
   readonly authorizationScopes?: string[]
+
+  /**
+   * Request validator options
+   * @default 
+   */
+  readonly reqValidator?: RequestValidatorOptions;
 }
 
 export interface MethodProps {
@@ -160,7 +167,7 @@ export class Method extends Resource {
       integration: this.renderIntegration(props.integration),
       methodResponses: this.renderMethodResponses(options.methodResponses),
       requestModels: this.renderRequestModels(options.requestModels),
-      requestValidatorId: options.requestValidator ? options.requestValidator.requestValidatorId : undefined,
+      requestValidatorId: this.requestValidatorId(options),
       authorizationScopes: options.authorizationScopes ?? defaultMethodOptions.authorizationScopes,
     };
 
@@ -301,6 +308,20 @@ export class Method extends Resource {
     }
 
     return models;
+  }
+
+  private requestValidatorId(options: MethodOptions): string | undefined {
+    if (!options.requestValidator && !options.reqValidator) {
+      return undefined;
+    }
+
+    if (options.reqValidator) {
+      const validator = this.restApi.addRequestValidator('validator', options.reqValidator);
+      return validator.requestValidatorId;
+    }
+
+    //For backward compatibility
+    return options.requestValidator.requestValidatorId;
   }
 }
 

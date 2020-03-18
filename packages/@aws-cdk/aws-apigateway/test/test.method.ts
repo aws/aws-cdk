@@ -803,5 +803,53 @@ export = {
     }));
 
     test.done();
+  },
+
+  'method has a request validator with provided properties'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigw.RestApi(stack, 'test-api', { deploy: false });
+
+    // WHEN
+    new apigw.Method(stack, 'method-man', {
+      httpMethod: 'GET',
+      resource: api.root,
+      options: {
+        reqValidator: {
+          requestValidatorName: 'test-validator',
+          validateRequestBody: true,
+          validateRequestParameters: false
+        }
+      }
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::RequestValidator', {
+      RestApiId: { Ref: stack.getLogicalId(api.node.findChild('Resource') as cdk.CfnElement) },
+      ValidateRequestBody: true,
+      ValidateRequestParameters: false,
+      Name: 'test-validator'
+    }));
+
+    test.done();
+  },
+
+  'method do not have a request validator'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigw.RestApi(stack, 'test-api', { deploy: false });
+
+    // WHEN
+    new apigw.Method(stack, 'method-man', {
+      httpMethod: 'GET',
+      resource: api.root
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+      RequestValidatorId: ABSENT
+    }));
+
+    test.done();
   }
 };

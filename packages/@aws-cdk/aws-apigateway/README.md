@@ -308,7 +308,13 @@ resource.addMethod('GET', integration, {
     'method.request.querystring.who': true
   },
   // We need to set the validator for ensuring they are passed
-  requestValidator: validator,
+  requestValidator: validator, // requestValidator is deprecated, Use `reqValidator`
+  // We can pass request validator's properties
+  reqValidator: {
+    requestValidatorName: 'test-validator',
+    validateRequestBody: true,
+    validateRequestParameters: false
+  }
   methodResponses: [
     {
       // Successful response from the integration
@@ -321,7 +327,7 @@ resource.addMethod('GET', integration, {
       },
       // Validate the schema on the response
       responseModels: {
-        'application/json': responseModel
+        'application/json': resp  onseModel
       }
     },
     {
