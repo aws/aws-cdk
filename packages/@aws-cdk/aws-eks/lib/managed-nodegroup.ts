@@ -213,7 +213,7 @@ export class Nodegroup extends Resource implements INodegroup {
     this.minSize = props.minSize ?? 1;
 
     if (this.desiredSize > this.maxSize) {
-      throw new Error(`desired capacity ${this.desiredSize} can't be greater than max size ${this.maxSize}`);
+      throw new Error(`Desired capacity ${this.desiredSize} can't be greater than max size ${this.maxSize}`);
     }
     if (this.desiredSize < this.minSize) {
       throw new Error(`Minimum capacity ${this.minSize} can't be greater than desired size ${this.desiredSize}`);
@@ -235,12 +235,13 @@ export class Nodegroup extends Resource implements INodegroup {
       amiType: props.amiType,
       diskSize: props.diskSize,
       forceUpdateEnabled: props.forceUpdateEnabled ?? true,
-      instanceTypes: props.instanceType ? [props.instanceType?.toString()] : undefined,
+      instanceTypes: props.instanceType ? [props.instanceType.toString()] : undefined,
       labels: props.labels,
       releaseVersion: props.releaseVersion,
       remoteAccess: props.remoteAccess ? {
         ec2SshKey: props.remoteAccess.ec2SshKey,
-        sourceSecurityGroups: props.remoteAccess.sourceSecurityGroups?.map(m => m.securityGroupId)
+        sourceSecurityGroups: props.remoteAccess.sourceSecurityGroups ?
+          props.remoteAccess.sourceSecurityGroups.map(m => m.securityGroupId) : undefined
       } : undefined,
       scalingConfig: {
         desiredSize: this.desiredSize,
