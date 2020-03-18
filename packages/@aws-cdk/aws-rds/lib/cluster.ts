@@ -147,7 +147,7 @@ export interface DatabaseClusterProps {
    * Role that will be associated with this DB cluster to enable S3 import.
    * This feature is only supported by the Aurora database engine.
    *
-   * Setting this property means the s3ImportBuckets property should not be used.
+   * This property must not be used if `s3ImportBuckets` is used.
    *
    * For MySQL:
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Integrating.LoadFromS3.html
@@ -155,14 +155,14 @@ export interface DatabaseClusterProps {
    * For PostgreSQL:
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraPostgreSQL.Migrating.html
    *
-   * @default - A role is created for you if the s3ImportBuckets property is set
+   * @default - New role is created if `s3ImportBuckets` is set, no role is defined otherwise
    */
   readonly s3ImportRole?: IRole;
 
   /**
    * S3 buckets that you want to load data from. This feature is only supported by the Aurora database engine.
    *
-   * Setting this property means the s3ImportRole property should not be used.
+   * This property must not be used if `s3ImportRole` is used.
    *
    * For MySQL:
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Integrating.LoadFromS3.html
@@ -170,7 +170,7 @@ export interface DatabaseClusterProps {
    * For PostgreSQL:
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraPostgreSQL.Migrating.html
    *
-   * @default - No S3 import functionality is enabled
+   * @default - None
    */
   readonly s3ImportBuckets?: s3.IBucket[];
 
@@ -178,7 +178,7 @@ export interface DatabaseClusterProps {
    * Role that will be associated with this DB cluster to enable S3 export.
    * This feature is only supported by the Aurora database engine.
    *
-   * Setting this property means the s3ExportBuckets property should not be used.
+   * This property must not be used if `s3ExportBuckets` is used.
    *
    * For MySQL:
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Integrating.SaveIntoS3.html
@@ -186,14 +186,14 @@ export interface DatabaseClusterProps {
    * For PostgreSQL:
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/postgresql-s3-export.html
    *
-   * @default - A role is created for you if the s3ExportBuckets property is set
+   * @default - New role is created if `s3ExportBuckets` is set, no role is defined otherwise
    */
   readonly s3ExportRole?: IRole;
 
   /**
    * S3 buckets that you want to load data into. This feature is only supported by the Aurora database engine.
    *
-   * Setting this property means the s3ExportRole property should not be used.
+   * This property must not be used if `s3ExportRole` is used.
    *
    * For MySQL:
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Integrating.SaveIntoS3.html
@@ -201,7 +201,7 @@ export interface DatabaseClusterProps {
    * For PostgreSQL:
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/postgresql-s3-export.html
    *
-   * @default - No S3 export functionality is enabled
+   * @default - None
    */
   readonly s3ExportBuckets?: s3.IBucket[];
 }
@@ -374,7 +374,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
     let s3ImportRole = props.s3ImportRole;
     if (props.s3ImportBuckets && props.s3ImportBuckets.length > 0) {
       if (props.s3ImportRole) {
-        throw new Error(`Property s3ImportRole should not be specified when specifying s3ImportBuckets.`);
+        throw new Error(`Only one of s3ImportRole or s3ImportBuckets must be specified, not both.`);
       }
 
       s3ImportRole = new Role(this, "S3ImportRole", {
@@ -399,7 +399,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
     let s3ExportRole = props.s3ExportRole;
     if (props.s3ExportBuckets && props.s3ExportBuckets.length > 0) {
       if (props.s3ExportRole) {
-        throw new Error(`Property s3ExportRole should not be specified when specifying s3ExportBuckets.`);
+        throw new Error(`Only one of s3ExportRole or s3ExportBuckets must be specified, not both.`);
       }
 
       s3ExportRole = new Role(this, "S3ExportRole", {
@@ -425,7 +425,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
     }
 
     let clusterParameterGroup = props.parameterGroup;
-    const clusterAssociatedRoles = [];
+    const clusterAssociatedRoles: CfnDBCluster.DBClusterRoleProperty[] = [];
     if (s3ImportRole || s3ExportRole) {
       if (s3ImportRole) {
         clusterAssociatedRoles.push({ roleArn: s3ImportRole.roleArn });
@@ -460,9 +460,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
       vpcSecurityGroupIds: [this.securityGroupId],
       port: props.port,
       dbClusterParameterGroupName: clusterParameterGroup && clusterParameterGroup.parameterGroupName,
-      associatedRoles: clusterAssociatedRoles.length > 0
-        ? clusterAssociatedRoles
-        : undefined,
+      associatedRoles: clusterAssociatedRoles.length > 0 ? clusterAssociatedRoles : undefined,
       // Admin
       masterUsername: secret ? secret.secretValueFromJson('username').toString() : props.masterUser.username,
       masterUserPassword: secret
@@ -621,7 +619,7 @@ function bucketAndObjectArns(buckets: s3.IBucket[]): string[] {
 /**
  * Get default parameter group family for given engine and version
  */
-function getClusterParameterGroupFamily(engine: DatabaseClusterEngine, engineVersion: string | undefined): string {
+function getClusterParameterGroupFamily(engine: DatabaseClusterEngine, engineVersion?: string): string {
   if (engine === DatabaseClusterEngine.AURORA) {
     return 'aurora5.6';
   } else if (engine === DatabaseClusterEngine.AURORA_MYSQL) {

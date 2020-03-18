@@ -68,8 +68,10 @@ export interface ParameterGroupProps {
 
   /**
    * The parameters in this parameter group
+   *
+   * @default None
    */
-  readonly parameters: { [key: string]: string };
+  readonly parameters?: { [key: string]: string };
 }
 
 /**
@@ -86,7 +88,7 @@ export class ParameterGroup extends ParameterGroupBase {
   constructor(scope: Construct, id: string, props: ParameterGroupProps) {
     super(scope, id);
 
-    this.parameters = props.parameters;
+    this.parameters = props.parameters ? props.parameters : {};
 
     const resource = new CfnDBParameterGroup(this, 'Resource', {
       description: props.description || `Parameter group for ${props.family}`,
@@ -119,7 +121,7 @@ export class ClusterParameterGroup extends ParameterGroupBase {
   constructor(scope: Construct, id: string, props: ClusterParameterGroupProps) {
     super(scope, id);
 
-    this.parameters = props.parameters;
+    this.parameters = props.parameters ? props.parameters : {};
 
     const resource = new CfnDBClusterParameterGroup(this, 'Resource', {
       description: props.description || `Cluster parameter group for ${props.family}`,
