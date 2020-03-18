@@ -1,6 +1,6 @@
 import { expect, haveResource, matchTemplate } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
-import { RemovalPolicy, Stack } from '@aws-cdk/core';
+import { CfnParameter, RemovalPolicy, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { LogGroup, RetentionDays } from '../lib';
 
@@ -80,6 +80,26 @@ export = {
           DeletionPolicy: "Retain",
           UpdateReplacePolicy: "Retain"
         }
+      }
+    }));
+
+    test.done();
+  },
+
+  'unresolved retention'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const parameter = new CfnParameter(stack, "RetentionInDays", { default: 30, type: "Number" });
+
+    // WHEN
+    new LogGroup(stack, 'LogGroup', {
+      retention: parameter.valueAsNumber
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Logs::LogGroup', {
+      RetentionInDays: {
+        Ref: "RetentionInDays"
       }
     }));
 
