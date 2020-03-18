@@ -50,7 +50,8 @@
     "@aws-cdk/aws-dynamodb": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
-    "@aws-cdk/core": "0.0.0"
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^1.1.2"
   },
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
@@ -66,7 +67,8 @@
     "@aws-cdk/aws-dynamodb": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
-    "@aws-cdk/core": "0.0.0"
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^1.1.2"
   },
   "scripts": {
     "build": "cdk-build",
