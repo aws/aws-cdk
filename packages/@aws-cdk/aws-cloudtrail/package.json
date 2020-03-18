@@ -105,5 +105,8 @@
       "docs-public-apis:@aws-cdk/aws-cloudtrail.ReadWriteType.WRITE_ONLY",
       "docs-public-apis:@aws-cdk/aws-cloudtrail.ReadWriteType.ALL"
     ]
+  },
+  "awscdkio": {
+    "announce": false
   }
 }

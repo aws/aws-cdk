@@ -125,5 +125,8 @@
       "props-default-doc:@aws-cdk/aws-elasticloadbalancingv2.TargetGroupAttributes.loadBalancerArns"
     ]
   },
-  "stability": "stable"
+  "stability": "stable",
+  "awscdkio": {
+    "announce": false
+  }
 }

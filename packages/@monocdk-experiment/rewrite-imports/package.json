@@ -7,8 +7,8 @@
   },
   "main": "bin/rewrite-imports.js",
   "scripts": {
-    "build": "tsc",
-    "watch": "tsc -w",
+    "build": "cdk-build",
+    "watch": "cdk-watch",
     "test": "echo ok",
     "pkglint": "pkglint -f",
     "package": "cdk-package",

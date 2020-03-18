@@ -112,5 +112,8 @@
       "docs-public-apis:@aws-cdk/aws-sns-subscriptions.UrlSubscription.bind",
       "docs-public-apis:@aws-cdk/aws-sns-subscriptions.SubscriptionProps"
     ]
+  },
+  "awscdkio": {
+    "announce": false
   }
 }

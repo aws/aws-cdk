@@ -122,5 +122,8 @@
       "props-default-doc:@aws-cdk/aws-sns.NumericConditions.lessThanOrEqualTo"
     ]
   },
-  "stability": "stable"
+  "stability": "stable",
+  "awscdkio": {
+    "announce": false
+  }
 }

@@ -108,5 +108,8 @@
       "resource-attribute:@aws-cdk/aws-eks.Cluster.clusterSecurityGroupId"
     ]
   },
-  "stability": "experimental"
+  "stability": "experimental",
+  "awscdkio": {
+    "announce": false
+  }
 }

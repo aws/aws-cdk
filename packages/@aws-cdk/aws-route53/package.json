@@ -138,5 +138,8 @@
     "statements": 60,
     "lines": 60,
     "branches": 60
+  },
+  "awscdkio": {
+    "announce": false
   }
 }
