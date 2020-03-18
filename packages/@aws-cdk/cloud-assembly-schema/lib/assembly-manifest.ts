@@ -336,5 +336,4 @@ export interface AssemblyManifest {
      */
     readonly runtime?: RuntimeInfo;
 
-    // readonly required: string;
 }
