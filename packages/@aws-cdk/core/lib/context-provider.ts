@@ -1,5 +1,5 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import { Construct } from './construct';
+import { Construct } from './construct-compat';
 import { Stack } from './stack';
 import { Token } from './token';
 

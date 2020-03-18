@@ -1,6 +1,6 @@
 import { ICfnConditionExpression } from './cfn-condition';
 import { CfnRefElement } from './cfn-element';
-import { Construct } from './construct';
+import { Construct } from './construct-compat';
 import { capitalizePropertyNames } from './util';
 
 /**

@@ -1,5 +1,5 @@
 import { ArnComponents } from './arn';
-import { Construct, IConstruct } from './construct';
+import { Construct, IConstruct } from './construct-compat';
 import { Lazy } from './lazy';
 import { generatePhysicalName, isGeneratedWhenNeededMarker } from './private/physical-name-generator';
 import { IResolveContext } from './resolvable';

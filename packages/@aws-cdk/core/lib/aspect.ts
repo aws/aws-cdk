@@ -1,4 +1,4 @@
-import { IConstruct } from './construct';
+import { IConstruct } from './construct-compat';
 
 /**
  * Represents an Aspect

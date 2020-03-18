@@ -33,5 +33,15 @@
     "cdk-build-tools": "0.0.0",
     "pkglint": "0.0.0",
     "@types/node": "^10.17.17"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git",
+    "directory": "packages/@monocdk-experiment/rewrite-imports"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "stability": "experimental",
+  "engines": {
+    "node": ">= 10.3.0"
   }
 }

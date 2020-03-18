@@ -6,12 +6,12 @@ import * as contextproviders from '../../context-providers';
 import { debug, error, print, warning } from '../../logging';
 import { Configuration } from '../../settings';
 import { flatMap } from '../../util/arrays';
-import { ISDK } from '../util/sdk';
+import { SdkProvider } from '../aws-auth';
 
 /**
  * @returns output directory
  */
-type Synthesizer = (aws: ISDK, config: Configuration) => Promise<cxapi.CloudAssembly>;
+type Synthesizer = (aws: SdkProvider, config: Configuration) => Promise<cxapi.CloudAssembly>;
 
 export interface AppStacksProps {
   /**
@@ -43,7 +43,7 @@ export interface AppStacksProps {
   /**
    * AWS object (used by synthesizer and contextprovider)
    */
-  aws: ISDK;
+  aws: SdkProvider;
 
   /**
    * Callback invoked to synthesize the actual stacks

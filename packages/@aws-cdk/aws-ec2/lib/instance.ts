@@ -280,7 +280,7 @@ export class Instance extends Resource implements IInstance {
 
     // use delayed evaluation
     const imageConfig = props.machineImage.getImage(this);
-    this.userData = props.userData || imageConfig.userData || UserData.forOperatingSystem(imageConfig.osType);
+    this.userData = props.userData ?? imageConfig.userData;
     const userDataToken = Lazy.stringValue({ produce: () => Fn.base64(this.userData.render()) });
     const securityGroupsToken = Lazy.listValue({ produce: () => this.securityGroups.map(sg => sg.securityGroupId) });
 

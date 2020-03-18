@@ -1,5 +1,5 @@
 import { Schedule } from "@aws-cdk/aws-applicationautoscaling";
-import { IVpc } from '@aws-cdk/aws-ec2';
+import { IVpc, SubnetSelection, SubnetType } from '@aws-cdk/aws-ec2';
 import { AwsLogDriver, Cluster, ContainerImage, ICluster, LogDriver, Secret, TaskDefinition } from "@aws-cdk/aws-ecs";
 import { Rule } from "@aws-cdk/aws-events";
 import { EcsTask } from "@aws-cdk/aws-events-targets";
@@ -39,6 +39,15 @@ export interface ScheduledTaskBaseProps {
    * @default 1
    */
   readonly desiredTaskCount?: number;
+
+  /**
+   * In what subnets to place the task's ENIs
+   *
+   * (Only applicable in case the TaskDefinition is configured for AwsVpc networking)
+   *
+   * @default Private subnets
+   */
+  readonly subnetSelection?: SubnetSelection;
 }
 
 export interface ScheduledTaskImageProps {
@@ -96,6 +105,15 @@ export abstract class ScheduledTaskBase extends Construct {
   public readonly desiredTaskCount: number;
 
   /**
+   * In what subnets to place the task's ENIs
+   *
+   * (Only applicable in case the TaskDefinition is configured for AwsVpc networking)
+   *
+   * @default Private subnets
+   */
+  public readonly subnetSelection: SubnetSelection;
+
+  /**
    * The CloudWatch Events rule for the service.
    */
   public readonly eventRule: Rule;
@@ -111,6 +129,7 @@ export abstract class ScheduledTaskBase extends Construct {
       throw new Error('You must specify a desiredTaskCount greater than 0');
     }
     this.desiredTaskCount = props.desiredTaskCount || 1;
+    this.subnetSelection = props.subnetSelection || { subnetType: SubnetType.PRIVATE };
 
     // An EventRule that describes the event trigger (in this case a scheduled run)
     this.eventRule = new Rule(this, 'ScheduledEventRule', {
@@ -128,7 +147,8 @@ export abstract class ScheduledTaskBase extends Construct {
     const eventRuleTarget = new EcsTask( {
       cluster: this.cluster,
       taskDefinition,
-      taskCount: this.desiredTaskCount
+      taskCount: this.desiredTaskCount,
+      subnetSelection: this.subnetSelection
     });
 
     this.eventRule.addTarget(eventRuleTarget);

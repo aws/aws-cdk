@@ -1054,6 +1054,44 @@ export class YarnNohoistBundledDependencies extends ValidationRule {
   }
 }
 
+export class ConstructsDependency extends ValidationRule {
+  public readonly name = 'constructs/dependency';
+
+  public validate(pkg: PackageJson) {
+    const REQUIRED_VERSION = '^1.1.2';
+
+    if (pkg.devDependencies?.constructs && pkg.devDependencies?.constructs !== REQUIRED_VERSION) {
+      pkg.report({
+        ruleName: this.name,
+        message: `"constructs" must have a version requirement ${REQUIRED_VERSION}`,
+        fix: () => {
+          pkg.addDevDependency('constructs', REQUIRED_VERSION);
+        }
+      });
+    }
+
+    if (pkg.dependencies.constructs && pkg.dependencies.constructs !== REQUIRED_VERSION) {
+      pkg.report({
+        ruleName: this.name,
+        message: `"constructs" must have a version requirement ${REQUIRED_VERSION}`,
+        fix: () => {
+          pkg.addDependency('constructs', REQUIRED_VERSION);
+        }
+      });
+
+      if (!pkg.peerDependencies.constructs || pkg.peerDependencies.constructs !== REQUIRED_VERSION) {
+        pkg.report({
+          ruleName: this.name,
+          message: `"constructs" must have a version requirement ${REQUIRED_VERSION} in peerDependencies`,
+          fix: () => {
+            pkg.addPeerDependency('constructs', REQUIRED_VERSION);
+          }
+        });
+      }
+    }
+  }
+}
+
 /**
  * Determine whether this is a JSII package
  *

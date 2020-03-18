@@ -26,4 +26,4 @@ export abstract class Reference extends Intrinsic {
   }
 }
 
-import { IConstruct } from './construct';
+import { IConstruct } from './construct-compat';

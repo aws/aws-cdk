@@ -846,7 +846,8 @@ export class EksOptimizedImage implements ec2.IMachineImage {
     const ami = ssm.StringParameter.valueForStringParameter(scope, this.amiParameterName);
     return {
       imageId: ami,
-      osType: ec2.OperatingSystemType.LINUX
+      osType: ec2.OperatingSystemType.LINUX,
+      userData: ec2.UserData.forLinux(),
     };
   }
 }

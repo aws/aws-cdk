@@ -356,6 +356,17 @@
                     "Fn::Sub": "${CloudFormationExecutionRole.Arn}"
                   },
                   "Effect": "Allow"
+                },
+                {
+                  "Sid": "CliPermissions",
+                  "Action": [
+                    "cloudformation:DescribeStackEvents",
+                    "cloudformation:GetTemplate",
+                    "cloudformation:DeleteStack",
+                    "sts:GetCallerIdentity"
+                  ],
+                  "Resource": "*",
+                  "Effect": "Allow"
                 }
               ],
               "Version": "2012-10-17"
