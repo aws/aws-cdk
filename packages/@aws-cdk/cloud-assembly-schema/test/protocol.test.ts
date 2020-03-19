@@ -14,9 +14,9 @@ test('test manifest save', () => {
 
   Manifest.save(assemblyManifest, manifestFile);
 
-  const loaded = JSON.parse(fs.readFileSync(manifestFile, 'UTF-8'));
+  const saved = JSON.parse(fs.readFileSync(manifestFile, 'UTF-8'));
 
-  expect(loaded).toEqual(assemblyManifest);
+  expect(saved).toEqual(assemblyManifest);
 
 });
 
