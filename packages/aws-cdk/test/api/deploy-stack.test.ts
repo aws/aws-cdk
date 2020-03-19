@@ -142,7 +142,7 @@ test('deploy is skipped if template did not change', async () => {
   expect(createChangeSetCalled).toBeFalsy();
   expect(executeChangeSetCalled).toBeFalsy();
   expect(describeStacksInput!).toStrictEqual({ StackName: 'withouterrors' });
-  expect(getTemplateInput!).toStrictEqual({ StackName: 'withouterrors', TemplateStage: 'Original' });
+  expect(getTemplateInput!).toStrictEqual({ StackName: 'withouterrors', TemplateStage: 'Processed' });
 });
 
 test('deploy is skipped if template and tags did not change', async () => {
@@ -210,7 +210,7 @@ test('deploy is skipped if template and tags did not change', async () => {
   expect(createChangeSetCalled).toBeFalsy();
   expect(executeChangeSetCalled).toBeFalsy();
   expect(describeStacksInput!).toStrictEqual({ StackName: 'withouterrors' });
-  expect(getTemplateInput!).toStrictEqual({ StackName: 'withouterrors', TemplateStage: 'Original' });
+  expect(getTemplateInput!).toStrictEqual({ StackName: 'withouterrors', TemplateStage: 'Processed' });
 });
 
 test('deploy not skipped if template did not change but tags changed', async () => {
@@ -279,7 +279,7 @@ test('deploy not skipped if template did not change but tags changed', async () 
   expect(executeChangeSetCalled).toBeTruthy();
   expect(describeChangeSetCalled).toBeTruthy();
   expect(describeStacksInput!).toStrictEqual({ StackName: "withouterrors" });
-  expect(getTemplateInput!).toStrictEqual({ StackName: 'withouterrors', TemplateStage: 'Original' });
+  expect(getTemplateInput!).toStrictEqual({ StackName: 'withouterrors', TemplateStage: 'Processed' });
 });
 
 test('deploy not skipped if template did not change but one tag removed', async () => {
@@ -352,7 +352,7 @@ test('deploy not skipped if template did not change but one tag removed', async 
   expect(executeChangeSetCalled).toBeTruthy();
   expect(describeChangeSetCalled).toBeTruthy();
   expect(describeStacksInput!).toStrictEqual({ StackName: "withouterrors" });
-  expect(getTemplateInput!).toStrictEqual({ StackName: 'withouterrors', TemplateStage: 'Original' });
+  expect(getTemplateInput!).toStrictEqual({ StackName: 'withouterrors', TemplateStage: 'Processed' });
 });
 
 test('deploy not skipped if template did not change and --force is applied', async () => {
@@ -467,5 +467,5 @@ test('deploy not skipped if template changed', async () => {
   expect(executeChangeSetCalled).toBeTruthy();
   expect(describeChangeSetCalled).toBeTruthy();
   expect(describeStacksInput!).toStrictEqual({ StackName: "withouterrors" });
-  expect(getTemplateInput!).toStrictEqual({ StackName: 'withouterrors', TemplateStage: 'Original' });
+  expect(getTemplateInput!).toStrictEqual({ StackName: 'withouterrors', TemplateStage: 'Processed' });
 });

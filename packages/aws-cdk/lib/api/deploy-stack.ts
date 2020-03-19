@@ -287,7 +287,7 @@ async function getDeployedStack(cfn: aws.CloudFormation, stackName: string): Pro
 
 export async function readCurrentTemplate(cfn: aws.CloudFormation, stackName: string) {
   try {
-    const response = await cfn.getTemplate({ StackName: stackName, TemplateStage: 'Original' }).promise();
+    const response = await cfn.getTemplate({ StackName: stackName, TemplateStage: 'Processed' }).promise();
     return (response.TemplateBody && deserializeStructure(response.TemplateBody)) || {};
   } catch (e) {
     if (e.code === 'ValidationError' && e.message === `Stack with id ${stackName} does not exist`) {
