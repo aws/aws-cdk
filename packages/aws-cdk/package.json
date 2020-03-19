@@ -74,7 +74,7 @@
     "cdk-assets": "0.0.0",
     "colors": "^1.4.0",
     "decamelize": "^4.0.0",
-    "fs-extra": "^8.1.0",
+    "fs-extra": "^9.0.0",
     "glob": "^7.1.6",
     "json-diff": "^0.5.4",
     "minimatch": ">=3.0",
