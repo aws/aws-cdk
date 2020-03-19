@@ -190,7 +190,7 @@ The CodeBuild library supports both Linux and Windows images via the
 
 You can either specify one of the predefined Windows/Linux images by using one
 of the constants such as `WindowsBuildImage.WIN_SERVER_CORE_2016_BASE` or
-`LinuxBuildImage.UBUNTU_14_04_RUBY_2_5_1`.
+`LinuxBuildImage.STANDARD_2_0`.
 
 Alternatively, you can specify a custom image using one of the static methods on
 `XxxBuildImage`:
