@@ -82,12 +82,17 @@
     "cdk"
   ],
   "homepage": "https://github.com/aws/aws-cdk",
-  "bundledDependencies": [],
+  "bundledDependencies": [
+    "jsonschema"
+  ],
   "engines": {
     "node": ">= 10.3.0"
   },
   "stability": "stable",
   "awslint": {
     "exclude": []
+  },
+  "dependencies": {
+    "jsonschema": "^1.2.5"
   }
 }
