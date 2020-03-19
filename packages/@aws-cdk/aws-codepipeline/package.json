@@ -163,5 +163,8 @@
       "docs-public-apis:@aws-cdk/aws-codepipeline.ActionCategory.SOURCE"
     ]
   },
-  "stability": "stable"
+  "stability": "stable",
+  "awscdkio": {
+    "announce": false
+  }
 }
