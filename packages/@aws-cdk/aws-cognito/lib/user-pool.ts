@@ -51,64 +51,78 @@ export interface AutoVerifiedAttrs {
   readonly phone?: boolean;
 }
 
+/**
+ * Triggers for a user pool
+ * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-identity-pools-working-with-aws-lambda-triggers.html
+ */
 export interface UserPoolTriggers {
   /**
    * Creates an authentication challenge.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-create-auth-challenge.html
+   * @default - no trigger configured
    */
   readonly createAuthChallenge?: lambda.IFunction;
 
   /**
    * A custom Message AWS Lambda trigger.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-custom-message.html
+   * @default - no trigger configured
    */
   readonly customMessage?: lambda.IFunction;
 
   /**
    * Defines the authentication challenge.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-define-auth-challenge.html
+   * @default - no trigger configured
    */
   readonly defineAuthChallenge?: lambda.IFunction;
 
   /**
    * A post-authentication AWS Lambda trigger.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-post-authentication.html
+   * @default - no trigger configured
    */
   readonly postAuthentication?: lambda.IFunction;
 
   /**
    * A post-confirmation AWS Lambda trigger.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-post-confirmation.html
+   * @default - no trigger configured
    */
   readonly postConfirmation?: lambda.IFunction;
 
   /**
    * A pre-authentication AWS Lambda trigger.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-pre-authentication.html
+   * @default - no trigger configured
    */
   readonly preAuthentication?: lambda.IFunction;
 
   /**
    * A pre-registration AWS Lambda trigger.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-pre-sign-up.html
+   * @default - no trigger configured
    */
   readonly preSignUp?: lambda.IFunction;
 
   /**
    * A pre-token-generation AWS Lambda trigger.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-pre-token-generation.html
+   * @default - no trigger configured
    */
   readonly preTokenGeneration?: lambda.IFunction;
 
   /**
    * A user-migration AWS Lambda trigger.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-migrate-user.html
+   * @default - no trigger configured
    */
   readonly userMigration?: lambda.IFunction;
 
   /**
    * Verifies the authentication challenge response.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-verify-auth-challenge-response.html
+   * @default - no trigger configured
    */
   readonly verifyAuthChallengeResponse?: lambda.IFunction;
 
@@ -394,7 +408,7 @@ export interface UserPoolProps {
 
   /**
    * Lambda functions to use for supported Cognito triggers.
-   *
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-identity-pools-working-with-aws-lambda-triggers.html
    * @default - No Lambda triggers.
    */
   readonly lambdaTriggers?: UserPoolTriggers;
@@ -522,7 +536,7 @@ export class UserPool extends Resource implements IUserPool {
       usernameAttributes: signIn.usernameAttrs,
       aliasAttributes: signIn.aliasAttrs,
       autoVerifiedAttributes: signIn.autoVerifyAttrs,
-      lambdaConfig: Lazy.anyValue({ produce: () => this.triggers }),
+      lambdaConfig: Lazy.anyValue({ produce: () => undefinedIfNoKeys(this.triggers) }),
       smsConfiguration: this.smsConfiguration(props),
       adminCreateUserConfig,
       emailVerificationMessage,

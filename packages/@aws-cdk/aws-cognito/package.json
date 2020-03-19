@@ -90,17 +90,6 @@
   },
   "awslint": {
     "exclude": [
-      "props-default-doc:@aws-cdk/aws-cognito.UserPoolTriggers.verifyAuthChallengeResponse",
-      "props-default-doc:@aws-cdk/aws-cognito.UserPoolTriggers.userMigration",
-      "props-default-doc:@aws-cdk/aws-cognito.UserPoolTriggers.preTokenGeneration",
-      "props-default-doc:@aws-cdk/aws-cognito.UserPoolTriggers.preSignUp",
-      "props-default-doc:@aws-cdk/aws-cognito.UserPoolTriggers.preAuthentication",
-      "props-default-doc:@aws-cdk/aws-cognito.UserPoolTriggers.postConfirmation",
-      "props-default-doc:@aws-cdk/aws-cognito.UserPoolTriggers.postAuthentication",
-      "props-default-doc:@aws-cdk/aws-cognito.UserPoolTriggers.defineAuthChallenge",
-      "props-default-doc:@aws-cdk/aws-cognito.UserPoolTriggers.customMessage",
-      "props-default-doc:@aws-cdk/aws-cognito.UserPoolTriggers.createAuthChallenge",
-      "docs-public-apis:@aws-cdk/aws-cognito.UserPoolTriggers",
       "docs-public-apis:@aws-cdk/aws-cognito.UserPoolClient.userPoolClientClientSecret",
       "docs-public-apis:@aws-cdk/aws-cognito.UserPoolClient.userPoolClientId",
       "docs-public-apis:@aws-cdk/aws-cognito.UserPoolClient.userPoolClientName",
