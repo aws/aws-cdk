@@ -14,9 +14,10 @@ class EksClusterStack extends TestStack {
       assumedBy: new iam.AccountRootPrincipal()
     });
 
+    // create the cluster with a default nodegroup capacity
     const cluster = new eks.Cluster(this, 'Cluster', {
       mastersRole,
-      defaultCapacity: 0,
+      defaultCapacity: 2,
     });
 
     // fargate profile for resources in the "default" namespace
@@ -40,6 +41,12 @@ class EksClusterStack extends TestStack {
         kubeletExtraArgs: '--node-labels foo=bar,goo=far',
         awsApiRetryAttempts: 5
       }
+    });
+
+    // add a extra nodegroup
+    cluster.addNodegroup('extra-ng', {
+      instanceType: new ec2.InstanceType('t3.small'),
+      minSize: 1,
     });
 
     // apply a kubernetes manifest

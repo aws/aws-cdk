@@ -313,7 +313,7 @@ export class Cluster extends Resource implements ICluster {
    * The auto scaling group that hosts the default capacity for this cluster.
    * This will be `undefined` if the default capacity is set to 0.
    */
-  public readonly defaultCapacity?: autoscaling.AutoScalingGroup;
+  public readonly defaultCapacity?: Nodegroup;
 
   /**
    * If this cluster is kubectl-enabled, returns the `ClusterResource` object
@@ -423,7 +423,7 @@ export class Cluster extends Resource implements ICluster {
     const minCapacity = props.defaultCapacity === undefined ? DEFAULT_CAPACITY_COUNT : props.defaultCapacity;
     if (minCapacity > 0) {
       const instanceType = props.defaultCapacityInstance || DEFAULT_CAPACITY_TYPE;
-      this.defaultCapacity = this.addCapacity('DefaultCapacity', { instanceType, minCapacity });
+      this.defaultCapacity = this.addNodegroup('DefaultCapacity', { instanceType, minSize: minCapacity } );
     }
 
     const outputConfigCommand = props.outputConfigCommand === undefined ? true : props.outputConfigCommand;
@@ -481,7 +481,7 @@ export class Cluster extends Resource implements ICluster {
    * @param options options for creating a new nodegroup
    */
   public addNodegroup(id: string, options?: NodegroupOptions): Nodegroup {
-    return new Nodegroup(this, id, {
+    return new Nodegroup(this, `Nodegroup${id}`, {
       cluster: this,
       ...options,
     });

@@ -97,10 +97,18 @@ export = {
       // WHEN
       const cluster = new eks.Cluster(stack, 'cluster');
 
-      // THEN
+     // THEN
       test.ok(cluster.defaultCapacity);
-      expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', { MinSize: '2', MaxSize: '2' }));
-      expect(stack).to(haveResource('AWS::AutoScaling::LaunchConfiguration', { InstanceType: 'm5.large' }));
+      expect(stack).to(haveResource('AWS::EKS::Nodegroup', {
+        InstanceTypes: [
+          "m5.large"
+        ],
+        ScalingConfig: {
+          DesiredSize: 2,
+          MaxSize: 2,
+          MinSize: 2
+        }
+      }));
       test.done();
     },
 
@@ -116,8 +124,14 @@ export = {
 
       // THEN
       test.ok(cluster.defaultCapacity);
-      expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', { MinSize: '10', MaxSize: '10' }));
-      expect(stack).to(haveResource('AWS::AutoScaling::LaunchConfiguration', { InstanceType: 'm2.xlarge' }));
+      expect(stack).to(haveResource('AWS::EKS::Nodegroup', {
+        ScalingConfig: {
+          DesiredSize: 10,
+          MaxSize: 10,
+          MinSize: 10
+        }
+      }));
+      // expect(stack).to(haveResource('AWS::AutoScaling::LaunchConfiguration', { InstanceType: 'm2.xlarge' }));
       test.done();
     },
 
@@ -479,8 +493,8 @@ export = {
       const assembly = app.synth();
       const template = assembly.getStackByName(stack.stackName).template;
       test.deepEqual(template.Outputs, {
-        ClusterDefaultCapacityInstanceRoleARN7DADF219: {
-          Value: { 'Fn::GetAtt': [ 'ClusterDefaultCapacityInstanceRole3E209969', 'Arn' ] }
+        ClusterNodegroupDefaultCapacityInstanceRoleARN0DD0C9A4: {
+          Value: { 'Fn::GetAtt': [ 'ClusterNodegroupDefaultCapacityNodeGroupRole55953B04', 'Arn' ] }
         }
       });
       test.done();
@@ -613,14 +627,15 @@ export = {
       test.done();
   },
 
-  'EKS-Optimized AMI with GPU support'(test: Test) {
+  'EKS-Optimized AMI with GPU support when addCapacity'(test: Test) {
     // GIVEN
     const { app, stack } = testFixtureNoVpc();
 
     // WHEN
     new eks.Cluster(stack, 'cluster', {
-      defaultCapacity: 2,
-      defaultCapacityInstance: new ec2.InstanceType('g4dn.xlarge'),
+      defaultCapacity: 0,
+    }).addCapacity('GPUCapacity', {
+      instanceType: new ec2.InstanceType('g4dn.xlarge'),
     });
 
     // THEN

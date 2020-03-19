@@ -172,7 +172,7 @@ export = {
       },
       NodeRole: {
         "Fn::GetAtt": [
-          "ClusterngNodeGroupRole5E8156A5",
+          "ClusterNodegroupngNodeGroupRoleDA0D35DA",
           "Arn"
         ]
       },

@@ -35,7 +35,7 @@ export enum NodegroupAmiType {
  *
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-eks-nodegroup-remoteaccess.html
  */
-export interface RemoteAccess {
+export interface NodegroupRemoteAccess {
   /**
    * The Amazon EC2 SSH key that provides access for SSH communication with the worker nodes in the managed node group.
    */
@@ -141,7 +141,7 @@ export interface NodegroupOptions {
    *
    * @default - disabled
    */
-  readonly remoteAccess?: RemoteAccess;
+  readonly remoteAccess?: NodegroupRemoteAccess;
   /**
    * The metadata to apply to the node group to assist with categorization and organization. Each tag consists of a key and an optional
    * value, both of which you define. Node group tags do not propagate to any other resources associated with the node group, such as the

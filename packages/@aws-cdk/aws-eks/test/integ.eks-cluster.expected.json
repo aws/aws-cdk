@@ -911,6 +911,13 @@
               "\\\",\\\"groups\\\":[\\\"system:masters\\\"]},{\\\"rolearn\\\":\\\"",
               {
                 "Fn::GetAtt": [
+                  "ClusterNodegroupDefaultCapacityNodeGroupRole55953B04",
+                  "Arn"
+                ]
+              },
+              "\\\",\\\"username\\\":\\\"system:node:{{EC2PrivateDNSName}}\\\",\\\"groups\\\":[\\\"system:bootstrappers\\\",\\\"system:nodes\\\"]},{\\\"rolearn\\\":\\\"",
+              {
+                "Fn::GetAtt": [
                   "ClusterNodesInstanceRoleC3C01328",
                   "Arn"
                 ]
@@ -919,6 +926,13 @@
               {
                 "Fn::GetAtt": [
                   "ClusterspotInstanceRole39043830",
+                  "Arn"
+                ]
+              },
+              "\\\",\\\"username\\\":\\\"system:node:{{EC2PrivateDNSName}}\\\",\\\"groups\\\":[\\\"system:bootstrappers\\\",\\\"system:nodes\\\"]},{\\\"rolearn\\\":\\\"",
+              {
+                "Fn::GetAtt": [
+                  "ClusterNodegroupextrangNodeGroupRole23AE23D0",
                   "Arn"
                 ]
               },
@@ -938,6 +952,105 @@
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
+    },
+    "ClusterNodegroupDefaultCapacityNodeGroupRole55953B04": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "ec2.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/AmazonEKSWorkerNodePolicy"
+              ]
+            ]
+          },
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/AmazonEKS_CNI_Policy"
+              ]
+            ]
+          },
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "ClusterNodegroupDefaultCapacity479E488E": {
+      "Type": "AWS::EKS::Nodegroup",
+      "Properties": {
+        "ClusterName": {
+          "Ref": "Cluster9EE0221C"
+        },
+        "NodeRole": {
+          "Fn::GetAtt": [
+            "ClusterNodegroupDefaultCapacityNodeGroupRole55953B04",
+            "Arn"
+          ]
+        },
+        "Subnets": [
+          {
+            "Ref": "ClusterDefaultVpcPrivateSubnet1Subnet03F39409"
+          },
+          {
+            "Ref": "ClusterDefaultVpcPrivateSubnet2SubnetA526AEA7"
+          },
+          {
+            "Ref": "ClusterDefaultVpcPrivateSubnet3SubnetB64BC839"
+          }
+        ],
+        "ForceUpdateEnabled": true,
+        "InstanceTypes": [
+          "m5.large"
+        ],
+        "ScalingConfig": {
+          "DesiredSize": 2,
+          "MaxSize": 2,
+          "MinSize": 2
+        }
+      }
     },
     "ClusterfargateprofiledefaultPodExecutionRole09952CFF": {
       "Type": "AWS::IAM::Role",
@@ -1604,6 +1717,105 @@
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
+    },
+    "ClusterNodegroupextrangNodeGroupRole23AE23D0": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "ec2.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/AmazonEKSWorkerNodePolicy"
+              ]
+            ]
+          },
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/AmazonEKS_CNI_Policy"
+              ]
+            ]
+          },
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "ClusterNodegroupextrang36592D8D": {
+      "Type": "AWS::EKS::Nodegroup",
+      "Properties": {
+        "ClusterName": {
+          "Ref": "Cluster9EE0221C"
+        },
+        "NodeRole": {
+          "Fn::GetAtt": [
+            "ClusterNodegroupextrangNodeGroupRole23AE23D0",
+            "Arn"
+          ]
+        },
+        "Subnets": [
+          {
+            "Ref": "ClusterDefaultVpcPrivateSubnet1Subnet03F39409"
+          },
+          {
+            "Ref": "ClusterDefaultVpcPrivateSubnet2SubnetA526AEA7"
+          },
+          {
+            "Ref": "ClusterDefaultVpcPrivateSubnet3SubnetB64BC839"
+          }
+        ],
+        "ForceUpdateEnabled": true,
+        "InstanceTypes": [
+          "t3.small"
+        ],
+        "ScalingConfig": {
+          "DesiredSize": 1,
+          "MaxSize": 1,
+          "MinSize": 1
+        }
+      }
     },
     "ClustermanifestHelloApp078A45D8": {
       "Type": "Custom::AWSCDK-EKS-KubernetesResource",

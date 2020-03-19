@@ -53,7 +53,7 @@ export = {
             "[{\"apiVersion\":\"v1\",\"kind\":\"ConfigMap\",\"metadata\":{\"name\":\"aws-auth\",\"namespace\":\"kube-system\"},\"data\":{\"mapRoles\":\"[{\\\"rolearn\\\":\\\"",
             {
               "Fn::GetAtt": [
-                "ClusterDefaultCapacityInstanceRole3E209969",
+                "ClusterNodegroupDefaultCapacityNodeGroupRole55953B04",
                 "Arn"
               ]
             },
@@ -128,7 +128,7 @@ export = {
             "[{\"apiVersion\":\"v1\",\"kind\":\"ConfigMap\",\"metadata\":{\"name\":\"aws-auth\",\"namespace\":\"kube-system\"},\"data\":{\"mapRoles\":\"[{\\\"rolearn\\\":\\\"",
             {
               "Fn::GetAtt": [
-                "ClusterDefaultCapacityInstanceRole3E209969",
+                "ClusterNodegroupDefaultCapacityNodeGroupRole55953B04",
                 "Arn"
               ]
             },
