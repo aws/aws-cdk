@@ -105,5 +105,8 @@
       "docs-public-apis:@aws-cdk/aws-ecr.RepositoryProps"
     ]
   },
-  "stability": "stable"
+  "stability": "stable",
+  "awscdkio": {
+    "announce": false
+  }
 }
