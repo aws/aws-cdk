@@ -32,8 +32,12 @@ export class Manifest {
     private static validate(manifest: any) {
         const validator = new Validator();
         const result = validator.validate(manifest, Manifest.schema, {
-            // nestedErrors does exist but is not in the TypeScript definitions
-            nestedErrors: true
+
+            // does exist but is not in the TypeScript definitions
+            nestedErrors: true,
+
+            allowUnknownAttributes: false
+
         } as any);
         if (result.valid) { return manifest; }
         throw new Error(`Invalid assembly manifest:\n${result}`);
@@ -60,9 +64,12 @@ export class Manifest {
                 for (const metadataEntries of Object.values(artifact.metadata || [])) {
                     for (const metadataEntry of metadataEntries) {
                         if (metadataEntry.type === ArtifactMetadataEntryType.STACK_TAGS && metadataEntry.data) {
-                            Object.assign(metadataEntry.data, (metadataEntry.data as any[]).map(t => {
+
+                            const metadataAny = metadataEntry as any;
+
+                            metadataAny.data = metadataAny.data.map((t: any) => {
                                 return { key: t.Key, value: t.Value };
-                             }));
+                            });
                         }
                     }
                 }

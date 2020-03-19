@@ -1,11 +1,13 @@
 #!/bin/bash
 set -euo pipefail
+scriptsdir=$(cd $(dirname $0) && pwd)
+packagedir=$(realpath ${scriptsdir}/..)
 
 # Input
-INPUT_FILE='lib/assembly-manifest.d.ts'
+INPUT_FILE="${packagedir}/lib/assembly-manifest.d.ts"
 
 # Output
-OUTPUT_DIR='schema'
+OUTPUT_DIR="${packagedir}/schema"
 OUTPUT_FILE="${OUTPUT_DIR}/cloud-assembly.schema.json"
 
 mkdir -p ${OUTPUT_DIR}
@@ -19,3 +21,7 @@ typescript-json-schema                           \
     --strictNullChecks true                      \
     --topRef           true                      \
     --noExtraProps
+
+# patch stack tags to match how they are actually stored in manifest.json
+# the reverve path in done at runtime. see protocol.ts#patchStackTags
+node ${scriptsdir}/patch-schema-stack-tags.js ${OUTPUT_FILE}

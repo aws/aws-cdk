@@ -14,9 +14,9 @@ test('test manifest save', () => {
 
   Manifest.save(assemblyManifest, manifestFile);
 
-  const saved = JSON.parse(fs.readFileSync(manifestFile, 'UTF-8'));
+  const loaded = JSON.parse(fs.readFileSync(manifestFile, 'UTF-8'));
 
-  expect(saved).toEqual(assemblyManifest);
+  expect(loaded).toEqual(assemblyManifest);
 
 });
 
@@ -31,9 +31,25 @@ test('test manifest load', () => {
 
   Manifest.save(assemblyManifest, manifestFile);
 
-  const saved = Manifest.load(manifestFile);
+  const loaded = Manifest.load(manifestFile);
 
-  expect(saved).toEqual(assemblyManifest);
+  expect(loaded).toEqual(assemblyManifest);
+
+});
+
+test('test manifest load fail on invalid file', () => {
+
+  const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'protocol-tests'));
+  const manifestFile = path.join(outdir, 'manifest.json');
+
+  // this is invalid because 'version' is required
+  const assemblyManifest = {
+
+  };
+
+  fs.writeFileSync(manifestFile, JSON.stringify(assemblyManifest));
+
+  expect(() => Manifest.load(manifestFile)).toThrow(/Invalid assembly manifest/);
 
 });
 
@@ -66,12 +82,12 @@ test('test stack-tags are deserialized properly', () => {
             {
               type: "aws:cdk:asset",
               data: {
-                repositoryName: "MyRepo",
-                imageTag: "71e25186b635876c7a79be28e67d4ec49eb88ec417d64e16eaba11920ab159c0",
-                id: "71e25186b635876c7a79be28e67d4ec49eb88ec417d64e16eaba11920ab159c0",
+                repositoryName: "repo",
+                imageTag: "tag",
+                id: "id",
                 packaging: "container-image",
-                path: "asset.71e25186b635876c7a79be28e67d4ec49eb88ec417d64e16eaba11920ab159c0",
-                sourceHash: "71e25186b635876c7a79be28e67d4ec49eb88ec417d64e16eaba11920ab159c0"
+                path: "path",
+                sourceHash: "hash"
               },
               trace: ["trace"]
             },
