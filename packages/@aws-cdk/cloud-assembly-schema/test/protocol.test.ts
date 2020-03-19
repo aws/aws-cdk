@@ -1,7 +1,8 @@
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { AssemblyManifest, Manifest, StackTagsMetadataEntry } from '../lib';
+import { AssemblyManifest, Manifest } from '../lib';
+import { hashObject } from './fingerprint';
 
 test('test manifest save', () => {
 
@@ -53,57 +54,16 @@ test('test manifest load fail on invalid file', () => {
 
 });
 
-test('test stack-tags are deserialized properly', () => {
+test('schema has the correct version', () => {
 
-  const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'protocol-tests'));
-  const manifestFile = path.join(outdir, 'manifest.json');
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const expectedHash = require('./schema.expected.json').hash;
 
-  fs.writeFileSync(manifestFile, JSON.stringify({
-    version: "version",
-    artifacts: {
-      Tree: {
-        type: "cdk:tree",
-        properties: {
-          file: "tree.json"
-        }
-      },
-      stack: {
-        type: "aws:cloudformation:stack",
-        metadata: {
-          AwsCdkPlaygroundBatch: [
-            {
-              type: "aws:cdk:stack-tags",
-              data: [{
-                Key: "hello",
-                Value: "world"
-              }],
-              trace: ["trace"]
-            },
-            {
-              type: "aws:cdk:asset",
-              data: {
-                repositoryName: "repo",
-                imageTag: "tag",
-                id: "id",
-                packaging: "container-image",
-                path: "path",
-                sourceHash: "hash"
-              },
-              trace: ["trace"]
-            },
-          ]
-        }
-      }
-    },
-  }));
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const schema = require('../schema/cloud-assembly.schema.json');
 
-  const m: AssemblyManifest = Manifest.load(manifestFile);
+  const schemaHash = hashObject(schema);
 
-  if (m.artifacts && m.artifacts.stack.metadata && m.artifacts.stack.metadata.AwsCdkPlaygroundBatch[0].data) {
-    const entry = m.artifacts.stack.metadata.AwsCdkPlaygroundBatch[0].data as StackTagsMetadataEntry;
-    expect(entry[0].key).toEqual("hello");
-    expect(entry[0].value).toEqual("world");
-  }
-  expect(m.version).toEqual("version");
+  expect(schemaHash).toEqual(expectedHash);
 
 });

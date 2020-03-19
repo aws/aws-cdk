@@ -194,22 +194,6 @@ export enum ArtifactType {
 }
 
 /**
- * Key Value Tag.
- */
-export interface Tag {
-
-    /**
-     * Tag key.
-     */
-    readonly key: string;
-
-    /**
-     * Tag value.
-     */
-    readonly value: string;
-}
-
-/**
  * An metadata entry in the construct.
  */
 export interface MetadataEntry {

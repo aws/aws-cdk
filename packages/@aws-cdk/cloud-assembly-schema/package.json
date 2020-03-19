@@ -37,10 +37,15 @@
     "awslint": "cdk-awslint",
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test",
-    "compat": "cdk-compat"
+    "compat": "cdk-compat",
+    "generate-schema-json": "bash scripts/generate-json-schema.sh",
+    "bump-schema-version": "node scripts/bump-schema-version.js"
   },
   "cdk-build": {
-    "post": ["bash scripts/generate-json-schema.sh"]
+    "post": ["yarn generate-schema-json"],
+    "eslint": {
+      "ignore-pattern": ["scripts/*"]
+    }
   },
   "author": {
     "name": "Amazon Web Services",
