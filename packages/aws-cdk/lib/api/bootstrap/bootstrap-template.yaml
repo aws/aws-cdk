@@ -241,6 +241,8 @@ Resources:
                   - s3:Abort*
                   - s3:DeleteObject*
                   - s3:PutObject*
+                  # Necessary to write to the cross-region artifact replication bucket
+                  # https://aws.amazon.com/premiumsupport/knowledge-center/codepipeline-deploy-cloudformation/.
                   - kms:Decrypt
                   - kms:DescribeKey
                   - kms:Encrypt

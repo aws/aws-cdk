@@ -2,8 +2,8 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as path from 'path';
-import * as YAML from 'yaml';
 import { BootstrapEnvironmentProps, deployStack, DeployStackResult } from '..';
+import { loadStructuredFile } from '../../serialize';
 import { SdkProvider } from '../aws-auth';
 
 export async function bootstrapEnvironment2(environment: cxapi.Environment, sdk: SdkProvider,
@@ -19,8 +19,7 @@ export async function bootstrapEnvironment2(environment: cxapi.Environment, sdk:
   // convert from YAML to JSON (which the Cloud Assembly uses)
   const templateFile = `${toolkitStackName}.template.json`;
   const bootstrapTemplatePath = path.join(__dirname, 'bootstrap-template.yaml');
-  const bootstrapTemplateContents = await fs.readFile(bootstrapTemplatePath);
-  const bootstrapTemplateObject = YAML.parse(bootstrapTemplateContents.toString());
+  const bootstrapTemplateObject = loadStructuredFile(bootstrapTemplatePath);
   await fs.writeJson(
     path.join(builder.outdir, templateFile),
     bootstrapTemplateObject);
