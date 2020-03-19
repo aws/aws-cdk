@@ -100,5 +100,8 @@
       "props-default-doc:@aws-cdk/aws-ses.ReceiptRuleActionConfig.bounceAction",
       "props-default-doc:@aws-cdk/aws-ses.ReceiptRuleActionConfig.lambdaAction"
     ]
+  },
+  "awscdkio": {
+    "announce": false
   }
 }

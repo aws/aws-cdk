@@ -113,5 +113,8 @@
       "props-default-doc:@aws-cdk/aws-lambda-event-sources.S3EventSourceProps.filters",
       "docs-public-apis:@aws-cdk/aws-lambda-event-sources.SqsEventSourceProps"
     ]
+  },
+  "awscdkio": {
+    "announce": false
   }
 }
