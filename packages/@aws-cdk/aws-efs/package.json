@@ -110,5 +110,8 @@
       "resource-interface-extends-resource:@aws-cdk/aws-efs.IEfsFileSystem"
     ]
   },
-  "stability": "experimental"
+  "stability": "experimental",
+  "awscdkio": {
+    "announce": false
+  }
 }

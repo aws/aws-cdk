@@ -206,8 +206,22 @@ dashboard.addWidgets(new GraphWidget({
   right: [errorCountMetric.with({
     statistic: "average",
     label: "Error rate",
-    color: "00FF00"
+    color: Color.GREEN
   })]
+}));
+```
+
+Graph widgets can also display annotations attached to the left or the right y-axis.
+
+```ts
+dashboard.addWidgets(new GraphWidget({
+  // ...
+  // ...
+
+  leftAnnotations: [
+    { value: 1800, label: Duration.minutes(30).toHumanString(), color: Color.RED, },
+    { value: 3600, label: '1 hour', color: '#2ca02c', }
+  ],
 }));
 ```
 
