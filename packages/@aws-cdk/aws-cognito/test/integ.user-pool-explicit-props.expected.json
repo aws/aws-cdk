@@ -55,9 +55,70 @@
           "email",
           "phone_number"
         ],
+        "EmailConfiguration": {
+          "From": "noreply@myawesomeapp.com",
+          "ReplyToEmailAddress": "support@myawesomeapp.com"
+        },
         "EmailVerificationMessage": "verification email body from the integ test. Code is {####}.",
         "EmailVerificationSubject": "verification email subject from the integ test",
+        "EnabledMfas": [
+          "SMS_MFA",
+          "SOFTWARE_TOKEN_MFA"
+        ],
         "LambdaConfig": {},
+        "Schema": [
+          {
+            "Name": "email",
+            "Required": true
+          },
+          {
+            "Name": "name",
+            "Required": true
+          },
+          {
+            "AttributeDataType": "String",
+            "Name": "some-string-attr"
+          },
+          {
+            "AttributeDataType": "String",
+            "Name": "another-string-attr",
+            "StringAttributeConstraints": {
+              "MaxLength": "100",
+              "MinLength": "4"
+            }
+          },
+          {
+            "AttributeDataType": "Number",
+            "Name": "some-number-attr"
+          },
+          {
+            "AttributeDataType": "Number",
+            "Name": "another-number-attr",
+            "NumberAttributeConstraints": {
+              "MaxValue": "50",
+              "MinValue": "10"
+            }
+          },
+          {
+            "AttributeDataType": "Boolean",
+            "Name": "some-boolean-attr"
+          },
+          {
+            "AttributeDataType": "DateTime",
+            "Name": "some-datetime-attr"
+          }
+        ],
+        "MfaConfiguration": "ON",
+        "Policies": {
+          "PasswordPolicy": {
+            "MinimumLength": 12,
+            "RequireLowercase": true,
+            "RequireNumbers": true,
+            "RequireSymbols": true,
+            "RequireUppercase": true,
+            "TemporaryPasswordValidityDays": 10
+          }
+        },
         "SmsConfiguration": {
           "ExternalId": "integuserpoolmyuserpoolDA38443C",
           "SnsCallerArn": {
@@ -75,6 +136,13 @@
           "EmailSubject": "verification email subject from the integ test",
           "SmsMessage": "verification sms message from the integ test. Code is {####}."
         }
+      }
+    }
+  },
+  "Outputs": {
+    "userpoolId": {
+      "Value": {
+        "Ref": "myuserpool01998219"
       }
     }
   }

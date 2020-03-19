@@ -90,7 +90,8 @@
     "@aws-cdk/aws-cloudwatch": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-sns": "0.0.0",
-    "@aws-cdk/core": "0.0.0"
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^1.1.2"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -99,7 +100,8 @@
     "@aws-cdk/aws-cloudwatch": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-sns": "0.0.0",
-    "@aws-cdk/core": "0.0.0"
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^1.1.2"
   },
   "engines": {
     "node": ">= 10.3.0"
@@ -111,5 +113,8 @@
       "docs-public-apis:@aws-cdk/aws-cloudwatch-actions.AutoScalingAction.bind",
       "docs-public-apis:@aws-cdk/aws-cloudwatch-actions.SnsAction.bind"
     ]
+  },
+  "awscdkio": {
+    "announce": false
   }
 }
