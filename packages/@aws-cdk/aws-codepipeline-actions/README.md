@@ -308,7 +308,7 @@ const testAction = new codepipeline_actions.CodeBuildAction({
 When you want to have multiple inputs and/or outputs for a Project used in a
 Pipeline, instead of using the `secondarySources` and `secondaryArtifacts`
 properties of the `Project` class, you need to use the `extraInputs` and
-`extraOutputs` properties of the CodeBuild CodePipeline
+`outputs` properties of the CodeBuild CodePipeline
 Actions. Example:
 
 ```ts
