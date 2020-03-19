@@ -88,5 +88,8 @@
       "docs-public-apis:@aws-cdk/region-info.RegionInfo.regions",
       "docs-public-apis:@aws-cdk/region-info.RegionInfo.name"
     ]
+  },
+  "awscdkio": {
+    "announce": false
   }
 }

@@ -109,5 +109,8 @@
       "docs-public-apis:@aws-cdk/aws-elasticloadbalancing.LoadBalancingProtocol.SSL"
     ]
   },
-  "stability": "stable"
+  "stability": "stable",
+  "awscdkio": {
+    "announce": false
+  }
 }
