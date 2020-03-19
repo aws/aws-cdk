@@ -4,29 +4,6 @@ import * as os from 'os';
 import * as path from 'path';
 import { CloudAssemblyBuilder } from '../lib';
 
-/**
- * This method is intentionally duplicated from cloud-assembly.ts
- * because I doesn't seem right exposing it just for the sake of the test.
- * Also, this makes sure that if a bug is intorduced in the way the version number
- * is extracted in cloud-assembly.ts, this test will fail.
- *
- * (Assuming here that this is correct)
- */
-function versionNumber(): string {
-
-  function extract(packageJson: string) {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    return require(packageJson).version.replace(/\+[0-9a-f]+$/, '');
-  }
-
-  try {
-    return extract('../package.json');
-  } catch (err) {
-    // monocdk support
-    return extract('../../../package.json');
-  }
-}
-
 test('cloud assembly builder', () => {
   // GIVEN
   const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'cloud-assembly-builder-tests'));
@@ -88,7 +65,7 @@ test('cloud assembly builder', () => {
   // THEN
   // verify the manifest looks right
   expect(manifest).toStrictEqual({
-    version: versionNumber(),
+    version: cxschema.Manifest.version(),
     missing: [
       { key: 'foo', provider: 'context-provider', props: { a: 'A', b: 2 } }
     ],

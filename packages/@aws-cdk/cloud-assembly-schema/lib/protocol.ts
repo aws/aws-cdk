@@ -29,10 +29,8 @@ export class Manifest {
      * Fetch the current schema version number.
      */
     public static version(): string {
-        if (!Manifest.schema.id) {
-            throw new Error("Invalid schema: missing id");
-        }
-        return Manifest.schema.id;
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        return require('../schema/cloud-assembly.version.json').version;
     }
 
     // eslint-disable-next-line @typescript-eslint/no-require-imports
