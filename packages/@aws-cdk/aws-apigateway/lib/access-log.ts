@@ -40,7 +40,7 @@ export class CloudWatchLogsDestination implements IAccessLogDestination {
 /**
  * $context variables when customize access log.
  */
-export class AccessLogFormat {
+export class AccessLogField {
   /**
    * The API owner's AWS account ID.
    */
@@ -436,5 +436,82 @@ export class AccessLogFormat {
    */
   public static contextStatus() {
     return '$context.status';
+  }
+}
+
+/**
+ * A API Gateway custom access log format.
+ */
+export interface IAccessLogFormat {
+  readonly format: string;
+}
+
+/**
+ * jsonWithStandardFields property
+ */
+export interface IJsonWithStandardFieldProps {
+  ip?: boolean,
+  caller?: boolean,
+  user?: boolean,
+  requestTime?: boolean,
+  httpMethod?: boolean,
+  resourcePath?: boolean,
+  status?: boolean,
+  protocol?: boolean,
+  responseLength?: boolean
+}
+
+/**
+ * factory methods for access log format.
+ */
+export class AccessLogFormat {
+  /**
+   * Generate Common Log Format.
+   */
+  public static clf(): IAccessLogFormat {
+    return {
+      format: `${AccessLogField.contextIdentitySourceIp()} ${AccessLogField.contextIdentityCaller()} ${AccessLogField.contextIdentityUser()} \
+[${AccessLogField.contextRequestTime()}] "${AccessLogField.contextHttpMethod()} ${AccessLogField.contextResourcePath()} ${AccessLogField.contextProtocol()}" \
+${AccessLogField.contextStatus()} ${AccessLogField.contextResponseLength()} ${AccessLogField.contextRequestId()}`
+    };
+  }
+
+  /**
+   * Generate standard json log format.
+   */
+  public static jsonWithStandardFields(
+    {
+      ip = true,
+      caller = true,
+      user = true,
+      requestTime = true,
+      httpMethod = true,
+      resourcePath= true,
+      status = true,
+      protocol = true,
+      responseLength = true
+    }: IJsonWithStandardFieldProps = {}): IAccessLogFormat {
+    return {
+      format: JSON.stringify({
+        requestId: AccessLogField.contextRequestId(),
+        ip: ip ? AccessLogField.contextIdentitySourceIp() : undefined,
+        caller: caller ? AccessLogField.contextIdentityCaller() : undefined,
+        user: user ? AccessLogField.contextIdentityUser() : undefined,
+        requestTime: requestTime ? AccessLogField.contextRequestTime() : undefined,
+        httpMethod: httpMethod ? AccessLogField.contextHttpMethod() : undefined,
+        resourcePath: resourcePath ? AccessLogField.contextResourcePath() : undefined,
+        status: status ? AccessLogField.contextStatus() : undefined,
+        protocol: protocol ? AccessLogField.contextProtocol() : undefined,
+        responseLength: responseLength ? AccessLogField.contextResponseLength() : undefined
+      })
+    };
+  }
+
+  /**
+   * Custom log format.
+   * @param format
+   */
+  public static custom(format: string): IAccessLogFormat {
+    return {format};
   }
 }

@@ -272,7 +272,8 @@ export = {
             "LogGroupF5B46931",
             "Arn"
           ]
-        }
+        },
+        Format: "$context.identity.sourceIp $context.identity.caller $context.identity.user [$context.requestTime] \"$context.httpMethod $context.resourcePath $context.protocol\" $context.status $context.responseLength $context.requestId"
       },
       StageName: "prod"
     }));
@@ -288,27 +289,24 @@ export = {
     api.root.addMethod('GET');
 
     // WHEN
-    const testFormat = JSON.stringify({
-      requestId: apigateway.AccessLogFormat.contextRequestId(),
-      ip: apigateway.AccessLogFormat.contextIdentitySourceIp(),
-      caller: apigateway.AccessLogFormat.contextIdentityCaller(),
-      user: apigateway.AccessLogFormat.contextIdentityUser(),
-      requestTime: apigateway.AccessLogFormat.contextRequestTime(),
-      httpMethod: apigateway.AccessLogFormat.contextHttpMethod(),
-      resourcePath: apigateway.AccessLogFormat.contextResourcePath(),
-      status: apigateway.AccessLogFormat.contextStatus(),
-      protocol: apigateway.AccessLogFormat.contextProtocol(),
-      responseLength: apigateway.AccessLogFormat.contextResponseLength()
-    });
+    const testLogGroup = new logs.LogGroup(stack, 'LogGroup');
+    const testFormat = apigateway.AccessLogFormat.jsonWithStandardFields({caller: false});
     new apigateway.Stage(stack, 'my-stage', {
       deployment,
+      accessLogDestination: new apigateway.CloudWatchLogsDestination(testLogGroup),
       accessLogFormat: testFormat
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::Stage', {
       AccessLogSetting: {
-        Format: "{\"requestId\":\"$context.requestId\",\"ip\":\"$context.identity.sourceIp\",\"caller\":\"$context.identity.caller\",\"user\":\"$context.identity.user\",\"requestTime\":\"$context.requestTime\",\"httpMethod\":\"$context.httpMethod\",\"resourcePath\":\"$context.resourcePath\",\"status\":\"$context.status\",\"protocol\":\"$context.protocol\",\"responseLength\":\"$context.responseLength\"}"
+        DestinationArn: {
+          "Fn::GetAtt": [
+            "LogGroupF5B46931",
+            "Arn"
+          ]
+        },
+        Format: "{\"requestId\":\"$context.requestId\",\"ip\":\"$context.identity.sourceIp\",\"user\":\"$context.identity.user\",\"requestTime\":\"$context.requestTime\",\"httpMethod\":\"$context.httpMethod\",\"resourcePath\":\"$context.resourcePath\",\"status\":\"$context.status\",\"protocol\":\"$context.protocol\",\"responseLength\":\"$context.responseLength\"}"
       },
       StageName: "prod"
     }));
@@ -324,17 +322,23 @@ export = {
     api.root.addMethod('GET');
 
     // WHEN
-    const testFormat = `${apigateway.AccessLogFormat.contextIdentitySourceIp()} ${apigateway.AccessLogFormat.contextIdentityCaller()} ${apigateway.AccessLogFormat.contextIdentityUser()} \
-[${apigateway.AccessLogFormat.contextRequestTime()}] "${apigateway.AccessLogFormat.contextHttpMethod()} ${apigateway.AccessLogFormat.contextResourcePath()} ${apigateway.AccessLogFormat.contextProtocol()}" \
-${apigateway.AccessLogFormat.contextStatus()} ${apigateway.AccessLogFormat.contextResponseLength()} ${apigateway.AccessLogFormat.contextRequestId()}`;
+    const testLogGroup = new logs.LogGroup(stack, 'LogGroup');
+    const testFormat = apigateway.AccessLogFormat.clf();
     new apigateway.Stage(stack, 'my-stage', {
       deployment,
+      accessLogDestination: new apigateway.CloudWatchLogsDestination(testLogGroup),
       accessLogFormat: testFormat
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::Stage', {
       AccessLogSetting: {
+        DestinationArn: {
+          "Fn::GetAtt": [
+            "LogGroupF5B46931",
+            "Arn"
+          ]
+        },
         Format: "$context.identity.sourceIp $context.identity.caller $context.identity.user [$context.requestTime] \"$context.httpMethod $context.resourcePath $context.protocol\" $context.status $context.responseLength $context.requestId"
       },
       StageName: "prod"
@@ -352,18 +356,7 @@ ${apigateway.AccessLogFormat.contextStatus()} ${apigateway.AccessLogFormat.conte
 
     // WHEN
     const testLogGroup = new logs.LogGroup(stack, 'LogGroup');
-    const testFormat = JSON.stringify({
-      requestId: apigateway.AccessLogFormat.contextRequestId(),
-      ip: apigateway.AccessLogFormat.contextIdentitySourceIp(),
-      caller: apigateway.AccessLogFormat.contextIdentityCaller(),
-      user: apigateway.AccessLogFormat.contextIdentityUser(),
-      requestTime: apigateway.AccessLogFormat.contextRequestTime(),
-      httpMethod: apigateway.AccessLogFormat.contextHttpMethod(),
-      resourcePath: apigateway.AccessLogFormat.contextResourcePath(),
-      status: apigateway.AccessLogFormat.contextStatus(),
-      protocol: apigateway.AccessLogFormat.contextProtocol(),
-      responseLength: apigateway.AccessLogFormat.contextResponseLength()
-    });
+    const testFormat = apigateway.AccessLogFormat.jsonWithStandardFields();
     new apigateway.Stage(stack, 'my-stage', {
       deployment,
       accessLogDestination: new apigateway.CloudWatchLogsDestination(testLogGroup),
@@ -395,23 +388,34 @@ ${apigateway.AccessLogFormat.contextStatus()} ${apigateway.AccessLogFormat.conte
     api.root.addMethod('GET');
 
     // WHEN
-    const testFormat = JSON.stringify({
-      ip: apigateway.AccessLogFormat.contextIdentitySourceIp(),
-      caller: apigateway.AccessLogFormat.contextIdentityCaller(),
-      user: apigateway.AccessLogFormat.contextIdentityUser(),
-      requestTime: apigateway.AccessLogFormat.contextRequestTime(),
-      httpMethod: apigateway.AccessLogFormat.contextHttpMethod(),
-      resourcePath: apigateway.AccessLogFormat.contextResourcePath(),
-      status: apigateway.AccessLogFormat.contextStatus(),
-      protocol: apigateway.AccessLogFormat.contextProtocol(),
-      responseLength: apigateway.AccessLogFormat.contextResponseLength()
-    });
+    const testLogGroup = new logs.LogGroup(stack, 'LogGroup');
+    const testFormat = apigateway.AccessLogFormat.custom('empty');
+
+    // THEN
+    test.throws(() => new apigateway.Stage(stack, 'my-stage', {
+      deployment,
+      accessLogDestination: new apigateway.CloudWatchLogsDestination(testLogGroup),
+      accessLogFormat: testFormat
+    }), /The format must include at least `AccessLogFormat.contextRequestId\(\)`/);
+
+    test.done();
+  },
+
+  'fails when access log destination is empty'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
+    const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
+    api.root.addMethod('GET');
+
+    // WHEN
+    const testFormat = apigateway.AccessLogFormat.clf();
 
     // THEN
     test.throws(() => new apigateway.Stage(stack, 'my-stage', {
       deployment,
       accessLogFormat: testFormat
-    }), 'The format must include at least `AccessLogFormat.contextRequestId()`');
+    }), /Access Log destination is empty/);
 
     test.done();
   },

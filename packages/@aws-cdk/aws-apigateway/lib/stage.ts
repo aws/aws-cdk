@@ -1,6 +1,6 @@
 import { Construct, Duration, Resource, Stack } from '@aws-cdk/core';
 
-import { IAccessLogDestination } from './access-log';
+import { AccessLogFormat, IAccessLogDestination, IAccessLogFormat} from './access-log';
 import { CfnStage } from './apigateway.generated';
 import { Deployment } from './deployment';
 import { IRestApi } from './restapi';
@@ -27,9 +27,9 @@ export interface StageOptions extends MethodDeploymentOptions {
    * The format must include at least `AccessLogFormat.contextRequestId()`.
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html#context-variable-reference
    *
-   * @default - No format
+   * @default - Common Log Format
    */
-  readonly accessLogFormat?: string;
+  readonly accessLogFormat?: IAccessLogFormat;
 
   /**
    * Specifies whether Amazon X-Ray tracing is enabled for this method.
@@ -185,7 +185,7 @@ export class Stage extends Resource {
   private enableCacheCluster?: boolean;
 
   private readonly accessLogDestination?: IAccessLogDestination;
-  private readonly accessLogFormat?: string;
+  private readonly accessLogFormat?: IAccessLogFormat;
 
   constructor(scope: Construct, id: string, props: StageProps) {
     super(scope, id);
@@ -201,13 +201,16 @@ export class Stage extends Resource {
     if (this.accessLogDestination == null && this.accessLogFormat == null) {
       accessLogSetting = undefined;
     } else {
-      if (this.accessLogFormat != null && !/.*\$context.requestId.*/.test(this.accessLogFormat)) {
+      if (this.accessLogFormat != null && !/.*\$context.requestId.*/.test(this.accessLogFormat.format)) {
         throw new Error('The format must include at least `AccessLogFormat.contextRequestId()`');
+      }
+      if (this.accessLogFormat != null && this.accessLogDestination == null) {
+        throw new Error('Access Log destination is empty');
       }
 
       accessLogSetting = {
         destinationArn: this.accessLogDestination?.bind().destinationArn,
-        format: this.accessLogFormat
+        format: this.accessLogFormat?.format ? this.accessLogFormat?.format : AccessLogFormat.clf().format
       };
     }
 

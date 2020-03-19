@@ -490,27 +490,12 @@ Access logs can be configured to be sent to a specific CloudWatch log group. Thi
 The following example will configure API Gateway to enable custom access logging.
 
 ```ts
-const format = JSON.stringify({
-  requestId: apigateway.AccessLogFormat.contextRequestId(),
-  ip: apigateway.AccessLogFormat.contextIdentitySourceIp(),
-  caller: apigateway.AccessLogFormat.contextIdentityCaller(),
-  user: apigateway.AccessLogFormat.contextIdentityUser(),
-  requestTime: apigateway.AccessLogFormat.contextRequestTime(),
-  httpMethod: apigateway.AccessLogFormat.contextHttpMethod(),
-  resourcePath: apigateway.AccessLogFormat.contextResourcePath(),
-  status: apigateway.AccessLogFormat.contextStatus(),
-  protocol: apigateway.AccessLogFormat.contextProtocol(),
-  responseLength: apigateway.AccessLogFormat.contextResponseLength()
-});
-
 // production stage
 const prdLogGroup = new cwlogs.LogGroup(this, "PrdLogs");
 const api = new apigateway.RestApi(this, 'books', {
   deployOptions: {
-    accessLogSetting: {
-        destinationArn: new apigateway.CloudWatchLogsDestination(prdLogGroup),
-        format
-    }
+    accessLogDestination: new apigateway.CloudWatchLogsDestination(prdLogGroup),
+    accessLogFormat: apigateway.AccessLogFormat.jsonWithStandardFields()
   }
 })
 const deployment = new apigateway.Deployment(stack, 'Deployment', {api});
@@ -520,7 +505,7 @@ const devLogGroup = new cwlogs.LogGroup(this, "DevLogs");
 new apigateway.Stage(this, 'dev', {
   deployment,
   accessLogDestination: new apigateway.CloudWatchLogsDestination(devLogGroup),
-  accessLogFormat: format
+  accessLogFormat: apigateway.AccessLogFormat.jsonWithStandardFields({ip: false})
 });
 ```
 
@@ -530,12 +515,9 @@ The access log can be structured freely. The following will configure CLF format
 const logGroup = new cwlogs.LogGroup(this, "ApiGatewayAccessLogs");
 const api = new apigateway.RestApi(this, 'books', {
   deployOptions: {
-    accessLogSetting: {
-        destinationArn: new apigateway.CloudWatchLogsDestination(logGroup),
-        format: `${apigateway.AccessLogFormat.contextIdentitySourceIp()} ${apigateway.AccessLogFormat.contextIdentityCaller()} ${apigateway.AccessLogFormat.contextIdentityUser()} \
-[${apigateway.AccessLogFormat.contextRequestTime()}] "${apigateway.AccessLogFormat.contextHttpMethod()} ${apigateway.AccessLogFormat.contextResourcePath()} ${apigateway.AccessLogFormat.contextProtocol()}" \
-${apigateway.AccessLogFormat.contextStatus()} ${apigateway.AccessLogFormat.contextResponseLength()} ${apigateway.AccessLogFormat.contextRequestId()}`;
-        })
+    accessLogDestination: new apigateway.CloudWatchLogsDestination(logGroup),
+    accessLogFormat: apigateway.AccessLogFormat.clf();
+    })
     }
   }
 })
