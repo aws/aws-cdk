@@ -129,7 +129,7 @@ export type LogicalIdMetadataEntry = string;
 /**
  * @see ArtifactMetadataEntryType.STACK_TAGS
  */
-export type StackTagsMetadataEntry = Tag[];
+export type StackTagsMetadataEntry = any[];
 
 /**
  * Union type for all metadata entries that might exist in the manifest.

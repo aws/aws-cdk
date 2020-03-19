@@ -26,6 +26,13 @@ export class Manifest {
         return manifest;
     }
 
+    public static version(): string {
+        if (!Manifest.schema.id) {
+            throw new Error("Invalid schem: missing id");
+        }
+        return Manifest.schema.id;
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     private static schema: Schema = require('../schema/cloud-assembly.schema.json');
 

@@ -231,7 +231,7 @@ export class CloudAssemblyBuilder {
     // explicitly initializing this type will help us detect
     // breaking changes. (For example adding a required property will break compilation).
     let manifest: cxschema.AssemblyManifest = {
-      version: this.versionNumber(),
+      version: cxschema.Manifest.version(),
       artifacts: this.artifacts,
       runtime: options.runtimeInfo,
       missing: this.missing.length > 0 ? this.missing : undefined
@@ -249,21 +249,6 @@ export class CloudAssemblyBuilder {
     fs.writeFileSync(path.join(this.outdir, 'cdk.out'), JSON.stringify({ version: manifest.version }));
 
     return new CloudAssembly(this.outdir);
-  }
-
-  private versionNumber(): string {
-
-    function extract(packageJson: string) {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      return require(packageJson).version.replace(/\+[0-9a-f]+$/, '');
-    }
-
-    try {
-      return extract('../package.json');
-    } catch (err) {
-      // monocdk support
-      return extract('../../../package.json');
-    }
   }
 
 }
