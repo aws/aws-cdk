@@ -1,4 +1,3 @@
-export * from './invoke-function';
 export * from './run-lambda-task';
 export * from './invoke-activity';
 export * from './run-ecs-task-base'; // Remove this once we can
