@@ -54,7 +54,7 @@ test('test manifest load fail on invalid file', () => {
 
 });
 
-test('schema has the correct version', () => {
+test('schema has the correct hash', () => {
 
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const expectedHash = require('./schema.expected.json').hash;
