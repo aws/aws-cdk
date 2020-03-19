@@ -77,7 +77,8 @@
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-ssm": "0.0.0",
-    "@aws-cdk/core": "0.0.0"
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^1.1.2"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -87,7 +88,8 @@
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-ssm": "0.0.0",
-    "@aws-cdk/core": "0.0.0"
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^1.1.2"
   },
   "engines": {
     "node": ">= 10.3.0"
@@ -106,6 +108,7 @@
       "module-name:@aws-cdk/aws-eks-legacy",
       "props-no-arn-refs:@aws-cdk/aws-eks-legacy.ClusterProps.outputMastersRoleArn",
       "resource-attribute:@aws-cdk/aws-eks-legacy.Cluster.clusterSecurityGroupId",
+      "resource-attribute:@aws-cdk/aws-eks-legacy.Cluster.clusterEncryptionConfigKeyArn",
       "props-default-doc:@aws-cdk/aws-eks-legacy.AutoScalingGroupOptions.bootstrapOptions",
       "docs-public-apis:@aws-cdk/aws-eks-legacy.AwsAuthProps",
       "docs-public-apis:@aws-cdk/aws-eks-legacy.BootstrapOptions",
@@ -114,5 +117,8 @@
       "docs-public-apis:@aws-cdk/aws-eks-legacy.Mapping"
     ]
   },
-  "stability": "deprecated"
+  "stability": "deprecated",
+  "awscdkio": {
+    "announce": false
+  }
 }

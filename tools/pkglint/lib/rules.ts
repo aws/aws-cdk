@@ -1054,6 +1054,70 @@ export class YarnNohoistBundledDependencies extends ValidationRule {
   }
 }
 
+export class ConstructsDependency extends ValidationRule {
+  public readonly name = 'constructs/dependency';
+
+  public validate(pkg: PackageJson) {
+    const REQUIRED_VERSION = '^1.1.2';
+
+    if (pkg.devDependencies?.constructs && pkg.devDependencies?.constructs !== REQUIRED_VERSION) {
+      pkg.report({
+        ruleName: this.name,
+        message: `"constructs" must have a version requirement ${REQUIRED_VERSION}`,
+        fix: () => {
+          pkg.addDevDependency('constructs', REQUIRED_VERSION);
+        }
+      });
+    }
+
+    if (pkg.dependencies.constructs && pkg.dependencies.constructs !== REQUIRED_VERSION) {
+      pkg.report({
+        ruleName: this.name,
+        message: `"constructs" must have a version requirement ${REQUIRED_VERSION}`,
+        fix: () => {
+          pkg.addDependency('constructs', REQUIRED_VERSION);
+        }
+      });
+
+      if (!pkg.peerDependencies.constructs || pkg.peerDependencies.constructs !== REQUIRED_VERSION) {
+        pkg.report({
+          ruleName: this.name,
+          message: `"constructs" must have a version requirement ${REQUIRED_VERSION} in peerDependencies`,
+          fix: () => {
+            pkg.addPeerDependency('constructs', REQUIRED_VERSION);
+          }
+        });
+      }
+    }
+  }
+}
+
+/**
+ * Do not announce new versions of AWS CDK modules in awscdk.io because it is very very spammy
+ * and actually causes the @awscdkio twitter account to be blocked.
+ *
+ * https://github.com/construct-catalog/catalog/issues/24
+ * https://github.com/construct-catalog/catalog/pull/22
+ */
+export class DoNotAnnounceInCatalog extends ValidationRule {
+  public readonly name = 'catalog/no-announce';
+
+  public validate(pkg: PackageJson) {
+    if (!isJSII(pkg)) { return; }
+
+    if (pkg.json.awscdkio?.announce !== false) {
+      pkg.report({
+        ruleName: this.name,
+        message:  `missing "awscdkio.announce: false" in package.json`,
+        fix: () => {
+          pkg.json.awscdkio = pkg.json.awscdkio ?? { };
+          pkg.json.awscdkio.announce = false;
+        }
+      });
+    }
+  }
+}
+
 /**
  * Determine whether this is a JSII package
  *

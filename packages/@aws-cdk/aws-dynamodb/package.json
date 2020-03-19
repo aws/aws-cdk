@@ -64,7 +64,7 @@
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
     "@types/nodeunit": "^0.0.30",
-    "aws-sdk": "^2.637.0",
+    "aws-sdk": "^2.642.0",
     "aws-sdk-mock": "^5.1.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
@@ -80,7 +80,8 @@
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "@aws-cdk/custom-resources": "0.0.0"
+    "@aws-cdk/custom-resources": "0.0.0",
+    "constructs": "^1.1.2"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -90,7 +91,8 @@
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "@aws-cdk/custom-resources": "0.0.0"
+    "@aws-cdk/custom-resources": "0.0.0",
+    "constructs": "^1.1.2"
   },
   "engines": {
     "node": ">= 10.3.0"
@@ -110,5 +112,8 @@
       "docs-public-apis:@aws-cdk/aws-dynamodb.AttributeType",
       "docs-public-apis:@aws-cdk/aws-dynamodb.ProjectionType"
     ]
+  },
+  "awscdkio": {
+    "announce": false
   }
 }
