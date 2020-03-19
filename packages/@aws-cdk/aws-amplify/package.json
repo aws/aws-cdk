@@ -111,5 +111,8 @@
     "exclude": [
       "construct-ctor-props-optional:@aws-cdk/aws-amplify.App"
     ]
+  },
+  "awscdkio": {
+    "announce": false
   }
 }

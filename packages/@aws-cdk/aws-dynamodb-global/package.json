@@ -89,5 +89,8 @@
   },
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
-  "stability": "deprecated"
+  "stability": "deprecated",
+  "awscdkio": {
+    "announce": false
+  }
 }
