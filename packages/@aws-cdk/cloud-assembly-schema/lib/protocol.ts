@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import { Schema, Validator } from 'jsonschema';
+// import { Schema, Validator } from 'jsonschema';
 import { ArtifactMetadataEntryType, ArtifactType, AssemblyManifest } from './assembly-manifest';
 
 /**
@@ -20,23 +20,23 @@ export class Manifest {
      * Load manifest from file.
      */
     public static load(filePath: string): AssemblyManifest {
-        const raw = JSON.parse(fs.readFileSync(filePath, 'UTF-8'));
-        const manifest: AssemblyManifest = Manifest.validate(raw);
+        const manifest: AssemblyManifest = JSON.parse(fs.readFileSync(filePath, 'UTF-8'));
+        // const manifest: AssemblyManifest = Manifest.validate(raw);
         Manifest.patchStackTags(manifest);
         return manifest;
     }
 
-    private static schema: Schema = require('../schema/cloud-assembly.schema.json');
+    // private static schema: Schema = require('../schema/cloud-assembly.schema.json');
 
-    private static validate(manifest: any) {
-        const validator = new Validator();
-        const result = validator.validate(manifest, Manifest.schema, {
-            // nestedErrors does exist but is not in the TypeScript definitions
-            nestedErrors: true
-        } as any);
-        if (result.valid) { return manifest; }
-        throw new Error(`Invalid assembly manifest:\n${result}`);
-    }
+    // private static validate(manifest: any) {
+    //     const validator = new Validator();
+    //     const result = validator.validate(manifest, Manifest.schema, {
+    //         // nestedErrors does exist but is not in the TypeScript definitions
+    //         nestedErrors: true
+    //     } as any);
+    //     if (result.valid) { return manifest; }
+    //     throw new Error(`Invalid assembly manifest:\n${result}`);
+    // }
 
     /**
      * This requires some explaining...

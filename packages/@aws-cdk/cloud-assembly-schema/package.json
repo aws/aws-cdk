@@ -44,9 +44,6 @@
     "url": "https://aws.amazon.com",
     "organization": true
   },
-  "dependencies": {
-    "jsonschema": "^1.2.5"
-  },
   "jest": {
     "moduleFileExtensions": [
       "js"
