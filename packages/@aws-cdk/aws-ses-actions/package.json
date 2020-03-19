@@ -120,5 +120,8 @@
       "props-default-doc:@aws-cdk/aws-ses-actions.BounceTemplateProps.statusCode",
       "props-default-doc:@aws-cdk/aws-ses-actions.StopProps.topic"
     ]
+  },
+  "awscdkio": {
+    "announce": false
   }
 }
