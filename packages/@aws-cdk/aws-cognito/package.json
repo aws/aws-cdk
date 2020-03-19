@@ -90,7 +90,6 @@
   },
   "awslint": {
     "exclude": [
-      "no-unused-type:@aws-cdk/aws-cognito.UserPoolAttribute",
       "props-default-doc:@aws-cdk/aws-cognito.UserPoolTriggers.verifyAuthChallengeResponse",
       "props-default-doc:@aws-cdk/aws-cognito.UserPoolTriggers.userMigration",
       "props-default-doc:@aws-cdk/aws-cognito.UserPoolTriggers.preTokenGeneration",
@@ -108,5 +107,8 @@
       "docs-public-apis:@aws-cdk/aws-cognito.UserPoolClientProps"
     ]
   },
-  "stability": "experimental"
+  "stability": "experimental",
+  "awscdkio": {
+    "announce": false
+  }
 }

@@ -87,7 +87,7 @@
     "@aws-cdk/assert": "0.0.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
-    "fs-extra": "^8.1.0",
+    "fs-extra": "^9.0.0",
     "parcel-bundler": "^1.12.4",
     "pkglint": "0.0.0"
   },
@@ -105,5 +105,8 @@
   "engines": {
     "node": ">= 10.3.0"
   },
-  "stability": "experimental"
+  "stability": "experimental",
+  "awscdkio": {
+    "announce": false
+  }
 }

@@ -106,5 +106,8 @@
       "props-physical-name:@aws-cdk/aws-cloud9.Ec2EnvironmentProps"
     ]
   },
-  "stability": "experimental"
+  "stability": "experimental",
+  "awscdkio": {
+    "announce": false
+  }
 }

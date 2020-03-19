@@ -88,7 +88,9 @@
   },
   "stability": "experimental",
   "awslint": {
-    "exclude": [
-    ]
+    "exclude": []
+  },
+  "awscdkio": {
+    "announce": false
   }
 }
