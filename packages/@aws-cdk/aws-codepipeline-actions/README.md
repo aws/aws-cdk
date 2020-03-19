@@ -106,6 +106,37 @@ new codepipeline_actions.CodeBuildAction({
 });
 ```
 
+#### BitBucket
+
+CodePipeline can use a BitBucket Git repository as a source:
+
+**Note**: you have to manually connect CodePipeline through the AWS Console with your BitBucket account.
+This is a one-time operation for a given AWS account in a given region.
+The simplest way to do that is to either start creating a new CodePipeline,
+or edit na existing one, while being logged in to BitBucket.
+Choose BitBucket as the source,
+and grant CodePipeline permissions to your BitBucket account.
+Copy & paste the Connection ARN that you get in the console,
+or use the [`codestar-connections list-connections` AWS CLI operation](https://docs.aws.amazon.com/cli/latest/reference/codestar-connections/list-connections.html)
+to find it.
+After that, you can safely abort creating or editing the pipeline -
+the connection has already been created.
+
+```typescript
+const sourceOutput = new codepipeline.Artifact();
+const sourceAction = new codepipeline_actions.BitBucketSourceAction({
+  actionName: 'BitBucket_Source',
+  owner: 'aws',
+  repo: 'aws-cdk',
+  output: sourceOutput,
+  connectionArn: 'arn:aws:codestar-connections:us-east-1:123456789012:connection/12345678-abcd-12ab-34cdef5678gh',
+});
+```
+
+**Note**: as this feature is still in Beta in CodePipeline,
+the above class `BitBucketSourceAction` is experimental -
+we reserve the right to make breaking changes to it.
+
 #### AWS S3
 
 To use an S3 Bucket as a source in CodePipeline:
