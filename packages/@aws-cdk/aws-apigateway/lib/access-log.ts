@@ -443,6 +443,9 @@ export class AccessLogField {
  * A API Gateway custom access log format.
  */
 export interface IAccessLogFormat {
+  /**
+   * A API Gateway custom access log format
+   */
   readonly format: string;
 }
 
@@ -450,14 +453,50 @@ export interface IAccessLogFormat {
  * jsonWithStandardFields property
  */
 export interface IJsonWithStandardFieldProps {
+  /**
+   * If this flag is enabled, $context.identity.sourceIp will be output to the log
+   * @default true
+   */
   ip?: boolean,
+  /**
+   * If this flag is enabled, $context.identity.caller will be output to the log
+   * @default true
+   */
   caller?: boolean,
+  /**
+   * If this flag is enabled, $context.identity.user will be output to the log
+   * @default true
+   */
   user?: boolean,
+  /**
+   * If this flag is enabled, $context.requestTime will be output to the log
+   * @default true
+   */
   requestTime?: boolean,
+  /**
+   * If this flag is enabled, $context.httpMethod will be output to the log
+   * @default true
+   */
   httpMethod?: boolean,
+  /**
+   * If this flag is enabled, $context.resourcePath will be output to the log
+   * @default true
+   */
   resourcePath?: boolean,
+  /**
+   * If this flag is enabled, $context.status will be output to the log
+   * @default true
+   */
   status?: boolean,
+  /**
+   * If this flag is enabled, $context.protocol will be output to the log
+   * @default true
+   */
   protocol?: boolean,
+  /**
+   * If this flag is enabled, $context.responseLength will be output to the log
+   * @default true
+   */
   responseLength?: boolean
 }
 
