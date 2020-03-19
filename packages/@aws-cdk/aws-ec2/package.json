@@ -471,5 +471,8 @@
       "props-default-doc:@aws-cdk/aws-ec2.InterfaceVpcEndpointAttributes.securityGroups"
     ]
   },
-  "stability": "stable"
+  "stability": "stable",
+  "awscdkio": {
+    "announce": false
+  }
 }

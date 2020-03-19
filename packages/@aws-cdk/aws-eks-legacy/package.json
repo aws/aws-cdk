@@ -117,5 +117,8 @@
       "docs-public-apis:@aws-cdk/aws-eks-legacy.Mapping"
     ]
   },
-  "stability": "deprecated"
+  "stability": "deprecated",
+  "awscdkio": {
+    "announce": false
+  }
 }

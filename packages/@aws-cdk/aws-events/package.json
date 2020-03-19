@@ -105,5 +105,8 @@
       "props-default-doc:@aws-cdk/aws-events.RuleTargetConfig.sqsParameters"
     ]
   },
-  "stability": "stable"
+  "stability": "stable",
+  "awscdkio": {
+    "announce": false
+  }
 }

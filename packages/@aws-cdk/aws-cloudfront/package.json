@@ -141,5 +141,8 @@
       "docs-public-apis:@aws-cdk/aws-cloudfront.ViewerCertificateOptions",
       "props-default-doc:@aws-cdk/aws-cloudfront.ViewerCertificateOptions.aliases"
     ]
+  },
+  "awscdkio": {
+    "announce": false
   }
 }

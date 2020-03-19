@@ -111,5 +111,8 @@
       "docs-public-apis:@aws-cdk/aws-elasticloadbalancingv2-targets.InstanceTarget",
       "docs-public-apis:@aws-cdk/aws-elasticloadbalancingv2-targets.LambdaTarget"
     ]
+  },
+  "awscdkio": {
+    "announce": false
   }
 }

@@ -108,5 +108,8 @@
   "stability": "stable",
   "awslint": {
     "exclude": []
+  },
+  "awscdkio": {
+    "announce": false
   }
 }

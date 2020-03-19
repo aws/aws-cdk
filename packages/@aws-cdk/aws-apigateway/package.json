@@ -299,5 +299,8 @@
       "attribute-tag:@aws-cdk/aws-apigateway.TokenAuthorizer.authorizerArn"
     ]
   },
-  "stability": "stable"
+  "stability": "stable",
+  "awscdkio": {
+    "announce": false
+  }
 }

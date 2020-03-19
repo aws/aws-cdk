@@ -137,5 +137,8 @@
       "docs-public-apis:@aws-cdk/aws-s3.BucketNotificationDestinationType.QUEUE"
     ]
   },
-  "stability": "stable"
+  "stability": "stable",
+  "awscdkio": {
+    "announce": false
+  }
 }

@@ -103,5 +103,8 @@
       "docs-public-apis:@aws-cdk/aws-logs.SpaceDelimitedTextPattern.logPatternString"
     ]
   },
-  "stability": "stable"
+  "stability": "stable",
+  "awscdkio": {
+    "announce": false
+  }
 }

@@ -115,5 +115,8 @@
       "docs-public-apis:@aws-cdk/aws-route53-patterns.HttpsRedirect",
       "docs-public-apis:@aws-cdk/aws-route53-patterns.HttpsRedirectProps"
     ]
+  },
+  "awscdkio": {
+    "announce": false
   }
 }

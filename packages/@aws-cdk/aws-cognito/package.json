@@ -107,5 +107,8 @@
       "docs-public-apis:@aws-cdk/aws-cognito.UserPoolClientProps"
     ]
   },
-  "stability": "experimental"
+  "stability": "experimental",
+  "awscdkio": {
+    "announce": false
+  }
 }

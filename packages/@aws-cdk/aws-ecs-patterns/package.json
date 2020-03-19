@@ -113,5 +113,8 @@
       "docs-public-apis:@aws-cdk/aws-ecs-patterns.NetworkLoadBalancedTaskImageOptions",
       "docs-public-apis:@aws-cdk/aws-ecs-patterns.ScheduledTaskImageProps"
     ]
+  },
+  "awscdkio": {
+    "announce": false
   }
 }

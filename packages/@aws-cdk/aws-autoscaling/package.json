@@ -139,5 +139,8 @@
       "docs-public-apis:@aws-cdk/aws-autoscaling.ScalingProcess.HEALTH_CHECK"
     ]
   },
-  "stability": "stable"
+  "stability": "stable",
+  "awscdkio": {
+    "announce": false
+  }
 }

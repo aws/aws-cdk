@@ -122,5 +122,8 @@
       "docs-public-apis:@aws-cdk/aws-glue.SerializationLibrary.REGEXP",
       "docs-public-apis:@aws-cdk/aws-glue.SerializationLibrary.className"
     ]
+  },
+  "awscdkio": {
+    "announce": false
   }
 }

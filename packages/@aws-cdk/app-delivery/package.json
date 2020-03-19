@@ -99,5 +99,8 @@
       "docs-public-apis:@aws-cdk/app-delivery.PipelineDeployStackAction.onStateChange",
       "docs-public-apis:@aws-cdk/app-delivery.PipelineDeployStackActionProps"
     ]
+  },
+  "awscdkio": {
+    "announce": false
   }
 }

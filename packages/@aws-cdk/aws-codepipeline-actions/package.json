@@ -165,5 +165,8 @@
       "docs-public-apis:@aws-cdk/aws-codepipeline-actions.CodeDeployEcsDeployAction",
       "props-default-doc:@aws-cdk/aws-codepipeline-actions.CodeDeployEcsDeployActionProps.containerImageInputs"
     ]
+  },
+  "awscdkio": {
+    "announce": false
   }
 }

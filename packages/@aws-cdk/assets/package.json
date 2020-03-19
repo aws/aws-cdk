@@ -100,5 +100,8 @@
       "docs-public-apis:@aws-cdk/assets.StagingProps.sourcePath",
       "docs-public-apis:@aws-cdk/assets.FollowMode"
     ]
+  },
+  "awscdkio": {
+    "announce": false
   }
 }

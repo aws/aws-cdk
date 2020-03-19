@@ -108,5 +108,8 @@
       "docs-public-apis:@aws-cdk/aws-codecommit.RepositoryEventTrigger.CREATE_REF",
       "docs-public-apis:@aws-cdk/aws-codecommit.RepositoryEventTrigger.DELETE_REF"
     ]
+  },
+  "awscdkio": {
+    "announce": false
   }
 }

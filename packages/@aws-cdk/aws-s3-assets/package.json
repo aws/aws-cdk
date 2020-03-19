@@ -96,5 +96,8 @@
       "docs-public-apis:@aws-cdk/aws-s3-assets.AssetOptions",
       "docs-public-apis:@aws-cdk/aws-s3-assets.AssetProps"
     ]
+  },
+  "awscdkio": {
+    "announce": false
   }
 }

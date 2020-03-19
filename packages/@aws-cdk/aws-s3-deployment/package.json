@@ -136,5 +136,8 @@
       "docs-public-apis:@aws-cdk/aws-s3-deployment.StorageClass.GLACIER",
       "docs-public-apis:@aws-cdk/aws-s3-deployment.StorageClass.DEEP_ARCHIVE"
     ]
+  },
+  "awscdkio": {
+    "announce": false
   }
 }

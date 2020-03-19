@@ -140,5 +140,8 @@
       "props-default-doc:@aws-cdk/aws-events-targets.ContainerOverride.environment",
       "props-default-doc:@aws-cdk/aws-events-targets.EcsTaskProps.containerOverrides"
     ]
+  },
+  "awscdkio": {
+    "announce": false
   }
 }

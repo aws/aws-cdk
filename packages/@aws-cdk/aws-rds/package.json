@@ -137,5 +137,8 @@
       "docs-public-apis:@aws-cdk/aws-rds.DatabaseInstanceEngine.SQL_SERVER_WEB"
     ]
   },
-  "stability": "experimental"
+  "stability": "experimental",
+  "awscdkio": {
+    "announce": false
+  }
 }
