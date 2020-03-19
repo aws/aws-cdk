@@ -53,6 +53,7 @@ describe('Bootstrapping', () => {
       testStack = await deployCdkApp(outdir, env, sdk, bootstrapStackName, (app) => {
         new MyTestCdkStack(app, exampleAppStack, {
           assetType: ExampleAsset.ASSET_1,
+          env,
         });
       });
     });
@@ -75,6 +76,7 @@ describe('Bootstrapping', () => {
         await deployCdkApp(outdir, env, sdk, bootstrapStackName, (app) => {
           new MyTestCdkStack(app, exampleAppStack, {
             assetType: ExampleAsset.ASSET_2,
+            env,
           });
         });
       });
