@@ -84,11 +84,6 @@
                 "version": {
                     "description": "Protocol version",
                     "type": "string"
-                },
-                "version2": {
-                    "default": "asd",
-                    "description": "Protocol version",
-                    "type": "string"
                 }
             },
             "required": [
