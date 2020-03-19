@@ -33,6 +33,7 @@ def patch_handler(event, context):
     resource_namespace = props['ResourceNamespace']
     apply_patch_json = props['ApplyPatchJson']
     restore_patch_json = props['RestorePatchJson']
+    patch_type = props['PatchType']
 
     patch_json = None
     if request_type == 'Create' or request_type == 'Update': 
@@ -42,7 +43,7 @@ def patch_handler(event, context):
     else:
         raise Exception("invalid request type %s" % request_type)
 
-    kubectl([ 'patch', resource_name, '-n', resource_namespace, '-p', patch_json ])
+    kubectl([ 'patch', resource_name, '-n', resource_namespace, '-p', patch_json, '--type', patch_type ])
 
 
 def kubectl(args):
