@@ -113,5 +113,8 @@
       "docs-public-apis:@aws-cdk/aws-cloudwatch-actions.AutoScalingAction.bind",
       "docs-public-apis:@aws-cdk/aws-cloudwatch-actions.SnsAction.bind"
     ]
+  },
+  "awscdkio": {
+    "announce": false
   }
 }
