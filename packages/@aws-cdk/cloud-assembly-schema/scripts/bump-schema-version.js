@@ -19,10 +19,17 @@ function applyPatch(document, patch, out) {
     fs.writeFileSync(out, JSON.stringify(patched, null, 4));
 }
 
-applyPatch(version,
-    [{ op:"replace", path: "/version", value: semver.inc(version.version, 'major') }],
-    path.join(__dirname, '../schema/cloud-assembly.version.json'))
+const currentHash = fingerprint.hashObject(schema);
+const expectedHash = expected.hash;
 
-applyPatch(expected,
-    [{ op:"replace", path: "/hash", value: fingerprint.hashObject(schema) }],
-    path.join(__dirname, '../test/schema.expected.json'))
+if (currentHash != expectedHash) {
+
+    applyPatch(version,
+        [{ op:"replace", path: "/version", value: semver.inc(version.version, 'major') }],
+        path.join(__dirname, '../schema/cloud-assembly.version.json'))
+
+    applyPatch(expected,
+        [{ op:"replace", path: "/hash", value: currentHash }],
+        path.join(__dirname, '../test/schema.expected.json'))
+
+}
