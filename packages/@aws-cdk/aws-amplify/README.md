@@ -33,7 +33,7 @@ const amplifyApp = new amplify.App(this, 'MyApp', {
     version: '1.0',
     frontend: {
       phases: {
-        prebuild: {
+        preBuild: {
           commands: [
             'yarn'
           ]
