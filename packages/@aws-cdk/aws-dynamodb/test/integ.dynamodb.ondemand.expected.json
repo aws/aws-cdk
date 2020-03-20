@@ -17,8 +17,8 @@
         ],
         "BillingMode": "PAY_PER_REQUEST"
       },
-      "DeletionPolicy": "Delete",
-      "UpdateReplacePolicy": "Delete"
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "TableWithGlobalAndLocalSecondaryIndexBC540710": {
       "Type": "AWS::DynamoDB::Table",
@@ -244,8 +244,8 @@
           "Enabled": true
         }
       },
-      "DeletionPolicy": "Delete",
-      "UpdateReplacePolicy": "Delete"
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "TableWithGlobalSecondaryIndexCC8E841E": {
       "Type": "AWS::DynamoDB::Table",
@@ -282,8 +282,8 @@
           }
         ]
       },
-      "DeletionPolicy": "Delete",
-      "UpdateReplacePolicy": "Delete"
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "TableWithLocalSecondaryIndex4DA3D08F": {
       "Type": "AWS::DynamoDB::Table",
@@ -332,8 +332,8 @@
           }
         ]
       },
-      "DeletionPolicy": "Delete",
-      "UpdateReplacePolicy": "Delete"
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     }
   }
 }
