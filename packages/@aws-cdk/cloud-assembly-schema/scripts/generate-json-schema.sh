@@ -4,7 +4,7 @@ scriptsdir=$(cd $(dirname $0) && pwd)
 packagedir=$(realpath ${scriptsdir}/..)
 
 # Input
-INPUT_FILE="${packagedir}/lib/assembly-manifest.d.ts"
+INPUT_FILE="${packagedir}/lib/manifest.d.ts"
 
 # Output
 OUTPUT_DIR="${packagedir}/schema"
