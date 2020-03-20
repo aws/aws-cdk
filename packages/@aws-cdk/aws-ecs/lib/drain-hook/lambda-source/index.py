@@ -35,10 +35,12 @@ def lambda_handler(event, context):
 
 def container_instance_arn(cluster, instance_id):
   """Turn an instance ID into a container instance ARN."""
-  arns = ecs.list_container_instances(cluster=cluster, filter='ec2InstanceId==' + instance_id)['containerInstanceArns']
-  if not arns:
-    return None
-  return arns[0]
+  containerInstanceArns = ecs.list_container_instances(cluster=cluster)['containerInstanceArns']
+  containerInstances = ecs.describe_container_instances(cluster=cluster, containerInstances=containerInstanceArns)['containerInstances']
+  for i in containerInstances:
+      if i['ec2InstanceId'] == instance_id:
+        return i['containerInstanceArn']
+  return None
 
 
 def has_tasks(cluster, instance_arn):
