@@ -4,6 +4,8 @@ import * as path from 'path';
 import { AssemblyManifest, Manifest, StackTagsMetadataEntry } from '../lib';
 import { hashObject } from './fingerprint';
 
+const FIXTURES = path.join(__dirname, 'fixtures');
+
 test('manifest save', () => {
 
   const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'protocol-tests'));
@@ -101,6 +103,11 @@ test('manifest load fail on complex invalid file', () => {
 
   expect(() => Manifest.load(manifestFile)).toThrow(/Invalid assembly manifest/);
 
+});
+
+test('load fails for invalid artifact type', () => {
+  expect(() => Manifest.load(path.join(FIXTURES, 'invalid-artifact-type', 'manifest.json')))
+  .toThrow(/Invalid assembly manifest/);
 });
 
 test('stack-tags are deserialized properly', () => {
