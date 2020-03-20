@@ -6,6 +6,10 @@ import { hashObject } from './fingerprint';
 
 const FIXTURES = path.join(__dirname, 'fixtures');
 
+function fixture(name: string) {
+  return path.join(FIXTURES, name, 'manifest.json');
+}
+
 test('manifest save', () => {
 
   const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'protocol-tests'));
@@ -24,36 +28,8 @@ test('manifest save', () => {
 });
 
 test('manifest load', () => {
-
-  const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'protocol-tests'));
-  const manifestFile = path.join(outdir, 'manifest.json');
-
-  const assemblyManifest: AssemblyManifest = {
-    version: "version"
-  };
-
-  Manifest.save(assemblyManifest, manifestFile);
-
-  const loaded = Manifest.load(manifestFile);
-
-  expect(loaded).toEqual(assemblyManifest);
-
-});
-
-test('manifest load fail on invalid file', () => {
-
-  const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'protocol-tests'));
-  const manifestFile = path.join(outdir, 'manifest.json');
-
-  // this is invalid because 'version' is required
-  const assemblyManifest = {
-
-  };
-
-  fs.writeFileSync(manifestFile, JSON.stringify(assemblyManifest));
-
-  expect(() => Manifest.load(manifestFile)).toThrow(/Invalid assembly manifest/);
-
+  const loaded = Manifest.load(fixture("only-version"));
+  expect(loaded).toMatchSnapshot();
 });
 
 test('schema has the correct hash', () => {
@@ -70,91 +46,20 @@ test('schema has the correct hash', () => {
 
 });
 
-test('manifest load fail on invalid file', () => {
-
-  const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'protocol-tests'));
-  const manifestFile = path.join(outdir, 'manifest.json');
-
-  // this is invalid because 'version' is required
-  const assemblyManifest = {
-
-  };
-
-  fs.writeFileSync(manifestFile, JSON.stringify(assemblyManifest));
-
-  expect(() => Manifest.load(manifestFile)).toThrow(/Invalid assembly manifest/);
+test('manifest load fails for invalid nested property', () => {
+  expect(() => Manifest.load(fixture("invalid-nested-property")))
+  .toThrow(/Invalid assembly manifest/);
 
 });
 
-test('manifest load fail on complex invalid file', () => {
-
-  const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'protocol-tests'));
-  const manifestFile = path.join(outdir, 'manifest.json');
-
-  // this is invalid because 'version' is required
-  const assemblyManifest = {
-    version: "0.0.5",
-    runtime: {
-      libraries: ["should", "be", "a", "map"]
-    }
-  };
-
-  fs.writeFileSync(manifestFile, JSON.stringify(assemblyManifest));
-
-  expect(() => Manifest.load(manifestFile)).toThrow(/Invalid assembly manifest/);
-
-});
-
-test('load fails for invalid artifact type', () => {
-  expect(() => Manifest.load(path.join(FIXTURES, 'invalid-artifact-type', 'manifest.json')))
+test('manifest load fails for invalid artifact type', () => {
+  expect(() => Manifest.load(fixture('invalid-artifact-type')))
   .toThrow(/Invalid assembly manifest/);
 });
 
 test('stack-tags are deserialized properly', () => {
 
-  const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'protocol-tests'));
-  const manifestFile = path.join(outdir, 'manifest.json');
-
-  fs.writeFileSync(manifestFile, JSON.stringify({
-    version: "version",
-    artifacts: {
-      Tree: {
-        type: "cdk:tree",
-        properties: {
-          file: "tree.json"
-        }
-      },
-      stack: {
-        type: "aws:cloudformation:stack",
-        metadata: {
-          AwsCdkPlaygroundBatch: [
-            {
-              type: "aws:cdk:stack-tags",
-              data: [{
-                Key: "hello",
-                Value: "world"
-              }],
-              trace: ["trace"]
-            },
-            {
-              type: "aws:cdk:asset",
-              data: {
-                repositoryName: "repo",
-                imageTag: "tag",
-                id: "id",
-                packaging: "container-image",
-                path: "path",
-                sourceHash: "hash"
-              },
-              trace: ["trace"]
-            },
-          ]
-        }
-      }
-    },
-  }));
-
-  const m: AssemblyManifest = Manifest.load(manifestFile);
+  const m: AssemblyManifest = Manifest.load(fixture('with-stack-tags'));
 
   if (m.artifacts?.stack?.metadata?.AwsCdkPlaygroundBatch[0].data) {
     const entry = m.artifacts.stack.metadata.AwsCdkPlaygroundBatch[0].data as StackTagsMetadataEntry;
