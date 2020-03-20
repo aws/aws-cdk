@@ -547,7 +547,7 @@ This is in addition to the detailed execution logs already provided by Amazon Cl
 The access logging feature lets you generate access logs in different formats such as CLF (Common Log Format), JSON, XML, and CSV.
 More info can be found [here](https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-logging.html).
 
-Access logs can be configured to be sent to a specific CloudWatch log group. This can either be configured either for all stages of the RestApi or to specific stages.
+Access logs can be configured to be sent to a specific CloudWatch log group. This can be configured either for all stages of the RestApi or for a specific stage.
 The following example will configure API Gateway to enable custom access logging.
 
 ```ts
@@ -570,7 +570,7 @@ new apigateway.Stage(this, 'dev', {
 });
 ```
 
-The access log can be structured freely. The following will configure CLF format.
+The access log can be structured freely. The following will configure [CLF format](https://en.wikipedia.org/wiki/Common_Log_Format).
 
 ```ts
 const logGroup = new cwlogs.LogGroup(this, "ApiGatewayAccessLogs");
@@ -578,10 +578,8 @@ const api = new apigateway.RestApi(this, 'books', {
   deployOptions: {
     accessLogDestination: new apigateway.CloudWatchLogsDestination(logGroup),
     accessLogFormat: apigateway.AccessLogFormat.clf();
-    })
-    }
-  }
-})
+  })
+};
 ```
 
 #### Deeper dive: invalidation of deployments
