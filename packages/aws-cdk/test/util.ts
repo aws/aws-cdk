@@ -1,6 +1,9 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs';
 import * as path from 'path';
+import { CloudExecutable } from '../lib/api/cxapp/cloud-executable';
+import { Configuration } from '../lib/settings';
+import { MockSdkProvider } from './util/mock-sdk';
 
 export interface TestStackArtifact {
   stackName: string;
@@ -14,6 +17,25 @@ export interface TestStackArtifact {
 export interface TestAssembly {
   stacks: TestStackArtifact[];
   missing?: cxapi.MissingContext[];
+}
+
+export class MockCloudExecutable extends CloudExecutable {
+  public readonly configuration: Configuration;
+  public readonly sdkProvider: MockSdkProvider;
+
+  constructor(assembly: TestAssembly) {
+    const configuration = new Configuration();
+    const sdkProvider = new MockSdkProvider();
+
+    super({
+      configuration,
+      sdkProvider,
+      synthesizer: () => Promise.resolve(testAssembly(assembly))
+    });
+
+    this.configuration = configuration;
+    this.sdkProvider = sdkProvider;
+  }
 }
 
 export function testAssembly(assembly: TestAssembly): cxapi.CloudAssembly {
@@ -53,4 +75,22 @@ export function testAssembly(assembly: TestAssembly): cxapi.CloudAssembly {
 export function testStack(stack: TestStackArtifact) {
   const assembly = testAssembly({ stacks: [stack] });
   return assembly.getStackByName(stack.stackName);
+}
+
+/**
+ * Return a mocked instance of a class, given its constructor
+ *
+ * I don't understand why jest doesn't provide this by default,
+ * but there you go.
+ *
+ * FIXME: Currently very limited. Doesn't support inheritance, getters or
+ * automatic detection of properties (as those exist on instances, not
+ * classes).
+ */
+export function classMockOf<A>(ctr: new (...args: any[]) => A): jest.Mocked<A> {
+  const ret: any = {};
+  for (const methodName of Object.getOwnPropertyNames(ctr.prototype)) {
+    ret[methodName] = jest.fn();
+  }
+  return ret;
 }

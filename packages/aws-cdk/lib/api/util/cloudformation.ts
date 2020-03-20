@@ -33,7 +33,7 @@ export class CloudFormationStack {
 
   private _template: any;
 
-  protected constructor(private readonly cfn: CloudFormation, private readonly stackName: string, private readonly stack?: CloudFormation.Stack) {
+  protected constructor(private readonly cfn: CloudFormation, public readonly stackName: string, private readonly stack?: CloudFormation.Stack) {
   }
 
   public async template() {
@@ -63,7 +63,9 @@ export class CloudFormationStack {
   }
 
   public get stackStatus(): StackStatus {
-    this.assertExists();
+    if (!this.exists) {
+      return new StackStatus('NOT_FOUND', `Stack not found during lookup`);
+    }
     return StackStatus.fromStackDescription(this.stack!);
   }
 
@@ -80,7 +82,7 @@ export class CloudFormationStack {
 }
 
 /**
- * Describe a changeset in CloudFormation, regardless of it's current state.
+ * Describe a changeset in CloudFormation, regardless of its current state.
  *
  * @param cfn       a CloudFormation client
  * @param stackName   the name of the Stack the ChangeSet belongs to
@@ -91,53 +93,6 @@ export class CloudFormationStack {
 async function describeChangeSet(cfn: CloudFormation, stackName: string, changeSetName: string): Promise<CloudFormation.DescribeChangeSetOutput> {
   const response = await cfn.describeChangeSet({ StackName: stackName, ChangeSetName: changeSetName }).promise();
   return response;
-}
-
-/**
- * Describes a stack in CloudFormation, regardless of it's current state.
- *
- * @param cfn     a CloudFormation client
- * @param stackName the name of the stack to be described
- *
- * @returns +undefined+ if the stack does not exist or is deleted, and the CloudFormation stack description otherwise
- */
-export async function describeStack(cfn: CloudFormation, stackName: string): Promise<CloudFormation.Stack | undefined> {
-  try {
-    const response = await cfn.describeStacks({ StackName: stackName }).promise();
-    return response.Stacks && response.Stacks[0];
-  } catch (e) {
-    if (e.code === 'ValidationError' && e.message === `Stack with id ${stackName} does not exist`) {
-      return undefined;
-    }
-    throw e;
-  }
-}
-
-/**
- * Checks whether a stack exists in CloudFormation.
- *
- * @param cfn     a CloudFormation client
- * @param stackName the name of the stack to be checked for
- *
- * @returns     +true+ if the stack exists, regardless of it's current state
- */
-export async function stackExists(cfn: CloudFormation, stackName: string): Promise<boolean> {
-  const description = await describeStack(cfn, stackName);
-  return description !== undefined;
-}
-
-/**
- * Checks whether a stack has failed creation in CloudFormation. This is identified by the current stack Status being
- * ``ROLLBACK_COMPLETE``.
- *
- * @param cfn       a CloudFormation client
- * @param stackName the name of the stack to be checked for
- *
- * @returns +true+ if the stack exists and is in failed-creation state.
- */
-export async function stackFailedCreating(cfn: CloudFormation, stackName: string): Promise<boolean> {
-  const description = await describeStack(cfn, stackName);
-  return description != null && description.StackStatus === 'ROLLBACK_COMPLETE';
 }
 
 /**

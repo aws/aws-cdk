@@ -10,7 +10,7 @@ import { publishAssets } from '../util/asset-publishing';
 import { contentHash } from '../util/content-hash';
 import { ISDK, SdkProvider } from './aws-auth';
 import { ToolkitInfo } from './toolkit-info';
-import { changeSetHasNoChanges, CloudFormationStack, stackExists, stackFailedCreating, waitForChangeSet, waitForStack  } from './util/cloudformation';
+import { changeSetHasNoChanges, CloudFormationStack, waitForChangeSet, waitForStack  } from './util/cloudformation';
 import { StackActivityMonitor } from './util/cloudformation/stack-activity-monitor';
 
 type TemplateBodyParameter = {
@@ -180,7 +180,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
 
   const bodyParameter = await makeBodyParameter(stackArtifact, options.resolvedEnvironment, assets, options.toolkitInfo);
 
-  if (await stackFailedCreating(cfn, deployName)) {
+  if (cloudFormationStack.stackStatus.isCreationFailure) {
     debug(`Found existing stack ${deployName} that had previously failed creation. Deleting it before attempting to re-create it.`);
     await cfn.deleteStack({ StackName: deployName }).promise();
     const deletedStack = await waitForStack(cfn, deployName, false);
@@ -305,17 +305,21 @@ export interface DestroyStackOptions {
 export async function destroyStack(options: DestroyStackOptions) {
   const deployName = options.deployName || options.stack.stackName;
   const cfn = options.sdk.cloudFormation();
-  if (!await stackExists(cfn, deployName)) {
+
+  const currentStack = await CloudFormationStack.lookup(cfn, deployName);
+  if (!currentStack.exists) {
     return;
   }
   const monitor = options.quiet ? undefined : new StackActivityMonitor(cfn, deployName, options.stack).start();
-  await cfn.deleteStack({ StackName: deployName, RoleARN: options.roleArn }).promise().catch(e => { throw e; });
-  const destroyedStack = await waitForStack(cfn, deployName, false);
-  if (monitor) { await monitor.stop(); }
-  if (destroyedStack && destroyedStack.stackStatus.name !== 'DELETE_COMPLETE') {
-    throw new Error(`Failed to destroy ${deployName}: ${destroyedStack.stackStatus}`);
+  try {
+    await cfn.deleteStack({ StackName: deployName, RoleARN: options.roleArn }).promise();
+    const destroyedStack = await waitForStack(cfn, deployName, false);
+    if (destroyedStack && destroyedStack.stackStatus.name !== 'DELETE_COMPLETE') {
+      throw new Error(`Failed to destroy ${deployName}: ${destroyedStack.stackStatus}`);
+    }
+  } finally {
+    if (monitor) { await monitor.stop(); }
   }
-  return;
 }
 
 function compareTags(a: Tag[], b: Tag[]): boolean {

@@ -4,7 +4,7 @@ import { debug } from '../logging';
 import { Mode, SdkProvider } from './aws-auth';
 import { deployStack, DeployStackResult, destroyStack } from './deploy-stack';
 import { ToolkitInfo } from './toolkit-info';
-import { CloudFormationStack, stackExists, Template } from './util/cloudformation';
+import { CloudFormationStack, Template } from './util/cloudformation';
 import { replaceAwsPlaceholders } from './util/placeholders';
 
 export interface DeployStackOptions {
@@ -105,8 +105,8 @@ export class CloudFormationDeployments {
 
   public async stackExists(options: StackExistsOptions): Promise<boolean> {
     const { stackSdk } = await this.prepareSdkFor(options.stack, undefined, Mode.ForReading);
-    const cfn = stackSdk.cloudFormation();
-    return stackExists(cfn, options.deployName ?? options.stack.stackName);
+    const stack = await CloudFormationStack.lookup(stackSdk.cloudFormation(), options.deployName ?? options.stack.stackName);
+    return stack.exists;
   }
 
   /**
