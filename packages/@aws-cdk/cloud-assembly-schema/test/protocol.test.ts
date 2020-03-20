@@ -68,6 +68,41 @@ test('schema has the correct hash', () => {
 
 });
 
+test('test manifest load fail on invalid file', () => {
+
+  const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'protocol-tests'));
+  const manifestFile = path.join(outdir, 'manifest.json');
+
+  // this is invalid because 'version' is required
+  const assemblyManifest = {
+
+  };
+
+  fs.writeFileSync(manifestFile, JSON.stringify(assemblyManifest));
+
+  expect(() => Manifest.load(manifestFile)).toThrow(/Invalid assembly manifest/);
+
+});
+
+test('test manifest load fail on complex invalid file', () => {
+
+  const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'protocol-tests'));
+  const manifestFile = path.join(outdir, 'manifest.json');
+
+  // this is invalid because 'version' is required
+  const assemblyManifest = {
+    version: "0.0.5",
+    runtime: {
+      libraries: ["should", "be", "a", "map"]
+    }
+  };
+
+  fs.writeFileSync(manifestFile, JSON.stringify(assemblyManifest));
+
+  expect(() => Manifest.load(manifestFile)).toThrow(/Invalid assembly manifest/);
+
+});
+
 test('test stack-tags are deserialized properly', () => {
 
   const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'protocol-tests'));
