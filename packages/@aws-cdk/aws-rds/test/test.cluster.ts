@@ -628,7 +628,7 @@ export = {
                 Resource: [
                   {
                     "Fn::GetAtt": [
-                      "ImportBucketBAF3A8E9",
+                      "Bucket83908E77",
                       "Arn"
                     ]
                   },
@@ -638,7 +638,7 @@ export = {
                       [
                         {
                           "Fn::GetAtt": [
-                            "ImportBucketBAF3A8E9",
+                            "Bucket83908E77",
                             "Arn"
                           ]
                         },
@@ -772,7 +772,7 @@ export = {
                 Resource: [
                   {
                     "Fn::GetAtt": [
-                      "ExportBucket4E99310E",
+                      "Bucket83908E77",
                       "Arn"
                     ]
                   },
@@ -782,7 +782,7 @@ export = {
                       [
                         {
                           "Fn::GetAtt": [
-                            "ExportBucket4E99310E",
+                            "Bucket83908E77",
                             "Arn"
                           ]
                         },

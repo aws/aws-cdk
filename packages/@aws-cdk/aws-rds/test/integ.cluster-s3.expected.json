@@ -10,7 +10,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-rds-integ/VPC"
+            "Value": "aws-cdk-rds-s3-integ/VPC"
           }
         ]
       }
@@ -27,7 +27,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-rds-integ/VPC/PublicSubnet1"
+            "Value": "aws-cdk-rds-s3-integ/VPC/PublicSubnet1"
           },
           {
             "Key": "aws-cdk:subnet-name",
@@ -49,7 +49,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-rds-integ/VPC/PublicSubnet1"
+            "Value": "aws-cdk-rds-s3-integ/VPC/PublicSubnet1"
           }
         ]
       }
@@ -87,7 +87,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-rds-integ/VPC/PublicSubnet1"
+            "Value": "aws-cdk-rds-s3-integ/VPC/PublicSubnet1"
           }
         ]
       }
@@ -107,7 +107,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-rds-integ/VPC/PublicSubnet1"
+            "Value": "aws-cdk-rds-s3-integ/VPC/PublicSubnet1"
           }
         ]
       }
@@ -124,7 +124,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-rds-integ/VPC/PublicSubnet2"
+            "Value": "aws-cdk-rds-s3-integ/VPC/PublicSubnet2"
           },
           {
             "Key": "aws-cdk:subnet-name",
@@ -146,7 +146,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-rds-integ/VPC/PublicSubnet2"
+            "Value": "aws-cdk-rds-s3-integ/VPC/PublicSubnet2"
           }
         ]
       }
@@ -184,7 +184,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-rds-integ/VPC/PublicSubnet2"
+            "Value": "aws-cdk-rds-s3-integ/VPC/PublicSubnet2"
           }
         ]
       }
@@ -204,7 +204,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-rds-integ/VPC/PublicSubnet2"
+            "Value": "aws-cdk-rds-s3-integ/VPC/PublicSubnet2"
           }
         ]
       }
@@ -221,7 +221,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-rds-integ/VPC/PrivateSubnet1"
+            "Value": "aws-cdk-rds-s3-integ/VPC/PrivateSubnet1"
           },
           {
             "Key": "aws-cdk:subnet-name",
@@ -243,7 +243,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-rds-integ/VPC/PrivateSubnet1"
+            "Value": "aws-cdk-rds-s3-integ/VPC/PrivateSubnet1"
           }
         ]
       }
@@ -283,7 +283,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-rds-integ/VPC/PrivateSubnet2"
+            "Value": "aws-cdk-rds-s3-integ/VPC/PrivateSubnet2"
           },
           {
             "Key": "aws-cdk:subnet-name",
@@ -305,7 +305,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-rds-integ/VPC/PrivateSubnet2"
+            "Value": "aws-cdk-rds-s3-integ/VPC/PrivateSubnet2"
           }
         ]
       }
@@ -339,7 +339,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-rds-integ/VPC"
+            "Value": "aws-cdk-rds-s3-integ/VPC"
           }
         ]
       }
@@ -352,16 +352,6 @@
         },
         "InternetGatewayId": {
           "Ref": "VPCIGWB7E252D3"
-        }
-      }
-    },
-    "ParamsA8366201": {
-      "Type": "AWS::RDS::DBClusterParameterGroup",
-      "Properties": {
-        "Description": "A nice parameter group",
-        "Family": "aurora5.6",
-        "Parameters": {
-          "character_set_database": "utf8mb4"
         }
       }
     },
@@ -413,6 +403,16 @@
           "Version": "2012-10-17"
         }
       },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
+    },
+    "ImportBucketBAF3A8E9": {
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
+    },
+    "ExportBucket4E99310E": {
+      "Type": "AWS::S3::Bucket",
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"
     },
@@ -472,12 +472,168 @@
         }
       }
     },
+    "DatabaseS3ImportRole377BC9C0": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "rds.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "s3:ListBucket",
+                    "s3:GetObject",
+                    "s3:GetObjectVersion"
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    {
+                      "Fn::GetAtt": [
+                        "ImportBucketBAF3A8E9",
+                        "Arn"
+                      ]
+                    },
+                    {
+                      "Fn::Join": [
+                        "",
+                        [
+                          {
+                            "Fn::GetAtt": [
+                              "ImportBucketBAF3A8E9",
+                              "Arn"
+                            ]
+                          },
+                          "/*"
+                        ]
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "Version": "2012-10-17"
+            },
+            "PolicyName": "ReadS3Files"
+          }
+        ]
+      }
+    },
+    "DatabaseS3ExportRole9E328562": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "rds.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "s3:ListBucket",
+                    "s3:AbortMultipartUpload",
+                    "s3:DeleteObject",
+                    "s3:GetObject",
+                    "s3:ListMultipartUploadParts",
+                    "s3:PutObject"
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    {
+                      "Fn::GetAtt": [
+                        "ExportBucket4E99310E",
+                        "Arn"
+                      ]
+                    },
+                    {
+                      "Fn::Join": [
+                        "",
+                        [
+                          {
+                            "Fn::GetAtt": [
+                              "ExportBucket4E99310E",
+                              "Arn"
+                            ]
+                          },
+                          "/*"
+                        ]
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "Version": "2012-10-17"
+            },
+            "PolicyName": "WriteS3Files"
+          }
+        ]
+      }
+    },
+    "DatabaseClusterParameterGroupF2A52087": {
+      "Type": "AWS::RDS::DBClusterParameterGroup",
+      "Properties": {
+        "Description": "Cluster parameter group for aurora5.6",
+        "Family": "aurora5.6",
+        "Parameters": {
+          "aurora_load_from_s3_role": {
+            "Fn::GetAtt": [
+              "DatabaseS3ImportRole377BC9C0",
+              "Arn"
+            ]
+          },
+          "aurora_select_into_s3_role": {
+            "Fn::GetAtt": [
+              "DatabaseS3ExportRole9E328562",
+              "Arn"
+            ]
+          }
+        }
+      }
+    },
     "DatabaseB269D8BB": {
       "Type": "AWS::RDS::DBCluster",
       "Properties": {
         "Engine": "aurora",
+        "AssociatedRoles": [
+          {
+            "RoleArn": {
+              "Fn::GetAtt": [
+                "DatabaseS3ImportRole377BC9C0",
+                "Arn"
+              ]
+            }
+          },
+          {
+            "RoleArn": {
+              "Fn::GetAtt": [
+                "DatabaseS3ExportRole9E328562",
+                "Arn"
+              ]
+            }
+          }
+        ],
         "DBClusterParameterGroupName": {
-          "Ref": "ParamsA8366201"
+          "Ref": "DatabaseClusterParameterGroupF2A52087"
         },
         "DBSubnetGroupName": {
           "Ref": "DatabaseSubnets56F17B9A"

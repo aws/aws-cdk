@@ -5,7 +5,7 @@ import * as cdk from '@aws-cdk/core';
 import { DatabaseCluster, DatabaseClusterEngine } from '../lib';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-cdk-rds-integ');
+const stack = new cdk.Stack(app, 'aws-cdk-rds-s3-integ');
 
 const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2 });
 
