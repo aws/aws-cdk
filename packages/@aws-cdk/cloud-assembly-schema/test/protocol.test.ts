@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { AssemblyManifest, Manifest } from '../lib';
+import { AssemblyManifest, Manifest, StackTagsMetadataEntry } from '../lib';
 import { hashObject } from './fingerprint';
 
 test('test manifest save', () => {
@@ -65,5 +65,60 @@ test('schema has the correct hash', () => {
   const schemaHash = hashObject(schema);
 
   expect(schemaHash).toEqual(expectedHash);
+
+});
+
+test('test stack-tags are deserialized properly', () => {
+
+  const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'protocol-tests'));
+  const manifestFile = path.join(outdir, 'manifest.json');
+
+  fs.writeFileSync(manifestFile, JSON.stringify({
+    version: "version",
+    artifacts: {
+      Tree: {
+        type: "cdk:tree",
+        properties: {
+          file: "tree.json"
+        }
+      },
+      stack: {
+        type: "aws:cloudformation:stack",
+        metadata: {
+          AwsCdkPlaygroundBatch: [
+            {
+              type: "aws:cdk:stack-tags",
+              data: [{
+                Key: "hello",
+                Value: "world"
+              }],
+              trace: ["trace"]
+            },
+            {
+              type: "aws:cdk:asset",
+              data: {
+                repositoryName: "repo",
+                imageTag: "tag",
+                id: "id",
+                packaging: "container-image",
+                path: "path",
+                sourceHash: "hash"
+              },
+              trace: ["trace"]
+            },
+          ]
+        }
+      }
+    },
+  }));
+
+  const m: AssemblyManifest = Manifest.load(manifestFile);
+
+  if (m.artifacts?.stack?.metadata?.AwsCdkPlaygroundBatch[0].data) {
+    const entry = m.artifacts.stack.metadata.AwsCdkPlaygroundBatch[0].data as StackTagsMetadataEntry;
+    expect(entry[0].key).toEqual("hello");
+    expect(entry[0].value).toEqual("world");
+  }
+  expect(m.version).toEqual("version");
 
 });
