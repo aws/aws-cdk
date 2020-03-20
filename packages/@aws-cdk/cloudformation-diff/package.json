@@ -42,7 +42,7 @@
     "@types/string-width": "^4.0.1",
     "@types/table": "^4.0.7",
     "cdk-build-tools": "0.0.0",
-    "fast-check": "^1.22.2",
+    "fast-check": "^1.23.0",
     "jest": "^24.9.0",
     "pkglint": "0.0.0",
     "ts-jest": "^25.2.0"
