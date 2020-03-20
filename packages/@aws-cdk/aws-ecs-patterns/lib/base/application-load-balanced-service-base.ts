@@ -362,12 +362,12 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
       }
     }
 
-    new cdk.CfnOutput(this, 'LoadBalancerDNS', { value: loadBalancer.loadBalancerDnsName });
-    new cdk.CfnOutput(this, 'ServiceURL', { value: protocol.toLowerCase() + '://' + domainName });
-
     if (loadBalancer instanceof ApplicationLoadBalancer) {
       this._applicationLoadBalancer = loadBalancer;
     }
+
+    new cdk.CfnOutput(this, 'LoadBalancerDNS', { value: loadBalancer.loadBalancerDnsName });
+    new cdk.CfnOutput(this, 'ServiceURL', { value: protocol.toLowerCase() + '://' + domainName });
   }
 
   /**
