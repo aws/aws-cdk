@@ -110,6 +110,22 @@ export interface ContainerImageAssetMetadataEntry extends BaseAssetMetadataEntry
 }
 
 /**
+ * Metadata Entry spec for stack tag.
+ */
+export interface Tag {
+
+    /**
+     * Tag key.
+     */
+    readonly key: string
+
+    /**
+     * Tag value.
+     */
+    readonly value: string
+}
+
+/**
  * @see ArtifactMetadataEntryType.ASSET
  */
 export type AssetMetadataEntry = FileAssetMetadataEntry | ContainerImageAssetMetadataEntry;
@@ -129,7 +145,7 @@ export type LogicalIdMetadataEntry = string;
 /**
  * @see ArtifactMetadataEntryType.STACK_TAGS
  */
-export type StackTagsMetadataEntry = any[];
+export type StackTagsMetadataEntry = Tag[];
 
 /**
  * Union type for all metadata entries that might exist in the manifest.
