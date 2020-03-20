@@ -455,6 +455,8 @@ books.addMethod('GET', new apigateway.HttpIntegration('http://amazon.com'), {
 });
 ```
 
+You can find a full working example [here](test/authorizers/integ.token-authorizer.ts).
+
 By default, the `TokenAuthorizer` looks for the authorization token in the request header with the key 'Authorization'. This can,
 however, be modified by changing the `identitySource` property.
 
@@ -493,6 +495,8 @@ books.addMethod('GET', new apigateway.HttpIntegration('http://amazon.com'), {
   authorizer: auth
 });
 ```
+
+You can find a full working example [here](test/authorizers/integ.request-authorizer.ts).
 
 By default, the `RequestAuthorizer` does not pass any kind of information from the request. This can,
 however, be modified by changing the `identitySource` property, and is required when specifying a value for caching.
