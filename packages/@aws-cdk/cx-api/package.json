@@ -51,23 +51,7 @@
   "peerDependencies": {
     "@aws-cdk/cloud-assembly-schema": "0.0.0"
   },
-  "jest": {
-    "moduleFileExtensions": [
-      "js"
-    ],
-    "coverageThreshold": {
-      "global": {
-        "branches": 80,
-        "statements": 80
-      }
-    },
-    "collectCoverage": true,
-    "coverageReporters": [
-      "lcov",
-      "html",
-      "text-summary"
-    ]
-  },
+  "jest": {},
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/jest": "^25.2.1",

@@ -57,17 +57,7 @@
     "fs-extra": "^8.1.0",
     "pkglint": "0.0.0"
   },
-  "jest": {
-    "moduleFileExtensions": [
-      "ts",
-      "js"
-    ],
-    "preset": "ts-jest",
-    "testMatch": [
-      "**/__tests__/**/*.ts?(x)",
-      "**/?(*.)+(spec|test).ts?(x)"
-    ]
-  },
+  "jest": {},
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
     "type": "git",

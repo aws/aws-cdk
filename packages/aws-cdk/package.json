@@ -103,18 +103,12 @@
   },
   "stability": "stable",
   "jest": {
-    "moduleFileExtensions": [
-      "js"
-    ],
     "coverageThreshold": {
       "global": {
         "branches": 45,
         "statements": 60
       }
-    },
-    "testMatch": [
-      "**/?(*.)+(spec|test).js?(x)"
-    ]
+    }
   },
   "maturity": "stable"
 }

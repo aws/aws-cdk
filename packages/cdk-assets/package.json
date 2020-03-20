@@ -68,20 +68,10 @@
   "stability": "experimental",
   "maturity": "experimental",
   "jest": {
-    "moduleFileExtensions": [
-      "js"
-    ],
     "coverageThreshold": {
       "global": {
-        "branches": 60,
-        "statements": 80
+        "branches": 60
       }
-    },
-    "collectCoverage": true,
-    "coverageReporters": [
-      "lcov",
-      "html",
-      "text-summary"
-    ]
+    }
   }
 }

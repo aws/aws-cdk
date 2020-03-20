@@ -80,23 +80,7 @@
     "@aws-cdk/region-info": "0.0.0",
     "constructs": "^3.0.2"
   },
-  "jest": {
-    "moduleFileExtensions": [
-      "js"
-    ],
-    "coverageThreshold": {
-      "global": {
-        "branches": 70,
-        "statements": 70
-      }
-    },
-    "collectCoverage": true,
-    "coverageReporters": [
-      "lcov",
-      "html",
-      "text-summary"
-    ]
-  },
+  "jest": {},
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
     "node": ">= 10.13.0"

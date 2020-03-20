@@ -52,21 +52,11 @@
     ]
   },
   "jest": {
-    "moduleFileExtensions": [
-      "js"
-    ],
     "coverageThreshold": {
       "global": {
-        "branches": 30,
-        "statements": 80
+        "branches": 30
       }
-    },
-    "collectCoverage": true,
-    "coverageReporters": [
-      "lcov",
-      "html",
-      "text-summary"
-    ]
+    }
   },
   "keywords": [
     "aws",

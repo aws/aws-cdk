@@ -103,21 +103,11 @@
     "constructs": "^3.0.2"
   },
   "jest": {
-    "moduleFileExtensions": [
-      "js"
-    ],
     "coverageThreshold": {
       "global": {
-        "branches": 70,
-        "statements": 80
+        "branches": 70
       }
-    },
-    "collectCoverage": true,
-    "coverageReporters": [
-      "lcov",
-      "html",
-      "text-summary"
-    ]
+    }
   },
   "engines": {
     "node": ">= 10.13.0"

@@ -42,13 +42,7 @@ async function main() {
     if (testFiles.length > 0) {
       throw new Error(`Jest is enabled, but ${testFiles.length} nodeunit tests were found!`);
     }
-    const globalJestConfig = JSON.parse(await fs.readFile(configFilePath('jest.config.json'), 'utf-8'));
-    const jestConfig = { ...globalJestConfig, ...packageJson.jest };
-
-    const jestConfigFile = 'jest.config.gen.json';
-    await fs.writeFile(jestConfigFile, JSON.stringify(jestConfig));
-
-    await shell([args.jest, '--config', jestConfigFile], { timers });
+    await shell([args.jest], { timers });
   } else if (testFiles.length > 0) {
     const testCommand: string[] = [];
 
