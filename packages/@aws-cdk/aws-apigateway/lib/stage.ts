@@ -1,5 +1,4 @@
 import { Construct, Duration, Resource, Stack } from '@aws-cdk/core';
-
 import { AccessLogFormat, IAccessLogDestination, IAccessLogFormat} from './access-log';
 import { CfnStage } from './apigateway.generated';
 import { Deployment } from './deployment';
@@ -304,7 +303,7 @@ export class Stage extends Resource {
         loggingLevel: options.loggingLevel,
         metricsEnabled: options.metricsEnabled,
         throttlingBurstLimit: options.throttlingBurstLimit,
-        throttlingRateLimit: options.throttlingRateLimit
+        throttlingRateLimit: options.throttlingRateLimit,
       };
     }
   }
