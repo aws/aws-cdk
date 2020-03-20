@@ -1,2 +1,2 @@
-export * from './assembly-manifest';
-export * from './protocol';
+export * from './manifest';
+export * from './schema';

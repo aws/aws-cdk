@@ -1,6 +1,6 @@
 import * as fs from 'fs';
-import { Schema, Validator } from 'jsonschema';
-import { ArtifactMetadataEntryType, ArtifactType, AssemblyManifest } from './assembly-manifest';
+import * as jsonschema from 'jsonschema';
+import * as assembly from './manifest';
 
 /**
  * Protocol utility class.
@@ -12,17 +12,17 @@ export class Manifest {
      *
      * @param manifest - manifest.
      */
-    public static save(manifest: AssemblyManifest, filePath: string) {
+    public static save(manifest: assembly.AssemblyManifest, filePath: string) {
         fs.writeFileSync(filePath, JSON.stringify(manifest, undefined, 2));
     }
 
     /**
      * Load manifest from file.
      */
-    public static load(filePath: string): AssemblyManifest {
-        const raw: AssemblyManifest = JSON.parse(fs.readFileSync(filePath, 'UTF-8'));
+    public static load(filePath: string): assembly.AssemblyManifest {
+        const raw: assembly.AssemblyManifest = JSON.parse(fs.readFileSync(filePath, 'UTF-8'));
         Manifest.patchStackTags(raw);
-        const manifest: AssemblyManifest = Manifest.validate(raw);
+        const manifest: assembly.AssemblyManifest = Manifest.validate(raw);
         return manifest;
     }
 
@@ -35,10 +35,10 @@ export class Manifest {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    private static schema: Schema = require('../schema/cloud-assembly.schema.json');
+    private static schema: jsonschema.Schema = require('../schema/cloud-assembly.schema.json');
 
-    private static validate(manifest: any): AssemblyManifest {
-        const validator = new Validator();
+    private static validate(manifest: any): assembly.AssemblyManifest {
+        const validator = new jsonschema.Validator();
         const result = validator.validate(manifest, Manifest.schema, {
 
             // does exist but is not in the TypeScript definitions
@@ -66,12 +66,12 @@ export class Manifest {
      * Ideally, we would start writing the `camelCased` and translate to how CloudFormation expects it when needed. But this requires nasty
      * backwards-compatibility code and it just doesn't seem to be worth the effort.
      */
-    private static patchStackTags(manifest: AssemblyManifest) {
+    private static patchStackTags(manifest: assembly.AssemblyManifest) {
         for (const artifact of Object.values(manifest.artifacts || [])) {
-            if (artifact.type === ArtifactType.AWS_CLOUDFORMATION_STACK) {
+            if (artifact.type === assembly.ArtifactType.AWS_CLOUDFORMATION_STACK) {
                 for (const metadataEntries of Object.values(artifact.metadata || [])) {
                     for (const metadataEntry of metadataEntries) {
-                        if (metadataEntry.type === ArtifactMetadataEntryType.STACK_TAGS && metadataEntry.data) {
+                        if (metadataEntry.type === assembly.ArtifactMetadataEntryType.STACK_TAGS && metadataEntry.data) {
 
                             const metadataAny = metadataEntry as any;
 
