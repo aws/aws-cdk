@@ -63,11 +63,6 @@ test('assembly with multiple stacks', () => {
   expect(assembly.artifacts).toHaveLength(2);
 });
 
-test('fails for invalid artifact type', () => {
-  const assembly = new CloudAssembly(path.join(FIXTURES, 'invalid-artifact-type'));
-  expect(assembly.tryGetArtifact('MyArt')).toBeUndefined();
-});
-
 test('fails for invalid environment format', () => {
   expect(() => new CloudAssembly(path.join(FIXTURES, 'invalid-env-format')))
     .toThrow('Unable to parse environment specification');
