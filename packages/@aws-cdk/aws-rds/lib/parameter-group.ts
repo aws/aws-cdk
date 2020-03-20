@@ -43,9 +43,12 @@ abstract class ParameterGroupBase extends Resource implements IParameterGroup {
   /**
    * Parameters of the parameter group
    */
-  protected parameters: { [key: string]: string } = {};
+  protected parameters?: { [key: string]: string } = {};
 
   public addParameter(key: string, value: string) {
+    if (!this.parameters) {
+      this.parameters = {};
+    }
     this.parameters[key] = value;
   }
 }

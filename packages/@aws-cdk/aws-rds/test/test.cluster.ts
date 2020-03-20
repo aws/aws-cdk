@@ -551,7 +551,7 @@ export = {
           ]
         }
       }]
-    }, ResourcePart.Properties));
+    }));
 
     expect(stack).to(haveResource("AWS::RDS::DBClusterParameterGroup", {
       Family: 'aurora5.6',
@@ -563,10 +563,11 @@ export = {
           ]
         }
       }
-    }, ResourcePart.Properties));
+    }));
 
     test.done();
   },
+
   'create a cluster with s3 import buckets'(test: Test) {
     // GIVEN
     const stack = testStack();
@@ -598,7 +599,7 @@ export = {
           ]
         }
       }]
-    }, ResourcePart.Properties));
+    }));
 
     expect(stack).to(haveResource("AWS::RDS::DBClusterParameterGroup", {
       Family: 'aurora5.6',
@@ -610,10 +611,54 @@ export = {
           ]
         }
       }
-    }, ResourcePart.Properties));
+    }));
+
+    expect(stack).to(haveResource("AWS::IAM::Role", {
+      Policies: [
+        {
+          PolicyDocument: {
+            Statement: [
+              {
+                Action: [
+                  "s3:ListBucket",
+                  "s3:GetObject",
+                  "s3:GetObjectVersion"
+                ],
+                Effect: "Allow",
+                Resource: [
+                  {
+                    "Fn::GetAtt": [
+                      "ImportBucketBAF3A8E9",
+                      "Arn"
+                    ]
+                  },
+                  {
+                    "Fn::Join": [
+                      "",
+                      [
+                        {
+                          "Fn::GetAtt": [
+                            "ImportBucketBAF3A8E9",
+                            "Arn"
+                          ]
+                        },
+                        "/*"
+                      ]
+                    ]
+                  }
+                ]
+              }
+            ],
+            Version: "2012-10-17"
+          },
+          PolicyName: "ReadS3Files"
+        }
+      ]
+    }));
 
     test.done();
   },
+
   'create a cluster with s3 export role'(test: Test) {
     // GIVEN
     const stack = testStack();
@@ -647,7 +692,7 @@ export = {
           ]
         }
       }]
-    }, ResourcePart.Properties));
+    }));
 
     expect(stack).to(haveResource("AWS::RDS::DBClusterParameterGroup", {
       Family: 'aurora5.6',
@@ -659,10 +704,11 @@ export = {
           ]
         }
       }
-    }, ResourcePart.Properties));
+    }));
 
     test.done();
   },
+
   'create a cluster with s3 export buckets'(test: Test) {
     // GIVEN
     const stack = testStack();
@@ -694,7 +740,7 @@ export = {
           ]
         }
       }]
-    }, ResourcePart.Properties));
+    }));
 
     expect(stack).to(haveResource("AWS::RDS::DBClusterParameterGroup", {
       Family: 'aurora5.6',
@@ -706,10 +752,57 @@ export = {
           ]
         }
       }
-    }, ResourcePart.Properties));
+    }));
+
+    expect(stack).to(haveResource("AWS::IAM::Role", {
+      Policies: [
+        {
+          PolicyDocument: {
+            Statement: [
+              {
+                Action: [
+                  "s3:ListBucket",
+                  "s3:AbortMultipartUpload",
+                  "s3:DeleteObject",
+                  "s3:GetObject",
+                  "s3:ListMultipartUploadParts",
+                  "s3:PutObject"
+                ],
+                Effect: "Allow",
+                Resource: [
+                  {
+                    "Fn::GetAtt": [
+                      "ExportBucket4E99310E",
+                      "Arn"
+                    ]
+                  },
+                  {
+                    "Fn::Join": [
+                      "",
+                      [
+                        {
+                          "Fn::GetAtt": [
+                            "ExportBucket4E99310E",
+                            "Arn"
+                          ]
+                        },
+                        "/*"
+                      ]
+                    ]
+                  }
+                ]
+              }
+            ],
+            Version: "2012-10-17"
+          },
+          PolicyName: "WriteS3Files"
+        }
+      ]
+    }));
 
     test.done();
   },
+
   'create a cluster with s3 import and export buckets'(test: Test) {
     // GIVEN
     const stack = testStack();
@@ -751,7 +844,7 @@ export = {
           ]
         }
       }]
-    }, ResourcePart.Properties));
+    }));
 
     expect(stack).to(haveResource("AWS::RDS::DBClusterParameterGroup", {
       Family: 'aurora5.6',
@@ -769,10 +862,11 @@ export = {
           ]
         }
       }
-    }, ResourcePart.Properties));
+    }));
 
     test.done();
   },
+
   'create a cluster with s3 import and export buckets and custom parameter group'(test: Test) {
     // GIVEN
     const stack = testStack();
@@ -822,7 +916,7 @@ export = {
           ]
         }
       }]
-    }, ResourcePart.Properties));
+    }));
 
     expect(stack).to(haveResource("AWS::RDS::DBClusterParameterGroup", {
       Family: 'family',
@@ -841,10 +935,11 @@ export = {
           ]
         }
       }
-    }, ResourcePart.Properties));
+    }));
 
     test.done();
   },
+
   'PostgreSQL cluster with s3 export buckets does not generate custom parameter group'(test: Test) {
     // GIVEN
     const stack = testStack();
@@ -876,12 +971,13 @@ export = {
           ]
         }
       }]
-    }, ResourcePart.Properties));
+    }));
 
     expect(stack).notTo(haveResource("AWS::RDS::DBClusterParameterGroup"));
 
     test.done();
   },
+
   'throws when s3ExportRole and s3ExportBuckets properties are both specified'(test: Test) {
     // GIVEN
     const stack = testStack();
@@ -909,6 +1005,7 @@ export = {
 
     test.done();
   },
+
   'throws when s3ImportRole and s3ImportBuckets properties are both specified'(test: Test) {
     // GIVEN
     const stack = testStack();

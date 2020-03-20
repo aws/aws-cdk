@@ -438,8 +438,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
       if (props.engine === DatabaseClusterEngine.AURORA || props.engine === DatabaseClusterEngine.AURORA_MYSQL) {
         if (!clusterParameterGroup) {
           clusterParameterGroup = new ClusterParameterGroup(this, "ClusterParameterGroup", {
-            family: getClusterParameterGroupFamily(props.engine, props.engineVersion),
-            parameters: {}
+            family: props.engine.getClusterParameterGroupFamily(props.engineVersion)
           });
         }
 
@@ -615,27 +614,4 @@ function bucketAndObjectArns(buckets: s3.IBucket[]): string[] {
     arns.push(bucket.arnForObjects('*'));
   }
   return arns;
-}
-
-/**
- * Get default parameter group family for given engine and version
- */
-function getClusterParameterGroupFamily(engine: DatabaseClusterEngine, engineVersion?: string): string {
-  if (engine === DatabaseClusterEngine.AURORA) {
-    return 'aurora5.6';
-  } else if (engine === DatabaseClusterEngine.AURORA_MYSQL) {
-    return 'aurora-mysql5.7';
-  } else if (engine === DatabaseClusterEngine.AURORA_POSTGRESQL) {
-    if (engineVersion) {
-      if (engineVersion.startsWith('9')) {
-        return "aurora-postgresql9.6";
-      } else if (engineVersion.startsWith('10')) {
-        return "aurora-postgresql10";
-      } else if (engineVersion.startsWith('11')) {
-        return "aurora-postgresql11";
-      }
-    }
-    return "aurora-postgresql11";
-  }
-  throw new Error(`Unknown database engine: ${engine.name}`);
 }

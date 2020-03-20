@@ -36,6 +36,29 @@ export class DatabaseClusterEngine {
     this.singleUserRotationApplication = singleUserRotationApplication;
     this.multiUserRotationApplication = multiUserRotationApplication;
   }
+
+  /**
+   * Get this engine's default parameter group family for given version
+   */
+  public getClusterParameterGroupFamily(engineVersion?: string): string {
+    if (this === DatabaseClusterEngine.AURORA) {
+      return 'aurora5.6';
+    } else if (this === DatabaseClusterEngine.AURORA_MYSQL) {
+      return 'aurora-mysql5.7';
+    } else if (this === DatabaseClusterEngine.AURORA_POSTGRESQL) {
+      if (engineVersion) {
+        if (engineVersion.startsWith('9')) {
+          return "aurora-postgresql9.6";
+        } else if (engineVersion.startsWith('10')) {
+          return "aurora-postgresql10";
+        } else if (engineVersion.startsWith('11')) {
+          return "aurora-postgresql11";
+        }
+      }
+      return "aurora-postgresql11";
+    }
+    throw new Error(`Unknown database engine: ${this.name}`);
+  }
 }
 
 /**
