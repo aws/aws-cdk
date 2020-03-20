@@ -4,7 +4,7 @@ import * as path from 'path';
 import { AssemblyManifest, Manifest, StackTagsMetadataEntry } from '../lib';
 import { hashObject } from './fingerprint';
 
-test('test manifest save', () => {
+test('manifest save', () => {
 
   const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'protocol-tests'));
   const manifestFile = path.join(outdir, 'manifest.json');
@@ -21,7 +21,7 @@ test('test manifest save', () => {
 
 });
 
-test('test manifest load', () => {
+test('manifest load', () => {
 
   const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'protocol-tests'));
   const manifestFile = path.join(outdir, 'manifest.json');
@@ -38,7 +38,7 @@ test('test manifest load', () => {
 
 });
 
-test('test manifest load fail on invalid file', () => {
+test('manifest load fail on invalid file', () => {
 
   const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'protocol-tests'));
   const manifestFile = path.join(outdir, 'manifest.json');
@@ -68,7 +68,7 @@ test('schema has the correct hash', () => {
 
 });
 
-test('test manifest load fail on invalid file', () => {
+test('manifest load fail on invalid file', () => {
 
   const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'protocol-tests'));
   const manifestFile = path.join(outdir, 'manifest.json');
@@ -84,7 +84,7 @@ test('test manifest load fail on invalid file', () => {
 
 });
 
-test('test manifest load fail on complex invalid file', () => {
+test('manifest load fail on complex invalid file', () => {
 
   const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'protocol-tests'));
   const manifestFile = path.join(outdir, 'manifest.json');
@@ -103,7 +103,7 @@ test('test manifest load fail on complex invalid file', () => {
 
 });
 
-test('test stack-tags are deserialized properly', () => {
+test('stack-tags are deserialized properly', () => {
 
   const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'protocol-tests'));
   const manifestFile = path.join(outdir, 'manifest.json');
