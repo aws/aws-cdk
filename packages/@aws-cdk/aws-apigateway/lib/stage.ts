@@ -197,13 +197,13 @@ export class Stage extends Resource {
     let accessLogSetting: CfnStage.AccessLogSettingProperty | undefined;
     this.accessLogDestination = props.accessLogDestination;
     this.accessLogFormat = props.accessLogFormat;
-    if (this.accessLogDestination == null && this.accessLogFormat == null) {
+    if (!this.accessLogDestination && !this.accessLogFormat) {
       accessLogSetting = undefined;
     } else {
-      if (this.accessLogFormat != null && !/.*\$context.requestId.*/.test(this.accessLogFormat.format)) {
+      if (this.accessLogFormat !== undefined && !/.*\$context.requestId.*/.test(this.accessLogFormat.format)) {
         throw new Error('The format must include at least `AccessLogFormat.contextRequestId()`');
       }
-      if (this.accessLogFormat != null && this.accessLogDestination == null) {
+      if (this.accessLogFormat !== undefined && this.accessLogDestination === undefined) {
         throw new Error('Access Log destination is empty');
       }
 
