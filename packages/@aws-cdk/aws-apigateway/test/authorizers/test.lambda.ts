@@ -267,5 +267,22 @@ export = {
     expect(stack).notTo(haveResource('AWS::Lambda::Permission'));
 
     test.done();
-  }
+  },
+
+  'request authorizer throws when not attached to a rest api'(test: Test) {
+    const stack = new Stack();
+    const func = new lambda.Function(stack, 'myfunction', {
+      handler: 'handler',
+      code: lambda.Code.fromInline('foo'),
+      runtime: lambda.Runtime.NODEJS_12_X,
+    });
+    const auth = new RequestAuthorizer(stack, 'myauthorizer', {
+      handler: func,
+      identitySources: [ IdentitySource.header('myheader') ],
+    });
+
+    test.throws(() => stack.resolve(auth.authorizerArn), /must be attached to a RestApi/);
+
+    test.done();
+  },
 };
