@@ -548,7 +548,17 @@ ${AccessLogField.contextStatus()} ${AccessLogField.contextResponseLength()} ${Ac
 
   /**
    * Custom log format.
+   * You can create any log format string. You can easily get the $ context variable by using the methods of AccessLogField.
    * @param format
+   * @example custom(JSON.stringify({
+   *  requestId: AccessLogField.contextRequestId(),
+   *  sourceIp: AccessLogField.contextIdentitySourceIp(),
+   *  method: AccessLogFiled.contextHttpMethod(),
+   *  userContext: {
+   *    sub: AccessLogField.contextAuthorizerClaims('sub'),
+   *    email: AccessLogField.contextAuthorizerClaims('email')
+   *  }
+   * }))
    */
   public static custom(format: string): AccessLogFormatProps {
     return {format};
