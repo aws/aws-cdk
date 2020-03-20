@@ -259,7 +259,7 @@ export = {
     const testLogGroup = new logs.LogGroup(stack, 'LogGroup');
     new apigateway.Stage(stack, 'my-stage', {
       deployment,
-      accessLogDestination: new apigateway.CloudWatchLogsDestination(testLogGroup),
+      accessLogDestination: new apigateway.LogGroupLogDestination(testLogGroup),
     });
 
     // THEN
@@ -291,7 +291,7 @@ export = {
     const testFormat = apigateway.AccessLogFormat.jsonWithStandardFields({caller: false});
     new apigateway.Stage(stack, 'my-stage', {
       deployment,
-      accessLogDestination: new apigateway.CloudWatchLogsDestination(testLogGroup),
+      accessLogDestination: new apigateway.LogGroupLogDestination(testLogGroup),
       accessLogFormat: testFormat
     });
 
@@ -324,7 +324,7 @@ export = {
     const testFormat = apigateway.AccessLogFormat.clf();
     new apigateway.Stage(stack, 'my-stage', {
       deployment,
-      accessLogDestination: new apigateway.CloudWatchLogsDestination(testLogGroup),
+      accessLogDestination: new apigateway.LogGroupLogDestination(testLogGroup),
       accessLogFormat: testFormat
     });
 
@@ -357,7 +357,7 @@ export = {
     const testFormat = apigateway.AccessLogFormat.jsonWithStandardFields();
     new apigateway.Stage(stack, 'my-stage', {
       deployment,
-      accessLogDestination: new apigateway.CloudWatchLogsDestination(testLogGroup),
+      accessLogDestination: new apigateway.LogGroupLogDestination(testLogGroup),
       accessLogFormat: testFormat
     });
 
@@ -392,7 +392,7 @@ export = {
     // THEN
     test.throws(() => new apigateway.Stage(stack, 'my-stage', {
       deployment,
-      accessLogDestination: new apigateway.CloudWatchLogsDestination(testLogGroup),
+      accessLogDestination: new apigateway.LogGroupLogDestination(testLogGroup),
       accessLogFormat: testFormat
     }), /The format must include at least `AccessLogFormat.contextRequestId\(\)`/);
 

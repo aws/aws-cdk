@@ -23,7 +23,7 @@ export interface AccessLogDestinationConfig {
 /**
  * Use CloudWatch Logs as a custom access log destination for API Gateway.
  */
-export class CloudWatchLogsDestination implements IAccessLogDestination {
+export class LogGroupLogDestination implements IAccessLogDestination {
   constructor(private readonly logGroup: ILogGroup) {
   }
 
@@ -442,7 +442,7 @@ export class AccessLogField {
 /**
  * A API Gateway custom access log format.
  */
-export interface IAccessLogFormat {
+export interface AccessLogFormatProps {
   /**
    * A API Gateway custom access log format
    */
@@ -507,7 +507,7 @@ export class AccessLogFormat {
   /**
    * Generate Common Log Format.
    */
-  public static clf(): IAccessLogFormat {
+  public static clf(): AccessLogFormatProps {
     return {
       format: `${AccessLogField.contextIdentitySourceIp()} ${AccessLogField.contextIdentityCaller()} ${AccessLogField.contextIdentityUser()} \
 [${AccessLogField.contextRequestTime()}] "${AccessLogField.contextHttpMethod()} ${AccessLogField.contextResourcePath()} ${AccessLogField.contextProtocol()}" \
@@ -529,7 +529,7 @@ ${AccessLogField.contextStatus()} ${AccessLogField.contextResponseLength()} ${Ac
       status = true,
       protocol = true,
       responseLength = true
-    }: IJsonWithStandardFieldProps = {}): IAccessLogFormat {
+    }: IJsonWithStandardFieldProps = {}): AccessLogFormatProps {
     return {
       format: JSON.stringify({
         requestId: AccessLogField.contextRequestId(),
@@ -550,7 +550,7 @@ ${AccessLogField.contextStatus()} ${AccessLogField.contextResponseLength()} ${Ac
    * Custom log format.
    * @param format
    */
-  public static custom(format: string): IAccessLogFormat {
+  public static custom(format: string): AccessLogFormatProps {
     return {format};
   }
 }
