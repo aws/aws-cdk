@@ -218,6 +218,7 @@
                         },
                         {
                             "items": {
+                                "$ref": "#/definitions/Tag"
                             },
                             "type": "array"
                         },
@@ -294,6 +295,25 @@
             },
             "required": [
                 "libraries"
+            ],
+            "type": "object"
+        },
+        "Tag": {
+            "additionalProperties": false,
+            "description": "Metadata Entry spec for stack tag.",
+            "properties": {
+                "key": {
+                    "description": "Tag key.",
+                    "type": "string"
+                },
+                "value": {
+                    "description": "Tag value.",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "key",
+                "value"
             ],
             "type": "object"
         }

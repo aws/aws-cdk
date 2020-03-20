@@ -12,7 +12,7 @@ const schemaPath = '../schema/cloud-assembly.schema.json';
 var schema = require(schemaPath);
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-var metadata = require(versionPath);
+var metadata = require(metadataPath);
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 var expected = require(expectedPath);

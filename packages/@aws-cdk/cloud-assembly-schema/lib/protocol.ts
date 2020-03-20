@@ -21,6 +21,7 @@ export class Manifest {
      */
     public static load(filePath: string): AssemblyManifest {
         const raw: AssemblyManifest = JSON.parse(fs.readFileSync(filePath, 'UTF-8'));
+        Manifest.patchStackTags(raw);
         const manifest: AssemblyManifest = Manifest.validate(raw);
         return manifest;
     }
@@ -30,7 +31,7 @@ export class Manifest {
      */
     public static version(): string {
         // eslint-disable-next-line @typescript-eslint/no-require-imports
-        return require('../schema/cloud-assembly.version.json').version;
+        return require('../schema/cloud-assembly.metadata.json').version;
     }
 
     // eslint-disable-next-line @typescript-eslint/no-require-imports
