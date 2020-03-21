@@ -3,6 +3,25 @@ import { Default, RegionInfo } from '@aws-cdk/region-info';
 import { PolicyStatement } from './policy-statement';
 import { mergePrincipal } from './util';
 
+// TODO: add all types. Probably belongs in its own file. Export? Could just be one flat object too.
+// Might be able to better than `any` as the value
+// TODO: check this matches the IAM service. Nija says that you can only specify each condition once,
+// so seems right, but should check
+// export interface Conditions {
+//   readonly "StringEquals"?: any;
+//   readonly StringNotEquals?: any;
+//   readonly StringEqualsIgnoreCase?: any;
+//   readonly StringNotEqualsIgnoreCase?: any;
+//   readonly StringLike?: any;
+//   readonly StringNotLike?: any;
+// };
+/**
+ * TODO: docs
+ */
+export interface Conditions {
+  [key: string]: any;
+}
+
 /**
  * Any object that has an associated principal that a permission can be granted to
  */
@@ -17,7 +36,7 @@ export interface IGrantable {
  * Represents a logical IAM principal.
  *
  * An IPrincipal describes a logical entity that can perform AWS API calls
- * against sets of resources, optionally under certain conditions.
+ * against sets of resources, optionally under certain conditions. // TODO: may need to update these docs
  *
  * Examples of simple principals are IAM objects that you create, such
  * as Users or Roles.
@@ -82,6 +101,50 @@ export abstract class PrincipalBase implements IPrincipal {
     // Have to implement toJSON() because the default will lead to infinite recursion.
     return this.policyFragment.principalJson;
   }
+
+  // TODO: should this be part of IPrincipal too?
+  /**
+   * TODO: docs
+   */
+  public withConditions(conditions: Conditions): IPrincipal {
+    return new PrincipalWithConditions(this, conditions);
+  }
+}
+
+/**
+ * A principal with conditions TODO: improve docs; should this extend BasePrincipal instead?
+ */
+export class PrincipalWithConditions implements IPrincipal {
+  public readonly grantPrincipal: IPrincipal = this;
+
+  /**
+   * When this Principal is used in an AssumeRole policy, the action to use.
+   */
+  public readonly assumeRoleAction: string = 'sts:AssumeRole';
+
+  constructor(
+    /**
+     * The principal to which conditions are being added.
+     * TODO: review docs, esp in context of where they show up
+     */
+    public readonly principal: IPrincipal,
+    // TODO: fix any; review access; ServicePrincipal uses `opts` object, consider that
+    /**
+     * The conditions to add to the principal.
+     * TODO: review docs - can steal from below
+     */
+    public readonly conditions: Conditions,
+  ) {
+  } // TODO: check style for empty constructor
+
+  public get policyFragment(): PrincipalPolicyFragment {
+    // TODO: merge this.conditions with the ones already defined on this.principal
+    return new PrincipalPolicyFragment(this.principal.policyFragment.principalJson, this.conditions);
+  }
+
+  public addToPolicy(statement: PolicyStatement): boolean {
+    return this.principal.addToPolicy(statement);
+  }
 }
 
 /**
@@ -93,7 +156,7 @@ export abstract class PrincipalBase implements IPrincipal {
 export class PrincipalPolicyFragment {
   constructor(
     public readonly principalJson: { [key: string]: string[] },
-    public readonly conditions: { [key: string]: any } = { }) {
+    public readonly conditions: Conditions = {}) {
   }
 }
 
@@ -103,7 +166,7 @@ export class ArnPrincipal extends PrincipalBase {
   }
 
   public get policyFragment(): PrincipalPolicyFragment {
-    return new PrincipalPolicyFragment({ AWS: [ this.arn ] });
+    return new PrincipalPolicyFragment({ AWS: [this.arn] });
   }
 
   public toString() {
@@ -200,7 +263,7 @@ export class CanonicalUserPrincipal extends PrincipalBase {
   }
 
   public get policyFragment(): PrincipalPolicyFragment {
-    return new PrincipalPolicyFragment({ CanonicalUser: [ this.canonicalUserId ] });
+    return new PrincipalPolicyFragment({ CanonicalUser: [this.canonicalUserId] });
   }
 
   public toString() {
@@ -213,7 +276,7 @@ export class FederatedPrincipal extends PrincipalBase {
 
   constructor(
     public readonly federated: string,
-    public readonly conditions: {[key: string]: any},
+    public readonly conditions: Conditions,
     assumeRoleAction: string = 'sts:AssumeRole') {
     super();
 
@@ -221,7 +284,7 @@ export class FederatedPrincipal extends PrincipalBase {
   }
 
   public get policyFragment(): PrincipalPolicyFragment {
-    return new PrincipalPolicyFragment({ Federated: [ this.federated ] }, this.conditions);
+    return new PrincipalPolicyFragment({ Federated: [this.federated] }, this.conditions);
   }
 
   public toString() {
@@ -293,7 +356,7 @@ export class CompositePrincipal extends PrincipalBase {
   }
 
   public get policyFragment(): PrincipalPolicyFragment {
-    const principalJson: { [key: string]: string[] } = { };
+    const principalJson: { [key: string]: string[] } = {};
 
     for (const p of this.principals) {
       mergePrincipal(principalJson, p.policyFragment.principalJson);

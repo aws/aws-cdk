@@ -135,6 +135,7 @@ export class PolicyStatement {
     this.addPrincipals(new ArnPrincipal(arn));
   }
 
+  // TODO: these helpers should add PrincipalWithConditions if `conditions` is passed
   /**
    * Adds a service principal to this policy statement.
    *
@@ -398,7 +399,7 @@ class JsonPrincipal extends PrincipalBase {
 
     this.policyFragment = {
       principalJson: json,
-      conditions: []
+      conditions: {}
     };
   }
 }

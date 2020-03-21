@@ -46,6 +46,63 @@ test('use of cross-stack role reference does not lead to URLSuffix being exporte
         }
       }
     }
-  }
-  );
+  });
+});
+
+// TODO: may well belong in policy-document.test.ts
+test('can create principal with conditions', () => {
+  // GIVEN
+  const accountId = '012345678910';
+  const app = new App();
+  const stack = new Stack(app, 'Stack');
+
+  // WHEN
+  const conditions = {
+    StringEquals: {
+      "s3:x-amz-acl": [
+        "public-read"
+      ]
+    }
+  };
+  const principal = new iam.AccountPrincipal(accountId).withConditions(conditions);
+  new iam.Role(stack, 'Role', {
+    assumedBy: principal,
+  });
+
+  // THEN
+  app.synth();
+
+  expect(stack).toMatchTemplate({
+    Resources: {
+      Role1ABCC5F0: { // how is this name set? Seems to be used a lot of places so I guess it's the one that'll be generated...
+        Type: "AWS::IAM::Role",
+        Properties: {
+          AssumeRolePolicyDocument: {
+            Statement: [
+              {
+                Action: "sts:AssumeRole",
+                Condition: {
+                  StringEquals: {
+                    "s3:x-amz-acl": [
+                      "public-read"
+                    ]
+                  }
+                },
+                Effect: "Allow",
+                Principal: {
+                  AWS: {
+                    'Fn::Join': [
+                      '',
+                      [ 'arn:', { Ref: 'AWS::Partition' }, `:iam::${accountId}:root` ]
+                    ]
+                  }
+                },
+              }
+            ],
+            Version: "2012-10-17"
+          }
+        }
+      }
+    }
+  });
 });
