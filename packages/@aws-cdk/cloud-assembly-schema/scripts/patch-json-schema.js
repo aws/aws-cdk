@@ -12,27 +12,36 @@ function applyPatch(document, patch, out) {
     fs.writeFileSync(out, JSON.stringify(patched, null, 4));
 }
 
-applyPatch(schema,
-    [
-        {
-            op: "remove",
-            path: "/definitions/ContainerImageAssetMetadataEntry",
-            value: {}
-        },
-        {
-            op: "remove",
-            path: "/definitions/FileAssetMetadataEntry",
-            value: {}
-        },
-        {
-            op: "remove",
-            path: "/definitions/Tag",
-            value: {}
-        },
-        {
-            op: "remove",
-            path: "/definitions/MetadataEntry/properties/data/anyOf",
-            value: {}
-        }
-    ],
-    path.join(__dirname, schemaPath))
+const metadataRefs = []
+
+for (what of schema.definitions.MetadataEntry.properties.data.anyOf) {
+
+    let ref = undefined;
+
+    if (what.$ref) {
+        ref = what.$ref;
+    }
+
+    if (what.type === 'array') {
+        ref = what.items.$ref;
+    }
+
+    if (ref) {
+        console.log('Adding ref: ' + ref);
+        metadataRefs.push(ref.replace('#', ''))
+    }
+
+}
+
+const patches = [
+    {
+        op: "remove",
+        path: "/definitions/MetadataEntry/properties/data/anyOf"
+    }
+]
+
+for (ref of metadataRefs) {
+    patches.push({op: "remove", path: ref})
+}
+
+applyPatch(schema, patches, path.join(__dirname, schemaPath))
