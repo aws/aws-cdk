@@ -399,6 +399,47 @@ export = {
     test.done();
   },
 
+  'if the custom log format is set(custom)'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
+    const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
+    api.root.addMethod('GET');
+
+    // WHEN
+    const testLogGroup = new logs.LogGroup(stack, 'LogGroup');
+    const testFormat = apigateway.AccessLogFormat.custom(JSON.stringify({
+      requestId: apigateway.AccessLogField.contextRequestId(),
+      sourceIp: apigateway.AccessLogField.contextIdentitySourceIp(),
+      method: apigateway.AccessLogField.contextHttpMethod(),
+      userContext: {
+        sub: apigateway.AccessLogField.contextAuthorizerClaims('sub'),
+        email: apigateway.AccessLogField.contextAuthorizerClaims('email')
+      }
+    }));
+    new apigateway.Stage(stack, 'my-stage', {
+      deployment,
+      accessLogDestination: new apigateway.LogGroupLogDestination(testLogGroup),
+      accessLogFormat: testFormat
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::Stage', {
+      AccessLogSetting: {
+        DestinationArn: {
+          "Fn::GetAtt": [
+            "LogGroupF5B46931",
+            "Arn"
+          ]
+        },
+        Format:  "{\"requestId\":\"$context.requestId\",\"sourceIp\":\"$context.identity.sourceIp\",\"method\":\"$context.httpMethod\",\"userContext\":{\"sub\":\"$context.authorizer.claims.sub\",\"email\":\"$context.authorizer.claims.email\"}}"
+      },
+      StageName: "prod"
+    }));
+
+    test.done();
+  },
+
   'fails when access log destination is empty'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
