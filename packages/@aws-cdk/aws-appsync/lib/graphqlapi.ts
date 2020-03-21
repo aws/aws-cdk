@@ -1059,6 +1059,7 @@ export class Resolver extends Construct {
             fieldName: props.fieldName,
             dataSourceName: props.dataSource ? props.dataSource.name : undefined,
             kind: props.pipelineConfig ? 'PIPELINE' : 'UNIT',
+            pipelineConfig: props.pipelineConfig,
             requestMappingTemplate: props.requestMappingTemplate ? props.requestMappingTemplate.renderTemplate() : undefined,
             responseMappingTemplate: props.responseMappingTemplate ? props.responseMappingTemplate.renderTemplate() : undefined,
         });
