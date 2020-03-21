@@ -22,3 +22,4 @@ typescript-json-schema                           \
     --topRef           true                      \
     --noExtraProps
 
+node ${packagedir}/scripts/patch-json-schema.js
