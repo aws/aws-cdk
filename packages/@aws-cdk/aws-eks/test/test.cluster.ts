@@ -479,28 +479,6 @@ export = {
       test.done();
     },
 
-    'when adding capacity, instance role ARN will not be outputed only if we do not auto-map aws-auth'(test: Test) {
-      // GIVEN
-      const { app, stack } = testFixtureNoVpc();
-
-      // WHEN
-      new eks.Cluster(stack, 'Cluster', {
-        outputConfigCommand: false,
-        kubectlEnabled: false
-      });
-
-      // THEN
-      const assembly = app.synth();
-      const template = assembly.getStackByName(stack.stackName).template;
-      test.deepEqual(template.Outputs, {
-        ClusterNodegroupDefaultCapacityInstanceRoleARN0DD0C9A4: {
-          Value: { 'Fn::GetAtt': [ 'ClusterNodegroupDefaultCapacityNodeGroupRole55953B04', 'Arn' ] }
-        }
-      });
-      test.done();
-    },
-  },
-
   'boostrap user-data': {
 
     'rendered by default for ASGs'(test: Test) {
@@ -963,4 +941,4 @@ export = {
     }));
     test.done();
   }
-};
+}};

@@ -1,6 +1,6 @@
 import { InstanceType, ISecurityGroup, SubnetSelection } from '@aws-cdk/aws-ec2';
 import { IRole, ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
-import { CfnOutput, Construct, IResource, Resource } from '@aws-cdk/core';
+import { Construct, IResource, Resource } from '@aws-cdk/core';
 import { Cluster } from './cluster';
 import { CfnNodegroup } from './eks.generated';
 
@@ -60,8 +60,10 @@ export interface NodegroupOptions {
    */
   readonly nodegroupName?: string;
   /**
-   * The subnets to use for the Auto Scaling group that is created for your node group. These subnets must have the tag key
-   * `kubernetes.io/cluster/CLUSTER_NAME` with a value of `shared`, where `CLUSTER_NAME` is replaced with the name of your cluster.
+   * The subnets to use for the Auto Scaling group that is created for your node group.
+   * By specifying the SubnetSelection, the selected subnets will automatically apply required tags i.e.
+   * `kubernetes.io/cluster/CLUSTER_NAME` with a value of `shared`, where `CLUSTER_NAME` is replaced with
+   * the name of your cluster.
    *
    * @default - private subnets
    */
@@ -103,7 +105,7 @@ export interface NodegroupOptions {
    * because pods could not be drained, you can force the update after it fails to terminate the old node whether or not any pods are
    * running on the node.
    *
-   * @default - true
+   * @default true
    */
   readonly forceUpdateEnabled?: boolean;
   /**
@@ -204,7 +206,9 @@ export class Nodegroup extends Resource implements INodegroup {
   private readonly minSize: number;
 
   constructor(scope: Construct, id: string, props: NodegroupProps ) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.nodegroupName
+    });
 
     this.cluster = props.cluster;
 
@@ -219,18 +223,23 @@ export class Nodegroup extends Resource implements INodegroup {
       throw new Error(`Minimum capacity ${this.minSize} can't be greater than desired size ${this.desiredSize}`);
     }
 
-    const ngRole = new Role(this, 'NodeGroupRole', {
-      assumedBy: new ServicePrincipal('ec2.amazonaws.com')
-    });
+    if (!props.nodeRole) {
+      const ngRole = new Role(this, 'NodeGroupRole', {
+        assumedBy: new ServicePrincipal('ec2.amazonaws.com')
+      });
 
-    ngRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AmazonEKSWorkerNodePolicy'));
-    ngRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AmazonEKS_CNI_Policy'));
-    ngRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryReadOnly'));
+      ngRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AmazonEKSWorkerNodePolicy'));
+      ngRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AmazonEKS_CNI_Policy'));
+      ngRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryReadOnly'));
+      this.role = ngRole;
+    } else {
+      this.role = props.nodeRole;
+    }
 
-    const resource = new CfnNodegroup(this, id, {
+    const resource = new CfnNodegroup(this, 'Resource', {
       clusterName: this.cluster.clusterName,
       nodegroupName: props.nodegroupName,
-      nodeRole: ngRole.roleArn,
+      nodeRole: this.role.roleArn,
       subnets: this.cluster.vpc.selectSubnets(props.subnets).subnetIds,
       amiType: props.amiType,
       diskSize: props.diskSize,
@@ -251,28 +260,15 @@ export class Nodegroup extends Resource implements INodegroup {
       tags: props.tags
     });
 
-    // do not attempt to map the role if `kubectl` is not enabled for this
-    // cluster or if `mapRole` is set to false. By default this should happen.
-    if (this.cluster.kubectlEnabled) {
-      // see https://docs.aws.amazon.com/en_us/eks/latest/userguide/add-user-role.html
-      this.cluster.awsAuth.addRoleMapping(ngRole, {
-        username: 'system:node:{{EC2PrivateDNSName}}',
-        groups: [
-          'system:bootstrappers',
-          'system:nodes'
-        ]
-      });
-    } else {
-      // since we are not mapping the instance role to RBAC, synthesize an
-      // output so it can be pasted into `aws-auth-cm.yaml`
-      new CfnOutput(this, 'InstanceRoleARN', {
-        value: ngRole.roleArn
-      });
-    }
+    // As managed nodegroup will auto map the instance role to RBAC behind the scene and users don't have to manually
+    // do it anymore. We don't need to print out the instance role arn now.
 
-    this.nodegroupArn = resource.attrArn;
-    this.nodegroupName = resource.ref;
-    this.role = ngRole;
+    this.nodegroupArn = this.getResourceArnAttribute(resource.attrArn, {
+      service: 'eks',
+      resource: 'nodegroup',
+      resourceName: this.physicalName,
+    });
+    this.nodegroupName = this.getResourceNameAttribute(resource.ref);
   }
 
 }

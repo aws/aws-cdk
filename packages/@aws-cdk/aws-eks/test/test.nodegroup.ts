@@ -115,7 +115,7 @@ export = {
     const { stack, vpc } = testFixture();
 
     // WHEN
-    const cluster = new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: true, defaultCapacity: 0 });
+    const cluster = new eks.Cluster(stack, 'Cluster', { vpc, defaultCapacity: 0 });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
       remoteAccess: {
@@ -150,7 +150,7 @@ export = {
       Outputs: {
         NodegroupName: {
           Value: {
-            "Fn::ImportValue": "Stack:ExportsOutputRefNodegroup03D26A2C734B1122"
+            "Fn::ImportValue": "Stack:ExportsOutputRefNodegroup62B4B2C1EF8AB7C1"
           }
         }
       }

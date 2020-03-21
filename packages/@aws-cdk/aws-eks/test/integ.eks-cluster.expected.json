@@ -911,13 +911,6 @@
               "\\\",\\\"groups\\\":[\\\"system:masters\\\"]},{\\\"rolearn\\\":\\\"",
               {
                 "Fn::GetAtt": [
-                  "ClusterNodegroupDefaultCapacityNodeGroupRole55953B04",
-                  "Arn"
-                ]
-              },
-              "\\\",\\\"username\\\":\\\"system:node:{{EC2PrivateDNSName}}\\\",\\\"groups\\\":[\\\"system:bootstrappers\\\",\\\"system:nodes\\\"]},{\\\"rolearn\\\":\\\"",
-              {
-                "Fn::GetAtt": [
                   "ClusterNodesInstanceRoleC3C01328",
                   "Arn"
                 ]
@@ -926,13 +919,6 @@
               {
                 "Fn::GetAtt": [
                   "ClusterspotInstanceRole39043830",
-                  "Arn"
-                ]
-              },
-              "\\\",\\\"username\\\":\\\"system:node:{{EC2PrivateDNSName}}\\\",\\\"groups\\\":[\\\"system:bootstrappers\\\",\\\"system:nodes\\\"]},{\\\"rolearn\\\":\\\"",
-              {
-                "Fn::GetAtt": [
-                  "ClusterNodegroupextrangNodeGroupRole23AE23D0",
                   "Arn"
                 ]
               },
@@ -1018,7 +1004,7 @@
         ]
       }
     },
-    "ClusterNodegroupDefaultCapacity479E488E": {
+    "ClusterNodegroupDefaultCapacityDA0920A3": {
       "Type": "AWS::EKS::Nodegroup",
       "Properties": {
         "ClusterName": {
@@ -1718,72 +1704,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
-    "ClusterNodegroupextrangNodeGroupRole23AE23D0": {
-      "Type": "AWS::IAM::Role",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "ec2.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "ManagedPolicyArns": [
-          {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition"
-                },
-                ":iam::aws:policy/AmazonEKSWorkerNodePolicy"
-              ]
-            ]
-          },
-          {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition"
-                },
-                ":iam::aws:policy/AmazonEKS_CNI_Policy"
-              ]
-            ]
-          },
-          {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition"
-                },
-                ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-              ]
-            ]
-          }
-        ]
-      }
-    },
-    "ClusterNodegroupextrang36592D8D": {
+    "ClusterNodegroupextrangF9406A09": {
       "Type": "AWS::EKS::Nodegroup",
       "Properties": {
         "ClusterName": {
@@ -1791,7 +1712,7 @@
         },
         "NodeRole": {
           "Fn::GetAtt": [
-            "ClusterNodegroupextrangNodeGroupRole23AE23D0",
+            "ClusterNodegroupDefaultCapacityNodeGroupRole55953B04",
             "Arn"
           ]
         },
