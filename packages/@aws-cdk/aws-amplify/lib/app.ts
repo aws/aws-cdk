@@ -1,11 +1,10 @@
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
+import { Construct, IResource, Lazy, Resource, SecretValue } from '@aws-cdk/core';
 import { CfnApp } from './amplify.generated';
 import { BasicAuth } from './basic-auth';
 import { Branch, BranchOptions } from './branch';
 import { Domain, DomainOptions } from './domain';
-import { ISourceCodeProvider } from './source-code-provider';
 import { renderEnvironmentVariables } from './utils';
 
 /**
@@ -18,6 +17,52 @@ export interface IApp extends IResource {
    * @attribute
    */
   readonly appId: string;
+}
+
+/**
+ * Configuration for the source code provider
+ */
+export interface SourceCodeProviderConfig {
+  /**
+   * The repository for the application. Must use the `HTTPS` protocol.
+   *
+   * @example https://github.com/aws/aws-cdk
+   */
+  readonly repository: string;
+
+  /**
+   * OAuth token for 3rd party source control system for an Amplify App, used
+   * to create webhook and read-only deploy key. OAuth token is not stored.
+   *
+   * Either `accessToken` or `oauthToken` must be specified if `repository`
+   * is sepcified.
+   *
+   * @default - do not use a token
+   */
+  readonly oauthToken?: SecretValue;
+
+  /**
+   * Personal Access token for 3rd party source control system for an Amplify
+   * App, used to create webhook and read-only deploy key. Token is not stored.
+   *
+   * Either `accessToken` or `oauthToken` must be specified if `repository`
+   * is sepcified.
+   *
+   * @default - do not use a token
+   */
+  readonly accessToken?: SecretValue;
+}
+
+/**
+ * A source code provider
+ */
+export interface ISourceCodeProvider {
+  /**
+   * Binds the source code provider to an app
+   *
+   * @param app The app [disable-awslint:ref-via-interface]
+   */
+  bind(app: App): SourceCodeProviderConfig;
 }
 
 /**
@@ -89,7 +134,8 @@ export interface AppProps {
   readonly environmentVariables?: { [name: string]: string };
 
   /**
-   * The IAM service role to associate with the application
+   * The IAM service role to associate with the application. The App
+   * implements IGrantable.
    *
    * @default - a new role is created
    */
@@ -154,7 +200,7 @@ export class App extends Resource implements IApp, iam.IGrantable {
     });
     this.grantPrincipal = role;
 
-    const sourceCodeProviderOptions = props.sourceCodeProvider?.bind(role);
+    const sourceCodeProviderOptions = props.sourceCodeProvider?.bind(this);
 
     const app = new CfnApp(this, 'Resource', {
       accessToken: sourceCodeProviderOptions?.accessToken?.toString(),
