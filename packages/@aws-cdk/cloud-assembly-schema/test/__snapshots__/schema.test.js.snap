@@ -1,12 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`manifest load 1`] = `
-Object {
-  "version": "version",
-}
-`;
-
-exports[`metadata is not validated 1`] = `
+exports[`can access random metadata 1`] = `
 Object {
   "artifacts": Object {
     "Tree": Object {
@@ -39,6 +33,12 @@ Object {
       "type": "aws:cloudformation:stack",
     },
   },
+  "version": "version",
+}
+`;
+
+exports[`manifest load 1`] = `
+Object {
   "version": "version",
 }
 `;

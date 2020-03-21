@@ -70,7 +70,13 @@ test('stack-tags are deserialized properly', () => {
 
 });
 
-test('metadata is not validated', () => {
+test('can access random metadata', () => {
+
   const loaded = Manifest.load(fixture('random-metadata'));
+  const randomArray = loaded.artifacts?.stack.metadata?.AwsCdkPlaygroundBatch[0].data;
+  const randomNumber = loaded.artifacts?.stack.metadata?.AwsCdkPlaygroundBatch[1].data;
+
+  expect(randomArray).toEqual(["42"]);
+  expect(randomNumber).toEqual(42);
   expect(loaded).toMatchSnapshot();
 });
