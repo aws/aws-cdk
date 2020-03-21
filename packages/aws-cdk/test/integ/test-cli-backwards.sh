@@ -26,6 +26,7 @@ trap cleanup INT EXIT
 download_latest_release_json
 latest_version=$(node -p "require('./release.json').name")
 
+# TODO : Copy repo (?) to temp dir and work their to not mess up local changes
 echo "Checking out integration tests from version ${latest_version}"
 pushd ${repo_root} && git checkout ${latest_version} -- packages/aws-cdk/test/integ/cli && popd
 
