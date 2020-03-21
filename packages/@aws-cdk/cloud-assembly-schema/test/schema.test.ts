@@ -69,3 +69,8 @@ test('stack-tags are deserialized properly', () => {
   expect(m.version).toEqual("version");
 
 });
+
+test('metadata is not validated', () => {
+  const loaded = Manifest.load(fixture('random-metadata'));
+  expect(loaded).toMatchSnapshot();
+});

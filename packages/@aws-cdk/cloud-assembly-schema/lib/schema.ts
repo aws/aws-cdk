@@ -20,10 +20,11 @@ export class Manifest {
      * Load manifest from file.
      */
     public static load(filePath: string): assembly.AssemblyManifest {
-        const raw: assembly.AssemblyManifest = JSON.parse(fs.readFileSync(filePath, 'UTF-8'));
-        Manifest.patchStackTags(raw);
-        const manifest: assembly.AssemblyManifest = Manifest.validate(raw);
-        return manifest;
+        let raw: assembly.AssemblyManifest = JSON.parse(fs.readFileSync(filePath, 'UTF-8'));
+        raw = Manifest.patchStackTags(raw);
+        const forValidation = Manifest.removeMetadata(raw);
+        Manifest.validate(forValidation);
+        return raw;
     }
 
     /**
@@ -37,7 +38,23 @@ export class Manifest {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     private static schema: jsonschema.Schema = require('../schema/cloud-assembly.schema.json');
 
-    private static validate(manifest: any): assembly.AssemblyManifest {
+    private static clone(obj: any) {
+        return JSON.parse(JSON.stringify(obj));
+    }
+
+    private static removeMetadata(manifest: assembly.AssemblyManifest): assembly.AssemblyManifest {
+
+        const cloned: assembly.AssemblyManifest = Manifest.clone(manifest);
+
+        for (const artifact of Object.values(cloned.artifacts || [])) {
+            (artifact as any).metadata = {};
+        }
+
+        return cloned;
+
+    }
+
+    private static validate(manifest: assembly.AssemblyManifest) {
         const validator = new jsonschema.Validator();
         const result = validator.validate(manifest, Manifest.schema, {
 
@@ -47,8 +64,9 @@ export class Manifest {
             allowUnknownAttributes: false
 
         } as any);
-        if (result.valid) { return manifest; }
-        throw new Error(`Invalid assembly manifest:\n${result}`);
+        if (!result.valid) {
+            throw new Error(`Invalid assembly manifest:\n${result}`);
+        }
     }
 
     /**
@@ -66,8 +84,11 @@ export class Manifest {
      * Ideally, we would start writing the `camelCased` and translate to how CloudFormation expects it when needed. But this requires nasty
      * backwards-compatibility code and it just doesn't seem to be worth the effort.
      */
-    private static patchStackTags(manifest: assembly.AssemblyManifest) {
-        for (const artifact of Object.values(manifest.artifacts || [])) {
+    private static patchStackTags(manifest: assembly.AssemblyManifest): assembly.AssemblyManifest {
+
+        const cloned: assembly.AssemblyManifest = Manifest.clone(manifest);
+
+        for (const artifact of Object.values(cloned.artifacts || [])) {
             if (artifact.type === assembly.ArtifactType.AWS_CLOUDFORMATION_STACK) {
                 for (const metadataEntries of Object.values(artifact.metadata || [])) {
                     for (const metadataEntry of metadataEntries) {
@@ -83,6 +104,8 @@ export class Manifest {
                 }
             }
         }
+
+        return cloned;
     }
 
     private constructor() {}
