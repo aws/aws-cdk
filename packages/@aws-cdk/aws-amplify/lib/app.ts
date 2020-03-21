@@ -1,10 +1,11 @@
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct, IResource, Lazy, Resource, SecretValue } from '@aws-cdk/core';
+import { Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
 import { CfnApp } from './amplify.generated';
 import { BasicAuth } from './basic-auth';
 import { Branch, BranchOptions } from './branch';
 import { Domain, DomainOptions } from './domain';
+import { ISourceCodeProvider } from './source-code-provider';
 import { renderEnvironmentVariables } from './utils';
 
 /**
@@ -24,22 +25,18 @@ export interface IApp extends IResource {
  */
 export interface AppProps {
   /**
-   * Personal Access token for 3rd party source control system for an Amplify
-   * App, used to create webhook and read-only deploy key. Token is not stored.
-   *
-   * Either `accessToken` or `oauthToken` must be specified if `repository`
-   * is sepcified.
-   *
-   * @default - use OAuth token
-   */
-  readonly accessToken?: SecretValue;
-
-  /**
    * The name for the application
    *
    * @default - a CDK generated name
    */
   readonly appName?: string;
+
+  /**
+   * The source code provider for this application
+   *
+   * @default - not connected to a source code provider
+   */
+  readonly sourceCodeProvider?: ISourceCodeProvider;
 
   /**
    * The auto branch creation configuration. Use this to automatically create
@@ -97,26 +94,6 @@ export interface AppProps {
    * @default - a new role is created
    */
   readonly role?: iam.IRole;
-
-  /**
-   * OAuth token for 3rd party source control system for an Amplify App, used
-   * to create webhook and read-only deploy key. OAuth token is not stored.
-   *
-   * Either `accessToken` or `oauthToken` must be specified if `repository`
-   * is sepcified.
-   *
-   * @default - use access token
-   */
-  readonly oauthToken?: SecretValue;
-
-  /**
-   * The repository for the application. Must use the `HTTPS` protocol.
-   *
-   * @example https://github.com/aws/aws-cdk
-   *
-   * @default - not connected to a repository
-   */
-  readonly repository?: string;
 }
 
 /**
@@ -168,14 +145,6 @@ export class App extends Resource implements IApp, iam.IGrantable {
   constructor(scope: Construct, id: string, props: AppProps) {
     super(scope, id);
 
-    if (props.repository && !props.accessToken && !props.oauthToken) {
-      throw new Error('Either `accessToken` or `oauthToken` must be specified');
-    }
-
-    if (props.repository && !props.repository.startsWith('https://')) {
-      throw new Error('`repository` must use the HTTPS protocol');
-    }
-
     this.customRules = props.customRules || [];
     this.environmentVariables = props.environmentVariables || {};
     this.autoBranchEnvironmentVariables = props.autoBranchCreation && props.autoBranchCreation.environmentVariables || {};
@@ -185,8 +154,10 @@ export class App extends Resource implements IApp, iam.IGrantable {
     });
     this.grantPrincipal = role;
 
+    const sourceCodeProviderOptions = props.sourceCodeProvider?.bind(role);
+
     const app = new CfnApp(this, 'Resource', {
-      accessToken: props.accessToken && props.accessToken.toString(),
+      accessToken: sourceCodeProviderOptions?.accessToken?.toString(),
       autoBranchCreationConfig: props.autoBranchCreation && {
         autoBranchCreationPatterns: props.autoBranchCreation.patterns,
         basicAuthConfig: props.autoBranchCreation.basicAuth && props.autoBranchCreation.basicAuth.bind(this, 'BranchBasicAuth'),
@@ -205,8 +176,8 @@ export class App extends Resource implements IApp, iam.IGrantable {
       environmentVariables: Lazy.anyValue({ produce: () => renderEnvironmentVariables(this.environmentVariables) }, { omitEmptyArray: true }),
       iamServiceRole: role.roleArn,
       name: props.appName || this.node.id,
-      oauthToken: props.oauthToken && props.oauthToken.toString(),
-      repository: props.repository,
+      oauthToken: sourceCodeProviderOptions?.oauthToken?.toString(),
+      repository: sourceCodeProviderOptions?.repository,
     });
 
     this.appId = app.attrAppId;
