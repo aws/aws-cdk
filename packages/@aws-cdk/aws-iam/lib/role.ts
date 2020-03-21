@@ -235,7 +235,7 @@ export class Role extends Resource implements IRole {
 
     return options.mutable !== false && accountsAreEqualOrOneIsUnresolved(scopeAccount, roleAccount)
       ? new Import(scope, id)
-      : new ImmutableRole(new Import(scope, id));
+      : new ImmutableRole(scope, `ImmutableRole${id}`, new Import(scope, id));
 
     function accountsAreEqualOrOneIsUnresolved(account1: string | undefined,
                                                account2: string | undefined): boolean {
@@ -401,7 +401,7 @@ export class Role extends Resource implements IRole {
    * Role's policies yourself.
    */
   public withoutPolicyUpdates(): IRole {
-    return new ImmutableRole(this);
+    return new ImmutableRole(this.node.scope as Construct, `ImmutableRole${this.node.id}`, this);
   }
 }
 
