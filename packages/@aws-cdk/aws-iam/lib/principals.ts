@@ -3,23 +3,17 @@ import { Default, RegionInfo } from '@aws-cdk/region-info';
 import { PolicyStatement } from './policy-statement';
 import { mergePrincipal } from './util';
 
-// TODO: add all types. Probably belongs in its own file. Export? Could just be one flat object too.
-// Might be able to better than `any` as the value
-// TODO: check this matches the IAM service. Nija says that you can only specify each condition once,
-// so seems right, but should check
-// export interface Conditions {
-//   readonly "StringEquals"?: any;
-//   readonly StringNotEquals?: any;
-//   readonly StringEqualsIgnoreCase?: any;
-//   readonly StringNotEqualsIgnoreCase?: any;
-//   readonly StringLike?: any;
-//   readonly StringNotLike?: any;
-// };
 /**
  * TODO: docs
+ * https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition.html
+ * https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_condition-keys.html
+ *
+ * TODO: note for commit - JSII blocks this from being more strongly modelled
+ * TODO: check this type is used in all places (e.g. statement.addCondition)...
+ * technically a breaking change to narrow the type but seeing as Cfn enforces it anyway it should be acceptable
  */
 export interface Conditions {
-  [key: string]: any;
+  [key: string]: { [conditionKey: string]: string | string[] };
 }
 
 /**
@@ -114,7 +108,11 @@ export abstract class PrincipalBase implements IPrincipal {
 /**
  * A principal with conditions TODO: improve docs; should this extend BasePrincipal instead?
  */
-export class PrincipalWithConditions implements IPrincipal {
+export class PrincipalWithConditions<PrincipalType extends PrincipalBase> implements IPrincipal {
+  /**
+   * TODO: docs (or exclude in package.json)
+   */
+  public readonly conditions: Conditions;
   public readonly grantPrincipal: IPrincipal = this;
 
   /**
@@ -124,18 +122,14 @@ export class PrincipalWithConditions implements IPrincipal {
 
   constructor(
     /**
-     * The principal to which conditions are being added.
-     * TODO: review docs, esp in context of where they show up
+     * TODO: docs (or exclude in package.json)
      */
-    public readonly principal: IPrincipal,
-    // TODO: fix any; review access; ServicePrincipal uses `opts` object, consider that
-    /**
-     * The conditions to add to the principal.
-     * TODO: review docs - can steal from below
-     */
-    public readonly conditions: Conditions,
+    public readonly principal: PrincipalType,
+    conditions: Conditions,
   ) {
-  } // TODO: check style for empty constructor
+      // TODO: check for clashes?
+      this.conditions = { ...principal.policyFragment.conditions, ...conditions };
+  }
 
   public get policyFragment(): PrincipalPolicyFragment {
     // TODO: merge this.conditions with the ones already defined on this.principal
@@ -144,6 +138,10 @@ export class PrincipalWithConditions implements IPrincipal {
 
   public addToPolicy(statement: PolicyStatement): boolean {
     return this.principal.addToPolicy(statement);
+  }
+
+  public toString() {
+    return this.principal.toString();
   }
 }
 
