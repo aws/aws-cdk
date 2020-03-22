@@ -931,40 +931,19 @@ export = {
   },
 
   'fileSystemLocations': {
-    'require fileSystemLocation of type EFS only'(test: Test) {
-      const stack = new cdk.Stack();
-
-      test.throws(() => {
-        new codebuild.Project(stack, 'MyProject', {
-          buildSpec: codebuild.BuildSpec.fromObject({
-            version: '0.2',
-          }),
-          fileSystemLocations: [{
-            type: "efs",
-            identifier: "sadf",
-            location: "asdf",
-            mountPoint: "asf",
-            mountOptions: "asdf"
-
-          }]
-        });
-      }, /EFS/);
-
-      test.done();
-    },
     'create fileSystemLocation and validate attributes'(test: Test) {
       const stack = new cdk.Stack();
       new codebuild.Project(stack, 'MyProject', {
         buildSpec: codebuild.BuildSpec.fromObject({
           version: '0.2',
         }),
-        fileSystemLocations: [{
+        fileSystemLocations: [codebuild.FileSystemLocation.efs({
           type: "EFS",
           identifier: "myidentifier2",
           location: "myclodation.mydnsroot.com:/loc",
           mountPoint: "/media",
           mountOptions: "opts"
-        }]
+        })]
       });
 
       expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
@@ -987,21 +966,21 @@ export = {
         buildSpec: codebuild.BuildSpec.fromObject({
           version: '0.2',
         }),
-        fileSystemLocations: [{
+        fileSystemLocations: [codebuild.FileSystemLocation.efs({
           type: "EFS",
           identifier: "myidentifier2",
           location: "myclodation.mydnsroot.com:/loc",
           mountPoint: "/media",
           mountOptions: "opts"
-        }]
+        })]
       });
-      project.addFileSystemLocations({
+      project.addFileSystemLocations(codebuild.FileSystemLocation.efs({
         type: "EFS",
         identifier: "myidentifier3",
         location: "myclodation.mydnsroot.com:/loc",
         mountPoint: "/media",
         mountOptions: "opts"
-      });
+      }));
 
       expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
         "FileSystemLocations": [

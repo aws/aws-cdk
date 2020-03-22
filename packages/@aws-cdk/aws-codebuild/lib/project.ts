@@ -724,7 +724,6 @@ export class Project extends ProjectBase {
     this.validateCodePipelineSettings(artifacts);
 
     for (const fileSystemLocation of props.fileSystemLocations || []) {
-      this.validateFileSystemLocation(fileSystemLocation);
       this.addFileSystemLocations(fileSystemLocation);
     }
 
@@ -794,7 +793,10 @@ export class Project extends ProjectBase {
    * @param fileSystemLocation the fileSystemLocation to add
    */
   public addFileSystemLocations(fileSystemLocation: IFileSystemLocation): void {
-    this._fileSystemLocations.push(fileSystemLocation);
+    const fileSystemConfig = fileSystemLocation.bind(this, this);
+    if (fileSystemConfig) {
+      this._fileSystemLocations.push(fileSystemConfig.location);
+    }
   }
 
   /**
@@ -1036,12 +1038,6 @@ export class Project extends ProjectBase {
         artifactsType === CODEPIPELINE_SOURCE_ARTIFACTS_TYPE) &&
         (sourceType !== artifactsType)) {
       throw new Error('Both source and artifacts must be set to CodePipeline');
-    }
-  }
-
-  private validateFileSystemLocation(fileSystemLocation: IFileSystemLocation) {
-    if (fileSystemLocation.type !== "EFS") {
-      throw new Error('The only supported type for fileSystemLocation is EFS');
     }
   }
 }
@@ -1555,10 +1551,48 @@ export enum BuildEnvironmentVariableType {
   SECRETS_MANAGER = 'SECRETS_MANAGER'
 }
 
+export interface FileSystemConfig {
+  readonly location: CfnProject.ProjectFileSystemLocationProperty;
+}
+
 /**
  * The abstract interface of a CodeBuild FileSystemLocation.
  */
 export interface IFileSystemLocation {
+  bind(scope: Construct, project: IProject): FileSystemConfig;
+}
+
+/**
+ * FileSystemLocation provider definition for a CodeBuild Project.
+ */
+export class FileSystemLocation {
+  public static efs(props: IGenericFileSystemLocationProps): IFileSystemLocation {
+    return new EfsFileSystemLocation(props);
+  }
+}
+
+/**
+ * EfsFileSystemLocation definition for a CodeBuild project.
+ */
+class EfsFileSystemLocation implements IFileSystemLocation {
+  constructor(private readonly props: IGenericFileSystemLocationProps) {}
+
+  public bind(_scope: Construct, _project: IProject): FileSystemConfig {
+    return {
+      location: {
+        identifier: this.props.identifier,
+        location: this.props.location,
+        mountOptions: this.props.mountOptions,
+        mountPoint: this.props.mountPoint,
+        type: 'EFS',
+      },
+    };
+  }
+}
+/**
+ * The abstract interface of a CodeBuild FileSystemLocation.
+ */
+export interface IGenericFileSystemLocationProps {
   readonly identifier: string;
   readonly location: string;
   readonly mountOptions?: string;

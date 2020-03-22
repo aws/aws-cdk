@@ -204,11 +204,17 @@
       "docs-public-apis:@aws-cdk/aws-codebuild.SourceConfig.sourceProperty",
       "docs-public-apis:@aws-cdk/aws-codebuild.SourceConfig.buildTriggers",
       "props-default-doc:@aws-cdk/aws-codebuild.SourceConfig.buildTriggers",
-      "docs-public-apis:@aws-cdk/aws-codebuild.IFileSystemLocation.identifier",
-      "docs-public-apis:@aws-cdk/aws-codebuild.IFileSystemLocation.location",
-      "docs-public-apis:@aws-cdk/aws-codebuild.IFileSystemLocation.mountPoint",
-      "docs-public-apis:@aws-cdk/aws-codebuild.IFileSystemLocation.type",
-      "docs-public-apis:@aws-cdk/aws-codebuild.IFileSystemLocation.mountOptions"
+      "docs-public-apis:@aws-cdk/aws-codebuild.IGenericFileSystemLocationProps.identifier",
+      "docs-public-apis:@aws-cdk/aws-codebuild.IGenericFileSystemLocationProps.location",
+      "docs-public-apis:@aws-cdk/aws-codebuild.IGenericFileSystemLocationProps.mountPoint",
+      "docs-public-apis:@aws-cdk/aws-codebuild.IGenericFileSystemLocationProps.type",
+      "docs-public-apis:@aws-cdk/aws-codebuild.IGenericFileSystemLocationProps.mountOptions",
+      "docs-public-apis:@aws-cdk/aws-codebuild.IFileSystemLocation",
+      "docs-public-apis:@aws-cdk/aws-codebuild.IFileSystemLocation.bind",
+      "docs-public-apis:@aws-cdk/aws-codebuild.FileSystemConfig",
+      "docs-public-apis:@aws-cdk/aws-codebuild.FileSystemConfig.location",
+      "docs-public-apis:@aws-cdk/aws-codebuild.FileSystemLocation",
+      "docs-public-apis:@aws-cdk/aws-codebuild.FileSystemLocation.efs"
     ]
   },
   "stability": "stable"
