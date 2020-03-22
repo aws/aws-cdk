@@ -1,6 +1,7 @@
 import { CustomResource, CustomResourceProvider } from '@aws-cdk/aws-cloudformation';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
+import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -83,7 +84,7 @@ export interface AwsSdkCall {
    *
    * @default - do not catch errors
    */
-  readonly catchErrorPattern?: string;
+  readonly ignoreErrorCodesMatching?: string;
 
   /**
    * API version to use for the service
@@ -235,6 +236,14 @@ export interface AwsCustomResourceProps {
    * @default Duration.minutes(2)
    */
   readonly timeout?: cdk.Duration
+
+  /**
+   * The number of days log events of the Lambda function implementing
+   * this custom resource are kept in CloudWatch Logs.
+   *
+   * @default logs.RetentionDays.INFINITE
+   */
+  readonly logRetention?: logs.RetentionDays;
 }
 
 /**
@@ -245,9 +254,21 @@ export interface AwsCustomResourceProps {
  *
  */
 export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
+
+  private static breakIgnoreErrorsCircuit(sdkCalls: Array<AwsSdkCall | undefined>, caller: string) {
+
+    for (const call of sdkCalls) {
+      if (call?.ignoreErrorCodesMatching) {
+        throw new Error(`\`${caller}\`` + ' cannot be called along with `ignoreErrorCodesMatching`.');
+      }
+    }
+
+  }
+
   public readonly grantPrincipal: iam.IPrincipal;
 
   private readonly customResource: CustomResource;
+  private readonly props: AwsCustomResourceProps;
 
   // 'props' cannot be optional, even though all its properties are optional.
   // this is because at least one sdk call must be provided.
@@ -264,6 +285,14 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
       }
     }
 
+    for (const call of [props.onCreate, props.onUpdate, props.onDelete]) {
+      if (call?.physicalResourceId?.responsePath) {
+        AwsCustomResource.breakIgnoreErrorsCircuit([call], "PhysicalResourceId.fromResponse");
+      }
+    }
+
+    this.props = props;
+
     const provider = new lambda.SingletonFunction(this, 'Provider', {
       code: lambda.Code.fromAsset(path.join(__dirname, 'runtime')),
       runtime: lambda.Runtime.NODEJS_12_X,
@@ -272,6 +301,7 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
       lambdaPurpose: 'AWS',
       timeout: props.timeout || cdk.Duration.minutes(2),
       role: props.role,
+      logRetention: props.logRetention,
     });
     this.grantPrincipal = provider.grantPrincipal;
 
@@ -313,9 +343,14 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
    * Use `Token.asXxx` to encode the returned `Reference` as a specific type or
    * use the convenience `getDataString` for string attributes.
    *
+   * Note that you cannot use this method if `ignoreErrorCodesMatching`
+   * is configured for any of the SDK calls. This is because in such a case,
+   * the response data might not exist, and will cause a CloudFormation deploy time error.
+   *
    * @param dataPath the path to the data
    */
-  public getData(dataPath: string) {
+  public getResponseFieldReference(dataPath: string) {
+    AwsCustomResource.breakIgnoreErrorsCircuit([this.props.onCreate, this.props.onUpdate], "getData");
     return this.customResource.getAtt(dataPath);
   }
 
@@ -324,11 +359,17 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
    *
    * Example for S3 / listBucket : 'Buckets.0.Name'
    *
+   * Note that you cannot use this method if `ignoreErrorCodesMatching`
+   * is configured for any of the SDK calls. This is because in such a case,
+   * the response data might not exist, and will cause a CloudFormation deploy time error.
+   *
    * @param dataPath the path to the data
    */
-  public getDataString(dataPath: string): string {
+  public getResponseField(dataPath: string): string {
+    AwsCustomResource.breakIgnoreErrorsCircuit([this.props.onCreate, this.props.onUpdate], "getDataString");
     return this.customResource.getAttString(dataPath);
   }
+
 }
 
 /**

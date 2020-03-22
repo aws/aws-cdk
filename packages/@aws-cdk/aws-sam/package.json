@@ -64,7 +64,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
-    "@types/jest": "^25.1.2",
+    "@types/jest": "^25.1.4",
     "cdk-build-tools": "0.0.0",
     "cfn2ts": "0.0.0",
     "jest": "^24.9.0",
@@ -72,14 +72,19 @@
     "ts-jest": "^25.2.0"
   },
   "dependencies": {
-    "@aws-cdk/core": "0.0.0"
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^2.0.0"
   },
   "peerDependencies": {
-    "@aws-cdk/core": "0.0.0"
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^2.0.0"
   },
   "jest": {},
   "engines": {
     "node": ">= 10.3.0"
   },
-  "stability": "experimental"
+  "stability": "experimental",
+  "awscdkio": {
+    "announce": false
+  }
 }

@@ -1,5 +1,6 @@
 import '@aws-cdk/assert/jest';
 import * as iam from '@aws-cdk/aws-iam';
+import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '../../lib';
 
@@ -342,7 +343,7 @@ test('getData', () => {
   });
 
   // WHEN
-  const token = awsSdk.getData('Data');
+  const token = awsSdk.getResponseFieldReference('Data');
 
   // THEN
   expect(stack.resolve(token)).toEqual({
@@ -351,6 +352,97 @@ test('getData', () => {
       'Data'
     ]
   });
+});
+
+test('fails when getData is used with `ignoreErrorCodesMatching`', () => {
+
+  const stack = new cdk.Stack();
+
+  const resource = new AwsCustomResource(stack, 'AwsSdk', {
+    onUpdate: {
+      service: 'CloudWatchLogs',
+      action: 'putRetentionPolicy',
+      parameters: {
+        logGroupName: '/aws/lambda/loggroup',
+        retentionInDays: 90
+      },
+      ignoreErrorCodesMatching: ".*",
+      physicalResourceId: PhysicalResourceId.of("Id")
+    },
+    policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ANY_RESOURCE}),
+  });
+
+  expect(() => resource.getResponseFieldReference("ShouldFail")).toThrow(/`getData`.+`ignoreErrorCodesMatching`/);
+
+});
+
+test('fails when getDataString is used with `ignoreErrorCodesMatching`', () => {
+
+  const stack = new cdk.Stack();
+
+  const resource = new AwsCustomResource(stack, 'AwsSdk', {
+    onUpdate: {
+      service: 'CloudWatchLogs',
+      action: 'putRetentionPolicy',
+      parameters: {
+        logGroupName: '/aws/lambda/loggroup',
+        retentionInDays: 90
+      },
+      ignoreErrorCodesMatching: ".*",
+      physicalResourceId: PhysicalResourceId.of("Id"),
+    },
+    policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ANY_RESOURCE}),
+  });
+
+  expect(() => resource.getResponseField("ShouldFail")).toThrow(/`getDataString`.+`ignoreErrorCodesMatching`/);
+
+});
+
+test('fail when `PhysicalResourceId.fromResponse` is used with `ignoreErrorCodesMatching', () => {
+
+  const stack = new cdk.Stack();
+  expect(() => new AwsCustomResource(stack, 'AwsSdkOnUpdate', {
+    onUpdate: {
+      service: 'CloudWatchLogs',
+      action: 'putRetentionPolicy',
+      parameters: {
+        logGroupName: '/aws/lambda/loggroup',
+        retentionInDays: 90
+      },
+      ignoreErrorCodesMatching: ".*",
+      physicalResourceId: PhysicalResourceId.fromResponse("Response")
+    },
+    policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ANY_RESOURCE}),
+  })).toThrow(/`PhysicalResourceId.fromResponse`.+`ignoreErrorCodesMatching`/);
+
+  expect(() => new AwsCustomResource(stack, 'AwsSdkOnCreate', {
+    onCreate: {
+      service: 'CloudWatchLogs',
+      action: 'putRetentionPolicy',
+      parameters: {
+        logGroupName: '/aws/lambda/loggroup',
+        retentionInDays: 90
+      },
+      ignoreErrorCodesMatching: ".*",
+      physicalResourceId: PhysicalResourceId.fromResponse("Response")
+    },
+    policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ANY_RESOURCE}),
+  })).toThrow(/`PhysicalResourceId.fromResponse`.+`ignoreErrorCodesMatching`/);
+
+  expect(() => new AwsCustomResource(stack, 'AwsSdkOnDelete', {
+    onDelete: {
+      service: 'CloudWatchLogs',
+      action: 'putRetentionPolicy',
+      parameters: {
+        logGroupName: '/aws/lambda/loggroup',
+        retentionInDays: 90
+      },
+      ignoreErrorCodesMatching: ".*",
+      physicalResourceId: PhysicalResourceId.fromResponse("Response")
+    },
+    policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ANY_RESOURCE}),
+  })).toThrow(/`PhysicalResourceId.fromResponse`.+`ignoreErrorCodesMatching`/);
+
 });
 
 test('getDataString', () => {
@@ -371,7 +463,7 @@ test('getDataString', () => {
       service: 'service',
       action: 'action',
       parameters: {
-        a: awsSdk.getDataString('Data')
+        a: awsSdk.getResponseField('Data')
       },
       physicalResourceId: PhysicalResourceId.of('id')
     },
@@ -395,5 +487,37 @@ test('getDataString', () => {
         "id": 'id'
       }
     }
+  });
+});
+
+test('can specify log retention', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  new AwsCustomResource(stack, 'AwsSdk', {
+    onCreate: {
+      service: 'service',
+      action: 'action',
+      physicalResourceId: PhysicalResourceId.of('id')
+    },
+    logRetention: logs.RetentionDays.ONE_WEEK,
+    policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE })
+  });
+
+  // THEN
+  expect(stack).toHaveResource('Custom::LogRetention', {
+    LogGroupName: {
+      'Fn::Join': [
+        '',
+        [
+          '/aws/lambda/',
+          {
+            Ref: 'AWS679f53fac002430cb0da5b7982bd22872D164C4C'
+          }
+        ]
+      ]
+    },
+    RetentionInDays: 7
   });
 });

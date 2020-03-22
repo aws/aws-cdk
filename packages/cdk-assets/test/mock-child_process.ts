@@ -9,14 +9,25 @@ export interface Invocation {
   commandLine: string[];
   exitCode?: number;
   stdout?: string;
+
+  /**
+   * Only match a prefix of the command (don't care about the details of the arguments)
+   */
+  prefix?: boolean;
 }
 
 export function mockSpawn(...invocations: Invocation[]) {
   let mock = (child_process.spawn as any);
   for (const _invocation of invocations) {
-    const invocation = _invocation;
+    const invocation = _invocation; // Mirror into variable for closure
     mock = mock.mockImplementationOnce((binary: string, args: string[], _options: any) => {
-      expect([binary, ...args]).toEqual(invocation.commandLine);
+      if (invocation.prefix) {
+        // Match command line prefix
+        expect([binary, ...args].slice(0, invocation.commandLine.length)).toEqual(invocation.commandLine);
+      } else {
+        // Match full command line
+        expect([binary, ...args]).toEqual(invocation.commandLine);
+      }
 
       const child: any = new events.EventEmitter();
       child.stdin = new events.EventEmitter();

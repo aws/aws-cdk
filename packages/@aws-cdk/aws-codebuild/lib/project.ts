@@ -101,7 +101,7 @@ export interface IProject extends IResource, iam.IGrantable, ec2.IConnectable {
    * @param metricName The name of the metric
    * @param props Customization properties
    */
-  metric(metricName: string, props: cloudwatch.MetricOptions): cloudwatch.Metric;
+  metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
    * Measures the number of builds triggered.
@@ -316,7 +316,7 @@ abstract class ProjectBase extends Resource implements IProject {
    * @param metricName The name of the metric
    * @param props Customization properties
    */
-  public metric(metricName: string, props: cloudwatch.MetricOptions) {
+  public metric(metricName: string, props?: cloudwatch.MetricOptions) {
     return new cloudwatch.Metric({
       namespace: 'AWS/CodeBuild',
       metricName,
@@ -846,7 +846,7 @@ export class Project extends ProjectBase {
       }
       if (this._secondaryArtifacts.length > 0) {
         ret.push('A Project with a CodePipeline Source cannot have secondary artifacts. ' +
-          "Use the CodeBuild Pipeline Actions' `extraOutputs` property instead");
+          "Use the CodeBuild Pipeline Actions' `outputs` property instead");
       }
     }
     return ret;

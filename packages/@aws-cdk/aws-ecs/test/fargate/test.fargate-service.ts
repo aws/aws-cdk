@@ -664,7 +664,7 @@ export = {
               protocol: ecs.Protocol.TCP
             })]
           });
-        }, /Container 'FargateTaskDef\/MainContainer' has no mapping for port 8001 and protocol tcp. Did you call "container.addPortMapping()"?/);
+        }, /Container 'FargateTaskDef\/MainContainer' has no mapping for port 8001 and protocol tcp. Did you call "container.addPortMappings\(\)"\?/);
 
         test.done();
       },
@@ -699,7 +699,7 @@ export = {
               containerPort: 8002,
             })]
           });
-        }, /Container 'FargateTaskDef\/MainContainer' has no mapping for port 8002 and protocol tcp. Did you call "container.addPortMapping()"?/);
+        }, /Container 'FargateTaskDef\/MainContainer' has no mapping for port 8002 and protocol tcp. Did you call "container.addPortMappings\(\)"\?/);
 
         test.done();
       },
@@ -1487,5 +1487,74 @@ export = {
     });
 
     test.done();
-  }
+  },
+
+  'When import a Fargate Service': {
+    'with serviceArn'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+      // WHEN
+      const service = ecs.FargateService.fromFargateServiceAttributes(stack, 'EcsService', {
+        serviceArn: 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service',
+        cluster,
+      });
+
+      // THEN
+      test.equal(service.serviceArn, 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service');
+      test.equal(service.serviceName, 'my-http-service');
+
+      test.done();
+    },
+
+    'with serviceName'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const pseudo = new cdk.ScopedAws(stack);
+      const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+      // WHEN
+      const service = ecs.FargateService.fromFargateServiceAttributes(stack, 'EcsService', {
+        serviceName: 'my-http-service',
+        cluster,
+      });
+
+      // THEN
+      test.deepEqual(stack.resolve(service.serviceArn), stack.resolve(`arn:${pseudo.partition}:ecs:${pseudo.region}:${pseudo.accountId}:service/my-http-service`));
+      test.equal(service.serviceName, 'my-http-service');
+
+      test.done();
+    },
+
+    'throws an exception if both serviceArn and serviceName were provided for fromEc2ServiceAttributes'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+      test.throws(() => {
+        ecs.FargateService.fromFargateServiceAttributes(stack, 'EcsService', {
+          serviceArn: 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service',
+          serviceName: 'my-http-service',
+          cluster,
+        });
+      }, /only specify either serviceArn or serviceName/);
+
+      test.done();
+    },
+
+    'throws an exception if neither serviceArn nor serviceName were provided for fromEc2ServiceAttributes'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+      test.throws(() => {
+        ecs.FargateService.fromFargateServiceAttributes(stack, 'EcsService', {
+          cluster,
+        });
+      }, /only specify either serviceArn or serviceName/);
+
+      test.done();
+    },
+  },
 };
