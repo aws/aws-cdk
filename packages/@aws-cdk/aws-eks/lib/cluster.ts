@@ -481,6 +481,8 @@ export class Cluster extends Resource implements ICluster {
    * @param options options for creating a new nodegroup
    */
   public addNodegroup(id: string, options?: NodegroupOptions): Nodegroup {
+    // initialize the awsAuth for this cluster
+    this._awsAuth = this._awsAuth ?? this.awsAuth;
     return new Nodegroup(this, `Nodegroup${id}`, {
       cluster: this,
       ...options,
