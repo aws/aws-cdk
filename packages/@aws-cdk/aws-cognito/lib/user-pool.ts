@@ -144,7 +144,9 @@ export interface UserVerificationConfig {
    * The email body template for the verification email sent to the user upon sign up.
    * See https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-settings-message-templates.html to
    * learn more about message templates.
-   * @default 'Hello {username}, Your verification code is {####}'
+   *
+   * @default - 'Hello {username}, Your verification code is {####}' if VerificationEmailStyle.CODE is chosen,
+   * 'Hello {username}, Verify your account by clicking on {##Verify Email##}' if VerificationEmailStyle.LINK is chosen.
    */
   readonly emailBody?: string;
 
@@ -159,7 +161,9 @@ export interface UserVerificationConfig {
    * The message template for the verification SMS sent to the user upon sign up.
    * See https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-settings-message-templates.html to
    * learn more about message templates.
-   * @default 'The verification code to your new account is {####}'
+   *
+   * @default - 'The verification code to your new account is {####}' if VerificationEmailStyle.CODE is chosen,
+   * not configured if VerificationEmailStyle.LINK is chosen
    */
   readonly smsMessage?: string;
 }
@@ -486,24 +490,15 @@ export class UserPool extends Resource implements IUserPool {
       }
     }
 
-    const emailVerificationSubject = props.userVerification?.emailSubject ?? 'Verify your new account';
-    const emailVerificationMessage = props.userVerification?.emailBody ?? 'Hello {username}, Your verification code is {####}';
-    const smsVerificationMessage = props.userVerification?.smsMessage ?? 'The verification code to your new account is {####}';
-
-    const defaultEmailOption = props.userVerification?.emailStyle ?? VerificationEmailStyle.CODE;
-    const verificationMessageTemplate: CfnUserPool.VerificationMessageTemplateProperty =
-      (defaultEmailOption === VerificationEmailStyle.CODE) ? {
-        defaultEmailOption,
-        emailMessage: emailVerificationMessage,
-        emailSubject: emailVerificationSubject,
-        smsMessage: smsVerificationMessage,
-      } : {
-        defaultEmailOption,
-        emailMessageByLink: emailVerificationMessage,
-        emailSubjectByLink: emailVerificationSubject,
-        smsMessage: smsVerificationMessage
-      };
-
+    const verificationMessageTemplate = this.verificationMessageConfiguration(props);
+    let emailVerificationMessage;
+    let emailVerificationSubject;
+    let smsVerificationMessage;
+    if (verificationMessageTemplate.defaultEmailOption === VerificationEmailStyle.CODE) {
+      emailVerificationMessage = verificationMessageTemplate.emailMessage;
+      emailVerificationSubject = verificationMessageTemplate.emailSubject;
+      smsVerificationMessage = verificationMessageTemplate.smsMessage;
+    }
     const inviteMessageTemplate: CfnUserPool.InviteMessageTemplateProperty = {
       emailMessage: props.userInvitation?.emailBody,
       emailSubject: props.userInvitation?.emailSubject,
@@ -662,6 +657,42 @@ export class UserPool extends Resource implements IUserPool {
       principal: new ServicePrincipal('cognito-idp.amazonaws.com'),
       sourceArn: this.userPoolArn
     });
+  }
+
+  private verificationMessageConfiguration(props: UserPoolProps): CfnUserPool.VerificationMessageTemplateProperty {
+    const emailStyle = props.userVerification?.emailStyle ?? VerificationEmailStyle.CODE;
+    const emailSubject = props.userVerification?.emailSubject ?? 'Verify your new account';
+
+    if (emailStyle === VerificationEmailStyle.CODE) {
+      const emailMessage = props.userVerification?.emailBody ?? 'Hello {username}, Your verification code is {####}';
+      const smsMessage = props.userVerification?.smsMessage ?? 'The verification code to your new account is {####}';
+      if (emailMessage.indexOf('{####}') < 0) {
+        throw new Error(`Verification email body must contain the template string '{####}'`);
+      }
+      if (smsMessage.indexOf('{####}') < 0) {
+        throw new Error(`SMS message must contain the template string '{####}'`);
+      }
+      return {
+        defaultEmailOption: VerificationEmailStyle.CODE,
+        emailMessage,
+        emailSubject,
+        smsMessage,
+      };
+    } else {
+      if (props.userVerification?.smsMessage !== undefined) {
+        throw new Error('SMS message cannot be configured when emailStyle is configured to CODE');
+      }
+      const emailMessage = props.userVerification?.emailBody ?? 'Hello {username}, Verify your account by clicking on {##Verify Email##}';
+      if (emailMessage.indexOf('{##Verify Email##}') < 0) {
+        throw new Error(`Verification email body must contain the template string '{##Verify Email##}'`);
+      }
+      return {
+        defaultEmailOption: VerificationEmailStyle.LINK,
+        emailMessageByLink: emailMessage,
+        emailSubjectByLink: emailSubject,
+        smsMessage: props.userVerification?.smsMessage,
+      };
+    }
   }
 
   private signInConfiguration(props: UserPoolProps) {
