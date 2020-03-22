@@ -1,9 +1,9 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import { SDK } from '../../lib';
 import { AppStacks, DefaultSelection } from '../../lib/api/cxapp/stacks';
 import { registerContextProvider } from '../../lib/context-providers';
 import { Configuration } from '../../lib/settings';
 import { testAssembly } from '../util';
+import { MockSDK } from '../util/mock-sdk';
 
 test('do not throw when selecting stack without errors', async () => {
   // GIVEN
@@ -113,7 +113,7 @@ test('stop executing if context providers are not making progress', async () => 
 
   const stacks = new AppStacks({
     configuration: new Configuration(),
-    aws: new SDK({ userAgent: 'aws-cdk/jest' }),
+    aws: new MockSDK(),
     synthesizer: async () => testAssembly({
       stacks: [{
         stackName: 'thestack',
@@ -138,7 +138,7 @@ function testStacks({ env, versionReporting = true }: { env?: string, versionRep
 
   return new AppStacks({
     configuration,
-    aws: new SDK({ userAgent: 'aws-cdk/jest' }),
+    aws: new MockSDK(),
     synthesizer: async () => testAssembly({
       stacks: [{
         stackName: 'withouterrors',

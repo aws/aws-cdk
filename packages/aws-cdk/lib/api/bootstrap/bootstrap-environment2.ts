@@ -2,9 +2,11 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as path from 'path';
-import { BootstrapEnvironmentProps, deployStack, DeployStackResult, ISDK } from '..';
+import { BootstrapEnvironmentProps, deployStack, DeployStackResult } from '..';
+import { loadStructuredFile } from '../../serialize';
+import { SdkProvider } from '../aws-auth';
 
-export async function bootstrapEnvironment2(environment: cxapi.Environment, sdk: ISDK,
+export async function bootstrapEnvironment2(environment: cxapi.Environment, sdk: SdkProvider,
                                             toolkitStackName: string, roleArn: string | undefined,
                                             props: BootstrapEnvironmentProps = {}): Promise<DeployStackResult> {
   if (props.trustedAccounts?.length && !props.cloudFormationExecutionPolicies?.length) {
@@ -13,11 +15,14 @@ export async function bootstrapEnvironment2(environment: cxapi.Environment, sdk:
 
   const outdir = await fs.mkdtemp(path.join(os.tmpdir(), 'cdk-bootstrap-new'));
   const builder = new cxapi.CloudAssemblyBuilder(outdir);
-  const templateFile = `${toolkitStackName}.template.json`;
 
-  await fs.copy(
-    path.join(__dirname, 'bootstrap-template.json'),
-    path.join(builder.outdir, templateFile));
+  // convert from YAML to JSON (which the Cloud Assembly uses)
+  const templateFile = `${toolkitStackName}.template.json`;
+  const bootstrapTemplatePath = path.join(__dirname, 'bootstrap-template.yaml');
+  const bootstrapTemplateObject = loadStructuredFile(bootstrapTemplatePath);
+  await fs.writeJson(
+    path.join(builder.outdir, templateFile),
+    bootstrapTemplateObject);
 
   builder.addArtifact(toolkitStackName, {
     type: cxapi.ArtifactType.AWS_CLOUDFORMATION_STACK,

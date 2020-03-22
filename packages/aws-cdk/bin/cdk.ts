@@ -6,7 +6,8 @@ import * as colors from 'colors/safe';
 import * as path from 'path';
 import * as yargs from 'yargs';
 
-import { bootstrapEnvironment, BootstrapEnvironmentProps, SDK } from '../lib';
+import { bootstrapEnvironment, BootstrapEnvironmentProps } from '../lib';
+import { SdkProvider } from '../lib/api/aws-auth';
 import { bootstrapEnvironment2 } from '../lib/api/bootstrap/bootstrap-environment2';
 import { environmentsFromDescriptors, globEnvironmentsFromStacks } from '../lib/api/cxapp/environments';
 import { execProgram } from '../lib/api/cxapp/exec';
@@ -67,7 +68,9 @@ async function parseCommandLineArguments() {
       .option('ci', { type: 'boolean', desc: 'Force CI detection (deprecated)', default: process.env.CI !== undefined })
       .option('notification-arns', {type: 'array', desc: 'ARNs of SNS topics that CloudFormation will notify with stack related events', nargs: 1, requiresArg: true})
       .option('tags', { type: 'array', alias: 't', desc: 'Tags to add to the stack (KEY=VALUE)', nargs: 1, requiresArg: true })
-      .option('execute', {type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)', default: true})
+      .option('execute', { type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)', default: true })
+      .option('force', { alias: 'f', type: 'boolean', desc: 'Always deploy stack even if templates are identical', default: false })
+      .option('parameters', { type: 'array', desc: 'Additional parameters passed to CloudFormation at deploy time (STACK:KEY=VALUE)', nargs: 1, requiresArg: true, default: {} })
     )
     .command('destroy [STACKS..]', 'Destroy the stack(s) named STACKS', yargs => yargs
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only destroy requested stacks, don\'t include dependees' })
@@ -109,11 +112,13 @@ async function initCommandLine() {
   debug('CDK toolkit version:', version.DISPLAY_VERSION);
   debug('Command line arguments:', argv);
 
-  const aws = new SDK({
+  const aws = await SdkProvider.withAwsCliCompatibleDefaults({
     profile: argv.profile,
-    proxyAddress: argv.proxy,
-    caBundlePath: argv['ca-bundle-path'],
     ec2creds: argv.ec2creds,
+    httpOptions: {
+      proxyAddress: argv.proxy,
+      caBundlePath: argv['ca-bundle-path'],
+    }
   });
 
   const configuration = new Configuration(argv);
@@ -214,6 +219,13 @@ async function initCommandLine() {
         });
 
       case 'deploy':
+        const parameterMap: { [name: string]: string | undefined } = {};
+        for (const parameter of args.parameters) {
+          if (typeof parameter === 'string') {
+            const keyValue = (parameter as string).split('=', 2);
+            parameterMap[keyValue[0]] = keyValue[1];
+          }
+        }
         return await cli.deploy({
           stackNames: args.STACKS,
           exclusively: args.exclusively,
@@ -224,7 +236,9 @@ async function initCommandLine() {
           reuseAssets: args['build-exclude'],
           tags: configuration.settings.get(['tags']),
           sdk: aws,
-          execute: args.execute
+          execute: args.execute,
+          force: args.force,
+          parameters: parameterMap
         });
 
       case 'destroy':

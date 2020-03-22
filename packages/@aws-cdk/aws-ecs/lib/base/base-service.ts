@@ -22,6 +22,13 @@ export interface IService extends IResource {
    * @attribute
    */
   readonly serviceArn: string;
+
+  /**
+   * The name of the service.
+   *
+   * @attribute
+   */
+  readonly serviceName: string;
 }
 
 /**
@@ -246,10 +253,20 @@ class NetworkListenerConfig extends ListenerConfig {
 }
 
 /**
+ * The interface for BaseService.
+ */
+export interface IBaseService extends IService {
+  /**
+   * The cluster that hosts the service.
+   */
+  readonly cluster: ICluster;
+}
+
+/**
  * The base class for Ec2Service and FargateService services.
  */
 export abstract class BaseService extends Resource
-  implements IService, elbv2.IApplicationLoadBalancerTarget, elbv2.INetworkLoadBalancerTarget, elb.ILoadBalancerTarget {
+  implements IBaseService, elbv2.IApplicationLoadBalancerTarget, elbv2.INetworkLoadBalancerTarget, elb.ILoadBalancerTarget {
 
   /**
    * The security groups which manage the allowed network traffic for the service.
@@ -514,7 +531,8 @@ export abstract class BaseService extends Resource
       namespace: sdNamespace,
       name: options.name,
       dnsRecordType: dnsRecordType!,
-      customHealthCheck: { failureThreshold: options.failureThreshold || 1 }
+      customHealthCheck: { failureThreshold: options.failureThreshold || 1 },
+      dnsTtl: options.dnsTtl,
     });
 
     const serviceArn = cloudmapService.serviceArn;

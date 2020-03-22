@@ -525,3 +525,77 @@ vpc.addFlowLog('FlowLogCloudWatch', {
   trafficType: ec2.FlowLogTrafficType.REJECT
 });
 ```
+
+By default the CDK will create the necessary resources for the destination. For the CloudWatch Logs destination
+it will create a CloudWatch Logs Log Group as well as the IAM role with the necessary permissions to publish to
+the log group. In the case of an S3 destination, it will create the S3 bucket.
+
+If you want to customize any of the destination resources you can provide your own as part of the `destination`.
+
+*CloudWatch Logs*
+```ts
+const logGroup = new logs.LogGroup(this, 'MyCustomLogGroup');
+
+const role = new iam.Role(this, 'MyCustomRole', {
+  assumedBy: new iam.ServicePrincipal('vpc-flow-logs.amazonaws.com')
+});
+
+new ec2.FlowLog(this, 'FlowLog', {
+  resourceType: ec2.FlowLogResourceType.fromVpc(vpc),
+  destination: ec2.FlowLogDestination.toCloudWatchLogs(logGroup, role)
+});
+```
+
+*S3*
+```ts
+
+const bucket = new s3.Bucket(this, 'MyCustomBucket');
+
+new ec2.FlowLog(this, 'FlowLog', {
+  resourceType: ec2.FlowLogResourceType.fromVpc(vpc),
+  destination: ec2.FlowLogDestination.toS3(bucket)
+});
+```
+
+## User Data
+User data enables you to run a script when your instances start up.  In order to configure these scripts you can add commands directly to the script
+ or you can use the UserData's convenience functions to aid in the creation of your script.
+
+A user data could be configured to run a script found in an asset through the following:
+```ts
+const asset = new Asset(this, 'Asset', {path: path.join(__dirname, 'configure.sh')});
+const instance = new ec2.Instance(this, 'Instance', {
+  // ...
+  });
+const localPath = instance.userData.addS3DownloadCommand({
+  bucket:asset.bucket,
+  bucketKey:asset.s3ObjectKey,
+});
+instance.userData.addExecuteFileCommand({
+  filePath:localPath,
+  arguments: '--verbose -y'
+});
+asset.grantRead( instance.role );
+```
+
+## Importing existing subnet
+
+To import an existing Subnet, call `Subnet.fromSubnetAttributes()` or
+`Subnet.fromSubnetId()`. Only if you supply the subnet's Availability Zone
+and Route Table Ids when calling `Subnet.fromSubnetAttributes()` will you be
+able to use the CDK features that use these values (such as selecting one
+subnet per AZ).
+
+Importing an existing subnet looks like this:
+
+```ts
+// Supply all properties
+const subnet = Subnet.fromSubnetAttributes(this, 'SubnetFromAttributes', {
+  subnetId: 's-1234',
+  availabilityZone: 'pub-az-4465',
+  routeTableId: 'rt-145'
+});
+
+// Supply only subnet id
+const subnet = Subnet.fromSubnetId(this, 'SubnetFromId', 's-1234');
+```

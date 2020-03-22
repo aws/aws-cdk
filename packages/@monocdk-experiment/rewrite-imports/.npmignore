@@ -1,0 +1,7 @@
+
+dist
+.LAST_PACKAGE
+*.tsbuildinfo
+tsconfig.json
+.LAST_BUILD
+*.snk

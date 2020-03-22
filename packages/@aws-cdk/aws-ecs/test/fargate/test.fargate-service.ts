@@ -664,7 +664,7 @@ export = {
               protocol: ecs.Protocol.TCP
             })]
           });
-        }, /Container 'FargateTaskDef\/MainContainer' has no mapping for port 8001 and protocol tcp. Did you call "container.addPortMapping()"?/);
+        }, /Container 'FargateTaskDef\/MainContainer' has no mapping for port 8001 and protocol tcp. Did you call "container.addPortMappings\(\)"\?/);
 
         test.done();
       },
@@ -699,7 +699,7 @@ export = {
               containerPort: 8002,
             })]
           });
-        }, /Container 'FargateTaskDef\/MainContainer' has no mapping for port 8002 and protocol tcp. Did you call "container.addPortMapping()"?/);
+        }, /Container 'FargateTaskDef\/MainContainer' has no mapping for port 8002 and protocol tcp. Did you call "container.addPortMappings\(\)"\?/);
 
         test.done();
       },
@@ -1334,7 +1334,7 @@ export = {
       test.done();
     },
 
-    'creates AWS Cloud Map service for Private DNS namespace with SRV records'(test: Test) {
+    'creates AWS Cloud Map service for Private DNS namespace with SRV records with proper defaults'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1359,7 +1359,7 @@ export = {
         taskDefinition,
         cloudMapOptions: {
           name: 'myApp',
-          dnsRecordType: cloudmap.DnsRecordType.SRV
+          dnsRecordType: cloudmap.DnsRecordType.SRV,
         }
       });
 
@@ -1369,6 +1369,68 @@ export = {
           DnsRecords: [
             {
               TTL: 60,
+              Type: "SRV"
+            }
+          ],
+          NamespaceId: {
+            'Fn::GetAtt': [
+              'EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F',
+              'Id'
+            ]
+          },
+          RoutingPolicy: 'MULTIVALUE'
+        },
+        HealthCheckCustomConfig: {
+          FailureThreshold: 1
+        },
+        Name: "myApp",
+        NamespaceId: {
+          'Fn::GetAtt': [
+            'EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F',
+            'Id'
+          ]
+        }
+      }));
+
+      test.done();
+    },
+
+    'creates AWS Cloud Map service for Private DNS namespace with SRV records with overriden defaults'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+      const container = taskDefinition.addContainer('MainContainer', {
+        image: ecs.ContainerImage.fromRegistry('hello'),
+        memoryLimitMiB: 512
+      });
+      container.addPortMappings({ containerPort: 8000 });
+
+      // WHEN
+      cluster.addDefaultCloudMapNamespace({
+        name: 'foo.com',
+        type: cloudmap.NamespaceType.DNS_PRIVATE
+      });
+
+      new ecs.FargateService(stack, 'Service', {
+        cluster,
+        taskDefinition,
+        cloudMapOptions: {
+          name: 'myApp',
+          dnsRecordType: cloudmap.DnsRecordType.SRV,
+          dnsTtl: cdk.Duration.seconds(10),
+        }
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::ServiceDiscovery::Service', {
+        DnsConfig: {
+          DnsRecords: [
+            {
+              TTL: 10,
               Type: "SRV"
             }
           ],
@@ -1425,5 +1487,74 @@ export = {
     });
 
     test.done();
-  }
+  },
+
+  'When import a Fargate Service': {
+    'with serviceArn'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+      // WHEN
+      const service = ecs.FargateService.fromFargateServiceAttributes(stack, 'EcsService', {
+        serviceArn: 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service',
+        cluster,
+      });
+
+      // THEN
+      test.equal(service.serviceArn, 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service');
+      test.equal(service.serviceName, 'my-http-service');
+
+      test.done();
+    },
+
+    'with serviceName'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const pseudo = new cdk.ScopedAws(stack);
+      const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+      // WHEN
+      const service = ecs.FargateService.fromFargateServiceAttributes(stack, 'EcsService', {
+        serviceName: 'my-http-service',
+        cluster,
+      });
+
+      // THEN
+      test.deepEqual(stack.resolve(service.serviceArn), stack.resolve(`arn:${pseudo.partition}:ecs:${pseudo.region}:${pseudo.accountId}:service/my-http-service`));
+      test.equal(service.serviceName, 'my-http-service');
+
+      test.done();
+    },
+
+    'throws an exception if both serviceArn and serviceName were provided for fromEc2ServiceAttributes'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+      test.throws(() => {
+        ecs.FargateService.fromFargateServiceAttributes(stack, 'EcsService', {
+          serviceArn: 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service',
+          serviceName: 'my-http-service',
+          cluster,
+        });
+      }, /only specify either serviceArn or serviceName/);
+
+      test.done();
+    },
+
+    'throws an exception if neither serviceArn nor serviceName were provided for fromEc2ServiceAttributes'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+      test.throws(() => {
+        ecs.FargateService.fromFargateServiceAttributes(stack, 'EcsService', {
+          cluster,
+        });
+      }, /only specify either serviceArn or serviceName/);
+
+      test.done();
+    },
+  },
 };
