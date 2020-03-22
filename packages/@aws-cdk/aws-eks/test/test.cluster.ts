@@ -675,7 +675,7 @@ export = {
               ]
             }
           },
-          { 
+          {
             Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
