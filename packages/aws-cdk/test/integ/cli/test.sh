@@ -7,21 +7,30 @@ header CLI Integration Tests
 
 prepare_fixture
 
-VERSION_UNDER_TEST=${VERSION_UNDER_TEST:-1.30.0}
+current_version=$(node -p "require('${scriptdir}/../../../package.json').version")
+
+VERSION_UNDER_TEST=${VERSION_UNDER_TEST:-${current_version}}
+
+function should_skip {
+  test=$1
+  echo $(node -p "require('${scriptdir}/../cli.exclusions.js').shouldSkip('${test}', '${VERSION_UNDER_TEST}')")
+}
 
 function get_skip_jusitification {
   test=$1
-  version=$2
-  echo $(node -p "require('../cli.exclusions.js').forTest(${test}, ${VERSION_UNDER_TEST}).justification")
+  echo $(node -p "require('${scriptdir}/../cli.exclusions.js').getJustification('${test}', '${VERSION_UNDER_TEST}')")
 }
 
 for test in $(cd ${scriptdir} && ls test-*.sh); do
   echo "============================================================================================"
 
-  skip_jusitification=$(get_skip_jusitification ${test})
+  skip=$(should_skip ${test})
 
-  if [ ${skip_jusitification} != "undefined" ]; then
-    echo ${test} - skipped (${skip_jusitification})
+  if [ ${skip} == "true" ]; then
+
+    jusitification="$(get_skip_jusitification ${test})"
+
+    echo "${test} - skipped (${jusitification})"
     continue
   fi
 
