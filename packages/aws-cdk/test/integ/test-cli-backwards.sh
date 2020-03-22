@@ -1,14 +1,12 @@
 #!/bin/bash
 set -euo pipefail
 integdir=$(cd $(dirname $0) && pwd)
-repo_root=$(realpath ${integdir}/../../../../)
+
+temp_dir=$(mktemp -d)
 
 function cleanup {
-    rm -rf release.json
-    pushd ${repo_root}
-    git reset packages/aws-cdk/test/integ/cli/.
-    git checkout HEAD -- packages/aws-cdk/test/integ/cli/.
-    popd
+    rm -rf ${temp_dir}
+    # rm -rf ${integdir}/cli-${latest_version}
 }
 
 function download_latest_release_json {
@@ -18,17 +16,32 @@ function download_latest_release_json {
         github_headers="Authorization: token ${GITHUB_TOKEN}"
     fi
 
-    curl -Ss --dump-header /dev/null -H "$github_headers" https://api.github.com/repos/aws/aws-cdk/releases/latest > release.json
+    out="${temp_dir}/aws-cdk-release.json"
+
+    curl -Ss --dump-header /dev/null -H "$github_headers" https://api.github.com/repos/aws/aws-cdk/releases/latest > ${out}
+    echo ${out}
 }
 
-trap cleanup INT EXIT
+function download_repo {
 
-download_latest_release_json
-latest_version=$(node -p "require('./release.json').name")
+    version=$1
 
-# TODO : Copy repo (?) to temp dir and work their to not mess up local changes
-echo "Checking out integration tests from version ${latest_version}"
-pushd ${repo_root} && git checkout ${latest_version} -- packages/aws-cdk/test/integ/cli && popd
+    out="${temp_dir}/aws-cdk-${version}.tar.gz"
+
+    curl -L -o ${out} "https://github.com/aws/aws-cdk/archive/${version}.tar.gz"
+    tar --strip-components=1 -zxf ${out} -C ${temp_dir}
+    echo ${temp_dir}
+
+}
+
+# trap cleanup INT EXIT
+
+temp_release_json=$(download_latest_release_json)
+latest_version=$(node -p "require('${temp_release_json}').name")
+
+echo "Downloading aws-cdk repo version ${latest_version}"
+temp_repo_dir="$(download_repo ${latest_version})"
+cp -r ${temp_dir}/packages/aws-cdk/test/integ/cli ${integdir}/cli-${latest_version}
 
 echo "Running integration tests from version ${latest_version}"
-${integdir}/cli/test.sh
+# VERSION_UNDER_TEST=${latest_version} ${integdir}/cli-${latest_version}/test.sh
