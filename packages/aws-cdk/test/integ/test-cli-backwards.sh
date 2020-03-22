@@ -6,7 +6,7 @@ temp_dir=$(mktemp -d)
 
 function cleanup {
     rm -rf ${temp_dir}
-    # rm -rf ${integdir}/cli-${latest_version}
+    rm -rf ${integdir}/cli-${latest_version}
 }
 
 function download_latest_release_json {
@@ -34,13 +34,14 @@ function download_repo {
 
 }
 
-# trap cleanup INT EXIT
+trap cleanup INT EXIT
 
 temp_release_json=$(download_latest_release_json)
 latest_version=$(node -p "require('${temp_release_json}').name")
 
 echo "Downloading aws-cdk repo version ${latest_version}"
 temp_repo_dir="$(download_repo ${latest_version})"
+rm -rf ${integdir}/cli-${latest_version}
 cp -r ${temp_dir}/packages/aws-cdk/test/integ/cli ${integdir}/cli-${latest_version}
 
 echo "Running integration tests from version ${latest_version}"
