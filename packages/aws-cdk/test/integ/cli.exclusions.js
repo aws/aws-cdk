@@ -1,4 +1,20 @@
-const exclusions = require('./cli.exclusions.json').exclusions;
+/**
+List of exclusions when running backwards compatibility tests.
+Add when you need to exclude a specific integration test from a specific version.
+
+This is an escape hatch for the rare cases where we need to intorduce
+a change that breaks existing integration tests. (e.g security)
+
+For example:
+
+{
+    "test": "test-cdk-iam-diff.sh",
+    "version": "1.30.0",
+    "justification": "iam policy generation has changed in version > 1.30.0 because..."
+},
+
+*/
+const exclusions = []
 
 function getExclusion(test, version) {
 

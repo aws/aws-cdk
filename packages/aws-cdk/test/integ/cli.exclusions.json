@@ -1,9 +1,0 @@
-{
-    "exclusions": [
-        {
-            "test": "test-cdk-synth.sh",
-            "version": "0.0.0",
-            "justification": "asdads"
-        }
-    ]
-}
