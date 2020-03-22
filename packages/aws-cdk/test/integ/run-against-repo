@@ -33,4 +33,4 @@ trap unpatch_cli_version INT EXIT
 # this is really nasty, not sure of a reasonable better solution for now.
 patch_cli_version
 
-exec "$@"
+$@
