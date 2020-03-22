@@ -423,7 +423,7 @@ export class Cluster extends Resource implements ICluster {
     const minCapacity = props.defaultCapacity === undefined ? DEFAULT_CAPACITY_COUNT : props.defaultCapacity;
     if (minCapacity > 0) {
       const instanceType = props.defaultCapacityInstance || DEFAULT_CAPACITY_TYPE;
-      this.defaultCapacity = this.addNodegroup('DefaultCapacity', { instanceType, minSize: minCapacity } );
+      this.defaultCapacity = this.addNodegroup('DefaultCapacity', { instanceTypes: [instanceType], minSize: minCapacity } );
     }
 
     const outputConfigCommand = props.outputConfigCommand === undefined ? true : props.outputConfigCommand;

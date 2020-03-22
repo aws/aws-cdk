@@ -54,7 +54,7 @@ export = {
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
       remoteAccess: {
-        ec2SshKey: 'foo',
+        sshKeyName: 'foo',
         sourceSecurityGroups: [ new ec2.SecurityGroup(stack, 'SG', { vpc }) ]
       }
      });
@@ -81,7 +81,7 @@ export = {
 
     // WHEN
     const cluster = new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: true, defaultCapacity: 0 });
-    new eks.Nodegroup(stack, 'Nodegroup', { cluster, forceUpdateEnabled: false });
+    new eks.Nodegroup(stack, 'Nodegroup', { cluster, forceUpdate: false });
 
     // THEN
     expect(stack).to(haveResourceLike('AWS::EKS::Nodegroup', {
@@ -98,7 +98,7 @@ export = {
     const cluster = new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: true, defaultCapacity: 0 });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
-      instanceType: new ec2.InstanceType('m5.large')
+      instanceTypes: [ new ec2.InstanceType('m5.large') ]
      });
 
     // THEN
@@ -119,7 +119,7 @@ export = {
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
       remoteAccess: {
-        ec2SshKey: 'foo',
+        sshKeyName: 'foo',
       }
     });
 
@@ -194,6 +194,49 @@ export = {
     ));
     test.done();
   },
+
+  'create ndoegroup with existing node role'(test: Test) {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: true, defaultCapacity: 1 });
+
+    // WHEN
+    new eks.Nodegroup(stack, 'NG', {
+      cluster,
+      nodeRole: cluster.defaultCapacity!.role,
+      minSize: 3
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::EKS::Nodegroup', {
+      ClusterName: {
+        Ref: "Cluster9EE0221C"
+      },
+      NodeRole: {
+        "Fn::GetAtt": [
+          "ClusterNodegroupDefaultCapacityNodeGroupRole55953B04",
+          "Arn"
+        ]
+      },
+      Subnets: [
+        {
+          Ref: "VPCPrivateSubnet1Subnet8BCA10E0"
+        },
+        {
+          Ref: "VPCPrivateSubnet2SubnetCFCDAA7A"
+        }
+      ],
+      ForceUpdateEnabled: true,
+      ScalingConfig: {
+        DesiredSize: 3,
+        MaxSize: 3,
+        MinSize: 3
+      }
+    }
+    ));
+    test.done();
+  },
+
   'throws when desiredSize > maxSize'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();
