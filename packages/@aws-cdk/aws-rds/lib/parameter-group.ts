@@ -11,14 +11,6 @@ export interface IParameterGroup extends IResource {
    * @attribute
    */
   readonly parameterGroupName: string;
-
-  /**
-   * Add a parameter to this parameter group
-   *
-   * @param key The key of the parameter to be added
-   * @param value The value of the parameter to be added
-   */
-  addParameter(key: string, value: string): void;
 }
 
 /**
@@ -29,7 +21,7 @@ abstract class ParameterGroupBase extends Resource implements IParameterGroup {
    * Imports a parameter group
    */
   public static fromParameterGroupName(scope: Construct, id: string, parameterGroupName: string): IParameterGroup {
-    class Import extends ParameterGroupBase implements IParameterGroup {
+    class Import extends Resource implements IParameterGroup {
       public readonly parameterGroupName = parameterGroupName;
     }
     return new Import(scope, id);
@@ -45,6 +37,12 @@ abstract class ParameterGroupBase extends Resource implements IParameterGroup {
    */
   protected parameters?: { [key: string]: string } = {};
 
+  /**
+   * Add a parameter to this parameter group
+   *
+   * @param key The key of the parameter to be added
+   * @param value The value of the parameter to be added
+   */
   public addParameter(key: string, value: string) {
     if (!this.parameters) {
       this.parameters = {};
@@ -72,7 +70,7 @@ export interface ParameterGroupProps {
   /**
    * The parameters in this parameter group
    *
-   * @default None
+   * @default - None
    */
   readonly parameters?: { [key: string]: string };
 }

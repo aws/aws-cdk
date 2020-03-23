@@ -10,9 +10,19 @@ import { IParameterGroup } from './parameter-group';
  */
 export class DatabaseClusterEngine {
   /* tslint:disable max-line-length */
-  public static readonly AURORA = new DatabaseClusterEngine('aurora', secretsmanager.SecretRotationApplication.MYSQL_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.MYSQL_ROTATION_MULTI_USER);
-  public static readonly AURORA_MYSQL = new DatabaseClusterEngine('aurora-mysql', secretsmanager.SecretRotationApplication.MYSQL_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.MYSQL_ROTATION_MULTI_USER);
-  public static readonly AURORA_POSTGRESQL = new DatabaseClusterEngine('aurora-postgresql', secretsmanager.SecretRotationApplication.POSTGRES_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.POSTGRES_ROTATION_MULTI_USER);
+  public static readonly AURORA = new DatabaseClusterEngine('aurora', secretsmanager.SecretRotationApplication.MYSQL_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.MYSQL_ROTATION_MULTI_USER, [
+    ['5.6', 'aurora5.6']
+  ]);
+
+  public static readonly AURORA_MYSQL = new DatabaseClusterEngine('aurora-mysql', secretsmanager.SecretRotationApplication.MYSQL_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.MYSQL_ROTATION_MULTI_USER, [
+    ['5.7', 'aurora-mysql5.7']
+  ]);
+
+  public static readonly AURORA_POSTGRESQL = new DatabaseClusterEngine('aurora-postgresql', secretsmanager.SecretRotationApplication.POSTGRES_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.POSTGRES_ROTATION_MULTI_USER, [
+    ['9', 'aurora-postgresql9.6'],
+    ['10', 'aurora-postgresql10'],
+    ['11', 'aurora-postgresql11']
+  ]);
   /* tslint:enable max-line-length */
 
   /**
@@ -30,34 +40,29 @@ export class DatabaseClusterEngine {
    */
   public readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
 
+  private readonly parameterGroupFamilies: Array<[string, string]>;
+
   // tslint:disable-next-line max-line-length
-  constructor(name: string, singleUserRotationApplication: secretsmanager.SecretRotationApplication, multiUserRotationApplication: secretsmanager.SecretRotationApplication) {
+  constructor(name: string, singleUserRotationApplication: secretsmanager.SecretRotationApplication, multiUserRotationApplication: secretsmanager.SecretRotationApplication, defaultParameterGroupFamilies: Array<[string, string]>) {
     this.name = name;
     this.singleUserRotationApplication = singleUserRotationApplication;
     this.multiUserRotationApplication = multiUserRotationApplication;
+    this.parameterGroupFamilies = defaultParameterGroupFamilies;
   }
 
   /**
    * Get this engine's default parameter group family for given version
    */
-  public getClusterParameterGroupFamily(engineVersion?: string): string {
-    if (this === DatabaseClusterEngine.AURORA) {
-      return 'aurora5.6';
-    } else if (this === DatabaseClusterEngine.AURORA_MYSQL) {
-      return 'aurora-mysql5.7';
-    } else if (this === DatabaseClusterEngine.AURORA_POSTGRESQL) {
-      if (engineVersion) {
-        if (engineVersion.startsWith('9')) {
-          return "aurora-postgresql9.6";
-        } else if (engineVersion.startsWith('10')) {
-          return "aurora-postgresql10";
-        } else if (engineVersion.startsWith('11')) {
-          return "aurora-postgresql11";
-        }
+  public parameterGroupFamily(engineVersion?: string): string {
+    if (engineVersion) {
+      const defaultFamily = this.parameterGroupFamilies.find(x => engineVersion.startsWith(x[0]));
+      if (defaultFamily) {
+        return defaultFamily[1];
       }
-      return "aurora-postgresql11";
+    } else if (this.parameterGroupFamilies.length > 0) {
+      return this.parameterGroupFamilies[this.parameterGroupFamilies.length - 1][1];
     }
-    throw new Error(`Unknown database engine: ${this.name}`);
+    throw new Error(`Could not determine parameter group family for database engine version: ${engineVersion}`);
   }
 }
 

@@ -613,47 +613,42 @@ export = {
       }
     }));
 
-    expect(stack).to(haveResource("AWS::IAM::Role", {
-      Policies: [
-        {
-          PolicyDocument: {
-            Statement: [
+    expect(stack).to(haveResource("AWS::IAM::Policy", {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              "s3:GetObject*",
+              "s3:GetBucket*",
+              "s3:List*"
+            ],
+            Effect: "Allow",
+            Resource: [
               {
-                Action: [
-                  "s3:ListBucket",
-                  "s3:GetObject",
-                  "s3:GetObjectVersion"
-                ],
-                Effect: "Allow",
-                Resource: [
-                  {
-                    "Fn::GetAtt": [
-                      "Bucket83908E77",
-                      "Arn"
-                    ]
-                  },
-                  {
-                    "Fn::Join": [
-                      "",
-                      [
-                        {
-                          "Fn::GetAtt": [
-                            "Bucket83908E77",
-                            "Arn"
-                          ]
-                        },
-                        "/*"
+                "Fn::GetAtt": [
+                  "Bucket83908E77",
+                  "Arn"
+                ]
+              },
+              {
+                "Fn::Join": [
+                  "",
+                  [
+                    {
+                      "Fn::GetAtt": [
+                        "Bucket83908E77",
+                        "Arn"
                       ]
-                    ]
-                  }
+                    },
+                    "/*"
+                  ]
                 ]
               }
-            ],
-            Version: "2012-10-17"
-          },
-          PolicyName: "ReadS3Files"
-        }
-      ]
+            ]
+          }
+        ],
+        Version: "2012-10-17"
+      }
     }));
 
     test.done();
@@ -754,50 +749,45 @@ export = {
       }
     }));
 
-    expect(stack).to(haveResource("AWS::IAM::Role", {
-      Policies: [
-        {
-          PolicyDocument: {
-            Statement: [
+    expect(stack).to(haveResource("AWS::IAM::Policy", {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              "s3:GetObject*",
+              "s3:GetBucket*",
+              "s3:List*",
+              "s3:DeleteObject*",
+              "s3:PutObject*",
+              "s3:Abort*"
+            ],
+            Effect: "Allow",
+            Resource: [
               {
-                Action: [
-                  "s3:ListBucket",
-                  "s3:AbortMultipartUpload",
-                  "s3:DeleteObject",
-                  "s3:GetObject",
-                  "s3:ListMultipartUploadParts",
-                  "s3:PutObject"
-                ],
-                Effect: "Allow",
-                Resource: [
-                  {
-                    "Fn::GetAtt": [
-                      "Bucket83908E77",
-                      "Arn"
-                    ]
-                  },
-                  {
-                    "Fn::Join": [
-                      "",
-                      [
-                        {
-                          "Fn::GetAtt": [
-                            "Bucket83908E77",
-                            "Arn"
-                          ]
-                        },
-                        "/*"
+                "Fn::GetAtt": [
+                  "Bucket83908E77",
+                  "Arn"
+                ]
+              },
+              {
+                "Fn::Join": [
+                  "",
+                  [
+                    {
+                      "Fn::GetAtt": [
+                        "Bucket83908E77",
+                        "Arn"
                       ]
-                    ]
-                  }
+                    },
+                    "/*"
+                  ]
                 ]
               }
-            ],
-            Version: "2012-10-17"
-          },
-          PolicyName: "WriteS3Files"
-        }
-      ]
+            ]
+          }
+        ],
+        Version: "2012-10-17"
+      }
     }));
 
     test.done();

@@ -154,17 +154,78 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
  */
 export class DatabaseInstanceEngine extends DatabaseClusterEngine {
   /* tslint:disable max-line-length */
-  public static readonly MARIADB = new DatabaseInstanceEngine('mariadb', secretsmanager.SecretRotationApplication.MARIADB_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.MARIADB_ROTATION_MULTI_USER);
-  public static readonly MYSQL = new DatabaseInstanceEngine('mysql', secretsmanager.SecretRotationApplication.MYSQL_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.MYSQL_ROTATION_MULTI_USER);
-  public static readonly ORACLE_EE = new DatabaseInstanceEngine('oracle-ee', secretsmanager.SecretRotationApplication.ORACLE_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.ORACLE_ROTATION_MULTI_USER);
-  public static readonly ORACLE_SE2 = new DatabaseInstanceEngine('oracle-se2', secretsmanager.SecretRotationApplication.ORACLE_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.ORACLE_ROTATION_MULTI_USER);
-  public static readonly ORACLE_SE1 = new DatabaseInstanceEngine('oracle-se1', secretsmanager.SecretRotationApplication.ORACLE_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.ORACLE_ROTATION_MULTI_USER);
-  public static readonly ORACLE_SE = new DatabaseInstanceEngine('oracle-se', secretsmanager.SecretRotationApplication.ORACLE_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.ORACLE_ROTATION_MULTI_USER);
-  public static readonly POSTGRES = new DatabaseInstanceEngine('postgres', secretsmanager.SecretRotationApplication.POSTGRES_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.POSTGRES_ROTATION_MULTI_USER);
-  public static readonly SQL_SERVER_EE = new DatabaseInstanceEngine('sqlserver-ee', secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_MULTI_USER);
-  public static readonly SQL_SERVER_SE = new DatabaseInstanceEngine('sqlserver-se', secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_MULTI_USER);
-  public static readonly SQL_SERVER_EX = new DatabaseInstanceEngine('sqlserver-ex', secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_MULTI_USER);
-  public static readonly SQL_SERVER_WEB = new DatabaseInstanceEngine('sqlserver-web', secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_MULTI_USER);
+  public static readonly MARIADB = new DatabaseInstanceEngine('mariadb', secretsmanager.SecretRotationApplication.MARIADB_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.MARIADB_ROTATION_MULTI_USER, [
+    ['10.0', 'mariadb10.0'],
+    ['10.1', 'mariadb10.1'],
+    ['10.2', 'mariadb10.2'],
+    ['10.3', 'mariadb10.3']
+  ]);
+
+  public static readonly MYSQL = new DatabaseInstanceEngine('mysql', secretsmanager.SecretRotationApplication.MYSQL_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.MYSQL_ROTATION_MULTI_USER, [
+    ['5.6', 'mysql5.6'],
+    ['5.7', 'mysql5.7'],
+    ['8.0', 'mysql8.0']
+  ]);
+
+  public static readonly ORACLE_EE = new DatabaseInstanceEngine('oracle-ee', secretsmanager.SecretRotationApplication.ORACLE_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.ORACLE_ROTATION_MULTI_USER, [
+    ['11', 'oracle-ee-11.2'],
+    ['12.1', 'oracle-ee-12.1'],
+    ['12.2', 'oracle-ee-12.2'],
+    ['18', 'oracle-ee-18'],
+    ['19', 'oracle-ee-19']
+  ]);
+
+  public static readonly ORACLE_SE2 = new DatabaseInstanceEngine('oracle-se2', secretsmanager.SecretRotationApplication.ORACLE_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.ORACLE_ROTATION_MULTI_USER, [
+    ['12.1', 'oracle-se2-12.1'],
+    ['12.2', 'oracle-se2-12.2'],
+    ['18', 'oracle-se2-18'],
+    ['19', 'oracle-se2-19']
+  ]);
+
+  public static readonly ORACLE_SE1 = new DatabaseInstanceEngine('oracle-se1', secretsmanager.SecretRotationApplication.ORACLE_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.ORACLE_ROTATION_MULTI_USER, [
+    ['11', 'oracle-se1-11.2']
+  ]);
+
+  public static readonly ORACLE_SE = new DatabaseInstanceEngine('oracle-se', secretsmanager.SecretRotationApplication.ORACLE_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.ORACLE_ROTATION_MULTI_USER, [
+    ['11', 'oracle-se-11.2']
+  ]);
+
+  public static readonly POSTGRES = new DatabaseInstanceEngine('postgres', secretsmanager.SecretRotationApplication.POSTGRES_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.POSTGRES_ROTATION_MULTI_USER, [
+    ['9.3', 'postgres9.3'],
+    ['9.4', 'postgres9.4'],
+    ['9.5', 'postgres9.5'],
+    ['9.6', 'postgres9.6'],
+    ['10', 'postgres10'],
+    ['11', 'postgres11'],
+  ]);
+
+  public static readonly SQL_SERVER_EE = new DatabaseInstanceEngine('sqlserver-ee', secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_MULTI_USER, [
+    ['11', 'sqlserver-ee-11.0'],
+    ['12', 'sqlserver-ee-12.0'],
+    ['13', 'sqlserver-ee-13.0'],
+    ['14', 'sqlserver-ee-14.0']
+  ]);
+
+  public static readonly SQL_SERVER_SE = new DatabaseInstanceEngine('sqlserver-se', secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_MULTI_USER, [
+    ['11', 'sqlserver-se-11.0'],
+    ['12', 'sqlserver-se-12.0'],
+    ['13', 'sqlserver-se-13.0'],
+    ['14', 'sqlserver-se-14.0']
+  ]);
+
+  public static readonly SQL_SERVER_EX = new DatabaseInstanceEngine('sqlserver-ex', secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_MULTI_USER, [
+    ['11', 'sqlserver-ex-11.0'],
+    ['12', 'sqlserver-ex-12.0'],
+    ['13', 'sqlserver-ex-13.0'],
+    ['14', 'sqlserver-ex-14.0']
+  ]);
+
+  public static readonly SQL_SERVER_WEB = new DatabaseInstanceEngine('sqlserver-web', secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_MULTI_USER, [
+    ['11', 'sqlserver-web-11.0'],
+    ['12', 'sqlserver-web-12.0'],
+    ['13', 'sqlserver-web-13.0'],
+    ['14', 'sqlserver-web-14.0']
+  ]);
   /* tslint:enable max-line-length */
 
   /** To make it a compile-time error to pass a DatabaseClusterEngine where a DatabaseInstanceEngine is expected. */

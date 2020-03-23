@@ -1,5 +1,5 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
-import { IRole, ManagedPolicy, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
+import { IRole, ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
@@ -378,22 +378,11 @@ export class DatabaseCluster extends DatabaseClusterBase {
       }
 
       s3ImportRole = new Role(this, "S3ImportRole", {
-        assumedBy: new ServicePrincipal("rds.amazonaws.com"),
-        inlinePolicies: {
-          ReadS3Files: new PolicyDocument({
-            statements: [
-              new PolicyStatement({
-                  actions: [
-                    's3:ListBucket',
-                    's3:GetObject',
-                    's3:GetObjectVersion'
-                  ],
-                  resources: bucketAndObjectArns(props.s3ImportBuckets)
-              })
-            ]
-          }),
-        }
+        assumedBy: new ServicePrincipal("rds.amazonaws.com")
       });
+      for (const bucket of props.s3ImportBuckets) {
+        bucket.grantRead(s3ImportRole);
+      }
     }
 
     let s3ExportRole = props.s3ExportRole;
@@ -404,24 +393,10 @@ export class DatabaseCluster extends DatabaseClusterBase {
 
       s3ExportRole = new Role(this, "S3ExportRole", {
         assumedBy: new ServicePrincipal("rds.amazonaws.com"),
-        inlinePolicies: {
-          WriteS3Files: new PolicyDocument({
-            statements: [
-              new PolicyStatement({
-                  actions: [
-                    's3:ListBucket',
-                    's3:AbortMultipartUpload',
-                    's3:DeleteObject',
-                    's3:GetObject',
-                    's3:ListMultipartUploadParts',
-                    's3:PutObject'
-                  ],
-                  resources: bucketAndObjectArns(props.s3ExportBuckets)
-              })
-            ]
-          }),
-        }
       });
+      for (const bucket of props.s3ExportBuckets) {
+        bucket.grantReadWrite(s3ExportRole);
+      }
     }
 
     let clusterParameterGroup = props.parameterGroup;
@@ -438,15 +413,17 @@ export class DatabaseCluster extends DatabaseClusterBase {
       if (props.engine === DatabaseClusterEngine.AURORA || props.engine === DatabaseClusterEngine.AURORA_MYSQL) {
         if (!clusterParameterGroup) {
           clusterParameterGroup = new ClusterParameterGroup(this, "ClusterParameterGroup", {
-            family: props.engine.getClusterParameterGroupFamily(props.engineVersion)
+            family: props.engine.parameterGroupFamily(props.engineVersion)
           });
         }
 
-        if (s3ImportRole) {
-          clusterParameterGroup.addParameter('aurora_load_from_s3_role', s3ImportRole.roleArn);
-        }
-        if (s3ExportRole) {
-          clusterParameterGroup.addParameter('aurora_select_into_s3_role', s3ExportRole.roleArn);
+        if (clusterParameterGroup instanceof ClusterParameterGroup) {
+          if (s3ImportRole) {
+            clusterParameterGroup.addParameter('aurora_load_from_s3_role', s3ImportRole.roleArn);
+          }
+          if (s3ExportRole) {
+            clusterParameterGroup.addParameter('aurora_select_into_s3_role', s3ExportRole.roleArn);
+          }
         }
       }
     }
@@ -602,16 +579,4 @@ export class DatabaseCluster extends DatabaseClusterBase {
  */
 function databaseInstanceType(instanceType: ec2.InstanceType) {
   return 'db.' + instanceType.toString();
-}
-
-/**
- * Get bucket and object-level ARN's for specified S3 buckets
- */
-function bucketAndObjectArns(buckets: s3.IBucket[]): string[] {
-  const arns: string[] = [];
-  for (const bucket of buckets) {
-    arns.push(bucket.bucketArn);
-    arns.push(bucket.arnForObjects('*'));
-  }
-  return arns;
 }
