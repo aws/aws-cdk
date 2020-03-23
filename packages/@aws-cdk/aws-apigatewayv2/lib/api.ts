@@ -2,6 +2,8 @@ import { ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Construct, IResource, Resource, Stack,  } from '@aws-cdk/core';
 import { CfnApi, CfnApiProps,  HttpRouteOptions, IRouteBase, LambdaRouteOptions, Route  } from '../lib';
+import { IIntegration, Integration, IntegrationProps } from './integration';
+import { HttpMethod, RouteProps } from './route';
 
 /**
  * the HTTP API interface
@@ -25,14 +27,14 @@ export interface HttpApiProps {
    */
   readonly apiName?: string;
   /**
-   * target lambda function for lambda proxy integration.
+   * target lambda function of lambda proxy integration for the $default route
    *
    * @default - None. Specify either `targetHandler` or `targetUrl`
    */
   readonly targetHandler?: lambda.IFunction;
 
   /**
-   * target URL for HTTP proxy integration.
+   * target URL of the HTTP proxy integration for the $default route
    *
    * @default - None. Specify either `targetHandler` or `targetUrl`
    */
@@ -96,6 +98,23 @@ export class HttpApi extends Resource implements IHttpApi {
    */
   public get url() {
     return `https://${this.httpApiId}.execute-api.${Stack.of(this).region}.${Stack.of(this).urlSuffix}`;
+  }
+
+  // public get root(): IRouteBase {
+  //   return new Route(this, `RootRoute${this.httpApiId}`, {
+  //     api: this,
+  //     httpPath: '/',
+  //   });
+  // }
+
+  public addRootRoute(integration?: IIntegration, httpMethod?: HttpMethod): IRouteBase {
+    this.root = new Route(this, `RootRoute${this.httpApiId}`, {
+      api: this,
+      httpPath: '/',
+      integration,
+      httpMethod
+    });
+    return this.root;
   }
 
   /**

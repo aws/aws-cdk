@@ -79,24 +79,20 @@ You can create a `$default route` that acts as a catch-all for requests that don
 When you create HTTP APIs with either `Lambda Proxy Integration` or `HTTP Proxy Integration`, the `$default route` will be created as well.
 
 
+## Defining APIs
 
-To create a root route for an existing `Api` resource
+APIs are defined as a hierarchy of routes. `addLambdaRoute` and `addHttpRoute` can be used to build this hierarchy. The root resource is `api.root`.
 
-```ts
-// create a root route for the API
-httpApi.root = new apigatewayv2.Route(stack, 'RootRoute', {
-  api: httpApi,
-  httpPath: '/',
-  integration: integRootHandler
-});
-```
-And extend different routes from the root route
+For example, the following code defines an API that includes the following HTTP endpoints: ANY /, GET /books, POST /books, GET /books/{book_id}, DELETE /books/{book_id}.
 
 ```ts
 const checkIpUrl = 'https://checkip.amazonaws.com';
 const awsUrl = 'https://aws.amazon.com';
 
-httpApi.root
+const api = new apigatewayv2.HttpApi(this, 'HttpApi');
+api.root
+
+api.root
   // HTTP GET /foo
   .addLambdaRoute('foo', 'Foo', {
     target: handler,

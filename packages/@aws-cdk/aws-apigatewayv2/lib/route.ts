@@ -1,6 +1,7 @@
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Construct, IResource, Resource } from '@aws-cdk/core';
 import * as apigatewayv2 from '../lib';
+import { IIntegration } from './integration';
 
 /**
  * the interface of the Route of API Gateway HTTP API
@@ -280,5 +281,12 @@ export class Route extends Resource implements IRouteBase {
       parent: this,
       pathPart,
     });
+  }
+
+  /**
+   * add integration for this route
+   */
+  public addIntegration(integration:IIntegration): Route {
+    
   }
 }

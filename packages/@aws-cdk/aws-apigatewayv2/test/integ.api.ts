@@ -1,6 +1,7 @@
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import * as apigatewayv2 from '../lib';
+import { HttpMethod, Integration } from '../lib';
 
 const app = new cdk.App();
 
@@ -39,34 +40,20 @@ def handler(event, context):
 const checkIpUrl = 'https://checkip.amazonaws.com';
 const awsUrl = 'https://aws.amazon.com';
 
-// Create a basic HTTP API
-const httpApi = new apigatewayv2.HttpApi(stack, 'HttpApi', {
-  targetUrl: checkIpUrl
+// create a basic HTTP API with http proxy integration as the $default route
+const api = new apigatewayv2.HttpApi(stack, 'HttpApi', {
+  targetUrl: checkIpUrl,
 });
 
-// addLambdaRoute from this API
-// HTTP ANY /fn
-httpApi.addLambdaRoute('/fn', 'LambdaRoute', {
-  target: handler
-});
-
-const httpApi2 = new apigatewayv2.HttpApi(stack, 'HttpApi2', {
-  targetHandler: handler
-});
-
-const integRootHandler = new apigatewayv2.LambdaProxyIntegration(stack, 'IntegRootHandler', {
-  api: httpApi2,
+// create a lambda proxy integration for the api
+const rootIntegration = new apigatewayv2.LambdaProxyIntegration(stack, 'RootIntegration', {
+  api,
   targetHandler: rootHandler
 });
 
-// create a root route for the API
-httpApi2.root = new apigatewayv2.Route(stack, 'RootRoute', {
-  api: httpApi2,
-  httpPath: '/',
-  integration: integRootHandler
-});
-
-httpApi2.root
+// pass the rootIntegration to addRootRoute() to initialize the root route
+// HTTP GET /
+api.addRootRoute(rootIntegration, HttpMethod.GET)
   // HTTP GET /foo
   .addLambdaRoute('foo', 'Foo', {
     target: handler,
@@ -82,3 +69,42 @@ httpApi2.root
     targetUrl: checkIpUrl,
     method: apigatewayv2.HttpMethod.ANY
   });
+
+// // addLambdaRoute from this API
+// // HTTP ANY /fn
+// httpApi.addLambdaRoute('/fn', 'LambdaRoute', {
+//   target: handler
+// });
+
+// const httpApi2 = new apigatewayv2.HttpApi(stack, 'HttpApi2', {
+//   targetHandler: handler
+// });
+
+// const integRootHandler = new apigatewayv2.LambdaProxyIntegration(stack, 'IntegRootHandler', {
+//   api: httpApi2,
+//   targetHandler: rootHandler
+// });
+
+// // create a root route for the API
+// httpApi2.root = new apigatewayv2.Route(stack, 'RootRoute', {
+//   api: httpApi2,
+//   httpPath: '/',
+//   integration: integRootHandler
+// });
+
+// httpApi2.root
+//   // HTTP GET /foo
+//   .addLambdaRoute('foo', 'Foo', {
+//     target: handler,
+//     method: apigatewayv2.HttpMethod.GET
+//   })
+//   // HTTP ANY /foo/aws
+//   .addHttpRoute('aws',  'AwsPage', {
+//     targetUrl: awsUrl,
+//     method: apigatewayv2.HttpMethod.ANY
+//   })
+//   // HTTP ANY /foo/aws/checkip
+//   .addHttpRoute('checkip', 'CheckIp', {
+//     targetUrl: checkIpUrl,
+//     method: apigatewayv2.HttpMethod.ANY
+//   });
