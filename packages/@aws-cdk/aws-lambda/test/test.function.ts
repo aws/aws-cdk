@@ -7,7 +7,6 @@ import * as _ from 'lodash';
 import {Test, testCase} from 'nodeunit';
 import * as path from 'path';
 import * as lambda from '../lib';
-import { CfnOutput } from '@aws-cdk/core';
 
 export = testCase({
   'add incompatible layer'(test: Test) {
@@ -208,10 +207,10 @@ export = testCase({
       });
 
       // WHEN
-      new CfnOutput(stack1, 'CurrentVersionArn', {
+      new cdk.CfnOutput(stack1, 'CurrentVersionArn', {
         value: fn1.currentVersion.functionArn
       });
-      new CfnOutput(stack2, 'CurrentVersionArn', {
+      new cdk.CfnOutput(stack2, 'CurrentVersionArn', {
         value: fn2.currentVersion.functionArn
       });
 

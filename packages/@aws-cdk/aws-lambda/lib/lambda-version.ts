@@ -252,4 +252,3 @@ export class Version extends QualifiedFunctionBase implements IVersion {
 export function extractQualifierFromArn(arn: string) {
   return Fn.select(7, Fn.split(':', arn));
 }
-
