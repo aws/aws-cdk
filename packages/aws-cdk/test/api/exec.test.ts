@@ -1,17 +1,18 @@
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cdk from '@aws-cdk/core';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
+import * as semver from 'semver';
 import { ImportMock } from 'ts-mock-imports';
 import { SdkProvider } from '../../lib';
 import { execProgram } from '../../lib/api/cxapp/exec';
 import { Configuration, Settings } from '../../lib/settings';
-import * as cli from '../../lib/version';
 
 // We need to increase the default 5s jest
 // timeout for async tests because the 'execProgram' invocation
 // might take a while :\
-const FIVE_SECOND_TIMEOUT = 10000;
+const TEN_SECOND_TIMEOUT = 10000;
 
 function createApp(outdir: string): cdk.App {
 
@@ -28,21 +29,26 @@ function createApp(outdir: string): cdk.App {
     return app;
 }
 
-test('execProgram throws when framework version > cli version', async () => {
+test('execProgram throws when manifest version > schema version', async () => {
 
     const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'exec-tests'));
-    const manifestFilePath = path.join(outdir, 'manifest.json');
 
     const app = createApp(outdir);
 
-    app.synth();
+    const currentSchemaVersion = cxschema.Manifest.version();
 
-    // patch manifest version to simulate a larger framework version.
-    const manifest = JSON.parse(fs.readFileSync(manifestFilePath, "UTF-8"));
-    manifest.version = "999.0.0";
-    fs.writeFileSync(manifestFilePath, JSON.stringify(manifest));
+    // this mock will cause the framework to use a greater schema version that the real one,
+    // causing the cli to fail because (hopefully).
+    const mockVersionNumber = ImportMock.mockFunction(cxschema.Manifest, 'version', semver.inc(currentSchemaVersion, 'major'));
+    try {
+        app.synth();
+    } catch (err) {
+        fail(err.message);
+    } finally {
+        mockVersionNumber.restore();
+    }
 
-    const expectedError = `A newer version of the CDK CLI (>= ${manifest.version}) is necessary to interact with this app`;
+    const expectedError = `A newer version of the CDK CLI (>= ) is necessary to interact with this app`;
 
     const sdkProvider = await SdkProvider.withAwsCliCompatibleDefaults();
 
@@ -58,9 +64,9 @@ test('execProgram throws when framework version > cli version', async () => {
         expect(err.message).toEqual(expectedError);
     }
 
-}, FIVE_SECOND_TIMEOUT);
+}, TEN_SECOND_TIMEOUT);
 
-test('execProgram does not throw when framework version = cli version', async () => {
+test('execProgram does not throw when manifest version = schema version', async () => {
 
     const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'exec-tests'));
 
@@ -81,22 +87,17 @@ test('execProgram does not throw when framework version = cli version', async ()
         fail(err.message);
     }
 
-}, FIVE_SECOND_TIMEOUT);
+}, TEN_SECOND_TIMEOUT);
 
-test('execProgram does not throw when framework version < cli version', async () => {
+test('execProgram does not throw when manifest version < schema version', async () => {
 
     const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'exec-tests'));
-    const manifestFilePath = path.join(outdir, 'manifest.json');
 
     const app = createApp(outdir);
 
-    app.synth();
+    const currentSchemaVersion = cxschema.Manifest.version();
 
-    // patch manifest version to make sure we don't compare 0.0.0 and 0.0.0 in case the mock
-    // is faulty. (maybe someone changes the method name...)
-    const manifest = JSON.parse(fs.readFileSync(manifestFilePath, "UTF-8"));
-    manifest.version = "888.0.0";
-    fs.writeFileSync(manifestFilePath, JSON.stringify(manifest));
+    app.synth();
 
     const sdkProvider = await SdkProvider.withAwsCliCompatibleDefaults();
 
@@ -105,7 +106,9 @@ test('execProgram does not throw when framework version < cli version', async ()
         app: outdir
     });
 
-    const mockVersionNumber = ImportMock.mockFunction(cli, 'versionNumber', "999.0.0");
+    // this mock will cause the cli to think its exepcted schema version is
+    // greater that the version created in the manifest, which is what we are testing for.
+    const mockVersionNumber = ImportMock.mockFunction(cxschema.Manifest, 'version', semver.inc(currentSchemaVersion, 'major'));
     try {
         await execProgram(sdkProvider, config);
     } catch (err) {
@@ -114,4 +117,4 @@ test('execProgram does not throw when framework version < cli version', async ()
         mockVersionNumber.restore();
     }
 
-}, FIVE_SECOND_TIMEOUT);
+}, TEN_SECOND_TIMEOUT);
