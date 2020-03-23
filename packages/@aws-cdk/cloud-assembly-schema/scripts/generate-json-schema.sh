@@ -23,3 +23,5 @@ typescript-json-schema                           \
     --noExtraProps
 
 node ${packagedir}/scripts/patch-json-schema.js
+
+git diff ${packagedir}/schema/cloud-assembly.schema.json
