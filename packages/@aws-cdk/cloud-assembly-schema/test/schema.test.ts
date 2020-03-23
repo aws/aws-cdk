@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
+import * as semver from 'semver';
 import { AssemblyManifest, Manifest, StackTagsMetadataEntry } from '../lib';
 import { hashObject } from './fingerprint';
 
@@ -32,7 +33,7 @@ test('manifest load', () => {
   expect(loaded).toMatchSnapshot();
 });
 
-test('schema has the correct hash', () => {
+test('schema has the correct version and hash', () => {
 
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const expectedHash = require('./schema.expected.json').hash;
@@ -42,7 +43,17 @@ test('schema has the correct hash', () => {
 
   const schemaHash = hashObject(schema);
 
-  expect(schemaHash).toEqual(expectedHash);
+  if (schemaHash !== expectedHash) {
+
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const version = require('../schema/cloud-assembly.metadata.json').version;
+    const expectedVersion = semver.inc(version, 'major');
+    expect(version).toEqual(expectedVersion);
+
+    // we also require the hash to be equal, so fail anyway.
+    // this is to prevent a manual change to the version, without changing the hash.
+    expect(schemaHash).toEqual(expectedHash);
+  }
 
 });
 
