@@ -49,12 +49,18 @@ const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargat
     image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
   },
 });
+
+loadBalancedFargateService.targetGroup.configureHealthCheck({
+  path: "/custom-health-path",
+});
 ```
 
 Instead of providing a cluster you can specify a VPC and CDK will create a new ECS cluster.
 If you deploy multiple services CDK will only create one cluster per VPC.
 
 You can omit `cluster` and `vpc` to let CDK create a new VPC with two AZs and create a cluster inside this VPC.
+
+You can customize the health check for your target group; otherwise it defaults to `HTTP` over port `80` hitting path `/`.
 
 Additionally, if more than one application target group are needed, instantiate one of the following:
 
