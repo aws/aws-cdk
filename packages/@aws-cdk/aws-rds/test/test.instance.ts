@@ -719,7 +719,7 @@ export = {
     test.done();
   },
 
-  'create an instance from snapshot with maxiumum allocated storage'(test: Test) {
+  'create an instance from snapshot with maximum allocated storage'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
