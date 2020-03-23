@@ -11,7 +11,9 @@ const stack = new cdk.Stack(app, 'batch-events');
 const queue = new batch.JobQueue(stack, 'MyQueue', {
   computeEnvironments: [
     {
-      computeEnvironment: new batch.ComputeEnvironment(stack, 'ComputeEnvironment'),
+      computeEnvironment: new batch.ComputeEnvironment(stack, 'ComputeEnvironment', {
+        managed: false
+      }),
       order: 1
     }
   ]

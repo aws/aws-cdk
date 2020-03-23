@@ -23,7 +23,7 @@
           "ComputeEnvironmentOrder": [
             {
               "ComputeEnvironment": {
-                "Ref": "MyQueueResourceBatchComputeEnvironment03CD666B"
+                "Ref": "ComputeEnvironmentC570994D"
               },
               "Order": 1
             }
@@ -32,12 +32,12 @@
           "State": "ENABLED"
         }
       },
-      "MyQueueResourceBatchComputeEnvironment03CD666B": {
+      "ComputeEnvironmentC570994D": {
         "Type": "AWS::Batch::ComputeEnvironment",
         "Properties": {
           "ServiceRole": {
             "Fn::GetAtt": [
-              "MyQueueResourceBatchComputeEnvironmentResourceServiceInstanceRole527D247A",
+              "ComputeEnvironmentResourceServiceInstanceRoleDC6D4445",
               "Arn"
             ]
           },
@@ -62,7 +62,7 @@
           }
         }
       },
-      "MyQueueResourceBatchComputeEnvironmentResourceServiceInstanceRole527D247A": {
+      "ComputeEnvironmentResourceServiceInstanceRoleDC6D4445": {
         "Type": "AWS::IAM::Role",
         "Properties": {
           "AssumeRolePolicyDocument": {

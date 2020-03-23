@@ -11,7 +11,9 @@ test('use aws batch job as an eventrule target', () => {
   const jobQueue = new batch.JobQueue(stack, 'MyQueue', {
     computeEnvironments: [
       {
-        computeEnvironment: new batch.ComputeEnvironment(stack, 'ComputeEnvironment'),
+        computeEnvironment: new batch.ComputeEnvironment(stack, 'ComputeEnvironment', {
+          managed: false
+        }),
         order: 1
       }
     ]
