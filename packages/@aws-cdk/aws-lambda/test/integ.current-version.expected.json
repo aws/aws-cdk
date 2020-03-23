@@ -85,7 +85,7 @@
         "MyLambdaServiceRole4539ECB6"
       ]
     },
-    "MyLambdaCurrentVersionE7A382CC73a23add9934a83560eb6afdb1ec3e65": {
+    "MyLambdaCurrentVersionE7A382CC1a5358ec9d2d5ef45baeba2fbb9fa9bd": {
       "Type": "AWS::Lambda::Version",
       "Properties": {
         "FunctionName": {
@@ -96,6 +96,21 @@
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"
     },
+    "MyLambdaCurrentVersionEventInvokeConfigD120DC68": {
+      "Type": "AWS::Lambda::EventInvokeConfig",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "MyLambdaCCE802FB"
+        },
+        "Qualifier": {
+          "Fn::GetAtt": [
+            "MyLambdaCurrentVersionE7A382CC1a5358ec9d2d5ef45baeba2fbb9fa9bd",
+            "Version"
+          ]
+        },
+        "MaximumRetryAttempts": 1
+      }
+    },
     "MyLambdaCurrentVersionAliaslive9151E913": {
       "Type": "AWS::Lambda::Alias",
       "Properties": {
@@ -104,7 +119,7 @@
         },
         "FunctionVersion": {
           "Fn::GetAtt": [
-            "MyLambdaCurrentVersionE7A382CC73a23add9934a83560eb6afdb1ec3e65",
+            "MyLambdaCurrentVersionE7A382CC1a5358ec9d2d5ef45baeba2fbb9fa9bd",
             "Version"
           ]
         },

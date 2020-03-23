@@ -100,7 +100,7 @@ property.
 const fn = new lambda.Function(this, 'MyFunction', {
   currentVersionOptions: {
     removalPolicy: RemovalPolicy.RETAIN, // retain old versions
-    retryAttempts: 5                     // async retry attempts
+    retryAttempts: 1                     // async retry attempts
   }
 });
 
