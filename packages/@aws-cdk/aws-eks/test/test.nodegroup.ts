@@ -54,7 +54,7 @@ export = {
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
       remoteAccess: {
-        ec2SshKey: 'foo',
+        sshKeyName: 'foo',
         sourceSecurityGroups: [ new ec2.SecurityGroup(stack, 'SG', { vpc }) ]
       }
      });
@@ -81,7 +81,7 @@ export = {
 
     // WHEN
     const cluster = new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: true, defaultCapacity: 0 });
-    new eks.Nodegroup(stack, 'Nodegroup', { cluster, forceUpdateEnabled: false });
+    new eks.Nodegroup(stack, 'Nodegroup', { cluster, forceUpdate: false });
 
     // THEN
     expect(stack).to(haveResourceLike('AWS::EKS::Nodegroup', {
@@ -119,7 +119,7 @@ export = {
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
       remoteAccess: {
-        ec2SshKey: 'foo',
+        sshKeyName: 'foo',
       }
     });
 

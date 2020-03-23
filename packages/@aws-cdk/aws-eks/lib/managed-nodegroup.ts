@@ -16,17 +16,12 @@ export interface INodegroup extends IResource {
 }
 
 /**
- * The AMI type for your node group. GPU instance types should use the `AL2_x86_64_GPU` AMI type, which uses the Amazon EKS-optimized
- * Linux AMI with GPU support. Non-GPU instances should use the `AL2_x86_64` AMI type, which uses the Amazon EKS-optimized Linux AMI.
+ * The AMI type for your node group. GPU instance types should use the `AL2_x86_64_GPU` AMI type, which uses the
+ * Amazon EKS-optimized Linux AMI with GPU support. Non-GPU instances should use the `AL2_x86_64` AMI type, which
+ * uses the Amazon EKS-optimized Linux AMI.
  */
 export enum NodegroupAmiType {
-  /**
-   * Amazon EKS-optimized Linux AMI
-   */
   AL2_X86_64 = 'AL2_x86_64',
-  /**
-   *  Amazon EKS-optimized Linux AMI with GPU support
-   */
   AL2_X86_64_GPU = 'AL2_x86_64_GPU',
 }
 
@@ -39,10 +34,11 @@ export interface NodegroupRemoteAccess {
   /**
    * The Amazon EC2 SSH key that provides access for SSH communication with the worker nodes in the managed node group.
    */
-  readonly ec2SshKey: string;
+  readonly sshKeyName: string;
   /**
-   * The security groups that are allowed SSH access (port 22) to the worker nodes. If you specify an Amazon EC2 SSH key but do not
-   * specify a source security group when you create a managed node group, then port 22 on the worker nodes is opened to the internet (0.0.0.0/0).
+   * The security groups that are allowed SSH access (port 22) to the worker nodes. If you specify an Amazon EC2 SSH
+   * key but do not specify a source security group when you create a managed node group, then port 22 on the worker
+   * nodes is opened to the internet (0.0.0.0/0).
    *
    * @default - port 22 on the worker nodes is opened to the internet (0.0.0.0/0)
    */
@@ -60,8 +56,8 @@ export interface NodegroupOptions {
    */
   readonly nodegroupName?: string;
   /**
-   * The subnets to use for the Auto Scaling group that is created for your node group.
-   * By specifying the SubnetSelection, the selected subnets will automatically apply required tags i.e.
+   * The subnets to use for the Auto Scaling group that is created for your node group. By specifying the
+   * SubnetSelection, the selected subnets will automatically apply required tags i.e.
    * `kubernetes.io/cluster/CLUSTER_NAME` with a value of `shared`, where `CLUSTER_NAME` is replaced with
    * the name of your cluster.
    *
@@ -69,23 +65,22 @@ export interface NodegroupOptions {
    */
   readonly subnets?: SubnetSelection;
   /**
-   * The AMI type for your node group. GPU instance types should use the `AL2_x86_64_GPU` AMI type, which uses the Amazon EKS-optimized
-   * Linux AMI with GPU support. Non-GPU instances should use the `AL2_x86_64` AMI type, which uses the Amazon EKS-optimized Linux AMI.
+   * The AMI type for your node group.
    *
-   * @default - AL2_x86_64
+   * @default AL2_x86_64
    */
   readonly amiType?: NodegroupAmiType;
   /**
    * The root device disk size (in GiB) for your node group instances.
    *
-   * @default - 20
+   * @default 20
    */
   readonly diskSize?: number;
   /**
-   * The current number of worker nodes that the managed node group should maintain. If not specified, the nodewgroup will initially
-   * create `minSize` instances.
+   * The current number of worker nodes that the managed node group should maintain. If not specified,
+   * the nodewgroup will initially create `minSize` instances.
    *
-   * @default - 2
+   * @default 2
    */
   readonly desiredSize?: number;
   /**
@@ -97,22 +92,24 @@ export interface NodegroupOptions {
   /**
    * The minimum number of worker nodes that the managed node group can scale in to. This number must be greater than zero.
    *
-   * @default - 1
+   * @default 1
    */
   readonly minSize?: number;
   /**
-   * Force the update if the existing node group's pods are unable to be drained due to a pod disruption budget issue. If an update fails
-   * because pods could not be drained, you can force the update after it fails to terminate the old node whether or not any pods are
+   * Force the update if the existing node group's pods are unable to be drained due to a pod disruption budget issue.
+   * If an update fails because pods could not be drained, you can force the update after it fails to terminate the old
+   * node whether or not any pods are
    * running on the node.
    *
    * @default true
    */
-  readonly forceUpdateEnabled?: boolean;
+  readonly forceUpdate?: boolean;
   /**
-   * The instance type to use for your node group. Currently, you can specify a single instance type for a node group. The default value
-   * for this parameter is `t3.medium`. If you choose a GPU instance type, be sure to specify the `AL2_x86_64_GPU` with the amiType parameter.
+   * The instance type to use for your node group. Currently, you can specify a single instance type for a node group.
+   * The default value for this parameter is `t3.medium`. If you choose a GPU instance type, be sure to specify the
+   * `AL2_x86_64_GPU` with the amiType parameter.
    *
-   * @default - t3.medium
+   * @default t3.medium
    */
   readonly instanceType?: InstanceType;
   /**
@@ -123,9 +120,9 @@ export interface NodegroupOptions {
   readonly labels?: { [name: string]: string };
   /**
    * The IAM role to associate with your node group. The Amazon EKS worker node kubelet daemon
-   * makes calls to AWS APIs on your behalf. Worker nodes receive permissions for these API calls through an IAM instance profile
-   * and associated policies. Before you can launch worker nodes and register them into a cluster, you must create an IAM role for
-   * those worker nodes to use when they are launched.
+   * makes calls to AWS APIs on your behalf. Worker nodes receive permissions for these API calls through
+   * an IAM instance profile and associated policies. Before you can launch worker nodes and register them
+   * into a cluster, you must create an IAM role for those worker nodes to use when they are launched.
    *
    * @default - None. Auto-generated if not specified.
    */
@@ -137,17 +134,17 @@ export interface NodegroupOptions {
    */
   readonly releaseVersion?: string;
   /**
-   * The remote access (SSH) configuration to use with your node group. Disabled by default, however, if you specify an Amazon EC2
-   * SSH key but do not specify a source security group when you create a managed node group, then port 22 on the worker nodes is
-   * opened to the internet (0.0.0.0/0)
+   * The remote access (SSH) configuration to use with your node group. Disabled by default, however, if you
+   * specify an Amazon EC2 SSH key but do not specify a source security group when you create a managed node group,
+   * then port 22 on the worker nodes is opened to the internet (0.0.0.0/0)
    *
    * @default - disabled
    */
   readonly remoteAccess?: NodegroupRemoteAccess;
   /**
-   * The metadata to apply to the node group to assist with categorization and organization. Each tag consists of a key and an optional
-   * value, both of which you define. Node group tags do not propagate to any other resources associated with the node group, such as the
-   * Amazon EC2 instances or subnets.
+   * The metadata to apply to the node group to assist with categorization and organization. Each tag consists of
+   * a key and an optional value, both of which you define. Node group tags do not propagate to any other resources
+   * associated with the node group, such as the Amazon EC2 instances or subnets.
    *
    * @default - None
    */
@@ -243,12 +240,12 @@ export class Nodegroup extends Resource implements INodegroup {
       subnets: this.cluster.vpc.selectSubnets(props.subnets).subnetIds,
       amiType: props.amiType,
       diskSize: props.diskSize,
-      forceUpdateEnabled: props.forceUpdateEnabled ?? true,
+      forceUpdateEnabled: props.forceUpdate ?? true,
       instanceTypes: props.instanceType ? [props.instanceType.toString()] : undefined,
       labels: props.labels,
       releaseVersion: props.releaseVersion,
       remoteAccess: props.remoteAccess ? {
-        ec2SshKey: props.remoteAccess.ec2SshKey,
+        ec2SshKey: props.remoteAccess.sshKeyName,
         sourceSecurityGroups: props.remoteAccess.sourceSecurityGroups ?
           props.remoteAccess.sourceSecurityGroups.map(m => m.securityGroupId) : undefined
       } : undefined,
