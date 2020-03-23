@@ -100,7 +100,7 @@ You can add customized node group through `cluster.addNodegroup()`:
 
 ```ts
 cluster.addNodegroup('nodegroup', {
-  instanceTypes: new ec2.InstanceType('m5.large'),
+  instanceType: new ec2.InstanceType('m5.large'),
   minSize: 4,
 });
 ```
