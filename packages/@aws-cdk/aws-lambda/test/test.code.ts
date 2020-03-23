@@ -83,43 +83,6 @@ export = {
       }, ResourcePart.CompleteDefinition));
       test.done();
     },
-
-    'codeHash is supported for assets and inline'(test: Test) {
-      // GIVEN
-      const stack = new cdk.Stack();
-
-      // WHEN
-      const asset = new lambda.Function(stack, 'AssetCode', {
-        code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
-        runtime: lambda.Runtime.NODEJS_12_X,
-        handler: 'index.handler'
-      });
-
-      const inline = new lambda.Function(stack, 'InlineCode', {
-        code: lambda.Code.fromInline('boom boom'),
-        runtime: lambda.Runtime.NODEJS_12_X,
-        handler: 'index.handler'
-      });
-
-      const bucket = new lambda.Function(stack, 'S3Code', {
-        code: lambda.Code.fromBucket(s3.Bucket.fromBucketName(stack, 'Bucket', 'bucket'), 'key'),
-        runtime: lambda.Runtime.NODEJS_12_X,
-        handler: 'index.handler'
-      });
-
-      const params = new lambda.Function(stack, 'CfnParams', {
-        code: lambda.Code.fromCfnParameters(),
-        runtime: lambda.Runtime.NODEJS_12_X,
-        handler: 'index.handler'
-      });
-
-      // THEN
-      test.deepEqual(asset._codeHash, '9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232');
-      test.deepEqual(inline._codeHash, '58ad733fe276cb7b9b171b0beafad40f43b6d1cd68a1b93327d3655f739dfa0e');
-      test.deepEqual(bucket._codeHash, undefined);
-      test.deepEqual(params._codeHash, undefined);
-      test.done();
-    }
   },
 
   'lambda.Code.fromCfnParameters': {

@@ -1,7 +1,6 @@
 import * as s3 from '@aws-cdk/aws-s3';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import * as cdk from '@aws-cdk/core';
-import * as crypto from 'crypto';
 
 export abstract class Code {
   /**
@@ -105,12 +104,6 @@ export interface CodeConfig {
    * Inline code (mutually exclusive with `s3Location`).
    */
   readonly inlineCode?: string;
-
-  /**
-   * The hash of the lambda code (if applicable) or `undefined` if it cannot be
-   * computed.
-   */
-  readonly codeHash?: string;
 }
 
 /**
@@ -147,7 +140,6 @@ export class S3Code extends Code {
  */
 export class InlineCode extends Code {
   public readonly isInline = true;
-  private readonly codeHash: string;
 
   constructor(private code: string) {
     super();
@@ -159,14 +151,11 @@ export class InlineCode extends Code {
     if (code.length > 4096) {
       throw new Error("Lambda source is too large, must be <= 4096 but is " + code.length);
     }
-
-    this.codeHash = crypto.createHash('sha256').update(code).digest('hex');
   }
 
   public bind(_scope: cdk.Construct): CodeConfig {
     return {
       inlineCode: this.code,
-      codeHash: this.codeHash
     };
   }
 }
@@ -200,7 +189,6 @@ export class AssetCode extends Code {
     }
 
     return {
-      codeHash: this.asset.sourceHash,
       s3Location: {
         bucketName: this.asset.s3BucketName,
         objectKey: this.asset.s3ObjectKey

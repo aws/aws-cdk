@@ -7,18 +7,11 @@ export function calculateFunctionHash(fn: LambdaFunction) {
 
   const functionResource = fn.node.defaultChild as CfnResource;
 
-  if (!fn._codeHash) {
-    throw new Error(`assertion failed: codeHash is expected to have a value if currentVersion is defined`);
-  }
-
   // render the cloudformation resource from this function
   const config = stack.resolve((functionResource as any)._toCloudFormation());
 
   const hash = crypto.createHash('md5');
-  hash.update(JSON.stringify({
-    code: fn._codeHash,
-    config
-  }));
+  hash.update(JSON.stringify(config));
 
   return hash.digest('hex');
 }

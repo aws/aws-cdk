@@ -287,12 +287,6 @@ export class Function extends FunctionBase {
       return this._currentVersion;
     }
 
-    if (!this._codeHash) {
-      throw new Error(
-        `cannot automatically create a version resource for this function since the hash of the code cannot be calculated. ` +
-        `This is only supported for "lambda.Code.fromAsset" and "lambda.Code.fromInline"`);
-    }
-
     this._currentVersion = new Version(this, `CurrentVersion`, {
       lambda: this,
       description: `${this.node.path}.currentVersion (created by AWS CDK)`,
@@ -470,11 +464,6 @@ export class Function extends FunctionBase {
 
   public readonly permissionsNode = this.node;
 
-  /**
-   * @internal
-   */
-  public _codeHash?: string;
-
   protected readonly canCreatePermissions = true;
 
   private readonly layers: ILayerVersion[] = [];
@@ -520,7 +509,6 @@ export class Function extends FunctionBase {
     verifyCodeConfig(code, props.runtime);
 
     this.deadLetterQueue = this.buildDeadLetterQueue(props);
-    this._codeHash = code.codeHash;
 
     const resource: CfnFunction = new CfnFunction(this, 'Resource', {
       functionName: this.physicalName,
@@ -820,5 +808,5 @@ export function verifyCodeConfig(code: CodeConfig, runtime: Runtime) {
   // if this is inline code, check that the runtime supports
   if (code.inlineCode && !runtime.supportsInlineCode) {
     throw new Error(`Inline source not allowed for ${runtime.name}`);
-  }}
-
+  }
+}

@@ -185,22 +185,6 @@ export = testCase({
 
   'currentVersion': {
 
-    'cannot be created for unsupported lambda.Code types'(test: Test) {
-      // GIVEN
-      const stack = new cdk.Stack();
-
-      // WHEN
-      const fn = new lambda.Function(stack, 'fn', {
-        handler: 'foo',
-        runtime: lambda.Runtime.NODEJS_12_X,
-        code: lambda.Code.fromCfnParameters()
-      });
-
-      // THEN
-      test.throws(() => fn.currentVersion, /cannot automatically create a version resource for this function/);
-      test.done();
-    },
-
     // see test.function-hash.ts for more coverage for this
     'logical id of version is based on the function hash'(test: Test) {
       // GIVEN
@@ -235,18 +219,17 @@ export = testCase({
       expect(stack1).to(haveOutput({
         outputName: 'CurrentVersionArn',
         outputValue: {
-          Ref: "MyFunctionCurrentVersion197490AFa10cabe18b67f28a68a1ad20c7468ba6"
+          Ref: "MyFunctionCurrentVersion197490AF1a9a73cf5c46aec5e40fb202042eb60b"
         }
       }));
       expect(stack2).to(haveOutput({
         outputName: 'CurrentVersionArn',
         outputValue: {
-          Ref: "MyFunctionCurrentVersion197490AF35a71af54fb82ee3ff968834b82d088c"
+          Ref: "MyFunctionCurrentVersion197490AF8360a045031060e3117269037b7bffd6"
         }
       }));
       test.done();
     }
-
   },
 
 });

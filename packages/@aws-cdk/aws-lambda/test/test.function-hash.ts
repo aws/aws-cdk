@@ -39,8 +39,8 @@ export = {
         handler: 'index.handler'
       });
 
-      test.deepEqual(calculateFunctionHash(fn1), 'a1dd0e860a511e65bf720e3bd0f6b6a9');
-      test.deepEqual(calculateFunctionHash(fn2), 'a1dd0e860a511e65bf720e3bd0f6b6a9');
+      test.deepEqual(calculateFunctionHash(fn1), calculateFunctionHash(fn2));
+      test.deepEqual(calculateFunctionHash(fn1), 'aea5463dba236007afe91d2832b3c836');
       test.done();
     },
   },
@@ -53,8 +53,8 @@ export = {
       handler: 'index.handler'
     });
 
-    test.notDeepEqual(calculateFunctionHash(fn1), 'a1dd0e860a511e65bf720e3bd0f6b6a9');
-    test.deepEqual(calculateFunctionHash(fn1), '1ad32fcab0aa68bf36825df8e6f0a7a2');
+    test.notDeepEqual(calculateFunctionHash(fn1), 'aea5463dba236007afe91d2832b3c836');
+    test.deepEqual(calculateFunctionHash(fn1), '979b4a14c6f174c745cdbcd1036cf844');
     test.done();
   },
 
@@ -79,8 +79,8 @@ export = {
       }
     });
 
-    test.deepEqual(calculateFunctionHash(fn1), 'ea4daca738e83756eec5a3a3c806d54d');
-    test.deepEqual(calculateFunctionHash(fn2), '2cb1ed852c739c60254b3bbfb258e513');
+    test.deepEqual(calculateFunctionHash(fn1), 'd1bc824ac5022b7d62d8b12dbae6580c');
+    test.deepEqual(calculateFunctionHash(fn2), '3b683d05465012b0aa9c4ff53b32f014');
     test.done();
   },
 
@@ -105,8 +105,28 @@ export = {
       }
     });
 
-    test.deepEqual(calculateFunctionHash(fn1), 'ea4daca738e83756eec5a3a3c806d54d');
-    test.deepEqual(calculateFunctionHash(fn2), '4bdbec98b3c838410b5637fb71101514');
+    test.deepEqual(calculateFunctionHash(fn1), 'd1bc824ac5022b7d62d8b12dbae6580c');
+    test.deepEqual(calculateFunctionHash(fn2), '0f168f0772463e8e547bb3800937e54d');
+    test.done();
+  },
+
+  'inline code change impacts the hash'(test: Test) {
+    const stack1 = new Stack();
+    const fn1 = new lambda.Function(stack1, 'MyFunction', {
+      runtime: lambda.Runtime.NODEJS_12_X,
+      code: lambda.Code.fromInline('foo'),
+      handler: 'index.handler',
+    });
+
+    const stack2 = new Stack();
+    const fn2 = new lambda.Function(stack2, 'MyFunction', {
+      runtime: lambda.Runtime.NODEJS_10_X,
+      code: lambda.Code.fromInline('foo bar'),
+      handler: 'index.handler',
+    });
+
+    test.deepEqual(calculateFunctionHash(fn1), 'ebf2e871fc6a3062e8bdcc5ebe16db3f');
+    test.deepEqual(calculateFunctionHash(fn2), 'ffedf6424a18a594a513129dc97bf53c');
     test.done();
   }
 };
