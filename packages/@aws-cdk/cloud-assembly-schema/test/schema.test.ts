@@ -1,7 +1,6 @@
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import * as semver from 'semver';
 import { AssemblyManifest, Manifest, StackTagsMetadataEntry } from '../lib';
 import { hashObject } from './fingerprint';
 
@@ -33,27 +32,31 @@ test('manifest load', () => {
   expect(loaded).toMatchSnapshot();
 });
 
-test('schema has the correct version and hash', () => {
+test('schema has the correct hash', () => {
 
   // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const expectedHash = require('./schema.expected.json').hash;
+  const expected = require('./schema.expected.json');
 
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const schema = require('../schema/cloud-assembly.schema.json');
 
   const schemaHash = hashObject(schema);
 
-  if (schemaHash !== expectedHash) {
+  expect(schemaHash).toEqual(expected.hash);
 
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const version = require('../schema/cloud-assembly.metadata.json').version;
-    const expectedVersion = semver.inc(version, 'major');
-    expect(version).toEqual(expectedVersion);
+});
 
-    // we also require the hash to be equal, so fail anyway.
-    // this is to prevent a manual change to the version, without changing the hash.
-    expect(schemaHash).toEqual(expectedHash);
-  }
+test('schema has the correct version', () => {
+
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const expected = require('./schema.expected.json');
+
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const metadata = require('../schema/cloud-assembly.metadata.json');
+
+  const schemaVersion = metadata.version;
+
+  expect(schemaVersion).toEqual(expected.version);
 
 });
 
