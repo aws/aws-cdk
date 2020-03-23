@@ -85,15 +85,18 @@ export class DockerImageAsset extends Construct implements assets.IAsset {
     validateProps(props);
 
     // resolve full path
-    const dir = path.resolve(props.directory);
+    const fullPath = path.resolve(props.directory, props.file ?? 'Dockerfile');
+    const fileName = path.basename(fullPath);
+    const dir = path.dirname(fullPath);
+
+    // verify working directory exists
     if (!fs.existsSync(dir)) {
       throw new Error(`Cannot find image directory at ${dir}`);
     }
 
     // validate the docker file exists
-    const file = path.join(dir, props.file || 'Dockerfile');
-    if (!fs.existsSync(file)) {
-      throw new Error(`Cannot find file at ${file}`);
+    if (!fs.existsSync(fullPath)) {
+      throw new Error(`Cannot find file at ${fullPath}`);
     }
 
     let exclude: string[] = props.exclude || [];
@@ -107,7 +110,7 @@ export class DockerImageAsset extends Construct implements assets.IAsset {
     // make sure the docker file and the dockerignore file end up in the staging area
     // see https://github.com/aws/aws-cdk/issues/6004
     exclude = exclude.filter(ignoreExpression => {
-      return !(minimatch(file, ignoreExpression, { matchBase: true }) ||
+      return !(minimatch(fileName, ignoreExpression, { matchBase: true }) ||
              minimatch(ignore, ignoreExpression, { matchBase: true }));
     });
 
@@ -120,7 +123,7 @@ export class DockerImageAsset extends Construct implements assets.IAsset {
     if (props.extraHash)      { extraHash.user = props.extraHash; }
     if (props.buildArgs)      { extraHash.buildArgs = props.buildArgs; }
     if (props.target)         { extraHash.target = props.target; }
-    if (props.file)           { extraHash.file = props.file; }
+    if (props.file)           { extraHash.file = fileName; }
     if (props.repositoryName) { extraHash.repositoryName = props.repositoryName; }
 
     // add "salt" to the hash in order to invalidate the image in the upgrade to

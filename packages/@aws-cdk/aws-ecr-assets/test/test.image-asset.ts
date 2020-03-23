@@ -305,5 +305,21 @@ export = {
     test.deepEqual(asset6.sourceHash, '594ae5a5d23367d18468fefca5a4e56ca83b077d1274a1f812f55c8c9ead9eaa');
     test.deepEqual(asset7.sourceHash, 'bc007f81fe1dd0f0bbb24af898eba3f4f15edbff19b7abb3fac928439486d667');
     test.done();
+  },
+
+  'Dockerfile can be referenced using a directory in `file` argument'(test: Test) {
+    const app = new App();
+    const stack = new Stack(app, 'stack');
+
+    const image = new DockerImageAsset(stack, 'Asset1', {
+      directory: path.resolve(__dirname),
+      file: 'demo-image/Dockerfile'
+    });
+
+    const session = app.synth();
+
+    test.ok(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'Dockerfile')));
+    test.ok(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'index.py')));
+    test.done();
   }
 };
