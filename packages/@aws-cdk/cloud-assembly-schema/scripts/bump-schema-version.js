@@ -27,6 +27,8 @@ const expectedHash = expected.hash;
 
 if (currentHash != expectedHash) {
 
+    console.log('Detected changes')
+
     const currentVersion = metadata.version;
     const newVersion = semver.inc(metadata.version, 'major');
 
