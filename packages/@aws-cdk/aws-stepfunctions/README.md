@@ -35,7 +35,7 @@ const submitLambda = new lambda.Function(this, 'SubmitLambda', { ... });
 const getStatusLambda = new lambda.Function(this, 'CheckLambda', { ... });
 
 const submitJob = new sfn.Task(this, 'Submit Job', {
-    task: new tasks.RunLambdaTask(submitLambda),
+    task: new tasks.InvokeFunction(submitLambda),
     // Put Lambda's result here in the execution's state object
     resultPath: '$.guid',
 });
@@ -45,7 +45,7 @@ const waitX = new sfn.Wait(this, 'Wait X Seconds', {
 });
 
 const getStatus = new sfn.Task(this, 'Get Job Status', {
-    task: new tasks.RunLambdaTask(getStatusLambda),
+    task: new tasks.InvokeFunction(getStatusLambda),
     // Pass just the field named "guid" into the Lambda, put the
     // Lambda's result in a field called "status"
     inputPath: '$.guid',
@@ -58,7 +58,7 @@ const jobFailed = new sfn.Fail(this, 'Job Failed', {
 });
 
 const finalStatus = new sfn.Task(this, 'Get Final Job Status', {
-    task: new tasks.RunLambdaTask(getStatusLambda),
+    task: new tasks.InvokeFunction(getStatusLambda),
     // Use "guid" field as input, output of the Lambda becomes the
     // entire state machine output.
     inputPath: '$.guid',
@@ -126,6 +126,7 @@ couple of the tasks available are:
 
 * `tasks.InvokeActivity` -- start an Activity (Activities represent a work
   queue that you poll on a compute fleet you manage yourself)
+* `tasks.InvokeFunction` -- invoke a Lambda function with function ARN
 * `tasks.RunBatchJob` -- run a Batch job
 * `tasks.RunLambdaTask` -- call Lambda as integrated service with magic ARN
 * `tasks.RunGlueJobTask` -- call Glue Job as integrated service
@@ -138,7 +139,7 @@ couple of the tasks available are:
 * `tasks.StartExecution` -- call StartExecution to a state machine of Step Functions
 * `tasks.EvaluateExpression` -- evaluate an expression referencing state paths
 
-Except `tasks.InvokeActivity`, the [service integration
+Except `tasks.InvokeActivity` and `tasks.InvokeFunction`, the [service integration
 pattern](https://docs.aws.amazon.com/step-functions/latest/dg/connect-to-resource.html)
 (`integrationPattern`) are supposed to be given as parameter when customers want
 to call integrated services within a Task state. The default value is `FIRE_AND_FORGET`.
@@ -152,6 +153,28 @@ such as `Data.stringAt()`.
 
 If so, the value is taken from the indicated location in the state JSON,
 similar to (for example) `inputPath`.
+
+#### Lambda example - InvokeFunction
+
+```ts
+const task = new sfn.Task(this, 'Invoke1', {
+    task: new tasks.InvokeFunction(myLambda),
+    inputPath: '$.input',
+    timeout: Duration.minutes(5),
+});
+
+// Add a retry policy
+task.addRetry({
+    interval: Duration.seconds(5),
+    maxAttempts: 10
+});
+
+// Add an error handler
+task.addCatch(errorHandlerState);
+
+// Set the next state
+task.next(nextState);
+```
 
 #### Lambda example - RunLambdaTask
 
