@@ -27,7 +27,6 @@ for (what of schema.definitions.MetadataEntry.properties.data.anyOf) {
     }
 
     if (ref) {
-        console.log('Adding ref: ' + ref);
         metadataRefs.push(ref.replace('#', ''))
     }
 
