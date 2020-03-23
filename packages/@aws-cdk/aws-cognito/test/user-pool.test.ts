@@ -281,6 +281,27 @@ describe('User Pool', () => {
     });
   });
 
+  test('fails when the same trigger is added twice', () => {
+    // GIVEN
+    const stack = new Stack();
+    const userpool = new UserPool(stack, 'Pool');
+
+    const fn1 = new lambda.Function(stack, 'fn1', {
+      code: lambda.Code.fromInline('foo'),
+      runtime: lambda.Runtime.NODEJS_12_X,
+      handler: 'index.handler',
+    });
+    const fn2 = new lambda.Function(stack, 'fn2', {
+      code: lambda.Code.fromInline('foo'),
+      runtime: lambda.Runtime.NODEJS_12_X,
+      handler: 'index.handler',
+    });
+
+    // WHEN
+    userpool.addTrigger(Operation.CREATE_AUTH_CHALLENGE, fn1);
+    expect(() => userpool.addTrigger(Operation.CREATE_AUTH_CHALLENGE, fn2)).toThrow(/already exists/);
+  });
+
   test('no username aliases specified', () => {
     // GIVEN
     const stack = new Stack();
