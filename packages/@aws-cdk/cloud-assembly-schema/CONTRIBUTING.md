@@ -103,10 +103,30 @@ Bump hash: c9059fa4c7fc10873876b1759f7f9149c3509a67b60200cf10f7268b83bfaeae -> 1
 ✨  Done in 0.18s.
 ```
 
-Now, if we run `git diff schema/cloud-assembly.schema.json schema/cloud-assembly.metadata.json test/schema.expected.json`:
+Now, if we run `git diff`:
 
 ```console
-❯ git diff schema/cloud-assembly.schema.json schema/cloud-assembly.metadata.json test/schema.expected.json
+diff --git a/packages/@aws-cdk/cloud-assembly-schema/lib/manifest.ts b/packages/@aws-cdk/cloud-assembly-schema/lib/manifest.ts
+index d6b2dfc56..17de7d170 100644
+--- a/packages/@aws-cdk/cloud-assembly-schema/lib/manifest.ts
++++ b/packages/@aws-cdk/cloud-assembly-schema/lib/manifest.ts
+@@ -309,6 +309,14 @@ export interface ArtifactManifest {
+  * A manifest which describes the cloud assembly.
+  */
+ export interface AssemblyManifest {
++
++    /**
++     * The cloud provider this assembly is deployed to.
++     *
++     * @default aws
++     */
++    readonly cloudProvider?: string;
++
+     /**
+      * Protocol version
+      */
+diff --git a/packages/@aws-cdk/cloud-assembly-schema/schema/cloud-assembly.metadata.json
+b/packages/@aws-cdk/cloud-assembly-schema/schema/cloud-assembly.metadata.json
 index a06dd3f0f..2bc6d1822 100644
 --- a/packages/@aws-cdk/cloud-assembly-schema/schema/cloud-assembly.metadata.json
 +++ b/packages/@aws-cdk/cloud-assembly-schema/schema/cloud-assembly.metadata.json
@@ -116,6 +136,8 @@ index a06dd3f0f..2bc6d1822 100644
 +    "version": "3.0.0"
  }
 \ No newline at end of file
+diff --git a/packages/@aws-cdk/cloud-assembly-schema/schema/cloud-assembly.schema.json
+b/packages/@aws-cdk/cloud-assembly-schema/schema/cloud-assembly.schema.json
 index 1581e88e9..489be8b79 100644
 --- a/packages/@aws-cdk/cloud-assembly-schema/schema/cloud-assembly.schema.json
 +++ b/packages/@aws-cdk/cloud-assembly-schema/schema/cloud-assembly.schema.json
@@ -130,7 +152,9 @@ index 1581e88e9..489be8b79 100644
 +                },
                  "missing": {
                      "default": "- no missing context.",
-                     "description": "Missing context information. If this field has values, it means that ..."
+                     "description": "Missing context information. If this field has values ...",
+diff --git a/packages/@aws-cdk/cloud-assembly-schema/test/schema.expected.json
+b/packages/@aws-cdk/cloud-assembly-schema/test/schema.expected.json
 index 5b98ebf7e..09862090d 100644
 --- a/packages/@aws-cdk/cloud-assembly-schema/test/schema.expected.json
 +++ b/packages/@aws-cdk/cloud-assembly-schema/test/schema.expected.json
@@ -143,14 +167,17 @@ index 5b98ebf7e..09862090d 100644
 
 Now you can very clearly see the changes:
 
-- Schema change because a new property was added.
-- Version bump because the schema was changed.
-- Hash bump because the schema was changed.
+- `manifest.ts` - the code change.
+- `cloud-assembly.schema.json` - the schema change generated from the code.
+- `cloud-assembly.metadata.json` - version was bump.
+- `schema.expected.json` - expected hash was updated.
+
+> Its actually pretty much the same to our normal integration tes with the expected templates.
 
 Now, running `yarn test` again:
 
 ```console
-❯ yarn test                                                                                                                                                                                                                                                                                                     [15:39:16]
+❯ yarn test
 yarn run v1.21.1
 $ cdk-test
 PASS test/schema.test.js
