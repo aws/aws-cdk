@@ -741,7 +741,7 @@ export = {
     test.done();
   },
 
-  'create a DB instance with maxiumum allocated storage'(test: Test) {
+  'create a DB instance with maximum allocated storage'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
