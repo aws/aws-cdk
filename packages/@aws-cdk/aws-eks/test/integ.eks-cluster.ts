@@ -45,7 +45,7 @@ class EksClusterStack extends TestStack {
 
     // add a extra nodegroup
     cluster.addNodegroup('extra-ng', {
-      instanceTypes: [new ec2.InstanceType('t3.small')],
+      instanceType: new ec2.InstanceType('t3.small'),
       minSize: 1,
       // reusing the default capacity nodegroup instance role when available
       nodeRole: cluster.defaultCapacity ? cluster.defaultCapacity.role : undefined
