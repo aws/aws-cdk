@@ -43,21 +43,21 @@ export class DatabaseClusterEngine {
   private readonly parameterGroupFamilies: Array<[string, string]>;
 
   // tslint:disable-next-line max-line-length
-  constructor(name: string, singleUserRotationApplication: secretsmanager.SecretRotationApplication, multiUserRotationApplication: secretsmanager.SecretRotationApplication, defaultParameterGroupFamilies: Array<[string, string]>) {
+  constructor(name: string, singleUserRotationApplication: secretsmanager.SecretRotationApplication, multiUserRotationApplication: secretsmanager.SecretRotationApplication, parameterGroupFamilies: Array<[string, string]>) {
     this.name = name;
     this.singleUserRotationApplication = singleUserRotationApplication;
     this.multiUserRotationApplication = multiUserRotationApplication;
-    this.parameterGroupFamilies = defaultParameterGroupFamilies;
+    this.parameterGroupFamilies = parameterGroupFamilies;
   }
 
   /**
-   * Get this engine's default parameter group family for given version
+   * Get this engine's parameter group family for a given version
    */
   public parameterGroupFamily(engineVersion?: string): string {
     if (engineVersion) {
-      const defaultFamily = this.parameterGroupFamilies.find(x => engineVersion.startsWith(x[0]));
-      if (defaultFamily) {
-        return defaultFamily[1];
+      const family = this.parameterGroupFamilies.find(x => engineVersion.startsWith(x[0]));
+      if (family) {
+        return family[1];
       }
     } else if (this.parameterGroupFamilies.length > 0) {
       return this.parameterGroupFamilies[this.parameterGroupFamilies.length - 1][1];
