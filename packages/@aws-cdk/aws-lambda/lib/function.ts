@@ -229,6 +229,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
   /**
    * Options for the `lambda.Version` resource automatically created by the
    * `fn.currentVersion` method.
+   * @default - default options as described in `VersionOptions`
    */
   readonly currentVersionOptions?: VersionOptions;
 }

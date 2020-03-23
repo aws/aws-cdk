@@ -27,6 +27,9 @@ export interface IVersion extends IFunction {
   addAlias(aliasName: string, options?: AliasOptions): Alias;
 }
 
+/**
+ * Options for `lambda.Version`
+ */
 export interface VersionOptions extends EventInvokeConfigOptions {
   /**
    * SHA256 of the version of the Lambda source code
