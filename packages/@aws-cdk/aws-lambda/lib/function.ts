@@ -277,10 +277,10 @@ export class Function extends FunctionBase {
   /**
    * Returns a `lambda.Version` which represents the current version of this
    * Lambda function. A new version will be created every time the function's
-   * code or it's configuration changes.
+   * configuration changes.
    *
-   * To enable this, set `currentVersion: true` attribute to `true` when creating
-   * the `lambda.Function` object.
+   * You can specify options for this version using the `currentVersionOptions`
+   * prop when initializing the `lambda.Function`.
    */
   public get currentVersion(): Version {
     if (this._currentVersion) {

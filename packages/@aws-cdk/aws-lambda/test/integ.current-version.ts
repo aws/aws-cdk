@@ -12,6 +12,7 @@ class TestStack extends Stack {
       runtime: lambda.Runtime.PYTHON_3_8,
       currentVersionOptions: {
         removalPolicy: RemovalPolicy.RETAIN,
+        retryAttempts: 5
       }
     });
 

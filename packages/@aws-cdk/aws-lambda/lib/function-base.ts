@@ -41,6 +41,13 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
 
   /**
    * The `$LATEST` version of this function.
+   *
+   * Note that this is reference to a non-specific AWS Lambda version, which
+   * means the function this version refers to can return different results in
+   * different invocations.
+   *
+   * To obtain a reference to an explicit version which references the current
+   * function configuration, use `lambdaFunction.currentVersion` instead.
    */
   readonly latestVersion: IVersion;
 

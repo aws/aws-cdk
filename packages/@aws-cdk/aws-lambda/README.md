@@ -92,15 +92,15 @@ points to a specific version.
 
 The following example defines an alias named `live` which will always point to a
 version that represents the function as defined in your CDK app. When you change
-your lambda code or configuration, a new resource will be created. Since the
-version's `removalPolicy` option is set to `RETAIN`, old versions will not be
-deleted (the default is `DESTROY`):
+your lambda code or configuration, a new resource will be created. You can
+specify options for the current version through the `currentVersionOptions`
+property.
 
 ```ts
 const fn = new lambda.Function(this, 'MyFunction', {
-  // ...
   currentVersionOptions: {
-    removalPolicy: RemovalPolicy.RETAIN // retain old versions
+    removalPolicy: RemovalPolicy.RETAIN, // retain old versions
+    retryAttempts: 5                     // async retry attempts
   }
 });
 
