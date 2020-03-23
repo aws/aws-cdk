@@ -133,6 +133,78 @@ export interface UserPoolTriggers {
 }
 
 /**
+ * User pool operations to which lambda triggers can be attached.
+ */
+export class Operation {
+  /**
+   * Creates a challenge in a custom auth flow
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-create-auth-challenge.html
+   */
+  public static readonly CREATE_AUTH_CHALLENGE = new Operation('createAuthChallenge');
+
+  /**
+   * Advanced customization and localization of messages
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-custom-message.html
+   */
+  public static readonly CUSTOM_MESSAGE = new Operation('customMessage');
+
+  /**
+   * Determines the next challenge in a custom auth flow
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-define-auth-challenge.html
+   */
+  public static readonly DEFINE_AUTH_CHALLENGE = new Operation('defineAuthChallenge');
+
+  /**
+   * Event logging for custom analytics
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-post-authentication.html
+   */
+  public static readonly POST_AUTHENTICATION = new Operation('postAuthentication');
+
+  /**
+   * Custom welcome messages or event logging for custom analytics
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-post-confirmation.html
+   */
+  public static readonly POST_CONFIRMATION = new Operation('postConfirmation');
+
+  /**
+   * Custom validation to accept or deny the sign-in request
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-pre-authentication.html
+   */
+  public static readonly PRE_AUTHENTICATION = new Operation('preAuthentication');
+
+  /**
+   * Custom validation to accept or deny the sign-up request
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-pre-sign-up.html
+   */
+  public static readonly PRE_SIGN_UP = new Operation('preSignUp');
+
+  /**
+   * Add or remove attributes in Id tokens
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-pre-token-generation.html
+   */
+  public static readonly PRE_TOKEN_GENERATION = new Operation('preTokenGeneration');
+
+  /**
+   * Migrate a user from an existing user directory to user pools
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-migrate-user.html
+   */
+  public static readonly USER_MIGRATION = new Operation('userMigration');
+
+  /**
+   * Determines if a response is correct in a custom auth flow
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-verify-auth-challenge-response.html
+   */
+  public static readonly VERIFY_AUTH_CHALLENGE_RESPONSE = new Operation('verifyAuthChallengeResponse');
+
+  /** The key to use in `CfnUserPool.LambdaConfigProperty` */
+  public readonly operationName: string;
+
+  constructor(operationName: string) {
+    this.operationName = operationName;
+  }
+}
+
+/**
  * The email verification style
  */
 export enum VerificationEmailStyle {
@@ -561,118 +633,21 @@ export class UserPool extends Resource implements IUserPool {
   }
 
   /**
-   * Attach 'Create Auth Challenge' trigger
-   * Grants access from cognito-idp.amazonaws.com to the lambda
-   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-create-auth-challenge.html
-   * @param fn the lambda function to attach
+   * Add a lambda trigger to a user pool operation
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-identity-pools-working-with-aws-lambda-triggers.html
    */
-  public addCreateAuthChallengeTrigger(fn: lambda.IFunction): void {
-    this.addLambdaPermission(fn, 'CreateAuthChallenge');
-    this.triggers = { ...this.triggers, createAuthChallenge: fn.functionArn };
-  }
+  public addTrigger(operation: Operation, fn: lambda.IFunction): void {
+    if (operation.operationName in this.triggers) {
+      throw new Error(`A trigger for the operation ${operation} already exists.`);
+    }
 
-  /**
-   * Attach 'Custom Message' trigger
-   * Grants access from cognito-idp.amazonaws.com to the lambda
-   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-custom-message.html
-   * @param fn the lambda function to attach
-   */
-  public addCustomMessageTrigger(fn: lambda.IFunction): void {
-    this.addLambdaPermission(fn, 'CustomMessage');
-    this.triggers = { ...this.triggers, customMessage: fn.functionArn };
-  }
-
-  /**
-   * Attach 'Define Auth Challenge' trigger
-   * Grants access from cognito-idp.amazonaws.com to the lambda
-   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-define-auth-challenge.html
-   * @param fn the lambda function to attach
-   */
-  public addDefineAuthChallengeTrigger(fn: lambda.IFunction): void {
-    this.addLambdaPermission(fn, 'DefineAuthChallenge');
-    this.triggers = { ...this.triggers, defineAuthChallenge: fn.functionArn };
-  }
-
-  /**
-   * Attach 'Post Authentication' trigger
-   * Grants access from cognito-idp.amazonaws.com to the lambda
-   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-post-authentication.html
-   * @param fn the lambda function to attach
-   */
-  public addPostAuthenticationTrigger(fn: lambda.IFunction): void {
-    this.addLambdaPermission(fn, 'PostAuthentication');
-    this.triggers = { ...this.triggers, postAuthentication: fn.functionArn };
-  }
-
-  /**
-   * Attach 'Post Confirmation' trigger
-   * Grants access from cognito-idp.amazonaws.com to the lambda
-   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-post-confirmation.html
-   * @param fn the lambda function to attach
-   */
-  public addPostConfirmationTrigger(fn: lambda.IFunction): void {
-    this.addLambdaPermission(fn, 'PostConfirmation');
-    this.triggers = { ...this.triggers, postConfirmation: fn.functionArn };
-  }
-
-  /**
-   * Attach 'Pre Authentication' trigger
-   * Grants access from cognito-idp.amazonaws.com to the lambda
-   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-pre-authentication.html
-   * @param fn the lambda function to attach
-   */
-  public addPreAuthenticationTrigger(fn: lambda.IFunction): void {
-    this.addLambdaPermission(fn, 'PreAuthentication');
-    this.triggers = { ...this.triggers, preAuthentication: fn.functionArn };
-  }
-
-  /**
-   * Attach 'Pre Sign Up' trigger
-   * Grants access from cognito-idp.amazonaws.com to the lambda
-   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-pre-sign-up.html
-   * @param fn the lambda function to attach
-   */
-  public addPreSignUpTrigger(fn: lambda.IFunction): void {
-    this.addLambdaPermission(fn, 'PreSignUp');
-    this.triggers = { ...this.triggers, preSignUp: fn.functionArn };
-  }
-
-  /**
-   * Attach 'Pre Token Generation' trigger
-   * Grants access from cognito-idp.amazonaws.com to the lambda
-   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-pre-token-generation.html
-   * @param fn the lambda function to attach
-   */
-  public addPreTokenGenerationTrigger(fn: lambda.IFunction): void {
-    this.addLambdaPermission(fn, 'PreTokenGeneration');
-    this.triggers = { ...this.triggers, preTokenGeneration: fn.functionArn };
-  }
-
-  /**
-   * Attach 'User Migration' trigger
-   * Grants access from cognito-idp.amazonaws.com to the lambda
-   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-migrate-user.html
-   * @param fn the lambda function to attach
-   */
-  public addUserMigrationTrigger(fn: lambda.IFunction): void {
-    this.addLambdaPermission(fn, 'UserMigration');
-    this.triggers = { ...this.triggers, userMigration: fn.functionArn };
-  }
-
-  /**
-   * Attach 'Verify Auth Challenge Response' trigger
-   * Grants access from cognito-idp.amazonaws.com to the lambda
-   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-verify-auth-challenge-response.html
-   * @param fn the lambda function to attach
-   */
-  public addVerifyAuthChallengeResponseTrigger(fn: lambda.IFunction): void {
-    this.addLambdaPermission(fn, 'VerifyAuthChallengeResponse');
-    this.triggers = { ...this.triggers, verifyAuthChallengeResponse: fn.functionArn };
+    this.addLambdaPermission(fn, operation.operationName);
+    (this.triggers as any)[operation.operationName] = fn.functionArn;
   }
 
   private addLambdaPermission(fn: lambda.IFunction, name: string): void {
-    const normalize = name.charAt(0).toUpperCase() + name.slice(1);
-    fn.addPermission(`${normalize}Cognito`, {
+    const capitalize = name.charAt(0).toUpperCase() + name.slice(1);
+    fn.addPermission(`${capitalize}Cognito`, {
       principal: new ServicePrincipal('cognito-idp.amazonaws.com'),
       sourceArn: this.userPoolArn
     });

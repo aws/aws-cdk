@@ -285,8 +285,8 @@ occur, such as, sign up, user confirmation, sign in, etc. They can also be used 
 challenges, user migrations and custom verification messages. Learn more about triggers at [User Pool Workflows with
 Triggers](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-identity-pools-working-with-aws-lambda-triggers.html).
 
-Lambda triggers can either be specified as part of the `UserPool` construct's construction, or it can be added later,
-via methods on the construct, as so -
+Lambda triggers can either be specified as part of the `UserPool` initialization, or it can be added later, via methods
+on the construct, as so -
 
 ```ts
 const authChallengeFn = new lambda.Function(this, 'authChallengeFn', {
@@ -301,7 +301,7 @@ const userpool = new UserPool(this, 'myuserpool', {
   }
 });
 
-userpool.addUserMigrationTrigger(new lambda.Function(this, 'userMigrationFn', {
+userpool.addTrigger(Operation.USER_MIGRATION, new lambda.Function(this, 'userMigrationFn', {
   // ...
 }));
 ```
@@ -309,19 +309,6 @@ userpool.addUserMigrationTrigger(new lambda.Function(this, 'userMigrationFn', {
 The following table lists the set of triggers available, and their corresponding method to add it to the user pool.
 For more information on the function of these triggers and how to configure them, read [User Pool Workflows with
 Triggers](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-identity-pools-working-with-aws-lambda-triggers.html).
-
-| Trigger | Method |
-| ---- | ---- |
-| createAuthChallenge | `addCreateAuthChallengeTrigger()` |
-| customMessage | `addCustomMessageTrigger()` |
-| defineAuthChallenge | `addDefineAuthChallengeTrigger()` |
-| postAuthentication | `addPostAuthenticationTrigger()` |
-| postConfirmation | `addPostConfirmationTrigger()` |
-| preAuthentication | `addPreAuthenticationTrigger()` |
-| preSignUp | `addPreSignUpTrigger()` |
-| preTokenGeneration | `addPreTokenGenerationTrigger()` |
-| userMigration | `addUserMigrationTrigger()` |
-| verifyAuthChallengeResponse | `addVerifyAuthChallengeResponseTrigger()` |
 
 ### Importing User Pools
 

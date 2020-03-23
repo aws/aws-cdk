@@ -3,7 +3,7 @@ import { ABSENT } from '@aws-cdk/assert/lib/assertions/have-resource';
 import { Role } from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Construct, Duration, Stack, Tag } from '@aws-cdk/core';
-import { Mfa, NumberAttribute, StringAttribute, UserPool, VerificationEmailStyle } from '../lib';
+import { Mfa, NumberAttribute, Operation, StringAttribute, UserPool, VerificationEmailStyle } from '../lib';
 
 describe('User Pool', () => {
   test('default setup', () => {
@@ -242,17 +242,17 @@ describe('User Pool', () => {
     const verifyAuthChallengeResponse = fooFunction(stack, 'verifyAuthChallengeResponse');
 
     // WHEN
-    const pool = new UserPool(stack, 'Pool', { });
-    pool.addCreateAuthChallengeTrigger(createAuthChallenge);
-    pool.addCustomMessageTrigger(customMessage);
-    pool.addDefineAuthChallengeTrigger(defineAuthChallenge);
-    pool.addPostAuthenticationTrigger(postAuthentication);
-    pool.addPostConfirmationTrigger(postConfirmation);
-    pool.addPreAuthenticationTrigger(preAuthentication);
-    pool.addPreSignUpTrigger(preSignUp);
-    pool.addPreTokenGenerationTrigger(preTokenGeneration);
-    pool.addUserMigrationTrigger(userMigration);
-    pool.addVerifyAuthChallengeResponseTrigger(verifyAuthChallengeResponse);
+    const pool = new UserPool(stack, 'Pool');
+    pool.addTrigger(Operation.CREATE_AUTH_CHALLENGE, createAuthChallenge);
+    pool.addTrigger(Operation.CUSTOM_MESSAGE, customMessage);
+    pool.addTrigger(Operation.DEFINE_AUTH_CHALLENGE, defineAuthChallenge);
+    pool.addTrigger(Operation.POST_AUTHENTICATION, postAuthentication);
+    pool.addTrigger(Operation.POST_CONFIRMATION, postConfirmation);
+    pool.addTrigger(Operation.PRE_AUTHENTICATION, preAuthentication);
+    pool.addTrigger(Operation.PRE_SIGN_UP, preSignUp);
+    pool.addTrigger(Operation.PRE_TOKEN_GENERATION, preTokenGeneration);
+    pool.addTrigger(Operation.USER_MIGRATION, userMigration);
+    pool.addTrigger(Operation.VERIFY_AUTH_CHALLENGE_RESPONSE, verifyAuthChallengeResponse);
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
