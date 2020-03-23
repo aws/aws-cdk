@@ -81,6 +81,7 @@ To use the storage auto scaling option of RDS you can specify the maximum alloca
 This is the upper limit to which RDS can automatically scale the storage. More info can be found
 [here](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PIOPS.StorageTypes.html#USER_PIOPS.Autoscaling)
 Example for max storage configuration:
+
 ```ts
 const instance = new DatabaseInstance(stack, 'Instance', {
     engine: rds.DatabaseInstanceEngine.ORACLE_SE1,
