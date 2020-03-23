@@ -30,19 +30,13 @@ if (currentHash != expectedHash) {
     const currentVersion = metadata.version;
     const newVersion = semver.inc(metadata.version, 'major');
 
-    console.log(`schema.version: ${currentVersion} -> ${newVersion}`)
+    console.log(`Schema.version: ${currentVersion} -> ${newVersion}`)
     applyPatch(metadata,
         [{ op:"replace", path: "/version", value: newVersion }],
         path.join(__dirname, metadataPath))
 
-    console.log(`expected.hash: ${currentHash} -> ${expectedHash}`)
+    console.log(`Expected.hash: ${currentHash} -> ${expectedHash}`)
     applyPatch(expected,
         [{ op:"replace", path: "/hash", value: currentHash }],
         path.join(__dirname, expectedPath))
-
-    console.log(`expected.version: ${currentVersion} -> ${newVersion}`)
-    applyPatch(expected,
-        [{ op:"replace", path: "/version", value: newVersion }],
-        path.join(__dirname, expectedPath))
-
 }

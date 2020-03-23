@@ -46,20 +46,6 @@ test('schema has the correct hash', () => {
 
 });
 
-test('schema has the correct version', () => {
-
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const expected = require('./schema.expected.json');
-
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const metadata = require('../schema/cloud-assembly.metadata.json');
-
-  const schemaVersion = metadata.version;
-
-  expect(schemaVersion).toEqual(expected.version);
-
-});
-
 test('manifest load fails for invalid nested property', () => {
   expect(() => Manifest.load(fixture("invalid-nested-property")))
   .toThrow(/Invalid assembly manifest/);
