@@ -3,13 +3,13 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { Construct, Duration, Fn, Lazy } from '@aws-cdk/core';
-import { Alias, AliasOptions } from './alias';
+import { CfnResource, Construct, Duration, Fn, Lazy, Stack } from '@aws-cdk/core';
 import { Code, CodeConfig } from './code';
 import { EventInvokeConfigOptions } from './event-invoke-config';
 import { IEventSource } from './event-source';
 import { FunctionAttributes, FunctionBase, IFunction } from './function-base';
-import { Version } from './lambda-version';
+import { calculateFunctionHash, trimFromStart } from './function-hash';
+import { Version, VersionOptions } from './lambda-version';
 import { CfnFunction } from './lambda.generated';
 import { ILayerVersion } from './layers';
 import { LogRetention } from './log-retention';
@@ -225,6 +225,12 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * @default - A new role is created.
    */
   readonly logRetentionRole?: iam.IRole;
+
+  /**
+   * Options for the `lambda.Version` resource automatically created by the
+   * `fn.currentVersion` method.
+   */
+  readonly currentVersionOptions?: VersionOptions;
 }
 
 export interface FunctionProps extends FunctionOptions {
@@ -267,6 +273,55 @@ export interface FunctionProps extends FunctionOptions {
  * library.
  */
 export class Function extends FunctionBase {
+
+  /**
+   * Returns a `lambda.Version` which represents the current version of this
+   * Lambda function. A new version will be created every time the function's
+   * code or it's configuration changes.
+   *
+   * To enable this, set `currentVersion: true` attribute to `true` when creating
+   * the `lambda.Function` object.
+   */
+  public get currentVersion(): Version {
+    if (this._currentVersion) {
+      return this._currentVersion;
+    }
+
+    if (!this._codeHash) {
+      throw new Error(
+        `cannot automatically create a version resource for this function since the hash of the code cannot be calculated. ` +
+        `This is only supported for "lambda.Code.fromAsset" and "lambda.Code.fromInline"`);
+    }
+
+    this._currentVersion = new Version(this, `CurrentVersion`, {
+      lambda: this,
+      description: `${this.node.path}.currentVersion (created by AWS CDK)`,
+      ...this.currentVersionOptions
+    });
+
+    return this._currentVersion;
+  }
+
+  /**
+   * The LogGroup where the Lambda function's logs are made available.
+   *
+   * If either `logRetention` is set or this property is called, a CloudFormation custom resource is added to the stack that
+   * pre-creates the log group as part of the stack deployment, if it already doesn't exist, and sets the correct log retention
+   * period (never expire, by default).
+   *
+   * Further, if the log group already exists and the `logRetention` is not set, the custom resource will reset the log retention
+   * to never expire even if it was configured with a different value.
+   */
+  public get logGroup(): logs.ILogGroup {
+    if (!this._logGroup) {
+      const logretention = new LogRetention(this, 'LogRetention', {
+        logGroupName: `/aws/lambda/${this.functionName}`,
+        retention: logs.RetentionDays.INFINITE,
+      });
+      this._logGroup = logs.LogGroup.fromLogGroupArn(this, `${this.node.id}-LogGroup`, logretention.logGroupArn);
+    }
+    return this._logGroup;
+  }
   public static fromFunctionArn(scope: Construct, id: string, functionArn: string): IFunction {
     return Function.fromFunctionAttributes(scope, id, { functionArn });
   }
@@ -416,12 +471,9 @@ export class Function extends FunctionBase {
   public readonly permissionsNode = this.node;
 
   /**
-   * The hash of the AWS Lambda code.
-   *
-   * This only applies to `lambda.Code.fromAsset` and `lambda.Code.fromInline`.
-   * For other code types this will return `undefined`.
+   * @internal
    */
-  public readonly codeHash?: string;
+  public _codeHash?: string;
 
   protected readonly canCreatePermissions = true;
 
@@ -433,6 +485,9 @@ export class Function extends FunctionBase {
    * Environment variables for this function
    */
   private readonly environment: { [key: string]: string };
+
+  private readonly currentVersionOptions?: VersionOptions;
+  private _currentVersion?: Version;
 
   constructor(scope: Construct, id: string, props: FunctionProps) {
     super(scope, id, {
@@ -465,7 +520,7 @@ export class Function extends FunctionBase {
     verifyCodeConfig(code, props.runtime);
 
     this.deadLetterQueue = this.buildDeadLetterQueue(props);
-    this.codeHash = code.codeHash;
+    this._codeHash = code.codeHash;
 
     const resource: CfnFunction = new CfnFunction(this, 'Resource', {
       functionName: this.physicalName,
@@ -530,6 +585,8 @@ export class Function extends FunctionBase {
         retryAttempts: props.retryAttempts,
       });
     }
+
+    this.currentVersionOptions = props.currentVersionOptions;
   }
 
   /**
@@ -573,13 +630,7 @@ export class Function extends FunctionBase {
    * All versions should have distinct names, and you should not delete versions
    * as long as your Alias needs to refer to them.
    *
-   * @param name A unique name for this version. The version name is not
-   * specified, a name will automatically be generated based on the code hash of
-   * the lambda. This means that a new version will automatically be created
-   * every time the lambda code changes. This is only supported for
-   * `lambda.Code.fromAsset` and `lambda.Code.fromInline`. Otherwise `name` is
-   * required.
-   *
+   * @param name A unique name for this version.
    * @param codeSha256 The SHA-256 hash of the most recently deployed Lambda
    *  source code, or omit to skip validation.
    * @param description A description for this version.
@@ -588,21 +639,19 @@ export class Function extends FunctionBase {
    * @param asyncInvokeConfig configuration for this version when it is invoked
    * asynchronously.
    * @returns A new Version object.
+   *
+   * @deprecated This method will create an AWS::Lambda::Version resource which
+   * snapshots the AWS Lambda function *at the time of its creation* and it
+   * won't get updated when the function changes. Instead, use
+   * `this.currentVersion` to obtain a reference to a version resource that gets
+   * automatically recreated when the function configuration (or code) changes.
    */
   public addVersion(
-    name?: string,
+    name: string,
     codeSha256?: string,
     description?: string,
     provisionedExecutions?: number,
     asyncInvokeConfig: EventInvokeConfigOptions = {}): Version {
-
-    if (!name) {
-      if (!this.codeHash) {
-        throw new Error(`version name must be provided because the the lambda code hash cannot be calculated. Only "lambda.Code.fromAsset" and "lambda.Code.fromInline" support code hash`);
-      }
-
-      name = this.codeHash;
-    }
 
     return new Version(this, 'Version' + name, {
       lambda: this,
@@ -613,42 +662,21 @@ export class Function extends FunctionBase {
     });
   }
 
-  /**
-   * Defines an alias for this function associated with the latest version of
-   * the function.
-   *
-   * @param name The name for this alias.
-   * @param options Options for the alias. If this function uses assets or
-   * inline code, do not specify `versionName`. Otherwise, `versionName` is
-   * required.
-   */
-  public addAlias(name: string, options: AddAliasOptions = { }) {
-    return new Alias(this, `Alias${name}`, {
-      version: this.addVersion(options.versionName),
-      aliasName: name,
-      ...options
-    });
-  }
+  protected prepare() {
+    super.prepare();
 
-  /**
-   * The LogGroup where the Lambda function's logs are made available.
-   *
-   * If either `logRetention` is set or this property is called, a CloudFormation custom resource is added to the stack that
-   * pre-creates the log group as part of the stack deployment, if it already doesn't exist, and sets the correct log retention
-   * period (never expire, by default).
-   *
-   * Further, if the log group already exists and the `logRetention` is not set, the custom resource will reset the log retention
-   * to never expire even if it was configured with a different value.
-   */
-  public get logGroup(): logs.ILogGroup {
-    if (!this._logGroup) {
-      const logretention = new LogRetention(this, 'LogRetention', {
-        logGroupName: `/aws/lambda/${this.functionName}`,
-        retention: logs.RetentionDays.INFINITE,
-      });
-      this._logGroup = logs.LogGroup.fromLogGroupArn(this, `${this.node.id}-LogGroup`, logretention.logGroupArn);
+    // if we have a current version resource, override it's logical id
+    // so that it includes the hash of the function code and it's configuration.
+    if (this._currentVersion) {
+      const stack = Stack.of(this);
+      const cfn = this._currentVersion.node.defaultChild as CfnResource;
+      const originalLogicalId: string = stack.resolve(cfn.logicalId);
+
+      const hash = calculateFunctionHash(this);
+
+      const logicalId = trimFromStart(originalLogicalId, 255 - 32);
+      cfn.overrideLogicalId(`${logicalId}${hash}`);
     }
-    return this._logGroup;
   }
 
   private renderEnvironment() {
@@ -792,26 +820,5 @@ export function verifyCodeConfig(code: CodeConfig, runtime: Runtime) {
   // if this is inline code, check that the runtime supports
   if (code.inlineCode && !runtime.supportsInlineCode) {
     throw new Error(`Inline source not allowed for ${runtime.name}`);
-  }
-}
+  }}
 
-/**
- * Options for `function.addAlias`.
- */
-export interface AddAliasOptions extends AliasOptions {
-  /**
-   * An explicit name for this version.
-   *
-   * It is not recommeneded to specify a name for the version because you will
-   * need to explicitly update it every time your lambda code changes. If you
-   * leave this undefined, the framework will automatically create a new version
-   * every time your lambda code changes.
-   *
-   * @default - a name will automatically be generated based on the code hash of
-   * the lambda. This means that a new version will automatically be created
-   * every time the lambda code changes. This is only supported for
-   * `lambda.Code.fromAsset` and `lambda.Code.fromInline`. Otherwise `name` is
-   * required.
-   */
-  readonly versionName?: string;
-}

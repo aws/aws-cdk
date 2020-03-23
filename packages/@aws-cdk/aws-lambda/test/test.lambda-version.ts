@@ -114,34 +114,32 @@ export = {
     test.done();
   },
 
-  'version name can be omitted if code hash is supported'(test: Test) {
+  'addAlias can be used to add an alias that points to a version'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const fn = new lambda.Function(stack, 'MyFunction', {
-      code: lambda.Code.fromInline('i support code hash'),
-      runtime: lambda.Runtime.NODEJS_12_X,
-      handler: 'index.handler'
+    const fn = new lambda.Function(stack, 'Fn', {
+      runtime: lambda.Runtime.NODEJS_10_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('foo'),
     });
+    const version = fn.currentVersion;
 
     // WHEN
-    const version = fn.addVersion();
+    version.addAlias('foo');
 
     // THEN
-    test.deepEqual(stack.resolve((version.node.defaultChild as lambda.CfnVersion).logicalId), 'MyFunctionVersion3881c5a687768784b8ba777dcd8ee69aadbd8bc1f5dfd01d5d085e32654afb8aD80517F5');
-    test.done();
-  },
-
-  'version name cannot be omitted if code hash is not supported'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const fn = new lambda.Function(stack, 'MyFunction', {
-      code: lambda.Code.fromCfnParameters(),
-      runtime: lambda.Runtime.NODEJS_12_X,
-      handler: 'index.handler'
-    });
-
-    // THEN
-    test.throws(() => fn.addVersion(), /version name must be provided because the the lambda code hash cannot be calculated. Only "lambda.Code.fromAsset" and "lambda.Code.fromInline" support code hash/);
+    expect(stack).to(haveResource('AWS::Lambda::Alias', {
+      "FunctionName": {
+        "Ref": "Fn9270CBC0"
+      },
+      "FunctionVersion": {
+        "Fn::GetAtt": [
+          "FnCurrentVersion17A89ABB3127ebe0d45a77e18d3b1ca1c6c8c55c",
+          "Version"
+        ]
+      },
+      "Name": "foo"
+    }));
     test.done();
   }
 };

@@ -56,27 +56,61 @@ from an S3 bucket).
 
 ### Versions and Aliases
 
+You can use
+[versions](https://docs.aws.amazon.com/lambda/latest/dg/configuration-versions.html)
+to manage the deployment of your AWS Lambda functions. For example, you can
+publish a new version of a function for beta testing without affecting users of
+the stable production version.
+
+The function version includes the following information:
+
+- The function code and all associated dependencies.
+- The Lambda runtime that executes the function.
+- All of the function settings, including the environment variables.
+- A unique Amazon Resource Name (ARN) to identify this version of the function.
+
 You can define one or more
 [aliases](https://docs.aws.amazon.com/lambda/latest/dg/configuration-aliases.html)
 for your AWS Lambda function. A Lambda alias is like a pointer to a specific
 Lambda function version. Users can access the function version using the alias
 ARN.
 
-To define an alias that points to the latest version of your function's code,
-you can use the `function.addAlias` method like so:
+The `fn.currentVersion` property can be used to obtain a `lambda.Version`
+resource that represents the AWS Lambda function defined in your application.
+Any change to your function's code or configuration will result in the creation
+of a new version resource. You can specify options for this version through the
+`currentVersionOptions` property.
+
+> The `currentVersion` property is only supported when your AWS Lambda function
+> uses either `lambda.Code.fromAsset` or `lambda.Code.fromInline`. Other types
+> of code providers (such as `lambda.Code.fromBucket`) require that you define a
+> `lambda.Version` resource directly since the CDK is unable to determine if
+> their contents had changed.
+
+The `version.addAlias()` method can be used to define an AWS Lambda alias that
+points to a specific version.
+
+The following example defines an alias named `live` which will always point to a
+version that represents the function as defined in your CDK app. When you change
+your lambda code or configuration, a new resource will be created. Since the
+version's `removalPolicy` option is set to `RETAIN`, old versions will not be
+deleted (the default is `DESTROY`):
 
 ```ts
-const alias = lambdaFunction.addAlias('latest');
+const fn = new lambda.Function(this, 'MyFunction', {
+  // ...
+  currentVersionOptions: {
+    removalPolicy: RemovalPolicy.RETAIN // retain old versions
+  }
+});
+
+fn.currentVersion.addAlias('live');
 ```
 
-This will define an alias that points to a
-[Version](https://docs.aws.amazon.com/lambda/latest/dg/configuration-versions.html)
-resource that will get updated every time your lambda code changes based on your code's hash.
-
-> Automatically creating version objects based on the code's hash is only supported
-> for `lambda.Code.fromAsset` and `lambda.Code.fromInline`. Other types of code
-> providers require that you will maintain the `versionName` explicitly when you
-> define the alias (and update it manually when your code changes). 
+> NOTE: The `fn.latestVersion` property returns a `lambda.IVersion` which
+> represents the `$LATEST` pseudo-version. Most AWS services require a specific
+> AWS Lambda version, and won't allow you to use `$LATEST`. Therefore, you would
+> normally want to use `lambda.currentVersion`.
 
 ### Layers
 

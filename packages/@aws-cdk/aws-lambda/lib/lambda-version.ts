@@ -1,9 +1,11 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import { Construct, Fn } from '@aws-cdk/core';
+import { Construct, Fn, RemovalPolicy } from '@aws-cdk/core';
+import { Alias, AliasOptions } from './alias';
 import { EventInvokeConfigOptions } from './event-invoke-config';
 import { Function } from './function';
 import { IFunction, QualifiedFunctionBase } from './function-base';
 import { CfnVersion } from './lambda.generated';
+import { addAlias } from './util';
 
 export interface IVersion extends IFunction {
   /**
@@ -16,12 +18,16 @@ export interface IVersion extends IFunction {
    * The underlying AWS Lambda function.
    */
   readonly lambda: IFunction;
+
+  /**
+   * Defines an alias for this version.
+   * @param aliasName The name of the alias
+   * @param options Alias options
+   */
+  addAlias(aliasName: string, options?: AliasOptions): Alias;
 }
 
-/**
- * Properties for a new Lambda version
- */
-export interface VersionProps extends EventInvokeConfigOptions {
+export interface VersionOptions extends EventInvokeConfigOptions {
   /**
    * SHA256 of the version of the Lambda source code
    *
@@ -39,16 +45,29 @@ export interface VersionProps extends EventInvokeConfigOptions {
   readonly description?: string;
 
   /**
-   * Function to get the value of
-   */
-  readonly lambda: IFunction;
-
-  /**
    * Specifies a provisioned concurrency configuration for a function's version.
    *
    * @default No provisioned concurrency
    */
   readonly provisionedConcurrentExecutions?: number;
+
+  /**
+   * Whether to ratin old versions of this function when a new version is
+   * created.
+   *
+   * @default RemovalPolicy.DESTROY
+   */
+  readonly removalPolicy?: RemovalPolicy;
+}
+
+/**
+ * Properties for a new Lambda version
+ */
+export interface VersionProps extends VersionOptions {
+  /**
+   * Function to get the value of
+   */
+  readonly lambda: IFunction;
 }
 
 export interface VersionAttributes {
@@ -102,6 +121,10 @@ export class Version extends QualifiedFunctionBase implements IVersion {
 
       protected readonly qualifier = version;
       protected readonly canCreatePermissions = false;
+
+      public addAlias(name: string, opts: AliasOptions = { }): Alias {
+        return addAlias(this, this, name, opts);
+      }
     }
     return new Import(scope, id);
   }
@@ -117,6 +140,10 @@ export class Version extends QualifiedFunctionBase implements IVersion {
 
       protected readonly qualifier = attrs.version;
       protected readonly canCreatePermissions = false;
+
+      public addAlias(name: string, opts: AliasOptions = { }): Alias {
+        return addAlias(this, this, name, opts);
+      }
     }
     return new Import(scope, id);
   }
@@ -139,6 +166,10 @@ export class Version extends QualifiedFunctionBase implements IVersion {
       description: props.description,
       functionName: props.lambda.functionName,
       provisionedConcurrencyConfig: this.determineProvisionedConcurrency(props)
+    });
+
+    version.applyRemovalPolicy(props.removalPolicy, {
+      default: RemovalPolicy.DESTROY
     });
 
     this.version = version.attrVersion;
@@ -179,6 +210,15 @@ export class Version extends QualifiedFunctionBase implements IVersion {
   }
 
   /**
+   * Defines an alias for this version.
+   * @param aliasName The name of the alias (e.g. "live")
+   * @param options Alias options
+   */
+  public addAlias(aliasName: string, options: AliasOptions = { }): Alias {
+    return addAlias(this, this, aliasName, options);
+  }
+
+  /**
    * Validate that the provisionedConcurrentExecutions makes sense
    *
    * Member must have value greater than or equal to 1
@@ -212,3 +252,4 @@ export class Version extends QualifiedFunctionBase implements IVersion {
 export function extractQualifierFromArn(arn: string) {
   return Fn.select(7, Fn.split(':', arn));
 }
+

@@ -1,4 +1,5 @@
 import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
+import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
@@ -100,9 +101,23 @@ export = {
         handler: 'index.handler'
       });
 
+      const bucket = new lambda.Function(stack, 'S3Code', {
+        code: lambda.Code.fromBucket(s3.Bucket.fromBucketName(stack, 'Bucket', 'bucket'), 'key'),
+        runtime: lambda.Runtime.NODEJS_12_X,
+        handler: 'index.handler'
+      });
+
+      const params = new lambda.Function(stack, 'CfnParams', {
+        code: lambda.Code.fromCfnParameters(),
+        runtime: lambda.Runtime.NODEJS_12_X,
+        handler: 'index.handler'
+      });
+
       // THEN
-      test.deepEqual(asset.codeHash, '9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232');
-      test.deepEqual(inline.codeHash, '58ad733fe276cb7b9b171b0beafad40f43b6d1cd68a1b93327d3655f739dfa0e');
+      test.deepEqual(asset._codeHash, '9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232');
+      test.deepEqual(inline._codeHash, '58ad733fe276cb7b9b171b0beafad40f43b6d1cd68a1b93327d3655f739dfa0e');
+      test.deepEqual(bucket._codeHash, undefined);
+      test.deepEqual(params._codeHash, undefined);
       test.done();
     }
   },
