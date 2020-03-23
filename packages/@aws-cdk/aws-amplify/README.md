@@ -56,6 +56,20 @@ const amplifyApp = new amplify.App(this, 'MyApp', {
 });
 ```
 
+To connect your `App` to CodeCommit, use the `CodeCommitSourceCodeProvider`:
+```ts
+const repository = new codecommit.Repository(this, 'Repo', {
+  repositoryName: 'my-repo'
+});
+
+const amplifyApp = new amplify.App(this, 'App', {
+  sourceCodeProvider: new amplify.CodeCommitSourceCodeProvider({ repository })
+});
+```
+
+The IAM role associated with the `App` will automatically be granted the permission
+to pull the CodeCommit repository.
+
 Add branches:
 ```ts
 const master = amplifyApp.addBranch('master'); // `id` will be used as repo branch name
