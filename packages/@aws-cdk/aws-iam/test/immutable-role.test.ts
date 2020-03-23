@@ -111,5 +111,6 @@ describe('ImmutableRole', () => {
   // aws-codepipeline-actions/lib/cloudformation/pipeline-actions.ts#L517
   test('immutable role is a construct', () => {
     new Construct(immutableRole as unknown as Construct, 'Child');
+    new Construct(mutableRole.withoutPolicyUpdates() as unknown as Construct, 'Child2');
   });
 });
