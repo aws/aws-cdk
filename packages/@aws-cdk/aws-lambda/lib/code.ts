@@ -111,7 +111,6 @@ export interface CodeConfig {
  */
 export class S3Code extends Code {
   public readonly isInline = false;
-
   private bucketName: string;
 
   constructor(bucket: s3.IBucket, private key: string, private objectVersion?: string) {
@@ -155,7 +154,7 @@ export class InlineCode extends Code {
 
   public bind(_scope: cdk.Construct): CodeConfig {
     return {
-      inlineCode: this.code,
+      inlineCode: this.code
     };
   }
 }
@@ -165,7 +164,6 @@ export class InlineCode extends Code {
  */
 export class AssetCode extends Code {
   public readonly isInline = false;
-
   private asset?: s3_assets.Asset;
 
   /**
@@ -248,7 +246,6 @@ export interface CfnParametersCodeProps {
  */
 export class CfnParametersCode extends Code {
   public readonly isInline = false;
-
   private _bucketNameParam?: cdk.CfnParameter;
   private _objectKeyParam?: cdk.CfnParameter;
 
