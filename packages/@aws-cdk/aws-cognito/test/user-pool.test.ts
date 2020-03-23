@@ -2,8 +2,8 @@ import '@aws-cdk/assert/jest';
 import { ABSENT } from '@aws-cdk/assert/lib/assertions/have-resource';
 import { Role } from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Stack, Tag } from '@aws-cdk/core';
-import { UserPool, VerificationEmailStyle } from '../lib';
+import { Duration, Stack, Tag } from '@aws-cdk/core';
+import { Mfa, NumberAttribute, StringAttribute, UserPool, VerificationEmailStyle } from '../lib';
 
 describe('User Pool', () => {
   test('default setup', () => {
@@ -33,7 +33,7 @@ describe('User Pool', () => {
           'Fn::GetAtt': [ 'PoolsmsRoleC3352CE6', 'Arn' ],
         },
         ExternalId: 'Pool'
-      }
+      },
     });
 
     expect(stack).toHaveResource('AWS::IAM::Role', {
@@ -434,6 +434,293 @@ describe('User Pool', () => {
     // THEN
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
       AutoVerifiedAttributes: [ 'email', 'phone_number' ],
+    });
+  });
+
+  test('required attributes', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'Pool', {
+      requiredAttributes: {
+        fullname: true,
+        timezone: true,
+      }
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+      Schema: [
+        {
+          Name: 'name',
+          Required: true
+        },
+        {
+          Name: 'zoneinfo',
+          Required: true
+        },
+      ]
+    });
+  });
+
+  test('schema is absent when required attributes are specified but as false', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'Pool1', {
+      userPoolName: 'Pool1',
+    });
+    new UserPool(stack, 'Pool2', {
+      userPoolName: 'Pool2',
+      requiredAttributes: {
+        familyName: false,
+      }
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+      UserPoolName: 'Pool1',
+      Schema: ABSENT
+    });
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+      UserPoolName: 'Pool2',
+      Schema: ABSENT
+    });
+  });
+
+  test('custom attributes with default constraints', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'Pool', {
+      customAttributes: {
+        'custom-string-attr': new StringAttribute(),
+        'custom-number-attr': new NumberAttribute(),
+      }
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+      Schema: [
+        {
+          Name: 'custom-string-attr',
+          AttributeDataType: 'String',
+          StringAttributeConstraints: ABSENT,
+          NumberAttributeConstraints: ABSENT,
+        },
+        {
+          Name: 'custom-number-attr',
+          AttributeDataType: 'Number',
+          StringAttributeConstraints: ABSENT,
+          NumberAttributeConstraints: ABSENT,
+        }
+      ]
+    });
+  });
+
+  test('custom attributes with constraints', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'Pool', {
+      customAttributes: {
+        'custom-string-attr': new StringAttribute({ minLen: 5, maxLen: 50 }),
+        'custom-number-attr': new NumberAttribute({ min: 500, max: 2000 }),
+      }
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+      Schema: [
+        {
+          AttributeDataType: 'String',
+          Name: 'custom-string-attr',
+          StringAttributeConstraints: {
+            MaxLength: '50',
+            MinLength: '5',
+          }
+        },
+        {
+          AttributeDataType: 'Number',
+          Name: 'custom-number-attr',
+          NumberAttributeConstraints: {
+            MaxValue: '2000',
+            MinValue: '500',
+          }
+        }
+      ]
+    });
+  });
+
+  test('mfaTypes is ignored when mfaEnforcement is undefined or set to OFF', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'Pool1', {
+      userPoolName: 'Pool1',
+      mfaSecondFactor: {
+        sms: true,
+        otp: true,
+      }
+    });
+    new UserPool(stack, 'Pool2', {
+      userPoolName: 'Pool2',
+      mfa: Mfa.OFF,
+      mfaSecondFactor: {
+        sms: true,
+        otp: true,
+      }
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+      UserPoolName: 'Pool1',
+      MfaConfiguration: ABSENT,
+      EnabledMfas: ABSENT,
+    });
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+      UserPoolName: 'Pool2',
+      MfaConfiguration: 'OFF',
+      EnabledMfas: ABSENT,
+    });
+  });
+
+  test('sms mfa type is the default when mfaEnforcement is set to REQUIRED or OPTIONAL', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'Pool1', {
+      userPoolName: 'Pool1',
+      mfa: Mfa.OPTIONAL,
+    });
+    new UserPool(stack, 'Pool2', {
+      userPoolName: 'Pool2',
+      mfa: Mfa.REQUIRED,
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+      UserPoolName: 'Pool1',
+      MfaConfiguration: 'OPTIONAL',
+      EnabledMfas: [ 'SMS_MFA' ],
+    });
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+      UserPoolName: 'Pool2',
+      MfaConfiguration: 'ON',
+      EnabledMfas: [ 'SMS_MFA' ],
+    });
+  });
+
+  test('mfa type is correctly picked up when specified', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'Pool', {
+      mfa: Mfa.REQUIRED,
+      mfaSecondFactor: {
+        sms: true,
+        otp: true,
+      }
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+      EnabledMfas: [ 'SMS_MFA', 'SOFTWARE_TOKEN_MFA' ],
+    });
+  });
+
+  test('password policy is correctly set', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'Pool', {
+      passwordPolicy: {
+        tempPasswordValidity: Duration.days(2),
+        minLength: 15,
+        requireDigits: true,
+        requireLowercase: true,
+        requireUppercase: true,
+        requireSymbols: true,
+      }
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+      Policies: {
+        PasswordPolicy: {
+          TemporaryPasswordValidityDays: 2,
+          MinimumLength: 15,
+          RequireLowercase: true,
+          RequireUppercase: true,
+          RequireNumbers: true,
+          RequireSymbols: true,
+        },
+      },
+    });
+  });
+
+  test('throws when tempPassword validity is not in round days', () => {
+    const stack = new Stack();
+
+    expect(() => new UserPool(stack, 'Pool', {
+      passwordPolicy: {
+        tempPasswordValidity: Duration.hours(30),
+      }
+    })).toThrow();
+  });
+
+  test('temp password throws an error when above the max', () => {
+    const stack = new Stack();
+
+    expect(() => new UserPool(stack, 'Pool', {
+      passwordPolicy: {
+        tempPasswordValidity: Duration.days(400),
+      }
+    })).toThrow(/tempPasswordValidity cannot be greater than/);
+  });
+
+  test('throws when minLength is out of range', () => {
+    const stack = new Stack();
+
+    expect(() => new UserPool(stack, 'Pool1', {
+      passwordPolicy: {
+        minLength: 5,
+      },
+    })).toThrow(/minLength for password must be between/);
+
+    expect(() => new UserPool(stack, 'Pool2', {
+      passwordPolicy: {
+        minLength: 100,
+      },
+    })).toThrow(/minLength for password must be between/);
+  });
+
+  test('email transmission settings are recognized correctly', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'Pool', {
+      emailSettings: {
+        from: 'from@myawesomeapp.com',
+        replyTo: 'replyTo@myawesomeapp.com'
+      }
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+      EmailConfiguration: {
+        From: 'from@myawesomeapp.com',
+        ReplyToEmailAddress: 'replyTo@myawesomeapp.com'
+      }
     });
   });
 });
