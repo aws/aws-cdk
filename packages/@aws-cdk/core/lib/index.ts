@@ -27,6 +27,7 @@ export * from './cfn-tag';
 export * from './removal-policy';
 export * from './arn';
 export * from './duration';
+export * from './storage';
 export * from './stack-trace';
 
 export * from './app';
