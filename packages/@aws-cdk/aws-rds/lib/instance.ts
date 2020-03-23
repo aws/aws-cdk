@@ -481,6 +481,7 @@ export interface DatabaseInstanceNewProps {
 
   /**
    * Upper limit to which RDS can scale the storage
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PIOPS.StorageTypes.html#USER_PIOPS.Autoscaling
    * @default - No default value
    */
   readonly maxAllocatedStorage?: number;
