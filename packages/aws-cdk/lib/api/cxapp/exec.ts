@@ -1,3 +1,4 @@
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as childProcess from 'child_process';
 import * as fs from 'fs-extra';
@@ -104,11 +105,11 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
       return ver;
     }
 
-    const cliSem = _parseVersion(cliVersion);
+    const maximumAcceptedManifestSem = _parseVersion(cxschema.Manifest.version());
     const manifestSem = _parseVersion(cloudAssembly.manifest.version);
 
-    if (semver.gt(manifestSem, cliSem)) {
-      throw new Error(`A newer version of the CDK CLI (>= ${manifestSem}) is necessary to interact with this app`);
+    if (semver.gt(manifestSem, maximumAcceptedManifestSem)) {
+      throw new Error(`A newer version of the CDK CLI (>= ${manifestSem}) is necessary to interact with this app (current CLI version is ${maximumAcceptedManifestSem})`);
     }
 
   }
