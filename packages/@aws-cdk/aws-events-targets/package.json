@@ -106,6 +106,7 @@
     "@aws-cdk/aws-sns-subscriptions": "0.0.0",
     "@aws-cdk/aws-sqs": "0.0.0",
     "@aws-cdk/aws-stepfunctions": "0.0.0",
+    "@aws-cdk/aws-batch": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "constructs": "^2.0.0"
   },
@@ -123,6 +124,7 @@
     "@aws-cdk/aws-sns-subscriptions": "0.0.0",
     "@aws-cdk/aws-sqs": "0.0.0",
     "@aws-cdk/aws-stepfunctions": "0.0.0",
+    "@aws-cdk/aws-batch": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "constructs": "^2.0.0"
   },
