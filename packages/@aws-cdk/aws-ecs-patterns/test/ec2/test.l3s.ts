@@ -60,44 +60,6 @@ export = {
     test.done();
   },
 
-  'test ECS loadbalanced construct with private load balancer'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'VPC');
-    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
-
-    // WHEN
-    new ecsPatterns.ApplicationLoadBalancedEc2Service(stack, 'Service', {
-      cluster,
-      memoryLimitMiB: 1024,
-      taskImageOptions: {
-        image: ecs.ContainerImage.fromRegistry('test'),
-        environment: {
-          TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
-          TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
-        }
-      },
-      desiredCount: 2,
-      publicLoadBalancer: false,
-    });
-
-    // THEN - stack contains a load balancer and a service
-    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer'));
-
-    expect(stack).notTo(haveResourceLike('AWS::ServiceDiscovery::Service', {
-      DnsConfig: {
-        DnsRecords: [
-          {
-            Type: "A"
-          }
-        ]
-      }
-    }));
-
-    test.done();
-  },
-
   'set vpc instead of cluster'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -369,41 +331,6 @@ export = {
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::Listener', {
       Port: 80,
       Protocol: 'HTTP'
-    }));
-
-    test.done();
-  },
-
-  'test Fargate loadbalanced construct with private load balancer'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'VPC');
-    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-
-    // WHEN
-    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
-      cluster,
-      taskImageOptions: {
-        image: ecs.ContainerImage.fromRegistry('test'),
-        environment: {
-          TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
-          TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
-        }
-      },
-      desiredCount: 2,
-      publicLoadBalancer: false,
-    });
-
-    // THEN - stack contains a load balancer and a service
-    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer'));
-    expect(stack).notTo(haveResourceLike('AWS::ServiceDiscovery::Service', {
-      DnsConfig: {
-        DnsRecords: [
-          {
-            Type: "A"
-          }
-        ]
-      }
     }));
 
     test.done();
