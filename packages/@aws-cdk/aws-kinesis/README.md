@@ -46,3 +46,24 @@ const stream = new Stream(this, 'MyEncryptedStream', {
 
 assert(stream.encryptionKey === myKmsKey);
 ```
+
+### Granting IAM Permissions on Stream to Grantable
+
+Read and Write iam actions can be added to a iam.IGrantable. If the stream has an encryption key attributed, access 
+to encrypt and/or decrypt with the encryption key will also be added to the grantable. There are three instance methods 
+available on a Stream object:  
+*.grantWrite(grantee: iam.IGrantable)  
+*.grantRead(grantee: iam.IGrantable)  
+*.grantReadWrite(grantee: iam.IGrantable)  
+```ts
+const grantable = new iam.Role(this, 'Role', {
+  assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+  description: 'Example role...',
+}
+
+const stream = new Stream(this, 'MyEncryptedStream', {
+    encryption: StreamEncryption.Kms
+});
+
+stream.grantRead(grantable);
+```
