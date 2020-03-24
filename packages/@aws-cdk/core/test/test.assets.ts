@@ -18,6 +18,8 @@ export = {
     // THEN
     const assetMetadata = stack.node.metadata.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
 
+    expect(assetMetadata && assetMetadata.data).toBeTruthy();
+
     if (assetMetadata && assetMetadata.data) {
       const data = assetMetadata.data as cxschema.AssetMetadataEntry;
       test.equal(data.path, 'file-name');
@@ -60,6 +62,8 @@ export = {
 
     // THEN
     const assetMetadata = stack.node.metadata.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
+
+    expect(assetMetadata && assetMetadata.data).toBeTruthy();
 
     if (assetMetadata && assetMetadata.data) {
       const data = assetMetadata.data as cxschema.ContainerImageAssetMetadataEntry;
