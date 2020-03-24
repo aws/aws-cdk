@@ -1,4 +1,4 @@
-import ec2 = require('@aws-cdk/aws-ec2');
+import * as ec2 from '@aws-cdk/aws-ec2';
 import { Aws, Construct, IResource, Resource } from '@aws-cdk/core';
 import { CfnConnection } from './glue.generated';
 
