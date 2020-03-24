@@ -480,9 +480,9 @@ export interface DatabaseInstanceNewProps {
   readonly removalPolicy?: RemovalPolicy
 
   /**
-   * Upper limit to which RDS can scale the storage
+   * Upper limit to which RDS can scale the storage in GiB(Gibibyte).
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PIOPS.StorageTypes.html#USER_PIOPS.Autoscaling
-   * @default - No default value
+   * @default - No autoscaling of RDS instance
    */
   readonly maxAllocatedStorage?: number;
 }
