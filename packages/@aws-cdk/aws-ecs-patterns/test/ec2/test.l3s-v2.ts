@@ -2,7 +2,7 @@ import { expect, haveResource, haveResourceLike, SynthUtils } from '@aws-cdk/ass
 import { Certificate } from '@aws-cdk/aws-certificatemanager';
 import { InstanceType, Vpc } from '@aws-cdk/aws-ec2';
 import { AwsLogDriver, Cluster, ContainerImage, Ec2TaskDefinition, PropagatedTagSource, Protocol } from '@aws-cdk/aws-ecs';
-import { ApplicationProtocol } from '@aws-cdk/aws-elasticloadbalancingv2';
+import { ApplicationProtocol, ListenerCertificate, Protocol as elbv2Protocol } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { CompositePrincipal, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { PublicHostedZone } from '@aws-cdk/aws-route53';
 import { NamespaceType } from '@aws-cdk/aws-servicediscovery';
@@ -1098,6 +1098,65 @@ export = {
             'Arn',
           ],
         },
+      }));
+
+      test.done();
+    },
+
+    'set a TLS listener'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VPC');
+      const cluster = new Cluster(stack, 'Cluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new InstanceType('t2.micro') });
+
+      // WHEN
+      new NetworkMultipleTargetGroupsEc2Service(stack, 'Service', {
+        cluster,
+        memoryLimitMiB: 256,
+        taskImageOptions: {
+          image: ContainerImage.fromRegistry('test'),
+        },
+        loadBalancers: [
+          {
+            name: "lb",
+            listeners: [
+              {
+                name: "listener",
+                certificates: [ListenerCertificate.fromArn("arn:aws:acm:region:account:certificate/123456789012-1234-1234-1234-12345678")],
+                protocol: elbv2Protocol.TLS
+              }
+            ]
+          }
+        ],
+        targetGroups: [
+          {
+            containerPort: 80,
+            listener: "listener"
+          },
+        ]
+      });
+
+      // THEN
+      expect(stack).to(haveResource("AWS::ElasticLoadBalancingV2::Listener", {
+        DefaultActions: [
+          {
+            TargetGroupArn: {
+              Ref: "ServicelblistenerECSTargetGroupweb80Group1E0F6DCA"
+            },
+            Type: "forward"
+          }
+        ],
+        LoadBalancerArn: {
+          Ref: "ServicelbF1E7AAC9"
+        },
+        Port: 80,
+        Protocol: "TLS",
+        Certificates: [
+          {
+            CertificateArn: "arn:aws:acm:region:account:certificate/123456789012-1234-1234-1234-12345678"
+          }
+        ]
       }));
 
       test.done();

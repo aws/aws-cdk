@@ -1,7 +1,7 @@
 import { IVpc } from '@aws-cdk/aws-ec2';
 import { AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerDefinition, ContainerImage, ICluster, LogDriver,
-  PropagatedTagSource, Protocol, Secret } from '@aws-cdk/aws-ecs';
-import { NetworkListener, NetworkLoadBalancer, NetworkTargetGroup } from '@aws-cdk/aws-elasticloadbalancingv2';
+  PropagatedTagSource, Protocol as ecsProtocol, Secret } from '@aws-cdk/aws-ecs';
+import { IListenerCertificate, NetworkListener, NetworkLoadBalancer, NetworkTargetGroup, Protocol as elbv2Protocol } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { IRole } from '@aws-cdk/aws-iam';
 import { ARecord, IHostedZone, RecordTarget } from '@aws-cdk/aws-route53';
 import { LoadBalancerTarget } from '@aws-cdk/aws-route53-targets';
@@ -232,6 +232,20 @@ export interface NetworkListenerProps {
    * @default 80
    */
   readonly port?: number;
+
+  /**
+   * Protocol for listener, expects TCP or TLS
+   *
+   * @default - TLS if certificates are provided. TCP otherwise.
+   */
+  readonly protocol?: elbv2Protocol;
+
+  /**
+   * Certificate list of ACM cert ARNs
+   *
+   * @default - No certificates.
+   */
+  readonly certificates?: IListenerCertificate[];
 }
 
 /**
@@ -300,7 +314,11 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends Construct {
         const lb = this.createLoadBalancer(lbProps.name, lbProps.publicLoadBalancer);
         this.loadBalancers.push(lb);
         for (const listenerProps of lbProps.listeners) {
-          const listener = this.createListener(listenerProps.name, lb, listenerProps.port || 80);
+          const listener = lb.addListener(listenerProps.name, {
+            port: listenerProps.port || 80,
+            certificates: listenerProps.certificates,
+            protocol: listenerProps.protocol
+          });
           this.listeners.push(listener);
         }
         this.createDomainName(lb, lbProps.domainName, lbProps.domainZone);
@@ -310,8 +328,8 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends Construct {
       this.loadBalancer = this.loadBalancers[0];
       this.listener = this.listeners[0];
     } else {
-      this.loadBalancer = this.createLoadBalancer('LB');
-      this.listener = this.createListener('PublicListener', this.loadBalancer, 80);
+      this.loadBalancer = this.createLoadBalancer('LB', true);
+      this.listener = this.loadBalancer.addListener("PublicListener", {port: 80});
       this.createDomainName(this.loadBalancer);
 
       new CfnOutput(this, 'LoadBalancerDNS', { value: this.loadBalancer.loadBalancerDnsName });
@@ -365,7 +383,7 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends Construct {
 
   protected addPortMappingForTargets(container: ContainerDefinition, targets: NetworkTargetProps[]) {
     for (const target of targets) {
-      if (!container.findPortMapping(target.containerPort, Protocol.TCP)) {
+      if (!container.findPortMapping(target.containerPort, ecsProtocol.TCP)) {
         container.addPortMappings({
           containerPort: target.containerPort,
         });
