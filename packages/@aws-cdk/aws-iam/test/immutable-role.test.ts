@@ -1,5 +1,5 @@
 import '@aws-cdk/assert/jest';
-import { Stack } from '@aws-cdk/core';
+import { Construct, Stack } from '@aws-cdk/core';
 import * as iam from '../lib';
 
 // tslint:disable:object-literal-key-quotes
@@ -105,5 +105,12 @@ describe('ImmutableRole', () => {
         ],
       },
     });
+  });
+
+  // this pattern is used here:
+  // aws-codepipeline-actions/lib/cloudformation/pipeline-actions.ts#L517
+  test('immutable role is a construct', () => {
+    new Construct(immutableRole as unknown as Construct, 'Child');
+    new Construct(mutableRole.withoutPolicyUpdates() as unknown as Construct, 'Child2');
   });
 });
