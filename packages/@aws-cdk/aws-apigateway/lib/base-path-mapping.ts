@@ -17,6 +17,7 @@ export interface BasePathMappingOptions {
 
   /**
    * The Deployment stage of API
+   * [disable-awslint:ref-via-interface]
    * @default - map to deploymentStage of restApi otherwise stage needs to pass in URL
    */
   readonly stage?: Stage;
