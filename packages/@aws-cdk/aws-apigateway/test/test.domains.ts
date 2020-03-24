@@ -1,10 +1,9 @@
 // tslint:disable:object-literal-key-quotes
 import { ABSENT, expect, haveResource } from '@aws-cdk/assert';
 import * as acm from '@aws-cdk/aws-certificatemanager';
-import { Stack, CfnElement } from '@aws-cdk/core';
+import { CfnElement, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as apigw from '../lib';
-import { Deployment, Stage } from '../lib';
 
 export = {
   'can define either an EDGE or REGIONAL domain name'(test: Test) {
@@ -347,11 +346,11 @@ export = {
     api1.root.addMethod('GET');
     api2.root.addMethod('GET');
 
-    const testDeploy = new Deployment(stack, 'test-deployment', {
+    const testDeploy = new apigw.Deployment(stack, 'test-deployment', {
       api: api1
     });
 
-    const testStage = new Stage(stack, 'test-stage', {
+    const testStage = new apigw.Stage(stack, 'test-stage', {
       deployment : testDeploy
     });
 
