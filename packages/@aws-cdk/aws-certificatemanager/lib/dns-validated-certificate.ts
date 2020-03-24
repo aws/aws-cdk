@@ -109,7 +109,9 @@ export class DnsValidatedCertificate extends cdk.Resource implements ICertificat
     protected validate(): string[] {
         const errors: string[] = [];
         // Ensure the zone name is a parent zone of the certificate domain name
-        if (this.domainName !== this.normalizedZoneName && !this.domainName.endsWith('.' + this.normalizedZoneName)) {
+        if (!cdk.Token.isUnresolved(this.normalizedZoneName) &&
+              this.domainName !== this.normalizedZoneName &&
+              !this.domainName.endsWith('.' + this.normalizedZoneName)) {
             errors.push(`DNS zone ${this.normalizedZoneName} is not authoritative for certificate domain name ${this.domainName}`);
         }
         return errors;

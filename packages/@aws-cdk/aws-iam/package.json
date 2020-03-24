@@ -74,12 +74,12 @@
   "dependencies": {
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
-    "constructs": "^1.1.2"
+    "constructs": "^2.0.0"
   },
   "peerDependencies": {
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
-    "constructs": "^1.1.2"
+    "constructs": "^2.0.0"
   },
   "jest": {
     "moduleFileExtensions": [
@@ -158,5 +158,8 @@
       "docs-public-apis:@aws-cdk/aws-iam.IUser"
     ]
   },
-  "stability": "stable"
+  "stability": "stable",
+  "awscdkio": {
+    "announce": false
+  }
 }

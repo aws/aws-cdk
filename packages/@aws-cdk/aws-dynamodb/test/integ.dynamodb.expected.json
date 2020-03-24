@@ -20,8 +20,8 @@
           "WriteCapacityUnits": 5
         }
       },
-      "DeletionPolicy": "Delete",
-      "UpdateReplacePolicy": "Delete"
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "TableWithGlobalAndLocalSecondaryIndexBC540710": {
       "Type": "AWS::DynamoDB::Table",
@@ -270,8 +270,8 @@
           "Enabled": true
         }
       },
-      "DeletionPolicy": "Delete",
-      "UpdateReplacePolicy": "Delete"
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "TableWithGlobalSecondaryIndexCC8E841E": {
       "Type": "AWS::DynamoDB::Table",
@@ -315,8 +315,8 @@
           "WriteCapacityUnits": 5
         }
       },
-      "DeletionPolicy": "Delete",
-      "UpdateReplacePolicy": "Delete"
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "TableWithLocalSecondaryIndex4DA3D08F": {
       "Type": "AWS::DynamoDB::Table",
@@ -368,8 +368,8 @@
           "WriteCapacityUnits": 5
         }
       },
-      "DeletionPolicy": "Delete",
-      "UpdateReplacePolicy": "Delete"
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "User00B015A1": {
       "Type": "AWS::IAM::User"

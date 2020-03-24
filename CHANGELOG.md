@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.31.0](https://github.com/aws/aws-cdk/compare/v1.30.0...v1.31.0) (2020-03-24)
+
+
+### ⚠ BREAKING CHANGES
+
+* .NET Core v3.1 is required with JSII v1.1
+
+### Features
+
+* **cloud9:** Support Cloud9 EC2 Environment  ([#6298](https://github.com/aws/aws-cdk/issues/6298)) ([f50b876](https://github.com/aws/aws-cdk/commit/f50b8769548c34a66cf05079d1ac721c83992840))
+* **codepipeline:** add experimental support for the BitBucket source action ([#6756](https://github.com/aws/aws-cdk/issues/6756)) ([95bb1ad](https://github.com/aws/aws-cdk/commit/95bb1ad60e600007421acd6d160e0d7fb9bc0389)), closes [#6710](https://github.com/aws/aws-cdk/issues/6710)
+* **eks:** KubernetesPatch ([#6753](https://github.com/aws/aws-cdk/issues/6753)) ([c7fab5b](https://github.com/aws/aws-cdk/commit/c7fab5b29aca518fb6e1c8f2868d915885fedf04)), closes [#6723](https://github.com/aws/aws-cdk/issues/6723)
+* **events:** AWS Batch event target ([#6570](https://github.com/aws/aws-cdk/issues/6570)) ([73899a9](https://github.com/aws/aws-cdk/commit/73899a95ffe52c51ff77155fd654c2b4cdef7241))
+
+
+### Bug Fixes
+
+* **acm:** Allow tokens as a part of the hosted zone name ([#6685](https://github.com/aws/aws-cdk/issues/6685)) ([acfb6ef](https://github.com/aws/aws-cdk/commit/acfb6ef8b5f94c04206c3afc8d12bfaf87c1a650)), closes [#6133](https://github.com/aws/aws-cdk/issues/6133)
+* **aws-ecs-patterns:** only create an A record if LB is public ([#6895](https://github.com/aws/aws-cdk/issues/6895)) ([f31f4e1](https://github.com/aws/aws-cdk/commit/f31f4e128d5f9dd8d673ac2a3c28d792d1427dda)), closes [#6702](https://github.com/aws/aws-cdk/issues/6702)
+* **cdk-assets:** context path not honored by Docker asset build ([#6957](https://github.com/aws/aws-cdk/issues/6957)) ([1edd507](https://github.com/aws/aws-cdk/commit/1edd5076e8a5b4e2194c73e395d1712f74cd2ba1)), closes [#6954](https://github.com/aws/aws-cdk/issues/6954) [#6814](https://github.com/aws/aws-cdk/issues/6814)
+* **cloudwatch:** unhelpful error when reusing metric IDs ([#6892](https://github.com/aws/aws-cdk/issues/6892)) ([60253a3](https://github.com/aws/aws-cdk/commit/60253a319d6f185cf807ca45dac4ce0be4ab5777))
+* **cognito:** user pool - link style email verification fails to deploy ([#6938](https://github.com/aws/aws-cdk/issues/6938)) ([b5c60d5](https://github.com/aws/aws-cdk/commit/b5c60d50a6c4fb7e93185c5874a2651ba40d0247)), closes [#6811](https://github.com/aws/aws-cdk/issues/6811)
+* **ec2:** spelling error in Instance's subnet selection logic. ([#6752](https://github.com/aws/aws-cdk/issues/6752)) ([564561a](https://github.com/aws/aws-cdk/commit/564561a5462b78bc29cd6d6968abe6b05a670df2))
+* **iam:** immutable role cannot be used as a construct ([#6920](https://github.com/aws/aws-cdk/issues/6920)) ([56be032](https://github.com/aws/aws-cdk/commit/56be032149f3e698120f7653e36ef1fea565f952)), closes [#6885](https://github.com/aws/aws-cdk/issues/6885)
+
+
+* .NET Core 3.1 is required with JSII v1.1 ([#6951](https://github.com/aws/aws-cdk/issues/6951)) ([24f12d6](https://github.com/aws/aws-cdk/commit/24f12d6931fc107cc959404516e5c33001c6f7f5))
+
 ## [1.30.0](https://github.com/aws/aws-cdk/compare/v1.29.0...v1.30.0) (2020-03-18)
 
 

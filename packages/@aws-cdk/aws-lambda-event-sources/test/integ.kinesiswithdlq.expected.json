@@ -134,6 +134,14 @@
     }
   },
   "Outputs": {
+    "FunctionArn": {
+      "Value": {
+        "Fn::GetAtt": [
+          "FC4345940",
+          "Arn"
+        ]
+      }
+    },
     "InputKinesisStreamName": {
       "Value": {
         "Ref": "S509448A1"
@@ -143,13 +151,6 @@
       "Value": {
         "Ref": "Q63C6E3AB"
       }
-    },
-    "FunctionArn": {
-      "Value":{
-        "Fn::GetAtt":["FC4345940","Arn"]
-        }
-      }
-  },
-  "Parameters": {
+    }
   }
 }

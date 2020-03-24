@@ -168,8 +168,11 @@ export class GraphWidget extends ConcreteWidget {
   }
 
   public toJson(): any[] {
-    const horizontalAnnoations =  (this.props.leftAnnotations || []).map(mapAnnotation('left')).concat(
-      (this.props.rightAnnotations || []).map(mapAnnotation('right')));
+    const horizontalAnnotations = [
+      ...(this.props.leftAnnotations || []).map(mapAnnotation('left')),
+      ...(this.props.rightAnnotations || []).map(mapAnnotation('right')),
+    ];
+
     const metrics = allMetricsGraphJson(this.props.left || [], this.props.right || []);
     return [{
       type: 'metric',
@@ -183,7 +186,7 @@ export class GraphWidget extends ConcreteWidget {
         region: this.props.region || cdk.Aws.REGION,
         stacked: this.props.stacked,
         metrics: metrics.length > 0 ? metrics : undefined,
-        annotations: horizontalAnnoations.length > 0 ? { horizontal: horizontalAnnoations } : undefined,
+        annotations: horizontalAnnotations.length > 0 ? { horizontal: horizontalAnnotations } : undefined,
         yAxis: {
           left: this.props.leftYAxis !== undefined ? this.props.leftYAxis : undefined,
           right: this.props.rightYAxis !== undefined ? this.props.rightYAxis : undefined,

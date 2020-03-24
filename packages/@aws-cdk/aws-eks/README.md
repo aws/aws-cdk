@@ -321,6 +321,21 @@ CDK. This means that if the resource is deleted from your code (or the stack is
 deleted), the next `cdk deploy` will issue a `kubectl delete` command and the
 Kubernetes resources will be deleted.
 
+### Patching Kubernetes Resources
+
+The KubernetesPatch construct can be used to update existing kubernetes
+resources. The following example can be used to patch the `hello-kubernetes`
+deployment from the example above with 5 replicas.
+
+```ts
+new KubernetesPatch(this, 'hello-kub-deployment-label', {
+  cluster,
+  resourceName: "deployment/hello-kubernetes",
+  applyPatch: { spec: { replicas: 5 } },
+  restorePatch: { spec: { replicas: 3 } }
+})
+```
+
 ### AWS IAM Mapping
 
 As described in the [Amazon EKS User Guide](https://docs.aws.amazon.com/en_us/eks/latest/userguide/add-user-role.html),

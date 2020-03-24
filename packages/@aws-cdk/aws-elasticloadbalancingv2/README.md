@@ -39,11 +39,13 @@ const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
 });
 
 // Add a listener and open up the load balancer's security group
-// to the world. 'open' is the default, set this to 'false'
-// and use `listener.connections` if you want to be selective
-// about who can access the listener.
+// to the world.
 const listener = lb.addListener('Listener', {
     port: 80,
+
+    // 'open: true' is the default, you can leave it out if you want. Set it
+    // to 'false' and use `listener.connections` if you want to be selective
+    // about who can access the load balancer.
     open: true,
 });
 

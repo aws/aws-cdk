@@ -291,7 +291,7 @@ export class Instance extends Resource implements IInstance {
       if (selected.length === 1) {
         subnet = selected[0];
       } else {
-        throw new Error('When specifying AZ there has to be exactly on subnet of the given type in this az');
+        throw new Error('When specifying AZ there has to be exactly one subnet of the given type in this az');
       }
     } else {
       subnet = subnets[0];
