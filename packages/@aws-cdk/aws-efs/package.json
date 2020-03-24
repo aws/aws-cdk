@@ -90,7 +90,7 @@
     "@aws-cdk/aws-kms": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
-    "constructs": "^1.1.2"
+    "constructs": "^2.0.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -99,7 +99,7 @@
     "@aws-cdk/aws-kms": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
-    "constructs": "^1.1.2"
+    "constructs": "^2.0.0"
   },
   "engines": {
     "node": ">= 10.3.0"
@@ -112,5 +112,8 @@
       "resource-interface-extends-resource:@aws-cdk/aws-efs.IEfsFileSystem"
     ]
   },
-  "stability": "experimental"
+  "stability": "experimental",
+  "awscdkio": {
+    "announce": false
+  }
 }
