@@ -86,9 +86,13 @@ export const isPositiveInteger = (value: number) => {
 /**
  * Define a Map state in the state machine
  *
- * A Map state can be used to dynamically process elements of an array through sub state machines
+ * A `Map` state can be used to run a set of steps for each element of an input array.
+ * A Map state will execute the same steps for multiple entries of an array in the state input.
  *
- * The Result of a Map state is the transformed array after processing through the iterator state machines.
+ * While the Parallel state executes multiple branches of steps using the same input, a Map state
+ * will execute the same steps for multiple entries of an array in the state input.
+ *
+ * @see https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-map-state.html
  */
 export class Map extends State implements INextable {
     public readonly endStates: INextable[];
