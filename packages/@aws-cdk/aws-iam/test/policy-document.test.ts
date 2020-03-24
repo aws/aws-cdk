@@ -480,18 +480,18 @@ describe('IAM polocy document', () => {
       const principalOpts = {
         conditions: {
           BinaryEquals: {
-            "principal-key": "SGV5LCBmcmllbmQh",
+            'principal-key': 'SGV5LCBmcmllbmQh',
           },
         },
       };
       const p = new ServicePrincipal('s3.amazonaws.com', principalOpts)
-        .withConditions({ StringEquals: { "wrapper-key": ["val-1", "val-2"] } });
+        .withConditions({ StringEquals: { 'wrapper-key': ['val-1', 'val-2'] } });
       const statement = new PolicyStatement();
       statement.addPrincipals(p);
       expect(stack.resolve(statement.toStatementJson())).toEqual({
         Condition: {
-          BinaryEquals: { "principal-key": "SGV5LCBmcmllbmQh" },
-          StringEquals: { "wrapper-key": ["val-1", "val-2"] },
+          BinaryEquals: { 'principal-key': 'SGV5LCBmcmllbmQh' },
+          StringEquals: { 'wrapper-key': ['val-1', 'val-2'] },
         },
         Effect: 'Allow',
         Principal: {
@@ -502,43 +502,43 @@ describe('IAM polocy document', () => {
 
     test('conditions from addCondition are merged with those from the principal', () => {
       const stack = new Stack();
-      const p = new AccountPrincipal('012345678900').withConditions({ StringEquals: { key: "val" } });
+      const p = new AccountPrincipal('012345678900').withConditions({ StringEquals: { key: 'val' } });
       const statement = new PolicyStatement();
       statement.addPrincipals(p);
-      statement.addCondition("Null", { "banned-key": "true" });
+      statement.addCondition('Null', { 'banned-key': 'true' });
       expect(stack.resolve(statement.toStatementJson())).toEqual({
         Effect: 'Allow',
         Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::012345678900:root']] } },
-        Condition: { StringEquals: { key: "val" }, Null: { "banned-key": "true" } },
+        Condition: { StringEquals: { key: 'val' }, Null: { 'banned-key': 'true' } },
       });
     });
 
     test('adding conditions via `withConditions` does not affect the original principal', () => {
       const originalPrincipal = new ArnPrincipal('iam:an:arn');
-      const principalWithConditions = originalPrincipal.withConditions({ StringEquals: { key: "val" } });
+      const principalWithConditions = originalPrincipal.withConditions({ StringEquals: { key: 'val' } });
       expect(originalPrincipal.policyFragment.conditions).toEqual({});
-      expect(principalWithConditions.policyFragment.conditions).toEqual({ StringEquals: { key: "val" } });
+      expect(principalWithConditions.policyFragment.conditions).toEqual({ StringEquals: { key: 'val' } });
     });
 
     test('conditions are merged when operators conflict', () => {
       const p = new FederatedPrincipal('fed', {
-        OperatorOne: { "fed-key": "fed-val" },
-        OperatorTwo: { "fed-key": "fed-val" },
-        OperatorThree: { "fed-key": "fed-val" },
+        OperatorOne: { 'fed-key': 'fed-val' },
+        OperatorTwo: { 'fed-key': 'fed-val' },
+        OperatorThree: { 'fed-key': 'fed-val' },
       }).withConditions({
-        OperatorTwo: { "with-key": "with-val" },
-        OperatorThree: { "with-key": "with-val" },
+        OperatorTwo: { 'with-key': 'with-val' },
+        OperatorThree: { 'with-key': 'with-val' },
       });
       const statement = new PolicyStatement();
-      statement.addCondition("OperatorThree", { "add-key": "add-val" });
+      statement.addCondition('OperatorThree', { 'add-key': 'add-val' });
       statement.addPrincipals(p);
       expect(statement.toStatementJson()).toEqual({
         Effect: 'Allow',
         Principal: { Federated: 'fed' },
         Condition: {
-          OperatorOne: { "fed-key": "fed-val" },
-          OperatorTwo: { "fed-key": "fed-val", "with-key": "with-val" },
-          OperatorThree: { "fed-key": "fed-val", "with-key": "with-val", "add-key": "add-val" },
+          OperatorOne: { 'fed-key': 'fed-val' },
+          OperatorTwo: { 'fed-key': 'fed-val', 'with-key': 'with-val' },
+          OperatorThree: { 'fed-key': 'fed-val', 'with-key': 'with-val', 'add-key': 'add-val' },
         }
       });
     });
@@ -546,17 +546,17 @@ describe('IAM polocy document', () => {
     test('values passed to `withConditions` overwrite values from the wrapped principal ' +
       'when keys conflict within an operator', () => {
       const p = new FederatedPrincipal('fed', {
-        Operator: { key: "p-val" },
+        Operator: { key: 'p-val' },
       }).withConditions({
-        Operator: { key: "with-val" },
+        Operator: { key: 'with-val' },
       });
       const statement = new PolicyStatement();
       statement.addPrincipals(p);
       expect(statement.toStatementJson()).toEqual({
-        Effect: "Allow",
+        Effect: 'Allow',
         Principal: { Federated: 'fed' },
         Condition: {
-          Operator: { key: "with-val" },
+          Operator: { key: 'with-val' },
         },
       });
     });
