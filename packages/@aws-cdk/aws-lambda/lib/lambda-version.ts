@@ -55,7 +55,7 @@ export interface VersionOptions extends EventInvokeConfigOptions {
   readonly provisionedConcurrentExecutions?: number;
 
   /**
-   * Whether to ratin old versions of this function when a new version is
+   * Whether to retain old versions of this function when a new version is
    * created.
    *
    * @default RemovalPolicy.DESTROY
