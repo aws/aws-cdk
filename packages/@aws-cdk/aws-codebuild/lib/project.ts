@@ -516,7 +516,7 @@ export interface CommonProjectProps {
    * A ProjectFileSystemLocation object specifies the identifier, location, mountOptions, mountPoint,
    * and type of a file system created using Amazon Elastic File System.
    *
-   * @default false
+   * @default - no file system locations
    */
   readonly fileSystemLocations?: IFileSystemLocation[];
 }
