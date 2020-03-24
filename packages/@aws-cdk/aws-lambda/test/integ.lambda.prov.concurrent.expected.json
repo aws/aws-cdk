@@ -189,9 +189,7 @@
         "ProvisionedConcurrencyConfig": {
           "ProvisionedConcurrentExecutions": 5
         }
-      },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete"
+      }
     },
     "Alias29455D932": {
       "Type": "AWS::Lambda::Alias",
