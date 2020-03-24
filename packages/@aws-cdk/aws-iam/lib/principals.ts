@@ -127,8 +127,13 @@ export class PrincipalWithConditions<PrincipalType extends PrincipalBase> implem
     public readonly principal: PrincipalType,
     conditions: Conditions,
   ) {
-      // TODO: check for clashes?
-      this.conditions = { ...principal.policyFragment.conditions, ...conditions };
+      this.conditions = conditions;
+      Object.entries(principal.policyFragment.conditions).forEach(([key, valueFromPrincipal]) => {
+        const valueFromConditions = this.conditions[key];
+        this.conditions[key] = valueFromConditions
+          ? { ...valueFromPrincipal, ...valueFromConditions }
+          : valueFromPrincipal;
+      });
   }
 
   public get policyFragment(): PrincipalPolicyFragment {

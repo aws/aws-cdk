@@ -519,6 +519,47 @@ describe('IAM polocy document', () => {
       expect(originalPrincipal.policyFragment.conditions).toEqual({});
       expect(principalWithConditions.policyFragment.conditions).toEqual({ StringEquals: { key: "val" } });
     });
+
+    test('conditions are merged when operators conflict', () => {
+      const p = new FederatedPrincipal('fed', {
+        OperatorOne: { "fed-key": "fed-val" },
+        OperatorTwo: { "fed-key": "fed-val" },
+        OperatorThree: { "fed-key": "fed-val" },
+      }).withConditions({
+        OperatorTwo: { "with-key": "with-val" },
+        OperatorThree: { "with-key": "with-val" },
+      });
+      const statement = new PolicyStatement();
+      statement.addCondition("OperatorThree", { "add-key": "add-val" });
+      statement.addPrincipals(p);
+      expect(statement.toStatementJson()).toEqual({
+        Effect: 'Allow',
+        Principal: { Federated: 'fed' },
+        Condition: {
+          OperatorOne: { "fed-key": "fed-val" },
+          OperatorTwo: { "fed-key": "fed-val", "with-key": "with-val" },
+          OperatorThree: { "fed-key": "fed-val", "with-key": "with-val", "add-key": "add-val" },
+        }
+      });
+    });
+
+    test('values passed to `withConditions` overwrite values from the wrapped principal ' +
+      'when keys conflict within an operator', () => {
+      const p = new FederatedPrincipal('fed', {
+        Operator: { key: "p-val" },
+      }).withConditions({
+        Operator: { key: "with-val" },
+      });
+      const statement = new PolicyStatement();
+      statement.addPrincipals(p);
+      expect(statement.toStatementJson()).toEqual({
+        Effect: "Allow",
+        Principal: { Federated: 'fed' },
+        Condition: {
+          Operator: { key: "with-val" },
+        },
+      });
+    });
   });
 
   describe('duplicate statements', () => {
