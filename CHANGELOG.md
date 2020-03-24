@@ -9,8 +9,6 @@ All notable changes to this project will be documented in this file. See [standa
 
 * .NET Core v3.1 is required with JSII v1.1
 
-Co-authored-by: mergify[bot] <37929162+mergify[bot]@users.noreply.github.com>
-
 ### Features
 
 * **cloud9:** Support Cloud9 EC2 Environment  ([#6298](https://github.com/aws/aws-cdk/issues/6298)) ([f50b876](https://github.com/aws/aws-cdk/commit/f50b8769548c34a66cf05079d1ac721c83992840))
