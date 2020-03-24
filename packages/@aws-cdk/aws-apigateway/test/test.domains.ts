@@ -1,7 +1,7 @@
 // tslint:disable:object-literal-key-quotes
 import { ABSENT, expect, haveResource } from '@aws-cdk/assert';
 import * as acm from '@aws-cdk/aws-certificatemanager';
-import { Stack } from '@aws-cdk/core';
+import { Stack, CfnElement } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as apigw from '../lib';
 import { Deployment, Stage } from '../lib';
@@ -368,7 +368,7 @@ export = {
       "RestApiId": {
         "Ref": "api1A91238E2"
       },
-      "Stage": { Ref: stack.getLogicalId(testStage.node.findChild('Resource') as cdk.CfnElement) }
+      "Stage": { Ref: stack.getLogicalId(testStage.node.findChild('Resource') as CfnElement) }
     }));
 
     expect(stack).to(haveResource('AWS::ApiGateway::BasePathMapping', {
