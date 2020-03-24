@@ -42,9 +42,13 @@
     "bump-schema-version": "node scripts/bump-schema-version.js"
   },
   "cdk-build": {
-    "post": ["yarn generate-schema-json"],
+    "post": [
+      "yarn generate-schema-json"
+    ],
     "eslint": {
-      "ignore-pattern": ["scripts/*"]
+      "ignore-pattern": [
+        "scripts/*"
+      ]
     }
   },
   "author": {
@@ -104,5 +108,8 @@
   },
   "dependencies": {
     "jsonschema": "^1.2.5"
+  },
+  "awscdkio": {
+    "announce": false
   }
 }
