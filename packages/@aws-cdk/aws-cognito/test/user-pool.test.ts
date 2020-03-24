@@ -715,6 +715,27 @@ describe('User Pool', () => {
     });
   });
 
+  test('password minimum length is set to the default when other parts of the policy is configured', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'Pool', {
+      passwordPolicy: {
+        tempPasswordValidity: Duration.days(2),
+        requireDigits: true,
+      }
+    });
+
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+      Policies: {
+        PasswordPolicy: {
+          MinimumLength: 8,
+        },
+      },
+    });
+  });
+
   test('throws when tempPassword validity is not in round days', () => {
     const stack = new Stack();
 
