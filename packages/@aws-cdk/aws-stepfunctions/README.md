@@ -542,9 +542,9 @@ const success = new stepfunctions.Fail(this, 'Fail', {
 ### Map
 
 A `Map` state can be used to run a set of steps for each element of an input array.
-A Map state will execute the same steps for multiple entries of an array in the state input.
+A `Map` state will execute the same steps for multiple entries of an array in the state input.
 
-While the Parallel state executes multiple branches of steps using the same input, a Map state will
+While the `Parallel` state executes multiple branches of steps using the same input, a `Map` state will
 execute the same steps for multiple entries of an array in the state input.
 
 ```ts
