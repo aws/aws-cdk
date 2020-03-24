@@ -90,8 +90,7 @@
       "Properties": {
         "FunctionName": {
           "Ref": "MyLambdaCCE802FB"
-        },
-        "Description": "lambda-test-current-version/MyLambda.currentVersion (created by AWS CDK)"
+        }
       },
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"

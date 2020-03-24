@@ -78,7 +78,9 @@
         "FunctionName": {
           "Ref": "MyLambdaCCE802FB"
         }
-      }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "Alias325C5727": {
       "Type": "AWS::Lambda::Alias",

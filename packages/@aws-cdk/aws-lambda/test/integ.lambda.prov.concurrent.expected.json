@@ -78,7 +78,9 @@
         "FunctionName": {
           "Ref": "MyLambdaAliasPCED0B8D751"
         }
-      }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "Alias325C5727": {
       "Type": "AWS::Lambda::Alias",
@@ -189,7 +191,9 @@
         "ProvisionedConcurrencyConfig": {
           "ProvisionedConcurrentExecutions": 5
         }
-      }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "Alias29455D932": {
       "Type": "AWS::Lambda::Alias",
