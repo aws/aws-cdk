@@ -171,9 +171,11 @@ export class Version extends QualifiedFunctionBase implements IVersion {
       provisionedConcurrencyConfig: this.determineProvisionedConcurrency(props)
     });
 
-    version.applyRemovalPolicy(props.removalPolicy, {
-      default: RemovalPolicy.DESTROY
-    });
+    if (props.removalPolicy) {
+      version.applyRemovalPolicy(props.removalPolicy, {
+        default: RemovalPolicy.DESTROY
+      });
+    }
 
     this.version = version.attrVersion;
     this.functionArn = version.ref;
