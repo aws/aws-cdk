@@ -146,7 +146,7 @@ export class PolicyStatement {
     this.addPrincipals(new ServicePrincipal(service, opts));
   }
 
-  public addFederatedPrincipal(federated: any, conditions: {[key: string]: any}) {
+  public addFederatedPrincipal(federated: any, conditions: Conditions) {
     this.addPrincipals(new FederatedPrincipal(federated, conditions));
   }
 
@@ -209,7 +209,7 @@ export class PolicyStatement {
   /**
    * Add multiple conditions to the Policy
    */
-  public addConditions(conditions: {[key: string]: any}) {
+  public addConditions(conditions: Conditions) {
     Object.keys(conditions).map(key => {
       this.addCondition(key, conditions[key]);
     });
@@ -302,6 +302,19 @@ export class PolicyStatement {
 export enum Effect {
   ALLOW = 'Allow',
   DENY = 'Deny',
+}
+
+/**
+ * TODO: docs
+ * https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition.html
+ * https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_condition-keys.html
+ *
+ * TODO: note for commit - JSII blocks this from being more strongly modelled
+ * TODO: check this type is used in all places (e.g. statement.addCondition)...
+ * technically a breaking change to narrow the type but seeing as Cfn enforces it anyway it should be acceptable
+ */
+export interface Conditions {
+  [operator: string]: { [conditionKey: string]: string | string[] };
 }
 
 /**

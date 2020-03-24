@@ -1,20 +1,7 @@
 import * as cdk from '@aws-cdk/core';
 import { Default, RegionInfo } from '@aws-cdk/region-info';
-import { PolicyStatement } from './policy-statement';
+import { Conditions, PolicyStatement } from './policy-statement';
 import { mergePrincipal } from './util';
-
-/**
- * TODO: docs
- * https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition.html
- * https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_condition-keys.html
- *
- * TODO: note for commit - JSII blocks this from being more strongly modelled
- * TODO: check this type is used in all places (e.g. statement.addCondition)...
- * technically a breaking change to narrow the type but seeing as Cfn enforces it anyway it should be acceptable
- */
-export interface Conditions {
-  [key: string]: { [conditionKey: string]: string | string[] };
-}
 
 /**
  * Any object that has an associated principal that a permission can be granted to
@@ -137,7 +124,6 @@ export class PrincipalWithConditions<PrincipalType extends PrincipalBase> implem
   }
 
   public get policyFragment(): PrincipalPolicyFragment {
-    // TODO: merge this.conditions with the ones already defined on this.principal
     return new PrincipalPolicyFragment(this.principal.policyFragment.principalJson, this.conditions);
   }
 
