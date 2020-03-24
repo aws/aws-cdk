@@ -48,7 +48,7 @@
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
-    "constructs": "^1.1.2"
+    "constructs": "^2.0.0"
   },
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
@@ -85,7 +85,7 @@
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
-    "constructs": "^1.1.2"
+    "constructs": "^2.0.0"
   },
   "engines": {
     "node": ">= 10.3.0"
@@ -99,5 +99,8 @@
       "docs-public-apis:@aws-cdk/app-delivery.PipelineDeployStackAction.onStateChange",
       "docs-public-apis:@aws-cdk/app-delivery.PipelineDeployStackActionProps"
     ]
+  },
+  "awscdkio": {
+    "announce": false
   }
 }
