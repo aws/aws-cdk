@@ -383,26 +383,26 @@ project.connections.allowTo(loadBalancer, ec2.Port.tcp(443));
 ## Project File System Location EFS
 
 Add support for CodeBuild to build on AWS EFS file system mounts using
-the new ProjectFileSystemLocation .
+the new ProjectFileSystemLocation.
 The `fileSystemLocations` property which accepts a list `ProjectFileSystemLocation`
-as represented by the interface `IFileSystemLocations`
-The only supported file system type is `EFS`
+as represented by the interface `IFileSystemLocations`.
+The only supported file system type is `EFS`.
 
-For Example:
+For example:
 
 ```ts
 new codebuild.Project(stack, 'MyProject', {
     buildSpec: codebuild.BuildSpec.fromObject({
         version: '0.2',
     }),
-    fileSystemLocations: [{
-        identifier: "myidentifier",
-        location: "fs-c8d04839.efs.eu-west-2.amazonaws.com:/mnt",
-        mountOptions: "nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2",
-        mountPoint: "/media",
-        type: "EFS"
-
-    }]
+    fileSystemLocations: [
+      codebuild.FileSystemLocation.efs({
+          identifier: "myidentifier2",
+          location: "myclodation.mydnsroot.com:/loc",
+          mountPoint: "/media",
+          mountOptions: "opts"
+      })
+    ]
 });
 ```
 

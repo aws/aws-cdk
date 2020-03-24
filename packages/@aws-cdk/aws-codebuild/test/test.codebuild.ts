@@ -938,7 +938,6 @@ export = {
           version: '0.2',
         }),
         fileSystemLocations: [codebuild.FileSystemLocation.efs({
-          type: "EFS",
           identifier: "myidentifier2",
           location: "myclodation.mydnsroot.com:/loc",
           mountPoint: "/media",
@@ -967,7 +966,6 @@ export = {
           version: '0.2',
         }),
         fileSystemLocations: [codebuild.FileSystemLocation.efs({
-          type: "EFS",
           identifier: "myidentifier2",
           location: "myclodation.mydnsroot.com:/loc",
           mountPoint: "/media",
@@ -975,7 +973,6 @@ export = {
         })]
       });
       project.addFileSystemLocations(codebuild.FileSystemLocation.efs({
-        type: "EFS",
         identifier: "myidentifier3",
         location: "myclodation.mydnsroot.com:/loc",
         mountPoint: "/media",

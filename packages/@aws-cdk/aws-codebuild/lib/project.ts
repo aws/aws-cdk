@@ -13,6 +13,7 @@ import { BuildSpec } from './build-spec';
 import { Cache } from './cache';
 import { CfnProject } from './codebuild.generated';
 import { CodePipelineArtifacts } from './codepipeline-artifacts';
+import { IFileSystemLocation } from './file-location';
 import { NoArtifacts } from './no-artifacts';
 import { NoSource } from './no-source';
 import { ISource } from './source';
@@ -794,9 +795,7 @@ export class Project extends ProjectBase {
    */
   public addFileSystemLocations(fileSystemLocation: IFileSystemLocation): void {
     const fileSystemConfig = fileSystemLocation.bind(this, this);
-    if (fileSystemConfig) {
-      this._fileSystemLocations.push(fileSystemConfig.location);
-    }
+    this._fileSystemLocations.push(fileSystemConfig.location);
   }
 
   /**
@@ -1549,53 +1548,4 @@ export enum BuildEnvironmentVariableType {
    * An environment variable stored in AWS Secrets Manager.
    */
   SECRETS_MANAGER = 'SECRETS_MANAGER'
-}
-
-export interface FileSystemConfig {
-  readonly location: CfnProject.ProjectFileSystemLocationProperty;
-}
-
-/**
- * The abstract interface of a CodeBuild FileSystemLocation.
- */
-export interface IFileSystemLocation {
-  bind(scope: Construct, project: IProject): FileSystemConfig;
-}
-
-/**
- * FileSystemLocation provider definition for a CodeBuild Project.
- */
-export class FileSystemLocation {
-  public static efs(props: IGenericFileSystemLocationProps): IFileSystemLocation {
-    return new EfsFileSystemLocation(props);
-  }
-}
-
-/**
- * EfsFileSystemLocation definition for a CodeBuild project.
- */
-class EfsFileSystemLocation implements IFileSystemLocation {
-  constructor(private readonly props: IGenericFileSystemLocationProps) {}
-
-  public bind(_scope: Construct, _project: IProject): FileSystemConfig {
-    return {
-      location: {
-        identifier: this.props.identifier,
-        location: this.props.location,
-        mountOptions: this.props.mountOptions,
-        mountPoint: this.props.mountPoint,
-        type: 'EFS',
-      },
-    };
-  }
-}
-/**
- * The abstract interface of a CodeBuild FileSystemLocation.
- */
-export interface IGenericFileSystemLocationProps {
-  readonly identifier: string;
-  readonly location: string;
-  readonly mountOptions?: string;
-  readonly mountPoint: string;
-  readonly type: string;
 }
