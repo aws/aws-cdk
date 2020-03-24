@@ -1,8 +1,8 @@
 import { expect as cdkExpect, haveResource } from '@aws-cdk/assert';
-import events = require('@aws-cdk/aws-events');
-import sqs = require('@aws-cdk/aws-sqs');
+import * as events from '@aws-cdk/aws-events';
+import * as sqs from '@aws-cdk/aws-sqs';
 import { Duration, Stack } from '@aws-cdk/core';
-import targets = require('../../lib');
+import * as targets from '../../lib';
 
 test('sqs queue as an event rule target', () => {
   // GIVEN

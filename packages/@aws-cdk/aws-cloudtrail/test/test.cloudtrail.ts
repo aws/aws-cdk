@@ -1,7 +1,7 @@
 import { expect, haveResource, not, SynthUtils } from '@aws-cdk/assert';
-import iam = require('@aws-cdk/aws-iam');
+import * as iam from '@aws-cdk/aws-iam';
 import { RetentionDays } from '@aws-cdk/aws-logs';
-import s3 = require('@aws-cdk/aws-s3');
+import * as s3 from '@aws-cdk/aws-s3';
 import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { ReadWriteType, Trail } from '../lib';
@@ -96,6 +96,22 @@ export = {
       expect(stack).to(not(haveResource("AWS::Logs::LogGroup")));
       test.done();
     },
+
+    'with imported s3 bucket'(test: Test) {
+      // GIVEN
+      const stack = getTestStack();
+      const bucket = s3.Bucket.fromBucketName(stack, 'S3', 'SomeBucket');
+
+      // WHEN
+      new Trail(stack, 'Trail', { bucket });
+
+      expect(stack).to(haveResource('AWS::CloudTrail::Trail', {
+        S3BucketName: 'SomeBucket'
+      }));
+
+      test.done();
+    },
+
     'with cloud watch logs': {
       'enabled'(test: Test) {
         const stack = getTestStack();

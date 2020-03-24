@@ -19,7 +19,9 @@
                 "kms:Delete*",
                 "kms:ScheduleKeyDeletion",
                 "kms:CancelKeyDeletion",
-                "kms:GenerateDataKey"
+                "kms:GenerateDataKey",
+                "kms:TagResource",
+                "kms:UntagResource"
               ],
               "Effect": "Allow",
               "Principal": {
@@ -98,17 +100,36 @@
                 }
               },
               "Resource": "*"
+            },
+            {
+              "Action": [
+                "kms:Decrypt",
+                "kms:Encrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::GetAtt": [
+                    "BuildProjectRoleAA92C755",
+                    "Arn"
+                  ]
+                }
+              },
+              "Resource": "*"
             }
           ],
           "Version": "2012-10-17"
         }
       },
-      "DeletionPolicy": "Retain",
-      "UpdateReplacePolicy": "Retain"
+      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Delete"
     },
     "MyPipelineArtifactsBucket727923DD": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
+        "PublicAccessBlockConfiguration" : {"BlockPublicAcls":true,"BlockPublicPolicy":true,"IgnorePublicAcls":true,"RestrictPublicBuckets":true},
         "BucketEncryption": {
           "ServerSideEncryptionConfiguration": [
             {
@@ -139,8 +160,8 @@
           ]
         }
       },
-      "DeletionPolicy": "Retain",
-      "UpdateReplacePolicy": "Retain"
+      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Delete"
     },
     "MyPipelineRoleC0D47CA4": {
       "Type": "AWS::IAM::Role",
@@ -330,7 +351,10 @@
         "ArtifactStore": {
           "EncryptionKey": {
             "Id": {
-              "Ref": "MyPipelineArtifactsBucketEncryptionKey8BF0A7F3"
+              "Fn::GetAtt": [
+                "MyPipelineArtifactsBucketEncryptionKey8BF0A7F3",
+                "Arn"
+              ]
             },
             "Type": "KMS"
           },
@@ -463,7 +487,7 @@
       "Properties": {
         "EventPattern": {
           "detail-type": [
-            "CodePipeline Stage Execution State Change"
+            "CodePipeline Action Execution State Change"
           ],
           "source": [
             "aws.codepipeline"
@@ -817,6 +841,21 @@
                   "Arn"
                 ]
               }
+            },
+            {
+              "Action": [
+                "kms:Decrypt",
+                "kms:Encrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "MyPipelineArtifactsBucketEncryptionKey8BF0A7F3",
+                  "Arn"
+                ]
+              }
             }
           ],
           "Version": "2012-10-17"
@@ -834,6 +873,12 @@
       "Properties": {
         "Artifacts": {
           "Type": "CODEPIPELINE"
+        },
+        "EncryptionKey": {
+          "Fn::GetAtt": [
+            "MyPipelineArtifactsBucketEncryptionKey8BF0A7F3",
+            "Arn"
+          ]
         },
         "Environment": {
           "ComputeType": "BUILD_GENERAL1_SMALL",

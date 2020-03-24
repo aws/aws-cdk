@@ -1,4 +1,4 @@
-import lambda = require('@aws-cdk/aws-lambda');
+import * as lambda from '@aws-cdk/aws-lambda';
 import { Construct, Duration, Stack } from '@aws-cdk/core';
 import { CustomResource, CustomResourceProvider } from '../lib';
 
@@ -25,7 +25,7 @@ class CopyOperation extends Construct {
     });
 
     new CustomResource(this, 'Resource', {
-      provider: CustomResourceProvider.lambda(lambdaProvider),
+      provider: CustomResourceProvider.fromLambda(lambdaProvider),
       properties: {
         sourceBucketArn: props.sourceBucket.bucketArn,
         targetBucketArn: props.targetBucket.bucketArn,

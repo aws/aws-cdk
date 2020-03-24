@@ -5,12 +5,14 @@
 
 ![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
 
-> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
-> future breaking changes.**
+> **This is a _developer preview_ (public beta) module.**
 >
-> This API is still under active development and subject to non-backward
-> compatible changes or removal in any future version. Use of the API is not recommended in production
-> environments. Experimental APIs are not subject to the Semantic Versioning model.
+> All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib))
+> are auto-generated from CloudFormation. They are stable and safe to use.
+>
+> However, all other classes, i.e., higher level constructs, are under active development and subject to non-backward
+> compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model.
+> This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
 
 ---
 <!--END STABILITY BANNER-->
@@ -75,64 +77,55 @@ Example:
 
 ```ts
 expect(stack).to(haveResource('AWS::CertificateManager::Certificate', {
-    DomainName: 'test.example.com'
+    DomainName: 'test.example.com',
     // Note: some properties omitted here
+
+    ShouldNotExist: ABSENT
 }));
 ```
 
+`ABSENT` is a magic value to assert that a particular key in an object is *not* set (or set to `undefined`).
 
-## Integration tests
+### Check number of resources
 
-Integration tests are modeled as CDK apps that are deployed by the developers.
-If deployment succeeds, the synthesized template is saved in a local file and
-"locked". During build, the test app is only synthesized and compared against
-the checked-in file to protect against regressions.
+If you want to assert that `n` number of resources of a particular type exist, with or without specific properties:
 
-### Setup
-
-Create any number of files called `integ.*.ts` in your `test` directory. These
-should be CDK apps containing a single stack.
-
-Add the following to your `package.json`':
-
-```json
-{
-    scripts: {
-        "test": ".... && cdk-integ-assert",
-        "integ": "cdk-integ"
-    },
-    ...
-    devDependencies: {
-        "@aws-cdk/assert": "*",
-        "aws-cdk": "*"
-    }
-}
+```ts
+countResources(type, count)
+countResourcesLike(type, count, props)
 ```
 
-This installs two tools into your scripts:
+Example:
 
- * When `npm test` is executed (during build), the `cdk-integ-assert` tool is
-   invoked. This tool will only synthesize the integration test stacks and
-   compare them to the .expected files. If the files differ (or do not exist),
-   the test will fail.
- * When `npm run integ` is executed (manually by the developer), the `cdk-integ`
-   tool is invoked. This tool will actually attempt to deploy the integration
-   test stacks into the default environment. If it succeeds, the .expected file
-   will be updated to include the latest synthesized stack.
-
-The usage of `cdk-integ` is:
-
-```bash
-cdk-integ [--no-clean] [filters...]
-
-# or
-
-npm run integ -- [--no-clean] [filters...]
+```ts
+expect(stack).to(countResources('AWS::ApiGateway::Method', 3));
+expect(stack).to(countResourcesLike('AWS::ApiGateway::Method', 1, {
+  HttpMethod: 'GET',
+  ResourceId: {
+    "Ref": "MyResource01234"
+  }
+}));
 ```
 
- * If `--no-clean` is specified, the integration test stacks will not be cleaned
-   up. This can be used to perform manual validation on the stacks.
- * If filters are specified, each test name is evaluated against each filter. If
-   the name matches any of the filters, the test is included. Otherwise it is
-   skipped.
+### Check existence of an output
+`haveOutput` assertion can be used to check that a stack contains specific output.
+Parameters to check against can be:
+- `outputName`
+- `outputValue`
+- `exportName`
 
+If `outputValue` is provided, at least one of `outputName`, `exportName` should be provided as well
+
+Example
+```ts
+expect(synthStack).to(haveOutput({
+  outputName: 'TestOutputName',
+  exportName: 'TestOutputExportName',
+  outputValue: {
+    'Fn::GetAtt': [
+      'TestResource',
+      'Arn'
+    ]
+  }
+}));
+```

@@ -1,5 +1,5 @@
-import cfnspec = require('@aws-cdk/cfnspec');
-import colors = require('colors/safe');
+import * as cfnspec from '@aws-cdk/cfnspec';
+import * as colors from 'colors/safe';
 import { PropertyChange, PropertyMap, ResourceChange } from "../diff/types";
 import { DiffableCollection } from '../diffable';
 import { renderIntrinsics } from "../render-intrinsics";

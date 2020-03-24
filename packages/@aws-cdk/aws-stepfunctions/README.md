@@ -5,12 +5,14 @@
 
 ![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
 
-> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
-> future breaking changes.**
+> **This is a _developer preview_ (public beta) module.**
 >
-> This API is still under active development and subject to non-backward
-> compatible changes or removal in any future version. Use of the API is not recommended in production
-> environments. Experimental APIs are not subject to the Semantic Versioning model.
+> All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib))
+> are auto-generated from CloudFormation. They are stable and safe to use.
+>
+> However, all other classes, i.e., higher level constructs, are under active development and subject to non-backward
+> compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model.
+> This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
 
 ---
 <!--END STABILITY BANNER-->
@@ -39,7 +41,7 @@ const submitJob = new sfn.Task(this, 'Submit Job', {
 });
 
 const waitX = new sfn.Wait(this, 'Wait X Seconds', {
-    duration: sfn.WaitDuration.secondsPath('$.wait_time'),
+    duration: sfn.WaitTime.secondsPath('$.waitSeconds'),
 });
 
 const getStatus = new sfn.Task(this, 'Get Job Status', {
@@ -103,13 +105,14 @@ This library comes with a set of classes that model the [Amazon States
 Language](https://states-language.net/spec.html). The following State classes
 are supported:
 
-* `Task`
-* `Pass`
-* `Wait`
-* `Choice`
-* `Parallel`
-* `Succeed`
-* `Fail`
+* [`Task`](#task)
+* [`Pass`](#pass)
+* [`Wait`](#wait)
+* [`Choice`](#choice)
+* [`Parallel`](#parallel)
+* [`Succeed`](#succeed)
+* [`Fail`](#fail)
+* [`Map`](#map)
 
 An arbitrary JSON object (specified at execution start) is passed from state to
 state and transformed during the execution of the workflow. For more
@@ -125,7 +128,9 @@ couple of the tasks available are:
 * `tasks.InvokeActivity` -- start an Activity (Activities represent a work
   queue that you poll on a compute fleet you manage yourself)
 * `tasks.InvokeFunction` -- invoke a Lambda function with function ARN
+* `tasks.RunBatchJob` -- run a Batch job
 * `tasks.RunLambdaTask` -- call Lambda as integrated service with magic ARN
+* `tasks.RunGlueJobTask` -- call Glue Job as integrated service
 * `tasks.PublishToTopic` -- publish a message to an SNS topic
 * `tasks.SendToQueue` -- send a message to an SQS queue
 * `tasks.RunEcsFargateTask`/`ecs.RunEcsEc2Task` -- run a container task,
@@ -133,6 +138,7 @@ couple of the tasks available are:
 * `tasks.SagemakerTrainTask` -- run a SageMaker training job
 * `tasks.SagemakerTransformTask` -- run a SageMaker transform job
 * `tasks.StartExecution` -- call StartExecution to a state machine of Step Functions
+* `tasks.EvaluateExpression` -- evaluate an expression referencing state paths
 
 Except `tasks.InvokeActivity` and `tasks.InvokeFunction`, the [service integration
 pattern](https://docs.aws.amazon.com/step-functions/latest/dg/connect-to-resource.html)
@@ -182,6 +188,54 @@ task.next(nextState);
       }
     })
   });
+```
+
+#### Glue Job example
+
+```ts
+  const task = new sfn.Task(stack, 'ETL', {
+    task: new tasks.RunGlueJobTask(glueJobName, {
+      integrationPattern: sfn.ServiceIntegrationPattern.SYNC,
+      arguments: {
+        "--table-prefix": "myTable"
+      }
+    })
+  });
+```
+
+[Example CDK app](../aws-stepfunctions-tasks/test/integ.glue-task.ts)
+
+#### Batch example
+
+```ts
+import batch = require('@aws-cdk/aws-batch');
+
+const batchQueue = new batch.JobQueue(this, 'JobQueue', {
+  computeEnvironments: [
+    {
+      order: 1,
+      computeEnvironment: new batch.ComputeEnvironment(this, 'ComputeEnv', {
+        computeResources: { vpc }
+      })
+    }
+  ]
+});
+
+const batchJobDefinition = new batch.JobDefinition(this, 'JobDefinition', {
+  container: {
+    image: ecs.ContainerImage.fromAsset(
+      path.resolve(__dirname, 'batchjob-image')
+    )
+  }
+});
+
+const task = new sfn.Task(this, 'Submit Job', {
+  task: new tasks.RunBatchJob({
+    jobDefinition: batchJobDefinition,
+    jobName: 'MyJob',
+    jobQueue: batchQueue
+  })
+});
 ```
 
 #### SNS example
@@ -329,6 +383,50 @@ new sfn.StateMachine(stack, 'ParentStateMachine', {
 });
 ```
 
+#### Eval example
+
+Use the `EvaluateExpression` to perform simple operations referencing state paths. The
+`expression` referenced in the task will be evaluated in a Lambda function
+(`eval()`). This allows you to not have to write Lambda code for simple operations.
+
+Example: convert a wait time from milliseconds to seconds, concat this in a message and wait:
+
+```ts
+const convertToSeconds = new sfn.Task(this, 'Convert to seconds', {
+  task: new tasks.EvaluateExpression({ expression: '$.waitMilliseconds / 1000' }),
+  resultPath: '$.waitSeconds'
+});
+
+const createMessage = new sfn.Task(this, 'Create message', {
+  // Note: this is a string inside a string.
+  task: new tasks.EvaluateExpression({ expression: '`Now waiting ${$.waitSeconds} seconds...`'}),
+  resultPath: '$.message'
+});
+
+const publishMessage = new sfn.Task(this, 'Publish message', {
+  task: new tasks.PublishToTopic(topic, {
+    message: sfn.TaskInput.fromDataAt('$.message'),
+  }),
+  resultPath: '$.sns'
+});
+
+const wait = new sfn.Wait(this, 'Wait', {
+  time: sfn.WaitTime.secondsPath('$.waitSeconds')
+});
+
+new sfn.StateMachine(this, 'StateMachine', {
+  definition: convertToSeconds
+    .next(createMessage)
+    .next(publishMessage)
+    .next(wait)
+});
+```
+
+The `EvaluateExpression` supports a `runtime` prop to specify the Lambda
+runtime to use to evaluate the expression. Currently, the only runtime
+supported is `lambda.Runtime.NODEJS_10_X`.
+
+
 ### Pass
 
 A `Pass` state does no work, but it can optionally transform the execution's
@@ -355,7 +453,7 @@ state.
 // Wait until it's the time mentioned in the the state object's "triggerTime"
 // field.
 const wait = new stepfunctions.Wait(this, 'Wait For Trigger Time', {
-    duration: stepfunctions.WaitDuration.timestampPath('$.triggerTime'),
+    time: stepfunctions.WaitTime.timestampPath('$.triggerTime'),
 });
 
 // Set the next state
@@ -364,7 +462,7 @@ wait.next(startTheWork);
 
 ### Choice
 
-A `Choice` state can take a differen path through the workflow based on the
+A `Choice` state can take a different path through the workflow based on the
 values in the execution's JSON state:
 
 ```ts
@@ -439,6 +537,22 @@ const success = new stepfunctions.Fail(this, 'Fail', {
     error: 'WorkflowFailure',
     cause: "Something went wrong"
 });
+```
+
+### Map
+
+A `Map` state can be used to run a set of steps for each element of an input array.
+A `Map` state will execute the same steps for multiple entries of an array in the state input.
+
+While the `Parallel` state executes multiple branches of steps using the same input, a `Map` state will
+execute the same steps for multiple entries of an array in the state input.
+
+```ts
+const map = new stepfunctions.Map(this, 'Map State', {
+    maxConcurrency: 1,
+    itemsPath: stepfunctions.Data.stringAt('$.inputForMap')
+});
+map.iterator(new stepfunctions.Pass(this, 'Pass State'));
 ```
 
 ## Task Chaining

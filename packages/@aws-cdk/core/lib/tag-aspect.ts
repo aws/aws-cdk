@@ -1,6 +1,6 @@
-// import cxapi = require('@aws-cdk/cx-api');
+// import * as cxapi from '@aws-cdk/cx-api';
 import { IAspect } from './aspect';
-import { Construct, IConstruct } from './construct';
+import { Construct, IConstruct } from './construct-compat';
 import { ITaggable, TagManager } from './tag-manager';
 
 /**

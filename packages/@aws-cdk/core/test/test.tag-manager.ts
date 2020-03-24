@@ -3,6 +3,13 @@ import { TagType } from '../lib/cfn-resource';
 import { TagManager } from '../lib/tag-manager';
 
 export = {
+  'TagManagerOptions can set tagPropertyName'(test: Test) {
+    const tagPropName = 'specialName';
+    const mgr = new TagManager(TagType.MAP, 'Foo', undefined, { tagPropertyName: tagPropName });
+
+    test.deepEqual(mgr.tagPropertyName, tagPropName);
+    test.done();
+  },
   '#setTag() supports setting a tag regardless of Type'(test: Test) {
     const notTaggable = new TagManager(TagType.NOT_TAGGABLE, 'AWS::Resource::Type');
     notTaggable.setTag('key', 'value');

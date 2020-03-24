@@ -1,6 +1,6 @@
 import '@aws-cdk/assert/jest';
 import { Duration, Stack } from '@aws-cdk/core';
-import { ArnPrincipal, CompositePrincipal, FederatedPrincipal, ManagedPolicy, PolicyStatement, Role, ServicePrincipal, User } from '../lib';
+import { AnyPrincipal, ArnPrincipal, CompositePrincipal, FederatedPrincipal, ManagedPolicy, PolicyStatement, Role, ServicePrincipal, User } from '../lib';
 
 describe('IAM role', () => {
   test('default role', () => {
@@ -139,12 +139,12 @@ describe('IAM role', () => {
     // add a policy to the role
     const after = new Stack();
     const afterRole = new Role(after, 'MyRole', { assumedBy: new ServicePrincipal('sns.amazonaws.com') });
-    afterRole.addToPolicy(new PolicyStatement({ resources: ['myresource'], actions: ['myaction'] }));
+    afterRole.addToPolicy(new PolicyStatement({ resources: ['myresource'], actions: ['service:myaction'] }));
     expect(after).toHaveResource('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
-            Action: "myaction",
+            Action: "service:myaction",
             Effect: "Allow",
             Resource: "myresource"
           }
@@ -318,5 +318,92 @@ describe('IAM role', () => {
         ]
       }
     });
+  });
+
+  test('Principal-* in an AssumeRolePolicyDocument gets translated to { "AWS": "*" }', () => {
+    // The docs say that "Principal: *" and "Principal: { AWS: * }" are equivalent
+    // (https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_principal.html)
+    // but in practice CreateRole errors out if you use "Principal: *" in an AssumeRolePolicyDocument:
+    // An error occurred (MalformedPolicyDocument) when calling the CreateRole operation: AssumeRolepolicy contained an invalid principal: "STAR":"*".
+
+    // Make sure that we handle this case specially.
+    const stack = new Stack();
+    new Role(stack, 'Role', {
+      assumedBy: new AnyPrincipal(),
+    });
+
+    expect(stack).toHaveResource('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: "sts:AssumeRole",
+            Effect: "Allow",
+            Principal: { AWS: "*" },
+          }
+        ],
+        Version: "2012-10-17"
+      }
+    });
+  });
+
+  test('can have a description', () => {
+    const stack = new Stack();
+
+    new Role(stack, 'MyRole', {
+      assumedBy: new ServicePrincipal('sns.amazonaws.com'),
+      description: "This is a role description."
+    });
+
+    expect(stack).toMatchTemplate({ Resources:
+      { MyRoleF48FFE04:
+         { Type: 'AWS::IAM::Role',
+         Properties:
+          { AssumeRolePolicyDocument:
+           { Statement:
+            [ { Action: 'sts:AssumeRole',
+              Effect: 'Allow',
+              Principal: { Service: 'sns.amazonaws.com' } } ],
+              Version: '2012-10-17' },
+            Description: 'This is a role description.' } } } });
+  });
+
+  test('should not have an empty description', () => {
+    const stack = new Stack();
+
+    new Role(stack, 'MyRole', {
+      assumedBy: new ServicePrincipal('sns.amazonaws.com'),
+      description: ""
+    });
+
+    expect(stack).toMatchTemplate({ Resources:
+      { MyRoleF48FFE04:
+         { Type: 'AWS::IAM::Role',
+         Properties:
+          { AssumeRolePolicyDocument:
+           { Statement:
+            [ { Action: 'sts:AssumeRole',
+              Effect: 'Allow',
+              Principal: { Service: 'sns.amazonaws.com' } } ],
+              Version: '2012-10-17' }} } } });
+  });
+
+  test('description can only be 1000 characters long', () => {
+    const stack = new Stack();
+
+    expect(() => {
+      new Role(stack, 'MyRole', {
+        assumedBy: new ServicePrincipal('sns.amazonaws.com'),
+        description: "1000+ character long description: Lorem ipsum dolor sit amet, consectetuer adipiscing elit. \
+        Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, \
+        nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat \
+        massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, \
+        imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. \
+        Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, \
+        eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus \
+        varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. \
+        Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing \
+        sem neque sed ipsum."
+      });
+    }).toThrow(/Role description must be no longer than 1000 characters./);
   });
 });

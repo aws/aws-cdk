@@ -1,8 +1,18 @@
-import acm = require('@aws-cdk/aws-certificatemanager');
+import * as acm from '@aws-cdk/aws-certificatemanager';
 import { Construct, IResource, Resource } from '@aws-cdk/core';
 import { CfnDomainName } from './apigateway.generated';
 import { BasePathMapping, BasePathMappingOptions } from './base-path-mapping';
-import { EndpointType, IRestApi} from './restapi';
+import { EndpointType, IRestApi } from './restapi';
+
+/**
+ * The minimum version of the SSL protocol that you want API Gateway to use for HTTPS connections.
+ */
+export enum SecurityPolicy {
+  /** Cipher suite TLS 1.0 */
+  TLS_1_0 = 'TLS_1_0',
+  /** Cipher suite TLS 1.2 */
+  TLS_1_2 = 'TLS_1_2'
+}
 
 export interface DomainNameOptions {
   /**
@@ -22,6 +32,13 @@ export interface DomainNameOptions {
    * @default REGIONAL
    */
   readonly endpointType?: EndpointType;
+
+  /**
+   * The Transport Layer Security (TLS) version + cipher suite for this domain name.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-domainname.html
+   * @default SecurityPolicy.TLS_1_0
+   */
+  readonly securityPolicy?: SecurityPolicy
 }
 
 export interface DomainNameProps extends DomainNameOptions {
@@ -90,6 +107,7 @@ export class DomainName extends Resource implements IDomainName {
       certificateArn: edge ? props.certificate.certificateArn : undefined,
       regionalCertificateArn: edge ? undefined : props.certificate.certificateArn,
       endpointConfiguration: { types: [endpointType] },
+      securityPolicy: props.securityPolicy
     });
 
     this.domainName = resource.ref;

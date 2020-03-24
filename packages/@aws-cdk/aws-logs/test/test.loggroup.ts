@@ -1,6 +1,6 @@
 import { expect, haveResource, matchTemplate } from '@aws-cdk/assert';
-import iam = require('@aws-cdk/aws-iam');
-import { RemovalPolicy, Stack } from '@aws-cdk/core';
+import * as iam from '@aws-cdk/aws-iam';
+import { CfnParameter, RemovalPolicy, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { LogGroup, RetentionDays } from '../lib';
 
@@ -86,6 +86,26 @@ export = {
     test.done();
   },
 
+  'unresolved retention'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const parameter = new CfnParameter(stack, "RetentionInDays", { default: 30, type: "Number" });
+
+    // WHEN
+    new LogGroup(stack, 'LogGroup', {
+      retention: parameter.valueAsNumber
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Logs::LogGroup', {
+      RetentionInDays: {
+        Ref: "RetentionInDays"
+      }
+    }));
+
+    test.done();
+  },
+
   'will delete log group if asked to'(test: Test) {
     // GIVEN
     const stack = new Stack();
@@ -110,7 +130,7 @@ export = {
     test.done();
   },
 
-  'export/import'(test: Test) {
+  'import from arn'(test: Test) {
     // GIVEN
     const stack2 = new Stack();
 
@@ -119,8 +139,28 @@ export = {
     imported.addStream('MakeMeAStream');
 
     // THEN
+    test.deepEqual(imported.logGroupName, 'my-log-group');
+    test.deepEqual(imported.logGroupArn, 'arn:aws:logs:us-east-1:123456789012:log-group:my-log-group');
     expect(stack2).to(haveResource('AWS::Logs::LogStream', {
       LogGroupName: "my-log-group"
+    }));
+    test.done();
+  },
+
+  'import from name'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const imported = LogGroup.fromLogGroupName(stack, 'lg', 'my-log-group');
+    imported.addStream('MakeMeAStream');
+
+    // THEN
+    test.deepEqual(imported.logGroupName, 'my-log-group');
+    test.ok(/^arn:.+:logs:.+:.+:log-group:my-log-group$/.test(imported.logGroupArn),
+      `LogGroup ARN ${imported.logGroupArn} does not match the expected pattern`);
+    expect(stack).to(haveResource('AWS::Logs::LogStream', {
+      LogGroupName: 'my-log-group'
     }));
     test.done();
   },

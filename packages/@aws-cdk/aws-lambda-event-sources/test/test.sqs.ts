@@ -1,8 +1,8 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import sqs = require('@aws-cdk/aws-sqs');
-import cdk = require('@aws-cdk/core');
+import * as sqs from '@aws-cdk/aws-sqs';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import sources = require('../lib');
+import * as sources from '../lib';
 import { TestFunction } from './test-function';
 
 // tslint:disable:object-literal-key-quotes
@@ -110,6 +110,32 @@ export = {
       batchSize: 11
     })), /Maximum batch size must be between 1 and 10 inclusive \(given 11\)/);
 
+    test.done();
+  },
+
+  'contains eventSourceMappingId after lambda binding'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const q = new sqs.Queue(stack, 'Q');
+    const eventSource = new sources.SqsEventSource(q);
+
+    // WHEN
+    fn.addEventSource(eventSource);
+
+    // THEN
+    test.ok(eventSource.eventSourceMappingId);
+    test.done();
+  },
+
+  'eventSourceMappingId throws error before binding to lambda'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const q = new sqs.Queue(stack, 'Q');
+    const eventSource = new sources.SqsEventSource(q);
+
+    // WHEN/THEN
+    test.throws(() => eventSource.eventSourceMappingId, /SqsEventSource is not yet bound to an event source mapping/);
     test.done();
   },
 };

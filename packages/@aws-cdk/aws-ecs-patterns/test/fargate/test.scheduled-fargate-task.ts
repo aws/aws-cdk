@@ -1,8 +1,8 @@
-import { expect, haveResource } from '@aws-cdk/assert';
-import ec2 = require('@aws-cdk/aws-ec2');
-import ecs = require('@aws-cdk/aws-ecs');
-import events = require('@aws-cdk/aws-events');
-import cdk = require('@aws-cdk/core');
+import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as ecs from '@aws-cdk/aws-ecs';
+import * as events from '@aws-cdk/aws-events';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { ScheduledFargateTask } from '../../lib';
 
@@ -15,8 +15,10 @@ export = {
 
     new ScheduledFargateTask(stack, 'ScheduledFargateTask', {
       cluster,
-      image: ecs.ContainerImage.fromRegistry('henk'),
-      memoryLimitMiB: 512,
+      scheduledFargateTaskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('henk'),
+        memoryLimitMiB: 512,
+      },
       schedule: events.Schedule.expression('rate(1 minute)')
     });
 
@@ -88,11 +90,13 @@ export = {
 
     new ScheduledFargateTask(stack, 'ScheduledFargateTask', {
       cluster,
-      image: ecs.ContainerImage.fromRegistry('henk'),
+      scheduledFargateTaskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('henk'),
+        memoryLimitMiB: 512,
+        cpu: 2,
+        environment: { TRIGGER: 'CloudWatch Events' },
+      },
       desiredTaskCount: 2,
-      memoryLimitMiB: 512,
-      cpu: 2,
-      environment: { TRIGGER: 'CloudWatch Events' },
       schedule: events.Schedule.expression('rate(1 minute)')
     });
 
@@ -170,7 +174,9 @@ export = {
 
     new ScheduledFargateTask(stack, 'ScheduledFargateTask', {
       cluster,
-      image: ecs.ContainerImage.fromRegistry('henk'),
+      scheduledFargateTaskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('henk'),
+      },
       schedule: events.Schedule.expression('rate(1 minute)')
     });
 
@@ -208,8 +214,10 @@ export = {
 
     new ScheduledFargateTask(stack, 'ScheduledFargateTask', {
       cluster,
-      image: ecs.ContainerImage.fromRegistry('henk'),
-      command: ["-c", "4", "amazon.com"],
+      scheduledFargateTaskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('henk'),
+        command: ["-c", "4", "amazon.com"],
+      },
       schedule: events.Schedule.expression('rate(1 minute)')
     });
 
@@ -237,6 +245,49 @@ export = {
             }
           },
           Name: "ScheduledContainer"
+        }
+      ]
+    }));
+
+    test.done();
+  },
+
+  "Scheduled Fargate Task - with subnetSelection defined"(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc', {
+      maxAzs: 1,
+      subnetConfiguration: [
+        { name: 'Public', cidrMask: 28, subnetType: ec2.SubnetType.PUBLIC }
+      ],
+    });
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+    new ScheduledFargateTask(stack, 'ScheduledFargateTask', {
+      cluster,
+      scheduledFargateTaskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('henk'),
+      },
+      subnetSelection: { subnetType: ec2.SubnetType.PUBLIC },
+      schedule: events.Schedule.expression('rate(1 minute)')
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::Events::Rule', {
+      Targets: [
+        {
+          EcsParameters: {
+            NetworkConfiguration: {
+              AwsVpcConfiguration: {
+                AssignPublicIp: 'ENABLED',
+                Subnets: [
+                  {
+                    Ref: 'VpcPublicSubnet1Subnet5C2D37C4'
+                  }
+                ]
+              }
+            },
+          }
         }
       ]
     }));

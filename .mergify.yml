@@ -1,75 +1,92 @@
 # See https://doc.mergify.io
 
 pull_request_rules:
+  - name: label core
+    actions:
+      label:
+        add: [ contribution/core ]
+    conditions:
+      - author~=^(eladb|RomainMuller|garnaat|nija-at|shivlaks|skinny85|rix0rrr|NGL321|Jerry-AWS|SomayaB|MrArnoldPalmer|NetaNir|iliapolo)$
+      - -label~="contribution/core"
   - name: automatic merge
     actions:
       comment:
-        message: Thank you for contributing! Your pull request is now being automatically merged.
+        message: Thank you for contributing! Your pull request will be updated from master and then merged automatically (do not update manually, and be sure to [allow changes to be pushed to your fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/allowing-changes-to-a-pull-request-branch-created-from-a-fork)).
       merge:
         strict: smart
         method: squash
         strict_method: merge
       delete_head_branch: {}
-      dismiss_reviews: {}
     conditions:
-      - author!=dependabot[bot]
-      - author!=dependabot-preview[bot]
+      - base!=release
       - -title~=(WIP|wip)
-      - -label~=^(blocked|do-not-merge)
+      - -label~=(blocked|do-not-merge|no-squash)
       - -merged
       - -closed
+      - author!=dependabot[bot]
+      - author!=dependabot-preview[bot]
       - "#approved-reviews-by>=1"
       - -approved-reviews-by~=author
       - "#changes-requested-reviews-by=0"
-      - status-success=AWS CodeBuild us-east-1 (aws-cdk-build)
+      - status-success~=AWS CodeBuild us-east-1
       - status-success=Semantic Pull Request
-  - name: comment checklist
-    actions:
-      label:
-        add: [ automerge-enabled ]
-      comment:
-        message: |
-          Thanks so much for taking the time to contribute to the AWS CDK ❤️
-
-          We will shortly assign someone to review this pull request and help get it
-          merged. In the meantime, please **take a minute to make sure you follow this
-          checklist**:
-
-          * **PR title `type(scope): text`**
-            * __type__: `fix`, `feat`, `refactor` go into CHANGELOG, `chore` is hidden
-            - __scope__: name of module without `aws-` or `cdk-` prefix or postfix (e.g. `s3` instead of `aws-s3-deployment`)
-            - __text__: use all **lower-case**, **do not** end with a period, do not include issue refs
-          * **PR Description**
-            - __Rationale__: describe rationale of change and approach taken
-            - __Issues__: indicate issues fixed via: `fixes #xxx` or `closes #xxx`
-            - __Breaking?__: last paragraph: `BREAKING CHANGE: <describe what changed + link for details>`
-          * **Testing**
-            - Unit test added. Prefer to add a new test rather than modify existing tests
-            - **CLI or init templates change**? Re-run/add [CLI integration tests](https://github.com/aws/aws-cdk/blob/master/CONTRIBUTING.md#running-cli-integration-tests)
-          * **Documentation**
-            - **README**: update module README to describe new features
-            - **API docs**: public APIs must be documented. Copy from official AWS docs when possible
-            - **Design**: for significant features, follow [design process](https://github.com/aws/aws-cdk/blob/master/CONTRIBUTING.md#step-2-design-optional)
-    conditions:
-      - author!=dependabot[bot]
-      - author!=dependabot-preview[bot]
-      - -label~=^(automerge-enabled)
-      - base=master
-  - name: comment on CI fail
+      - status-success=mandatory-changes
+  - name: automatic merge
     actions:
       comment:
-        message: Continuous integration build failed
+        message: Thank you for contributing! Your pull request will be updated from master and then merged automatically without squashing (do not update manually, and be sure to [allow changes to be pushed to your fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/allowing-changes-to-a-pull-request-branch-created-from-a-fork)).
+      merge:
+        strict: smart
+        # Merge instead of squash
+        method: merge
+        strict_method: merge
+      delete_head_branch: {}
     conditions:
+      - -title~=(WIP|wip)
+      - -label~=(blocked|do-not-merge)
+      # Only if no-squash is set
+      - label~=no-squash
+      - -merged
+      - -closed
       - author!=dependabot[bot]
       - author!=dependabot-preview[bot]
-      - status-failure=AWS CodeBuild us-east-1 (aws-cdk-build)
+      - "#approved-reviews-by>=1"
+      - -approved-reviews-by~=author
+      - "#changes-requested-reviews-by=0"
+      - status-success~=AWS CodeBuild us-east-1
+      - status-success=Semantic Pull Request
+      - status-success=mandatory-changes
+  - name: when changes are requested
+    actions:
+      comment:
+        message: Once all the requested changes have been addressed, and the PR is ready for another review, remember to [dismiss the review](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/dismissing-a-pull-request-review).
+    conditions:
+      - changes-requested-reviews-by=@aws/aws-cdk-team
   - name: remove stale reviews
     actions:
-      dismiss_reviews: {}
+      dismiss_reviews:
+        approved: true
+        changes_requested: false
     conditions:
       - author!=dependabot[bot]
       - author!=dependabot-preview[bot]
+        # List out all the people whose work is okay to provisionally approve
+      - author!=eladb
+      - author!=RomainMuller
+      - author!=garnaat
+      - author!=nija-at
+      - author!=shivlaks
+      - author!=skinny85
+      - author!=rix0rrr
+      - author!=NGL321
+      - author!=Jerry-AWS
+      - author!=SomayaB
+      - author!=MrArnoldPalmer
+      - author!=NetaNir
+      - author!=iliapolo
       - base=master
+      - -merged
+      - -closed
   - name: if fails conventional commits
     actions:
       comment:
@@ -78,3 +95,27 @@ pull_request_rules:
       - author!=dependabot[bot]
       - author!=dependabot-preview[bot]
       - status-failure=Semantic Pull Request
+      - -merged
+      - -closed
+  - name: automatic merge of Dependabot PRs
+    actions:
+      comment:
+        message: Thanks Dependabot!
+      merge:
+        # 'strict: false' disables Mergify keeping the branch up-to-date from master.
+        # It's not necessary: Dependabot will do that itself.
+        # It's not dangerous: GitHub branch protection settings prevent merging stale branches.
+        strict: false
+        method: squash
+      delete_head_branch: {}
+    conditions:
+      - -title~=(WIP|wip)
+      - -label~=(blocked|do-not-merge)
+      - -merged
+      - -closed
+      - author~=dependabot
+      - "#approved-reviews-by>=1"
+      - "#changes-requested-reviews-by=0"
+      - status-success~=AWS CodeBuild us-east-1
+      - status-success=Semantic Pull Request
+      - status-success=mandatory-changes

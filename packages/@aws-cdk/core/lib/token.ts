@@ -1,4 +1,5 @@
-import { IConstruct } from "./construct";
+import { IConstruct } from "./construct-compat";
+import { Lazy } from "./lazy";
 import { unresolved } from "./private/encoding";
 import { Intrinsic } from "./private/intrinsic";
 import { resolve } from "./private/resolve";
@@ -112,8 +113,9 @@ export class Tokenization {
    */
   public static resolve(obj: any, options: ResolveOptions): any {
     return resolve(obj, {
-      ...options,
-      preparing: false
+      scope: options.scope,
+      resolver: options.resolver,
+      preparing: (options.preparing !== undefined ? options.preparing : false)
     });
   }
 
@@ -126,6 +128,22 @@ export class Tokenization {
    */
   public static isResolvable(obj: any): obj is IResolvable {
     return isResolvableObject(obj);
+  }
+
+  /**
+   * Stringify a number directly or lazily if it's a Token. If it is an object (i.e., { Ref: 'SomeLogicalId' }), return it as-is.
+   */
+  public static stringifyNumber(x: number) {
+    // only convert numbers to strings so that Refs, conditions, and other things don't end up synthesizing as [object object]
+
+    if (Token.isUnresolved(x)) {
+      return Lazy.stringValue({ produce: context => {
+          const resolved = context.resolve(x);
+          return typeof resolved !== 'number' ? resolved : `${resolved}`;
+        } });
+    } else {
+      return typeof x !== 'number' ? x : `${x}`;
+    }
   }
 
   private constructor() {
@@ -150,6 +168,12 @@ export interface ResolveOptions {
    * The resolver to apply to any resolvable tokens found
    */
   readonly resolver: ITokenResolver;
+
+  /**
+   * Whether the resolution is being executed during the prepare phase or not.
+   * @default false
+   */
+  readonly preparing?: boolean;
 }
 
 /**

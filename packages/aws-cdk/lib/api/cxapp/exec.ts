@@ -1,13 +1,14 @@
-import cxapi = require('@aws-cdk/cx-api');
-import childProcess = require('child_process');
-import fs = require('fs-extra');
-import path = require('path');
+import * as cxapi from '@aws-cdk/cx-api';
+import * as childProcess from 'child_process';
+import * as fs from 'fs-extra';
+import * as path from 'path';
 import { debug } from '../../logging';
 import { Configuration, PROJECT_CONFIG, USER_DEFAULTS } from '../../settings';
-import { ISDK } from '../util/sdk';
+import { versionNumber } from '../../version';
+import { SdkProvider } from '../aws-auth';
 
 /** Invokes the cloud executable and returns JSON output */
-export async function execProgram(aws: ISDK, config: Configuration): Promise<cxapi.CloudAssembly> {
+export async function execProgram(aws: SdkProvider, config: Configuration): Promise<cxapi.CloudAssembly> {
   const env: { [key: string]: string } = { };
 
   const context = config.context.all;
@@ -73,6 +74,10 @@ export async function execProgram(aws: ISDK, config: Configuration): Promise<cxa
   debug('outdir:', outdir);
   env[cxapi.OUTDIR_ENV] = outdir;
 
+  // Send version information
+  env[cxapi.CLI_ASM_VERSION_ENV] = cxapi.CLOUD_ASSEMBLY_VERSION;
+  env[cxapi.CLI_VERSION_ENV] = versionNumber();
+
   debug('env:', env);
 
   await exec();
@@ -126,12 +131,15 @@ export async function execProgram(aws: ISDK, config: Configuration): Promise<cxa
  *
  * @param context The context key/value bash.
  */
-async function populateDefaultEnvironmentIfNeeded(aws: ISDK, env: { [key: string]: string | undefined}) {
-  env[cxapi.DEFAULT_REGION_ENV] = await aws.defaultRegion();
+async function populateDefaultEnvironmentIfNeeded(aws: SdkProvider, env: { [key: string]: string | undefined}) {
+  env[cxapi.DEFAULT_REGION_ENV] = aws.defaultRegion;
   debug(`Setting "${cxapi.DEFAULT_REGION_ENV}" environment variable to`, env[cxapi.DEFAULT_REGION_ENV]);
 
-  env[cxapi.DEFAULT_ACCOUNT_ENV] = await aws.defaultAccount();
-  debug(`Setting "${cxapi.DEFAULT_ACCOUNT_ENV}" environment variable to`, env[cxapi.DEFAULT_ACCOUNT_ENV]);
+  const accountId = (await aws.defaultAccount())?.accountId;
+  if (accountId) {
+    env[cxapi.DEFAULT_ACCOUNT_ENV] = accountId;
+    debug(`Setting "${cxapi.DEFAULT_ACCOUNT_ENV}" environment variable to`, env[cxapi.DEFAULT_ACCOUNT_ENV]);
+  }
 }
 
 /**

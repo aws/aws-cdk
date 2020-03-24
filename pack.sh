@@ -2,30 +2,69 @@
 # Runs "npm package" in all modules. This will produce a "dist/" directory in each module.
 # Then, calls pack-collect.sh to merge all outputs into a root ./pack directory, which is
 # later read by bundle-beta.sh.
-set -e
+set -eu
 export PATH=$PWD/node_modules/.bin:$PATH
 export NODE_OPTIONS="--max-old-space-size=4096 ${NODE_OPTIONS:-}"
 root=$PWD
 
+PACMAK=${PACMAK:-jsii-pacmak}
+ROSETTA=${ROSETTA:-jsii-rosetta}
+TMPDIR=${TMPDIR:-$(dirname $(mktemp -u))}
 distdir="$PWD/dist"
 rm -fr ${distdir}
 mkdir -p ${distdir}
 
-scopes=$(lerna ls 2>/dev/null | grep -v "(private)" | cut -d" " -f1 | xargs -n1 -I{} echo "--scope {}" | tr "\n" " ")
+# Split out jsii and non-jsii packages. Jsii packages will be built all at once.
+# Non-jsii packages will be run individually.
+echo "Collecting package list..." >&2
+scripts/list-packages $TMPDIR/jsii.txt $TMPDIR/nonjsii.txt
 
-# Run the "cdk-package" script in all modules. For jsii modules, this invokes jsii-pacmak which generates and builds multi-language
-# outputs. For non-jsii module, it will just run "npm pack" and place the output in dist/npm
-# (which is similar to how pacmak outputs it).
-lerna run ${scopes} --sort --concurrency=1 --stream package
+# Return lerna scopes from a package list
+function lerna_scopes() {
+  while [[ "${1:-}" != "" ]]; do
+    echo "--scope $1 "
+    shift
+  done
+}
 
-# Collect dist/ from all modules into the root dist/
-for dir in $(find packages -name dist | grep -v node_modules); do
-  echo "Merging ${dir} into ${distdir}"
-  rsync -av $dir/ ${distdir}/
+# Compile examples with respect to "decdk" directory, as all packages will
+# be symlinked there so they can all be included.
+echo "Extracting code samples" >&2
+node --experimental-worker $(which $ROSETTA) \
+  --compile \
+  --output samples.tabl.json \
+  --directory packages/decdk \
+  $(cat $TMPDIR/jsii.txt)
+
+# Jsii packaging (all at once using jsii-pacmak)
+echo "Packaging jsii modules" >&2
+$PACMAK \
+  --verbose \
+  --rosetta-tablet samples.tabl.json \
+  $(cat $TMPDIR/jsii.txt)
+
+# Non-jsii packaging, which means running 'package' in every individual
+# module
+echo "Packaging non-jsii modules" >&2
+lerna run $(lerna_scopes $(cat $TMPDIR/nonjsii.txt)) --sort --concurrency=1 --stream package
+
+# Finally rsync all 'dist' directories together into a global 'dist' directory
+for dir in $(find packages -name dist | grep -v node_modules | grep -v run-wrappers); do
+  echo "Merging ${dir} into ${distdir}" >&2
+  rsync -a $dir/ ${distdir}/
 done
 
-# Get version from lerna
-version="$(cat ${root}/lerna.json | grep version | cut -d '"' -f4)"
+# Remove a JSII aggregate POM that may have snuk past
+rm -rf dist/java/software/amazon/jsii
+
+# Get version
+version="$(node -p "require('./scripts/get-version')")"
+
+# Ensure we don't publish anything beyond 1.x for now
+if [[ ! "${version}" == "1."* ]]; then
+  echo "ERROR: accidentally releasing a major version? Expecting repo version to start with '1.' but got '${version}'"
+  exit 1
+fi
 
 # Get commit from CodePipeline (or git, if we are in CodeBuild)
 # If CODEBUILD_RESOLVED_SOURCE_VERSION is not defined (i.e. local
@@ -45,6 +84,16 @@ HERE
 
 # copy CHANGELOG.md to dist/ for github releases
 cp CHANGELOG.md ${distdir}/
+
+# defensive: make sure our artifacts don't use the version marker (this means
+# that "pack" will always fails when building in a dev environment)
+# when we get to 10.0.0, we can fix this...
+marker=$(node -p "require('./scripts/get-version-marker')")
+if find dist/ | grep "${marker}"; then
+  echo "ERROR: build artifacts use the version marker '${marker}' instead of a real version."
+  echo "This is expected for builds in a development environment but should not happen in CI builds!"
+  exit 1
+fi
 
 # for posterity, print all files in dist
 echo "=============================================================================================="

@@ -1,13 +1,20 @@
 import { ScalingInterval } from '@aws-cdk/aws-applicationautoscaling';
 import { IVpc } from '@aws-cdk/aws-ec2';
-import { AwsLogDriver, BaseService, Cluster, ContainerImage, ICluster, LogDriver, Secret } from '@aws-cdk/aws-ecs';
+import { AwsLogDriver, BaseService, Cluster, ContainerImage, ICluster, LogDriver, PropagatedTagSource, Secret } from '@aws-cdk/aws-ecs';
 import { IQueue, Queue } from '@aws-cdk/aws-sqs';
-import { CfnOutput, Construct, Stack } from '@aws-cdk/core';
+import { CfnOutput, Construct, Duration, Stack } from '@aws-cdk/core';
 
 /**
  * The properties for the base QueueProcessingEc2Service or QueueProcessingFargateService service.
  */
 export interface QueueProcessingServiceBaseProps {
+  /**
+   * The name of the service.
+   *
+   * @default - CloudFormation-generated name.
+   */
+  readonly serviceName?: string;
+
   /**
    * The name of the cluster that hosts the service.
    *
@@ -72,12 +79,27 @@ export interface QueueProcessingServiceBaseProps {
   /**
    * A queue for which to process items from.
    *
-   * If specified and this is a FIFO queue, the queue name must end in the string '.fifo'.
-   * @see https://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_CreateQueue.html
+   * If specified and this is a FIFO queue, the queue name must end in the string '.fifo'. See
+   * [CreateQueue](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_CreateQueue.html)
    *
    * @default 'SQSQueue with CloudFormation-generated name'
    */
   readonly queue?: IQueue;
+
+  /**
+   * The maximum number of times that a message can be received by consumers.
+   * When this value is exceeded for a message the message will be automatically sent to the Dead Letter Queue.
+   *
+   * @default 3
+   */
+  readonly maxReceiveCount?: number;
+
+  /**
+   * The number of seconds that Dead Letter Queue retains a message.
+   *
+   * @default Duration.days(14)
+   */
+  readonly retentionPeriod?: Duration;
 
   /**
    * Maximum capacity to scale to.
@@ -89,8 +111,8 @@ export interface QueueProcessingServiceBaseProps {
   /**
    * The intervals for scaling based on the SQS queue's ApproximateNumberOfMessagesVisible metric.
    *
-   * Maps a range of metric values to a particular scaling behavior.
-   * https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-simple-step.html
+   * Maps a range of metric values to a particular scaling behavior. See
+   * [Simple and Step Scaling Policies for Amazon EC2 Auto Scaling](https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-simple-step.html)
    *
    * @default [{ upper: 0, change: -1 },{ lower: 100, change: +1 },{ lower: 500, change: +5 }]
    */
@@ -102,6 +124,29 @@ export interface QueueProcessingServiceBaseProps {
    * @default - AwsLogDriver if enableLogging is true
    */
   readonly logDriver?: LogDriver;
+
+  /**
+   * Specifies whether to propagate the tags from the task definition or the service to the tasks in the service.
+   * Tags can only be propagated to the tasks within the service during service creation.
+   *
+   * @default - none
+   */
+  readonly propagateTags?: PropagatedTagSource;
+
+  /**
+   * Specifies whether to enable Amazon ECS managed tags for the tasks within the service. For more information, see
+   * [Tagging Your Amazon ECS Resources](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-using-tags.html)
+   *
+   * @default false
+   */
+  readonly enableECSManagedTags?: boolean;
+
+  /**
+   * The name of a family that the task definition is registered to. A family groups multiple versions of a task definition.
+   *
+   * @default - Automatically generated name.
+   */
+  readonly family?: string;
 }
 
 /**
@@ -112,6 +157,11 @@ export abstract class QueueProcessingServiceBase extends Construct {
    * The SQS queue that the service will process from
    */
   public readonly sqsQueue: IQueue;
+
+  /**
+   * The dead letter queue for the primary SQS queue
+   */
+  public readonly deadLetterQueue?: IQueue;
 
   /**
    * The cluster where your service will be deployed
@@ -161,8 +211,23 @@ export abstract class QueueProcessingServiceBase extends Construct {
     }
     this.cluster = props.cluster || this.getDefaultCluster(this, props.vpc);
 
-    // Create the SQS queue if one is not provided
-    this.sqsQueue = props.queue !== undefined ? props.queue : new Queue(this, 'EcsProcessingQueue', {});
+    // Create the SQS queue and it's corresponding DLQ if one is not provided
+    if (props.queue) {
+      this.sqsQueue = props.queue;
+    } else {
+      this.deadLetterQueue = new Queue(this, "EcsProcessingDeadLetterQueue", {
+        retentionPeriod: props.retentionPeriod || Duration.days(14)
+      });
+      this.sqsQueue = new Queue(this, 'EcsProcessingQueue', {
+        deadLetterQueue: {
+          queue: this.deadLetterQueue,
+          maxReceiveCount: props.maxReceiveCount || 3
+        }
+      });
+
+      new CfnOutput(this, 'SQSDeadLetterQueue', { value: this.deadLetterQueue.queueName });
+      new CfnOutput(this, 'SQSDeadLetterQueueArn', { value: this.deadLetterQueue.queueArn });
+    }
 
     // Setup autoscaling scaling intervals
     const defaultScalingSteps = [{ upper: 0, change: -1 }, { lower: 100, change: +1 }, { lower: 500, change: +5 }];
@@ -181,8 +246,12 @@ export abstract class QueueProcessingServiceBase extends Construct {
     this.secrets = props.secrets;
 
     // Determine the desired task count (minimum) and maximum scaling capacity
-    this.desiredCount = props.desiredTaskCount || 1;
+    this.desiredCount = props.desiredTaskCount !== undefined ? props.desiredTaskCount : 1;
     this.maxCapacity = props.maxScalingCapacity || (2 * this.desiredCount);
+
+    if (!this.desiredCount && !this.maxCapacity) {
+      throw new Error(`maxScalingCapacity must be set and greater than 0 if desiredCount is 0`);
+    }
 
     new CfnOutput(this, 'SQSQueue', { value: this.sqsQueue.queueName });
     new CfnOutput(this, 'SQSQueueArn', { value: this.sqsQueue.queueArn });
@@ -204,6 +273,17 @@ export abstract class QueueProcessingServiceBase extends Construct {
     });
   }
 
+  /**
+   * Grant SQS permissions to an ECS service.
+   * @param service the ECS/Fargate service to which to grant SQS permissions
+   */
+  protected grantPermissionsToService(service: BaseService) {
+    this.sqsQueue.grantConsumeMessages(service.taskDefinition.taskRole);
+  }
+
+  /**
+   * Returns the default cluster.
+   */
   protected getDefaultCluster(scope: Construct, vpc?: IVpc): Cluster {
     // magic string to avoid collision with user-defined constructs
     const DEFAULT_CLUSTER_ID = `EcsDefaultClusterMnL3mNNYN${vpc ? vpc.node.id : ''}`;

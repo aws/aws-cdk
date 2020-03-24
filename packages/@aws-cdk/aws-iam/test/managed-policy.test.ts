@@ -1,10 +1,17 @@
 import '@aws-cdk/assert/jest';
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 import { Group, ManagedPolicy, PolicyStatement, Role, ServicePrincipal, User } from '../lib';
 
 describe('managed policy', () => {
+  let app: cdk.App;
+  let stack: cdk.Stack;
+
+  beforeEach(() => {
+    app = new cdk.App();
+    stack = new cdk.Stack(app, 'MyStack', { env: { account: '1234', region: 'us-east-1' }});
+  });
+
   test('simple AWS managed policy', () => {
-    const stack = new cdk.Stack();
     const mp = ManagedPolicy.fromAwsManagedPolicyName("service-role/SomePolicy");
 
     expect(stack.resolve(mp.managedPolicyArn)).toEqual({
@@ -17,24 +24,24 @@ describe('managed policy', () => {
   });
 
   test('simple customer managed policy', () => {
-    const stack = new cdk.Stack();
     const mp = ManagedPolicy.fromManagedPolicyName(stack, 'MyCustomerManagedPolicy', "SomeCustomerPolicy");
 
     expect(stack.resolve(mp.managedPolicyArn)).toEqual({
       "Fn::Join": ['', [
         'arn:',
         { Ref: 'AWS::Partition' },
-        ':iam::',
-        { Ref: 'AWS::AccountId' },
-        ':policy/SomeCustomerPolicy'
+        ':iam::1234:policy/SomeCustomerPolicy'
       ]]
     });
   });
 
-  test('managed policy with statements', () => {
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'MyStack');
+  test('managed policy by arn', () => {
+    const mp = ManagedPolicy.fromManagedPolicyArn(stack, 'MyManagedPolicyByArn', "arn:aws:iam::1234:policy/my-policy");
 
+    expect(stack.resolve(mp.managedPolicyArn)).toEqual("arn:aws:iam::1234:policy/my-policy");
+  });
+
+  test('managed policy with statements', () => {
     const policy = new ManagedPolicy(stack, 'MyManagedPolicy', { managedPolicyName: 'MyManagedPolicyName' });
     policy.addStatements(new PolicyStatement({ resources: ['*'], actions: ['sqs:SendMessage'] }));
     policy.addStatements(new PolicyStatement({ resources: ['arn'], actions: ['sns:Subscribe'] }));
@@ -71,9 +78,6 @@ describe('managed policy', () => {
   });
 
   test('policy name can be omitted, in which case the logical id will be used', () => {
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'MyStack');
-
     const policy = new ManagedPolicy(stack, 'MyManagedPolicy');
     policy.addStatements(new PolicyStatement({ resources: ['*'], actions: ['sqs:SendMessage'] }));
     policy.addStatements(new PolicyStatement({ resources: ['arn'], actions: ['sns:Subscribe'] }));
@@ -109,10 +113,6 @@ describe('managed policy', () => {
   });
 
   test('via props, managed policy can be attached to users, groups and roles and permissions, description and path can be added', () => {
-    const app = new cdk.App();
-
-    const stack = new cdk.Stack(app, 'MyStack');
-
     const user1 = new User(stack, 'User1');
     const group1 = new Group(stack, 'Group1');
     const role1 = new Role(stack, 'Role1', {
@@ -168,8 +168,6 @@ describe('managed policy', () => {
   });
 
   test('idempotent if a principal (user/group/role) is attached twice', () => {
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'MyStack');
     const p = new ManagedPolicy(stack, 'MyManagedPolicy');
     p.addStatements(new PolicyStatement({ actions: ['*'], resources: ['*'] }));
 
@@ -224,10 +222,6 @@ describe('managed policy', () => {
   });
 
   test('users, groups, roles and permissions can be added using methods', () => {
-    const app = new cdk.App();
-
-    const stack = new cdk.Stack(app, 'MyStack');
-
     const p = new ManagedPolicy(stack, 'MyManagedPolicy', {
       managedPolicyName: 'Foo',
     });
@@ -278,9 +272,6 @@ describe('managed policy', () => {
   });
 
   test('policy can be attached to users, groups or role via methods on the principal', () => {
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'MyStack');
-
     const policy = new ManagedPolicy(stack, 'MyManagedPolicy');
     const user = new User(stack, 'MyUser');
     const group = new Group(stack, 'MyGroup');
@@ -327,9 +318,6 @@ describe('managed policy', () => {
   });
 
   test('policy from AWS managed policy lookup can be attached to users, groups or role via methods on the principal', () => {
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'MyStack');
-
     const policy = ManagedPolicy.fromAwsManagedPolicyName('AnAWSManagedPolicy');
     const user = new User(stack, 'MyUser');
     const group = new Group(stack, 'MyGroup');
@@ -403,9 +391,6 @@ describe('managed policy', () => {
   });
 
   test('policy from customer managed policy lookup can be attached to users, groups or role via methods', () => {
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'MyStack');
-
     const policy = ManagedPolicy.fromManagedPolicyName(stack, 'MyManagedPolicy', 'ACustomerManagedPolicyName');
     const user = new User(stack, 'MyUser');
     const group = new Group(stack, 'MyGroup');
@@ -427,9 +412,7 @@ describe('managed policy', () => {
                   [
                     "arn:",
                     { Ref: "AWS::Partition" },
-                    ":iam::",
-                    { Ref: "AWS::AccountId" },
-                    ":policy/ACustomerManagedPolicyName"
+                    ":iam::1234:policy/ACustomerManagedPolicyName"
                   ]
                 ]
               }]
@@ -445,9 +428,7 @@ describe('managed policy', () => {
                   [
                     "arn:",
                     { Ref: "AWS::Partition" },
-                    ":iam::",
-                    { Ref: "AWS::AccountId" },
-                    ":policy/ACustomerManagedPolicyName"
+                    ":iam::1234:policy/ACustomerManagedPolicyName"
                   ]
                 ]
               }]
@@ -463,9 +444,7 @@ describe('managed policy', () => {
                   [
                     "arn:",
                     { Ref: "AWS::Partition" },
-                    ":iam::",
-                    { Ref: "AWS::AccountId" },
-                    ":policy/ACustomerManagedPolicyName"
+                    ":iam::1234:policy/ACustomerManagedPolicyName"
                   ]
                 ]
               }],
@@ -485,10 +464,56 @@ describe('managed policy', () => {
   });
 
   test('fails if policy document is empty', () => {
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'MyStack');
     new ManagedPolicy(stack, 'MyPolicy');
     expect(() => app.synth())
       .toThrow(/Managed Policy is empty. You must add statements to the policy/);
+  });
+
+  test('managed policy name is correctly calculated', () => {
+    const mp = new ManagedPolicy(stack, 'Policy');
+    mp.addStatements(new PolicyStatement({
+      actions: ['a:abc'],
+    }));
+
+    expect(stack.resolve(mp.managedPolicyName)).toEqual({
+      "Fn::Select": [ 1,
+        { "Fn::Split": [ "/",
+            { "Fn::Select": [ 5,
+              { "Fn::Split": [ ":",
+              { Ref: "Policy23B91518", }] }, ], }, ], }, ]
+    });
+  });
+
+  test('cross-stack hard-name contains the right resource type', () => {
+    const mp = new ManagedPolicy(stack, 'Policy', {
+      managedPolicyName: cdk.PhysicalName.GENERATE_IF_NEEDED
+    });
+    mp.addStatements(new PolicyStatement({
+      actions: ['a:abc'],
+    }));
+
+    const stack2 = new cdk.Stack(app, 'Stack2', { env: { account: '5678', region: 'us-east-1' }});
+    new cdk.CfnOutput(stack2, 'Output', {
+      value: mp.managedPolicyArn
+    });
+
+    expect(stack2).toMatchTemplate({
+      Outputs: {
+        Output: {
+          Value: {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  Ref: "AWS::Partition"
+                },
+                ":iam::1234:policy/mystackmystackpolicy17395e221b1b6deaf875"
+              ]
+            ]
+          }
+        }
+      }
+    });
   });
 });

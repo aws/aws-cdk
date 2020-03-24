@@ -1,7 +1,7 @@
 export * from './aspect';
 export * from './tag-aspect';
 
-export * from './construct';
+export * from './construct-compat';
 export * from './token';
 export * from './resolvable';
 export * from './lazy';
@@ -38,6 +38,9 @@ export * from './secret-value';
 
 export * from './resource';
 export * from './physical-name';
+export * from './assets';
+
+export * from './tree';
 
 // WARNING: Should not be exported, but currently is because of a bug. See the
 // class description for more information.

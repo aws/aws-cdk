@@ -1,8 +1,8 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 
-import appmesh = require('../lib');
+import * as appmesh from '../lib';
 
 export = {
   'When adding route to existing VirtualRouter': {
@@ -302,5 +302,18 @@ export = {
 
       test.done();
     },
+  },
+
+  'can import a virtual router'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const vr = appmesh.VirtualRouter.fromVirtualRouterName(stack, 'Router', 'MyMesh', 'MyRouter');
+
+    // THEN
+    test.ok(vr.mesh !== undefined);
+
+    test.done();
   },
 };

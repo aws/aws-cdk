@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/core');
-import elbv2 = require('../lib');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as cdk from '@aws-cdk/core';
+import * as elbv2 from '../lib';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-elbv2-integ');
@@ -21,14 +21,14 @@ const listener = lb.addListener('Listener', {
 
 const group1 = listener.addTargets('Target', {
   port: 80,
-  targets: [new elbv2.IpTarget('10.0.1.1')]
+  targets: [new elbv2.IpTarget('10.0.128.4')]
 });
 
 const group2 = listener.addTargets('ConditionalTarget', {
   priority: 10,
   hostHeader: 'example.com',
   port: 80,
-  targets: [new elbv2.IpTarget('10.0.1.2')]
+  targets: [new elbv2.IpTarget('10.0.128.5')]
 });
 
 group1.metricTargetResponseTime().createAlarm(stack, 'ResponseTimeHigh1', {

@@ -9,19 +9,20 @@
     "test": "jest"
   },
   "devDependencies": {
-    "@aws-cdk/assert": "^%cdk-version%",
-    "@types/jest": "^24.0.18",
+    "@aws-cdk/assert": "%cdk-version%",
+    "@types/jest": "^24.0.22",
+    "@types/node": "10.17.5",
     "jest": "^24.9.0",
-    "ts-jest": "^24.0.2",
-    "typescript": "~3.6.2"
+    "ts-jest": "^24.1.0",
+    "typescript": "~3.7.2"
   },
   "peerDependencies": {
-    "@aws-cdk/core": "^%cdk-version%"
+    "@aws-cdk/core": "%cdk-version%"
   },
   "dependencies": {
-    "@aws-cdk/aws-sns": "^%cdk-version%",
-    "@aws-cdk/aws-sns-subscriptions": "^%cdk-version%",
-    "@aws-cdk/aws-sqs": "^%cdk-version%",
-    "@aws-cdk/core": "^%cdk-version%"
+    "@aws-cdk/aws-sns": "%cdk-version%",
+    "@aws-cdk/aws-sns-subscriptions": "%cdk-version%",
+    "@aws-cdk/aws-sqs": "%cdk-version%",
+    "@aws-cdk/core": "%cdk-version%"
   }
 }

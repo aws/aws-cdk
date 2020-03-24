@@ -5,12 +5,14 @@
 
 ![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
 
-> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
-> future breaking changes.**
+> **This is a _developer preview_ (public beta) module.**
 >
-> This API is still under active development and subject to non-backward
-> compatible changes or removal in any future version. Use of the API is not recommended in production
-> environments. Experimental APIs are not subject to the Semantic Versioning model.
+> All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib))
+> are auto-generated from CloudFormation. They are stable and safe to use.
+>
+> However, all other classes, i.e., higher level constructs, are under active development and subject to non-backward
+> compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model.
+> This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
 
 ---
 <!--END STABILITY BANNER-->
@@ -44,13 +46,6 @@ cluster.addResource('mypod', {
   }
 });
 ```
-
-**NOTE**: in order to determine the default AMI for for Amazon EKS instances the
-`eks.Cluster` resource must be defined within a stack that is configured with an
-explicit `env.region`. See [Environments](https://docs.aws.amazon.com/cdk/latest/guide/environments.html)
-in the AWS CDK Developer Guide for more details.
-
-Here is a [complete sample](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-eks/test/integ.eks-kubectl.lit.ts).
 
 ### Capacity
 
@@ -93,10 +88,53 @@ You can add customized capacity through `cluster.addCapacity()` or
 ```ts
 cluster.addCapacity('frontend-nodes', {
   instanceType: new ec2.InstanceType('t2.medium'),
-  desiredCapacity: 3,
+  minCapacity: 3,
   vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC }
 });
 ```
+
+### Fargate
+
+AWS Fargate is a technology that provides on-demand, right-sized compute
+capacity for containers. With AWS Fargate, you no longer have to provision,
+configure, or scale groups of virtual machines to run containers. This removes
+the need to choose server types, decide when to scale your node groups, or
+optimize cluster packing. 
+
+You can control which pods start on Fargate and how they run with Fargate
+Profiles, which are defined as part of your Amazon EKS cluster.
+
+See [Fargate
+Considerations](https://docs.aws.amazon.com/eks/latest/userguide/fargate.html#fargate-considerations)
+in the AWS EKS User Guide.
+
+You can add Fargate Profiles to any EKS cluster defined in your CDK app
+through the `addFargateProfile()` method. The following example adds a profile
+that will match all pods from the "default" namespace:
+
+```ts
+cluster.addFargateProfile('MyProfile', {
+  selectors: [ { namespace: 'default' } ]
+});
+```
+
+To create an EKS cluster that **only** uses Fargate capacity, you can use
+`FargateCluster`.
+
+The following code defines an Amazon EKS cluster without EC2 capacity and a default
+Fargate Profile that matches all pods from the "kube-system" and "default" namespaces. It is also configured to [run CoreDNS on Fargate](https://docs.aws.amazon.com/eks/latest/userguide/fargate-getting-started.html#fargate-gs-coredns) through the `coreDnsComputeType` cluster option.
+
+```ts
+const cluster = new eks.FargateCluster(this, 'MyCluster');
+
+ // apply k8s resources on this cluster
+cluster.addResource(...);
+```
+
+**NOTE**: Classic Load Balancers and Network Load Balancers are not supported on
+pods running on Fargate. For ingress, we recommend that you use the [ALB Ingress
+Controller](https://docs.aws.amazon.com/eks/latest/userguide/alb-ingress.html)
+on Amazon EKS (minimum version v1.1.4).
 
 ### Spot Capacity
 
@@ -130,7 +168,7 @@ you can use `kubeletExtraArgs` to add custom node labels or taints.
 // up to ten spot instances
 cluster.addCapacity('spot', {
   instanceType: new ec2.InstanceType('t3.large'),
-  desiredCapacity: 2,
+  minCapacity: 2,
   bootstrapOptions: {
     kubeletExtraArgs: '--node-labels foo=bar,goo=far',
     awsApiRetryAttempts: 5
@@ -283,6 +321,21 @@ CDK. This means that if the resource is deleted from your code (or the stack is
 deleted), the next `cdk deploy` will issue a `kubectl delete` command and the
 Kubernetes resources will be deleted.
 
+### Patching Kubernetes Resources
+
+The KubernetesPatch construct can be used to update existing kubernetes
+resources. The following example can be used to patch the `hello-kubernetes`
+deployment from the example above with 5 replicas.
+
+```ts
+new KubernetesPatch(this, 'hello-kub-deployment-label', {
+  cluster,
+  resourceName: "deployment/hello-kubernetes",
+  applyPatch: { spec: { replicas: 5 } },
+  restorePatch: { spec: { replicas: 3 } }
+})
+```
+
 ### AWS IAM Mapping
 
 As described in the [Amazon EKS User Guide](https://docs.aws.amazon.com/en_us/eks/latest/userguide/add-user-role.html),
@@ -386,7 +439,44 @@ When kubectl is disabled, you should be aware of the following:
    edit the [aws-auth ConfigMap](https://docs.aws.amazon.com/eks/latest/userguide/add-user-role.html)
    when you add capacity in order to map the IAM instance role to RBAC to allow nodes to join the cluster.
 3. Any `eks.Cluster` APIs that depend on programmatic kubectl support will fail
-   with an error: `cluster.addResource`, `cluster.awsAuth`, `props.mastersRole`.
+   with an error: `cluster.addResource`, `cluster.addChart`, `cluster.awsAuth`, `props.mastersRole`.
+
+### Helm Charts
+
+The `HelmChart` construct or `cluster.addChart` method can be used
+to add Kubernetes resources to this cluster using Helm.
+
+The following example will install the [NGINX Ingress Controller](https://kubernetes.github.io/ingress-nginx/)
+to you cluster using Helm.
+
+```ts
+// option 1: use a construct
+new HelmChart(this, 'NginxIngress', {
+  cluster,
+  chart: 'nginx-ingress',
+  repository: 'https://helm.nginx.com/stable',
+  namespace: 'kube-system'
+});
+
+// or, option2: use `addChart`
+cluster.addChart('NginxIngress', {
+  chart: 'nginx-ingress',
+  repository: 'https://helm.nginx.com/stable',
+  namespace: 'kube-system'
+});
+```
+
+Helm charts will be installed and updated using `helm upgrade --install`.
+This means that if the chart is added to CDK with the same release name, it will try to update
+the chart in the cluster. The chart will exists as CloudFormation resource.
+
+Helm charts are implemented as CloudFormation resources in CDK.
+This means that if the chart is deleted from your code (or the stack is
+deleted), the next `cdk deploy` will issue a `helm uninstall` command and the
+Helm chart will be deleted.
+
+When there is no `release` defined, the chart will be installed using the `node.uniqueId`,
+which will be lower cassed and truncated to the last 63 characters.
 
 ### Roadmap
 

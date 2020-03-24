@@ -1,12 +1,12 @@
-import autoscaling = require('@aws-cdk/aws-autoscaling');
-import cloudwatch = require ('@aws-cdk/aws-cloudwatch');
-import ec2 = require('@aws-cdk/aws-ec2');
-import iam = require('@aws-cdk/aws-iam');
-import cloudmap = require('@aws-cdk/aws-servicediscovery');
-import ssm = require('@aws-cdk/aws-ssm');
-import {Construct, Duration, IResource, Resource, Stack} from '@aws-cdk/core';
-import {InstanceDrainHook} from './drain-hook/instance-drain-hook';
-import {CfnCluster} from './ecs.generated';
+import * as autoscaling from '@aws-cdk/aws-autoscaling';
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as iam from '@aws-cdk/aws-iam';
+import * as cloudmap from '@aws-cdk/aws-servicediscovery';
+import * as ssm from '@aws-cdk/aws-ssm';
+import { Construct, Duration, IResource, Resource, Stack } from '@aws-cdk/core';
+import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
+import { CfnCluster } from './ecs.generated';
 
 /**
  * The properties used to define an ECS cluster.
@@ -40,6 +40,13 @@ export interface ClusterProps {
    * @default - no EC2 capacity will be added, you can use `addCapacity` to add capacity later.
    */
   readonly capacity?: AddCapacityOptions;
+
+  /**
+   * If true CloudWatch Container Insights will be enabled for the cluster
+   *
+   * @default - Container Insights will be disabled for this cluser.
+   */
+  readonly containerInsights?: boolean;
 }
 
 /**
@@ -96,8 +103,12 @@ export class Cluster extends Resource implements ICluster {
       physicalName: props.clusterName,
     });
 
+    const containerInsights = props.containerInsights !== undefined ? props.containerInsights : false;
+    const clusterSettings = containerInsights ? [{name: "containerInsights", value: "enabled"}] : undefined;
+
     const cluster = new CfnCluster(this, 'Resource', {
       clusterName: this.physicalName,
+      clusterSettings,
     });
 
     this.clusterArn = this.getResourceArnAttribute(cluster.attrArn, {
@@ -195,6 +206,10 @@ export class Cluster extends Resource implements ICluster {
       autoScalingGroup.addUserData('echo ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config');
     }
 
+    if (autoScalingGroup.spotPrice && options.spotInstanceDraining) {
+      autoScalingGroup.addUserData('echo ECS_ENABLE_SPOT_INSTANCE_DRAINING=true >> /etc/ecs/ecs.config');
+    }
+
     // ECS instances must be able to do these things
     // Source: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/instance_IAM_role.html
     autoScalingGroup.addToRolePolicy(new iam.PolicyStatement({
@@ -252,7 +267,7 @@ export class Cluster extends Resource implements ICluster {
    * @default average over 5 minutes
    */
   public metricMemoryReservation(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('MemoryReservation', props );
+    return this.metric('MemoryReservation', props);
   }
 
   /**
@@ -264,7 +279,7 @@ export class Cluster extends Resource implements ICluster {
       metricName,
       dimensions: { ClusterName: this.clusterName },
       ...props
-    });
+    }).attachTo(this);
   }
 }
 
@@ -350,22 +365,24 @@ export class EcsOptimizedAmi implements ec2.IMachineImage {
 
     // set the SSM parameter name
     this.amiParameterName = "/aws/service/ecs/optimized-ami/"
-                          + ( this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX ? "amazon-linux/" : "" )
-                          + ( this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 ? "amazon-linux-2/" : "" )
-                          + ( this.windowsVersion ? `windows_server/${this.windowsVersion}/english/full/` : "" )
-                          + ( this.hwType === AmiHardwareType.GPU ? "gpu/" : "" )
-                          + ( this.hwType === AmiHardwareType.ARM ? "arm64/" : "" )
-                          + "recommended/image_id";
+      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX ? "amazon-linux/" : "")
+      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 ? "amazon-linux-2/" : "")
+      + (this.windowsVersion ? `windows_server/${this.windowsVersion}/english/full/` : "")
+      + (this.hwType === AmiHardwareType.GPU ? "gpu/" : "")
+      + (this.hwType === AmiHardwareType.ARM ? "arm64/" : "")
+      + "recommended/image_id";
   }
 
   /**
    * Return the correct image
    */
   public getImage(scope: Construct): ec2.MachineImageConfig {
-    const ami = ssm.StringParameter.valueForStringParameter(scope, this.amiParameterName);
+    const ami = ssm.StringParameter.valueForTypedStringParameter(scope, this.amiParameterName, ssm.ParameterType.AWS_EC2_IMAGE_ID);
+    const osType = this.windowsVersion ? ec2.OperatingSystemType.WINDOWS : ec2.OperatingSystemType.LINUX;
     return {
       imageId: ami,
-      osType: this.windowsVersion ? ec2.OperatingSystemType.WINDOWS : ec2.OperatingSystemType.LINUX
+      osType,
+      userData: ec2.UserData.forOperatingSystem(osType),
     };
   }
 }
@@ -380,14 +397,14 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
    * @param hardwareType ECS-optimized AMI variant to use
    */
   public static amazonLinux2(hardwareType = AmiHardwareType.STANDARD): EcsOptimizedImage {
-    return new EcsOptimizedImage({generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2, hardwareType});
+    return new EcsOptimizedImage({ generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2, hardwareType });
   }
 
   /**
    * Construct an Amazon Linux AMI image from the latest ECS Optimized AMI published in SSM
    */
   public static amazonLinux(): EcsOptimizedImage {
-    return new EcsOptimizedImage({generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX});
+    return new EcsOptimizedImage({ generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX });
   }
 
   /**
@@ -396,7 +413,7 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
    * @param windowsVersion Windows Version to use
    */
   public static windows(windowsVersion: WindowsOptimizedVersion): EcsOptimizedImage {
-    return new EcsOptimizedImage({windowsVersion});
+    return new EcsOptimizedImage({ windowsVersion });
   }
 
   private readonly generation?: ec2.AmazonLinuxGeneration;
@@ -421,22 +438,24 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
 
     // set the SSM parameter name
     this.amiParameterName = "/aws/service/ecs/optimized-ami/"
-        + ( this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX ? "amazon-linux/" : "" )
-        + ( this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 ? "amazon-linux-2/" : "" )
-        + ( this.windowsVersion ? `windows_server/${this.windowsVersion}/english/full/` : "" )
-        + ( this.hwType === AmiHardwareType.GPU ? "gpu/" : "" )
-        + ( this.hwType === AmiHardwareType.ARM ? "arm64/" : "" )
-        + "recommended/image_id";
+      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX ? "amazon-linux/" : "")
+      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 ? "amazon-linux-2/" : "")
+      + (this.windowsVersion ? `windows_server/${this.windowsVersion}/english/full/` : "")
+      + (this.hwType === AmiHardwareType.GPU ? "gpu/" : "")
+      + (this.hwType === AmiHardwareType.ARM ? "arm64/" : "")
+      + "recommended/image_id";
   }
 
   /**
    * Return the correct image
    */
   public getImage(scope: Construct): ec2.MachineImageConfig {
-    const ami = ssm.StringParameter.valueForStringParameter(scope, this.amiParameterName);
+    const ami = ssm.StringParameter.valueForTypedStringParameter(scope, this.amiParameterName, ssm.ParameterType.AWS_EC2_IMAGE_ID);
+    const osType = this.windowsVersion ? ec2.OperatingSystemType.WINDOWS : ec2.OperatingSystemType.LINUX;
     return {
       imageId: ami,
-      osType: this.windowsVersion ? ec2.OperatingSystemType.WINDOWS : ec2.OperatingSystemType.LINUX
+      osType,
+      userData: ec2.UserData.forOperatingSystem(osType),
     };
   }
 }
@@ -614,6 +633,14 @@ export interface AddAutoScalingGroupCapacityOptions {
    * @default Duration.minutes(5)
    */
   readonly taskDrainTime?: Duration;
+
+  /**
+   * Specify whether to enable Automated Draining for Spot Instances running Amazon ECS Services.
+   * For more information, see [Using Spot Instances](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/container-instance-spot.html).
+   *
+   * @default false
+   */
+  readonly spotInstanceDraining?: boolean
 }
 
 /**

@@ -1,0 +1,5 @@
+*.js
+*.d.ts
+!deps.js
+!gen.js
+src/

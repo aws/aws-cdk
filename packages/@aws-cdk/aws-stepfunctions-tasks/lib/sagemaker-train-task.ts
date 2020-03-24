@@ -1,13 +1,15 @@
-import ec2 = require('@aws-cdk/aws-ec2');
-import iam = require('@aws-cdk/aws-iam');
-import sfn = require('@aws-cdk/aws-stepfunctions');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as iam from '@aws-cdk/aws-iam';
+import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Duration, Lazy, Stack } from '@aws-cdk/core';
-import { resourceArnSuffix } from './resource-arn-suffix';
+import { getResourceArn } from './resource-arn-suffix';
 import { AlgorithmSpecification, Channel, InputMode, OutputDataConfig, ResourceConfig,
          S3DataType, StoppingCondition, VpcConfig,  } from './sagemaker-task-base-types';
 
 /**
- *  @experimental
+ * Properties for creating an Amazon SageMaker training job
+ *
+ * @experimental
  */
 export interface SagemakerTrainTaskProps {
 
@@ -41,7 +43,11 @@ export interface SagemakerTrainTaskProps {
     readonly algorithmSpecification: AlgorithmSpecification;
 
     /**
-     * Hyperparameters to be used for the train job.
+     * Algorithm-specific parameters that influence the quality of the model. Set hyperparameters before you start the learning process.
+     * For a list of hyperparameters provided by Amazon SageMaker
+     * @see https://docs.aws.amazon.com/sagemaker/latest/dg/algos.html
+     *
+     * @default - No hyperparameters
      */
     readonly hyperparameters?: {[key: string]: any};
 
@@ -52,6 +58,8 @@ export interface SagemakerTrainTaskProps {
 
     /**
      * Tags to be applied to the train job.
+     *
+     * @default - No tags
      */
     readonly tags?: {[key: string]: string};
 
@@ -61,17 +69,23 @@ export interface SagemakerTrainTaskProps {
     readonly outputDataConfig: OutputDataConfig;
 
     /**
-     * Identifies the resources, ML compute instances, and ML storage volumes to deploy for model training.
+     * Specifies the resources, ML compute instances, and ML storage volumes to deploy for model training.
+     *
+     * @default - 1 instance of EC2 `M4.XLarge` with `10GB` volume
      */
     readonly resourceConfig?: ResourceConfig;
 
     /**
      * Sets a time limit for training.
+     *
+     * @default - max runtime of 1 hour
      */
     readonly stoppingCondition?: StoppingCondition;
 
     /**
      * Specifies the VPC that you want your training job to connect to.
+     *
+     * @default - No VPC
      */
     readonly vpcConfig?: VpcConfig;
 }
@@ -108,10 +122,10 @@ export class SagemakerTrainTask implements iam.IGrantable, ec2.IConnectable, sfn
      */
     private readonly stoppingCondition: StoppingCondition;
 
-    private readonly vpc: ec2.IVpc;
-    private securityGroup: ec2.ISecurityGroup;
+    private readonly vpc?: ec2.IVpc;
+    private securityGroup?: ec2.ISecurityGroup;
     private readonly securityGroups: ec2.ISecurityGroup[] = [];
-    private readonly subnets: string[];
+    private readonly subnets?: string[];
     private readonly integrationPattern: sfn.ServiceIntegrationPattern;
     private _role?: iam.IRole;
     private _grantPrincipal?: iam.IPrincipal;
@@ -251,7 +265,7 @@ export class SagemakerTrainTask implements iam.IGrantable, ec2.IConnectable, sfn
         }
 
         return {
-          resourceArn: 'arn:aws:states:::sagemaker:createTrainingJob' + resourceArnSuffix.get(this.integrationPattern),
+          resourceArn: getResourceArn("sagemaker", "createTrainingJob", this.integrationPattern),
           parameters: this.renderParameters(),
           policyStatements: this.makePolicyStatements(task),
         };

@@ -1,9 +1,9 @@
-import cxapi = require('@aws-cdk/cx-api');
-import minimatch = require('minimatch');
-import { ISDK } from '../util/sdk';
+import * as cxapi from '@aws-cdk/cx-api';
+import * as minimatch from 'minimatch';
+import { SdkProvider } from '../aws-auth';
 import { AppStacks } from './stacks';
 
-export async function globEnvironmentsFromStacks(appStacks: AppStacks, environmentGlobs: string[], sdk: ISDK): Promise<cxapi.Environment[]> {
+export async function globEnvironmentsFromStacks(appStacks: AppStacks, environmentGlobs: string[], sdk: SdkProvider): Promise<cxapi.Environment[]> {
   if (environmentGlobs.length === 0) {
     environmentGlobs = [ '**' ]; // default to ALL
   }
@@ -12,7 +12,7 @@ export async function globEnvironmentsFromStacks(appStacks: AppStacks, environme
 
   const availableEnvironments = new Array<cxapi.Environment>();
   for (const stack of stacks) {
-    const actual = await parseEnvironment(sdk, stack.environment);
+    const actual = await sdk.resolveEnvironment(stack.environment.account, stack.environment.region);
     availableEnvironments.push(actual);
   }
 
@@ -24,20 +24,6 @@ export async function globEnvironmentsFromStacks(appStacks: AppStacks, environme
   }
 
   return environments;
-}
-
-async function parseEnvironment(sdk: ISDK, env: cxapi.Environment): Promise<cxapi.Environment> {
-  const account = env.account === cxapi.UNKNOWN_ACCOUNT ? await sdk.defaultAccount() : env.account;
-  const region = env.region === cxapi.UNKNOWN_REGION ? await sdk.defaultRegion() : env.region;
-
-  if (!account || !region) {
-    throw new Error(`Unable to determine default account and/or region`);
-  }
-
-  return {
-    account, region,
-    name: cxapi.EnvironmentUtils.format(account, region)
-  };
 }
 
 /**

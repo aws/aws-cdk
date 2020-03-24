@@ -1,11 +1,11 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
-import codecommit = require('@aws-cdk/aws-codecommit');
-import ec2 = require('@aws-cdk/aws-ec2');
-import kms = require('@aws-cdk/aws-kms');
-import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/core');
+import * as codecommit from '@aws-cdk/aws-codecommit';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as kms from '@aws-cdk/aws-kms';
+import * as s3 from '@aws-cdk/aws-s3';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import codebuild = require('../lib');
+import * as codebuild from '../lib';
 import { CodePipelineSource } from '../lib/codepipeline-source';
 import { NoSource } from '../lib/no-source';
 
@@ -865,6 +865,71 @@ export = {
     },
   },
 
+  'secondary source versions': {
+    'allow secondary source versions'(test: Test) {
+      const stack = new cdk.Stack();
+      const bucket = new s3.Bucket(stack, 'MyBucket');
+      const project = new codebuild.Project(stack, 'MyProject', {
+        source: codebuild.Source.s3({
+          bucket,
+          path: 'some/path',
+        }),
+      });
+
+      project.addSecondarySource(codebuild.Source.s3({
+        bucket,
+        path: 'another/path',
+        identifier: 'source1',
+        version: 'someversion'
+      }));
+
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        "SecondarySources": [
+          {
+            "SourceIdentifier": "source1",
+            "Type": "S3",
+          },
+        ],
+        "SecondarySourceVersions": [
+          {
+            "SourceIdentifier": "source1",
+            "SourceVersion": "someversion"
+          }
+        ]
+      }));
+
+      test.done();
+    },
+
+    'allow not to specify secondary source versions'(test: Test) {
+      const stack = new cdk.Stack();
+      const bucket = new s3.Bucket(stack, 'MyBucket');
+      const project = new codebuild.Project(stack, 'MyProject', {
+        source: codebuild.Source.s3({
+          bucket,
+          path: 'some/path',
+        }),
+      });
+
+      project.addSecondarySource(codebuild.Source.s3({
+        bucket,
+        path: 'another/path',
+        identifier: 'source1',
+      }));
+
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        "SecondarySources": [
+          {
+            "SourceIdentifier": "source1",
+            "Type": "S3",
+          },
+        ]
+      }));
+
+      test.done();
+    },
+  },
+
   'secondary artifacts': {
     'require providing an identifier when creating a Project'(test: Test) {
       const stack = new cdk.Stack();
@@ -1232,12 +1297,79 @@ export = {
     test.done();
   },
 
+  'ARM image': {
+    'AMAZON_LINUX_2_ARM': {
+      'has type ARM_CONTAINER and default ComputeType LARGE'(test: Test) {
+        const stack = new cdk.Stack();
+        new codebuild.PipelineProject(stack, 'Project', {
+          environment: {
+            buildImage: codebuild.LinuxBuildImage.AMAZON_LINUX_2_ARM,
+          },
+        });
+
+        expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+          "Environment": {
+            "Type": "ARM_CONTAINER",
+            "ComputeType": "BUILD_GENERAL1_LARGE",
+          },
+        }));
+
+        test.done();
+      },
+
+      'cannot be used in conjunction with ComputeType SMALL'(test: Test) {
+        const stack = new cdk.Stack();
+
+        test.throws(() => {
+          new codebuild.PipelineProject(stack, 'Project', {
+            environment: {
+              buildImage: codebuild.LinuxBuildImage.AMAZON_LINUX_2_ARM,
+              computeType: codebuild.ComputeType.SMALL,
+            },
+          });
+        }, /ARM images only support ComputeType 'BUILD_GENERAL1_LARGE' - 'BUILD_GENERAL1_SMALL' was given/);
+
+        test.done();
+      },
+
+      'cannot be used in conjunction with ComputeType MEDIUM'(test: Test) {
+        const stack = new cdk.Stack();
+
+        test.throws(() => {
+          new codebuild.PipelineProject(stack, 'Project', {
+            environment: {
+              buildImage: codebuild.LinuxBuildImage.AMAZON_LINUX_2_ARM,
+              computeType: codebuild.ComputeType.MEDIUM,
+            },
+          });
+        }, /ARM images only support ComputeType 'BUILD_GENERAL1_LARGE' - 'BUILD_GENERAL1_MEDIUM' was given/);
+
+        test.done();
+      },
+
+      'cannot be used in conjunction with ComputeType X2_LARGE'(test: Test) {
+        const stack = new cdk.Stack();
+
+        test.throws(() => {
+          new codebuild.PipelineProject(stack, 'Project', {
+            environment: {
+              buildImage: codebuild.LinuxBuildImage.AMAZON_LINUX_2_ARM,
+              computeType: codebuild.ComputeType.X2_LARGE,
+            },
+          });
+        }, /ARM images only support ComputeType 'BUILD_GENERAL1_LARGE' - 'BUILD_GENERAL1_2XLARGE' was given/);
+
+        test.done();
+      },
+    },
+  },
+
   'badge support test'(test: Test) {
     const stack = new cdk.Stack();
 
     interface BadgeValidationTestCase {
       source: codebuild.Source,
-      shouldPassValidation: boolean
+      allowsBadge: boolean
     }
 
     const repo = new codecommit.Repository(stack, 'MyRepo', {
@@ -1246,22 +1378,22 @@ export = {
     const bucket = new s3.Bucket(stack, 'MyBucket');
 
     const cases: BadgeValidationTestCase[] = [
-      { source: new NoSource(), shouldPassValidation: false },
-      { source: new CodePipelineSource(), shouldPassValidation: false },
-      { source: codebuild.Source.codeCommit({ repository: repo }), shouldPassValidation: false },
-      { source: codebuild.Source.s3({ bucket, path: 'path/to/source.zip' }), shouldPassValidation: false },
-      { source: codebuild.Source.gitHub({ owner: 'awslabs', repo: 'aws-cdk' }), shouldPassValidation: true },
-      { source: codebuild.Source.gitHubEnterprise({ httpsCloneUrl: 'url' }), shouldPassValidation: true },
-      { source: codebuild.Source.bitBucket({ owner: 'awslabs', repo: 'aws-cdk' }), shouldPassValidation: true }
+      { source: new NoSource(), allowsBadge: false },
+      { source: new CodePipelineSource(), allowsBadge: false },
+      { source: codebuild.Source.codeCommit({ repository: repo }), allowsBadge: true },
+      { source: codebuild.Source.s3({ bucket, path: 'path/to/source.zip' }), allowsBadge: false },
+      { source: codebuild.Source.gitHub({ owner: 'awslabs', repo: 'aws-cdk' }), allowsBadge: true },
+      { source: codebuild.Source.gitHubEnterprise({ httpsCloneUrl: 'url' }), allowsBadge: true },
+      { source: codebuild.Source.bitBucket({ owner: 'awslabs', repo: 'aws-cdk' }), allowsBadge: true },
     ];
 
     cases.forEach(testCase => {
       const source = testCase.source;
       const validationBlock = () => { new codebuild.Project(stack, `MyProject-${source.type}`, { source, badge: true }); };
-      if (testCase.shouldPassValidation) {
-        test.doesNotThrow(validationBlock, Error, `Badge is not supported for source type ${source.type}`);
+      if (testCase.allowsBadge) {
+        test.doesNotThrow(validationBlock);
       } else {
-        test.throws(validationBlock, Error, `Badge is not supported for source type ${source.type}`);
+        test.throws(validationBlock, /Badge is not supported for source type /);
       }
     });
 

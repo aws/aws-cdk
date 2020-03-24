@@ -1,6 +1,6 @@
-import events = require('@aws-cdk/aws-events');
-import iam = require('@aws-cdk/aws-iam');
-import s3 = require('@aws-cdk/aws-s3');
+import * as events from '@aws-cdk/aws-events';
+import * as iam from '@aws-cdk/aws-iam';
+import * as s3 from '@aws-cdk/aws-s3';
 import { Construct, IResource } from '@aws-cdk/core';
 import { Artifact } from './artifact';
 
@@ -25,6 +25,17 @@ export interface ActionArtifactBounds {
   readonly maxInputs: number;
   readonly minOutputs: number;
   readonly maxOutputs: number;
+}
+
+/**
+ * The CodePipeline variables that are global,
+ * not bound to a specific action.
+ * This class defines a bunch of static fields that represent the different variables.
+ * These can be used can be used in any action configuration.
+ */
+export class GlobalVariables {
+  /** The identifier of the current pipeline execution. */
+  public static readonly executionId = '#{codepipeline.PipelineExecutionId}';
 }
 
 export interface ActionProperties {
@@ -84,6 +95,13 @@ export interface ActionProperties {
   readonly artifactBounds: ActionArtifactBounds;
   readonly inputs?: Artifact[];
   readonly outputs?: Artifact[];
+
+  /**
+   * The name of the namespace to use for variables emitted by this action.
+   *
+   * @default - a name will be generated, based on the stage and action names
+   */
+  readonly variablesNamespace?: string;
 }
 
 export interface ActionBindOptions {
@@ -153,6 +171,11 @@ export interface IStage {
 
   readonly pipeline: IPipeline;
 
+  /**
+   * The actions belonging to this stage.
+   */
+  readonly actions: IAction[];
+
   addAction(action: IAction): void;
 
   onStateChange(name: string, target?: events.IRuleTarget, options?: events.RuleProps): events.Rule;
@@ -164,7 +187,7 @@ export interface IStage {
 export interface CommonActionProps {
   /**
    * The physical, human-readable name of the Action.
-   * Not that Action names must be unique within a single Stage.
+   * Note that Action names must be unique within a single Stage.
    */
   readonly actionName: string;
 
@@ -176,6 +199,15 @@ export interface CommonActionProps {
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/reference-pipeline-structure.html
    */
   readonly runOrder?: number;
+
+  /**
+   * The name of the namespace to use for variables emitted by this action.
+   *
+   * @default - a name will be generated, based on the stage and action names,
+   *   if any of the action's variables were referenced - otherwise,
+   *   no namespace will be set
+   */
+  readonly variablesNamespace?: string;
 }
 
 /**

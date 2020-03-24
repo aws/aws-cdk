@@ -1,7 +1,7 @@
-import iam = require('@aws-cdk/aws-iam');
-import sns = require('@aws-cdk/aws-sns');
-import sfn = require('@aws-cdk/aws-stepfunctions');
-import { resourceArnSuffix } from './resource-arn-suffix';
+import * as iam from '@aws-cdk/aws-iam';
+import * as sns from '@aws-cdk/aws-sns';
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+import { getResourceArn } from './resource-arn-suffix';
 
 /**
  * Properties for PublishTask
@@ -21,11 +21,15 @@ export interface PublishToTopicProps {
    * being sent to every subscription type.
    *
    * @see https://docs.aws.amazon.com/sns/latest/api/API_Publish.html#API_Publish_RequestParameters
+   * @default false
    */
   readonly messagePerSubscriptionType?: boolean;
 
   /**
-   * Message subject
+   * Used as the "Subject" line when the message is delivered to email endpoints.
+   * Also included, if present, in the standard JSON messages delivered to other endpoints.
+   *
+   * @default - No subject
    */
   readonly subject?: string;
 
@@ -70,7 +74,7 @@ export class PublishToTopic implements sfn.IStepFunctionsTask {
 
   public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
     return {
-      resourceArn: 'arn:aws:states:::sns:publish' + resourceArnSuffix.get(this.integrationPattern),
+      resourceArn: getResourceArn("sns", "publish", this.integrationPattern),
       policyStatements: [new iam.PolicyStatement({
         actions: ['sns:Publish'],
         resources: [this.topic.topicArn]

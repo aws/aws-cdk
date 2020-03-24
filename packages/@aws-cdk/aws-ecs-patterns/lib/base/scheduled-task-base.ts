@@ -1,5 +1,5 @@
 import { Schedule } from "@aws-cdk/aws-applicationautoscaling";
-import { IVpc } from '@aws-cdk/aws-ec2';
+import { IVpc, SubnetSelection, SubnetType } from '@aws-cdk/aws-ec2';
 import { AwsLogDriver, Cluster, ContainerImage, ICluster, LogDriver, Secret, TaskDefinition } from "@aws-cdk/aws-ecs";
 import { Rule } from "@aws-cdk/aws-events";
 import { EcsTask } from "@aws-cdk/aws-events-targets";
@@ -26,18 +26,37 @@ export interface ScheduledTaskBaseProps {
   readonly vpc?: IVpc;
 
   /**
-   * The image used to start a container.
-   */
-  readonly image: ContainerImage;
-
-  /**
    * The schedule or rate (frequency) that determines when CloudWatch Events
-   * runs the rule. For more information, see Schedule Expression Syntax for
-   * Rules in the Amazon CloudWatch User Guide.
-   *
-   * @see http://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html
+   * runs the rule. For more information, see
+   * [Schedule Expression Syntax for Rules](https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html)
+   * in the Amazon CloudWatch User Guide.
    */
   readonly schedule: Schedule;
+
+  /**
+   * The desired number of instantiations of the task definition to keep running on the service.
+   *
+   * @default 1
+   */
+  readonly desiredTaskCount?: number;
+
+  /**
+   * In what subnets to place the task's ENIs
+   *
+   * (Only applicable in case the TaskDefinition is configured for AwsVpc networking)
+   *
+   * @default Private subnets
+   */
+  readonly subnetSelection?: SubnetSelection;
+}
+
+export interface ScheduledTaskImageProps {
+  /**
+   * The image used to start a container. Image or taskDefinition must be specified, but not both.
+   *
+   * @default - none
+   */
+  readonly image: ContainerImage;
 
   /**
    * The command that is passed to the container.
@@ -47,13 +66,6 @@ export interface ScheduledTaskBaseProps {
    * @default - CMD value built into container image.
    */
   readonly command?: string[];
-
-  /**
-   * The desired number of instantiations of the task definition to keep running on the service.
-   *
-   * @default 1
-   */
-  readonly desiredTaskCount?: number;
 
   /**
    * The environment variables to pass to the container.
@@ -87,13 +99,24 @@ export abstract class ScheduledTaskBase extends Construct {
   public readonly cluster: ICluster;
   /**
    * The desired number of instantiations of the task definition to keep running on the service.
+   *
+   * The minimum value is 1
    */
   public readonly desiredTaskCount: number;
-  public readonly eventRule: Rule;
+
   /**
-   * The AwsLogDriver to use for logging if logging is enabled.
+   * In what subnets to place the task's ENIs
+   *
+   * (Only applicable in case the TaskDefinition is configured for AwsVpc networking)
+   *
+   * @default Private subnets
    */
-  public readonly logDriver?: LogDriver;
+  public readonly subnetSelection: SubnetSelection;
+
+  /**
+   * The CloudWatch Events rule for the service.
+   */
+  public readonly eventRule: Rule;
 
   /**
    * Constructs a new instance of the ScheduledTaskBase class.
@@ -102,16 +125,16 @@ export abstract class ScheduledTaskBase extends Construct {
     super(scope, id);
 
     this.cluster = props.cluster || this.getDefaultCluster(this, props.vpc);
+    if (props.desiredTaskCount !== undefined && props.desiredTaskCount < 1) {
+      throw new Error('You must specify a desiredTaskCount greater than 0');
+    }
     this.desiredTaskCount = props.desiredTaskCount || 1;
+    this.subnetSelection = props.subnetSelection || { subnetType: SubnetType.PRIVATE };
 
     // An EventRule that describes the event trigger (in this case a scheduled run)
     this.eventRule = new Rule(this, 'ScheduledEventRule', {
       schedule: props.schedule,
     });
-
-    this.logDriver = props.logDriver !== undefined
-                        ? props.logDriver
-                        : this.createAWSLogDriver(this.node.id);
   }
 
   /**
@@ -124,7 +147,8 @@ export abstract class ScheduledTaskBase extends Construct {
     const eventRuleTarget = new EcsTask( {
       cluster: this.cluster,
       taskDefinition,
-      taskCount: this.desiredTaskCount
+      taskCount: this.desiredTaskCount,
+      subnetSelection: this.subnetSelection
     });
 
     this.eventRule.addTarget(eventRuleTarget);
@@ -132,6 +156,9 @@ export abstract class ScheduledTaskBase extends Construct {
     return eventRuleTarget;
   }
 
+  /**
+   * Returns the default cluster.
+   */
   protected getDefaultCluster(scope: Construct, vpc?: IVpc): Cluster {
     // magic string to avoid collision with user-defined constructs
     const DEFAULT_CLUSTER_ID = `EcsDefaultClusterMnL3mNNYN${vpc ? vpc.node.id : ''}`;

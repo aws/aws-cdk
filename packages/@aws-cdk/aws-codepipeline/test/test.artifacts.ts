@@ -1,8 +1,7 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
-import cdk = require('@aws-cdk/core');
-import { ConstructNode } from '@aws-cdk/core';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import codepipeline = require('../lib');
+import * as codepipeline from '../lib';
 import { FakeBuildAction } from './fake-build-action';
 import { FakeSourceAction } from './fake-source-action';
 
@@ -173,10 +172,67 @@ export = {
 
       test.done();
     },
+
+    'without a name, sanitize the auto stage-action derived name'(test: Test) {
+      const stack = new cdk.Stack();
+
+      const sourceOutput = new codepipeline.Artifact();
+      new codepipeline.Pipeline(stack, 'Pipeline', {
+        stages: [
+          {
+            stageName: 'Source.@', // @ and . are not allowed in Artifact names!
+            actions: [
+              new FakeSourceAction({
+                actionName: 'source1',
+                output: sourceOutput,
+              }),
+            ],
+          },
+          {
+            stageName: 'Build',
+            actions: [
+              new FakeBuildAction({
+                actionName: 'build1',
+                input: sourceOutput,
+              }),
+            ],
+          },
+        ],
+      });
+
+      expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+        "Stages": [
+          {
+            "Name": "Source.@",
+            "Actions": [
+              {
+                "Name": "source1",
+                "OutputArtifacts": [
+                  { "Name": "Artifact_Source_source1" },
+                ],
+              },
+            ],
+          },
+          {
+            "Name": "Build",
+            "Actions": [
+              {
+                "Name": "build1",
+                "InputArtifacts": [
+                  { "Name": "Artifact_Source_source1" },
+                ],
+              },
+            ],
+          },
+        ],
+      }));
+
+      test.done();
+    },
   },
 };
 
 function validate(construct: cdk.IConstruct): cdk.ValidationError[] {
-  ConstructNode.prepare(construct.node);
-  return ConstructNode.validate(construct.node);
+  cdk.ConstructNode.prepare(construct.node);
+  return cdk.ConstructNode.validate(construct.node);
 }

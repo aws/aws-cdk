@@ -25,7 +25,8 @@
               "QueryString": false
             },
             "TargetOriginId": "origin1",
-            "ViewerProtocolPolicy": "redirect-to-https"
+            "ViewerProtocolPolicy": "redirect-to-https",
+            "Compress": true
           },
           "DefaultRootObject": "index.html",
           "Enabled": true,

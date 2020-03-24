@@ -1,6 +1,6 @@
-import yargs = require('yargs');
+import * as yargs from 'yargs';
+import { SdkProvider } from './api/aws-auth';
 import { AppStacks } from './api/cxapp/stacks';
-import { ISDK } from './api/util/sdk';
 import { Configuration } from './settings';
 
 /**
@@ -19,7 +19,7 @@ export interface CommandOptions {
   args: yargs.Arguments;
   configuration: Configuration;
   appStacks: AppStacks;
-  aws: ISDK;
+  aws: SdkProvider;
 }
 
 /**

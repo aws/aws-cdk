@@ -1,7 +1,7 @@
-import iam = require('@aws-cdk/aws-iam');
-import sfn = require('@aws-cdk/aws-stepfunctions');
+import * as iam from '@aws-cdk/aws-iam';
+import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Stack } from '@aws-cdk/core';
-import { resourceArnSuffix } from './resource-arn-suffix';
+import { getResourceArn } from './resource-arn-suffix';
 
 /**
  * Properties for StartExecution
@@ -11,6 +11,8 @@ export interface StartExecutionProps {
    * The JSON input for the execution, same as that of StartExecution.
    *
    * @see https://docs.aws.amazon.com/step-functions/latest/apireference/API_StartExecution.html
+   *
+   * @default - No input
    */
   readonly input?: { [key: string]: any };
 
@@ -18,6 +20,8 @@ export interface StartExecutionProps {
    * The name of the execution, same as that of StartExecution.
    *
    * @see https://docs.aws.amazon.com/step-functions/latest/apireference/API_StartExecution.html
+   *
+   * @default - None
    */
   readonly name?: string;
 
@@ -59,10 +63,8 @@ export class StartExecution implements sfn.IStepFunctionsTask {
   }
 
   public bind(task: sfn.Task): sfn.StepFunctionsTaskConfig {
-    const resourceArn = 'arn:aws:states:::states:startExecution' + resourceArnSuffix.get(this.integrationPattern);
-
     return {
-      resourceArn,
+      resourceArn: getResourceArn("states", "startExecution", this.integrationPattern),
       policyStatements: this.createScopedAccessPolicy(task),
       parameters: {
         Input: this.props.input,

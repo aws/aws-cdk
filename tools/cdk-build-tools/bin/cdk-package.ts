@@ -1,6 +1,6 @@
-import fs = require('fs-extra');
-import path = require('path');
-import yargs = require('yargs');
+import * as fs from 'fs-extra';
+import * as path from 'path';
+import * as yargs from 'yargs';
 import { shell } from '../lib/os';
 import { Timers } from '../lib/timer';
 

@@ -5,12 +5,14 @@
 
 ![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
 
-> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
-> future breaking changes.**
+> **This is a _developer preview_ (public beta) module.**
 >
-> This API is still under active development and subject to non-backward
-> compatible changes or removal in any future version. Use of the API is not recommended in production
-> environments. Experimental APIs are not subject to the Semantic Versioning model.
+> All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib))
+> are auto-generated from CloudFormation. They are stable and safe to use.
+>
+> However, all other classes, i.e., higher level constructs, are under active development and subject to non-backward
+> compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model.
+> This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
 
 ---
 <!--END STABILITY BANNER-->
@@ -24,15 +26,6 @@ A `Database` is a logical grouping of `Tables` in the Glue Catalog.
 ```ts
 new glue.Database(stack, 'MyDatabase', {
   databaseName: 'my_database'
-});
-```
-
-By default, a S3 bucket is created and the Database is stored under  `s3://<bucket-name>/`, but you can manually specify another location:
-
-```ts
-new glue.Database(stack, 'MyDatabase', {
-  databaseName: 'my_database',
-  locationUri: 's3://explicit-bucket/some-path/'
 });
 ```
 

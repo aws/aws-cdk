@@ -1,4 +1,4 @@
-import { Construct, IResource, Resource } from '@aws-cdk/core';
+import { Construct, IResource, Resource, Token } from '@aws-cdk/core';
 import { CfnCertificate } from './certificatemanager.generated';
 import { apexDomain } from './util';
 
@@ -103,11 +103,15 @@ export class Certificate extends Resource implements ICertificate {
      * Closes over props.
      */
     function domainValidationOption(domainName: string): CfnCertificate.DomainValidationOptionProperty {
-      const overrideDomain = props.validationDomains && props.validationDomains[domainName];
-      return {
-        domainName,
-        validationDomain: overrideDomain || apexDomain(domainName)
-      };
+      let validationDomain = props.validationDomains && props.validationDomains[domainName];
+      if (validationDomain === undefined) {
+        if (Token.isUnresolved(domainName)) {
+          throw new Error(`When using Tokens for domain names, 'validationDomains' needs to be supplied`);
+        }
+        validationDomain = apexDomain(domainName);
+      }
+
+      return { domainName, validationDomain };
     }
   }
 }

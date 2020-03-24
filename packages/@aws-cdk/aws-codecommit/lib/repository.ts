@@ -1,4 +1,4 @@
-import events = require('@aws-cdk/aws-events');
+import * as events from '@aws-cdk/aws-events';
 import { Construct, IConstruct, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { CfnRepository } from './codecommit.generated';
 

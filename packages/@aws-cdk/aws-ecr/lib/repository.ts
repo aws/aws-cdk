@@ -1,5 +1,5 @@
-import events = require('@aws-cdk/aws-events');
-import iam = require('@aws-cdk/aws-iam');
+import * as events from '@aws-cdk/aws-events';
+import * as iam from '@aws-cdk/aws-iam';
 import { Construct, IConstruct, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
 import { CfnRepository } from './ecr.generated';
 import { LifecycleRule, TagStatus } from './lifecycle';
@@ -80,6 +80,21 @@ export interface IRepository extends IResource {
    * @param options Options for adding the rule
    */
   onCloudTrailImagePushed(id: string, options?: OnCloudTrailImagePushedOptions): events.Rule;
+
+  /**
+   * Defines an AWS CloudWatch event rule that can trigger a target when the image scan is completed
+   *
+   *
+   * @param id The id of the rule
+   * @param options Options for adding the rule
+   */
+  onImageScanCompleted(id: string, options?: OnImageScanCompletedOptions): events.Rule;
+
+  /**
+   * Defines a CloudWatch event rule which triggers for repository events. Use
+   * `rule.addEventPattern(pattern)` to specify a filter.
+   */
+  onEvent(id: string, options?: events.OnEventOptions): events.Rule;
 }
 
 /**
@@ -170,7 +185,41 @@ export abstract class RepositoryBase extends Resource implements IRepository {
     });
     return rule;
   }
+  /**
+   * Defines an AWS CloudWatch event rule that can trigger a target when an image scan is completed
+   *
+   *
+   * @param id The id of the rule
+   * @param options Options for adding the rule
+   */
+  public onImageScanCompleted(id: string, options: OnImageScanCompletedOptions = {}): events.Rule {
+    const rule = new events.Rule(this, id, options);
+    rule.addTarget(options.target);
+    rule.addEventPattern({
+      source: ['aws.ecr'],
+      detailType: ['ECR Image Scan'],
+      detail: {
+        'repository-name': [this.repositoryName],
+        'scan-status': ['COMPLETE'],
+        'image-tags': options.imageTags ? options.imageTags : undefined
+      }
+    });
+    return rule;
+  }
 
+  /**
+   * Defines a CloudWatch event rule which triggers for repository events. Use
+   * `rule.addEventPattern(pattern)` to specify a filter.
+   */
+  public onEvent(id: string, options: events.OnEventOptions = {}) {
+    const rule = new events.Rule(this, id, options);
+    rule.addEventPattern({
+      source: ['aws.ecr'],
+      resources: [this.repositoryArn]
+    });
+    rule.addTarget(options.target);
+    return rule;
+  }
   /**
    * Grant the given principal identity permissions to perform the actions on this repository
    */
@@ -223,6 +272,19 @@ export interface OnCloudTrailImagePushedOptions extends events.OnEventOptions {
    * @default - Watch changes to all tags
    */
   readonly imageTag?: string;
+}
+
+/**
+ * Options for the OnImageScanCompleted method
+ */
+export interface OnImageScanCompletedOptions extends events.OnEventOptions {
+  /**
+   * Only watch changes to the image tags spedified.
+   * Leave it undefined to watch the full repository.
+   *
+   * @default - Watch the changes to the repository with all image tags
+   */
+  readonly imageTags?: string[];
 }
 
 export interface RepositoryProps {

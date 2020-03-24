@@ -1,7 +1,7 @@
-import { expect, haveResource } from '@aws-cdk/assert';
-import iam = require('@aws-cdk/aws-iam');
+import { expect, haveResource, SynthUtils } from '@aws-cdk/assert';
+import * as iam from '@aws-cdk/aws-iam';
 import { HostedZone, PublicHostedZone } from '@aws-cdk/aws-route53';
-import { App, Stack } from '@aws-cdk/core';
+import { App, Stack, Token } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { DnsValidatedCertificate } from '../lib/dns-validated-certificate';
 
@@ -32,7 +32,7 @@ export = {
     }));
     expect(stack).to(haveResource('AWS::Lambda::Function', {
       Handler: 'index.certificateRequestHandler',
-      Runtime: 'nodejs8.10',
+      Runtime: 'nodejs10.x',
       Timeout: 900,
     }));
     expect(stack).to(haveResource('AWS::IAM::Policy', {
@@ -66,10 +66,10 @@ export = {
               'Fn::Join': [
                 '',
                 [
-                  'arn:aws:route53:::hostedzone/',
-                  {
-                    Ref: 'ExampleDotCom4D1B83AA'
-                  }
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':route53:::hostedzone/',
+                  { Ref: 'ExampleDotCom4D1B83AA' }
                 ]
               ]
             }
@@ -93,8 +93,29 @@ export = {
       hostedZone: helloDotComZone,
     });
 
-    // a bit of a hack: expect(stack) will trigger validation.
-    test.throws(() => expect(stack), /DNS zone hello.com is not authoritative for certificate domain name example.com/);
+    test.throws(() => {
+      SynthUtils.synthesize(stack);
+    }, /DNS zone hello.com is not authoritative for certificate domain name example.com/);
+
+    test.done();
+  },
+
+  'does not try to validate unresolved tokens'(test: Test) {
+    const stack = new Stack();
+
+    const helloDotComZone = new PublicHostedZone(stack, 'HelloDotCom', {
+      zoneName: Token.asString('hello.com')
+    });
+
+    new DnsValidatedCertificate(stack, 'Cert', {
+      domainName: 'hello.com',
+      hostedZone: helloDotComZone
+    });
+
+    test.doesNotThrow(() => {
+      SynthUtils.synthesize(stack);
+    });
+
     test.done();
   },
 
@@ -139,6 +160,7 @@ export = {
     new DnsValidatedCertificate(stack, 'Cert', {
       domainName: 'mydomain.com',
       hostedZone: imported,
+      route53Endpoint: "https://api.route53.xxx.com",
     });
 
     // THEN
@@ -150,7 +172,8 @@ export = {
           ]
         },
         DomainName: 'mydomain.com',
-        HostedZoneId: 'DUMMY'
+        HostedZoneId: 'DUMMY',
+        Route53Endpoint: 'https://api.route53.xxx.com'
       }));
 
     test.done();

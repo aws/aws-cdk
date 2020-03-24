@@ -1,8 +1,9 @@
-import ec2 = require('@aws-cdk/aws-ec2');
-import elb = require('@aws-cdk/aws-elasticloadbalancing');
-import { Construct, Lazy, Resource } from '@aws-cdk/core';
-import { BaseService, BaseServiceOptions, IService, LaunchType, PropagatedTagSource } from '../base/base-service';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import { Construct, Lazy, Resource, Stack } from '@aws-cdk/core';
+import { BaseService, BaseServiceOptions, IBaseService, IService, LaunchType, PropagatedTagSource } from '../base/base-service';
+import { fromServiceAtrributes } from '../base/from-service-attributes';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
+import { ICluster } from '../cluster';
 import { CfnService } from '../ecs.generated';
 import { PlacementConstraint, PlacementStrategy } from '../placement';
 
@@ -75,7 +76,8 @@ export interface Ec2ServiceProps extends BaseServiceOptions {
    * Specifies whether to propagate the tags from the task definition or the service to the tasks in the service.
    * Tags can only be propagated to the tasks within the service during service creation.
    *
-   * @default PropagatedTagSource.SERVICE
+   * @deprecated Use `propagateTags` instead.
+   * @default PropagatedTagSource.NONE
    */
   readonly propagateTaskTagsFrom?: PropagatedTagSource;
 }
@@ -88,11 +90,35 @@ export interface IEc2Service extends IService {
 }
 
 /**
+ * The properties to import from the service using the EC2 launch type.
+ */
+export interface Ec2ServiceAttributes {
+  /**
+   * The cluster that hosts the service.
+   */
+  readonly cluster: ICluster;
+
+  /**
+   * The service ARN.
+   *
+   * @default - either this, or {@link serviceName}, is required
+   */
+  readonly serviceArn?: string;
+
+  /**
+   * The name of the service.
+   *
+   * @default - either this, or {@link serviceArn}, is required
+   */
+  readonly serviceName?: string;
+}
+
+/**
  * This creates a service using the EC2 launch type on an ECS cluster.
  *
  * @resource AWS::ECS::Service
  */
-export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBalancerTarget {
+export class Ec2Service extends BaseService implements IEc2Service {
 
   /**
    * Imports from the specified service ARN.
@@ -100,8 +126,16 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
   public static fromEc2ServiceArn(scope: Construct, id: string, ec2ServiceArn: string): IEc2Service {
     class Import extends Resource implements IEc2Service {
       public readonly serviceArn = ec2ServiceArn;
+      public readonly serviceName = Stack.of(scope).parseArn(ec2ServiceArn).resourceName as string;
     }
     return new Import(scope, id);
+  }
+
+  /**
+   * Imports from the specified service attrributes.
+   */
+  public static fromEc2ServiceAttributes(scope: Construct, id: string, attrs: Ec2ServiceAttributes): IBaseService {
+    return fromServiceAtrributes(scope, id, attrs);
   }
 
   private readonly constraints: CfnService.PlacementConstraintProperty[];
@@ -128,6 +162,13 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
       throw new Error('Supplied TaskDefinition is not configured for compatibility with EC2');
     }
 
+    if (props.propagateTags && props.propagateTaskTagsFrom) {
+      throw new Error('You can only specify either propagateTags or propagateTaskTagsFrom. Alternatively, you can leave both blank');
+    }
+
+    const propagateTagsFromSource = props.propagateTaskTagsFrom !== undefined ? props.propagateTaskTagsFrom
+                                      : (props.propagateTags !== undefined ? props.propagateTags : PropagatedTagSource.NONE);
+
     super(scope, id, {
       ...props,
       // If daemon, desiredCount must be undefined and that's what we want. Otherwise, default to 1.
@@ -135,7 +176,7 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
       maxHealthyPercent: props.daemon && props.maxHealthyPercent === undefined ? 100 : props.maxHealthyPercent,
       minHealthyPercent: props.daemon && props.minHealthyPercent === undefined ? 0 : props.minHealthyPercent,
       launchType: LaunchType.EC2,
-      propagateTags: props.propagateTaskTagsFrom === undefined ? PropagatedTagSource.NONE : props.propagateTaskTagsFrom,
+      propagateTags: propagateTagsFromSource,
       enableECSManagedTags: props.enableECSManagedTags,
     },
     {
@@ -153,9 +194,16 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
     if (props.taskDefinition.networkMode === NetworkMode.AWS_VPC) {
       this.configureAwsVpcNetworking(props.cluster.vpc, props.assignPublicIp, props.vpcSubnets, props.securityGroup);
     } else {
-      // Either None, Bridge or Host networking. Copy SecurityGroup from ASG.
+      // Either None, Bridge or Host networking. Copy SecurityGroups from ASG.
+      // We have to be smart here -- by default future Security Group rules would be created
+      // in the Cluster stack. However, if the Cluster is in a different stack than us,
+      // that will lead to a cyclic reference (we point to that stack for the cluster name,
+      // but that stack will point to the ALB probably created right next to us).
+      //
+      // In that case, reference the same security groups but make sure new rules are
+      // created in the current scope (i.e., this stack)
       validateNoNetworkingProps(props);
-      this.connections.addSecurityGroup(...props.cluster.connections.securityGroups);
+      this.connections.addSecurityGroup(...securityGroupsInThisStack(this, props.cluster.connections.securityGroups));
     }
 
     this.addPlacementConstraints(...props.placementConstraints || []);
@@ -191,26 +239,6 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
   }
 
   /**
-   * Registers the service as a target of a Classic Load Balancer (CLB).
-   *
-   * Don't call this. Call `loadBalancer.addTarget()` instead.
-   */
-  public attachToClassicLB(loadBalancer: elb.LoadBalancer): void {
-    if (this.taskDefinition.networkMode === NetworkMode.BRIDGE) {
-      throw new Error("Cannot use a Classic Load Balancer if NetworkMode is Bridge. Use Host or AwsVpc instead.");
-    }
-    if (this.taskDefinition.networkMode === NetworkMode.NONE) {
-      throw new Error("Cannot use a Classic Load Balancer if NetworkMode is None. Use Host or AwsVpc instead.");
-    }
-
-    this.loadBalancers.push({
-      loadBalancerName: loadBalancer.loadBalancerName,
-      containerName: this.taskDefinition.defaultContainer!.containerName,
-      containerPort: this.taskDefinition.defaultContainer!.containerPort,
-    });
-  }
-
-  /**
    * Validates this Ec2Service.
    */
   protected validate(): string[] {
@@ -229,6 +257,28 @@ function validateNoNetworkingProps(props: Ec2ServiceProps) {
   if (props.vpcSubnets !== undefined || props.securityGroup !== undefined || props.assignPublicIp) {
     throw new Error('vpcSubnets, securityGroup and assignPublicIp can only be used in AwsVpc networking mode');
   }
+}
+
+/**
+ * Force security group rules to be created in this stack.
+ *
+ * For every security group, if the scope and the group are in different stacks, return
+ * a fake "imported" security group instead. This will behave as the original security group,
+ * but new Ingress and Egress rule resources will be added in the current stack instead of the
+ * other one.
+ */
+function securityGroupsInThisStack(scope: Construct, groups: ec2.ISecurityGroup[]): ec2.ISecurityGroup[] {
+  const thisStack = Stack.of(scope);
+
+  let i = 1;
+  return groups.map(group => {
+    if (thisStack === Stack.of(group)) { return group; } // Simple case, just return the original one
+
+    return ec2.SecurityGroup.fromSecurityGroupId(scope, `SecurityGroup${i++}`, group.securityGroupId, {
+      allowAllOutbound: group.allowAllOutbound,
+      mutable: true,
+    });
+  });
 }
 
 /**

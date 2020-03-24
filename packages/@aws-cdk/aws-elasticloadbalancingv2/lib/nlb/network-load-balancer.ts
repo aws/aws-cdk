@@ -1,5 +1,5 @@
-import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import ec2 = require('@aws-cdk/aws-ec2');
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as ec2 from '@aws-cdk/aws-ec2';
 import { Construct, Resource } from '@aws-cdk/core';
 import { BaseLoadBalancer, BaseLoadBalancerProps, ILoadBalancerV2 } from '../shared/base-load-balancer';
 import { BaseNetworkListenerProps, NetworkListener } from './network-listener';
@@ -38,6 +38,14 @@ export interface NetworkLoadBalancerAttributes {
    * @default - When not provided, LB cannot be used as Route53 Alias target.
    */
   readonly loadBalancerDnsName?: string;
+
+  /**
+   * The VPC to associate with the load balancer.
+   *
+   * @default - When not provided, listeners cannot be created on imported load
+   * balancers.
+   */
+  readonly vpc?: ec2.IVpc;
 }
 
 /**
@@ -49,7 +57,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
   public static fromNetworkLoadBalancerAttributes(scope: Construct, id: string, attrs: NetworkLoadBalancerAttributes): INetworkLoadBalancer {
     class Import extends Resource implements INetworkLoadBalancer {
       public readonly loadBalancerArn = attrs.loadBalancerArn;
-      public readonly vpc?: ec2.IVpc = undefined;
+      public readonly vpc?: ec2.IVpc = attrs.vpc;
       public addListener(lid: string, props: BaseNetworkListenerProps): NetworkListener {
         return new NetworkListener(this, lid, {
           loadBalancer: this,
@@ -104,7 +112,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
       metricName,
       dimensions: { LoadBalancer: this.loadBalancerFullName },
       ...props
-    });
+    }).attachTo(this);
   }
 
   /**
@@ -227,11 +235,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
 /**
  * A network load balancer
  */
-export interface INetworkLoadBalancer extends ILoadBalancerV2 {
-  /**
-   * The ARN of this load balancer
-   */
-  readonly loadBalancerArn: string;
+export interface INetworkLoadBalancer extends ILoadBalancerV2, ec2.IVpcEndpointServiceLoadBalancer {
 
   /**
    * The VPC this load balancer has been created in (if available)

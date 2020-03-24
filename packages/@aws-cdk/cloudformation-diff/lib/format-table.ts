@@ -1,6 +1,6 @@
-import colors = require('colors/safe');
-import stringWidth = require('string-width');
-import table = require('table');
+import * as colors from 'colors/safe';
+import * as stringWidth from 'string-width';
+import * as table from 'table';
 
 /**
  * Render a two-dimensional array to a visually attractive table

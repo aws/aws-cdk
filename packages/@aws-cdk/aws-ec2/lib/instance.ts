@@ -1,4 +1,4 @@
-import iam = require('@aws-cdk/aws-iam');
+import * as iam from '@aws-cdk/aws-iam';
 
 import { Construct, Duration, Fn, IResource, Lazy, Resource, Tag } from '@aws-cdk/core';
 import { Connections, IConnectable } from './connections';
@@ -7,6 +7,7 @@ import { InstanceType } from './instance-types';
 import { IMachineImage, OperatingSystemType } from './machine-image';
 import { ISecurityGroup, SecurityGroup } from './security-group';
 import { UserData } from './user-data';
+import { BlockDevice, synthesizeBlockDeviceMappings } from './volume';
 import { IVpc, SubnetSelection } from './vpc';
 
 /**
@@ -14,7 +15,7 @@ import { IVpc, SubnetSelection } from './vpc';
  */
 const NAME_TAG: string = 'Name';
 
-export interface IInstance extends IResource, IConnectable {
+export interface IInstance extends IResource, IConnectable, iam.IGrantable {
   /**
    * The instance's ID
    *
@@ -142,10 +143,9 @@ export interface InstanceProps {
    * The role must be assumable by the service principal `ec2.amazonaws.com`:
    *
    * @example
-   *
-   *    const role = new iam.Role(this, 'MyRole', {
-   *      assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
-   *    });
+   * const role = new iam.Role(this, 'MyRole', {
+   *   assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
+   * });
    *
    * @default - A role will automatically be created, it can be accessed via the `role` property
    */
@@ -157,6 +157,39 @@ export interface InstanceProps {
    * @default - CDK generated name
    */
   readonly instanceName?: string;
+
+  /**
+   * Specifies whether to enable an instance launched in a VPC to perform NAT.
+   * This controls whether source/destination checking is enabled on the instance.
+   * A value of true means that checking is enabled, and false means that checking is disabled.
+   * The value must be false for the instance to perform NAT.
+   *
+   * @default true
+   */
+  readonly sourceDestCheck?: boolean;
+
+  /**
+   * Specifies how block devices are exposed to the instance. You can specify virtual devices and EBS volumes.
+   *
+   * Each instance that is launched has an associated root device volume,
+   * either an Amazon EBS volume or an instance store volume.
+   * You can use block device mappings to specify additional EBS volumes or
+   * instance store volumes to attach to an instance when it is launched.
+   *
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/block-device-mapping-concepts.html
+   *
+   * @default - Uses the block device mapping of the AMI
+   */
+  readonly blockDevices?: BlockDevice[];
+
+  /**
+   * Defines a private IP address to associate with an instance.
+   *
+   * Private IP should be available within the VPC that the instance is build within.
+   *
+   * @default - no association
+   */
+  readonly privateIpAddress?: string
 }
 
 /**
@@ -178,6 +211,11 @@ export class Instance extends Resource implements IInstance {
    * The IAM role assumed by the instance.
    */
   public readonly role: iam.IRole;
+
+  /**
+   * The principal to grant permissions to
+   */
+  public readonly grantPrincipal: iam.IPrincipal;
 
   /**
    * UserData for the instance
@@ -234,6 +272,7 @@ export class Instance extends Resource implements IInstance {
     this.role = props.role || new iam.Role(this, 'InstanceRole', {
       assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
     });
+    this.grantPrincipal = this.role;
 
     const iamProfile = new iam.CfnInstanceProfile(this, 'InstanceProfile', {
       roles: [this.role.roleName]
@@ -241,7 +280,7 @@ export class Instance extends Resource implements IInstance {
 
     // use delayed evaluation
     const imageConfig = props.machineImage.getImage(this);
-    this.userData = props.userData || imageConfig.userData || UserData.forOperatingSystem(imageConfig.osType);
+    this.userData = props.userData ?? imageConfig.userData;
     const userDataToken = Lazy.stringValue({ produce: () => Fn.base64(this.userData.render()) });
     const securityGroupsToken = Lazy.listValue({ produce: () => this.securityGroups.map(sg => sg.securityGroupId) });
 
@@ -252,7 +291,7 @@ export class Instance extends Resource implements IInstance {
       if (selected.length === 1) {
         subnet = selected[0];
       } else {
-        throw new Error('When specifying AZ there has to be exactly on subnet of the given type in this az');
+        throw new Error('When specifying AZ there has to be exactly one subnet of the given type in this az');
       }
     } else {
       subnet = subnets[0];
@@ -267,6 +306,9 @@ export class Instance extends Resource implements IInstance {
       userData: userDataToken,
       subnetId: subnet.subnetId,
       availabilityZone: subnet.availabilityZone,
+      sourceDestCheck: props.sourceDestCheck,
+      blockDeviceMappings: props.blockDevices !== undefined ? synthesizeBlockDeviceMappings(this, props.blockDevices) : undefined,
+      privateIpAddress: props.privateIpAddress
     });
     this.instance.node.addDependency(this.role);
 

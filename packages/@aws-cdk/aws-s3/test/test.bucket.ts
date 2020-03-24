@@ -1,12 +1,10 @@
 import { expect, haveResource, haveResourceLike, SynthUtils } from '@aws-cdk/assert';
-import iam = require('@aws-cdk/aws-iam');
-import kms = require('@aws-cdk/aws-kms');
-import cdk = require('@aws-cdk/core');
-import { Stack } from '@aws-cdk/core';
+import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { EOL } from 'os';
-import s3 = require('../lib');
-import { Bucket } from '../lib';
+import * as s3 from '../lib';
 
 // to make it easy to copy & paste from output:
 // tslint:disable:object-literal-key-quotes
@@ -280,7 +278,9 @@ export = {
                     "kms:Delete*",
                     "kms:ScheduleKeyDeletion",
                     "kms:CancelKeyDeletion",
-                    "kms:GenerateDataKey"
+                    "kms:GenerateDataKey",
+                    "kms:TagResource",
+                    "kms:UntagResource"
                   ],
                   "Effect": "Allow",
                   "Principal": {
@@ -460,7 +460,7 @@ export = {
       const stack = new cdk.Stack();
       const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.UNENCRYPTED });
 
-      bucket.addToResourcePolicy(new iam.PolicyStatement({ resources: ['foo'], actions: [ 'bar' ]}));
+      bucket.addToResourcePolicy(new iam.PolicyStatement({ resources: ['foo'], actions: [ 'bar:baz' ]}));
 
       expect(stack).toMatch({
         "Resources": {
@@ -478,7 +478,7 @@ export = {
               "PolicyDocument": {
                 "Statement": [
                   {
-                    "Action": "bar",
+                    "Action": "bar:baz",
                     "Effect": "Allow",
                     "Resource": "foo"
                   }
@@ -593,7 +593,7 @@ export = {
       const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', { bucketArn });
 
       // this is a no-op since the bucket is external
-      bucket.addToResourcePolicy(new iam.PolicyStatement({ resources: ['foo'], actions: ['bar']}));
+      bucket.addToResourcePolicy(new iam.PolicyStatement({ resources: ['foo'], actions: ['bar:baz']}));
 
       const p = new iam.PolicyStatement({ resources: [bucket.bucketArn], actions: ['s3:ListBucket'] });
 
@@ -829,7 +829,8 @@ export = {
           "Statement": [
             {
               "Action": ["kms:Create*", "kms:Describe*", "kms:Enable*", "kms:List*", "kms:Put*", "kms:Update*",
-                "kms:Revoke*", "kms:Disable*", "kms:Get*", "kms:Delete*", "kms:ScheduleKeyDeletion", "kms:CancelKeyDeletion", "kms:GenerateDataKey"],
+                "kms:Revoke*", "kms:Disable*", "kms:Get*", "kms:Delete*", "kms:ScheduleKeyDeletion", "kms:CancelKeyDeletion",
+                "kms:GenerateDataKey", "kms:TagResource", "kms:UntagResource"],
               "Effect": "Allow",
               "Principal": {
                 "AWS": {
@@ -884,7 +885,9 @@ export = {
                       "kms:Delete*",
                       "kms:ScheduleKeyDeletion",
                       "kms:CancelKeyDeletion",
-                      "kms:GenerateDataKey"
+                      "kms:GenerateDataKey",
+                      "kms:TagResource",
+                      "kms:UntagResource"
                     ],
                     "Effect": "Allow",
                     "Principal": {
@@ -1548,6 +1551,58 @@ export = {
       test.deepEqual(stack.resolve(bucket.bucketWebsiteUrl), { 'Fn::GetAtt': ['Website32962D0B', 'WebsiteURL'] });
       test.done();
     },
+    'exports the WebsiteDomain'(test: Test) {
+      const stack = new cdk.Stack();
+      const bucket = new s3.Bucket(stack, 'Website', {
+        websiteIndexDocument: 'index.html'
+      });
+      test.deepEqual(stack.resolve(bucket.bucketWebsiteDomainName), {
+        'Fn::Select': [
+          2,
+          {
+            'Fn::Split': [ '/', { 'Fn::GetAtt': [ 'Website32962D0B', 'WebsiteURL' ] } ]
+          }
+        ]
+      });
+      test.done();
+    },
+    'exports the WebsiteURL for imported buckets'(test: Test) {
+      const stack = new cdk.Stack();
+      const bucket = s3.Bucket.fromBucketName(stack, 'Website', 'my-test-bucket');
+      test.deepEqual(stack.resolve(bucket.bucketWebsiteUrl), {
+        'Fn::Join': [
+          '',
+          [
+            'http://my-test-bucket.s3-website-',
+            { Ref: 'AWS::Region' },
+            '.',
+            { Ref: 'AWS::URLSuffix' }
+          ]
+        ]
+      });
+      test.deepEqual(stack.resolve(bucket.bucketWebsiteDomainName), {
+        'Fn::Join': [
+          '',
+          [
+            'my-test-bucket.s3-website-',
+            { Ref: 'AWS::Region' },
+            '.',
+            { Ref: 'AWS::URLSuffix' }
+          ]
+        ]
+      });
+      test.done();
+    },
+    'exports the WebsiteURL for imported buckets with url'(test: Test) {
+      const stack = new cdk.Stack();
+      const bucket = s3.Bucket.fromBucketAttributes(stack, 'Website', {
+        bucketName: 'my-test-bucket',
+        bucketWebsiteUrl: 'http://my-test-bucket.my-test.suffix',
+      });
+      test.deepEqual(stack.resolve(bucket.bucketWebsiteUrl), 'http://my-test-bucket.my-test.suffix');
+      test.deepEqual(stack.resolve(bucket.bucketWebsiteDomainName), 'my-test-bucket.my-test.suffix');
+      test.done();
+    },
     'adds RedirectAllRequestsTo property'(test: Test) {
       const stack = new cdk.Stack();
       new s3.Bucket(stack, 'Website', {
@@ -1639,10 +1694,10 @@ export = {
 
   'Bucket.fromBucketArn'(test: Test) {
     // GIVEN
-    const stack = new Stack();
+    const stack = new cdk.Stack();
 
     // WHEN
-    const bucket = Bucket.fromBucketArn(stack, 'my-bucket', 'arn:aws:s3:::my_corporate_bucket');
+    const bucket = s3.Bucket.fromBucketArn(stack, 'my-bucket', 'arn:aws:s3:::my_corporate_bucket');
 
     // THEN
     test.deepEqual(bucket.bucketName, 'my_corporate_bucket');
@@ -1652,10 +1707,10 @@ export = {
 
   'Bucket.fromBucketName'(test: Test) {
     // GIVEN
-    const stack = new Stack();
+    const stack = new cdk.Stack();
 
     // WHEN
-    const bucket = Bucket.fromBucketName(stack, 'imported-bucket', 'my-bucket-name');
+    const bucket = s3.Bucket.fromBucketName(stack, 'imported-bucket', 'my-bucket-name');
 
     // THEN
     test.deepEqual(bucket.bucketName, 'my-bucket-name');
@@ -1667,11 +1722,88 @@ export = {
 
   'if a kms key is specified, it implies bucket is encrypted with kms (dah)'(test: Test) {
     // GIVEN
-    const stack = new Stack();
+    const stack = new cdk.Stack();
     const key = new kms.Key(stack, 'k');
 
     // THEN
-    new Bucket(stack, 'b', { encryptionKey: key });
+    new s3.Bucket(stack, 'b', { encryptionKey: key });
     test.done();
-  }
+  },
+
+  'Bucket with Server Access Logs'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const accessLogBucket = new s3.Bucket(stack, 'AccessLogs');
+    new s3.Bucket(stack, 'MyBucket', {
+      serverAccessLogsBucket: accessLogBucket,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::S3::Bucket', {
+      LoggingConfiguration: {
+        DestinationBucketName: {
+          Ref: 'AccessLogs8B620ECA',
+        },
+      }
+    }));
+
+    test.done();
+  },
+
+  'Bucket with Server Access Logs with Prefix'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const accessLogBucket = new s3.Bucket(stack, 'AccessLogs');
+    new s3.Bucket(stack, 'MyBucket', {
+      serverAccessLogsBucket: accessLogBucket,
+      serverAccessLogsPrefix: 'hello',
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::S3::Bucket', {
+      LoggingConfiguration: {
+        DestinationBucketName: {
+          Ref: 'AccessLogs8B620ECA',
+        },
+        LogFilePrefix: 'hello'
+      }
+    }));
+
+    test.done();
+  },
+
+ 'Access log prefix given without bucket'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // THEN
+    test.throws(() => new s3.Bucket(stack, 'MyBucket', {
+      serverAccessLogsPrefix: 'hello'
+    }), /"serverAccessLogsBucket" is required if "serverAccessLogsPrefix" is set/);
+
+    test.done();
+ },
+
+ 'Bucket Allow Log delivery changes bucket Access Control should fail'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const accessLogBucket = new s3.Bucket(stack, 'AccessLogs', {
+      accessControl: s3.BucketAccessControl.AUTHENTICATED_READ,
+    });
+    test.throws(() =>
+      new s3.Bucket(stack, 'MyBucket', {
+        serverAccessLogsBucket: accessLogBucket,
+        serverAccessLogsPrefix: 'hello',
+        accessControl: s3.BucketAccessControl.AUTHENTICATED_READ,
+      })
+      , /Cannot enable log delivery to this bucket because the bucket's ACL has been set and can't be changed/);
+
+    test.done();
+ },
 };

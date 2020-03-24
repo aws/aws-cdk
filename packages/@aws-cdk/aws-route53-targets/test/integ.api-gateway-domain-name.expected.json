@@ -44,13 +44,13 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs8.10"
+        "Runtime": "nodejs10.x"
       },
       "DependsOn": [
         "HandlerServiceRoleFCDC14AE"
       ]
     },
-    "HandlerApiPermissionawscdkapigwaliasintegapiF4DF08ACANY133739C8": {
+    "apiANYApiPermissionawscdkapigwaliasintegapiF4DF08ACANYBCED9DDA": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -91,7 +91,7 @@
         }
       }
     },
-    "HandlerApiPermissionTestawscdkapigwaliasintegapiF4DF08ACANY872335B7": {
+    "apiANYApiPermissionTestawscdkapigwaliasintegapiF4DF08ACANYC10548C8": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -128,7 +128,7 @@
         }
       }
     },
-    "HandlerApiPermissionawscdkapigwaliasintegapiF4DF08ACANYproxyD4D13682": {
+    "apiproxyANYApiPermissionawscdkapigwaliasintegapiF4DF08ACANYproxy80933581": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -169,7 +169,7 @@
         }
       }
     },
-    "HandlerApiPermissionTestawscdkapigwaliasintegapiF4DF08ACANYproxyFF16208A": {
+    "apiproxyANYApiPermissionTestawscdkapigwaliasintegapiF4DF08ACANYproxyCF8E3D8C": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",

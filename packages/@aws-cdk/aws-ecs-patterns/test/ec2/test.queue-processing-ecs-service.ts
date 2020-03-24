@@ -1,10 +1,10 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
-import ec2 = require('@aws-cdk/aws-ec2');
-import ecs = require('@aws-cdk/aws-ecs');
-import sqs = require('@aws-cdk/aws-sqs');
-import cdk = require('@aws-cdk/core');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as ecs from '@aws-cdk/aws-ecs';
+import * as sqs from '@aws-cdk/aws-sqs';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import ecsPatterns = require('../../lib');
+import * as ecsPatterns from '../../lib';
 
 export = {
   'test ECS queue worker service construct - with only required props'(test: Test) {
@@ -27,7 +27,21 @@ export = {
       LaunchType: "EC2",
     }));
 
-    expect(stack).to(haveResource("AWS::SQS::Queue"));
+    expect(stack).to(haveResource("AWS::SQS::Queue", {
+      RedrivePolicy: {
+        deadLetterTargetArn: {
+          "Fn::GetAtt": [
+            "ServiceEcsProcessingDeadLetterQueue4A89196E",
+            "Arn"
+          ]
+        },
+        maxReceiveCount: 3
+      }
+    }));
+
+    expect(stack).to(haveResource("AWS::SQS::Queue", {
+      MessageRetentionPeriod: 1209600
+    }));
 
     expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
@@ -59,7 +73,83 @@ export = {
           Image: "test",
           Memory: 512
         }
-      ]
+      ],
+      Family: "ServiceQueueProcessingTaskDef83DB34F1"
+    }));
+
+    test.done();
+  },
+
+  'test ECS queue worker service construct - with optional props for queues'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+
+    // WHEN
+    new ecsPatterns.QueueProcessingEc2Service(stack, 'Service', {
+      cluster,
+      memoryLimitMiB: 512,
+      image: ecs.ContainerImage.fromRegistry('test'),
+      maxReceiveCount: 42,
+      retentionPeriod: cdk.Duration.days(7)
+    });
+
+    // THEN - QueueWorker is of EC2 launch type, an SQS queue is created and all default properties are set.
+    expect(stack).to(haveResource("AWS::ECS::Service", {
+      DesiredCount: 1,
+      LaunchType: "EC2",
+    }));
+
+    expect(stack).to(haveResource("AWS::SQS::Queue", {
+      RedrivePolicy: {
+        deadLetterTargetArn: {
+          "Fn::GetAtt": [
+            "ServiceEcsProcessingDeadLetterQueue4A89196E",
+            "Arn"
+          ]
+        },
+        maxReceiveCount: 42
+      }
+    }));
+
+    expect(stack).to(haveResource("AWS::SQS::Queue", {
+      MessageRetentionPeriod: 604800
+    }));
+
+    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          Environment: [
+            {
+              Name: "QUEUE_NAME",
+              Value: {
+                "Fn::GetAtt": [
+                  "ServiceEcsProcessingQueueC266885C",
+                  "QueueName"
+                ]
+              }
+            }
+          ],
+          LogConfiguration: {
+            LogDriver: "awslogs",
+            Options: {
+              "awslogs-group": {
+                Ref: "ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1"
+              },
+              "awslogs-stream-prefix": "Service",
+              "awslogs-region": {
+                Ref: "AWS::Region"
+              }
+            }
+          },
+          Essential: true,
+          Image: "test",
+          Memory: 512
+        }
+      ],
+      Family: "ServiceQueueProcessingTaskDef83DB34F1"
     }));
 
     test.done();
@@ -88,13 +178,16 @@ export = {
         TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
       },
       queue,
-      maxScalingCapacity: 5
+      maxScalingCapacity: 5,
+      serviceName: "ecs-test-service",
+      family: "ecs-task-family"
     });
 
     // THEN - QueueWorker is of EC2 launch type, an SQS queue is created and all optional properties are set.
     expect(stack).to(haveResource("AWS::ECS::Service", {
       DesiredCount: 2,
-      LaunchType: "EC2"
+      LaunchType: "EC2",
+      ServiceName: "ecs-test-service"
     }));
 
     expect(stack).to(haveResource("AWS::SQS::Queue", {
@@ -131,9 +224,55 @@ export = {
           Image: "test",
           Memory: 1024
         }
-      ]
+      ],
+      Family: "ecs-task-family"
     }));
 
     test.done();
-  }
+  },
+
+  'can set desiredTaskCount to 0'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+
+    // WHEN
+    new ecsPatterns.QueueProcessingEc2Service(stack, 'Service', {
+      cluster,
+      desiredTaskCount: 0,
+      maxScalingCapacity: 2,
+      memoryLimitMiB: 512,
+      image: ecs.ContainerImage.fromRegistry('test')
+    });
+
+    // THEN - QueueWorker is of EC2 launch type, an SQS queue is created and all default properties are set.
+    expect(stack).to(haveResource("AWS::ECS::Service", {
+      DesiredCount: 0,
+      LaunchType: "EC2",
+    }));
+
+    test.done();
+  },
+
+  'throws if desiredTaskCount and maxScalingCapacity are 0'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+
+    // THEN
+    test.throws(() =>
+      new ecsPatterns.QueueProcessingEc2Service(stack, 'Service', {
+        cluster,
+        desiredTaskCount: 0,
+        memoryLimitMiB: 512,
+        image: ecs.ContainerImage.fromRegistry('test')
+      })
+    , /maxScalingCapacity must be set and greater than 0 if desiredCount is 0/);
+
+    test.done();
+  },
 };

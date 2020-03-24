@@ -1,33 +1,17 @@
 // tslint:disable:max-line-length
-import child_process = require('child_process');
-import colors = require('colors');
-import fs = require('fs-extra');
-import reflect = require('jsii-reflect');
-import path = require('path');
-import yargs = require('yargs');
-import { AggregateLinter, apiLinter, attributesLinter, cfnResourceLinter, constructLinter, DiagnosticLevel, durationsLinter, eventsLinter, exportsLinter,
-  importsLinter, integrationLinter, moduleLinter, noUnusedTypeLinter, publicStaticPropertiesLinter, resourceLinter } from '../lib';
-
-const linter = new AggregateLinter(
-  moduleLinter,
-  constructLinter,
-  cfnResourceLinter,
-  resourceLinter,
-  apiLinter,
-  importsLinter,
-  attributesLinter,
-  exportsLinter,
-  eventsLinter,
-  integrationLinter,
-  noUnusedTypeLinter,
-  durationsLinter,
-  publicStaticPropertiesLinter
-);
+import * as child_process from 'child_process';
+import * as colors from 'colors';
+import * as fs from 'fs-extra';
+import * as reflect from 'jsii-reflect';
+import * as path from 'path';
+import * as yargs from 'yargs';
+import { ALL_RULES_LINTER, DiagnosticLevel } from '../lib';
 
 let stackTrace = false;
 
 async function main() {
   const argv = yargs
+    .env('AWSLINT')
     .usage('awslint [options] [command]')
     .showHelpOnFail(true)
     .command('', 'lint the current module (default)')
@@ -73,7 +57,7 @@ async function main() {
   const config = path.join(workdir, 'package.json');
 
   if (command === 'list') {
-    for (const rule of linter.rules) {
+    for (const rule of ALL_RULES_LINTER.rules) {
       console.info(`${colors.cyan(rule.code)}: ${rule.message}`);
     }
     return;
@@ -122,7 +106,7 @@ async function main() {
 
     const results = [];
 
-    results.push(...linter.eval(assembly, {
+    results.push(...ALL_RULES_LINTER.eval(assembly, {
       include: args.include,
       exclude: args.exclude,
     }));
@@ -231,7 +215,9 @@ main().catch(e => {
 
 async function loadModule(dir: string) {
   const ts = new reflect.TypeSystem();
-  await ts.load(dir);
+  await ts.load(dir, { validate: false }); // Don't validate to save 66% of execution time (20s vs 1min).
+  // We run 'awslint' during build time, assemblies are guaranteed to be ok.
+
   if (ts.roots.length !== 1) {
     throw new Error(`Expecting only a single root assembly`);
   }

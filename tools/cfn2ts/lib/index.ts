@@ -1,5 +1,5 @@
-import cfnSpec = require('@aws-cdk/cfnspec');
-import fs = require('fs-extra');
+import * as cfnSpec from '@aws-cdk/cfnspec';
+import * as fs from 'fs-extra';
 import { AugmentationGenerator } from './augmentation-generator';
 import CodeGenerator from './codegen';
 import { packageName } from './genspec';

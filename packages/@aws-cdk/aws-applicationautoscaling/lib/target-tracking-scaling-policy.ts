@@ -1,5 +1,5 @@
-import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import cdk = require('@aws-cdk/core');
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as cdk from '@aws-cdk/core';
 import { CfnScalingPolicy } from './applicationautoscaling.generated';
 import { IScalableTarget } from './scalable-target';
 
@@ -35,14 +35,24 @@ export interface BaseTargetTrackingProps {
   /**
    * Period after a scale in activity completes before another scale in activity can start.
    *
-   * @default - No scale in cooldown.
+   * @default Duration.seconds(300) for the following scalable targets: ECS services,
+   * Spot Fleet requests, EMR clusters, AppStream 2.0 fleets, Aurora DB clusters,
+   * Amazon SageMaker endpoint variants, Custom resources. For all other scalable
+   * targets, the default value is Duration.seconds(0): DynamoDB tables, DynamoDB
+   * global secondary indexes, Amazon Comprehend document classification endpoints,
+   * Lambda provisioned concurrency
    */
   readonly scaleInCooldown?: cdk.Duration;
 
   /**
    * Period after a scale out activity completes before another scale out activity can start.
    *
-   * @default - No scale out cooldown.
+   * @default Duration.seconds(300) for the following scalable targets: ECS services,
+   * Spot Fleet requests, EMR clusters, AppStream 2.0 fleets, Aurora DB clusters,
+   * Amazon SageMaker endpoint variants, Custom resources. For all other scalable
+   * targets, the default value is Duration.seconds(0): DynamoDB tables, DynamoDB
+   * global secondary indexes, Amazon Comprehend document classification endpoints,
+   * Lambda provisioned concurrency
    */
   readonly scaleOutCooldown?: cdk.Duration;
 }
@@ -115,6 +125,10 @@ export class TargetTrackingScalingPolicy extends cdk.Construct {
       throw new Error(`Exactly one of 'customMetric' or 'predefinedMetric' must be specified.`);
     }
 
+    if (props.customMetric && !props.customMetric.toMetricConfig().metricStat) {
+      throw new Error(`Only direct metrics are supported for Target Tracking. Use Step Scaling or supply a Metric object.`);
+    }
+
     super(scope, id);
 
     const resource = new CfnScalingPolicy(this, 'Resource', {
@@ -140,10 +154,10 @@ export class TargetTrackingScalingPolicy extends cdk.Construct {
 
 function renderCustomMetric(metric?: cloudwatch.IMetric): CfnScalingPolicy.CustomizedMetricSpecificationProperty | undefined {
   if (!metric) { return undefined; }
-  const c = metric.toAlarmConfig();
+  const c = metric.toMetricConfig().metricStat!;
 
-  if (!c.statistic) {
-    throw new Error('Can only use Average, Minimum, Maximum, SampleCount, Sum statistic for target tracking');
+  if (c.statistic.startsWith('p')) {
+    throw new Error(`Cannot use statistic '${c.statistic}' for Target Tracking: only 'Average', 'Minimum', 'Maximum', 'SampleCount', and 'Sum' are supported.`);
   }
 
   return {
@@ -151,7 +165,7 @@ function renderCustomMetric(metric?: cloudwatch.IMetric): CfnScalingPolicy.Custo
     metricName: c.metricName,
     namespace: c.namespace,
     statistic: c.statistic,
-    unit: c.unit
+    unit: c.unitFilter,
   };
 }
 

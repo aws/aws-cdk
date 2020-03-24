@@ -1,11 +1,9 @@
 import { CloudFormationStackArtifact } from '@aws-cdk/cx-api';
 import { Tag } from "../api/cxapp/stacks";
 import { debug } from '../logging';
-import { deserializeStructure } from '../serialize';
-import { Mode } from './aws-auth/credentials';
-import { deployStack, DeployStackResult } from './deploy-stack';
+import { Mode, SdkProvider } from './aws-auth';
+import { deployStack, DeployStackResult, readCurrentTemplate } from './deploy-stack';
 import { loadToolkitInfo } from './toolkit-info';
-import { ISDK } from './util/sdk';
 
 export const DEFAULT_TOOLKIT_STACK_NAME = 'CDKToolkit';
 
@@ -24,42 +22,45 @@ export interface IDeploymentTarget {
 export interface DeployStackOptions {
   stack: CloudFormationStackArtifact;
   roleArn?: string;
+  notificationArns?: string[];
   deployName?: string;
   quiet?: boolean;
-  ci?: boolean;
   toolkitStackName?: string;
   reuseAssets?: string[];
   tags?: Tag[];
+  execute?: boolean;
+
+  /**
+   * Force deployment, even if the deployed template is identical to the one we are about to deploy.
+   * @default false deployment will be skipped if the template is identical
+   */
+  force?: boolean;
+
+  /**
+   * Extra parameters for CloudFormation
+   * @default - no additional parameters will be passed to the template
+   */
+  parameters?: { [name: string]: string | undefined };
 }
 
 export interface ProvisionerProps {
-  aws: ISDK;
+  aws: SdkProvider;
 }
 
 /**
  * Default provisioner (applies to CloudFormation).
  */
 export class CloudFormationDeploymentTarget implements IDeploymentTarget {
-  private readonly aws: ISDK;
+  private readonly aws: SdkProvider;
 
   constructor(props: ProvisionerProps) {
     this.aws = props.aws;
   }
 
   public async readCurrentTemplate(stack: CloudFormationStackArtifact): Promise<Template> {
-    debug(`Reading existing template for stack ${stack.name}.`);
-
-    const cfn = await this.aws.cloudFormation(stack.environment.account, stack.environment.region, Mode.ForReading);
-    try {
-      const response = await cfn.getTemplate({ StackName: stack.name }).promise();
-      return (response.TemplateBody && deserializeStructure(response.TemplateBody)) || {};
-    } catch (e) {
-      if (e.code === 'ValidationError' && e.message === `Stack with id ${stack.name} does not exist`) {
-        return {};
-      } else {
-        throw e;
-      }
-    }
+    debug(`Reading existing template for stack ${stack.displayName}.`);
+    const cfn = (await this.aws.forEnvironment(stack.environment.account, stack.environment.region, Mode.ForReading)).cloudFormation();
+    return readCurrentTemplate(cfn, stack.stackName);
   }
 
   public async deployStack(options: DeployStackOptions): Promise<DeployStackResult> {
@@ -68,12 +69,15 @@ export class CloudFormationDeploymentTarget implements IDeploymentTarget {
       stack: options.stack,
       deployName: options.deployName,
       roleArn: options.roleArn,
+      notificationArns: options.notificationArns,
       quiet: options.quiet,
       sdk: this.aws,
-      ci: options.ci,
       reuseAssets: options.reuseAssets,
       toolkitInfo,
-      tags: options.tags
+      tags: options.tags,
+      execute: options.execute,
+      force: options.force,
+      parameters: options.parameters
     });
   }
 }

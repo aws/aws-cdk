@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 import { INextable } from '../types';
 import { StateType } from './private/state-type';
 import { State } from './state';

@@ -5,16 +5,17 @@
 
 ![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
 
-> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
-> future breaking changes.**
+> **This is a _developer preview_ (public beta) module.**
 >
-> This API is still under active development and subject to non-backward
-> compatible changes or removal in any future version. Use of the API is not recommended in production
-> environments. Experimental APIs are not subject to the Semantic Versioning model.
+> All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib))
+> are auto-generated from CloudFormation. They are stable and safe to use.
+>
+> However, all other classes, i.e., higher level constructs, are under active development and subject to non-backward
+> compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model.
+> This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
 
 ---
 <!--END STABILITY BANNER-->
-
 
 AWS App Mesh is a service mesh based on the [Envoy](https://www.envoyproxy.io/) proxy that makes it easy to monitor and control microservices. App Mesh standardizes how your microservices communicate, giving you end-to-end visibility and helping to ensure high-availability for your applications.
 
@@ -41,7 +42,7 @@ The following example creates the `AppMesh` service mesh with the default filter
 
 ```typescript
 const mesh = new Mesh(stack, 'AppMesh', {
-  name: 'myAwsmMesh',
+  meshName: 'myAwsmMesh',
 });
 ```
 
@@ -49,10 +50,8 @@ The mesh can also be created with the "ALLOW_ALL" egress filter by overwritting 
 
 ```typescript
 const mesh = new Mesh(stack, 'AppMesh', {
-  name: 'myAwsmMesh',
-  meshSpec: {
-    egressFilter: appmesh.MeshFilterType.Allow_All,
-  },
+  meshName: 'myAwsmMesh',
+  egressFilter: MeshFilterType.ALLOW_ALL,
 });
 ```
 
@@ -64,12 +63,12 @@ Virtual routers handle traffic for one or more virtual services within your mesh
 
 ```typescript
 const router = mesh.addVirtualRouter('router', {
-  portMappings: [
-    {
+  listener: {
+    portMapping: {
       port: 8081,
-      protocol: appmesh.Protocol.HTTP,
-    },
-  ],
+      protocol: Protocol.HTTP,
+    }
+  }
 });
 ```
 
@@ -77,20 +76,18 @@ The router can also be created using the constructor and passing in the mesh ins
 
 ```typescript
 const mesh = new Mesh(stack, 'AppMesh', {
-  name: 'myAwsmMesh',
-  meshSpec: {
-    egressFilter: appmesh.MeshFilterType.Allow_All,
-  },
+  meshName: 'myAwsmMesh',
+  egressFilter: MeshFilterType.Allow_All,
 });
 
-const router = new appmesh.VirtualRouter(stack, 'router', {
+const router = new VirtualRouter(stack, 'router', {
   mesh, // notice that mesh is a required property when creating a router with a new statement
-  portMappings: [
-    {
+  listener: {
+    portMapping: {
       port: 8081,
-      protocol: appmesh.Protocol.HTTP,
-    },
-  ],
+      protocol: Protocol.HTTP,
+    }
+  }
 });
 ```
 
@@ -144,65 +141,58 @@ The response metadata for your new `virtual node` contains the Amazon Resource N
 
 ```typescript
 const vpc = new ec2.Vpc(stack, 'vpc');
-const namespace = new cloudmap.PrivateDnsNamespace(stack, 'test-namespace', {
-  vpc,
-  name: 'domain.local',
+const namespace = new servicediscovery.PrivateDnsNamespace(this, 'test-namespace', {
+    vpc,
+    name: 'domain.local',
 });
+const service = namespace.createService('Svc');
 
 const node = mesh.addVirtualNode('virtual-node', {
-  hostname: 'node-a',
-  namespace,
-  listeners: {
-    portMappings: [
-      {
-        port: 8081,
-        protocol: appmesh.Protocol.HTTP,
-      },
-    ],
-    healthChecks: [
-      {
-        healthyThreshold: 3,
-        intervalMillis: 5000, // minimum
-        path: `/health-check-path`,
-        port: 8080,
-        protocol: appmesh.Protocol.HTTP,
-        timeoutMillis: 2000, // minimum
-        unhealthyThreshold: 2,
-      },
-    ],
+  dnsHostName: 'node-a',
+  cloudMapService: service,
+  listener: {
+    portMapping: {
+      port: 8081,
+      protocol: Protocol.HTTP,
+    },
+    healthCheck: {
+      healthyThreshold: 3,
+      interval: Duration.seconds(5), // minimum
+      path: `/health-check-path`,
+      port: 8080,
+      protocol: Protocol.HTTP,
+      timeout: Duration.seconds(2), // minimum
+      unhealthyThreshold: 2,
+    },
   },
-});
+})
 ```
 
 Create a `VirtualNode` with the the constructor and add tags.
 
 ```typescript
-const node = new appmesh.VirtualNode(stack, 'node', {
+const node = new VirtualNode(this, 'node', {
   mesh,
-  hostname: 'node-1',
-  namespace,
+  dnsHostName: 'node-1',
+  cloudMapService: service,
   listener: {
-    portMappings: [
-      {
-        port: 8080,
-        protocol: appmesh.Protocol.HTTP,
-      },
-    ],
-    healthChecks: [
-      {
-        healthyThreshold: 3,
-        intervalMillis: 5000, // min
-        path: '/ping',
-        port: 8080,
-        protocol: appmesh.Protocol.HTTP,
-        timeoutMillis: 2000, // min
-        unhealthyThreshold: 2,
-      },
-    ],
+    portMapping: {
+      port: 8080,
+      protocol: Protocol.HTTP,
+    },
+    healthCheck: {
+      healthyThreshold: 3,
+      interval: Duration.seconds(5), // min
+      path: '/ping',
+      port: 8080,
+      protocol: Protocol.HTTP,
+      timeout: Duration.seconds(2), // min
+      unhealthyThreshold: 2,
+    },
   },
 });
 
-node.node.apply(new cdk.Tag('Environment', 'Dev'));
+cdk.Tag.add(node, 'Environment', 'Dev');
 ```
 
 The listeners property can be left blank dded later with the `mesh.addListeners()` method. The `healthcheck` property is optional but if specifying a listener, the `portMappings` must contain at least one property.
@@ -224,7 +214,7 @@ router.addRoute('route', {
     },
   ],
   prefix: `/path-to-app`,
-  isHttpRoute: true,
+  routeType: RouteType.HTTP,
 });
 ```
 
@@ -243,7 +233,7 @@ router.addRoute('route', {
     },
   ],
   prefix: `/path-to-app`,
-  isHttpRoute: true,
+  routeType: RouteType.HTTP,
 });
 ```
 
@@ -261,7 +251,7 @@ ratingsRouter.addRoutes(
         },
       ],
       prefix: `/path-to-app`,
-      isHttpRoute: true,
+      routeType: RouteType.HTTP,
     },
     {
       routeTargets: [
@@ -271,7 +261,7 @@ ratingsRouter.addRoutes(
         },
       ],
       prefix: `/path-to-app2`,
-      isHttpRoute: true,
+      routeType: RouteType.HTTP,
     },
   ]
 );

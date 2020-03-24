@@ -1,4 +1,5 @@
 export * from './rollback-config';
+export * from './ecs';
 export * from './lambda';
 export * from './server';
 
