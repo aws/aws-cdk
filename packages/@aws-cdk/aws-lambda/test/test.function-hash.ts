@@ -128,5 +128,32 @@ export = {
     test.deepEqual(calculateFunctionHash(fn1), 'ebf2e871fc6a3062e8bdcc5ebe16db3f');
     test.deepEqual(calculateFunctionHash(fn2), 'ffedf6424a18a594a513129dc97bf53c');
     test.done();
+  },
+
+  'different order of env vars produce the same hash'(test: Test) {
+    const stack1 = new Stack();
+    const fn1 = new lambda.Function(stack1, 'MyFunction', {
+      runtime: lambda.Runtime.NODEJS_12_X,
+      code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
+      handler: 'index.handler',
+      environment: {
+        Foo: 'bar',
+        Bar: 'foo',
+      }
+    });
+
+    const stack2 = new Stack();
+    const fn2 = new lambda.Function(stack2, 'MyFunction', {
+      runtime: lambda.Runtime.NODEJS_12_X,
+      code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
+      handler: 'index.handler',
+      environment: {
+        Bar: 'foo',
+        Foo: 'bar',
+      }
+    });
+
+    test.deepEqual(calculateFunctionHash(fn1), calculateFunctionHash(fn2));
+    test.done();
   }
 };

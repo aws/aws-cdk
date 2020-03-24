@@ -290,7 +290,6 @@ export class Function extends FunctionBase {
 
     this._currentVersion = new Version(this, `CurrentVersion`, {
       lambda: this,
-      description: `${this.node.path}.currentVersion (created by AWS CDK)`,
       ...this.currentVersionOptions
     });
 
@@ -673,9 +672,14 @@ export class Function extends FunctionBase {
       return undefined;
     }
 
-    return {
-      variables: this.environment
-    };
+    // sort environment so the hash of the function used to create
+    // `currentVersion` is not affected by key order (this is how lambda does it).
+    const variables: { [key: string]: string } = { };
+    for (const key of Object.keys(this.environment).sort()) {
+      variables[key] = this.environment[key];
+    }
+
+    return { variables };
   }
 
   /**
