@@ -1,5 +1,5 @@
-import ec2 = require('@aws-cdk/aws-ec2');
-import secretsmanager = require('@aws-cdk/aws-secretsmanager');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { IResource } from '@aws-cdk/core';
 import { Endpoint } from './endpoint';
 
@@ -50,9 +50,9 @@ export interface DatabaseClusterAttributes {
   readonly port: number;
 
   /**
-   * The security group for this database cluster
+   * The security group of the database cluster
    */
-  readonly securityGroupId: string;
+  readonly securityGroup: ec2.ISecurityGroup;
 
   /**
    * Identifier for the cluster

@@ -1,4 +1,5 @@
-import { Lazy } from "./lazy";
+import { GeneratedWhenNeededMarker } from './private/physical-name-generator';
+import { Token } from './token';
 
 /**
  * Includes special markers for automatic generation of physical names.
@@ -14,11 +15,7 @@ export class PhysicalName {
    * mostly designed for reusable constructs which may or may not be referenced
    * acrossed environments.
    */
-  public static readonly GENERATE_IF_NEEDED = Lazy.stringValue({
-    produce: () => {
-      throw new Error(`Invalid physical name passed to CloudFormation. Use "this.physicalName" instead`);
-    }
-  });
+  public static readonly GENERATE_IF_NEEDED = Token.asString(new GeneratedWhenNeededMarker());
 
   private constructor() { }
 }

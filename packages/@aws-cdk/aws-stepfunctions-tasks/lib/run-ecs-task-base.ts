@@ -1,9 +1,9 @@
-import ec2 = require('@aws-cdk/aws-ec2');
-import ecs = require('@aws-cdk/aws-ecs');
-import iam = require('@aws-cdk/aws-iam');
-import sfn = require('@aws-cdk/aws-stepfunctions');
-import cdk = require('@aws-cdk/core');
-import { Stack } from '@aws-cdk/core';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as ecs from '@aws-cdk/aws-ecs';
+import * as iam from '@aws-cdk/aws-iam';
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+import * as cdk from '@aws-cdk/core';
+import { getResourceArn } from './resource-arn-suffix';
 import { ContainerOverride } from './run-ecs-task-base-types';
 
 /**
@@ -16,7 +16,10 @@ export interface CommonEcsRunTaskProps {
   readonly cluster: ecs.ICluster;
 
   /**
-   * Task Definition used for running tasks in the service
+   * Task Definition used for running tasks in the service.
+   *
+   * Note: this must be TaskDefinition, and not ITaskDefinition,
+   * as it requires properties that are not known for imported task definitions
    */
   readonly taskDefinition: ecs.TaskDefinition;
 
@@ -25,15 +28,19 @@ export interface CommonEcsRunTaskProps {
    *
    * Key is the name of the container to override, value is the
    * values you want to override.
+   *
+   * @default - No overrides
    */
   readonly containerOverrides?: ContainerOverride[];
 
   /**
-   * Whether to wait for the task to complete and return the response
+   * The service integration pattern indicates different ways to call RunTask in ECS.
    *
-   * @default true
+   * The valid value for Lambda is FIRE_AND_FORGET, SYNC and WAIT_FOR_TASK_TOKEN.
+   *
+   * @default FIRE_AND_FORGET
    */
-  readonly synchronous?: boolean;
+  readonly integrationPattern?: sfn.ServiceIntegrationPattern;
 }
 
 /**
@@ -42,6 +49,8 @@ export interface CommonEcsRunTaskProps {
 export interface EcsRunTaskBaseProps extends CommonEcsRunTaskProps {
   /**
    * Additional parameters to pass to the base task
+   *
+   * @default - No additional parameters passed
    */
   readonly parameters?: {[key: string]: any};
 }
@@ -57,10 +66,25 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
 
   private securityGroup?: ec2.ISecurityGroup;
   private networkConfiguration?: any;
-  private readonly sync: boolean;
+  private readonly integrationPattern: sfn.ServiceIntegrationPattern;
 
   constructor(private readonly props: EcsRunTaskBaseProps) {
-    this.sync = props.synchronous !== false;
+    this.integrationPattern = props.integrationPattern || sfn.ServiceIntegrationPattern.FIRE_AND_FORGET;
+
+    const supportedPatterns = [
+      sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
+      sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
+      sfn.ServiceIntegrationPattern.SYNC
+    ];
+
+    if (!supportedPatterns.includes(this.integrationPattern)) {
+      throw new Error(`Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call ECS.`);
+    }
+
+    if (this.integrationPattern === sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN
+      && !sfn.FieldUtils.containsTaskToken(props.containerOverrides)) {
+     throw new Error('Task Token is missing in containerOverrides (pass Context.taskToken somewhere in containerOverrides)');
+    }
 
     for (const override of this.props.containerOverrides || []) {
       const name = override.containerName;
@@ -83,7 +107,7 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
     }
 
     return {
-      resourceArn: 'arn:aws:states:::ecs:runTask' + (this.sync ? '.sync' : ''),
+      resourceArn: getResourceArn("ecs", "runTask", this.integrationPattern),
       parameters: {
         Cluster: this.props.cluster.clusterArn,
         TaskDefinition: this.props.taskDefinition.taskDefinitionArn,
@@ -118,7 +142,7 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
   }
 
   private makePolicyStatements(task: sfn.Task): iam.PolicyStatement[] {
-    const stack = Stack.of(task);
+    const stack = cdk.Stack.of(task);
 
     // https://docs.aws.amazon.com/step-functions/latest/dg/ecs-iam.html
     const policyStatements = [
@@ -136,7 +160,7 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
       }),
     ];
 
-    if (this.sync) {
+    if (this.integrationPattern === sfn.ServiceIntegrationPattern.SYNC) {
       policyStatements.push(new iam.PolicyStatement({
         actions: ["events:PutTargets", "events:PutRule", "events:DescribeRule"],
         resources: [stack.formatArn({
@@ -154,8 +178,8 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
     // Need to be able to pass both Task and Execution role, apparently
     const ret = new Array<iam.IRole>();
     ret.push(this.props.taskDefinition.taskRole);
-    if ((this.props.taskDefinition as any).executionRole) {
-      ret.push((this.props.taskDefinition as any).executionRole);
+    if (this.props.taskDefinition.executionRole) {
+      ret.push(this.props.taskDefinition.executionRole);
     }
     return ret;
   }

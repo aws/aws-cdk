@@ -1,7 +1,7 @@
-import fc = require('fast-check');
-import _ = require('lodash');
-import nodeunit = require('nodeunit');
-import { Fn, Stack, Token } from '../lib';
+import * as fc from 'fast-check';
+import * as _ from 'lodash';
+import * as nodeunit from 'nodeunit';
+import { App, CfnOutput, Fn, Stack, Token } from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
 
 function asyncTest(cb: (test: nodeunit.Test) => Promise<void>): (test: nodeunit.Test) => void {
@@ -61,17 +61,17 @@ export = nodeunit.testCase({
     },
     'resolves to the value if only one value is joined': asyncTest(async () => {
       const stack = new Stack();
-      await fc.assert(
+      fc.assert(
         fc.property(
           fc.string(), anyValue,
-          (delimiter, value) => _.isEqual(stack.resolve(Fn.join(delimiter, [value])), value)
+          (delimiter, value) => _.isEqual(stack.resolve(Fn.join(delimiter, [value as string])), value)
         ),
         { verbose: true }
       );
     }),
     'pre-concatenates string literals': asyncTest(async () => {
       const stack = new Stack();
-      await fc.assert(
+      fc.assert(
         fc.property(
           fc.string(), fc.array(nonEmptyString, 1, 15),
           (delimiter, values) => stack.resolve(Fn.join(delimiter, values)) === values.join(delimiter)
@@ -81,7 +81,7 @@ export = nodeunit.testCase({
     }),
     'pre-concatenates around tokens': asyncTest(async () => {
       const stack = new Stack();
-      await fc.assert(
+      fc.assert(
         fc.property(
           fc.string(), fc.array(nonEmptyString, 1, 3), tokenish, fc.array(nonEmptyString, 1, 3),
           (delimiter, prefix, obj, suffix) =>
@@ -93,22 +93,22 @@ export = nodeunit.testCase({
     }),
     'flattens joins nested under joins with same delimiter': asyncTest(async () => {
       const stack = new Stack();
-      await fc.assert(
+      fc.assert(
         fc.property(
           fc.string(), fc.array(anyValue),
                       fc.array(anyValue, 1, 3),
                       fc.array(anyValue),
           (delimiter, prefix, nested, suffix) =>
             // Gonna test
-            _.isEqual(stack.resolve(Fn.join(delimiter, [...prefix, Fn.join(delimiter, nested), ...suffix])),
-                      stack.resolve(Fn.join(delimiter, [...prefix, ...nested, ...suffix])))
+            _.isEqual(stack.resolve(Fn.join(delimiter, [...prefix as string[], Fn.join(delimiter, nested as string[]), ...suffix as string[]])),
+                      stack.resolve(Fn.join(delimiter, [...prefix as string[], ...nested as string[], ...suffix as string[]])))
         ),
         { verbose: true }
       );
     }),
     'does not flatten joins nested under joins with different delimiter': asyncTest(async () => {
       const stack = new Stack();
-      await fc.assert(
+      fc.assert(
         fc.property(
           fc.string(), fc.string(),
           fc.array(anyValue, 1, 3),
@@ -116,7 +116,7 @@ export = nodeunit.testCase({
           fc.array(anyValue, 3),
           (delimiter1, delimiter2, prefix,  nested, suffix) => {
             fc.pre(delimiter1 !== delimiter2);
-            const join = Fn.join(delimiter1, [...prefix, Fn.join(delimiter2, stringListToken(nested)), ...suffix]);
+            const join = Fn.join(delimiter1, [...prefix as string[], Fn.join(delimiter2, stringListToken(nested)), ...suffix as string[]]);
             const resolved = stack.resolve(join);
             return resolved['Fn::Join'][1].find((e: any) => typeof e === 'object'
                                                         && ('Fn::Join' in e)
@@ -139,6 +139,58 @@ export = nodeunit.testCase({
         ]
       });
     }),
+
+    'cross-stack FnJoin elements are properly resolved': asyncTest(async (test) => {
+      // GIVEN
+      const app = new App();
+      const stack1 = new Stack(app, 'Stack1');
+      const stack2 = new Stack(app, 'Stack2');
+
+      // WHEN
+      new CfnOutput(stack2, 'Stack1Id', {
+        value: Fn.join(' = ', [ 'Stack1Id', stack1.stackId ])
+      });
+
+      // THEN
+      const template = app.synth().getStackByName('Stack2').template;
+
+      test.deepEqual(template, {
+        Outputs: {
+          Stack1Id: {
+            Value: {
+              'Fn::Join': [' = ', [
+                'Stack1Id',
+                { 'Fn::ImportValue': 'Stack1:ExportsOutputRefAWSStackIdB2DD5BAA' }
+              ]]
+            }
+          }
+        }
+      });
+    }),
+  },
+  'Ref': {
+    'returns a reference given a logical name'(test: nodeunit.Test) {
+      const stack = new Stack();
+      test.deepEqual(stack.resolve(Fn.ref('hello')), {
+        Ref: 'hello'
+      });
+      test.done();
+    }
+  },
+  'nested Fn::Join with list token'(test: nodeunit.Test) {
+    const stack = new Stack();
+    const inner = Fn.join(',', Token.asList({ NotReallyList: true }));
+    const outer = Fn.join(',', [ inner, 'Foo' ]);
+    test.deepEqual(stack.resolve(outer), {
+      'Fn::Join': [
+        ',',
+        [
+          { 'Fn::Join': [ ',', { NotReallyList: true } ] },
+          'Foo'
+        ]
+      ]
+    });
+    test.done();
   },
 });
 

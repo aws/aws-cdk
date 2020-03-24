@@ -1,4 +1,4 @@
-import cxapi = require('@aws-cdk/cx-api');
+import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
 import { App, App as Root, CfnCondition,
     CfnDeletionPolicy, CfnResource, Construct, ConstructNode,
@@ -668,7 +668,7 @@ export = {
 
     // THEN
     const assembly = app.synth();
-    const templateB = assembly.getStack(stackB.stackName).template;
+    const templateB = assembly.getStackByName(stackB.stackName).template;
 
     test.deepEqual(templateB, {
       Resources: {
@@ -679,6 +679,28 @@ export = {
       }
     });
     test.deepEqual(stackB.dependencies.map(s => s.node.id), ['StackA']);
+
+    test.done();
+  },
+
+  'enableVersionUpgrade can be set on a resource'(test: Test) {
+    const stack = new Stack();
+    const r1 = new CfnResource(stack, 'Resource', { type: 'Type' });
+
+    r1.cfnOptions.updatePolicy = {
+      enableVersionUpgrade: true
+    };
+
+    test.deepEqual(toCloudFormation(stack), {
+      Resources: {
+        Resource: {
+          Type: 'Type',
+          UpdatePolicy: {
+            EnableVersionUpgrade: true
+          }
+        }
+      }
+    });
 
     test.done();
   },

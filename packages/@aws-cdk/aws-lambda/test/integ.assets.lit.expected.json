@@ -9,17 +9,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "lambda.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "lambda.amazonaws.com"
               }
             }
           ],
@@ -46,7 +36,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "MyLambdaCodeS3BucketC82A5870"
+            "Ref": "AssetParameters9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232S3Bucket1354C645"
           },
           "S3Key": {
             "Fn::Join": [
@@ -59,7 +49,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "MyLambdaCodeS3VersionKey47762537"
+                          "Ref": "AssetParameters9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232S3VersionKey5D873FAC"
                         }
                       ]
                     }
@@ -72,7 +62,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "MyLambdaCodeS3VersionKey47762537"
+                          "Ref": "AssetParameters9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232S3VersionKey5D873FAC"
                         }
                       ]
                     }
@@ -97,17 +87,17 @@
     }
   },
   "Parameters": {
-    "MyLambdaCodeS3BucketC82A5870": {
+    "AssetParameters9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232S3Bucket1354C645": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"lambda-test-assets/MyLambda/Code\""
+      "Description": "S3 bucket for asset \"9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232\""
     },
-    "MyLambdaCodeS3VersionKey47762537": {
+    "AssetParameters9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232S3VersionKey5D873FAC": {
       "Type": "String",
-      "Description": "S3 key for asset version \"lambda-test-assets/MyLambda/Code\""
+      "Description": "S3 key for asset version \"9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232\""
     },
-    "MyLambdaCodeArtifactHashF5E94E30": {
+    "AssetParameters9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232ArtifactHashFA16AACF": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"lambda-test-assets/MyLambda/Code\""
+      "Description": "Artifact hash for asset \"9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232\""
     }
   }
 }

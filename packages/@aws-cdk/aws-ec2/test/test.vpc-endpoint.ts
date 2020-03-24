@@ -1,9 +1,9 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import { AnyPrincipal, PolicyStatement } from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 // tslint:disable-next-line:max-line-length
-import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, InterfaceVpcEndpoint, InterfaceVpcEndpointAwsService, SubnetType, Vpc } from '../lib';
+import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, InterfaceVpcEndpoint, InterfaceVpcEndpointAwsService, InterfaceVpcEndpointService, SecurityGroup, SubnetType, Vpc } from '../lib';
 
 export = {
   'gateway endpoint': {
@@ -174,50 +174,30 @@ export = {
       test.done();
     },
 
-    'conveniance methods for S3 and DynamoDB'(test: Test) {
+    'works with an imported vpc'(test: Test) {
       // GIVEN
       const stack = new Stack();
-      const vpc = new Vpc(stack, 'VpcNetwork');
-
-      // WHEN
-      vpc.addS3Endpoint('S3');
-      vpc.addDynamoDbEndpoint('DynamoDb');
+      const vpc = Vpc.fromVpcAttributes(stack, 'VPC', {
+        vpcId: 'id',
+        privateSubnetIds: ['1', '2', '3'],
+        privateSubnetRouteTableIds: ['rt1', 'rt2', 'rt3'],
+        availabilityZones: ['a', 'b', 'c']
+      });
 
       // THEN
-      expect(stack).to(haveResource('AWS::EC2::VPCEndpoint', {
-        ServiceName: {
-          'Fn::Join': [
-            '',
-            [
-              'com.amazonaws.',
-              {
-                Ref: 'AWS::Region'
-              },
-              '.s3'
-            ]
-          ]
-        },
-      }));
+      vpc.addGatewayEndpoint('Gateway', { service: GatewayVpcEndpointAwsService.S3 });
 
       expect(stack).to(haveResource('AWS::EC2::VPCEndpoint', {
-        ServiceName: {
-          'Fn::Join': [
-            '',
-            [
-              'com.amazonaws.',
-              {
-                Ref: 'AWS::Region'
-              },
-              '.dynamodb'
-            ]
-          ]
-        },
+        ServiceName: { 'Fn::Join': ['', ['com.amazonaws.', { Ref: 'AWS::Region' }, '.s3']] },
+        VpcId: 'id',
+        RouteTableIds: ['rt1', 'rt2', 'rt3'],
+        VpcEndpointType: 'Gateway',
       }));
 
       test.done();
     },
 
-    'throws with an imported vpc'(test: Test) {
+    'throws with an imported vpc without route tables ids'(test: Test) {
       // GIVEN
       const stack = new Stack();
       const vpc = Vpc.fromVpcAttributes(stack, 'VPC', {
@@ -226,11 +206,7 @@ export = {
         availabilityZones: ['a', 'b', 'c']
       });
 
-      // THEN
-      test.throws(() => new GatewayVpcEndpoint(stack, 'Gateway', {
-        service: GatewayVpcEndpointAwsService.S3,
-        vpc
-      }), /route table/);
+      test.throws(() => vpc.addGatewayEndpoint('Gateway', { service: GatewayVpcEndpointAwsService.S3 }), /route table/);
 
       test.done();
     }
@@ -300,7 +276,7 @@ export = {
 
       // WHEN
       const importedEndpoint = InterfaceVpcEndpoint.fromInterfaceVpcEndpointAttributes(stack2, 'ImportedEndpoint', {
-        securityGroupId: 'security-group-id',
+        securityGroups: [SecurityGroup.fromSecurityGroupId(stack2, 'SG', 'security-group-id')],
         vpcEndpointId: 'vpc-endpoint-id',
         port: 80
       });
@@ -311,6 +287,87 @@ export = {
         GroupId: 'security-group-id'
       }));
       test.deepEqual(importedEndpoint.vpcEndpointId, 'vpc-endpoint-id');
+
+      test.done();
+    },
+
+    'with existing security groups'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VpcNetwork');
+
+      // WHEN
+      vpc.addInterfaceEndpoint('EcrDocker', {
+        service: InterfaceVpcEndpointAwsService.ECR_DOCKER,
+        securityGroups: [SecurityGroup.fromSecurityGroupId(stack, 'SG', 'existing-id')]
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::EC2::VPCEndpoint', {
+        SecurityGroupIds: ['existing-id'],
+      }));
+
+      test.done();
+    },
+    'security group has ingress by default'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VpcNetwork');
+
+      // WHEN
+      vpc.addInterfaceEndpoint('SecretsManagerEndpoint', {
+        service: InterfaceVpcEndpointAwsService.SECRETS_MANAGER,
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::EC2::SecurityGroup', {
+        SecurityGroupIngress: [
+          {
+            CidrIp: { "Fn::GetAtt": [ "VpcNetworkB258E83A", "CidrBlock" ] },
+            FromPort: 443,
+            IpProtocol: "tcp",
+            ToPort: 443
+          }
+        ]
+      }, ));
+
+      test.done();
+    },
+    'non-AWS service interface endpoint'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VpcNetwork');
+
+      // WHEN
+      vpc.addInterfaceEndpoint('YourService', {
+        service: new InterfaceVpcEndpointService("com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc", 443)
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::EC2::VPCEndpoint', {
+        ServiceName: "com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc",
+        PrivateDnsEnabled: false
+      }));
+
+      test.done();
+    },
+    'marketplace partner service interface endpoint'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VpcNetwork');
+
+      // WHEN
+      vpc.addInterfaceEndpoint('YourService', {
+        service: {name: "com.amazonaws.vpce.us-east-1.vpce-svc-mktplacesvcwprdns",
+                  port: 443,
+                  privateDnsDefault: true}
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::EC2::VPCEndpoint', {
+        ServiceName: "com.amazonaws.vpce.us-east-1.vpce-svc-mktplacesvcwprdns",
+        PrivateDnsEnabled: true
+      }));
 
       test.done();
     }

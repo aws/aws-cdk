@@ -1,6 +1,6 @@
 import { expect } from '@aws-cdk/assert';
-import iam = require('@aws-cdk/aws-iam');
-import kms = require('@aws-cdk/aws-kms');
+import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import { App, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { Stream, StreamEncryption } from '../lib';
@@ -131,7 +131,10 @@ export = {
                     "kms:Get*",
                     "kms:Delete*",
                     "kms:ScheduleKeyDeletion",
-                    "kms:CancelKeyDeletion"
+                    "kms:CancelKeyDeletion",
+                    "kms:GenerateDataKey",
+                    "kms:TagResource",
+                    "kms:UntagResource"
                   ],
                   "Effect": "Allow",
                   "Principal": {
@@ -215,7 +218,10 @@ export = {
                     "kms:Get*",
                     "kms:Delete*",
                     "kms:ScheduleKeyDeletion",
-                    "kms:CancelKeyDeletion"
+                    "kms:CancelKeyDeletion",
+                    "kms:GenerateDataKey",
+                    "kms:TagResource",
+                    "kms:UntagResource"
                   ],
                   "Effect": "Allow",
                   "Principal": {
@@ -298,7 +304,10 @@ export = {
                         "kms:Get*",
                         "kms:Delete*",
                         "kms:ScheduleKeyDeletion",
-                        "kms:CancelKeyDeletion"
+                        "kms:CancelKeyDeletion",
+                        "kms:GenerateDataKey",
+                        "kms:TagResource",
+                        "kms:UntagResource"
                       ],
                       "Effect": "Allow",
                       "Principal": {
@@ -435,7 +444,10 @@ export = {
                         "kms:Get*",
                         "kms:Delete*",
                         "kms:ScheduleKeyDeletion",
-                        "kms:CancelKeyDeletion"
+                        "kms:CancelKeyDeletion",
+                        "kms:GenerateDataKey",
+                        "kms:TagResource",
+                        "kms:UntagResource"
                       ],
                       "Effect": "Allow",
                       "Principal": {
@@ -580,7 +592,10 @@ export = {
                         "kms:Get*",
                         "kms:Delete*",
                         "kms:ScheduleKeyDeletion",
-                        "kms:CancelKeyDeletion"
+                        "kms:CancelKeyDeletion",
+                        "kms:GenerateDataKey",
+                        "kms:TagResource",
+                        "kms:UntagResource"
                       ],
                       "Effect": "Allow",
                       "Principal": {

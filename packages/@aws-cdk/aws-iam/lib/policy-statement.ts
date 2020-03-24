@@ -1,29 +1,76 @@
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 import { AccountPrincipal, AccountRootPrincipal, Anyone, ArnPrincipal, CanonicalUserPrincipal,
-  FederatedPrincipal, IPrincipal, ServicePrincipal, ServicePrincipalOpts } from './principals';
+  FederatedPrincipal, IPrincipal, PrincipalBase, PrincipalPolicyFragment, ServicePrincipal, ServicePrincipalOpts } from './principals';
 import { mergePrincipal } from './util';
+
+const ensureArrayOrUndefined = (field: any) => {
+  if (field === undefined) {
+    return undefined;
+  }
+  if (typeof (field) !== "string" && !Array.isArray(field)) {
+    throw new Error("Fields must be either a string or an array of strings");
+  }
+  if (Array.isArray(field) && !!field.find((f: any) => typeof (f) !== "string")) {
+    throw new Error("Fields must be either a string or an array of strings");
+  }
+  return Array.isArray(field) ? field : [field];
+};
 
 /**
  * Represents a statement in an IAM policy document.
  */
 export class PolicyStatement {
+
+  /**
+   * Creates a new PolicyStatement based on the object provided.
+   * This will accept an object created from the `.toJSON()` call
+   * @param obj the PolicyStatement in object form.
+   */
+  public static fromJson(obj: any) {
+    return new PolicyStatement({
+      sid: obj.Sid,
+      actions: ensureArrayOrUndefined(obj.Action),
+      resources: ensureArrayOrUndefined(obj.Resource),
+      conditions: obj.Condition,
+      effect: obj.Effect,
+      notActions: ensureArrayOrUndefined(obj.NotAction),
+      notResources: ensureArrayOrUndefined(obj.NotResource),
+      principals: obj.Principal ? [ new JsonPrincipal(obj.Principal) ] : undefined,
+      notPrincipals: obj.NotPrincipal ? [ new JsonPrincipal(obj.NotPrincipal) ] : undefined
+    });
+  }
+
   /**
    * Statement ID for this statement
    */
   public sid?: string;
   public effect: Effect;
 
-  private action = new Array<any>();
-  private principal: { [key: string]: any[] } = {};
-  private resource = new Array<any>();
-  private condition: { [key: string]: any } = { };
+  private readonly action = new Array<any>();
+  private readonly notAction = new Array<any>();
+  private readonly principal: { [key: string]: any[] } = {};
+  private readonly notPrincipal: { [key: string]: any[] } = {};
+  private readonly resource = new Array<any>();
+  private readonly notResource = new Array<any>();
+  private readonly condition: { [key: string]: any } = { };
 
   constructor(props: PolicyStatementProps = {}) {
+    // Validate actions
+    for (const action of [...props.actions || [], ...props.notActions || []]) {
+      if (!/^(\*|[a-zA-Z0-9-]+:[a-zA-Z0-9*]+)$/.test(action)) {
+        throw new Error(`Action '${action}' is invalid. An action string consists of a service namespace, a colon, and the name of an action. Action names can include wildcards.`);
+      }
+    }
+
+    this.sid = props.sid;
     this.effect = props.effect || Effect.ALLOW;
 
     this.addActions(...props.actions || []);
+    this.addNotActions(...props.notActions || []);
     this.addPrincipals(...props.principals || []);
+    this.addNotPrincipals(...props.notPrincipals || []);
     this.addResources(...props.resources || []);
+    this.addNotResources(...props.notResources || []);
     if (props.conditions !== undefined) {
       this.addConditions(props.conditions);
     }
@@ -34,7 +81,17 @@ export class PolicyStatement {
   //
 
   public addActions(...actions: string[]) {
+    if (actions.length > 0 && this.notAction.length > 0) {
+      throw new Error(`Cannot add 'Actions' to policy statement if 'NotActions' have been added`);
+    }
     this.action.push(...actions);
+  }
+
+  public addNotActions(...notActions: string[]) {
+    if (notActions.length > 0 && this.action.length > 0) {
+      throw new Error(`Cannot add 'NotActions' to policy statement if 'Actions' have been added`);
+    }
+    this.notAction.push(...notActions);
   }
 
   //
@@ -45,13 +102,27 @@ export class PolicyStatement {
    * Indicates if this permission has a "Principal" section.
    */
   public get hasPrincipal() {
-    return Object.keys(this.principal).length > 0;
+    return Object.keys(this.principal).length > 0 || Object.keys(this.notPrincipal).length > 0;
   }
 
   public addPrincipals(...principals: IPrincipal[]) {
+    if (Object.keys(principals).length > 0 && Object.keys(this.notPrincipal).length > 0) {
+      throw new Error(`Cannot add 'Principals' to policy statement if 'NotPrincipals' have been added`);
+    }
     for (const principal of principals) {
       const fragment = principal.policyFragment;
       mergePrincipal(this.principal, fragment.principalJson);
+      this.addConditions(fragment.conditions);
+    }
+  }
+
+  public addNotPrincipals(...notPrincipals: IPrincipal[]) {
+    if (Object.keys(notPrincipals).length > 0 && Object.keys(this.principal).length > 0) {
+      throw new Error(`Cannot add 'NotPrincipals' to policy statement if 'Principals' have been added`);
+    }
+    for (const notPrincipal of notPrincipals) {
+      const fragment = notPrincipal.policyFragment;
+      mergePrincipal(this.notPrincipal, fragment.principalJson);
       this.addConditions(fragment.conditions);
     }
   }
@@ -95,7 +166,17 @@ export class PolicyStatement {
   //
 
   public addResources(...arns: string[]) {
+    if (arns.length > 0 && this.notResource.length > 0) {
+      throw new Error(`Cannot add 'Resources' to policy statement if 'NotResources' have been added`);
+    }
     this.resource.push(...arns);
+  }
+
+  public addNotResources(...arns: string[]) {
+    if (arns.length > 0 && this.resource.length > 0) {
+      throw new Error(`Cannot add 'NotResources' to policy statement if 'Resources' have been added`);
+    }
+    this.notResource.push(...arns);
   }
 
   /**
@@ -120,7 +201,8 @@ export class PolicyStatement {
    * Add a condition to the Policy
    */
   public addCondition(key: string, value: any) {
-    this.condition[key] = value;
+    const existingValue = this.condition[key];
+    this.condition[key] = existingValue ? { ...existingValue, ...value } : value;
   }
 
   /**
@@ -142,10 +224,13 @@ export class PolicyStatement {
   public toStatementJson(): any {
     return noUndef({
       Action: _norm(this.action),
+      NotAction: _norm(this.notAction),
       Condition: _norm(this.condition),
       Effect: _norm(this.effect),
       Principal: _normPrincipal(this.principal),
+      NotPrincipal: _normPrincipal(this.notPrincipal),
       Resource: _norm(this.resource),
+      NotResource: _norm(this.notResource),
       Sid: _norm(this.sid),
     });
 
@@ -223,11 +308,29 @@ export enum Effect {
  */
 export interface PolicyStatementProps {
   /**
+   * The Sid (statement ID) is an optional identifier that you provide for the
+   * policy statement. You can assign a Sid value to each statement in a
+   * statement array. In services that let you specify an ID element, such as
+   * SQS and SNS, the Sid value is just a sub-ID of the policy document's ID. In
+   * IAM, the Sid value must be unique within a JSON policy.
+   *
+   * @default - no sid
+   */
+  readonly sid?: string;
+
+  /**
    * List of actions to add to the statement
    *
    * @default - no actions
    */
   readonly actions?: string[];
+
+  /**
+   * List of not actions to add to the statement
+   *
+   * @default - no not-actions
+   */
+  readonly notActions?: string[];
 
   /**
    * List of principals to add to the statement
@@ -237,11 +340,25 @@ export interface PolicyStatementProps {
   readonly principals?: IPrincipal[];
 
   /**
+   * List of not principals to add to the statement
+   *
+   * @default - no not principals
+   */
+  readonly notPrincipals?: IPrincipal[];
+
+  /**
    * Resource ARNs to add to the statement
    *
-   * @default - no principals
+   * @default - no resources
    */
   readonly resources?: string[];
+
+  /**
+   * NotResource ARNs to add to the statement
+   *
+   * @default - no not-resources
+   */
+  readonly notResources?: string[];
 
   /**
    * Conditions to add to the statement
@@ -266,4 +383,22 @@ function noUndef(x: any): any {
     }
   }
   return ret;
+}
+
+class JsonPrincipal extends PrincipalBase {
+  public readonly policyFragment: PrincipalPolicyFragment;
+
+  constructor(json: any = { }) {
+    super();
+
+    // special case: if principal is a string, turn it into an "AWS" principal
+    if (typeof(json) === 'string') {
+      json = { AWS: json };
+    }
+
+    this.policyFragment = {
+      principalJson: json,
+      conditions: []
+    };
+  }
 }

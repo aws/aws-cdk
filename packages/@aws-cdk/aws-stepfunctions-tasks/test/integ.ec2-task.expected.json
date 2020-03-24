@@ -14,7 +14,6 @@
             "IpProtocol": "-1"
           }
         ],
-        "SecurityGroupIngress": [],
         "Tags": [
           {
             "Key": "Name",
@@ -48,7 +47,13 @@
             }
           ],
           "Version": "2012-10-17"
-        }
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ2/FargateCluster/DefaultAutoScalingGroup"
+          }
+        ]
       }
     },
     "FargateClusterDefaultAutoScalingGroupInstanceRoleDefaultPolicy3BD78F3E": {
@@ -136,7 +141,6 @@
       "Properties": {
         "MaxSize": "1",
         "MinSize": "1",
-        "DesiredCapacity": "1",
         "LaunchConfigurationName": {
           "Ref": "FargateClusterDefaultAutoScalingGroupLaunchConfig57306899"
         },
@@ -171,17 +175,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "lambda.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "lambda.amazonaws.com"
               }
             }
           ],
@@ -199,6 +193,12 @@
                 ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
               ]
             ]
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ2/FargateCluster/DefaultAutoScalingGroup"
           }
         ]
       }
@@ -362,22 +362,18 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "autoscaling.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "autoscaling.amazonaws.com"
               }
             }
           ],
           "Version": "2012-10-17"
-        }
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ2/FargateCluster/DefaultAutoScalingGroup"
+          }
+        ]
       }
     },
     "FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHookRoleDefaultPolicy4958D19D": {
@@ -404,7 +400,15 @@
       }
     },
     "FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic49146C10": {
-      "Type": "AWS::SNS::Topic"
+      "Type": "AWS::SNS::Topic",
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ2/FargateCluster/DefaultAutoScalingGroup"
+          }
+        ]
+      }
     },
     "FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHook2AE13680": {
       "Type": "AWS::AutoScaling::LifecycleHook",
@@ -439,17 +443,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "ecs-tasks.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "ecs-tasks.amazonaws.com"
               }
             }
           ],
@@ -467,88 +461,14 @@
               "Fn::Join": [
                 "",
                 [
+                  "12345678.dkr.ecr.test-region.",
                   {
-                    "Fn::Select": [
-                      4,
-                      {
-                        "Fn::Split": [
-                          ":",
-                          {
-                            "Fn::Join": [
-                              "",
-                              [
-                                "arn:",
-                                {
-                                  "Ref": "AWS::Partition"
-                                },
-                                ":ecr:test-region:12345678:repository/",
-                                {
-                                  "Fn::GetAtt": [
-                                    "TaskDefTheContainerAssetImageAdoptRepository997406C3",
-                                    "RepositoryName"
-                                  ]
-                                }
-                              ]
-                            ]
-                          }
-                        ]
-                      }
-                    ]
+                    "Ref": "AWS::URLSuffix"
                   },
-                  ".dkr.ecr.",
-                  {
-                    "Fn::Select": [
-                      3,
-                      {
-                        "Fn::Split": [
-                          ":",
-                          {
-                            "Fn::Join": [
-                              "",
-                              [
-                                "arn:",
-                                {
-                                  "Ref": "AWS::Partition"
-                                },
-                                ":ecr:test-region:12345678:repository/",
-                                {
-                                  "Fn::GetAtt": [
-                                    "TaskDefTheContainerAssetImageAdoptRepository997406C3",
-                                    "RepositoryName"
-                                  ]
-                                }
-                              ]
-                            ]
-                          }
-                        ]
-                      }
-                    ]
-                  },
-                  ".amazonaws.com/",
-                  {
-                    "Fn::GetAtt": [
-                      "TaskDefTheContainerAssetImageAdoptRepository997406C3",
-                      "RepositoryName"
-                    ]
-                  },
-                  "@sha256:",
-                  {
-                    "Fn::Select": [
-                      1,
-                      {
-                        "Fn::Split": [
-                          "@sha256:",
-                          {
-                            "Ref": "TaskDefTheContainerAssetImageImageName92ECAC22"
-                          }
-                        ]
-                      }
-                    ]
-                  }
+                  "/aws-cdk/assets:1f37178655533422f6654c973b99eadec99a723c7181c912e4fb0976187c687c"
                 ]
               ]
             },
-            "Links": [],
             "LogConfiguration": {
               "LogDriver": "awslogs",
               "Options": {
@@ -560,11 +480,7 @@
               }
             },
             "Memory": 256,
-            "MountPoints": [],
-            "Name": "TheContainer",
-            "PortMappings": [],
-            "Ulimits": [],
-            "VolumesFrom": []
+            "Name": "TheContainer"
           }
         ],
         "ExecutionRoleArn": {
@@ -583,44 +499,13 @@
             "TaskDefTaskRole1EDB4A67",
             "Arn"
           ]
-        },
-        "Volumes": []
-      }
-    },
-    "TaskDefTheContainerAssetImageAdoptRepository997406C3": {
-      "Type": "Custom::ECRAdoptedRepository",
-      "Properties": {
-        "ServiceToken": {
-          "Fn::GetAtt": [
-            "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62c52BE89E9",
-            "Arn"
-          ]
-        },
-        "RepositoryName": {
-          "Fn::Select": [
-            0,
-            {
-              "Fn::Split": [
-                "@sha256:",
-                {
-                  "Ref": "TaskDefTheContainerAssetImageImageName92ECAC22"
-                }
-              ]
-            }
-          ]
         }
-      },
-      "DependsOn": [
-        "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleDefaultPolicy6BC8737C",
-        "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleD788AA17"
-      ],
-      "DeletionPolicy": "Delete",
-      "UpdateReplacePolicy": "Delete"
+      }
     },
     "TaskDefTheContainerLogGroupD94C8EF5": {
       "Type": "AWS::Logs::LogGroup",
-      "DeletionPolicy": "Retain",
-      "UpdateReplacePolicy": "Retain"
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
     },
     "TaskDefExecutionRoleB4775C97": {
       "Type": "AWS::IAM::Role",
@@ -631,17 +516,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "ecs-tasks.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "ecs-tasks.amazonaws.com"
               }
             }
           ],
@@ -669,13 +544,7 @@
                     {
                       "Ref": "AWS::Partition"
                     },
-                    ":ecr:test-region:12345678:repository/",
-                    {
-                      "Fn::GetAtt": [
-                        "TaskDefTheContainerAssetImageAdoptRepository997406C3",
-                        "RepositoryName"
-                      ]
-                    }
+                    ":ecr:test-region:12345678:repository/aws-cdk/assets"
                   ]
                 ]
               }
@@ -708,154 +577,6 @@
           }
         ]
       }
-    },
-    "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleD788AA17": {
-      "Type": "AWS::IAM::Role",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "lambda.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "ManagedPolicyArns": [
-          {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition"
-                },
-                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-              ]
-            ]
-          }
-        ]
-      }
-    },
-    "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleDefaultPolicy6BC8737C": {
-      "Type": "AWS::IAM::Policy",
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": [
-                "ecr:GetRepositoryPolicy",
-                "ecr:SetRepositoryPolicy",
-                "ecr:DeleteRepository",
-                "ecr:ListImages",
-                "ecr:BatchDeleteImage"
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::Join": [
-                  "",
-                  [
-                    "arn:",
-                    {
-                      "Ref": "AWS::Partition"
-                    },
-                    ":ecr:test-region:12345678:repository/",
-                    {
-                      "Fn::Select": [
-                        0,
-                        {
-                          "Fn::Split": [
-                            "@sha256:",
-                            {
-                              "Ref": "TaskDefTheContainerAssetImageImageName92ECAC22"
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                ]
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "PolicyName": "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleDefaultPolicy6BC8737C",
-        "Roles": [
-          {
-            "Ref": "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleD788AA17"
-          }
-        ]
-      }
-    },
-    "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62c52BE89E9": {
-      "Type": "AWS::Lambda::Function",
-      "Properties": {
-        "Code": {
-          "S3Bucket": {
-            "Ref": "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cCodeS3Bucket92AB06B6"
-          },
-          "S3Key": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Fn::Select": [
-                    0,
-                    {
-                      "Fn::Split": [
-                        "||",
-                        {
-                          "Ref": "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cCodeS3VersionKey393B7276"
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "Fn::Select": [
-                    1,
-                    {
-                      "Fn::Split": [
-                        "||",
-                        {
-                          "Ref": "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cCodeS3VersionKey393B7276"
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            ]
-          }
-        },
-        "Handler": "handler.handler",
-        "Role": {
-          "Fn::GetAtt": [
-            "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleD788AA17",
-            "Arn"
-          ]
-        },
-        "Runtime": "nodejs8.10",
-        "Timeout": 300
-      },
-      "DependsOn": [
-        "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleDefaultPolicy6BC8737C",
-        "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleD788AA17"
-      ]
     },
     "StateMachineRoleB840431D": {
       "Type": "AWS::IAM::Role",
@@ -961,7 +682,11 @@
               {
                 "Ref": "TaskDef54694570"
               },
-              "\",\"Overrides\":{\"ContainerOverrides\":[{\"Name\":\"TheContainer\",\"Environment\":[{\"Name\":\"SOME_KEY\",\"Value.$\":\"$.SomeKey\"}]}]},\"LaunchType\":\"EC2\"},\"Type\":\"Task\",\"Resource\":\"arn:aws:states:::ecs:runTask.sync\"}}}"
+              "\",\"Overrides\":{\"ContainerOverrides\":[{\"Name\":\"TheContainer\",\"Environment\":[{\"Name\":\"SOME_KEY\",\"Value.$\":\"$.SomeKey\"}]}]},\"LaunchType\":\"EC2\"},\"Type\":\"Task\",\"Resource\":\"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":states:::ecs:runTask.sync\"}}}"
             ]
           ]
         },
@@ -971,29 +696,17 @@
             "Arn"
           ]
         }
-      }
+      },
+      "DependsOn": [
+        "StateMachineRoleDefaultPolicyDF1E6607",
+        "StateMachineRoleB840431D"
+      ]
     }
   },
   "Parameters": {
     "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
-      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
       "Default": "/aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id"
-    },
-    "TaskDefTheContainerAssetImageImageName92ECAC22": {
-      "Type": "String",
-      "Description": "ECR repository name and tag asset \"aws-ecs-integ2/TaskDef/TheContainer/AssetImage\""
-    },
-    "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cCodeS3Bucket92AB06B6": {
-      "Type": "String",
-      "Description": "S3 bucket for asset \"aws-ecs-integ2/AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62c/Code\""
-    },
-    "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cCodeS3VersionKey393B7276": {
-      "Type": "String",
-      "Description": "S3 key for asset version \"aws-ecs-integ2/AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62c/Code\""
-    },
-    "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cCodeArtifactHash8BCBAA49": {
-      "Type": "String",
-      "Description": "Artifact hash for asset \"aws-ecs-integ2/AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62c/Code\""
     }
   }
 }

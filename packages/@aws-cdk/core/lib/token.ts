@@ -1,4 +1,5 @@
-import { IConstruct } from "./construct";
+import { IConstruct } from "./construct-compat";
+import { Lazy } from "./lazy";
 import { unresolved } from "./private/encoding";
 import { Intrinsic } from "./private/intrinsic";
 import { resolve } from "./private/resolve";
@@ -111,7 +112,11 @@ export class Tokenization {
    * @param options Prefix key path components for diagnostics.
    */
   public static resolve(obj: any, options: ResolveOptions): any {
-    return resolve(obj, options);
+    return resolve(obj, {
+      scope: options.scope,
+      resolver: options.resolver,
+      preparing: (options.preparing !== undefined ? options.preparing : false)
+    });
   }
 
   /**
@@ -123,6 +128,22 @@ export class Tokenization {
    */
   public static isResolvable(obj: any): obj is IResolvable {
     return isResolvableObject(obj);
+  }
+
+  /**
+   * Stringify a number directly or lazily if it's a Token. If it is an object (i.e., { Ref: 'SomeLogicalId' }), return it as-is.
+   */
+  public static stringifyNumber(x: number) {
+    // only convert numbers to strings so that Refs, conditions, and other things don't end up synthesizing as [object object]
+
+    if (Token.isUnresolved(x)) {
+      return Lazy.stringValue({ produce: context => {
+          const resolved = context.resolve(x);
+          return typeof resolved !== 'number' ? resolved : `${resolved}`;
+        } });
+    } else {
+      return typeof x !== 'number' ? x : `${x}`;
+    }
   }
 
   private constructor() {
@@ -147,6 +168,12 @@ export interface ResolveOptions {
    * The resolver to apply to any resolvable tokens found
    */
   readonly resolver: ITokenResolver;
+
+  /**
+   * Whether the resolution is being executed during the prepare phase or not.
+   * @default false
+   */
+  readonly preparing?: boolean;
 }
 
 /**
@@ -161,4 +188,20 @@ export interface EncodingOptions {
 
 export function isResolvableObject(x: any): x is IResolvable {
   return typeof(x) === 'object' && x !== null && typeof x.resolve === 'function';
+}
+
+/**
+ * Call the given function only if all given values are resolved
+ *
+ * Exported as a function since it will be used by TypeScript modules, but
+ * can't be exposed via JSII because of the generics.
+ */
+export function withResolved<A>(a: A, fn: (a: A) => void): void;
+export function withResolved<A, B>(a: A, b: B, fn: (a: A, b: B) => void): void;
+export function withResolved<A, B, C>(a: A, b: B, c: C, fn: (a: A, b: B, c: C) => void): void;
+export function withResolved(...args: any[]) {
+  if (args.length < 2) { return; }
+  const argArray = args.slice(0, args.length - 1);
+  if (argArray.some(Token.isUnresolved)) { return; }
+  args[args.length - 1].apply(arguments, argArray);
 }

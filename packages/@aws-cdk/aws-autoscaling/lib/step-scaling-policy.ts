@@ -1,6 +1,6 @@
 import { findAlarmThresholds, normalizeIntervals } from '@aws-cdk/aws-autoscaling-common';
-import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import cdk = require('@aws-cdk/core');
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as cdk from '@aws-cdk/core';
 import { IAutoScalingGroup } from './auto-scaling-group';
 import { AdjustmentType, MetricAggregationType, StepScalingAction } from './step-scaling-action';
 
@@ -104,7 +104,6 @@ export class StepScalingPolicy extends cdk.Construct {
       this.lowerAlarm = new cloudwatch.Alarm(this, 'LowerAlarm', {
         // Recommended by AutoScaling
         metric: props.metric,
-        period: cdk.Duration.minutes(1), // Recommended by AutoScaling
         alarmDescription: 'Lower threshold scaling alarm',
         comparisonOperator: cloudwatch.ComparisonOperator.LESS_THAN_OR_EQUAL_TO_THRESHOLD,
         evaluationPeriods: 1,
@@ -135,7 +134,6 @@ export class StepScalingPolicy extends cdk.Construct {
       this.upperAlarm = new cloudwatch.Alarm(this, 'UpperAlarm', {
         // Recommended by AutoScaling
         metric: props.metric,
-        period: cdk.Duration.minutes(1), // Recommended by AutoScaling
         alarmDescription: 'Upper threshold scaling alarm',
         comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
         evaluationPeriods: 1,
@@ -146,8 +144,10 @@ export class StepScalingPolicy extends cdk.Construct {
   }
 }
 
-function aggregationTypeFromMetric(metric: cloudwatch.IMetric): MetricAggregationType {
-  const statistic = metric.toAlarmConfig().statistic;
+function aggregationTypeFromMetric(metric: cloudwatch.IMetric): MetricAggregationType | undefined {
+  const statistic = metric.toMetricConfig().metricStat?.statistic;
+  if (statistic === undefined) { return undefined; } // Math expression, don't know aggregation, leave default
+
   switch (statistic) {
     case 'Average':
       return MetricAggregationType.AVERAGE;

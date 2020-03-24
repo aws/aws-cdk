@@ -1,4 +1,4 @@
-import iam = require('@aws-cdk/aws-iam');
+import * as iam from '@aws-cdk/aws-iam';
 import { Method } from './method';
 import { VpcLink } from './vpc-link';
 
@@ -31,7 +31,7 @@ export interface IntegrationOptions {
    *
    * @default A role is not assumed
    */
-  readonly credentialsRole?: iam.Role;
+  readonly credentialsRole?: iam.IRole;
 
   /**
    * Requires that the caller's identity be passed through from the request.
@@ -71,7 +71,9 @@ export interface IntegrationOptions {
    * the key, and the template is the value (specified as a string), such as
    * the following snippet:
    *
-   *   { "application/json": "{\n  \"statusCode\": \"200\"\n}" }
+   * ```
+   *   { "application/json": "{ \"statusCode\": 200 }" }
+   * ```
    *
    * @see http://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html
    */
@@ -139,7 +141,16 @@ export interface IntegrationProps {
  * or implement on your own by specifying the set of props.
  */
 export class Integration {
-  constructor(readonly props: IntegrationProps) { }
+  constructor(private readonly props: IntegrationProps) { }
+
+  /**
+   * Allows `Method` to access the integration props.
+   *
+   * @internal
+   */
+  public get _props() {
+    return this.props;
+  }
 
   /**
    * Can be overridden by subclasses to allow the integration to interact with the method

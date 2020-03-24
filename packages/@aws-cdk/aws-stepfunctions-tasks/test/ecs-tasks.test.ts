@@ -1,9 +1,9 @@
 import '@aws-cdk/assert/jest';
-import ec2 = require('@aws-cdk/aws-ec2');
-import ecs = require('@aws-cdk/aws-ecs');
-import sfn = require('@aws-cdk/aws-stepfunctions');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as ecs from '@aws-cdk/aws-ecs';
+import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Stack } from '@aws-cdk/core';
-import tasks = require('../lib');
+import * as tasks from '../lib';
 
 let stack: Stack;
 let vpc: ec2.Vpc;
@@ -57,6 +57,7 @@ test('Running a Fargate Task', () => {
 
   // WHEN
   const runTask = new sfn.Task(stack, 'RunFargate', { task: new tasks.RunEcsFargateTask({
+    integrationPattern: sfn.ServiceIntegrationPattern.SYNC,
     cluster,
     taskDefinition,
     containerOverrides: [
@@ -103,7 +104,18 @@ test('Running a Fargate Task', () => {
         ],
       },
     },
-    Resource: "arn:aws:states:::ecs:runTask.sync",
+    Resource: {
+      "Fn::Join": [
+        "",
+        [
+          "arn:",
+          {
+            Ref: "AWS::Partition",
+          },
+          ":states:::ecs:runTask.sync",
+        ],
+      ],
+    },
     Type: "Task",
   });
 
@@ -154,6 +166,7 @@ test('Running an EC2 Task with bridge network', () => {
 
   // WHEN
   const runTask = new sfn.Task(stack, 'Run', { task: new tasks.RunEcsEc2Task({
+    integrationPattern: sfn.ServiceIntegrationPattern.SYNC,
     cluster,
     taskDefinition,
     containerOverrides: [
@@ -191,7 +204,18 @@ test('Running an EC2 Task with bridge network', () => {
         ],
       },
     },
-    Resource: "arn:aws:states:::ecs:runTask.sync",
+    Resource: {
+      "Fn::Join": [
+        "",
+        [
+          "arn:",
+          {
+            Ref: "AWS::Partition",
+          },
+          ":states:::ecs:runTask.sync",
+        ],
+      ],
+    },
     Type: "Task",
   });
 
@@ -241,6 +265,7 @@ test('Running an EC2 Task with placement strategies', () => {
   });
 
   const ec2Task = new tasks.RunEcsEc2Task({
+    integrationPattern: sfn.ServiceIntegrationPattern.SYNC,
     cluster,
     taskDefinition,
     placementStrategies: [
@@ -274,7 +299,18 @@ test('Running an EC2 Task with placement strategies', () => {
         { Type: "random", },
       ],
     },
-    Resource: "arn:aws:states:::ecs:runTask.sync",
+    Resource: {
+      "Fn::Join": [
+        "",
+        [
+          "arn:",
+          {
+            Ref: "AWS::Partition",
+          },
+          ":states:::ecs:runTask.sync",
+        ],
+      ],
+    },
     Type: "Task",
   });
 });
@@ -289,6 +325,7 @@ test('Running an EC2 Task with overridden number values', () => {
   });
 
   const ec2Task = new tasks.RunEcsEc2Task({
+    integrationPattern: sfn.ServiceIntegrationPattern.SYNC,
     cluster,
     taskDefinition,
     containerOverrides: [
@@ -322,7 +359,18 @@ test('Running an EC2 Task with overridden number values', () => {
         ],
       },
     },
-    Resource: "arn:aws:states:::ecs:runTask.sync",
+    Resource: {
+      "Fn::Join": [
+        "",
+        [
+          "arn:",
+          {
+            Ref: "AWS::Partition",
+          },
+          ":states:::ecs:runTask.sync",
+        ],
+      ],
+    },
     Type: "Task",
   });
 });

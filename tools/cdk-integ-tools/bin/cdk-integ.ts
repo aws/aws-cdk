@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Exercise all integ stacks and if they deploy, update the expected synth files
-import yargs = require('yargs');
+import * as yargs from 'yargs';
 import { DEFAULT_SYNTH_OPTIONS, IntegrationTests } from '../lib/integ-helpers';
 
 // tslint:disable:no-console
@@ -27,11 +27,6 @@ async function main() {
     console.error(`Selected stack: ${stackToDeploy}`);
 
     const args = new Array<string>();
-
-    // don't inject cloudformation metadata into template
-    args.push('--no-path-metadata');
-    args.push('--no-asset-metadata');
-    args.push('--no-staging');
 
     // inject "--verbose" to the command line of "cdk" if we are in verbose mode
     if (argv.verbose) {

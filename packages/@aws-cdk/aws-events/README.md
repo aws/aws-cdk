@@ -36,6 +36,11 @@ event when the pipeline changes it's state.
   enables different parts of an organization to look for and process the events
   that are of interest to them. A rule can customize the JSON sent to the
   target, by passing only certain parts or by overwriting it with a constant.
+* __EventBuses__: An event bus can receive events from your own custom applications
+  or it can receive events from applications and services created by AWS SaaS partners.
+  See [Creating an Event Bus](https://docs.aws.amazon.com/eventbridge/latest/userguide/create-event-bus.html).
+
+## Rule
 
 The `Rule` construct defines a CloudWatch events rule which monitors an
 event based on an [event
@@ -73,6 +78,27 @@ onCommitRule.addTarget(new targets.SnsTopic(topic, {
 }));
 ```
 
+## Scheduling
+
+You can configure a Rule to run on a schedule (cron or rate). 
+
+The following example runs a task every day at 4am:
+
+```ts
+import { Rule, Schedule } from '@aws-cdk/aws-events';
+import { EcsTask } from '@aws-cdk/aws-events-targets';
+...
+
+const ecsTaskTarget = new EcsTask({ cluster, taskDefinition });
+
+new Rule(this, 'ScheduleRule', {
+ schedule: Schedule.cron({ minute: '0', hour: '4' }),
+ targets: [ecsTaskTarget],
+});
+```
+
+More details in [ScheduledEvents](https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html) documentation page.
+
 ## Event Targets
 
 The `@aws-cdk/aws-events-targets` module includes classes that implement the `IRuleTarget`
@@ -87,3 +113,45 @@ The following targets are supported:
 * `targets.SnsTopic`: Publish into an SNS topic
 * `targets.SqsQueue`: Send a message to an Amazon SQS Queue
 * `targets.SfnStateMachine`: Trigger an AWS Step Functions state machine
+* `targets.AwsApi`: Make an AWS API call
+
+### Cross-account targets
+
+It's possible to have the source of the event and a target in separate AWS accounts:
+
+```typescript
+import { App, Stack } from '@aws-cdk/core';
+import codebuild = require('@aws-cdk/aws-codebuild');
+import codecommit = require('@aws-cdk/aws-codecommit');
+import targets = require('@aws-cdk/aws-events-targets');
+
+const app = new App();
+
+const stack1 = new Stack(app, 'Stack1', { env: { account: account1, region: 'us-east-1' } });
+const repo = new codecommit.Repository(stack1, 'Repository', {
+  // ...
+});
+
+const stack2 = new Stack(app, 'Stack2', { env: { account: account2, region: 'us-east-1' } });
+const project = new codebuild.Project(stack2, 'Project', {
+  // ...
+});
+
+repo.onCommit('OnCommit', {
+  target: new targets.CodeBuildProject(project),
+});
+```
+
+In this situation, the CDK will wire the 2 accounts together:
+
+* It will generate a rule in the source stack with the event bus of the target account as the target
+* It will generate a rule in the target stack, with the provided target
+* It will generate a separate stack that gives the source account permissions to publish events
+  to the event bus of the target account in the given region,
+  and make sure its deployed before the source stack
+
+**Note**: while events can span multiple accounts, they _cannot_ span different regions
+(that is a CloudWatch, not CDK, limitation).
+
+For more information, see the
+[AWS documentation on cross-account events](https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/CloudWatchEvents-CrossAccountEventDelivery.html).

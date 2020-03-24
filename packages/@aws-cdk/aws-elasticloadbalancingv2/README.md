@@ -39,11 +39,13 @@ const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
 });
 
 // Add a listener and open up the load balancer's security group
-// to the world. 'open' is the default, set this to 'false'
-// and use `listener.connections` if you want to be selective
-// about who can access the listener.
+// to the world.
 const listener = lb.addListener('Listener', {
     port: 80,
+
+    // 'open: true' is the default, you can leave it out if you want. Set it
+    // to 'false' and use `listener.connections` if you want to be selective
+    // about who can access the load balancer.
     open: true,
 });
 
@@ -73,23 +75,28 @@ listener.addFixedResponse('Fixed', {
 #### Conditions
 
 It's possible to route traffic to targets based on conditions in the incoming
-HTTP request. Path- and host-based conditions are supported. For example,
-the following will route requests to the indicated AutoScalingGroup
-only if the requested host in the request is `example.com`:
+HTTP request. Path- and host-based conditions are supported. For example, the
+following will route requests to the indicated AutoScalingGroup only if the
+requested host in the request is either for `example.com/ok` or
+`example.com/path`:
 
 ```ts
 listener.addTargets('Example.Com Fleet', {
     priority: 10,
+    pathPatterns: ['/ok', '/path'],
     hostHeader: 'example.com',
     port: 8080,
     targets: [asg]
 });
 ```
 
-`priority` is a required field when you add targets with conditions. The lowest
-number wins.
+A target with a condition contains either `pathPatterns` or `hostHeader`, or
+both. If both are specified, both conditions must be met for the requests to
+be routed to the given target. `priority` is a required field when you add
+targets with conditions. The lowest number wins.
 
-Every listener must have at least one target without conditions.
+Every listener must have at least one target without conditions, which is
+where all requests that didn't match any of the conditions will be sent.
 
 ### Defining a Network Load Balancer
 
@@ -152,6 +159,27 @@ const group = listener.addTargets('AppFleet', {
 group.addTarget(asg2);
 ```
 
+### Using Lambda Targets
+
+To use a Lambda Function as a target, use the integration class in the
+`@aws-cdk/aws-elasticloadbalancingv2-targets` package:
+
+```ts
+import lambda = require('@aws-cdk/aws-lambda');
+import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
+import targets = require('@aws-cdk/aws-elasticloadbalancingv2-targets');
+
+const lambdaFunction = new lambda.Function(...);
+const lb = new elbv2.ApplicationLoadBalancer(...);
+
+const listener = lb.addListener('Listener', { port: 80 });
+listener.addTargets('Targets', {
+    targets: [new targets.LambdaTarget(lambdaFunction)]
+});
+```
+
+Only a single Lambda function can be added to a single listener rule.
+
 ### Configuring Health Checks
 
 Health checks are configured upon creation of a target group:
@@ -186,6 +214,22 @@ listener.addTargets('AppFleet', {
 
 listener.connections.allowFrom(lb, ec2.Port.tcp(8088));
 ```
+
+### Using a Load Balancer from a different Stack
+
+If you want to put your Load Balancer and the Targets it is load balancing to in
+different stacks, you may not be able to use the convenience methods
+`loadBalancer.addListener()` and `listener.addTargets()`.
+
+The reason is that these methods will create resources in the same Stack as the
+object they're called on, which may lead to cyclic references between stacks.
+Instead, you will have to create an `ApplicationListener` in the target stack,
+or an empty `TargetGroup` in the load balancer stack that you attach your
+service to.
+
+For an example of the alternatives while load balancing to an ECS service, see the
+[ecs/cross-stack-load-balancer
+example](https://github.com/aws-samples/aws-cdk-examples/tree/master/typescript/ecs/cross-stack-load-balancer/).
 
 ### Protocol for Load Balancer Targets
 

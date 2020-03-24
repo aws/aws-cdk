@@ -1,5 +1,5 @@
-import impl = require('./diff');
-import types = require('./diff/types');
+import * as impl from './diff';
+import * as types from './diff/types';
 import { deepEqual, diffKeyedEntities, unionOf } from './diff/util';
 
 export * from './diff/types';

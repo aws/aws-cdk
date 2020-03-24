@@ -1,6 +1,5 @@
-import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/core');
-import { Stack } from '@aws-cdk/core';
+import * as iam from '@aws-cdk/aws-iam';
+import * as cdk from '@aws-cdk/core';
 import { Function as LambdaFunction, FunctionProps } from './function';
 import { FunctionBase, IFunction } from './function-base';
 import { Permission } from './permission';
@@ -32,8 +31,10 @@ export interface SingletonFunctionProps extends FunctionProps {
 /**
  * A Lambda that will only ever be added to a stack once.
  *
- * The lambda is identified using the value of 'uuid'. Run 'uuidgen'
- * for every SingletonLambda you create.
+ * This construct is a way to guarantee that the lambda function will be guaranteed to be part of the stack,
+ * once and only once, irrespective of how many times the construct is declared to be part of the stack.
+ * This is guaranteed as long as the `uuid` property and the optional `lambdaPurpose` property stay the same
+ * whenever they're declared into the stack.
  *
  * @resource AWS::Lambda::Function
  */
@@ -42,6 +43,7 @@ export class SingletonFunction extends FunctionBase {
   public readonly functionName: string;
   public readonly functionArn: string;
   public readonly role?: iam.IRole;
+  public readonly permissionsNode: cdk.ConstructNode;
   protected readonly canCreatePermissions: boolean;
   private lambdaFunction: IFunction;
 
@@ -49,6 +51,7 @@ export class SingletonFunction extends FunctionBase {
     super(scope, id);
 
     this.lambdaFunction = this.ensureLambda(props);
+    this.permissionsNode = this.lambdaFunction.node;
 
     this.functionArn = this.lambdaFunction.functionArn;
     this.functionName = this.lambdaFunction.functionName;
@@ -64,13 +67,13 @@ export class SingletonFunction extends FunctionBase {
 
   private ensureLambda(props: SingletonFunctionProps): IFunction {
     const constructName = (props.lambdaPurpose || 'SingletonLambda') + slugify(props.uuid);
-    const existing = Stack.of(this).node.tryFindChild(constructName);
+    const existing = cdk.Stack.of(this).node.tryFindChild(constructName);
     if (existing) {
       // Just assume this is true
       return existing as FunctionBase;
     }
 
-    return new LambdaFunction(Stack.of(this), constructName, props);
+    return new LambdaFunction(cdk.Stack.of(this), constructName, props);
   }
 }
 

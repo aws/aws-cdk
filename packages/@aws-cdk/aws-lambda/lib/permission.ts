@@ -1,4 +1,5 @@
-import iam = require('@aws-cdk/aws-iam');
+import * as iam from '@aws-cdk/aws-iam';
+import { Construct } from '@aws-cdk/core';
 
 /**
  * Represents a permission statement that can be added to a Lambda's resource policy
@@ -35,6 +36,16 @@ export interface Permission {
    * The principal can be either an AccountPrincipal or a ServicePrincipal.
    */
   readonly principal: iam.IPrincipal;
+
+  /**
+   * The scope to which the permission constructs be attached. The default is
+   * the Lambda function construct itself, but this would need to be different
+   * in cases such as cross-stack references where the Permissions would need
+   * to sit closer to the consumer of this permission (i.e., the caller).
+   *
+   * @default - The instance of lambda.IFunction
+   */
+  readonly scope?: Construct;
 
   /**
    * The AWS account ID (without hyphens) of the source owner. For example, if

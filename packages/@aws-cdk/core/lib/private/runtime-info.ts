@@ -1,4 +1,4 @@
-import cxapi = require('@aws-cdk/cx-api');
+import * as cxapi from '@aws-cdk/cx-api';
 import { major as nodeMajorVersion } from './node-version';
 
 /**
@@ -61,6 +61,7 @@ function findNpmPackage(fileName: string): { name: string, version: string, priv
       nodeMajorVersion >= 12 ? './package.json' : 'package.json',
       { paths }
     );
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     return require(packagePath);
   } catch (e) {
     return undefined;

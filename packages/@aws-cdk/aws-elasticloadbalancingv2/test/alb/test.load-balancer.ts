@@ -1,10 +1,10 @@
 import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
-import ec2 = require('@aws-cdk/aws-ec2');
-import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/core');
-import { Stack } from '@aws-cdk/core';
+import { Metric } from '@aws-cdk/aws-cloudwatch';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as s3 from '@aws-cdk/aws-s3';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import elbv2 = require('../../lib');
+import * as elbv2 from '../../lib';
 
 export = {
   'Trivial construction: internet facing'(test: Test) {
@@ -217,7 +217,7 @@ export = {
     const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
 
     // WHEN
-    const metrics = [];
+    const metrics = new Array<Metric>();
     metrics.push(lb.metricActiveConnectionCount());
     metrics.push(lb.metricClientTlsNegotiationErrorCount());
     metrics.push(lb.metricConsumedLCUs());
@@ -253,7 +253,7 @@ export = {
 
   'loadBalancerName'(test: Test) {
     // GIVEN
-    const stack = new Stack();
+    const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Stack');
 
     // WHEN
@@ -266,6 +266,49 @@ export = {
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       Name: 'myLoadBalancer'
     }));
+    test.done();
+  },
+
+  'imported load balancer with no vpc throws error when calling addTargets'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const albArn = 'myArn';
+    const sg = new ec2.SecurityGroup(stack, "sg", {
+      vpc,
+      securityGroupName: 'mySg',
+    });
+    const alb = elbv2.ApplicationLoadBalancer.fromApplicationLoadBalancerAttributes(stack, 'ALB', {
+      loadBalancerArn: albArn,
+      securityGroupId: sg.securityGroupId,
+    });
+
+    // WHEN
+    const listener = alb.addListener('Listener', { port: 80 });
+    test.throws(() => listener.addTargets('Targets', {port: 8080}));
+
+    test.done();
+  },
+
+  'imported load balancer with vpc does not throw error when calling addTargets'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const albArn = 'MyArn';
+    const sg = new ec2.SecurityGroup(stack, 'sg', {
+      vpc,
+      securityGroupName: 'mySg',
+    });
+    const alb = elbv2.ApplicationLoadBalancer.fromApplicationLoadBalancerAttributes(stack, 'ALB', {
+      loadBalancerArn: albArn,
+      securityGroupId: sg.securityGroupId,
+      vpc,
+    });
+
+    // WHEN
+    const listener = alb.addListener('Listener', { port: 80 });
+    test.doesNotThrow(() => listener.addTargets('Targets', {port: 8080}));
+
     test.done();
   },
 };

@@ -8,4 +8,11 @@ export interface IRule extends IResource {
    * @attribute
    */
   readonly ruleArn: string;
+
+  /**
+   * The name event rule
+   *
+   * @attribute
+   */
+  readonly ruleName: string;
 }

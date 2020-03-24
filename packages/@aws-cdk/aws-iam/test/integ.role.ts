@@ -1,5 +1,5 @@
 import { App, Stack } from "@aws-cdk/core";
-import { AccountRootPrincipal, Policy, PolicyStatement, Role, ServicePrincipal } from "../lib";
+import { AccountRootPrincipal, OrganizationPrincipal, Policy, PolicyStatement, Role, ServicePrincipal } from "../lib";
 
 const app = new App();
 
@@ -18,7 +18,12 @@ policy.attachToRole(role);
 // Role with an external ID
 new Role(stack, 'TestRole2', {
   assumedBy: new AccountRootPrincipal(),
-  externalId: 'supply-me',
+  externalIds: ['supply-me'],
+});
+
+// Role with an org
+new Role(stack, 'TestRole3', {
+  assumedBy: new OrganizationPrincipal('o-1234'),
 });
 
 app.synth();

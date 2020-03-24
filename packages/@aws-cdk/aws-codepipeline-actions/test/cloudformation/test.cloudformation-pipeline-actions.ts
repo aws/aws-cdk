@@ -1,13 +1,12 @@
-import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import { expect, haveResourceLike } from '@aws-cdk/assert';
 import { CloudFormationCapabilities } from '@aws-cdk/aws-cloudformation';
-import codebuild = require('@aws-cdk/aws-codebuild');
-import { Repository } from '@aws-cdk/aws-codecommit';
-import codepipeline = require('@aws-cdk/aws-codepipeline');
-import { Role } from '@aws-cdk/aws-iam';
-import { PolicyStatement, ServicePrincipal } from '@aws-cdk/aws-iam';
-import cdk = require('@aws-cdk/core');
+import * as codebuild from '@aws-cdk/aws-codebuild';
+import * as codecommit from '@aws-cdk/aws-codecommit';
+import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import { PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import cpactions = require('../../lib');
+import * as cpactions from '../../lib';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -22,7 +21,7 @@ export = {
   });
 
   /** Source! */
-  const repo = new Repository(stack, 'MyVeryImportantRepo', {
+  const repo = new codecommit.Repository(stack, 'MyVeryImportantRepo', {
     repositoryName: 'my-very-important-repo',
   });
 
@@ -109,7 +108,6 @@ export = {
         "BranchName": "master",
         "PollForSourceChanges": true
       },
-      "InputArtifacts": [],
       "Name": "source",
       "OutputArtifacts": [
         {
@@ -175,7 +173,6 @@ export = {
       },
       "InputArtifacts": [{"Name": "OutputYo"}],
       "Name": "BuildChangeSetProd",
-      "OutputArtifacts": [],
       "RunOrder": 1
       },
       {
@@ -189,9 +186,7 @@ export = {
         "ActionMode": "CHANGE_SET_EXECUTE",
         "ChangeSetName": "MyMagicalChangeSet"
       },
-      "InputArtifacts": [],
       "Name": "ExecuteChangeSetProd",
-      "OutputArtifacts": [],
       "RunOrder": 1
       }
     ],
@@ -204,7 +199,7 @@ export = {
 
   },
 
-  'fullPermissions leads to admin role and full IAM capabilities'(test: Test) {
+  'fullPermissions leads to admin role and full IAM capabilities with pipeline bucket+key read permissions'(test: Test) {
   // GIVEN
   const stack = new TestFixture();
 
@@ -242,10 +237,25 @@ export = {
   }));
 
   // THEN: Role is created with full permissions
-  expect(stack).to(haveResource('AWS::IAM::Policy', {
+  expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
     PolicyDocument: {
       Version: '2012-10-17',
       Statement: [
+        {
+          "Action": [
+            "s3:GetObject*",
+            "s3:GetBucket*",
+            "s3:List*",
+          ],
+          "Effect": "Allow",
+        },
+        {
+          "Action": [
+            "kms:Decrypt",
+            "kms:DescribeKey",
+          ],
+          "Effect": "Allow",
+        },
         {
           Action: "*",
           Effect: 'Allow',
@@ -544,6 +554,122 @@ export = {
 
   test.done();
   },
+
+  'cross-account CFN Pipeline': {
+    'correctly creates the deployment Role in the other account'(test: Test) {
+      const app = new cdk.App();
+
+      const pipelineStack = new cdk.Stack(app, 'PipelineStack', {
+        env: {
+          account: '234567890123',
+          region: 'us-west-2',
+        },
+      });
+
+      const sourceOutput = new codepipeline.Artifact();
+      new codepipeline.Pipeline(pipelineStack, 'Pipeline', {
+        stages: [
+          {
+            stageName: 'Source',
+            actions: [
+              new cpactions.CodeCommitSourceAction({
+                actionName: 'CodeCommit',
+                repository: codecommit.Repository.fromRepositoryName(pipelineStack, 'Repo', 'RepoName'),
+                output: sourceOutput,
+              }),
+            ],
+          },
+          {
+            stageName: 'Deploy',
+            actions: [
+              new cpactions.CloudFormationCreateUpdateStackAction({
+                actionName: 'CFN',
+                stackName: 'MyStack',
+                adminPermissions: true,
+                templatePath: sourceOutput.atPath('template.yaml'),
+                account: '123456789012',
+              }),
+            ],
+          },
+        ],
+      });
+
+      expect(pipelineStack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+        "Stages": [
+          {
+            "Name": "Source",
+          },
+          {
+            "Name": "Deploy",
+            "Actions": [
+              {
+                "Name": "CFN",
+                "RoleArn": { "Fn::Join": ["", ["arn:", { "Ref": "AWS::Partition" },
+                      ":iam::123456789012:role/pipelinestack-support-123loycfnactionrole56af64af3590f311bc50",
+                  ]],
+                },
+                "Configuration": {
+                  "RoleArn": {
+                    "Fn::Join": ["", ["arn:", { "Ref": "AWS::Partition" },
+                        ":iam::123456789012:role/pipelinestack-support-123fndeploymentrole4668d9b5a30ce3dc4508",
+                    ]],
+                  },
+                },
+              },
+            ],
+          },
+        ],
+      }));
+
+      // the pipeline's BucketPolicy should trust both CFN roles
+      expect(pipelineStack).to(haveResourceLike('AWS::S3::BucketPolicy', {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*",
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": ["", ["arn:", { "Ref": "AWS::Partition" },
+                    ":iam::123456789012:role/pipelinestack-support-123fndeploymentrole4668d9b5a30ce3dc4508",
+                  ]],
+                },
+              },
+            },
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*",
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": ["", ["arn:", { "Ref": "AWS::Partition" },
+                    ":iam::123456789012:role/pipelinestack-support-123loycfnactionrole56af64af3590f311bc50",
+                  ]],
+                },
+              },
+            },
+          ],
+        },
+      }));
+
+      const otherStack = app.node.findChild('cross-account-support-stack-123456789012') as cdk.Stack;
+      expect(otherStack).to(haveResourceLike('AWS::IAM::Role', {
+        "RoleName": "pipelinestack-support-123loycfnactionrole56af64af3590f311bc50",
+      }));
+      expect(otherStack).to(haveResourceLike('AWS::IAM::Role', {
+        "RoleName": "pipelinestack-support-123fndeploymentrole4668d9b5a30ce3dc4508",
+      }));
+
+      test.done();
+    },
+  },
 };
 
 /**
@@ -553,7 +679,7 @@ class TestFixture extends cdk.Stack {
   public readonly pipeline: codepipeline.Pipeline;
   public readonly sourceStage: codepipeline.IStage;
   public readonly deployStage: codepipeline.IStage;
-  public readonly repo: Repository;
+  public readonly repo: codecommit.Repository;
   public readonly sourceOutput: codepipeline.Artifact;
 
   constructor() {
@@ -562,7 +688,7 @@ class TestFixture extends cdk.Stack {
     this.pipeline = new codepipeline.Pipeline(this, 'Pipeline');
     this.sourceStage = this.pipeline.addStage({ stageName: 'Source' });
     this.deployStage = this.pipeline.addStage({ stageName: 'Deploy' });
-    this.repo = new Repository(this, 'MyVeryImportantRepo', {
+    this.repo = new codecommit.Repository(this, 'MyVeryImportantRepo', {
       repositoryName: 'my-very-important-repo',
     });
     this.sourceOutput = new codepipeline.Artifact('SourceArtifact');

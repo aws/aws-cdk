@@ -1,7 +1,7 @@
 # Set the default behavior, in case people don't have core.autocrlf set.
 * text=auto
 
-# Currently, this repository has LF dependecnies in building and testing, with json, sh, and no extensions.
+# Currently, this repository has LF dependencies in building and testing, with json, sh, and no extensions.
 # Until this is fixed, it is best to just set the whole repository to be LF.
 * eol=lf
 

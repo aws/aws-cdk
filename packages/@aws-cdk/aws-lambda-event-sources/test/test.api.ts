@@ -1,15 +1,15 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import lambda = require('@aws-cdk/aws-lambda');
-import cdk = require('@aws-cdk/core');
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import events = require('../lib');
+import * as events from '../lib';
 
 export = {
   'minimal example'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const handler = new lambda.Function(stack, 'MyFunc', {
-      code: lambda.Code.inline('boom'),
+      code: lambda.Code.fromInline('boom'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS,
     });
@@ -35,7 +35,7 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const handler = new lambda.Function(stack, 'MyFunc', {
-      code: lambda.Code.inline('boom'),
+      code: lambda.Code.fromInline('boom'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS,
     });
@@ -72,7 +72,7 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const handler = new lambda.Function(stack, 'MyFunc', {
-      code: lambda.Code.inline('boom'),
+      code: lambda.Code.fromInline('boom'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS,
     });

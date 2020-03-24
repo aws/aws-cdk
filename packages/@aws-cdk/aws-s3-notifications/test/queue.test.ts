@@ -1,9 +1,9 @@
 import { SynthUtils } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
-import s3 = require('@aws-cdk/aws-s3');
-import sqs = require('@aws-cdk/aws-sqs');
+import * as s3 from '@aws-cdk/aws-s3';
+import * as sqs from '@aws-cdk/aws-sqs';
 import { Stack } from '@aws-cdk/core';
-import notif = require('../lib');
+import * as notif from '../lib';
 
 test('queues can be used as destinations', () => {
   const stack = new Stack();
@@ -29,9 +29,7 @@ test('queues can be used as destinations', () => {
           },
           Effect: "Allow",
           Principal: {
-            Service: {
-              "Fn::Join": ["", ["s3.", { Ref: "AWS::URLSuffix" }]]
-            }
+            Service: "s3.amazonaws.com"
           },
           Resource: { "Fn::GetAtt": [ "Queue4A7E3555", "Arn" ] }
 
@@ -95,7 +93,10 @@ test('if the queue is encrypted with a custom kms key, the key resource policy i
             "kms:Get*",
             "kms:Delete*",
             "kms:ScheduleKeyDeletion",
-            "kms:CancelKeyDeletion"
+            "kms:CancelKeyDeletion",
+            "kms:GenerateDataKey",
+            "kms:TagResource",
+            "kms:UntagResource"
           ],
           Effect: "Allow",
           Principal: {
@@ -116,7 +117,7 @@ test('if the queue is encrypted with a custom kms key, the key resource policy i
           },
           Effect: "Allow",
           Principal: {
-            Service: { "Fn::Join": [ "", [ "s3.", { Ref: "AWS::URLSuffix" } ] ] }
+            Service: "s3.amazonaws.com"
           },
           Resource: "*"
         },
@@ -127,9 +128,7 @@ test('if the queue is encrypted with a custom kms key, the key resource policy i
           ],
           Effect: "Allow",
           Principal: {
-            Service: {
-              "Fn::Join": ["", ["s3.", { Ref: "AWS::URLSuffix" }]]
-            }
+            Service: "s3.amazonaws.com"
           },
           Resource: "*"
         }
@@ -138,13 +137,4 @@ test('if the queue is encrypted with a custom kms key, the key resource policy i
     },
     Description: "Created by Queue"
   });
-});
-
-test('fails if trying to subscribe to a queue with managed kms encryption', () => {
-  const stack = new Stack();
-  const queue = new sqs.Queue(stack, 'Queue', { encryption: sqs.QueueEncryption.KMS_MANAGED });
-  const bucket = new s3.Bucket(stack, 'Bucket');
-  expect(() => {
-    bucket.addObjectRemovedNotification(new notif.SqsDestination(queue));
-  }).toThrow('Unable to add statement to IAM resource policy for KMS key: "alias/aws/sqs"');
 });

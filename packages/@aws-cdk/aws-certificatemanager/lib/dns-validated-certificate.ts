@@ -1,9 +1,9 @@
-import cfn = require('@aws-cdk/aws-cloudformation');
-import iam = require('@aws-cdk/aws-iam');
-import lambda = require('@aws-cdk/aws-lambda');
-import route53 = require('@aws-cdk/aws-route53');
-import cdk = require('@aws-cdk/core');
-import path = require('path');
+import * as cfn from '@aws-cdk/aws-cloudformation';
+import * as iam from '@aws-cdk/aws-iam';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as route53 from '@aws-cdk/aws-route53';
+import * as cdk from '@aws-cdk/core';
+import * as path from 'path';
 import { CertificateProps, ICertificate } from './certificate';
 
 /**
@@ -23,6 +23,27 @@ export interface DnsValidatedCertificateProps extends CertificateProps {
      * @default the region the stack is deployed in.
      */
     readonly region?: string;
+
+    /**
+     * An endpoint of Route53 service, which is not necessary as AWS SDK could figure
+     * out the right endpoints for most regions, but for some regions such as those in
+     * aws-cn partition, the default endpoint is not working now, hence the right endpoint
+     * need to be specified through this prop.
+     *
+     * Route53 is not been offically launched in China, it is only available for AWS
+     * internal accounts now. To make DnsValidatedCertificate work for internal accounts
+     * now, a special endpoint needs to be provided.
+     *
+     * @default - The AWS SDK will determine the Route53 endpoint to use based on region
+     */
+    readonly route53Endpoint?: string;
+
+    /**
+     * Role to use for the custom resource that creates the validated certificate
+     *
+     * @default - A new role will be created
+     */
+    readonly customResourceRole?: iam.IRole;
 }
 
 /**
@@ -52,10 +73,11 @@ export class DnsValidatedCertificate extends cdk.Resource implements ICertificat
         this.hostedZoneId = props.hostedZone.hostedZoneId.replace(/^\/hostedzone\//, '');
 
         const requestorFunction = new lambda.Function(this, 'CertificateRequestorFunction', {
-            code: lambda.Code.asset(path.resolve(__dirname, '..', 'lambda-packages', 'dns_validated_certificate_handler', 'lib')),
+            code: lambda.Code.fromAsset(path.resolve(__dirname, '..', 'lambda-packages', 'dns_validated_certificate_handler', 'lib')),
             handler: 'index.certificateRequestHandler',
-            runtime: lambda.Runtime.NODEJS_8_10,
-            timeout: cdk.Duration.minutes(15)
+            runtime: lambda.Runtime.NODEJS_10_X,
+            timeout: cdk.Duration.minutes(15),
+            role: props.customResourceRole
         });
         requestorFunction.addToRolePolicy(new iam.PolicyStatement({
             actions: ['acm:RequestCertificate', 'acm:DescribeCertificate', 'acm:DeleteCertificate'],
@@ -67,16 +89,17 @@ export class DnsValidatedCertificate extends cdk.Resource implements ICertificat
         }));
         requestorFunction.addToRolePolicy(new iam.PolicyStatement({
             actions: ['route53:changeResourceRecordSets'],
-            resources: [`arn:aws:route53:::hostedzone/${this.hostedZoneId}`],
+            resources: [`arn:${cdk.Stack.of(requestorFunction).partition}:route53:::hostedzone/${this.hostedZoneId}`],
         }));
 
         const certificate = new cfn.CustomResource(this, 'CertificateRequestorResource', {
             provider: cfn.CustomResourceProvider.lambda(requestorFunction),
             properties: {
                 DomainName: props.domainName,
-                SubjectAlternativeNames: props.subjectAlternativeNames,
+                SubjectAlternativeNames: cdk.Lazy.listValue({ produce: () => props.subjectAlternativeNames }, { omitEmpty: true }),
                 HostedZoneId: this.hostedZoneId,
                 Region: props.region,
+                Route53Endpoint: props.route53Endpoint,
             }
         });
 
@@ -86,7 +109,9 @@ export class DnsValidatedCertificate extends cdk.Resource implements ICertificat
     protected validate(): string[] {
         const errors: string[] = [];
         // Ensure the zone name is a parent zone of the certificate domain name
-        if (this.domainName !== this.normalizedZoneName && !this.domainName.endsWith('.' + this.normalizedZoneName)) {
+        if (!cdk.Token.isUnresolved(this.normalizedZoneName) &&
+              this.domainName !== this.normalizedZoneName &&
+              !this.domainName.endsWith('.' + this.normalizedZoneName)) {
             errors.push(`DNS zone ${this.normalizedZoneName} is not authoritative for certificate domain name ${this.domainName}`);
         }
         return errors;

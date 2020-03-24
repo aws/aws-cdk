@@ -1,10 +1,15 @@
 const path = require('path');
 const cdk = require('@aws-cdk/core');
+const ec2 = require('@aws-cdk/aws-ec2');
 const ssm = require('@aws-cdk/aws-ssm');
 const iam = require('@aws-cdk/aws-iam');
 const sns = require('@aws-cdk/aws-sns');
 const lambda = require('@aws-cdk/aws-lambda');
 const docker = require('@aws-cdk/aws-ecr-assets');
+const core = require('@aws-cdk/core')
+const { StackWithNestedStack, StackWithNestedStackUsingParameters } = require('./nested-stack');
+
+const stackPrefix = process.env.STACK_NAME_PREFIX || 'cdk-toolkit-integration';
 
 class MyStack extends cdk.Stack {
   constructor(parent, id, props) {
@@ -33,6 +38,26 @@ class YourStack extends cdk.Stack {
     super(parent, id, props);
     new sns.Topic(this, 'topic1');
     new sns.Topic(this, 'topic2');
+  }
+}
+
+class ParameterStack extends cdk.Stack {
+  constructor(parent, id, props) {
+    super(parent, id, props);
+
+    new sns.Topic(this, 'TopicParameter', {
+      topicName: new cdk.CfnParameter(this, 'TopicNameParam')
+    });
+  }
+}
+
+class OtherParameterStack extends cdk.Stack {
+  constructor(parent, id, props) {
+    super(parent, id, props);
+
+    new sns.Topic(this, 'TopicParameter', {
+      topicName: new cdk.CfnParameter(this, 'OtherTopicNameParam')
+    });
   }
 }
 
@@ -83,7 +108,7 @@ class LambdaStack extends cdk.Stack {
 
     const fn = new lambda.Function(this, 'my-function', {
       code: lambda.Code.asset(path.join(__dirname, 'lambda')),
-      runtime: lambda.Runtime.NODEJS_8_10,
+      runtime: lambda.Runtime.NODEJS_10_X,
       handler: 'index.handler'
     });
 
@@ -98,10 +123,77 @@ class DockerStack extends cdk.Stack {
     new docker.DockerImageAsset(this, 'image', {
       directory: path.join(__dirname, 'docker')
     });
+
+    // Add at least a single resource (WaitConditionHandle), otherwise this stack will never
+    // be deployed (and its assets never built)
+    new core.CfnResource(this, 'Handle', {
+      type: 'AWS::CloudFormation::WaitConditionHandle'
+    });
   }
 }
 
-const stackPrefix = process.env.STACK_NAME_PREFIX || 'cdk-toolkit-integration';
+class DockerStackWithCustomFile extends cdk.Stack {
+  constructor(parent, id, props) {
+    super(parent, id, props);
+
+    new docker.DockerImageAsset(this, 'image', {
+      directory: path.join(__dirname, 'docker'),
+      file: 'Dockerfile.Custom'
+    });
+
+    // Add at least a single resource (WaitConditionHandle), otherwise this stack will never
+    // be deployed (and its assets never built)
+    new core.CfnResource(this, 'Handle', {
+      type: 'AWS::CloudFormation::WaitConditionHandle'
+    });
+  }
+}
+
+class FailedStack extends cdk.Stack {
+
+  constructor(parent, id, props) {
+    super(parent, id, props);
+
+    // fails on 'Property PolicyDocument cannot be empty'.
+    new core.CfnResource(this, 'EmptyPolicy', {
+      type: 'AWS::IAM::Policy'
+    })
+
+  }
+
+}
+
+const VPC_TAG_NAME = 'custom-tag';
+const VPC_TAG_VALUE = `${stackPrefix}-bazinga!`;
+
+class DefineVpcStack extends cdk.Stack {
+  constructor(parent, id, props) {
+    super(parent, id, props);
+
+    new ec2.Vpc(this, 'VPC', {
+      maxAzs: 1,
+    }).node.applyAspect(new cdk.Tag(VPC_TAG_NAME, VPC_TAG_VALUE));
+  }
+}
+
+class ImportVpcStack extends cdk.Stack {
+  constructor(parent, id, props) {
+    super(parent, id, props);
+
+    ec2.Vpc.fromLookup(this, 'DefaultVPC', { isDefault: true });
+    ec2.Vpc.fromLookup(this, 'ByTag', { tags: { [VPC_TAG_NAME]: VPC_TAG_VALUE } });
+  }
+}
+
+class ConditionalResourceStack extends cdk.Stack {
+  constructor(parent, id, props) {
+    super(parent, id, props);
+
+    if (!process.env.NO_RESOURCE) {
+      new iam.User(this, 'User');
+    }
+  }
+}
 
 const app = new cdk.App();
 
@@ -113,6 +205,9 @@ const defaultEnv = {
 // Deploy all does a wildcard ${stackPrefix}-test-*
 new MyStack(app, `${stackPrefix}-test-1`, { env: defaultEnv });
 new YourStack(app, `${stackPrefix}-test-2`);
+// Deploy wildcard with parameters does ${stackPrefix}-param-test-*
+new ParameterStack(app, `${stackPrefix}-param-test-1`);
+new OtherParameterStack(app, `${stackPrefix}-param-test-2`);
 // Not included in wildcard
 new IamStack(app, `${stackPrefix}-iam-test`);
 const providing = new ProvidingStack(app, `${stackPrefix}-order-providing`);
@@ -122,5 +217,20 @@ new MissingSSMParameterStack(app, `${stackPrefix}-missing-ssm-parameter`, { env:
 
 new LambdaStack(app, `${stackPrefix}-lambda`);
 new DockerStack(app, `${stackPrefix}-docker`);
+new DockerStackWithCustomFile(app, `${stackPrefix}-docker-with-custom-file`);
+new FailedStack(app, `${stackPrefix}-failed`)
+
+if (process.env.ENABLE_VPC_TESTING) { // Gating so we don't do context fetching unless that's what we are here for
+  const env = { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION };
+  if (process.env.ENABLE_VPC_TESTING === 'DEFINE')
+    new DefineVpcStack(app, `${stackPrefix}-define-vpc`, { env });
+  if (process.env.ENABLE_VPC_TESTING === 'IMPORT')
+  new ImportVpcStack(app, `${stackPrefix}-import-vpc`, { env });
+}
+
+new ConditionalResourceStack(app, `${stackPrefix}-conditional-resource`)
+
+new StackWithNestedStack(app, `${stackPrefix}-with-nested-stack`);
+new StackWithNestedStackUsingParameters(app, `${stackPrefix}-with-nested-stack-using-parameters`);
 
 app.synth();

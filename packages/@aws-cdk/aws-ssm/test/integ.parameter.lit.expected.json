@@ -40,6 +40,7 @@
             {
               "Action": [
                 "ssm:DescribeParameters",
+                "ssm:GetParameters",
                 "ssm:GetParameter",
                 "ssm:GetParameterHistory"
               ],
@@ -60,7 +61,7 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":parameter",
+                    ":parameter/",
                     {
                       "Ref": "StringParameter472EED0E"
                     }
@@ -110,6 +111,31 @@
               }
             ]
           }
+        ]
+      }
+    },
+    "ParamArn": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "arn:",
+            {
+              "Ref": "AWS::Partition"
+            },
+            ":ssm:",
+            {
+              "Ref": "AWS::Region"
+            },
+            ":",
+            {
+              "Ref": "AWS::AccountId"
+            },
+            ":parameter/",
+            {
+              "Ref": "StringParameter472EED0E"
+            }
+          ]
         ]
       }
     }

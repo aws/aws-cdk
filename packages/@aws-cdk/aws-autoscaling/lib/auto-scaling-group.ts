@@ -1,16 +1,20 @@
-import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import ec2 = require('@aws-cdk/aws-ec2');
-import elb = require('@aws-cdk/aws-elasticloadbalancing');
-import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
-import iam = require('@aws-cdk/aws-iam');
-import sns = require('@aws-cdk/aws-sns');
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as elb from '@aws-cdk/aws-elasticloadbalancing';
+import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
+import * as iam from '@aws-cdk/aws-iam';
+import * as sns from '@aws-cdk/aws-sns';
 
-import { CfnAutoScalingRollingUpdate, Construct, Duration, Fn, IResource, Lazy, Resource, Stack, Tag } from '@aws-cdk/core';
+import {
+  CfnAutoScalingRollingUpdate, Construct, Duration, Fn, IResource, Lazy, PhysicalName, Resource, Stack,
+  Tag, Tokenization, withResolved
+} from '@aws-cdk/core';
 import { CfnAutoScalingGroup, CfnAutoScalingGroupProps, CfnLaunchConfiguration } from './autoscaling.generated';
 import { BasicLifecycleHookProps, LifecycleHook } from './lifecycle-hook';
 import { BasicScheduledActionProps, ScheduledAction } from './scheduled-action';
 import { BasicStepScalingPolicyProps, StepScalingPolicy } from './step-scaling-policy';
 import { BaseTargetTrackingProps, PredefinedMetric, TargetTrackingScalingPolicy } from './target-tracking-scaling-policy';
+import { BlockDevice, EbsDeviceVolumeType } from './volume';
 
 /**
  * Name tag constant
@@ -41,7 +45,11 @@ export interface CommonAutoScalingGroupProps {
   /**
    * Initial amount of instances in the fleet
    *
-   * @default 1
+   * If this is set to a number, every deployment will reset the amount of
+   * instances to this number. It is recommended to leave this value blank.
+   *
+   * @default minCapacity, and leave unchanged during deployment
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-group.html#cfn-as-group-desiredcapacity
    */
   readonly desiredCapacity?: number;
 
@@ -156,6 +164,13 @@ export interface CommonAutoScalingGroupProps {
    * @default none
    */
   readonly spotPrice?: string;
+
+  /**
+   * Configuration for health checks
+   *
+   * @default - HealthCheck.ec2 with no grace period
+   */
+  readonly healthCheck?: HealthCheck;
 }
 
 /**
@@ -201,6 +216,20 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
    * @default A role will automatically be created, it can be accessed via the `role` property
    */
   readonly role?: iam.IRole;
+
+  /**
+   * Specifies how block devices are exposed to the instance. You can specify virtual devices and EBS volumes.
+   *
+   * Each instance that is launched has an associated root device volume,
+   * either an Amazon EBS volume or an instance store volume.
+   * You can use block device mappings to specify additional EBS volumes or
+   * instance store volumes to attach to an instance when it is launched.
+   *
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/block-device-mapping-concepts.html
+   *
+   * @default - Uses the block device mapping of the AMI
+   */
+  readonly blockDevices?: BlockDevice[];
 }
 
 abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGroup {
@@ -273,7 +302,7 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
    */
   public scaleOnRequestCount(id: string, props: RequestCountScalingProps): TargetTrackingScalingPolicy {
     if (this.albTargetGroup === undefined) {
-      throw new Error('Attach the AutoScalingGroup to an Application Load Balancer before calling scaleOnRequestCount()');
+      throw new Error('Attach the AutoScalingGroup to a non-imported Application Load Balancer before calling scaleOnRequestCount()');
     }
 
     const resourceLabel = `${this.albTargetGroup.firstLoadBalancerFullName}/${this.albTargetGroup.targetGroupFullName}`;
@@ -324,7 +353,8 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   elb.ILoadBalancerTarget,
   ec2.IConnectable,
   elbv2.IApplicationLoadBalancerTarget,
-  elbv2.INetworkLoadBalancerTarget {
+  elbv2.INetworkLoadBalancerTarget,
+  iam.IGrantable {
 
   public static fromAutoScalingGroupName(scope: Construct, id: string, autoScalingGroupName: string): IAutoScalingGroup {
     class Import extends AutoScalingGroupBase {
@@ -355,6 +385,11 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   public readonly role: iam.IRole;
 
   /**
+   * The principal to grant permissions to
+   */
+  public readonly grantPrincipal: iam.IPrincipal;
+
+  /**
    * Name of the AutoScalingGroup
    */
   public readonly autoScalingGroupName: string;
@@ -368,6 +403,12 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
    * UserData for the instances
    */
   public readonly userData: ec2.UserData;
+
+  /**
+   * The maximum spot price configured for thie autoscaling group. `undefined`
+   * indicates that this group uses on-demand capacity.
+   */
+  public readonly spotPrice?: string;
 
   private readonly autoScalingGroup: CfnAutoScalingGroup;
   private readonly securityGroup: ec2.ISecurityGroup;
@@ -387,8 +428,11 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     this.node.applyAspect(new Tag(NAME_TAG, this.node.path));
 
     this.role = props.role || new iam.Role(this, 'InstanceRole', {
+      roleName: PhysicalName.GENERATE_IF_NEEDED,
       assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
     });
+
+    this.grantPrincipal = this.role;
 
     const iamProfile = new iam.CfnInstanceProfile(this, 'InstanceProfile', {
       roles: [ this.role.roleName ]
@@ -396,7 +440,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
 
     // use delayed evaluation
     const imageConfig = props.machineImage.getImage(this);
-    this.userData = props.userData || imageConfig.userData || ec2.UserData.forOperatingSystem(imageConfig.osType);
+    this.userData = props.userData ?? imageConfig.userData;
     const userDataToken = Lazy.stringValue({ produce: () => Fn.base64(this.userData.render()) });
     const securityGroupsToken = Lazy.listValue({ produce: () => this.securityGroups.map(sg => sg.securityGroupId) });
 
@@ -409,27 +453,50 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       userData: userDataToken,
       associatePublicIpAddress: props.associatePublicIpAddress,
       spotPrice: props.spotPrice,
+      blockDeviceMappings: (props.blockDevices !== undefined ?
+        synthesizeBlockDeviceMappings(this, props.blockDevices).map<CfnLaunchConfiguration.BlockDeviceMappingProperty>(
+          ({ deviceName, ebs, virtualName, noDevice }) => ({
+            deviceName, ebs, virtualName, noDevice: noDevice ? true : undefined
+          })
+        ) : undefined),
     });
 
     launchConfig.node.addDependency(this.role);
 
-    const desiredCapacity =
-        (props.desiredCapacity !== undefined ? props.desiredCapacity :
-        (props.minCapacity !== undefined ? props.minCapacity :
-        (props.maxCapacity !== undefined ? props.maxCapacity : 1)));
+    // desiredCapacity just reflects what the user has supplied.
+    const desiredCapacity = props.desiredCapacity;
     const minCapacity = props.minCapacity !== undefined ? props.minCapacity : 1;
-    const maxCapacity = props.maxCapacity !== undefined ? props.maxCapacity : desiredCapacity;
+    const maxCapacity = props.maxCapacity !== undefined ? props.maxCapacity :
+                        desiredCapacity !== undefined ? desiredCapacity : Math.max(minCapacity, 1);
 
-    if (desiredCapacity < minCapacity || desiredCapacity > maxCapacity) {
-      throw new Error(`Should have minCapacity (${minCapacity}) <= desiredCapacity (${desiredCapacity}) <= maxCapacity (${maxCapacity})`);
+    withResolved(minCapacity, maxCapacity, (min, max) => {
+      if (min > max) {
+        throw new Error(`minCapacity (${min}) should be <= maxCapacity (${max})`);
+      }
+    });
+    withResolved(desiredCapacity, minCapacity, (desired, min) => {
+      if (desired === undefined) { return; }
+      if (desired < min) {
+        throw new Error(`Should have minCapacity (${min}) <= desiredCapacity (${desired})`);
+      }
+    });
+    withResolved(desiredCapacity, maxCapacity, (desired, max) => {
+      if (desired === undefined) { return; }
+      if (max < desired) {
+        throw new Error(`Should have desiredCapacity (${desired}) <= maxCapacity (${max})`);
+      }
+    });
+
+    if (desiredCapacity !== undefined) {
+      this.node.addWarning(`desiredCapacity has been configured. Be aware this will reset the size of your AutoScalingGroup on every deployment. See https://github.com/aws/aws-cdk/issues/5215`);
     }
 
     const { subnetIds, hasPublic } = props.vpc.selectSubnets(props.vpcSubnets);
     const asgProps: CfnAutoScalingGroupProps = {
       cooldown: props.cooldown !== undefined ? props.cooldown.toSeconds().toString() : undefined,
-      minSize: minCapacity.toString(),
-      maxSize: maxCapacity.toString(),
-      desiredCapacity: desiredCapacity.toString(),
+      minSize: Tokenization.stringifyNumber(minCapacity),
+      maxSize: Tokenization.stringifyNumber(maxCapacity),
+      desiredCapacity: desiredCapacity !== undefined ? Tokenization.stringifyNumber(desiredCapacity) : undefined,
       launchConfigurationName: launchConfig.ref,
       loadBalancerNames: Lazy.listValue({ produce: () => this.loadBalancerNames }, { omitEmpty: true }),
       targetGroupArns: Lazy.listValue({ produce: () => this.targetGroupArns }, { omitEmpty: true }),
@@ -444,11 +511,13 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
           ],
         }
       ],
-      vpcZoneIdentifier: subnetIds
+      vpcZoneIdentifier: subnetIds,
+      healthCheckType: props.healthCheck && props.healthCheck.type,
+      healthCheckGracePeriod: props.healthCheck && props.healthCheck.gracePeriod && props.healthCheck.gracePeriod.toSeconds(),
     };
 
     if (!hasPublic && props.associatePublicIpAddress) {
-      throw new Error("To set 'associatePublicIpAddress: true' you must select Public subnets (vpcSubnets: { subnetType: SubnetType.Public })");
+      throw new Error("To set 'associatePublicIpAddress: true' you must select Public subnets (vpcSubnets: { subnetType: SubnetType.PUBLIC })");
     }
 
     this.autoScalingGroup = new CfnAutoScalingGroup(this, 'ASG', asgProps);
@@ -459,8 +528,11 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       resource: 'autoScalingGroup:*:autoScalingGroupName',
       resourceName: this.autoScalingGroupName
     });
+    this.node.defaultChild = this.autoScalingGroup;
 
     this.applyUpdatePolicies(props);
+
+    this.spotPrice = props.spotPrice;
   }
 
   /**
@@ -483,9 +555,18 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   /**
    * Attach to ELBv2 Application Target Group
    */
-  public attachToApplicationTargetGroup(targetGroup: elbv2.ApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
+  public attachToApplicationTargetGroup(targetGroup: elbv2.IApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
+    if (this.albTargetGroup !== undefined) {
+      throw new Error('Cannot add AutoScalingGroup to 2nd Target Group');
+    }
+
     this.targetGroupArns.push(targetGroup.targetGroupArn);
-    this.albTargetGroup = targetGroup;
+    if (targetGroup instanceof elbv2.ApplicationTargetGroup) {
+      // Copy onto self if it's a concrete type. We need this for autoscaling
+      // based on request count, which we cannot do with an imported TargetGroup.
+      this.albTargetGroup = targetGroup;
+    }
+
     targetGroup.registerConnectable(this);
     return { targetType: elbv2.TargetType.INSTANCE };
   }
@@ -493,7 +574,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   /**
    * Attach to ELBv2 Application Target Group
    */
-  public attachToNetworkTargetGroup(targetGroup: elbv2.NetworkTargetGroup): elbv2.LoadBalancerTargetProps {
+  public attachToNetworkTargetGroup(targetGroup: elbv2.INetworkTargetGroup): elbv2.LoadBalancerTargetProps {
     this.targetGroupArns.push(targetGroup.targetGroupArn);
     return { targetType: elbv2.TargetType.INSTANCE };
   }
@@ -674,6 +755,61 @@ export enum ScalingProcess {
 }
 
 /**
+ * EC2 Heath check options
+ */
+export interface Ec2HealthCheckOptions {
+  /**
+   * Specified the time Auto Scaling waits before checking the health status of an EC2 instance that has come into service
+   *
+   * @default Duration.seconds(0)
+   */
+  readonly grace?: Duration;
+}
+
+/**
+ * ELB Heath check options
+ */
+export interface ElbHealthCheckOptions {
+  /**
+   * Specified the time Auto Scaling waits before checking the health status of an EC2 instance that has come into service
+   *
+   * This option is required for ELB health checks.
+   */
+  readonly grace: Duration;
+}
+
+/**
+ * Health check settings
+ */
+export class HealthCheck {
+  /**
+   * Use EC2 for health checks
+   *
+   * @param options EC2 health check options
+   */
+  public static ec2(options: Ec2HealthCheckOptions = {}): HealthCheck {
+    return new HealthCheck(HealthCheckType.EC2, options.grace);
+  }
+
+  /**
+   * Use ELB for health checks.
+   * It considers the instance unhealthy if it fails either the EC2 status checks or the load balancer health checks.
+   *
+   * @param options ELB health check options
+   */
+  public static elb(options: ElbHealthCheckOptions): HealthCheck {
+    return new HealthCheck(HealthCheckType.ELB, options.grace);
+  }
+
+  private constructor(public readonly type: string, public readonly gracePeriod?: Duration) { }
+}
+
+enum HealthCheckType {
+  EC2 = 'EC2',
+  ELB = 'ELB',
+}
+
+/**
  * Render the rolling update configuration into the appropriate object
  */
 function renderRollingUpdateConfig(config: RollingUpdateConfiguration = {}): CfnAutoScalingRollingUpdate {
@@ -798,4 +934,33 @@ export interface MetricTargetTrackingProps extends BaseTargetTrackingProps {
    * Value to keep the metric around
    */
   readonly targetValue: number;
+}
+
+/**
+ * Synthesize an array of block device mappings from a list of block device
+ *
+ * @param construct the instance/asg construct, used to host any warning
+ * @param blockDevices list of block devices
+ */
+function synthesizeBlockDeviceMappings(construct: Construct, blockDevices: BlockDevice[]): CfnLaunchConfiguration.BlockDeviceMappingProperty[] {
+  return blockDevices.map<CfnLaunchConfiguration.BlockDeviceMappingProperty>(({ deviceName, volume, mappingEnabled }) => {
+    const { virtualName, ebsDevice: ebs } = volume;
+
+    if (ebs) {
+      const { iops, volumeType } = ebs;
+
+      if (!iops) {
+        if (volumeType === EbsDeviceVolumeType.IO1) {
+          throw new Error('iops property is required with volumeType: EbsDeviceVolumeType.IO1');
+        }
+      } else if (volumeType !== EbsDeviceVolumeType.IO1) {
+        construct.node.addWarning('iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
+      }
+    }
+
+    return {
+      deviceName, ebs, virtualName,
+      noDevice: mappingEnabled === false ? true : undefined,
+    };
+  });
 }

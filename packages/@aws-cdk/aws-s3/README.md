@@ -191,3 +191,67 @@ const bucket = new Bucket(this, 'MyBlockedBucket', {
 When `blockPublicPolicy` is set to `true`, `grantPublicRead()` throws an error.
 
 [block public access settings]: https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html
+
+### Logging configuration
+
+Use `serverAccessLogsBucket` to describe where server access logs are to be stored.
+
+```ts
+const accessLogsBucket = new Bucket(this, 'AccessLogsBucket');
+
+const bucket = new Bucket(this, 'MyBucket', {
+  serverAccessLogsBucket: accessLogsBucket,
+});
+```
+
+It's also possible to specify a prefix for Amazon S3 to assign to all log object keys.
+
+```ts
+const bucket = new Bucket(this, 'MyBucket', {
+  serverAccessLogsBucket: accessLogsBucket,
+  serverAccessLogsPrefix: 'logs'
+});
+```
+
+[S3 Server access logging]: https://docs.aws.amazon.com/AmazonS3/latest/dev/ServerLogs.html
+
+### Website redirection
+
+You can use the two following properties to specify the bucket [redirection policy]. Please note that these methods cannot both be applied to the same bucket.
+
+[redirection policy]: https://docs.aws.amazon.com/AmazonS3/latest/dev/how-to-page-redirect.html#advanced-conditional-redirects
+
+#### Static redirection
+
+You can statically redirect a to a given Bucket URL or any other host name with `websiteRedirect`:
+
+```ts
+const bucket = new Bucket(this, 'MyRedirectedBucket', {
+    websiteRedirect: { hostName: 'www.example.com' }
+});
+```
+
+#### Routing rules
+
+Alternatively, you can also define multiple `websiteRoutingRules`, to define complex, conditional redirections:
+
+```ts
+const bucket = new Bucket(this, 'MyRedirectedBucket', {
+  websiteRoutingRules: [{
+    hostName: 'www.example.com',
+    httpRedirectCode: '302',
+    protocol: RedirectProtocol.HTTPS,
+    replaceKey: ReplaceKey.prefixWith('test/'),
+    condition: {
+      httpErrorCodeReturnedEquals: '200',
+      keyPrefixEquals: 'prefix',
+    }
+  }]
+});
+```
+
+### Filling the bucket as part of deployment
+
+To put files into a bucket as part of a deployment (for example, to host a
+website), see the `@aws-cdk/aws-s3-deployment` package, which provides a
+resource that can do just that.

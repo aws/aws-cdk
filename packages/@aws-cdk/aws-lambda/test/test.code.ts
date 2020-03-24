@@ -1,30 +1,30 @@
 import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
-import cdk = require('@aws-cdk/core');
-import cxapi = require('@aws-cdk/cx-api');
+import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
-import path = require('path');
-import lambda = require('../lib');
+import * as path from 'path';
+import * as lambda from '../lib';
 
 // tslint:disable:no-string-literal
 
 export = {
-  'lambda.Code.inline': {
+  'lambda.Code.fromInline': {
     'fails if used with unsupported runtimes'(test: Test) {
-      test.throws(() => defineFunction(lambda.Code.inline('boom'), lambda.Runtime.GO_1_X), /Inline source not allowed for go1\.x/);
-      test.throws(() => defineFunction(lambda.Code.inline('boom'), lambda.Runtime.JAVA_8), /Inline source not allowed for java8/);
+      test.throws(() => defineFunction(lambda.Code.fromInline('boom'), lambda.Runtime.GO_1_X), /Inline source not allowed for go1\.x/);
+      test.throws(() => defineFunction(lambda.Code.fromInline('boom'), lambda.Runtime.JAVA_8), /Inline source not allowed for java8/);
       test.done();
     },
     'fails if larger than 4096 bytes'(test: Test) {
       test.throws(
-        () => defineFunction(lambda.Code.inline(generateRandomString(4097)), lambda.Runtime.NODEJS_8_10),
+        () => defineFunction(lambda.Code.fromInline(generateRandomString(4097)), lambda.Runtime.NODEJS_10_X),
         /Lambda source is too large, must be <= 4096 but is 4097/);
       test.done();
     }
   },
-  'lambda.Code.asset': {
+  'lambda.Code.fromAsset': {
     'fails if a non-zip asset is used'(test: Test) {
       // GIVEN
-      const fileAsset = lambda.Code.asset(path.join(__dirname, 'my-lambda-handler', 'index.py'));
+      const fileAsset = lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler', 'index.py'));
 
       // THEN
       test.throws(() => defineFunction(fileAsset), /Asset must be a \.zip file or a directory/);
@@ -35,18 +35,18 @@ export = {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'MyStack');
-      const directoryAsset = lambda.Code.asset(path.join(__dirname, 'my-lambda-handler'));
+      const directoryAsset = lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler'));
 
       // WHEN
       new lambda.Function(stack, 'Func1', {
         handler: 'foom',
-        runtime: lambda.Runtime.NODEJS_8_10,
+        runtime: lambda.Runtime.NODEJS_10_X,
         code: directoryAsset
       });
 
       new lambda.Function(stack, 'Func2', {
         handler: 'foom',
-        runtime: lambda.Runtime.NODEJS_8_10,
+        runtime: lambda.Runtime.NODEJS_10_X,
         code: directoryAsset
       });
 
@@ -55,12 +55,7 @@ export = {
       const synthesized = assembly.stacks[0];
 
       // Func1 has an asset, Func2 does not
-      const metadata = synthesized.manifest.metadata || {};
-      test.ok(metadata['/MyStack/Func1/Code']);
-      test.deepEqual(metadata['/MyStack/Func1/Code'].length, 1);
-      test.deepEqual(metadata['/MyStack/Func1/Code'][0].type, 'aws:cdk:asset');
-      test.deepEqual(metadata['/MyStack/Func2/Code'], undefined);
-
+      test.deepEqual(synthesized.assets.length, 1);
       test.done();
     },
 
@@ -73,8 +68,8 @@ export = {
 
       // WHEN
       new lambda.Function(stack, 'Func1', {
-        code: lambda.Code.asset(location),
-        runtime: lambda.Runtime.NODEJS_8_10,
+        code: lambda.Code.fromAsset(location),
+        runtime: lambda.Runtime.NODEJS_10_X,
         handler: 'foom',
       });
 
@@ -89,13 +84,13 @@ export = {
     }
   },
 
-  'lambda.Code.cfnParameters': {
+  'lambda.Code.fromCfnParameters': {
     "automatically creates the Bucket and Key parameters when it's used in a Function"(test: Test) {
       const stack = new cdk.Stack();
       const code = new lambda.CfnParametersCode();
       new lambda.Function(stack, 'Function', {
         code,
-        runtime: lambda.Runtime.NODEJS_8_10,
+        runtime: lambda.Runtime.NODEJS_10_X,
         handler: 'index.handler',
       });
 
@@ -139,7 +134,7 @@ export = {
         type: 'String',
       });
 
-      const code = lambda.Code.cfnParameters({
+      const code = lambda.Code.fromCfnParameters({
         bucketNameParam,
         objectKeyParam: bucketKeyParam,
       });
@@ -149,7 +144,7 @@ export = {
 
       new lambda.Function(stack, 'Function', {
         code,
-        runtime: lambda.Runtime.NODEJS_8_10,
+        runtime: lambda.Runtime.NODEJS_10_X,
         handler: 'index.handler',
       });
 
@@ -194,7 +189,7 @@ export = {
   },
 };
 
-function defineFunction(code: lambda.Code, runtime: lambda.Runtime = lambda.Runtime.NODEJS_8_10) {
+function defineFunction(code: lambda.Code, runtime: lambda.Runtime = lambda.Runtime.NODEJS_10_X) {
   const stack = new cdk.Stack();
   return new lambda.Function(stack, 'Func', {
     handler: 'foom',

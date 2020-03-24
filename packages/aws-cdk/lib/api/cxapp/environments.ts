@@ -1,9 +1,9 @@
-import cxapi = require('@aws-cdk/cx-api');
-import minimatch = require('minimatch');
-import { SDK } from '../util/sdk';
+import * as cxapi from '@aws-cdk/cx-api';
+import * as minimatch from 'minimatch';
+import { SdkProvider } from '../aws-auth';
 import { AppStacks } from './stacks';
 
-export async function globEnvironmentsFromStacks(appStacks: AppStacks, environmentGlobs: string[], sdk: SDK): Promise<cxapi.Environment[]> {
+export async function globEnvironmentsFromStacks(appStacks: AppStacks, environmentGlobs: string[], sdk: SdkProvider): Promise<cxapi.Environment[]> {
   if (environmentGlobs.length === 0) {
     environmentGlobs = [ '**' ]; // default to ALL
   }
@@ -12,7 +12,7 @@ export async function globEnvironmentsFromStacks(appStacks: AppStacks, environme
 
   const availableEnvironments = new Array<cxapi.Environment>();
   for (const stack of stacks) {
-    const actual = await parseEnvironment(sdk, stack.environment);
+    const actual = await sdk.resolveEnvironment(stack.environment.account, stack.environment.region);
     availableEnvironments.push(actual);
   }
 
@@ -26,33 +26,20 @@ export async function globEnvironmentsFromStacks(appStacks: AppStacks, environme
   return environments;
 }
 
-async function parseEnvironment(sdk: SDK, env: cxapi.Environment): Promise<cxapi.Environment> {
-  const account = env.account === cxapi.UNKNOWN_ACCOUNT ? await sdk.defaultAccount() : env.account;
-  const region = env.region === cxapi.UNKNOWN_REGION ? await sdk.defaultRegion() : env.region;
-
-  if (!account || !region) {
-    throw new Error(`Unable to determine default account and/or region`);
-  }
-
-  return {
-    account, region,
-    name: cxapi.EnvironmentUtils.format(account, region)
-  };
-}
-
 /**
  * Given a set of "<account>/<region>" strings, construct environments for them
  */
 export function environmentsFromDescriptors(envSpecs: string[]): cxapi.Environment[] {
   if (envSpecs.length === 0) {
-    throw new Error(`Either specify an app with '--app', or specify an environment name like '123456789012/us-east-1'`);
+    throw new Error(`Either specify an app with '--app', or specify an environment name like 'aws://123456789012/us-east-1'`);
   }
 
   const ret = new Array<cxapi.Environment>();
+
   for (const spec of envSpecs) {
-    const parts = spec.split('/');
+    const parts = spec.replace(/^aws:\/\//, '').split('/');
     if (parts.length !== 2) {
-      throw new Error(`Expected environment name in format '<account>/<region>', got: ${spec}`);
+      throw new Error(`Expected environment name in format 'aws://<account>/<region>', got: ${spec}`);
     }
 
     ret.push({

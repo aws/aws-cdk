@@ -9,17 +9,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "lambda.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "lambda.amazonaws.com"
               }
             }
           ],
@@ -66,7 +56,7 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs8.10"
+        "Runtime": "nodejs10.x"
       },
       "DependsOn": [
         "CustomFunctionServiceRoleD3F73B79"
@@ -150,17 +140,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "config.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "config.amazonaws.com"
               }
             }
           ],
@@ -206,7 +186,7 @@
             "Arn": {
               "Ref": "ComplianceTopic0229448B"
             },
-            "Id": "awscdkconfigruleintegComplianceTopic55CAF01A"
+            "Id": "Target0"
           }
         ]
       }
@@ -223,17 +203,7 @@
               "Action": "sns:Publish",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "events.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "events.amazonaws.com"
               },
               "Resource": {
                 "Ref": "ComplianceTopic0229448B"

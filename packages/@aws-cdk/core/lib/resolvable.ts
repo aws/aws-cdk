@@ -1,4 +1,4 @@
-import { IConstruct } from "./construct";
+import { IConstruct } from "./construct-compat";
 import { TokenString } from "./private/encoding";
 import { TokenMap } from "./private/token-map";
 import { TokenizedStringFragments } from "./string-fragments";
@@ -11,6 +11,11 @@ export interface IResolveContext {
    * The scope from which resolution has been initiated
    */
   readonly scope: IConstruct;
+
+  /**
+   * True when we are still preparing, false if we're rendering the final output
+   */
+  readonly preparing: boolean;
 
   /**
    * Resolve an inner object

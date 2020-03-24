@@ -1,7 +1,7 @@
-import sqs = require('@aws-cdk/aws-sqs');
-import sfn = require('@aws-cdk/aws-stepfunctions');
-import cdk = require('@aws-cdk/core');
-import tasks = require('../lib');
+import * as sqs from '@aws-cdk/aws-sqs';
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+import * as cdk from '@aws-cdk/core';
+import * as tasks from '../lib';
 
 let stack: cdk.Stack;
 let queue: sqs.Queue;
@@ -22,7 +22,18 @@ test('Send message to queue', () => {
   // THEN
   expect(stack.resolve(task.toStateJson())).toEqual({
     Type: 'Task',
-    Resource: 'arn:aws:states:::sqs:sendMessage',
+    Resource: {
+      "Fn::Join": [
+        "",
+        [
+          "arn:",
+          {
+            Ref: "AWS::Partition",
+          },
+          ":states:::sqs:sendMessage",
+        ],
+      ],
+    },
     End: true,
     Parameters: {
       'QueueUrl': { Ref: 'Queue4A7E3555' },
@@ -35,7 +46,7 @@ test('Send message to queue', () => {
 test('Send message to SQS queue with task token', () => {
   // WHEN
   const task = new sfn.Task(stack, 'Send', { task: new tasks.SendToQueue(queue, {
-    waitForTaskToken: true,
+    integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
     messageBody: sfn.TaskInput.fromObject({
       Input: 'Send this message',
       Token: sfn.Context.taskToken
@@ -45,7 +56,18 @@ test('Send message to SQS queue with task token', () => {
   // THEN
   expect(stack.resolve(task.toStateJson())).toEqual({
     Type: 'Task',
-    Resource: 'arn:aws:states:::sqs:sendMessage.waitForTaskToken',
+    Resource: {
+      "Fn::Join": [
+        "",
+        [
+          "arn:",
+          {
+            Ref: "AWS::Partition",
+          },
+          ":states:::sqs:sendMessage.waitForTaskToken",
+        ],
+      ],
+    },
     End: true,
     Parameters: {
       QueueUrl: { Ref: 'Queue4A7E3555' },
@@ -57,11 +79,11 @@ test('Send message to SQS queue with task token', () => {
   });
 });
 
-test('Task throws if waitForTaskToken is supplied but task token is not included in messageBody', () => {
+test('Task throws if WAIT_FOR_TASK_TOKEN is supplied but task token is not included in messageBody', () => {
   expect(() => {
     // WHEN
     new sfn.Task(stack, 'Send', { task: new tasks.SendToQueue(queue, {
-      waitForTaskToken: true,
+      integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
       messageBody: sfn.TaskInput.fromText('Send this message')
     }) });
     // THEN
@@ -79,7 +101,18 @@ test('Message body can come from state', () => {
   // THEN
   expect(stack.resolve(task.toStateJson())).toEqual({
     Type: 'Task',
-    Resource: 'arn:aws:states:::sqs:sendMessage',
+    Resource: {
+      "Fn::Join": [
+        "",
+        [
+          "arn:",
+          {
+            Ref: "AWS::Partition",
+          },
+          ":states:::sqs:sendMessage",
+        ],
+      ],
+    },
     End: true,
     Parameters: {
       'QueueUrl': { Ref: 'Queue4A7E3555' },
@@ -102,7 +135,18 @@ test('Message body can be an object', () => {
   // THEN
   expect(stack.resolve(task.toStateJson())).toEqual({
     Type: 'Task',
-    Resource: 'arn:aws:states:::sqs:sendMessage',
+    Resource: {
+      "Fn::Join": [
+        "",
+        [
+          "arn:",
+          {
+            Ref: "AWS::Partition",
+          },
+          ":states:::sqs:sendMessage",
+        ],
+      ],
+    },
     End: true,
     Parameters: {
       QueueUrl: { Ref: 'Queue4A7E3555' },
@@ -127,7 +171,18 @@ test('Message body object can contain references', () => {
   // THEN
   expect(stack.resolve(task.toStateJson())).toEqual({
     Type: 'Task',
-    Resource: 'arn:aws:states:::sqs:sendMessage',
+    Resource: {
+      "Fn::Join": [
+        "",
+        [
+          "arn:",
+          {
+            Ref: "AWS::Partition",
+          },
+          ":states:::sqs:sendMessage",
+        ],
+      ],
+    },
     End: true,
     Parameters: {
       QueueUrl: { Ref: 'Queue4A7E3555' },
@@ -136,4 +191,13 @@ test('Message body object can contain references', () => {
       }
     },
   });
+});
+
+test('Task throws if SYNC is supplied as service integration pattern', () => {
+  expect(() => {
+    new sfn.Task(stack, 'Send', { task: new tasks.SendToQueue(queue, {
+      integrationPattern: sfn.ServiceIntegrationPattern.SYNC,
+      messageBody: sfn.TaskInput.fromText('Send this message')
+    }) });
+  }).toThrow(/Invalid Service Integration Pattern: SYNC is not supported to call SQS./i);
 });

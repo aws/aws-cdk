@@ -1,6 +1,7 @@
 import { ICfnConditionExpression } from './cfn-condition';
 import { minimalCloudFormationJoin } from './private/cloudformation-lang';
 import { Intrinsic } from './private/intrinsic';
+import { Reference } from './reference';
 import { IResolvable, IResolveContext } from './resolvable';
 import { captureStackTrace } from './stack-trace';
 import { Token } from './token';
@@ -13,6 +14,15 @@ import { Token } from './token';
  */
 export class Fn {
   /**
+   * The ``Ref`` intrinsic function returns the value of the specified parameter or resource.
+   * Note that it doesn't validate the logicalName, it mainly serves paremeter/resource reference defined in a ``CfnInclude`` template.
+   * @param logicalName The logical name of a parameter/resource for which you want to retrieve its value.
+   */
+  public static ref(logicalName: string): string {
+    return new FnRef(logicalName).toString();
+  }
+
+  /**
    * The ``Fn::GetAtt`` intrinsic function returns the value of an attribute
    * from a resource in the template.
    * @param logicalNameOfResource The logical name (also called logical ID) of
@@ -20,9 +30,9 @@ export class Fn {
    * @param attributeName The name of the resource-specific attribute whose
    * value you want. See the resource's reference page for details about the
    * attributes available for that resource type.
-   * @returns a CloudFormationToken object
+   * @returns an IResolvable object
    */
-  public static getAtt(logicalNameOfResource: string, attributeName: string): Token {
+  public static getAtt(logicalNameOfResource: string, attributeName: string): IResolvable {
     return new FnGetAtt(logicalNameOfResource, attributeName);
   }
 
@@ -307,6 +317,21 @@ export class Fn {
 class FnBase extends Intrinsic {
   constructor(name: string, value: any) {
     super({ [name]: value });
+  }
+}
+
+/**
+ * The intrinsic function ``Ref`` returns the value of the specified parameter or resource.
+ * When you specify a parameter's logical name, it returns the value of the parameter.
+ * When you specify a resource's logical name, it returns a value that you can typically use to refer to that resource, such as a physical ID.
+ */
+class FnRef extends FnBase {
+  /**
+   * Creates an ``Ref`` function.
+   * @param logicalName The logical name of a parameter/resource for which you want to retrieve its value.
+   */
+  constructor(logicalName: string) {
+    super('Ref', logicalName);
   }
 }
 
@@ -637,8 +662,6 @@ class FnJoin implements IResolvable {
 
   private readonly delimiter: string;
   private readonly listOfValues: any[];
-  // Cache for the result of resolveValues() - since it otherwise would be computed several times
-  private _resolvedValues?: any[];
 
   /**
    * Creates an ``Fn::Join`` function.
@@ -682,9 +705,7 @@ class FnJoin implements IResolvable {
    * generate shorter output.
    */
   private resolveValues(context: IResolveContext) {
-    if (this._resolvedValues) { return this._resolvedValues; }
-
-    const resolvedValues = this.listOfValues.map(context.resolve);
-    return this._resolvedValues = minimalCloudFormationJoin(this.delimiter, resolvedValues);
+    const resolvedValues = this.listOfValues.map(x => Reference.isReference(x) ? x : context.resolve(x));
+    return  minimalCloudFormationJoin(this.delimiter, resolvedValues);
   }
 }

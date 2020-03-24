@@ -1,16 +1,16 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import ec2 = require('@aws-cdk/aws-ec2');
-import elb = require('@aws-cdk/aws-elasticloadbalancing');
-import cloudmap = require('@aws-cdk/aws-servicediscovery');
-import cdk = require('@aws-cdk/core');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as elb from '@aws-cdk/aws-elasticloadbalancing';
+import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
+import * as cloudmap from '@aws-cdk/aws-servicediscovery';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import ecs = require('../../lib');
-import { BinPackResource, BuiltInAttributes, ContainerImage, NetworkMode } from '../../lib';
-import { LaunchType } from '../../lib/base/base-service';
+import * as ecs from '../../lib';
+import { LaunchType, PropagatedTagSource } from '../../lib/base/base-service';
 import { PlacementConstraint, PlacementStrategy } from '../../lib/placement';
 
 export = {
-  "When creating an ECS Service": {
+  "When creating an EC2 Service": {
     "with only required properties set, it correctly sets default properties"(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
@@ -43,9 +43,221 @@ export = {
         },
         DesiredCount: 1,
         LaunchType: LaunchType.EC2,
-        LoadBalancers: [],
-        SchedulingStrategy: "REPLICA"
+        SchedulingStrategy: "REPLICA",
+        EnableECSManagedTags: false,
       }));
+
+      test.done();
+    },
+
+    "with custom cloudmap namespace"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      const container = taskDefinition.addContainer("web", {
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+        memoryLimitMiB: 512
+      });
+      container.addPortMappings({ containerPort: 8000 });
+
+      const cloudMapNamespace = new cloudmap.PrivateDnsNamespace(stack, 'TestCloudMapNamespace', {
+        name: "scorekeep.com",
+        vpc,
+      });
+
+      new ecs.Ec2Service(stack, "Ec2Service", {
+        cluster,
+        taskDefinition,
+        cloudMapOptions: {
+          name: "myApp",
+          failureThreshold: 20,
+          cloudMapNamespace,
+        },
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::ServiceDiscovery::Service', {
+        DnsConfig: {
+          DnsRecords: [
+            {
+              TTL: 60,
+              Type: "SRV"
+            }
+          ],
+          NamespaceId: {
+            'Fn::GetAtt': [
+              'TestCloudMapNamespace1FB9B446',
+              'Id'
+            ]
+          },
+          RoutingPolicy: 'MULTIVALUE'
+        },
+        HealthCheckCustomConfig: {
+          FailureThreshold: 20
+        },
+        Name: "myApp",
+        NamespaceId: {
+          'Fn::GetAtt': [
+            'TestCloudMapNamespace1FB9B446',
+            'Id'
+          ]
+        }
+      }));
+
+      expect(stack).to(haveResource('AWS::ServiceDiscovery::PrivateDnsNamespace', {
+        Name: "scorekeep.com",
+        Vpc: {
+          Ref: "MyVpcF9F0CA6F"
+        }
+      }));
+
+      test.done();
+    },
+
+    "with all properties set"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+        networkMode: ecs.NetworkMode.AWS_VPC
+      });
+
+      cluster.addDefaultCloudMapNamespace({
+        name: 'foo.com',
+        type: cloudmap.NamespaceType.DNS_PRIVATE
+      });
+
+      taskDefinition.addContainer("web", {
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+        memoryLimitMiB: 512,
+      });
+
+      // WHEN
+      const service = new ecs.Ec2Service(stack, "Ec2Service", {
+        cluster,
+        taskDefinition,
+        desiredCount: 2,
+        assignPublicIp: true,
+        cloudMapOptions: {
+          name: "myapp",
+          dnsRecordType: cloudmap.DnsRecordType.A,
+          dnsTtl: cdk.Duration.seconds(50),
+          failureThreshold: 20
+        },
+        daemon: false,
+        healthCheckGracePeriod: cdk.Duration.seconds(60),
+        maxHealthyPercent: 150,
+        minHealthyPercent: 55,
+        deploymentController: {
+          type: ecs.DeploymentControllerType.CODE_DEPLOY
+        },
+        securityGroup: new ec2.SecurityGroup(stack, 'SecurityGroup1', {
+          allowAllOutbound: true,
+          description: 'Example',
+          securityGroupName: 'Bob',
+          vpc,
+        }),
+        serviceName: "bonjour",
+        vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC }
+      });
+
+      service.addPlacementConstraints(PlacementConstraint.memberOf("attribute:ecs.instance-type =~ t2.*"));
+      service.addPlacementStrategies(PlacementStrategy.spreadAcross(ecs.BuiltInAttributes.AVAILABILITY_ZONE));
+
+      // THEN
+      expect(stack).to(haveResource("AWS::ECS::Service", {
+        TaskDefinition: {
+          Ref: "Ec2TaskDef0226F28C"
+        },
+        Cluster: {
+          Ref: "EcsCluster97242B84"
+        },
+        DeploymentConfiguration: {
+          MaximumPercent: 150,
+          MinimumHealthyPercent: 55
+        },
+        DeploymentController: {
+          Type: ecs.DeploymentControllerType.CODE_DEPLOY
+        },
+        DesiredCount: 2,
+        LaunchType: LaunchType.EC2,
+        NetworkConfiguration: {
+          AwsvpcConfiguration: {
+            AssignPublicIp: "ENABLED",
+            SecurityGroups: [
+              {
+                "Fn::GetAtt": [
+                  "SecurityGroup1F554B36F",
+                  "GroupId"
+                ]
+              }
+            ],
+            Subnets: [
+              {
+                Ref: "MyVpcPublicSubnet1SubnetF6608456"
+              },
+              {
+                Ref: "MyVpcPublicSubnet2Subnet492B6BFB"
+              }
+            ]
+          }
+        },
+        PlacementConstraints: [
+          {
+            Expression: "attribute:ecs.instance-type =~ t2.*",
+            Type: "memberOf"
+          }
+        ],
+        PlacementStrategies: [
+          {
+            Field: "attribute:ecs.availability-zone",
+            Type: "spread"
+          }
+        ],
+        SchedulingStrategy: "REPLICA",
+        ServiceName: "bonjour",
+        ServiceRegistries: [
+          {
+            RegistryArn: {
+              "Fn::GetAtt": [
+                "Ec2ServiceCloudmapService45B52C0F",
+                "Arn"
+              ]
+            }
+          }
+        ]
+      }));
+
+      test.done();
+    },
+
+    "throws when task definition is not EC2 compatible"(test: Test) {
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.TaskDefinition(stack, 'FargateTaskDef', {
+        compatibility: ecs.Compatibility.FARGATE,
+        cpu: "256",
+        memoryMiB: "512"
+      });
+      taskDefinition.addContainer('BaseContainer', {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        memoryReservationMiB: 10,
+      });
+
+      // THEN
+      test.throws(() => {
+        new ecs.Ec2Service(stack, "Ec2Service", {
+          cluster,
+          taskDefinition,
+        });
+      }, /Supplied TaskDefinition is not configured for compatibility with EC2/);
 
       test.done();
     },
@@ -209,7 +421,7 @@ export = {
         const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
         cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
-          networkMode: NetworkMode.BRIDGE
+          networkMode: ecs.NetworkMode.BRIDGE
         });
 
         taskDefinition.addContainer("web", {
@@ -239,7 +451,7 @@ export = {
         const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
         cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
-          networkMode: NetworkMode.BRIDGE
+          networkMode: ecs.NetworkMode.BRIDGE
         });
 
         taskDefinition.addContainer("web", {
@@ -269,7 +481,7 @@ export = {
         const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
         cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
-          networkMode: NetworkMode.AWS_VPC
+          networkMode: ecs.NetworkMode.AWS_VPC
         });
 
         taskDefinition.addContainer("web", {
@@ -317,7 +529,7 @@ export = {
         const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
         cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
-          networkMode: NetworkMode.AWS_VPC
+          networkMode: ecs.NetworkMode.AWS_VPC
         });
 
         taskDefinition.addContainer("web", {
@@ -398,6 +610,38 @@ export = {
       test.done();
     },
 
+    "with spreadAcross container instances strategy"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      taskDefinition.addContainer("web", {
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+        memoryLimitMiB: 512
+      });
+
+      const service = new ecs.Ec2Service(stack, "Ec2Service", {
+        cluster,
+        taskDefinition,
+      });
+
+      // WHEN
+      service.addPlacementStrategies(PlacementStrategy.spreadAcrossInstances());
+
+      // THEN
+      expect(stack).to(haveResource("AWS::ECS::Service", {
+        PlacementStrategies: [{
+          Field: "instanceId",
+          Type: "spread"
+        }]
+      }));
+
+      test.done();
+    },
+
     "with spreadAcross placement strategy"(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
@@ -416,7 +660,7 @@ export = {
         taskDefinition,
       });
 
-      service.addPlacementStrategies(PlacementStrategy.spreadAcross(BuiltInAttributes.AVAILABILITY_ZONE));
+      service.addPlacementStrategies(PlacementStrategy.spreadAcross(ecs.BuiltInAttributes.AVAILABILITY_ZONE));
 
       // THEN
       expect(stack).to(haveResource("AWS::ECS::Service", {
@@ -425,6 +669,51 @@ export = {
           Type: "spread"
         }]
       }));
+
+      test.done();
+    },
+
+    "can turn PlacementStrategy into json format"(test: Test) {
+      // THEN
+      test.deepEqual(PlacementStrategy.spreadAcross(ecs.BuiltInAttributes.AVAILABILITY_ZONE).toJson(), [{
+        type: 'spread',
+        field: 'attribute:ecs.availability-zone'
+      }]);
+
+      test.done();
+    },
+
+    "can turn PlacementConstraints into json format"(test: Test) {
+      // THEN
+      test.deepEqual(PlacementConstraint.distinctInstances().toJson(), [{
+        type: 'distinctInstance'
+      }]);
+
+      test.done();
+    },
+
+    "errors when spreadAcross with no input"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      taskDefinition.addContainer("web", {
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+        memoryLimitMiB: 512
+      });
+
+      const service = new ecs.Ec2Service(stack, "Ec2Service", {
+        cluster,
+        taskDefinition,
+      });
+
+      // THEN
+      test.throws(() => {
+        service.addPlacementStrategies(PlacementStrategy.spreadAcross());
+      }, 'spreadAcross: give at least one field to spread by');
 
       test.done();
     },
@@ -450,8 +739,84 @@ export = {
 
       // THEN
       test.throws(() => {
-        service.addPlacementStrategies(PlacementStrategy.spreadAcross(BuiltInAttributes.AVAILABILITY_ZONE));
+        service.addPlacementStrategies(PlacementStrategy.spreadAcross(ecs.BuiltInAttributes.AVAILABILITY_ZONE));
       });
+
+      test.done();
+    },
+
+    "with no placement constraints"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      taskDefinition.addContainer("web", {
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+        memoryLimitMiB: 512
+      });
+
+      new ecs.Ec2Service(stack, "Ec2Service", {
+        cluster,
+        taskDefinition,
+      });
+
+      // THEN
+      expect(stack).notTo(haveResource("AWS::ECS::Service", {
+        PlacementConstraints: undefined
+      }));
+
+      test.done();
+    },
+
+    "with both propagateTags and propagateTaskTagsFrom defined"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      taskDefinition.addContainer("web", {
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+        memoryLimitMiB: 512
+      });
+
+      test.throws(() => new ecs.Ec2Service(stack, "Ec2Service", {
+        cluster,
+        taskDefinition,
+        propagateTags: PropagatedTagSource.SERVICE,
+        propagateTaskTagsFrom: PropagatedTagSource.SERVICE,
+      }));
+
+      test.done();
+    },
+
+    "with no placement strategy if daemon specified"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      taskDefinition.addContainer("web", {
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+        memoryLimitMiB: 512
+      });
+
+      new ecs.Ec2Service(stack, "Ec2Service", {
+        cluster,
+        taskDefinition,
+        daemon: true
+      });
+
+      // THEN
+      expect(stack).notTo(haveResource("AWS::ECS::Service", {
+        PlacementStrategies: undefined
+      }));
 
       test.done();
     },
@@ -513,6 +878,68 @@ export = {
       test.done();
     },
 
+    "with packedbyCpu placement strategy"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      taskDefinition.addContainer("web", {
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+        memoryLimitMiB: 512
+      });
+
+      const service = new ecs.Ec2Service(stack, "Ec2Service", {
+        cluster,
+        taskDefinition,
+      });
+
+      service.addPlacementStrategies(PlacementStrategy.packedByCpu());
+
+      // THEN
+      expect(stack).to(haveResource("AWS::ECS::Service", {
+        PlacementStrategies: [{
+          Field: "cpu",
+          Type: "binpack"
+        }]
+      }));
+
+      test.done();
+    },
+
+    "with packedbyMemory placement strategy"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      taskDefinition.addContainer("web", {
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+        memoryLimitMiB: 512
+      });
+
+      const service = new ecs.Ec2Service(stack, "Ec2Service", {
+        cluster,
+        taskDefinition,
+      });
+
+      service.addPlacementStrategies(PlacementStrategy.packedByMemory());
+
+      // THEN
+      expect(stack).to(haveResource("AWS::ECS::Service", {
+        PlacementStrategies: [{
+          Field: "memory",
+          Type: "binpack"
+        }]
+      }));
+
+      test.done();
+    },
+
     "with packedBy placement strategy"(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
@@ -531,7 +958,7 @@ export = {
         taskDefinition,
       });
 
-      service.addPlacementStrategies(PlacementStrategy.packedBy(BinPackResource.MEMORY));
+      service.addPlacementStrategies(PlacementStrategy.packedBy(ecs.BinPackResource.MEMORY));
 
       // THEN
       expect(stack).to(haveResource("AWS::ECS::Service", {
@@ -565,8 +992,420 @@ export = {
 
       // THEN
       test.throws(() => {
-        service.addPlacementStrategies(PlacementStrategy.packedBy(BinPackResource.MEMORY));
+        service.addPlacementStrategies(PlacementStrategy.packedBy(ecs.BinPackResource.MEMORY));
       });
+
+      test.done();
+    }
+  },
+
+  "attachToClassicLB": {
+    "allows network mode of task definition to be host"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TD', { networkMode: ecs.NetworkMode.HOST });
+      const container = taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        memoryLimitMiB: 1024,
+      });
+      container.addPortMappings({ containerPort: 808 });
+      const service = new ecs.Ec2Service(stack, 'Service', {
+        cluster,
+        taskDefinition
+      });
+
+      // THEN
+      const lb = new elb.LoadBalancer(stack, 'LB', { vpc });
+      service.attachToClassicLB(lb);
+
+      test.done();
+    },
+
+    'allows network mode of task definition to be bridge'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TD', { networkMode: ecs.NetworkMode.BRIDGE });
+      const container = taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        memoryLimitMiB: 1024,
+      });
+      container.addPortMappings({ containerPort: 808 });
+      const service = new ecs.Ec2Service(stack, 'Service', {
+        cluster,
+        taskDefinition
+      });
+
+      // THEN
+      const lb = new elb.LoadBalancer(stack, 'LB', { vpc });
+      service.attachToClassicLB(lb);
+
+      test.done();
+    },
+
+    'throws when network mode of task definition is AwsVpc'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TD', { networkMode: ecs.NetworkMode.AWS_VPC });
+      const container = taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        memoryLimitMiB: 1024,
+      });
+      container.addPortMappings({ containerPort: 808 });
+      const service = new ecs.Ec2Service(stack, 'Service', {
+        cluster,
+        taskDefinition
+      });
+
+      // THEN
+      const lb = new elb.LoadBalancer(stack, 'LB', { vpc });
+      test.throws(() => {
+        service.attachToClassicLB(lb);
+      }, /Cannot use a Classic Load Balancer if NetworkMode is AwsVpc. Use Host or Bridge instead./);
+
+      test.done();
+    },
+
+    'throws when network mode of task definition is none'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TD', { networkMode: ecs.NetworkMode.NONE });
+      const container = taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        memoryLimitMiB: 1024,
+      });
+      container.addPortMappings({ containerPort: 808 });
+      const service = new ecs.Ec2Service(stack, 'Service', {
+        cluster,
+        taskDefinition
+      });
+
+      // THEN
+      const lb = new elb.LoadBalancer(stack, 'LB', { vpc });
+      test.throws(() => {
+        service.attachToClassicLB(lb);
+      }, /Cannot use a Classic Load Balancer if NetworkMode is None. Use Host or Bridge instead./);
+
+      test.done();
+    }
+  },
+
+  "attachToApplicationTargetGroup": {
+    "allows network mode of task definition to be other than none"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', { networkMode: ecs.NetworkMode.AWS_VPC });
+      const container = taskDefinition.addContainer('MainContainer', {
+        image: ecs.ContainerImage.fromRegistry('hello'),
+      });
+      container.addPortMappings({ containerPort: 8000 });
+
+      const service = new ecs.Ec2Service(stack, 'Service', {
+        cluster,
+        taskDefinition
+      });
+
+      const lb = new elbv2.ApplicationLoadBalancer(stack, "lb", { vpc });
+      const listener = lb.addListener("listener", { port: 80 });
+      const targetGroup = listener.addTargets("target", {
+        port: 80,
+      });
+
+      // THEN
+      service.attachToApplicationTargetGroup(targetGroup);
+
+      test.done();
+    },
+
+    "throws when network mode of task definition is none"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', { networkMode: ecs.NetworkMode.NONE });
+      const container = taskDefinition.addContainer('MainContainer', {
+        image: ecs.ContainerImage.fromRegistry('hello'),
+      });
+      container.addPortMappings({ containerPort: 8000 });
+
+      const service = new ecs.Ec2Service(stack, 'Service', {
+        cluster,
+        taskDefinition
+      });
+
+      const lb = new elbv2.ApplicationLoadBalancer(stack, "lb", { vpc });
+      const listener = lb.addListener("listener", { port: 80 });
+      const targetGroup = listener.addTargets("target", {
+        port: 80,
+      });
+
+      // THEN
+      test.throws(() => {
+        service.attachToApplicationTargetGroup(targetGroup);
+      }, /Cannot use a load balancer if NetworkMode is None. Use Bridge, Host or AwsVpc instead./);
+
+      test.done();
+    },
+
+    'correctly setting ingress and egress port': {
+      'with bridge/NAT network mode and 0 host port'(test: Test) {
+        [ecs.NetworkMode.BRIDGE, ecs.NetworkMode.NAT].forEach((networkMode: ecs.NetworkMode) => {
+          // GIVEN
+          const stack = new cdk.Stack();
+          const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+          const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+          cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+          const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', { networkMode });
+          const container = taskDefinition.addContainer('MainContainer', {
+            image: ecs.ContainerImage.fromRegistry('hello'),
+            memoryLimitMiB: 512,
+          });
+          container.addPortMappings({ containerPort: 8000 });
+          container.addPortMappings({ containerPort: 8001 });
+
+          const service = new ecs.Ec2Service(stack, 'Service', {
+            cluster,
+            taskDefinition
+          });
+
+          // WHEN
+          const lb = new elbv2.ApplicationLoadBalancer(stack, "lb", { vpc });
+          const listener = lb.addListener("listener", { port: 80 });
+          listener.addTargets("target", {
+            port: 80,
+            targets: [service.loadBalancerTarget({
+              containerName: "MainContainer",
+              containerPort: 8001
+            })]
+          });
+
+          // THEN
+          expect(stack).to(haveResource('AWS::EC2::SecurityGroupIngress', {
+            Description: "Load balancer to target",
+            FromPort: 32768,
+            ToPort: 65535
+          }));
+
+          expect(stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
+            Description: "Load balancer to target",
+            FromPort: 32768,
+            ToPort: 65535
+          }));
+        });
+
+        test.done();
+      },
+
+      'with bridge/NAT network mode and host port other than 0'(test: Test) {
+        [ecs.NetworkMode.BRIDGE, ecs.NetworkMode.NAT].forEach((networkMode: ecs.NetworkMode) => {
+          // GIVEN
+          const stack = new cdk.Stack();
+          const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+          const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+          cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+          const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', { networkMode });
+          const container = taskDefinition.addContainer('MainContainer', {
+            image: ecs.ContainerImage.fromRegistry('hello'),
+            memoryLimitMiB: 512,
+          });
+          container.addPortMappings({ containerPort: 8000 });
+          container.addPortMappings({ containerPort: 8001, hostPort: 80 });
+
+          const service = new ecs.Ec2Service(stack, 'Service', {
+            cluster,
+            taskDefinition
+          });
+
+          // WHEN
+          const lb = new elbv2.ApplicationLoadBalancer(stack, "lb", { vpc });
+          const listener = lb.addListener("listener", { port: 80 });
+          listener.addTargets("target", {
+            port: 80,
+            targets: [service.loadBalancerTarget({
+              containerName: "MainContainer",
+              containerPort: 8001
+            })]
+          });
+
+          // THEN
+          expect(stack).to(haveResource('AWS::EC2::SecurityGroupIngress', {
+            Description: "Load balancer to target",
+            FromPort: 80,
+            ToPort: 80,
+          }));
+
+          expect(stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
+            Description: "Load balancer to target",
+            FromPort: 80,
+            ToPort: 80
+          }));
+        });
+
+        test.done();
+      },
+
+      'with host network mode'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+        const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+        cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+        const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', { networkMode: ecs.NetworkMode.HOST });
+        const container = taskDefinition.addContainer('MainContainer', {
+          image: ecs.ContainerImage.fromRegistry('hello'),
+          memoryLimitMiB: 512,
+        });
+        container.addPortMappings({ containerPort: 8000 });
+        container.addPortMappings({ containerPort: 8001 });
+
+        const service = new ecs.Ec2Service(stack, 'Service', {
+          cluster,
+          taskDefinition
+        });
+
+        // WHEN
+        const lb = new elbv2.ApplicationLoadBalancer(stack, "lb", { vpc });
+        const listener = lb.addListener("listener", { port: 80 });
+        listener.addTargets("target", {
+          port: 80,
+          targets: [service.loadBalancerTarget({
+            containerName: "MainContainer",
+            containerPort: 8001
+          })]
+        });
+
+        // THEN
+        expect(stack).to(haveResource('AWS::EC2::SecurityGroupIngress', {
+          Description: "Load balancer to target",
+          FromPort: 8001,
+          ToPort: 8001,
+        }));
+
+        expect(stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
+          Description: "Load balancer to target",
+          FromPort: 8001,
+          ToPort: 8001
+        }));
+
+        test.done();
+      },
+
+      'with aws_vpc network mode'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+        const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+        cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+        const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', { networkMode: ecs.NetworkMode.AWS_VPC });
+        const container = taskDefinition.addContainer('MainContainer', {
+          image: ecs.ContainerImage.fromRegistry('hello'),
+          memoryLimitMiB: 512,
+        });
+        container.addPortMappings({ containerPort: 8000 });
+        container.addPortMappings({ containerPort: 8001 });
+
+        const service = new ecs.Ec2Service(stack, 'Service', {
+          cluster,
+          taskDefinition
+        });
+
+        // WHEN
+        const lb = new elbv2.ApplicationLoadBalancer(stack, "lb", { vpc });
+        const listener = lb.addListener("listener", { port: 80 });
+        listener.addTargets("target", {
+          port: 80,
+          targets: [service.loadBalancerTarget({
+            containerName: "MainContainer",
+            containerPort: 8001
+          })]
+        });
+
+        // THEN
+        expect(stack).to(haveResource('AWS::EC2::SecurityGroupIngress', {
+          Description: "Load balancer to target",
+          FromPort: 8001,
+          ToPort: 8001,
+        }));
+
+        expect(stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
+          Description: "Load balancer to target",
+          FromPort: 8001,
+          ToPort: 8001
+        }));
+
+        test.done();
+      }
+    },
+  },
+
+  "attachToNetworkTargetGroup": {
+    "allows network mode of task definition to be other than none"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', { networkMode: ecs.NetworkMode.AWS_VPC });
+      const container = taskDefinition.addContainer('MainContainer', {
+        image: ecs.ContainerImage.fromRegistry('hello'),
+      });
+      container.addPortMappings({ containerPort: 8000 });
+
+      const service = new ecs.Ec2Service(stack, 'Service', {
+        cluster,
+        taskDefinition
+      });
+
+      const lb = new elbv2.NetworkLoadBalancer(stack, "lb", { vpc });
+      const listener = lb.addListener("listener", { port: 80 });
+      const targetGroup = listener.addTargets("target", {
+        port: 80,
+      });
+
+      // THEN
+      service.attachToNetworkTargetGroup(targetGroup);
+
+      test.done();
+    },
+
+    "throws when network mode of task definition is none"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', { networkMode: ecs.NetworkMode.NONE });
+      const container = taskDefinition.addContainer('MainContainer', {
+        image: ecs.ContainerImage.fromRegistry('hello'),
+      });
+      container.addPortMappings({ containerPort: 8000 });
+
+      const service = new ecs.Ec2Service(stack, 'Service', {
+        cluster,
+        taskDefinition
+      });
+
+      const lb = new elbv2.NetworkLoadBalancer(stack, "lb", { vpc });
+      const listener = lb.addListener("listener", { port: 80 });
+      const targetGroup = listener.addTargets("target", {
+        port: 80,
+      });
+
+      // THEN
+      test.throws(() => {
+        service.attachToNetworkTargetGroup(targetGroup);
+      }, /Cannot use a load balancer if NetworkMode is None. Use Bridge, Host or AwsVpc instead./);
 
       test.done();
     }
@@ -585,7 +1424,10 @@ export = {
         memoryLimitMiB: 1024,
       });
       container.addPortMappings({ containerPort: 808 });
-      const service = new ecs.Ec2Service(stack, 'Service', { cluster, taskDefinition});
+      const service = new ecs.Ec2Service(stack, 'Service', {
+        cluster,
+        taskDefinition
+      });
 
       // WHEN
       const lb = new elb.LoadBalancer(stack, 'LB', { vpc });
@@ -609,6 +1451,45 @@ export = {
       }));
 
       test.done();
+    },
+
+    'can attach any container and port as a target'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TD', { networkMode: ecs.NetworkMode.HOST });
+      const container = taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        memoryLimitMiB: 1024,
+      });
+      container.addPortMappings({ containerPort: 808 });
+      container.addPortMappings({ containerPort: 8080 });
+      const service = new ecs.Ec2Service(stack, 'Service', {
+        cluster,
+        taskDefinition
+      });
+
+      // WHEN
+      const lb = new elb.LoadBalancer(stack, 'LB', { vpc });
+      lb.addTarget(service.loadBalancerTarget({
+        containerName: "web",
+        containerPort: 8080
+      }));
+
+      // THEN
+      expect(stack).to(haveResource('AWS::ECS::Service', {
+        LoadBalancers: [
+          {
+            ContainerName: "web",
+            ContainerPort: 8080,
+            LoadBalancerName: { Ref: "LB8A12904C" }
+          }
+        ]
+      }));
+
+      test.done();
     }
   },
 
@@ -623,7 +1504,7 @@ export = {
       // default network mode is bridge
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
       const container = taskDefinition.addContainer('MainContainer', {
-        image: ContainerImage.fromRegistry('hello'),
+        image: ecs.ContainerImage.fromRegistry('hello'),
         memoryLimitMiB: 512
       });
       container.addPortMappings({ containerPort: 8000 });
@@ -649,10 +1530,10 @@ export = {
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
-        networkMode: NetworkMode.NONE
+        networkMode: ecs.NetworkMode.NONE
       });
       const container = taskDefinition.addContainer('MainContainer', {
-        image: ContainerImage.fromRegistry('hello'),
+        image: ecs.ContainerImage.fromRegistry('hello'),
         memoryLimitMiB: 512
       });
       container.addPortMappings({ containerPort: 8000 });
@@ -683,7 +1564,7 @@ export = {
       // default network mode is bridge
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
       const container = taskDefinition.addContainer('MainContainer', {
-        image: ContainerImage.fromRegistry('hello'),
+        image: ecs.ContainerImage.fromRegistry('hello'),
         memoryLimitMiB: 512
       });
       container.addPortMappings({ containerPort: 8000 });
@@ -757,10 +1638,10 @@ export = {
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
 
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
-        networkMode: NetworkMode.HOST
+        networkMode: ecs.NetworkMode.HOST
       });
       const container = taskDefinition.addContainer('MainContainer', {
-        image: ContainerImage.fromRegistry('hello'),
+        image: ecs.ContainerImage.fromRegistry('hello'),
         memoryLimitMiB: 512
       });
       container.addPortMappings({ containerPort: 8000 });
@@ -836,7 +1717,7 @@ export = {
       // default network mode is bridge
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
       const container = taskDefinition.addContainer('MainContainer', {
-        image: ContainerImage.fromRegistry('hello'),
+        image: ecs.ContainerImage.fromRegistry('hello'),
         memoryLimitMiB: 512
       });
       container.addPortMappings({ containerPort: 8000 });
@@ -868,10 +1749,10 @@ export = {
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
 
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
-        networkMode: NetworkMode.AWS_VPC
+        networkMode: ecs.NetworkMode.AWS_VPC
       });
       const container = taskDefinition.addContainer('MainContainer', {
-        image: ContainerImage.fromRegistry('hello'),
+        image: ecs.ContainerImage.fromRegistry('hello'),
         memoryLimitMiB: 512
       });
       container.addPortMappings({ containerPort: 8000 });
@@ -943,10 +1824,10 @@ export = {
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
 
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
-        networkMode: NetworkMode.AWS_VPC
+        networkMode: ecs.NetworkMode.AWS_VPC
       });
       const container = taskDefinition.addContainer('MainContainer', {
-        image: ContainerImage.fromRegistry('hello'),
+        image: ecs.ContainerImage.fromRegistry('hello'),
         memoryLimitMiB: 512
       });
       container.addPortMappings({ containerPort: 8000 });
@@ -1043,6 +1924,86 @@ export = {
       statistic: 'Average'
     });
 
+    test.deepEqual(stack.resolve(service.metricCpuUtilization()), {
+      dimensions: {
+        ClusterName: { Ref: 'EcsCluster97242B84' },
+        ServiceName: { 'Fn::GetAtt': ['ServiceD69D759B', 'Name'] }
+      },
+      namespace: 'AWS/ECS',
+      metricName: 'CPUUtilization',
+      period: cdk.Duration.minutes(5),
+      statistic: 'Average'
+    });
+
     test.done();
-  }
+  },
+
+  'When import an EC2 Service': {
+    'with serviceArn'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+      // WHEN
+      const service = ecs.Ec2Service.fromEc2ServiceAttributes(stack, 'EcsService', {
+        serviceArn: 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service',
+        cluster,
+      });
+
+      // THEN
+      test.equal(service.serviceArn, 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service');
+      test.equal(service.serviceName, 'my-http-service');
+
+      test.done();
+    },
+
+    'with serviceName'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const pseudo = new cdk.ScopedAws(stack);
+      const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+      // WHEN
+      const service = ecs.Ec2Service.fromEc2ServiceAttributes(stack, 'EcsService', {
+        serviceName: 'my-http-service',
+        cluster,
+      });
+
+      // THEN
+      test.deepEqual(stack.resolve(service.serviceArn), stack.resolve(`arn:${pseudo.partition}:ecs:${pseudo.region}:${pseudo.accountId}:service/my-http-service`));
+      test.equal(service.serviceName, 'my-http-service');
+
+      test.done();
+    },
+
+    'throws an exception if both serviceArn and serviceName were provided for fromEc2ServiceAttributes'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+      test.throws(() => {
+        ecs.Ec2Service.fromEc2ServiceAttributes(stack, 'EcsService', {
+          serviceArn: 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service',
+          serviceName: 'my-http-service',
+          cluster,
+        });
+      }, /only specify either serviceArn or serviceName/);
+
+      test.done();
+    },
+
+    'throws an exception if neither serviceArn nor serviceName were provided for fromEc2ServiceAttributes'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+      test.throws(() => {
+        ecs.Ec2Service.fromEc2ServiceAttributes(stack, 'EcsService', {
+          cluster,
+        });
+      }, /only specify either serviceArn or serviceName/);
+
+      test.done();
+    },
+  },
 };

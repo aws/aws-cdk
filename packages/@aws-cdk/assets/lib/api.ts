@@ -8,13 +8,4 @@ export interface IAsset {
    * the content hash has changed.
    */
   readonly sourceHash: string;
-
-  /**
-   * A hash of the bundle for of this asset, which is only available at deployment time. As this is
-   * a late-bound token, it may not be used in construct IDs, but can be passed as a resource
-   * property in order to force a change on a resource when an asset is effectively updated. This is
-   * more reliable than `sourceHash` in particular for assets which bundling phase involve external
-   * resources that can change over time (such as Docker image builds).
-   */
-  readonly artifactHash: string;
 }

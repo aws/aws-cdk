@@ -1,15 +1,15 @@
 import '@aws-cdk/assert/jest';
-import lambda = require('@aws-cdk/aws-lambda');
-import sfn = require('@aws-cdk/aws-stepfunctions');
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Stack } from '@aws-cdk/core';
-import tasks = require('../lib');
+import * as tasks from '../lib';
 
 let stack: Stack;
 let fn: lambda.Function;
 beforeEach(() => {
   stack = new Stack();
   fn = new lambda.Function(stack, 'Fn', {
-    code: lambda.Code.inline('hello'),
+    code: lambda.Code.fromInline('hello'),
     handler: 'index.hello',
     runtime: lambda.Runtime.PYTHON_2_7,
   });

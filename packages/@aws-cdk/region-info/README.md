@@ -5,12 +5,14 @@
 
 ![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
 
-> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
-> future breaking changes.**
+> **This is a _developer preview_ (public beta) module.**
 >
-> This API is still under active development and subject to non-backward
-> compatible changes or removal in any future version. Use of the API is not recommended in production
-> environments. Experimental APIs are not subject to the Semantic Versioning model.
+> All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib))
+> are auto-generated from CloudFormation. They are stable and safe to use.
+>
+> However, all other classes, i.e., higher level constructs, are under active development and subject to non-backward
+> compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model.
+> This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
 
 ---
 <!--END STABILITY BANNER-->
@@ -32,7 +34,7 @@ import { RegionInfo } from '@aws-cdk/region-info';
 const region = RegionInfo.get('eu-west-1');
 
 // Access attributes:
-region.s3StaticWebsiteEndpoint; // s3-website.eu-west-1.amazonaws.com
+region.s3StaticWebsiteEndpoint; // s3-website-eu-west-1.amazonaws.com
 region.servicePrincipal('logs.amazonaws.com'); // logs.eu-west-1.amazonaws.com
 ```
 
@@ -52,7 +54,7 @@ import regionInfo = require('@aws-cdk/region-info');
 const codeDeployPrincipal = regionInfo.Fact.find('us-east-1', regionInfo.FactName.servicePrincipal('codedeploy.amazonaws.com'));
 // => codedeploy.us-east-1.amazonaws.com
 
-const staticWebsite = regionInfo.Fact.find('ap-northeast-1', regionInfo.FactName.s3StaticWebsiteEndpoint);
+const staticWebsite = regionInfo.Fact.find('ap-northeast-1', regionInfo.FactName.S3_STATIC_WEBSITE_ENDPOINT);
 // => s3-website-ap-northeast-1.amazonaws.com
 ```
 

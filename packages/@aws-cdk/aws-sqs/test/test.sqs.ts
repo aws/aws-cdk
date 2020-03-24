@@ -1,17 +1,18 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import iam = require('@aws-cdk/aws-iam');
-import kms = require('@aws-cdk/aws-kms');
+import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import { Duration, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import sqs = require('../lib');
-import { Queue } from '../lib';
+import * as sqs from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 
 export = {
   'default properties'(test: Test) {
     const stack = new Stack();
-    new sqs.Queue(stack, 'Queue');
+    const q = new sqs.Queue(stack, 'Queue');
+
+    test.deepEqual(q.fifo, false);
 
     expect(stack).toMatch({
       "Resources": {
@@ -95,21 +96,32 @@ export = {
     test.done();
   },
 
-  'exporting and importing works'(test: Test) {
-    // GIVEN
-    const stack = new Stack();
+  'export and import': {
+    'importing works correctly'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
 
-    // WHEN
-    const imports = sqs.Queue.fromQueueArn(stack, 'Imported', 'arn:aws:sqs:us-east-1:123456789012:queue1');
+      // WHEN
+      const imports = sqs.Queue.fromQueueArn(stack, 'Imported', 'arn:aws:sqs:us-east-1:123456789012:queue1');
 
-    // THEN
+      // THEN
 
-    // "import" returns an IQueue bound to `Fn::ImportValue`s.
-    test.deepEqual(stack.resolve(imports.queueArn), 'arn:aws:sqs:us-east-1:123456789012:queue1');
-    test.deepEqual(stack.resolve(imports.queueUrl), { 'Fn::Join':
-      [ '', [ 'https://sqs.', { Ref: 'AWS::Region' }, '.', { Ref: 'AWS::URLSuffix' }, '/', { Ref: 'AWS::AccountId' }, '/queue1' ] ] });
-    test.deepEqual(stack.resolve(imports.queueName), 'queue1');
-    test.done();
+      // "import" returns an IQueue bound to `Fn::ImportValue`s.
+      test.deepEqual(stack.resolve(imports.queueArn), 'arn:aws:sqs:us-east-1:123456789012:queue1');
+      test.deepEqual(stack.resolve(imports.queueUrl), { 'Fn::Join':
+        [ '', [ 'https://sqs.', { Ref: 'AWS::Region' }, '.', { Ref: 'AWS::URLSuffix' }, '/', { Ref: 'AWS::AccountId' }, '/queue1' ] ] });
+      test.deepEqual(stack.resolve(imports.queueName), 'queue1');
+      test.done();
+    },
+
+    'importing fifo and standard queues are detected correctly'(test: Test) {
+      const stack = new Stack();
+      const stdQueue = sqs.Queue.fromQueueArn(stack, 'StdQueue', 'arn:aws:sqs:us-east-1:123456789012:queue1');
+      const fifoQueue = sqs.Queue.fromQueueArn(stack, 'FifoQueue', 'arn:aws:sqs:us-east-1:123456789012:queue2.fifo');
+      test.deepEqual(stdQueue.fifo, false);
+      test.deepEqual(fifoQueue.fifo, true);
+      test.done();
+    },
   },
 
   'grants': {
@@ -143,16 +155,16 @@ export = {
     },
 
     'grant() is general purpose'(test: Test) {
-      testGrant((q, p) => q.grant(p, 'hello', 'world'),
-        'hello',
-        'world'
+      testGrant((q, p) => q.grant(p, 'service:hello', 'service:world'),
+        'service:hello',
+        'service:world'
       );
       test.done();
     },
 
     'grants also work on imported queues'(test: Test) {
       const stack = new Stack();
-      const queue = Queue.fromQueueAttributes(stack, 'Import', {
+      const queue = sqs.Queue.fromQueueAttributes(stack, 'Import', {
         queueArn: 'arn:aws:sqs:us-east-1:123456789012:queue1',
         queueUrl: 'https://queue-url'
       });
@@ -276,13 +288,58 @@ export = {
     },
   },
 
+  'test ".fifo" suffixed queues register as fifo'(test: Test) {
+    const stack = new Stack();
+    const queue = new sqs.Queue(stack, 'Queue', {
+      queueName: 'MyQueue.fifo'
+    });
+
+    test.deepEqual(queue.fifo, true);
+
+    expect(stack).toMatch({
+      "Resources": {
+        "Queue4A7E3555": {
+          "Type": "AWS::SQS::Queue",
+          "Properties": {
+            "QueueName": "MyQueue.fifo",
+            "FifoQueue": true
+          }
+        }
+      }
+    });
+
+    test.done();
+  },
+
+  'test a fifo queue is observed when the "fifo" property is specified'(test: Test) {
+    const stack = new Stack();
+    const queue = new sqs.Queue(stack, 'Queue', {
+      fifo: true
+    });
+
+    test.deepEqual(queue.fifo, true);
+
+    expect(stack).toMatch({
+      "Resources": {
+        "Queue4A7E3555": {
+          "Type": "AWS::SQS::Queue",
+          "Properties": {
+            "FifoQueue": true
+          }
+        }
+      }
+    });
+
+    test.done();
+  },
+
   'test metrics'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const topic = new Queue(stack, 'Queue');
+    const queue = new sqs.Queue(stack, 'Queue');
 
     // THEN
-    test.deepEqual(stack.resolve(topic.metricNumberOfMessagesSent()), {
+    test.deepEqual(stack.resolve(queue.metricNumberOfMessagesSent()), {
       dimensions: {QueueName: { 'Fn::GetAtt': [ 'Queue4A7E3555', 'QueueName' ] }},
       namespace: 'AWS/SQS',
       metricName: 'NumberOfMessagesSent',
@@ -290,7 +347,7 @@ export = {
       statistic: 'Sum'
     });
 
-    test.deepEqual(stack.resolve(topic.metricSentMessageSize()), {
+    test.deepEqual(stack.resolve(queue.metricSentMessageSize()), {
       dimensions: {QueueName: { 'Fn::GetAtt': [ 'Queue4A7E3555', 'QueueName' ] }},
       namespace: 'AWS/SQS',
       metricName: 'SentMessageSize',
@@ -302,9 +359,9 @@ export = {
   }
 };
 
-function testGrant(action: (q: Queue, principal: iam.IPrincipal) => void, ...expectedActions: string[]) {
+function testGrant(action: (q: sqs.Queue, principal: iam.IPrincipal) => void, ...expectedActions: string[]) {
   const stack = new Stack();
-  const queue = new Queue(stack, 'MyQueue');
+  const queue = new sqs.Queue(stack, 'MyQueue');
   const principal = new iam.User(stack, 'User');
 
   action(queue, principal);

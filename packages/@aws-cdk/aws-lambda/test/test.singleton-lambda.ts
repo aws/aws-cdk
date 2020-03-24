@@ -1,7 +1,7 @@
 import { expect, matchTemplate } from '@aws-cdk/assert';
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import lambda = require('../lib');
+import * as lambda from '../lib';
 
 export = {
   'can add same singleton Lambda multiple times, only instantiated once in template'(test: Test) {
@@ -30,7 +30,7 @@ export = {
         {
           Action: "sts:AssumeRole",
           Effect: "Allow",
-            Principal: { Service: { "Fn::Join": ["", ["lambda.", { Ref: "AWS::URLSuffix" }]] } }
+            Principal: { Service: "lambda.amazonaws.com" }
         }
         ],
         Version: "2012-10-17"

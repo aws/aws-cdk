@@ -1,7 +1,8 @@
-import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import ec2 = require('@aws-cdk/aws-ec2');
-import iam = require('@aws-cdk/aws-iam');
-import { IResource, Resource } from '@aws-cdk/core';
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as iam from '@aws-cdk/aws-iam';
+import { ConstructNode, IResource, Resource } from '@aws-cdk/core';
+import { EventInvokeConfig, EventInvokeConfigOptions } from './event-invoke-config';
 import { IEventSource } from './event-source';
 import { EventSourceMapping, EventSourceMappingOptions } from './event-source-mapping';
 import { IVersion } from './lambda-version';
@@ -42,6 +43,11 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
   readonly latestVersion: IVersion;
 
   /**
+   * The construct node where permissions are attached.
+   */
+  readonly permissionsNode: ConstructNode;
+
+  /**
    * Adds an event source that maps to this AWS Lambda function.
    * @param id construct ID
    * @param options mapping options
@@ -51,9 +57,13 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
   /**
    * Adds a permission to the Lambda resource policy.
    * @param id The id ƒor the permission construct
+   * @param permission The permission to grant to this Lambda function. @see Permission for details.
    */
   addPermission(id: string, permission: Permission): void;
 
+  /**
+   * Adds a statement to the IAM role assumed by the instance.
+   */
   addToRolePolicy(statement: iam.PolicyStatement): void;
 
   /**
@@ -88,6 +98,11 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
   metricThrottles(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   addEventSource(source: IEventSource): void;
+
+  /**
+   * Configures options for asynchronous invocation.
+   */
+  configureAsyncInvoke(options: EventInvokeConfigOptions): void
 }
 
 /**
@@ -109,12 +124,22 @@ export interface FunctionAttributes {
   readonly role?: iam.IRole;
 
   /**
-   * Id of the securityGroup for this Lambda, if in a VPC.
+   * Id of the security group of this Lambda, if in a VPC.
+   *
+   * This needs to be given in order to support allowing connections
+   * to this Lambda.
+   *
+   * @deprecated use `securityGroup` instead
+   */
+  readonly securityGroupId?: string;
+
+  /**
+   * The security group of this Lambda, if in a VPC.
    *
    * This needs to be given in order to support allowing connections
    * to this Lambda.
    */
-  readonly securityGroupId?: string;
+  readonly securityGroup?: ec2.ISecurityGroup;
 }
 
 export abstract class FunctionBase extends Resource implements IFunction {
@@ -141,6 +166,11 @@ export abstract class FunctionBase extends Resource implements IFunction {
   public abstract readonly role?: iam.IRole;
 
   /**
+   * The construct node where permissions are attached.
+   */
+  public abstract readonly permissionsNode: ConstructNode;
+
+  /**
    * Whether the addPermission() call adds any permissions
    *
    * True for new Lambdas, false for imported Lambdas (they might live in different accounts).
@@ -158,6 +188,7 @@ export abstract class FunctionBase extends Resource implements IFunction {
   /**
    * Adds a permission to the Lambda resource policy.
    * @param id The id ƒor the permission construct
+   * @param permission The permission to grant to this Lambda function. @see Permission for details.
    */
   public addPermission(id: string, permission: Permission) {
     if (!this.canCreatePermissions) {
@@ -167,8 +198,9 @@ export abstract class FunctionBase extends Resource implements IFunction {
 
     const principal = this.parsePermissionPrincipal(permission.principal);
     const action = permission.action || 'lambda:InvokeFunction';
+    const scope = permission.scope || this;
 
-    new CfnPermission(this, id, {
+    new CfnPermission(scope, id, {
       action,
       principal,
       functionName: this.functionArn,
@@ -178,6 +210,9 @@ export abstract class FunctionBase extends Resource implements IFunction {
     });
   }
 
+  /**
+   * Adds a statement to the IAM role assumed by the instance.
+   */
   public addToRolePolicy(statement: iam.PolicyStatement) {
     if (!this.role) {
       return;
@@ -261,6 +296,17 @@ export abstract class FunctionBase extends Resource implements IFunction {
     source.bind(this);
   }
 
+  public configureAsyncInvoke(options: EventInvokeConfigOptions): void {
+    if (this.node.tryFindChild('EventInvokeConfig') !== undefined) {
+      throw new Error(`An EventInvokeConfig has already been configured for the function at ${this.node.path}`);
+    }
+
+    new EventInvokeConfig(this, 'EventInvokeConfig', {
+      function: this,
+      ...options
+    });
+  }
+
   private parsePermissionPrincipal(principal?: iam.IPrincipal) {
     if (!principal) {
       return undefined;
@@ -275,16 +321,41 @@ export abstract class FunctionBase extends Resource implements IFunction {
       return (principal as iam.ServicePrincipal).service;
     }
 
+    if (`arn` in principal) {
+      return (principal as iam.ArnPrincipal).arn;
+    }
+
     throw new Error(`Invalid principal type for Lambda permission statement: ${principal.constructor.name}. ` +
-      'Supported: AccountPrincipal, ServicePrincipal');
+      'Supported: AccountPrincipal, ArnPrincipal, ServicePrincipal');
   }
 }
 
 export abstract class QualifiedFunctionBase extends FunctionBase {
   public abstract readonly lambda: IFunction;
 
+  public readonly permissionsNode = this.node;
+
+  /**
+   * The qualifier of the version or alias of this function.
+   * A qualifier is the identifier that's appended to a version or alias ARN.
+   * @see https://docs.aws.amazon.com/lambda/latest/dg/API_GetFunctionConfiguration.html#API_GetFunctionConfiguration_RequestParameters
+   */
+  protected abstract readonly qualifier: string;
+
   public get latestVersion() {
     return this.lambda.latestVersion;
+  }
+
+  public configureAsyncInvoke(options: EventInvokeConfigOptions): void {
+    if (this.node.tryFindChild('EventInvokeConfig') !== undefined) {
+      throw new Error(`An EventInvokeConfig has already been configured for the qualified function at ${this.node.path}`);
+    }
+
+    new EventInvokeConfig(this, 'EventInvokeConfig', {
+      function: this.lambda,
+      qualifier: this.qualifier,
+      ...options
+    });
   }
 }
 
@@ -294,6 +365,7 @@ export abstract class QualifiedFunctionBase extends FunctionBase {
 class LatestVersion extends FunctionBase implements IVersion {
   public readonly lambda: IFunction;
   public readonly version = '$LATEST';
+  public readonly permissionsNode = this.node;
 
   protected readonly canCreatePermissions = true;
 

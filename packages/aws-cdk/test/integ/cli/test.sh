@@ -5,6 +5,8 @@ source ${scriptdir}/common.bash
 
 header CLI Integration Tests
 
+prepare_fixture
+
 for test in $(cd ${scriptdir} && ls test-*.sh); do
   echo "============================================================================================"
   echo "${test}"

@@ -1,3 +1,4 @@
+import { Token } from "@aws-cdk/core";
 import { Connections, IConnectable } from "./connections";
 
 /**
@@ -26,7 +27,17 @@ export interface IPeer extends IConnectable {
 }
 
 /**
- * Factories for static connection peer
+ * Peer object factories (to be used in Security Group management)
+ *
+ * The static methods on this object can be used to create peer objects
+ * which represent a connection partner in Security Group rules.
+ *
+ * Use this object if you need to represent connection partners using plain IP
+ * addresses, or a prefix list ID.
+ *
+ * If you want to address a connection partner by Security Group, you can just
+ * use the Security Group (or the construct that contains a Security Group)
+ * directly, as it already implements `IPeer`.
  */
 export class Peer {
   /**
@@ -77,6 +88,18 @@ class CidrIPv4 implements IPeer {
   public readonly uniqueId: string;
 
   constructor(private readonly cidrIp: string) {
+    if (!Token.isUnresolved(cidrIp)) {
+      const cidrMatch = cidrIp.match(/^(\d{1,3}\.){3}\d{1,3}(\/\d+)?$/);
+
+      if (!cidrMatch) {
+        throw new Error(`Invalid IPv4 CIDR: "${cidrIp}"`);
+      }
+
+      if (!cidrMatch[2]) {
+        throw new Error(`CIDR mask is missing in IPv4: "${cidrIp}". Did you mean "${cidrIp}/32"?`);
+      }
+    }
+
     this.uniqueId = cidrIp;
   }
 
@@ -112,6 +135,18 @@ class CidrIPv6 implements IPeer {
   public readonly uniqueId: string;
 
   constructor(private readonly cidrIpv6: string) {
+    if (!Token.isUnresolved(cidrIpv6)) {
+      const cidrMatch = cidrIpv6.match(/^([\da-f]{0,4}:){2,7}([\da-f]{0,4})?(\/\d+)?$/);
+
+      if (!cidrMatch) {
+        throw new Error(`Invalid IPv6 CIDR: "${cidrIpv6}"`);
+      }
+
+      if (!cidrMatch[3]) {
+        throw new Error(`CIDR mask is missing in IPv6: "${cidrIpv6}". Did you mean "${cidrIpv6}/128"?`);
+      }
+    }
+
     this.uniqueId = cidrIpv6;
   }
 
@@ -134,7 +169,7 @@ class CidrIPv6 implements IPeer {
  */
 class AnyIPv6 extends CidrIPv6 {
   constructor() {
-    super("::0/0");
+    super("::/0");
   }
 }
 

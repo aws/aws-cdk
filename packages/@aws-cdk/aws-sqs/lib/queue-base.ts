@@ -1,5 +1,5 @@
-import iam = require('@aws-cdk/aws-iam');
-import kms = require('@aws-cdk/aws-kms');
+import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import { IResource, Resource } from '@aws-cdk/core';
 import { QueuePolicy } from './policy';
 
@@ -26,6 +26,11 @@ export interface IQueue extends IResource {
    * If this queue is server-side encrypted, this is the KMS encryption key.
    */
   readonly encryptionMasterKey?: kms.IKey;
+
+  /**
+   * Whether this queue is an Amazon SQS FIFO queue. If false, this is a standard queue.
+   */
+  readonly fifo: boolean;
 
   /**
    * Adds a statement to the IAM resource policy associated with this queue.
@@ -111,6 +116,11 @@ export abstract class QueueBase extends Resource implements IQueue {
    * If this queue is server-side encrypted, this is the KMS encryption key.
    */
   public abstract readonly encryptionMasterKey?: kms.IKey;
+
+  /**
+   * Whether this queue is an Amazon SQS FIFO queue. If false, this is a standard queue.
+   */
+  public abstract readonly fifo: boolean;
 
   /**
    * Controls automatic creation of policy objects.

@@ -13,11 +13,12 @@ This construct library allows you to define AWS Lambda Functions.
 
 ```ts
 import lambda = require('@aws-cdk/aws-lambda');
+import path = require('path');
 
 const fn = new lambda.Function(this, 'MyFunction', {
-    runtime: lambda.Runtime.NODEJS_10_X,
-    handler: 'index.handler',
-    code: lambda.Code.asset('./lambda-handler'),
+  runtime: lambda.Runtime.NODEJS_10_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
 });
 ```
 
@@ -26,11 +27,11 @@ const fn = new lambda.Function(this, 'MyFunction', {
 The `lambda.Code` class includes static convenience methods for various types of
 runtime code.
 
- * `lambda.Code.bucket(bucket, key[, objectVersion])` - specify an S3 object
+ * `lambda.Code.fromBucket(bucket, key[, objectVersion])` - specify an S3 object
    that contains the archive of your runtime code.
- * `lambda.Code.inline(code)` - inline the handle code as a string. This is
+ * `lambda.Code.fromInline(code)` - inline the handle code as a string. This is
    limited to supported runtimes and the code cannot exceed 4KiB.
- * `lambda.Code.asset(path)` - specify a directory or a .zip file in the local
+ * `lambda.Code.fromAsset(path)` - specify a directory or a .zip file in the local
    filesystem which will be zipped and uploaded to S3 before deployment.
 
 The following example shows how to define a Python function and deploy the code
@@ -42,6 +43,12 @@ When deploying a stack that contains this code, the directory will be zip
 archived and then uploaded to an S3 bucket, then the exact location of the S3
 objects will be passed when the stack is deployed.
 
+During synthesis, the CDK expects to find a directory on disk at the asset
+directory specified. Note that we are referencing the asset directory relatively
+to our CDK project directory. This is especially important when we want to share
+this construct through a library. Different programming languages will have
+different techniques for bundling resources into libraries.
+
 ### Layers
 
 The `lambda.LayerVersion` class can be used to define Lambda layers and manage
@@ -49,7 +56,7 @@ granting permissions to other AWS accounts or organizations.
 
 [Example of Lambda Layer usage](test/integ.layer-version.lit.ts)
 
-## Event Rule Target
+### Event Rule Target
 
 You can use an AWS Lambda function as a target for an Amazon CloudWatch event
 rule:
@@ -102,7 +109,7 @@ import lambda = require('@aws-cdk/aws-lambda');
 const fn = new lambda.Function(this, 'MyFunction', {
     runtime: lambda.Runtime.NODEJS_10_X,
     handler: 'index.handler',
-    code: lambda.Code.inline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
+    code: lambda.Code.fromInline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
     deadLetterQueueEnabled: true
 });
 ```
@@ -117,7 +124,7 @@ const dlq = new sqs.Queue(this, 'DLQ');
 const fn = new lambda.Function(this, 'MyFunction', {
     runtime: lambda.Runtime.NODEJS_10_X,
     handler: 'index.handler',
-    code: lambda.Code.inline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
+    code: lambda.Code.fromInline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
     deadLetterQueue: dlq
 });
 ```
@@ -133,10 +140,11 @@ import lambda = require('@aws-cdk/aws-lambda');
 const fn = new lambda.Function(this, 'MyFunction', {
     runtime: lambda.Runtime.NODEJS_10_X,
     handler: 'index.handler',
-    code: lambda.Code.inline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
+    code: lambda.Code.fromInline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
     tracing: lambda.Tracing.ACTIVE
 });
 ```
+
 See [the AWS documentation](https://docs.aws.amazon.com/lambda/latest/dg/lambda-x-ray.html)
 to learn more about AWS Lambda's X-Ray support.
 
@@ -148,9 +156,47 @@ import lambda = require('@aws-cdk/aws-lambda');
 const fn = new lambda.Function(this, 'MyFunction', {
     runtime: lambda.Runtime.NODEJS_10_X,
     handler: 'index.handler',
-    code: lambda.Code.inline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
+    code: lambda.Code.fromInline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
     reservedConcurrentExecutions: 100
 });
 ```
+
 See [the AWS documentation](https://docs.aws.amazon.com/lambda/latest/dg/concurrent-executions.html)
 managing concurrency.
+
+### Log Group
+
+Lambda functions automatically create a log group with the name `/aws/lambda/<function-name>` upon first execution with
+log data set to never expire.
+
+The `logRetention` property can be used to set a different expiration period.
+
+It is possible to obtain the function's log group as a `logs.ILogGroup` by calling the `logGroup` property of the
+`Function` construct.
+
+*Note* that, if either `logRetention` is set or `logGroup` property is called, a [CloudFormation custom
+resource](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cfn-customresource.html) is added
+to the stack that pre-creates the log group as part of the stack deployment, if it already doesn't exist, and sets the
+correct log retention period (never expire, by default).
+
+*Further note* that, if the log group already exists and the `logRetention` is not set, the custom resource will reset
+the log retention to never expire even if it was configured with a different value.
+
+### Singleton Function
+
+The `SingletonFunction` construct is a way to guarantee that a lambda function will be guaranteed to be part of the stack,
+once and only once, irrespective of how many times the construct is declared to be part of the stack. This is guaranteed
+as long as the `uuid` property and the optional `lambdaPurpose` property stay the same whenever they're declared into the
+stack.
+
+A typical use case of this function is when a higher level construct needs to declare a Lambda function as part of it but
+needs to guarantee that the function is declared once. However, a user of this higher level construct can declare it any
+number of times and with different properties. Using `SingletonFunction` here with a fixed `uuid` will guarantee this.
+
+For example, the `LogRetention` construct requires only one single lambda function for all different log groups whose
+retention it seeks to manage.
+
+### Language-specific APIs
+Language-specific higher level constructs are provided in separate modules:
+
+* Node.js: [`@aws-cdk/aws-lambda-nodejs`](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-lambda-nodejs)

@@ -2,21 +2,32 @@
 #------------------------------------------------------------------
 # setup
 #------------------------------------------------------------------
-set -e
+set -eu
 scriptdir=$(cd $(dirname $0) && pwd)
-source ${scriptdir}/../common/util.bash
+source ${scriptdir}/common.bash
 
 header TypeScript
-prepare_toolkit
-preload_npm_packages
 
 #------------------------------------------------------------------
 
-for template in app sample-app lib; do
-    echo "Trying template $template"
-    cd $(mktemp -d)
-    cdk init -l typescript -t $template
+if [[ "${1:-}" == "" ]]; then
+    templates="app sample-app lib"
+else
+    templates="$@"
+fi
+
+for template in $templates; do
+    echo "Trying TypeScript template $template"
+
+    setup
+
+    cdk init -l typescript $template
     npm ls # this will fail if we have unmet peer dependencies
     npm run build
-    cdk synth
+    npm run test
+
+    # Can't run `cdk synth` on libraries
+    if [[ $template != "lib" ]]; then
+        cdk synth
+    fi
 done

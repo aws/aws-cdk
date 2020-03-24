@@ -1,6 +1,6 @@
-import kinesis = require('@aws-cdk/aws-kinesis');
-import lambda = require('@aws-cdk/aws-lambda');
-import cdk = require('@aws-cdk/core');
+import * as kinesis from '@aws-cdk/aws-kinesis';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as cdk from '@aws-cdk/core';
 import { KinesisEventSource } from '../lib';
 import { TestFunction } from './test-function';
 

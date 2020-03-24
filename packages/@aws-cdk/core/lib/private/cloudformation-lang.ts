@@ -1,5 +1,6 @@
 import { Lazy } from "../lazy";
-import { DefaultTokenResolver, IFragmentConcatenator, IPostProcessor, IResolvable, IResolveContext  } from "../resolvable";
+import { Reference } from "../reference";
+import { DefaultTokenResolver, IFragmentConcatenator, IPostProcessor, IResolvable, IResolveContext } from "../resolvable";
 import { TokenizedStringFragments } from "../string-fragments";
 import { Token } from "../token";
 import { Intrinsic } from "./intrinsic";
@@ -47,6 +48,12 @@ export class CloudFormationLang {
       }
 
       public resolveToken(t: IResolvable, context: IResolveContext, postProcess: IPostProcessor) {
+        // Return References directly, so their type is maintained and the references will
+        // continue to work. Only while preparing, because we do need the final value of the
+        // token while resolving.
+        if (Reference.isReference(t) && context.preparing) { return wrap(t); }
+
+        // Deep-resolve and wrap. This is necessary for Lazy tokens so we can see "inside" them.
         return wrap(super.resolveToken(t, context, postProcess));
       }
       public resolveString(fragments: TokenizedStringFragments, context: IResolveContext) {
@@ -60,6 +67,7 @@ export class CloudFormationLang {
     // We need a ResolveContext to get started so return a Token
     return Lazy.stringValue({ produce: (ctx: IResolveContext) =>
       JSON.stringify(resolve(obj, {
+        preparing: ctx.preparing,
         scope: ctx.scope,
         resolver: new IntrinsincWrapper()
       }), undefined, space)
@@ -163,9 +171,16 @@ export function minimalCloudFormationJoin(delimiter: string, values: any[]): any
   }
 
   function isSplicableFnJoinIntrinsic(obj: any): boolean {
-    return isIntrinsic(obj)
-      && Object.keys(obj)[0] === 'Fn::Join'
-      && obj['Fn::Join'][0] === delimiter;
+    if (!isIntrinsic(obj)) { return false; }
+    if (Object.keys(obj)[0] !== 'Fn::Join') { return false;  }
+
+    const [ delim, list ] = obj['Fn::Join'];
+    if (delim !== delimiter) { return false; }
+
+    if (Token.isUnresolved(list)) { return false; }
+    if (!Array.isArray(list)) { return false; }
+
+    return true;
   }
 }
 

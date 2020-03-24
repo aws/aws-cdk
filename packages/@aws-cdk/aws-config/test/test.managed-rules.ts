@@ -1,8 +1,8 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import sns = require('@aws-cdk/aws-sns');
-import cdk = require('@aws-cdk/core');
+import * as sns from '@aws-cdk/aws-sns';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import config = require('../lib');
+import * as config from '../lib';
 
 export = {
   'access keys rotated'(test: Test) {
@@ -58,17 +58,7 @@ export = {
             Action: 'sts:AssumeRole',
             Effect: 'Allow',
             Principal: {
-              Service: {
-                'Fn::Join': [
-                  '',
-                  [
-                    'config.',
-                    {
-                      Ref: 'AWS::URLSuffix'
-                    }
-                  ]
-                ]
-              }
+              Service: "config.amazonaws.com"
             }
           }
         ],

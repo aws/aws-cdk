@@ -1,11 +1,11 @@
-import cxapi = require('@aws-cdk/cx-api');
-import { Mode, SDK } from '../api';
+import * as cxapi from '@aws-cdk/cx-api';
+import { Mode, SdkProvider } from '../api';
 import { debug } from '../logging';
 import { ContextProviderPlugin } from './provider';
 
 export class HostedZoneContextProviderPlugin implements ContextProviderPlugin {
 
-  constructor(private readonly aws: SDK) {
+  constructor(private readonly aws: SdkProvider) {
   }
 
   public async getValue(args: {[key: string]: any}): Promise<object> {
@@ -16,7 +16,7 @@ export class HostedZoneContextProviderPlugin implements ContextProviderPlugin {
     }
     const domainName = args.domainName;
     debug(`Reading hosted zone ${account}:${region}:${domainName}`);
-    const r53 = await this.aws.route53(account, region, Mode.ForReading);
+    const r53 = (await this.aws.forEnvironment(account, region, Mode.ForReading)).route53();
     const response = await r53.listHostedZonesByName({ DNSName: domainName }).promise();
     if (!response.HostedZones) {
       throw new Error(`Hosted Zone not found in account ${account}, region ${region}: ${domainName}`);

@@ -1,4 +1,4 @@
-import lambda = require('@aws-cdk/aws-lambda');
+import * as lambda from '@aws-cdk/aws-lambda';
 import { Construct, Duration, Stack } from '@aws-cdk/core';
 import { CustomResource, CustomResourceProvider } from '../lib';
 
@@ -19,13 +19,13 @@ class CopyOperation extends Construct {
     const lambdaProvider = new lambda.SingletonFunction(this, 'Provider', {
       uuid: 'f7d4f730-4ee1-11e8-9c2d-fa7ae01bbebc',
       runtime: lambda.Runtime.PYTHON_3_7,
-      code: lambda.Code.asset('../copy-handler'),
+      code: lambda.Code.fromAsset('../copy-handler'),
       handler: 'index.handler',
       timeout: Duration.seconds(60),
     });
 
     new CustomResource(this, 'Resource', {
-      provider: CustomResourceProvider.lambda(lambdaProvider),
+      provider: CustomResourceProvider.fromLambda(lambdaProvider),
       properties: {
         sourceBucketArn: props.sourceBucket.bucketArn,
         targetBucketArn: props.targetBucket.bucketArn,

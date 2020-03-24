@@ -1,7 +1,7 @@
-import sns = require('@aws-cdk/aws-sns');
-import sfn = require('@aws-cdk/aws-stepfunctions');
-import cdk = require('@aws-cdk/core');
-import tasks = require('../lib');
+import * as sns from '@aws-cdk/aws-sns';
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+import * as cdk from '@aws-cdk/core';
+import * as tasks from '../lib';
 
 test('Publish literal message to SNS topic', () => {
   // GIVEN
@@ -16,7 +16,18 @@ test('Publish literal message to SNS topic', () => {
   // THEN
   expect(stack.resolve(pub.toStateJson())).toEqual({
     Type: 'Task',
-    Resource: 'arn:aws:states:::sns:publish',
+    Resource: {
+      "Fn::Join": [
+        "",
+        [
+          "arn:",
+          {
+            Ref: "AWS::Partition",
+          },
+          ":states:::sns:publish",
+        ],
+      ],
+    },
     End: true,
     Parameters: {
       TopicArn: { Ref: 'TopicBFC7AF6E' },
@@ -32,7 +43,7 @@ test('Publish JSON to SNS topic with task token', () => {
 
   // WHEN
   const pub = new sfn.Task(stack, 'Publish', { task: new tasks.PublishToTopic(topic, {
-    waitForTaskToken: true,
+    integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
     message: sfn.TaskInput.fromObject({
       Input: 'Publish this message',
       Token: sfn.Context.taskToken
@@ -42,7 +53,18 @@ test('Publish JSON to SNS topic with task token', () => {
   // THEN
   expect(stack.resolve(pub.toStateJson())).toEqual({
     Type: 'Task',
-    Resource: 'arn:aws:states:::sns:publish.waitForTaskToken',
+    Resource: {
+      "Fn::Join": [
+        "",
+        [
+          "arn:",
+          {
+            Ref: "AWS::Partition",
+          },
+          ":states:::sns:publish.waitForTaskToken",
+        ],
+      ],
+    },
     End: true,
     Parameters: {
       TopicArn: { Ref: 'TopicBFC7AF6E' },
@@ -54,14 +76,14 @@ test('Publish JSON to SNS topic with task token', () => {
   });
 });
 
-test('Task throws if waitForTaskToken is supplied but task token is not included in message', () => {
+test('Task throws if WAIT_FOR_TASK_TOKEN is supplied but task token is not included in message', () => {
   expect(() => {
     // GIVEN
     const stack = new cdk.Stack();
     const topic = new sns.Topic(stack, 'Topic');
     // WHEN
     new sfn.Task(stack, 'Publish', { task: new tasks.PublishToTopic(topic, {
-      waitForTaskToken: true,
+      integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
       message: sfn.TaskInput.fromText('Publish this message')
     }) });
     // THEN
@@ -81,11 +103,34 @@ test('Publish to topic with ARN from payload', () => {
   // THEN
   expect(stack.resolve(pub.toStateJson())).toEqual({
     Type: 'Task',
-    Resource: 'arn:aws:states:::sns:publish',
+    Resource: {
+      "Fn::Join": [
+        "",
+        [
+          "arn:",
+          {
+            Ref: "AWS::Partition",
+          },
+          ":states:::sns:publish",
+        ],
+      ],
+    },
     End: true,
     Parameters: {
       'TopicArn.$': '$.topicArn',
       'Message': 'Publish this message'
     },
   });
+});
+
+test('Task throws if SYNC is supplied as service integration pattern', () => {
+  expect(() => {
+    const stack = new cdk.Stack();
+    const topic = new sns.Topic(stack, 'Topic');
+
+    new sfn.Task(stack, 'Publish', { task: new tasks.PublishToTopic(topic, {
+      integrationPattern: sfn.ServiceIntegrationPattern.SYNC,
+      message: sfn.TaskInput.fromText('Publish this message')
+    }) });
+  }).toThrow(/Invalid Service Integration Pattern: SYNC is not supported to call SNS./i);
 });

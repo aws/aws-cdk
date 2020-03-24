@@ -18,9 +18,15 @@ const trainingData = new Bucket(stack, 'TrainingData', {
 
 new StateMachine(stack, 'StateMachine', {
   definition: new Task(stack, 'TrainTask', {
-    task: new SagemakerTrainTask(stack, {
-      algorithmSpecification: {},
-      inputDataConfig: [{ channelName: 'InputData', dataSource: { s3DataSource: { s3Location: S3Location.fromBucket(trainingData, 'data/') } } }],
+    task: new SagemakerTrainTask({
+      algorithmSpecification: {
+        algorithmName: 'GRADIENT_ASCENT',
+      },
+      inputDataConfig: [{ channelName: 'InputData', dataSource: {
+        s3DataSource: {
+          s3Location: S3Location.fromBucket(trainingData, 'data/')
+        }
+      } }],
       outputDataConfig: { s3OutputLocation: S3Location.fromBucket(trainingData, 'result/') },
       trainingJobName: 'MyTrainingJob',
     })

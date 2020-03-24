@@ -7,9 +7,7 @@
     "inlineSourceMap": true,
     "inlineSources": true,
     "lib": [
-      "es2016",
-      "es2017.object",
-      "es2017.string"
+      "es2018"
     ],
     "module": "CommonJS",
     "noEmitOnError": true,
@@ -22,7 +20,7 @@
     "resolveJsonModule": true,
     "strict": true,
     "strictNullChecks": true,
-    "strictPropertyInitialization": false,
+    "strictPropertyInitialization": true,
     "stripInternal": true,
     "target": "ES2018"
   },

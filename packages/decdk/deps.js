@@ -14,10 +14,13 @@ let errors = false;
 
 for (const dir of modules) {
   const module = path.resolve(root, dir);
-  if (!fs.existsSync(path.join(module, '.jsii'))) {
+  const meta = require(path.join(module, 'package.json'));
+
+  // skip non-jsii modules
+  if (!meta.jsii) {
     continue;
   }
-  const meta = require(path.join(module, 'package.json'));
+
   const exists = deps[meta.name];
 
   if (meta.deprecated) {
@@ -34,7 +37,7 @@ for (const dir of modules) {
     errors = true;
   }
 
-  const requirement = `^${meta.version}`;
+  const requirement = `${meta.version}`;
 
   if (exists && exists !== requirement) {
     console.error(`invalid version requirement: expecting '${requirement}', got ${exists}`);
@@ -44,7 +47,7 @@ for (const dir of modules) {
   deps[meta.name] = requirement;
 }
 
-fs.writeFileSync(path.join(__dirname, 'package.json'), JSON.stringify(pkg, undefined, 2));
+fs.writeFileSync(path.join(__dirname, 'package.json'), JSON.stringify(pkg, undefined, 2) + '\n');
 
 if (errors) {
   console.error('errors found. updated package.json');

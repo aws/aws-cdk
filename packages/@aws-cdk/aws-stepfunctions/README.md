@@ -5,12 +5,14 @@
 
 ![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
 
-> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
-> future breaking changes.**
+> **This is a _developer preview_ (public beta) module.**
 >
-> This API is still under active development and subject to non-backward
-> compatible changes or removal in any future version. Use of the API is not recommended in production
-> environments. Experimental APIs are not subject to the Semantic Versioning model.
+> All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib))
+> are auto-generated from CloudFormation. They are stable and safe to use.
+>
+> However, all other classes, i.e., higher level constructs, are under active development and subject to non-backward
+> compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model.
+> This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
 
 ---
 <!--END STABILITY BANNER-->
@@ -39,7 +41,7 @@ const submitJob = new sfn.Task(this, 'Submit Job', {
 });
 
 const waitX = new sfn.Wait(this, 'Wait X Seconds', {
-    duration: sfn.WaitDuration.secondsPath('$.wait_time'),
+    duration: sfn.WaitTime.secondsPath('$.waitSeconds'),
 });
 
 const getStatus = new sfn.Task(this, 'Get Job Status', {
@@ -122,15 +124,25 @@ done is determine by a class that implements `IStepFunctionsTask`, a collection
 of which can be found in the `@aws-cdk/aws-stepfunctions-tasks` package. A
 couple of the tasks available are:
 
-* `tasks.InvokeFunction` -- call a Lambda Function
 * `tasks.InvokeActivity` -- start an Activity (Activities represent a work
   queue that you poll on a compute fleet you manage yourself)
+* `tasks.InvokeFunction` -- invoke a Lambda function with function ARN
+* `tasks.RunBatchJob` -- run a Batch job
+* `tasks.RunLambdaTask` -- call Lambda as integrated service with magic ARN
+* `tasks.RunGlueJobTask` -- call Glue Job as integrated service
 * `tasks.PublishToTopic` -- publish a message to an SNS topic
 * `tasks.SendToQueue` -- send a message to an SQS queue
 * `tasks.RunEcsFargateTask`/`ecs.RunEcsEc2Task` -- run a container task,
   depending on the type of capacity.
 * `tasks.SagemakerTrainTask` -- run a SageMaker training job
 * `tasks.SagemakerTransformTask` -- run a SageMaker transform job
+* `tasks.StartExecution` -- call StartExecution to a state machine of Step Functions
+* `tasks.EvaluateExpression` -- evaluate an expression referencing state paths
+
+Except `tasks.InvokeActivity` and `tasks.InvokeFunction`, the [service integration
+pattern](https://docs.aws.amazon.com/step-functions/latest/dg/connect-to-resource.html)
+(`integrationPattern`) are supposed to be given as parameter when customers want
+to call integrated services within a Task state. The default value is `FIRE_AND_FORGET`.
 
 #### Task parameters from the state json
 
@@ -142,10 +154,10 @@ such as `Data.stringAt()`.
 If so, the value is taken from the indicated location in the state JSON,
 similar to (for example) `inputPath`.
 
-#### Lambda example
+#### Lambda example - InvokeFunction
 
 ```ts
-const task = new sfn.Task(this, 'Invoke The Lambda', {
+const task = new sfn.Task(this, 'Invoke1', {
     task: new tasks.InvokeFunction(myLambda),
     inputPath: '$.input',
     timeout: Duration.minutes(5),
@@ -164,6 +176,67 @@ task.addCatch(errorHandlerState);
 task.next(nextState);
 ```
 
+#### Lambda example - RunLambdaTask
+
+```ts
+  const task = new sfn.Task(stack, 'Invoke2', {
+    task: new tasks.RunLambdaTask(myLambda, {
+      integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
+      payload: {
+        token: sfn.Context.taskToken
+      }
+    })
+  });
+```
+
+#### Glue Job example
+
+```ts
+  const task = new sfn.Task(stack, 'ETL', {
+    task: new tasks.RunGlueJobTask(glueJobName, {
+      integrationPattern: sfn.ServiceIntegrationPattern.SYNC,
+      arguments: {
+        "--table-prefix": "myTable"
+      }
+    })
+  });
+```
+
+[Example CDK app](../aws-stepfunctions-tasks/test/integ.glue-task.ts)
+
+#### Batch example
+
+```ts
+import batch = require('@aws-cdk/aws-batch');
+
+const batchQueue = new batch.JobQueue(this, 'JobQueue', {
+  computeEnvironments: [
+    {
+      order: 1,
+      computeEnvironment: new batch.ComputeEnvironment(this, 'ComputeEnv', {
+        computeResources: { vpc }
+      })
+    }
+  ]
+});
+
+const batchJobDefinition = new batch.JobDefinition(this, 'JobDefinition', {
+  container: {
+    image: ecs.ContainerImage.fromAsset(
+      path.resolve(__dirname, 'batchjob-image')
+    )
+  }
+});
+
+const task = new sfn.Task(this, 'Submit Job', {
+  task: new tasks.RunBatchJob({
+    jobDefinition: batchJobDefinition,
+    jobName: 'MyJob',
+    jobQueue: batchQueue
+  })
+});
+```
+
 #### SNS example
 
 ```ts
@@ -176,6 +249,7 @@ const topic = new sns.Topic(this, 'Topic');
 // Use a field from the execution data as message.
 const task1 = new sfn.Task(this, 'Publish1', {
     task: new tasks.PublishToTopic(topic, {
+        integrationPattern: sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
         message: TaskInput.fromDataAt('$.state.message'),
     })
 });
@@ -282,6 +356,76 @@ const task = new sfn.Task(this, 'Batch Inference', {
 });
 ```
 
+#### Step Functions example
+
+```ts
+// Define a state machine with one Pass state
+const child = new sfn.StateMachine(stack, 'ChildStateMachine', {
+    definition: sfn.Chain.start(new sfn.Pass(stack, 'PassState')),
+});
+
+// Include the state machine in a Task state with callback pattern
+const task = new sfn.Task(stack, 'ChildTask', {
+  task: new tasks.ExecuteStateMachine(child, {
+    integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
+    input: {
+      token: sfn.Context.taskToken,
+      foo: 'bar'
+    },
+    name: 'MyExecutionName'
+  })
+});
+
+// Define a second state machine with the Task state above
+new sfn.StateMachine(stack, 'ParentStateMachine', {
+  definition: task
+});
+```
+
+#### Eval example
+
+Use the `EvaluateExpression` to perform simple operations referencing state paths. The
+`expression` referenced in the task will be evaluated in a Lambda function
+(`eval()`). This allows you to not have to write Lambda code for simple operations.
+
+Example: convert a wait time from milliseconds to seconds, concat this in a message and wait:
+
+```ts
+const convertToSeconds = new sfn.Task(this, 'Convert to seconds', {
+  task: new tasks.EvaluateExpression({ expression: '$.waitMilliseconds / 1000' }),
+  resultPath: '$.waitSeconds'
+});
+
+const createMessage = new sfn.Task(this, 'Create message', {
+  // Note: this is a string inside a string.
+  task: new tasks.EvaluateExpression({ expression: '`Now waiting ${$.waitSeconds} seconds...`'}),
+  resultPath: '$.message'
+});
+
+const publishMessage = new sfn.Task(this, 'Publish message', {
+  task: new tasks.PublishToTopic(topic, {
+    message: sfn.TaskInput.fromDataAt('$.message'),
+  }),
+  resultPath: '$.sns'
+});
+
+const wait = new sfn.Wait(this, 'Wait', {
+  time: sfn.WaitTime.secondsPath('$.waitSeconds')
+});
+
+new sfn.StateMachine(this, 'StateMachine', {
+  definition: convertToSeconds
+    .next(createMessage)
+    .next(publishMessage)
+    .next(wait)
+});
+```
+
+The `EvaluateExpression` supports a `runtime` prop to specify the Lambda
+runtime to use to evaluate the expression. Currently, the only runtime
+supported is `lambda.Runtime.NODEJS_10_X`.
+
+
 ### Pass
 
 A `Pass` state does no work, but it can optionally transform the execution's
@@ -308,7 +452,7 @@ state.
 // Wait until it's the time mentioned in the the state object's "triggerTime"
 // field.
 const wait = new stepfunctions.Wait(this, 'Wait For Trigger Time', {
-    duration: stepfunctions.WaitDuration.timestampPath('$.triggerTime'),
+    time: stepfunctions.WaitTime.timestampPath('$.triggerTime'),
 });
 
 // Set the next state

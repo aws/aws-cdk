@@ -1,8 +1,8 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
-import logs = require('@aws-cdk/aws-logs');
-import cdk = require('@aws-cdk/core');
+import * as logs from '@aws-cdk/aws-logs';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import ecs = require('../lib');
+import * as ecs from '../lib';
 
 let stack: cdk.Stack;
 let td: ecs.TaskDefinition;
@@ -53,6 +53,43 @@ export = {
     test.done();
   },
 
+  "create an aws log driver using awsLogs"(test: Test) {
+    // WHEN
+    td.addContainer('Container', {
+      image,
+      logging: ecs.AwsLogDriver.awsLogs({
+        datetimeFormat: 'format',
+        logRetention: logs.RetentionDays.ONE_MONTH,
+        multilinePattern: 'pattern',
+        streamPrefix: 'hello'
+      })
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Logs::LogGroup', {
+      RetentionInDays: logs.RetentionDays.ONE_MONTH
+    }));
+
+    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          LogConfiguration: {
+            LogDriver: 'awslogs',
+            Options: {
+              'awslogs-group': { Ref: 'TaskDefinitionContainerLogGroup4D0A87C1' },
+              'awslogs-stream-prefix': 'hello',
+              'awslogs-region': { Ref: 'AWS::Region' },
+              'awslogs-datetime-format': 'format',
+              'awslogs-multiline-pattern': 'pattern'
+            }
+          }
+        }
+      ]
+    }));
+
+    test.done();
+  },
+
   'with a defined log group'(test: Test) {
     // GIVEN
     const logGroup = new logs.LogGroup(stack, 'LogGroup');
@@ -67,6 +104,10 @@ export = {
     });
 
     // THEN
+    expect(stack).to(haveResource('AWS::Logs::LogGroup', {
+      RetentionInDays: logs.RetentionDays.TWO_YEARS
+    }));
+
     expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
@@ -81,6 +122,21 @@ export = {
         }
       ]
     }));
+
+    test.done();
+  },
+
+  'without a defined log group'(test: Test) {
+    // GIVEN
+    td.addContainer('Container', {
+      image,
+      logging: new ecs.AwsLogDriver({
+        streamPrefix: 'hello',
+      })
+    });
+
+    // THEN
+    expect(stack).notTo(haveResource('AWS::Logs::LogGroup', {}));
 
     test.done();
   },

@@ -1,10 +1,30 @@
-import codepipeline = require('@aws-cdk/aws-codepipeline');
-import ecr = require('@aws-cdk/aws-ecr');
-import targets = require('@aws-cdk/aws-events-targets');
-import iam = require('@aws-cdk/aws-iam');
+import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import * as ecr from '@aws-cdk/aws-ecr';
+import * as targets from '@aws-cdk/aws-events-targets';
+import * as iam from '@aws-cdk/aws-iam';
 import { Construct } from '@aws-cdk/core';
 import { Action } from '../action';
 import { sourceArtifactBounds } from '../common';
+
+/**
+ * The CodePipeline variables emitted by the ECR source Action.
+ */
+export interface EcrSourceVariables {
+  /** The identifier of the registry. In ECR, this is usually the ID of the AWS account owning it. */
+  readonly registryId: string;
+
+  /** The physical name of the repository that this action tracks. */
+  readonly repositoryName: string;
+
+  /** The digest of the current image, in the form '<digest type>:<digest value>'. */
+  readonly imageDigest: string;
+
+  /** The Docker tag of the current image. */
+  readonly imageTag: string;
+
+  /** The full ECR Docker URI of the current image. */
+  readonly imageUri: string;
+}
 
 /**
  * Construction properties of {@link EcrSourceAction}.
@@ -41,6 +61,7 @@ export class EcrSourceAction extends Action {
   constructor(props: EcrSourceActionProps) {
     super({
       ...props,
+      resource: props.repository,
       category: codepipeline.ActionCategory.SOURCE,
       provider: 'ECR',
       artifactBounds: sourceArtifactBounds(),
@@ -48,6 +69,17 @@ export class EcrSourceAction extends Action {
     });
 
     this.props = props;
+  }
+
+  /** The variables emitted by this action. */
+  public get variables(): EcrSourceVariables {
+    return {
+      registryId: this.variableExpression('RegistryId'),
+      repositoryName: this.variableExpression('RepositoryName'),
+      imageDigest: this.variableExpression('ImageDigest'),
+      imageTag: this.variableExpression('ImageTag'),
+      imageUri: this.variableExpression('ImageURI'),
+    };
   }
 
   protected bound(_scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):

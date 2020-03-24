@@ -1,5 +1,7 @@
 import { expect, haveResource, not, SynthUtils } from '@aws-cdk/assert';
+import * as iam from '@aws-cdk/aws-iam';
 import { RetentionDays } from '@aws-cdk/aws-logs';
+import * as s3 from '@aws-cdk/aws-s3';
 import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { ReadWriteType, Trail } from '../lib';
@@ -11,9 +13,7 @@ const ExpectedBucketPolicyProperties = {
         Action: "s3:GetBucketAcl",
         Effect: "Allow",
         Principal: {
-          Service: {
-            "Fn::Join": ["", ["cloudtrail.", { Ref: "AWS::URLSuffix" }]]
-          }
+          Service: "cloudtrail.amazonaws.com"
         },
         Resource: {
           "Fn::GetAtt": [
@@ -31,9 +31,7 @@ const ExpectedBucketPolicyProperties = {
         },
         Effect: "Allow",
         Principal: {
-          Service: {
-            "Fn::Join": ["", ["cloudtrail.", { Ref: "AWS::URLSuffix" }]]
-          }
+          Service: "cloudtrail.amazonaws.com"
         },
         Resource: {
           "Fn::Join": [
@@ -71,6 +69,49 @@ export = {
       test.deepEqual(trail.DependsOn, ['MyAmazingCloudTrailS3Policy39C120B0']);
       test.done();
     },
+    'with s3bucket'(test: Test) {
+      const stack = getTestStack();
+      const Trailbucket = new s3.Bucket(stack, 'S3');
+      const cloudTrailPrincipal = new iam.ServicePrincipal("cloudtrail.amazonaws.com");
+      Trailbucket.addToResourcePolicy(new iam.PolicyStatement({
+        resources: [Trailbucket.bucketArn],
+         actions: ['s3:GetBucketAcl'],
+         principals: [cloudTrailPrincipal],
+       }));
+
+      Trailbucket.addToResourcePolicy(new iam.PolicyStatement({
+        resources: [Trailbucket.arnForObjects(`AWSLogs/${Stack.of(stack).account}/*`)],
+        actions: ["s3:PutObject"],
+        principals: [cloudTrailPrincipal],
+        conditions:  {
+          StringEquals: {'s3:x-amz-acl': "bucket-owner-full-control"}
+        }
+      }));
+
+      new Trail(stack, 'Trail', {bucket: Trailbucket});
+
+      expect(stack).to(haveResource("AWS::CloudTrail::Trail"));
+      expect(stack).to(haveResource("AWS::S3::Bucket"));
+      expect(stack).to(haveResource("AWS::S3::BucketPolicy"));
+      expect(stack).to(not(haveResource("AWS::Logs::LogGroup")));
+      test.done();
+    },
+
+    'with imported s3 bucket'(test: Test) {
+      // GIVEN
+      const stack = getTestStack();
+      const bucket = s3.Bucket.fromBucketName(stack, 'S3', 'SomeBucket');
+
+      // WHEN
+      new Trail(stack, 'Trail', { bucket });
+
+      expect(stack).to(haveResource('AWS::CloudTrail::Trail', {
+        S3BucketName: 'SomeBucket'
+      }));
+
+      test.done();
+    },
+
     'with cloud watch logs': {
       'enabled'(test: Test) {
         const stack = getTestStack();
@@ -200,8 +241,8 @@ export = {
     trail.onCloudTrailEvent('DoEvents', {
       target: {
         bind: () => ({
+          id: '',
           arn: 'arn',
-          id: 'myid'
         })
       }
     });
@@ -217,7 +258,7 @@ export = {
       Targets: [
         {
           Arn: "arn",
-          Id: "myid"
+          Id: "Target0"
         }
       ]
     }));

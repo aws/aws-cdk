@@ -1,6 +1,6 @@
-import events = require('@aws-cdk/aws-events');
-import iam = require('@aws-cdk/aws-iam');
-import lambda = require('@aws-cdk/aws-lambda');
+import * as events from '@aws-cdk/aws-events';
+import * as iam from '@aws-cdk/aws-iam';
+import * as lambda from '@aws-cdk/aws-lambda';
 import { Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
 import { CfnConfigRule } from './config.generated';
 
@@ -167,10 +167,30 @@ abstract class RuleNew extends RuleBase {
  * The maximum frequency at which the AWS Config rule runs evaluations.
  */
 export enum MaximumExecutionFrequency {
+
+  /**
+   * 1 hour.
+   */
   ONE_HOUR = 'One_Hour',
+
+  /**
+   * 3 hours.
+   */
   THREE_HOURS = 'Three_Hours',
+
+  /**
+   * 6 hours.
+   */
   SIX_HOURS = 'Six_Hours',
+
+  /**
+   * 12 hours.
+   */
   TWELVE_HOURS = 'Twelve_Hours',
+
+  /**
+   * 24 hours.
+   */
   TWENTY_FOUR_HOURS = 'TwentyFour_Hours'
 }
 

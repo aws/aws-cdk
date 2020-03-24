@@ -1,6 +1,6 @@
-import events = require('@aws-cdk/aws-events');
-import iam = require('@aws-cdk/aws-iam');
-import sns = require('@aws-cdk/aws-sns');
+import * as events from '@aws-cdk/aws-events';
+import * as iam from '@aws-cdk/aws-iam';
+import * as sns from '@aws-cdk/aws-sns';
 
 /**
  * Customize the SNS Topic Event Target
@@ -34,14 +34,15 @@ export class SnsTopic implements events.IRuleTarget {
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/resource-based-policies-cwe.html#sns-permissions
    */
-  public bind(_rule: events.IRule): events.RuleTargetConfig {
+  public bind(_rule: events.IRule, _id?: string): events.RuleTargetConfig {
     // deduplicated automatically
     this.topic.grantPublish(new iam.ServicePrincipal('events.amazonaws.com'));
 
     return {
-      id: this.topic.node.uniqueId,
+      id: '',
       arn: this.topic.topicArn,
       input: this.props.message,
+      targetResource: this.topic,
     };
   }
 }

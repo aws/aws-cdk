@@ -1,5 +1,6 @@
-import iam = require('@aws-cdk/aws-iam');
-import lambda = require('@aws-cdk/aws-lambda');
+import * as iam from '@aws-cdk/aws-iam';
+import * as lambda from '@aws-cdk/aws-lambda';
+import { Lazy } from '@aws-cdk/core';
 import { IntegrationOptions } from '../integration';
 import { Method } from '../method';
 import { AwsIntegration } from './aws';
@@ -55,18 +56,20 @@ export class LambdaIntegration extends AwsIntegration {
     super.bind(method);
     const principal = new iam.ServicePrincipal('apigateway.amazonaws.com');
 
-    const desc = `${method.httpMethod}.${method.resource.path.replace(/\//g, '.')}`;
+    const desc = `${method.restApi.node.uniqueId}.${method.httpMethod}.${method.resource.path.replace(/\//g, '.')}`;
 
     this.handler.addPermission(`ApiPermission.${desc}`, {
       principal,
-      sourceArn: method.methodArn,
+      scope: method,
+      sourceArn: Lazy.stringValue({ produce: () => method.methodArn }),
     });
 
     // add permission to invoke from the console
     if (this.enableTest) {
       this.handler.addPermission(`ApiPermission.Test.${desc}`, {
         principal,
-        sourceArn: method.testMethodArn
+        scope: method,
+        sourceArn: method.testMethodArn,
       });
     }
   }

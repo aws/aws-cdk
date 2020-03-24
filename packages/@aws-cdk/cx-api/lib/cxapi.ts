@@ -15,24 +15,20 @@ export const DEFAULT_ACCOUNT_ENV = 'CDK_DEFAULT_ACCOUNT';
 export const DEFAULT_REGION_ENV = 'CDK_DEFAULT_REGION';
 
 /**
- * Enables the embedding of the "aws:cdk:path" in CloudFormation template metadata.
+ * Version of Cloud Assembly expected by CDK CLI.
+ *
+ * CLI started emitting this at 1.10.1
  */
-export const PATH_METADATA_ENABLE_CONTEXT = 'aws:cdk:enable-path-metadata';
+export const CLI_ASM_VERSION_ENV = 'CDK_CLI_ASM_VERSION';
 
 /**
- * Disable the collection and reporting of version information.
+ * Version of the CLI currently running.
+ *
+ * CLI started emitting this at 1.10.1
  */
-export const DISABLE_VERSION_REPORTING = 'aws:cdk:disable-version-reporting';
+export const CLI_VERSION_ENV = 'CDK_CLI_VERSION';
 
 /**
- * If this is set, asset staging is disabled. This means that assets will not be copied to
- * the output directory and will be referenced with absolute source paths.
+ * If a context value is an object with this key, it indicates an error
  */
-export const DISABLE_ASSET_STAGING_CONTEXT = 'aws:cdk:disable-asset-staging';
-
-/**
- * If this context key is set, the CDK will stage assets under the specified
- * directory. Otherwise, assets will not be staged.
- * Omits stack traces from construct metadata entries.
- */
-export const DISABLE_METADATA_STACK_TRACE = 'aws:cdk:disable-stack-trace';
+export const PROVIDER_ERROR_KEY = '$providerError';

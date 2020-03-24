@@ -1,18 +1,24 @@
 {
   "compilerOptions": {
     "target": "ES2018",
-    "lib": ["es2016", "es2017.object", "es2017.string"],
     "module": "commonjs",
+    "lib": ["es2018"],
     "strict": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
-    "noImplicitThis": true,
     "alwaysStrict": true,
+    "declaration": true,
+    "inlineSourceMap": true,
+    "inlineSources": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "inlineSourceMap": true,
-    "inlineSources": true
-  }
+    "resolveJsonModule": true,
+    "composite": true,
+    "incremental": true
+  },
+  "include": ["**/*.ts"],
+  "references": [
+    { "path": "../../packages/@aws-cdk/cloudformation-diff" },
+    { "path": "../../packages/@aws-cdk/cx-api" }
+  ]
 }

@@ -5,6 +5,14 @@ import { Fact, FactName } from './fact';
  */
 export class RegionInfo {
   /**
+   * @returns the list of names of AWS regions for which there is at least one registered fact. This
+   *          may not be an exaustive list of all available AWS regions.
+   */
+  public static get regions(): RegionInfo[] {
+    return Fact.regions.map(RegionInfo.get);
+  }
+
+  /**
    * Obtain region info for a given region name.
    *
    * @param name the name of the region (e.g: us-east-1)
@@ -41,6 +49,13 @@ export class RegionInfo {
    */
   public get s3StaticWebsiteEndpoint(): string | undefined {
     return Fact.find(this.name, FactName.S3_STATIC_WEBSITE_ENDPOINT);
+  }
+
+  /**
+   * The hosted zone ID used by Route 53 to alias a S3 static website in this region (e.g: Z2O1EMRO9K5GLX)
+   */
+  public get s3StaticWebsiteHostedZoneId(): string | undefined {
+    return Fact.find(this.name, FactName.S3_STATIC_WEBSITE_ZONE_53_HOSTED_ZONE_ID);
   }
 
   /**

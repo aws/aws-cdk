@@ -1,9 +1,9 @@
-import events = require('@aws-cdk/aws-events');
-import iam = require('@aws-cdk/aws-iam');
-import lambda = require('@aws-cdk/aws-lambda');
+import * as events from '@aws-cdk/aws-events';
+import * as lambda from '@aws-cdk/aws-lambda';
+import { addLambdaPermission } from './util';
 
 /**
- * Customize the SNS Topic Event Target
+ * Customize the Lambda Event Target
  */
 export interface LambdaFunctionProps {
   /**
@@ -28,20 +28,15 @@ export class LambdaFunction implements events.IRuleTarget {
    * Returns a RuleTarget that can be used to trigger this Lambda as a
    * result from a CloudWatch event.
    */
-  public bind(rule: events.IRule): events.RuleTargetConfig {
-    const permissionId = `AllowEventRule${rule.node.uniqueId}`;
-    if (!this.handler.node.tryFindChild(permissionId)) {
-      this.handler.addPermission(permissionId, {
-        action: 'lambda:InvokeFunction',
-        principal: new iam.ServicePrincipal('events.amazonaws.com'),
-        sourceArn: rule.ruleArn
-      });
-    }
+  public bind(rule: events.IRule, _id?: string): events.RuleTargetConfig {
+    // Allow handler to be called from rule
+    addLambdaPermission(rule, this.handler);
 
     return {
-      id: this.handler.node.uniqueId,
+      id: '',
       arn: this.handler.functionArn,
       input: this.props.event,
+      targetResource: this.handler,
     };
   }
 }

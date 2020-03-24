@@ -3,8 +3,7 @@
     "Repo02AC86CF": {
       "Type": "AWS::CodeCommit::Repository",
       "Properties": {
-        "RepositoryName": "TestRepository",
-        "Triggers": []
+        "RepositoryName": "TestRepository"
       }
     },
     "pipelinePipeline22F2A91DArtifactsBucketEncryptionKey87C796D2": {
@@ -25,7 +24,10 @@
                 "kms:Get*",
                 "kms:Delete*",
                 "kms:ScheduleKeyDeletion",
-                "kms:CancelKeyDeletion"
+                "kms:CancelKeyDeletion",
+                "kms:GenerateDataKey",
+                "kms:TagResource",
+                "kms:UntagResource"
               ],
               "Effect": "Allow",
               "Principal": {
@@ -71,12 +73,13 @@
           "Version": "2012-10-17"
         }
       },
-      "DeletionPolicy": "Retain",
-      "UpdateReplacePolicy": "Retain"
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "pipelinePipeline22F2A91DArtifactsBucketC1799DCD": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
+        "PublicAccessBlockConfiguration" : {"BlockPublicAcls":true,"BlockPublicPolicy":true,"IgnorePublicAcls":true,"RestrictPublicBuckets":true},
         "BucketEncryption": {
           "ServerSideEncryptionConfiguration": [
             {
@@ -93,8 +96,22 @@
           ]
         }
       },
-      "DeletionPolicy": "Retain",
-      "UpdateReplacePolicy": "Retain"
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
+    },
+    "pipelinePipeline22F2A91DArtifactsBucketEncryptionKeyAlias9530209A": {
+      "Type": "AWS::KMS::Alias",
+      "Properties": {
+        "AliasName": "alias/codepipeline-pipelineeventspipelinepipeline22f2a91dfbb66895",
+        "TargetKeyId": {
+          "Fn::GetAtt": [
+            "pipelinePipeline22F2A91DArtifactsBucketEncryptionKey87C796D2",
+            "Arn"
+          ]
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "pipelinePipeline22F2A91DRole58B7B05E": {
       "Type": "AWS::IAM::Role",
@@ -105,17 +122,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "codepipeline.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "codepipeline.amazonaws.com"
               }
             }
           ],
@@ -236,7 +243,6 @@
                   },
                   "BranchName": "master"
                 },
-                "InputArtifacts": [],
                 "Name": "CodeCommit",
                 "OutputArtifacts": [
                   {
@@ -263,9 +269,7 @@
                   "Provider": "Manual",
                   "Version": "1"
                 },
-                "InputArtifacts": [],
                 "Name": "Hello",
-                "OutputArtifacts": [],
                 "RoleArn": {
                   "Fn::GetAtt": [
                     "pipelinePipeline22F2A91DBuildHelloCodePipelineActionRoleA9729116",
@@ -372,17 +376,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "events.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "events.amazonaws.com"
               }
             }
           ],
@@ -463,7 +457,7 @@
                 ]
               ]
             },
-            "Id": "pipelineeventspipelinePipeline22F2A91DFBB66895",
+            "Id": "Target0",
             "RoleArn": {
               "Fn::GetAtt": [
                 "pipelinePipeline22F2A91DEventsRole048D7F59",

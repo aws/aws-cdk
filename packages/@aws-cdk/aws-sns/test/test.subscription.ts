@@ -1,7 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import sns = require('../lib');
+import * as sns from '../lib';
 
 export = {
   'create a subscription'(test: Test) {
@@ -75,6 +75,30 @@ export = {
           { numeric: ['>=', 300, '<=', 350] },
           { numeric: ['>', 2000, '<', 3000] },
         ]
+      },
+    }));
+    test.done();
+  },
+
+  'with existsFilter'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const topic = new sns.Topic(stack, 'Topic');
+
+    // WHEN
+    new sns.Subscription(stack, 'Subscription', {
+      endpoint: 'endpoint',
+      filterPolicy: {
+        size: sns.SubscriptionFilter.existsFilter(),
+      },
+      protocol: sns.SubscriptionProtocol.LAMBDA,
+      topic
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::SNS::Subscription', {
+      FilterPolicy: {
+        size: [{ exists: true }]
       },
     }));
     test.done();

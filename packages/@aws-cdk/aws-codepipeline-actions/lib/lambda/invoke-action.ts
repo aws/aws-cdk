@@ -1,6 +1,6 @@
-import codepipeline = require('@aws-cdk/aws-codepipeline');
-import iam = require('@aws-cdk/aws-iam');
-import lambda = require('@aws-cdk/aws-lambda');
+import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import * as iam from '@aws-cdk/aws-iam';
+import * as lambda from '@aws-cdk/aws-lambda';
 import { Construct, Stack } from "@aws-cdk/core";
 import { Action } from '../action';
 
@@ -60,6 +60,7 @@ export class LambdaInvokeAction extends Action {
   constructor(props: LambdaInvokeActionProps) {
     super({
       ...props,
+      resource: props.lambda,
       category: codepipeline.ActionCategory.INVOKE,
       provider: 'Lambda',
       artifactBounds: {
@@ -71,6 +72,21 @@ export class LambdaInvokeAction extends Action {
     });
 
     this.props = props;
+  }
+
+  /**
+   * Reference a CodePipeline variable defined by the Lambda function this action points to.
+   * Variables in Lambda invoke actions are defined by calling the PutJobSuccessResult CodePipeline API call
+   * with the 'outputVariables' property filled.
+   *
+   * @param variableName the name of the variable to reference.
+   *   A variable by this name must be present in the 'outputVariables' section of the PutJobSuccessResult
+   *   request that the Lambda function calls when the action is invoked
+   *
+   * @see https://docs.aws.amazon.com/codepipeline/latest/APIReference/API_PutJobSuccessResult.html
+   */
+  public variable(variableName: string): string {
+    return this.variableExpression(variableName);
   }
 
   protected bound(scope: Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):

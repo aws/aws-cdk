@@ -1,5 +1,5 @@
-import apig = require('@aws-cdk/aws-apigateway');
-import route53 = require('@aws-cdk/aws-route53');
+import * as apig from '@aws-cdk/aws-apigateway';
+import * as route53 from '@aws-cdk/aws-route53';
 
 /**
  * Defines an API Gateway domain name as the alias target.

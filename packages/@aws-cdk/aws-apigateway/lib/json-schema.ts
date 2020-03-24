@@ -63,9 +63,9 @@ export interface JsonSchema {
   readonly minProperties?: number;
   readonly required?: string[];
   readonly properties?: { [name: string]: JsonSchema };
-  readonly additionalProperties?: JsonSchema;
+  readonly additionalProperties?: boolean;
   readonly patternProperties?: { [name: string]: JsonSchema };
-  readonly dependencies?: { [name: string]: JsonSchema | string[] };
+  readonly dependencies?: { [name: string]: JsonSchema | string[] };
   readonly propertyNames?: JsonSchema;
 
   // Conditional

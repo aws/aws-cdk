@@ -3,8 +3,7 @@
     "Repo02AC86CF": {
       "Type": "AWS::CodeCommit::Repository",
       "Properties": {
-        "RepositoryName": "aws-cdk-codecommit-events",
-        "Triggers": []
+        "RepositoryName": "aws-cdk-codecommit-events"
       }
     },
     "RepoOnReferenceCreatedF1C66FF1": {
@@ -37,7 +36,7 @@
             "Arn": {
               "Ref": "MyTopic86869434"
             },
-            "Id": "MyTopic"
+            "Id": "Target0"
           }
         ]
       }

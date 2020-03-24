@@ -1,0 +1,37 @@
+type Customer {
+    id: String!
+    name: String!
+}
+
+input SaveCustomerInput {
+    name: String!
+}
+
+type Order {
+    customer: String!
+    order: String!
+}
+
+type Query {
+    getCustomers: [Customer]
+    getCustomer(id: String): Customer
+    getCustomerOrdersEq(customer: String): Order
+    getCustomerOrdersLt(customer: String): Order
+    getCustomerOrdersLe(customer: String): Order
+    getCustomerOrdersGt(customer: String): Order
+    getCustomerOrdersGe(customer: String): Order
+    getCustomerOrdersFilter(customer: String, order: String): Order
+    getCustomerOrdersBetween(customer: String, order1: String, order2: String): Order
+}
+
+input FirstOrderInput {
+    product: String!
+    quantity: Int!
+}
+
+type Mutation {
+    addCustomer(customer: SaveCustomerInput!): Customer
+    saveCustomer(id: String!, customer: SaveCustomerInput!): Customer
+    removeCustomer(id: String!): Customer
+    saveCustomerWithFirstOrder(customer: SaveCustomerInput!, order: FirstOrderInput!, referral: String): Order
+}

@@ -38,7 +38,7 @@ function update-spec() {
     node build-tools/spec-diff.js "${title}" "${target}" "${intermediate}" >> CHANGELOG.md.new
     echo "" >> CHANGELOG.md.new
 
-    echo >&2 "Updarting source spec..."
+    echo >&2 "Updating source spec..."
     rm -f ${target}
     cp ${intermediate} ${target}
 }
@@ -48,6 +48,10 @@ update-spec \
     "https://d1uauaxba7bl26.cloudfront.net/latest/gzip/CloudFormationResourceSpecification.json" \
     spec-source/000_CloudFormationResourceSpecification.json \
     true
+
+echo >&2 "Recording new version..."
+rm -f cfn.version
+node -p "require('${scriptdir}/../spec-source/000_CloudFormationResourceSpecification.json').ResourceSpecificationVersion" > cfn.version
 
 update-spec \
     "Serverless Application Model (SAM) Resource Specification" \
@@ -67,9 +71,11 @@ node ${scriptdir}/create-missing-libraries.js || {
 
 # update decdk dep list
 (cd ${scriptdir}/../../../decdk && node ./deps.js || true)
+(cd ${scriptdir}/../../../monocdk-experiment && node ./deps.js || true)
 
 # append old changelog after new and replace as the last step because otherwise we will not be idempotent
-cat CHANGELOG.md >> CHANGELOG.md.new
-cp CHANGELOG.md.new CHANGELOG.md
-
-
+_changelog_contents=$(cat CHANGELOG.md.new)
+if [ -n "${_changelog_contents}" ]; then
+    cat CHANGELOG.md >> CHANGELOG.md.new
+    cp CHANGELOG.md.new CHANGELOG.md
+fi

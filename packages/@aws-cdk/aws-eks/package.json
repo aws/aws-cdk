@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-eks",
-  "version": "1.1.0",
+  "version": "0.0.0",
   "description": "The CDK Construct Library for AWS::EKS",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -11,8 +11,7 @@
         "package": "software.amazon.awscdk.services.eks",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "eks",
-          "versionSuffix": ".DEVPREVIEW"
+          "artifactId": "eks"
         }
       },
       "dotnet": {
@@ -20,15 +19,12 @@
         "packageId": "Amazon.CDK.AWS.EKS",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "versionSuffix": "-devpreview"
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.aws-eks",
         "module": "aws_cdk.aws_eks"
       }
-    },
-    "metadata": {
-      "awsdocs:title": "Amazon EKS"
     }
   },
   "repository": {
@@ -47,7 +43,8 @@
     "awslint": "cdk-awslint",
     "cfn2ts": "cfn2ts",
     "build+test+package": "npm run build+test && npm run package",
-    "build+test": "npm run build && npm test"
+    "build+test": "npm run build && npm test",
+    "compat": "cdk-compat"
   },
   "cdk-build": {
     "cloudformation": "AWS::EKS"
@@ -65,27 +62,54 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^1.1.0",
-    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
-    "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
-    "cfn2ts": "file:../../../tools/cfn2ts",
-    "pkglint": "file:../../../tools/pkglint"
+    "@aws-cdk/assert": "0.0.0",
+    "@types/nodeunit": "^0.0.30",
+    "aws-sdk": "^2.644.0",
+    "cdk-build-tools": "0.0.0",
+    "cdk-integ-tools": "0.0.0",
+    "cfn2ts": "0.0.0",
+    "nodeunit": "^0.11.3",
+    "pkglint": "0.0.0",
+    "sinon": "^9.0.1"
   },
   "dependencies": {
-    "@aws-cdk/aws-autoscaling": "^1.1.0",
-    "@aws-cdk/aws-ec2": "^1.1.0",
-    "@aws-cdk/aws-iam": "^1.1.0",
-    "@aws-cdk/core": "^1.1.0"
+    "@aws-cdk/aws-autoscaling": "0.0.0",
+    "@aws-cdk/aws-cloudformation": "0.0.0",
+    "@aws-cdk/aws-ec2": "0.0.0",
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-lambda": "0.0.0",
+    "@aws-cdk/aws-ssm": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/custom-resources": "0.0.0",
+    "constructs": "^2.0.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-autoscaling": "^1.1.0",
-    "@aws-cdk/aws-ec2": "^1.1.0",
-    "@aws-cdk/aws-iam": "^1.1.0",
-    "@aws-cdk/core": "^1.1.0"
+    "@aws-cdk/aws-autoscaling": "0.0.0",
+    "@aws-cdk/aws-cloudformation": "0.0.0",
+    "@aws-cdk/aws-ec2": "0.0.0",
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-lambda": "0.0.0",
+    "@aws-cdk/aws-ssm": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/custom-resources": "0.0.0",
+    "constructs": "^2.0.0"
   },
   "engines": {
-    "node": ">= 8.10.0"
+    "node": ">= 10.3.0"
   },
-  "stability": "experimental"
+  "awslint": {
+    "exclude": [
+      "resource-attribute:@aws-cdk/aws-eks.FargateCluster.clusterSecurityGroupId",
+      "resource-attribute:@aws-cdk/aws-eks.FargateCluster.clusterEncryptionConfigKeyArn",
+      "resource-attribute:@aws-cdk/aws-eks.Cluster.clusterSecurityGroupId",
+      "resource-attribute:@aws-cdk/aws-eks.Cluster.clusterEncryptionConfigKeyArn",
+      "props-no-arn-refs:@aws-cdk/aws-eks.ClusterProps.outputMastersRoleArn",
+      "resource-attribute:@aws-cdk/aws-eks.Cluster.clusterSecurityGroupId"
+    ]
+  },
+  "stability": "experimental",
+  "awscdkio": {
+    "announce": false
+  }
 }

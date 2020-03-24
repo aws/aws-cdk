@@ -1,4 +1,4 @@
-import reflect = require("jsii-reflect");
+import * as reflect from 'jsii-reflect';
 import { TypeSystem } from "jsii-reflect";
 import { getDocTag } from "./util";
 
@@ -79,6 +79,13 @@ export class CoreTypes {
   }
 
   /**
+   * Return true if the given interface type is a CFN class or prop type
+   */
+  public static isCfnType(interfaceType: reflect.Type) {
+    return interfaceType.name.startsWith('Cfn') || (interfaceType.namespace && interfaceType.namespace.startsWith('Cfn'));
+  }
+
+  /**
    * @returns `classType` for the core type Construct
    */
   public get constructClass() {
@@ -114,7 +121,7 @@ export class CoreTypes {
   }
 
   public get physicalNameClass() {
-    return this.sys.findClass(CoreTypesFqn.PhysicalName)
+    return this.sys.findClass(CoreTypesFqn.PhysicalName);
   }
 
   private readonly sys: TypeSystem;

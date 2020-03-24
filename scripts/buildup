@@ -1,9 +1,27 @@
 #!/bin/bash
 set -euo pipefail
-
-export NODE_OPTIONS="--max-old-space-size=4096 ${NODE_OPTIONS:-}"
-
 scriptdir=$(cd $(dirname $0) && pwd)
-export PATH=$(cd $scriptdir && npm bin):$PATH
-scope=$(${scriptdir}/current-scope)
-exec lerna run build --scope ${scope} --include-filtered-dependencies
+
+echo "************************************************************"
+echo " buildup usage:"
+echo " - execute 'buildup --resume' to resume after failure"
+echo " - execute 'buildup' to restart the build from the start"
+echo ""
+echo " for advanced usage, see ${scriptdir}/foreach.sh"
+echo "************************************************************"
+
+if [ "$#" -eq 0 ]; then
+  ${scriptdir}/foreach.sh --reset
+else
+  if [ "$1" != "--resume" ]; then
+    echo "Unknown option: $1"
+    exit 1
+  fi
+fi
+
+${scriptdir}/foreach.sh --up yarn build
+${scriptdir}/foreach.sh --reset
+
+echo "************************************************************"
+echo "buildup done"
+echo "************************************************************"

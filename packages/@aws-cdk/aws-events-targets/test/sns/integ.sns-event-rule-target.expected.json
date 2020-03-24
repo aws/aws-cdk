@@ -12,17 +12,7 @@
               "Action": "sns:Publish",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "events.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "events.amazonaws.com"
               },
               "Resource": {
                 "Ref": "MyTopic86869434"
@@ -49,7 +39,7 @@
             "Arn": {
               "Ref": "MyTopic86869434"
             },
-            "Id": "awscdksnseventtargetMyTopicB7575CD8"
+            "Id": "Target0"
           }
         ]
       }

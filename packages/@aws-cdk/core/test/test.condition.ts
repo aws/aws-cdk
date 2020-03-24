@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import cdk = require('../lib');
+import * as cdk from '../lib';
 import { toCloudFormation } from './util';
 
 export = {

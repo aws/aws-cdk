@@ -1,8 +1,8 @@
 import { countResources, expect, haveResource } from '@aws-cdk/assert';
-import events = require('@aws-cdk/aws-events');
-import lambda = require('@aws-cdk/aws-lambda');
-import cdk = require('@aws-cdk/core');
-import targets = require('../../lib');
+import * as events from '@aws-cdk/aws-events';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as cdk from '@aws-cdk/core';
+import * as targets from '../../lib';
 
 test('use lambda as an event rule target', () => {
   // GIVEN
@@ -51,10 +51,55 @@ test('use lambda as an event rule target', () => {
     Targets: [
       {
         Arn: { "Fn::GetAtt": [lambdaId, "Arn"] },
-        Id: "MyLambda"
+        Id: "Target0"
       }
     ]
   }));
+});
+
+test('adding same lambda function as target mutiple times creates permission only once', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const fn = newTestLambda(stack);
+  const rule = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+  });
+
+  // WHEN
+  rule.addTarget(new targets.LambdaFunction(fn, {
+    event: events.RuleTargetInput.fromObject({ key: 'value1' })
+  }));
+  rule.addTarget(new targets.LambdaFunction(fn, {
+    event: events.RuleTargetInput.fromObject({ key: 'value2' })
+  }));
+
+  // THEN
+  expect(stack).to(countResources('AWS::Lambda::Permission', 1));
+});
+
+test('adding same singleton lambda function as target mutiple times creates permission only once', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const fn = new lambda.SingletonFunction(stack, 'MyLambda', {
+    code: new lambda.InlineCode('foo'),
+    handler: 'bar',
+    runtime: lambda.Runtime.PYTHON_2_7,
+    uuid: 'uuid'
+  });
+  const rule = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+  });
+
+  // WHEN
+  rule.addTarget(new targets.LambdaFunction(fn, {
+    event: events.RuleTargetInput.fromObject({ key: 'value1' })
+  }));
+  rule.addTarget(new targets.LambdaFunction(fn, {
+    event: events.RuleTargetInput.fromObject({ key: 'value2' })
+  }));
+
+  // THEN
+  expect(stack).to(countResources('AWS::Lambda::Permission', 1));
 });
 
 function newTestLambda(scope: cdk.Construct) {

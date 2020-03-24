@@ -1,9 +1,11 @@
-import { expect, haveResource, haveResourceLike, InspectionFailure, ResourcePart } from '@aws-cdk/assert';
-import ec2 = require('@aws-cdk/aws-ec2');
-import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/core');
+import { ABSENT, expect, haveResource, haveResourceLike, InspectionFailure, ResourcePart } from '@aws-cdk/assert';
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as iam from '@aws-cdk/aws-iam';
+import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
-import autoscaling = require('../lib');
+import * as autoscaling from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -21,7 +23,7 @@ export = {
     expect(stack).toMatch({
       "Parameters": {
         "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter": {
-          "Type": "AWS::SSM::Parameter::Value<String>",
+          "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
           "Default": "/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2"
         }
       },
@@ -37,7 +39,6 @@ export = {
                 "IpProtocol": "-1",
               }
             ],
-            "SecurityGroupIngress": [],
             "Tags": [
               {
                 "Key": "Name",
@@ -62,7 +63,13 @@ export = {
                 }
               ],
               "Version": "2012-10-17"
-            }
+            },
+            "Tags": [
+             {
+               "Key": "Name",
+               "Value": "MyFleet"
+             }
+           ],
           }
         },
         "MyFleetInstanceProfile70A58496": {
@@ -107,7 +114,6 @@ export = {
             }
           },
           "Properties": {
-            "DesiredCapacity": "1",
             "LaunchConfigurationName": {
               "Ref": "MyFleetLaunchConfig5D7F9801"
             },
@@ -149,6 +155,30 @@ export = {
       MinSize: "0",
       MaxSize: "0",
       DesiredCapacity: "0",
+    }
+    ));
+
+    test.done();
+  },
+
+  'validation is not performed when using Tokens'(test: Test) {
+    const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
+    const vpc = mockVpc(stack);
+
+    new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+      minCapacity: cdk.Lazy.numberValue({ produce: () => 5 }),
+      maxCapacity: cdk.Lazy.numberValue({ produce: () => 1 }),
+      desiredCapacity: cdk.Lazy.numberValue({ produce: () => 20 }),
+    });
+
+    // THEN: no exception
+    expect(stack).to(haveResource("AWS::AutoScaling::AutoScalingGroup", {
+      MinSize: "5",
+      MaxSize: "1",
+      DesiredCapacity: "20",
     }
     ));
 
@@ -222,7 +252,6 @@ export = {
     expect(stack).to(haveResource("AWS::AutoScaling::AutoScalingGroup", {
       MinSize: "10",
       MaxSize: "10",
-      DesiredCapacity: "10",
     }
     ));
 
@@ -245,8 +274,7 @@ export = {
     // THEN
     expect(stack).to(haveResource("AWS::AutoScaling::AutoScalingGroup", {
       MinSize: "1",
-      MaxSize: "10",
-      DesiredCapacity: "10",
+      MaxSize: "10"
     }
     ));
 
@@ -397,6 +425,49 @@ export = {
     test.done();
   },
 
+  'can configure EC2 health check'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
+    const vpc = mockVpc(stack);
+
+    // WHEN
+    new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+      healthCheck: autoscaling.HealthCheck.ec2()
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike("AWS::AutoScaling::AutoScalingGroup", {
+      HealthCheckType: 'EC2',
+    }));
+
+    test.done();
+  },
+
+  'can configure EBS health check'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
+    const vpc = mockVpc(stack);
+
+    // WHEN
+    new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+      healthCheck: autoscaling.HealthCheck.elb({grace: cdk.Duration.minutes(15)})
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike("AWS::AutoScaling::AutoScalingGroup", {
+      HealthCheckType: 'ELB',
+      HealthCheckGracePeriod: 900
+    }));
+
+    test.done();
+  },
+
   'can add Security Group to Fleet'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
@@ -471,7 +542,7 @@ export = {
     const vpc = mockVpc(stack);
 
     // WHEN
-    new autoscaling.AutoScalingGroup(stack, 'MyStack', {
+    const asg = new autoscaling.AutoScalingGroup(stack, 'MyStack', {
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
@@ -480,6 +551,7 @@ export = {
     });
 
     // THEN
+    test.deepEqual(asg.spotPrice, '0.05');
     expect(stack).to(haveResource("AWS::AutoScaling::LaunchConfiguration", {
       SpotPrice: "0.05",
     }));
@@ -605,7 +677,286 @@ export = {
       "Roles": ["HelloDude"]
     }));
     test.done();
-  }
+  },
+
+  'defaultChild is available on an ASG'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+    const asg = new autoscaling.AutoScalingGroup(stack, 'MyStack', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+    });
+
+    // THEN
+    test.ok(asg.node.defaultChild instanceof autoscaling.CfnAutoScalingGroup);
+
+    test.done();
+  },
+
+  'can set blockDeviceMappings'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+    new autoscaling.AutoScalingGroup(stack, 'MyStack', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+      blockDevices: [{
+        deviceName: 'ebs',
+        mappingEnabled: true,
+        volume: autoscaling.BlockDeviceVolume.ebs(15, {
+          deleteOnTermination: true,
+          encrypted: true,
+          volumeType: autoscaling.EbsDeviceVolumeType.IO1,
+          iops: 5000,
+        })
+      }, {
+        deviceName: 'ebs-snapshot',
+        mappingEnabled: false,
+        volume: autoscaling.BlockDeviceVolume.ebsFromSnapshot('snapshot-id', {
+          volumeSize: 500,
+          deleteOnTermination: false,
+          volumeType: autoscaling.EbsDeviceVolumeType.SC1,
+        })
+      }, {
+        deviceName: 'ephemeral',
+        volume: autoscaling.BlockDeviceVolume.ephemeral(0)
+      }]
+    });
+
+    // THEN
+    expect(stack).to(haveResource("AWS::AutoScaling::LaunchConfiguration", {
+      BlockDeviceMappings: [
+        {
+          DeviceName: "ebs",
+          Ebs: {
+            DeleteOnTermination: true,
+            Encrypted: true,
+            Iops: 5000,
+            VolumeSize: 15,
+            VolumeType: "io1"
+          },
+          NoDevice: ABSENT
+        },
+        {
+          DeviceName: "ebs-snapshot",
+          Ebs: {
+            DeleteOnTermination: false,
+            SnapshotId: "snapshot-id",
+            VolumeSize: 500,
+            VolumeType: "sc1"
+          },
+          NoDevice: true
+        },
+        {
+          DeviceName: "ephemeral",
+          VirtualName: "ephemeral0",
+          NoDevice: ABSENT
+        }
+      ]
+    }));
+
+    test.done();
+  },
+
+  'throws if ephemeral volumeIndex < 0'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+
+    // THEN
+    test.throws(() => {
+      new autoscaling.AutoScalingGroup(stack, 'MyStack', {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+        machineImage: new ec2.AmazonLinuxImage(),
+        vpc,
+        blockDevices: [{
+          deviceName: 'ephemeral',
+          volume: autoscaling.BlockDeviceVolume.ephemeral(-1)
+        }]
+      });
+    }, /volumeIndex must be a number starting from 0/);
+
+    test.done();
+  },
+
+  'throws if volumeType === IO1 without iops'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+
+    // THEN
+    test.throws(() => {
+      new autoscaling.AutoScalingGroup(stack, 'MyStack', {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+        machineImage: new ec2.AmazonLinuxImage(),
+        vpc,
+        blockDevices: [{
+          deviceName: 'ebs',
+          volume: autoscaling.BlockDeviceVolume.ebs(15, {
+            deleteOnTermination: true,
+            encrypted: true,
+            volumeType: autoscaling.EbsDeviceVolumeType.IO1,
+          })
+        }]
+      });
+    }, /ops property is required with volumeType: EbsDeviceVolumeType.IO1/);
+
+    test.done();
+  },
+
+  'warning if iops without volumeType'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+
+    const asg = new autoscaling.AutoScalingGroup(stack, 'MyStack', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+      blockDevices: [{
+        deviceName: 'ebs',
+        volume: autoscaling.BlockDeviceVolume.ebs(15, {
+          deleteOnTermination: true,
+          encrypted: true,
+          iops: 5000,
+        })
+      }]
+    });
+
+    // THEN
+    test.deepEqual(asg.node.metadata[0].type, cxapi.WARNING_METADATA_KEY);
+    test.deepEqual(asg.node.metadata[0].data, 'iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
+
+    test.done();
+  },
+
+  'warning if iops and volumeType !== IO1'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+
+    const asg = new autoscaling.AutoScalingGroup(stack, 'MyStack', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+      blockDevices: [{
+        deviceName: 'ebs',
+        volume: autoscaling.BlockDeviceVolume.ebs(15, {
+          deleteOnTermination: true,
+          encrypted: true,
+          volumeType: autoscaling.EbsDeviceVolumeType.GP2,
+          iops: 5000,
+        })
+      }]
+    });
+
+    // THEN
+    test.deepEqual(asg.node.metadata[0].type, cxapi.WARNING_METADATA_KEY);
+    test.deepEqual(asg.node.metadata[0].data, 'iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
+
+    test.done();
+  },
+
+  'step scaling on metric'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+    const asg = new autoscaling.AutoScalingGroup(stack, 'MyStack', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+    });
+
+    // WHEN
+    asg.scaleOnMetric('Metric', {
+      metric: new cloudwatch.Metric({
+        namespace: 'Test',
+        metricName: 'Metric',
+      }),
+      adjustmentType: autoscaling.AdjustmentType.CHANGE_IN_CAPACITY,
+      scalingSteps: [
+        { change: -1, lower: 0, upper: 49 },
+        { change: 0, lower: 50, upper: 99 },
+        { change: 1, lower: 100 }
+      ]
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::CloudWatch::Alarm', {
+      ComparisonOperator: "LessThanOrEqualToThreshold",
+      EvaluationPeriods: 1,
+      MetricName: "Metric",
+      Namespace: "Test",
+      Period: 300,
+    }));
+
+    test.done();
+  },
+
+  'step scaling on MathExpression'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+    const asg = new autoscaling.AutoScalingGroup(stack, 'MyStack', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+    });
+
+    // WHEN
+    asg.scaleOnMetric('Metric', {
+      metric: new cloudwatch.MathExpression({
+        expression: 'a',
+        usingMetrics: {
+          a: new cloudwatch.Metric({
+            namespace: 'Test',
+            metricName: 'Metric',
+          })
+        },
+      }),
+      adjustmentType: autoscaling.AdjustmentType.CHANGE_IN_CAPACITY,
+      scalingSteps: [
+        { change: -1, lower: 0, upper: 49 },
+        { change: 0, lower: 50, upper: 99 },
+        { change: 1, lower: 100 }
+      ]
+    });
+
+    // THEN
+    expect(stack).notTo(haveResource('AWS::CloudWatch::Alarm', {
+      Period: 60
+    }));
+
+    expect(stack).to(haveResource('AWS::CloudWatch::Alarm', {
+      "ComparisonOperator": "LessThanOrEqualToThreshold",
+      "EvaluationPeriods": 1,
+      "Metrics": [
+        {
+          "Expression": "a",
+          "Id": "expr_1"
+        },
+        {
+          "Id": "a",
+          "MetricStat": {
+            "Metric": {
+              "MetricName": "Metric",
+              "Namespace": "Test"
+            },
+            "Period": 300,
+            "Stat": "Average"
+          },
+          "ReturnData": false
+        }
+      ],
+      "Threshold": 49
+    }));
+
+    test.done();
+  },
+
 };
 
 function mockVpc(stack: cdk.Stack) {

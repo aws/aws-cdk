@@ -1,0 +1,113 @@
+# See https://doc.mergify.io
+
+pull_request_rules:
+  - name: label core
+    actions:
+      label:
+        add: [ contribution/core ]
+    conditions:
+      - author~=^(eladb|RomainMuller|garnaat|nija-at|shivlaks|skinny85|rix0rrr|NGL321|Jerry-AWS|SomayaB|MrArnoldPalmer|NetaNir|iliapolo)$
+      - -label~="contribution/core"
+  - name: automatic merge
+    actions:
+      comment:
+        message: Thank you for contributing! Your pull request will be updated from master and then merged automatically (do not update manually, and be sure to [allow changes to be pushed to your fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/allowing-changes-to-a-pull-request-branch-created-from-a-fork)).
+      merge:
+        strict: smart
+        method: squash
+        strict_method: merge
+      delete_head_branch: {}
+    conditions:
+      - base!=release
+      - -title~=(WIP|wip)
+      - -label~=(blocked|do-not-merge|no-squash)
+      - -merged
+      - -closed
+      - author!=dependabot[bot]
+      - author!=dependabot-preview[bot]
+      - "#approved-reviews-by>=1"
+      - -approved-reviews-by~=author
+      - "#changes-requested-reviews-by=0"
+      - status-success~=AWS CodeBuild us-east-1
+      - status-success=Semantic Pull Request
+      - status-success=mandatory-changes
+  - name: automatic merge
+    actions:
+      comment:
+        message: Thank you for contributing! Your pull request will be updated from master and then merged automatically without squashing (do not update manually, and be sure to [allow changes to be pushed to your fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/allowing-changes-to-a-pull-request-branch-created-from-a-fork)).
+      merge:
+        strict: smart
+        # Merge instead of squash
+        method: merge
+        strict_method: merge
+      delete_head_branch: {}
+    conditions:
+      - -title~=(WIP|wip)
+      - -label~=(blocked|do-not-merge)
+      # Only if no-squash is set
+      - label~=no-squash
+      - -merged
+      - -closed
+      - author!=dependabot[bot]
+      - author!=dependabot-preview[bot]
+      - "#approved-reviews-by>=1"
+      - -approved-reviews-by~=author
+      - "#changes-requested-reviews-by=0"
+      - status-success~=AWS CodeBuild us-east-1
+      - status-success=Semantic Pull Request
+      - status-success=mandatory-changes
+  - name: remove stale reviews
+    actions:
+      dismiss_reviews: {}
+    conditions:
+      - author!=dependabot[bot]
+      - author!=dependabot-preview[bot]
+        # List out all the people whose work is okay to provisionally approve
+      - author!=eladb
+      - author!=RomainMuller
+      - author!=garnaat
+      - author!=nija-at
+      - author!=shivlaks
+      - author!=skinny85
+      - author!=rix0rrr
+      - author!=NGL321
+      - author!=Jerry-AWS
+      - author!=SomayaB
+      - author!=MrArnoldPalmer
+      - author!=NetaNir
+      - author!=iliapolo
+      - base=master
+      - -merged
+      - -closed
+  - name: if fails conventional commits
+    actions:
+      comment:
+        message: Title does not follow the guidelines of [Conventional Commits](https://www.conventionalcommits.org). Please adjust title before merge.
+    conditions:
+      - author!=dependabot[bot]
+      - author!=dependabot-preview[bot]
+      - status-failure=Semantic Pull Request
+      - -merged
+      - -closed
+  - name: automatic merge of Dependabot PRs
+    actions:
+      comment:
+        message: Thanks Dependabot!
+      merge:
+        # 'strict: false' disables Mergify keeping the branch up-to-date from master.
+        # It's not necessary: Dependabot will do that itself.
+        # It's not dangerous: GitHub branch protection settings prevent merging stale branches.
+        strict: false
+        method: squash
+      delete_head_branch: {}
+    conditions:
+      - -title~=(WIP|wip)
+      - -label~=(blocked|do-not-merge)
+      - -merged
+      - -closed
+      - author~=dependabot
+      - "#approved-reviews-by>=1"
+      - "#changes-requested-reviews-by=0"
+      - status-success~=AWS CodeBuild us-east-1
+      - status-success=Semantic Pull Request
+      - status-success=mandatory-changes

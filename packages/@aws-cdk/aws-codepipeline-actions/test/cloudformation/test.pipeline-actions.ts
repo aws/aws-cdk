@@ -1,17 +1,17 @@
-import codepipeline = require('@aws-cdk/aws-codepipeline');
-import events = require('@aws-cdk/aws-events');
-import iam = require('@aws-cdk/aws-iam');
-import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/core');
-import { Stack } from '@aws-cdk/core';
-import _ = require('lodash');
-import nodeunit = require('nodeunit');
-import cpactions = require('../../lib');
+import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import * as events from '@aws-cdk/aws-events';
+import * as iam from '@aws-cdk/aws-iam';
+import * as s3 from '@aws-cdk/aws-s3';
+import * as cdk from '@aws-cdk/core';
+import * as _ from 'lodash';
+import * as nodeunit from 'nodeunit';
+import * as cpactions from '../../lib';
 
 export = nodeunit.testCase({
   'CreateReplaceChangeSet': {
     'works'(test: nodeunit.Test) {
-      const stack = new cdk.Stack();
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
       const pipelineRole = new RoleDouble(stack, 'PipelineRole');
       const artifact = new codepipeline.Artifact('TestArtifact');
       const action = new cpactions.CloudFormationCreateReplaceChangeSetAction({
@@ -26,20 +26,22 @@ export = nodeunit.testCase({
         actions: [action],
       });
 
-      _assertPermissionGranted(test, pipelineRole.statements, 'iam:PassRole', action.deploymentRole.roleArn);
+      cdk.ConstructNode.prepare(stack.node);
+
+      _assertPermissionGranted(test, stack, pipelineRole.statements, 'iam:PassRole', action.deploymentRole.roleArn);
 
       const stackArn = _stackArn('MyStack', stack);
       const changeSetCondition = { StringEqualsIfExists: { 'cloudformation:ChangeSetName': 'MyChangeSet' } };
-      _assertPermissionGranted(test, pipelineRole.statements, 'cloudformation:DescribeStacks', stackArn, changeSetCondition);
-      _assertPermissionGranted(test, pipelineRole.statements, 'cloudformation:DescribeChangeSet', stackArn, changeSetCondition);
-      _assertPermissionGranted(test, pipelineRole.statements, 'cloudformation:CreateChangeSet', stackArn, changeSetCondition);
-      _assertPermissionGranted(test, pipelineRole.statements, 'cloudformation:DeleteChangeSet', stackArn, changeSetCondition);
+      _assertPermissionGranted(test, stack, pipelineRole.statements, 'cloudformation:DescribeStacks', stackArn, changeSetCondition);
+      _assertPermissionGranted(test, stack, pipelineRole.statements, 'cloudformation:DescribeChangeSet', stackArn, changeSetCondition);
+      _assertPermissionGranted(test, stack, pipelineRole.statements, 'cloudformation:CreateChangeSet', stackArn, changeSetCondition);
+      _assertPermissionGranted(test, stack, pipelineRole.statements, 'cloudformation:DeleteChangeSet', stackArn, changeSetCondition);
 
       // TODO: revert "as any" once we move all actions into a single package.
-      test.deepEqual(stage.actions[0].actionProperties.inputs, [artifact],
+      test.deepEqual(stage.fullActions[0].actionProperties.inputs, [artifact],
                      'The input was correctly registered');
 
-      _assertActionMatches(test, stage.actions, 'CloudFormation', 'Deploy', {
+      _assertActionMatches(test, stack, stage.fullActions, 'CloudFormation', 'Deploy', {
         ActionMode: 'CHANGE_SET_CREATE_REPLACE',
         StackName: 'MyStack',
         ChangeSetName: 'MyChangeSet'
@@ -122,10 +124,10 @@ export = nodeunit.testCase({
       });
 
       const stackArn = _stackArn('MyStack', stack);
-      _assertPermissionGranted(test, pipelineRole.statements, 'cloudformation:ExecuteChangeSet', stackArn,
+      _assertPermissionGranted(test, stack, pipelineRole.statements, 'cloudformation:ExecuteChangeSet', stackArn,
                                { StringEqualsIfExists: { 'cloudformation:ChangeSetName': 'MyChangeSet' } });
 
-      _assertActionMatches(test, stage.actions, 'CloudFormation', 'Deploy', {
+      _assertActionMatches(test, stack, stage.fullActions, 'CloudFormation', 'Deploy', {
         ActionMode: 'CHANGE_SET_EXECUTE',
         StackName: 'MyStack',
         ChangeSetName: 'MyChangeSet'
@@ -194,12 +196,12 @@ export = nodeunit.testCase({
     });
     const stackArn = _stackArn('MyStack', stack);
 
-    _assertPermissionGranted(test, pipelineRole.statements, 'cloudformation:DescribeStack*', stackArn);
-    _assertPermissionGranted(test, pipelineRole.statements, 'cloudformation:CreateStack', stackArn);
-    _assertPermissionGranted(test, pipelineRole.statements, 'cloudformation:UpdateStack', stackArn);
-    _assertPermissionGranted(test, pipelineRole.statements, 'cloudformation:DeleteStack', stackArn);
+    _assertPermissionGranted(test, stack, pipelineRole.statements, 'cloudformation:DescribeStack*', stackArn);
+    _assertPermissionGranted(test, stack, pipelineRole.statements, 'cloudformation:CreateStack', stackArn);
+    _assertPermissionGranted(test, stack, pipelineRole.statements, 'cloudformation:UpdateStack', stackArn);
+    _assertPermissionGranted(test, stack, pipelineRole.statements, 'cloudformation:DeleteStack', stackArn);
 
-    _assertPermissionGranted(test, pipelineRole.statements, 'iam:PassRole', action.deploymentRole.roleArn);
+    _assertPermissionGranted(test, stack, pipelineRole.statements, 'iam:PassRole', action.deploymentRole.roleArn);
 
     test.done();
   },
@@ -218,10 +220,10 @@ export = nodeunit.testCase({
     });
     const stackArn = _stackArn('MyStack', stack);
 
-    _assertPermissionGranted(test, pipelineRole.statements, 'cloudformation:DescribeStack*', stackArn);
-    _assertPermissionGranted(test, pipelineRole.statements, 'cloudformation:DeleteStack', stackArn);
+    _assertPermissionGranted(test, stack, pipelineRole.statements, 'cloudformation:DescribeStack*', stackArn);
+    _assertPermissionGranted(test, stack, pipelineRole.statements, 'cloudformation:DeleteStack', stackArn);
 
-    _assertPermissionGranted(test, pipelineRole.statements, 'iam:PassRole', action.deploymentRole.roleArn);
+    _assertPermissionGranted(test, stack, pipelineRole.statements, 'iam:PassRole', action.deploymentRole.roleArn);
 
     test.done();
   },
@@ -235,23 +237,24 @@ interface PolicyStatementJson {
 }
 
 function _assertActionMatches(test: nodeunit.Test,
+                              stack: cdk.Stack,
                               actions: FullAction[],
                               provider: string,
                               category: string,
                               configuration?: { [key: string]: any }) {
   const configurationStr = configuration
-                         ? `, configuration including ${JSON.stringify(resolve(configuration), null, 2)}`
+                         ? `, configuration including ${JSON.stringify(stack.resolve(configuration), null, 2)}`
                          : '';
   const actionsStr = JSON.stringify(actions.map(a =>
     ({ owner: a.actionProperties.owner, provider: a.actionProperties.provider,
-      category: a.actionProperties.category, configuration: resolve(a.actionConfig.configuration)
+      category: a.actionProperties.category, configuration: stack.resolve(a.actionConfig.configuration)
     })
   ), null, 2);
-  test.ok(_hasAction(actions, provider, category, configuration),
+  test.ok(_hasAction(stack, actions, provider, category, configuration),
           `Expected to find an action with provider ${provider}, category ${category}${configurationStr}, but found ${actionsStr}`);
 }
 
-function _hasAction(actions: FullAction[], provider: string, category: string,
+function _hasAction(stack: cdk.Stack, actions: FullAction[], provider: string, category: string,
                     configuration?: { [key: string]: any}) {
   for (const action of actions) {
     if (action.actionProperties.provider !== provider) { continue; }
@@ -259,7 +262,7 @@ function _hasAction(actions: FullAction[], provider: string, category: string,
     if (configuration && !action.actionConfig.configuration) { continue; }
     if (configuration) {
       for (const key of Object.keys(configuration)) {
-        if (!_.isEqual(resolve(action.actionConfig.configuration[key]), resolve(configuration[key]))) {
+        if (!_.isEqual(stack.resolve(action.actionConfig.configuration[key]), stack.resolve(configuration[key]))) {
           continue;
         }
       }
@@ -269,29 +272,34 @@ function _hasAction(actions: FullAction[], provider: string, category: string,
   return false;
 }
 
-function _assertPermissionGranted(test: nodeunit.Test, statements: iam.PolicyStatement[], action: string, resource: string, conditions?: any) {
+function _assertPermissionGranted(test: nodeunit.Test,
+                                  stack: cdk.Stack,
+                                  statements: iam.PolicyStatement[],
+                                  action: string,
+                                  resource: string,
+                                  conditions?: any) {
   const conditionStr = conditions
-                     ? ` with condition(s) ${JSON.stringify(resolve(conditions))}`
+                     ? ` with condition(s) ${JSON.stringify(stack.resolve(conditions))}`
                      : '';
-  const resolvedStatements = resolve(statements.map(s => s.toStatementJson()));
+  const resolvedStatements = stack.resolve(statements.map(s => s.toStatementJson()));
   const statementsStr = JSON.stringify(resolvedStatements, null, 2);
-  test.ok(_grantsPermission(resolvedStatements, action, resource, conditions),
-          `Expected to find a statement granting ${action} on ${JSON.stringify(resolve(resource))}${conditionStr}, found:\n${statementsStr}`);
+  test.ok(_grantsPermission(stack, resolvedStatements, action, resource, conditions),
+          `Expected to find a statement granting ${action} on ${JSON.stringify(stack.resolve(resource))}${conditionStr}, found:\n${statementsStr}`);
 }
 
-function _grantsPermission(statements: PolicyStatementJson[], action: string, resource: string, conditions?: any) {
+function _grantsPermission(stack: cdk.Stack, statements: PolicyStatementJson[], action: string, resource: string, conditions?: any) {
   for (const statement of statements.filter(s => s.Effect === 'Allow')) {
-    if (!_isOrContains(statement.Action, action)) { continue; }
-    if (!_isOrContains(statement.Resource, resource)) { continue; }
-    if (conditions && !_isOrContains(statement.Condition, conditions)) { continue; }
+    if (!_isOrContains(stack, statement.Action, action)) { continue; }
+    if (!_isOrContains(stack, statement.Resource, resource)) { continue; }
+    if (conditions && !_isOrContains(stack, statement.Condition, conditions)) { continue; }
     return true;
   }
   return false;
 }
 
-function _isOrContains(entity: string | string[], value: string): boolean {
-  const resolvedValue = resolve(value);
-  const resolvedEntity = resolve(entity);
+function _isOrContains(stack: cdk.Stack, entity: string | string[], value: string): boolean {
+  const resolvedValue = stack.resolve(value);
+  const resolvedEntity = stack.resolve(entity);
   if (_.isEqual(resolvedEntity, resolvedValue)) { return true; }
   if (!Array.isArray(resolvedEntity)) { return false; }
   for (const tested of entity) {
@@ -301,7 +309,7 @@ function _isOrContains(entity: string | string[], value: string): boolean {
 }
 
 function _stackArn(stackName: string, scope: cdk.IConstruct): string {
-  return Stack.of(scope).formatArn({
+  return cdk.Stack.of(scope).formatArn({
     service: 'cloudformation',
     resource: 'stack',
     resourceName: `${stackName}/*`,
@@ -317,7 +325,7 @@ class PipelineDouble extends cdk.Resource implements codepipeline.IPipeline {
   constructor(scope: cdk.Construct, id: string, { pipelineName, role }: { pipelineName?: string, role: iam.Role }) {
     super(scope, id);
     this.pipelineName = pipelineName || 'TestPipeline';
-    this.pipelineArn = Stack.of(this).formatArn({ service: 'codepipeline', resource: 'pipeline', resourceName: this.pipelineName });
+    this.pipelineArn = cdk.Stack.of(this).formatArn({ service: 'codepipeline', resource: 'pipeline', resourceName: this.pipelineName });
     this.role = role;
     this.artifactBucket = new BucketDouble(scope, 'BucketDouble');
   }
@@ -340,7 +348,8 @@ class FullAction {
 class StageDouble implements codepipeline.IStage {
   public readonly stageName: string;
   public readonly pipeline: codepipeline.IPipeline;
-  public readonly actions: FullAction[];
+  public readonly actions: codepipeline.IAction[] = [];
+  public readonly fullActions: FullAction[];
 
   public get node(): cdk.ConstructNode {
     throw new Error('StageDouble is not a real construct');
@@ -359,7 +368,7 @@ class StageDouble implements codepipeline.IStage {
         bucket: pipeline.artifactBucket,
       })));
     }
-    this.actions = fullActions;
+    this.fullActions = fullActions;
   }
 
   public addAction(_action: codepipeline.IAction): void {
@@ -398,8 +407,4 @@ class BucketDouble extends s3.Bucket {
   public grantReadWrite(identity: iam.IGrantable, _objectsKeyPattern: any = '*'): iam.Grant {
     return iam.Grant.drop(identity, '');
   }
-}
-
-function resolve(x: any): any {
-  return new cdk.Stack().resolve(x);
 }

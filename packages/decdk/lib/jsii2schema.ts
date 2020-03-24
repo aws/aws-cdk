@@ -1,5 +1,5 @@
-import jsiiReflect = require('jsii-reflect');
-import util = require('util');
+import * as jsiiReflect from 'jsii-reflect';
+import * as util from 'util';
 
 // tslint:disable:no-console
 
@@ -433,7 +433,7 @@ export function isDataType(t: jsiiReflect.Type | undefined): t is jsiiReflect.In
   if (!t) {
     return false;
   }
-  return t instanceof jsiiReflect.InterfaceType && (t as any).interfaceSpec.datatype;
+  return t instanceof jsiiReflect.InterfaceType && (t as any).spec.datatype;
 }
 
 // Must only have properties, all of which are scalars,

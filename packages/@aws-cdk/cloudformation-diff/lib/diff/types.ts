@@ -1,4 +1,4 @@
-import cfnspec = require('@aws-cdk/cfnspec');
+import * as cfnspec from '@aws-cdk/cfnspec';
 import { AssertionError } from 'assert';
 import { IamChanges } from '../iam/iam-changes';
 import { SecurityGroupChanges } from '../network/security-group-changes';
@@ -272,6 +272,8 @@ export interface IDifference<ValueType> {
 export class Difference<ValueType> implements IDifference<ValueType> {
   /**
    * Whether this is an actual different or the values are actually the same
+   *
+   * isDifferent => (isUpdate | isRemoved | isUpdate)
    */
   public readonly isDifferent: boolean;
 
