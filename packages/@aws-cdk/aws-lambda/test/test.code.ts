@@ -81,7 +81,7 @@ export = {
         }
       }, ResourcePart.CompleteDefinition));
       test.done();
-    },
+    }
   },
 
   'lambda.Code.fromCfnParameters': {
