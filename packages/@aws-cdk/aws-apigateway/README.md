@@ -619,13 +619,17 @@ domain.addBasePathMapping(api1, { basePath: 'go-to-api1' });
 domain.addBasePathMapping(api2, { basePath: 'boom' });
 ```
 
-You can specify name of API's stage with base path else default mapping will always be assigned to the APIs
-`deploymentStage`, which will automatically assigned to the latest API deployment.
-More info can be found [here](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-basepathmapping.html#cfn-apigateway-basepathmapping-stage).
-Here is an example to specify stage name:
+You can specify the API `Stage` to which this base path URL will map to. By default, this will be the
+`deploymentStage` of the `RestApi`. 
+
 ```ts
-domain.addBasePathMapping(api1, { basePath: 'go-to-api1', stage: 'prod' });
-```
+const betaDeploy = new Deployment(this, 'beta-deployment', {
+  api: restapi,
+});
+const betaStage = new Stage(this, 'beta-stage', {
+  deployment: betaDeploy,
+});
+domain.addBasePathMapping(restapi, { basePath: 'api/beta', stage: betaStage });
 
 If you don't specify `basePath`, all URLs under this domain will be mapped
 to the API, and you won't be able to map another API to the same domain:
