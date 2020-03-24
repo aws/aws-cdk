@@ -7,6 +7,7 @@ import { mockAws, mockedApiFailure, mockedApiResult } from './mock-aws';
 import { mockSpawn } from './mock-child_process';
 
 let aws: ReturnType<typeof mockAws>;
+const absoluteDockerPath = '/simple/cdk.out/dockerdir';
 beforeEach(() => {
   mockfs({
     '/simple/cdk.out/assets.json': JSON.stringify({
@@ -33,7 +34,7 @@ beforeEach(() => {
       dockerImages: {
         theAsset: {
           source: {
-            directory: '/simple/cdk.out/dockerdir'
+            directory: absoluteDockerPath
           },
           destinations: {
             theDestination: {
@@ -112,7 +113,7 @@ describe('with a complete manifest', () => {
     mockSpawn(
       { commandLine: ['docker', 'login', '--username', 'user', '--password-stdin', 'https://proxy.com/'] },
       { commandLine: ['docker', 'inspect', 'cdkasset-theasset'], exitCode: 1 },
-      { commandLine: ['docker', 'build', '--tag', 'cdkasset-theasset', '/simple/cdk.out/dockerdir'] },
+      { commandLine: ['docker', 'build', '--tag', 'cdkasset-theasset', '.'], cwd: absoluteDockerPath },
       { commandLine: ['docker', 'tag', 'cdkasset-theasset', '12345.amazonaws.com/repo:abcdef'] },
       { commandLine: ['docker', 'push', '12345.amazonaws.com/repo:abcdef'] },
     );
@@ -135,7 +136,7 @@ test('correctly identify Docker directory if path is absolute', async () => {
     // Only care about the 'build' command line
     { commandLine: ['docker', 'login'], prefix: true, },
     { commandLine: ['docker', 'inspect'], exitCode: 1, prefix: true },
-    { commandLine: ['docker', 'build', '--tag', 'cdkasset-theasset', '/simple/cdk.out/dockerdir'] },
+    { commandLine: ['docker', 'build', '--tag', 'cdkasset-theasset', '.'], cwd: absoluteDockerPath },
     { commandLine: ['docker', 'tag'], prefix: true },
     { commandLine: ['docker', 'push'], prefix: true },
   );

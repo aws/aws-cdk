@@ -37,9 +37,9 @@ export class Docker {
       '--tag', options.tag,
       ...options.target ? ['--target', options.target] : [],
       ...options.file ? ['--file', options.file] : [],
-      options.directory,
+      '.'
     ];
-    await this.execute(buildCommand);
+    await this.execute(buildCommand, { cwd: options.directory });
   }
 
   /**
