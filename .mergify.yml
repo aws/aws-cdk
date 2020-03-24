@@ -56,9 +56,17 @@ pull_request_rules:
       - status-success~=AWS CodeBuild us-east-1
       - status-success=Semantic Pull Request
       - status-success=mandatory-changes
+  - name: when changes are requested
+    actions:
+      comment:
+        message: Once all the requested changes have been addressed, and the PR is ready for another review, remember to [dismiss the review](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/dismissing-a-pull-request-review).
+    conditions:
+      - changes-requested-reviews-by=@aws/aws-cdk-team
   - name: remove stale reviews
     actions:
-      dismiss_reviews: {}
+      dismiss_reviews:
+        approved: true
+        changes_requested: false
     conditions:
       - author!=dependabot[bot]
       - author!=dependabot-preview[bot]

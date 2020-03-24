@@ -717,5 +717,51 @@ export = {
     });
 
     test.done();
+  },
+
+  'create an instance from snapshot with maximum allocated storage'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
+      snapshotIdentifier: 'my-snapshot',
+      engine: rds.DatabaseInstanceEngine.POSTGRES,
+      instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
+      vpc,
+      maxAllocatedStorage: 200
+    });
+
+    expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+      DBSnapshotIdentifier: 'my-snapshot',
+      MaxAllocatedStorage: 200
+    }));
+
+    test.done();
+  },
+
+  'create a DB instance with maximum allocated storage'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.MYSQL,
+      instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      masterUsername: 'admin',
+      vpc,
+      backupRetention: cdk.Duration.seconds(0),
+      maxAllocatedStorage: 250
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+      BackupRetentionPeriod: 0,
+      MaxAllocatedStorage: 250
+    }));
+
+    test.done();
   }
 };

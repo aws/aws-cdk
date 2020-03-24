@@ -58,6 +58,21 @@ const instance = new DatabaseInstance(stack, 'Instance', {
 ```
 By default, the master password will be generated and stored in AWS Secrets Manager.
 
+To use the storage auto scaling option of RDS you can specify the maximum allocated storage.
+This is the upper limit to which RDS can automatically scale the storage. More info can be found
+[here](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PIOPS.StorageTypes.html#USER_PIOPS.Autoscaling)
+Example for max storage configuration:
+
+```ts
+const instance = new DatabaseInstance(stack, 'Instance', {
+    engine: rds.DatabaseInstanceEngine.ORACLE_SE1,
+    instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+    masterUsername: 'syscdk',
+    vpc,
+    maxAllocatedStorage: 200
+});
+```
+
 Use `DatabaseInstanceFromSnapshot` and `DatabaseInstanceReadReplica` to create an instance from snapshot or
 a source database respectively:
 
@@ -76,6 +91,7 @@ new DatabaseInstanceReadReplica(stack, 'ReadReplica', {
     vpc
 });
 ```
+
 Creating a "production" Oracle database instance with option and parameter groups:
 
 [example of setting up a production oracle instance](test/integ.instance.lit.ts)
