@@ -5,12 +5,14 @@
 
 ![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
 
-> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
-> future breaking changes.**
+> **This is a _developer preview_ (public beta) module.**
 >
-> This API is still under active development and subject to non-backward
-> compatible changes or removal in any future version. Use of the API is not recommended in production
-> environments. Experimental APIs are not subject to the Semantic Versioning model.
+> All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib))
+> are auto-generated from CloudFormation. They are stable and safe to use.
+>
+> However, all other classes, i.e., higher level constructs, are under active development and subject to non-backward
+> compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model.
+> This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
 
 ---
 <!--END STABILITY BANNER-->
@@ -36,7 +38,7 @@ const cluster = new DatabaseCluster(this, 'Database', {
     }
 });
 ```
-By default, the master password will be generated and stored in AWS Secrets Manager.
+By default, the master password will be generated and stored in AWS Secrets Manager with auto-generated description.
 
 Your cluster will be empty by default. To add a default database upon construction, specify the
 `defaultDatabaseName` attribute.
@@ -56,6 +58,21 @@ const instance = new DatabaseInstance(stack, 'Instance', {
 ```
 By default, the master password will be generated and stored in AWS Secrets Manager.
 
+To use the storage auto scaling option of RDS you can specify the maximum allocated storage.
+This is the upper limit to which RDS can automatically scale the storage. More info can be found
+[here](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PIOPS.StorageTypes.html#USER_PIOPS.Autoscaling)
+Example for max storage configuration:
+
+```ts
+const instance = new DatabaseInstance(stack, 'Instance', {
+    engine: rds.DatabaseInstanceEngine.ORACLE_SE1,
+    instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+    masterUsername: 'syscdk',
+    vpc,
+    maxAllocatedStorage: 200
+});
+```
+
 Use `DatabaseInstanceFromSnapshot` and `DatabaseInstanceReadReplica` to create an instance from snapshot or
 a source database respectively:
 
@@ -74,6 +91,7 @@ new DatabaseInstanceReadReplica(stack, 'ReadReplica', {
     vpc
 });
 ```
+
 Creating a "production" Oracle database instance with option and parameter groups:
 
 [example of setting up a production oracle instance](test/integ.instance.lit.ts)
@@ -119,7 +137,7 @@ instance.addRotationSingleUser(); // Will rotate automatically after 30 days
 The multi user rotation scheme is also available:
 ```ts
 instance.addRotationMultiUser('MyUser', {
-  secret: myImportedSecret
+  secret: myImportedSecret // This secret must have the `masterarn` key
 });
 ```
 
@@ -127,6 +145,7 @@ It's also possible to create user credentials together with the instance/cluster
 ```ts
 const myUserSecret = new rds.DatabaseSecret(this, 'MyUserSecret', {
   username: 'myuser'
+  masterSecret: instance.secret
 });
 const myUserSecretAttached = myUserSecret.attach(instance); // Adds DB connections information in the secret
 

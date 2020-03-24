@@ -5,7 +5,6 @@
  * have an AWS construct library.
  */
 
-import * as child_process from 'child_process';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as cfnspec from '../lib';
@@ -76,10 +75,7 @@ async function main() {
       : `${moduleFamily.toLocaleLowerCase()}-${lowcaseModuleName}`;
 
     // python names
-    const pythonDistSubName = moduleFamily === 'AWS'
-      ? lowcaseModuleName
-      : `${moduleFamily.toLocaleLowerCase()}.${lowcaseModuleName}`;
-    const pythonDistName = `aws-cdk.${pythonDistSubName}`;
+    const pythonDistName = `aws-cdk.${moduleName}`;
     const pythonModuleName = pythonDistName.replace(/-/g, "_");
 
     async function write(relativePath: string, contents: string[] | string | object) {
@@ -135,7 +131,7 @@ async function main() {
       repository: {
         type: "git",
         url: "https://github.com/aws/aws-cdk.git",
-        directory: `packages/@aws-cdk/${packageName}`,
+        directory: `packages/${packageName}`,
       },
       homepage: "https://github.com/aws/aws-cdk",
       scripts: {
@@ -167,17 +163,7 @@ async function main() {
         url: "https://aws.amazon.com",
         organization: true
       },
-      jest: {
-        moduleFileExtensions: [
-          "js"
-        ],
-        coverageThreshold: {
-          global: {
-            branches: 60,
-            statements: 80
-          }
-        }
-      },
+      jest: {},
       license: "Apache-2.0",
       devDependencies: {
         "@aws-cdk/assert": version,
@@ -214,6 +200,7 @@ async function main() {
       '.nycrc',
       '.LAST_PACKAGE',
       '*.snk',
+      'nyc.config.js'
     ]);
 
     await write('.npmignore', [
@@ -261,12 +248,14 @@ async function main() {
       '',
       '![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)',
       '',
-      '> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have',
-      '> future breaking changes.**',
+      '> **This is a _developer preview_ (public beta) module.**',
       '>',
-      '> This API is still under active development and subject to non-backward',
-      '> compatible changes or removal in any future version. Use of the API is not recommended in production',
-      '> environments. Experimental APIs are not subject to the Semantic Versioning model.',
+      '> All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib))',
+      '> are auto-generated from CloudFormation. They are stable and safe to use.',
+      '>',
+      '> However, all other classes, i.e., higher level constructs, are under active development and subject to non-backward',
+      '> compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model.',
+      '> This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.',
       '',
       '---',
       '<!--END STABILITY BANNER-->',
@@ -283,12 +272,8 @@ async function main() {
       await fs.copy(path.join(templateDir, file), path.join(packagePath, file));
     }
 
-    // build the package
-    const lerna = path.join(path.dirname(require.resolve('lerna/package.json')), 'cli.js');
-    await exec(`${lerna} run --progress build --scope ${packageName}`);
-
     // update decdk
-    const decdkPkgJsonPath = path.join(require.resolve('decdk'), '..', '..', 'package.json');
+    const decdkPkgJsonPath = path.join(__dirname, '..', '..', '..', 'decdk', 'package.json');
     const decdkPkg = JSON.parse(await fs.readFile(decdkPkgJsonPath, 'utf8'));
     const unorderedDeps = {
       ...decdkPkg.dependencies,
@@ -306,20 +291,3 @@ main().catch(e => {
   console.error(e);
   process.exit(1);
 });
-
-async function exec(command: string) {
-  const child = child_process.spawn(command, [], {
-    stdio: [ 'ignore', 'inherit', 'inherit' ],
-    shell: true
-  });
-  return new Promise((ok, fail) => {
-    child.once('error', e => fail(e));
-    child.once('exit', code => {
-      if (code === 0) {
-        return ok();
-      } else {
-        return fail(new Error('non-zero exit code: ' + code));
-      }
-    });
-  });
-}

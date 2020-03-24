@@ -124,26 +124,6 @@ export = {
       test.done();
     },
 
-    'can set the SourceVersion for a gitHubEnterprise'(test: Test) {
-      // GIVEN
-      const stack = new cdk.Stack();
-
-      // WHEN
-      new codebuild.Project(stack, 'Project', {
-        source: codebuild.Source.gitHubEnterprise({
-          httpsCloneUrl: 'https://mygithub-enterprise.com/myuser/myrepo',
-          branchOrRef: 'testbranch',
-        })
-      });
-
-      // THEN
-      expect(stack).to(haveResource('AWS::CodeBuild::Project', {
-        SourceVersion: 'testbranch',
-      }));
-
-      test.done();
-    },
-
     'can explicitly set reportBuildStatus to false'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
@@ -205,27 +185,110 @@ export = {
 
       test.done();
     },
+
+    'can provide credentials to use with the source'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      new codebuild.GitHubSourceCredentials(stack, 'GitHubSourceCredentials', {
+        accessToken: cdk.SecretValue.plainText('my-access-token'),
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::CodeBuild::SourceCredential', {
+        "ServerType": "GITHUB",
+        "AuthType": "PERSONAL_ACCESS_TOKEN",
+        "Token": "my-access-token",
+      }));
+
+      test.done();
+    },
   },
 
-  'project with bitbucket and SourceVersion'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
+  'GitHub Enterprise source': {
+    'can use branchOrRef to set the source version'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
 
-    // WHEN
-    new codebuild.Project(stack, 'Project', {
-      source: codebuild.Source.bitBucket({
-        owner: 'testowner',
-        repo: 'testrepo',
-        branchOrRef: 'testbranch',
-      })
-    });
+      // WHEN
+      new codebuild.Project(stack, 'Project', {
+        source: codebuild.Source.gitHubEnterprise({
+          httpsCloneUrl: 'https://mygithub-enterprise.com/myuser/myrepo',
+          branchOrRef: 'testbranch',
+        }),
+      });
 
-    // THEN
-    expect(stack).to(haveResource('AWS::CodeBuild::Project', {
-      SourceVersion: 'testbranch',
-    }));
+      // THEN
+      expect(stack).to(haveResource('AWS::CodeBuild::Project', {
+        SourceVersion: 'testbranch',
+      }));
 
-    test.done();
+      test.done();
+    },
+
+    'can provide credentials to use with the source'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      new codebuild.GitHubEnterpriseSourceCredentials(stack, 'GitHubEnterpriseSourceCredentials', {
+        accessToken: cdk.SecretValue.plainText('my-access-token'),
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::CodeBuild::SourceCredential', {
+        "ServerType": "GITHUB_ENTERPRISE",
+        "AuthType": "PERSONAL_ACCESS_TOKEN",
+        "Token": "my-access-token",
+      }));
+
+      test.done();
+    },
+  },
+
+  'BitBucket source': {
+    'can use branchOrRef to set the source version'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      new codebuild.Project(stack, 'Project', {
+        source: codebuild.Source.bitBucket({
+          owner: 'testowner',
+          repo: 'testrepo',
+          branchOrRef: 'testbranch',
+        })
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::CodeBuild::Project', {
+        SourceVersion: 'testbranch',
+      }));
+
+      test.done();
+    },
+
+    'can provide credentials to use with the source'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      new codebuild.BitBucketSourceCredentials(stack, 'BitBucketSourceCredentials', {
+        username: cdk.SecretValue.plainText('my-username'),
+        password: cdk.SecretValue.plainText('password'),
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::CodeBuild::SourceCredential', {
+        "ServerType": "BITBUCKET",
+        "AuthType": "BASIC_AUTH",
+        "Username": "my-username",
+        "Token": "password",
+      }));
+
+      test.done();
+    },
   },
 
   'project with s3 cache bucket'(test: Test) {
@@ -416,4 +479,21 @@ export = {
 
     test.done();
   },
+
+  'metric method generates a valid CloudWatch metric'(test: Test) {
+    const stack = new cdk.Stack();
+
+    const project = new codebuild.Project(stack, 'Project', {
+      source: codebuild.Source.gitHubEnterprise({
+        httpsCloneUrl: 'https://mygithub-enterprise.com/myuser/myrepo',
+      })
+    });
+
+    const metric = project.metric('Builds');
+    test.equal(metric.metricName, 'Builds');
+    test.equal(metric.period.toSeconds(), cdk.Duration.minutes(5).toSeconds());
+    test.equal(metric.statistic, 'Average');
+
+    test.done();
+  }
 };

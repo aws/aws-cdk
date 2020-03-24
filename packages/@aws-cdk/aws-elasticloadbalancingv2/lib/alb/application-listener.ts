@@ -209,6 +209,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
         listener: this,
         hostHeader: props.hostHeader,
         pathPattern: props.pathPattern,
+        pathPatterns: props.pathPatterns,
         priority: props.priority,
         targetGroups: props.targetGroups
       });
@@ -234,7 +235,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
   public addTargets(id: string, props: AddApplicationTargetsProps): ApplicationTargetGroup {
     if (!this.loadBalancer.vpc) {
       // tslint:disable-next-line:max-line-length
-      throw new Error('Can only call addTargets() when using a constructed Load Balancer; construct a new TargetGroup and use addTargetGroup');
+      throw new Error('Can only call addTargets() when using a constructed Load Balancer or an imported Load Balancer with specified vpc; construct a new TargetGroup and use addTargetGroup');
     }
 
     const group = new ApplicationTargetGroup(this, id + 'Group', {
@@ -252,6 +253,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
     this.addTargetGroups(id, {
       hostHeader: props.hostHeader,
       pathPattern: props.pathPattern,
+      pathPatterns: props.pathPatterns,
       priority: props.priority,
       targetGroups: [group],
     });
@@ -334,7 +336,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
   protected validate(): string[] {
     const errors = super.validate();
     if (this.protocol === ApplicationProtocol.HTTPS && this.certificateArns.length === 0) {
-      errors.push('HTTPS Listener needs at least one certificate (call addCertificateArns)');
+      errors.push('HTTPS Listener needs at least one certificate (call addCertificates)');
     }
     return errors;
   }
@@ -480,9 +482,7 @@ class ImportedApplicationListener extends Resource implements IApplicationListen
    * At least one TargetGroup must be added without conditions.
    */
   public addTargetGroups(id: string, props: AddApplicationTargetGroupsProps): void {
-    if ((props.hostHeader !== undefined || props.pathPattern !== undefined) !== (props.priority !== undefined)) {
-      throw new Error(`Setting 'pathPattern' or 'hostHeader' also requires 'priority', and vice versa`);
-    }
+    checkAddRuleProps(props);
 
     if (props.priority !== undefined) {
       // New rule
@@ -562,10 +562,22 @@ export interface AddRuleProps {
    * Requires that priority is set.
    *
    * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html#path-conditions
-   *
    * @default No path condition
+   * @deprecated Use `pathPatterns` instead.
    */
   readonly pathPattern?: string;
+
+  /**
+   * Rule applies if the requested path matches any of the given patterns.
+   *
+   * May contain up to three '*' wildcards.
+   *
+   * Requires that priority is set.
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html#path-conditions
+   * @default - No path condition.
+   */
+  readonly pathPatterns?: string[];
 }
 
 /**
@@ -614,7 +626,7 @@ export interface AddApplicationTargetsProps extends AddRuleProps {
    * After this period, the cookie is considered stale. The minimum value is
    * 1 second and the maximum value is 7 days (604800 seconds).
    *
-   * @default Duration.days(1)
+   * @default Stickiness disabled
    */
   readonly stickinessCookieDuration?: Duration;
 
@@ -667,7 +679,7 @@ export interface AddRedirectResponseProps extends AddRuleProps, RedirectResponse
 }
 
 function checkAddRuleProps(props: AddRuleProps) {
-  if ((props.hostHeader !== undefined || props.pathPattern !== undefined) !== (props.priority !== undefined)) {
+  if ((props.hostHeader !== undefined || props.pathPattern !== undefined || props.pathPatterns !== undefined) !== (props.priority !== undefined)) {
     throw new Error(`Setting 'pathPattern' or 'hostHeader' also requires 'priority', and vice versa`);
   }
 }

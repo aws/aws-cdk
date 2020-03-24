@@ -3,6 +3,9 @@ import * as kms from '@aws-cdk/aws-kms';
 import { Construct, IResource, Resource, Stack } from '@aws-cdk/core';
 import { CfnStream } from './kinesis.generated';
 
+/**
+ * A Kinesis Stream
+ */
 export interface IStream extends IResource {
   /**
    * The ARN of the stream.
@@ -64,6 +67,8 @@ export interface StreamAttributes {
 
   /**
    * The KMS key securing the contents of the stream if encryption is enabled.
+   *
+   * @default - No encryption
    */
   readonly encryptionKey?: kms.IKey;
 }
@@ -172,6 +177,9 @@ abstract class StreamBase extends Resource implements IStream {
   }
 }
 
+/**
+ * Properties for a Kinesis Stream
+ */
 export interface StreamProps {
   /**
    * Enforces a particular physical stream name.
@@ -217,6 +225,13 @@ export interface StreamProps {
  */
 export class Stream extends StreamBase {
 
+  /**
+   * Import an existing Kinesis Stream provided an ARN
+   *
+   * @param scope The parent creating construct (usually `this`).
+   * @param id The construct's name
+   * @param streamArn Stream ARN (i.e. arn:aws:kinesis:<region>:<account-id>:stream/Foo)
+   */
   public static fromStreamArn(scope: Construct, id: string, streamArn: string): IStream {
     return Stream.fromStreamAttributes(scope, id, { streamArn });
   }

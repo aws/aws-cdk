@@ -122,6 +122,13 @@ export interface RoleProps {
    * @default Duration.hours(1)
    */
   readonly maxSessionDuration?: Duration;
+
+  /**
+   * A description of the role. It can be up to 1000 characters long.
+   *
+   * @default - No description.
+   */
+  readonly description?: string;
 }
 
 /**
@@ -147,6 +154,14 @@ export interface FromRoleArnOptions {
 export class Role extends Resource implements IRole {
   /**
    * Imports an external role by ARN.
+   *
+   * If the imported Role ARN is a Token (such as a
+   * `CfnParameter.valueAsString` or a `Fn.importValue()`) *and* the referenced
+   * role has a `path` (like `arn:...:role/AdminRoles/Alice`), the
+   * `role.roleName` property will not resolve to the correct value. Instead it
+   * will resolve to the first path component. We unfortunately cannot express
+   * the correct calculation of the full path name as a CloudFormation
+   * expression.
    *
    * @param scope construct scope
    * @param id construct id
@@ -220,7 +235,7 @@ export class Role extends Resource implements IRole {
 
     return options.mutable !== false && accountsAreEqualOrOneIsUnresolved(scopeAccount, roleAccount)
       ? new Import(scope, id)
-      : new ImmutableRole(new Import(scope, id));
+      : new ImmutableRole(scope, `ImmutableRole${id}`, new Import(scope, id));
 
     function accountsAreEqualOrOneIsUnresolved(account1: string | undefined,
                                                account2: string | undefined): boolean {
@@ -269,6 +284,7 @@ export class Role extends Resource implements IRole {
   private defaultPolicy?: Policy;
   private readonly managedPolicies: IManagedPolicy[] = [];
   private readonly attachedPolicies = new AttachedPolicies();
+  private immutableRole?: IRole;
 
   constructor(scope: Construct, id: string, props: RoleProps) {
     super(scope, id, {
@@ -285,6 +301,11 @@ export class Role extends Resource implements IRole {
     this.permissionsBoundary = props.permissionsBoundary;
     const maxSessionDuration = props.maxSessionDuration && props.maxSessionDuration.toSeconds();
     validateMaxSessionDuration(maxSessionDuration);
+    const description = (props.description && props.description?.length > 0) ? props.description : undefined;
+
+    if (description && description.length > 1000) {
+      throw new Error('Role description must be no longer than 1000 characters.');
+    }
 
     const role = new CfnRole(this, 'Resource', {
       assumeRolePolicyDocument: this.assumeRolePolicy as any,
@@ -294,6 +315,7 @@ export class Role extends Resource implements IRole {
       permissionsBoundary: this.permissionsBoundary ? this.permissionsBoundary.managedPolicyArn : undefined,
       roleName: this.physicalName,
       maxSessionDuration,
+      description
     });
 
     this.roleId = role.attrRoleId;
@@ -380,7 +402,11 @@ export class Role extends Resource implements IRole {
    * Role's policies yourself.
    */
   public withoutPolicyUpdates(): IRole {
-    return new ImmutableRole(this);
+    if (!this.immutableRole) {
+      this.immutableRole = new ImmutableRole(this.node.scope as Construct, `ImmutableRole${this.node.id}`, this);
+    }
+
+    return this.immutableRole;
   }
 }
 
