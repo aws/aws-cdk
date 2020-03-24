@@ -5,23 +5,38 @@ import { Duration, SecretValue } from '@aws-cdk/core';
 import { IParameterGroup } from './parameter-group';
 
 /**
+ * Engine major version and parameter group family pairs.
+ */
+export interface ParameterGroupFamily {
+  /**
+   * The engine major version name
+   */
+  readonly engineMajorVersion: string;
+
+  /**
+   * The parameter group family name
+   */
+  readonly parameterGroupFamily: string
+}
+
+/**
  * A database cluster engine. Provides mapping to the serverless application
  * used for secret rotation.
  */
 export class DatabaseClusterEngine {
   /* tslint:disable max-line-length */
   public static readonly AURORA = new DatabaseClusterEngine('aurora', secretsmanager.SecretRotationApplication.MYSQL_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.MYSQL_ROTATION_MULTI_USER, [
-    ['5.6', 'aurora5.6']
+    { engineMajorVersion: '5.6', parameterGroupFamily: 'aurora5.6' }
   ]);
 
   public static readonly AURORA_MYSQL = new DatabaseClusterEngine('aurora-mysql', secretsmanager.SecretRotationApplication.MYSQL_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.MYSQL_ROTATION_MULTI_USER, [
-    ['5.7', 'aurora-mysql5.7']
+    { engineMajorVersion: '5.7', parameterGroupFamily: 'aurora-mysql5.7' }
   ]);
 
   public static readonly AURORA_POSTGRESQL = new DatabaseClusterEngine('aurora-postgresql', secretsmanager.SecretRotationApplication.POSTGRES_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.POSTGRES_ROTATION_MULTI_USER, [
-    ['9', 'aurora-postgresql9.6'],
-    ['10', 'aurora-postgresql10'],
-    ['11', 'aurora-postgresql11']
+    { engineMajorVersion: '9.6', parameterGroupFamily: 'aurora-postgresql9.6'},
+    { engineMajorVersion: '10', parameterGroupFamily: 'aurora-postgresql10' },
+    { engineMajorVersion: '11', parameterGroupFamily: 'aurora-postgresql11'}
   ]);
   /* tslint:enable max-line-length */
 
@@ -40,29 +55,29 @@ export class DatabaseClusterEngine {
    */
   public readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
 
-  private readonly parameterGroupFamilies: Array<[string, string]>;
+  private readonly parameterGroupFamilies: ParameterGroupFamily[];
 
   // tslint:disable-next-line max-line-length
-  constructor(name: string, singleUserRotationApplication: secretsmanager.SecretRotationApplication, multiUserRotationApplication: secretsmanager.SecretRotationApplication, parameterGroupFamilies: Array<[string, string]>) {
+  constructor(name: string, singleUserRotationApplication: secretsmanager.SecretRotationApplication, multiUserRotationApplication: secretsmanager.SecretRotationApplication, parameterGroupFamilies?: ParameterGroupFamily[]) {
     this.name = name;
     this.singleUserRotationApplication = singleUserRotationApplication;
     this.multiUserRotationApplication = multiUserRotationApplication;
-    this.parameterGroupFamilies = parameterGroupFamilies;
+    this.parameterGroupFamilies = parameterGroupFamilies ? parameterGroupFamilies : [];
   }
 
   /**
-   * Get this engine's parameter group family for a given version
+   * Get this engine's parameter group family for a given major version.
    */
-  public parameterGroupFamily(engineVersion?: string): string {
-    if (engineVersion) {
-      const family = this.parameterGroupFamilies.find(x => engineVersion.startsWith(x[0]));
+  public parameterGroupFamily(engineMajorVersion?: string): string {
+    if (engineMajorVersion) {
+      const family = this.parameterGroupFamilies.find(x => engineMajorVersion.startsWith(x.engineMajorVersion));
       if (family) {
-        return family[1];
+        return family.parameterGroupFamily;
       }
     } else if (this.parameterGroupFamilies.length > 0) {
-      return this.parameterGroupFamilies[this.parameterGroupFamilies.length - 1][1];
+      return this.parameterGroupFamilies[this.parameterGroupFamilies.length - 1].parameterGroupFamily;
     }
-    throw new Error(`Could not determine parameter group family for database engine version: ${engineVersion}`);
+    throw new Error(`Parameter group family not found for database engine major version: ${engineMajorVersion}`);
   }
 }
 

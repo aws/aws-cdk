@@ -417,7 +417,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
           });
         }
 
-        if (clusterParameterGroup instanceof ClusterParameterGroup) {
+        if (clusterParameterGroup instanceof ClusterParameterGroup) { // ignore imported ClusterParameterGroup
           if (s3ImportRole) {
             clusterParameterGroup.addParameter('aurora_load_from_s3_role', s3ImportRole.roleArn);
           }
