@@ -109,7 +109,7 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
     const manifestSem = _parseVersion(cloudAssembly.manifest.version);
 
     if (semver.gt(manifestSem, maximumAcceptedManifestSem)) {
-      throw new Error(`A newer version of the CDK CLI (>= ${manifestSem}) is necessary to interact with this app (current CLI version is ${maximumAcceptedManifestSem})`);
+      throw new Error(`Cloud assembly schema version mismatch: actual('${manifestSem}') > expected('${maximumAcceptedManifestSem}'). A newer version of the CDK CLI is necessary to interact with this app.`);
     }
 
   }

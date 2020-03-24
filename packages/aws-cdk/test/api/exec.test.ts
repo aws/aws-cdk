@@ -29,6 +29,10 @@ function createApp(outdir: string): cdk.App {
     return app;
 }
 
+async function createSdkProvider() {
+    return await SdkProvider.withAwsCliCompatibleDefaults();
+}
+
 test('execProgram throws when manifest version > schema version', async () => {
 
     const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'exec-tests'));
@@ -37,9 +41,11 @@ test('execProgram throws when manifest version > schema version', async () => {
 
     const currentSchemaVersion = cxschema.Manifest.version();
 
-    // this mock will cause the framework to use a greater schema version that the real one,
-    // causing the cli to fail because (hopefully).
-    const mockVersionNumber = ImportMock.mockFunction(cxschema.Manifest, 'version', semver.inc(currentSchemaVersion, 'major'));
+    const mockManifestVersion = semver.inc(currentSchemaVersion, 'major');
+
+    // this mock will cause the framework to use a greater schema version than the real one,
+    // causing the cli to fail (hopefully).
+    const mockVersionNumber = ImportMock.mockFunction(cxschema.Manifest, 'version', mockManifestVersion);
     try {
         app.synth();
     } catch (err) {
@@ -48,9 +54,9 @@ test('execProgram throws when manifest version > schema version', async () => {
         mockVersionNumber.restore();
     }
 
-    const expectedError = `A newer version of the CDK CLI (>= ) is necessary to interact with this app`;
+    const expectedError = `Cloud assembly schema version mismatch: actual('${mockManifestVersion}') > expected('${cxschema.Manifest.version()}'). A newer version of the CDK CLI is necessary to interact with this app.`;
 
-    const sdkProvider = await SdkProvider.withAwsCliCompatibleDefaults();
+    const sdkProvider = await createSdkProvider();
 
     const config = new Configuration();
     config.settings = new Settings({
@@ -74,7 +80,7 @@ test('execProgram does not throw when manifest version = schema version', async 
 
     app.synth();
 
-    const sdkProvider = await SdkProvider.withAwsCliCompatibleDefaults();
+    const sdkProvider = await createSdkProvider();
 
     const config = new Configuration();
     config.settings = new Settings({
@@ -99,7 +105,7 @@ test('execProgram does not throw when manifest version < schema version', async 
 
     app.synth();
 
-    const sdkProvider = await SdkProvider.withAwsCliCompatibleDefaults();
+    const sdkProvider = await createSdkProvider();
 
     const config = new Configuration();
     config.settings = new Settings({
