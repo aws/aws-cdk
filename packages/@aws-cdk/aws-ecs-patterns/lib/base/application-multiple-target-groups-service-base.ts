@@ -365,7 +365,8 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
 
     if (props.loadBalancers) {
       for (const lbProps of props.loadBalancers) {
-        const lb = this.createLoadBalancer(lbProps.name, lbProps.publicLoadBalancer);
+        const internetFacing = lbProps.publicLoadBalancer !== undefined ? lbProps.publicLoadBalancer : true;
+        const lb = this.createLoadBalancer(lbProps.name, internetFacing);
         this.loadBalancers.push(lb);
         const protocolType = new Set<ApplicationProtocol>();
         for (const listenerProps of lbProps.listeners) {
@@ -384,7 +385,7 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
           });
           this.listeners.push(listener);
         }
-        const domainName = this.createDomainName(lb, lbProps.domainName, lbProps.domainZone);
+        const domainName = this.createDomainName(lb, internetFacing, lbProps.domainName, lbProps.domainZone);
         new CfnOutput(this, `LoadBalancerDNS${lb.node.id}`, { value: lb.loadBalancerDnsName });
         for (const protocol of protocolType) {
           new CfnOutput(this, `ServiceURL${lb.node.id}${protocol.toLowerCase()}`, { value: protocol.toLowerCase() + '://' + domainName });
@@ -394,13 +395,13 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
       this.loadBalancer = this.loadBalancers[0];
       this.listener = this.listeners[0];
     } else {
-      this.loadBalancer = this.createLoadBalancer('LB');
+      this.loadBalancer = this.createLoadBalancer('LB', true);
       const protocol = this.createListenerProtocol();
       this.listener = this.configListener(protocol, {
         listenerName: "PublicListener",
         loadBalancer: this.loadBalancer,
       });
-      const domainName = this.createDomainName(this.loadBalancer);
+      const domainName = this.createDomainName(this.loadBalancer, true);
 
       new CfnOutput(this, 'LoadBalancerDNS', { value: this.loadBalancer.loadBalancerDnsName });
       new CfnOutput(this, 'ServiceURL', { value: protocol.toLowerCase() + '://' + domainName });
@@ -514,8 +515,7 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
     }
   }
 
-  private createLoadBalancer(name: string, publicLoadBalancer?: boolean): ApplicationLoadBalancer {
-    const internetFacing = publicLoadBalancer !== undefined ? publicLoadBalancer : true;
+  private createLoadBalancer(name: string, internetFacing: boolean): ApplicationLoadBalancer {
     const lbProps = {
       vpc: this.cluster.vpc,
       internetFacing
@@ -551,20 +551,22 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
     });
   }
 
-  private createDomainName(loadBalancer: ApplicationLoadBalancer, name?: string, zone?: IHostedZone): string {
+  private createDomainName(loadBalancer: ApplicationLoadBalancer, internetFacing: boolean, name?: string, zone?: IHostedZone): string {
     let domainName = loadBalancer.loadBalancerDnsName;
     if (typeof name !== 'undefined') {
       if (typeof zone === 'undefined') {
         throw new Error('A Route53 hosted domain zone name is required to configure the specified domain name');
       }
 
-      const record = new ARecord(this, `DNS${loadBalancer.node.id}`, {
-        zone,
-        recordName: name,
-        target: RecordTarget.fromAlias(new LoadBalancerTarget(loadBalancer)),
-      });
+      if (internetFacing) {
+        const record = new ARecord(this, `DNS${loadBalancer.node.id}`, {
+          zone,
+          recordName: name,
+          target: RecordTarget.fromAlias(new LoadBalancerTarget(loadBalancer)),
+        });
 
-      domainName = record.domainName;
+        domainName = record.domainName;
+      }
     }
     return domainName;
   }

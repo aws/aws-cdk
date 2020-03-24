@@ -1,4 +1,5 @@
 export * from './alexa-ask/deploy-action';
+export * from './bitbucket/source-action';
 export * from './cloudformation/pipeline-actions';
 export * from './codebuild/build-action';
 export * from './codecommit/source-action';

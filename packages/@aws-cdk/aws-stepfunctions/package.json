@@ -74,36 +74,28 @@
     "@aws-cdk/aws-cloudwatch": "0.0.0",
     "@aws-cdk/aws-events": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
-    "@aws-cdk/core": "0.0.0"
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^2.0.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/aws-cloudwatch": "0.0.0",
     "@aws-cdk/aws-events": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
-    "@aws-cdk/core": "0.0.0"
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^2.0.0"
   },
   "engines": {
     "node": ">= 10.3.0"
   },
   "awslint": {
     "exclude": [
-      "import-props-interface:@aws-cdk/aws-stepfunctions.ActivityImportProps",
-      "export:@aws-cdk/aws-stepfunctions.IActivity",
-      "duration-prop-type:@aws-cdk/aws-stepfunctions.WaitProps.duration",
       "duration-prop-type:@aws-cdk/aws-stepfunctions.Errors.TIMEOUT",
-      "no-unused-type:@aws-cdk/aws-stepfunctions.ServiceIntegrationPattern",
-      "docs-public-apis:@aws-cdk/aws-stepfunctions.TaskInput.value",
-      "docs-public-apis:@aws-cdk/aws-stepfunctions.InputType.OBJECT",
-      "docs-public-apis:@aws-cdk/aws-stepfunctions.Data.isJsonPathString",
-      "docs-public-apis:@aws-cdk/aws-stepfunctions.Result.value",
-      "docs-public-apis:@aws-cdk/aws-stepfunctions.StateGraph.startState",
-      "docs-public-apis:@aws-cdk/aws-stepfunctions.TaskInput.type",
-      "docs-public-apis:@aws-cdk/aws-stepfunctions.InputType.TEXT",
-      "docs-public-apis:@aws-cdk/aws-stepfunctions.WaitTime",
-      "docs-public-apis:@aws-cdk/aws-stepfunctions.ActivityProps",
-      "docs-public-apis:@aws-cdk/aws-stepfunctions.IActivity"
+      "no-unused-type:@aws-cdk/aws-stepfunctions.ServiceIntegrationPattern"
     ]
   },
-  "stability": "experimental"
+  "stability": "experimental",
+  "awscdkio": {
+    "announce": false
+  }
 }

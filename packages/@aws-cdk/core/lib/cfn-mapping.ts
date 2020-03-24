@@ -1,6 +1,6 @@
 import { CfnRefElement } from './cfn-element';
 import { Fn } from './cfn-fn';
-import { Construct } from './construct';
+import { Construct } from './construct-compat';
 import { Token } from './token';
 
 export interface CfnMappingProps {
