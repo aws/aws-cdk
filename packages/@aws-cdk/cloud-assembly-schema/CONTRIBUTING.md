@@ -9,7 +9,7 @@ Our tests and validation mechanisms will ensure you make those changes correctly
 
 ### Schema Generation
 
-The [*json-schema*](./schema/cloud-assembly.schema.json) is auto-generated from the code during build. Whenever you make
+The [*json-schema*](./schema/cloud-assembly.schema.json) is auto-generated from the code during build.
 
 For example, lets see what happens when we add an optional `cloudProvider` property to the [`AssemblyManifest`](./lib/manifest.ts#L311) interface:
 

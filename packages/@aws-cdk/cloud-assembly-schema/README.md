@@ -20,7 +20,7 @@ command, or the [`app.synth()`](https://github.com/aws/aws-cdk/blob/master/packa
 Its essentially a set of files and directories, one of which is the `manifest.json` file. It defines the set of instructions that are
 needed in order to deploy the assembly directory.
 
-> For example, when `cdk deploy` is executed, this file is read and performs its instructions:
+> For example, when `cdk deploy` is executed, the CLI reads this file and performs its instructions:
 > - Build container images.
 > - Upload assets.
 > - Deploy CloudFormation templates.
@@ -43,20 +43,19 @@ Every such instruction, is crucial for ensuring the correct deployment behavior.
 consumers must be aware of every such instruction modification.
 
 For this reason, every change to the schema, even though it might not strictly break validation of the *json-schema* format,
-will cause a `major` version bump.
+is considered `major` version bump.
 
 ## How to consume
 
 If you'd like to consume the schema in order to do validations on `manifest.json` files, simply download it from this repo and run it against
 standard *json-schema* validators.
 
-
 > For example: https://www.npmjs.com/package/jsonschema (this is how the CDK CLI does it)
 
 Make sure you follow semantic versioning best practices, by **rejcting** to deploy cloud assemblies who's manifest version is greater than the one you expect.
 
 For example, if your consumer was built when the schema version was 1.2.0, you should reject deploying cloud assemblies with a
-manifest version of 2.0.0. Note that your schema validation might actually work on those manifest files, but the deployment itself will
+manifest version of 2.0.0 (or rather any higher than `1.2.0`). Note that your schema validation might actually work on those manifest files, but the deployment itself will
 not work properly because it will ignore some assembly instructions. Only when you roll out an update to your consumer,
 should it accept these assemblies, by upgrading its expected schema version and taking into account the new instructions.
 
