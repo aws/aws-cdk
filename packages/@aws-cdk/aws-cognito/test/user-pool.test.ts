@@ -104,26 +104,15 @@ describe('User Pool', () => {
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
       EmailVerificationMessage: ABSENT,
       EmailVerificationSubject: ABSENT,
-      SmsVerificationMessage: ABSENT,
+      SmsVerificationMessage: 'The verification code to your new account is {####}',
       VerificationMessageTemplate: {
         DefaultEmailOption: 'CONFIRM_WITH_LINK',
         EmailMessageByLink: 'Hello {username}, Verify your account by clicking on {##Verify Email##}',
         EmailSubjectByLink: 'Verify your new account',
-        SmsMessage: ABSENT,
+        SmsMessage: 'The verification code to your new account is {####}',
       }
     });
   }),
-
-  test('sms message cannot be specified if link-style email verification is configured', () => {
-    const stack = new Stack();
-
-    expect(() => new UserPool(stack, 'Pool', {
-      userVerification: {
-        emailStyle: VerificationEmailStyle.LINK,
-        smsMessage: 'sms message'
-      }
-    })).toThrow(/SMS message cannot be configured/);
-  });
 
   test('email and sms verification messages are validated', () => {
     const stack = new Stack();
