@@ -323,4 +323,4 @@ This should make sure the CFN update succeeds.
 ## Bootstrap template
 
 The bootstrap template used by the CLI command can be found in the
-[aws-cdk package](../packages/aws-cdk/lib/api/bootstrap/bootstrap-template.json).
+[aws-cdk package](../packages/aws-cdk/lib/api/bootstrap/bootstrap-template.yaml).

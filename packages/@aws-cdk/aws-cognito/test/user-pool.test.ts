@@ -97,21 +97,69 @@ describe('User Pool', () => {
     // WHEN
     new UserPool(stack, 'Pool', {
       userVerification: {
-        emailStyle: VerificationEmailStyle.LINK
+        emailStyle: VerificationEmailStyle.LINK,
       }
     });
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
-      EmailVerificationMessage: 'Hello {username}, Your verification code is {####}',
-      EmailVerificationSubject: 'Verify your new account',
+      EmailVerificationMessage: ABSENT,
+      EmailVerificationSubject: ABSENT,
+      SmsVerificationMessage: 'The verification code to your new account is {####}',
       VerificationMessageTemplate: {
         DefaultEmailOption: 'CONFIRM_WITH_LINK',
-        EmailMessageByLink: 'Hello {username}, Your verification code is {####}',
+        EmailMessageByLink: 'Hello {username}, Verify your account by clicking on {##Verify Email##}',
         EmailSubjectByLink: 'Verify your new account',
+        SmsMessage: 'The verification code to your new account is {####}',
       }
     });
   }),
+
+  test('email and sms verification messages are validated', () => {
+    const stack = new Stack();
+
+    expect(() => new UserPool(stack, 'Pool1', {
+      userVerification: {
+        emailStyle: VerificationEmailStyle.CODE,
+        emailBody: 'invalid email body',
+      }
+    })).toThrow(/Verification email body/);
+
+    expect(() => new UserPool(stack, 'Pool2', {
+      userVerification: {
+        emailStyle: VerificationEmailStyle.CODE,
+        emailBody: 'valid email body {####}',
+      }
+    })).not.toThrow();
+
+    expect(() => new UserPool(stack, 'Pool3', {
+      userVerification: {
+        emailStyle: VerificationEmailStyle.CODE,
+        smsMessage: 'invalid sms message',
+      }
+    })).toThrow(/SMS message/);
+
+    expect(() => new UserPool(stack, 'Pool4', {
+      userVerification: {
+        emailStyle: VerificationEmailStyle.CODE,
+        smsMessage: 'invalid sms message {####}',
+      }
+    })).not.toThrow();
+
+    expect(() => new UserPool(stack, 'Pool5', {
+      userVerification: {
+        emailStyle: VerificationEmailStyle.LINK,
+        emailBody: 'invalid email body {####}',
+      }
+    })).toThrow(/Verification email body/);
+
+    expect(() => new UserPool(stack, 'Pool6', {
+      userVerification: {
+        emailStyle: VerificationEmailStyle.LINK,
+        emailBody: 'invalid email body {##Verify Email##}',
+      }
+    })).not.toThrow();
+  });
 
   test('user invitation messages are configured correctly', () => {
     // GIVEN
@@ -621,6 +669,27 @@ describe('User Pool', () => {
           RequireUppercase: true,
           RequireNumbers: true,
           RequireSymbols: true,
+        },
+      },
+    });
+  });
+
+  test('password minimum length is set to the default when other parts of the policy is configured', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'Pool', {
+      passwordPolicy: {
+        tempPasswordValidity: Duration.days(2),
+        requireDigits: true,
+      }
+    });
+
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+      Policies: {
+        PasswordPolicy: {
+          MinimumLength: 8,
         },
       },
     });

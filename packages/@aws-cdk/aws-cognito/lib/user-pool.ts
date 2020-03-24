@@ -40,6 +40,10 @@ export interface SignInAliases {
 export interface AutoVerifiedAttrs {
   /**
    * Whether the email address of the user should be auto verified at sign up.
+   *
+   * Note: If both `email` and `phone` is set, Cognito only verifies the phone number. To also verify email, see here -
+   * https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-email-phone-verification.html
+   *
    * @default - true, if email is turned on for `signIn`. false, otherwise.
    */
   readonly email?: boolean;
@@ -236,7 +240,9 @@ export interface UserVerificationConfig {
    * The email body template for the verification email sent to the user upon sign up.
    * See https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-settings-message-templates.html to
    * learn more about message templates.
-   * @default 'Hello {username}, Your verification code is {####}'
+   *
+   * @default - 'Hello {username}, Your verification code is {####}' if VerificationEmailStyle.CODE is chosen,
+   * 'Hello {username}, Verify your account by clicking on {##Verify Email##}' if VerificationEmailStyle.LINK is chosen.
    */
   readonly emailBody?: string;
 
@@ -251,7 +257,9 @@ export interface UserVerificationConfig {
    * The message template for the verification SMS sent to the user upon sign up.
    * See https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-settings-message-templates.html to
    * learn more about message templates.
-   * @default 'The verification code to your new account is {####}'
+   *
+   * @default - 'The verification code to your new account is {####}' if VerificationEmailStyle.CODE is chosen,
+   * not configured if VerificationEmailStyle.LINK is chosen
    */
   readonly smsMessage?: string;
 }
@@ -578,24 +586,14 @@ export class UserPool extends Resource implements IUserPool {
       }
     }
 
-    const emailVerificationSubject = props.userVerification?.emailSubject ?? 'Verify your new account';
-    const emailVerificationMessage = props.userVerification?.emailBody ?? 'Hello {username}, Your verification code is {####}';
-    const smsVerificationMessage = props.userVerification?.smsMessage ?? 'The verification code to your new account is {####}';
-
-    const defaultEmailOption = props.userVerification?.emailStyle ?? VerificationEmailStyle.CODE;
-    const verificationMessageTemplate: CfnUserPool.VerificationMessageTemplateProperty =
-      (defaultEmailOption === VerificationEmailStyle.CODE) ? {
-        defaultEmailOption,
-        emailMessage: emailVerificationMessage,
-        emailSubject: emailVerificationSubject,
-        smsMessage: smsVerificationMessage,
-      } : {
-        defaultEmailOption,
-        emailMessageByLink: emailVerificationMessage,
-        emailSubjectByLink: emailVerificationSubject,
-        smsMessage: smsVerificationMessage
-      };
-
+    const verificationMessageTemplate = this.verificationMessageConfiguration(props);
+    let emailVerificationMessage;
+    let emailVerificationSubject;
+    if (verificationMessageTemplate.defaultEmailOption === VerificationEmailStyle.CODE) {
+      emailVerificationMessage = verificationMessageTemplate.emailMessage;
+      emailVerificationSubject = verificationMessageTemplate.emailSubject;
+    }
+    const smsVerificationMessage = verificationMessageTemplate.smsMessage;
     const inviteMessageTemplate: CfnUserPool.InviteMessageTemplateProperty = {
       emailMessage: props.userInvitation?.emailBody,
       emailSubject: props.userInvitation?.emailSubject,
@@ -657,6 +655,44 @@ export class UserPool extends Resource implements IUserPool {
       principal: new ServicePrincipal('cognito-idp.amazonaws.com'),
       sourceArn: this.userPoolArn
     });
+  }
+
+  private verificationMessageConfiguration(props: UserPoolProps): CfnUserPool.VerificationMessageTemplateProperty {
+    const USERNAME_TEMPLATE = '{username}';
+    const CODE_TEMPLATE = '{####}';
+    const VERIFY_EMAIL_TEMPLATE = '{##Verify Email##}';
+
+    const emailStyle = props.userVerification?.emailStyle ?? VerificationEmailStyle.CODE;
+    const emailSubject = props.userVerification?.emailSubject ?? 'Verify your new account';
+    const smsMessage = props.userVerification?.smsMessage ?? `The verification code to your new account is ${CODE_TEMPLATE}`;
+
+    if (emailStyle === VerificationEmailStyle.CODE) {
+      const emailMessage = props.userVerification?.emailBody ?? `Hello ${USERNAME_TEMPLATE}, Your verification code is ${CODE_TEMPLATE}`;
+      if (emailMessage.indexOf(CODE_TEMPLATE) < 0) {
+        throw new Error(`Verification email body must contain the template string '${CODE_TEMPLATE}'`);
+      }
+      if (smsMessage.indexOf(CODE_TEMPLATE) < 0) {
+        throw new Error(`SMS message must contain the template string '${CODE_TEMPLATE}'`);
+      }
+      return {
+        defaultEmailOption: VerificationEmailStyle.CODE,
+        emailMessage,
+        emailSubject,
+        smsMessage,
+      };
+    } else {
+      const emailMessage = props.userVerification?.emailBody ??
+        `Hello ${USERNAME_TEMPLATE}, Verify your account by clicking on ${VERIFY_EMAIL_TEMPLATE}`;
+      if (emailMessage.indexOf(VERIFY_EMAIL_TEMPLATE) < 0) {
+        throw new Error(`Verification email body must contain the template string '${VERIFY_EMAIL_TEMPLATE}'`);
+      }
+      return {
+        defaultEmailOption: VerificationEmailStyle.LINK,
+        emailMessageByLink: emailMessage,
+        emailSubjectByLink: emailSubject,
+        smsMessage,
+      };
+    }
   }
 
   private signInConfiguration(props: UserPoolProps) {
@@ -756,7 +792,7 @@ export class UserPool extends Resource implements IUserPool {
     if (tempPasswordValidity !== undefined && tempPasswordValidity.toDays() > Duration.days(365).toDays()) {
       throw new Error(`tempPasswordValidity cannot be greater than 365 days (received: ${tempPasswordValidity.toDays()})`);
     }
-    const minLength = props.passwordPolicy?.minLength;
+    const minLength = props.passwordPolicy ? props.passwordPolicy.minLength ?? 8 : undefined;
     if (minLength !== undefined && (minLength < 6 || minLength > 99)) {
       throw new Error(`minLength for password must be between 6 and 99 (received: ${minLength})`);
     }
