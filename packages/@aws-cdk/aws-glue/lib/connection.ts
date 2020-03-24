@@ -16,19 +16,18 @@ export enum ConnectionInputTypes {
 export interface IConnection extends IResource {
   /**
    * The name of the connection
+   * @attribute
    */
   readonly connectionName: string;
 }
 
-export interface ConnectionAttributes {
-  /** The name of the connection */
-  readonly connectionName: string;
-}
-
+/**
+ * Construction properties for {@link Connection}
+ */
 export interface ConnectionProps {
   /**
    * The name of the connection
-   * @default no name
+   * @default cloudformation generated name
    */
   readonly connectionName?: string;
 
@@ -56,27 +55,20 @@ export interface ConnectionProps {
   readonly matchCriteria?: string[];
 
   /**
-   * The connection's Availability Zone. This field is redundant because the specified
-   * subnet implies the Availability Zone to be used. Currently the field must be populated,
-   * but it will be deprecated in the future.
-   * @default no availability zone set
+   * The security group list used by the connection.
+   * @default no security groups
    */
-  readonly availabilityZone?: string;
-
-  /**
-   * The security group ID list used by the connection.
-   * @default no security group ids
-   */
-  readonly securityGroupIds?: ec2.ISecurityGroup[];
+  readonly securityGroups?: ec2.ISecurityGroup[];
 
   /**
    * The vpc used by the connection
+   * @default no vpc
    */
   readonly vpc?: ec2.Vpc;
 
   /**
    * The subnets used by the connection
-   * @default no subnets
+   * @default private subnets
    */
   readonly vpcSubnets?: ec2.SubnetSelection;
 }
@@ -89,9 +81,13 @@ export class Connection extends Resource implements IConnection {
   public readonly connectionName: string;
 
   constructor(scope: Construct, id: string, props: ConnectionProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.connectionName,
+    });
 
-    const subnetId = props.vpcSubnets && props.vpc ? props.vpc.selectSubnets(props.vpcSubnets).subnetIds[0] : undefined;
+    const subnets = props.vpc ? props.vpc.selectSubnets(props.vpcSubnets) : undefined;
+    const availabilityZone = subnets ? subnets.availabilityZones[0] : undefined;
+    const subnetId = subnets ? subnets.subnetIds[0] : undefined;
 
     const connectionResource = new CfnConnection(this, 'Resource', {
       catalogId: Aws.ACCOUNT_ID,
@@ -102,8 +98,8 @@ export class Connection extends Resource implements IConnection {
         matchCriteria: props.matchCriteria,
         name: props.connectionName,
         physicalConnectionRequirements: {
-          availabilityZone: props.availabilityZone,
-          securityGroupIdList: props.securityGroupIds ? props.securityGroupIds.map(sg => sg.securityGroupId) : undefined,
+          availabilityZone,
+          securityGroupIdList: props.securityGroups ? props.securityGroups.map(sg => sg.securityGroupId) : undefined,
           subnetId
         }
       }
