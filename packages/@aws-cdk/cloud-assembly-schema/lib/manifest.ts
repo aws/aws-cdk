@@ -1,3 +1,6 @@
+/**
+ * Common properties for asset metadata.
+ */
 interface BaseAssetMetadataEntry {
   /**
    * Requested packaging style
