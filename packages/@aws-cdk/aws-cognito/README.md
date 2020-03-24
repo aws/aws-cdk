@@ -301,7 +301,7 @@ const userpool = new UserPool(this, 'myuserpool', {
   }
 });
 
-userpool.addTrigger(Operation.USER_MIGRATION, new lambda.Function(this, 'userMigrationFn', {
+userpool.addTrigger(UserPoolOperation.USER_MIGRATION, new lambda.Function(this, 'userMigrationFn', {
   // ...
 }));
 ```

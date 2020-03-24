@@ -3,7 +3,7 @@ import { ABSENT } from '@aws-cdk/assert/lib/assertions/have-resource';
 import { Role } from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Construct, Duration, Stack, Tag } from '@aws-cdk/core';
-import { Mfa, NumberAttribute, Operation, StringAttribute, UserPool, VerificationEmailStyle } from '../lib';
+import { Mfa, NumberAttribute, StringAttribute, UserPool, UserPoolOperation, VerificationEmailStyle } from '../lib';
 
 describe('User Pool', () => {
   test('default setup', () => {
@@ -243,16 +243,16 @@ describe('User Pool', () => {
 
     // WHEN
     const pool = new UserPool(stack, 'Pool');
-    pool.addTrigger(Operation.CREATE_AUTH_CHALLENGE, createAuthChallenge);
-    pool.addTrigger(Operation.CUSTOM_MESSAGE, customMessage);
-    pool.addTrigger(Operation.DEFINE_AUTH_CHALLENGE, defineAuthChallenge);
-    pool.addTrigger(Operation.POST_AUTHENTICATION, postAuthentication);
-    pool.addTrigger(Operation.POST_CONFIRMATION, postConfirmation);
-    pool.addTrigger(Operation.PRE_AUTHENTICATION, preAuthentication);
-    pool.addTrigger(Operation.PRE_SIGN_UP, preSignUp);
-    pool.addTrigger(Operation.PRE_TOKEN_GENERATION, preTokenGeneration);
-    pool.addTrigger(Operation.USER_MIGRATION, userMigration);
-    pool.addTrigger(Operation.VERIFY_AUTH_CHALLENGE_RESPONSE, verifyAuthChallengeResponse);
+    pool.addTrigger(UserPoolOperation.CREATE_AUTH_CHALLENGE, createAuthChallenge);
+    pool.addTrigger(UserPoolOperation.CUSTOM_MESSAGE, customMessage);
+    pool.addTrigger(UserPoolOperation.DEFINE_AUTH_CHALLENGE, defineAuthChallenge);
+    pool.addTrigger(UserPoolOperation.POST_AUTHENTICATION, postAuthentication);
+    pool.addTrigger(UserPoolOperation.POST_CONFIRMATION, postConfirmation);
+    pool.addTrigger(UserPoolOperation.PRE_AUTHENTICATION, preAuthentication);
+    pool.addTrigger(UserPoolOperation.PRE_SIGN_UP, preSignUp);
+    pool.addTrigger(UserPoolOperation.PRE_TOKEN_GENERATION, preTokenGeneration);
+    pool.addTrigger(UserPoolOperation.USER_MIGRATION, userMigration);
+    pool.addTrigger(UserPoolOperation.VERIFY_AUTH_CHALLENGE_RESPONSE, verifyAuthChallengeResponse);
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
@@ -298,8 +298,8 @@ describe('User Pool', () => {
     });
 
     // WHEN
-    userpool.addTrigger(Operation.CREATE_AUTH_CHALLENGE, fn1);
-    expect(() => userpool.addTrigger(Operation.CREATE_AUTH_CHALLENGE, fn2)).toThrow(/already exists/);
+    userpool.addTrigger(UserPoolOperation.CREATE_AUTH_CHALLENGE, fn1);
+    expect(() => userpool.addTrigger(UserPoolOperation.CREATE_AUTH_CHALLENGE, fn2)).toThrow(/already exists/);
   });
 
   test('no username aliases specified', () => {

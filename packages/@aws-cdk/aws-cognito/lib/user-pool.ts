@@ -135,71 +135,77 @@ export interface UserPoolTriggers {
 /**
  * User pool operations to which lambda triggers can be attached.
  */
-export class Operation {
+export class UserPoolOperation {
   /**
    * Creates a challenge in a custom auth flow
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-create-auth-challenge.html
    */
-  public static readonly CREATE_AUTH_CHALLENGE = new Operation('createAuthChallenge');
+  public static readonly CREATE_AUTH_CHALLENGE = new UserPoolOperation('createAuthChallenge');
 
   /**
    * Advanced customization and localization of messages
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-custom-message.html
    */
-  public static readonly CUSTOM_MESSAGE = new Operation('customMessage');
+  public static readonly CUSTOM_MESSAGE = new UserPoolOperation('customMessage');
 
   /**
    * Determines the next challenge in a custom auth flow
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-define-auth-challenge.html
    */
-  public static readonly DEFINE_AUTH_CHALLENGE = new Operation('defineAuthChallenge');
+  public static readonly DEFINE_AUTH_CHALLENGE = new UserPoolOperation('defineAuthChallenge');
 
   /**
    * Event logging for custom analytics
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-post-authentication.html
    */
-  public static readonly POST_AUTHENTICATION = new Operation('postAuthentication');
+  public static readonly POST_AUTHENTICATION = new UserPoolOperation('postAuthentication');
 
   /**
    * Custom welcome messages or event logging for custom analytics
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-post-confirmation.html
    */
-  public static readonly POST_CONFIRMATION = new Operation('postConfirmation');
+  public static readonly POST_CONFIRMATION = new UserPoolOperation('postConfirmation');
 
   /**
    * Custom validation to accept or deny the sign-in request
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-pre-authentication.html
    */
-  public static readonly PRE_AUTHENTICATION = new Operation('preAuthentication');
+  public static readonly PRE_AUTHENTICATION = new UserPoolOperation('preAuthentication');
 
   /**
    * Custom validation to accept or deny the sign-up request
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-pre-sign-up.html
    */
-  public static readonly PRE_SIGN_UP = new Operation('preSignUp');
+  public static readonly PRE_SIGN_UP = new UserPoolOperation('preSignUp');
 
   /**
    * Add or remove attributes in Id tokens
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-pre-token-generation.html
    */
-  public static readonly PRE_TOKEN_GENERATION = new Operation('preTokenGeneration');
+  public static readonly PRE_TOKEN_GENERATION = new UserPoolOperation('preTokenGeneration');
 
   /**
    * Migrate a user from an existing user directory to user pools
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-migrate-user.html
    */
-  public static readonly USER_MIGRATION = new Operation('userMigration');
+  public static readonly USER_MIGRATION = new UserPoolOperation('userMigration');
 
   /**
    * Determines if a response is correct in a custom auth flow
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-verify-auth-challenge-response.html
    */
-  public static readonly VERIFY_AUTH_CHALLENGE_RESPONSE = new Operation('verifyAuthChallengeResponse');
+  public static readonly VERIFY_AUTH_CHALLENGE_RESPONSE = new UserPoolOperation('verifyAuthChallengeResponse');
+
+  /** A custom user pool operation */
+  public static of(name: string): UserPoolOperation {
+    const lowerCamelCase = name.charAt(0).toLowerCase() + name.slice(1);
+    return new UserPoolOperation(lowerCamelCase);
+  }
 
   /** The key to use in `CfnUserPool.LambdaConfigProperty` */
   public readonly operationName: string;
 
-  constructor(operationName: string) {
+  private constructor(operationName: string) {
     this.operationName = operationName;
   }
 }
@@ -636,7 +642,7 @@ export class UserPool extends Resource implements IUserPool {
    * Add a lambda trigger to a user pool operation
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-identity-pools-working-with-aws-lambda-triggers.html
    */
-  public addTrigger(operation: Operation, fn: lambda.IFunction): void {
+  public addTrigger(operation: UserPoolOperation, fn: lambda.IFunction): void {
     if (operation.operationName in this.triggers) {
       throw new Error(`A trigger for the operation ${operation} already exists.`);
     }
