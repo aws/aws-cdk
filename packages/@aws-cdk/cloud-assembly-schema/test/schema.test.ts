@@ -72,8 +72,16 @@ test('can access random metadata', () => {
   const loaded = Manifest.load(fixture('random-metadata'));
   const randomArray = loaded.artifacts?.stack.metadata?.AwsCdkPlaygroundBatch[0].data;
   const randomNumber = loaded.artifacts?.stack.metadata?.AwsCdkPlaygroundBatch[1].data;
+  const randomMap = loaded.artifacts?.stack.metadata?.AwsCdkPlaygroundBatch[2].data;
 
   expect(randomArray).toEqual(["42"]);
   expect(randomNumber).toEqual(42);
-  expect(loaded).toMatchSnapshot();
+  expect(randomMap).toEqual({
+    key: "value"
+  });
+
+  if (randomMap) {
+    expect((randomMap as any).key).toEqual("value");
+  }
+
 });

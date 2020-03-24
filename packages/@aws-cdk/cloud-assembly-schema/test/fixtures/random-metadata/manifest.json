@@ -12,13 +12,20 @@
         "metadata": {
           "AwsCdkPlaygroundBatch": [
             {
-              "type": "something",
+              "type": "random-array",
               "data": ["42"],
               "trace": ["trace"]
             },
             {
-              "type": "something-else",
+              "type": "random-number",
               "data": 42,
+              "trace": ["trace"]
+            },
+            {
+              "type": "random-map",
+              "data": {
+                "key": "value"
+              },
               "trace": ["trace"]
             }
           ]

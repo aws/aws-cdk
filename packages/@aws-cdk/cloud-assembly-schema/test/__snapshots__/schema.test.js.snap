@@ -1,42 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`can access random metadata 1`] = `
-Object {
-  "artifacts": Object {
-    "Tree": Object {
-      "properties": Object {
-        "file": "tree.json",
-      },
-      "type": "cdk:tree",
-    },
-    "stack": Object {
-      "metadata": Object {
-        "AwsCdkPlaygroundBatch": Array [
-          Object {
-            "data": Array [
-              "42",
-            ],
-            "trace": Array [
-              "trace",
-            ],
-            "type": "something",
-          },
-          Object {
-            "data": 42,
-            "trace": Array [
-              "trace",
-            ],
-            "type": "something-else",
-          },
-        ],
-      },
-      "type": "aws:cloudformation:stack",
-    },
-  },
-  "version": "version",
-}
-`;
-
 exports[`manifest load 1`] = `
 Object {
   "version": "version",
