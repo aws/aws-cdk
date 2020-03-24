@@ -41,7 +41,12 @@ trap cleanup INT EXIT
 
 echo "Downloading aws-cdk repo version ${VERSION_UNDER_TEST}"
 temp_repo_dir="$(download_repo ${VERSION_UNDER_TEST})"
-integ_under_test=${integdir}/cli-backwards-tests
+
+# remove '/' that is prevelant in our branch names but causes
+# bad behvaior when using it as directory names.
+sanitized_version=$(sed 's/\//-/g' <<< "${VERSION_UNDER_TEST}")
+
+integ_under_test=${integdir}/cli-backwards-tests-${sanitized_version}
 rm -rf ${integ_under_test}
 echo "Copying integration tests of version ${VERSION_UNDER_TEST} to ${integ_under_test} (dont worry, its gitignored)"
 cp -r ${temp_dir}/packages/aws-cdk/test/integ/cli ${integ_under_test}
