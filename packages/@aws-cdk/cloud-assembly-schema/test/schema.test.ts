@@ -2,7 +2,6 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import { AssemblyManifest, Manifest, StackTagsMetadataEntry } from '../lib';
-import { hashObject } from './fingerprint';
 
 const FIXTURES = path.join(__dirname, 'fixtures');
 
@@ -32,17 +31,15 @@ test('manifest load', () => {
   expect(loaded).toMatchSnapshot();
 });
 
-test('schema has the correct hash', () => {
+test('schema has the correct version', () => {
 
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const expected = require('./schema.expected.json');
 
   // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const schema = require('../schema/cloud-assembly.schema.json');
+  const metadata = require('../schema/cloud-assembly.metadata.json');
 
-  const schemaHash = hashObject(schema);
-
-  expect(schemaHash).toEqual(expected.hash);
+  expect(metadata.version).toEqual(expected.version);
 
 });
 
