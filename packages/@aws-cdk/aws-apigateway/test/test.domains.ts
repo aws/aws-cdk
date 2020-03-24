@@ -347,7 +347,7 @@ export = {
     api1.root.addMethod('GET');
     api2.root.addMethod('GET');
 
-    const testDeploy = new Deployment(this, 'test-deployment', {
+    const testDeploy = new Deployment(stack, 'test-deployment', {
       api: api1
     });
 
