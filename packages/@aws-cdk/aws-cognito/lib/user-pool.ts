@@ -797,7 +797,7 @@ export class UserPool extends Resource implements IUserPool {
     if (tempPasswordValidity !== undefined && tempPasswordValidity.toDays() > Duration.days(365).toDays()) {
       throw new Error(`tempPasswordValidity cannot be greater than 365 days (received: ${tempPasswordValidity.toDays()})`);
     }
-    const minLength = props.passwordPolicy?.minLength;
+    const minLength = props.passwordPolicy ? props.passwordPolicy.minLength ?? 8 : undefined;
     if (minLength !== undefined && (minLength < 6 || minLength > 99)) {
       throw new Error(`minLength for password must be between 6 and 99 (received: ${minLength})`);
     }
