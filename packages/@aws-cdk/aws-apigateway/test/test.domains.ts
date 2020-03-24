@@ -4,6 +4,7 @@ import * as acm from '@aws-cdk/aws-certificatemanager';
 import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as apigw from '../lib';
+import { Deployment, Stage } from '../lib';
 
 export = {
   'can define either an EDGE or REGIONAL domain name'(test: Test) {
@@ -346,8 +347,16 @@ export = {
     api1.root.addMethod('GET');
     api2.root.addMethod('GET');
 
+    const testDeploy = new Deployment(this, 'test-deployment', {
+      api: api1
+    });
+
+    const testStage = new Stage(stack, 'test-stage', {
+      deployment : testDeploy
+    });
+
     // WHEN
-    domain.addBasePathMapping(api1, { basePath: 'api1', stage: 'prod' });
+    domain.addBasePathMapping(api1, { basePath: 'api1', stage: testStage });
     domain.addBasePathMapping(api2, { basePath: 'api2' });
 
     // THEN
@@ -359,7 +368,7 @@ export = {
       "RestApiId": {
         "Ref": "api1A91238E2"
       },
-      "Stage": "prod"
+      "Stage": { Ref: stack.getLogicalId(testStage.node.findChild('Resource') as cdk.CfnElement) }
     }));
 
     expect(stack).to(haveResource('AWS::ApiGateway::BasePathMapping', {

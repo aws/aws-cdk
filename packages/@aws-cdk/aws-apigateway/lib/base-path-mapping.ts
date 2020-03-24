@@ -2,6 +2,7 @@ import { Construct, Resource, Token } from '@aws-cdk/core';
 import { CfnBasePathMapping } from './apigateway.generated';
 import { IDomainName } from './domain-name';
 import { IRestApi, RestApi } from './restapi';
+import { Stage } from './stage';
 
 export interface BasePathMappingOptions {
   /**
@@ -15,10 +16,10 @@ export interface BasePathMappingOptions {
   readonly basePath?: string;
 
   /**
-   * The Deployment stage name of API
+   * The Deployment stage of API
    * @default - map to deploymentStage of restApi otherwise stage needs to pass in URL
    */
-  readonly stage?: string;
+  readonly stage?: Stage;
 }
 
 export interface BasePathMappingProps extends BasePathMappingOptions {
@@ -53,14 +54,14 @@ export class BasePathMapping extends Resource {
     // if restApi is an owned API and it has a deployment stage, map all requests
     // to that stage. otherwise, the stage will have to be specified in the URL.
     const stage = props.stage ?? (props.restApi instanceof RestApi
-      ? props.restApi.deploymentStage.stageName
+      ? props.restApi.deploymentStage
       : undefined);
 
     new CfnBasePathMapping(this, 'Resource', {
       basePath: props.basePath,
       domainName: props.domainName.domainName,
       restApiId: props.restApi.restApiId,
-      stage
+      stage: stage && stage.stageName
     });
   }
 }
