@@ -725,7 +725,7 @@ export class Project extends ProjectBase {
     this.validateCodePipelineSettings(artifacts);
 
     for (const fileSystemLocation of props.fileSystemLocations || []) {
-      this.addFileSystemLocations(fileSystemLocation);
+      this.addFileSystemLocation(fileSystemLocation);
     }
 
     const resource = new CfnProject(this, 'Resource', {
@@ -793,7 +793,7 @@ export class Project extends ProjectBase {
    *
    * @param fileSystemLocation the fileSystemLocation to add
    */
-  public addFileSystemLocations(fileSystemLocation: IFileSystemLocation): void {
+  public addFileSystemLocation(fileSystemLocation: IFileSystemLocation): void {
     const fileSystemConfig = fileSystemLocation.bind(this, this);
     this._fileSystemLocations.push(fileSystemConfig.location);
   }

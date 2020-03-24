@@ -972,7 +972,7 @@ export = {
           mountOptions: "opts"
         })]
       });
-      project.addFileSystemLocations(codebuild.FileSystemLocation.efs({
+      project.addFileSystemLocation(codebuild.FileSystemLocation.efs({
         identifier: "myidentifier3",
         location: "myclodation.mydnsroot.com:/loc",
         mountPoint: "/media",
