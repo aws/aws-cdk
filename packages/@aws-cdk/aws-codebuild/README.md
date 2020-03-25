@@ -392,17 +392,17 @@ For example:
 
 ```ts
 new codebuild.Project(stack, 'MyProject', {
-    buildSpec: codebuild.BuildSpec.fromObject({
-        version: '0.2',
-    }),
-    fileSystemLocations: [
-      codebuild.FileSystemLocation.efs({
-          identifier: "myidentifier2",
-          location: "myclodation.mydnsroot.com:/loc",
-          mountPoint: "/media",
-          mountOptions: "opts"
-      })
-    ]
+  buildSpec: codebuild.BuildSpec.fromObject({
+    version: '0.2',
+  }),
+  fileSystemLocations: [
+    codebuild.FileSystemLocation.efs({
+      identifier: "myidentifier2",
+      location: "myclodation.mydnsroot.com:/loc",
+      mountPoint: "/media",
+      mountOptions: "opts"
+    })
+  ]
 });
 ```
 
