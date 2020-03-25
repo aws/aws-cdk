@@ -46,14 +46,16 @@
     "pkglint": "0.0.0",
     "ts-jest": "^25.2.0",
     "@monocdk-experiment/rewrite-imports": "0.0.0",
-    "monocdk-experiment": "0.0.0"
+    "monocdk-experiment": "0.0.0",
+    "constructs": "^2.0.0"
   },
   "dependencies": {
     "@aws-cdk/cloudformation-diff": "0.0.0"
   },
   "peerDependencies": {
     "jest": "^24.9.0",
-    "monocdk-experiment": "^0.0.0"
+    "monocdk-experiment": "^0.0.0",
+    "constructs": "^2.0.0"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",

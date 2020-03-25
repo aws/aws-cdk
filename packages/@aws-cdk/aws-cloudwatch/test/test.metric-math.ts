@@ -268,6 +268,58 @@ export = {
 
       test.done();
     },
+
+    'can reuse the same metric between left and right axes'(test: Test) {
+      // GIVEN
+      const graph = new GraphWidget({
+        left: [
+          new MathExpression({
+            expression: 'a + 1',
+            usingMetrics: { a }
+          })
+        ],
+        right: [
+          new MathExpression({
+            expression: 'a + 2',
+            usingMetrics: { a }
+          })
+        ]
+      });
+
+      // THEN
+      graphMetricsAre(test, graph, [
+        [ { label: 'a + 1', expression: 'a + 1' } ],
+        [ 'Test', 'ACount', { visible: false, id: 'a' } ],
+        [ { label: 'a + 2', expression: 'a + 2', yAxis: 'right' } ]
+      ]);
+
+      test.done();
+    },
+
+    'detect name conflicts between left and right axes'(test: Test) {
+      // GIVEN
+      const graph = new GraphWidget({
+        left: [
+          new MathExpression({
+            expression: 'm1 + 1',
+            usingMetrics: { m1: a }
+          })
+        ],
+        right: [
+          new MathExpression({
+            expression: 'm1 + 1',
+            usingMetrics: { m1: b }
+          })
+        ]
+      });
+
+      // THEN
+      test.throws(() => {
+        graphMetricsAre(test, graph, []);
+      }, /Cannot have two different metrics share the same id \('m1'\)/);
+
+      test.done();
+    },
   },
 
   'in alarms': {

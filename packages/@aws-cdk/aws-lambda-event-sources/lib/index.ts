@@ -3,5 +3,7 @@ export * from './dynamodb';
 export * from './kinesis';
 export * from './s3';
 export * from './sns';
+export * from './sns-dlq';
 export * from './stream';
 export * from './sqs';
+export * from './sqs-dlq';
