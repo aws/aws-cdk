@@ -34,8 +34,6 @@ const exclude_files = [
 async function main() {
   const outdir = path.join(await fs.mkdtemp(path.join(os.tmpdir(), 'monocdk-')), 'package');
 
-  const srcdir = outdir;
-
   console.error(`generating monocdk at ${outdir}`);
   const reexports = [];
 
@@ -68,10 +66,6 @@ async function main() {
   const pkgBundled = manifest.bundledDependencies = [ ];
 
   for (const dir of modules) {
-    if (dir.startsWith('.')) {
-      continue;
-    }
-
     if (exclude_modules.includes(dir)) {
       console.error(`skipping module ${dir}`);
       continue;
@@ -93,7 +87,7 @@ async function main() {
 
     const basename = path.basename(moduledir);
     const files = await fs.readdir(moduledir);
-    const targetdir = path.join(srcdir, basename);
+    const targetdir = path.join(outdir, basename);
     for (const file of files) {
       const source = path.join(moduledir, file);
 
@@ -154,12 +148,12 @@ async function main() {
     }    
   }
 
-  await fs.writeFile(path.join(srcdir, 'index.ts'), reexports.join('\n'));
+  await fs.writeFile(path.join(outdir, 'index.ts'), reexports.join('\n'));
 
   console.error(`rewriting "import" statements...`);
-  const sourceFiles = await findSources(srcdir);
+  const sourceFiles = await findSources(outdir);
   for (const source of sourceFiles) {
-    await rewriteImports(srcdir, source);
+    await rewriteImports(outdir, source);
   }
 
   // copy tsconfig.json and .npmignore

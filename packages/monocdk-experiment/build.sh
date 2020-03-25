@@ -33,6 +33,6 @@ cd ${scriptdir}
 mkdir -p dist/js
 cp ${tarball} dist/js
 
-# copying src/ so this module will also work as a local dependency (e.g. for modules under @monocdk-experiment/*).
+# so this module will also work as a local dependency (e.g. for modules under @monocdk-experiment/*).
 rm -fr staging
-rsync -av ${unpacked}/ staging/
+mv ${unpacked} staging
