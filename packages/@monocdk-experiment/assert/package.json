@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "build": "./clone.sh && cdk-build",
+    "build": "cdk-build",
     "watch": "cdk-watch",
     "lint": "cdk-lint",
     "test": "cdk-test",
@@ -15,6 +15,7 @@
     "build+test": "npm run build && npm test"
   },
   "cdk-build": {
+    "pre": [ "./clone.sh" ],
     "eslint": {
       "disable": true
     },
@@ -46,7 +47,7 @@
     "pkglint": "0.0.0",
     "ts-jest": "^25.2.0",
     "@monocdk-experiment/rewrite-imports": "0.0.0",
-    "monocdk-experiment": "file:../../monocdk-experiment/staging",
+    "monocdk-experiment": "file:../../monocdk-experiment",
     "constructs": "^2.0.0"
   },
   "dependencies": {

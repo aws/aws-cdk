@@ -15,4 +15,5 @@ done
 
 npx rewrite-imports {lib,test}/*.ts jest.ts
 
-
+# copy the full monocdk from the staging directory to node_modules
+rsync -a ../../monocdk-experiment/staging/ node_modules/monocdk-experiment/
