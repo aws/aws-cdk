@@ -26,6 +26,9 @@
     "organization": true
   },
   "license": "Apache-2.0",
+  "dependencies": {
+    "glob": "^7.1.6"
+  },
   "devDependencies": {
     "@types/jest": "^25.1.4",
     "@types/node": "^10.17.17",
@@ -49,8 +52,5 @@
   "stability": "experimental",
   "engines": {
     "node": ">= 10.3.0"
-  },
-  "dependencies": {
-    "glob": "^7.1.6"
   }
 }
