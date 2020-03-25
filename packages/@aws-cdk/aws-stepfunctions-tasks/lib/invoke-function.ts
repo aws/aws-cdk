@@ -4,6 +4,8 @@ import * as sfn from '@aws-cdk/aws-stepfunctions';
 
 /**
  * Properties for InvokeFunction
+ *
+ * @deprecated use `RunLambdaTask`
  */
 export interface InvokeFunctionProps {
   /**
