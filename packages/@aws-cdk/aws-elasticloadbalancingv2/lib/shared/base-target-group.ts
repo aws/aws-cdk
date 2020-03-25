@@ -241,7 +241,6 @@ export abstract class TargetGroupBase extends cdk.Construct implements ITargetGr
       vpcId: cdk.Lazy.stringValue({ produce: () => this.vpc && this.targetType !== TargetType.LAMBDA ? this.vpc.vpcId : undefined}),
 
       // HEALTH CHECK
-      // healthCheckEnabled: this.healthCheck.enabled ?? this.targetType !== TargetType.LAMBDA,
       healthCheckEnabled: cdk.Lazy.anyValue({ produce: () => this.healthCheck && this.healthCheck.enabled}),
       healthCheckIntervalSeconds: cdk.Lazy.numberValue({
         produce: () => this.healthCheck && this.healthCheck.interval && this.healthCheck.interval.toSeconds()
