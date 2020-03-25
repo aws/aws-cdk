@@ -47,7 +47,6 @@
           "email",
           "phone_number"
         ],
-        "LambdaConfig": {},
         "Policies": {
           "PasswordPolicy": {
             "MinimumLength": 8,

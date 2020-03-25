@@ -49,7 +49,6 @@
         ],
         "EmailVerificationMessage": "integ-test: Account verification code is {####}",
         "EmailVerificationSubject": "integ-test: Verify your account",
-        "LambdaConfig": {},
         "Policies": {
           "PasswordPolicy": {
             "MinimumLength": 8,
