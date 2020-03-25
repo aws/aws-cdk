@@ -54,7 +54,7 @@ export enum LogLevel {
 /**
  * Defines what execution history events are logged and where they are logged.
  */
-export interface LoggingConfiguration {
+export interface LogOptions {
   /**
    * An array of objects that describes where your execution history events will be logged. Limited to size 1.
    */
