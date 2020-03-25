@@ -1,50 +1,84 @@
 {
     "$ref": "#/definitions/AssemblyManifest",
-    "$schema": "http://json-schema.org/draft-07/schema#",
     "definitions": {
-        "ArtifactManifest": {
-            "additionalProperties": false,
-            "description": "A manifest for a single artifact within the cloud assembly.",
+        "AssemblyManifest": {
+            "description": "A manifest which describes the cloud assembly.",
+            "type": "object",
             "properties": {
-                "dependencies": {
-                    "default": "- no dependencies.",
-                    "description": "IDs of artifacts that must be deployed before this artifact.",
-                    "items": {
-                        "type": "string"
-                    },
-                    "type": "array"
-                },
-                "environment": {
-                    "default": "- no envrionment.",
-                    "description": "The environment into which this artifact is deployed.",
+                "version": {
+                    "description": "Protocol version",
                     "type": "string"
                 },
-                "metadata": {
+                "artifacts": {
+                    "description": "The set of artifacts in this assembly.",
+                    "default": "- no artifacts.",
+                    "type": "object",
                     "additionalProperties": {
-                        "items": {
-                            "$ref": "#/definitions/MetadataEntry"
-                        },
-                        "type": "array"
-                    },
-                    "default": "- no metadata.",
-                    "description": "Associated metadata.",
-                    "type": "object"
+                        "$ref": "#/definitions/ArtifactManifest"
+                    }
                 },
-                "properties": {
-                    "additionalProperties": {},
-                    "default": "- no properties.",
-                    "description": "The set of properties for this artifact (depends on type)",
-                    "type": "object"
+                "missing": {
+                    "description": "Missing context information. If this field has values, it means that the\ncloud assembly is not complete and should not be deployed.",
+                    "default": "- no missing context.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/MissingContext"
+                    }
                 },
+                "runtime": {
+                    "description": "Runtime information.",
+                    "default": "- no info.",
+                    "$ref": "#/definitions/RuntimeInfo"
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "version"
+            ]
+        },
+        "ArtifactManifest": {
+            "description": "A manifest for a single artifact within the cloud assembly.",
+            "type": "object",
+            "properties": {
                 "type": {
                     "$ref": "#/definitions/ArtifactType",
                     "description": "The type of artifact."
+                },
+                "environment": {
+                    "description": "The environment into which this artifact is deployed.",
+                    "default": "- no envrionment.",
+                    "type": "string"
+                },
+                "metadata": {
+                    "description": "Associated metadata.",
+                    "default": "- no metadata.",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/definitions/MetadataEntry"
+                        }
+                    }
+                },
+                "dependencies": {
+                    "description": "IDs of artifacts that must be deployed before this artifact.",
+                    "default": "- no dependencies.",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "properties": {
+                    "description": "The set of properties for this artifact (depends on type)",
+                    "default": "- no properties.",
+                    "type": "object",
+                    "additionalProperties": {}
                 }
             },
+            "additionalProperties": false,
             "required": [
                 "type"
-            ],
-            "type": "object"
+            ]
         },
         "ArtifactType": {
             "description": "Type of cloud artifact.",
@@ -55,78 +89,48 @@
             ],
             "type": "string"
         },
-        "AssemblyManifest": {
-            "additionalProperties": false,
-            "description": "A manifest which describes the cloud assembly.",
-            "properties": {
-                "artifacts": {
-                    "additionalProperties": {
-                        "$ref": "#/definitions/ArtifactManifest"
-                    },
-                    "default": "- no artifacts.",
-                    "description": "The set of artifacts in this assembly.",
-                    "type": "object"
-                },
-                "missing": {
-                    "default": "- no missing context.",
-                    "description": "Missing context information. If this field has values, it means that the\ncloud assembly is not complete and should not be deployed.",
-                    "items": {
-                        "$ref": "#/definitions/MissingContext"
-                    },
-                    "type": "array"
-                },
-                "runtime": {
-                    "$ref": "#/definitions/RuntimeInfo",
-                    "default": "- no info.",
-                    "description": "Runtime information."
-                },
-                "version": {
-                    "description": "Protocol version",
-                    "type": "string"
-                }
-            },
-            "required": [
-                "version"
-            ],
-            "type": "object"
-        },
         "MetadataEntry": {
-            "additionalProperties": false,
             "description": "An metadata entry in the construct.",
+            "type": "object",
             "properties": {
-                "data": {
-                    "default": "- no data.",
-                    "description": "The data."
-                },
-                "trace": {
-                    "default": "- no trace.",
-                    "description": "A stack trace for when the entry was created.",
-                    "items": {
-                        "type": "string"
-                    },
-                    "type": "array"
-                },
                 "type": {
                     "description": "The type of the metadata entry.",
                     "type": "string"
+                },
+                "data": {
+                    "description": "The data.",
+                    "default": "- no data."
+                },
+                "trace": {
+                    "description": "A stack trace for when the entry was created.",
+                    "default": "- no trace.",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             },
+            "additionalProperties": false,
             "required": [
                 "type"
-            ],
-            "type": "object"
+            ]
         },
         "MissingContext": {
-            "additionalProperties": false,
             "description": "Represents a missing piece of context.",
+            "type": "object",
             "properties": {
                 "key": {
                     "description": "The missing context key.",
                     "type": "string"
                 },
+                "provider": {
+                    "description": "The provider from which we expect this context key to be obtained.",
+                    "type": "string"
+                },
                 "props": {
-                    "additionalProperties": {},
                     "description": "A set of provider-specific options.",
+                    "type": "object",
+                    "additionalProperties": {},
                     "properties": {
                         "account": {
                             "type": "string"
@@ -134,37 +138,33 @@
                         "region": {
                             "type": "string"
                         }
-                    },
-                    "type": "object"
-                },
-                "provider": {
-                    "description": "The provider from which we expect this context key to be obtained.",
-                    "type": "string"
+                    }
                 }
             },
+            "additionalProperties": false,
             "required": [
                 "key",
                 "props",
                 "provider"
-            ],
-            "type": "object"
+            ]
         },
         "RuntimeInfo": {
-            "additionalProperties": false,
             "description": "Information about the application's runtime components.",
+            "type": "object",
             "properties": {
                 "libraries": {
+                    "description": "The list of libraries loaded in the application, associated with their versions.",
+                    "type": "object",
                     "additionalProperties": {
                         "type": "string"
-                    },
-                    "description": "The list of libraries loaded in the application, associated with their versions.",
-                    "type": "object"
+                    }
                 }
             },
+            "additionalProperties": false,
             "required": [
                 "libraries"
-            ],
-            "type": "object"
+            ]
         }
-    }
+    },
+    "$schema": "http://json-schema.org/draft-07/schema#"
 }
