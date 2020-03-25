@@ -66,7 +66,7 @@ export = {
         test.done();
     },
 
-    'Add log configuration'(test: Test) {
+    'log configuration'(test: Test) {
         // GIVEN
         const stack = new cdk.Stack();
 
