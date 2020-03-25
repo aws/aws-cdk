@@ -60,6 +60,16 @@ export interface BaseTargetGroupProps {
  * Properties for configuring a health check
  */
 export interface HealthCheck {
+
+  /**
+   * Indicates whether health checks are enabled. If the target type is lambda,
+   * health checks are disabled by default but can be enabled. If the target type
+   * is instance or ip, health checks are always enabled and cannot be disabled.
+   *
+   * @default - Determined automatically.
+   */
+   readonly enabled?: boolean;
+
   /**
    * The approximate number of seconds between health checks for an individual target.
    *
@@ -231,6 +241,8 @@ export abstract class TargetGroupBase extends cdk.Construct implements ITargetGr
       vpcId: cdk.Lazy.stringValue({ produce: () => this.vpc && this.targetType !== TargetType.LAMBDA ? this.vpc.vpcId : undefined}),
 
       // HEALTH CHECK
+      // healthCheckEnabled: this.healthCheck.enabled ?? this.targetType !== TargetType.LAMBDA,
+      healthCheckEnabled: cdk.Lazy.anyValue({ produce: () => this.healthCheck && this.healthCheck.enabled}),
       healthCheckIntervalSeconds: cdk.Lazy.numberValue({
         produce: () => this.healthCheck && this.healthCheck.interval && this.healthCheck.interval.toSeconds()
       }),
