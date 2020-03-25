@@ -174,7 +174,6 @@
       "docs-public-apis:@aws-cdk/aws-codebuild.Source.gitHubEnterprise",
       "docs-public-apis:@aws-cdk/aws-codebuild.Source.s3",
       "docs-public-apis:@aws-cdk/aws-codebuild.StateChangeEvent.currentPhase",
-      "docs-public-apis:@aws-cdk/aws-codebuild.WindowsBuildImage.WIN_SERVER_CORE_2016_BASE",
       "docs-public-apis:@aws-cdk/aws-codebuild.WindowsBuildImage.fromDockerRegistry",
       "docs-public-apis:@aws-cdk/aws-codebuild.WindowsBuildImage.fromEcrRepository",
       "props-default-doc:@aws-cdk/aws-codebuild.ArtifactsProps.identifier",

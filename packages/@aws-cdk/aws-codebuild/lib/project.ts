@@ -1390,8 +1390,22 @@ interface WindowsBuildImageProps {
  * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-available.html
  */
 export class WindowsBuildImage implements IBuildImage {
+  /**
+   * Corresponds to the standard CodeBuild image `aws/codebuild/windows-base:1.0`.
+   *
+   * @deprecated `WindowsBuildImage.WINDOWS_BASE_2_0` should be used instead.
+   */
   public static readonly WIN_SERVER_CORE_2016_BASE: IBuildImage = new WindowsBuildImage({
     imageId: 'aws/codebuild/windows-base:1.0',
+    imagePullPrincipalType: ImagePullPrincipalType.CODEBUILD,
+  });
+
+  /**
+   * The standard CodeBuild image `aws/codebuild/windows-base:2.0`, which is
+   * based off Windows Server Core 2016.
+   */
+  public static readonly WINDOWS_BASE_2_0: IBuildImage = new WindowsBuildImage({
+    imageId: 'aws/codebuild/windows-base:2.0',
     imagePullPrincipalType: ImagePullPrincipalType.CODEBUILD,
   });
 
