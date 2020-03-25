@@ -668,6 +668,21 @@
                   "Action": "sns:Publish",
                   "Effect": "Allow",
                   "Resource": "*"
+                },
+                {
+                  "Action": "sns:Publish",
+                  "Effect": "Deny",
+                  "Resource": "arn:*:sns:*:*:*"
+                },
+                {
+                  "Action": "sns:Publish",
+                  "Condition": {
+                    "StringEquals": {
+                      "sns:Protocol": "email"
+                    }
+                  },
+                  "Effect": "Deny",
+                  "Resource": "*"
                 }
               ],
               "Version": "2012-10-17"

@@ -63,6 +63,21 @@ describe('User Pool', () => {
                 Action: 'sns:Publish',
                 Effect: 'Allow',
                 Resource: '*'
+              },
+              {
+                Action: 'sns:Publish',
+                Effect: 'Deny',
+                Resource: 'arn:*:sns:*:*:*'
+              },
+              {
+                Action: 'sns:Publish',
+                Effect: 'Deny',
+                Resource: '*',
+                Condition: {
+                  StringEquals: {
+                    'sns:Protocol': 'email'
+                  }
+                }
               }
             ],
             Version: '2012-10-17'

@@ -1,4 +1,4 @@
-import { IRole, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
+import { Effect, IRole, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Construct, Duration, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { CfnUserPool } from './cognito.generated';
@@ -747,16 +747,31 @@ export class UserPool extends Resource implements IUserPool {
         }),
         inlinePolicies: {
           /*
-           * The UserPool is very particular that it must contain an 'sns:Publish' action as an inline policy.
-           * Ideally, a conditional that restricts this action to 'sms' protocol needs to be attached, but the UserPool deployment fails validation.
-           * Seems like a case of being excessively strict.
+           * UserPool is very particular that it must contain an 'sns:Publish' action as an inline policy.
+           * Ideally, a conditional that restricts this action to 'sms' protocol needs to be attached, but SNS doesn't
+           * support this yet. So allow all first and then restrict publishing to topics and emails.
            */
           'sns-publish': new PolicyDocument({
             statements: [
               new PolicyStatement({
                 actions: [ 'sns:Publish' ],
                 resources: [ '*' ],
-              })
+              }),
+              new PolicyStatement({
+                actions: [ 'sns:Publish' ],
+                effect: Effect.DENY,
+                resources: [ Stack.of(this).formatArn(
+                  { partition: '*', region: '*', account: '*', service: 'sns', resource: '*', } // all topics
+                ) ],
+              }),
+              new PolicyStatement({
+                actions: [ 'sns:Publish' ],
+                effect: Effect.DENY,
+                resources: [ '*' ],
+                conditions: {
+                  StringEquals: { 'sns:Protocol': 'email' }
+                }
+              }),
             ]
           })
         }
