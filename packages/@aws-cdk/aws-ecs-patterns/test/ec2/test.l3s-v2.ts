@@ -235,16 +235,6 @@ export = {
         }
       }));
 
-      expect(stack).notTo(haveResourceLike('AWS::ServiceDiscovery::Service', {
-        DnsConfig: {
-          DnsRecords: [
-            {
-              Type: "A"
-            }
-          ]
-        }
-      }));
-
       test.done();
     },
 
