@@ -117,7 +117,7 @@ export interface StateMachineProps {
      *
      * @default No logging
      */
-    readonly loggingConfiguration?: LoggingConfiguration;
+    readonly logs?: LogOptions;
 }
 
 /**
