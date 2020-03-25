@@ -3,14 +3,6 @@ const TJS = require('typescript-json-schema');
 const path = require('path');
 const semver = require('semver');
 
-function applyPatch(document, patch, out) {
-  const patched = jsonpatch.applyPatch(document, patch).newDocument;
-  if (out) {
-    fs.writeFileSync(out, JSON.stringify(patched, null, 4));
-  }
-  return patched;
-}
-
 function bump() {
 
   const metadataPath = '../schema/cloud-assembly.metadata.json';
@@ -22,54 +14,60 @@ function bump() {
 
   console.log(`Updating schema version: ${oldVersion} -> ${newVersion}`);
 
-  applyPatch(metadata,
+  const patched = jsonpatch.applyPatch(metadata,
     [
       {
         op:"replace",
         path: "/version",
         value: newVersion
       }
-    ],
-    path.join(__dirname, metadataPath))
+    ]
+  ).newDocument;
+
+  const out = path.join(__dirname, metadataPath);
+  fs.writeFileSync(out, JSON.stringify(patched, null, 4));
 
 }
 
 function generate(out, shouldBump) {
 
-    const settings = {
-      required: true,
-      ref: true,
-      topRef: true,
-      noExtraProps: true,
-      out: out
-    };
+  const settings = {
+    required: true,
+    ref: true,
+    topRef: true,
+    noExtraProps: true,
+    out: out
+  };
 
-    const compilerOptions = {
-      strictNullChecks: true
-    };
+  const compilerOptions = {
+    strictNullChecks: true
+  };
 
-    const program = TJS.getProgramFromFiles([path.join(__dirname, "../lib/manifest.d.ts")], compilerOptions);
-    const schema = TJS.generateSchema(program, 'AssemblyManifest', settings);
+  const program = TJS.getProgramFromFiles([path.join(__dirname, "../lib/manifest.d.ts")], compilerOptions);
+  const schema = TJS.generateSchema(program, 'AssemblyManifest', settings);
 
-    const addAnyOfAny = {
-      op: 'add',
-      path: "/definitions/MetadataEntry/properties/data/anyOf/0",
-      value: {
-        "description": "Any form of data. (for backwards compatibility to version < 1.31.0)"
-      },
+  const addAnyOfAny = {
+    op: 'add',
+    path: "/definitions/MetadataEntry/properties/data/anyOf/0",
+    value: {
+      "description": "Any form of data. (for backwards compatibility to version < 1.31.0)"
+    },
 
-    };
+  };
 
-    if (shouldBump) {
-      bump();
-    }
+  const patched = jsonpatch.applyPatch(schema, [addAnyOfAny]).newDocument;
 
-    if (out) {
-      console.log(`Generating schema to ${out}`);
-    }
-
-    return applyPatch(schema, [addAnyOfAny], out);
-
+  if (shouldBump) {
+    bump();
   }
 
-  module.exports.generate = generate;
+  if (out) {
+    console.log(`Generating schema to ${out}`);
+    fs.writeFileSync(out, JSON.stringify(patched, null, 4));
+  }
+
+  return patched;
+
+}
+
+module.exports.generate = generate;
