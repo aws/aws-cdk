@@ -1,6 +1,5 @@
 // tslint:disable: no-console
 import * as fs from 'fs';
-// import * as path from 'path';
 import * as _glob from 'glob';
 
 import { promisify } from 'util';
