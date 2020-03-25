@@ -32,7 +32,7 @@ export enum StateMachineType {
  *
  * @default ERROR
  */
-export enum LoggingLevel {
+export enum LogLevel {
     /**
      * No Logging
      */
