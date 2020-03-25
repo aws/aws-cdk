@@ -50,6 +50,7 @@
     "@aws-cdk/aws-batch": "0.0.0",
     "@aws-cdk/aws-budgets": "0.0.0",
     "@aws-cdk/aws-certificatemanager": "0.0.0",
+    "@aws-cdk/aws-chatbot": "0.0.0",
     "@aws-cdk/aws-cloud9": "0.0.0",
     "@aws-cdk/aws-cloudformation": "0.0.0",
     "@aws-cdk/aws-cloudfront": "0.0.0",
@@ -62,6 +63,7 @@
     "@aws-cdk/aws-codepipeline": "0.0.0",
     "@aws-cdk/aws-codepipeline-actions": "0.0.0",
     "@aws-cdk/aws-codestar": "0.0.0",
+    "@aws-cdk/aws-codestarconnections": "0.0.0",
     "@aws-cdk/aws-codestarnotifications": "0.0.0",
     "@aws-cdk/aws-cognito": "0.0.0",
     "@aws-cdk/aws-config": "0.0.0",
@@ -164,10 +166,11 @@
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
     "fs-extra": "^8.1.0",
-    "jsii-reflect": "^1.0.0",
+    "jsii-reflect": "^1.1.0",
     "jsonschema": "^1.2.5",
-    "yaml": "1.8.0",
-    "yargs": "^15.3.0"
+    "constructs": "^2.0.0",
+    "yaml": "1.8.3",
+    "yargs": "^15.3.1"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.1.0",
@@ -175,7 +178,7 @@
     "@types/yaml": "1.2.0",
     "@types/yargs": "^15.0.4",
     "jest": "^24.9.0",
-    "jsii": "^0.22.0"
+    "jsii": "^1.1.0"
   },
   "keywords": [
     "aws",

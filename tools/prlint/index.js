@@ -3,6 +3,8 @@ const GitHub = require("github-api")
 
 const OWNER = "aws"
 const REPO = "aws-cdk"
+const EXEMPT_README = 'pr-linter/exempt-readme'
+const EXEMPT_TEST = 'pr-linter/exempt-test'
 
 class LinterError extends Error {
     constructor(message) {
@@ -60,6 +62,20 @@ function fixContainsTest(issue, files) {
     };
 };
 
+function shouldExemptReadme(issue) {
+    return hasLabel(issue, EXEMPT_README);
+}
+
+function shouldExemptTest(issue) {
+    return hasLabel(issue, EXEMPT_TEST);
+}
+
+function hasLabel(issue, labelName) {
+    return issue.labels.some(function (l) {
+        return l.name === labelName;
+    })
+}
+
 async function mandatoryChanges(number) {
 
     if (!number) {
@@ -79,74 +95,21 @@ async function mandatoryChanges(number) {
 
     console.log("⌛  Validating...");
 
-    featureContainsReadme(issue, files);
-    featureContainsTest(issue, files);
-    fixContainsTest(issue, files);
-
-    console.log("✅  Success")
-
-}
-
-async function commitMessage(number) {
-
-    function validate() {
-
-        // this is the commit message mergify will use.
-        // see https://doc.mergify.io/actions.html#commit-message-and-squash-method.
-        const commitMessageSection = issue.body.match(/## Commit Message([\s|\S]*)## End Commit Message/);
-
-        if (!commitMessageSection || commitMessageSection.length !== 2) {
-            throw new LinterError("Your PR description doesn't specify the commit"
-                + " message properly. See for details.")
-        }
-
-        const commitMessage = commitMessageSection[1].trim();
-
-        const paragraphs = commitMessage.split(/\r\n\r\n|\n\n/);
-        const title = paragraphs[0];
-        const expectedCommitTitle = `${issue.title} (#${number})`
-
-        if (title !== expectedCommitTitle) {
-            throw new LinterError("First paragraph of '## Commit Message' section"
-                + ` must be: '${expectedCommitTitle}'`)
-        }
-
-        for (i in paragraphs) {
-            if (i != paragraphs.length - 1 && paragraphs[i].startsWith("BREAKING CHANGE:")) {
-                throw new LinterError("'BREAKING CHANGE:' must be specified as the last paragraph");
-            }
-        }
-    }
-
-    if (!number) {
-        throw new Error('Must provide a PR number')
-    }
-
-    const gh = createGitHubClient();
-
-    const issues = gh.getIssues(OWNER, REPO);
-
-    console.log(`⌛  Fetching PR number ${number}`)
-    const issue = (await issues.getIssue(number)).data;
-
-    const noSquash = issue.labels.some(function (l) {
-        return l.name.includes("no-squash");
-    });
-
-    if (issue.user.login === "dependabot[bot]" || issue.user.login === "dependabot-preview[bot]") {
-        // dependabot PR's are ok even without following this convention because they only contain
-        // a single commit in conventional commit form.
-        console.log("⏭️   Validation skipped because its a dependabot PR");
-    } else if (noSquash) {
-        // if the PR isn't merged as a squash commit, all this validation is irrelevant.
-        // this is the case for our automatic PR's to the 'release' branch.
-        console.log("⏭️   Validation skipped because the PR is labeled with 'no-squash'");
+    if (shouldExemptReadme(issue)) {
+        console.log(`Not validating README changes since the PR is labeled with '${EXEMPT_README}'`)
     } else {
-        console.log("⌛  Validating...");
-        validate();
+        featureContainsReadme(issue, files);
+    }
+
+    if (shouldExemptTest(issue)) {
+        console.log(`Not validating test changes since the PR is labeled with '${EXEMPT_TEST}'`)
+    } else {
+        featureContainsTest(issue, files);
+        fixContainsTest(issue, files);
     }
 
     console.log("✅  Success")
+
 }
 
 // we don't use the 'export' prefix because github actions
@@ -154,7 +117,6 @@ async function commitMessage(number) {
 // TODO need to verify this.
 module.exports.mandatoryChanges = mandatoryChanges
 module.exports.LinterError = LinterError
-module.exports.commitMessage = commitMessage
 
 require('make-runnable/custom')({
     printOutputFrame: false

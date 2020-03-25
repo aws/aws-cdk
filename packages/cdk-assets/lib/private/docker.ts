@@ -37,9 +37,9 @@ export class Docker {
       '--tag', options.tag,
       ...options.target ? ['--target', options.target] : [],
       ...options.file ? ['--file', options.file] : [],
-      options.directory,
+      '.'
     ];
-    await this.execute(buildCommand);
+    await this.execute(buildCommand, { cwd: options.directory });
   }
 
   /**
@@ -71,7 +71,14 @@ export class Docker {
   }
 
   private async execute(args: string[], options: ShellOptions = {}) {
-    await shell(['docker', ...args], { logger: this.logger, ...options });
+    try {
+      await shell(['docker', ...args], { logger: this.logger, ...options });
+    } catch (e) {
+      if (e.code === 'ENOENT') {
+        throw new Error(`Unable to execute 'docker' in order to build a container asset. Please install 'docker' and try again.`);
+      }
+      throw e;
+    }
   }
 }
 

@@ -76,7 +76,8 @@
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-sns": "0.0.0",
-    "@aws-cdk/core": "0.0.0"
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^2.0.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -84,19 +85,14 @@
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-sns": "0.0.0",
-    "@aws-cdk/core": "0.0.0"
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^2.0.0"
   },
   "engines": {
     "node": ">= 10.3.0"
   },
   "stability": "experimental",
-  "awslint": {
-    "exclude": [
-      "docs-public-apis:@aws-cdk/aws-config.MaximumExecutionFrequency.TWENTY_FOUR_HOURS",
-      "docs-public-apis:@aws-cdk/aws-config.MaximumExecutionFrequency.ONE_HOUR",
-      "docs-public-apis:@aws-cdk/aws-config.MaximumExecutionFrequency.THREE_HOURS",
-      "docs-public-apis:@aws-cdk/aws-config.MaximumExecutionFrequency.SIX_HOURS",
-      "docs-public-apis:@aws-cdk/aws-config.MaximumExecutionFrequency.TWELVE_HOURS"
-    ]
+  "awscdkio": {
+    "announce": false
   }
 }

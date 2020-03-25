@@ -380,6 +380,19 @@ Since a successful resource provisioning might or might not produce outputs, thi
 
 In both the cases, you will get a synth time error if you attempt to use it in conjunction with `ignoreErrorCodesMatching`.
 
+### Customizing the Lambda function implementing the custom resource
+Use the `role`, `timeout` and `logRetention` properties to customize the Lambda function implementing the custom
+resource:
+
+```ts
+new AwsCustomResource(this, 'Customized', {
+  // other props here
+  role: myRole, // must be assumable by the `lambda.amazonaws.com` service principal
+  timeout: cdk.Duration.minutes(10) // defaults to 2 minutes
+  logRetention: logs.RetentionDays.ONE_WEEK // defaults to never delete logs
+})
+```
+
 ### Examples
 
 #### Verify a domain with SES
