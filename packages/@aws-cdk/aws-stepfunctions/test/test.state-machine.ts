@@ -75,9 +75,9 @@ export = {
 
         new stepfunctions.StateMachine(stack, 'MyStateMachine', {
             definition: stepfunctions.Chain.start(new stepfunctions.Pass(stack, 'Pass')),
-            loggingConfiguration: {
-              destinations: [log],
-              level: stepfunctions.LoggingLevel.FATAL,
+            logs: {
+              destinations: log,
+              level: stepfunctions.LogLevel.FATAL,
               includeExecutionData: false
             }
         });

@@ -58,7 +58,7 @@ export interface LogOptions {
   /**
    * An array of objects that describes where your execution history events will be logged. Limited to size 1.
    */
-  readonly destinations: logs.ILogGroup[];
+  readonly destinations: logs.ILogGroup;
 
   /**
    * Determines whether execution data is included in your log.
@@ -72,7 +72,7 @@ export interface LogOptions {
    *
    * @default ERROR
    */
-  readonly level?: LoggingLevel;
+  readonly level?: LogLevel;
 }
 
 /**
@@ -191,10 +191,10 @@ export class StateMachine extends StateMachineBase {
         this.stateMachineType = props.stateMachineType ? props.stateMachineType : StateMachineType.STANDARD;
 
         let loggingConfiguration: CfnStateMachine.LoggingConfigurationProperty | undefined;
-        if (props.loggingConfiguration && props.loggingConfiguration.destinations.length > 0) {
-            const conf = props.loggingConfiguration;
+        if (props.logs) {
+            const conf = props.logs;
             loggingConfiguration = {
-                destinations: conf.destinations.map(loggroup => ({ cloudWatchLogsLogGroup: { logGroupArn: loggroup.logGroupArn } })),
+                destinations: [{ cloudWatchLogsLogGroup: { logGroupArn: conf.destinations.logGroupArn } }],
                 includeExecutionData: conf.includeExecutionData,
                 level: conf.level || "ERROR"
             };
