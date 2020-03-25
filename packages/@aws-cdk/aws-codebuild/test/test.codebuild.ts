@@ -930,6 +930,78 @@ export = {
     },
   },
 
+  'fileSystemLocations': {
+    'create fileSystemLocation and validate attributes'(test: Test) {
+      const stack = new cdk.Stack();
+      new codebuild.Project(stack, 'MyProject', {
+        buildSpec: codebuild.BuildSpec.fromObject({
+          version: '0.2',
+        }),
+        fileSystemLocations: [codebuild.FileSystemLocation.efs({
+          identifier: "myidentifier2",
+          location: "myclodation.mydnsroot.com:/loc",
+          mountPoint: "/media",
+          mountOptions: "opts"
+        })]
+      });
+
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        "FileSystemLocations": [
+          {
+            "Identifier": "myidentifier2",
+            "MountPoint": "/media",
+            "MountOptions": "opts",
+            "Location": "myclodation.mydnsroot.com:/loc",
+            "Type": "EFS"
+          },
+        ],
+      }));
+
+      test.done();
+    },
+    'Multiple fileSystemLocation created'(test: Test) {
+      const stack = new cdk.Stack();
+      const project = new codebuild.Project(stack, 'MyProject', {
+        buildSpec: codebuild.BuildSpec.fromObject({
+          version: '0.2',
+        }),
+        fileSystemLocations: [codebuild.FileSystemLocation.efs({
+          identifier: "myidentifier2",
+          location: "myclodation.mydnsroot.com:/loc",
+          mountPoint: "/media",
+          mountOptions: "opts"
+        })]
+      });
+      project.addFileSystemLocation(codebuild.FileSystemLocation.efs({
+        identifier: "myidentifier3",
+        location: "myclodation.mydnsroot.com:/loc",
+        mountPoint: "/media",
+        mountOptions: "opts"
+      }));
+
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        "FileSystemLocations": [
+          {
+            "Identifier": "myidentifier2",
+            "MountPoint": "/media",
+            "MountOptions": "opts",
+            "Location": "myclodation.mydnsroot.com:/loc",
+            "Type": "EFS"
+          },
+          {
+            "Identifier": "myidentifier3",
+            "MountPoint": "/media",
+            "MountOptions": "opts",
+            "Location": "myclodation.mydnsroot.com:/loc",
+            "Type": "EFS"
+          }
+        ],
+      }));
+
+      test.done();
+    }
+  },
+
   'secondary artifacts': {
     'require providing an identifier when creating a Project'(test: Test) {
       const stack = new cdk.Stack();
