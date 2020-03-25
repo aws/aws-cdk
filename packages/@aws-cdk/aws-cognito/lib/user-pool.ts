@@ -747,7 +747,7 @@ export class UserPool extends Resource implements IUserPool {
         }),
         inlinePolicies: {
           /*
-           * UserPool is very particular that it must contain an 'sns:Publish' action as an inline policy.
+           * The Cognito service is very particular that 'sns:Publish' action must be on an inline policy.
            * Ideally, a conditional that restricts this action to 'sms' protocol needs to be attached, but SNS doesn't
            * support this yet. So allow all first and then restrict publishing to topics and emails.
            */
