@@ -51,36 +51,14 @@ module.exports.generate = function(out, shouldBump) {
     const program = TJS.getProgramFromFiles([path.join(__dirname, "../lib/manifest.d.ts")], compilerOptions);
     const schema = TJS.generateSchema(program, 'AssemblyManifest', settings);
 
-    const metadataRefs = [];
+    const addAnyOfAny = {
+      op: 'add',
+      path: "/definitions/MetadataEntry/properties/data/anyOf/0",
+      value: {
+        "description": "Any form of data. (for backwards compatibility to version < 1.31.0)"
+      },
 
-    for (const what of schema.definitions.MetadataEntry.properties.data.anyOf) {
-
-      let ref;
-
-      if (what.$ref) {
-        ref = what.$ref;
-      }
-
-      if (what.type === 'array') {
-        ref = what.items.$ref;
-      }
-
-      if (ref) {
-        metadataRefs.push(ref.replace('#', ''));
-      }
-
-    }
-
-    const removeAnyOf = {
-      op: 'remove',
-      path: "/definitions/MetadataEntry/properties/data/anyOf"
     };
-
-    const patches = [removeAnyOf];
-
-    for (const ref of metadataRefs) {
-      patches.push({op: "remove", path: ref});
-    }
 
     if (shouldBump) {
       bump();
@@ -90,6 +68,6 @@ module.exports.generate = function(out, shouldBump) {
       console.log(`Generating schema to ${out}`);
     }
 
-    return applyPatch(schema, patches, out);
+    return applyPatch(schema, [addAnyOfAny], out);
 
   }

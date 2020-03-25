@@ -99,7 +99,27 @@
                 },
                 "data": {
                     "description": "The data.",
-                    "default": "- no data."
+                    "default": "- no data.",
+                    "anyOf": [
+                        {
+                            "description": "Any form of data."
+                        },
+                        {
+                            "$ref": "#/definitions/FileAssetMetadataEntry"
+                        },
+                        {
+                            "$ref": "#/definitions/ContainerImageAssetMetadataEntry"
+                        },
+                        {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Tag"
+                            }
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ]
                 },
                 "trace": {
                     "description": "A stack trace for when the entry was created.",
@@ -113,6 +133,138 @@
             "additionalProperties": false,
             "required": [
                 "type"
+            ]
+        },
+        "FileAssetMetadataEntry": {
+            "description": "Metadata Entry spec for files.",
+            "type": "object",
+            "properties": {
+                "packaging": {
+                    "description": "Requested packaging style",
+                    "enum": [
+                        "file",
+                        "zip"
+                    ],
+                    "type": "string"
+                },
+                "s3BucketParameter": {
+                    "description": "Name of parameter where S3 bucket should be passed in",
+                    "type": "string"
+                },
+                "s3KeyParameter": {
+                    "description": "Name of parameter where S3 key should be passed in",
+                    "type": "string"
+                },
+                "artifactHashParameter": {
+                    "description": "The name of the parameter where the hash of the bundled asset should be passed in.",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "Logical identifier for the asset",
+                    "type": "string"
+                },
+                "sourceHash": {
+                    "description": "The hash of the source directory used to build the asset.",
+                    "type": "string"
+                },
+                "path": {
+                    "description": "Path on disk to the asset",
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "artifactHashParameter",
+                "id",
+                "packaging",
+                "path",
+                "s3BucketParameter",
+                "s3KeyParameter",
+                "sourceHash"
+            ]
+        },
+        "ContainerImageAssetMetadataEntry": {
+            "description": "Metadata Entry spec for container images.",
+            "type": "object",
+            "properties": {
+                "packaging": {
+                    "description": "Type of asset",
+                    "type": "string",
+                    "enum": [
+                        "container-image"
+                    ]
+                },
+                "imageNameParameter": {
+                    "description": "ECR Repository name and repo digest (separated by \"@sha256:\") where this\nimage is stored.",
+                    "default": "undefined If not specified, `repositoryName` and `imageTag` are\nrequired because otherwise how will the stack know where to find the asset,\nha?",
+                    "type": "string"
+                },
+                "repositoryName": {
+                    "description": "ECR repository name, if omitted a default name based on the asset's ID is\nused instead. Specify this property if you need to statically address the\nimage, e.g. from a Kubernetes Pod. Note, this is only the repository name,\nwithout the registry and the tag parts.",
+                    "default": "- this parameter is REQUIRED after 1.21.0",
+                    "type": "string"
+                },
+                "imageTag": {
+                    "description": "The docker image tag to use for tagging pushed images. This field is\nrequired if `imageParameterName` is ommited (otherwise, the app won't be\nable to find the image).",
+                    "default": "- this parameter is REQUIRED after 1.21.0",
+                    "type": "string"
+                },
+                "buildArgs": {
+                    "description": "Build args to pass to the `docker build` command",
+                    "default": "no build args are passed",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "target": {
+                    "description": "Docker target to build to",
+                    "default": "no build target",
+                    "type": "string"
+                },
+                "file": {
+                    "description": "Path to the Dockerfile (relative to the directory).",
+                    "default": "- no file is passed",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "Logical identifier for the asset",
+                    "type": "string"
+                },
+                "sourceHash": {
+                    "description": "The hash of the source directory used to build the asset.",
+                    "type": "string"
+                },
+                "path": {
+                    "description": "Path on disk to the asset",
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "id",
+                "packaging",
+                "path",
+                "sourceHash"
+            ]
+        },
+        "Tag": {
+            "description": "Metadata Entry spec for stack tag.",
+            "type": "object",
+            "properties": {
+                "key": {
+                    "description": "Tag key.",
+                    "type": "string"
+                },
+                "value": {
+                    "description": "Tag value.",
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "key",
+                "value"
             ]
         },
         "MissingContext": {
