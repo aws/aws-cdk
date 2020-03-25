@@ -34,8 +34,6 @@ const exclude_files = [
 async function main() {
   const outdir = path.join(await fs.mkdtemp(path.join(os.tmpdir(), 'monocdk-')), 'package');
 
-  const srcdir = path.join(outdir, 'src');
-
   console.error(`generating monocdk at ${outdir}`);
   const reexports = [];
 
@@ -52,7 +50,8 @@ async function main() {
     throw new Error(`@types/node must be defined in devDependencies`);
   }
   const devDeps = manifest.devDependencies = {
-    '@types/node': nodeTypes
+    '@types/node': nodeTypes,
+    'constructs': manifest.devDependencies['constructs']
   };
 
   if (manifest.dependencies) {
@@ -88,7 +87,7 @@ async function main() {
 
     const basename = path.basename(moduledir);
     const files = await fs.readdir(moduledir);
-    const targetdir = path.join(srcdir, basename);
+    const targetdir = path.join(outdir, basename);
     for (const file of files) {
       const source = path.join(moduledir, file);
 
@@ -103,14 +102,18 @@ async function main() {
 
     await fs.writeFile(path.join(targetdir, 'index.ts'), `export * from './lib'\n`);
 
-    const namespace = basename.replace(/-/g, '_');
-    reexports.push(`import * as ${namespace} from './${basename}/lib'; export { ${namespace} };`)
+    // export "core" types at the root. all the rest under a namespace.
+    if (basename === 'core') {
+      reexports.push(`export * from './core/lib';`);
+    } else {
+      const namespace = basename.replace(/-/g, '_');
+      reexports.push(`export * as ${namespace} from './${basename}/lib';`);
+    }
 
     // add @types/ devDependencies from module
     const shouldIncludeDevDep = d => include_dev_deps.find(pred => pred(d));
 
     for (const [ devDep, devDepVersion ] of Object.entries(meta.devDependencies || {})) {
-
       if (!shouldIncludeDevDep(devDep)) {
         continue;
       }
@@ -150,12 +153,12 @@ async function main() {
     }    
   }
 
-  await fs.writeFile(path.join(srcdir, 'index.ts'), reexports.join('\n'));
+  await fs.writeFile(path.join(outdir, 'index.ts'), reexports.join('\n'));
 
   console.error(`rewriting "import" statements...`);
-  const sourceFiles = await findSources(srcdir);
+  const sourceFiles = await findSources(outdir);
   for (const source of sourceFiles) {
-    await rewriteImports(srcdir, source);
+    await rewriteImports(outdir, source);
   }
 
   // copy tsconfig.json and .npmignore
