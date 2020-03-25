@@ -35,28 +35,28 @@ Duration.days(7)        // 7 days
 Duration.parse('PT5M')  // 5 minutes
 ```
 
-## Storage Quantities
+## Size (Digital Information Quantity)
 
 To make specification of digital storage quantities unambiguous, a class called
-`Storage` is available.
+`Size` is available.
 
-An instance of `Storage` is initialized through one of its static factory methods:
+An instance of `Size` is initialized through one of its static factory methods:
 
 ```ts
-Storage.kibibytes(200) // 200 KiB
-Storage.mebibytes(5)   // 5 MiB
-Storage.gibibytes(40)  // 40 GiB
-Storage.tebibytes(200) // 200 TiB
-Storage.pebibytes(3)   // 3 PiB
+Size.kibibytes(200) // 200 KiB
+Size.mebibytes(5)   // 5 MiB
+Size.gibibytes(40)  // 40 GiB
+Size.tebibytes(200) // 200 TiB
+Size.pebibytes(3)   // 3 PiB
 ```
 
-Instances of `Storage` created with one of the units can be converted into others.
+Instances of `Size` created with one of the units can be converted into others.
 By default, conversion to a higher unit will fail if the conversion does not produce
 a whole number. This can be overridden by unsetting `integral` property.
 
 ```ts
-Storage.mebibytes(2).toKibibytes()                      // yields 2048
-Storage.kibibytes(2050).toMebibyte({ integral: false }) // yields 2
+Size.mebibytes(2).toKibibytes()                      // yields 2048
+Size.kibibytes(2050).toMebibyte({ integral: false }) // yields 2
 ```
 
 ## Secrets
