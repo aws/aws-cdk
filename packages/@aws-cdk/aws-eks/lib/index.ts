@@ -7,3 +7,4 @@ export * from './helm-chart';
 export * from './k8s-patch';
 export * from './k8s-resource';
 export * from './fargate-cluster';
+export * from './managed-nodegroup';
