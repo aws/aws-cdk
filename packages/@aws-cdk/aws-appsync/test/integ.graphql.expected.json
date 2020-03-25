@@ -45,7 +45,6 @@
         },
         "EmailVerificationMessage": "Hello {username}, Your verification code is {####}",
         "EmailVerificationSubject": "Verify your new account",
-        "LambdaConfig": {},
         "SmsConfiguration": {
           "ExternalId": "awsappsyncintegPool5D14B05B",
           "SnsCallerArn": {
@@ -574,8 +573,8 @@
         ],
         "BillingMode": "PAY_PER_REQUEST"
       },
-      "UpdateReplacePolicy": "Retain",
-      "DeletionPolicy": "Retain"
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "OrderTable416EB896": {
       "Type": "AWS::DynamoDB::Table",
@@ -602,8 +601,8 @@
         ],
         "BillingMode": "PAY_PER_REQUEST"
       },
-      "UpdateReplacePolicy": "Retain",
-      "DeletionPolicy": "Retain"
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     }
   }
 }

@@ -4,7 +4,6 @@ import { Construct, Duration, Lazy, Stack } from '@aws-cdk/core';
 import { CfnAuthorizer } from '../apigateway.generated';
 import { Authorizer, IAuthorizer } from '../authorizer';
 import { RestApi } from '../restapi';
-import { IdentitySource } from './identity-source';
 
 /**
  * Base properties for all lambda authorizers
@@ -112,6 +111,21 @@ abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
       }));
     }
   }
+
+  /**
+   * Returns a token that resolves to the Rest Api Id at the time of synthesis.
+   * Throws an error, during token resolution, if no RestApi is attached to this authorizer.
+   */
+  protected lazyRestApiId() {
+    return Lazy.stringValue({
+      produce: () => {
+        if (!this.restApiId) {
+          throw new Error(`Authorizer (${this.node.path}) must be attached to a RestApi`);
+        }
+        return this.restApiId;
+      }
+    });
+  }
 }
 
 /**
@@ -151,7 +165,7 @@ export class TokenAuthorizer extends LambdaAuthorizer {
   constructor(scope: Construct, id: string, props: TokenAuthorizerProps) {
     super(scope, id, props);
 
-    const restApiId = Lazy.stringValue({ produce: () => this.restApiId });
+    const restApiId = this.lazyRestApiId();
     const resource = new CfnAuthorizer(this, 'Resource', {
       name: props.authorizerName ?? this.node.uniqueId,
       restApiId,
@@ -190,7 +204,7 @@ export interface RequestAuthorizerProps extends LambdaAuthorizerProps {
    *
    * @see https://docs.aws.amazon.com/apigateway/api-reference/link-relation/authorizer-create/#identitySource
    */
-  readonly identitySources: IdentitySource[];
+  readonly identitySources: string[];
 }
 
 /**
@@ -213,7 +227,7 @@ export class RequestAuthorizer extends LambdaAuthorizer {
       throw new Error(`At least one Identity Source is required for a REQUEST-based Lambda authorizer if caching is enabled.`);
     }
 
-    const restApiId = Lazy.stringValue({ produce: () => this.restApiId });
+    const restApiId = this.lazyRestApiId();
     const resource = new CfnAuthorizer(this, 'Resource', {
       name: props.authorizerName ?? this.node.uniqueId,
       restApiId,

@@ -85,14 +85,33 @@
     "pkglint": "0.0.0"
   },
   "dependencies": {
-    "@aws-cdk/core": "0.0.0"
+    "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/aws-ec2": "0.0.0",
+    "@aws-cdk/aws-kms": "0.0.0",
+    "@aws-cdk/cx-api": "0.0.0",
+    "constructs": "^2.0.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/core": "0.0.0"
+    "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/aws-ec2": "0.0.0",
+    "@aws-cdk/aws-kms": "0.0.0",
+    "@aws-cdk/cx-api": "0.0.0",
+    "constructs": "^2.0.0"
   },
   "engines": {
     "node": ">= 10.3.0"
   },
-  "stability": "experimental"
+  "awslint": {
+    "exclude": [
+      "props-physical-name:@aws-cdk/aws-efs.EfsFileSystemProps",
+      "resource-interface:@aws-cdk/aws-efs.EfsFileSystem",
+      "construct-interface-extends-iconstruct:@aws-cdk/aws-efs.IEfsFileSystem",
+      "resource-interface-extends-resource:@aws-cdk/aws-efs.IEfsFileSystem"
+    ]
+  },
+  "stability": "experimental",
+  "awscdkio": {
+    "announce": false
+  }
 }
