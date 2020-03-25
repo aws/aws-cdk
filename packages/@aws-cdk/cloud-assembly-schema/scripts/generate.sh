@@ -9,4 +9,4 @@ OUTPUT_FILE="${OUTPUT_DIR}/cloud-assembly.schema.json"
 
 mkdir -p ${OUTPUT_DIR}
 
-node -e "require('../schema.js').generate('${OUTPUT_FILE}', true)"
+node -e "require('${packagedir}/scripts/schema.js').generate('${OUTPUT_FILE}', true)"
