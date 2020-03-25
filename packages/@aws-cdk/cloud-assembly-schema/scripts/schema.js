@@ -34,7 +34,7 @@ function bump() {
 
 }
 
-module.exports.generate = function(out, shouldBump) {
+function generate(out, shouldBump) {
 
     const settings = {
       required: true,
@@ -71,3 +71,5 @@ module.exports.generate = function(out, shouldBump) {
     return applyPatch(schema, [addAnyOfAny], out);
 
   }
+
+  module.exports.generate = generate;

@@ -102,7 +102,7 @@
                     "default": "- no data.",
                     "anyOf": [
                         {
-                            "description": "Any form of data."
+                            "description": "Any form of data. (for backwards compatibility to version < 1.31.0)"
                         },
                         {
                             "$ref": "#/definitions/FileAssetMetadataEntry"
