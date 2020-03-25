@@ -53,13 +53,6 @@ export = {
             "[{\"apiVersion\":\"v1\",\"kind\":\"ConfigMap\",\"metadata\":{\"name\":\"aws-auth\",\"namespace\":\"kube-system\"},\"data\":{\"mapRoles\":\"[{\\\"rolearn\\\":\\\"",
             {
               "Fn::GetAtt": [
-                "ClusterDefaultCapacityInstanceRole3E209969",
-                "Arn"
-              ]
-            },
-            "\\\",\\\"username\\\":\\\"system:node:{{EC2PrivateDNSName}}\\\",\\\"groups\\\":[\\\"system:bootstrappers\\\",\\\"system:nodes\\\"]},{\\\"rolearn\\\":\\\"",
-            {
-              "Fn::GetAtt": [
                 "roleC7B7E775",
                 "Arn"
               ]
@@ -125,14 +118,7 @@ export = {
         "Fn::Join": [
           "",
           [
-            "[{\"apiVersion\":\"v1\",\"kind\":\"ConfigMap\",\"metadata\":{\"name\":\"aws-auth\",\"namespace\":\"kube-system\"},\"data\":{\"mapRoles\":\"[{\\\"rolearn\\\":\\\"",
-            {
-              "Fn::GetAtt": [
-                "ClusterDefaultCapacityInstanceRole3E209969",
-                "Arn"
-              ]
-            },
-            "\\\",\\\"username\\\":\\\"system:node:{{EC2PrivateDNSName}}\\\",\\\"groups\\\":[\\\"system:bootstrappers\\\",\\\"system:nodes\\\"]},{\\\"rolearn\\\":\\\"arn:aws:iam::123456789012:role/S3Access\\\",\\\"username\\\":\\\"arn:aws:iam::123456789012:role/S3Access\\\",\\\"groups\\\":[\\\"group1\\\"]}]\",\"mapUsers\":\"[{\\\"userarn\\\":\\\"arn:",
+            "[{\"apiVersion\":\"v1\",\"kind\":\"ConfigMap\",\"metadata\":{\"name\":\"aws-auth\",\"namespace\":\"kube-system\"},\"data\":{\"mapRoles\":\"[{\\\"rolearn\\\":\\\"arn:aws:iam::123456789012:role/S3Access\\\",\\\"username\\\":\\\"arn:aws:iam::123456789012:role/S3Access\\\",\\\"groups\\\":[\\\"group1\\\"]}]\",\"mapUsers\":\"[{\\\"userarn\\\":\\\"arn:",
             {
               Ref: "AWS::Partition"
             },
