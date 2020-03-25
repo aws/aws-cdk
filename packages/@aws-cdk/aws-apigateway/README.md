@@ -307,10 +307,11 @@ resource.addMethod('GET', integration, {
   requestParameters: {
     'method.request.querystring.who': true
   },
-  // We need to set the validator for ensuring they are passed
-  requestValidator: validator, // requestValidator is deprecated, Use `reqValidator`
-  // We can pass request validator's properties
-  reqValidator: {
+  // To specify a request validator we can set either `requestValidator` or `requestValidatorOptions`
+  // We can set the validator for ensuring they are passed
+  requestValidator: validator,
+  // Or we can set request validator options like below
+  requestValidatorOptions: {
     requestValidatorName: 'test-validator',
     validateRequestBody: true,
     validateRequestParameters: false

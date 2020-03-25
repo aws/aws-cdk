@@ -815,7 +815,7 @@ export = {
       httpMethod: 'GET',
       resource: api.root,
       options: {
-        reqValidator: {
+        requestValidatorOptions: {
           requestValidatorName: 'test-validator',
           validateRequestBody: true,
           validateRequestParameters: false
@@ -849,6 +849,36 @@ export = {
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
       RequestValidatorId: ABSENT
     }));
+
+    test.done();
+  },
+
+  'method do not support both request validator and request validator options'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigw.RestApi(stack, 'test-api', { deploy: false });
+    const validator = api.addRequestValidator('test-validator1', {
+      validateRequestBody: true,
+      validateRequestParameters: false
+    });
+
+    // WHEN
+    const methodProps = {
+      httpMethod: 'GET',
+      resource: api.root,
+      options: {
+        requestValidatorOptions: {
+          requestValidatorName: 'test-validator2',
+          validateRequestBody: true,
+          validateRequestParameters: false
+        },
+        requestValidator: validator
+      }
+    };
+
+    // THEN
+    test.throws(() => new apigw.Method(stack, 'method', methodProps),
+    /Only one of 'requestValidator' or 'requestValidatorOptions' must be specified./);
 
     test.done();
   }

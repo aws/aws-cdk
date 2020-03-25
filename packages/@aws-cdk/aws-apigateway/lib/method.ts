@@ -73,7 +73,8 @@ export interface MethodOptions {
 
   /**
    * The ID of the associated request validator.
-   * @deprecated Use `reqValidator` to pass validator options
+   * Only one of `requestValidator` or `requestValidatorOptions` must be specified.
+   * @default - No default validator
    */
   readonly requestValidator?: IRequestValidator;
 
@@ -87,9 +88,10 @@ export interface MethodOptions {
 
   /**
    * Request validator options to create new validator
-   * @default - No validator
+   * Only one of `requestValidator` or `requestValidatorOptions` must be specified.
+   * @default - No default validator
    */
-  readonly reqValidator?: RequestValidatorOptions;
+  readonly requestValidatorOptions?: RequestValidatorOptions;
 }
 
 export interface MethodProps {
@@ -311,8 +313,12 @@ export class Method extends Resource {
   }
 
   private requestValidatorId(options: MethodOptions): string | undefined {
-    if (options.reqValidator) {
-      const validator = this.restApi.addRequestValidator('validator', options.reqValidator);
+    if (options.requestValidator && options.requestValidatorOptions) {
+      throw new Error(`Only one of 'requestValidator' or 'requestValidatorOptions' must be specified.`);
+    }
+
+    if (options.requestValidatorOptions) {
+      const validator = this.restApi.addRequestValidator('validator', options.requestValidatorOptions);
       return validator.requestValidatorId;
     }
 
