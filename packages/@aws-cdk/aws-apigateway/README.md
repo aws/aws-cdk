@@ -630,6 +630,7 @@ const betaStage = new Stage(this, 'beta-stage', {
   deployment: betaDeploy,
 });
 domain.addBasePathMapping(restapi, { basePath: 'api/beta', stage: betaStage });
+```
 
 If you don't specify `basePath`, all URLs under this domain will be mapped
 to the API, and you won't be able to map another API to the same domain:
