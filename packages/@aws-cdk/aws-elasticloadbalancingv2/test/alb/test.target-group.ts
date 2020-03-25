@@ -70,6 +70,7 @@ export = {
     const ipTarget = new elbv2.IpTarget("10.10.12.12", 80, "us-east-1a");
     listener.addTargets("TargetGroup", {
       targets: [ipTarget],
+      port: 80,
       healthCheck: {
         enabled: true,
         healthyHttpCodes: "255",
