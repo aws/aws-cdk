@@ -367,7 +367,7 @@ export = {
       "RestApiId": {
         "Ref": "api1A91238E2"
       },
-      "Stage": { Ref: stack.getLogicalId(testStage.node.findChild('Resource') as CfnElement) }
+      "Stage": stack.resolve(testStage.stageName)
     }));
 
     expect(stack).to(haveResource('AWS::ApiGateway::BasePathMapping', {
