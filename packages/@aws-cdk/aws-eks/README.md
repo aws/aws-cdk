@@ -55,6 +55,14 @@ By default, `eks.Cluster` is created with a managed nodegroup with x2 `m5.large`
 new eks.Cluster(this, 'cluster-two-m5-large');
 ```
 
+To use the traditional self-managed Amazon EC2 instances instead, set `defaultCapacityType` to `DefaultCapacityType.EC2`
+
+```ts
+const cluster = new eks.Cluster(this, 'cluster-self-managed-ec2', {
+  defaultCapacityType: eks.DefaultCapacityType.EC2
+});
+```
+
 The quantity and instance type for the default capacity can be specified through
 the `defaultCapacity` and `defaultCapacityInstance` props:
 

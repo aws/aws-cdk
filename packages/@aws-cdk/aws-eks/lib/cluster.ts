@@ -240,6 +240,13 @@ export interface ClusterProps extends ClusterOptions {
    * @default m5.large
    */
   readonly defaultCapacityInstance?: ec2.InstanceType;
+
+  /**
+   * The default capacity type for the cluster.
+   *
+   * @default NODEGROUP
+   */
+  readonly defaultCapacityType?: DefaultCapacityType
 }
 
 /**
@@ -313,7 +320,7 @@ export class Cluster extends Resource implements ICluster {
    * The auto scaling group that hosts the default capacity for this cluster.
    * This will be `undefined` if the default capacity is set to 0.
    */
-  public readonly defaultCapacity?: Nodegroup;
+  public readonly defaultCapacity?: Nodegroup | autoscaling.AutoScalingGroup;
 
   /**
    * If this cluster is kubectl-enabled, returns the `ClusterResource` object
@@ -423,7 +430,9 @@ export class Cluster extends Resource implements ICluster {
     const minCapacity = props.defaultCapacity === undefined ? DEFAULT_CAPACITY_COUNT : props.defaultCapacity;
     if (minCapacity > 0) {
       const instanceType = props.defaultCapacityInstance || DEFAULT_CAPACITY_TYPE;
-      this.defaultCapacity = this.addNodegroup('DefaultCapacity', { instanceType, minSize: minCapacity } );
+      this.defaultCapacity = props.defaultCapacityType === DefaultCapacityType.EC2 ?
+      this.addCapacity('DefaultCapacity', { instanceType, minCapacity }) :
+      this.addNodegroup('DefaultCapacity', { instanceType, minSize: minCapacity } );
     }
 
     const outputConfigCommand = props.outputConfigCommand === undefined ? true : props.outputConfigCommand;
@@ -952,6 +961,20 @@ export enum CoreDnsComputeType {
    * Deploy CoreDNS on Fargate-managed instances.
    */
   FARGATE = 'fargate'
+}
+
+/**
+ * The default capacity type for the cluster
+ */
+export enum DefaultCapacityType {
+  /**
+   * managed node group
+   */
+  NODEGROUP,
+  /**
+   * EC2 autoscaling group
+   */
+  EC2
 }
 
 const GPU_INSTANCETYPES = ['p2', 'p3', 'g4'];
