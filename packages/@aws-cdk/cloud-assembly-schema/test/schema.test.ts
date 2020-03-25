@@ -9,6 +9,29 @@ function fixture(name: string) {
   return path.join(FIXTURES, name, 'manifest.json');
 }
 
+function clone(obj: any) {
+  return JSON.parse(JSON.stringify(obj));
+}
+
+function removeKeys(obj: any, keys: string[]) {
+
+  function _recurse(o: any) {
+    for (const prop in o) {
+      if (keys.includes(prop)) {
+        delete o[prop];
+      } else if (typeof o[prop] === 'object') {
+        _recurse(o[prop]);
+      }
+    }
+  }
+
+  const cloned = clone(obj);
+  _recurse(cloned);
+
+  return cloned;
+
+}
+
 test('manifest save', () => {
 
   const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'protocol-tests'));
@@ -26,21 +49,35 @@ test('manifest save', () => {
 
 });
 
+test('cloud-assembly.json.schema is correct', () => {
+
+  // when we compare schemas we ignore changes the
+  // description that is generated from the ts docstrings.
+  const docStringFields = [
+    'description'
+  ];
+
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const schema = require('../scripts/schema.js');
+
+  const expected = removeKeys(schema.generate(), docStringFields);
+
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const actual = removeKeys(require('../schema/cloud-assembly.schema.json'), docStringFields);
+
+  try {
+    expect(actual).toEqual(expected);
+  } catch (err) {
+    // I couldn't for the life of me figure out how to provide additional error message
+    // to jets...any ideas?
+    err.message = `Oops. Did you forget to run 'yarn generate'?\n\n${err.message}`;
+    throw err;
+  }
+});
+
 test('manifest load', () => {
   const loaded = Manifest.load(fixture("only-version"));
   expect(loaded).toMatchSnapshot();
-});
-
-test('schema has the correct version', () => {
-
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const expected = require('./schema.expected.json');
-
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const metadata = require('../schema/cloud-assembly.metadata.json');
-
-  expect(metadata.version).toEqual(expected.version);
-
 });
 
 test('manifest load fails for invalid nested property', () => {

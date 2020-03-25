@@ -38,13 +38,9 @@
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test",
     "compat": "cdk-compat",
-    "generate-schema-json": "bash scripts/generate-json-schema.sh",
-    "bump-schema-version": "node scripts/bump-schema-version.js"
+    "generate": "bash scripts/generate.sh"
   },
   "cdk-build": {
-    "post": [
-      "yarn generate-schema-json"
-    ],
     "eslint": {
       "ignore-pattern": [
         "scripts/*"
