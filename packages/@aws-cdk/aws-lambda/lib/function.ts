@@ -673,8 +673,19 @@ export class Function extends FunctionBase {
       return undefined;
     }
 
+    // for backwards compatibility we do not sort environment variables in case
+    // _currentVersion is not defined. otherwise, this would have invalidated
+    // the template, and for example, may cause unneeded updates for nested
+    // stacks.
+    if (!this._currentVersion) {
+      return {
+        variables: this.environment
+      };
+    }
+
     // sort environment so the hash of the function used to create
-    // `currentVersion` is not affected by key order (this is how lambda does it).
+    // `currentVersion` is not affected by key order (this is how lambda does
+    // it).
     const variables: { [key: string]: string } = { };
     for (const key of Object.keys(this.environment).sort()) {
       variables[key] = this.environment[key];

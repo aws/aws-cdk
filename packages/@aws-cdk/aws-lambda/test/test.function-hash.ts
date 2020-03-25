@@ -1,4 +1,4 @@
-import { Stack } from '@aws-cdk/core';
+import { CfnOutput, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as path from 'path';
 import * as lambda from '../lib';
@@ -130,30 +130,65 @@ export = {
     test.done();
   },
 
-  'different order of env vars produce the same hash'(test: Test) {
-    const stack1 = new Stack();
-    const fn1 = new lambda.Function(stack1, 'MyFunction', {
-      runtime: lambda.Runtime.NODEJS_12_X,
-      code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
-      handler: 'index.handler',
-      environment: {
-        Foo: 'bar',
-        Bar: 'foo',
-      }
-    });
+  'impact of env variables order on hash': {
 
-    const stack2 = new Stack();
-    const fn2 = new lambda.Function(stack2, 'MyFunction', {
-      runtime: lambda.Runtime.NODEJS_12_X,
-      code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
-      handler: 'index.handler',
-      environment: {
-        Bar: 'foo',
-        Foo: 'bar',
-      }
-    });
+    'without "currentVersion", we preserve old behavior to avoid unnesesary invalidation of templates'(test: Test) {
+      const stack1 = new Stack();
+      const fn1 = new lambda.Function(stack1, 'MyFunction', {
+        runtime: lambda.Runtime.NODEJS_12_X,
+        code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
+        handler: 'index.handler',
+        environment: {
+          Foo: 'bar',
+          Bar: 'foo',
+        }
+      });
 
-    test.deepEqual(calculateFunctionHash(fn1), calculateFunctionHash(fn2));
-    test.done();
-  }
+      const stack2 = new Stack();
+      const fn2 = new lambda.Function(stack2, 'MyFunction', {
+        runtime: lambda.Runtime.NODEJS_12_X,
+        code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
+        handler: 'index.handler',
+        environment: {
+          Bar: 'foo',
+          Foo: 'bar',
+        }
+      });
+
+      test.notDeepEqual(calculateFunctionHash(fn1), calculateFunctionHash(fn2));
+      test.done();
+    },
+
+    'with "currentVersion", we sort env keys so order is consistent'(test: Test) {
+      const stack1 = new Stack();
+      const fn1 = new lambda.Function(stack1, 'MyFunction', {
+        runtime: lambda.Runtime.NODEJS_12_X,
+        code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
+        handler: 'index.handler',
+        environment: {
+          Foo: 'bar',
+          Bar: 'foo',
+        }
+      });
+
+      new CfnOutput(stack1, 'VersionArn', { value: fn1.currentVersion.functionArn });
+
+      const stack2 = new Stack();
+      const fn2 = new lambda.Function(stack2, 'MyFunction', {
+        runtime: lambda.Runtime.NODEJS_12_X,
+        code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
+        handler: 'index.handler',
+        environment: {
+          Bar: 'foo',
+          Foo: 'bar',
+        }
+      });
+
+      new CfnOutput(stack2, 'VersionArn', { value: fn2.currentVersion.functionArn });
+
+      test.deepEqual(calculateFunctionHash(fn1), calculateFunctionHash(fn2));
+      test.done();
+    }
+
+  },
 };
