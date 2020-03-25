@@ -8,40 +8,45 @@ import { Token } from "./token";
  *
  * When the amount is passed as a token, unit conversion is not possible.
  */
-export class Storage {
+export class Size {
   /**
    * Create a Storage representing an amount kibibytes.
+   * 1 KiB = 1024 bytes
    */
-  public static kibibytes(amount: number): Storage {
-    return new Storage(amount, StorageUnit.Kibibytes);
+  public static kibibytes(amount: number): Size {
+    return new Size(amount, StorageUnit.Kibibytes);
   }
 
   /**
    * Create a Storage representing an amount mebibytes.
+   * 1 MiB = 1024 KiB
    */
-  public static mebibytes(amount: number): Storage {
-    return new Storage(amount, StorageUnit.Mebibytes);
+  public static mebibytes(amount: number): Size {
+    return new Size(amount, StorageUnit.Mebibytes);
   }
 
   /**
    * Create a Storage representing an amount mebibytes.
+   * 1 GiB = 1024 MiB
    */
-  public static gibibytes(amount: number): Storage {
-    return new Storage(amount, StorageUnit.Gibibytes);
+  public static gibibytes(amount: number): Size {
+    return new Size(amount, StorageUnit.Gibibytes);
   }
 
   /**
    * Create a Storage representing an amount tebibytes.
+   * 1 TiB = 1024 GiB
    */
-  public static tebibytes(amount: number): Storage {
-    return new Storage(amount, StorageUnit.Tebibytes);
+  public static tebibytes(amount: number): Size {
+    return new Size(amount, StorageUnit.Tebibytes);
   }
 
   /**
    * Create a Storage representing an amount pebibytes.
+   * 1 PiB = 1024 TiB
    */
-  public static pebibyte(amount: number): Storage {
-    return new Storage(amount, StorageUnit.Pebibytes);
+  public static pebibyte(amount: number): Size {
+    return new Size(amount, StorageUnit.Pebibytes);
   }
 
   private readonly amount: number;
