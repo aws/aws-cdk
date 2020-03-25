@@ -318,9 +318,17 @@ export class Cluster extends Resource implements ICluster {
 
   /**
    * The auto scaling group that hosts the default capacity for this cluster.
-   * This will be `undefined` if the default capacity is set to 0.
+   * This will be `undefined` if the `defaultCapacityType` is not `EC2` or
+   * `defaultCapacityType` is `EC2` but default capacity is set to 0.
    */
-  public readonly defaultCapacity?: Nodegroup | autoscaling.AutoScalingGroup;
+  public readonly defaultCapacity?: autoscaling.AutoScalingGroup;
+
+  /**
+   * The node group that hosts the default capacity for this cluster.
+   * This will be `undefined` if the `defaultCapacityType` is `EC2` or
+   * `defaultCapacityType` is `NODEGROUP` but default capacity is set to 0.
+   */
+  public readonly defaultNodegroup?: Nodegroup;
 
   /**
    * If this cluster is kubectl-enabled, returns the `ClusterResource` object
@@ -431,8 +439,10 @@ export class Cluster extends Resource implements ICluster {
     if (minCapacity > 0) {
       const instanceType = props.defaultCapacityInstance || DEFAULT_CAPACITY_TYPE;
       this.defaultCapacity = props.defaultCapacityType === DefaultCapacityType.EC2 ?
-      this.addCapacity('DefaultCapacity', { instanceType, minCapacity }) :
-      this.addNodegroup('DefaultCapacity', { instanceType, minSize: minCapacity } );
+      this.addCapacity('DefaultCapacity', { instanceType, minCapacity }) : undefined;
+
+      this.defaultNodegroup = props.defaultCapacityType !== DefaultCapacityType.EC2 ?
+      this.addNodegroup('DefaultCapacity', { instanceType, minSize: minCapacity } ) : undefined;
     }
 
     const outputConfigCommand = props.outputConfigCommand === undefined ? true : props.outputConfigCommand;

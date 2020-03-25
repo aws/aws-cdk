@@ -79,10 +79,13 @@ To disable the default capacity, simply set `defaultCapacity` to `0`:
 new eks.Cluster(this, 'cluster-with-no-capacity', { defaultCapacity: 0 });
 ```
 
-The `cluster.defaultCapacity` property will reference the `NodeGroup`
+The `cluster.defaultCapacity` property will reference the `AutoScalingGroup`
 resource for the default capacity. It will be `undefined` if `defaultCapacity`
-is set to `0`:
+is set to `0` or `defaultCapacityType` is either `NODEGROUP` or undefined.
 
+And the `cluster.defaultNodegroup` property will reference the `Nodegroup`
+resource for the default capacity. It will be `undefined` if `defaultCapacity`
+is set to `0` or `defaultCapacityType` is `EC2`.
 
 You can add `AutoScalingGroup` resource as customized capacity through `cluster.addCapacity()` or
 `cluster.addAutoScalingGroup()`:

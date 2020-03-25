@@ -98,7 +98,7 @@ export = {
       const cluster = new eks.Cluster(stack, 'cluster');
 
      // THEN
-      test.ok(cluster.defaultCapacity);
+      test.ok(cluster.defaultNodegroup);
       expect(stack).to(haveResource('AWS::EKS::Nodegroup', {
         InstanceTypes: [
           "m5.large"
@@ -123,7 +123,7 @@ export = {
       });
 
       // THEN
-      test.ok(cluster.defaultCapacity);
+      test.ok(cluster.defaultNodegroup);
       expect(stack).to(haveResource('AWS::EKS::Nodegroup', {
         ScalingConfig: {
           DesiredSize: 10,
