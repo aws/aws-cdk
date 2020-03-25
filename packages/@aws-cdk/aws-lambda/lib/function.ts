@@ -3,12 +3,13 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { Construct, Duration, Fn, Lazy } from '@aws-cdk/core';
+import { CfnResource, Construct, Duration, Fn, Lazy, Stack } from '@aws-cdk/core';
 import { Code, CodeConfig } from './code';
 import { EventInvokeConfigOptions } from './event-invoke-config';
 import { IEventSource } from './event-source';
 import { FunctionAttributes, FunctionBase, IFunction } from './function-base';
-import { Version } from './lambda-version';
+import { calculateFunctionHash, trimFromStart } from './function-hash';
+import { Version, VersionOptions } from './lambda-version';
 import { CfnFunction } from './lambda.generated';
 import { ILayerVersion } from './layers';
 import { LogRetention } from './log-retention';
@@ -224,6 +225,13 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * @default - A new role is created.
    */
   readonly logRetentionRole?: iam.IRole;
+
+  /**
+   * Options for the `lambda.Version` resource automatically created by the
+   * `fn.currentVersion` method.
+   * @default - default options as described in `VersionOptions`
+   */
+  readonly currentVersionOptions?: VersionOptions;
 }
 
 export interface FunctionProps extends FunctionOptions {
@@ -266,6 +274,28 @@ export interface FunctionProps extends FunctionOptions {
  * library.
  */
 export class Function extends FunctionBase {
+
+  /**
+   * Returns a `lambda.Version` which represents the current version of this
+   * Lambda function. A new version will be created every time the function's
+   * configuration changes.
+   *
+   * You can specify options for this version using the `currentVersionOptions`
+   * prop when initializing the `lambda.Function`.
+   */
+  public get currentVersion(): Version {
+    if (this._currentVersion) {
+      return this._currentVersion;
+    }
+
+    this._currentVersion = new Version(this, `CurrentVersion`, {
+      lambda: this,
+      ...this.currentVersionOptions
+    });
+
+    return this._currentVersion;
+  }
+
   public static fromFunctionArn(scope: Construct, id: string, functionArn: string): IFunction {
     return Function.fromFunctionAttributes(scope, id, { functionArn });
   }
@@ -425,6 +455,9 @@ export class Function extends FunctionBase {
    */
   private readonly environment: { [key: string]: string };
 
+  private readonly currentVersionOptions?: VersionOptions;
+  private _currentVersion?: Version;
+
   constructor(scope: Construct, id: string, props: FunctionProps) {
     super(scope, id, {
       physicalName: props.functionName,
@@ -520,6 +553,8 @@ export class Function extends FunctionBase {
         retryAttempts: props.retryAttempts,
       });
     }
+
+    this.currentVersionOptions = props.currentVersionOptions;
   }
 
   /**
@@ -557,19 +592,27 @@ export class Function extends FunctionBase {
    * Add a new version for this Lambda
    *
    * If you want to deploy through CloudFormation and use aliases, you need to
-   * add a new version (with a new name) to your Lambda every time you want
-   * to deploy an update. An alias can then refer to the newly created Version.
+   * add a new version (with a new name) to your Lambda every time you want to
+   * deploy an update. An alias can then refer to the newly created Version.
    *
    * All versions should have distinct names, and you should not delete versions
    * as long as your Alias needs to refer to them.
    *
-   * @param name A unique name for this version
-   * @param codeSha256 The SHA-256 hash of the most recently deployed Lambda source code, or
-   *  omit to skip validation.
+   * @param name A unique name for this version.
+   * @param codeSha256 The SHA-256 hash of the most recently deployed Lambda
+   *  source code, or omit to skip validation.
    * @param description A description for this version.
-   * @param provisionedExecutions A provisioned concurrency configuration for a function's version.
-   * @param asyncInvokeConfig configuration for this version when it is invoked asynchronously.
+   * @param provisionedExecutions A provisioned concurrency configuration for a
+   * function's version.
+   * @param asyncInvokeConfig configuration for this version when it is invoked
+   * asynchronously.
    * @returns A new Version object.
+   *
+   * @deprecated This method will create an AWS::Lambda::Version resource which
+   * snapshots the AWS Lambda function *at the time of its creation* and it
+   * won't get updated when the function changes. Instead, use
+   * `this.currentVersion` to obtain a reference to a version resource that gets
+   * automatically recreated when the function configuration (or code) changes.
    */
   public addVersion(
     name: string,
@@ -577,6 +620,7 @@ export class Function extends FunctionBase {
     description?: string,
     provisionedExecutions?: number,
     asyncInvokeConfig: EventInvokeConfigOptions = {}): Version {
+
     return new Version(this, 'Version' + name, {
       lambda: this,
       codeSha256,
@@ -607,14 +651,47 @@ export class Function extends FunctionBase {
     return this._logGroup;
   }
 
+  protected prepare() {
+    super.prepare();
+
+    // if we have a current version resource, override it's logical id
+    // so that it includes the hash of the function code and it's configuration.
+    if (this._currentVersion) {
+      const stack = Stack.of(this);
+      const cfn = this._currentVersion.node.defaultChild as CfnResource;
+      const originalLogicalId: string = stack.resolve(cfn.logicalId);
+
+      const hash = calculateFunctionHash(this);
+
+      const logicalId = trimFromStart(originalLogicalId, 255 - 32);
+      cfn.overrideLogicalId(`${logicalId}${hash}`);
+    }
+  }
+
   private renderEnvironment() {
     if (!this.environment || Object.keys(this.environment).length === 0) {
       return undefined;
     }
 
-    return {
-      variables: this.environment
-    };
+    // for backwards compatibility we do not sort environment variables in case
+    // _currentVersion is not defined. otherwise, this would have invalidated
+    // the template, and for example, may cause unneeded updates for nested
+    // stacks.
+    if (!this._currentVersion) {
+      return {
+        variables: this.environment
+      };
+    }
+
+    // sort environment so the hash of the function used to create
+    // `currentVersion` is not affected by key order (this is how lambda does
+    // it).
+    const variables: { [key: string]: string } = { };
+    for (const key of Object.keys(this.environment).sort()) {
+      variables[key] = this.environment[key];
+    }
+
+    return { variables };
   }
 
   /**

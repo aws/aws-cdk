@@ -20,27 +20,15 @@ export interface IAlias extends IFunction {
 }
 
 /**
- * Properties for a new Lambda alias
+ * Options for `lambda.Alias`.
  */
-export interface AliasProps extends EventInvokeConfigOptions {
+export interface AliasOptions extends EventInvokeConfigOptions {
   /**
    * Description for the alias
    *
    * @default No description
    */
   readonly description?: string;
-
-  /**
-   * Function version this alias refers to
-   *
-   * Use lambda.addVersion() to obtain a new lambda version to refer to.
-   */
-  readonly version: IVersion;
-
-  /**
-   * Name of this alias
-   */
-  readonly aliasName: string;
 
   /**
    * Additional versions with individual weights this alias points to
@@ -67,6 +55,23 @@ export interface AliasProps extends EventInvokeConfigOptions {
    * @default No provisioned concurrency
    */
   readonly provisionedConcurrentExecutions?: number;
+}
+
+/**
+ * Properties for a new Lambda alias
+ */
+export interface AliasProps extends AliasOptions {
+  /**
+   * Name of this alias
+   */
+  readonly aliasName: string;
+
+  /**
+   * Function version this alias refers to
+   *
+   * Use lambda.addVersion() to obtain a new lambda version to refer to.
+   */
+  readonly version: IVersion;
 }
 
 export interface AliasAttributes {
