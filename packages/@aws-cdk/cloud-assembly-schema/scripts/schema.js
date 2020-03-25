@@ -1,6 +1,7 @@
 const jsonpatch = require('fast-json-patch');
 const TJS = require('typescript-json-schema');
 const path = require('path');
+const semver = require('semver');
 
 function applyPatch(document, patch, out) {
   const patched = jsonpatch.applyPatch(document, patch).newDocument;
@@ -21,7 +22,7 @@ function bump() {
 
   console.log(`Updating schema version: ${oldVersion} -> ${newVersion}`);
 
-  applyPatch(expected,
+  applyPatch(metadata,
     [
       {
         op:"replace",
