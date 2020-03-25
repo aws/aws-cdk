@@ -188,6 +188,16 @@ const role = new iam.Role(this, 'MyRole', {
 });
 ```
 
+The `PrincipalWithConditions` class can be used to add conditions to a
+principal, especially those that don't take a `conditions` parameter in their
+constructor. The `principal.withConditions()` method can be used to create a
+`PrincipalWithConditions` from an existing principal, for example:
+
+```ts
+const principal = new iam.AccountPrincipal('123456789000')
+  .withConditions({ StringEquals: { foo: "baz" } });
+```
+
 ### Parsing JSON Policy Documents
 
 The `PolicyDocument.fromJson` and `PolicyStatement.fromJson` static methods can be used to parse JSON objects. For example:
