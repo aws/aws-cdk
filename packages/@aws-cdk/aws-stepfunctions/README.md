@@ -700,9 +700,9 @@ const log = new logs.LogGroup(stack, 'MyLogGroup');
 
 new stepfunctions.StateMachine(stack, 'MyStateMachine', {
     definition: stepfunctions.Chain.start(new stepfunctions.Pass(stack, 'Pass')),
-    loggingConfiguration: {
-      destinations: [log],
-      level: stepfunctions.LoggingLevel.ALL,
+    logs: {
+      destinations: log,
+      level: stepfunctions.LogLevel.ALL,
     }
 });
 ```
