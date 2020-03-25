@@ -13,7 +13,7 @@ for file in ${files}; do
   cp $src/$file .
 done
 
-npx rewrite-imports {lib,test}/*.ts jest.ts
+npx rewrite-imports **/*.ts
 
 # symlink the full staged monocdk from the staging directory to node_modules
 rm -fr node_modules/monocdk-experiment
