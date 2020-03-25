@@ -13,11 +13,11 @@ function clone(obj: any) {
   return JSON.parse(JSON.stringify(obj));
 }
 
-function removeKeys(obj: any, keys: string[]) {
+function removeStringKeys(obj: any, keys: string[]) {
 
   function _recurse(o: any) {
     for (const prop in o) {
-      if (keys.includes(prop)) {
+      if (keys.includes(prop) && typeof o[prop] === 'string') {
         delete o[prop];
       } else if (typeof o[prop] === 'object') {
         _recurse(o[prop]);
@@ -60,10 +60,10 @@ test('cloud-assembly.json.schema is correct', () => {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const schema = require('../scripts/schema.js');
 
-  const expected = removeKeys(schema.generate(), docStringFields);
+  const expected = removeStringKeys(schema.generate(), docStringFields);
 
   // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const actual = removeKeys(require('../schema/cloud-assembly.schema.json'), docStringFields);
+  const actual = removeStringKeys(require('../schema/cloud-assembly.schema.json'), docStringFields);
 
   try {
     expect(actual).toEqual(expected);

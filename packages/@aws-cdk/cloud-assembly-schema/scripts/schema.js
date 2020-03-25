@@ -46,16 +46,19 @@ function generate(out, shouldBump) {
   const program = TJS.getProgramFromFiles([path.join(__dirname, "../lib/manifest.d.ts")], compilerOptions);
   const schema = TJS.generateSchema(program, 'AssemblyManifest', settings);
 
+  const patches = patchDefaults(schema);
+
   const addAnyOfAny = {
     op: 'add',
     path: "/definitions/MetadataEntry/properties/data/anyOf/0",
     value: {
       "description": "Any form of data. (for backwards compatibility to version < 1.31.0)"
     },
-
   };
 
-  const patched = jsonpatch.applyPatch(schema, [addAnyOfAny]).newDocument;
+  patches.push(addAnyOfAny);
+
+  const patched = jsonpatch.applyPatch(schema, patches).newDocument;
 
   if (shouldBump) {
     bump();
@@ -68,6 +71,59 @@ function generate(out, shouldBump) {
 
   return patched;
 
+}
+
+/**
+ * Remove 'default' from the schema since its generated
+ * from the tsdocs, which are not necessarily actual values,
+ * but rather descriptive behavior.
+ *
+ * To keep this inforamtion in the schema, we append it to the
+ * 'description' of the property.
+ */
+function patchDefaults(schema) {
+
+  const patches = [];
+
+  function _recurse(o, path) {
+    for (const prop in o) {
+
+      if (prop === 'description' && typeof o[prop] === 'string') {
+
+        const description = o[prop];
+        const defaultValue = o['default'];
+
+        if (!defaultValue) {
+          // property doesn't have a default value
+          // skip
+          continue
+        }
+
+        const descriptionWithDefault = `${description} (Default ${defaultValue})`
+
+        const replaceDescription = {
+          op: 'replace',
+          path: path + '/description',
+          value: descriptionWithDefault
+        }
+
+        const removeDefault = {
+          op: 'remove',
+          path: path + '/default'
+        }
+
+        patches.push(replaceDescription);
+        patches.push(removeDefault);
+
+      } else if (typeof o[prop] === 'object') {
+        _recurse(o[prop], path + '/' + prop);
+      }
+    }
+  }
+
+  _recurse(schema, '');
+
+  return patches;
 }
 
 module.exports.generate = generate;
