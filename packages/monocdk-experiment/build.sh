@@ -34,5 +34,5 @@ mkdir -p dist/js
 cp ${tarball} dist/js
 
 # copying src/ so this module will also work as a local dependency (e.g. for modules under @monocdk-experiment/*).
-rm -fr src
-rsync -av ${unpacked}/src/ src/
+rm -fr staging
+rsync -av ${unpacked}/ staging/

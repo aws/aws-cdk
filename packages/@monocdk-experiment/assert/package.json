@@ -46,7 +46,7 @@
     "pkglint": "0.0.0",
     "ts-jest": "^25.2.0",
     "@monocdk-experiment/rewrite-imports": "0.0.0",
-    "monocdk-experiment": "0.0.0",
+    "monocdk-experiment": "file:../../monocdk-experiment/staging",
     "constructs": "^2.0.0"
   },
   "dependencies": {

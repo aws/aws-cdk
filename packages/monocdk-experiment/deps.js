@@ -14,6 +14,10 @@ const modules = fs.readdirSync(root);
 let errors = false;
 
 for (const dir of modules) {
+  if (dir.startsWith('.')) {
+    continue;
+  }
+
   const module = path.resolve(root, dir);
   const meta = require(path.join(module, 'package.json'));
   if (!meta.jsii) {
@@ -30,8 +34,6 @@ for (const dir of modules) {
     delete pkgDevDeps[meta.name];
     continue;
   }
-
-
 
   if (!exists) {
     console.error(`missing dependency: ${meta.name}`);

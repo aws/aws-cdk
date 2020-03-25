@@ -34,7 +34,7 @@ const exclude_files = [
 async function main() {
   const outdir = path.join(await fs.mkdtemp(path.join(os.tmpdir(), 'monocdk-')), 'package');
 
-  const srcdir = path.join(outdir, 'src');
+  const srcdir = outdir;
 
   console.error(`generating monocdk at ${outdir}`);
   const reexports = [];
@@ -68,6 +68,10 @@ async function main() {
   const pkgBundled = manifest.bundledDependencies = [ ];
 
   for (const dir of modules) {
+    if (dir.startsWith('.')) {
+      continue;
+    }
+
     if (exclude_modules.includes(dir)) {
       console.error(`skipping module ${dir}`);
       continue;
