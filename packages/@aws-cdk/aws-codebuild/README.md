@@ -371,10 +371,10 @@ For example:
 ```ts
 const vpc = new ec2.Vpc(this, 'MyVPC');
 const project = new codebuild.Project(this, 'MyProject', {
-    vpc: vpc,
-    buildSpec: codebuild.BuildSpec.fromObject({
-      // ...
-    }),
+  vpc: vpc,
+  buildSpec: codebuild.BuildSpec.fromObject({
+    // ...
+  }),
 });
 
 project.connections.allowTo(loadBalancer, ec2.Port.tcp(443));
