@@ -15,5 +15,7 @@ done
 
 npx rewrite-imports {lib,test}/*.ts jest.ts
 
-# copy the full monocdk from the staging directory to node_modules
-rsync -a ../../monocdk-experiment/staging/ node_modules/monocdk-experiment/
+# symlink the full staged monocdk from the staging directory to node_modules
+rm -fr node_modules/monocdk-experiment
+mkdir -p node_modules
+ln -s $PWD/../../monocdk-experiment/staging node_modules/monocdk-experiment
