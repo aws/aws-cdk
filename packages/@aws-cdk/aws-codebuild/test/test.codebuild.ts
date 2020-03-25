@@ -303,7 +303,7 @@ export = {
           path: 'path/to/source.zip',
         }),
         environment: {
-          buildImage: codebuild.WindowsBuildImage.WIN_SERVER_CORE_2016_BASE,
+          buildImage: codebuild.WindowsBuildImage.WINDOWS_BASE_2_0,
         },
       });
 
@@ -442,7 +442,7 @@ export = {
           },
           "Environment": {
             "ComputeType": "BUILD_GENERAL1_MEDIUM",
-            "Image": "aws/codebuild/windows-base:1.0",
+            "Image": "aws/codebuild/windows-base:2.0",
             "PrivilegedMode": false,
             "Type": "WINDOWS_CONTAINER"
           },
@@ -1352,7 +1352,7 @@ export = {
   'using ComputeType.Small with a Windows image fails validation'(test: Test) {
     const stack = new cdk.Stack();
     const invalidEnvironment: codebuild.BuildEnvironment = {
-      buildImage: codebuild.WindowsBuildImage.WIN_SERVER_CORE_2016_BASE,
+      buildImage: codebuild.WindowsBuildImage.WINDOWS_BASE_2_0,
       computeType: codebuild.ComputeType.SMALL,
     };
 
