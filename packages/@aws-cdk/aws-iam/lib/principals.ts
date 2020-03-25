@@ -17,7 +17,7 @@ export interface IGrantable {
  * Represents a logical IAM principal.
  *
  * An IPrincipal describes a logical entity that can perform AWS API calls
- * against sets of resources, optionally under certain conditions. // TODO: may need to update these docs
+ * against sets of resources, optionally under certain conditions.
  *
  * Examples of simple principals are IAM objects that you create, such
  * as Users or Roles.
@@ -83,9 +83,14 @@ export abstract class PrincipalBase implements IPrincipal {
     return this.policyFragment.principalJson;
   }
 
-  // TODO: should this be part of IPrincipal too?
   /**
-   * TODO: docs
+   * Returns a new PrincipalWithConditions using this principal as the base, with the
+   * passed conditions added.
+   *
+   * When there is a value for the same operator and key in both the principal and the
+   * conditions parameter, the value from the conditions parameter will be used.
+   *
+   * @returns a new PrincipalWithConditions object.
    */
   public withConditions(conditions: Conditions): IPrincipal {
     return new PrincipalWithConditions(this, conditions);
@@ -93,34 +98,43 @@ export abstract class PrincipalBase implements IPrincipal {
 }
 
 /**
- * A principal with conditions TODO: improve docs; should this extend BasePrincipal instead?
+ * An IAM principal with additional conditions specifying when the policy is in effect.
+ *
+ * For more information about conditions, see:
+ * https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition.html
  */
 export class PrincipalWithConditions<PrincipalType extends PrincipalBase> implements IPrincipal {
-  /**
-   * TODO: docs (or exclude in package.json)
-   */
   public readonly conditions: Conditions;
   public readonly grantPrincipal: IPrincipal = this;
-
-  /**
-   * When this Principal is used in an AssumeRole policy, the action to use.
-   */
   public readonly assumeRoleAction: string = 'sts:AssumeRole';
 
   constructor(
-    /**
-     * TODO: docs (or exclude in package.json)
-     */
     public readonly principal: PrincipalType,
     conditions: Conditions,
   ) {
-      this.conditions = conditions;
-      Object.entries(principal.policyFragment.conditions).forEach(([key, valueFromPrincipal]) => {
-        const valueFromConditions = this.conditions[key];
-        this.conditions[key] = valueFromConditions
-          ? { ...valueFromPrincipal, ...valueFromConditions }
-          : valueFromPrincipal;
-      });
+    // Copy the intiial conditions from the principal
+    this.conditions = JSON.parse(JSON.stringify(this.principal.policyFragment.conditions));
+    this.addConditions(conditions);
+  }
+
+  /**
+   * Add a condition to the principal
+   */
+  public addCondition(key: string, value: { [key: string]: string | string[] }) {
+    const existingValue = this.conditions[key];
+    this.conditions[key] = existingValue ? { ...existingValue, ...value } : value;
+  }
+
+  /**
+   * Adds multiple conditions to the principal
+   *
+   * Values from the conditions parameter will overwrite existing values with the same operator
+   * and key.
+   */
+  public addConditions(conditions: Conditions) {
+    Object.entries(conditions).forEach(([key, value]) => {
+      this.addCondition(key, value);
+    });
   }
 
   public get policyFragment(): PrincipalPolicyFragment {
@@ -133,6 +147,11 @@ export class PrincipalWithConditions<PrincipalType extends PrincipalBase> implem
 
   public toString() {
     return this.principal.toString();
+  }
+
+  public toJSON() {
+    // Have to implement toJSON() because the default will lead to infinite recursion.
+    return this.policyFragment.principalJson;
   }
 }
 

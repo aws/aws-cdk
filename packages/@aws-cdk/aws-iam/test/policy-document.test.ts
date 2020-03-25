@@ -449,11 +449,11 @@ describe('IAM polocy document', () => {
 
       // add via policy statement
       statement.addArnPrincipal('aws-principal-3');
-      statement.addCondition('cond2', { boom: 123 });
+      statement.addCondition('cond2', { boom: "123" });
 
       expect(stack.resolve(statement.toStatementJson())).toEqual({
         Condition: {
-          cond2: { boom: 123 }
+          cond2: { boom: "123" }
         },
         Effect: 'Allow',
         Principal: {

@@ -135,7 +135,6 @@ export class PolicyStatement {
     this.addPrincipals(new ArnPrincipal(arn));
   }
 
-  // TODO: these helpers should add PrincipalWithConditions if `conditions` is passed
   /**
    * Adds a service principal to this policy statement.
    *
@@ -201,7 +200,7 @@ export class PolicyStatement {
   /**
    * Add a condition to the Policy
    */
-  public addCondition(key: string, value: any) {
+  public addCondition(key: string, value: { [key: string]: string | string[] }) {
     const existingValue = this.condition[key];
     this.condition[key] = existingValue ? { ...existingValue, ...value } : value;
   }
@@ -305,16 +304,12 @@ export enum Effect {
 }
 
 /**
- * TODO: docs
- * https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition.html
- * https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_condition-keys.html
+ * Conditions for when an IAM Policy is in effect.
  *
- * TODO: note for commit - JSII blocks this from being more strongly modelled
- * TODO: check this type is used in all places (e.g. statement.addCondition)...
- * technically a breaking change to narrow the type but seeing as Cfn enforces it anyway it should be acceptable
+ * See https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition.html
  */
 export interface Conditions {
-  [operator: string]: { [conditionKey: string]: string | string[] };
+  [operator: string]: { [key: string]: string | string[] };
 }
 
 /**
