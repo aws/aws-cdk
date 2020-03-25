@@ -1,7 +1,7 @@
 // tslint:disable:object-literal-key-quotes
 import { ABSENT, expect, haveResource } from '@aws-cdk/assert';
 import * as acm from '@aws-cdk/aws-certificatemanager';
-import { CfnElement, Stack } from '@aws-cdk/core';
+import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as apigw from '../lib';
 
