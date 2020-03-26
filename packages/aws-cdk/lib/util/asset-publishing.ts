@@ -44,13 +44,16 @@ class PublishingAws implements cdk_assets.IAws {
   }
 
   public async discoverCurrentAccount(): Promise<cdk_assets.Account> {
-    // Try to discover the current partition given default credentials. If we
-    // don't have "default" credentials, (such as when we're using a
-    // CredentialProvider), then we'll just guess the partition to be 'aws'. Our
-    // credential provider protocol currently doesn't provide for partition
-    // information.
-    const account = await this.aws.defaultAccount();
-    const partition = account?.partition ?? 'aws';
+    // Discover the current partition given current credentials. We already
+    // have the target environment, but it doesn't contain the partition yet.
+    //
+    // Until it does, we need to do a lookup here.
+    const sts = (await this.sdk({})).sts();
+    const response = await sts.getCallerIdentity().promise();
+    if (!response.Arn) {
+      throw new Error(`Unexpected STS response: ${JSON.stringify(response)}`);
+    }
+    const partition = response.Arn!.split(':')[1];
     return { accountId: this.targetEnv.account, partition };
   }
 
