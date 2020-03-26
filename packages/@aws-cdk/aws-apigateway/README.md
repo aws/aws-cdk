@@ -455,6 +455,8 @@ books.addMethod('GET', new apigateway.HttpIntegration('http://amazon.com'), {
 });
 ```
 
+You can find a full working example [here](test/authorizers/integ.token-authorizer.ts).
+
 By default, the `TokenAuthorizer` looks for the authorization token in the request header with the key 'Authorization'. This can,
 however, be modified by changing the `identitySource` property.
 
@@ -493,6 +495,8 @@ books.addMethod('GET', new apigateway.HttpIntegration('http://amazon.com'), {
   authorizer: auth
 });
 ```
+
+You can find a full working example [here](test/authorizers/integ.request-authorizer.ts).
 
 By default, the `RequestAuthorizer` does not pass any kind of information from the request. This can,
 however, be modified by changing the `identitySource` property, and is required when specifying a value for caching.
@@ -615,10 +619,18 @@ domain.addBasePathMapping(api1, { basePath: 'go-to-api1' });
 domain.addBasePathMapping(api2, { basePath: 'boom' });
 ```
 
-NOTE: currently, the mapping will always be assigned to the APIs
-`deploymentStage`, which will automatically assigned to the latest API
-deployment. Raise a GitHub issue if you require more granular control over
-mapping base paths to stages.
+You can specify the API `Stage` to which this base path URL will map to. By default, this will be the
+`deploymentStage` of the `RestApi`. 
+
+```ts
+const betaDeploy = new Deployment(this, 'beta-deployment', {
+  api: restapi,
+});
+const betaStage = new Stage(this, 'beta-stage', {
+  deployment: betaDeploy,
+});
+domain.addBasePathMapping(restapi, { basePath: 'api/beta', stage: betaStage });
+```
 
 If you don't specify `basePath`, all URLs under this domain will be mapped
 to the API, and you won't be able to map another API to the same domain:

@@ -2,8 +2,8 @@
   "name": "monocdk-experiment",
   "version": "0.0.0",
   "description": "An experiment to bundle the entire CDK into a single module",
-  "main": "src/index.js",
-  "types": "src/index.d.ts",
+  "main": "index.js",
+  "types": "index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git"
@@ -23,7 +23,7 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "constructs": "1.1.2",
+    "constructs": "2.0.0",
     "@aws-cdk/alexa-ask": "0.0.0",
     "@aws-cdk/app-delivery": "0.0.0",
     "@aws-cdk/assets": "0.0.0",
@@ -164,7 +164,7 @@
     "@aws-cdk/aws-codestarconnections": "0.0.0"
   },
   "peerDependencies": {
-    "constructs": "^1.1.2"
+    "constructs": "^2.0.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
