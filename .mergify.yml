@@ -58,7 +58,9 @@ pull_request_rules:
       - status-success=mandatory-changes
   - name: remove stale reviews
     actions:
-      dismiss_reviews: {}
+      dismiss_reviews:
+        approved: true
+        changes_requested: true
     conditions:
       - author!=dependabot[bot]
       - author!=dependabot-preview[bot]
