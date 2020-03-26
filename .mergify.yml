@@ -56,12 +56,6 @@ pull_request_rules:
       - status-success~=AWS CodeBuild us-east-1
       - status-success=Semantic Pull Request
       - status-success=mandatory-changes
-  - name: when changes are requested
-    actions:
-      comment:
-        message: Once all the requested changes have been addressed, and the PR is ready for another review, please remember to re-request a review. See [Step 7 in Requesting a pull request review](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/requesting-a-pull-request-review).
-    conditions:
-      - "#changes-requested-reviews-by>=1"
   - name: remove stale reviews
     actions:
       dismiss_reviews:
