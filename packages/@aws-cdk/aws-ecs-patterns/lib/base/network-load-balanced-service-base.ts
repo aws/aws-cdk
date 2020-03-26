@@ -293,13 +293,11 @@ export abstract class NetworkLoadBalancedServiceBase extends cdk.Construct {
         throw new Error('A Route53 hosted domain zone name is required to configure the specified domain name');
       }
 
-      if (internetFacing) {
-        new ARecord(this, "DNS", {
-          zone: props.domainZone,
-          recordName: props.domainName,
-          target: RecordTarget.fromAlias(new LoadBalancerTarget(loadBalancer)),
-        });
-      }
+      new ARecord(this, "DNS", {
+        zone: props.domainZone,
+        recordName: props.domainName,
+        target: RecordTarget.fromAlias(new LoadBalancerTarget(loadBalancer)),
+      });
     }
 
     if (loadBalancer instanceof NetworkLoadBalancer) {
