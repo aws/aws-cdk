@@ -194,7 +194,7 @@ When the stack finishes deployment, `outputs.json` would look like
 }
 ```
 
-If multiple stacks are being deployed or the wild card `*` is used to deploy all stacks, all outputs are written to the same output file where each Stack is a key in the JSON file
+If multiple stacks are being deployed or the wild card `*` is used to deploy all stacks, all outputs are written to the same output file where each stack artifact ID is a key in the JSON file
 
 
 ```console
