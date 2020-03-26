@@ -102,6 +102,7 @@ export class CdkToolkit {
 
     const outputsPath = options.outputsPath;
     if (outputsPath) {
+      fs.ensureFileSync(outputsPath);
       fs.writeJSONSync(outputsPath, {}, {encoding: 'utf8'});
     }
 

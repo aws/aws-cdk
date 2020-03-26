@@ -61,6 +61,20 @@ class OtherParameterStack extends cdk.Stack {
   }
 }
 
+class OutputsStack extends cdk.Stack {
+  constructor(parent, id, props) {
+    super(parent, id, props);
+
+    const topic =  new sns.Topic(this, 'MyOutput', {
+      topicName: 'MyTopic'
+    });
+
+    new cdk.CfnOutput(this, 'TopicName', {
+      value: topic.topicName
+    })
+  }
+}
+
 class IamStack extends cdk.Stack {
   constructor(parent, id, props) {
     super(parent, id, props);
@@ -208,6 +222,8 @@ new YourStack(app, `${stackPrefix}-test-2`);
 // Deploy wildcard with parameters does ${stackPrefix}-param-test-*
 new ParameterStack(app, `${stackPrefix}-param-test-1`);
 new OtherParameterStack(app, `${stackPrefix}-param-test-2`);
+// Deploy stack with outputs does ${stackPrefix}-outputs-test-*
+new OutputsStack(app, `${stackPrefix}-outputs-test-1`);
 // Not included in wildcard
 new IamStack(app, `${stackPrefix}-iam-test`);
 const providing = new ProvidingStack(app, `${stackPrefix}-order-providing`);
