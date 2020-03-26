@@ -2,7 +2,7 @@ import * as batch from '@aws-cdk/aws-batch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import { Duration, Stack, Token } from '@aws-cdk/core';
+import { Duration, Stack, Token, withResolved } from '@aws-cdk/core';
 import { getResourceArn } from './resource-arn-suffix';
 
 /**
@@ -191,10 +191,11 @@ export class RunBatchJob implements sfn.IStepFunctionsTask {
     }
 
     // validate arraySize limits
-    if (props.arraySize !== undefined && !Token.isUnresolved(props.arraySize) &&
-      (props.arraySize < 2 || props.arraySize > 10_000)) {
-      throw new Error(`arraySize must be between 2 and 10,000. Received ${props.arraySize}.`);
-    }
+    withResolved(props.arraySize, (arraySize) => {
+      if (arraySize !== undefined && (arraySize < 2 || arraySize > 10_000)) {
+        throw new Error(`arraySize must be between 2 and 10,000. Received ${arraySize}.`);
+      }
+    });
 
     // validate dependency size
     if (props.dependsOn && props.dependsOn.length > 20) {
@@ -202,10 +203,11 @@ export class RunBatchJob implements sfn.IStepFunctionsTask {
     }
 
     // validate attempts
-    if (props.attempts !== undefined && !Token.isUnresolved(props.attempts) &&
-      (props.attempts < 1 || props.attempts > 10)) {
-      throw new Error(`attempts must be between 1 and 10. Received ${props.attempts}.`);
-    }
+    withResolved(props.attempts, (attempts) => {
+      if (attempts !== undefined && (attempts < 1 || attempts > 10)) {
+        throw new Error(`attempts must be between 1 and 10. Received ${props.attempts}.`);
+      }
+    });
 
     // validate timeout
     if (props.timeout !== undefined && !Token.isUnresolved(props.timeout.toSeconds()) &&
