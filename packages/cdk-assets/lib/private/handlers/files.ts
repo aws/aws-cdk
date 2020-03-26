@@ -25,14 +25,16 @@ export class FileAssetHandler implements IAssetHandler {
     const s3 = await this.host.aws.s3Client(destination);
     this.host.emitMessage(EventType.CHECK, `Check ${s3Url}`);
 
-    const account = await this.host.aws.discoverCurrentAccount();
+    // A thunk for describing the current account. Used when we need to format an error
+    // message, not in the success case.
+    const account = async () => (await this.host.aws.discoverCurrentAccount())?.accountId;
     switch (await bucketOwnership(s3, destination.bucketName)) {
       case BucketOwnership.MINE:
         break;
       case BucketOwnership.DOES_NOT_EXIST:
-        throw new Error(`No bucket named '${destination.bucketName}'. Is account ${account} bootstrapped?`);
+        throw new Error(`No bucket named '${destination.bucketName}'. Is account ${await account()} bootstrapped?`);
       case BucketOwnership.SOMEONE_ELSES_OR_NO_ACCESS:
-        throw new Error(`Bucket named '${destination.bucketName}' exists, but not in account ${account}. Wrong account?`);
+        throw new Error(`Bucket named '${destination.bucketName}' exists, but not in account ${await account()}. Wrong account?`);
     }
 
     if (await objectExists(s3, destination.bucketName, destination.objectKey)) {
