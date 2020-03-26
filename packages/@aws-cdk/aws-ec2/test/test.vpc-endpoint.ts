@@ -309,6 +309,24 @@ export = {
 
       test.done();
     },
+    'with existing security groups for efs'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VpcNetwork');
+
+      // WHEN
+      vpc.addInterfaceEndpoint('Efs', {
+        service: InterfaceVpcEndpointAwsService.ELASTIC_FILESYSTEM,
+        securityGroups: [SecurityGroup.fromSecurityGroupId(stack, 'SG', 'existing-id')]
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::EC2::VPCEndpoint', {
+        SecurityGroupIds: ['existing-id'],
+      }));
+
+      test.done();
+    },
     'security group has ingress by default'(test: Test) {
       // GIVEN
       const stack = new Stack();

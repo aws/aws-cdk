@@ -438,6 +438,7 @@ Alternatively, existing security groups can be used by specifying the `securityG
 
 ## VPC endpoint services
 A VPC endpoint service enables you to expose a Network Load Balancer(s) as a provider service to consumers, who connect to your service over a VPC endpoint. You can restrict access to your service via whitelisted principals (anything that extends ArnPrincipal), and require that new connections be manually accepted.
+
 ```ts
 new VpcEndpointService(this, "EndpointService", {
   vpcEndpointServiceLoadBalancers: [networkLoadBalancer1, networkLoadBalancer2],
