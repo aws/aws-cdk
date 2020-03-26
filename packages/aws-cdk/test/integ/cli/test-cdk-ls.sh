@@ -16,6 +16,7 @@ ${STACK_NAME_PREFIX}-lambda
 ${STACK_NAME_PREFIX}-missing-ssm-parameter
 ${STACK_NAME_PREFIX}-order-providing
 ${STACK_NAME_PREFIX}-outputs-test-1
+${STACK_NAME_PREFIX}-outputs-test-2
 ${STACK_NAME_PREFIX}-param-test-1
 ${STACK_NAME_PREFIX}-param-test-2
 ${STACK_NAME_PREFIX}-test-1
