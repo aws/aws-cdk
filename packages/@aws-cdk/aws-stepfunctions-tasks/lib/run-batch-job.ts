@@ -2,7 +2,7 @@ import * as batch from '@aws-cdk/aws-batch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import { Duration, Stack, Token, withResolved } from '@aws-cdk/core';
+import { Duration, Stack, withResolved } from '@aws-cdk/core';
 import { getResourceArn } from './resource-arn-suffix';
 
 /**
@@ -205,15 +205,17 @@ export class RunBatchJob implements sfn.IStepFunctionsTask {
     // validate attempts
     withResolved(props.attempts, (attempts) => {
       if (attempts !== undefined && (attempts < 1 || attempts > 10)) {
-        throw new Error(`attempts must be between 1 and 10. Received ${props.attempts}.`);
+        throw new Error(`attempts must be between 1 and 10. Received ${attempts}.`);
       }
     });
 
     // validate timeout
-    if (props.timeout !== undefined && !Token.isUnresolved(props.timeout.toSeconds()) &&
-      props.timeout.toSeconds() < 60) {
-      throw new Error(`timeout must be greater than 60 seconds. Received ${props.timeout.toSeconds()} seconds.`);
-    }
+    // tslint:disable-next-line:no-unused-expression
+    props.timeout !== undefined && withResolved(props.timeout.toSeconds(), (timeout) => {
+      if (timeout < 60) {
+        throw new Error(`timeout must be greater than 60 seconds. Received ${timeout} seconds.`);
+      }
+    });
 
     // This is reuqired since environment variables must not start with AWS_BATCH;
     // this naming convention is reserved for variables that are set by the AWS Batch service.
