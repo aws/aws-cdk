@@ -5,7 +5,8 @@
   "bin": {
     "rewrite-imports": "bin/rewrite-imports"
   },
-  "main": "bin/rewrite-imports.js",
+  "main": "lib/rewrite.js",
+  "types": "lib/rewrite.d.ts",
   "scripts": {
     "build": "cdk-build",
     "watch": "cdk-watch",
