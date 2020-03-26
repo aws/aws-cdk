@@ -5,11 +5,12 @@ import { StackStatus } from './cloudformation/stack-status';
 
 export type Template = {
   Parameters?: Record<string, TemplateParameter>;
-  [key: string]: any
+  [key: string]: any;
 };
 
 interface TemplateParameter {
   Default?: any;
+  [key: string]: any;
 }
 
 /**
@@ -36,7 +37,7 @@ export class CloudFormationStack {
   protected constructor(private readonly cfn: CloudFormation, public readonly stackName: string, private readonly stack?: CloudFormation.Stack) {
   }
 
-  public async template() {
+  public async template(): Promise<Template> {
     if (this._template === undefined) {
       const response = await this.cfn.getTemplate({ StackName: this.stackName, TemplateStage: 'Original' }).promise();
       this._template = (response.TemplateBody && deserializeStructure(response.TemplateBody)) || {};
@@ -72,6 +73,13 @@ export class CloudFormationStack {
   public get tags(): CloudFormation.Tags {
     this.assertExists();
     return this.stack!.Tags || [];
+  }
+
+  /**
+   * Return the names of all parameters
+   */
+  public get parameterNames(): string[] {
+    return this.exists ? (this.stack!.Parameters || []).map(p => p.ParameterKey!) : [];
   }
 
   private assertExists() {
@@ -201,4 +209,43 @@ export async function waitForStack(cfn: CloudFormation,
     }
     return stack;
   });
+}
+
+export class TemplateParameters {
+  public static fromTemplate(template: Template) {
+    return new TemplateParameters(template.Parameters || {});
+  }
+
+  constructor(private readonly params: Record<string, TemplateParameter>) {
+  }
+
+  /**
+   * Return the set of CloudFormation parameters to pass to the CreateStack or UpdateStack API
+   *
+   * Will take into account parameters already set on the template (will emit
+   * 'UsePreviousValue: true' for those unless the value is changed), and will
+   * throw if parameters without a Default value or a Previous value are not
+   * supplied.
+   */
+  public makeApiParameters(updates: Record<string, string | undefined>, prevParams: string[]): CloudFormation.Parameter[] {
+    const missingRequired = new Array<string>();
+
+    const ret: CloudFormation.Parameter[] = [];
+    for (const [key, param] of Object.entries(this.params)) {
+
+      if (key in updates && updates[key]) {
+        ret.push({ ParameterKey: key, ParameterValue: updates[key] });
+      } else if (prevParams.includes(key)) {
+        ret.push({ ParameterKey: key, UsePreviousValue: true });
+      } else if (param.Default === undefined) {
+        missingRequired.push(key);
+      }
+    }
+
+    if (missingRequired.length > 0) {
+      throw new Error(`The following CloudFormation Parameters are missing a value: ${missingRequired.join(', ')}`);
+    }
+
+    return ret;
+  }
 }

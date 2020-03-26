@@ -10,7 +10,7 @@ import { publishAssets } from '../util/asset-publishing';
 import { contentHash } from '../util/content-hash';
 import { ISDK, SdkProvider } from './aws-auth';
 import { ToolkitInfo } from './toolkit-info';
-import { changeSetHasNoChanges, CloudFormationStack, waitForChangeSet, waitForStack  } from './util/cloudformation';
+import { changeSetHasNoChanges, CloudFormationStack, TemplateParameters, waitForChangeSet, waitForStack  } from './util/cloudformation';
 import { StackActivityMonitor } from './util/cloudformation/stack-activity-monitor';
 
 type TemplateBodyParameter = {
@@ -52,9 +52,14 @@ export interface DeployStackOptions {
   /**
    * SDK provider (seeded with default credentials)
    *
-   * Will be used by asset publishing to assume publishing credentials
-   * (which must start out from current credentials regardless of whether
-   * we've assumed a role to touch the stack or not)
+   * Will exclusively be used to assume publishing credentials (which must
+   * start out from current credentials regardless of whether we've assumed an
+   * action role to touch the stack or not).
+   *
+   * Used for the following purposes:
+   *
+   * - Publish legacy assets.
+   * - Upload large CloudFormation templates to the staging bucket.
    */
   sdkProvider: SdkProvider;
 
@@ -162,23 +167,19 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     }
   }
 
-  const assets = new AssetManifestBuilder();
+  // Detect "legacy" assets (which remain in the metadata) and publish them via
+  // an ad-hoc asset manifest, while passing their locations via template
+  // parameters.
+  const legacyAssets = new AssetManifestBuilder();
+  const assetParams = await addMetadataAssetsToManifest(stackArtifact, legacyAssets, options.toolkitInfo, options.reuseAssets);
 
-  const params = await addMetadataAssetsToManifest(stackArtifact, assets, options.toolkitInfo, options.reuseAssets);
-
-  // add passed CloudFormation parameters
-  for (const [paramName, paramValue] of Object.entries((options.parameters || {}))) {
-    if (paramValue) {
-      params.push({
-        ParameterKey: paramName,
-        ParameterValue: paramValue,
-      });
-    }
-  }
+  const apiParameters = TemplateParameters.fromTemplate(stackArtifact.template).makeApiParameters({
+    ...options.parameters,
+    ...assetParams,
+  }, cloudFormationStack.parameterNames);
 
   const executionId = uuid.v4();
-
-  const bodyParameter = await makeBodyParameter(stackArtifact, options.resolvedEnvironment, assets, options.toolkitInfo);
+  const bodyParameter = await makeBodyParameter(stackArtifact, options.resolvedEnvironment, legacyAssets, options.toolkitInfo);
 
   if (cloudFormationStack.stackStatus.isCreationFailure) {
     debug(`Found existing stack ${deployName} that had previously failed creation. Deleting it before attempting to re-create it.`);
@@ -189,7 +190,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     }
   }
 
-  await publishAssets(assets.toManifest(stackArtifact.assembly.directory), options.sdkProvider, stackEnv);
+  await publishAssets(legacyAssets.toManifest(stackArtifact.assembly.directory), options.sdkProvider, stackEnv);
 
   const changeSetName = `CDK-${executionId}`;
   const update = cloudFormationStack.exists;
@@ -203,7 +204,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     Description: `CDK Changeset for execution ${executionId}`,
     TemplateBody: bodyParameter.TemplateBody,
     TemplateURL: bodyParameter.TemplateURL,
-    Parameters: params,
+    Parameters: apiParameters,
     RoleARN: options.roleArn,
     NotificationARNs: options.notificationArns,
     Capabilities: [ 'CAPABILITY_IAM', 'CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND' ],
