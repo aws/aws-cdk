@@ -162,6 +162,57 @@ $ cdk deploy --parameters "ParametersStack:TopicNameParam=blahagain" --force
 
 ⚠️ Parameters do not propagate to NestedStacks. These must be sent with the constructor. See Nested Stack [documentation](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-cloudformation.NestedStack.html)
 
+##### Outputs
+
+Write stack outputs from deployments into a file. When your stack finishes deploying, all stack outputs will be written to the output file as JSON.
+
+Usage of output in a CDK stack
+```typescript
+const fn = new lambda.Function(this, "fn", {
+      handler: "index.handler",
+      code: lambda.Code.fromInline(`exports.handler = \${handler.toString()}`),
+      runtime: lambda.Runtime.NODEJS_10_X
+    });
+
+    new cdk.CfnOutput(this, 'FunctionArn', {
+      value: fn.functionArn,
+    });
+```
+
+Specify an outputs file to write to by supplying the `--outputs-path` parameter
+
+```console
+$ cdk deploy --outputs-path "/Users/code/myproject/outputs.json"
+```
+
+When the stack finishes deployment, `outputs.json` would look like
+```json
+{
+  "MyStack": {
+    "FunctionArn": "arn:aws:lambda:us-east-1:123456789012:function:MyStack-fn5FF616E3-G632ITHSP5HK"
+  }
+}
+```
+
+If multiple stacks are being deployed or the wild card `*` is used to deploy all stacks, all outputs are written to the same output file where each Stack is a key in the JSON file
+
+
+```console
+$ cdk deploy '*' --outputs-path "/Users/code/myproject/outputs.json"
+```
+
+Example `outputs.json` after deployment of multiple stacks
+```json
+{
+  "MyStack": {
+    "FunctionArn": "arn:aws:lambda:us-east-1:123456789012:function:MyStack-fn5FF616E3-G632ITHSP5HK"
+  },
+  "AnotherStack": {
+    "VPCId": "vpc-z0mg270fee16693f"
+  }  
+}
+```
+
 #### `cdk destroy`
 Deletes a stack from it's environment. This will cause the resources in the stack to be destroyed (unless they were
 configured with a `DeletionPolicy` of `Retain`). During the stack destruction, the command will output progress
