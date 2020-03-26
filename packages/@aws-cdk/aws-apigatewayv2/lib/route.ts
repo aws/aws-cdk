@@ -1,7 +1,7 @@
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Construct, IResource, Resource } from '@aws-cdk/core';
 import * as apigatewayv2 from '../lib';
-import { IIntegration } from './integration';
+import { IIntegration, Integration } from './integration';
 
 /**
  * the interface of the Route of API Gateway HTTP API
@@ -46,6 +46,11 @@ export interface IRouteBase extends IRoute {
    * add a child route with Lambda integration for this parent route
    */
   addLambdaRoute(pathPart: string, id: string, options: LambdaRouteOptions): Route;
+
+  /**
+   * add a child route with integration resource for this parent route
+   */
+  addRoutes(pathPart: string, id: string, options: RouteOptions): Route[];
 }
 
 /**
@@ -90,6 +95,28 @@ export interface LambdaRouteOptions {
    * @default HttpMethod.ANY
    */
   readonly integrationMethod?: HttpMethod;
+}
+
+/**
+ * Options for the Route with Integration resoruce
+ */
+export interface RouteOptions {
+  /**
+   * HTTP methods
+   * @default HttpMethod.ANY
+   */
+  readonly methods?: HttpMethod[]
+
+  /**
+   * Integration method
+   * @default HttpMethod.ANY
+   */
+  readonly integrationMethod?: HttpMethod;
+
+  /**
+   * Integration
+   */
+  readonly integration: Integration;
 }
 
 /**
@@ -250,6 +277,23 @@ export class Route extends Resource implements IRouteBase {
   }
 
   /**
+   * create child routes
+   */
+  public addRoutes(pathPart: string, id: string, options: RouteOptions): Route[] {
+    const routes: Route[] = [];
+    const methods = options.methods ?? [ HttpMethod.ANY ];
+    for (const m of methods) {
+      routes.push(new Route(this, `${id}${m}`, {
+        api: this.api,
+        integration: options.integration,
+        httpMethod: m,
+        httpPath: pathPart
+      }));
+    }
+    return routes;
+  }
+
+  /**
    * create a child route with Lambda proxy integration
    */
   public addLambdaRoute(pathPart: string, id: string, options: LambdaRouteOptions): Route {
@@ -283,10 +327,10 @@ export class Route extends Resource implements IRouteBase {
     });
   }
 
-  /**
-   * add integration for this route
-   */
-  public addIntegration(integration:IIntegration): Route {
-    
-  }
+  // /**
+  //  * add integration for this route
+  //  */
+  // public addIntegration(integration:IIntegration): Route {
+
+  // }
 }

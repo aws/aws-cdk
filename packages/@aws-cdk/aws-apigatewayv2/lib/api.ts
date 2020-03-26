@@ -3,7 +3,7 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import { Construct, IResource, Resource, Stack,  } from '@aws-cdk/core';
 import { CfnApi, CfnApiProps,  HttpRouteOptions, IRouteBase, LambdaRouteOptions, Route  } from '../lib';
 import { IIntegration, Integration, IntegrationProps } from './integration';
-import { HttpMethod, RouteProps } from './route';
+import { HttpMethod, RouteOptions } from './route';
 
 /**
  * the HTTP API interface
@@ -115,6 +115,23 @@ export class HttpApi extends Resource implements IHttpApi {
       httpMethod
     });
     return this.root;
+  }
+
+  /**
+   * add routes on this API
+   */
+  public addRoutes(pathPart: string, id: string, options: RouteOptions): Route[] {
+    const routes: Route[] = [];
+    const methods = options.methods ?? [ HttpMethod.ANY ];
+    for (const m of methods) {
+      routes.push(new Route(this, `${id}${m}`, {
+        api: this,
+        integration: options.integration,
+        httpMethod: m,
+        httpPath: pathPart
+      }));
+    }
+    return routes;
   }
 
   /**
