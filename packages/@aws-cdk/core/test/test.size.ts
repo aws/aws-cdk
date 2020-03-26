@@ -28,7 +28,7 @@ export = {
     test.equal(size.toGibibytes(), 4_096);
     test.equal(size.toTebibytes(), 4);
     test.throws(() => size.toPebibytes(), /'4294967296 kibibytes' cannot be converted into a whole number/);
-    floatEqual(test, size.toPebibytes({ rounding: SizeRoundingBehavior.FALSE }), 4_294_967_296 / (1024 * 1024 * 1024 * 1024));
+    floatEqual(test, size.toPebibytes({ rounding: SizeRoundingBehavior.NONE }), 4_294_967_296 / (1024 * 1024 * 1024 * 1024));
 
     test.equal(Size.kibibytes(4 * 1024 * 1024).toGibibytes(), 4);
 
@@ -43,7 +43,7 @@ export = {
     test.equal(size.toGibibytes(), 4_096);
     test.equal(size.toTebibytes(), 4);
     test.throws(() => size.toPebibytes(), /'4194304 mebibytes' cannot be converted into a whole number/);
-    floatEqual(test, size.toPebibytes({ rounding: SizeRoundingBehavior.FALSE }), 4_194_304 / (1024 * 1024 * 1024));
+    floatEqual(test, size.toPebibytes({ rounding: SizeRoundingBehavior.NONE }), 4_194_304 / (1024 * 1024 * 1024));
 
     test.equal(Size.mebibytes(4 * 1024).toGibibytes(), 4);
 
@@ -57,9 +57,9 @@ export = {
     test.equal(size.toMebibytes(), 5_120);
     test.equal(size.toGibibytes(), 5);
     test.throws(() => size.toTebibytes(), /'5 gibibytes' cannot be converted into a whole number/);
-    floatEqual(test, size.toTebibytes({ rounding: SizeRoundingBehavior.FALSE }), 5 / 1024);
+    floatEqual(test, size.toTebibytes({ rounding: SizeRoundingBehavior.NONE }), 5 / 1024);
     test.throws(() => size.toPebibytes(), /'5 gibibytes' cannot be converted into a whole number/);
-    floatEqual(test, size.toPebibytes({ rounding: SizeRoundingBehavior.FALSE }), 5 / (1024 * 1024));
+    floatEqual(test, size.toPebibytes({ rounding: SizeRoundingBehavior.NONE }), 5 / (1024 * 1024));
 
     test.equal(Size.gibibytes(4096).toTebibytes(), 4);
 
@@ -74,7 +74,7 @@ export = {
     test.equal(size.toGibibytes(), 5_120);
     test.equal(size.toTebibytes(), 5);
     test.throws(() => size.toPebibytes(), /'5 tebibytes' cannot be converted into a whole number/);
-    floatEqual(test, size.toPebibytes({ rounding: SizeRoundingBehavior.FALSE }), 5 / 1024);
+    floatEqual(test, size.toPebibytes({ rounding: SizeRoundingBehavior.NONE }), 5 / 1024);
 
     test.equal(Size.tebibytes(4096).toPebibytes(), 4);
 
@@ -103,9 +103,9 @@ export = {
     test.equals(size.toTebibytes({ rounding: SizeRoundingBehavior.FLOOR }), 0);
     floatEqual(test, size.toKibibytes({ rounding: SizeRoundingBehavior.FLOOR }), 5_324_800);
 
-    test.equals(size.toGibibytes({ rounding: SizeRoundingBehavior.FALSE}), 5.078125);
-    test.equals(size.toTebibytes({ rounding: SizeRoundingBehavior.FALSE}), 5200 / (1024 * 1024));
-    test.equals(size.toKibibytes({ rounding: SizeRoundingBehavior.FALSE}), 5_324_800);
+    test.equals(size.toGibibytes({ rounding: SizeRoundingBehavior.NONE}), 5.078125);
+    test.equals(size.toTebibytes({ rounding: SizeRoundingBehavior.NONE}), 5200 / (1024 * 1024));
+    test.equals(size.toKibibytes({ rounding: SizeRoundingBehavior.NONE}), 5_324_800);
 
     test.done();
   }

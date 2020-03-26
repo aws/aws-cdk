@@ -102,10 +102,11 @@ export class Size {
 export enum SizeRoundingBehavior {
   /** Fail the conversion if the result is not an integer. */
   FAIL,
-  /** Don't round. Return even if the result is a fraction. */
-  FALSE,
   /** If the result is not an integer, round it to the closest integer less than the result */
   FLOOR,
+  /** Don't round. Return even if the result is a fraction. */
+  NONE,
+
 }
 
 /**
@@ -146,7 +147,7 @@ function convert(amount: number, fromUnit: StorageUnit, toUnit: StorageUnit, opt
   const multiplier = fromUnit.inKibiBytes / toUnit.inKibiBytes;
   const value = amount * multiplier;
   switch (rounding) {
-    case SizeRoundingBehavior.FALSE:
+    case SizeRoundingBehavior.NONE:
       return value;
     case SizeRoundingBehavior.FLOOR:
       return Math.floor(value);
