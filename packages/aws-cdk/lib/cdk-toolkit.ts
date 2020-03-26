@@ -100,10 +100,10 @@ export class CdkToolkit {
       }
     }
 
-    const outputsPath = options.outputsPath;
-    if (outputsPath) {
-      fs.ensureFileSync(outputsPath);
-      fs.writeJSONSync(outputsPath, {}, {encoding: 'utf8'});
+    const outputsFile = options.outputsFile;
+    if (outputsFile) {
+      fs.ensureFileSync(outputsFile);
+      fs.writeJSON(outputsFile, {}, {encoding: 'utf8'});
     }
 
     for (const stack of stacks) {
@@ -177,11 +177,11 @@ export class CdkToolkit {
         if (Object.keys(result.outputs).length > 0) {
           print('\nOutputs:');
 
-          if (outputsPath) {
-            const outputs = fs.readJSONSync(outputsPath);
+          if (outputsFile) {
+            const outputs = fs.readJSONSync(outputsFile);
             outputs[stack.stackName] = result.outputs;
 
-            fs.writeJsonSync(outputsPath, outputs, {
+            fs.writeJsonSync(outputsFile, outputs, {
               spaces: 2,
               encoding: 'utf8'
             });
@@ -358,7 +358,7 @@ export interface DeployOptions {
    * Path to file where stack outputs will be written after a successful deploy as JSON
    * @default - Outputs are not written to any file
    */
-  outputsPath?: string;
+  outputsFile?: string;
 }
 
 export interface DestroyOptions {

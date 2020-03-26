@@ -179,10 +179,10 @@ const fn = new lambda.Function(this, "fn", {
     });
 ```
 
-Specify an outputs file to write to by supplying the `--outputs-path` parameter
+Specify an outputs file to write to by supplying the `--outputs-file` parameter
 
 ```console
-$ cdk deploy --outputs-path "/Users/code/myproject/outputs.json"
+$ cdk deploy --outputs-file "/Users/code/myproject/outputs.json"
 ```
 
 When the stack finishes deployment, `outputs.json` would look like
@@ -198,7 +198,7 @@ If multiple stacks are being deployed or the wild card `*` is used to deploy all
 
 
 ```console
-$ cdk deploy '*' --outputs-path "/Users/code/myproject/outputs.json"
+$ cdk deploy '*' --outputs-file "/Users/code/myproject/outputs.json"
 ```
 
 Example `outputs.json` after deployment of multiple stacks
