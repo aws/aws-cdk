@@ -67,7 +67,7 @@ export = {
     });
 
     // WHEN
-    const ipTarget = new elbv2.IpTarget("10.10.12.12", 80, "us-east-1a");
+    const ipTarget = new elbv2.IpTarget("10.10.12.12");
     listener.addTargets("TargetGroup", {
       targets: [ipTarget],
       port: 80,
@@ -83,17 +83,16 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AAWS::ElasticLoadBalancingV2::TargetGroup', {
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
       HealthCheckEnabled : true,
       HealthCheckIntervalSeconds : 255,
       HealthCheckPath : "/arbitrary",
-      HealthCheckPort : "80",
-      HealthCheckProtocol : "HTTP",
       HealthCheckTimeoutSeconds : 192,
       HealthyThresholdCount : 29,
       Matcher : {
         HttpCode : "255"
       },
+      Port: 80,
       UnhealthyThresholdCount : 27,
       }));
 
