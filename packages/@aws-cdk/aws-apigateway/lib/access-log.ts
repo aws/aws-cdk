@@ -455,49 +455,40 @@ export interface AccessLogFormatProps {
 export interface IJsonWithStandardFieldProps {
   /**
    * If this flag is enabled, $context.identity.sourceIp will be output to the log
-   * @default true
    */
-  ip?: boolean,
+  ip: boolean,
   /**
    * If this flag is enabled, $context.identity.caller will be output to the log
-   * @default true
    */
-  caller?: boolean,
+  caller: boolean,
   /**
    * If this flag is enabled, $context.identity.user will be output to the log
-   * @default true
    */
-  user?: boolean,
+  user: boolean,
   /**
    * If this flag is enabled, $context.requestTime will be output to the log
-   * @default true
    */
-  requestTime?: boolean,
+  requestTime: boolean,
   /**
    * If this flag is enabled, $context.httpMethod will be output to the log
-   * @default true
    */
-  httpMethod?: boolean,
+  httpMethod: boolean,
   /**
    * If this flag is enabled, $context.resourcePath will be output to the log
-   * @default true
    */
-  resourcePath?: boolean,
+  resourcePath: boolean,
   /**
    * If this flag is enabled, $context.status will be output to the log
-   * @default true
    */
-  status?: boolean,
+  status: boolean,
   /**
    * If this flag is enabled, $context.protocol will be output to the log
-   * @default true
    */
-  protocol?: boolean,
+  protocol: boolean,
   /**
    * If this flag is enabled, $context.responseLength will be output to the log
-   * @default true
    */
-  responseLength?: boolean
+  responseLength: boolean
 }
 
 /**
@@ -516,32 +507,32 @@ ${AccessLogField.contextStatus()} ${AccessLogField.contextResponseLength()} ${Ac
   }
 
   /**
-   * Generate standard json log format.
+   * Generate standard json log format.)
    */
   public static jsonWithStandardFields(
-    {
-      ip = true,
-      caller = true,
-      user = true,
-      requestTime = true,
-      httpMethod = true,
-      resourcePath= true,
-      status = true,
-      protocol = true,
-      responseLength = true
-    }: IJsonWithStandardFieldProps = {}): AccessLogFormatProps {
+    fields: IJsonWithStandardFieldProps = {
+      ip: true,
+      user: true,
+      caller: true,
+      requestTime: true,
+      httpMethod: true,
+      resourcePath: true,
+      status: true,
+      protocol: true,
+      responseLength: true
+    }): AccessLogFormatProps {
     return {
       format: JSON.stringify({
         requestId: AccessLogField.contextRequestId(),
-        ip: ip ? AccessLogField.contextIdentitySourceIp() : undefined,
-        caller: caller ? AccessLogField.contextIdentityCaller() : undefined,
-        user: user ? AccessLogField.contextIdentityUser() : undefined,
-        requestTime: requestTime ? AccessLogField.contextRequestTime() : undefined,
-        httpMethod: httpMethod ? AccessLogField.contextHttpMethod() : undefined,
-        resourcePath: resourcePath ? AccessLogField.contextResourcePath() : undefined,
-        status: status ? AccessLogField.contextStatus() : undefined,
-        protocol: protocol ? AccessLogField.contextProtocol() : undefined,
-        responseLength: responseLength ? AccessLogField.contextResponseLength() : undefined
+        ip: fields.ip ? AccessLogField.contextIdentitySourceIp() : undefined,
+        user: fields.user ? AccessLogField.contextIdentityUser() : undefined,
+        caller: fields.caller ? AccessLogField.contextIdentityCaller() : undefined,
+        requestTime: fields.requestTime ? AccessLogField.contextRequestTime() : undefined,
+        httpMethod: fields.httpMethod ? AccessLogField.contextHttpMethod() : undefined,
+        resourcePath: fields.resourcePath ? AccessLogField.contextResourcePath() : undefined,
+        status: fields.status ? AccessLogField.contextStatus() : undefined,
+        protocol: fields.protocol ? AccessLogField.contextProtocol() : undefined,
+        responseLength: fields.responseLength ? AccessLogField.contextResponseLength() : undefined
       })
     };
   }

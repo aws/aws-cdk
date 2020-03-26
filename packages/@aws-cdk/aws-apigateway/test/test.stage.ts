@@ -288,7 +288,17 @@ export = {
 
     // WHEN
     const testLogGroup = new logs.LogGroup(stack, 'LogGroup');
-    const testFormat = apigateway.AccessLogFormat.jsonWithStandardFields({caller: false});
+    const testFormat = apigateway.AccessLogFormat.jsonWithStandardFields({
+      caller: false,
+      httpMethod: true,
+      ip: true,
+      protocol: true,
+      requestTime: true,
+      resourcePath: true,
+      responseLength: true,
+      status: true,
+      user: true
+    });
     new apigateway.Stage(stack, 'my-stage', {
       deployment,
       accessLogDestination: new apigateway.LogGroupLogDestination(testLogGroup),
@@ -370,7 +380,7 @@ export = {
             'Arn'
           ]
         },
-        Format: "{\"requestId\":\"$context.requestId\",\"ip\":\"$context.identity.sourceIp\",\"caller\":\"$context.identity.caller\",\"user\":\"$context.identity.user\",\"requestTime\":\"$context.requestTime\",\"httpMethod\":\"$context.httpMethod\",\"resourcePath\":\"$context.resourcePath\",\"status\":\"$context.status\",\"protocol\":\"$context.protocol\",\"responseLength\":\"$context.responseLength\"}"
+        Format: "{\"requestId\":\"$context.requestId\",\"ip\":\"$context.identity.sourceIp\",\"user\":\"$context.identity.user\",\"caller\":\"$context.identity.caller\",\"requestTime\":\"$context.requestTime\",\"httpMethod\":\"$context.httpMethod\",\"resourcePath\":\"$context.resourcePath\",\"status\":\"$context.status\",\"protocol\":\"$context.protocol\",\"responseLength\":\"$context.responseLength\"}"
       },
       StageName: "prod"
     }));
