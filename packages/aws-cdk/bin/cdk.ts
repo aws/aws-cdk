@@ -71,6 +71,7 @@ async function parseCommandLineArguments() {
       .option('execute', { type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)', default: true })
       .option('force', { alias: 'f', type: 'boolean', desc: 'Always deploy stack even if templates are identical', default: false })
       .option('parameters', { type: 'array', desc: 'Additional parameters passed to CloudFormation at deploy time (STACK:KEY=VALUE)', nargs: 1, requiresArg: true, default: {} })
+      .option('outputs-path', { type: 'string', desc: 'Path to file where stack outputs will be written as JSON', requiresArg: true })
     )
     .command('destroy [STACKS..]', 'Destroy the stack(s) named STACKS', yargs => yargs
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only destroy requested stacks, don\'t include dependees' })
@@ -238,7 +239,8 @@ async function initCommandLine() {
           sdk: aws,
           execute: args.execute,
           force: args.force,
-          parameters: parameterMap
+          parameters: parameterMap,
+          outputsPath: args.outputsPath
         });
 
       case 'destroy':
