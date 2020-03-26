@@ -63,49 +63,60 @@ export class Size {
   /**
    * Return this storage as a total number of kibibytes.
    */
-  public toKibibytes(opts: StorageConversionOptions = {}): number {
+  public toKibibytes(opts: SizeConversionOptions = {}): number {
     return convert(this.amount, this.unit, StorageUnit.Kibibytes, opts);
   }
 
   /**
    * Return this storage as a total number of mebibytes.
    */
-  public toMebibytes(opts: StorageConversionOptions = {}): number {
+  public toMebibytes(opts: SizeConversionOptions = {}): number {
     return convert(this.amount, this.unit, StorageUnit.Mebibytes, opts);
   }
 
   /**
    * Return this storage as a total number of gibibytes.
    */
-  public toGibibytes(opts: StorageConversionOptions = {}): number {
+  public toGibibytes(opts: SizeConversionOptions = {}): number {
     return convert(this.amount, this.unit, StorageUnit.Gibibytes, opts);
   }
 
   /**
    * Return this storage as a total number of tebibytes.
    */
-  public toTebibytes(opts: StorageConversionOptions = {}): number {
+  public toTebibytes(opts: SizeConversionOptions = {}): number {
     return convert(this.amount, this.unit, StorageUnit.Tebibytes, opts);
   }
 
   /**
    * Return this storage as a total number of pebibytes.
    */
-  public toPebibytes(opts: StorageConversionOptions = {}): number {
+  public toPebibytes(opts: SizeConversionOptions = {}): number {
     return convert(this.amount, this.unit, StorageUnit.Pebibytes, opts);
   }
 }
 
 /**
+ * Rouding behaviour when converting between units of `Size`.
+ */
+export enum SizeRoundingBehavior {
+  /** Fail the conversion if the result is not an integer. */
+  FAIL,
+  /** Don't round. Return even if the result is a fraction. */
+  FALSE,
+  /** If the result is not an integer, round it to the closest integer less than the result */
+  FLOOR,
+}
+
+/**
  * Options for how to convert time to a different unit.
  */
-export interface StorageConversionOptions {
+export interface SizeConversionOptions {
   /**
-   * If `true`, conversions into a larger storage units (e.g. `Kibibytes` to `Mebibytes`) will fail if the result is not
-   * an integer.
-   * @default true
+   * How conversions should behave when it encounters a non-integer result
+   * @default SizeRoundingBehavior.FAIL
    */
-  readonly integral?: boolean;
+  readonly rounding?: SizeRoundingBehavior;
 }
 
 class StorageUnit {
@@ -125,7 +136,8 @@ class StorageUnit {
   }
 }
 
-function convert(amount: number, fromUnit: StorageUnit, toUnit: StorageUnit, { integral = true }: StorageConversionOptions) {
+function convert(amount: number, fromUnit: StorageUnit, toUnit: StorageUnit, options: SizeConversionOptions = {}) {
+  const rounding = options.rounding ?? SizeRoundingBehavior.FAIL;
   if (fromUnit.inKibiBytes === toUnit.inKibiBytes) { return amount; }
   if (Token.isUnresolved(amount)) {
     throw new Error(`Unable to perform time unit conversion on un-resolved token ${amount}.`);
@@ -133,8 +145,16 @@ function convert(amount: number, fromUnit: StorageUnit, toUnit: StorageUnit, { i
 
   const multiplier = fromUnit.inKibiBytes / toUnit.inKibiBytes;
   const value = amount * multiplier;
-  if (!Number.isInteger(value) && integral) {
-    throw new Error(`'${amount} ${fromUnit}' cannot be converted into a whole number of ${toUnit}.`);
+  switch (rounding) {
+    case SizeRoundingBehavior.FALSE:
+      return value;
+    case SizeRoundingBehavior.FLOOR:
+      return Math.floor(value);
+    default:
+    case SizeRoundingBehavior.FAIL:
+      if (!Number.isInteger(value)) {
+        throw new Error(`'${amount} ${fromUnit}' cannot be converted into a whole number of ${toUnit}.`);
+      }
+      return value;
   }
-  return value;
 }
