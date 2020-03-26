@@ -250,7 +250,7 @@ abstract class RepositoryBase extends Resource implements IRepository {
     return this.grant(grantee,
       'codecommit:EvaluatePullRequestApprovalRules',
       'codecommit:Get*',
-      'codecommit:Describe*'
+      'codecommit:Describe*',
     );
   }
 }
