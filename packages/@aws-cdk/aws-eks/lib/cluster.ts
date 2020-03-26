@@ -10,6 +10,7 @@ import { FargateProfile, FargateProfileOptions } from './fargate-profile';
 import { HelmChart, HelmChartOptions } from './helm-chart';
 import { KubernetesPatch } from './k8s-patch';
 import { KubernetesResource } from './k8s-resource';
+import { Nodegroup, NodegroupOptions  } from './managed-nodegroup';
 import { spotInterruptHandler } from './spot-interrupt-handler';
 import { renderUserData } from './user-data';
 
@@ -239,6 +240,13 @@ export interface ClusterProps extends ClusterOptions {
    * @default m5.large
    */
   readonly defaultCapacityInstance?: ec2.InstanceType;
+
+  /**
+   * The default capacity type for the cluster.
+   *
+   * @default NODEGROUP
+   */
+  readonly defaultCapacityType?: DefaultCapacityType
 }
 
 /**
@@ -310,9 +318,17 @@ export class Cluster extends Resource implements ICluster {
 
   /**
    * The auto scaling group that hosts the default capacity for this cluster.
-   * This will be `undefined` if the default capacity is set to 0.
+   * This will be `undefined` if the `defaultCapacityType` is not `EC2` or
+   * `defaultCapacityType` is `EC2` but default capacity is set to 0.
    */
   public readonly defaultCapacity?: autoscaling.AutoScalingGroup;
+
+  /**
+   * The node group that hosts the default capacity for this cluster.
+   * This will be `undefined` if the `defaultCapacityType` is `EC2` or
+   * `defaultCapacityType` is `NODEGROUP` but default capacity is set to 0.
+   */
+  public readonly defaultNodegroup?: Nodegroup;
 
   /**
    * If this cluster is kubectl-enabled, returns the `ClusterResource` object
@@ -422,7 +438,11 @@ export class Cluster extends Resource implements ICluster {
     const minCapacity = props.defaultCapacity === undefined ? DEFAULT_CAPACITY_COUNT : props.defaultCapacity;
     if (minCapacity > 0) {
       const instanceType = props.defaultCapacityInstance || DEFAULT_CAPACITY_TYPE;
-      this.defaultCapacity = this.addCapacity('DefaultCapacity', { instanceType, minCapacity });
+      this.defaultCapacity = props.defaultCapacityType === DefaultCapacityType.EC2 ?
+      this.addCapacity('DefaultCapacity', { instanceType, minCapacity }) : undefined;
+
+      this.defaultNodegroup = props.defaultCapacityType !== DefaultCapacityType.EC2 ?
+      this.addNodegroup('DefaultCapacity', { instanceType, minSize: minCapacity } ) : undefined;
     }
 
     const outputConfigCommand = props.outputConfigCommand === undefined ? true : props.outputConfigCommand;
@@ -468,6 +488,24 @@ export class Cluster extends Resource implements ICluster {
     });
 
     return asg;
+  }
+
+  /**
+   * Add managed nodegroup to this Amazon EKS cluster
+   *
+   * This method will create a new managed nodegroup and add into the capacity.
+   *
+   * @see https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html
+   * @param id The ID of the nodegroup
+   * @param options options for creating a new nodegroup
+   */
+  public addNodegroup(id: string, options?: NodegroupOptions): Nodegroup {
+    // initialize the awsAuth for this cluster
+    this._awsAuth = this._awsAuth ?? this.awsAuth;
+    return new Nodegroup(this, `Nodegroup${id}`, {
+      cluster: this,
+      ...options,
+    });
   }
 
   /**
@@ -933,6 +971,20 @@ export enum CoreDnsComputeType {
    * Deploy CoreDNS on Fargate-managed instances.
    */
   FARGATE = 'fargate'
+}
+
+/**
+ * The default capacity type for the cluster
+ */
+export enum DefaultCapacityType {
+  /**
+   * managed node group
+   */
+  NODEGROUP,
+  /**
+   * EC2 autoscaling group
+   */
+  EC2
 }
 
 const GPU_INSTANCETYPES = ['p2', 'p3', 'g4'];

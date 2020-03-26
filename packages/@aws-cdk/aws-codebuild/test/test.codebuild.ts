@@ -303,7 +303,7 @@ export = {
           path: 'path/to/source.zip',
         }),
         environment: {
-          buildImage: codebuild.WindowsBuildImage.WIN_SERVER_CORE_2016_BASE,
+          buildImage: codebuild.WindowsBuildImage.WINDOWS_BASE_2_0,
         },
       });
 
@@ -442,7 +442,7 @@ export = {
           },
           "Environment": {
             "ComputeType": "BUILD_GENERAL1_MEDIUM",
-            "Image": "aws/codebuild/windows-base:1.0",
+            "Image": "aws/codebuild/windows-base:2.0",
             "PrivilegedMode": false,
             "Type": "WINDOWS_CONTAINER"
           },
@@ -930,6 +930,78 @@ export = {
     },
   },
 
+  'fileSystemLocations': {
+    'create fileSystemLocation and validate attributes'(test: Test) {
+      const stack = new cdk.Stack();
+      new codebuild.Project(stack, 'MyProject', {
+        buildSpec: codebuild.BuildSpec.fromObject({
+          version: '0.2',
+        }),
+        fileSystemLocations: [codebuild.FileSystemLocation.efs({
+          identifier: "myidentifier2",
+          location: "myclodation.mydnsroot.com:/loc",
+          mountPoint: "/media",
+          mountOptions: "opts"
+        })]
+      });
+
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        "FileSystemLocations": [
+          {
+            "Identifier": "myidentifier2",
+            "MountPoint": "/media",
+            "MountOptions": "opts",
+            "Location": "myclodation.mydnsroot.com:/loc",
+            "Type": "EFS"
+          },
+        ],
+      }));
+
+      test.done();
+    },
+    'Multiple fileSystemLocation created'(test: Test) {
+      const stack = new cdk.Stack();
+      const project = new codebuild.Project(stack, 'MyProject', {
+        buildSpec: codebuild.BuildSpec.fromObject({
+          version: '0.2',
+        }),
+        fileSystemLocations: [codebuild.FileSystemLocation.efs({
+          identifier: "myidentifier2",
+          location: "myclodation.mydnsroot.com:/loc",
+          mountPoint: "/media",
+          mountOptions: "opts"
+        })]
+      });
+      project.addFileSystemLocation(codebuild.FileSystemLocation.efs({
+        identifier: "myidentifier3",
+        location: "myclodation.mydnsroot.com:/loc",
+        mountPoint: "/media",
+        mountOptions: "opts"
+      }));
+
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        "FileSystemLocations": [
+          {
+            "Identifier": "myidentifier2",
+            "MountPoint": "/media",
+            "MountOptions": "opts",
+            "Location": "myclodation.mydnsroot.com:/loc",
+            "Type": "EFS"
+          },
+          {
+            "Identifier": "myidentifier3",
+            "MountPoint": "/media",
+            "MountOptions": "opts",
+            "Location": "myclodation.mydnsroot.com:/loc",
+            "Type": "EFS"
+          }
+        ],
+      }));
+
+      test.done();
+    }
+  },
+
   'secondary artifacts': {
     'require providing an identifier when creating a Project'(test: Test) {
       const stack = new cdk.Stack();
@@ -1280,7 +1352,7 @@ export = {
   'using ComputeType.Small with a Windows image fails validation'(test: Test) {
     const stack = new cdk.Stack();
     const invalidEnvironment: codebuild.BuildEnvironment = {
-      buildImage: codebuild.WindowsBuildImage.WIN_SERVER_CORE_2016_BASE,
+      buildImage: codebuild.WindowsBuildImage.WINDOWS_BASE_2_0,
       computeType: codebuild.ComputeType.SMALL,
     };
 
