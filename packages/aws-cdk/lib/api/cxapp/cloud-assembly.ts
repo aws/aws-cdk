@@ -238,7 +238,6 @@ export interface MetadataMessageOptions {
    * @default false
    */
   strict?: boolean;
-
 }
 
 /**

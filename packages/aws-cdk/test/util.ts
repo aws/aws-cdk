@@ -38,7 +38,7 @@ export class MockCloudExecutable extends CloudExecutable {
   }
 }
 
-export function testAssembly(assembly: TestAssembly): cxapi.CloudAssembly {
+function testAssembly(assembly: TestAssembly): cxapi.CloudAssembly {
   const builder = new cxapi.CloudAssemblyBuilder();
 
   for (const stack of assembly.stacks) {
@@ -46,7 +46,6 @@ export function testAssembly(assembly: TestAssembly): cxapi.CloudAssembly {
     fs.writeFileSync(path.join(builder.outdir, templateFile), JSON.stringify(stack.template, undefined, 2));
 
     const metadata: { [path: string]: cxapi.MetadataEntry[] } = { ...stack.metadata };
-
     for (const asset of stack.assets || []) {
       metadata[asset.id] = [
         { type: cxapi.ASSET_METADATA, data: asset }

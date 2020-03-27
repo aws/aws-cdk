@@ -65,8 +65,8 @@ export interface CdkToolkitProps {
 /**
  * Toolkit logic
  *
- * The toolkit takes CDK app models from the `appStacks`
- * object and applies them to the `provisioner`.
+ * The toolkit runs the `cloudExecutable` to obtain a cloud assembly and
+ * deploys applies them to `cloudFormation`.
  */
 export class CdkToolkit {
   constructor(private readonly props: CdkToolkitProps) {
