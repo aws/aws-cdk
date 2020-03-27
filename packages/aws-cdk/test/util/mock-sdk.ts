@@ -133,7 +133,7 @@ type AwsCallInputOutput<T> =
 type MockHandlerType<AI extends [any, any]> = (input: AI[0]) => AI[1];
 
 // Any subset of the full type that synchronously returns the output structure is okay
-type SyncHandlerSubsetOf<S> = {[K in keyof S]?: MockHandlerType<AwsCallInputOutput<S[K]>>};
+export type SyncHandlerSubsetOf<S> = {[K in keyof S]?: MockHandlerType<AwsCallInputOutput<S[K]>>};
 
 /**
  * Fake AWS response.
