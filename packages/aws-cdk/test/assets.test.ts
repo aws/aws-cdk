@@ -5,7 +5,7 @@ import { addMetadataAssetsToManifest } from '../lib/assets';
 import { AssetManifestBuilder } from '../lib/util/asset-manifest-builder';
 import { publishAssets } from '../lib/util/asset-publishing';
 import { testStack } from './util';
-import { MockSDK, errorWithCode } from './util/mock-sdk';
+import { errorWithCode, MockSDK } from './util/mock-sdk';
 
 let toolkit: ToolkitInfo;
 let assets: AssetManifestBuilder;
