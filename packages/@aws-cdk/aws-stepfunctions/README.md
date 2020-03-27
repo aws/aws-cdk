@@ -139,6 +139,7 @@ couple of the tasks available are:
 * `tasks.SagemakerTransformTask` -- run a SageMaker transform job
 * `tasks.StartExecution` -- call StartExecution to a state machine of Step Functions
 * `tasks.EvaluateExpression` -- evaluate an expression referencing state paths
+* `tasks.CallDynamoDB` -- call GetItem, PutItem, DeleteItem and UpdateItem APIs of DynamoDB
 
 Except `tasks.InvokeActivity` and `tasks.InvokeFunction`, the [service integration
 pattern](https://docs.aws.amazon.com/step-functions/latest/dg/connect-to-resource.html)
@@ -426,6 +427,87 @@ The `EvaluateExpression` supports a `runtime` prop to specify the Lambda
 runtime to use to evaluate the expression. Currently, the only runtime
 supported is `lambda.Runtime.NODEJS_10_X`.
 
+#### DynamoDB example
+
+```ts
+const TABLE_NAME = 'Messages';
+const MESSAGE_ID = `1234`;
+const firstNumber = 18;
+const secondNumber = 24;
+
+const putItemTask = new sfn.Task(this, 'PutItem', {
+  task: tasks.CallDynamoDB.putItem({
+    item: {
+      MessageId: new tasks.AttributeValue().addS(MESSAGE_ID),
+      Text: new tasks.AttributeValue().addS(sfn.Data.stringAt('$.bar')),
+      TotalCount: new tasks.AttributeValue().addN(`${firstNumber}`)
+    },
+    tableName: TABLE_NAME
+  })
+});
+
+const getItemTaskAfterPut = new sfn.Task(this, 'GetItemAfterPut', {
+  task: tasks.CallDynamoDB.getItem({
+    partitionKey: {
+      name: 'MessageId',
+      value: new tasks.AttributeValue().addS(MESSAGE_ID)
+    },
+    tableName: TABLE_NAME
+  })
+});
+
+const updateItemTask = new sfn.Task(this, 'UpdateItem', {
+  task: tasks.CallDynamoDB.updateItem({
+    partitionKey: {
+      name: 'MessageId',
+      value: new tasks.AttributeValue().addS(MESSAGE_ID)
+    },
+    tableName: TABLE_NAME,
+    expressionAttributeValues: {
+      ':val': new tasks.AttributeValue().addN(
+        sfn.Data.stringAt('$.Item.TotalCount.N')
+      ),
+      ':rand': new tasks.AttributeValue().addN(`${secondNumber}`)
+    },
+    updateExpression: 'SET TotalCount = :val + :rand'
+  })
+});
+
+const getItemTaskAfterUpdate = new sfn.Task(this, 'GetItemAfterUpdate', {
+  task: tasks.CallDynamoDB.getItem({
+    partitionKey: {
+      name: 'MessageId',
+      value: new tasks.AttributeValue().addS(MESSAGE_ID)
+    },
+    tableName: TABLE_NAME
+  }),
+  outputPath: sfn.Data.stringAt('$.Item.TotalCount.N')
+});
+
+const deleteItemTask = new sfn.Task(this, 'DeleteItem', {
+  task: tasks.CallDynamoDB.deleteItem({
+    partitionKey: {
+      name: 'MessageId',
+      value: new tasks.AttributeValue().addS(MESSAGE_ID)
+    },
+    tableName: TABLE_NAME
+  }),
+  resultPath: 'DISCARD'
+});
+
+const definition = new sfn.Pass(this, 'Start', {
+  result: sfn.Result.fromObject({ bar: 'SomeValue' })
+})
+  .next(putItemTask)
+  .next(getItemTaskAfterPut)
+  .next(updateItemTask)
+  .next(getItemTaskAfterUpdate)
+  .next(deleteItemTask);
+
+const stateMachine = new sfn.StateMachine(this, 'StateMachine', {
+  definition
+});
+```
 
 ### Pass
 
