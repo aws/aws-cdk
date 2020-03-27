@@ -112,6 +112,10 @@ export class Deployment extends Resource {
        * falling back to declaring dependencies between the underlying CfnResources.
        */
       this.api.methods.map(m => m.node.defaultChild as CfnResource).forEach(m => this.resource.addDependsOn(m));
+
+      // Add CfnRestApi to the logical id so a new deployment is triggered when any of its properties change.
+      const cfnRestApiCF = (this.api.node.defaultChild as any)._toCloudFormation();
+      this.addToLogicalId(Stack.of(this).resolve(cfnRestApiCF));
     }
   }
 }

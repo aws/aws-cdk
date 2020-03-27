@@ -148,15 +148,17 @@ export = {
 
     // the logical ID changed
     const template = synthesize();
-    test.ok(!template.Resources.deployment33381975, 'old resource id deleted');
-    test.ok(template.Resources.deployment33381975427670fa9e4148dc851927485bdf36a5, 'new resource is created');
+    test.ok(!template.Resources.deployment33381975, 'old resource id is not deleted');
+    test.ok(template.Resources.deployment333819754913e5d14215ddb190cc8ff7a2a47b13,
+      `new resource deployment333819754913e5d14215ddb190cc8ff7a2a47b13 is not created, instead found ${Object.keys(template.Resources)}`);
 
     // tokens supported, and are resolved upon synthesis
     const value = 'hello hello';
     deployment.addToLogicalId({ foo: Lazy.stringValue({ produce: () => value }) });
 
     const template2 = synthesize();
-    test.ok(template2.Resources.deployment33381975a12dfe81474913364dc31c06e37f9449);
+    test.ok(template2.Resources.deployment33381975d74746a66ff539755f98d6d2b36c0a4d,
+      `resource deployment33381975d74746a66ff539755f98d6d2b36c0a4d not found, instead found ${Object.keys(template2.Resources)}`);
 
     test.done();
 

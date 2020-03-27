@@ -1,6 +1,7 @@
 import { expect, haveResource, haveResourceLike, ResourcePart, SynthUtils } from '@aws-cdk/assert';
 import { GatewayVpcEndpoint } from '@aws-cdk/aws-ec2';
-import { App, CfnElement, CfnResource, Stack } from '@aws-cdk/core';
+import { Effect, PolicyDocument, PolicyStatement } from '@aws-cdk/aws-iam';
+import { App, CfnElement, CfnOutput, CfnResource, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as apigw from '../lib';
 
@@ -807,6 +808,59 @@ export = {
         }
       }
     });
+
+    test.done();
+  },
+
+  'logicalId of latestDeployment is affected by RestApi properties'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    function createRestApi(id: string, props?: apigw.RestApiProps) {
+      const api = new apigw.RestApi(stack, id, props);
+      api.root.addMethod('ANY');
+      new CfnOutput(stack, `Deploy${id}`, { value: api.latestDeployment!.deploymentId });
+    }
+
+    // WHEN
+    createRestApi('baseline');
+
+    createRestApi('withPolicy', {
+      policy: new PolicyDocument({
+        statements: [
+          new PolicyStatement({
+            effect: Effect.ALLOW,
+            actions: [ 'service:yyx' ],
+            resources: [ '*' ],
+          })
+        ]
+      })
+    });
+
+    createRestApi('endpointTpes', {
+      endpointTypes: [ apigw.EndpointType.EDGE ]
+    });
+
+    createRestApi('binaryMediaTypes', {
+      binaryMediaTypes: [ 'media-type-1' ]
+    });
+
+    createRestApi('parameters', {
+      parameters: {
+        'key-1': 'value-1'
+      }
+    });
+
+    const rawCfn = SynthUtils.toCloudFormation(stack);
+
+    const deploymentLogicalIds = Object.keys(rawCfn.Outputs)
+      .filter((output) => output.startsWith('Deploy'))
+      .map((output) => rawCfn.Outputs[output].Value.Ref);
+    test.equals(deploymentLogicalIds.length, 5);
+
+    // use a set to check if there are any duplicates
+    const deploymentLogicalIdsSet = new Set(deploymentLogicalIds);
+    test.equals(deploymentLogicalIds.length, deploymentLogicalIdsSet.size, 'Logical Ids did not mutate when expected');
 
     test.done();
   }
