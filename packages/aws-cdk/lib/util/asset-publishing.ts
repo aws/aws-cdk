@@ -8,6 +8,13 @@ import { debug, error, print } from '../logging';
  * Use cdk-assets to publish all assets in the given manifest.
  */
 export async function publishAssets(manifest: cdk_assets.AssetManifest, sdk: SdkProvider, targetEnv: cxapi.Environment) {
+  // This shouldn't really happen (it's a programming error), but we don't have
+  // the types here to guide us. Do an runtime validation to be super super sure.
+  if (targetEnv.account === undefined || targetEnv.account === cxapi.UNKNOWN_ACCOUNT
+    || targetEnv.region === undefined || targetEnv.account === cxapi.UNKNOWN_REGION) {
+    throw new Error(`Asset publishing requires resolved account and region, got ${JSON.stringify(targetEnv)}`);
+  }
+
   const publisher = new cdk_assets.AssetPublishing(manifest, {
     aws: new PublishingAws(sdk, targetEnv),
     progressListener: new PublishingProgressListener(),
@@ -33,15 +40,21 @@ class PublishingAws implements cdk_assets.IAws {
   }
 
   public async discoverDefaultRegion(): Promise<string> {
-    return this.aws.defaultRegion;
+    return this.targetEnv.region;
   }
 
   public async discoverCurrentAccount(): Promise<cdk_assets.Account> {
-    const account = await this.aws.defaultAccount();
-    if (!account) {
-      throw new Error('AWS credentials are required to upload assets. Please configure environment variables or ~/.aws/credentials.');
+    // Discover the current partition given current credentials. We already
+    // have the target environment, but it doesn't contain the partition yet.
+    //
+    // Until it does, we need to do a lookup here.
+    const sts = (await this.sdk({})).sts();
+    const response = await sts.getCallerIdentity().promise();
+    if (!response.Arn) {
+      throw new Error(`Unexpected STS response: ${JSON.stringify(response)}`);
     }
-    return account;
+    const partition = response.Arn!.split(':')[1];
+    return { accountId: this.targetEnv.account, partition };
   }
 
   public async s3Client(options: cdk_assets.ClientOptions): Promise<AWS.S3> {

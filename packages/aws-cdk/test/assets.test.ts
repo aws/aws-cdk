@@ -1,8 +1,11 @@
 import { AssetMetadataEntry } from '@aws-cdk/cx-api';
+import { AssetManifest } from 'cdk-assets';
 import { ToolkitInfo } from '../lib';
 import { addMetadataAssetsToManifest } from '../lib/assets';
 import { AssetManifestBuilder } from '../lib/util/asset-manifest-builder';
+import { publishAssets } from '../lib/util/asset-publishing';
 import { testStack } from './util';
+import { MockSDK } from './util/mock-sdk';
 
 let toolkit: ToolkitInfo;
 let assets: AssetManifestBuilder;
@@ -216,6 +219,29 @@ describe('docker assets', () => {
 
     expect(assets.toManifest('.').entries).toEqual([]);
   });
+});
+
+test('publishing does not fail if there is no "default" account', () => {
+  // GIVEN
+  const manifest = new AssetManifest('.', {
+    version: '0',
+    files: {
+      assetId: {
+        source: { path: __filename },
+        destinations: {
+          theDestination: {
+            bucketName: '${AWS::AccountId}-bucket',
+            objectKey: 'key',
+          },
+        }
+      },
+    },
+  });
+  const provider = new MockSDK();
+  provider.defaultAccount = jest.fn(() => Promise.resolve(undefined));
+
+  // WHEN
+  publishAssets(manifest, provider, { account: '12345678', region: 'aa-south-1', name: 'main' });
 });
 
 function stackWithAssets(assetEntries: AssetMetadataEntry[]) {
