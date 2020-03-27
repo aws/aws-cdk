@@ -52,5 +52,33 @@ export = {
     }));
 
     test.done();
+  },
+
+  'Add an additional parameter to an existing parameter group'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const clusterParameterGroup = new ClusterParameterGroup(stack, 'Params', {
+      family: 'hello',
+      description: 'desc',
+      parameters: {
+        key1: 'value1'
+      }
+    });
+
+    clusterParameterGroup.addParameter('key2', 'value2');
+
+    // THEN
+    expect(stack).to(haveResource('AWS::RDS::DBClusterParameterGroup', {
+      Description: 'desc',
+      Family: 'hello',
+      Parameters: {
+        key1: 'value1',
+        key2: 'value2'
+      }
+    }));
+
+    test.done();
   }
 };
