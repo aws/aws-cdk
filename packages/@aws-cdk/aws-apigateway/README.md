@@ -546,6 +546,41 @@ const api = new apigateway.RestApi(this, 'books', {
 })
 ```
 
+You can use the `methodOptions` property to configure
+[default method throttling](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-request-throttling.html#apigateway-api-level-throttling-in-usage-plan)
+for a stage. The following snippet configures the a stage that accepts
+100 requests per minute, allowing burst up to 200 requests per minute.
+
+```ts
+const api = new apigateway.RestApi(this, 'books');
+const deployment = new apigateway.Deployment(this, 'my-deployment', { api });
+const stage = new apigateway.Stage(this, 'my-stage', {
+  deployment,
+  methodOptions: {
+    '/*/*': {  // This special path applies to all resource paths and all HTTP methods
+      throttlingRateLimit: 100,
+      throttlingBurstLimit: 200
+    }
+  }
+});
+```
+
+Configuring `methodOptions` on the `deployOptions` of `RestApi` will set the
+throttling behaviors on the default stage that is automatically created.
+
+```ts
+const api = new apigateway.RestApi(this, 'books', {
+  deployOptions: {
+    methodOptions: {
+      '/*/*': {  // This special path applies to all resource paths and all HTTP methods
+        throttlingRateLimit: 100,
+        throttlingBurstLimit: 1000
+      }
+    }
+  }
+});
+```
+
 #### Deeper dive: invalidation of deployments
 
 API Gateway deployments are an immutable snapshot of the API. This means that we
