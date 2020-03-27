@@ -253,6 +253,10 @@ export class RestApi extends Resource implements IRestApi {
 
     this.configureDeployment(props);
 
+    if (this._latestDeployment && (props.endpointTypes || props.endpointConfiguration)) {
+      this._latestDeployment.addToLogicalId({ endpointConfiguration: resource.endpointConfiguration });
+    }
+
     const cloudWatchRole = props.cloudWatchRole !== undefined ? props.cloudWatchRole : true;
     if (cloudWatchRole) {
       this.configureCloudWatchRole(resource);
@@ -410,6 +414,16 @@ export class RestApi extends Resource implements IRestApi {
         api: this,
         retainDeployments: props.retainDeployments
       });
+
+      if (props.policy) { this._latestDeployment.addToLogicalId({ policy: props.policy }); }
+      if (props.minimumCompressionSize !== undefined) {
+        this._latestDeployment.addToLogicalId({ minimumCompressionSize: props.minimumCompressionSize});
+      }
+      if (props.binaryMediaTypes && props.binaryMediaTypes.length > 0) {
+        this._latestDeployment.addToLogicalId({ binaryMediaTypes: props.binaryMediaTypes });
+      }
+      if (props.apiKeySourceType) { this._latestDeployment.addToLogicalId({ apiKeySourceType: props.apiKeySourceType }); }
+      if (props.parameters) { this._latestDeployment.addToLogicalId({ parameters: props.parameters }); }
 
       // encode the stage name into the construct id, so if we change the stage name, it will recreate a new stage.
       // stage name is part of the endpoint, so that makes sense.
