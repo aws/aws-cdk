@@ -6,6 +6,7 @@ export * from './source-credentials';
 export * from './artifacts';
 export * from './cache';
 export * from './build-spec';
+export * from './file-location';
 
 // AWS::CodeBuild CloudFormation Resources:
 export * from './codebuild.generated';
