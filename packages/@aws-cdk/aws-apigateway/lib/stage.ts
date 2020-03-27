@@ -1,5 +1,5 @@
 import { Construct, Duration, Resource, Stack } from '@aws-cdk/core';
-import { AccessLogFormat, AccessLogFormatProps, IAccessLogDestination} from './access-log';
+import { AccessLogFormat, AccessLogOptions, IAccessLogDestination} from './access-log';
 import { CfnStage } from './apigateway.generated';
 import { Deployment } from './deployment';
 import { IRestApi } from './restapi';
@@ -28,7 +28,7 @@ export interface StageOptions extends MethodDeploymentOptions {
    *
    * @default - Common Log Format
    */
-  readonly accessLogFormat?: AccessLogFormatProps;
+  readonly accessLogFormat?: AccessLogOptions;
 
   /**
    * Specifies whether Amazon X-Ray tracing is enabled for this method.
@@ -184,7 +184,7 @@ export class Stage extends Resource {
   private enableCacheCluster?: boolean;
 
   private readonly accessLogDestination?: IAccessLogDestination;
-  private readonly accessLogFormat?: AccessLogFormatProps;
+  private readonly accessLogFormat?: AccessLogOptions;
 
   constructor(scope: Construct, id: string, props: StageProps) {
     super(scope, id);

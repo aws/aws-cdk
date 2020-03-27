@@ -442,7 +442,7 @@ export class AccessLogField {
 /**
  * A API Gateway custom access log format.
  */
-export interface AccessLogFormatProps {
+export interface AccessLogOptions {
   /**
    * A API Gateway custom access log format
    */
@@ -498,7 +498,7 @@ export class AccessLogFormat {
   /**
    * Generate Common Log Format.
    */
-  public static clf(): AccessLogFormatProps {
+  public static clf(): AccessLogOptions {
     return {
       format: `${AccessLogField.contextIdentitySourceIp()} ${AccessLogField.contextIdentityCaller()} ${AccessLogField.contextIdentityUser()} \
 [${AccessLogField.contextRequestTime()}] "${AccessLogField.contextHttpMethod()} ${AccessLogField.contextResourcePath()} ${AccessLogField.contextProtocol()}" \
@@ -507,7 +507,8 @@ ${AccessLogField.contextStatus()} ${AccessLogField.contextResponseLength()} ${Ac
   }
 
   /**
-   * Generate standard json log format.)
+   * Access log will be produced in the JSON format with a set of fields most useful in the
+   * access log. All fields are turned on by default with the option to turn off specific fields.
    */
   public static jsonWithStandardFields(
     fields: IJsonWithStandardFieldProps = {
@@ -520,7 +521,7 @@ ${AccessLogField.contextStatus()} ${AccessLogField.contextResponseLength()} ${Ac
       status: true,
       protocol: true,
       responseLength: true
-    }): AccessLogFormatProps {
+    }): AccessLogOptions {
     return {
       format: JSON.stringify({
         requestId: AccessLogField.contextRequestId(),
@@ -551,7 +552,7 @@ ${AccessLogField.contextStatus()} ${AccessLogField.contextResponseLength()} ${Ac
    *  }
    * }))
    */
-  public static custom(format: string): AccessLogFormatProps {
+  public static custom(format: string): AccessLogOptions {
     return {format};
   }
 }
