@@ -362,7 +362,7 @@ export class CdkToolkit {
       defaultBehavior: DefaultSelection.OnlySingle
     });
 
-    this.validateStacks(stacks);
+    await this.validateStacks(stacks);
 
     return stacks;
   }
@@ -374,7 +374,7 @@ export class CdkToolkit {
       defaultBehavior: DefaultSelection.AllStacks
     });
 
-    this.validateStacks(stacks);
+    await this.validateStacks(stacks);
 
     return stacks;
   }
