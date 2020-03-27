@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "build": "./clone.sh && cdk-build",
+    "build": "cdk-build",
     "watch": "cdk-watch",
     "lint": "cdk-lint",
     "test": "cdk-test",
@@ -15,6 +15,7 @@
     "build+test": "npm run build && npm test"
   },
   "cdk-build": {
+    "pre": [ "./clone.sh" ],
     "eslint": {
       "disable": true
     },
@@ -47,7 +48,7 @@
     "ts-jest": "^25.2.0",
     "@monocdk-experiment/rewrite-imports": "0.0.0",
     "monocdk-experiment": "0.0.0",
-    "constructs": "^1.1.2"
+    "constructs": "^2.0.0"
   },
   "dependencies": {
     "@aws-cdk/cloudformation-diff": "0.0.0"
@@ -55,7 +56,7 @@
   "peerDependencies": {
     "jest": "^24.9.0",
     "monocdk-experiment": "^0.0.0",
-    "constructs": "^1.1.0"
+    "constructs": "^2.0.0"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",

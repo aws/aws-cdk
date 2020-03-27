@@ -43,7 +43,7 @@ const submitJob = new sfn.Task(this, 'Submit Job', {
 });
 
 const waitX = new sfn.Wait(this, 'Wait X Seconds', {
-    duration: sfn.WaitTime.secondsPath('$.waitSeconds'),
+    time: sfn.WaitTime.secondsPath('$.waitSeconds'),
 });
 
 const getStatus = new sfn.Task(this, 'Get Job Status', {
@@ -111,13 +111,14 @@ This library comes with a set of classes that model the [Amazon States
 Language](https://states-language.net/spec.html). The following State classes
 are supported:
 
-* `Task`
-* `Pass`
-* `Wait`
-* `Choice`
-* `Parallel`
-* `Succeed`
-* `Fail`
+* [`Task`](#task)
+* [`Pass`](#pass)
+* [`Wait`](#wait)
+* [`Choice`](#choice)
+* [`Parallel`](#parallel)
+* [`Succeed`](#succeed)
+* [`Fail`](#fail)
+* [`Map`](#map)
 
 An arbitrary JSON object (specified at execution start) is passed from state to
 state and transformed during the execution of the workflow. For more
@@ -444,7 +445,7 @@ wait.next(startTheWork);
 
 ### Choice
 
-A `Choice` state can take a differen path through the workflow based on the
+A `Choice` state can take a different path through the workflow based on the
 values in the execution's JSON state:
 
 ```ts
@@ -519,6 +520,22 @@ const success = new stepfunctions.Fail(this, 'Fail', {
     error: 'WorkflowFailure',
     cause: "Something went wrong"
 });
+```
+
+### Map
+
+A `Map` state can be used to run a set of steps for each element of an input array.
+A `Map` state will execute the same steps for multiple entries of an array in the state input.
+
+While the `Parallel` state executes multiple branches of steps using the same input, a `Map` state will
+execute the same steps for multiple entries of an array in the state input.
+
+```ts
+const map = new stepfunctions.Map(this, 'Map State', {
+    maxConcurrency: 1,
+    itemsPath: stepfunctions.Data.stringAt('$.inputForMap')
+});
+map.iterator(new stepfunctions.Pass(this, 'Pass State'));
 ```
 
 ## Task Chaining
