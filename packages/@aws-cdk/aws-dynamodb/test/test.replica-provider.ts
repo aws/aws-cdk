@@ -22,13 +22,7 @@ const createEvent: OnEventRequest = {
 };
 
 export = {
-  'setUp'(callback: any) {
-    process.env.USE_NORMAL_SDK = 'true';
-    callback();
-  },
-
   'tearDown'(callback: any) {
-    delete process.env.USE_NORMAL_SDK;
     AWS.restore();
     callback();
   },
