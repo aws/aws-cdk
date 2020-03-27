@@ -322,6 +322,49 @@ export = {
     test.done();
   },
 
+  'if the custom log format is set(json) all false'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
+    const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
+    api.root.addMethod('GET');
+
+    // WHEN
+    const testLogGroup = new logs.LogGroup(stack, 'LogGroup');
+    const testFormat = apigateway.AccessLogFormat.jsonWithStandardFields({
+      caller: false,
+      httpMethod: false,
+      ip: false,
+      protocol: false,
+      requestTime: false,
+      resourcePath: false,
+      responseLength: false,
+      status: false,
+      user: false
+    });
+    new apigateway.Stage(stack, 'my-stage', {
+      deployment,
+      accessLogDestination: new apigateway.LogGroupLogDestination(testLogGroup),
+      accessLogFormat: testFormat
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::Stage', {
+      AccessLogSetting: {
+        DestinationArn: {
+          "Fn::GetAtt": [
+            "LogGroupF5B46931",
+            "Arn"
+          ]
+        },
+        Format: "{\"requestId\":\"$context.requestId\"}"
+      },
+      StageName: "prod"
+    }));
+
+    test.done();
+  },
+
   'if the custom log format is set(clf)'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
