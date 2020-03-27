@@ -1,3 +1,4 @@
+import { SecretRotationApplication } from '@aws-cdk/aws-secretsmanager';
 import { Test } from 'nodeunit';
 import { DatabaseClusterEngine } from '../lib';
 
@@ -76,6 +77,34 @@ export = {
 
     // THEN
     test.equals(family, 'aurora-postgresql11');
+
+    test.done();
+  },
+
+  'parameter group family'(test: Test) {
+    // WHEN
+    const engine1 = new DatabaseClusterEngine(
+      'no-parameter-group-family',
+      SecretRotationApplication.POSTGRES_ROTATION_SINGLE_USER,
+      SecretRotationApplication.POSTGRES_ROTATION_SINGLE_USER);
+    const engine2 = new DatabaseClusterEngine(
+      'aurora-postgresql',
+      SecretRotationApplication.POSTGRES_ROTATION_SINGLE_USER,
+      SecretRotationApplication.POSTGRES_ROTATION_SINGLE_USER,
+      [
+        { engineMajorVersion: '1.0', parameterGroupFamily: 'family-1'},
+        { engineMajorVersion: '2.0', parameterGroupFamily: 'family-2' },
+      ]);
+
+    // THEN
+    test.equals(engine1.parameterGroupFamily(), undefined);
+    test.equals(engine1.parameterGroupFamily('1'), undefined);
+
+    test.equals(engine2.parameterGroupFamily('3'), undefined);
+    test.equals(engine2.parameterGroupFamily('1'), undefined);
+    test.equals(engine2.parameterGroupFamily('1.1'), undefined);
+    test.equals(engine2.parameterGroupFamily('1.0'), 'family-1');
+    test.equals(engine2.parameterGroupFamily('2.0.2'), 'family-2');
 
     test.done();
   }

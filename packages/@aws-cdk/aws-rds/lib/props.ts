@@ -3,6 +3,7 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { Duration, SecretValue } from '@aws-cdk/core';
 import { IParameterGroup } from './parameter-group';
+import { compare } from './private/version';
 
 /**
  * Engine major version and parameter group family pairs.
@@ -55,29 +56,35 @@ export class DatabaseClusterEngine {
    */
   public readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
 
-  private readonly parameterGroupFamilies: ParameterGroupFamily[];
+  private readonly parameterGroupFamilies?: ParameterGroupFamily[];
 
   // tslint:disable-next-line max-line-length
   constructor(name: string, singleUserRotationApplication: secretsmanager.SecretRotationApplication, multiUserRotationApplication: secretsmanager.SecretRotationApplication, parameterGroupFamilies?: ParameterGroupFamily[]) {
     this.name = name;
     this.singleUserRotationApplication = singleUserRotationApplication;
     this.multiUserRotationApplication = multiUserRotationApplication;
-    this.parameterGroupFamilies = parameterGroupFamilies ? parameterGroupFamilies : [];
+    this.parameterGroupFamilies = parameterGroupFamilies;
   }
 
   /**
-   * Get this engine's parameter group family for a given major version.
+   * Get the latest parameter group family for this engine. Latest is determined using semver on the engine major version.
+   * When `engineVersion` is specified, return the parameter group family corresponding to that engine version.
+   * Return undefined if no parameter group family is defined for this engine or for the requested `engineVersion`.
    */
-  public parameterGroupFamily(engineMajorVersion?: string): string {
-    if (engineMajorVersion) {
-      const family = this.parameterGroupFamilies.find(x => engineMajorVersion.startsWith(x.engineMajorVersion));
+  public parameterGroupFamily(engineVersion?: string): string | undefined {
+    if (this.parameterGroupFamilies === undefined) { return undefined; }
+    if (engineVersion) {
+      const family = this.parameterGroupFamilies.find(x => engineVersion.startsWith(x.engineMajorVersion));
       if (family) {
         return family.parameterGroupFamily;
       }
     } else if (this.parameterGroupFamilies.length > 0) {
-      return this.parameterGroupFamilies[this.parameterGroupFamilies.length - 1].parameterGroupFamily;
+      const sorted = this.parameterGroupFamilies.slice().sort((a, b) => {
+        return compare(a.engineMajorVersion, b.engineMajorVersion);
+      }).reverse();
+      return sorted[0].parameterGroupFamily;
     }
-    throw new Error(`Parameter group family not found for database engine major version: ${engineMajorVersion}`);
+    return undefined;
   }
 }
 

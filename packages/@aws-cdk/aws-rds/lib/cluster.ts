@@ -412,8 +412,13 @@ export class DatabaseCluster extends DatabaseClusterBase {
       // MySQL requires the associated roles to be specified as cluster parameters as well, PostgreSQL does not
       if (props.engine === DatabaseClusterEngine.AURORA || props.engine === DatabaseClusterEngine.AURORA_MYSQL) {
         if (!clusterParameterGroup) {
+          const parameterGroupFamily = props.engine.parameterGroupFamily(props.engineVersion);
+          if (!parameterGroupFamily) {
+            throw new Error(`No parameter group family found for database engine ${props.engine.name} with version ${props.engineVersion}.` +
+              'Failed to set the correct cluster parameters for s3 import and export roles.');
+          }
           clusterParameterGroup = new ClusterParameterGroup(this, "ClusterParameterGroup", {
-            family: props.engine.parameterGroupFamily(props.engineVersion)
+            family: parameterGroupFamily,
           });
         }
 
