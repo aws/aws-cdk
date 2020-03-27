@@ -57,7 +57,7 @@ export class ContainerImageAssetHandler implements IAssetHandler {
 
     const source = this.asset.source;
 
-    const fullPath = path.join(this.workDir, source.directory);
+    const fullPath = path.resolve(this.workDir, source.directory);
     this.host.emitMessage(EventType.BUILD, `Building Docker image at ${fullPath}`);
 
     await this.docker.build({

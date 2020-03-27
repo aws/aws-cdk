@@ -70,7 +70,7 @@
     "@aws-cdk/aws-sns": "0.0.0",
     "@aws-cdk/aws-sqs": "0.0.0",
     "@types/nodeunit": "^0.0.30",
-    "aws-sdk": "^2.637.0",
+    "aws-sdk": "^2.646.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
@@ -90,7 +90,8 @@
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/aws-s3-assets": "0.0.0",
     "@aws-cdk/aws-secretsmanager": "0.0.0",
-    "@aws-cdk/core": "0.0.0"
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^2.0.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -106,7 +107,8 @@
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/aws-s3-assets": "0.0.0",
     "@aws-cdk/aws-secretsmanager": "0.0.0",
-    "@aws-cdk/core": "0.0.0"
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^2.0.0"
   },
   "engines": {
     "node": ">= 10.3.0"
@@ -174,7 +176,6 @@
       "docs-public-apis:@aws-cdk/aws-codebuild.Source.gitHubEnterprise",
       "docs-public-apis:@aws-cdk/aws-codebuild.Source.s3",
       "docs-public-apis:@aws-cdk/aws-codebuild.StateChangeEvent.currentPhase",
-      "docs-public-apis:@aws-cdk/aws-codebuild.WindowsBuildImage.WIN_SERVER_CORE_2016_BASE",
       "docs-public-apis:@aws-cdk/aws-codebuild.WindowsBuildImage.fromDockerRegistry",
       "docs-public-apis:@aws-cdk/aws-codebuild.WindowsBuildImage.fromEcrRepository",
       "props-default-doc:@aws-cdk/aws-codebuild.ArtifactsProps.identifier",
@@ -203,8 +204,14 @@
       "docs-public-apis:@aws-cdk/aws-codebuild.S3SourceProps.path",
       "docs-public-apis:@aws-cdk/aws-codebuild.SourceConfig.sourceProperty",
       "docs-public-apis:@aws-cdk/aws-codebuild.SourceConfig.buildTriggers",
-      "props-default-doc:@aws-cdk/aws-codebuild.SourceConfig.buildTriggers"
+      "props-default-doc:@aws-cdk/aws-codebuild.SourceConfig.buildTriggers",
+      "props-physical-name:@aws-cdk/aws-codebuild.BitBucketSourceCredentialsProps",
+      "props-physical-name:@aws-cdk/aws-codebuild.GitHubSourceCredentialsProps",
+      "props-physical-name:@aws-cdk/aws-codebuild.GitHubEnterpriseSourceCredentialsProps"
     ]
   },
-  "stability": "stable"
+  "stability": "stable",
+  "awscdkio": {
+    "announce": false
+  }
 }

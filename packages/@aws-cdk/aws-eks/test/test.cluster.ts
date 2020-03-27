@@ -4,6 +4,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as eks from '../lib';
+import { KubectlLayer } from '../lib/kubectl-layer';
 import { spotInterruptHandler } from '../lib/spot-interrupt-handler';
 import { testFixture, testFixtureNoVpc } from './util';
 
@@ -32,6 +33,49 @@ export = {
     test.done();
   },
 
+  'create custom cluster correctly in any aws region'(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'stack', { env: { region: 'us-east-1' } });
+
+    // WHEN
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: true, defaultCapacity: 0 });
+    const layer = KubectlLayer.getOrCreate(stack, {});
+
+    // THEN
+    expect(stack).to(haveResource('Custom::AWSCDK-EKS-Cluster'));
+    expect(stack).to(haveResourceLike('AWS::Serverless::Application', {
+      Location: {
+        ApplicationId: 'arn:aws:serverlessrepo:us-east-1:903779448426:applications/lambda-layer-kubectl',
+      }
+    }));
+    test.equal(layer.isChina(), false);
+    test.done();
+  },
+
+  'create custom cluster correctly in any aws region in china'(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'stack', { env: { region: 'cn-north-1' } });
+
+    // WHEN
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: true, defaultCapacity: 0 });
+    new KubectlLayer(stack, 'NewLayer');
+    const layer = KubectlLayer.getOrCreate(stack);
+
+    // THEN
+    expect(stack).to(haveResource('Custom::AWSCDK-EKS-Cluster'));
+    expect(stack).to(haveResourceLike('AWS::Serverless::Application', {
+      Location:  {
+        ApplicationId: 'arn:aws-cn:serverlessrepo:cn-north-1:487369736442:applications/lambda-layer-kubectl',
+      }
+    }));
+    test.equal(layer.isChina(), true);
+    test.done();
+  },
+
   'if "vpc" is not specified, vpc with default configuration will be created'(test: Test) {
     // GIVEN
     const { stack } = testFixtureNoVpc();
@@ -53,10 +97,18 @@ export = {
       // WHEN
       const cluster = new eks.Cluster(stack, 'cluster');
 
-      // THEN
-      test.ok(cluster.defaultCapacity);
-      expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', { MinSize: '2', MaxSize: '2' }));
-      expect(stack).to(haveResource('AWS::AutoScaling::LaunchConfiguration', { InstanceType: 'm5.large' }));
+     // THEN
+      test.ok(cluster.defaultNodegroup);
+      expect(stack).to(haveResource('AWS::EKS::Nodegroup', {
+        InstanceTypes: [
+          "m5.large"
+        ],
+        ScalingConfig: {
+          DesiredSize: 2,
+          MaxSize: 2,
+          MinSize: 2
+        }
+      }));
       test.done();
     },
 
@@ -71,9 +123,15 @@ export = {
       });
 
       // THEN
-      test.ok(cluster.defaultCapacity);
-      expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', { MinSize: '10', MaxSize: '10' }));
-      expect(stack).to(haveResource('AWS::AutoScaling::LaunchConfiguration', { InstanceType: 'm2.xlarge' }));
+      test.ok(cluster.defaultNodegroup);
+      expect(stack).to(haveResource('AWS::EKS::Nodegroup', {
+        ScalingConfig: {
+          DesiredSize: 10,
+          MaxSize: 10,
+          MinSize: 10
+        }
+      }));
+      // expect(stack).to(haveResource('AWS::AutoScaling::LaunchConfiguration', { InstanceType: 'm2.xlarge' }));
       test.done();
     },
 
@@ -421,28 +479,6 @@ export = {
       test.done();
     },
 
-    'when adding capacity, instance role ARN will not be outputed only if we do not auto-map aws-auth'(test: Test) {
-      // GIVEN
-      const { app, stack } = testFixtureNoVpc();
-
-      // WHEN
-      new eks.Cluster(stack, 'Cluster', {
-        outputConfigCommand: false,
-        kubectlEnabled: false
-      });
-
-      // THEN
-      const assembly = app.synth();
-      const template = assembly.getStackByName(stack.stackName).template;
-      test.deepEqual(template.Outputs, {
-        ClusterDefaultCapacityInstanceRoleARN7DADF219: {
-          Value: { 'Fn::GetAtt': [ 'ClusterDefaultCapacityInstanceRole3E209969', 'Arn' ] }
-        }
-      });
-      test.done();
-    },
-  },
-
   'boostrap user-data': {
 
     'rendered by default for ASGs'(test: Test) {
@@ -569,14 +605,15 @@ export = {
       test.done();
   },
 
-  'EKS-Optimized AMI with GPU support'(test: Test) {
+  'EKS-Optimized AMI with GPU support when addCapacity'(test: Test) {
     // GIVEN
     const { app, stack } = testFixtureNoVpc();
 
     // WHEN
     new eks.Cluster(stack, 'cluster', {
-      defaultCapacity: 2,
-      defaultCapacityInstance: new ec2.InstanceType('g4dn.xlarge'),
+      defaultCapacity: 0,
+    }).addCapacity('GPUCapacity', {
+      instanceType: new ec2.InstanceType('g4dn.xlarge'),
     });
 
     // THEN
@@ -904,4 +941,4 @@ export = {
     }));
     test.done();
   }
-};
+}};

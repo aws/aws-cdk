@@ -57,17 +57,6 @@
       "docs-public-apis:@aws-cdk/core.ConstructNode.root",
       "docs-public-apis:@aws-cdk/core.ContextProvider.getKey",
       "docs-public-apis:@aws-cdk/core.ContextProvider.getValue",
-      "docs-public-apis:@aws-cdk/core.Duration.days",
-      "docs-public-apis:@aws-cdk/core.Duration.hours",
-      "docs-public-apis:@aws-cdk/core.Duration.millis",
-      "docs-public-apis:@aws-cdk/core.Duration.minutes",
-      "docs-public-apis:@aws-cdk/core.Duration.seconds",
-      "docs-public-apis:@aws-cdk/core.Duration.toDays",
-      "docs-public-apis:@aws-cdk/core.Duration.toHours",
-      "docs-public-apis:@aws-cdk/core.Duration.toISOString",
-      "docs-public-apis:@aws-cdk/core.Duration.toMilliseconds",
-      "docs-public-apis:@aws-cdk/core.Duration.toMinutes",
-      "docs-public-apis:@aws-cdk/core.Duration.toSeconds",
       "docs-public-apis:@aws-cdk/core.Lazy.anyValue",
       "docs-public-apis:@aws-cdk/core.Lazy.listValue",
       "docs-public-apis:@aws-cdk/core.Lazy.numberValue",
@@ -159,15 +148,20 @@
   },
   "dependencies": {
     "@aws-cdk/cx-api": "0.0.0",
-    "@aws-cdk/cdk-assets-schema": "0.0.0"
+    "@aws-cdk/cdk-assets-schema": "0.0.0",
+    "constructs": "^2.0.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/cx-api": "0.0.0",
+    "constructs": "^2.0.0",
     "@aws-cdk/cdk-assets-schema": "0.0.0"
   },
   "engines": {
     "node": ">= 10.3.0"
   },
-  "stability": "stable"
+  "stability": "stable",
+  "awscdkio": {
+    "announce": false
+  }
 }
