@@ -165,11 +165,11 @@
     "@aws-cdk/custom-resources": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
-    "fs-extra": "^9.0.0",
+    "fs-extra": "^8.1.0",
     "jsii-reflect": "^1.1.0",
     "jsonschema": "^1.2.5",
     "constructs": "^2.0.0",
-    "yaml": "1.8.2",
+    "yaml": "1.8.3",
     "yargs": "^15.3.1"
   },
   "devDependencies": {
