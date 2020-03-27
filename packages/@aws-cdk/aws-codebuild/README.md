@@ -189,8 +189,8 @@ The CodeBuild library supports both Linux and Windows images via the
 `LinuxBuildImage` and `WindowsBuildImage` classes, respectively.
 
 You can either specify one of the predefined Windows/Linux images by using one
-of the constants such as `WindowsBuildImage.WIN_SERVER_CORE_2016_BASE` or
-`LinuxBuildImage.UBUNTU_14_04_RUBY_2_5_1`.
+of the constants such as `WindowsBuildImage.WINDOWS_BASE_2_0` or
+`LinuxBuildImage.STANDARD_2_0`.
 
 Alternatively, you can specify a custom image using one of the static methods on
 `XxxBuildImage`:
@@ -212,6 +212,37 @@ The following example shows how to define an image from an ECR repository:
 The following example shows how to define an image from a private docker registry:
 
 [Docker Registry example](./test/integ.docker-registry.lit.ts)
+
+## Credentials
+
+CodeBuild allows you to store credentials used when communicating with various sources,
+like GitHub:
+
+```typescript
+new codebuild.GitHubSourceCredentials(this, 'CodeBuildGitHubCreds', {
+  accessToken: cdk.SecretValue.secretsManager('my-token'),
+});
+// GitHub Enterprise is almost the same,
+// except the class is called GitHubEnterpriseSourceCredentials
+```
+
+and BitBucket:
+
+```typescript
+new codebuild.BitBucketSourceCredentials(this, 'CodeBuildBitBucketCreds', {
+  username: cdk.SecretValue.secretsManager('my-bitbucket-creds', { jsonField: 'username' }),
+  password: cdk.SecretValue.secretsManager('my-bitbucket-creds', { jsonField: 'password' }),
+});
+```
+
+**Note**: the credentials are global to a given account in a given region -
+they are not defined per CodeBuild project.
+CodeBuild only allows storing a single credential of a given type
+(GitHub, GitHub Enterprise or BitBucket)
+in a given account in a given region -
+any attempt to save more than one will result in an error.
+You can use the [`list-source-credentials` AWS CLI operation](https://docs.aws.amazon.com/cli/latest/reference/codebuild/list-source-credentials.html)
+to inspect what credentials are stored in your account.
 
 ## Events
 
@@ -340,11 +371,41 @@ For example:
 ```ts
 const vpc = new ec2.Vpc(this, 'MyVPC');
 const project = new codebuild.Project(this, 'MyProject', {
-    vpc: vpc,
-    buildSpec: codebuild.BuildSpec.fromObject({
-      // ...
-    }),
+  vpc: vpc,
+  buildSpec: codebuild.BuildSpec.fromObject({
+    // ...
+  }),
 });
 
 project.connections.allowTo(loadBalancer, ec2.Port.tcp(443));
 ```
+
+## Project File System Location EFS
+
+Add support for CodeBuild to build on AWS EFS file system mounts using
+the new ProjectFileSystemLocation.
+The `fileSystemLocations` property which accepts a list `ProjectFileSystemLocation`
+as represented by the interface `IFileSystemLocations`.
+The only supported file system type is `EFS`.
+
+For example:
+
+```ts
+new codebuild.Project(stack, 'MyProject', {
+  buildSpec: codebuild.BuildSpec.fromObject({
+    version: '0.2',
+  }),
+  fileSystemLocations: [
+    codebuild.FileSystemLocation.efs({
+      identifier: "myidentifier2",
+      location: "myclodation.mydnsroot.com:/loc",
+      mountPoint: "/media",
+      mountOptions: "opts"
+    })
+  ]
+});
+```
+
+Here's a CodeBuild project with a simple example that creates a project mounted on AWS EFS:
+
+[Minimal Example](./test/integ.project-file-system-location.ts)

@@ -685,4 +685,83 @@ export = {
 
     test.done();
   },
+
+  'throws when timezone is set for non-sqlserver database engine'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'vpc');
+    const tzSupportedEngines = [ rds.DatabaseInstanceEngine.SQL_SERVER_EE, rds.DatabaseInstanceEngine.SQL_SERVER_EX,
+      rds.DatabaseInstanceEngine.SQL_SERVER_SE, rds.DatabaseInstanceEngine.SQL_SERVER_WEB ];
+    const tzUnsupportedEngines = [ rds.DatabaseInstanceEngine.MYSQL, rds.DatabaseInstanceEngine.POSTGRES,
+      rds.DatabaseInstanceEngine.ORACLE_EE, rds.DatabaseInstanceEngine.MARIADB ];
+
+    // THEN
+    tzSupportedEngines.forEach((engine) => {
+      test.ok(new rds.DatabaseInstance(stack, `${engine.name}-db`, {
+        engine,
+        instanceClass: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.SMALL),
+        masterUsername: 'master',
+        timezone: 'Europe/Zurich',
+        vpc,
+      }));
+    });
+
+    tzUnsupportedEngines.forEach((engine) => {
+      test.throws(() => new rds.DatabaseInstance(stack, `${engine.name}-db`, {
+        engine,
+        instanceClass: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.SMALL),
+        masterUsername: 'master',
+        timezone: 'Europe/Zurich',
+        vpc,
+      }), /timezone property can be configured only for Microsoft SQL Server/);
+    });
+
+    test.done();
+  },
+
+  'create an instance from snapshot with maximum allocated storage'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
+      snapshotIdentifier: 'my-snapshot',
+      engine: rds.DatabaseInstanceEngine.POSTGRES,
+      instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
+      vpc,
+      maxAllocatedStorage: 200
+    });
+
+    expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+      DBSnapshotIdentifier: 'my-snapshot',
+      MaxAllocatedStorage: 200
+    }));
+
+    test.done();
+  },
+
+  'create a DB instance with maximum allocated storage'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.MYSQL,
+      instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      masterUsername: 'admin',
+      vpc,
+      backupRetention: cdk.Duration.seconds(0),
+      maxAllocatedStorage: 250
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+      BackupRetentionPeriod: 0,
+      MaxAllocatedStorage: 250
+    }));
+
+    test.done();
+  }
 };

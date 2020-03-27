@@ -132,7 +132,11 @@ const key = api.addApiKey('ApiKey');
 
 const plan = api.addUsagePlan('UsagePlan', {
   name: 'Easy',
-  apiKey: key
+  apiKey: key,
+  throttle: {
+    rateLimit: 10,
+    burstLimit: 2
+  }
 });
 
 plan.addApiStage({
@@ -147,6 +151,36 @@ plan.addApiStage({
     }
   ]
 });
+```
+
+In scenarios where you need to create a single api key and configure rate limiting for it, you can use `RateLimitedApiKey`.
+This construct lets you specify rate limiting properties which should be applied only to the api key being created.
+The API key created has the specified rate limits, such as quota and throttles, applied.
+
+The following example shows how to use a rate limited api key :
+```ts
+const hello = new lambda.Function(this, 'hello', {
+  runtime: lambda.Runtime.NODEJS_10_X,
+  handler: 'hello.handler',
+  code: lambda.Code.fromAsset('lambda')
+});
+
+const api = new apigateway.RestApi(this, 'hello-api', { });
+const integration = new apigateway.LambdaIntegration(hello);
+
+const v1 = api.root.addResource('v1');
+const echo = v1.addResource('echo');
+const echoMethod = echo.addMethod('GET', integration, { apiKeyRequired: true });
+
+const key = new apigateway.RateLimitedApiKey(this, 'rate-limited-api-key', {
+  customerId: 'hello-customer',
+  resources: [api],
+  quota: {
+    limit: 10000,
+    period: apigateway.Period.MONTH
+  }
+});
+
 ```
 
 ### Working with models
@@ -232,14 +266,30 @@ You can define models for your responses (and requests)
 const responseModel = api.addModel('ResponseModel', {
   contentType: 'application/json',
   modelName: 'ResponseModel',
-  schema: { '$schema': 'http://json-schema.org/draft-04/schema#', 'title': 'pollResponse', 'type': 'object', 'properties': { 'state': { 'type': 'string' }, 'greeting': { 'type': 'string' } } }
+  schema: {
+    schema: JsonSchemaVersion.DRAFT4,
+    title: 'pollResponse',
+    type: JsonSchemaType.OBJECT,
+    properties: {
+      state: { type: JsonSchemaType.STRING },
+      greeting: { type: JsonSchemaType.STRING }
+    }
+  }
 });
 
 // We define the JSON Schema for the transformed error response
 const errorResponseModel = api.addModel('ErrorResponseModel', {
   contentType: 'application/json',
   modelName: 'ErrorResponseModel',
-  schema: { '$schema': 'http://json-schema.org/draft-04/schema#', 'title': 'errorResponse', 'type': 'object', 'properties': { 'state': { 'type': 'string' }, 'message': { 'type': 'string' } } }
+  schema: {
+    schema: JsonSchemaVersion.DRAFT4,
+    title: 'errorResponse',
+    type: JsonSchemaType.OBJECT,
+    properties: {
+      state: { type: JsonSchemaType.STRING },
+      message: { type: JsonSchemaType.STRING }
+    }
+  }
 });
 
 ```
@@ -318,6 +368,21 @@ const book = books.addResource('{book_id}');
 book.addMethod('GET');   // integrated with `booksBackend`
 ```
 
+A Method can be configured with authorization scopes. Authorization scopes are
+used in conjunction with an [authorizer that uses Amazon Cognito user
+pools](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-integrate-with-cognito.html#apigateway-enable-cognito-user-pool).
+Read more about authorization scopes
+[here](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-method.html#cfn-apigateway-method-authorizationscopes).
+
+Authorization scopes for a Method can be configured using the `authorizationScopes` property as shown below -
+
+```ts
+books.addMethod('GET', new apigateway.HttpIntegration('http://amazon.com'), {
+  authorizationType: AuthorizationType.COGNITO,
+  authorizationScopes: ['Scope1','Scope2']
+});
+```
+
 ### Proxy Routes
 
 The `addProxy` method can be used to install a greedy `{proxy+}` resource
@@ -339,7 +404,7 @@ that can be used for controlling access to your REST APIs.
 
 #### IAM-based authorizer
 
-The following CDK code provides 'excecute-api' permission to an IAM user, via IAM policies, for the 'GET' method on the `books` resource:
+The following CDK code provides 'execute-api' permission to an IAM user, via IAM policies, for the 'GET' method on the `books` resource:
 
 ```ts
 const getBooks = books.addMethod('GET', new apigateway.HttpIntegration('http://amazon.com'), {
@@ -390,6 +455,8 @@ books.addMethod('GET', new apigateway.HttpIntegration('http://amazon.com'), {
 });
 ```
 
+You can find a full working example [here](test/authorizers/integ.token-authorizer.ts).
+
 By default, the `TokenAuthorizer` looks for the authorization token in the request header with the key 'Authorization'. This can,
 however, be modified by changing the `identitySource` property.
 
@@ -428,6 +495,8 @@ books.addMethod('GET', new apigateway.HttpIntegration('http://amazon.com'), {
   authorizer: auth
 });
 ```
+
+You can find a full working example [here](test/authorizers/integ.request-authorizer.ts).
 
 By default, the `RequestAuthorizer` does not pass any kind of information from the request. This can,
 however, be modified by changing the `identitySource` property, and is required when specifying a value for caching.
@@ -477,6 +546,41 @@ const api = new apigateway.RestApi(this, 'books', {
 })
 ```
 
+You can use the `methodOptions` property to configure
+[default method throttling](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-request-throttling.html#apigateway-api-level-throttling-in-usage-plan)
+for a stage. The following snippet configures the a stage that accepts
+100 requests per minute, allowing burst up to 200 requests per minute.
+
+```ts
+const api = new apigateway.RestApi(this, 'books');
+const deployment = new apigateway.Deployment(this, 'my-deployment', { api });
+const stage = new apigateway.Stage(this, 'my-stage', {
+  deployment,
+  methodOptions: {
+    '/*/*': {  // This special path applies to all resource paths and all HTTP methods
+      throttlingRateLimit: 100,
+      throttlingBurstLimit: 200
+    }
+  }
+});
+```
+
+Configuring `methodOptions` on the `deployOptions` of `RestApi` will set the
+throttling behaviors on the default stage that is automatically created.
+
+```ts
+const api = new apigateway.RestApi(this, 'books', {
+  deployOptions: {
+    methodOptions: {
+      '/*/*': {  // This special path applies to all resource paths and all HTTP methods
+        throttlingRateLimit: 100,
+        throttlingBurstLimit: 1000
+      }
+    }
+  }
+});
+```
+
 #### Deeper dive: invalidation of deployments
 
 API Gateway deployments are an immutable snapshot of the API. This means that we
@@ -521,9 +625,12 @@ as `example.com`, and for subdomains, such as `www.example.com`. (You can create
 CNAME records only for subdomains.)
 
 ```ts
+import * as route53 from '@aws-cdk/aws-route53';
+import * as targets from '@aws-cdk/aws-route53-targets';
+
 new route53.ARecord(this, 'CustomDomainAliasRecord', {
   zone: hostedZoneForExampleCom,
-  target: route53.RecordTarget.fromAlias(new route53_targets.ApiGateway(api))
+  target: route53.RecordTarget.fromAlias(new targets.ApiGateway(api))
 });
 ```
 
@@ -533,7 +640,8 @@ You can also define a `DomainName` resource directly in order to customize the d
 new apigw.DomainName(this, 'custom-domain', {
   domainName: 'example.com',
   certificate: acmCertificateForExampleCom,
-  endpointType: apigw.EndpointType.EDGE // default is REGIONAL
+  endpointType: apigw.EndpointType.EDGE, // default is REGIONAL
+  securityPolicy: apigw.SecurityPolicy.TLS_1_2
 });
 ```
 
@@ -546,10 +654,18 @@ domain.addBasePathMapping(api1, { basePath: 'go-to-api1' });
 domain.addBasePathMapping(api2, { basePath: 'boom' });
 ```
 
-NOTE: currently, the mapping will always be assigned to the APIs
-`deploymentStage`, which will automatically assigned to the latest API
-deployment. Raise a GitHub issue if you require more granular control over
-mapping base paths to stages.
+You can specify the API `Stage` to which this base path URL will map to. By default, this will be the
+`deploymentStage` of the `RestApi`. 
+
+```ts
+const betaDeploy = new Deployment(this, 'beta-deployment', {
+  api: restapi,
+});
+const betaStage = new Stage(this, 'beta-stage', {
+  deployment: betaDeploy,
+});
+domain.addBasePathMapping(restapi, { basePath: 'api/beta', stage: betaStage });
+```
 
 If you don't specify `basePath`, all URLs under this domain will be mapped
 to the API, and you won't be able to map another API to the same domain:
@@ -561,12 +677,15 @@ domain.addBasePathMapping(api);
 This can also be achieved through the `mapping` configuration when defining the
 domain as demonstrated above.
 
-If you wish to setup this domain with an Amazon Route53 alias, use the `route53_targets.ApiGatewayDomain`:
+If you wish to setup this domain with an Amazon Route53 alias, use the `targets.ApiGatewayDomain`:
 
 ```ts
+import * as route53 from '@aws-cdk/aws-route53';
+import * as targets from '@aws-cdk/aws-route53-targets';
+
 new route53.ARecord(this, 'CustomDomainAliasRecord', {
   zone: hostedZoneForExampleCom,
-  target: route53.RecordTarget.fromAlias(new route53_targets.ApiGatewayDomain(domainName))
+  target: route53.RecordTarget.fromAlias(new targets.ApiGatewayDomain(domainName))
 });
 ```
 

@@ -4,10 +4,10 @@ import { NodeStringDecoder, StringDecoder  } from 'string_decoder';
 import { DeployStackOptions, DeployStackResult } from '../lib';
 import { AppStacks } from '../lib/api/cxapp/stacks';
 import { IDeploymentTarget, Template } from '../lib/api/deployment-target';
-import { SDK } from '../lib/api/util/sdk';
 import { CdkToolkit } from '../lib/cdk-toolkit';
 import { Configuration } from '../lib/settings';
 import { testAssembly } from './util';
+import { MockSDK } from './util/mock-sdk';
 
 const FIXED_RESULT = testAssembly({
   stacks: [{
@@ -36,7 +36,7 @@ const FIXED_RESULT = testAssembly({
 
 const appStacks = new AppStacks({
   configuration: new Configuration(),
-  aws: new SDK(),
+  aws: new MockSDK(),
   synthesizer: async () => FIXED_RESULT,
 });
 

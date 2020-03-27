@@ -154,17 +154,78 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
  */
 export class DatabaseInstanceEngine extends DatabaseClusterEngine {
   /* tslint:disable max-line-length */
-  public static readonly MARIADB = new DatabaseInstanceEngine('mariadb', secretsmanager.SecretRotationApplication.MARIADB_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.MARIADB_ROTATION_MULTI_USER);
-  public static readonly MYSQL = new DatabaseInstanceEngine('mysql', secretsmanager.SecretRotationApplication.MYSQL_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.MYSQL_ROTATION_MULTI_USER);
-  public static readonly ORACLE_EE = new DatabaseInstanceEngine('oracle-ee', secretsmanager.SecretRotationApplication.ORACLE_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.ORACLE_ROTATION_MULTI_USER);
-  public static readonly ORACLE_SE2 = new DatabaseInstanceEngine('oracle-se2', secretsmanager.SecretRotationApplication.ORACLE_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.ORACLE_ROTATION_MULTI_USER);
-  public static readonly ORACLE_SE1 = new DatabaseInstanceEngine('oracle-se1', secretsmanager.SecretRotationApplication.ORACLE_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.ORACLE_ROTATION_MULTI_USER);
-  public static readonly ORACLE_SE = new DatabaseInstanceEngine('oracle-se', secretsmanager.SecretRotationApplication.ORACLE_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.ORACLE_ROTATION_MULTI_USER);
-  public static readonly POSTGRES = new DatabaseInstanceEngine('postgres', secretsmanager.SecretRotationApplication.POSTGRES_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.POSTGRES_ROTATION_MULTI_USER);
-  public static readonly SQL_SERVER_EE = new DatabaseInstanceEngine('sqlserver-ee', secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_MULTI_USER);
-  public static readonly SQL_SERVER_SE = new DatabaseInstanceEngine('sqlserver-se', secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_MULTI_USER);
-  public static readonly SQL_SERVER_EX = new DatabaseInstanceEngine('sqlserver-ex', secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_MULTI_USER);
-  public static readonly SQL_SERVER_WEB = new DatabaseInstanceEngine('sqlserver-web', secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_MULTI_USER);
+  public static readonly MARIADB = new DatabaseInstanceEngine('mariadb', secretsmanager.SecretRotationApplication.MARIADB_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.MARIADB_ROTATION_MULTI_USER, [
+    { engineMajorVersion: '10.0', parameterGroupFamily: 'mariadb10.0' },
+    { engineMajorVersion: '10.1', parameterGroupFamily: 'mariadb10.1' },
+    { engineMajorVersion: '10.2', parameterGroupFamily: 'mariadb10.2' },
+    { engineMajorVersion: '10.3', parameterGroupFamily: 'mariadb10.3' }
+  ]);
+
+  public static readonly MYSQL = new DatabaseInstanceEngine('mysql', secretsmanager.SecretRotationApplication.MYSQL_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.MYSQL_ROTATION_MULTI_USER, [
+    { engineMajorVersion: '5.6', parameterGroupFamily: 'mysql5.6' },
+    { engineMajorVersion: '5.7', parameterGroupFamily: 'mysql5.7' },
+    { engineMajorVersion: '8.0', parameterGroupFamily: 'mysql8.0' }
+  ]);
+
+  public static readonly ORACLE_EE = new DatabaseInstanceEngine('oracle-ee', secretsmanager.SecretRotationApplication.ORACLE_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.ORACLE_ROTATION_MULTI_USER, [
+    { engineMajorVersion: '11.2', parameterGroupFamily: 'oracle-ee-11.2' },
+    { engineMajorVersion: '12.1', parameterGroupFamily: 'oracle-ee-12.1' },
+    { engineMajorVersion: '12.2', parameterGroupFamily: 'oracle-ee-12.2' },
+    { engineMajorVersion: '18', parameterGroupFamily: 'oracle-ee-18' },
+    { engineMajorVersion: '19', parameterGroupFamily: 'oracle-ee-19' }
+  ]);
+
+  public static readonly ORACLE_SE2 = new DatabaseInstanceEngine('oracle-se2', secretsmanager.SecretRotationApplication.ORACLE_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.ORACLE_ROTATION_MULTI_USER, [
+    { engineMajorVersion: '12.1', parameterGroupFamily: 'oracle-se2-12.1' },
+    { engineMajorVersion: '12.2', parameterGroupFamily: 'oracle-se2-12.2' },
+    { engineMajorVersion: '18', parameterGroupFamily: 'oracle-se2-18' },
+    { engineMajorVersion: '19', parameterGroupFamily: 'oracle-se2-19' }
+  ]);
+
+  public static readonly ORACLE_SE1 = new DatabaseInstanceEngine('oracle-se1', secretsmanager.SecretRotationApplication.ORACLE_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.ORACLE_ROTATION_MULTI_USER, [
+    { engineMajorVersion: '11.2', parameterGroupFamily: 'oracle-se1-11.2' }
+  ]);
+
+  public static readonly ORACLE_SE = new DatabaseInstanceEngine('oracle-se', secretsmanager.SecretRotationApplication.ORACLE_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.ORACLE_ROTATION_MULTI_USER, [
+    { engineMajorVersion: '11.2', parameterGroupFamily: 'oracle-se-11.2' }
+  ]);
+
+  public static readonly POSTGRES = new DatabaseInstanceEngine('postgres', secretsmanager.SecretRotationApplication.POSTGRES_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.POSTGRES_ROTATION_MULTI_USER, [
+    { engineMajorVersion: '9.3', parameterGroupFamily: 'postgres9.3' },
+    { engineMajorVersion: '9.4', parameterGroupFamily: 'postgres9.4' },
+    { engineMajorVersion: '9.5', parameterGroupFamily: 'postgres9.5' },
+    { engineMajorVersion: '9.6', parameterGroupFamily: 'postgres9.6' },
+    { engineMajorVersion: '10', parameterGroupFamily: 'postgres10' },
+    { engineMajorVersion: '11', parameterGroupFamily: 'postgres11' },
+  ]);
+
+  public static readonly SQL_SERVER_EE = new DatabaseInstanceEngine('sqlserver-ee', secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_MULTI_USER, [
+    { engineMajorVersion: '11', parameterGroupFamily: 'sqlserver-ee-11.0' },
+    { engineMajorVersion: '12', parameterGroupFamily: 'sqlserver-ee-12.0' },
+    { engineMajorVersion: '13', parameterGroupFamily: 'sqlserver-ee-13.0' },
+    { engineMajorVersion: '14', parameterGroupFamily: 'sqlserver-ee-14.0' }
+  ]);
+
+  public static readonly SQL_SERVER_SE = new DatabaseInstanceEngine('sqlserver-se', secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_MULTI_USER, [
+    { engineMajorVersion: '11', parameterGroupFamily: 'sqlserver-se-11.0' },
+    { engineMajorVersion: '12', parameterGroupFamily: 'sqlserver-se-12.0' },
+    { engineMajorVersion: '13', parameterGroupFamily: 'sqlserver-se-13.0' },
+    { engineMajorVersion: '14', parameterGroupFamily: 'sqlserver-se-14.0' }
+  ]);
+
+  public static readonly SQL_SERVER_EX = new DatabaseInstanceEngine('sqlserver-ex', secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_MULTI_USER, [
+    { engineMajorVersion: '11', parameterGroupFamily: 'sqlserver-ex-11.0' },
+    { engineMajorVersion: '12', parameterGroupFamily: 'sqlserver-ex-12.0' },
+    { engineMajorVersion: '13', parameterGroupFamily: 'sqlserver-ex-13.0' },
+    { engineMajorVersion: '14', parameterGroupFamily: 'sqlserver-ex-14.0' }
+  ]);
+
+  public static readonly SQL_SERVER_WEB = new DatabaseInstanceEngine('sqlserver-web', secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_MULTI_USER, [
+    { engineMajorVersion: '11', parameterGroupFamily: 'sqlserver-web-11.0' },
+    { engineMajorVersion: '12', parameterGroupFamily: 'sqlserver-web-12.0' },
+    { engineMajorVersion: '13', parameterGroupFamily: 'sqlserver-web-13.0' },
+    { engineMajorVersion: '14', parameterGroupFamily: 'sqlserver-web-14.0' }
+  ]);
   /* tslint:enable max-line-length */
 
   /** To make it a compile-time error to pass a DatabaseClusterEngine where a DatabaseInstanceEngine is expected. */
@@ -478,6 +539,13 @@ export interface DatabaseInstanceNewProps {
    * @default RemovalPolicy.Retain
    */
   readonly removalPolicy?: RemovalPolicy
+
+  /**
+   * Upper limit to which RDS can scale the storage in GiB(Gibibyte).
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PIOPS.StorageTypes.html#USER_PIOPS.Autoscaling
+   * @default - No autoscaling of RDS instance
+   */
+  readonly maxAllocatedStorage?: number;
 }
 
 /**
@@ -567,7 +635,8 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       processorFeatures: props.processorFeatures && renderProcessorFeatures(props.processorFeatures),
       publiclyAccessible: props.vpcPlacement && props.vpcPlacement.subnetType === ec2.SubnetType.PUBLIC,
       storageType,
-      vpcSecurityGroups: securityGroups.map(s => s.securityGroupId)
+      vpcSecurityGroups: securityGroups.map(s => s.securityGroupId),
+      maxAllocatedStorage: props.maxAllocatedStorage
     };
   }
 
@@ -616,7 +685,7 @@ export interface DatabaseInstanceSourceProps extends DatabaseInstanceNewProps {
   readonly allowMajorVersionUpgrade?: boolean;
 
   /**
-   * The time zone of the instance.
+   * The time zone of the instance. This is currently supported only by Microsoft Sql Server.
    *
    * @default - RDS default timezone
    */
@@ -677,6 +746,12 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
 
     this.singleUserRotationApplication = props.engine.singleUserRotationApplication;
     this.multiUserRotationApplication = props.engine.multiUserRotationApplication;
+
+    const timezoneSupport = [ DatabaseInstanceEngine.SQL_SERVER_EE, DatabaseInstanceEngine.SQL_SERVER_EX,
+      DatabaseInstanceEngine.SQL_SERVER_SE, DatabaseInstanceEngine.SQL_SERVER_WEB ];
+    if (props.timezone && !timezoneSupport.includes(props.engine)) {
+      throw new Error(`timezone property can be configured only for Microsoft SQL Server, not ${props.engine.name}`);
+    }
 
     this.sourceCfnProps = {
       ...this.newCfnProps,

@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-s3",
-  "version": "999.0.0",
+  "version": "0.0.0",
   "description": "CDK Constructs for AWS S3",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -62,26 +62,28 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "999.0.0",
+    "@aws-cdk/assert": "0.0.0",
     "@types/nodeunit": "^0.0.30",
-    "cdk-build-tools": "999.0.0",
-    "cdk-integ-tools": "999.0.0",
-    "cfn2ts": "999.0.0",
+    "cdk-build-tools": "0.0.0",
+    "cdk-integ-tools": "0.0.0",
+    "cfn2ts": "0.0.0",
     "nodeunit": "^0.11.3",
-    "pkglint": "999.0.0"
+    "pkglint": "0.0.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-events": "999.0.0",
-    "@aws-cdk/aws-iam": "999.0.0",
-    "@aws-cdk/aws-kms": "999.0.0",
-    "@aws-cdk/core": "999.0.0"
+    "@aws-cdk/aws-events": "0.0.0",
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-kms": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^2.0.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-events": "999.0.0",
-    "@aws-cdk/aws-iam": "999.0.0",
-    "@aws-cdk/aws-kms": "999.0.0",
-    "@aws-cdk/core": "999.0.0"
+    "@aws-cdk/aws-events": "0.0.0",
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-kms": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^2.0.0"
   },
   "engines": {
     "node": ">= 10.3.0"
@@ -135,5 +137,8 @@
       "docs-public-apis:@aws-cdk/aws-s3.BucketNotificationDestinationType.QUEUE"
     ]
   },
-  "stability": "stable"
+  "stability": "stable",
+  "awscdkio": {
+    "announce": false
+  }
 }

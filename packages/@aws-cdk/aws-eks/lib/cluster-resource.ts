@@ -57,10 +57,13 @@ export class ClusterResource extends Construct {
     // this role to manage all clusters in the account. this must be lazy since
     // `props.name` may contain a lazy value that conditionally resolves to a
     // physical name.
-    const resourceArn = Lazy.stringValue({
-      produce: () => stack.resolve(props.name)
-        ? stack.formatArn(clusterArnComponents(stack.resolve(props.name)))
-        : '*'
+    const resourceArns = Lazy.listValue({
+      produce: () => {
+        const arn = stack.formatArn(clusterArnComponents(stack.resolve(props.name)));
+        return stack.resolve(props.name)
+          ? [ arn, `${arn}/*` ] // see https://github.com/aws/aws-cdk/issues/6060
+          : [ '*' ];
+      }
     });
 
     const fargateProfileResourceArn = Lazy.stringValue({
@@ -76,7 +79,7 @@ export class ClusterResource extends Construct {
 
     this.creationRole.addToPolicy(new iam.PolicyStatement({
       actions: [ 'eks:CreateCluster', 'eks:DescribeCluster', 'eks:DeleteCluster', 'eks:UpdateClusterVersion', 'eks:UpdateClusterConfig', 'eks:CreateFargateProfile' ],
-      resources: [ resourceArn ]
+      resources: resourceArns
     }));
 
     this.creationRole.addToPolicy(new iam.PolicyStatement({

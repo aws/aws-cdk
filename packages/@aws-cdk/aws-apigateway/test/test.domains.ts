@@ -1,5 +1,5 @@
 // tslint:disable:object-literal-key-quotes
-import { expect, haveResource } from '@aws-cdk/assert';
+import { ABSENT, expect, haveResource } from '@aws-cdk/assert';
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
@@ -61,6 +61,53 @@ export = {
       "DomainName": "example.com",
       "EndpointConfiguration": { "Types": [ "REGIONAL" ] },
       "RegionalCertificateArn": { "Ref": "Cert5C9FAEC1" }
+    }));
+    test.done();
+  },
+
+  'accepts different security policies'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
+
+    // WHEN
+    new apigw.DomainName(stack, 'my-domain', {
+      domainName: 'old.example.com',
+      certificate: cert,
+      securityPolicy: apigw.SecurityPolicy.TLS_1_0
+    });
+
+    new apigw.DomainName(stack, 'your-domain', {
+      domainName: 'new.example.com',
+      certificate: cert,
+      securityPolicy: apigw.SecurityPolicy.TLS_1_2
+    });
+
+    new apigw.DomainName(stack, 'default-domain', {
+      domainName: 'default.example.com',
+      certificate: cert
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::DomainName', {
+      "DomainName": "old.example.com",
+      "EndpointConfiguration": { "Types": [ "REGIONAL" ] },
+      "RegionalCertificateArn": { "Ref": "Cert5C9FAEC1" },
+      "SecurityPolicy": "TLS_1_0"
+    }));
+
+    expect(stack).to(haveResource('AWS::ApiGateway::DomainName', {
+      "DomainName": "new.example.com",
+      "EndpointConfiguration": { "Types": [ "REGIONAL" ] },
+      "RegionalCertificateArn": { "Ref": "Cert5C9FAEC1" },
+      "SecurityPolicy": "TLS_1_2"
+    }));
+
+    expect(stack).to(haveResource('AWS::ApiGateway::DomainName', {
+      "DomainName": "default.example.com",
+      "EndpointConfiguration": { "Types": [ "REGIONAL" ] },
+      "RegionalCertificateArn": { "Ref": "Cert5C9FAEC1" },
+      "SecurityPolicy": ABSENT
     }));
     test.done();
   },
@@ -283,6 +330,58 @@ export = {
       }
     }));
 
+    test.done();
+  },
+
+  '"addBasePathMapping" can be used to add base path mapping to the domain with specific stage'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const api1 = new apigw.RestApi(stack, 'api1');
+    const api2 = new apigw.RestApi(stack, 'api2');
+    const domain = new apigw.DomainName(stack, 'my-domain', {
+      domainName: 'example.com',
+      certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
+      endpointType: apigw.EndpointType.REGIONAL
+    });
+    api1.root.addMethod('GET');
+    api2.root.addMethod('GET');
+
+    const testDeploy = new apigw.Deployment(stack, 'test-deployment', {
+      api: api1
+    });
+
+    const testStage = new apigw.Stage(stack, 'test-stage', {
+      deployment : testDeploy
+    });
+
+    // WHEN
+    domain.addBasePathMapping(api1, { basePath: 'api1', stage: testStage });
+    domain.addBasePathMapping(api2, { basePath: 'api2' });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::BasePathMapping', {
+      "DomainName": {
+        "Ref": "mydomain592C948B"
+      },
+      "BasePath": "api1",
+      "RestApiId": {
+        "Ref": "api1A91238E2"
+      },
+      "Stage": stack.resolve(testStage.stageName)
+    }));
+
+    expect(stack).to(haveResource('AWS::ApiGateway::BasePathMapping', {
+      "DomainName": {
+        "Ref": "mydomain592C948B"
+      },
+      "BasePath": "api2",
+      "RestApiId": {
+        "Ref": "api2C4850CEA"
+      },
+      "Stage": {
+        "Ref": "api2DeploymentStageprod4120D74E"
+      }
+    }));
     test.done();
   }
 };
