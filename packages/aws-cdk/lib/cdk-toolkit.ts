@@ -100,11 +100,8 @@ export class CdkToolkit {
       }
     }
 
+    const stackOutputs: {[key: string]: any } = {};
     const outputsFile = options.outputsFile;
-    if (outputsFile) {
-      fs.ensureFileSync(outputsFile);
-      fs.writeJSON(outputsFile, {}, {encoding: 'utf8'});
-    }
 
     for (const stack of stacks) {
       if (stacks.length !== 1) { highlight(stack.displayName); }
@@ -177,15 +174,7 @@ export class CdkToolkit {
         if (Object.keys(result.outputs).length > 0) {
           print('\nOutputs:');
 
-          if (outputsFile) {
-            const outputs = fs.readJSONSync(outputsFile);
-            outputs[stack.stackName] = result.outputs;
-
-            fs.writeJsonSync(outputsFile, outputs, {
-              spaces: 2,
-              encoding: 'utf8'
-            });
-          }
+          stackOutputs[stack.stackName] = result.outputs;
         }
 
         for (const name of Object.keys(result.outputs)) {
@@ -199,6 +188,14 @@ export class CdkToolkit {
       } catch (e) {
         error('\n ❌  %s failed: %s', colors.bold(stack.displayName), e);
         throw e;
+      } finally {
+        if (outputsFile) {
+          fs.ensureFileSync(outputsFile);
+          fs.writeJson(outputsFile, stackOutputs, {
+            spaces: 2,
+            encoding: 'utf8'
+          });
+        }
       }
     }
   }
