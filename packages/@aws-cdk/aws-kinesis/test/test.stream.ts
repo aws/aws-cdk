@@ -83,23 +83,17 @@ export = {
     test.done();
   },
   "retention period must be between 24 and 168 hours"(test: Test) {
-    test.throws({
-      block: () => {
-        new Stream(new Stack(), "MyStream", {
-          retentionPeriod: Duration.hours(169)
-        });
-      },
-      message: "retentionPeriod must be between 24 and 168 hours. Received 169"
-    });
+    test.throws(() => {
+      new Stream(new Stack(), 'MyStream', {
+        retentionPeriod: Duration.hours(169)
+      });
+    }, /retentionPeriod must be between 24 and 168 hours. Received 169/);
 
-    test.throws({
-      block: () => {
-        new Stream(new Stack(), "MyStream", {
+    test.throws(() => {
+        new Stream(new Stack(), 'MyStream', {
           retentionPeriod: Duration.hours(23)
-        });
-      },
-      message: "retentionPeriod must be between 24 and 168 hours. Received 23"
-    });
+          });
+    }, /retentionPeriod must be between 24 and 168 hours. Received 23/);
 
     test.done();
   },
