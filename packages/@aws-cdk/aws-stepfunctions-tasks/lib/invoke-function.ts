@@ -4,6 +4,8 @@ import * as sfn from '@aws-cdk/aws-stepfunctions';
 
 /**
  * Properties for InvokeFunction
+ *
+ * @deprecated use `RunLambdaTask`
  */
 export interface InvokeFunctionProps {
   /**
@@ -22,6 +24,8 @@ export interface InvokeFunctionProps {
  * The Lambda function Arn is defined as Resource in the state machine definition.
  *
  * OUTPUT: the output of this task is the return value of the Lambda Function.
+ *
+ * @deprecated Use `RunLambdaTask`
  */
 export class InvokeFunction implements sfn.IStepFunctionsTask {
   constructor(private readonly lambdaFunction: lambda.IFunction, private readonly props: InvokeFunctionProps = {}) {
