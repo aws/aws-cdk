@@ -125,12 +125,13 @@ type AwsCallInputOutput<T> =
     T extends {
       (args: infer INPUT, callback?: ((err: AWS.AWSError, data: any) => void) | undefined): AWS.Request<infer OUTPUT, AWS.AWSError>;
       (callback?: ((err: AWS.AWSError, data: {}) => void) | undefined): AWS.Request<any, any>;
-    } ? [INPUT, OUTPUT] : never;
+    } ? [INPUT, OUTPUT] : T;
 
 // Determine the type of the mock handler from the type of the Input/Output type pair.
 // Don't need to worry about the 'never', TypeScript will propagate it upwards making it
 // impossible to specify the field that has 'never' anywhere in its type.
-type MockHandlerType<AI extends [any, any]> = (input: AI[0]) => AI[1];
+type MockHandlerType<AI> =
+    AI extends [any, any] ? (input: AI[0]) => AI[1] : AI;
 
 // Any subset of the full type that synchronously returns the output structure is okay
 export type SyncHandlerSubsetOf<S> = {[K in keyof S]?: MockHandlerType<AwsCallInputOutput<S[K]>>};
@@ -165,3 +166,13 @@ export function mockResolvedEnvironment(): cxapi.Environment {
     name: 'aws://123456789/bermuda-triangle-1337',
   };
 }
+
+// Jest helpers
+
+// An object on which all callables are Jest Mocks
+export type MockedObject<S extends object> = {[K in keyof S]: MockedFunction<Required<S>[K]>};
+
+// If a function, then a mocked version of it, otherwise just T
+type MockedFunction<T> = T extends (...args: any[]) => any
+  ? jest.MockInstance<ReturnType<T>, jest.ArgsType<T>>
+  : T;

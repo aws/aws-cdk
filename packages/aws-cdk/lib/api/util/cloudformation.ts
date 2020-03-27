@@ -246,6 +246,16 @@ export class TemplateParameters {
       throw new Error(`The following CloudFormation Parameters are missing a value: ${missingRequired.join(', ')}`);
     }
 
+    // Just append all supplied overrides that aren't really expected (this
+    // will fail CFN but maybe people made typos that they want to be notified
+    // of)
+    const unknownParam = ([key, _]: [string, any]) => this.params[key] === undefined;
+    const hasValue = ([_, value]: [string, any]) => !!value;
+    for (const [key, value] of Object.entries(updates).filter(unknownParam).filter(hasValue)) {
+      ret.push({ ParameterKey: key, ParameterValue: value });
+    }
+
     return ret;
+
   }
 }

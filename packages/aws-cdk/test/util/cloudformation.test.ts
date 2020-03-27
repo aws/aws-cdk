@@ -31,6 +31,21 @@ test('default, prev, no override => use previous', () => {
   expect(makeParams(true, true, false)).toEqual([USE_PREVIOUS]);
 });
 
+test('unknown parameter in overrides, pass it anyway', () => {
+  // Not sure if we really want this. It seems like it would be nice
+  // to not pass parameters that aren't expected, given that CFN will
+  // just error out. But maybe we want to be warned of typos...
+  const params = TemplateParameters.fromTemplate({
+    Parameters: {
+      Foo: { Default: 'Foo' },
+    }
+  });
+
+  expect(params.makeApiParameters({ Bar: 'Bar' }, [])).toEqual([
+    { ParameterKey: 'Bar', ParameterValue: 'Bar' },
+  ]);
+});
+
 function makeParams(defaultValue: boolean, hasPrevValue: boolean, override: boolean) {
   const params = TemplateParameters.fromTemplate({
     Parameters: {

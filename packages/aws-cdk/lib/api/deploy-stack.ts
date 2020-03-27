@@ -228,7 +228,9 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     debug('Execution of changeset %s on stack %s has started; waiting for the update to complete...', changeSetName, deployName);
     try {
       const finalStack = await waitForStack(cfn, deployName);
-      if (!finalStack) { throw new Error('Stack deploy failed'); } // This should only happen very rarely
+
+      // This shouldn't really happen, but catch it anyway. You never know.
+      if (!finalStack) { throw new Error('Stack deploy failed (the stack disappeared while we were deploying it)'); }
       cloudFormationStack = finalStack;
     } finally {
       await monitor?.stop();
