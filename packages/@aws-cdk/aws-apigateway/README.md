@@ -570,7 +570,17 @@ const devLogGroup = new cwlogs.LogGroup(this, "DevLogs");
 new apigateway.Stage(this, 'dev', {
   deployment,
   accessLogDestination: new apigateway.CloudWatchLogsDestination(devLogGroup),
-  accessLogFormat: apigateway.AccessLogFormat.jsonWithStandardFields({ip: false})
+  accessLogFormat: apigateway.AccessLogFormat.jsonWithStandardFields({
+    caller: false,
+    httpMethod: true,
+    ip: true,
+    protocol: true,
+    requestTime: true,
+    resourcePath: true,
+    responseLength: true,
+    status: true,
+    user: true
+  })
 });
 ```
 
