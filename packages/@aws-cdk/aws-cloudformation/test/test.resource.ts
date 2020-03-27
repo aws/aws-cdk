@@ -2,6 +2,7 @@ import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Test, testCase } from 'nodeunit';
 import { CustomResource, CustomResourceProvider } from '../lib';
 
@@ -205,7 +206,65 @@ export = testCase({
     // THEN
     test.deepEqual(stack.resolve(res.resource.ref), { Ref: 'myResourceC6A188A9' });
     test.done();
-  }
+  },
+
+  '@aws-cdk/core:disableCustomResourceUppercaseProperties': {
+
+    'disabled (default)': {
+
+      'Properties are uppercased'(test: Test) {
+        // GIVEN
+        const app = new cdk.App();
+
+        // WHEN
+        const stack = new cdk.Stack(app, 'Test');
+        new TestCustomResourceProperties(stack, 'Custom', {
+          properties: {
+            lowercase: 'value',
+            Uppercase: 'value'
+          }
+        });
+
+        // THEN
+        expect(stack).to(haveResource('AWS::CloudFormation::CustomResource', {
+          Lowercase: 'value',
+          Uppercase: 'value',
+        }, ResourcePart.Properties));
+
+        test.done();
+      }
+    },
+
+    'enabled': {
+
+      'Properties are not modified'(test: Test) {
+        // GIVEN
+        const app = new cdk.App({
+          context: {
+            [cxapi.DISABLE_CUSTOM_RESOURCE_UPPERCASE_PROPERTIES]: 'true'
+          }
+        });
+
+        // WHEN
+        const stack = new cdk.Stack(app, 'Test');
+        new TestCustomResourceProperties(stack, 'Custom', {
+          properties: {
+            lowercase: 'value',
+            Uppercase: 'value'
+          }
+        });
+
+        // THEN
+        expect(stack).to(haveResource('AWS::CloudFormation::CustomResource', {
+          lowercase: 'value',
+          Uppercase: 'value',
+        }, ResourcePart.Properties));
+
+        test.done();
+      },
+    }
+
+  },
 });
 
 class TestCustomResource extends cdk.Construct {
@@ -224,6 +283,27 @@ class TestCustomResource extends cdk.Construct {
 
     this.resource = new CustomResource(this, 'Resource', {
       ...opts,
+      provider: CustomResourceProvider.fromLambda(singletonLambda),
+    });
+  }
+}
+
+class TestCustomResourceProperties extends cdk.Construct {
+  public readonly resource: CustomResource;
+
+  constructor(scope: cdk.Construct, id: string, properties: { [key: string]: any }) {
+    super(scope, id);
+
+    const singletonLambda = new lambda.SingletonFunction(this, 'Lambda', {
+      uuid: 'TestCustomResourceProvider',
+      code: new lambda.InlineCode('def hello(): pass'),
+      runtime: lambda.Runtime.PYTHON_2_7,
+      handler: 'index.hello',
+      timeout: cdk.Duration.minutes(5),
+    });
+
+    this.resource = new CustomResource(this, 'Resource', {
+      ...properties,
       provider: CustomResourceProvider.fromLambda(singletonLambda),
     });
   }

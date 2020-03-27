@@ -30,6 +30,11 @@ export const ENABLE_DIFF_NO_FAIL_CONTEXT = 'aws-cdk:enableDiffNoFail';
 export const ENABLE_DIFF_NO_FAIL = ENABLE_DIFF_NO_FAIL_CONTEXT;
 
 /**
+ * If this is set, properties of a custom resource will not be uppercased.
+ */
+export const DISABLE_CUSTOM_RESOURCE_UPPERCASE_PROPERTIES = '@aws-cdk/aws-cloudformation:disableCustomResourceUppercaseProperties';
+
+/**
  * This map includes context keys and values for feature flags that enable
  * capabilities "from the future", which we could not introduce as the default
  * behavior due to backwards compatibility for existing projects.
@@ -45,4 +50,5 @@ export const ENABLE_DIFF_NO_FAIL = ENABLE_DIFF_NO_FAIL_CONTEXT;
 export const FUTURE_FLAGS = {
   [ENABLE_STACK_NAME_DUPLICATES_CONTEXT]: 'true',
   [ENABLE_DIFF_NO_FAIL_CONTEXT]: 'true',
+  [DISABLE_CUSTOM_RESOURCE_UPPERCASE_PROPERTIES]: 'true',
 };

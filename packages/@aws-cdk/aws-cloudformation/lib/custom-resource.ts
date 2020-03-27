@@ -1,6 +1,7 @@
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sns from '@aws-cdk/aws-sns';
 import { CfnResource, Construct, RemovalPolicy, Resource, Token } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { CfnCustomResource } from './cloudformation.generated';
 
 /**
@@ -164,7 +165,9 @@ export class CustomResource extends Resource {
       type,
       properties: {
         ServiceToken: providerConfig.serviceToken,
-        ...uppercaseProperties(props.properties || {})
+        ...(this.node.tryGetContext(cxapi.DISABLE_CUSTOM_RESOURCE_UPPERCASE_PROPERTIES)
+        ? (props.properties || {})
+        : uppercaseProperties(props.properties || {}))
       }
     });
 
