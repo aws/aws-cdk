@@ -42,6 +42,20 @@ export class MockSDK extends SdkProvider {
   public stubEcr(stubs: SyncHandlerSubsetOf<AWS.ECR>) {
     (this.sdk as any).ecr = jest.fn().mockReturnValue(partialAwsService<AWS.ECR>(stubs));
   }
+
+  /**
+   * Replace the S3 client with the given object
+   */
+  public stubS3(stubs: SyncHandlerSubsetOf<AWS.S3>) {
+    (this.sdk as any).s3 = jest.fn().mockReturnValue(partialAwsService<AWS.S3>(stubs));
+  }
+
+  /**
+   * Replace the STS client with the given object
+   */
+  public stubSTS(stubs: SyncHandlerSubsetOf<AWS.STS>) {
+    (this.sdk as any).sts = jest.fn().mockReturnValue(partialAwsService<AWS.STS>(stubs));
+  }
 }
 
 /**
@@ -127,4 +141,10 @@ export function mockToolkitInfo() {
     bucketEndpoint: 'BUCKET_ENDPOINT',
     environment: { name: 'env', account: '1234', region: 'abc' }
   });
+}
+
+export function errorWithCode(code: string, message: string) {
+  const ret = new Error(message);
+  (ret as any).code = code;
+  return ret;
 }
