@@ -30,6 +30,30 @@ export = {
     test.done();
   },
 
+  'test setup target tracking on predefined metric for lambda'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const target = createScalableTarget(stack);
+
+    // WHEN
+    target.scaleToTrackMetric('Tracking', {
+      predefinedMetric: appscaling.PredefinedMetric.LAMBDA_PROVISIONED_CONCURRENCY_UTILIZATION,
+      targetValue: 0.9,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
+      PolicyType: "TargetTrackingScaling",
+      TargetTrackingScalingPolicyConfiguration: {
+        PredefinedMetricSpecification: { PredefinedMetricType: "LambdaProvisionedConcurrencyUtilization" },
+        TargetValue: 0.9
+      }
+
+    }));
+
+    test.done();
+  },
+
   'test setup target tracking on custom metric'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();

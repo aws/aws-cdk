@@ -173,15 +173,64 @@ function renderCustomMetric(metric?: cloudwatch.IMetric): CfnScalingPolicy.Custo
  * One of the predefined autoscaling metrics
  */
 export enum PredefinedMetric {
+ /**
+  * DYNAMODB_READ_CAPACITY_UTILIZATIO
+  * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
+  */
   DYNAMODB_READ_CAPACITY_UTILIZATION = 'DynamoDBReadCapacityUtilization',
+ /**
+  * DYANMODB_WRITE_CAPACITY_UTILIZATION
+  * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
+  */
   DYANMODB_WRITE_CAPACITY_UTILIZATION = 'DynamoDBWriteCapacityUtilization',
+  /**
+   * ALB_REQUEST_COUNT_PER_TARGET
+   * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
+   */
   ALB_REQUEST_COUNT_PER_TARGET = 'ALBRequestCountPerTarget',
+  /**
+   * RDS_READER_AVERAGE_CPU_UTILIZATION
+   * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
+   */
   RDS_READER_AVERAGE_CPU_UTILIZATION = 'RDSReaderAverageCPUUtilization',
+  /**
+   * RDS_READER_AVERAGE_DATABASE_CONNECTIONS
+   * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
+   */
   RDS_READER_AVERAGE_DATABASE_CONNECTIONS = 'RDSReaderAverageDatabaseConnections',
+  /**
+   * EC2_SPOT_FLEET_REQUEST_AVERAGE_CPU_UTILIZATION
+   * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
+   */
   EC2_SPOT_FLEET_REQUEST_AVERAGE_CPU_UTILIZATION = 'EC2SpotFleetRequestAverageCPUUtilization',
+  /**
+   * EC2_SPOT_FLEET_REQUEST_AVERAGE_NETWORK_IN
+   * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
+   */
   EC2_SPOT_FLEET_REQUEST_AVERAGE_NETWORK_IN = 'EC2SpotFleetRequestAverageNetworkIn',
+  /**
+   * EC2_SPOT_FLEET_REQUEST_AVERAGE_NETWORK_OUT
+   * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
+   */
   EC2_SPOT_FLEET_REQUEST_AVERAGE_NETWORK_OUT = 'EC2SpotFleetRequestAverageNetworkOut',
+  /**
+   * SAGEMAKER_VARIANT_INVOCATIONS_PER_INSTANCE
+   * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
+   */
   SAGEMAKER_VARIANT_INVOCATIONS_PER_INSTANCE = 'SageMakerVariantInvocationsPerInstance',
+  /**
+   * ECS_SERVICE_AVERAGE_CPU_UTILIZATION
+   * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
+   */
   ECS_SERVICE_AVERAGE_CPU_UTILIZATION = 'ECSServiceAverageCPUUtilization',
+  /**
+   * ECS_SERVICE_AVERAGE_CPU_UTILIZATION
+   * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
+   */
   ECS_SERVICE_AVERAGE_MEMORY_UTILIZATION = 'ECSServiceAverageMemoryUtilization',
+  /**
+   * LAMBDA_PROVISIONED_CONCURRENCY_UTILIZATION
+   * @see https://docs.aws.amazon.com/lambda/latest/dg/monitoring-metrics.html#monitoring-metrics-concurrency
+   */
+  LAMBDA_PROVISIONED_CONCURRENCY_UTILIZATION = "LambdaProvisionedConcurrencyUtilization",
 }
