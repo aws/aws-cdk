@@ -2,8 +2,8 @@ import '@aws-cdk/assert/jest';
 import { ABSENT } from '@aws-cdk/assert/lib/assertions/have-resource';
 import { Role } from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Duration, Stack, Tag } from '@aws-cdk/core';
-import { Mfa, NumberAttribute, StringAttribute, UserPool, VerificationEmailStyle } from '../lib';
+import { Construct, Duration, Stack, Tag } from '@aws-cdk/core';
+import { Mfa, NumberAttribute, StringAttribute, UserPool, UserPoolOperation, VerificationEmailStyle } from '../lib';
 
 describe('User Pool', () => {
   test('default setup', () => {
@@ -34,6 +34,7 @@ describe('User Pool', () => {
         },
         ExternalId: 'Pool'
       },
+      lambdaTriggers: ABSENT,
     });
 
     expect(stack).toHaveResource('AWS::IAM::Role', {
@@ -248,134 +249,10 @@ describe('User Pool', () => {
     });
   });
 
-  test('lambda triggers are defined', () => {
+  test('lambda triggers via properties are correctly configured', () => {
     // GIVEN
     const stack = new Stack();
-    const fn = new lambda.Function(stack, 'MyLambda', {
-      code: new lambda.InlineCode('foo'),
-      handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
-    });
-
-    // WHEN
-    const pool = new UserPool(stack, 'Pool', {
-      lambdaTriggers: {
-        preSignUp: fn
-      }
-    });
-    pool.addCustomMessageTrigger(fn);
-
-    // THEN
-    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
-      LambdaConfig: {
-        PreSignUp: stack.resolve(fn.functionArn),
-        CustomMessage: stack.resolve(fn.functionArn)
-      }
-    });
-  });
-
-  test('on* API correctly appends triggers', () => {
-    // GIVEN
-    const stack = new Stack();
-
-    const createAuthChallengeLambdaFn = new lambda.Function(stack, 'createAuthChallengeLambda', {
-      code: new lambda.InlineCode('foo'),
-      handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
-    });
-
-    const customMessageLambdaFn = new lambda.Function(stack, 'customMessageLambda', {
-      code: new lambda.InlineCode('foo'),
-      handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
-    });
-
-    const defineAuthChallengeLambdaFn = new lambda.Function(stack, 'defineAuthChallengeLambda', {
-      code: new lambda.InlineCode('foo'),
-      handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
-    });
-
-    const postAuthenticationLambdaFn = new lambda.Function(stack, 'postAuthenticationLambda', {
-      code: new lambda.InlineCode('foo'),
-      handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
-    });
-
-    const postConfirmationLambdaFn = new lambda.Function(stack, 'postConfirmationLambda', {
-      code: new lambda.InlineCode('foo'),
-      handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
-    });
-
-    const preAuthenticationLambdaFn = new lambda.Function(stack, 'preAuthenticationLambda', {
-      code: new lambda.InlineCode('foo'),
-      handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
-    });
-
-    const preSignUpLambdaFn = new lambda.Function(stack, 'preSignUpLambda', {
-      code: new lambda.InlineCode('foo'),
-      handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
-    });
-
-    const preTokenGenerationLambdaFn = new lambda.Function(stack, 'preTokenGenerationLambda', {
-      code: new lambda.InlineCode('foo'),
-      handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
-    });
-
-    const userMigrationLambdaFn = new lambda.Function(stack, 'userMigrationLambda', {
-      code: new lambda.InlineCode('foo'),
-      handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
-    });
-
-    const verifyAuthChallengeResponseLambdaFn = new lambda.Function(stack, 'verifyAuthChallengeResponseLambda', {
-      code: new lambda.InlineCode('foo'),
-      handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
-    });
-
-    // WHEN
-    const pool = new UserPool(stack, 'Pool', { });
-    pool.addCreateAuthChallengeTrigger(createAuthChallengeLambdaFn);
-    pool.addCustomMessageTrigger(customMessageLambdaFn);
-    pool.addDefineAuthChallengeTrigger(defineAuthChallengeLambdaFn);
-    pool.addPostAuthenticationTrigger(postAuthenticationLambdaFn);
-    pool.addPostConfirmationTrigger(postConfirmationLambdaFn);
-    pool.addPreAuthenticationTrigger(preAuthenticationLambdaFn);
-    pool.addPreSignUpTrigger(preSignUpLambdaFn);
-    pool.addPreTokenGenerationTrigger(preTokenGenerationLambdaFn);
-    pool.addUserMigrationTrigger(userMigrationLambdaFn);
-    pool.addVerifyAuthChallengeResponseTrigger(verifyAuthChallengeResponseLambdaFn);
-
-    // THEN
-    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
-      LambdaConfig: {
-        CreateAuthChallenge: stack.resolve(createAuthChallengeLambdaFn.functionArn),
-        CustomMessage: stack.resolve(customMessageLambdaFn.functionArn),
-        DefineAuthChallenge: stack.resolve(defineAuthChallengeLambdaFn.functionArn),
-        PostAuthentication: stack.resolve(postAuthenticationLambdaFn.functionArn),
-        PostConfirmation: stack.resolve(postConfirmationLambdaFn.functionArn),
-        PreAuthentication: stack.resolve(preAuthenticationLambdaFn.functionArn),
-        PreSignUp: stack.resolve(preSignUpLambdaFn.functionArn),
-        PreTokenGeneration: stack.resolve(preTokenGenerationLambdaFn.functionArn),
-        UserMigration: stack.resolve(userMigrationLambdaFn.functionArn),
-        VerifyAuthChallengeResponse: stack.resolve(verifyAuthChallengeResponseLambdaFn.functionArn)
-      }
-    });
-  });
-
-  test('lambdas are given cognito service grant', () => {
-    // GIVEN
-    const stack = new Stack();
-    const fn = new lambda.Function(stack, 'MyLambda', {
-      code: new lambda.InlineCode('foo'),
-      handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
-    });
+    const fn = fooFunction(stack, 'preSignUp');
 
     // WHEN
     new UserPool(stack, 'Pool', {
@@ -385,10 +262,92 @@ describe('User Pool', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::Lambda::Permission', {
-      FunctionName: stack.resolve(fn.functionArn),
-      Principal: 'cognito-idp.amazonaws.com'
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+      LambdaConfig: {
+        PreSignUp: stack.resolve(fn.functionArn),
+      }
     });
+    expect(stack).toHaveResourceLike('AWS::Lambda::Permission', {
+      Action: "lambda:InvokeFunction",
+      FunctionName: stack.resolve(fn.functionArn),
+      Principal: 'cognito-idp.amazonaws.com',
+    });
+  });
+
+  test('add* API correctly appends triggers', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const createAuthChallenge = fooFunction(stack, 'createAuthChallenge');
+    const customMessage = fooFunction(stack, 'customMessage');
+    const defineAuthChallenge = fooFunction(stack, 'defineAuthChallenge');
+    const postAuthentication = fooFunction(stack, 'postAuthentication');
+    const postConfirmation = fooFunction(stack, 'postConfirmation');
+    const preAuthentication = fooFunction(stack, 'preAuthentication');
+    const preSignUp = fooFunction(stack, 'preSignUp');
+    const preTokenGeneration = fooFunction(stack, 'preTokenGeneration');
+    const userMigration = fooFunction(stack, 'userMigration');
+    const verifyAuthChallengeResponse = fooFunction(stack, 'verifyAuthChallengeResponse');
+
+    // WHEN
+    const pool = new UserPool(stack, 'Pool');
+    pool.addTrigger(UserPoolOperation.CREATE_AUTH_CHALLENGE, createAuthChallenge);
+    pool.addTrigger(UserPoolOperation.CUSTOM_MESSAGE, customMessage);
+    pool.addTrigger(UserPoolOperation.DEFINE_AUTH_CHALLENGE, defineAuthChallenge);
+    pool.addTrigger(UserPoolOperation.POST_AUTHENTICATION, postAuthentication);
+    pool.addTrigger(UserPoolOperation.POST_CONFIRMATION, postConfirmation);
+    pool.addTrigger(UserPoolOperation.PRE_AUTHENTICATION, preAuthentication);
+    pool.addTrigger(UserPoolOperation.PRE_SIGN_UP, preSignUp);
+    pool.addTrigger(UserPoolOperation.PRE_TOKEN_GENERATION, preTokenGeneration);
+    pool.addTrigger(UserPoolOperation.USER_MIGRATION, userMigration);
+    pool.addTrigger(UserPoolOperation.VERIFY_AUTH_CHALLENGE_RESPONSE, verifyAuthChallengeResponse);
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+      LambdaConfig: {
+        CreateAuthChallenge: stack.resolve(createAuthChallenge.functionArn),
+        CustomMessage: stack.resolve(customMessage.functionArn),
+        DefineAuthChallenge: stack.resolve(defineAuthChallenge.functionArn),
+        PostAuthentication: stack.resolve(postAuthentication.functionArn),
+        PostConfirmation: stack.resolve(postConfirmation.functionArn),
+        PreAuthentication: stack.resolve(preAuthentication.functionArn),
+        PreSignUp: stack.resolve(preSignUp.functionArn),
+        PreTokenGeneration: stack.resolve(preTokenGeneration.functionArn),
+        UserMigration: stack.resolve(userMigration.functionArn),
+        VerifyAuthChallengeResponse: stack.resolve(verifyAuthChallengeResponse.functionArn)
+      }
+    });
+
+    [ createAuthChallenge, customMessage, defineAuthChallenge, postAuthentication,
+      postConfirmation, preAuthentication, preSignUp, preTokenGeneration, userMigration,
+      verifyAuthChallengeResponse ].forEach((fn) => {
+      expect(stack).toHaveResourceLike('AWS::Lambda::Permission', {
+        Action: "lambda:InvokeFunction",
+        FunctionName: stack.resolve(fn.functionArn),
+        Principal: 'cognito-idp.amazonaws.com',
+      });
+    });
+  });
+
+  test('fails when the same trigger is added twice', () => {
+    // GIVEN
+    const stack = new Stack();
+    const userpool = new UserPool(stack, 'Pool');
+
+    const fn1 = new lambda.Function(stack, 'fn1', {
+      code: lambda.Code.fromInline('foo'),
+      runtime: lambda.Runtime.NODEJS_12_X,
+      handler: 'index.handler',
+    });
+    const fn2 = new lambda.Function(stack, 'fn2', {
+      code: lambda.Code.fromInline('foo'),
+      runtime: lambda.Runtime.NODEJS_12_X,
+      handler: 'index.handler',
+    });
+
+    // WHEN
+    userpool.addTrigger(UserPoolOperation.CREATE_AUTH_CHALLENGE, fn1);
+    expect(() => userpool.addTrigger(UserPoolOperation.CREATE_AUTH_CHALLENGE, fn2)).toThrow(/already exists/);
   });
 
   test('no username aliases specified', () => {
@@ -793,3 +752,12 @@ describe('User Pool', () => {
     });
   });
 });
+
+function fooFunction(scope: Construct, name: string): lambda.IFunction {
+  return new lambda.Function(scope, name, {
+    functionName: name,
+    code: lambda.Code.inline('foo'),
+    runtime: lambda.Runtime.NODEJS_12_X,
+    handler: 'index.handler',
+  });
+}

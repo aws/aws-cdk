@@ -131,6 +131,52 @@ test('Task with all the parameters', () => {
   });
 });
 
+test('supports tokens', () => {
+  // WHEN
+  const task = new sfn.Task(stack, 'Task', {
+    task: new tasks.RunBatchJob({
+      jobDefinition: batchJobDefinition,
+      jobName: sfn.Data.stringAt('$.jobName'),
+      jobQueue: batchJobQueue,
+      arraySize: sfn.Data.numberAt('$.arraySize'),
+      timeout: cdk.Duration.seconds(sfn.Data.numberAt('$.timeout')),
+      attempts: sfn.Data.numberAt('$.attempts'),
+    })
+  });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition'
+          },
+          ':states:::batch:submitJob.sync'
+        ]
+      ]
+    },
+    End: true,
+    Parameters: {
+      'JobDefinition': { Ref: 'JobDefinition24FFE3ED' },
+      'JobName.$': '$.jobName',
+      'JobQueue': { Ref: 'JobQueueEE3AD499' },
+      'ArrayProperties': {
+        'Size.$': '$.arraySize'
+      },
+      'RetryStrategy': {
+        'Attempts.$': '$.attempts'
+      },
+      'Timeout': {
+        'AttemptDurationSeconds.$': '$.timeout'
+      }
+    }
+  });
+});
+
 test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration pattern', () => {
   expect(() => {
     new sfn.Task(stack, 'Task', {
@@ -174,7 +220,7 @@ test('Task throws if arraySize is out of limits 2-10000', () => {
       })
     });
   }).toThrow(
-    /Invalid value of arraySize. The array size can be between 2 and 10,000./i
+    /arraySize must be between 2 and 10,000/
   );
 
   expect(() => {
@@ -187,7 +233,7 @@ test('Task throws if arraySize is out of limits 2-10000', () => {
       })
     });
   }).toThrow(
-    /Invalid value of arraySize. The array size can be between 2 and 10,000./i
+    /arraySize must be between 2 and 10,000/
   );
 });
 
@@ -205,7 +251,7 @@ test('Task throws if dependencies exceeds 20', () => {
       })
     });
   }).toThrow(
-    /Invalid number of dependencies. A job can depend upon a maximum of 20 jobs./i
+    /dependencies must be 20 or less/
   );
 });
 
@@ -220,7 +266,7 @@ test('Task throws if attempts is out of limits 1-10', () => {
       })
     });
   }).toThrow(
-    /Invalid value of attempts. You may specify between 1 and 10 attempts./i
+    /attempts must be between 1 and 10/
   );
 
   expect(() => {
@@ -233,7 +279,7 @@ test('Task throws if attempts is out of limits 1-10', () => {
       })
     });
   }).toThrow(
-    /Invalid value of attempts. You may specify between 1 and 10 attempts./i
+    /attempts must be between 1 and 10/
   );
 });
 
@@ -248,6 +294,6 @@ test('Task throws if timeout is less than 60 sec', () => {
       })
     });
   }).toThrow(
-    /Invalid value of timrout. The minimum value for the timeout is 60 seconds./i
+    /timeout must be greater than 60 seconds/
   );
 });

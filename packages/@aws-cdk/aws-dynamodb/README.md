@@ -74,4 +74,17 @@ https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/AutoScaling.htm
 https://aws.amazon.com/blogs/database/how-to-use-aws-cloudformation-to-configure-auto-scaling-for-amazon-dynamodb-tables-and-indexes/
 
 ### Amazon DynamoDB Global Tables
-Please see the `@aws-cdk/aws-dynamodb-global` package.
+
+You can create DynamoDB Global Tables by setting the `replicationRegions` property on a `Table`:
+
+```ts
+import dynamodb = require('@aws-cdk/aws-dynamodb');
+
+const globalTable = new dynamodb.Table(this, 'Table', {
+  partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
+  replicationRegions: ['us-east-1', 'us-east-2', 'us-west-2'],
+});
+```
+
+When doing so, a CloudFormation Custom Resource will be added to the stack in order to create the replica tables in the
+selected regions.
