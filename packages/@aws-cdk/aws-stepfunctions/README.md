@@ -35,17 +35,21 @@ const submitLambda = new lambda.Function(this, 'SubmitLambda', { ... });
 const getStatusLambda = new lambda.Function(this, 'CheckLambda', { ... });
 
 const submitJob = new sfn.Task(this, 'Submit Job', {
-    task: new tasks.InvokeFunction(submitLambda),
+    task: new tasks.RunLambdaTask(submitLambda, {
+      integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
+    }),
     // Put Lambda's result here in the execution's state object
     resultPath: '$.guid',
 });
 
 const waitX = new sfn.Wait(this, 'Wait X Seconds', {
-    duration: sfn.WaitTime.secondsPath('$.waitSeconds'),
+    time: sfn.WaitTime.secondsPath('$.waitSeconds'),
 });
 
 const getStatus = new sfn.Task(this, 'Get Job Status', {
-    task: new tasks.InvokeFunction(getStatusLambda),
+    task: new tasks.RunLambdaTask(getStatusLambda, {
+      integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
+    }),
     // Pass just the field named "guid" into the Lambda, put the
     // Lambda's result in a field called "status"
     inputPath: '$.guid',
@@ -58,7 +62,9 @@ const jobFailed = new sfn.Fail(this, 'Job Failed', {
 });
 
 const finalStatus = new sfn.Task(this, 'Get Final Job Status', {
-    task: new tasks.InvokeFunction(getStatusLambda),
+    task: new tasks.RunLambdaTask(getStatusLambda, {
+      integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
+    }),
     // Use "guid" field as input, output of the Lambda becomes the
     // entire state machine output.
     inputPath: '$.guid',
@@ -105,13 +111,14 @@ This library comes with a set of classes that model the [Amazon States
 Language](https://states-language.net/spec.html). The following State classes
 are supported:
 
-* `Task`
-* `Pass`
-* `Wait`
-* `Choice`
-* `Parallel`
-* `Succeed`
-* `Fail`
+* [`Task`](#task)
+* [`Pass`](#pass)
+* [`Wait`](#wait)
+* [`Choice`](#choice)
+* [`Parallel`](#parallel)
+* [`Succeed`](#succeed)
+* [`Fail`](#fail)
+* [`Map`](#map)
 
 An arbitrary JSON object (specified at execution start) is passed from state to
 state and transformed during the execution of the workflow. For more
@@ -126,7 +133,6 @@ couple of the tasks available are:
 
 * `tasks.InvokeActivity` -- start an Activity (Activities represent a work
   queue that you poll on a compute fleet you manage yourself)
-* `tasks.InvokeFunction` -- invoke a Lambda function with function ARN
 * `tasks.RunBatchJob` -- run a Batch job
 * `tasks.RunLambdaTask` -- call Lambda as integrated service with magic ARN
 * `tasks.RunGlueJobTask` -- call Glue Job as integrated service
@@ -139,9 +145,9 @@ couple of the tasks available are:
 * `tasks.StartExecution` -- call StartExecution to a state machine of Step Functions
 * `tasks.EvaluateExpression` -- evaluate an expression referencing state paths
 
-Except `tasks.InvokeActivity` and `tasks.InvokeFunction`, the [service integration
+Except `tasks.InvokeActivity`, the [service integration
 pattern](https://docs.aws.amazon.com/step-functions/latest/dg/connect-to-resource.html)
-(`integrationPattern`) are supposed to be given as parameter when customers want
+(`integrationPattern`) is supposed to be provided as a parameter when customers want
 to call integrated services within a Task state. The default value is `FIRE_AND_FORGET`.
 
 #### Task parameters from the state json
@@ -154,29 +160,7 @@ such as `Data.stringAt()`.
 If so, the value is taken from the indicated location in the state JSON,
 similar to (for example) `inputPath`.
 
-#### Lambda example - InvokeFunction
-
-```ts
-const task = new sfn.Task(this, 'Invoke1', {
-    task: new tasks.InvokeFunction(myLambda),
-    inputPath: '$.input',
-    timeout: Duration.minutes(5),
-});
-
-// Add a retry policy
-task.addRetry({
-    interval: Duration.seconds(5),
-    maxAttempts: 10
-});
-
-// Add an error handler
-task.addCatch(errorHandlerState);
-
-// Set the next state
-task.next(nextState);
-```
-
-#### Lambda example - RunLambdaTask
+#### Lambda example
 
 ```ts
   const task = new sfn.Task(stack, 'Invoke2', {
@@ -461,7 +445,7 @@ wait.next(startTheWork);
 
 ### Choice
 
-A `Choice` state can take a differen path through the workflow based on the
+A `Choice` state can take a different path through the workflow based on the
 values in the execution's JSON state:
 
 ```ts
@@ -536,6 +520,22 @@ const success = new stepfunctions.Fail(this, 'Fail', {
     error: 'WorkflowFailure',
     cause: "Something went wrong"
 });
+```
+
+### Map
+
+A `Map` state can be used to run a set of steps for each element of an input array.
+A `Map` state will execute the same steps for multiple entries of an array in the state input.
+
+While the `Parallel` state executes multiple branches of steps using the same input, a `Map` state will
+execute the same steps for multiple entries of an array in the state input.
+
+```ts
+const map = new stepfunctions.Map(this, 'Map State', {
+    maxConcurrency: 1,
+    itemsPath: stepfunctions.Data.stringAt('$.inputForMap')
+});
+map.iterator(new stepfunctions.Pass(this, 'Pass State'));
 ```
 
 ## Task Chaining

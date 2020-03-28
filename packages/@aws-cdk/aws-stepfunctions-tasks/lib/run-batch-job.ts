@@ -2,7 +2,7 @@ import * as batch from '@aws-cdk/aws-batch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import { Duration, Stack } from '@aws-cdk/core';
+import { Duration, Stack, withResolved } from '@aws-cdk/core';
 import { getResourceArn } from './resource-arn-suffix';
 
 /**
@@ -191,38 +191,31 @@ export class RunBatchJob implements sfn.IStepFunctionsTask {
     }
 
     // validate arraySize limits
-    if (
-      props.arraySize !== undefined &&
-      (props.arraySize < 2 || props.arraySize > 10000)
-    ) {
-      throw new Error(
-        `Invalid value of arraySize. The array size can be between 2 and 10,000.`
-      );
-    }
+    withResolved(props.arraySize, (arraySize) => {
+      if (arraySize !== undefined && (arraySize < 2 || arraySize > 10_000)) {
+        throw new Error(`arraySize must be between 2 and 10,000. Received ${arraySize}.`);
+      }
+    });
 
     // validate dependency size
     if (props.dependsOn && props.dependsOn.length > 20) {
-      throw new Error(
-        `Invalid number of dependencies. A job can depend upon a maximum of 20 jobs.`
-      );
+      throw new Error(`dependencies must be 20 or less. Received ${props.dependsOn.length}.`);
     }
 
     // validate attempts
-    if (
-      props.attempts !== undefined &&
-      (props.attempts < 1 || props.attempts > 10)
-    ) {
-      throw new Error(
-        `Invalid value of attempts. You may specify between 1 and 10 attempts.`
-      );
-    }
+    withResolved(props.attempts, (attempts) => {
+      if (attempts !== undefined && (attempts < 1 || attempts > 10)) {
+        throw new Error(`attempts must be between 1 and 10. Received ${attempts}.`);
+      }
+    });
 
     // validate timeout
-    if (props.timeout && props.timeout.toSeconds() < 60) {
-      throw new Error(
-        `Invalid value of timrout. The minimum value for the timeout is 60 seconds.`
-      );
-    }
+    // tslint:disable-next-line:no-unused-expression
+    props.timeout !== undefined && withResolved(props.timeout.toSeconds(), (timeout) => {
+      if (timeout < 60) {
+        throw new Error(`timeout must be greater than 60 seconds. Received ${timeout} seconds.`);
+      }
+    });
 
     // This is reuqired since environment variables must not start with AWS_BATCH;
     // this naming convention is reserved for variables that are set by the AWS Batch service.
