@@ -24,7 +24,7 @@ export class GitHubSourceCredentials extends Resource {
   constructor(scope: Construct, id: string, props: GitHubSourceCredentialsProps) {
     super(scope, id);
 
-    new CfnSourceCredential(scope, 'Resource', {
+    new CfnSourceCredential(this, 'Resource', {
       serverType: 'GITHUB',
       authType: 'PERSONAL_ACCESS_TOKEN',
       token: props.accessToken.toString(),
@@ -56,7 +56,7 @@ export class GitHubEnterpriseSourceCredentials extends Resource {
   constructor(scope: Construct, id: string, props: GitHubEnterpriseSourceCredentialsProps) {
     super(scope, id);
 
-    new CfnSourceCredential(scope, 'Resource', {
+    new CfnSourceCredential(this, 'Resource', {
       serverType: 'GITHUB_ENTERPRISE',
       authType: 'PERSONAL_ACCESS_TOKEN',
       token: props.accessToken.toString(),

@@ -58,6 +58,21 @@ const instance = new DatabaseInstance(stack, 'Instance', {
 ```
 By default, the master password will be generated and stored in AWS Secrets Manager.
 
+To use the storage auto scaling option of RDS you can specify the maximum allocated storage.
+This is the upper limit to which RDS can automatically scale the storage. More info can be found
+[here](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PIOPS.StorageTypes.html#USER_PIOPS.Autoscaling)
+Example for max storage configuration:
+
+```ts
+const instance = new DatabaseInstance(stack, 'Instance', {
+    engine: rds.DatabaseInstanceEngine.ORACLE_SE1,
+    instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+    masterUsername: 'syscdk',
+    vpc,
+    maxAllocatedStorage: 200
+});
+```
+
 Use `DatabaseInstanceFromSnapshot` and `DatabaseInstanceReadReplica` to create an instance from snapshot or
 a source database respectively:
 
@@ -76,6 +91,7 @@ new DatabaseInstanceReadReplica(stack, 'ReadReplica', {
     vpc
 });
 ```
+
 Creating a "production" Oracle database instance with option and parameter groups:
 
 [example of setting up a production oracle instance](test/integ.instance.lit.ts)
@@ -150,4 +166,31 @@ const dbConnections = instance.metricDatabaseConnections();
 
 // The average amount of time taken per disk I/O operation (average over 1 minute)
 const readLatency = instance.metric('ReadLatency', { statistic: 'Average', periodSec: 60 });
+```
+
+### Enabling S3 integration to a cluster (non-serverless Aurora only)
+
+Data in S3 buckets can be imported to and exported from Aurora databases using SQL queries. To enable this
+functionality, set the `s3ImportBuckets` and `s3ExportBuckets` properties for import and export respectively. When
+configured, the CDK automatically creates and configures IAM roles as required.
+Additionally, the `s3ImportRole` and `s3ExportRole` properties can be used to set this role directly.
+
+For Aurora MySQL, read more about [loading data from
+S3](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Integrating.LoadFromS3.html) and [saving
+data into S3](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Integrating.SaveIntoS3.html).
+
+For Aurora PostgreSQL, read more about [loading data from
+S3](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraPostgreSQL.Migrating.html) and [saving 
+data into S3](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/postgresql-s3-export.html).
+
+The following snippet sets up a database cluster with different S3 buckets where the data is imported and exported - 
+
+```ts
+const importBucket = new s3.Bucket(this, 'importbucket');
+const exportBucket = new s3.Bucket(this, 'exportbucket');
+new DatabaseCluster(this, 'dbcluster', {
+    // ...
+    s3ImportBuckets: [ importBucket ],
+    s3ExportBuckets: [ exportBucket ]
+});
 ```

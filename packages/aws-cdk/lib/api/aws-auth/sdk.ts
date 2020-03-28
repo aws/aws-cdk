@@ -14,6 +14,8 @@ export interface ISDK {
   route53(): AWS.Route53;
 
   ecr(): AWS.ECR;
+
+  sts(): AWS.STS;
 }
 
 /**
@@ -65,5 +67,9 @@ export class SDK implements ISDK {
 
   public ecr(): AWS.ECR {
     return new AWS.ECR(this.config);
+  }
+
+  public sts(): AWS.STS {
+    return new AWS.STS(this.config);
   }
 }

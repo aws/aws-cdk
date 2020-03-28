@@ -17,14 +17,12 @@
 ---
 <!--END STABILITY BANNER-->
 
+Migrate TypeScript `import` statements from modular CDK (i.e. `@aws-cdk/aws-s3`) to mono-cdk (i.e. `monocdk-experiment/aws-s3`);
 
-A hacky tool to mass rewrite a bunch of TS files from the old style imports
-to the new style imports.
+Usage:
 
-Don't expect this to be perfect, or even good. Have your trusty pal git available
-to roll back if you need to!
-
+```shell
+$ rewrite-imports lib/**/*.ts
 ```
-npx tsc
-node /path/to/cdk-rewrite-mono-imports/index lib/*.ts
-```
+
+NOTE: `node_modules` and `*.d.ts` files are ignored.
