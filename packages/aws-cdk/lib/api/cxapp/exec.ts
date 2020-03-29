@@ -54,8 +54,6 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
   debug('context:', context);
   env[cxapi.CONTEXT_ENV] = JSON.stringify(context);
 
-  const cliVersion = versionNumber();
-
   const app = config.settings.get(['app']);
   if (!app) {
     throw new Error(`--app is required either in command-line, in ${PROJECT_CONFIG} or in ${USER_DEFAULTS}`);
@@ -79,7 +77,7 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
   env[cxapi.OUTDIR_ENV] = outdir;
 
   // Send version information
-  env[cxapi.CLI_VERSION_ENV] = cliVersion;
+  env[cxapi.CLI_VERSION_ENV] = versionNumber();
 
   debug('env:', env);
 
