@@ -297,23 +297,20 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends Construct {
 
     if (props.loadBalancers) {
       for (const lbProps of props.loadBalancers) {
-        const internetFacing = lbProps.publicLoadBalancer !== undefined ? lbProps.publicLoadBalancer : true;
-        const lb = this.createLoadBalancer(lbProps.name, internetFacing);
+        const lb = this.createLoadBalancer(lbProps.name, lbProps.publicLoadBalancer);
         this.loadBalancers.push(lb);
         for (const listenerProps of lbProps.listeners) {
           const listener = this.createListener(listenerProps.name, lb, listenerProps.port || 80);
           this.listeners.push(listener);
         }
-        if (internetFacing) {
-          this.createDomainName(lb, lbProps.domainName, lbProps.domainZone);
-        }
+        this.createDomainName(lb, lbProps.domainName, lbProps.domainZone);
         new CfnOutput(this, `LoadBalancerDNS${lb.node.id}`, { value: lb.loadBalancerDnsName });
       }
       // set up default load balancer and listener.
       this.loadBalancer = this.loadBalancers[0];
       this.listener = this.listeners[0];
     } else {
-      this.loadBalancer = this.createLoadBalancer('LB', true);
+      this.loadBalancer = this.createLoadBalancer('LB');
       this.listener = this.createListener('PublicListener', this.loadBalancer, 80);
       this.createDomainName(this.loadBalancer);
 
@@ -408,7 +405,8 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends Construct {
     }
   }
 
-  private createLoadBalancer(name: string, internetFacing: boolean): NetworkLoadBalancer {
+  private createLoadBalancer(name: string, publicLoadBalancer?: boolean): NetworkLoadBalancer {
+    const internetFacing = publicLoadBalancer !== undefined ? publicLoadBalancer : true;
     const lbProps = {
       vpc: this.cluster.vpc,
       internetFacing

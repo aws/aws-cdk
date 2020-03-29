@@ -27,6 +27,7 @@ and let us know if it's not up-to-date (even better, submit a PR with your  corr
   - [Full clean build](#full-clean-build)
   - [Full Docker build](#full-docker-build)
   - [Partial build](#partial-build)
+  - [Partial pack](#partial-pack)
   - [Quick Iteration](#quick-iteration)
   - [Linking against this repository](#linking-against-this-repository)
   - [Running integration tests in parallel](#running-integration-tests-in-parallel)
@@ -424,6 +425,27 @@ $ ../../../scripts/buildup
 
 Note that `buildup` uses `foreach.sh`, which means it's resumable. If your build fails and you wish to resume, just run
 `buildup --resume`. If you wish to restart, run `buildup` again.
+
+### Partial pack
+
+Packing involves generating CDK code in the various target languages, and packaged up ready to be published to the
+respective package managers. Once in a while, these will need to be generated either to test the experience of a new
+feature, or reproduce a packaging failure.
+
+Before running this, make sure either that the CDK module and all of its dependencies are already built. See [Partial
+build](#partial-build) or [Full clean build](#full-clean-build).
+
+To package a specific module, say the `@aws-cdk/aws-ec2` module:
+
+```console
+$ cd <root-of-cdk-repo>
+$ docker run --rm --net=host -it -v $PWD:$PWD -w $PWD jsii/superchain
+docker$ cd packages/@aws-cdk/aws-ec2
+docker$ ../../../scripts/foreach.sh --up yarn run package
+docker$ exit
+```
+
+The `dist/` folder within each module contains the packaged up language artifacts.
 
 ### Quick Iteration
 
