@@ -1,0 +1,20 @@
+{
+    "ResourceTypes": {
+        "AWS::ResourceGroups::Group": {
+            "patch": {
+                "description": "Sets AWS::ResourceGroups::Group#Tags to Json",
+                "operations": [
+                    {
+                        "op": "remove",
+                        "path": "/Properties/Tags/ItemType"
+                    },
+                    {
+                        "op": "add",
+                        "path": "/Properties/Tags/PrimitiveType",
+                        "value": "Json"
+                    }
+                ]
+            }
+        }
+    }
+}
