@@ -59,6 +59,11 @@ function serve_npm_packages() {
 
   use_verdaccio
 
+  if [ ! -z ${USE_PUBLISHED_FRAMEWORK_VERSION:-} ]; then
+    # when using latest published framework, only publish cli
+    tarballs=aws-cdk-*.tgz
+  fi
+
   log "Publishing NPM tarballs..."
   for tgz in $tarballs; do
     # Doesn't matter what directory it is, just shouldn't be the
