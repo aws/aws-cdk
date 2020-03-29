@@ -59,10 +59,15 @@ function serve_npm_packages() {
 
   use_verdaccio
 
+  echo "Checking if using published framework"
+
   if [ ! -z ${USE_PUBLISHED_FRAMEWORK_VERSION:-} ]; then
     # when using latest published framework, only publish cli
+    echo "Yes, using published framework"
     tarballs=aws-cdk-*.tgz
   fi
+
+  echo "tarballs = ${tarballs}"
 
   log "Publishing NPM tarballs..."
   for tgz in $tarballs; do
