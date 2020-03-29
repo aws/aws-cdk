@@ -43,6 +43,8 @@
     "nohoist": [
       "**/jszip",
       "**/jszip/**",
+      "@aws-cdk/cdk-assets-schema/semver",
+      "@aws-cdk/cdk-assets-schema/semver/**",
       "@aws-cdk/assets/minimatch",
       "@aws-cdk/assets/minimatch/**",
       "@aws-cdk/aws-codepipeline-actions/case",
@@ -51,8 +53,6 @@
       "@aws-cdk/aws-ecr-assets/minimatch/**",
       "@aws-cdk/aws-lambda-nodejs/parcel-bundler",
       "@aws-cdk/aws-lambda-nodejs/parcel-bundler/**",
-      "@aws-cdk/cdk-assets-schema/semver",
-      "@aws-cdk/cdk-assets-schema/semver/**",
       "@aws-cdk/cloud-assembly-schema/jsonschema",
       "@aws-cdk/cloud-assembly-schema/jsonschema/**",
       "@aws-cdk/cx-api/semver",
