@@ -2,7 +2,6 @@
 *.js.map
 *.d.ts
 !lib/init-templates/**/javascript/**/*
-!test/integ/cli.exclusions.js
 node_modules
 dist
 

@@ -29,8 +29,7 @@
         "lib/init-templates/*/typescript/**/*.ts",
         "lib/init-templates/*/javascript/**/*.js",
         "test/integ/cli/app/**/*.js",
-        "test/integ/cli/cloud-assemblies/**/*.json.js",
-        "test/integ/cli.exclusions.js"
+        "test/integ/cli/cloud-assemblies/**/*.json.js"
       ]
     }
   },
