@@ -282,12 +282,12 @@ async function getDeployedStack(cfn: aws.CloudFormation, stackName: string):
   const template = await readCurrentTemplate(cfn, stackName);
   return {
     stackId: stack.StackId,
-    tags: stack.Tags ? tocxschemaTags(stack.Tags) : [],
+    tags: stack.Tags ? toCxSchemaTags(stack.Tags) : [],
     template
   };
 }
 
-function tocxschemaTags(tags: Tags): cxschema.Tag[] {
+function toCxSchemaTags(tags: Tags): cxschema.Tag[] {
   return tags.map(t => {
     return { key: t.Key, value: t.Value };
   });
