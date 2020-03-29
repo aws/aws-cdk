@@ -172,7 +172,7 @@ export interface ComputeResources {
    * The minimum number of EC2 vCPUs that an environment should maintain (even if the compute environment state is DISABLED).
    * Each vCPU is equivalent to 1,024 CPU shares. You must specify at least one vCPU.
    *
-   * @default 1
+   * @default 0
    */
   readonly minvCpus?: number;
 
