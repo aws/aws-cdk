@@ -36,6 +36,6 @@ for test in $(cd ${scriptdir} && ls test-*.sh); do
 
   echo "${test}"
   echo "============================================================================================"
-  # /bin/bash ${scriptdir}/${test}
+  /bin/bash ${scriptdir}/${test}
 done
 
