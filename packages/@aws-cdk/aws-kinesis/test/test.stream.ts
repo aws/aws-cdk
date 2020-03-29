@@ -97,6 +97,33 @@ export = {
 
     test.done();
   },
+
+  'uses Kinesis master key if KINESIS_MANAGED encryption type is provided'(test: Test) {
+    const stack = new Stack();
+
+    new Stream(stack, 'MyStream', {
+      encryption: StreamEncryption.KINESIS_MANAGED
+    });
+
+    expect(stack).toMatch({
+      "Resources": {
+        "MyStream5C050E93": {
+          "Type": "AWS::Kinesis::Stream",
+          "Properties": {
+            "ShardCount": 1,
+            "RetentionPeriodHours": 24,
+            "StreamEncryption": {
+              "EncryptionType": "KMS",
+              "KeyId": "alias/aws/kinesis"
+            }
+          }
+        }
+      }
+    });
+
+    test.done();
+  },
+
   "auto-creates KMS key if encryption type is KMS but no key is provided"(test: Test) {
     const stack = new Stack();
 

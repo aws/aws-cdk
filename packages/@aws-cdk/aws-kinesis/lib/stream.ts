@@ -201,7 +201,7 @@ export interface StreamProps {
    * If you choose KMS, you can specify a KMS key via `encryptionKey`. If
    * encryption key is not specified, a key will automatically be created.
    *
-   * @default Unencrypted
+   * @default StreamEncryption.UNENCRYPTED
    */
   readonly encryption?: StreamEncryption;
 
@@ -210,7 +210,7 @@ export interface StreamProps {
    *
    * The 'encryption' property must be set to "Kms".
    *
-   * @default If encryption is set to "Kms" and this property is undefined, a
+   * @default - If encryption is set to "KMS" and this property is undefined, a
    * new KMS key will be created and associated with this stream.
    */
   readonly encryptionKey?: kms.IKey;
@@ -306,6 +306,14 @@ export class Stream extends StreamBase {
       return { streamEncryption: undefined, encryptionKey: undefined };
     }
 
+    if (encryptionType === StreamEncryption.KINESIS_MANAGED) {
+      const encryption = { encryptionType: 'KMS', keyId: 'alias/aws/kinesis'};
+      return {
+        streamEncryption: encryption,
+        encryptionKey: undefined
+      };
+    }
+
     if (encryptionType === StreamEncryption.KMS) {
       const encryptionKey = props.encryptionKey || new kms.Key(this, 'Key', {
         description: `Created by ${this.node.path}`
@@ -336,4 +344,9 @@ export enum StreamEncryption {
    * If `encryptionKey` is specified, this key will be used, otherwise, one will be defined.
    */
   KMS = 'KMS',
+
+  /**
+   * Server-side encryption with a master key managed by Amazon Kinesis
+   */
+  KINESIS_MANAGED = 'MANAGED'
 }
