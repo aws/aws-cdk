@@ -15,7 +15,19 @@ Note that it is not generated as part of the build, this is to ensure developers
 If changes to the code are perfomed, without generating a new schema, the tests will fail:
 
 ```console
+$ cdk-test
+FAIL test/schema.test.js (5.902s)
+  ✓ manifest save (7ms)
+  ✕ cloud-assembly.json.schema is correct (5304ms)
+  ✓ manifest load (4ms)
+  ✓ manifest load fails for invalid nested property (5ms)
+  ✓ manifest load fails for invalid artifact type (1ms)
+  ✓ stack-tags are deserialized properly (1ms)
+  ✓ can access random metadata (1ms)
 
+  ● cloud-assembly.json.schema is correct
+
+    Whoops, Looks like the schema has changed. Did you forget to run 'yarn generate'?
 ```
 
 ### Schema Validation
