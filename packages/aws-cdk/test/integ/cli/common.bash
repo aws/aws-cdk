@@ -73,24 +73,15 @@ function prepare_fixture() {
     # we install locally.
     mkdir -p node_modules
 
-    # this will cause the npm wrapper to install
-    # the versions from source.
-    framework_version=""
-    if [ ! -z ${USE_PUBLISHED_FRAMEWORK_VERSION} ]; then
-      # this will cause the npm wrapper to install
-      # the latest published 1.x versions.
-      framework_version="@^1"
-    fi
-
     npm install \
-        @aws-cdk/core${framework_version} \
-        @aws-cdk/aws-sns${framework_version} \
-        @aws-cdk/aws-iam${framework_version} \
-        @aws-cdk/aws-lambda${framework_version} \
-        @aws-cdk/aws-ssm${framework_version} \
-        @aws-cdk/aws-ecr-assets${framework_version} \
-        @aws-cdk/aws-cloudformation${framework_version} \
-        @aws-cdk/aws-ec2${framework_version}
+        @aws-cdk/core \
+        @aws-cdk/aws-sns \
+        @aws-cdk/aws-iam \
+        @aws-cdk/aws-lambda \
+        @aws-cdk/aws-ssm \
+        @aws-cdk/aws-ecr-assets \
+        @aws-cdk/aws-cloudformation \
+        @aws-cdk/aws-ec2
 
     echo "| setup complete at: $PWD"
     echo "| 'cdk' is: $(type -p cdk)"
