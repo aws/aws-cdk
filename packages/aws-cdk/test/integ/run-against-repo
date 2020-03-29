@@ -18,5 +18,4 @@ export ORIGINAL_NPM="$(type -p npm)"
 
 export PATH="$cli_dir/bin:$cli_dir/test/integ/run-wrappers/repo:$PATH"
 hash -r
-
 exec "$@"
