@@ -254,7 +254,7 @@ export class CloudAssemblyBuilder {
 }
 
 /**
- * Backwards compatibility where `RuntimeInfo`
+ * Backwards compatibility for when `RuntimeInfo`
  * was defined here. This is necessary because its used as an input in the stable
  * @aws-cdk/core library.
  *
@@ -265,7 +265,7 @@ export interface RuntimeInfo extends cxschema.RuntimeInfo {
 }
 
 /**
- * Backwards compatibility where `MetadataEntry`
+ * Backwards compatibility for when `MetadataEntry`
  * was defined here. This is necessary because its used as an input in the stable
  * @aws-cdk/core library.
  *
@@ -276,7 +276,7 @@ export interface MetadataEntry extends cxschema.MetadataEntry {
 }
 
 /**
- * Backwards compatibility for version <= 1.28.0 where `MissingContext`
+ * Backwards compatibility for when `MissingContext`
  * was defined here. This is necessary because its used as an input in the stable
  * @aws-cdk/core library.
  *
