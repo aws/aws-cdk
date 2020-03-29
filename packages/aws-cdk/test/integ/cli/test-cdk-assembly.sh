@@ -58,4 +58,4 @@ cdk -a . deploy "${STACK_NAME_PREFIX}-docker-with-custom-file" --require-approva
 # destory
 announce "cdk destroy"
 cdk -a . destroy -f "${STACK_NAME_PREFIX}-lambda"
-# cdk -a . destroy -f "${STACK_NAME_PREFIX}-docker"
+cdk -a . destroy -f "${STACK_NAME_PREFIX}-docker-with-custom-file"
