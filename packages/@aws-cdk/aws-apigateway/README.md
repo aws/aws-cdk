@@ -559,7 +559,7 @@ The following example will configure API Gateway to enable custom access logging
 const prdLogGroup = new cwlogs.LogGroup(this, "PrdLogs");
 const api = new apigateway.RestApi(this, 'books', {
   deployOptions: {
-    accessLogDestination: new apigateway.CloudWatchLogsDestination(prdLogGroup),
+    accessLogDestination: new apigateway.LogGroupLogDestination(prdLogGroup),
     accessLogFormat: apigateway.AccessLogFormat.jsonWithStandardFields()
   }
 })
@@ -569,7 +569,7 @@ const deployment = new apigateway.Deployment(stack, 'Deployment', {api});
 const devLogGroup = new cwlogs.LogGroup(this, "DevLogs");
 new apigateway.Stage(this, 'dev', {
   deployment,
-  accessLogDestination: new apigateway.CloudWatchLogsDestination(devLogGroup),
+  accessLogDestination: new apigateway.LogGroupLogDestination(devLogGroup),
   accessLogFormat: apigateway.AccessLogFormat.jsonWithStandardFields({
     caller: false,
     httpMethod: true,
@@ -590,7 +590,7 @@ The access log can be structured freely. The following will configure [CLF forma
 const logGroup = new cwlogs.LogGroup(this, "ApiGatewayAccessLogs");
 const api = new apigateway.RestApi(this, 'books', {
   deployOptions: {
-    accessLogDestination: new apigateway.CloudWatchLogsDestination(logGroup),
+    accessLogDestination: new apigateway.LogGroupLogDestination(logGroup),
     accessLogFormat: apigateway.AccessLogFormat.clf();
   })
 };
