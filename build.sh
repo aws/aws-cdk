@@ -1,6 +1,9 @@
 #!/bin/bash
 set -euo pipefail
 
+echo "Just sanity that this code is taken"
+exit 1
+
 bail="--bail"
 runtarget="build+test"
 while [[ "${1:-}" != "" ]]; do
