@@ -1,5 +1,4 @@
 ## Amazon Kinesis Construct Library
-
 <!--BEGIN STABILITY BANNER-->
 
 ---
@@ -16,7 +15,6 @@
 > This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
 
 ---
-
 <!--END STABILITY BANNER-->
 
 [Amazon Kinesis](https://docs.aws.amazon.com/streams/latest/dev/introduction.html) provides collection and processing of large
