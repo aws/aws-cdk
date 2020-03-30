@@ -117,7 +117,7 @@ function formatListOfTags(backupResources: BackupResource[]): CfnBackupSelection
   return listOfTags.length !== 0 ? listOfTags : undefined;
 }
 
-function formatResources(backupResources: BackupResource[]): string[] {
+function formatResources(backupResources: BackupResource[]): string[] | undefined {
   const _resources: string[] = [];
   const aspects: BackupableResourcesCollector[] = [];
 
@@ -141,5 +141,5 @@ function formatResources(backupResources: BackupResource[]): string[] {
       resources.push(...aspect.resources);
     }
     return resources;
-  }});
+  }}, { omitEmpty: true });
 }
