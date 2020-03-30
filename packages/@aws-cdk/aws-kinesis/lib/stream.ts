@@ -306,7 +306,7 @@ export class Stream extends StreamBase {
       return { streamEncryption: undefined, encryptionKey: undefined };
     }
 
-    if (encryptionType === StreamEncryption.KINESIS_MANAGED) {
+    if (encryptionType === StreamEncryption.MANAGED) {
       const encryption = { encryptionType: 'KMS', keyId: 'alias/aws/kinesis'};
       return {
         streamEncryption: encryption,
