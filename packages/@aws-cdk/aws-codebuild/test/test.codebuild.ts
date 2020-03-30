@@ -1369,6 +1369,25 @@ export = {
     test.done();
   },
 
+  'fromCodebuildImage'(test: Test) {
+    const stack = new cdk.Stack();
+    new codebuild.PipelineProject(stack, 'Project', {
+      environment: {
+        buildImage: codebuild.LinuxBuildImage.fromCodebuildImage('aws/codebuild/standard:4.0')
+      },
+    });
+
+    expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+      "Environment": {
+        "Type": "LINUX_CONTAINER",
+        "ComputeType": "BUILD_GENERAL1_SMALL",
+        "Image": "aws/codebuild/standard:4.0",
+      },
+    }));
+
+    test.done();
+  },
+
   'ARM image': {
     'AMAZON_LINUX_2_ARM': {
       'has type ARM_CONTAINER and default ComputeType LARGE'(test: Test) {
