@@ -34,9 +34,11 @@ class CallDynamoDBStack extends cdk.Stack {
     const putItemTask = new sfn.Task(this, 'PutItem', {
       task: tasks.CallDynamoDB.putItem({
         item: {
-          MessageId: new tasks.AttributeValue().addS(MESSAGE_ID),
-          Text: new tasks.AttributeValue().addS(sfn.Data.stringAt('$.bar')),
-          TotalCount: new tasks.AttributeValue().addN(`${firstNumber}`)
+          MessageId: new tasks.DynamoAttributeValue().withS(MESSAGE_ID),
+          Text: new tasks.DynamoAttributeValue().withS(
+            sfn.Data.stringAt('$.bar')
+          ),
+          TotalCount: new tasks.DynamoAttributeValue().withN(`${firstNumber}`)
         },
         tableName: TABLE_NAME
       })
@@ -46,7 +48,7 @@ class CallDynamoDBStack extends cdk.Stack {
       task: tasks.CallDynamoDB.getItem({
         partitionKey: {
           name: 'MessageId',
-          value: new tasks.AttributeValue().addS(MESSAGE_ID)
+          value: new tasks.DynamoAttributeValue().withS(MESSAGE_ID)
         },
         tableName: TABLE_NAME
       })
@@ -56,14 +58,14 @@ class CallDynamoDBStack extends cdk.Stack {
       task: tasks.CallDynamoDB.updateItem({
         partitionKey: {
           name: 'MessageId',
-          value: new tasks.AttributeValue().addS(MESSAGE_ID)
+          value: new tasks.DynamoAttributeValue().withS(MESSAGE_ID)
         },
         tableName: TABLE_NAME,
         expressionAttributeValues: {
-          ':val': new tasks.AttributeValue().addN(
+          ':val': new tasks.DynamoAttributeValue().withN(
             sfn.Data.stringAt('$.Item.TotalCount.N')
           ),
-          ':rand': new tasks.AttributeValue().addN(`${secondNumber}`)
+          ':rand': new tasks.DynamoAttributeValue().withN(`${secondNumber}`)
         },
         updateExpression: 'SET TotalCount = :val + :rand'
       })
@@ -73,7 +75,7 @@ class CallDynamoDBStack extends cdk.Stack {
       task: tasks.CallDynamoDB.getItem({
         partitionKey: {
           name: 'MessageId',
-          value: new tasks.AttributeValue().addS(MESSAGE_ID)
+          value: new tasks.DynamoAttributeValue().withS(MESSAGE_ID)
         },
         tableName: TABLE_NAME
       }),
@@ -84,7 +86,7 @@ class CallDynamoDBStack extends cdk.Stack {
       task: tasks.CallDynamoDB.deleteItem({
         partitionKey: {
           name: 'MessageId',
-          value: new tasks.AttributeValue().addS(MESSAGE_ID)
+          value: new tasks.DynamoAttributeValue().withS(MESSAGE_ID)
         },
         tableName: TABLE_NAME
       }),

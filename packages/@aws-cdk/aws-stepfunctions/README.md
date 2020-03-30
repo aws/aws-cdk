@@ -429,6 +429,8 @@ supported is `lambda.Runtime.NODEJS_10_X`.
 
 #### DynamoDB example
 
+##### PutItem
+
 ```ts
 const TABLE_NAME = 'Messages';
 const MESSAGE_ID = `1234`;
@@ -438,57 +440,87 @@ const secondNumber = 24;
 const putItemTask = new sfn.Task(this, 'PutItem', {
   task: tasks.CallDynamoDB.putItem({
     item: {
-      MessageId: new tasks.AttributeValue().addS(MESSAGE_ID),
-      Text: new tasks.AttributeValue().addS(sfn.Data.stringAt('$.bar')),
-      TotalCount: new tasks.AttributeValue().addN(`${firstNumber}`)
+      MessageId: new tasks.DynamoAttributeValue().withS(MESSAGE_ID),
+      Text: new tasks.DynamoAttributeValue().withS(
+        sfn.Data.stringAt('$.bar')
+      ),
+      TotalCount: new tasks.DynamoAttributeValue().withN(`${firstNumber}`)
     },
     tableName: TABLE_NAME
   })
 });
 
-const getItemTaskAfterPut = new sfn.Task(this, 'GetItemAfterPut', {
+const definition = new sfn.Pass(this, 'Start', {
+  result: sfn.Result.fromObject({ bar: 'SomeValue' })
+})
+  .next(putItemTask);
+
+const stateMachine = new sfn.StateMachine(this, 'StateMachine', {
+  definition
+});
+```
+
+##### GetItem
+
+```ts
+const getItemTask = new sfn.Task(this, 'GetItem', {
   task: tasks.CallDynamoDB.getItem({
     partitionKey: {
       name: 'MessageId',
-      value: new tasks.AttributeValue().addS(MESSAGE_ID)
+      value: new tasks.DynamoAttributeValue().withS(MESSAGE_ID)
     },
     tableName: TABLE_NAME
   })
 });
 
+const definition = new sfn.Pass(this, 'Start', {
+  result: sfn.Result.fromObject({ bar: 'SomeValue' })
+})
+  .next(getItemTask);
+
+const stateMachine = new sfn.StateMachine(this, 'StateMachine', {
+  definition
+});
+```
+
+##### UpdateItem
+
+```ts
 const updateItemTask = new sfn.Task(this, 'UpdateItem', {
   task: tasks.CallDynamoDB.updateItem({
     partitionKey: {
       name: 'MessageId',
-      value: new tasks.AttributeValue().addS(MESSAGE_ID)
+      value: new tasks.DynamoAttributeValue().withS(MESSAGE_ID)
     },
     tableName: TABLE_NAME,
     expressionAttributeValues: {
-      ':val': new tasks.AttributeValue().addN(
+      ':val': new tasks.DynamoAttributeValue().withN(
         sfn.Data.stringAt('$.Item.TotalCount.N')
       ),
-      ':rand': new tasks.AttributeValue().addN(`${secondNumber}`)
+      ':rand': new tasks.DynamoAttributeValue().withN(`${secondNumber}`)
     },
     updateExpression: 'SET TotalCount = :val + :rand'
   })
 });
 
-const getItemTaskAfterUpdate = new sfn.Task(this, 'GetItemAfterUpdate', {
-  task: tasks.CallDynamoDB.getItem({
-    partitionKey: {
-      name: 'MessageId',
-      value: new tasks.AttributeValue().addS(MESSAGE_ID)
-    },
-    tableName: TABLE_NAME
-  }),
-  outputPath: sfn.Data.stringAt('$.Item.TotalCount.N')
-});
+const definition = new sfn.Pass(this, 'Start', {
+  result: sfn.Result.fromObject({ bar: 'SomeValue' })
+})
+  .next(updateItemTask);
 
+const stateMachine = new sfn.StateMachine(this, 'StateMachine', {
+  definition
+});
+```
+
+##### DeleteItem
+
+```ts
 const deleteItemTask = new sfn.Task(this, 'DeleteItem', {
   task: tasks.CallDynamoDB.deleteItem({
     partitionKey: {
       name: 'MessageId',
-      value: new tasks.AttributeValue().addS(MESSAGE_ID)
+      value: new tasks.DynamoAttributeValue().withS(MESSAGE_ID)
     },
     tableName: TABLE_NAME
   }),
@@ -498,10 +530,6 @@ const deleteItemTask = new sfn.Task(this, 'DeleteItem', {
 const definition = new sfn.Pass(this, 'Start', {
   result: sfn.Result.fromObject({ bar: 'SomeValue' })
 })
-  .next(putItemTask)
-  .next(getItemTaskAfterPut)
-  .next(updateItemTask)
-  .next(getItemTaskAfterUpdate)
   .next(deleteItemTask);
 
 const stateMachine = new sfn.StateMachine(this, 'StateMachine', {

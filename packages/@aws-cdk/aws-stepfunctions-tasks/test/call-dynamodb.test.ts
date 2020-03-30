@@ -16,21 +16,21 @@ test('GetItem task', () => {
     task: tasks.CallDynamoDB.getItem({
       partitionKey: {
         name: 'SOME_KEY',
-        value: new tasks.AttributeValue().addS('1234')
+        value: new tasks.DynamoAttributeValue().withS('1234')
       },
       sortKey: {
         name: 'OTHER_KEY',
-        value: new tasks.AttributeValue().addN('4321')
+        value: new tasks.DynamoAttributeValue().withN('4321')
       },
       tableName: TABLE_NAME,
       consistentRead: true,
       expressionAttributeNames: { OTHER_KEY: '#OK' },
       projectionExpression: [
-        new tasks.Expression()
+        new tasks.DynamoProjectionExpression()
           .withAttribute('Messages')
           .atIndex(1)
           .withAttribute('Tags'),
-        new tasks.Expression().withAttribute('ID')
+        new tasks.DynamoProjectionExpression().withAttribute('ID')
       ],
       returnConsumedCapacity: tasks.ReturnConsumedCapacity.TOTAL
     })
@@ -67,12 +67,12 @@ test('PutItem task', () => {
   // WHEN
   const task = new sfn.Task(stack, 'PutItem', {
     task: tasks.CallDynamoDB.putItem({
-      item: { SOME_KEY: new tasks.AttributeValue().addS('1234') },
+      item: { SOME_KEY: new tasks.DynamoAttributeValue().withS('1234') },
       tableName: TABLE_NAME,
       conditionExpression: 'ForumName <> :f and Subject <> :s',
       expressionAttributeNames: { OTHER_KEY: '#OK' },
       expressionAttributeValues: {
-        ':val': new tasks.AttributeValue().addN(
+        ':val': new tasks.DynamoAttributeValue().withN(
           sfn.Data.stringAt('$.Item.TotalCount.N')
         )
       },
@@ -117,13 +117,13 @@ test('DeleteItem task', () => {
     task: tasks.CallDynamoDB.deleteItem({
       partitionKey: {
         name: 'SOME_KEY',
-        value: new tasks.AttributeValue().addS('1234')
+        value: new tasks.DynamoAttributeValue().withS('1234')
       },
       tableName: TABLE_NAME,
       conditionExpression: 'ForumName <> :f and Subject <> :s',
       expressionAttributeNames: { OTHER_KEY: '#OK' },
       expressionAttributeValues: {
-        ':val': new tasks.AttributeValue().addN(
+        ':val': new tasks.DynamoAttributeValue().withN(
           sfn.Data.stringAt('$.Item.TotalCount.N')
         )
       },
@@ -168,13 +168,13 @@ test('UpdateItem task', () => {
     task: tasks.CallDynamoDB.updateItem({
       partitionKey: {
         name: 'SOME_KEY',
-        value: new tasks.AttributeValue().addS('1234')
+        value: new tasks.DynamoAttributeValue().withS('1234')
       },
       tableName: TABLE_NAME,
       conditionExpression: 'ForumName <> :f and Subject <> :s',
       expressionAttributeNames: { OTHER_KEY: '#OK' },
       expressionAttributeValues: {
-        ':val': new tasks.AttributeValue().addN(
+        ':val': new tasks.DynamoAttributeValue().withN(
           sfn.Data.stringAt('$.Item.TotalCount.N')
         )
       },
@@ -221,7 +221,7 @@ test('Invalid value of TableName should throw', () => {
       task: tasks.CallDynamoDB.getItem({
         partitionKey: {
           name: 'SOME_KEY',
-          value: new tasks.AttributeValue().addS('1234')
+          value: new tasks.DynamoAttributeValue().withS('1234')
         },
         tableName: 'ab'
       })
@@ -235,7 +235,7 @@ test('Invalid value of TableName should throw', () => {
       task: tasks.CallDynamoDB.getItem({
         partitionKey: {
           name: 'SOME_KEY',
-          value: new tasks.AttributeValue().addS('1234')
+          value: new tasks.DynamoAttributeValue().withS('1234')
         },
         tableName:
           'abU93s5MTZDv6TYLk3Q3BE3Hj3AMca3NOb5ypSNZv1JZIONg7p8L8LNxuAStavPxYZKcoG36KwXktkuFHf0jJvt7SKofEqwYHmmK0tNJSkGoPe3MofnB7IWu3V48HbrqNGZqW005CMmDHESQWf40JK8qK0CSQtM8Z64zqysB7SZZazDRm7kKr062RXQKL82nvTxnKxTPfCHiG2YJEhuFdUywHCTN2Rjinl3P7TpwyIuPWyYHm6nZodRKLMmWpgUftZ'
@@ -250,7 +250,7 @@ test('Invalid value of TableName should throw', () => {
       task: tasks.CallDynamoDB.getItem({
         partitionKey: {
           name: 'SOME_KEY',
-          value: new tasks.AttributeValue().addS('1234')
+          value: new tasks.DynamoAttributeValue().withS('1234')
         },
         tableName: 'abcd@'
       })

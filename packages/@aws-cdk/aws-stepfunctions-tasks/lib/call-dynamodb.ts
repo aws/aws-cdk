@@ -30,7 +30,7 @@ export enum ReturnConsumedCapacity {
 export enum ReturnItemCollectionMetrics {
   /**
    * If set to SIZE, the response includes statistics about item collections,
-   * if any, that were modified during the operation are returned in the response
+   * if any, that were modified during the operation.
    */
   SIZE = 'SIZE',
 
@@ -73,20 +73,20 @@ export enum ReturnValues {
 /**
  * Map of string to AttributeValue
  */
-export interface AttributeValueMap {
-  [key: string]: AttributeValue;
+export interface DynamoAttributeValueMap {
+  [key: string]: DynamoAttributeValue;
 }
 
 /**
  * Class to generate AttributeValue
  */
-export class AttributeValue {
+export class DynamoAttributeValue {
   private attributeValue: any = {};
 
   /**
    * Sets an attribute of type String. For example:  "S": "Hello"
    */
-  public addS(value: string) {
+  public withS(value: string) {
     this.attributeValue.S = value;
     return this;
   }
@@ -97,7 +97,7 @@ export class AttributeValue {
    * to maximize compatibility across languages and libraries.
    * However, DynamoDB treats them as number type attributes for mathematical operations.
    */
-  public addN(value: string) {
+  public withN(value: string) {
     this.attributeValue.N = value;
     return this;
   }
@@ -105,7 +105,7 @@ export class AttributeValue {
   /**
    * Sets an attribute of type Binary. For example:  "B": "dGhpcyB0ZXh0IGlzIGJhc2U2NC1lbmNvZGVk"
    */
-  public addB(value: string) {
+  public withB(value: string) {
     this.attributeValue.B = value;
     return this;
   }
@@ -113,7 +113,7 @@ export class AttributeValue {
   /**
    * Sets an attribute of type String Set. For example:  "SS": ["Giraffe", "Hippo" ,"Zebra"]
    */
-  public addSS(value: string[]) {
+  public withSS(value: string[]) {
     this.attributeValue.SS = value;
     return this;
   }
@@ -124,7 +124,7 @@ export class AttributeValue {
    * to maximize compatibility across languages and libraries.
    * However, DynamoDB treats them as number type attributes for mathematical operations.
    */
-  public addNS(value: string[]) {
+  public withNS(value: string[]) {
     this.attributeValue.NS = value;
     return this;
   }
@@ -132,7 +132,7 @@ export class AttributeValue {
   /**
    * Sets an attribute of type Binary Set. For example:  "BS": ["U3Vubnk=", "UmFpbnk=", "U25vd3k="]
    */
-  public addBS(value: string[]) {
+  public withBS(value: string[]) {
     this.attributeValue.BS = value;
     return this;
   }
@@ -140,7 +140,7 @@ export class AttributeValue {
   /**
    * Sets an attribute of type Map. For example:  "M": {"Name": {"S": "Joe"}, "Age": {"N": "35"}}
    */
-  public addM(value: AttributeValueMap) {
+  public withM(value: DynamoAttributeValueMap) {
     this.attributeValue.M = transformAttributeValueMap(value);
     return this;
   }
@@ -148,7 +148,7 @@ export class AttributeValue {
   /**
    * Sets an attribute of type List. For example:  "L": [ {"S": "Cookies"} , {"S": "Coffee"}, {"N", "3.14159"}]
    */
-  public addL(value: AttributeValue[]) {
+  public withL(value: DynamoAttributeValue[]) {
     this.attributeValue.L = value.map(val => val.toObject());
     return this;
   }
@@ -156,7 +156,7 @@ export class AttributeValue {
   /**
    * Sets an attribute of type Null. For example:  "NULL": true
    */
-  public addNULL(value: boolean) {
+  public withNULL(value: boolean) {
     this.attributeValue.NULL = value;
     return this;
   }
@@ -164,7 +164,7 @@ export class AttributeValue {
   /**
    * Sets an attribute of type Boolean. For example:  "BOOL": true
    */
-  public addBOOL(value: boolean) {
+  public withBOOL(value: boolean) {
     this.attributeValue.BOOL = value;
     return this;
   }
@@ -180,7 +180,7 @@ export class AttributeValue {
 /**
  * Property for any key
  */
-export interface Attribute {
+export interface DynamoAttribute {
   /**
    * The name of the attribute
    */
@@ -189,13 +189,13 @@ export interface Attribute {
   /**
    * The value of the attribute
    */
-  readonly value: AttributeValue;
+  readonly value: DynamoAttributeValue;
 }
 
 /**
  * Class to generate projection expression
  */
-export class Expression {
+export class DynamoProjectionExpression {
   private expression: string[] = [];
 
   /**
@@ -203,7 +203,7 @@ export class Expression {
    *
    * @param attr Attribute name
    */
-  public withAttribute(attr: string): Expression {
+  public withAttribute(attr: string): DynamoProjectionExpression {
     if (this.expression.length) {
       this.expression.push(`.${attr}`);
     } else {
@@ -217,7 +217,7 @@ export class Expression {
    *
    * @param index array index
    */
-  public atIndex(index: number): Expression {
+  public atIndex(index: number): DynamoProjectionExpression {
     if (!this.expression.length) {
       throw new Error('Expression must start with an attribute');
     }
@@ -243,7 +243,7 @@ export interface DynamoGetItemProps {
    *
    * @see https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_GetItem.html#DDB-GetItem-request-Key
    */
-  readonly partitionKey: Attribute;
+  readonly partitionKey: DynamoAttribute;
 
   /**
    * The name of the table containing the requested item.
@@ -257,7 +257,7 @@ export interface DynamoGetItemProps {
    *
    * @see https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_GetItem.html#DDB-GetItem-request-Key
    */
-  readonly sortKey?: Attribute;
+  readonly sortKey?: DynamoAttribute;
 
   /**
    * Determines the read consistency model:
@@ -278,21 +278,21 @@ export interface DynamoGetItemProps {
   readonly expressionAttributeNames?: { [key: string]: string };
 
   /**
-   * An array of Expression that identifies one or more attributes to retrieve from the table.
+   * An array of DynamoProjectionExpression that identifies one or more attributes to retrieve from the table.
    * These attributes can include scalars, sets, or elements of a JSON document.
    *
    * @see https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_GetItem.html#DDB-GetItem-request-ProjectionExpression
    *
    * @default - No projection expression
    */
-  readonly projectionExpression?: Expression[];
+  readonly projectionExpression?: DynamoProjectionExpression[];
 
   /**
    * Determines the level of detail about provisioned throughput consumption that is returned in the response
    *
    * @see https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_GetItem.html#DDB-GetItem-request-ReturnConsumedCapacity
    *
-   * @default - No returnConsumedCapacity
+   * @default ReturnConsumedCapacity.NONE
    */
   readonly returnConsumedCapacity?: ReturnConsumedCapacity;
 }
@@ -308,10 +308,10 @@ export interface DynamoPutItemProps {
    *
    * @see https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_PutItem.html#DDB-PutItem-request-Item
    */
-  readonly item: AttributeValueMap;
+  readonly item: DynamoAttributeValueMap;
 
   /**
-   * The name of the table containing the requested item.
+   * The name of the table where the item should be writen .
    */
   readonly tableName: string;
 
@@ -340,24 +340,23 @@ export interface DynamoPutItemProps {
    *
    * @default - No expression attribute values
    */
-  readonly expressionAttributeValues?: AttributeValueMap;
+  readonly expressionAttributeValues?: DynamoAttributeValueMap;
 
   /**
    * Determines the level of detail about provisioned throughput consumption that is returned in the response
    *
    * @see https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_PutItem.html#DDB-PutItem-request-ReturnConsumedCapacity
    *
-   * @default - No returnConsumedCapacity
+   * @default ReturnConsumedCapacity.NONE
    */
   readonly returnConsumedCapacity?: ReturnConsumedCapacity;
 
   /**
-   * Determines whether item collection metrics are returned.
-   * If set to SIZE, the response includes statistics about item collections, if any,
-   * that were modified during the operation are returned in the response.
-   * If set to NONE (the default), no statistics are returned.
+   * The item collection metrics to returned in the response
    *
-   * @default - No returnItemCollectionMetrics
+   * @see https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/LSI.html#LSI.ItemCollections
+   *
+   * @default ReturnItemCollectionMetrics.NONE
    */
   readonly returnItemCollectionMetrics?: ReturnItemCollectionMetrics;
 
@@ -367,7 +366,7 @@ export interface DynamoPutItemProps {
    *
    * @see https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_PutItem.html#DDB-PutItem-request-ReturnValues
    *
-   * @default - No returnValues
+   * @default ReturnValues.NONE
    */
   readonly returnValues?: ReturnValues;
 }
@@ -381,7 +380,7 @@ export interface DynamoDeleteItemProps {
    *
    * @see https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_DeleteItem.html#DDB-DeleteItem-request-Key
    */
-  readonly partitionKey: Attribute;
+  readonly partitionKey: DynamoAttribute;
 
   /**
    * The name of the table containing the requested item.
@@ -395,7 +394,7 @@ export interface DynamoDeleteItemProps {
    *
    * @see https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_DeleteItem.html#DDB-DeleteItem-request-Key
    */
-  readonly sortKey?: Attribute;
+  readonly sortKey?: DynamoAttribute;
 
   /**
    * A condition that must be satisfied in order for a conditional DeleteItem to succeed.
@@ -422,14 +421,14 @@ export interface DynamoDeleteItemProps {
    *
    * @default - No expression attribute values
    */
-  readonly expressionAttributeValues?: AttributeValueMap;
+  readonly expressionAttributeValues?: DynamoAttributeValueMap;
 
   /**
    * Determines the level of detail about provisioned throughput consumption that is returned in the response
    *
    * @see https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_DeleteItem.html#DDB-DeleteItem-request-ReturnConsumedCapacity
    *
-   * @default - No returnConsumedCapacity
+   * @default ReturnConsumedCapacity.NONE
    */
   readonly returnConsumedCapacity?: ReturnConsumedCapacity;
 
@@ -439,7 +438,7 @@ export interface DynamoDeleteItemProps {
    * that were modified during the operation are returned in the response.
    * If set to NONE (the default), no statistics are returned.
    *
-   * @default - No returnItemCollectionMetrics
+   * @default ReturnItemCollectionMetrics.NONE
    */
   readonly returnItemCollectionMetrics?: ReturnItemCollectionMetrics;
 
@@ -448,7 +447,7 @@ export interface DynamoDeleteItemProps {
    *
    * @see https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_DeleteItem.html#DDB-DeleteItem-request-ReturnValues
    *
-   * @default - No returnValues
+   * @default ReturnValues.NONE
    */
   readonly returnValues?: ReturnValues;
 }
@@ -462,7 +461,7 @@ export interface DynamoUpdateItemProps {
    *
    * @see https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_UpdateItem.html#DDB-UpdateItem-request-Key
    */
-  readonly partitionKey: Attribute;
+  readonly partitionKey: DynamoAttribute;
 
   /**
    * The name of the table containing the requested item.
@@ -476,7 +475,7 @@ export interface DynamoUpdateItemProps {
    *
    * @see https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_UpdateItem.html#DDB-UpdateItem-request-Key
    */
-  readonly sortKey?: Attribute;
+  readonly sortKey?: DynamoAttribute;
 
   /**
    * A condition that must be satisfied in order for a conditional DeleteItem to succeed.
@@ -503,14 +502,14 @@ export interface DynamoUpdateItemProps {
    *
    * @default - No expression attribute values
    */
-  readonly expressionAttributeValues?: AttributeValueMap;
+  readonly expressionAttributeValues?: DynamoAttributeValueMap;
 
   /**
    * Determines the level of detail about provisioned throughput consumption that is returned in the response
    *
    * @see https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_UpdateItem.html#DDB-UpdateItem-request-ReturnConsumedCapacity
    *
-   * @default - No returnConsumedCapacity
+   * @default ReturnConsumedCapacity.NONE
    */
   readonly returnConsumedCapacity?: ReturnConsumedCapacity;
 
@@ -520,7 +519,7 @@ export interface DynamoUpdateItemProps {
    * that were modified during the operation are returned in the response.
    * If set to NONE (the default), no statistics are returned.
    *
-   * @default - No returnItemCollectionMetrics
+   * @default ReturnItemCollectionMetrics.NONE
    */
   readonly returnItemCollectionMetrics?: ReturnItemCollectionMetrics;
 
@@ -529,7 +528,7 @@ export interface DynamoUpdateItemProps {
    *
    * @see https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_UpdateItem.html#DDB-UpdateItem-request-ReturnValues
    *
-   * @default - No returnValues
+   * @default ReturnValues.NONE
    */
   readonly returnValues?: ReturnValues;
 
@@ -574,7 +573,7 @@ export class DynamoGetItem implements sfn.IStepFunctionsTask {
   }
 
   private configureProjectionExpression(
-    expressions?: Expression[]
+    expressions?: DynamoProjectionExpression[]
   ): string | undefined {
     return expressions
       ? expressions.map(expression => expression.toString()).join(',')
@@ -766,7 +765,10 @@ function getDynamoPolicyStatements(
   ];
 }
 
-function configurePrimaryKey(partitionKey: Attribute, sortKey?: Attribute) {
+function configurePrimaryKey(
+  partitionKey: DynamoAttribute,
+  sortKey?: DynamoAttribute
+) {
   const key = {
     [partitionKey.name]: partitionKey.value.toObject()
   };
@@ -778,7 +780,7 @@ function configurePrimaryKey(partitionKey: Attribute, sortKey?: Attribute) {
   return key;
 }
 
-function transformAttributeValueMap(attrMap?: AttributeValueMap) {
+function transformAttributeValueMap(attrMap?: DynamoAttributeValueMap) {
   const transformedValue: any = {};
   for (const key in attrMap) {
     if (key) {
