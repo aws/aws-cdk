@@ -5,7 +5,7 @@ import { addMetadataAssetsToManifest } from '../lib/assets';
 import { AssetManifestBuilder } from '../lib/util/asset-manifest-builder';
 import { publishAssets } from '../lib/util/asset-publishing';
 import { testStack } from './util';
-import { MockSDK } from './util/mock-sdk';
+import { errorWithCode, MockSDK } from './util/mock-sdk';
 
 let toolkit: ToolkitInfo;
 let assets: AssetManifestBuilder;
@@ -221,7 +221,7 @@ describe('docker assets', () => {
   });
 });
 
-test('publishing does not fail if there is no "default" account', () => {
+test('publishing does not fail if there is no "default" account', async () => {
   // GIVEN
   const manifest = new AssetManifest('.', {
     version: '0',
@@ -230,7 +230,7 @@ test('publishing does not fail if there is no "default" account', () => {
         source: { path: __filename },
         destinations: {
           theDestination: {
-            bucketName: '${AWS::AccountId}-bucket',
+            bucketName: '${AWS::AccountId}-${AWS::Partition}-bucket',
             objectKey: 'key',
           },
         }
@@ -239,9 +239,23 @@ test('publishing does not fail if there is no "default" account', () => {
   });
   const provider = new MockSDK();
   provider.defaultAccount = jest.fn(() => Promise.resolve(undefined));
+  provider.stubSTS({
+    // Necessary to potentially replace partition
+    getCallerIdentity() { return { Account: 'UNUSED', Arn: 'arn:aws-aa:1234:stuff', UserId: 'userId' }; }
+  });
+  provider.stubS3({
+    getBucketLocation() { return { LocationConstraint: 'abc' }; },
+    headObject(options) {
+      if (options.Bucket !== '12345678-aws-aa-bucket') {
+        throw new Error(`Unexpected bucket name: ${options.Bucket}`);
+      }
+      throw errorWithCode('NotFound', 'Does not exist eh');
+    },
+    upload: (() => undefined) as any,
+  });
 
   // WHEN
-  publishAssets(manifest, provider, { account: '12345678', region: 'aa-south-1', name: 'main' });
+  await publishAssets(manifest, provider, { account: '12345678', region: 'aa-south-1', name: 'main' });
 });
 
 function stackWithAssets(assetEntries: AssetMetadataEntry[]) {
