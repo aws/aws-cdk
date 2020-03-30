@@ -22,17 +22,38 @@ function serve_npm_packages() {
     return
   fi
 
-  tarballs=$dist_root/js/*.tgz
+  echo "Checking if using published framework"
 
-  log "Discovering local package names..."
-  # Read the package names from each tarball, so that we can generate
-  # a Verdaccio config that will keep each of these packages locally
-  # and not go to NPMJS for it.
-  package_names=""
-  for tgz in $tarballs; do
-    name=$(node -pe 'JSON.parse(process.argv[1]).name' "$(tar xOzf $tgz package/package.json)")
-    package_names="$package_names $name"
-  done
+  if [ ! -z ${USE_PUBLISHED_FRAMEWORK_VERSION:-} ]; then
+    # when using latest published framework, only
+    # install the cli and its dependencies.
+
+    echo "Looking up CLI dependencies..."
+    # good lord
+    package_names=$(node -p "Object.entries(require('./package/package.json').dependencies).filter(x => x[0].includes('@aws-cdk')).map(x => x[0] + '-${version}').join(' ')")
+
+    echo "Yes, using published framework"
+    version=$(node -p 'require("./package/package.json").version')
+    tarballs=$dist_root/js/aws-cdk-${version}.tgz
+    package_names="${package_names} aws-cdk-${version}"
+
+    echo "tarballs= ${tarballs}"
+    echo "package_names= ${package_names}"
+  else
+
+    tarballs=$dist_root/js/*.tgz
+
+    log "Discovering local package names..."
+    # Read the package names from each tarball, so that we can generate
+    # a Verdaccio config that will keep each of these packages locally
+    # and not go to NPMJS for it.
+    package_names=""
+    for tgz in $tarballs; do
+      name=$(node -pe 'JSON.parse(process.argv[1]).name' "$(tar xOzf $tgz package/package.json)")
+      package_names="$package_names $name"
+    done
+
+  fi
 
   #------------------------------------------------------------------------------
   # Start a local npm repository and install the CDK from the distribution to it
@@ -58,14 +79,6 @@ function serve_npm_packages() {
   export VERDACCIO_PID=$pid
 
   use_verdaccio
-
-  echo "Checking if using published framework"
-
-  if [ ! -z ${USE_PUBLISHED_FRAMEWORK_VERSION:-} ]; then
-    # when using latest published framework, only publish cli
-    echo "Yes, using published framework"
-    tarballs=$dist_root/js/aws-cdk*.tgz
-  fi
 
   echo "tarballs = ${tarballs}"
 
