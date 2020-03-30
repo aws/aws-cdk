@@ -98,11 +98,11 @@ export = {
     test.done();
   },
 
-  'uses Kinesis master key if KINESIS_MANAGED encryption type is provided'(test: Test) {
+  'uses Kinesis master key if MANAGED encryption type is provided'(test: Test) {
     const stack = new Stack();
 
     new Stream(stack, 'MyStream', {
-      encryption: StreamEncryption.KINESIS_MANAGED
+      encryption: StreamEncryption.MANAGED
     });
 
     expect(stack).toMatch({

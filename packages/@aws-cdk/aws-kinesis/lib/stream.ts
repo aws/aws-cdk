@@ -348,5 +348,5 @@ export enum StreamEncryption {
   /**
    * Server-side encryption with a master key managed by Amazon Kinesis
    */
-  KINESIS_MANAGED = 'MANAGED'
+  MANAGED = 'MANAGED'
 }
