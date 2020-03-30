@@ -56,9 +56,9 @@ export enum LogLevel {
  */
 export interface LogOptions {
   /**
-   * An array of objects that describes where your execution history events will be logged. Limited to size 1.
+   * The log group where the execution history events will be logged.
    */
-  readonly destinations: logs.ILogGroup;
+  readonly destination: logs.ILogGroup;
 
   /**
    * Determines whether execution data is included in your log.
@@ -194,24 +194,24 @@ export class StateMachine extends StateMachineBase {
         if (props.logs) {
             const conf = props.logs;
             loggingConfiguration = {
-                destinations: [{ cloudWatchLogsLogGroup: { logGroupArn: conf.destinations.logGroupArn } }],
+                destinations: [{ cloudWatchLogsLogGroup: { logGroupArn: conf.destination.logGroupArn } }],
                 includeExecutionData: conf.includeExecutionData,
-                level: conf.level || "ERROR"
+                level: conf.level || 'ERROR'
             };
             // https://docs.aws.amazon.com/step-functions/latest/dg/cw-logs.html#cloudwatch-iam-policy
             this.addToRolePolicy(new iam.PolicyStatement({
               effect: iam.Effect.ALLOW,
               actions: [
-                "logs:CreateLogDelivery",
-                "logs:GetLogDelivery",
-                "logs:UpdateLogDelivery",
-                "logs:DeleteLogDelivery",
-                "logs:ListLogDeliveries",
-                "logs:PutResourcePolicy",
-                "logs:DescribeResourcePolicies",
-                "logs:DescribeLogGroups"
+                'logs:CreateLogDelivery',
+                'logs:GetLogDelivery',
+                'logs:UpdateLogDelivery',
+                'logs:DeleteLogDelivery',
+                'logs:ListLogDeliveries',
+                'logs:PutResourcePolicy',
+                'logs:DescribeResourcePolicies',
+                'logs:DescribeLogGroups'
               ],
-              resources: ["*"]
+              resources: ['*']
             }));
         }
 

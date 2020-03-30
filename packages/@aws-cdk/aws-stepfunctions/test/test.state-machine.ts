@@ -71,12 +71,12 @@ export = {
         const stack = new cdk.Stack();
 
         // WHEN
-        const log = new logs.LogGroup(stack, 'MyLogGroup');
+        const logGroup = new logs.LogGroup(stack, 'MyLogGroup');
 
         new stepfunctions.StateMachine(stack, 'MyStateMachine', {
             definition: stepfunctions.Chain.start(new stepfunctions.Pass(stack, 'Pass')),
             logs: {
-              destinations: log,
+              destination: logGroup,
               level: stepfunctions.LogLevel.FATAL,
               includeExecutionData: false
             }
@@ -84,17 +84,17 @@ export = {
 
         // THEN
         expect(stack).to(haveResource('AWS::StepFunctions::StateMachine', {
-            DefinitionString: "{\"StartAt\":\"Pass\",\"States\":{\"Pass\":{\"Type\":\"Pass\",\"End\":true}}}",
+            DefinitionString: '{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}',
             LoggingConfiguration: {
                 Destinations: [{
                     CloudWatchLogsLogGroup: {
                         LogGroupArn: {
-                            "Fn::GetAtt": ["MyLogGroup5C0DAD85", "Arn"]
+                            'Fn::GetAtt': ['MyLogGroup5C0DAD85', 'Arn']
                         }
                     }
                 }],
                 IncludeExecutionData: false,
-                Level: "FATAL"
+                Level: 'FATAL'
             }
         }));
 
@@ -102,24 +102,24 @@ export = {
             PolicyDocument: {
                 Statement: [{
                     Action: [
-                        "logs:CreateLogDelivery",
-                        "logs:GetLogDelivery",
-                        "logs:UpdateLogDelivery",
-                        "logs:DeleteLogDelivery",
-                        "logs:ListLogDeliveries",
-                        "logs:PutResourcePolicy",
-                        "logs:DescribeResourcePolicies",
-                        "logs:DescribeLogGroups"
+                        'logs:CreateLogDelivery',
+                        'logs:GetLogDelivery',
+                        'logs:UpdateLogDelivery',
+                        'logs:DeleteLogDelivery',
+                        'logs:ListLogDeliveries',
+                        'logs:PutResourcePolicy',
+                        'logs:DescribeResourcePolicies',
+                        'logs:DescribeLogGroups'
                     ],
-                    Effect: "Allow",
-                    Resource: "*"
+                    Effect: 'Allow',
+                    Resource: '*'
                 }],
-                Version: "2012-10-17"
+                Version: '2012-10-17'
             },
-            PolicyName: "MyStateMachineRoleDefaultPolicyE468EB18",
+            PolicyName: 'MyStateMachineRoleDefaultPolicyE468EB18',
             Roles: [
                 {
-                    Ref: "MyStateMachineRoleD59FFEBC"
+                    Ref: 'MyStateMachineRoleD59FFEBC'
                 }
             ]
         }));

@@ -696,12 +696,12 @@ Enable logging to CloudWatch by passing a logging configuration with a
 destination LogGroup:
 
 ```ts
-const log = new logs.LogGroup(stack, 'MyLogGroup');
+const logGroup = new logs.LogGroup(stack, 'MyLogGroup');
 
 new stepfunctions.StateMachine(stack, 'MyStateMachine', {
     definition: stepfunctions.Chain.start(new stepfunctions.Pass(stack, 'Pass')),
     logs: {
-      destinations: log,
+      destinations: logGroup,
       level: stepfunctions.LogLevel.ALL,
     }
 });
