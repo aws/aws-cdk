@@ -1,5 +1,6 @@
 import '@aws-cdk/assert/jest';
 import * as codebuild from '@aws-cdk/aws-codebuild';
+import * as codecommit from '@aws-cdk/aws-codecommit';
 import { SecretValue, Stack } from '@aws-cdk/core';
 import * as amplify from '../lib';
 
@@ -8,11 +9,14 @@ beforeEach(() => {
   stack = new Stack();
 });
 
-test('create an app', () => {
+test('create an app connected to a GitHub repository', () => {
   // WHEN
   new amplify.App(stack, 'App', {
-    repository: 'https://github.com/aws/aws-cdk',
-    oauthToken: SecretValue.plainText('secret'),
+    sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
+      owner: 'aws',
+      repository: 'aws-cdk',
+      oauthToken: SecretValue.plainText('secret')
+    }),
     buildSpec: codebuild.BuildSpec.fromObject({
       version: '1.0',
       frontend: {
@@ -57,11 +61,86 @@ test('create an app', () => {
   });
 });
 
+test('create an app connected to a CodeCommit repository', () => {
+  // WHEN
+  new amplify.App(stack, 'App', {
+    sourceCodeProvider: new amplify.CodeCommitSourceCodeProvider({
+      repository: codecommit.Repository.fromRepositoryName(stack, 'Repo', 'my-repo'),
+    }),
+  });
+
+  // THEN
+  expect(stack).toHaveResource('AWS::Amplify::App', {
+    IAMServiceRole: {
+      'Fn::GetAtt': [
+        'AppRole1AF9B530',
+        'Arn'
+      ]
+    },
+    Repository: {
+      'Fn::Join': [
+        '',
+        [
+          'https://git-codecommit.',
+          {
+            Ref: 'AWS::Region'
+          },
+          '.',
+          {
+            Ref: 'AWS::URLSuffix'
+          },
+          '/v1/repos/my-repo'
+        ]
+      ]
+    }
+  });
+
+  expect(stack).toHaveResource('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'codecommit:GitPull',
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition'
+                },
+                ':codecommit:',
+                {
+                  Ref: 'AWS::Region'
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId'
+                },
+                ':my-repo'
+              ]
+            ]
+          },
+        }
+      ],
+      Version: '2012-10-17'
+    },
+    Roles: [
+      {
+        Ref: 'AppRole1AF9B530'
+      }
+    ]
+  });
+});
+
 test('with basic auth from credentials', () => {
   // WHEN
   new amplify.App(stack, 'App', {
-    repository: 'https://github.com/aws/aws-cdk',
-    oauthToken: SecretValue.plainText('secret'),
+    sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
+      owner: 'aws',
+      repository: 'aws-cdk',
+      oauthToken: SecretValue.plainText('secret')
+    }),
     basicAuth: amplify.BasicAuth.fromCredentials('username', SecretValue.plainText('password'))
   });
 
@@ -78,8 +157,11 @@ test('with basic auth from credentials', () => {
 test('with basic auth from generated password', () => {
   // WHEN
   new amplify.App(stack, 'App', {
-    repository: 'https://github.com/aws/aws-cdk',
-    oauthToken: SecretValue.plainText('secret'),
+    sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
+      owner: 'aws',
+      repository: 'aws-cdk',
+      oauthToken: SecretValue.plainText('secret')
+    }),
     basicAuth: amplify.BasicAuth.fromGeneratedPassword('username')
   });
 
@@ -114,8 +196,11 @@ test('with basic auth from generated password', () => {
 test('with env vars', () => {
   // WHEN
   const app = new amplify.App(stack, 'App', {
-    repository: 'https://github.com/aws/aws-cdk',
-    oauthToken: SecretValue.plainText('secret'),
+    sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
+      owner: 'aws',
+      repository: 'aws-cdk',
+      oauthToken: SecretValue.plainText('secret')
+    }),
     environmentVariables: {
       key1: 'value1'
     }
@@ -140,8 +225,11 @@ test('with env vars', () => {
 test('with custom rules', () => {
   // WHEN
   const app = new amplify.App(stack, 'App', {
-    repository: 'https://github.com/aws/aws-cdk',
-    oauthToken: SecretValue.plainText('secret'),
+    sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
+      owner: 'aws',
+      repository: 'aws-cdk',
+      oauthToken: SecretValue.plainText('secret')
+    }),
     customRules: [
       {
         source: '/source1',
@@ -176,8 +264,11 @@ test('with custom rules', () => {
 test('with auto branch creation', () => {
   // WHEN
   const app = new amplify.App(stack, 'App', {
-    repository: 'https://github.com/aws/aws-cdk',
-    oauthToken: SecretValue.plainText('secret'),
+    sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
+      owner: 'aws',
+      repository: 'aws-cdk',
+      oauthToken: SecretValue.plainText('secret')
+    }),
     autoBranchCreation: {
       environmentVariables: {
         key1: 'value1'
@@ -204,17 +295,4 @@ test('with auto branch creation', () => {
       ]
     }
   });
-});
-
-test('throws when both access token and oauth token are not specified', () => {
-  expect(() => new amplify.App(stack, 'App', {
-    repository: 'https://github.com/aws/aws-cdk'
-  })).toThrow('Either `accessToken` or `oauthToken` must be specified');
-});
-
-test('throws if repository is not https', () => {
-  expect(() => new amplify.App(stack, 'App', {
-    repository: 'git@github.com:aws/aws-cdk.git',
-    oauthToken: SecretValue.plainText('secret'),
-  })).toThrow('`repository` must use the HTTPS protocol');
 });
