@@ -440,7 +440,7 @@ export = {
 
     // WHEN
     const testLogGroup = new logs.LogGroup(stack, 'LogGroup');
-    const testFormat = apigateway.AccessLogFormat.custom('empty');
+    const testFormat = new apigateway.AccessLogFormat('');
 
     // THEN
     test.throws(() => new apigateway.Stage(stack, 'my-stage', {

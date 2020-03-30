@@ -1,4 +1,4 @@
-import { ILogGroup } from '@aws-cdk/aws-logs';
+import {ILogGroup} from '@aws-cdk/aws-logs';
 
 /**
  * A API Gateway custom access log destination.
@@ -436,16 +436,6 @@ export class AccessLogField {
 }
 
 /**
- * A API Gateway custom access log format.
- */
-export interface AccessLogOptions {
-  /**
-   * A API Gateway custom access log format
-   */
-  readonly format: string;
-}
-
-/**
  * jsonWithStandardFields property
  */
 export interface IJsonWithStandardFieldProps {
@@ -492,49 +482,6 @@ export interface IJsonWithStandardFieldProps {
  */
 export class AccessLogFormat {
   /**
-   * Generate Common Log Format.
-   */
-  public static clf(): AccessLogOptions {
-    return {
-      format: `${AccessLogField.contextIdentitySourceIp()} ${AccessLogField.contextIdentityCaller()} ${AccessLogField.contextIdentityUser()} \
-[${AccessLogField.contextRequestTime()}] "${AccessLogField.contextHttpMethod()} ${AccessLogField.contextResourcePath()} ${AccessLogField.contextProtocol()}" \
-${AccessLogField.contextStatus()} ${AccessLogField.contextResponseLength()} ${AccessLogField.contextRequestId()}`
-    };
-  }
-
-  /**
-   * Access log will be produced in the JSON format with a set of fields most useful in the
-   * access log. All fields are turned on by default with the option to turn off specific fields.
-   */
-  public static jsonWithStandardFields(
-    fields: IJsonWithStandardFieldProps = {
-      ip: true,
-      user: true,
-      caller: true,
-      requestTime: true,
-      httpMethod: true,
-      resourcePath: true,
-      status: true,
-      protocol: true,
-      responseLength: true
-    }): AccessLogOptions {
-    return {
-      format: JSON.stringify({
-        requestId: AccessLogField.contextRequestId(),
-        ip: fields.ip ? AccessLogField.contextIdentitySourceIp() : undefined,
-        user: fields.user ? AccessLogField.contextIdentityUser() : undefined,
-        caller: fields.caller ? AccessLogField.contextIdentityCaller() : undefined,
-        requestTime: fields.requestTime ? AccessLogField.contextRequestTime() : undefined,
-        httpMethod: fields.httpMethod ? AccessLogField.contextHttpMethod() : undefined,
-        resourcePath: fields.resourcePath ? AccessLogField.contextResourcePath() : undefined,
-        status: fields.status ? AccessLogField.contextStatus() : undefined,
-        protocol: fields.protocol ? AccessLogField.contextProtocol() : undefined,
-        responseLength: fields.responseLength ? AccessLogField.contextResponseLength() : undefined
-      })
-    };
-  }
-
-  /**
    * Custom log format.
    * You can create any log format string. You can easily get the $ context variable by using the methods of AccessLogField.
    * @param format
@@ -548,7 +495,62 @@ ${AccessLogField.contextStatus()} ${AccessLogField.contextResponseLength()} ${Ac
    *  }
    * }))
    */
-  public static custom(format: string): AccessLogOptions {
-    return {format};
+  public static custom(format: string): AccessLogFormat {
+    return new AccessLogFormat(format);
+  }
+
+  /**
+   * Generate Common Log Format.
+   */
+  public static clf(): AccessLogFormat {
+    return new AccessLogFormat(`${AccessLogField.contextIdentitySourceIp()} ${AccessLogField.contextIdentityCaller()} ${AccessLogField.contextIdentityUser()} \
+[${AccessLogField.contextRequestTime()}] "${AccessLogField.contextHttpMethod()} ${AccessLogField.contextResourcePath()} ${AccessLogField.contextProtocol()}" \
+${AccessLogField.contextStatus()} ${AccessLogField.contextResponseLength()} ${AccessLogField.contextRequestId()}`);
+  }
+
+  /**
+   * Access log will be produced in the JSON format with a set of fields most useful in the access log. All fields are turned on by default with the
+   * option to turn off specific fields.
+   */
+  public static jsonWithStandardFields(
+    fields: IJsonWithStandardFieldProps = {
+      ip: true,
+      user: true,
+      caller: true,
+      requestTime: true,
+      httpMethod: true,
+      resourcePath: true,
+      status: true,
+      protocol: true,
+      responseLength: true
+    }): AccessLogFormat {
+    return this.custom(JSON.stringify({
+      requestId: AccessLogField.contextRequestId(),
+      ip: fields.ip ? AccessLogField.contextIdentitySourceIp() : undefined,
+      user: fields.user ? AccessLogField.contextIdentityUser() : undefined,
+      caller: fields.caller ? AccessLogField.contextIdentityCaller() : undefined,
+      requestTime: fields.requestTime ? AccessLogField.contextRequestTime() : undefined,
+      httpMethod: fields.httpMethod ? AccessLogField.contextHttpMethod() : undefined,
+      resourcePath: fields.resourcePath ? AccessLogField.contextResourcePath() : undefined,
+      status: fields.status ? AccessLogField.contextStatus() : undefined,
+      protocol: fields.protocol ? AccessLogField.contextProtocol() : undefined,
+      responseLength: fields.responseLength ? AccessLogField.contextResponseLength() : undefined
+    }));
+  }
+
+  /**
+   * A API Gateway custom access log format
+   */
+  public format: string;
+
+  private constructor(format: string) {
+    this.format = format;
+  }
+
+  /**
+   * Output a format string to be used with CloudFormation.
+   */
+  public toString(): string {
+    return this.format;
   }
 }

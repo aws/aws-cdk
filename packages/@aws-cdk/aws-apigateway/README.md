@@ -580,7 +580,7 @@ new apigateway.Stage(this, 'dev', {
     responseLength: true,
     status: true,
     user: true
-  })The following code will generate the access log in the
+  })
 });
 ```
 
@@ -591,9 +591,8 @@ const logGroup = new cwlogs.LogGroup(this, "ApiGatewayAccessLogs");
 const api = new apigateway.RestApi(this, 'books', {
   deployOptions: {
     accessLogDestination: new apigateway.LogGroupLogDestination(logGroup),
-    accessLogFormat: apigateway.AccessLogFormat.clf();
-  })
-};
+    accessLogFormat: apigateway.AccessLogFormat.clf(),
+  }});
 ```
 
 You can use the `methodOptions` property to configure

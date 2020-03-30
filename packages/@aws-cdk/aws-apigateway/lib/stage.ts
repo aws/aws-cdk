@@ -1,5 +1,5 @@
 import { Construct, Duration, Resource, Stack } from '@aws-cdk/core';
-import { AccessLogFormat, AccessLogOptions, IAccessLogDestination} from './access-log';
+import { AccessLogFormat, IAccessLogDestination} from './access-log';
 import { CfnStage } from './apigateway.generated';
 import { Deployment } from './deployment';
 import { IRestApi } from './restapi';
@@ -28,7 +28,7 @@ export interface StageOptions extends MethodDeploymentOptions {
    *
    * @default - Common Log Format
    */
-  readonly accessLogFormat?: AccessLogOptions;
+  readonly accessLogFormat?: AccessLogFormat;
 
   /**
    * Specifies whether Amazon X-Ray tracing is enabled for this method.
@@ -184,7 +184,7 @@ export class Stage extends Resource {
   private enableCacheCluster?: boolean;
 
   private readonly accessLogDestination?: IAccessLogDestination;
-  private readonly accessLogFormat?: AccessLogOptions;
+  private readonly accessLogFormat?: AccessLogFormat;
 
   constructor(scope: Construct, id: string, props: StageProps) {
     super(scope, id);
@@ -200,7 +200,7 @@ export class Stage extends Resource {
     if (!this.accessLogDestination && !this.accessLogFormat) {
       accessLogSetting = undefined;
     } else {
-      if (this.accessLogFormat !== undefined && !/.*\$context.requestId.*/.test(this.accessLogFormat.format)) {
+      if (this.accessLogFormat !== undefined && !/.*\$context.requestId.*/.test(this.accessLogFormat.toString())) {
         throw new Error('The format must include at least `AccessLogFormat.contextRequestId()`');
       }
       if (this.accessLogFormat !== undefined && this.accessLogDestination === undefined) {
@@ -209,7 +209,7 @@ export class Stage extends Resource {
 
       accessLogSetting = {
         destinationArn: this.accessLogDestination?.bind().destinationArn,
-        format: this.accessLogFormat?.format ? this.accessLogFormat?.format : AccessLogFormat.clf().format
+        format: this.accessLogFormat?.format ? this.accessLogFormat?.format : AccessLogFormat.clf().toString()
       };
     }
 
