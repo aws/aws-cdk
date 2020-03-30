@@ -1,7 +1,7 @@
 import { expect } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { App, Stack } from '@aws-cdk/core';
+import { App, Duration, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { Stream, StreamEncryption } from '../lib';
 
@@ -64,8 +64,8 @@ export = {
   "uses explicit retention period"(test: Test) {
     const stack = new Stack();
 
-    new Stream(stack, 'MyStream', {
-      retentionPeriodHours: 168
+    new Stream(stack, "MyStream", {
+      retentionPeriod: Duration.hours(168)
     });
 
     expect(stack).toMatch({
@@ -83,23 +83,17 @@ export = {
     test.done();
   },
   "retention period must be between 24 and 168 hours"(test: Test) {
-    test.throws({
-      block: () => {
-        new Stream(new Stack(), 'MyStream', {
-          retentionPeriodHours: 169
-        });
-      },
-      message: "retentionPeriodHours must be between 24 and 168 hours"
-    });
+    test.throws(() => {
+      new Stream(new Stack(), 'MyStream', {
+        retentionPeriod: Duration.hours(169)
+      });
+    }, /retentionPeriod must be between 24 and 168 hours. Received 169/);
 
-    test.throws({
-      block: () => {
+    test.throws(() => {
         new Stream(new Stack(), 'MyStream', {
-          retentionPeriodHours: 23
-        });
-      },
-      message: "retentionPeriodHours must be between 24 and 168 hours"
-    });
+          retentionPeriod: Duration.hours(23)
+          });
+    }, /retentionPeriod must be between 24 and 168 hours. Received 23/);
 
     test.done();
   },
@@ -964,8 +958,7 @@ export = {
       const stackB = new Stack(app, 'stackB');
       const user = new iam.User(stackB, 'UserWhoNeedsAccess');
       streamFromStackA.grantRead(user);
-
-      test.throws(() => app.synth(), /'stackB' depends on 'stackA'/);
+      test.throws(() => app.synth(), /'stack.' depends on 'stack.'/);
       test.done();
     }
   }
