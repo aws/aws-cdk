@@ -45,12 +45,16 @@ export interface BackupVaultProps {
   /**
    * A SNS topic to send vault events to.
    *
+   * @see https://docs.aws.amazon.com/aws-backup/latest/devguide/sns-notifications.html
+   *
    * @default - no notifications
    */
   readonly notificationTopic?: sns.ITopic
 
   /**
    * The vault events to send.
+   *
+   * @see https://docs.aws.amazon.com/aws-backup/latest/devguide/sns-notifications.html
    *
    * @default - all vault events if `notificationTopic` is defined
    */
