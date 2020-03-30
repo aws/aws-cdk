@@ -170,7 +170,8 @@ export interface ComputeResources {
 
   /**
    * The minimum number of EC2 vCPUs that an environment should maintain (even if the compute environment state is DISABLED).
-   * Each vCPU is equivalent to 1,024 CPU shares. You must specify at least one vCPU.
+   * Each vCPU is equivalent to 1,024 CPU shares. By keeping this set to 0 you will not have instance time wasted when
+   * there is no work to be run. If you set this above zero you will maintain that number of vCPUs at all times.
    *
    * @default 0
    */
