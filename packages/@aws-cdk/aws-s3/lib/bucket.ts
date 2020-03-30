@@ -905,12 +905,13 @@ export interface BucketProps {
 
   /**
    * Destination bucket for the server access logs.
-   * @default - Access logs are disabled
+   * @default - If "serverAccessLogsPrefix" undefined - access logs disabled, otherwise - log to current bucket.
    */
   readonly serverAccessLogsBucket?: IBucket;
 
   /**
    * Optional log file prefix to use for the bucket's access logs.
+   * If defined without "serverAccessLogsBucket", enables access logs to current bucket with this prefix.
    * @default - No log file prefix
    */
   readonly serverAccessLogsPrefix?: string;
