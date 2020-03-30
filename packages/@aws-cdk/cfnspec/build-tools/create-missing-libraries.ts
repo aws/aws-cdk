@@ -180,7 +180,10 @@ async function main() {
       engines: {
         node: '>= 10.3.0'
       },
-      stability: "experimental"
+      stability: "experimental",
+      awscdkio: {
+        announce: false
+      }
     });
 
     await write('.gitignore', [
