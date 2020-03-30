@@ -172,7 +172,12 @@ export class BackupPlan extends Resource implements IBackupPlan {
    * The backup vault where backups are stored if not defined at
    * the rule level
    */
-  public get backupVault(): IBackupVault | undefined {
+  public get backupVault(): IBackupVault {
+    if (!this._backupVault) {
+      // This cannot happen but is here to make TypeScript happy
+      throw new Error('No backup vault!');
+    }
+
     return this._backupVault;
   }
 
