@@ -64,7 +64,7 @@ function serve_npm_packages() {
   if [ ! -z ${USE_PUBLISHED_FRAMEWORK_VERSION:-} ]; then
     # when using latest published framework, only publish cli
     echo "Yes, using published framework"
-    tarballs=aws-cdk-*.tgz
+    tarballs=$dist_root/js/aws-cdk*.tgz
   fi
 
   echo "tarballs = ${tarballs}"
