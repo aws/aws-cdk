@@ -23,12 +23,22 @@ export interface BackupSelectionOptions {
   readonly backupSelectionName?: string;
 
   /**
-   * The role that AWS Backup uses to authenticate when restoring the target
-   * resource
+   * The role that AWS Backup uses to authenticate when backuping or restoring
+   * the resources. The `AWSBackupServiceRolePolicyForBackup` managed policy
+   * will be attached to this role.
    *
    * @default - a new role will be created
    */
   readonly role?: iam.IRole;
+
+  /**
+   * Whether to automatically give restores permissions to the role that AWS
+   * Backup uses. If `true`, the `AWSBackupServiceRolePolicyForRestores` managed
+   * policy will be attached to the role.
+   *
+   * @default false
+   */
+  readonly allowRestores?: boolean;
 }
 
 /**
@@ -69,11 +79,11 @@ export class BackupSelection extends Resource implements iam.IGrantable {
 
     const role = props.role || new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('backup.amazonaws.com'),
-      managedPolicies: [
-        iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSBackupServiceRolePolicyForBackup'),
-        iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSBackupServiceRolePolicyForRestores'),
-      ]
     });
+    role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSBackupServiceRolePolicyForBackup'));
+    if (props.allowRestores) {
+      role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSBackupServiceRolePolicyForRestores'));
+    }
     this.grantPrincipal = role;
 
     const selection = new CfnBackupSelection(this, 'Resource', {

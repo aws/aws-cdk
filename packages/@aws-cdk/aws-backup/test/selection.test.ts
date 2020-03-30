@@ -72,6 +72,35 @@ test('create a selection', () => {
             ':iam::aws:policy/service-role/AWSBackupServiceRolePolicyForBackup'
           ]
         ]
+      }
+    ]
+  });
+});
+
+test('allow restores', () => {
+  // WHEN
+  new BackupSelection(stack, 'Selection', {
+    backupPlan: plan,
+    resources: [
+      BackupResource.fromArn('arn1'),
+    ],
+    allowRestores: true,
+  });
+
+  // THEN
+  expect(stack).toHaveResource('AWS::IAM::Role', {
+    ManagedPolicyArns: [
+      {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition'
+            },
+            ':iam::aws:policy/service-role/AWSBackupServiceRolePolicyForBackup'
+          ]
+        ]
       },
       {
         'Fn::Join': [

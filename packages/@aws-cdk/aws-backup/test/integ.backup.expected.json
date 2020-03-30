@@ -121,18 +121,6 @@
                 ":iam::aws:policy/service-role/AWSBackupServiceRolePolicyForBackup"
               ]
             ]
-          },
-          {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition"
-                },
-                ":iam::aws:policy/service-role/AWSBackupServiceRolePolicyForRestores"
-              ]
-            ]
           }
         ]
       }
