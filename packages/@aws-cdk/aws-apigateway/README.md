@@ -580,11 +580,11 @@ new apigateway.Stage(this, 'dev', {
     responseLength: true,
     status: true,
     user: true
-  })
+  })The following code will generate the access log in the
 });
 ```
 
-The access log can be structured freely. The following will configure [CLF format](https://en.wikipedia.org/wiki/Common_Log_Format).
+The following code will generate the access log in the [CLF format](https://en.wikipedia.org/wiki/Common_Log_Format).
 
 ```ts
 const logGroup = new cwlogs.LogGroup(this, "ApiGatewayAccessLogs");

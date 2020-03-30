@@ -57,7 +57,7 @@ export class AccessLogField {
 
   /**
    * A property of the claims returned from the Amazon Cognito user pool after the method caller is successfully authenticated.
-   * For more information: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-integrate-with-cognito.html
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-integrate-with-cognito.html
    *
    * @param property A property key of the claims.
    */
@@ -68,7 +68,7 @@ export class AccessLogField {
   /**
    * The principal user identification associated with the token sent by the client and returned
    * from an API Gateway Lambda authorizer (formerly known as a custom authorizer).
-   * For more information: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-use-lambda-authorizer.html
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-use-lambda-authorizer.html
    */
   public static contextAuthorizerPrincipalId() {
     return '$context.authorizer.principalId';
@@ -76,7 +76,7 @@ export class AccessLogField {
 
   /**
    * The stringified value of the specified key-value pair of the `context` map returned from an API Gateway Lambda authorizer function.
-   * For more information: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-use-lambda-authorizer.html
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-use-lambda-authorizer.html
    * @param property key of the context map.
    */
   public static contextAuthorizer(property: string) {
@@ -106,10 +106,6 @@ export class AccessLogField {
 
   /**
    * A string containing an API Gateway error message.
-   * This variable can only be used for simple variable substitution in a GatewayResponse body-mapping template,
-   * which is not processed by the Velocity Template Language engine, and in access logging.
-   * For more information: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-logging.html
-   *                       https://docs.aws.amazon.com/apigateway/latest/developerguide/customize-gateway-responses.html
    */
   public static contextErrorMessage() {
     return '$context.error.message';
@@ -126,8 +122,8 @@ export class AccessLogField {
    * A type of GatewayResponse. This variable can only be used for simple variable substitution in a GatewayResponse body-mapping template,
    * which is not processed by the Velocity Template Language engine, and in access logging.
    *
-   * For more information: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-logging.html
-   *                       https://docs.aws.amazon.com/apigateway/latest/developerguide/customize-gateway-responses.html
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-logging.html
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/customize-gateway-responses.html
    */
   public static contextErrorResponseType() {
     return '$context.error.responseType';
@@ -164,7 +160,7 @@ export class AccessLogField {
   /**
    * For API methods that require an API key, this variable is the API key associated with the method request.
    * For methods that don't require an API key, this variable is
-   * For more information: https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-api-usage-plans.html
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-api-usage-plans.html
    */
   public static contextIdentityApiKey() {
     return '$context.identity.apiKey';
@@ -187,7 +183,7 @@ export class AccessLogField {
   /**
    * The Amazon Cognito authentication provider used by the caller making the request.
    * Available only if the request was signed with Amazon Cognito credentials.
-   * For more information: https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-identity.html
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-identity.html
    */
   public static contextIdentityCognitoAuthenticationProvider() {
     return '$context.identity.cognitoAuthenticationProvider';
@@ -233,7 +229,7 @@ export class AccessLogField {
 
   /**
    * The principal identifier of the user making the request. Used in Lambda authorizers.
-   * For more information: https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-lambda-authorizer-output.html
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-lambda-authorizer-output.html
    */
   public static contextIdentityUser() {
     return '$context.identity.user';
@@ -248,7 +244,7 @@ export class AccessLogField {
 
   /**
    * The Amazon Resource Name (ARN) of the effective user identified after authentication.
-   * For more information: https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users.html
+   * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users.html
    */
   public static contextIdentityUserArn() {
     return '$context.identity.userArn';
@@ -280,7 +276,7 @@ export class AccessLogField {
   /**
    * The request header override.
    * If this parameter is defined, it contains the headers to be used instead of the HTTP Headers that are defined in the Integration Request pane.
-   * For more information: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-override-request-response-parameters.html
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-override-request-response-parameters.html
    *
    * @param headerName
    */
@@ -291,7 +287,7 @@ export class AccessLogField {
   /**
    * The request path override. If this parameter is defined,
    * it contains the request path to be used instead of the URL Path Parameters that are defined in the Integration Request pane.
-   * For more information: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-override-request-response-parameters.html
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-override-request-response-parameters.html
    *
    * @param pathName
    */
@@ -314,7 +310,7 @@ export class AccessLogField {
    * The response header override.
    * If this parameter is defined, it contains the header to be returned instead of the Response header
    * that is defined as the Default mapping in the Integration Response pane.
-   * For more information: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-override-request-response-parameters.html
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-override-request-response-parameters.html
    *
    * @param headerName
    */
@@ -326,7 +322,7 @@ export class AccessLogField {
    * The response status code override.
    * If this parameter is defined, it contains the status code to be returned instead of the Method response status
    * that is defined as the Default mapping in the Integration Response pane.
-   * For more information: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-override-request-response-parameters.html
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-override-request-response-parameters.html
    */
   public static contextResponseOverrideStatus() {
     return '$context.responseOverride.status';
@@ -357,7 +353,7 @@ export class AccessLogField {
    * The path to your resource.
    * For example, for the non-proxy request URI of `https://{rest-api-id.execute-api.{region}.amazonaws.com/{stage}/root/child`,
    * The $context.resourcePath value is `/root/child`.
-   * For more information: https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-create-api-step-by-step.html
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-create-api-step-by-step.html
    */
   public static contextResourcePath() {
     return '$context.resourcePath';
@@ -372,7 +368,7 @@ export class AccessLogField {
 
   /**
    * The response received from AWS WAF: `WAF_ALLOW` or `WAF_BLOCK`. Will not be set if the stage is not associated with a web ACL.
-   * For more information: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-control-access-aws-waf.html
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-control-access-aws-waf.html
    */
   public static contextWafResponseCode() {
     return '$context.wafResponseCode';
@@ -381,7 +377,7 @@ export class AccessLogField {
   /**
    * The complete ARN of the web ACL that is used to decide whether to allow or block the request.
    * Will not be set if the stage is not associated with a web ACL.
-   * For more information: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-control-access-aws-waf.html
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-control-access-aws-waf.html
    */
   public static contextWebaclArn() {
     return '$context.webaclArn';
@@ -389,7 +385,7 @@ export class AccessLogField {
 
   /**
    * The trace ID for the X-Ray trace.
-   * For more information: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-enabling-xray.html
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-enabling-xray.html
    */
   public static contextXrayTraceId() {
     return '$context.xrayTraceId';
