@@ -1,4 +1,4 @@
-import { expect } from '@aws-cdk/assert';
+import { expect, haveResource } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import { App, Duration, Stack } from '@aws-cdk/core';
@@ -99,12 +99,15 @@ export = {
   },
 
   'uses Kinesis master key if MANAGED encryption type is provided'(test: Test) {
+    // GIVEN
     const stack = new Stack();
 
+    // WHEN
     new Stream(stack, 'MyStream', {
       encryption: StreamEncryption.MANAGED
     });
 
+    // THEN
     expect(stack).toMatch({
       "Resources": {
         "MyStream5C050E93": {
@@ -120,6 +123,32 @@ export = {
         }
       }
     });
+
+    test.done();
+  },
+
+  'if a KMS key is supplied, use KMS as the encryption type'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const key = new kms.Key(stack, 'myKey');
+
+    // WHEN
+    new Stream(stack, 'myStream', {
+      encryptionKey: key
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Kinesis::Stream', {
+        ShardCount: 1,
+        RetentionPeriodHours: 24,
+        StreamEncryption: {
+          EncryptionType: 'KMS',
+          KeyId: {
+            'Fn::GetAtt': ['myKey441A1E73', 'Arn']
+          }
+        }
+      })
+    );
 
     test.done();
   },

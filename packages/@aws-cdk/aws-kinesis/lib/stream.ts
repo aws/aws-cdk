@@ -201,7 +201,7 @@ export interface StreamProps {
    * If you choose KMS, you can specify a KMS key via `encryptionKey`. If
    * encryption key is not specified, a key will automatically be created.
    *
-   * @default StreamEncryption.UNENCRYPTED
+   * @default - StreamEncryption.KMS if encryptionKey is specified, or StreamEncryption.UNENCRYPTED otherwise
    */
   readonly encryption?: StreamEncryption;
 
@@ -294,8 +294,9 @@ export class Stream extends StreamBase {
     encryptionKey?: kms.IKey
   } {
 
-    // default to unencrypted.
-    const encryptionType = props.encryption || StreamEncryption.UNENCRYPTED;
+    // default based on whether encryption key is specified
+    const encryptionType = props.encryption ??
+    (props.encryptionKey ? StreamEncryption.KMS : StreamEncryption.UNENCRYPTED);
 
     // if encryption key is set, encryption must be set to KMS.
     if (encryptionType !== StreamEncryption.KMS && props.encryptionKey) {
