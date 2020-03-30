@@ -62,8 +62,8 @@ export class BackupPlan extends Resource implements IBackupPlan {
    * Daily with 35 day retention
    */
   public static daily35DayRetention(scope: Construct, id: string, backupVault?: IBackupVault) {
-    const plan = new BackupPlan(scope, id);
-    plan.addRule(BackupPlanRule.daily(backupVault));
+    const plan = new BackupPlan(scope, id, { backupVault });
+    plan.addRule(BackupPlanRule.daily());
     return plan;
   }
 
@@ -71,9 +71,9 @@ export class BackupPlan extends Resource implements IBackupPlan {
    * Daily and monthly with 1 year retention
    */
   public static dailyMonthly1YearRetention(scope: Construct, id: string, backupVault?: IBackupVault) {
-    const plan = new BackupPlan(scope, id);
-    plan.addRule(BackupPlanRule.daily(backupVault));
-    plan.addRule(BackupPlanRule.monthly1Year(backupVault));
+    const plan = new BackupPlan(scope, id, { backupVault });
+    plan.addRule(BackupPlanRule.daily());
+    plan.addRule(BackupPlanRule.monthly1Year());
     return plan;
   }
 
@@ -81,10 +81,10 @@ export class BackupPlan extends Resource implements IBackupPlan {
    * Daily, weekly and monthly with 5 year retention
    */
   public static dailyWeeklyMonthly5YearRetention(scope: Construct, id: string, backupVault?: IBackupVault) {
-    const plan = new BackupPlan(scope, id);
-    plan.addRule(BackupPlanRule.daily(backupVault));
-    plan.addRule(BackupPlanRule.weekly(backupVault));
-    plan.addRule(BackupPlanRule.monthly5Year(backupVault));
+    const plan = new BackupPlan(scope, id, { backupVault });
+    plan.addRule(BackupPlanRule.daily());
+    plan.addRule(BackupPlanRule.weekly());
+    plan.addRule(BackupPlanRule.monthly5Year());
     return plan;
   }
 
@@ -92,10 +92,10 @@ export class BackupPlan extends Resource implements IBackupPlan {
    * Daily, weekly and monthly with 7 year retention
    */
   public static dailyWeeklyMonthly7YearRetention(scope: Construct, id: string, backupVault?: IBackupVault) {
-    const plan = new BackupPlan(scope, id);
-    plan.addRule(BackupPlanRule.daily(backupVault));
-    plan.addRule(BackupPlanRule.weekly(backupVault));
-    plan.addRule(BackupPlanRule.monthly7Year(backupVault));
+    const plan = new BackupPlan(scope, id, { backupVault });
+    plan.addRule(BackupPlanRule.daily());
+    plan.addRule(BackupPlanRule.weekly());
+    plan.addRule(BackupPlanRule.monthly7Year());
     return plan;
   }
 
