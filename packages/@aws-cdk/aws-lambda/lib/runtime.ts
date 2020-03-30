@@ -27,30 +27,30 @@ export class Runtime {
   public static readonly ALL = new Array<Runtime>();
 
   /**
-   * @deprecated Use {@link NODEJS_10_X}
-   *
    * The NodeJS runtime (nodejs)
+   *
+   * @deprecated Use {@link NODEJS_10_X}
    */
   public static readonly NODEJS =           new Runtime('nodejs',         RuntimeFamily.NODEJS, { supportsInlineCode: true });
 
   /**
-   * @deprecated Use {@link NODEJS_10_X}
-   *
    * The NodeJS 4.3 runtime (nodejs4.3)
+   *
+   * @deprecated Use {@link NODEJS_10_X}
    */
   public static readonly NODEJS_4_3 =       new Runtime('nodejs4.3',      RuntimeFamily.NODEJS, { supportsInlineCode: true });
 
   /**
-   * @deprecated Use {@link NODEJS_10_X}
-   *
    * The NodeJS 6.10 runtime (nodejs6.10)
+   *
+   * @deprecated Use {@link NODEJS_10_X}
    */
   public static readonly NODEJS_6_10 =      new Runtime('nodejs6.10',     RuntimeFamily.NODEJS, { supportsInlineCode: true });
 
   /**
-   * @deprecated Use {@link NODEJS_10_X}
-   *
    * The NodeJS 8.10 runtime (nodejs8.10)
+   *
+   * @deprecated Use {@link NODEJS_10_X}
    */
   public static readonly NODEJS_8_10 =      new Runtime('nodejs8.10',     RuntimeFamily.NODEJS, { supportsInlineCode: true });
 
@@ -95,16 +95,16 @@ export class Runtime {
   public static readonly JAVA_11 =          new Runtime('java11',         RuntimeFamily.JAVA);
 
   /**
-   * @deprecated Use {@link DOTNET_CORE_2_1}
-   *
    * The .NET Core 1.0 runtime (dotnetcore1.0)
+   *
+   * @deprecated Use {@link DOTNET_CORE_2_1}
    */
   public static readonly DOTNET_CORE_1 =    new Runtime('dotnetcore1.0',  RuntimeFamily.DOTNET_CORE);
 
   /**
-   * @deprecated Use {@link DOTNET_CORE_2_1}
-   *
    * The .NET Core 2.0 runtime (dotnetcore2.0)
+   *
+   * @deprecated Use {@link DOTNET_CORE_2_1}
    */
   public static readonly DOTNET_CORE_2 =    new Runtime('dotnetcore2.0',  RuntimeFamily.DOTNET_CORE);
 
