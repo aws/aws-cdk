@@ -45,7 +45,7 @@
     "fast-check": "^1.22.2",
     "jest": "^24.9.0",
     "pkglint": "0.0.0",
-    "ts-jest": "^25.2.0"
+    "ts-jest": "^25.3.0"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
