@@ -12,6 +12,8 @@ import { TokenizedStringFragments } from './string-fragments';
  *
  * Tokens can be embedded into strings while retaining their original
  * semantics.
+ *
+ * @deprecated use the `Token` class from the `constructs` package instead.
  */
 export class Token {
   /**
@@ -74,6 +76,8 @@ export class Token {
 
 /**
  * Less oft-needed functions to manipulate Tokens
+ *
+ * @deprecated use the `Tokenization` class from the `constructs` package instead.
  */
 export class Tokenization {
   /**
@@ -157,6 +161,8 @@ export class Tokenization {
  * implementors and resolution hooks, whereas this struct is just to bundle
  * a number of things that would otherwise be arguments to resolve() in a
  * readable way.
+ *
+ * @deprecated use the `Tokenization` class and `ResolveOptions` from the `constructs` package instead.
  */
 export interface ResolveOptions {
   /**
@@ -178,6 +184,8 @@ export interface ResolveOptions {
 
 /**
  * Properties to string encodings
+ *
+ * @deprecated use the `Token` class and `EncodingOptions` from the `constructs` package instead.
  */
 export interface EncodingOptions {
   /**

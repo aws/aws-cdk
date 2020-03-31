@@ -3,6 +3,8 @@ import { IFragmentConcatenator, IResolvable } from './resolvable';
 
 /**
  * Fragments of a concatenated string containing stringified Tokens
+ *
+ * @deprecated use the `TokenozedStringFragments` class from the `constructs` package instead.
  */
 export class TokenizedStringFragments {
   /** @internal */
@@ -64,6 +66,8 @@ export class TokenizedStringFragments {
  * Interface to apply operation to tokens in a string
  *
  * Interface so it can be exported via jsii.
+ *
+ * @deprecated use the `TokenizedStringFragments` class and `ITokenMapper` from the `constructs` package instead.
  */
 export interface ITokenMapper {
   /**

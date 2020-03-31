@@ -4,6 +4,8 @@ import { TokenizedStringFragments } from './string-fragments';
 
 /**
  * Current resolution context for tokens
+ *
+ * @deprecated use the `IResolveContext` interface from the `constructs` package instead.
  */
 export interface IResolveContext {
   /**
@@ -31,6 +33,8 @@ export interface IResolveContext {
  * Interface for values that can be resolvable later
  *
  * Tokens are special objects that participate in synthesis.
+ *
+ * @deprecated use the `IResolvable` interface from the `constructs` package instead.
  */
 export interface IResolvable {
   /**
@@ -56,6 +60,8 @@ export interface IResolvable {
 
 /**
  * A Token that can post-process the complete resolved value, after resolve() has recursed over it
+ *
+ * @deprecated use the `IPostProcessor` interface from the `constructs` package instead.
  */
 export interface IPostProcessor  {
   /**
@@ -66,6 +72,8 @@ export interface IPostProcessor  {
 
 /**
  * How to resolve tokens
+ *
+ * @deprecated use the `ITokenResolver` interface from the `constructs` package instead.
  */
 export interface ITokenResolver {
   /**
@@ -91,7 +99,7 @@ export interface ITokenResolver {
  *
  * Interface so it could potentially be exposed over jsii.
  *
- * @experimental
+ * @deprecated use the `IFragmentConcatenator` interface from the `constructs` package instead.
  */
 export interface IFragmentConcatenator {
   /**
@@ -104,6 +112,8 @@ export interface IFragmentConcatenator {
  * Converts all fragments to strings and concats those
  *
  * Drops 'undefined's.
+ *
+ * @deprecated use the `StringConcat` class from the `constructs` package instead.
  */
 export class StringConcat implements IFragmentConcatenator {
   public join(left: any | undefined, right: any | undefined): any {
@@ -116,7 +126,7 @@ export class StringConcat implements IFragmentConcatenator {
 /**
  * Default resolver implementation
  *
- * @experimental
+ * @deprecated use the `DefaultTokenResolver` class from the `constructs` package instead.
  */
 export class DefaultTokenResolver implements ITokenResolver {
   private readonly delegate: CDefaultTokenResolver;
