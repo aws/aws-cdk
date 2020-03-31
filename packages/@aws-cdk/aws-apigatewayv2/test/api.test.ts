@@ -10,13 +10,13 @@ test('minimal setup', () => {
   const stack = new Stack();
 
   // WHEN
-  new apigw.Api(stack, 'my-api');
+  new apigw.Api(stack, 'my-api', { protocolType: apigw.ProtocolType.WEBSOCKET, routeSelectionExpression: apigw.KnownRouteSelectionExpression.CONTEXT_ROUTE_KEY });
 
   // THEN
   cdkExpect(stack).to(haveResource("AWS::ApiGatewayV2::Api", {
     Name: 'my-api',
     ProtocolType: apigw.ProtocolType.WEBSOCKET,
-    RouteSelectionExpression: '${request.body.action}'
+    RouteSelectionExpression: '${context.routeKey}'
   }));
 
   cdkExpect(stack).to(haveResource("AWS::ApiGatewayV2::Deployment", {
@@ -36,6 +36,8 @@ test('minimal setup (no deploy)', () => {
 
   // WHEN
   new apigw.Api(stack, 'my-api', {
+    protocolType: apigw.ProtocolType.WEBSOCKET,
+    routeSelectionExpression: apigw.KnownRouteSelectionExpression.CONTEXT_ROUTE_KEY,
     deploy: false
   });
 
@@ -55,6 +57,8 @@ test('minimal setup (no deploy, error)', () => {
   // WHEN
   expect(() => {
     return new apigw.Api(stack, 'my-api', {
+      protocolType: apigw.ProtocolType.WEBSOCKET,
+      routeSelectionExpression: apigw.KnownRouteSelectionExpression.CONTEXT_ROUTE_KEY,
       deploy: false,
       deployOptions: {
         stageName: 'testStage'
@@ -68,7 +72,7 @@ test('URLs and ARNs', () => {
   const stack = new Stack();
 
   // WHEN
-  const api = new apigw.Api(stack, 'my-api');
+  const api = new apigw.Api(stack, 'my-api', { protocolType: apigw.ProtocolType.WEBSOCKET, routeSelectionExpression: apigw.KnownRouteSelectionExpression.CONTEXT_ROUTE_KEY });
   const importedStage = apigw.Stage.fromStageName(stack, 'devStage', 'dev');
   const importedRoute = apigw.Route.fromRouteAttributes(stack, 'devRoute', {
     key: 'routeKey',
@@ -99,6 +103,8 @@ test('URLs and ARNs (no deploy)', () => {
 
   // WHEN
   const api = new apigw.Api(stack, 'my-api', {
+    protocolType: apigw.ProtocolType.WEBSOCKET,
+    routeSelectionExpression: apigw.KnownRouteSelectionExpression.CONTEXT_ROUTE_KEY,
     deploy: false
   });
   const importedStage = apigw.Stage.fromStageName(stack, 'devStage', 'dev');

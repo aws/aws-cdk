@@ -12,6 +12,8 @@ test('route', () => {
 
   // WHEN
   const api = new apigw.Api(stack, 'my-api', {
+    protocolType: apigw.ProtocolType.WEBSOCKET,
+    routeSelectionExpression: apigw.KnownRouteSelectionExpression.CONTEXT_ROUTE_KEY,
     deploy: false
   });
   const integration = api.addLambdaIntegration('myFunction', {
@@ -43,12 +45,36 @@ test('route', () => {
   }));
 });
 
+test('route (no model)', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  const api = new apigw.Api(stack, 'my-api', {
+    protocolType: apigw.ProtocolType.HTTP,
+    deploy: false
+  });
+  const integration = api.addLambdaIntegration('myFunction', {
+    handler: lambda.Function.fromFunctionArn(stack, 'handler', `arn:aws:lambda:${stack.region}:${stack.account}:function:my-function`),
+  });
+  integration.addRoute('POST /');
+
+  // THEN
+  cdkExpect(stack).to(haveResource("AWS::ApiGatewayV2::Route", {
+    ApiId: { Ref: "myapi4C7BF186" },
+    RouteKey: "POST /",
+    Target: { "Fn::Join": ["", [ "integrations/", { Ref: "myapimyFunction27BC3796" } ] ] }
+  }));
+});
+
 test('route response', () => {
   // GIVEN
   const stack = new Stack();
 
   // WHEN
   const api = new apigw.Api(stack, 'my-api', {
+    protocolType: apigw.ProtocolType.WEBSOCKET,
+    routeSelectionExpression: apigw.KnownRouteSelectionExpression.CONTEXT_ROUTE_KEY,
     deploy: false
   });
   const integration = api.addLambdaIntegration('myFunction', {

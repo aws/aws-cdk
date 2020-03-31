@@ -52,6 +52,25 @@ export enum KnownRouteKey {
 }
 
 /**
+ * Known expressions for selecting a route in an API
+ */
+export enum KnownRouteSelectionExpression {
+  /**
+   * Selects the route key from the request context
+   *
+   * Supported only for WebSocket APIs.
+   */
+  CONTEXT_ROUTE_KEY = '${context.routeKey}',
+
+  /**
+   * A string starting with the method ans containing the request path
+   *
+   * Only supported value for HTTP APIs, if not provided, will be the default
+   */
+  METHOD_PATH = '${request.method} ${request.path}'
+}
+
+/**
  * Defines the attributes for an Api Gateway V2 Route.
  */
 export interface RouteAttributes {

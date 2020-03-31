@@ -6,7 +6,7 @@ import { Integration } from './integration';
 import { LambdaIntegration, LambdaIntegrationOptions } from './integrations/lambda-integration';
 import { JsonSchema } from './json-schema';
 import { Model, ModelOptions } from './model';
-import { IRoute, KnownRouteKey } from './route';
+import { IRoute, KnownRouteSelectionExpression } from './route';
 import { IStage, Stage, StageOptions } from './stage';
 
 /**
@@ -22,6 +22,118 @@ export enum ProtocolType {
    * HTTP API
    */
   HTTP = "HTTP"
+}
+
+/**
+ * Specifies how to interpret the base path of the API during import
+ */
+export enum BasePath {
+  /**
+   * Ignores the base path
+   */
+  IGNORE = "ignore",
+
+  /**
+   * Prepends the base path to the API path
+   */
+  PREPEND = "prepend",
+
+  /**
+   * Splits the base path from the API path
+   */
+  SPLIT = "split"
+}
+
+/**
+ * This expression is evaluated when the service determines the given request should proceed
+ * only if the client provides a valid API key.
+ */
+export enum KnownApiKeySelectionExpression {
+  /**
+   * Uses the `x-api-key` header to get the API Key
+   */
+  HEADER_X_API_KEY = "$request.header.x-api-key",
+
+  /**
+   * Uses the `usageIdentifier` property of the current authorizer to get the API Key
+   */
+  AUTHORIZER_USAGE_IDENTIFIER = " $context.authorizer.usageIdentifierKey"
+}
+
+/**
+ * The BodyS3Location property specifies an S3 location from which to import an OpenAPI definition.
+ */
+export interface BodyS3Location {
+  /**
+   * The S3 bucket that contains the OpenAPI definition to import.
+   */
+  readonly bucket: string;
+
+  /**
+   * The Etag of the S3 object.
+   *
+   * @default - no etag verification
+   */
+  readonly etag?: string;
+
+  /**
+   * The key of the S3 object.
+   */
+  readonly key: string;
+
+  /**
+   * The version of the S3 object.
+   *
+   * @default - get latest version
+   */
+  readonly version?: string;
+}
+
+/**
+ * The CorsConfiguration property specifies a CORS configuration for an API.
+ */
+export interface CorsConfiguration {
+  /**
+   * Specifies whether credentials are included in the CORS request.
+   *
+   * @default false
+   */
+  readonly allowCredentials?: boolean;
+
+  /**
+   * Represents a collection of allowed headers.
+   *
+   * @default - no headers allowed
+   */
+  readonly allowHeaders?: string[];
+
+  /**
+   * Represents a collection of allowed HTTP methods.
+   *
+   * @default - no allowed methods
+   */
+  readonly allowMethods: string[];
+
+  /**
+   * Represents a collection of allowed origins.
+   *
+   * @default - get allowed origins
+   */
+  readonly allowOrigins?: string[];
+
+  /**
+   * Represents a collection of exposed headers.
+   *
+   * @default - get allowed origins
+   */
+  readonly exposeHeaders?: string[];
+
+  /**
+   * The number of seconds that the browser should cache preflight request results.
+   *
+   * @default - get allowed origins
+   */
+  readonly maxAge?: number;
 }
 
 /**
@@ -88,25 +200,65 @@ export interface ApiProps {
   readonly apiName?: string;
 
   /**
-   * Available protocols for ApiGateway V2 APIs (currently only 'WEBSOCKET' is supported)
+   * Specifies how to interpret the base path of the API during import.
    *
-   * @default 'WEBSOCKET'
+   * Supported only for HTTP APIs.
+   * @default 'ignore'
+   */
+  readonly basePath?: BasePath;
+
+  /**
+   * The OpenAPI definition.
+   *
+   * To import an HTTP API, you must specify `body` or `bodyS3Location`.
+   *
+   * Supported only for HTTP APIs.
+   * @default - `bodyS3Location` if defined, or no import
+   */
+  readonly body?: string;
+
+  /**
+   * The S3 location of an OpenAPI definition.
+   *
+   * To import an HTTP API, you must specify `body` or `bodyS3Location`.
+   *
+   * Supported only for HTTP APIs.
+   * @default - `body` if defined, or no import
+   */
+  readonly bodyS3Location?: BodyS3Location;
+
+  /**
+   * The S3 location of an OpenAPI definition.
+   *
+   * To import an HTTP API, you must specify `body` or `bodyS3Location`.
+   *
+   * Supported only for HTTP APIs.
+   * @default - `body` if defined, or no import
+   */
+  readonly corsConfiguration?: CorsConfiguration;
+
+  /**
+   * Available protocols for ApiGateway V2 APIs
+   *
+   * @default - required unless you specify an OpenAPI definition
    */
   readonly protocolType?: ProtocolType | string;
 
   /**
    * Expression used to select the route for this API
    *
-   * @default '${request.body.action}'
+   * @default - '${request.method} ${request.path}' for HTTP APIs, required for Web Socket APIs
    */
-  readonly routeSelectionExpression?: KnownRouteKey | string;
+  readonly routeSelectionExpression?: KnownRouteSelectionExpression | string;
 
   /**
    * Expression used to select the Api Key to use for metering
    *
+   * Supported only for WebSocket APIs
+   *
    * @default - No Api Key
    */
-  readonly apiKeySelectionExpression?: string;
+  readonly apiKeySelectionExpression?: KnownApiKeySelectionExpression | string;
 
   /**
    * A description of the purpose of this API Gateway Api resource.
@@ -128,6 +280,13 @@ export interface ApiProps {
    * @default false
    */
   readonly version?: string;
+
+  /**
+   * Specifies whether to rollback the API creation (`true`) or not (`false`) when a warning is encountered
+   *
+   * @default false
+   */
+  readonly failOnWarnings?: boolean;
 }
 
 /**
@@ -176,10 +335,46 @@ export class Api extends Resource implements IApi {
       physicalName: props.apiName || id,
     });
 
+    if (props.protocolType === undefined && props.body === null && props.bodyS3Location === null) {
+      throw new Error("You must specify a protocol type, or import an Open API definition (directly or from S3)");
+    }
+
+    switch (props.protocolType) {
+      case ProtocolType.WEBSOCKET: {
+        if (props.basePath !== undefined) {
+          throw new Error('"basePath" is only supported with HTTP APIs');
+        }
+        if (props.body !== undefined) {
+          throw new Error('"body" is only supported with HTTP APIs');
+        }
+        if (props.bodyS3Location !== undefined) {
+          throw new Error('"bodyS3Location" is only supported with HTTP APIs');
+        }
+        if (props.corsConfiguration !== undefined) {
+          throw new Error('"corsConfiguration" is only supported with HTTP APIs');
+        }
+        if (props.routeSelectionExpression === undefined) {
+          throw new Error('"routeSelectionExpression" is required for Web Socket APIs');
+        }
+        break;
+      }
+      case ProtocolType.HTTP:
+      case undefined: {
+        if (props.apiKeySelectionExpression !== undefined) {
+          throw new Error('"apiKeySelectionExpression" is only supported with Web Socket APIs');
+        }
+        if (props.disableSchemaValidation !== undefined) {
+          throw new Error('"disableSchemaValidation" is only supported with Web Socket APIs');
+        }
+        if (props.routeSelectionExpression !== undefined && props.apiKeySelectionExpression !== KnownRouteSelectionExpression.METHOD_PATH) {
+          throw new Error('"routeSelectionExpression" has a single supported value for HTTP APIs: "${request.method} ${request.path}"');
+        }
+        break;
+      }
+    }
+
     this.resource = new CfnApi(this, 'Resource', {
       ...props,
-      protocolType: props.protocolType || ProtocolType.WEBSOCKET,
-      routeSelectionExpression: props.routeSelectionExpression || '${request.body.action}',
       name: this.physicalName
     });
     this.apiId = this.resource.ref;

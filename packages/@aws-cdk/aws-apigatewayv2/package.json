@@ -124,6 +124,8 @@
       "no-unused-type:@aws-cdk/aws-apigatewayv2.ProtocolType",
       "no-unused-type:@aws-cdk/aws-apigatewayv2.EndpointType",
       "no-unused-type:@aws-cdk/aws-apigatewayv2.AuthorizerType",
+      "no-unused-type:@aws-cdk/aws-apigatewayv2.KnownApiKeySelectionExpression",
+      "no-unused-type:@aws-cdk/aws-apigatewayv2.KnownRouteSelectionExpression",
       "resource-interface:@aws-cdk/aws-apigatewayv2.LambdaIntegration"
     ]
   },

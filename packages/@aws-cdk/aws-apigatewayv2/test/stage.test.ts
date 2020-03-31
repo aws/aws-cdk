@@ -11,6 +11,8 @@ test('minimal setup', () => {
 
   // WHEN
   const api = new apigw.Api(stack, 'my-api', {
+    protocolType: apigw.ProtocolType.WEBSOCKET,
+    routeSelectionExpression: apigw.KnownRouteSelectionExpression.CONTEXT_ROUTE_KEY,
     deploy: false
   });
   const deployment = new apigw.Deployment(stack, 'deployment', {

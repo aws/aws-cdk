@@ -12,6 +12,8 @@ test('Lambda integration', () => {
 
   // WHEN
   const api = new apigw.Api(stack, 'my-api', {
+    protocolType: apigw.ProtocolType.WEBSOCKET,
+    routeSelectionExpression: apigw.KnownRouteSelectionExpression.CONTEXT_ROUTE_KEY,
     deploy: false
   });
   api.addLambdaIntegration('myFunction', {
@@ -32,6 +34,8 @@ test('Lambda integration (with extra params)', () => {
 
   // WHEN
   const api = new apigw.Api(stack, 'my-api', {
+    protocolType: apigw.ProtocolType.WEBSOCKET,
+    routeSelectionExpression: apigw.KnownRouteSelectionExpression.CONTEXT_ROUTE_KEY,
     deploy: false
   });
   api.addLambdaIntegration('myFunction', {
@@ -56,6 +60,8 @@ test('Lambda integration (proxy)', () => {
 
   // WHEN
   const api = new apigw.Api(stack, 'my-api', {
+    protocolType: apigw.ProtocolType.WEBSOCKET,
+    routeSelectionExpression: apigw.KnownRouteSelectionExpression.CONTEXT_ROUTE_KEY,
     deploy: false
   });
   api.addLambdaIntegration('myFunction', {
@@ -77,6 +83,8 @@ test('Integration response', () => {
 
   // WHEN
   const api = new apigw.Api(stack, 'my-api', {
+    protocolType: apigw.ProtocolType.WEBSOCKET,
+    routeSelectionExpression: apigw.KnownRouteSelectionExpression.CONTEXT_ROUTE_KEY,
     deploy: false
   });
   const integration = api.addLambdaIntegration('myFunction', {

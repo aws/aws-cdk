@@ -10,7 +10,7 @@ test('minimal setup', () => {
   const stack = new Stack();
 
   // WHEN
-  const api = new apigw.Api(stack, 'my-api');
+  const api = new apigw.Api(stack, 'my-api', { protocolType: apigw.ProtocolType.WEBSOCKET, routeSelectionExpression: apigw.KnownRouteSelectionExpression.CONTEXT_ROUTE_KEY });
   const domainName = new apigw.DomainName(stack, 'domain-name', { domainName: 'test.example.com' });
   new apigw.ApiMapping(stack, 'mapping', {
     stage: api.deploymentStage!,

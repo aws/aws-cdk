@@ -17,8 +17,96 @@
 ---
 <!--END STABILITY BANNER-->
 
-This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
+Amazon API Gateway V2 is a fully managed service that makes it easy for developers
+to publish, maintain, monitor, and secure Web Socket or HTTP APIs at any scale. Create an API to
+access data, business logic, or functionality from your back-end services, such
+as applications running on Amazon Elastic Compute Cloud (Amazon EC2), code
+running on AWS Lambda, or any web application.
+
+### Defining APIs
+
+APIs are defined through adding routes, and integrating them with AWS Services or APIs.
+Currently this module supports HTTP APIs and Web Socket APIs.
+
+For example a Web Socket API with a "$connect" route (handling user connection) backed by
+an AWS Lambda function would be defined as follows:
 
 ```ts
-import apigatewayv2 = require('@aws-cdk/aws-apigatewayv2');
+const api = new apigatewayv2.Api(this, 'books-api', {
+  protocolType: apigatewayv2.ProtocolType.HTTP
+});
+
+const backend = new lambda.Function(...);
+const integration = api.addLambdaIntegration('myFunction', {
+  handler: backend
+});
+
+integration.addRoute('POST /');
 ```
+
+You can also supply `proxy: false`, in which case you will have to explicitly
+define the API model:
+
+```ts
+const backend = new lambda.Function(...);
+const integration = api.addLambdaIntegration('myFunction', {
+  handler: backend,
+  proxy: false
+});
+```
+
+### Integration Targets
+
+Methods are associated with backend integrations, which are invoked when this
+method is called. API Gateway supports the following integrations:
+
+ * `LambdaIntegration` - can be used to invoke an AWS Lambda function.
+
+The following example shows how to integrate the `GET /book/{book_id}` method to
+an AWS Lambda function:
+
+```ts
+const getBookHandler = new lambda.Function(...);
+const getBookIntegration = api.addLambdaIntegration('myFunction', {
+  handler: getBookHandler
+});
+```
+
+The following example shows how to use an API Key with a usage plan:
+
+```ts
+const hello = new lambda.Function(...);
+
+const api = new apigatewayv2.Api(this, 'hello-api', {
+  protocolType: apigatewayv2.ProtocolType.WEBSOCKET,
+  apiKeySelectionExpression: '$request.header.x-api-key'
+});
+```
+
+### Working with models
+
+When you work with Lambda integrations that are not Proxy integrations, you
+have to define your models and mappings for the request, response, and integration.
+
+```ts
+const hello = new lambda.Function(...);
+
+const api = new apigateway.RestApi(this, 'hello-api', {
+  protocolType: apigatewayv2.ProtocolType.HTTP
+});
+
+const integration = api.addLambdaIntegration('myFunction', {
+  handler: hello
+});
+integration.addRoute(apigw.KnownRouteKey.CONNECT, {
+  modelSelectionExpression: apigw.KnownModelKey.DEFAULT,
+  requestModels: {
+    $default: api.addModel({ schema: apigw.JsonSchemaVersion.DRAFT4, title: "statusInputModel", type: apigw.JsonSchemaType.OBJECT, properties: { action: { type: apigw.JsonSchemaType.STRING } } })
+  },
+  routeResponseSelectionExpression: apigw.KnownRouteResponseKey.DEFAULT
+});
+```
+
+----
+
+This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
