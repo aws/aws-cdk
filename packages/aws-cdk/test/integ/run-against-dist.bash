@@ -22,24 +22,41 @@ function serve_npm_packages() {
     return
   fi
 
+  cli_root=./package  
+
   echo "Checking if using published framework"
 
   if [ ! -z ${USE_PUBLISHED_FRAMEWORK_VERSION:-} ]; then
     # when using latest published framework, only
     # install the cli and its dependencies.
 
-    version=$(node -p 'require("./package/package.json").version')
+    version=$(node -p "require('${cli_root}/package.json').version")
 
     echo "Looking up CLI dependencies..."
     # good lord
-    package_names=$(node -p "Object.entries(require('./package/package.json').dependencies).filter(x => x[0].includes('@aws-cdk')).map(x => x[0] + '-${version}').join(' ')")
+    cli_deps=$(node -p "Object.entries(require('${cli_root}/package.json').dependencies).filter(x => x[0].includes('@aws-cdk')).map(x => x[0].replace('@aws-cdk/', '')).join(' ')")
 
     echo "Yes, using published framework"
     tarballs=$dist_root/js/aws-cdk-${version}.tgz
-    package_names="${package_names} aws-cdk-${version}"
+    package_names="aws-cdk"
+
+    for dep in ${cli_deps}; do
+      
+      tarball=$dist_root/js/${dep}@${version}.jsii.tgz
+      package=@aws-cdk/${dep}
+      if [ ! -f ${tarball} ]; then
+        # not a jsii dependency, the tarball is different...
+        tarball=$dist_root/js/aws-cdk-${dep}-${version}.tgz        
+      fi 
+
+      ls -l ${tarball}
+      tarballs="${tarballs} ${tarball}"
+      package_names="${package_names} ${package}"
+    done
 
     echo "tarballs= ${tarballs}"
     echo "package_names= ${package_names}"
+
   else
 
     tarballs=$dist_root/js/*.tgz
@@ -89,6 +106,7 @@ function serve_npm_packages() {
     # aws-cdk package directory.
     (cd $npmws && npm --quiet publish $tgz)
   done
+
 }
 
 function write_verdaccio_config() {
