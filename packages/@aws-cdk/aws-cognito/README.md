@@ -40,6 +40,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
   - [Emails](#emails)
   - [Lambda Triggers](#lambda-triggers)
   - [Import](#importing-user-pools)
+  - [App Clients](#app-clients)
 
 ## User Pools
 

@@ -77,12 +77,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
   }
 
   public readonly userPoolClientId: string;
-
-  /**
-   * The client name that was specified via the `userPoolClientName` property during initialization,
-   * `undefined` otherwise.
-   */
-  public readonly userPoolClientName?: string;
+  private readonly _userPoolClientName?: string;
 
   /*
    * Note to implementers: Two CloudFormation return values Name and ClientSecret are part of the spec.
@@ -103,6 +98,17 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
     });
 
     this.userPoolClientId = resource.ref;
-    this.userPoolClientName = props.userPoolClientName;
+    this._userPoolClientName = props.userPoolClientName;
+  }
+
+  /**
+   * The client name that was specified via the `userPoolClientName` property during initialization,
+   * throws an error otherwise.
+   */
+  public get userPoolClientName(): string {
+    if (this._userPoolClientName === undefined) {
+      throw new Error('userPoolClientName is available only if specified on the UserPoolClient during initialization');
+    }
+    return this._userPoolClientName;
   }
 }

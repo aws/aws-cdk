@@ -35,7 +35,7 @@ describe('User Pool Client', () => {
 
     // THEN
     expect(client1.userPoolClientName).toEqual('myclient');
-    expect(client2.userPoolClientName).toBeUndefined();
+    expect(() => client2.userPoolClientName).toThrow(/available only if specified on the UserPoolClient during initialization/);
   });
 
   test('import', () => {
