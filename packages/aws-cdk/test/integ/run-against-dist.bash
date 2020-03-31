@@ -95,8 +95,6 @@ function serve_npm_packages() {
 
   use_verdaccio
 
-  echo "tarballs = ${tarballs}"
-
   log "Publishing NPM tarballs..."
   for tgz in $tarballs; do
     # Doesn't matter what directory it is, just shouldn't be the
