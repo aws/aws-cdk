@@ -589,7 +589,7 @@ export class Cluster extends Resource implements ICluster {
 
     // if this is an ASG with spot instances, install the spot interrupt handler (only if kubectl is enabled).
     if (autoScalingGroup.spotPrice && this.kubectlEnabled) {
-      this.addResource('spot-interrupt-handler', ...spotInterruptHandler());
+      this.addChart('spot-interrupt-handler', spotInterruptHandler());
     }
   }
 
