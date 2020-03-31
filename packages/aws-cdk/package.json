@@ -50,7 +50,7 @@
     "@types/node": "^10.17.18",
     "@types/promptly": "^3.0.0",
     "@types/semver": "^7.1.0",
-    "@types/sinon": "^7.5.2",
+    "@types/sinon": "^9.0.0",
     "@types/table": "^4.0.7",
     "@types/uuid": "^7.0.2",
     "@types/yaml": "^1.2.0",
