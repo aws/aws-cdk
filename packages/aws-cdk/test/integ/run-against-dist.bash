@@ -28,12 +28,13 @@ function serve_npm_packages() {
     # when using latest published framework, only
     # install the cli and its dependencies.
 
+    version=$(node -p 'require("./package/package.json").version')
+
     echo "Looking up CLI dependencies..."
     # good lord
     package_names=$(node -p "Object.entries(require('./package/package.json').dependencies).filter(x => x[0].includes('@aws-cdk')).map(x => x[0] + '-${version}').join(' ')")
 
     echo "Yes, using published framework"
-    version=$(node -p 'require("./package/package.json").version')
     tarballs=$dist_root/js/aws-cdk-${version}.tgz
     package_names="${package_names} aws-cdk-${version}"
 
