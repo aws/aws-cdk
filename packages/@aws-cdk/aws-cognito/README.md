@@ -40,6 +40,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
   - [Emails](#emails)
   - [Lambda Triggers](#lambda-triggers)
   - [Import](#importing-user-pools)
+  - [App Clients](#app-clients)
 
 ## User Pools
 
@@ -329,3 +330,24 @@ const awesomePool = UserPool.fromUserPoolId(stack, 'awesome-user-pool', 'us-east
 const otherAwesomePool = UserPool.fromUserPoolArn(stack, 'other-awesome-user-pool',
   'arn:aws:cognito-idp:eu-west-1:123456789012:userpool/us-east-1_mtRyYQ14D');
 ```
+
+### App Clients
+
+An app is an entity within a user pool that has permission to call unauthenticated APIs (APIs that do not have an
+authenticated user), such as APIs to register, sign in, and handle forgotten passwords. To call these APIs, you need an
+app client ID and an optional client secret. Read [Configuring a User Pool App
+Client](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-client-apps.html) to learn more.
+
+The following code creates an app client and retrieves the client id -
+
+```ts
+const pool = new UserPool(this, 'Pool');
+
+const client = new UserPoolClient(stack, 'Client', {
+  userPool: pool
+});
+
+const clientId = client.userPoolClientId; 
+```
+
+Existing app clients can be imported into the CDK app using the `UserPoolClient.fromUserPoolClientId()` API.
