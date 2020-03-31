@@ -22,26 +22,25 @@ function serve_npm_packages() {
     return
   fi
 
-  cli_root=./package  
-
-  echo "Checking if using published framework"
-
   if [ ! -z ${USE_PUBLISHED_FRAMEWORK_VERSION:-} ]; then
+
+    echo "Testing against latest published versions of the framework"
+
     # when using latest published framework, only
     # install the cli and its dependencies.
 
+    cli_root=./package  
+
     version=$(node -p "require('${cli_root}/package.json').version")
 
-    echo "Looking up CLI dependencies..."
     # good lord
+    echo "Fetching CLI dependencies"
     cli_deps=$(node -p "Object.entries(require('${cli_root}/package.json').dependencies).filter(x => x[0].includes('@aws-cdk')).map(x => x[0].replace('@aws-cdk/', '')).join(' ')")
 
-    echo "Yes, using published framework"
     tarballs=$dist_root/js/aws-cdk-${version}.tgz
     package_names="aws-cdk"
 
     for dep in ${cli_deps}; do
-      
       tarball=$dist_root/js/${dep}@${version}.jsii.tgz
       package=@aws-cdk/${dep}
       if [ ! -f ${tarball} ]; then
@@ -49,15 +48,13 @@ function serve_npm_packages() {
         tarball=$dist_root/js/aws-cdk-${dep}-${version}.tgz        
       fi 
 
-      ls -l ${tarball}
       tarballs="${tarballs} ${tarball}"
       package_names="${package_names} ${package}"
     done
 
-    echo "tarballs= ${tarballs}"
-    echo "package_names= ${package_names}"
-
   else
+
+    echo "Testing against local versions of the framework"
 
     tarballs=$dist_root/js/*.tgz
 
