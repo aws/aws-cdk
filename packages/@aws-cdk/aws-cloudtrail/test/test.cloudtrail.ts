@@ -75,20 +75,20 @@ export = {
       const cloudTrailPrincipal = new iam.ServicePrincipal("cloudtrail.amazonaws.com");
       Trailbucket.addToResourcePolicy(new iam.PolicyStatement({
         resources: [Trailbucket.bucketArn],
-         actions: ['s3:GetBucketAcl'],
-         principals: [cloudTrailPrincipal],
-       }));
+        actions: ['s3:GetBucketAcl'],
+        principals: [cloudTrailPrincipal],
+      }));
 
       Trailbucket.addToResourcePolicy(new iam.PolicyStatement({
         resources: [Trailbucket.arnForObjects(`AWSLogs/${Stack.of(stack).account}/*`)],
         actions: ["s3:PutObject"],
         principals: [cloudTrailPrincipal],
-        conditions:  {
-          StringEquals: {'s3:x-amz-acl': "bucket-owner-full-control"}
+        conditions: {
+          StringEquals: { 's3:x-amz-acl': "bucket-owner-full-control" }
         }
       }));
 
-      new Trail(stack, 'Trail', {bucket: Trailbucket});
+      new Trail(stack, 'Trail', { bucket: Trailbucket });
 
       expect(stack).to(haveResource("AWS::CloudTrail::Trail"));
       expect(stack).to(haveResource("AWS::S3::Bucket"));
@@ -107,6 +107,50 @@ export = {
 
       expect(stack).to(haveResource('AWS::CloudTrail::Trail', {
         S3BucketName: 'SomeBucket'
+      }));
+
+      test.done();
+    },
+
+    'with s3KeyPrefix'(test: Test) {
+      // GIVEN
+      const stack = getTestStack();
+
+      // WHEN
+      new Trail(stack, 'Trail', { s3KeyPrefix: 'someprefix' });
+
+      expect(stack).to(haveResource("AWS::CloudTrail::Trail"));
+      expect(stack).to(haveResource("AWS::S3::Bucket"));
+      expect(stack).to(haveResource('AWS::S3::BucketPolicy', {
+        Bucket: { Ref: 'TrailS30071F172' },
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: 's3:GetBucketAcl',
+              Effect: 'Allow',
+              Principal: { Service: 'cloudtrail.amazonaws.com' },
+              Resource: { 'Fn::GetAtt': ['TrailS30071F172', 'Arn'] }
+            },
+            {
+              Action: 's3:PutObject',
+              Condition: {
+                StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' }
+              },
+              Effect: 'Allow',
+              Principal: { Service: 'cloudtrail.amazonaws.com' },
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    { 'Fn::GetAtt': ['TrailS30071F172', 'Arn'] },
+                    '/someprefix/AWSLogs/123456789012/*'
+                  ]
+                ]
+              }
+            }
+          ],
+          Version: '2012-10-17'
+        }
       }));
 
       test.done();

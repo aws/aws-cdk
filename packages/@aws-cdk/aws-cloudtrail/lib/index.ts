@@ -142,22 +142,24 @@ export class Trail extends Resource {
 
     const cloudTrailPrincipal = new iam.ServicePrincipal("cloudtrail.amazonaws.com");
 
-    this.s3bucket = props.bucket || new s3.Bucket(this, 'S3', {encryption: s3.BucketEncryption.UNENCRYPTED});
+    this.s3bucket = props.bucket || new s3.Bucket(this, 'S3', { encryption: s3.BucketEncryption.UNENCRYPTED });
 
     this.s3bucket.addToResourcePolicy(new iam.PolicyStatement({
-        resources: [this.s3bucket.bucketArn],
-        actions: ['s3:GetBucketAcl'],
-        principals: [cloudTrailPrincipal],
-      }));
+      resources: [this.s3bucket.bucketArn],
+      actions: ['s3:GetBucketAcl'],
+      principals: [cloudTrailPrincipal],
+    }));
 
     this.s3bucket.addToResourcePolicy(new iam.PolicyStatement({
-        resources: [this.s3bucket.arnForObjects(`AWSLogs/${Stack.of(this).account}/*`)],
-        actions: ["s3:PutObject"],
-        principals: [cloudTrailPrincipal],
-        conditions:  {
-          StringEquals: {'s3:x-amz-acl': "bucket-owner-full-control"}
-        }
-      }));
+      resources: [this.s3bucket.arnForObjects(
+        `${props.s3KeyPrefix ? `${props.s3KeyPrefix}/` : ''}AWSLogs/${Stack.of(this).account}/*`
+      )],
+      actions: ["s3:PutObject"],
+      principals: [cloudTrailPrincipal],
+      conditions: {
+        StringEquals: { 's3:x-amz-acl': "bucket-owner-full-control" }
+      }
+    }));
 
     let logGroup: logs.CfnLogGroup | undefined;
     let logsRole: iam.IRole | undefined;
@@ -176,7 +178,7 @@ export class Trail extends Resource {
     }
 
     if (props.managementEvents) {
-      const managementEvent =  {
+      const managementEvent = {
         includeManagementEvents: true,
         readWriteType: props.managementEvents
       };
@@ -190,7 +192,7 @@ export class Trail extends Resource {
       isMultiRegionTrail: props.isMultiRegionTrail == null ? true : props.isMultiRegionTrail,
       includeGlobalServiceEvents: props.includeGlobalServiceEvents == null ? true : props.includeGlobalServiceEvents,
       trailName: this.physicalName,
-      kmsKeyId:  props.kmsKey && props.kmsKey.keyArn,
+      kmsKeyId: props.kmsKey && props.kmsKey.keyArn,
       s3BucketName: this.s3bucket.bucketName,
       s3KeyPrefix: props.s3KeyPrefix,
       cloudWatchLogsLogGroupArn: logGroup && logGroup.attrArn,
