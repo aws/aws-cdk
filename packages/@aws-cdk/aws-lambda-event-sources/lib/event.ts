@@ -18,7 +18,7 @@ export class CloudWatchEventSource implements IEventSource {
         const stack = Stack.of(target);
         new Rule(stack, `${target.node.uniqueId}:ScheduleRule`, {
             ...this.props,
-            targets: [...(this.props?.targets || []), new LambdaFunction(target)],
+            targets: [...(this.props.targets || []), new LambdaFunction(target)],
         });
     }
 }
