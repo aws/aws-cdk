@@ -118,28 +118,20 @@ function formatListOfTags(backupResources: BackupResource[]): CfnBackupSelection
 }
 
 function formatResources(backupResources: BackupResource[]): string[] | undefined {
-  const _resources: string[] = [];
-  const aspects: BackupableResourcesCollector[] = [];
+  const resources: string[] = [];
+  const backupResourcesCollector = new BackupableResourcesCollector();
 
-  // Create all aspects first and then loop over them because we cannot
-  // add items to a token list
   for (const resource of backupResources) {
     if (resource.resource) {
-      _resources.push(resource.resource);
+      resources.push(resource.resource);
     }
 
     if (resource.construct) {
-      const backupResourcesCollector = new BackupableResourcesCollector();
       resource.construct.node.applyAspect(backupResourcesCollector);
-      aspects.push(backupResourcesCollector);
     }
   }
 
-  return Lazy.listValue({ produce: () => {
-    const resources: string[] = [..._resources];
-    for (const aspect of aspects) {
-      resources.push(...aspect.resources);
-    }
-    return resources;
-  }}, { omitEmpty: true });
+  return Lazy.listValue({
+    produce: () => [...resources, ...backupResourcesCollector.resources]
+  }, { omitEmpty: true });
 }

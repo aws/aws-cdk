@@ -141,11 +141,13 @@ test('fromConstruct', () => {
     }
   }
   const myConstruct = new MyConstruct(stack, 'MyConstruct');
+  const efsConstruct = new EfsConstruct(stack, 'EfsConstruct');
 
   // WHEN
   plan.addSelection('Selection', {
     resources: [
       BackupResource.fromConstruct(myConstruct),
+      BackupResource.fromConstruct(efsConstruct),
     ]
   });
 
@@ -201,6 +203,29 @@ test('fromConstruct', () => {
               ':file-system/',
               {
                 Ref: 'MyConstructEFSFileSystemC68B6B78'
+              }
+            ]
+          ]
+        },
+        {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              {
+                Ref: 'AWS::Partition'
+              },
+              ':elasticfilesystem:',
+              {
+                Ref: 'AWS::Region'
+              },
+              ':',
+              {
+                Ref: 'AWS::AccountId'
+              },
+              ':file-system/',
+              {
+                Ref: 'EfsConstructFileSystemFBE43F88'
               }
             ]
           ]
