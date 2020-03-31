@@ -545,7 +545,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParameters01b2187f99280c53b7d58040d494b5d051e1e253601fc32dee62ba56712db247S3Bucket3747EA0C"
+            "Ref": "AssetParameters32949dc2510e9dcfb770033a67b684a0ed49f86fb8a6ed93e2ccafbb4217641dS3Bucket7A5FA028"
           },
           "S3Key": {
             "Fn::Join": [
@@ -558,7 +558,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters01b2187f99280c53b7d58040d494b5d051e1e253601fc32dee62ba56712db247S3VersionKey13E25E1F"
+                          "Ref": "AssetParameters32949dc2510e9dcfb770033a67b684a0ed49f86fb8a6ed93e2ccafbb4217641dS3VersionKeyD02759A5"
                         }
                       ]
                     }
@@ -571,7 +571,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters01b2187f99280c53b7d58040d494b5d051e1e253601fc32dee62ba56712db247S3VersionKey13E25E1F"
+                          "Ref": "AssetParameters32949dc2510e9dcfb770033a67b684a0ed49f86fb8a6ed93e2ccafbb4217641dS3VersionKeyD02759A5"
                         }
                       ]
                     }
@@ -865,11 +865,11 @@
     }
   },
   "Parameters": {
-    "AssetParameters01b2187f99280c53b7d58040d494b5d051e1e253601fc32dee62ba56712db247S3Bucket3747EA0C": {
+    "AssetParameters32949dc2510e9dcfb770033a67b684a0ed49f86fb8a6ed93e2ccafbb4217641dS3Bucket7A5FA028": {
       "Type": "String",
       "Description": "S3 bucket for asset \"01b2187f99280c53b7d58040d494b5d051e1e253601fc32dee62ba56712db247\""
     },
-    "AssetParameters01b2187f99280c53b7d58040d494b5d051e1e253601fc32dee62ba56712db247S3VersionKey13E25E1F": {
+    "AssetParameters32949dc2510e9dcfb770033a67b684a0ed49f86fb8a6ed93e2ccafbb4217641dS3VersionKeyD02759A5": {
       "Type": "String",
       "Description": "S3 key for asset version \"01b2187f99280c53b7d58040d494b5d051e1e253601fc32dee62ba56712db247\""
     },

@@ -116,7 +116,7 @@ const requestCertificate = async function(requestId, domainName, subjectAlternat
           acc[cur.Name] = cur;
           return acc;
         }, {});
-      records = Object.keys(unique).sort().map((key) => unique[key]);
+      records = Object.keys(unique).sort().map(key => unique[key]);
     } else {
       // Exponential backoff with jitter based on 200ms base
       // component of backoff fixed to ensure minimum total wait time on
