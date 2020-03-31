@@ -113,6 +113,7 @@ The following targets are supported:
 * `targets.SnsTopic`: Publish into an SNS topic
 * `targets.SqsQueue`: Send a message to an Amazon SQS Queue
 * `targets.SfnStateMachine`: Trigger an AWS Step Functions state machine
+* `targets.BatchJob`: Queue an AWS Batch Job
 * `targets.AwsApi`: Make an AWS API call
 
 ### Cross-account targets

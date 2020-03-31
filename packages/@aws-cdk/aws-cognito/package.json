@@ -74,13 +74,15 @@
   "dependencies": {
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
-    "@aws-cdk/core": "0.0.0"
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^2.0.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
-    "@aws-cdk/core": "0.0.0"
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^2.0.0"
   },
   "jest": {},
   "engines": {
@@ -88,23 +90,14 @@
   },
   "awslint": {
     "exclude": [
-      "no-unused-type:@aws-cdk/aws-cognito.UserPoolAttribute",
-      "props-default-doc:@aws-cdk/aws-cognito.UserPoolTriggers.verifyAuthChallengeResponse",
-      "props-default-doc:@aws-cdk/aws-cognito.UserPoolTriggers.userMigration",
-      "props-default-doc:@aws-cdk/aws-cognito.UserPoolTriggers.preTokenGeneration",
-      "props-default-doc:@aws-cdk/aws-cognito.UserPoolTriggers.preSignUp",
-      "props-default-doc:@aws-cdk/aws-cognito.UserPoolTriggers.preAuthentication",
-      "props-default-doc:@aws-cdk/aws-cognito.UserPoolTriggers.postConfirmation",
-      "props-default-doc:@aws-cdk/aws-cognito.UserPoolTriggers.postAuthentication",
-      "props-default-doc:@aws-cdk/aws-cognito.UserPoolTriggers.defineAuthChallenge",
-      "props-default-doc:@aws-cdk/aws-cognito.UserPoolTriggers.customMessage",
-      "props-default-doc:@aws-cdk/aws-cognito.UserPoolTriggers.createAuthChallenge",
-      "docs-public-apis:@aws-cdk/aws-cognito.UserPoolTriggers",
       "docs-public-apis:@aws-cdk/aws-cognito.UserPoolClient.userPoolClientClientSecret",
       "docs-public-apis:@aws-cdk/aws-cognito.UserPoolClient.userPoolClientId",
       "docs-public-apis:@aws-cdk/aws-cognito.UserPoolClient.userPoolClientName",
       "docs-public-apis:@aws-cdk/aws-cognito.UserPoolClientProps"
     ]
   },
-  "stability": "experimental"
+  "stability": "experimental",
+  "awscdkio": {
+    "announce": false
+  }
 }

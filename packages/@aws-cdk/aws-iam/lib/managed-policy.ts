@@ -97,7 +97,7 @@ export interface ManagedPolicyProps {
  */
 export class ManagedPolicy extends Resource implements IManagedPolicy {
   /**
-   * Construct a customer managed policy from the managedPolicyName
+   * Import a customer managed policy from the managedPolicyName.
    *
    * For this managed policy, you only need to know the name to be able to use it.
    *
@@ -116,10 +116,23 @@ export class ManagedPolicy extends Resource implements IManagedPolicy {
   }
 
   /**
-   * Constructs a managed policy from an ARN.
+   * Import an external managed policy by ARN.
    *
-   * For this managed policy, you only need to know the ARN to be able to use it. This can be useful if you got the ARN in a Cloudformation Export.
+   * For this managed policy, you only need to know the ARN to be able to use it.
+   * This can be useful if you got the ARN from a CloudFormation Export.
    *
+   * If the imported Managed Policy ARN is a Token (such as a
+   * `CfnParameter.valueAsString` or a `Fn.importValue()`) *and* the referenced
+   * managed policy has a `path` (like `arn:...:policy/AdminPolicy/AdminAllow`), the
+   * `managedPolicyName` property will not resolve to the correct value. Instead it
+   * will resolve to the first path component. We unfortunately cannot express
+   * the correct calculation of the full path name as a CloudFormation
+   * expression. In this scenario the Managed Policy ARN should be supplied without the
+   * `path` in order to resolve the correct managed policy resource.
+   *
+   * @param scope construct scope
+   * @param id construct id
+   * @param managedPolicyArn the ARN of the managed policy to import
    */
   public static fromManagedPolicyArn(scope: Construct, id: string, managedPolicyArn: string): IManagedPolicy {
     class Import extends Resource implements IManagedPolicy {
@@ -129,7 +142,7 @@ export class ManagedPolicy extends Resource implements IManagedPolicy {
   }
 
   /**
-   * Construct a managed policy from one of the policies that AWS manages
+   * Import a managed policy from one of the policies that AWS manages.
    *
    * For this managed policy, you only need to know the name to be able to use it.
    *

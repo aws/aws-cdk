@@ -91,7 +91,8 @@
     "@aws-cdk/aws-route53-targets": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "@aws-cdk/region-info": "0.0.0"
+    "@aws-cdk/region-info": "0.0.0",
+    "constructs": "^2.0.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -102,7 +103,8 @@
     "@aws-cdk/aws-route53-targets": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "@aws-cdk/region-info": "0.0.0"
+    "@aws-cdk/region-info": "0.0.0",
+    "constructs": "^2.0.0"
   },
   "engines": {
     "node": ">= 10.3.0"
@@ -113,5 +115,8 @@
       "docs-public-apis:@aws-cdk/aws-route53-patterns.HttpsRedirect",
       "docs-public-apis:@aws-cdk/aws-route53-patterns.HttpsRedirectProps"
     ]
+  },
+  "awscdkio": {
+    "announce": false
   }
 }
