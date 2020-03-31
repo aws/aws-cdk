@@ -6,7 +6,7 @@ source ${scriptdir}/common.bash
 
 setup
 
-stack_arn=$(cdk deploy -v ${STACK_NAME_PREFIX}-with-nested-stack-using-parameters --parameters "MyTopicParam=ThereIsNoSpoon")
+stack_arn=$(cdk deploy -v ${STACK_NAME_PREFIX}-with-nested-stack-using-parameters --parameters "MyTopicParam=${STACK_NAME_PREFIX}ThereIsNoSpoon")
 echo "Stack deployed successfully"
 
 # verify that we only deployed a single stack (there's a single ARN in the output)

@@ -6,7 +6,7 @@ source ${scriptdir}/common.bash
 
 setup
 
-stack_arn=$(cdk deploy -v ${STACK_NAME_PREFIX}-param-test-1 --parameters "TopicNameParam=bazinga")
+stack_arn=$(cdk deploy -v ${STACK_NAME_PREFIX}-param-test-1 --parameters "TopicNameParam=${STACK_NAME_PREFIX}bazinga")
 echo "Stack deployed successfully"
 
 # verify that we only deployed a single stack (there's a single ARN in the output)
