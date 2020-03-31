@@ -23,7 +23,7 @@ AWS Backup is a fully managed backup service that makes it easy to centralize an
 
 In AWS Backup, a *backup plan* is a policy expression that defines when and how you want to back up your AWS resources, such as Amazon DynamoDB tables or Amazon Elastic File System (Amazon EFS) file systems. You can assign resources to backup plans, and AWS Backup automatically backs up and retains backups for those resources according to the backup plan. You can create multiple backup plans if you have workloads with different backup requirements.
 
-This module provides ready-made backup plans (similar to the console exprience):
+This module provides ready-made backup plans (similar to the console experience):
 
 ```ts
 import * as backup from '@aws-cdk/aws-backup';
@@ -43,8 +43,8 @@ plan.addSelection('Selection', {
   ]
 })
 ```
-If not specified, a new IAM role with managed policies for backup and restore
-will be created for the selection. The `BackupSelection` implements `IGrantable`.
+If not specified, a new IAM role with a managed policy for backup will be
+created for the selection. The `BackupSelection` implements `IGrantable`.
 
 To add rules to a plan, use `addRule()`:
 
