@@ -80,6 +80,15 @@ export interface ManagedPolicyProps {
    * @default - No statements.
    */
   readonly statements?: PolicyStatement[];
+
+  /**
+   * Initial PolicyDocument to use for this ManagedPolicy. If omited, any
+   * `PolicyStatement` provided in the `statements` property will be applied
+   * against the empty default `PolicyDocument`.
+   *
+   * @default - An empty policy.
+   */
+  readonly document?: PolicyDocument;
 }
 
 /**
@@ -202,6 +211,10 @@ export class ManagedPolicy extends Resource implements IManagedPolicy {
 
     this.description = props.description || '';
     this.path = props.path || '/';
+
+    if (props.document) {
+      this.document = props.document;
+    }
 
     const resource = new CfnManagedPolicy(this, 'Resource', {
       policyDocument: this.document,
