@@ -1,6 +1,5 @@
 # VSCode extension
 .vscode/
-
 /.favorites.json
 
 # TypeScript incremental build states
