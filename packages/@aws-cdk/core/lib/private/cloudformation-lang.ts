@@ -1,10 +1,9 @@
-import { Lazy } from "../lazy";
-import { Reference } from "../reference";
-import { DefaultTokenResolver, IFragmentConcatenator, IPostProcessor, IResolvable, IResolveContext } from "../resolvable";
-import { TokenizedStringFragments } from "../string-fragments";
-import { Token } from "../token";
-import { Intrinsic } from "./intrinsic";
-import { resolve } from "./resolve";
+import { Lazy } from '../lazy';
+import { Reference } from '../reference';
+import { DefaultTokenResolver, IFragmentConcatenator, IPostProcessor, IResolvable, IResolveContext } from '../resolvable';
+import { TokenizedStringFragments } from '../string-fragments';
+import { Token, Tokenization } from '../token';
+import { Intrinsic } from './intrinsic';
 
 /**
  * Routines that know how to do operations at the CloudFormation document language level
@@ -65,12 +64,13 @@ export class CloudFormationLang {
     }
 
     // We need a ResolveContext to get started so return a Token
-    return Lazy.stringValue({ produce: (ctx: IResolveContext) =>
-      JSON.stringify(resolve(obj, {
-        preparing: ctx.preparing,
-        scope: ctx.scope,
-        resolver: new IntrinsincWrapper()
-      }), undefined, space)
+    return Lazy.stringValue({
+      produce: (ctx: IResolveContext) =>
+        JSON.stringify(Tokenization.resolve(obj, {
+          preparing: ctx.preparing,
+          scope: ctx.scope,
+          resolver: new IntrinsincWrapper()
+        }), undefined, space)
     });
 
     function wrap(value: any): any {

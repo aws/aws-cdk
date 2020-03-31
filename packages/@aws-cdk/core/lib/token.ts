@@ -1,11 +1,7 @@
-import { IConstruct } from "./construct-compat";
-import { Lazy } from "./lazy";
-import { unresolved } from "./private/encoding";
-import { Intrinsic } from "./private/intrinsic";
-import { resolve } from "./private/resolve";
-import { TokenMap } from "./private/token-map";
-import { IResolvable, ITokenResolver } from "./resolvable";
-import { TokenizedStringFragments } from "./string-fragments";
+import { Token as CToken, Tokenization as CTokenization } from 'constructs';
+import { IConstruct } from './construct-compat';
+import { DefaultTokenResolver, IPostProcessor, IResolvable, IResolveContext, ITokenResolver, StringConcat } from './resolvable';
+import { TokenizedStringFragments } from './string-fragments';
 
 /**
  * Represents a special or lazily-evaluated value.
@@ -33,7 +29,7 @@ export class Token {
    * @param obj The object to test.
    */
   public static isUnresolved(obj: any): boolean {
-    return unresolved(obj);
+    return CToken.isUnresolved(obj);
   }
 
   /**
@@ -48,31 +44,28 @@ export class Token {
    * on the string.
    */
   public static asString(value: any, options: EncodingOptions = {}): string {
-    if (typeof value === 'string') { return value; }
-    return TokenMap.instance().registerString(Token.asAny(value), options.displayHint);
+    return CToken.asString(value, options);
   }
 
   /**
    * Return a reversible number representation of this token
    */
   public static asNumber(value: any): number {
-    if (typeof value === 'number') { return value; }
-    return TokenMap.instance().registerNumber(Token.asAny(value));
+    return CToken.asNumber(value);
   }
 
   /**
    * Return a reversible list representation of this token
    */
   public static asList(value: any, options: EncodingOptions = {}): string[] {
-    if (Array.isArray(value) && value.every(x => typeof x === 'string')) { return value; }
-    return TokenMap.instance().registerList(Token.asAny(value), options.displayHint);
+    return CToken.asList(value, options);
   }
 
   /**
    * Return a resolvable representation of the given value
    */
   public static asAny(value: any): IResolvable {
-    return isResolvableObject(value) ? value : new Intrinsic(value);
+    return CToken.asAny(value);
   }
 
   private constructor() {
@@ -87,21 +80,21 @@ export class Tokenization {
    * Un-encode a string potentially containing encoded tokens
    */
   public static reverseString(s: string): TokenizedStringFragments {
-    return TokenMap.instance().splitString(s);
+    return new TokenizedStringFragments(CTokenization.reverseString(s));
   }
 
   /**
    * Un-encode a Tokenized value from a number
    */
   public static reverseNumber(n: number): IResolvable | undefined {
-    return TokenMap.instance().lookupNumberToken(n);
+    return CTokenization.reverseNumber(n);
   }
 
   /**
    * Un-encode a Tokenized value from a list
    */
   public static reverseList(l: string[]): IResolvable | undefined {
-    return TokenMap.instance().lookupList(l);
+    return CTokenization.reverseList(l);
   }
 
   /**
@@ -112,10 +105,15 @@ export class Tokenization {
    * @param options Prefix key path components for diagnostics.
    */
   public static resolve(obj: any, options: ResolveOptions): any {
-    return resolve(obj, {
-      scope: options.scope,
-      resolver: options.resolver,
-      preparing: (options.preparing !== undefined ? options.preparing : false)
+    const resolver = options.resolver;
+
+    return CTokenization.resolve(obj, {
+      ...options,
+      resolver: {
+        resolveList: resolver.resolveList.bind(resolver),
+        resolveString: (s, context) => resolver.resolveString(new TokenizedStringFragments(s), context as any),
+        resolveToken: resolver.resolveToken.bind(resolver),
+      },
     });
   }
 
@@ -127,23 +125,25 @@ export class Tokenization {
    * object.
    */
   public static isResolvable(obj: any): obj is IResolvable {
-    return isResolvableObject(obj);
+    return CTokenization.isResolvable(obj);
   }
 
   /**
    * Stringify a number directly or lazily if it's a Token. If it is an object (i.e., { Ref: 'SomeLogicalId' }), return it as-is.
    */
   public static stringifyNumber(x: number) {
-    // only convert numbers to strings so that Refs, conditions, and other things don't end up synthesizing as [object object]
+    return CTokenization.stringifyNumber(x);
+  }
 
-    if (Token.isUnresolved(x)) {
-      return Lazy.stringValue({ produce: context => {
-          const resolved = context.resolve(x);
-          return typeof resolved !== 'number' ? resolved : `${resolved}`;
-        } });
-    } else {
-      return typeof x !== 'number' ? x : `${x}`;
-    }
+  /**
+   * @internal
+   */
+  public static _findTokens(scope: IConstruct, fn: () => any): IResolvable[] {
+    const resolver = new RememberingResolver();
+
+    this.resolve(fn(), { scope, resolver, preparing: true });
+
+    return resolver.tokens;
   }
 
   private constructor() {
@@ -204,4 +204,21 @@ export function withResolved(...args: any[]) {
   const argArray = args.slice(0, args.length - 1);
   if (argArray.some(Token.isUnresolved)) { return; }
   args[args.length - 1].apply(arguments, argArray);
+}
+
+class RememberingResolver extends DefaultTokenResolver {
+  private readonly tokensSeen = new Set<IResolvable>();
+
+  public constructor() {
+    super(new StringConcat());
+  }
+
+  public resolveToken(t: IResolvable, context: IResolveContext, postProcessor: IPostProcessor) {
+    this.tokensSeen.add(t);
+    return super.resolveToken(t, context, postProcessor);
+  }
+
+  public get tokens(): IResolvable[] {
+    return Array.from(this.tokensSeen);
+  }
 }

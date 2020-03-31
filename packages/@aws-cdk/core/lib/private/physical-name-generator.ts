@@ -2,8 +2,7 @@ import * as crypto from 'crypto';
 import { IResolvable, IResolveContext } from '../resolvable';
 import { IResource } from '../resource';
 import { Stack } from '../stack';
-import { Token } from '../token';
-import { TokenMap } from './token-map';
+import { Token, Tokenization } from '../token';
 
 export function generatePhysicalName(resource: IResource): string {
   const stack = Stack.of(resource);
@@ -98,6 +97,6 @@ export class GeneratedWhenNeededMarker implements IResolvable {
  * Checks whether a stringified token resolves to a `GeneratedWhenNeededMarker`.
  */
 export function isGeneratedWhenNeededMarker(val: string): boolean {
-  const token = TokenMap.instance().lookupString(val);
+  const token = Tokenization.reverseString(val).firstToken;
   return !!token && GENERATE_IF_NEEDED_SYMBOL in token;
 }

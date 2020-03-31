@@ -9,8 +9,8 @@ import { Environment } from './environment';
 import { FileAssetParameters } from './private/asset-parameters';
 import { CLOUDFORMATION_TOKEN_RESOLVER, CloudFormationLang } from './private/cloudformation-lang';
 import { LogicalIDs } from './private/logical-id';
-import { findTokens , resolve } from './private/resolve';
 import { makeUniqueId } from './private/uniqueid';
+import { Token, Tokenization } from './token';
 
 const STACK_SYMBOL = Symbol.for('@aws-cdk/core.Stack');
 const MY_STACK_CACHE = Symbol.for('@aws-cdk/core.Stack.myStack');
@@ -297,9 +297,8 @@ export class Stack extends Construct implements ITaggable {
    * Resolve a tokenized value in the context of the current stack.
    */
   public resolve(obj: any): any {
-    return resolve(obj, {
+    return Tokenization.resolve(obj, {
       scope: this,
-      prefix: [],
       resolver: CLOUDFORMATION_TOKEN_RESOLVER,
       preparing: false
     });
@@ -1087,7 +1086,7 @@ export class Stack extends Construct implements ITaggable {
 
     for (const element of cfnElements(this)) {
       try {
-        tokens.push(...findTokens(element, () => element._toCloudFormation()));
+        tokens.push(...Tokenization._findTokens(element, () => element._toCloudFormation()));
       }  catch (e) {
         // Note: it might be that the properties of the CFN object aren't valid.
         // This will usually be preventatively caught in a construct's validate()
@@ -1198,7 +1197,6 @@ import { Intrinsic } from './private/intrinsic';
 import { Reference } from './reference';
 import { IResolvable } from './resolvable';
 import { ITaggable, TagManager } from './tag-manager';
-import { Token } from './token';
 
 /**
  * Find all resources in a set of constructs

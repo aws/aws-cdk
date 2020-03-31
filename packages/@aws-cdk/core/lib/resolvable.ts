@@ -1,7 +1,6 @@
-import { IConstruct } from "./construct-compat";
-import { TokenString } from "./private/encoding";
-import { TokenMap } from "./private/token-map";
-import { TokenizedStringFragments } from "./string-fragments";
+import { DefaultTokenResolver as CDefaultTokenResolver } from 'constructs';
+import { IConstruct } from './construct-compat';
+import { TokenizedStringFragments } from './string-fragments';
 
 /**
  * Current resolution context for tokens
@@ -120,7 +119,10 @@ export class StringConcat implements IFragmentConcatenator {
  * @experimental
  */
 export class DefaultTokenResolver implements ITokenResolver {
-  constructor(private readonly concat: IFragmentConcatenator) {
+  private readonly delegate: CDefaultTokenResolver;
+
+  constructor(concat: IFragmentConcatenator) {
+    this.delegate = new CDefaultTokenResolver(concat);
   }
 
   /**
@@ -130,44 +132,17 @@ export class DefaultTokenResolver implements ITokenResolver {
    * then finally post-process it.
    */
   public resolveToken(t: IResolvable, context: IResolveContext, postProcessor: IPostProcessor) {
-    try {
-      let resolved = t.resolve(context);
-
-      // The token might have returned more values that need resolving, recurse
-      resolved = context.resolve(resolved);
-      resolved = postProcessor.postProcess(resolved, context);
-      return resolved;
-    } catch (e) {
-      let message = `Resolution error: ${e.message}.`;
-      if (t.creationStack && t.creationStack.length > 0) {
-        message += `\nObject creation stack:\n  at ${t.creationStack.join('\n  at ')}`;
-      }
-
-      e.message = message;
-      throw e;
-    }
+    return this.delegate.resolveToken(t, context, postProcessor);
   }
 
   /**
    * Resolve string fragments to Tokens
    */
   public resolveString(fragments: TokenizedStringFragments, context: IResolveContext) {
-    return fragments.mapTokens({ mapToken: context.resolve }).join(this.concat);
+    return this.delegate.resolveString(fragments._delegate, context);
   }
 
   public resolveList(xs: string[], context: IResolveContext) {
-    // Must be a singleton list token, because concatenation is not allowed.
-    if (xs.length !== 1) {
-      throw new Error(`Cannot add elements to list token, got: ${xs}`);
-    }
-
-    const str = TokenString.forListToken(xs[0]);
-    const tokenMap = TokenMap.instance();
-    const fragments = str.split(tokenMap.lookupToken.bind(tokenMap));
-    if (fragments.length !== 1) {
-      throw new Error(`Cannot concatenate strings in a tokenized string array, got: ${xs[0]}`);
-    }
-
-    return fragments.mapTokens({ mapToken: context.resolve }).firstValue;
+    return this.delegate.resolveList(xs, context);
   }
 }

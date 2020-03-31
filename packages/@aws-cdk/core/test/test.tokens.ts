@@ -2,7 +2,6 @@ import { Test } from 'nodeunit';
 import { Fn, isResolvableObject, Lazy, Stack, Token, Tokenization } from '../lib';
 import { createTokenDouble, extractTokenDouble } from '../lib/private/encoding';
 import { Intrinsic } from '../lib/private/intrinsic';
-import { findTokens } from '../lib/private/resolve';
 import { IResolvable } from '../lib/resolvable';
 import { evaluateCFN } from './evaluate-cfn';
 
@@ -310,7 +309,7 @@ export = {
     };
 
     // THEN
-    const tokens = findTokens(new Stack(), () => s);
+    const tokens = Tokenization._findTokens(new Stack(), () => s);
     test.ok(tokens.some(t => t === innerToken), 'Cannot find innerToken');
     test.ok(tokens.some(t => t === token), 'Cannot find token');
     test.done();
