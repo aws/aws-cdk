@@ -1,6 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { Construct, Duration, IResource, Resource, Stack } from '@aws-cdk/core';
+import { Aws, CfnCondition, Construct, Duration, Fn, IResource, Resource, Stack } from '@aws-cdk/core';
+import { IResolvable } from 'constructs';
 import { CfnStream } from './kinesis.generated';
 
 /**
@@ -290,9 +291,25 @@ export class Stream extends StreamBase {
    * user's configuration.
    */
   private parseEncryption(props: StreamProps): {
-    streamEncryption?: CfnStream.StreamEncryptionProperty,
+    streamEncryption?: CfnStream.StreamEncryptionProperty | IResolvable
     encryptionKey?: kms.IKey
   } {
+
+    // if encryption properties are not set, default to KMS in regions where KMS is available
+    if (!props.encryption && !props.encryptionKey) {
+      const condition = new CfnCondition(this, 'Condition', {
+        expression: Fn.conditionOr(
+          Fn.conditionEquals(Aws.REGION, 'cn-north-1'),
+          Fn.conditionEquals(Aws.REGION, 'cn-northwest-1'))
+      });
+
+      const defaultEncryption = Fn.conditionIf(
+        condition.logicalId,
+        Aws.NO_VALUE,
+        { EncryptionType: 'KMS', KeyId: 'alias/aws/kinesis' });
+
+      return {streamEncryption: defaultEncryption, encryptionKey: undefined };
+      }
 
     // default based on whether encryption key is specified
     const encryptionType = props.encryption ??
