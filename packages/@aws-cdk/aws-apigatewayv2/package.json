@@ -87,14 +87,45 @@
   },
   "dependencies": {
     "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-lambda": "0.0.0",
     "constructs": "^2.0.0"
   },
   "peerDependencies": {
     "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-lambda": "0.0.0",
     "constructs": "^2.0.0"
   },
   "engines": {
     "node": ">= 10.3.0"
+  },
+  "awslint": {
+    "exclude": [
+      "props-physical-name:@aws-cdk/aws-apigatewayv2.ApiMappingProps",
+      "props-physical-name:@aws-cdk/aws-apigatewayv2.DeploymentProps",
+      "props-physical-name:@aws-cdk/aws-apigatewayv2.IntegrationResponseProps",
+      "props-physical-name:@aws-cdk/aws-apigatewayv2.LambdaIntegrationProps",
+      "props-physical-name:@aws-cdk/aws-apigatewayv2.RouteProps",
+      "props-physical-name:@aws-cdk/aws-apigatewayv2.RouteResponseProps",
+      "no-unused-type:@aws-cdk/aws-apigatewayv2.AuthorizationType",
+      "no-unused-type:@aws-cdk/aws-apigatewayv2.ConnectionType",
+      "no-unused-type:@aws-cdk/aws-apigatewayv2.ContentHandlingStrategy",
+      "no-unused-type:@aws-cdk/aws-apigatewayv2.IntegrationMethod",
+      "no-unused-type:@aws-cdk/aws-apigatewayv2.IntegrationType",
+      "no-unused-type:@aws-cdk/aws-apigatewayv2.KnownContentTypes",
+      "no-unused-type:@aws-cdk/aws-apigatewayv2.KnownIntegrationResponseKey",
+      "no-unused-type:@aws-cdk/aws-apigatewayv2.KnownModelKey",
+      "no-unused-type:@aws-cdk/aws-apigatewayv2.KnownRouteKey",
+      "no-unused-type:@aws-cdk/aws-apigatewayv2.KnownRouteResponseKey",
+      "no-unused-type:@aws-cdk/aws-apigatewayv2.KnownTemplateKey",
+      "no-unused-type:@aws-cdk/aws-apigatewayv2.LoggingLevel",
+      "no-unused-type:@aws-cdk/aws-apigatewayv2.PassthroughBehavior",
+      "no-unused-type:@aws-cdk/aws-apigatewayv2.ProtocolType",
+      "no-unused-type:@aws-cdk/aws-apigatewayv2.EndpointType",
+      "no-unused-type:@aws-cdk/aws-apigatewayv2.AuthorizerType",
+      "resource-interface:@aws-cdk/aws-apigatewayv2.LambdaIntegration"
+    ]
   },
   "stability": "experimental",
   "awscdkio": {
