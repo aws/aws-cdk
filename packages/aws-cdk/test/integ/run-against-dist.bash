@@ -22,17 +22,56 @@ function serve_npm_packages() {
     return
   fi
 
-  tarballs=$dist_root/js/*.tgz
+  cli_root=./package  
 
-  log "Discovering local package names..."
-  # Read the package names from each tarball, so that we can generate
-  # a Verdaccio config that will keep each of these packages locally
-  # and not go to NPMJS for it.
-  package_names=""
-  for tgz in $tarballs; do
-    name=$(node -pe 'JSON.parse(process.argv[1]).name' "$(tar xOzf $tgz package/package.json)")
-    package_names="$package_names $name"
-  done
+  echo "Checking if using published framework"
+
+  if [ ! -z ${USE_PUBLISHED_FRAMEWORK_VERSION:-} ]; then
+    # when using latest published framework, only
+    # install the cli and its dependencies.
+
+    version=$(node -p "require('${cli_root}/package.json').version")
+
+    echo "Looking up CLI dependencies..."
+    # good lord
+    cli_deps=$(node -p "Object.entries(require('${cli_root}/package.json').dependencies).filter(x => x[0].includes('@aws-cdk')).map(x => x[0].replace('@aws-cdk/', '')).join(' ')")
+
+    echo "Yes, using published framework"
+    tarballs=$dist_root/js/aws-cdk-${version}.tgz
+    package_names="aws-cdk"
+
+    for dep in ${cli_deps}; do
+      
+      tarball=$dist_root/js/${dep}@${version}.jsii.tgz
+      package=@aws-cdk/${dep}
+      if [ ! -f ${tarball} ]; then
+        # not a jsii dependency, the tarball is different...
+        tarball=$dist_root/js/aws-cdk-${dep}-${version}.tgz        
+      fi 
+
+      ls -l ${tarball}
+      tarballs="${tarballs} ${tarball}"
+      package_names="${package_names} ${package}"
+    done
+
+    echo "tarballs= ${tarballs}"
+    echo "package_names= ${package_names}"
+
+  else
+
+    tarballs=$dist_root/js/*.tgz
+
+    log "Discovering local package names..."
+    # Read the package names from each tarball, so that we can generate
+    # a Verdaccio config that will keep each of these packages locally
+    # and not go to NPMJS for it.
+    package_names=""
+    for tgz in $tarballs; do
+      name=$(node -pe 'JSON.parse(process.argv[1]).name' "$(tar xOzf $tgz package/package.json)")
+      package_names="$package_names $name"
+    done
+
+  fi
 
   #------------------------------------------------------------------------------
   # Start a local npm repository and install the CDK from the distribution to it
@@ -59,10 +98,7 @@ function serve_npm_packages() {
 
   use_verdaccio
 
-  if [ ! -z ${USE_PUBLISHED_FRAMEWORK_VERSION:-} ]; then
-    # when using latest published framework, only publish cli
-    tarballs=aws-cdk-*.tgz
-  fi
+  echo "tarballs = ${tarballs}"
 
   log "Publishing NPM tarballs..."
   for tgz in $tarballs; do
@@ -70,6 +106,7 @@ function serve_npm_packages() {
     # aws-cdk package directory.
     (cd $npmws && npm --quiet publish $tgz)
   done
+
 }
 
 function write_verdaccio_config() {
