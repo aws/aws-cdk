@@ -200,6 +200,19 @@ myFunction.addEventSource(new KinesisEventSource(queue, {
 });
 ```
 
+### CloudWatch Events
+
+You can setup CloudWatch Events to trigger Lambda functions. 
+
+```ts
+const fn = new lambda.Function(...);
+fn.addEventSource(new CloudWatchEventSource({
+  schedule: Schedule.cron({day: '1'})
+}));
+```
+
+The [CloudWatchEventSourceProps](./lib/event.ts) interface is an extension of the [RuleProps](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-events.Rule.html) interface and is passed through to the underlying Event Rule.
+
 ## Roadmap
 
 Eventually, this module will support all the event sources described under
