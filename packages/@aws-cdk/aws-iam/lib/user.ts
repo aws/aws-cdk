@@ -115,7 +115,11 @@ export interface UserProps {
  */
 export class User extends Resource implements IIdentity, IUser {
   /**
-   * Import an existing user given a username
+   * Import an existing user given a username.
+   *
+   * @param scope construct scope
+   * @param id construct id
+   * @param userName the username of the existing user to import
    */
   public static fromUserName(scope: Construct, id: string, userName: string): IUser {
     const arn = Stack.of(scope).formatArn({
