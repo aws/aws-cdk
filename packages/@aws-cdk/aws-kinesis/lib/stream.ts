@@ -201,7 +201,7 @@ export interface StreamProps {
    * If you choose KMS, you can specify a KMS key via `encryptionKey`. If
    * encryption key is not specified, a key will automatically be created.
    *
-   * @default Unencrypted
+   * @default - StreamEncryption.KMS if encryptionKey is specified, or StreamEncryption.UNENCRYPTED otherwise
    */
   readonly encryption?: StreamEncryption;
 
@@ -210,7 +210,7 @@ export interface StreamProps {
    *
    * The 'encryption' property must be set to "Kms".
    *
-   * @default If encryption is set to "Kms" and this property is undefined, a
+   * @default - If encryption is set to "KMS" and this property is undefined, a
    * new KMS key will be created and associated with this stream.
    */
   readonly encryptionKey?: kms.IKey;
@@ -294,8 +294,9 @@ export class Stream extends StreamBase {
     encryptionKey?: kms.IKey
   } {
 
-    // default to unencrypted.
-    const encryptionType = props.encryption || StreamEncryption.UNENCRYPTED;
+    // default based on whether encryption key is specified
+    const encryptionType = props.encryption ??
+    (props.encryptionKey ? StreamEncryption.KMS : StreamEncryption.UNENCRYPTED);
 
     // if encryption key is set, encryption must be set to KMS.
     if (encryptionType !== StreamEncryption.KMS && props.encryptionKey) {
@@ -304,6 +305,14 @@ export class Stream extends StreamBase {
 
     if (encryptionType === StreamEncryption.UNENCRYPTED) {
       return { streamEncryption: undefined, encryptionKey: undefined };
+    }
+
+    if (encryptionType === StreamEncryption.MANAGED) {
+      const encryption = { encryptionType: 'KMS', keyId: 'alias/aws/kinesis'};
+      return {
+        streamEncryption: encryption,
+        encryptionKey: undefined
+      };
     }
 
     if (encryptionType === StreamEncryption.KMS) {
@@ -336,4 +345,9 @@ export enum StreamEncryption {
    * If `encryptionKey` is specified, this key will be used, otherwise, one will be defined.
    */
   KMS = 'KMS',
+
+  /**
+   * Server-side encryption with a master key managed by Amazon Kinesis
+   */
+  MANAGED = 'MANAGED'
 }
