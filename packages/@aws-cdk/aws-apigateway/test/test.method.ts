@@ -834,7 +834,7 @@ export = {
     test.done();
   },
 
-  'method do not have a request validator'(test: Test) {
+  'method does not have a request validator'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigw.RestApi(stack, 'test-api', { deploy: false });
