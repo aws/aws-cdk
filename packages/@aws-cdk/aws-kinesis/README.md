@@ -59,10 +59,19 @@ Streams are not encrypted by default.
 [Stream encryption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesis-stream-streamencryption.html) enables
 server-side encryption using an AWS KMS key for a specified stream.
 
-You can enable encryption on your streams by specifying the `encryption` property. A KMS key will be created for you and associated with the stream.
+You can enable encryption on your stream with the master key owned by Kinesis Data Streams by specifying the `encryption` property.
 
 ```ts
-const stream = new Stream(this, "MyEncryptedStream", {
+new Stream(this, 'MyEncryptedStream', {
+  encryption: StreamEncryption.MANAGED
+});
+```
+
+You can enable encryption on your stream with a user-managed key by specifying the `encryption` property.
+A KMS key will be created for you and associated with the stream.
+
+```ts
+new Stream(this, "MyEncryptedStream", {
   encryption: StreamEncryption.KMS
 });
 ```
@@ -74,7 +83,7 @@ import * as kms from "@aws-cdk/aws-kms";
 
 const key = new kms.Key(this, "MyKey");
 
-const stream = new Stream(this, "MyEncryptedStream", {
+new Stream(this, "MyEncryptedStream", {
   encryption: StreamEncryption.KMS,
   encryptionKey: key
 });

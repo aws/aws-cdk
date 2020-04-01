@@ -1,4 +1,4 @@
-import { Construct, Resource } from '@aws-cdk/core';
+import { Construct, IResource, Resource } from '@aws-cdk/core';
 import { CfnUserPoolClient } from './cognito.generated';
 import { IUserPool } from './user-pool';
 
@@ -22,10 +22,13 @@ export enum AuthFlow {
   USER_PASSWORD = 'USER_PASSWORD_AUTH'
 }
 
+/**
+ * Properties for the UserPoolClient construct
+ */
 export interface UserPoolClientProps {
   /**
    * Name of the application client
-   * @default cloudformation generated name
+   * @default - cloudformation generated name
    */
   readonly userPoolClientName?: string;
 
@@ -42,44 +45,70 @@ export interface UserPoolClientProps {
 
   /**
    * List of enabled authentication flows
-   * @default no enabled flows
+   * @default - no enabled flows
    */
   readonly enabledAuthFlows?: AuthFlow[]
 }
 
 /**
+ * Represents a Cognito user pool client.
+ */
+export interface IUserPoolClient extends IResource {
+  /**
+   * Name of the application client
+   * @attribute
+   */
+  readonly userPoolClientId: string;
+}
+
+/**
  * Define a UserPool App Client
  */
-export class UserPoolClient extends Resource {
+export class UserPoolClient extends Resource implements IUserPoolClient {
   /**
-   * @attribute
+   * Import a user pool client given its id.
    */
+  public static fromUserPoolClientId(scope: Construct, id: string, userPoolClientId: string): IUserPoolClient {
+    class Import extends Resource implements IUserPoolClient {
+      public readonly userPoolClientId = userPoolClientId;
+    }
+
+    return new Import(scope, id);
+  }
+
   public readonly userPoolClientId: string;
+  private readonly _userPoolClientName?: string;
 
-  /**
-   * @attribute
+  /*
+   * Note to implementers: Two CloudFormation return values Name and ClientSecret are part of the spec.
+   * However, they have been explicity not implemented here. They are not documented in CloudFormation, and
+   * CloudFormation returns the following the string when these two attributes are 'GetAtt' - "attribute not supported
+   * at this time, please use the CLI or Console to retrieve this value".
+   * Awaiting updates from CloudFormation.
    */
-  public readonly userPoolClientName: string;
-
-  /**
-   * @attribute
-   */
-  public readonly userPoolClientClientSecret: string;
 
   constructor(scope: Construct, id: string, props: UserPoolClientProps) {
-    super(scope, id, {
-      physicalName: props.userPoolClientName,
-    });
+    super(scope, id);
 
     const resource = new CfnUserPoolClient(this, 'Resource', {
-      clientName: this.physicalName,
+      clientName: props.userPoolClientName,
       generateSecret: props.generateSecret,
       userPoolId: props.userPool.userPoolId,
       explicitAuthFlows: props.enabledAuthFlows
     });
 
     this.userPoolClientId = resource.ref;
-    this.userPoolClientClientSecret = resource.attrClientSecret;
-    this.userPoolClientName = resource.attrName;
+    this._userPoolClientName = props.userPoolClientName;
+  }
+
+  /**
+   * The client name that was specified via the `userPoolClientName` property during initialization,
+   * throws an error otherwise.
+   */
+  public get userPoolClientName(): string {
+    if (this._userPoolClientName === undefined) {
+      throw new Error('userPoolClientName is available only if specified on the UserPoolClient during initialization');
+    }
+    return this._userPoolClientName;
   }
 }
