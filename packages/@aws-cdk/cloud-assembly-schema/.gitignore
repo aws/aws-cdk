@@ -1,5 +1,6 @@
 lib/*.js
 test/*.js
+scripts/*.js
 *.js.map
 *.d.ts
 node_modules
