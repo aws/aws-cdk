@@ -70,7 +70,7 @@ test('cloud-assembly.json.schema is correct', () => {
   } catch (err) {
     // I couldn't for the life of me figure out how to provide additional error message
     // to jets...any ideas?
-    err.message = `Whoops, Looks like the schema has changed. Did you forget to run 'yarn generate'?\n\n${err.message}`;
+    err.message = `Whoops, Looks like the schema has changed. Did you forget to run 'yarn update-schema'?\n\n${err.message}`;
     throw err;
   }
 });

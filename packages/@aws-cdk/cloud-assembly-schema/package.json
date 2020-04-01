@@ -38,7 +38,7 @@
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test",
     "compat": "cdk-compat",
-    "generate": "bash scripts/generate.sh"
+    "update-schema": "bash scripts/update-schema.sh"
   },
   "cdk-build": {
     "eslint": {
