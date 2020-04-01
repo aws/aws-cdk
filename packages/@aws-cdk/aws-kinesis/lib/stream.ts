@@ -300,18 +300,21 @@ export class Stream extends StreamBase {
 
     // if encryption properties are not set, default to KMS in regions where KMS is available
     if (!props.encryption && !props.encryptionKey) {
-      const condition = new CfnCondition(this, 'Condition', {
-        expression: Fn.conditionOr(
-          Fn.conditionEquals(Aws.REGION, 'cn-north-1'),
-          Fn.conditionEquals(Aws.REGION, 'cn-northwest-1'))
-      });
 
-      const defaultEncryption = Fn.conditionIf(
-        condition.logicalId,
-        Aws.NO_VALUE,
-        { EncryptionType: 'KMS', KeyId: 'alias/aws/kinesis' });
+      const conditionName = 'AwsCdkKinesisEncryptedStreamsUnsupportedRegions';
+      const existing = Stack.of(this).node.tryFindChild(conditionName);
 
-      return { streamEncryption: defaultEncryption, encryptionKey: undefined };
+      // create a single condition for the Stack
+      if (!existing) {
+        new CfnCondition(Stack.of(this), conditionName, {
+          expression: Fn.conditionOr(
+            Fn.conditionEquals(Aws.REGION, 'cn-north-1'),
+            Fn.conditionEquals(Aws.REGION, 'cn-northwest-1')
+          )
+        });
+      }
+
+      return { streamEncryption: this.getEncryptionCondition(conditionName), encryptionKey: undefined };
     }
 
     // default based on whether encryption key is specified
@@ -348,6 +351,14 @@ export class Stream extends StreamBase {
     }
 
     throw new Error(`Unexpected 'encryptionType': ${encryptionType}`);
+  }
+
+  private getEncryptionCondition(conditionName: string): IResolvable {
+    return Fn.conditionIf(
+        conditionName,
+        Aws.NO_VALUE,
+        { EncryptionType: 'KMS', KeyId: 'alias/aws/kinesis' }
+      );
   }
 }
 

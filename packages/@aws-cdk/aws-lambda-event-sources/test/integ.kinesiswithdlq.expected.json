@@ -129,7 +129,7 @@
         "RetentionPeriodHours": 24,
         "StreamEncryption": {
           "Fn::If": [
-            "SCondition1DEFD8F0",
+            "AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
             {
               "Ref": "AWS::NoValue"
             },
@@ -166,7 +166,7 @@
     }
   },
   "Conditions": {
-    "SCondition1DEFD8F0": {
+    "AwsCdkKinesisEncryptedStreamsUnsupportedRegions": {
       "Fn::Or": [
         {
           "Fn::Equals": [
