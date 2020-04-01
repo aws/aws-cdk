@@ -297,20 +297,12 @@ const errorResponseModel = api.addModel('ErrorResponseModel', {
 And reference all on your method definition.
 
 ```ts
-// If you want to define parameter mappings for the request, you need a validator
-const validator = api.addRequestValidator('DefaultValidator', {
-  validateRequestBody: false,
-  validateRequestParameters: true
-});
 resource.addMethod('GET', integration, {
   // We can mark the parameters as required
   requestParameters: {
     'method.request.querystring.who': true
   },
-  // To specify a request validator we can set either `requestValidator` or `requestValidatorOptions`
-  // We can set the validator for ensuring they are passed
-  requestValidator: validator,
-  // Or we can set request validator options like below
+  // we can set request validator options like below
   requestValidatorOptions: {
     requestValidatorName: 'test-validator',
     validateRequestBody: true,
@@ -346,6 +338,9 @@ resource.addMethod('GET', integration, {
   ]
 });
 ```
+
+Specifying `requestValidatorOptions` automatically creates the RequestValidator construct with the given options.
+However, if you have your RequestValidator already initialized or imported, use the `requestValidator` option instead.
 
 #### Default Integration and Method Options
 
