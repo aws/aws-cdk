@@ -21,7 +21,7 @@ There are two main things to understand about the files in this module:
 - [`lib/schema.generated`](./schema.generated/cloud-assembly.schema.json)
 
   This directory contains the generated json [schema](./schema.generated/cloud-assembly.schema.json) from the aformentioned 
-  typescript code. It also contains a [metadata](./schema.generated/cloud-assembly.metadata.json) file that holds the current version
+  typescript code. It also contains a [version](./schema.generated/cloud-assembly.version.json) file that holds the current version
   of the schema. These files are **not** intended for manual editing. Keep reading to understand how wthey change and when.
 
 ### Schema Generation

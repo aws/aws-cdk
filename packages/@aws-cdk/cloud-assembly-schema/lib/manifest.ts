@@ -31,7 +31,7 @@ export class Manifest {
    */
   public static version(): string {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    return require('../schema.generated/cloud-assembly.metadata.json').version;
+    return require('../schema.generated/cloud-assembly.version.json').version;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-require-imports
