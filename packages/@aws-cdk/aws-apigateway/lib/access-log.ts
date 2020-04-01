@@ -443,39 +443,39 @@ export interface JsonWithStandardFieldProps {
   /**
    * If this flag is enabled, the source IP of request will be output to the log
    */
-  ip: boolean,
+  readonly ip: boolean,
   /**
    * If this flag is enabled, the principal identifier of the caller will be output to the log
    */
-  caller: boolean,
+  readonly caller: boolean,
   /**
    * If this flag is enabled, the principal identifier of the user will be output to the log
    */
-  user: boolean,
+  readonly user: boolean,
   /**
    * If this flag is enabled, the CLF-formatted request time((dd/MMM/yyyy:HH:mm:ss +-hhmm) will be output to the log
    */
-  requestTime: boolean,
+  readonly requestTime: boolean,
   /**
    * If this flag is enabled, the http method will be output to the log
    */
-  httpMethod: boolean,
+  readonly httpMethod: boolean,
   /**
    * If this flag is enabled, the path to your resource will be output to the log
    */
-  resourcePath: boolean,
+  readonly resourcePath: boolean,
   /**
    * If this flag is enabled, the method response status will be output to the log
    */
-  status: boolean,
+  readonly status: boolean,
   /**
    * If this flag is enabled, the request protocol will be output to the log
    */
-  protocol: boolean,
+  readonly protocol: boolean,
   /**
    * If this flag is enabled, the response payload length will be output to the log
    */
-  responseLength: boolean
+  readonly responseLength: boolean
 }
 
 /**
@@ -504,9 +504,12 @@ export class AccessLogFormat {
    * Generate Common Log Format.
    */
   public static clf(): AccessLogFormat {
-    return new AccessLogFormat(`${AccessLogField.contextIdentitySourceIp()} ${AccessLogField.contextIdentityCaller()} ${AccessLogField.contextIdentityUser()} \
-[${AccessLogField.contextRequestTime()}] "${AccessLogField.contextHttpMethod()} ${AccessLogField.contextResourcePath()} ${AccessLogField.contextProtocol()}" \
-${AccessLogField.contextStatus()} ${AccessLogField.contextResponseLength()} ${AccessLogField.contextRequestId()}`);
+    const requester = [AccessLogField.contextIdentitySourceIp(), AccessLogField.contextIdentityCaller(), AccessLogField.contextIdentityUser() ].join(' ');
+    const requestTime = AccessLogField.contextRequestTime();
+    const request = [ AccessLogField.contextHttpMethod(), AccessLogField.contextResourcePath(), AccessLogField.contextProtocol()].join(' ');
+    const status = [ AccessLogField.contextStatus(), AccessLogField.contextResponseLength(), AccessLogField.contextRequestId()].join(' ');
+
+    return new AccessLogFormat(`${requester} [${requestTime}] "${request}" ${status}`);
   }
 
   /**

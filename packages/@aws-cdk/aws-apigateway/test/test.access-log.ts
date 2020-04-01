@@ -26,4 +26,25 @@ export = {
         test.done();
     },
 
+    'if clf method called'(test: Test) {
+        const testFormat = apigateway.AccessLogFormat.clf();
+        test.deepEqual(testFormat.toString(), "$context.identity.sourceIp $context.identity.caller $context.identity.user [$context.requestTime] \"$context.httpMethod $context.resourcePath $context.protocol\" $context.status $context.responseLength $context.requestId");
+
+        test.done();
+    },
+
+    'if custom method called'(test: Test) {
+        const testFormat = apigateway.AccessLogFormat.custom(JSON.stringify({
+            requestId: apigateway.AccessLogField.contextRequestId(),
+            sourceIp: apigateway.AccessLogField.contextIdentitySourceIp(),
+            method: apigateway.AccessLogField.contextHttpMethod(),
+            userContext: {
+                sub: apigateway.AccessLogField.contextAuthorizerClaims('sub'),
+                email: apigateway.AccessLogField.contextAuthorizerClaims('email')
+            }
+        }));
+        test.deepEqual(testFormat.toString(), "{\"requestId\":\"$context.requestId\",\"sourceIp\":\"$context.identity.sourceIp\",\"method\":\"$context.httpMethod\",\"userContext\":{\"sub\":\"$context.authorizer.claims.sub\",\"email\":\"$context.authorizer.claims.email\"}}");
+
+        test.done();
+    }
 };
