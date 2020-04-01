@@ -13,6 +13,7 @@ import { BuildSpec } from './build-spec';
 import { Cache } from './cache';
 import { CfnProject } from './codebuild.generated';
 import { CodePipelineArtifacts } from './codepipeline-artifacts';
+import { IFileSystemLocation } from './file-location';
 import { NoArtifacts } from './no-artifacts';
 import { NoSource } from './no-source';
 import { ISource } from './source';
@@ -508,6 +509,16 @@ export interface CommonProjectProps {
    * @default true
    */
   readonly allowAllOutbound?: boolean;
+
+  /**
+   * An  ProjectFileSystemLocation objects for a CodeBuild build project.
+   *
+   * A ProjectFileSystemLocation object specifies the identifier, location, mountOptions, mountPoint,
+   * and type of a file system created using Amazon Elastic File System.
+   *
+   * @default - no file system locations
+   */
+  readonly fileSystemLocations?: IFileSystemLocation[];
 }
 
 export interface ProjectProps extends CommonProjectProps {
@@ -657,6 +668,7 @@ export class Project extends ProjectBase {
   private readonly _secondarySourceVersions: CfnProject.ProjectSourceVersionProperty[];
   private readonly _secondaryArtifacts: CfnProject.ArtifactsProperty[];
   private _encryptionKey?: kms.IKey;
+  private readonly _fileSystemLocations: CfnProject.ProjectFileSystemLocationProperty[];
 
   constructor(scope: Construct, id: string, props: ProjectProps) {
     super(scope, id, {
@@ -700,6 +712,7 @@ export class Project extends ProjectBase {
 
     this._secondarySources = [];
     this._secondarySourceVersions = [];
+    this._fileSystemLocations = [];
     for (const secondarySource of props.secondarySources || []) {
       this.addSecondarySource(secondarySource);
     }
@@ -711,6 +724,10 @@ export class Project extends ProjectBase {
 
     this.validateCodePipelineSettings(artifacts);
 
+    for (const fileSystemLocation of props.fileSystemLocations || []) {
+      this.addFileSystemLocation(fileSystemLocation);
+    }
+
     const resource = new CfnProject(this, 'Resource', {
       description: props.description,
       source: {
@@ -720,6 +737,7 @@ export class Project extends ProjectBase {
       artifacts: artifactsConfig.artifactsProperty,
       serviceRole: this.role.roleArn,
       environment: this.renderEnvironment(props.environment, environmentVariables),
+      fileSystemLocations: this.renderFileSystemLocations(),
       // lazy, because we have a setter for it in setEncryptionKey
       encryptionKey: Lazy.stringValue({ produce: () => this._encryptionKey && this._encryptionKey.keyArn }),
       badgeEnabled: props.badge,
@@ -768,6 +786,16 @@ export class Project extends ProjectBase {
         sourceVersion: secondarySourceConfig.sourceVersion,
       });
     }
+  }
+
+  /**
+   * Adds a fileSystemLocation to the Project.
+   *
+   * @param fileSystemLocation the fileSystemLocation to add
+   */
+  public addFileSystemLocation(fileSystemLocation: IFileSystemLocation): void {
+    const fileSystemConfig = fileSystemLocation.bind(this, this);
+    this._fileSystemLocations.push(fileSystemConfig.location);
   }
 
   /**
@@ -896,6 +924,12 @@ export class Project extends ProjectBase {
       computeType: env.computeType || this.buildImage.defaultComputeType,
       environmentVariables: hasEnvironmentVars ? Project.serializeEnvVariables(vars) : undefined,
     };
+  }
+
+  private renderFileSystemLocations(): CfnProject.ProjectFileSystemLocationProperty[] | undefined {
+    return this._fileSystemLocations.length === 0
+      ? undefined
+      : this._fileSystemLocations;
   }
 
   private renderSecondarySources(): CfnProject.SourceProperty[] | undefined {
@@ -1394,8 +1428,22 @@ interface WindowsBuildImageProps {
  * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-available.html
  */
 export class WindowsBuildImage implements IBuildImage {
+  /**
+   * Corresponds to the standard CodeBuild image `aws/codebuild/windows-base:1.0`.
+   *
+   * @deprecated `WindowsBuildImage.WINDOWS_BASE_2_0` should be used instead.
+   */
   public static readonly WIN_SERVER_CORE_2016_BASE: IBuildImage = new WindowsBuildImage({
     imageId: 'aws/codebuild/windows-base:1.0',
+    imagePullPrincipalType: ImagePullPrincipalType.CODEBUILD,
+  });
+
+  /**
+   * The standard CodeBuild image `aws/codebuild/windows-base:2.0`, which is
+   * based off Windows Server Core 2016.
+   */
+  public static readonly WINDOWS_BASE_2_0: IBuildImage = new WindowsBuildImage({
+    imageId: 'aws/codebuild/windows-base:2.0',
     imagePullPrincipalType: ImagePullPrincipalType.CODEBUILD,
   });
 

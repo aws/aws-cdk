@@ -32,7 +32,7 @@
     "@types/glob": "^7.1.1",
     "@types/jest": "^25.1.4",
     "@types/mock-fs": "^4.10.0",
-    "@types/node": "^10.17.17",
+    "@types/node": "^10.17.18",
     "@types/yargs": "^15.0.4",
     "@types/jszip": "^3.1.7",
     "jszip": "^3.2.2",
@@ -44,7 +44,7 @@
   "dependencies": {
     "@aws-cdk/cdk-assets-schema": "0.0.0",
     "archiver": "^3.1.1",
-    "aws-sdk": "^2.645.0",
+    "aws-sdk": "^2.650.0",
     "glob": "^7.1.6",
     "yargs": "^15.3.1"
   },

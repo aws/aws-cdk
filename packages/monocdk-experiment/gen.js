@@ -102,8 +102,13 @@ async function main() {
 
     await fs.writeFile(path.join(targetdir, 'index.ts'), `export * from './lib'\n`);
 
-    const namespace = basename.replace(/-/g, '_');
-    reexports.push(`import * as ${namespace} from './${basename}/lib'; export { ${namespace} };`)
+    // export "core" types at the root. all the rest under a namespace.
+    if (basename === 'core') {
+      reexports.push(`export * from './core/lib';`);
+    } else {
+      const namespace = basename.replace(/-/g, '_');
+      reexports.push(`export * as ${namespace} from './${basename}/lib';`);
+    }
 
     // add @types/ devDependencies from module
     const shouldIncludeDevDep = d => include_dev_deps.find(pred => pred(d));

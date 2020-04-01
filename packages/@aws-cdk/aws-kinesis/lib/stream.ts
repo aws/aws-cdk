@@ -1,6 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { Construct, IResource, Resource, Stack } from '@aws-cdk/core';
+import { Construct, Duration, IResource, Resource, Stack } from '@aws-cdk/core';
 import { CfnStream } from './kinesis.generated';
 
 /**
@@ -185,9 +185,9 @@ export interface StreamProps {
 
   /**
    * The number of hours for the data records that are stored in shards to remain accessible.
-   * @default 24
+   * @default Duration.hours(24)
    */
-  readonly retentionPeriodHours?: number;
+  readonly retentionPeriod?: Duration;
 
   /**
    * The number of shards for the stream.
@@ -201,7 +201,7 @@ export interface StreamProps {
    * If you choose KMS, you can specify a KMS key via `encryptionKey`. If
    * encryption key is not specified, a key will automatically be created.
    *
-   * @default Unencrypted
+   * @default - StreamEncryption.KMS if encryptionKey is specified, or StreamEncryption.UNENCRYPTED otherwise
    */
   readonly encryption?: StreamEncryption;
 
@@ -210,7 +210,7 @@ export interface StreamProps {
    *
    * The 'encryption' property must be set to "Kms".
    *
-   * @default If encryption is set to "Kms" and this property is undefined, a
+   * @default - If encryption is set to "KMS" and this property is undefined, a
    * new KMS key will be created and associated with this stream.
    */
   readonly encryptionKey?: kms.IKey;
@@ -261,9 +261,9 @@ export class Stream extends StreamBase {
     });
 
     const shardCount = props.shardCount || 1;
-    const retentionPeriodHours = props.retentionPeriodHours || 24;
-    if (retentionPeriodHours < 24 && retentionPeriodHours > 168) {
-      throw new Error("retentionPeriodHours must be between 24 and 168 hours");
+    const retentionPeriodHours = props.retentionPeriod?.toHours() ?? 24;
+    if (retentionPeriodHours < 24 || retentionPeriodHours > 168) {
+      throw new Error(`retentionPeriod must be between 24 and 168 hours. Received ${retentionPeriodHours}`);
     }
 
     const { streamEncryption, encryptionKey } = this.parseEncryption(props);
@@ -294,8 +294,9 @@ export class Stream extends StreamBase {
     encryptionKey?: kms.IKey
   } {
 
-    // default to unencrypted.
-    const encryptionType = props.encryption || StreamEncryption.UNENCRYPTED;
+    // default based on whether encryption key is specified
+    const encryptionType = props.encryption ??
+    (props.encryptionKey ? StreamEncryption.KMS : StreamEncryption.UNENCRYPTED);
 
     // if encryption key is set, encryption must be set to KMS.
     if (encryptionType !== StreamEncryption.KMS && props.encryptionKey) {
@@ -304,6 +305,14 @@ export class Stream extends StreamBase {
 
     if (encryptionType === StreamEncryption.UNENCRYPTED) {
       return { streamEncryption: undefined, encryptionKey: undefined };
+    }
+
+    if (encryptionType === StreamEncryption.MANAGED) {
+      const encryption = { encryptionType: 'KMS', keyId: 'alias/aws/kinesis'};
+      return {
+        streamEncryption: encryption,
+        encryptionKey: undefined
+      };
     }
 
     if (encryptionType === StreamEncryption.KMS) {
@@ -336,4 +345,9 @@ export enum StreamEncryption {
    * If `encryptionKey` is specified, this key will be used, otherwise, one will be defined.
    */
   KMS = 'KMS',
+
+  /**
+   * Server-side encryption with a master key managed by Amazon Kinesis
+   */
+  MANAGED = 'MANAGED'
 }
