@@ -169,14 +169,14 @@ Write stack outputs from deployments into a file. When your stack finishes deplo
 Usage of output in a CDK stack
 ```typescript
 const fn = new lambda.Function(this, "fn", {
-      handler: "index.handler",
-      code: lambda.Code.fromInline(`exports.handler = \${handler.toString()}`),
-      runtime: lambda.Runtime.NODEJS_10_X
-    });
+  handler: "index.handler",
+  code: lambda.Code.fromInline(`exports.handler = \${handler.toString()}`),
+  runtime: lambda.Runtime.NODEJS_10_X
+});
 
-    new cdk.CfnOutput(this, 'FunctionArn', {
-      value: fn.functionArn,
-    });
+new cdk.CfnOutput(this, 'FunctionArn', {
+  value: fn.functionArn,
+});
 ```
 
 Specify an outputs file to write to by supplying the `--outputs-file` parameter
