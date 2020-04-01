@@ -83,7 +83,7 @@
             "type": "string"
         },
         "MetadataEntry": {
-            "description": "An metadata entry in the construct.",
+            "description": "A metadata entry in a cloud assembly artifact.",
             "type": "object",
             "properties": {
                 "type": {
@@ -93,9 +93,6 @@
                 "data": {
                     "description": "The data. (Default - no data.)",
                     "anyOf": [
-                        {
-                            "description": "Any form of data. (for backwards compatibility to version < 1.31.0)"
-                        },
                         {
                             "$ref": "#/definitions/FileAssetMetadataEntry"
                         },
@@ -110,6 +107,9 @@
                         },
                         {
                             "type": "string"
+                        },
+                        {
+                            "description": "Free form data."
                         }
                     ]
                 },

@@ -1,4 +1,3 @@
-import jsonpatch = require('fast-json-patch');
 import fs = require('fs');
 import path = require('path');
 import semver = require('semver');
@@ -25,7 +24,7 @@ function bump() {
 
 }
 
-function generate(out: string, shouldBump: boolean) {
+export function generate(out: string, shouldBump: boolean) {
 
   const settings = {
     required: true,
@@ -42,19 +41,8 @@ function generate(out: string, shouldBump: boolean) {
   const program = TJS.getProgramFromFiles([path.join(__dirname, "../lib/manifest.d.ts")], compilerOptions);
   const schema = TJS.generateSchema(program, 'AssemblyManifest', settings);
 
-  const patches = patchDefaults(schema);
-
-  const addAnyOfAny: jsonpatch.AddOperation<any> = {
-    op: 'add',
-    path: "/definitions/MetadataEntry/properties/data/anyOf/0",
-    value: {
-      description: "Free form data."
-    },
-  };
-
-  patches.push(addAnyOfAny);
-
-  const patched = jsonpatch.applyPatch(schema, patches).newDocument;
+  augmentDescription(schema);
+  addAnyMetadataEntry(schema);
 
   if (shouldBump) {
     bump();
@@ -62,10 +50,10 @@ function generate(out: string, shouldBump: boolean) {
 
   if (out) {
     log(`Generating schema to ${out}`);
-    fs.writeFileSync(out, JSON.stringify(patched, null, 4));
+    fs.writeFileSync(out, JSON.stringify(schema, null, 4));
   }
 
-  return patched;
+  return schema;
 
 }
 
@@ -77,11 +65,9 @@ function generate(out: string, shouldBump: boolean) {
  * To keep this inforamtion in the schema, we append it to the
  * 'description' of the property.
  */
-function patchDefaults(schema: any): jsonpatch.Operation[] {
+function augmentDescription(schema: any) {
 
-  const patches: jsonpatch.Operation[] = [];
-
-  function _recurse(o: any, currentPath: string) {
+  function _recurse(o: any) {
     for (const prop in o) {
 
       if (prop === 'description' && typeof o[prop] === 'string') {
@@ -97,29 +83,25 @@ function patchDefaults(schema: any): jsonpatch.Operation[] {
 
         const descriptionWithDefault = `${description} (Default ${defaultValue})`;
 
-        const replaceDescription: jsonpatch.ReplaceOperation<string> = {
-          op: 'replace',
-          path: currentPath + '/description',
-          value: descriptionWithDefault
-        };
-
-        const removeDefault: jsonpatch.RemoveOperation = {
-          op: 'remove',
-          path: currentPath + '/default'
-        };
-
-        patches.push(replaceDescription);
-        patches.push(removeDefault);
+        delete o.default;
+        o[prop] = descriptionWithDefault;
 
       } else if (typeof o[prop] === 'object') {
-        _recurse(o[prop], currentPath + '/' + prop);
+        _recurse(o[prop]);
       }
     }
   }
 
-  _recurse(schema, '');
+  _recurse(schema);
 
-  return patches;
 }
 
-module.exports.generate = generate;
+/**
+ * Patch the properties of MetadataEntry to allow
+ * specifying any free form data. This is needed since source
+ * code doesn't allow this in order to enforce stricter jsii
+ * compatibility checks.
+ */
+function addAnyMetadataEntry(schema: any) {
+  schema.definitions.MetadataEntry.properties.data.anyOf.push({description: "Free form data."});
+}
