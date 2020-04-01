@@ -5,7 +5,8 @@
   "bin": {
     "rewrite-imports": "bin/rewrite-imports"
   },
-  "main": "bin/rewrite-imports.js",
+  "main": "lib/rewrite.js",
+  "types": "lib/rewrite.d.ts",
   "scripts": {
     "build": "cdk-build",
     "watch": "cdk-watch",
@@ -32,7 +33,7 @@
   "devDependencies": {
     "@types/glob": "^7.1.1",
     "@types/jest": "^25.1.4",
-    "@types/node": "^10.17.17",
+    "@types/node": "^10.17.18",
     "cdk-build-tools": "0.0.0",
     "pkglint": "0.0.0"
   },
