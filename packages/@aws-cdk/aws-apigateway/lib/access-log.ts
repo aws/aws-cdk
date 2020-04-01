@@ -1,17 +1,17 @@
 import {ILogGroup} from '@aws-cdk/aws-logs';
 
 /**
- * A API Gateway custom access log destination.
+ * Access log destination for a RestApi Stage.
  */
 export interface IAccessLogDestination {
   /**
-   * Binds destination.
+   * Binds this destination to the RestApi Stage.
    */
   bind(): AccessLogDestinationConfig
 }
 
 /**
- * Options when binding a destination to a API Gateway
+ * Options when binding a log destination to a RestApi Stage.
  */
 export interface AccessLogDestinationConfig {
   /**
@@ -38,7 +38,7 @@ export class LogGroupLogDestination implements IAccessLogDestination {
 }
 
 /**
- * $context variables when customize access log.
+ * $context variables that can be used to customize access log pattern.
  */
 export class AccessLogField {
   /**
@@ -253,7 +253,7 @@ export class AccessLogField {
   /**
    * The request path.
    * For example, for a non-proxy request URL of https://{rest-api-id.execute-api.{region}.amazonaws.com/{stage}/root/child,
-   * the $context.path value is /{stage}/root/child.
+   * this value is /{stage}/root/child.
    */
   public static contextPath() {
     return '$context.path';
@@ -440,39 +440,39 @@ export class AccessLogField {
  */
 export interface IJsonWithStandardFieldProps {
   /**
-   * If this flag is enabled, $context.identity.sourceIp will be output to the log
+   * If this flag is enabled, the source IP of request will be output to the log
    */
   ip: boolean,
   /**
-   * If this flag is enabled, $context.identity.caller will be output to the log
+   * If this flag is enabled, the principal identifier of the caller will be output to the log
    */
   caller: boolean,
   /**
-   * If this flag is enabled, $context.identity.user will be output to the log
+   * If this flag is enabled, the principal identifier of the user will be output to the log
    */
   user: boolean,
   /**
-   * If this flag is enabled, $context.requestTime will be output to the log
+   * If this flag is enabled, the CLF-formatted request time((dd/MMM/yyyy:HH:mm:ss +-hhmm) will be output to the log
    */
   requestTime: boolean,
   /**
-   * If this flag is enabled, $context.httpMethod will be output to the log
+   * If this flag is enabled, the http method will be output to the log
    */
   httpMethod: boolean,
   /**
-   * If this flag is enabled, $context.resourcePath will be output to the log
+   * If this flag is enabled, the path to your resource will be output to the log
    */
   resourcePath: boolean,
   /**
-   * If this flag is enabled, $context.status will be output to the log
+   * If this flag is enabled, the method response status will be output to the log
    */
   status: boolean,
   /**
-   * If this flag is enabled, $context.protocol will be output to the log
+   * If this flag is enabled, the request protocol will be output to the log
    */
   protocol: boolean,
   /**
-   * If this flag is enabled, $context.responseLength will be output to the log
+   * If this flag is enabled, the response payload length will be output to the log
    */
   responseLength: boolean
 }

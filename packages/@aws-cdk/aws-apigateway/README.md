@@ -547,12 +547,8 @@ const api = new apigateway.RestApi(this, 'books', {
 ```
 ### Access Logging
 
-This is in addition to the detailed execution logs already provided by Amazon CloudWatch for API requests made to your APIs.
-The access logging feature lets you generate access logs in different formats such as CLF (Common Log Format), JSON, XML, and CSV.
+You can set the format of the access log.
 More info can be found [here](https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-logging.html).
-
-Access logs can be configured to be sent to a specific CloudWatch log group. This can be configured either for all stages of the RestApi or for a specific stage.
-The following example will configure API Gateway to enable custom access logging.
 
 ```ts
 // production stage
