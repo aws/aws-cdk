@@ -48,9 +48,7 @@ is considered `major` version bump.
 ## How to consume
 
 If you'd like to consume the schema in order to do validations on `manifest.json` files, simply download it from this repo and run it against
-standard *json-schema* validators.
-
-> For example: https://www.npmjs.com/package/jsonschema (this is how the CDK CLI does it)
+standard *json-schema* validators, such as [jsonschema](https://www.npmjs.com/package/jsonschema).
 
 Make sure you follow semantic versioning best practices, by **rejcting** to deploy cloud assemblies who's manifest version is greater than the one you expect.
 
