@@ -25,7 +25,7 @@ needed in order to deploy the assembly directory.
 > - Upload assets.
 > - Deploy CloudFormation templates.
 
-Therefore, the assembly is how the CDK class library and CDK CLI (or any other consumer) should communicate. To ensure compatibility
+Therefore, the assembly is how the CDK class library and CDK CLI (or any other consumer) communicate. To ensure compatibility
 between the assembly and its consumers, we treat the manifest file as a well defined, versioned schema.
 
 ## Schema
