@@ -878,7 +878,7 @@ export = {
 
     // THEN
     test.throws(() => new apigw.Method(stack, 'method', methodProps),
-    /Only one of 'requestValidator' or 'requestValidatorOptions' must be specified./);
+      /Only one of 'requestValidator' or 'requestValidatorOptions' must be specified./);
 
     test.done();
   }
