@@ -50,7 +50,7 @@ is considered `major` version bump.
 If you'd like to consume the schema in order to do validations on `manifest.json` files, simply download it from this repo and run it against
 standard *json-schema* validators, such as [jsonschema](https://www.npmjs.com/package/jsonschema).
 
-Make sure you follow semantic versioning best practices, by **rejcting** to deploy cloud assemblies who's manifest version is greater than the one you expect.
+Make sure you follow semantic versioning best practices, by **rejecting** to deploy cloud assemblies who's manifest version is greater than the one you expect.
 
 For example, if your consumer was built when the schema version was 1.2.0, you should reject deploying cloud assemblies with a
 manifest version of 2.0.0 (or rather any higher than `1.2.0`). Note that your schema validation might actually work on those manifest files, but the deployment itself will
