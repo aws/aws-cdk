@@ -211,7 +211,7 @@ export enum ArtifactType {
 }
 
 /**
- * An metadata entry in the construct.
+ * A metadata entry in a cloud assembly artifact.
  */
 export interface MetadataEntry {
   /**
