@@ -174,7 +174,13 @@ const lb = new elbv2.ApplicationLoadBalancer(...);
 
 const listener = lb.addListener('Listener', { port: 80 });
 listener.addTargets('Targets', {
-    targets: [new targets.LambdaTarget(lambdaFunction)]
+    targets: [new targets.LambdaTarget(lambdaFunction)],
+
+    // For Lambda Targets, you need to explicitly enable health checks if you
+    // want them.
+    healthCheck: {
+        enabled: true,
+    }
 });
 ```
 
