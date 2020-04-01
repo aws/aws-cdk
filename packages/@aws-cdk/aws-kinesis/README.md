@@ -41,7 +41,7 @@ new Stream(this, "MyFirstStream", {
 ```
 
 You can also specify properties such as `shardCount` to indicate how many shards the stream should choose and a `retentionPeriod`
-to specify how many logn the data in the shards should remain accessible.
+to specify how long the data in the shards should remain accessible.
 Read more at [Creating and Managing Streams](https://docs.aws.amazon.com/streams/latest/dev/working-with-streams.html)
 
 ```ts
@@ -52,19 +52,15 @@ new Stream(this, "MyFirstStream", {
 });
 ```
 
-Streams are not encrypted by default.
-
 ### Encryption
 
 [Stream encryption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesis-stream-streamencryption.html) enables
 server-side encryption using an AWS KMS key for a specified stream.
 
-You can enable encryption on your stream with the master key owned by Kinesis Data Streams by specifying the `encryption` property.
+Encryption is enabled by default on your stream with the master key owned by Kinesis Data Streams in regions where it is supported.
 
 ```ts
-new Stream(this, 'MyEncryptedStream', {
-  encryption: StreamEncryption.MANAGED
-});
+new Stream(this, 'MyEncryptedStream');
 ```
 
 You can enable encryption on your stream with a user-managed key by specifying the `encryption` property.
