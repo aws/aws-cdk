@@ -8,7 +8,7 @@ test('empty assembly', () => {
   expect(assembly.artifacts).toEqual([]);
   expect(assembly.runtime).toEqual({ libraries: { } });
   expect(assembly.stacks).toEqual([]);
-  expect(assembly.version).toEqual("1.10.0");
+  expect(assembly.version).toEqual("0.0.0");
   expect(assembly.manifest).toMatchSnapshot();
   expect(assembly.tree()).toBeUndefined();
 });
@@ -19,7 +19,6 @@ test('assembly with a single cloudformation stack and tree metadata', () => {
   expect(assembly.stacks).toHaveLength(1);
   expect(assembly.manifest.missing).toBeUndefined();
   expect(assembly.runtime).toEqual({ libraries: { } });
-  expect(assembly.version).toEqual("1.10.0");
 
   const stack = assembly.stacks[0];
   expect(stack.manifest).toMatchSnapshot();
