@@ -185,7 +185,7 @@ Specify an outputs file to write to by supplying the `--outputs-file` parameter
 $ cdk deploy --outputs-file outputs.json
 ```
 
-When the stack finishes deployment, `outputs.json` would look like.
+When the stack finishes deployment, `outputs.json` would look like this:
 ```json
 {
   "MyStack": {
