@@ -185,7 +185,7 @@ Specify an outputs file to write to by supplying the `--outputs-file` parameter
 $ cdk deploy --outputs-file "/Users/code/myproject/outputs.json"
 ```
 
-When the stack finishes deployment, `outputs.json` would look like
+When the stack finishes deployment, `outputs.json` would look like.
 ```json
 {
   "MyStack": {
@@ -193,6 +193,9 @@ When the stack finishes deployment, `outputs.json` would look like
   }
 }
 ```
+
+⚠️ The `key` of the outputs corresponds to the logical ID.
+Read more about identifiers in the CDK [here](https://docs.aws.amazon.com/cdk/latest/guide/identifiers.html)
 
 If multiple stacks are being deployed or the wild card `*` is used to deploy all stacks, all outputs are written to the same output file where each stack artifact ID is a key in the JSON file
 
