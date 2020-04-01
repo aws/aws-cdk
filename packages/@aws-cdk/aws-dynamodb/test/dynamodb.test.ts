@@ -14,8 +14,6 @@ import {
   Table,
 } from '../lib';
 
-// tslint:disable:object-literal-key-quotes
-
 // CDK parameters
 const CONSTRUCT_NAME = 'MyTable';
 
