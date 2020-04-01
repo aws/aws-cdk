@@ -37,7 +37,7 @@ export = {
             }
           }
         },
-        myapiDeployment92F2CB49916eaecf87f818f1e175215b8d086029: {
+        myapiDeployment92F2CB4972a890db5063ec679071ba7eefc76f2a: {
           Type: "AWS::ApiGateway::Deployment",
           Properties: {
             RestApiId: { Ref: "myapi4C7BF186" },
@@ -49,7 +49,7 @@ export = {
           Type: "AWS::ApiGateway::Stage",
           Properties: {
             RestApiId: { Ref: "myapi4C7BF186" },
-            DeploymentId: { Ref: "myapiDeployment92F2CB49916eaecf87f818f1e175215b8d086029" },
+            DeploymentId: { Ref: "myapiDeployment92F2CB4972a890db5063ec679071ba7eefc76f2a" },
             StageName: "prod"
           }
         },

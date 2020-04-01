@@ -1,6 +1,6 @@
 import { CfnResource, Construct, Lazy, RemovalPolicy, Resource, Stack } from '@aws-cdk/core';
 import * as crypto from 'crypto';
-import { CfnDeployment, CfnDeploymentProps } from './apigateway.generated';
+import { CfnDeployment } from './apigateway.generated';
 import { IRestApi, RestApi } from './restapi';
 
 export interface DeploymentProps  {
@@ -68,7 +68,7 @@ export class Deployment extends Resource {
 
     this.resource = new LatestDeploymentResource(this, 'Resource', {
       description: props.description,
-      restApiId: props.api.restApiId,
+      restApi: props.api,
     });
 
     if (props.retainDeployments) {
@@ -112,21 +112,27 @@ export class Deployment extends Resource {
        * falling back to declaring dependencies between the underlying CfnResources.
        */
       this.api.methods.map(m => m.node.defaultChild as CfnResource).forEach(m => this.resource.addDependsOn(m));
-
-      // Add CfnRestApi to the logical id so a new deployment is triggered when any of its properties change.
-      const cfnRestApiCF = (this.api.node.defaultChild as any)._toCloudFormation();
-      this.addToLogicalId(Stack.of(this).resolve(cfnRestApiCF));
     }
   }
+}
+
+interface LatestDeploymentResourceProps {
+  readonly description?: string;
+  readonly restApi: IRestApi;
 }
 
 class LatestDeploymentResource extends CfnDeployment {
   private hashComponents = new Array<any>();
   private originalLogicalId: string;
+  private api: IRestApi;
 
-  constructor(scope: Construct, id: string, props: CfnDeploymentProps) {
-    super(scope, id, props);
+  constructor(scope: Construct, id: string, props: LatestDeploymentResourceProps) {
+    super(scope, id, {
+      description: props.description,
+      restApiId: props.restApi.restApiId,
+    });
 
+    this.api = props.restApi;
     this.originalLogicalId = Stack.of(this).getLogicalId(this);
   }
 
@@ -149,6 +155,13 @@ class LatestDeploymentResource extends CfnDeployment {
    * add via `addToLogicalId`.
    */
   protected prepare() {
+    if (this.api instanceof RestApi) { // Ignore IRestApi that are imported
+
+      // Add CfnRestApi to the logical id so a new deployment is triggered when any of its properties change.
+      const cfnRestApiCF = (this.api.node.defaultChild as any)._toCloudFormation();
+      this.addToLogicalId(Stack.of(this).resolve(cfnRestApiCF));
+    }
+
     const stack = Stack.of(this);
 
     // if hash components were added to the deployment, we use them to calculate
