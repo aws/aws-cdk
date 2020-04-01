@@ -158,13 +158,16 @@ Example of overwriting the topic name from a previous deployment.
 $ cdk deploy --parameters "ParametersStack:TopicNameParam=blahagain" --force
 ```
 
-⚠️ Parameters will be applied to all stacks if a stack name is not specified or `*` is provided. Parameters provided to Stacks that do not make use of the parameter will not successfully deploy.
+⚠️ Parameters will be applied to all stacks if a stack name is not specified or `*` is provided.
+Parameters provided to Stacks that do not make use of the parameter will not successfully deploy.
 
-⚠️ Parameters do not propagate to NestedStacks. These must be sent with the constructor. See Nested Stack [documentation](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-cloudformation.NestedStack.html)
+⚠️ Parameters do not propagate to NestedStacks. These must be sent with the constructor.
+See Nested Stack [documentation](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-cloudformation.NestedStack.html)
 
 ##### Outputs
 
-Write stack outputs from deployments into a file. When your stack finishes deploying, all stack outputs will be written to the output file as JSON.
+Write stack outputs from deployments into a file. When your stack finishes deploying, all stack outputs
+will be written to the output file as JSON.
 
 Usage of output in a CDK stack
 ```typescript
@@ -197,7 +200,8 @@ When the stack finishes deployment, `outputs.json` would look like this:
 ⚠️ The `key` of the outputs corresponds to the logical ID of the `CfnOutput`.
 Read more about identifiers in the CDK [here](https://docs.aws.amazon.com/cdk/latest/guide/identifiers.html)
 
-If multiple stacks are being deployed or the wild card `*` is used to deploy all stacks, all outputs are written to the same output file where each stack artifact ID is a key in the JSON file
+If multiple stacks are being deployed or the wild card `*` is used to deploy all stacks, all outputs are written
+to the same output file where each stack artifact ID is a key in the JSON file
 
 
 ```console
