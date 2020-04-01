@@ -436,9 +436,9 @@ export class AccessLogField {
 }
 
 /**
- * jsonWithStandardFields property
+ * Properties for controlling items output in JSON standard format
  */
-export interface IJsonWithStandardFieldProps {
+export interface JsonWithStandardFieldProps {
   /**
    * If this flag is enabled, the source IP of request will be output to the log
    */
@@ -513,7 +513,7 @@ ${AccessLogField.contextStatus()} ${AccessLogField.contextResponseLength()} ${Ac
    * option to turn off specific fields.
    */
   public static jsonWithStandardFields(
-    fields: IJsonWithStandardFieldProps = {
+    fields: JsonWithStandardFieldProps = {
       ip: true,
       user: true,
       caller: true,
