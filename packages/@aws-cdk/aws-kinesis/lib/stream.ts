@@ -203,8 +203,8 @@ export interface StreamProps {
    * encryption key is not specified, a key will automatically be created.
    *
    * @default - StreamEncryption.KMS if encrypted Streams are supported in the region
-   *  or StreamEncryption.UNENCRYPTED otherwise.
-   *  StreamEncryption.KMS if an encryption key is supplied through the encryptionKey property
+   *   or StreamEncryption.UNENCRYPTED otherwise.
+   *   StreamEncryption.KMS if an encryption key is supplied through the encryptionKey property
    */
   readonly encryption?: StreamEncryption;
 
@@ -213,9 +213,9 @@ export interface StreamProps {
    *
    * The 'encryption' property must be set to "Kms".
    *
-   * @default - Kinesis Data Streams master key ('/alias/aws/kinesis')
-   *  If encryption is set to StreamEncryption.KMS and this property is undefined, a
-   *  new KMS key will be created and associated with this stream.
+   * @default - Kinesis Data Streams master key ('/alias/aws/kinesis').
+   *   If encryption is set to StreamEncryption.KMS and this property is undefined, a new KMS key
+   *   will be created and associated with this stream.
    */
   readonly encryptionKey?: kms.IKey;
 }
