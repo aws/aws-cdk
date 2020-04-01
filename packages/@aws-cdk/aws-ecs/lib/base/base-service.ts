@@ -355,6 +355,12 @@ export abstract class BaseService extends Resource
       ...additionalProps,
     });
 
+    if (props.deploymentController?.type === DeploymentControllerType.EXTERNAL) {
+      this.node.addWarning('taskDefinition and launchType are blanked out when using external deployment controller.');
+      this.resource.launchType = undefined;
+      this.resource.taskDefinition = undefined;
+    }
+
     this.serviceArn = this.getResourceArnAttribute(this.resource.ref, {
       service: 'ecs',
       resource: 'service',
