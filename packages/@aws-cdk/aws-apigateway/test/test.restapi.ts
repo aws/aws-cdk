@@ -1,7 +1,6 @@
 import { expect, haveResource, haveResourceLike, ResourcePart, SynthUtils } from '@aws-cdk/assert';
 import { GatewayVpcEndpoint } from '@aws-cdk/aws-ec2';
-import { Effect, PolicyDocument, PolicyStatement } from '@aws-cdk/aws-iam';
-import { App, CfnElement, CfnOutput, CfnResource, Stack } from '@aws-cdk/core';
+import { App, CfnElement, CfnResource, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as apigw from '../lib';
 
@@ -591,7 +590,7 @@ export = {
         "myapiAccountC3A4750C",
         "myapiCloudWatchRoleEB425128",
         "myapiGET9B7CD29E",
-        "myapiDeploymentB7EF8EB75c091a668064a3f3a1f6d68a3fb22cf9",
+        "myapiDeploymentB7EF8EB7b8edc043bcd33e0d85a3c85151f47e98",
         "myapiDeploymentStageprod329F21FF",
         "myapi162F20B8"
       ]
@@ -811,57 +810,4 @@ export = {
 
     test.done();
   },
-
-  'logicalId of latestDeployment is affected by RestApi properties'(test: Test) {
-    // GIVEN
-    const stack = new Stack();
-
-    function createRestApi(id: string, props?: apigw.RestApiProps) {
-      const api = new apigw.RestApi(stack, id, props);
-      api.root.addMethod('ANY');
-      new CfnOutput(stack, `Deploy${id}`, { value: api.latestDeployment!.deploymentId });
-    }
-
-    // WHEN
-    createRestApi('baseline');
-
-    createRestApi('withPolicy', {
-      policy: new PolicyDocument({
-        statements: [
-          new PolicyStatement({
-            effect: Effect.ALLOW,
-            actions: [ 'service:yyx' ],
-            resources: [ '*' ],
-          })
-        ]
-      })
-    });
-
-    createRestApi('endpointTpes', {
-      endpointTypes: [ apigw.EndpointType.EDGE ]
-    });
-
-    createRestApi('binaryMediaTypes', {
-      binaryMediaTypes: [ 'media-type-1' ]
-    });
-
-    createRestApi('parameters', {
-      parameters: {
-        'key-1': 'value-1'
-      }
-    });
-
-    const rawCfn = SynthUtils.toCloudFormation(stack);
-
-    const deploymentLogicalIds = Object.keys(rawCfn.Outputs)
-      .filter((output) => output.startsWith('Deploy'))
-      .map((output) => rawCfn.Outputs[output].Value.Ref);
-    test.equals(deploymentLogicalIds.length, 5);
-
-    // use a set to check if there are any duplicates
-    const deploymentLogicalIdsSet = new Set(deploymentLogicalIds);
-    test.equals(deploymentLogicalIds.length, deploymentLogicalIdsSet.size, 'Logical Ids did not mutate when expected');
-
-    test.done();
-  }
 };

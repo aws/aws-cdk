@@ -170,7 +170,7 @@
         "Name": "MyRestApi"
       }
     },
-    "MyRestApiDeploymentB555B5828fad37a0e56bbac79ae37ae990881dca": {
+    "MyRestApiDeploymentB555B582dcff966d69deeda8d47e3bf409ce29cb": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -189,7 +189,7 @@
           "Ref": "MyRestApi2D1F47A9"
         },
         "DeploymentId": {
-          "Ref": "MyRestApiDeploymentB555B5828fad37a0e56bbac79ae37ae990881dca"
+          "Ref": "MyRestApiDeploymentB555B582dcff966d69deeda8d47e3bf409ce29cb"
         },
         "StageName": "prod"
       }

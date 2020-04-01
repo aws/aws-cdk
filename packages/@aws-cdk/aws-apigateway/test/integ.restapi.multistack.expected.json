@@ -75,7 +75,7 @@
           "Name": "SecondRestAPI"
         }
       },
-      "BooksApiDeployment86CA39AFc929a0f95f673e230c62e2c9754726f6": {
+      "BooksApiDeployment86CA39AF7e6c771d47a1a3777eba99bffc037822": {
         "Type": "AWS::ApiGateway::Deployment",
         "Properties": {
           "RestApiId": {
@@ -96,7 +96,7 @@
             "Ref": "BooksApi60AC975F"
           },
           "DeploymentId": {
-            "Ref": "BooksApiDeployment86CA39AFc929a0f95f673e230c62e2c9754726f6"
+            "Ref": "BooksApiDeployment86CA39AF7e6c771d47a1a3777eba99bffc037822"
           },
           "StageName": "prod"
         }

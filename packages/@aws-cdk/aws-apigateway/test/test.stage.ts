@@ -42,7 +42,7 @@ export = {
             }
           }
         },
-        mydeployment71ED3B4B: {
+        mydeployment71ED3B4B5ce82e617e0729f75657ddcca51e3b91: {
           Type: "AWS::ApiGateway::Deployment",
           Properties: {
             RestApiId: {
@@ -60,7 +60,7 @@ export = {
               Ref: "testapiD6451F70"
             },
             DeploymentId: {
-              Ref: "mydeployment71ED3B4B"
+              Ref: "mydeployment71ED3B4B5ce82e617e0729f75657ddcca51e3b91"
             },
             StageName: "prod"
           }

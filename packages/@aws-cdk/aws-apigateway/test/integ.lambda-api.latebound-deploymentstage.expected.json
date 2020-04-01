@@ -355,7 +355,7 @@
         }
       }
     },
-    "deployment33381975": {
+    "deployment3338197541aef5f15bf9a60b10e06fdbe72854f4": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -374,7 +374,7 @@
           "Ref": "lambdarestapiF559E4F2"
         },
         "DeploymentId": {
-          "Ref": "deployment33381975"
+          "Ref": "deployment3338197541aef5f15bf9a60b10e06fdbe72854f4"
         },
         "StageName": "prod"
       }
