@@ -20,18 +20,8 @@ function bump() {
 
   log(`Updating schema version: ${oldVersion} -> ${newVersion}`);
 
-  const patched = jsonpatch.applyPatch(metadata,
-    [
-      {
-        op: "replace",
-        path: "/version",
-        value: newVersion
-      }
-    ]
-  ).newDocument;
-
   const out = path.join(__dirname, metadataPath);
-  fs.writeFileSync(out, JSON.stringify(patched, null, 4));
+  fs.writeFileSync(out, JSON.stringify({version: newVersion}));
 
 }
 
