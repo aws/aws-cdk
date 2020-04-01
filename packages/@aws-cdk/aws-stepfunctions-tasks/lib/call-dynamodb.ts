@@ -1,12 +1,12 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import { Stack } from '@aws-cdk/core';
+import { Stack, withResolved } from '@aws-cdk/core';
 import { getResourceArn } from './resource-arn-suffix';
 
 /**
  * Determines the level of detail about provisioned throughput consumption that is returned.
  */
-export enum ReturnConsumedCapacity {
+export enum DynamoConsumedCapacity {
   /**
    * The response includes the aggregate ConsumedCapacity for the operation,
    * together with ConsumedCapacity for each table and secondary index that was accessed
@@ -27,7 +27,7 @@ export enum ReturnConsumedCapacity {
 /**
  * Determines whether item collection metrics are returned.
  */
-export enum ReturnItemCollectionMetrics {
+export enum DynamoItemCollectionMetrics {
   /**
    * If set to SIZE, the response includes statistics about item collections,
    * if any, that were modified during the operation.
@@ -43,7 +43,7 @@ export enum ReturnItemCollectionMetrics {
 /**
  * Use ReturnValues if you want to get the item attributes as they appear before or after they are changed
  */
-export enum ReturnValues {
+export enum DynamoReturnValues {
   /**
    * Nothing is returned
    */
@@ -292,9 +292,9 @@ export interface DynamoGetItemProps {
    *
    * @see https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_GetItem.html#DDB-GetItem-request-ReturnConsumedCapacity
    *
-   * @default ReturnConsumedCapacity.NONE
+   * @default DynamoConsumedCapacity.NONE
    */
-  readonly returnConsumedCapacity?: ReturnConsumedCapacity;
+  readonly returnConsumedCapacity?: DynamoConsumedCapacity;
 }
 
 /**
@@ -347,18 +347,18 @@ export interface DynamoPutItemProps {
    *
    * @see https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_PutItem.html#DDB-PutItem-request-ReturnConsumedCapacity
    *
-   * @default ReturnConsumedCapacity.NONE
+   * @default DynamoConsumedCapacity.NONE
    */
-  readonly returnConsumedCapacity?: ReturnConsumedCapacity;
+  readonly returnConsumedCapacity?: DynamoConsumedCapacity;
 
   /**
    * The item collection metrics to returned in the response
    *
    * @see https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/LSI.html#LSI.ItemCollections
    *
-   * @default ReturnItemCollectionMetrics.NONE
+   * @default DynamoItemCollectionMetrics.NONE
    */
-  readonly returnItemCollectionMetrics?: ReturnItemCollectionMetrics;
+  readonly returnItemCollectionMetrics?: DynamoItemCollectionMetrics;
 
   /**
    * Use ReturnValues if you want to get the item attributes as they appeared
@@ -366,9 +366,9 @@ export interface DynamoPutItemProps {
    *
    * @see https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_PutItem.html#DDB-PutItem-request-ReturnValues
    *
-   * @default ReturnValues.NONE
+   * @default DynamoReturnValues.NONE
    */
-  readonly returnValues?: ReturnValues;
+  readonly returnValues?: DynamoReturnValues;
 }
 
 /**
@@ -428,9 +428,9 @@ export interface DynamoDeleteItemProps {
    *
    * @see https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_DeleteItem.html#DDB-DeleteItem-request-ReturnConsumedCapacity
    *
-   * @default ReturnConsumedCapacity.NONE
+   * @default DynamoConsumedCapacity.NONE
    */
-  readonly returnConsumedCapacity?: ReturnConsumedCapacity;
+  readonly returnConsumedCapacity?: DynamoConsumedCapacity;
 
   /**
    * Determines whether item collection metrics are returned.
@@ -438,18 +438,18 @@ export interface DynamoDeleteItemProps {
    * that were modified during the operation are returned in the response.
    * If set to NONE (the default), no statistics are returned.
    *
-   * @default ReturnItemCollectionMetrics.NONE
+   * @default DynamoItemCollectionMetrics.NONE
    */
-  readonly returnItemCollectionMetrics?: ReturnItemCollectionMetrics;
+  readonly returnItemCollectionMetrics?: DynamoItemCollectionMetrics;
 
   /**
    * Use ReturnValues if you want to get the item attributes as they appeared before they were deleted.
    *
    * @see https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_DeleteItem.html#DDB-DeleteItem-request-ReturnValues
    *
-   * @default ReturnValues.NONE
+   * @default DynamoReturnValues.NONE
    */
-  readonly returnValues?: ReturnValues;
+  readonly returnValues?: DynamoReturnValues;
 }
 
 /**
@@ -509,9 +509,9 @@ export interface DynamoUpdateItemProps {
    *
    * @see https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_UpdateItem.html#DDB-UpdateItem-request-ReturnConsumedCapacity
    *
-   * @default ReturnConsumedCapacity.NONE
+   * @default DynamoConsumedCapacity.NONE
    */
-  readonly returnConsumedCapacity?: ReturnConsumedCapacity;
+  readonly returnConsumedCapacity?: DynamoConsumedCapacity;
 
   /**
    * Determines whether item collection metrics are returned.
@@ -519,18 +519,18 @@ export interface DynamoUpdateItemProps {
    * that were modified during the operation are returned in the response.
    * If set to NONE (the default), no statistics are returned.
    *
-   * @default ReturnItemCollectionMetrics.NONE
+   * @default DynamoItemCollectionMetrics.NONE
    */
-  readonly returnItemCollectionMetrics?: ReturnItemCollectionMetrics;
+  readonly returnItemCollectionMetrics?: DynamoItemCollectionMetrics;
 
   /**
    * Use ReturnValues if you want to get the item attributes as they appeared before they were deleted.
    *
    * @see https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_UpdateItem.html#DDB-UpdateItem-request-ReturnValues
    *
-   * @default ReturnValues.NONE
+   * @default DynamoReturnValues.NONE
    */
-  readonly returnValues?: ReturnValues;
+  readonly returnValues?: DynamoReturnValues;
 
   /**
    * An expression that defines one or more attributes to be updated,
@@ -548,7 +548,7 @@ export interface DynamoUpdateItemProps {
  */
 export class DynamoGetItem implements sfn.IStepFunctionsTask {
   constructor(private readonly props: DynamoGetItemProps) {
-    validateTableName(props.tableName);
+    withResolved(props.tableName, validateTableName);
   }
 
   public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
@@ -586,7 +586,7 @@ export class DynamoGetItem implements sfn.IStepFunctionsTask {
  */
 export class DynamoPutItem implements sfn.IStepFunctionsTask {
   constructor(private readonly props: DynamoPutItemProps) {
-    validateTableName(props.tableName);
+    withResolved(props.tableName, validateTableName);
   }
 
   public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
@@ -618,7 +618,7 @@ export class DynamoPutItem implements sfn.IStepFunctionsTask {
  */
 export class DynamoDeleteItem implements sfn.IStepFunctionsTask {
   constructor(private readonly props: DynamoDeleteItemProps) {
-    validateTableName(props.tableName);
+    withResolved(props.tableName, validateTableName);
   }
 
   public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
@@ -650,7 +650,7 @@ export class DynamoDeleteItem implements sfn.IStepFunctionsTask {
  */
 export class DynamoUpdateItem implements sfn.IStepFunctionsTask {
   constructor(private readonly props: DynamoUpdateItemProps) {
-    validateTableName(props.tableName);
+    withResolved(props.tableName, validateTableName);
   }
 
   public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
@@ -733,7 +733,7 @@ function validateTableName(tableName: string) {
     !new RegExp(/[a-zA-Z0-9_.-]+$/).test(tableName)
   ) {
     throw new Error(
-      'TableName should not contain alphanumeric characters and should be between 3-255 characters long.'
+      `TableName should not contain alphanumeric characters and should be between 3-255 characters long. Received: ${tableName}`
     );
   }
 }

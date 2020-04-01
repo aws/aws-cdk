@@ -32,7 +32,7 @@ test('GetItem task', () => {
           .withAttribute('Tags'),
         new tasks.DynamoProjectionExpression().withAttribute('ID')
       ],
-      returnConsumedCapacity: tasks.ReturnConsumedCapacity.TOTAL
+      returnConsumedCapacity: tasks.DynamoConsumedCapacity.TOTAL
     })
   });
 
@@ -76,9 +76,9 @@ test('PutItem task', () => {
           sfn.Data.stringAt('$.Item.TotalCount.N')
         )
       },
-      returnConsumedCapacity: tasks.ReturnConsumedCapacity.TOTAL,
-      returnItemCollectionMetrics: tasks.ReturnItemCollectionMetrics.SIZE,
-      returnValues: tasks.ReturnValues.ALL_NEW
+      returnConsumedCapacity: tasks.DynamoConsumedCapacity.TOTAL,
+      returnItemCollectionMetrics: tasks.DynamoItemCollectionMetrics.SIZE,
+      returnValues: tasks.DynamoReturnValues.ALL_NEW
     })
   });
 
@@ -127,9 +127,9 @@ test('DeleteItem task', () => {
           sfn.Data.stringAt('$.Item.TotalCount.N')
         )
       },
-      returnConsumedCapacity: tasks.ReturnConsumedCapacity.TOTAL,
-      returnItemCollectionMetrics: tasks.ReturnItemCollectionMetrics.SIZE,
-      returnValues: tasks.ReturnValues.ALL_NEW
+      returnConsumedCapacity: tasks.DynamoConsumedCapacity.TOTAL,
+      returnItemCollectionMetrics: tasks.DynamoItemCollectionMetrics.SIZE,
+      returnValues: tasks.DynamoReturnValues.ALL_NEW
     })
   });
 
@@ -178,9 +178,9 @@ test('UpdateItem task', () => {
           sfn.Data.stringAt('$.Item.TotalCount.N')
         )
       },
-      returnConsumedCapacity: tasks.ReturnConsumedCapacity.TOTAL,
-      returnItemCollectionMetrics: tasks.ReturnItemCollectionMetrics.SIZE,
-      returnValues: tasks.ReturnValues.ALL_NEW,
+      returnConsumedCapacity: tasks.DynamoConsumedCapacity.TOTAL,
+      returnItemCollectionMetrics: tasks.DynamoItemCollectionMetrics.SIZE,
+      returnValues: tasks.DynamoReturnValues.ALL_NEW,
       updateExpression: 'SET TotalCount = TotalCount + :val'
     })
   });
@@ -215,6 +215,67 @@ test('UpdateItem task', () => {
   });
 });
 
+test('supports tokens', () => {
+  // WHEN
+  const task = new sfn.Task(stack, 'GetItem', {
+    task: tasks.CallDynamoDB.getItem({
+      partitionKey: {
+        name: 'SOME_KEY',
+        value: new tasks.DynamoAttributeValue().withS(
+          sfn.Data.stringAt('$.partitionKey')
+        )
+      },
+      sortKey: {
+        name: 'OTHER_KEY',
+        value: new tasks.DynamoAttributeValue().withN(
+          sfn.Data.stringAt('$.sortKey')
+        )
+      },
+      tableName: sfn.Data.stringAt('$.tableName'),
+      consistentRead: true,
+      expressionAttributeNames: { OTHER_KEY: sfn.Data.stringAt('$.otherKey') },
+      projectionExpression: [
+        new tasks.DynamoProjectionExpression()
+          .withAttribute('Messages')
+          .atIndex(1)
+          .withAttribute('Tags'),
+        new tasks.DynamoProjectionExpression().withAttribute('ID')
+      ],
+      returnConsumedCapacity: tasks.DynamoConsumedCapacity.TOTAL
+    })
+  });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition'
+          },
+          ':states:::dynamodb:getItem'
+        ]
+      ]
+    },
+    End: true,
+    Parameters: {
+      // tslint:disable:object-literal-key-quotes
+      Key: {
+        SOME_KEY: { 'S.$': '$.partitionKey' },
+        OTHER_KEY: { 'N.$': '$.sortKey' }
+      },
+      'TableName.$': '$.tableName',
+      ConsistentRead: true,
+      ExpressionAttributeNames: { 'OTHER_KEY.$': '$.otherKey' },
+      ProjectionExpression: 'Messages[1].Tags,ID',
+      ReturnConsumedCapacity: 'TOTAL'
+    }
+  });
+});
+
 test('Invalid value of TableName should throw', () => {
   expect(() => {
     new sfn.Task(stack, 'GetItem', {
@@ -227,7 +288,7 @@ test('Invalid value of TableName should throw', () => {
       })
     });
   }).toThrow(
-    /TableName should not contain alphanumeric characters and should be between 3-255 characters long./
+    /TableName should not contain alphanumeric characters and should be between 3-255 characters long. Received: ab/
   );
 
   expect(() => {
@@ -242,7 +303,7 @@ test('Invalid value of TableName should throw', () => {
       })
     });
   }).toThrow(
-    /TableName should not contain alphanumeric characters and should be between 3-255 characters long./
+    /TableName should not contain alphanumeric characters and should be between 3-255 characters long. Received: abU93s5MTZDv6TYLk3Q3BE3Hj3AMca3NOb5ypSNZv1JZIONg7p8L8LNxuAStavPxYZKcoG36KwXktkuFHf0jJvt7SKofEqwYHmmK0tNJSkGoPe3MofnB7IWu3V48HbrqNGZqW005CMmDHESQWf40JK8qK0CSQtM8Z64zqysB7SZZazDRm7kKr062RXQKL82nvTxnKxTPfCHiG2YJEhuFdUywHCTN2Rjinl3P7TpwyIuPWyYHm6nZodRKLMmWpgUftZ/
   );
 
   expect(() => {
@@ -256,6 +317,30 @@ test('Invalid value of TableName should throw', () => {
       })
     });
   }).toThrow(
-    /TableName should not contain alphanumeric characters and should be between 3-255 characters long./
+    /TableName should not contain alphanumeric characters and should be between 3-255 characters long. Received: abcd@/
   );
+});
+
+describe('DynamoProjectionExpression', () => {
+  test('should correctly configure projectionExpression', () => {
+    expect(
+      new tasks.DynamoProjectionExpression()
+        .withAttribute('Messages')
+        .atIndex(1)
+        .atIndex(10)
+        .withAttribute('Tags')
+        .withAttribute('Items')
+        .atIndex(0)
+        .toString()
+    ).toEqual('Messages[1][10].Tags.Items[0]');
+  });
+
+  test('should throw if expression starts with atIndex', () => {
+    expect(() =>
+      new tasks.DynamoProjectionExpression()
+        .atIndex(1)
+        .withAttribute('Messages')
+        .toString()
+    ).toThrow(/Expression must start with an attribute/);
+  });
 });
