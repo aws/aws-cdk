@@ -100,6 +100,9 @@ export class CdkToolkit {
       }
     }
 
+    const stackOutputs: { [key: string]: any } = { };
+    const outputsFile = options.outputsFile;
+
     for (const stack of stacks) {
       if (stacks.length !== 1) { highlight(stack.displayName); }
       if (!stack.environment) {
@@ -170,6 +173,8 @@ export class CdkToolkit {
 
         if (Object.keys(result.outputs).length > 0) {
           print('\nOutputs:');
+
+          stackOutputs[stack.stackName] = result.outputs;
         }
 
         for (const name of Object.keys(result.outputs)) {
@@ -183,6 +188,17 @@ export class CdkToolkit {
       } catch (e) {
         error('\n ❌  %s failed: %s', colors.bold(stack.displayName), e);
         throw e;
+      } finally {
+        // If an outputs file has been specified, create the file path and write stack outputs to it once.
+        // Outputs are written after all stacks have been deployed. If a stack deployment fails,
+        // all of the outputs from successfully deployed stacks before the failure will still be written.
+        if (outputsFile) {
+          fs.ensureFileSync(outputsFile);
+          fs.writeJson(outputsFile, stackOutputs, {
+            spaces: 2,
+            encoding: 'utf8'
+          });
+        }
       }
     }
   }
@@ -337,6 +353,12 @@ export interface DeployOptions {
    * @default {}
    */
   parameters?: { [name: string]: string | undefined };
+
+  /**
+   * Path to file where stack outputs will be written after a successful deploy as JSON
+   * @default - Outputs are not written to any file
+   */
+  outputsFile?: string;
 }
 
 export interface DestroyOptions {

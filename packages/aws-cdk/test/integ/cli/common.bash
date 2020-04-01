@@ -93,6 +93,8 @@ function cleanup() {
   cleanup_stack ${STACK_NAME_PREFIX}-test-2
   cleanup_stack ${STACK_NAME_PREFIX}-iam-test
   cleanup_stack ${STACK_NAME_PREFIX}-with-nested-stack
+  cleanup_stack ${STACK_NAME_PREFIX}-outputs-test-1
+  cleanup_stack ${STACK_NAME_PREFIX}-outputs-test-2
 }
 
 function setup() {
