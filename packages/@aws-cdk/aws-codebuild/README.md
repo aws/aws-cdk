@@ -188,9 +188,9 @@ can use the `environment` property to customize the build environment:
 The CodeBuild library supports both Linux and Windows images via the
 `LinuxBuildImage` and `WindowsBuildImage` classes, respectively.
 
-You can either specify one of the predefined Windows/Linux images by using one
+You can specify one of the predefined Windows/Linux images by using one
 of the constants such as `WindowsBuildImage.WINDOWS_BASE_2_0` or
-`LinuxBuildImage.STANDARD_2_0`.
+`LinuxBuildImage.STANDARD_2_0`. You can also use `LinuxBuildImage.fromCodebuildImage(name)` to specify a predefined image that may not be available as a constant yet.
 
 Alternatively, you can specify a custom image using one of the static methods on
 `XxxBuildImage`:
