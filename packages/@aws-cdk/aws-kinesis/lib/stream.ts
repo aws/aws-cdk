@@ -312,7 +312,7 @@ export class Stream extends StreamBase {
         { EncryptionType: 'KMS', KeyId: 'alias/aws/kinesis' });
 
       return { streamEncryption: defaultEncryption, encryptionKey: undefined };
-      }
+    }
 
     // default based on whether encryption key is specified
     const encryptionType = props.encryption ??
