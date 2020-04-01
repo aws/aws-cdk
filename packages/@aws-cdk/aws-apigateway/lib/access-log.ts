@@ -6,6 +6,7 @@ import {Stage} from './stage';
  */
 export interface IAccessLogDestination {
   /**
+   * [disable-awslint:ref-via-interface]
    * Binds this destination to the RestApi Stage.
    */
   bind(stage: Stage): AccessLogDestinationConfig
