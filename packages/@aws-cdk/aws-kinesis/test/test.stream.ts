@@ -1,7 +1,7 @@
-import { expect } from '@aws-cdk/assert';
+import { expect, haveResource } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { App, Stack } from '@aws-cdk/core';
+import { App, Duration, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { Stream, StreamEncryption } from '../lib';
 
@@ -64,8 +64,8 @@ export = {
   "uses explicit retention period"(test: Test) {
     const stack = new Stack();
 
-    new Stream(stack, 'MyStream', {
-      retentionPeriodHours: 168
+    new Stream(stack, "MyStream", {
+      retentionPeriod: Duration.hours(168)
     });
 
     expect(stack).toMatch({
@@ -83,26 +83,76 @@ export = {
     test.done();
   },
   "retention period must be between 24 and 168 hours"(test: Test) {
-    test.throws({
-      block: () => {
+    test.throws(() => {
+      new Stream(new Stack(), 'MyStream', {
+        retentionPeriod: Duration.hours(169)
+      });
+    }, /retentionPeriod must be between 24 and 168 hours. Received 169/);
+
+    test.throws(() => {
         new Stream(new Stack(), 'MyStream', {
-          retentionPeriodHours: 169
-        });
-      },
-      message: "retentionPeriodHours must be between 24 and 168 hours"
+          retentionPeriod: Duration.hours(23)
+          });
+    }, /retentionPeriod must be between 24 and 168 hours. Received 23/);
+
+    test.done();
+  },
+
+  'uses Kinesis master key if MANAGED encryption type is provided'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new Stream(stack, 'MyStream', {
+      encryption: StreamEncryption.MANAGED
     });
 
-    test.throws({
-      block: () => {
-        new Stream(new Stack(), 'MyStream', {
-          retentionPeriodHours: 23
-        });
-      },
-      message: "retentionPeriodHours must be between 24 and 168 hours"
+    // THEN
+    expect(stack).toMatch({
+      "Resources": {
+        "MyStream5C050E93": {
+          "Type": "AWS::Kinesis::Stream",
+          "Properties": {
+            "ShardCount": 1,
+            "RetentionPeriodHours": 24,
+            "StreamEncryption": {
+              "EncryptionType": "KMS",
+              "KeyId": "alias/aws/kinesis"
+            }
+          }
+        }
+      }
     });
 
     test.done();
   },
+
+  'if a KMS key is supplied, use KMS as the encryption type'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const key = new kms.Key(stack, 'myKey');
+
+    // WHEN
+    new Stream(stack, 'myStream', {
+      encryptionKey: key
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Kinesis::Stream', {
+        ShardCount: 1,
+        RetentionPeriodHours: 24,
+        StreamEncryption: {
+          EncryptionType: 'KMS',
+          KeyId: {
+            'Fn::GetAtt': ['myKey441A1E73', 'Arn']
+          }
+        }
+      })
+    );
+
+    test.done();
+  },
+
   "auto-creates KMS key if encryption type is KMS but no key is provided"(test: Test) {
     const stack = new Stack();
 
@@ -964,8 +1014,7 @@ export = {
       const stackB = new Stack(app, 'stackB');
       const user = new iam.User(stackB, 'UserWhoNeedsAccess');
       streamFromStackA.grantRead(user);
-
-      test.throws(() => app.synth(), /'stackB' depends on 'stackA'/);
+      test.throws(() => app.synth(), /'stack.' depends on 'stack.'/);
       test.done();
     }
   }
