@@ -194,7 +194,7 @@ When the stack finishes deployment, `outputs.json` would look like this:
 }
 ```
 
-⚠️ The `key` of the outputs corresponds to the logical ID.
+⚠️ The `key` of the outputs corresponds to the logical ID of the `CfnOutput`.
 Read more about identifiers in the CDK [here](https://docs.aws.amazon.com/cdk/latest/guide/identifiers.html)
 
 If multiple stacks are being deployed or the wild card `*` is used to deploy all stacks, all outputs are written to the same output file where each stack artifact ID is a key in the JSON file
