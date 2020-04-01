@@ -274,6 +274,18 @@ dashboard.addWidgets(new TextWidget({
 }));
 ```
 
+### Query results widget
+
+A query results widget shows the results of a query from Logs Insights:
+
+```ts
+dashboard.addWidgets(new QueryWidget({
+  logGroup: LogGroup.fromLogGroupName(stack, 'MyLogGroup', 'my-log-group'),
+  queryString: `fields @message
+                | filter @message like /Error/`
+}));
+```
+
 ### Dashboard Layout
 
 The widgets on a dashboard are visually laid out in a grid that is 24 columns

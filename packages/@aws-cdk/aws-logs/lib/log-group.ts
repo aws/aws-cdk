@@ -7,18 +7,12 @@ import { MetricFilter } from './metric-filter';
 import { FilterPattern, IFilterPattern } from './pattern';
 import { ILogSubscriptionDestination, SubscriptionFilter } from './subscription-filter';
 
-export interface ILogGroup extends IResource {
+export interface ILogGroup extends IResource, cloudwatch.IQueryLogGroup {
   /**
    * The ARN of this log group
    * @attribute
    */
   readonly logGroupArn: string;
-
-  /**
-   * The name of this log group
-   * @attribute
-   */
-  readonly logGroupName: string;
 
   /**
    * Create a new Log Stream for this Log Group
