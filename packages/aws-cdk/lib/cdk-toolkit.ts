@@ -100,7 +100,7 @@ export class CdkToolkit {
       }
     }
 
-    const stackOutputs: {[key: string]: any } = {};
+    const stackOutputs: { [key: string]: any } = { };
     const outputsFile = options.outputsFile;
 
     for (const stack of stacks) {
