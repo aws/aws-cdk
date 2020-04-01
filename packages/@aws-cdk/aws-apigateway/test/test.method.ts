@@ -825,7 +825,7 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::RequestValidator', {
-      RestApiId: { Ref: stack.getLogicalId(api.node.findChild('Resource') as cdk.CfnElement) },
+      RestApiId: stack.resolve(api.restApiId),
       ValidateRequestBody: true,
       ValidateRequestParameters: false,
       Name: 'test-validator'
