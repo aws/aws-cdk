@@ -130,6 +130,9 @@ export interface Tag {
  */
 export type AssetMetadataEntry = FileAssetMetadataEntry | ContainerImageAssetMetadataEntry;
 
+// Type aliases for metadata entries. 
+// Used simply to assign names to data types for more clearity.
+
 /**
  * @see ArtifactMetadataEntryType.INFO
  * @see ArtifactMetadataEntryType.WARN
@@ -182,7 +185,7 @@ export enum ArtifactMetadataEntryType {
   LOGICAL_ID = 'aws:cdk:logicalId',
 
   /**
-   * Tag metadata key.
+   * Represents tags of a stack.
    */
   STACK_TAGS = 'aws:cdk:stack-tags'
 }
