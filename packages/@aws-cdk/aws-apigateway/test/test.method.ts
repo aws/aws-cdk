@@ -853,7 +853,7 @@ export = {
     test.done();
   },
 
-  'method do not support both request validator and request validator options'(test: Test) {
+  'method does not support both request validator and request validator options'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigw.RestApi(stack, 'test-api', { deploy: false });
