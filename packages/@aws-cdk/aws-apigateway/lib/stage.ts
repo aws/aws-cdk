@@ -208,7 +208,7 @@ export class Stage extends Resource {
       }
 
       accessLogSetting = {
-        destinationArn: this.accessLogDestination?.bind().destinationArn,
+        destinationArn: this.accessLogDestination?.bind(this).destinationArn,
         format: this.accessLogFormat?.format ? this.accessLogFormat?.format : AccessLogFormat.clf().toString()
       };
     }
