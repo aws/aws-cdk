@@ -258,6 +258,7 @@ export class CloudAssemblyBuilder {
  * was defined here. This is necessary because its used as an input in the stable
  * @aws-cdk/core library.
  *
+ * @deprecated moved to package 'cloud-assembly-schema'
  * @see core.ConstructNode.synth
  */
 export interface RuntimeInfo extends cxschema.RuntimeInfo {
@@ -269,6 +270,7 @@ export interface RuntimeInfo extends cxschema.RuntimeInfo {
  * was defined here. This is necessary because its used as an input in the stable
  * @aws-cdk/core library.
  *
+ * @deprecated moved to package 'cloud-assembly-schema'
  * @see core.ConstructNode.metadata
  */
 export interface MetadataEntry extends cxschema.MetadataEntry {
@@ -280,6 +282,7 @@ export interface MetadataEntry extends cxschema.MetadataEntry {
  * was defined here. This is necessary because its used as an input in the stable
  * @aws-cdk/core library.
  *
+ * @deprecated moved to package 'cloud-assembly-schema'
  * @see core.Stack.reportMissingContext
  */
 export interface MissingContext extends cxschema.MissingContext {
