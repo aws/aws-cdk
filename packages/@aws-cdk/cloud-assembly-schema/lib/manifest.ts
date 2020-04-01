@@ -205,7 +205,7 @@ export enum ArtifactType {
   AWS_CLOUDFORMATION_STACK = 'aws:cloudformation:stack',
 
   /**
-   * The artifact contains metadata generated out of the CDK application.
+   * The artifact contains the CDK application's construct tree.
    */
   CDK_TREE = 'cdk:tree',
 }
