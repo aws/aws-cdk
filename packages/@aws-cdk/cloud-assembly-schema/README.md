@@ -50,11 +50,13 @@ is considered `major` version bump.
 If you'd like to consume the schema in order to do validations on `manifest.json` files, simply download it from this repo and run it against
 standard *json-schema* validators, such as [jsonschema](https://www.npmjs.com/package/jsonschema).
 
-Make sure you follow semantic versioning best practices, by **rejecting** to deploy cloud assemblies who's manifest version is greater than the one you expect.
+Consumers must take into account the `major` version of the schema they are consuming. They should reject cloud assemblies 
+with a `major` version that is higher than what they expect. While schema validation might pass on such assemblies, the deployment integrity 
+cannot be guaranteed because some instructions will be ignored.
 
-For example, if your consumer was built when the schema version was 1.2.0, you should reject deploying cloud assemblies with a
-manifest version of 2.0.0 (or rather any higher than `1.2.0`). Note that your schema validation might actually work on those manifest files, but the deployment itself will
-not work properly because it will ignore some assembly instructions. Only when you roll out an update to your consumer,
-should it accept these assemblies, by upgrading its expected schema version and taking into account the new instructions.
+> For example, if your consumer was built when the schema version was 2.0.0, you should reject deploying cloud assemblies with a 
+> manifest version of 3.0.0. 
 
-> As a reference, have a look at how our consumer (the CDK CLI) does this [validation](../../aws-cdk/lib/api/cxapp/exec.ts#L111).
+## Contributing
+
+See [Contribution Guide](./CONTRIBUTING.md)
