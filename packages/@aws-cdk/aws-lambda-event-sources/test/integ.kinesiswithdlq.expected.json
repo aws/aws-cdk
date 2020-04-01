@@ -126,7 +126,19 @@
       "Type": "AWS::Kinesis::Stream",
       "Properties": {
         "ShardCount": 1,
-        "RetentionPeriodHours": 24
+        "RetentionPeriodHours": 24,
+        "StreamEncryption": {
+          "Fn::If": [
+            "SCondition1DEFD8F0",
+            {
+              "Ref": "AWS::NoValue"
+            },
+            {
+              "EncryptionType": "KMS",
+              "KeyId": "alias/aws/kinesis"
+            }
+          ]
+        }
       }
     },
     "Q63C6E3AB": {
@@ -151,6 +163,28 @@
       "Value": {
         "Ref": "Q63C6E3AB"
       }
+    }
+  },
+  "Conditions": {
+    "SCondition1DEFD8F0": {
+      "Fn::Or": [
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "AWS::Region"
+            },
+            "cn-north-1"
+          ]
+        },
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "AWS::Region"
+            },
+            "cn-northwest-1"
+          ]
+        }
+      ]
     }
   }
 }
