@@ -1,9 +1,7 @@
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as childProcess from 'child_process';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import * as semver from 'semver';
 import { debug } from '../../logging';
 import { Configuration, PROJECT_CONFIG, USER_DEFAULTS } from '../../settings';
 import { versionNumber } from '../../version';
@@ -62,7 +60,7 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
   // by pass "synth" if app points to a cloud assembly
   if (await fs.pathExists(app) && (await fs.stat(app)).isDirectory()) {
     debug('--app points to a cloud assembly, so we by pass synth');
-    return createAssembly(app);
+    return new cxapi.CloudAssembly(app);
   }
 
   const commandLine = await guessExecutable(appToArray(app));
@@ -83,34 +81,7 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
 
   await exec();
 
-  return createAssembly(outdir);
-
-  function createAssembly(directory: string) {
-
-    const assembly = new cxapi.CloudAssembly(directory);
-    assertAssemblyVersion(assembly);
-    return assembly;
-
-  }
-
-  function assertAssemblyVersion(cloudAssembly: cxapi.CloudAssembly) {
-
-    function _parseVersion(version: string) {
-      const ver = semver.coerce(version);
-      if (!ver) {
-        throw new Error(`Could not parse "${version}" as semver`);
-      }
-      return ver;
-    }
-
-    const maximumAcceptedManifestSem = _parseVersion(cxschema.Manifest.version());
-    const manifestSem = _parseVersion(cloudAssembly.manifest.version);
-
-    if (semver.gt(manifestSem, maximumAcceptedManifestSem)) {
-      throw new Error(`Cloud assembly schema version mismatch: actual('${manifestSem}') > expected('${maximumAcceptedManifestSem}'). Consider upgrading your CLI version.`);
-    }
-
-  }
+  return new cxapi.CloudAssembly(outdir);
 
   async function exec() {
     return new Promise<string>((ok, fail) => {
