@@ -63,7 +63,7 @@ test('cloud-assembly.json.schema is correct', () => {
   const expected = removeStringKeys(schema.generate(), docStringFields);
 
   // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const actual = removeStringKeys(require('../schema/cloud-assembly.schema.json'), docStringFields);
+  const actual = removeStringKeys(require('../schema.generated/cloud-assembly.schema.json'), docStringFields);
 
   try {
     expect(actual).toEqual(expected);

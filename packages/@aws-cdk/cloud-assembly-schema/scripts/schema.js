@@ -5,7 +5,7 @@ const semver = require('semver');
 
 function bump() {
 
-  const metadataPath = '../schema/cloud-assembly.metadata.json';
+  const metadataPath = '../schema.generated/cloud-assembly.metadata.json';
 
   var metadata = require(metadataPath);
 
