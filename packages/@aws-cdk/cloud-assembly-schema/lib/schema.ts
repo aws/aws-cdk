@@ -1,90 +1,339 @@
-import * as fs from 'fs';
-import * as jsonschema from 'jsonschema';
-import * as assembly from './manifest';
+/**
+ * Common properties for asset metadata.
+ */
+interface BaseAssetMetadataEntry {
+  /**
+   * Requested packaging style
+   */
+  readonly packaging: string;
+
+  /**
+   * Logical identifier for the asset
+   */
+  readonly id: string;
+
+  /**
+   * The hash of the source directory used to build the asset.
+   */
+  readonly sourceHash: string;
+
+  /**
+   * Path on disk to the asset
+   */
+  readonly path: string;
+}
 
 /**
- * Protocol utility class.
+ * Metadata Entry spec for files.
  */
-export class Manifest {
+export interface FileAssetMetadataEntry extends BaseAssetMetadataEntry {
   /**
-   * Save manifest to file.
-   *
-   * @param manifest - manifest.
+   * Requested packaging style
    */
-  public static save(manifest: assembly.AssemblyManifest, filePath: string) {
-    fs.writeFileSync(filePath, JSON.stringify(manifest, undefined, 2));
-  }
+  readonly packaging: 'zip' | 'file';
 
   /**
-   * Load manifest from file.
+   * Name of parameter where S3 bucket should be passed in
    */
-  public static load(filePath: string): assembly.AssemblyManifest {
-    const raw: assembly.AssemblyManifest = JSON.parse(fs.readFileSync(filePath, 'UTF-8'));
-    Manifest.patchStackTags(raw);
-    Manifest.validate(raw);
-    return raw;
-  }
+  readonly s3BucketParameter: string;
 
   /**
-   * Fetch the current schema version number.
+   * Name of parameter where S3 key should be passed in
    */
-  public static version(): string {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    return require('../schema.generated/cloud-assembly.metadata.json').version;
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  private static schema: jsonschema.Schema = require('../schema.generated/cloud-assembly.schema.json');
-
-  private static validate(manifest: assembly.AssemblyManifest) {
-    const validator = new jsonschema.Validator();
-    const result = validator.validate(manifest, Manifest.schema, {
-
-      // does exist but is not in the TypeScript definitions
-      nestedErrors: true,
-
-      allowUnknownAttributes: false
-
-    } as any);
-    if (!result.valid) {
-      throw new Error(`Invalid assembly manifest:\n${result}`);
-    }
-  }
+  readonly s3KeyParameter: string;
 
   /**
-   * This requires some explaining...
-   *
-   * We previously used `{ Key, Value }` for the object that represents a stack tag. (Notice the casing)
-   * @link https://github.com/aws/aws-cdk/blob/v1.27.0/packages/aws-cdk/lib/api/cxapp/stacks.ts#L427.
-   *
-   * When that object moved to this package, it had to be JSII compliant, which meant the property
-   * names must be `camelCased`, and not `PascalCased`. This meant it no longer matches the structure in the `manifest.json` file.
-   * In order to support current manifest files, we have to translate the `PascalCased` representation to the new `camelCased` one.
-   *
-   * Note that the serialization itself still writes `PascalCased` because it relates to how CloudFormation expects it.
-   *
-   * Ideally, we would start writing the `camelCased` and translate to how CloudFormation expects it when needed. But this requires nasty
-   * backwards-compatibility code and it just doesn't seem to be worth the effort.
+   * The name of the parameter where the hash of the bundled asset should be passed in.
    */
-  private static patchStackTags(manifest: assembly.AssemblyManifest) {
-    for (const artifact of Object.values(manifest.artifacts || [])) {
-      if (artifact.type === assembly.ArtifactType.AWS_CLOUDFORMATION_STACK) {
-        for (const metadataEntries of Object.values(artifact.metadata || [])) {
-          for (const metadataEntry of metadataEntries) {
-            if (metadataEntry.type === assembly.ArtifactMetadataEntryType.STACK_TAGS && metadataEntry.data) {
+  readonly artifactHashParameter: string;
+}
 
-              const metadataAny = metadataEntry as any;
+/**
+ * Metadata Entry spec for container images.
+ */
+export interface ContainerImageAssetMetadataEntry extends BaseAssetMetadataEntry {
+  /**
+   * Type of asset
+   */
+  readonly packaging: 'container-image';
 
-              metadataAny.data = metadataAny.data.map((t: any) => {
-                  return { key: t.Key, value: t.Value };
-              });
-            }
-          }
-        }
-      }
-    }
-  }
+  /**
+   * ECR Repository name and repo digest (separated by "@sha256:") where this
+   * image is stored.
+   *
+   * @default undefined If not specified, `repositoryName` and `imageTag` are
+   * required because otherwise how will the stack know where to find the asset,
+   * ha?
+   * @deprecated specify `repositoryName` and `imageTag` instead, and then you
+   * know where the image will go.
+   */
+  readonly imageNameParameter?: string;
 
-  private constructor() {}
+  /**
+   * ECR repository name, if omitted a default name based on the asset's ID is
+   * used instead. Specify this property if you need to statically address the
+   * image, e.g. from a Kubernetes Pod. Note, this is only the repository name,
+   * without the registry and the tag parts.
+   *
+   * @default - this parameter is REQUIRED after 1.21.0
+   */
+  readonly repositoryName?: string;
 
+  /**
+   * The docker image tag to use for tagging pushed images. This field is
+   * required if `imageParameterName` is ommited (otherwise, the app won't be
+   * able to find the image).
+   *
+   * @default - this parameter is REQUIRED after 1.21.0
+   */
+  readonly imageTag?: string;
+
+  /**
+   * Build args to pass to the `docker build` command
+   *
+   * @default no build args are passed
+   */
+  readonly buildArgs?: { [key: string]: string };
+
+  /**
+   * Docker target to build to
+   *
+   * @default no build target
+   */
+  readonly target?: string;
+
+  /**
+   * Path to the Dockerfile (relative to the directory).
+   *
+   * @default - no file is passed
+   */
+  readonly file?: string;
+}
+
+/**
+ * Metadata Entry spec for stack tag.
+ */
+export interface Tag {
+  /**
+   * Tag key.
+   */
+  readonly key: string
+
+  /**
+   * Tag value.
+   */
+  readonly value: string
+}
+
+/**
+ * @see ArtifactMetadataEntryType.ASSET
+ */
+export type AssetMetadataEntry = FileAssetMetadataEntry | ContainerImageAssetMetadataEntry;
+
+// Type aliases for metadata entries.
+// Used simply to assign names to data types for more clearity.
+
+/**
+ * @see ArtifactMetadataEntryType.INFO
+ * @see ArtifactMetadataEntryType.WARN
+ * @see ArtifactMetadataEntryType.ERROR
+ */
+export type LogMessageMetadataEntry = string;
+
+/**
+ * @see ArtifactMetadataEntryType.LOGICAL_ID
+ */
+export type LogicalIdMetadataEntry = string;
+
+/**
+ * @see ArtifactMetadataEntryType.STACK_TAGS
+ */
+export type StackTagsMetadataEntry = Tag[];
+
+/**
+ * Union type for all metadata entries that might exist in the manifest.
+ */
+export type MetadataEntryData = AssetMetadataEntry | LogMessageMetadataEntry | LogicalIdMetadataEntry | StackTagsMetadataEntry;
+
+/**
+ * Type of artifact metadata entry.
+ */
+export enum ArtifactMetadataEntryType {
+  /**
+   * Asset in metadata.
+   */
+  ASSET = 'aws:cdk:asset',
+
+  /**
+   * Metadata key used to print INFO-level messages by the toolkit when an app is syntheized.
+   */
+  INFO = 'aws:cdk:info',
+
+  /**
+   * Metadata key used to print WARNING-level messages by the toolkit when an app is syntheized.
+   */
+  WARN = 'aws:cdk:warning',
+
+  /**
+   * Metadata key used to print ERROR-level messages by the toolkit when an app is syntheized.
+   */
+  ERROR = 'aws:cdk:error',
+
+  /**
+   * Represents the CloudFormation logical ID of a resource at a certain path.
+   */
+  LOGICAL_ID = 'aws:cdk:logicalId',
+
+  /**
+   * Represents tags of a stack.
+   */
+  STACK_TAGS = 'aws:cdk:stack-tags'
+}
+
+/**
+ * Type of cloud artifact.
+ */
+export enum ArtifactType {
+  /**
+   * Stub required because of JSII.
+   */
+  NONE = 'none', // required due to a jsii bug
+
+  /**
+   * The artifact is an AWS CloudFormation stack.
+   */
+  AWS_CLOUDFORMATION_STACK = 'aws:cloudformation:stack',
+
+  /**
+   * The artifact contains the CDK application's construct tree.
+   */
+  CDK_TREE = 'cdk:tree',
+}
+
+/**
+ * A metadata entry in a cloud assembly artifact.
+ */
+export interface MetadataEntry {
+  /**
+   * The type of the metadata entry.
+   */
+  readonly type: string;
+
+  /**
+   * The data.
+   *
+   * @default - no data.
+   */
+  readonly data?: MetadataEntryData;
+
+  /**
+   * A stack trace for when the entry was created.
+   *
+   * @default - no trace.
+   */
+  readonly trace?: string[];
+}
+
+/**
+ * Information about the application's runtime components.
+ */
+export interface RuntimeInfo {
+  /**
+   * The list of libraries loaded in the application, associated with their versions.
+   */
+  readonly libraries: { [name: string]: string };
+}
+
+/**
+ * Represents a missing piece of context.
+ */
+export interface MissingContext {
+  /**
+   * The missing context key.
+   */
+  readonly key: string;
+
+  /**
+   * The provider from which we expect this context key to be obtained.
+   */
+  readonly provider: string;
+
+  /**
+   * A set of provider-specific options.
+   */
+  readonly props: {
+    account?: string;
+    region?: string;
+    [key: string]: any;
+  };
+}
+
+/**
+ * A manifest for a single artifact within the cloud assembly.
+ */
+export interface ArtifactManifest {
+  /**
+   * The type of artifact.
+   */
+  readonly type: ArtifactType;
+
+  /**
+   * The environment into which this artifact is deployed.
+   *
+   * @default - no envrionment.
+   */
+  readonly environment?: string; // format: aws://account/region
+
+  /**
+   * Associated metadata.
+   *
+   * @default - no metadata.
+   */
+  readonly metadata?: { [path: string]: MetadataEntry[] };
+
+  /**
+   * IDs of artifacts that must be deployed before this artifact.
+   *
+   * @default - no dependencies.
+   */
+  readonly dependencies?: string[];
+
+  /**
+   * The set of properties for this artifact (depends on type)
+   *
+   * @default - no properties.
+   */
+  readonly properties?: { [name: string]: any };
+}
+
+/**
+ * A manifest which describes the cloud assembly.
+ */
+export interface AssemblyManifest {
+  /**
+   * Protocol version
+   */
+  readonly version: string;
+
+  /**
+   * The set of artifacts in this assembly.
+   *
+   * @default - no artifacts.
+   */
+  readonly artifacts?: { [id: string]: ArtifactManifest };
+
+  /**
+   * Missing context information. If this field has values, it means that the
+   * cloud assembly is not complete and should not be deployed.
+   *
+   * @default - no missing context.
+   */
+  readonly missing?: MissingContext[];
+
+  /**
+   * Runtime information.
+   *
+   * @default - no info.
+   */
+  readonly runtime?: RuntimeInfo;
 }
