@@ -52,7 +52,7 @@ function generate(out, shouldBump) {
     op: 'add',
     path: "/definitions/MetadataEntry/properties/data/anyOf/0",
     value: {
-      "description": "Any form of data. (for backwards compatibility to version < 1.31.0)"
+      "description": "Free form data."
     },
   };
 
