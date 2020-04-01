@@ -189,6 +189,9 @@ export class CdkToolkit {
         error('\n ❌  %s failed: %s', colors.bold(stack.displayName), e);
         throw e;
       } finally {
+        // If an outputs file has been specified, create the file path and write stack outputs to it once.
+        // Outputs are written after all stacks have been deployed. If a stack deployment fails,
+        // all of the outputs from successfully deployed stacks before the failure will still be written.
         if (outputsFile) {
           fs.ensureFileSync(outputsFile);
           fs.writeJson(outputsFile, stackOutputs, {
