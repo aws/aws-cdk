@@ -182,7 +182,7 @@ const fn = new lambda.Function(this, "fn", {
 Specify an outputs file to write to by supplying the `--outputs-file` parameter
 
 ```console
-$ cdk deploy --outputs-file "/Users/code/myproject/outputs.json"
+$ cdk deploy --outputs-file outputs.json
 ```
 
 When the stack finishes deployment, `outputs.json` would look like.
