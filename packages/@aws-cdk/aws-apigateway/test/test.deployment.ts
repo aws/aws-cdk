@@ -133,7 +133,7 @@ export = {
     test.done();
   },
 
-  'logical ID of the deployment resourc is salted'(test: Test) {
+  'logical ID of the deployment resource is salted'(test: Test) {
     // GIVEN
     const stack = new Stack();
     const api = new apigateway.RestApi(stack, 'api', { deploy: false, cloudWatchRole: false });
