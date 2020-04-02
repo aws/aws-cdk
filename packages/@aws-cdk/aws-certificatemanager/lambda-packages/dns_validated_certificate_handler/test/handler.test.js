@@ -347,6 +347,229 @@ describe('DNS Validated Certificate Handler', () => {
       });
   });
 
+  test('Poll_Create operation requests a certificate', () => {
+
+    const request = nock(ResponseURL).put('/', body => {
+      return body.Status === 'SUCCESS';
+    }).reply(200);
+
+    return LambdaTester(handler.certificateRequestHandler)
+      .event({
+        RequestType: 'Poll_Create',
+        RequestId: testRequestId,
+        ResourceProperties: {
+          DomainName: testDomainName,
+          HostedZoneId: testHostedZoneId,
+          Region: 'us-east-1',
+        },
+        physicalResourceId: testCertificateArn,
+        certificateArn: testCertificateArn,
+        responseData: {},
+      })
+      .expectResolve(() => {
+        expect(request.isDone()).toBe(true);
+      });
+  });
+
+  test('Create operation with `SubjectAlternativeNames` requests a certificate with validation records for all options', () => {
+    const requestCertificateFake = sinon.fake.resolves({
+      CertificateArn: testCertificateArn,
+    });
+
+    const describeCertificateFake = sinon.stub();
+    describeCertificateFake.onFirstCall().resolves({
+      Certificate: {
+        CertificateArn: testCertificateArn
+      }
+    });
+    describeCertificateFake.resolves({
+      Certificate: {
+        CertificateArn: testCertificateArn,
+        DomainValidationOptions: [
+          {
+            ValidationStatus: 'SUCCESS',
+            ResourceRecord: {
+              Name: testRRName,
+              Type: 'CNAME',
+              Value: testRRValue
+            }
+          }, {
+            ValidationStatus: 'SUCCESS',
+            ResourceRecord: {
+              Name: testAltRRName,
+              Type: 'CNAME',
+              Value: testAltRRValue
+            }
+          }
+        ]
+      }
+    });
+
+    const changeResourceRecordSetsFake = sinon.fake.resolves({
+      ChangeInfo: {
+        Id: 'bogus'
+      }
+    });
+
+    AWS.mock('ACM', 'requestCertificate', requestCertificateFake);
+    AWS.mock('ACM', 'describeCertificate', describeCertificateFake);
+    AWS.mock('Route53', 'changeResourceRecordSets', changeResourceRecordSetsFake);
+
+    const request = nock(ResponseURL).put('/', body => {
+      return body.Status === 'SUCCESS';
+    }).reply(200);
+
+    return LambdaTester(handler.certificateRequestHandler)
+      .event({
+        RequestType: 'Create',
+        RequestId: testRequestId,
+        ResourceProperties: {
+          DomainName: testDomainName,
+          SubjectAlternativeNames: [testSubjectAlternativeName],
+          HostedZoneId: testHostedZoneId,
+          Region: 'us-east-1',
+        }
+      })
+      .expectResolve(() => {
+        sinon.assert.calledWith(requestCertificateFake, sinon.match({
+          DomainName: testDomainName,
+          ValidationMethod: 'DNS',
+          SubjectAlternativeNames: [testSubjectAlternativeName]
+        }));
+        sinon.assert.calledWith(changeResourceRecordSetsFake, sinon.match({
+          ChangeBatch: {
+            Changes: [
+              {
+                Action: 'UPSERT',
+                ResourceRecordSet: {
+                  Name: testRRName,
+                  Type: 'CNAME',
+                  TTL: 60,
+                  ResourceRecords: [{
+                    Value: testRRValue
+                  }]
+                }
+              }, {
+                Action: 'UPSERT',
+                ResourceRecordSet: {
+                  Name: testAltRRName,
+                  Type: 'CNAME',
+                  TTL: 60,
+                  ResourceRecords: [{
+                    Value: testAltRRValue
+                  }]
+                }
+              }
+            ]
+          },
+          HostedZoneId: testHostedZoneId
+        }));
+        expect(request.isDone()).toBe(true);
+      });
+  });
+
+  test('Create operation with `SubjectAlternativeNames` requests a certificate for all options without duplicates', () => {
+    const requestCertificateFake = sinon.fake.resolves({
+      CertificateArn: testCertificateArn,
+    });
+
+    const describeCertificateFake = sinon.stub();
+    describeCertificateFake.onFirstCall().resolves({
+      Certificate: {
+        CertificateArn: testCertificateArn
+      }
+    });
+    describeCertificateFake.resolves({
+      Certificate: {
+        CertificateArn: testCertificateArn,
+        DomainValidationOptions: [
+          {
+            ValidationStatus: 'SUCCESS',
+            ResourceRecord: {
+              Name: testRRName,
+              Type: 'CNAME',
+              Value: testRRValue
+            }
+          }, {
+            ValidationStatus: 'SUCCESS',
+            ResourceRecord: {
+              Name: testAltRRName,
+              Type: 'CNAME',
+              Value: testAltRRValue
+            }
+          }, {
+            ValidationStatus: 'SUCCESS',
+            ResourceRecord: {
+              Name: testRRName,
+              Type: 'CNAME',
+              Value: testRRValue
+            }
+          }
+        ]
+      }
+    });
+
+    const changeResourceRecordSetsFake = sinon.fake.resolves({
+      ChangeInfo: {
+        Id: 'bogus'
+      }
+    });
+
+    AWS.mock('ACM', 'requestCertificate', requestCertificateFake);
+    AWS.mock('ACM', 'describeCertificate', describeCertificateFake);
+    AWS.mock('Route53', 'changeResourceRecordSets', changeResourceRecordSetsFake);
+
+    const request = nock(ResponseURL).put('/', body => {
+      return body.Status === 'SUCCESS';
+    }).reply(200);
+
+    return LambdaTester(handler.certificateRequestHandler)
+      .event({
+        RequestType: 'Create',
+        RequestId: testRequestId,
+        ResourceProperties: {
+          DomainName: testDomainName,
+          HostedZoneId: testHostedZoneId,
+          Region: 'us-east-1',
+        }
+      })
+      .expectResolve(() => {
+        sinon.assert.calledWith(requestCertificateFake, sinon.match({
+          DomainName: testDomainName,
+          ValidationMethod: 'DNS'
+        }));
+        sinon.assert.calledWith(changeResourceRecordSetsFake, sinon.match({
+          ChangeBatch: {
+            Changes: [
+              {
+                Action: 'UPSERT',
+                ResourceRecordSet: {
+                  Name: testRRName,
+                  Type: 'CNAME',
+                  TTL: 60,
+                  ResourceRecords: [{
+                    Value: testRRValue
+                  }]
+                }
+              }, {
+                Action: 'UPSERT',
+                ResourceRecordSet: {
+                  Name: testAltRRName,
+                  Type: 'CNAME',
+                  TTL: 60,
+                  ResourceRecords: [{
+                    Value: testAltRRValue
+                  }]
+                }
+              }
+            ]
+          },
+          HostedZoneId: testHostedZoneId
+        }));
+        expect(request.isDone()).toBe(true);
+      });
+  });
+
   test('Create operation fails after more than 60s if certificate has no DomainValidationOptions', () => {
     handler.withRandom(() => 0);
     const requestCertificateFake = sinon.fake.resolves({

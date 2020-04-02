@@ -161,17 +161,41 @@ const requestCertificate = async function(requestId, domainName, subjectAlternat
     Id: changeBatch.ChangeInfo.Id
   }).promise();
 
-  console.log('Waiting for validation...');
-  await acm.waitFor('certificateValidated', {
-    // Wait up to 9 minutes and 30 seconds
-    $waiter: {
-      delay: 30,
-      maxAttempts: 19
-    },
-    CertificateArn: reqCertResponse.CertificateArn
-  }).promise();
+  return waitForCertificateValidation(region, reqCertResponse.CertificateArn, 30, 19);
+};
 
-  return reqCertResponse.CertificateArn;
+const waitForCertificateValidation = async function(region, certificateArn, delay, maxAttempts) {
+
+  const acm = new aws.ACM({ region });
+  if (waiter) {
+    // Used by the test suite, since waiters aren't mockable yet
+    acm.waitFor = waiter;
+  }
+
+  console.log('Waiting for validation...');
+  try {
+    await acm.waitFor('certificateValidated', {
+      // Wait up to 9 minutes and 30 seconds
+      $waiter: {
+        delay,
+        maxAttempts
+      },
+      CertificateArn: certificateArn
+    }).promise();
+  } catch (err) {
+    if (`${err}`.startsWith('ResourceNotReady')) {
+      return {
+        validationStatus: 'PENDING',
+        certificateArn
+      };
+    }
+    throw err;
+  }
+
+  return {
+    validationStatus: 'SUCCESS',
+    certificateArn
+  };
 };
 
 /**
@@ -225,15 +249,27 @@ const deleteCertificate = async function(arn, region) {
  * Main handler, invoked by Lambda
  */
 exports.certificateRequestHandler = async function(event, context) {
+
   var responseData = {};
   var physicalResourceId;
   var certificateArn;
 
   try {
     switch (event.RequestType) {
+      case 'Poll_Create':
+        responseData = event.responseData;
+        certificateArn = event.certificateArn;
+        physicalResourceId = event.physicalResourceId;
+        await waitForCertificateValidation(
+          event.ResourceProperties.Region,
+          event.physicalResourceId,
+          30,
+          29
+        );
+        break;
       case 'Create':
       case 'Update':
-        certificateArn = await requestCertificate(
+        var result = await requestCertificate(
           event.RequestId,
           event.ResourceProperties.DomainName,
           event.ResourceProperties.SubjectAlternativeNames,
@@ -241,7 +277,24 @@ exports.certificateRequestHandler = async function(event, context) {
           event.ResourceProperties.Region,
           event.ResourceProperties.Route53Endpoint,
         );
-        responseData.Arn = physicalResourceId = certificateArn;
+
+        responseData.Arn = physicalResourceId = result.certificateArn;
+        if (result.validationStatus === 'PENDING') {
+          // couldn't complete validation in 9.5 minutes. Starting another cycle
+          console.log('restarting to wait another ~15 minutes for certificate validation');
+          await new aws.Lambda().invoke({
+            FunctionName: context.functionName,
+            InvocationType: 'Event',
+            Payload: JSON.stringify({
+              ...event,
+              RequestType: 'Poll_Create',
+              physicalResourceId,
+              certificateArn,
+              responseData,
+            }),
+          }).promise();
+          return;
+        }
         break;
       case 'Delete':
         physicalResourceId = event.PhysicalResourceId;
