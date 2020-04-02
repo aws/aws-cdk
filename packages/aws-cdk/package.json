@@ -17,9 +17,9 @@
     "package": "cdk-package",
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test",
-    "integ-cli": "test/integ/run-against-repo test/integ/cli/test.sh",
-    "integ-cli-backwards": "test/integ/run-against-repo test/integ/test-cli-backwards.sh",
-    "integ-cli-framework": "test/integ/run-against-repo test/integ/test-cli-framework.sh",
+    "integ-cli": "scripts/integ-cli.sh",
+    "integ-cli-regression": "scripts/integ-cli-regression.sh",
+    "integ-cli-no-regression": "scripts/integ-cli-no-regression.sh",
     "integ-init": "test/integ/run-against-dist test/integ/init/test-all.sh"
   },
   "cdk-build": {

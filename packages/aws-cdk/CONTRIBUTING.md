@@ -16,18 +16,41 @@ REQUIREMENTS
 Run:
 
 ```
-npm run integ-cli
+yarn integ-cli
 ```
 
-In addition, you can run CLI integration compatibility tests. 
-These run integration tests of the previously published version. 
-They make sure you don't introduce changes that break any existing functionality.
+There are two types of tests involved in the integration suite:
 
-Run:
+#### Functional
 
+These tests simply run the local integration tests located in [`test/integ/cli`](./test/integ/cli). They test the proper deployment of stacks and in general the correctness of the actions performed by the CLI.
+
+You can run these specifically by executing:
+
+```console
+yarn integ-cli-no-regression
 ```
-npm run integ-cli-backwards # run against latest CLI and Framework.
-npm run integ-cli-framework # run against latest CLI and previous Framework.
+
+#### Regression
+
+Validate that previously tested functionality still works in light of recent changes to the CLI. This is done by fetching the functional tests of the latest published release, and running them against the new CLI code.
+
+These tests run in two variations:
+
+- **against local framework code**
+
+  Use your local framework code. This is important to make sure the new CLI version
+  will work properly with the new framework version. 
+
+- **against latest release code**
+
+  Fetches the framework code from the latest release. This is important to make sure
+  the new CLI version does not rely on new framework features to provide the same functionality.
+
+You can run these specifically by executing:
+
+```console
+yarn integ-cli-regression
 ```
 
 ### Init template integration tests
