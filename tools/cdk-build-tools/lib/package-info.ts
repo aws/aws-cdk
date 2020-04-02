@@ -129,7 +129,7 @@ export interface CDKBuildOptions {
   /**
    * An optional command (formatted as a list of strings) to run after building
    *
-   * (Typically a code generator)
+   * (Schema generator for example)
    */
   post?: string[];
 
