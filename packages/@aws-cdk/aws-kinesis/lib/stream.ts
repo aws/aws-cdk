@@ -325,21 +325,13 @@ export class Stream extends StreamBase {
     const encryptionType = props.encryption ??
       (props.encryptionKey ? StreamEncryption.KMS : StreamEncryption.UNENCRYPTED);
 
-    // if encryption key is set, encryption must be set to KMS.
-    if (encryptionType !== StreamEncryption.KMS && props.encryptionKey) {
-      throw new Error(`encryptionKey is specified, so 'encryption' must be set to KMS (value: ${encryptionType})`);
-    }
-
     if (encryptionType === StreamEncryption.UNENCRYPTED) {
-      return { streamEncryption: undefined, encryptionKey: undefined };
+      return { };
     }
 
     if (encryptionType === StreamEncryption.MANAGED) {
       const encryption = { encryptionType: 'KMS', keyId: 'alias/aws/kinesis'};
-      return {
-        streamEncryption: encryption,
-        encryptionKey: undefined
-      };
+      return { streamEncryption: encryption };
     }
 
     if (encryptionType === StreamEncryption.KMS) {
