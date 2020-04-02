@@ -347,7 +347,7 @@ export abstract class BaseService extends Resource
       propagateTags: props.propagateTags === PropagatedTagSource.NONE ? undefined : props.propagateTags,
       enableEcsManagedTags: props.enableECSManagedTags === undefined ? false : props.enableECSManagedTags,
       deploymentController: props.deploymentController,
-      launchType: props.launchType,
+      launchType: props.deploymentController?.type === DeploymentControllerType.EXTERNAL ? undefined : props.launchType,
       healthCheckGracePeriodSeconds: this.evaluateHealthGracePeriod(props.healthCheckGracePeriod),
       /* role: never specified, supplanted by Service Linked Role */
       networkConfiguration: Lazy.anyValue({ produce: () => this.networkConfiguration }, { omitEmptyArray: true }),
@@ -357,8 +357,6 @@ export abstract class BaseService extends Resource
 
     if (props.deploymentController?.type === DeploymentControllerType.EXTERNAL) {
       this.node.addWarning('taskDefinition and launchType are blanked out when using external deployment controller.');
-      this.resource.launchType = undefined;
-      this.resource.taskDefinition = undefined;
     }
 
     this.serviceArn = this.getResourceArnAttribute(this.resource.ref, {
