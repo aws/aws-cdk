@@ -58,8 +58,9 @@ This means that breaking changes will be rejected. These include:
 - Adding a required property. (same as changing from *optional* to *required*)
 - Changing the type of the property.
 
-In addition, the interfaces defined here are programatically exposed to users, via the [`manifest`](../cx-api/lib/cloud-assembly.ts#L42)
-property of the `CloudAssembly` class. This means that the following are also considered breaking changes:
+In addition, the interfaces defined here are programatically exposed to users, via the `manifest` 
+property of the [`CloudAssembly`]((../cx-api/lib/cloud-assembly.ts)) class. This means that the following are 
+also considered breaking changes:
 
 - Changing a property from *required* to *optional*.
 - Removing an optional property.
