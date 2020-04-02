@@ -7,7 +7,11 @@ import { DnsValidatedCertificate } from '../lib/dns-validated-certificate';
 
 export = {
   'creates CloudFormation Custom Resource'(test: Test) {
-    const stack = new Stack();
+
+    const app = new App();
+    const stack = new Stack(app, 'Stack', {
+      env: { account: '12345678', region: 'us-blue-5' },
+    });
 
     const exampleDotComZone = new PublicHostedZone(stack, 'ExampleDotCom', {
       zoneName: 'example.com'
@@ -70,6 +74,20 @@ export = {
                   { Ref: 'AWS::Partition' },
                   ':route53:::hostedzone/',
                   { Ref: 'ExampleDotCom4D1B83AA' }
+                ]
+              ]
+            }
+          },
+          {
+            Action: 'lambda:InvokeFunction',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:aws:lambda:',
+                  { Ref: 'AWS::Region' },
+                  ':*:function:*'
                 ]
               ]
             }
