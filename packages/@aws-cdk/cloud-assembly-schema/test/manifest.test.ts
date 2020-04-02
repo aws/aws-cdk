@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
+import * as semver from 'semver';
 import { AssemblyManifest, Manifest, StackTagsMetadataEntry } from '../lib';
 
 const FIXTURES = path.join(__dirname, 'fixtures');
@@ -34,7 +35,7 @@ function removeStringKeys(obj: any, keys: string[]) {
 
 test('manifest save', () => {
 
-  const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'protocol-tests'));
+  const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'schema-tests'));
   const manifestFile = path.join(outdir, 'manifest.json');
 
   const assemblyManifest: AssemblyManifest = {
@@ -91,9 +92,53 @@ test('manifest load fails for invalid artifact type', () => {
   .toThrow(/Invalid assembly manifest/);
 });
 
-test('manifest load fails on high version', () => {
+test('manifest load fails on higher major version', () => {
   expect(() => Manifest.load(fixture('high-version')))
   .toThrow(/Cloud assembly schema version mismatch/);
+});
+
+// once we start introducing minor version bumps that are considered
+// non breaking, this test can be removed.
+test('manifest load fails on higher minor version', () => {
+
+  const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'schema-tests'));
+  const manifestFile = path.join(outdir, 'manifest.json');
+
+  const newVersion = semver.inc(Manifest.version(), 'minor');
+  expect(newVersion).toBeTruthy();
+
+  if (newVersion) {
+    const assemblyManifest: AssemblyManifest = {
+      version: newVersion
+    };
+
+    Manifest.save(assemblyManifest, manifestFile);
+
+    expect(() => Manifest.load(manifestFile))
+    .toThrow(/Cloud assembly schema version mismatch/);
+  }
+});
+
+// once we start introducing patch version bumps that are considered
+// non breaking, this test can be removed.
+test('manifest load fails on higher patch version', () => {
+
+  const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'schema-tests'));
+  const manifestFile = path.join(outdir, 'manifest.json');
+
+  const newVersion = semver.inc(Manifest.version(), 'patch');
+  expect(newVersion).toBeTruthy();
+
+  if (newVersion) {
+    const assemblyManifest: AssemblyManifest = {
+      version: newVersion
+    };
+
+    Manifest.save(assemblyManifest, manifestFile);
+
+    expect(() => Manifest.load(manifestFile))
+    .toThrow(/Cloud assembly schema version mismatch/);
+  }
 });
 
 test('manifest load fails on invalid version', () => {
