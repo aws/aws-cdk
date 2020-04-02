@@ -305,13 +305,12 @@ export = {
   },
 
   'encryption key cannot be supplied with UNENCRYPTED as the encryption type'(test: Test) {
-    test.throws(() => {
-      // GIVEN
-      const stack = new Stack();
-      const key = new kms.Key(stack, 'myKey');
 
-      // WHEN
-      new Stream(new Stack(), 'MyStream', {
+    const stack = new Stack();
+    const key = new kms.Key(stack, 'myKey');
+
+    test.throws(() => {
+      new Stream(stack, 'MyStream', {
         encryptionKey: key,
         encryption: StreamEncryption.UNENCRYPTED
       });
