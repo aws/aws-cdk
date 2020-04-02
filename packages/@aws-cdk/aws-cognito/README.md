@@ -38,7 +38,9 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
   - [Security](#security)
     - [Multi-factor Authentication](#multi-factor-authentication-mfa)
   - [Emails](#emails)
+  - [Lambda Triggers](#lambda-triggers)
   - [Import](#importing-user-pools)
+  - [App Clients](#app-clients)
 
 ## User Pools
 
@@ -277,6 +279,38 @@ Amazon SES, however, support for Amazon SES is not available in the CDK yet. If 
 give [this issue](https://github.com/aws/aws-cdk/issues/6768) a +1. Until then, you can use the [cfn
 layer](https://docs.aws.amazon.com/cdk/latest/guide/cfn_layer.html) to configure this.
 
+### Lambda Triggers
+
+User pools can be configured such that AWS Lambda functions can be triggered when certain user operations or actions
+occur, such as, sign up, user confirmation, sign in, etc. They can also be used to add custom authentication
+challenges, user migrations and custom verification messages. Learn more about triggers at [User Pool Workflows with
+Triggers](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-identity-pools-working-with-aws-lambda-triggers.html).
+
+Lambda triggers can either be specified as part of the `UserPool` initialization, or it can be added later, via methods
+on the construct, as so -
+
+```ts
+const authChallengeFn = new lambda.Function(this, 'authChallengeFn', {
+  // ...
+});
+
+const userpool = new UserPool(this, 'myuserpool', {
+  // ...
+  triggers: {
+    createAuthChallenge: authChallengeFn,
+    // ...
+  }
+});
+
+userpool.addTrigger(UserPoolOperation.USER_MIGRATION, new lambda.Function(this, 'userMigrationFn', {
+  // ...
+}));
+```
+
+The following table lists the set of triggers available, and their corresponding method to add it to the user pool.
+For more information on the function of these triggers and how to configure them, read [User Pool Workflows with
+Triggers](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-identity-pools-working-with-aws-lambda-triggers.html).
+
 ### Importing User Pools
 
 Any user pool that has been created outside of this stack, can be imported into the CDK app. Importing a user pool
@@ -296,3 +330,24 @@ const awesomePool = UserPool.fromUserPoolId(stack, 'awesome-user-pool', 'us-east
 const otherAwesomePool = UserPool.fromUserPoolArn(stack, 'other-awesome-user-pool',
   'arn:aws:cognito-idp:eu-west-1:123456789012:userpool/us-east-1_mtRyYQ14D');
 ```
+
+### App Clients
+
+An app is an entity within a user pool that has permission to call unauthenticated APIs (APIs that do not have an
+authenticated user), such as APIs to register, sign in, and handle forgotten passwords. To call these APIs, you need an
+app client ID and an optional client secret. Read [Configuring a User Pool App
+Client](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-client-apps.html) to learn more.
+
+The following code creates an app client and retrieves the client id -
+
+```ts
+const pool = new UserPool(this, 'Pool');
+
+const client = new UserPoolClient(stack, 'Client', {
+  userPool: pool
+});
+
+const clientId = client.userPoolClientId; 
+```
+
+Existing app clients can be imported into the CDK app using the `UserPoolClient.fromUserPoolClientId()` API.
