@@ -81,16 +81,7 @@ export = {
           {
             Action: 'lambda:InvokeFunction',
             Effect: 'Allow',
-            Resource: {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:aws:lambda:',
-                  { Ref: 'AWS::Region' },
-                  ':*:function:*'
-                ]
-              ]
-            }
+            Resource: 'arn:aws:lambda:*:*:function:*'
           },
         ],
       }

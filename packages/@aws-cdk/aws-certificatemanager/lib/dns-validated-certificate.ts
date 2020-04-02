@@ -93,7 +93,7 @@ export class DnsValidatedCertificate extends cdk.Resource implements ICertificat
         }));
         requestorFunction.addToRolePolicy(new iam.PolicyStatement({
             actions: ['lambda:InvokeFunction'],
-            resources: [`arn:aws:lambda:${props.region}:*:function:*`],
+            resources: [`arn:aws:lambda:*:*:function:*`],
         }));
 
         const certificate = new cfn.CustomResource(this, 'CertificateRequestorResource', {
