@@ -34,7 +34,7 @@ Note that it is not generated as part of the build, this is to ensure developers
 changes to the schema. If changes to the code are perfomed, without generating a new schema, the tests will fail:
 
 ```console
-$ cdk-test
+$ yarn test
 FAIL test/schema.test.js (5.902s)
   ✓ manifest save (7ms)
   ✕ cloud-assembly.json.schema is correct (5304ms)
@@ -53,12 +53,10 @@ FAIL test/schema.test.js (5.902s)
 
 Being a **stable** `jsii` module, it undergoes strict API compatibility checks with the help
 of [`jsii-diff`](https://github.com/aws/jsii/tree/master/packages/jsii-diff). 
-This means that performing breaking changes, such as:
+This means that breaking changes will be rejected. These include:
 
 - Adding a required property. (same as changing from *optional* to *required*)
 - Changing the type of the property.
-
-Will be rejected.
 
 In addition, the interfaces defined here are programatically exposed to users, via the [`manifest`](../cx-api/lib/cloud-assembly.ts#L42)
 property of the `CloudAssembly` class. This means that the following are also considered breaking changes:
