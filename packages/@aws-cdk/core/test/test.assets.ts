@@ -18,7 +18,7 @@ export = {
     // THEN
     const assetMetadata = stack.node.metadata.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
 
-    expect(assetMetadata && assetMetadata.data).toBeTruthy();
+    test.ok(assetMetadata && assetMetadata.data);
 
     if (assetMetadata && assetMetadata.data) {
       const data = assetMetadata.data as cxschema.AssetMetadataEntry;
@@ -63,7 +63,7 @@ export = {
     // THEN
     const assetMetadata = stack.node.metadata.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
 
-    expect(assetMetadata && assetMetadata.data).toBeTruthy();
+    test.ok(assetMetadata && assetMetadata.data);
 
     if (assetMetadata && assetMetadata.data) {
       const data = assetMetadata.data as cxschema.ContainerImageAssetMetadataEntry;
@@ -91,7 +91,7 @@ export = {
     // THEN
     const assetMetadata = stack.node.metadata.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
 
-    expect(assetMetadata && assetMetadata.data).toBeTruthy();
+    test.ok(assetMetadata && assetMetadata.data);
 
     if (assetMetadata && assetMetadata.data) {
       const data = assetMetadata.data as cxschema.ContainerImageAssetMetadataEntry;
@@ -120,7 +120,7 @@ export = {
     // THEN
     const assetMetadata = stack.node.metadata.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
 
-    expect(assetMetadata && assetMetadata.data).toBeTruthy();
+    test.ok(assetMetadata && assetMetadata.data);
 
     if (assetMetadata && assetMetadata.data) {
       const data = assetMetadata.data as cxschema.ContainerImageAssetMetadataEntry;
