@@ -17,7 +17,7 @@ beforeEach(() => {
 
 describe('deploy', () => {
   describe('makes correct CloudFormation calls', () => {
-    test('without options', () => {
+    test('without options', async () => {
       // GIVEN
       const toolkit = new CdkToolkit({
         cloudExecutable,
@@ -30,10 +30,10 @@ describe('deploy', () => {
       });
 
       // WHEN
-      toolkit.deploy({ stackNames: ['Test-Stack-A', 'Test-Stack-B'] });
+      await toolkit.deploy({ stackNames: ['Test-Stack-A', 'Test-Stack-B'] });
     });
 
-    test('with sns notification arns', () => {
+    test('with sns notification arns', async () => {
       // GIVEN
       const notificationArns = ['arn:aws:sns:::cfn-notifications', 'arn:aws:sns:::my-cool-topic'];
       const toolkit = new CdkToolkit({
@@ -47,7 +47,7 @@ describe('deploy', () => {
       });
 
       // WHEN
-      toolkit.deploy({
+      await toolkit.deploy({
         stackNames: ['Test-Stack-A', 'Test-Stack-B'],
         notificationArns,
       });

@@ -803,5 +803,83 @@ export = {
     }));
 
     test.done();
+  },
+
+  'method has a request validator with provided properties'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigw.RestApi(stack, 'test-api', { deploy: false });
+
+    // WHEN
+    new apigw.Method(stack, 'method-man', {
+      httpMethod: 'GET',
+      resource: api.root,
+      options: {
+        requestValidatorOptions: {
+          requestValidatorName: 'test-validator',
+          validateRequestBody: true,
+          validateRequestParameters: false
+        }
+      }
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::RequestValidator', {
+      RestApiId: stack.resolve(api.restApiId),
+      ValidateRequestBody: true,
+      ValidateRequestParameters: false,
+      Name: 'test-validator'
+    }));
+
+    test.done();
+  },
+
+  'method does not have a request validator'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigw.RestApi(stack, 'test-api', { deploy: false });
+
+    // WHEN
+    new apigw.Method(stack, 'method-man', {
+      httpMethod: 'GET',
+      resource: api.root
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+      RequestValidatorId: ABSENT
+    }));
+
+    test.done();
+  },
+
+  'method does not support both request validator and request validator options'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigw.RestApi(stack, 'test-api', { deploy: false });
+    const validator = api.addRequestValidator('test-validator1', {
+      validateRequestBody: true,
+      validateRequestParameters: false
+    });
+
+    // WHEN
+    const methodProps = {
+      httpMethod: 'GET',
+      resource: api.root,
+      options: {
+        requestValidatorOptions: {
+          requestValidatorName: 'test-validator2',
+          validateRequestBody: true,
+          validateRequestParameters: false
+        },
+        requestValidator: validator
+      }
+    };
+
+    // THEN
+    test.throws(() => new apigw.Method(stack, 'method', methodProps),
+      /Only one of 'requestValidator' or 'requestValidatorOptions' must be specified./);
+
+    test.done();
   }
 };
