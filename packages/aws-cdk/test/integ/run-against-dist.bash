@@ -22,7 +22,7 @@ function serve_npm_packages() {
     return
   fi
 
-  if [ ! -z ${USE_PUBLISHED_FRAMEWORK_VERSION:-} ]; then
+  if [ ! -z "${USE_PUBLISHED_FRAMEWORK_VERSION:-}" ]; then
 
     echo "Testing against latest published versions of the framework"
 
