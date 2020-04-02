@@ -40,7 +40,7 @@ export class Manifest {
   private static validate(manifest: assembly.AssemblyManifest) {
 
     function parseVersion(version: string) {
-      const ver = semver.coerce(version);
+      const ver = semver.valid(version);
       if (!ver) {
         throw new Error(`Invalid semver string: "${version}"`);
       }
