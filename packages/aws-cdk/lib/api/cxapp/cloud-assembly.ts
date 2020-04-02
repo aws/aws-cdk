@@ -3,9 +3,6 @@ import * as colors from 'colors/safe';
 import * as minimatch from 'minimatch';
 import { error, print, warning } from '../../logging';
 
-export interface CloudAssemblyProps {
-}
-
 export enum DefaultSelection {
   /**
    * Returns an empty selection in case there are no selectors.
@@ -159,7 +156,7 @@ export class StackCollection {
 
   public get firstStack() {
     if (this.stackCount < 1) {
-      throw new Error(`Stack Collection contains no stacks`);
+      throw new Error(`StackCollection contains no stack artifacts (trying to access the first one)`);
     }
     return this.stackArtifacts[0];
   }
@@ -241,7 +238,7 @@ export interface MetadataMessageOptions {
 }
 
 /**
- * Include stacks that depend on the stacks already in the set
+ * Calculate the transitive closure of stack dependents.
  *
  * Modifies `selectedStacks` in-place.
  */
@@ -250,8 +247,8 @@ function includeDownstreamStacks(
     allStacks: Map<string, cxapi.CloudFormationStackArtifact>) {
   const added = new Array<string>();
 
-  let madeProgress = true;
-  while (madeProgress) {
+  let madeProgress;
+  do {
     madeProgress = false;
 
     for (const [id, stack] of allStacks) {
@@ -262,7 +259,7 @@ function includeDownstreamStacks(
         madeProgress = true;
       }
     }
-  }
+  } while (madeProgress);
 
   if (added.length > 0) {
     print('Including depending stacks: %s', colors.bold(added.join(', ')));
@@ -270,7 +267,7 @@ function includeDownstreamStacks(
 }
 
 /**
- * Include stacks that that stacks in the set depend on
+ * Calculate the transitive closure of stack dependencies.
  *
  * Modifies `selectedStacks` in-place.
  */
