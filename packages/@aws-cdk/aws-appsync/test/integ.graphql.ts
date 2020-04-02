@@ -51,7 +51,7 @@ const orderTable = new Table(stack, 'OrderTable', {
 });
 
 const customerDS = api.addDynamoDbDataSource('Customer', 'The customer data source', customerTable);
-const orderDS = api.addDynamoDbDataSource('Order', 'The irder data source', orderTable);
+const orderDS = api.addDynamoDbDataSource('Order', 'The order data source', orderTable);
 
 customerDS.createResolver({
   typeName: 'Query',

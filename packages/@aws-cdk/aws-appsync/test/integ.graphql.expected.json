@@ -392,7 +392,7 @@
         },
         "Name": "Order",
         "Type": "AMAZON_DYNAMODB",
-        "Description": "The irder data source",
+        "Description": "The order data source",
         "DynamoDBConfig": {
           "AwsRegion": {
             "Ref": "AWS::Region"

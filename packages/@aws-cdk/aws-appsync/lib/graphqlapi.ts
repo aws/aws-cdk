@@ -322,7 +322,7 @@ export class GraphQLApi extends Construct {
 }
 
 /**
- * Base properties fo an AppSync datasource
+ * Base properties for an AppSync datasource
  */
 export interface BaseDataSourceProps {
   /**
