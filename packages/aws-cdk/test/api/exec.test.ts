@@ -57,12 +57,7 @@ test('cli throws when manifest version > schema version', async () => {
     app: outdir
   });
 
-  try {
-    await execProgram(sdkProvider, config);
-    fail('Expected execProgram to throw');
-  } catch (err) {
-    expect(err.message).toEqual(expectedError);
-  }
+  await expect(execProgram(sdkProvider, config)).rejects.toEqual(new Error(expectedError));
 
 }, TEN_SECOND_TIMEOUT);
 
@@ -78,11 +73,7 @@ test('cli does not throw when manifest version = schema version', async () => {
     app: outdir
   });
 
-  try {
-    await execProgram(sdkProvider, config);
-  } catch (err) {
-    fail(err.message);
-  }
+  await execProgram(sdkProvider, config);
 
 }, TEN_SECOND_TIMEOUT);
 
@@ -105,8 +96,6 @@ test('cli does not throw when manifest version < schema version', async () => {
   const mockVersionNumber = ImportMock.mockFunction(cxschema.Manifest, 'version', semver.inc(currentSchemaVersion, 'major'));
   try {
     await execProgram(sdkProvider, config);
-  } catch (err) {
-    fail(err.message);
   } finally {
     mockVersionNumber.restore();
   }
