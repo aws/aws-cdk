@@ -31,11 +31,11 @@ between the assembly and its consumers, we treat the manifest file as a well def
 ## Schema
 
 This module contains the typescript structs that comprise the `manifest.json` file, as well as the
-generated [*json-schema*](./schema.generated/cloud-assembly.schema.json).
+generated [*json-schema*](./schema/cloud-assembly.schema.json).
 
 ## Versioning
 
-The schema version is specified in the [`cloud-assembly.version.json`](./schema.generated/cloud-assembly.schema.json) file, under the `version` property.
+The schema version is specified in the [`cloud-assembly.version.json`](./schema/cloud-assembly.schema.json) file, under the `version` property.
 It follows semantic versioning, but with a small twist.
 
 When we add instructions to the assembly, they are reflected in the manifest file and the *json-schema* accordingly.
@@ -47,7 +47,7 @@ is considered `major` version bump.
 
 ## How to consume
 
-If you'd like to consume the [schema file](./schema.generated/cloud-assembly.schema.json) in order to do validations on `manifest.json` files, 
+If you'd like to consume the [schema file](./schema/cloud-assembly.schema.json) in order to do validations on `manifest.json` files, 
 simply download it from this repo and run it against standard *json-schema* validators, such as [jsonschema](https://www.npmjs.com/package/jsonschema).
 
 Consumers must take into account the `major` version of the schema they are consuming. They should reject cloud assemblies 

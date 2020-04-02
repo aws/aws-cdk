@@ -10,7 +10,7 @@ function log(message: string) {
 
 function bump() {
 
-  const metadataPath = '../schema.generated/cloud-assembly.version.json';
+  const metadataPath = '../schema/cloud-assembly.version.json';
 
   const metadata = require(metadataPath);
 

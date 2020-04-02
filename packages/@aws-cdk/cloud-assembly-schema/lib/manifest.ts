@@ -31,11 +31,11 @@ export class Manifest {
    */
   public static version(): string {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    return require('../schema.generated/cloud-assembly.version.json').version;
+    return require('../schema/cloud-assembly.version.json').version;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-require-imports
-  private static schema: jsonschema.Schema = require('../schema.generated/cloud-assembly.schema.json');
+  private static schema: jsonschema.Schema = require('../schema/cloud-assembly.schema.json');
 
   private static validate(manifest: assembly.AssemblyManifest) {
 
