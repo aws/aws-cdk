@@ -159,10 +159,14 @@
     "@aws-cdk/custom-resources": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
-    "@types/node": "^10.17.17",
+    "@types/node": "^10.17.18",
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/aws-chatbot": "0.0.0",
-    "@aws-cdk/aws-codestarconnections": "0.0.0"
+    "@aws-cdk/aws-codestarconnections": "0.0.0",
+    "@aws-cdk/aws-cassandra": "0.0.0",
+    "@aws-cdk/aws-codeguruprofiler": "0.0.0",
+    "@aws-cdk/aws-networkmanager": "0.0.0",
+    "@aws-cdk/aws-resourcegroups": "0.0.0"
   },
   "peerDependencies": {
     "constructs": "^2.0.0"

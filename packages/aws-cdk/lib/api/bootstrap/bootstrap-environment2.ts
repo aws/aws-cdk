@@ -20,7 +20,7 @@ export async function bootstrapEnvironment2(environment: cxapi.Environment, sdk:
   // convert from YAML to JSON (which the Cloud Assembly uses)
   const templateFile = `${toolkitStackName}.template.json`;
   const bootstrapTemplatePath = path.join(__dirname, 'bootstrap-template.yaml');
-  const bootstrapTemplateObject = loadStructuredFile(bootstrapTemplatePath);
+  const bootstrapTemplateObject = await loadStructuredFile(bootstrapTemplatePath);
   await fs.writeJson(
     path.join(builder.outdir, templateFile),
     bootstrapTemplateObject);
