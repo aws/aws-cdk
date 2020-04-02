@@ -114,6 +114,11 @@ export class Runtime {
   public static readonly DOTNET_CORE_2_1 =  new Runtime('dotnetcore2.1',  RuntimeFamily.DOTNET_CORE);
 
   /**
+   * The .NET Core 3.1 runtime (dotnetcore3.1)
+   */
+  public static readonly DOTNET_CORE_3_1 = new Runtime('dotnetcore3.1',  RuntimeFamily.DOTNET_CORE);
+
+  /**
    * The Go 1.x runtime (go1.x)
    */
   public static readonly GO_1_X =           new Runtime('go1.x',          RuntimeFamily.GO);
