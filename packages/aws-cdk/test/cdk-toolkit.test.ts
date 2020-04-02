@@ -7,7 +7,7 @@ import { MockSDK } from './util/mock-sdk';
 
 describe('deploy', () => {
   describe('makes correct CloudFormation calls', () => {
-    test('without options', () => {
+    test('without options', async () => {
       // GIVEN
       const toolkit = new CdkToolkit({
         appStacks: new TestAppStacks(),
@@ -18,10 +18,10 @@ describe('deploy', () => {
       });
 
       // WHEN
-      toolkit.deploy({ stackNames: ['Test-Stack-A', 'Test-Stack-B'], sdk: new MockSDK() });
+      await toolkit.deploy({ stackNames: ['Test-Stack-A', 'Test-Stack-B'], sdk: new MockSDK() });
     });
 
-    test('with sns notification arns', () => {
+    test('with sns notification arns', async () => {
       // GIVEN
       const notificationArns = ['arn:aws:sns:::cfn-notifications', 'arn:aws:sns:::my-cool-topic'];
       const toolkit = new CdkToolkit({
@@ -33,7 +33,7 @@ describe('deploy', () => {
       });
 
       // WHEN
-      toolkit.deploy({
+      await toolkit.deploy({
         stackNames: ['Test-Stack-A', 'Test-Stack-B'],
         notificationArns,
         sdk: new MockSDK()

@@ -194,7 +194,7 @@ export class CdkToolkit {
         // all of the outputs from successfully deployed stacks before the failure will still be written.
         if (outputsFile) {
           fs.ensureFileSync(outputsFile);
-          fs.writeJson(outputsFile, stackOutputs, {
+          await fs.writeJson(outputsFile, stackOutputs, {
             spaces: 2,
             encoding: 'utf8'
           });
