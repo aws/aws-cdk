@@ -25,7 +25,7 @@ This command runs two types of tests:
 
 These tests simply run the local integration tests located in [`test/integ/cli`](./test/integ/cli). They test the proper deployment of stacks and in general the correctness of the actions performed by the CLI.
 
-You can run also run just these tests by executing:
+You can also run just these tests by executing:
 
 ```console
 yarn integ-cli-no-regression
@@ -47,7 +47,7 @@ These tests run in two variations:
   Fetches the framework code from the latest release. This is important to make sure
   the new CLI version does not rely on new framework features to provide the same functionality.
 
-You can run also run just these tests by executing:
+You can also run just these tests by executing:
 
 ```console
 yarn integ-cli-regression
