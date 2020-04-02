@@ -325,6 +325,10 @@ export class Stream extends StreamBase {
     const encryptionType = props.encryption ??
       (props.encryptionKey ? StreamEncryption.KMS : StreamEncryption.UNENCRYPTED);
 
+    if (encryptionType !== StreamEncryption.KMS && props.encryptionKey) {
+      throw new Error(`encryptionKey is specified, so 'encryption' must be set to KMS (value: ${encryptionType})`);
+    }
+
     if (encryptionType === StreamEncryption.UNENCRYPTED) {
       return { };
     }
