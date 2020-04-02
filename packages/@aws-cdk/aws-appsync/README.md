@@ -24,6 +24,10 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 Given the following GraphQL schema file `schema.graphql`:
 
 ```graphql
+type ServiceVersion {
+    version: String!
+}
+
 type Customer {
     id: String!
     name: String!
@@ -39,6 +43,7 @@ type Order {
 }
 
 type Query {
+    getServiceVersion: ServiceVersion
     getCustomers: [Customer]
     getCustomer(id: String): Customer
 }
@@ -84,6 +89,19 @@ export class ApiStack extends Stack {
         ],
       },
       schemaDefinitionFile: './schema.graphql',
+    });
+
+    const noneDS = api.addNoneDataSource('None', 'Dummy data source');
+
+    noneDS.createResolver({
+      typeName: 'Query',
+      fieldName: 'getServiceVersion',
+      requestMappingTemplate: MappingTemplate.fromString(JSON.stringify({
+        version: '2017-02-28',
+      })),
+      responseMappingTemplate: MappingTemplate.fromString(JSON.stringify({
+        version: 'v1',
+      })),
     });
 
     const customerTable = new Table(this, 'CustomerTable', {

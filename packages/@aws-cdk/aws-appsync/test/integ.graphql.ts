@@ -29,6 +29,19 @@ const api = new GraphQLApi(stack, 'Api', {
   },
 });
 
+const noneDS = api.addNoneDataSource('None', 'Dummy data source');
+
+noneDS.createResolver({
+  typeName: 'Query',
+  fieldName: 'getServiceVersion',
+  requestMappingTemplate: MappingTemplate.fromString(JSON.stringify({
+    version: '2017-02-28',
+  })),
+  responseMappingTemplate: MappingTemplate.fromString(JSON.stringify({
+    version: 'v1',
+  })),
+});
+
 const customerTable = new Table(stack, 'CustomerTable', {
   billingMode: BillingMode.PAY_PER_REQUEST,
   partitionKey: {

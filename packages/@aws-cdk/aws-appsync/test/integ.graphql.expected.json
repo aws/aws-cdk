@@ -106,8 +106,66 @@
             "ApiId"
           ]
         },
-        "Definition": "type Customer {\n    id: String!\n    name: String!\n}\n\ninput SaveCustomerInput {\n    name: String!\n}\n\ntype Order {\n    customer: String!\n    order: String!\n}\n\ntype Query {\n    getCustomers: [Customer]\n    getCustomer(id: String): Customer\n    getCustomerOrdersEq(customer: String): Order\n    getCustomerOrdersLt(customer: String): Order\n    getCustomerOrdersLe(customer: String): Order\n    getCustomerOrdersGt(customer: String): Order\n    getCustomerOrdersGe(customer: String): Order\n    getCustomerOrdersFilter(customer: String, order: String): Order\n    getCustomerOrdersBetween(customer: String, order1: String, order2: String): Order\n}\n\ninput FirstOrderInput {\n    product: String!\n    quantity: Int!\n}\n\ntype Mutation {\n    addCustomer(customer: SaveCustomerInput!): Customer\n    saveCustomer(id: String!, customer: SaveCustomerInput!): Customer\n    removeCustomer(id: String!): Customer\n    saveCustomerWithFirstOrder(customer: SaveCustomerInput!, order: FirstOrderInput!, referral: String): Order\n}"
+        "Definition": "type ServiceVersion {\n    version: String!\n}\n\ntype Customer {\n    id: String!\n    name: String!\n}\n\ninput SaveCustomerInput {\n    name: String!\n}\n\ntype Order {\n    customer: String!\n    order: String!\n}\n\ntype Query {\n    getServiceVersion: ServiceVersion\n    getCustomers: [Customer]\n    getCustomer(id: String): Customer\n    getCustomerOrdersEq(customer: String): Order\n    getCustomerOrdersLt(customer: String): Order\n    getCustomerOrdersLe(customer: String): Order\n    getCustomerOrdersGt(customer: String): Order\n    getCustomerOrdersGe(customer: String): Order\n    getCustomerOrdersFilter(customer: String, order: String): Order\n    getCustomerOrdersBetween(customer: String, order1: String, order2: String): Order\n}\n\ninput FirstOrderInput {\n    product: String!\n    quantity: Int!\n}\n\ntype Mutation {\n    addCustomer(customer: SaveCustomerInput!): Customer\n    saveCustomer(id: String!, customer: SaveCustomerInput!): Customer\n    removeCustomer(id: String!): Customer\n    saveCustomerWithFirstOrder(customer: SaveCustomerInput!, order: FirstOrderInput!, referral: String): Order\n}"
       }
+    },
+    "ApiNoneDSServiceRole640F032A": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "appsync.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "ApiNoneDSB4E6495F": {
+      "Type": "AWS::AppSync::DataSource",
+      "Properties": {
+        "ApiId": {
+          "Fn::GetAtt": [
+            "ApiF70053CD",
+            "ApiId"
+          ]
+        },
+        "Name": "None",
+        "Type": "NONE",
+        "Description": "Dummy data source",
+        "ServiceRoleArn": {
+          "Fn::GetAtt": [
+            "ApiNoneDSServiceRole640F032A",
+            "Arn"
+          ]
+        }
+      }
+    },
+    "ApiNoneDSQuerygetServiceVersionResolver4AF8FD42": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Fn::GetAtt": [
+            "ApiF70053CD",
+            "ApiId"
+          ]
+        },
+        "FieldName": "getServiceVersion",
+        "TypeName": "Query",
+        "DataSourceName": "None",
+        "Kind": "UNIT",
+        "RequestMappingTemplate": "{\"version\":\"2017-02-28\"}",
+        "ResponseMappingTemplate": "{\"version\":\"v1\"}"
+      },
+      "DependsOn": [
+        "ApiNoneDSB4E6495F",
+        "ApiSchema510EECD7"
+      ]
     },
     "ApiCustomerDSServiceRoleA929BCF7": {
       "Type": "AWS::IAM::Role",

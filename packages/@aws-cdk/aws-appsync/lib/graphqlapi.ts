@@ -241,6 +241,19 @@ export class GraphQLApi extends Construct {
   }
 
   /**
+   * add a new dummy data source to this API
+   * @param name The name of the data source
+   * @param description The description of the data source
+   */
+  public addNoneDataSource(name: string, description: string): NoneDataSource {
+    return new NoneDataSource(this, `${name}DS`, {
+      api: this,
+      description,
+      name,
+    });
+  }
+
+  /**
    * add a new DynamoDB data source to this API
    * @param name The name of the data source
    * @param description The description of the data source
@@ -442,6 +455,23 @@ export abstract class BaseDataSource extends Construct implements IGrantable {
     });
   }
 
+}
+
+/**
+ * Properties for an AppSync dummy datasource
+ */
+export interface NoneDataSourceProps extends BaseDataSourceProps {
+}
+
+/**
+ * An AppSync dummy datasource
+ */
+export class NoneDataSource extends BaseDataSource {
+  constructor(scope: Construct, id: string, props: NoneDataSourceProps) {
+    super(scope, id, props, {
+      type: 'NONE',
+    });
+  }
 }
 
 /**
