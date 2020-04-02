@@ -53,8 +53,8 @@ export class Manifest {
     // first validation the version should be accepted.
     if (semver.gt(actual, maxVersion)) {
       throw new Error(`Cloud assembly schema version mismatch:
-        actual('${actual}') > expected('${maxVersion}').
-        Consider upgrading your CLI version.`);
+        Maximum schema version supported is ${maxVersion}, but found ${actual}.
+        Please upgrade your CLI in order to interact with this app.`);
     }
 
     // now validate the format is good.
