@@ -2,7 +2,7 @@
 List of exclusions when running backwards compatibility tests.
 Add when you need to exclude a specific integration test from a specific version.
 
-This is an escape hatch for the rare cases where we need to intorduce
+This is an escape hatch for the rare cases where we need to introduce
 a change that breaks existing integration tests. (e.g security)
 
 For example:
