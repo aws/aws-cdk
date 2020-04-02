@@ -23,7 +23,7 @@
     "pkglint": "pkglint -f",
     "test": "echo success",
     "build+test+package": "npm run build+test",
-    "build+test": "npm run build && npm run test"
+    "build+test": "npm run build && npm test"
   },
   "author": {
     "name": "Amazon Web Services",

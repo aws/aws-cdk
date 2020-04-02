@@ -18,7 +18,7 @@
   "scripts": {
     "build": "tsc -b && tslint -p . && chmod +x bin/pkglint",
     "test": "echo success",
-    "build+test": "npm run build && npm run test",
+    "build+test": "npm run build && npm test",
     "build+test+package": "npm run build+test",
     "watch": "tsc -b -w",
     "lint": "tsc -b && tslint -p . --force"
