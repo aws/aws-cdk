@@ -206,6 +206,69 @@ export = {
     test.done();
   },
 
+  'honors passed asset options'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const bucket = new s3.Bucket(stack, 'Dest');
+
+    // WHEN
+    new s3deploy.BucketDeployment(stack, 'Deploy', {
+      sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'), {
+        exclude: ['*', '!index.html'],
+      })],
+      destinationBucket: bucket,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('Custom::CDKBucketDeployment', {
+      "ServiceToken": {
+        "Fn::GetAtt": [
+          "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536",
+          "Arn"
+        ]
+      },
+      "SourceBucketNames": [{
+        "Ref": "AssetParameterse9b696b2a8a1f93ea8b8a9ce1e4dd4727f9243eba984e50411ca95c6b03d26b6S3Bucket1A1EC3E9"
+      }],
+      "SourceObjectKeys": [{
+        "Fn::Join": [
+          "",
+          [
+            {
+              "Fn::Select": [
+                0,
+                {
+                  "Fn::Split": [
+                    "||",
+                    {
+                      "Ref": "AssetParameterse9b696b2a8a1f93ea8b8a9ce1e4dd4727f9243eba984e50411ca95c6b03d26b6S3VersionKeyE46A4824"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Fn::Select": [
+                1,
+                {
+                  "Fn::Split": [
+                    "||",
+                    {
+                      "Ref": "AssetParameterse9b696b2a8a1f93ea8b8a9ce1e4dd4727f9243eba984e50411ca95c6b03d26b6S3VersionKeyE46A4824"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        ]
+      }],
+      "DestinationBucketName": {
+        "Ref": "DestC383B82A"
+      }
+    }));
+    test.done();
+  },
   'retainOnDelete can be used to retain files when resource is deleted'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();

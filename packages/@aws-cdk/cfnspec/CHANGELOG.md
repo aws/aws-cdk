@@ -1,3 +1,35 @@
+# CloudFormation Resource Specification v12.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::ApiGatewayV2::Integration ConnectionId (__added__)
+* AWS::AutoScaling::AutoScalingGroup MaxInstanceLifetime (__added__)
+* AWS::EC2::Volume MultiAttachEnabled (__added__)
+
+## Property Type Changes
+
+* AWS::IoT::TopicRule.AssetPropertyTimestamp (__added__)
+* AWS::IoT::TopicRule.AssetPropertyValue (__added__)
+* AWS::IoT::TopicRule.AssetPropertyVariant (__added__)
+* AWS::IoT::TopicRule.HttpAction (__added__)
+* AWS::IoT::TopicRule.HttpActionHeader (__added__)
+* AWS::IoT::TopicRule.HttpAuthorization (__added__)
+* AWS::IoT::TopicRule.IotEventsAction (__added__)
+* AWS::IoT::TopicRule.IotSiteWiseAction (__added__)
+* AWS::IoT::TopicRule.PutAssetPropertyValueEntry (__added__)
+* AWS::IoT::TopicRule.SigV4Authorization (__added__)
+* AWS::IoT::TopicRule.Action Http (__added__)
+* AWS::IoT::TopicRule.Action IotEvents (__added__)
+* AWS::IoT::TopicRule.Action IotSiteWise (__added__)
+* AWS::IoT::TopicRule.RepublishAction Qos (__added__)
+
+
 # CloudFormation Resource Specification v11.6.0
 
 ## New Resource Types
