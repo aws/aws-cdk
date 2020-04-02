@@ -17,7 +17,11 @@ function cleanup {
     rm -rf ${integ_under_test}
 }
 
+
 function get_latest_published_version {
+
+    # fetch the latest published version number.
+    # this is stored in the github releases under the 'latest' tag.
 
     github_headers=""
     if [[ "${GITHUB_TOKEN:-}" != "" ]]; then
@@ -33,6 +37,10 @@ function get_latest_published_version {
 
 function download_repo {
 
+    # we need to download the repo code from GitHub in order to extract
+    # the integration tests that were present in that version of the repo.
+    # TODO - consider switching this to 'npm install', 
+    # apparently we publish the integ tests in the package.    
     version=$1
 
     out="${temp_dir}/.repo.tar.gz"
@@ -43,6 +51,9 @@ function download_repo {
 
 }
 
+# this allows injecting different versions to be treated as the baseline
+# of the regression. usually this would just be the latest published version,
+# but this can even be a branch name during development and testing.
 VERSION_UNDER_TEST=${VERSION_UNDER_TEST:-$(get_latest_published_version)}
 
 trap cleanup INT EXIT
