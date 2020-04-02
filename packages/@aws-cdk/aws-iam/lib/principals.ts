@@ -1,6 +1,6 @@
 import * as cdk from '@aws-cdk/core';
 import { Default, RegionInfo } from '@aws-cdk/region-info';
-import { Conditions, PolicyStatement } from './policy-statement';
+import { Condition, Conditions, PolicyStatement } from './policy-statement';
 import { mergePrincipal } from './util';
 
 /**
@@ -78,6 +78,11 @@ export abstract class PrincipalBase implements IPrincipal {
     return JSON.stringify(this.policyFragment.principalJson);
   }
 
+  /**
+   * JSON-ify the principal
+   *
+   * Used when JSON.stringify() is called
+   */
   public toJSON() {
     // Have to implement toJSON() because the default will lead to infinite recursion.
     return this.policyFragment.principalJson;
@@ -104,23 +109,21 @@ export abstract class PrincipalBase implements IPrincipal {
  * https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition.html
  */
 export class PrincipalWithConditions<PrincipalType extends PrincipalBase> implements IPrincipal {
-  public readonly conditions: Conditions;
   public readonly grantPrincipal: IPrincipal = this;
-  public readonly assumeRoleAction: string = 'sts:AssumeRole';
+  public readonly assumeRoleAction: string = this.principal.assumeRoleAction;
+  private additionalConditions: Conditions;
 
   constructor(
-    public readonly principal: PrincipalType,
+    private readonly principal: PrincipalType,
     conditions: Conditions,
   ) {
-    // Copy the intiial conditions from the principal
-    this.conditions = JSON.parse(JSON.stringify(this.principal.policyFragment.conditions));
-    this.addConditions(conditions);
+    this.additionalConditions = conditions;
   }
 
   /**
    * Add a condition to the principal
    */
-  public addCondition(key: string, value: { [key: string]: string | string[] }) {
+  public addCondition(key: string, value: Condition) {
     const existingValue = this.conditions[key];
     this.conditions[key] = existingValue ? { ...existingValue, ...value } : value;
   }
@@ -137,6 +140,14 @@ export class PrincipalWithConditions<PrincipalType extends PrincipalBase> implem
     });
   }
 
+  /**
+   * The conditions under which the policy is in effect.
+   * See [the IAMdocumentation](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition.html).
+   */
+  public get conditions() {
+    return this.mergeConditions(this.principal.policyFragment.conditions, this.additionalConditions);
+  }
+
   public get policyFragment(): PrincipalPolicyFragment {
     return new PrincipalPolicyFragment(this.principal.policyFragment.principalJson, this.conditions);
   }
@@ -149,9 +160,30 @@ export class PrincipalWithConditions<PrincipalType extends PrincipalBase> implem
     return this.principal.toString();
   }
 
+  /**
+   * JSON-ify the principal
+   *
+   * Used when JSON.stringify() is called
+   */
   public toJSON() {
     // Have to implement toJSON() because the default will lead to infinite recursion.
     return this.policyFragment.principalJson;
+  }
+
+  private mergeConditions(principalConditions: Conditions, additionalConditions: Conditions): Conditions {
+    const mergedConditions: Conditions = {};
+    Object.entries(principalConditions).forEach(([operator, condition]) => {
+      mergedConditions[operator] = condition;
+    });
+    Object.entries(additionalConditions).forEach(([operator, condition]) => {
+      const existingCondition = mergedConditions[operator];
+      if (!existingCondition) {
+        mergedConditions[operator] = condition;
+      } else {
+        mergedConditions[operator] = { ...existingCondition, ...condition };
+      }
+    });
+    return mergedConditions;
   }
 }
 
@@ -164,6 +196,10 @@ export class PrincipalWithConditions<PrincipalType extends PrincipalBase> implem
 export class PrincipalPolicyFragment {
   constructor(
     public readonly principalJson: { [key: string]: string[] },
+    /**
+     * The conditions under which the policy is in effect.
+     * See [the IAMdocumentation](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition.html).
+     */
     public readonly conditions: Conditions = {}) {
   }
 }
@@ -284,6 +320,10 @@ export class FederatedPrincipal extends PrincipalBase {
 
   constructor(
     public readonly federated: string,
+    /**
+     * The conditions under which the policy is in effect.
+     * See [the IAMdocumentation](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition.html).
+     */
     public readonly conditions: Conditions,
     assumeRoleAction: string = 'sts:AssumeRole') {
     super();
@@ -395,6 +435,11 @@ class StackDependentToken implements cdk.IResolvable {
     return cdk.Token.asString(this);
   }
 
+  /**
+   * JSON-ify the token
+   *
+   * Used when JSON.stringify() is called
+   */
   public toJSON() {
     return `<unresolved-token>`;
   }
@@ -419,6 +464,11 @@ class ServicePrincipalToken implements cdk.IResolvable {
     });
   }
 
+  /**
+   * JSON-ify the token
+   *
+   * Used when JSON.stringify() is called
+   */
   public toJSON() {
     return `<${this.service}>`;
   }

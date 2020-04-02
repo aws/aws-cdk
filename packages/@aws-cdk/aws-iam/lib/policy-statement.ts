@@ -304,13 +304,22 @@ export enum Effect {
 }
 
 /**
- * Conditions for when an IAM Policy is in effect.
- *
- * See https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition.html
+ * Condition for when an IAM policy is in effect. Maps from the keys in a request's context to
+ * a string value or array of values. See the Conditions interface for more details.
  */
-export interface Conditions {
-  [operator: string]: { [key: string]: string | string[] };
-}
+export type Condition = Record<string, any>;
+
+/**
+ * Conditions for when an IAM Policy is in effect, specified in the following structure:
+ *
+ * `{ "Operator": { "keyInRequestContext": "value" } }`
+ *
+ * The value can be either a single string value or an array of string values.
+ *
+ * For more information, including which operators are supported, see [the IAM
+ * documentation](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition.html).
+ */
+export type Conditions = Record<string, Condition>;
 
 /**
  * Interface for creating a policy statement
