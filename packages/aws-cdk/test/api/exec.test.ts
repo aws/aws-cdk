@@ -40,7 +40,7 @@ test('cli throws when manifest version > schema version', async () => {
   const mockManifestVersion = semver.inc(currentSchemaVersion, 'major');
 
   // this mock will cause the framework to use a greater schema version than the real one,
-  // causing the cli to fail (hopefully).
+  // and should cause the CLI to fail.
   const mockVersionNumber = ImportMock.mockFunction(cxschema.Manifest, 'version', mockManifestVersion);
   try {
     app.synth();
