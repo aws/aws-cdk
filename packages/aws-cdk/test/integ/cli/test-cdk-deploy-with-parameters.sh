@@ -6,6 +6,8 @@ source ${scriptdir}/common.bash
 
 setup
 
+# STACK_NAME_PREFIX is used in TopicNameParam to allow multiple instances
+# of this test to run in parallel, othewise they will attempt to create the same SNS topic.
 stack_arn=$(cdk deploy -v ${STACK_NAME_PREFIX}-param-test-1 --parameters "TopicNameParam=${STACK_NAME_PREFIX}bazinga")
 echo "Stack deployed successfully"
 
