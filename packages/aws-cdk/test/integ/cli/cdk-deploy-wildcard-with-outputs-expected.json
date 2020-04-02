@@ -1,8 +1,0 @@
-{
-  "cdk-toolkit-integration-outputs-test-1": {
-    "TopicName": "MyTopic"
-  },
-  "cdk-toolkit-integration-outputs-test-2": {
-    "TopicName": "MyOtherTopic"
-  }
-}
