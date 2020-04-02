@@ -5332,10 +5332,10 @@ falafel@^2.1.0:
     isarray "^2.0.1"
     object-keys "^1.0.6"
 
-fast-check@^1.24.0:
-  version "1.24.0"
-  resolved "https://registry.yarnpkg.com/fast-check/-/fast-check-1.24.0.tgz#55b8c990fc529a65412ed6c43a9ae52974dd8f0b"
-  integrity sha512-GnEs2bUHKMXRbVdNiccsGM3O38wl2NfZkAfGwU7bGTOZBN5xzjGjXzh4uvN4NR/mwqoaoEkcZ+LE5Yedc5RIeA==
+fast-check@^1.24.1:
+  version "1.24.1"
+  resolved "https://registry.yarnpkg.com/fast-check/-/fast-check-1.24.1.tgz#42a153e664122b1a2defdaea4e9b8311635fa7e7"
+  integrity sha512-ECF5LDbt4F8sJyTDI62fRLn0BdHDAdBacxlEsxaYbtqwbsdWofoYZUSaUp9tJrLsqCQ8jG28SkNvPZpDfNo3tw==
   dependencies:
     pure-rand "^2.0.0"
     tslib "^1.10.0"
