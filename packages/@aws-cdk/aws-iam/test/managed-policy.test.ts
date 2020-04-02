@@ -1,6 +1,6 @@
 import '@aws-cdk/assert/jest';
 import * as cdk from '@aws-cdk/core';
-import { Group, ManagedPolicy, PolicyStatement, Role, ServicePrincipal, User } from '../lib';
+import { Group, ManagedPolicy, PolicyDocument, PolicyStatement, Role, ServicePrincipal, User } from '../lib';
 
 describe('managed policy', () => {
   let app: cdk.App;
@@ -71,6 +71,69 @@ describe('managed policy', () => {
             ManagedPolicyArns: [
               { Ref: 'MyManagedPolicy9F3720AE' }
             ]
+          }
+        }
+      }
+    });
+  });
+
+  test('managed policy from policy document alone', () => {
+    new ManagedPolicy(stack, 'MyManagedPolicy', {
+      managedPolicyName: 'MyManagedPolicyName',
+      document: PolicyDocument.fromJson({
+        Statement: [{
+          Action: "sqs:SendMessage",
+          Effect: "Allow",
+          Resource: "*",
+        }],
+      })
+    });
+
+    expect(stack).toMatchTemplate({
+      Resources: {
+        MyManagedPolicy9F3720AE: {
+          Type: 'AWS::IAM::ManagedPolicy',
+          Properties: {
+            ManagedPolicyName: 'MyManagedPolicyName',
+            PolicyDocument: {
+              Statement: [{ Action: 'sqs:SendMessage', Effect: 'Allow', Resource: '*' }],
+              Version: '2012-10-17'
+            },
+            Path: '/',
+            Description: ''
+          }
+        }
+      }
+    });
+  });
+
+  test('managed policy from policy document with additional statements', () => {
+    new ManagedPolicy(stack, 'MyManagedPolicy', {
+      managedPolicyName: 'MyManagedPolicyName',
+      document: PolicyDocument.fromJson({
+        Statement: [{
+          Action: "sqs:SendMessage",
+          Effect: "Allow",
+          Resource: "*",
+        }],
+      }),
+      statements: [new PolicyStatement({ resources: ['arn'], actions: ['sns:Subscribe'] })]
+    });
+
+    expect(stack).toMatchTemplate({
+      Resources: {
+        MyManagedPolicy9F3720AE: {
+          Type: 'AWS::IAM::ManagedPolicy',
+          Properties: {
+            ManagedPolicyName: 'MyManagedPolicyName',
+            PolicyDocument: {
+              Statement:
+                [{ Action: 'sqs:SendMessage', Effect: 'Allow', Resource: '*' },
+                { Action: 'sns:Subscribe', Effect: 'Allow', Resource: 'arn' }],
+              Version: '2012-10-17'
+            },
+            Path: '/',
+            Description: ''
           }
         }
       }

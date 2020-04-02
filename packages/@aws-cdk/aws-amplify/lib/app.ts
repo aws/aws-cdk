@@ -20,9 +20,27 @@ export interface IApp extends IResource {
 }
 
 /**
- * Properties for an App
+ * Configuration for the source code provider
  */
-export interface AppProps {
+export interface SourceCodeProviderConfig {
+  /**
+   * The repository for the application. Must use the `HTTPS` protocol.
+   *
+   * @example https://github.com/aws/aws-cdk
+   */
+  readonly repository: string;
+
+  /**
+   * OAuth token for 3rd party source control system for an Amplify App, used
+   * to create webhook and read-only deploy key. OAuth token is not stored.
+   *
+   * Either `accessToken` or `oauthToken` must be specified if `repository`
+   * is sepcified.
+   *
+   * @default - do not use a token
+   */
+  readonly oauthToken?: SecretValue;
+
   /**
    * Personal Access token for 3rd party source control system for an Amplify
    * App, used to create webhook and read-only deploy key. Token is not stored.
@@ -30,16 +48,40 @@ export interface AppProps {
    * Either `accessToken` or `oauthToken` must be specified if `repository`
    * is sepcified.
    *
-   * @default - use OAuth token
+   * @default - do not use a token
    */
   readonly accessToken?: SecretValue;
+}
 
+/**
+ * A source code provider
+ */
+export interface ISourceCodeProvider {
+  /**
+   * Binds the source code provider to an app
+   *
+   * @param app The app [disable-awslint:ref-via-interface]
+   */
+  bind(app: App): SourceCodeProviderConfig;
+}
+
+/**
+ * Properties for an App
+ */
+export interface AppProps {
   /**
    * The name for the application
    *
    * @default - a CDK generated name
    */
   readonly appName?: string;
+
+  /**
+   * The source code provider for this application
+   *
+   * @default - not connected to a source code provider
+   */
+  readonly sourceCodeProvider?: ISourceCodeProvider;
 
   /**
    * The auto branch creation configuration. Use this to automatically create
@@ -92,31 +134,12 @@ export interface AppProps {
   readonly environmentVariables?: { [name: string]: string };
 
   /**
-   * The IAM service role to associate with the application
+   * The IAM service role to associate with the application. The App
+   * implements IGrantable.
    *
    * @default - a new role is created
    */
   readonly role?: iam.IRole;
-
-  /**
-   * OAuth token for 3rd party source control system for an Amplify App, used
-   * to create webhook and read-only deploy key. OAuth token is not stored.
-   *
-   * Either `accessToken` or `oauthToken` must be specified if `repository`
-   * is sepcified.
-   *
-   * @default - use access token
-   */
-  readonly oauthToken?: SecretValue;
-
-  /**
-   * The repository for the application. Must use the `HTTPS` protocol.
-   *
-   * @example https://github.com/aws/aws-cdk
-   *
-   * @default - not connected to a repository
-   */
-  readonly repository?: string;
 }
 
 /**
@@ -168,14 +191,6 @@ export class App extends Resource implements IApp, iam.IGrantable {
   constructor(scope: Construct, id: string, props: AppProps) {
     super(scope, id);
 
-    if (props.repository && !props.accessToken && !props.oauthToken) {
-      throw new Error('Either `accessToken` or `oauthToken` must be specified');
-    }
-
-    if (props.repository && !props.repository.startsWith('https://')) {
-      throw new Error('`repository` must use the HTTPS protocol');
-    }
-
     this.customRules = props.customRules || [];
     this.environmentVariables = props.environmentVariables || {};
     this.autoBranchEnvironmentVariables = props.autoBranchCreation && props.autoBranchCreation.environmentVariables || {};
@@ -185,8 +200,10 @@ export class App extends Resource implements IApp, iam.IGrantable {
     });
     this.grantPrincipal = role;
 
+    const sourceCodeProviderOptions = props.sourceCodeProvider?.bind(this);
+
     const app = new CfnApp(this, 'Resource', {
-      accessToken: props.accessToken && props.accessToken.toString(),
+      accessToken: sourceCodeProviderOptions?.accessToken?.toString(),
       autoBranchCreationConfig: props.autoBranchCreation && {
         autoBranchCreationPatterns: props.autoBranchCreation.patterns,
         basicAuthConfig: props.autoBranchCreation.basicAuth && props.autoBranchCreation.basicAuth.bind(this, 'BranchBasicAuth'),
@@ -205,8 +222,8 @@ export class App extends Resource implements IApp, iam.IGrantable {
       environmentVariables: Lazy.anyValue({ produce: () => renderEnvironmentVariables(this.environmentVariables) }, { omitEmptyArray: true }),
       iamServiceRole: role.roleArn,
       name: props.appName || this.node.id,
-      oauthToken: props.oauthToken && props.oauthToken.toString(),
-      repository: props.repository,
+      oauthToken: sourceCodeProviderOptions?.oauthToken?.toString(),
+      repository: sourceCodeProviderOptions?.repository,
     });
 
     this.appId = app.attrAppId;
