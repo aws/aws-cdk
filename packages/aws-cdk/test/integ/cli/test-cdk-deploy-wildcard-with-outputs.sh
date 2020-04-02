@@ -16,8 +16,8 @@ expected_file=${integ_test_dir}/outputs/expected.json
 touch $expected_file
 
 # add prefixes as stacks are keyed on their stack name in the outputs file
-expected_outputs=${scriptdir}/cdk-deploy-wildcard-with-outputs-expected.json
-sed "s|outputs|$STACK_NAME_PREFIX\-outputs|g" "$expected_outputs" > "$expected_file"
+expected_outputs=${scriptdir}/cdk-deploy-wildcard-with-outputs-expected.template
+sed "s|%STACK_NAME_PREFIX%|$STACK_NAME_PREFIX|g" "$expected_outputs" > "$expected_file"
 
 # deploy all outputs stacks
 cdk deploy ${STACK_NAME_PREFIX}-outputs-test-\* --outputs-file ${outputs_file}
