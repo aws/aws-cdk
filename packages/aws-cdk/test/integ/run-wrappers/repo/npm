@@ -5,7 +5,7 @@ command=$1
 
 lerna=$REPO_ROOT/node_modules/.bin/lerna
 
-if [ ! -z ${USE_PUBLISHED_FRAMEWORK_VERSION:-} ]; then
+if [ ! -z "${USE_PUBLISHED_FRAMEWORK_VERSION:-}" ]; then
   # simply pass through to npm and install the published package.
   echo "Running original NPM command since we are testing against published framework version"
   exec $ORIGINAL_NPM "$@"
