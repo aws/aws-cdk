@@ -16,6 +16,7 @@
   },
   "scripts": {
     "build": "echo success",
-    "build+test": "npm run build"
+    "test": "echo sucees",
+    "build+test": "npm run build test && npm run test"
   }
 }
