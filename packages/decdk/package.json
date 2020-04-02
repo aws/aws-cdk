@@ -178,7 +178,7 @@
   },
   "devDependencies": {
     "@types/fs-extra": "^8.1.0",
-    "@types/jest": "^25.1.4",
+    "@types/jest": "^25.1.5",
     "@types/yaml": "1.2.0",
     "@types/yargs": "^15.0.4",
     "jest": "^24.9.0",
