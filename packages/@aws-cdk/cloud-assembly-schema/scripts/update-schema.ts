@@ -1,7 +1,7 @@
 import fs = require('fs');
 import path = require('path');
 import semver = require('semver');
-import TJS = require('typescript-json-schema');
+import tjs = require('typescript-json-schema');
 
 function log(message: string) {
   // tslint:disable-next-line:no-console
@@ -30,7 +30,7 @@ export function generate(out: string, shouldBump: boolean) {
     required: true,
     ref: true,
     topRef: true,
-    noExtraProps: true,
+    noExtraProps: false,
     out
   };
 
@@ -38,8 +38,8 @@ export function generate(out: string, shouldBump: boolean) {
     strictNullChecks: true
   };
 
-  const program = TJS.getProgramFromFiles([path.join(__dirname, "../lib/manifest.d.ts")], compilerOptions);
-  const schema = TJS.generateSchema(program, 'AssemblyManifest', settings);
+  const program = tjs.getProgramFromFiles([path.join(__dirname, "../lib/schema.d.ts")], compilerOptions);
+  const schema = tjs.generateSchema(program, 'AssemblyManifest', settings);
 
   augmentDescription(schema);
   addAnyMetadataEntry(schema);

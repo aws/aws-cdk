@@ -28,7 +28,6 @@
                     "$ref": "#/definitions/RuntimeInfo"
                 }
             },
-            "additionalProperties": false,
             "required": [
                 "version"
             ]
@@ -68,7 +67,6 @@
                     "additionalProperties": {}
                 }
             },
-            "additionalProperties": false,
             "required": [
                 "type"
             ]
@@ -121,7 +119,6 @@
                     }
                 }
             },
-            "additionalProperties": false,
             "required": [
                 "type"
             ]
@@ -163,7 +160,6 @@
                     "type": "string"
                 }
             },
-            "additionalProperties": false,
             "required": [
                 "artifactHashParameter",
                 "id",
@@ -225,7 +221,6 @@
                     "type": "string"
                 }
             },
-            "additionalProperties": false,
             "required": [
                 "id",
                 "packaging",
@@ -246,7 +241,6 @@
                     "type": "string"
                 }
             },
-            "additionalProperties": false,
             "required": [
                 "key",
                 "value"
@@ -278,7 +272,6 @@
                     }
                 }
             },
-            "additionalProperties": false,
             "required": [
                 "key",
                 "props",
@@ -297,7 +290,6 @@
                     }
                 }
             },
-            "additionalProperties": false,
             "required": [
                 "libraries"
             ]

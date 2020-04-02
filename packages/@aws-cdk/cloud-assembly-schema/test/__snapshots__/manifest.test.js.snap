@@ -2,6 +2,6 @@
 
 exports[`manifest load 1`] = `
 Object {
-  "version": "version",
+  "version": "2.0.0",
 }
 `;

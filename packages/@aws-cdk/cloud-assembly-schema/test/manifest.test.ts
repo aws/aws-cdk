@@ -58,7 +58,7 @@ test('cloud-assembly.json.schema is correct', () => {
   ];
 
   // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const schema = require('../scripts/schema.js');
+  const schema = require('../scripts/update-schema.js');
 
   const expected = removeStringKeys(schema.generate(), docStringFields);
 
@@ -91,6 +91,21 @@ test('manifest load fails for invalid artifact type', () => {
   .toThrow(/Invalid assembly manifest/);
 });
 
+test('manifest load fails on high version', () => {
+  expect(() => Manifest.load(fixture('high-version')))
+  .toThrow(/Cloud assembly schema version mismatch/);
+});
+
+test('manifest load fails on invalid version', () => {
+  expect(() => Manifest.load(fixture('invalid-version')))
+  .toThrow(/Invalid semver string/);
+});
+
+test('manifest load succeeds on unknown properties', () => {
+  const manifest = Manifest.load(fixture('unknown-property'));
+  expect(manifest.version).toEqual("2.0.0");
+});
+
 test('stack-tags are deserialized properly', () => {
 
   const m: AssemblyManifest = Manifest.load(fixture('with-stack-tags'));
@@ -100,7 +115,7 @@ test('stack-tags are deserialized properly', () => {
     expect(entry[0].key).toEqual("hello");
     expect(entry[0].value).toEqual("world");
   }
-  expect(m.version).toEqual("version");
+  expect(m.version).toEqual("2.0.0");
 
 });
 

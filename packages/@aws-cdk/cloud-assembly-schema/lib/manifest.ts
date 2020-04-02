@@ -38,6 +38,26 @@ export class Manifest {
   private static schema: jsonschema.Schema = require('../schema.generated/cloud-assembly.schema.json');
 
   private static validate(manifest: assembly.AssemblyManifest) {
+
+    function parseVersion(version: string) {
+      const ver = semver.coerce(version);
+      if (!ver) {
+        throw new Error(`Invalid semver string: "${version}"`);
+      }
+      return ver;
+    }
+
+    const maxVersion = parseVersion(Manifest.version());
+    const actual = parseVersion(manifest.version);
+
+    // first validation the version should be accepted.
+    if (semver.gt(actual, maxVersion)) {
+      throw new Error(`Cloud assembly schema version mismatch:
+        actual('${actual}') > expected('${maxVersion}').
+        Consider upgrading your CLI version.`);
+    }
+
+    // now validate the format is good.
     const validator = new jsonschema.Validator();
     const result = validator.validate(manifest, Manifest.schema, {
 
@@ -49,25 +69,6 @@ export class Manifest {
     } as any);
     if (!result.valid) {
       throw new Error(`Invalid assembly manifest:\n${result}`);
-    }
-
-    function parseVersion(version: string) {
-      const ver = semver.coerce(version);
-      if (!ver) {
-        throw new Error(`Invalid semver string: "${version}"`);
-      }
-      return ver;
-    }
-
-    // the format validation passed, but we have another restriction
-
-    const maxVersion = parseVersion(Manifest.version());
-    const actual = parseVersion(manifest.version);
-
-    if (semver.gt(actual, maxVersion)) {
-      throw new Error(`Cloud assembly schema version mismatch:
-        actual('${actual}') > expected('${maxVersion}').
-        Consider upgrading your CLI version.`);
     }
 
   }
