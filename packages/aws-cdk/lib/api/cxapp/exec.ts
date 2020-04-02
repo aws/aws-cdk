@@ -1,3 +1,4 @@
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as childProcess from 'child_process';
 import * as fs from 'fs-extra';
@@ -75,6 +76,7 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
   env[cxapi.OUTDIR_ENV] = outdir;
 
   // Send version information
+  env[cxapi.CLI_ASM_VERSION_ENV] = cxschema.Manifest.version();
   env[cxapi.CLI_VERSION_ENV] = versionNumber();
 
   debug('env:', env);
