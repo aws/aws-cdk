@@ -47,8 +47,8 @@ is considered `major` version bump.
 
 ## How to consume
 
-If you'd like to consume the schema in order to do validations on `manifest.json` files, simply download it from this repo and run it against
-standard *json-schema* validators, such as [jsonschema](https://www.npmjs.com/package/jsonschema).
+If you'd like to consume the [schema file](./schema.generated/cloud-assembly.schema.json) in order to do validations on `manifest.json` files, 
+simply download it from this repo and run it against standard *json-schema* validators, such as [jsonschema](https://www.npmjs.com/package/jsonschema).
 
 Consumers must take into account the `major` version of the schema they are consuming. They should reject cloud assemblies 
 with a `major` version that is higher than what they expect. While schema validation might pass on such assemblies, the deployment integrity 
