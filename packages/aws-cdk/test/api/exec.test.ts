@@ -44,13 +44,12 @@ test('cli throws when manifest version > schema version', async () => {
   const mockVersionNumber = ImportMock.mockFunction(cxschema.Manifest, 'version', mockManifestVersion);
   try {
     app.synth();
-  } catch (err) {
-    fail(err.message);
   } finally {
     mockVersionNumber.restore();
   }
 
-  const expectedError = `Cloud assembly schema version mismatch: actual('${mockManifestVersion}') > expected('${cxschema.Manifest.version()}'). A newer version of the CDK CLI is necessary to interact with this app.`;
+  const expectedError = `Cloud assembly schema version mismatch: Maximum schema version supported is ${currentSchemaVersion}, but found ${mockManifestVersion}.`
+    +  '\nPlease upgrade your CLI in order to interact with this app.';
   const sdkProvider = await createSdkProvider();
 
   const config = new Configuration();

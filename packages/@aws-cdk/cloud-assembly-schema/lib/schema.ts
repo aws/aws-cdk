@@ -13,7 +13,7 @@ interface BaseAssetMetadataEntry {
   readonly id: string;
 
   /**
-   * The hash of the source directory used to build the asset.
+   * The hash of the asset source.
    */
   readonly sourceHash: string;
 
