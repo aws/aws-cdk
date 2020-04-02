@@ -1345,6 +1345,20 @@ export class LinuxBuildImage implements IBuildImage {
     });
   }
 
+  /**
+   * Uses a Docker image provided by CodeBuild.
+   *
+   * @returns A Docker image provided by CodeBuild.
+   *
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-available.html
+   *
+   * @param id The image identifier
+   * @example 'aws/codebuild/standard:4.0'
+   */
+  public static fromCodeBuildImageId(id: string): IBuildImage {
+    return LinuxBuildImage.codeBuildImage(id);
+  }
+
   private static codeBuildImage(name: string): IBuildImage {
     return new LinuxBuildImage({
       imageId: name,
