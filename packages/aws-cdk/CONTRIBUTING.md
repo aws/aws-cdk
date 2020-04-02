@@ -19,15 +19,6 @@ Run:
 npm run integ-cli
 ```
 
-In addition, you can run CLI integration compatibility tests. These run integration tests of the previously published version. They make sure you don't introduce changes that break any existing functionality.
-
-Run:
-
-```
-npm run integ-cli-backwards # run against latest CLI and Framework.
-npm run integ-cli-framework # run against latest CLI and previous Framework.
-```
-
 ### Init template integration tests
 
 Init template tests will initialize and compile the init templates that the
