@@ -190,7 +190,7 @@ The CodeBuild library supports both Linux and Windows images via the
 
 You can specify one of the predefined Windows/Linux images by using one
 of the constants such as `WindowsBuildImage.WINDOWS_BASE_2_0` or
-`LinuxBuildImage.STANDARD_2_0`. You can also use `LinuxBuildImage.fromCodebuildImage(name)` to specify a predefined image that may not be available as a constant yet.
+`LinuxBuildImage.STANDARD_2_0`.
 
 Alternatively, you can specify a custom image using one of the static methods on
 `XxxBuildImage`:
@@ -200,6 +200,7 @@ Alternatively, you can specify a custom image using one of the static methods on
   ECR repository.
 * Use `.fromAsset(directory)` to use an image created from a
   local asset.
+* Use `.fromCodeBuildImageId(id)` to reference a pre-defined, CodeBuild-provided Docker image.
 
 The following example shows how to define an image from a Docker asset:
 

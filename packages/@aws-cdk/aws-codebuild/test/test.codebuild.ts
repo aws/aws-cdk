@@ -1373,14 +1373,12 @@ export = {
     const stack = new cdk.Stack();
     new codebuild.PipelineProject(stack, 'Project', {
       environment: {
-        buildImage: codebuild.LinuxBuildImage.fromCodebuildImage('aws/codebuild/standard:4.0')
+        buildImage: codebuild.LinuxBuildImage.fromCodeBuildImageId('aws/codebuild/standard:4.0')
       },
     });
 
     expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
       "Environment": {
-        "Type": "LINUX_CONTAINER",
-        "ComputeType": "BUILD_GENERAL1_SMALL",
         "Image": "aws/codebuild/standard:4.0",
       },
     }));

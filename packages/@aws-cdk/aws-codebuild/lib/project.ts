@@ -1352,10 +1352,11 @@ export class LinuxBuildImage implements IBuildImage {
    *
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-available.html
    *
-   * @param name The image identifier
+   * @param id The image identifier
+   * @example 'aws/codebuild/standard:4.0'
    */
-  public static fromCodebuildImage(name: string): IBuildImage {
-    return LinuxBuildImage.codeBuildImage(name);
+  public static fromCodeBuildImageId(id: string): IBuildImage {
+    return LinuxBuildImage.codeBuildImage(id);
   }
 
   private static codeBuildImage(name: string): IBuildImage {
