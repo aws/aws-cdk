@@ -172,13 +172,13 @@
     "constructs": "^2.0.0",
     "fs-extra": "^8.1.0",
     "jsii-reflect": "^1.1.0",
-    "jsonschema": "^1.2.5",
+    "jsonschema": "^1.2.6",
     "yaml": "1.8.3",
     "yargs": "^15.3.1"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.1.0",
-    "@types/jest": "^25.1.4",
+    "@types/jest": "^25.1.5",
     "@types/yaml": "1.2.0",
     "@types/yargs": "^15.0.4",
     "jest": "^24.9.0",

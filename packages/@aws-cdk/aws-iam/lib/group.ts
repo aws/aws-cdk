@@ -108,10 +108,21 @@ abstract class GroupBase extends Resource implements IGroup {
 }
 
 export class Group extends GroupBase {
-
   /**
-   * Imports a group from ARN
-   * @param groupArn (e.g. `arn:aws:iam::account-id:group/group-name`)
+   * Import an external group by ARN.
+   *
+   * If the imported Group ARN is a Token (such as a
+   * `CfnParameter.valueAsString` or a `Fn.importValue()`) *and* the referenced
+   * group has a `path` (like `arn:...:group/AdminGroup/NetworkAdmin`), the
+   * `groupName` property will not resolve to the correct value. Instead it
+   * will resolve to the first path component. We unfortunately cannot express
+   * the correct calculation of the full path name as a CloudFormation
+   * expression. In this scenario the Group ARN should be supplied without the
+   * `path` in order to resolve the correct group resource.
+   *
+   * @param scope construct scope
+   * @param id construct id
+   * @param groupArn the ARN of the group to import (e.g. `arn:aws:iam::account-id:group/group-name`)
    */
   public static fromGroupArn(scope: Construct, id: string, groupArn: string): IGroup {
     const groupName = Stack.of(scope).parseArn(groupArn).resourceName!;
