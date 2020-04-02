@@ -1,6 +1,6 @@
 import * as cdk from '@aws-cdk/core';
 import { Default, RegionInfo } from '@aws-cdk/region-info';
-import { Condition, Conditions, PolicyStatement } from './policy-statement';
+import { Conditions, PolicyStatement } from './policy-statement';
 import { mergePrincipal } from './util';
 
 /**
@@ -123,7 +123,7 @@ export class PrincipalWithConditions<PrincipalType extends PrincipalBase> implem
   /**
    * Add a condition to the principal
    */
-  public addCondition(key: string, value: Condition) {
+  public addCondition(key: string, value: { [key: string]: any }) {
     const existingValue = this.conditions[key];
     this.conditions[key] = existingValue ? { ...existingValue, ...value } : value;
   }

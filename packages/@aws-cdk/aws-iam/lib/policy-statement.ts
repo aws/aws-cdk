@@ -200,7 +200,7 @@ export class PolicyStatement {
   /**
    * Add a condition to the Policy
    */
-  public addCondition(key: string, value: { [key: string]: string | string[] }) {
+  public addCondition(key: string, value: any) {
     const existingValue = this.condition[key];
     this.condition[key] = existingValue ? { ...existingValue, ...value } : value;
   }
@@ -304,12 +304,6 @@ export enum Effect {
 }
 
 /**
- * Condition for when an IAM policy is in effect. Maps from the keys in a request's context to
- * a string value or array of values. See the Conditions interface for more details.
- */
-export type Condition = Record<string, any>;
-
-/**
  * Conditions for when an IAM Policy is in effect, specified in the following structure:
  *
  * `{ "Operator": { "keyInRequestContext": "value" } }`
@@ -319,7 +313,7 @@ export type Condition = Record<string, any>;
  * For more information, including which operators are supported, see [the IAM
  * documentation](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition.html).
  */
-export type Conditions = Record<string, Condition>;
+export type Conditions = Record<string, any>;
 
 /**
  * Interface for creating a policy statement
