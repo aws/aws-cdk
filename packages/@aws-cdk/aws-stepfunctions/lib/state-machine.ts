@@ -1,5 +1,6 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
+import * as logs from '@aws-cdk/aws-logs';
 import { Construct, Duration, IResource, Resource, Stack } from '@aws-cdk/core';
 import { StateGraph } from './state-graph';
 import { CfnStateMachine } from './stepfunctions.generated';
@@ -22,6 +23,56 @@ export enum StateMachineType {
      * Standard Workflows are ideal for long-running, durable, and auditable workflows.
      */
     STANDARD = 'STANDARD'
+}
+
+/**
+ * Defines which category of execution history events are logged.
+ *
+ * @see https://docs.aws.amazon.com/step-functions/latest/dg/cloudwatch-log-level.html
+ *
+ * @default ERROR
+ */
+export enum LogLevel {
+    /**
+     * No Logging
+     */
+    OFF = 'OFF',
+    /**
+     * Log everything
+     */
+    ALL = 'ALL',
+    /**
+     * Log all errors
+     */
+    ERROR= 'ERROR',
+    /**
+     * Log fatal errors
+     */
+    FATAL = 'FATAL'
+}
+
+/**
+ * Defines what execution history events are logged and where they are logged.
+ */
+export interface LogOptions {
+  /**
+   * The log group where the execution history events will be logged.
+   */
+  readonly destination: logs.ILogGroup;
+
+  /**
+   * Determines whether execution data is included in your log.
+   *
+   * @default true
+   */
+  readonly includeExecutionData?: boolean;
+
+  /**
+   * Defines which category of execution history events are logged.
+   *
+   * @default ERROR
+   */
+  readonly level?: LogLevel;
 }
 
 /**
@@ -60,6 +111,13 @@ export interface StateMachineProps {
      * @default StateMachineType.STANDARD
      */
     readonly stateMachineType?: StateMachineType;
+
+    /**
+     * Defines what execution history events are logged and where they are logged.
+     *
+     * @default No logging
+     */
+    readonly logs?: LogOptions;
 }
 
 /**
@@ -132,11 +190,37 @@ export class StateMachine extends StateMachineBase {
 
         this.stateMachineType = props.stateMachineType ? props.stateMachineType : StateMachineType.STANDARD;
 
+        let loggingConfiguration: CfnStateMachine.LoggingConfigurationProperty | undefined;
+        if (props.logs) {
+            const conf = props.logs;
+            loggingConfiguration = {
+                destinations: [{ cloudWatchLogsLogGroup: { logGroupArn: conf.destination.logGroupArn } }],
+                includeExecutionData: conf.includeExecutionData,
+                level: conf.level || 'ERROR'
+            };
+            // https://docs.aws.amazon.com/step-functions/latest/dg/cw-logs.html#cloudwatch-iam-policy
+            this.addToRolePolicy(new iam.PolicyStatement({
+              effect: iam.Effect.ALLOW,
+              actions: [
+                'logs:CreateLogDelivery',
+                'logs:GetLogDelivery',
+                'logs:UpdateLogDelivery',
+                'logs:DeleteLogDelivery',
+                'logs:ListLogDeliveries',
+                'logs:PutResourcePolicy',
+                'logs:DescribeResourcePolicies',
+                'logs:DescribeLogGroups'
+              ],
+              resources: ['*']
+            }));
+        }
+
         const resource = new CfnStateMachine(this, 'Resource', {
             stateMachineName: this.physicalName,
             stateMachineType: props.stateMachineType ? props.stateMachineType : undefined,
             roleArn: this.role.roleArn,
             definitionString: Stack.of(this).toJsonString(graph.toGraphJson()),
+            loggingConfiguration
         });
 
         resource.node.addDependency(this.role);
