@@ -47,23 +47,7 @@ export interface BuilderOptions {
  * Builder
  */
 export class Builder {
-  private readonly parcelBinPath: string;
-
   constructor(private readonly options: BuilderOptions) {
-    let parcelPkgPath: string;
-    try {
-      parcelPkgPath = require.resolve('parcel-bundler/package.json'); // This will throw if `parcel-bundler` cannot be found
-    } catch (err) {
-      throw new Error('It looks like parcel-bundler is not installed. Please install v1.x of parcel-bundler with yarn or npm.');
-    }
-    const parcelDir = path.dirname(parcelPkgPath);
-    const parcelPkg = JSON.parse(fs.readFileSync(parcelPkgPath, 'utf8'));
-
-    if (!parcelPkg.version || !/^1\./.test(parcelPkg.version)) { // Peer dependency on parcel v1.x
-      throw new Error(`This module has a peer dependency on parcel-bundler v1.x. Got v${parcelPkg.version}.`);
-    }
-
-    this.parcelBinPath = path.join(parcelDir, parcelPkg.bin.parcel);
   }
 
   public build(): void {
@@ -78,9 +62,19 @@ export class Builder {
         });
       }
 
-      const args = [
-        'build', this.options.entry,
-        '--out-dir', this.options.outDir,
+      const dockerBuildArgs = [
+        "build", "-t", "parcel-bundler", path.join(__dirname, "../parcel-bundler")
+      ];
+      const dockerRunArgs = [
+        "run", "--rm",
+        "-v", `${path.dirname(path.resolve(this.options.entry))}:/entry`,
+        "-v", `${path.resolve(this.options.outDir)}:/out`,
+        ...(this.options.cacheDir ? ["-v", `${path.resolve(this.options.cacheDir)}:/cache`] : []),
+        "parcel-bundler"
+      ];
+      const parcelArgs = [
+        'parcel', 'build', `/entry/${path.basename(this.options.entry)}`,
+        '--out-dir', "/out",
         '--out-file', 'index.js',
         '--global', this.options.global,
         '--target', 'node',
@@ -88,19 +82,23 @@ export class Builder {
         '--log-level', '2',
         !this.options.minify && '--no-minify',
         !this.options.sourceMaps && '--no-source-maps',
-        ...this.options.cacheDir
-          ? ['--cache-dir', this.options.cacheDir]
-          : [],
+        ...(this.options.cacheDir ? ['--cache-dir', "/cache"] : []),
       ].filter(Boolean) as string[];
 
-      const parcel = spawnSync(this.parcelBinPath, args);
+      const build = spawnSync("docker", dockerBuildArgs);
+      if (build.error) {
+        throw build.error;
+      }
+      if (build.status !== 0) {
+        throw new Error(`[Status ${build.status}] stdout: ${build.stdout?.toString().trim()}\n\n\nstderr: ${build.stderr?.toString().trim()}`);
+      }
 
+      const parcel = spawnSync("docker", [...dockerRunArgs, ...parcelArgs]);
       if (parcel.error) {
         throw parcel.error;
       }
-
       if (parcel.status !== 0) {
-        throw new Error(parcel.stdout.toString().trim());
+        throw new Error(`[Status ${parcel.status}] stdout: ${parcel.stdout?.toString().trim()}\n\n\nstderr: ${parcel.stderr?.toString().trim()}`);
       }
     } catch (err) {
       throw new Error(`Failed to build file at ${this.options.entry}: ${err}`);

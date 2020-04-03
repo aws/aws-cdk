@@ -1,25 +1,14 @@
 import { spawnSync } from 'child_process';
-import * as fs from 'fs';
+import * as path from 'path';
 import { Builder } from '../lib/builder';
-
-let parcelPkgPath: string;
-let parcelPkg: Buffer;
-beforeAll(() => {
-  parcelPkgPath = require.resolve('parcel-bundler/package.json');
-  parcelPkg = fs.readFileSync(parcelPkgPath);
-});
-
-afterEach(() => {
-  fs.writeFileSync(parcelPkgPath, parcelPkg);
-});
 
 jest.mock('child_process', () => ({
   spawnSync: jest.fn((_cmd: string, args: string[]) => {
-    if (args[1] === 'error') {
+    if (args.includes('/entry/error')) {
       return { error: 'parcel-error' };
     }
 
-    if (args[1] === 'status') {
+    if (args.includes('/entry/status')) {
       return { status: 1, stdout: Buffer.from('status-error') };
     }
 
@@ -27,7 +16,7 @@ jest.mock('child_process', () => ({
   })
 }));
 
-test('calls parcel with the correct args', () => {
+test('calls docker with the correct args', () => {
   const builder = new Builder({
     entry: 'entry',
     global: 'handler',
@@ -36,9 +25,20 @@ test('calls parcel with the correct args', () => {
   });
   builder.build();
 
-  expect(spawnSync).toHaveBeenCalledWith(expect.stringContaining('parcel-bundler'), expect.arrayContaining([
-    'build', 'entry',
-    '--out-dir', 'out-dir',
+  // docker build
+  expect(spawnSync).toHaveBeenNthCalledWith(1, 'docker', [
+    'build', '-t', 'parcel-bundler', path.join(__dirname, '../parcel-bundler')
+  ]);
+
+  // docker run
+  expect(spawnSync).toHaveBeenNthCalledWith(2, 'docker', [
+    'run', '--rm',
+    '-v', `${path.join(__dirname, '..')}:/entry`,
+    '-v', `${path.join(__dirname, '../out-dir')}:/out`,
+    '-v', `${path.join(__dirname, '../cache-dir')}:/cache`,
+    'parcel-bundler',
+    'parcel', 'build', '/entry/entry',
+    '--out-dir', '/out',
     '--out-file', 'index.js',
     '--global', 'handler',
     '--target', 'node',
@@ -46,8 +46,8 @@ test('calls parcel with the correct args', () => {
     '--log-level', '2',
     '--no-minify',
     '--no-source-maps',
-    '--cache-dir', 'cache-dir'
-  ]));
+    '--cache-dir', '/cache'
+  ]);
 });
 
 test('throws in case of error', () => {
@@ -66,16 +66,4 @@ test('throws if status is not 0', () => {
     outDir: 'out-dir'
   });
   expect(() => builder.build()).toThrow('status-error');
-});
-
-test('throws when parcel-bundler is not 1.x', () => {
-  fs.writeFileSync(parcelPkgPath, JSON.stringify({
-    ...JSON.parse(parcelPkg.toString()),
-    version: '2.3.4'
-  }));
-  expect(() => new Builder({
-    entry: 'entry',
-    global: 'handler',
-    outDir: 'out-dur'
-  })).toThrow(/This module has a peer dependency on parcel-bundler v1.x. Got v2.3.4./);
 });
