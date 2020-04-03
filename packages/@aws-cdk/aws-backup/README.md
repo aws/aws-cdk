@@ -43,6 +43,7 @@ plan.addSelection('Selection', {
   ]
 })
 ```
+
 If not specified, a new IAM role with a managed policy for backup will be
 created for the selection. The `BackupSelection` implements `IGrantable`.
 
@@ -69,7 +70,7 @@ plan.addRule(BackupPlanRule.weekly());
 ```
 
 By default a new [vault](#Backup-vault) is created when creating a plan.
-It is also possible specify a vault either at the plan level or at the
+It is also possible to specify a vault either at the plan level or at the
 rule level.
 
 ```ts
