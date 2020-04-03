@@ -1,9 +1,25 @@
-import { Construct, Duration, Resource, Stack } from '@aws-cdk/core';
+import { Construct, Duration, IResource, Resource, Stack } from '@aws-cdk/core';
 import { AccessLogFormat, IAccessLogDestination} from './access-log';
 import { CfnStage } from './apigateway.generated';
 import { Deployment } from './deployment';
 import { IRestApi } from './restapi';
 import { parseMethodOptionsPath } from './util';
+
+/**
+ * Represents an APIGateway Stage.
+ */
+export interface IStage extends IResource {
+  /**
+   * Name of this stage.
+   * @attribute
+   */
+  readonly stageName: string;
+
+  /**
+   * RestApi to which this stage is associated.
+   */
+  readonly restApi: IRestApi;
+}
 
 export interface StageOptions extends MethodDeploymentOptions {
   /**
@@ -174,10 +190,18 @@ export interface MethodDeploymentOptions {
   readonly cacheDataEncrypted?: boolean;
 }
 
-export class Stage extends Resource {
+export class Stage extends Resource implements IStage {
   /**
-   * @attribute
+   * Import a stage given its name and the original RestApi it's associated to.
    */
+  public static fromStageName(scope: Construct, id: string, restApi: IRestApi, stageName: string): IStage {
+    class Import extends Resource implements IStage {
+      public readonly stageName = stageName;
+      public readonly restApi = restApi;
+    }
+    return new Import(scope, id);
+  }
+
   public readonly stageName: string;
 
   public readonly restApi: IRestApi;

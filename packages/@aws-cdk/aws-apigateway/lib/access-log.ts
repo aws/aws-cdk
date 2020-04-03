@@ -1,5 +1,5 @@
-import {ILogGroup} from '@aws-cdk/aws-logs';
-import {Stage} from './stage';
+import { ILogGroup } from '@aws-cdk/aws-logs';
+import { IStage } from './stage';
 
 /**
  * Access log destination for a RestApi Stage.
@@ -7,10 +7,8 @@ import {Stage} from './stage';
 export interface IAccessLogDestination {
   /**
    * Binds this destination to the RestApi Stage.
-   *
-   * @param stage [disable-awslint:ref-via-interface]
    */
-  bind(stage: Stage): AccessLogDestinationConfig
+  bind(stage: IStage): AccessLogDestinationConfig
 }
 
 /**
@@ -33,7 +31,7 @@ export class LogGroupLogDestination implements IAccessLogDestination {
   /**
    * Binds this destination to the CloudWatch Logs.
    */
-  public bind(_stage: Stage): AccessLogDestinationConfig {
+  public bind(_stage: IStage): AccessLogDestinationConfig {
     return {
       destinationArn: this.logGroup.logGroupArn
     };
