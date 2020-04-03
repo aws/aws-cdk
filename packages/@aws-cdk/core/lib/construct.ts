@@ -68,15 +68,16 @@ export class ConstructNode {
    * @param node The root node
    */
   public static prepare(node: ConstructNode) {
-    const constructs = node.findAll(ConstructOrder.PREORDER);
+    let constructs = node.findAll(ConstructOrder.PREORDER);
 
     // Aspects are applied root to leaf
     for (const construct of constructs) {
       construct.node.invokeAspects();
     }
 
-    // Use .reverse() to achieve post-order traversal
-    for (const construct of constructs.reverse()) {
+    // Since constrcuts can be added to the tree when invoking an Aspect, recreate the constructs list
+    constructs = node.findAll(ConstructOrder.POSTORDER);
+    for (const construct of constructs) {
       if (Construct.isConstruct(construct)) {
         (construct as any).prepare(); // "as any" is needed because we want to keep "prepare" protected
       }
