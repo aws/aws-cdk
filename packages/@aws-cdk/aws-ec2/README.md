@@ -130,10 +130,10 @@ type and availability zone. If no availability zones are specified, all
 availability zones are considered. 
 * If no subnet type is specified, the type defaults to the types of subnets in the
 VPC, in this order:
-** If Private subnets exist, then the type defaults to Private
-** If no Private subnets exist, but Isolated subnets do, then the type defaults to
+  * If Private subnets exist, then the type defaults to Private
+  * If no Private subnets exist, but Isolated subnets do, then the type defaults to
 Isolated
-** If no Private or Isolated subnets exist, the type defaults to Public
+  * If no Private or Isolated subnets exist, the type defaults to Public
 
 ### Using NAT instances
 
