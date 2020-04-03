@@ -1,7 +1,6 @@
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import { Stack } from '@aws-cdk/core';
-import { BootstrapOptions } from './cluster';
-import { LifecycleLabel } from './spot-interrupt-handler';
+import { BootstrapOptions, LifecycleLabel } from './cluster';
 
 export function renderUserData(clusterName: string, autoScalingGroup: autoscaling.AutoScalingGroup, options: BootstrapOptions = { }): string[] {
   const stack = Stack.of(autoScalingGroup);

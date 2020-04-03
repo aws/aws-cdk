@@ -997,7 +997,7 @@ export enum DefaultCapacityType {
 /**
  * The lifecycle label for node selector
  */
-enum LifecycleLabel {
+export enum LifecycleLabel {
   /**
    * on-demand instances
    */
