@@ -33,7 +33,7 @@
     "cdk-build-tools": "0.0.0",
     "jest": "^24.9.0",
     "pkglint": "0.0.0",
-    "ts-jest": "^25.3.0"
+    "ts-jest": "^25.3.1"
   },
   "dependencies": {
     "@aws-cdk/cloudformation-diff": "0.0.0",

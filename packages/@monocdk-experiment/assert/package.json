@@ -45,7 +45,7 @@
     "cdk-build-tools": "0.0.0",
     "jest": "^24.9.0",
     "pkglint": "0.0.0",
-    "ts-jest": "^25.3.0",
+    "ts-jest": "^25.3.1",
     "@monocdk-experiment/rewrite-imports": "0.0.0",
     "monocdk-experiment": "0.0.0",
     "constructs": "^2.0.0"

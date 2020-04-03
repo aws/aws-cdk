@@ -72,7 +72,7 @@
     "jest": "^25.2.4",
     "pkglint": "0.0.0",
     "sinon": "^9.0.1",
-    "ts-jest": "^25.3.0"
+    "ts-jest": "^25.3.1"
   },
   "dependencies": {
     "@aws-cdk/aws-applicationautoscaling": "0.0.0",
