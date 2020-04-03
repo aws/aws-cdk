@@ -168,8 +168,11 @@ export class GraphWidget extends ConcreteWidget {
   }
 
   public toJson(): any[] {
-    const horizontalAnnoations =  (this.props.leftAnnotations || []).map(mapAnnotation('left')).concat(
-      (this.props.rightAnnotations || []).map(mapAnnotation('right')));
+    const horizontalAnnotations = [
+      ...(this.props.leftAnnotations || []).map(mapAnnotation('left')),
+      ...(this.props.rightAnnotations || []).map(mapAnnotation('right')),
+    ];
+
     const metrics = allMetricsGraphJson(this.props.left || [], this.props.right || []);
     return [{
       type: 'metric',
@@ -183,7 +186,7 @@ export class GraphWidget extends ConcreteWidget {
         region: this.props.region || cdk.Aws.REGION,
         stacked: this.props.stacked,
         metrics: metrics.length > 0 ? metrics : undefined,
-        annotations: horizontalAnnoations.length > 0 ? { horizontal: horizontalAnnoations } : undefined,
+        annotations: horizontalAnnotations.length > 0 ? { horizontal: horizontalAnnotations } : undefined,
         yAxis: {
           left: this.props.leftYAxis !== undefined ? this.props.leftYAxis : undefined,
           right: this.props.rightYAxis !== undefined ? this.props.rightYAxis : undefined,
@@ -251,14 +254,15 @@ export interface HorizontalAnnotation {
   /**
    * Label for the annotation
    *
-   * @default No label
+   * @default - No label
    */
   readonly label?: string;
 
   /**
-   * Hex color code to be used for the annotation
+   * The hex color code, prefixed with '#' (e.g. '#00ff00'), to be used for the annotation.
+   * The `Color` class has a set of standard colors that can be used here.
    *
-   * @default Automatic color
+   * @default - Automatic color
    */
   readonly color?: string;
 
@@ -292,6 +296,35 @@ export enum Shading {
    * Add shading below the annotation
    */
   BELOW = 'below'
+}
+
+/**
+ * A set of standard colours that can be used in annotations in a GraphWidget.
+ */
+export class Color {
+  /** blue - hex #1f77b4 */
+  public static readonly BLUE = '#1f77b4';
+
+  /** brown - hex #8c564b */
+  public static readonly BROWN = '#8c564b';
+
+  /** green - hex #2ca02c */
+  public static readonly GREEN = '#2ca02c';
+
+  /** grey - hex #7f7f7f */
+  public static readonly GREY = '#7f7f7f';
+
+  /** orange - hex #ff7f0e */
+  public static readonly ORANGE = '#ff7f0e';
+
+  /** pink - hex #e377c2 */
+  public static readonly PINK = '#e377c2';
+
+  /** purple - hex #9467bd */
+  public static readonly PURPLE = '#9467bd';
+
+  /** red - hex #d62728 */
+  public static readonly RED = '#d62728';
 }
 
 function mapAnnotation(yAxis: string): ((x: HorizontalAnnotation) => any) {

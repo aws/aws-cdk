@@ -77,10 +77,10 @@ let report = function(event, context, responseStatus, physicalResourceId, respon
  * @param {string} hostedZoneId the Route53 Hosted Zone ID
  * @returns {string} Validated certificate ARN
  */
-const requestCertificate = async function(requestId, domainName, subjectAlternativeNames, hostedZoneId, region) {
+const requestCertificate = async function(requestId, domainName, subjectAlternativeNames, hostedZoneId, region, route53Endpoint) {
   const crypto = require('crypto');
   const acm = new aws.ACM({ region });
-  const route53 = new aws.Route53();
+  const route53 = route53Endpoint ? new aws.Route53({endpoint: route53Endpoint}) : new aws.Route53();
   if (waiter) {
     // Used by the test suite, since waiters aren't mockable yet
     route53.waitFor = acm.waitFor = waiter;
@@ -99,15 +99,24 @@ const requestCertificate = async function(requestId, domainName, subjectAlternat
 
   console.log('Waiting for ACM to provide DNS records for validation...');
 
-  let record;
-  for (let attempt = 0; attempt < maxAttempts && !record; attempt++) {
+  let records;
+  for (let attempt = 0; attempt < maxAttempts && !records; attempt++) {
     const { Certificate } = await acm.describeCertificate({
       CertificateArn: reqCertResponse.CertificateArn
     }).promise();
     const options = Certificate.DomainValidationOptions || [];
-
     if (options.length > 0 && options[0].ResourceRecord) {
-      record = options[0].ResourceRecord;
+      // some alternative names will produce the same validation record
+      // as the main domain (eg. example.com + *.example.com)
+      // filtering duplicates to avoid errors with adding the same record
+      // to the route53 zone twice
+      const unique = options
+        .map((val) => val.ResourceRecord)
+        .reduce((acc, cur) => {
+          acc[cur.Name] = cur;
+          return acc;
+        }, {});
+      records = Object.keys(unique).sort().map(key => unique[key]);
     } else {
       // Exponential backoff with jitter based on 200ms base
       // component of backoff fixed to ensure minimum total wait time on
@@ -116,25 +125,28 @@ const requestCertificate = async function(requestId, domainName, subjectAlternat
       await sleep(random() * base * 50 + base * 150);
     }
   }
-  if (!record) {
+  if (!records) {
     throw new Error(`Response from describeCertificate did not contain DomainValidationOptions after ${maxAttempts} attempts.`)
   }
 
-  console.log(`Upserting DNS record into zone ${hostedZoneId}: ${record.Name} ${record.Type} ${record.Value}`);
+  console.log(`Upserting ${records.length} DNS records into zone ${hostedZoneId}:`);
 
   const changeBatch = await route53.changeResourceRecordSets({
     ChangeBatch: {
-      Changes: [{
-        Action: 'UPSERT',
-        ResourceRecordSet: {
-          Name: record.Name,
-          Type: record.Type,
-          TTL: 60,
-          ResourceRecords: [{
-            Value: record.Value
-          }]
-        }
-      }]
+      Changes: records.map((record) => {
+        console.log(`${record.Name} ${record.Type} ${record.Value}`)
+        return {
+          Action: 'UPSERT',
+          ResourceRecordSet: {
+            Name: record.Name,
+            Type: record.Type,
+            TTL: 60,
+            ResourceRecords: [{
+              Value: record.Value
+            }]
+          }
+        };
+      }),
     },
     HostedZoneId: hostedZoneId
   }).promise();
@@ -227,6 +239,7 @@ exports.certificateRequestHandler = async function(event, context) {
           event.ResourceProperties.SubjectAlternativeNames,
           event.ResourceProperties.HostedZoneId,
           event.ResourceProperties.Region,
+          event.ResourceProperties.Route53Endpoint,
         );
         responseData.Arn = physicalResourceId = certificateArn;
         break;

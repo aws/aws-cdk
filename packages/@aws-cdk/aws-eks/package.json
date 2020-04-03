@@ -64,7 +64,7 @@
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
     "@types/nodeunit": "^0.0.30",
-    "aws-sdk": "^2.637.0",
+    "aws-sdk": "^2.652.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
@@ -80,7 +80,8 @@
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-ssm": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "@aws-cdk/custom-resources": "0.0.0"
+    "@aws-cdk/custom-resources": "0.0.0",
+    "constructs": "^2.0.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -91,7 +92,8 @@
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-ssm": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "@aws-cdk/custom-resources": "0.0.0"
+    "@aws-cdk/custom-resources": "0.0.0",
+    "constructs": "^2.0.0"
   },
   "engines": {
     "node": ">= 10.3.0"
@@ -99,10 +101,19 @@
   "awslint": {
     "exclude": [
       "resource-attribute:@aws-cdk/aws-eks.FargateCluster.clusterSecurityGroupId",
+      "resource-attribute:@aws-cdk/aws-eks.FargateCluster.clusterEncryptionConfigKeyArn",
       "resource-attribute:@aws-cdk/aws-eks.Cluster.clusterSecurityGroupId",
+      "resource-attribute:@aws-cdk/aws-eks.Cluster.clusterEncryptionConfigKeyArn",
       "props-no-arn-refs:@aws-cdk/aws-eks.ClusterProps.outputMastersRoleArn",
-      "resource-attribute:@aws-cdk/aws-eks.Cluster.clusterSecurityGroupId"
+      "resource-attribute:@aws-cdk/aws-eks.Cluster.clusterSecurityGroupId",
+      "resource-attribute:@aws-cdk/aws-eks.Cluster.clusterSecurityGroupId",
+      "docs-public-apis:@aws-cdk/aws-eks.NodegroupAmiType.AL2_X86_64",
+      "docs-public-apis:@aws-cdk/aws-eks.NodegroupAmiType.AL2_X86_64_GPU"
+
     ]
   },
-  "stability": "experimental"
+  "stability": "experimental",
+  "awscdkio": {
+    "announce": false
+  }
 }

@@ -43,6 +43,20 @@ export class MockSdkProvider extends SdkProvider {
   public stubEcr(stubs: SyncHandlerSubsetOf<AWS.ECR>) {
     (this.sdk as any).ecr = jest.fn().mockReturnValue(partialAwsService<AWS.ECR>(stubs));
   }
+
+  /**
+   * Replace the S3 client with the given object
+   */
+  public stubS3(stubs: SyncHandlerSubsetOf<AWS.S3>) {
+    (this.sdk as any).s3 = jest.fn().mockReturnValue(partialAwsService<AWS.S3>(stubs));
+  }
+
+  /**
+   * Replace the STS client with the given object
+   */
+  public stubSTS(stubs: SyncHandlerSubsetOf<AWS.STS>) {
+    (this.sdk as any).sts = jest.fn().mockReturnValue(partialAwsService<AWS.STS>(stubs));
+  }
 }
 
 export class MockSdk implements ISDK {
@@ -125,15 +139,16 @@ type AwsCallInputOutput<T> =
     T extends {
       (args: infer INPUT, callback?: ((err: AWS.AWSError, data: any) => void) | undefined): AWS.Request<infer OUTPUT, AWS.AWSError>;
       (callback?: ((err: AWS.AWSError, data: {}) => void) | undefined): AWS.Request<any, any>;
-    } ? [INPUT, OUTPUT] : never;
+    } ? [INPUT, OUTPUT] : T;
 
 // Determine the type of the mock handler from the type of the Input/Output type pair.
 // Don't need to worry about the 'never', TypeScript will propagate it upwards making it
 // impossible to specify the field that has 'never' anywhere in its type.
-type MockHandlerType<AI extends [any, any]> = (input: AI[0]) => AI[1];
+type MockHandlerType<AI> =
+    AI extends [any, any] ? (input: AI[0]) => AI[1] : AI;
 
 // Any subset of the full type that synchronously returns the output structure is okay
-type SyncHandlerSubsetOf<S> = {[K in keyof S]?: MockHandlerType<AwsCallInputOutput<S[K]>>};
+export type SyncHandlerSubsetOf<S> = {[K in keyof S]?: MockHandlerType<AwsCallInputOutput<S[K]>>};
 
 /**
  * Fake AWS response.
@@ -164,4 +179,19 @@ export function mockResolvedEnvironment(): cxapi.Environment {
     region: 'bermuda-triangle-1337',
     name: 'aws://123456789/bermuda-triangle-1337',
   };
+}
+
+// Jest helpers
+
+// An object on which all callables are Jest Mocks
+export type MockedObject<S extends object> = {[K in keyof S]: MockedFunction<Required<S>[K]>};
+
+// If a function, then a mocked version of it, otherwise just T
+type MockedFunction<T> = T extends (...args: any[]) => any
+  ? jest.MockInstance<ReturnType<T>, jest.ArgsType<T>>
+  : T;
+export function errorWithCode(code: string, message: string) {
+  const ret = new Error(message);
+  (ret as any).code = code;
+  return ret;
 }

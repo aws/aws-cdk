@@ -2,8 +2,8 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as path from 'path';
+import { Tag } from '../cdk-toolkit';
 import { Mode, SdkProvider } from './aws-auth';
-import {Tag} from "./cxapp/stacks";
 import { deployStack, DeployStackResult } from './deploy-stack';
 
 // tslint:disable:max-line-length

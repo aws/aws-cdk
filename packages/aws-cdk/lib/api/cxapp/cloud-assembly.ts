@@ -3,9 +3,6 @@ import * as colors from 'colors/safe';
 import * as minimatch from 'minimatch';
 import { error, print, warning } from '../../logging';
 
-export interface CloudAssemblyProps {
-}
-
 export enum DefaultSelection {
   /**
    * Returns an empty selection in case there are no selectors.
@@ -61,7 +58,13 @@ export enum ExtendedStackSelection {
  * A single Cloud Assembly and the operations we do on it to deploy the artifacts inside
  */
 export class CloudAssembly {
+  /**
+   * The directory this CloudAssembly was read from
+   */
+  public readonly directory: string;
+
   constructor(public readonly assembly: cxapi.CloudAssembly) {
+    this.directory = assembly.directory;
   }
 
   public async selectStacks(selectors: string[], options: SelectStacksOptions): Promise<StackCollection> {
@@ -75,12 +78,12 @@ export class CloudAssembly {
     if (selectors.length === 0) {
       switch (options.defaultBehavior) {
         case DefaultSelection.AllStacks:
-          return this.collectionForStacks(stacks);
+          return new StackCollection(this, stacks);
         case DefaultSelection.None:
-          return this.collectionForStacks([]);
+          return new StackCollection(this, []);
         case DefaultSelection.OnlySingle:
           if (stacks.length === 1) {
-            return this.collectionForStacks(stacks);
+            return new StackCollection(this, stacks);
           } else {
             throw new Error(`Since this app includes more than a single stack, specify which stacks to use (wildcards are supported)\n` +
               `Stacks: ${stacks.map(x => x.id).join(' ')}`);
@@ -125,28 +128,14 @@ export class CloudAssembly {
     // Filter original array because it is in the right order
     const selectedList = stacks.filter(s => selectedStacks.has(s.id));
 
-    return this.collectionForStacks(selectedList);
+    return new StackCollection(this, selectedList);
   }
 
   /**
-   * Return a collection of Cloud Artifacts for the given set of stacks.
-   *
-   * Include the non-stack dependencies ordered before the stacks that depend
-   * on them.
-   *
-   * Requires that the input is already toposorted.
+   * Select a single stack by its ID
    */
-  private collectionForStacks(stacks: cxapi.CloudFormationStackArtifact[]): StackCollection {
-    const artifacts = new Array<cxapi.CloudArtifact>();
-    for (const stack of stacks) {
-      const nonStackDependencies = stack.dependencies.filter(s => !(s instanceof cxapi.CloudFormationStackArtifact));
-
-      // Insert all non-stack dependencies that aren't already in the collection
-      artifacts.push(...nonStackDependencies.filter(art => !artifacts.includes(art)));
-      // Then include the stack itself
-      artifacts.push(stack);
-    }
-    return new StackCollection(artifacts);
+  public stackById(stackId: string) {
+    return new StackCollection(this, [this.assembly.getStackArtifact(stackId)]);
   }
 }
 
@@ -158,15 +147,28 @@ export class CloudAssembly {
  * bundles cannot.
  */
 export class StackCollection {
-  constructor(private readonly artifacts: cxapi.CloudArtifact[]) {
+  constructor(public readonly assembly: CloudAssembly, public readonly stackArtifacts: cxapi.CloudFormationStackArtifact[]) {
   }
 
   public get stackCount() {
-    return this.stacks.length;
+    return this.stackArtifacts.length;
   }
 
   public get firstStack() {
-    return this.stacks[0];
+    if (this.stackCount < 1) {
+      throw new Error(`StackCollection contains no stack artifacts (trying to access the first one)`);
+    }
+    return this.stackArtifacts[0];
+  }
+
+  public get stackIds(): string[] {
+    return this.stackArtifacts.map(s => s.id);
+  }
+
+  public reversed() {
+    const arts = [...this.stackArtifacts];
+    arts.reverse();
+    return new StackCollection(this.assembly, arts);
   }
 
   /**
@@ -176,7 +178,7 @@ export class StackCollection {
     let warnings = false;
     let errors = false;
 
-    for (const stack of this.stacks) {
+    for (const stack of this.stackArtifacts) {
       for (const message of stack.messages) {
         switch (message.level) {
           case cxapi.SynthesisMessageLevel.WARNING:
@@ -210,11 +212,6 @@ export class StackCollection {
       }
     }
   }
-
-  private get stacks(): cxapi.CloudFormationStackArtifact[] {
-    return this.artifacts.filter(isStackArtifact);
-  }
-
 }
 
 export interface MetadataMessageOptions {
@@ -238,14 +235,10 @@ export interface MetadataMessageOptions {
    * @default false
    */
   strict?: boolean;
-
-}
-
-export class ExecutionPlan {
 }
 
 /**
- * Include stacks that depend on the stacks already in the set
+ * Calculate the transitive closure of stack dependents.
  *
  * Modifies `selectedStacks` in-place.
  */
@@ -254,8 +247,8 @@ function includeDownstreamStacks(
     allStacks: Map<string, cxapi.CloudFormationStackArtifact>) {
   const added = new Array<string>();
 
-  let madeProgress = true;
-  while (madeProgress) {
+  let madeProgress;
+  do {
     madeProgress = false;
 
     for (const [id, stack] of allStacks) {
@@ -266,7 +259,7 @@ function includeDownstreamStacks(
         madeProgress = true;
       }
     }
-  }
+  } while (madeProgress);
 
   if (added.length > 0) {
     print('Including depending stacks: %s', colors.bold(added.join(', ')));
@@ -274,7 +267,7 @@ function includeDownstreamStacks(
 }
 
 /**
- * Include stacks that that stacks in the set depend on
+ * Calculate the transitive closure of stack dependencies.
  *
  * Modifies `selectedStacks` in-place.
  */
@@ -301,8 +294,4 @@ function includeUpstreamStacks(
   if (added.length > 0) {
     print('Including dependency stacks: %s', colors.bold(added.join(', ')));
   }
-}
-
-function isStackArtifact(x: cxapi.CloudArtifact): x is cxapi.CloudFormationStackArtifact {
-  return x instanceof cxapi.CloudFormationStackArtifact;
 }

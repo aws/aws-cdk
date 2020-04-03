@@ -1,5 +1,4 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import * as aws from 'aws-sdk';
 import * as colors from 'colors/safe';
 import { debug } from '../logging';
 import { ISDK } from './aws-auth';
@@ -24,7 +23,7 @@ export class ToolkitInfo {
       return undefined;
     }
 
-    const outputs = stackOutputs(stack);
+    const outputs = stack.outputs;
 
     return new ToolkitInfo({
       sdk, environment,
@@ -34,7 +33,7 @@ export class ToolkitInfo {
 
     function requireOutput(output: string): string {
       if (!(output in outputs)) {
-        throw new Error(`The CDK toolkit stack (${stack!.StackName}) does not have an output named ${output}. Use 'cdk bootstrap' to correct this.`);
+        throw new Error(`The CDK toolkit stack (${stack!.stackName}) does not have an output named ${output}. Use 'cdk bootstrap' to correct this.`);
       }
       return outputs[output];
     }
@@ -110,19 +109,4 @@ export interface EcrCredentials {
   username: string;
   password: string;
   endpoint: string;
-}
-
-/**
- * Return the stack outputs as a map
- */
-function stackOutputs(stack: aws.CloudFormation.Stack): Record<string, string> {
-  const ret: Record<string, string> = {};
-
-  for (const output of stack.Outputs || []) {
-    if (output.OutputKey) {
-      ret[output.OutputKey] = output.OutputValue ?? '';
-    }
-  }
-
-  return ret;
 }

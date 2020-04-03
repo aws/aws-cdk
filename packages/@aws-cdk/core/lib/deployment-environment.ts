@@ -4,7 +4,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from "./assets";
 import { Fn } from './cfn-fn';
-import { Construct, ISynthesisSession } from "./construct";
+import { Construct, ISynthesisSession } from "./construct-compat";
 import { FileAssetParameters } from './private/asset-parameters';
 import { TemplatedString } from './private/templated-string';
 import { Stack } from "./stack";
@@ -467,7 +467,7 @@ export class LegacyDeploymentEnvironment implements IDeploymentEnvironment {
   }
 
   private doAddFileAsset(asset: FileAssetSource): FileAssetLocation {
-    let params = this.assetParameters.node.tryFindChild(asset.sourceHash) as FileAssetParameters;
+    let params = this.assetParameters.node.findChild(asset.sourceHash) as FileAssetParameters;
     if (!params) {
       params = new FileAssetParameters(this.assetParameters, asset.sourceHash);
 

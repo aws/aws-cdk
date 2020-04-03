@@ -1,4 +1,4 @@
-import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import { ABSENT, expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as iam from '@aws-cdk/aws-iam';
@@ -692,6 +692,193 @@ export = {
         authorizationType: apigw.AuthorizationType.NONE,
       });
     }, /Authorization type is set to NONE which is different from what is required by the authorizer/);
+
+    test.done();
+  },
+
+  'method has Auth Scopes'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigw.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
+
+    // WHEN
+    new apigw.Method(stack, 'my-method', {
+      httpMethod: 'POST',
+      resource: api.root,
+      options: {
+        apiKeyRequired: true,
+        authorizationScopes: ['AuthScope1', 'AuthScope2'],
+      }
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+      ApiKeyRequired: true,
+      AuthorizationScopes: ['AuthScope1', 'AuthScope2']
+    }));
+
+    test.done();
+  },
+
+  'use default Auth Scopes'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigw.RestApi(stack, 'test-api', {
+      cloudWatchRole: false,
+      deploy: false,
+      defaultMethodOptions: {
+        authorizationScopes: ['DefaultAuth']
+      }
+    });
+
+    // WHEN
+    new apigw.Method(stack, 'defaultAuthScopes', {
+      httpMethod: 'POST',
+      resource: api.root,
+      options: {
+        operationName: 'defaultAuthScopes'
+      }
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+      OperationName: 'defaultAuthScopes',
+      AuthorizationScopes: ['DefaultAuth']
+    }));
+
+    test.done();
+  },
+
+  'Method options Auth Scopes is picked up'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigw.RestApi(stack, 'test-api', {
+      cloudWatchRole: false,
+      deploy: false,
+      defaultMethodOptions: {
+        authorizationScopes: ['DefaultAuth']
+      }
+    });
+
+    // WHEN
+    new apigw.Method(stack, 'MethodAuthScopeUsed', {
+      httpMethod: 'POST',
+      resource: api.root,
+      options: {
+        apiKeyRequired: true,
+        authorizationScopes: ['MethodAuthScope'],
+      }
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+      ApiKeyRequired: true,
+      AuthorizationScopes: ['MethodAuthScope']
+    }));
+
+    test.done();
+  },
+
+  'Auth Scopes absent'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigw.RestApi(stack, 'test-api', {
+      cloudWatchRole: false,
+      deploy: false
+    });
+
+    // WHEN
+    new apigw.Method(stack, 'authScopesAbsent', {
+      httpMethod: 'POST',
+      resource: api.root,
+      options: {
+        operationName: 'authScopesAbsent'
+      }
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+      OperationName: 'authScopesAbsent',
+      AuthorizationScopes: ABSENT
+    }));
+
+    test.done();
+  },
+
+  'method has a request validator with provided properties'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigw.RestApi(stack, 'test-api', { deploy: false });
+
+    // WHEN
+    new apigw.Method(stack, 'method-man', {
+      httpMethod: 'GET',
+      resource: api.root,
+      options: {
+        requestValidatorOptions: {
+          requestValidatorName: 'test-validator',
+          validateRequestBody: true,
+          validateRequestParameters: false
+        }
+      }
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::RequestValidator', {
+      RestApiId: stack.resolve(api.restApiId),
+      ValidateRequestBody: true,
+      ValidateRequestParameters: false,
+      Name: 'test-validator'
+    }));
+
+    test.done();
+  },
+
+  'method does not have a request validator'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigw.RestApi(stack, 'test-api', { deploy: false });
+
+    // WHEN
+    new apigw.Method(stack, 'method-man', {
+      httpMethod: 'GET',
+      resource: api.root
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+      RequestValidatorId: ABSENT
+    }));
+
+    test.done();
+  },
+
+  'method does not support both request validator and request validator options'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigw.RestApi(stack, 'test-api', { deploy: false });
+    const validator = api.addRequestValidator('test-validator1', {
+      validateRequestBody: true,
+      validateRequestParameters: false
+    });
+
+    // WHEN
+    const methodProps = {
+      httpMethod: 'GET',
+      resource: api.root,
+      options: {
+        requestValidatorOptions: {
+          requestValidatorName: 'test-validator2',
+          validateRequestBody: true,
+          validateRequestParameters: false
+        },
+        requestValidator: validator
+      }
+    };
+
+    // THEN
+    test.throws(() => new apigw.Method(stack, 'method', methodProps),
+      /Only one of 'requestValidator' or 'requestValidatorOptions' must be specified./);
 
     test.done();
   }

@@ -138,13 +138,13 @@ and always deploy the stack.
 Pass parameters to your template during deployment by using `--parameters
 (STACK:KEY=VALUE)`. This will apply the value `VALUE` to the key `KEY` for stack `STACK`.
 
-Example of providing an attrbute value for an SNS Topic through a parameter in TypeScript:
+Example of providing an attribute value for an SNS Topic through a parameter in TypeScript:
 
 Usage of parameter in CDK Stack:
 ```ts
 new sns.Topic(this, 'TopicParameter', {
-     topicName : new cdk.CfnParameter(this, 'TopicNameParam').value.toString()
-    });
+    topicName: new cdk.CfnParameter(this, 'TopicNameParam').value.toString()
+});
 ```
 
 Parameter values as a part of `cdk deploy`
@@ -153,15 +153,72 @@ $ cdk deploy --parameters "MyStackName:TopicNameParam=parameterized"
 ```
 
 Parameter values can be overwritten by supplying the `--force` flag.
-Example of overwriting the topic name from a previous interview
+Example of overwriting the topic name from a previous deployment.
 ```console
-$  cdk deploy --parameters "ParametersStack:TopicNameParam=blahagain" --force
+$ cdk deploy --parameters "ParametersStack:TopicNameParam=blahagain" --force
 ```
 
-⚠️ Parameters will be applied to all stacks if a stack name is not specified or `*` is provided. Parameters provided to Stacks that do not make use of the parameter will not successfully deploy.
+⚠️ Parameters will be applied to all stacks if a stack name is not specified or `*` is provided.
+Parameters provided to Stacks that do not make use of the parameter will not successfully deploy.
 
-⚠️ Parameters do not propagate to NestedStacks. These must be sent with the constructor. See Nested Stack [documentation](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-cloudformation.NestedStack.html)
+⚠️ Parameters do not propagate to NestedStacks. These must be sent with the constructor.
+See Nested Stack [documentation](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-cloudformation.NestedStack.html)
 
+##### Outputs
+
+Write stack outputs from deployments into a file. When your stack finishes deploying, all stack outputs
+will be written to the output file as JSON.
+
+Usage of output in a CDK stack
+```typescript
+const fn = new lambda.Function(this, "fn", {
+  handler: "index.handler",
+  code: lambda.Code.fromInline(`exports.handler = \${handler.toString()}`),
+  runtime: lambda.Runtime.NODEJS_10_X
+});
+
+new cdk.CfnOutput(this, 'FunctionArn', {
+  value: fn.functionArn,
+});
+```
+
+Specify an outputs file to write to by supplying the `--outputs-file` parameter
+
+```console
+$ cdk deploy --outputs-file outputs.json
+```
+
+When the stack finishes deployment, `outputs.json` would look like this:
+```json
+{
+  "MyStack": {
+    "FunctionArn": "arn:aws:lambda:us-east-1:123456789012:function:MyStack-fn5FF616E3-G632ITHSP5HK"
+  }
+}
+```
+
+⚠️ The `key` of the outputs corresponds to the logical ID of the `CfnOutput`.
+Read more about identifiers in the CDK [here](https://docs.aws.amazon.com/cdk/latest/guide/identifiers.html)
+
+If multiple stacks are being deployed or the wild card `*` is used to deploy all stacks, all outputs
+are written to the same output file where each stack artifact ID is a key in the JSON file
+
+
+```console
+$ cdk deploy '*' --outputs-file "/Users/code/myproject/outputs.json"
+```
+
+Example `outputs.json` after deployment of multiple stacks
+```json
+{
+  "MyStack": {
+    "FunctionArn": "arn:aws:lambda:us-east-1:123456789012:function:MyStack-fn5FF616E3-G632ITHSP5HK"
+  },
+  "AnotherStack": {
+    "VPCId": "vpc-z0mg270fee16693f"
+  }  
+}
+```
 
 #### `cdk destroy`
 Deletes a stack from it's environment. This will cause the resources in the stack to be destroyed (unless they were
@@ -207,14 +264,14 @@ configuration's order of precedence is:
 
 #### JSON Configuration files
 Some of the interesting keys that can be used in the JSON configuration files:
-```js
+```json5
 {
-    "app": "node bin/main.js",        // Command to start the CDK app     (--app='node bin/main.js')
-    "context": {                      // Context entries                  (--context=key=value)
-        "key": "value",
+    "app": "node bin/main.js",        // Command to start the CDK app      (--app='node bin/main.js')
+    "context": {                      // Context entries                   (--context=key=value)
+        "key": "value"
     },
-    "toolkitStackName": "foo",        // Customize 'bootstrap' stack name (--toolkit-stack-name=foo)
-    "toolkitBucketName": "fooBucket", // Customize 'bootstrap' bucket name(--toolkit-bucket-name=fooBucket)
-    "versionReporting": false,        // Opt-out of version reporting     (--no-version-reporting)
+    "toolkitStackName": "foo",        // Customize 'bootstrap' stack name  (--toolkit-stack-name=foo)
+    "toolkitBucketName": "fooBucket", // Customize 'bootstrap' bucket name (--toolkit-bucket-name=fooBucket)
+    "versionReporting": false         // Opt-out of version reporting      (--no-version-reporting)
 }
 ```

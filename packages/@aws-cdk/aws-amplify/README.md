@@ -27,13 +27,16 @@ import amplify = require('@aws-cdk/aws-amplify');
 import cdk = require('@aws-cdk/core');
 
 const amplifyApp = new amplify.App(this, 'MyApp', {
-  repository: 'https://github.com/<user>/<repo>',
-  oauthToken: cdk.SecretValue.secretsManager('my-github-token'),
+  sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
+    owner: '<user>',
+    repository: '<repo>',
+    oauthToken: cdk.SecretValue.secretsManager('my-github-token')
+  }),
   buildSpec: codebuild.BuildSpec.fromObject({ // Alternatively add a `amplify.yml` to the repo
     version: '1.0',
     frontend: {
       phases: {
-        prebuild: {
+        preBuild: {
           commands: [
             'yarn'
           ]
@@ -52,6 +55,20 @@ const amplifyApp = new amplify.App(this, 'MyApp', {
   })
 });
 ```
+
+To connect your `App` to CodeCommit, use the `CodeCommitSourceCodeProvider`:
+```ts
+const repository = new codecommit.Repository(this, 'Repo', {
+  repositoryName: 'my-repo'
+});
+
+const amplifyApp = new amplify.App(this, 'App', {
+  sourceCodeProvider: new amplify.CodeCommitSourceCodeProvider({ repository })
+});
+```
+
+The IAM role associated with the `App` will automatically be granted the permission
+to pull the CodeCommit repository.
 
 Add branches:
 ```ts

@@ -5,7 +5,7 @@ import { ConnectionType, Integration } from './integration';
 import { MockIntegration } from './integrations/mock';
 import { MethodResponse } from './methodresponse';
 import { IModel } from './model';
-import { IRequestValidator } from './requestvalidator';
+import { IRequestValidator, RequestValidatorOptions } from './requestvalidator';
 import { IResource } from './resource';
 import { RestApi } from './restapi';
 import { validateHttpMethod } from './util';
@@ -73,8 +73,25 @@ export interface MethodOptions {
 
   /**
    * The ID of the associated request validator.
+   * Only one of `requestValidator` or `requestValidatorOptions` must be specified.
+   * @default - No default validator
    */
   readonly requestValidator?: IRequestValidator;
+
+  /**
+   * A list of authorization scopes configured on the method. The scopes are used with
+   * a COGNITO_USER_POOLS authorizer to authorize the method invocation.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-method.html#cfn-apigateway-method-authorizationscopes
+   * @default - no authorization scopes
+   */
+  readonly authorizationScopes?: string[]
+
+  /**
+   * Request validator options to create new validator
+   * Only one of `requestValidator` or `requestValidatorOptions` must be specified.
+   * @default - No default validator
+   */
+  readonly requestValidatorOptions?: RequestValidatorOptions;
 }
 
 export interface MethodProps {
@@ -152,7 +169,8 @@ export class Method extends Resource {
       integration: this.renderIntegration(props.integration),
       methodResponses: this.renderMethodResponses(options.methodResponses),
       requestModels: this.renderRequestModels(options.requestModels),
-      requestValidatorId: options.requestValidator ? options.requestValidator.requestValidatorId : undefined
+      requestValidatorId: this.requestValidatorId(options),
+      authorizationScopes: options.authorizationScopes ?? defaultMethodOptions.authorizationScopes,
     };
 
     const resource = new CfnMethod(this, 'Resource', methodProps);
@@ -292,6 +310,20 @@ export class Method extends Resource {
     }
 
     return models;
+  }
+
+  private requestValidatorId(options: MethodOptions): string | undefined {
+    if (options.requestValidator && options.requestValidatorOptions) {
+      throw new Error(`Only one of 'requestValidator' or 'requestValidatorOptions' must be specified.`);
+    }
+
+    if (options.requestValidatorOptions) {
+      const validator = this.restApi.addRequestValidator('validator', options.requestValidatorOptions);
+      return validator.requestValidatorId;
+    }
+
+    // For backward compatibility
+    return options.requestValidator?.requestValidatorId;
   }
 }
 
