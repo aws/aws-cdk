@@ -188,9 +188,9 @@ can use the `environment` property to customize the build environment:
 The CodeBuild library supports both Linux and Windows images via the
 `LinuxBuildImage` and `WindowsBuildImage` classes, respectively.
 
-You can either specify one of the predefined Windows/Linux images by using one
-of the constants such as `WindowsBuildImage.WIN_SERVER_CORE_2016_BASE` or
-`LinuxBuildImage.UBUNTU_14_04_RUBY_2_5_1`.
+You can specify one of the predefined Windows/Linux images by using one
+of the constants such as `WindowsBuildImage.WINDOWS_BASE_2_0` or
+`LinuxBuildImage.STANDARD_2_0`.
 
 Alternatively, you can specify a custom image using one of the static methods on
 `XxxBuildImage`:
@@ -200,6 +200,7 @@ Alternatively, you can specify a custom image using one of the static methods on
   ECR repository.
 * Use `.fromAsset(directory)` to use an image created from a
   local asset.
+* Use `.fromCodeBuildImageId(id)` to reference a pre-defined, CodeBuild-provided Docker image.
 
 The following example shows how to define an image from a Docker asset:
 
@@ -371,11 +372,41 @@ For example:
 ```ts
 const vpc = new ec2.Vpc(this, 'MyVPC');
 const project = new codebuild.Project(this, 'MyProject', {
-    vpc: vpc,
-    buildSpec: codebuild.BuildSpec.fromObject({
-      // ...
-    }),
+  vpc: vpc,
+  buildSpec: codebuild.BuildSpec.fromObject({
+    // ...
+  }),
 });
 
 project.connections.allowTo(loadBalancer, ec2.Port.tcp(443));
 ```
+
+## Project File System Location EFS
+
+Add support for CodeBuild to build on AWS EFS file system mounts using
+the new ProjectFileSystemLocation.
+The `fileSystemLocations` property which accepts a list `ProjectFileSystemLocation`
+as represented by the interface `IFileSystemLocations`.
+The only supported file system type is `EFS`.
+
+For example:
+
+```ts
+new codebuild.Project(stack, 'MyProject', {
+  buildSpec: codebuild.BuildSpec.fromObject({
+    version: '0.2',
+  }),
+  fileSystemLocations: [
+    codebuild.FileSystemLocation.efs({
+      identifier: "myidentifier2",
+      location: "myclodation.mydnsroot.com:/loc",
+      mountPoint: "/media",
+      mountOptions: "opts"
+    })
+  ]
+});
+```
+
+Here's a CodeBuild project with a simple example that creates a project mounted on AWS EFS:
+
+[Minimal Example](./test/integ.project-file-system-location.ts)

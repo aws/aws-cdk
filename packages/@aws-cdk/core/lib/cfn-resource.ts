@@ -4,7 +4,7 @@ import { CfnCondition } from './cfn-condition';
 // tslint:disable-next-line:ordered-imports
 import { CfnRefElement } from './cfn-element';
 import { CfnCreationPolicy, CfnDeletionPolicy, CfnUpdatePolicy } from './cfn-resource-policy';
-import { Construct, IConstruct } from './construct';
+import { Construct, IConstruct } from './construct-compat';
 import { addDependency } from './deps';
 import { CfnReference } from './private/cfn-reference';
 import { Reference } from './reference';

@@ -66,7 +66,7 @@
     "@aws-cdk/assert": "0.0.0",
     "@types/minimatch": "^3.0.3",
     "@types/nodeunit": "^0.0.30",
-    "@types/sinon": "^7.5.2",
+    "@types/sinon": "^9.0.0",
     "aws-cdk": "0.0.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
@@ -78,12 +78,14 @@
   "dependencies": {
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
-    "minimatch": "^3.0.4"
+    "minimatch": "^3.0.4",
+    "constructs": "^2.0.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/core": "0.0.0",
-    "@aws-cdk/cx-api": "0.0.0"
+    "@aws-cdk/cx-api": "0.0.0",
+    "constructs": "^2.0.0"
   },
   "engines": {
     "node": ">= 10.3.0"
@@ -98,5 +100,8 @@
       "docs-public-apis:@aws-cdk/assets.StagingProps.sourcePath",
       "docs-public-apis:@aws-cdk/assets.FollowMode"
     ]
+  },
+  "awscdkio": {
+    "announce": false
   }
 }

@@ -78,7 +78,8 @@
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
-    "minimatch": "^3.0.4"
+    "minimatch": "^3.0.4",
+    "constructs": "^2.0.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -89,7 +90,8 @@
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "@aws-cdk/cx-api": "0.0.0"
+    "@aws-cdk/cx-api": "0.0.0",
+    "constructs": "^2.0.0"
   },
   "nyc": {
     "statements": 70
@@ -100,5 +102,8 @@
   "bundledDependencies": [
     "minimatch"
   ],
-  "stability": "experimental"
+  "stability": "experimental",
+  "awscdkio": {
+    "announce": false
+  }
 }

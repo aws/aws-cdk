@@ -1,17 +1,16 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import * as minimatch from 'minimatch';
 import { SdkProvider } from '../aws-auth';
-import { AppStacks } from './stacks';
+import { StackCollection } from './cloud-assembly';
 
-export async function globEnvironmentsFromStacks(appStacks: AppStacks, environmentGlobs: string[], sdk: SdkProvider): Promise<cxapi.Environment[]> {
+// tslint:disable-next-line:max-line-length
+export async function globEnvironmentsFromStacks(stacks: StackCollection, environmentGlobs: string[], sdk: SdkProvider): Promise<cxapi.Environment[]> {
   if (environmentGlobs.length === 0) {
     environmentGlobs = [ '**' ]; // default to ALL
   }
 
-  const stacks = await appStacks.listStacks();
-
   const availableEnvironments = new Array<cxapi.Environment>();
-  for (const stack of stacks) {
+  for (const stack of stacks.stackArtifacts) {
     const actual = await sdk.resolveEnvironment(stack.environment.account, stack.environment.region);
     availableEnvironments.push(actual);
   }
