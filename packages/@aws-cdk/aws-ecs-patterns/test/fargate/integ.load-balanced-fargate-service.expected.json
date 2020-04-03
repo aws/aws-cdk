@@ -528,6 +528,11 @@
                   ]
                 ]
               }
+            },
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": "arn:aws:lambda:*:*:function:*"
             }
           ],
           "Version": "2012-10-17"
