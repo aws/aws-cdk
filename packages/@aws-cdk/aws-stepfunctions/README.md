@@ -673,6 +673,22 @@ new cloudwatch.Alarm(this, 'ThrottledAlarm', {
 });
 ```
 
+## Logging
+
+Enable logging to CloudWatch by passing a logging configuration with a
+destination LogGroup:
+
+```ts
+const logGroup = new logs.LogGroup(stack, 'MyLogGroup');
+
+new stepfunctions.StateMachine(stack, 'MyStateMachine', {
+    definition: stepfunctions.Chain.start(new stepfunctions.Pass(stack, 'Pass')),
+    logs: {
+      destinations: logGroup,
+      level: stepfunctions.LogLevel.ALL,
+    }
+});
+```
 
 ## Future work
 
