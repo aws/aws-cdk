@@ -467,7 +467,7 @@ export class LegacyDeploymentEnvironment implements IDeploymentEnvironment {
   }
 
   private doAddFileAsset(asset: FileAssetSource): FileAssetLocation {
-    let params = this.assetParameters.node.findChild(asset.sourceHash) as FileAssetParameters;
+    let params = this.assetParameters.node.tryFindChild(asset.sourceHash) as FileAssetParameters;
     if (!params) {
       params = new FileAssetParameters(this.assetParameters, asset.sourceHash);
 
