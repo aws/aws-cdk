@@ -545,7 +545,7 @@ export class AccessLogFormat {
   /**
    * A API Gateway custom access log format
    */
-  public format: string;
+  private readonly format: string;
 
   private constructor(format: string) {
     this.format = format;

@@ -328,7 +328,7 @@ export = {
       deployment,
       accessLogDestination: new apigateway.LogGroupLogDestination(testLogGroup),
       accessLogFormat: testFormat
-    }), /The format must include at least `AccessLogFormat.contextRequestId\(\)`/);
+    }), /Access log must include at least `AccessLogFormat.contextRequestId\(\)`/);
 
     test.done();
   },
@@ -347,7 +347,7 @@ export = {
     test.throws(() => new apigateway.Stage(stack, 'my-stage', {
       deployment,
       accessLogFormat: testFormat
-    }), /Access Log destination is empty/);
+    }), /Access log format is specified without a destination/);
 
     test.done();
   },

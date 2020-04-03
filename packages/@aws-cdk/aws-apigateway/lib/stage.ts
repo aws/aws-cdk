@@ -207,9 +207,6 @@ export class Stage extends Resource implements IStage {
   public readonly restApi: IRestApi;
   private enableCacheCluster?: boolean;
 
-  private readonly accessLogDestination?: IAccessLogDestination;
-  private readonly accessLogFormat?: AccessLogFormat;
-
   constructor(scope: Construct, id: string, props: StageProps) {
     super(scope, id);
 
@@ -219,21 +216,21 @@ export class Stage extends Resource implements IStage {
 
     // custom access logging
     let accessLogSetting: CfnStage.AccessLogSettingProperty | undefined;
-    this.accessLogDestination = props.accessLogDestination;
-    this.accessLogFormat = props.accessLogFormat;
-    if (!this.accessLogDestination && !this.accessLogFormat) {
+    const accessLogDestination = props.accessLogDestination;
+    const accessLogFormat = props.accessLogFormat;
+    if (!accessLogDestination && !accessLogFormat) {
       accessLogSetting = undefined;
     } else {
-      if (this.accessLogFormat !== undefined && !/.*\$context.requestId.*/.test(this.accessLogFormat.toString())) {
-        throw new Error('The format must include at least `AccessLogFormat.contextRequestId()`');
+      if (accessLogFormat !== undefined && !/.*\$context.requestId.*/.test(accessLogFormat.toString())) {
+        throw new Error('Access log must include at least `AccessLogFormat.contextRequestId()`');
       }
-      if (this.accessLogFormat !== undefined && this.accessLogDestination === undefined) {
-        throw new Error('Access Log destination is empty');
+      if (accessLogFormat !== undefined && accessLogDestination === undefined) {
+        throw new Error('Access log format is specified without a destination');
       }
 
       accessLogSetting = {
-        destinationArn: this.accessLogDestination?.bind(this).destinationArn,
-        format: this.accessLogFormat?.format ? this.accessLogFormat?.format : AccessLogFormat.clf().toString()
+        destinationArn: accessLogDestination?.bind(this).destinationArn,
+        format: accessLogFormat?.toString() ? accessLogFormat?.toString() : AccessLogFormat.clf().toString()
       };
     }
 

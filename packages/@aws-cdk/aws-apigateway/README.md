@@ -547,8 +547,15 @@ const api = new apigateway.RestApi(this, 'books', {
 ```
 ### Access Logging
 
-You can set the format of the access log.
-More info can be found [here](https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-logging.html).
+Access logging creates logs everytime an API method is accessed. Access logs can have information on
+who has accessed the API, how the caller accessed the API and what responses were generated.
+Access logs are configured on a Stage of the RestApi.
+Access logs can be expressed in a format of your choosing, and can contain any access details, with a
+minimum that it must include the 'requestId'. The list of  variables that can be expressed in the access
+log can be found
+[here](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html#context-variable-reference).
+Read more at [Setting Up CloudWatch API Logging in API
+Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-logging.html)
 
 ```ts
 // production stage
@@ -589,6 +596,20 @@ const api = new apigateway.RestApi(this, 'books', {
     accessLogDestination: new apigateway.LogGroupLogDestination(logGroup),
     accessLogFormat: apigateway.AccessLogFormat.clf(),
   }});
+```
+
+You can also configure your own access log format by using the `AccessLogFormat.custom()` API.
+`AccessLogField` provides commonly used fields. The following code configures access log to contain.
+
+```ts
+const logGroup = new cwlogs.LogGroup(this, "ApiGatewayAccessLogs");
+new apigateway.RestApi(this, 'books', {
+  deployOptions: {
+    accessLogDestination: new apigateway.LogGroupLogDestination(logGroup),
+    accessLogFormat: apigateway.AccessLogFormat.custom(
+      `${AccessLogFormat.contextRequestId()} ${AccessLogField.contextErrorMessage()} ${AccessLogField.contextErrorMessageString()}`);
+  })
+};
 ```
 
 You can use the `methodOptions` property to configure
