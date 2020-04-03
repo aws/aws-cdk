@@ -3,7 +3,7 @@ import { CloudFormationDeployments, DeployStackOptions } from '../lib/api/cloudf
 import { DeployStackResult } from '../lib/api/deploy-stack';
 import { Template } from '../lib/api/util/cloudformation';
 import { CdkToolkit, Tag } from '../lib/cdk-toolkit';
-import { MockCloudExecutable } from './util';
+import { MockCloudExecutable, TestStackArtifact } from './util';
 
 let cloudExecutable: MockCloudExecutable;
 beforeEach(() => {
@@ -56,17 +56,36 @@ describe('deploy', () => {
 });
 
 class MockStack {
-  public static readonly MOCK_STACK_A = new MockStack('Test-Stack-A');
-  public static readonly MOCK_STACK_B = new MockStack('Test-Stack-B');
-
-  constructor(
-    public readonly stackName: string,
-    public readonly template: any = { Resources: { TempalteName: stackName } },
-    public readonly templateFile: string = `fake/stack/${stackName}.json`,
-    public readonly assets: cxapi.AssetMetadataEntry[] = [],
-    public readonly parameters: { [id: string]: string } = {},
-    public readonly environment: cxapi.Environment = { name: 'MockEnv', account: '123456789012', region: 'bermuda-triangle-1' },
-  ) {}
+  public static readonly MOCK_STACK_A: TestStackArtifact = {
+    stackName: 'Test-Stack-A',
+    template: { Resources: { TempalteName: 'Test-Stack-A' } },
+    env: 'aws://123456789012/bermuda-triangle-1',
+    metadata: {
+      '/Test-Stack-A': [
+        {
+          type: cxapi.STACK_TAGS_METADATA_KEY,
+          data: [
+            { Key: 'Foo', Value: 'Bar' } as Tag
+          ]
+        }
+      ]
+    },
+  };
+  public static readonly MOCK_STACK_B: TestStackArtifact = {
+    stackName: 'Test-Stack-B',
+    template: { Resources: { TempalteName: 'Test-Stack-B' } },
+    env: 'aws://123456789012/bermuda-triangle-1',
+    metadata: {
+      '/Test-Stack-B': [
+        {
+          type: cxapi.STACK_TAGS_METADATA_KEY,
+          data: [
+            { Key: 'Baz', Value: 'Zinga!' } as Tag
+          ]
+        }
+      ]
+    },
+  };
 }
 
 class FakeCloudFormation extends CloudFormationDeployments {
