@@ -23,6 +23,7 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
+    "typescript": "~3.8.3",
     "constructs": "2.0.0",
     "@aws-cdk/alexa-ask": "0.0.0",
     "@aws-cdk/app-delivery": "0.0.0",
