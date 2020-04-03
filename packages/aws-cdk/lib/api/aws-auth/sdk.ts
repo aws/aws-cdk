@@ -9,11 +9,17 @@ import { Account } from './sdk-provider';
 export interface ISDK {
   /**
    * The region this SDK has been instantiated for
+   *
+   * (As distinct from the `defaultRegion()` on SdkProvider which
+   * represents the region configured in the default config).
    */
   readonly currentRegion: string;
 
   /**
    * The Account this SDK has been instantiated for
+   *
+   * (As distinct from the `defaultAccount()` on SdkProvider which
+   * represents the account available by using default credentials).
    */
   currentAccount(): Promise<Account>;
 
@@ -97,4 +103,4 @@ export class SDK implements ISDK {
   }
 }
 
-const CURRENT_ACCOUNT_KEY = Symbol();
+const CURRENT_ACCOUNT_KEY = Symbol('current_account_key');

@@ -14,7 +14,7 @@ interface TemplateParameter {
 }
 
 /**
- * Represents an existing class in CloudFormation
+ * Represents an (existing) Stack in CloudFormation
  *
  * Bundle and cache some information that we need during deployment (so we don't have to make
  * repeated calls to CloudFormation).

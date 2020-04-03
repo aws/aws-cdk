@@ -69,8 +69,8 @@ export interface SdkHttpOptions {
   readonly userAgent?: string;
 }
 
-const CACHED_ACCOUNT = Symbol();
-const CACHED_DEFAULT_CREDENTIALS = Symbol();
+const CACHED_ACCOUNT = Symbol('cached_account');
+const CACHED_DEFAULT_CREDENTIALS = Symbol('cached_default_credentials');
 
 /**
  * Creates instances of the AWS SDK appropriate for a given account/region
@@ -177,7 +177,15 @@ export class SdkProvider {
   }
 
   /**
-   * Use the default credentials to lookup our account number using STS.
+   * The account we'd auth into if we used default credentials.
+   *
+   * Default credentials are the set of ambiently configured credentials using
+   * one of the environment variables, or ~/.aws/credentials, or the *one*
+   * profile that was passed into the CLI.
+   *
+   * Might return undefined if there are no default/ambient credentials
+   * available (in which case the user should better hope they have
+   * credential plugins configured).
    *
    * Uses a cache to avoid STS calls if we don't need 'em.
    */

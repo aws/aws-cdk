@@ -8,14 +8,63 @@ import { CloudFormationStack, Template } from './util/cloudformation';
 import { replaceAwsPlaceholders } from './util/placeholders';
 
 export interface DeployStackOptions {
+  /**
+   * Stack to deploy
+   */
   stack: CloudFormationStackArtifact;
+
+  /**
+   * Execution role for the deployment (pass through to CloudFormation)
+   *
+   * @default - Current role
+   */
   roleArn?: string;
+
+  /**
+   * Topic ARNs to send a message when deployment finishes (pass through to CloudFormation)
+   *
+   * @default - No notifications
+   */
   notificationArns?: string[];
+
+  /**
+   * Override name under which stack will be deployed
+   *
+   * @default - Use artifact default
+   */
   deployName?: string;
+
+  /**
+   * Don't show stack deployment events, just wait
+   *
+   * @default false
+   */
   quiet?: boolean;
+
+  /**
+   * Name of the toolkit stack, if not the default name
+   *
+   * @default 'CDKToolkit'
+   */
   toolkitStackName?: string;
+
+  /**
+   * List of asset IDs which should NOT be built or uploaded
+   *
+   * @default - Build all assets
+   */
   reuseAssets?: string[];
+
+  /**
+   * Stack tags (pass through to CloudFormation)
+   */
   tags?: Tag[];
+
+  /**
+   * Stage the change set but don't execute it
+   *
+   * @default - false
+   */
   execute?: boolean;
 
   /**
@@ -49,7 +98,10 @@ export interface ProvisionerProps {
 }
 
 /**
- * Default provisioner (applies to CloudFormation).
+ * Helper class for CloudFormation deployments
+ *
+ * Looks us the right SDK and Bootstrap stack to deploy a given
+ * stack artifact.
  */
 export class CloudFormationDeployments {
   private readonly sdkProvider: SdkProvider;
@@ -70,7 +122,6 @@ export class CloudFormationDeployments {
   public async deployStack(options: DeployStackOptions): Promise<DeployStackResult> {
     const { stackSdk, resolvedEnvironment, cloudFormationRoleArn } = await this.prepareSdkFor(options.stack, options.roleArn);
 
-    // tslint:disable-next-line:max-line-length
     const toolkitInfo = await ToolkitInfo.lookup(resolvedEnvironment, stackSdk, options.toolkitStackName);
 
     return deployStack({
@@ -110,10 +161,13 @@ export class CloudFormationDeployments {
   }
 
   /**
-   * Return the SDK and CloudFormation options for touching the given stack
+   * Get the environment necessary for touching the given stack
    *
-   * Return an SDK with the right credentials, the resolved environment, and
-   * return the CloudFormation Execution Role.
+   * Returns the following:
+   *
+   * - The resolved environment for the stack (no more 'unknown-account/unknown-region')
+   * - SDK loaded with the right credentials for calling `CreateChangeSet`.
+   * - The Execution Role that should be passed to CloudFormation.
    */
   private async prepareSdkFor(stack: CloudFormationStackArtifact, roleArn?: string, mode = Mode.ForWriting) {
     // Substitute any placeholders with information about the current environment
@@ -131,7 +185,7 @@ export class CloudFormationDeployments {
 
     const stackSdk = arns.assumeRoleArn
       ? await this.sdkProvider.withAssumedRole(arns.assumeRoleArn, undefined, resolvedEnvironment.region)
-      : await this.sdkProvider.forEnvironment(stack.environment.account, stack.environment.region, mode);
+      : await this.sdkProvider.forEnvironment(resolvedEnvironment.account, resolvedEnvironment.region, mode);
 
     return {
       stackSdk,
