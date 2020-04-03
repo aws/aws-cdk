@@ -11,7 +11,6 @@ import { HelmChart, HelmChartOptions } from './helm-chart';
 import { KubernetesPatch } from './k8s-patch';
 import { KubernetesResource } from './k8s-resource';
 import { Nodegroup, NodegroupOptions  } from './managed-nodegroup';
-import { spotInterruptHandler } from './spot-interrupt-handler';
 import { renderUserData } from './user-data';
 
 // defaults are based on https://eksctl.io
@@ -589,7 +588,15 @@ export class Cluster extends Resource implements ICluster {
 
     // if this is an ASG with spot instances, install the spot interrupt handler (only if kubectl is enabled).
     if (autoScalingGroup.spotPrice && this.kubectlEnabled) {
-      this.addChart('spot-interrupt-handler', spotInterruptHandler());
+      this.addChart('spot-interrupt-handler', {
+        chart: 'aws-node-termination-handler',
+        version: '0.7.3',
+        repository: 'https://aws.github.io/eks-charts',
+        namespace: 'kube-system',
+        values: {
+          'nodeSelector.lifecycle': LifecycleLabel.SPOT
+        }
+      });
     }
   }
 
@@ -985,6 +992,20 @@ export enum DefaultCapacityType {
    * EC2 autoscaling group
    */
   EC2
+}
+
+/**
+ * The lifecycle label for node selector
+ */
+enum LifecycleLabel {
+  /**
+   * on-demand instances
+   */
+  ON_DEMAND = 'OnDemand',
+  /**
+   * spot instances
+   */
+  SPOT = 'Ec2Spot',
 }
 
 const GPU_INSTANCETYPES = ['p2', 'p3', 'g4'];

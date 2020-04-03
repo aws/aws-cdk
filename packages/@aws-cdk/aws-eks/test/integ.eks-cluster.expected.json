@@ -1701,6 +1701,7 @@
         },
         "Release": "ksclustertestclusterchartspotinterrupthandlerf41ba997",
         "Chart": "aws-node-termination-handler",
+        "Version": "0.7.3",
         "Wait": false,
         "Values": "{\"nodeSelector.lifecycle\":\"Ec2Spot\"}",
         "Namespace": "kube-system",
