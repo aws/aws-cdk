@@ -5,7 +5,7 @@ jest.mock('../../lib/api/deploy-stack', () => ({
 }));
 
 import { bootstrapEnvironment2 } from '../../lib/api/bootstrap/bootstrap-environment2';
-import { MockSDK } from '../util/mock-sdk';
+import { MockSdkProvider } from '../util/mock-sdk';
 
 describe('Bootstrapping v2', () => {
   const env = {
@@ -13,7 +13,7 @@ describe('Bootstrapping v2', () => {
     region: 'us-east-1',
     name: 'mock',
   };
-  const sdk = new MockSDK();
+  const sdk = new MockSdkProvider();
 
   test('passes the bucket name as a CFN parameter', async () => {
     await bootstrapEnvironment2(env, sdk, 'mockStack', undefined, {

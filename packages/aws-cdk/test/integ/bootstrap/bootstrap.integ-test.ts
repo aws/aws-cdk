@@ -3,7 +3,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { bootstrapEnvironment, deployStack, destroyStack, loadToolkitInfo, Mode, SdkProvider } from '../../../lib/api';
+import { bootstrapEnvironment, deployStack, destroyStack, ISDK, Mode, SdkProvider, ToolkitInfo } from '../../../lib/api';
 import { bootstrapEnvironment2 } from '../../../lib/api/bootstrap/bootstrap-environment2';
 import { ExampleAsset, MyTestCdkStack } from './example-cdk-app/my-test-cdk-stack';
 
@@ -16,7 +16,8 @@ describe('Bootstrapping', () => {
   const region = requireEnvVariable('TEST_REGION');
   let s3: AWS.S3;
   let env: cxapi.Environment;
-  let sdk: SdkProvider;
+  let sdkProvider: SdkProvider;
+  let sdk: ISDK;
 
   beforeAll(async () => {
     env = {
@@ -24,12 +25,13 @@ describe('Bootstrapping', () => {
       account,
       region,
     };
-    sdk = await SdkProvider.withAwsCliCompatibleDefaults({
+    sdkProvider = await SdkProvider.withAwsCliCompatibleDefaults({
       httpOptions: {
         userAgent: 'aws-cdk-bootstrap-integ-test',
       }
     });
-    s3 = (await sdk.forEnvironment(cxapi.UNKNOWN_ACCOUNT, cxapi.UNKNOWN_REGION, Mode.ForWriting)).s3();
+    sdk = await sdkProvider.forEnvironment(env.account, env.region, Mode.ForWriting);
+    s3 = sdk.s3();
   });
 
   describe('deploys the legacy bootstrap stack', () => {
@@ -43,14 +45,14 @@ describe('Bootstrapping', () => {
 
     beforeAll(async () => {
       // bootstrap the "old" way
-      const bootstrapResults = await bootstrapEnvironment(env, sdk, bootstrapStackName, undefined, {
+      const bootstrapResults = await bootstrapEnvironment(env, sdkProvider, bootstrapStackName, undefined, {
         bucketName: legacyBootstrapBucketName,
       });
       bootstrapStack = bootstrapResults.stackArtifact;
     });
 
     test('and then can deploy a CDK app using that bootstrap stack', async () => {
-      testStack = await deployCdkApp(outdir, env, sdk, bootstrapStackName, (app) => {
+      testStack = await deployCdkApp(outdir, env, sdkProvider, sdk, bootstrapStackName, (app) => {
         new MyTestCdkStack(app, exampleAppStack, {
           assetType: ExampleAsset.ASSET_1,
           env,
@@ -61,7 +63,7 @@ describe('Bootstrapping', () => {
     describe('and then updates the bootstrap stack with the new resources', () => {
       beforeAll(async () => {
         // bootstrap the "new" way
-        const bootstrapResults = await bootstrapEnvironment2(env, sdk, bootstrapStackName, undefined, {
+        const bootstrapResults = await bootstrapEnvironment2(env, sdkProvider, bootstrapStackName, undefined, {
           bucketName: newBootstrapBucketName,
           trustedAccounts: ['790124522186', '593667001225'],
           cloudFormationExecutionPolicies: [
@@ -73,7 +75,7 @@ describe('Bootstrapping', () => {
       });
 
       test('can now update the CDK app with the new bootstrap stack', async () => {
-        await deployCdkApp(outdir, env, sdk, bootstrapStackName, (app) => {
+        await deployCdkApp(outdir, env, sdkProvider, sdk, bootstrapStackName, (app) => {
           new MyTestCdkStack(app, exampleAppStack, {
             assetType: ExampleAsset.ASSET_2,
             env,
@@ -117,8 +119,8 @@ function requireEnvVariable(variableName: string): string {
   return ret;
 }
 
-async function deployCdkApp(outdir: string, env: cxapi.Environment,
-                            sdk: SdkProvider, bootstrapStackName: string, cdkCode: (app: core.App) => void) {
+async function deployCdkApp(outdir: string, env: cxapi.Environment, sdkProvider: SdkProvider,
+                            sdk: ISDK, bootstrapStackName: string, cdkCode: (app: core.App) => void) {
   // clean the output directory, just to make 100% sure there is no junk left there
   await fs.remove(outdir);
 
@@ -128,11 +130,13 @@ async function deployCdkApp(outdir: string, env: cxapi.Environment,
   const assembly = app.synth();
 
   // now deploy the synthesized app
-  const toolkitInfo = await loadToolkitInfo(env, sdk, bootstrapStackName);
+  const toolkitInfo = await ToolkitInfo.lookup(env, sdk, bootstrapStackName);
   const testStack = assembly.stacks[0]; // we assume there's just one stack
   await deployStack({
     stack: testStack,
+    resolvedEnvironment: env,
     toolkitInfo,
+    sdkProvider,
     sdk,
   });
   return testStack;

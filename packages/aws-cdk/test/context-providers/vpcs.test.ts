@@ -1,11 +1,11 @@
 import * as aws from 'aws-sdk';
 import * as AWS from 'aws-sdk-mock';
 import { VpcNetworkContextProviderPlugin } from '../../lib/context-providers/vpcs';
-import { MockSDK } from '../util/mock-sdk';
+import { MockSdkProvider } from '../util/mock-sdk';
 
 AWS.setSDK(require.resolve('aws-sdk'));
 
-const mockSDK = new MockSDK();
+const mockSDK = new MockSdkProvider();
 
 type AwsCallback<T> = (err: Error | null, val: T) => void;
 
