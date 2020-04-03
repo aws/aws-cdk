@@ -208,7 +208,7 @@ export class ConstructNode {
   public static _unwrap(c: constructs.Node): ConstructNode {
     const x = (c as any)[ORIGINAL_CONSTRUCT_NODE_SYMBOL];
     if (!x) {
-      throw new Error(`invalid ConstructNode type`);
+      throw new Error('invalid ConstructNode type');
     }
 
     return x;

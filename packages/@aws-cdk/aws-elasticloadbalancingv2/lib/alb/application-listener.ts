@@ -119,7 +119,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
   constructor(scope: Construct, id: string, props: ApplicationListenerProps) {
     const [protocol, port] = determineProtocolAndPort(props.protocol, props.port);
     if (protocol === undefined || port === undefined) {
-      throw new Error(`At least one of 'port' or 'protocol' is required`);
+      throw new Error('At least one of \'port\' or \'protocol\' is required');
     }
 
     super(scope, id, {
@@ -136,10 +136,10 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
 
     // Attach certificates
     if (props.certificateArns && props.certificateArns.length > 0) {
-      this.addCertificateArns("ListenerCertificate", props.certificateArns);
+      this.addCertificateArns('ListenerCertificate', props.certificateArns);
     }
     if (props.certificates && props.certificates.length > 0) {
-      this.addCertificates("DefaultCertificates", props.certificates);
+      this.addCertificates('DefaultCertificates', props.certificates);
     }
 
     // This listener edits the securitygroup of the load balancer,
@@ -680,6 +680,6 @@ export interface AddRedirectResponseProps extends AddRuleProps, RedirectResponse
 
 function checkAddRuleProps(props: AddRuleProps) {
   if ((props.hostHeader !== undefined || props.pathPattern !== undefined || props.pathPatterns !== undefined) !== (props.priority !== undefined)) {
-    throw new Error(`Setting 'pathPattern' or 'hostHeader' also requires 'priority', and vice versa`);
+    throw new Error('Setting \'pathPattern\' or \'hostHeader\' also requires \'priority\', and vice versa');
   }
 }

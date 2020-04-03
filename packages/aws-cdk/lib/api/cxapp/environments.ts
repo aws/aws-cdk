@@ -30,7 +30,7 @@ export async function globEnvironmentsFromStacks(stacks: StackCollection, enviro
  */
 export function environmentsFromDescriptors(envSpecs: string[]): cxapi.Environment[] {
   if (envSpecs.length === 0) {
-    throw new Error(`Either specify an app with '--app', or specify an environment name like 'aws://123456789012/us-east-1'`);
+    throw new Error('Either specify an app with \'--app\', or specify an environment name like \'aws://123456789012/us-east-1\'');
   }
 
   const ret = new Array<cxapi.Environment>();

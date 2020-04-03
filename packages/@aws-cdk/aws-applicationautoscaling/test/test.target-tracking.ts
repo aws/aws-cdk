@@ -19,9 +19,9 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
-      PolicyType: "TargetTrackingScaling",
+      PolicyType: 'TargetTrackingScaling',
       TargetTrackingScalingPolicyConfiguration: {
-        PredefinedMetricSpecification: { PredefinedMetricType: "EC2SpotFleetRequestAverageCPUUtilization" },
+        PredefinedMetricSpecification: { PredefinedMetricType: 'EC2SpotFleetRequestAverageCPUUtilization' },
         TargetValue: 30
       }
 
@@ -43,9 +43,9 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
-      PolicyType: "TargetTrackingScaling",
+      PolicyType: 'TargetTrackingScaling',
       TargetTrackingScalingPolicyConfiguration: {
-        PredefinedMetricSpecification: { PredefinedMetricType: "LambdaProvisionedConcurrencyUtilization" },
+        PredefinedMetricSpecification: { PredefinedMetricType: 'LambdaProvisionedConcurrencyUtilization' },
         TargetValue: 0.9
       }
 
@@ -67,12 +67,12 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
-      PolicyType: "TargetTrackingScaling",
+      PolicyType: 'TargetTrackingScaling',
       TargetTrackingScalingPolicyConfiguration: {
         CustomizedMetricSpecification: {
-          MetricName: "Metric",
-          Namespace: "Test",
-          Statistic: "Average"
+          MetricName: 'Metric',
+          Namespace: 'Test',
+          Statistic: 'Average'
         },
         TargetValue: 30
       }
