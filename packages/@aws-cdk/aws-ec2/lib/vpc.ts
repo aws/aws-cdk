@@ -184,6 +184,13 @@ export interface SubnetSelection {
   readonly subnetType?: SubnetType;
 
   /**
+   * Select subnets only in the given AZs.
+   *
+   * @default no filtering on AZs is done
+   */
+  readonly availabilityZones?: string[];
+
+  /**
    * Select the subnet group with the given name
    *
    * Select the subnet group with the given name. This only needs
@@ -388,6 +395,9 @@ abstract class VpcBase extends Resource implements IVpc {
     } else if (selection.subnetGroupName !== undefined) { // Select by name
       return this.selectSubnetObjectsByName(selection.subnetGroupName);
 
+    } else if (selection.subnetType !== undefined && selection.availabilityZones !== undefined) {
+      return this.selectSubnetObjectsByTypeAndAvailabilityZones(selection.subnetType, selection.availabilityZones);
+
     } else {
       const type = selection.subnetType || SubnetType.PRIVATE;
       return this.selectSubnetObjectsByType(type, !!selection.onePerAz);
@@ -430,6 +440,18 @@ abstract class VpcBase extends Resource implements IVpc {
     return subnets;
   }
 
+  private selectSubnetObjectsByTypeAndAvailabilityZones(subnetType: SubnetType, azs: string[]) {
+    const allSubnets = {
+      [SubnetType.ISOLATED]: this.isolatedSubnets,
+      [SubnetType.PRIVATE]: this.privateSubnets,
+      [SubnetType.PUBLIC]: this.publicSubnets,
+    };
+
+    const subnets = allSubnets[subnetType];
+
+    return subnets.filter(s => azs.includes(s.availabilityZone));
+  }
+
   /**
    * Validate the fields in a SubnetSelection object, and reify defaults if necessary
    *
@@ -452,9 +474,22 @@ abstract class VpcBase extends Resource implements IVpc {
 
     if (placement.subnetType === undefined && placement.subnetGroupName === undefined && placement.subnets === undefined) {
       // Return default subnet type based on subnets that actually exist
-      if (this.privateSubnets.length > 0) { return { subnetType: SubnetType.PRIVATE, onePerAz: placement.onePerAz }; }
-      if (this.isolatedSubnets.length > 0) { return { subnetType: SubnetType.ISOLATED, onePerAz: placement.onePerAz }; }
-      return { subnetType: SubnetType.PUBLIC, onePerAz: placement.onePerAz };
+      if (this.privateSubnets.length > 0) {
+        return {
+          subnetType: SubnetType.PRIVATE,
+          onePerAz: placement.onePerAz,
+          availabilityZones: placement.availabilityZones};
+      }
+      if (this.isolatedSubnets.length > 0) {
+        return {
+          subnetType: SubnetType.ISOLATED,
+          onePerAz: placement.onePerAz,
+          availabilityZones: placement.availabilityZones };
+      }
+      return {
+        subnetType: SubnetType.PUBLIC,
+        onePerAz: placement.onePerAz,
+        availabilityZones: placement.availabilityZones };
     }
 
     return placement;

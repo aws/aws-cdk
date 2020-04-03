@@ -88,6 +88,53 @@ itself to 2 Availability Zones.
 Therefore, to get the VPC to spread over 3 or more availability zones, you
 must specify the environment where the stack will be deployed.
 
+### Choosing subnets for resources
+
+When creating some resources, such as databases or instances, there is an option 
+to choose which subnets to place them in. For example, a VPC endpoint by default 
+is placed into a subnet in every availability zone, but you can override which 
+subnets to use.
+
+The example below will place the endpoint into two AZs (us-east-1a and us-east-1c),
+in Isolated subnets.
+```ts
+new InterfaceVpcEndpoint(stack, "VPC Endpoint", {
+  vpc,
+  service: new InterfaceVpcEndpointService("com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc", 443),
+  subnets: {
+    subnetType: SubnetType.ISOLATED,
+    availabilityZones: ["us-east-1a", "us-east-1c"]
+  }
+});
+```
+
+You can also specify particular subnets for granular control.
+```ts
+new InterfaceVpcEndpoint(stack, "VPC Endpoint", {
+  vpc,
+  service: new InterfaceVpcEndpointService("com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc", 443),
+  subnets: {
+    subnets: [subnet1, subnet2]
+  }
+});
+```
+
+Which subnets are selected is evaluated as follows:
+
+* Specifying particular subnets overrides any other settings, such as type or 
+availability zone.
+* If no subnets are specified, but a subnetGroupName is, the
+subnetGroupName will override other settings. 
+* If neither subnets nor subnetGroupName are specified, subnets are selected by 
+type and availability zone. If no availability zones are specified, all 
+availability zones are considered. 
+* If no subnet type is specified, the type defaults to the types of subnets in the
+VPC, in this order:
+** If Private subnets exist, then the type defaults to Private
+** If no Private subnets exist, but Isolated subnets do, then the type defaults to
+Isolated
+** If no Private or Isolated subnets exist, the type defaults to Public
+
 ### Using NAT instances
 
 By default, the `Vpc` construct will create NAT *gateways* for you, which
@@ -423,6 +470,23 @@ A VPC endpoint enables you to privately connect your VPC to supported AWS servic
 Endpoints are virtual devices. They are horizontally scaled, redundant, and highly available VPC components that allow communication between instances in your VPC and services without imposing availability risks or bandwidth constraints on your network traffic.
 
 [example of setting up VPC endpoints](test/integ.vpc-endpoint.lit.ts)
+
+Not all VPC endpoint services are available in all availability zones. By default,
+CDK will place a VPC endpoint in one subnet per AZ, because CDK doesn't know about
+unavailable AZs. You can determine what the available AZs are from the AWS console.
+The AZs CDK places the VPC endpoint in can be configured as follows:
+
+```ts
+new InterfaceVpcEndpoint(stack, "VPC Endpoint", {
+  vpc,
+  service: new InterfaceVpcEndpointService("com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc", 443),
+  // Choose which availability zones to place the VPC endpoint in, based on
+  // available AZs
+  subnets: {
+    availabilityZones: ["us-east-1a", "us-east-1c"]
+  }
+});
+```
 
 ### Security groups for interface VPC endpoints
 By default, interface VPC endpoints create a new security group and traffic is **not**
