@@ -108,13 +108,13 @@ export abstract class PrincipalBase implements IPrincipal {
  * For more information about conditions, see:
  * https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition.html
  */
-export class PrincipalWithConditions<PrincipalType extends PrincipalBase> implements IPrincipal {
+export class PrincipalWithConditions implements IPrincipal {
   public readonly grantPrincipal: IPrincipal = this;
   public readonly assumeRoleAction: string = this.principal.assumeRoleAction;
   private additionalConditions: Conditions;
 
   constructor(
-    private readonly principal: PrincipalType,
+    private readonly principal: IPrincipal,
     conditions: Conditions,
   ) {
     this.additionalConditions = conditions;
@@ -176,12 +176,7 @@ export class PrincipalWithConditions<PrincipalType extends PrincipalBase> implem
       mergedConditions[operator] = condition;
     });
     Object.entries(additionalConditions).forEach(([operator, condition]) => {
-      const existingCondition = mergedConditions[operator];
-      if (!existingCondition) {
-        mergedConditions[operator] = condition;
-      } else {
-        mergedConditions[operator] = { ...existingCondition, ...condition };
-      }
+      mergedConditions[operator] = { ...mergedConditions[operator], ...condition };
     });
     return mergedConditions;
   }
