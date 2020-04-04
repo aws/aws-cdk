@@ -1,105 +1,94 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import { AppStacks, Tag } from '../lib/api/cxapp/stacks';
+import { CloudFormationDeployments, DeployStackOptions } from '../lib/api/cloudformation-deployments';
 import { DeployStackResult } from '../lib/api/deploy-stack';
-import { DeployStackOptions, IDeploymentTarget, Template } from '../lib/api/deployment-target';
-import { CdkToolkit } from '../lib/cdk-toolkit';
-import { MockSDK } from './util/mock-sdk';
+import { Template } from '../lib/api/util/cloudformation';
+import { CdkToolkit, Tag } from '../lib/cdk-toolkit';
+import { MockCloudExecutable, TestStackArtifact } from './util';
+
+let cloudExecutable: MockCloudExecutable;
+beforeEach(() => {
+  cloudExecutable = new MockCloudExecutable({
+    stacks: [
+      MockStack.MOCK_STACK_A,
+      MockStack.MOCK_STACK_B,
+    ],
+  });
+});
 
 describe('deploy', () => {
   describe('makes correct CloudFormation calls', () => {
-    test('without options', () => {
+    test('without options', async () => {
       // GIVEN
       const toolkit = new CdkToolkit({
-        appStacks: new TestAppStacks(),
-        provisioner: new TestProvisioner({
+        cloudExecutable,
+        configuration: cloudExecutable.configuration,
+        sdkProvider: cloudExecutable.sdkProvider,
+        cloudFormation: new FakeCloudFormation({
           'Test-Stack-A': { Foo: 'Bar' },
           'Test-Stack-B': { Baz: 'Zinga!' },
         }),
       });
 
       // WHEN
-      toolkit.deploy({ stackNames: ['Test-Stack-A', 'Test-Stack-B'], sdk: new MockSDK() });
+      await toolkit.deploy({ stackNames: ['Test-Stack-A', 'Test-Stack-B'] });
     });
 
-    test('with sns notification arns', () => {
+    test('with sns notification arns', async () => {
       // GIVEN
       const notificationArns = ['arn:aws:sns:::cfn-notifications', 'arn:aws:sns:::my-cool-topic'];
       const toolkit = new CdkToolkit({
-        appStacks: new TestAppStacks(),
-        provisioner: new TestProvisioner({
+        cloudExecutable,
+        configuration: cloudExecutable.configuration,
+        sdkProvider: cloudExecutable.sdkProvider,
+        cloudFormation: new FakeCloudFormation({
           'Test-Stack-A': { Foo: 'Bar' },
           'Test-Stack-B': { Baz: 'Zinga!' },
         }, notificationArns),
       });
 
       // WHEN
-      toolkit.deploy({
+      await toolkit.deploy({
         stackNames: ['Test-Stack-A', 'Test-Stack-B'],
         notificationArns,
-        sdk: new MockSDK()
       });
     });
   });
 });
 
 class MockStack {
-  constructor(
-    public readonly stackName: string,
-    public readonly template: any = { Resources: { TempalteName: stackName } },
-    public readonly templateFile: string = `fake/stack/${stackName}.json`,
-    public readonly assets: cxapi.AssetMetadataEntry[] = [],
-    public readonly parameters: { [id: string]: string } = {},
-    public readonly environment: cxapi.Environment = { name: 'MockEnv', account: '123456789012', region: 'bermuda-triangle-1' },
-  ) {}
+  public static readonly MOCK_STACK_A: TestStackArtifact = {
+    stackName: 'Test-Stack-A',
+    template: { Resources: { TempalteName: 'Test-Stack-A' } },
+    env: 'aws://123456789012/bermuda-triangle-1',
+    metadata: {
+      '/Test-Stack-A': [
+        {
+          type: cxapi.STACK_TAGS_METADATA_KEY,
+          data: [
+            { Key: 'Foo', Value: 'Bar' } as Tag
+          ]
+        }
+      ]
+    },
+  };
+  public static readonly MOCK_STACK_B: TestStackArtifact = {
+    stackName: 'Test-Stack-B',
+    template: { Resources: { TempalteName: 'Test-Stack-B' } },
+    env: 'aws://123456789012/bermuda-triangle-1',
+    metadata: {
+      '/Test-Stack-B': [
+        {
+          type: cxapi.STACK_TAGS_METADATA_KEY,
+          data: [
+            { Key: 'Baz', Value: 'Zinga!' } as Tag
+          ]
+        }
+      ]
+    },
+  };
 }
 
-class TestAppStacks extends AppStacks {
-  public static readonly MOCK_STACK_A = new MockStack('Test-Stack-A');
-  public static readonly MOCK_STACK_B = new MockStack('Test-Stack-B');
-
-  constructor() {
-    super(undefined as any);
-  }
-
-  public getTagsFromStackMetadata(stack: cxapi.CloudFormationStackArtifact): Tag[] {
-    switch (stack.stackName) {
-      case TestAppStacks.MOCK_STACK_A.stackName:
-        return [{ Key: 'Foo', Value: 'Bar' }];
-      case TestAppStacks.MOCK_STACK_B.stackName:
-        return [{ Key: 'Baz', Value: 'Zinga!' }];
-      default:
-        throw new Error(`Not an expected mock stack: ${stack.stackName}`);
-    }
-  }
-
-  public selectStacks(selectors: string[]): Promise<cxapi.CloudFormationStackArtifact[]> {
-    expect(selectors).toEqual(['Test-Stack-A', 'Test-Stack-B']);
-    return Promise.resolve([
-      // Cheating the type system here (intentionally, so we have to stub less!)
-      TestAppStacks.MOCK_STACK_A as cxapi.CloudFormationStackArtifact,
-      TestAppStacks.MOCK_STACK_B as cxapi.CloudFormationStackArtifact,
-    ]);
-  }
-
-  public processMetadata(stacks: cxapi.CloudFormationStackArtifact[]): void {
-    stacks.forEach(stack =>
-      expect([TestAppStacks.MOCK_STACK_A, TestAppStacks.MOCK_STACK_B]).toContain(stack));
-  }
-
-  public listStacks(): never {
-    throw new Error('Not Implemented');
-  }
-
-  public synthesizeStack(): never {
-    throw new Error('Not Implemented');
-  }
-
-  public synthesizeStacks(): never {
-    throw new Error('Not Implemented');
-  }
-}
-
-class TestProvisioner implements IDeploymentTarget {
+class FakeCloudFormation extends CloudFormationDeployments {
   private readonly expectedTags: { [stackName: string]: Tag[] } = {};
   private readonly expectedNotificationArns?: string[];
 
@@ -107,6 +96,8 @@ class TestProvisioner implements IDeploymentTarget {
     expectedTags: { [stackName: string]: { [key: string]: string } } = {},
     expectedNotificationArns?: string[],
   ) {
+    super({ sdkProvider: undefined as any });
+
     for (const [stackName, tags] of Object.entries(expectedTags)) {
       this.expectedTags[stackName] =
         Object.entries(tags).map(([Key, Value]) => ({ Key, Value }))
@@ -118,7 +109,7 @@ class TestProvisioner implements IDeploymentTarget {
   }
 
   public deployStack(options: DeployStackOptions): Promise<DeployStackResult> {
-    expect([TestAppStacks.MOCK_STACK_A.stackName, TestAppStacks.MOCK_STACK_B.stackName])
+    expect([MockStack.MOCK_STACK_A.stackName, MockStack.MOCK_STACK_B.stackName])
       .toContain(options.stack.stackName);
     expect(options.tags).toEqual(this.expectedTags[options.stack.stackName]);
     expect(options.notificationArns).toEqual(this.expectedNotificationArns);
@@ -132,9 +123,9 @@ class TestProvisioner implements IDeploymentTarget {
 
   public readCurrentTemplate(stack: cxapi.CloudFormationStackArtifact): Promise<Template> {
     switch (stack.stackName) {
-      case TestAppStacks.MOCK_STACK_A.stackName:
+      case MockStack.MOCK_STACK_A.stackName:
         return Promise.resolve({});
-      case TestAppStacks.MOCK_STACK_B.stackName:
+      case MockStack.MOCK_STACK_B.stackName:
         return Promise.resolve({});
       default:
         return Promise.reject(`Not an expected mock stack: ${stack.stackName}`);
