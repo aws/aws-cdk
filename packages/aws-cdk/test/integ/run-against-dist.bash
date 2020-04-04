@@ -22,17 +22,53 @@ function serve_npm_packages() {
     return
   fi
 
-  tarballs=$dist_root/js/*.tgz
+  if [ ! -z "${USE_PUBLISHED_FRAMEWORK_VERSION:-}" ]; then
 
-  log "Discovering local package names..."
-  # Read the package names from each tarball, so that we can generate
-  # a Verdaccio config that will keep each of these packages locally
-  # and not go to NPMJS for it.
-  package_names=""
-  for tgz in $tarballs; do
-    name=$(node -pe 'JSON.parse(process.argv[1]).name' "$(tar xOzf $tgz package/package.json)")
-    package_names="$package_names $name"
-  done
+    echo "Testing against latest published versions of the framework"
+
+    # when using latest published framework, only
+    # install the cli and its dependencies.
+
+    cli_root=./package  
+
+    version=$(node -p "require('${cli_root}/package.json').version")
+
+    # good lord
+    echo "Fetching CLI dependencies"
+    cli_deps=$(node -p "Object.entries(require('${cli_root}/package.json').dependencies).filter(x => x[0].includes('@aws-cdk')).map(x => x[0].replace('@aws-cdk/', '')).join(' ')")
+
+    tarballs=$dist_root/js/aws-cdk-${version}.tgz
+    package_names="aws-cdk"
+
+    for dep in ${cli_deps}; do
+      tarball=$dist_root/js/${dep}@${version}.jsii.tgz
+      package=@aws-cdk/${dep}
+      if [ ! -f ${tarball} ]; then
+        # not a jsii dependency, the tarball is different...
+        tarball=$dist_root/js/aws-cdk-${dep}-${version}.tgz        
+      fi 
+
+      tarballs="${tarballs} ${tarball}"
+      package_names="${package_names} ${package}"
+    done
+
+  else
+
+    echo "Testing against local versions of the framework"
+
+    tarballs=$dist_root/js/*.tgz
+
+    log "Discovering local package names..."
+    # Read the package names from each tarball, so that we can generate
+    # a Verdaccio config that will keep each of these packages locally
+    # and not go to NPMJS for it.
+    package_names=""
+    for tgz in $tarballs; do
+      name=$(node -pe 'JSON.parse(process.argv[1]).name' "$(tar xOzf $tgz package/package.json)")
+      package_names="$package_names $name"
+    done
+
+  fi
 
   #------------------------------------------------------------------------------
   # Start a local npm repository and install the CDK from the distribution to it
@@ -65,6 +101,7 @@ function serve_npm_packages() {
     # aws-cdk package directory.
     (cd $npmws && npm --quiet publish $tgz)
   done
+
 }
 
 function write_verdaccio_config() {

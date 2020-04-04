@@ -5,7 +5,11 @@ command=$1
 
 lerna=$REPO_ROOT/node_modules/.bin/lerna
 
-if [[ "$command" == "install" || "$command" == "i" ]]; then
+if [ ! -z "${USE_PUBLISHED_FRAMEWORK_VERSION:-}" ]; then
+  # simply pass through to npm and install the published package.
+  echo "Running original NPM command since we are testing against published framework version"
+  exec $ORIGINAL_NPM "$@"
+elif [[ "$command" == "install" || "$command" == "i" ]]; then
   npmargs="install"
   shift
 
@@ -29,5 +33,3 @@ if [[ "$command" == "install" || "$command" == "i" ]]; then
 
   exec $ORIGINAL_NPM $npmargs
 fi
-
-exec $ORIGINAL_NPM "$@"
