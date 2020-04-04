@@ -1,5 +1,5 @@
+import { Tag } from '@aws-cdk/cloud-assembly-schema';
 import { CloudFormationStackArtifact } from '@aws-cdk/cx-api';
-import { Tag } from '../cdk-toolkit';
 import { debug } from '../logging';
 import { Mode, SdkProvider } from './aws-auth';
 import { deployStack, DeployStackResult, destroyStack } from './deploy-stack';
