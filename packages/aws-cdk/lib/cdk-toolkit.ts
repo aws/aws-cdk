@@ -10,9 +10,8 @@ import { environmentsFromDescriptors, globEnvironmentsFromStacks } from '../lib/
 import { SdkProvider } from './api/aws-auth';
 import { bootstrapEnvironment2 } from './api/bootstrap/bootstrap-environment2';
 import { CloudFormationDeployments } from './api/cloudformation-deployments';
-import { CloudAssembly, StackCollection } from './api/cxapp/cloud-assembly';
+import { CloudAssembly, DefaultSelection, ExtendedStackSelection, StackCollection } from './api/cxapp/cloud-assembly';
 import { CloudExecutable } from './api/cxapp/cloud-executable';
-import { DefaultSelection, ExtendedStackSelection } from "./api/cxapp/stacks";
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
 import { data, error, highlight, print, success, warning } from './logging';
 import { deserializeStructure } from './serialize';
