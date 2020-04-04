@@ -120,8 +120,8 @@ test('deploy is skipped if template and tags did not change', async () => {
   await deployStack({
     stack: FAKE_STACK,
     tags: [
-      { Key: 'Key1', Value: 'Value1'},
-      { Key: 'Key2', Value: 'Value2'}
+      { Key: 'Key1', Value: 'Value1' },
+      { Key: 'Key2', Value: 'Value2' }
     ],
     sdk,
     sdkProvider,
