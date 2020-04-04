@@ -66,7 +66,7 @@ class MockStack {
         {
           type: cxschema.ArtifactMetadataEntryType.STACK_TAGS,
           data: [
-            { key: 'Foo', value: 'Bar' } as cxschema.Tag
+            { key: 'Foo', value: 'Bar' }
           ]
         }
       ]
@@ -81,7 +81,7 @@ class MockStack {
         {
           type: cxschema.ArtifactMetadataEntryType.STACK_TAGS,
           data: [
-            { key: 'Baz', value: 'Zinga!' } as cxschema.Tag
+            { key: 'Baz', value: 'Zinga!' }
           ]
         }
       ]
