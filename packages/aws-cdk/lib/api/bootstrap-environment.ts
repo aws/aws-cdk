@@ -3,7 +3,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as path from 'path';
-import { SdkProvider } from './aws-auth';
+import { Mode, SdkProvider } from './aws-auth';
 import { deployStack, DeployStackResult } from './deploy-stack';
 
 // tslint:disable:max-line-length
@@ -59,7 +59,7 @@ export interface BootstrapEnvironmentProps {
 }
 
 /** @experimental */
-export async function bootstrapEnvironment(environment: cxapi.Environment, aws: SdkProvider, toolkitStackName: string, roleArn: string | undefined, props: BootstrapEnvironmentProps = {}): Promise<DeployStackResult> {
+export async function bootstrapEnvironment(environment: cxapi.Environment, sdkProvider: SdkProvider, toolkitStackName: string, roleArn: string | undefined, props: BootstrapEnvironmentProps = {}): Promise<DeployStackResult> {
   if (props.trustedAccounts?.length) {
     throw new Error('--trust can only be passed for the new bootstrap experience!');
   }
@@ -119,9 +119,15 @@ export async function bootstrapEnvironment(environment: cxapi.Environment, aws: 
   });
 
   const assembly = builder.buildAssembly();
+
+  const resolvedEnvironment = await sdkProvider.resolveEnvironment(environment.account, environment.region);
+
   return await deployStack({
     stack: assembly.getStackByName(toolkitStackName),
-    sdk: aws, roleArn,
+    resolvedEnvironment,
+    sdk: await sdkProvider.forEnvironment(environment.account, environment.region, Mode.ForWriting),
+    sdkProvider,
+    roleArn,
     tags: props.tags,
     execute: props.execute
   });

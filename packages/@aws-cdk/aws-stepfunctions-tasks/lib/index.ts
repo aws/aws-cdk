@@ -21,3 +21,4 @@ export * from './emr-modify-instance-fleet-by-name';
 export * from './emr-modify-instance-group-by-name';
 export * from './run-glue-job-task';
 export * from './run-batch-job';
+export * from './call-dynamodb';
