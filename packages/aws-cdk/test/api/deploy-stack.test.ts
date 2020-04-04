@@ -213,6 +213,20 @@ test('deploy not skipped if template changed', async () => {
   expect(cfnMocks.executeChangeSet).toHaveBeenCalled();
 });
 
+test('not executed and no error if --no-execute is given', async () => {
+  // WHEN
+  await deployStack({
+    stack: FAKE_STACK,
+    sdk,
+    sdkProvider,
+    execute: false,
+    resolvedEnvironment: mockResolvedEnvironment(),
+  });
+
+  // THEN
+  expect(cfnMocks.executeChangeSet).not.toHaveBeenCalled();
+});
+
 /**
  * Set up the mocks so that it looks like the stack exists to start with
  */
