@@ -39,6 +39,10 @@ export class MockCloudExecutable extends CloudExecutable {
   }
 }
 
+function clone(obj: any) {
+  return JSON.parse(JSON.stringify(obj));
+}
+
 function testAssembly(assembly: TestAssembly): cxapi.CloudAssembly {
   const builder = new cxapi.CloudAssemblyBuilder();
 
@@ -46,7 +50,7 @@ function testAssembly(assembly: TestAssembly): cxapi.CloudAssembly {
     const templateFile = `${stack.stackName}.template.json`;
     fs.writeFileSync(path.join(builder.outdir, templateFile), JSON.stringify(stack.template, undefined, 2));
 
-    const metadata: { [path: string]: cxschema.MetadataEntry[] } = { ...stack.metadata };
+    const metadata: { [path: string]: cxschema.MetadataEntry[] } = patchStackTags({ ...stack.metadata });
     for (const asset of stack.assets || []) {
       metadata[asset.id] = [
         { type: cxschema.ArtifactMetadataEntryType.ASSET, data: asset }
@@ -70,6 +74,25 @@ function testAssembly(assembly: TestAssembly): cxapi.CloudAssembly {
   }
 
   return builder.buildAssembly();
+}
+
+function patchStackTags(metadata: { [path: string]: cxschema.MetadataEntry[] }): { [path: string]: cxschema.MetadataEntry[] } {
+
+  const cloned = clone(metadata) as { [path: string]: cxschema.MetadataEntry[] };
+
+  for (const metadataEntries of Object.values(cloned)) {
+    for (const metadataEntry of metadataEntries) {
+      if (metadataEntry.type === cxschema.ArtifactMetadataEntryType.STACK_TAGS && metadataEntry.data) {
+
+        const metadataAny = metadataEntry as any;
+
+        metadataAny.data = metadataAny.data.map((t: any) => {
+            return { Key: t.key, Value: t.value };
+        });
+      }
+    }
+  }
+  return cloned;
 }
 
 export function testStack(stack: TestStackArtifact) {
