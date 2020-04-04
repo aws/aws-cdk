@@ -50,6 +50,8 @@ function testAssembly(assembly: TestAssembly): cxapi.CloudAssembly {
     const templateFile = `${stack.stackName}.template.json`;
     fs.writeFileSync(path.join(builder.outdir, templateFile), JSON.stringify(stack.template, undefined, 2));
 
+    // we call patchStackTags here to simulate the tags formatter
+    // that is used when building real manifest files.
     const metadata: { [path: string]: cxschema.MetadataEntry[] } = patchStackTags({ ...stack.metadata });
     for (const asset of stack.assets || []) {
       metadata[asset.id] = [
@@ -76,6 +78,13 @@ function testAssembly(assembly: TestAssembly): cxapi.CloudAssembly {
   return builder.buildAssembly();
 }
 
+/**
+ * Transform stack tags from how they are decalred in source code (lower cased)
+ * to how they are stored on disk (upper cased). In real synthesis this is done
+ * by a special tags formatter.
+ *
+ * @see @aws-cdk/core/lib/stack.ts
+ */
 function patchStackTags(metadata: { [path: string]: cxschema.MetadataEntry[] }): { [path: string]: cxschema.MetadataEntry[] } {
 
   const cloned = clone(metadata) as { [path: string]: cxschema.MetadataEntry[] };
