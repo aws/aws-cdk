@@ -90,7 +90,7 @@ test('do bootstrap using KMS CMK', async () => {
 test('do bootstrap with custom tags for toolkit stack', async () => {
   // WHEN
   const ret = await bootstrapEnvironment(env, sdk, 'mockStack', undefined, {
-    tags: [{ key: 'Foo', value: 'Bar' }]
+    tags: [{ Key: 'Foo', Value: 'Bar' }]
   });
 
   // THEN

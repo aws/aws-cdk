@@ -3,7 +3,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { CloudFormationDeployments, DeployStackOptions } from '../lib/api/cloudformation-deployments';
 import { DeployStackResult } from '../lib/api/deploy-stack';
 import { Template } from '../lib/api/util/cloudformation';
-import { CdkToolkit } from '../lib/cdk-toolkit';
+import { CdkToolkit, Tag } from '../lib/cdk-toolkit';
 import { MockCloudExecutable, TestStackArtifact } from './util';
 
 let cloudExecutable: MockCloudExecutable;
@@ -90,7 +90,7 @@ class MockStack {
 }
 
 class FakeCloudFormation extends CloudFormationDeployments {
-  private readonly expectedTags: { [stackName: string]: cxschema.Tag[] } = {};
+  private readonly expectedTags: { [stackName: string]: Tag[] } = {};
   private readonly expectedNotificationArns?: string[];
 
   constructor(
@@ -101,8 +101,8 @@ class FakeCloudFormation extends CloudFormationDeployments {
 
     for (const [stackName, tags] of Object.entries(expectedTags)) {
       this.expectedTags[stackName] =
-        Object.entries(tags).map(([key, value]) => ({ key, value }))
-          .sort((l, r) =>  l.key.localeCompare(r.key));
+        Object.entries(tags).map(([Key, Value]) => ({ Key, Value }))
+          .sort((l, r) =>  l.Key.localeCompare(r.Key));
     }
     if (expectedNotificationArns) {
       this.expectedNotificationArns = expectedNotificationArns;

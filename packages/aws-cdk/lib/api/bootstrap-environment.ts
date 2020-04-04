@@ -3,6 +3,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as path from 'path';
+import { Tag } from '../cdk-toolkit';
 import { Mode, SdkProvider } from './aws-auth';
 import { deployStack, DeployStackResult } from './deploy-stack';
 
@@ -34,7 +35,7 @@ export interface BootstrapEnvironmentProps {
    *
    * @default - None.
    */
-  readonly tags?: cxschema.Tag[];
+  readonly tags?: Tag[];
   /**
    * Whether to execute the changeset or only create it and leave it in review.
    * @default true

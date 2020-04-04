@@ -120,8 +120,8 @@ test('deploy is skipped if template and tags did not change', async () => {
   await deployStack({
     stack: FAKE_STACK,
     tags: [
-      { key: 'Key1', value: 'Value1'},
-      { key: 'Key2', value: 'Value2'}
+      { Key: 'Key1', Value: 'Value1'},
+      { Key: 'Key2', Value: 'Value2'}
     ],
     sdk,
     sdkProvider,
@@ -151,8 +151,8 @@ test('deploy not skipped if template did not change but tags changed', async () 
     resolvedEnvironment: mockResolvedEnvironment(),
     tags: [
       {
-        key: 'Key',
-        value: 'NewValue'
+        Key: 'Key',
+        Value: 'NewValue'
       }
     ]
   });
@@ -181,7 +181,7 @@ test('deploy not skipped if template did not change but one tag removed', async 
     sdkProvider,
     resolvedEnvironment: mockResolvedEnvironment(),
     tags: [
-      { key: 'Key1', value: 'Value1' }
+      { Key: 'Key1', Value: 'Value1' }
     ]
   });
 

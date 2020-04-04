@@ -1,5 +1,5 @@
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { CloudFormationStackArtifact } from '@aws-cdk/cx-api';
+import { Tag } from '../cdk-toolkit';
 import { debug } from '../logging';
 import { Mode, SdkProvider } from './aws-auth';
 import { deployStack, DeployStackResult, destroyStack } from './deploy-stack';
@@ -57,7 +57,7 @@ export interface DeployStackOptions {
   /**
    * Stack tags (pass through to CloudFormation)
    */
-  tags?: cxschema.Tag[];
+  tags?: Tag[];
 
   /**
    * Stage the change set but don't execute it

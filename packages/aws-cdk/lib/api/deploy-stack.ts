@@ -1,9 +1,8 @@
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
-import { Tags } from 'aws-sdk/clients/cloudformation';
 import * as colors from 'colors/safe';
 import * as uuid from 'uuid';
 import { addMetadataAssetsToManifest } from '../assets';
+import { Tag } from '../cdk-toolkit';
 import { debug, error, print } from '../logging';
 import { toYAML } from '../serialize';
 import { AssetManifestBuilder } from '../util/asset-manifest-builder';
@@ -111,7 +110,7 @@ export interface DeployStackOptions {
    *
    * @default - No tags
    */
-  tags?: cxschema.Tag[];
+  tags?: Tag[];
 
   /**
    * Whether to execute the changeset or leave it in review.
@@ -154,7 +153,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     // bail out if the current template is exactly the same as the one we are about to deploy
     // in cdk-land, this means nothing changed because assets (and therefore nested stacks) are immutable.
     debug(`checking if we can skip this stack based on the currently deployed template and tags (use --force to override)`);
-    const tagsIdentical = compareTags(toCxSchemaTags(cloudFormationStack.tags), options.tags ?? []);
+    const tagsIdentical = compareTags(cloudFormationStack.tags, options.tags ?? []);
     if (JSON.stringify(stackArtifact.template) === JSON.stringify(await cloudFormationStack.template()) && tagsIdentical) {
       debug(`${deployName}: no change in template and tags, skipping (use --force to override)`);
       return {
@@ -209,7 +208,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     RoleARN: options.roleArn,
     NotificationARNs: options.notificationArns,
     Capabilities: [ 'CAPABILITY_IAM', 'CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND' ],
-    Tags: options.tags ? toCloudFormationTags(options.tags) : options.tags
+    Tags: options.tags ? options.tags : options.tags
   }).promise();
   debug('Initiated creation of changeset: %s; waiting for it to finish creating...', changeSet.Id);
   const changeSetDescription = await waitForChangeSet(cfn, deployName, changeSetName);
@@ -327,27 +326,15 @@ export async function destroyStack(options: DestroyStackOptions) {
   }
 }
 
-function toCxSchemaTags(tags: Tags): cxschema.Tag[] {
-  return tags.map(t => {
-    return { key: t.Key, value: t.Value };
-  });
-}
-
-function toCloudFormationTags(tags: cxschema.Tag[]): Tags {
-    return tags.map(t => {
-        return { Key: t.key, Value: t.value };
-    });
-}
-
-function compareTags(a: cxschema.Tag[], b: cxschema.Tag[]): boolean {
+function compareTags(a: Tag[], b: Tag[]): boolean {
   if (a.length !== b.length) {
     return false;
   }
 
   for (const aTag of a) {
-    const bTag = b.find(tag => tag.key === aTag.key);
+    const bTag = b.find(tag => tag.Key === aTag.Key);
 
-    if (!bTag || bTag.value !== aTag.value) {
+    if (!bTag || bTag.Value !== aTag.Value) {
       return false;
     }
   }
