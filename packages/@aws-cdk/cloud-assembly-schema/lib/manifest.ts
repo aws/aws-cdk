@@ -18,6 +18,8 @@ export class Manifest {
 
   /**
    * Load manifest from file.
+   *
+   * @param filePath - path to the manifest file.
    */
   public static load(filePath: string): assembly.AssemblyManifest {
     const raw: assembly.AssemblyManifest = JSON.parse(fs.readFileSync(filePath, 'UTF-8'));
@@ -50,7 +52,7 @@ export class Manifest {
     const maxVersion = parseVersion(Manifest.version());
     const actual = parseVersion(manifest.version);
 
-    // first validation the version should be accepted.
+    // first validate the version should be accepted.
     if (semver.gt(actual, maxVersion)) {
       throw new Error(`Cloud assembly schema version mismatch: Maximum schema version supported is ${maxVersion}, but found ${actual}.`
       +  '\nPlease upgrade your CLI in order to interact with this app.');
