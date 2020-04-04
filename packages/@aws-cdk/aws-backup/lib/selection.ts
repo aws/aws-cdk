@@ -74,6 +74,10 @@ export class BackupSelection extends Resource implements iam.IGrantable {
    */
   public readonly grantPrincipal: iam.IPrincipal;
 
+  private listOfTags: CfnBackupSelection.ConditionResourceTypeProperty[] = [];
+  private resources: string[] = [];
+  private readonly backupableResourcesCollector = new BackupableResourcesCollector();
+
   constructor(scope: Construct, id: string, props: BackupSelectionProps) {
     super(scope, id);
 
@@ -91,47 +95,42 @@ export class BackupSelection extends Resource implements iam.IGrantable {
       backupSelection: {
         iamRoleArn: role.roleArn,
         selectionName: props.backupSelectionName || this.node.id,
-        listOfTags: formatListOfTags(props.resources),
-        resources: formatResources(props.resources),
+        listOfTags: Lazy.anyValue({
+          produce: () => this.listOfTags
+        }, { omitEmptyArray: true }),
+        resources: Lazy.listValue({
+          produce: () => [...this.resources, ...this.backupableResourcesCollector.resources ]
+        }, { omitEmpty: true }),
       }
     });
 
     this.backupPlanId = selection.attrBackupPlanId;
     this.selectionId = selection.attrSelectionId;
+
+    for (const resource of props.resources) {
+      this.addResource(resource);
+    }
   }
-}
 
-function formatListOfTags(backupResources: BackupResource[]): CfnBackupSelection.ConditionResourceTypeProperty[] | undefined {
-  const listOfTags: CfnBackupSelection.ConditionResourceTypeProperty[] = [];
-
-  for (const resource of backupResources) {
+  private addResource(resource: BackupResource) {
     if (resource.tagCondition) {
-      listOfTags.push({
+      this.listOfTags.push({
         conditionKey: resource.tagCondition.key,
         conditionType: resource.tagCondition.operation || TagOperation.STRING_EQUALS,
         conditionValue: resource.tagCondition.value,
       });
     }
-  }
 
-  return listOfTags.length !== 0 ? listOfTags : undefined;
-}
-
-function formatResources(backupResources: BackupResource[]): string[] | undefined {
-  const resources: string[] = [];
-  const backupResourcesCollector = new BackupableResourcesCollector();
-
-  for (const resource of backupResources) {
     if (resource.resource) {
-      resources.push(resource.resource);
+      this.resources.push(resource.resource);
     }
 
     if (resource.construct) {
-      resource.construct.node.applyAspect(backupResourcesCollector);
+      resource.construct.node.applyAspect(this.backupableResourcesCollector);
+      // Cannot push `this.backupableResourcesCollector.resources` to
+      // `this.resources` here because it has not been evaluated yet.
+      // Will be concatenated to `this.resources` in a `Lazy.listValue`
+      // in the constructor instead.
     }
   }
-
-  return Lazy.listValue({
-    produce: () => [...resources, ...backupResourcesCollector.resources]
-  }, { omitEmpty: true });
 }
