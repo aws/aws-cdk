@@ -37,6 +37,12 @@ export class CloudFormationStack {
   protected constructor(private readonly cfn: CloudFormation, public readonly stackName: string, private readonly stack?: CloudFormation.Stack) {
   }
 
+  /**
+   * Retrieve the stack's deployed template
+   *
+   * Cached, so will only be retrieved once. Will throw an error
+   * if the stack does not exist.
+   */
   public async template(): Promise<Template> {
     if (this._template === undefined) {
       const response = await this.cfn.getTemplate({ StackName: this.stackName, TemplateStage: 'Original' }).promise();
@@ -45,17 +51,30 @@ export class CloudFormationStack {
     return this._template;
   }
 
+  /**
+   * Whether the stack exists
+   */
   public get exists() {
     return this.stack !== undefined;
   }
 
+  /**
+   * The stack's ID
+   *
+   * Throws if the stack doesn't exist.
+   */
   public get stackId() {
     this.assertExists();
     return this.stack!.StackId!;
   }
 
+  /**
+   * The stack's current outputs
+   *
+   * Empty object if the stack doesn't exist
+   */
   public get outputs(): Record<string, string> {
-    this.assertExists();
+    if (!this.exists) { return {}; }
     const result: { [name: string]: string } = {};
     (this.stack!.Outputs || []).forEach(output => {
       result[output.OutputKey!] = output.OutputValue!;
@@ -63,6 +82,11 @@ export class CloudFormationStack {
     return result;
   }
 
+  /**
+   * The stack's status
+   *
+   * Special status NOT_FOUND if the stack does not exist.
+   */
   public get stackStatus(): StackStatus {
     if (!this.exists) {
       return new StackStatus('NOT_FOUND', 'Stack not found during lookup');
@@ -70,13 +94,19 @@ export class CloudFormationStack {
     return StackStatus.fromStackDescription(this.stack!);
   }
 
+  /**
+   * The stack's current tags
+   *
+   * Empty list of the stack does not exist
+   */
   public get tags(): CloudFormation.Tags {
-    this.assertExists();
-    return this.stack!.Tags || [];
+    return this.stack?.Tags || [];
   }
 
   /**
-   * Return the names of all parameters
+   * Return the names of all current parameters to the stack
+   *
+   * Empty list if the stack does not exist.
    */
   public get parameterNames(): string[] {
     return this.exists ? (this.stack!.Parameters || []).map(p => p.ParameterKey!) : [];
