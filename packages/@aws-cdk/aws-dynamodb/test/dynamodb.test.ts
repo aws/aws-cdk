@@ -313,6 +313,7 @@ test('when specifying every property', () => {
     writeCapacity: 1337,
     pointInTimeRecovery: true,
     serverSideEncryption: true,
+    kmsMasterKeyId: "kmsMasterKeyId",
     billingMode: BillingMode.PROVISIONED,
     stream: StreamViewType.KEYS_ONLY,
     timeToLiveAttribute: 'timeToLive',

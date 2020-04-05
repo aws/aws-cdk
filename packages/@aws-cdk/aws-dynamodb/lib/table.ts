@@ -99,6 +99,15 @@ export interface TableOptions {
    */
   readonly serverSideEncryption?: boolean;
 
+    /**
+   * The AWS KMS customer master key (CMK) that should be used for the AWS KMS encryption. 
+   * To specify a CMK, use its key ID, Amazon Resource Name (ARN), alias name, or alias ARN. 
+   * Note that you should only provide this parameter if the key is different from the default 
+   * DynamoDB customer master key alias/aws/dynamodb.
+   * @default - KMS Master Key server-side encryption is enabled with an customer owned master key
+   */
+  readonly kmsMasterKeyId?: string;
+
   /**
    * The name of TTL attribute.
    * @default - TTL is disabled
@@ -678,7 +687,7 @@ export class Table extends TableBase {
         readCapacityUnits: props.readCapacity || 5,
         writeCapacityUnits: props.writeCapacity || 5
       },
-      sseSpecification: props.serverSideEncryption ? { sseEnabled: props.serverSideEncryption } : undefined,
+      sseSpecification: props.serverSideEncryption ? { sseEnabled: props.serverSideEncryption, kmsMasterKeyId: props.kmsMasterKeyId } : undefined,
       streamSpecification,
       timeToLiveSpecification: props.timeToLiveAttribute ? { attributeName: props.timeToLiveAttribute, enabled: true } : undefined
     });
