@@ -9,7 +9,7 @@ For example:
 
 {
     "test": "test-cdk-iam-diff.sh",
-    "version": "1.30.0",
+    "version": "v1.30.0",
     "justification": "iam policy generation has changed in version > 1.30.0 because..."
 },
 
@@ -17,17 +17,17 @@ For example:
 const exclusions = [
   {
     "test": "test-cdk-deploy-with-parameters.sh",
-    "version": "1.31.0",
+    "version": "v1.31.0",
     "justification": "This test doesn't use a unique sns topic name and it collides with our regular integ suite"
   },
   {
     "test": "test-cdk-deploy-wildcard-with-parameters.sh",
-    "version": "1.31.0",
+    "version": "v1.31.0",
     "justification": "This test doesn't use a unique sns topic name and it collides with our regular integ suite"
   },
   {
     "test": "test-cdk-deploy-nested-stack-with-parameters.sh",
-    "version": "1.31.0",
+    "version": "v1.31.0",
     "justification": "This test doesn't use a unique sns topic name and it collides with our regular integ suite"
   }
 ]
