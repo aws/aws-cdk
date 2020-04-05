@@ -163,12 +163,17 @@ export class RecordTarget {
   }
 
   /**
-   * Use ip adresses as target.
+   * Use ip addresses as target.
    */
   public static fromIpAddresses(...ipAddresses: string[]) {
     return RecordTarget.fromValues(...ipAddresses);
   }
 
+  /**
+   *
+   * @param values correspond with the chosen record type (e.g. for 'A' Type, specify one ore more IP addresses)
+   * @param aliasTarget alias for targets such as CloudFront distribution to route traffic to
+   */
   protected constructor(public readonly values?: string[], public readonly aliasTarget?: IAliasRecordTarget) {
   }
 }
@@ -215,6 +220,8 @@ export class RecordSet extends Resource implements IRecordSet {
 }
 
 /**
+ * Target for a DNS A Record
+ *
  * @deprecated Use RecordTarget
  */
 export class AddressRecordTarget extends RecordTarget {

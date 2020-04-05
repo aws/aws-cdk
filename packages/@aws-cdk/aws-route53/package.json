@@ -103,20 +103,7 @@
       "props-physical-name:@aws-cdk/aws-route53.RecordSetProps",
       "props-physical-name:@aws-cdk/aws-route53.SrvRecordProps",
       "props-physical-name:@aws-cdk/aws-route53.TxtRecordProps",
-      "props-physical-name:@aws-cdk/aws-route53.AaaaRecordProps",
-      "docs-public-apis:@aws-cdk/aws-route53.AddressRecordTarget",
-      "docs-public-apis:@aws-cdk/aws-route53.PrivateHostedZoneProps",
-      "docs-public-apis:@aws-cdk/aws-route53.IPublicHostedZone",
-      "docs-public-apis:@aws-cdk/aws-route53.IPrivateHostedZone",
-      "props-default-doc:@aws-cdk/aws-route53.HostedZoneProviderProps.vpcId",
-      "props-default-doc:@aws-cdk/aws-route53.HostedZoneProviderProps.privateZone",
-      "docs-public-apis:@aws-cdk/aws-route53.CommonHostedZoneProps",
-      "docs-public-apis:@aws-cdk/aws-route53.RecordTarget.values",
-      "docs-public-apis:@aws-cdk/aws-route53.RecordTarget.aliasTarget",
-      "docs-public-apis:@aws-cdk/aws-route53.PublicHostedZone.fromPublicHostedZoneId",
-      "docs-public-apis:@aws-cdk/aws-route53.PrivateHostedZone.fromPrivateHostedZoneId",
-      "docs-public-apis:@aws-cdk/aws-route53.HostedZone.fromHostedZoneId",
-      "docs-public-apis:@aws-cdk/aws-route53.HostedZone"
+      "props-physical-name:@aws-cdk/aws-route53.AaaaRecordProps"
     ]
   },
   "stability": "stable",
