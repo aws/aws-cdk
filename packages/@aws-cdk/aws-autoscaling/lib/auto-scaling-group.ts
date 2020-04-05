@@ -467,7 +467,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     const desiredCapacity = props.desiredCapacity;
     const minCapacity = props.minCapacity !== undefined ? props.minCapacity : 1;
     const maxCapacity = props.maxCapacity !== undefined ? props.maxCapacity :
-                        desiredCapacity !== undefined ? desiredCapacity : Math.max(minCapacity, 1);
+      desiredCapacity !== undefined ? desiredCapacity : Math.max(minCapacity, 1);
 
     withResolved(minCapacity, maxCapacity, (min, max) => {
       if (min > max) {
@@ -488,7 +488,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     });
 
     if (desiredCapacity !== undefined) {
-      this.node.addWarning(`desiredCapacity has been configured. Be aware this will reset the size of your AutoScalingGroup on every deployment. See https://github.com/aws/aws-cdk/issues/5215`);
+      this.node.addWarning('desiredCapacity has been configured. Be aware this will reset the size of your AutoScalingGroup on every deployment. See https://github.com/aws/aws-cdk/issues/5215');
     }
 
     const { subnetIds, hasPublic } = props.vpc.selectSubnets(props.vpcSubnets);
@@ -504,10 +504,10 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
         {
           topicArn: props.notificationsTopic.topicArn,
           notificationTypes: [
-            "autoscaling:EC2_INSTANCE_LAUNCH",
-            "autoscaling:EC2_INSTANCE_LAUNCH_ERROR",
-            "autoscaling:EC2_INSTANCE_TERMINATE",
-            "autoscaling:EC2_INSTANCE_TERMINATE_ERROR"
+            'autoscaling:EC2_INSTANCE_LAUNCH',
+            'autoscaling:EC2_INSTANCE_LAUNCH_ERROR',
+            'autoscaling:EC2_INSTANCE_TERMINATE',
+            'autoscaling:EC2_INSTANCE_TERMINATE_ERROR'
           ],
         }
       ],

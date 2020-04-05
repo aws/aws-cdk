@@ -8,7 +8,7 @@ import * as path from 'path';
 import { debug } from '../../logging';
 import { cached } from '../../util/functions';
 import { CredentialPlugins } from '../aws-auth/credential-plugins';
-import { Mode } from "../aws-auth/credentials";
+import { Mode } from '../aws-auth/credentials';
 import { AwsCliCompatible } from './awscli-compatible';
 import { ISDK, SDK } from './sdk';
 
@@ -104,8 +104,8 @@ export class SdkProvider {
      */
     public readonly defaultRegion: string,
     httpOptions: SdkHttpOptions = {}) {
-      this.httpOptions = defaultHttpOptions(httpOptions);
-    }
+    this.httpOptions = defaultHttpOptions(httpOptions);
+  }
 
   /**
    * Return an SDK which can do operations in the given environment
@@ -158,11 +158,11 @@ export class SdkProvider {
     accountId = accountId !== cxapi.UNKNOWN_ACCOUNT ? accountId : (await this.defaultAccount())?.accountId;
 
     if (!region) {
-      throw new Error(`AWS region must be configured either when you configure your CDK stack or through the environment`);
+      throw new Error('AWS region must be configured either when you configure your CDK stack or through the environment');
     }
 
     if (!accountId) {
-      throw new Error(`Unable to resolve AWS account to use. It must be either configured when you define your CDK or through the environment`);
+      throw new Error('Unable to resolve AWS account to use. It must be either configured when you define your CDK or through the environment');
     }
 
     const environment: cxapi.Environment = {
@@ -228,7 +228,7 @@ export class SdkProvider {
 
     // No luck, format a useful error message
     const error = [`Need to perform AWS calls for account ${accountId}`];
-    error.push(defaultAccountId ? `but the current credentials are for ${defaultAccountId}` : `but no credentials have been configured`);
+    error.push(defaultAccountId ? `but the current credentials are for ${defaultAccountId}` : 'but no credentials have been configured');
     if (this.plugins.availablePluginNames.length > 0) {
       error.push(`and none of these plugins found any: ${this.plugins.availablePluginNames.join(', ')}`);
     }

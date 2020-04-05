@@ -32,7 +32,7 @@ taskDefinition.addContainer('TheContainer', {
 
 // Build state machine
 const definition = new sfn.Pass(stack, 'Start', {
-    result: sfn.Result.fromObject({ SomeKey: 'SomeValue' })
+  result: sfn.Result.fromObject({ SomeKey: 'SomeValue' })
 }).next(new sfn.Task(stack, 'FargateTask', { task: new tasks.RunEcsFargateTask({
   integrationPattern: sfn.ServiceIntegrationPattern.SYNC,
   cluster, taskDefinition,
