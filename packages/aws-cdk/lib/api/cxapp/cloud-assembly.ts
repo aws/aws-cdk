@@ -85,7 +85,7 @@ export class CloudAssembly {
           if (stacks.length === 1) {
             return new StackCollection(this, stacks);
           } else {
-            throw new Error(`Since this app includes more than a single stack, specify which stacks to use (wildcards are supported)\n` +
+            throw new Error('Since this app includes more than a single stack, specify which stacks to use (wildcards are supported)\n' +
               `Stacks: ${stacks.map(x => x.id).join(' ')}`);
           }
         default:
@@ -156,7 +156,7 @@ export class StackCollection {
 
   public get firstStack() {
     if (this.stackCount < 1) {
-      throw new Error(`StackCollection contains no stack artifacts (trying to access the first one)`);
+      throw new Error('StackCollection contains no stack artifacts (trying to access the first one)');
     }
     return this.stackArtifacts[0];
   }
@@ -243,8 +243,8 @@ export interface MetadataMessageOptions {
  * Modifies `selectedStacks` in-place.
  */
 function includeDownstreamStacks(
-    selectedStacks: Map<string, cxapi.CloudFormationStackArtifact>,
-    allStacks: Map<string, cxapi.CloudFormationStackArtifact>) {
+  selectedStacks: Map<string, cxapi.CloudFormationStackArtifact>,
+  allStacks: Map<string, cxapi.CloudFormationStackArtifact>) {
   const added = new Array<string>();
 
   let madeProgress;
@@ -272,8 +272,8 @@ function includeDownstreamStacks(
  * Modifies `selectedStacks` in-place.
  */
 function includeUpstreamStacks(
-    selectedStacks: Map<string, cxapi.CloudFormationStackArtifact>,
-    allStacks: Map<string, cxapi.CloudFormationStackArtifact>) {
+  selectedStacks: Map<string, cxapi.CloudFormationStackArtifact>,
+  allStacks: Map<string, cxapi.CloudFormationStackArtifact>) {
   const added = new Array<string>();
   let madeProgress = true;
   while (madeProgress) {

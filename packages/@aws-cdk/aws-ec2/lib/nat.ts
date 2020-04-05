@@ -1,7 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import { Instance } from './instance';
 import { InstanceType } from './instance-types';
-import { IMachineImage, LookupMachineImage } from "./machine-image";
+import { IMachineImage, LookupMachineImage } from './machine-image';
 import { Port } from './port';
 import { SecurityGroup } from './security-group';
 import { PrivateSubnet, PublicSubnet, RouterType, Vpc } from './vpc';

@@ -254,7 +254,7 @@ export = {
     });
     const customAttributes = { foo: 'bar' };
 
-    service.registerLoadBalancer("Loadbalancer", alb, customAttributes);
+    service.registerLoadBalancer('Loadbalancer', alb, customAttributes);
 
     // THEN
     expect(stack).to(haveResource('AWS::ServiceDiscovery::Instance', {
@@ -296,7 +296,7 @@ export = {
 
     // THEN
     test.throws(() => {
-      service.registerLoadBalancer("Loadbalancer", alb);
+      service.registerLoadBalancer('Loadbalancer', alb);
     }, /Namespace associated with Service must be a DNS Namespace./);
 
     test.done();
@@ -320,7 +320,7 @@ export = {
 
     // THEN
     test.throws(() => {
-      service.registerLoadBalancer("Loadbalancer", alb);
+      service.registerLoadBalancer('Loadbalancer', alb);
     }, /Service must use `WEIGHTED` routing policy./);
 
     test.done();

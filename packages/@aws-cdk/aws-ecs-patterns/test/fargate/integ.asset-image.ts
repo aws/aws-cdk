@@ -14,7 +14,7 @@ Array.isArray(cluster);
 Array.isArray(path);
 
 // Instantiate Fargate Service with just cluster and image
-const fargateService = new ecsPatterns.ApplicationLoadBalancedFargateService(stack, "FargateService", {
+const fargateService = new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'FargateService', {
   cluster,
   taskImageOptions: {
     containerPort: 8000,

@@ -1,5 +1,5 @@
-import { Assertion, JestFriendlyAssertion } from "../assertion";
-import { StackInspector } from "../inspector";
+import { Assertion, JestFriendlyAssertion } from '../assertion';
+import { StackInspector } from '../inspector';
 
 /**
  * Magic value to signify that a certain key should be absent from the property bag.
@@ -22,19 +22,21 @@ export const ABSENT = '{{ABSENT}}';
  * @param allowValueExtension if properties is an object, tells whether values must match exactly, or if they are
  *                     allowed to be supersets of the reference values. Meaningless if properties is a function.
  */
-export function haveResource(resourceType: string,
-                             properties?: any,
-                             comparison?: ResourcePart,
-                             allowValueExtension: boolean = false): Assertion<StackInspector> {
+export function haveResource(
+  resourceType: string,
+  properties?: any,
+  comparison?: ResourcePart,
+  allowValueExtension: boolean = false): Assertion<StackInspector> {
   return new HaveResourceAssertion(resourceType, properties, comparison, allowValueExtension);
 }
 
 /**
  * Sugar for calling ``haveResources`` with ``allowValueExtension`` set to ``true``.
  */
-export function haveResourceLike(resourceType: string,
-                                 properties?: any,
-                                 comparison?: ResourcePart) {
+export function haveResourceLike(
+  resourceType: string,
+  properties?: any,
+  comparison?: ResourcePart) {
   return haveResource(resourceType, properties, comparison, true);
 }
 
@@ -45,10 +47,11 @@ export class HaveResourceAssertion extends JestFriendlyAssertion<StackInspector>
   private readonly part: ResourcePart;
   private readonly predicate: PropertyPredicate;
 
-  constructor(private readonly resourceType: string,
-              private readonly properties?: any,
-              part?: ResourcePart,
-              allowValueExtension: boolean = false) {
+  constructor(
+    private readonly resourceType: string,
+    private readonly properties?: any,
+    part?: ResourcePart,
+    allowValueExtension: boolean = false) {
     super();
 
     this.predicate = typeof properties === 'function' ? properties : makeSuperObjectPredicate(properties, allowValueExtension);
@@ -165,8 +168,8 @@ export function isSuperObject(superObj: any, pattern: any, errors: string[] = []
 
       const innerErrors = new Array<string>();
       const valueMatches = allowValueExtension
-                         ? isSuperObject(superObj[patternKey], patternValue, innerErrors, allowValueExtension)
-                         : isStrictlyEqual(superObj[patternKey], patternValue, innerErrors);
+        ? isSuperObject(superObj[patternKey], patternValue, innerErrors, allowValueExtension)
+        : isStrictlyEqual(superObj[patternKey], patternValue, innerErrors);
       if (!valueMatches) {
         errors.push(`Field ${patternKey} mismatch: ${innerErrors.join(', ')}`);
       }

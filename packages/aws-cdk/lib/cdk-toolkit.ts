@@ -163,7 +163,7 @@ export class CdkToolkit {
               'but terminal (TTY) is not attached so we are unable to get a confirmation from the user');
           }
 
-          const confirmed = await promptly.confirm(`Do you wish to deploy these changes (y/n)?`);
+          const confirmed = await promptly.confirm('Do you wish to deploy these changes (y/n)?');
           if (!confirmed) { throw new Error('Aborted by user'); }
         }
       }
@@ -190,8 +190,8 @@ export class CdkToolkit {
         });
 
         const message = result.noOp
-          ? ` ✅  %s (no changes)`
-          : ` ✅  %s`;
+          ? ' ✅  %s (no changes)'
+          : ' ✅  %s';
 
         success('\n' + message, stack.displayName);
 
@@ -326,8 +326,9 @@ export class CdkToolkit {
    *             all stacks are implicitly selected.
    * @param toolkitStackName the name to be used for the CDK Toolkit stack.
    */
-  public async bootstrap(environmentGlobs: string[], toolkitStackName: string, roleArn: string | undefined,
-                         useNewBootstrapping: boolean, props: BootstrapEnvironmentProps): Promise<void> {
+  public async bootstrap(
+    environmentGlobs: string[], toolkitStackName: string, roleArn: string | undefined,
+    useNewBootstrapping: boolean, props: BootstrapEnvironmentProps): Promise<void> {
     // Two modes of operation.
     //
     // If there is an '--app' argument, we select the environments from the app. Otherwise we just take the user

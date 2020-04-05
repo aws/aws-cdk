@@ -33,12 +33,12 @@ export = {
       { MyMapping:
          { TopLevelKey1:
           { SecondLevelKey1: [ 1, 2, 3, 4 ],
-          SecondLevelKey2: { Hello: 'World' } },
+            SecondLevelKey2: { Hello: 'World' } },
          TopLevelKey2: { SecondLevelKey1: [ 99, 99, 99 ], SecondLevelKey2: 'Hi' } } },
-       Resources:
+    Resources:
       { MyResource:
          { Type: 'R',
-         Properties:
+           Properties:
           { RefToValueInMap:
            { 'Fn::FindInMap': [ 'MyMapping', 'TopLevelKey1', 'SecondLevelKey1' ] } } } } });
 
@@ -81,7 +81,7 @@ export = {
 
     // THEN
     test.deepEqual(stack.resolve(v), {
-      "Fn::FindInMap": [ 'mapping', { Ref: "AWS::Region" }, "size" ]
+      'Fn::FindInMap': [ 'mapping', { Ref: 'AWS::Region' }, 'size' ]
     });
     test.done();
   },
