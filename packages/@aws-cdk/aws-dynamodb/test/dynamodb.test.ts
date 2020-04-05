@@ -313,7 +313,7 @@ test('when specifying every property', () => {
     writeCapacity: 1337,
     pointInTimeRecovery: true,
     serverSideEncryption: true,
-    kmsMasterKeyId: "kmsMasterKeyId",
+    kmsMasterKeyId: 'kmsMasterKeyId',
     billingMode: BillingMode.PROVISIONED,
     stream: StreamViewType.KEYS_ONLY,
     timeToLiveAttribute: 'timeToLive',
@@ -337,7 +337,7 @@ test('when specifying every property', () => {
         WriteCapacityUnits: 1337
       },
       PointInTimeRecoverySpecification: { PointInTimeRecoveryEnabled: true },
-      SSESpecification: { SSEEnabled: true, KMSMasterKeyId: "kmsMasterKeyId" },
+      SSESpecification: { SSEEnabled: true, KMSMasterKeyId: 'kmsMasterKeyId' },
       StreamSpecification: { StreamViewType: 'KEYS_ONLY' },
       TableName: 'MyTable',
       Tags: [{ Key: 'Environment', Value: 'Production' }],
