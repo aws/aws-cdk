@@ -166,7 +166,7 @@ abstract class StreamBase extends Resource implements IStream {
   }
 
   /**
-   * Grant the indicated permissions on this key to the given IAM principal (Role/Group/User).
+   * Grant the indicated permissions on this stream to the given IAM principal (Role/Group/User).
    */
   public grant(grantee: iam.IGrantable, ...actions: string[]) {
     return iam.Grant.addToPrincipal({
