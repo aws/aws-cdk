@@ -22,17 +22,17 @@ test('Eval with Node.js', () => {
   // THEN
   expect(stack).toHaveResource('AWS::StepFunctions::StateMachine', {
     DefinitionString: {
-      "Fn::Join": [
-        "",
+      'Fn::Join': [
+        '',
         [
-          "{\"StartAt\":\"Task\",\"States\":{\"Task\":{\"End\":true,\"Parameters\":{\"expression\":\"$.a + $.b\",\"expressionAttributeValues\":{\"$.a.$\":\"$.a\",\"$.b.$\":\"$.b\"}},\"Type\":\"Task\",\"Resource\":\"",
+          '{"StartAt":"Task","States":{"Task":{"End":true,"Parameters":{"expression":"$.a + $.b","expressionAttributeValues":{"$.a.$":"$.a","$.b.$":"$.b"}},"Type":"Task","Resource":"',
           {
-            "Fn::GetAtt": [
-              "Evala0d2ce44871b4e7487a1f5e63d7c3bdc4DAC06E1",
-              "Arn"
+            'Fn::GetAtt': [
+              'Evala0d2ce44871b4e7487a1f5e63d7c3bdc4DAC06E1',
+              'Arn'
             ]
           },
-          "\"}}}"
+          '"}}}'
         ]
       ]
     },

@@ -47,9 +47,9 @@ export = {
       ...eventCommon,
       RequestType: 'Create',
       ResourceProperties: {
-          ServiceToken: 'token',
-          RetentionInDays: '30',
-          LogGroupName: 'group'
+        ServiceToken: 'token',
+        RetentionInDays: '30',
+        LogGroupName: 'group'
       }
     };
 
@@ -98,9 +98,9 @@ export = {
       ...eventCommon,
       RequestType: 'Update',
       ResourceProperties: {
-          ServiceToken: 'token',
-          RetentionInDays: '365',
-          LogGroupName: 'group'
+        ServiceToken: 'token',
+        RetentionInDays: '365',
+        LogGroupName: 'group'
       },
       OldResourceProperties: {
         ServiceToken: 'token',
@@ -146,8 +146,8 @@ export = {
       RequestType: 'Update',
       PhysicalResourceId: 'group',
       ResourceProperties: {
-          ServiceToken: 'token',
-          LogGroupName: 'group'
+        ServiceToken: 'token',
+        LogGroupName: 'group'
       },
       OldResourceProperties: {
         ServiceToken: 'token',
@@ -187,8 +187,8 @@ export = {
       RequestType: 'Delete',
       PhysicalResourceId: 'group',
       ResourceProperties: {
-          ServiceToken: 'token',
-          LogGroupName: 'group'
+        ServiceToken: 'token',
+        LogGroupName: 'group'
       }
     };
 
@@ -216,9 +216,9 @@ export = {
       ...eventCommon,
       RequestType: 'Create',
       ResourceProperties: {
-          ServiceToken: 'token',
-          RetentionInDays: '30',
-          LogGroupName: 'group'
+        ServiceToken: 'token',
+        RetentionInDays: '30',
+        LogGroupName: 'group'
       }
     };
 
@@ -250,9 +250,9 @@ export = {
       ...eventCommon,
       RequestType: 'Create',
       ResourceProperties: {
-          ServiceToken: 'token',
-          RetentionInDays: '30',
-          LogGroupName: 'group'
+        ServiceToken: 'token',
+        RetentionInDays: '30',
+        LogGroupName: 'group'
       }
     };
 
@@ -273,9 +273,9 @@ export = {
     const event = {
       ...eventCommon,
       ResourceProperties: {
-          ServiceToken: 'token',
-          RetentionInDays: '30',
-          LogGroupName: 'group'
+        ServiceToken: 'token',
+        RetentionInDays: '30',
+        LogGroupName: 'group'
       }
     };
 

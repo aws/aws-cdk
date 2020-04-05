@@ -246,7 +246,7 @@ export interface CfnAutoScalingScheduledAction {
   * a stack update. If you modify any of the group size property values in your template, AWS CloudFormation uses the modified
   * values and updates your Auto Scaling group.
   */
- readonly ignoreUnmodifiedGroupSizeProperties?: boolean;
+  readonly ignoreUnmodifiedGroupSizeProperties?: boolean;
 }
 
 /**

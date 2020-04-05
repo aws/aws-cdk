@@ -5,7 +5,7 @@ import * as os from 'os';
 import * as path from 'path';
 import * as util from 'util';
 import { debug } from '../../logging';
-import { SharedIniFile } from "./sdk_ini_file";
+import { SharedIniFile } from './sdk_ini_file';
 
 /**
  * Behaviors to match AWS CLI

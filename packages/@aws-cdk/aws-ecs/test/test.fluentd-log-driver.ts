@@ -117,7 +117,7 @@ export = {
     test.done();
   },
 
-  "create a fluentd log driver using fluentd"(test: Test) {
+  'create a fluentd log driver using fluentd'(test: Test) {
     // WHEN
     td.addContainer('Container', {
       image,

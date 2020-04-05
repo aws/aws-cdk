@@ -1,10 +1,10 @@
-import { Lazy } from "../lazy";
-import { Reference } from "../reference";
-import { DefaultTokenResolver, IFragmentConcatenator, IPostProcessor, IResolvable, IResolveContext } from "../resolvable";
-import { TokenizedStringFragments } from "../string-fragments";
-import { Token } from "../token";
-import { Intrinsic } from "./intrinsic";
-import { resolve } from "./resolve";
+import { Lazy } from '../lazy';
+import { Reference } from '../reference';
+import { DefaultTokenResolver, IFragmentConcatenator, IPostProcessor, IResolvable, IResolveContext } from '../resolvable';
+import { TokenizedStringFragments } from '../string-fragments';
+import { Token } from '../token';
+import { Intrinsic } from './intrinsic';
+import { resolve } from './resolve';
 
 /**
  * Routines that know how to do operations at the CloudFormation document language level

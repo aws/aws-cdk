@@ -161,7 +161,7 @@ export default class CodeGenerator {
         propName,
         spec: propSpec,
         additionalDocs: quoteCode(additionalDocs)},
-        container
+      container
       );
       propertyMap[propName] = newName;
     });
@@ -212,7 +212,7 @@ export default class CodeGenerator {
 
     const cfnResourceTypeName = `${JSON.stringify(cfnName)}`;
     this.code.line('/**');
-    this.code.line(` * The CloudFormation resource type name for this resource class.`);
+    this.code.line(' * The CloudFormation resource type name for this resource class.');
     this.code.line(' */');
     this.code.line(`public static readonly CFN_RESOURCE_TYPE_NAME = ${cfnResourceTypeName};`);
 
@@ -258,9 +258,9 @@ export default class CodeGenerator {
     this.code.line('/**');
     this.code.line(` * Create a new ${quoteCode(resourceName.specName!.fqn)}.`);
     this.code.line(' *');
-    this.code.line(` * @param scope - scope in which this resource is defined`);
-    this.code.line(` * @param id    - scoped id of the resource`);
-    this.code.line(` * @param props - resource properties`);
+    this.code.line(' * @param scope - scope in which this resource is defined');
+    this.code.line(' * @param id    - scoped id of the resource');
+    this.code.line(' * @param props - resource properties');
     this.code.line(' */');
     const optionalProps = spec.Properties && !Object.values(spec.Properties).some(p => p.Required || false);
     const propsArgument = propsType ? `, props: ${propsType.className}${optionalProps ? ' = {}' : ''}` : '';
@@ -386,10 +386,11 @@ export default class CodeGenerator {
    *
    * Generated as a top-level function outside any namespace so we can hide it from library consumers.
    */
-  private emitCloudFormationMapper(resource: genspec.CodeName,
-                                   typeName: genspec.CodeName,
-                                   propSpecs: { [name: string]: schema.Property },
-                                   nameConversionTable: Dictionary<string>) {
+  private emitCloudFormationMapper(
+    resource: genspec.CodeName,
+    typeName: genspec.CodeName,
+    propSpecs: { [name: string]: schema.Property },
+    nameConversionTable: Dictionary<string>) {
     const mapperName = genspec.cfnMapperName(typeName);
 
     this.code.line('/**');
@@ -472,10 +473,11 @@ export default class CodeGenerator {
    *
    * Generated as a top-level function outside any namespace so we can hide it from library consumers.
    */
-  private emitValidator(resource: genspec.CodeName,
-                        typeName: genspec.CodeName,
-                        propSpecs: { [name: string]: schema.Property },
-                        nameConversionTable: Dictionary<string>): void {
+  private emitValidator(
+    resource: genspec.CodeName,
+    typeName: genspec.CodeName,
+    propSpecs: { [name: string]: schema.Property },
+    nameConversionTable: Dictionary<string>): void {
     const validatorName = genspec.validatorName(typeName);
 
     this.code.line('/**');
@@ -598,7 +600,7 @@ export default class CodeGenerator {
 
     this.docLink(propTypeSpec.Documentation, '@stability external');
     if (!propTypeSpec.Properties || Object.keys(propTypeSpec.Properties).length === 0) {
-      this.code.line(`// tslint:disable-next-line:no-empty-interface | A genuine empty-object type`);
+      this.code.line('// tslint:disable-next-line:no-empty-interface | A genuine empty-object type');
     }
     this.code.openBlock(`export interface ${typeName.className}`);
     const conversionTable: Dictionary<string> = {};
