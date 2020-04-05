@@ -6,7 +6,7 @@ source ${scriptdir}/common.bash
 
 setup
 
-stack_arns=$(cdk deploy ${STACK_NAME_PREFIX}-test-\* -v)
+stack_arns=$(cdk deploy ${STACK_NAME_PREFIX}-test-\*)
 echo "Stack deployed successfully"
 
 # verify that we only deployed a single stack (there's a single ARN in the output)
