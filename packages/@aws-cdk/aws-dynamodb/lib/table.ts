@@ -99,7 +99,7 @@ export interface TableOptions {
    */
   readonly serverSideEncryption?: boolean;
 
-    /**
+  /**
    * The AWS KMS customer master key (CMK) that should be used for the AWS KMS encryption. 
    * To specify a CMK, use its key ID, Amazon Resource Name (ARN), alias name, or alias ARN. 
    * Note that you should only provide this parameter if the key is different from the default 
