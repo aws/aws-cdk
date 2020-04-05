@@ -44,17 +44,7 @@ class PublishingAws implements cdk_assets.IAws {
   }
 
   public async discoverCurrentAccount(): Promise<cdk_assets.Account> {
-    // Discover the current partition given current credentials. We already
-    // have the target environment, but it doesn't contain the partition yet.
-    //
-    // Until it does, we need to do a lookup here.
-    const sts = (await this.sdk({})).sts();
-    const response = await sts.getCallerIdentity().promise();
-    if (!response.Arn) {
-      throw new Error(`Unexpected STS response: ${JSON.stringify(response)}`);
-    }
-    const partition = response.Arn!.split(':')[1];
-    return { accountId: this.targetEnv.account, partition };
+    return (await this.sdk({})).currentAccount();
   }
 
   public async s3Client(options: cdk_assets.ClientOptions): Promise<AWS.S3> {
