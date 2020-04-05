@@ -3,6 +3,45 @@
 Unit tests are automatically run as part of the regular build. Integration tests
 aren't run automatically since they have nontrivial requirements to run.
 
+### Three ways of running the tests
+
+We are reusing the same set of integration tests in 3 ways. In each of
+those cases, we get the code we're testing to test from a different source.
+
+- Run them as part of development. In this case, we get the CLI
+  and the framework libraries from the source repository.
+- Run them as integration tests in the pipeline. In this case, we get a specific
+  version of the CLI and the framework libraries from a set of candidate NPM
+  packages.
+- Run them continuously, as a canary. In this case, we get the latest CLI and
+  the framework libraries directly from the package managers, same as an
+  end user would do.
+
+To hide the differences between these different ways of running the tests,
+there are 3 scripts. They all take as command-line argument the ACTUAL test
+script to run, and prepare the environment in such a way that the tests
+will use the `cdk` command and the libraries from the distribution selected.
+
+To run the CLI integ tests in each configuration:
+
+```
+$ test/integ/run-against-repo test/integ/cli/test.sh
+$ test/integ/run-against-dist test/integ/cli/test.sh
+$ test/integ/run-against-release test/integ/cli/test.sh
+```
+
+You can switch out the test script to run the init tests:
+
+```
+$ test/integ/run-against-xxx test/integ/init/test-all.sh
+```
+
+Or even run a single integ test:
+
+```
+$ test/integ/run-against-xxx test/integ/init/test-cdk-deploy-no-tty.sh
+```
+
 ### CLI integration tests
 
 CLI tests will exercise a number of common CLI scenarios, and deploy actual
@@ -40,7 +79,7 @@ These tests run in two variations:
 - **against local framework code**
 
   Use your local framework code. This is important to make sure the new CLI version
-  will work properly with the new framework version. 
+  will work properly with the new framework version.
 
 - **against latest release code**
 

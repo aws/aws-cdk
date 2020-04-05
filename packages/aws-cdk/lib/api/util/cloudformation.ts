@@ -40,10 +40,14 @@ export class CloudFormationStack {
   /**
    * Retrieve the stack's deployed template
    *
-   * Cached, so will only be retrieved once. Will throw an error
-   * if the stack does not exist.
+   * Cached, so will only be retrieved once. Will return an empty
+   * structure if the stack does not exist.
    */
   public async template(): Promise<Template> {
+    if (!this.exists) {
+      return {};
+    }
+
     if (this._template === undefined) {
       const response = await this.cfn.getTemplate({ StackName: this.stackName, TemplateStage: 'Original' }).promise();
       this._template = (response.TemplateBody && deserializeStructure(response.TemplateBody)) || {};
