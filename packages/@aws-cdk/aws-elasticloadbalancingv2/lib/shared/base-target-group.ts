@@ -68,7 +68,7 @@ export interface HealthCheck {
    *
    * @default - Determined automatically.
    */
-   readonly enabled?: boolean;
+  readonly enabled?: boolean;
 
   /**
    * The approximate number of seconds between health checks for an individual target.
@@ -301,7 +301,7 @@ export abstract class TargetGroupBase extends cdk.Construct implements ITargetGr
     this.targetType = props.targetType;
 
     if (this.targetType === TargetType.LAMBDA && this.targetsJson.length >= 1) {
-      throw new Error(`TargetGroup can only contain one LAMBDA target. Create a new TargetGroup.`);
+      throw new Error('TargetGroup can only contain one LAMBDA target. Create a new TargetGroup.');
     }
 
     if (props.targetJson) {
@@ -313,11 +313,11 @@ export abstract class TargetGroupBase extends cdk.Construct implements ITargetGr
     const ret = super.validate();
 
     if (this.targetType === undefined && this.targetsJson.length === 0) {
-      this.node.addWarning(`When creating an empty TargetGroup, you should specify a 'targetType' (this warning may become an error in the future).`);
+      this.node.addWarning("When creating an empty TargetGroup, you should specify a 'targetType' (this warning may become an error in the future).");
     }
 
     if (this.targetType !== TargetType.LAMBDA && this.vpc === undefined) {
-      ret.push(`'vpc' is required for a non-Lambda TargetGroup`);
+      ret.push("'vpc' is required for a non-Lambda TargetGroup");
     }
 
     return ret;
@@ -403,6 +403,6 @@ export interface LoadBalancerTargetProps {
  *     app/my-load-balancer/50dc6c495c0c9188
  */
 export function loadBalancerNameFromListenerArn(listenerArn: string) {
-    const arnParts = cdk.Fn.split('/', listenerArn);
-    return `${cdk.Fn.select(1, arnParts)}/${cdk.Fn.select(2, arnParts)}/${cdk.Fn.select(3, arnParts)}`;
+  const arnParts = cdk.Fn.split('/', listenerArn);
+  return `${cdk.Fn.select(1, arnParts)}/${cdk.Fn.select(2, arnParts)}/${cdk.Fn.select(3, arnParts)}`;
 }

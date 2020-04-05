@@ -1,5 +1,5 @@
-import { App, Stack } from "@aws-cdk/core";
-import { AccountRootPrincipal, OrganizationPrincipal, Policy, PolicyStatement, Role, ServicePrincipal } from "../lib";
+import { App, Stack } from '@aws-cdk/core';
+import { AccountRootPrincipal, OrganizationPrincipal, Policy, PolicyStatement, Role, ServicePrincipal } from '../lib';
 
 const app = new App();
 

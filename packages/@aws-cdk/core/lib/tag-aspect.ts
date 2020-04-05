@@ -73,7 +73,7 @@ abstract class TagBase implements IAspect {
 
   public visit(construct: IConstruct): void {
     if (TagManager.isTaggable(construct)) {
-        this.applyTag(construct);
+      this.applyTag(construct);
     }
   }
 

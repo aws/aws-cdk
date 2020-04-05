@@ -23,18 +23,18 @@ describe('IAM polocy document', () => {
       [ 'sqs:SendMessage',
         'dynamodb:CreateTable',
         'dynamodb:DeleteTable' ],
-       Resource: [ 'myQueue', 'yourQueue', '*' ],
-       Effect: 'Allow',
-       Principal:
+    Resource: [ 'myQueue', 'yourQueue', '*' ],
+    Effect: 'Allow',
+    Principal:
       { AWS:
          { 'Fn::Join':
           [ '',
-          [ 'arn:',
-            { Ref: 'AWS::Partition' },
-            ':iam::my',
-            { account: 'account' },
-            'name:root' ] ] } },
-       Condition: { StringEquals: { 'sts:ExternalId': '12221121221' } } });
+            [ 'arn:',
+              { Ref: 'AWS::Partition' },
+              ':iam::my',
+              { account: 'account' },
+              'name:root' ] ] } },
+    Condition: { StringEquals: { 'sts:ExternalId': '12221121221' } } });
   });
 
   test('the PolicyDocument class is a dom for iam policy documents', () => {
@@ -143,10 +143,10 @@ describe('IAM polocy document', () => {
   test('canonicalUserPrincipal adds a principal to a policy with the passed canonical user id', () => {
     const stack = new Stack();
     const p = new PolicyStatement();
-    const canoncialUser = "averysuperduperlongstringfor";
+    const canoncialUser = 'averysuperduperlongstringfor';
     p.addPrincipals(new CanonicalUserPrincipal(canoncialUser));
     expect(stack.resolve(p.toStatementJson())).toEqual({
-      Effect: "Allow",
+      Effect: 'Allow',
       Principal: {
         CanonicalUser: canoncialUser
       }
@@ -159,19 +159,19 @@ describe('IAM polocy document', () => {
     const p = new PolicyStatement();
     p.addAccountRootPrincipal();
     expect(stack.resolve(p.toStatementJson())).toEqual({
-      Effect: "Allow",
+      Effect: 'Allow',
       Principal: {
         AWS: {
-        "Fn::Join": [
-          "",
-          [
-          "arn:",
-          { Ref: "AWS::Partition" },
-          ":iam::",
-          { Ref: "AWS::AccountId" },
-          ":root"
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':iam::',
+              { Ref: 'AWS::AccountId' },
+              ':root'
+            ]
           ]
-        ]
         }
       }
     });
@@ -180,11 +180,11 @@ describe('IAM polocy document', () => {
   test('addFederatedPrincipal adds a Federated principal with the passed value', () => {
     const stack = new Stack();
     const p = new PolicyStatement();
-    p.addFederatedPrincipal("com.amazon.cognito", { StringEquals: { key: 'value' }});
+    p.addFederatedPrincipal('com.amazon.cognito', { StringEquals: { key: 'value' }});
     expect(stack.resolve(p.toStatementJson())).toEqual({
-      Effect: "Allow",
+      Effect: 'Allow',
       Principal: {
-        Federated: "com.amazon.cognito"
+        Federated: 'com.amazon.cognito'
       },
       Condition: {
         StringEquals: { key: 'value' }
@@ -469,7 +469,7 @@ describe('IAM polocy document', () => {
 
       // THEN
       expect(() => p.addPrincipals(new FederatedPrincipal('fed', {}, 'sts:Boom')))
-       .toThrow(/Cannot add multiple principals with different "assumeRoleAction". Expecting "sts:AssumeRole", got "sts:Boom"/);
+        .toThrow(/Cannot add multiple principals with different "assumeRoleAction". Expecting "sts:AssumeRole", got "sts:Boom"/);
     });
   });
 
@@ -485,13 +485,13 @@ describe('IAM polocy document', () => {
       statement.addActions('action1', 'action2');
       statement.addServicePrincipal('service');
       statement.addConditions({
-          a: {
-            b: 'c'
-          },
-          d: {
-            e: 'f'
-          }
-        });
+        a: {
+          b: 'c'
+        },
+        d: {
+          e: 'f'
+        }
+      });
 
       // WHEN
       p.addStatements(statement);

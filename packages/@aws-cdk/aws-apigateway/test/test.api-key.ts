@@ -1,6 +1,6 @@
 import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import * as cdk from '@aws-cdk/core';
-import { Test } from "nodeunit";
+import { Test } from 'nodeunit';
 import * as apigateway from '../lib';
 
 export = {
@@ -35,8 +35,8 @@ export = {
       CustomerId: 'test-customer',
       StageKeys: [
         {
-          RestApiId: { Ref: "testapiD6451F70" },
-          StageName: { Ref: "testapiDeploymentStagetest5869DF71" }
+          RestApiId: { Ref: 'testapiD6451F70' },
+          StageName: { Ref: 'testapiDeploymentStagetest5869DF71' }
         }
       ]
     }));

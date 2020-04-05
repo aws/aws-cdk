@@ -413,7 +413,7 @@ export = {
     const stack = new Stack();
 
     const explicitKey = new kms.Key(stack, 'ExplicitKey', {
-      description: `Explicit Key`
+      description: 'Explicit Key'
     });
 
     new Stream(stack, 'MyStream', {

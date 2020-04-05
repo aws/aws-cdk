@@ -24,9 +24,9 @@ const READ_DATA_ACTIONS = [
 ];
 
 const READ_STREAM_DATA_ACTIONS = [
-  "dynamodb:DescribeStream",
-  "dynamodb:GetRecords",
-  "dynamodb:GetShardIterator",
+  'dynamodb:DescribeStream',
+  'dynamodb:GetRecords',
+  'dynamodb:GetShardIterator',
 ];
 
 const WRITE_DATA_ACTIONS = [
@@ -598,7 +598,7 @@ export class Table extends TableBase {
       if (!maybeTableName) { throw new Error('ARN for DynamoDB table must be in the form: ...'); }
       name = maybeTableName;
     } else {
-      if (attrs.tableArn) { throw new Error("Only one of tableArn or tableName can be provided"); }
+      if (attrs.tableArn) { throw new Error('Only one of tableArn or tableName can be provided'); }
       name = attrs.tableName;
       arn = stack.formatArn({
         service: 'dynamodb',

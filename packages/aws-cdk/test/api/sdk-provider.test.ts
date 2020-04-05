@@ -98,7 +98,7 @@ describe('CLI compatible credentials loading', () => {
     await expect(provider.defaultAccount()).resolves.toEqual({ accountId: `${uid}the_account_#`, partition: 'aws-here' });
     const sdk = await provider.forEnvironment(`${uid}the_account_#`, 'rgn', Mode.ForReading);
     expect(sdkConfig(sdk).credentials!.accessKeyId).toEqual(`${uid}access`);
-    expect(sdkConfig(sdk).region).toEqual(`rgn`);
+    expect(sdkConfig(sdk).region).toEqual('rgn');
   });
 
   test('unknown account and region uses current', async () => {

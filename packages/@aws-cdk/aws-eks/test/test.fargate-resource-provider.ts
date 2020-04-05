@@ -15,13 +15,13 @@ export = {
 
       // THEN
       sinon.assert.calledWithExactly(client.configureAssumeRole, {
-        RoleArn: "AssumeRoleArn",
-        RoleSessionName: "AWSCDK.EKSCluster.Create.RequestIdMock"
+        RoleArn: 'AssumeRoleArn',
+        RoleSessionName: 'AWSCDK.EKSCluster.Create.RequestIdMock'
       });
 
       sinon.assert.calledWithExactly(client.createFargateProfile, {
         clusterName: 'MockClusterName',
-        fargateProfileName: "LogicalResourceIdMock-RequestIdMock"
+        fargateProfileName: 'LogicalResourceIdMock-RequestIdMock'
       });
 
       test.deepEqual(onEventResponse, {
@@ -50,7 +50,7 @@ export = {
 
       // THEN
       sinon.assert.calledWithExactly(client.createFargateProfile, {
-        fargateProfileName: "MyProfileNameBoom",
+        fargateProfileName: 'MyProfileNameBoom',
         clusterName: 'MockClusterName'
       });
 
@@ -79,7 +79,7 @@ export = {
       // THEN
       sinon.assert.calledWithExactly(client.describeFargateProfile, {
         clusterName: 'MockClusterName',
-        fargateProfileName: "PhysicalResourceIdMock"
+        fargateProfileName: 'PhysicalResourceIdMock'
       });
 
       test.equal(resp.IsComplete, true);
@@ -103,7 +103,7 @@ export = {
       // THEN
       sinon.assert.calledWithExactly(client.describeFargateProfile, {
         clusterName: 'MockClusterName',
-        fargateProfileName: "PhysicalResourceIdMock"
+        fargateProfileName: 'PhysicalResourceIdMock'
       });
 
       test.equal(resp.IsComplete, false);
@@ -133,7 +133,7 @@ export = {
       // THEN
       sinon.assert.calledWithExactly(client.describeFargateProfile, {
         clusterName: 'MockClusterName',
-        fargateProfileName: "PhysicalResourceIdMock"
+        fargateProfileName: 'PhysicalResourceIdMock'
       });
 
       test.equal(error.message, 'CREATE_FAILED');
@@ -155,13 +155,13 @@ export = {
 
       // THEN
       sinon.assert.calledWithExactly(client.configureAssumeRole, {
-        RoleArn: "AssumeRoleArn",
-        RoleSessionName: "AWSCDK.EKSCluster.Update.RequestIdMock"
+        RoleArn: 'AssumeRoleArn',
+        RoleSessionName: 'AWSCDK.EKSCluster.Update.RequestIdMock'
       });
 
       sinon.assert.calledWithExactly(client.createFargateProfile, {
         clusterName: 'MockClusterName',
-        fargateProfileName: "LogicalResourceIdMock-RequestIdMock"
+        fargateProfileName: 'LogicalResourceIdMock-RequestIdMock'
       });
 
       test.deepEqual(onEventResponse, {
@@ -188,13 +188,13 @@ export = {
 
       // THEN
       sinon.assert.calledWithExactly(client.configureAssumeRole, {
-        RoleArn: "AssumeRoleArn",
-        RoleSessionName: "AWSCDK.EKSCluster.Delete.RequestIdMock"
+        RoleArn: 'AssumeRoleArn',
+        RoleSessionName: 'AWSCDK.EKSCluster.Delete.RequestIdMock'
       });
 
       sinon.assert.calledWithExactly(client.deleteFargateProfile, {
         clusterName: 'MockClusterName',
-        fargateProfileName: "PhysicalResourceIdMock"
+        fargateProfileName: 'PhysicalResourceIdMock'
       });
 
       test.equal(onEventResponse, undefined);
@@ -218,7 +218,7 @@ export = {
       // THEN
       sinon.assert.calledWithExactly(client.describeFargateProfile, {
         clusterName: 'MockClusterName',
-        fargateProfileName: "PhysicalResourceIdMock"
+        fargateProfileName: 'PhysicalResourceIdMock'
       });
 
       test.deepEqual(resp, {
@@ -251,7 +251,7 @@ export = {
       // THEN
       sinon.assert.calledWithExactly(client.describeFargateProfile, {
         clusterName: 'MockClusterName',
-        fargateProfileName: "PhysicalResourceIdMock"
+        fargateProfileName: 'PhysicalResourceIdMock'
       });
 
       test.equal(error.message, 'DELETE_FAILED');

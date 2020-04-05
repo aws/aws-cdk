@@ -86,7 +86,7 @@ export class GeneratedWhenNeededMarker implements IResolvable {
   }
 
   public resolve(_ctx: IResolveContext): never {
-    throw new Error(`Invalid physical name passed to CloudFormation. Use "this.physicalName" instead`);
+    throw new Error('Invalid physical name passed to CloudFormation. Use "this.physicalName" instead');
   }
 
   public toString(): string {

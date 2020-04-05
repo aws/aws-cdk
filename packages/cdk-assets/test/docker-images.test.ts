@@ -97,7 +97,7 @@ describe('with a complete manifest', () => {
       { commandLine: ['docker', 'inspect', 'cdkasset-theasset'] },
       { commandLine: ['docker', 'tag', 'cdkasset-theasset', '12345.amazonaws.com/repo:abcdef'] },
       { commandLine: ['docker', 'push', '12345.amazonaws.com/repo:abcdef'] },
-      );
+    );
 
     await pub.publish();
   });

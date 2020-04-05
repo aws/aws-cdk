@@ -97,10 +97,10 @@ export = {
       expect(stack).to(haveResourceLike('AWS::Lambda::Function', {
         Code: {
           S3Bucket: {
-            Ref: "FunctionLambdaSourceBucketNameParameter9E9E108F",
+            Ref: 'FunctionLambdaSourceBucketNameParameter9E9E108F',
           },
           S3Key: {
-            Ref: "FunctionLambdaSourceObjectKeyParameter1C7AED11",
+            Ref: 'FunctionLambdaSourceObjectKeyParameter1C7AED11',
           },
         },
       }));
@@ -151,10 +151,10 @@ export = {
       expect(stack).to(haveResourceLike('AWS::Lambda::Function', {
         Code: {
           S3Bucket: {
-            Ref: "BucketNameParam",
+            Ref: 'BucketNameParam',
           },
           S3Key: {
-            Ref: "ObjectKeyParam",
+            Ref: 'ObjectKeyParam',
           },
         },
       }));

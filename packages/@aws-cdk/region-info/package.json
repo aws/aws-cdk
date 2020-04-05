@@ -30,7 +30,12 @@
   "cdk-build": {
     "pre": [
       "npm run gen"
-    ]
+    ],
+    "eslint": {
+      "ignore-pattern": [
+        "lib/built-ins.generated.ts"
+      ]
+    }
   },
   "scripts": {
     "gen": "bash build-tools/generate.sh",

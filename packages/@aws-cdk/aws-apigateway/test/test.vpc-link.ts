@@ -22,8 +22,8 @@ export = {
 
     // THEN
     expect(stack).to(haveResourceLike('AWS::ApiGateway::VpcLink', {
-      Name: "MyLink",
-      TargetArns: [{ Ref: "NLB55158F82" }]
+      Name: 'MyLink',
+      TargetArns: [{ Ref: 'NLB55158F82' }]
     }));
 
     test.done();
@@ -47,12 +47,12 @@ export = {
 
     // THEN
     expect(stack).to(haveResourceLike('AWS::ApiGateway::VpcLink', {
-      Name: "VpcLink",
+      Name: 'VpcLink',
       TargetArns: [
-        { Ref: "NLB03D178991" },
-        { Ref: "NLB13224D47C" },
-        { Ref: "NLB2BEBACE62" },
-        { Ref: "NLB372DB3895" }
+        { Ref: 'NLB03D178991' },
+        { Ref: 'NLB13224D47C' },
+        { Ref: 'NLB2BEBACE62' },
+        { Ref: 'NLB372DB3895' }
       ]
     }));
 

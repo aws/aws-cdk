@@ -19,8 +19,8 @@ test('stream can be subscription destination', () => {
 
   // THEN: subscription target is Stream
   expect(stack).toHaveResource('AWS::Logs::SubscriptionFilter', {
-    DestinationArn: { "Fn::GetAtt": [ "MyStream5C050E93", "Arn" ] },
-    RoleArn: { "Fn::GetAtt": [ "SubscriptionCloudWatchLogsCanPutRecords9C1223EC", "Arn" ] },
+    DestinationArn: { 'Fn::GetAtt': [ 'MyStream5C050E93', 'Arn' ] },
+    RoleArn: { 'Fn::GetAtt': [ 'SubscriptionCloudWatchLogsCanPutRecords9C1223EC', 'Arn' ] },
   });
 
   // THEN: we have a role to write to the Stream
@@ -28,16 +28,16 @@ test('stream can be subscription destination', () => {
     AssumeRolePolicyDocument: {
       Version: '2012-10-17',
       Statement: [{
-        Action: "sts:AssumeRole",
+        Action: 'sts:AssumeRole',
         Effect: 'Allow',
         Principal: {
           Service: {
-            "Fn::Join": [ "", [
-                "logs.",
-                { Ref: "AWS::Region" },
-                ".",
-                { Ref: "AWS::URLSuffix" }
-              ]
+            'Fn::Join': [ '', [
+              'logs.',
+              { Ref: 'AWS::Region' },
+              '.',
+              { Ref: 'AWS::URLSuffix' }
+            ]
             ]
           }
         }
@@ -51,17 +51,17 @@ test('stream can be subscription destination', () => {
       Statement: [
         {
           Action: [
-            "kinesis:DescribeStream",
-            "kinesis:PutRecord",
-            "kinesis:PutRecords",
+            'kinesis:DescribeStream',
+            'kinesis:PutRecord',
+            'kinesis:PutRecords',
           ],
-          Effect: "Allow",
-          Resource: { "Fn::GetAtt": [ "MyStream5C050E93", "Arn" ] }
+          Effect: 'Allow',
+          Resource: { 'Fn::GetAtt': [ 'MyStream5C050E93', 'Arn' ] }
         },
         {
-          Action: "iam:PassRole",
-          Effect: "Allow",
-          Resource: { "Fn::GetAtt": [ "SubscriptionCloudWatchLogsCanPutRecords9C1223EC", "Arn" ] }
+          Action: 'iam:PassRole',
+          Effect: 'Allow',
+          Resource: { 'Fn::GetAtt': [ 'SubscriptionCloudWatchLogsCanPutRecords9C1223EC', 'Arn' ] }
         }
       ],
     }
@@ -90,8 +90,8 @@ test('stream can be subscription destination twice, without duplicating permissi
 
   // THEN: subscription target is Stream
   expect(stack).toHaveResource('AWS::Logs::SubscriptionFilter', {
-    DestinationArn: { "Fn::GetAtt": [ "MyStream5C050E93", "Arn" ] },
-    RoleArn: { "Fn::GetAtt": [ "SubscriptionCloudWatchLogsCanPutRecords9C1223EC", "Arn" ] },
+    DestinationArn: { 'Fn::GetAtt': [ 'MyStream5C050E93', 'Arn' ] },
+    RoleArn: { 'Fn::GetAtt': [ 'SubscriptionCloudWatchLogsCanPutRecords9C1223EC', 'Arn' ] },
   });
 
   // THEN: we have a role to write to the Stream
@@ -99,16 +99,16 @@ test('stream can be subscription destination twice, without duplicating permissi
     AssumeRolePolicyDocument: {
       Version: '2012-10-17',
       Statement: [{
-        Action: "sts:AssumeRole",
+        Action: 'sts:AssumeRole',
         Effect: 'Allow',
         Principal: {
           Service: {
-            "Fn::Join": [ "", [
-                "logs.",
-                { Ref: "AWS::Region" },
-                ".",
-                { Ref: "AWS::URLSuffix" }
-              ]
+            'Fn::Join': [ '', [
+              'logs.',
+              { Ref: 'AWS::Region' },
+              '.',
+              { Ref: 'AWS::URLSuffix' }
+            ]
             ]
           }
         }
@@ -122,17 +122,17 @@ test('stream can be subscription destination twice, without duplicating permissi
       Statement: [
         {
           Action: [
-            "kinesis:DescribeStream",
-            "kinesis:PutRecord",
-            "kinesis:PutRecords",
+            'kinesis:DescribeStream',
+            'kinesis:PutRecord',
+            'kinesis:PutRecords',
           ],
-          Effect: "Allow",
-          Resource: { "Fn::GetAtt": [ "MyStream5C050E93", "Arn" ] }
+          Effect: 'Allow',
+          Resource: { 'Fn::GetAtt': [ 'MyStream5C050E93', 'Arn' ] }
         },
         {
-          Action: "iam:PassRole",
-          Effect: "Allow",
-          Resource: { "Fn::GetAtt": [ "SubscriptionCloudWatchLogsCanPutRecords9C1223EC", "Arn" ] }
+          Action: 'iam:PassRole',
+          Effect: 'Allow',
+          Resource: { 'Fn::GetAtt': [ 'SubscriptionCloudWatchLogsCanPutRecords9C1223EC', 'Arn' ] }
         }
       ],
     }

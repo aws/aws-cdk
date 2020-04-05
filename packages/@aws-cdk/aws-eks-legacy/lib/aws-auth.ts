@@ -33,11 +33,11 @@ export class AwsAuth extends Construct {
       cluster: props.cluster,
       manifest: [
         {
-          apiVersion: "v1",
-          kind: "ConfigMap",
+          apiVersion: 'v1',
+          kind: 'ConfigMap',
           metadata: {
-            name: "aws-auth",
-            namespace: "kube-system"
+            name: 'aws-auth',
+            namespace: 'kube-system'
           },
           data: {
             mapRoles: this.synthesizeMapRoles(),

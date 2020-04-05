@@ -68,17 +68,17 @@ export async function bootstrapEnvironment(environment: cxapi.Environment, sdkPr
   }
 
   const template = {
-    Description: "The CDK Toolkit Stack. It was created by `cdk bootstrap` and manages resources necessary for managing your Cloud Applications with AWS CDK.",
+    Description: 'The CDK Toolkit Stack. It was created by `cdk bootstrap` and manages resources necessary for managing your Cloud Applications with AWS CDK.',
     Resources: {
       StagingBucket: {
-        Type: "AWS::S3::Bucket",
+        Type: 'AWS::S3::Bucket',
         Properties: {
           BucketName: props.bucketName,
-          AccessControl: "Private",
+          AccessControl: 'Private',
           BucketEncryption: {
             ServerSideEncryptionConfiguration: [{
               ServerSideEncryptionByDefault: {
-                SSEAlgorithm: "aws:kms",
+                SSEAlgorithm: 'aws:kms',
                 KMSMasterKeyID: props.kmsKeyId,
               },
             }]
@@ -94,12 +94,12 @@ export async function bootstrapEnvironment(environment: cxapi.Environment, sdkPr
     },
     Outputs: {
       [BUCKET_NAME_OUTPUT]: {
-        Description: "The name of the S3 bucket owned by the CDK toolkit stack",
-        Value: { Ref: "StagingBucket" }
+        Description: 'The name of the S3 bucket owned by the CDK toolkit stack',
+        Value: { Ref: 'StagingBucket' }
       },
       [BUCKET_DOMAIN_NAME_OUTPUT]: {
-        Description: "The domain name of the S3 bucket owned by the CDK toolkit stack",
-        Value: { "Fn::GetAtt": ["StagingBucket", "RegionalDomainName"] }
+        Description: 'The domain name of the S3 bucket owned by the CDK toolkit stack',
+        Value: { 'Fn::GetAtt': ['StagingBucket', 'RegionalDomainName'] }
       }
     }
   };

@@ -12,11 +12,11 @@ beforeEach(() => {
 test('Terminate cluster with static ClusterId', () => {
   // WHEN
   const task = new sfn.Task(stack, 'Task', {
-      task: new tasks.EmrTerminateCluster({
-        clusterId: 'ClusterId',
-        integrationPattern: sfn.ServiceIntegrationPattern.SYNC
-      })
-    });
+    task: new tasks.EmrTerminateCluster({
+      clusterId: 'ClusterId',
+      integrationPattern: sfn.ServiceIntegrationPattern.SYNC
+    })
+  });
 
   // THEN
   expect(stack.resolve(task.toStateJson())).toEqual({
@@ -43,11 +43,11 @@ test('Terminate cluster with static ClusterId', () => {
 test('Terminate cluster with ClusterId from payload', () => {
   // WHEN
   const task = new sfn.Task(stack, 'Task', {
-      task: new tasks.EmrTerminateCluster({
-        clusterId: sfn.TaskInput.fromDataAt('$.ClusterId').value,
-        integrationPattern: sfn.ServiceIntegrationPattern.SYNC
-      })
-    });
+    task: new tasks.EmrTerminateCluster({
+      clusterId: sfn.TaskInput.fromDataAt('$.ClusterId').value,
+      integrationPattern: sfn.ServiceIntegrationPattern.SYNC
+    })
+  });
 
   // THEN
   expect(stack.resolve(task.toStateJson())).toEqual({
@@ -74,11 +74,11 @@ test('Terminate cluster with ClusterId from payload', () => {
 test('Terminate cluster with static ClusterId and SYNC integrationPattern', () => {
   // WHEN
   const task = new sfn.Task(stack, 'Task', {
-      task: new tasks.EmrTerminateCluster({
-        clusterId: 'ClusterId',
-        integrationPattern: sfn.ServiceIntegrationPattern.FIRE_AND_FORGET
-      })
-    });
+    task: new tasks.EmrTerminateCluster({
+      clusterId: 'ClusterId',
+      integrationPattern: sfn.ServiceIntegrationPattern.FIRE_AND_FORGET
+    })
+  });
 
   // THEN
   expect(stack.resolve(task.toStateJson())).toEqual({

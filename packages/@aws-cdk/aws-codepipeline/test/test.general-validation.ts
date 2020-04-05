@@ -3,7 +3,7 @@ import { Test } from 'nodeunit';
 import { IStage } from '../lib/action';
 import { Artifact } from '../lib/artifact';
 import { Pipeline } from '../lib/pipeline';
-import { validateName } from "../lib/validation";
+import { validateName } from '../lib/validation';
 import { FakeSourceAction } from './fake-source-action';
 
 interface NameValidationTestCase {

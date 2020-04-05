@@ -13,7 +13,7 @@ beforeEach(() => {
   // GIVEN
   stack = new cdk.Stack();
   clusterRole = new iam.Role(stack, 'ClusterRole', {
-      assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
+    assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
   });
   serviceRole = new iam.Role(stack, 'ServiceRole', {
     assumedBy: new iam.ServicePrincipal('elasticmapreduce.amazonaws.com')

@@ -12,18 +12,18 @@ export = testCase({
     test.deepEqual(capitalizePropertyNames(c, [ 'hello', 88 ]), [ 'hello', 88 ]);
     test.deepEqual(capitalizePropertyNames(c,
       { Hello: 'world', hey: 'dude' }),
-      { Hello: 'world', Hey: 'dude' });
+    { Hello: 'world', Hey: 'dude' });
     test.deepEqual(capitalizePropertyNames(c,
       [ 1, 2, { three: 3 }]),
-      [ 1, 2, { Three: 3 }]);
+    [ 1, 2, { Three: 3 }]);
     test.deepEqual(capitalizePropertyNames(c,
       { Hello: 'world', recursive: { foo: 123, there: { another: [ 'hello', { world: 123 } ]} } }),
-      { Hello: 'world', Recursive: { Foo: 123, There: { Another: [ 'hello', { World: 123 } ]} } });
+    { Hello: 'world', Recursive: { Foo: 123, There: { Another: [ 'hello', { World: 123 } ]} } });
 
     // make sure tokens are resolved and result is also capitalized
     test.deepEqual(capitalizePropertyNames(c,
       { hello: { resolve: () => ({ foo: 'bar' }) }, world: new SomeToken() }),
-      { Hello: { Foo: 'bar' }, World: 100 });
+    { Hello: { Foo: 'bar' }, World: 100 });
 
     test.done();
   },
@@ -52,7 +52,7 @@ export = testCase({
     'primitives'(test: Test) {
       const stack = new Stack();
       test.strictEqual(stack.resolve(ignoreEmpty(12)), 12);
-      test.strictEqual(stack.resolve(ignoreEmpty("12")), "12");
+      test.strictEqual(stack.resolve(ignoreEmpty('12')), '12');
       test.done();
     },
 

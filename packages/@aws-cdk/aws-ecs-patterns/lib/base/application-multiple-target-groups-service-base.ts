@@ -397,7 +397,7 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
       this.loadBalancer = this.createLoadBalancer('LB');
       const protocol = this.createListenerProtocol();
       this.listener = this.configListener(protocol, {
-        listenerName: "PublicListener",
+        listenerName: 'PublicListener',
         loadBalancer: this.loadBalancer,
       });
       const domainName = this.createDomainName(this.loadBalancer);
@@ -473,8 +473,8 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
   private createLogDriver(enableLoggingProp?: boolean, logDriverProp?: LogDriver): LogDriver | undefined {
     const enableLogging = enableLoggingProp !== undefined ? enableLoggingProp : true;
     const logDriver = logDriverProp !== undefined
-                        ? logDriverProp : enableLogging
-                          ? this.createAWSLogDriver(this.node.id) : undefined;
+      ? logDriverProp : enableLogging
+        ? this.createAWSLogDriver(this.node.id) : undefined;
     return logDriver;
   }
 

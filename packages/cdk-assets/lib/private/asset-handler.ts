@@ -1,5 +1,5 @@
-import { IAws } from "../aws";
-import { EventType } from "../progress";
+import { IAws } from '../aws';
+import { EventType } from '../progress';
 
 export interface IAssetHandler {
   publish(): Promise<void>;

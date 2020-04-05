@@ -130,9 +130,9 @@ export class LambdaDeploymentGroup extends cdk.Resource implements ILambdaDeploy
    * @returns a Construct representing a reference to an existing Deployment Group
    */
   public static fromLambdaDeploymentGroupAttributes(
-      scope: cdk.Construct,
-      id: string,
-      attrs: LambdaDeploymentGroupAttributes): ILambdaDeploymentGroup {
+    scope: cdk.Construct,
+    id: string,
+    attrs: LambdaDeploymentGroupAttributes): ILambdaDeploymentGroup {
     return new ImportedLambdaDeploymentGroup(scope, id, attrs);
   }
 

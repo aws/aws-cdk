@@ -10,7 +10,7 @@ const MAX_CLUSTER_NAME_LEN = 100;
 export class ClusterResourceHandler extends ResourceHandler {
   public get clusterName() {
     if (!this.physicalResourceId) {
-      throw new Error(`Cannot determine cluster name without physical resource ID`);
+      throw new Error('Cannot determine cluster name without physical resource ID');
     }
 
     return this.physicalResourceId;
@@ -103,7 +103,7 @@ export class ClusterResourceHandler extends ResourceHandler {
 
   protected async onUpdate() {
     const updates = analyzeUpdate(this.oldProps, this.newProps);
-    console.log(`onUpdate:`, JSON.stringify({ updates }, undefined, 2));
+    console.log('onUpdate:', JSON.stringify({ updates }, undefined, 2));
 
     // if there is an update that requires replacement, go ahead and just create
     // a new cluster with the new config. The old cluster will automatically be
@@ -143,7 +143,7 @@ export class ClusterResourceHandler extends ResourceHandler {
   }
 
   protected async isUpdateComplete() {
-    console.log(`isUpdateComplete`);
+    console.log('isUpdateComplete');
     return this.isActive();
   }
 

@@ -232,15 +232,15 @@ export class Method extends Resource {
 
     let credentials;
     if (options.credentialsPassthrough !== undefined && options.credentialsRole !== undefined) {
-      throw new Error(`'credentialsPassthrough' and 'credentialsRole' are mutually exclusive`);
+      throw new Error('\'credentialsPassthrough\' and \'credentialsRole\' are mutually exclusive');
     }
 
     if (options.connectionType === ConnectionType.VPC_LINK && options.vpcLink === undefined) {
-      throw new Error(`'connectionType' of VPC_LINK requires 'vpcLink' prop to be set`);
+      throw new Error('\'connectionType\' of VPC_LINK requires \'vpcLink\' prop to be set');
     }
 
     if (options.connectionType === ConnectionType.INTERNET && options.vpcLink !== undefined) {
-      throw new Error(`cannot set 'vpcLink' where 'connectionType' is INTERNET`);
+      throw new Error('cannot set \'vpcLink\' where \'connectionType\' is INTERNET');
     }
 
     if (options.credentialsRole) {
@@ -305,7 +305,7 @@ export class Method extends Resource {
     const models: {[param: string]: string} = {};
     for (const contentType in requestModels) {
       if (requestModels.hasOwnProperty(contentType)) {
-          models[contentType] = requestModels[contentType].modelId;
+        models[contentType] = requestModels[contentType].modelId;
       }
     }
 
@@ -314,7 +314,7 @@ export class Method extends Resource {
 
   private requestValidatorId(options: MethodOptions): string | undefined {
     if (options.requestValidator && options.requestValidatorOptions) {
-      throw new Error(`Only one of 'requestValidator' or 'requestValidatorOptions' must be specified.`);
+      throw new Error('Only one of \'requestValidator\' or \'requestValidatorOptions\' must be specified.');
     }
 
     if (options.requestValidatorOptions) {

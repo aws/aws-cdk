@@ -62,7 +62,7 @@ export = {
     test.done();
   },
 
-  "dont allow unresolved tokens to be used in construct IDs"(test: Test) {
+  'dont allow unresolved tokens to be used in construct IDs'(test: Test) {
     // GIVEN
     const root = new Root();
     const token = Lazy.stringValue({ produce: () => 'lazy' });

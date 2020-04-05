@@ -3,7 +3,7 @@ import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Duration, Stack } from '@aws-cdk/core';
 import * as tasks from '../lib';
 
-const jobName = "GlueJob";
+const jobName = 'GlueJob';
 let stack: Stack;
 beforeEach(() => {
   stack = new Stack();
@@ -20,14 +20,14 @@ test('Invoke glue job with just job ARN', () => {
   expect(stack.resolve(task.toStateJson())).toEqual({
     Type: 'Task',
     Resource: {
-      "Fn::Join": [
-        "",
+      'Fn::Join': [
+        '',
         [
-          "arn:",
+          'arn:',
           {
-            Ref: "AWS::Partition",
+            Ref: 'AWS::Partition',
           },
-          ":states:::glue:startJobRun",
+          ':states:::glue:startJobRun',
         ],
       ],
     },
@@ -40,11 +40,11 @@ test('Invoke glue job with just job ARN', () => {
 
 test('Invoke glue job with full properties', () => {
   const jobArguments = {
-    key: "value"
+    key: 'value'
   };
   const timeoutMinutes = 1440;
   const timeout = Duration.minutes(timeoutMinutes);
-  const securityConfiguration = "securityConfiguration";
+  const securityConfiguration = 'securityConfiguration';
   const notifyDelayAfterMinutes = 10;
   const notifyDelayAfter = Duration.minutes(notifyDelayAfterMinutes);
   const task = new sfn.Task(stack, 'Task', {
@@ -63,14 +63,14 @@ test('Invoke glue job with full properties', () => {
   expect(stack.resolve(task.toStateJson())).toEqual({
     Type: 'Task',
     Resource: {
-      "Fn::Join": [
-        "",
+      'Fn::Join': [
+        '',
         [
-          "arn:",
+          'arn:',
           {
-            Ref: "AWS::Partition",
+            Ref: 'AWS::Partition',
           },
-          ":states:::glue:startJobRun.sync",
+          ':states:::glue:startJobRun.sync',
         ],
       ],
     },
@@ -100,7 +100,7 @@ test('permitted role actions limited to start job run if service integration pat
   expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [{
-        Action: "glue:StartJobRun"
+        Action: 'glue:StartJobRun'
       }]
     }
   });
@@ -120,10 +120,10 @@ test('permitted role actions include start, get, and stop job run if service int
     PolicyDocument: {
       Statement: [{
         Action: [
-          "glue:StartJobRun",
-          "glue:GetJobRun",
-          "glue:GetJobRuns",
-          "glue:BatchStopJobRun"
+          'glue:StartJobRun',
+          'glue:GetJobRun',
+          'glue:GetJobRuns',
+          'glue:BatchStopJobRun'
         ]
       }]
     }

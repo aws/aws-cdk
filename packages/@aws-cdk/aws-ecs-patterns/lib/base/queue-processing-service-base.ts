@@ -207,7 +207,7 @@ export abstract class QueueProcessingServiceBase extends Construct {
     super(scope, id);
 
     if (props.cluster && props.vpc) {
-      throw new Error(`You can only specify either vpc or cluster. Alternatively, you can leave both blank`);
+      throw new Error('You can only specify either vpc or cluster. Alternatively, you can leave both blank');
     }
     this.cluster = props.cluster || this.getDefaultCluster(this, props.vpc);
 
@@ -215,7 +215,7 @@ export abstract class QueueProcessingServiceBase extends Construct {
     if (props.queue) {
       this.sqsQueue = props.queue;
     } else {
-      this.deadLetterQueue = new Queue(this, "EcsProcessingDeadLetterQueue", {
+      this.deadLetterQueue = new Queue(this, 'EcsProcessingDeadLetterQueue', {
         retentionPeriod: props.retentionPeriod || Duration.days(14)
       });
       this.sqsQueue = new Queue(this, 'EcsProcessingQueue', {
@@ -236,10 +236,10 @@ export abstract class QueueProcessingServiceBase extends Construct {
     // Create log driver if logging is enabled
     const enableLogging = props.enableLogging !== undefined ? props.enableLogging : true;
     this.logDriver = props.logDriver !== undefined
-                        ? props.logDriver
-                        : enableLogging
-                            ? this.createAWSLogDriver(this.node.id)
-                            : undefined;
+      ? props.logDriver
+      : enableLogging
+        ? this.createAWSLogDriver(this.node.id)
+        : undefined;
 
     // Add the queue name to environment variables
     this.environment = { ...(props.environment || {}), QUEUE_NAME: this.sqsQueue.queueName };
@@ -250,7 +250,7 @@ export abstract class QueueProcessingServiceBase extends Construct {
     this.maxCapacity = props.maxScalingCapacity || (2 * this.desiredCount);
 
     if (!this.desiredCount && !this.maxCapacity) {
-      throw new Error(`maxScalingCapacity must be set and greater than 0 if desiredCount is 0`);
+      throw new Error('maxScalingCapacity must be set and greater than 0 if desiredCount is 0');
     }
 
     new CfnOutput(this, 'SQSQueue', { value: this.sqsQueue.queueName });

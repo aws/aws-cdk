@@ -14,7 +14,7 @@ cluster.addCapacity('DefaultAutoScalingGroup', {
 });
 
 // Add Private DNS Namespace
-const domainName = "scorekeep.com";
+const domainName = 'scorekeep.com';
 cluster.addDefaultCloudMapNamespace({
   name: domainName,
 });
@@ -25,7 +25,7 @@ const frontendTD = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
 });
 
 const frontend = frontendTD.addContainer('frontend', {
-  image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
   memoryLimitMiB: 256,
 });
 
@@ -35,11 +35,11 @@ frontend.addPortMappings({
   protocol: ecs.Protocol.TCP
 });
 
-new ecs.Ec2Service(stack, "FrontendService", {
+new ecs.Ec2Service(stack, 'FrontendService', {
   cluster,
   taskDefinition: frontendTD,
   cloudMapOptions: {
-    name: "frontend"
+    name: 'frontend'
   }
 });
 

@@ -21,11 +21,11 @@ export = {
     // WHEN
     const providedName = 'test.domain.com.';
     const qualified = util.determineFullyQualifiedDomainName(providedName, {
-        hostedZoneId: 'fakeId',
-        zoneName: 'ignored',
-        hostedZoneArn: 'arn:aws:route53:::hostedzone/fakeId',
-        stack,
-        node: stack.node,
+      hostedZoneId: 'fakeId',
+      zoneName: 'ignored',
+      hostedZoneArn: 'arn:aws:route53:::hostedzone/fakeId',
+      stack,
+      node: stack.node,
     });
 
     // THEN
@@ -40,11 +40,11 @@ export = {
     // WHEN
     const providedName = 'test.domain.com';
     const qualified = util.determineFullyQualifiedDomainName(providedName, {
-        hostedZoneId: 'fakeId',
-        zoneName: 'test.domain.com.',
-        hostedZoneArn: 'arn:aws:route53:::hostedzone/fakeId',
-        stack,
-        node: stack.node,
+      hostedZoneId: 'fakeId',
+      zoneName: 'test.domain.com.',
+      hostedZoneArn: 'arn:aws:route53:::hostedzone/fakeId',
+      stack,
+      node: stack.node,
     });
 
     // THEN
@@ -59,11 +59,11 @@ export = {
     // WHEN
     const providedName = 'test.domain.com';
     const qualified = util.determineFullyQualifiedDomainName(providedName, {
-        hostedZoneId: 'fakeId',
-        zoneName: 'domain.com.',
-        hostedZoneArn: 'arn:aws:route53:::hostedzone/fakeId',
-        stack,
-        node: stack.node,
+      hostedZoneId: 'fakeId',
+      zoneName: 'domain.com.',
+      hostedZoneArn: 'arn:aws:route53:::hostedzone/fakeId',
+      stack,
+      node: stack.node,
     });
 
     // THEN
@@ -78,11 +78,11 @@ export = {
     // WHEN
     const providedName = 'test';
     const qualified = util.determineFullyQualifiedDomainName(providedName, {
-        hostedZoneId: 'fakeId',
-        zoneName: 'domain.com.',
-        hostedZoneArn: 'arn:aws:route53:::hostedzone/fakeId',
-        stack,
-        node: stack.node,
+      hostedZoneId: 'fakeId',
+      zoneName: 'domain.com.',
+      hostedZoneArn: 'arn:aws:route53:::hostedzone/fakeId',
+      stack,
+      node: stack.node,
     });
 
     // THEN

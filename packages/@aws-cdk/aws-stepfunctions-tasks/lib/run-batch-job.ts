@@ -255,9 +255,9 @@ export class RunBatchJob implements sfn.IStepFunctionsTask {
 
         DependsOn: this.props.dependsOn
           ? this.props.dependsOn.map(jobDependency => ({
-              JobId: jobDependency.jobId,
-              Type: jobDependency.type
-            }))
+            JobId: jobDependency.jobId,
+            Type: jobDependency.type
+          }))
           : undefined,
 
         RetryStrategy:

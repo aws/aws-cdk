@@ -20,6 +20,6 @@ new cloudfront.CloudFrontWebDistribution(stack, 'MyDistribution', {
       behaviors : [ {isDefaultBehavior: true}]
     }
   ]
- });
+});
 
 app.synth();

@@ -216,7 +216,7 @@ export class Metric implements IMetric {
     this.namespace = props.namespace;
     this.metricName = props.metricName;
     // Try parsing, this will throw if it's not a valid stat
-    this.statistic = normalizeStatistic(props.statistic || "Average");
+    this.statistic = normalizeStatistic(props.statistic || 'Average');
     this.label = props.label;
     this.color = props.color;
     this.unit = props.unit;
@@ -304,7 +304,7 @@ export class Metric implements IMetric {
   public toAlarmConfig(): MetricAlarmConfig {
     const metricConfig = this.toMetricConfig();
     if (metricConfig.metricStat === undefined) {
-      throw new Error(`Using a math expression is not supported here. Pass a 'Metric' object instead`);
+      throw new Error('Using a math expression is not supported here. Pass a \'Metric\' object instead');
     }
 
     const stat = parseStatistic(metricConfig.metricStat.statistic);
@@ -322,7 +322,7 @@ export class Metric implements IMetric {
   public toGraphConfig(): MetricGraphConfig {
     const metricConfig = this.toMetricConfig();
     if (metricConfig.metricStat === undefined) {
-      throw new Error(`Using a math expression is not supported here. Pass a 'Metric' object instead`);
+      throw new Error('Using a math expression is not supported here. Pass a \'Metric\' object instead');
     }
 
     return {
@@ -475,11 +475,11 @@ export class MathExpression implements IMetric {
   }
 
   public toAlarmConfig(): MetricAlarmConfig {
-    throw new Error(`Using a math expression is not supported here. Pass a 'Metric' object instead`);
+    throw new Error('Using a math expression is not supported here. Pass a \'Metric\' object instead');
   }
 
   public toGraphConfig(): MetricGraphConfig {
-    throw new Error(`Using a math expression is not supported here. Pass a 'Metric' object instead`);
+    throw new Error('Using a math expression is not supported here. Pass a \'Metric\' object instead');
   }
 
   public toMetricConfig(): MetricConfig {

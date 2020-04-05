@@ -14,14 +14,14 @@ new cloudfront.CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
   originConfigs: [
     {
       originHeaders: {
-        "X-Custom-Header": "somevalue",
+        'X-Custom-Header': 'somevalue',
       },
       customOriginSource: {
-        domainName: "brelandm.a2z.com",
+        domainName: 'brelandm.a2z.com',
       },
       behaviors: [
         {
-        isDefaultBehavior: true,
+          isDefaultBehavior: true,
         }
       ]
     }
@@ -37,14 +37,14 @@ new cloudfront.CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably2', {
   originConfigs: [
     {
       originHeaders: {
-        "X-Custom-Header": "somevalue",
+        'X-Custom-Header': 'somevalue',
       },
       customOriginSource: {
-        domainName: "brelandm.a2z.com",
+        domainName: 'brelandm.a2z.com',
       },
       behaviors: [
         {
-        isDefaultBehavior: true,
+          isDefaultBehavior: true,
         }
       ]
     }

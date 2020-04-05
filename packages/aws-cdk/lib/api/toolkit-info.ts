@@ -19,7 +19,7 @@ export class ToolkitInfo {
     const stack = await waitForStack(cfn, stackName ?? DEFAULT_TOOLKIT_STACK_NAME);
     if (!stack) {
       debug('The environment %s doesn\'t have the CDK toolkit stack (%s) installed. Use %s to setup your environment for use with the toolkit.',
-          environment.name, stackName, colors.blue(`cdk bootstrap "${environment.name}"`));
+        environment.name, stackName, colors.blue(`cdk bootstrap "${environment.name}"`));
       return undefined;
     }
 

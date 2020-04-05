@@ -14,7 +14,7 @@ new NetworkMultipleTargetGroupsFargateService(stack, 'myService', {
   cluster,
   memoryLimitMiB: 512,
   taskImageOptions: {
-    image: ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+    image: ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
   },
   loadBalancers: [
     {

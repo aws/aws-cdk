@@ -19,12 +19,12 @@ export = {
       internalPort: 8080,
     });
 
-    expect(stack).to(haveResource("AWS::ElasticLoadBalancing::LoadBalancer", {
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancing::LoadBalancer', {
       Listeners: [{
-        InstancePort: "8080",
-        InstanceProtocol: "http",
-        LoadBalancerPort: "8080",
-        Protocol: "http"
+        InstancePort: '8080',
+        InstanceProtocol: 'http',
+        LoadBalancerPort: '8080',
+        Protocol: 'http'
       }]
     }));
 
@@ -48,13 +48,13 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource("AWS::ElasticLoadBalancing::LoadBalancer", {
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancing::LoadBalancer', {
       HealthCheck: {
-        HealthyThreshold: "2",
-        Interval: "60",
-        Target: "HTTPS:443/ping",
-        Timeout: "5",
-        UnhealthyThreshold: "5"
+        HealthyThreshold: '2',
+        Interval: '60',
+        Target: 'HTTPS:443/ping',
+        Timeout: '5',
+        UnhealthyThreshold: '5'
       },
     }));
 
@@ -84,9 +84,9 @@ export = {
       SecurityGroupEgress: [
         {
           Description: 'Port 8080 LB to fleet',
-          CidrIp: "666.666.666.666/666",
+          CidrIp: '666.666.666.666/666',
           FromPort: 8080,
-          IpProtocol: "tcp",
+          IpProtocol: 'tcp',
           ToPort: 8080
         }
       ],

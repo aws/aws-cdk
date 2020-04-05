@@ -51,11 +51,11 @@ test('returns the most recent AMI matching the criteria', async () => {
       Images: [
         {
           ImageId: 'ami-1234',
-          CreationDate: "2016-06-22T08:39:59.000Z",
+          CreationDate: '2016-06-22T08:39:59.000Z',
         },
         {
           ImageId: 'ami-5678',
-          CreationDate: "2019-06-22T08:39:59.000Z",
+          CreationDate: '2019-06-22T08:39:59.000Z',
         }
       ]
     });

@@ -9,7 +9,7 @@ new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'L3', {
   memoryLimitMiB: 1024,
   cpu: 512,
   taskImageOptions: {
-    image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+    image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
   },
 });
 
@@ -17,7 +17,7 @@ new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'L3b', {
   memoryLimitMiB: 1024,
   cpu: 512,
   taskImageOptions: {
-    image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+    image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
   },
 });
 

@@ -170,7 +170,7 @@ export class GatewayVpcEndpoint extends VpcEndpoint implements IGatewayVpcEndpoi
     const routeTableIds = allRouteTableIds(...subnets.map(s => props.vpc.selectSubnets(s)));
 
     if (routeTableIds.length === 0) {
-      throw new Error(`Can't add a gateway endpoint to VPC; route table IDs are not available`);
+      throw new Error('Can\'t add a gateway endpoint to VPC; route table IDs are not available');
     }
 
     const endpoint = new CfnVPCEndpoint(this, 'Resource', {

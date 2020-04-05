@@ -637,7 +637,7 @@ export class Project extends ProjectBase {
    * @returns an array of {@link CfnProject.EnvironmentVariableProperty} instances
    */
   public static serializeEnvVariables(environmentVariables: { [name: string]: BuildEnvironmentVariable }):
-      CfnProject.EnvironmentVariableProperty[] {
+  CfnProject.EnvironmentVariableProperty[] {
     return Object.keys(environmentVariables).map(name => ({
       name,
       type: environmentVariables[name].type || BuildEnvironmentVariableType.PLAINTEXT,
@@ -806,7 +806,7 @@ export class Project extends ProjectBase {
    */
   public addSecondaryArtifact(secondaryArtifact: IArtifacts): void {
     if (!secondaryArtifact.identifier) {
-      throw new Error("The identifier attribute is mandatory for secondary artifacts");
+      throw new Error('The identifier attribute is mandatory for secondary artifacts');
     }
     this._secondaryArtifacts.push(secondaryArtifact.bind(this, this).artifactsProperty);
   }
@@ -872,8 +872,9 @@ export class Project extends ProjectBase {
     });
   }
 
-  private renderEnvironment(env: BuildEnvironment = {},
-                            projectVars: { [name: string]: BuildEnvironmentVariable } = {}): CfnProject.EnvironmentProperty {
+  private renderEnvironment(
+    env: BuildEnvironment = {},
+    projectVars: { [name: string]: BuildEnvironmentVariable } = {}): CfnProject.EnvironmentProperty {
     const vars: { [name: string]: BuildEnvironmentVariable } = {};
     const containerVars = env.environmentVariables || {};
 
@@ -891,7 +892,7 @@ export class Project extends ProjectBase {
 
     const errors = this.buildImage.validate(env);
     if (errors.length > 0) {
-      throw new Error("Invalid CodeBuild environment: " + errors.join('\n'));
+      throw new Error('Invalid CodeBuild environment: ' + errors.join('\n'));
     }
 
     const imagePullPrincipalType = this.buildImage.imagePullPrincipalType === ImagePullPrincipalType.CODEBUILD
@@ -958,13 +959,13 @@ export class Project extends ProjectBase {
    */
   private configureVpc(props: ProjectProps): CfnProject.VpcConfigProperty | undefined {
     if ((props.securityGroups || props.allowAllOutbound !== undefined) && !props.vpc) {
-      throw new Error(`Cannot configure 'securityGroup' or 'allowAllOutbound' without configuring a VPC`);
+      throw new Error('Cannot configure \'securityGroup\' or \'allowAllOutbound\' without configuring a VPC');
     }
 
     if (!props.vpc) { return undefined; }
 
     if ((props.securityGroups && props.securityGroups.length > 0) && props.allowAllOutbound !== undefined) {
-      throw new Error(`Configure 'allowAllOutbound' directly on the supplied SecurityGroup.`);
+      throw new Error('Configure \'allowAllOutbound\' directly on the supplied SecurityGroup.');
     }
 
     let securityGroups: ec2.ISecurityGroup[];
@@ -1401,7 +1402,7 @@ function runScriptLinuxBuildSpec(entrypoint: string) {
           // to only allow downloading the very latest version.
           `echo "Downloading scripts from s3://\${${S3_BUCKET_ENV}}/\${${S3_KEY_ENV}}"`,
           `aws s3 cp s3://\${${S3_BUCKET_ENV}}/\${${S3_KEY_ENV}} /tmp`,
-          `mkdir -p /tmp/scriptdir`,
+          'mkdir -p /tmp/scriptdir',
           `unzip /tmp/$(basename \$${S3_KEY_ENV}) -d /tmp/scriptdir`,
         ]
       },
@@ -1520,7 +1521,7 @@ export class WindowsBuildImage implements IBuildImage {
   public validate(buildEnvironment: BuildEnvironment): string[] {
     const ret: string[] = [];
     if (buildEnvironment.computeType === ComputeType.SMALL) {
-      ret.push("Windows images do not support the Small ComputeType");
+      ret.push('Windows images do not support the Small ComputeType');
     }
     return ret;
   }
@@ -1538,7 +1539,7 @@ export class WindowsBuildImage implements IBuildImage {
         },
         build: {
           commands: [
-            `Set-Variable -Name TEMPDIR -Value (New-TemporaryFile).DirectoryName`,
+            'Set-Variable -Name TEMPDIR -Value (New-TemporaryFile).DirectoryName',
             `aws s3 cp s3://$env:${S3_BUCKET_ENV}/$env:${S3_KEY_ENV} $TEMPDIR\\scripts.zip`,
             'New-Item -ItemType Directory -Path $TEMPDIR\\scriptdir',
             'Expand-Archive -Path $TEMPDIR/scripts.zip -DestinationPath $TEMPDIR\\scriptdir',

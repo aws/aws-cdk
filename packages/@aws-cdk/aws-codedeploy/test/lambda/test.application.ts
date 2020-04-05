@@ -4,8 +4,8 @@ import { Test } from 'nodeunit';
 import * as codedeploy from '../../lib';
 
 export = {
-  "CodeDeploy Lambda Application": {
-    "can be created"(test: Test) {
+  'CodeDeploy Lambda Application': {
+    'can be created'(test: Test) {
       const stack = new cdk.Stack();
       new codedeploy.LambdaApplication(stack, 'MyApp');
       expect(stack).to(haveResource('AWS::CodeDeploy::Application', {
@@ -13,7 +13,7 @@ export = {
       }));
       test.done();
     },
-    "can be created with explicit name"(test: Test) {
+    'can be created with explicit name'(test: Test) {
       const stack = new cdk.Stack();
       new codedeploy.LambdaApplication(stack, 'MyApp', {
         applicationName: 'my-name',

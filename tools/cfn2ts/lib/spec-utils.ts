@@ -21,7 +21,7 @@ export class SpecName {
       return new SpecName(module, lastParts[0]);
     }
 
-    throw new Error("Not a CloudFormation resource name: " + cfnName);
+    throw new Error('Not a CloudFormation resource name: ' + cfnName);
   }
 
   constructor(readonly module: string, readonly resourceName: string) {
@@ -43,7 +43,7 @@ export class SpecName {
  */
 export class PropertyAttributeName extends SpecName {
   public static parse(cfnName: string): PropertyAttributeName {
-    if (cfnName === "Tag") {
+    if (cfnName === 'Tag') {
       // Crazy
       return new PropertyAttributeName('', '', 'Tag');
     }
@@ -58,7 +58,7 @@ export class PropertyAttributeName extends SpecName {
       return new PropertyAttributeName(module, lastParts[0], lastParts[1]);
     }
 
-    throw new Error("Not a recognized PropertyType name: " + cfnName);
+    throw new Error('Not a recognized PropertyType name: ' + cfnName);
   }
 
   constructor(module: string, resourceName: string, readonly propAttrName: string) {

@@ -29,25 +29,25 @@ test('Execute State Machine - Default - Fire and Forget', () => {
   expect(stack.resolve(task.toStateJson())).toEqual({
     Type: 'Task',
     Resource: {
-      "Fn::Join": [
-        "",
+      'Fn::Join': [
+        '',
         [
-          "arn:",
+          'arn:',
           {
-            Ref: "AWS::Partition",
+            Ref: 'AWS::Partition',
           },
-          ":states:::states:startExecution",
+          ':states:::states:startExecution',
         ],
       ],
     },
     End: true,
     Parameters: {
       Input: {
-        foo: "bar"
-       },
+        foo: 'bar'
+      },
       Name: 'myExecutionName',
       StateMachineArn: {
-        Ref: "ChildStateMachine9133117F"
+        Ref: 'ChildStateMachine9133117F'
       }
     },
   });
@@ -67,21 +67,21 @@ test('Execute State Machine - Sync', () => {
   expect(stack.resolve(task.toStateJson())).toEqual({
     Type: 'Task',
     Resource: {
-      "Fn::Join": [
-        "",
+      'Fn::Join': [
+        '',
         [
-          "arn:",
+          'arn:',
           {
-            Ref: "AWS::Partition",
+            Ref: 'AWS::Partition',
           },
-          ":states:::states:startExecution.sync",
+          ':states:::states:startExecution.sync',
         ],
       ],
     },
     End: true,
     Parameters: {
       StateMachineArn: {
-        Ref: "ChildStateMachine9133117F"
+        Ref: 'ChildStateMachine9133117F'
       }
     },
   });
@@ -104,24 +104,24 @@ test('Execute State Machine - Wait For Task Token', () => {
   expect(stack.resolve(task.toStateJson())).toEqual({
     Type: 'Task',
     Resource: {
-      "Fn::Join": [
-        "",
+      'Fn::Join': [
+        '',
         [
-          "arn:",
+          'arn:',
           {
-            Ref: "AWS::Partition",
+            Ref: 'AWS::Partition',
           },
-          ":states:::states:startExecution.waitForTaskToken",
+          ':states:::states:startExecution.waitForTaskToken',
         ],
       ],
     },
     End: true,
     Parameters: {
       Input: {
-        "token.$": "$$.Task.Token"
+        'token.$': '$$.Task.Token'
       },
       StateMachineArn: {
-        Ref: "ChildStateMachine9133117F"
+        Ref: 'ChildStateMachine9133117F'
       }
     },
   });

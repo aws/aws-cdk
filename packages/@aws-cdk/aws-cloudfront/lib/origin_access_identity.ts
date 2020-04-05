@@ -40,10 +40,10 @@ abstract class OriginAccessIdentityBase extends cdk.Resource {
   protected arn(): string {
     return cdk.Stack.of(this).formatArn(
       {
-        service: "iam",
-        region: "", // global
-        account: "cloudfront",
-        resource: "user",
+        service: 'iam',
+        region: '', // global
+        account: 'cloudfront',
+        resource: 'user',
         resourceName: `CloudFront Origin Access Identity ${this.originAccessIdentityName}`
       }
     );
@@ -106,9 +106,9 @@ export class OriginAccessIdentity extends OriginAccessIdentityBase implements IO
   constructor(scope: cdk.Construct, id: string, props?: OriginAccessIdentityProps) {
     super(scope, id);
 
-    this.resource = new CfnCloudFrontOriginAccessIdentity(this, "Resource", {
+    this.resource = new CfnCloudFrontOriginAccessIdentity(this, 'Resource', {
       cloudFrontOriginAccessIdentityConfig: {
-        comment: (props && props.comment) || "Allows CloudFront to reach the bucket"
+        comment: (props && props.comment) || 'Allows CloudFront to reach the bucket'
       }
     });
     // physical id - OAI name

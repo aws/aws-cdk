@@ -208,10 +208,10 @@ export = {
     expect(fixture.stack).to(haveResource('AWS::EC2::SecurityGroup', {
       SecurityGroupIngress: [
         {
-          CidrIp: "0.0.0.0/0",
-          Description: "Open to the world",
+          CidrIp: '0.0.0.0/0',
+          Description: 'Open to the world',
           FromPort: 80,
-          IpProtocol: "tcp",
+          IpProtocol: 'tcp',
           ToPort: 80
         }
       ],
@@ -234,9 +234,9 @@ export = {
 
     // THEN
     expect(stack2).to(haveResource('AWS::EC2::SecurityGroupIngress', {
-      CidrIp: "0.0.0.0/0",
-      Description: "Open to the world",
-      IpProtocol: "tcp",
+      CidrIp: '0.0.0.0/0',
+      Description: 'Open to the world',
+      IpProtocol: 'tcp',
       FromPort: 8080,
       ToPort: 8080,
       GroupId: 'imported-security-group-id'
@@ -246,8 +246,8 @@ export = {
   },
 };
 
-const LB_SECURITY_GROUP = { "Fn::GetAtt": [ "LBSecurityGroup8A41EA2B", "GroupId" ] };
-const IMPORTED_LB_SECURITY_GROUP = { "Fn::ImportValue": "Stack:ExportsOutputFnGetAttLBSecurityGroup8A41EA2BGroupId851EE1F6" };
+const LB_SECURITY_GROUP = { 'Fn::GetAtt': [ 'LBSecurityGroup8A41EA2B', 'GroupId' ] };
+const IMPORTED_LB_SECURITY_GROUP = { 'Fn::ImportValue': 'Stack:ExportsOutputFnGetAttLBSecurityGroup8A41EA2BGroupId851EE1F6' };
 
 function expectSameStackSGRules(stack: cdk.Stack) {
   expectSGRules(stack, LB_SECURITY_GROUP);
@@ -260,17 +260,17 @@ function expectedImportedSGRules(stack: cdk.Stack) {
 function expectSGRules(stack: cdk.Stack, lbGroup: any) {
   expect(stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
     GroupId: lbGroup,
-    IpProtocol: "tcp",
-    Description: "Load balancer to target",
-    DestinationSecurityGroupId: { "Fn::GetAtt": [ "TargetSGDB98152D", "GroupId" ] },
+    IpProtocol: 'tcp',
+    Description: 'Load balancer to target',
+    DestinationSecurityGroupId: { 'Fn::GetAtt': [ 'TargetSGDB98152D', 'GroupId' ] },
     FromPort: 8008,
     ToPort: 8008
   }));
   expect(stack).to(haveResource('AWS::EC2::SecurityGroupIngress', {
-    IpProtocol: "tcp",
-    Description: "Load balancer to target",
+    IpProtocol: 'tcp',
+    Description: 'Load balancer to target',
     FromPort: 8008,
-    GroupId: { "Fn::GetAtt": [ "TargetSGDB98152D", "GroupId" ] },
+    GroupId: { 'Fn::GetAtt': [ 'TargetSGDB98152D', 'GroupId' ] },
     SourceSecurityGroupId: lbGroup,
     ToPort: 8008
   }));

@@ -106,14 +106,14 @@ test('passing trusted accounts to the old bootstrapping results in an error', as
   await expect(bootstrapEnvironment(env, sdk, 'mockStack', undefined, {
     trustedAccounts: ['0123456789012'],
   }))
-  .rejects
-  .toThrow('--trust can only be passed for the new bootstrap experience!');
+    .rejects
+    .toThrow('--trust can only be passed for the new bootstrap experience!');
 });
 
 test('passing CFN execution policies to the old bootstrapping results in an error', async () => {
   await expect(bootstrapEnvironment(env, sdk, 'mockStack', undefined, {
     cloudFormationExecutionPolicies: ['arn:aws:iam::aws:policy/AdministratorAccess'],
   }))
-  .rejects
-  .toThrow('--cloudformation-execution-policies can only be passed for the new bootstrap experience!');
+    .rejects
+    .toThrow('--cloudformation-execution-policies can only be passed for the new bootstrap experience!');
 });

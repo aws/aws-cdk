@@ -29,48 +29,48 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::IAM::Policy', {
-      "PolicyDocument": {
-        "Statement": [
+      'PolicyDocument': {
+        'Statement': [
           {
-            "Action": "dynamodb:ListStreams",
-            "Effect": "Allow",
-            "Resource": { "Fn::Join": [ "", [ { "Fn::GetAtt": [ "TD925BC7E", "Arn" ] }, "/stream/*" ] ] }
+            'Action': 'dynamodb:ListStreams',
+            'Effect': 'Allow',
+            'Resource': { 'Fn::Join': [ '', [ { 'Fn::GetAtt': [ 'TD925BC7E', 'Arn' ] }, '/stream/*' ] ] }
           },
           {
-            "Action": [
-              "dynamodb:DescribeStream",
-              "dynamodb:GetRecords",
-              "dynamodb:GetShardIterator",
+            'Action': [
+              'dynamodb:DescribeStream',
+              'dynamodb:GetRecords',
+              'dynamodb:GetShardIterator',
             ],
-            "Effect": "Allow",
-            "Resource": {
-              "Fn::GetAtt": [
-                "TD925BC7E",
-                "StreamArn"
+            'Effect': 'Allow',
+            'Resource': {
+              'Fn::GetAtt': [
+                'TD925BC7E',
+                'StreamArn'
               ]
             }
           }
         ],
-        "Version": "2012-10-17"
+        'Version': '2012-10-17'
       },
-      "PolicyName": "FnServiceRoleDefaultPolicyC6A839BF",
-      "Roles": [{
-        "Ref": "FnServiceRoleB9001A96"
+      'PolicyName': 'FnServiceRoleDefaultPolicyC6A839BF',
+      'Roles': [{
+        'Ref': 'FnServiceRoleB9001A96'
       }]
     }));
 
     expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
-      "EventSourceArn": {
-        "Fn::GetAtt": [
-          "TD925BC7E",
-          "StreamArn"
+      'EventSourceArn': {
+        'Fn::GetAtt': [
+          'TD925BC7E',
+          'StreamArn'
         ]
       },
-      "FunctionName":  {
-        "Ref": "Fn9270CBC0"
+      'FunctionName':  {
+        'Ref': 'Fn9270CBC0'
       },
-      "BatchSize": 100,
-      "StartingPosition": "TRIM_HORIZON"
+      'BatchSize': 100,
+      'StartingPosition': 'TRIM_HORIZON'
     }));
 
     test.done();
@@ -96,17 +96,17 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
-      "EventSourceArn": {
-        "Fn::GetAtt": [
-          "TD925BC7E",
-          "StreamArn"
+      'EventSourceArn': {
+        'Fn::GetAtt': [
+          'TD925BC7E',
+          'StreamArn'
         ]
       },
-      "FunctionName":  {
-        "Ref": "Fn9270CBC0"
+      'FunctionName':  {
+        'Ref': 'Fn9270CBC0'
       },
-      "BatchSize": 50,
-      "StartingPosition": "LATEST"
+      'BatchSize': 50,
+      'StartingPosition': 'LATEST'
     }));
 
     test.done();
@@ -194,17 +194,17 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
-      "EventSourceArn": {
-        "Fn::GetAtt": [
-          "TD925BC7E",
-          "StreamArn"
+      'EventSourceArn': {
+        'Fn::GetAtt': [
+          'TD925BC7E',
+          'StreamArn'
         ]
       },
-      "FunctionName":  {
-        "Ref": "Fn9270CBC0"
+      'FunctionName':  {
+        'Ref': 'Fn9270CBC0'
       },
-      "MaximumBatchingWindowInSeconds": 120,
-      "StartingPosition": "LATEST"
+      'MaximumBatchingWindowInSeconds': 120,
+      'StartingPosition': 'LATEST'
     }));
 
     test.done();
@@ -294,17 +294,17 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
-      "EventSourceArn": {
-        "Fn::GetAtt": [
-          "TD925BC7E",
-          "StreamArn"
+      'EventSourceArn': {
+        'Fn::GetAtt': [
+          'TD925BC7E',
+          'StreamArn'
         ]
       },
-      "FunctionName":  {
-        "Ref": "Fn9270CBC0"
+      'FunctionName':  {
+        'Ref': 'Fn9270CBC0'
       },
-      "MaximumRetryAttempts": 10,
-      "StartingPosition": "LATEST"
+      'MaximumRetryAttempts': 10,
+      'StartingPosition': 'LATEST'
     }));
 
     test.done();
@@ -374,17 +374,17 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
-      "EventSourceArn": {
-        "Fn::GetAtt": [
-          "TD925BC7E",
-          "StreamArn"
+      'EventSourceArn': {
+        'Fn::GetAtt': [
+          'TD925BC7E',
+          'StreamArn'
         ]
       },
-      "FunctionName":  {
-        "Ref": "Fn9270CBC0"
+      'FunctionName':  {
+        'Ref': 'Fn9270CBC0'
       },
-      "BisectBatchOnFunctionError": true,
-      "StartingPosition": "LATEST"
+      'BisectBatchOnFunctionError': true,
+      'StartingPosition': 'LATEST'
     }));
 
     test.done();
@@ -410,17 +410,17 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
-      "EventSourceArn": {
-        "Fn::GetAtt": [
-          "TD925BC7E",
-          "StreamArn"
+      'EventSourceArn': {
+        'Fn::GetAtt': [
+          'TD925BC7E',
+          'StreamArn'
         ]
       },
-      "FunctionName":  {
-        "Ref": "Fn9270CBC0"
+      'FunctionName':  {
+        'Ref': 'Fn9270CBC0'
       },
-      "ParallelizationFactor": 5,
-      "StartingPosition": "LATEST"
+      'ParallelizationFactor': 5,
+      'StartingPosition': 'LATEST'
     }));
 
     test.done();
@@ -490,17 +490,17 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
-      "EventSourceArn": {
-        "Fn::GetAtt": [
-          "TD925BC7E",
-          "StreamArn"
+      'EventSourceArn': {
+        'Fn::GetAtt': [
+          'TD925BC7E',
+          'StreamArn'
         ]
       },
-      "FunctionName":  {
-        "Ref": "Fn9270CBC0"
+      'FunctionName':  {
+        'Ref': 'Fn9270CBC0'
       },
-      "MaximumRecordAgeInSeconds": 100,
-      "StartingPosition": "LATEST"
+      'MaximumRecordAgeInSeconds': 100,
+      'StartingPosition': 'LATEST'
     }));
 
     test.done();
@@ -571,27 +571,27 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
-      "EventSourceArn": {
-        "Fn::GetAtt": [
-          "TD925BC7E",
-          "StreamArn"
+      'EventSourceArn': {
+        'Fn::GetAtt': [
+          'TD925BC7E',
+          'StreamArn'
         ]
       },
-      "FunctionName":  {
-        "Ref": "Fn9270CBC0"
+      'FunctionName':  {
+        'Ref': 'Fn9270CBC0'
       },
-      "DestinationConfig": {
-        "OnFailure": {
-          "Destination": {
-            "Fn::GetAtt": [
-              "Queue4A7E3555",
-              "Arn"
+      'DestinationConfig': {
+        'OnFailure': {
+          'Destination': {
+            'Fn::GetAtt': [
+              'Queue4A7E3555',
+              'Arn'
             ]
           }
 
         }
       },
-      "StartingPosition": "LATEST"
+      'StartingPosition': 'LATEST'
     }));
 
     test.done();

@@ -90,8 +90,8 @@ export = {
 
       // THEN
       expect(stack1).to(haveResourceLike('AWS::CloudWatch::Alarm', {
-        MetricName: "ACount",
-        Namespace: "Test",
+        MetricName: 'ACount',
+        Namespace: 'Test',
         Period: 300,
       }));
 

@@ -32,18 +32,18 @@ test('use aws batch job as an eventrule target', () => {
 
   // THEN
   expect(stack).to(haveResource('AWS::Events::Rule', {
-    ScheduleExpression: "rate(1 min)",
-    State: "ENABLED",
+    ScheduleExpression: 'rate(1 min)',
+    State: 'ENABLED',
     Targets: [
       {
         Arn: {
-          Ref: "MyQueueE6CA6235"
+          Ref: 'MyQueueE6CA6235'
         },
-        Id: "Target0",
+        Id: 'Target0',
         RoleArn: {
-          "Fn::GetAtt": [
-            "MyJobEventsRoleCF43C336",
-            "Arn"
+          'Fn::GetAtt': [
+            'MyJobEventsRoleCF43C336',
+            'Arn'
           ]
         }
       }
@@ -53,25 +53,25 @@ test('use aws batch job as an eventrule target', () => {
     AssumeRolePolicyDocument: {
       Statement: [
         {
-          Action: "sts:AssumeRole",
-          Effect: "Allow",
+          Action: 'sts:AssumeRole',
+          Effect: 'Allow',
           Principal: {
-            Service: "batch.amazonaws.com"
+            Service: 'batch.amazonaws.com'
           }
         }
       ],
-      Version: "2012-10-17"
+      Version: '2012-10-17'
     },
     ManagedPolicyArns: [
       {
-        "Fn::Join": [
-          "",
+        'Fn::Join': [
+          '',
           [
-            "arn:",
+            'arn:',
             {
-              Ref: "AWS::Partition"
+              Ref: 'AWS::Partition'
             },
-            ":iam::aws:policy/service-role/AWSBatchServiceRole"
+            ':iam::aws:policy/service-role/AWSBatchServiceRole'
           ]
         ]
       }
@@ -82,19 +82,19 @@ test('use aws batch job as an eventrule target', () => {
     PolicyDocument: {
       Statement: [
         {
-          Action: "batch:SubmitJob",
-          Effect: "Allow",
+          Action: 'batch:SubmitJob',
+          Effect: 'Allow',
           Resource: {
-            Ref: "MyJob8719E923"
+            Ref: 'MyJob8719E923'
           }
         }
       ],
-      Version: "2012-10-17"
+      Version: '2012-10-17'
     },
-    PolicyName: "MyJobEventsRoleDefaultPolicy7266D3A7",
+    PolicyName: 'MyJobEventsRoleDefaultPolicy7266D3A7',
     Roles: [
       {
-        Ref: "MyJobEventsRoleCF43C336"
+        Ref: 'MyJobEventsRoleCF43C336'
       }
     ]
   }));

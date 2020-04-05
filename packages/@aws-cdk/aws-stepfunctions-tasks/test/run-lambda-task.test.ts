@@ -22,8 +22,8 @@ test('Invoke lambda with default magic ARN', () => {
         foo: 'bar'
       },
       invocationType: tasks.InvocationType.REQUEST_RESPONSE,
-      clientContext: "eyJoZWxsbyI6IndvcmxkIn0=",
-      qualifier: "1",
+      clientContext: 'eyJoZWxsbyI6IndvcmxkIn0=',
+      qualifier: '1',
     })
   });
   new sfn.StateMachine(stack, 'SM', {
@@ -33,28 +33,28 @@ test('Invoke lambda with default magic ARN', () => {
   expect(stack.resolve(task.toStateJson())).toEqual({
     Type: 'Task',
     Resource: {
-      "Fn::Join": [
-        "",
+      'Fn::Join': [
+        '',
         [
-          "arn:",
+          'arn:',
           {
-            Ref: "AWS::Partition",
+            Ref: 'AWS::Partition',
           },
-          ":states:::lambda:invoke",
+          ':states:::lambda:invoke',
         ],
       ],
     },
     End: true,
     Parameters: {
       FunctionName: {
-        Ref: "Fn9270CBC0"
+        Ref: 'Fn9270CBC0'
       },
       Payload: {
-        foo: "bar"
+        foo: 'bar'
       },
-      InvocationType: "RequestResponse",
-      ClientContext: "eyJoZWxsbyI6IndvcmxkIn0=",
-      Qualifier: "1"
+      InvocationType: 'RequestResponse',
+      ClientContext: 'eyJoZWxsbyI6IndvcmxkIn0=',
+      Qualifier: '1'
     },
   });
 });
@@ -75,24 +75,24 @@ test('Lambda function can be used in a Task with Task Token', () => {
   expect(stack.resolve(task.toStateJson())).toEqual({
     Type: 'Task',
     Resource: {
-      "Fn::Join": [
-        "",
+      'Fn::Join': [
+        '',
         [
-          "arn:",
+          'arn:',
           {
-            Ref: "AWS::Partition",
+            Ref: 'AWS::Partition',
           },
-          ":states:::lambda:invoke.waitForTaskToken",
+          ':states:::lambda:invoke.waitForTaskToken',
         ],
       ],
     },
     End: true,
     Parameters: {
       FunctionName: {
-        Ref: "Fn9270CBC0"
+        Ref: 'Fn9270CBC0'
       },
       Payload: {
-        "token.$": "$$.Task.Token"
+        'token.$': '$$.Task.Token'
       }
     },
   });

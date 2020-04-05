@@ -63,7 +63,7 @@ export class Source {
           ...options,
         });
         if (!asset.isZipArchive) {
-          throw new Error(`Asset path must be either a .zip file or a directory`);
+          throw new Error('Asset path must be either a .zip file or a directory');
         }
         return {
           bucket: asset.bucket,

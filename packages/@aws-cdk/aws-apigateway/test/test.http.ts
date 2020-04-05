@@ -17,9 +17,9 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
       Integration: {
-        IntegrationHttpMethod: "GET",
-        Type: "HTTP_PROXY",
-        Uri: "http://foo/bar"
+        IntegrationHttpMethod: 'GET',
+        Type: 'HTTP_PROXY',
+        Uri: 'http://foo/bar'
       }
     }));
 
@@ -45,10 +45,10 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
       Integration: {
-        CacheNamespace: "hey",
-        IntegrationHttpMethod: "POST",
-        Type: "HTTP",
-        Uri: "http://foo/bar"
+        CacheNamespace: 'hey',
+        IntegrationHttpMethod: 'POST',
+        Type: 'HTTP',
+        Uri: 'http://foo/bar'
       }
     }));
 

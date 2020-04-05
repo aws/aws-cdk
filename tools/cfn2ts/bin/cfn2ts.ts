@@ -18,7 +18,7 @@ async function main() {
   }
 
   if (!argv.scope) {
-    throw new Error(`--scope is not provided and cannot be auto-detected from package.json (under "cdk-build.cloudformation")`);
+    throw new Error('--scope is not provided and cannot be auto-detected from package.json (under "cdk-build.cloudformation")');
   }
 
   await generate(argv.scope, argv.out);

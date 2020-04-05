@@ -102,9 +102,9 @@ export interface TrailProps {
 }
 
 export enum ReadWriteType {
-  READ_ONLY = "ReadOnly",
-  WRITE_ONLY = "WriteOnly",
-  ALL = "All"
+  READ_ONLY = 'ReadOnly',
+  WRITE_ONLY = 'WriteOnly',
+  ALL = 'All'
 }
 
 /**
@@ -140,7 +140,7 @@ export class Trail extends Resource {
       physicalName: props.trailName,
     });
 
-    const cloudTrailPrincipal = new iam.ServicePrincipal("cloudtrail.amazonaws.com");
+    const cloudTrailPrincipal = new iam.ServicePrincipal('cloudtrail.amazonaws.com');
 
     this.s3bucket = props.bucket || new s3.Bucket(this, 'S3', { encryption: s3.BucketEncryption.UNENCRYPTED });
 
@@ -154,10 +154,10 @@ export class Trail extends Resource {
       resources: [this.s3bucket.arnForObjects(
         `${props.s3KeyPrefix ? `${props.s3KeyPrefix}/` : ''}AWSLogs/${Stack.of(this).account}/*`
       )],
-      actions: ["s3:PutObject"],
+      actions: ['s3:PutObject'],
       principals: [cloudTrailPrincipal],
       conditions: {
-        StringEquals: { 's3:x-amz-acl': "bucket-owner-full-control" }
+        StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' }
       }
     }));
 
@@ -165,14 +165,14 @@ export class Trail extends Resource {
     let logsRole: iam.IRole | undefined;
 
     if (props.sendToCloudWatchLogs) {
-      logGroup = new logs.CfnLogGroup(this, "LogGroup", {
+      logGroup = new logs.CfnLogGroup(this, 'LogGroup', {
         retentionInDays: props.cloudWatchLogsRetention || logs.RetentionDays.ONE_YEAR
       });
 
       logsRole = new iam.Role(this, 'LogsRole', { assumedBy: cloudTrailPrincipal });
 
       logsRole.addToPolicy(new iam.PolicyStatement({
-        actions: ["logs:PutLogEvents", "logs:CreateLogStream"],
+        actions: ['logs:PutLogEvents', 'logs:CreateLogStream'],
         resources: [logGroup.attrArn],
       }));
     }
@@ -235,16 +235,16 @@ export class Trail extends Resource {
    */
   public addS3EventSelector(prefixes: string[], options: AddS3EventSelectorOptions = {}) {
     if (prefixes.length > 250) {
-      throw new Error("A maximum of 250 data elements can be in one event selector");
+      throw new Error('A maximum of 250 data elements can be in one event selector');
     }
     if (this.eventSelectors.length > 5) {
-      throw new Error("A maximum of 5 event selectors are supported per trail.");
+      throw new Error('A maximum of 5 event selectors are supported per trail.');
     }
     this.eventSelectors.push({
       includeManagementEvents: options.includeManagementEvents,
       readWriteType: options.readWriteType,
       dataResources: [{
-        type: "AWS::S3::Object",
+        type: 'AWS::S3::Object',
         values: prefixes
       }]
     });

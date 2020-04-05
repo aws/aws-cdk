@@ -17,7 +17,7 @@ export function flatten(object: object): { [key: string]: string } {
           typeof child[key] === 'object' && child[key] !== null
             ? _flatten(child[key], path.concat([key]))
             : ({ [path.concat([key]).join('.')]: child[key] })
-      ));
+        ));
     }(object)
   );
 }
@@ -47,7 +47,7 @@ function filterKeys(object: object, pred: (key: string) => boolean) {
       (acc, [k, v]) => pred(k)
         ? { ...acc, [k]: v }
         : acc,
-        {}
+      {}
     );
 }
 

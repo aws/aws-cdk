@@ -1,4 +1,4 @@
-import { Token } from "./token";
+import { Token } from './token';
 
 /**
  * Represents the amount of digital storage.

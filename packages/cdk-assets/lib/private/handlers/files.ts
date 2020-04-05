@@ -4,9 +4,9 @@ import * as path from 'path';
 import { FileManifestEntry } from '../../asset-manifest';
 import { EventType } from '../../progress';
 import { zipDirectory } from '../archive';
-import { IAssetHandler, IHandlerHost } from "../asset-handler";
+import { IAssetHandler, IHandlerHost } from '../asset-handler';
 import { pathExists } from '../fs-extra';
-import { replaceAwsPlaceholders } from "../placeholders";
+import { replaceAwsPlaceholders } from '../placeholders';
 
 export class FileAssetHandler implements IAssetHandler {
   private readonly fileCacheRoot: string;

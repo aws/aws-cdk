@@ -1,4 +1,4 @@
-export const AMI_PROVIDER = "ami";
+export const AMI_PROVIDER = 'ami';
 
 /**
  * Query to AMI context provider

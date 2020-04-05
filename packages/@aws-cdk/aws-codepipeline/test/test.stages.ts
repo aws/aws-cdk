@@ -21,9 +21,9 @@ export = {
       });
 
       expect(stack, true).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
-        "Stages": [
-          { "Name": "FirstStage" },
-          { "Name": "SecondStage" },
+        'Stages': [
+          { 'Name': 'FirstStage' },
+          { 'Name': 'SecondStage' },
         ],
       }));
 
@@ -44,10 +44,10 @@ export = {
       });
 
       expect(stack, true).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
-        "Stages": [
-          { "Name": "FirstStage" },
-          { "Name": "SecondStage" },
-          { "Name": "ThirdStage" },
+        'Stages': [
+          { 'Name': 'FirstStage' },
+          { 'Name': 'SecondStage' },
+          { 'Name': 'ThirdStage' },
         ],
       }));
 
@@ -90,7 +90,7 @@ export = {
       test.done();
     },
 
-    "providing more than one placement value results in an error"(test: Test) {
+    'providing more than one placement value results in an error'(test: Test) {
       const stack = new cdk.Stack();
       const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
       const stage = pipeline.addStage({ stageName: 'Stage' });

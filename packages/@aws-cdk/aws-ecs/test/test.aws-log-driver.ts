@@ -53,7 +53,7 @@ export = {
     test.done();
   },
 
-  "create an aws log driver using awsLogs"(test: Test) {
+  'create an aws log driver using awsLogs'(test: Test) {
     // WHEN
     td.addContainer('Container', {
       image,

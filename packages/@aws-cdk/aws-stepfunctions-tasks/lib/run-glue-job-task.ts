@@ -84,22 +84,22 @@ export class RunGlueJobTask implements sfn.IStepFunctionsTask {
     const notificationProperty = this.props.notifyDelayAfter ? { NotifyDelayAfter: this.props.notifyDelayAfter.toMinutes() } : null;
     let iamActions: string[] | undefined;
     if (this.integrationPattern === sfn.ServiceIntegrationPattern.FIRE_AND_FORGET) {
-      iamActions = ["glue:StartJobRun"];
+      iamActions = ['glue:StartJobRun'];
     } else if (this.integrationPattern === sfn.ServiceIntegrationPattern.SYNC) {
       iamActions = [
-        "glue:StartJobRun",
-        "glue:GetJobRun",
-        "glue:GetJobRuns",
-        "glue:BatchStopJobRun"
+        'glue:StartJobRun',
+        'glue:GetJobRun',
+        'glue:GetJobRuns',
+        'glue:BatchStopJobRun'
       ];
     }
     return {
-      resourceArn: getResourceArn("glue", "startJobRun", this.integrationPattern),
+      resourceArn: getResourceArn('glue', 'startJobRun', this.integrationPattern),
       policyStatements: [new iam.PolicyStatement({
         resources: [
           Stack.of(task).formatArn({
-            service: "glue",
-            resource: "job",
+            service: 'glue',
+            resource: 'job',
             resourceName: this.glueJobName
           })
         ],

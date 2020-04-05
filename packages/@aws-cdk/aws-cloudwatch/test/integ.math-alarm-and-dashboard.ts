@@ -9,7 +9,7 @@ import * as cloudwatch from '../lib';
 
 const app = new cdk.App();
 
-const stack = new cdk.Stack(app, `aws-cdk-cloudwatch`);
+const stack = new cdk.Stack(app, 'aws-cdk-cloudwatch');
 
 const queue = new cdk.CfnResource(stack, 'queue', { type: 'AWS::SQS::Queue' });
 
@@ -18,7 +18,7 @@ const metricA = new cloudwatch.Metric({
   metricName: 'ApproximateNumberOfMessagesVisible',
   dimensions: { QueueName: queue.getAtt('QueueName') },
   period: cdk.Duration.seconds(10),
-  label: "Visible Messages"
+  label: 'Visible Messages'
 });
 
 const metricB = new cloudwatch.Metric({
@@ -26,16 +26,16 @@ const metricB = new cloudwatch.Metric({
   metricName: 'ApproximateNumberOfMessagesNotVisible',
   dimensions: { QueueName: queue.getAtt('QueueName') },
   period: cdk.Duration.seconds(30),
-  label: "NotVisible Messages"
+  label: 'NotVisible Messages'
 });
 
 const sumExpression = new cloudwatch.MathExpression({
-  expression: "m1+m2",
+  expression: 'm1+m2',
   usingMetrics: {
     m1: metricA,
     m2: metricB
   },
-  label: "Total Messages",
+  label: 'Total Messages',
   period: cdk.Duration.minutes(1)
 });
 

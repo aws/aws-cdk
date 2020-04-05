@@ -64,7 +64,7 @@ export = {
     test.done();
   },
 
-  "create a json-file log driver using json-file"(test: Test) {
+  'create a json-file log driver using json-file'(test: Test) {
     // WHEN
     td.addContainer('Container', {
       image,

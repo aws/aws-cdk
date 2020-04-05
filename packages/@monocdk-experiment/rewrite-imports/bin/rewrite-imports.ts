@@ -10,7 +10,7 @@ const writeFile = promisify(fs.writeFile);
 
 async function main() {
   if (!process.argv[2]) {
-    console.error(`usage: rewrite-imports **/*.ts`);
+    console.error('usage: rewrite-imports **/*.ts');
     return;
   }
 

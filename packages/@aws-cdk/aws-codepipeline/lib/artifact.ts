@@ -1,5 +1,5 @@
 import * as s3 from '@aws-cdk/aws-s3';
-import { Lazy, Token } from "@aws-cdk/core";
+import { Lazy, Token } from '@aws-cdk/core';
 import * as validation from './validation';
 
 /**

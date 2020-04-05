@@ -503,13 +503,14 @@ export class ResourceDifference implements IDifference<Resource> {
   /** The resource type (or old and new type if it has changed) */
   private readonly resourceTypes: { readonly oldType?: string, readonly newType?: string };
 
-  constructor(public readonly oldValue: Resource | undefined,
-              public readonly newValue: Resource | undefined,
-              args: {
-          resourceType: { oldType?: string, newType?: string },
-          propertyDiffs: { [key: string]: PropertyDifference<any> },
-          otherDiffs: { [key: string]: Difference<any> }
-        }
+  constructor(
+    public readonly oldValue: Resource | undefined,
+    public readonly newValue: Resource | undefined,
+    args: {
+      resourceType: { oldType?: string, newType?: string },
+      propertyDiffs: { [key: string]: PropertyDifference<any> },
+      otherDiffs: { [key: string]: Difference<any> }
+    }
   ) {
     this.resourceTypes = args.resourceType;
     this.propertyDiffs = args.propertyDiffs;
@@ -616,8 +617,8 @@ export class ResourceDifference implements IDifference<Resource> {
     const baseImpact = Object.keys(this.otherChanges).length > 0 ? ResourceImpact.WILL_UPDATE : ResourceImpact.NO_CHANGE;
 
     return Object.values(this.propertyDiffs)
-           .map(elt => elt.changeImpact)
-           .reduce(worstImpact, baseImpact);
+      .map(elt => elt.changeImpact)
+      .reduce(worstImpact, baseImpact);
   }
 
   /**

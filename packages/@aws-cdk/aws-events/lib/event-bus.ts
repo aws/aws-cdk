@@ -151,7 +151,7 @@ export class EventBus extends Resource implements IEventBus {
       actions: ['events:PutEvents'],
       resourceArns: ['*'],
     });
- }
+  }
 
   private static eventBusProps(defaultEventBusName: string, props?: EventBusProps) {
     if (props) {
@@ -160,16 +160,16 @@ export class EventBus extends Resource implements IEventBus {
 
       if (eventBusName !== undefined && eventSourceName !== undefined) {
         throw new Error(
-          `'eventBusName' and 'eventSourceName' cannot both be provided`
+          '\'eventBusName\' and \'eventSourceName\' cannot both be provided'
         );
       } else if (eventBusName !== undefined) {
         if (eventBusName === 'default') {
           throw new Error(
-            `'eventBusName' must not be 'default'`
+            '\'eventBusName\' must not be \'default\''
           );
         } else if (eventBusName.indexOf('/') > -1) {
           throw new Error(
-            `'eventBusName' must not contain '/'`
+            '\'eventBusName\' must not contain \'/\''
           );
         } else if (!eventBusNameRegex.test(eventBusName)) {
           throw new Error(

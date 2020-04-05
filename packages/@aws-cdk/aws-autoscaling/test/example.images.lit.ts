@@ -17,9 +17,9 @@ const amznLinux = new ec2.AmazonLinuxImage({
 // a map giving the AMI to in for each region:
 
 const linux = new ec2.GenericLinuxImage({
-    'us-east-1': 'ami-97785bed',
-    'eu-west-1': 'ami-12345678',
-    // ...
+  'us-east-1': 'ami-97785bed',
+  'eu-west-1': 'ami-12345678',
+  // ...
 });
 /// !hide
 

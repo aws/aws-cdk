@@ -30,20 +30,20 @@ describe('ImmutableRole', () => {
     immutableRole.attachInlinePolicy(policy);
 
     expect(stack).toHaveResource('AWS::IAM::Policy', {
-      "PolicyDocument": {
-        "Statement": [
+      'PolicyDocument': {
+        'Statement': [
           {
-            "Action": "s3:*",
-            "Resource": "*",
-            "Effect": "Allow",
+            'Action': 's3:*',
+            'Resource': '*',
+            'Effect': 'Allow',
           },
         ],
-        "Version": "2012-10-17",
+        'Version': '2012-10-17',
       },
-      "PolicyName": "Policy23B91518",
-      "Users": [
+      'PolicyName': 'Policy23B91518',
+      'Users': [
         {
-          "Ref": "User00B015A1",
+          'Ref': 'User00B015A1',
         },
       ],
     });
@@ -55,7 +55,7 @@ describe('ImmutableRole', () => {
     immutableRole.addManagedPolicy({ managedPolicyArn: 'Arn2' });
 
     expect(stack).toHaveResourceLike('AWS::IAM::Role', {
-      "ManagedPolicyArns": [
+      'ManagedPolicyArns': [
         'Arn1',
       ],
     });
@@ -73,13 +73,13 @@ describe('ImmutableRole', () => {
     }));
 
     expect(stack).toHaveResource('AWS::IAM::Policy', {
-      "PolicyDocument": {
-        "Version": "2012-10-17",
-        "Statement": [
+      'PolicyDocument': {
+        'Version': '2012-10-17',
+        'Statement': [
           {
-            "Resource": "*",
-            "Action": "s3:*",
-            "Effect": "Allow",
+            'Resource': '*',
+            'Action': 's3:*',
+            'Effect': 'Allow',
           },
         ],
       },
@@ -95,12 +95,12 @@ describe('ImmutableRole', () => {
     });
 
     expect(stack).not.toHaveResourceLike('AWS::IAM::Policy', {
-      "PolicyDocument": {
-        "Statement": [
+      'PolicyDocument': {
+        'Statement': [
           {
-            "Resource": "*",
-            "Action": "s3:*",
-            "Effect": "Allow",
+            'Resource': '*',
+            'Action': 's3:*',
+            'Effect': 'Allow',
           },
         ],
       },

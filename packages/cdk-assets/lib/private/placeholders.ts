@@ -1,5 +1,5 @@
-import { Placeholders } from "@aws-cdk/cdk-assets-schema";
-import { Account, IAws } from "../aws";
+import { Placeholders } from '@aws-cdk/cdk-assets-schema';
+import { Account, IAws } from '../aws';
 
 /**
  * Replace the {ACCOUNT} and {REGION} placeholders in all strings found in a complex object.

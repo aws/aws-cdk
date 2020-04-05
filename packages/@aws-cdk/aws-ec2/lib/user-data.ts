@@ -1,6 +1,6 @@
-import { IBucket } from "@aws-cdk/aws-s3";
-import { CfnElement, Resource, Stack } from "@aws-cdk/core";
-import { OperatingSystemType } from "./machine-image";
+import { IBucket } from '@aws-cdk/aws-s3';
+import { CfnElement, Resource, Stack } from '@aws-cdk/core';
+import { OperatingSystemType } from './machine-image';
 
 /**
  * Options when constructing UserData for Linux
@@ -163,7 +163,7 @@ class LinuxUserData extends UserData {
 
   public addExecuteFileCommand( params: ExecuteFileOptions): void {
     this.addCommands(
-      `set -e`,
+      'set -e',
       `chmod +x '${params.filePath}'`,
       `'${params.filePath}' ${params.arguments}`
     );
@@ -205,9 +205,9 @@ class WindowsUserData extends UserData {
   public render(): string {
     return `<powershell>${
       [...(this.renderOnExitLines()),
-      ...this.lines,
-      ...( this.onExitLines.length > 0 ? ['throw "Success"'] : [] )
-    ].join('\n')
+        ...this.lines,
+        ...( this.onExitLines.length > 0 ? ['throw "Success"'] : [] )
+      ].join('\n')
     }</powershell>`;
   }
 
@@ -257,7 +257,7 @@ class CustomUserData extends UserData {
   }
 
   public addOnExitCommands(): void {
-    throw new Error("CustomUserData does not support addOnExitCommands, use UserData.forLinux() or UserData.forWindows() instead.");
+    throw new Error('CustomUserData does not support addOnExitCommands, use UserData.forLinux() or UserData.forWindows() instead.');
   }
 
   public render(): string {
@@ -265,14 +265,14 @@ class CustomUserData extends UserData {
   }
 
   public addS3DownloadCommand(): string {
-    throw new Error("CustomUserData does not support addS3DownloadCommand, use UserData.forLinux() or UserData.forWindows() instead.");
+    throw new Error('CustomUserData does not support addS3DownloadCommand, use UserData.forLinux() or UserData.forWindows() instead.');
   }
 
   public addExecuteFileCommand(): void {
-    throw new Error("CustomUserData does not support addExecuteFileCommand, use UserData.forLinux() or UserData.forWindows() instead.");
+    throw new Error('CustomUserData does not support addExecuteFileCommand, use UserData.forLinux() or UserData.forWindows() instead.');
   }
 
   public addSignalOnExitCommand(): void {
-    throw new Error("CustomUserData does not support addSignalOnExitCommand, use UserData.forLinux() or UserData.forWindows() instead.");
+    throw new Error('CustomUserData does not support addSignalOnExitCommand, use UserData.forLinux() or UserData.forWindows() instead.');
   }
 }

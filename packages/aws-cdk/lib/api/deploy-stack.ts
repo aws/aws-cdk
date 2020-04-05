@@ -152,7 +152,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
   if (!options.force && cloudFormationStack.exists) {
     // bail out if the current template is exactly the same as the one we are about to deploy
     // in cdk-land, this means nothing changed because assets (and therefore nested stacks) are immutable.
-    debug(`checking if we can skip this stack based on the currently deployed template and tags (use --force to override)`);
+    debug('checking if we can skip this stack based on the currently deployed template and tags (use --force to override)');
     const tagsIdentical = compareTags(cloudFormationStack.tags, options.tags ?? []);
     if (JSON.stringify(stackArtifact.template) === JSON.stringify(await cloudFormationStack.template()) && tagsIdentical) {
       debug(`${deployName}: no change in template and tags, skipping (use --force to override)`);
@@ -196,7 +196,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
   const update = cloudFormationStack.exists;
 
   debug(`Attempting to create ChangeSet ${changeSetName} to ${update ? 'update' : 'create'} stack ${deployName}`);
-  print(`%s: creating CloudFormation changeset...`, colors.bold(deployName));
+  print('%s: creating CloudFormation changeset...', colors.bold(deployName));
   const changeSet = await cfn.createChangeSet({
     StackName: deployName,
     ChangeSetName: changeSetName,
@@ -237,7 +237,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     }
     debug('Stack %s has completed updating', deployName);
   } else {
-    print(`Changeset %s created and waiting in review for manual execution (--no-execute)`, changeSetName);
+    print('Changeset %s created and waiting in review for manual execution (--no-execute)', changeSetName);
   }
   return { noOp: false, outputs: cloudFormationStack.outputs, stackArn: changeSet.StackId!, stackArtifact };
 }
@@ -273,7 +273,7 @@ async function makeBodyParameter(
       'Run the following command in order to setup an S3 bucket in this environment, and then re-deploy:\n\n',
       colors.blue(`\t$ cdk bootstrap ${resolvedEnvironment.name}\n`));
 
-    throw new Error(`Template too large to deploy ("cdk bootstrap" is required)`);
+    throw new Error('Template too large to deploy ("cdk bootstrap" is required)');
   }
 
   const templateHash = contentHash(templateJson);

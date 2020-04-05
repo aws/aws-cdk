@@ -5,7 +5,7 @@ import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import {throws} from 'assert';
-import * as batch from "../lib";
+import * as batch from '../lib';
 
 describe('Batch Compute Evironment', () => {
   let expectedManagedDefaultComputeProps: any;
@@ -218,7 +218,7 @@ describe('Batch Compute Evironment', () => {
           },
           InstanceRole: {
             'Fn::GetAtt': [
-              props.computeResources.instanceRole ? "InstanceProfile" : '',
+              props.computeResources.instanceRole ? 'InstanceProfile' : '',
               'Arn'
             ]
           },

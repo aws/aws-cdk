@@ -49,9 +49,9 @@ export = nodeunit.testCase({
         'd'
       ]);
 
-      test.deepEqual(stack.resolve(obj), { 'Fn::Join': [ "",
+      test.deepEqual(stack.resolve(obj), { 'Fn::Join': [ '',
         [
-          "a",
+          'a',
           { 'Fn::GetAtt': ['a', 'bc'] },
           'cd',
         ]
@@ -86,9 +86,9 @@ export = nodeunit.testCase({
           fc.string(), fc.array(nonEmptyString, 1, 3), tokenish, fc.array(nonEmptyString, 1, 3),
           (delimiter, prefix, obj, suffix) =>
             _.isEqual(stack.resolve(Fn.join(delimiter, [...prefix, stringToken(obj), ...suffix])),
-                      { 'Fn::Join': [delimiter, [prefix.join(delimiter), obj, suffix.join(delimiter)]] })
+              { 'Fn::Join': [delimiter, [prefix.join(delimiter), obj, suffix.join(delimiter)]] })
         ),
-        { verbose: true, seed: 1539874645005, path: "0:0:0:0:0:0:0:0:0" }
+        { verbose: true, seed: 1539874645005, path: '0:0:0:0:0:0:0:0:0' }
       );
     }),
     'flattens joins nested under joins with same delimiter': asyncTest(async () => {
@@ -96,12 +96,12 @@ export = nodeunit.testCase({
       fc.assert(
         fc.property(
           fc.string(), fc.array(anyValue),
-                      fc.array(anyValue, 1, 3),
-                      fc.array(anyValue),
+          fc.array(anyValue, 1, 3),
+          fc.array(anyValue),
           (delimiter, prefix, nested, suffix) =>
             // Gonna test
             _.isEqual(stack.resolve(Fn.join(delimiter, [...prefix as string[], Fn.join(delimiter, nested as string[]), ...suffix as string[]])),
-                      stack.resolve(Fn.join(delimiter, [...prefix as string[], ...nested as string[], ...suffix as string[]])))
+              stack.resolve(Fn.join(delimiter, [...prefix as string[], ...nested as string[], ...suffix as string[]])))
         ),
         { verbose: true }
       );

@@ -64,7 +64,7 @@ export = {
     test.done();
   },
 
-  "create a journald log driver using journald"(test: Test) {
+  'create a journald log driver using journald'(test: Test) {
     // WHEN
     td.addContainer('Container', {
       image,

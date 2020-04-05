@@ -43,11 +43,12 @@ export class CodeName {
   }
 
   // tslint:disable:no-shadowed-variable
-  constructor(readonly packageName: string,
-              readonly namespace: string,
-              readonly className: string,
-              readonly specName?: SpecName,
-              readonly methodName?: string) {
+  constructor(
+    readonly packageName: string,
+    readonly namespace: string,
+    readonly className: string,
+    readonly specName?: SpecName,
+    readonly methodName?: string) {
   }
   // tslint:enable:no-shadowed-variable
 
