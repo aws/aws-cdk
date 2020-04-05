@@ -337,7 +337,7 @@ test('when specifying every property', () => {
         WriteCapacityUnits: 1337
       },
       PointInTimeRecoverySpecification: { PointInTimeRecoveryEnabled: true },
-      SSESpecification: { SSEEnabled: true },
+      SSESpecification: { SSEEnabled: true, KMSMasterKeyId: "kmsMasterKeyId" },
       StreamSpecification: { StreamViewType: 'KEYS_ONLY' },
       TableName: 'MyTable',
       Tags: [{ Key: 'Environment', Value: 'Production' }],
