@@ -18,17 +18,98 @@ export interface IRecordSet extends IResource {
  * The record type.
  */
 export enum RecordType {
+  /**
+   * route traffic to a resource, such as a web server, using an IPv4 address in dotted decimal
+   * notation
+   *
+   * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/ResourceRecordTypes.html#AFormat
+   */
   A = 'A',
+
+  /**
+   * route traffic to a resource, such as a web server, using an IPv6 address in colon-separated
+   * hexadecimal format
+   *
+   * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/ResourceRecordTypes.html#AAAAFormat
+   */
   AAAA = 'AAAA',
+
+  /**
+   * A CAA record specifies which certificate authorities (CAs) are allowed to issue certificates
+   * for a domain or subdomain
+   *
+   * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/ResourceRecordTypes.html#CAAFormat
+   */
   CAA = 'CAA',
+
+  /**
+   * A CNAME record maps DNS queries for the name of the current record, such as acme.example.com,
+   * to another domain (example.com or example.net) or subdomain (acme.example.com or zenith.example.org).
+   *
+   * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/ResourceRecordTypes.html#CNAMEFormat
+   */
   CNAME = 'CNAME',
+
+  /**
+   * An MX record specifies the names of your mail servers and, if you have two or more mail servers,
+   * the priority order.
+   *
+   * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/ResourceRecordTypes.html#MXFormat
+   */
   MX = 'MX',
+
+  /**
+   * A Name Authority Pointer (NAPTR) is a type of record that is used by Dynamic Delegation Discovery
+   * System (DDDS) applications to convert one value to another or to replace one value with another.
+   * For example, one common use is to convert phone numbers into SIP URIs.
+   *
+   * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/ResourceRecordTypes.html#NAPTRFormat
+   */
   NAPTR = 'NAPTR',
+
+  /**
+   * An NS record identifies the name servers for the hosted zone
+   *
+   * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/ResourceRecordTypes.html#NSFormat
+   */
   NS = 'NS',
+
+  /**
+   * A PTR record maps an IP address to the corresponding domain name.
+   *
+   * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/ResourceRecordTypes.html#PTRFormat
+   */
   PTR = 'PTR',
+
+  /**
+   * A start of authority (SOA) record provides information about a domain and the corresponding Amazon
+   * Route 53 hosted zone
+   *
+   * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/ResourceRecordTypes.html#SOAFormat
+   */
   SOA = 'SOA',
+
+  /**
+   * SPF records were formerly used to verify the identity of the sender of email messages.
+   * Instead of an SPF record, we recommend that you create a TXT record that contains the applicable value.
+   *
+   * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/ResourceRecordTypes.html#SPFFormat
+   */
   SPF = 'SPF',
+
+  /**
+   * An SRV record Value element consists of four space-separated values. The first three values are
+   * decimal numbers representing priority, weight, and port. The fourth value is a domain name.
+   *
+   * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/ResourceRecordTypes.html#SRVFormat
+   */
   SRV = 'SRV',
+
+  /**
+   * A TXT record contains one or more strings that are enclosed in double quotation marks (").
+   *
+   * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/ResourceRecordTypes.html#TXTFormat
+   */
   TXT = 'TXT'
 }
 
@@ -82,12 +163,17 @@ export class RecordTarget {
   }
 
   /**
-   * Use ip adresses as target.
+   * Use ip addresses as target.
    */
   public static fromIpAddresses(...ipAddresses: string[]) {
     return RecordTarget.fromValues(...ipAddresses);
   }
 
+  /**
+   *
+   * @param values correspond with the chosen record type (e.g. for 'A' Type, specify one ore more IP addresses)
+   * @param aliasTarget alias for targets such as CloudFront distribution to route traffic to
+   */
   protected constructor(public readonly values?: string[], public readonly aliasTarget?: IAliasRecordTarget) {
   }
 }
@@ -134,6 +220,8 @@ export class RecordSet extends Resource implements IRecordSet {
 }
 
 /**
+ * Target for a DNS A Record
+ *
  * @deprecated Use RecordTarget
  */
 export class AddressRecordTarget extends RecordTarget {
