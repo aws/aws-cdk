@@ -14,7 +14,7 @@ export class LambdaDestination implements logs.ILogSubscriptionDestination {
     const arn = logGroup.logGroupArn;
 
     this.fn.addPermission('CanInvokeLambda', {
-      principal: new iam.ServicePrincipal(`logs.amazonaws.com`),
+      principal: new iam.ServicePrincipal('logs.amazonaws.com'),
       sourceArn: arn,
       // Using SubScription Filter as scope is okay, since every Subscription Filter has only
       // one destination.

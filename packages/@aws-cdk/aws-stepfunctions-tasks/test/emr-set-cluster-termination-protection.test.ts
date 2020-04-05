@@ -12,11 +12,11 @@ beforeEach(() => {
 test('Set termination protection with static ClusterId and TerminationProtected', () => {
   // WHEN
   const task = new sfn.Task(stack, 'Task', {
-      task: new tasks.EmrSetClusterTerminationProtection({
-        clusterId: 'ClusterId',
-        terminationProtected: false
-      })
-    });
+    task: new tasks.EmrSetClusterTerminationProtection({
+      clusterId: 'ClusterId',
+      terminationProtected: false
+    })
+  });
 
   // THEN
   expect(stack.resolve(task.toStateJson())).toEqual({
@@ -44,11 +44,11 @@ test('Set termination protection with static ClusterId and TerminationProtected'
 test('Set termination protection with static ClusterId and TerminationProtected from payload', () => {
   // WHEN
   const task = new sfn.Task(stack, 'Task', {
-      task: new tasks.EmrSetClusterTerminationProtection({
-        clusterId: 'ClusterId',
-        terminationProtected: sfn.TaskInput.fromDataAt('$.TerminationProtected').value
-      })
-    });
+    task: new tasks.EmrSetClusterTerminationProtection({
+      clusterId: 'ClusterId',
+      terminationProtected: sfn.TaskInput.fromDataAt('$.TerminationProtected').value
+    })
+  });
 
   // THEN
   expect(stack.resolve(task.toStateJson())).toEqual({
@@ -76,11 +76,11 @@ test('Set termination protection with static ClusterId and TerminationProtected 
 test('Set termination protection with ClusterId from payload and static TerminationProtected', () => {
   // WHEN
   const task = new sfn.Task(stack, 'Task', {
-      task: new tasks.EmrSetClusterTerminationProtection({
-        clusterId: sfn.TaskInput.fromDataAt('$.ClusterId').value,
-        terminationProtected: false
-      })
-    });
+    task: new tasks.EmrSetClusterTerminationProtection({
+      clusterId: sfn.TaskInput.fromDataAt('$.ClusterId').value,
+      terminationProtected: false
+    })
+  });
 
   // THEN
   expect(stack.resolve(task.toStateJson())).toEqual({

@@ -1,6 +1,6 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import { Construct } from "./construct-compat";
-import { Lazy } from "./lazy";
+import { Construct } from './construct-compat';
+import { Lazy } from './lazy';
 import { Token } from './token';
 
 const CFN_ELEMENT_SYMBOL = Symbol.for('@aws-cdk/core.CfnElement');
@@ -159,5 +159,5 @@ function notTooLong(x: string) {
   return x.substr(0, 47) + '...' + x.substr(x.length - 47);
 }
 
-import { CfnReference } from "./private/cfn-reference";
+import { CfnReference } from './private/cfn-reference';
 import { Stack } from './stack';

@@ -17,14 +17,14 @@ test('Publish literal message to SNS topic', () => {
   expect(stack.resolve(pub.toStateJson())).toEqual({
     Type: 'Task',
     Resource: {
-      "Fn::Join": [
-        "",
+      'Fn::Join': [
+        '',
         [
-          "arn:",
+          'arn:',
           {
-            Ref: "AWS::Partition",
+            Ref: 'AWS::Partition',
           },
-          ":states:::sns:publish",
+          ':states:::sns:publish',
         ],
       ],
     },
@@ -54,14 +54,14 @@ test('Publish JSON to SNS topic with task token', () => {
   expect(stack.resolve(pub.toStateJson())).toEqual({
     Type: 'Task',
     Resource: {
-      "Fn::Join": [
-        "",
+      'Fn::Join': [
+        '',
         [
-          "arn:",
+          'arn:',
           {
-            Ref: "AWS::Partition",
+            Ref: 'AWS::Partition',
           },
-          ":states:::sns:publish.waitForTaskToken",
+          ':states:::sns:publish.waitForTaskToken',
         ],
       ],
     },
@@ -104,14 +104,14 @@ test('Publish to topic with ARN from payload', () => {
   expect(stack.resolve(pub.toStateJson())).toEqual({
     Type: 'Task',
     Resource: {
-      "Fn::Join": [
-        "",
+      'Fn::Join': [
+        '',
         [
-          "arn:",
+          'arn:',
           {
-            Ref: "AWS::Partition",
+            Ref: 'AWS::Partition',
           },
-          ":states:::sns:publish",
+          ':states:::sns:publish',
         ],
       ],
     },

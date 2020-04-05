@@ -146,10 +146,10 @@ export class EmrAddStep implements sfn.IStepFunctionsTask {
               undefined :
               Object.entries(this.props.properties).map(
                 kv => ({
-                    Key: kv[0],
-                    Value: kv[1]
-                  })
-                )
+                  Key: kv[0],
+                  Value: kv[1]
+                })
+              )
           }
         }
       }

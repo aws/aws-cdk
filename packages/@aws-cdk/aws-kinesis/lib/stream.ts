@@ -150,12 +150,12 @@ abstract class StreamBase extends Resource implements IStream {
    */
   public grantReadWrite(grantee: iam.IGrantable) {
     const ret = this.grant(
-        grantee,
-        'kinesis:DescribeStream',
-        'kinesis:GetRecords',
-        'kinesis:GetShardIterator',
-        'kinesis:PutRecord',
-        'kinesis:PutRecords');
+      grantee,
+      'kinesis:DescribeStream',
+      'kinesis:GetRecords',
+      'kinesis:GetShardIterator',
+      'kinesis:PutRecord',
+      'kinesis:PutRecords');
 
     if (this.encryptionKey) {
       this.encryptionKey.grantEncryptDecrypt(grantee);
@@ -272,7 +272,7 @@ export class Stream extends StreamBase {
 
     const { streamEncryption, encryptionKey } = this.parseEncryption(props);
 
-    this.stream = new CfnStream(this, "Resource", {
+    this.stream = new CfnStream(this, 'Resource', {
       name: this.physicalName,
       retentionPeriodHours,
       shardCount,

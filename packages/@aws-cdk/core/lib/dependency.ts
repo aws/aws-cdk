@@ -1,4 +1,4 @@
-import { IConstruct } from "./construct-compat";
+import { IConstruct } from './construct-compat';
 
 /**
  * Trait marker for classes that can be depended upon

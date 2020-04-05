@@ -69,6 +69,10 @@ integ_under_test=${integdir}/cli-backwards-tests-${sanitized_version}
 rm -rf ${integ_under_test}
 echo "Copying integration tests of version ${VERSION_UNDER_TEST} to ${integ_under_test} (dont worry, its gitignored)"
 cp -r ${temp_dir}/packages/aws-cdk/test/integ/cli ${integ_under_test}
+echo "Copying test runner to integration tests of version ${VERSION_UNDER_TEST}"
+cp -r ${integdir}/cli/test.sh ${integ_under_test}/test.sh
+echo "Copying common.bash to integration tests of version ${VERSION_UNDER_TEST}"
+cp -r ${integdir}/cli/common.bash ${integ_under_test}/common.bash
 
 echo "Running integration tests of version ${VERSION_UNDER_TEST} from ${integ_under_test}"
 VERSION_UNDER_TEST=${VERSION_UNDER_TEST} ${integ_under_test}/test.sh

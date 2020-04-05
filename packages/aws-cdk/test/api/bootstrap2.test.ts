@@ -43,8 +43,8 @@ describe('Bootstrapping v2', () => {
     await expect(bootstrapEnvironment2(env, sdk, 'mockStack', undefined, {
       trustedAccounts: ['123456789012'],
     }))
-    .rejects
-    .toThrow('--cloudformation-execution-policies are required if --trust has been passed!');
+      .rejects
+      .toThrow('--cloudformation-execution-policies are required if --trust has been passed!');
   });
 
   afterEach(() => {
