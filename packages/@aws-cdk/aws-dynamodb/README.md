@@ -73,6 +73,33 @@ Further reading:
 https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/AutoScaling.html
 https://aws.amazon.com/blogs/database/how-to-use-aws-cloudformation-to-configure-auto-scaling-for-amazon-dynamodb-tables-and-indexes/
 
+### Encryption
+
+All user data stored in Amazon DynamoDB is fully encrypted at rest. When creating a new table, you can choose to encrypt using the following customer master keys (CMK) to encrypt your table:
+* AWS owned CMK – Default encryption type. The key is owned by DynamoDB (no additional charge).
+* AWS managed CMK – The key is stored in your account and is managed by AWS KMS (AWS KMS charges apply).
+* Customer managed CMK – The key is stored in your account and is created, owned, and managed by you. You have full control over the CMK (AWS KMS charges apply).
+
+You may choose to use an AWS Managed CMK in your account by enabling `serverSideEncryption`
+
+```ts
+import dynamodb = require('@aws-cdk/aws-dynamodb');
+
+const table = new dynamodb.Table(this, 'Table', {
+  serverSideEncryption: true
+});
+```
+
+To specify a Customer managed CMK, pass the CMK's key ID, Amazon Resource Name (ARN), alias name, or alias ARN to `kmsMasterKeyId`
+
+```ts
+import dynamodb = require('@aws-cdk/aws-dynamodb');
+
+const table = new dynamodb.Table(this, 'Table', {
+  kmsMasterKeyId: 'cmkKeyID'
+});
+```
+
 ### Amazon DynamoDB Global Tables
 
 You can create DynamoDB Global Tables by setting the `replicationRegions` property on a `Table`:
