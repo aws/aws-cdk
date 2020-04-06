@@ -153,10 +153,11 @@ stream.grantRead(lambdaRole);
 
 The following read permissions are provided to a service principal by the `grantRead()` API:
 
-- `kinesis:DescribeStream`
+- `kinesis:DescribeStreamSummary`
 - `kinesis:GetRecords`
 - `kinesis:GetShardIterator`
 - `kinesis:ListShards`
+- `kinesis:SubscribeToShard`
 
 #### Write Permissions
 
@@ -179,6 +180,6 @@ stream.grantWrite(lambdaRole);
 
 The following write permissions are provided to a service principal by the `grantWrite()` API:
 
-- `kinesis:DescribeStream`
+- `kinesis:ListShards`
 - `kinesis:PutRecord`
 - `kinesis:PutRecords`
