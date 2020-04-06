@@ -90,13 +90,15 @@ must specify the environment where the stack will be deployed.
 
 ### Choosing subnets for resources
 
-When creating some resources, such as databases or instances, there is an option 
-to choose which subnets to place them in. For example, a VPC endpoint by default 
-is placed into a subnet in every availability zone, but you can override which 
-subnets to use.
+When creating resources that create Elastic Network Interfaces (such as
+databases or instances), there is an option to choose which subnets to place
+them in. For example, a VPC endpoint by default is placed into a subnet in
+every availability zone, but you can override which subnets to use. The property
+is typically called one of `subnets`, `vpcSubnets` or `subnetSelection`.
 
-The example below will place the endpoint into two AZs (us-east-1a and us-east-1c),
-in Isolated subnets.
+The example below will place the endpoint into two AZs (`us-east-1a` and `us-east-1c1),
+in Isolated subnets:
+
 ```ts
 new InterfaceVpcEndpoint(stack, "VPC Endpoint", {
   vpc,
@@ -108,7 +110,8 @@ new InterfaceVpcEndpoint(stack, "VPC Endpoint", {
 });
 ```
 
-You can also specify particular subnets for granular control.
+You can also specify specific subnet objects for granular control:
+
 ```ts
 new InterfaceVpcEndpoint(stack, "VPC Endpoint", {
   vpc,
@@ -121,23 +124,26 @@ new InterfaceVpcEndpoint(stack, "VPC Endpoint", {
 
 Which subnets are selected is evaluated as follows:
 
-* Specifying particular subnets overrides any other settings, such as type or 
-availability zone.
-* If no subnets are specified, subnets must be specified by a combination of
-fields:
-  * Subnet group name is necessary if there are multiple subnet groups with the
-same type (subnet group implies subnet type).
-  * Subnet type specifies the type of subnets to return (PUBLIC, PRIVATE, ISOLATED).
-If no subnet type is specified, the type defaults to the types of subnets in the
-VPC, in this order:
-    * If Private subnets exist, then the type defaults to Private
-    * If no Private subnets exist, but Isolated subnets do, then the type defaults to
-Isolated
-    * If no Private or Isolated subnets exist, the type defaults to Public
-  * Subnets can be filtered by availability zone on top of subnet group name or type. 
-If no availability zones are specified, all availability zones are considered. 
-  * For use cases where only one subnet per availability zone is desired, specifying 
-onePerAZ will further filter subnets to only include one per AZ.
+* `subnets`: if specific subnet objects are supplied, these are selected, and no other
+  logic is used.
+* `subnetType`/`subnetGroupName`: otherwise, a set of subnets is selected by
+  supplying either type or name:
+  * `subnetType` will select all subnets of the given type.
+  * `subnetGroupName` should be used to distinguish between multiple groups of subnets of
+    the same type (for example, you may want to separate your application instances and your
+    RDS instances into two distinct groups of Isolated subnets).
+  * If neither are given, the first available subnet group of a given type that
+    exists in the VPC will be used, in this order: Private, then Isolated, then Public.
+    In short: by default ENIs will preferentially be placed in subnets not connected to
+    the Internet.
+* `availabilityZones`/`onePerAz`: finally, some availability-zone based filtering may be done.
+  This filtering by availability zones will only be possible if the VPC has been created or
+  looked up in a non-environment agnostic stack (so account and region have been set and
+  availability zones have been looked up).
+  * `availabilityZones`: only the specific subnets from the selected subnet groups that are
+    in the given availability zones will be returned.
+  * `onePerAz`: per availability zone, a maximum of one subnet will be returned (Useful for resource
+    types that do not allow creating two ENIs in the same availability zone).
 
 ### Using NAT instances
 
