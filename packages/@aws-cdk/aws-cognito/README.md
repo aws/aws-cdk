@@ -172,9 +172,9 @@ new UserPool(this, 'myuserpool', {
     address: true,
   },
   customAttributes: {
-    'myappid': new StringAttribute({ minLen: 5, maxLen: 15 }),
+    'myappid': new StringAttribute({ minLen: 5, maxLen: 15, mutable: false }),
     'callingcode': new NumberAttribute({ min: 1, max: 3 }),
-    'isEmployee': new BooleanAttribute(),
+    'isEmployee': new BooleanAttribute({ developerOnly: true }),
     'joinedOn': new DateTimeAttribute(),
   },
 });
@@ -183,7 +183,12 @@ new UserPool(this, 'myuserpool', {
 As shown in the code snippet, there are data types that are available for custom attributes. The 'String' and 'Number'
 data types allow for further constraints on their length and values, respectively.
 
-Custom attributes cannot be marked as required.
+All custom attributes share the tree common properties `developerOnly`, `mutable` and `required`.
+
+ - `developerOnly` means that this attribute can only be modified by an administrator. The use of this property is discouraged
+ in favor of the use of write permissions for attributes in the user pool client (see [AppClients](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-client-apps.html)),
+
+ - `mutable` allows the value to be changed after the value is set by the user.
 
 ### Security
 

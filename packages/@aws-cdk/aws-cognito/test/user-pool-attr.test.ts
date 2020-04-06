@@ -1,7 +1,79 @@
 import '@aws-cdk/assert/jest';
-import { BooleanAttribute, DateTimeAttribute, NumberAttribute, StringAttribute } from '../lib';
+import { BooleanAttribute, CustomAttributeConfig, DateTimeAttribute, ICustomAttribute, NumberAttribute, StringAttribute } from '../lib';
 
 describe('User Pool Attributes', () => {
+
+  describe('BaseCustomAttributeProperties', () => {
+    test('default', () => {
+      // GIVEN
+      const allAttributes: ICustomAttribute[] = [
+        new StringAttribute(),
+        new NumberAttribute(),
+        new BooleanAttribute(),
+        new DateTimeAttribute(),
+      ];
+
+      // WHEN
+      const bounds: CustomAttributeConfig[] = allAttributes.map((attr) => attr.bind() );
+
+      // THEN
+      bounds.forEach((bound) => {
+        expect(bound.developerOnly).toBeUndefined();
+        expect(bound.mutable).toBeUndefined();
+      });
+    });
+
+    describe('CustomAttribute base properties are set true as expected', () => {
+      // GIVEN
+      const allTrueProps = {
+        developerOnly: true,
+        mutable: true,
+      };
+      const allAttributeTypes: ICustomAttribute[] = [
+        new StringAttribute(allTrueProps),
+        new NumberAttribute(allTrueProps),
+        new BooleanAttribute(allTrueProps),
+        new DateTimeAttribute(allTrueProps),
+      ];
+
+      // WHEN
+      const bounds: CustomAttributeConfig[] = allAttributeTypes.map((attr) => attr.bind() );
+
+      // THEN
+      bounds.forEach((bound) => {
+        test(`in attribute of type ${bound.dataType}:`, () => {
+          expect(bound.developerOnly).toEqual(true);
+          expect(bound.mutable).toEqual(true);
+        });
+      });
+    });
+
+    describe('CustomAttribute base properties are set false as expected', () => {
+      // GIVEN
+      const allFalseProps = {
+        developerOnly: false,
+        mutable: false,
+      };
+      const allAttributeTypes: ICustomAttribute[] = [
+        new StringAttribute(allFalseProps),
+        new NumberAttribute(allFalseProps),
+        new BooleanAttribute(allFalseProps),
+        new DateTimeAttribute(allFalseProps),
+      ];
+
+      // WHEN
+      const bounds: CustomAttributeConfig[] = allAttributeTypes.map((attr) => attr.bind() );
+
+      // THEN
+      bounds.forEach((bound) => {
+        test(`in attribute of type ${bound.dataType}`, () => {
+          expect(bound.developerOnly).toEqual(false);
+          expect(bound.mutable).toEqual(false);
+        });
+      });
+    });
+  });
+
   describe('StringAttribute', () => {
     test('default', () => {
       // GIVEN
