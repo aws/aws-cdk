@@ -12,6 +12,10 @@ jest.mock('child_process', () => ({
       return { status: 1, stdout: Buffer.from('status-error') };
     }
 
+    if (args.includes('/entry/no-docker')) {
+      return { error: "Error: spawnSync docker ENOENT" };
+    }
+
     return { error: null, status: 0 };
   })
 }));
@@ -66,4 +70,13 @@ test('throws if status is not 0', () => {
     outDir: 'out-dir'
   });
   expect(() => builder.build()).toThrow('status-error');
+});
+
+test('throws if docker is not installed', () => {
+  const builder = new Builder({
+    entry: 'no-docker',
+    global: 'handler',
+    outDir: 'out-dir'
+  });
+  expect(() => builder.build()).toThrow('Error: spawnSync docker ENOENT');
 });
