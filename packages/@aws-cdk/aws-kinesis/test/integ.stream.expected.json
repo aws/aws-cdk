@@ -42,6 +42,7 @@
                 "kinesis:DescribeStream",
                 "kinesis:GetRecords",
                 "kinesis:GetShardIterator",
+                "kinesis:ListShards",
                 "kinesis:PutRecord",
                 "kinesis:PutRecords"
               ],
