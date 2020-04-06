@@ -120,8 +120,8 @@ export = {
       Spec: {
         ServiceDiscovery: {
           AWSCloudMap: {
-            NamespaceName: "domain.local",
-            ServiceName: { "Fn::GetAtt": [ "testnamespaceSvcB55702EC", "Name" ] }
+            NamespaceName: 'domain.local',
+            ServiceName: { 'Fn::GetAtt': [ 'testnamespaceSvcB55702EC', 'Name' ] }
           }
         }
       }
@@ -279,13 +279,13 @@ export = {
               Logging: {
                 AccessLog: {
                   File: {
-                    Path: "/dev/stdout"
+                    Path: '/dev/stdout'
                   }
                 }
               },
               ServiceDiscovery: {
                 DNS: {
-                  Hostname: "test.domain.local"
+                  Hostname: 'test.domain.local'
                 }
               }
             },
@@ -415,7 +415,7 @@ export = {
             },
           },
           backends: [
-              service1,
+            service1,
           ],
         });
 

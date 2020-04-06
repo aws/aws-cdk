@@ -82,10 +82,10 @@ export class RunLambdaTask implements sfn.IStepFunctionsTask {
 
   public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
     return {
-      resourceArn: getResourceArn("lambda", "invoke", this.integrationPattern),
+      resourceArn: getResourceArn('lambda', 'invoke', this.integrationPattern),
       policyStatements: [new iam.PolicyStatement({
         resources: [this.lambdaFunction.functionArn],
-        actions: ["lambda:InvokeFunction"],
+        actions: ['lambda:InvokeFunction'],
       })],
       metricPrefixSingular: 'LambdaFunction',
       metricPrefixPlural: 'LambdaFunctions',

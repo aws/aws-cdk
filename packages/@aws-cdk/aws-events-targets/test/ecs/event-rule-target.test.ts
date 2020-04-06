@@ -5,7 +5,7 @@ import * as events from '@aws-cdk/aws-events';
 import * as cdk from '@aws-cdk/core';
 import * as targets from '../../lib';
 
-test("Can use EC2 taskdef as EventRule target", () => {
+test('Can use EC2 taskdef as EventRule target', () => {
   // GIVEN
   const stack = new cdk.Stack();
   const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
@@ -39,25 +39,25 @@ test("Can use EC2 taskdef as EventRule target", () => {
   expect(stack).toHaveResourceLike('AWS::Events::Rule', {
     Targets: [
       {
-        Arn: { "Fn::GetAtt": ["EcsCluster97242B84", "Arn"] },
+        Arn: { 'Fn::GetAtt': ['EcsCluster97242B84', 'Arn'] },
         EcsParameters: {
           TaskCount: 1,
-          TaskDefinitionArn: { Ref: "TaskDef54694570" }
+          TaskDefinitionArn: { Ref: 'TaskDef54694570' }
         },
         InputTransformer: {
           InputPathsMap: {
-            "detail-event": "$.detail.event"
+            'detail-event': '$.detail.event'
           },
-          InputTemplate: "{\"containerOverrides\":[{\"name\":\"TheContainer\",\"command\":[\"echo\",<detail-event>]}]}"
+          InputTemplate: '{"containerOverrides":[{"name":"TheContainer","command":["echo",<detail-event>]}]}'
         },
-        RoleArn: { "Fn::GetAtt": ["TaskDefEventsRoleFB3B67B8", "Arn"] },
-        Id: "Target0"
+        RoleArn: { 'Fn::GetAtt': ['TaskDefEventsRoleFB3B67B8', 'Arn'] },
+        Id: 'Target0'
       }
     ]
   });
 });
 
-test("Can use Fargate taskdef as EventRule target", () => {
+test('Can use Fargate taskdef as EventRule target', () => {
   // GIVEN
   const stack = new cdk.Stack();
   const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
@@ -87,24 +87,24 @@ test("Can use Fargate taskdef as EventRule target", () => {
   expect(stack).toHaveResourceLike('AWS::Events::Rule', {
     Targets: [
       {
-        Arn: { "Fn::GetAtt": ["EcsCluster97242B84", "Arn"] },
+        Arn: { 'Fn::GetAtt': ['EcsCluster97242B84', 'Arn'] },
         EcsParameters: {
           TaskCount: 1,
-          TaskDefinitionArn: { Ref: "TaskDef54694570" },
-          LaunchType: "FARGATE",
+          TaskDefinitionArn: { Ref: 'TaskDef54694570' },
+          LaunchType: 'FARGATE',
           NetworkConfiguration: {
             AwsVpcConfiguration: {
               Subnets: [
                 {
-                  Ref: "VpcPrivateSubnet1Subnet536B997A"
+                  Ref: 'VpcPrivateSubnet1Subnet536B997A'
                 }
               ],
-              AssignPublicIp: "DISABLED",
+              AssignPublicIp: 'DISABLED',
               SecurityGroups: [
                 {
-                  "Fn::GetAtt": [
-                    "TaskDefSecurityGroupD50E7CF0",
-                    "GroupId"
+                  'Fn::GetAtt': [
+                    'TaskDefSecurityGroupD50E7CF0',
+                    'GroupId'
                   ]
                 }
               ]
@@ -113,18 +113,18 @@ test("Can use Fargate taskdef as EventRule target", () => {
         },
         InputTransformer: {
           InputPathsMap: {
-            "detail-event": "$.detail.event"
+            'detail-event': '$.detail.event'
           },
-          InputTemplate: "{\"containerOverrides\":[{\"name\":\"TheContainer\",\"command\":[\"echo\",<detail-event>]}]}"
+          InputTemplate: '{"containerOverrides":[{"name":"TheContainer","command":["echo",<detail-event>]}]}'
         },
-        RoleArn: { "Fn::GetAtt": ["TaskDefEventsRoleFB3B67B8", "Arn"] },
-        Id: "Target0"
+        RoleArn: { 'Fn::GetAtt': ['TaskDefEventsRoleFB3B67B8', 'Arn'] },
+        Id: 'Target0'
       }
     ]
   });
 });
 
-test("Can use same fargate taskdef with multiple rules", () => {
+test('Can use same fargate taskdef with multiple rules', () => {
   // GIVEN
   const stack = new cdk.Stack();
   const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
@@ -156,7 +156,7 @@ test("Can use same fargate taskdef with multiple rules", () => {
   }))).not.toThrow();
 });
 
-test("Can use same fargate taskdef multiple times in a rule", () => {
+test('Can use same fargate taskdef multiple times in a rule', () => {
   // GIVEN
   const stack = new cdk.Stack();
   const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
@@ -190,7 +190,7 @@ test("Can use same fargate taskdef multiple times in a rule", () => {
   }))).not.toThrow();
 });
 
-test("Isolated subnet does not have AssignPublicIp=true", () => {
+test('Isolated subnet does not have AssignPublicIp=true', () => {
   // GIVEN
   const stack = new cdk.Stack();
   const vpc = new ec2.Vpc(stack, 'Vpc', {
@@ -199,7 +199,7 @@ test("Isolated subnet does not have AssignPublicIp=true", () => {
       subnetType: ec2.SubnetType.ISOLATED,
       name: 'Isolated'
     }]
-   });
+  });
   const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 
   const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
@@ -227,33 +227,33 @@ test("Isolated subnet does not have AssignPublicIp=true", () => {
   expect(stack).toHaveResourceLike('AWS::Events::Rule', {
     Targets: [
       {
-        Arn: { "Fn::GetAtt": ["EcsCluster97242B84", "Arn"] },
+        Arn: { 'Fn::GetAtt': ['EcsCluster97242B84', 'Arn'] },
         EcsParameters: {
           TaskCount: 1,
-          TaskDefinitionArn: { Ref: "TaskDef54694570" },
-          LaunchType: "FARGATE",
+          TaskDefinitionArn: { Ref: 'TaskDef54694570' },
+          LaunchType: 'FARGATE',
           NetworkConfiguration: {
             AwsVpcConfiguration: {
               Subnets: [
                 {
-                  Ref: "VpcIsolatedSubnet1SubnetE48C5737"
+                  Ref: 'VpcIsolatedSubnet1SubnetE48C5737'
                 }
               ],
-              AssignPublicIp: "DISABLED",
+              AssignPublicIp: 'DISABLED',
               SecurityGroups: [
                 {
-                  "Fn::GetAtt": [
-                    "TaskDefSecurityGroupD50E7CF0",
-                    "GroupId"
+                  'Fn::GetAtt': [
+                    'TaskDefSecurityGroupD50E7CF0',
+                    'GroupId'
                   ]
                 }
               ]
             }
           },
         },
-        Input: "{\"containerOverrides\":[{\"name\":\"TheContainer\",\"command\":[\"echo\",\"yay\"]}]}",
-        RoleArn: { "Fn::GetAtt": ["TaskDefEventsRoleFB3B67B8", "Arn"] },
-        Id: "Target0"
+        Input: '{"containerOverrides":[{"name":"TheContainer","command":["echo","yay"]}]}',
+        RoleArn: { 'Fn::GetAtt': ['TaskDefEventsRoleFB3B67B8', 'Arn'] },
+        Id: 'Target0'
       }
     ],
   });

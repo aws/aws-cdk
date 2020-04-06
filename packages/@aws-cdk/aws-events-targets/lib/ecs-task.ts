@@ -81,7 +81,7 @@ export class EcsTask implements events.IRuleTarget {
       actions: ['ecs:RunTask'],
       resources: [this.taskDefinition.taskDefinitionArn],
       conditions: {
-        ArnEquals: { "ecs:cluster": this.cluster.clusterArn }
+        ArnEquals: { 'ecs:cluster': this.cluster.clusterArn }
       }
     })];
 

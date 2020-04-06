@@ -199,7 +199,7 @@ export class Policy extends Resource implements IPolicy {
     // validate that the policy is attached to at least one principal (role, user or group).
     if (!this.isAttached) {
       if (this.force) {
-        result.push(`Policy created with force=true must be attached to at least one principal: user, group or role`);
+        result.push('Policy created with force=true must be attached to at least one principal: user, group or role');
       }
       if (!this.force && this.referenceTaken) {
         result.push('This Policy has been referenced by a resource, so it must be attached to at least one user, group or role.');
