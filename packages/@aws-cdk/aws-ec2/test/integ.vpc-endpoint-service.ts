@@ -22,19 +22,19 @@ class VpcEndpointServiceStack extends cdk.Stack {
     super(scope, id, props);
 
     const nlbNoPrincipals = new DummyEndpointLoadBalacer(
-        "arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a");
+      'arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a');
 
-    new ec2.VpcEndpointService(this, "MyVpcEndpointServiceWithNoPrincipals", {
+    new ec2.VpcEndpointService(this, 'MyVpcEndpointServiceWithNoPrincipals', {
       vpcEndpointServiceLoadBalancers: [nlbNoPrincipals],
       acceptanceRequired: false,
       whitelistedPrincipals: []
     });
 
     const nlbWithPrincipals = new DummyEndpointLoadBalacer(
-        "arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/1jd81k39sa421ffs");
-    const principalArn = new ArnPrincipal("arn:aws:iam::123456789012:root");
+      'arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/1jd81k39sa421ffs');
+    const principalArn = new ArnPrincipal('arn:aws:iam::123456789012:root');
 
-    new ec2.VpcEndpointService(this, "MyVpcEndpointServiceWithPrincipals", {
+    new ec2.VpcEndpointService(this, 'MyVpcEndpointServiceWithPrincipals', {
       vpcEndpointServiceLoadBalancers: [nlbWithPrincipals],
       acceptanceRequired: false,
       whitelistedPrincipals: [principalArn]

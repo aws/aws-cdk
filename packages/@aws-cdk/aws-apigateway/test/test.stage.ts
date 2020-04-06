@@ -19,51 +19,51 @@ export = {
     expect(stack).toMatch({
       Resources: {
         testapiD6451F70: {
-          Type: "AWS::ApiGateway::RestApi",
+          Type: 'AWS::ApiGateway::RestApi',
           Properties: {
-            Name: "test-api"
+            Name: 'test-api'
           }
         },
         testapiGETD8DE4ED1: {
-          Type: "AWS::ApiGateway::Method",
+          Type: 'AWS::ApiGateway::Method',
           Properties: {
-            HttpMethod: "GET",
+            HttpMethod: 'GET',
             ResourceId: {
-              "Fn::GetAtt": [
-                "testapiD6451F70",
-                "RootResourceId"
+              'Fn::GetAtt': [
+                'testapiD6451F70',
+                'RootResourceId'
               ]
             },
             RestApiId: {
-              Ref: "testapiD6451F70"
+              Ref: 'testapiD6451F70'
             },
-            AuthorizationType: "NONE",
+            AuthorizationType: 'NONE',
             Integration: {
-              Type: "MOCK"
+              Type: 'MOCK'
             }
           }
         },
         mydeployment71ED3B4B: {
-          Type: "AWS::ApiGateway::Deployment",
+          Type: 'AWS::ApiGateway::Deployment',
           Properties: {
             RestApiId: {
-              Ref: "testapiD6451F70"
+              Ref: 'testapiD6451F70'
             }
           },
           DependsOn: [
-            "testapiGETD8DE4ED1"
+            'testapiGETD8DE4ED1'
           ]
         },
         mystage7483BE9A: {
-          Type: "AWS::ApiGateway::Stage",
+          Type: 'AWS::ApiGateway::Stage',
           Properties: {
             RestApiId: {
-              Ref: "testapiD6451F70"
+              Ref: 'testapiD6451F70'
             },
             DeploymentId: {
-              Ref: "mydeployment71ED3B4B"
+              Ref: 'mydeployment71ED3B4B'
             },
-            StageName: "prod"
+            StageName: 'prod'
           }
         }
       }
@@ -90,10 +90,10 @@ export = {
     expect(stack).to(haveResource('AWS::ApiGateway::Stage', {
       MethodSettings: [
         {
-        HttpMethod: "*",
-        LoggingLevel: "INFO",
-        ResourcePath: "/*",
-        ThrottlingRateLimit: 12,
+          HttpMethod: '*',
+          LoggingLevel: 'INFO',
+          ResourcePath: '/*',
+          ThrottlingRateLimit: 12,
         }
       ]
     }));
@@ -124,17 +124,17 @@ export = {
     expect(stack).to(haveResource('AWS::ApiGateway::Stage', {
       MethodSettings: [
         {
-          HttpMethod: "*",
-          LoggingLevel: "INFO",
-          ResourcePath: "/*",
+          HttpMethod: '*',
+          LoggingLevel: 'INFO',
+          ResourcePath: '/*',
           ThrottlingRateLimit: 12
         },
         {
-          HttpMethod: "GET",
-          LoggingLevel: "ERROR",
-          ResourcePath: "/~1goo~1bar"
+          HttpMethod: 'GET',
+          LoggingLevel: 'ERROR',
+          ResourcePath: '/~1goo~1bar'
         }
-        ]
+      ]
     }));
 
     test.done();
@@ -156,7 +156,7 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::Stage', {
       CacheClusterEnabled: true,
-      CacheClusterSize: "0.5"
+      CacheClusterSize: '0.5'
     }));
 
     test.done();
@@ -178,7 +178,7 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::Stage', {
       CacheClusterEnabled: true,
-      CacheClusterSize: "0.5"
+      CacheClusterSize: '0.5'
     }));
 
     test.done();
@@ -217,15 +217,15 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::Stage', {
       CacheClusterEnabled: true,
-      CacheClusterSize: "0.5",
+      CacheClusterSize: '0.5',
       MethodSettings: [
-      {
-        CachingEnabled: true,
-        HttpMethod: "*",
-        ResourcePath: "/*"
-      }
+        {
+          CachingEnabled: true,
+          HttpMethod: '*',
+          ResourcePath: '/*'
+        }
       ],
-      StageName: "prod"
+      StageName: 'prod'
     }));
 
     test.done();

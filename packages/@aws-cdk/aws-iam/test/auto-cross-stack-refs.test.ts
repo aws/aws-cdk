@@ -28,9 +28,9 @@ describe('automatic cross-stack references', () => {
     expect(stackWithUser).toMatchTemplate({
       Resources: {
         User00B015A1: {
-          Type: "AWS::IAM::User",
+          Type: 'AWS::IAM::User',
           Properties: {
-            Groups: [ { "Fn::ImportValue": "stack2:ExportsOutputRefGroupC77FDACD8CF7DD5B" } ]
+            Groups: [ { 'Fn::ImportValue': 'stack2:ExportsOutputRefGroupC77FDACD8CF7DD5B' } ]
           }
         }
       }
@@ -38,13 +38,13 @@ describe('automatic cross-stack references', () => {
     expect(stackWithGroup).toMatchTemplate({
       Outputs: {
         ExportsOutputRefGroupC77FDACD8CF7DD5B: {
-          Value: { Ref: "GroupC77FDACD" },
-          Export: { Name: "stack2:ExportsOutputRefGroupC77FDACD8CF7DD5B" }
+          Value: { Ref: 'GroupC77FDACD' },
+          Export: { Name: 'stack2:ExportsOutputRefGroupC77FDACD8CF7DD5B' }
         }
       },
       Resources: {
         GroupC77FDACD: {
-          Type: "AWS::IAM::Group"
+          Type: 'AWS::IAM::Group'
         }
       }
     });

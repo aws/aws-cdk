@@ -12,14 +12,14 @@ beforeEach(() => {
 test('Add Step with static ClusterId and Step configuration', () => {
   // WHEN
   const task = new sfn.Task(stack, 'Task', {
-      task: new tasks.EmrAddStep({
-        clusterId: 'ClusterId',
-        name: 'StepName',
-        jar: 'Jar',
-        actionOnFailure: tasks.ActionOnFailure.CONTINUE,
-        integrationPattern: sfn.ServiceIntegrationPattern.SYNC
-      })
-    });
+    task: new tasks.EmrAddStep({
+      clusterId: 'ClusterId',
+      name: 'StepName',
+      jar: 'Jar',
+      actionOnFailure: tasks.ActionOnFailure.CONTINUE,
+      integrationPattern: sfn.ServiceIntegrationPattern.SYNC
+    })
+  });
 
   // THEN
   expect(stack.resolve(task.toStateJson())).toEqual({
@@ -53,14 +53,14 @@ test('Add Step with static ClusterId and Step configuration', () => {
 test('Terminate cluster with ClusterId from payload and static Step configuration', () => {
   // WHEN
   const task = new sfn.Task(stack, 'Task', {
-      task: new tasks.EmrAddStep({
-        clusterId: sfn.Data.stringAt('$.ClusterId'),
-        name: 'StepName',
-        jar: 'Jar',
-        actionOnFailure: tasks.ActionOnFailure.CONTINUE,
-        integrationPattern: sfn.ServiceIntegrationPattern.SYNC
-      })
-    });
+    task: new tasks.EmrAddStep({
+      clusterId: sfn.Data.stringAt('$.ClusterId'),
+      name: 'StepName',
+      jar: 'Jar',
+      actionOnFailure: tasks.ActionOnFailure.CONTINUE,
+      integrationPattern: sfn.ServiceIntegrationPattern.SYNC
+    })
+  });
 
   // THEN
   expect(stack.resolve(task.toStateJson())).toEqual({
@@ -94,14 +94,14 @@ test('Terminate cluster with ClusterId from payload and static Step configuratio
 test('Add Step with static ClusterId and Step Name from payload', () => {
   // WHEN
   const task = new sfn.Task(stack, 'Task', {
-      task: new tasks.EmrAddStep({
-        clusterId: 'ClusterId',
-        name: sfn.Data.stringAt('$.StepName'),
-        jar: 'Jar',
-        actionOnFailure: tasks.ActionOnFailure.CONTINUE,
-        integrationPattern: sfn.ServiceIntegrationPattern.SYNC
-      })
-    });
+    task: new tasks.EmrAddStep({
+      clusterId: 'ClusterId',
+      name: sfn.Data.stringAt('$.StepName'),
+      jar: 'Jar',
+      actionOnFailure: tasks.ActionOnFailure.CONTINUE,
+      integrationPattern: sfn.ServiceIntegrationPattern.SYNC
+    })
+  });
 
   // THEN
   expect(stack.resolve(task.toStateJson())).toEqual({
@@ -135,14 +135,14 @@ test('Add Step with static ClusterId and Step Name from payload', () => {
 test('Add Step with static ClusterId and Step configuration and FIRE_AND_FORGET integrationPattern', () => {
   // WHEN
   const task = new sfn.Task(stack, 'Task', {
-      task: new tasks.EmrAddStep({
-        clusterId: 'ClusterId',
-        name: 'StepName',
-        jar: 'Jar',
-        actionOnFailure: tasks.ActionOnFailure.CONTINUE,
-        integrationPattern: sfn.ServiceIntegrationPattern.FIRE_AND_FORGET
-      })
-    });
+    task: new tasks.EmrAddStep({
+      clusterId: 'ClusterId',
+      name: 'StepName',
+      jar: 'Jar',
+      actionOnFailure: tasks.ActionOnFailure.CONTINUE,
+      integrationPattern: sfn.ServiceIntegrationPattern.FIRE_AND_FORGET
+    })
+  });
 
   // THEN
   expect(stack.resolve(task.toStateJson())).toEqual({
@@ -176,14 +176,14 @@ test('Add Step with static ClusterId and Step configuration and FIRE_AND_FORGET 
 test('Add Step with static ClusterId and Step configuration with TERMINATE_CLUSTER', () => {
   // WHEN
   const task = new sfn.Task(stack, 'Task', {
-      task: new tasks.EmrAddStep({
-        clusterId: 'ClusterId',
-        name: 'StepName',
-        jar: 'Jar',
-        actionOnFailure: tasks.ActionOnFailure.TERMINATE_CLUSTER,
-        integrationPattern: sfn.ServiceIntegrationPattern.SYNC
-      })
-    });
+    task: new tasks.EmrAddStep({
+      clusterId: 'ClusterId',
+      name: 'StepName',
+      jar: 'Jar',
+      actionOnFailure: tasks.ActionOnFailure.TERMINATE_CLUSTER,
+      integrationPattern: sfn.ServiceIntegrationPattern.SYNC
+    })
+  });
 
   // THEN
   expect(stack.resolve(task.toStateJson())).toEqual({
@@ -217,15 +217,15 @@ test('Add Step with static ClusterId and Step configuration with TERMINATE_CLUST
 test('Add Step with static ClusterId and Step configuration with Args', () => {
   // WHEN
   const task = new sfn.Task(stack, 'Task', {
-      task: new tasks.EmrAddStep({
-        clusterId: 'ClusterId',
-        name: 'StepName',
-        jar: 'Jar',
-        args: ['Arg1'],
-        actionOnFailure: tasks.ActionOnFailure.CONTINUE,
-        integrationPattern: sfn.ServiceIntegrationPattern.SYNC
-      })
-    });
+    task: new tasks.EmrAddStep({
+      clusterId: 'ClusterId',
+      name: 'StepName',
+      jar: 'Jar',
+      args: ['Arg1'],
+      actionOnFailure: tasks.ActionOnFailure.CONTINUE,
+      integrationPattern: sfn.ServiceIntegrationPattern.SYNC
+    })
+  });
 
   // THEN
   expect(stack.resolve(task.toStateJson())).toEqual({
@@ -260,17 +260,17 @@ test('Add Step with static ClusterId and Step configuration with Args', () => {
 test('Add Step with static ClusterId and Step configuration with Properties', () => {
   // WHEN
   const task = new sfn.Task(stack, 'Task', {
-      task: new tasks.EmrAddStep({
-        clusterId: 'ClusterId',
-        name: 'StepName',
-        jar: 'Jar',
-        properties: {
-          PropertyKey: 'PropertyValue'
-        },
-        actionOnFailure: tasks.ActionOnFailure.CONTINUE,
-        integrationPattern: sfn.ServiceIntegrationPattern.SYNC
-      })
-    });
+    task: new tasks.EmrAddStep({
+      clusterId: 'ClusterId',
+      name: 'StepName',
+      jar: 'Jar',
+      properties: {
+        PropertyKey: 'PropertyValue'
+      },
+      actionOnFailure: tasks.ActionOnFailure.CONTINUE,
+      integrationPattern: sfn.ServiceIntegrationPattern.SYNC
+    })
+  });
 
   // THEN
   expect(stack.resolve(task.toStateJson())).toEqual({

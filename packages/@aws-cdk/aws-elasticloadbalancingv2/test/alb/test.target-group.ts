@@ -58,27 +58,27 @@ export = {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack');
-    const vpc = new ec2.Vpc(stack, "VPC", {});
+    const vpc = new ec2.Vpc(stack, 'VPC', {});
     const alb = new elbv2.ApplicationLoadBalancer(stack, 'ALB', {vpc});
-    const listener = new elbv2.ApplicationListener(stack, "Listener", {
+    const listener = new elbv2.ApplicationListener(stack, 'Listener', {
       port: 80,
       loadBalancer: alb,
       open: false
     });
 
     // WHEN
-    const ipTarget = new elbv2.IpTarget("10.10.12.12");
-    listener.addTargets("TargetGroup", {
+    const ipTarget = new elbv2.IpTarget('10.10.12.12');
+    listener.addTargets('TargetGroup', {
       targets: [ipTarget],
       port: 80,
       healthCheck: {
         enabled: true,
-        healthyHttpCodes: "255",
+        healthyHttpCodes: '255',
         interval: cdk.Duration.seconds(255),
         timeout: cdk.Duration.seconds(192),
         healthyThresholdCount: 29,
         unhealthyThresholdCount: 27,
-        path: "/arbitrary"
+        path: '/arbitrary'
       }
     });
 
@@ -86,15 +86,15 @@ export = {
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
       HealthCheckEnabled : true,
       HealthCheckIntervalSeconds : 255,
-      HealthCheckPath : "/arbitrary",
+      HealthCheckPath : '/arbitrary',
       HealthCheckTimeoutSeconds : 192,
       HealthyThresholdCount : 29,
       Matcher : {
-        HttpCode : "255"
+        HttpCode : '255'
       },
       Port: 80,
       UnhealthyThresholdCount : 27,
-      }));
+    }));
 
     test.done();
   }
