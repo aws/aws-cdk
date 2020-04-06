@@ -342,7 +342,7 @@ The following code creates an app client and retrieves the client id -
 
 ```ts
 const pool = new UserPool(this, 'pool');
-pool.addClient('customer-app-client');
+const client = pool.addClient('customer-app-client');
 const clientId = client.userPoolClientId;
 ```
 
@@ -351,7 +351,9 @@ and imported user pools, clients can also be created via the `UserPoolClient` co
 
 ```ts
 const importedPool = UserPool.fromUserPoolId(this, 'imported-pool', 'us-east-1_oiuR12Abd');
-new UserPoolClient(this, 'customer-app-client');
+new UserPoolClient(this, 'customer-app-client', {
+  userPool: importedPool
+});
 ```
 
 Clients can be configured with authentication flows. Authentication flows allow users on a client to be authenticated
