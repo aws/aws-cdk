@@ -14,18 +14,18 @@ type DocsLinterContext = {
 
 export const docsLinter = new Linter<DocsLinterContext>(assembly => {
   return [
-    ...flatMap(assembly.classes, classType => [
+    ...flatMap([...assembly.classes], classType => [
       { assembly, kind: 'type', documentable: classType, errorKey: classType.fqn },
       ...classType.ownProperties.map(property => ({ assembly, kind: 'class-property', containingType: classType, documentable: property, errorKey: `${classType.fqn}.${property.name}` })),
       ...classType.ownMethods.map(method => ({ assembly, kind: 'method', containingType: classType, documentable: method, errorKey: `${classType.fqn}.${method.name}` })),
     ]),
-    ...flatMap(assembly.interfaces, interfaceType => [
+    ...flatMap([...assembly.interfaces], interfaceType => [
       { assembly, kind: 'type', documentable: interfaceType, errorKey: interfaceType.fqn },
       // tslint:disable-next-line:max-line-length
       ...interfaceType.ownProperties.map(property => ({ assembly, kind: 'interface-property', containingType: interfaceType, documentable: property, errorKey: `${interfaceType.fqn}.${property.name}` })),
       ...interfaceType.ownMethods.map(method => ({ assembly, kind: 'method', containingType: interfaceType, documentable: method, errorKey: `${interfaceType.fqn}.${method.name}` })),
     ]),
-    ...flatMap(assembly.enums, enumType => [
+    ...flatMap([...assembly.enums], enumType => [
       { assembly, kind: 'type', documentable: enumType, errorKey: enumType.fqn },
       ...enumType.members.map(member => ({ assembly, kind: 'enum-member', containingType: enumType, documentable: member, errorKey: `${enumType.fqn}.${member.name}` }))
     ]),
