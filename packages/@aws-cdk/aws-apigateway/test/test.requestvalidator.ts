@@ -50,7 +50,7 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::RequestValidator', {
       RestApiId: { Ref: stack.getLogicalId(api.node.findChild('Resource') as cdk.CfnElement) },
-      Name: "my-model",
+      Name: 'my-model',
       ValidateRequestBody: false,
       ValidateRequestParameters: true
     }));

@@ -1,7 +1,7 @@
-import { CustomResource } from "@aws-cdk/aws-cloudformation";
-import { Construct, Stack } from "@aws-cdk/core";
-import { Cluster } from "./cluster";
-import { KubectlProvider } from "./kubectl-provider";
+import { CustomResource } from '@aws-cdk/aws-cloudformation';
+import { Construct, Stack } from '@aws-cdk/core';
+import { Cluster } from './cluster';
+import { KubectlProvider } from './kubectl-provider';
 
 /**
  * Properties for KubernetesPatch
@@ -51,15 +51,15 @@ export enum PatchType {
   /**
    * JSON Patch, RFC 6902
    */
-  JSON = "json",
+  JSON = 'json',
   /**
    * JSON Merge patch
    */
-  MERGE = "merge",
+  MERGE = 'merge',
   /**
    * Strategic merge patch
    */
-  STRATEGIC = "strategic"
+  STRATEGIC = 'strategic'
 }
 
 /**

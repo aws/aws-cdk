@@ -6,8 +6,8 @@ export = {
     const stack = new Stack();
     test.ok(Token.isUnresolved(stack.account));
     test.ok(Token.isUnresolved(stack.region));
-    test.deepEqual(stack.resolve(stack.account), { Ref: "AWS::AccountId" });
-    test.deepEqual(stack.resolve(stack.region), { Ref: "AWS::Region" });
+    test.deepEqual(stack.resolve(stack.account), { Ref: 'AWS::AccountId' });
+    test.deepEqual(stack.resolve(stack.region), { Ref: 'AWS::Region' });
     test.done();
   },
 

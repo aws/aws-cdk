@@ -159,8 +159,8 @@ export = {
     'encodes exclude patterns'(test: Test) {
       // GIVEN
       const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'fingerprint-tests'));
-      const options1 = {path: dir, exclude: ["**", "!file.py"], sourcePath: dir};
-      const options2 = {path: dir, exclude: ["**", "!otherfile.py"], sourcePath: dir};
+      const options1 = {path: dir, exclude: ['**', '!file.py'], sourcePath: dir};
+      const options2 = {path: dir, exclude: ['**', '!otherfile.py'], sourcePath: dir};
 
       // WHEN
       const f1 = libfs.fingerprint(dir, options1);
