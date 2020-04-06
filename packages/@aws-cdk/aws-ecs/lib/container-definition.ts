@@ -26,10 +26,16 @@ export abstract class Secret {
   /**
    * Creates a environment variable value from a secret stored in AWS Secrets
    * Manager.
+   *
+   * @param secret the secret stored in AWS Secrets Manager
+   * @param field the name of the field with the value that you want to set as
+   * the environment variable value. Only values in JSON format are supported.
+   * If you do not specify a JSON field, then the full content of the secret is
+   * used.
    */
-  public static fromSecretsManager(secret: secretsmanager.ISecret): Secret {
+  public static fromSecretsManager(secret: secretsmanager.ISecret, field?: string): Secret {
     return {
-      arn: secret.secretArn,
+      arn: field ? `${secret.secretArn}:${field}::` : secret.secretArn,
       grantRead: grantee => secret.grantRead(grantee),
     };
   }

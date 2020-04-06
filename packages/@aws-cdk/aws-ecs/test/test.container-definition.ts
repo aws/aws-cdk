@@ -799,6 +799,50 @@ export = {
 
   },
 
+  'use a specific secret JSON key as environment variable'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+    const secret = new secretsmanager.Secret(stack, 'Secret');
+
+    // WHEN
+    taskDefinition.addContainer('cont', {
+      image: ecs.ContainerImage.fromRegistry('test'),
+      memoryLimitMiB: 1024,
+      secrets: {
+        SECRET_KEY: ecs.Secret.fromSecretsManager(secret, 'specificKey'),
+      }
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          Secrets: [
+            {
+              Name: 'SECRET_KEY',
+              ValueFrom: {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      Ref: 'SecretA720EF05'
+                    },
+                    ':specificKey::'
+                  ]
+                ]
+              }
+            },
+          ]
+        }
+      ]
+    }));
+
+    test.done();
+
+  },
+
   'can add AWS logging to container definition'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
