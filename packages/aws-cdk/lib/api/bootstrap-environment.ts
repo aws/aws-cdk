@@ -90,7 +90,33 @@ export async function bootstrapEnvironment(environment: cxapi.Environment, sdkPr
             RestrictPublicBuckets: true,
           },
         }
-      }
+      },
+      StagingBucketPolicy: {
+        Type: 'AWS::S3::BucketPolicy',
+        Properties: {
+          Bucket: { Ref: 'StagingBucket' },
+          PolicyDocument: {
+            Id: 'AccessControl',
+            Version: '2012-10-17',
+            Statement: [
+              {
+                Sid: 'AllowSSLRequestsOnly',
+                Action: 's3:*',
+                Effect: 'Deny',
+                Resource: [
+                  { 'Fn::Sub': '${StagingBucket.Arn}' },
+                  { 'Fn::Sub': '${StagingBucket.Arn}/*' },
+                ],
+                Condition: {
+                  Bool: { 'aws:SecureTransport': 'false' }
+                },
+                Principal: '*'
+              }
+            ]
+          }
+        },
+
+      },
     },
     Outputs: {
       [BUCKET_NAME_OUTPUT]: {
