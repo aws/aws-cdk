@@ -142,7 +142,7 @@ export class PrincipalWithConditions implements IPrincipal {
 
   /**
    * The conditions under which the policy is in effect.
-   * See [the IAMdocumentation](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition.html).
+   * See [the IAM documentation](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition.html).
    */
   public get conditions() {
     return this.mergeConditions(this.principal.policyFragment.conditions, this.additionalConditions);
@@ -193,7 +193,7 @@ export class PrincipalPolicyFragment {
     public readonly principalJson: { [key: string]: string[] },
     /**
      * The conditions under which the policy is in effect.
-     * See [the IAMdocumentation](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition.html).
+     * See [the IAM documentation](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition.html).
      */
     public readonly conditions: Conditions = {}) {
   }
@@ -317,7 +317,7 @@ export class FederatedPrincipal extends PrincipalBase {
     public readonly federated: string,
     /**
      * The conditions under which the policy is in effect.
-     * See [the IAMdocumentation](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition.html).
+     * See [the IAM documentation](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition.html).
      */
     public readonly conditions: Conditions,
     assumeRoleAction: string = 'sts:AssumeRole') {
