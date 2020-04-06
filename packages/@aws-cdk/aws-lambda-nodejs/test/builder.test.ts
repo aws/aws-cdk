@@ -26,6 +26,7 @@ test('calls docker with the correct args', () => {
     global: 'handler',
     outDir: 'out-dir',
     cacheDir: 'cache-dir',
+    nodeDockerTag: '13.8.0-alpine3.11'
   });
   builder.build();
 
@@ -58,7 +59,8 @@ test('throws in case of error', () => {
   const builder = new Builder({
     entry: 'error',
     global: 'handler',
-    outDir: 'out-dir'
+    outDir: 'out-dir',
+    nodeDockerTag: '13.8.0-alpine3.11'
   });
   expect(() => builder.build()).toThrow('parcel-error');
 });
@@ -67,7 +69,8 @@ test('throws if status is not 0', () => {
   const builder = new Builder({
     entry: 'status',
     global: 'handler',
-    outDir: 'out-dir'
+    outDir: 'out-dir',
+    nodeDockerTag: '13.8.0-alpine3.11'
   });
   expect(() => builder.build()).toThrow('status-error');
 });
@@ -76,7 +79,8 @@ test('throws if docker is not installed', () => {
   const builder = new Builder({
     entry: 'no-docker',
     global: 'handler',
-    outDir: 'out-dir'
+    outDir: 'out-dir',
+    nodeDockerTag: '13.8.0-alpine3.11'
   });
   expect(() => builder.build()).toThrow('Error: spawnSync docker ENOENT');
 });
