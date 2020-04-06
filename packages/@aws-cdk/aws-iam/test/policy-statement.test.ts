@@ -173,7 +173,7 @@ describe('IAM policy statement', () => {
       }).toThrow(/Fields must be either a string or an array of strings/);
     });
 
-    test('throws error with field data being object', () => {
+    test('throws error with field data being array of non-strings', () => {
       expect(() => {
         PolicyStatement.fromJson({
           Action: [{}]

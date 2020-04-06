@@ -1,8 +1,8 @@
 import '@aws-cdk/assert/jest';
 import { Lazy, Stack, Token } from '@aws-cdk/core';
 import {
-  Anyone, AnyPrincipal, ArnPrincipal, CanonicalUserPrincipal, CompositePrincipal, Effect, FederatedPrincipal,
-  IPrincipal, PolicyDocument, PolicyStatement, PrincipalPolicyFragment, ServicePrincipal
+  AccountPrincipal, Anyone, AnyPrincipal, ArnPrincipal, CanonicalUserPrincipal, CompositePrincipal, Effect,
+  FederatedPrincipal, IPrincipal, PolicyDocument, PolicyStatement, PrincipalPolicyFragment, ServicePrincipal
 } from '../lib';
 
 describe('IAM polocy document', () => {
@@ -427,7 +427,7 @@ describe('IAM polocy document', () => {
 
     test('conditions are not allowed on individual principals of a composite', () => {
       const p = new CompositePrincipal(new ArnPrincipal('i:am'));
-      expect(() => p.addPrincipals(new FederatedPrincipal('federated', { condition: 1 })))
+      expect(() => p.addPrincipals(new FederatedPrincipal('federated', { StringEquals: { 'aws:some-key': 'some-value' } })))
         .toThrow(/Components of a CompositePrincipal must not have conditions/);
     });
 
@@ -449,11 +449,11 @@ describe('IAM polocy document', () => {
 
       // add via policy statement
       statement.addArnPrincipal('aws-principal-3');
-      statement.addCondition('cond2', { boom: 123 });
+      statement.addCondition('cond2', { boom: '123' });
 
       expect(stack.resolve(statement.toStatementJson())).toEqual({
         Condition: {
-          cond2: { boom: 123 }
+          cond2: { boom: '123' }
         },
         Effect: 'Allow',
         Principal: {
@@ -470,6 +470,94 @@ describe('IAM polocy document', () => {
       // THEN
       expect(() => p.addPrincipals(new FederatedPrincipal('fed', {}, 'sts:Boom')))
         .toThrow(/Cannot add multiple principals with different "assumeRoleAction". Expecting "sts:AssumeRole", got "sts:Boom"/);
+    });
+  });
+
+  describe('PrincipalWithConditions can be used to add a principal with conditions', () => {
+    test('includes conditions from both the wrapped principal and the wrapper', () => {
+      const stack = new Stack();
+      const principalOpts = {
+        conditions: {
+          BinaryEquals: {
+            'principal-key': 'SGV5LCBmcmllbmQh',
+          },
+        },
+      };
+      const p = new ServicePrincipal('s3.amazonaws.com', principalOpts)
+        .withConditions({ StringEquals: { 'wrapper-key': ['val-1', 'val-2'] } });
+      const statement = new PolicyStatement();
+      statement.addPrincipals(p);
+      expect(stack.resolve(statement.toStatementJson())).toEqual({
+        Condition: {
+          BinaryEquals: { 'principal-key': 'SGV5LCBmcmllbmQh' },
+          StringEquals: { 'wrapper-key': ['val-1', 'val-2'] },
+        },
+        Effect: 'Allow',
+        Principal: {
+          Service: 's3.amazonaws.com',
+        },
+      });
+    });
+
+    test('conditions from addCondition are merged with those from the principal', () => {
+      const stack = new Stack();
+      const p = new AccountPrincipal('012345678900').withConditions({ StringEquals: { key: 'val' } });
+      const statement = new PolicyStatement();
+      statement.addPrincipals(p);
+      statement.addCondition('Null', { 'banned-key': 'true' });
+      expect(stack.resolve(statement.toStatementJson())).toEqual({
+        Effect: 'Allow',
+        Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::012345678900:root']] } },
+        Condition: { StringEquals: { key: 'val' }, Null: { 'banned-key': 'true' } },
+      });
+    });
+
+    test('adding conditions via `withConditions` does not affect the original principal', () => {
+      const originalPrincipal = new ArnPrincipal('iam:an:arn');
+      const principalWithConditions = originalPrincipal.withConditions({ StringEquals: { key: 'val' } });
+      expect(originalPrincipal.policyFragment.conditions).toEqual({});
+      expect(principalWithConditions.policyFragment.conditions).toEqual({ StringEquals: { key: 'val' } });
+    });
+
+    test('conditions are merged when operators conflict', () => {
+      const p = new FederatedPrincipal('fed', {
+        OperatorOne: { 'fed-key': 'fed-val' },
+        OperatorTwo: { 'fed-key': 'fed-val' },
+        OperatorThree: { 'fed-key': 'fed-val' },
+      }).withConditions({
+        OperatorTwo: { 'with-key': 'with-val' },
+        OperatorThree: { 'with-key': 'with-val' },
+      });
+      const statement = new PolicyStatement();
+      statement.addCondition('OperatorThree', { 'add-key': 'add-val' });
+      statement.addPrincipals(p);
+      expect(statement.toStatementJson()).toEqual({
+        Effect: 'Allow',
+        Principal: { Federated: 'fed' },
+        Condition: {
+          OperatorOne: { 'fed-key': 'fed-val' },
+          OperatorTwo: { 'fed-key': 'fed-val', 'with-key': 'with-val' },
+          OperatorThree: { 'fed-key': 'fed-val', 'with-key': 'with-val', 'add-key': 'add-val' },
+        }
+      });
+    });
+
+    test('values passed to `withConditions` overwrite values from the wrapped principal ' +
+      'when keys conflict within an operator', () => {
+      const p = new FederatedPrincipal('fed', {
+        Operator: { key: 'p-val' },
+      }).withConditions({
+        Operator: { key: 'with-val' },
+      });
+      const statement = new PolicyStatement();
+      statement.addPrincipals(p);
+      expect(statement.toStatementJson()).toEqual({
+        Effect: 'Allow',
+        Principal: { Federated: 'fed' },
+        Condition: {
+          Operator: { key: 'with-val' },
+        },
+      });
     });
   });
 

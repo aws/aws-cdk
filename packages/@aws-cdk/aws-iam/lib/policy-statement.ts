@@ -145,7 +145,7 @@ export class PolicyStatement {
     this.addPrincipals(new ServicePrincipal(service, opts));
   }
 
-  public addFederatedPrincipal(federated: any, conditions: {[key: string]: any}) {
+  public addFederatedPrincipal(federated: any, conditions: Conditions) {
     this.addPrincipals(new FederatedPrincipal(federated, conditions));
   }
 
@@ -200,7 +200,7 @@ export class PolicyStatement {
   /**
    * Add a condition to the Policy
    */
-  public addCondition(key: string, value: any) {
+  public addCondition(key: string, value: Condition) {
     const existingValue = this.condition[key];
     this.condition[key] = existingValue ? { ...existingValue, ...value } : value;
   }
@@ -208,7 +208,7 @@ export class PolicyStatement {
   /**
    * Add multiple conditions to the Policy
    */
-  public addConditions(conditions: {[key: string]: any}) {
+  public addConditions(conditions: Conditions) {
     Object.keys(conditions).map(key => {
       this.addCondition(key, conditions[key]);
     });
@@ -302,6 +302,24 @@ export enum Effect {
   ALLOW = 'Allow',
   DENY = 'Deny',
 }
+
+/**
+ * Condition for when an IAM policy is in effect. Maps from the keys in a request's context to
+ * a string value or array of string values. See the Conditions interface for more details.
+ */
+export type Condition = Record<string, any>;
+
+/**
+ * Conditions for when an IAM Policy is in effect, specified in the following structure:
+ *
+ * `{ "Operator": { "keyInRequestContext": "value" } }`
+ *
+ * The value can be either a single string value or an array of string values.
+ *
+ * For more information, including which operators are supported, see [the IAM
+ * documentation](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition.html).
+ */
+export type Conditions = Record<string, Condition>;
 
 /**
  * Interface for creating a policy statement
@@ -398,7 +416,7 @@ class JsonPrincipal extends PrincipalBase {
 
     this.policyFragment = {
       principalJson: json,
-      conditions: []
+      conditions: {}
     };
   }
 }
