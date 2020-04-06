@@ -227,7 +227,17 @@ describe('User Pool', () => {
     // WHEN
     const pool = UserPool.fromUserPoolArn(stack, 'userpool', userPoolArn);
     expect(pool.userPoolId).toEqual('test-user-pool');
-    expect(pool.userPoolArn).toEqual(userPoolArn);
+    expect(stack.resolve(pool.userPoolArn)).toEqual({
+      'Fn::Join': [ '', [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':cognito-idp:',
+        { Ref: 'AWS::Region' },
+        ':',
+        { Ref: 'AWS::AccountId' },
+        ':userpool/test-user-pool'
+      ] ]
+    });
   });
 
   test('support tags', () => {
@@ -750,6 +760,31 @@ describe('User Pool', () => {
         ReplyToEmailAddress: 'replyTo@myawesomeapp.com'
       }
     });
+  });
+});
+
+test('addClient', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  const userpool = new UserPool(stack, 'Pool');
+  userpool.addClient('UserPoolClient', {
+    userPoolClientName: 'userpoolclient'
+  });
+  const imported = UserPool.fromUserPoolId(stack, 'imported', 'imported-userpool-id');
+  imported.addClient('UserPoolImportedClient', {
+    userPoolClientName: 'userpoolimportedclient'
+  });
+
+  // THEN
+  expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
+    ClientName: 'userpoolclient',
+    UserPoolId: stack.resolve(userpool.userPoolId),
+  });
+  expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
+    ClientName: 'userpoolimportedclient',
+    UserPoolId: stack.resolve(imported.userPoolId),
   });
 });
 
