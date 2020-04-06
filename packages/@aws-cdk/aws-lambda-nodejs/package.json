@@ -47,6 +47,10 @@
     "compat": "cdk-compat"
   },
   "cdk-build": {
+    "pre": [
+      "nohup /usr/local/bin/dockerd --host=unix:///var/run/docker.sock --host=tcp://0.0.0.0:2375 --storage-driver=overlay&",
+      "timeout 15 sh -c \"until docker info; do echo .; sleep 1; done\""
+    ],
     "eslint": {
       "ignore-pattern": [
         "test/function.test.handler2.js",
