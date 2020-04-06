@@ -193,7 +193,7 @@ export class BackupPlan extends Resource implements IBackupPlan {
 
   protected validate() {
     if (this.rules.length === 0) {
-      return [`A backup plan must have at least 1 rule.`];
+      return ['A backup plan must have at least 1 rule.'];
     }
 
     return [];
