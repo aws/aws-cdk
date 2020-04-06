@@ -2,7 +2,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as ssm from '@aws-cdk/aws-ssm';
 import * as cdk from '@aws-cdk/core';
 import { TaskDefinition } from './base/task-definition';
-import { ContainerDefinition, ContainerDefinitionOptions, ContainerDefinitionProps } from "./container-definition";
+import { ContainerDefinition, ContainerDefinitionOptions, ContainerDefinitionProps } from './container-definition';
 import { ContainerImage } from './container-image';
 import { CfnTaskDefinition } from './ecs.generated';
 import { LogDriverConfig } from './log-drivers/log-driver';
@@ -138,10 +138,10 @@ export function obtainDefaultFluentBitECRImage(task: TaskDefinition, logDriverCo
   // grant ECR image pull permissions to executor role
   task.addToExecutionRolePolicy(new iam.PolicyStatement({
     actions: [
-      "ecr:GetAuthorizationToken",
-      "ecr:BatchCheckLayerAvailability",
-      "ecr:GetDownloadUrlForLayer",
-      "ecr:BatchGetImage"
+      'ecr:GetAuthorizationToken',
+      'ecr:BatchCheckLayerAvailability',
+      'ecr:GetDownloadUrlForLayer',
+      'ecr:BatchGetImage'
     ],
     resources: ['*']
   }));
@@ -217,13 +217,13 @@ export class FirelensLogRouter extends ContainerDefinition {
       if (configFileType === FirelensConfigFileType.S3) {
         props.taskDefinition.addToExecutionRolePolicy(new iam.PolicyStatement({
           actions: [
-            "s3:GetObject",
+            's3:GetObject',
           ],
           resources: [options.configFileValue]
         }));
         props.taskDefinition.addToExecutionRolePolicy(new iam.PolicyStatement({
           actions: [
-            "s3:GetBucketLocation",
+            's3:GetBucketLocation',
           ],
           resources: [options.configFileValue.split('/')[0]]
         }));

@@ -22,8 +22,8 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::IAM::Policy', {
-      "PolicyDocument": {
-        "Statement": [
+      'PolicyDocument': {
+        'Statement': [
           {
             "Action": [
               "kinesis:DescribeStream",
@@ -31,35 +31,35 @@ export = {
               "kinesis:GetShardIterator",
               "kinesis:ListShards"
             ],
-            "Effect": "Allow",
-            "Resource": {
-              "Fn::GetAtt": [
-                "S509448A1",
-                "Arn"
+            'Effect': 'Allow',
+            'Resource': {
+              'Fn::GetAtt': [
+                'S509448A1',
+                'Arn'
               ]
             }
           }
         ],
-        "Version": "2012-10-17"
+        'Version': '2012-10-17'
       },
-      "PolicyName": "FnServiceRoleDefaultPolicyC6A839BF",
-      "Roles": [{
-        "Ref": "FnServiceRoleB9001A96"
+      'PolicyName': 'FnServiceRoleDefaultPolicyC6A839BF',
+      'Roles': [{
+        'Ref': 'FnServiceRoleB9001A96'
       }]
     }));
 
     expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
-      "EventSourceArn": {
-        "Fn::GetAtt": [
-          "S509448A1",
-          "Arn"
+      'EventSourceArn': {
+        'Fn::GetAtt': [
+          'S509448A1',
+          'Arn'
         ]
       },
-      "FunctionName":  {
-        "Ref": "Fn9270CBC0"
+      'FunctionName':  {
+        'Ref': 'Fn9270CBC0'
       },
-      "BatchSize": 100,
-      "StartingPosition": "TRIM_HORIZON"
+      'BatchSize': 100,
+      'StartingPosition': 'TRIM_HORIZON'
     }));
 
     test.done();
@@ -79,17 +79,17 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
-      "EventSourceArn": {
-        "Fn::GetAtt": [
-          "S509448A1",
-          "Arn"
+      'EventSourceArn': {
+        'Fn::GetAtt': [
+          'S509448A1',
+          'Arn'
         ]
       },
-      "FunctionName":  {
-        "Ref": "Fn9270CBC0"
+      'FunctionName':  {
+        'Ref': 'Fn9270CBC0'
       },
-      "BatchSize": 50,
-      "StartingPosition": "LATEST"
+      'BatchSize': 50,
+      'StartingPosition': 'LATEST'
     }));
 
     test.done();
@@ -139,17 +139,17 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
-      "EventSourceArn": {
-        "Fn::GetAtt": [
-          "S509448A1",
-          "Arn"
+      'EventSourceArn': {
+        'Fn::GetAtt': [
+          'S509448A1',
+          'Arn'
         ]
       },
-      "FunctionName":  {
-        "Ref": "Fn9270CBC0"
+      'FunctionName':  {
+        'Ref': 'Fn9270CBC0'
       },
-      "MaximumBatchingWindowInSeconds": 120,
-      "StartingPosition": "LATEST"
+      'MaximumBatchingWindowInSeconds': 120,
+      'StartingPosition': 'LATEST'
     }));
 
     test.done();

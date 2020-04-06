@@ -340,10 +340,10 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
       computeResources = {
         allocationStrategy: props.computeResources.allocationStrategy
          || (
-             props.computeResources.type === ComputeResourceType.SPOT
+           props.computeResources.type === ComputeResourceType.SPOT
              ? AllocationStrategy.SPOT_CAPACITY_OPTIMIZED
              : AllocationStrategy.BEST_FIT
-            ),
+         ),
         bidPercentage: props.computeResources.bidPercentage,
         desiredvCpus: props.computeResources.desiredvCpus,
         ec2KeyPair: props.computeResources.ec2KeyPair,
@@ -351,12 +351,12 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
         instanceRole: props.computeResources.instanceRole
           ? props.computeResources.instanceRole
           : new iam.CfnInstanceProfile(this, 'Instance-Profile', {
-              roles: [ new iam.Role(this, 'Ecs-Instance-Role', {
-                assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
-                managedPolicies: [
-                    iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonEC2ContainerServiceforEC2Role')
-                    ]
-              }).roleName]
+            roles: [ new iam.Role(this, 'Ecs-Instance-Role', {
+              assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+              managedPolicies: [
+                iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonEC2ContainerServiceforEC2Role')
+              ]
+            }).roleName]
           }).attrArn,
         instanceTypes: this.buildInstanceTypes(props.computeResources.instanceTypes),
         launchTemplate: props.computeResources.launchTemplate,
@@ -438,7 +438,7 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
         // Bid percentage must be from 0 - 100
         if (props.computeResources.bidPercentage !== undefined &&
           (props.computeResources.bidPercentage < 0 || props.computeResources.bidPercentage > 100)) {
-            throw new Error('Bid percentage can only be a value between 0 and 100');
+          throw new Error('Bid percentage can only be a value between 0 and 100');
         }
       }
 
@@ -451,7 +451,7 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
         // minvCpus cannot exceed max vCpus
         if (props.computeResources.maxvCpus &&
           props.computeResources.minvCpus > props.computeResources.maxvCpus) {
-            throw new Error('Minimum vCpus cannot be greater than the maximum vCpus');
+          throw new Error('Minimum vCpus cannot be greater than the maximum vCpus');
         }
       }
     }

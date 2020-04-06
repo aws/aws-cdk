@@ -264,8 +264,8 @@ export class LoadBalancer extends Resource implements IConnectable {
     const protocol = ifUndefinedLazy(listener.externalProtocol, () => wellKnownProtocol(listener.externalPort));
     const instancePort = listener.internalPort || listener.externalPort;
     const instanceProtocol = ifUndefined(listener.internalProtocol,
-                 ifUndefined(tryWellKnownProtocol(instancePort),
-                 isHttpProtocol(protocol) ? LoadBalancingProtocol.HTTP : LoadBalancingProtocol.TCP));
+      ifUndefined(tryWellKnownProtocol(instancePort),
+        isHttpProtocol(protocol) ? LoadBalancingProtocol.HTTP : LoadBalancingProtocol.TCP));
 
     this.listeners.push({
       loadBalancerPort: listener.externalPort.toString(),
@@ -422,10 +422,10 @@ function ifUndefinedLazy<T>(x: T | undefined, def: () => T): T {
  */
 function healthCheckToJSON(healthCheck: HealthCheck): CfnLoadBalancer.HealthCheckProperty {
   const protocol = ifUndefined(healthCheck.protocol,
-           ifUndefined(tryWellKnownProtocol(healthCheck.port),
-           LoadBalancingProtocol.TCP));
+    ifUndefined(tryWellKnownProtocol(healthCheck.port),
+      LoadBalancingProtocol.TCP));
 
-  const path = protocol === LoadBalancingProtocol.HTTP || protocol === LoadBalancingProtocol.HTTPS ? ifUndefined(healthCheck.path, "/") : "";
+  const path = protocol === LoadBalancingProtocol.HTTP || protocol === LoadBalancingProtocol.HTTPS ? ifUndefined(healthCheck.path, '/') : '';
 
   const target = `${protocol.toUpperCase()}:${healthCheck.port}${path}`;
 

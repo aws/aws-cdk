@@ -40,10 +40,14 @@ export class CloudFormationStack {
   /**
    * Retrieve the stack's deployed template
    *
-   * Cached, so will only be retrieved once. Will throw an error
-   * if the stack does not exist.
+   * Cached, so will only be retrieved once. Will return an empty
+   * structure if the stack does not exist.
    */
   public async template(): Promise<Template> {
+    if (!this.exists) {
+      return {};
+    }
+
     if (this._template === undefined) {
       const response = await this.cfn.getTemplate({ StackName: this.stackName, TemplateStage: 'Original' }).promise();
       this._template = (response.TemplateBody && deserializeStructure(response.TemplateBody)) || {};
@@ -89,7 +93,7 @@ export class CloudFormationStack {
    */
   public get stackStatus(): StackStatus {
     if (!this.exists) {
-      return new StackStatus('NOT_FOUND', `Stack not found during lookup`);
+      return new StackStatus('NOT_FOUND', 'Stack not found during lookup');
     }
     return StackStatus.fromStackDescription(this.stack!);
   }
@@ -214,9 +218,10 @@ export function changeSetHasNoChanges(description: CloudFormation.DescribeChange
  *
  * @returns     the CloudFormation description of the stabilized stack
  */
-export async function waitForStack(cfn: CloudFormation,
-                                   stackName: string,
-                                   failOnDeletedStack: boolean = true): Promise<CloudFormationStack | undefined> {
+export async function waitForStack(
+  cfn: CloudFormation,
+  stackName: string,
+  failOnDeletedStack: boolean = true): Promise<CloudFormationStack | undefined> {
   debug('Waiting for stack %s to finish creating or updating...', stackName);
   return waitFor(async () => {
     const stack = await CloudFormationStack.lookup(cfn, stackName);

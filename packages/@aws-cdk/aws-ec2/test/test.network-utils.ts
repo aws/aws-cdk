@@ -9,21 +9,21 @@ import {
 export = {
 
   IP: {
-    "should convert a valid IP Address to an integer"(test: Test) {
+    'should convert a valid IP Address to an integer'(test: Test) {
       test.strictEqual(NetworkUtils.ipToNum('174.66.173.168'), 2923605416);
       test.done();
     },
-    "should throw on invalid IP Address"(test: Test) {
+    'should throw on invalid IP Address'(test: Test) {
       test.throws(() => {
         NetworkUtils.ipToNum('174.266.173.168');
       }, Error, 'is not valid');
       test.done();
     },
-    "should convert a valid IP integer to a staring"(test: Test) {
+    'should convert a valid IP integer to a staring'(test: Test) {
       test.strictEqual(NetworkUtils.numToIp(2923605416), '174.66.173.168');
       test.done();
     },
-    "should throw an error for invalid IP"(test: Test) {
+    'should throw an error for invalid IP'(test: Test) {
       test.throws(() => {
         NetworkUtils.numToIp(2923605416 * 5);
       }, /is not a valid/);
@@ -32,14 +32,14 @@ export = {
       }, /is not a valid/);
       test.done();
     },
-    "validIp returns true if octect is in 0-255"(test: Test) {
+    'validIp returns true if octect is in 0-255'(test: Test) {
       const invalidIps = ['255.255.0.0', '0.0.0.0', '1.2.3.4', '10.0.0.0', '255.01.01.255'];
       for (const ip of invalidIps) {
         test.strictEqual(true, NetworkUtils.validIp(ip));
       }
       test.done();
     },
-    "validIp returns false if octect is not in 0-255"(test: Test) {
+    'validIp returns false if octect is not in 0-255'(test: Test) {
       const invalidIps = ['1.2.3.4.689', '-1.55.22.22', '', ' ', '255.264.1.01'];
       for (const ip of invalidIps) {
         test.strictEqual(false, NetworkUtils.validIp(ip));
@@ -48,13 +48,13 @@ export = {
     },
   },
   CidrBlock: {
-    "should return the next valid subnet from offset IP"(test: Test) {
+    'should return the next valid subnet from offset IP'(test: Test) {
       const num = NetworkUtils.ipToNum('10.0.1.255');
       const newBlock = new CidrBlock(num, 24);
       test.strictEqual(newBlock.cidr, '10.0.2.0/24');
       test.done();
     },
-    "nextBlock() returns the next higher CIDR space"(test: Test) {
+    'nextBlock() returns the next higher CIDR space'(test: Test) {
       const testValues = [
         ['192.168.0.0/24', '192.168.1.0/24'],
         ['10.85.7.0/28', '10.85.7.16/28'],
@@ -65,7 +65,7 @@ export = {
       }
       test.done();
     },
-    "maxIp() should return the last usable IP from the CidrBlock"(test: Test) {
+    'maxIp() should return the last usable IP from the CidrBlock'(test: Test) {
       const testValues = [
         ['10.0.3.0/28', '10.0.3.15'],
         ['10.0.3.1/28', '10.0.3.31'],
@@ -77,7 +77,7 @@ export = {
       }
       test.done();
     },
-    "minIp() should return the first usable IP from the CidrBlock"(test: Test) {
+    'minIp() should return the first usable IP from the CidrBlock'(test: Test) {
       const testValues = [
         ['192.168.0.0/18', '192.168.0.0'],
         ['10.0.3.0/24', '10.0.3.0']
@@ -88,19 +88,19 @@ export = {
       }
       test.done();
     },
-    "containsCidr returns true if fully contained"(test: Test) {
+    'containsCidr returns true if fully contained'(test: Test) {
       const block = new CidrBlock('10.0.3.0/24');
       const contained = new CidrBlock('10.0.3.0/26');
       test.strictEqual(block.containsCidr(contained), true);
       test.done();
     },
-    "containsCidr returns false if not fully contained"(test: Test) {
+    'containsCidr returns false if not fully contained'(test: Test) {
       const block = new CidrBlock('10.0.3.0/26');
       const notContained = new CidrBlock('10.0.3.0/25');
       test.strictEqual(block.containsCidr(notContained), false);
       test.done();
     },
-    "calculateNetmask returns the ip string mask"(test: Test) {
+    'calculateNetmask returns the ip string mask'(test: Test) {
       const netmask = CidrBlock.calculateNetmask(27);
       test.strictEqual(netmask, '255.255.255.224');
       test.done();
@@ -108,7 +108,7 @@ export = {
 
   },
   NetworkBuilder: {
-    "allows you to carve subnets our of CIDR network"(test: Test) {
+    'allows you to carve subnets our of CIDR network'(test: Test) {
       const answers = [
         [
           '192.168.0.0/28',
@@ -147,7 +147,7 @@ export = {
       }
       test.done();
     },
-    "throws on subnets < 16 or > 28"(test: Test) {
+    'throws on subnets < 16 or > 28'(test: Test) {
       const builder = new NetworkBuilder('192.168.0.0/18');
       test.throws(() => {
         builder.addSubnet(15);
@@ -157,7 +157,7 @@ export = {
       }, InvalidCidrRangeError);
       test.done();
     },
-    "throws if you add a subnet outside of the cidr"(test: Test) {
+    'throws if you add a subnet outside of the cidr'(test: Test) {
       const builder = new NetworkBuilder('192.168.0.0/18');
       const builder2 = new NetworkBuilder('10.0.0.0/21');
       builder.addSubnets(19, 1);
@@ -171,7 +171,7 @@ export = {
       }, /exceeds remaining space/);
       test.done();
     },
-    "maskForRemainingSubnets calcs mask for even split of remaining"(test: Test) {
+    'maskForRemainingSubnets calcs mask for even split of remaining'(test: Test) {
       const builder = new NetworkBuilder('10.0.0.0/24');
       builder.addSubnet(25);
       test.strictEqual(27, builder.maskForRemainingSubnets(3));

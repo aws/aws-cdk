@@ -20,11 +20,11 @@ test('Can create target groups with instance id target', () => {
   // THEN
   expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
     Port: 80,
-    Protocol: "HTTP",
+    Protocol: 'HTTP',
     Targets: [
-      { Id: "i-1234" }
+      { Id: 'i-1234' }
     ],
-    TargetType: "instance",
+    TargetType: 'instance',
   }));
 });
 
@@ -50,10 +50,10 @@ test('Can create target groups with instance target', () => {
   // THEN
   expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
     Port: 80,
-    Protocol: "HTTP",
+    Protocol: 'HTTP',
     Targets: [
       { Id: {Ref: 'InstanceC1063A87'} }
     ],
-    TargetType: "instance",
+    TargetType: 'instance',
   }));
 });

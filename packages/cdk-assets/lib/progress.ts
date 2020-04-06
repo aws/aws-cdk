@@ -1,4 +1,4 @@
-import { IManifestEntry } from "./asset-manifest";
+import { IManifestEntry } from './asset-manifest';
 
 /**
  * A listener for progress events from the publisher
