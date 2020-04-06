@@ -9,8 +9,6 @@ const role = new iam.Role(stack, 'UserRole', {
   assumedBy: new iam.AccountRootPrincipal(),
 });
 
-const stream = new Stream(stack, 'myStream', {
-  streamName: 'MyStream',
-});
+const stream = new Stream(stack, 'myStream');
 
 stream.grantReadWrite(role);
