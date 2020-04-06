@@ -22,7 +22,7 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::Logs::Destination', {
       DestinationName: 'MyDestination',
-      RoleArn: { "Fn::GetAtt": [ "Role1ABCC5F0", "Arn" ] },
+      RoleArn: { 'Fn::GetAtt': [ 'Role1ABCC5F0', 'Arn' ] },
       TargetArn: 'arn:bogus',
     }));
 

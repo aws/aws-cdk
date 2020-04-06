@@ -78,76 +78,76 @@ test('Running a Fargate Task', () => {
   expect(stack.resolve(runTask.toStateJson())).toEqual({
     End: true,
     Parameters: {
-      Cluster: {"Fn::GetAtt": ["ClusterEB0386A7", "Arn"]},
-      LaunchType: "FARGATE",
+      Cluster: {'Fn::GetAtt': ['ClusterEB0386A7', 'Arn']},
+      LaunchType: 'FARGATE',
       NetworkConfiguration: {
         AwsvpcConfiguration: {
-          SecurityGroups: [{"Fn::GetAtt": ["RunFargateSecurityGroup709740F2", "GroupId"]}],
+          SecurityGroups: [{'Fn::GetAtt': ['RunFargateSecurityGroup709740F2', 'GroupId']}],
           Subnets: [
-            {Ref: "VpcPrivateSubnet1Subnet536B997A"},
-            {Ref: "VpcPrivateSubnet2Subnet3788AAA1"},
+            {Ref: 'VpcPrivateSubnet1Subnet536B997A'},
+            {Ref: 'VpcPrivateSubnet2Subnet3788AAA1'},
           ]
         },
       },
-      TaskDefinition: {Ref: "TD49C78F36"},
+      TaskDefinition: {Ref: 'TD49C78F36'},
       Overrides: {
         ContainerOverrides: [
           {
             Environment: [
               {
-                "Name": "SOME_KEY",
-                "Value.$": "$.SomeKey",
+                'Name': 'SOME_KEY',
+                'Value.$': '$.SomeKey',
               },
             ],
-            Name: "TheContainer",
+            Name: 'TheContainer',
           },
         ],
       },
     },
     Resource: {
-      "Fn::Join": [
-        "",
+      'Fn::Join': [
+        '',
         [
-          "arn:",
+          'arn:',
           {
-            Ref: "AWS::Partition",
+            Ref: 'AWS::Partition',
           },
-          ":states:::ecs:runTask.sync",
+          ':states:::ecs:runTask.sync',
         ],
       ],
     },
-    Type: "Task",
+    Type: 'Task',
   });
 
   expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [
         {
-          Action: "ecs:RunTask",
-          Effect: "Allow",
-          Resource: {Ref: "TD49C78F36"}
+          Action: 'ecs:RunTask',
+          Effect: 'Allow',
+          Resource: {Ref: 'TD49C78F36'}
         },
         {
-          Action: ["ecs:StopTask", "ecs:DescribeTasks"],
-          Effect: "Allow",
-          Resource: "*"
+          Action: ['ecs:StopTask', 'ecs:DescribeTasks'],
+          Effect: 'Allow',
+          Resource: '*'
         },
         {
-          Action: "iam:PassRole",
-          Effect: "Allow",
-          Resource: [{"Fn::GetAtt": ["TDTaskRoleC497AFFC", "Arn"]}]
+          Action: 'iam:PassRole',
+          Effect: 'Allow',
+          Resource: [{'Fn::GetAtt': ['TDTaskRoleC497AFFC', 'Arn']}]
         },
         {
-          Action: ["events:PutTargets", "events:PutRule", "events:DescribeRule"],
-          Effect: "Allow",
-          Resource: {"Fn::Join": ["", [
-            "arn:",
-            {Ref: "AWS::Partition"},
-            ":events:",
-            {Ref: "AWS::Region"},
-            ":",
-            {Ref: "AWS::AccountId"},
-            ":rule/StepFunctionsGetEventsForECSTaskRule"
+          Action: ['events:PutTargets', 'events:PutRule', 'events:DescribeRule'],
+          Effect: 'Allow',
+          Resource: {'Fn::Join': ['', [
+            'arn:',
+            {Ref: 'AWS::Partition'},
+            ':events:',
+            {Ref: 'AWS::Region'},
+            ':',
+            {Ref: 'AWS::AccountId'},
+            ':rule/StepFunctionsGetEventsForECSTaskRule'
           ]]}
         }
       ],
@@ -187,67 +187,67 @@ test('Running an EC2 Task with bridge network', () => {
   expect(stack.resolve(runTask.toStateJson())).toEqual({
     End: true,
     Parameters: {
-      Cluster: {"Fn::GetAtt": ["ClusterEB0386A7", "Arn"]},
-      LaunchType: "EC2",
-      TaskDefinition: {Ref: "TD49C78F36"},
+      Cluster: {'Fn::GetAtt': ['ClusterEB0386A7', 'Arn']},
+      LaunchType: 'EC2',
+      TaskDefinition: {Ref: 'TD49C78F36'},
       Overrides: {
         ContainerOverrides: [
           {
             Environment: [
               {
-                "Name": "SOME_KEY",
-                "Value.$": "$.SomeKey",
+                'Name': 'SOME_KEY',
+                'Value.$': '$.SomeKey',
               },
             ],
-            Name: "TheContainer",
+            Name: 'TheContainer',
           },
         ],
       },
     },
     Resource: {
-      "Fn::Join": [
-        "",
+      'Fn::Join': [
+        '',
         [
-          "arn:",
+          'arn:',
           {
-            Ref: "AWS::Partition",
+            Ref: 'AWS::Partition',
           },
-          ":states:::ecs:runTask.sync",
+          ':states:::ecs:runTask.sync',
         ],
       ],
     },
-    Type: "Task",
+    Type: 'Task',
   });
 
   expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [
         {
-          Action: "ecs:RunTask",
-          Effect: "Allow",
-          Resource: {Ref: "TD49C78F36"}
+          Action: 'ecs:RunTask',
+          Effect: 'Allow',
+          Resource: {Ref: 'TD49C78F36'}
         },
         {
-          Action: ["ecs:StopTask", "ecs:DescribeTasks"],
-          Effect: "Allow",
-          Resource: "*"
+          Action: ['ecs:StopTask', 'ecs:DescribeTasks'],
+          Effect: 'Allow',
+          Resource: '*'
         },
         {
-          Action: "iam:PassRole",
-          Effect: "Allow",
-          Resource: [{"Fn::GetAtt": ["TDTaskRoleC497AFFC", "Arn"]}]
+          Action: 'iam:PassRole',
+          Effect: 'Allow',
+          Resource: [{'Fn::GetAtt': ['TDTaskRoleC497AFFC', 'Arn']}]
         },
         {
-          Action: ["events:PutTargets", "events:PutRule", "events:DescribeRule"],
-          Effect: "Allow",
-          Resource: {"Fn::Join": ["", [
-            "arn:",
-            {Ref: "AWS::Partition"},
-            ":events:",
-            {Ref: "AWS::Region"},
-            ":",
-            {Ref: "AWS::AccountId"},
-            ":rule/StepFunctionsGetEventsForECSTaskRule"
+          Action: ['events:PutTargets', 'events:PutRule', 'events:DescribeRule'],
+          Effect: 'Allow',
+          Resource: {'Fn::Join': ['', [
+            'arn:',
+            {Ref: 'AWS::Partition'},
+            ':events:',
+            {Ref: 'AWS::Region'},
+            ':',
+            {Ref: 'AWS::AccountId'},
+            ':rule/StepFunctionsGetEventsForECSTaskRule'
           ]]}
         }
       ],
@@ -287,31 +287,31 @@ test('Running an EC2 Task with placement strategies', () => {
   expect(stack.resolve(runTask.toStateJson())).toEqual({
     End: true,
     Parameters: {
-      Cluster: {"Fn::GetAtt": ["ClusterEB0386A7", "Arn"]},
-      LaunchType: "EC2",
-      TaskDefinition: {Ref: "TD49C78F36"},
+      Cluster: {'Fn::GetAtt': ['ClusterEB0386A7', 'Arn']},
+      LaunchType: 'EC2',
+      TaskDefinition: {Ref: 'TD49C78F36'},
       PlacementConstraints: [
-        { Type: "memberOf", Expression: "blieptuut", },
+        { Type: 'memberOf', Expression: 'blieptuut', },
       ],
       PlacementStrategy: [
-        { Field: "instanceId", Type: "spread", },
-        { Field: "cpu", Type: "binpack", },
-        { Type: "random", },
+        { Field: 'instanceId', Type: 'spread', },
+        { Field: 'cpu', Type: 'binpack', },
+        { Type: 'random', },
       ],
     },
     Resource: {
-      "Fn::Join": [
-        "",
+      'Fn::Join': [
+        '',
         [
-          "arn:",
+          'arn:',
           {
-            Ref: "AWS::Partition",
+            Ref: 'AWS::Partition',
           },
-          ":states:::ecs:runTask.sync",
+          ':states:::ecs:runTask.sync',
         ],
       ],
     },
-    Type: "Task",
+    Type: 'Task',
   });
 });
 
@@ -345,32 +345,32 @@ test('Running an EC2 Task with overridden number values', () => {
   expect(stack.resolve(runTask.toStateJson())).toEqual({
     End: true,
     Parameters: {
-      Cluster: {"Fn::GetAtt": ["ClusterEB0386A7", "Arn"]},
-      LaunchType: "EC2",
-      TaskDefinition: {Ref: "TD49C78F36"},
+      Cluster: {'Fn::GetAtt': ['ClusterEB0386A7', 'Arn']},
+      LaunchType: 'EC2',
+      TaskDefinition: {Ref: 'TD49C78F36'},
       Overrides: {
         ContainerOverrides: [
           {
-            "Command.$": "$.TheCommand",
-            "Cpu": 5,
-            "Memory.$": "$.MemoryLimit",
-            "Name": "TheContainer",
+            'Command.$': '$.TheCommand',
+            'Cpu': 5,
+            'Memory.$': '$.MemoryLimit',
+            'Name': 'TheContainer',
           },
         ],
       },
     },
     Resource: {
-      "Fn::Join": [
-        "",
+      'Fn::Join': [
+        '',
         [
-          "arn:",
+          'arn:',
           {
-            Ref: "AWS::Partition",
+            Ref: 'AWS::Partition',
           },
-          ":states:::ecs:runTask.sync",
+          ':states:::ecs:runTask.sync',
         ],
       ],
     },
-    Type: "Task",
+    Type: 'Task',
   });
 });

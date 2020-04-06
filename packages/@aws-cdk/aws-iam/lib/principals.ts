@@ -341,7 +341,7 @@ export class AccountRootPrincipal extends AccountPrincipal {
   }
 
   public toString() {
-    return `AccountRootPrincipal()`;
+    return 'AccountRootPrincipal()';
   }
 }
 
@@ -354,7 +354,7 @@ export class AnyPrincipal extends ArnPrincipal {
   }
 
   public toString() {
-    return `AnyPrincipal()`;
+    return 'AnyPrincipal()';
   }
 }
 
@@ -381,14 +381,14 @@ export class CompositePrincipal extends PrincipalBase {
     for (const p of principals) {
       if (p.assumeRoleAction !== this.assumeRoleAction) {
         throw new Error(
-          `Cannot add multiple principals with different "assumeRoleAction". ` +
+          'Cannot add multiple principals with different "assumeRoleAction". ' +
           `Expecting "${this.assumeRoleAction}", got "${p.assumeRoleAction}"`);
       }
 
       const fragment = p.policyFragment;
       if (fragment.conditions && Object.keys(fragment.conditions).length > 0) {
         throw new Error(
-          `Components of a CompositePrincipal must not have conditions. ` +
+          'Components of a CompositePrincipal must not have conditions. ' +
           `Tried to add the following fragment: ${JSON.stringify(fragment)}`);
       }
 
@@ -436,14 +436,15 @@ class StackDependentToken implements cdk.IResolvable {
    * Used when JSON.stringify() is called
    */
   public toJSON() {
-    return `<unresolved-token>`;
+    return '<unresolved-token>';
   }
 }
 
 class ServicePrincipalToken implements cdk.IResolvable {
   public readonly creationStack: string[];
-  constructor(private readonly service: string,
-              private readonly opts: ServicePrincipalOpts) {
+  constructor(
+    private readonly service: string,
+    private readonly opts: ServicePrincipalOpts) {
     this.creationStack = cdk.captureStackTrace();
   }
 

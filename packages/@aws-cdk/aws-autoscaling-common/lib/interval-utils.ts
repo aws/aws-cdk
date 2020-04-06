@@ -1,4 +1,4 @@
-import { ScalingInterval } from "./types";
+import { ScalingInterval } from './types';
 
 export interface CompleteScalingInterval {
   readonly lower: number;
