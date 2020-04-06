@@ -26,11 +26,11 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "codemaker": "^1.1.0",
+    "codemaker": "^1.2.0",
     "yaml": "1.8.3"
   },
   "devDependencies": {
-    "@types/jest": "^25.1.4",
+    "@types/jest": "^25.2.1",
     "@types/yaml": "1.2.0",
     "jest": "^24.9.0"
   },

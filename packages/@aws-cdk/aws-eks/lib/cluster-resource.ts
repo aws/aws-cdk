@@ -36,7 +36,7 @@ export class ClusterResource extends Construct {
     const provider = ClusterResourceProvider.getOrCreate(this);
 
     if (!props.roleArn) {
-      throw new Error(`"roleArn" is required`);
+      throw new Error('"roleArn" is required');
     }
 
     // the role used to create the cluster. this becomes the administrator role
@@ -126,7 +126,7 @@ export class ClusterResource extends Construct {
 
     if (!this.trustedPrincipals.includes(trustedRole.roleArn)) {
       if (!this.creationRole.assumeRolePolicy) {
-        throw new Error(`unexpected: cluster creation role must have trust policy`);
+        throw new Error('unexpected: cluster creation role must have trust policy');
       }
 
       this.creationRole.assumeRolePolicy.addStatements(new iam.PolicyStatement({

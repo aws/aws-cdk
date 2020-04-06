@@ -44,7 +44,7 @@ export = {
     test.done();
   },
 
-  "create a splunk log driver using splunk with minimum options"(test: Test) {
+  'create a splunk log driver using splunk with minimum options'(test: Test) {
     // WHEN
     td.addContainer('Container', {
       image,
@@ -73,7 +73,7 @@ export = {
     test.done();
   },
 
-  "create a splunk log driver using splunk with sourcetype defined"(test: Test) {
+  'create a splunk log driver using splunk with sourcetype defined'(test: Test) {
     // WHEN
     td.addContainer('Container', {
       image,

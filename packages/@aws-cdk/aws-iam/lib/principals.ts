@@ -1,6 +1,6 @@
 import * as cdk from '@aws-cdk/core';
 import { Default, RegionInfo } from '@aws-cdk/region-info';
-import { PolicyStatement } from './policy-statement';
+import { Condition, Conditions, PolicyStatement } from './policy-statement';
 import { mergePrincipal } from './util';
 
 /**
@@ -78,9 +78,107 @@ export abstract class PrincipalBase implements IPrincipal {
     return JSON.stringify(this.policyFragment.principalJson);
   }
 
+  /**
+   * JSON-ify the principal
+   *
+   * Used when JSON.stringify() is called
+   */
   public toJSON() {
     // Have to implement toJSON() because the default will lead to infinite recursion.
     return this.policyFragment.principalJson;
+  }
+
+  /**
+   * Returns a new PrincipalWithConditions using this principal as the base, with the
+   * passed conditions added.
+   *
+   * When there is a value for the same operator and key in both the principal and the
+   * conditions parameter, the value from the conditions parameter will be used.
+   *
+   * @returns a new PrincipalWithConditions object.
+   */
+  public withConditions(conditions: Conditions): IPrincipal {
+    return new PrincipalWithConditions(this, conditions);
+  }
+}
+
+/**
+ * An IAM principal with additional conditions specifying when the policy is in effect.
+ *
+ * For more information about conditions, see:
+ * https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition.html
+ */
+export class PrincipalWithConditions implements IPrincipal {
+  public readonly grantPrincipal: IPrincipal = this;
+  public readonly assumeRoleAction: string = this.principal.assumeRoleAction;
+  private additionalConditions: Conditions;
+
+  constructor(
+    private readonly principal: IPrincipal,
+    conditions: Conditions,
+  ) {
+    this.additionalConditions = conditions;
+  }
+
+  /**
+   * Add a condition to the principal
+   */
+  public addCondition(key: string, value: Condition) {
+    const existingValue = this.conditions[key];
+    this.conditions[key] = existingValue ? { ...existingValue, ...value } : value;
+  }
+
+  /**
+   * Adds multiple conditions to the principal
+   *
+   * Values from the conditions parameter will overwrite existing values with the same operator
+   * and key.
+   */
+  public addConditions(conditions: Conditions) {
+    Object.entries(conditions).forEach(([key, value]) => {
+      this.addCondition(key, value);
+    });
+  }
+
+  /**
+   * The conditions under which the policy is in effect.
+   * See [the IAM documentation](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition.html).
+   */
+  public get conditions() {
+    return this.mergeConditions(this.principal.policyFragment.conditions, this.additionalConditions);
+  }
+
+  public get policyFragment(): PrincipalPolicyFragment {
+    return new PrincipalPolicyFragment(this.principal.policyFragment.principalJson, this.conditions);
+  }
+
+  public addToPolicy(statement: PolicyStatement): boolean {
+    return this.principal.addToPolicy(statement);
+  }
+
+  public toString() {
+    return this.principal.toString();
+  }
+
+  /**
+   * JSON-ify the principal
+   *
+   * Used when JSON.stringify() is called
+   */
+  public toJSON() {
+    // Have to implement toJSON() because the default will lead to infinite recursion.
+    return this.policyFragment.principalJson;
+  }
+
+  private mergeConditions(principalConditions: Conditions, additionalConditions: Conditions): Conditions {
+    const mergedConditions: Conditions = {};
+    Object.entries(principalConditions).forEach(([operator, condition]) => {
+      mergedConditions[operator] = condition;
+    });
+    Object.entries(additionalConditions).forEach(([operator, condition]) => {
+      mergedConditions[operator] = { ...mergedConditions[operator], ...condition };
+    });
+    return mergedConditions;
   }
 }
 
@@ -93,7 +191,11 @@ export abstract class PrincipalBase implements IPrincipal {
 export class PrincipalPolicyFragment {
   constructor(
     public readonly principalJson: { [key: string]: string[] },
-    public readonly conditions: { [key: string]: any } = { }) {
+    /**
+     * The conditions under which the policy is in effect.
+     * See [the IAM documentation](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition.html).
+     */
+    public readonly conditions: Conditions = {}) {
   }
 }
 
@@ -103,7 +205,7 @@ export class ArnPrincipal extends PrincipalBase {
   }
 
   public get policyFragment(): PrincipalPolicyFragment {
-    return new PrincipalPolicyFragment({ AWS: [ this.arn ] });
+    return new PrincipalPolicyFragment({ AWS: [this.arn] });
   }
 
   public toString() {
@@ -200,7 +302,7 @@ export class CanonicalUserPrincipal extends PrincipalBase {
   }
 
   public get policyFragment(): PrincipalPolicyFragment {
-    return new PrincipalPolicyFragment({ CanonicalUser: [ this.canonicalUserId ] });
+    return new PrincipalPolicyFragment({ CanonicalUser: [this.canonicalUserId] });
   }
 
   public toString() {
@@ -213,7 +315,11 @@ export class FederatedPrincipal extends PrincipalBase {
 
   constructor(
     public readonly federated: string,
-    public readonly conditions: {[key: string]: any},
+    /**
+     * The conditions under which the policy is in effect.
+     * See [the IAM documentation](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition.html).
+     */
+    public readonly conditions: Conditions,
     assumeRoleAction: string = 'sts:AssumeRole') {
     super();
 
@@ -221,7 +327,7 @@ export class FederatedPrincipal extends PrincipalBase {
   }
 
   public get policyFragment(): PrincipalPolicyFragment {
-    return new PrincipalPolicyFragment({ Federated: [ this.federated ] }, this.conditions);
+    return new PrincipalPolicyFragment({ Federated: [this.federated] }, this.conditions);
   }
 
   public toString() {
@@ -235,7 +341,7 @@ export class AccountRootPrincipal extends AccountPrincipal {
   }
 
   public toString() {
-    return `AccountRootPrincipal()`;
+    return 'AccountRootPrincipal()';
   }
 }
 
@@ -248,7 +354,7 @@ export class AnyPrincipal extends ArnPrincipal {
   }
 
   public toString() {
-    return `AnyPrincipal()`;
+    return 'AnyPrincipal()';
   }
 }
 
@@ -275,14 +381,14 @@ export class CompositePrincipal extends PrincipalBase {
     for (const p of principals) {
       if (p.assumeRoleAction !== this.assumeRoleAction) {
         throw new Error(
-          `Cannot add multiple principals with different "assumeRoleAction". ` +
+          'Cannot add multiple principals with different "assumeRoleAction". ' +
           `Expecting "${this.assumeRoleAction}", got "${p.assumeRoleAction}"`);
       }
 
       const fragment = p.policyFragment;
       if (fragment.conditions && Object.keys(fragment.conditions).length > 0) {
         throw new Error(
-          `Components of a CompositePrincipal must not have conditions. ` +
+          'Components of a CompositePrincipal must not have conditions. ' +
           `Tried to add the following fragment: ${JSON.stringify(fragment)}`);
       }
 
@@ -293,7 +399,7 @@ export class CompositePrincipal extends PrincipalBase {
   }
 
   public get policyFragment(): PrincipalPolicyFragment {
-    const principalJson: { [key: string]: string[] } = { };
+    const principalJson: { [key: string]: string[] } = {};
 
     for (const p of this.principals) {
       mergePrincipal(principalJson, p.policyFragment.principalJson);
@@ -324,15 +430,21 @@ class StackDependentToken implements cdk.IResolvable {
     return cdk.Token.asString(this);
   }
 
+  /**
+   * JSON-ify the token
+   *
+   * Used when JSON.stringify() is called
+   */
   public toJSON() {
-    return `<unresolved-token>`;
+    return '<unresolved-token>';
   }
 }
 
 class ServicePrincipalToken implements cdk.IResolvable {
   public readonly creationStack: string[];
-  constructor(private readonly service: string,
-              private readonly opts: ServicePrincipalOpts) {
+  constructor(
+    private readonly service: string,
+    private readonly opts: ServicePrincipalOpts) {
     this.creationStack = cdk.captureStackTrace();
   }
 
@@ -348,6 +460,11 @@ class ServicePrincipalToken implements cdk.IResolvable {
     });
   }
 
+  /**
+   * JSON-ify the token
+   *
+   * Used when JSON.stringify() is called
+   */
   public toJSON() {
     return `<${this.service}>`;
   }

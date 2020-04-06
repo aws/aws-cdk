@@ -307,8 +307,8 @@ export = {
     expect(stack).toMatch({
       Parameters: {
         MyParamNameParameter: {
-          Type: "AWS::SSM::Parameter::Value<String>",
-          Default: "MyParamName"
+          Type: 'AWS::SSM::Parameter::Value<String>',
+          Default: 'MyParamName'
         }
       }
     });
@@ -553,8 +553,8 @@ export = {
       expect(stack).toMatch({
         Parameters: {
           SsmParameterValuemyparamnameC96584B6F00A464EAD1953AFF4B05118Parameter: {
-            Type: "AWS::SSM::Parameter::Value<String>",
-            Default: "my-param-name"
+            Type: 'AWS::SSM::Parameter::Value<String>',
+            Default: 'my-param-name'
           }
         }
       });
@@ -576,12 +576,12 @@ export = {
       expect(stack).toMatch({
         Parameters: {
           SsmParameterValuemyparamnameC96584B6F00A464EAD1953AFF4B05118Parameter: {
-            Type: "AWS::SSM::Parameter::Value<String>",
-            Default: "my-param-name"
+            Type: 'AWS::SSM::Parameter::Value<String>',
+            Default: 'my-param-name'
           },
           SsmParameterValuemyparamname2C96584B6F00A464EAD1953AFF4B05118Parameter: {
-            Type: "AWS::SSM::Parameter::Value<String>",
-            Default: "my-param-name-2"
+            Type: 'AWS::SSM::Parameter::Value<String>',
+            Default: 'my-param-name-2'
           }
         }
       });

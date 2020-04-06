@@ -192,7 +192,7 @@ export class EmrCreateCluster implements sfn.IStepFunctionsTask {
    */
   public get serviceRole(): iam.IRole {
     if (this._serviceRole === undefined) {
-        throw new Error(`role not available yet--use the object in a Task first`);
+      throw new Error('role not available yet--use the object in a Task first');
     }
     return this._serviceRole;
   }
@@ -204,7 +204,7 @@ export class EmrCreateCluster implements sfn.IStepFunctionsTask {
    */
   public get clusterRole(): iam.IRole {
     if (this._clusterRole === undefined) {
-        throw new Error(`role not available yet--use the object in a Task first`);
+      throw new Error('role not available yet--use the object in a Task first');
     }
     return this._clusterRole;
   }
@@ -216,7 +216,7 @@ export class EmrCreateCluster implements sfn.IStepFunctionsTask {
    */
   public get autoScalingRole(): iam.IRole {
     if (this._autoScalingRole === undefined) {
-        throw new Error(`role not available yet--use the object in a Task first`);
+      throw new Error('role not available yet--use the object in a Task first');
     }
     return this._autoScalingRole;
   }
@@ -266,8 +266,9 @@ export class EmrCreateCluster implements sfn.IStepFunctionsTask {
   /**
    * This generates the PolicyStatements required by the Task to call CreateCluster.
    */
-  private createPolicyStatements(task: sfn.Task, serviceRole: iam.IRole, clusterRole: iam.IRole,
-                                 autoScalingRole?: iam.IRole): iam.PolicyStatement[] {
+  private createPolicyStatements(
+    task: sfn.Task, serviceRole: iam.IRole, clusterRole: iam.IRole,
+    autoScalingRole?: iam.IRole): iam.PolicyStatement[] {
     const stack = cdk.Stack.of(task);
 
     const policyStatements = [

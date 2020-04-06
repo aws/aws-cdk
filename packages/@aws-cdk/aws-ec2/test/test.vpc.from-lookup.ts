@@ -1,7 +1,7 @@
-import { Construct, ContextProvider, GetContextValueOptions, GetContextValueResult, Lazy, Stack } from "@aws-cdk/core";
+import { Construct, ContextProvider, GetContextValueOptions, GetContextValueResult, Lazy, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
-import { SubnetType, Vpc } from "../lib";
+import { SubnetType, Vpc } from '../lib';
 
 export = {
   'Vpc.fromLookup()': {
@@ -180,8 +180,9 @@ interface MockVcpContextResponse {
   readonly subnetGroups: cxapi.VpcSubnetGroup[];
 }
 
-function mockVpcContextProviderWith(test: Test, response: MockVcpContextResponse,
-                                    paramValidator?: (options: cxapi.VpcContextQuery) => void) {
+function mockVpcContextProviderWith(
+  test: Test, response: MockVcpContextResponse,
+  paramValidator?: (options: cxapi.VpcContextQuery) => void) {
   const previous = ContextProvider.getValue;
   ContextProvider.getValue = (_scope: Construct, options: GetContextValueOptions) => {
     // do some basic sanity checks
