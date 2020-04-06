@@ -129,6 +129,23 @@ Resources:
         IgnorePublicAcls: true
         RestrictPublicBuckets: true
     UpdateReplacePolicy: Retain
+  StagingBucketPolicy:
+    Type: 'AWS::S3::BucketPolicy'
+    Properties:
+      Bucket: { Ref: 'StagingBucket' }
+      PolicyDocument:
+        Id: 'AccessControl'
+        Version: '2012-10-17'
+        Statement:
+          - Sid: 'AllowSSLRequestsOnly'
+            Action: 's3:*'
+            Effect: 'Deny'
+            Resource:
+              - { 'Fn::Sub': '${StagingBucket.Arn}' }
+              - { 'Fn::Sub': '${StagingBucket.Arn}/*' }
+            Condition:
+              Bool: { 'aws:SecureTransport': 'false' }
+            Principal: '*'
   ContainerAssetsRepository:
     Type: AWS::ECR::Repository
     Properties:
