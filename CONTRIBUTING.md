@@ -18,6 +18,7 @@ and let us know if it's not up-to-date (even better, submit a PR with your  corr
   - [Main build scripts](#main-build-scripts)
   - [Partial build tools](#partial-build-tools)
   - [Useful aliases](#useful-aliases)
+  - [eslint](#eslint)
   - [pkglint](#pkglint)
   - [awslint](#awslint)
   - [cfn2ts](#cfn2ts)
@@ -260,6 +261,19 @@ alias lt='lr test'
 # runs "yarn watch" for the current module (recommended to run in a separate terminal session):
 alias lw='lr watch'
 ```
+
+### eslint
+
+The CDK uses eslint to 'lint' all ts and js files in the CDK repo. It is executed automatically as part of `yarn build`.
+
+To run `eslint` on a specific package, at the root of the package, run
+
+```bash
+eslint . --ext=.ts,.js
+```
+
+All packages in the repo use a standard base configuration found at [eslintrc.js](tools/cdk-build-tools/config/eslintrc.js).
+This can be customized for any package by modifying the `.eslintrc` file found at its root.
 
 ### pkglint
 

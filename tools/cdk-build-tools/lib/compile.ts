@@ -17,15 +17,11 @@ export async function compileCurrentPackage(timers: Timers, options: CDKBuildOpt
 
   // Always call linters
 
-  // tslint:disable-next-line: no-console
   if (!options.eslint?.disable) {
     await shell([
       compilers.eslint || require.resolve('eslint/bin/eslint'),
-      `--config=${path.resolve(__dirname, '..', 'config', 'eslintrc.yml')}`,
       '.',
       '--ext=.js,.ts',
-      '--ignore-path=.gitignore',
-      '--no-eslintrc', // ignore local .eslintrc files
       `--resolve-plugins-relative-to=${__dirname}`,
       ...options.eslint?.["ignore-pattern"]?.map(pattern => `--ignore-pattern=${pattern}`) || []
     ], { timers });
