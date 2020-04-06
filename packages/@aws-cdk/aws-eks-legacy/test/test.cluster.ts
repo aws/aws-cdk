@@ -21,10 +21,10 @@ export = {
     expect(stack).to(haveResourceLike('AWS::EKS::Cluster', {
       ResourcesVpcConfig: {
         SubnetIds: [
-          { Ref: "VPCPublicSubnet1SubnetB4246D30" },
-          { Ref: "VPCPublicSubnet2Subnet74179F39" },
-          { Ref: "VPCPrivateSubnet1Subnet8BCA10E0" },
-          { Ref: "VPCPrivateSubnet2SubnetCFCDAA7A" },
+          { Ref: 'VPCPublicSubnet1SubnetB4246D30' },
+          { Ref: 'VPCPublicSubnet2Subnet74179F39' },
+          { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
+          { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },
         ]
       }
     }));
@@ -102,10 +102,10 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::EC2::Subnet', {
       Tags: [
-        { Key: "Name", Value: "Stack/VPC/PrivateSubnet1" },
-        { Key: "aws-cdk:subnet-name", Value: "Private" },
-        { Key: "aws-cdk:subnet-type", Value: "Private" },
-        { Key: "kubernetes.io/role/internal-elb", Value: "1" }
+        { Key: 'Name', Value: 'Stack/VPC/PrivateSubnet1' },
+        { Key: 'aws-cdk:subnet-name', Value: 'Private' },
+        { Key: 'aws-cdk:subnet-type', Value: 'Private' },
+        { Key: 'kubernetes.io/role/internal-elb', Value: '1' }
       ]
     }));
 
@@ -123,10 +123,10 @@ export = {
     expect(stack).to(haveResource('AWS::EC2::Subnet', {
       MapPublicIpOnLaunch: true,
       Tags: [
-        { Key: "Name", Value: "Stack/VPC/PublicSubnet1" },
-        { Key: "aws-cdk:subnet-name", Value: "Public" },
-        { Key: "aws-cdk:subnet-type", Value: "Public" },
-        { Key: "kubernetes.io/role/elb", Value: "1" }
+        { Key: 'Name', Value: 'Stack/VPC/PublicSubnet1' },
+        { Key: 'aws-cdk:subnet-name', Value: 'Public' },
+        { Key: 'aws-cdk:subnet-type', Value: 'Public' },
+        { Key: 'kubernetes.io/role/elb', Value: '1' }
       ]
     }));
 
@@ -147,14 +147,14 @@ export = {
     expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', {
       Tags: [
         {
-          Key: "Name",
+          Key: 'Name',
           PropagateAtLaunch: true,
-          Value: "Stack/Cluster/Default"
+          Value: 'Stack/Cluster/Default'
         },
         {
-          Key: { "Fn::Join": [ "", [ "kubernetes.io/cluster/", { Ref: "ClusterEB0386A7" } ] ] },
+          Key: { 'Fn::Join': [ '', [ 'kubernetes.io/cluster/', { Ref: 'ClusterEB0386A7' } ] ] },
           PropagateAtLaunch: true,
-          Value: "owned"
+          Value: 'owned'
         }
       ]
     }));
@@ -186,7 +186,7 @@ export = {
       Outputs: {
         ClusterARN: {
           Value: {
-            "Fn::ImportValue": "Stack:ExportsOutputFnGetAttClusterEB0386A7Arn2F2E3C3F"
+            'Fn::ImportValue': 'Stack:ExportsOutputFnGetAttClusterEB0386A7Arn2F2E3C3F'
           }
         }
       }
@@ -218,17 +218,17 @@ export = {
     // THEN
     expect(stack).to(haveResource(eks.KubernetesResource.RESOURCE_TYPE, {
       Manifest: {
-        "Fn::Join": [
-          "",
+        'Fn::Join': [
+          '',
           [
-            "[{\"apiVersion\":\"v1\",\"kind\":\"ConfigMap\",\"metadata\":{\"name\":\"aws-auth\",\"namespace\":\"kube-system\"},\"data\":{\"mapRoles\":\"[{\\\"rolearn\\\":\\\"",
+            '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system"},"data":{"mapRoles":"[{\\"rolearn\\":\\"',
             {
-              "Fn::GetAtt": [
-                "roleC7B7E775",
-                "Arn"
+              'Fn::GetAtt': [
+                'roleC7B7E775',
+                'Arn'
               ]
             },
-            "\\\",\\\"groups\\\":[\\\"system:masters\\\"]}]\",\"mapUsers\":\"[]\",\"mapAccounts\":\"[]\"}}]"
+            '\\",\\"groups\\":[\\"system:masters\\"]}]","mapUsers":"[]","mapAccounts":"[]"}}]'
           ]
         ]
       }
@@ -248,11 +248,11 @@ export = {
 
     // THEN
     expect(stack).to(haveResource(eks.KubernetesResource.RESOURCE_TYPE, {
-      Manifest: "[{\"foo\":123}]"
+      Manifest: '[{"foo":123}]'
     }));
 
     expect(stack).to(haveResource(eks.KubernetesResource.RESOURCE_TYPE, {
-      Manifest: "[{\"bar\":123},{\"boor\":[1,2,3]}]"
+      Manifest: '[{"bar":123},{"boor":[1,2,3]}]'
     }));
 
     test.done();
@@ -271,17 +271,17 @@ export = {
     // THEN
     expect(stack).to(haveResource(eks.KubernetesResource.RESOURCE_TYPE, {
       Manifest: {
-        "Fn::Join": [
-          "",
+        'Fn::Join': [
+          '',
           [
-            "[{\"apiVersion\":\"v1\",\"kind\":\"ConfigMap\",\"metadata\":{\"name\":\"aws-auth\",\"namespace\":\"kube-system\"},\"data\":{\"mapRoles\":\"[{\\\"rolearn\\\":\\\"",
+            '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system"},"data":{"mapRoles":"[{\\"rolearn\\":\\"',
             {
-              "Fn::GetAtt": [
-                "ClusterdefaultInstanceRoleF20A29CD",
-                "Arn"
+              'Fn::GetAtt': [
+                'ClusterdefaultInstanceRoleF20A29CD',
+                'Arn'
               ]
             },
-            "\\\",\\\"username\\\":\\\"system:node:{{EC2PrivateDNSName}}\\\",\\\"groups\\\":[\\\"system:bootstrappers\\\",\\\"system:nodes\\\"]}]\",\"mapUsers\":\"[]\",\"mapAccounts\":\"[]\"}}]"
+            '\\",\\"username\\":\\"system:node:{{EC2PrivateDNSName}}\\",\\"groups\\":[\\"system:bootstrappers\\",\\"system:nodes\\"]}]","mapUsers":"[]","mapAccounts":"[]"}}]'
           ]
         ]
       }
@@ -467,7 +467,7 @@ export = {
       // THEN
       const template = app.synth().getStackByName(stack.stackName).template;
       const userData = template.Resources.ClusterMyCapcityLaunchConfig58583345.Properties.UserData;
-      test.deepEqual(userData, { "Fn::Base64": "#!/bin/bash" });
+      test.deepEqual(userData, { 'Fn::Base64': '#!/bin/bash' });
       test.done();
     },
 
@@ -549,17 +549,17 @@ export = {
   },
 
   'if bootstrap is disabled cannot specify options'(test: Test) {
-      // GIVEN
-      const { stack } = testFixtureNoVpc();
-      const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0 });
+    // GIVEN
+    const { stack } = testFixtureNoVpc();
+    const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0 });
 
-      // THEN
-      test.throws(() => cluster.addCapacity('MyCapcity', {
-        instanceType: new ec2.InstanceType('m3.xlargs'),
-        bootstrapEnabled: false,
-        bootstrapOptions: { awsApiRetryAttempts: 10 }
-      }), /Cannot specify "bootstrapOptions" if "bootstrapEnabled" is false/);
-      test.done();
+    // THEN
+    test.throws(() => cluster.addCapacity('MyCapcity', {
+      instanceType: new ec2.InstanceType('m3.xlargs'),
+      bootstrapEnabled: false,
+      bootstrapOptions: { awsApiRetryAttempts: 10 }
+    }), /Cannot specify "bootstrapOptions" if "bootstrapEnabled" is false/);
+    test.done();
   },
 
   'EKS-Optimized AMI with GPU support'(test: Test) {
@@ -576,8 +576,8 @@ export = {
     const assembly = app.synth();
     const parameters = assembly.getStackByName(stack.stackName).template.Parameters;
     test.ok(Object.entries(parameters).some(
-        ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') && (v as any).Default.includes('amazon-linux2-gpu')
-      ), 'EKS AMI with GPU should be in ssm parameters');
+      ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') && (v as any).Default.includes('amazon-linux2-gpu')
+    ), 'EKS AMI with GPU should be in ssm parameters');
     test.done();
   },
 };

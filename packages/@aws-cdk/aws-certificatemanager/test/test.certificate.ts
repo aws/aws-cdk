@@ -14,8 +14,8 @@ export = {
     expect(stack).to(haveResource('AWS::CertificateManager::Certificate', {
       DomainName: 'test.example.com',
       DomainValidationOptions: [{
-        DomainName: "test.example.com",
-        ValidationDomain: "example.com"
+        DomainName: 'test.example.com',
+        ValidationDomain: 'example.com'
       }]
     }));
 
@@ -34,8 +34,8 @@ export = {
 
     expect(stack).to(haveResource('AWS::CertificateManager::Certificate', {
       DomainValidationOptions: [{
-        DomainName: "test.example.com",
-        ValidationDomain: "test.example.com"
+        DomainName: 'test.example.com',
+        ValidationDomain: 'test.example.com'
       }]
     }));
 

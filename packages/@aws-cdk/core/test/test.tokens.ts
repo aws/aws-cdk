@@ -34,18 +34,18 @@ export = {
     test.deepEqual(actual, {
       Obj: [
         {
-        Data: {
-          stringProp: "hello",
-          numberProp: 1234
-        },
-        Recurse: 42
+          Data: {
+            stringProp: 'hello',
+            numberProp: 1234
+          },
+          Recurse: 42
         },
         {
-        Data: {
-          stringProp: "hello",
-          numberProp: 1234
-        },
-        Recurse: 42
+          Data: {
+            stringProp: 'hello',
+            numberProp: 1234
+          },
+          Recurse: 42
         }
       ]
     });
@@ -60,18 +60,18 @@ export = {
     test.deepEqual(actual, {
       Obj: [
         {
-        Data: {
-          stringProp: "hello",
-          numberProp: 1234
-        },
-        Recurse: 42
+          Data: {
+            stringProp: 'hello',
+            numberProp: 1234
+          },
+          Recurse: 42
         },
         {
-        Data: {
-          stringProp: "hello",
-          numberProp: 1234
-        },
-        Recurse: 42
+          Data: {
+            stringProp: 'hello',
+            numberProp: 1234
+          },
+          Recurse: 42
         }
       ]
     });
@@ -187,7 +187,7 @@ export = {
 
   'Doubly nested strings evaluate correctly in scalar context'(test: Test) {
     // GIVEN
-    const token1 = new Intrinsic( "world");
+    const token1 = new Intrinsic( 'world');
     const token2 = new Intrinsic( `hello ${token1}`);
 
     // WHEN
@@ -195,8 +195,8 @@ export = {
     const resolved2 = resolve(token2);
 
     // THEN
-    test.deepEqual(evaluateCFN(resolved1), "hello world");
-    test.deepEqual(evaluateCFN(resolved2), "hello world");
+    test.deepEqual(evaluateCFN(resolved1), 'hello world');
+    test.deepEqual(evaluateCFN(resolved2), 'hello world');
 
     test.done();
   },
@@ -291,7 +291,7 @@ export = {
 
     // WHEN
     const s = {
-      [token.toString()]: `boom chicago`
+      [token.toString()]: 'boom chicago'
     };
 
     // THEN
@@ -306,7 +306,7 @@ export = {
 
     // WHEN
     const s = {
-      [token.toString()]: `boom chicago`
+      [token.toString()]: 'boom chicago'
     };
 
     // THEN

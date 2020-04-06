@@ -790,7 +790,7 @@ export class UserPool extends Resource implements IUserPool {
       return undefined;
     } else if (props.mfaSecondFactor === undefined &&
       (props.mfa === Mfa.OPTIONAL || props.mfa === Mfa.REQUIRED)) {
-        return [ 'SMS_MFA' ];
+      return [ 'SMS_MFA' ];
     } else {
       const enabledMfas = [];
       if (props.mfaSecondFactor!.sms) {

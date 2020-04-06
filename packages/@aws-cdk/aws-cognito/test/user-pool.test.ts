@@ -278,7 +278,7 @@ describe('User Pool', () => {
       }
     });
     expect(stack).toHaveResourceLike('AWS::Lambda::Permission', {
-      Action: "lambda:InvokeFunction",
+      Action: 'lambda:InvokeFunction',
       FunctionName: stack.resolve(fn.functionArn),
       Principal: 'cognito-idp.amazonaws.com',
     });
@@ -332,7 +332,7 @@ describe('User Pool', () => {
       postConfirmation, preAuthentication, preSignUp, preTokenGeneration, userMigration,
       verifyAuthChallengeResponse ].forEach((fn) => {
       expect(stack).toHaveResourceLike('AWS::Lambda::Permission', {
-        Action: "lambda:InvokeFunction",
+        Action: 'lambda:InvokeFunction',
         FunctionName: stack.resolve(fn.functionArn),
         Principal: 'cognito-idp.amazonaws.com',
       });
