@@ -2312,12 +2312,12 @@
   dependencies:
     "@types/yargs-parser" "*"
 
-"@typescript-eslint/eslint-plugin@^2.26.0":
-  version "2.26.0"
-  resolved "https://registry.yarnpkg.com/@typescript-eslint/eslint-plugin/-/eslint-plugin-2.26.0.tgz#04c96560c8981421e5a9caad8394192363cc423f"
-  integrity sha512-4yUnLv40bzfzsXcTAtZyTjbiGUXMrcIJcIMioI22tSOyAxpdXiZ4r7YQUU8Jj6XXrLz9d5aMHPQf5JFR7h27Nw==
+"@typescript-eslint/eslint-plugin@^2.27.0":
+  version "2.27.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/eslint-plugin/-/eslint-plugin-2.27.0.tgz#e479cdc4c9cf46f96b4c287755733311b0d0ba4b"
+  integrity sha512-/my+vVHRN7zYgcp0n4z5A6HAK7bvKGBiswaM5zIlOQczsxj/aiD7RcgD+dvVFuwFaGh5+kM7XA6Q6PN0bvb1tw==
   dependencies:
-    "@typescript-eslint/experimental-utils" "2.26.0"
+    "@typescript-eslint/experimental-utils" "2.27.0"
     functional-red-black-tree "^1.0.1"
     regexpp "^3.0.0"
     tsutils "^3.17.1"
@@ -2331,13 +2331,13 @@
     "@typescript-eslint/typescript-estree" "2.23.0"
     eslint-scope "^5.0.0"
 
-"@typescript-eslint/experimental-utils@2.26.0":
-  version "2.26.0"
-  resolved "https://registry.yarnpkg.com/@typescript-eslint/experimental-utils/-/experimental-utils-2.26.0.tgz#063390c404d9980767d76274df386c0aa675d91d"
-  integrity sha512-RELVoH5EYd+JlGprEyojUv9HeKcZqF7nZUGSblyAw1FwOGNnmQIU8kxJ69fttQvEwCsX5D6ECJT8GTozxrDKVQ==
+"@typescript-eslint/experimental-utils@2.27.0":
+  version "2.27.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/experimental-utils/-/experimental-utils-2.27.0.tgz#801a952c10b58e486c9a0b36cf21e2aab1e9e01a"
+  integrity sha512-vOsYzjwJlY6E0NJRXPTeCGqjv5OHgRU1kzxHKWJVPjDYGbPgLudBXjIlc+OD1hDBZ4l1DLbOc5VjofKahsu9Jw==
   dependencies:
     "@types/json-schema" "^7.0.3"
-    "@typescript-eslint/typescript-estree" "2.26.0"
+    "@typescript-eslint/typescript-estree" "2.27.0"
     eslint-scope "^5.0.0"
     eslint-utils "^2.0.0"
 
@@ -2364,10 +2364,10 @@
     semver "^6.3.0"
     tsutils "^3.17.1"
 
-"@typescript-eslint/typescript-estree@2.26.0":
-  version "2.26.0"
-  resolved "https://registry.yarnpkg.com/@typescript-eslint/typescript-estree/-/typescript-estree-2.26.0.tgz#d8132cf1ee8a72234f996519a47d8a9118b57d56"
-  integrity sha512-3x4SyZCLB4zsKsjuhxDLeVJN6W29VwBnYpCsZ7vIdPel9ZqLfIZJgJXO47MNUkurGpQuIBALdPQKtsSnWpE1Yg==
+"@typescript-eslint/typescript-estree@2.27.0":
+  version "2.27.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/typescript-estree/-/typescript-estree-2.27.0.tgz#a288e54605412da8b81f1660b56c8b2e42966ce8"
+  integrity sha512-t2miCCJIb/FU8yArjAvxllxbTiyNqaXJag7UOpB5DVoM3+xnjeOngtqlJkLRnMtzaRcJhe3CIR9RmL40omubhg==
   dependencies:
     debug "^4.1.1"
     eslint-visitor-keys "^1.1.0"
@@ -3401,7 +3401,7 @@ capture-stack-trace@^1.0.0:
   resolved "https://registry.yarnpkg.com/capture-stack-trace/-/capture-stack-trace-1.0.1.tgz#a6c0bbe1f38f3aa0b92238ecb6ff42c344d4135d"
   integrity sha512-mYQLZnx5Qt1JgB1WEiMCf2647plpGeQ2NMR/5L0HNZzGQo4fuSPnK+wjfPnKZV0aiJDgzmWqqkV/g7JD+DW0qw==
 
-case@1.6.3, case@^1.6.2, case@^1.6.3:
+case@1.6.3, case@^1.6.3:
   version "1.6.3"
   resolved "https://registry.yarnpkg.com/case/-/case-1.6.3.tgz#0a4386e3e9825351ca2e6216c60467ff5f1ea1c9"
   integrity sha512-mzDSXIPaFwVDvZAHqZ9VlbyF4yyXRuX6IvB06WvPYkqJVO24kX1PPhv9bfpKNFZyxYFmmgo03HUiD8iklmJYRQ==
@@ -3602,14 +3602,14 @@ code-point-at@^1.0.0:
   resolved "https://registry.yarnpkg.com/code-point-at/-/code-point-at-1.1.0.tgz#0d070b4d043a5bea33a2f1a40e2edb3d9a4ccf77"
   integrity sha1-DQcLTQQ6W+ozovGkDi7bPZpMz3c=
 
-codemaker@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/codemaker/-/codemaker-1.1.0.tgz#157020837e6bbb6bdae55f6b3ac9fce8d7676b69"
-  integrity sha512-XkPDpK8tagP+UUo+/d/4xD1nbP9LxefMLWDE772QmOR4tTINc4WYZkLPLdpnU1v+qRKX1kALD1dQ2MtsC3ZHYw==
+codemaker@^1.1.0, codemaker@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/codemaker/-/codemaker-1.2.0.tgz#9a9ea3567cb4322710b8145ed31494385e65503a"
+  integrity sha512-Cga8BFZz7muPZMcYvc+7JIgN2wNwrGaaFDLVXR4+xUDTaXFDq09tUNzx30o+GmGH4NMy8mNTSTxmTugJNB3U8w==
   dependencies:
     camelcase "^5.3.1"
     decamelize "^1.2.0"
-    fs-extra "^8.1.0"
+    fs-extra "^9.0.0"
 
 collect-v8-coverage@^1.0.0:
   version "1.0.0"
@@ -7835,23 +7835,23 @@ jsii-rosetta@^1.1.0, jsii-rosetta@^1.2.0:
     xmldom "^0.3.0"
     yargs "^15.3.1"
 
-jsii@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/jsii/-/jsii-1.1.0.tgz#cc76544fd67793f92f3fbe8f0d1ff22d75f61092"
-  integrity sha512-QmtKu2ZEXwMop+An4AnDsOZJr5EObcXtGiuw8bVy8ldq1WHiri4mvSWwZQI3ekUcWyOGjwFY9CuDy+xYbsf+Pg==
+jsii@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/jsii/-/jsii-1.2.0.tgz#06a27a552479fa5f6037eb63c9565a4725aa7f12"
+  integrity sha512-JIyn7z3umoeEyK0QdVdnskjIW7SmV9S6sUKJVY424t7g0QE6NRlhM26JarRxCwCGuR1lJ1AnvcQbvQ7vV8/kaA==
   dependencies:
-    "@jsii/spec" "^1.1.0"
-    case "^1.6.2"
+    "@jsii/spec" "^1.2.0"
+    case "^1.6.3"
     colors "^1.4.0"
     deep-equal "^2.0.1"
-    fs-extra "^8.1.0"
+    fs-extra "^9.0.0"
     log4js "^6.1.2"
     semver "^7.1.3"
     semver-intersect "^1.4.0"
     sort-json "^2.0.0"
     spdx-license-list "^6.1.0"
     typescript "~3.8.3"
-    yargs "^15.3.0"
+    yargs "^15.3.1"
 
 json-diff@^0.5.4:
   version "0.5.4"
