@@ -1,4 +1,5 @@
 import { expect, haveResource } from '@aws-cdk/assert';
+import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as apigateway from '../lib';
@@ -243,6 +244,110 @@ export = {
       deployment,
       cachingEnabled: true
     }), /Cannot enable caching for method \/\*\/\* since cache cluster is disabled on stage/);
+
+    test.done();
+  },
+
+  'if only the custom log destination log group is set'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'test-api', {cloudWatchRole: false, deploy: false});
+    const deployment = new apigateway.Deployment(stack, 'my-deployment', {api});
+    api.root.addMethod('GET');
+
+    // WHEN
+    const testLogGroup = new logs.LogGroup(stack, 'LogGroup');
+    new apigateway.Stage(stack, 'my-stage', {
+      deployment,
+      accessLogDestination: new apigateway.LogGroupLogDestination(testLogGroup),
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::Stage', {
+      AccessLogSetting: {
+        DestinationArn: {
+          'Fn::GetAtt': [
+            'LogGroupF5B46931',
+            'Arn'
+          ]
+        },
+        Format: '$context.identity.sourceIp $context.identity.caller $context.identity.user [$context.requestTime] "$context.httpMethod $context.resourcePath $context.protocol" $context.status $context.responseLength $context.requestId'
+      },
+      StageName: 'prod'
+    }));
+
+    test.done();
+  },
+
+  'if the custom log destination log group and format is set'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'test-api', {cloudWatchRole: false, deploy: false});
+    const deployment = new apigateway.Deployment(stack, 'my-deployment', {api});
+    api.root.addMethod('GET');
+
+    // WHEN
+    const testLogGroup = new logs.LogGroup(stack, 'LogGroup');
+    const testFormat = apigateway.AccessLogFormat.jsonWithStandardFields();
+    new apigateway.Stage(stack, 'my-stage', {
+      deployment,
+      accessLogDestination: new apigateway.LogGroupLogDestination(testLogGroup),
+      accessLogFormat: testFormat
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::Stage', {
+      AccessLogSetting: {
+        DestinationArn: {
+          'Fn::GetAtt': [
+            'LogGroupF5B46931',
+            'Arn'
+          ]
+        },
+        Format: '{"requestId":"$context.requestId","ip":"$context.identity.sourceIp","user":"$context.identity.user","caller":"$context.identity.caller","requestTime":"$context.requestTime","httpMethod":"$context.httpMethod","resourcePath":"$context.resourcePath","status":"$context.status","protocol":"$context.protocol","responseLength":"$context.responseLength"}'
+      },
+      StageName: 'prod'
+    }));
+
+    test.done();
+  },
+
+  'fails when access log format does not contain `AccessLogFormat.contextRequestId()`'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
+    const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
+    api.root.addMethod('GET');
+
+    // WHEN
+    const testLogGroup = new logs.LogGroup(stack, 'LogGroup');
+    const testFormat = apigateway.AccessLogFormat.custom('');
+
+    // THEN
+    test.throws(() => new apigateway.Stage(stack, 'my-stage', {
+      deployment,
+      accessLogDestination: new apigateway.LogGroupLogDestination(testLogGroup),
+      accessLogFormat: testFormat
+    }), /Access log must include at least `AccessLogFormat.contextRequestId\(\)`/);
+
+    test.done();
+  },
+
+  'fails when access log destination is empty'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
+    const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
+    api.root.addMethod('GET');
+
+    // WHEN
+    const testFormat = apigateway.AccessLogFormat.jsonWithStandardFields();
+
+    // THEN
+    test.throws(() => new apigateway.Stage(stack, 'my-stage', {
+      deployment,
+      accessLogFormat: testFormat
+    }), /Access log format is specified without a destination/);
 
     test.done();
   },
