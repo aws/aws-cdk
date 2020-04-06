@@ -11,7 +11,7 @@ import { HelmChart, HelmChartOptions } from './helm-chart';
 import { KubernetesPatch } from './k8s-patch';
 import { KubernetesResource } from './k8s-resource';
 import { Nodegroup, NodegroupOptions  } from './managed-nodegroup';
-import { renderUserData } from './user-data';
+import { LifecycleLabel, renderUserData } from './user-data';
 
 // defaults are based on https://eksctl.io
 const DEFAULT_CAPACITY_COUNT = 2;
@@ -992,20 +992,6 @@ export enum DefaultCapacityType {
    * EC2 autoscaling group
    */
   EC2
-}
-
-/**
- * The lifecycle label for node selector
- */
-export enum LifecycleLabel {
-  /**
-   * on-demand instances
-   */
-  ON_DEMAND = 'OnDemand',
-  /**
-   * spot instances
-   */
-  SPOT = 'Ec2Spot',
 }
 
 const GPU_INSTANCETYPES = ['p2', 'p3', 'g4'];

@@ -108,8 +108,7 @@
       "resource-attribute:@aws-cdk/aws-eks.Cluster.clusterSecurityGroupId",
       "resource-attribute:@aws-cdk/aws-eks.Cluster.clusterSecurityGroupId",
       "docs-public-apis:@aws-cdk/aws-eks.NodegroupAmiType.AL2_X86_64",
-      "docs-public-apis:@aws-cdk/aws-eks.NodegroupAmiType.AL2_X86_64_GPU",
-      "no-unused-type:@aws-cdk/aws-eks.LifecycleLabel"
+      "docs-public-apis:@aws-cdk/aws-eks.NodegroupAmiType.AL2_X86_64_GPU"
     ]
   },
   "stability": "experimental",

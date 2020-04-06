@@ -1,6 +1,6 @@
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import { Stack } from '@aws-cdk/core';
-import { BootstrapOptions, LifecycleLabel } from './cluster';
+import { BootstrapOptions } from './cluster';
 
 export function renderUserData(clusterName: string, autoScalingGroup: autoscaling.AutoScalingGroup, options: BootstrapOptions = { }): string[] {
   const stack = Stack.of(autoScalingGroup);
@@ -42,4 +42,18 @@ export function renderUserData(clusterName: string, autoScalingGroup: autoscalin
     `/etc/eks/bootstrap.sh ${clusterName} --kubelet-extra-args "${kubeletExtraArgs}" ${commandLineSuffix}`.trim(),
     `/opt/aws/bin/cfn-signal --exit-code $? --stack ${stack.stackName} --resource ${asgLogicalId} --region ${stack.region}`
   ];
+}
+
+/**
+ * The lifecycle label for node selector
+ */
+export enum LifecycleLabel {
+  /**
+   * on-demand instances
+   */
+  ON_DEMAND = 'OnDemand',
+  /**
+   * spot instances
+   */
+  SPOT = 'Ec2Spot',
 }
