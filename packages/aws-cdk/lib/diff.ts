@@ -14,11 +14,11 @@ import { print, warning } from './logging';
  * @returns the count of differences that were rendered.
  */
 export function printStackDiff(
-      oldTemplate: any,
-      newTemplate: cxapi.CloudFormationStackArtifact,
-      strict: boolean,
-      context: number,
-      stream?: cfnDiff.FormatStream): number {
+  oldTemplate: any,
+  newTemplate: cxapi.CloudFormationStackArtifact,
+  strict: boolean,
+  context: number,
+  stream?: cfnDiff.FormatStream): number {
 
   const diff = cfnDiff.diffTemplate(oldTemplate, newTemplate.template);
 
@@ -60,7 +60,7 @@ export function printSecurityDiff(oldTemplate: any, newTemplate: cxapi.CloudForm
   if (difRequiresApproval(diff, requireApproval)) {
     // tslint:disable-next-line:max-line-length
     warning(`This deployment will make potentially sensitive changes according to your current security approval level (--require-approval ${requireApproval}).`);
-    warning(`Please confirm you intend to make the following modifications:\n`);
+    warning('Please confirm you intend to make the following modifications:\n');
 
     cfnDiff.formatSecurityChanges(process.stdout, diff, buildLogicalToPathMap(newTemplate));
     return true;

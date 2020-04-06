@@ -51,16 +51,19 @@ export class Source {
    * Uses a local asset as the deployment source.
    * @param path The path to a local .zip file or a directory
    */
-  public static asset(path: string): ISource {
+  public static asset(path: string, options?: s3_assets.AssetOptions): ISource {
     return {
       bind(context: cdk.Construct): SourceConfig {
         let id = 1;
         while (context.node.tryFindChild(`Asset${id}`)) {
           id++;
         }
-        const asset = new s3_assets.Asset(context, `Asset${id}`, { path });
+        const asset = new s3_assets.Asset(context, `Asset${id}`, {
+          path,
+          ...options,
+        });
         if (!asset.isZipArchive) {
-          throw new Error(`Asset path must be either a .zip file or a directory`);
+          throw new Error('Asset path must be either a .zip file or a directory');
         }
         return {
           bucket: asset.bucket,

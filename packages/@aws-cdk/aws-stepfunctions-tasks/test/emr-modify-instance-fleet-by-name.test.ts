@@ -12,13 +12,13 @@ beforeEach(() => {
 test('Modify an InstanceFleet with static ClusterId, InstanceFleetName, and InstanceFleetConfiguration', () => {
   // WHEN
   const task = new sfn.Task(stack, 'Task', {
-      task: new tasks.EmrModifyInstanceFleetByName({
-        clusterId: 'ClusterId',
-        instanceFleetName: 'InstanceFleetName',
-        targetOnDemandCapacity: 2,
-        targetSpotCapacity: 0
-      })
-    });
+    task: new tasks.EmrModifyInstanceFleetByName({
+      clusterId: 'ClusterId',
+      instanceFleetName: 'InstanceFleetName',
+      targetOnDemandCapacity: 2,
+      targetSpotCapacity: 0
+    })
+  });
 
   // THEN
   expect(stack.resolve(task.toStateJson())).toEqual({

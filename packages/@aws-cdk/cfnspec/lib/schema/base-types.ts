@@ -15,15 +15,15 @@ export enum PrimitiveType {
 
 export function isPrimitiveType(str: string): str is PrimitiveType {
   switch (str) {
-  case PrimitiveType.String:
-  case PrimitiveType.Long:
-  case PrimitiveType.Integer:
-  case PrimitiveType.Double:
-  case PrimitiveType.Boolean:
-  case PrimitiveType.Timestamp:
-  case PrimitiveType.Json:
-    return true;
-  default:
-    return false;
+    case PrimitiveType.String:
+    case PrimitiveType.Long:
+    case PrimitiveType.Integer:
+    case PrimitiveType.Double:
+    case PrimitiveType.Boolean:
+    case PrimitiveType.Timestamp:
+    case PrimitiveType.Json:
+      return true;
+    default:
+      return false;
   }
 }

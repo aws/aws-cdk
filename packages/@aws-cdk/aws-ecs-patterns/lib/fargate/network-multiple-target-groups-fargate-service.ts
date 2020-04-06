@@ -155,7 +155,7 @@ export class NetworkMultipleTargetGroupsFargateService extends NetworkMultipleTa
   }
 
   private createFargateService(props: NetworkMultipleTargetGroupsFargateServiceProps): FargateService {
-    return new FargateService(this, "Service", {
+    return new FargateService(this, 'Service', {
       cluster: this.cluster,
       desiredCount: this.desiredCount,
       taskDefinition: this.taskDefinition,
