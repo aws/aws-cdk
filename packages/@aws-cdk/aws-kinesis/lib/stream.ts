@@ -331,15 +331,12 @@ export class Stream extends StreamBase {
     }
 
     if (encryptionType === StreamEncryption.UNENCRYPTED) {
-      return { streamEncryption: undefined, encryptionKey: undefined };
+      return { };
     }
 
     if (encryptionType === StreamEncryption.MANAGED) {
       const encryption = { encryptionType: 'KMS', keyId: 'alias/aws/kinesis'};
-      return {
-        streamEncryption: encryption,
-        encryptionKey: undefined
-      };
+      return { streamEncryption: encryption };
     }
 
     if (encryptionType === StreamEncryption.KMS) {
