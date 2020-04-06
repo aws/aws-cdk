@@ -45,35 +45,11 @@ test('use aws batch job as an eventrule target', () => {
             'MyJobEventsRoleCF43C336',
             'Arn'
           ]
-        }
-      }
-    ]
-  }));
-  expect(stack).to(haveResource('AWS::IAM::Role', {
-    AssumeRolePolicyDocument: {
-      Statement: [
-        {
-          Action: 'sts:AssumeRole',
-          Effect: 'Allow',
-          Principal: {
-            Service: 'batch.amazonaws.com'
-          }
-        }
-      ],
-      Version: '2012-10-17'
-    },
-    ManagedPolicyArns: [
-      {
-        'Fn::Join': [
-          '',
-          [
-            'arn:',
-            {
-              Ref: 'AWS::Partition'
-            },
-            ':iam::aws:policy/service-role/AWSBatchServiceRole'
-          ]
-        ]
+        },
+        BatchParameters: {
+          JobDefinition: { Ref: 'MyJob8719E923' },
+          JobName: 'Rule'
+        },
       }
     ]
   }));
@@ -84,18 +60,16 @@ test('use aws batch job as an eventrule target', () => {
         {
           Action: 'batch:SubmitJob',
           Effect: 'Allow',
-          Resource: {
-            Ref: 'MyJob8719E923'
-          }
+          Resource: [
+            { Ref: 'MyJob8719E923' },
+            { Ref: 'MyQueueE6CA6235' }
+          ],
         }
       ],
       Version: '2012-10-17'
     },
-    PolicyName: 'MyJobEventsRoleDefaultPolicy7266D3A7',
     Roles: [
-      {
-        Ref: 'MyJobEventsRoleCF43C336'
-      }
+      { Ref: 'MyJobEventsRoleCF43C336' }
     ]
   }));
 });

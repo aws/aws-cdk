@@ -28,7 +28,7 @@ export interface FargateServiceProps extends BaseServiceOptions {
   /**
    * The subnets to associate with the service.
    *
-   * @default - Private subnets.
+   * @default - Public subnets if `assignPublicIp` is set, otherwise the first available one of Private, Isolated, Public, in that order.
    */
   readonly vpcSubnets?: ec2.SubnetSelection;
 
