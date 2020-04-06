@@ -8,7 +8,7 @@ const stack = new cdk.Stack(app, 'aws-ecs-integ-secret-json-key');
 const secret = new secretsmanager.Secret(stack, 'Secret', {
   generateSecretString: {
     generateStringKey: 'password',
-    secretStringTemplate: JSON.stringify({ username: 'user '})
+    secretStringTemplate: JSON.stringify({ username: 'user' })
   }
 });
 
