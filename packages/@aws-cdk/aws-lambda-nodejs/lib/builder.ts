@@ -41,6 +41,15 @@ export interface BuilderOptions {
    * The node version to use as target for Babel
    */
   readonly nodeVersion?: string;
+
+  /**
+   * The docker tag of the node base image to use in the parcel-bundler docker image
+   *
+   * @see https://hub.docker.com/_/node/?tab=tags
+   *
+   * @default - 13.8.0-alpine3.11
+   */
+  readonly nodeDockerTag?: string;
 }
 
 /**
@@ -62,8 +71,9 @@ export class Builder {
         });
       }
 
+      const nodeDockerTag = this.options.nodeDockerTag || "13.8.0-alpine3.11";
       const dockerBuildArgs = [
-        "build", "-t", "parcel-bundler", path.join(__dirname, "../parcel-bundler")
+        "build", "--build-arg", `NODE_TAG=${nodeDockerTag}`, "-t", "parcel-bundler", path.join(__dirname, "../parcel-bundler")
       ];
       const dockerRunArgs = [
         "run", "--rm",
