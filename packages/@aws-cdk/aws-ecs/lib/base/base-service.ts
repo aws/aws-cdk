@@ -586,7 +586,7 @@ export abstract class BaseService extends Resource
   // tslint:disable-next-line:max-line-length
   protected configureAwsVpcNetworking(vpc: ec2.IVpc, assignPublicIp?: boolean, vpcSubnets?: ec2.SubnetSelection, securityGroup?: ec2.ISecurityGroup) {
     if (vpcSubnets === undefined) {
-      vpcSubnets = { subnetType: assignPublicIp ? ec2.SubnetType.PUBLIC : ec2.SubnetType.PRIVATE };
+      vpcSubnets = assignPublicIp ? { subnetType: ec2.SubnetType.PUBLIC } : {};
     }
     if (securityGroup === undefined) {
       securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', { vpc });

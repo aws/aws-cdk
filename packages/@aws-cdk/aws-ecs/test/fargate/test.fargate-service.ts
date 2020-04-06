@@ -82,6 +82,34 @@ export = {
       test.done();
     },
 
+    'can create service with default settings if VPC only has public subnets'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {
+        subnetConfiguration: [
+          {
+            cidrMask: 28,
+            name: 'public-only',
+            subnetType: ec2.SubnetType.PUBLIC
+          }
+        ]
+      });
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      });
+
+      // WHEN
+      new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+      });
+
+      // THEN -- did not throw
+      test.done();
+    },
+
     'with custom cloudmap namespace'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
