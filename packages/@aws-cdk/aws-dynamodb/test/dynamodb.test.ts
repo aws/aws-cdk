@@ -314,8 +314,9 @@ test('when specifying every property', () => {
     writeCapacity: 1337,
     pointInTimeRecovery: true,
     serverSideEncryption: true,
-    kmsMasterKey: {
-      keyArn: 'kmsMasterKeyArn'
+    kmsEncryption: {
+      arnPrincipal: 'arn:aws:iam::111122223333:user/db-lead',
+      masterKey: 'kmsMasterKeyArn',
     },
     billingMode: BillingMode.PROVISIONED,
     stream: StreamViewType.KEYS_ONLY,
@@ -343,7 +344,7 @@ test('when specifying every property', () => {
       SSESpecification: { 
         SSEEnabled: true, 
         KMSMasterKey: {
-          keyArn: 'kmsMasterKeyArn'
+          keyArn: 'kmsMasterKeyArn',
         } 
       },
       StreamSpecification: { StreamViewType: 'KEYS_ONLY' },

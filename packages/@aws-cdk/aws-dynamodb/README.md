@@ -90,13 +90,18 @@ const table = new dynamodb.Table(this, 'Table', {
 });
 ```
 
-To specify a Customer managed CMK, pass the CMK's key ID, Amazon Resource Name (ARN), alias name, or alias ARN to `kmsMasterKeyId`
+To specify a Customer managed CMK, pass the CMK's from IAM to `kmsMasterKey` and specify the `arnPrincipal` that will use the CMK via DynamoDB
 
 ```ts
 import dynamodb = require('@aws-cdk/aws-dynamodb');
 
 const table = new dynamodb.Table(this, 'Table', {
-  kmsMasterKeyId: 'cmkKeyID'
+  kmsMasterKey: {
+    arnPrincipal: 'arn:aws:iam::111122223333:user/db-lead',
+    masterKey: {
+      keyArn: 'iamMasterKeyArn'
+    }
+  }
 });
 ```
 

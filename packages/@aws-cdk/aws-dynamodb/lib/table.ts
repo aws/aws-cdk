@@ -58,7 +58,7 @@ export interface TableKMSOptions {
   /**
    * The master key that resides in KMS
    */
-  readonly materKey: kms.IKey
+  readonly masterKey: kms.IKey
 }
 
 export interface TableOptions {
@@ -701,7 +701,7 @@ export class Table extends TableBase {
         readCapacityUnits: props.readCapacity || 5,
         writeCapacityUnits: props.writeCapacity || 5
       },
-      sseSpecification: props.serverSideEncryption ? { sseEnabled: props.serverSideEncryption, kmsMasterKeyId: props.kmsEncryption?.materKey?.keyArn } : undefined,
+      sseSpecification: props.serverSideEncryption ? { sseEnabled: props.serverSideEncryption, kmsMasterKeyId: props.kmsEncryption?.masterKey?.keyArn } : undefined,
       streamSpecification,
       timeToLiveSpecification: props.timeToLiveAttribute ? { attributeName: props.timeToLiveAttribute, enabled: true } : undefined
     });
