@@ -53,8 +53,8 @@ const prodStage = {
 
 new codepipeline.Pipeline(stack, 'Pipeline', {
   stages: [
-      sourceStage,
-      prodStage,
+    sourceStage,
+    prodStage,
   ],
 });
 /// !hide

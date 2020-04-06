@@ -33,8 +33,8 @@ export = {
     expect(stack).toMatch({
       Parameters: {
         RefParameter: {
-          Type: "AWS::SSM::Parameter::Value<String>",
-          Default: "/some/key"
+          Type: 'AWS::SSM::Parameter::Value<String>',
+          Default: '/some/key'
         }
       }
     });

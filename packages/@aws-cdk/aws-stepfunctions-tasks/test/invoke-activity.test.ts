@@ -17,10 +17,10 @@ test('Activity can be used in a Task', () => {
   // THEN
   expect(stack).toHaveResource('AWS::StepFunctions::StateMachine', {
     DefinitionString: {
-      "Fn::Join": ["", [
-        "{\"StartAt\":\"Task\",\"States\":{\"Task\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"",
-        { Ref: "Activity04690B0A" },
-        "\"}}}"
+      'Fn::Join': ['', [
+        '{"StartAt":"Task","States":{"Task":{"End":true,"Type":"Task","Resource":"',
+        { Ref: 'Activity04690B0A' },
+        '"}}}'
       ]]
     },
   });
@@ -57,7 +57,7 @@ test('Activity Task metrics and Activity metrics are the same', () => {
     task.metricTimedOut(),
   ];
 
-    // THEN
+  // THEN
   for (let i = 0; i < activityMetrics.length; i++) {
     expect(activityMetrics[i]).toEqual(taskMetrics[i]);
   }
