@@ -2,6 +2,7 @@ import { ResourcePart, SynthUtils } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import { App, CfnDeletionPolicy, ConstructNode, Duration, RemovalPolicy, Stack, Tag } from '@aws-cdk/core';
 import {
   Attribute,
@@ -313,7 +314,9 @@ test('when specifying every property', () => {
     writeCapacity: 1337,
     pointInTimeRecovery: true,
     serverSideEncryption: true,
-    kmsMasterKeyId: 'kmsMasterKeyId',
+    kmsMasterKey: {
+      keyArn: 'kmsMasterKeyArn'
+    },
     billingMode: BillingMode.PROVISIONED,
     stream: StreamViewType.KEYS_ONLY,
     timeToLiveAttribute: 'timeToLive',
@@ -337,7 +340,12 @@ test('when specifying every property', () => {
         WriteCapacityUnits: 1337
       },
       PointInTimeRecoverySpecification: { PointInTimeRecoveryEnabled: true },
-      SSESpecification: { SSEEnabled: true, KMSMasterKeyId: 'kmsMasterKeyId' },
+      SSESpecification: { 
+        SSEEnabled: true, 
+        KMSMasterKey: {
+          keyArn: 'kmsMasterKeyArn'
+        } 
+      },
       StreamSpecification: { StreamViewType: 'KEYS_ONLY' },
       TableName: 'MyTable',
       Tags: [{ Key: 'Environment', Value: 'Production' }],

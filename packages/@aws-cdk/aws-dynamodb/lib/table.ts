@@ -2,6 +2,7 @@ import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import { CfnCustomResource, CustomResource } from '@aws-cdk/aws-cloudformation';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import { Aws, CfnCondition, Construct, Fn, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
 import { CfnTable } from './dynamodb.generated';
 import { ReplicaProvider } from './replica-provider';
@@ -46,6 +47,18 @@ export interface Attribute {
    * The data type of an attribute.
    */
   readonly type: AttributeType;
+}
+
+export interface TableKMSOptions {
+  /**
+   * The principal that will have access to the KMS CMK via DynamoDB
+   */
+  readonly arnPrincipal: string;
+
+  /**
+   * The master key that resides in KMS
+   */
+  readonly materKey: kms.IKey
 }
 
 export interface TableOptions {
@@ -106,7 +119,7 @@ export interface TableOptions {
    * DynamoDB customer master key alias/aws/dynamodb.
    * @default - KMS Master Key server-side encryption is enabled with an customer owned master key
    */
-  readonly kmsMasterKeyId?: string;
+  readonly kmsEncryption?: TableKMSOptions;
 
   /**
    * The name of TTL attribute.
@@ -651,6 +664,7 @@ export class Table extends TableBase {
   private readonly tableScaling: ScalableAttributePair = {};
   private readonly indexScaling = new Map<string, ScalableAttributePair>();
   private readonly scalingRole: iam.IRole;
+  private readonly kmsAccessPolicy: iam.IPolicy;
 
   constructor(scope: Construct, id: string, props: TableProps) {
     super(scope, id, {
@@ -687,7 +701,7 @@ export class Table extends TableBase {
         readCapacityUnits: props.readCapacity || 5,
         writeCapacityUnits: props.writeCapacity || 5
       },
-      sseSpecification: props.serverSideEncryption ? { sseEnabled: props.serverSideEncryption, kmsMasterKeyId: props.kmsMasterKeyId } : undefined,
+      sseSpecification: props.serverSideEncryption ? { sseEnabled: props.serverSideEncryption, kmsMasterKeyId: props.kmsEncryption?.materKey?.keyArn } : undefined,
       streamSpecification,
       timeToLiveSpecification: props.timeToLiveAttribute ? { attributeName: props.timeToLiveAttribute, enabled: true } : undefined
     });
@@ -705,6 +719,10 @@ export class Table extends TableBase {
     this.tableStreamArn = streamSpecification ? this.table.attrStreamArn : undefined;
 
     this.scalingRole = this.makeScalingRole();
+
+    if (props.kmsEncryption) {
+      this.kmsAccessPolicy = this.makeKMSPolicy(props.kmsEncryption);
+    }
 
     this.addKey(props.partitionKey, HASH_KEY_TYPE);
     this.tablePartitionKey = props.partitionKey;
@@ -1009,6 +1027,54 @@ export class Table extends TableBase {
       resource: 'role/aws-service-role/dynamodb.application-autoscaling.amazonaws.com',
       resourceName: 'AWSServiceRoleForApplicationAutoScaling_DynamoDBTable'
     }));
+  }
+
+  /**
+   * Return the policy that will be used by the role to access the KMS CMK
+   */
+  private makeKMSPolicy(options: TableKMSOptions): iam.IPolicy {
+    // Creating policy per DynamoDB Customer CMK Policy documentation
+    // https://docs.aws.amazon.com/kms/latest/developerguide/services-dynamodb.html#dynamodb-customer-cmk-policy
+    const principalAccessStatement = new iam.PolicyStatement({
+      sid: 'Allow access through Amazon DynamoDB for all principals in the account that are authorized to use Amazon DynamoDB',
+      principals: [
+        new iam.ServicePrincipal(options.arnPrincipal)
+      ],
+      actions: [
+        'kms:Encrypt',
+        'kms:Decrypt',
+        'kms:ReEncrypt*',
+        'kms:GenerateDataKey*',
+        'kms:DescribeKey',
+        'kms:CreateGrant'
+      ],
+      resources : options.materKey.keyArn,
+      conditions: {
+        'StringLike' : {
+          'kms:ViaService' : 'dynamodb.*.amazonaws.com'
+        }
+      }
+    });
+
+    const dynamoDBAccessStatement = new iam.PolicyStatement({
+      sid: 'Allow DynamoDB to get information about the CMK',
+      principals: [
+        new iam.ServicePrincipal('dynamodb.amazonaws.com')
+      ],
+      actions: [
+        'kms:Describe*',
+        'kms:Get*',
+        'kms:List*'
+      ],
+      resources : options.materKey.keyArn
+    });
+
+    return new iam.Policy(this, 'KMSAccessPolicy', {
+      statements: [
+        principalAccessStatement,
+        dynamoDBAccessStatement
+      ]
+    });
   }
 
   /**
