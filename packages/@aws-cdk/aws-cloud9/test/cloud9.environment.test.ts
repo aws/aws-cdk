@@ -25,7 +25,7 @@ test('create resource correctly with both vpc and subnetSelectio', () => {
     subnetSelection: {
       subnetType: ec2.SubnetType.PRIVATE
     }
-   });
+  });
   // THEN
   expectCDK(stack).to(haveResource('AWS::Cloud9::EnvironmentEC2'));
 });
@@ -42,7 +42,7 @@ test('create correctly with instanceType specified', () => {
   new cloud9.Ec2Environment(stack, 'C9Env', {
     vpc,
     instanceType: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.LARGE)
-   });
+  });
   // THEN
   expectCDK(stack).to(haveResource('AWS::Cloud9::EnvironmentEC2'));
 });

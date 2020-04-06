@@ -258,6 +258,7 @@ export = {
 
     test.done();
   },
+
   'retention period must be between 24 and 168 hours'(test: Test) {
     test.throws(() => {
       new Stream(new Stack(), 'MyStream', {
@@ -299,6 +300,21 @@ export = {
         }
       }
     });
+
+    test.done();
+  },
+
+  'encryption key cannot be supplied with UNENCRYPTED as the encryption type'(test: Test) {
+
+    const stack = new Stack();
+    const key = new kms.Key(stack, 'myKey');
+
+    test.throws(() => {
+      new Stream(stack, 'MyStream', {
+        encryptionKey: key,
+        encryption: StreamEncryption.UNENCRYPTED
+      });
+    }, /encryptionKey is specified, so 'encryption' must be set to KMS/);
 
     test.done();
   },
@@ -409,11 +425,12 @@ export = {
 
     test.done();
   },
+
   'uses explicit KMS key if encryption type is KMS and a key is provided'(test: Test) {
     const stack = new Stack();
 
     const explicitKey = new kms.Key(stack, 'ExplicitKey', {
-      description: `Explicit Key`
+      description: 'Explicit Key'
     });
 
     new Stream(stack, 'MyStream', {
@@ -493,6 +510,7 @@ export = {
 
     test.done();
   },
+
   permissions: {
     'with encryption': {
       'grantRead creates and attaches a policy with read only access to Stream and EncryptionKey'(test: Test) {

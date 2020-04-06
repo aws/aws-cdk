@@ -63,7 +63,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
-    "@types/jest": "^25.1.5",
+    "@types/jest": "^25.2.1",
     "aws-sdk": "^2.653.0",
     "aws-sdk-mock": "^5.1.0",
     "cdk-build-tools": "0.0.0",

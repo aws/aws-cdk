@@ -33,7 +33,7 @@ export class KinesisEventSource extends StreamEventSource {
    */
   public get eventSourceMappingId(): string {
     if (!this._eventSourceMappingId) {
-      throw new Error("KinesisEventSource is not yet bound to an event source mapping");
+      throw new Error('KinesisEventSource is not yet bound to an event source mapping');
     }
     return this._eventSourceMappingId;
   }

@@ -1,4 +1,4 @@
-import { DlqDestinationConfig, IEventSourceDlq, IEventSourceMapping, IFunction } from "@aws-cdk/aws-lambda";
+import { DlqDestinationConfig, IEventSourceDlq, IEventSourceMapping, IFunction } from '@aws-cdk/aws-lambda';
 import * as sns from '@aws-cdk/aws-sns';
 
 /**

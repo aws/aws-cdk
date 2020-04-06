@@ -31,41 +31,41 @@ export = {
       // THEN - stack contains a load balancer, a service, and a target group.
       expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer'));
 
-      expect(stack).to(haveResource("AWS::ECS::Service", {
+      expect(stack).to(haveResource('AWS::ECS::Service', {
         DesiredCount: 1,
-        LaunchType: "EC2",
+        LaunchType: 'EC2',
       }));
 
-      expect(stack).to(haveResourceLike("AWS::ECS::TaskDefinition", {
+      expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
         ContainerDefinitions: [
           {
-            Image: "test",
+            Image: 'test',
             LogConfiguration: {
-              LogDriver: "awslogs",
+              LogDriver: 'awslogs',
               Options: {
-                "awslogs-group": {
-                  Ref: "ServiceTaskDefwebLogGroup2A898F61"
+                'awslogs-group': {
+                  Ref: 'ServiceTaskDefwebLogGroup2A898F61'
                 },
-                "awslogs-stream-prefix": "Service",
-                "awslogs-region": {
-                  Ref: "AWS::Region"
+                'awslogs-stream-prefix': 'Service',
+                'awslogs-region': {
+                  Ref: 'AWS::Region'
                 }
               }
             },
             Memory: 1024,
-            Name: "web",
+            Name: 'web',
             PortMappings: [
               {
                 ContainerPort: 80,
                 HostPort: 0,
-                Protocol: "tcp"
+                Protocol: 'tcp'
               }
             ]
           }
         ],
-        NetworkMode: "bridge",
+        NetworkMode: 'bridge',
         RequiresCompatibilities: [
-          "EC2"
+          'EC2'
         ],
       }));
 
@@ -90,18 +90,18 @@ export = {
           containerPorts: [80, 90],
           enableLogging: false,
           environment: {
-            TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
-            TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
+            TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
+            TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value'
           },
           logDriver: new AwsLogDriver({
-            streamPrefix: "TestStream"
+            streamPrefix: 'TestStream'
           }),
-          family: "Ec2TaskDef",
+          family: 'Ec2TaskDef',
           executionRole: new Role(stack, 'ExecutionRole', {
             path: '/',
             assumedBy: new CompositePrincipal(
-              new ServicePrincipal("ecs.amazonaws.com"),
-              new ServicePrincipal("ecs-tasks.amazonaws.com")
+              new ServicePrincipal('ecs.amazonaws.com'),
+              new ServicePrincipal('ecs-tasks.amazonaws.com')
             )
           }),
           taskRole: new Role(stack, 'TaskRole', {
@@ -114,13 +114,13 @@ export = {
         healthCheckGracePeriod: Duration.millis(2000),
         loadBalancers: [
           {
-            name: "lb",
+            name: 'lb',
             domainName: 'api.example.com',
             domainZone: zone,
             publicLoadBalancer: false,
             listeners: [
               {
-                name: "listener",
+                name: 'listener',
                 protocol: ApplicationProtocol.HTTPS,
                 certificate: Certificate.fromCertificateArn(stack, 'Cert', 'helloworld')
               }
@@ -129,16 +129,16 @@ export = {
         ],
         propagateTags: PropagatedTagSource.SERVICE,
         memoryReservationMiB: 1024,
-        serviceName: "myService",
+        serviceName: 'myService',
         targetGroups: [
           {
             containerPort: 80,
-            listener: "listener"
+            listener: 'listener'
           },
           {
             containerPort: 90,
-            listener: "listener",
-            pathPattern: "a/b/c",
+            listener: 'listener',
+            pathPattern: 'a/b/c',
             priority: 10,
             protocol: Protocol.TCP
           }
@@ -146,91 +146,91 @@ export = {
       });
 
       // THEN
-      expect(stack).to(haveResource("AWS::ECS::Service", {
+      expect(stack).to(haveResource('AWS::ECS::Service', {
         DesiredCount: 3,
-        LaunchType: "EC2",
+        LaunchType: 'EC2',
         EnableECSManagedTags: true,
         HealthCheckGracePeriodSeconds: 2,
         LoadBalancers: [
           {
-            ContainerName: "myContainer",
+            ContainerName: 'myContainer',
             ContainerPort: 80,
             TargetGroupArn: {
-              Ref: "ServicelblistenerECSTargetGroupmyContainer80GroupAD83584A"
+              Ref: 'ServicelblistenerECSTargetGroupmyContainer80GroupAD83584A'
             }
           },
           {
-            ContainerName: "myContainer",
+            ContainerName: 'myContainer',
             ContainerPort: 90,
             TargetGroupArn: {
-              Ref: "ServicelblistenerECSTargetGroupmyContainer90GroupF5A6D3A0"
+              Ref: 'ServicelblistenerECSTargetGroupmyContainer90GroupF5A6D3A0'
             }
           }
         ],
-        PropagateTags: "SERVICE",
-        ServiceName: "myService"
+        PropagateTags: 'SERVICE',
+        ServiceName: 'myService'
       }));
 
-      expect(stack).to(haveResourceLike("AWS::ECS::TaskDefinition", {
+      expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
         ContainerDefinitions: [
           {
             Cpu: 256,
             Environment: [
               {
-                Name: "TEST_ENVIRONMENT_VARIABLE1",
-                Value: "test environment variable 1 value"
+                Name: 'TEST_ENVIRONMENT_VARIABLE1',
+                Value: 'test environment variable 1 value'
               },
               {
-                Name: "TEST_ENVIRONMENT_VARIABLE2",
-                Value: "test environment variable 2 value"
+                Name: 'TEST_ENVIRONMENT_VARIABLE2',
+                Value: 'test environment variable 2 value'
               }
             ],
             Essential: true,
-            Image: "test",
+            Image: 'test',
             LogConfiguration: {
-              LogDriver: "awslogs",
+              LogDriver: 'awslogs',
               Options: {
-                "awslogs-group": {
-                  Ref: "ServiceTaskDefmyContainerLogGroup0A87368B"
+                'awslogs-group': {
+                  Ref: 'ServiceTaskDefmyContainerLogGroup0A87368B'
                 },
-                "awslogs-stream-prefix": "TestStream",
-                "awslogs-region": {
-                  Ref: "AWS::Region"
+                'awslogs-stream-prefix': 'TestStream',
+                'awslogs-region': {
+                  Ref: 'AWS::Region'
                 }
               }
             },
             Memory: 1024,
             MemoryReservation: 1024,
-            Name: "myContainer",
+            Name: 'myContainer',
             PortMappings: [
               {
                 ContainerPort: 80,
                 HostPort: 0,
-                Protocol: "tcp"
+                Protocol: 'tcp'
               },
               {
                 ContainerPort: 90,
                 HostPort: 0,
-                Protocol: "tcp"
+                Protocol: 'tcp'
               }
             ]
           }
         ],
         ExecutionRoleArn: {
-          "Fn::GetAtt": [
-            "ExecutionRole605A040B",
-            "Arn"
+          'Fn::GetAtt': [
+            'ExecutionRole605A040B',
+            'Arn'
           ]
         },
-        Family: "ServiceTaskDef79D79521",
-        NetworkMode: "bridge",
+        Family: 'ServiceTaskDef79D79521',
+        NetworkMode: 'bridge',
         RequiresCompatibilities: [
-          "EC2"
+          'EC2'
         ],
         TaskRoleArn: {
-          "Fn::GetAtt": [
-            "TaskRole30FC0FBB",
-            "Arn"
+          'Fn::GetAtt': [
+            'TaskRole30FC0FBB',
+            'Arn'
           ]
         }
       }));
@@ -253,7 +253,7 @@ export = {
       });
 
       // THEN - stack does not contain a LaunchConfiguration
-      expect(stack, true).notTo(haveResource("AWS::AutoScaling::LaunchConfiguration"));
+      expect(stack, true).notTo(haveResource('AWS::AutoScaling::LaunchConfiguration'));
 
       test.throws(() => expect(stack));
 
@@ -268,8 +268,8 @@ export = {
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new InstanceType('t2.micro') });
 
       const taskDefinition = new Ec2TaskDefinition(stack, 'Ec2TaskDef');
-      const container = taskDefinition.addContainer("web", {
-        image: ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+      const container = taskDefinition.addContainer('web', {
+        image: ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
         memoryLimitMiB: 512
       });
       container.addPortMappings({
@@ -283,26 +283,26 @@ export = {
       });
 
       // THEN
-      expect(stack).to(haveResourceLike("AWS::ECS::TaskDefinition", {
+      expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
         ContainerDefinitions: [
           {
             Essential: true,
-            Image: "amazon/amazon-ecs-sample",
+            Image: 'amazon/amazon-ecs-sample',
             Memory: 512,
-            Name: "web",
+            Name: 'web',
             PortMappings: [
               {
                 ContainerPort: 80,
                 HostPort: 0,
-                Protocol: "tcp"
+                Protocol: 'tcp'
               }
             ]
           }
         ],
-        Family: "Ec2TaskDef",
-        NetworkMode: "bridge",
+        Family: 'Ec2TaskDef',
+        NetworkMode: 'bridge',
         RequiresCompatibilities: [
-          "EC2"
+          'EC2'
         ]
       }));
 
@@ -326,26 +326,26 @@ export = {
         },
         loadBalancers: [
           {
-            name: "lb1",
+            name: 'lb1',
             domainName: 'api.example.com',
             domainZone: zone,
             listeners: [
               {
-                name: "listener1",
+                name: 'listener1',
                 protocol: ApplicationProtocol.HTTPS,
                 certificate: Certificate.fromCertificateArn(stack, 'Cert', 'helloworld')
               },
               {
-                name: "listener2",
+                name: 'listener2',
                 protocol: ApplicationProtocol.HTTP
               }
             ]
           },
           {
-            name: "lb3",
+            name: 'lb3',
             listeners: [
               {
-                name: "listener3",
+                name: 'listener3',
                 protocol: ApplicationProtocol.HTTP
               }
             ]
@@ -354,15 +354,15 @@ export = {
         targetGroups: [
           {
             containerPort: 80,
-            listener: "listener1"
+            listener: 'listener1'
           },
           {
             containerPort: 90,
-            listener: "listener2"
+            listener: 'listener2'
           },
           {
             containerPort: 70,
-            listener: "listener3"
+            listener: 'listener3'
           }
         ]
       });
@@ -372,20 +372,20 @@ export = {
       test.deepEqual(template, {
         ServiceLoadBalancerDNSlb175E78BFE: {
           Value: {
-            "Fn::GetAtt": [
-              "Servicelb152C7F4F9",
-              "DNSName"
+            'Fn::GetAtt': [
+              'Servicelb152C7F4F9',
+              'DNSName'
             ]
           }
         },
         ServiceServiceURLlb1https5C0C4079: {
           Value: {
-            "Fn::Join": [
-              "",
+            'Fn::Join': [
+              '',
               [
-                "https://",
+                'https://',
                 {
-                  Ref: "ServiceDNSlb12BA1FAD3"
+                  Ref: 'ServiceDNSlb12BA1FAD3'
                 }
               ]
             ]
@@ -393,12 +393,12 @@ export = {
         },
         ServiceServiceURLlb1http65F0546A: {
           Value: {
-            "Fn::Join": [
-              "",
+            'Fn::Join': [
+              '',
               [
-                "http://",
+                'http://',
                 {
-                  Ref: "ServiceDNSlb12BA1FAD3"
+                  Ref: 'ServiceDNSlb12BA1FAD3'
                 }
               ]
             ]
@@ -406,22 +406,22 @@ export = {
         },
         ServiceLoadBalancerDNSlb32F273F27: {
           Value: {
-            "Fn::GetAtt": [
-              "Servicelb3A583D5E7",
-              "DNSName"
+            'Fn::GetAtt': [
+              'Servicelb3A583D5E7',
+              'DNSName'
             ]
           }
         },
         ServiceServiceURLlb3http40F9CADC: {
           Value: {
-            "Fn::Join": [
-              "",
+            'Fn::Join': [
+              '',
               [
-                "http://",
+                'http://',
                 {
-                  "Fn::GetAtt": [
-                    "Servicelb3A583D5E7",
-                    "DNSName"
+                  'Fn::GetAtt': [
+                    'Servicelb3A583D5E7',
+                    'DNSName'
                   ]
                 }
               ]
@@ -520,7 +520,7 @@ export = {
         cluster,
         vpc,
         taskImageOptions: {
-          image: ContainerImage.fromRegistry("/aws/aws-example-app")
+          image: ContainerImage.fromRegistry('/aws/aws-example-app')
         }
       }), /You can only specify either vpc or cluster. Alternatively, you can leave both blank/);
 
@@ -552,15 +552,15 @@ export = {
       });
 
       // THEN
-      expect(stack).to(haveResource("AWS::ECS::Service", {
+      expect(stack).to(haveResource('AWS::ECS::Service', {
         ServiceRegistries: [
           {
-            ContainerName: "web",
+            ContainerName: 'web',
             ContainerPort: 80,
             RegistryArn: {
-              "Fn::GetAtt": [
-                "ServiceCloudmapServiceDE76B29D",
-                "Arn"
+              'Fn::GetAtt': [
+                'ServiceCloudmapServiceDE76B29D',
+                'Arn'
               ]
             }
           }
@@ -572,7 +572,7 @@ export = {
           DnsRecords: [
             {
               TTL: 60,
-              Type: "SRV"
+              Type: 'SRV'
             }
           ],
           NamespaceId: {
@@ -586,7 +586,7 @@ export = {
         HealthCheckCustomConfig: {
           FailureThreshold: 1
         },
-        Name: "myApp",
+        Name: 'myApp',
         NamespaceId: {
           'Fn::GetAtt': [
             'EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F',
@@ -598,7 +598,7 @@ export = {
       test.done();
     },
 
-    "errors when setting both taskDefinition and taskImageOptions"(test: Test) {
+    'errors when setting both taskDefinition and taskImageOptions'(test: Test) {
       // GIVEN
       const stack = new Stack();
       const vpc = new Vpc(stack, 'VPC');
@@ -606,8 +606,8 @@ export = {
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new InstanceType('t2.micro') });
 
       const taskDefinition = new Ec2TaskDefinition(stack, 'Ec2TaskDef');
-      taskDefinition.addContainer("test", {
-        image: ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+      taskDefinition.addContainer('test', {
+        image: ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
         memoryLimitMiB: 512
       });
 
@@ -625,7 +625,7 @@ export = {
       test.done();
     },
 
-    "errors when setting neither taskDefinition nor taskImageOptions"(test: Test) {
+    'errors when setting neither taskDefinition nor taskImageOptions'(test: Test) {
       // GIVEN
       const stack = new Stack();
       const vpc = new Vpc(stack, 'VPC');
@@ -642,7 +642,7 @@ export = {
       test.done();
     },
 
-    "errors when setting domainName but not domainZone"(test: Test) {
+    'errors when setting domainName but not domainZone'(test: Test) {
       // GIVEN
       const stack = new Stack();
       const vpc = new Vpc(stack, 'VPC');
@@ -658,7 +658,7 @@ export = {
           },
           loadBalancers: [
             {
-              name: "lb1",
+              name: 'lb1',
               domainName: 'api.example.com',
               listeners: [
                 {
@@ -673,7 +673,7 @@ export = {
       test.done();
     },
 
-    "errors when loadBalancers is empty"(test: Test) {
+    'errors when loadBalancers is empty'(test: Test) {
       // GIVEN
       const stack = new Stack();
       const vpc = new Vpc(stack, 'VPC');
@@ -693,7 +693,7 @@ export = {
       test.done();
     },
 
-    "errors when targetGroups is empty"(test: Test) {
+    'errors when targetGroups is empty'(test: Test) {
       // GIVEN
       const stack = new Stack();
       const vpc = new Vpc(stack, 'VPC');
@@ -713,7 +713,7 @@ export = {
       test.done();
     },
 
-    "errors when no listener specified"(test: Test) {
+    'errors when no listener specified'(test: Test) {
       // GIVEN
       const stack = new Stack();
       const vpc = new Vpc(stack, 'VPC');
@@ -728,7 +728,7 @@ export = {
           },
           loadBalancers: [
             {
-              name: "lb",
+              name: 'lb',
               listeners: []
             }
           ]
@@ -753,10 +753,10 @@ export = {
           },
           loadBalancers: [
             {
-              name: "lb",
+              name: 'lb',
               listeners: [
                 {
-                  name: "listener",
+                  name: 'listener',
                   protocol: ApplicationProtocol.HTTP,
                   certificate: Certificate.fromCertificateArn(stack, 'Cert', 'helloworld')
                 }
@@ -784,10 +784,10 @@ export = {
           },
           loadBalancers: [
             {
-              name: "lb",
+              name: 'lb',
               listeners: [
                 {
-                  name: "listener",
+                  name: 'listener',
                   protocol: ApplicationProtocol.HTTPS
                 }
               ]
@@ -814,10 +814,10 @@ export = {
           },
           loadBalancers: [
             {
-              name: "lb",
+              name: 'lb',
               listeners: [
                 {
-                  name: "listener1"
+                  name: 'listener1'
                 }
               ]
             }
@@ -825,7 +825,7 @@ export = {
           targetGroups: [
             {
               containerPort: 80,
-              listener: "listener2"
+              listener: 'listener2'
             }
           ]
         });
@@ -877,54 +877,54 @@ export = {
       // THEN - stack contains a load balancer and a service
       expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer'));
 
-      expect(stack).to(haveResource("AWS::ECS::Service", {
+      expect(stack).to(haveResource('AWS::ECS::Service', {
         DesiredCount: 1,
-        LaunchType: "EC2",
+        LaunchType: 'EC2',
       }));
 
-      expect(stack).to(haveResourceLike("AWS::ECS::TaskDefinition", {
+      expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
         ContainerDefinitions: [
           {
             Essential: true,
-            Image: "test",
+            Image: 'test',
             LogConfiguration: {
-              LogDriver: "awslogs",
+              LogDriver: 'awslogs',
               Options: {
-                "awslogs-group": {
-                  Ref: "ServiceTaskDefwebLogGroup2A898F61"
+                'awslogs-group': {
+                  Ref: 'ServiceTaskDefwebLogGroup2A898F61'
                 },
-                "awslogs-stream-prefix": "Service",
-                "awslogs-region": {
-                  Ref: "AWS::Region"
+                'awslogs-stream-prefix': 'Service',
+                'awslogs-region': {
+                  Ref: 'AWS::Region'
                 }
               }
             },
             Memory: 256,
-            Name: "web",
+            Name: 'web',
             PortMappings: [
               {
                 ContainerPort: 80,
                 HostPort: 0,
-                Protocol: "tcp"
+                Protocol: 'tcp'
               }
             ]
           }
         ],
         ExecutionRoleArn: {
-          "Fn::GetAtt": [
-            "ServiceTaskDefExecutionRole919F7BE3",
-            "Arn"
+          'Fn::GetAtt': [
+            'ServiceTaskDefExecutionRole919F7BE3',
+            'Arn'
           ]
         },
-        Family: "ServiceTaskDef79D79521",
-        NetworkMode: "bridge",
+        Family: 'ServiceTaskDef79D79521',
+        NetworkMode: 'bridge',
         RequiresCompatibilities: [
-          "EC2"
+          'EC2'
         ],
         TaskRoleArn: {
-          "Fn::GetAtt": [
-            "ServiceTaskDefTaskRole0CFE2F57",
-            "Arn"
+          'Fn::GetAtt': [
+            'ServiceTaskDefTaskRole0CFE2F57',
+            'Arn'
           ]
         }
       }));
@@ -950,18 +950,18 @@ export = {
           containerPorts: [80, 90],
           enableLogging: false,
           environment: {
-            TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
-            TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
+            TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
+            TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value'
           },
           logDriver: new AwsLogDriver({
-            streamPrefix: "TestStream"
+            streamPrefix: 'TestStream'
           }),
-          family: "Ec2TaskDef",
+          family: 'Ec2TaskDef',
           executionRole: new Role(stack, 'ExecutionRole', {
             path: '/',
             assumedBy: new CompositePrincipal(
-              new ServicePrincipal("ecs.amazonaws.com"),
-              new ServicePrincipal("ecs-tasks.amazonaws.com")
+              new ServicePrincipal('ecs.amazonaws.com'),
+              new ServicePrincipal('ecs-tasks.amazonaws.com')
             )
           }),
           taskRole: new Role(stack, 'TaskRole', {
@@ -974,21 +974,21 @@ export = {
         healthCheckGracePeriod: Duration.millis(2000),
         loadBalancers: [
           {
-            name: "lb1",
+            name: 'lb1',
             domainName: 'api.example.com',
             domainZone: zone,
             publicLoadBalancer: false,
             listeners: [
               {
-                name: "listener1"
+                name: 'listener1'
               }
             ]
           },
           {
-            name: "lb2",
+            name: 'lb2',
             listeners: [
               {
-                name: "listener2",
+                name: 'listener2',
                 port: 81
               }
             ]
@@ -996,106 +996,106 @@ export = {
         ],
         propagateTags: PropagatedTagSource.SERVICE,
         memoryReservationMiB: 256,
-        serviceName: "myService",
+        serviceName: 'myService',
         targetGroups: [
           {
             containerPort: 80,
-            listener: "listener1"
+            listener: 'listener1'
           },
           {
             containerPort: 90,
-            listener: "listener2"
+            listener: 'listener2'
           }
         ]
       });
 
       // THEN
-      expect(stack).to(haveResource("AWS::ECS::Service", {
+      expect(stack).to(haveResource('AWS::ECS::Service', {
         DesiredCount: 3,
         EnableECSManagedTags: true,
         HealthCheckGracePeriodSeconds: 2,
-        LaunchType: "EC2",
+        LaunchType: 'EC2',
         LoadBalancers: [
           {
-            ContainerName: "myContainer",
+            ContainerName: 'myContainer',
             ContainerPort: 80,
             TargetGroupArn: {
-              Ref: "Servicelb1listener1ECSTargetGroupmyContainer80Group43098F8B"
+              Ref: 'Servicelb1listener1ECSTargetGroupmyContainer80Group43098F8B'
             }
           },
           {
-            ContainerName: "myContainer",
+            ContainerName: 'myContainer',
             ContainerPort: 90,
             TargetGroupArn: {
-              Ref: "Servicelb2listener2ECSTargetGroupmyContainer90GroupDEB417E4"
+              Ref: 'Servicelb2listener2ECSTargetGroupmyContainer90GroupDEB417E4'
             }
           }
         ],
-        PropagateTags: "SERVICE",
-        SchedulingStrategy: "REPLICA",
-        ServiceName: "myService"
+        PropagateTags: 'SERVICE',
+        SchedulingStrategy: 'REPLICA',
+        ServiceName: 'myService'
       }));
 
-      expect(stack).to(haveResourceLike("AWS::ECS::TaskDefinition", {
+      expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
         ContainerDefinitions: [
           {
             Cpu: 256,
             Environment: [
               {
-                Name: "TEST_ENVIRONMENT_VARIABLE1",
-                Value: "test environment variable 1 value"
+                Name: 'TEST_ENVIRONMENT_VARIABLE1',
+                Value: 'test environment variable 1 value'
               },
               {
-                Name: "TEST_ENVIRONMENT_VARIABLE2",
-                Value: "test environment variable 2 value"
+                Name: 'TEST_ENVIRONMENT_VARIABLE2',
+                Value: 'test environment variable 2 value'
               }
             ],
             Essential: true,
-            Image: "test",
+            Image: 'test',
             LogConfiguration: {
-              LogDriver: "awslogs",
+              LogDriver: 'awslogs',
               Options: {
-                "awslogs-group": {
-                  Ref: "ServiceTaskDefmyContainerLogGroup0A87368B"
+                'awslogs-group': {
+                  Ref: 'ServiceTaskDefmyContainerLogGroup0A87368B'
                 },
-                "awslogs-stream-prefix": "TestStream",
-                "awslogs-region": {
-                  Ref: "AWS::Region"
+                'awslogs-stream-prefix': 'TestStream',
+                'awslogs-region': {
+                  Ref: 'AWS::Region'
                 }
               }
             },
             Memory: 256,
             MemoryReservation: 256,
-            Name: "myContainer",
+            Name: 'myContainer',
             PortMappings: [
               {
                 ContainerPort: 80,
                 HostPort: 0,
-                Protocol: "tcp"
+                Protocol: 'tcp'
               },
               {
                 ContainerPort: 90,
                 HostPort: 0,
-                Protocol: "tcp"
+                Protocol: 'tcp'
               }
             ]
           }
         ],
         ExecutionRoleArn: {
-          "Fn::GetAtt": [
-            "ExecutionRole605A040B",
-            "Arn"
+          'Fn::GetAtt': [
+            'ExecutionRole605A040B',
+            'Arn'
           ]
         },
-        Family: "ServiceTaskDef79D79521",
-        NetworkMode: "bridge",
+        Family: 'ServiceTaskDef79D79521',
+        NetworkMode: 'bridge',
         RequiresCompatibilities: [
-          "EC2"
+          'EC2'
         ],
         TaskRoleArn: {
-          "Fn::GetAtt": [
-            "TaskRole30FC0FBB",
-            "Arn"
+          'Fn::GetAtt': [
+            'TaskRole30FC0FBB',
+            'Arn'
           ]
         }
       }));
@@ -1118,7 +1118,7 @@ export = {
       });
 
       // THEN - stack does not contain a LaunchConfiguration
-      expect(stack, true).notTo(haveResource("AWS::AutoScaling::LaunchConfiguration"));
+      expect(stack, true).notTo(haveResource('AWS::AutoScaling::LaunchConfiguration'));
 
       test.throws(() => expect(stack));
 
@@ -1133,8 +1133,8 @@ export = {
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new InstanceType('t2.micro') });
 
       const taskDefinition = new Ec2TaskDefinition(stack, 'Ec2TaskDef');
-      const container = taskDefinition.addContainer("web", {
-        image: ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+      const container = taskDefinition.addContainer('web', {
+        image: ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
         memoryLimitMiB: 512
       });
       container.addPortMappings({
@@ -1148,26 +1148,26 @@ export = {
       });
 
       // THEN
-      expect(stack).to(haveResourceLike("AWS::ECS::TaskDefinition", {
+      expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
         ContainerDefinitions: [
           {
             Essential: true,
-            Image: "amazon/amazon-ecs-sample",
+            Image: 'amazon/amazon-ecs-sample',
             Memory: 512,
-            Name: "web",
+            Name: 'web',
             PortMappings: [
               {
                 ContainerPort: 80,
                 HostPort: 0,
-                Protocol: "tcp"
+                Protocol: 'tcp'
               }
             ]
           }
         ],
-        Family: "Ec2TaskDef",
-        NetworkMode: "bridge",
+        Family: 'Ec2TaskDef',
+        NetworkMode: 'bridge',
         RequiresCompatibilities: [
-          "EC2"
+          'EC2'
         ]
       }));
 
@@ -1259,7 +1259,7 @@ export = {
         cluster,
         vpc,
         taskImageOptions: {
-          image: ContainerImage.fromRegistry("/aws/aws-example-app")
+          image: ContainerImage.fromRegistry('/aws/aws-example-app')
         }
       }), /You can only specify either vpc or cluster. Alternatively, you can leave both blank/);
 
@@ -1291,15 +1291,15 @@ export = {
       });
 
       // THEN
-      expect(stack).to(haveResource("AWS::ECS::Service", {
+      expect(stack).to(haveResource('AWS::ECS::Service', {
         ServiceRegistries: [
           {
-            ContainerName: "web",
+            ContainerName: 'web',
             ContainerPort: 80,
             RegistryArn: {
-              "Fn::GetAtt": [
-                "ServiceCloudmapServiceDE76B29D",
-                "Arn"
+              'Fn::GetAtt': [
+                'ServiceCloudmapServiceDE76B29D',
+                'Arn'
               ]
             }
           }
@@ -1311,7 +1311,7 @@ export = {
           DnsRecords: [
             {
               TTL: 60,
-              Type: "SRV"
+              Type: 'SRV'
             }
           ],
           NamespaceId: {
@@ -1325,7 +1325,7 @@ export = {
         HealthCheckCustomConfig: {
           FailureThreshold: 1
         },
-        Name: "myApp",
+        Name: 'myApp',
         NamespaceId: {
           'Fn::GetAtt': [
             'EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F',
@@ -1337,7 +1337,7 @@ export = {
       test.done();
     },
 
-    "errors when setting both taskDefinition and taskImageOptions"(test: Test) {
+    'errors when setting both taskDefinition and taskImageOptions'(test: Test) {
       // GIVEN
       const stack = new Stack();
       const vpc = new Vpc(stack, 'VPC');
@@ -1345,8 +1345,8 @@ export = {
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new InstanceType('t2.micro') });
 
       const taskDefinition = new Ec2TaskDefinition(stack, 'Ec2TaskDef');
-      taskDefinition.addContainer("test", {
-        image: ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+      taskDefinition.addContainer('test', {
+        image: ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
         memoryLimitMiB: 512
       });
 
@@ -1364,7 +1364,7 @@ export = {
       test.done();
     },
 
-    "errors when setting neither taskDefinition nor taskImageOptions"(test: Test) {
+    'errors when setting neither taskDefinition nor taskImageOptions'(test: Test) {
       // GIVEN
       const stack = new Stack();
       const vpc = new Vpc(stack, 'VPC');
@@ -1381,7 +1381,7 @@ export = {
       test.done();
     },
 
-    "errors when setting domainName but not domainZone"(test: Test) {
+    'errors when setting domainName but not domainZone'(test: Test) {
       // GIVEN
       const stack = new Stack();
       const vpc = new Vpc(stack, 'VPC');
@@ -1397,10 +1397,10 @@ export = {
           },
           loadBalancers: [
             {
-              name: "lb1",
+              name: 'lb1',
               domainName: 'api.example.com',
               listeners: [{
-                name: "listener1"
+                name: 'listener1'
               }]
             }
           ]
@@ -1410,7 +1410,7 @@ export = {
       test.done();
     },
 
-    "errors when loadBalancers is empty"(test: Test) {
+    'errors when loadBalancers is empty'(test: Test) {
       // GIVEN
       const stack = new Stack();
       const vpc = new Vpc(stack, 'VPC');
@@ -1430,7 +1430,7 @@ export = {
       test.done();
     },
 
-    "errors when targetGroups is empty"(test: Test) {
+    'errors when targetGroups is empty'(test: Test) {
       // GIVEN
       const stack = new Stack();
       const vpc = new Vpc(stack, 'VPC');
@@ -1450,7 +1450,7 @@ export = {
       test.done();
     },
 
-    "errors when no listener specified"(test: Test) {
+    'errors when no listener specified'(test: Test) {
       // GIVEN
       const stack = new Stack();
       const vpc = new Vpc(stack, 'VPC');
@@ -1465,7 +1465,7 @@ export = {
           },
           loadBalancers: [
             {
-              name: "lb",
+              name: 'lb',
               listeners: []
             }
           ]
@@ -1484,16 +1484,16 @@ export = {
       // THEN
       test.throws(() => {
         new NetworkMultipleTargetGroupsEc2Service(stack, 'Service', {
-        cluster,
+          cluster,
           taskImageOptions: {
             image: ContainerImage.fromRegistry('test'),
           },
           loadBalancers: [
             {
-              name: "lb",
+              name: 'lb',
               listeners: [
                 {
-                  name: "listener1"
+                  name: 'listener1'
                 }
               ]
             }
@@ -1501,7 +1501,7 @@ export = {
           targetGroups: [
             {
               containerPort: 80,
-              listener: "listener2"
+              listener: 'listener2'
             }
           ]
         });
