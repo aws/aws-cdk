@@ -153,6 +153,7 @@ stream.grantRead(lambdaRole);
 
 The following read permissions are provided to a service principal by the `grantRead()` API:
 
+- `kinesis:DescribeStream`
 - `kinesis:DescribeStreamSummary`
 - `kinesis:GetRecords`
 - `kinesis:GetShardIterator`

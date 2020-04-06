@@ -40,11 +40,13 @@
             {
               "Action": [
                 "kinesis:DescribeStream",
+                "kinesis:DescribeStreamSummary",
                 "kinesis:GetRecords",
                 "kinesis:GetShardIterator",
                 "kinesis:ListShards",
                 "kinesis:PutRecord",
-                "kinesis:PutRecords"
+                "kinesis:PutRecords",
+                "kinesis:SubscribeToShard"
               ],
               "Effect": "Allow",
               "Resource": {

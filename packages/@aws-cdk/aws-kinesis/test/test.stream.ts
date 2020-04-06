@@ -607,7 +607,14 @@ export = {
                 PolicyDocument: {
                   Statement: [
                     {
-                      Action: ['kinesis:DescribeStream', 'kinesis:GetRecords', 'kinesis:GetShardIterator', 'kinesis:ListShards'],
+                      Action: [
+                        'kinesis:DescribeStream',
+                        'kinesis:DescribeStreamSummary',
+                        'kinesis:GetRecords',
+                        'kinesis:GetShardIterator',
+                        'kinesis:ListShards',
+                        'kinesis:SubscribeToShard'
+                      ],
                       Effect: 'Allow',
                       Resource: {
                         'Fn::GetAtt': ['MyStream5C050E93', 'Arn']
@@ -731,7 +738,7 @@ export = {
                 PolicyDocument: {
                   Statement: [
                     {
-                      Action: ['kinesis:DescribeStream', 'kinesis:PutRecord', 'kinesis:PutRecords'],
+                      Action: ['kinesis:ListShards', 'kinesis:PutRecord', 'kinesis:PutRecords'],
                       Effect: 'Allow',
                       Resource: {
                         'Fn::GetAtt': ['MyStream5C050E93', 'Arn']
@@ -857,11 +864,13 @@ export = {
                     {
                       Action: [
                         'kinesis:DescribeStream',
+                        'kinesis:DescribeStreamSummary',
                         'kinesis:GetRecords',
                         'kinesis:GetShardIterator',
                         'kinesis:ListShards',
                         'kinesis:PutRecord',
-                        'kinesis:PutRecords'
+                        'kinesis:PutRecords',
+                        'kinesis:SubscribeToShard'
                       ],
                       Effect: 'Allow',
                       Resource: {
@@ -930,7 +939,14 @@ export = {
                 PolicyDocument: {
                   Statement: [
                     {
-                      Action: ['kinesis:DescribeStream', 'kinesis:GetRecords', 'kinesis:GetShardIterator', 'kinesis:ListShards'],
+                      Action: [
+                        'kinesis:DescribeStream',
+                        'kinesis:DescribeStreamSummary',
+                        'kinesis:GetRecords',
+                        'kinesis:GetShardIterator',
+                        'kinesis:ListShards',
+                        'kinesis:SubscribeToShard'
+                      ],
                       Effect: 'Allow',
                       Resource: {
                         'Fn::GetAtt': ['MyStream5C050E93', 'Arn']
@@ -1011,7 +1027,7 @@ export = {
                 PolicyDocument: {
                   Statement: [
                     {
-                      Action: ['kinesis:DescribeStream', 'kinesis:PutRecord', 'kinesis:PutRecords'],
+                      Action: ['kinesis:ListShards', 'kinesis:PutRecord', 'kinesis:PutRecords'],
                       Effect: 'Allow',
                       Resource: {
                         'Fn::GetAtt': ['MyStream5C050E93', 'Arn']
@@ -1094,11 +1110,13 @@ export = {
                     {
                       Action: [
                         'kinesis:DescribeStream',
+                        'kinesis:DescribeStreamSummary',
                         'kinesis:GetRecords',
                         'kinesis:GetShardIterator',
                         'kinesis:ListShards',
                         'kinesis:PutRecord',
-                        'kinesis:PutRecords'
+                        'kinesis:PutRecords',
+                        'kinesis:SubscribeToShard'
                       ],
                       Effect: 'Allow',
                       Resource: {

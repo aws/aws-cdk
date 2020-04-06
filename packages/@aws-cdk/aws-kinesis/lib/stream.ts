@@ -117,6 +117,7 @@ abstract class StreamBase extends Resource implements IStream {
   public grantRead(grantee: iam.IGrantable) {
     const ret = this.grant(
       grantee,
+      'kinesis:DescribeStream',
       'kinesis:DescribeStreamSummary',
       'kinesis:GetRecords',
       'kinesis:GetShardIterator',
@@ -161,6 +162,7 @@ abstract class StreamBase extends Resource implements IStream {
   public grantReadWrite(grantee: iam.IGrantable) {
     const ret = this.grant(
       grantee,
+      'kinesis:DescribeStream',
       'kinesis:DescribeStreamSummary',
       'kinesis:GetRecords',
       'kinesis:GetShardIterator',

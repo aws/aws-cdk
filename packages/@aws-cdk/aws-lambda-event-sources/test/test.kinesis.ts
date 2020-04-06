@@ -27,9 +27,11 @@ export = {
           {
             'Action': [
               'kinesis:DescribeStream',
+              'kinesis:DescribeStreamSummary',
               'kinesis:GetRecords',
               'kinesis:GetShardIterator',
-              'kinesis:ListShards'
+              'kinesis:ListShards',
+              'kinesis:SubscribeToShard'
             ],
             'Effect': 'Allow',
             'Resource': {
