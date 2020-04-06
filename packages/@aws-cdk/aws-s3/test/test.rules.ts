@@ -20,7 +20,7 @@ export = {
       LifecycleConfiguration: {
         Rules: [{
           ExpirationInDays: 30,
-          Status: "Enabled"
+          Status: 'Enabled'
         }]
       }
     }));
@@ -43,7 +43,7 @@ export = {
       LifecycleConfiguration: {
         Rules: [{
           ExpirationInDays: 30,
-          Status: "Enabled"
+          Status: 'Enabled'
         }]
       }
     }));
@@ -67,7 +67,7 @@ export = {
       LifecycleConfiguration: {
         Rules: [{
           ExpirationDate: '2018-01-01T00:00:00',
-          Status: "Enabled"
+          Status: 'Enabled'
         }]
       }
     }));
@@ -97,7 +97,7 @@ export = {
             StorageClass: 'GLACIER',
             TransitionInDays: 30
           }],
-          Status: "Enabled"
+          Status: 'Enabled'
         }]
       }
     }));

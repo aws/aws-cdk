@@ -29,7 +29,7 @@ class VpcEndpointStack extends cdk.Stack {
         principals: [new iam.AnyPrincipal()],
         actions: ['dynamodb:DescribeTable', 'dynamodb:ListTables'],
         resources: ['*'],
-    }));
+      }));
 
     // Add an interface endpoint
     vpc.addInterfaceEndpoint('EcrDockerEndpoint', {

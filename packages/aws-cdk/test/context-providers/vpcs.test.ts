@@ -1,11 +1,11 @@
 import * as aws from 'aws-sdk';
 import * as AWS from 'aws-sdk-mock';
 import { VpcNetworkContextProviderPlugin } from '../../lib/context-providers/vpcs';
-import { MockSDK } from '../util/mock-sdk';
+import { MockSdkProvider } from '../util/mock-sdk';
 
 AWS.setSDK(require.resolve('aws-sdk'));
 
-const mockSDK = new MockSDK();
+const mockSDK = new MockSdkProvider();
 
 type AwsCallback<T> = (err: Error | null, val: T) => void;
 
@@ -136,22 +136,22 @@ test('Recognize public subnet by route table', async () => {
         RouteTableId: 'rtb-123456',
         Routes: [
           {
-            DestinationCidrBlock: "10.0.2.0/26",
-            Origin: "CreateRoute",
-            State: "active",
-            VpcPeeringConnectionId: "pcx-xxxxxx"
+            DestinationCidrBlock: '10.0.2.0/26',
+            Origin: 'CreateRoute',
+            State: 'active',
+            VpcPeeringConnectionId: 'pcx-xxxxxx'
           },
           {
-            DestinationCidrBlock: "10.0.1.0/24",
-            GatewayId: "local",
-            Origin: "CreateRouteTable",
-            State: "active"
+            DestinationCidrBlock: '10.0.1.0/24',
+            GatewayId: 'local',
+            Origin: 'CreateRouteTable',
+            State: 'active'
           },
           {
-            DestinationCidrBlock: "0.0.0.0/0",
-            GatewayId: "igw-xxxxxx",
-            Origin: "CreateRoute",
-            State: "active"
+            DestinationCidrBlock: '0.0.0.0/0',
+            GatewayId: 'igw-xxxxxx',
+            Origin: 'CreateRoute',
+            State: 'active'
           }
         ],
       },

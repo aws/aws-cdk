@@ -50,7 +50,7 @@ test('throws and logs in case of error', async () => {
 
 test('catches and logs error', async () => {
   const catchEvent: AwsApiProps = {
-   ...event,
+    ...event,
     catchErrorPattern: 'Invalid'
   };
 

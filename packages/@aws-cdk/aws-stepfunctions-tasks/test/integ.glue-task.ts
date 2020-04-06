@@ -45,7 +45,7 @@ const jobTask = new sfn.Task(stack, 'Glue Job Task', {
   task: new tasks.RunGlueJobTask(job.name!, {
     integrationPattern: sfn.ServiceIntegrationPattern.SYNC,
     arguments: {
-      "--enable-metrics": "true"
+      '--enable-metrics': 'true'
     }
   })
 });
