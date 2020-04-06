@@ -123,17 +123,21 @@ Which subnets are selected is evaluated as follows:
 
 * Specifying particular subnets overrides any other settings, such as type or 
 availability zone.
-* If no subnets are specified, but a subnetGroupName is, the
-subnetGroupName will override other settings. 
-* If neither subnets nor subnetGroupName are specified, subnets are selected by 
-type and availability zone. If no availability zones are specified, all 
-availability zones are considered. 
-* If no subnet type is specified, the type defaults to the types of subnets in the
+* If no subnets are specified, subnets must be specified by a combination of
+fields:
+  * Subnet group name is necessary if there are multiple subnet groups with the
+same type (subnet group implies subnet type).
+  * Subnet type specifies the type of subnets to return (PUBLIC, PRIVATE, ISOLATED).
+If no subnet type is specified, the type defaults to the types of subnets in the
 VPC, in this order:
-  * If Private subnets exist, then the type defaults to Private
-  * If no Private subnets exist, but Isolated subnets do, then the type defaults to
+    * If Private subnets exist, then the type defaults to Private
+    * If no Private subnets exist, but Isolated subnets do, then the type defaults to
 Isolated
-  * If no Private or Isolated subnets exist, the type defaults to Public
+    * If no Private or Isolated subnets exist, the type defaults to Public
+  * Subnets can be filtered by availability zone on top of subnet group name or type. 
+If no availability zones are specified, all availability zones are considered. 
+  * For use cases where only one subnet per availability zone is desired, specifying 
+onePerAZ will further filter subnets to only include one per AZ.
 
 ### Using NAT instances
 
