@@ -90,8 +90,8 @@ export class NodejsFunction extends lambda.Function {
     const buildDir = props.buildDir || path.join(path.dirname(entry), '.build');
     const handlerDir = path.join(buildDir, crypto.createHash('sha256').update(entry).digest('hex'));
     const defaultRunTime = nodeMajorVersion() >= 12
-    ? lambda.Runtime.NODEJS_12_X
-    : lambda.Runtime.NODEJS_10_X;
+      ? lambda.Runtime.NODEJS_12_X
+      : lambda.Runtime.NODEJS_10_X;
     const runtime = props.runtime || defaultRunTime;
     const nodeDockerTag = props.nodeDockerTag || "13.8.0-alpine3.11";
 

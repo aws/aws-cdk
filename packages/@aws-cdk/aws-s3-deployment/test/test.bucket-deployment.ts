@@ -24,40 +24,40 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('Custom::CDKBucketDeployment', {
-      "ServiceToken": {
-        "Fn::GetAtt": [
-          "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536",
-          "Arn"
+      'ServiceToken': {
+        'Fn::GetAtt': [
+          'CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536',
+          'Arn'
         ]
       },
-      "SourceBucketNames": [{
-        "Ref": "AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eS3Bucket9CD8B20A"
+      'SourceBucketNames': [{
+        'Ref': 'AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eS3Bucket9CD8B20A'
       }],
-      "SourceObjectKeys": [{
-        "Fn::Join": [
-          "",
+      'SourceObjectKeys': [{
+        'Fn::Join': [
+          '',
           [
             {
-              "Fn::Select": [
+              'Fn::Select': [
                 0,
                 {
-                  "Fn::Split": [
-                    "||",
+                  'Fn::Split': [
+                    '||',
                     {
-                      "Ref": "AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eS3VersionKeyA58D380C"
+                      'Ref': 'AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eS3VersionKeyA58D380C'
                     }
                   ]
                 }
               ]
             },
             {
-              "Fn::Select": [
+              'Fn::Select': [
                 1,
                 {
-                  "Fn::Split": [
-                    "||",
+                  'Fn::Split': [
+                    '||',
                     {
-                      "Ref": "AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eS3VersionKeyA58D380C"
+                      'Ref': 'AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eS3VersionKeyA58D380C'
                     }
                   ]
                 }
@@ -66,8 +66,8 @@ export = {
           ]
         ]
       }],
-      "DestinationBucketName": {
-        "Ref": "DestC383B82A"
+      'DestinationBucketName': {
+        'Ref': 'DestC383B82A'
       }
     }));
     test.done();
@@ -89,46 +89,46 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('Custom::CDKBucketDeployment', {
-      "ServiceToken": {
-        "Fn::GetAtt": [
-          "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536",
-          "Arn"
+      'ServiceToken': {
+        'Fn::GetAtt': [
+          'CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536',
+          'Arn'
         ]
       },
-      "SourceBucketNames": [
+      'SourceBucketNames': [
         {
-          "Ref": "AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eS3Bucket9CD8B20A"
+          'Ref': 'AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eS3Bucket9CD8B20A'
         },
         {
-          "Ref": "AssetParametersa94977ede0211fd3b45efa33d6d8d1d7bbe0c5a96d977139d8b16abfa96fe9cbS3Bucket99793559"
+          'Ref': 'AssetParametersa94977ede0211fd3b45efa33d6d8d1d7bbe0c5a96d977139d8b16abfa96fe9cbS3Bucket99793559'
         }
       ],
-      "SourceObjectKeys": [
+      'SourceObjectKeys': [
         {
-          "Fn::Join": [
-            "",
+          'Fn::Join': [
+            '',
             [
               {
-                "Fn::Select": [
+                'Fn::Select': [
                   0,
                   {
-                    "Fn::Split": [
-                      "||",
+                    'Fn::Split': [
+                      '||',
                       {
-                        "Ref": "AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eS3VersionKeyA58D380C"
+                        'Ref': 'AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eS3VersionKeyA58D380C'
                       }
                     ]
                   }
                 ]
               },
               {
-                "Fn::Select": [
+                'Fn::Select': [
                   1,
                   {
-                    "Fn::Split": [
-                      "||",
+                    'Fn::Split': [
+                      '||',
                       {
-                        "Ref": "AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eS3VersionKeyA58D380C"
+                        'Ref': 'AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eS3VersionKeyA58D380C'
                       }
                     ]
                   }
@@ -138,30 +138,30 @@ export = {
           ]
         },
         {
-          "Fn::Join": [
-            "",
+          'Fn::Join': [
+            '',
             [
               {
-                "Fn::Select": [
+                'Fn::Select': [
                   0,
                   {
-                    "Fn::Split": [
-                      "||",
+                    'Fn::Split': [
+                      '||',
                       {
-                        "Ref": "AssetParametersa94977ede0211fd3b45efa33d6d8d1d7bbe0c5a96d977139d8b16abfa96fe9cbS3VersionKeyD9ACE665"
+                        'Ref': 'AssetParametersa94977ede0211fd3b45efa33d6d8d1d7bbe0c5a96d977139d8b16abfa96fe9cbS3VersionKeyD9ACE665'
                       }
                     ]
                   }
                 ]
               },
               {
-                "Fn::Select": [
+                'Fn::Select': [
                   1,
                   {
-                    "Fn::Split": [
-                      "||",
+                    'Fn::Split': [
+                      '||',
                       {
-                        "Ref": "AssetParametersa94977ede0211fd3b45efa33d6d8d1d7bbe0c5a96d977139d8b16abfa96fe9cbS3VersionKeyD9ACE665"
+                        'Ref': 'AssetParametersa94977ede0211fd3b45efa33d6d8d1d7bbe0c5a96d977139d8b16abfa96fe9cbS3VersionKeyD9ACE665'
                       }
                     ]
                   }
@@ -171,8 +171,8 @@ export = {
           ]
         }
       ],
-      "DestinationBucketName": {
-        "Ref": "DestC383B82A"
+      'DestinationBucketName': {
+        'Ref': 'DestC383B82A'
       }
     }));
     test.done();
@@ -221,40 +221,40 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('Custom::CDKBucketDeployment', {
-      "ServiceToken": {
-        "Fn::GetAtt": [
-          "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536",
-          "Arn"
+      'ServiceToken': {
+        'Fn::GetAtt': [
+          'CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536',
+          'Arn'
         ]
       },
-      "SourceBucketNames": [{
-        "Ref": "AssetParameterse9b696b2a8a1f93ea8b8a9ce1e4dd4727f9243eba984e50411ca95c6b03d26b6S3Bucket1A1EC3E9"
+      'SourceBucketNames': [{
+        'Ref': 'AssetParameterse9b696b2a8a1f93ea8b8a9ce1e4dd4727f9243eba984e50411ca95c6b03d26b6S3Bucket1A1EC3E9'
       }],
-      "SourceObjectKeys": [{
-        "Fn::Join": [
-          "",
+      'SourceObjectKeys': [{
+        'Fn::Join': [
+          '',
           [
             {
-              "Fn::Select": [
+              'Fn::Select': [
                 0,
                 {
-                  "Fn::Split": [
-                    "||",
+                  'Fn::Split': [
+                    '||',
                     {
-                      "Ref": "AssetParameterse9b696b2a8a1f93ea8b8a9ce1e4dd4727f9243eba984e50411ca95c6b03d26b6S3VersionKeyE46A4824"
+                      'Ref': 'AssetParameterse9b696b2a8a1f93ea8b8a9ce1e4dd4727f9243eba984e50411ca95c6b03d26b6S3VersionKeyE46A4824'
                     }
                   ]
                 }
               ]
             },
             {
-              "Fn::Select": [
+              'Fn::Select': [
                 1,
                 {
-                  "Fn::Split": [
-                    "||",
+                  'Fn::Split': [
+                    '||',
                     {
-                      "Ref": "AssetParameterse9b696b2a8a1f93ea8b8a9ce1e4dd4727f9243eba984e50411ca95c6b03d26b6S3VersionKeyE46A4824"
+                      'Ref': 'AssetParameterse9b696b2a8a1f93ea8b8a9ce1e4dd4727f9243eba984e50411ca95c6b03d26b6S3VersionKeyE46A4824'
                     }
                   ]
                 }
@@ -263,8 +263,8 @@ export = {
           ]
         ]
       }],
-      "DestinationBucketName": {
-        "Ref": "DestC383B82A"
+      'DestinationBucketName': {
+        'Ref': 'DestC383B82A'
       }
     }));
     test.done();
@@ -321,14 +321,14 @@ export = {
     new s3deploy.BucketDeployment(stack, 'Deploy', {
       sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website.zip'))],
       destinationBucket: bucket,
-      contentType: "text/html",
-      contentLanguage: "en",
+      contentType: 'text/html',
+      contentLanguage: 'en',
       storageClass: s3deploy.StorageClass.INTELLIGENT_TIERING,
-      contentDisposition: "inline",
+      contentDisposition: 'inline',
       serverSideEncryption: s3deploy.ServerSideEncryption.AWS_KMS,
-      serverSideEncryptionAwsKmsKeyId: "mykey",
-      serverSideEncryptionCustomerAlgorithm: "rot13",
-      websiteRedirectLocation: "example",
+      serverSideEncryptionAwsKmsKeyId: 'mykey',
+      serverSideEncryptionCustomerAlgorithm: 'rot13',
+      websiteRedirectLocation: 'example',
       cacheControl: [s3deploy.CacheControl.setPublic(), s3deploy.CacheControl.maxAge(cdk.Duration.hours(1))],
       expires: s3deploy.Expires.after(cdk.Duration.hours(12))
     });
@@ -355,7 +355,7 @@ export = {
   'expires type has correct values'(test: Test) {
     test.equal(s3deploy.Expires.atDate(new Date('Sun, 26 Jan 2020 00:53:20 GMT')).value, 'Sun, 26 Jan 2020 00:53:20 GMT');
     test.equal(s3deploy.Expires.atTimestamp(1580000000000).value, 'Sun, 26 Jan 2020 00:53:20 GMT');
-    test.ok(Math.abs(new Date(s3deploy.Expires.after(cdk.Duration.minutes(10)).value).getTime() - (Date.now() + 600000)) < 15000, "Expires.after accurate to within 15 seconds");
+    test.ok(Math.abs(new Date(s3deploy.Expires.after(cdk.Duration.minutes(10)).value).getTime() - (Date.now() + 600000)) < 15000, 'Expires.after accurate to within 15 seconds');
     test.equal(s3deploy.Expires.fromString('Tue, 04 Feb 2020 08:45:33 GMT').value, 'Tue, 04 Feb 2020 08:45:33 GMT');
 
     test.done();
@@ -419,7 +419,7 @@ export = {
 
     expect(stack).to(haveResource('Custom::CDKBucketDeployment', {
       DistributionId: {
-        "Ref": "DistributionCFDistribution882A7313"
+        'Ref': 'DistributionCFDistribution882A7313'
       },
       DistributionPaths: ['/images/*']
     }));
@@ -451,7 +451,7 @@ export = {
 
     expect(stack).to(haveResource('Custom::CDKBucketDeployment', {
       DistributionId: {
-        "Ref": "DistributionCFDistribution882A7313"
+        'Ref': 'DistributionCFDistribution882A7313'
       },
     }));
 
@@ -487,78 +487,78 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::IAM::Policy', {
-      "PolicyDocument": {
-        "Statement": [
+      'PolicyDocument': {
+        'Statement': [
           {
-            "Action": [
-              "s3:GetObject*",
-              "s3:GetBucket*",
-              "s3:List*"
+            'Action': [
+              's3:GetObject*',
+              's3:GetBucket*',
+              's3:List*'
             ],
-            "Effect": "Allow",
-            "Resource": [
+            'Effect': 'Allow',
+            'Resource': [
               {
-                "Fn::GetAtt": [
-                  "Source71E471F1",
-                  "Arn"
+                'Fn::GetAtt': [
+                  'Source71E471F1',
+                  'Arn'
                 ]
               },
               {
-                "Fn::Join": [
-                  "",
+                'Fn::Join': [
+                  '',
                   [
                     {
-                      "Fn::GetAtt": [
-                        "Source71E471F1",
-                        "Arn"
+                      'Fn::GetAtt': [
+                        'Source71E471F1',
+                        'Arn'
                       ]
                     },
-                    "/*"
+                    '/*'
                   ]
                 ]
               }
             ]
           },
           {
-            "Action": [
-              "s3:GetObject*",
-              "s3:GetBucket*",
-              "s3:List*",
-              "s3:DeleteObject*",
-              "s3:PutObject*",
-              "s3:Abort*"
+            'Action': [
+              's3:GetObject*',
+              's3:GetBucket*',
+              's3:List*',
+              's3:DeleteObject*',
+              's3:PutObject*',
+              's3:Abort*'
             ],
-            "Effect": "Allow",
-            "Resource": [
+            'Effect': 'Allow',
+            'Resource': [
               {
-                "Fn::GetAtt": [
-                  "DestC383B82A",
-                  "Arn"
+                'Fn::GetAtt': [
+                  'DestC383B82A',
+                  'Arn'
                 ]
               },
               {
-                "Fn::Join": [
-                  "",
+                'Fn::Join': [
+                  '',
                   [
                     {
-                      "Fn::GetAtt": [
-                        "DestC383B82A",
-                        "Arn"
+                      'Fn::GetAtt': [
+                        'DestC383B82A',
+                        'Arn'
                       ]
                     },
-                    "/*"
+                    '/*'
                   ]
                 ]
               }
             ]
           }
         ],
-        "Version": "2012-10-17"
+        'Version': '2012-10-17'
       },
-      "PolicyName": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF",
-      "Roles": [
+      'PolicyName': 'CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF',
+      'Roles': [
         {
-          "Ref": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
+          'Ref': 'CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265'
         }
       ]
     }));
@@ -622,10 +622,10 @@ export = {
     expect(stack).to(countResources('AWS::IAM::Role', 1));
     expect(stack).to(countResources('AWS::Lambda::Function', 1));
     expect(stack).to(haveResource('AWS::Lambda::Function', {
-      "Role": {
-        "Fn::GetAtt": [
-          "Role1ABCC5F0",
-          "Arn"
+      'Role': {
+        'Fn::GetAtt': [
+          'Role1ABCC5F0',
+          'Arn'
         ]
       }
     }));

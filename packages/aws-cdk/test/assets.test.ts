@@ -43,11 +43,11 @@ describe('file assets', () => {
     expect(assets.toManifest('.').entries).toEqual([
       expect.objectContaining({
         destination: {
-          bucketName: "bucket",
-          objectKey: "assets/SomeStackSomeResource4567/source-hash.js",
+          bucketName: 'bucket',
+          objectKey: 'assets/SomeStackSomeResource4567/source-hash.js',
         },
         source: {
-          packaging: "file",
+          packaging: 'file',
           path: __filename,
         },
       })
@@ -76,7 +76,7 @@ describe('file assets', () => {
       expect.objectContaining({
         destination: {
           bucketName: 'bucket',
-          objectKey: "assets/source-hash.js",
+          objectKey: 'assets/source-hash.js',
         },
       })
     ]);
@@ -131,13 +131,13 @@ describe('docker assets', () => {
     });
     expect(assets.toManifest('.').entries).toEqual([
       expect.objectContaining({
-        type: "docker-image",
+        type: 'docker-image',
         destination: {
-          imageTag: "0123456789abcdef",
-          repositoryName: "cdk/stack-construct-abc123",
+          imageTag: '0123456789abcdef',
+          repositoryName: 'cdk/stack-construct-abc123',
         },
         source: {
-          directory: "/foo",
+          directory: '/foo',
         },
       })
     ]);
@@ -179,13 +179,13 @@ describe('docker assets', () => {
     expect(params).toEqual({}); // No parameters!
     expect(assets.toManifest('.').entries).toEqual([
       expect.objectContaining({
-        type: "docker-image",
+        type: 'docker-image',
         destination: {
-          imageTag: "12345",
-          repositoryName: "reponame",
+          imageTag: '12345',
+          repositoryName: 'reponame',
         },
         source: {
-          directory: "/foo",
+          directory: '/foo',
         },
       })
     ]);
