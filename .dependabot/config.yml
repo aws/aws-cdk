@@ -11,7 +11,7 @@ update_configs:
       - match:
           dependency_name: "jsii*"
       - match:
-          dependency_name: "@jsii"
+          dependency_name: "@jsii/*"
       - match:
           dependency_name: "codemaker"
         
