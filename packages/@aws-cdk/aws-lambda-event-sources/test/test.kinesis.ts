@@ -25,11 +25,11 @@ export = {
       'PolicyDocument': {
         'Statement': [
           {
-            "Action": [
-              "kinesis:DescribeStream",
-              "kinesis:GetRecords",
-              "kinesis:GetShardIterator",
-              "kinesis:ListShards"
+            'Action': [
+              'kinesis:DescribeStream',
+              'kinesis:GetRecords',
+              'kinesis:GetShardIterator',
+              'kinesis:ListShards'
             ],
             'Effect': 'Allow',
             'Resource': {
