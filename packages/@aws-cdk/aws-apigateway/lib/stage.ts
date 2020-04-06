@@ -191,17 +191,6 @@ export interface MethodDeploymentOptions {
 }
 
 export class Stage extends Resource implements IStage {
-  /**
-   * Import a stage given its name and the original RestApi it's associated to.
-   */
-  public static fromStageName(scope: Construct, id: string, restApi: IRestApi, stageName: string): IStage {
-    class Import extends Resource implements IStage {
-      public readonly stageName = stageName;
-      public readonly restApi = restApi;
-    }
-    return new Import(scope, id);
-  }
-
   public readonly stageName: string;
 
   public readonly restApi: IRestApi;

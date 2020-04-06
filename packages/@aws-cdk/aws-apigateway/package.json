@@ -299,7 +299,7 @@
       "attribute-tag:@aws-cdk/aws-apigateway.LambdaAuthorizer.authorizerArn",
       "attribute-tag:@aws-cdk/aws-apigateway.RequestAuthorizer.authorizerArn",
       "attribute-tag:@aws-cdk/aws-apigateway.TokenAuthorizer.authorizerArn",
-      "from-signature:@aws-cdk/aws-apigateway.Stage.fromStageName"
+      "from-method:@aws-cdk/aws-apigateway.Stage"
     ]
   },
   "stability": "stable",
