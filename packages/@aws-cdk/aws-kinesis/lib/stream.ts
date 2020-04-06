@@ -115,7 +115,13 @@ abstract class StreamBase extends Resource implements IStream {
    * contents of the stream will also be granted.
    */
   public grantRead(grantee: iam.IGrantable) {
-    const ret = this.grant(grantee, 'kinesis:DescribeStream', 'kinesis:GetRecords', 'kinesis:GetShardIterator', 'kinesis:ListShards');
+    const ret = this.grant(
+      grantee,
+      'kinesis:DescribeStreamSummary',
+      'kinesis:GetRecords',
+      'kinesis:GetShardIterator',
+      'kinesis:ListShards',
+      'kinesis:SubscribeToShard');
 
     if (this.encryptionKey) {
       this.encryptionKey.grantDecrypt(grantee);
@@ -132,7 +138,11 @@ abstract class StreamBase extends Resource implements IStream {
    * contents of the stream will also be granted.
    */
   public grantWrite(grantee: iam.IGrantable) {
-    const ret = this.grant(grantee, 'kinesis:DescribeStream', 'kinesis:PutRecord', 'kinesis:PutRecords');
+    const ret = this.grant(
+      grantee,
+      'kinesis:ListShards',
+      'kinesis:PutRecord',
+      'kinesis:PutRecords');
 
     if (this.encryptionKey) {
       this.encryptionKey.grantEncrypt(grantee);
@@ -151,12 +161,13 @@ abstract class StreamBase extends Resource implements IStream {
   public grantReadWrite(grantee: iam.IGrantable) {
     const ret = this.grant(
       grantee,
-      'kinesis:DescribeStream',
+      'kinesis:DescribeStreamSummary',
       'kinesis:GetRecords',
       'kinesis:GetShardIterator',
       'kinesis:ListShards',
       'kinesis:PutRecord',
-      'kinesis:PutRecords');
+      'kinesis:PutRecords',
+      'kinesis:SubscribeToShard');
 
     if (this.encryptionKey) {
       this.encryptionKey.grantEncryptDecrypt(grantee);
