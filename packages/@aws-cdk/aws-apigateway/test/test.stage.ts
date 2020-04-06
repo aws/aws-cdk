@@ -266,14 +266,14 @@ export = {
     expect(stack).to(haveResource('AWS::ApiGateway::Stage', {
       AccessLogSetting: {
         DestinationArn: {
-          "Fn::GetAtt": [
-            "LogGroupF5B46931",
-            "Arn"
+          'Fn::GetAtt': [
+            'LogGroupF5B46931',
+            'Arn'
           ]
         },
-        Format: "$context.identity.sourceIp $context.identity.caller $context.identity.user [$context.requestTime] \"$context.httpMethod $context.resourcePath $context.protocol\" $context.status $context.responseLength $context.requestId"
+        Format: '$context.identity.sourceIp $context.identity.caller $context.identity.user [$context.requestTime] "$context.httpMethod $context.resourcePath $context.protocol" $context.status $context.responseLength $context.requestId'
       },
-      StageName: "prod"
+      StageName: 'prod'
     }));
 
     test.done();
@@ -304,9 +304,9 @@ export = {
             'Arn'
           ]
         },
-        Format: "{\"requestId\":\"$context.requestId\",\"ip\":\"$context.identity.sourceIp\",\"user\":\"$context.identity.user\",\"caller\":\"$context.identity.caller\",\"requestTime\":\"$context.requestTime\",\"httpMethod\":\"$context.httpMethod\",\"resourcePath\":\"$context.resourcePath\",\"status\":\"$context.status\",\"protocol\":\"$context.protocol\",\"responseLength\":\"$context.responseLength\"}"
+        Format: '{"requestId":"$context.requestId","ip":"$context.identity.sourceIp","user":"$context.identity.user","caller":"$context.identity.caller","requestTime":"$context.requestTime","httpMethod":"$context.httpMethod","resourcePath":"$context.resourcePath","status":"$context.status","protocol":"$context.protocol","responseLength":"$context.responseLength"}'
       },
-      StageName: "prod"
+      StageName: 'prod'
     }));
 
     test.done();
