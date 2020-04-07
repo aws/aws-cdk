@@ -4,6 +4,7 @@ import { Construct, Duration, IResource, Lazy, Resource, Stack } from '@aws-cdk/
 import { CfnUserPool } from './cognito.generated';
 import { ICustomAttribute, RequiredAttributes } from './user-pool-attr';
 import { IUserPoolClient, UserPoolClient, UserPoolClientOptions } from './user-pool-client';
+import { IUserPoolDomain, UserPoolDomain, UserPoolDomainOptions } from './user-pool-domain';
 
 /**
  * The different ways in which users of this pool can sign up or sign in.
@@ -658,8 +659,23 @@ export class UserPool extends Resource implements IUserPool {
     (this.triggers as any)[operation.operationName] = fn.functionArn;
   }
 
+  /**
+   * Add a new app client to this user pool.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-client-apps.html
+   */
   public addClient(id: string, options?: UserPoolClientOptions): IUserPoolClient {
     return new UserPoolClient(this, id, {
+      userPool: this,
+      ...options
+    });
+  }
+
+  /**
+   * Associate a domain to this user pool.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-assign-domain.html
+   */
+  public addDomain(id: string, options?: UserPoolDomainOptions): IUserPoolDomain {
+    return new UserPoolDomain(this, id, {
       userPool: this,
       ...options
     });
