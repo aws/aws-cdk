@@ -58,6 +58,12 @@ function serve_npm_packages() {
     tarballs="${tarballs} $dist_root/js/cdk-assets-${version}.tgz"
     package_names="${package_names} cdk-assets"
 
+    # manually add @aws-cdk/cfnspec since its a transitive dependency via @aws-cdk/cloudformation-diff
+    # hence isn't picked up from package.json
+    echo "Adding @aws-cdk/cfnspec to CLI dependencies"
+    tarballs="${tarballs} $dist_root/js/aws-cdk-cfnspec-${version}.tgz"
+    package_names="${package_names} @aws-cdk/cfnspec"
+
   else
 
     echo "Testing against local versions of the framework"
