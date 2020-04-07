@@ -80,7 +80,7 @@ export class SendToQueue implements sfn.IStepFunctionsTask {
 
   public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
     return {
-      resourceArn: getResourceArn("sqs", "sendMessage", this.integrationPattern),
+      resourceArn: getResourceArn('sqs', 'sendMessage', this.integrationPattern),
       policyStatements: [new iam.PolicyStatement({
         actions: ['sqs:SendMessage'],
         resources: [this.queue.queueArn]

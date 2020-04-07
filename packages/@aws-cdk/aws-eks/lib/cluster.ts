@@ -10,6 +10,7 @@ import { FargateProfile, FargateProfileOptions } from './fargate-profile';
 import { HelmChart, HelmChartOptions } from './helm-chart';
 import { KubernetesPatch } from './k8s-patch';
 import { KubernetesResource } from './k8s-resource';
+import { Nodegroup, NodegroupOptions  } from './managed-nodegroup';
 import { spotInterruptHandler } from './spot-interrupt-handler';
 import { renderUserData } from './user-data';
 
@@ -239,6 +240,13 @@ export interface ClusterProps extends ClusterOptions {
    * @default m5.large
    */
   readonly defaultCapacityInstance?: ec2.InstanceType;
+
+  /**
+   * The default capacity type for the cluster.
+   *
+   * @default NODEGROUP
+   */
+  readonly defaultCapacityType?: DefaultCapacityType
 }
 
 /**
@@ -310,9 +318,17 @@ export class Cluster extends Resource implements ICluster {
 
   /**
    * The auto scaling group that hosts the default capacity for this cluster.
-   * This will be `undefined` if the default capacity is set to 0.
+   * This will be `undefined` if the `defaultCapacityType` is not `EC2` or
+   * `defaultCapacityType` is `EC2` but default capacity is set to 0.
    */
   public readonly defaultCapacity?: autoscaling.AutoScalingGroup;
+
+  /**
+   * The node group that hosts the default capacity for this cluster.
+   * This will be `undefined` if the `defaultCapacityType` is `EC2` or
+   * `defaultCapacityType` is `NODEGROUP` but default capacity is set to 0.
+   */
+  public readonly defaultNodegroup?: Nodegroup;
 
   /**
    * If this cluster is kubectl-enabled, returns the `ClusterResource` object
@@ -406,7 +422,7 @@ export class Cluster extends Resource implements ICluster {
     // map the IAM role to the `system:masters` group.
     if (props.mastersRole) {
       if (!this.kubectlEnabled) {
-        throw new Error(`Cannot specify a "masters" role if kubectl is disabled`);
+        throw new Error('Cannot specify a "masters" role if kubectl is disabled');
       }
 
       this.awsAuth.addMastersRole(props.mastersRole);
@@ -422,7 +438,11 @@ export class Cluster extends Resource implements ICluster {
     const minCapacity = props.defaultCapacity === undefined ? DEFAULT_CAPACITY_COUNT : props.defaultCapacity;
     if (minCapacity > 0) {
       const instanceType = props.defaultCapacityInstance || DEFAULT_CAPACITY_TYPE;
-      this.defaultCapacity = this.addCapacity('DefaultCapacity', { instanceType, minCapacity });
+      this.defaultCapacity = props.defaultCapacityType === DefaultCapacityType.EC2 ?
+        this.addCapacity('DefaultCapacity', { instanceType, minCapacity }) : undefined;
+
+      this.defaultNodegroup = props.defaultCapacityType !== DefaultCapacityType.EC2 ?
+        this.addNodegroup('DefaultCapacity', { instanceType, minSize: minCapacity } ) : undefined;
     }
 
     const outputConfigCommand = props.outputConfigCommand === undefined ? true : props.outputConfigCommand;
@@ -471,6 +491,24 @@ export class Cluster extends Resource implements ICluster {
   }
 
   /**
+   * Add managed nodegroup to this Amazon EKS cluster
+   *
+   * This method will create a new managed nodegroup and add into the capacity.
+   *
+   * @see https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html
+   * @param id The ID of the nodegroup
+   * @param options options for creating a new nodegroup
+   */
+  public addNodegroup(id: string, options?: NodegroupOptions): Nodegroup {
+    // initialize the awsAuth for this cluster
+    this._awsAuth = this._awsAuth ?? this.awsAuth;
+    return new Nodegroup(this, `Nodegroup${id}`, {
+      cluster: this,
+      ...options,
+    });
+  }
+
+  /**
    * Add compute capacity to this EKS cluster in the form of an AutoScalingGroup
    *
    * The AutoScalingGroup must be running an EKS-optimized AMI containing the
@@ -508,7 +546,7 @@ export class Cluster extends Resource implements ICluster {
 
     const bootstrapEnabled = options.bootstrapEnabled !== undefined ? options.bootstrapEnabled : true;
     if (options.bootstrapOptions && !bootstrapEnabled) {
-      throw new Error(`Cannot specify "bootstrapOptions" if "bootstrapEnabled" is false`);
+      throw new Error('Cannot specify "bootstrapOptions" if "bootstrapEnabled" is false');
     }
 
     if (bootstrapEnabled) {
@@ -526,7 +564,7 @@ export class Cluster extends Resource implements ICluster {
     });
 
     if (options.mapRole === true && !this.kubectlEnabled) {
-      throw new Error(`Cannot map instance IAM role to RBAC if kubectl is disabled for the cluster`);
+      throw new Error('Cannot map instance IAM role to RBAC if kubectl is disabled for the cluster');
     }
 
     // do not attempt to map the role if `kubectl` is not enabled for this
@@ -560,7 +598,7 @@ export class Cluster extends Resource implements ICluster {
    */
   public get awsAuth() {
     if (!this.kubectlEnabled) {
-      throw new Error(`Cannot define aws-auth mappings if kubectl is disabled`);
+      throw new Error('Cannot define aws-auth mappings if kubectl is disabled');
     }
 
     if (!this._awsAuth) {
@@ -620,7 +658,7 @@ export class Cluster extends Resource implements ICluster {
    */
   public _getKubectlCreationRoleArn(assumedBy?: iam.IRole) {
     if (!this._clusterResource) {
-      throw new Error(`Unable to perform this operation since kubectl is not enabled for this cluster`);
+      throw new Error('Unable to perform this operation since kubectl is not enabled for this cluster');
     }
 
     return this._clusterResource.getCreationRoleArn(assumedBy);
@@ -645,13 +683,13 @@ export class Cluster extends Resource implements ICluster {
           continue;
         }
 
-        subnet.node.applyAspect(new Tag(tag, "1"));
+        subnet.node.applyAspect(new Tag(tag, '1'));
       }
     };
 
     // https://docs.aws.amazon.com/eks/latest/userguide/network_reqs.html
-    tagAllSubnets('private', this.vpc.privateSubnets, "kubernetes.io/role/internal-elb");
-    tagAllSubnets('public', this.vpc.publicSubnets, "kubernetes.io/role/elb");
+    tagAllSubnets('private', this.vpc.privateSubnets, 'kubernetes.io/role/internal-elb');
+    tagAllSubnets('public', this.vpc.publicSubnets, 'kubernetes.io/role/elb');
   }
 
   /**
@@ -661,7 +699,7 @@ export class Cluster extends Resource implements ICluster {
    */
   private defineCoreDnsComputeType(type: CoreDnsComputeType) {
     if (!this.kubectlEnabled) {
-      throw new Error(`kubectl must be enabled in order to define the compute type for CoreDNS`);
+      throw new Error('kubectl must be enabled in order to define the compute type for CoreDNS');
     }
 
     // ec2 is the "built in" compute type of the cluster so if this is the
@@ -833,7 +871,7 @@ class ImportedCluster extends Resource implements ICluster {
   constructor(scope: Construct, id: string, props: ClusterAttributes) {
     super(scope, id);
 
-    this.vpc = ec2.Vpc.fromVpcAttributes(this, "VPC", props.vpc);
+    this.vpc = ec2.Vpc.fromVpcAttributes(this, 'VPC', props.vpc);
     this.clusterName = props.clusterName;
     this.clusterEndpoint = props.clusterEndpoint;
     this.clusterArn = props.clusterArn;
@@ -884,9 +922,9 @@ export class EksOptimizedImage implements ec2.IMachineImage {
 
     // set the SSM parameter name
     this.amiParameterName = `/aws/service/eks/optimized-ami/${this.kubernetesVersion}/`
-      + ( this.nodeType === NodeType.STANDARD ? "amazon-linux-2/" : "" )
-      + ( this.nodeType === NodeType.GPU ? "amazon-linux2-gpu/" : "" )
-      + "recommended/image_id";
+      + ( this.nodeType === NodeType.STANDARD ? 'amazon-linux-2/' : '' )
+      + ( this.nodeType === NodeType.GPU ? 'amazon-linux2-gpu/' : '' )
+      + 'recommended/image_id';
   }
 
   /**
@@ -933,6 +971,20 @@ export enum CoreDnsComputeType {
    * Deploy CoreDNS on Fargate-managed instances.
    */
   FARGATE = 'fargate'
+}
+
+/**
+ * The default capacity type for the cluster
+ */
+export enum DefaultCapacityType {
+  /**
+   * managed node group
+   */
+  NODEGROUP,
+  /**
+   * EC2 autoscaling group
+   */
+  EC2
 }
 
 const GPU_INSTANCETYPES = ['p2', 'p3', 'g4'];

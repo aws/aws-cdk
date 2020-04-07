@@ -1,18 +1,33 @@
 import * as AWS from 'aws-sdk';
 import { ConfigurationOptions } from 'aws-sdk/lib/config';
+import { debug } from '../../logging';
+import { cached } from '../../util/functions';
+import { AccountAccessKeyCache } from './account-cache';
+import { Account } from './sdk-provider';
 
 /** @experimental */
 export interface ISDK {
+  /**
+   * The region this SDK has been instantiated for
+   *
+   * (As distinct from the `defaultRegion()` on SdkProvider which
+   * represents the region configured in the default config).
+   */
+  readonly currentRegion: string;
+
+  /**
+   * The Account this SDK has been instantiated for
+   *
+   * (As distinct from the `defaultAccount()` on SdkProvider which
+   * represents the account available by using default credentials).
+   */
+  currentAccount(): Promise<Account>;
+
   cloudFormation(): AWS.CloudFormation;
-
   ec2(): AWS.EC2;
-
   ssm(): AWS.SSM;
-
   s3(): AWS.S3;
-
   route53(): AWS.Route53;
-
   ecr(): AWS.ECR;
 }
 
@@ -20,6 +35,10 @@ export interface ISDK {
  * Base functionality of SDK without credential fetching
  */
 export class SDK implements ISDK {
+  private static readonly accountCache = new AccountAccessKeyCache();
+
+  public readonly currentRegion: string;
+
   private readonly config: ConfigurationOptions;
 
   /**
@@ -34,13 +53,14 @@ export class SDK implements ISDK {
    */
   private readonly retryOptions = { maxRetries: 6, retryDelayOptions: { base: 300 }};
 
-  constructor(credentials: AWS.Credentials, region: string, httpOptions: ConfigurationOptions = {}) {
+  constructor(private readonly credentials: AWS.Credentials, region: string, httpOptions: ConfigurationOptions = {}) {
     this.config = {
       ...httpOptions,
       ...this.retryOptions,
       credentials,
       region,
     };
+    this.currentRegion = region;
   }
 
   public cloudFormation(): AWS.CloudFormation {
@@ -66,4 +86,21 @@ export class SDK implements ISDK {
   public ecr(): AWS.ECR {
     return new AWS.ECR(this.config);
   }
+
+  public async currentAccount(): Promise<Account> {
+    return cached(this, CURRENT_ACCOUNT_KEY, () => SDK.accountCache.fetch(this.credentials.accessKeyId, async () => {
+      // if we don't have one, resolve from STS and store in cache.
+      debug('Looking up default account ID from STS');
+      const result = await new AWS.STS(this.config).getCallerIdentity().promise();
+      const accountId = result.Account;
+      const partition = result.Arn!.split(':')[1];
+      if (!accountId) {
+        throw new Error('STS didn\'t return an account ID');
+      }
+      debug('Default account ID:', accountId);
+      return { accountId, partition };
+    }));
+  }
 }
+
+const CURRENT_ACCOUNT_KEY = Symbol('current_account_key');

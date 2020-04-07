@@ -33,8 +33,8 @@ test('use CloudFront as record target', () => {
   // THEN
   expect(stack).toHaveResource('AWS::Route53::RecordSet', {
     AliasTarget: {
-      DNSName: { "Fn::GetAtt": [ "MyDistributionCFDistributionDE147309", "DomainName" ] },
-      HostedZoneId: "Z2FDTNDATAQYW2"
+      DNSName: { 'Fn::GetAtt': [ 'MyDistributionCFDistributionDE147309', 'DomainName' ] },
+      HostedZoneId: 'Z2FDTNDATAQYW2'
     },
   });
 });

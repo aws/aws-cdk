@@ -161,7 +161,7 @@ export class CloudAssembly {
     const tree = trees[0];
 
     if (!(tree instanceof TreeCloudArtifact)) {
-      throw new Error(`"Tree" artifact is not of expected type`);
+      throw new Error('"Tree" artifact is not of expected type');
     }
 
     return tree;

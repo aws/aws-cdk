@@ -72,14 +72,14 @@ function prepare_fixture() {
     mkdir -p node_modules
 
     npm install \
-        @aws-cdk/core@^1 \
-        @aws-cdk/aws-sns@^1 \
-        @aws-cdk/aws-iam@^1 \
-        @aws-cdk/aws-lambda@^1 \
-        @aws-cdk/aws-ssm@^1 \
-        @aws-cdk/aws-ecr-assets@^1 \
-        @aws-cdk/aws-cloudformation@^1 \
-        @aws-cdk/aws-ec2@^1
+        @aws-cdk/core \
+        @aws-cdk/aws-sns \
+        @aws-cdk/aws-iam \
+        @aws-cdk/aws-lambda \
+        @aws-cdk/aws-ssm \
+        @aws-cdk/aws-ecr-assets \
+        @aws-cdk/aws-cloudformation \
+        @aws-cdk/aws-ec2
 
     echo "| setup complete at: $PWD"
     echo "| 'cdk' is: $(type -p cdk)"
@@ -93,6 +93,8 @@ function cleanup() {
   cleanup_stack ${STACK_NAME_PREFIX}-test-2
   cleanup_stack ${STACK_NAME_PREFIX}-iam-test
   cleanup_stack ${STACK_NAME_PREFIX}-with-nested-stack
+  cleanup_stack ${STACK_NAME_PREFIX}-outputs-test-1
+  cleanup_stack ${STACK_NAME_PREFIX}-outputs-test-2
 }
 
 function setup() {
