@@ -155,7 +155,7 @@ export class ApplicationMultipleTargetGroupsFargateService extends ApplicationMu
   }
 
   private createFargateService(props: ApplicationMultipleTargetGroupsFargateServiceProps): FargateService {
-    return new FargateService(this, "Service", {
+    return new FargateService(this, 'Service', {
       cluster: this.cluster,
       desiredCount: this.desiredCount,
       taskDefinition: this.taskDefinition,

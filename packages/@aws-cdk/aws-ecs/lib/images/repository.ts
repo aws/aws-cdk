@@ -1,7 +1,7 @@
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { Construct, Token } from '@aws-cdk/core';
-import { ContainerDefinition } from "../container-definition";
-import { ContainerImage, ContainerImageConfig } from "../container-image";
+import { ContainerDefinition } from '../container-definition';
+import { ContainerImage, ContainerImageConfig } from '../container-image';
 
 /**
  * Regex pattern to check if it is an ECR image URL.

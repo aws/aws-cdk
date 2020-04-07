@@ -1,7 +1,7 @@
 import * as semver from 'semver';
 import { DockerImageAsset } from './docker-image-asset';
 import { FileAsset } from './file-asset';
-import { ManifestFile } from "./manifest-schema";
+import { ManifestFile } from './manifest-schema';
 import { loadMyPackageJson } from './private/my-package-json';
 import { assertIsObject, expectKey, isMapOf, isObjectAnd, isString } from './private/schema-helpers';
 

@@ -60,6 +60,11 @@ The following source types are supported for bucket deployments:
  - Local directory: `s3deploy.Source.asset('/path/to/local/directory')`
  - Another bucket: `s3deploy.Source.bucket(bucket, zipObjectKey)`
 
+To create a source from a single file, you can pass `AssetOptions` to exclude
+all but a single file:
+
+ - Single file: `s3deploy.Source.asset('/path/to/local/directory', { exclude: ['**', '!onlyThisFile.txt'] })`
+
 ## Retain on Delete
 
 By default, the contents of the destination bucket will be deleted when the

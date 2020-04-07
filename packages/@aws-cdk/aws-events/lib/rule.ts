@@ -110,7 +110,7 @@ export class Rule extends Resource implements IRule {
     });
 
     if (props.eventBus && props.schedule) {
-      throw new Error(`Cannot associate rule with 'eventBus' when using 'schedule'`);
+      throw new Error('Cannot associate rule with \'eventBus\' when using \'schedule\'');
     }
 
     this.description = props.description;
@@ -232,7 +232,7 @@ export class Rule extends Resource implements IRule {
             },
             stackName: `${targetStack.stackName}-EventBusPolicy-support-${targetRegion}-${sourceAccount}`,
           });
-          new CfnEventBusPolicy(eventBusPolicyStack, `GivePermToOtherAccount`, {
+          new CfnEventBusPolicy(eventBusPolicyStack, 'GivePermToOtherAccount', {
             action: 'events:PutEvents',
             statementId: 'MySid',
             principal: sourceAccount,
@@ -283,6 +283,7 @@ export class Rule extends Resource implements IRule {
       ecsParameters: targetProps.ecsParameters,
       kinesisParameters: targetProps.kinesisParameters,
       runCommandParameters: targetProps.runCommandParameters,
+      batchParameters: targetProps.batchParameters,
       sqsParameters: targetProps.sqsParameters,
       input: inputProps && inputProps.input,
       inputPath: inputProps && inputProps.inputPath,
@@ -360,7 +361,7 @@ export class Rule extends Resource implements IRule {
 
   protected validate() {
     if (Object.keys(this.eventPattern).length === 0 && !this.scheduleExpression) {
-      return [`Either 'eventPattern' or 'schedule' must be defined`];
+      return ['Either \'eventPattern\' or \'schedule\' must be defined'];
     }
 
     return [];

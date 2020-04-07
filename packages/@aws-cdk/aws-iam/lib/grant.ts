@@ -1,6 +1,6 @@
 import * as cdk from '@aws-cdk/core';
-import { PolicyStatement } from "./policy-statement";
-import { IGrantable, IPrincipal } from "./principals";
+import { PolicyStatement } from './policy-statement';
+import { IGrantable, IPrincipal } from './principals';
 
 /**
  * Basic options for a grant operation

@@ -58,7 +58,7 @@ export = {
             Action: 'sts:AssumeRole',
             Effect: 'Allow',
             Principal: {
-              Service: "config.amazonaws.com"
+              Service: 'config.amazonaws.com'
             }
           }
         ],

@@ -1,6 +1,6 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as cdk from '@aws-cdk/core';
-import { CustomActionRegistration } from "../custom-action-registration";
+import { CustomActionRegistration } from '../custom-action-registration';
 
 /**
  * A Jenkins provider.

@@ -80,6 +80,15 @@ export interface ManagedPolicyProps {
    * @default - No statements.
    */
   readonly statements?: PolicyStatement[];
+
+  /**
+   * Initial PolicyDocument to use for this ManagedPolicy. If omited, any
+   * `PolicyStatement` provided in the `statements` property will be applied
+   * against the empty default `PolicyDocument`.
+   *
+   * @default - An empty policy.
+   */
+  readonly document?: PolicyDocument;
 }
 
 /**
@@ -88,7 +97,7 @@ export interface ManagedPolicyProps {
  */
 export class ManagedPolicy extends Resource implements IManagedPolicy {
   /**
-   * Construct a customer managed policy from the managedPolicyName
+   * Import a customer managed policy from the managedPolicyName.
    *
    * For this managed policy, you only need to know the name to be able to use it.
    *
@@ -96,10 +105,10 @@ export class ManagedPolicy extends Resource implements IManagedPolicy {
   public static fromManagedPolicyName(scope: Construct, id: string, managedPolicyName: string): IManagedPolicy {
     class Import extends Resource implements IManagedPolicy {
       public readonly managedPolicyArn = Stack.of(scope).formatArn({
-        service: "iam",
-        region: "", // no region for managed policy
+        service: 'iam',
+        region: '', // no region for managed policy
         account: Stack.of(scope).account, // Can this be something the user specifies?
-        resource: "policy",
+        resource: 'policy',
         resourceName: managedPolicyName
       });
     }
@@ -107,10 +116,23 @@ export class ManagedPolicy extends Resource implements IManagedPolicy {
   }
 
   /**
-   * Constructs a managed policy from an ARN.
+   * Import an external managed policy by ARN.
    *
-   * For this managed policy, you only need to know the ARN to be able to use it. This can be useful if you got the ARN in a Cloudformation Export.
+   * For this managed policy, you only need to know the ARN to be able to use it.
+   * This can be useful if you got the ARN from a CloudFormation Export.
    *
+   * If the imported Managed Policy ARN is a Token (such as a
+   * `CfnParameter.valueAsString` or a `Fn.importValue()`) *and* the referenced
+   * managed policy has a `path` (like `arn:...:policy/AdminPolicy/AdminAllow`), the
+   * `managedPolicyName` property will not resolve to the correct value. Instead it
+   * will resolve to the first path component. We unfortunately cannot express
+   * the correct calculation of the full path name as a CloudFormation
+   * expression. In this scenario the Managed Policy ARN should be supplied without the
+   * `path` in order to resolve the correct managed policy resource.
+   *
+   * @param scope construct scope
+   * @param id construct id
+   * @param managedPolicyArn the ARN of the managed policy to import
    */
   public static fromManagedPolicyArn(scope: Construct, id: string, managedPolicyArn: string): IManagedPolicy {
     class Import extends Resource implements IManagedPolicy {
@@ -120,7 +142,7 @@ export class ManagedPolicy extends Resource implements IManagedPolicy {
   }
 
   /**
-   * Construct a managed policy from one of the policies that AWS manages
+   * Import a managed policy from one of the policies that AWS manages.
    *
    * For this managed policy, you only need to know the name to be able to use it.
    *
@@ -133,10 +155,10 @@ export class ManagedPolicy extends Resource implements IManagedPolicy {
       public readonly managedPolicyArn = Lazy.stringValue({
         produce(ctx: IResolveContext) {
           return Stack.of(ctx.scope).formatArn({
-            service: "iam",
-            region: "", // no region for managed policy
-            account: "aws", // the account for a managed policy is 'aws'
-            resource: "policy",
+            service: 'iam',
+            region: '', // no region for managed policy
+            account: 'aws', // the account for a managed policy is 'aws'
+            resource: 'policy',
             resourceName: managedPolicyName
           });
         }
@@ -189,6 +211,10 @@ export class ManagedPolicy extends Resource implements IManagedPolicy {
 
     this.description = props.description || '';
     this.path = props.path || '/';
+
+    if (props.document) {
+      this.document = props.document;
+    }
 
     const resource = new CfnManagedPolicy(this, 'Resource', {
       policyDocument: this.document,

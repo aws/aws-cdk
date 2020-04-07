@@ -24,7 +24,7 @@ manifests within EKS clusters.
 
 This example defines an Amazon EKS cluster with the following configuration:
 
-- 2x **m5.large** instances (this instance type suits most common use-cases, and is good value for money)
+- Managed nodegroup with 2x **m5.large** instances (this instance type suits most common use-cases, and is good value for money)
 - Dedicated VPC with default configuration (see [ec2.Vpc](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-ec2-readme.html#vpc))
 - A Kubernetes pod with a container based on the [paulbouwer/hello-kubernetes](https://github.com/paulbouwer/hello-kubernetes) image.
 
@@ -49,10 +49,18 @@ cluster.addResource('mypod', {
 
 ### Capacity
 
-By default, `eks.Cluster` is created with x2 `m5.large` instances.
+By default, `eks.Cluster` is created with a managed nodegroup with x2 `m5.large` instances.
 
 ```ts
 new eks.Cluster(this, 'cluster-two-m5-large');
+```
+
+To use the traditional self-managed Amazon EC2 instances instead, set `defaultCapacityType` to `DefaultCapacityType.EC2`
+
+```ts
+const cluster = new eks.Cluster(this, 'cluster-self-managed-ec2', {
+  defaultCapacityType: eks.DefaultCapacityType.EC2
+});
 ```
 
 The quantity and instance type for the default capacity can be specified through
@@ -73,16 +81,13 @@ new eks.Cluster(this, 'cluster-with-no-capacity', { defaultCapacity: 0 });
 
 The `cluster.defaultCapacity` property will reference the `AutoScalingGroup`
 resource for the default capacity. It will be `undefined` if `defaultCapacity`
-is set to `0`:
+is set to `0` or `defaultCapacityType` is either `NODEGROUP` or undefined.
 
-```ts
-const cluster = new eks.Cluster(this, 'my-cluster');
-cluster.defaultCapacity!.scaleOnCpuUtilization('up', {
-  targetUtilizationPercent: 80
-});
-```
+And the `cluster.defaultNodegroup` property will reference the `Nodegroup`
+resource for the default capacity. It will be `undefined` if `defaultCapacity`
+is set to `0` or `defaultCapacityType` is `EC2`.
 
-You can add customized capacity through `cluster.addCapacity()` or
+You can add `AutoScalingGroup` resource as customized capacity through `cluster.addCapacity()` or
 `cluster.addAutoScalingGroup()`:
 
 ```ts
@@ -92,6 +97,25 @@ cluster.addCapacity('frontend-nodes', {
   vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC }
 });
 ```
+
+### Managed Node Groups
+
+Amazon EKS managed node groups automate the provisioning and lifecycle management of nodes (Amazon EC2 instances) 
+for Amazon EKS Kubernetes clusters. By default, `eks.Nodegroup` create a nodegroup with x2 `t3.medium` instances. 
+
+```ts
+new eks.Nodegroup(stack, 'nodegroup', { cluster });
+```
+
+You can add customized node group through `cluster.addNodegroup()`:
+
+```ts
+cluster.addNodegroup('nodegroup', {
+  instanceType: new ec2.InstanceType('m5.large'),
+  minSize: 4,
+});
+```
+
 
 ### Fargate
 

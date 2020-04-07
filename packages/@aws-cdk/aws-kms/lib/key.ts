@@ -381,21 +381,21 @@ export class Key extends KeyBase {
    */
   private allowAccountToAdmin() {
     const actions = [
-      "kms:Create*",
-      "kms:Describe*",
-      "kms:Enable*",
-      "kms:List*",
-      "kms:Put*",
-      "kms:Update*",
-      "kms:Revoke*",
-      "kms:Disable*",
-      "kms:Get*",
-      "kms:Delete*",
-      "kms:ScheduleKeyDeletion",
-      "kms:CancelKeyDeletion",
-      "kms:GenerateDataKey",
-      "kms:TagResource",
-      "kms:UntagResource"
+      'kms:Create*',
+      'kms:Describe*',
+      'kms:Enable*',
+      'kms:List*',
+      'kms:Put*',
+      'kms:Update*',
+      'kms:Revoke*',
+      'kms:Disable*',
+      'kms:Get*',
+      'kms:Delete*',
+      'kms:ScheduleKeyDeletion',
+      'kms:CancelKeyDeletion',
+      'kms:GenerateDataKey',
+      'kms:TagResource',
+      'kms:UntagResource'
     ];
 
     this.addToResourcePolicy(new iam.PolicyStatement({

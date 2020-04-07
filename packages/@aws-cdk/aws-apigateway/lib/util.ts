@@ -44,7 +44,7 @@ export function parseMethodOptionsPath(originalPath: string): { resourcePath: st
 
 export function parseAwsApiCall(path?: string, action?: string, actionParams?: { [key: string]: string }): { apiType: string, apiValue: string } {
   if (actionParams && !action) {
-    throw new Error(`"actionParams" requires that "action" will be set`);
+    throw new Error('"actionParams" requires that "action" will be set');
   }
 
   if (path && action) {
@@ -69,7 +69,7 @@ export function parseAwsApiCall(path?: string, action?: string, actionParams?: {
     };
   }
 
-  throw new Error(`Either "path" or "action" are required`);
+  throw new Error('Either "path" or "action" are required');
 }
 
 export function validateInteger(property: number | undefined, messagePrefix: string) {
@@ -86,7 +86,7 @@ export class JsonSchemaMapper {
    */
   public static toCfnJsonSchema(schema: jsonSchema.JsonSchema): any {
     const result = JsonSchemaMapper._toCfnJsonSchema(schema);
-    if (! ("$schema" in result)) {
+    if (! ('$schema' in result)) {
       result.$schema = jsonSchema.JsonSchemaVersion.DRAFT4;
     }
     return result;

@@ -243,11 +243,11 @@ export class Queue extends QueueBase {
     validateProps(props);
 
     const redrivePolicy = props.deadLetterQueue
-              ? {
-                deadLetterTargetArn: props.deadLetterQueue.queue.queueArn,
-                maxReceiveCount: props.deadLetterQueue.maxReceiveCount
-                }
-              : undefined;
+      ? {
+        deadLetterTargetArn: props.deadLetterQueue.queue.queueArn,
+        maxReceiveCount: props.deadLetterQueue.maxReceiveCount
+      }
+      : undefined;
 
     const { encryptionMasterKey, encryptionProps } = _determineEncryptionProps.call(this);
 

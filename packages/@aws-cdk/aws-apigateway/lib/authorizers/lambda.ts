@@ -75,7 +75,7 @@ abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
     this.role = props.assumeRole;
 
     if (props.resultsCacheTtl && props.resultsCacheTtl?.toSeconds() > 3600) {
-      throw new Error(`Lambda authorizer property 'resultsCacheTtl' must not be greater than 3600 seconds (1 hour)`);
+      throw new Error('Lambda authorizer property \'resultsCacheTtl\' must not be greater than 3600 seconds (1 hour)');
     }
   }
 
@@ -85,7 +85,7 @@ abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
    */
   public _attachToApi(restApi: RestApi) {
     if (this.restApiId && this.restApiId !== restApi.restApiId) {
-      throw new Error(`Cannot attach authorizer to two different rest APIs`);
+      throw new Error('Cannot attach authorizer to two different rest APIs');
     }
 
     this.restApiId = restApi.restApiId;
@@ -224,7 +224,7 @@ export class RequestAuthorizer extends LambdaAuthorizer {
     super(scope, id, props);
 
     if ((props.resultsCacheTtl === undefined || props.resultsCacheTtl.toSeconds() !== 0) && props.identitySources.length === 0) {
-      throw new Error(`At least one Identity Source is required for a REQUEST-based Lambda authorizer if caching is enabled.`);
+      throw new Error('At least one Identity Source is required for a REQUEST-based Lambda authorizer if caching is enabled.');
     }
 
     const restApiId = this.lazyRestApiId();

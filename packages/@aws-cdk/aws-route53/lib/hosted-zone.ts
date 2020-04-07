@@ -7,6 +7,9 @@ import { CaaAmazonRecord, ZoneDelegationRecord } from './record-set';
 import { CfnHostedZone } from './route53.generated';
 import { makeHostedZoneArn, validateZoneName } from './util';
 
+/**
+ * Common properties to create a Route 53 hosted zone
+ */
 export interface CommonHostedZoneProps {
   /**
    * The name of the domain. For resource record types that include a domain
@@ -44,16 +47,27 @@ export interface HostedZoneProps extends CommonHostedZoneProps {
   readonly vpcs?: ec2.IVpc[];
 }
 
+/**
+ * Container for records, and records contain information about how to route traffic for a
+ * specific domain, such as example.com and its subdomains (acme.example.com, zenith.example.com)
+ */
 export class HostedZone extends Resource implements IHostedZone {
   public get hostedZoneArn(): string {
     return makeHostedZoneArn(this, this.hostedZoneId);
   }
 
+  /**
+   * Import a Route 53 hosted zone defined either outside the CDK, or in a different CDK stack
+   *
+   * @param scope the parent Construct for this Construct
+   * @param id  the logical name of this Construct
+   * @param hostedZoneId the ID of the hosted zone to import
+   */
   public static fromHostedZoneId(scope: Construct, id: string, hostedZoneId: string): IHostedZone {
     class Import extends Resource implements IHostedZone {
       public readonly hostedZoneId = hostedZoneId;
       public get zoneName(): string {
-        throw new Error(`HostedZone.fromHostedZoneId doesn't support "zoneName"`);
+        throw new Error('HostedZone.fromHostedZoneId doesn\'t support "zoneName"');
       }
       public get hostedZoneArn(): string {
         return makeHostedZoneArn(this, this.hostedZoneId);
@@ -164,6 +178,9 @@ export interface PublicHostedZoneProps extends CommonHostedZoneProps {
   readonly caaAmazon?: boolean;
 }
 
+/**
+ * Represents a Route 53 public hosted zone
+ */
 export interface IPublicHostedZone extends IHostedZone { }
 
 /**
@@ -173,10 +190,17 @@ export interface IPublicHostedZone extends IHostedZone { }
  */
 export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
 
+  /**
+   * Import a Route 53 public hosted zone defined either outside the CDK, or in a different CDK stack
+   *
+   * @param scope the parent Construct for this Construct
+   * @param id the logical name of this Construct
+   * @param publicHostedZoneId the ID of the public hosted zone to import
+   */
   public static fromPublicHostedZoneId(scope: Construct, id: string, publicHostedZoneId: string): IPublicHostedZone {
     class Import extends Resource implements IPublicHostedZone {
       public readonly hostedZoneId = publicHostedZoneId;
-      public get zoneName(): string { throw new Error(`cannot retrieve "zoneName" from an an imported hosted zone`); }
+      public get zoneName(): string { throw new Error('cannot retrieve "zoneName" from an an imported hosted zone'); }
       public get hostedZoneArn(): string {
         return makeHostedZoneArn(this, this.hostedZoneId);
       }
@@ -234,6 +258,9 @@ export interface ZoneDelegationOptions {
   readonly ttl?: Duration;
 }
 
+/**
+ * Properties to create a Route 53 private hosted zone
+ */
 export interface PrivateHostedZoneProps extends CommonHostedZoneProps {
   /**
    * A VPC that you want to associate with this hosted zone.
@@ -244,6 +271,9 @@ export interface PrivateHostedZoneProps extends CommonHostedZoneProps {
   readonly vpc: ec2.IVpc;
 }
 
+/**
+ * Represents a Route 53 private hosted zone
+ */
 export interface IPrivateHostedZone extends IHostedZone {}
 
 /**
@@ -256,10 +286,17 @@ export interface IPrivateHostedZone extends IHostedZone {}
  */
 export class PrivateHostedZone extends HostedZone implements IPrivateHostedZone {
 
+  /**
+   * Import a Route 53 private hosted zone defined either outside the CDK, or in a different CDK stack
+   *
+   * @param scope the parent Construct for this Construct
+   * @param id the logical name of this Construct
+   * @param privateHostedZoneId the ID of the private hosted zone to import
+   */
   public static fromPrivateHostedZoneId(scope: Construct, id: string, privateHostedZoneId: string): IPrivateHostedZone {
     class Import extends Resource implements IPrivateHostedZone {
       public readonly hostedZoneId = privateHostedZoneId;
-      public get zoneName(): string { throw new Error(`cannot retrieve "zoneName" from an an imported hosted zone`); }
+      public get zoneName(): string { throw new Error('cannot retrieve "zoneName" from an an imported hosted zone'); }
       public get hostedZoneArn(): string {
         return makeHostedZoneArn(this, this.hostedZoneId);
       }

@@ -49,8 +49,8 @@ export = {
       },
       RotationLambdaARN: {
         'Fn::GetAtt': [
-          "SecretRotationA9FFCFA9",
-          "Outputs.RotationLambdaARN"
+          'SecretRotationA9FFCFA9',
+          'Outputs.RotationLambdaARN'
         ]
       },
       RotationRules: {

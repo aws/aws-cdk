@@ -23,7 +23,7 @@ const distribution = new cloudfront.CloudFrontWebDistribution(stack, 'MyDistribu
       behaviors : [ {isDefaultBehavior: true}]
     }
   ]
- });
+});
 
 new route53.ARecord(zone, 'Alias', {
   zone,

@@ -76,8 +76,8 @@ export = {
             MaxCapacity: 50,
             MinCapacity: 1
           },
-          Schedule: "rate(1 minute)",
-          ScheduledActionName: "ScaleUp"
+          Schedule: 'rate(1 minute)',
+          ScheduledActionName: 'ScaleUp'
         }
       ]
     }));
@@ -115,22 +115,22 @@ export = {
     }));
 
     expect(stack).to(haveResource('AWS::CloudWatch::Alarm', {
-      ComparisonOperator: "LessThanOrEqualToThreshold",
+      ComparisonOperator: 'LessThanOrEqualToThreshold',
       EvaluationPeriods: 1,
       Metrics: [
         {
-          Expression: "a",
-          Id: "expr_1"
+          Expression: 'a',
+          Id: 'expr_1'
         },
         {
-          Id: "a",
+          Id: 'a',
           MetricStat: {
             Metric: {
-              MetricName: "Metric",
-              Namespace: "Test"
+              MetricName: 'Metric',
+              Namespace: 'Test'
             },
             Period: 300,
-            Stat: "Average"
+            Stat: 'Average'
           },
           ReturnData: false
         }

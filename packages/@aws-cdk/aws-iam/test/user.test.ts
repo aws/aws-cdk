@@ -50,7 +50,7 @@ describe('IAM user', () => {
     // THEN
     expect(stack).toHaveResource('AWS::IAM::User', {
       ManagedPolicyArns: [
-        { "Fn::Join": ["", ["arn:", { Ref: "AWS::Partition" }, ":iam::aws:policy/asdf"]] }
+        { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/asdf']] }
       ]
     });
   });
@@ -67,14 +67,14 @@ describe('IAM user', () => {
 
     expect(stack).toHaveResource('AWS::IAM::User', {
       PermissionsBoundary: {
-        "Fn::Join": [
-          "",
+        'Fn::Join': [
+          '',
           [
-            "arn:",
+            'arn:',
             {
-              Ref: "AWS::Partition"
+              Ref: 'AWS::Partition'
             },
-            ":iam::aws:policy/managed-policy"
+            ':iam::aws:policy/managed-policy'
           ]
         ]
       }
@@ -90,7 +90,7 @@ describe('IAM user', () => {
 
     // THEN
     expect(stack.resolve(user.userArn)).toStrictEqual({
-      "Fn::Join": ["", ["arn:", { Ref: "AWS::Partition" }, ":iam::", { Ref: "AWS::AccountId" }, ":user/MyUserName"]]
+      'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':user/MyUserName']]
     });
   });
 });

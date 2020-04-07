@@ -110,10 +110,10 @@ export = {
     test.deepEqual(stack._toCloudFormation(), { Resources:
       { myResource:
          { Type: 'AWS::MyResource',
-         Properties:
+           Properties:
           { MyProp1: 'hello',
-          MyProp2: 'howdy',
-          Environment: { key: 'value' } } } } });
+            MyProp2: 'howdy',
+            Environment: { key: 'value' } } } } });
 
     test.done();
   },
@@ -713,8 +713,8 @@ export = {
 
     // THEN
     test.deepEqual(stack.resolve(azs), [
-      { "Fn::Select": [ 0, { "Fn::GetAZs": "" } ] },
-      { "Fn::Select": [ 1, { "Fn::GetAZs": "" } ] }
+      { 'Fn::Select': [ 0, { 'Fn::GetAZs': '' } ] },
+      { 'Fn::Select': [ 1, { 'Fn::GetAZs': '' } ] }
     ]);
     test.done();
   },

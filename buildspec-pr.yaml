@@ -7,7 +7,6 @@ phases:
     commands:
       # Install yarn if it wasn't already present in the image
       - yarn --version || npm -g install yarn
-      - yarn install --frozen-lockfile
   build:
     commands:
       - /bin/bash ./build.sh && git diff-index --exit-code --ignore-space-at-eol --stat HEAD

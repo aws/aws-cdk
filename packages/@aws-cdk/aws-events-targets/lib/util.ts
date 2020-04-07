@@ -1,7 +1,7 @@
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Construct, IConstruct } from "@aws-cdk/core";
+import { Construct, IConstruct } from '@aws-cdk/core';
 
 /**
  * Obtain the Role for the CloudWatch event

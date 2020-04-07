@@ -1,9 +1,9 @@
-import { Schedule } from "@aws-cdk/aws-applicationautoscaling";
+import { Schedule } from '@aws-cdk/aws-applicationautoscaling';
 import { IVpc, SubnetSelection, SubnetType } from '@aws-cdk/aws-ec2';
-import { AwsLogDriver, Cluster, ContainerImage, ICluster, LogDriver, Secret, TaskDefinition } from "@aws-cdk/aws-ecs";
-import { Rule } from "@aws-cdk/aws-events";
-import { EcsTask } from "@aws-cdk/aws-events-targets";
-import { Construct, Stack } from "@aws-cdk/core";
+import { AwsLogDriver, Cluster, ContainerImage, ICluster, LogDriver, Secret, TaskDefinition } from '@aws-cdk/aws-ecs';
+import { Rule } from '@aws-cdk/aws-events';
+import { EcsTask } from '@aws-cdk/aws-events-targets';
+import { Construct, Stack } from '@aws-cdk/core';
 
 /**
  * The properties for the base ScheduledEc2Task or ScheduledFargateTask task.

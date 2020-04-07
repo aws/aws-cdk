@@ -7,11 +7,11 @@ const ensureArrayOrUndefined = (field: any) => {
   if (field === undefined) {
     return undefined;
   }
-  if (typeof (field) !== "string" && !Array.isArray(field)) {
-    throw new Error("Fields must be either a string or an array of strings");
+  if (typeof (field) !== 'string' && !Array.isArray(field)) {
+    throw new Error('Fields must be either a string or an array of strings');
   }
-  if (Array.isArray(field) && !!field.find((f: any) => typeof (f) !== "string")) {
-    throw new Error("Fields must be either a string or an array of strings");
+  if (Array.isArray(field) && !!field.find((f: any) => typeof (f) !== 'string')) {
+    throw new Error('Fields must be either a string or an array of strings');
   }
   return Array.isArray(field) ? field : [field];
 };
@@ -82,14 +82,14 @@ export class PolicyStatement {
 
   public addActions(...actions: string[]) {
     if (actions.length > 0 && this.notAction.length > 0) {
-      throw new Error(`Cannot add 'Actions' to policy statement if 'NotActions' have been added`);
+      throw new Error('Cannot add \'Actions\' to policy statement if \'NotActions\' have been added');
     }
     this.action.push(...actions);
   }
 
   public addNotActions(...notActions: string[]) {
     if (notActions.length > 0 && this.action.length > 0) {
-      throw new Error(`Cannot add 'NotActions' to policy statement if 'Actions' have been added`);
+      throw new Error('Cannot add \'NotActions\' to policy statement if \'Actions\' have been added');
     }
     this.notAction.push(...notActions);
   }
@@ -107,7 +107,7 @@ export class PolicyStatement {
 
   public addPrincipals(...principals: IPrincipal[]) {
     if (Object.keys(principals).length > 0 && Object.keys(this.notPrincipal).length > 0) {
-      throw new Error(`Cannot add 'Principals' to policy statement if 'NotPrincipals' have been added`);
+      throw new Error('Cannot add \'Principals\' to policy statement if \'NotPrincipals\' have been added');
     }
     for (const principal of principals) {
       const fragment = principal.policyFragment;
@@ -118,7 +118,7 @@ export class PolicyStatement {
 
   public addNotPrincipals(...notPrincipals: IPrincipal[]) {
     if (Object.keys(notPrincipals).length > 0 && Object.keys(this.principal).length > 0) {
-      throw new Error(`Cannot add 'NotPrincipals' to policy statement if 'Principals' have been added`);
+      throw new Error('Cannot add \'NotPrincipals\' to policy statement if \'Principals\' have been added');
     }
     for (const notPrincipal of notPrincipals) {
       const fragment = notPrincipal.policyFragment;
@@ -145,7 +145,7 @@ export class PolicyStatement {
     this.addPrincipals(new ServicePrincipal(service, opts));
   }
 
-  public addFederatedPrincipal(federated: any, conditions: {[key: string]: any}) {
+  public addFederatedPrincipal(federated: any, conditions: Conditions) {
     this.addPrincipals(new FederatedPrincipal(federated, conditions));
   }
 
@@ -167,14 +167,14 @@ export class PolicyStatement {
 
   public addResources(...arns: string[]) {
     if (arns.length > 0 && this.notResource.length > 0) {
-      throw new Error(`Cannot add 'Resources' to policy statement if 'NotResources' have been added`);
+      throw new Error('Cannot add \'Resources\' to policy statement if \'NotResources\' have been added');
     }
     this.resource.push(...arns);
   }
 
   public addNotResources(...arns: string[]) {
     if (arns.length > 0 && this.resource.length > 0) {
-      throw new Error(`Cannot add 'NotResources' to policy statement if 'Resources' have been added`);
+      throw new Error('Cannot add \'NotResources\' to policy statement if \'Resources\' have been added');
     }
     this.notResource.push(...arns);
   }
@@ -200,7 +200,7 @@ export class PolicyStatement {
   /**
    * Add a condition to the Policy
    */
-  public addCondition(key: string, value: any) {
+  public addCondition(key: string, value: Condition) {
     const existingValue = this.condition[key];
     this.condition[key] = existingValue ? { ...existingValue, ...value } : value;
   }
@@ -208,7 +208,7 @@ export class PolicyStatement {
   /**
    * Add multiple conditions to the Policy
    */
-  public addConditions(conditions: {[key: string]: any}) {
+  public addConditions(conditions: Conditions) {
     Object.keys(conditions).map(key => {
       this.addCondition(key, conditions[key]);
     });
@@ -302,6 +302,24 @@ export enum Effect {
   ALLOW = 'Allow',
   DENY = 'Deny',
 }
+
+/**
+ * Condition for when an IAM policy is in effect. Maps from the keys in a request's context to
+ * a string value or array of string values. See the Conditions interface for more details.
+ */
+export type Condition = Record<string, any>;
+
+/**
+ * Conditions for when an IAM Policy is in effect, specified in the following structure:
+ *
+ * `{ "Operator": { "keyInRequestContext": "value" } }`
+ *
+ * The value can be either a single string value or an array of string values.
+ *
+ * For more information, including which operators are supported, see [the IAM
+ * documentation](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition.html).
+ */
+export type Conditions = Record<string, Condition>;
 
 /**
  * Interface for creating a policy statement
@@ -398,7 +416,7 @@ class JsonPrincipal extends PrincipalBase {
 
     this.policyFragment = {
       principalJson: json,
-      conditions: []
+      conditions: {}
     };
   }
 }

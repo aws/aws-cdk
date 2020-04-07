@@ -33,7 +33,7 @@ const defaultEksClient: EksClient = {
 
 function getEksClient() {
   if (!eks) {
-    throw new Error(`EKS client not initialized (call "configureAssumeRole")`);
+    throw new Error('EKS client not initialized (call "configureAssumeRole")');
   }
 
   return eks;

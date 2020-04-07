@@ -61,7 +61,7 @@ export class Staging extends Construct {
     if (stagingDisabled) {
       this.stagedPath = this.sourcePath;
     } else {
-      this.relativePath = `asset.` + this.sourceHash + path.extname(this.sourcePath);
+      this.relativePath = 'asset.' + this.sourceHash + path.extname(this.sourcePath);
       this.stagedPath = this.relativePath; // always relative to outdir
     }
   }

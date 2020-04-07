@@ -2,7 +2,7 @@ import * as child_process from 'child_process';
 import * as events from 'events';
 
 if (!(child_process as any).spawn.mockImplementationOnce) {
-  throw new Error(`Call "jest.mock('child_process');" at the top of the test file!`);
+  throw new Error('Call "jest.mock(\'child_process\');" at the top of the test file!');
 }
 
 export interface Invocation {

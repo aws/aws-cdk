@@ -337,13 +337,13 @@ export class CustomRule extends RuleNew {
 
     if (props.configurationChanges) {
       sourceDetails.push({
-          eventSource: 'aws.config',
-          messageType: 'ConfigurationItemChangeNotification'
-        });
+        eventSource: 'aws.config',
+        messageType: 'ConfigurationItemChangeNotification'
+      });
       sourceDetails.push({
-          eventSource: 'aws.config',
-          messageType: 'OversizedConfigurationItemChangeNotification'
-        });
+        eventSource: 'aws.config',
+        messageType: 'OversizedConfigurationItemChangeNotification'
+      });
     }
 
     if (props.periodic) {

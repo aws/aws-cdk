@@ -2,12 +2,14 @@ import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import { ConstructNode, IResource, Resource } from '@aws-cdk/core';
+import { AliasOptions } from './alias';
 import { EventInvokeConfig, EventInvokeConfigOptions } from './event-invoke-config';
 import { IEventSource } from './event-source';
 import { EventSourceMapping, EventSourceMappingOptions } from './event-source-mapping';
 import { IVersion } from './lambda-version';
 import { CfnPermission } from './lambda.generated';
 import { Permission } from './permission';
+import { addAlias } from './util';
 
 export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
 
@@ -39,6 +41,13 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
 
   /**
    * The `$LATEST` version of this function.
+   *
+   * Note that this is reference to a non-specific AWS Lambda version, which
+   * means the function this version refers to can return different results in
+   * different invocations.
+   *
+   * To obtain a reference to an explicit version which references the current
+   * function configuration, use `lambdaFunction.currentVersion` instead.
    */
   readonly latestVersion: IVersion;
 
@@ -102,7 +111,7 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
   /**
    * Configures options for asynchronous invocation.
    */
-  configureAsyncInvoke(options: EventInvokeConfigOptions): void
+  configureAsyncInvoke(options: EventInvokeConfigOptions): void;
 }
 
 /**
@@ -235,7 +244,7 @@ export abstract class FunctionBase extends Resource implements IFunction {
   }
 
   public get latestVersion(): IVersion {
-    // Dynamic to avoid invinite recursion when creating the LatestVersion instance...
+    // Dynamic to avoid infinite recursion when creating the LatestVersion instance...
     return new LatestVersion(this);
   }
 
@@ -317,11 +326,11 @@ export abstract class FunctionBase extends Resource implements IFunction {
       return (principal as iam.AccountPrincipal).accountId;
     }
 
-    if (`service` in principal) {
+    if ('service' in principal) {
       return (principal as iam.ServicePrincipal).service;
     }
 
-    if (`arn` in principal) {
+    if ('arn' in principal) {
       return (principal as iam.ArnPrincipal).arn;
     }
 
@@ -392,5 +401,9 @@ class LatestVersion extends FunctionBase implements IVersion {
 
   public get role() {
     return this.lambda.role;
+  }
+
+  public addAlias(aliasName: string, options: AliasOptions = {}) {
+    return addAlias(this, this, aliasName, options);
   }
 }

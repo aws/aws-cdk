@@ -4,7 +4,7 @@ import { Test } from 'nodeunit';
 import * as ecs from '../lib';
 
 export = {
-  "A task definition with both compatibilities defaults to networkmode AwsVpc"(test: Test) {
+  'A task definition with both compatibilities defaults to networkmode AwsVpc'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -17,7 +17,7 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
-      NetworkMode: "awsvpc",
+      NetworkMode: 'awsvpc',
     }));
 
     test.done();

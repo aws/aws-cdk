@@ -40,8 +40,8 @@ export class EmrSetClusterTerminationProtection implements sfn.IStepFunctionsTas
         })
       ],
       parameters: {
-          ClusterId: this.props.clusterId,
-          TerminationProtected: this.props.terminationProtected
+        ClusterId: this.props.clusterId,
+        TerminationProtected: this.props.terminationProtected
       }
     };
   }

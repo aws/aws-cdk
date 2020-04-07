@@ -105,47 +105,47 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::IAM::Policy', {
       PolicyDocument: {
-        "Statement": [
+        'Statement': [
           {
-            "Action": [
-              "ecr:BatchCheckLayerAvailability",
-              "ecr:GetDownloadUrlForLayer",
-              "ecr:BatchGetImage"
+            'Action': [
+              'ecr:BatchCheckLayerAvailability',
+              'ecr:GetDownloadUrlForLayer',
+              'ecr:BatchGetImage'
             ],
-            "Effect": "Allow",
-            "Resource": {
-              "Fn::Join": [
-                "",
+            'Effect': 'Allow',
+            'Resource': {
+              'Fn::Join': [
+                '',
                 [
-                  "arn:",
+                  'arn:',
                   {
-                    "Ref": "AWS::Partition"
+                    'Ref': 'AWS::Partition'
                   },
-                  ":ecr:",
+                  ':ecr:',
                   {
-                    "Ref": "AWS::Region"
+                    'Ref': 'AWS::Region'
                   },
-                  ":",
+                  ':',
                   {
-                    "Ref": "AWS::AccountId"
+                    'Ref': 'AWS::AccountId'
                   },
-                  ":repository/aws-cdk/assets"
+                  ':repository/aws-cdk/assets'
                 ]
               ]
             }
           },
           {
-            "Action": "ecr:GetAuthorizationToken",
-            "Effect": "Allow",
-            "Resource": "*"
+            'Action': 'ecr:GetAuthorizationToken',
+            'Effect': 'Allow',
+            'Resource': '*'
           }
         ],
-        "Version": "2012-10-17"
+        'Version': '2012-10-17'
       },
-      "PolicyName": "MyUserDefaultPolicy7B897426",
-      "Users": [
+      'PolicyName': 'MyUserDefaultPolicy7B897426',
+      'Users': [
         {
-          "Ref": "MyUserDC45028B"
+          'Ref': 'MyUserDC45028B'
         }
       ]
     }));
@@ -220,7 +220,7 @@ export = {
 
     // .dockerignore itself should be included in output to be processed during docker build
     test.ok(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, '.dockerignore')));
-    test.ok(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, `Dockerfile`)));
+    test.ok(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'Dockerfile')));
     test.ok(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'index.py')));
     test.ok(!fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'foobar.txt')));
     test.ok(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'subdirectory')));
@@ -241,7 +241,7 @@ export = {
     const session = app.synth();
 
     test.ok(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, '.dockerignore')));
-    test.ok(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, `Dockerfile`)));
+    test.ok(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'Dockerfile')));
     test.ok(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'index.py')));
     test.ok(!fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'foobar.txt')));
     test.ok(!fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'subdirectory')));

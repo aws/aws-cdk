@@ -1,4 +1,5 @@
 import { expect, haveResource } from '@aws-cdk/assert';
+import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as apigateway from '../lib';
@@ -18,51 +19,51 @@ export = {
     expect(stack).toMatch({
       Resources: {
         testapiD6451F70: {
-          Type: "AWS::ApiGateway::RestApi",
+          Type: 'AWS::ApiGateway::RestApi',
           Properties: {
-            Name: "test-api"
+            Name: 'test-api'
           }
         },
         testapiGETD8DE4ED1: {
-          Type: "AWS::ApiGateway::Method",
+          Type: 'AWS::ApiGateway::Method',
           Properties: {
-            HttpMethod: "GET",
+            HttpMethod: 'GET',
             ResourceId: {
-              "Fn::GetAtt": [
-                "testapiD6451F70",
-                "RootResourceId"
+              'Fn::GetAtt': [
+                'testapiD6451F70',
+                'RootResourceId'
               ]
             },
             RestApiId: {
-              Ref: "testapiD6451F70"
+              Ref: 'testapiD6451F70'
             },
-            AuthorizationType: "NONE",
+            AuthorizationType: 'NONE',
             Integration: {
-              Type: "MOCK"
+              Type: 'MOCK'
             }
           }
         },
         mydeployment71ED3B4B: {
-          Type: "AWS::ApiGateway::Deployment",
+          Type: 'AWS::ApiGateway::Deployment',
           Properties: {
             RestApiId: {
-              Ref: "testapiD6451F70"
+              Ref: 'testapiD6451F70'
             }
           },
           DependsOn: [
-            "testapiGETD8DE4ED1"
+            'testapiGETD8DE4ED1'
           ]
         },
         mystage7483BE9A: {
-          Type: "AWS::ApiGateway::Stage",
+          Type: 'AWS::ApiGateway::Stage',
           Properties: {
             RestApiId: {
-              Ref: "testapiD6451F70"
+              Ref: 'testapiD6451F70'
             },
             DeploymentId: {
-              Ref: "mydeployment71ED3B4B"
+              Ref: 'mydeployment71ED3B4B'
             },
-            StageName: "prod"
+            StageName: 'prod'
           }
         }
       }
@@ -89,10 +90,10 @@ export = {
     expect(stack).to(haveResource('AWS::ApiGateway::Stage', {
       MethodSettings: [
         {
-        HttpMethod: "*",
-        LoggingLevel: "INFO",
-        ResourcePath: "/*",
-        ThrottlingRateLimit: 12,
+          HttpMethod: '*',
+          LoggingLevel: 'INFO',
+          ResourcePath: '/*',
+          ThrottlingRateLimit: 12,
         }
       ]
     }));
@@ -123,17 +124,17 @@ export = {
     expect(stack).to(haveResource('AWS::ApiGateway::Stage', {
       MethodSettings: [
         {
-          HttpMethod: "*",
-          LoggingLevel: "INFO",
-          ResourcePath: "/*",
+          HttpMethod: '*',
+          LoggingLevel: 'INFO',
+          ResourcePath: '/*',
           ThrottlingRateLimit: 12
         },
         {
-          HttpMethod: "GET",
-          LoggingLevel: "ERROR",
-          ResourcePath: "/~1goo~1bar"
+          HttpMethod: 'GET',
+          LoggingLevel: 'ERROR',
+          ResourcePath: '/~1goo~1bar'
         }
-        ]
+      ]
     }));
 
     test.done();
@@ -155,7 +156,7 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::Stage', {
       CacheClusterEnabled: true,
-      CacheClusterSize: "0.5"
+      CacheClusterSize: '0.5'
     }));
 
     test.done();
@@ -177,7 +178,7 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::Stage', {
       CacheClusterEnabled: true,
-      CacheClusterSize: "0.5"
+      CacheClusterSize: '0.5'
     }));
 
     test.done();
@@ -216,15 +217,15 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::Stage', {
       CacheClusterEnabled: true,
-      CacheClusterSize: "0.5",
+      CacheClusterSize: '0.5',
       MethodSettings: [
-      {
-        CachingEnabled: true,
-        HttpMethod: "*",
-        ResourcePath: "/*"
-      }
+        {
+          CachingEnabled: true,
+          HttpMethod: '*',
+          ResourcePath: '/*'
+        }
       ],
-      StageName: "prod"
+      StageName: 'prod'
     }));
 
     test.done();
@@ -243,6 +244,110 @@ export = {
       deployment,
       cachingEnabled: true
     }), /Cannot enable caching for method \/\*\/\* since cache cluster is disabled on stage/);
+
+    test.done();
+  },
+
+  'if only the custom log destination log group is set'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'test-api', {cloudWatchRole: false, deploy: false});
+    const deployment = new apigateway.Deployment(stack, 'my-deployment', {api});
+    api.root.addMethod('GET');
+
+    // WHEN
+    const testLogGroup = new logs.LogGroup(stack, 'LogGroup');
+    new apigateway.Stage(stack, 'my-stage', {
+      deployment,
+      accessLogDestination: new apigateway.LogGroupLogDestination(testLogGroup),
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::Stage', {
+      AccessLogSetting: {
+        DestinationArn: {
+          'Fn::GetAtt': [
+            'LogGroupF5B46931',
+            'Arn'
+          ]
+        },
+        Format: '$context.identity.sourceIp $context.identity.caller $context.identity.user [$context.requestTime] "$context.httpMethod $context.resourcePath $context.protocol" $context.status $context.responseLength $context.requestId'
+      },
+      StageName: 'prod'
+    }));
+
+    test.done();
+  },
+
+  'if the custom log destination log group and format is set'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'test-api', {cloudWatchRole: false, deploy: false});
+    const deployment = new apigateway.Deployment(stack, 'my-deployment', {api});
+    api.root.addMethod('GET');
+
+    // WHEN
+    const testLogGroup = new logs.LogGroup(stack, 'LogGroup');
+    const testFormat = apigateway.AccessLogFormat.jsonWithStandardFields();
+    new apigateway.Stage(stack, 'my-stage', {
+      deployment,
+      accessLogDestination: new apigateway.LogGroupLogDestination(testLogGroup),
+      accessLogFormat: testFormat
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::Stage', {
+      AccessLogSetting: {
+        DestinationArn: {
+          'Fn::GetAtt': [
+            'LogGroupF5B46931',
+            'Arn'
+          ]
+        },
+        Format: '{"requestId":"$context.requestId","ip":"$context.identity.sourceIp","user":"$context.identity.user","caller":"$context.identity.caller","requestTime":"$context.requestTime","httpMethod":"$context.httpMethod","resourcePath":"$context.resourcePath","status":"$context.status","protocol":"$context.protocol","responseLength":"$context.responseLength"}'
+      },
+      StageName: 'prod'
+    }));
+
+    test.done();
+  },
+
+  'fails when access log format does not contain `AccessLogFormat.contextRequestId()`'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
+    const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
+    api.root.addMethod('GET');
+
+    // WHEN
+    const testLogGroup = new logs.LogGroup(stack, 'LogGroup');
+    const testFormat = apigateway.AccessLogFormat.custom('');
+
+    // THEN
+    test.throws(() => new apigateway.Stage(stack, 'my-stage', {
+      deployment,
+      accessLogDestination: new apigateway.LogGroupLogDestination(testLogGroup),
+      accessLogFormat: testFormat
+    }), /Access log must include at least `AccessLogFormat.contextRequestId\(\)`/);
+
+    test.done();
+  },
+
+  'fails when access log destination is empty'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
+    const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
+    api.root.addMethod('GET');
+
+    // WHEN
+    const testFormat = apigateway.AccessLogFormat.jsonWithStandardFields();
+
+    // THEN
+    test.throws(() => new apigateway.Stage(stack, 'my-stage', {
+      deployment,
+      accessLogFormat: testFormat
+    }), /Access log format is specified without a destination/);
 
     test.done();
   },

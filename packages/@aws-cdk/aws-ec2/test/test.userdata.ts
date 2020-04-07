@@ -1,6 +1,6 @@
 import { Bucket } from '@aws-cdk/aws-s3';
 import { Test } from 'nodeunit';
-import { Stack } from "../../core/lib";
+import { Stack } from '../../core/lib';
 import * as ec2 from '../lib';
 
 export = {
@@ -45,7 +45,7 @@ export = {
 
     // WHEN
     userData.addSignalOnExitCommand( resource );
-    userData.addCommands("command1");
+    userData.addCommands('command1');
 
     // THEN
     const rendered = userData.render();
@@ -64,18 +64,18 @@ export = {
     // GIVEN
     const stack = new Stack();
     const userData = ec2.UserData.forWindows();
-    const bucket = Bucket.fromBucketName( stack, "testBucket", "test" );
-    const bucket2 = Bucket.fromBucketName( stack, "testBucket2", "test2" );
+    const bucket = Bucket.fromBucketName( stack, 'testBucket', 'test' );
+    const bucket2 = Bucket.fromBucketName( stack, 'testBucket2', 'test2' );
 
     // WHEN
     userData.addS3DownloadCommand({
       bucket,
-      bucketKey: "filename.bat"
+      bucketKey: 'filename.bat'
     } );
     userData.addS3DownloadCommand({
       bucket: bucket2,
-      bucketKey: "filename2.bat",
-      localFile: "c:\\test\\location\\otherScript.bat"
+      bucketKey: 'filename2.bat',
+      localFile: 'c:\\test\\location\\otherScript.bat'
     } );
 
     // THEN
@@ -93,11 +93,11 @@ export = {
 
     // WHEN
     userData.addExecuteFileCommand({
-      filePath: "C:\\test\\filename.bat",
+      filePath: 'C:\\test\\filename.bat',
     } );
     userData.addExecuteFileCommand({
-      filePath: "C:\\test\\filename2.bat",
-      arguments: "arg1 arg2 -arg $variable"
+      filePath: 'C:\\test\\filename2.bat',
+      arguments: 'arg1 arg2 -arg $variable'
     } );
 
     // THEN
@@ -149,7 +149,7 @@ export = {
 
     // WHEN
     const userData = ec2.UserData.forLinux();
-    userData.addCommands("command1");
+    userData.addCommands('command1');
     userData.addSignalOnExitCommand( resource );
 
     // THEN
@@ -167,18 +167,18 @@ export = {
     // GIVEN
     const stack = new Stack();
     const userData = ec2.UserData.forLinux();
-    const bucket = Bucket.fromBucketName( stack, "testBucket", "test" );
-    const bucket2 = Bucket.fromBucketName( stack, "testBucket2", "test2" );
+    const bucket = Bucket.fromBucketName( stack, 'testBucket', 'test' );
+    const bucket2 = Bucket.fromBucketName( stack, 'testBucket2', 'test2' );
 
     // WHEN
     userData.addS3DownloadCommand({
       bucket,
-      bucketKey: "filename.sh"
+      bucketKey: 'filename.sh'
     } );
     userData.addS3DownloadCommand({
       bucket: bucket2,
-      bucketKey: "filename2.sh",
-      localFile: "c:\\test\\location\\otherScript.sh"
+      bucketKey: 'filename2.sh',
+      localFile: 'c:\\test\\location\\otherScript.sh'
     } );
 
     // THEN
@@ -197,11 +197,11 @@ export = {
 
     // WHEN
     userData.addExecuteFileCommand({
-      filePath: "/tmp/filename.sh",
+      filePath: '/tmp/filename.sh',
     } );
     userData.addExecuteFileCommand({
-      filePath: "/test/filename2.sh",
-      arguments: "arg1 arg2 -arg $variable"
+      filePath: '/test/filename2.sh',
+      arguments: 'arg1 arg2 -arg $variable'
     } );
 
     // THEN
@@ -230,10 +230,10 @@ export = {
   'Custom user data throws when adding on exit commands'(test: Test) {
     // GIVEN
     // WHEN
-    const userData = ec2.UserData.custom("");
+    const userData = ec2.UserData.custom('');
 
     // THEN
-    test.throws(() => userData.addOnExitCommands( "a command goes here" ));
+    test.throws(() => userData.addOnExitCommands( 'a command goes here' ));
     test.done();
   },
   'Custom user data throws when adding signal command'(test: Test) {
@@ -242,7 +242,7 @@ export = {
     const resource = new ec2.Vpc(stack, 'RESOURCE');
 
     // WHEN
-    const userData = ec2.UserData.custom("");
+    const userData = ec2.UserData.custom('');
 
     // THEN
     test.throws(() => userData.addSignalOnExitCommand( resource ));
@@ -251,25 +251,25 @@ export = {
   'Custom user data throws when downloading file'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const userData = ec2.UserData.custom("");
-    const bucket = Bucket.fromBucketName( stack, "testBucket", "test" );
+    const userData = ec2.UserData.custom('');
+    const bucket = Bucket.fromBucketName( stack, 'testBucket', 'test' );
     // WHEN
     // THEN
     test.throws(() => userData.addS3DownloadCommand({
       bucket,
-      bucketKey: "filename.sh"
+      bucketKey: 'filename.sh'
     } ));
     test.done();
   },
   'Custom user data throws when executing file'(test: Test) {
     // GIVEN
-    const userData = ec2.UserData.custom("");
+    const userData = ec2.UserData.custom('');
     // WHEN
     // THEN
     test.throws(() =>
-    userData.addExecuteFileCommand({
-      filePath: "/tmp/filename.sh",
-    } ));
+      userData.addExecuteFileCommand({
+        filePath: '/tmp/filename.sh',
+      } ));
     test.done();
   },
 

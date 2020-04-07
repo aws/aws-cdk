@@ -18,7 +18,7 @@ class MockAction implements codepipeline.IAction {
   }
 
   public bind(_scope: cdk.Construct, _stage: codepipeline.IStage, _options: codepipeline.ActionBindOptions):
-      codepipeline.ActionConfig {
+  codepipeline.ActionConfig {
     return {
       configuration: this.configuration,
     };

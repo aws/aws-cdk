@@ -92,6 +92,17 @@ test('upload file if new', async () => {
   // We'll just have to assume the contents are correct
 });
 
+test('successful run does not need to query account ID', async () => {
+  const pub = new AssetPublishing(AssetManifest.fromPath('/simple/cdk.out'), { aws });
+
+  aws.mockS3.headObject = mockedApiFailure('NotFound', 'File does not exist');
+  aws.mockS3.upload = mockUpload('FILE_CONTENTS');
+
+  await pub.publish();
+
+  expect(aws.discoverCurrentAccount).not.toHaveBeenCalled();
+});
+
 test('correctly identify asset path if path is absolute', async () => {
   const pub = new AssetPublishing(AssetManifest.fromPath('/abs/cdk.out'), { aws });
 

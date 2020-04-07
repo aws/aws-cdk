@@ -98,7 +98,7 @@ describe('CLI compatible credentials loading', () => {
     await expect(provider.defaultAccount()).resolves.toEqual({ accountId: `${uid}the_account_#`, partition: 'aws-here' });
     const sdk = await provider.forEnvironment(`${uid}the_account_#`, 'rgn', Mode.ForReading);
     expect(sdkConfig(sdk).credentials!.accessKeyId).toEqual(`${uid}access`);
-    expect(sdkConfig(sdk).region).toEqual(`rgn`);
+    expect(sdkConfig(sdk).region).toEqual('rgn');
   });
 
   test('unknown account and region uses current', async () => {
@@ -136,7 +136,7 @@ describe('CLI compatible credentials loading', () => {
   test('different account throws', async () => {
     const provider = await SdkProvider.withAwsCliCompatibleDefaults({ ...defaultCredOptions, profile: 'boo' });
 
-    expect(provider.forEnvironment(`${uid}some_account_#`, 'def', Mode.ForReading)).rejects.toThrow('Need to perform AWS calls');
+    await expect(provider.forEnvironment(`${uid}some_account_#`, 'def', Mode.ForReading)).rejects.toThrow('Need to perform AWS calls');
   });
 });
 

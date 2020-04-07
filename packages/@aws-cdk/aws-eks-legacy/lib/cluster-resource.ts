@@ -49,7 +49,7 @@ export class ClusterResource extends Construct {
     });
 
     if (!props.roleArn) {
-      throw new Error(`"roleArn" is required`);
+      throw new Error('"roleArn" is required');
     }
 
     // since we don't know the cluster name at this point, we must give this role star resource permissions

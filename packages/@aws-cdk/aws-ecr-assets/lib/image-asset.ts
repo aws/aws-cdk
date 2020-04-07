@@ -112,7 +112,7 @@ export class DockerImageAsset extends Construct implements assets.IAsset {
     });
 
     if (props.repositoryName) {
-      this.node.addWarning(`DockerImageAsset.repositoryName is deprecated. Override "core.Stack.addDockerImageAsset" to control asset locations`);
+      this.node.addWarning('DockerImageAsset.repositoryName is deprecated. Override "core.Stack.addDockerImageAsset" to control asset locations');
     }
 
     // include build context in "extra" so it will impact the hash
@@ -167,7 +167,7 @@ function validateProps(props: DockerImageAssetProps) {
 function validateBuildArgs(buildArgs?: { [key: string]: string }) {
   for (const [key, value] of Object.entries(buildArgs || {})) {
     if (Token.isUnresolved(key) || Token.isUnresolved(value)) {
-      throw new Error(`Cannot use tokens in keys or values of "buildArgs" since they are needed before deployment`);
+      throw new Error('Cannot use tokens in keys or values of "buildArgs" since they are needed before deployment');
     }
   }
 }

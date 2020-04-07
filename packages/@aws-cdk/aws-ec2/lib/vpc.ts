@@ -1,5 +1,5 @@
 import { ConcreteDependable, Construct, ContextProvider, DependableTrait, IConstruct,
-    IDependable, IResource, Lazy, Resource, Stack, Tag, Token } from '@aws-cdk/core';
+  IDependable, IResource, Lazy, Resource, Stack, Tag, Token } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import {
   CfnEIP, CfnInternetGateway, CfnNatGateway, CfnRoute, CfnRouteTable, CfnSubnet,
@@ -439,7 +439,7 @@ abstract class VpcBase extends Resource implements IVpc {
   private reifySelectionDefaults(placement: SubnetSelection): SubnetSelection {
     if (placement.subnetName !== undefined) {
       if (placement.subnetGroupName !== undefined) {
-        throw new Error(`Please use only 'subnetGroupName' ('subnetName' is deprecated and has the same behavior)`);
+        throw new Error('Please use only \'subnetGroupName\' (\'subnetName\' is deprecated and has the same behavior)');
       }
       placement = {...placement, subnetGroupName: placement.subnetName };
     }
@@ -820,16 +820,16 @@ export interface SubnetConfiguration {
    */
   readonly name: string;
 
- /**
-  * Controls if subnet IP space needs to be reserved.
-  *
-  * When true, the IP space for the subnet is reserved but no actual
-  * resources are provisioned. This space is only dependent on the
-  * number of availibility zones and on `cidrMask` - all other subnet
-  * properties are ignored.
-  *
-  * @default false
-  */
+  /**
+   * Controls if subnet IP space needs to be reserved.
+   *
+   * When true, the IP space for the subnet is reserved but no actual
+   * resources are provisioned. This space is only dependent on the
+   * number of availibility zones and on `cidrMask` - all other subnet
+   * properties are ignored.
+   *
+   * @default false
+   */
   readonly reserved?: boolean;
 }
 
@@ -910,7 +910,7 @@ export class Vpc extends VpcBase {
       || Token.isUnresolved(options.vpcName)
       || Object.values(options.tags || {}).some(Token.isUnresolved)
       || Object.keys(options.tags || {}).some(Token.isUnresolved)) {
-      throw new Error(`All arguments to Vpc.fromLookup() must be concrete (no Tokens)`);
+      throw new Error('All arguments to Vpc.fromLookup() must be concrete (no Tokens)');
     }
 
     const filter: {[key: string]: string} = makeTagFilter(options.tags);
@@ -1038,7 +1038,7 @@ export class Vpc extends VpcBase {
 
     const cidrBlock = ifUndefined(props.cidr, Vpc.DEFAULT_CIDR_RANGE);
     if (Token.isUnresolved(cidrBlock)) {
-      throw new Error(`'cidr' property must be a concrete CIDR string, got a Token (we need to parse it for automatic subdivision)`);
+      throw new Error('\'cidr\' property must be a concrete CIDR string, got a Token (we need to parse it for automatic subdivision)');
     }
 
     this.networkBuilder = new NetworkBuilder(cidrBlock);
@@ -1422,7 +1422,7 @@ export class Subnet extends Resource implements ISubnet {
    * @param gatewayAttachment the gateway attachment construct to be added as a dependency
    */
   public addDefaultInternetRoute(gatewayId: string, gatewayAttachment: IDependable) {
-    const route = new CfnRoute(this, `DefaultRoute`, {
+    const route = new CfnRoute(this, 'DefaultRoute', {
       routeTableId: this.routeTable.routeTableId,
       destinationCidrBlock: '0.0.0.0/0',
       gatewayId
@@ -1465,7 +1465,7 @@ export class Subnet extends Resource implements ISubnet {
    */
   public addRoute(id: string, options: AddRouteOptions) {
     if (options.destinationCidrBlock && options.destinationIpv6CidrBlock) {
-      throw new Error(`Cannot specify both 'destinationCidrBlock' and 'destinationIpv6CidrBlock'`);
+      throw new Error('Cannot specify both \'destinationCidrBlock\' and \'destinationIpv6CidrBlock\'');
     }
 
     const route = new CfnRoute(this, id, {
@@ -1608,9 +1608,9 @@ export class PublicSubnet extends Subnet implements IPublicSubnet {
    */
   public addNatGateway() {
     // Create a NAT Gateway in this public subnet
-    const ngw = new CfnNatGateway(this, `NATGateway`, {
+    const ngw = new CfnNatGateway(this, 'NATGateway', {
       subnetId: this.subnetId,
-      allocationId: new CfnEIP(this, `EIP`, {
+      allocationId: new CfnEIP(this, 'EIP', {
         domain: 'vpc'
       }).attrAllocationId,
     });
@@ -1677,7 +1677,7 @@ class ImportedVpc extends VpcBase {
 
   public get vpcCidrBlock(): string {
     if (this.cidr === undefined) {
-      throw new Error(`Cannot perform this operation: 'vpcCidrBlock' was not supplied when creating this VPC`);
+      throw new Error('Cannot perform this operation: \'vpcCidrBlock\' was not supplied when creating this VPC');
     }
     return this.cidr;
   }
@@ -1717,14 +1717,14 @@ class LookedUpVpc extends VpcBase {
     if (this.cidr === undefined) {
       // Value might be cached from an old CLI version, so bumping the CX API protocol to
       // force the value to exist would not have helped.
-      throw new Error(`Cannot perform this operation: 'vpcCidrBlock' was not found when looking up this VPC. Use a newer version of the CDK CLI and clear the old context value.`);
+      throw new Error('Cannot perform this operation: \'vpcCidrBlock\' was not found when looking up this VPC. Use a newer version of the CDK CLI and clear the old context value.');
     }
     return this.cidr;
   }
 
   private extractSubnetsOfType(subnetGroups: cxapi.VpcSubnetGroup[], subnetGroupType: cxapi.VpcSubnetGroupType): ISubnet[] {
     return flatMap(subnetGroups.filter(subnetGroup => subnetGroup.type === subnetGroupType),
-        subnetGroup => this.subnetGroupToSubnets(subnetGroup));
+      subnetGroup => this.subnetGroupToSubnets(subnetGroup));
   }
 
   private subnetGroupToSubnets(subnetGroup: cxapi.VpcSubnetGroup): ISubnet[] {
@@ -1843,7 +1843,7 @@ function determineNatGatewayCount(requestedCount: number | undefined, subnetConf
 
   if (count === 0 && hasPrivateSubnets) {
     // tslint:disable-next-line:max-line-length
-    throw new Error(`If you do not want NAT gateways (natGateways=0), make sure you don't configure any PRIVATE subnets in 'subnetConfiguration' (make them PUBLIC or ISOLATED instead)`);
+    throw new Error('If you do not want NAT gateways (natGateways=0), make sure you don\'t configure any PRIVATE subnets in \'subnetConfiguration\' (make them PUBLIC or ISOLATED instead)');
   }
 
   if (count > 0 && !hasPublicSubnets) {

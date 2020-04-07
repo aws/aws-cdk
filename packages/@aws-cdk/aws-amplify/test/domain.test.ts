@@ -6,8 +6,11 @@ test('create a domain', () => {
   // GIVEN
   const stack = new Stack();
   const app = new amplify.App(stack, 'App', {
-    repository: 'https://github.com/aws/aws-cdk',
-    oauthToken: SecretValue.plainText('secret'),
+    sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
+      owner: 'aws',
+      repository: 'aws-cdk',
+      oauthToken: SecretValue.plainText('secret')
+    }),
   });
   const prodBranch = app.addBranch('master');
   const devBranch = app.addBranch('dev');
@@ -65,8 +68,11 @@ test('throws at synthesis without subdomains', () => {
   const app = new App();
   const stack = new Stack(app, 'test-stack');
   const amplifyApp = new amplify.App(stack, 'App', {
-    repository: 'https://github.com/aws/aws-cdk',
-    oauthToken: SecretValue.plainText('secret'),
+    sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
+      owner: 'aws',
+      repository: 'aws-cdk',
+      oauthToken: SecretValue.plainText('secret')
+    }),
   });
 
   // WHEN

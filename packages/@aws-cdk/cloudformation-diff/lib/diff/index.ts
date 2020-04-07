@@ -39,8 +39,8 @@ export function diffResource(oldValue?: types.Resource, newValue?: types.Resourc
     const typeSpec = cfnspec.filteredSpecification(resourceType.oldType);
     const impl = typeSpec.ResourceTypes[resourceType.oldType];
     propertyDiffs = diffKeyedEntities(oldValue!.Properties,
-                      newValue!.Properties,
-                      (oldVal, newVal, key) => _diffProperty(oldVal, newVal, key, impl));
+      newValue!.Properties,
+      (oldVal, newVal, key) => _diffProperty(oldVal, newVal, key, impl));
 
     otherDiffs = diffKeyedEntities(oldValue, newValue, _diffOther);
     delete otherDiffs.Properties;

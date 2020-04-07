@@ -91,7 +91,7 @@ class S3FileProvider extends Construct {
               's3:PutObject*',
               's3:Abort*'
             ] })
-          ]
+        ]
       }),
     });
   }

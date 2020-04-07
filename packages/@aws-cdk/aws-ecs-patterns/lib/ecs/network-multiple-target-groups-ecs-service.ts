@@ -134,7 +134,7 @@ export class NetworkMultipleTargetGroupsEc2Service extends NetworkMultipleTarget
   }
 
   private createEc2Service(props: NetworkMultipleTargetGroupsEc2ServiceProps): Ec2Service {
-    return new Ec2Service(this, "Service", {
+    return new Ec2Service(this, 'Service', {
       cluster: this.cluster,
       desiredCount: this.desiredCount,
       taskDefinition: this.taskDefinition,

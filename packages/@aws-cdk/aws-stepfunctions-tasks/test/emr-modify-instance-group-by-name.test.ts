@@ -12,29 +12,29 @@ beforeEach(() => {
 test('Modify an InstanceGroup with static ClusterId, InstanceGroupName, and InstanceGroup', () => {
   // WHEN
   const task = new sfn.Task(stack, 'Task', {
-      task: new tasks.EmrModifyInstanceGroupByName({
-        clusterId: 'ClusterId',
-        instanceGroupName: 'InstanceGroupName',
-        instanceGroup: {
-          configurations: [{
-            classification: 'Classification',
-            properties: {
-              Key: 'Value'
-            }
-          }],
-          eC2InstanceIdsToTerminate: ['InstanceToTerminate'],
-          instanceCount: 1,
-          shrinkPolicy: {
-            decommissionTimeout: cdk.Duration.seconds(1),
-            instanceResizePolicy: {
-              instanceTerminationTimeout: cdk.Duration.seconds(1),
-              instancesToProtect: ['InstanceToProtect'],
-              instancesToTerminate: ['InstanceToTerminate']
-            }
+    task: new tasks.EmrModifyInstanceGroupByName({
+      clusterId: 'ClusterId',
+      instanceGroupName: 'InstanceGroupName',
+      instanceGroup: {
+        configurations: [{
+          classification: 'Classification',
+          properties: {
+            Key: 'Value'
+          }
+        }],
+        eC2InstanceIdsToTerminate: ['InstanceToTerminate'],
+        instanceCount: 1,
+        shrinkPolicy: {
+          decommissionTimeout: cdk.Duration.seconds(1),
+          instanceResizePolicy: {
+            instanceTerminationTimeout: cdk.Duration.seconds(1),
+            instancesToProtect: ['InstanceToProtect'],
+            instancesToTerminate: ['InstanceToTerminate']
           }
         }
-      })
-    });
+      }
+    })
+  });
 
   // THEN
   expect(stack.resolve(task.toStateJson())).toEqual({

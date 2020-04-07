@@ -69,7 +69,7 @@ export = testCase({
 
     // THEN
     test.throws(() => new lambda.LayerVersion(stack, 'LayerVersion', { code, compatibleRuntimes: [] }),
-                /supports no runtime/);
+      /supports no runtime/);
 
     test.done();
   },

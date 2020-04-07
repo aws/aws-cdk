@@ -19,29 +19,29 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::Lambda::Permission', {
-      "Action": "lambda:InvokeFunction",
-      "FunctionName": {
-        "Fn::GetAtt": [
-          "Fn9270CBC0",
-          "Arn"
+      'Action': 'lambda:InvokeFunction',
+      'FunctionName': {
+        'Fn::GetAtt': [
+          'Fn9270CBC0',
+          'Arn'
         ]
       },
-      "Principal": "sns.amazonaws.com",
-      "SourceArn": {
-        "Ref": "TD925BC7E"
+      'Principal': 'sns.amazonaws.com',
+      'SourceArn': {
+        'Ref': 'TD925BC7E'
       }
     }));
 
     expect(stack).to(haveResource('AWS::SNS::Subscription', {
-      "Endpoint": {
-        "Fn::GetAtt": [
-          "Fn9270CBC0",
-          "Arn"
+      'Endpoint': {
+        'Fn::GetAtt': [
+          'Fn9270CBC0',
+          'Arn'
         ]
       },
-      "Protocol": "lambda",
-      "TopicArn": {
-        "Ref": "TD925BC7E"
+      'Protocol': 'lambda',
+      'TopicArn': {
+        'Ref': 'TD925BC7E'
       }
     }));
 

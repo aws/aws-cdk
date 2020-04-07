@@ -67,7 +67,7 @@ export class HttpsRedirect extends Construct {
     });
 
     domainNames.forEach((domainName) => {
-      const hash = crypto.createHash('md5').update(domainName).digest("hex").substr(0, 6);
+      const hash = crypto.createHash('md5').update(domainName).digest('hex').substr(0, 6);
       new ARecord(this, `RedirectAliasRecord${hash}`, {
         recordName: domainName,
         zone: props.zone,

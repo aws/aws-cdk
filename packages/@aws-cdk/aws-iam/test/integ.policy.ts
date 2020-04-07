@@ -1,6 +1,6 @@
-import { App, Stack } from "@aws-cdk/core";
-import { Policy, PolicyStatement } from "../lib";
-import { User } from "../lib/user";
+import { App, Stack } from '@aws-cdk/core';
+import { Policy, PolicyStatement } from '../lib';
+import { User } from '../lib/user';
 
 const app = new App();
 

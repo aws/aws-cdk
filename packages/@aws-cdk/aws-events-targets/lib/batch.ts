@@ -32,6 +32,13 @@ export interface BatchJobProps {
    * @default no retryStrategy is set
    */
   readonly attempts?: number;
+
+  /**
+   * The name of the submitted job
+   *
+   * @default - Automatically generated
+   */
+  readonly jobName?: string;
 }
 
 /**
@@ -49,33 +56,26 @@ export class BatchJob implements events.IRuleTarget {
    * Returns a RuleTarget that can be used to trigger queue this batch job as a
    * result from a CloudWatch event.
    */
-  public bind(_rule: events.IRule, _id?: string): events.RuleTargetConfig {
-    const baseBatchParameters: any = {
+  public bind(rule: events.IRule, _id?: string): events.RuleTargetConfig {
+    const batchParameters: events.CfnRule.BatchParametersProperty = {
       jobDefinition: this.jobDefinition.jobDefinitionArn,
-      jobName: this.jobDefinition.jobDefinitionName
+      jobName: this.props.jobName ?? rule.node.uniqueId,
+      arrayProperties: this.props.size ? { size: this.props.size } : undefined,
+      retryStrategy: this.props.attempts ? { attempts: this.props.attempts } : undefined,
     };
-
-    if (this.props.size) {
-      baseBatchParameters.arrayProperties = {
-        size: this.props.size
-      };
-    }
-
-    if (this.props.attempts) {
-      baseBatchParameters.retryStrategy = {
-        attempts: this.props.attempts
-      };
-    }
-
-    const batchParameters: events.CfnRule.BatchParametersProperty = baseBatchParameters;
 
     return {
       id: '',
       arn: this.jobQueue.jobQueueArn,
+      // When scoping resource-level access for job submission, you must provide both job queue and job definition resource types.
+      // https://docs.aws.amazon.com/batch/latest/userguide/ExamplePolicies_BATCH.html#iam-example-restrict-job-def
       role: singletonEventRole(this.jobDefinition, [
         new iam.PolicyStatement({
           actions: ['batch:SubmitJob'],
-          resources: [this.jobDefinition.jobDefinitionArn]
+          resources: [
+            this.jobDefinition.jobDefinitionArn,
+            this.jobQueue.jobQueueArn,
+          ]
         })
       ]),
       input: this.props.event,

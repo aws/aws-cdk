@@ -7,7 +7,7 @@ export = {
     const stack = new cdk.Stack();
     const fn = new Function(stack, 'fn', {
       handler: 'index.handler',
-      code: Code.fromInline(`exports.handler = \${handler.toString()}`),
+      code: Code.fromInline('exports.handler = ${handler.toString()}'),
       runtime: Runtime.NODEJS_10_X
     });
 
@@ -27,7 +27,7 @@ export = {
     const stack = new cdk.Stack();
     const fn = new Function(stack, 'fn', {
       handler: 'index.handler',
-      code: Code.fromInline(`exports.handler = \${handler.toString()}`),
+      code: Code.fromInline('exports.handler = ${handler.toString()}'),
       runtime: Runtime.NODEJS_10_X
     });
 
@@ -47,7 +47,7 @@ export = {
     const stack = new cdk.Stack();
     const fn = new Function(stack, 'fn', {
       handler: 'index.handler',
-      code: Code.fromInline(`exports.handler = \${handler.toString()}`),
+      code: Code.fromInline('exports.handler = ${handler.toString()}'),
       runtime: Runtime.NODEJS_10_X
     });
 
@@ -67,7 +67,7 @@ export = {
     const stack = new cdk.Stack();
     const fn = new Function(stack, 'fn', {
       handler: 'index.handler',
-      code: Code.fromInline(`exports.handler = \${handler.toString()}`),
+      code: Code.fromInline('exports.handler = ${handler.toString()}'),
       runtime: Runtime.NODEJS_10_X
     });
 
@@ -87,7 +87,7 @@ export = {
     const stack = new cdk.Stack();
     const fn = new Function(stack, 'fn', {
       handler: 'index.handler',
-      code: Code.fromInline(`exports.handler = \${handler.toString()}`),
+      code: Code.fromInline('exports.handler = ${handler.toString()}'),
       runtime: Runtime.NODEJS_10_X
     });
 
@@ -107,7 +107,7 @@ export = {
     const stack = new cdk.Stack();
     const fn = new Function(stack, 'fn', {
       handler: 'index.handler',
-      code: Code.fromInline(`exports.handler = \${handler.toString()}`),
+      code: Code.fromInline('exports.handler = ${handler.toString()}'),
       runtime: Runtime.NODEJS_10_X
     });
 
@@ -127,7 +127,7 @@ export = {
     const stack = new cdk.Stack();
     const fn = new Function(stack, 'fn', {
       handler: 'index.handler',
-      code: Code.fromInline(`exports.handler = \${handler.toString()}`),
+      code: Code.fromInline('exports.handler = ${handler.toString()}'),
       runtime: Runtime.NODEJS_10_X
     });
 

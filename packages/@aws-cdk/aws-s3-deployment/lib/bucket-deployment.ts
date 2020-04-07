@@ -7,10 +7,10 @@ import * as cdk from '@aws-cdk/core';
 import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
-import { ISource, SourceConfig } from "./source";
+import { ISource, SourceConfig } from './source';
 
 const now = Date.now();
-const handlerCodeBundle = path.join(__dirname, "..", "lambda", "bundle.zip");
+const handlerCodeBundle = path.join(__dirname, '..', 'lambda', 'bundle.zip');
 const handlerSourceDirectory = path.join(__dirname, '..', 'lambda', 'src');
 
 export interface BucketDeploymentProps {
@@ -159,7 +159,7 @@ export class BucketDeployment extends cdk.Construct {
     super(scope, id);
 
     if (props.distributionPaths && !props.distribution) {
-      throw new Error("Distribution must be specified if distribution paths are specified");
+      throw new Error('Distribution must be specified if distribution paths are specified');
     }
 
     const sourceHash = calcSourceHash(handlerSourceDirectory);
@@ -212,7 +212,7 @@ export class BucketDeployment extends cdk.Construct {
     // configurations since we have a singleton.
     if (memoryLimit) {
       if (cdk.Token.isUnresolved(memoryLimit)) {
-        throw new Error(`Can't use tokens when specifying "memoryLimit" since we use it to identify the singleton custom resource handler`);
+        throw new Error('Can\'t use tokens when specifying "memoryLimit" since we use it to identify the singleton custom resource handler');
       }
 
       uuid += `-${memoryLimit.toString()}MiB`;
@@ -247,7 +247,7 @@ function calcSourceHash(srcDir: string): string {
 
 function mapUserMetadata(metadata: UserDefinedObjectMetadata) {
   const mapKey = (key: string) =>
-    key.toLowerCase().startsWith("x-amzn-meta-")
+    key.toLowerCase().startsWith('x-amzn-meta-')
       ? key.toLowerCase()
       : `x-amzn-meta-${key.toLowerCase()}`;
 
@@ -257,17 +257,17 @@ function mapUserMetadata(metadata: UserDefinedObjectMetadata) {
 function mapSystemMetadata(metadata: BucketDeploymentProps) {
   const res: { [key: string]: string } = {};
 
-  if (metadata.cacheControl) { res["cache-control"] = metadata.cacheControl.map(c => c.value).join(", "); }
+  if (metadata.cacheControl) { res['cache-control'] = metadata.cacheControl.map(c => c.value).join(', '); }
   if (metadata.expires) { res.expires = metadata.expires.value; }
-  if (metadata.contentDisposition) { res["content-disposition"] = metadata.contentDisposition; }
-  if (metadata.contentEncoding) { res["content-encoding"] = metadata.contentEncoding; }
-  if (metadata.contentLanguage) { res["content-language"] = metadata.contentLanguage; }
-  if (metadata.contentType) { res["content-type"] = metadata.contentType; }
+  if (metadata.contentDisposition) { res['content-disposition'] = metadata.contentDisposition; }
+  if (metadata.contentEncoding) { res['content-encoding'] = metadata.contentEncoding; }
+  if (metadata.contentLanguage) { res['content-language'] = metadata.contentLanguage; }
+  if (metadata.contentType) { res['content-type'] = metadata.contentType; }
   if (metadata.serverSideEncryption) { res.sse = metadata.serverSideEncryption; }
-  if (metadata.storageClass) { res["storage-class"] = metadata.storageClass; }
-  if (metadata.websiteRedirectLocation) { res["website-redirect"] = metadata.websiteRedirectLocation; }
-  if (metadata.serverSideEncryptionAwsKmsKeyId) { res["sse-kms-key-id"] = metadata.serverSideEncryptionAwsKmsKeyId; }
-  if (metadata.serverSideEncryptionCustomerAlgorithm) { res["sse-c-copy-source"] = metadata.serverSideEncryptionCustomerAlgorithm; }
+  if (metadata.storageClass) { res['storage-class'] = metadata.storageClass; }
+  if (metadata.websiteRedirectLocation) { res['website-redirect'] = metadata.websiteRedirectLocation; }
+  if (metadata.serverSideEncryptionAwsKmsKeyId) { res['sse-kms-key-id'] = metadata.serverSideEncryptionAwsKmsKeyId; }
+  if (metadata.serverSideEncryptionCustomerAlgorithm) { res['sse-c-copy-source'] = metadata.serverSideEncryptionCustomerAlgorithm; }
 
   return Object.keys(res).length === 0 ? undefined : res;
 }
@@ -277,12 +277,12 @@ function mapSystemMetadata(metadata: BucketDeploymentProps) {
  * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
  */
 export class CacheControl {
-  public static mustRevalidate() { return new CacheControl("must-revalidate"); }
-  public static noCache() { return new CacheControl("no-cache"); }
-  public static noTransform() { return new CacheControl("no-transform"); }
-  public static setPublic() { return new CacheControl("public"); }
-  public static setPrivate() { return new CacheControl("private"); }
-  public static proxyRevalidate() { return new CacheControl("proxy-revalidate"); }
+  public static mustRevalidate() { return new CacheControl('must-revalidate'); }
+  public static noCache() { return new CacheControl('no-cache'); }
+  public static noTransform() { return new CacheControl('no-transform'); }
+  public static setPublic() { return new CacheControl('public'); }
+  public static setPrivate() { return new CacheControl('private'); }
+  public static proxyRevalidate() { return new CacheControl('proxy-revalidate'); }
   public static maxAge(t: cdk.Duration) { return new CacheControl(`max-age=${t.toSeconds()}`); }
   public static sMaxAge(t: cdk.Duration) { return new CacheControl(`s-max-age=${t.toSeconds()}`); }
   public static fromString(s: string) {  return new CacheControl(s); }

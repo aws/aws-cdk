@@ -1,7 +1,7 @@
-import { Construct, Lazy, Resource, Stack, Token } from "@aws-cdk/core";
+import { Construct, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
 import { CfnDashboard } from './cloudwatch.generated';
-import { Column, Row } from "./layout";
-import { IWidget } from "./widget";
+import { Column, Row } from './layout';
+import { IWidget } from './widget';
 
 export enum PeriodOverride {
   AUTO = 'auto',

@@ -79,7 +79,7 @@ export class IpInstance extends InstanceBase {
     const dnsRecordType = props.service.dnsRecordType;
 
     if (dnsRecordType === DnsRecordType.CNAME) {
-        throw new Error('Service must support `A`, `AAAA` or `SRV` records to register this instance type.');
+      throw new Error('Service must support `A`, `AAAA` or `SRV` records to register this instance type.');
     }
     if (dnsRecordType === DnsRecordType.SRV) {
       if (!props.port) {

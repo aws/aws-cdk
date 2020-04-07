@@ -44,7 +44,7 @@ export abstract class Action implements codepipeline.IAction {
   }
 
   public bind(scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
-    codepipeline.ActionConfig {
+  codepipeline.ActionConfig {
     this._pipeline = stage.pipeline;
     this._stage = stage;
     this._scope = scope;
@@ -86,7 +86,7 @@ export abstract class Action implements codepipeline.IAction {
    *   to configure itself, like a reference to the Role, etc.
    */
   protected abstract bound(scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
-    codepipeline.ActionConfig;
+  codepipeline.ActionConfig;
 
   private get pipeline(): codepipeline.IPipeline {
     if (this._pipeline) {

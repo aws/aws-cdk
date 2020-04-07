@@ -20,25 +20,25 @@ test('sns topic as an event rule target', () => {
     PolicyDocument: {
       Statement: [
         {
-          Sid: "0",
-          Action: "sns:Publish",
-          Effect: "Allow",
-          Principal: { Service: "events.amazonaws.com" },
-          Resource: { Ref: "MyTopic86869434" }
+          Sid: '0',
+          Action: 'sns:Publish',
+          Effect: 'Allow',
+          Principal: { Service: 'events.amazonaws.com' },
+          Resource: { Ref: 'MyTopic86869434' }
         }
       ],
-      Version: "2012-10-17"
+      Version: '2012-10-17'
     },
-    Topics: [{ Ref: "MyTopic86869434" }]
+    Topics: [{ Ref: 'MyTopic86869434' }]
   }));
 
   expect(stack).to(haveResource('AWS::Events::Rule', {
-    ScheduleExpression: "rate(1 hour)",
-    State: "ENABLED",
+    ScheduleExpression: 'rate(1 hour)',
+    State: 'ENABLED',
     Targets: [
       {
-        Arn: { Ref: "MyTopic86869434" },
-        Id: "Target0"
+        Arn: { Ref: 'MyTopic86869434' },
+        Id: 'Target0'
       }
     ]
   }));
@@ -62,15 +62,15 @@ test('multiple uses of a topic as a target results in a single policy statement'
     PolicyDocument: {
       Statement: [
         {
-          Action: "sns:Publish",
-          Effect: "Allow",
-          Principal: { Service: "events.amazonaws.com" },
-          Resource: { Ref: "MyTopic86869434" },
-          Sid: "0"
+          Action: 'sns:Publish',
+          Effect: 'Allow',
+          Principal: { Service: 'events.amazonaws.com' },
+          Resource: { Ref: 'MyTopic86869434' },
+          Sid: '0'
         }
       ],
-      Version: "2012-10-17"
+      Version: '2012-10-17'
     },
-    Topics: [ { Ref: "MyTopic86869434" } ]
+    Topics: [ { Ref: 'MyTopic86869434' } ]
   }));
 });

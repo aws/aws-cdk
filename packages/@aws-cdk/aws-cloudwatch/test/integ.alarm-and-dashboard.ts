@@ -9,7 +9,7 @@ import * as cloudwatch from '../lib';
 
 const app = new cdk.App();
 
-const stack = new cdk.Stack(app, `aws-cdk-cloudwatch`);
+const stack = new cdk.Stack(app, 'aws-cdk-cloudwatch');
 
 const queue = new cdk.CfnResource(stack, 'queue', { type: 'AWS::SQS::Queue' });
 

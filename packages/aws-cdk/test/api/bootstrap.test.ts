@@ -1,7 +1,7 @@
 import { CreateChangeSetInput } from 'aws-sdk/clients/cloudformation';
 import { bootstrapEnvironment } from '../../lib';
 import { fromYAML } from '../../lib/serialize';
-import { MockSDK } from '../util/mock-sdk';
+import { MockSdkProvider, SyncHandlerSubsetOf } from '../util/mock-sdk';
 
 const env = {
   account: '123456789012',
@@ -9,198 +9,111 @@ const env = {
   name: 'mock',
 };
 
-test('do bootstrap', async () => {
-  // GIVEN
-  const sdk = new MockSDK();
+let sdk: MockSdkProvider;
+let executed: boolean;
+let cfnMocks: jest.Mocked<SyncHandlerSubsetOf<AWS.CloudFormation>>;
+let changeSetTemplate: any | undefined;
+beforeEach(() => {
+  sdk = new MockSdkProvider();
+  executed = false;
 
-  let executed = false;
-
-  sdk.stubCloudFormation({
-    describeStacks() {
-      return {
-        Stacks: []
-      };
-    },
-
-    createChangeSet(info: CreateChangeSetInput) {
-      const template = fromYAML(info.TemplateBody as string);
-      const bucketProperties = template.Resources.StagingBucket.Properties;
-      expect(bucketProperties.BucketName).toBeUndefined();
-      expect(bucketProperties.BucketEncryption.ServerSideEncryptionConfiguration[0].ServerSideEncryptionByDefault.KMSMasterKeyID)
-        .toBeUndefined();
+  cfnMocks = {
+    describeStacks: jest.fn()
+      // First call, no stacks exist
+      .mockImplementationOnce(() => ({ Stacks: [] }))
+      // Second call, stack has been created
+      .mockImplementationOnce(() => ({ Stacks: [
+        {
+          StackStatus: 'CREATE_COMPLETE',
+          StackStatusReason: 'It is magic',
+        }
+      ] })),
+    createChangeSet: jest.fn((info: CreateChangeSetInput) => {
+      changeSetTemplate = fromYAML(info.TemplateBody as string);
       return {};
-    },
-
-    describeChangeSet() {
-      return {
-        Status: 'CREATE_COMPLETE',
-        Changes: [],
-      };
-    },
-
-    executeChangeSet() {
+    }),
+    describeChangeSet: jest.fn(() => ({
+      Status: 'CREATE_COMPLETE',
+      Changes: [],
+    })),
+    executeChangeSet: jest.fn(() => {
       executed = true;
       return {};
-    }
-  });
+    }),
+  };
+  sdk.stubCloudFormation(cfnMocks);
+});
 
+test('do bootstrap', async () => {
   // WHEN
   const ret = await bootstrapEnvironment(env, sdk, 'mockStack', undefined);
 
   // THEN
+  const bucketProperties = changeSetTemplate.Resources.StagingBucket.Properties;
+  expect(bucketProperties.BucketName).toBeUndefined();
+  expect(bucketProperties.BucketEncryption.ServerSideEncryptionConfiguration[0].ServerSideEncryptionByDefault.KMSMasterKeyID)
+    .toBeUndefined();
   expect(ret.noOp).toBeFalsy();
   expect(executed).toBeTruthy();
 });
 
 test('do bootstrap using custom bucket name', async () => {
-  // GIVEN
-  const sdk = new MockSDK();
-
-  let executed = false;
-
-  sdk.stubCloudFormation({
-    describeStacks() {
-      return {
-        Stacks: []
-      };
-    },
-
-    createChangeSet(info: CreateChangeSetInput) {
-      const template = fromYAML(info.TemplateBody as string);
-      const bucketProperties = template.Resources.StagingBucket.Properties;
-      expect(bucketProperties.BucketName).toBe('foobar');
-      expect(bucketProperties.BucketEncryption.ServerSideEncryptionConfiguration[0].ServerSideEncryptionByDefault.KMSMasterKeyID)
-        .toBeUndefined();
-      return {};
-    },
-
-    describeChangeSet() {
-      return {
-        Status: 'CREATE_COMPLETE',
-        Changes: [],
-      };
-    },
-
-    executeChangeSet() {
-      executed = true;
-      return {};
-    }
-  });
-
   // WHEN
   const ret = await bootstrapEnvironment(env, sdk, 'mockStack', undefined, {
     bucketName: 'foobar',
   });
 
   // THEN
+  const bucketProperties = changeSetTemplate.Resources.StagingBucket.Properties;
+  expect(bucketProperties.BucketName).toBe('foobar');
+  expect(bucketProperties.BucketEncryption.ServerSideEncryptionConfiguration[0].ServerSideEncryptionByDefault.KMSMasterKeyID)
+    .toBeUndefined();
   expect(ret.noOp).toBeFalsy();
   expect(executed).toBeTruthy();
 });
+
 test('do bootstrap using KMS CMK', async () => {
-  // GIVEN
-  const sdk = new MockSDK();
-
-  let executed = false;
-
-  sdk.stubCloudFormation({
-    describeStacks() {
-      return {
-        Stacks: []
-      };
-    },
-
-    createChangeSet(info: CreateChangeSetInput) {
-      const template = fromYAML(info.TemplateBody as string);
-      const bucketProperties = template.Resources.StagingBucket.Properties;
-      expect(bucketProperties.BucketName).toBeUndefined();
-      expect(bucketProperties.BucketEncryption.ServerSideEncryptionConfiguration[0].ServerSideEncryptionByDefault.KMSMasterKeyID)
-        .toBe('myKmsKey');
-      return {};
-    },
-
-    describeChangeSet() {
-      return {
-        Status: 'CREATE_COMPLETE',
-        Changes: [],
-      };
-    },
-
-    executeChangeSet() {
-      executed = true;
-      return {};
-    }
-  });
-
   // WHEN
   const ret = await bootstrapEnvironment(env, sdk, 'mockStack', undefined, {
     kmsKeyId: 'myKmsKey',
   });
 
   // THEN
+  const bucketProperties = changeSetTemplate.Resources.StagingBucket.Properties;
+  expect(bucketProperties.BucketName).toBeUndefined();
+  expect(bucketProperties.BucketEncryption.ServerSideEncryptionConfiguration[0].ServerSideEncryptionByDefault.KMSMasterKeyID)
+    .toBe('myKmsKey');
   expect(ret.noOp).toBeFalsy();
   expect(executed).toBeTruthy();
 });
+
 test('do bootstrap with custom tags for toolkit stack', async () => {
-  // GIVEN
-  const sdk = new MockSDK();
-
-  let executed = false;
-
-  sdk.stubCloudFormation({
-    describeStacks() {
-      return {
-        Stacks: []
-      };
-    },
-
-    createChangeSet(info: CreateChangeSetInput) {
-      const template = fromYAML(info.TemplateBody as string);
-      const bucketProperties = template.Resources.StagingBucket.Properties;
-      expect(bucketProperties.BucketName).toBeUndefined();
-      expect(bucketProperties.BucketEncryption.ServerSideEncryptionConfiguration[0].ServerSideEncryptionByDefault.KMSMasterKeyID)
-        .toBeUndefined();
-      return {};
-    },
-
-    describeChangeSet() {
-      return {
-        Status: 'CREATE_COMPLETE',
-        Changes: [],
-      };
-    },
-
-    executeChangeSet() {
-      executed = true;
-      return {};
-    }
-  });
-
   // WHEN
   const ret = await bootstrapEnvironment(env, sdk, 'mockStack', undefined, {
     tags: [{ Key: 'Foo', Value: 'Bar' }]
   });
 
   // THEN
+  const bucketProperties = changeSetTemplate.Resources.StagingBucket.Properties;
+  expect(bucketProperties.BucketName).toBeUndefined();
+  expect(bucketProperties.BucketEncryption.ServerSideEncryptionConfiguration[0].ServerSideEncryptionByDefault.KMSMasterKeyID)
+    .toBeUndefined();
   expect(ret.noOp).toBeFalsy();
   expect(executed).toBeTruthy();
 });
 
 test('passing trusted accounts to the old bootstrapping results in an error', async () => {
-  const sdk = new MockSDK();
-
   await expect(bootstrapEnvironment(env, sdk, 'mockStack', undefined, {
     trustedAccounts: ['0123456789012'],
   }))
-  .rejects
-  .toThrow('--trust can only be passed for the new bootstrap experience!');
+    .rejects
+    .toThrow('--trust can only be passed for the new bootstrap experience!');
 });
 
 test('passing CFN execution policies to the old bootstrapping results in an error', async () => {
-  const sdk = new MockSDK();
-
   await expect(bootstrapEnvironment(env, sdk, 'mockStack', undefined, {
     cloudFormationExecutionPolicies: ['arn:aws:iam::aws:policy/AdministratorAccess'],
   }))
-  .rejects
-  .toThrow('--cloudformation-execution-policies can only be passed for the new bootstrap experience!');
+    .rejects
+    .toThrow('--cloudformation-execution-policies can only be passed for the new bootstrap experience!');
 });

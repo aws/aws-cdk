@@ -68,7 +68,7 @@ function enumeratePackages(root: string, pred: PackagePredicate): JSIIPackage[] 
     debug(`Checking directory: ${directory}`);
 
     if (pred(packageJson)) {
-      debug(`Matches predicate.`);
+      debug('Matches predicate.');
       ret.push({ directory, packageJson });
     }
 

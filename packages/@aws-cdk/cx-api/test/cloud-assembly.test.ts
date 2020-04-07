@@ -27,7 +27,7 @@ test('assembly with a single cloudformation stack and tree metadata', () => {
   expect(stack.assets).toHaveLength(0);
   expect(stack.dependencies).toEqual([]);
   expect(stack.environment).toEqual({ account: '37736633', region: 'us-region-1', name: 'aws://37736633/us-region-1' });
-  expect(stack.template).toEqual({ Resources: { MyBucket: { Type: "AWS::S3::Bucket" } } });
+  expect(stack.template).toEqual({ Resources: { MyBucket: { Type: 'AWS::S3::Bucket' } } });
   expect(stack.messages).toEqual([]);
   expect(stack.manifest.metadata).toEqual(undefined);
   expect(stack.originalName).toEqual('MyStackName');
@@ -116,7 +116,7 @@ test('verifyManifestVersion', () => {
   verifyManifestVersion(CLOUD_ASSEMBLY_VERSION);
   // tslint:disable-next-line:max-line-length
   expect(() => verifyManifestVersion('0.31.0')).toThrow(`The CDK CLI you are using requires your app to use CDK modules with version >= ${CLOUD_ASSEMBLY_VERSION}`);
-  expect(() => verifyManifestVersion('99.99.99')).toThrow(`A newer version of the CDK CLI (>= 99.99.99) is necessary to interact with this app`);
+  expect(() => verifyManifestVersion('99.99.99')).toThrow('A newer version of the CDK CLI (>= 99.99.99) is necessary to interact with this app');
 });
 
 test('stack artifacts can specify an explicit stack name that is different from the artifact id', () => {

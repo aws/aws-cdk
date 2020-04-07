@@ -135,50 +135,50 @@ export = nodeunit.testCase({
     }));
     expect(pipelineStack).to(haveResource('AWS::CodePipeline::Pipeline', hasPipelineAction({
       Configuration: {
-        StackName: "TestStack",
-        ActionMode: "CHANGE_SET_REPLACE",
-        Capabilities: "CAPABILITY_NAMED_IAM",
+        StackName: 'TestStack',
+        ActionMode: 'CHANGE_SET_REPLACE',
+        Capabilities: 'CAPABILITY_NAMED_IAM',
       }
     })));
     expect(pipelineStack).to(haveResource('AWS::CodePipeline::Pipeline', hasPipelineAction({
       Configuration: {
-        StackName: "AnonymousIAM",
-        ActionMode: "CHANGE_SET_REPLACE",
-        Capabilities: "CAPABILITY_IAM",
+        StackName: 'AnonymousIAM',
+        ActionMode: 'CHANGE_SET_REPLACE',
+        Capabilities: 'CAPABILITY_IAM',
       }
     })));
     expect(pipelineStack).notTo(haveResource('AWS::CodePipeline::Pipeline', hasPipelineAction({
       Configuration: {
-        StackName: "NoCapStack",
-        ActionMode: "CHANGE_SET_REPLACE",
-        Capabilities: "CAPABILITY_NAMED_IAM",
+        StackName: 'NoCapStack',
+        ActionMode: 'CHANGE_SET_REPLACE',
+        Capabilities: 'CAPABILITY_NAMED_IAM',
       }
     })));
     expect(pipelineStack).notTo(haveResource('AWS::CodePipeline::Pipeline', hasPipelineAction({
       Configuration: {
-        StackName: "NoCapStack",
-        ActionMode: "CHANGE_SET_REPLACE",
-        Capabilities: "CAPABILITY_IAM",
+        StackName: 'NoCapStack',
+        ActionMode: 'CHANGE_SET_REPLACE',
+        Capabilities: 'CAPABILITY_IAM',
       }
     })));
     expect(pipelineStack).to(haveResource('AWS::CodePipeline::Pipeline', hasPipelineAction({
       Configuration: {
-        StackName: "NoCapStack",
-        ActionMode: "CHANGE_SET_REPLACE",
+        StackName: 'NoCapStack',
+        ActionMode: 'CHANGE_SET_REPLACE',
       }
     })));
     expect(pipelineStack).to(haveResource('AWS::CodePipeline::Pipeline', hasPipelineAction({
       Configuration: {
-        StackName: "AutoExpand",
-        ActionMode: "CHANGE_SET_REPLACE",
-        Capabilities: "CAPABILITY_AUTO_EXPAND",
+        StackName: 'AutoExpand',
+        ActionMode: 'CHANGE_SET_REPLACE',
+        Capabilities: 'CAPABILITY_AUTO_EXPAND',
       }
     })));
     expect(pipelineStack).to(haveResource('AWS::CodePipeline::Pipeline', hasPipelineAction({
       Configuration: {
-        StackName: "AnonymousIAMAndAutoExpand",
-        ActionMode: "CHANGE_SET_REPLACE",
-        Capabilities: "CAPABILITY_IAM,CAPABILITY_AUTO_EXPAND",
+        StackName: 'AnonymousIAMAndAutoExpand',
+        ActionMode: 'CHANGE_SET_REPLACE',
+        Capabilities: 'CAPABILITY_IAM,CAPABILITY_AUTO_EXPAND',
       }
     })));
     test.done();
@@ -200,29 +200,29 @@ export = nodeunit.testCase({
         Statement: [
           {
             Action: [
-              "s3:GetObject*",
-              "s3:GetBucket*",
-              "s3:List*",
+              's3:GetObject*',
+              's3:GetBucket*',
+              's3:List*',
             ],
-            Effect: "Allow",
+            Effect: 'Allow',
             Resource: [
               {
-                "Fn::GetAtt": [
-                  "CodePipelineArtifactsBucketF1E925CF",
-                  "Arn",
+                'Fn::GetAtt': [
+                  'CodePipelineArtifactsBucketF1E925CF',
+                  'Arn',
                 ],
               },
               {
-                "Fn::Join": [
-                  "",
+                'Fn::Join': [
+                  '',
                   [
                     {
-                      "Fn::GetAtt": [
-                        "CodePipelineArtifactsBucketF1E925CF",
-                        "Arn",
+                      'Fn::GetAtt': [
+                        'CodePipelineArtifactsBucketF1E925CF',
+                        'Arn',
                       ],
                     },
-                    "/*",
+                    '/*',
                   ],
                 ],
               },
@@ -230,14 +230,14 @@ export = nodeunit.testCase({
           },
           {
             Action: [
-              "kms:Decrypt",
-              "kms:DescribeKey",
+              'kms:Decrypt',
+              'kms:DescribeKey',
             ],
-            Effect: "Allow",
+            Effect: 'Allow',
             Resource: {
-              "Fn::GetAtt": [
-                "CodePipelineArtifactsBucketEncryptionKey85407CB4",
-                "Arn",
+              'Fn::GetAtt': [
+                'CodePipelineArtifactsBucketEncryptionKey85407CB4',
+                'Arn',
               ],
             },
           },
@@ -251,9 +251,9 @@ export = nodeunit.testCase({
     }));
     expect(pipelineStack).to(haveResource('AWS::CodePipeline::Pipeline', hasPipelineAction({
       Configuration: {
-        StackName: "TestStack",
-        ActionMode: "CHANGE_SET_REPLACE",
-        Capabilities: "CAPABILITY_NAMED_IAM,CAPABILITY_AUTO_EXPAND",
+        StackName: 'TestStack',
+        ActionMode: 'CHANGE_SET_REPLACE',
+        Capabilities: 'CAPABILITY_NAMED_IAM,CAPABILITY_AUTO_EXPAND',
       }
     })));
     test.done();
@@ -317,29 +317,29 @@ export = nodeunit.testCase({
         Statement: [
           {
             Action: [
-              "s3:GetObject*",
-              "s3:GetBucket*",
-              "s3:List*",
+              's3:GetObject*',
+              's3:GetBucket*',
+              's3:List*',
             ],
-            Effect: "Allow",
+            Effect: 'Allow',
             Resource: [
               {
-                "Fn::GetAtt": [
-                  "CodePipelineArtifactsBucketF1E925CF",
-                  "Arn",
+                'Fn::GetAtt': [
+                  'CodePipelineArtifactsBucketF1E925CF',
+                  'Arn',
                 ],
               },
               {
-                "Fn::Join": [
-                  "",
+                'Fn::Join': [
+                  '',
                   [
                     {
-                      "Fn::GetAtt": [
-                        "CodePipelineArtifactsBucketF1E925CF",
-                        "Arn",
+                      'Fn::GetAtt': [
+                        'CodePipelineArtifactsBucketF1E925CF',
+                        'Arn',
                       ],
                     },
-                    "/*"
+                    '/*'
                   ],
                 ],
               },
@@ -347,14 +347,14 @@ export = nodeunit.testCase({
           },
           {
             Action: [
-              "kms:Decrypt",
-              "kms:DescribeKey",
+              'kms:Decrypt',
+              'kms:DescribeKey',
             ],
-            Effect: "Allow",
+            Effect: 'Allow',
             Resource: {
-              "Fn::GetAtt": [
-                "CodePipelineArtifactsBucketEncryptionKey85407CB4",
-                "Arn",
+              'Fn::GetAtt': [
+                'CodePipelineArtifactsBucketEncryptionKey85407CB4',
+                'Arn',
               ],
             },
           },
@@ -423,7 +423,7 @@ class FakeAction implements codepipeline.IAction {
   }
 
   public bind(_scope: cdk.Construct, _stage: codepipeline.IStage, _options: codepipeline.ActionBindOptions):
-      codepipeline.ActionConfig {
+  codepipeline.ActionConfig {
     return {};
   }
 

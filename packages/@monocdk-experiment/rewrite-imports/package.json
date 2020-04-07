@@ -5,11 +5,12 @@
   "bin": {
     "rewrite-imports": "bin/rewrite-imports"
   },
-  "main": "bin/rewrite-imports.js",
+  "main": "lib/rewrite.js",
+  "types": "lib/rewrite.d.ts",
   "scripts": {
-    "build": "tsc",
-    "watch": "tsc -w",
-    "test": "echo ok",
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "test": "cdk-test",
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "build+test+package": "npm run build+test && npm run package",
@@ -27,12 +28,22 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "typescript": "^3.8.3"
+    "glob": "^7.1.6"
   },
   "devDependencies": {
+    "@types/glob": "^7.1.1",
+    "@types/jest": "^25.2.1",
+    "@types/node": "^10.17.18",
     "cdk-build-tools": "0.0.0",
-    "pkglint": "0.0.0",
-    "@types/node": "^10.17.17"
+    "pkglint": "0.0.0"
+  },
+  "jest": {
+    "coverageThreshold": {
+      "global": {
+        "statements": 75,
+        "branches": 65
+      }
+    }
   },
   "repository": {
     "type": "git",

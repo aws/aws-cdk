@@ -1,8 +1,8 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
 import { App, App as Root, CfnCondition,
-    CfnDeletionPolicy, CfnResource, Construct, ConstructNode,
-    Fn, RemovalPolicy, Stack } from '../lib';
+  CfnDeletionPolicy, CfnResource, Construct, ConstructNode,
+  Fn, RemovalPolicy, Stack } from '../lib';
 import { toCloudFormation } from './util';
 
 export = {
@@ -19,9 +19,9 @@ export = {
     test.deepEqual(toCloudFormation(stack), {
       Resources: {
         MyResource: {
-          Type: "MyResourceType",
+          Type: 'MyResourceType',
           Properties: {
-            Prop1: "p1",
+            Prop1: 'p1',
             Prop2: 123
           }
         }
@@ -108,12 +108,12 @@ export = {
 
     test.deepEqual(toCloudFormation(stack), {
       Resources: {
-        MyResource: { Type: "My::Counter", Properties: { Count: 1 } },
+        MyResource: { Type: 'My::Counter', Properties: { Count: 1 } },
         MyResource2: {
-          Type: "Type",
+          Type: 'Type',
           Properties: {
             Perm: {
-              "Fn::GetAtt": [ "MyResource", "Arn" ]
+              'Fn::GetAtt': [ 'MyResource', 'Arn' ]
             }
           }
         }
@@ -135,18 +135,18 @@ export = {
     test.deepEqual(toCloudFormation(stack), {
       Resources: {
         Counter1: {
-          Type: "My::Counter",
+          Type: 'My::Counter',
           Properties: { Count: 1 }
         },
         Counter2: {
-          Type: "My::Counter",
+          Type: 'My::Counter',
           Properties: { Count: 1 },
           DependsOn: [
-            "Counter1",
-            "Resource3"
+            'Counter1',
+            'Resource3'
           ]
         },
-        Resource3: { Type: "MyResourceType" }
+        Resource3: { Type: 'MyResourceType' }
       }
     });
 
@@ -170,15 +170,15 @@ export = {
     test.deepEqual(toCloudFormation(stack), {
       Resources: {
         Counter1: {
-          Type: "My::Counter",
+          Type: 'My::Counter',
           Properties: {
             Count: 1
           }
         },
         Dependent: {
-          Type: "R",
+          Type: 'R',
           DependsOn: [
-            "Counter1"
+            'Counter1'
           ]
         }
       }
@@ -273,7 +273,7 @@ export = {
     test.deepEqual(toCloudFormation(stack), {
       Resources: {
         Resource: {
-          Type: "Type",
+          Type: 'Type',
           Metadata: {
             MyKey: 10,
             MyValue: 99

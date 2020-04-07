@@ -59,9 +59,9 @@ export = {
     const embedded = `the number is ${num}`;
 
     // WHEN
-    test.equal(evaluateCFN(stack.resolve(embedded)), "the number is 1");
-    test.equal(evaluateCFN(stack.resolve(stack.toJsonString({ embedded }))), "{\"embedded\":\"the number is 1\"}");
-    test.equal(evaluateCFN(stack.resolve(stack.toJsonString({ num }))), "{\"num\":1}");
+    test.equal(evaluateCFN(stack.resolve(embedded)), 'the number is 1');
+    test.equal(evaluateCFN(stack.resolve(stack.toJsonString({ embedded }))), '{"embedded":"the number is 1"}');
+    test.equal(evaluateCFN(stack.resolve(stack.toJsonString({ num }))), '{"num":1}');
 
     test.done();
   },
@@ -113,7 +113,7 @@ export = {
 
     const stringified = stack.toJsonString(fakeIntrinsics);
     test.equal(evaluateCFN(stack.resolve(stringified)),
-        '{"a":{"Fn::GetArtifactAtt":{"key":"val"}},"b":{"Fn::GetParam":["val1","val2"]}}');
+      '{"a":{"Fn::GetArtifactAtt":{"key":"val"}},"b":{"Fn::GetParam":["val1","val2"]}}');
 
     test.done();
   },

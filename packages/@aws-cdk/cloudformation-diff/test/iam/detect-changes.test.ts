@@ -276,7 +276,7 @@ test('finds policy removals', () => {
       SomeRole: resource('AWS::IAM::Role', {
         ManagedPolicyArns: ['arn:policy2'],
       })
-  }));
+    }));
 
   // THEN
   expect(diff.iamChanges.toJson()).toEqual({

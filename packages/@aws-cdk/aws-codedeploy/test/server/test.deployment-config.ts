@@ -7,7 +7,7 @@ import * as codedeploy from '../../lib';
 
 export = {
   'CodeDeploy DeploymentConfig': {
-    "can be created by specifying only minHealthyHostCount"(test: Test) {
+    'can be created by specifying only minHealthyHostCount'(test: Test) {
       const stack = new cdk.Stack();
 
       new codedeploy.ServerDeploymentConfig(stack, 'DeploymentConfig', {
@@ -15,16 +15,16 @@ export = {
       });
 
       expect(stack).to(haveResource('AWS::CodeDeploy::DeploymentConfig', {
-        "MinimumHealthyHosts": {
-          "Type": "HOST_COUNT",
-          "Value": 1,
+        'MinimumHealthyHosts': {
+          'Type': 'HOST_COUNT',
+          'Value': 1,
         },
       }));
 
       test.done();
     },
 
-    "can be created by specifying only minHealthyHostPercentage"(test: Test) {
+    'can be created by specifying only minHealthyHostPercentage'(test: Test) {
       const stack = new cdk.Stack();
 
       new codedeploy.ServerDeploymentConfig(stack, 'DeploymentConfig', {
@@ -32,9 +32,9 @@ export = {
       });
 
       expect(stack).to(haveResource('AWS::CodeDeploy::DeploymentConfig', {
-        "MinimumHealthyHosts": {
-          "Type": "FLEET_PERCENT",
-          "Value": 75,
+        'MinimumHealthyHosts': {
+          'Type': 'FLEET_PERCENT',
+          'Value': 75,
         },
       }));
 

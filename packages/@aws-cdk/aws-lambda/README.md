@@ -49,6 +49,69 @@ to our CDK project directory. This is especially important when we want to share
 this construct through a library. Different programming languages will have
 different techniques for bundling resources into libraries.
 
+When using `fromAsset` or `fromInline`, you can obtain the hash of source
+through the `function.codeHash` property. This property will return `undefined`
+if the code hash cannot be calculated during synthesis (e.g. when using code
+from an S3 bucket).
+
+### Versions and Aliases
+
+You can use
+[versions](https://docs.aws.amazon.com/lambda/latest/dg/configuration-versions.html)
+to manage the deployment of your AWS Lambda functions. For example, you can
+publish a new version of a function for beta testing without affecting users of
+the stable production version.
+
+The function version includes the following information:
+
+- The function code and all associated dependencies.
+- The Lambda runtime that executes the function.
+- All of the function settings, including the environment variables.
+- A unique Amazon Resource Name (ARN) to identify this version of the function.
+
+You can define one or more
+[aliases](https://docs.aws.amazon.com/lambda/latest/dg/configuration-aliases.html)
+for your AWS Lambda function. A Lambda alias is like a pointer to a specific
+Lambda function version. Users can access the function version using the alias
+ARN.
+
+The `fn.currentVersion` property can be used to obtain a `lambda.Version`
+resource that represents the AWS Lambda function defined in your application.
+Any change to your function's code or configuration will result in the creation
+of a new version resource. You can specify options for this version through the
+`currentVersionOptions` property.
+
+> The `currentVersion` property is only supported when your AWS Lambda function
+> uses either `lambda.Code.fromAsset` or `lambda.Code.fromInline`. Other types
+> of code providers (such as `lambda.Code.fromBucket`) require that you define a
+> `lambda.Version` resource directly since the CDK is unable to determine if
+> their contents had changed.
+
+The `version.addAlias()` method can be used to define an AWS Lambda alias that
+points to a specific version.
+
+The following example defines an alias named `live` which will always point to a
+version that represents the function as defined in your CDK app. When you change
+your lambda code or configuration, a new resource will be created. You can
+specify options for the current version through the `currentVersionOptions`
+property.
+
+```ts
+const fn = new lambda.Function(this, 'MyFunction', {
+  currentVersionOptions: {
+    removalPolicy: RemovalPolicy.RETAIN, // retain old versions
+    retryAttempts: 1                     // async retry attempts
+  }
+});
+
+fn.currentVersion.addAlias('live');
+```
+
+> NOTE: The `fn.latestVersion` property returns a `lambda.IVersion` which
+> represents the `$LATEST` pseudo-version. Most AWS services require a specific
+> AWS Lambda version, and won't allow you to use `$LATEST`. Therefore, you would
+> normally want to use `lambda.currentVersion`.
+
 ### Layers
 
 The `lambda.LayerVersion` class can be used to define Lambda layers and manage

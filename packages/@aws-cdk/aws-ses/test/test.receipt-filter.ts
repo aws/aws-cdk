@@ -19,16 +19,16 @@ export = {
 
     // THEN
     expect(stack).toMatch({
-      "Resources": {
-        "FilterC907D6DA": {
-          "Type": "AWS::SES::ReceiptFilter",
-          "Properties": {
-            "Filter": {
-              "IpFilter": {
-                "Cidr": "1.2.3.4/16",
-                "Policy": "Block"
+      'Resources': {
+        'FilterC907D6DA': {
+          'Type': 'AWS::SES::ReceiptFilter',
+          'Properties': {
+            'Filter': {
+              'IpFilter': {
+                'Cidr': '1.2.3.4/16',
+                'Policy': 'Block'
               },
-              "Name": "MyFilter"
+              'Name': 'MyFilter'
             }
           }
         }
@@ -52,36 +52,36 @@ export = {
 
     // THEN
     expect(stack).toMatch({
-      "Resources": {
-        "WhiteListBlockAllAE2CDDFF": {
-          "Type": "AWS::SES::ReceiptFilter",
-          "Properties": {
-            "Filter": {
-              "IpFilter": {
-                "Cidr": "0.0.0.0/0",
-                "Policy": "Block"
+      'Resources': {
+        'WhiteListBlockAllAE2CDDFF': {
+          'Type': 'AWS::SES::ReceiptFilter',
+          'Properties': {
+            'Filter': {
+              'IpFilter': {
+                'Cidr': '0.0.0.0/0',
+                'Policy': 'Block'
               }
             }
           }
         },
-        "WhiteListAllow1000016F396A7F2": {
-          "Type": "AWS::SES::ReceiptFilter",
-          "Properties": {
-            "Filter": {
-              "IpFilter": {
-                "Cidr": "10.0.0.0/16",
-                "Policy": "Allow"
+        'WhiteListAllow1000016F396A7F2': {
+          'Type': 'AWS::SES::ReceiptFilter',
+          'Properties': {
+            'Filter': {
+              'IpFilter': {
+                'Cidr': '10.0.0.0/16',
+                'Policy': 'Allow'
               }
             }
           }
         },
-        "WhiteListAllow1234A4DDAD4E": {
-          "Type": "AWS::SES::ReceiptFilter",
-          "Properties": {
-            "Filter": {
-              "IpFilter": {
-                "Cidr": "1.2.3.4",
-                "Policy": "Allow"
+        'WhiteListAllow1234A4DDAD4E': {
+          'Type': 'AWS::SES::ReceiptFilter',
+          'Properties': {
+            'Filter': {
+              'IpFilter': {
+                'Cidr': '1.2.3.4',
+                'Policy': 'Allow'
               }
             }
           }

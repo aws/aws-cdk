@@ -1,4 +1,4 @@
-import { Token } from "./token";
+import { Token } from './token';
 
 /**
  * Represents a length of time.
@@ -221,7 +221,7 @@ export class Duration {
   public toString(): string {
     return Token.asString(
       () => {
-        throw new Error(`Duration.toString() was used, but .toSeconds, .toMinutes or .toDays should have been called instead`);
+        throw new Error('Duration.toString() was used, but .toSeconds, .toMinutes or .toDays should have been called instead');
       },
       { displayHint: `${this.amount} ${this.unit.label}` }
     );
@@ -244,7 +244,7 @@ export class Duration {
  */
 export interface TimeConversionOptions {
   /**
-   * If `true`, conversions into a larger time unit (e.g. `Seconds` to `Mintues`) will fail if the result is not an
+   * If `true`, conversions into a larger time unit (e.g. `Seconds` to `Minutes`) will fail if the result is not an
    * integer.
    *
    * @default true

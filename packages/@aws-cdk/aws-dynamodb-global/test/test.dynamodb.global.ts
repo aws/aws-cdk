@@ -14,9 +14,9 @@ const TABLE_NAME = 'GlobalTable';
 const TABLE_PARTITION_KEY: Attribute = { name: 'hashKey', type: AttributeType.STRING };
 
 const STACK_PROPS: GlobalTableProps = {
-    partitionKey: TABLE_PARTITION_KEY,
-    tableName: TABLE_NAME,
-    regions: [ 'us-east-1', 'us-east-2', 'us-west-2' ]
+  partitionKey: TABLE_PARTITION_KEY,
+  tableName: TABLE_NAME,
+  regions: [ 'us-east-1', 'us-east-2', 'us-west-2' ]
 };
 
 export = {
@@ -28,33 +28,33 @@ export = {
       for ( const reg of STACK_PROPS.regions ) {
         const tableStack = topStack.node.findChild(CONSTRUCT_NAME + '-' + reg) as Stack;
         expect(tableStack).to(haveResource('AWS::DynamoDB::Table', {
-          "KeySchema": [
-              {
-                "AttributeName": "hashKey",
-                "KeyType": "HASH"
-              }
-            ],
-            "AttributeDefinitions": [
-              {
-                "AttributeName": "hashKey",
-                "AttributeType": "S"
-              }
-            ],
-            "StreamSpecification": {
-              "StreamViewType": "NEW_AND_OLD_IMAGES"
-            },
-            "TableName": "GlobalTable"
+          'KeySchema': [
+            {
+              'AttributeName': 'hashKey',
+              'KeyType': 'HASH'
+            }
+          ],
+          'AttributeDefinitions': [
+            {
+              'AttributeName': 'hashKey',
+              'AttributeType': 'S'
+            }
+          ],
+          'StreamSpecification': {
+            'StreamViewType': 'NEW_AND_OLD_IMAGES'
+          },
+          'TableName': 'GlobalTable'
         }));
       }
-      const customResourceStack = stack.node.findChild(CONSTRUCT_NAME + "-CustomResource") as Stack;
+      const customResourceStack = stack.node.findChild(CONSTRUCT_NAME + '-CustomResource') as Stack;
       expect(customResourceStack).to(haveResource('AWS::Lambda::Function', {
-        Description: "Lambda to make DynamoDB a global table",
-        Handler: "index.handler",
+        Description: 'Lambda to make DynamoDB a global table',
+        Handler: 'index.handler',
         Timeout: 300
       }));
       expect(customResourceStack).to(haveResource('AWS::CloudFormation::CustomResource', {
         Regions: STACK_PROPS.regions,
-        ResourceType: "Custom::DynamoGlobalTableCoordinator",
+        ResourceType: 'Custom::DynamoGlobalTableCoordinator',
         TableName: TABLE_NAME,
       }));
       test.done();
@@ -78,10 +78,10 @@ export = {
     });
 
     expect(stack).toMatch({
-      "Outputs": {
-        "DynamoDbOutput": {
-          "Value": {
-            "Fn::ImportValue": "GlobalTableStackawscdkdynamodbglobalawscdkdynamodbglobaluseast19C1C8A14:awscdkdynamodbglobalawscdkdynamodbglobaluseast1ExportsOutputFnGetAttawscdkdynamodbglobalGlobalTableuseast1FC03DD69StreamArn28E90DB8",
+      'Outputs': {
+        'DynamoDbOutput': {
+          'Value': {
+            'Fn::ImportValue': 'GlobalTableStackawscdkdynamodbglobalawscdkdynamodbglobaluseast19C1C8A14:awscdkdynamodbglobalawscdkdynamodbglobaluseast1ExportsOutputFnGetAttawscdkdynamodbglobalGlobalTableuseast1FC03DD69StreamArn28E90DB8',
           },
         },
       },

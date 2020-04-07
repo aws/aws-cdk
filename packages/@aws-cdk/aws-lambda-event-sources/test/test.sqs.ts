@@ -19,38 +19,38 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::IAM::Policy', {
-      "PolicyDocument": {
-        "Statement": [
+      'PolicyDocument': {
+        'Statement': [
           {
-            "Action": [
-              "sqs:ReceiveMessage",
-              "sqs:ChangeMessageVisibility",
-              "sqs:GetQueueUrl",
-              "sqs:DeleteMessage",
-              "sqs:GetQueueAttributes"
+            'Action': [
+              'sqs:ReceiveMessage',
+              'sqs:ChangeMessageVisibility',
+              'sqs:GetQueueUrl',
+              'sqs:DeleteMessage',
+              'sqs:GetQueueAttributes'
             ],
-            "Effect": "Allow",
-            "Resource": {
-              "Fn::GetAtt": [
-                "Q63C6E3AB",
-                "Arn"
+            'Effect': 'Allow',
+            'Resource': {
+              'Fn::GetAtt': [
+                'Q63C6E3AB',
+                'Arn'
               ]
             }
           }
         ],
-        "Version": "2012-10-17"
+        'Version': '2012-10-17'
       }
     }));
 
     expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
-      "EventSourceArn": {
-        "Fn::GetAtt": [
-          "Q63C6E3AB",
-          "Arn"
+      'EventSourceArn': {
+        'Fn::GetAtt': [
+          'Q63C6E3AB',
+          'Arn'
         ]
       },
-      "FunctionName": {
-        "Ref": "Fn9270CBC0"
+      'FunctionName': {
+        'Ref': 'Fn9270CBC0'
       }
     }));
 
@@ -70,16 +70,16 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
-      "EventSourceArn": {
-        "Fn::GetAtt": [
-          "Q63C6E3AB",
-          "Arn"
+      'EventSourceArn': {
+        'Fn::GetAtt': [
+          'Q63C6E3AB',
+          'Arn'
         ]
       },
-      "FunctionName": {
-        "Ref": "Fn9270CBC0"
+      'FunctionName': {
+        'Ref': 'Fn9270CBC0'
       },
-      "BatchSize": 5
+      'BatchSize': 5
     }));
 
     test.done();

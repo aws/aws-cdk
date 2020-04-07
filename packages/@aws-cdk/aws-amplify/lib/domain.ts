@@ -103,7 +103,7 @@ export class Domain extends Resource {
 
   protected validate() {
     if (this.subDomains.length === 0) {
-      return [`The domain doesn't contain any subdomains`];
+      return ['The domain doesn\'t contain any subdomains'];
     }
 
     return [];

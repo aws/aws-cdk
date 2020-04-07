@@ -1,12 +1,13 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { IRole, ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
+import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { Construct, Duration, RemovalPolicy, Resource, Token } from '@aws-cdk/core';
 import { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
-import { IParameterGroup } from './parameter-group';
+import { ClusterParameterGroup, IParameterGroup } from './parameter-group';
 import { BackupProps, DatabaseClusterEngine, InstanceProps, Login, RotationMultiUserOptions } from './props';
 import { CfnDBCluster, CfnDBInstance, CfnDBSubnetGroup } from './rds.generated';
 
@@ -141,6 +142,68 @@ export interface DatabaseClusterProps {
    * @default - A role is automatically created for you
    */
   readonly monitoringRole?: IRole;
+
+  /**
+   * Role that will be associated with this DB cluster to enable S3 import.
+   * This feature is only supported by the Aurora database engine.
+   *
+   * This property must not be used if `s3ImportBuckets` is used.
+   *
+   * For MySQL:
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Integrating.LoadFromS3.html
+   *
+   * For PostgreSQL:
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraPostgreSQL.Migrating.html
+   *
+   * @default - New role is created if `s3ImportBuckets` is set, no role is defined otherwise
+   */
+  readonly s3ImportRole?: IRole;
+
+  /**
+   * S3 buckets that you want to load data from. This feature is only supported by the Aurora database engine.
+   *
+   * This property must not be used if `s3ImportRole` is used.
+   *
+   * For MySQL:
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Integrating.LoadFromS3.html
+   *
+   * For PostgreSQL:
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraPostgreSQL.Migrating.html
+   *
+   * @default - None
+   */
+  readonly s3ImportBuckets?: s3.IBucket[];
+
+  /**
+   * Role that will be associated with this DB cluster to enable S3 export.
+   * This feature is only supported by the Aurora database engine.
+   *
+   * This property must not be used if `s3ExportBuckets` is used.
+   *
+   * For MySQL:
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Integrating.SaveIntoS3.html
+   *
+   * For PostgreSQL:
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/postgresql-s3-export.html
+   *
+   * @default - New role is created if `s3ExportBuckets` is set, no role is defined otherwise
+   */
+  readonly s3ExportRole?: IRole;
+
+  /**
+   * S3 buckets that you want to load data into. This feature is only supported by the Aurora database engine.
+   *
+   * This property must not be used if `s3ExportRole` is used.
+   *
+   * For MySQL:
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Integrating.SaveIntoS3.html
+   *
+   * For PostgreSQL:
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/postgresql-s3-export.html
+   *
+   * @default - None
+   */
+  readonly s3ExportBuckets?: s3.IBucket[];
 }
 
 /**
@@ -291,10 +354,10 @@ export class DatabaseCluster extends DatabaseClusterBase {
     });
 
     const securityGroup = props.instanceProps.securityGroup !== undefined ?
-    props.instanceProps.securityGroup : new ec2.SecurityGroup(this, 'SecurityGroup', {
-      description: 'RDS security group',
-      vpc: props.instanceProps.vpc
-    });
+      props.instanceProps.securityGroup : new ec2.SecurityGroup(this, 'SecurityGroup', {
+        description: 'RDS security group',
+        vpc: props.instanceProps.vpc
+      });
     this.securityGroupId = securityGroup.securityGroupId;
 
     let secret: DatabaseSecret | undefined;
@@ -308,6 +371,68 @@ export class DatabaseCluster extends DatabaseClusterBase {
     this.singleUserRotationApplication = props.engine.singleUserRotationApplication;
     this.multiUserRotationApplication = props.engine.multiUserRotationApplication;
 
+    let s3ImportRole = props.s3ImportRole;
+    if (props.s3ImportBuckets && props.s3ImportBuckets.length > 0) {
+      if (props.s3ImportRole) {
+        throw new Error('Only one of s3ImportRole or s3ImportBuckets must be specified, not both.');
+      }
+
+      s3ImportRole = new Role(this, 'S3ImportRole', {
+        assumedBy: new ServicePrincipal('rds.amazonaws.com')
+      });
+      for (const bucket of props.s3ImportBuckets) {
+        bucket.grantRead(s3ImportRole);
+      }
+    }
+
+    let s3ExportRole = props.s3ExportRole;
+    if (props.s3ExportBuckets && props.s3ExportBuckets.length > 0) {
+      if (props.s3ExportRole) {
+        throw new Error('Only one of s3ExportRole or s3ExportBuckets must be specified, not both.');
+      }
+
+      s3ExportRole = new Role(this, 'S3ExportRole', {
+        assumedBy: new ServicePrincipal('rds.amazonaws.com'),
+      });
+      for (const bucket of props.s3ExportBuckets) {
+        bucket.grantReadWrite(s3ExportRole);
+      }
+    }
+
+    let clusterParameterGroup = props.parameterGroup;
+    const clusterAssociatedRoles: CfnDBCluster.DBClusterRoleProperty[] = [];
+    if (s3ImportRole || s3ExportRole) {
+      if (s3ImportRole) {
+        clusterAssociatedRoles.push({ roleArn: s3ImportRole.roleArn });
+      }
+      if (s3ExportRole) {
+        clusterAssociatedRoles.push({ roleArn: s3ExportRole.roleArn });
+      }
+
+      // MySQL requires the associated roles to be specified as cluster parameters as well, PostgreSQL does not
+      if (props.engine === DatabaseClusterEngine.AURORA || props.engine === DatabaseClusterEngine.AURORA_MYSQL) {
+        if (!clusterParameterGroup) {
+          const parameterGroupFamily = props.engine.parameterGroupFamily(props.engineVersion);
+          if (!parameterGroupFamily) {
+            throw new Error(`No parameter group family found for database engine ${props.engine.name} with version ${props.engineVersion}.` +
+              'Failed to set the correct cluster parameters for s3 import and export roles.');
+          }
+          clusterParameterGroup = new ClusterParameterGroup(this, 'ClusterParameterGroup', {
+            family: parameterGroupFamily,
+          });
+        }
+
+        if (clusterParameterGroup instanceof ClusterParameterGroup) { // ignore imported ClusterParameterGroup
+          if (s3ImportRole) {
+            clusterParameterGroup.addParameter('aurora_load_from_s3_role', s3ImportRole.roleArn);
+          }
+          if (s3ExportRole) {
+            clusterParameterGroup.addParameter('aurora_select_into_s3_role', s3ExportRole.roleArn);
+          }
+        }
+      }
+    }
+
     const cluster = new CfnDBCluster(this, 'Resource', {
       // Basic
       engine: props.engine.name,
@@ -316,14 +441,15 @@ export class DatabaseCluster extends DatabaseClusterBase {
       dbSubnetGroupName: subnetGroup.ref,
       vpcSecurityGroupIds: [this.securityGroupId],
       port: props.port,
-      dbClusterParameterGroupName: props.parameterGroup && props.parameterGroup.parameterGroupName,
+      dbClusterParameterGroupName: clusterParameterGroup && clusterParameterGroup.parameterGroupName,
+      associatedRoles: clusterAssociatedRoles.length > 0 ? clusterAssociatedRoles : undefined,
       // Admin
       masterUsername: secret ? secret.secretValueFromJson('username').toString() : props.masterUser.username,
       masterUserPassword: secret
         ? secret.secretValueFromJson('password').toString()
         : (props.masterUser.password
-            ? props.masterUser.password.toString()
-            : undefined),
+          ? props.masterUser.password.toString()
+          : undefined),
       backupRetentionPeriod: props.backup && props.backup.retention && props.backup.retention.toDays(),
       preferredBackupWindow: props.backup && props.backup.preferredWindow,
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
@@ -358,8 +484,8 @@ export class DatabaseCluster extends DatabaseClusterBase {
 
     let monitoringRole;
     if (props.monitoringInterval && props.monitoringInterval.toSeconds()) {
-      monitoringRole = props.monitoringRole || new Role(this, "MonitoringRole", {
-        assumedBy: new ServicePrincipal("monitoring.rds.amazonaws.com"),
+      monitoringRole = props.monitoringRole || new Role(this, 'MonitoringRole', {
+        assumedBy: new ServicePrincipal('monitoring.rds.amazonaws.com'),
         managedPolicies: [
           ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonRDSEnhancedMonitoringRole')
         ]
@@ -370,8 +496,8 @@ export class DatabaseCluster extends DatabaseClusterBase {
       const instanceIndex = i + 1;
 
       const instanceIdentifier = props.instanceIdentifierBase != null ? `${props.instanceIdentifierBase}${instanceIndex}` :
-                     props.clusterIdentifier != null ? `${props.clusterIdentifier}instance${instanceIndex}` :
-                     undefined;
+        props.clusterIdentifier != null ? `${props.clusterIdentifier}instance${instanceIndex}` :
+          undefined;
 
       const publiclyAccessible = props.instanceProps.vpcSubnets && props.instanceProps.vpcSubnets.subnetType === ec2.SubnetType.PUBLIC;
 

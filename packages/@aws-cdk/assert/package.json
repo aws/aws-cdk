@@ -29,11 +29,11 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/jest": "^25.1.4",
+    "@types/jest": "^25.2.1",
     "cdk-build-tools": "0.0.0",
     "jest": "^24.9.0",
     "pkglint": "0.0.0",
-    "ts-jest": "^25.2.0"
+    "ts-jest": "^25.3.1"
   },
   "dependencies": {
     "@aws-cdk/cloudformation-diff": "0.0.0",

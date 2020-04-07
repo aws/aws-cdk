@@ -35,7 +35,9 @@ const submitLambda = new lambda.Function(this, 'SubmitLambda', { ... });
 const getStatusLambda = new lambda.Function(this, 'CheckLambda', { ... });
 
 const submitJob = new sfn.Task(this, 'Submit Job', {
-    task: new tasks.InvokeFunction(submitLambda),
+    task: new tasks.RunLambdaTask(submitLambda, {
+      integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
+    }),
     // Put Lambda's result here in the execution's state object
     resultPath: '$.guid',
 });
@@ -45,7 +47,9 @@ const waitX = new sfn.Wait(this, 'Wait X Seconds', {
 });
 
 const getStatus = new sfn.Task(this, 'Get Job Status', {
-    task: new tasks.InvokeFunction(getStatusLambda),
+    task: new tasks.RunLambdaTask(getStatusLambda, {
+      integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
+    }),
     // Pass just the field named "guid" into the Lambda, put the
     // Lambda's result in a field called "status"
     inputPath: '$.guid',
@@ -58,7 +62,9 @@ const jobFailed = new sfn.Fail(this, 'Job Failed', {
 });
 
 const finalStatus = new sfn.Task(this, 'Get Final Job Status', {
-    task: new tasks.InvokeFunction(getStatusLambda),
+    task: new tasks.RunLambdaTask(getStatusLambda, {
+      integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
+    }),
     // Use "guid" field as input, output of the Lambda becomes the
     // entire state machine output.
     inputPath: '$.guid',
@@ -127,7 +133,6 @@ couple of the tasks available are:
 
 * `tasks.InvokeActivity` -- start an Activity (Activities represent a work
   queue that you poll on a compute fleet you manage yourself)
-* `tasks.InvokeFunction` -- invoke a Lambda function with function ARN
 * `tasks.RunBatchJob` -- run a Batch job
 * `tasks.RunLambdaTask` -- call Lambda as integrated service with magic ARN
 * `tasks.RunGlueJobTask` -- call Glue Job as integrated service
@@ -139,10 +144,11 @@ couple of the tasks available are:
 * `tasks.SagemakerTransformTask` -- run a SageMaker transform job
 * `tasks.StartExecution` -- call StartExecution to a state machine of Step Functions
 * `tasks.EvaluateExpression` -- evaluate an expression referencing state paths
+* `tasks.CallDynamoDB` -- call GetItem, PutItem, DeleteItem and UpdateItem APIs of DynamoDB
 
-Except `tasks.InvokeActivity` and `tasks.InvokeFunction`, the [service integration
+Except `tasks.InvokeActivity`, the [service integration
 pattern](https://docs.aws.amazon.com/step-functions/latest/dg/connect-to-resource.html)
-(`integrationPattern`) are supposed to be given as parameter when customers want
+(`integrationPattern`) is supposed to be provided as a parameter when customers want
 to call integrated services within a Task state. The default value is `FIRE_AND_FORGET`.
 
 #### Task parameters from the state json
@@ -155,29 +161,7 @@ such as `Data.stringAt()`.
 If so, the value is taken from the indicated location in the state JSON,
 similar to (for example) `inputPath`.
 
-#### Lambda example - InvokeFunction
-
-```ts
-const task = new sfn.Task(this, 'Invoke1', {
-    task: new tasks.InvokeFunction(myLambda),
-    inputPath: '$.input',
-    timeout: Duration.minutes(5),
-});
-
-// Add a retry policy
-task.addRetry({
-    interval: Duration.seconds(5),
-    maxAttempts: 10
-});
-
-// Add an error handler
-task.addCatch(errorHandlerState);
-
-// Set the next state
-task.next(nextState);
-```
-
-#### Lambda example - RunLambdaTask
+#### Lambda example
 
 ```ts
   const task = new sfn.Task(stack, 'Invoke2', {
@@ -426,6 +410,115 @@ The `EvaluateExpression` supports a `runtime` prop to specify the Lambda
 runtime to use to evaluate the expression. Currently, the only runtime
 supported is `lambda.Runtime.NODEJS_10_X`.
 
+#### DynamoDB example
+
+##### PutItem
+
+```ts
+const TABLE_NAME = 'Messages';
+const MESSAGE_ID = `1234`;
+const firstNumber = 18;
+const secondNumber = 24;
+
+const putItemTask = new sfn.Task(this, 'PutItem', {
+  task: tasks.CallDynamoDB.putItem({
+    item: {
+      MessageId: new tasks.DynamoAttributeValue().withS(MESSAGE_ID),
+      Text: new tasks.DynamoAttributeValue().withS(
+        sfn.Data.stringAt('$.bar')
+      ),
+      TotalCount: new tasks.DynamoAttributeValue().withN(`${firstNumber}`)
+    },
+    tableName: TABLE_NAME
+  })
+});
+
+const definition = new sfn.Pass(this, 'Start', {
+  result: sfn.Result.fromObject({ bar: 'SomeValue' })
+})
+  .next(putItemTask);
+
+const stateMachine = new sfn.StateMachine(this, 'StateMachine', {
+  definition
+});
+```
+
+##### GetItem
+
+```ts
+const getItemTask = new sfn.Task(this, 'GetItem', {
+  task: tasks.CallDynamoDB.getItem({
+    partitionKey: {
+      name: 'MessageId',
+      value: new tasks.DynamoAttributeValue().withS(MESSAGE_ID)
+    },
+    tableName: TABLE_NAME
+  })
+});
+
+const definition = new sfn.Pass(this, 'Start', {
+  result: sfn.Result.fromObject({ bar: 'SomeValue' })
+})
+  .next(getItemTask);
+
+const stateMachine = new sfn.StateMachine(this, 'StateMachine', {
+  definition
+});
+```
+
+##### UpdateItem
+
+```ts
+const updateItemTask = new sfn.Task(this, 'UpdateItem', {
+  task: tasks.CallDynamoDB.updateItem({
+    partitionKey: {
+      name: 'MessageId',
+      value: new tasks.DynamoAttributeValue().withS(MESSAGE_ID)
+    },
+    tableName: TABLE_NAME,
+    expressionAttributeValues: {
+      ':val': new tasks.DynamoAttributeValue().withN(
+        sfn.Data.stringAt('$.Item.TotalCount.N')
+      ),
+      ':rand': new tasks.DynamoAttributeValue().withN(`${secondNumber}`)
+    },
+    updateExpression: 'SET TotalCount = :val + :rand'
+  })
+});
+
+const definition = new sfn.Pass(this, 'Start', {
+  result: sfn.Result.fromObject({ bar: 'SomeValue' })
+})
+  .next(updateItemTask);
+
+const stateMachine = new sfn.StateMachine(this, 'StateMachine', {
+  definition
+});
+```
+
+##### DeleteItem
+
+```ts
+const deleteItemTask = new sfn.Task(this, 'DeleteItem', {
+  task: tasks.CallDynamoDB.deleteItem({
+    partitionKey: {
+      name: 'MessageId',
+      value: new tasks.DynamoAttributeValue().withS(MESSAGE_ID)
+    },
+    tableName: TABLE_NAME
+  }),
+  resultPath: 'DISCARD'
+});
+
+const definition = new sfn.Pass(this, 'Start', {
+  result: sfn.Result.fromObject({ bar: 'SomeValue' })
+})
+  .next(deleteItemTask);
+
+const stateMachine = new sfn.StateMachine(this, 'StateMachine', {
+  definition
+});
+```
 
 ### Pass
 
@@ -690,6 +783,22 @@ new cloudwatch.Alarm(this, 'ThrottledAlarm', {
 });
 ```
 
+## Logging
+
+Enable logging to CloudWatch by passing a logging configuration with a
+destination LogGroup:
+
+```ts
+const logGroup = new logs.LogGroup(stack, 'MyLogGroup');
+
+new stepfunctions.StateMachine(stack, 'MyStateMachine', {
+    definition: stepfunctions.Chain.start(new stepfunctions.Pass(stack, 'Pass')),
+    logs: {
+      destinations: logGroup,
+      level: stepfunctions.LogLevel.ALL,
+    }
+});
+```
 
 ## Future work
 
