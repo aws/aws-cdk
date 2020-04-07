@@ -1,5 +1,5 @@
 import { ArnPrincipal } from '@aws-cdk/aws-iam';
-import { Construct, IResource, Resource } from '@aws-cdk/core';
+import { Aws, Construct, Fn, IResource, Resource } from '@aws-cdk/core';
 import { CfnVPCEndpointService, CfnVPCEndpointServicePermissions } from './ec2.generated';
 
 /**
@@ -56,6 +56,8 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
    */
   public readonly vpcEndpointServiceId: string;
 
+  public readonly vpcEndpointServiceName: string;
+
   private readonly endpointService: CfnVPCEndpointService;
 
   constructor(scope: Construct, id: string, props: VpcEndpointServiceProps) {
@@ -75,7 +77,8 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
     });
 
     this.vpcEndpointServiceId = this.endpointService.ref;
-
+    this.vpcEndpointServiceName = Fn.join('.', ['com.amazonaws.vpce', Aws.REGION, this.vpcEndpointServiceId]);
+    //this.vpcEndpointServiceName = "";
     if (this.whitelistedPrincipals.length > 0) {
       new CfnVPCEndpointServicePermissions(this, 'Permissions', {
         serviceId: this.endpointService.ref,
