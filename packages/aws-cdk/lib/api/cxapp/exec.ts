@@ -2,7 +2,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as childProcess from 'child_process';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { debug, warning } from '../../logging';
+import { debug } from '../../logging';
 import { Configuration, PROJECT_CONFIG, USER_DEFAULTS } from '../../settings';
 import { versionNumber } from '../../version';
 import { SdkProvider } from '../aws-auth';
