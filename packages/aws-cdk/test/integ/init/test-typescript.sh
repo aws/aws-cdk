@@ -27,7 +27,7 @@ for template in $templates; do
     npm run test
 
     # Can't run `cdk synth` on libraries
-    if [[ $template != "lib" ]]; then
+    if [[ $template != "lib" && $template != "jsii" ]]; then
         cdk synth
     fi
 done

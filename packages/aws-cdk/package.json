@@ -29,6 +29,7 @@
     "eslint": {
       "ignore-pattern": [
         "lib/init-templates/*/typescript/**/*.ts",
+        "lib/init-templates/lib/jsii/**/*.ts",
         "lib/init-templates/*/javascript/**/*.js",
         "test/integ/cli/app/**/*.js",
         "test/integ/cli/cloud-assemblies/**/*.json.js"

@@ -1,0 +1,66 @@
+{
+  "name": "%name%",
+  "version": "0.1.0",
+  "description": "A sample CDK app",
+  "keywords": [
+    "cdk",
+    "sns",
+    "sqs",
+    "jsii"
+  ],
+  "author": {
+    "name": "[YOUR NAME HERE]",
+    "email": "[YOUR EMAIL HERE]",
+    "url": "[YOUR WEBSITE HERE]"
+  },
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "[GIT URL HERE]",
+    "directory": "lib/"
+  },
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "build": "jsii",
+    "watch": "jsii -w",
+    "package": "jsii-pacmak -v",
+    "test": "jest",
+    "lint": "tslint 'lib/**/*.ts{,x}'"
+  },
+  "jsii": {
+    "outdir": "./dist/",
+    "targets": {
+      "java": {
+        "package": "com.myorg.%name%",
+        "maven": {
+          "groupId": "com.myorg",
+          "artifactId": "%name%"
+        }
+      },
+      "python": {
+        "distName": "%name%",
+        "module": "%name.PythonModule%"
+      }
+    }
+  },
+  "devDependencies": {
+    "@aws-cdk/assert": "%cdk-version%",
+    "jsii": "^1.1.0",
+    "jsii-pacmak": "^1.1.0",
+    "@types/jest": "^24.0.22",
+    "@types/node": "10.17.5",
+    "jest": "^24.9.0",
+    "ts-jest": "^24.1.0",
+    "typescript": "~3.7.2"
+  },
+  "peerDependencies": {
+    "@aws-cdk/core": "%cdk-version%"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-sns": "%cdk-version%",
+    "@aws-cdk/aws-sns-subscriptions": "%cdk-version%",
+    "@aws-cdk/aws-sqs": "%cdk-version%",
+    "@aws-cdk/core": "%cdk-version%"
+  }
+}
