@@ -71,7 +71,7 @@
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
     "archiver": "^3.1.1",
-    "aws-sdk": "^2.654.0",
+    "aws-sdk": "^2.655.0",
     "camelcase": "^6.0.0",
     "cdk-assets": "0.0.0",
     "colors": "^1.4.0",
