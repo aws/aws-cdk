@@ -15,7 +15,9 @@
     "build+test": "npm run build && npm test"
   },
   "cdk-build": {
-    "pre": [ "./clone.sh" ],
+    "pre": [
+      "./clone.sh"
+    ],
     "eslint": {
       "disable": true
     },
@@ -71,5 +73,6 @@
   "engines": {
     "node": ">= 10.3.0"
   },
-  "stability": "experimental"
+  "stability": "experimental",
+  "maturity": "developer-preview"
 }

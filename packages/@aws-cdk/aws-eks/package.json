@@ -109,10 +109,10 @@
       "resource-attribute:@aws-cdk/aws-eks.Cluster.clusterSecurityGroupId",
       "docs-public-apis:@aws-cdk/aws-eks.NodegroupAmiType.AL2_X86_64",
       "docs-public-apis:@aws-cdk/aws-eks.NodegroupAmiType.AL2_X86_64_GPU"
-
     ]
   },
   "stability": "experimental",
+  "maturity": "experimental",
   "awscdkio": {
     "announce": false
   }

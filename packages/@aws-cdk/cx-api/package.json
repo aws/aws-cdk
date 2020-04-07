@@ -91,6 +91,7 @@
     "node": ">= 10.3.0"
   },
   "stability": "experimental",
+  "maturity": "experimental",
   "awslint": {
     "exclude": [
       "props-default-doc:@aws-cdk/cx-api.MetadataEntry.data",

@@ -102,6 +102,7 @@
     "node": ">= 10.3.0"
   },
   "stability": "experimental",
+  "maturity": "experimental",
   "awscdkio": {
     "announce": false
   }

@@ -87,6 +87,7 @@
     "node": ">= 10.3.0"
   },
   "stability": "experimental",
+  "maturity": "experimental",
   "awslint": {
     "exclude": [
       "docs-public-apis:@aws-cdk/region-info.Fact.regions",

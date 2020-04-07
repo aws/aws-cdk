@@ -109,6 +109,7 @@
     "node": ">= 10.3.0"
   },
   "stability": "experimental",
+  "maturity": "cfn-only",
   "awslint": {
     "exclude": [
       "construct-ctor-props-optional:@aws-cdk/aws-amplify.App"

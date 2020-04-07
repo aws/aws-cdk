@@ -173,34 +173,69 @@ export class StabilitySetting extends ValidationRule {
       return;
     }
 
-    let stability = pkg.json.stability;
-    switch (stability) {
-      case 'experimental':
-      case 'stable':
-      case 'deprecated':
-        if (pkg.json.deprecated && stability !== 'deprecated') {
-          pkg.report({
-            ruleName: this.name,
-            message: `Package is deprecated, but is marked with stability "${stability}"`,
-            fix: () => pkg.json.stability = 'deprecated',
-          });
-          stability = 'deprecated';
-        }
-        break;
-      default:
-        const defaultStability = pkg.json.deprecated ? 'deprecated' : 'experimental';
-        pkg.report({
-          ruleName: this.name,
-          message: `Invalid stability configuration in package.json: ${JSON.stringify(stability)}`,
-          fix: () => pkg.json.stability = defaultStability,
-        });
-        stability = defaultStability;
+    // 'stability' contains the default API-level stability, either 'experimental', 'stable',
+    // 'deprecated' or 'external'. This is the value that will be used for every class
+    // unless it is annotated otherwise. It must be one of these values, which will be
+    // enforced by 'jsii'.
+    //
+    // On top of this, we have conceptual library-level "maturity", which is one of
+    // the following stages: 'cfn-only', 'experimental', 'developer-preview', 'stable',
+    // 'deprecated'. These render into stability banners in the README.
+    //
+    // The maturities mostly map onto default stabilities, and so maturity will
+    // be derived from stability if possible. The mapping is:
+    //
+    //     STABILITY      MATURITY
+    //     experimental   cfn-only
+    //                    experimental
+    //                    developer-preview
+    //     stable         stable
+    //     deprecated     deprecated
+    //     external       (not used, we don't allow 'external' as default stability)
+    //
+    // Since 'stability: experimental' maps onto 3 different maturities, you must annotate
+    // this manually. Otherwise, the stability value will be used to determine maturity.
+    //
+    // (Potentially, 'cfn-only' could have been derived automatically, but that would require
+    // making pkglint depend on 'jsii-reflect'... let's not go there).
+    let maturity = pkg.json.maturity as string | undefined;
+    const stability = pkg.json.stability ?? (pkg.json.deprecated ? 'deprecated' : 'experimental');
+
+    const matchingMaturities = ['stable', 'deprecated'];
+
+    if (!maturity && !matchingMaturities.includes(stability)) {
+      pkg.report({
+        ruleName: this.name,
+        message: `"stability" is "${stability}", please also indicate "maturity" to one of "cfn-only"|"experimental"|"developer-preview"`,
+      });
+      return;
     }
-    this.validateReadmeHasBanner(pkg, stability);
+
+    if (maturity && matchingMaturities.includes(stability)) {
+      pkg.report({
+        ruleName: this.name,
+        message: `"maturity" must either match "stability" of "${stability}", or be left out.`,
+        // Actually just undefine it
+        fix: () => pkg.json.maturity = undefined
+      });
+    }
+
+    if (pkg.json.deprecated && maturity !== 'deprecated') {
+      pkg.report({
+        ruleName: this.name,
+        message: `Package is deprecated, but is marked with maturity "${maturity}"`,
+        fix: () => pkg.json.maturity = 'deprecated',
+      });
+      maturity = 'deprecated';
+    }
+
+    if (maturity) {
+      this.validateReadmeHasBanner(pkg, maturity);
+    }
   }
 
-  private validateReadmeHasBanner(pkg: PackageJson, stability: string) {
-    const badge = this.readmeBadge(stability);
+  private validateReadmeHasBanner(pkg: PackageJson, maturity: string) {
+    const badge = this.readmeBadge(maturity);
     if (!badge) {
       // Somehow, we don't have a badge for this stability level
       return;
@@ -217,54 +252,28 @@ export class StabilitySetting extends ValidationRule {
       const [title, ...body] = readmeContent.replace(/<!--BEGIN STABILITY BANNER-->(?:.|\n)+<!--END STABILITY BANNER-->\n+/m, '').split('\n');
       pkg.report({
         ruleName: this.name,
-        message: `Missing stability banner for ${stability} in README.md file`,
+        message: `Missing stability banner for ${maturity} in README.md file`,
         fix: () => fs.writeFileSync(readmeFile, [title, badge, ...body].join('\n')),
       });
     }
   }
 
-  private readmeBadge(stability: string) {
-    switch (stability) {
-      case 'deprecated':
-        return _div(
-          { label: 'Deprecated', color: 'critical' },
-          'This API may emit warnings. Backward compatibility is not guaranteed.',
-        );
-      case 'experimental':
-        return _div(
-          { label: 'Experimental', color: 'important' },
-          '**This is a _developer preview_ (public beta) module.**',
-          '',
-          'All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib))',
-          'are auto-generated from CloudFormation. They are stable and safe to use.',
-          '',
-          'However, all other classes, i.e., higher level constructs, are under active development and subject to non-backward',
-          'compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model.',
-          'This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.',
-        );
-      case 'stable':
-        return _div(
-          { label: 'Stable', color: 'success' },
-        );
-      default:
-        return undefined;
-    }
+  private readmeBadge(maturity: string) {
+    const bannerContents = fs.readFileSync(path.join(__dirname, 'banners', `${maturity}.md`), { encoding: 'utf-8' });
 
-    function _div(badge: { label: string, color: string }, ...messages: string[]) {
-      return [
-        '<!--BEGIN STABILITY BANNER-->',
-        '',
-        '---',
-        '',
-        `![Stability: ${badge.label}](https://img.shields.io/badge/stability-${badge.label}-${badge.color}.svg?style=for-the-badge)`,
-        '',
-        ...messages.map(message => `> ${message}`.trimRight()),
-        '',
-        '---',
-        '<!--END STABILITY BANNER-->',
-        '',
-      ].join('\n');
-    }
+    const bannerLines = bannerContents.split('\n').map(s => s.trimRight());
+
+    return [
+      '<!--BEGIN STABILITY BANNER-->',
+      '',
+      '---',
+      '',
+      ...bannerLines,
+      '',
+      '---',
+      '<!--END STABILITY BANNER-->',
+      '',
+    ].join('\n');
   }
 }
 

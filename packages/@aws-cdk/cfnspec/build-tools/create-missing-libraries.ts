@@ -181,6 +181,7 @@ async function main() {
         node: '>= 10.3.0'
       },
       stability: 'experimental',
+      maturity: 'cfn-only',
       awscdkio: {
         announce: false
       }

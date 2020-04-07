@@ -106,6 +106,7 @@
     "node": ">= 10.3.0"
   },
   "stability": "experimental",
+  "maturity": "experimental",
   "awslint": {
     "exclude": [
       "docs-public-apis:@aws-cdk/aws-elasticloadbalancingv2-targets.InstanceTarget",
