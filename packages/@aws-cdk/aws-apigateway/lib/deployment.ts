@@ -169,7 +169,7 @@ class LatestDeploymentResource extends CfnDeployment {
     if (this.hashComponents.length > 0) {
       const md5 = crypto.createHash('md5');
       this.hashComponents.map(x => stack.resolve(x)).forEach(c => md5.update(JSON.stringify(c)));
-      this.overrideLogicalId(this.originalLogicalId + md5.digest("hex"));
+      this.overrideLogicalId(this.originalLogicalId + md5.digest('hex'));
     }
     super.prepare();
   }

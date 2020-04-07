@@ -354,10 +354,10 @@ export class DatabaseCluster extends DatabaseClusterBase {
     });
 
     const securityGroup = props.instanceProps.securityGroup !== undefined ?
-    props.instanceProps.securityGroup : new ec2.SecurityGroup(this, 'SecurityGroup', {
-      description: 'RDS security group',
-      vpc: props.instanceProps.vpc
-    });
+      props.instanceProps.securityGroup : new ec2.SecurityGroup(this, 'SecurityGroup', {
+        description: 'RDS security group',
+        vpc: props.instanceProps.vpc
+      });
     this.securityGroupId = securityGroup.securityGroupId;
 
     let secret: DatabaseSecret | undefined;
@@ -374,11 +374,11 @@ export class DatabaseCluster extends DatabaseClusterBase {
     let s3ImportRole = props.s3ImportRole;
     if (props.s3ImportBuckets && props.s3ImportBuckets.length > 0) {
       if (props.s3ImportRole) {
-        throw new Error(`Only one of s3ImportRole or s3ImportBuckets must be specified, not both.`);
+        throw new Error('Only one of s3ImportRole or s3ImportBuckets must be specified, not both.');
       }
 
-      s3ImportRole = new Role(this, "S3ImportRole", {
-        assumedBy: new ServicePrincipal("rds.amazonaws.com")
+      s3ImportRole = new Role(this, 'S3ImportRole', {
+        assumedBy: new ServicePrincipal('rds.amazonaws.com')
       });
       for (const bucket of props.s3ImportBuckets) {
         bucket.grantRead(s3ImportRole);
@@ -388,11 +388,11 @@ export class DatabaseCluster extends DatabaseClusterBase {
     let s3ExportRole = props.s3ExportRole;
     if (props.s3ExportBuckets && props.s3ExportBuckets.length > 0) {
       if (props.s3ExportRole) {
-        throw new Error(`Only one of s3ExportRole or s3ExportBuckets must be specified, not both.`);
+        throw new Error('Only one of s3ExportRole or s3ExportBuckets must be specified, not both.');
       }
 
-      s3ExportRole = new Role(this, "S3ExportRole", {
-        assumedBy: new ServicePrincipal("rds.amazonaws.com"),
+      s3ExportRole = new Role(this, 'S3ExportRole', {
+        assumedBy: new ServicePrincipal('rds.amazonaws.com'),
       });
       for (const bucket of props.s3ExportBuckets) {
         bucket.grantReadWrite(s3ExportRole);
@@ -417,7 +417,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
             throw new Error(`No parameter group family found for database engine ${props.engine.name} with version ${props.engineVersion}.` +
               'Failed to set the correct cluster parameters for s3 import and export roles.');
           }
-          clusterParameterGroup = new ClusterParameterGroup(this, "ClusterParameterGroup", {
+          clusterParameterGroup = new ClusterParameterGroup(this, 'ClusterParameterGroup', {
             family: parameterGroupFamily,
           });
         }
@@ -448,8 +448,8 @@ export class DatabaseCluster extends DatabaseClusterBase {
       masterUserPassword: secret
         ? secret.secretValueFromJson('password').toString()
         : (props.masterUser.password
-            ? props.masterUser.password.toString()
-            : undefined),
+          ? props.masterUser.password.toString()
+          : undefined),
       backupRetentionPeriod: props.backup && props.backup.retention && props.backup.retention.toDays(),
       preferredBackupWindow: props.backup && props.backup.preferredWindow,
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
@@ -484,8 +484,8 @@ export class DatabaseCluster extends DatabaseClusterBase {
 
     let monitoringRole;
     if (props.monitoringInterval && props.monitoringInterval.toSeconds()) {
-      monitoringRole = props.monitoringRole || new Role(this, "MonitoringRole", {
-        assumedBy: new ServicePrincipal("monitoring.rds.amazonaws.com"),
+      monitoringRole = props.monitoringRole || new Role(this, 'MonitoringRole', {
+        assumedBy: new ServicePrincipal('monitoring.rds.amazonaws.com'),
         managedPolicies: [
           ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonRDSEnhancedMonitoringRole')
         ]
@@ -496,8 +496,8 @@ export class DatabaseCluster extends DatabaseClusterBase {
       const instanceIndex = i + 1;
 
       const instanceIdentifier = props.instanceIdentifierBase != null ? `${props.instanceIdentifierBase}${instanceIndex}` :
-                     props.clusterIdentifier != null ? `${props.clusterIdentifier}instance${instanceIndex}` :
-                     undefined;
+        props.clusterIdentifier != null ? `${props.clusterIdentifier}instance${instanceIndex}` :
+          undefined;
 
       const publiclyAccessible = props.instanceProps.vpcSubnets && props.instanceProps.vpcSubnets.subnetType === ec2.SubnetType.PUBLIC;
 

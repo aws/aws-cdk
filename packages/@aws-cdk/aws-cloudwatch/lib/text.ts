@@ -1,4 +1,4 @@
-import { ConcreteWidget } from "./widget";
+import { ConcreteWidget } from './widget';
 
 /**
  * Properties for a Text widget

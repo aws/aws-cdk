@@ -8,8 +8,7 @@ import * as path from 'path';
 import { debug } from '../../logging';
 import { cached } from '../../util/functions';
 import { CredentialPlugins } from '../aws-auth/credential-plugins';
-import { Mode } from "../aws-auth/credentials";
-import { AccountAccessKeyCache } from './account-cache';
+import { Mode } from '../aws-auth/credentials';
 import { AwsCliCompatible } from './awscli-compatible';
 import { ISDK, SDK } from './sdk';
 
@@ -70,8 +69,8 @@ export interface SdkHttpOptions {
   readonly userAgent?: string;
 }
 
-const CACHED_ACCOUNT = Symbol();
-const CACHED_DEFAULT_CREDENTIALS = Symbol();
+const CACHED_ACCOUNT = Symbol('cached_account');
+const CACHED_DEFAULT_CREDENTIALS = Symbol('cached_default_credentials');
 
 /**
  * Creates instances of the AWS SDK appropriate for a given account/region
@@ -95,7 +94,6 @@ export class SdkProvider {
     return new SdkProvider(chain, region, options.httpOptions);
   }
 
-  private readonly accountCache = new AccountAccessKeyCache();
   private readonly plugins = new CredentialPlugins();
   private readonly httpOptions: ConfigurationOptions;
 
@@ -106,8 +104,8 @@ export class SdkProvider {
      */
     public readonly defaultRegion: string,
     httpOptions: SdkHttpOptions = {}) {
-      this.httpOptions = defaultHttpOptions(httpOptions);
-    }
+    this.httpOptions = defaultHttpOptions(httpOptions);
+  }
 
   /**
    * Return an SDK which can do operations in the given environment
@@ -160,11 +158,11 @@ export class SdkProvider {
     accountId = accountId !== cxapi.UNKNOWN_ACCOUNT ? accountId : (await this.defaultAccount())?.accountId;
 
     if (!region) {
-      throw new Error(`AWS region must be configured either when you configure your CDK stack or through the environment`);
+      throw new Error('AWS region must be configured either when you configure your CDK stack or through the environment');
     }
 
     if (!accountId) {
-      throw new Error(`Unable to resolve AWS account to use. It must be either configured when you define your CDK or through the environment`);
+      throw new Error('Unable to resolve AWS account to use. It must be either configured when you define your CDK or through the environment');
     }
 
     const environment: cxapi.Environment = {
@@ -174,8 +172,20 @@ export class SdkProvider {
     return environment;
   }
 
+  public async resolveEnvironmentObject(env: cxapi.Environment) {
+    return this.resolveEnvironment(env.account, env.region);
+  }
+
   /**
-   * Use the default credentials to lookup our account number using STS.
+   * The account we'd auth into if we used default credentials.
+   *
+   * Default credentials are the set of ambiently configured credentials using
+   * one of the environment variables, or ~/.aws/credentials, or the *one*
+   * profile that was passed into the CLI.
+   *
+   * Might return undefined if there are no default/ambient credentials
+   * available (in which case the user should better hope they have
+   * credential plugins configured).
    *
    * Uses a cache to avoid STS calls if we don't need 'em.
    */
@@ -189,23 +199,9 @@ export class SdkProvider {
           throw new Error('Unable to resolve AWS credentials (setup with "aws configure")');
         }
 
-        const account = await this.accountCache.fetch(creds.accessKeyId, async () => {
-          // if we don't have one, resolve from STS and store in cache.
-          debug('Looking up default account ID from STS');
-          const result = await new AWS.STS({ ...this.httpOptions, credentials: creds, region: this.defaultRegion }).getCallerIdentity().promise();
-          const accountId = result.Account;
-          const partition = result.Arn!.split(':')[1];
-          if (!accountId) {
-            debug('STS didn\'t return an account ID');
-            return undefined;
-          }
-          debug('Default account ID:', accountId);
-          return { accountId, partition };
-        });
-
-        return account;
+        return new SDK(creds, this.defaultRegion, this.httpOptions).currentAccount();
       } catch (e) {
-        debug('Unable to determine the default AWS account (did you configure "aws configure"?):', e);
+        debug('Unable to determine the default AWS account:', e);
         return undefined;
       }
     });
@@ -232,7 +228,7 @@ export class SdkProvider {
 
     // No luck, format a useful error message
     const error = [`Need to perform AWS calls for account ${accountId}`];
-    error.push(defaultAccountId ? `but the current credentials are for ${defaultAccountId}` : `but no credentials have been configured`);
+    error.push(defaultAccountId ? `but the current credentials are for ${defaultAccountId}` : 'but no credentials have been configured');
     if (this.plugins.availablePluginNames.length > 0) {
       error.push(`and none of these plugins found any: ${this.plugins.availablePluginNames.join(', ')}`);
     }

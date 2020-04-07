@@ -65,7 +65,7 @@ async function isComplete(event: AWSCDKAsyncCustomResource.IsCompleteRequest) {
   // if we are not complete, reeturn false, and don't send a response back.
   if (!isCompleteResult.IsComplete) {
     if (isCompleteResult.Data && Object.keys(isCompleteResult.Data).length > 0) {
-      throw new Error(`"Data" is not allowed if "IsComplete" is "False"`);
+      throw new Error('"Data" is not allowed if "IsComplete" is "False"');
     }
 
     throw new cfnResponse.Retry(JSON.stringify(event));
@@ -110,7 +110,7 @@ async function invokeUserFunction(functionArnEnv: string, payload: any) {
   if (resp.FunctionError) {
     log('user function threw an error:', resp.FunctionError);
     const errorMessage = jsonPayload.errorMessage || 'error';
-    const trace = jsonPayload.trace ? `\nRemote function error: ` + jsonPayload.trace.join('\n') : '';
+    const trace = jsonPayload.trace ? '\nRemote function error: ' + jsonPayload.trace.join('\n') : '';
 
     const e = new Error(errorMessage);
     e.stack += trace;
