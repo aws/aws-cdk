@@ -237,11 +237,11 @@ export abstract class RepositoryBase extends Resource implements IRepository {
    * Grant the given identity permissions to use the images in this repository
    */
   public grantPull(grantee: iam.IGrantable) {
-    const ret = this.grant(grantee, "ecr:BatchCheckLayerAvailability", "ecr:GetDownloadUrlForLayer", "ecr:BatchGetImage");
+    const ret = this.grant(grantee, 'ecr:BatchCheckLayerAvailability', 'ecr:GetDownloadUrlForLayer', 'ecr:BatchGetImage');
 
     iam.Grant.addToPrincipal({
       grantee,
-      actions: ["ecr:GetAuthorizationToken"],
+      actions: ['ecr:GetAuthorizationToken'],
       resourceArns: ['*'],
       scope: this,
     });
@@ -255,10 +255,10 @@ export abstract class RepositoryBase extends Resource implements IRepository {
   public grantPullPush(grantee: iam.IGrantable) {
     this.grantPull(grantee);
     return this.grant(grantee,
-      "ecr:PutImage",
-      "ecr:InitiateLayerUpload",
-      "ecr:UploadLayerPart",
-      "ecr:CompleteLayerUpload");
+      'ecr:PutImage',
+      'ecr:InitiateLayerUpload',
+      'ecr:UploadLayerPart',
+      'ecr:CompleteLayerUpload');
   }
 }
 

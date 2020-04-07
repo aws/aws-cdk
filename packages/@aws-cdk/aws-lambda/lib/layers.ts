@@ -174,10 +174,10 @@ export class LayerVersion extends LayerVersionBase {
     // Allow usage of the code in this context...
     const code = props.code.bind(this);
     if (code.inlineCode) {
-      throw new Error(`Inline code is not supported for AWS Lambda layers`);
+      throw new Error('Inline code is not supported for AWS Lambda layers');
     }
     if (!code.s3Location) {
-      throw new Error(`Code must define an S3 location`);
+      throw new Error('Code must define an S3 location');
     }
 
     const resource: CfnLayerVersion = new CfnLayerVersion(this, 'Resource', {

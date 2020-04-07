@@ -28,7 +28,7 @@ export class EnvironmentUtils {
     if (!env) {
       throw new Error(
         `Unable to parse environment specification "${environment}". ` +
-        `Expected format: aws://account/region`);
+        'Expected format: aws://account/region');
     }
 
     const [ , account, region ] = env;

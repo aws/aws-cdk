@@ -23,14 +23,14 @@ test('Send message to queue', () => {
   expect(stack.resolve(task.toStateJson())).toEqual({
     Type: 'Task',
     Resource: {
-      "Fn::Join": [
-        "",
+      'Fn::Join': [
+        '',
         [
-          "arn:",
+          'arn:',
           {
-            Ref: "AWS::Partition",
+            Ref: 'AWS::Partition',
           },
-          ":states:::sqs:sendMessage",
+          ':states:::sqs:sendMessage',
         ],
       ],
     },
@@ -57,14 +57,14 @@ test('Send message to SQS queue with task token', () => {
   expect(stack.resolve(task.toStateJson())).toEqual({
     Type: 'Task',
     Resource: {
-      "Fn::Join": [
-        "",
+      'Fn::Join': [
+        '',
         [
-          "arn:",
+          'arn:',
           {
-            Ref: "AWS::Partition",
+            Ref: 'AWS::Partition',
           },
-          ":states:::sqs:sendMessage.waitForTaskToken",
+          ':states:::sqs:sendMessage.waitForTaskToken',
         ],
       ],
     },
@@ -102,14 +102,14 @@ test('Message body can come from state', () => {
   expect(stack.resolve(task.toStateJson())).toEqual({
     Type: 'Task',
     Resource: {
-      "Fn::Join": [
-        "",
+      'Fn::Join': [
+        '',
         [
-          "arn:",
+          'arn:',
           {
-            Ref: "AWS::Partition",
+            Ref: 'AWS::Partition',
           },
-          ":states:::sqs:sendMessage",
+          ':states:::sqs:sendMessage',
         ],
       ],
     },
@@ -136,14 +136,14 @@ test('Message body can be an object', () => {
   expect(stack.resolve(task.toStateJson())).toEqual({
     Type: 'Task',
     Resource: {
-      "Fn::Join": [
-        "",
+      'Fn::Join': [
+        '',
         [
-          "arn:",
+          'arn:',
           {
-            Ref: "AWS::Partition",
+            Ref: 'AWS::Partition',
           },
-          ":states:::sqs:sendMessage",
+          ':states:::sqs:sendMessage',
         ],
       ],
     },
@@ -172,14 +172,14 @@ test('Message body object can contain references', () => {
   expect(stack.resolve(task.toStateJson())).toEqual({
     Type: 'Task',
     Resource: {
-      "Fn::Join": [
-        "",
+      'Fn::Join': [
+        '',
         [
-          "arn:",
+          'arn:',
           {
-            Ref: "AWS::Partition",
+            Ref: 'AWS::Partition',
           },
-          ":states:::sqs:sendMessage",
+          ':states:::sqs:sendMessage',
         ],
       ],
     },

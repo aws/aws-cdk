@@ -7,8 +7,11 @@ let app: amplify.App;
 beforeEach(() => {
   stack = new Stack();
   app = new amplify.App(stack, 'App', {
-    repository: 'https://github.com/aws/aws-cdk',
-    oauthToken: SecretValue.plainText('secret'),
+    sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
+      owner: 'aws',
+      repository: 'aws-cdk',
+      oauthToken: SecretValue.plainText('secret')
+    }),
   });
 });
 

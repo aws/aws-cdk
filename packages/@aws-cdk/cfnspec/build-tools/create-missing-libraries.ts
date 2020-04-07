@@ -76,7 +76,7 @@ async function main() {
 
     // python names
     const pythonDistName = `aws-cdk.${moduleName}`;
-    const pythonModuleName = pythonDistName.replace(/-/g, "_");
+    const pythonModuleName = pythonDistName.replace(/-/g, '_');
 
     async function write(relativePath: string, contents: string[] | string | object) {
       const fullPath = path.join(packagePath, relativePath);
@@ -112,8 +112,8 @@ async function main() {
             namespace: dotnetPackage,
             packageId: dotnetPackage,
             signAssembly: true,
-            assemblyOriginatorKeyFile: "../../key.snk",
-            iconUrl: "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+            assemblyOriginatorKeyFile: '../../key.snk',
+            iconUrl: 'https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png'
           },
           java: {
             package: `${javaGroupId}.${javaPackage}`,
@@ -129,58 +129,61 @@ async function main() {
         }
       },
       repository: {
-        type: "git",
-        url: "https://github.com/aws/aws-cdk.git",
+        type: 'git',
+        url: 'https://github.com/aws/aws-cdk.git',
         directory: `packages/${packageName}`,
       },
-      homepage: "https://github.com/aws/aws-cdk",
+      homepage: 'https://github.com/aws/aws-cdk',
       scripts: {
-        build: "cdk-build",
-        watch: "cdk-watch",
-        lint: "cdk-lint",
-        test: "cdk-test",
-        integ: "cdk-integ",
-        pkglint: "pkglint -f",
-        package: "cdk-package",
-        awslint: "cdk-awslint",
-        cfn2ts: "cfn2ts",
-        'build+test+package': "npm run build+test && npm run package",
-        'build+test': "npm run build && npm test",
-        compat: "cdk-compat"
+        build: 'cdk-build',
+        watch: 'cdk-watch',
+        lint: 'cdk-lint',
+        test: 'cdk-test',
+        integ: 'cdk-integ',
+        pkglint: 'pkglint -f',
+        package: 'cdk-package',
+        awslint: 'cdk-awslint',
+        cfn2ts: 'cfn2ts',
+        'build+test+package': 'npm run build+test && npm run package',
+        'build+test': 'npm run build && npm test',
+        compat: 'cdk-compat'
       },
       'cdk-build': {
         cloudformation: namespace
       },
       keywords: [
-        "aws",
-        "cdk",
-        "constructs",
+        'aws',
+        'cdk',
+        'constructs',
         namespace,
         moduleName
       ],
       author: {
-        name: "Amazon Web Services",
-        url: "https://aws.amazon.com",
+        name: 'Amazon Web Services',
+        url: 'https://aws.amazon.com',
         organization: true
       },
       jest: {},
-      license: "Apache-2.0",
+      license: 'Apache-2.0',
       devDependencies: {
-        "@aws-cdk/assert": version,
-        "cdk-build-tools": version,
-        "cfn2ts": version,
-        "pkglint": version,
+        '@aws-cdk/assert': version,
+        'cdk-build-tools': version,
+        'cfn2ts': version,
+        'pkglint': version,
       },
       dependencies: {
-        "@aws-cdk/core": version,
+        '@aws-cdk/core': version,
       },
       peerDependencies: {
-        "@aws-cdk/core": version,
+        '@aws-cdk/core': version,
       },
       engines: {
         node: '>= 10.3.0'
       },
-      stability: "experimental"
+      stability: 'experimental',
+      awscdkio: {
+        announce: false
+      }
     });
 
     await write('.gitignore', [
@@ -234,10 +237,10 @@ async function main() {
     await write(`test/${lowcaseModuleName}.test.ts`, [
       "import '@aws-cdk/assert/jest';",
       "import {} from '../lib';",
-      "",
+      '',
       "test('No tests are specified for this package', () => {",
-      "  expect(true).toBe(true);",
-      "});",
+      '  expect(true).toBe(true);',
+      '});',
     ]);
 
     await write('README.md', [

@@ -1,11 +1,8 @@
 import { AssetMetadataEntry } from '@aws-cdk/cx-api';
-import { AssetManifest } from 'cdk-assets';
 import { ToolkitInfo } from '../lib';
 import { addMetadataAssetsToManifest } from '../lib/assets';
 import { AssetManifestBuilder } from '../lib/util/asset-manifest-builder';
-import { publishAssets } from '../lib/util/asset-publishing';
 import { testStack } from './util';
-import { MockSDK } from './util/mock-sdk';
 
 let toolkit: ToolkitInfo;
 let assets: AssetManifestBuilder;
@@ -37,20 +34,20 @@ describe('file assets', () => {
     const params = await addMetadataAssetsToManifest(stack, assets, toolkit);
 
     // THEN
-    expect(params).toEqual([
-      { ParameterKey: 'BucketParameter', ParameterValue: 'bucket' },
-      { ParameterKey: 'KeyParameter', ParameterValue: 'assets/SomeStackSomeResource4567/||source-hash.js' },
-      { ParameterKey: 'ArtifactHashParameter', ParameterValue: 'source-hash' },
-    ]);
+    expect(params).toEqual({
+      BucketParameter: 'bucket',
+      KeyParameter: 'assets/SomeStackSomeResource4567/||source-hash.js',
+      ArtifactHashParameter: 'source-hash',
+    });
 
     expect(assets.toManifest('.').entries).toEqual([
       expect.objectContaining({
         destination: {
-          bucketName: "bucket",
-          objectKey: "assets/SomeStackSomeResource4567/source-hash.js",
+          bucketName: 'bucket',
+          objectKey: 'assets/SomeStackSomeResource4567/source-hash.js',
         },
         source: {
-          packaging: "file",
+          packaging: 'file',
           path: __filename,
         },
       })
@@ -79,7 +76,7 @@ describe('file assets', () => {
       expect.objectContaining({
         destination: {
           bucketName: 'bucket',
-          objectKey: "assets/source-hash.js",
+          objectKey: 'assets/source-hash.js',
         },
       })
     ]);
@@ -103,11 +100,8 @@ describe('file assets', () => {
     const params = await addMetadataAssetsToManifest(stack, assets, toolkit, ['SomeStackSomeResource4567']);
 
     // THEN
-    expect(params).toEqual([
-      { ParameterKey: 'BucketParameter', UsePreviousValue: true },
-      { ParameterKey: 'KeyParameter', UsePreviousValue: true },
-      { ParameterKey: 'ArtifactHashParameter', UsePreviousValue: true },
-    ]);
+    expect(params).toEqual({
+    });
 
     expect(assets.toManifest('.').entries).toEqual([]);
   });
@@ -132,18 +126,18 @@ describe('docker assets', () => {
 
     // THEN
     expect(toolkit.prepareEcrRepository).toHaveBeenCalledWith('cdk/stack-construct-abc123');
-    expect(params).toEqual([
-      { ParameterKey: 'MyParameter', ParameterValue: 'docker.uri:0123456789abcdef' },
-    ]);
+    expect(params).toEqual({
+      MyParameter: 'docker.uri:0123456789abcdef',
+    });
     expect(assets.toManifest('.').entries).toEqual([
       expect.objectContaining({
-        type: "docker-image",
+        type: 'docker-image',
         destination: {
-          imageTag: "0123456789abcdef",
-          repositoryName: "cdk/stack-construct-abc123",
+          imageTag: '0123456789abcdef',
+          repositoryName: 'cdk/stack-construct-abc123',
         },
         source: {
-          directory: "/foo",
+          directory: '/foo',
         },
       })
     ]);
@@ -182,16 +176,16 @@ describe('docker assets', () => {
 
     // THEN
     expect(toolkit.prepareEcrRepository).toHaveBeenCalledWith('reponame');
-    expect(params).toEqual([]); // No parameters!
+    expect(params).toEqual({}); // No parameters!
     expect(assets.toManifest('.').entries).toEqual([
       expect.objectContaining({
-        type: "docker-image",
+        type: 'docker-image',
         destination: {
-          imageTag: "12345",
-          repositoryName: "reponame",
+          imageTag: '12345',
+          repositoryName: 'reponame',
         },
         source: {
-          directory: "/foo",
+          directory: '/foo',
         },
       })
     ]);
@@ -213,35 +207,11 @@ describe('docker assets', () => {
     const params = await addMetadataAssetsToManifest(stack, assets, toolkit, ['SomeStackSomeResource4567']);
 
     // THEN
-    expect(params).toEqual([
-      { ParameterKey: 'asdf', UsePreviousValue: true },
-    ]);
+    expect(params).toEqual({
+    });
 
     expect(assets.toManifest('.').entries).toEqual([]);
   });
-});
-
-test('publishing does not fail if there is no "default" account', () => {
-  // GIVEN
-  const manifest = new AssetManifest('.', {
-    version: '0',
-    files: {
-      assetId: {
-        source: { path: __filename },
-        destinations: {
-          theDestination: {
-            bucketName: '${AWS::AccountId}-bucket',
-            objectKey: 'key',
-          },
-        }
-      },
-    },
-  });
-  const provider = new MockSDK();
-  provider.defaultAccount = jest.fn(() => Promise.resolve(undefined));
-
-  // WHEN
-  publishAssets(manifest, provider, { account: '12345678', region: 'aa-south-1', name: 'main' });
 });
 
 function stackWithAssets(assetEntries: AssetMetadataEntry[]) {

@@ -31,10 +31,11 @@ function validatePropertyTypes(test: Test, specification: schema.Specification) 
   }
 }
 
-function validateProperties(typeName: string,
-                            test: Test,
-                            properties: { [name: string]: schema.Property },
-                            specification: schema.Specification) {
+function validateProperties(
+  typeName: string,
+  test: Test,
+  properties: { [name: string]: schema.Property },
+  specification: schema.Specification) {
   const expectedKeys = ['Documentation', 'Required', 'UpdateType', 'ScrutinyType'];
   for (const name of Object.keys(properties)) {
 
@@ -109,15 +110,16 @@ function validateProperties(typeName: string,
     }
 
     test.deepEqual(
-        without(Object.keys(property), expectedKeys), [],
-        `${typeName}.Properties.${name} has no extra properties`);
+      without(Object.keys(property), expectedKeys), [],
+      `${typeName}.Properties.${name} has no extra properties`);
   }
 }
 
-function validateAttributes(typeName: string,
-                            test: Test,
-                            attributes: { [name: string]: schema.Attribute },
-                            specification: schema.Specification) {
+function validateAttributes(
+  typeName: string,
+  test: Test,
+  attributes: { [name: string]: schema.Attribute },
+  specification: schema.Specification) {
   for (const name of Object.keys(attributes)) {
     const attribute = attributes[name];
     test.ok(('Type' in attribute) !== ('PrimitiveType' in attribute), 'One of, and only one of, Type or PrimitiveType must be present');
