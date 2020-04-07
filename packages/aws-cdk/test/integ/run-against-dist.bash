@@ -55,7 +55,7 @@ function serve_npm_packages() {
     # manually add cdk-assets since its not prefixed with @aws-cdk and 
     # hence isn't picked up from package.json
     echo "Adding cdk-assets to CLI dependencies"
-    tarballs="${tarballs} cdk-assets-${version}.tgz"
+    tarballs="${tarballs} $dist_root/js/cdk-assets-${version}.tgz"
     package_names="${package_names} cdk-assets"
 
   else
