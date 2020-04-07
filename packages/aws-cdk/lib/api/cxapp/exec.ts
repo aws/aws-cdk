@@ -2,7 +2,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as childProcess from 'child_process';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { debug } from '../../logging';
+import { debug, warning } from '../../logging';
 import { Configuration, PROJECT_CONFIG, USER_DEFAULTS } from '../../settings';
 import { versionNumber } from '../../version';
 import { SdkProvider } from '../aws-auth';
@@ -179,7 +179,15 @@ const EXTENSION_MAP = new Map<string, CommandGenerator>([
  */
 async function guessExecutable(commandLine: string[]) {
   if (commandLine.length === 1) {
-    const fstat = await fs.stat(commandLine[0]);
+    let fstat;
+
+    try {
+      fstat = await fs.stat(commandLine[0]);
+    } catch (error) {
+      debug(`Unable to determine executable from command-line argument. Using '${commandLine}'`);
+      return commandLine;
+    }
+
     // tslint:disable-next-line:no-bitwise
     const isExecutable = (fstat.mode & fs.constants.X_OK) !== 0;
     const isWindows = process.platform === 'win32';
