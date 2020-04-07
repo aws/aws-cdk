@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@jsii/spec": "^1.2.0",
-    "camelcase": "^5.3.1",
+    "camelcase": "^6.0.0",
     "colors": "^1.4.0",
     "fs-extra": "^8.1.0",
     "jsii-reflect": "^1.2.0",
