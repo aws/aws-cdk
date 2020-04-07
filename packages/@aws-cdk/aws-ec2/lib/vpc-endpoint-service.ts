@@ -33,7 +33,7 @@ export interface IVpcEndpointService extends IResource {
 export class VpcEndpointService extends Resource implements IVpcEndpointService {
 
   /**
-   * One or more network load balancer ARNs to host the service.
+   * One or more network load balancers to host the service.
    * @attribute
    */
   public readonly vpcEndpointServiceLoadBalancers: IVpcEndpointServiceLoadBalancer[];
@@ -49,6 +49,12 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
    * @experimental
    */
   public readonly whitelistedPrincipals: ArnPrincipal[];
+
+  /**
+   * The id of the VPC Endpoint Service, like vpce-svc-xxxxxxxx.
+   * @attribute
+   */
+  public readonly vpcEndpointServiceId: string;
 
   private readonly endpointService: CfnVPCEndpointService;
 
@@ -67,6 +73,8 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
       networkLoadBalancerArns: this.vpcEndpointServiceLoadBalancers.map(lb => lb.loadBalancerArn),
       acceptanceRequired: this.acceptanceRequired
     });
+
+    this.vpcEndpointServiceId = this.endpointService.ref;
 
     if (this.whitelistedPrincipals.length > 0) {
       new CfnVPCEndpointServicePermissions(this, 'Permissions', {
