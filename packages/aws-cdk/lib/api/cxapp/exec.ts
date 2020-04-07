@@ -15,36 +15,28 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
   await populateDefaultEnvironmentIfNeeded(aws, env);
 
   let pathMetadata: boolean = config.settings.get(['pathMetadata']);
-  if (pathMetadata === undefined) {
-    pathMetadata = true; // defaults to true
-  }
+  pathMetadata = pathMetadata ?? true;
 
   if (pathMetadata) {
     context[cxapi.PATH_METADATA_ENABLE_CONTEXT] = true;
   }
 
   let assetMetadata: boolean = config.settings.get(['assetMetadata']);
-  if (assetMetadata === undefined) {
-    assetMetadata = true; // defaults to true
-  }
+  assetMetadata = assetMetadata ?? true;
 
   if (assetMetadata) {
     context[cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT] = true;
   }
 
   let versionReporting: boolean = config.settings.get(['versionReporting']);
-  if (versionReporting === undefined) {
-    versionReporting = true; // defaults to true
-  }
+  versionReporting = versionReporting ?? true;
 
   if (!versionReporting) {
     context[cxapi.DISABLE_VERSION_REPORTING] = true;
   }
 
   let stagingEnabled = config.settings.get(['staging']);
-  if (stagingEnabled === undefined) {
-    stagingEnabled = true;
-  }
+  stagingEnabled = stagingEnabled ?? true;
   if (!stagingEnabled) {
     context[cxapi.DISABLE_ASSET_STAGING_CONTEXT] = true;
   }
@@ -93,7 +85,7 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
       //   (which would be different between Linux and Windows).
       //
       // - Inherit stderr from controlling terminal. We don't use the captured value
-      //   anway, and if the subprocess is printing to it for debugging purposes the
+      //   anyway, and if the subprocess is printing to it for debugging purposes the
       //   user gets to see it sooner. Plus, capturing doesn't interact nicely with some
       //   processes like Maven.
       const proc = childProcess.spawn(commandLine[0], commandLine.slice(1), {
@@ -121,10 +113,10 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
 
 /**
  * If we don't have region/account defined in context, we fall back to the default SDK behavior
- * where region is retreived from ~/.aws/config and account is based on default credentials provider
+ * where region is retrieved from ~/.aws/config and account is based on default credentials provider
  * chain and then STS is queried.
  *
- * This is done opportunistically: for example, if we can't acccess STS for some reason or the region
+ * This is done opportunistically: for example, if we can't access STS for some reason or the region
  * is not configured, the context value will be 'null' and there could failures down the line. In
  * some cases, synthesis does not require region/account information at all, so that might be perfectly
  * fine in certain scenarios.
@@ -184,7 +176,7 @@ async function guessExecutable(commandLine: string[]) {
     try {
       fstat = await fs.stat(commandLine[0]);
     } catch (error) {
-      debug(`Unable to determine executable from command-line argument. Using '${commandLine}'`);
+      debug(`Not a file: '${commandLine[0]}'. Using '${commandLine}' as command-line`);
       return commandLine;
     }
 
