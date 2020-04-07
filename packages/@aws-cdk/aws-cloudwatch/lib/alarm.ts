@@ -163,9 +163,10 @@ export class Alarm extends Resource implements IAlarm {
     this.alarmName = this.getResourceNameAttribute(alarm.ref);
 
     this.metric = props.metric;
+    const datapoints = props.datapointsToAlarm || props.evaluationPeriods;
     this.annotation = {
       // tslint:disable-next-line:max-line-length
-      label: `${this.metric} ${OPERATOR_SYMBOLS[comparisonOperator]} ${props.threshold} for ${props.evaluationPeriods} datapoints within ${describePeriod(props.evaluationPeriods * metricPeriod(props.metric).toSeconds())}`,
+      label: `${this.metric} ${OPERATOR_SYMBOLS[comparisonOperator]} ${props.threshold} for ${datapoints} datapoints within ${describePeriod(props.evaluationPeriods * metricPeriod(props.metric).toSeconds())}`,
       value: props.threshold,
     };
   }
