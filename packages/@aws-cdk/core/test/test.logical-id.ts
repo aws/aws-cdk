@@ -47,7 +47,7 @@ export = {
     const r = new CfnResource(stack, 'x'.repeat(256), { type: 'Resource' });
 
     // THEN
-    test.equals(stack.resolve(r.logicalId), 'x'.repeat(240) + `C7A139A2`);
+    test.equals(stack.resolve(r.logicalId), 'x'.repeat(240) + 'C7A139A2');
     test.done();
   },
 
@@ -231,7 +231,7 @@ export = {
       protected allocateLogicalId(element: CfnElement): string {
         if (element.node.id === 'A') { return 'LogicalIdOfA'; }
         if (element.node.id === 'B') { return 'LogicalIdOfB'; }
-        throw new Error(`Invalid element ID`);
+        throw new Error('Invalid element ID');
       }
     }
 

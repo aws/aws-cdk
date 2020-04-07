@@ -6,7 +6,9 @@ source ${scriptdir}/common.bash
 
 setup
 
-stack_arns=$(cdk deploy ${STACK_NAME_PREFIX}-param-test-\* --parameters "${STACK_NAME_PREFIX}-param-test-1:TopicNameParam=bazinga" --parameters "${STACK_NAME_PREFIX}-param-test-2:OtherTopicNameParam=ThatsMySpot")
+# STACK_NAME_PREFIX is used in OtherTopicNameParam to allow multiple instances
+# of this test to run in parallel, othewise they will attempt to create the same SNS topic.
+stack_arns=$(cdk deploy ${STACK_NAME_PREFIX}-param-test-\* --parameters "${STACK_NAME_PREFIX}-param-test-1:TopicNameParam=${STACK_NAME_PREFIX}bazinga" --parameters "${STACK_NAME_PREFIX}-param-test-2:OtherTopicNameParam=${STACK_NAME_PREFIX}ThatsMySpot")
 echo "Stack deployed successfully"
 
 # verify that we only deployed a single stack (there's a single ARN in the output)

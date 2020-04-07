@@ -170,7 +170,7 @@ export class GatewayVpcEndpoint extends VpcEndpoint implements IGatewayVpcEndpoi
     const routeTableIds = allRouteTableIds(...subnets.map(s => props.vpc.selectSubnets(s)));
 
     if (routeTableIds.length === 0) {
-      throw new Error(`Can't add a gateway endpoint to VPC; route table IDs are not available`);
+      throw new Error('Can\'t add a gateway endpoint to VPC; route table IDs are not available');
     }
 
     const endpoint = new CfnVPCEndpoint(this, 'Resource', {
@@ -254,6 +254,8 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly ECS = new InterfaceVpcEndpointAwsService('ecs');
   public static readonly ECS_AGENT = new InterfaceVpcEndpointAwsService('ecs-agent');
   public static readonly ECS_TELEMETRY = new InterfaceVpcEndpointAwsService('ecs-telemetry');
+  public static readonly ELASTIC_FILESYSTEM = new InterfaceVpcEndpointAwsService('elasticfilesystem');
+  public static readonly ELASTIC_FILESYSTEM_FIPS = new InterfaceVpcEndpointAwsService('elasticfilesystem-fips');
   public static readonly ELASTIC_INFERENCE_RUNTIME = new InterfaceVpcEndpointAwsService('elastic-inference.runtime');
   public static readonly ELASTIC_LOAD_BALANCING = new InterfaceVpcEndpointAwsService('elasticloadbalancing');
   public static readonly CLOUDWATCH_EVENTS = new InterfaceVpcEndpointAwsService('events');

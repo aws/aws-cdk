@@ -20,10 +20,10 @@ export = {
     expect(stack).toMatch({
       Outputs: {
         ARN: {
-          Value: "arn:aws:lambda:region:account-id:function:function-name:version"
+          Value: 'arn:aws:lambda:region:account-id:function:function-name:version'
         },
         Name: {
-          Value: "function-name:version"
+          Value: 'function-name:version'
         }
       }
     });
@@ -111,6 +111,35 @@ export = {
       MaximumRetryAttempts: 0
     }));
 
+    test.done();
+  },
+
+  'addAlias can be used to add an alias that points to a version'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'Fn', {
+      runtime: lambda.Runtime.NODEJS_10_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('foo'),
+    });
+    const version = fn.currentVersion;
+
+    // WHEN
+    version.addAlias('foo');
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::Alias', {
+      'FunctionName': {
+        'Ref': 'Fn9270CBC0'
+      },
+      'FunctionVersion': {
+        'Fn::GetAtt': [
+          'FnCurrentVersion17A89ABB19ed45993ff69fd011ae9fd4ab6e2005',
+          'Version'
+        ]
+      },
+      'Name': 'foo'
+    }));
     test.done();
   }
 };

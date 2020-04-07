@@ -37,7 +37,7 @@ const secret = secretsmanager.Secret.fromSecretAttributes(scope, 'ImportedSecret
 ```
 
 SecretsManager secret values can only be used in select set of properties. For the
-list of properties, see [the CloudFormation Dynamic References documentation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/dynamic-references.htm).
+list of properties, see [the CloudFormation Dynamic References documentation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/dynamic-references.html).
 
 ### Rotating a Secret with a custom Lambda function
 A rotation schedule can be added to a Secret using a custom Lambda function:

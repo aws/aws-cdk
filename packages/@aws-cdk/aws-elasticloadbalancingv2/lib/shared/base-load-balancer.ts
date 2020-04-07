@@ -168,7 +168,7 @@ export abstract class BaseLoadBalancer extends Resource {
 
     const region = Stack.of(this).region;
     if (Token.isUnresolved(region)) {
-      throw new Error(`Region is required to enable ELBv2 access logging`);
+      throw new Error('Region is required to enable ELBv2 access logging');
     }
 
     const account = ELBV2_ACCOUNTS[region];
@@ -177,7 +177,7 @@ export abstract class BaseLoadBalancer extends Resource {
     }
 
     prefix = prefix || '';
-    bucket.grantPut(new iam.AccountPrincipal(account), `${(prefix ? prefix + "/" : "")}AWSLogs/${Stack.of(this).account}/*`);
+    bucket.grantPut(new iam.AccountPrincipal(account), `${(prefix ? prefix + '/' : '')}AWSLogs/${Stack.of(this).account}/*`);
 
     // make sure the bucket's policy is created before the ALB (see https://github.com/aws/aws-cdk/issues/1633)
     this.node.addDependency(bucket);
