@@ -51,12 +51,17 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
   public readonly whitelistedPrincipals: ArnPrincipal[];
 
   /**
-   * The id of the VPC Endpoint Service, like vpce-svc-xxxxxxxx.
+   * The id of the VPC Endpoint Service, like vpce-svc-xxxxxxxxxxxxxxxx.
    * @attribute
    */
   public readonly vpcEndpointServiceId: string;
 
-  public readonly vpcEndpointServiceName: string;
+  /**
+   * The service name of the VPC Endpoint Service that clients use to connect to,
+   * like com.amazonaws.vpce.<region>.vpce-svc-xxxxxxxxxxxxxxxx
+   * @attribute
+   */
+  public readonly serviceName: string;
 
   private readonly endpointService: CfnVPCEndpointService;
 
@@ -77,8 +82,7 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
     });
 
     this.vpcEndpointServiceId = this.endpointService.ref;
-    this.vpcEndpointServiceName = Fn.join('.', ['com.amazonaws.vpce', Aws.REGION, this.vpcEndpointServiceId]);
-    //this.vpcEndpointServiceName = "";
+    this.serviceName = Fn.join('.', ['com.amazonaws.vpce', Aws.REGION, this.vpcEndpointServiceId]);
     if (this.whitelistedPrincipals.length > 0) {
       new CfnVPCEndpointServicePermissions(this, 'Permissions', {
         serviceId: this.endpointService.ref,

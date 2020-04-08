@@ -24,7 +24,7 @@ class VpcEndpointServiceStack extends cdk.Stack {
     const nlbNoPrincipals = new DummyEndpointLoadBalacer(
       'arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a');
 
-    new ec2.VpcEndpointService(this, 'MyVpcEndpointServiceWithNoPrincipals', {
+    const service1 = new ec2.VpcEndpointService(this, 'MyVpcEndpointServiceWithNoPrincipals', {
       vpcEndpointServiceLoadBalancers: [nlbNoPrincipals],
       acceptanceRequired: false,
       whitelistedPrincipals: []
@@ -34,10 +34,22 @@ class VpcEndpointServiceStack extends cdk.Stack {
       'arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/1jd81k39sa421ffs');
     const principalArn = new ArnPrincipal('arn:aws:iam::123456789012:root');
 
-    new ec2.VpcEndpointService(this, 'MyVpcEndpointServiceWithPrincipals', {
+    const service2 = new ec2.VpcEndpointService(this, 'MyVpcEndpointServiceWithPrincipals', {
       vpcEndpointServiceLoadBalancers: [nlbWithPrincipals],
       acceptanceRequired: false,
       whitelistedPrincipals: [principalArn]
+    });
+
+    new cdk.CfnOutput(this, 'MyVpcEndpointServiceWithNoPrincipalsServiceName', {
+      exportName: 'ServiceName',
+      value: service1.serviceName,
+      description: 'Give this to service consumers so they can connect via VPC Endpoint'
+    });
+
+    new cdk.CfnOutput(this, 'MyVpcEndpointServiceWithPrincipalsEndpointServiceId', {
+      exportName: 'EndpointServiceId',
+      value: service2.vpcEndpointServiceId,
+      description: 'Reference this service from other stacks'
     });
   }
 }
