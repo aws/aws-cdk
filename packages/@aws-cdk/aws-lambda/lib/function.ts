@@ -514,13 +514,23 @@ export class Function extends FunctionBase {
 
     resource.node.addDependency(this.role);
 
-    this.functionName = this.getResourceNameAttribute(resource.ref);
-    this.functionArn = this.getResourceArnAttribute(resource.attrArn, {
-      service: 'lambda',
-      resource: 'function',
-      resourceName: this.physicalName,
-      sep: ':',
-    });
+    if (props.functionName) {
+      this.functionName = props.functionName;
+      this.functionArn = Stack.of(this).formatArn({
+        service: 'lambda',
+        resource: 'function',
+        resourceName: props.functionName,
+        sep: ':',
+      });
+    } else {
+      this.functionName = this.getResourceNameAttribute(resource.ref);
+      this.functionArn = this.getResourceArnAttribute(resource.attrArn, {
+        service: 'lambda',
+        resource: 'function',
+        resourceName: this.physicalName,
+        sep: ':',
+      });
+    }
 
     this.runtime = props.runtime;
 

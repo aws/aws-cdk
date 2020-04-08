@@ -231,4 +231,20 @@ export = testCase({
     }
   },
 
+  'functionName is not a token when functionName property is specified'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'MyFunction', {
+      functionName: 'MyFunction',
+      handler: 'foo',
+      runtime: lambda.Runtime.NODEJS_12_X,
+      code: lambda.Code.fromInline('foo'),
+    });
+
+    test.strictEqual(fn.functionName, 'MyFunction');
+    test.ok(fn.functionArn.endsWith(':function:MyFunction'));
+
+    test.done();
+  }
+
 });
