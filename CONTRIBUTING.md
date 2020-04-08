@@ -275,6 +275,18 @@ eslint . --ext=.ts,.js
 All packages in the repo use a standard base configuration found at [eslintrc.js](tools/cdk-build-tools/config/eslintrc.js).
 This can be customized for any package by modifying the `.eslintrc` file found at its root.
 
+If you're using the VS Code and would like to see eslint violations on it, install the [eslint
+extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) and add the following to the
+[settings](https://code.visualstudio.com/docs/getstarted/settings).
+
+```json
+"eslint.workingDirectories": [
+  { "pattern": "./packages/@aws-cdk/*" },
+  { "pattern": "./packages/@monocdk-experiment/*" },
+  { "pattern": "./packages/*" },
+],
+```
+
 ### pkglint
 
 The `pkglint` tool "lints" package.json files across the repo according to [rules.ts](tools/pkglint/lib/rules.ts).
