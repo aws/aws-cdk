@@ -34,7 +34,7 @@ function serve_npm_packages() {
     version=$(node -p "require('${cli_root}/package.json').version")
 
     # good lord
-    echo "Fetching CLI dependencies"
+    echo "Fetching @aws-cdk CLI dependencies from package.json"
     cli_deps=$(node -p "Object.entries(require('${cli_root}/package.json').dependencies).filter(x => x[0].includes('@aws-cdk')).map(x => x[0].replace('@aws-cdk/', '')).join(' ')")
 
     tarballs=$dist_root/js/aws-cdk-${version}.tgz
@@ -51,6 +51,18 @@ function serve_npm_packages() {
       tarballs="${tarballs} ${tarball}"
       package_names="${package_names} ${package}"
     done
+
+    # manually add cdk-assets since its not prefixed with @aws-cdk and 
+    # hence isn't picked up from package.json
+    echo "Adding cdk-assets to CLI dependencies"
+    tarballs="${tarballs} $dist_root/js/cdk-assets-${version}.tgz"
+    package_names="${package_names} cdk-assets"
+
+    # manually add @aws-cdk/cfnspec since its a transitive dependency via @aws-cdk/cloudformation-diff
+    # hence isn't picked up from package.json
+    echo "Adding @aws-cdk/cfnspec to CLI dependencies"
+    tarballs="${tarballs} $dist_root/js/aws-cdk-cfnspec-${version}.tgz"
+    package_names="${package_names} @aws-cdk/cfnspec"
 
   else
 
