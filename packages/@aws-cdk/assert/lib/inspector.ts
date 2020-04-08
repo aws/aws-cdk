@@ -12,7 +12,7 @@ export abstract class Inspector {
 
   public to(assertion: Assertion<this>): any {
     return this.aroundAssert ? this.aroundAssert(() => this._to(assertion))
-                 : this._to(assertion);
+      : this._to(assertion);
   }
 
   public notTo(assertion: Assertion<this>): any {
@@ -38,7 +38,7 @@ export class StackInspector extends Inspector {
 
   public at(path: string | string[]): StackPathInspector {
     if (!(this.stack instanceof api.CloudFormationStackArtifact)) {
-      throw new Error(`Cannot use "expect(stack).at(path)" for a raw template, only CloudFormationStackArtifact`);
+      throw new Error('Cannot use "expect(stack).at(path)" for a raw template, only CloudFormationStackArtifact');
     }
 
     const strPath = typeof path === 'string' ? path : path.join('/');

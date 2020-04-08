@@ -3,7 +3,7 @@ import { StringParameter } from '@aws-cdk/aws-ssm';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { AmazonLinuxImage, BlockDeviceVolume, EbsDeviceVolumeType, Instance, InstanceClass, InstanceSize, InstanceType, Vpc } from "../lib";
+import { AmazonLinuxImage, BlockDeviceVolume, EbsDeviceVolumeType, Instance, InstanceClass, InstanceSize, InstanceType, Vpc } from '../lib';
 
 export = {
   'instance is created correctly'(test: Test) {
@@ -66,45 +66,45 @@ export = {
         Statement: [
           {
             Action: [
-              "ssm:DescribeParameters",
-              "ssm:GetParameters",
-              "ssm:GetParameter",
-              "ssm:GetParameterHistory"
+              'ssm:DescribeParameters',
+              'ssm:GetParameters',
+              'ssm:GetParameter',
+              'ssm:GetParameterHistory'
             ],
-            Effect: "Allow",
+            Effect: 'Allow',
             Resource: {
-              "Fn::Join": [
-                "",
+              'Fn::Join': [
+                '',
                 [
-                  "arn:",
+                  'arn:',
                   {
-                    Ref: "AWS::Partition"
+                    Ref: 'AWS::Partition'
                   },
-                  ":ssm:",
+                  ':ssm:',
                   {
-                    Ref: "AWS::Region"
+                    Ref: 'AWS::Region'
                   },
-                  ":",
+                  ':',
                   {
-                    Ref: "AWS::AccountId"
+                    Ref: 'AWS::AccountId'
                   },
-                  ":parameter/",
+                  ':parameter/',
                   {
-                    Ref: "Param165332EC"
+                    Ref: 'Param165332EC'
                   }
                 ]
               ]
             }
           }
         ],
-        Version: "2012-10-17"
+        Version: '2012-10-17'
       },
     }));
 
     test.done();
   },
 
-  "blockDeviceMappings": {
+  'blockDeviceMappings': {
     'can set blockDeviceMappings'(test: Test) {
       // GIVEN
       const stack = new Stack();
@@ -139,31 +139,31 @@ export = {
       });
 
       // THEN
-      expect(stack).to(haveResource("AWS::EC2::Instance", {
+      expect(stack).to(haveResource('AWS::EC2::Instance', {
         BlockDeviceMappings: [
           {
-            DeviceName: "ebs",
+            DeviceName: 'ebs',
             Ebs: {
               DeleteOnTermination: true,
               Encrypted: true,
               Iops: 5000,
               VolumeSize: 15,
-              VolumeType: "io1"
+              VolumeType: 'io1'
             }
           },
           {
-            DeviceName: "ebs-snapshot",
+            DeviceName: 'ebs-snapshot',
             Ebs: {
               DeleteOnTermination: false,
-              SnapshotId: "snapshot-id",
+              SnapshotId: 'snapshot-id',
               VolumeSize: 500,
-              VolumeType: "sc1"
+              VolumeType: 'sc1'
             },
             NoDevice: {}
           },
           {
-            DeviceName: "ephemeral",
-            VirtualName: "ephemeral0"
+            DeviceName: 'ephemeral',
+            VirtualName: 'ephemeral0'
           }
         ]
       }));
@@ -281,7 +281,7 @@ export = {
       vpc,
       machineImage: new AmazonLinuxImage(),
       instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
-      privateIpAddress: "10.0.0.2"
+      privateIpAddress: '10.0.0.2'
     });
 
     // THEN

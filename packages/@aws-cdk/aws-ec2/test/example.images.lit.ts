@@ -24,9 +24,9 @@ const natAmi = ec2.MachineImage.lookup({
 // For other custom (Linux) images, instantiate a `GenericLinuxImage` with
 // a map giving the AMI to in for each region:
 const linux = ec2.MachineImage.genericLinux({
-    'us-east-1': 'ami-97785bed',
-    'eu-west-1': 'ami-12345678',
-    // ...
+  'us-east-1': 'ami-97785bed',
+  'eu-west-1': 'ami-12345678',
+  // ...
 });
 
 // For other custom (Windows) images, instantiate a `GenericWindowsImage` with

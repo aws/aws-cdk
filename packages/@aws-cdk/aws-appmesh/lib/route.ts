@@ -152,7 +152,7 @@ export class Route extends cdk.Resource implements IRoute {
 
     const routeType = props.routeType !== undefined ? props.routeType :
       props.prefix !== undefined ? RouteType.HTTP :
-      RouteType.TCP;
+        RouteType.TCP;
 
     if (routeType === RouteType.HTTP) {
       this.httpRoute = this.renderHttpRoute(props);

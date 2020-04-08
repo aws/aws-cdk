@@ -45,7 +45,7 @@ beforeEach(done => {
         },
         Export: {
           Name: {
-            "Fn::Sub": "${AWS::StackName}-ComplexExportNameOutput"
+            'Fn::Sub': '${AWS::StackName}-ComplexExportNameOutput'
           }
         }
       }

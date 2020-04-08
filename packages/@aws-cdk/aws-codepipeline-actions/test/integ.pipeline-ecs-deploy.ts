@@ -16,7 +16,7 @@ const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-ecs-deploy');
 const vpc = new ec2.Vpc(stack, 'VPC', {
   maxAzs: 1,
 });
-const cluster = new ecs.Cluster(stack, "EcsCluster", {
+const cluster = new ecs.Cluster(stack, 'EcsCluster', {
   vpc,
 });
 const repository = new ecr.Repository(stack, 'EcrRepo');

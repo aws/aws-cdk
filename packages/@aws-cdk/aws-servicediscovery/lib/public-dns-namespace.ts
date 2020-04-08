@@ -20,7 +20,7 @@ export interface PublicDnsNamespaceAttributes {
    * Namespace ARN for the Namespace.
    */
   readonly namespaceArn: string;
- }
+}
 
 /**
  * Define a Public DNS Namespace

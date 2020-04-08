@@ -25,7 +25,7 @@ export async function addMetadataAssetsToManifest(stack: cxapi.CloudFormationSta
 
   if (!toolkitInfo) {
     // tslint:disable-next-line:max-line-length
-    throw new Error(`This stack uses assets, so the toolkit stack must be deployed to the environment (Run "${colors.blue("cdk bootstrap " + stack.environment!.name)}")`);
+    throw new Error(`This stack uses assets, so the toolkit stack must be deployed to the environment (Run "${colors.blue('cdk bootstrap ' + stack.environment!.name)}")`);
   }
 
   const params: Record<string, string> = {};
@@ -42,7 +42,7 @@ export async function addMetadataAssetsToManifest(stack: cxapi.CloudFormationSta
 
     debug(`Preparing asset ${asset.id}: ${JSON.stringify(asset)}`);
     if (!stack.assembly) {
-      throw new Error(`Unexpected: stack assembly is required in order to find assets in assemly directory`);
+      throw new Error('Unexpected: stack assembly is required in order to find assets in assemly directory');
     }
 
     Object.assign(params, await prepareAsset(asset, assetManifest, toolkitInfo));
@@ -70,10 +70,10 @@ async function prepareAsset(asset: cxschema.AssetMetadataEntry, assetManifest: A
 }
 
 function prepareFileAsset(
-    asset: cxschema.FileAssetMetadataEntry,
-    assetManifest: AssetManifestBuilder,
-    toolkitInfo: ToolkitInfo,
-    packaging: asset_schema.FileAssetPackaging): Record<string, string> {
+  asset: cxschema.FileAssetMetadataEntry,
+  assetManifest: AssetManifestBuilder,
+  toolkitInfo: ToolkitInfo,
+  packaging: asset_schema.FileAssetPackaging): Record<string, string> {
 
   const extension = packaging === asset_schema.FileAssetPackaging.ZIP_DIRECTORY ? '.zip' : path.extname(asset.path);
   const baseName = `${asset.sourceHash}${extension}`;
@@ -100,16 +100,16 @@ function prepareFileAsset(
 }
 
 async function prepareDockerImageAsset(
-    asset: cxschema.ContainerImageAssetMetadataEntry,
-    assetManifest: AssetManifestBuilder,
-    toolkitInfo: ToolkitInfo): Promise<Record<string, string>> {
+  asset: cxschema.ContainerImageAssetMetadataEntry,
+  assetManifest: AssetManifestBuilder,
+  toolkitInfo: ToolkitInfo): Promise<Record<string, string>> {
 
   // Pre-1.21.0, repositoryName can be specified by the user or can be left out, in which case we make
   // a per-asset repository which will get adopted and cleaned up along with the stack.
   // Post-1.21.0, repositoryName will always be specified and it will be a shared repository between
   // all assets, and asset will have imageTag specified as well. Validate the combination.
   if (!asset.imageNameParameter && (!asset.repositoryName || !asset.imageTag)) {
-    throw new Error(`Invalid Docker image asset configuration: "repositoryName" and "imageTag" are required when "imageNameParameter" is left out`);
+    throw new Error('Invalid Docker image asset configuration: "repositoryName" and "imageTag" are required when "imageNameParameter" is left out');
   }
 
   const repositoryName = asset.repositoryName ?? 'cdk/' + asset.id.replace(/[:/]/g, '-').toLowerCase();

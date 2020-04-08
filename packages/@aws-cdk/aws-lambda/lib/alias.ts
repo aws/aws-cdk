@@ -168,7 +168,7 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
     // ARN parsing splits on `:`, so we can only get the function's name from the ARN as resourceName...
     // And we're parsing it out (instead of using the underlying function directly) in order to have use of it incur
     // an implicit dependency on the resource.
-    this.functionName = `${this.stack.parseArn(this.functionArn, ":").resourceName!}:${this.aliasName}`;
+    this.functionName = `${this.stack.parseArn(this.functionArn, ':').resourceName!}:${this.aliasName}`;
   }
 
   public get grantPrincipal() {

@@ -25,7 +25,7 @@ test('assembly with a single cloudformation stack and tree metadata', () => {
   expect(stack.assets).toHaveLength(0);
   expect(stack.dependencies).toEqual([]);
   expect(stack.environment).toEqual({ account: '37736633', region: 'us-region-1', name: 'aws://37736633/us-region-1' });
-  expect(stack.template).toEqual({ Resources: { MyBucket: { Type: "AWS::S3::Bucket" } } });
+  expect(stack.template).toEqual({ Resources: { MyBucket: { Type: 'AWS::S3::Bucket' } } });
   expect(stack.messages).toEqual([]);
   expect(stack.manifest.metadata).toEqual(undefined);
   expect(stack.originalName).toEqual('MyStackName');

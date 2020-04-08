@@ -66,11 +66,11 @@ export = {
     test.ok(meta['/my-stack'][0]);
     test.deepEqual(meta['/my-stack'][0].data, {
       path: 'asset.6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2',
-      id: "6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2",
-      packaging: "zip",
+      id: '6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2',
+      packaging: 'zip',
       sourceHash: '6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2',
-      s3BucketParameter: "AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3Bucket50B5A10B",
-      s3KeyParameter: "AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3VersionKey1F7D75F9",
+      s3BucketParameter: 'AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3Bucket50B5A10B',
+      s3KeyParameter: 'AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3VersionKey1F7D75F9',
       artifactHashParameter: 'AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2ArtifactHash220DE9BD',
     });
 
@@ -121,11 +121,11 @@ export = {
         Version: '2012-10-17',
         Statement: [
           {
-            Action: ["s3:GetObject*", "s3:GetBucket*", "s3:List*"],
+            Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
             Effect: 'Allow',
             Resource: [
-              { "Fn::Join": ["", ["arn:", {Ref: "AWS::Partition"}, ":s3:::", {Ref: "AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3Bucket50B5A10B"} ] ] },
-              { "Fn::Join": ["", [ "arn:", {Ref: "AWS::Partition"}, ":s3:::", {Ref: "AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3Bucket50B5A10B"}, "/*" ] ] }
+              { 'Fn::Join': ['', ['arn:', {Ref: 'AWS::Partition'}, ':s3:::', {Ref: 'AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3Bucket50B5A10B'} ] ] },
+              { 'Fn::Join': ['', [ 'arn:', {Ref: 'AWS::Partition'}, ':s3:::', {Ref: 'AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3Bucket50B5A10B'}, '/*' ] ] }
             ]
           }
         ]
@@ -199,8 +199,8 @@ export = {
     // THEN
     expect(stack).to(haveResource('My::Resource::Type', {
       Metadata: {
-        "aws:asset:path": 'asset.6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2',
-        "aws:asset:property": "PropName"
+        'aws:asset:path': 'asset.6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2',
+        'aws:asset:property': 'PropName'
       }
     }, ResourcePart.CompleteDefinition));
     test.done();
@@ -219,8 +219,8 @@ export = {
     // THEN
     expect(stack).notTo(haveResource('My::Resource::Type', {
       Metadata: {
-        "aws:asset:path": SAMPLE_ASSET_DIR,
-        "aws:asset:property": "PropName"
+        'aws:asset:path': SAMPLE_ASSET_DIR,
+        'aws:asset:property': 'PropName'
       }
     }, ResourcePart.CompleteDefinition));
 
@@ -299,8 +299,8 @@ export = {
 
       const template = SynthUtils.synthesize(stack).template;
       test.deepEqual(template.Resources.MyResource.Metadata, {
-        "aws:asset:path": `asset.6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2`,
-        "aws:asset:property": "PropName"
+        'aws:asset:path': 'asset.6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2',
+        'aws:asset:property': 'PropName'
       });
       test.done();
     },
@@ -326,8 +326,8 @@ export = {
 
       const template = SynthUtils.synthesize(stack).template;
       test.deepEqual(template.Resources.MyResource.Metadata, {
-        "aws:asset:path": SAMPLE_ASSET_DIR,
-        "aws:asset:property": "PropName"
+        'aws:asset:path': SAMPLE_ASSET_DIR,
+        'aws:asset:property': 'PropName'
       });
       test.done();
     },

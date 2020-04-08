@@ -64,7 +64,7 @@ export = {
     test.done();
   },
 
-  "create a syslog log driver using syslog"(test: Test) {
+  'create a syslog log driver using syslog'(test: Test) {
     // WHEN
     td.addContainer('Container', {
       image,

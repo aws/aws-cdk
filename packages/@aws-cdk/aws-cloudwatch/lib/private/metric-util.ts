@@ -1,6 +1,6 @@
-import { Duration } from "@aws-cdk/core";
-import { MathExpression } from "../metric";
-import { IMetric, MetricConfig, MetricExpressionConfig, MetricStatConfig } from "../metric-types";
+import { Duration } from '@aws-cdk/core';
+import { MathExpression } from '../metric';
+import { IMetric, MetricConfig, MetricExpressionConfig, MetricStatConfig } from '../metric-types';
 
 const METRICKEY_SYMBOL = Symbol('@aws-cdk/aws-cloudwatch.MetricKey');
 
@@ -113,12 +113,12 @@ export function metricPeriod(metric: IMetric): Duration {
 export function dispatchMetric<A, B>(metric: IMetric, fns: { withStat: (x: MetricStatConfig, c: MetricConfig) => A, withExpression: (x: MetricExpressionConfig, c: MetricConfig) => B }): A | B {
   const conf = metric.toMetricConfig();
   if (conf.metricStat && conf.mathExpression) {
-    throw new Error(`Metric object must not produce both 'metricStat' and 'mathExpression'`);
+    throw new Error('Metric object must not produce both \'metricStat\' and \'mathExpression\'');
   } else if (conf.metricStat) {
     return fns.withStat(conf.metricStat, conf);
   } else if (conf.mathExpression) {
     return fns.withExpression(conf.mathExpression, conf);
   } else {
-    throw new Error(`Metric object must have either 'metricStat' or 'mathExpression'`);
+    throw new Error('Metric object must have either \'metricStat\' or \'mathExpression\'');
   }
 }

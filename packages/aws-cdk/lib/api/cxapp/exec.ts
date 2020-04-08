@@ -17,7 +17,7 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
 
   let pathMetadata: boolean = config.settings.get(['pathMetadata']);
   if (pathMetadata === undefined) {
-      pathMetadata = true; // defaults to true
+    pathMetadata = true; // defaults to true
   }
 
   if (pathMetadata) {
@@ -158,7 +158,7 @@ type CommandGenerator = (file: string) => string[];
  * Execute the given file with the same 'node' process as is running the current process
  */
 function executeNode(scriptFile: string): string[] {
-    return [process.execPath, scriptFile];
+  return [process.execPath, scriptFile];
 }
 
 /**
@@ -183,7 +183,7 @@ async function guessExecutable(commandLine: string[]) {
     const fstat = await fs.stat(commandLine[0]);
     // tslint:disable-next-line:no-bitwise
     const isExecutable = (fstat.mode & fs.constants.X_OK) !== 0;
-    const isWindows = process.platform === "win32";
+    const isWindows = process.platform === 'win32';
 
     const handler = EXTENSION_MAP.get(path.extname(commandLine[0]));
     if (handler && (!isExecutable || isWindows)) {

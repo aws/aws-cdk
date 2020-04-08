@@ -7,9 +7,10 @@ import { BootstrapEnvironmentProps, deployStack, DeployStackResult } from '..';
 import { loadStructuredFile } from '../../serialize';
 import { Mode, SdkProvider } from '../aws-auth';
 
-export async function bootstrapEnvironment2(environment: cxapi.Environment, sdkProvider: SdkProvider,
-                                            toolkitStackName: string, roleArn: string | undefined,
-                                            props: BootstrapEnvironmentProps = {}): Promise<DeployStackResult> {
+export async function bootstrapEnvironment2(
+  environment: cxapi.Environment, sdkProvider: SdkProvider,
+  toolkitStackName: string, roleArn: string | undefined,
+  props: BootstrapEnvironmentProps = {}): Promise<DeployStackResult> {
   if (props.trustedAccounts?.length && !props.cloudFormationExecutionPolicies?.length) {
     throw new Error('--cloudformation-execution-policies are required if --trust has been passed!');
   }
