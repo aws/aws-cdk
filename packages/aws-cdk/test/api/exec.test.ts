@@ -65,6 +65,18 @@ test('the application set in --app is executed', async () => {
   await execProgram(sdkProvider, config);
 });
 
+test('the application set in --app is executed as-is if it contains a filename that does not exist', async () => {
+  // GIVEN
+  config.settings.set(['app'], 'does-not-exist');
+  mockSpawn({
+    commandLine: ['does-not-exist'],
+    sideEffect: () => writeOutputAssembly(),
+  });
+
+  // WHEN
+  await execProgram(sdkProvider, config);
+});
+
 test('the application set in --app is executed with arguments', async () => {
   // GIVEN
   config.settings.set(['app'], 'cloud-executable an-arg');
