@@ -71,4 +71,36 @@ describe('User Pool Client', () => {
       userPoolDomainName: 'test-domain.example.com'
     })).toThrow(/certificate must be specified/);
   });
+
+  test('custom resource is added when cloudFrontDistribution method is called', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+    const domain = pool.addDomain('Domain', {
+      cognitoDomainPrefix: 'cognito-domain-prefix',
+    });
+
+    // WHEN
+    const cfDomainName = domain.cloudFrontDomainName;
+
+    // THEN
+    expect(stack.resolve(cfDomainName)).toEqual({
+      'Fn::GetAtt': [
+        'PoolDomainCloudFrontDomainName340BF87E',
+        'DomainDescription.CloudFrontDistribution',
+      ]
+    });
+
+    expect(stack).toHaveResource('Custom::UserPoolCloudFrontDomainName');
+    expect(stack).toHaveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [{
+          Action: 'cognito-idp:DescribeUserPoolDomain',
+          Effect: 'Allow',
+          Resource: '*',
+        }],
+        Version: '2012-10-17'
+      }
+    });
+  });
 });

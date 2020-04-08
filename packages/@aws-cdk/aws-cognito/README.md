@@ -416,3 +416,6 @@ pool.addDomain('domain', {
   cognitoDomainPrefix: 'my-awesome-app',
 });
 ```
+
+The `UserPoolDomain` construct exposes a `cloudFrontDomainName` attribute that returns the CloudFront domain name. This
+can then be used to wire it up with a CloudFront distribution or to a Route53 target.
