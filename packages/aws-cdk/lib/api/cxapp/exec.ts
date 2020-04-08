@@ -14,29 +14,26 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
   const context = config.context.all;
   await populateDefaultEnvironmentIfNeeded(aws, env);
 
-  let pathMetadata: boolean = config.settings.get(['pathMetadata']);
-  pathMetadata = pathMetadata ?? true;
+  const pathMetadata: boolean = config.settings.get(['pathMetadata']) ?? true;
 
   if (pathMetadata) {
     context[cxapi.PATH_METADATA_ENABLE_CONTEXT] = true;
   }
 
-  let assetMetadata: boolean = config.settings.get(['assetMetadata']);
-  assetMetadata = assetMetadata ?? true;
+  const assetMetadata: boolean = config.settings.get(['assetMetadata']) ?? true;
 
   if (assetMetadata) {
     context[cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT] = true;
   }
 
-  let versionReporting: boolean = config.settings.get(['versionReporting']);
-  versionReporting = versionReporting ?? true;
+  const versionReporting: boolean = config.settings.get(['versionReporting']) ?? true;
 
   if (!versionReporting) {
     context[cxapi.DISABLE_VERSION_REPORTING] = true;
   }
 
-  let stagingEnabled = config.settings.get(['staging']);
-  stagingEnabled = stagingEnabled ?? true;
+  const stagingEnabled = config.settings.get(['staging']) ?? true;
+
   if (!stagingEnabled) {
     context[cxapi.DISABLE_ASSET_STAGING_CONTEXT] = true;
   }
