@@ -49,9 +49,9 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
     throw new Error(`--app is required either in command-line, in ${PROJECT_CONFIG} or in ${USER_DEFAULTS}`);
   }
 
-  // by pass "synth" if app points to a cloud assembly
+  // bypass "synth" if app points to a cloud assembly
   if (await fs.pathExists(app) && (await fs.stat(app)).isDirectory()) {
-    debug('--app points to a cloud assembly, so we by pass synth');
+    debug('--app points to a cloud assembly, so we bypass synth');
     return new cxapi.CloudAssembly(app);
   }
 
