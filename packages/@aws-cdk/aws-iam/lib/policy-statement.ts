@@ -131,6 +131,12 @@ export class PolicyStatement {
     this.addPrincipals(new AccountPrincipal(accountId));
   }
 
+  /**
+   * Specify a principal using the ARN  identifier of the principal.
+   * You cannot specify IAM groups and instance profiles as principals.
+   *
+   * @param arn ARN identifier of AWS account, IAM user, or IAM role (i.e. arn:aws:iam::123456789012:user/user-name)
+   */
   public addArnPrincipal(arn: string) {
     this.addPrincipals(new ArnPrincipal(arn));
   }
@@ -298,8 +304,22 @@ export class PolicyStatement {
   }
 }
 
+/**
+ * The Effect element of an IAM policy
+ *
+ * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_effect.html
+ */
 export enum Effect {
+  /**
+   * Allows access to a resource in an IAM policy statement. By default, access to resources are denied.
+   */
   ALLOW = 'Allow',
+
+  /**
+   * Explicitly deny access to a resource. By default, all requests are denied implicitly.
+   *
+   * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_evaluation-logic.html
+   */
   DENY = 'Deny',
 }
 
