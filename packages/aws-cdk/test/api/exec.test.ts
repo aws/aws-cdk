@@ -18,11 +18,11 @@ function createApp(outdir: string): cdk.App {
   const app = new cdk.App({outdir});
   const stack = new cdk.Stack(app, 'Stack');
 
-  new cdk.CfnResource(stack, "Role", {
-      type: "AWS::IAM::Role",
-      properties: {
-        RoleName: "Role"
-      }
+  new cdk.CfnResource(stack, 'Role', {
+    type: 'AWS::IAM::Role',
+    properties: {
+      RoleName: 'Role'
+    }
   });
 
   return app;

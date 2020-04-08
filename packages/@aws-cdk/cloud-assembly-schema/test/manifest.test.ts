@@ -39,7 +39,7 @@ test('manifest save', () => {
   const manifestFile = path.join(outdir, 'manifest.json');
 
   const assemblyManifest: AssemblyManifest = {
-    version: "version"
+    version: 'version'
   };
 
   Manifest.save(assemblyManifest, manifestFile);
@@ -77,24 +77,20 @@ test('cloud-assembly.json.schema is correct', () => {
 });
 
 test('manifest load', () => {
-  const loaded = Manifest.load(fixture("only-version"));
+  const loaded = Manifest.load(fixture('only-version'));
   expect(loaded).toMatchSnapshot();
 });
 
 test('manifest load fails for invalid nested property', () => {
-  expect(() => Manifest.load(fixture("invalid-nested-property")))
-  .toThrow(/Invalid assembly manifest/);
-
+  expect(() => Manifest.load(fixture('invalid-nested-property'))).toThrow(/Invalid assembly manifest/);
 });
 
 test('manifest load fails for invalid artifact type', () => {
-  expect(() => Manifest.load(fixture('invalid-artifact-type')))
-  .toThrow(/Invalid assembly manifest/);
+  expect(() => Manifest.load(fixture('invalid-artifact-type'))).toThrow(/Invalid assembly manifest/);
 });
 
 test('manifest load fails on higher major version', () => {
-  expect(() => Manifest.load(fixture('high-version')))
-  .toThrow(/Cloud assembly schema version mismatch/);
+  expect(() => Manifest.load(fixture('high-version'))).toThrow(/Cloud assembly schema version mismatch/);
 });
 
 // once we start introducing minor version bumps that are considered
@@ -114,8 +110,7 @@ test('manifest load fails on higher minor version', () => {
 
     Manifest.save(assemblyManifest, manifestFile);
 
-    expect(() => Manifest.load(manifestFile))
-    .toThrow(/Cloud assembly schema version mismatch/);
+    expect(() => Manifest.load(manifestFile)).toThrow(/Cloud assembly schema version mismatch/);
   }
 });
 
@@ -136,19 +131,17 @@ test('manifest load fails on higher patch version', () => {
 
     Manifest.save(assemblyManifest, manifestFile);
 
-    expect(() => Manifest.load(manifestFile))
-    .toThrow(/Cloud assembly schema version mismatch/);
+    expect(() => Manifest.load(manifestFile)).toThrow(/Cloud assembly schema version mismatch/);
   }
 });
 
 test('manifest load fails on invalid version', () => {
-  expect(() => Manifest.load(fixture('invalid-version')))
-  .toThrow(/Invalid semver string/);
+  expect(() => Manifest.load(fixture('invalid-version'))).toThrow(/Invalid semver string/);
 });
 
 test('manifest load succeeds on unknown properties', () => {
   const manifest = Manifest.load(fixture('unknown-property'));
-  expect(manifest.version).toEqual("2.0.0");
+  expect(manifest.version).toEqual('0.0.0');
 });
 
 test('stack-tags are deserialized properly', () => {
@@ -157,10 +150,10 @@ test('stack-tags are deserialized properly', () => {
 
   if (m.artifacts?.stack?.metadata?.AwsCdkPlaygroundBatch[0].data) {
     const entry = m.artifacts.stack.metadata.AwsCdkPlaygroundBatch[0].data as StackTagsMetadataEntry;
-    expect(entry[0].key).toEqual("hello");
-    expect(entry[0].value).toEqual("world");
+    expect(entry[0].key).toEqual('hello');
+    expect(entry[0].value).toEqual('world');
   }
-  expect(m.version).toEqual("2.0.0");
+  expect(m.version).toEqual('0.0.0');
 
 });
 
@@ -171,14 +164,16 @@ test('can access random metadata', () => {
   const randomNumber = loaded.artifacts?.stack.metadata?.AwsCdkPlaygroundBatch[1].data;
   const randomMap = loaded.artifacts?.stack.metadata?.AwsCdkPlaygroundBatch[2].data;
 
-  expect(randomArray).toEqual(["42"]);
+  expect(randomArray).toEqual(['42']);
   expect(randomNumber).toEqual(42);
   expect(randomMap).toEqual({
-    key: "value"
+    key: 'value'
   });
 
+  expect(randomMap).toBeTruthy();
+
   if (randomMap) {
-    expect((randomMap as any).key).toEqual("value");
+    expect((randomMap as any).key).toEqual('value');
   }
 
 });

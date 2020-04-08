@@ -8,7 +8,7 @@ test('empty assembly', () => {
   expect(assembly.artifacts).toEqual([]);
   expect(assembly.runtime).toEqual({ libraries: { } });
   expect(assembly.stacks).toEqual([]);
-  expect(assembly.version).toEqual("0.0.0");
+  expect(assembly.version).toEqual('0.0.0');
   expect(assembly.manifest).toMatchSnapshot();
   expect(assembly.tree()).toBeUndefined();
 });

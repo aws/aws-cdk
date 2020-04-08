@@ -96,7 +96,7 @@ function patchStackTags(metadata: { [path: string]: cxschema.MetadataEntry[] }):
         const metadataAny = metadataEntry as any;
 
         metadataAny.data = metadataAny.data.map((t: any) => {
-            return { Key: t.key, Value: t.value };
+          return { Key: t.key, Value: t.value };
         });
       }
     }

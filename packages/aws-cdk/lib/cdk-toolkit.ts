@@ -605,7 +605,7 @@ function tagsForStack(stack: cxapi.CloudFormationStackArtifact): Tag[] {
  */
 function toCloudFormationTags(tags: cxschema.Tag[]): Tag[] {
   return tags.map(t => {
-      return { Key: t.key, Value: t.value };
+    return { Key: t.key, Value: t.value };
   });
 }
 
