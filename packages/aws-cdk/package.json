@@ -62,7 +62,7 @@
     "jest": "^24.9.0",
     "mockery": "^2.1.0",
     "pkglint": "0.0.0",
-    "sinon": "^9.0.1",
+    "sinon": "^9.0.2",
     "ts-jest": "^25.3.1"
   },
   "dependencies": {
