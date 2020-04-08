@@ -165,7 +165,7 @@ export interface CustomAttributeConfig {
 /**
  * Constraints that can be applied to a custom attribute of string type.
  */
-export interface BaseCustomAttributeProps {
+export interface CustomAttributeProps {
   /**
    * Specifies whether the attribute type is developer only. This attribute can only be modified by an administrator.
    * Users will not be able to modify this attribute using their access token.
@@ -190,7 +190,7 @@ export interface BaseCustomAttributeProps {
  * All common properties are set here and the method `baseAttributeConfig`
  * should be used by subclasses to create base CustomAttributeConfig object inside the `bind()` method.
  */
-abstract class BaseCustomAttribute implements ICustomAttribute {
+abstract class CustomAttribute implements ICustomAttribute {
   protected readonly developerOnly?: boolean;
   protected readonly mutable?: boolean;
 
@@ -199,7 +199,7 @@ abstract class BaseCustomAttribute implements ICustomAttribute {
    */
   protected abstract readonly dataType: string;
 
-  constructor(props: BaseCustomAttributeProps = {}) {
+  constructor(props: CustomAttributeProps = {}) {
     this.developerOnly = props.developerOnly;
     this.mutable = props.mutable;
   }
@@ -241,13 +241,13 @@ export interface StringAttributeConstraints {
 /**
  * Props for constructing a StringAttr
  */
-export interface StringAttributeProps extends BaseCustomAttributeProps, StringAttributeConstraints {
+export interface StringAttributeProps extends CustomAttributeProps, StringAttributeConstraints {
 }
 
 /**
  * The String custom attribute type.
  */
-export class StringAttribute extends BaseCustomAttribute {
+export class StringAttribute extends CustomAttribute {
   protected readonly dataType = 'String';
   private readonly minLen?: number;
   private readonly maxLen?: number;
@@ -304,13 +304,13 @@ export interface NumberAttributeConstraints {
 /**
  * Props for NumberAttr
  */
-export interface NumberAttributeProps extends BaseCustomAttributeProps, NumberAttributeConstraints {
+export interface NumberAttributeProps extends CustomAttributeProps, NumberAttributeConstraints {
 }
 
 /**
  * The Number custom attribute type.
  */
-export class NumberAttribute extends BaseCustomAttribute {
+export class NumberAttribute extends CustomAttribute {
   protected readonly dataType = 'Number';
   private readonly min?: number;
   private readonly max?: number;
@@ -344,7 +344,7 @@ export class NumberAttribute extends BaseCustomAttribute {
 /**
  * The Boolean custom attribute type.
  */
-export class BooleanAttribute extends BaseCustomAttribute {
+export class BooleanAttribute extends CustomAttribute {
   protected readonly dataType = 'Boolean';
   public bind(): CustomAttributeConfig {
     return this.baseAttributeConfig();
@@ -354,7 +354,7 @@ export class BooleanAttribute extends BaseCustomAttribute {
 /**
  * The DateTime custom attribute type.
  */
-export class DateTimeAttribute extends BaseCustomAttribute {
+export class DateTimeAttribute extends CustomAttribute {
   protected readonly dataType = 'DateTime';
   public bind(): CustomAttributeConfig {
     return this.baseAttributeConfig();
