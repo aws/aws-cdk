@@ -852,7 +852,6 @@ export class UserPool extends Resource implements IUserPool {
           attributeDataType: attrConfig.dataType,
           numberAttributeConstraints: (attrConfig.numberConstraints) ? numberConstraints : undefined,
           stringAttributeConstraints: (attrConfig.stringConstraints) ? stringConstraints : undefined,
-          developerOnlyAttribute: attrConfig.developerOnly,
           mutable: attrConfig.mutable,
         };
       });

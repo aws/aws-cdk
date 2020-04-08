@@ -143,14 +143,6 @@ export interface CustomAttributeConfig {
   readonly numberConstraints?: NumberAttributeConstraints;
 
   /**
-   * Specifies whether the attribute type is developer only. This attribute can only be modified by an administrator.
-   * Users will not be able to modify this attribute using their access token.
-   *
-   * @default false
-   */
-  readonly developerOnly?: boolean
-
-  /**
    * Specifies whether the value of the attribute can be changed.
    * For any user pool attribute that's mapped to an identity provider attribute, you must set this parameter to true.
    * Amazon Cognito updates mapped attributes when users sign in to your application through an identity provider.
@@ -166,13 +158,6 @@ export interface CustomAttributeConfig {
  * Constraints that can be applied to a custom attribute of string type.
  */
 export interface CustomAttributeProps {
-  /**
-   * Specifies whether the attribute type is developer only. This attribute can only be modified by an administrator.
-   * Users will not be able to modify this attribute using their access token.
-   *
-   * @default false
-   */
-  readonly developerOnly?: boolean
 
   /**
    * Specifies whether the value of the attribute can be changed.
@@ -191,7 +176,6 @@ export interface CustomAttributeProps {
  * should be used by subclasses to create base CustomAttributeConfig object inside the `bind()` method.
  */
 export abstract class CustomAttribute implements ICustomAttribute {
-  protected readonly developerOnly?: boolean;
   protected readonly mutable?: boolean;
 
   /**
@@ -200,7 +184,6 @@ export abstract class CustomAttribute implements ICustomAttribute {
   protected abstract readonly dataType: string;
 
   constructor(props: CustomAttributeProps = {}) {
-    this.developerOnly = props.developerOnly;
     this.mutable = props.mutable;
   }
 
@@ -215,7 +198,6 @@ export abstract class CustomAttribute implements ICustomAttribute {
   protected baseAttributeConfig(): CustomAttributeConfig {
     return {
       dataType: this.dataType,
-      developerOnly: this.developerOnly,
       mutable: this.mutable,
     };
   }
@@ -277,7 +259,6 @@ export class StringAttribute extends CustomAttribute {
 
     return {
       dataType: aux.dataType,
-      developerOnly: aux.developerOnly,
       mutable: aux.mutable,
       stringConstraints,
     };
@@ -334,7 +315,6 @@ export class NumberAttribute extends CustomAttribute {
 
     return {
       dataType: aux.dataType,
-      developerOnly: aux.developerOnly,
       mutable: aux.mutable,
       numberConstraints,
     };

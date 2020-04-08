@@ -18,7 +18,6 @@ describe('User Pool Attributes', () => {
 
       // THEN
       bounds.forEach((bound) => {
-        expect(bound.developerOnly).toBeUndefined();
         expect(bound.mutable).toBeUndefined();
       });
     });
@@ -26,7 +25,6 @@ describe('User Pool Attributes', () => {
     describe('CustomAttribute base properties are set true as expected', () => {
       // GIVEN
       const allTrueProps = {
-        developerOnly: true,
         mutable: true,
       };
       const allAttributeTypes: ICustomAttribute[] = [
@@ -42,7 +40,6 @@ describe('User Pool Attributes', () => {
       // THEN
       bounds.forEach((bound) => {
         test(`in attribute of type ${bound.dataType}:`, () => {
-          expect(bound.developerOnly).toEqual(true);
           expect(bound.mutable).toEqual(true);
         });
       });
@@ -51,7 +48,6 @@ describe('User Pool Attributes', () => {
     describe('CustomAttribute base properties are set false as expected', () => {
       // GIVEN
       const allFalseProps = {
-        developerOnly: false,
         mutable: false,
       };
       const allAttributeTypes: ICustomAttribute[] = [
@@ -67,7 +63,6 @@ describe('User Pool Attributes', () => {
       // THEN
       bounds.forEach((bound) => {
         test(`in attribute of type ${bound.dataType}`, () => {
-          expect(bound.developerOnly).toEqual(false);
           expect(bound.mutable).toEqual(false);
         });
       });
