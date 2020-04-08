@@ -714,7 +714,6 @@ export = {
         }),
       }, {
         deviceName: 'ebs-snapshot',
-        mappingEnabled: false,
         volume: autoscaling.BlockDeviceVolume.ebsFromSnapshot('snapshot-id', {
           volumeSize: 500,
           deleteOnTermination: false,
@@ -723,6 +722,13 @@ export = {
       }, {
         deviceName: 'ephemeral',
         volume: autoscaling.BlockDeviceVolume.ephemeral(0),
+      }, {
+        deviceName: 'disabled',
+        volume: autoscaling.BlockDeviceVolume.ephemeral(1),
+        mappingEnabled: false,
+      }, {
+        deviceName: 'none',
+        volume: autoscaling.BlockDeviceVolume.noDevice(),
       }],
     });
 
@@ -748,12 +754,20 @@ export = {
             VolumeSize: 500,
             VolumeType: 'sc1',
           },
-          NoDevice: true,
+          NoDevice: ABSENT,
         },
         {
           DeviceName: 'ephemeral',
           VirtualName: 'ephemeral0',
           NoDevice: ABSENT,
+        },
+        {
+          DeviceName: 'disabled',
+          NoDevice: true,
+        },
+        {
+          DeviceName: 'none',
+          NoDevice: true,
         },
       ],
     }));

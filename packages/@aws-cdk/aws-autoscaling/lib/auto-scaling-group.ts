@@ -14,7 +14,7 @@ import { BasicLifecycleHookProps, LifecycleHook } from './lifecycle-hook';
 import { BasicScheduledActionProps, ScheduledAction } from './scheduled-action';
 import { BasicStepScalingPolicyProps, StepScalingPolicy } from './step-scaling-policy';
 import { BaseTargetTrackingProps, PredefinedMetric, TargetTrackingScalingPolicy } from './target-tracking-scaling-policy';
-import { BlockDevice, EbsDeviceVolumeType } from './volume';
+import { BlockDevice, BlockDeviceVolume, EbsDeviceVolumeType } from './volume';
 
 /**
  * Name tag constant
@@ -455,11 +455,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       associatePublicIpAddress: props.associatePublicIpAddress,
       spotPrice: props.spotPrice,
       blockDeviceMappings: (props.blockDevices !== undefined ?
-        synthesizeBlockDeviceMappings(this, props.blockDevices).map<CfnLaunchConfiguration.BlockDeviceMappingProperty>(
-          ({ deviceName, ebs, virtualName, noDevice }) => ({
-            deviceName, ebs, virtualName, noDevice: noDevice ? true : undefined,
-          }),
-        ) : undefined),
+        synthesizeBlockDeviceMappings(this, props.blockDevices) : undefined),
     });
 
     launchConfig.node.addDependency(this.role);
@@ -947,6 +943,13 @@ function synthesizeBlockDeviceMappings(construct: Construct, blockDevices: Block
   return blockDevices.map<CfnLaunchConfiguration.BlockDeviceMappingProperty>(({ deviceName, volume, mappingEnabled }) => {
     const { virtualName, ebsDevice: ebs } = volume;
 
+    if (volume === BlockDeviceVolume._NO_DEVICE || mappingEnabled === false) {
+      return {
+        deviceName,
+        noDevice: true,
+      };
+    }
+
     if (ebs) {
       const { iops, volumeType } = ebs;
 
@@ -961,7 +964,6 @@ function synthesizeBlockDeviceMappings(construct: Construct, blockDevices: Block
 
     return {
       deviceName, ebs, virtualName,
-      noDevice: mappingEnabled === false ? true : undefined,
     };
   });
 }
