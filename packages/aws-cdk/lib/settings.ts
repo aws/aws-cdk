@@ -41,21 +41,21 @@ export class Configuration {
 
   constructor(commandLineArguments?: Arguments) {
     this.commandLineArguments = commandLineArguments
-                              ? Settings.fromCommandLineArguments(commandLineArguments)
-                              : new Settings();
+      ? Settings.fromCommandLineArguments(commandLineArguments)
+      : new Settings();
     this.commandLineContext = this.commandLineArguments.subSettings([CONTEXT_KEY]).makeReadOnly();
   }
 
   private get projectConfig() {
     if (!this._projectConfig) {
-      throw new Error(`#load has not been called yet!`);
+      throw new Error('#load has not been called yet!');
     }
     return this._projectConfig;
   }
 
   private get projectContext() {
     if (!this._projectContext) {
-      throw new Error(`#load has not been called yet!`);
+      throw new Error('#load has not been called yet!');
     }
     return this._projectContext;
   }
@@ -71,9 +71,9 @@ export class Configuration {
     await this.migrateLegacyContext();
 
     this.context = new Context(
-        this.commandLineContext,
-        this.projectConfig.subSettings([CONTEXT_KEY]).makeReadOnly(),
-        this.projectContext);
+      this.commandLineContext,
+      this.projectConfig.subSettings([CONTEXT_KEY]).makeReadOnly(),
+      this.projectContext);
 
     // Build settings from what's left
     this.settings = this.defaultConfig
@@ -270,8 +270,8 @@ export class Settings {
       if (parts.length === 2) {
         debug('CLI argument tags: %s=%s', parts[0], parts[1]);
         tags.push({
-         Key: parts[0],
-         Value: parts[1]
+          Key: parts[0],
+          Value: parts[1]
         });
       } else {
         warning('Tags argument is not an assignment (key=value): %s', assignment);

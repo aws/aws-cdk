@@ -589,14 +589,14 @@ export class Stack extends Construct implements ITaggable {
   public _addAssemblyDependency(target: Stack, reason?: string) {
     // defensive: we should never get here for nested stacks
     if (this.nested || target.nested) {
-      throw new Error(`Cannot add assembly-level dependencies for nested stacks`);
+      throw new Error('Cannot add assembly-level dependencies for nested stacks');
     }
 
     reason = reason || 'dependency added using stack.addDependency()';
     const cycle = target.stackDependencyReasons(this);
     if (cycle !== undefined) {
-        // tslint:disable-next-line:max-line-length
-        throw new Error(`'${target.node.path}' depends on '${this.node.path}' (${cycle.join(', ')}). Adding this dependency (${reason}) would create a cyclic reference.`);
+      // tslint:disable-next-line:max-line-length
+      throw new Error(`'${target.node.path}' depends on '${this.node.path}' (${cycle.join(', ')}). Adding this dependency (${reason}) would create a cyclic reference.`);
     }
 
     let dep = this._stackDependencies[target.node.uniqueId];
@@ -1001,15 +1001,15 @@ export class Stack extends Construct implements ITaggable {
     // unsupported: stacks from different apps
     if (target.node.root !== this.node.root) {
       throw new Error(
-        `Cannot reference across apps. ` +
-        `Consuming and producing stacks must be defined within the same CDK app.`);
+        'Cannot reference across apps. ' +
+        'Consuming and producing stacks must be defined within the same CDK app.');
     }
 
     // unsupported: stacks are not in the same environment
     if (target.environment !== this.environment) {
       throw new Error(
         `Stack "${this.node.path}" cannot consume a cross reference from stack "${target.node.path}". ` +
-        `Cross stack references are only supported for stacks deployed to the same environment or between nested stacks and their parent stack`);
+        'Cross stack references are only supported for stacks deployed to the same environment or between nested stacks and their parent stack');
     }
 
     // if one of the stacks is a nested stack, go ahead and give it the right to make the cross reference
@@ -1100,7 +1100,7 @@ export interface ITemplateOptions {
   /**
    * Metadata associated with the CloudFormation template.
    */
-   metadata?: { [key: string]: any };
+  metadata?: { [key: string]: any };
 }
 
 /**

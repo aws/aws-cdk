@@ -1,4 +1,4 @@
-import { GRID_WIDTH, IWidget } from "./widget";
+import { GRID_WIDTH, IWidget } from './widget';
 
 // This file contains widgets that exist for layout purposes
 

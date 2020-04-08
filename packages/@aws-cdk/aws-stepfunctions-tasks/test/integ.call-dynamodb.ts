@@ -27,7 +27,7 @@ class CallDynamoDBStack extends cdk.Stack {
     super(scope, id, props);
 
     const TABLE_NAME = 'Messages';
-    const MESSAGE_ID = `1234`;
+    const MESSAGE_ID = '1234';
     const firstNumber = 18;
     const secondNumber = 24;
 

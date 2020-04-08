@@ -145,11 +145,11 @@ export class InlineCode extends Code {
     super();
 
     if (code.length === 0) {
-      throw new Error(`Lambda inline code cannot be empty`);
+      throw new Error('Lambda inline code cannot be empty');
     }
 
     if (code.length > 4096) {
-      throw new Error("Lambda source is too large, must be <= 4096 but is " + code.length);
+      throw new Error('Lambda source is too large, must be <= 4096 but is ' + code.length);
     }
   }
 
@@ -197,7 +197,7 @@ export class AssetCode extends Code {
 
   public bindToResource(resource: cdk.CfnResource, options: ResourceBindOptions = { }) {
     if (!this.asset) {
-      throw new Error(`bindToResource() must be called after bind()`);
+      throw new Error('bindToResource() must be called after bind()');
     }
 
     const resourceProperty = options.resourceProperty || 'Code';

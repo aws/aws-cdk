@@ -21,7 +21,7 @@ const interfaceVpcEndpoint = new ec2.InterfaceVpcEndpoint(stack, 'InterfaceEndpo
   },
   privateDnsEnabled: false,
   subnets: {
-      subnetType: ec2.SubnetType.PRIVATE
+    subnetType: ec2.SubnetType.PRIVATE
   }
 });
 const zone = new route53.PrivateHostedZone(stack, 'PrivateZone', {
@@ -29,7 +29,7 @@ const zone = new route53.PrivateHostedZone(stack, 'PrivateZone', {
   zoneName: 'test.aws.cdk.com'
 });
 
-new route53.ARecord(stack, "AliasEndpointRecord", {
+new route53.ARecord(stack, 'AliasEndpointRecord', {
   zone,
   recordName: 'foo',
   target: route53.RecordTarget.fromAlias(new targets.InterfaceVpcEndpointTarget(interfaceVpcEndpoint))
