@@ -183,6 +183,8 @@ new UserPool(this, 'myuserpool', {
 As shown in the code snippet, there are data types that are available for custom attributes. The 'String' and 'Number'
 data types allow for further constraints on their length and values, respectively.
 
+Custom attributes cannot be marked as required.
+
 All custom attributes share the common properties `developerOnly` and `mutable`.
 
  - `developerOnly` means that this attribute can only be modified by an administrator. The use of this property is discouraged
