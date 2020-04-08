@@ -190,7 +190,7 @@ export interface CustomAttributeProps {
  * All common properties are set here and the method `baseAttributeConfig`
  * should be used by subclasses to create base CustomAttributeConfig object inside the `bind()` method.
  */
-abstract class CustomAttribute implements ICustomAttribute {
+export abstract class CustomAttribute implements ICustomAttribute {
   protected readonly developerOnly?: boolean;
   protected readonly mutable?: boolean;
 
