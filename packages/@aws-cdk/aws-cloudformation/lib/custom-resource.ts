@@ -161,12 +161,12 @@ export class CustomResource extends Resource {
 
     const type = renderResourceType(props.resourceType);
     const providerConfig = props.provider.bind(this);
-    
+
     // change properties to upper case under a feature flag (since this is a breaking change).
     const properties = this.node.tryGetContext(cxapi.DISABLE_CUSTOM_RESOURCE_UPPERCASE_PROPERTIES)
       ? (props.properties ?? {})
-      : uppercaseProperties(props.properties || {}));
-    
+      : uppercaseProperties(props.properties || {});
+
     this.resource = new CfnResource(this, 'Default', {
       type,
       properties: {
