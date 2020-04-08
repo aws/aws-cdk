@@ -1,3 +1,101 @@
+# CloudFormation Resource Specification v12.2.0
+
+## New Resource Types
+
+* AWS::Detective::Graph
+* AWS::Detective::MemberInvitation
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::CloudWatch::InsightRule Tags (__added__)
+* AWS::CodeBuild::ReportGroup Tags (__added__)
+* AWS::FSx::FileSystem StorageType (__added__)
+* AWS::KinesisAnalyticsV2::Application Tags (__added__)
+* AWS::StepFunctions::StateMachine TracingConfiguration (__added__)
+
+## Property Type Changes
+
+* AWS::EC2::EC2Fleet.TagRequest (__removed__)
+* AWS::CloudWatch::InsightRule.Tags (__added__)
+* AWS::EC2::EC2Fleet.CapacityReservationOptionsRequest (__added__)
+* AWS::EC2::EC2Fleet.Placement (__added__)
+* AWS::StepFunctions::StateMachine.TracingConfiguration (__added__)
+* AWS::Batch::JobDefinition.ContainerProperties Memory.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Batch::JobDefinition.ContainerProperties Vcpus.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::EC2::EC2Fleet.FleetLaunchTemplateConfigRequest LaunchTemplateSpecification.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::EC2Fleet.FleetLaunchTemplateConfigRequest Overrides.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::EC2Fleet.FleetLaunchTemplateOverridesRequest Placement (__added__)
+* AWS::EC2::EC2Fleet.FleetLaunchTemplateOverridesRequest AvailabilityZone.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::EC2Fleet.FleetLaunchTemplateOverridesRequest InstanceType.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::EC2Fleet.FleetLaunchTemplateOverridesRequest MaxPrice.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::EC2Fleet.FleetLaunchTemplateOverridesRequest Priority.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::EC2Fleet.FleetLaunchTemplateOverridesRequest SubnetId.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::EC2Fleet.FleetLaunchTemplateOverridesRequest WeightedCapacity.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::EC2Fleet.FleetLaunchTemplateSpecificationRequest LaunchTemplateId.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::EC2Fleet.FleetLaunchTemplateSpecificationRequest LaunchTemplateName.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::EC2Fleet.FleetLaunchTemplateSpecificationRequest Version.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::EC2Fleet.OnDemandOptionsRequest CapacityReservationOptions (__added__)
+* AWS::EC2::EC2Fleet.OnDemandOptionsRequest MaxTotalPrice (__added__)
+* AWS::EC2::EC2Fleet.OnDemandOptionsRequest MinTargetCapacity (__added__)
+* AWS::EC2::EC2Fleet.OnDemandOptionsRequest SingleAvailabilityZone (__added__)
+* AWS::EC2::EC2Fleet.OnDemandOptionsRequest SingleInstanceType (__added__)
+* AWS::EC2::EC2Fleet.OnDemandOptionsRequest AllocationStrategy.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::EC2Fleet.SpotOptionsRequest MaxTotalPrice (__added__)
+* AWS::EC2::EC2Fleet.SpotOptionsRequest MinTargetCapacity (__added__)
+* AWS::EC2::EC2Fleet.SpotOptionsRequest SingleAvailabilityZone (__added__)
+* AWS::EC2::EC2Fleet.SpotOptionsRequest SingleInstanceType (__added__)
+* AWS::EC2::EC2Fleet.SpotOptionsRequest AllocationStrategy.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::EC2Fleet.SpotOptionsRequest InstanceInterruptionBehavior.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::EC2Fleet.SpotOptionsRequest InstancePoolsToUseCount.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::EC2Fleet.TagSpecification ResourceType.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::EC2Fleet.TagSpecification Tags.ItemType (__changed__)
+  * Old: TagRequest
+  * New: Tag
+* AWS::EC2::EC2Fleet.TagSpecification Tags.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::IoTEvents::DetectorModel.SetTimer DurationExpression (__added__)
+
+
 # CloudFormation Resource Specification v12.0.0
 
 ## New Resource Types

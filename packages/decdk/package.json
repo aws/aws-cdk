@@ -71,6 +71,7 @@
     "@aws-cdk/aws-config": "0.0.0",
     "@aws-cdk/aws-datapipeline": "0.0.0",
     "@aws-cdk/aws-dax": "0.0.0",
+    "@aws-cdk/aws-detective": "0.0.0",
     "@aws-cdk/aws-directoryservice": "0.0.0",
     "@aws-cdk/aws-dlm": "0.0.0",
     "@aws-cdk/aws-dms": "0.0.0",
