@@ -61,7 +61,7 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
   // by pass "synth" if app points to a cloud assembly
   if (await fs.pathExists(app) && (await fs.stat(app)).isDirectory()) {
     debug('--app points to a cloud assembly, so we by pass synth');
-    return new cxapi.CloudAssembly(app);
+    return createAssembly(app);
   }
 
   const commandLine = await guessExecutable(appToArray(app));
@@ -83,7 +83,18 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
 
   await exec();
 
-  return new cxapi.CloudAssembly(outdir);
+  return createAssembly(outdir);
+
+  function createAssembly(appDir: string) {
+    try {
+      return new cxapi.CloudAssembly(appDir);
+    } catch (error) {
+      if (error.message.includes(cxschema.VERSION_MISMATCH)) {
+        throw new Error(`${error.message}.\nPlease upgrade your CLI in order to interact with this app.`);
+      }
+      throw error;
+    }
+  }
 
   async function exec() {
     return new Promise<string>((ok, fail) => {

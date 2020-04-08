@@ -3,6 +3,8 @@ import * as jsonschema from 'jsonschema';
 import * as semver from 'semver';
 import * as assembly from './schema';
 
+export const VERSION_MISMATCH: string = 'Cloud assembly schema version mismatch';
+
 /**
  * Protocol utility class.
  */
@@ -49,13 +51,14 @@ export class Manifest {
       return ver;
     }
 
-    const maxVersion = parseVersion(Manifest.version());
+    const maxSupported = parseVersion(Manifest.version());
     const actual = parseVersion(manifest.version);
 
     // first validate the version should be accepted.
-    if (semver.gt(actual, maxVersion)) {
-      throw new Error(`Cloud assembly schema version mismatch: Maximum schema version supported is ${maxVersion}, but found ${actual}.`
-      +  '\nPlease upgrade your CLI in order to interact with this app.');
+    if (semver.gt(actual, maxSupported)) {
+      // we throw a custom error type because this is caught in the CLI
+      // to print some more ontext to the user.
+      throw new Error(`${VERSION_MISMATCH}: Maximum schema version supported is ${maxSupported}, but found ${actual}`);
     }
 
     // now validate the format is good.
@@ -99,7 +102,7 @@ export class Manifest {
               const metadataAny = metadataEntry as any;
 
               metadataAny.data = metadataAny.data.map((t: any) => {
-                  return { key: t.Key, value: t.Value };
+                return { key: t.Key, value: t.Value };
               });
             }
           }
