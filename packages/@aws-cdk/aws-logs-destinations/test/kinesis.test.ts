@@ -51,7 +51,7 @@ test('stream can be subscription destination', () => {
       Statement: [
         {
           Action: [
-            'kinesis:DescribeStream',
+            'kinesis:ListShards',
             'kinesis:PutRecord',
             'kinesis:PutRecords',
           ],
@@ -122,7 +122,7 @@ test('stream can be subscription destination twice, without duplicating permissi
       Statement: [
         {
           Action: [
-            'kinesis:DescribeStream',
+            'kinesis:ListShards',
             'kinesis:PutRecord',
             'kinesis:PutRecords',
           ],

@@ -26,6 +26,9 @@ intake and aggregation.
 - [Streams](#streams)
   - [Encryption](#encryption)
   - [Import](#import)
+  - [Permission Grants](#permission-grants)
+    - [Read Permissions](#read-permissions)
+    - [Write Permissions](#write-permissions)
 
 ## Streams
 
@@ -119,3 +122,66 @@ const importedStream = Stream.fromStreamAttributes(
   }
 );
 ```
+
+### Permission Grants
+
+IAM roles, users or groups which need to be able to work with Amazon Kinesis streams at runtime should be granted IAM permissions.
+
+Any object that implements the `IGrantable` interface (has an associated principal) can be granted permissions by calling:
+
+- `grantRead(principal)` - grants the principal read access
+- `grantWrite(principal)` - grants the principal write permissions to a Stream
+- `grantReadWrite(principal)` - grants principal read and write permissions
+
+#### Read Permissions
+
+Grant `read` access to a stream by calling the `grantRead()` API.
+If the stream has an encryption key, read permissions will also be granted to the key.
+
+```ts
+const lambdaRole = new iam.Role(this, 'Role', {
+  assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+  description: 'Example role...',
+}
+
+const stream = new Stream(this, 'MyEncryptedStream', {
+    encryption: StreamEncryption.KMS
+});
+
+// give lambda permissions to read stream
+stream.grantRead(lambdaRole);
+```
+
+The following read permissions are provided to a service principal by the `grantRead()` API:
+
+- `kinesis:DescribeStream`
+- `kinesis:DescribeStreamSummary`
+- `kinesis:GetRecords`
+- `kinesis:GetShardIterator`
+- `kinesis:ListShards`
+- `kinesis:SubscribeToShard`
+
+#### Write Permissions
+
+Grant `write` permissions to a stream is provided by calling the `grantWrite()` API.
+If the stream has an encryption key, write permissions will also be granted to the key.
+
+```ts
+const lambdaRole = new iam.Role(this, 'Role', {
+  assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+  description: 'Example role...',
+}
+
+const stream = new Stream(this, 'MyEncryptedStream', {
+    encryption: StreamEncryption.KMS
+});
+
+// give lambda permissions to write to stream
+stream.grantWrite(lambdaRole);
+```
+
+The following write permissions are provided to a service principal by the `grantWrite()` API:
+
+- `kinesis:ListShards`
+- `kinesis:PutRecord`
+- `kinesis:PutRecords`
