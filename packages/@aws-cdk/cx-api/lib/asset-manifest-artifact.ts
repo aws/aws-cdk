@@ -1,3 +1,4 @@
+import * as path from 'path';
 import { ArtifactManifest, CloudArtifact } from './cloud-artifact';
 import { CloudAssembly } from './cloud-assembly';
 
@@ -17,6 +18,6 @@ export class AssetManifestArtifact extends CloudArtifact {
     if (!properties.file) {
       throw new Error('Invalid AssetManifestArtifact. Missing "fiel" property');
     }
-    this.file = properties.file;
+    this.file = path.resolve(this.assembly.directory, properties.file);
   }
 }
