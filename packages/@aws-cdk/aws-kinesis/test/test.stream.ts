@@ -868,9 +868,9 @@ export = {
                         'kinesis:GetRecords',
                         'kinesis:GetShardIterator',
                         'kinesis:ListShards',
+                        'kinesis:SubscribeToShard',
                         'kinesis:PutRecord',
-                        'kinesis:PutRecords',
-                        'kinesis:SubscribeToShard'
+                        'kinesis:PutRecords'
                       ],
                       Effect: 'Allow',
                       Resource: {
@@ -1114,9 +1114,9 @@ export = {
                         'kinesis:GetRecords',
                         'kinesis:GetShardIterator',
                         'kinesis:ListShards',
+                        'kinesis:SubscribeToShard',
                         'kinesis:PutRecord',
-                        'kinesis:PutRecords',
-                        'kinesis:SubscribeToShard'
+                        'kinesis:PutRecords'
                       ],
                       Effect: 'Allow',
                       Resource: {

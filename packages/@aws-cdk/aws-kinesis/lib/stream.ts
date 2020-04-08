@@ -4,6 +4,21 @@ import { Aws, CfnCondition, Construct, Duration, Fn, IResource, Resource, Stack 
 import { IResolvable } from 'constructs';
 import { CfnStream } from './kinesis.generated';
 
+const READ_OPERATIONS = [
+  'kinesis:DescribeStream',
+  'kinesis:DescribeStreamSummary',
+  'kinesis:GetRecords',
+  'kinesis:GetShardIterator',
+  'kinesis:ListShards',
+  'kinesis:SubscribeToShard'
+];
+
+const WRITE_OPERATIONS = [
+  'kinesis:ListShards',
+  'kinesis:PutRecord',
+  'kinesis:PutRecords'
+];
+
 /**
  * A Kinesis Stream
  */
@@ -115,14 +130,7 @@ abstract class StreamBase extends Resource implements IStream {
    * contents of the stream will also be granted.
    */
   public grantRead(grantee: iam.IGrantable) {
-    const ret = this.grant(
-      grantee,
-      'kinesis:DescribeStream',
-      'kinesis:DescribeStreamSummary',
-      'kinesis:GetRecords',
-      'kinesis:GetShardIterator',
-      'kinesis:ListShards',
-      'kinesis:SubscribeToShard');
+    const ret = this.grant(grantee, ...READ_OPERATIONS);
 
     if (this.encryptionKey) {
       this.encryptionKey.grantDecrypt(grantee);
@@ -139,11 +147,7 @@ abstract class StreamBase extends Resource implements IStream {
    * contents of the stream will also be granted.
    */
   public grantWrite(grantee: iam.IGrantable) {
-    const ret = this.grant(
-      grantee,
-      'kinesis:ListShards',
-      'kinesis:PutRecord',
-      'kinesis:PutRecords');
+    const ret = this.grant(grantee, ...WRITE_OPERATIONS);
 
     if (this.encryptionKey) {
       this.encryptionKey.grantEncrypt(grantee);
@@ -160,16 +164,7 @@ abstract class StreamBase extends Resource implements IStream {
    * encrypt/decrypt will also be granted.
    */
   public grantReadWrite(grantee: iam.IGrantable) {
-    const ret = this.grant(
-      grantee,
-      'kinesis:DescribeStream',
-      'kinesis:DescribeStreamSummary',
-      'kinesis:GetRecords',
-      'kinesis:GetShardIterator',
-      'kinesis:ListShards',
-      'kinesis:PutRecord',
-      'kinesis:PutRecords',
-      'kinesis:SubscribeToShard');
+    const ret = this.grant(grantee, ...Array.from(new Set([...READ_OPERATIONS, ...WRITE_OPERATIONS])));
 
     if (this.encryptionKey) {
       this.encryptionKey.grantEncryptDecrypt(grantee);

@@ -125,8 +125,9 @@ const importedStream = Stream.fromStreamAttributes(
 
 ### Permission Grants
 
-IAM roles, users or groups which need to be able to work with Amazon Kinesis streams at runtime will should be granted IAM permissions. Any object that implements the `IGrantable`
-interface (has an associated principal) can be granted permissions by calling:
+IAM roles, users or groups which need to be able to work with Amazon Kinesis streams at runtime should be granted IAM permissions.
+
+Any object that implements the `IGrantable` interface (has an associated principal) can be granted permissions by calling:
 
 - `grantRead(principal)` - grants the principal read access
 - `grantWrite(principal)` - grants the principal write permissions to a Stream
