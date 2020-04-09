@@ -4,6 +4,21 @@ import { Aws, CfnCondition, Construct, Duration, Fn, IResource, Resource, Stack 
 import { IResolvable } from 'constructs';
 import { CfnStream } from './kinesis.generated';
 
+const READ_OPERATIONS = [
+  'kinesis:DescribeStream',
+  'kinesis:DescribeStreamSummary',
+  'kinesis:GetRecords',
+  'kinesis:GetShardIterator',
+  'kinesis:ListShards',
+  'kinesis:SubscribeToShard'
+];
+
+const WRITE_OPERATIONS = [
+  'kinesis:ListShards',
+  'kinesis:PutRecord',
+  'kinesis:PutRecords'
+];
+
 /**
  * A Kinesis Stream
  */
@@ -115,7 +130,7 @@ abstract class StreamBase extends Resource implements IStream {
    * contents of the stream will also be granted.
    */
   public grantRead(grantee: iam.IGrantable) {
-    const ret = this.grant(grantee, 'kinesis:DescribeStream', 'kinesis:GetRecords', 'kinesis:GetShardIterator');
+    const ret = this.grant(grantee, ...READ_OPERATIONS);
 
     if (this.encryptionKey) {
       this.encryptionKey.grantDecrypt(grantee);
@@ -132,7 +147,7 @@ abstract class StreamBase extends Resource implements IStream {
    * contents of the stream will also be granted.
    */
   public grantWrite(grantee: iam.IGrantable) {
-    const ret = this.grant(grantee, 'kinesis:DescribeStream', 'kinesis:PutRecord', 'kinesis:PutRecords');
+    const ret = this.grant(grantee, ...WRITE_OPERATIONS);
 
     if (this.encryptionKey) {
       this.encryptionKey.grantEncrypt(grantee);
@@ -149,13 +164,7 @@ abstract class StreamBase extends Resource implements IStream {
    * encrypt/decrypt will also be granted.
    */
   public grantReadWrite(grantee: iam.IGrantable) {
-    const ret = this.grant(
-      grantee,
-      'kinesis:DescribeStream',
-      'kinesis:GetRecords',
-      'kinesis:GetShardIterator',
-      'kinesis:PutRecord',
-      'kinesis:PutRecords');
+    const ret = this.grant(grantee, ...Array.from(new Set([...READ_OPERATIONS, ...WRITE_OPERATIONS])));
 
     if (this.encryptionKey) {
       this.encryptionKey.grantEncryptDecrypt(grantee);
@@ -164,7 +173,10 @@ abstract class StreamBase extends Resource implements IStream {
     return ret;
   }
 
-  private grant(grantee: iam.IGrantable, ...actions: string[]) {
+  /**
+   * Grant the indicated permissions on this stream to the given IAM principal (Role/Group/User).
+   */
+  public grant(grantee: iam.IGrantable, ...actions: string[]) {
     return iam.Grant.addToPrincipal({
       grantee,
       actions,
@@ -331,15 +343,12 @@ export class Stream extends StreamBase {
     }
 
     if (encryptionType === StreamEncryption.UNENCRYPTED) {
-      return { streamEncryption: undefined, encryptionKey: undefined };
+      return { };
     }
 
     if (encryptionType === StreamEncryption.MANAGED) {
       const encryption = { encryptionType: 'KMS', keyId: 'alias/aws/kinesis'};
-      return {
-        streamEncryption: encryption,
-        encryptionKey: undefined
-      };
+      return { streamEncryption: encryption };
     }
 
     if (encryptionType === StreamEncryption.KMS) {

@@ -194,7 +194,8 @@ export = {
     const metric = new Metric({ namespace: 'CDK', metricName: 'Test' });
 
     const alarm = metric.createAlarm(stack, 'Alarm', {
-      evaluationPeriods: 2,
+      evaluationPeriods: 7,
+      datapointsToAlarm: 2,
       threshold: 1000
     });
 
@@ -219,7 +220,7 @@ export = {
           horizontal: [{
             yAxis: 'right',
             value: 1000,
-            label: 'Test >= 1000 for 2 datapoints within 10 minutes',
+            label: 'Test >= 1000 for 2 datapoints within 35 minutes',
           }]
         },
         yAxis: {}
