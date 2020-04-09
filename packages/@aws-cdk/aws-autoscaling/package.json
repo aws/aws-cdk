@@ -142,5 +142,6 @@
   "stability": "stable",
   "awscdkio": {
     "announce": false
-  }
+  },
+  "maturity": "stable"
 }

@@ -162,10 +162,16 @@ export class ReadmeFile extends ValidationRule {
 }
 
 /**
- * There must be a stability setting, and that the appropriate banner is present in the README.md file.
+ * All packages must have a "maturity" declaration.
+ *
+ * The banner in the README must match the package maturity.
+ *
+ * As a way to seed the settings, if 'maturity' is missing but can
+ * be auto-derived from 'stability', that will be the fix (otherwise
+ * there is no fix).
  */
-export class StabilitySetting extends ValidationRule {
-  public readonly name = 'package-info/stability';
+export class MaturitySetting extends ValidationRule {
+  public readonly name = 'package-info/maturity';
 
   public validate(pkg: PackageJson): void {
     if (pkg.json.private) {
@@ -173,50 +179,20 @@ export class StabilitySetting extends ValidationRule {
       return;
     }
 
-    // 'stability' contains the default API-level stability, either 'experimental', 'stable',
-    // 'deprecated' or 'external'. This is the value that will be used for every class
-    // unless it is annotated otherwise. It must be one of these values, which will be
-    // enforced by 'jsii'.
-    //
-    // On top of this, we have conceptual library-level "maturity", which is one of
-    // the following stages: 'cfn-only', 'experimental', 'developer-preview', 'stable',
-    // 'deprecated'. These render into stability banners in the README.
-    //
-    // The maturities mostly map onto default stabilities, and so maturity will
-    // be derived from stability if possible. The mapping is:
-    //
-    //     STABILITY      MATURITY
-    //     experimental   cfn-only
-    //                    experimental
-    //                    developer-preview
-    //     stable         stable
-    //     deprecated     deprecated
-    //     external       (not used, we don't allow 'external' as default stability)
-    //
-    // Since 'stability: experimental' maps onto 3 different maturities, you must annotate
-    // this manually. Otherwise, the stability value will be used to determine maturity.
-    //
-    // (Potentially, 'cfn-only' could have been derived automatically, but that would require
-    // making pkglint depend on 'jsii-reflect'... let's not go there).
     let maturity = pkg.json.maturity as string | undefined;
-    const stability = pkg.json.stability ?? (pkg.json.deprecated ? 'deprecated' : 'experimental');
+    const stability = pkg.json.stability as string | undefined;
+    if (!maturity) {
+      let fix;
+      if (stability && ['stable', 'deprecated'].includes(stability)) {
+        // We can autofix!
+        fix = () => pkg.json.maturity = stability;
+        maturity = stability;
+      }
 
-    const matchingMaturities = ['stable', 'deprecated'];
-
-    if (!maturity && !matchingMaturities.includes(stability)) {
       pkg.report({
         ruleName: this.name,
-        message: `"stability" is "${stability}", please also indicate "maturity" to one of "cfn-only"|"experimental"|"developer-preview"`,
-      });
-      return;
-    }
-
-    if (maturity && matchingMaturities.includes(stability)) {
-      pkg.report({
-        ruleName: this.name,
-        message: `"maturity" must either match "stability" of "${stability}", or be left out.`,
-        // Actually just undefine it
-        fix: () => pkg.json.maturity = undefined
+        message: `Package is missing "maturity" setting (expected one of ${Object.keys(MATURITY_TO_STABILITY)})`,
+        fix,
       });
     }
 
@@ -274,6 +250,44 @@ export class StabilitySetting extends ValidationRule {
       '<!--END STABILITY BANNER-->',
       '',
     ].join('\n');
+  }
+}
+
+const MATURITY_TO_STABILITY: Record<string, string> = {
+  'cfn-only': 'experimental',
+  'experimental': 'experimental',
+  'developer-preview': 'experimental',
+  'stable': 'stable',
+  'deprecated': 'deprecated',
+};
+
+/**
+ * There must be a stability setting, and it must match the package maturity.
+ *
+ * Maturity setting is leading here (as there are more options than the
+ * stability setting), but the stability setting must be present for `jsii`
+ * to properly read and encode it into the assembly.
+ */
+export class StabilitySetting extends ValidationRule {
+  public readonly name = 'package-info/stability';
+
+  public validate(pkg: PackageJson): void {
+    if (pkg.json.private) {
+      // Does not apply to private packages!
+      return;
+    }
+
+    const maturity = pkg.json.maturity as string | undefined;
+    const stability = pkg.json.stability as string | undefined;
+
+    const expectedStability = maturity ? MATURITY_TO_STABILITY[maturity] : undefined;
+    if (!stability || (expectedStability && stability !== expectedStability)) {
+      pkg.report({
+        ruleName: this.name,
+        message: `stability is '${stability}', but based on maturity is expected to be '${expectedStability}'`,
+        fix: expectedStability ? (() => pkg.json.stability = expectedStability) : undefined,
+      });
+    }
   }
 }
 
