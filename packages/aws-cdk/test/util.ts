@@ -38,7 +38,7 @@ export class MockCloudExecutable extends CloudExecutable {
   }
 }
 
-function testAssembly(assembly: TestAssembly): cxapi.CloudAssembly {
+export function testAssembly(assembly: TestAssembly): cxapi.CloudAssembly {
   const builder = new cxapi.CloudAssemblyBuilder();
 
   for (const stack of assembly.stacks) {
