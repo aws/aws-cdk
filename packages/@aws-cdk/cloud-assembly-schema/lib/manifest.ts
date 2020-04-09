@@ -3,6 +3,9 @@ import * as jsonschema from 'jsonschema';
 import * as semver from 'semver';
 import * as assembly from './schema';
 
+// this prefix is used by the CLI to identify this specific error.
+// in which case we want to instruct the user to upgrade his CLI.
+// see exec.ts#createAssembly
 export const VERSION_MISMATCH: string = 'Cloud assembly schema version mismatch';
 
 /**

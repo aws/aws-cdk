@@ -90,6 +90,8 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
       return new cxapi.CloudAssembly(appDir);
     } catch (error) {
       if (error.message.includes(cxschema.VERSION_MISMATCH)) {
+        // this means the CLI version is too old.
+        // we instruct the user to upgrade.
         throw new Error(`${error.message}.\nPlease upgrade your CLI in order to interact with this app.`);
       }
       throw error;
