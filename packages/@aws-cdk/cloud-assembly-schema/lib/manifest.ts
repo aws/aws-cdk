@@ -59,8 +59,8 @@ export class Manifest {
 
     // first validate the version should be accepted.
     if (semver.gt(actual, maxSupported)) {
-      // we throw a custom error type because this is caught in the CLI
-      // to print some more ontext to the user.
+      // we use a well known error prefix so that the CLI can identify this specific error
+      // and print some more context to the user.
       throw new Error(`${VERSION_MISMATCH}: Maximum schema version supported is ${maxSupported}, but found ${actual}`);
     }
 
