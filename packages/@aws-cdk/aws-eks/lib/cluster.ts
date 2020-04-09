@@ -10,7 +10,7 @@ import { FargateProfile, FargateProfileOptions } from './fargate-profile';
 import { HelmChart, HelmChartOptions } from './helm-chart';
 import { KubernetesPatch } from './k8s-patch';
 import { KubernetesResource } from './k8s-resource';
-import { Nodegroup, NodegroupOptions  } from './managed-nodegroup';
+import { Nodegroup, NodegroupOptions } from './managed-nodegroup';
 import { spotInterruptHandler } from './spot-interrupt-handler';
 import { renderUserData } from './user-data';
 
@@ -246,7 +246,7 @@ export interface ClusterProps extends ClusterOptions {
    *
    * @default NODEGROUP
    */
-  readonly defaultCapacityType?: DefaultCapacityType
+  readonly defaultCapacityType?: DefaultCapacityType;
 }
 
 /**
@@ -351,7 +351,7 @@ export class Cluster extends Resource implements ICluster {
    * @param name the name of the Construct to create
    * @param props properties in the IClusterProps interface
    */
-  constructor(scope: Construct, id: string, props: ClusterProps = { }) {
+  constructor(scope: Construct, id: string, props: ClusterProps = {}) {
     super(scope, id, {
       physicalName: props.clusterName,
     });
@@ -413,7 +413,7 @@ export class Cluster extends Resource implements ICluster {
 
     const updateConfigCommandPrefix = `aws eks update-kubeconfig --name ${this.clusterName}`;
     const getTokenCommandPrefix = `aws eks get-token --cluster-name ${this.clusterName}`;
-    const commonCommandOptions = [ `--region ${stack.region}` ];
+    const commonCommandOptions = [`--region ${stack.region}`];
 
     if (props.outputClusterName) {
       new CfnOutput(this, 'ClusterName', { value: this.clusterName });
@@ -442,7 +442,7 @@ export class Cluster extends Resource implements ICluster {
         this.addCapacity('DefaultCapacity', { instanceType, minCapacity }) : undefined;
 
       this.defaultNodegroup = props.defaultCapacityType !== DefaultCapacityType.EC2 ?
-        this.addNodegroup('DefaultCapacity', { instanceType, minSize: minCapacity } ) : undefined;
+        this.addNodegroup('DefaultCapacity', { instanceType, minSize: minCapacity }) : undefined;
     }
 
     const outputConfigCommand = props.outputConfigCommand === undefined ? true : props.outputConfigCommand;
@@ -473,18 +473,20 @@ export class Cluster extends Resource implements ICluster {
     const asg = new autoscaling.AutoScalingGroup(this, id, {
       ...options,
       vpc: this.vpc,
-      machineImage: new EksOptimizedImage({
-        nodeType: nodeTypeForInstanceType(options.instanceType),
-        kubernetesVersion: this.version,
-      }),
+      machineImage: options.machineImageType === MachineImageType.BOTTLEROCKET ?
+        new BottleRocketImage({ cluster: this }) :
+        new EksOptimizedImage({
+          nodeType: nodeTypeForInstanceType(options.instanceType),
+          kubernetesVersion: this.version,
+        }),
       updateType: options.updateType || autoscaling.UpdateType.ROLLING_UPDATE,
       instanceType: options.instanceType,
     });
 
     this.addAutoScalingGroup(asg, {
       mapRole: options.mapRole,
-      bootstrapOptions: options.bootstrapOptions,
-      bootstrapEnabled: options.bootstrapEnabled
+      bootstrapOptions: options.machineImageType === MachineImageType.BOTTLEROCKET ? undefined : options.bootstrapOptions,
+      bootstrapEnabled: options.machineImageType === MachineImageType.BOTTLEROCKET ? false : options.bootstrapEnabled
     });
 
     return asg;
@@ -771,6 +773,13 @@ export interface CapacityOptions extends autoscaling.CommonAutoScalingGroupProps
    * @default - none
    */
   readonly bootstrapOptions?: BootstrapOptions;
+
+  /**
+   * Machine image type
+   *
+   * @default MachineImageType.AMAZON_LINUX_2
+   */
+  readonly machineImageType?: MachineImageType;
 }
 
 /**
@@ -905,6 +914,16 @@ export interface EksOptimizedImageProps {
 }
 
 /**
+ * Properties for BottleRocketImageProps
+ */
+export interface BottleRocketImageProps {
+  /**
+   * The cluster to register from the instance running the bottlerocket image
+   */
+  readonly cluster: ICluster;
+}
+
+/**
  * Construct an Amazon Linux 2 image from the latest EKS Optimized AMI published in SSM
  */
 export class EksOptimizedImage implements ec2.IMachineImage {
@@ -922,8 +941,8 @@ export class EksOptimizedImage implements ec2.IMachineImage {
 
     // set the SSM parameter name
     this.amiParameterName = `/aws/service/eks/optimized-ami/${this.kubernetesVersion}/`
-      + ( this.nodeType === NodeType.STANDARD ? 'amazon-linux-2/' : '' )
-      + ( this.nodeType === NodeType.GPU ? 'amazon-linux2-gpu/' : '' )
+      + (this.nodeType === NodeType.STANDARD ? 'amazon-linux-2/' : '')
+      + (this.nodeType === NodeType.GPU ? 'amazon-linux2-gpu/' : '')
       + 'recommended/image_id';
   }
 
@@ -936,6 +955,48 @@ export class EksOptimizedImage implements ec2.IMachineImage {
       imageId: ami,
       osType: ec2.OperatingSystemType.LINUX,
       userData: ec2.UserData.forLinux(),
+    };
+  }
+}
+
+/**
+ * Construct an Bottlerocket image from the latest AMI published in SSM
+ */
+export class BottleRocketImage implements ec2.IMachineImage {
+  // private readonly nodeType?: NodeType;
+  private readonly kubernetesVersion?: string;
+
+  private readonly amiParameterName: string;
+
+  private readonly cluster: ICluster;
+
+  /**
+   * Constructs a new instance of the BottleRocketImage class.
+   */
+  public constructor(props: BottleRocketImageProps) {
+    // only 1.15 is available
+    this.kubernetesVersion = '1.15';
+
+    // set the SSM parameter name
+    this.amiParameterName = `/aws/service/bottlerocket/aws-k8s-${this.kubernetesVersion}/x86_64/latest/image_id`;
+
+    this.cluster = props.cluster;
+  }
+
+  /**
+   * Return the correct image
+   */
+  public getImage(scope: Construct): ec2.MachineImageConfig {
+    const ami = ssm.StringParameter.valueForStringParameter(scope, this.amiParameterName);
+    return {
+      imageId: ami,
+      osType: ec2.OperatingSystemType.LINUX,
+      userData: ec2.UserData.custom(`
+        [settings.kubernetes]
+        api-server="${this.cluster.clusterEndpoint}"
+        cluster-certificate="${this.cluster.clusterCertificateAuthorityData}"
+        cluster-name="${this.cluster.clusterName}"
+      `)
     };
   }
 }
@@ -985,6 +1046,20 @@ export enum DefaultCapacityType {
    * EC2 autoscaling group
    */
   EC2
+}
+
+/**
+ * The machine image type
+ */
+export enum MachineImageType {
+  /**
+   * Amazon EKS-optimized Linux AMI
+   */
+  AMAZON_LINUX_2,
+  /**
+   * Bottlerocket AMI
+   */
+  BOTTLEROCKET
 }
 
 const GPU_INSTANCETYPES = ['p2', 'p3', 'g4'];

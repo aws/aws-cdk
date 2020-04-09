@@ -32,6 +32,13 @@ class EksClusterStack extends TestStack {
       minCapacity: 3,
     });
 
+    // add bottlerocket nodes
+    cluster.addCapacity('BottlerocketNodes', {
+      instanceType: new ec2.InstanceType('t3.small'),
+      minCapacity:  2,
+      machineImageType: eks.MachineImageType.BOTTLEROCKET
+    });
+
     // spot instances (up to 10)
     cluster.addCapacity('spot', {
       spotPrice: '0.1094',
