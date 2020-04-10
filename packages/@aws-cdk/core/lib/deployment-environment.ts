@@ -2,12 +2,12 @@ import * as asset_schema from '@aws-cdk/cdk-assets-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs';
 import * as path from 'path';
-import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from "./assets";
+import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from './assets';
 import { Fn } from './cfn-fn';
-import { Construct, ISynthesisSession } from "./construct-compat";
+import { Construct, ISynthesisSession } from './construct-compat';
 import { FileAssetParameters } from './private/asset-parameters';
 import { TemplatedString } from './private/templated-string';
-import { Stack } from "./stack";
+import { Stack } from './stack';
 import { Token } from './token';
 
 /**
@@ -15,7 +15,7 @@ import { Token } from './token';
  * image assets will be pushed into this repository with an image tag based on
  * the source hash.
  */
-const ASSETS_ECR_REPOSITORY_NAME = "aws-cdk/assets";
+const ASSETS_ECR_REPOSITORY_NAME = 'aws-cdk/assets';
 
 /**
  * This allows users to work around the fact that the ECR repository is
@@ -23,7 +23,7 @@ const ASSETS_ECR_REPOSITORY_NAME = "aws-cdk/assets";
  * repository name. The CLI will auto-create this ECR repository if it's not
  * already created.
  */
-const ASSETS_ECR_REPOSITORY_NAME_OVERRIDE_CONTEXT_KEY = "assets-ecr-repository-name";
+const ASSETS_ECR_REPOSITORY_NAME_OVERRIDE_CONTEXT_KEY = 'assets-ecr-repository-name';
 
 /**
  * Encodes information how a certain Stack should be deployed
@@ -126,7 +126,7 @@ export interface ConventionModeDeploymentEnvironmentProps {
    * be replaced with the values of qualifier and the stack's account and region,
    * respectively.
    *
-   * @default "cdk-bootstrap-${Qualifier}-assets-${AWS::AccountId}-${AWS::Region}"
+   * @default 'cdk-bootstrap-${Qualifier}-assets-${AWS::AccountId}-${AWS::Region}'
    */
   readonly stagingBucketName?: string;
 
@@ -139,7 +139,7 @@ export interface ConventionModeDeploymentEnvironmentProps {
    * be replaced with the values of qualifier and the stack's account and region,
    * respectively.
    *
-   * @default "cdk-bootstrap-${Qualifier}-container-assets-${AWS::AccountId}-${AWS::Region}"
+   * @default 'cdk-bootstrap-${Qualifier}-container-assets-${AWS::AccountId}-${AWS::Region}'
    */
   readonly ecrRepositoryName?: string;
 
@@ -152,7 +152,7 @@ export interface ConventionModeDeploymentEnvironmentProps {
    * be replaced with the values of qualifier and the stack's account and region,
    * respectively.
    *
-   * @default "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-bootstrap-publishing-role-${AWS::AccountId}-${AWS::Region}"
+   * @default 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-bootstrap-publishing-role-${AWS::AccountId}-${AWS::Region}'
    */
   readonly assetPublishingRoleArn?: string;
 
@@ -172,7 +172,7 @@ export interface ConventionModeDeploymentEnvironmentProps {
    * be replaced with the values of qualifier and the stack's account and region,
    * respectively.
    *
-   * @default "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-bootstrap-deploy-action-role-${AWS::AccountId}-${AWS::Region}"
+   * @default 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-bootstrap-deploy-action-role-${AWS::AccountId}-${AWS::Region}'
    */
   readonly deployActionRoleArn?: string;
 
@@ -185,7 +185,7 @@ export interface ConventionModeDeploymentEnvironmentProps {
    * be replaced with the values of qualifier and the stack's account and region,
    * respectively.
    *
-   * @default "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-bootstrap-cfn-exec-role-${AWS::AccountId}-${AWS::Region}"
+   * @default 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-bootstrap-cfn-exec-role-${AWS::AccountId}-${AWS::Region}'
    */
   readonly cloudFormationExecutionRole?: string;
 
@@ -195,7 +195,7 @@ export interface ConventionModeDeploymentEnvironmentProps {
    * You can use this and leave the other naming properties empty if you have deployed
    * the bootstrap environment with standard names but only differnet qualifiers.
    *
-   * @default "hnb659fds"
+   * @default 'hnb659fds'
    */
   readonly qualifier?: string;
 }
@@ -229,7 +229,7 @@ export class ConventionModeDeploymentEnvironment implements IDeploymentEnvironme
   public bind(stack: Stack): void {
     this.stack = stack;
 
-    const qualifier = this.props.qualifier ?? "hnb659fds";
+    const qualifier = this.props.qualifier ?? 'hnb659fds';
 
     // NOTE: we purposely don't replace '${AWS::Partition}' since the only value we can replace it with is '${AWS::Partition}'
     const TPL = (s: string) => new TemplatedString<'Qualifier' | 'AWS::AccountId' | 'AWS::Region'>(s).sub({
@@ -544,7 +544,7 @@ export class NestedStackDeploymentEnvironment implements IDeploymentEnvironment 
 // Sanity check on these values.
 //
 // Too simplify stack agnostic handling, we rely on very exact values for the
-// various "current environment" placeholders. Yes, they're declared as constants
+// various 'current environment' placeholders. Yes, they're declared as constants
 // for readability, but they're not allowed to be changed. These assertions should
 // probably go into unit tests later, but for now they're here.
 //

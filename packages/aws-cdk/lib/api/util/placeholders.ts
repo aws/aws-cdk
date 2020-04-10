@@ -1,5 +1,5 @@
-import { CloudFormationStackArtifact } from "@aws-cdk/cx-api";
-import { Account, SdkProvider } from "../aws-auth";
+import { CloudFormationStackArtifact } from '@aws-cdk/cx-api';
+import { Account, SdkProvider } from '../aws-auth';
 
 /**
  * Replace the {ACCOUNT} and {REGION} placeholders in all strings found in a complex object.
@@ -50,7 +50,7 @@ export async function replaceAwsPlaceholders<A extends { }>(object: A, aws: SdkP
 }
 
 /**
- * A "replace-all" function that doesn't require us escaping a literal string to a regex
+ * A 'replace-all' function that doesn't require us escaping a literal string to a regex
  */
 function replaceAll(s: string, search: string, replace: string) {
   return s.split(search).join(replace);
