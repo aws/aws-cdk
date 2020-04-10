@@ -178,7 +178,7 @@ async function main() {
         '@aws-cdk/core': version,
       },
       engines: {
-        node: '>= 10.3.0'
+        node: '>= 10.12.0'
       },
       stability: 'experimental',
       awscdkio: {

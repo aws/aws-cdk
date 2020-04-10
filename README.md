@@ -57,7 +57,7 @@ on AWS.
 
 ## At a glance
 
-Install or update the [AWS CDK CLI] from npm (requires [Node.js ≥ 10.3.0](https://nodejs.org/download/release/latest-v10.x/)):
+Install or update the [AWS CDK CLI] from npm (requires [Node.js ≥ 10.12.0](https://nodejs.org/download/release/latest-v10.x/)):
 
 ```bash
 $ npm i -g aws-cdk
