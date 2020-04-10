@@ -80,7 +80,7 @@ test('cli throws when manifest version > schema version', async () => {
     +  '\nPlease upgrade your CLI in order to interact with this app.';
 
   const config1 = new Configuration();
-  config.settings = new Settings({
+  config1.settings = new Settings({
     app: outdir
   });
 
@@ -95,7 +95,7 @@ test('cli does not throw when manifest version = schema version', async () => {
   app.synth();
 
   const config1 = new Configuration();
-  config.settings = new Settings({
+  config1.settings = new Settings({
     app: outdir
   });
 
@@ -112,7 +112,7 @@ test('cli does not throw when manifest version < schema version', async () => {
   app.synth();
 
   const config1 = new Configuration();
-  config.settings = new Settings({
+  config1.settings = new Settings({
     app: outdir
   });
 
@@ -211,5 +211,5 @@ function writeOutputAssembly() {
   const asm = testAssembly({
     stacks: []
   });
-  bockfs.write('/home/project/cdk.out/manifest.json', JSON.stringify(asm));
+  bockfs.write('/home/project/cdk.out/manifest.json', JSON.stringify(asm.manifest));
 }
