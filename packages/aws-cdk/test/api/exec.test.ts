@@ -5,9 +5,9 @@ import * as os from 'os';
 import * as path from 'path';
 import * as semver from 'semver';
 import { ImportMock } from 'ts-mock-imports';
-import { SdkProvider } from '../../lib';
 import { execProgram } from '../../lib/api/cxapp/exec';
 import { Configuration, Settings } from '../../lib/settings';
+import { MockSdkProvider } from '../util/mock-sdk';
 
 // We need to increase the default 5s jest
 // timeout for async tests because the 'execProgram' invocation
@@ -28,8 +28,8 @@ function createApp(outdir: string): cdk.App {
   return app;
 }
 
-async function createSdkProvider() {
-  return await SdkProvider.withAwsCliCompatibleDefaults();
+function createSdkProvider() {
+  return new MockSdkProvider();
 }
 
 test('cli throws when manifest version > schema version', async () => {
@@ -50,7 +50,7 @@ test('cli throws when manifest version > schema version', async () => {
 
   const expectedError = `Cloud assembly schema version mismatch: Maximum schema version supported is ${currentSchemaVersion}, but found ${mockManifestVersion}.`
     +  '\nPlease upgrade your CLI in order to interact with this app.';
-  const sdkProvider = await createSdkProvider();
+  const sdkProvider = createSdkProvider();
 
   const config = new Configuration();
   config.settings = new Settings({
@@ -67,7 +67,7 @@ test('cli does not throw when manifest version = schema version', async () => {
   const app = createApp(outdir);
   app.synth();
 
-  const sdkProvider = await createSdkProvider();
+  const sdkProvider = createSdkProvider();
   const config = new Configuration();
   config.settings = new Settings({
     app: outdir
@@ -85,7 +85,7 @@ test('cli does not throw when manifest version < schema version', async () => {
 
   app.synth();
 
-  const sdkProvider = await createSdkProvider();
+  const sdkProvider = createSdkProvider();
   const config = new Configuration();
   config.settings = new Settings({
     app: outdir
