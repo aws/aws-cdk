@@ -45,7 +45,11 @@
     "organization": true
   },
   "dependencies": {
-    "semver": "^7.2.1"
+    "semver": "^7.2.1",
+    "@aws-cdk/cloud-assembly-schema": "0.0.0"
+  },
+  "peerDependencies": {
+    "@aws-cdk/cloud-assembly-schema": "0.0.0"
   },
   "jest": {
     "moduleFileExtensions": [

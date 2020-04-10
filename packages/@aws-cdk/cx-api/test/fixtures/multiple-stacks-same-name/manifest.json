@@ -1,5 +1,5 @@
 {
-  "version": "1.10.0",
+  "version": "0.0.0",
   "artifacts": {
     "stack1": {
       "type": "aws:cloudformation:stack",
