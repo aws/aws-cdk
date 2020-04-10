@@ -15,7 +15,9 @@
     "build+test": "npm run build && npm test"
   },
   "cdk-build": {
-    "pre": [ "./clone.sh" ],
+    "pre": [
+      "./clone.sh"
+    ],
     "eslint": {
       "disable": true
     },
@@ -69,7 +71,7 @@
   ],
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 10.3.0"
+    "node": ">= 10.12.0"
   },
   "stability": "experimental"
 }
