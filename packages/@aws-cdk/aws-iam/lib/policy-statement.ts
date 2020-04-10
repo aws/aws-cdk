@@ -44,6 +44,9 @@ export class PolicyStatement {
    * Statement ID for this statement
    */
   public sid?: string;
+  /**
+   * Whether to allow or deny the actions in this statement
+   */
   public effect: Effect;
 
   private readonly action = new Array<any>();
@@ -105,6 +108,11 @@ export class PolicyStatement {
     return Object.keys(this.principal).length > 0 || Object.keys(this.notPrincipal).length > 0;
   }
 
+  /**
+   * Adds principals to the "Principal" section of a policy statement
+   *
+   * @param principals IAM principals that will be added
+   */
   public addPrincipals(...principals: IPrincipal[]) {
     if (Object.keys(principals).length > 0 && Object.keys(this.notPrincipal).length > 0) {
       throw new Error('Cannot add \'Principals\' to policy statement if \'NotPrincipals\' have been added');
@@ -155,14 +163,25 @@ export class PolicyStatement {
     this.addPrincipals(new FederatedPrincipal(federated, conditions));
   }
 
+  /**
+   * Adds an AWS account root user principal to this policy statement
+   */
   public addAccountRootPrincipal() {
     this.addPrincipals(new AccountRootPrincipal());
   }
 
+  /**
+   * Adds a canonical user ID principal to this policy document
+   *
+   * @param canonicalUserId unique identifier assigned by AWS for every account
+   */
   public addCanonicalUserPrincipal(canonicalUserId: string) {
     this.addPrincipals(new CanonicalUserPrincipal(canonicalUserId));
   }
 
+  /**
+   * Adds all identities in all accounts ("*") to this policy statement
+   */
   public addAnyPrincipal() {
     this.addPrincipals(new Anyone());
   }
@@ -408,7 +427,7 @@ export interface PolicyStatementProps {
   /**
    * Whether to allow or deny the actions in this statement
    *
-   * @default - allow
+   * @default Effect.ALLOW
    */
   readonly effect?: Effect;
 }

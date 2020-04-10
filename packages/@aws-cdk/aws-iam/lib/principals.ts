@@ -289,6 +289,10 @@ export class ServicePrincipal extends PrincipalBase {
  * A principal that represents an AWS Organization
  */
 export class OrganizationPrincipal extends PrincipalBase {
+  /**
+   *
+   * @param organizationId The unique identifier (ID) of an organization (i.e. o-12345abcde)
+   */
   constructor(public readonly organizationId: string) {
     super();
   }

@@ -85,6 +85,9 @@ export interface PolicyProps {
  */
 export class Policy extends Resource implements IPolicy {
 
+  /**
+   * Import a policy in this app based on its name
+   */
   public static fromPolicyName(scope: Construct, id: string, policyName: string): IPolicy {
     class Import extends Resource implements IPolicy {
       public readonly policyName = policyName;
