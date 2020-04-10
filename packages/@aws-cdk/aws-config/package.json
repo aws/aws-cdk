@@ -92,7 +92,7 @@
     "node": ">= 10.3.0"
   },
   "stability": "experimental",
-  "maturity": "experimental",
+  "maturity": "developer-preview",
   "awscdkio": {
     "announce": false
   }
