@@ -1,0 +1,299 @@
+{
+    "$ref": "#/definitions/AssemblyManifest",
+    "definitions": {
+        "AssemblyManifest": {
+            "description": "A manifest which describes the cloud assembly.",
+            "type": "object",
+            "properties": {
+                "version": {
+                    "description": "Protocol version",
+                    "type": "string"
+                },
+                "artifacts": {
+                    "description": "The set of artifacts in this assembly. (Default - no artifacts.)",
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/ArtifactManifest"
+                    }
+                },
+                "missing": {
+                    "description": "Missing context information. If this field has values, it means that the\ncloud assembly is not complete and should not be deployed. (Default - no missing context.)",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/MissingContext"
+                    }
+                },
+                "runtime": {
+                    "description": "Runtime information. (Default - no info.)",
+                    "$ref": "#/definitions/RuntimeInfo"
+                }
+            },
+            "required": [
+                "version"
+            ]
+        },
+        "ArtifactManifest": {
+            "description": "A manifest for a single artifact within the cloud assembly.",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "$ref": "#/definitions/ArtifactType",
+                    "description": "The type of artifact."
+                },
+                "environment": {
+                    "description": "The environment into which this artifact is deployed. (Default - no envrionment.)",
+                    "type": "string"
+                },
+                "metadata": {
+                    "description": "Associated metadata. (Default - no metadata.)",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/definitions/MetadataEntry"
+                        }
+                    }
+                },
+                "dependencies": {
+                    "description": "IDs of artifacts that must be deployed before this artifact. (Default - no dependencies.)",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "properties": {
+                    "description": "The set of properties for this artifact (depends on type) (Default - no properties.)",
+                    "type": "object",
+                    "additionalProperties": {}
+                }
+            },
+            "required": [
+                "type"
+            ]
+        },
+        "ArtifactType": {
+            "description": "Type of cloud artifact.",
+            "enum": [
+                "aws:cloudformation:stack",
+                "cdk:tree",
+                "none"
+            ],
+            "type": "string"
+        },
+        "MetadataEntry": {
+            "description": "A metadata entry in a cloud assembly artifact.",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "description": "The type of the metadata entry.",
+                    "type": "string"
+                },
+                "data": {
+                    "description": "The data. (Default - no data.)",
+                    "anyOf": [
+                        {
+                            "$ref": "#/definitions/FileAssetMetadataEntry"
+                        },
+                        {
+                            "$ref": "#/definitions/ContainerImageAssetMetadataEntry"
+                        },
+                        {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Tag"
+                            }
+                        },
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "description": "Free form data."
+                        }
+                    ]
+                },
+                "trace": {
+                    "description": "A stack trace for when the entry was created. (Default - no trace.)",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": [
+                "type"
+            ]
+        },
+        "FileAssetMetadataEntry": {
+            "description": "Metadata Entry spec for files.",
+            "type": "object",
+            "properties": {
+                "packaging": {
+                    "description": "Requested packaging style",
+                    "enum": [
+                        "file",
+                        "zip"
+                    ],
+                    "type": "string"
+                },
+                "s3BucketParameter": {
+                    "description": "Name of parameter where S3 bucket should be passed in",
+                    "type": "string"
+                },
+                "s3KeyParameter": {
+                    "description": "Name of parameter where S3 key should be passed in",
+                    "type": "string"
+                },
+                "artifactHashParameter": {
+                    "description": "The name of the parameter where the hash of the bundled asset should be passed in.",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "Logical identifier for the asset",
+                    "type": "string"
+                },
+                "sourceHash": {
+                    "description": "The hash of the source directory used to build the asset.",
+                    "type": "string"
+                },
+                "path": {
+                    "description": "Path on disk to the asset",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "artifactHashParameter",
+                "id",
+                "packaging",
+                "path",
+                "s3BucketParameter",
+                "s3KeyParameter",
+                "sourceHash"
+            ]
+        },
+        "ContainerImageAssetMetadataEntry": {
+            "description": "Metadata Entry spec for container images.",
+            "type": "object",
+            "properties": {
+                "packaging": {
+                    "description": "Type of asset",
+                    "type": "string",
+                    "enum": [
+                        "container-image"
+                    ]
+                },
+                "imageNameParameter": {
+                    "description": "ECR Repository name and repo digest (separated by \"@sha256:\") where this\nimage is stored. (Default undefined If not specified, `repositoryName` and `imageTag` are\nrequired because otherwise how will the stack know where to find the asset,\nha?)",
+                    "type": "string"
+                },
+                "repositoryName": {
+                    "description": "ECR repository name, if omitted a default name based on the asset's ID is\nused instead. Specify this property if you need to statically address the\nimage, e.g. from a Kubernetes Pod. Note, this is only the repository name,\nwithout the registry and the tag parts. (Default - this parameter is REQUIRED after 1.21.0)",
+                    "type": "string"
+                },
+                "imageTag": {
+                    "description": "The docker image tag to use for tagging pushed images. This field is\nrequired if `imageParameterName` is ommited (otherwise, the app won't be\nable to find the image). (Default - this parameter is REQUIRED after 1.21.0)",
+                    "type": "string"
+                },
+                "buildArgs": {
+                    "description": "Build args to pass to the `docker build` command (Default no build args are passed)",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "target": {
+                    "description": "Docker target to build to (Default no build target)",
+                    "type": "string"
+                },
+                "file": {
+                    "description": "Path to the Dockerfile (relative to the directory). (Default - no file is passed)",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "Logical identifier for the asset",
+                    "type": "string"
+                },
+                "sourceHash": {
+                    "description": "The hash of the source directory used to build the asset.",
+                    "type": "string"
+                },
+                "path": {
+                    "description": "Path on disk to the asset",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "id",
+                "packaging",
+                "path",
+                "sourceHash"
+            ]
+        },
+        "Tag": {
+            "description": "Metadata Entry spec for stack tag.",
+            "type": "object",
+            "properties": {
+                "key": {
+                    "description": "Tag key.",
+                    "type": "string"
+                },
+                "value": {
+                    "description": "Tag value.",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "key",
+                "value"
+            ]
+        },
+        "MissingContext": {
+            "description": "Represents a missing piece of context.",
+            "type": "object",
+            "properties": {
+                "key": {
+                    "description": "The missing context key.",
+                    "type": "string"
+                },
+                "provider": {
+                    "description": "The provider from which we expect this context key to be obtained.",
+                    "type": "string"
+                },
+                "props": {
+                    "description": "A set of provider-specific options.",
+                    "type": "object",
+                    "additionalProperties": {},
+                    "properties": {
+                        "account": {
+                            "type": "string"
+                        },
+                        "region": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "required": [
+                "key",
+                "props",
+                "provider"
+            ]
+        },
+        "RuntimeInfo": {
+            "description": "Information about the application's runtime components.",
+            "type": "object",
+            "properties": {
+                "libraries": {
+                    "description": "The list of libraries loaded in the application, associated with their versions.",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": [
+                "libraries"
+            ]
+        }
+    },
+    "$schema": "http://json-schema.org/draft-07/schema#"
+}

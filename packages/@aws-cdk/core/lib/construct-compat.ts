@@ -10,6 +10,7 @@
  * This file, in its entirety, is expected to be removed in v2.0.
  */
 
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as constructs from 'constructs';
 import { IAspect } from './aspect';
@@ -389,7 +390,7 @@ export class ConstructNode {
    * @param message The info message.
    */
   public addInfo(message: string): void {
-    this._actualNode.addMetadata(cxapi.INFO_METADATA_KEY, message);
+    this._actualNode.addMetadata(cxschema.ArtifactMetadataEntryType.INFO, message);
   }
 
   /**
@@ -399,7 +400,7 @@ export class ConstructNode {
    * @param message The warning message.
    */
   public addWarning(message: string): void {
-    this._actualNode.addMetadata(cxapi.WARNING_METADATA_KEY, message);
+    this._actualNode.addMetadata(cxschema.ArtifactMetadataEntryType.WARN, message);
   }
 
   /**
@@ -408,7 +409,7 @@ export class ConstructNode {
    * @param message The error message.
    */
   public addError(message: string) {
-    this._actualNode.addMetadata(cxapi.ERROR_METADATA_KEY, message);
+    this._actualNode.addMetadata(cxschema.ArtifactMetadataEntryType.ERROR, message);
   }
 
   /**

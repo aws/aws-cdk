@@ -21,8 +21,9 @@
     "build": "tsc -b && tslint -p . && chmod +x bin/cdk-build && chmod +x bin/cdk-test && chmod +x bin/cdk-watch && chmod +x bin/cdk-awslint && pkglint",
     "watch": "tsc -b -w",
     "pkglint": "pkglint -f",
+    "test": "echo success",
     "build+test+package": "npm run build+test",
-    "build+test": "npm run build"
+    "build+test": "npm run build && npm test"
   },
   "author": {
     "name": "Amazon Web Services",

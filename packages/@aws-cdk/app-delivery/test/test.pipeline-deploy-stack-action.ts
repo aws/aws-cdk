@@ -6,8 +6,8 @@ import * as cpactions from '@aws-cdk/aws-codepipeline-actions';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cdk from '@aws-cdk/core';
-import * as cxapi from '@aws-cdk/cx-api';
 import * as fc from 'fast-check';
 import * as nodeunit from 'nodeunit';
 import { PipelineDeployStackAction } from '../lib/pipeline-deploy-stack-action';
@@ -390,7 +390,7 @@ export = nodeunit.testCase({
 
           const deployedStack = new cdk.Stack(app, 'DeployedStack');
           for (let i = 0 ; i < assetCount ; i++) {
-            deployedStack.node.addMetadata(cxapi.ASSET_METADATA, {});
+            deployedStack.node.addMetadata(cxschema.ArtifactMetadataEntryType.ASSET, {});
           }
 
           test.throws(() => {

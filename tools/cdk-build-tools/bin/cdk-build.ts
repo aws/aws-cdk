@@ -46,6 +46,10 @@ async function main() {
   }
 
   await compileCurrentPackage(timers, options, { eslint: args.eslint, jsii: args.jsii, tsc: args.tsc, tslint: args.tslint });
+
+  if (options.post) {
+    await shell(options.post, { timers });
+  }
 }
 
 const timers = new Timers();

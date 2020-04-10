@@ -1,4 +1,4 @@
-## Cloud Executable protocol
+## Cloud Executable API
 <!--BEGIN STABILITY BANNER-->
 
 ---

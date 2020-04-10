@@ -1,3 +1,4 @@
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { DefaultSelection } from '../../lib/api/cxapp/cloud-assembly';
 import { registerContextProvider } from '../../lib/context-providers';
@@ -86,7 +87,7 @@ async function testCloudExecutable({ env, versionReporting = true }: { env?: str
       metadata: {
         '/resource': [
           {
-            type: cxapi.ERROR_METADATA_KEY,
+            type: cxschema.ArtifactMetadataEntryType.ERROR,
             data: 'this is an error'
           }
         ]

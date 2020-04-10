@@ -314,6 +314,7 @@ export async function destroyStack(options: DestroyStackOptions) {
     return;
   }
   const monitor = options.quiet ? undefined : new StackActivityMonitor(cfn, deployName, options.stack).start();
+
   try {
     await cfn.deleteStack({ StackName: deployName, RoleARN: options.roleArn }).promise();
     const destroyedStack = await waitForStack(cfn, deployName, false);
