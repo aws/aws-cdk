@@ -502,6 +502,44 @@ Helm chart will be deleted.
 When there is no `release` defined, the chart will be installed using the `node.uniqueId`,
 which will be lower cassed and truncated to the last 63 characters.
 
+
+### Bottlerocket
+
+[Bottlerocket](https://aws.amazon.com/tw/bottlerocket/) is a Linux-based open-source operating system that is purpose-built by Amazon Web Services for running containers on virtual machines or bare metal hosts. At this moment the managed nodegroup only supports Amazon EKS-optimized AMI but it's possible to create a capacity of self-managed `AutoScalingGroup` running with bottlerocket Linux AMI. 
+
+The following example will create a capacity with self-managed Amazon EC2 capacity of 2 `t3.small` Linux instances running with `Bottlerocket` AMI.
+
+```ts
+// add bottlerocket nodes
+cluster.addCapacity('BottlerocketNodes', {
+  instanceType: new ec2.InstanceType('t3.small'),
+  minCapacity:  2,
+  machineImageType: eks.MachineImageType.BOTTLEROCKET
+});
+```
+
+To create a `Bottlerocket` only capacity without default capacity, set the cluster `defaultCapacity` to `0` before the `addCapacity()`.
+
+
+```ts
+// create cluster with no default capacity
+const cluster = new eks.Cluster(this, 'Cluster', {
+  mastersRole,
+  defaultCapacity: 0
+});
+
+// add bottlerocket capacity to this cluster
+cluster.addCapacity('BottlerocketNodes', {
+  machineImageType: eks.MachineImageType.BOTTLEROCKET
+});
+
+```
+
+Please note the `bootstrapEnabled` and `bootstrapOptions` properties is not required and will be ingored when you create the `Bottlerocket` capacity. 
+
+`Bottlerocket` is now available in public preview and only available in [some supported AWS regions](https://github.com/bottlerocket-os/bottlerocket/blob/develop/QUICKSTART.md#finding-an-ami). 
+
+
 ### Roadmap
 
 - [ ] AutoScaling (combine EC2 and Kubernetes scaling)
