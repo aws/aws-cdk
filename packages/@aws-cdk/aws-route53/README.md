@@ -12,7 +12,7 @@
 To add a public hosted zone:
 
 ```ts
-import route53 = require('@aws-cdk/aws-route53');
+import * as route53 from '@aws-cdk/aws-route53';
 
 new route53.PublicHostedZone(this, 'HostedZone', {
   zoneName: 'fully.qualified.domain.com'
@@ -24,8 +24,8 @@ To add a private hosted zone, use `PrivateHostedZone`. Note that
 VPC you're configuring for private hosted zones.
 
 ```ts
-import ec2 = require('@aws-cdk/aws-ec2');
-import route53 = require('@aws-cdk/aws-route53');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as route53 from '@aws-cdk/aws-route53';
 
 const vpc = new ec2.Vpc(this, 'VPC');
 
@@ -41,7 +41,7 @@ Additional VPCs can be added with `zone.addVpc()`.
 
 To add a TXT record to your zone:
 ```ts
-import route53 = require('@aws-cdk/aws-route53');
+import * as route53 from '@aws-cdk/aws-route53';
 
 new route53.TxtRecord(this, 'TXTRecord', {
   zone: myZone,
@@ -59,7 +59,7 @@ new route53.TxtRecord(this, 'TXTRecord', {
 
 To add a A record to your zone:
 ```ts
-import route53 = require('@aws-cdk/aws-route53');
+import * as route53 from '@aws-cdk/aws-route53';
 
 new route53.ARecord(this, 'ARecord', {
   zone: myZone,
@@ -69,8 +69,8 @@ new route53.ARecord(this, 'ARecord', {
 
 To add a AAAA record pointing to a CloudFront distribution:
 ```ts
-import route53 = require('@aws-cdk/aws-route53');
-import targets = require('@aws-cdk/aws-route53-targets');
+import * as route53 from '@aws-cdk/aws-route53';
+import * as targets from '@aws-cdk/aws-route53-targets';
 
 new route53.AaaaRecord(this, 'Alias', {
   zone: myZone,
