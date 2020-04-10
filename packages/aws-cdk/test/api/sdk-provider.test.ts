@@ -154,11 +154,14 @@ describe('CLI compatible credentials loading', () => {
     // Messy mocking
     let called = false;
     jest.mock('proxy-agent', () => {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       class FakeAgent extends require('https').Agent {
         public addRequest(_: any, __: any) {
-          // This error takes 6 seconds to be completely handled. It might be retries in the SDK
-          // somewhere, or something about the Node event loop. I've spent an hour trying to figure
-          // it out and I can't, and I gave up. We'll just have to live with this.
+          // FIXME: this error takes 6 seconds to be completely handled. It
+          // might be retries in the SDK somewhere, or something about the Node
+          // event loop. I've spent an hour trying to figure it out and I can't,
+          // and I gave up. We'll just have to live with this until someone gets
+          // inspired.
           const error = new Error('ABORTED BY TEST');
           (error as any).code = 'RequestAbortedError';
           (error as any).retryable = false;

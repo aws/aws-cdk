@@ -301,7 +301,6 @@ function parseHttpOptions(options: SdkHttpOptions) {
     debug('Using proxy server: %s', proxyAddress);
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const ProxyAgent: any = require('proxy-agent');
-    // tslint:disable-next-line:no-console
     config.httpOptions.agent = new ProxyAgent(proxyAddress);
   }
   if (caBundlePath) {
