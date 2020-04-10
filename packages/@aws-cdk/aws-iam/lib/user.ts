@@ -8,6 +8,11 @@ import { PolicyStatement } from './policy-statement';
 import { ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
 import { AttachedPolicies, undefinedIfEmpty } from './util';
 
+/**
+ * Represents an IAM user
+ *
+ * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users.html
+ */
 export interface IUser extends IIdentity {
   /**
    * The user's name

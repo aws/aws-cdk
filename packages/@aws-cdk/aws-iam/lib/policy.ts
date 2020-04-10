@@ -7,8 +7,15 @@ import { IRole } from './role';
 import { IUser } from './user';
 import { generatePolicyName, undefinedIfEmpty } from './util';
 
+/**
+ * Represents an IAM Policy
+ *
+ * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_manage.html
+ */
 export interface IPolicy extends IResource {
   /**
+   * The name of this policy.
+   *
    * @attribute
    */
   readonly policyName: string;

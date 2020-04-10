@@ -189,6 +189,11 @@ export class PrincipalWithConditions implements IPrincipal {
  * set of "Condition"s that need to be applied to the policy.
  */
 export class PrincipalPolicyFragment {
+  /**
+   *
+   * @param principalJson JSON of the "Principal" section in a policy statement
+   * @param conditions conditions that need to be applied to this policy
+   */
   constructor(
     public readonly principalJson: { [key: string]: string[] },
     /**
@@ -355,7 +360,7 @@ export class FederatedPrincipal extends PrincipalBase {
 
   /**
    *
-   * @param federated federated identity provider (i.e. 'cognito-identiy.amazonaws.com' for users authenticated through Cognito)
+   * @param federated federated identity provider (i.e. 'cognito-identity.amazonaws.com' for users authenticated through Cognito)
    * @param conditions The conditions under which the policy is in effect.
    *   See [the IAM documentation](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition.html).
    */

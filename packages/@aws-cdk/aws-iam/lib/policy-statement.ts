@@ -83,6 +83,13 @@ export class PolicyStatement {
   // Actions
   //
 
+  /**
+   * Specify allowed actions into the "Action" section of the policy statement.
+   *
+   * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_action.html
+   *
+   * @param actions actions that will be allowed.
+   */
   public addActions(...actions: string[]) {
     if (actions.length > 0 && this.notAction.length > 0) {
       throw new Error('Cannot add \'Actions\' to policy statement if \'NotActions\' have been added');
@@ -90,6 +97,14 @@ export class PolicyStatement {
     this.action.push(...actions);
   }
 
+  /**
+   * Explicitly allow all actions except the specified list of actions into the "NotAction" section
+   * of the policy document.
+   *
+   * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_notaction.html
+   *
+   * @param notActions actions that will be denied. All other actions will be permitted.
+   */
   public addNotActions(...notActions: string[]) {
     if (notActions.length > 0 && this.action.length > 0) {
       throw new Error('Cannot add \'NotActions\' to policy statement if \'Actions\' have been added');
@@ -109,7 +124,9 @@ export class PolicyStatement {
   }
 
   /**
-   * Adds principals to the "Principal" section of a policy statement
+   * Adds principals to the "Principal" section of a policy statement.
+   *
+   * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_principal.html
    *
    * @param principals IAM principals that will be added
    */
@@ -124,6 +141,14 @@ export class PolicyStatement {
     }
   }
 
+  /**
+   * Specify principals that is not allowed or denied access to the "NotPrincipal" section of
+   * a policy statement.
+   *
+   * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_notprincipal.html
+   *
+   * @param notPrincipals IAM principals that will be denied access
+   */
   public addNotPrincipals(...notPrincipals: IPrincipal[]) {
     if (Object.keys(notPrincipals).length > 0 && Object.keys(this.principal).length > 0) {
       throw new Error('Cannot add \'NotPrincipals\' to policy statement if \'Principals\' have been added');
@@ -135,6 +160,9 @@ export class PolicyStatement {
     }
   }
 
+  /**
+   * Specify AWS account ID as the principal entity to the "Principal" section of a policy statement.
+   */
   public addAwsAccountPrincipal(accountId: string) {
     this.addPrincipals(new AccountPrincipal(accountId));
   }
@@ -159,6 +187,13 @@ export class PolicyStatement {
     this.addPrincipals(new ServicePrincipal(service, opts));
   }
 
+  /**
+   * Adds a federated identity provider such as Amazon Cognito to this policy statement.
+   *
+   * @param federated federated identity provider (i.e. 'cognito-identity.amazonaws.com')
+   * @param conditions The conditions under which the policy is in effect.
+   *   See [the IAM documentation](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition.html).
+   */
   public addFederatedPrincipal(federated: any, conditions: Conditions) {
     this.addPrincipals(new FederatedPrincipal(federated, conditions));
   }
@@ -190,6 +225,14 @@ export class PolicyStatement {
   // Resources
   //
 
+  /**
+   * Specify resources that this policy statement applies into the "Resource" section of
+   * this policy statement.
+   *
+   * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_resource.html
+   *
+   * @param arns Amazon Resource Names (ARNs) of the resources that this policy statement applies to
+   */
   public addResources(...arns: string[]) {
     if (arns.length > 0 && this.notResource.length > 0) {
       throw new Error('Cannot add \'Resources\' to policy statement if \'NotResources\' have been added');
@@ -197,6 +240,14 @@ export class PolicyStatement {
     this.resource.push(...arns);
   }
 
+  /**
+   * Specify resources that this policy statement will not apply to in the "NotResource" section
+   * of this policy statement. All resources except the specified list will be matched.
+   *
+   * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_notresource.html
+   *
+   * @param arns Amazon Resource Names (ARNs) of the resources that this policy statement does not apply to
+   */
   public addNotResources(...arns: string[]) {
     if (arns.length > 0 && this.resource.length > 0) {
       throw new Error('Cannot add \'NotResources\' to policy statement if \'Resources\' have been added');
@@ -246,6 +297,11 @@ export class PolicyStatement {
     this.addCondition('StringEquals', { 'sts:ExternalId': accountId });
   }
 
+  /**
+   * JSON-ify the policy statement
+   *
+   * Used when JSON.stringify() is called
+   */
   public toStatementJson(): any {
     return noUndef({
       Action: _norm(this.action),
@@ -307,6 +363,9 @@ export class PolicyStatement {
     }
   }
 
+  /**
+   * String representation of this policy statement
+   */
   public toString() {
     return cdk.Token.asString(this, {
       displayHint: 'PolicyStatement'
