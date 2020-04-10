@@ -76,6 +76,7 @@
     "@aws-cdk/aws-elasticloadbalancingv2": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
+    "@aws-cdk/aws-logs": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "constructs": "^2.0.0"
   },
@@ -86,11 +87,12 @@
     "@aws-cdk/aws-elasticloadbalancingv2": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
+    "@aws-cdk/aws-logs": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "constructs": "^2.0.0"
   },
   "engines": {
-    "node": ">= 10.3.0"
+    "node": ">= 10.12.0"
   },
   "nyc": {
     "exclude": [
@@ -296,7 +298,8 @@
       "docs-public-apis:@aws-cdk/aws-apigateway.ResourceBase.url",
       "attribute-tag:@aws-cdk/aws-apigateway.LambdaAuthorizer.authorizerArn",
       "attribute-tag:@aws-cdk/aws-apigateway.RequestAuthorizer.authorizerArn",
-      "attribute-tag:@aws-cdk/aws-apigateway.TokenAuthorizer.authorizerArn"
+      "attribute-tag:@aws-cdk/aws-apigateway.TokenAuthorizer.authorizerArn",
+      "from-method:@aws-cdk/aws-apigateway.Stage"
     ]
   },
   "stability": "stable",
