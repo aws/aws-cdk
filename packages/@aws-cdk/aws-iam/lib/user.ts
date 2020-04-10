@@ -27,6 +27,9 @@ export interface IUser extends IIdentity {
   addToGroup(group: IGroup): void;
 }
 
+/**
+ * Properties for defining an IAM user
+ */
 export interface UserProps {
   /**
    * Groups to add this user to. You can also use `addToGroup` to add this

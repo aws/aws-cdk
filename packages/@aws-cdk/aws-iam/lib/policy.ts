@@ -14,6 +14,9 @@ export interface IPolicy extends IResource {
   readonly policyName: string;
 }
 
+/**
+ * Properties for defining an IAM inline policy document
+ */
 export interface PolicyProps {
   /**
    * The name of the policy. If you specify multiple policies for an entity,
