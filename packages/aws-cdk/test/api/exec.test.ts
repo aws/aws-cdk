@@ -1,15 +1,12 @@
 jest.mock('child_process');
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cdk from '@aws-cdk/core';
-import * as fs from 'fs';
-import * as os from 'os';
-import * as path from 'path';
 import * as semver from 'semver';
 import * as sinon from 'sinon';
 import { ImportMock } from 'ts-mock-imports';
 import { execProgram } from '../../lib/api/cxapp/exec';
 import { setVerbose } from '../../lib/logging';
-import { Configuration, Settings } from '../../lib/settings';
+import { Configuration } from '../../lib/settings';
 import * as bockfs from '../bockfs';
 import { testAssembly } from '../util';
 import { mockSpawn } from '../util/mock-child_process';
@@ -46,8 +43,8 @@ afterEach(() => {
 // might take a while :\
 const TEN_SECOND_TIMEOUT = 10000;
 
-function createApp(outdir: string): cdk.App {
-  const app = new cdk.App({outdir});
+function createApp(): cdk.App {
+  const app = new cdk.App({outdir: 'cdk.out'});
   const stack = new cdk.Stack(app, 'Stack');
 
   new cdk.CfnResource(stack, 'Role', {
@@ -62,8 +59,7 @@ function createApp(outdir: string): cdk.App {
 
 test('cli throws when manifest version > schema version', async () => {
 
-  const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'exec-tests'));
-  const app = createApp(outdir);
+  const app = createApp();
   const currentSchemaVersion = cxschema.Manifest.version();
   const mockManifestVersion = semver.inc(currentSchemaVersion, 'major');
 
@@ -79,48 +75,37 @@ test('cli throws when manifest version > schema version', async () => {
   const expectedError = `Cloud assembly schema version mismatch: Maximum schema version supported is ${currentSchemaVersion}, but found ${mockManifestVersion}.`
     +  '\nPlease upgrade your CLI in order to interact with this app.';
 
-  const config1 = new Configuration();
-  config1.settings = new Settings({
-    app: outdir
-  });
+  config.settings.set(['app'], 'cdk.out');
 
-  await expect(execProgram(sdkProvider, config1)).rejects.toEqual(new Error(expectedError));
+  await expect(execProgram(sdkProvider, config)).rejects.toEqual(new Error(expectedError));
 
 }, TEN_SECOND_TIMEOUT);
 
 test('cli does not throw when manifest version = schema version', async () => {
 
-  const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'exec-tests'));
-  const app = createApp(outdir);
+  const app = createApp();
   app.synth();
 
-  const config1 = new Configuration();
-  config1.settings = new Settings({
-    app: outdir
-  });
+  config.settings.set(['app'], 'cdk.out');
 
-  await execProgram(sdkProvider, config1);
+  await execProgram(sdkProvider, config);
 
 }, TEN_SECOND_TIMEOUT);
 
 test('cli does not throw when manifest version < schema version', async () => {
 
-  const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'exec-tests'));
-  const app = createApp(outdir);
+  const app = createApp();
   const currentSchemaVersion = cxschema.Manifest.version();
 
   app.synth();
 
-  const config1 = new Configuration();
-  config1.settings = new Settings({
-    app: outdir
-  });
+  config.settings.set(['app'], 'cdk.out');
 
   // this mock will cause the cli to think its exepcted schema version is
   // greater that the version created in the manifest, which is what we are testing for.
   const mockVersionNumber = ImportMock.mockFunction(cxschema.Manifest, 'version', semver.inc(currentSchemaVersion, 'major'));
   try {
-    await execProgram(sdkProvider, config1);
+    await execProgram(sdkProvider, config);
   } finally {
     mockVersionNumber.restore();
   }
