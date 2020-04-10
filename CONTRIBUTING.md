@@ -49,7 +49,7 @@ and let us know if it's not up-to-date (even better, submit a PR with your  corr
 ## Getting Started
 
 For day-to-day development and normal contributions, the following SDKs and tools are required:
- - [Node.js 10.3.0](https://nodejs.org/download/release/latest-v10.x/)
+ - [Node.js 10.12.0](https://nodejs.org/download/release/latest-v10.x/)
  - [Yarn >= 1.19.1](https://yarnpkg.com/lang/en/docs/install)
  - [Java OpenJDK 8](http://openjdk.java.net/install/)
  - [.NET Core SDK 3.0](https://www.microsoft.com/net/download)
