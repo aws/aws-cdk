@@ -963,7 +963,6 @@ export class EksOptimizedImage implements ec2.IMachineImage {
  * Construct an Bottlerocket image from the latest AMI published in SSM
  */
 export class BottleRocketImage implements ec2.IMachineImage {
-  // private readonly nodeType?: NodeType;
   private readonly kubernetesVersion?: string;
 
   private readonly amiParameterName: string;
@@ -974,7 +973,7 @@ export class BottleRocketImage implements ec2.IMachineImage {
    * Constructs a new instance of the BottleRocketImage class.
    */
   public constructor(props: BottleRocketImageProps) {
-    // only 1.15 is available
+    // only 1.15 is currently available
     this.kubernetesVersion = '1.15';
 
     // set the SSM parameter name
