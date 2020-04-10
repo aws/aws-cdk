@@ -1,7 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { App, Lazy, Stack } from '@aws-cdk/core';
-import { ASSET_METADATA } from '@aws-cdk/cx-api';
 import * as fs from 'fs';
 import { Test } from 'nodeunit';
 import * as path from 'path';
@@ -50,8 +50,8 @@ export = {
     });
 
     // THEN
-    const assetMetadata = stack.node.metadata.find(({ type }) => type === ASSET_METADATA);
-    test.deepEqual(assetMetadata && assetMetadata.data.buildArgs, { a: 'b' });
+    const assetMetadata = stack.node.metadata.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
+    test.deepEqual(assetMetadata && (assetMetadata.data as cxschema.ContainerImageAssetMetadataEntry).buildArgs, { a: 'b' });
     test.done();
   },
 
@@ -69,8 +69,8 @@ export = {
     });
 
     // THEN
-    const assetMetadata = stack.node.metadata.find(({ type }) => type === ASSET_METADATA);
-    test.deepEqual(assetMetadata && assetMetadata.data.target, 'a-target');
+    const assetMetadata = stack.node.metadata.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
+    test.deepEqual(assetMetadata && (assetMetadata.data as cxschema.ContainerImageAssetMetadataEntry).target, 'a-target');
     test.done();
   },
 
@@ -86,8 +86,8 @@ export = {
     });
 
     // THEN
-    const assetMetadata = stack.node.metadata.find(({ type }) => type === ASSET_METADATA);
-    test.deepEqual(assetMetadata && assetMetadata.data.file, 'Dockerfile.Custom');
+    const assetMetadata = stack.node.metadata.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
+    test.deepEqual(assetMetadata && (assetMetadata.data as cxschema.ContainerImageAssetMetadataEntry).file, 'Dockerfile.Custom');
     test.done();
   },
 

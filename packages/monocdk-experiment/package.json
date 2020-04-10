@@ -161,6 +161,7 @@
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
     "@types/node": "^10.17.18",
+    "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/aws-chatbot": "0.0.0",
     "@aws-cdk/aws-codestarconnections": "0.0.0",
     "@aws-cdk/aws-cassandra": "0.0.0",
@@ -174,6 +175,6 @@
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 10.3.0"
+    "node": ">= 10.12.0"
   }
 }

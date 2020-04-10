@@ -1,7 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import { StringParameter } from '@aws-cdk/aws-ssm';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { Stack } from '@aws-cdk/core';
-import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
 import { AmazonLinuxImage, BlockDeviceVolume, EbsDeviceVolumeType, Instance, InstanceClass, InstanceSize, InstanceType, Vpc } from '../lib';
 
@@ -237,7 +237,7 @@ export = {
       });
 
       // THEN
-      test.deepEqual(instance.node.metadata[0].type, cxapi.WARNING_METADATA_KEY);
+      test.deepEqual(instance.node.metadata[0].type, cxschema.ArtifactMetadataEntryType.WARN);
       test.deepEqual(instance.node.metadata[0].data, 'iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
 
       test.done();
@@ -264,7 +264,7 @@ export = {
       });
 
       // THEN
-      test.deepEqual(instance.node.metadata[0].type, cxapi.WARNING_METADATA_KEY);
+      test.deepEqual(instance.node.metadata[0].type, cxschema.ArtifactMetadataEntryType.WARN);
       test.deepEqual(instance.node.metadata[0].data, 'iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
 
       test.done();
