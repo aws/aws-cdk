@@ -105,25 +105,6 @@ export function pathToTopLevelStack(s: Stack): Stack[] {
 }
 
 /**
- * @returns true if this stack is a direct or indirect parent of the nested
- * stack `nested`. If `nested` is a top-level stack, returns false.
- */
-export function isParentOfNestedStack(parent: Stack, child: Stack): boolean {
-  // if "nested" is not a nested stack, then by definition we cannot be its parent
-  if (!child.nestedStackParent) {
-    return false;
-  }
-
-  // if this is the direct parent, then we found it
-  if (parent === child.nestedStackParent) {
-    return true;
-  }
-
-  // traverse up
-  return isParentOfNestedStack(parent, child.nestedStackParent);
-}
-
-/**
  * Given two arrays, returns the last common element or `undefined` if there
  * isn't (arrays are foriegn).
  */

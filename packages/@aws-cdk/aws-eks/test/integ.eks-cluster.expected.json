@@ -784,9 +784,7 @@
                 "eks:DeleteCluster",
                 "eks:UpdateClusterVersion",
                 "eks:UpdateClusterConfig",
-                "eks:CreateFargateProfile",
-                "eks:TagResource",
-                "eks:UntagResource"
+                "eks:CreateFargateProfile"
               ],
               "Effect": "Allow",
               "Resource": [
@@ -1895,7 +1893,7 @@
               },
               "/",
               {
-                "Ref": "AssetParametersc6510ec9618c99417a04af8cc6ed10b424085b76e94a020e26ae0b5cf3178cf6S3Bucket41E299BC"
+                "Ref": "AssetParameters0221f5cd1a0d3c0ffb2fbe4cbd2cec483bf690fb947411e20a3ab81bdb351420S3Bucket522186DC"
               },
               "/",
               {
@@ -1905,7 +1903,7 @@
                     "Fn::Split": [
                       "||",
                       {
-                        "Ref": "AssetParametersc6510ec9618c99417a04af8cc6ed10b424085b76e94a020e26ae0b5cf3178cf6S3VersionKey71B3A771"
+                        "Ref": "AssetParameters0221f5cd1a0d3c0ffb2fbe4cbd2cec483bf690fb947411e20a3ab81bdb351420S3VersionKey49A30498"
                       }
                     ]
                   }
@@ -1918,7 +1916,7 @@
                     "Fn::Split": [
                       "||",
                       {
-                        "Ref": "AssetParametersc6510ec9618c99417a04af8cc6ed10b424085b76e94a020e26ae0b5cf3178cf6S3VersionKey71B3A771"
+                        "Ref": "AssetParameters0221f5cd1a0d3c0ffb2fbe4cbd2cec483bf690fb947411e20a3ab81bdb351420S3VersionKey49A30498"
                       }
                     ]
                   }
@@ -1956,7 +1954,7 @@
               },
               "/",
               {
-                "Ref": "AssetParameters2377e47b4df6f3d032696e27f30e27037a5d18aeb58f9e42ce538e73a75971f7S3Bucket186FBEF7"
+                "Ref": "AssetParameters4879b18570e6d8e6398649d06615e96a53481f49423527777e15b54271976c83S3Bucket9B10D651"
               },
               "/",
               {
@@ -1966,7 +1964,7 @@
                     "Fn::Split": [
                       "||",
                       {
-                        "Ref": "AssetParameters2377e47b4df6f3d032696e27f30e27037a5d18aeb58f9e42ce538e73a75971f7S3VersionKey1EB57477"
+                        "Ref": "AssetParameters4879b18570e6d8e6398649d06615e96a53481f49423527777e15b54271976c83S3VersionKey99741143"
                       }
                     ]
                   }
@@ -1979,7 +1977,7 @@
                     "Fn::Split": [
                       "||",
                       {
-                        "Ref": "AssetParameters2377e47b4df6f3d032696e27f30e27037a5d18aeb58f9e42ce538e73a75971f7S3VersionKey1EB57477"
+                        "Ref": "AssetParameters4879b18570e6d8e6398649d06615e96a53481f49423527777e15b54271976c83S3VersionKey99741143"
                       }
                     ]
                   }
@@ -2113,29 +2111,29 @@
       "Type": "String",
       "Description": "Artifact hash for asset \"a6d508eaaa0d3cddbb47a84123fc878809c8431c5466f360912f70b5b9770afb\""
     },
-    "AssetParameters2377e47b4df6f3d032696e27f30e27037a5d18aeb58f9e42ce538e73a75971f7S3Bucket186FBEF7": {
+    "AssetParameters0221f5cd1a0d3c0ffb2fbe4cbd2cec483bf690fb947411e20a3ab81bdb351420S3Bucket522186DC": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"2377e47b4df6f3d032696e27f30e27037a5d18aeb58f9e42ce538e73a75971f7\""
+      "Description": "S3 bucket for asset \"0221f5cd1a0d3c0ffb2fbe4cbd2cec483bf690fb947411e20a3ab81bdb351420\""
     },
-    "AssetParameters2377e47b4df6f3d032696e27f30e27037a5d18aeb58f9e42ce538e73a75971f7S3VersionKey1EB57477": {
+    "AssetParameters0221f5cd1a0d3c0ffb2fbe4cbd2cec483bf690fb947411e20a3ab81bdb351420S3VersionKey49A30498": {
       "Type": "String",
-      "Description": "S3 key for asset version \"2377e47b4df6f3d032696e27f30e27037a5d18aeb58f9e42ce538e73a75971f7\""
+      "Description": "S3 key for asset version \"0221f5cd1a0d3c0ffb2fbe4cbd2cec483bf690fb947411e20a3ab81bdb351420\""
     },
-    "AssetParameters2377e47b4df6f3d032696e27f30e27037a5d18aeb58f9e42ce538e73a75971f7ArtifactHashD1316A92": {
+    "AssetParameters0221f5cd1a0d3c0ffb2fbe4cbd2cec483bf690fb947411e20a3ab81bdb351420ArtifactHash8E0FEA21": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"2377e47b4df6f3d032696e27f30e27037a5d18aeb58f9e42ce538e73a75971f7\""
+      "Description": "Artifact hash for asset \"0221f5cd1a0d3c0ffb2fbe4cbd2cec483bf690fb947411e20a3ab81bdb351420\""
     },
-    "AssetParametersc6510ec9618c99417a04af8cc6ed10b424085b76e94a020e26ae0b5cf3178cf6S3Bucket41E299BC": {
+    "AssetParameters4879b18570e6d8e6398649d06615e96a53481f49423527777e15b54271976c83S3Bucket9B10D651": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"c6510ec9618c99417a04af8cc6ed10b424085b76e94a020e26ae0b5cf3178cf6\""
+      "Description": "S3 bucket for asset \"4879b18570e6d8e6398649d06615e96a53481f49423527777e15b54271976c83\""
     },
-    "AssetParametersc6510ec9618c99417a04af8cc6ed10b424085b76e94a020e26ae0b5cf3178cf6S3VersionKey71B3A771": {
+    "AssetParameters4879b18570e6d8e6398649d06615e96a53481f49423527777e15b54271976c83S3VersionKey99741143": {
       "Type": "String",
-      "Description": "S3 key for asset version \"c6510ec9618c99417a04af8cc6ed10b424085b76e94a020e26ae0b5cf3178cf6\""
+      "Description": "S3 key for asset version \"4879b18570e6d8e6398649d06615e96a53481f49423527777e15b54271976c83\""
     },
-    "AssetParametersc6510ec9618c99417a04af8cc6ed10b424085b76e94a020e26ae0b5cf3178cf6ArtifactHashC32772E8": {
+    "AssetParameters4879b18570e6d8e6398649d06615e96a53481f49423527777e15b54271976c83ArtifactHash2E06714F": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"c6510ec9618c99417a04af8cc6ed10b424085b76e94a020e26ae0b5cf3178cf6\""
+      "Description": "Artifact hash for asset \"4879b18570e6d8e6398649d06615e96a53481f49423527777e15b54271976c83\""
     },
     "SsmParameterValueawsserviceeksoptimizedami114amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
       "Type": "AWS::SSM::Parameter::Value<String>",

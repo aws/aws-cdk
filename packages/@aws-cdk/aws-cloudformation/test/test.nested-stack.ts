@@ -1,4 +1,4 @@
-import { expect, haveResource, SynthUtils } from '@aws-cdk/assert';
+import { expect, haveResource, matchTemplate, SynthUtils } from '@aws-cdk/assert';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import * as sns from '@aws-cdk/aws-sns';
 import { App, CfnParameter, CfnResource, Construct, ContextProvider, Stack } from '@aws-cdk/core';
@@ -909,4 +909,61 @@ export = {
 
     test.done();
   },
+
+  'references to a resource from a deeply nested stack'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const top = new Stack(app, 'stack');
+    const topLevel = new CfnResource(top, 'toplevel', { type: 'TopLevel' });
+    const nested1 = new NestedStack(top, 'nested1');
+    const nested2 = new NestedStack(nested1, 'nested2');
+
+    // WHEN
+    new CfnResource(nested2, 'refToTopLevel', {
+      type: 'BottomLevel',
+      properties: { RefToTopLevel: topLevel.ref }
+    });
+
+    // THEN
+    expect(top).to(haveResource('AWS::CloudFormation::Stack', {
+      Parameters: {
+        referencetostackAssetParameters842982bd421cce9742ba27151ef12ed699d44d22801f41e8029f63f2358a3f2fS3Bucket5DA5D2E7Ref: {
+          Ref: 'AssetParameters842982bd421cce9742ba27151ef12ed699d44d22801f41e8029f63f2358a3f2fS3BucketDD4D96B5'
+        },
+        referencetostackAssetParameters842982bd421cce9742ba27151ef12ed699d44d22801f41e8029f63f2358a3f2fS3VersionKey8FBE5C12Ref: {
+          Ref: 'AssetParameters842982bd421cce9742ba27151ef12ed699d44d22801f41e8029f63f2358a3f2fS3VersionKey83E381F3'
+        },
+        referencetostacktoplevelBB16BF13Ref: {
+          Ref: 'toplevel'
+        }
+      }
+    }));
+
+    expect(nested1).to(haveResource('AWS::CloudFormation::Stack', {
+      Parameters: {
+        referencetostacktoplevelBB16BF13Ref: {
+          Ref: 'referencetostacktoplevelBB16BF13Ref'
+        }
+      }
+    }));
+
+    expect(nested2).to(matchTemplate({
+      Resources: {
+        refToTopLevel: {
+          Type: 'BottomLevel',
+          Properties: {
+            RefToTopLevel: {
+              Ref: 'referencetostacktoplevelBB16BF13Ref'
+            }
+          }
+        }
+      },
+      Parameters: {
+        referencetostacktoplevelBB16BF13Ref: {
+          Type: 'String'
+        },
+      },
+    }));
+    test.done();
+  }
 };
