@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.32.2](https://github.com/aws/aws-cdk/compare/v1.32.1...v1.32.2) (2020-04-10)
+
+### Bug Fixes
+
+* **cli:** profile AssumeRole credentials don't work via proxy ([#7292](https://github.com/aws/aws-cdk/pull/7292))
+
 ## [1.32.1](https://github.com/aws/aws-cdk/compare/v1.32.0...v1.32.1) (2020-04-09)
 
 
@@ -28,7 +34,7 @@ code provider. The props `repository`, `accessToken` and `oauthToken` do not exi
 anymore in `AppProps`.
 * **kinesis:** `retentionPeriodHours` is now `retentionPeriod` and of type `Duration`
 * **eks:** `Cluster` now creates a default managed nodegroup as its default capacity. Set the new cluster property `defaultCapacityType` to `DefaultCapacityType.EC2` to preserve `EC2` as its default capacity.
-* **cognito:** `add*Trigger()` methods to configure 
+* **cognito:** `add*Trigger()` methods to configure
 lambda triggers has now been replaced  by a single
 `addTrigger()` method.
 * **cognito:** `addTrigger()` method will fail if a trigger
