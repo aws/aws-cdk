@@ -7,13 +7,23 @@ import { IRole } from './role';
 import { IUser } from './user';
 import { generatePolicyName, undefinedIfEmpty } from './util';
 
+/**
+ * Represents an IAM Policy
+ *
+ * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_manage.html
+ */
 export interface IPolicy extends IResource {
   /**
+   * The name of this policy.
+   *
    * @attribute
    */
   readonly policyName: string;
 }
 
+/**
+ * Properties for defining an IAM inline policy document
+ */
 export interface PolicyProps {
   /**
    * The name of the policy. If you specify multiple policies for an entity,
@@ -82,6 +92,9 @@ export interface PolicyProps {
  */
 export class Policy extends Resource implements IPolicy {
 
+  /**
+   * Import a policy in this app based on its name
+   */
   public static fromPolicyName(scope: Construct, id: string, policyName: string): IPolicy {
     class Import extends Resource implements IPolicy {
       public readonly policyName = policyName;

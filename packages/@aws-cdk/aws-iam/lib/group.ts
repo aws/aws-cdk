@@ -8,6 +8,11 @@ import { ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals'
 import { IUser } from './user';
 import { AttachedPolicies } from './util';
 
+/**
+ * Represents an IAM Group.
+ *
+ * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_groups.html
+ */
 export interface IGroup extends IIdentity {
   /**
    * Returns the IAM Group Name
@@ -24,6 +29,9 @@ export interface IGroup extends IIdentity {
   readonly groupArn: string;
 }
 
+/**
+ * Properties for defining an IAM group
+ */
 export interface GroupProps {
   /**
    * A name for the IAM group. For valid values, see the GroupName parameter
@@ -107,6 +115,12 @@ abstract class GroupBase extends Resource implements IGroup {
   }
 }
 
+/**
+ * An IAM Group (collection of IAM users) lets you specify permissions for
+ * multiple users, which can make it easier to manage permissions for those users.
+ *
+ * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_groups.html
+ */
 export class Group extends GroupBase {
   /**
    * Import an external group by ARN.

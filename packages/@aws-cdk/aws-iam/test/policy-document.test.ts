@@ -5,7 +5,7 @@ import {
   FederatedPrincipal, IPrincipal, PolicyDocument, PolicyStatement, PrincipalPolicyFragment, ServicePrincipal
 } from '../lib';
 
-describe('IAM polocy document', () => {
+describe('IAM policy document', () => {
   test('the Permission class is a programming model for iam', () => {
     const stack = new Stack();
 
