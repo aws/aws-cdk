@@ -1,8 +1,8 @@
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { ArtifactType, CloudAssemblyBuilder } from '../lib';
-import { CLOUD_ASSEMBLY_VERSION } from '../lib/versioning';
+import { CloudAssemblyBuilder } from '../lib';
 
 test('cloud assembly builder', () => {
   // GIVEN
@@ -12,11 +12,11 @@ test('cloud assembly builder', () => {
 
   // WHEN
   session.addArtifact('my-first-artifact', {
-    type: ArtifactType.AWS_CLOUDFORMATION_STACK,
+    type: cxschema.ArtifactType.AWS_CLOUDFORMATION_STACK,
     environment: 'aws://1222344/us-east-1',
     dependencies: ['minimal-artifact'],
     metadata: {
-      foo: [ { data: 123, type: 'foo', trace: [] } ]
+      foo: [ { data: '123', type: 'foo', trace: [] } ]
     },
     properties: {
       templateFile,
@@ -28,7 +28,7 @@ test('cloud assembly builder', () => {
   });
 
   session.addArtifact('tree-artifact', {
-    type: ArtifactType.CDK_TREE,
+    type: cxschema.ArtifactType.CDK_TREE,
     properties: {
       file: 'foo.tree.json'
     }
@@ -44,7 +44,7 @@ test('cloud assembly builder', () => {
   });
 
   session.addArtifact('minimal-artifact', {
-    type: ArtifactType.AWS_CLOUDFORMATION_STACK,
+    type: cxschema.ArtifactType.AWS_CLOUDFORMATION_STACK,
     environment: 'aws://111/helo-world',
     properties: {
       templateFile
@@ -65,7 +65,7 @@ test('cloud assembly builder', () => {
   // THEN
   // verify the manifest looks right
   expect(manifest).toStrictEqual({
-    version: CLOUD_ASSEMBLY_VERSION,
+    version: cxschema.Manifest.version(),
     missing: [
       { key: 'foo', provider: 'context-provider', props: { a: 'A', b: 2 } }
     ],
@@ -80,7 +80,7 @@ test('cloud assembly builder', () => {
         type: 'aws:cloudformation:stack',
         environment: 'aws://1222344/us-east-1',
         dependencies: ['minimal-artifact'],
-        metadata: { foo: [ { data: 123, type: 'foo', trace: [] } ] },
+        metadata: { foo: [ { data: '123', type: 'foo', trace: [] } ] },
         properties: {
           templateFile: 'foo.template.json',
           parameters: {
