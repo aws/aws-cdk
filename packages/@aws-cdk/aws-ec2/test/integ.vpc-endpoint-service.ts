@@ -42,7 +42,7 @@ class VpcEndpointServiceStack extends cdk.Stack {
 
     new cdk.CfnOutput(this, 'MyVpcEndpointServiceWithNoPrincipalsServiceName', {
       exportName: 'ServiceName',
-      value: service1.serviceName,
+      value: service1.vpcEndpointServiceName,
       description: 'Give this to service consumers so they can connect via VPC Endpoint'
     });
 
