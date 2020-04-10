@@ -718,7 +718,9 @@ export = {
                 'eks:DeleteCluster',
                 'eks:UpdateClusterVersion',
                 'eks:UpdateClusterConfig',
-                'eks:CreateFargateProfile'
+                'eks:CreateFargateProfile',
+                'eks:TagResource',
+                'eks:UntagResource'
               ],
               Effect: 'Allow',
               Resource: [ {
@@ -826,7 +828,9 @@ export = {
                 'eks:DeleteCluster',
                 'eks:UpdateClusterVersion',
                 'eks:UpdateClusterConfig',
-                'eks:CreateFargateProfile'
+                'eks:CreateFargateProfile',
+                'eks:TagResource',
+                'eks:UntagResource'
               ],
               Effect: 'Allow',
               Resource: [ '*' ]
