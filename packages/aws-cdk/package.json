@@ -63,12 +63,14 @@
     "mockery": "^2.1.0",
     "pkglint": "0.0.0",
     "sinon": "^9.0.2",
-    "ts-jest": "^25.3.1"
+    "ts-jest": "^25.3.1",
+    "ts-mock-imports": "^1.2.6"
   },
   "dependencies": {
     "@aws-cdk/cdk-assets-schema": "0.0.0",
     "@aws-cdk/cloudformation-diff": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
+    "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
     "archiver": "^3.1.1",
     "aws-sdk": "^2.656.0",
@@ -100,7 +102,7 @@
   ],
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 10.3.0"
+    "node": ">= 10.12.0"
   },
   "stability": "stable",
   "jest": {

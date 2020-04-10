@@ -96,7 +96,7 @@
     "constructs": "^2.0.0"
   },
   "engines": {
-    "node": ">= 10.3.0"
+    "node": ">= 10.12.0"
   },
   "awslint": {
     "exclude": [
@@ -109,7 +109,6 @@
       "resource-attribute:@aws-cdk/aws-eks.Cluster.clusterSecurityGroupId",
       "docs-public-apis:@aws-cdk/aws-eks.NodegroupAmiType.AL2_X86_64",
       "docs-public-apis:@aws-cdk/aws-eks.NodegroupAmiType.AL2_X86_64_GPU"
-
     ]
   },
   "stability": "experimental",
