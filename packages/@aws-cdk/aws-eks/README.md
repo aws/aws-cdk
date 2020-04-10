@@ -524,7 +524,6 @@ To create a `Bottlerocket` only capacity without default capacity, set the clust
 ```ts
 // create cluster with no default capacity
 const cluster = new eks.Cluster(this, 'Cluster', {
-  mastersRole,
   defaultCapacity: 0
 });
 
