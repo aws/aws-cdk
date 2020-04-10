@@ -15,37 +15,26 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
   const context = config.context.all;
   await populateDefaultEnvironmentIfNeeded(aws, env);
 
-  let pathMetadata: boolean = config.settings.get(['pathMetadata']);
-  if (pathMetadata === undefined) {
-    pathMetadata = true; // defaults to true
-  }
+  const pathMetadata: boolean = config.settings.get(['pathMetadata']) ?? true;
 
   if (pathMetadata) {
     context[cxapi.PATH_METADATA_ENABLE_CONTEXT] = true;
   }
 
-  let assetMetadata: boolean = config.settings.get(['assetMetadata']);
-  if (assetMetadata === undefined) {
-    assetMetadata = true; // defaults to true
-  }
+  const assetMetadata: boolean = config.settings.get(['assetMetadata']) ?? true;
 
   if (assetMetadata) {
     context[cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT] = true;
   }
 
-  let versionReporting: boolean = config.settings.get(['versionReporting']);
-  if (versionReporting === undefined) {
-    versionReporting = true; // defaults to true
-  }
+  const versionReporting: boolean = config.settings.get(['versionReporting']) ?? true;
 
   if (!versionReporting) {
     context[cxapi.DISABLE_VERSION_REPORTING] = true;
   }
 
-  let stagingEnabled = config.settings.get(['staging']);
-  if (stagingEnabled === undefined) {
-    stagingEnabled = true;
-  }
+  const stagingEnabled = config.settings.get(['staging']) ?? true;
+
   if (!stagingEnabled) {
     context[cxapi.DISABLE_ASSET_STAGING_CONTEXT] = true;
   }
@@ -58,9 +47,9 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
     throw new Error(`--app is required either in command-line, in ${PROJECT_CONFIG} or in ${USER_DEFAULTS}`);
   }
 
-  // by pass "synth" if app points to a cloud assembly
+  // bypass "synth" if app points to a cloud assembly
   if (await fs.pathExists(app) && (await fs.stat(app)).isDirectory()) {
-    debug('--app points to a cloud assembly, so we by pass synth');
+    debug('--app points to a cloud assembly, so we bypass synth');
     return createAssembly(app);
   }
 
@@ -107,7 +96,7 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
       //   (which would be different between Linux and Windows).
       //
       // - Inherit stderr from controlling terminal. We don't use the captured value
-      //   anway, and if the subprocess is printing to it for debugging purposes the
+      //   anyway, and if the subprocess is printing to it for debugging purposes the
       //   user gets to see it sooner. Plus, capturing doesn't interact nicely with some
       //   processes like Maven.
       const proc = childProcess.spawn(commandLine[0], commandLine.slice(1), {
@@ -135,10 +124,10 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
 
 /**
  * If we don't have region/account defined in context, we fall back to the default SDK behavior
- * where region is retreived from ~/.aws/config and account is based on default credentials provider
+ * where region is retrieved from ~/.aws/config and account is based on default credentials provider
  * chain and then STS is queried.
  *
- * This is done opportunistically: for example, if we can't acccess STS for some reason or the region
+ * This is done opportunistically: for example, if we can't access STS for some reason or the region
  * is not configured, the context value will be 'null' and there could failures down the line. In
  * some cases, synthesis does not require region/account information at all, so that might be perfectly
  * fine in certain scenarios.
@@ -193,7 +182,15 @@ const EXTENSION_MAP = new Map<string, CommandGenerator>([
  */
 async function guessExecutable(commandLine: string[]) {
   if (commandLine.length === 1) {
-    const fstat = await fs.stat(commandLine[0]);
+    let fstat;
+
+    try {
+      fstat = await fs.stat(commandLine[0]);
+    } catch (error) {
+      debug(`Not a file: '${commandLine[0]}'. Using '${commandLine}' as command-line`);
+      return commandLine;
+    }
+
     // tslint:disable-next-line:no-bitwise
     const isExecutable = (fstat.mode & fs.constants.X_OK) !== 0;
     const isWindows = process.platform === 'win32';

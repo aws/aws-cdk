@@ -90,7 +90,7 @@
     "constructs": "^2.0.0"
   },
   "engines": {
-    "node": ">= 10.3.0"
+    "node": ">= 10.12.0"
   },
   "stability": "experimental",
   "awslint": {
