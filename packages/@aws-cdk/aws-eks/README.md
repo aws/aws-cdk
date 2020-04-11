@@ -518,7 +518,7 @@ cluster.addCapacity('BottlerocketNodes', {
 });
 ```
 
-To create a `Bottlerocket` only capacity without default capacity, set the cluster `defaultCapacity` to `0` before the `addCapacity()`.
+To define only Bottlerocket capacity in your cluster, set `defaultCapacity` to `0` when you define the cluster as described above.
 
 
 ```ts
