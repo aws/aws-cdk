@@ -5,7 +5,6 @@ import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as eks from '../lib';
 import { KubectlLayer } from '../lib/kubectl-layer';
-import { spotInterruptHandler } from '../lib/spot-interrupt-handler';
 import { testFixture, testFixtureNoVpc } from './util';
 
 // tslint:disable:max-line-length
@@ -567,7 +566,14 @@ export = {
           });
 
           // THEN
-          expect(stack).to(haveResource(eks.KubernetesResource.RESOURCE_TYPE, { Manifest: JSON.stringify(spotInterruptHandler()) }));
+          expect(stack).to(haveResource(eks.HelmChart.RESOURCE_TYPE, {
+            Release: 'stackclusterchartspotinterrupthandlerdec62e07',
+            Chart: 'aws-node-termination-handler',
+            Wait: false,
+            Values: '{\"nodeSelector.lifecycle\":\"Ec2Spot\"}',
+            Namespace: 'kube-system',
+            Repository: 'https://aws.github.io/eks-charts'
+          }));
           test.done();
         },
 
