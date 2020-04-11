@@ -154,7 +154,7 @@ export interface NodegroupOptions {
    *
    * @default - None
    */
-  readonly tags?: { [name: string]: string; };
+  readonly tags?: { [name: string]: string };
 }
 
 /**
