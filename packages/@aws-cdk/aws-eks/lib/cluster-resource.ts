@@ -78,7 +78,16 @@ export class ClusterResource extends Construct {
     }));
 
     this.creationRole.addToPolicy(new iam.PolicyStatement({
-      actions: [ 'eks:CreateCluster', 'eks:DescribeCluster', 'eks:DeleteCluster', 'eks:UpdateClusterVersion', 'eks:UpdateClusterConfig', 'eks:CreateFargateProfile' ],
+      actions: [
+        'eks:CreateCluster',
+        'eks:DescribeCluster',
+        'eks:DeleteCluster',
+        'eks:UpdateClusterVersion',
+        'eks:UpdateClusterConfig',
+        'eks:CreateFargateProfile',
+        'eks:TagResource',
+        'eks:UntagResource'
+      ],
       resources: resourceArns
     }));
 
