@@ -1635,25 +1635,25 @@
             "Fn::Join": [
               "",
               [
-                "\n        [settings.kubernetes]\n        api-server=\"",
+                "\n[settings.kubernetes]\napi-server=\"",
                 {
                   "Fn::GetAtt": [
                     "Cluster9EE0221C",
                     "Endpoint"
                   ]
                 },
-                "\"\n        cluster-certificate=\"",
+                "\"\ncluster-certificate=\"",
                 {
                   "Fn::GetAtt": [
                     "Cluster9EE0221C",
                     "CertificateAuthorityData"
                   ]
                 },
-                "\"\n        cluster-name=\"",
+                "\"\ncluster-name=\"",
                 {
                   "Ref": "Cluster9EE0221C"
                 },
-                "\"\n      "
+                "\""
               ]
             ]
           }
