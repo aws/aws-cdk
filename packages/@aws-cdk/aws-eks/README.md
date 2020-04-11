@@ -520,20 +520,6 @@ cluster.addCapacity('BottlerocketNodes', {
 
 To define only Bottlerocket capacity in your cluster, set `defaultCapacity` to `0` when you define the cluster as described above.
 
-
-```ts
-// create cluster with no default capacity
-const cluster = new eks.Cluster(this, 'Cluster', {
-  defaultCapacity: 0
-});
-
-// add bottlerocket capacity to this cluster
-cluster.addCapacity('BottlerocketNodes', {
-  machineImageType: eks.MachineImageType.BOTTLEROCKET
-});
-
-```
-
 Please note Bottlerocket does not allow to customize bootstrap options and `bootstrapOptions` properties is not required when you create the `Bottlerocket` capacity. 
 
 `Bottlerocket` is now available in public preview and only available in [some supported AWS regions](https://github.com/bottlerocket-os/bottlerocket/blob/develop/QUICKSTART.md#finding-an-ami). 
