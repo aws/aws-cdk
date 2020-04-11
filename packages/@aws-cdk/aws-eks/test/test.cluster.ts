@@ -5,6 +5,7 @@ import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as eks from '../lib';
 import { KubectlLayer } from '../lib/kubectl-layer';
+import { spotInterruptHandler } from '../lib/spot-interrupt-handler';
 import { testFixture, testFixtureNoVpc } from './util';
 
 // tslint:disable:max-line-length
@@ -21,10 +22,10 @@ export = {
     expect(stack).to(haveResourceLike('AWS::EKS::Cluster', {
       ResourcesVpcConfig: {
         SubnetIds: [
-          { Ref: "VPCPublicSubnet1SubnetB4246D30" },
-          { Ref: "VPCPublicSubnet2Subnet74179F39" },
-          { Ref: "VPCPrivateSubnet1Subnet8BCA10E0" },
-          { Ref: "VPCPrivateSubnet2SubnetCFCDAA7A" },
+          { Ref: 'VPCPublicSubnet1SubnetB4246D30' },
+          { Ref: 'VPCPublicSubnet2Subnet74179F39' },
+          { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
+          { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },
         ]
       }
     }));
@@ -100,7 +101,7 @@ export = {
       test.ok(cluster.defaultNodegroup);
       expect(stack).to(haveResource('AWS::EKS::Nodegroup', {
         InstanceTypes: [
-          "m5.large"
+          'm5.large'
         ],
         ScalingConfig: {
           DesiredSize: 2,
@@ -159,10 +160,10 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::EC2::Subnet', {
       Tags: [
-        { Key: "Name", Value: "Stack/VPC/PrivateSubnet1" },
-        { Key: "aws-cdk:subnet-name", Value: "Private" },
-        { Key: "aws-cdk:subnet-type", Value: "Private" },
-        { Key: "kubernetes.io/role/internal-elb", Value: "1" }
+        { Key: 'Name', Value: 'Stack/VPC/PrivateSubnet1' },
+        { Key: 'aws-cdk:subnet-name', Value: 'Private' },
+        { Key: 'aws-cdk:subnet-type', Value: 'Private' },
+        { Key: 'kubernetes.io/role/internal-elb', Value: '1' }
       ]
     }));
 
@@ -180,10 +181,10 @@ export = {
     expect(stack).to(haveResource('AWS::EC2::Subnet', {
       MapPublicIpOnLaunch: true,
       Tags: [
-        { Key: "Name", Value: "Stack/VPC/PublicSubnet1" },
-        { Key: "aws-cdk:subnet-name", Value: "Public" },
-        { Key: "aws-cdk:subnet-type", Value: "Public" },
-        { Key: "kubernetes.io/role/elb", Value: "1" }
+        { Key: 'Name', Value: 'Stack/VPC/PublicSubnet1' },
+        { Key: 'aws-cdk:subnet-name', Value: 'Public' },
+        { Key: 'aws-cdk:subnet-type', Value: 'Public' },
+        { Key: 'kubernetes.io/role/elb', Value: '1' }
       ]
     }));
 
@@ -204,14 +205,14 @@ export = {
     expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', {
       Tags: [
         {
-          Key: "Name",
+          Key: 'Name',
           PropagateAtLaunch: true,
-          Value: "Stack/Cluster/Default"
+          Value: 'Stack/Cluster/Default'
         },
         {
-          Key: { "Fn::Join": ["", ["kubernetes.io/cluster/", { Ref: "ClusterEB0386A7" }]] },
+          Key: { 'Fn::Join': ['', ['kubernetes.io/cluster/', { Ref: 'ClusterEB0386A7' }]] },
           PropagateAtLaunch: true,
-          Value: "owned"
+          Value: 'owned'
         }
       ]
     }));
@@ -243,7 +244,7 @@ export = {
       Outputs: {
         ClusterARN: {
           Value: {
-            "Fn::ImportValue": "Stack:ExportsOutputFnGetAttClusterEB0386A7Arn2F2E3C3F"
+            'Fn::ImportValue': 'Stack:ExportsOutputFnGetAttClusterEB0386A7Arn2F2E3C3F'
           }
         }
       }
@@ -275,24 +276,24 @@ export = {
     // THEN
     expect(stack).to(haveResource(eks.KubernetesResource.RESOURCE_TYPE, {
       Manifest: {
-        "Fn::Join": [
-          "",
+        'Fn::Join': [
+          '',
           [
-            "[{\"apiVersion\":\"v1\",\"kind\":\"ConfigMap\",\"metadata\":{\"name\":\"aws-auth\",\"namespace\":\"kube-system\"},\"data\":{\"mapRoles\":\"[{\\\"rolearn\\\":\\\"",
+            '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system"},"data":{"mapRoles":"[{\\"rolearn\\":\\"',
             {
-              "Fn::GetAtt": [
-                "roleC7B7E775",
-                "Arn"
+              'Fn::GetAtt': [
+                'roleC7B7E775',
+                'Arn'
               ]
             },
-            "\\\",\\\"username\\\":\\\"",
+            '\\",\\"username\\":\\"',
             {
-              "Fn::GetAtt": [
-                "roleC7B7E775",
-                "Arn"
+              'Fn::GetAtt': [
+                'roleC7B7E775',
+                'Arn'
               ]
             },
-            "\\\",\\\"groups\\\":[\\\"system:masters\\\"]}]\",\"mapUsers\":\"[]\",\"mapAccounts\":\"[]\"}}]"
+            '\\",\\"groups\\":[\\"system:masters\\"]}]","mapUsers":"[]","mapAccounts":"[]"}}]'
           ]
         ]
       }
@@ -312,11 +313,11 @@ export = {
 
     // THEN
     expect(stack).to(haveResource(eks.KubernetesResource.RESOURCE_TYPE, {
-      Manifest: "[{\"foo\":123}]"
+      Manifest: '[{"foo":123}]'
     }));
 
     expect(stack).to(haveResource(eks.KubernetesResource.RESOURCE_TYPE, {
-      Manifest: "[{\"bar\":123},{\"boor\":[1,2,3]}]"
+      Manifest: '[{"bar":123},{"boor":[1,2,3]}]'
     }));
 
     test.done();
@@ -335,17 +336,17 @@ export = {
     // THEN
     expect(stack).to(haveResource(eks.KubernetesResource.RESOURCE_TYPE, {
       Manifest: {
-        "Fn::Join": [
-          "",
+        'Fn::Join': [
+          '',
           [
-            "[{\"apiVersion\":\"v1\",\"kind\":\"ConfigMap\",\"metadata\":{\"name\":\"aws-auth\",\"namespace\":\"kube-system\"},\"data\":{\"mapRoles\":\"[{\\\"rolearn\\\":\\\"",
+            '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system"},"data":{"mapRoles":"[{\\"rolearn\\":\\"',
             {
-              "Fn::GetAtt": [
-                "ClusterdefaultInstanceRoleF20A29CD",
-                "Arn"
+              'Fn::GetAtt': [
+                'ClusterdefaultInstanceRoleF20A29CD',
+                'Arn'
               ]
             },
-            "\\\",\\\"username\\\":\\\"system:node:{{EC2PrivateDNSName}}\\\",\\\"groups\\\":[\\\"system:bootstrappers\\\",\\\"system:nodes\\\"]}]\",\"mapUsers\":\"[]\",\"mapAccounts\":\"[]\"}}]"
+            '\\",\\"username\\":\\"system:node:{{EC2PrivateDNSName}}\\",\\"groups\\":[\\"system:bootstrappers\\",\\"system:nodes\\"]}]","mapUsers":"[]","mapAccounts":"[]"}}]'
           ]
         ]
       }
@@ -509,7 +510,7 @@ export = {
         // THEN
         const template = app.synth().getStackByName(stack.stackName).template;
         const userData = template.Resources.ClusterMyCapcityLaunchConfig58583345.Properties.UserData;
-        test.deepEqual(userData, { "Fn::Base64": "#!/bin/bash" });
+        test.deepEqual(userData, { 'Fn::Base64': '#!/bin/bash' });
         test.done();
       },
 
@@ -643,15 +644,15 @@ export = {
       // THEN
       expect(stack).to(haveResource('Custom::AWSCDK-EKS-Cluster', {
         Config: {
-          name: "my-cluster-name",
-          roleArn: { "Fn::GetAtt": ["MyClusterRoleBA20FE72", "Arn"] },
+          name: 'my-cluster-name',
+          roleArn: { 'Fn::GetAtt': ['MyClusterRoleBA20FE72', 'Arn'] },
           resourcesVpcConfig: {
-            securityGroupIds: [{ "Fn::GetAtt": ["MyClusterControlPlaneSecurityGroup6B658F79", "GroupId"] }],
+            securityGroupIds: [{ 'Fn::GetAtt': ['MyClusterControlPlaneSecurityGroup6B658F79', 'GroupId'] }],
             subnetIds: [
-              { Ref: "MyClusterDefaultVpcPublicSubnet1SubnetFAE5A9B6" },
-              { Ref: "MyClusterDefaultVpcPublicSubnet2SubnetF6D028A0" },
-              { Ref: "MyClusterDefaultVpcPrivateSubnet1SubnetE1D0DCDB" },
-              { Ref: "MyClusterDefaultVpcPrivateSubnet2Subnet11FEA8D0" }
+              { Ref: 'MyClusterDefaultVpcPublicSubnet1SubnetFAE5A9B6' },
+              { Ref: 'MyClusterDefaultVpcPublicSubnet2SubnetF6D028A0' },
+              { Ref: 'MyClusterDefaultVpcPrivateSubnet1SubnetE1D0DCDB' },
+              { Ref: 'MyClusterDefaultVpcPrivateSubnet2Subnet11FEA8D0' }
             ]
           }
         }
@@ -662,39 +663,39 @@ export = {
         AssumeRolePolicyDocument: {
           Statement: [
             {
-              Action: "sts:AssumeRole",
-              Effect: "Allow",
+              Action: 'sts:AssumeRole',
+              Effect: 'Allow',
               Principal: {
                 AWS: [
                   {
-                    "Fn::GetAtt": [
-                      "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454",
-                      "Outputs.StackawscdkawseksClusterResourceProviderOnEventHandlerServiceRole3AEE0A43Arn"
+                    'Fn::GetAtt': [
+                      'awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454',
+                      'Outputs.StackawscdkawseksClusterResourceProviderOnEventHandlerServiceRole3AEE0A43Arn'
                     ]
                   },
                   {
-                    "Fn::GetAtt": [
-                      "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454",
-                      "Outputs.StackawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole8E7F1C11Arn"
+                    'Fn::GetAtt': [
+                      'awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454',
+                      'Outputs.StackawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole8E7F1C11Arn'
                     ]
                   }
                 ]
               }
             },
             {
-              Action: "sts:AssumeRole",
-              Effect: "Allow",
+              Action: 'sts:AssumeRole',
+              Effect: 'Allow',
               Principal: {
                 AWS: {
-                  "Fn::GetAtt": [
-                    "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B",
-                    "Outputs.StackawscdkawseksKubectlProviderHandlerServiceRole2C52B3ECArn"
+                  'Fn::GetAtt': [
+                    'awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B',
+                    'Outputs.StackawscdkawseksKubectlProviderHandlerServiceRole2C52B3ECArn'
                   ]
                 }
               }
             }
           ],
-          Version: "2012-10-17"
+          Version: '2012-10-17'
         }
       }));
 
@@ -703,99 +704,99 @@ export = {
         PolicyDocument: {
           Statement: [
             {
-              Action: "iam:PassRole",
-              Effect: "Allow",
+              Action: 'iam:PassRole',
+              Effect: 'Allow',
               Resource: {
-                "Fn::GetAtt": [
-                  "MyClusterRoleBA20FE72",
-                  "Arn"
+                'Fn::GetAtt': [
+                  'MyClusterRoleBA20FE72',
+                  'Arn'
                 ]
               }
             },
             {
-              Action: "ec2:DescribeSubnets",
-              Effect: "Allow",
-              Resource: "*",
+              Action: 'ec2:DescribeSubnets',
+              Effect: 'Allow',
+              Resource: '*',
             },
             {
               Action: [
-                "eks:CreateCluster",
-                "eks:DescribeCluster",
-                "eks:DeleteCluster",
-                "eks:UpdateClusterVersion",
-                "eks:UpdateClusterConfig",
-                "eks:CreateFargateProfile",
-                "eks:TagResource",
-                "eks:UntagResource"
+                'eks:CreateCluster',
+                'eks:DescribeCluster',
+                'eks:DeleteCluster',
+                'eks:UpdateClusterVersion',
+                'eks:UpdateClusterConfig',
+                'eks:CreateFargateProfile',
+                'eks:TagResource',
+                'eks:UntagResource'
               ],
-              Effect: "Allow",
+              Effect: 'Allow',
               Resource: [{
-                "Fn::Join": [
-                  "",
+                'Fn::Join': [
+                  '',
                   [
-                    "arn:",
+                    'arn:',
                     {
-                      Ref: "AWS::Partition"
+                      Ref: 'AWS::Partition'
                     },
-                    ":eks:us-east-1:",
+                    ':eks:us-east-1:',
                     {
-                      Ref: "AWS::AccountId"
+                      Ref: 'AWS::AccountId'
                     },
-                    ":cluster/my-cluster-name"
+                    ':cluster/my-cluster-name'
                   ]
                 ]
               }, {
-                "Fn::Join": [
-                  "",
+                'Fn::Join': [
+                  '',
                   [
-                    "arn:",
+                    'arn:',
                     {
-                      Ref: "AWS::Partition"
+                      Ref: 'AWS::Partition'
                     },
-                    ":eks:us-east-1:",
+                    ':eks:us-east-1:',
                     {
-                      Ref: "AWS::AccountId"
+                      Ref: 'AWS::AccountId'
                     },
-                    ":cluster/my-cluster-name/*"
+                    ':cluster/my-cluster-name/*'
                   ]
                 ]
               }]
             },
             {
               Action: [
-                "eks:DescribeFargateProfile",
-                "eks:DeleteFargateProfile"
+                'eks:DescribeFargateProfile',
+                'eks:DeleteFargateProfile'
               ],
-              Effect: "Allow",
+              Effect: 'Allow',
               Resource: {
-                "Fn::Join": [
-                  "",
+                'Fn::Join': [
+                  '',
                   [
-                    "arn:",
+                    'arn:',
                     {
-                      Ref: "AWS::Partition"
+                      Ref: 'AWS::Partition'
                     },
-                    ":eks:us-east-1:",
+                    ':eks:us-east-1:',
                     {
-                      Ref: "AWS::AccountId"
+                      Ref: 'AWS::AccountId'
                     },
-                    ":fargateprofile/my-cluster-name/*"
+                    ':fargateprofile/my-cluster-name/*'
                   ]
                 ]
               }
             },
             {
-              Action: "iam:GetRole",
-              Effect: "Allow",
-              Resource: "*"
+              Action: 'iam:GetRole',
+              Effect: 'Allow',
+              Resource: '*'
             },
             {
-              Action: "iam:CreateServiceLinkedRole",
-              Effect: "Allow",
-              Resource: "*"
+              Action: 'iam:CreateServiceLinkedRole',
+              Effect: 'Allow',
+              Resource: '*'
             }
           ],
-          Version: "2012-10-17"
+          Version: '2012-10-17'
         }
       }));
       test.done();
@@ -813,54 +814,54 @@ export = {
         PolicyDocument: {
           Statement: [
             {
-              Action: "iam:PassRole",
-              Effect: "Allow",
+              Action: 'iam:PassRole',
+              Effect: 'Allow',
               Resource: {
-                "Fn::GetAtt": [
-                  "MyClusterRoleBA20FE72",
-                  "Arn"
+                'Fn::GetAtt': [
+                  'MyClusterRoleBA20FE72',
+                  'Arn'
                 ]
               }
             },
             {
-              Action: "ec2:DescribeSubnets",
-              Effect: "Allow",
-              Resource: "*",
+              Action: 'ec2:DescribeSubnets',
+              Effect: 'Allow',
+              Resource: '*',
             },
             {
               Action: [
-                "eks:CreateCluster",
-                "eks:DescribeCluster",
-                "eks:DeleteCluster",
-                "eks:UpdateClusterVersion",
-                "eks:UpdateClusterConfig",
-                "eks:CreateFargateProfile",
-                "eks:TagResource",
-                "eks:UntagResource"
+                'eks:CreateCluster',
+                'eks:DescribeCluster',
+                'eks:DeleteCluster',
+                'eks:UpdateClusterVersion',
+                'eks:UpdateClusterConfig',
+                'eks:CreateFargateProfile',
+                'eks:TagResource',
+                'eks:UntagResource'
               ],
-              Effect: "Allow",
-              Resource: ["*"]
+              Effect: 'Allow',
+              Resource: ['*']
             },
             {
               Action: [
-                "eks:DescribeFargateProfile",
-                "eks:DeleteFargateProfile"
+                'eks:DescribeFargateProfile',
+                'eks:DeleteFargateProfile'
               ],
-              Effect: "Allow",
-              Resource: "*"
+              Effect: 'Allow',
+              Resource: '*'
             },
             {
-              Action: "iam:GetRole",
-              Effect: "Allow",
-              Resource: "*"
+              Action: 'iam:GetRole',
+              Effect: 'Allow',
+              Resource: '*'
             },
             {
-              Action: "iam:CreateServiceLinkedRole",
-              Effect: "Allow",
-              Resource: "*"
+              Action: 'iam:CreateServiceLinkedRole',
+              Effect: 'Allow',
+              Resource: '*'
             }
           ],
-          Version: "2012-10-17"
+          Version: '2012-10-17'
         }
       }));
       test.done();
@@ -886,39 +887,39 @@ export = {
         AssumeRolePolicyDocument: {
           Statement: [
             {
-              Action: "sts:AssumeRole",
-              Effect: "Allow",
+              Action: 'sts:AssumeRole',
+              Effect: 'Allow',
               Principal: {
                 AWS: [
                   {
-                    "Fn::GetAtt": [
-                      "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454",
-                      "Outputs.StackawscdkawseksClusterResourceProviderOnEventHandlerServiceRole3AEE0A43Arn"
+                    'Fn::GetAtt': [
+                      'awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454',
+                      'Outputs.StackawscdkawseksClusterResourceProviderOnEventHandlerServiceRole3AEE0A43Arn'
                     ]
                   },
                   {
-                    "Fn::GetAtt": [
-                      "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454",
-                      "Outputs.StackawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole8E7F1C11Arn"
+                    'Fn::GetAtt': [
+                      'awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454',
+                      'Outputs.StackawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole8E7F1C11Arn'
                     ]
                   }
                 ]
               }
             },
             {
-              Action: "sts:AssumeRole",
-              Effect: "Allow",
+              Action: 'sts:AssumeRole',
+              Effect: 'Allow',
               Principal: {
                 AWS: {
-                  "Fn::GetAtt": [
-                    "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B",
-                    "Outputs.StackawscdkawseksKubectlProviderHandlerServiceRole2C52B3ECArn"
+                  'Fn::GetAtt': [
+                    'awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B',
+                    'Outputs.StackawscdkawseksKubectlProviderHandlerServiceRole2C52B3ECArn'
                   ]
                 }
               }
             }
           ],
-          Version: "2012-10-17"
+          Version: '2012-10-17'
         }
       }));
       test.done();
@@ -935,17 +936,17 @@ export = {
 
       // THEN
       expect(stack).to(haveResource('Custom::AWSCDK-EKS-KubernetesPatch', {
-        ResourceName: "deployment/coredns",
-        ResourceNamespace: "kube-system",
-        ApplyPatchJson: "{\"spec\":{\"template\":{\"metadata\":{\"annotations\":{\"eks.amazonaws.com/compute-type\":\"fargate\"}}}}}",
-        RestorePatchJson: "{\"spec\":{\"template\":{\"metadata\":{\"annotations\":{\"eks.amazonaws.com/compute-type\":\"ec2\"}}}}}",
+        ResourceName: 'deployment/coredns',
+        ResourceNamespace: 'kube-system',
+        ApplyPatchJson: '{"spec":{"template":{"metadata":{"annotations":{"eks.amazonaws.com/compute-type":"fargate"}}}}}',
+        RestorePatchJson: '{"spec":{"template":{"metadata":{"annotations":{"eks.amazonaws.com/compute-type":"ec2"}}}}}',
         ClusterName: {
-          Ref: "MyCluster8AD82BF8"
+          Ref: 'MyCluster8AD82BF8'
         },
         RoleArn: {
-          "Fn::GetAtt": [
-            "MyClusterCreationRoleB5FA4FF3",
-            "Arn"
+          'Fn::GetAtt': [
+            'MyClusterCreationRoleB5FA4FF3',
+            'Arn'
           ]
         }
       }));
