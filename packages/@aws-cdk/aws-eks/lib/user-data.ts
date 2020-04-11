@@ -3,8 +3,9 @@ import { Stack } from '@aws-cdk/core';
 import { BootstrapOptions, ICluster } from './cluster';
 import { LifecycleLabel } from './spot-interrupt-handler';
 
-export function renderAmazonLinuxUserData(clusterName: string, autoScalingGroup: autoscaling.AutoScalingGroup,
-                                          options: BootstrapOptions = {}): string[] {
+// tslint:disable-next-line:max-line-length
+export function renderAmazonLinuxUserData(clusterName: string, autoScalingGroup: autoscaling.AutoScalingGroup, options: BootstrapOptions = {}): string[] {
+
   const stack = Stack.of(autoScalingGroup);
 
   // determine logical id of ASG so we can signal cloudformation
