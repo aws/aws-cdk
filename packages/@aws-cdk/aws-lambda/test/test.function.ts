@@ -218,13 +218,13 @@ export = testCase({
       expect(stack1).to(haveOutput({
         outputName: 'CurrentVersionArn',
         outputValue: {
-          Ref: "MyFunctionCurrentVersion197490AF1a9a73cf5c46aec5e40fb202042eb60b"
+          Ref: 'MyFunctionCurrentVersion197490AF1a9a73cf5c46aec5e40fb202042eb60b'
         }
       }));
       expect(stack2).to(haveOutput({
         outputName: 'CurrentVersionArn',
         outputValue: {
-          Ref: "MyFunctionCurrentVersion197490AF8360a045031060e3117269037b7bffd6"
+          Ref: 'MyFunctionCurrentVersion197490AF8360a045031060e3117269037b7bffd6'
         }
       }));
       test.done();

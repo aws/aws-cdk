@@ -140,7 +140,7 @@ export class Alias extends AliasBase {
       }
 
       if (!aliasName.match(/^[a-zA-Z0-9:/_-]{1,256}$/)) {
-        throw new Error(`Alias name must be between 1 and 256 characters in a-zA-Z0-9:/_-`);
+        throw new Error('Alias name must be between 1 and 256 characters in a-zA-Z0-9:/_-');
       }
     }
 

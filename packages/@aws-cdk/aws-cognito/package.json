@@ -86,14 +86,12 @@
   },
   "jest": {},
   "engines": {
-    "node": ">= 10.3.0"
+    "node": ">= 10.12.0"
   },
   "awslint": {
     "exclude": [
-      "docs-public-apis:@aws-cdk/aws-cognito.UserPoolClient.userPoolClientClientSecret",
-      "docs-public-apis:@aws-cdk/aws-cognito.UserPoolClient.userPoolClientId",
-      "docs-public-apis:@aws-cdk/aws-cognito.UserPoolClient.userPoolClientName",
-      "docs-public-apis:@aws-cdk/aws-cognito.UserPoolClientProps"
+      "attribute-tag:@aws-cdk/aws-cognito.UserPoolClient.userPoolClientName",
+      "resource-attribute:@aws-cdk/aws-cognito.UserPoolClient.userPoolClientClientSecret"
     ]
   },
   "stability": "experimental",

@@ -1,9 +1,9 @@
-import { expect, haveResourceLike } from "@aws-cdk/assert";
+import { expect, haveResourceLike } from '@aws-cdk/assert';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as sns from '@aws-cdk/aws-sns';
-import { Aws, Lazy, SecretValue, Stack, Token } from "@aws-cdk/core";
+import { Aws, Lazy, SecretValue, Stack, Token } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as cpactions from '../../lib';
 
@@ -103,31 +103,31 @@ export = {
       });
 
       expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
-        "PolicyDocument": {
-          "Statement": [
+        'PolicyDocument': {
+          'Statement': [
             {
-              "Action": "lambda:ListFunctions",
-              "Resource": "*",
-              "Effect": "Allow",
+              'Action': 'lambda:ListFunctions',
+              'Resource': '*',
+              'Effect': 'Allow',
             },
             {
-              "Action": "lambda:InvokeFunction",
-              "Effect": "Allow",
+              'Action': 'lambda:InvokeFunction',
+              'Effect': 'Allow',
             },
             {
-              "Action": [
-                "s3:GetObject*",
-                "s3:GetBucket*",
-                "s3:List*",
+              'Action': [
+                's3:GetObject*',
+                's3:GetBucket*',
+                's3:List*',
               ],
-              "Effect": "Allow",
+              'Effect': 'Allow',
             },
             {
-              "Action": [
-                "kms:Decrypt",
-                "kms:DescribeKey",
+              'Action': [
+                'kms:Decrypt',
+                'kms:DescribeKey',
               ],
-              "Effect": "Allow",
+              'Effect': 'Allow',
             },
           ],
         },
@@ -143,32 +143,32 @@ export = {
       });
 
       expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
-        "PolicyDocument": {
-          "Statement": [
+        'PolicyDocument': {
+          'Statement': [
             {
-              "Action": "lambda:ListFunctions",
-              "Resource": "*",
-              "Effect": "Allow",
+              'Action': 'lambda:ListFunctions',
+              'Resource': '*',
+              'Effect': 'Allow',
             },
             {
-              "Action": "lambda:InvokeFunction",
-              "Effect": "Allow",
+              'Action': 'lambda:InvokeFunction',
+              'Effect': 'Allow',
             },
             {
-              "Action": [
-                "s3:DeleteObject*",
-                "s3:PutObject*",
-                "s3:Abort*",
+              'Action': [
+                's3:DeleteObject*',
+                's3:PutObject*',
+                's3:Abort*',
               ],
-              "Effect": "Allow",
+              'Effect': 'Allow',
             },
             {
-              "Action": [
-                "kms:Encrypt",
-                "kms:ReEncrypt*",
-                "kms:GenerateDataKey*",
+              'Action': [
+                'kms:Encrypt',
+                'kms:ReEncrypt*',
+                'kms:GenerateDataKey*',
               ],
-              "Effect": "Allow",
+              'Effect': 'Allow',
             },
           ],
         },
@@ -184,47 +184,47 @@ export = {
       });
 
       expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
-        "PolicyDocument": {
-          "Statement": [
+        'PolicyDocument': {
+          'Statement': [
             {
-              "Action": "lambda:ListFunctions",
-              "Resource": "*",
-              "Effect": "Allow",
+              'Action': 'lambda:ListFunctions',
+              'Resource': '*',
+              'Effect': 'Allow',
             },
             {
-              "Action": "lambda:InvokeFunction",
-              "Effect": "Allow",
+              'Action': 'lambda:InvokeFunction',
+              'Effect': 'Allow',
             },
             {
-              "Action": [
-                "s3:GetObject*",
-                "s3:GetBucket*",
-                "s3:List*",
+              'Action': [
+                's3:GetObject*',
+                's3:GetBucket*',
+                's3:List*',
               ],
-              "Effect": "Allow",
+              'Effect': 'Allow',
             },
             {
-              "Action": [
-                "kms:Decrypt",
-                "kms:DescribeKey",
+              'Action': [
+                'kms:Decrypt',
+                'kms:DescribeKey',
               ],
-              "Effect": "Allow",
+              'Effect': 'Allow',
             },
             {
-              "Action": [
-                "s3:DeleteObject*",
-                "s3:PutObject*",
-                "s3:Abort*",
+              'Action': [
+                's3:DeleteObject*',
+                's3:PutObject*',
+                's3:Abort*',
               ],
-              "Effect": "Allow",
+              'Effect': 'Allow',
             },
             {
-              "Action": [
-                "kms:Encrypt",
-                "kms:ReEncrypt*",
-                "kms:GenerateDataKey*",
+              'Action': [
+                'kms:Encrypt',
+                'kms:ReEncrypt*',
+                'kms:GenerateDataKey*',
               ],
-              "Effect": "Allow",
+              'Effect': 'Allow',
             },
           ],
         },
@@ -270,21 +270,21 @@ export = {
       });
 
       expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
-        "Stages": [
+        'Stages': [
           {
-            "Name": "Source",
+            'Name': 'Source',
           },
           {
-            "Name": "Invoke",
-            "Actions": [
+            'Name': 'Invoke',
+            'Actions': [
               {
-                "Name": "LambdaInvoke",
-                "Namespace": "Invoke_LambdaInvoke_NS",
+                'Name': 'LambdaInvoke',
+                'Namespace': 'Invoke_LambdaInvoke_NS',
               },
               {
-                "Name": "Approve",
-                "Configuration": {
-                  "CustomData": "#{Invoke_LambdaInvoke_NS.SomeVar}",
+                'Name': 'Approve',
+                'Configuration': {
+                  'CustomData': '#{Invoke_LambdaInvoke_NS.SomeVar}',
                 },
               },
             ],

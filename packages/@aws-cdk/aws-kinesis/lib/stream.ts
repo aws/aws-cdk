@@ -1,7 +1,23 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { Construct, Duration, IResource, Resource, Stack } from '@aws-cdk/core';
+import { Aws, CfnCondition, Construct, Duration, Fn, IResource, Resource, Stack } from '@aws-cdk/core';
+import { IResolvable } from 'constructs';
 import { CfnStream } from './kinesis.generated';
+
+const READ_OPERATIONS = [
+  'kinesis:DescribeStream',
+  'kinesis:DescribeStreamSummary',
+  'kinesis:GetRecords',
+  'kinesis:GetShardIterator',
+  'kinesis:ListShards',
+  'kinesis:SubscribeToShard'
+];
+
+const WRITE_OPERATIONS = [
+  'kinesis:ListShards',
+  'kinesis:PutRecord',
+  'kinesis:PutRecords'
+];
 
 /**
  * A Kinesis Stream
@@ -75,20 +91,6 @@ export interface StreamAttributes {
 
 /**
  * Represents a Kinesis Stream.
- *
- * Streams can be either defined within this stack:
- *
- *   new Stream(this, 'MyStream', { props });
- *
- * Or imported from an existing stream:
- *
- *   Stream.import(this, 'MyImportedStream', { streamArn: ... });
- *
- * You can also export a stream and import it into another stack:
- *
- *   const ref = myStream.export();
- *   Stream.import(this, 'MyImportedStream', ref);
- *
  */
 abstract class StreamBase extends Resource implements IStream {
   /**
@@ -114,7 +116,7 @@ abstract class StreamBase extends Resource implements IStream {
    * contents of the stream will also be granted.
    */
   public grantRead(grantee: iam.IGrantable) {
-    const ret = this.grant(grantee, 'kinesis:DescribeStream', 'kinesis:GetRecords', 'kinesis:GetShardIterator');
+    const ret = this.grant(grantee, ...READ_OPERATIONS);
 
     if (this.encryptionKey) {
       this.encryptionKey.grantDecrypt(grantee);
@@ -131,11 +133,8 @@ abstract class StreamBase extends Resource implements IStream {
    * contents of the stream will also be granted.
    */
   public grantWrite(grantee: iam.IGrantable) {
-    const ret = this.grant(grantee, 'kinesis:DescribeStream', 'kinesis:PutRecord', 'kinesis:PutRecords');
-
-    if (this.encryptionKey) {
-      this.encryptionKey.grantEncrypt(grantee);
-    }
+    const ret = this.grant(grantee, ...WRITE_OPERATIONS);
+    this.encryptionKey?.grantEncrypt(grantee);
 
     return ret;
   }
@@ -148,22 +147,16 @@ abstract class StreamBase extends Resource implements IStream {
    * encrypt/decrypt will also be granted.
    */
   public grantReadWrite(grantee: iam.IGrantable) {
-    const ret = this.grant(
-        grantee,
-        'kinesis:DescribeStream',
-        'kinesis:GetRecords',
-        'kinesis:GetShardIterator',
-        'kinesis:PutRecord',
-        'kinesis:PutRecords');
-
-    if (this.encryptionKey) {
-      this.encryptionKey.grantEncryptDecrypt(grantee);
-    }
+    const ret = this.grant(grantee, ...Array.from(new Set([...READ_OPERATIONS, ...WRITE_OPERATIONS])));
+    this.encryptionKey?.grantEncryptDecrypt(grantee);
 
     return ret;
   }
 
-  private grant(grantee: iam.IGrantable, ...actions: string[]) {
+  /**
+   * Grant the indicated permissions on this stream to the given IAM principal (Role/Group/User).
+   */
+  public grant(grantee: iam.IGrantable, ...actions: string[]) {
     return iam.Grant.addToPrincipal({
       grantee,
       actions,
@@ -201,7 +194,9 @@ export interface StreamProps {
    * If you choose KMS, you can specify a KMS key via `encryptionKey`. If
    * encryption key is not specified, a key will automatically be created.
    *
-   * @default - StreamEncryption.KMS if encryptionKey is specified, or StreamEncryption.UNENCRYPTED otherwise
+   * @default - StreamEncryption.KMS if encrypted Streams are supported in the region
+   *   or StreamEncryption.UNENCRYPTED otherwise.
+   *   StreamEncryption.KMS if an encryption key is supplied through the encryptionKey property
    */
   readonly encryption?: StreamEncryption;
 
@@ -210,8 +205,9 @@ export interface StreamProps {
    *
    * The 'encryption' property must be set to "Kms".
    *
-   * @default - If encryption is set to "KMS" and this property is undefined, a
-   * new KMS key will be created and associated with this stream.
+   * @default - Kinesis Data Streams master key ('/alias/aws/kinesis').
+   *   If encryption is set to StreamEncryption.KMS and this property is undefined, a new KMS key
+   *   will be created and associated with this stream.
    */
   readonly encryptionKey?: kms.IKey;
 }
@@ -268,7 +264,7 @@ export class Stream extends StreamBase {
 
     const { streamEncryption, encryptionKey } = this.parseEncryption(props);
 
-    this.stream = new CfnStream(this, "Resource", {
+    this.stream = new CfnStream(this, 'Resource', {
       name: this.physicalName,
       retentionPeriodHours,
       shardCount,
@@ -290,13 +286,36 @@ export class Stream extends StreamBase {
    * user's configuration.
    */
   private parseEncryption(props: StreamProps): {
-    streamEncryption?: CfnStream.StreamEncryptionProperty,
+    streamEncryption?: CfnStream.StreamEncryptionProperty | IResolvable
     encryptionKey?: kms.IKey
   } {
 
+    // if encryption properties are not set, default to KMS in regions where KMS is available
+    if (!props.encryption && !props.encryptionKey) {
+
+      const conditionName = 'AwsCdkKinesisEncryptedStreamsUnsupportedRegions';
+      const existing = Stack.of(this).node.tryFindChild(conditionName);
+
+      // create a single condition for the Stack
+      if (!existing) {
+        new CfnCondition(Stack.of(this), conditionName, {
+          expression: Fn.conditionOr(
+            Fn.conditionEquals(Aws.REGION, 'cn-north-1'),
+            Fn.conditionEquals(Aws.REGION, 'cn-northwest-1')
+          )
+        });
+      }
+
+      return {
+        streamEncryption: Fn.conditionIf(conditionName,
+          Aws.NO_VALUE,
+          { EncryptionType: 'KMS', KeyId: 'alias/aws/kinesis'})
+      };
+    }
+
     // default based on whether encryption key is specified
     const encryptionType = props.encryption ??
-    (props.encryptionKey ? StreamEncryption.KMS : StreamEncryption.UNENCRYPTED);
+      (props.encryptionKey ? StreamEncryption.KMS : StreamEncryption.UNENCRYPTED);
 
     // if encryption key is set, encryption must be set to KMS.
     if (encryptionType !== StreamEncryption.KMS && props.encryptionKey) {
@@ -304,15 +323,12 @@ export class Stream extends StreamBase {
     }
 
     if (encryptionType === StreamEncryption.UNENCRYPTED) {
-      return { streamEncryption: undefined, encryptionKey: undefined };
+      return { };
     }
 
     if (encryptionType === StreamEncryption.MANAGED) {
       const encryption = { encryptionType: 'KMS', keyId: 'alias/aws/kinesis'};
-      return {
-        streamEncryption: encryption,
-        encryptionKey: undefined
-      };
+      return { streamEncryption: encryption };
     }
 
     if (encryptionType === StreamEncryption.KMS) {

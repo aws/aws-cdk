@@ -1,3 +1,4 @@
+import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
 import { Account, ISDK, SDK, SdkProvider, ToolkitInfo } from '../../lib';
 
@@ -7,11 +8,11 @@ import { Account, ISDK, SDK, SdkProvider, ToolkitInfo } from '../../lib';
  * Its the responsibility of the consumer to replace all calls that
  * actually will be called.
  */
-export class MockSDK extends SdkProvider {
+export class MockSdkProvider extends SdkProvider {
   private readonly sdk: ISDK;
 
   constructor() {
-    super(new AWS.CredentialProviderChain([]), 'bermuda-triangle-1337', { userAgent: 'aws-cdk/jest' });
+    super(new AWS.CredentialProviderChain([]), 'bermuda-triangle-1337', { customUserAgent: 'aws-cdk/jest' });
 
     // SDK contains a real SDK, since some test use 'AWS-mock' to replace the underlying
     // AWS calls which a real SDK would do, and some tests use the 'stub' functionality below.
@@ -55,6 +56,34 @@ export class MockSDK extends SdkProvider {
    */
   public stubSTS(stubs: SyncHandlerSubsetOf<AWS.STS>) {
     (this.sdk as any).sts = jest.fn().mockReturnValue(partialAwsService<AWS.STS>(stubs));
+  }
+}
+
+export class MockSdk implements ISDK {
+  public readonly currentRegion: string = 'bermuda-triangle-1337';
+  public readonly cloudFormation = jest.fn();
+  public readonly ec2 = jest.fn();
+  public readonly ssm = jest.fn();
+  public readonly s3 = jest.fn();
+  public readonly route53 = jest.fn();
+  public readonly ecr = jest.fn();
+
+  public currentAccount(): Promise<Account> {
+    return Promise.resolve({ accountId: '123456789012', partition: 'aws' });
+  }
+
+  /**
+   * Replace the CloudFormation client with the given object
+   */
+  public stubCloudFormation(stubs: SyncHandlerSubsetOf<AWS.CloudFormation>) {
+    this.cloudFormation.mockReturnValue(partialAwsService<AWS.CloudFormation>(stubs));
+  }
+
+  /**
+   * Replace the ECR client with the given object
+   */
+  public stubEcr(stubs: SyncHandlerSubsetOf<AWS.ECR>) {
+    this.ecr.mockReturnValue(partialAwsService<AWS.ECR>(stubs));
   }
 }
 
@@ -110,15 +139,16 @@ type AwsCallInputOutput<T> =
     T extends {
       (args: infer INPUT, callback?: ((err: AWS.AWSError, data: any) => void) | undefined): AWS.Request<infer OUTPUT, AWS.AWSError>;
       (callback?: ((err: AWS.AWSError, data: {}) => void) | undefined): AWS.Request<any, any>;
-    } ? [INPUT, OUTPUT] : never;
+    } ? [INPUT, OUTPUT] : T;
 
 // Determine the type of the mock handler from the type of the Input/Output type pair.
 // Don't need to worry about the 'never', TypeScript will propagate it upwards making it
 // impossible to specify the field that has 'never' anywhere in its type.
-type MockHandlerType<AI extends [any, any]> = (input: AI[0]) => AI[1];
+type MockHandlerType<AI> =
+    AI extends [any, any] ? (input: AI[0]) => AI[1] : AI;
 
 // Any subset of the full type that synchronously returns the output structure is okay
-type SyncHandlerSubsetOf<S> = {[K in keyof S]?: MockHandlerType<AwsCallInputOutput<S[K]>>};
+export type SyncHandlerSubsetOf<S> = {[K in keyof S]?: MockHandlerType<AwsCallInputOutput<S[K]>>};
 
 /**
  * Fake AWS response.
@@ -136,13 +166,30 @@ class FakeAWSResponse<T> {
 
 export function mockToolkitInfo() {
   return new ToolkitInfo({
-    sdk: new MockSDK(),
+    sdk: new MockSdk(),
     bucketName: 'BUCKET_NAME',
     bucketEndpoint: 'BUCKET_ENDPOINT',
     environment: { name: 'env', account: '1234', region: 'abc' }
   });
 }
 
+export function mockResolvedEnvironment(): cxapi.Environment {
+  return {
+    account: '123456789',
+    region: 'bermuda-triangle-1337',
+    name: 'aws://123456789/bermuda-triangle-1337',
+  };
+}
+
+// Jest helpers
+
+// An object on which all callables are Jest Mocks
+export type MockedObject<S extends object> = {[K in keyof S]: MockedFunction<Required<S>[K]>};
+
+// If a function, then a mocked version of it, otherwise just T
+type MockedFunction<T> = T extends (...args: any[]) => any
+  ? jest.MockInstance<ReturnType<T>, jest.ArgsType<T>>
+  : T;
 export function errorWithCode(code: string, message: string) {
   const ret = new Error(message);
   (ret as any).code = code;

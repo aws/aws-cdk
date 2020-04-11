@@ -1,3 +1,4 @@
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as aws from 'aws-sdk';
 import * as colors from 'colors/safe';
@@ -70,10 +71,11 @@ export class StackActivityMonitor {
    */
   private readonly resourceTypeColumnWidth: number;
 
-  constructor(private readonly cfn: aws.CloudFormation,
-              private readonly stackName: string,
-              private readonly stack: cxapi.CloudFormationStackArtifact,
-              private readonly resourcesTotal?: number) {
+  constructor(
+    private readonly cfn: aws.CloudFormation,
+    private readonly stackName: string,
+    private readonly stack: cxapi.CloudFormationStackArtifact,
+    private readonly resourcesTotal?: number) {
 
     if (this.resourcesTotal != null) {
       // +1 because the stack also emits a "COMPLETE" event at the end, and that wasn't
@@ -128,7 +130,7 @@ export class StackActivityMonitor {
 
       this.flushEvents();
     } catch (e) {
-      error("Error occurred while monitoring stack: %s", e);
+      error('Error occurred while monitoring stack: %s', e);
     }
     this.scheduleNextTick();
   }
@@ -189,15 +191,15 @@ export class StackActivityMonitor {
 
     const logicalId = resourceName !== e.LogicalResourceId ? `(${e.LogicalResourceId}) ` : '';
 
-    process.stderr.write(util.format(` %s | %s | %s | %s | %s %s%s%s\n`,
-          this.progress(),
-          new Date(e.Timestamp).toLocaleTimeString(),
-          color(padRight(20, (e.ResourceStatus || '').substr(0, 20))), // pad left and trim
-          padRight(this.resourceTypeColumnWidth, e.ResourceType || ''),
-          color(colors.bold(resourceName)),
-          logicalId,
-          reasonColor(colors.bold(e.ResourceStatusReason ? e.ResourceStatusReason : '')),
-          reasonColor(stackTrace)));
+    process.stderr.write(util.format(' %s | %s | %s | %s | %s %s%s%s\n',
+      this.progress(),
+      new Date(e.Timestamp).toLocaleTimeString(),
+      color(padRight(20, (e.ResourceStatus || '').substr(0, 20))), // pad left and trim
+      padRight(this.resourceTypeColumnWidth, e.ResourceType || ''),
+      color(colors.bold(resourceName)),
+      logicalId,
+      reasonColor(colors.bold(e.ResourceStatusReason ? e.ResourceStatusReason : '')),
+      reasonColor(stackTrace)));
 
     this.lastPrintTime = Date.now();
   }
@@ -212,8 +214,8 @@ export class StackActivityMonitor {
     }
 
     return util.format('%s/%s',
-        padLeft(this.resourceDigits, this.resourcesDone.toString()),
-        padLeft(this.resourceDigits, this.resourcesTotal != null ? this.resourcesTotal.toString() : '?'));
+      padLeft(this.resourceDigits, this.resourcesDone.toString()),
+      padLeft(this.resourceDigits, this.resourcesTotal != null ? this.resourcesTotal.toString() : '?'));
   }
 
   /**
@@ -236,12 +238,12 @@ export class StackActivityMonitor {
     this.lastPrintTime = +Infinity;
   }
 
-  private findMetadataFor(logicalId: string | undefined): { entry: cxapi.MetadataEntry, path: string } | undefined {
+  private findMetadataFor(logicalId: string | undefined): { entry: cxschema.MetadataEntry, path: string } | undefined {
     const metadata = this.stack.manifest.metadata;
     if (!logicalId || !metadata) { return undefined; }
     for (const path of Object.keys(metadata)) {
       const entry = metadata[path]
-        .filter(e => e.type === cxapi.LOGICAL_ID_METADATA_KEY)
+        .filter(e => e.type === cxschema.ArtifactMetadataEntryType.LOGICAL_ID)
         .find(e => e.data === logicalId);
       if (entry) {
         return { entry, path };

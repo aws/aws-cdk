@@ -133,13 +133,13 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
-      PolicyType: "StepScaling",
+      PolicyType: 'StepScaling',
       ScalingTargetId: {
-        Ref: "Target3191CF44"
+        Ref: 'Target3191CF44'
       },
       StepScalingPolicyConfiguration: {
-        AdjustmentType: "ChangeInCapacity",
-        MetricAggregationType: "Average",
+        AdjustmentType: 'ChangeInCapacity',
+        MetricAggregationType: 'Average',
         StepAdjustments: [
           {
             MetricIntervalUpperBound: 0,
