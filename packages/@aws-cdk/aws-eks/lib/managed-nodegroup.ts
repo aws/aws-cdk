@@ -123,7 +123,7 @@ export interface NodegroupOptions {
    *
    * @default - None
    */
-  readonly labels?: { [name: string]: string; };
+  readonly labels?: { [name: string]: string };
   /**
    * The IAM role to associate with your node group. The Amazon EKS worker node kubelet daemon
    * makes calls to AWS APIs on your behalf. Worker nodes receive permissions for these API calls through
@@ -154,7 +154,7 @@ export interface NodegroupOptions {
    *
    * @default - None
    */
-  readonly tags?: { [name: string]: string; };
+  readonly tags?: { [name: string]: string };
 }
 
 /**
