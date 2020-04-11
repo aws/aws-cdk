@@ -84,7 +84,7 @@
     "minimatch": ">=3.0",
     "promptly": "^3.0.3",
     "proxy-agent": "^3.1.1",
-    "semver": "^7.2.1",
+    "semver": "^7.2.2",
     "source-map-support": "^0.5.16",
     "table": "^5.4.6",
     "uuid": "^7.0.3",
