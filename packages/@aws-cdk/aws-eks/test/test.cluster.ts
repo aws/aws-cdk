@@ -5,7 +5,6 @@ import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as eks from '../lib';
 import { KubectlLayer } from '../lib/kubectl-layer';
-import { spotInterruptHandler } from '../lib/spot-interrupt-handler';
 import { testFixture, testFixtureNoVpc } from './util';
 
 // tslint:disable:max-line-length
@@ -68,7 +67,7 @@ export = {
     // THEN
     expect(stack).to(haveResource('Custom::AWSCDK-EKS-Cluster'));
     expect(stack).to(haveResourceLike('AWS::Serverless::Application', {
-      Location: {
+      Location:  {
         ApplicationId: 'arn:aws-cn:serverlessrepo:cn-north-1:487369736442:applications/lambda-layer-kubectl',
       }
     }));
@@ -210,7 +209,7 @@ export = {
           Value: 'Stack/Cluster/Default'
         },
         {
-          Key: { 'Fn::Join': ['', ['kubernetes.io/cluster/', { Ref: 'ClusterEB0386A7' }]] },
+          Key: { 'Fn::Join': [ '', [ 'kubernetes.io/cluster/', { Ref: 'ClusterEB0386A7' } ] ] },
           PropagateAtLaunch: true,
           Value: 'owned'
         }
@@ -309,7 +308,7 @@ export = {
 
     // WHEN
     cluster.addResource('manifest1', { foo: 123 });
-    cluster.addResource('manifest2', { bar: 123 }, { boor: [1, 2, 3] });
+    cluster.addResource('manifest2', { bar: 123 }, { boor: [ 1, 2, 3 ] });
 
     // THEN
     expect(stack).to(haveResource(eks.KubernetesResource.RESOURCE_TYPE, {
@@ -398,8 +397,8 @@ export = {
       const assembly = app.synth();
       const template = assembly.getStackByName(stack.stackName).template;
       test.deepEqual(template.Outputs, {
-        ClusterConfigCommand43AAE40F: { Value: { 'Fn::Join': ['', ['aws eks update-kubeconfig --name ', { Ref: 'Cluster9EE0221C' }, ' --region us-east-1']] } },
-        ClusterGetTokenCommand06AE992E: { Value: { 'Fn::Join': ['', ['aws eks get-token --cluster-name ', { Ref: 'Cluster9EE0221C' }, ' --region us-east-1']] } }
+        ClusterConfigCommand43AAE40F: { Value: { 'Fn::Join': [ '', [ 'aws eks update-kubeconfig --name ', { Ref: 'Cluster9EE0221C' }, ' --region us-east-1' ] ] } },
+        ClusterGetTokenCommand06AE992E: { Value: { 'Fn::Join': [ '', [ 'aws eks get-token --cluster-name ', { Ref: 'Cluster9EE0221C' }, ' --region us-east-1' ] ] } }
       });
       test.done();
     },
@@ -416,8 +415,8 @@ export = {
       const assembly = app.synth();
       const template = assembly.getStackByName(stack.stackName).template;
       test.deepEqual(template.Outputs, {
-        ClusterConfigCommand43AAE40F: { Value: { 'Fn::Join': ['', ['aws eks update-kubeconfig --name ', { Ref: 'Cluster9EE0221C' }, ' --region us-east-1 --role-arn ', { 'Fn::GetAtt': ['masters0D04F23D', 'Arn'] }]] } },
-        ClusterGetTokenCommand06AE992E: { Value: { 'Fn::Join': ['', ['aws eks get-token --cluster-name ', { Ref: 'Cluster9EE0221C' }, ' --region us-east-1 --role-arn ', { 'Fn::GetAtt': ['masters0D04F23D', 'Arn'] }]] } }
+        ClusterConfigCommand43AAE40F: { Value: { 'Fn::Join': [ '', [ 'aws eks update-kubeconfig --name ', { Ref: 'Cluster9EE0221C' }, ' --region us-east-1 --role-arn ', { 'Fn::GetAtt': [ 'masters0D04F23D', 'Arn' ] } ] ] } },
+        ClusterGetTokenCommand06AE992E: { Value: { 'Fn::Join': [ '', [ 'aws eks get-token --cluster-name ', { Ref: 'Cluster9EE0221C' }, ' --region us-east-1 --role-arn ', { 'Fn::GetAtt': [ 'masters0D04F23D', 'Arn' ] } ] ] } }
       });
       test.done();
     },
@@ -474,7 +473,7 @@ export = {
       const assembly = app.synth();
       const template = assembly.getStackByName(stack.stackName).template;
       test.deepEqual(template.Outputs, {
-        ClusterMastersRoleArnB15964B1: { Value: { 'Fn::GetAtt': ['masters0D04F23D', 'Arn'] } }
+        ClusterMastersRoleArnB15964B1: { Value: { 'Fn::GetAtt': [ 'masters0D04F23D', 'Arn' ] } }
       });
       test.done();
     },
@@ -482,7 +481,7 @@ export = {
     'boostrap user-data': {
 
       'rendered by default for ASGs'(test: Test) {
-        // GIVEN
+      // GIVEN
         const { app, stack } = testFixtureNoVpc();
         const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0 });
 
@@ -492,12 +491,12 @@ export = {
         // THEN
         const template = app.synth().getStackByName(stack.stackName).template;
         const userData = template.Resources.ClusterMyCapcityLaunchConfig58583345.Properties.UserData;
-        test.deepEqual(userData, { 'Fn::Base64': { 'Fn::Join': ['', ['#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ', { Ref: 'Cluster9EE0221C' }, ' --kubelet-extra-args "--node-labels lifecycle=OnDemand" --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ClusterMyCapcityASGD4CD8B97 --region us-east-1']] } });
+        test.deepEqual(userData, { 'Fn::Base64': { 'Fn::Join': [ '', [ '#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ', { Ref: 'Cluster9EE0221C' }, ' --kubelet-extra-args "--node-labels lifecycle=OnDemand" --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ClusterMyCapcityASGD4CD8B97 --region us-east-1' ] ] } });
         test.done();
       },
 
       'not rendered if bootstrap is disabled'(test: Test) {
-        // GIVEN
+      // GIVEN
         const { app, stack } = testFixtureNoVpc();
         const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0 });
 
@@ -516,7 +515,7 @@ export = {
 
       // cursory test for options: see test.user-data.ts for full suite
       'bootstrap options'(test: Test) {
-        // GIVEN
+      // GIVEN
         const { app, stack } = testFixtureNoVpc();
         const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0 });
 
@@ -531,14 +530,14 @@ export = {
         // THEN
         const template = app.synth().getStackByName(stack.stackName).template;
         const userData = template.Resources.ClusterMyCapcityLaunchConfig58583345.Properties.UserData;
-        test.deepEqual(userData, { 'Fn::Base64': { 'Fn::Join': ['', ['#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ', { Ref: 'Cluster9EE0221C' }, ' --kubelet-extra-args "--node-labels lifecycle=OnDemand  --node-labels FOO=42" --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ClusterMyCapcityASGD4CD8B97 --region us-east-1']] } });
+        test.deepEqual(userData, { 'Fn::Base64': { 'Fn::Join': [ '', [ '#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ', { Ref: 'Cluster9EE0221C' }, ' --kubelet-extra-args "--node-labels lifecycle=OnDemand  --node-labels FOO=42" --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ClusterMyCapcityASGD4CD8B97 --region us-east-1' ] ] } });
         test.done();
       },
 
       'spot instances': {
 
         'nodes labeled an tainted accordingly'(test: Test) {
-          // GIVEN
+        // GIVEN
           const { app, stack } = testFixtureNoVpc();
           const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0 });
 
@@ -551,12 +550,12 @@ export = {
           // THEN
           const template = app.synth().getStackByName(stack.stackName).template;
           const userData = template.Resources.ClusterMyCapcityLaunchConfig58583345.Properties.UserData;
-          test.deepEqual(userData, { 'Fn::Base64': { 'Fn::Join': ['', ['#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ', { Ref: 'Cluster9EE0221C' }, ' --kubelet-extra-args "--node-labels lifecycle=Ec2Spot --register-with-taints=spotInstance=true:PreferNoSchedule" --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ClusterMyCapcityASGD4CD8B97 --region us-east-1']] } });
+          test.deepEqual(userData, { 'Fn::Base64': { 'Fn::Join': [ '', [ '#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ', { Ref: 'Cluster9EE0221C' }, ' --kubelet-extra-args "--node-labels lifecycle=Ec2Spot --register-with-taints=spotInstance=true:PreferNoSchedule" --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ClusterMyCapcityASGD4CD8B97 --region us-east-1' ] ] } });
           test.done();
         },
 
         'if kubectl is enabled, the interrupt handler is added'(test: Test) {
-          // GIVEN
+        // GIVEN
           const { stack } = testFixtureNoVpc();
           const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0 });
 
@@ -579,7 +578,7 @@ export = {
         },
 
         'if kubectl is disabled, interrupt handler is not added'(test: Test) {
-          // GIVEN
+        // GIVEN
           const { stack } = testFixtureNoVpc();
           const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, kubectlEnabled: false });
 
@@ -613,7 +612,7 @@ export = {
     },
 
     'EKS-Optimized AMI with GPU support when addCapacity'(test: Test) {
-      // GIVEN
+    // GIVEN
       const { app, stack } = testFixtureNoVpc();
 
       // WHEN
@@ -633,7 +632,7 @@ export = {
     },
 
     'when using custom resource a creation role & policy is defined'(test: Test) {
-      // GIVEN
+    // GIVEN
       const { stack } = testFixture();
 
       // WHEN
@@ -645,9 +644,9 @@ export = {
       expect(stack).to(haveResource('Custom::AWSCDK-EKS-Cluster', {
         Config: {
           name: 'my-cluster-name',
-          roleArn: { 'Fn::GetAtt': ['MyClusterRoleBA20FE72', 'Arn'] },
+          roleArn: { 'Fn::GetAtt': [ 'MyClusterRoleBA20FE72', 'Arn' ] },
           resourcesVpcConfig: {
-            securityGroupIds: [{ 'Fn::GetAtt': ['MyClusterControlPlaneSecurityGroup6B658F79', 'GroupId'] }],
+            securityGroupIds: [ { 'Fn::GetAtt': [ 'MyClusterControlPlaneSecurityGroup6B658F79', 'GroupId' ] } ],
             subnetIds: [
               { Ref: 'MyClusterDefaultVpcPublicSubnet1SubnetFAE5A9B6' },
               { Ref: 'MyClusterDefaultVpcPublicSubnet2SubnetF6D028A0' },
@@ -730,7 +729,7 @@ export = {
                 'eks:UntagResource'
               ],
               Effect: 'Allow',
-              Resource: [{
+              Resource: [ {
                 'Fn::Join': [
                   '',
                   [
@@ -760,7 +759,7 @@ export = {
                     ':cluster/my-cluster-name/*'
                   ]
                 ]
-              }]
+              } ]
             },
             {
               Action: [
@@ -803,7 +802,7 @@ export = {
     },
 
     'if an explicit cluster name is not provided, the creation role policy is wider (allows interacting with all clusters)'(test: Test) {
-      // GIVEN
+    // GIVEN
       const { stack } = testFixture();
 
       // WHEN
@@ -840,7 +839,7 @@ export = {
                 'eks:UntagResource'
               ],
               Effect: 'Allow',
-              Resource: ['*']
+              Resource: [ '*' ]
             },
             {
               Action: [
@@ -868,7 +867,7 @@ export = {
     },
 
     'if helm charts are used, its resource provider is allowed to assume the creation role'(test: Test) {
-      // GIVEN
+    // GIVEN
       const { stack } = testFixture();
       const cluster = new eks.Cluster(stack, 'MyCluster', {
         clusterName: 'my-cluster-name'
@@ -926,7 +925,7 @@ export = {
     },
 
     'coreDnsComputeType will patch the coreDNS configuration to use a "fargate" compute type and restore to "ec2" upon removal'(test: Test) {
-      // GIVEN
+    // GIVEN
       const stack = new cdk.Stack();
 
       // WHEN
@@ -952,5 +951,4 @@ export = {
       }));
       test.done();
     }
-  }
-};
+  }};
