@@ -36,7 +36,7 @@ export abstract class Secret {
   public static fromSecretsManager(secret: secretsmanager.ISecret, field?: string): Secret {
     return {
       arn: field ? `${secret.secretArn}:${field}::` : secret.secretArn,
-      hasField: true,
+      hasField: !!field,
       grantRead: grantee => secret.grantRead(grantee),
     };
   }

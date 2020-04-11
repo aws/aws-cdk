@@ -795,6 +795,9 @@ export = {
       }
     }));
 
+    test.equal(ecs.Secret.fromSecretsManager(secret).hasField, false);
+    test.equal(ecs.Secret.fromSsmParameter(parameter).hasField, undefined);
+
     test.done();
 
   },
