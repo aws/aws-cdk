@@ -1,3 +1,4 @@
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs';
 import { Test } from 'nodeunit';
@@ -74,7 +75,7 @@ export = {
       protected synthesize(s: cdk.ISynthesisSession) {
         writeJson(s.assembly.outdir, 'foo.json', { bar: 123 });
         s.assembly.addArtifact('my-random-construct', {
-          type: cxapi.ArtifactType.AWS_CLOUDFORMATION_STACK,
+          type: cxschema.ArtifactType.AWS_CLOUDFORMATION_STACK,
           environment: 'aws://12345/bar',
           properties: {
             templateFile: 'foo.json'
@@ -94,7 +95,7 @@ export = {
 
     test.deepEqual(readJson(session.directory, 'foo.json'), { bar: 123 });
     test.deepEqual(session.manifest, {
-      version: cxapi.CLOUD_ASSEMBLY_VERSION,
+      version: cxschema.Manifest.version(),
       artifacts: {
         'Tree': {
           type: 'cdk:tree',
@@ -127,7 +128,7 @@ export = {
         calls.push('synthesize');
 
         session.assembly.addArtifact('art', {
-          type: cxapi.ArtifactType.AWS_CLOUDFORMATION_STACK,
+          type: cxschema.ArtifactType.AWS_CLOUDFORMATION_STACK,
           properties: {
             templateFile: 'hey.json',
             parameters: {

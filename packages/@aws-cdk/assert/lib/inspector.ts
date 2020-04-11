@@ -1,3 +1,4 @@
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as api from '@aws-cdk/cx-api';
 import { Assertion, not } from './assertion';
 import { MatchStyle, matchTemplate } from './assertions/match-template';
@@ -65,9 +66,9 @@ export class StackPathInspector extends Inspector {
     const metadata = this.stack.manifest.metadata || {};
     const md = metadata[this.path] || metadata[`/${this.stack.id}${this.path}`];
     if (md === undefined) { return undefined; }
-    const resourceMd = md.find(entry => entry.type === api.LOGICAL_ID_METADATA_KEY);
+    const resourceMd = md.find(entry => entry.type === cxschema.ArtifactMetadataEntryType.LOGICAL_ID);
     if (resourceMd === undefined) { return undefined; }
-    const logicalId = resourceMd.data;
+    const logicalId = resourceMd.data as cxschema.LogMessageMetadataEntry;
     return this.stack.template.Resources[logicalId];
   }
 }

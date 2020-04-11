@@ -34,6 +34,10 @@ beforeEach(() => {
       [foo]
       aws_access_key_id=${uid}fooccess
       aws_secret_access_key=secret
+
+      [assumer]
+      aws_access_key_id=${uid}assumer
+      aws_secret_access_key=secret
     `),
     '/home/me/.bxt/config': dedent(`
       [default]
@@ -46,6 +50,13 @@ beforeEach(() => {
       aws_access_key_id=${uid}booccess
       aws_secret_access_key=boocret
       # No region here
+
+      [profile assumable]
+      role_arn=arn:aws:iam::12356789012:role/Assumable
+      source_profile=assumer
+
+      [profile assumer]
+      region=us-east-2
     `),
   });
 
@@ -137,6 +148,43 @@ describe('CLI compatible credentials loading', () => {
     const provider = await SdkProvider.withAwsCliCompatibleDefaults({ ...defaultCredOptions, profile: 'boo' });
 
     await expect(provider.forEnvironment(`${uid}some_account_#`, 'def', Mode.ForReading)).rejects.toThrow('Need to perform AWS calls');
+  });
+
+  test('even when using a profile to assume another profile, STS calls goes through the proxy', async () => {
+    // Messy mocking
+    let called = false;
+    jest.mock('proxy-agent', () => {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      class FakeAgent extends require('https').Agent {
+        public addRequest(_: any, __: any) {
+          // FIXME: this error takes 6 seconds to be completely handled. It
+          // might be retries in the SDK somewhere, or something about the Node
+          // event loop. I've spent an hour trying to figure it out and I can't,
+          // and I gave up. We'll just have to live with this until someone gets
+          // inspired.
+          const error = new Error('ABORTED BY TEST');
+          (error as any).code = 'RequestAbortedError';
+          (error as any).retryable = false;
+          called = true;
+          throw error;
+        }
+      }
+      return FakeAgent;
+    });
+
+    // WHEN
+    const provider = await SdkProvider.withAwsCliCompatibleDefaults({ ...defaultCredOptions,
+      ec2creds: false,
+      profile: 'assumable',
+      httpOptions: {
+        proxyAddress: 'http://DOESNTMATTER/',
+      }
+    });
+
+    await provider.defaultAccount();
+
+    // THEN -- the fake proxy agent got called, we don't care about the result
+    expect(called).toEqual(true);
   });
 });
 
