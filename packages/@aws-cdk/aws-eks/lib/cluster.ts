@@ -12,7 +12,7 @@ import { KubernetesPatch } from './k8s-patch';
 import { KubernetesResource } from './k8s-resource';
 import { Nodegroup, NodegroupOptions } from './managed-nodegroup';
 import { spotInterruptHandler } from './spot-interrupt-handler';
-import { renderBottlerocketUserData, renderUserData } from './user-data';
+import { renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
 
 // defaults are based on https://eksctl.io
 const DEFAULT_CAPACITY_COUNT = 2;
@@ -471,7 +471,7 @@ export class Cluster extends Resource implements ICluster {
    */
   public addCapacity(id: string, options: CapacityOptions): autoscaling.AutoScalingGroup {
     if (options.machineImageType === MachineImageType.BOTTLEROCKET && options.bootstrapOptions !== undefined ) {
-      throw new Error('bootstrapOptions is not required for Bottlerocket');
+      throw new Error('bootstrapOptions is not supported for Bottlerocket');
     }
     const asg = new autoscaling.AutoScalingGroup(this, id, {
       ...options,
@@ -558,7 +558,7 @@ export class Cluster extends Resource implements ICluster {
     if (bootstrapEnabled) {
       const userData = options.machineImageType === MachineImageType.BOTTLEROCKET ?
         renderBottlerocketUserData(this) :
-        renderUserData(this.clusterName, autoScalingGroup, options.bootstrapOptions);
+        renderAmazonLinuxUserData(this.clusterName, autoScalingGroup, options.bootstrapOptions);
       autoScalingGroup.addUserData(...userData);
     }
 
@@ -965,7 +965,7 @@ export class EksOptimizedImage implements ec2.IMachineImage {
 /**
  * Construct an Bottlerocket image from the latest AMI published in SSM
  */
-export class BottleRocketImage implements ec2.IMachineImage {
+class BottleRocketImage implements ec2.IMachineImage {
   private readonly kubernetesVersion?: string;
 
   private readonly amiParameterName: string;
