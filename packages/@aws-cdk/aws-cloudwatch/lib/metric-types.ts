@@ -55,32 +55,139 @@ export enum Statistic {
  * Unit for metric
  */
 export enum Unit {
+  /**
+   * Seconds
+   */
   SECONDS = 'Seconds',
+
+  /**
+   * Microseconds
+   */
   MICROSECONDS = 'Microseconds',
+
+  /**
+   * Milliseconds
+   */
   MILLISECONDS = 'Milliseconds',
+
+  /**
+   * Bytes
+   */
   BYTES = 'Bytes',
+
+  /**
+   * Kilobytes
+   */
   KILOBYTES = 'Kilobytes',
+
+  /**
+   * Megabytes
+   */
   MEGABYTES = 'Megabytes',
+
+  /**
+   * Gigabytes
+   */
   GIGABYTES = 'Gigabytes',
+
+  /**
+   * Terabytes
+   */
   TERABYTES = 'Terabytes',
+
+  /**
+   * Bits
+   */
   BITS = 'Bits',
+
+  /**
+   * Kilobits
+   */
   KILOBITS = 'Kilobits',
+
+  /**
+   * Megabits
+   */
   MEGABITS = 'Megabits',
+
+  /**
+   * Gigabits
+   */
   GIGABITS = 'Gigabits',
+
+  /**
+   * Terabits
+   */
   TERABITS = 'Terabits',
+
+  /**
+   * Percent
+   */
   PERCENT = 'Percent',
+
+  /**
+   * Count
+   */
   COUNT = 'Count',
+
+  /**
+   * Bytes/second (B/s)
+   */
   BYTES_PER_SECOND = 'Bytes/Second',
+
+  /**
+   * Kilobytes/second (kB/s)
+   */
   KILOBYTES_PER_SECOND = 'Kilobytes/Second',
+
+  /**
+   * Megabytes/second (MB/s)
+   */
   MEGABYTES_PER_SECOND = 'Megabytes/Second',
+
+  /**
+   * Gigabytes/second (GB/s)
+   */
   GIGABYTES_PER_SECOND = 'Gigabytes/Second',
+
+  /**
+   * Terabytes/second (TB/s)
+   */
   TERABYTES_PER_SECOND = 'Terabytes/Second',
+
+  /**
+   * Bits/second (b/s)
+   */
   BITS_PER_SECOND = 'Bits/Second',
+
+  /**
+   * Kilobits/second (kb/s)
+   */
   KILOBITS_PER_SECOND = 'Kilobits/Second',
+
+  /**
+   * Megabits/second (Mb/s)
+   */
   MEGABITS_PER_SECOND = 'Megabits/Second',
+
+  /**
+   * Gigabits/second (Gb/s)
+   */
   GIGABITS_PER_SECOND = 'Gigabits/Second',
+
+  /**
+   * Terabits/second (Tb/s)
+   */
   TERABITS_PER_SECOND = 'Terabits/Second',
+
+  /**
+   * Count/second
+   */
   COUNT_PER_SECOND = 'Count/Second',
+
+  /**
+   * No unit
+   */
   NONE = 'None'
 }
 
