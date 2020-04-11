@@ -477,7 +477,7 @@ export class TaskDefinition extends TaskDefinitionBase {
       }
     }
 
-    return this.containers.map(x => x.renderContainerDefinition(this));
+    return this.containers.map(x => x.renderContainerDefinition());
   }
 }
 

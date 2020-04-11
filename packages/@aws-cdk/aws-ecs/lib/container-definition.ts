@@ -36,11 +36,24 @@ export abstract class Secret {
   public static fromSecretsManager(secret: secretsmanager.ISecret, field?: string): Secret {
     return {
       arn: field ? `${secret.secretArn}:${field}::` : secret.secretArn,
+      hasField: true,
       grantRead: grantee => secret.grantRead(grantee),
     };
   }
 
+  /**
+   * The ARN of the secret
+   */
   public abstract readonly arn: string;
+
+  /**
+   * Whether this secret uses a specific JSON field
+   */
+  public abstract readonly hasField?: boolean;
+
+  /**
+   * Grants reading the secret to a principal
+   */
   public abstract grantRead(grantee: iam.IGrantable): iam.Grant;
 }
 
@@ -519,9 +532,9 @@ export class ContainerDefinition extends cdk.Construct {
   /**
    * Render this container definition to a CloudFormation object
    *
-   * @param taskDefinition [disable-awslint:ref-via-interface] (made optional to avoid breaking change)
+   * @param _taskDefinition [disable-awslint:ref-via-interface] (unused but kept to avoid breaking change)
    */
-  public renderContainerDefinition(taskDefinition?: TaskDefinition): CfnTaskDefinition.ContainerDefinitionProperty {
+  public renderContainerDefinition(_taskDefinition?: TaskDefinition): CfnTaskDefinition.ContainerDefinitionProperty {
     return {
       command: this.props.command,
       cpu: this.props.cpu,
@@ -551,22 +564,34 @@ export class ContainerDefinition extends cdk.Construct {
       workingDirectory: this.props.workingDirectory,
       logConfiguration: this.logDriverConfig,
       environment: this.props.environment && renderKV(this.props.environment, 'name', 'value'),
-      secrets: this.props.secrets && Object.entries(this.props.secrets)
-        .map(([k, v]) => {
-          if (taskDefinition) {
-            v.grantRead(taskDefinition.obtainExecutionRole());
-          }
-          return {
-            name: k,
-            valueFrom: v.arn
-          };
-        }),
+      secrets: this.renderSecrets(),
       extraHosts: this.props.extraHosts && renderKV(this.props.extraHosts, 'hostname', 'ipAddress'),
       healthCheck: this.props.healthCheck && renderHealthCheck(this.props.healthCheck),
       links: cdk.Lazy.listValue({ produce: () => this.links }, { omitEmpty: true }),
       linuxParameters: this.linuxParameters && this.linuxParameters.renderLinuxParameters(),
       resourceRequirements: (this.props.gpuCount !== undefined) ? renderResourceRequirements(this.props.gpuCount) : undefined,
     };
+  }
+
+  private renderSecrets(): CfnTaskDefinition.SecretProperty[] | undefined {
+    if (!this.props.secrets) {
+      return undefined;
+    }
+
+    const secrets: CfnTaskDefinition.SecretProperty[] = [];
+
+    for (const [k, v] of Object.entries(this.props.secrets)) {
+      if (this.taskDefinition.isFargateCompatible && v.hasField) {
+        throw new Error(`Cannot specify secret JSON field for a task using the FARGATE launch type: '${k}' in container '${this.node.id}'`);
+      }
+      v.grantRead(this.taskDefinition.obtainExecutionRole());
+      secrets.push({
+        name: k,
+        valueFrom: v.arn
+      });
+    }
+
+    return secrets;
   }
 }
 

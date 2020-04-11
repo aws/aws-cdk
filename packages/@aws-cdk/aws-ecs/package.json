@@ -137,8 +137,6 @@
       "docs-public-apis:@aws-cdk/aws-ecs.GelfCompressionType.GZIP",
       "docs-public-apis:@aws-cdk/aws-ecs.WindowsOptimizedVersion.SERVER_2016",
       "docs-public-apis:@aws-cdk/aws-ecs.WindowsOptimizedVersion.SERVER_2019",
-      "docs-public-apis:@aws-cdk/aws-ecs.Secret.arn",
-      "docs-public-apis:@aws-cdk/aws-ecs.Secret.grantRead",
       "props-default-doc:@aws-cdk/aws-ecs.AppMeshProxyConfigurationProps.egressIgnoredIPs",
       "props-default-doc:@aws-cdk/aws-ecs.AppMeshProxyConfigurationProps.egressIgnoredPorts",
       "props-default-doc:@aws-cdk/aws-ecs.AppMeshProxyConfigurationProps.ignoredGID",
