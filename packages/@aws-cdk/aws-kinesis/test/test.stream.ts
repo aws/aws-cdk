@@ -305,7 +305,6 @@ export = {
   },
 
   'encryption key cannot be supplied with UNENCRYPTED as the encryption type'(test: Test) {
-
     const stack = new Stack();
     const key = new kms.Key(stack, 'myKey');
 
@@ -608,7 +607,14 @@ export = {
                 PolicyDocument: {
                   Statement: [
                     {
-                      Action: ['kinesis:DescribeStream', 'kinesis:GetRecords', 'kinesis:GetShardIterator'],
+                      Action: [
+                        'kinesis:DescribeStream',
+                        'kinesis:DescribeStreamSummary',
+                        'kinesis:GetRecords',
+                        'kinesis:GetShardIterator',
+                        'kinesis:ListShards',
+                        'kinesis:SubscribeToShard'
+                      ],
                       Effect: 'Allow',
                       Resource: {
                         'Fn::GetAtt': ['MyStream5C050E93', 'Arn']
@@ -732,7 +738,7 @@ export = {
                 PolicyDocument: {
                   Statement: [
                     {
-                      Action: ['kinesis:DescribeStream', 'kinesis:PutRecord', 'kinesis:PutRecords'],
+                      Action: ['kinesis:ListShards', 'kinesis:PutRecord', 'kinesis:PutRecords'],
                       Effect: 'Allow',
                       Resource: {
                         'Fn::GetAtt': ['MyStream5C050E93', 'Arn']
@@ -856,7 +862,16 @@ export = {
                 PolicyDocument: {
                   Statement: [
                     {
-                      Action: ['kinesis:DescribeStream', 'kinesis:GetRecords', 'kinesis:GetShardIterator', 'kinesis:PutRecord', 'kinesis:PutRecords'],
+                      Action: [
+                        'kinesis:DescribeStream',
+                        'kinesis:DescribeStreamSummary',
+                        'kinesis:GetRecords',
+                        'kinesis:GetShardIterator',
+                        'kinesis:ListShards',
+                        'kinesis:SubscribeToShard',
+                        'kinesis:PutRecord',
+                        'kinesis:PutRecords'
+                      ],
                       Effect: 'Allow',
                       Resource: {
                         'Fn::GetAtt': ['MyStream5C050E93', 'Arn']
@@ -924,7 +939,14 @@ export = {
                 PolicyDocument: {
                   Statement: [
                     {
-                      Action: ['kinesis:DescribeStream', 'kinesis:GetRecords', 'kinesis:GetShardIterator'],
+                      Action: [
+                        'kinesis:DescribeStream',
+                        'kinesis:DescribeStreamSummary',
+                        'kinesis:GetRecords',
+                        'kinesis:GetShardIterator',
+                        'kinesis:ListShards',
+                        'kinesis:SubscribeToShard'
+                      ],
                       Effect: 'Allow',
                       Resource: {
                         'Fn::GetAtt': ['MyStream5C050E93', 'Arn']
@@ -1005,7 +1027,7 @@ export = {
                 PolicyDocument: {
                   Statement: [
                     {
-                      Action: ['kinesis:DescribeStream', 'kinesis:PutRecord', 'kinesis:PutRecords'],
+                      Action: ['kinesis:ListShards', 'kinesis:PutRecord', 'kinesis:PutRecords'],
                       Effect: 'Allow',
                       Resource: {
                         'Fn::GetAtt': ['MyStream5C050E93', 'Arn']
@@ -1086,7 +1108,16 @@ export = {
                 PolicyDocument: {
                   Statement: [
                     {
-                      Action: ['kinesis:DescribeStream', 'kinesis:GetRecords', 'kinesis:GetShardIterator', 'kinesis:PutRecord', 'kinesis:PutRecords'],
+                      Action: [
+                        'kinesis:DescribeStream',
+                        'kinesis:DescribeStreamSummary',
+                        'kinesis:GetRecords',
+                        'kinesis:GetShardIterator',
+                        'kinesis:ListShards',
+                        'kinesis:SubscribeToShard',
+                        'kinesis:PutRecord',
+                        'kinesis:PutRecords'
+                      ],
                       Effect: 'Allow',
                       Resource: {
                         'Fn::GetAtt': ['MyStream5C050E93', 'Arn']
