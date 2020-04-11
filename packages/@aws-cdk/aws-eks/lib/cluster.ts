@@ -413,7 +413,7 @@ export class Cluster extends Resource implements ICluster {
 
     const updateConfigCommandPrefix = `aws eks update-kubeconfig --name ${this.clusterName}`;
     const getTokenCommandPrefix = `aws eks get-token --cluster-name ${this.clusterName}`;
-    const commonCommandOptions = [` --region ${stack.region} `];
+    const commonCommandOptions = [ `--region ${stack.region}` ];
 
     if (props.outputClusterName) {
       new CfnOutput(this, 'ClusterName', { value: this.clusterName });
