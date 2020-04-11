@@ -87,6 +87,16 @@ amplifyApp.addCustomRule({
 });
 ```
 
+When working with a single page application (SPA), use the
+`CustomRule.SINGLE_PAGE_APPLICATION_REDIRECT` to set up a 200
+rewrite for all files to `index.html` except for the following
+file extensions: css, gif, ico, jpg, js, png, txt, svg, woff,
+ttf, map, json, webmanifest.
+
+```ts
+mySinglePageApp.addCustomRule(amplify.CustomRule.SINGLE_PAGE_APPLICATION_REDIRECT);
+```
+
 Add a domain and map sub domains to branches:
 ```ts
 const domain = amplifyApp.addDomain('example.com');

@@ -261,6 +261,29 @@ test('with custom rules', () => {
   });
 });
 
+test('with SPA redirect', () => {
+  // WHEN
+  new amplify.App(stack, 'App', {
+    sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
+      owner: 'aws',
+      repository: 'aws-cdk',
+      oauthToken: SecretValue.plainText('secret')
+    }),
+    customRules: [amplify.CustomRule.SINGLE_PAGE_APPLICATION_REDIRECT]
+  });
+
+  // THEN
+  expect(stack).toHaveResource('AWS::Amplify::App', {
+    CustomRules: [
+      {
+        Source: '</^[^.]+$|\\.(?!(css|gif|ico|jpg|js|png|txt|svg|woff|ttf|map|json|webmanifest)$)([^.]+$)/>',
+        Status: '200',
+        Target: '/index.html'
+      },
+    ]
+  });
+});
+
 test('with auto branch creation', () => {
   // WHEN
   const app = new amplify.App(stack, 'App', {
