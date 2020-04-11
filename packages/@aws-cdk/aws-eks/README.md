@@ -520,7 +520,7 @@ cluster.addCapacity('BottlerocketNodes', {
 
 To define only Bottlerocket capacity in your cluster, set `defaultCapacity` to `0` when you define the cluster as described above.
 
-Please note Bottlerocket does not allow to customize bootstrap options and `bootstrapOptions` properties is not required when you create the `Bottlerocket` capacity. 
+Please note Bottlerocket does not allow to customize bootstrap options and `bootstrapOptions` properties is not supported when you create the `Bottlerocket` capacity. 
 
 `Bottlerocket` is now available in public preview and only available in [some supported AWS regions](https://github.com/bottlerocket-os/bottlerocket/blob/develop/QUICKSTART.md#finding-an-ami). 
 
