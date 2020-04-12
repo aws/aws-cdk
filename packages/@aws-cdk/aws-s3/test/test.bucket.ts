@@ -1786,9 +1786,9 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::S3::Bucket', {
-     LoggingConfiguration: {
-       LogFilePrefix: 'hello'
-     }
+      LoggingConfiguration: {
+        LogFilePrefix: 'hello'
+      }
     }));
     test.done();
   },
