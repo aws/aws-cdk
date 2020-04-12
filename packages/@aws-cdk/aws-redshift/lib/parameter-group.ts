@@ -15,7 +15,7 @@ export enum ParameterGroupFamily {
 /**
  * A parameter group
  */
-export interface IParameterGroup extends IResource {
+export interface IClusterParameterGroup extends IResource {
   /**
    * The name of this parameter group
    *
@@ -27,7 +27,7 @@ export interface IParameterGroup extends IResource {
 /**
  * A new cluster or instance parameter group
  */
-abstract class ParameterGroupBase extends Resource implements IParameterGroup {
+abstract class ClusterParameterGroupBase extends Resource implements IClusterParameterGroup {
   /**
    * The name of the parameter group
    */
@@ -64,12 +64,12 @@ export interface ClusterParameterGroupProps {
  *
  * @resource AWS::Redshift::ClusterParameterGroup
  */
-export class ClusterParameterGroup extends ParameterGroupBase {
+export class ClusterParameterGroup extends ClusterParameterGroupBase {
   /**
    * Imports a parameter group
    */
-  public static fromParameterGroupName(scope: Construct, id: string, parameterGroupName: string): IParameterGroup {
-    class Import extends Resource implements IParameterGroup {
+  public static fromParameterGroupName(scope: Construct, id: string, parameterGroupName: string): IClusterParameterGroup {
+    class Import extends Resource implements IClusterParameterGroup {
       public readonly parameterGroupName = parameterGroupName;
     }
     return new Import(scope, id);

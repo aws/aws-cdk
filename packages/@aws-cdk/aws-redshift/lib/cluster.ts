@@ -6,7 +6,7 @@ import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { Construct, Duration, IResource, RemovalPolicy, Resource, Token } from '@aws-cdk/core';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
-import { IParameterGroup } from './parameter-group';
+import { IClusterParameterGroup } from './parameter-group';
 import { Login, RotationMultiUserOptions } from './props';
 import { CfnCluster, CfnClusterSubnetGroup } from './redshift.generated';
 
@@ -99,7 +99,7 @@ export interface ClusterProps {
    *
    * @default - No parameter group.
    */
-  readonly parameterGroup?: IParameterGroup;
+  readonly parameterGroup?: IClusterParameterGroup;
 
   /**
    * Number of compute nodes in the cluster
@@ -351,7 +351,7 @@ export class Cluster extends ClusterBase {
     if (!props.masterUser.masterPassword) {
       secret = new DatabaseSecret(this, 'Secret', {
         username: props.masterUser.masterUsername,
-        encryptionKey: props.masterUser.kmsKey
+        encryptionKey: props.masterUser.encryptionKey
       });
     }
 
