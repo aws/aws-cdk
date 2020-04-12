@@ -69,7 +69,7 @@ test('can create a cluster with imported vpc and security group', () => {
       masterPassword: cdk.SecretValue.plainText('tooshort'),
     },
     vpc,
-    securityGroups: [sg]
+    securityGroup: sg
   });
 
   // THEN
