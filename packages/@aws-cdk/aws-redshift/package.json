@@ -68,10 +68,6 @@
       "global": {
         "branches": 60,
         "statements": 80
-      },
-      "./lib/redshift.generated.ts": {
-        "branches": 40,
-        "statements": 70
       }
     },
     "collectCoverage": true,
@@ -103,9 +99,9 @@
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-secretsmanager": "0.0.0",
     "@aws-cdk/aws-kms": "0.0.0",
-    "@aws-cdk/aws-s3": "0.0.0"
+    "@aws-cdk/aws-s3": "0.0.0",
+    "@aws-cdk/core": "0.0.0"
   },
-
   "engines": {
     "node": ">= 10.12.0"
   },
