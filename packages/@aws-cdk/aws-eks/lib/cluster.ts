@@ -11,7 +11,7 @@ import { HelmChart, HelmChartOptions } from './helm-chart';
 import { KubernetesPatch } from './k8s-patch';
 import { KubernetesResource } from './k8s-resource';
 import { Nodegroup, NodegroupOptions  } from './managed-nodegroup';
-import { LifecycleLabel, renderUserData } from './user-data';
+import { LifecycleLabel, renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
 
 // defaults are based on https://eksctl.io
 const DEFAULT_CAPACITY_COUNT = 2;
@@ -245,7 +245,7 @@ export interface ClusterProps extends ClusterOptions {
    *
    * @default NODEGROUP
    */
-  readonly defaultCapacityType?: DefaultCapacityType
+  readonly defaultCapacityType?: DefaultCapacityType;
 }
 
 /**
@@ -441,7 +441,7 @@ export class Cluster extends Resource implements ICluster {
         this.addCapacity('DefaultCapacity', { instanceType, minCapacity }) : undefined;
 
       this.defaultNodegroup = props.defaultCapacityType !== DefaultCapacityType.EC2 ?
-        this.addNodegroup('DefaultCapacity', { instanceType, minSize: minCapacity } ) : undefined;
+        this.addNodegroup('DefaultCapacity', { instanceType, minSize: minCapacity }) : undefined;
     }
 
     const outputConfigCommand = props.outputConfigCommand === undefined ? true : props.outputConfigCommand;
@@ -469,13 +469,18 @@ export class Cluster extends Resource implements ICluster {
    * [EC2 Spot Instance Termination Notices](https://aws.amazon.com/blogs/aws/new-ec2-spot-instance-termination-notices/).
    */
   public addCapacity(id: string, options: CapacityOptions): autoscaling.AutoScalingGroup {
+    if (options.machineImageType === MachineImageType.BOTTLEROCKET && options.bootstrapOptions !== undefined ) {
+      throw new Error('bootstrapOptions is not supported for Bottlerocket');
+    }
     const asg = new autoscaling.AutoScalingGroup(this, id, {
       ...options,
       vpc: this.vpc,
-      machineImage: new EksOptimizedImage({
-        nodeType: nodeTypeForInstanceType(options.instanceType),
-        kubernetesVersion: this.version,
-      }),
+      machineImage: options.machineImageType === MachineImageType.BOTTLEROCKET ?
+        new BottleRocketImage() :
+        new EksOptimizedImage({
+          nodeType: nodeTypeForInstanceType(options.instanceType),
+          kubernetesVersion: this.version,
+        }),
       updateType: options.updateType || autoscaling.UpdateType.ROLLING_UPDATE,
       instanceType: options.instanceType,
     });
@@ -483,7 +488,8 @@ export class Cluster extends Resource implements ICluster {
     this.addAutoScalingGroup(asg, {
       mapRole: options.mapRole,
       bootstrapOptions: options.bootstrapOptions,
-      bootstrapEnabled: options.bootstrapEnabled
+      bootstrapEnabled: options.bootstrapEnabled,
+      machineImageType: options.machineImageType
     });
 
     return asg;
@@ -549,7 +555,9 @@ export class Cluster extends Resource implements ICluster {
     }
 
     if (bootstrapEnabled) {
-      const userData = renderUserData(this.clusterName, autoScalingGroup, options.bootstrapOptions);
+      const userData = options.machineImageType === MachineImageType.BOTTLEROCKET ?
+        renderBottlerocketUserData(this) :
+        renderAmazonLinuxUserData(this.clusterName, autoScalingGroup, options.bootstrapOptions);
       autoScalingGroup.addUserData(...userData);
     }
 
@@ -778,6 +786,13 @@ export interface CapacityOptions extends autoscaling.CommonAutoScalingGroupProps
    * @default - none
    */
   readonly bootstrapOptions?: BootstrapOptions;
+
+  /**
+   * Machine image type
+   *
+   * @default MachineImageType.AMAZON_LINUX_2
+   */
+  readonly machineImageType?: MachineImageType;
 }
 
 /**
@@ -862,6 +877,13 @@ export interface AutoScalingGroupOptions {
    * @default - default options
    */
   readonly bootstrapOptions?: BootstrapOptions;
+
+  /**
+   * Allow options to specify different machine image type
+   *
+   * @default MachineImageType.AMAZON_LINUX_2
+   */
+  readonly machineImageType?: MachineImageType;
 }
 
 /**
@@ -947,6 +969,38 @@ export class EksOptimizedImage implements ec2.IMachineImage {
   }
 }
 
+/**
+ * Construct an Bottlerocket image from the latest AMI published in SSM
+ */
+class BottleRocketImage implements ec2.IMachineImage {
+  private readonly kubernetesVersion?: string;
+
+  private readonly amiParameterName: string;
+
+  /**
+   * Constructs a new instance of the BottleRocketImage class.
+   */
+  public constructor() {
+    // only 1.15 is currently available
+    this.kubernetesVersion = '1.15';
+
+    // set the SSM parameter name
+    this.amiParameterName = `/aws/service/bottlerocket/aws-k8s-${this.kubernetesVersion}/x86_64/latest/image_id`;
+  }
+
+  /**
+   * Return the correct image
+   */
+  public getImage(scope: Construct): ec2.MachineImageConfig {
+    const ami = ssm.StringParameter.valueForStringParameter(scope, this.amiParameterName);
+    return {
+      imageId: ami,
+      osType: ec2.OperatingSystemType.LINUX,
+      userData: ec2.UserData.custom(''),
+    };
+  }
+}
+
 // MAINTAINERS: use ./scripts/kube_bump.sh to update LATEST_KUBERNETES_VERSION
 const LATEST_KUBERNETES_VERSION = '1.14';
 
@@ -992,6 +1046,20 @@ export enum DefaultCapacityType {
    * EC2 autoscaling group
    */
   EC2
+}
+
+/**
+ * The machine image type
+ */
+export enum MachineImageType {
+  /**
+   * Amazon EKS-optimized Linux AMI
+   */
+  AMAZON_LINUX_2,
+  /**
+   * Bottlerocket AMI
+   */
+  BOTTLEROCKET
 }
 
 const GPU_INSTANCETYPES = ['p2', 'p3', 'g4'];
