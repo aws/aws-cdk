@@ -22,7 +22,7 @@ class EksClusterStack extends TestStack {
 
     // // fargate profile for resources in the "default" namespace
     cluster.addFargateProfile('default', {
-      selectors: [ { namespace: 'default' } ]
+      selectors: [{ namespace: 'default' }]
     });
 
     // add some capacity to the cluster. The IAM instance role will
@@ -30,6 +30,13 @@ class EksClusterStack extends TestStack {
     cluster.addCapacity('Nodes', {
       instanceType: new ec2.InstanceType('t2.medium'),
       minCapacity: 3,
+    });
+
+    // add bottlerocket nodes
+    cluster.addCapacity('BottlerocketNodes', {
+      instanceType: new ec2.InstanceType('t3.small'),
+      minCapacity: 2,
+      machineImageType: eks.MachineImageType.BOTTLEROCKET
     });
 
     // spot instances (up to 10)
