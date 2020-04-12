@@ -5,6 +5,11 @@ import { IAlarm } from './alarm';
  * Interface for objects that can be the targets of CloudWatch alarm actions
  */
 export interface IAlarmAction {
+  /**
+   * 
+   * @param scope 
+   * @param alarm 
+   */
   bind(scope: Construct, alarm: IAlarm): AlarmActionConfig;
 }
 

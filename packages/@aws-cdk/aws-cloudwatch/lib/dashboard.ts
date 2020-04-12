@@ -8,6 +8,9 @@ export enum PeriodOverride {
   INHERIT = 'inherit',
 }
 
+/**
+ * Properties for defining a CloudWatch Dashboard
+ */
 export interface DashboardProps {
   /**
    * Name of the dashboard.

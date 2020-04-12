@@ -49,14 +49,14 @@ export interface YAxisProps {
   /**
    * The max value
    *
-   * @default No maximum value
+   * @default - No maximum value
    */
   readonly max?: number;
 
   /**
    * The label
    *
-   * @default No label
+   * @default - No label
    */
   readonly label?: string;
 
@@ -79,6 +79,8 @@ export interface AlarmWidgetProps extends MetricWidgetProps {
 
   /**
    * Left Y axis
+   *
+   * @default - No minimum or maximum values for the left Y-axis
    */
   readonly leftYAxis?: YAxisProps;
 }
@@ -122,36 +124,50 @@ export class AlarmWidget extends ConcreteWidget {
 export interface GraphWidgetProps extends MetricWidgetProps {
   /**
    * Metrics to display on left Y axis
+   *
+   * @default - No metrics
    */
   readonly left?: IMetric[];
 
   /**
    * Metrics to display on right Y axis
+   *
+   * @default - No metrics
    */
   readonly right?: IMetric[];
 
   /**
    * Annotations for the left Y axis
+   *
+   * @default - No annotations
    */
   readonly leftAnnotations?: HorizontalAnnotation[];
 
   /**
    * Annotations for the right Y axis
+   *
+   * @default - No annotations
    */
   readonly rightAnnotations?: HorizontalAnnotation[];
 
   /**
    * Whether the graph should be shown as stacked lines
+   *
+   * @default false
    */
   readonly stacked?: boolean;
 
   /**
    * Left Y axis
+   *
+   * @default - None
    */
   readonly leftYAxis?: YAxisProps;
 
   /**
    * Right Y axis
+   *
+   * @default - None
    */
   readonly rightYAxis?: YAxisProps;
 }

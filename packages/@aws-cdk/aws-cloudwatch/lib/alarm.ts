@@ -9,13 +9,20 @@ import { dropUndefined } from './private/object';
 import { MetricSet } from './private/rendering';
 import { parseStatistic } from './private/statistic';
 
+/**
+ * Represents a CloudWatch Alarm
+ */
 export interface IAlarm extends IResource {
   /**
+   * Alarm ARN (i.e. arn:aws:cloudwatch:<region>:<account-id>:alarm:Foo)
+   *
    * @attribute
    */
   readonly alarmArn: string;
 
   /**
+   * Name of the alarm
+   *
    * @attribute
    */
   readonly alarmName: string;
@@ -102,6 +109,13 @@ export enum TreatMissingData {
  */
 export class Alarm extends Resource implements IAlarm {
 
+  /**
+   * Import an existing CloudWatch alarm provided an ARN
+   *
+   * @param scope The parent creating construct (usually `this`).
+   * @param id The construct's name
+   * @param alarmArn Alarm ARN (i.e. arn:aws:cloudwatch:<region>:<account-id>:alarm:Foo)
+   */
   public static fromAlarmArn(scope: Construct, id: string, alarmArn: string): IAlarm {
     class Import extends Resource implements IAlarm {
       public readonly alarmArn = alarmArn;
