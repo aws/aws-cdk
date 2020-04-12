@@ -11,6 +11,8 @@ export interface StartExecutionProps {
    * The JSON input for the execution, same as that of StartExecution.
    *
    * @see https://docs.aws.amazon.com/step-functions/latest/apireference/API_StartExecution.html
+   *
+   * @default - No input
    */
   readonly input?: { [key: string]: any };
 
@@ -18,6 +20,8 @@ export interface StartExecutionProps {
    * The name of the execution, same as that of StartExecution.
    *
    * @see https://docs.aws.amazon.com/step-functions/latest/apireference/API_StartExecution.html
+   *
+   * @default - None
    */
   readonly name?: string;
 
@@ -60,7 +64,7 @@ export class StartExecution implements sfn.IStepFunctionsTask {
 
   public bind(task: sfn.Task): sfn.StepFunctionsTaskConfig {
     return {
-      resourceArn: getResourceArn("states", "startExecution", this.integrationPattern),
+      resourceArn: getResourceArn('states', 'startExecution', this.integrationPattern),
       policyStatements: this.createScopedAccessPolicy(task),
       parameters: {
         Input: this.props.input,

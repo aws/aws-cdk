@@ -35,14 +35,24 @@ export interface BaseTargetTrackingProps {
   /**
    * Period after a scale in activity completes before another scale in activity can start.
    *
-   * @default - No scale in cooldown.
+   * @default Duration.seconds(300) for the following scalable targets: ECS services,
+   * Spot Fleet requests, EMR clusters, AppStream 2.0 fleets, Aurora DB clusters,
+   * Amazon SageMaker endpoint variants, Custom resources. For all other scalable
+   * targets, the default value is Duration.seconds(0): DynamoDB tables, DynamoDB
+   * global secondary indexes, Amazon Comprehend document classification endpoints,
+   * Lambda provisioned concurrency
    */
   readonly scaleInCooldown?: cdk.Duration;
 
   /**
    * Period after a scale out activity completes before another scale out activity can start.
    *
-   * @default - No scale out cooldown.
+   * @default Duration.seconds(300) for the following scalable targets: ECS services,
+   * Spot Fleet requests, EMR clusters, AppStream 2.0 fleets, Aurora DB clusters,
+   * Amazon SageMaker endpoint variants, Custom resources. For all other scalable
+   * targets, the default value is Duration.seconds(0): DynamoDB tables, DynamoDB
+   * global secondary indexes, Amazon Comprehend document classification endpoints,
+   * Lambda provisioned concurrency
    */
   readonly scaleOutCooldown?: cdk.Duration;
 }
@@ -112,11 +122,11 @@ export class TargetTrackingScalingPolicy extends cdk.Construct {
 
   constructor(scope: cdk.Construct, id: string, props: TargetTrackingScalingPolicyProps) {
     if ((props.customMetric === undefined) === (props.predefinedMetric === undefined)) {
-      throw new Error(`Exactly one of 'customMetric' or 'predefinedMetric' must be specified.`);
+      throw new Error('Exactly one of \'customMetric\' or \'predefinedMetric\' must be specified.');
     }
 
     if (props.customMetric && !props.customMetric.toMetricConfig().metricStat) {
-      throw new Error(`Only direct metrics are supported for Target Tracking. Use Step Scaling or supply a Metric object.`);
+      throw new Error('Only direct metrics are supported for Target Tracking. Use Step Scaling or supply a Metric object.');
     }
 
     super(scope, id);
@@ -163,15 +173,64 @@ function renderCustomMetric(metric?: cloudwatch.IMetric): CfnScalingPolicy.Custo
  * One of the predefined autoscaling metrics
  */
 export enum PredefinedMetric {
+  /**
+   * DYNAMODB_READ_CAPACITY_UTILIZATIO
+   * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
+   */
   DYNAMODB_READ_CAPACITY_UTILIZATION = 'DynamoDBReadCapacityUtilization',
+  /**
+   * DYANMODB_WRITE_CAPACITY_UTILIZATION
+   * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
+   */
   DYANMODB_WRITE_CAPACITY_UTILIZATION = 'DynamoDBWriteCapacityUtilization',
+  /**
+   * ALB_REQUEST_COUNT_PER_TARGET
+   * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
+   */
   ALB_REQUEST_COUNT_PER_TARGET = 'ALBRequestCountPerTarget',
+  /**
+   * RDS_READER_AVERAGE_CPU_UTILIZATION
+   * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
+   */
   RDS_READER_AVERAGE_CPU_UTILIZATION = 'RDSReaderAverageCPUUtilization',
+  /**
+   * RDS_READER_AVERAGE_DATABASE_CONNECTIONS
+   * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
+   */
   RDS_READER_AVERAGE_DATABASE_CONNECTIONS = 'RDSReaderAverageDatabaseConnections',
+  /**
+   * EC2_SPOT_FLEET_REQUEST_AVERAGE_CPU_UTILIZATION
+   * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
+   */
   EC2_SPOT_FLEET_REQUEST_AVERAGE_CPU_UTILIZATION = 'EC2SpotFleetRequestAverageCPUUtilization',
+  /**
+   * EC2_SPOT_FLEET_REQUEST_AVERAGE_NETWORK_IN
+   * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
+   */
   EC2_SPOT_FLEET_REQUEST_AVERAGE_NETWORK_IN = 'EC2SpotFleetRequestAverageNetworkIn',
+  /**
+   * EC2_SPOT_FLEET_REQUEST_AVERAGE_NETWORK_OUT
+   * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
+   */
   EC2_SPOT_FLEET_REQUEST_AVERAGE_NETWORK_OUT = 'EC2SpotFleetRequestAverageNetworkOut',
+  /**
+   * SAGEMAKER_VARIANT_INVOCATIONS_PER_INSTANCE
+   * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
+   */
   SAGEMAKER_VARIANT_INVOCATIONS_PER_INSTANCE = 'SageMakerVariantInvocationsPerInstance',
+  /**
+   * ECS_SERVICE_AVERAGE_CPU_UTILIZATION
+   * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
+   */
   ECS_SERVICE_AVERAGE_CPU_UTILIZATION = 'ECSServiceAverageCPUUtilization',
+  /**
+   * ECS_SERVICE_AVERAGE_CPU_UTILIZATION
+   * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
+   */
   ECS_SERVICE_AVERAGE_MEMORY_UTILIZATION = 'ECSServiceAverageMemoryUtilization',
+  /**
+   * LAMBDA_PROVISIONED_CONCURRENCY_UTILIZATION
+   * @see https://docs.aws.amazon.com/lambda/latest/dg/monitoring-metrics.html#monitoring-metrics-concurrency
+   */
+  LAMBDA_PROVISIONED_CONCURRENCY_UTILIZATION = 'LambdaProvisionedConcurrencyUtilization',
 }

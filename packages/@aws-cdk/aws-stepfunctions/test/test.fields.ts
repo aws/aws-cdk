@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { Context, Data, FieldUtils } from "../lib";
+import { Context, Data, FieldUtils } from '../lib';
 
 export = {
   'deep replace correctly handles fields in arrays'(test: Test) {
@@ -80,17 +80,29 @@ export = {
   },
 
   'datafield path must be correct'(test: Test) {
+    test.ok(Data.stringAt('$'));
+
+    test.throws(() => {
+      Data.stringAt('$hello');
+    }, /exactly equal to '\$' or start with '\$.'/);
+
     test.throws(() => {
       Data.stringAt('hello');
-    }, /must start with '\$.'/);
+    }, /exactly equal to '\$' or start with '\$.'/);
 
     test.done();
   },
 
   'context path must be correct'(test: Test) {
+    test.ok(Context.stringAt('$$'));
+
+    test.throws(() => {
+      Context.stringAt('$$hello');
+    }, /exactly equal to '\$\$' or start with '\$\$.'/);
+
     test.throws(() => {
       Context.stringAt('hello');
-    }, /must start with '\$\$.'/);
+    }, /exactly equal to '\$\$' or start with '\$\$.'/);
 
     test.done();
   },

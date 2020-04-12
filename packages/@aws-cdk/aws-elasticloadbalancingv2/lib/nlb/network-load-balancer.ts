@@ -38,6 +38,14 @@ export interface NetworkLoadBalancerAttributes {
    * @default - When not provided, LB cannot be used as Route53 Alias target.
    */
   readonly loadBalancerDnsName?: string;
+
+  /**
+   * The VPC to associate with the load balancer.
+   *
+   * @default - When not provided, listeners cannot be created on imported load
+   * balancers.
+   */
+  readonly vpc?: ec2.IVpc;
 }
 
 /**
@@ -49,7 +57,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
   public static fromNetworkLoadBalancerAttributes(scope: Construct, id: string, attrs: NetworkLoadBalancerAttributes): INetworkLoadBalancer {
     class Import extends Resource implements INetworkLoadBalancer {
       public readonly loadBalancerArn = attrs.loadBalancerArn;
-      public readonly vpc?: ec2.IVpc = undefined;
+      public readonly vpc?: ec2.IVpc = attrs.vpc;
       public addListener(lid: string, props: BaseNetworkListenerProps): NetworkListener {
         return new NetworkListener(this, lid, {
           loadBalancer: this,
@@ -75,7 +83,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
 
   constructor(scope: Construct, id: string, props: NetworkLoadBalancerProps) {
     super(scope, id, props, {
-      type: "network",
+      type: 'network',
     });
 
     if (props.crossZoneEnabled) { this.setAttribute('load_balancing.cross_zone.enabled', 'true'); }

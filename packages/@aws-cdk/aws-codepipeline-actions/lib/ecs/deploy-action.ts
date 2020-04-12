@@ -39,7 +39,7 @@ export interface EcsDeployActionProps extends codepipeline.CommonAwsActionProps 
   /**
    * The ECS Service to deploy.
    */
-  readonly service: ecs.BaseService;
+  readonly service: ecs.IBaseService;
 }
 
 /**
@@ -62,7 +62,7 @@ export class EcsDeployAction extends Action {
   }
 
   protected bound(_scope: Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
-      codepipeline.ActionConfig {
+  codepipeline.ActionConfig {
     // permissions based on CodePipeline documentation:
     // https://docs.aws.amazon.com/codepipeline/latest/userguide/how-to-custom-role.html#how-to-update-role-new-services
     options.role.addToPolicy(new iam.PolicyStatement({

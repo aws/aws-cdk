@@ -28,6 +28,8 @@ export interface CommonEcsRunTaskProps {
    *
    * Key is the name of the container to override, value is the
    * values you want to override.
+   *
+   * @default - No overrides
    */
   readonly containerOverrides?: ContainerOverride[];
 
@@ -47,6 +49,8 @@ export interface CommonEcsRunTaskProps {
 export interface EcsRunTaskBaseProps extends CommonEcsRunTaskProps {
   /**
    * Additional parameters to pass to the base task
+   *
+   * @default - No additional parameters passed
    */
   readonly parameters?: {[key: string]: any};
 }
@@ -79,7 +83,7 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
 
     if (this.integrationPattern === sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN
       && !sfn.FieldUtils.containsTaskToken(props.containerOverrides)) {
-     throw new Error('Task Token is missing in containerOverrides (pass Context.taskToken somewhere in containerOverrides)');
+      throw new Error('Task Token is missing in containerOverrides (pass Context.taskToken somewhere in containerOverrides)');
     }
 
     for (const override of this.props.containerOverrides || []) {
@@ -103,7 +107,7 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
     }
 
     return {
-      resourceArn: getResourceArn("ecs", "runTask", this.integrationPattern),
+      resourceArn: getResourceArn('ecs', 'runTask', this.integrationPattern),
       parameters: {
         Cluster: this.props.cluster.clusterArn,
         TaskDefinition: this.props.taskDefinition.taskDefinitionArn,
@@ -116,10 +120,10 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
   }
 
   protected configureAwsVpcNetworking(
-      vpc: ec2.IVpc,
-      assignPublicIp?: boolean,
-      subnetSelection?: ec2.SubnetSelection,
-      securityGroup?: ec2.ISecurityGroup) {
+    vpc: ec2.IVpc,
+    assignPublicIp?: boolean,
+    subnetSelection?: ec2.SubnetSelection,
+    securityGroup?: ec2.ISecurityGroup) {
 
     if (subnetSelection === undefined) {
       subnetSelection = { subnetType: assignPublicIp ? ec2.SubnetType.PUBLIC : ec2.SubnetType.PRIVATE };
@@ -158,7 +162,7 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
 
     if (this.integrationPattern === sfn.ServiceIntegrationPattern.SYNC) {
       policyStatements.push(new iam.PolicyStatement({
-        actions: ["events:PutTargets", "events:PutRule", "events:DescribeRule"],
+        actions: ['events:PutTargets', 'events:PutRule', 'events:DescribeRule'],
         resources: [stack.formatArn({
           service: 'events',
           resource: 'rule',

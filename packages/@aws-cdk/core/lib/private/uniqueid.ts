@@ -19,6 +19,7 @@ const PATH_SEP = '/';
 
 const HASH_LEN = 8;
 const MAX_HUMAN_LEN = 240; // max ID len is 255
+const MAX_ID_LEN = 255;
 
 /**
  * Calculates a unique ID for a set of textual components.
@@ -46,7 +47,18 @@ export function makeUniqueId(components: string[]) {
   // transparent migration of cloudformation templates to the CDK without the
   // need to rename all resources.
   if (components.length === 1) {
-    return removeNonAlphanumeric(components[0]);
+    // we filter out non-alpha characters but that is actually a bad idea
+    // because it could create conflicts ("A-B" and "AB" will render the same
+    // logical ID). sadly, changing it in the 1.x version line is impossible
+    // because it will be a breaking change. we should consider for v2.0.
+    // https://github.com/aws/aws-cdk/issues/6421
+    const candidate = removeNonAlphanumeric(components[0]);
+
+    // if our candidate is short enough, use it as is. otherwise, fall back to
+    // the normal mode.
+    if (candidate.length <= MAX_ID_LEN) {
+      return candidate;
+    }
   }
 
   const hash = pathHash(components);
@@ -65,7 +77,7 @@ export function makeUniqueId(components: string[]) {
  * The hash is limited in size.
  */
 function pathHash(path: string[]): string {
-  const md5 = crypto.createHash('md5').update(path.join(PATH_SEP)).digest("hex");
+  const md5 = crypto.createHash('md5').update(path.join(PATH_SEP)).digest('hex');
   return md5.slice(0, HASH_LEN).toUpperCase();
 }
 

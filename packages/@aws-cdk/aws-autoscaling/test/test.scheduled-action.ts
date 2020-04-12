@@ -60,33 +60,33 @@ export = {
     expect(stack).toMatch({
       Resources: {
         ASG46ED3070: {
-          Type: "AWS::AutoScaling::AutoScalingGroup",
+          Type: 'AWS::AutoScaling::AutoScalingGroup',
           Properties: {
-            MaxSize: "1",
-            MinSize: "1",
-            LaunchConfigurationName: { Ref: "ASGLaunchConfigC00AF12B" },
+            MaxSize: '1',
+            MinSize: '1',
+            LaunchConfigurationName: { Ref: 'ASGLaunchConfigC00AF12B' },
             Tags: [
               {
-                Key: "Name",
+                Key: 'Name',
                 PropagateAtLaunch: true,
-                Value: "ASG"
+                Value: 'ASG'
               }
             ],
             VPCZoneIdentifier: [
-              { Ref: "VPCPrivateSubnet1Subnet8BCA10E0" },
-              { Ref: "VPCPrivateSubnet2SubnetCFCDAA7A" },
+              { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
+              { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },
             ]
           },
           UpdatePolicy: {
             AutoScalingRollingUpdate: {
               WaitOnResourceSignals: false,
-              PauseTime: "PT0S",
+              PauseTime: 'PT0S',
               SuspendProcesses: [
-                "HealthCheck",
-                "ReplaceUnhealthy",
-                "AZRebalance",
-                "AlarmNotification",
-                "ScheduledActions"
+                'HealthCheck',
+                'ReplaceUnhealthy',
+                'AZRebalance',
+                'AlarmNotification',
+                'ScheduledActions'
               ]
             },
             AutoScalingScheduledAction: {
@@ -97,8 +97,8 @@ export = {
       },
       Parameters: {
         SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter: {
-          Type: "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
-          Default: "/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2"
+          Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
+          Default: '/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2'
         }
       }
     }, MatchStyle.SUPERSET);

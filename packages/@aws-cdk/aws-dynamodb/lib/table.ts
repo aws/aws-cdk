@@ -1,8 +1,10 @@
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
+import { CfnCustomResource, CustomResource } from '@aws-cdk/aws-cloudformation';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
-import { Aws, Construct, IResource, Lazy, RemovalPolicy, Resource, Stack } from '@aws-cdk/core';
+import { Aws, CfnCondition, Construct, Fn, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
 import { CfnTable } from './dynamodb.generated';
+import { ReplicaProvider } from './replica-provider';
 import { EnableScalingProps, IScalableTableAttribute } from './scalable-attribute-api';
 import { ScalableTableAttribute } from './scalable-table-attribute';
 
@@ -22,9 +24,9 @@ const READ_DATA_ACTIONS = [
 ];
 
 const READ_STREAM_DATA_ACTIONS = [
-  "dynamodb:DescribeStream",
-  "dynamodb:GetRecords",
-  "dynamodb:GetShardIterator",
+  'dynamodb:DescribeStream',
+  'dynamodb:GetRecords',
+  'dynamodb:GetShardIterator',
 ];
 
 const WRITE_DATA_ACTIONS = [
@@ -80,7 +82,8 @@ export interface TableOptions {
 
   /**
    * Specify how you are charged for read and write throughput and how you manage capacity.
-   * @default Provisioned
+   *
+   * @default PROVISIONED if `replicationRegions` is not specified, PAY_PER_REQUEST otherwise
    */
   readonly billingMode?: BillingMode;
 
@@ -106,7 +109,7 @@ export interface TableOptions {
    * When an item in the table is modified, StreamViewType determines what information
    * is written to the stream for this table.
    *
-   * @default - streams are disabled
+   * @default - streams are disabled unless `replicationRegions` is specified
    */
   readonly stream?: StreamViewType;
 
@@ -116,6 +119,14 @@ export interface TableOptions {
    * @default RemovalPolicy.RETAIN
    */
   readonly removalPolicy?: RemovalPolicy;
+
+  /**
+   * Regions where replica tables will be created
+   *
+   * @default - no replica tables are created
+   * @experimental
+   */
+  readonly replicationRegions?: string[];
 }
 
 export interface TableProps extends TableOptions {
@@ -200,6 +211,13 @@ export interface ITable extends IResource {
    * @attribute
    */
   readonly tableName: string;
+
+  /**
+   * ARN of the table's stream, if there is one.
+   *
+   * @attribute
+   */
+  readonly tableStreamArn?: string;
 
   /**
    * Permits an IAM principal all data read operations from this table:
@@ -294,7 +312,7 @@ export interface TableAttributes {
    * The ARN of the dynamodb table.
    * One of this, or {@link tabeName}, is required.
    *
-   * @default no table arn
+   * @default - no table arn
    */
   readonly tableArn?: string;
 
@@ -302,9 +320,16 @@ export interface TableAttributes {
    * The table name of the dynamodb table.
    * One of this, or {@link tabeArn}, is required.
    *
-   * @default no table name
+   * @default - no table name
    */
   readonly tableName?: string;
+
+  /**
+   * The ARN of the table's stream.
+   *
+   * @default - no table stream
+   */
+  readonly tableStreamArn?: string;
 }
 
 abstract class TableBase extends Resource implements ITable {
@@ -317,6 +342,11 @@ abstract class TableBase extends Resource implements ITable {
    * @attribute
    */
   public abstract readonly tableName: string;
+
+  /**
+   * @attribute
+   */
+  public abstract readonly tableStreamArn?: string;
 
   /**
    * Adds an IAM policy statement associated with this table to an IAM
@@ -337,6 +367,25 @@ abstract class TableBase extends Resource implements ITable {
   }
 
   /**
+   * Adds an IAM policy statement associated with this table's stream to an
+   * IAM principal's policy.
+   * @param grantee The principal (no-op if undefined)
+   * @param actions The set of actions to allow (i.e. "dynamodb:DescribeStream", "dynamodb:GetRecords", ...)
+   */
+  public grantStream(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
+    if (!this.tableStreamArn) {
+      throw new Error(`DynamoDB Streams must be enabled on the table ${this.node.path}`);
+    }
+
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions,
+      resourceArns: [this.tableStreamArn],
+      scope: this,
+    });
+  }
+
+  /**
    * Permits an IAM principal all data read operations from this table:
    * BatchGetItem, GetRecords, GetShardIterator, Query, GetItem, Scan.
    * @param grantee The principal to grant access to
@@ -348,9 +397,20 @@ abstract class TableBase extends Resource implements ITable {
   /**
    * Permits an IAM Principal to list streams attached to current dynamodb table.
    *
-   * @param _grantee The principal (no-op if undefined)
+   * @param grantee The principal (no-op if undefined)
    */
-  public abstract grantTableListStreams(_grantee: iam.IGrantable): iam.Grant;
+  public grantTableListStreams(grantee: iam.IGrantable): iam.Grant {
+    if (!this.tableStreamArn) {
+      throw new Error(`DynamoDB Streams must be enabled on the table ${this.node.path}`);
+    }
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions: ['dynamodb:ListStreams'],
+      resourceArns: [
+        Lazy.stringValue({ produce: () => `${this.tableArn}/stream/*` })
+      ],
+    });
+  }
 
   /**
    * Permits an IAM principal all stream data read operations for this
@@ -358,7 +418,10 @@ abstract class TableBase extends Resource implements ITable {
    * DescribeStream, GetRecords, GetShardIterator, ListStreams.
    * @param grantee The principal to grant access to
    */
-  public abstract grantStreamRead(grantee: iam.IGrantable): iam.Grant;
+  public grantStreamRead(grantee: iam.IGrantable): iam.Grant {
+    this.grantTableListStreams(grantee);
+    return this.grantStream(grantee, ...READ_STREAM_DATA_ACTIONS);
+  }
 
   /**
    * Permits an IAM principal all data write operations to this table:
@@ -510,47 +573,41 @@ export class Table extends TableBase {
 
       public readonly tableName: string;
       public readonly tableArn: string;
+      public readonly tableStreamArn?: string;
 
-      constructor(_scope: Construct, _id: string, _tableArn: string, _tableName: string) {
-        super(_scope, _id);
+      constructor(_tableArn: string, tableName: string, tableStreamArn?: string) {
+        super(scope, id);
         this.tableArn = _tableArn;
-        this.tableName = _tableName;
+        this.tableName = tableName;
+        this.tableStreamArn = tableStreamArn;
       }
 
       protected get hasIndex(): boolean {
         return false;
       }
-
-      public grantTableListStreams(_grantee: iam.IGrantable): iam.Grant {
-        throw new Error("Method not implemented.");
-      }
-
-      public grantStreamRead(_grantee: iam.IGrantable): iam.Grant {
-        throw new Error("Method not implemented.");
-      }
     }
 
-    let tableName: string;
-    let tableArn: string;
+    let name: string;
+    let arn: string;
     const stack = Stack.of(scope);
     if (!attrs.tableName) {
       if (!attrs.tableArn) { throw new Error('One of tableName or tableArn is required!'); }
 
-      tableArn = attrs.tableArn;
+      arn = attrs.tableArn;
       const maybeTableName = stack.parseArn(attrs.tableArn).resourceName;
       if (!maybeTableName) { throw new Error('ARN for DynamoDB table must be in the form: ...'); }
-      tableName = maybeTableName;
+      name = maybeTableName;
     } else {
-      if (attrs.tableArn) { throw new Error("Only one of tableArn or tableName can be provided"); }
-      tableName = attrs.tableName;
-      tableArn = stack.formatArn({
+      if (attrs.tableArn) { throw new Error('Only one of tableArn or tableName can be provided'); }
+      name = attrs.tableName;
+      arn = stack.formatArn({
         service: 'dynamodb',
         resource: 'table',
         resourceName: attrs.tableName,
       });
     }
 
-    return new Import(scope, id, tableArn, tableName);
+    return new Import(arn, name, attrs.tableStreamArn);
   }
 
   /**
@@ -575,8 +632,8 @@ export class Table extends TableBase {
   private readonly globalSecondaryIndexes = new Array<CfnTable.GlobalSecondaryIndexProperty>();
   private readonly localSecondaryIndexes = new Array<CfnTable.LocalSecondaryIndexProperty>();
 
-  private readonly secondaryIndexNames: string[] = [];
-  private readonly nonKeyAttributes: string[] = [];
+  private readonly secondaryIndexNames = new Set<string>();
+  private readonly nonKeyAttributes = new Set<string>();
 
   private readonly tablePartitionKey: Attribute;
   private readonly tableSortKey?: Attribute;
@@ -594,6 +651,21 @@ export class Table extends TableBase {
     this.billingMode = props.billingMode || BillingMode.PROVISIONED;
     this.validateProvisioning(props);
 
+    let streamSpecification: CfnTable.StreamSpecificationProperty | undefined;
+    if (props.replicationRegions) {
+      if (props.stream && props.stream !== StreamViewType.NEW_AND_OLD_IMAGES) {
+        throw new Error('`stream` must be set to `NEW_AND_OLD_IMAGES` when specifying `replicationRegions`');
+      }
+      streamSpecification = { streamViewType: StreamViewType.NEW_AND_OLD_IMAGES };
+
+      if (props.billingMode && props.billingMode !== BillingMode.PAY_PER_REQUEST) {
+        throw new Error('The `PAY_PER_REQUEST` billing mode must be used when specifying `replicationRegions`');
+      }
+      this.billingMode = BillingMode.PAY_PER_REQUEST;
+    } else if (props.stream) {
+      streamSpecification = { streamViewType : props.stream };
+    }
+
     this.table = new CfnTable(this, 'Resource', {
       tableName: this.physicalName,
       keySchema: this.keySchema,
@@ -602,12 +674,12 @@ export class Table extends TableBase {
       localSecondaryIndexes: Lazy.anyValue({ produce: () => this.localSecondaryIndexes }, { omitEmptyArray: true }),
       pointInTimeRecoverySpecification: props.pointInTimeRecovery ? { pointInTimeRecoveryEnabled: props.pointInTimeRecovery } : undefined,
       billingMode: this.billingMode === BillingMode.PAY_PER_REQUEST ? this.billingMode : undefined,
-      provisionedThroughput: props.billingMode === BillingMode.PAY_PER_REQUEST ? undefined : {
+      provisionedThroughput: this.billingMode === BillingMode.PAY_PER_REQUEST ? undefined : {
         readCapacityUnits: props.readCapacity || 5,
         writeCapacityUnits: props.writeCapacity || 5
       },
       sseSpecification: props.serverSideEncryption ? { sseEnabled: props.serverSideEncryption } : undefined,
-      streamSpecification: props.stream ? { streamViewType: props.stream } : undefined,
+      streamSpecification,
       timeToLiveSpecification: props.timeToLiveAttribute ? { attributeName: props.timeToLiveAttribute, enabled: true } : undefined
     });
     this.table.applyRemovalPolicy(props.removalPolicy);
@@ -621,7 +693,7 @@ export class Table extends TableBase {
     });
     this.tableName = this.getResourceNameAttribute(this.table.ref);
 
-    this.tableStreamArn = props.stream ? this.table.attrStreamArn : undefined;
+    this.tableStreamArn = streamSpecification ? this.table.attrStreamArn : undefined;
 
     this.scalingRole = this.makeScalingRole();
 
@@ -632,54 +704,10 @@ export class Table extends TableBase {
       this.addKey(props.sortKey, RANGE_KEY_TYPE);
       this.tableSortKey = props.sortKey;
     }
-  }
 
-  /**
-   * Adds an IAM policy statement associated with this table's stream to an
-   * IAM principal's policy.
-   * @param grantee The principal (no-op if undefined)
-   * @param actions The set of actions to allow (i.e. "dynamodb:DescribeStream", "dynamodb:GetRecords", ...)
-   */
-  public grantStream(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
-    if (!this.tableStreamArn) {
-      throw new Error(`DynamoDB Streams must be enabled on the table ${this.node.path}`);
+    if (props.replicationRegions) {
+      this.createReplicaTables(props.replicationRegions);
     }
-
-    return iam.Grant.addToPrincipal({
-      grantee,
-      actions,
-      resourceArns: [this.tableStreamArn],
-      scope: this,
-    });
-  }
-
-  /**
-   * Permits an IAM Principal to list streams attached to current dynamodb table.
-   *
-   * @param grantee The principal (no-op if undefined)
-   */
-  public grantTableListStreams(grantee: iam.IGrantable): iam.Grant {
-    if (!this.tableStreamArn) {
-      throw new Error(`DynamoDB Streams must be enabled on the table ${this.node.path}`);
-    }
-    return iam.Grant.addToPrincipal({
-      grantee,
-      actions: ['dynamodb:ListStreams'],
-      resourceArns: [
-        Lazy.stringValue({ produce: () => `${this.tableArn}/stream/*` })
-      ],
-    });
-  }
-
-  /**
-   * Permits an IAM principal all stream data read operations for this
-   * table's stream:
-   * DescribeStream, GetRecords, GetShardIterator, ListStreams.
-   * @param grantee The principal to grant access to
-   */
-  public grantStreamRead(grantee: iam.IGrantable): iam.Grant {
-    this.grantTableListStreams(grantee);
-    return this.grantStream(grantee, ...READ_STREAM_DATA_ACTIONS);
   }
 
   /**
@@ -695,7 +723,7 @@ export class Table extends TableBase {
     const gsiKeySchema = this.buildIndexKeySchema(props.partitionKey, props.sortKey);
     const gsiProjection = this.buildIndexProjection(props);
 
-    this.secondaryIndexNames.push(props.indexName);
+    this.secondaryIndexNames.add(props.indexName);
     this.globalSecondaryIndexes.push({
       indexName: props.indexName,
       keySchema: gsiKeySchema,
@@ -726,7 +754,7 @@ export class Table extends TableBase {
     const lsiKeySchema = this.buildIndexKeySchema(this.tablePartitionKey, props.sortKey);
     const lsiProjection = this.buildIndexProjection(props);
 
-    this.secondaryIndexNames.push(props.indexName);
+    this.secondaryIndexNames.add(props.indexName);
     this.localSecondaryIndexes.push({
       indexName: props.indexName,
       keySchema: lsiKeySchema,
@@ -867,11 +895,11 @@ export class Table extends TableBase {
    * @param indexName a name of global or local secondary index
    */
   private validateIndexName(indexName: string) {
-    if (this.secondaryIndexNames.includes(indexName)) {
+    if (this.secondaryIndexNames.has(indexName)) {
       // a duplicate index name causes validation exception, status code 400, while trying to create CFN stack
       throw new Error(`a duplicate index name, ${indexName}, is not allowed`);
     }
-    this.secondaryIndexNames.push(indexName);
+    this.secondaryIndexNames.add(indexName);
   }
 
   /**
@@ -880,21 +908,13 @@ export class Table extends TableBase {
    * @param nonKeyAttributes a list of non-key attribute names
    */
   private validateNonKeyAttributes(nonKeyAttributes: string[]) {
-    if (this.nonKeyAttributes.length + nonKeyAttributes.length > 20) {
+    if (this.nonKeyAttributes.size + nonKeyAttributes.length > 20) {
       // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Limits.html#limits-secondary-indexes
       throw new RangeError('a maximum number of nonKeyAttributes across all of secondary indexes is 20');
     }
 
     // store all non-key attributes
-    this.nonKeyAttributes.push(...nonKeyAttributes);
-
-    // throw error if key attribute is part of non-key attributes
-    this.attributeDefinitions.forEach(keyAttribute => {
-      if (typeof keyAttribute.attributeName === 'string' && this.nonKeyAttributes.includes(keyAttribute.attributeName)) {
-        throw new Error(`a key attribute, ${keyAttribute.attributeName}, is part of a list of non-key attributes, ${this.nonKeyAttributes}` +
-          ', which is not allowed since all key attributes are added automatically and this configuration causes stack creation failure');
-      }
-    });
+    nonKeyAttributes.forEach(att => this.nonKeyAttributes.add(att));
   }
 
   private buildIndexKeySchema(partitionKey: Attribute, sortKey?: Attribute): CfnTable.KeySchemaProperty[] {
@@ -955,8 +975,7 @@ export class Table extends TableBase {
    * @param attribute the key attribute of table or secondary index
    */
   private registerAttribute(attribute: Attribute) {
-    const name = attribute.name;
-    const type = attribute.type;
+    const { name, type } = attribute;
     const existingDef = this.attributeDefinitions.find(def => def.attributeName === name);
     if (existingDef && existingDef.attributeType !== type) {
       throw new Error(`Unable to specify ${name} as ${type} because it was already defined as ${existingDef.attributeType}`);
@@ -984,6 +1003,72 @@ export class Table extends TableBase {
   }
 
   /**
+   * Creates replica tables
+   *
+   * @param regions regions where to create tables
+   */
+  private createReplicaTables(regions: string[]) {
+    const stack = Stack.of(this);
+
+    if (!Token.isUnresolved(stack.region) && regions.includes(stack.region)) {
+      throw new Error('`replicationRegions` cannot include the region where this stack is deployed.');
+    }
+
+    const provider = ReplicaProvider.getOrCreate(this);
+
+    // Documentation at https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/V2gt_IAM.html
+    // is currently incorrect. AWS Support recommends `dynamodb:*` in both source and destination regions
+
+    // Permissions in the source region
+    this.grant(provider.onEventHandler, 'dynamodb:*');
+    this.grant(provider.isCompleteHandler, 'dynamodb:DescribeTable');
+
+    // Permissions in the destination regions
+    provider.onEventHandler.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['dynamodb:*'],
+      resources: regions.map(region => stack.formatArn({
+        region,
+        service: 'dynamodb',
+        resource: 'table',
+        resourceName: this.tableName
+      }))
+    }));
+
+    let previousRegion;
+    for (const region of new Set(regions)) { // Remove duplicates
+      // Use multiple custom resources because multiple create/delete
+      // updates cannot be combined in a single API call.
+      const currentRegion = new CustomResource(this, `Replica${region}`, {
+        provider: provider.provider,
+        resourceType: 'Custom::DynamoDBReplica',
+        properties: {
+          TableName: this.tableName,
+          Region: region,
+        }
+      });
+
+      // Deploy time check to prevent from creating a replica in the region
+      // where this stack is deployed. Only needed for environment agnostic
+      // stacks.
+      if (Token.isUnresolved(stack.region)) {
+        const createReplica = new CfnCondition(this, `StackRegionNotEquals${region}`, {
+          expression: Fn.conditionNot(Fn.conditionEquals(region, Aws.REGION))
+        });
+        const cfnCustomResource = currentRegion.node.defaultChild as CfnCustomResource;
+        cfnCustomResource.cfnOptions.condition = createReplica;
+      }
+
+      // We need to create/delete regions sequentially because we cannot
+      // have multiple table updates at the same time. The `isCompleteHandler`
+      // of the provider waits until the replica is an ACTIVE state.
+      if (previousRegion) {
+        currentRegion.node.addDependency(previousRegion);
+      }
+      previousRegion = currentRegion;
+    }
+  }
+
+  /**
    * Whether this table has indexes
    */
   protected get hasIndex(): boolean {
@@ -992,8 +1077,11 @@ export class Table extends TableBase {
 }
 
 export enum AttributeType {
+  /** Up to 400KiB of binary data (which must be encoded as base64 before sending to DynamoDB) */
   BINARY = 'B',
+  /** Numeric values made of up to 38 digits (positive, negative or zero) */
   NUMBER = 'N',
+  /** Up to 400KiB of UTF-8 encoded text */
   STRING = 'S',
 }
 
@@ -1012,8 +1100,11 @@ export enum BillingMode {
 }
 
 export enum ProjectionType {
+  /** Only the index and primary keys are projected into the index. */
   KEYS_ONLY = 'KEYS_ONLY',
+  /** Only the specified table attributes are projected into the index. The list of projected attributes is in `nonKeyAttributes`. */
   INCLUDE = 'INCLUDE',
+  /** All of the table attributes are projected into the index. */
   ALL = 'ALL'
 }
 

@@ -39,11 +39,13 @@ const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
 });
 
 // Add a listener and open up the load balancer's security group
-// to the world. 'open' is the default, set this to 'false'
-// and use `listener.connections` if you want to be selective
-// about who can access the listener.
+// to the world.
 const listener = lb.addListener('Listener', {
     port: 80,
+
+    // 'open: true' is the default, you can leave it out if you want. Set it
+    // to 'false' and use `listener.connections` if you want to be selective
+    // about who can access the load balancer.
     open: true,
 });
 
@@ -73,23 +75,28 @@ listener.addFixedResponse('Fixed', {
 #### Conditions
 
 It's possible to route traffic to targets based on conditions in the incoming
-HTTP request. Path- and host-based conditions are supported. For example,
-the following will route requests to the indicated AutoScalingGroup
-only if the requested host in the request is `example.com`:
+HTTP request. Path- and host-based conditions are supported. For example, the
+following will route requests to the indicated AutoScalingGroup only if the
+requested host in the request is either for `example.com/ok` or
+`example.com/path`:
 
 ```ts
 listener.addTargets('Example.Com Fleet', {
     priority: 10,
+    pathPatterns: ['/ok', '/path'],
     hostHeader: 'example.com',
     port: 8080,
     targets: [asg]
 });
 ```
 
-`priority` is a required field when you add targets with conditions. The lowest
-number wins.
+A target with a condition contains either `pathPatterns` or `hostHeader`, or
+both. If both are specified, both conditions must be met for the requests to
+be routed to the given target. `priority` is a required field when you add
+targets with conditions. The lowest number wins.
 
-Every listener must have at least one target without conditions.
+Every listener must have at least one target without conditions, which is
+where all requests that didn't match any of the conditions will be sent.
 
 ### Defining a Network Load Balancer
 
@@ -167,7 +174,13 @@ const lb = new elbv2.ApplicationLoadBalancer(...);
 
 const listener = lb.addListener('Listener', { port: 80 });
 listener.addTargets('Targets', {
-    targets: [new targets.LambdaTarget(lambdaFunction)]
+    targets: [new targets.LambdaTarget(lambdaFunction)],
+
+    // For Lambda Targets, you need to explicitly enable health checks if you
+    // want them.
+    healthCheck: {
+        enabled: true,
+    }
 });
 ```
 

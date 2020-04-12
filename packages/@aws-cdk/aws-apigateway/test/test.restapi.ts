@@ -1,4 +1,5 @@
 import { expect, haveResource, haveResourceLike, ResourcePart, SynthUtils } from '@aws-cdk/assert';
+import { GatewayVpcEndpoint } from '@aws-cdk/aws-ec2';
 import { App, CfnElement, CfnResource, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as apigw from '../lib';
@@ -18,78 +19,78 @@ export = {
     expect(stack).toMatch({
       Resources: {
         myapi4C7BF186: {
-          Type: "AWS::ApiGateway::RestApi",
+          Type: 'AWS::ApiGateway::RestApi',
           Properties: {
-            Name: "my-api"
+            Name: 'my-api'
           }
         },
         myapiGETF990CE3C: {
-          Type: "AWS::ApiGateway::Method",
+          Type: 'AWS::ApiGateway::Method',
           Properties: {
-            HttpMethod: "GET",
-            ResourceId: { "Fn::GetAtt": [ "myapi4C7BF186", "RootResourceId" ] },
-            RestApiId: { Ref: "myapi4C7BF186" },
-            AuthorizationType: "NONE",
+            HttpMethod: 'GET',
+            ResourceId: { 'Fn::GetAtt': [ 'myapi4C7BF186', 'RootResourceId' ] },
+            RestApiId: { Ref: 'myapi4C7BF186' },
+            AuthorizationType: 'NONE',
             Integration: {
-              Type: "MOCK"
+              Type: 'MOCK'
             }
           }
         },
         myapiDeployment92F2CB49916eaecf87f818f1e175215b8d086029: {
-          Type: "AWS::ApiGateway::Deployment",
+          Type: 'AWS::ApiGateway::Deployment',
           Properties: {
-            RestApiId: { Ref: "myapi4C7BF186" },
-            Description: "Automatically created by the RestApi construct"
+            RestApiId: { Ref: 'myapi4C7BF186' },
+            Description: 'Automatically created by the RestApi construct'
           },
-          DependsOn: ["myapiGETF990CE3C"]
+          DependsOn: ['myapiGETF990CE3C']
         },
         myapiDeploymentStageprod298F01AF: {
-          Type: "AWS::ApiGateway::Stage",
+          Type: 'AWS::ApiGateway::Stage',
           Properties: {
-            RestApiId: { Ref: "myapi4C7BF186" },
-            DeploymentId: { Ref: "myapiDeployment92F2CB49916eaecf87f818f1e175215b8d086029" },
-            StageName: "prod"
+            RestApiId: { Ref: 'myapi4C7BF186' },
+            DeploymentId: { Ref: 'myapiDeployment92F2CB49916eaecf87f818f1e175215b8d086029' },
+            StageName: 'prod'
           }
         },
         myapiCloudWatchRole095452E5: {
-          Type: "AWS::IAM::Role",
+          Type: 'AWS::IAM::Role',
           Properties: {
             AssumeRolePolicyDocument: {
               Statement: [
                 {
-                  Action: "sts:AssumeRole",
-                  Effect: "Allow",
-                  Principal: { Service: "apigateway.amazonaws.com" }
+                  Action: 'sts:AssumeRole',
+                  Effect: 'Allow',
+                  Principal: { Service: 'apigateway.amazonaws.com' }
                 }
               ],
-              Version: "2012-10-17"
+              Version: '2012-10-17'
             },
             ManagedPolicyArns: [
-              { "Fn::Join": [ "", [ "arn:", { Ref: "AWS::Partition" }, ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs" ] ] }
+              { 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs' ] ] }
             ]
           }
         },
         myapiAccountEC421A0A: {
-          Type: "AWS::ApiGateway::Account",
+          Type: 'AWS::ApiGateway::Account',
           Properties: {
-            CloudWatchRoleArn: { "Fn::GetAtt": [ "myapiCloudWatchRole095452E5", "Arn" ] }
+            CloudWatchRoleArn: { 'Fn::GetAtt': [ 'myapiCloudWatchRole095452E5', 'Arn' ] }
           },
-          DependsOn: [ "myapi4C7BF186" ]
+          DependsOn: [ 'myapi4C7BF186' ]
         }
       },
       Outputs: {
         myapiEndpoint3628AFE3: {
           Value: {
-            "Fn::Join": [ "", [
-              "https://",
-              { Ref: "myapi4C7BF186" },
-              ".execute-api.",
-              { Ref: "AWS::Region" },
-              ".",
-              { Ref: "AWS::URLSuffix" },
-              "/",
-              { Ref: "myapiDeploymentStageprod298F01AF" },
-              "/"
+            'Fn::Join': [ '', [
+              'https://',
+              { Ref: 'myapi4C7BF186' },
+              '.execute-api.',
+              { Ref: 'AWS::Region' },
+              '.',
+              { Ref: 'AWS::URLSuffix' },
+              '/',
+              { Ref: 'myapiDeploymentStageprod298F01AF' },
+              '/'
             ]]
           }
         }
@@ -159,18 +160,18 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::Resource', {
-      PathPart: "foo",
-      ParentId: { "Fn::GetAtt": [ "restapiC5611D27", "RootResourceId"] }
+      PathPart: 'foo',
+      ParentId: { 'Fn::GetAtt': [ 'restapiC5611D27', 'RootResourceId'] }
     }));
 
     expect(stack).to(haveResource('AWS::ApiGateway::Resource', {
-      PathPart: "bar",
-      ParentId: { "Fn::GetAtt": [ "restapiC5611D27", "RootResourceId"] }
+      PathPart: 'bar',
+      ParentId: { 'Fn::GetAtt': [ 'restapiC5611D27', 'RootResourceId'] }
     }));
 
     expect(stack).to(haveResource('AWS::ApiGateway::Resource', {
-      PathPart: "{hello}",
-      ParentId: { Ref: "restapifooF697E056" }
+      PathPart: '{hello}',
+      ParentId: { Ref: 'restapifooF697E056' }
     }));
 
     test.done();
@@ -191,8 +192,8 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::Resource', {
-      PathPart: "{proxy+}",
-      ParentId: { "Fn::GetAtt": ["restapiC5611D27", "RootResourceId"] }
+      PathPart: '{proxy+}',
+      ParentId: { 'Fn::GetAtt': ['restapiC5611D27', 'RootResourceId'] }
     }));
     test.done();
   },
@@ -211,62 +212,62 @@ export = {
     // THEN
     expect(stack).toMatch({
       Resources: {
-      restapiC5611D27: {
-        Type: "AWS::ApiGateway::RestApi",
-        Properties: {
-        Name: "restapi"
-        }
-      },
-      restapir1CF2997EA: {
-        Type: "AWS::ApiGateway::Resource",
-        Properties: {
-        ParentId: {
-          "Fn::GetAtt": [
-          "restapiC5611D27",
-          "RootResourceId"
-          ]
+        restapiC5611D27: {
+          Type: 'AWS::ApiGateway::RestApi',
+          Properties: {
+            Name: 'restapi'
+          }
         },
-        PathPart: "r1",
-        RestApiId: {
-          Ref: "restapiC5611D27"
-        }
-        }
-      },
-      restapir1POST766920C4: {
-        Type: "AWS::ApiGateway::Method",
-        Properties: {
-        HttpMethod: "POST",
-        ResourceId: {
-          Ref: "restapir1CF2997EA"
+        restapir1CF2997EA: {
+          Type: 'AWS::ApiGateway::Resource',
+          Properties: {
+            ParentId: {
+              'Fn::GetAtt': [
+                'restapiC5611D27',
+                'RootResourceId'
+              ]
+            },
+            PathPart: 'r1',
+            RestApiId: {
+              Ref: 'restapiC5611D27'
+            }
+          }
         },
-        RestApiId: {
-          Ref: "restapiC5611D27"
+        restapir1POST766920C4: {
+          Type: 'AWS::ApiGateway::Method',
+          Properties: {
+            HttpMethod: 'POST',
+            ResourceId: {
+              Ref: 'restapir1CF2997EA'
+            },
+            RestApiId: {
+              Ref: 'restapiC5611D27'
+            },
+            AuthorizationType: 'NONE',
+            Integration: {
+              Type: 'MOCK'
+            }
+          }
         },
-        AuthorizationType: "NONE",
-        Integration: {
-          Type: "MOCK"
+        restapiGET6FC1785A: {
+          Type: 'AWS::ApiGateway::Method',
+          Properties: {
+            HttpMethod: 'GET',
+            ResourceId: {
+              'Fn::GetAtt': [
+                'restapiC5611D27',
+                'RootResourceId'
+              ]
+            },
+            RestApiId: {
+              Ref: 'restapiC5611D27'
+            },
+            AuthorizationType: 'NONE',
+            Integration: {
+              Type: 'MOCK'
+            }
+          }
         }
-        }
-      },
-      restapiGET6FC1785A: {
-        Type: "AWS::ApiGateway::Method",
-        Properties: {
-        HttpMethod: "GET",
-        ResourceId: {
-          "Fn::GetAtt": [
-          "restapiC5611D27",
-          "RootResourceId"
-          ]
-        },
-        RestApiId: {
-          Ref: "restapiC5611D27"
-        },
-        AuthorizationType: "NONE",
-        Integration: {
-          Type: "MOCK"
-        }
-        }
-      }
       }
     });
 
@@ -356,25 +357,25 @@ export = {
     test.deepEqual(stack.resolve(api.url), { 'Fn::Join':
     [ '',
       [ 'https://',
-      { Ref: 'apiC8550315' },
-      '.execute-api.',
-      { Ref: 'AWS::Region' },
-      ".",
-      { Ref: "AWS::URLSuffix" },
-      "/",
-      { Ref: 'apiDeploymentStageprod896C8101' },
-      '/' ] ] });
+        { Ref: 'apiC8550315' },
+        '.execute-api.',
+        { Ref: 'AWS::Region' },
+        '.',
+        { Ref: 'AWS::URLSuffix' },
+        '/',
+        { Ref: 'apiDeploymentStageprod896C8101' },
+        '/' ] ] });
     test.deepEqual(stack.resolve(api.urlForPath('/foo/bar')), { 'Fn::Join':
     [ '',
       [ 'https://',
-      { Ref: 'apiC8550315' },
-      '.execute-api.',
-      { Ref: 'AWS::Region' },
-      ".",
-      { Ref: "AWS::URLSuffix" },
-      "/",
-      { Ref: 'apiDeploymentStageprod896C8101' },
-      '/foo/bar' ] ] });
+        { Ref: 'apiC8550315' },
+        '.execute-api.',
+        { Ref: 'AWS::Region' },
+        '.',
+        { Ref: 'AWS::URLSuffix' },
+        '/',
+        { Ref: 'apiDeploymentStageprod896C8101' },
+        '/foo/bar' ] ] });
     test.done();
   },
 
@@ -414,14 +415,14 @@ export = {
     test.deepEqual(stack.resolve(arn), { 'Fn::Join':
     [ '',
       [ 'arn:',
-      { Ref: 'AWS::Partition' },
-      ':execute-api:',
-      { Ref: 'AWS::Region' },
-      ':',
-      { Ref: 'AWS::AccountId' },
-      ':',
-      { Ref: 'apiC8550315' },
-      '/stage/method/path' ] ] });
+        { Ref: 'AWS::Partition' },
+        ':execute-api:',
+        { Ref: 'AWS::Region' },
+        ':',
+        { Ref: 'AWS::AccountId' },
+        ':',
+        { Ref: 'apiC8550315' },
+        '/stage/method/path' ] ] });
     test.done();
   },
 
@@ -447,16 +448,16 @@ export = {
     test.deepEqual(stack.resolve(method.methodArn), { 'Fn::Join':
     [ '',
       [ 'arn:',
-      { Ref: 'AWS::Partition' },
-      ':execute-api:',
-      { Ref: 'AWS::Region' },
-      ':',
-      { Ref: 'AWS::AccountId' },
-      ':',
-      { Ref: 'apiC8550315' },
-      '/',
-      { Ref: 'apiDeploymentStageprod896C8101' },
-      '/*/'] ] });
+        { Ref: 'AWS::Partition' },
+        ':execute-api:',
+        { Ref: 'AWS::Region' },
+        ':',
+        { Ref: 'AWS::AccountId' },
+        ':',
+        { Ref: 'apiC8550315' },
+        '/',
+        { Ref: 'apiDeploymentStageprod896C8101' },
+        '/*/'] ] });
     test.done();
   },
 
@@ -474,12 +475,82 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::RestApi', {
       EndpointConfiguration: {
-      Types: [
-        "EDGE",
-        "PRIVATE"
-      ]
+        Types: [
+          'EDGE',
+          'PRIVATE'
+        ]
       }
     }));
+    test.done();
+  },
+
+  '"endpointConfiguration" can be used to specify endpoint types for the api'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const api = new apigw.RestApi(stack, 'api', {
+      endpointConfiguration: {
+        types: [ apigw.EndpointType.EDGE, apigw.EndpointType.PRIVATE ]
+      }
+    });
+
+    api.root.addMethod('GET');
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::RestApi', {
+      EndpointConfiguration: {
+        Types: [ 'EDGE', 'PRIVATE' ]
+      }
+    }));
+    test.done();
+  },
+
+  '"endpointConfiguration" can be used to specify vpc endpoints on the API'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const api = new apigw.RestApi(stack, 'api', {
+      endpointConfiguration: {
+        types: [ apigw.EndpointType.EDGE, apigw.EndpointType.PRIVATE ],
+        vpcEndpoints: [
+          GatewayVpcEndpoint.fromGatewayVpcEndpointId(stack, 'ImportedEndpoint', 'vpcEndpoint'),
+          GatewayVpcEndpoint.fromGatewayVpcEndpointId(stack, 'ImportedEndpoint2', 'vpcEndpoint2'),
+        ]
+      }
+    });
+
+    api.root.addMethod('GET');
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::RestApi', {
+      EndpointConfiguration: {
+        Types: [
+          'EDGE',
+          'PRIVATE'
+        ],
+        VpcEndpointIds: [
+          'vpcEndpoint',
+          'vpcEndpoint2'
+        ]
+      }
+    }));
+    test.done();
+  },
+
+  '"endpointTypes" and "endpointConfiguration" can NOT both be used to specify endpoint configuration for the api'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // THEN
+    test.throws(() => new apigw.RestApi(stack, 'api', {
+      endpointConfiguration: {
+        types: [ apigw.EndpointType.PRIVATE ],
+        vpcEndpoints: [ GatewayVpcEndpoint.fromGatewayVpcEndpointId(stack, 'ImportedEndpoint', 'vpcEndpoint')]
+      },
+      endpointTypes: [ apigw.EndpointType.PRIVATE ]
+    }), /Only one of the RestApi props, endpointTypes or endpointConfiguration, is allowed/);
     test.done();
   },
 
@@ -496,8 +567,8 @@ export = {
     api.root.addMethod('GET');
 
     expect(stack).to(haveResource('AWS::ApiGateway::RestApi', {
-      CloneFrom: "foobar",
-      Name: "api"
+      CloneFrom: 'foobar',
+      Name: 'api'
     }));
 
     test.done();
@@ -516,12 +587,12 @@ export = {
     // THEN
     expect(stack).to(haveResource('My::Resource', {
       DependsOn: [
-        "myapiAccountC3A4750C",
-        "myapiCloudWatchRoleEB425128",
-        "myapiGET9B7CD29E",
-        "myapiDeploymentB7EF8EB75c091a668064a3f3a1f6d68a3fb22cf9",
-        "myapiDeploymentStageprod329F21FF",
-        "myapi162F20B8"
+        'myapiAccountC3A4750C',
+        'myapiCloudWatchRoleEB425128',
+        'myapiGET9B7CD29E',
+        'myapiDeploymentB7EF8EB75c091a668064a3f3a1f6d68a3fb22cf9',
+        'myapiDeploymentStageprod329F21FF',
+        'myapi162F20B8'
       ]
     }, ResourcePart.CompleteDefinition));
 
@@ -574,7 +645,7 @@ export = {
     // CASE #1
     expect(stack).to(haveResourceLike('AWS::ApiGateway::Method', {
       HttpMethod: 'GET',
-      ResourceId: { "Fn::GetAtt": [ "myapi162F20B8", "RootResourceId" ] },
+      ResourceId: { 'Fn::GetAtt': [ 'myapi162F20B8', 'RootResourceId' ] },
       Integration: { Type: 'AWS' },
       AuthorizerId: 'AUTHID',
       AuthorizationType: 'AWS_IAM',
@@ -583,7 +654,7 @@ export = {
     // CASE #2
     expect(stack).to(haveResourceLike('AWS::ApiGateway::Method', {
       HttpMethod: 'POST',
-      ResourceId: { Ref: "myapichildA0A65412" },
+      ResourceId: { Ref: 'myapichildA0A65412' },
       Integration: { Type: 'AWS' },
       AuthorizerId: 'AUTHID',
       AuthorizationType: 'COGNITO_USER_POOLS',
@@ -618,7 +689,7 @@ export = {
     api.addModel('model', {
       schema: {
         schema: apigw.JsonSchemaVersion.DRAFT4,
-        title: "test",
+        title: 'test',
         type: apigw.JsonSchemaType.OBJECT,
         properties: { message: { type: apigw.JsonSchemaType.STRING } }
       }
@@ -628,10 +699,10 @@ export = {
     expect(stack).to(haveResource('AWS::ApiGateway::Model', {
       RestApiId: { Ref: stack.getLogicalId(api.node.findChild('Resource') as CfnElement) },
       Schema: {
-        $schema: "http://json-schema.org/draft-04/schema#",
-        title: "test",
-        type: "object",
-        properties: { message: { type: "string" } }
+        $schema: 'http://json-schema.org/draft-04/schema#',
+        title: 'test',
+        type: 'object',
+        properties: { message: { type: 'string' } }
       }
     }));
 
@@ -651,7 +722,7 @@ export = {
       validateRequestParameters: true
     });
     api.addRequestValidator('body-validator', {
-      requestValidatorName: "Body",
+      requestValidatorName: 'Body',
       validateRequestBody: true,
       validateRequestParameters: false
     });
@@ -659,14 +730,14 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::RequestValidator', {
       RestApiId: { Ref: stack.getLogicalId(api.node.findChild('Resource') as CfnElement) },
-      Name: "Parameters",
+      Name: 'Parameters',
       ValidateRequestBody: false,
       ValidateRequestParameters: true
     }));
 
     expect(stack).to(haveResource('AWS::ApiGateway::RequestValidator', {
       RestApiId: { Ref: stack.getLogicalId(api.node.findChild('Resource') as CfnElement) },
-      Name: "Body",
+      Name: 'Body',
       ValidateRequestBody: true,
       ValidateRequestParameters: false
     }));

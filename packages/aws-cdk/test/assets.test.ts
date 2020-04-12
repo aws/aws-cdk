@@ -1,51 +1,90 @@
-import { Uploaded, UploadProps } from '../lib';
-import { prepareAssets } from '../lib/assets';
-import { testAssembly, testStack } from './util';
+import { AssetMetadataEntry } from '@aws-cdk/cloud-assembly-schema';
+import { ToolkitInfo } from '../lib';
+import { addMetadataAssetsToManifest } from '../lib/assets';
+import { AssetManifestBuilder } from '../lib/util/asset-manifest-builder';
+import { testStack } from './util';
 
-test('prepare assets', async () => {
-  // GIVEN
-  const assembly = testAssembly({
-    stacks: [{
-      stackName: 'SomeStack',
-      template: {
-        Resources: {
-          SomeResource: {
-            Type: 'AWS::Something::Something'
-          }
-        }
-      },
-      assets: [
-        {
-          sourceHash: 'source-hash',
-          path: __filename,
-          id: 'SomeStackSomeResource4567',
-          packaging: 'file',
-          s3BucketParameter: 'BucketParameter',
-          s3KeyParameter: 'KeyParameter',
-          artifactHashParameter: 'ArtifactHashParameter',
-        }
-      ]
-    }]
-  });
-
-  const toolkit = new FakeToolkit();
-
-  // WHEN
-  const params = await prepareAssets(assembly.getStackByName('SomeStack'), toolkit as any);
-
-  // THEN
-  expect(params).toEqual([
-    { ParameterKey: 'BucketParameter', ParameterValue: 'bucket' },
-    { ParameterKey: 'KeyParameter', ParameterValue: 'assets/SomeStackSomeResource4567/||12345.ts' },
-    { ParameterKey: 'ArtifactHashParameter', ParameterValue: '12345' },
-  ]);
+let toolkit: ToolkitInfo;
+let assets: AssetManifestBuilder;
+beforeEach(() => {
+  toolkit = {
+    bucketUrl: 'https://bucket',
+    bucketName: 'bucket',
+    prepareEcrRepository: jest.fn(),
+  } as any;
+  assets = new AssetManifestBuilder();
 });
 
-test('prepare assets with reuse', async () => {
-  // GIVEN
-  const stack = testStack({
-    stackName: 'SomeStack',
-    assets: [
+describe('file assets', () => {
+  test('convert to manifest and parameters', async () => {
+    // GIVEN
+    const stack = stackWithAssets([
+      {
+        sourceHash: 'source-hash',
+        path: __filename,
+        id: 'SomeStackSomeResource4567',
+        packaging: 'file',
+        s3BucketParameter: 'BucketParameter',
+        s3KeyParameter: 'KeyParameter',
+        artifactHashParameter: 'ArtifactHashParameter',
+      }
+    ]);
+
+    // WHEN
+    const params = await addMetadataAssetsToManifest(stack, assets, toolkit);
+
+    // THEN
+    expect(params).toEqual({
+      BucketParameter: 'bucket',
+      KeyParameter: 'assets/SomeStackSomeResource4567/||source-hash.js',
+      ArtifactHashParameter: 'source-hash',
+    });
+
+    expect(assets.toManifest('.').entries).toEqual([
+      expect.objectContaining({
+        destination: {
+          bucketName: 'bucket',
+          objectKey: 'assets/SomeStackSomeResource4567/source-hash.js',
+        },
+        source: {
+          packaging: 'file',
+          path: __filename,
+        },
+      })
+    ]);
+  });
+
+  test('hash and ID the same => only one path component', async () => {
+    // GIVEN
+    const stack = stackWithAssets([
+      {
+        sourceHash: 'source-hash',
+        path: __filename,
+        id: 'source-hash',
+        packaging: 'file',
+        s3BucketParameter: 'BucketParameter',
+        s3KeyParameter: 'KeyParameter',
+        artifactHashParameter: 'ArtifactHashParameter',
+      }
+    ]);
+
+    // WHEN
+    await addMetadataAssetsToManifest(stack, assets, toolkit);
+
+    // THEN
+    expect(assets.toManifest('.').entries).toEqual([
+      expect.objectContaining({
+        destination: {
+          bucketName: 'bucket',
+          objectKey: 'assets/source-hash.js',
+        },
+      })
+    ]);
+  });
+
+  test('reuse', async () => {
+    // GIVEN
+    const stack = stackWithAssets([
       {
         path: __filename,
         id: 'SomeStackSomeResource4567',
@@ -55,33 +94,106 @@ test('prepare assets with reuse', async () => {
         artifactHashParameter: 'ArtifactHashParameter',
         sourceHash: 'boom'
       }
-    ],
-    template: {
-      Resources: {
-        SomeResource: {
-          Type: 'AWS::Something::Something'
-        }
-      }
-    }
+    ]);
+
+    // WHEN
+    const params = await addMetadataAssetsToManifest(stack, assets, toolkit, ['SomeStackSomeResource4567']);
+
+    // THEN
+    expect(params).toEqual({
+    });
+
+    expect(assets.toManifest('.').entries).toEqual([]);
   });
-  const toolkit = new FakeToolkit();
-
-  // WHEN
-  const params = await prepareAssets(stack, toolkit as any, ['SomeStackSomeResource4567']);
-
-  // THEN
-  expect(params).toEqual([
-    { ParameterKey: 'BucketParameter', UsePreviousValue: true },
-    { ParameterKey: 'KeyParameter', UsePreviousValue: true },
-    { ParameterKey: 'ArtifactHashParameter', UsePreviousValue: true },
-  ]);
 });
 
-test('prepare container asset with reuse', async () => {
-  // GIVEN
-  const stack = testStack({
-    stackName: 'SomeStack',
-    assets: [
+describe('docker assets', () => {
+  test('parameter and no repository name (old)', async () => {
+    // GIVEN
+    const stack = stackWithAssets([
+      {
+        id: 'Stack:Construct/ABC123',
+        imageNameParameter: 'MyParameter',
+        packaging: 'container-image',
+        path: '/foo',
+        sourceHash: '0123456789abcdef',
+      }
+    ]);
+    mockFn(toolkit.prepareEcrRepository).mockResolvedValue({ repositoryUri: 'docker.uri' });
+
+    // WHEN
+    const params = await addMetadataAssetsToManifest(stack, assets, toolkit);
+
+    // THEN
+    expect(toolkit.prepareEcrRepository).toHaveBeenCalledWith('cdk/stack-construct-abc123');
+    expect(params).toEqual({
+      MyParameter: 'docker.uri:0123456789abcdef',
+    });
+    expect(assets.toManifest('.').entries).toEqual([
+      expect.objectContaining({
+        type: 'docker-image',
+        destination: {
+          imageTag: '0123456789abcdef',
+          repositoryName: 'cdk/stack-construct-abc123',
+        },
+        source: {
+          directory: '/foo',
+        },
+      })
+    ]);
+  });
+
+  test('if parameter is left out then repo and tag are required', async () => {
+    // GIVEN
+    const stack = stackWithAssets([
+      {
+        id: 'Stack:Construct/ABC123',
+        packaging: 'container-image',
+        path: '/foo',
+        sourceHash: '0123456789abcdef',
+      }
+    ]);
+
+    await expect(addMetadataAssetsToManifest(stack, assets, toolkit)).rejects.toThrow('Invalid Docker image asset');
+  });
+
+  test('no parameter and repo/tag name (new)', async () => {
+    // GIVEN
+    const stack = stackWithAssets([
+      {
+        id: 'Stack:Construct/ABC123',
+        repositoryName: 'reponame',
+        imageTag: '12345',
+        packaging: 'container-image',
+        path: '/foo',
+        sourceHash: '0123456789abcdef',
+      }
+    ]);
+    mockFn(toolkit.prepareEcrRepository).mockResolvedValue({ repositoryUri: 'docker.uri' });
+
+    // WHEN
+    const params = await addMetadataAssetsToManifest(stack, assets, toolkit);
+
+    // THEN
+    expect(toolkit.prepareEcrRepository).toHaveBeenCalledWith('reponame');
+    expect(params).toEqual({}); // No parameters!
+    expect(assets.toManifest('.').entries).toEqual([
+      expect.objectContaining({
+        type: 'docker-image',
+        destination: {
+          imageTag: '12345',
+          repositoryName: 'reponame',
+        },
+        source: {
+          directory: '/foo',
+        },
+      })
+    ]);
+  });
+
+  test('reuse', async () => {
+    // GIVEN
+    const stack = stackWithAssets([
       {
         path: __dirname,
         id: 'SomeStackSomeResource4567',
@@ -89,7 +201,23 @@ test('prepare container asset with reuse', async () => {
         imageNameParameter: 'asdf',
         sourceHash: 'source-hash'
       }
-    ],
+    ]);
+
+    // WHEN
+    const params = await addMetadataAssetsToManifest(stack, assets, toolkit, ['SomeStackSomeResource4567']);
+
+    // THEN
+    expect(params).toEqual({
+    });
+
+    expect(assets.toManifest('.').entries).toEqual([]);
+  });
+});
+
+function stackWithAssets(assetEntries: AssetMetadataEntry[]) {
+  return testStack({
+    stackName: 'SomeStack',
+    assets: assetEntries,
     template: {
       Resources: {
         SomeResource: {
@@ -98,28 +226,11 @@ test('prepare container asset with reuse', async () => {
       }
     }
   });
-  const toolkit = new FakeToolkit();
+}
 
-  // WHEN
-  const params = await prepareAssets(stack, toolkit as any, ['SomeStackSomeResource4567']);
-
-  // THEN
-  expect(params).toEqual([
-    { ParameterKey: 'asdf', UsePreviousValue: true },
-  ]);
-});
-
-class FakeToolkit {
-  public bucketUrl: string = 'https://bucket';
-  public bucketName: string = 'bucket';
-
-  public async uploadIfChanged(_data: any, props: UploadProps): Promise<Uploaded> {
-    const filename = `12345${props.s3KeySuffix}`;
-    return {
-      filename,
-      key: `${props.s3KeyPrefix}${filename}`,
-      hash: '12345',
-      changed: true,
-    };
+function mockFn<F extends (...xs: any[]) => any>(fn: F): jest.Mock<ReturnType<F>> {
+  if (!jest.isMockFunction(fn)) {
+    throw new Error(`Not a mock function: ${fn}`);
   }
+  return fn;
 }

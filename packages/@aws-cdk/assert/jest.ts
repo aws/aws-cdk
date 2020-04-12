@@ -1,4 +1,4 @@
-import { Stack } from '@aws-cdk/core';
+import * as core from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { JestFriendlyAssertion } from './lib/assertion';
 import { haveOutput, HaveOutputProperties } from './lib/assertions/have-output';
@@ -10,16 +10,19 @@ import { StackInspector } from './lib/inspector';
 declare global {
   namespace jest {
     interface Matchers<R, T> {
-      toMatchTemplate(template: any,
-                      matchStyle?: MatchStyle): R;
+      toMatchTemplate(
+        template: any,
+        matchStyle?: MatchStyle): R;
 
-      toHaveResource(resourceType: string,
-                     properties?: any,
-                     comparison?: ResourcePart): R;
+      toHaveResource(
+        resourceType: string,
+        properties?: any,
+        comparison?: ResourcePart): R;
 
-      toHaveResourceLike(resourceType: string,
-                         properties?: any,
-                         comparison?: ResourcePart): R;
+      toHaveResourceLike(
+        resourceType: string,
+        properties?: any,
+        comparison?: ResourcePart): R;
 
       toHaveOutput(props: HaveOutputProperties): R;
     }
@@ -28,7 +31,7 @@ declare global {
 
 expect.extend({
   toMatchTemplate(
-    actual: cxapi.CloudFormationStackArtifact | Stack,
+    actual: cxapi.CloudFormationStackArtifact | core.Stack,
     template: any,
     matchStyle?: MatchStyle) {
 
@@ -38,7 +41,7 @@ expect.extend({
     if (pass) {
       return {
         pass,
-        message: () => `Not ` + assertion.description
+        message: () => 'Not ' + assertion.description
       };
     } else {
       return {
@@ -49,40 +52,40 @@ expect.extend({
   },
 
   toHaveResource(
-      actual: cxapi.CloudFormationStackArtifact | Stack,
-      resourceType: string,
-      properties?: any,
-      comparison?: ResourcePart) {
+    actual: cxapi.CloudFormationStackArtifact | core.Stack,
+    resourceType: string,
+    properties?: any,
+    comparison?: ResourcePart) {
 
     const assertion = new HaveResourceAssertion(resourceType, properties, comparison, false);
     return applyAssertion(assertion, actual);
   },
 
   toHaveResourceLike(
-      actual: cxapi.CloudFormationStackArtifact | Stack,
-      resourceType: string,
-      properties?: any,
-      comparison?: ResourcePart) {
+    actual: cxapi.CloudFormationStackArtifact | core.Stack,
+    resourceType: string,
+    properties?: any,
+    comparison?: ResourcePart) {
 
     const assertion = new HaveResourceAssertion(resourceType, properties, comparison, true);
     return applyAssertion(assertion, actual);
   },
 
   toHaveOutput(
-    actual: cxapi.CloudFormationStackArtifact | Stack,
+    actual: cxapi.CloudFormationStackArtifact | core.Stack,
     props: HaveOutputProperties) {
 
     return applyAssertion(haveOutput(props), actual);
   }
 });
 
-function applyAssertion(assertion: JestFriendlyAssertion<StackInspector>, actual: cxapi.CloudFormationStackArtifact | Stack) {
+function applyAssertion(assertion: JestFriendlyAssertion<StackInspector>, actual: cxapi.CloudFormationStackArtifact | core.Stack) {
   const inspector = ourExpect(actual);
   const pass = assertion.assertUsing(inspector);
   if (pass) {
     return {
       pass,
-      message: () => `Not ` + assertion.generateErrorMessage(),
+      message: () => 'Not ' + assertion.generateErrorMessage(),
     };
   } else {
     return {

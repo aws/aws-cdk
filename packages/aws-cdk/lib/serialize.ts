@@ -1,3 +1,4 @@
+import * as fs from 'fs-extra';
 import * as YAML from 'yaml';
 
 /* eslint-disable @typescript-eslint/no-require-imports */
@@ -22,7 +23,7 @@ export function toYAML(obj: any): string {
  * Parse YAML
  */
 export function fromYAML(str: string): any {
-    return YAML.parse(str, { schema: 'yaml-1.1' });
+  return YAML.parse(str, { schema: 'yaml-1.1' });
 }
 
 /**
@@ -46,4 +47,12 @@ export function serializeStructure(object: any, json: boolean) {
   } else {
     return toYAML(object);
   }
+}
+
+/**
+ * Load a YAML or JSON file from disk
+ */
+export async function loadStructuredFile(fileName: string) {
+  const contents = await fs.readFile(fileName, { encoding: 'utf-8' });
+  return deserializeStructure(contents);
 }

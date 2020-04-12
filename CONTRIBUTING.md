@@ -27,6 +27,7 @@ and let us know if it's not up-to-date (even better, submit a PR with your  corr
   - [Full clean build](#full-clean-build)
   - [Full Docker build](#full-docker-build)
   - [Partial build](#partial-build)
+  - [Partial pack](#partial-pack)
   - [Quick Iteration](#quick-iteration)
   - [Linking against this repository](#linking-against-this-repository)
   - [Running integration tests in parallel](#running-integration-tests-in-parallel)
@@ -35,9 +36,11 @@ and let us know if it's not up-to-date (even better, submit a PR with your  corr
   - [Finding dependency cycles between packages](#finding-dependency-cycles-between-packages)
   - [Updating all Dependencies](#updating-all-dependencies)
   - [Running CLI integration tests](#running-cli-integration-tests)
+  - [Changing the Cloud Assembly Schema](#changing-cloud-assembly-schema)
   - [API Compatibility Checks](#api-compatibility-checks)
   - [Examples](#examples)
   - [Feature Flags](#feature-flags)
+  - [Versioning](#versioning)
 - [Troubleshooting](#troubleshooting)
 - [Debugging](#debugging)
   - [Connecting the VS Code Debugger](#connecting-the-vs-code-debugger)
@@ -46,13 +49,13 @@ and let us know if it's not up-to-date (even better, submit a PR with your  corr
 ## Getting Started
 
 For day-to-day development and normal contributions, the following SDKs and tools are required:
- - [Node.js 10.3.0](https://nodejs.org/download/release/latest-v10.x/)
+ - [Node.js 10.12.0](https://nodejs.org/download/release/latest-v10.x/)
  - [Yarn >= 1.19.1](https://yarnpkg.com/lang/en/docs/install)
  - [Java OpenJDK 8](http://openjdk.java.net/install/)
  - [.NET Core SDK 3.0](https://www.microsoft.com/net/download)
  - [Python 3.6.5](https://www.python.org/downloads/release/python-365/)
  - [Ruby 2.5.1](https://www.ruby-lang.org/en/news/2018/03/28/ruby-2-5-1-released/)
- 
+
 The basic commands to get the repository cloned and built locally follow:
 
 ```console
@@ -141,7 +144,7 @@ Integration tests perform a few functions in the CDK code base -
 3. (Optionally) Acts as a way to validate that constructs set up the CloudFormation resources as expected. A successful
    CloudFormation deployment does not mean that the resources are set up correctly.
 
-If you are working on a new feature that is using previously unused CloudFormation resource types, or involves 
+If you are working on a new feature that is using previously unused CloudFormation resource types, or involves
 configuring resource types across services, you need to write integration tests that use these resource types or
 features.
 
@@ -381,6 +384,12 @@ If you also wish to package to all languages, make sure you have all the [toolch
 $ ./pack.sh
 ```
 
+> NOTE: in local builds, pack.sh will finish but will fail with an error
+> indicating the build artifacts use the marker version (`0.0.0`). This is
+> normal, and you can trust the output in `dist/` despite the failure. This is a
+> protection we have to make sure we don't accidentally release artifacts with
+> the marker version.
+
 ### Full Docker build
 
 Clone the repo:
@@ -414,7 +423,29 @@ $ cd packages/@aws-cdk/aws-ec2
 $ ../../../scripts/buildup
 ```
 
-Note that `buildup` uses `foreach.sh`, which means it's resumable. If your build fails and you wish to resume, just run `buildup` again. If you wish to restart, run `buildup --restart`.
+Note that `buildup` uses `foreach.sh`, which means it's resumable. If your build fails and you wish to resume, just run
+`buildup --resume`. If you wish to restart, run `buildup` again.
+
+### Partial pack
+
+Packing involves generating CDK code in the various target languages, and packaged up ready to be published to the
+respective package managers. Once in a while, these will need to be generated either to test the experience of a new
+feature, or reproduce a packaging failure.
+
+Before running this, make sure either that the CDK module and all of its dependencies are already built. See [Partial
+build](#partial-build) or [Full clean build](#full-clean-build).
+
+To package a specific module, say the `@aws-cdk/aws-ec2` module:
+
+```console
+$ cd <root-of-cdk-repo>
+$ docker run --rm --net=host -it -v $PWD:$PWD -w $PWD jsii/superchain
+docker$ cd packages/@aws-cdk/aws-ec2
+docker$ ../../../scripts/foreach.sh --up yarn run package
+docker$ exit
+```
+
+The `dist/` folder within each module contains the packaged up language artifacts.
 
 ### Quick Iteration
 
@@ -526,6 +557,11 @@ run as part of the regular build, since they have some particular requirements.
 See the [CLI CONTRIBUTING.md file](packages/aws-cdk/CONTRIBUTING.md) for
 more information on running those tests.
 
+### Changing Cloud Assembly Schema
+
+If you plan on making changes to the `cloud-assembly-schema` package, make sure you familiarize yourself with
+its own [contribution guide](./packages/@aws-cdk/cloud-assembly-schema/CONTRIBUTING.md)
+
 ### API Compatibility Checks
 
 All stable APIs in the CDK go through a compatibility check during build using
@@ -635,8 +671,8 @@ The pattern is simple:
    form `module.Type:feature` (e.g. `@aws-cdk/core:enableStackNameDuplicates`).
 2. Use `node.tryGetContext(cxapi.ENABLE_XXX)` to check if this feature is enabled
    in your code. If it is not defined, revert to the legacy behavior.
-3. Add your feature flag to
-   [cx-api/lib/future.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/cx-api/lib/future.ts).
+3. Add your feature flag to the `FUTURE_FLAGS` map in
+   [cx-api/lib/features.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/cx-api/lib/features.ts).
    This map is inserted to generated `cdk.json` files for new projects created
    through `cdk init`.
 4. In your PR title (which goes into CHANGELOG), add a `(under feature flag)` suffix. e.g:
@@ -657,6 +693,25 @@ In the [next major version of the
 CDK](https://github.com/aws/aws-cdk/issues/3398) we will either remove the
 legacy behavior or flip the logic for all these features and then
 reset the `FEATURE_FLAGS` map for the next cycle.
+
+### Versioning
+
+All `package.json` files in this repo use a stable marker version of `0.0.0`.
+This means that when you declare dependencies, you should always use `0.0.0`.
+This makes it easier for us to bump a new version (the `bump.sh` script will
+just update the central version and create a CHANGELOG entry) and also reduces
+the chance of merge conflicts after a new version is released.
+
+Additional scripts that take part in the versioning mechanism:
+
+- `scripts/get-version.js` can be used to obtain the actual version of the repo.
+  You can use either from JavaScript code by `require('./scripts/get-version')`
+  or from a shell script `node -p "require('./scripts/get-version')"`.
+- `scripts/get-version-marker.js` returns `0.0.0` and used to DRY the version
+  marker.
+- `scripts/align-version.sh` and `scripts/align-version.js` are used to align
+  all package.json files in the repo to the official version. This script is
+  invoked in CI builds and should not be used inside a development environment.
 
 ## Troubleshooting
 

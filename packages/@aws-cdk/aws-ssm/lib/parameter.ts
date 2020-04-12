@@ -111,6 +111,13 @@ export interface ParameterOptions {
    * @default - auto-detect based on `parameterName`
    */
   readonly simpleName?: boolean;
+
+  /**
+   * The tier of the string parameter
+   *
+   * @default - undefined
+   */
+  readonly tier?: ParameterTier;
 }
 
 /**
@@ -207,6 +214,24 @@ export enum ParameterType {
 }
 
 /**
+ * SSM parameter tier
+ */
+export enum ParameterTier {
+  /**
+   * String
+   */
+  ADVANCED = 'Advanced',
+  /**
+   * String
+   */
+  INTELLIGENT_TIERING = 'Intelligent-Tiering',
+  /**
+   * String
+   */
+  STANDARD = 'Standard',
+}
+
+/**
  * Common attributes for string parameters.
  */
 export interface CommonStringParameterAttributes {
@@ -271,6 +296,7 @@ export interface SecureStringParameterAttributes extends CommonStringParameterAt
    * @default - default master key
    */
   readonly encryptionKey?: kms.IKey;
+
 }
 
 /**
@@ -291,7 +317,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
    */
   public static fromStringParameterAttributes(scope: Construct, id: string, attrs: StringParameterAttributes): IStringParameter {
     if (!attrs.parameterName) {
-      throw new Error(`parameterName cannot be an empty string`);
+      throw new Error('parameterName cannot be an empty string');
     }
 
     const type = attrs.type || ParameterType.STRING;
@@ -400,10 +426,19 @@ export class StringParameter extends ParameterBase implements IStringParameter {
       _assertValidValue(props.stringValue, props.allowedPattern);
     }
 
+    if (this.physicalName.length > 2048) {
+      throw new Error('Name cannot be longer than 2048 characters.');
+    }
+
+    if (props.description && props.description?.length > 1024) {
+      throw new Error('Description cannot be longer than 1024 characters.');
+    }
+
     const resource = new ssm.CfnParameter(this, 'Resource', {
       allowedPattern: props.allowedPattern,
       description: props.description,
       name: this.physicalName,
+      tier: props.tier,
       type: props.type || ParameterType.STRING,
       value: props.stringValue,
     });
@@ -458,10 +493,19 @@ export class StringListParameter extends ParameterBase implements IStringListPar
       props.stringListValue.forEach(str => _assertValidValue(str, props.allowedPattern!));
     }
 
+    if (this.physicalName.length > 2048) {
+      throw new Error('Name cannot be longer than 2048 characters.');
+    }
+
+    if (props.description && props.description?.length > 1024) {
+      throw new Error('Description cannot be longer than 1024 characters.');
+    }
+
     const resource = new ssm.CfnParameter(this, 'Resource', {
       allowedPattern: props.allowedPattern,
       description: props.description,
       name: this.physicalName,
+      tier: props.tier,
       type: ParameterType.STRING_LIST,
       value: props.stringListValue.join(','),
     });

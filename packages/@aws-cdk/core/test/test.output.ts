@@ -14,7 +14,7 @@ export = {
       description: 'CfnOutput properties'
     });
     test.deepEqual(toCloudFormation(stack), { Resources: { MyResource: { Type: 'R' } },
-    Outputs:
+      Outputs:
      { MyOutput:
       { Description: 'CfnOutput properties',
         Export: { Name: 'ExportName' },

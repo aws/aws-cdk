@@ -340,7 +340,7 @@ function validateSchema(columns: Column[], partitionKeys?: Column[]): void {
   const names = new Set<string>();
   (columns.concat(partitionKeys || [])).forEach(column => {
     if (names.has(column.name)) {
-      throw new Error(`column names and partition keys must be unique, but 'p1' is duplicated`);
+      throw new Error('column names and partition keys must be unique, but \'p1\' is duplicated');
     }
     names.add(column.name);
   });

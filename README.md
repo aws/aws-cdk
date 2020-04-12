@@ -17,10 +17,10 @@ infrastructure definition and share it without worrying about boilerplate logic.
 
 The CDK is available in the following languages:
 
-* JavaScript, TypeScript ([Node.js ≥ 10.3.0](https://nodejs.org/download/release/latest-v10.x/))
+* JavaScript, TypeScript ([Node.js ≥ 10.12.0](https://nodejs.org/download/release/latest-v10.x/))
 * Python ([Python ≥ 3.6](https://www.python.org/downloads/))
 * Java ([Java ≥ 8](https://www.oracle.com/technetwork/java/javase/downloads/index.html) and [Maven ≥ 3.5.4](https://maven.apache.org/download.cgi))
-* .NET ([.NET Core ≥ 3.0](https://dotnet.microsoft.com/download))
+* .NET ([.NET Core ≥ 3.1](https://dotnet.microsoft.com/download))
 
 -------
 
@@ -30,7 +30,8 @@ The CDK is available in the following languages:
 [API Reference](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-construct-library.html) |
 [Examples](https://github.com/aws-samples/aws-cdk-examples) |
 [Getting Help](#getting-help) |
-[RFCs](https://github.com/aws/aws-cdk-rfcs)
+[RFCs](https://github.com/aws/aws-cdk-rfcs) |
+[Roadmap](https://github.com/aws/aws-cdk/blob/master/ROADMAP.md)
 
 Developers use the [CDK framework] in one of the
 supported programming languages to define reusable cloud components called [constructs], which
@@ -56,7 +57,7 @@ on AWS.
 
 ## At a glance
 
-Install or update the [AWS CDK CLI] from npm (requires [Node.js ≥ 10.3.0](https://nodejs.org/download/release/latest-v10.x/)):
+Install or update the [AWS CDK CLI] from npm (requires [Node.js ≥ 10.12.0](https://nodejs.org/download/release/latest-v10.x/)):
 
 ```bash
 $ npm i -g aws-cdk
@@ -121,6 +122,13 @@ for tracking bugs and feature requests.
 We welcome community contributions and pull requests. See
 [CONTRIBUTING](./CONTRIBUTING.md) for information on how to set up a development
 environment and submit code.
+
+## Roadmap
+
+The [AWS CDK Roadmap project board] lets developers know about our upcoming features and priorities to help them plan how to best leverage the CDK and identify opportunities to contribute to the project. See [ROADMAP] for more information and FAQs.
+
+[AWS CDK Roadmap project board]: https://github.com/orgs/aws/projects/7
+[Roadmap]: (https://github.com/aws/aws-cdk/ROADMAP.md)
 
 ## License
 

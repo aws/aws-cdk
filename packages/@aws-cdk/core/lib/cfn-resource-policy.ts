@@ -136,6 +136,12 @@ export interface CfnUpdatePolicy {
    */
   readonly useOnlineResharding?: boolean;
 
+  /**
+   * To upgrade an Amazon ES domain to a new version of Elasticsearch rather than replacing the entire
+   * AWS::Elasticsearch::Domain resource, use the EnableVersionUpgrade update policy.
+   */
+  readonly enableVersionUpgrade?: boolean;
+
 }
 
 /**
@@ -240,7 +246,7 @@ export interface CfnAutoScalingScheduledAction {
   * a stack update. If you modify any of the group size property values in your template, AWS CloudFormation uses the modified
   * values and updates your Auto Scaling group.
   */
- readonly ignoreUnmodifiedGroupSizeProperties?: boolean;
+  readonly ignoreUnmodifiedGroupSizeProperties?: boolean;
 }
 
 /**

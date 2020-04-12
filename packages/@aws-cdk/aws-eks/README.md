@@ -5,12 +5,14 @@
 
 ![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
 
-> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
-> future breaking changes.**
+> **This is a _developer preview_ (public beta) module.**
 >
-> This API is still under active development and subject to non-backward
-> compatible changes or removal in any future version. Use of the API is not recommended in production
-> environments. Experimental APIs are not subject to the Semantic Versioning model.
+> All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib))
+> are auto-generated from CloudFormation. They are stable and safe to use.
+>
+> However, all other classes, i.e., higher level constructs, are under active development and subject to non-backward
+> compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model.
+> This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
 
 ---
 <!--END STABILITY BANNER-->
@@ -22,7 +24,7 @@ manifests within EKS clusters.
 
 This example defines an Amazon EKS cluster with the following configuration:
 
-- 2x **m5.large** instances (this instance type suits most common use-cases, and is good value for money)
+- Managed nodegroup with 2x **m5.large** instances (this instance type suits most common use-cases, and is good value for money)
 - Dedicated VPC with default configuration (see [ec2.Vpc](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-ec2-readme.html#vpc))
 - A Kubernetes pod with a container based on the [paulbouwer/hello-kubernetes](https://github.com/paulbouwer/hello-kubernetes) image.
 
@@ -45,14 +47,20 @@ cluster.addResource('mypod', {
 });
 ```
 
-Here is a [complete sample](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-eks/test/integ.eks-kubectl.lit.ts).
-
 ### Capacity
 
-By default, `eks.Cluster` is created with x2 `m5.large` instances.
+By default, `eks.Cluster` is created with a managed nodegroup with x2 `m5.large` instances.
 
 ```ts
 new eks.Cluster(this, 'cluster-two-m5-large');
+```
+
+To use the traditional self-managed Amazon EC2 instances instead, set `defaultCapacityType` to `DefaultCapacityType.EC2`
+
+```ts
+const cluster = new eks.Cluster(this, 'cluster-self-managed-ec2', {
+  defaultCapacityType: eks.DefaultCapacityType.EC2
+});
 ```
 
 The quantity and instance type for the default capacity can be specified through
@@ -73,16 +81,13 @@ new eks.Cluster(this, 'cluster-with-no-capacity', { defaultCapacity: 0 });
 
 The `cluster.defaultCapacity` property will reference the `AutoScalingGroup`
 resource for the default capacity. It will be `undefined` if `defaultCapacity`
-is set to `0`:
+is set to `0` or `defaultCapacityType` is either `NODEGROUP` or undefined.
 
-```ts
-const cluster = new eks.Cluster(this, 'my-cluster');
-cluster.defaultCapacity!.scaleOnCpuUtilization('up', {
-  targetUtilizationPercent: 80
-});
-```
+And the `cluster.defaultNodegroup` property will reference the `Nodegroup`
+resource for the default capacity. It will be `undefined` if `defaultCapacity`
+is set to `0` or `defaultCapacityType` is `EC2`.
 
-You can add customized capacity through `cluster.addCapacity()` or
+You can add `AutoScalingGroup` resource as customized capacity through `cluster.addCapacity()` or
 `cluster.addAutoScalingGroup()`:
 
 ```ts
@@ -92,6 +97,25 @@ cluster.addCapacity('frontend-nodes', {
   vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC }
 });
 ```
+
+### Managed Node Groups
+
+Amazon EKS managed node groups automate the provisioning and lifecycle management of nodes (Amazon EC2 instances) 
+for Amazon EKS Kubernetes clusters. By default, `eks.Nodegroup` create a nodegroup with x2 `t3.medium` instances. 
+
+```ts
+new eks.Nodegroup(stack, 'nodegroup', { cluster });
+```
+
+You can add customized node group through `cluster.addNodegroup()`:
+
+```ts
+cluster.addNodegroup('nodegroup', {
+  instanceType: new ec2.InstanceType('m5.large'),
+  minSize: 4,
+});
+```
+
 
 ### Fargate
 
@@ -150,10 +174,10 @@ cluster.addCapacity('spot', {
 
 Spot instance nodes will be labeled with `lifecycle=Ec2Spot` and tainted with `PreferNoSchedule`.
 
-The [Spot Termination Handler](https://github.com/awslabs/ec2-spot-labs/tree/master/ec2-spot-eks-solution/spot-termination-handler)
-DaemonSet will be installed on these nodes. The termination handler leverages
-[EC2 Spot Instance Termination Notices](https://aws.amazon.com/blogs/aws/new-ec2-spot-instance-termination-notices/)
-to gracefully stop all pods running on spot nodes that are about to be
+The [AWS Node Termination Handler](https://github.com/aws/aws-node-termination-handler)
+DaemonSet will be installed from [
+Amazon EKS Helm chart repository
+](https://github.com/aws/eks-charts/tree/master/stable/aws-node-termination-handler) on these nodes. The termination handler ensures that the Kubernetes control plane responds appropriately to events that can cause your EC2 instance to become unavailable, such as [EC2 maintenance events](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/monitoring-instances-status-check_sched.html) and [EC2 Spot interruptions](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-interruptions.html) and helps gracefully stop all pods running on spot nodes that are about to be
 terminated.
 
 ### Bootstrapping
@@ -321,6 +345,21 @@ CDK. This means that if the resource is deleted from your code (or the stack is
 deleted), the next `cdk deploy` will issue a `kubectl delete` command and the
 Kubernetes resources will be deleted.
 
+### Patching Kubernetes Resources
+
+The KubernetesPatch construct can be used to update existing kubernetes
+resources. The following example can be used to patch the `hello-kubernetes`
+deployment from the example above with 5 replicas.
+
+```ts
+new KubernetesPatch(this, 'hello-kub-deployment-label', {
+  cluster,
+  resourceName: "deployment/hello-kubernetes",
+  applyPatch: { spec: { replicas: 5 } },
+  restorePatch: { spec: { replicas: 3 } }
+})
+```
+
 ### AWS IAM Mapping
 
 As described in the [Amazon EKS User Guide](https://docs.aws.amazon.com/en_us/eks/latest/userguide/add-user-role.html),
@@ -462,6 +501,29 @@ Helm chart will be deleted.
 
 When there is no `release` defined, the chart will be installed using the `node.uniqueId`,
 which will be lower cassed and truncated to the last 63 characters.
+
+
+### Bottlerocket
+
+[Bottlerocket](https://aws.amazon.com/tw/bottlerocket/) is a Linux-based open-source operating system that is purpose-built by Amazon Web Services for running containers on virtual machines or bare metal hosts. At this moment the managed nodegroup only supports Amazon EKS-optimized AMI but it's possible to create a capacity of self-managed `AutoScalingGroup` running with bottlerocket Linux AMI. 
+
+The following example will create a capacity with self-managed Amazon EC2 capacity of 2 `t3.small` Linux instances running with `Bottlerocket` AMI.
+
+```ts
+// add bottlerocket nodes
+cluster.addCapacity('BottlerocketNodes', {
+  instanceType: new ec2.InstanceType('t3.small'),
+  minCapacity:  2,
+  machineImageType: eks.MachineImageType.BOTTLEROCKET
+});
+```
+
+To define only Bottlerocket capacity in your cluster, set `defaultCapacity` to `0` when you define the cluster as described above.
+
+Please note Bottlerocket does not allow to customize bootstrap options and `bootstrapOptions` properties is not supported when you create the `Bottlerocket` capacity. 
+
+`Bottlerocket` is now available in public preview and only available in [some supported AWS regions](https://github.com/bottlerocket-os/bottlerocket/blob/develop/QUICKSTART.md#finding-an-ami). 
+
 
 ### Roadmap
 

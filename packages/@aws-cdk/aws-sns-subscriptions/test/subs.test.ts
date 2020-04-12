@@ -2,7 +2,7 @@ import '@aws-cdk/assert/jest';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sns from '@aws-cdk/aws-sns';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { CfnParameter, SecretValue, Stack } from '@aws-cdk/core';
+import { CfnParameter, Stack, Token } from '@aws-cdk/core';
 import * as subs from '../lib';
 
 // tslint:disable:object-literal-key-quotes
@@ -22,21 +22,21 @@ test('url subscription', () => {
   topic.addSubscription(new subs.UrlSubscription('https://foobar.com/'));
 
   expect(stack).toMatchTemplate({
-    "Resources": {
-      "MyTopic86869434": {
-        "Type": "AWS::SNS::Topic",
-        "Properties": {
-          "DisplayName": "displayName",
-          "TopicName": "topicName"
+    'Resources': {
+      'MyTopic86869434': {
+        'Type': 'AWS::SNS::Topic',
+        'Properties': {
+          'DisplayName': 'displayName',
+          'TopicName': 'topicName'
         }
       },
-      "MyTopichttpsfoobarcomDEA92AB5": {
-        "Type": "AWS::SNS::Subscription",
-        "Properties": {
-          "Endpoint": "https://foobar.com/",
-          "Protocol": "https",
-          "TopicArn": {
-            "Ref": "MyTopic86869434"
+      'MyTopichttpsfoobarcomDEA92AB5': {
+        'Type': 'AWS::SNS::Subscription',
+        'Properties': {
+          'Endpoint': 'https://foobar.com/',
+          'Protocol': 'https',
+          'TopicArn': {
+            'Ref': 'MyTopic86869434'
           }
         }
       }
@@ -50,21 +50,21 @@ test('url subscription (with raw delivery)', () => {
   }));
 
   expect(stack).toMatchTemplate({
-    "Resources": {
-      "MyTopic86869434": {
-        "Type": "AWS::SNS::Topic",
-        "Properties": {
-          "DisplayName": "displayName",
-          "TopicName": "topicName"
+    'Resources': {
+      'MyTopic86869434': {
+        'Type': 'AWS::SNS::Topic',
+        'Properties': {
+          'DisplayName': 'displayName',
+          'TopicName': 'topicName'
         }
       },
-      "MyTopichttpsfoobarcomDEA92AB5": {
-        "Type": "AWS::SNS::Subscription",
-        "Properties": {
-          "Endpoint": "https://foobar.com/",
-          "Protocol": "https",
-          "TopicArn": { "Ref": "MyTopic86869434" },
-          "RawMessageDelivery": true
+      'MyTopichttpsfoobarcomDEA92AB5': {
+        'Type': 'AWS::SNS::Subscription',
+        'Properties': {
+          'Endpoint': 'https://foobar.com/',
+          'Protocol': 'https',
+          'TopicArn': { 'Ref': 'MyTopic86869434' },
+          'RawMessageDelivery': true
         }
       }
     }
@@ -72,25 +72,66 @@ test('url subscription (with raw delivery)', () => {
 });
 
 test('url subscription (unresolved url with protocol)', () => {
-  const secret = SecretValue.secretsManager('my-secret');
-  const url = secret.toString();
-  topic.addSubscription(new subs.UrlSubscription(url, {protocol: sns.SubscriptionProtocol.HTTPS}));
+  const urlToken = Token.asString({ Ref : 'my-url-1' });
+  topic.addSubscription(new subs.UrlSubscription(urlToken, {protocol: sns.SubscriptionProtocol.HTTPS}));
 
   expect(stack).toMatchTemplate({
-    "Resources": {
-      "MyTopic86869434": {
-        "Type": "AWS::SNS::Topic",
-        "Properties": {
-          "DisplayName": "displayName",
-          "TopicName": "topicName"
+    'Resources': {
+      'MyTopic86869434': {
+        'Type': 'AWS::SNS::Topic',
+        'Properties': {
+          'DisplayName': 'displayName',
+          'TopicName': 'topicName'
         }
       },
-      "MyTopicUnresolvedUrlBA127FB3": {
-        "Type": "AWS::SNS::Subscription",
-        "Properties": {
-          "Endpoint": "{{resolve:secretsmanager:my-secret:SecretString:::}}",
-          "Protocol": "https",
-          "TopicArn": { "Ref": "MyTopic86869434" },
+      'MyTopicTokenSubscription141DD1BE2': {
+        'Type': 'AWS::SNS::Subscription',
+        'Properties': {
+          'Endpoint': {
+            'Ref': 'my-url-1'
+          },
+          'Protocol': 'https',
+          'TopicArn': { 'Ref': 'MyTopic86869434' },
+        }
+      }
+    }
+  });
+});
+
+test('url subscription (double unresolved url with protocol)', () => {
+  const urlToken1 = Token.asString({ Ref : 'my-url-1' });
+  const urlToken2 = Token.asString({ Ref : 'my-url-2' });
+
+  topic.addSubscription(new subs.UrlSubscription(urlToken1, {protocol: sns.SubscriptionProtocol.HTTPS}));
+  topic.addSubscription(new subs.UrlSubscription(urlToken2, {protocol: sns.SubscriptionProtocol.HTTPS}));
+
+  expect(stack).toMatchTemplate({
+    'Resources': {
+      'MyTopic86869434': {
+        'Type': 'AWS::SNS::Topic',
+        'Properties': {
+          'DisplayName': 'displayName',
+          'TopicName': 'topicName'
+        }
+      },
+      'MyTopicTokenSubscription141DD1BE2': {
+        'Type': 'AWS::SNS::Subscription',
+        'Properties': {
+          'Endpoint': {
+            'Ref' : 'my-url-1'
+          },
+          'Protocol': 'https',
+          'TopicArn': { 'Ref': 'MyTopic86869434' },
+        }
+      },
+      'MyTopicTokenSubscription293BFE3F9': {
+        'Type': 'AWS::SNS::Subscription',
+        'Properties': {
+          'Endpoint': {
+            'Ref' : 'my-url-2'
+          },
+          'Protocol': 'https',
+          'TopicArn': { 'Ref': 'MyTopic86869434' },
         }
       }
     }
@@ -99,14 +140,14 @@ test('url subscription (unresolved url with protocol)', () => {
 
 test('url subscription (unknown protocol)', () => {
   expect(() => topic.addSubscription(new subs.UrlSubscription('some-protocol://foobar.com/')))
-   .toThrowError(/URL must start with either http:\/\/ or https:\/\//);
+    .toThrowError(/URL must start with either http:\/\/ or https:\/\//);
 });
 
 test('url subscription (unresolved url without protocol)', () => {
-  const secret = SecretValue.secretsManager('my-secret');
-  const url = secret.toString();
-  expect(() => topic.addSubscription(new subs.UrlSubscription(url)))
-   .toThrowError(/Must provide protocol if url is unresolved/);
+  const urlToken = Token.asString({ Ref : 'my-url-1' });
+
+  expect(() => topic.addSubscription(new subs.UrlSubscription(urlToken)))
+    .toThrowError(/Must provide protocol if url is unresolved/);
 });
 
 test('queue subscription', () => {
@@ -115,63 +156,63 @@ test('queue subscription', () => {
   topic.addSubscription(new subs.SqsSubscription(queue));
 
   expect(stack).toMatchTemplate({
-    "Resources": {
-      "MyTopic86869434": {
-        "Type": "AWS::SNS::Topic",
-        "Properties": {
-          "DisplayName": "displayName",
-          "TopicName": "topicName"
+    'Resources': {
+      'MyTopic86869434': {
+        'Type': 'AWS::SNS::Topic',
+        'Properties': {
+          'DisplayName': 'displayName',
+          'TopicName': 'topicName'
         }
       },
-      "MyQueueE6CA6235": {
-        "Type": "AWS::SQS::Queue"
+      'MyQueueE6CA6235': {
+        'Type': 'AWS::SQS::Queue'
       },
-      "MyQueuePolicy6BBEDDAC": {
-        "Type": "AWS::SQS::QueuePolicy",
-        "Properties": {
-          "PolicyDocument": {
-            "Statement": [
+      'MyQueuePolicy6BBEDDAC': {
+        'Type': 'AWS::SQS::QueuePolicy',
+        'Properties': {
+          'PolicyDocument': {
+            'Statement': [
               {
-                "Action": "sqs:SendMessage",
-                "Condition": {
-                  "ArnEquals": {
-                    "aws:SourceArn": {
-                      "Ref": "MyTopic86869434"
+                'Action': 'sqs:SendMessage',
+                'Condition': {
+                  'ArnEquals': {
+                    'aws:SourceArn': {
+                      'Ref': 'MyTopic86869434'
                     }
                   }
                 },
-                "Effect": "Allow",
-                "Principal": {
-                  "Service": "sns.amazonaws.com"
+                'Effect': 'Allow',
+                'Principal': {
+                  'Service': 'sns.amazonaws.com'
                 },
-                "Resource": {
-                  "Fn::GetAtt": [
-                    "MyQueueE6CA6235",
-                    "Arn"
+                'Resource': {
+                  'Fn::GetAtt': [
+                    'MyQueueE6CA6235',
+                    'Arn'
                   ]
                 }
               }
             ],
-            "Version": "2012-10-17"
+            'Version': '2012-10-17'
           },
-          "Queues": [
+          'Queues': [
             {
-              "Ref": "MyQueueE6CA6235"
+              'Ref': 'MyQueueE6CA6235'
             }
           ]
         }
       },
-      "MyQueueMyTopic9B00631B": {
-        "Type": "AWS::SNS::Subscription",
-        "Properties": {
-          "Protocol": "sqs",
-          "TopicArn": {
-            "Ref": "MyTopic86869434"
+      'MyQueueMyTopic9B00631B': {
+        'Type': 'AWS::SNS::Subscription',
+        'Properties': {
+          'Protocol': 'sqs',
+          'TopicArn': {
+            'Ref': 'MyTopic86869434'
           },
-          "Endpoint": {
-            "Fn::GetAtt": [
-              "MyQueueE6CA6235",
-              "Arn"
+          'Endpoint': {
+            'Fn::GetAtt': [
+              'MyQueueE6CA6235',
+              'Arn'
             ]
           }
         }
@@ -186,17 +227,17 @@ test('queue subscription (with raw delivery)', () => {
   topic.addSubscription(new subs.SqsSubscription(queue, { rawMessageDelivery: true }));
 
   expect(stack).toHaveResource('AWS::SNS::Subscription', {
-    "Endpoint": {
-      "Fn::GetAtt": [
-        "MyQueueE6CA6235",
-        "Arn"
+    'Endpoint': {
+      'Fn::GetAtt': [
+        'MyQueueE6CA6235',
+        'Arn'
       ]
     },
-    "Protocol": "sqs",
-    "TopicArn": {
-      "Ref": "MyTopic86869434"
+    'Protocol': 'sqs',
+    'TopicArn': {
+      'Ref': 'MyTopic86869434'
     },
-    "RawMessageDelivery": true
+    'RawMessageDelivery': true
   });
 });
 
@@ -210,91 +251,91 @@ test('lambda subscription', () => {
   topic.addSubscription(new subs.LambdaSubscription(fction));
 
   expect(stack).toMatchTemplate({
-    "Resources": {
-      "MyTopic86869434": {
-        "Type": "AWS::SNS::Topic",
-        "Properties": {
-          "DisplayName": "displayName",
-          "TopicName": "topicName"
+    'Resources': {
+      'MyTopic86869434': {
+        'Type': 'AWS::SNS::Topic',
+        'Properties': {
+          'DisplayName': 'displayName',
+          'TopicName': 'topicName'
         }
       },
-      "MyFuncServiceRole54065130": {
-        "Type": "AWS::IAM::Role",
-        "Properties": {
-          "AssumeRolePolicyDocument": {
-            "Statement": [
+      'MyFuncServiceRole54065130': {
+        'Type': 'AWS::IAM::Role',
+        'Properties': {
+          'AssumeRolePolicyDocument': {
+            'Statement': [
               {
-                "Action": "sts:AssumeRole",
-                "Effect": "Allow",
-                "Principal": {
-                  "Service": "lambda.amazonaws.com"
+                'Action': 'sts:AssumeRole',
+                'Effect': 'Allow',
+                'Principal': {
+                  'Service': 'lambda.amazonaws.com'
                 }
               }
             ],
-            "Version": "2012-10-17"
+            'Version': '2012-10-17'
           },
-          "ManagedPolicyArns": [
+          'ManagedPolicyArns': [
             {
-              "Fn::Join": [
-                "",
+              'Fn::Join': [
+                '',
                 [
-                  "arn:",
+                  'arn:',
                   {
-                    "Ref": "AWS::Partition"
+                    'Ref': 'AWS::Partition'
                   },
-                  ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                  ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
                 ]
               ]
             }
           ]
         }
       },
-      "MyFunc8A243A2C": {
-        "Type": "AWS::Lambda::Function",
-        "Properties": {
-          "Code": {
-            "ZipFile": "exports.handler = function(e, c, cb) { return cb() }"
+      'MyFunc8A243A2C': {
+        'Type': 'AWS::Lambda::Function',
+        'Properties': {
+          'Code': {
+            'ZipFile': 'exports.handler = function(e, c, cb) { return cb() }'
           },
-          "Handler": "index.handler",
-          "Role": {
-            "Fn::GetAtt": [
-              "MyFuncServiceRole54065130",
-              "Arn"
+          'Handler': 'index.handler',
+          'Role': {
+            'Fn::GetAtt': [
+              'MyFuncServiceRole54065130',
+              'Arn'
             ]
           },
-          "Runtime": "nodejs10.x"
+          'Runtime': 'nodejs10.x'
         },
-        "DependsOn": [
-          "MyFuncServiceRole54065130"
+        'DependsOn': [
+          'MyFuncServiceRole54065130'
         ]
       },
-      "MyFuncAllowInvokeMyTopicDD0A15B8": {
-        "Type": "AWS::Lambda::Permission",
-        "Properties": {
-          "Action": "lambda:InvokeFunction",
-          "FunctionName": {
-            "Fn::GetAtt": [
-              "MyFunc8A243A2C",
-              "Arn"
+      'MyFuncAllowInvokeMyTopicDD0A15B8': {
+        'Type': 'AWS::Lambda::Permission',
+        'Properties': {
+          'Action': 'lambda:InvokeFunction',
+          'FunctionName': {
+            'Fn::GetAtt': [
+              'MyFunc8A243A2C',
+              'Arn'
             ]
           },
-          "Principal": "sns.amazonaws.com",
-          "SourceArn": {
-            "Ref": "MyTopic86869434"
+          'Principal': 'sns.amazonaws.com',
+          'SourceArn': {
+            'Ref': 'MyTopic86869434'
           }
         }
       },
-      "MyFuncMyTopic93B6FB00": {
-        "Type": "AWS::SNS::Subscription",
-        "Properties": {
-          "Protocol": "lambda",
-          "TopicArn": {
-            "Ref": "MyTopic86869434"
+      'MyFuncMyTopic93B6FB00': {
+        'Type': 'AWS::SNS::Subscription',
+        'Properties': {
+          'Protocol': 'lambda',
+          'TopicArn': {
+            'Ref': 'MyTopic86869434'
           },
-          "Endpoint": {
-            "Fn::GetAtt": [
-              "MyFunc8A243A2C",
-              "Arn"
+          'Endpoint': {
+            'Fn::GetAtt': [
+              'MyFunc8A243A2C',
+              'Arn'
             ]
           }
         }
@@ -307,21 +348,165 @@ test('email subscription', () => {
   topic.addSubscription(new subs.EmailSubscription('foo@bar.com'));
 
   expect(stack).toMatchTemplate({
-    "Resources": {
-      "MyTopic86869434": {
-        "Type": "AWS::SNS::Topic",
-        "Properties": {
-          "DisplayName": "displayName",
-          "TopicName": "topicName"
+    'Resources': {
+      'MyTopic86869434': {
+        'Type': 'AWS::SNS::Topic',
+        'Properties': {
+          'DisplayName': 'displayName',
+          'TopicName': 'topicName'
         }
       },
-      "MyTopicfoobarcomA344CADA": {
-        "Type": "AWS::SNS::Subscription",
-        "Properties": {
-          "Endpoint": "foo@bar.com",
-          "Protocol": "email",
-          "TopicArn": {
-            "Ref": "MyTopic86869434"
+      'MyTopicfoobarcomA344CADA': {
+        'Type': 'AWS::SNS::Subscription',
+        'Properties': {
+          'Endpoint': 'foo@bar.com',
+          'Protocol': 'email',
+          'TopicArn': {
+            'Ref': 'MyTopic86869434'
+          }
+        }
+      }
+    }
+  });
+});
+
+test('email subscription with unresolved', () => {
+  const emailToken = Token.asString({ Ref : 'my-email-1' });
+  topic.addSubscription(new subs.EmailSubscription(emailToken));
+
+  expect(stack).toMatchTemplate({
+    'Resources': {
+      'MyTopic86869434': {
+        'Type': 'AWS::SNS::Topic',
+        'Properties': {
+          'DisplayName': 'displayName',
+          'TopicName': 'topicName'
+        }
+      },
+      'MyTopicTokenSubscription141DD1BE2': {
+        'Type': 'AWS::SNS::Subscription',
+        'Properties': {
+          'Endpoint': {
+            'Ref' : 'my-email-1'
+          },
+          'Protocol': 'email',
+          'TopicArn': {
+            'Ref': 'MyTopic86869434'
+          }
+        }
+      }
+    }
+  });
+});
+
+test('email and url subscriptions with unresolved', () => {
+  const emailToken = Token.asString({ Ref : 'my-email-1' });
+  const urlToken = Token.asString({ Ref : 'my-url-1' });
+  topic.addSubscription(new subs.EmailSubscription(emailToken));
+  topic.addSubscription(new subs.UrlSubscription(urlToken, {protocol: sns.SubscriptionProtocol.HTTPS}));
+
+  expect(stack).toMatchTemplate({
+    'Resources': {
+      'MyTopic86869434': {
+        'Type': 'AWS::SNS::Topic',
+        'Properties': {
+          'DisplayName': 'displayName',
+          'TopicName': 'topicName'
+        }
+      },
+      'MyTopicTokenSubscription141DD1BE2': {
+        'Type': 'AWS::SNS::Subscription',
+        'Properties': {
+          'Endpoint': {
+            'Ref' : 'my-email-1'
+          },
+          'Protocol': 'email',
+          'TopicArn': {
+            'Ref': 'MyTopic86869434'
+          }
+        }
+      },
+      'MyTopicTokenSubscription293BFE3F9': {
+        'Type': 'AWS::SNS::Subscription',
+        'Properties': {
+          'Endpoint': {
+            'Ref' : 'my-url-1'
+          },
+          'Protocol': 'https',
+          'TopicArn': {
+            'Ref': 'MyTopic86869434'
+          }
+        }
+      }
+    }
+  });
+});
+
+test('email and url subscriptions with unresolved - four subscriptions', () => {
+  const emailToken1 = Token.asString({ Ref : 'my-email-1' });
+  const emailToken2 = Token.asString({ Ref : 'my-email-2' });
+  const emailToken3 = Token.asString({ Ref : 'my-email-3' });
+  const emailToken4 = Token.asString({ Ref : 'my-email-4' });
+
+  topic.addSubscription(new subs.EmailSubscription(emailToken1));
+  topic.addSubscription(new subs.EmailSubscription(emailToken2));
+  topic.addSubscription(new subs.EmailSubscription(emailToken3));
+  topic.addSubscription(new subs.EmailSubscription(emailToken4));
+
+  expect(stack).toMatchTemplate({
+    'Resources': {
+      'MyTopic86869434': {
+        'Type': 'AWS::SNS::Topic',
+        'Properties': {
+          'DisplayName': 'displayName',
+          'TopicName': 'topicName'
+        }
+      },
+      'MyTopicTokenSubscription141DD1BE2': {
+        'Type': 'AWS::SNS::Subscription',
+        'Properties': {
+          'Endpoint': {
+            'Ref' : 'my-email-1'
+          },
+          'Protocol': 'email',
+          'TopicArn': {
+            'Ref': 'MyTopic86869434'
+          }
+        }
+      },
+      'MyTopicTokenSubscription293BFE3F9': {
+        'Type': 'AWS::SNS::Subscription',
+        'Properties': {
+          'Endpoint': {
+            'Ref' : 'my-email-2'
+          },
+          'Protocol': 'email',
+          'TopicArn': {
+            'Ref': 'MyTopic86869434'
+          }
+        }
+      },
+      'MyTopicTokenSubscription335C2B4CA': {
+        'Type': 'AWS::SNS::Subscription',
+        'Properties': {
+          'Endpoint': {
+            'Ref' : 'my-email-3'
+          },
+          'Protocol': 'email',
+          'TopicArn': {
+            'Ref': 'MyTopic86869434'
+          }
+        }
+      },
+      'MyTopicTokenSubscription4DBE52A3F': {
+        'Type': 'AWS::SNS::Subscription',
+        'Properties': {
+          'Endpoint': {
+            'Ref' : 'my-email-4'
+          },
+          'Protocol': 'email',
+          'TopicArn': {
+            'Ref': 'MyTopic86869434'
           }
         }
       }
@@ -341,144 +526,144 @@ test('multiple subscriptions', () => {
   topic.addSubscription(new subs.LambdaSubscription(func));
 
   expect(stack).toMatchTemplate({
-    "Resources": {
-      "MyTopic86869434": {
-        "Type": "AWS::SNS::Topic",
-        "Properties": {
-          "DisplayName": "displayName",
-          "TopicName": "topicName"
+    'Resources': {
+      'MyTopic86869434': {
+        'Type': 'AWS::SNS::Topic',
+        'Properties': {
+          'DisplayName': 'displayName',
+          'TopicName': 'topicName'
         }
       },
-      "MyQueueE6CA6235": {
-        "Type": "AWS::SQS::Queue"
+      'MyQueueE6CA6235': {
+        'Type': 'AWS::SQS::Queue'
       },
-      "MyQueuePolicy6BBEDDAC": {
-        "Type": "AWS::SQS::QueuePolicy",
-        "Properties": {
-          "PolicyDocument": {
-            "Statement": [
+      'MyQueuePolicy6BBEDDAC': {
+        'Type': 'AWS::SQS::QueuePolicy',
+        'Properties': {
+          'PolicyDocument': {
+            'Statement': [
               {
-                "Action": "sqs:SendMessage",
-                "Condition": {
-                  "ArnEquals": {
-                    "aws:SourceArn": {
-                      "Ref": "MyTopic86869434"
+                'Action': 'sqs:SendMessage',
+                'Condition': {
+                  'ArnEquals': {
+                    'aws:SourceArn': {
+                      'Ref': 'MyTopic86869434'
                     }
                   }
                 },
-                "Effect": "Allow",
-                "Principal": {
-                  "Service": "sns.amazonaws.com"
+                'Effect': 'Allow',
+                'Principal': {
+                  'Service': 'sns.amazonaws.com'
                 },
-                "Resource": {
-                  "Fn::GetAtt": [
-                    "MyQueueE6CA6235",
-                    "Arn"
+                'Resource': {
+                  'Fn::GetAtt': [
+                    'MyQueueE6CA6235',
+                    'Arn'
                   ]
                 }
               }
             ],
-            "Version": "2012-10-17"
+            'Version': '2012-10-17'
           },
-          "Queues": [
+          'Queues': [
             {
-              "Ref": "MyQueueE6CA6235"
+              'Ref': 'MyQueueE6CA6235'
             }
           ]
         }
       },
-      "MyQueueMyTopic9B00631B": {
-        "Type": "AWS::SNS::Subscription",
-        "Properties": {
-          "Protocol": "sqs",
-          "TopicArn": {
-            "Ref": "MyTopic86869434"
+      'MyQueueMyTopic9B00631B': {
+        'Type': 'AWS::SNS::Subscription',
+        'Properties': {
+          'Protocol': 'sqs',
+          'TopicArn': {
+            'Ref': 'MyTopic86869434'
           },
-          "Endpoint": {
-            "Fn::GetAtt": [
-              "MyQueueE6CA6235",
-              "Arn"
+          'Endpoint': {
+            'Fn::GetAtt': [
+              'MyQueueE6CA6235',
+              'Arn'
             ]
           }
         }
       },
-      "MyFuncServiceRole54065130": {
-        "Type": "AWS::IAM::Role",
-        "Properties": {
-          "AssumeRolePolicyDocument": {
-            "Statement": [
+      'MyFuncServiceRole54065130': {
+        'Type': 'AWS::IAM::Role',
+        'Properties': {
+          'AssumeRolePolicyDocument': {
+            'Statement': [
               {
-                "Action": "sts:AssumeRole",
-                "Effect": "Allow",
-                "Principal": {
-                  "Service": "lambda.amazonaws.com"
+                'Action': 'sts:AssumeRole',
+                'Effect': 'Allow',
+                'Principal': {
+                  'Service': 'lambda.amazonaws.com'
                 }
               }
             ],
-            "Version": "2012-10-17"
+            'Version': '2012-10-17'
           },
-          "ManagedPolicyArns": [
+          'ManagedPolicyArns': [
             {
-              "Fn::Join": [
-                "",
+              'Fn::Join': [
+                '',
                 [
-                  "arn:",
+                  'arn:',
                   {
-                    "Ref": "AWS::Partition"
+                    'Ref': 'AWS::Partition'
                   },
-                  ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                  ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
                 ]
               ]
             }
           ]
         }
       },
-      "MyFunc8A243A2C": {
-        "Type": "AWS::Lambda::Function",
-        "Properties": {
-          "Code": {
-            "ZipFile": "exports.handler = function(e, c, cb) { return cb() }"
+      'MyFunc8A243A2C': {
+        'Type': 'AWS::Lambda::Function',
+        'Properties': {
+          'Code': {
+            'ZipFile': 'exports.handler = function(e, c, cb) { return cb() }'
           },
-          "Handler": "index.handler",
-          "Role": {
-            "Fn::GetAtt": [
-              "MyFuncServiceRole54065130",
-              "Arn"
+          'Handler': 'index.handler',
+          'Role': {
+            'Fn::GetAtt': [
+              'MyFuncServiceRole54065130',
+              'Arn'
             ]
           },
-          "Runtime": "nodejs10.x"
+          'Runtime': 'nodejs10.x'
         },
-        "DependsOn": [
-          "MyFuncServiceRole54065130"
+        'DependsOn': [
+          'MyFuncServiceRole54065130'
         ]
       },
-      "MyFuncAllowInvokeMyTopicDD0A15B8": {
-        "Type": "AWS::Lambda::Permission",
-        "Properties": {
-          "Action": "lambda:InvokeFunction",
-          "FunctionName": {
-            "Fn::GetAtt": [
-              "MyFunc8A243A2C",
-              "Arn"
+      'MyFuncAllowInvokeMyTopicDD0A15B8': {
+        'Type': 'AWS::Lambda::Permission',
+        'Properties': {
+          'Action': 'lambda:InvokeFunction',
+          'FunctionName': {
+            'Fn::GetAtt': [
+              'MyFunc8A243A2C',
+              'Arn'
             ]
           },
-          "Principal": "sns.amazonaws.com",
-          "SourceArn": {
-            "Ref": "MyTopic86869434"
+          'Principal': 'sns.amazonaws.com',
+          'SourceArn': {
+            'Ref': 'MyTopic86869434'
           }
         }
       },
-      "MyFuncMyTopic93B6FB00": {
-        "Type": "AWS::SNS::Subscription",
-        "Properties": {
-          "Protocol": "lambda",
-          "TopicArn": {
-            "Ref": "MyTopic86869434"
+      'MyFuncMyTopic93B6FB00': {
+        'Type': 'AWS::SNS::Subscription',
+        'Properties': {
+          'Protocol': 'lambda',
+          'TopicArn': {
+            'Ref': 'MyTopic86869434'
           },
-          "Endpoint": {
-            "Fn::GetAtt": [
-              "MyFunc8A243A2C",
-              "Arn"
+          'Endpoint': {
+            'Fn::GetAtt': [
+              'MyFunc8A243A2C',
+              'Arn'
             ]
           }
         }
@@ -519,30 +704,30 @@ test('with filter policy', () => {
   }));
 
   expect(stack).toHaveResource('AWS::SNS::Subscription', {
-    "FilterPolicy": {
-      "color": [
-        "red",
+    'FilterPolicy': {
+      'color': [
+        'red',
         {
-          "prefix": "bl"
+          'prefix': 'bl'
         },
         {
-          "prefix": "ye"
+          'prefix': 'ye'
         }
       ],
-      "size": [
+      'size': [
         {
-          "anything-but": [
-            "small",
-            "medium"
+          'anything-but': [
+            'small',
+            'medium'
           ]
         }
       ],
-      "price": [
+      'price': [
         {
-          "numeric": [
-            ">=",
+          'numeric': [
+            '>=',
             100,
-            "<=",
+            '<=',
             200
           ]
         }
@@ -569,7 +754,7 @@ test('region property on an imported topic as a parameter', () => {
 
   expect(stack).toHaveResource('AWS::SNS::Subscription', {
     Region: {
-      "Fn::Select": [ 3, { "Fn::Split": [ ":", { "Ref": "topicArn" } ] } ]
+      'Fn::Select': [ 3, { 'Fn::Split': [ ':', { 'Ref': 'topicArn' } ] } ]
     }
   });
 });

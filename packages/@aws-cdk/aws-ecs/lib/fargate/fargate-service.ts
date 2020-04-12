@@ -1,7 +1,9 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
-import { BaseService, BaseServiceOptions, IService, LaunchType, PropagatedTagSource } from '../base/base-service';
+import { BaseService, BaseServiceOptions, IBaseService, IService, LaunchType, PropagatedTagSource } from '../base/base-service';
+import { fromServiceAtrributes } from '../base/from-service-attributes';
 import { TaskDefinition } from '../base/task-definition';
+import { ICluster } from '../cluster';
 
 /**
  * The properties for defining a service using the Fargate launch type.
@@ -26,7 +28,7 @@ export interface FargateServiceProps extends BaseServiceOptions {
   /**
    * The subnets to associate with the service.
    *
-   * @default - Private subnets.
+   * @default - Public subnets if `assignPublicIp` is set, otherwise the first available one of Private, Isolated, Public, in that order.
    */
   readonly vpcSubnets?: ec2.SubnetSelection;
 
@@ -66,6 +68,30 @@ export interface IFargateService extends IService {
 }
 
 /**
+ * The properties to import from the service using the Fargate launch type.
+ */
+export interface FargateServiceAttributes {
+  /**
+   * The cluster that hosts the service.
+   */
+  readonly cluster: ICluster;
+
+  /**
+   * The service ARN.
+   *
+   * @default - either this, or {@link serviceName}, is required
+   */
+  readonly serviceArn?: string;
+
+  /**
+   * The name of the service.
+   *
+   * @default - either this, or {@link serviceArn}, is required
+   */
+  readonly serviceName?: string;
+}
+
+/**
  * This creates a service using the Fargate launch type on an ECS cluster.
  *
  * @resource AWS::ECS::Service
@@ -73,13 +99,21 @@ export interface IFargateService extends IService {
 export class FargateService extends BaseService implements IFargateService {
 
   /**
-   * Import a task definition from the specified task definition ARN.
+   * Imports from the specified service ARN.
    */
   public static fromFargateServiceArn(scope: cdk.Construct, id: string, fargateServiceArn: string): IFargateService {
     class Import extends cdk.Resource implements IFargateService {
       public readonly serviceArn = fargateServiceArn;
+      public readonly serviceName = cdk.Stack.of(scope).parseArn(fargateServiceArn).resourceName as string;
     }
     return new Import(scope, id);
+  }
+
+  /**
+   * Imports from the specified service attrributes.
+   */
+  public static fromFargateServiceAttributes(scope: cdk.Construct, id: string, attrs: FargateServiceAttributes): IBaseService {
+    return fromServiceAtrributes(scope, id, attrs);
   }
 
   /**
@@ -95,7 +129,7 @@ export class FargateService extends BaseService implements IFargateService {
     }
 
     const propagateTagsFromSource = props.propagateTaskTagsFrom !== undefined ? props.propagateTaskTagsFrom
-                                      : (props.propagateTags !== undefined ? props.propagateTags : PropagatedTagSource.NONE);
+      : (props.propagateTags !== undefined ? props.propagateTags : PropagatedTagSource.NONE);
 
     super(scope, id, {
       ...props,

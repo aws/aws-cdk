@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as events from '@aws-cdk/aws-events';
@@ -7,7 +7,7 @@ import { Test } from 'nodeunit';
 import { ScheduledFargateTask } from '../../lib';
 
 export = {
-  "Can create a scheduled Fargate Task - with only required props"(test: Test) {
+  'Can create a scheduled Fargate Task - with only required props'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
@@ -26,33 +26,33 @@ export = {
     expect(stack).to(haveResource('AWS::Events::Rule', {
       Targets: [
         {
-          Arn: { "Fn::GetAtt": ["EcsCluster97242B84", "Arn"] },
+          Arn: { 'Fn::GetAtt': ['EcsCluster97242B84', 'Arn'] },
           EcsParameters: {
-            LaunchType: "FARGATE",
+            LaunchType: 'FARGATE',
             NetworkConfiguration: {
               AwsVpcConfiguration: {
-                AssignPublicIp: "DISABLED",
+                AssignPublicIp: 'DISABLED',
                 SecurityGroups: [
                   {
-                    "Fn::GetAtt": [
-                      "ScheduledFargateTaskScheduledTaskDefSecurityGroupE075BC19",
-                      "GroupId"
+                    'Fn::GetAtt': [
+                      'ScheduledFargateTaskScheduledTaskDefSecurityGroupE075BC19',
+                      'GroupId'
                     ]
                   }
                 ],
                 Subnets: [
                   {
-                    Ref: "VpcPrivateSubnet1Subnet536B997A"
+                    Ref: 'VpcPrivateSubnet1Subnet536B997A'
                   }
                 ]
               }
             },
             TaskCount: 1,
-            TaskDefinitionArn: { Ref: "ScheduledFargateTaskScheduledTaskDef521FA675" }
+            TaskDefinitionArn: { Ref: 'ScheduledFargateTaskScheduledTaskDef521FA675' }
           },
-          Id: "Target0",
-          Input: "{}",
-          RoleArn: { "Fn::GetAtt": ["ScheduledFargateTaskScheduledTaskDefEventsRole6CE19522", "Arn"] }
+          Id: 'Target0',
+          Input: '{}',
+          RoleArn: { 'Fn::GetAtt': ['ScheduledFargateTaskScheduledTaskDefEventsRole6CE19522', 'Arn'] }
         }
       ]
     }));
@@ -61,20 +61,20 @@ export = {
       ContainerDefinitions: [
         {
           Essential: true,
-          Image: "henk",
+          Image: 'henk',
           LogConfiguration: {
-            LogDriver: "awslogs",
+            LogDriver: 'awslogs',
             Options: {
-              "awslogs-group": {
-                Ref: "ScheduledFargateTaskScheduledTaskDefScheduledContainerLogGroup4134B16C"
+              'awslogs-group': {
+                Ref: 'ScheduledFargateTaskScheduledTaskDefScheduledContainerLogGroup4134B16C'
               },
-              "awslogs-stream-prefix": "ScheduledFargateTask",
-              "awslogs-region": {
-                Ref: "AWS::Region"
+              'awslogs-stream-prefix': 'ScheduledFargateTask',
+              'awslogs-region': {
+                Ref: 'AWS::Region'
               }
             }
           },
-          Name: "ScheduledContainer"
+          Name: 'ScheduledContainer'
         }
       ]
     }));
@@ -82,7 +82,7 @@ export = {
     test.done();
   },
 
-  "Can create a scheduled Fargate Task - with optional props"(test: Test) {
+  'Can create a scheduled Fargate Task - with optional props'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
@@ -104,33 +104,33 @@ export = {
     expect(stack).to(haveResource('AWS::Events::Rule', {
       Targets: [
         {
-          Arn: { "Fn::GetAtt": ["EcsCluster97242B84", "Arn"] },
+          Arn: { 'Fn::GetAtt': ['EcsCluster97242B84', 'Arn'] },
           EcsParameters: {
-            LaunchType: "FARGATE",
+            LaunchType: 'FARGATE',
             NetworkConfiguration: {
               AwsVpcConfiguration: {
-                AssignPublicIp: "DISABLED",
+                AssignPublicIp: 'DISABLED',
                 SecurityGroups: [
                   {
-                    "Fn::GetAtt": [
-                      "ScheduledFargateTaskScheduledTaskDefSecurityGroupE075BC19",
-                      "GroupId"
+                    'Fn::GetAtt': [
+                      'ScheduledFargateTaskScheduledTaskDefSecurityGroupE075BC19',
+                      'GroupId'
                     ]
                   }
                 ],
                 Subnets: [
                   {
-                    Ref: "VpcPrivateSubnet1Subnet536B997A"
+                    Ref: 'VpcPrivateSubnet1Subnet536B997A'
                   }
                 ]
               }
             },
             TaskCount: 2,
-            TaskDefinitionArn: { Ref: "ScheduledFargateTaskScheduledTaskDef521FA675" }
+            TaskDefinitionArn: { Ref: 'ScheduledFargateTaskScheduledTaskDef521FA675' }
           },
-          Id: "Target0",
-          Input: "{}",
-          RoleArn: { "Fn::GetAtt": ["ScheduledFargateTaskScheduledTaskDefEventsRole6CE19522", "Arn"] }
+          Id: 'Target0',
+          Input: '{}',
+          RoleArn: { 'Fn::GetAtt': ['ScheduledFargateTaskScheduledTaskDefEventsRole6CE19522', 'Arn'] }
         }
       ]
     }));
@@ -140,25 +140,25 @@ export = {
         {
           Environment: [
             {
-              Name: "TRIGGER",
-              Value: "CloudWatch Events"
+              Name: 'TRIGGER',
+              Value: 'CloudWatch Events'
             }
           ],
           Essential: true,
-          Image: "henk",
+          Image: 'henk',
           LogConfiguration: {
-            LogDriver: "awslogs",
+            LogDriver: 'awslogs',
             Options: {
-              "awslogs-group": {
-                Ref: "ScheduledFargateTaskScheduledTaskDefScheduledContainerLogGroup4134B16C"
+              'awslogs-group': {
+                Ref: 'ScheduledFargateTaskScheduledTaskDefScheduledContainerLogGroup4134B16C'
               },
-              "awslogs-stream-prefix": "ScheduledFargateTask",
-              "awslogs-region": {
-                Ref: "AWS::Region"
+              'awslogs-stream-prefix': 'ScheduledFargateTask',
+              'awslogs-region': {
+                Ref: 'AWS::Region'
               }
             }
           },
-          Name: "ScheduledContainer"
+          Name: 'ScheduledContainer'
         }
       ]
     }));
@@ -166,7 +166,7 @@ export = {
     test.done();
   },
 
-  "Scheduled Fargate Task - with MemoryReservation defined"(test: Test) {
+  'Scheduled Fargate Task - with MemoryReservation defined'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
@@ -185,20 +185,20 @@ export = {
       ContainerDefinitions: [
         {
           Essential: true,
-          Image: "henk",
+          Image: 'henk',
           LogConfiguration: {
-            LogDriver: "awslogs",
+            LogDriver: 'awslogs',
             Options: {
-              "awslogs-group": {
-                Ref: "ScheduledFargateTaskScheduledTaskDefScheduledContainerLogGroup4134B16C"
+              'awslogs-group': {
+                Ref: 'ScheduledFargateTaskScheduledTaskDefScheduledContainerLogGroup4134B16C'
               },
-              "awslogs-stream-prefix": "ScheduledFargateTask",
-              "awslogs-region": {
-                Ref: "AWS::Region"
+              'awslogs-stream-prefix': 'ScheduledFargateTask',
+              'awslogs-region': {
+                Ref: 'AWS::Region'
               }
             }
           },
-          Name: "ScheduledContainer"
+          Name: 'ScheduledContainer'
         }
       ]
     }));
@@ -206,7 +206,7 @@ export = {
     test.done();
   },
 
-  "Scheduled Fargate Task - with Command defined"(test: Test) {
+  'Scheduled Fargate Task - with Command defined'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
@@ -216,7 +216,7 @@ export = {
       cluster,
       scheduledFargateTaskImageOptions: {
         image: ecs.ContainerImage.fromRegistry('henk'),
-        command: ["-c", "4", "amazon.com"],
+        command: ['-c', '4', 'amazon.com'],
       },
       schedule: events.Schedule.expression('rate(1 minute)')
     });
@@ -226,25 +226,68 @@ export = {
       ContainerDefinitions: [
         {
           Command: [
-            "-c",
-            "4",
-            "amazon.com"
+            '-c',
+            '4',
+            'amazon.com'
           ],
           Essential: true,
-          Image: "henk",
+          Image: 'henk',
           LogConfiguration: {
-            LogDriver: "awslogs",
+            LogDriver: 'awslogs',
             Options: {
-              "awslogs-group": {
-                Ref: "ScheduledFargateTaskScheduledTaskDefScheduledContainerLogGroup4134B16C"
+              'awslogs-group': {
+                Ref: 'ScheduledFargateTaskScheduledTaskDefScheduledContainerLogGroup4134B16C'
               },
-              "awslogs-stream-prefix": "ScheduledFargateTask",
-              "awslogs-region": {
-                Ref: "AWS::Region"
+              'awslogs-stream-prefix': 'ScheduledFargateTask',
+              'awslogs-region': {
+                Ref: 'AWS::Region'
               }
             }
           },
-          Name: "ScheduledContainer"
+          Name: 'ScheduledContainer'
+        }
+      ]
+    }));
+
+    test.done();
+  },
+
+  'Scheduled Fargate Task - with subnetSelection defined'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc', {
+      maxAzs: 1,
+      subnetConfiguration: [
+        { name: 'Public', cidrMask: 28, subnetType: ec2.SubnetType.PUBLIC }
+      ],
+    });
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+    new ScheduledFargateTask(stack, 'ScheduledFargateTask', {
+      cluster,
+      scheduledFargateTaskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('henk'),
+      },
+      subnetSelection: { subnetType: ec2.SubnetType.PUBLIC },
+      schedule: events.Schedule.expression('rate(1 minute)')
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::Events::Rule', {
+      Targets: [
+        {
+          EcsParameters: {
+            NetworkConfiguration: {
+              AwsVpcConfiguration: {
+                AssignPublicIp: 'ENABLED',
+                Subnets: [
+                  {
+                    Ref: 'VpcPublicSubnet1Subnet5C2D37C4'
+                  }
+                ]
+              }
+            },
+          }
         }
       ]
     }));

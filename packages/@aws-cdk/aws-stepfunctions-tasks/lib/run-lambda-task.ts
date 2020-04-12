@@ -9,6 +9,8 @@ import { getResourceArn } from './resource-arn-suffix';
 export interface RunLambdaTaskProps {
   /**
    * The JSON that you want to provide to your Lambda function as input.
+   *
+   * @default - No payload
    */
   readonly payload?: { [key: string]: any };
 
@@ -80,10 +82,10 @@ export class RunLambdaTask implements sfn.IStepFunctionsTask {
 
   public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
     return {
-      resourceArn: getResourceArn("lambda", "invoke", this.integrationPattern),
+      resourceArn: getResourceArn('lambda', 'invoke', this.integrationPattern),
       policyStatements: [new iam.PolicyStatement({
         resources: [this.lambdaFunction.functionArn],
-        actions: ["lambda:InvokeFunction"],
+        actions: ['lambda:InvokeFunction'],
       })],
       metricPrefixSingular: 'LambdaFunction',
       metricPrefixPlural: 'LambdaFunctions',

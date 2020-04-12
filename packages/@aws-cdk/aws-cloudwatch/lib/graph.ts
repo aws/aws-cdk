@@ -1,8 +1,8 @@
 import * as cdk from '@aws-cdk/core';
-import { IAlarm } from "./alarm";
-import { IMetric } from "./metric-types";
+import { IAlarm } from './alarm';
+import { IMetric } from './metric-types';
 import { allMetricsGraphJson } from './private/rendering';
-import { ConcreteWidget } from "./widget";
+import { ConcreteWidget } from './widget';
 
 /**
  * Basic properties for widgets that display metrics
@@ -10,13 +10,15 @@ import { ConcreteWidget } from "./widget";
 export interface MetricWidgetProps {
   /**
    * Title for the graph
+   *
+   * @default - None
    */
   readonly title?: string;
 
   /**
    * The region the metrics of this graph should be taken from
    *
-   * @default Current region
+   * @default - Current region
    */
   readonly region?: string;
 
@@ -30,7 +32,8 @@ export interface MetricWidgetProps {
   /**
    * Height of the widget
    *
-   * @default Depends on the type of widget
+   * @default - 6 for Alarm and Graph widgets.
+   *   3 for single value widgets where most recent value of a metric is displayed.
    */
   readonly height?: number;
 }
@@ -49,14 +52,14 @@ export interface YAxisProps {
   /**
    * The max value
    *
-   * @default No maximum value
+   * @default - No maximum value
    */
   readonly max?: number;
 
   /**
    * The label
    *
-   * @default No label
+   * @default - No label
    */
   readonly label?: string;
 
@@ -79,6 +82,8 @@ export interface AlarmWidgetProps extends MetricWidgetProps {
 
   /**
    * Left Y axis
+   *
+   * @default - No minimum or maximum values for the left Y-axis
    */
   readonly leftYAxis?: YAxisProps;
 }
@@ -122,36 +127,50 @@ export class AlarmWidget extends ConcreteWidget {
 export interface GraphWidgetProps extends MetricWidgetProps {
   /**
    * Metrics to display on left Y axis
+   *
+   * @default - No metrics
    */
   readonly left?: IMetric[];
 
   /**
    * Metrics to display on right Y axis
+   *
+   * @default - No metrics
    */
   readonly right?: IMetric[];
 
   /**
    * Annotations for the left Y axis
+   *
+   * @default - No annotations
    */
   readonly leftAnnotations?: HorizontalAnnotation[];
 
   /**
    * Annotations for the right Y axis
+   *
+   * @default - No annotations
    */
   readonly rightAnnotations?: HorizontalAnnotation[];
 
   /**
    * Whether the graph should be shown as stacked lines
+   *
+   * @default false
    */
   readonly stacked?: boolean;
 
   /**
    * Left Y axis
+   *
+   * @default - None
    */
   readonly leftYAxis?: YAxisProps;
 
   /**
    * Right Y axis
+   *
+   * @default - None
    */
   readonly rightYAxis?: YAxisProps;
 }
@@ -168,8 +187,11 @@ export class GraphWidget extends ConcreteWidget {
   }
 
   public toJson(): any[] {
-    const horizontalAnnoations =  (this.props.leftAnnotations || []).map(mapAnnotation('left')).concat(
-      (this.props.rightAnnotations || []).map(mapAnnotation('right')));
+    const horizontalAnnotations = [
+      ...(this.props.leftAnnotations || []).map(mapAnnotation('left')),
+      ...(this.props.rightAnnotations || []).map(mapAnnotation('right')),
+    ];
+
     const metrics = allMetricsGraphJson(this.props.left || [], this.props.right || []);
     return [{
       type: 'metric',
@@ -183,7 +205,7 @@ export class GraphWidget extends ConcreteWidget {
         region: this.props.region || cdk.Aws.REGION,
         stacked: this.props.stacked,
         metrics: metrics.length > 0 ? metrics : undefined,
-        annotations: horizontalAnnoations.length > 0 ? { horizontal: horizontalAnnoations } : undefined,
+        annotations: horizontalAnnotations.length > 0 ? { horizontal: horizontalAnnotations } : undefined,
         yAxis: {
           left: this.props.leftYAxis !== undefined ? this.props.leftYAxis : undefined,
           right: this.props.rightYAxis !== undefined ? this.props.rightYAxis : undefined,
@@ -251,14 +273,15 @@ export interface HorizontalAnnotation {
   /**
    * Label for the annotation
    *
-   * @default No label
+   * @default - No label
    */
   readonly label?: string;
 
   /**
-   * Hex color code to be used for the annotation
+   * The hex color code, prefixed with '#' (e.g. '#00ff00'), to be used for the annotation.
+   * The `Color` class has a set of standard colors that can be used here.
    *
-   * @default Automatic color
+   * @default - Automatic color
    */
   readonly color?: string;
 
@@ -277,6 +300,9 @@ export interface HorizontalAnnotation {
   readonly visible?: boolean;
 }
 
+/**
+ * Fill shading options that will be used with an annotation
+ */
 export enum Shading {
   /**
    * Don't add shading
@@ -292,6 +318,35 @@ export enum Shading {
    * Add shading below the annotation
    */
   BELOW = 'below'
+}
+
+/**
+ * A set of standard colours that can be used in annotations in a GraphWidget.
+ */
+export class Color {
+  /** blue - hex #1f77b4 */
+  public static readonly BLUE = '#1f77b4';
+
+  /** brown - hex #8c564b */
+  public static readonly BROWN = '#8c564b';
+
+  /** green - hex #2ca02c */
+  public static readonly GREEN = '#2ca02c';
+
+  /** grey - hex #7f7f7f */
+  public static readonly GREY = '#7f7f7f';
+
+  /** orange - hex #ff7f0e */
+  public static readonly ORANGE = '#ff7f0e';
+
+  /** pink - hex #e377c2 */
+  public static readonly PINK = '#e377c2';
+
+  /** purple - hex #9467bd */
+  public static readonly PURPLE = '#9467bd';
+
+  /** red - hex #d62728 */
+  public static readonly RED = '#d62728';
 }
 
 function mapAnnotation(yAxis: string): ((x: HorizontalAnnotation) => any) {

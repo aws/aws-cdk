@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/region-info",
-  "version": "1.23.0",
+  "version": "0.0.0",
   "description": "AWS region information, such as service principal names",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -30,7 +30,12 @@
   "cdk-build": {
     "pre": [
       "npm run gen"
-    ]
+    ],
+    "eslint": {
+      "ignore-pattern": [
+        "lib/built-ins.generated.ts"
+      ]
+    }
   },
   "scripts": {
     "gen": "bash build-tools/generate.sh",
@@ -52,10 +57,10 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/fs-extra": "^8.0.1",
-    "cdk-build-tools": "1.23.0",
+    "@types/fs-extra": "^8.1.0",
+    "cdk-build-tools": "0.0.0",
     "fs-extra": "^8.1.0",
-    "pkglint": "1.23.0"
+    "pkglint": "0.0.0"
   },
   "jest": {
     "moduleFileExtensions": [
@@ -79,7 +84,7 @@
   ],
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 10.3.0"
+    "node": ">= 10.12.0"
   },
   "stability": "experimental",
   "awslint": {
@@ -88,5 +93,8 @@
       "docs-public-apis:@aws-cdk/region-info.RegionInfo.regions",
       "docs-public-apis:@aws-cdk/region-info.RegionInfo.name"
     ]
+  },
+  "awscdkio": {
+    "announce": false
   }
 }

@@ -87,6 +87,8 @@ permissions to trigger the expected targets, do the following:
 ```ts
 const role = new iam.Role(this, 'Role', {
   assumedBy: new iam.ServicePrincipal('codepipeline.amazonaws.com'),
+  // custom description if desired
+  description: 'This is a custom role...',
 });
 
 new codepipeline.Pipeline(this, 'Pipeline', {
@@ -184,6 +186,56 @@ const role = new iam.Role(this, 'MyRole', {
     new iam.AccountPrincipal('1818188181818187272')
   )
 });
+```
+
+The `PrincipalWithConditions` class can be used to add conditions to a
+principal, especially those that don't take a `conditions` parameter in their
+constructor. The `principal.withConditions()` method can be used to create a
+`PrincipalWithConditions` from an existing principal, for example:
+
+```ts
+const principal = new iam.AccountPrincipal('123456789000')
+  .withConditions({ StringEquals: { foo: "baz" } });
+```
+
+### Parsing JSON Policy Documents
+
+The `PolicyDocument.fromJson` and `PolicyStatement.fromJson` static methods can be used to parse JSON objects. For example:
+
+```ts
+const policyDocument = {
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "FirstStatement",
+      "Effect": "Allow",
+      "Action": ["iam:ChangePassword"],
+      "Resource": "*"
+    },
+    {
+      "Sid": "SecondStatement",
+      "Effect": "Allow",
+      "Action": "s3:ListAllMyBuckets",
+      "Resource": "*"
+    },
+    {
+      "Sid": "ThirdStatement",
+      "Effect": "Allow",
+      "Action": [
+        "s3:List*",
+        "s3:Get*"
+      ],
+      "Resource": [
+        "arn:aws:s3:::confidential-data",
+        "arn:aws:s3:::confidential-data/*"
+      ],
+      "Condition": {"Bool": {"aws:MultiFactorAuthPresent": "true"}}
+    }
+  ]
+};
+
+const newPolicyDocument = PolicyDocument.fromJson(policyDocument);
+
 ```
 
 ### Features

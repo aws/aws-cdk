@@ -1,15 +1,18 @@
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as path from 'path';
-import {Tag} from "./cxapp/stacks";
+import { Tag } from '../cdk-toolkit';
+import { Mode, SdkProvider } from './aws-auth';
 import { deployStack, DeployStackResult } from './deploy-stack';
-import { ISDK } from './util/sdk';
 
 // tslint:disable:max-line-length
 
 /** @experimental */
 export const BUCKET_NAME_OUTPUT = 'BucketName';
+/** @experimental */
+export const REPOSITORY_NAME_OUTPUT = 'RepositoryName';
 /** @experimental */
 export const BUCKET_DOMAIN_NAME_OUTPUT = 'BucketDomainName';
 
@@ -38,23 +41,45 @@ export interface BootstrapEnvironmentProps {
    * @default true
    */
   readonly execute?: boolean;
+
+  /**
+   * The list of AWS account IDs that are trusted to deploy into the environment being bootstrapped.
+   *
+   * @default - only the bootstrapped account can deploy into this environment
+   */
+  readonly trustedAccounts?: string[];
+
+  /**
+   * The ARNs of the IAM managed policies that should be attached to the role performing CloudFormation deployments.
+   * In most cases, this will be the AdministratorAccess policy.
+   * At least one policy is required if {@link trustedAccounts} were passed.
+   *
+   * @default - the role will have no policies attached
+   */
+  readonly cloudFormationExecutionPolicies?: string[];
 }
 
 /** @experimental */
-export async function bootstrapEnvironment(environment: cxapi.Environment, aws: ISDK, toolkitStackName: string, roleArn: string | undefined, props: BootstrapEnvironmentProps = {}): Promise<DeployStackResult> {
+export async function bootstrapEnvironment(environment: cxapi.Environment, sdkProvider: SdkProvider, toolkitStackName: string, roleArn: string | undefined, props: BootstrapEnvironmentProps = {}): Promise<DeployStackResult> {
+  if (props.trustedAccounts?.length) {
+    throw new Error('--trust can only be passed for the new bootstrap experience!');
+  }
+  if (props.cloudFormationExecutionPolicies?.length) {
+    throw new Error('--cloudformation-execution-policies can only be passed for the new bootstrap experience!');
+  }
 
   const template = {
-    Description: "The CDK Toolkit Stack. It was created by `cdk bootstrap` and manages resources necessary for managing your Cloud Applications with AWS CDK.",
+    Description: 'The CDK Toolkit Stack. It was created by `cdk bootstrap` and manages resources necessary for managing your Cloud Applications with AWS CDK.',
     Resources: {
       StagingBucket: {
-        Type: "AWS::S3::Bucket",
+        Type: 'AWS::S3::Bucket',
         Properties: {
           BucketName: props.bucketName,
-          AccessControl: "Private",
+          AccessControl: 'Private',
           BucketEncryption: {
             ServerSideEncryptionConfiguration: [{
               ServerSideEncryptionByDefault: {
-                SSEAlgorithm: "aws:kms",
+                SSEAlgorithm: 'aws:kms',
                 KMSMasterKeyID: props.kmsKeyId,
               },
             }]
@@ -66,16 +91,42 @@ export async function bootstrapEnvironment(environment: cxapi.Environment, aws: 
             RestrictPublicBuckets: true,
           },
         }
-      }
+      },
+      StagingBucketPolicy: {
+        Type: 'AWS::S3::BucketPolicy',
+        Properties: {
+          Bucket: { Ref: 'StagingBucket' },
+          PolicyDocument: {
+            Id: 'AccessControl',
+            Version: '2012-10-17',
+            Statement: [
+              {
+                Sid: 'AllowSSLRequestsOnly',
+                Action: 's3:*',
+                Effect: 'Deny',
+                Resource: [
+                  { 'Fn::Sub': '${StagingBucket.Arn}' },
+                  { 'Fn::Sub': '${StagingBucket.Arn}/*' },
+                ],
+                Condition: {
+                  Bool: { 'aws:SecureTransport': 'false' }
+                },
+                Principal: '*'
+              }
+            ]
+          }
+        },
+
+      },
     },
     Outputs: {
       [BUCKET_NAME_OUTPUT]: {
-        Description: "The name of the S3 bucket owned by the CDK toolkit stack",
-        Value: { Ref: "StagingBucket" }
+        Description: 'The name of the S3 bucket owned by the CDK toolkit stack',
+        Value: { Ref: 'StagingBucket' }
       },
       [BUCKET_DOMAIN_NAME_OUTPUT]: {
-        Description: "The domain name of the S3 bucket owned by the CDK toolkit stack",
-        Value: { "Fn::GetAtt": ["StagingBucket", "RegionalDomainName"] }
+        Description: 'The domain name of the S3 bucket owned by the CDK toolkit stack',
+        Value: { 'Fn::GetAtt': ['StagingBucket', 'RegionalDomainName'] }
       }
     }
   };
@@ -87,7 +138,7 @@ export async function bootstrapEnvironment(environment: cxapi.Environment, aws: 
   await fs.writeJson(path.join(builder.outdir, templateFile), template, { spaces: 2 });
 
   builder.addArtifact(toolkitStackName, {
-    type: cxapi.ArtifactType.AWS_CLOUDFORMATION_STACK,
+    type: cxschema.ArtifactType.AWS_CLOUDFORMATION_STACK,
     environment: cxapi.EnvironmentUtils.format(environment.account, environment.region),
     properties: {
       templateFile
@@ -95,9 +146,15 @@ export async function bootstrapEnvironment(environment: cxapi.Environment, aws: 
   });
 
   const assembly = builder.buildAssembly();
+
+  const resolvedEnvironment = await sdkProvider.resolveEnvironment(environment.account, environment.region);
+
   return await deployStack({
     stack: assembly.getStackByName(toolkitStackName),
-    sdk: aws, roleArn,
+    resolvedEnvironment,
+    sdk: await sdkProvider.forEnvironment(environment.account, environment.region, Mode.ForWriting),
+    sdkProvider,
+    roleArn,
     tags: props.tags,
     execute: props.execute
   });

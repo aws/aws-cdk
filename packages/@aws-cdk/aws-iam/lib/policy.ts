@@ -7,13 +7,23 @@ import { IRole } from './role';
 import { IUser } from './user';
 import { generatePolicyName, undefinedIfEmpty } from './util';
 
+/**
+ * Represents an IAM Policy
+ *
+ * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_manage.html
+ */
 export interface IPolicy extends IResource {
   /**
+   * The name of this policy.
+   *
    * @attribute
    */
   readonly policyName: string;
 }
 
+/**
+ * Properties for defining an IAM inline policy document
+ */
 export interface PolicyProps {
   /**
    * The name of the policy. If you specify multiple policies for an entity,
@@ -51,7 +61,7 @@ export interface PolicyProps {
 
   /**
    * Initial set of permissions to add to this policy document.
-   * You can also use `addPermission(statement)` to add permissions later.
+   * You can also use `addStatements(...statement)` to add permissions later.
    *
    * @default - No statements.
    */
@@ -82,6 +92,9 @@ export interface PolicyProps {
  */
 export class Policy extends Resource implements IPolicy {
 
+  /**
+   * Import a policy in this app based on its name
+   */
   public static fromPolicyName(scope: Construct, id: string, policyName: string): IPolicy {
     class Import extends Resource implements IPolicy {
       public readonly policyName = policyName;
@@ -199,7 +212,7 @@ export class Policy extends Resource implements IPolicy {
     // validate that the policy is attached to at least one principal (role, user or group).
     if (!this.isAttached) {
       if (this.force) {
-        result.push(`Policy created with force=true must be attached to at least one principal: user, group or role`);
+        result.push('Policy created with force=true must be attached to at least one principal: user, group or role');
       }
       if (!this.force && this.referenceTaken) {
         result.push('This Policy has been referenced by a resource, so it must be attached to at least one user, group or role.');

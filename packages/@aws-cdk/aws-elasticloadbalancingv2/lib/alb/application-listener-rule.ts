@@ -54,13 +54,21 @@ export interface BaseApplicationListenerRuleProps {
   /**
    * Rule applies if the requested path matches the given path pattern
    *
-   * May contain up to three '*' wildcards.
-   *
    * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html#path-conditions
-   *
    * @default - No path condition.
+   * @deprecated Use `pathPatterns` instead.
    */
   readonly pathPattern?: string;
+
+  /**
+   * Rule applies if the requested path matches any of the given patterns.
+   *
+   * Paths may contain up to three '*' wildcards.
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html#path-conditions
+   * @default - No path conditions.
+   */
+  readonly pathPatterns?: string[];
 }
 
 /**
@@ -169,14 +177,19 @@ export class ApplicationListenerRule extends cdk.Construct {
   constructor(scope: cdk.Construct, id: string, props: ApplicationListenerRuleProps) {
     super(scope, id);
 
-    if (!props.hostHeader && !props.pathPattern) {
-      throw new Error(`At least one of 'hostHeader' or 'pathPattern' is required when defining a load balancing rule.`);
+    const hasPathPatterns = props.pathPatterns || props.pathPattern;
+    if (!props.hostHeader && !hasPathPatterns) {
+      throw new Error('At least one of \'hostHeader\', \'pathPattern\' or \'pathPatterns\' is required when defining a load balancing rule.');
     }
 
     const possibleActions: Array<keyof ApplicationListenerRuleProps> = ['targetGroups', 'fixedResponse', 'redirectResponse'];
     const providedActions = possibleActions.filter(action => props[action] !== undefined);
     if (providedActions.length > 1) {
       throw new Error(`'${providedActions}' specified together, specify only one`);
+    }
+
+    if (props.priority <= 0) {
+      throw new Error('Priority must have value greater than or equal to 1');
     }
 
     this.listener = props.listener;
@@ -191,8 +204,13 @@ export class ApplicationListenerRule extends cdk.Construct {
     if (props.hostHeader) {
       this.setCondition('host-header', [props.hostHeader]);
     }
-    if (props.pathPattern) {
-      this.setCondition('path-pattern', [props.pathPattern]);
+
+    if (hasPathPatterns) {
+      if (props.pathPattern && props.pathPatterns) {
+        throw new Error('Both `pathPatterns` and `pathPattern` are specified, specify only one');
+      }
+      const pathPattern = props.pathPattern ? [props.pathPattern] : props.pathPatterns;
+      this.setCondition('path-pattern', pathPattern);
     }
 
     (props.targetGroups || []).forEach(this.addTargetGroup.bind(this));

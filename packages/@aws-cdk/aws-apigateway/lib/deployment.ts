@@ -18,7 +18,7 @@ export interface DeploymentProps  {
 
   /**
    * When an API Gateway model is updated, a new deployment will automatically be created.
-   * If this is true (default), the old API Gateway Deployment resource will not be deleted.
+   * If this is true, the old API Gateway Deployment resource will not be deleted.
    * This will allow manually reverting back to a previous deployment in case for example
    *
    * @default false
@@ -152,7 +152,7 @@ class LatestDeploymentResource extends CfnDeployment {
     if (this.hashComponents.length > 0) {
       const md5 = crypto.createHash('md5');
       this.hashComponents.map(x => stack.resolve(x)).forEach(c => md5.update(JSON.stringify(c)));
-      this.overrideLogicalId(this.originalLogicalId + md5.digest("hex"));
+      this.overrideLogicalId(this.originalLogicalId + md5.digest('hex'));
     }
     super.prepare();
   }

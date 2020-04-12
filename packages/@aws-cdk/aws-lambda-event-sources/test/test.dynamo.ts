@@ -1,6 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import * as dynamodb from '@aws-cdk/aws-dynamodb';
 import * as lambda from '@aws-cdk/aws-lambda';
+import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as sources from '../lib';
@@ -28,48 +29,48 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::IAM::Policy', {
-      "PolicyDocument": {
-        "Statement": [
+      'PolicyDocument': {
+        'Statement': [
           {
-            "Action": "dynamodb:ListStreams",
-            "Effect": "Allow",
-            "Resource": { "Fn::Join": [ "", [ { "Fn::GetAtt": [ "TD925BC7E", "Arn" ] }, "/stream/*" ] ] }
+            'Action': 'dynamodb:ListStreams',
+            'Effect': 'Allow',
+            'Resource': { 'Fn::Join': [ '', [ { 'Fn::GetAtt': [ 'TD925BC7E', 'Arn' ] }, '/stream/*' ] ] }
           },
           {
-            "Action": [
-              "dynamodb:DescribeStream",
-              "dynamodb:GetRecords",
-              "dynamodb:GetShardIterator",
+            'Action': [
+              'dynamodb:DescribeStream',
+              'dynamodb:GetRecords',
+              'dynamodb:GetShardIterator',
             ],
-            "Effect": "Allow",
-            "Resource": {
-              "Fn::GetAtt": [
-                "TD925BC7E",
-                "StreamArn"
+            'Effect': 'Allow',
+            'Resource': {
+              'Fn::GetAtt': [
+                'TD925BC7E',
+                'StreamArn'
               ]
             }
           }
         ],
-        "Version": "2012-10-17"
+        'Version': '2012-10-17'
       },
-      "PolicyName": "FnServiceRoleDefaultPolicyC6A839BF",
-      "Roles": [{
-        "Ref": "FnServiceRoleB9001A96"
+      'PolicyName': 'FnServiceRoleDefaultPolicyC6A839BF',
+      'Roles': [{
+        'Ref': 'FnServiceRoleB9001A96'
       }]
     }));
 
     expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
-      "EventSourceArn": {
-        "Fn::GetAtt": [
-          "TD925BC7E",
-          "StreamArn"
+      'EventSourceArn': {
+        'Fn::GetAtt': [
+          'TD925BC7E',
+          'StreamArn'
         ]
       },
-      "FunctionName":  {
-        "Ref": "Fn9270CBC0"
+      'FunctionName':  {
+        'Ref': 'Fn9270CBC0'
       },
-      "BatchSize": 100,
-      "StartingPosition": "TRIM_HORIZON"
+      'BatchSize': 100,
+      'StartingPosition': 'TRIM_HORIZON'
     }));
 
     test.done();
@@ -95,17 +96,17 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
-      "EventSourceArn": {
-        "Fn::GetAtt": [
-          "TD925BC7E",
-          "StreamArn"
+      'EventSourceArn': {
+        'Fn::GetAtt': [
+          'TD925BC7E',
+          'StreamArn'
         ]
       },
-      "FunctionName":  {
-        "Ref": "Fn9270CBC0"
+      'FunctionName':  {
+        'Ref': 'Fn9270CBC0'
       },
-      "BatchSize": 50,
-      "StartingPosition": "LATEST"
+      'BatchSize': 50,
+      'StartingPosition': 'LATEST'
     }));
 
     test.done();
@@ -193,17 +194,17 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
-      "EventSourceArn": {
-        "Fn::GetAtt": [
-          "TD925BC7E",
-          "StreamArn"
+      'EventSourceArn': {
+        'Fn::GetAtt': [
+          'TD925BC7E',
+          'StreamArn'
         ]
       },
-      "FunctionName":  {
-        "Ref": "Fn9270CBC0"
+      'FunctionName':  {
+        'Ref': 'Fn9270CBC0'
       },
-      "MaximumBatchingWindowInSeconds": 120,
-      "StartingPosition": "LATEST"
+      'MaximumBatchingWindowInSeconds': 120,
+      'StartingPosition': 'LATEST'
     }));
 
     test.done();
@@ -231,4 +232,368 @@ export = {
     test.done();
   },
 
+  'contains eventSourceMappingId after lambda binding'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const table = new dynamodb.Table(stack, 'T', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING
+      },
+      stream: dynamodb.StreamViewType.NEW_IMAGE
+    });
+    const eventSource = new sources.DynamoEventSource(table, {
+      startingPosition: lambda.StartingPosition.TRIM_HORIZON
+    });
+
+    // WHEN
+    fn.addEventSource(eventSource);
+
+    // THEN
+    test.ok(eventSource.eventSourceMappingId);
+    test.done();
+  },
+
+  'eventSourceMappingId throws error before binding to lambda'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const table = new dynamodb.Table(stack, 'T', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING
+      },
+      stream: dynamodb.StreamViewType.NEW_IMAGE
+    });
+    const eventSource = new sources.DynamoEventSource(table, {
+      startingPosition: lambda.StartingPosition.TRIM_HORIZON
+    });
+
+    // WHEN/THEN
+    test.throws(() => eventSource.eventSourceMappingId, /DynamoEventSource is not yet bound to an event source mapping/);
+    test.done();
+  },
+
+  'specific retryAttempts'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const table = new dynamodb.Table(stack, 'T', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING
+      },
+      stream: dynamodb.StreamViewType.NEW_IMAGE
+    });
+
+    // WHEN
+    fn.addEventSource(new sources.DynamoEventSource(table, {
+      retryAttempts: 10,
+      startingPosition: lambda.StartingPosition.LATEST
+    }));
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
+      'EventSourceArn': {
+        'Fn::GetAtt': [
+          'TD925BC7E',
+          'StreamArn'
+        ]
+      },
+      'FunctionName':  {
+        'Ref': 'Fn9270CBC0'
+      },
+      'MaximumRetryAttempts': 10,
+      'StartingPosition': 'LATEST'
+    }));
+
+    test.done();
+  },
+
+  'fails if retryAttempts < 0'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const table = new dynamodb.Table(stack, 'T', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING
+      },
+      stream: dynamodb.StreamViewType.NEW_IMAGE
+    });
+
+    // THEN
+    test.throws(() =>
+      fn.addEventSource(new sources.DynamoEventSource(table, {
+        retryAttempts: -1,
+        startingPosition: lambda.StartingPosition.LATEST
+      })), /retryAttempts must be between 0 and 10000 inclusive, got -1/);
+
+    test.done();
+  },
+
+  'fails if retryAttempts > 10000'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const table = new dynamodb.Table(stack, 'T', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING
+      },
+      stream: dynamodb.StreamViewType.NEW_IMAGE
+    });
+
+    // THEN
+    test.throws(() =>
+      fn.addEventSource(new sources.DynamoEventSource(table, {
+        retryAttempts: 10001,
+        startingPosition: lambda.StartingPosition.LATEST
+      })), /retryAttempts must be between 0 and 10000 inclusive, got 10001/);
+
+    test.done();
+  },
+
+  'specific bisectBatchOnFunctionError'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const table = new dynamodb.Table(stack, 'T', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING
+      },
+      stream: dynamodb.StreamViewType.NEW_IMAGE
+    });
+
+    // WHEN
+    fn.addEventSource(new sources.DynamoEventSource(table, {
+      bisectBatchOnError: true,
+      startingPosition: lambda.StartingPosition.LATEST
+    }));
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
+      'EventSourceArn': {
+        'Fn::GetAtt': [
+          'TD925BC7E',
+          'StreamArn'
+        ]
+      },
+      'FunctionName':  {
+        'Ref': 'Fn9270CBC0'
+      },
+      'BisectBatchOnFunctionError': true,
+      'StartingPosition': 'LATEST'
+    }));
+
+    test.done();
+  },
+
+  'specific parallelizationFactor'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const table = new dynamodb.Table(stack, 'T', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING
+      },
+      stream: dynamodb.StreamViewType.NEW_IMAGE
+    });
+
+    // WHEN
+    fn.addEventSource(new sources.DynamoEventSource(table, {
+      parallelizationFactor: 5,
+      startingPosition: lambda.StartingPosition.LATEST
+    }));
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
+      'EventSourceArn': {
+        'Fn::GetAtt': [
+          'TD925BC7E',
+          'StreamArn'
+        ]
+      },
+      'FunctionName':  {
+        'Ref': 'Fn9270CBC0'
+      },
+      'ParallelizationFactor': 5,
+      'StartingPosition': 'LATEST'
+    }));
+
+    test.done();
+  },
+
+  'fails if parallelizationFactor < 1'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const table = new dynamodb.Table(stack, 'T', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING
+      },
+      stream: dynamodb.StreamViewType.NEW_IMAGE
+    });
+
+    // THEN
+    test.throws(() =>
+      fn.addEventSource(new sources.DynamoEventSource(table, {
+        parallelizationFactor: 0,
+        startingPosition: lambda.StartingPosition.LATEST
+      })), /parallelizationFactor must be between 1 and 10 inclusive, got 0/);
+
+    test.done();
+  },
+
+  'fails if parallelizationFactor > 10'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const table = new dynamodb.Table(stack, 'T', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING
+      },
+      stream: dynamodb.StreamViewType.NEW_IMAGE
+    });
+
+    // THEN
+    test.throws(() =>
+      fn.addEventSource(new sources.DynamoEventSource(table, {
+        parallelizationFactor: 11,
+        startingPosition: lambda.StartingPosition.LATEST
+      })), /parallelizationFactor must be between 1 and 10 inclusive, got 11/);
+
+    test.done();
+  },
+
+  'specific maxRecordAge'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const table = new dynamodb.Table(stack, 'T', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING
+      },
+      stream: dynamodb.StreamViewType.NEW_IMAGE
+    });
+
+    // WHEN
+    fn.addEventSource(new sources.DynamoEventSource(table, {
+      maxRecordAge: cdk.Duration.seconds(100),
+      startingPosition: lambda.StartingPosition.LATEST
+    }));
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
+      'EventSourceArn': {
+        'Fn::GetAtt': [
+          'TD925BC7E',
+          'StreamArn'
+        ]
+      },
+      'FunctionName':  {
+        'Ref': 'Fn9270CBC0'
+      },
+      'MaximumRecordAgeInSeconds': 100,
+      'StartingPosition': 'LATEST'
+    }));
+
+    test.done();
+  },
+
+  'fails if maxRecordAge < 60 seconds'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const table = new dynamodb.Table(stack, 'T', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING
+      },
+      stream: dynamodb.StreamViewType.NEW_IMAGE
+    });
+
+    // THEN
+    test.throws(() =>
+      fn.addEventSource(new sources.DynamoEventSource(table, {
+        maxRecordAge: cdk.Duration.seconds(59),
+        startingPosition: lambda.StartingPosition.LATEST
+      })), /maxRecordAge must be between 60 seconds and 7 days inclusive/);
+
+    test.done();
+  },
+
+  'fails if maxRecordAge > 7 days'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const table = new dynamodb.Table(stack, 'T', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING
+      },
+      stream: dynamodb.StreamViewType.NEW_IMAGE
+    });
+
+    // THEN
+    test.throws(() =>
+      fn.addEventSource(new sources.DynamoEventSource(table, {
+        maxRecordAge: cdk.Duration.seconds(604801),
+        startingPosition: lambda.StartingPosition.LATEST
+      })), /maxRecordAge must be between 60 seconds and 7 days inclusive/);
+
+    test.done();
+  },
+
+  'specific destinationConfig'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const queue = new sqs.Queue(stack, 'Queue');
+    const table = new dynamodb.Table(stack, 'T', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING
+      },
+      stream: dynamodb.StreamViewType.NEW_IMAGE
+    });
+
+    // WHEN
+    fn.addEventSource(new sources.DynamoEventSource(table, {
+      onFailure: new sources.SqsDlq(queue),
+      startingPosition: lambda.StartingPosition.LATEST
+    }));
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
+      'EventSourceArn': {
+        'Fn::GetAtt': [
+          'TD925BC7E',
+          'StreamArn'
+        ]
+      },
+      'FunctionName':  {
+        'Ref': 'Fn9270CBC0'
+      },
+      'DestinationConfig': {
+        'OnFailure': {
+          'Destination': {
+            'Fn::GetAtt': [
+              'Queue4A7E3555',
+              'Arn'
+            ]
+          }
+
+        }
+      },
+      'StartingPosition': 'LATEST'
+    }));
+
+    test.done();
+  },
 };

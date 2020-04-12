@@ -1,11 +1,11 @@
-import { IConstruct } from "./construct";
-import { Lazy } from "./lazy";
-import { unresolved } from "./private/encoding";
-import { Intrinsic } from "./private/intrinsic";
-import { resolve } from "./private/resolve";
-import { TokenMap } from "./private/token-map";
-import { IResolvable, ITokenResolver } from "./resolvable";
-import { TokenizedStringFragments } from "./string-fragments";
+import { IConstruct } from './construct-compat';
+import { Lazy } from './lazy';
+import { unresolved } from './private/encoding';
+import { Intrinsic } from './private/intrinsic';
+import { resolve } from './private/resolve';
+import { TokenMap } from './private/token-map';
+import { IResolvable, ITokenResolver } from './resolvable';
+import { TokenizedStringFragments } from './string-fragments';
 
 /**
  * Represents a special or lazily-evaluated value.
@@ -138,9 +138,9 @@ export class Tokenization {
 
     if (Token.isUnresolved(x)) {
       return Lazy.stringValue({ produce: context => {
-          const resolved = context.resolve(x);
-          return typeof resolved !== 'number' ? resolved : `${resolved}`;
-        } });
+        const resolved = context.resolve(x);
+        return typeof resolved !== 'number' ? resolved : `${resolved}`;
+      } });
     } else {
       return typeof x !== 'number' ? x : `${x}`;
     }

@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-dynamodb",
-  "version": "1.23.0",
+  "version": "0.0.0",
   "description": "CDK Constructs for AWS DynamoDB",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -62,35 +62,46 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "1.23.0",
-    "@types/nodeunit": "^0.0.30",
-    "cdk-build-tools": "1.23.0",
-    "cdk-integ-tools": "1.23.0",
-    "cfn2ts": "1.23.0",
-    "nodeunit": "^0.11.3",
-    "pkglint": "1.23.0"
+    "@aws-cdk/assert": "0.0.0",
+    "@types/jest": "^25.2.1",
+    "aws-sdk": "^2.656.0",
+    "aws-sdk-mock": "^5.1.0",
+    "cdk-build-tools": "0.0.0",
+    "cdk-integ-tools": "0.0.0",
+    "cfn2ts": "0.0.0",
+    "jest": "^25.2.4",
+    "pkglint": "0.0.0",
+    "sinon": "^9.0.2",
+    "ts-jest": "^25.3.1"
   },
   "dependencies": {
-    "@aws-cdk/aws-applicationautoscaling": "1.23.0",
-    "@aws-cdk/aws-cloudwatch": "1.23.0",
-    "@aws-cdk/aws-iam": "1.23.0",
-    "@aws-cdk/core": "1.23.0"
+    "@aws-cdk/aws-applicationautoscaling": "0.0.0",
+    "@aws-cdk/aws-cloudformation": "0.0.0",
+    "@aws-cdk/aws-cloudwatch": "0.0.0",
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-lambda": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/custom-resources": "0.0.0",
+    "constructs": "^2.0.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-applicationautoscaling": "1.23.0",
-    "@aws-cdk/aws-cloudwatch": "1.23.0",
-    "@aws-cdk/aws-iam": "1.23.0",
-    "@aws-cdk/core": "1.23.0"
+    "@aws-cdk/aws-applicationautoscaling": "0.0.0",
+    "@aws-cdk/aws-cloudformation": "0.0.0",
+    "@aws-cdk/aws-cloudwatch": "0.0.0",
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-lambda": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/custom-resources": "0.0.0",
+    "constructs": "^2.0.0"
   },
   "engines": {
-    "node": ">= 10.3.0"
+    "node": ">= 10.12.0"
   },
   "stability": "stable",
   "awslint": {
     "exclude": [
       "docs-public-apis:@aws-cdk/aws-dynamodb.TableProps",
-      "docs-public-apis:@aws-cdk/aws-dynamodb.ProjectionType.ALL",
       "docs-public-apis:@aws-cdk/aws-dynamodb.Table.tableName",
       "docs-public-apis:@aws-cdk/aws-dynamodb.Table.tableStreamArn",
       "docs-public-apis:@aws-cdk/aws-dynamodb.Attribute",
@@ -100,12 +111,11 @@
       "docs-public-apis:@aws-cdk/aws-dynamodb.TableOptions",
       "docs-public-apis:@aws-cdk/aws-dynamodb.Table.tableArn",
       "docs-public-apis:@aws-cdk/aws-dynamodb.AttributeType",
-      "docs-public-apis:@aws-cdk/aws-dynamodb.AttributeType.BINARY",
-      "docs-public-apis:@aws-cdk/aws-dynamodb.AttributeType.NUMBER",
-      "docs-public-apis:@aws-cdk/aws-dynamodb.AttributeType.STRING",
-      "docs-public-apis:@aws-cdk/aws-dynamodb.ProjectionType",
-      "docs-public-apis:@aws-cdk/aws-dynamodb.ProjectionType.KEYS_ONLY",
-      "docs-public-apis:@aws-cdk/aws-dynamodb.ProjectionType.INCLUDE"
+      "docs-public-apis:@aws-cdk/aws-dynamodb.ProjectionType"
     ]
-  }
+  },
+  "awscdkio": {
+    "announce": false
+  },
+  "jest": {}
 }

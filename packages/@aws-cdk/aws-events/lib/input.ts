@@ -323,5 +323,5 @@ const EVENT_FIELD_SYMBOL = Symbol.for('@aws-cdk/aws-events.EventField');
  * Quote a string for use in a regex
  */
 function regexQuote(s: string) {
-  return s.replace(/[.?*+^$[\]\\(){}|-]/g, "\\$&");
+  return s.replace(/[.?*+^$[\]\\(){}|-]/g, '\\$&');
 }

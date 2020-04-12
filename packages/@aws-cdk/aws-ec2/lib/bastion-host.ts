@@ -1,13 +1,13 @@
-import { IPrincipal, IRole, PolicyStatement } from "@aws-cdk/aws-iam";
-import { CfnOutput, Construct, Stack } from "@aws-cdk/core";
-import { AmazonLinuxGeneration, InstanceClass, InstanceSize, InstanceType } from ".";
-import { Connections } from "./connections";
-import { IInstance, Instance } from "./instance";
-import { IMachineImage, MachineImage } from "./machine-image";
-import { IPeer } from "./peer";
-import { Port } from "./port";
-import { ISecurityGroup } from "./security-group";
-import { IVpc, SubnetSelection, SubnetType } from "./vpc";
+import { IPrincipal, IRole, PolicyStatement } from '@aws-cdk/aws-iam';
+import { CfnOutput, Construct, Stack } from '@aws-cdk/core';
+import { AmazonLinuxGeneration, InstanceClass, InstanceSize, InstanceType } from '.';
+import { Connections } from './connections';
+import { IInstance, Instance } from './instance';
+import { IMachineImage, MachineImage } from './machine-image';
+import { IPeer } from './peer';
+import { Port } from './port';
+import { ISecurityGroup } from './security-group';
+import { IVpc, SubnetSelection } from './vpc';
 
 /**
  * Properties of the bastion host
@@ -136,7 +136,7 @@ export class BastionHostLinux extends Construct implements IInstance {
       instanceName: props.instanceName ?? 'BastionHost',
       instanceType: props.instanceType ?? InstanceType.of(InstanceClass.T3, InstanceSize.NANO),
       machineImage: props.machineImage ?? MachineImage.latestAmazonLinux({ generation: AmazonLinuxGeneration.AMAZON_LINUX_2 }),
-      vpcSubnets: props.subnetSelection ?? { subnetType: SubnetType.PRIVATE },
+      vpcSubnets: props.subnetSelection ?? {},
     });
     this.instance.addToRolePolicy(new PolicyStatement({
       actions: [
@@ -171,8 +171,8 @@ export class BastionHostLinux extends Construct implements IInstance {
    * called, you should use SSM Session Manager to connect to the instance.
    */
   public allowSshAccessFrom(...peer: IPeer[]): void {
-      peer.forEach(p => {
-        this.connections.allowFrom(p, Port.tcp(22), 'SSH access');
-      });
+    peer.forEach(p => {
+      this.connections.allowFrom(p, Port.tcp(22), 'SSH access');
+    });
   }
 }

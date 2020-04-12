@@ -17,7 +17,7 @@ export function flatten(object: object): { [key: string]: string } {
           typeof child[key] === 'object' && child[key] !== null
             ? _flatten(child[key], path.concat([key]))
             : ({ [path.concat([key]).join('.')]: child[key] })
-      ));
+        ));
     }(object)
   );
 }
@@ -47,7 +47,7 @@ function filterKeys(object: object, pred: (key: string) => boolean) {
       (acc, [k, v]) => pred(k)
         ? { ...acc, [k]: v }
         : acc,
-        {}
+      {}
     );
 }
 
@@ -86,7 +86,21 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     console.log(JSON.stringify(event));
     console.log('AWS SDK VERSION: ' + AWS.VERSION);
 
-    let physicalResourceId = (event as any).PhysicalResourceId;
+    // Default physical resource id
+    let physicalResourceId: string;
+    switch (event.RequestType) {
+      case 'Create':
+        physicalResourceId = event.ResourceProperties.Create?.physicalResourceId?.id ??
+                             event.ResourceProperties.Update?.physicalResourceId?.id ??
+                             event.ResourceProperties.Delete?.physicalResourceId?.id ??
+                             event.LogicalResourceId;
+        break;
+      case 'Update':
+      case 'Delete':
+        physicalResourceId = event.ResourceProperties[event.RequestType]?.physicalResourceId?.id ?? event.PhysicalResourceId;
+        break;
+    }
+
     let flatData: { [key: string]: string } = {};
     let data: { [key: string]: string } = {};
     const call: AwsSdkCall | undefined = event.ResourceProperties[event.RequestType];
@@ -108,14 +122,14 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
           ? filterKeys(flatData, k => k.startsWith(call.outputPath!))
           : flatData;
       } catch (e) {
-        if (!call.catchErrorPattern || !new RegExp(call.catchErrorPattern).test(e.code)) {
+        if (!call.ignoreErrorCodesMatching || !new RegExp(call.ignoreErrorCodesMatching).test(e.code)) {
           throw e;
         }
       }
 
-      physicalResourceId = call.physicalResourceIdPath
-        ? flatData[call.physicalResourceIdPath]
-        : call.physicalResourceId || (event as any).PhysicalResourceId;
+      if (call.physicalResourceId?.responsePath) {
+        physicalResourceId = flatData[call.physicalResourceId.responsePath];
+      }
     }
 
     await respond('SUCCESS', 'OK', physicalResourceId, data);

@@ -1,7 +1,7 @@
 import * as aws from 'aws-sdk';
 import * as AWS from 'aws-sdk-mock';
-import { ISDK } from '../../lib/api';
 import { AmiContextProviderPlugin } from '../../lib/context-providers/ami';
+import { MockSdkProvider } from '../util/mock-sdk';
 
 AWS.setSDKInstance(aws);
 
@@ -10,16 +10,7 @@ afterEach(done => {
   done();
 });
 
-const mockSDK: ISDK = {
-  defaultAccount: () => Promise.resolve('123456789012'),
-  defaultRegion: () => Promise.resolve('bermuda-triangle-1337'),
-  cloudFormation: () => { throw new Error('Not Mocked'); },
-  ec2: () => Promise.resolve(new aws.EC2()),
-  ecr: () => { throw new Error('Not Mocked'); },
-  route53: () => { throw new Error('Not Mocked'); },
-  s3: () => { throw new Error('Not Mocked'); },
-  ssm: () => { throw new Error('Not Mocked'); },
-};
+const mockSDK = new MockSdkProvider();
 
 type AwsCallback<T> = (err: Error | null, val: T) => void;
 
@@ -60,11 +51,11 @@ test('returns the most recent AMI matching the criteria', async () => {
       Images: [
         {
           ImageId: 'ami-1234',
-          CreationDate: "2016-06-22T08:39:59.000Z",
+          CreationDate: '2016-06-22T08:39:59.000Z',
         },
         {
           ImageId: 'ami-5678',
-          CreationDate: "2019-06-22T08:39:59.000Z",
+          CreationDate: '2019-06-22T08:39:59.000Z',
         }
       ]
     });

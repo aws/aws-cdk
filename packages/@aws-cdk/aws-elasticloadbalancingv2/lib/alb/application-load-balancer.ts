@@ -1,8 +1,6 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
-import * as iam from '@aws-cdk/aws-iam';
-import * as s3 from '@aws-cdk/aws-s3';
-import { Construct, Duration, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
+import { Construct, Duration, Lazy, Resource } from '@aws-cdk/core';
 import { BaseLoadBalancer, BaseLoadBalancerProps, ILoadBalancerV2 } from '../shared/base-load-balancer';
 import { IpAddressType } from '../shared/enums';
 import { ApplicationListener, BaseApplicationListenerProps } from './application-listener';
@@ -62,7 +60,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
 
   constructor(scope: Construct, id: string, props: ApplicationLoadBalancerProps) {
     super(scope, id, props, {
-      type: "application",
+      type: 'application',
       securityGroups: Lazy.listValue({ produce: () => [this.securityGroup.securityGroupId] }),
       ipAddressType: props.ipAddressType,
     });
@@ -76,34 +74,6 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
 
     if (props.http2Enabled === false) { this.setAttribute('routing.http2.enabled', 'false'); }
     if (props.idleTimeout !== undefined) { this.setAttribute('idle_timeout.timeout_seconds', props.idleTimeout.toSeconds().toString()); }
-  }
-
-  /**
-   * Enable access logging for this load balancer.
-   *
-   * A region must be specified on the stack containing the load balancer; you cannot enable logging on
-   * environment-agnostic stacks. See https://docs.aws.amazon.com/cdk/latest/guide/environments.html
-   */
-  public logAccessLogs(bucket: s3.IBucket, prefix?: string) {
-    this.setAttribute('access_logs.s3.enabled', 'true');
-    this.setAttribute('access_logs.s3.bucket', bucket.bucketName.toString());
-    this.setAttribute('access_logs.s3.prefix', prefix);
-
-    const region = Stack.of(this).region;
-    if (Token.isUnresolved(region)) {
-      throw new Error(`Region is required to enable ELBv2 access logging`);
-    }
-
-    const account = ELBV2_ACCOUNTS[region];
-    if (!account) {
-      throw new Error(`Cannot enable access logging; don't know ELBv2 account for region ${region}`);
-    }
-
-    prefix = prefix || '';
-    bucket.grantPut(new iam.AccountPrincipal(account), `${(prefix ? prefix + "/" : "")}AWSLogs/${Stack.of(this).account}/*`);
-
-    // make sure the bucket's policy is created before the ALB (see https://github.com/aws/aws-cdk/issues/1633)
-    this.node.addDependency(bucket);
   }
 
   /**
@@ -482,7 +452,9 @@ export interface IApplicationLoadBalancer extends ILoadBalancerV2, ec2.IConnecta
   readonly loadBalancerArn: string;
 
   /**
-   * The VPC this load balancer has been created in (if available)
+   * The VPC this load balancer has been created in (if available).
+   * If this interface is the result of an import call to fromApplicationLoadBalancerAttributes,
+   * the vpc attribute will be undefined unless specified in the optional properties of that method.
    */
   readonly vpc?: ec2.IVpc;
 
@@ -528,34 +500,16 @@ export interface ApplicationLoadBalancerAttributes {
    * @default true
    */
   readonly securityGroupAllowsAllOutbound?: boolean;
-}
 
-// https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-access-logs.html#access-logging-bucket-permissions
-const ELBV2_ACCOUNTS: { [region: string]: string } = {
-  'us-east-1': '127311923021',
-  'us-east-2': '033677994240',
-  'us-west-1': '027434742980',
-  'us-west-2': '797873946194',
-  'ca-central-1': '985666609251',
-  'eu-central-1': '054676820928',
-  'eu-west-1': '156460612806',
-  'eu-west-2': '652711504416',
-  'eu-west-3': '009996457667',
-  'eu-north-1': '897822967062',
-  'ap-east-1': '754344448648',
-  'ap-northeast-1': '582318560864',
-  'ap-northeast-2': '600734575887',
-  'ap-northeast-3': '383597477331',
-  'ap-southeast-1': '114774131450',
-  'ap-southeast-2': '783225319266',
-  'ap-south-1': '718504428378',
-  'me-south-1': '076674570225',
-  'sa-east-1': '507241528517',
-  'us-gov-west-1': '048591011584',
-  'us-gov-east-1': '190560391635',
-  'cn-north-1': '638102146993',
-  'cn-northwest-1': '037604701340',
-};
+  /**
+   * The VPC this load balancer has been created in, if available
+   *
+   * @default - If the Load Balancer was imported and a VPC was not specified,
+   * the VPC is not available.
+   */
+  readonly vpc?: ec2.IVpc;
+
+}
 
 /**
  * An ApplicationLoadBalancer that has been defined elsewhere
@@ -574,13 +528,13 @@ class ImportedApplicationLoadBalancer extends Resource implements IApplicationLo
   /**
    * VPC of the load balancer
    *
-   * Always undefined.
+   * Undefined if optional vpc is not specified.
    */
   public readonly vpc?: ec2.IVpc;
 
   constructor(scope: Construct, id: string, private readonly props: ApplicationLoadBalancerAttributes) {
     super(scope, id);
-
+    this.vpc = props.vpc;
     this.loadBalancerArn = props.loadBalancerArn;
     this.connections = new ec2.Connections({
       securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(this, 'SecurityGroup', props.securityGroupId, {

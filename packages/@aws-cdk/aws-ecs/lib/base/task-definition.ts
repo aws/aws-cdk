@@ -256,7 +256,7 @@ export class TaskDefinition extends TaskDefinitionBase {
     }
 
     this.networkMode = props.networkMode !== undefined ? props.networkMode :
-                       this.isFargateCompatible ? NetworkMode.AWS_VPC : NetworkMode.BRIDGE;
+      this.isFargateCompatible ? NetworkMode.AWS_VPC : NetworkMode.BRIDGE;
     if (this.isFargateCompatible && this.networkMode !== NetworkMode.AWS_VPC) {
       throw new Error(`Fargate tasks can only have AwsVpc network mode, got: ${this.networkMode}`);
     }
@@ -274,7 +274,7 @@ export class TaskDefinition extends TaskDefinitionBase {
     this._executionRole = props.executionRole;
 
     this.taskRole = props.taskRole || new iam.Role(this, 'TaskRole', {
-        assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+      assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
     });
 
     const taskDef = new CfnTaskDefinition(this, 'Resource', {
@@ -284,8 +284,8 @@ export class TaskDefinition extends TaskDefinitionBase {
       family: this.family,
       taskRoleArn: this.taskRole.roleArn,
       requiresCompatibilities: [
-        ...(isEc2Compatible(props.compatibility) ? ["EC2"] : []),
-        ...(isFargateCompatible(props.compatibility) ? ["FARGATE"] : []),
+        ...(isEc2Compatible(props.compatibility) ? ['EC2'] : []),
+        ...(isFargateCompatible(props.compatibility) ? ['FARGATE'] : []),
       ],
       networkMode: this.renderNetworkMode(this.networkMode),
       placementConstraints: Lazy.anyValue({ produce: () =>
@@ -322,7 +322,7 @@ export class TaskDefinition extends TaskDefinitionBase {
     const portMapping = targetContainer.findPortMapping(targetContainerPort, targetProtocol);
     if (portMapping === undefined) {
       // tslint:disable-next-line:max-line-length
-      throw new Error(`Container '${targetContainer}' has no mapping for port ${options.containerPort} and protocol ${targetProtocol}. Did you call "container.addPortMapping()"?`);
+      throw new Error(`Container '${targetContainer}' has no mapping for port ${options.containerPort} and protocol ${targetProtocol}. Did you call "container.addPortMappings()"?`);
     }
     return {
       containerName: options.containerName,
@@ -657,12 +657,12 @@ export enum Scope {
   /**
    * Docker volumes that are scoped to a task are automatically provisioned when the task starts and destroyed when the task stops.
    */
-  TASK = "task",
+  TASK = 'task',
 
   /**
    * Docker volumes that are scoped as shared persist after the task stops.
    */
-  SHARED = "shared"
+  SHARED = 'shared'
 }
 
 /**

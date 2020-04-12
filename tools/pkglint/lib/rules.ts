@@ -11,7 +11,6 @@ import {
   fileShouldNotContain,
   findInnerPackages,
   monoRepoRoot,
-  monoRepoVersion,
 } from './util';
 
 // tslint:disable-next-line: no-var-requires
@@ -234,12 +233,14 @@ export class StabilitySetting extends ValidationRule {
       case 'experimental':
         return _div(
           { label: 'Experimental', color: 'important' },
-          '**This is a _developer preview_ (public beta) module. Releases might lack important features and might have',
-          'future breaking changes.**',
+          '**This is a _developer preview_ (public beta) module.**',
           '',
-          'This API is still under active development and subject to non-backward',
-          'compatible changes or removal in any future version. Use of the API is not recommended in production',
-          'environments. Experimental APIs are not subject to the Semantic Versioning model.',
+          'All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib))',
+          'are auto-generated from CloudFormation. They are stable and safe to use.',
+          '',
+          'However, all other classes, i.e., higher level constructs, are under active development and subject to non-backward',
+          'compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model.',
+          'This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.',
         );
       case 'stable':
         return _div(
@@ -496,7 +497,8 @@ function cdkModuleName(name: string) {
       isLegacyCdkPkg ? 'cdk'
         : isCdkPkg ? 'core'
           : name.startsWith('aws-') || name.startsWith('alexa-') ? name.replace(/^aws-/, '')
-            : `cdk-${name}`,
+            : name.startsWith('cdk-') ? name
+              : `cdk-${name}`,
     dotnetNamespace: `Amazon.CDK${isCdkPkg ? '' : `.${dotnetSuffix}`}`,
     python: {
       distName: `aws-cdk.${pythonName}`,
@@ -656,17 +658,51 @@ export class RegularDependenciesMustSatisfyPeerDependencies extends ValidationRu
 }
 
 /**
- * Check that dependencies on @aws-cdk/ packages use point versions (not version ranges).
+ * Check that dependencies on @aws-cdk/ packages use point versions (not version ranges)
+ * and that they are also defined in `peerDependencies`.
  */
 export class MustDependonCdkByPointVersions extends ValidationRule {
   public readonly name = 'dependencies/cdk-point-dependencies';
 
   public validate(pkg: PackageJson): void {
-    const expectedVersion = monoRepoVersion();
+    // yes, ugly, but we have a bunch of references to other files in the repo.
+    // we use the root package.json to determine what should be the version
+    // across the repo: in local builds, this should be 0.0.0 and in CI builds
+    // this would be the actual version of the repo after it's been aligned
+    // using scripts/align-version.sh
+    const expectedVersion = require('../../../package.json').version;
+    const ignore = [
+      '@aws-cdk/cloudformation-diff',
+      '@aws-cdk/cfnspec',
+      '@aws-cdk/cdk-assets-schema',
+      '@aws-cdk/cx-api',
+      '@aws-cdk/cloud-assembly-schema',
+      '@aws-cdk/region-info'
+    ];
 
     for (const [depName, depVersion] of Object.entries(pkg.dependencies)) {
-      if (isCdkModuleName(depName) && depVersion !== expectedVersion) {
+      if (!isCdkModuleName(depName) || ignore.includes(depName)) {
+        continue;
+      }
 
+      const peerDep = pkg.peerDependencies[depName];
+      if (!peerDep) {
+        pkg.report({
+          ruleName: this.name,
+          message: `dependency ${depName} must also appear in peerDependencies`,
+          fix: () => pkg.addPeerDependency(depName, expectedVersion)
+        });
+      }
+
+      if (peerDep !== expectedVersion) {
+        pkg.report({
+          ruleName: this.name,
+          message: `peer dependency ${depName} should have the version ${expectedVersion}`,
+          fix: () => pkg.addPeerDependency(depName, expectedVersion)
+        });
+      }
+
+      if (depVersion !== expectedVersion) {
         pkg.report({
           ruleName: this.name,
           message: `dependency ${depName}: dependency version must be ${expectedVersion}`,
@@ -743,7 +779,7 @@ export class MustHaveNodeEnginesDeclaration extends ValidationRule {
   public readonly name = 'package-info/engines';
 
   public validate(pkg: PackageJson): void {
-    expectJSON(this.name, pkg, 'engines.node', '>= 10.3.0');
+    expectJSON(this.name, pkg, 'engines.node', '>= 10.12.0');
   }
 }
 
@@ -843,7 +879,7 @@ export class AllVersionsTheSame extends ValidationRule {
   private readonly usedDeps: {[pkg: string]: VersionCount[]} = {};
 
   public prepare(pkg: PackageJson): void {
-    this.ourPackages[pkg.json.name] = `^${pkg.json.version}`;
+    this.ourPackages[pkg.json.name] = pkg.json.version;
     this.recordDeps(pkg.json.dependencies);
     this.recordDeps(pkg.json.devDependencies);
   }
@@ -1014,6 +1050,70 @@ export class YarnNohoistBundledDependencies extends ValidationRule {
           packageJson.workspaces.nohoist = [...packageJson.workspaces.nohoist, ...missing].sort();
           fs.writeFileSync(repoPackageJson, `${JSON.stringify(packageJson, null, 2)}\n`, { encoding: 'utf8' });
         },
+      });
+    }
+  }
+}
+
+export class ConstructsDependency extends ValidationRule {
+  public readonly name = 'constructs/dependency';
+
+  public validate(pkg: PackageJson) {
+    const REQUIRED_VERSION = '^2.0.0';
+
+    if (pkg.devDependencies?.constructs && pkg.devDependencies?.constructs !== REQUIRED_VERSION) {
+      pkg.report({
+        ruleName: this.name,
+        message: `"constructs" must have a version requirement ${REQUIRED_VERSION}`,
+        fix: () => {
+          pkg.addDevDependency('constructs', REQUIRED_VERSION);
+        }
+      });
+    }
+
+    if (pkg.dependencies.constructs && pkg.dependencies.constructs !== REQUIRED_VERSION) {
+      pkg.report({
+        ruleName: this.name,
+        message: `"constructs" must have a version requirement ${REQUIRED_VERSION}`,
+        fix: () => {
+          pkg.addDependency('constructs', REQUIRED_VERSION);
+        }
+      });
+
+      if (!pkg.peerDependencies.constructs || pkg.peerDependencies.constructs !== REQUIRED_VERSION) {
+        pkg.report({
+          ruleName: this.name,
+          message: `"constructs" must have a version requirement ${REQUIRED_VERSION} in peerDependencies`,
+          fix: () => {
+            pkg.addPeerDependency('constructs', REQUIRED_VERSION);
+          }
+        });
+      }
+    }
+  }
+}
+
+/**
+ * Do not announce new versions of AWS CDK modules in awscdk.io because it is very very spammy
+ * and actually causes the @awscdkio twitter account to be blocked.
+ *
+ * https://github.com/construct-catalog/catalog/issues/24
+ * https://github.com/construct-catalog/catalog/pull/22
+ */
+export class DoNotAnnounceInCatalog extends ValidationRule {
+  public readonly name = 'catalog/no-announce';
+
+  public validate(pkg: PackageJson) {
+    if (!isJSII(pkg)) { return; }
+
+    if (pkg.json.awscdkio?.announce !== false) {
+      pkg.report({
+        ruleName: this.name,
+        message:  `missing "awscdkio.announce: false" in package.json`,
+        fix: () => {
+          pkg.json.awscdkio = pkg.json.awscdkio ?? { };
+          pkg.json.awscdkio.announce = false;
+        }
       });
     }
   }

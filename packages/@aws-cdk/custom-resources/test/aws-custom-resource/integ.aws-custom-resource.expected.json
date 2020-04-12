@@ -22,7 +22,9 @@
             }
           },
           "physicalResourceId": {
-            "Ref": "TopicBFC7AF6E"
+            "id": {
+              "Ref": "TopicBFC7AF6E"
+            }
           }
         },
         "Update": {
@@ -35,7 +37,9 @@
             }
           },
           "physicalResourceId": {
-            "Ref": "TopicBFC7AF6E"
+            "id": {
+              "Ref": "TopicBFC7AF6E"
+            }
           }
         }
       },
@@ -109,7 +113,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParametersc6841f16fc6689f1b3a9ae6e91f18d4e6cc06c23c2b1e7b7155625c258cb8999S3Bucket38F49C79"
+            "Ref": "AssetParameters7e0ab73835911f6cf537c945c2d01caa68ab4279b34be0bbc98161e6354c1479S3Bucket62E7A741"
           },
           "S3Key": {
             "Fn::Join": [
@@ -122,7 +126,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersc6841f16fc6689f1b3a9ae6e91f18d4e6cc06c23c2b1e7b7155625c258cb8999S3VersionKey9906BC0C"
+                          "Ref": "AssetParameters7e0ab73835911f6cf537c945c2d01caa68ab4279b34be0bbc98161e6354c1479S3VersionKey50B9BA00"
                         }
                       ]
                     }
@@ -135,7 +139,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersc6841f16fc6689f1b3a9ae6e91f18d4e6cc06c23c2b1e7b7155625c258cb8999S3VersionKey9906BC0C"
+                          "Ref": "AssetParameters7e0ab73835911f6cf537c945c2d01caa68ab4279b34be0bbc98161e6354c1479S3VersionKey50B9BA00"
                         }
                       ]
                     }
@@ -172,12 +176,16 @@
         "Create": {
           "service": "SNS",
           "action": "listTopics",
-          "physicalResourceIdPath": "Topics.0.TopicArn"
+          "physicalResourceId": {
+            "responsePath": "Topics.0.TopicArn"
+          }
         },
         "Update": {
           "service": "SNS",
           "action": "listTopics",
-          "physicalResourceIdPath": "Topics.0.TopicArn"
+          "physicalResourceId": {
+            "responsePath": "Topics.0.TopicArn"
+          }
         }
       },
       "DependsOn": [
@@ -211,7 +219,9 @@
             },
             "WithDecryption": "TRUE:BOOLEAN"
           },
-          "physicalResourceIdPath": "Parameter.ARN"
+          "physicalResourceId": {
+            "responsePath": "Parameter.ARN"
+          }
         },
         "Update": {
           "service": "SSM",
@@ -222,7 +232,9 @@
             },
             "WithDecryption": "TRUE:BOOLEAN"
           },
-          "physicalResourceIdPath": "Parameter.ARN"
+          "physicalResourceId": {
+            "responsePath": "Parameter.ARN"
+          }
         }
       },
       "UpdateReplacePolicy": "Delete",
@@ -230,17 +242,17 @@
     }
   },
   "Parameters": {
-    "AssetParametersc6841f16fc6689f1b3a9ae6e91f18d4e6cc06c23c2b1e7b7155625c258cb8999S3Bucket38F49C79": {
+    "AssetParameters7e0ab73835911f6cf537c945c2d01caa68ab4279b34be0bbc98161e6354c1479S3Bucket62E7A741": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"c6841f16fc6689f1b3a9ae6e91f18d4e6cc06c23c2b1e7b7155625c258cb8999\""
+      "Description": "S3 bucket for asset \"7e0ab73835911f6cf537c945c2d01caa68ab4279b34be0bbc98161e6354c1479\""
     },
-    "AssetParametersc6841f16fc6689f1b3a9ae6e91f18d4e6cc06c23c2b1e7b7155625c258cb8999S3VersionKey9906BC0C": {
+    "AssetParameters7e0ab73835911f6cf537c945c2d01caa68ab4279b34be0bbc98161e6354c1479S3VersionKey50B9BA00": {
       "Type": "String",
-      "Description": "S3 key for asset version \"c6841f16fc6689f1b3a9ae6e91f18d4e6cc06c23c2b1e7b7155625c258cb8999\""
+      "Description": "S3 key for asset version \"7e0ab73835911f6cf537c945c2d01caa68ab4279b34be0bbc98161e6354c1479\""
     },
-    "AssetParametersc6841f16fc6689f1b3a9ae6e91f18d4e6cc06c23c2b1e7b7155625c258cb8999ArtifactHash5595423D": {
+    "AssetParameters7e0ab73835911f6cf537c945c2d01caa68ab4279b34be0bbc98161e6354c1479ArtifactHash19FB1963": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"c6841f16fc6689f1b3a9ae6e91f18d4e6cc06c23c2b1e7b7155625c258cb8999\""
+      "Description": "Artifact hash for asset \"7e0ab73835911f6cf537c945c2d01caa68ab4279b34be0bbc98161e6354c1479\""
     }
   },
   "Outputs": {

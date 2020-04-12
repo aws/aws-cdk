@@ -132,7 +132,11 @@ const key = api.addApiKey('ApiKey');
 
 const plan = api.addUsagePlan('UsagePlan', {
   name: 'Easy',
-  apiKey: key
+  apiKey: key,
+  throttle: {
+    rateLimit: 10,
+    burstLimit: 2
+  }
 });
 
 plan.addApiStage({
@@ -147,6 +151,36 @@ plan.addApiStage({
     }
   ]
 });
+```
+
+In scenarios where you need to create a single api key and configure rate limiting for it, you can use `RateLimitedApiKey`.
+This construct lets you specify rate limiting properties which should be applied only to the api key being created.
+The API key created has the specified rate limits, such as quota and throttles, applied.
+
+The following example shows how to use a rate limited api key :
+```ts
+const hello = new lambda.Function(this, 'hello', {
+  runtime: lambda.Runtime.NODEJS_10_X,
+  handler: 'hello.handler',
+  code: lambda.Code.fromAsset('lambda')
+});
+
+const api = new apigateway.RestApi(this, 'hello-api', { });
+const integration = new apigateway.LambdaIntegration(hello);
+
+const v1 = api.root.addResource('v1');
+const echo = v1.addResource('echo');
+const echoMethod = echo.addMethod('GET', integration, { apiKeyRequired: true });
+
+const key = new apigateway.RateLimitedApiKey(this, 'rate-limited-api-key', {
+  customerId: 'hello-customer',
+  resources: [api],
+  quota: {
+    limit: 10000,
+    period: apigateway.Period.MONTH
+  }
+});
+
 ```
 
 ### Working with models
@@ -232,14 +266,30 @@ You can define models for your responses (and requests)
 const responseModel = api.addModel('ResponseModel', {
   contentType: 'application/json',
   modelName: 'ResponseModel',
-  schema: { '$schema': 'http://json-schema.org/draft-04/schema#', 'title': 'pollResponse', 'type': 'object', 'properties': { 'state': { 'type': 'string' }, 'greeting': { 'type': 'string' } } }
+  schema: {
+    schema: JsonSchemaVersion.DRAFT4,
+    title: 'pollResponse',
+    type: JsonSchemaType.OBJECT,
+    properties: {
+      state: { type: JsonSchemaType.STRING },
+      greeting: { type: JsonSchemaType.STRING }
+    }
+  }
 });
 
 // We define the JSON Schema for the transformed error response
 const errorResponseModel = api.addModel('ErrorResponseModel', {
   contentType: 'application/json',
   modelName: 'ErrorResponseModel',
-  schema: { '$schema': 'http://json-schema.org/draft-04/schema#', 'title': 'errorResponse', 'type': 'object', 'properties': { 'state': { 'type': 'string' }, 'message': { 'type': 'string' } } }
+  schema: {
+    schema: JsonSchemaVersion.DRAFT4,
+    title: 'errorResponse',
+    type: JsonSchemaType.OBJECT,
+    properties: {
+      state: { type: JsonSchemaType.STRING },
+      message: { type: JsonSchemaType.STRING }
+    }
+  }
 });
 
 ```
@@ -247,18 +297,17 @@ const errorResponseModel = api.addModel('ErrorResponseModel', {
 And reference all on your method definition.
 
 ```ts
-// If you want to define parameter mappings for the request, you need a validator
-const validator = api.addRequestValidator('DefaultValidator', {
-  validateRequestBody: false,
-  validateRequestParameters: true
-});
 resource.addMethod('GET', integration, {
   // We can mark the parameters as required
   requestParameters: {
     'method.request.querystring.who': true
   },
-  // We need to set the validator for ensuring they are passed
-  requestValidator: validator,
+  // we can set request validator options like below
+  requestValidatorOptions: {
+    requestValidatorName: 'test-validator',
+    validateRequestBody: true,
+    validateRequestParameters: false
+  }
   methodResponses: [
     {
       // Successful response from the integration
@@ -290,6 +339,9 @@ resource.addMethod('GET', integration, {
 });
 ```
 
+Specifying `requestValidatorOptions` automatically creates the RequestValidator construct with the given options.
+However, if you have your RequestValidator already initialized or imported, use the `requestValidator` option instead.
+
 #### Default Integration and Method Options
 
 The `defaultIntegration` and `defaultMethodOptions` properties can be used to
@@ -318,6 +370,21 @@ const book = books.addResource('{book_id}');
 book.addMethod('GET');   // integrated with `booksBackend`
 ```
 
+A Method can be configured with authorization scopes. Authorization scopes are
+used in conjunction with an [authorizer that uses Amazon Cognito user
+pools](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-integrate-with-cognito.html#apigateway-enable-cognito-user-pool).
+Read more about authorization scopes
+[here](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-method.html#cfn-apigateway-method-authorizationscopes).
+
+Authorization scopes for a Method can be configured using the `authorizationScopes` property as shown below -
+
+```ts
+books.addMethod('GET', new apigateway.HttpIntegration('http://amazon.com'), {
+  authorizationType: AuthorizationType.COGNITO,
+  authorizationScopes: ['Scope1','Scope2']
+});
+```
+
 ### Proxy Routes
 
 The `addProxy` method can be used to install a greedy `{proxy+}` resource
@@ -339,7 +406,7 @@ that can be used for controlling access to your REST APIs.
 
 #### IAM-based authorizer
 
-The following CDK code provides 'excecute-api' permission to an IAM user, via IAM policies, for the 'GET' method on the `books` resource:
+The following CDK code provides 'execute-api' permission to an IAM user, via IAM policies, for the 'GET' method on the `books` resource:
 
 ```ts
 const getBooks = books.addMethod('GET', new apigateway.HttpIntegration('http://amazon.com'), {
@@ -370,8 +437,8 @@ API Gateway interacts with the authorizer Lambda function handler by passing inp
 The event object that the handler is called with contains the `authorizationToken` and the `methodArn` from the request to the
 API Gateway endpoint. The handler is expected to return the `principalId` (i.e. the client identifier) and a `policyDocument` stating
 what the client is authorizer to perform.
-See https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-use-lambda-authorizer.html for a detailed specification on
-inputs and outputs of the lambda handler.
+See [here](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-use-lambda-authorizer.html) for a detailed specification on
+inputs and outputs of the Lambda handler.
 
 The following code attaches a token-based Lambda authorizer to the 'GET' Method of the Book resource:
 
@@ -382,7 +449,7 @@ const authFn = new lambda.Function(this, 'booksAuthorizerLambda', {
 });
 
 const auth = new apigateway.TokenAuthorizer(this, 'booksAuthorizer', {
-  function: authFn
+  handler: authFn
 });
 
 books.addMethod('GET', new apigateway.HttpIntegration('http://amazon.com'), {
@@ -390,8 +457,51 @@ books.addMethod('GET', new apigateway.HttpIntegration('http://amazon.com'), {
 });
 ```
 
+You can find a full working example [here](test/authorizers/integ.token-authorizer.ts).
+
 By default, the `TokenAuthorizer` looks for the authorization token in the request header with the key 'Authorization'. This can,
 however, be modified by changing the `identitySource` property.
+
+Authorizers can also be passed via the `defaultMethodOptions` property within the `RestApi` construct or the `Method` construct. Unless
+explicitly overridden, the specified defaults will be applied across all `Method`s across the `RestApi` or across all `Resource`s,
+depending on where the defaults were specified.
+
+#### Lambda-based request authorizer
+
+This module provides support for request-based Lambda authorizers. When a client makes a request to an API's methods configured with such
+an authorizer, API Gateway calls the Lambda authorizer, which takes specified parts of the request, known as identity sources,
+as input and returns an IAM policy as output. A request-based Lambda authorizer (also called a request authorizer) receives 
+the identity sources in a series of values pulled from the request, from the headers, stage variables, query strings, and the context.
+
+API Gateway interacts with the authorizer Lambda function handler by passing input and expecting the output in a specific format.
+The event object that the handler is called with contains the body of the request and the `methodArn` from the request to the
+API Gateway endpoint. The handler is expected to return the `principalId` (i.e. the client identifier) and a `policyDocument` stating
+what the client is authorizer to perform.
+See [here](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-use-lambda-authorizer.html) for a detailed specification on
+inputs and outputs of the Lambda handler.
+
+The following code attaches a request-based Lambda authorizer to the 'GET' Method of the Book resource:
+
+```ts
+const authFn = new lambda.Function(this, 'booksAuthorizerLambda', {
+  // ...
+  // ...
+});
+
+const auth = new apigateway.RequestAuthorizer(this, 'booksAuthorizer', {
+  handler: authFn,
+  identitySources: [IdentitySource.header('Authorization')]
+});
+
+books.addMethod('GET', new apigateway.HttpIntegration('http://amazon.com'), {
+  authorizer: auth
+});
+```
+
+You can find a full working example [here](test/authorizers/integ.request-authorizer.ts).
+
+By default, the `RequestAuthorizer` does not pass any kind of information from the request. This can,
+however, be modified by changing the `identitySource` property, and is required when specifying a value for caching.
 
 Authorizers can also be passed via the `defaultMethodOptions` property within the `RestApi` construct or the `Method` construct. Unless
 explicitly overridden, the specified defaults will be applied across all `Method`s across the `RestApi` or across all `Resource`s,
@@ -436,6 +546,107 @@ const api = new apigateway.RestApi(this, 'books', {
     dataTraceEnabled: true
   }
 })
+```
+### Access Logging
+
+Access logging creates logs everytime an API method is accessed. Access logs can have information on
+who has accessed the API, how the caller accessed the API and what responses were generated.
+Access logs are configured on a Stage of the RestApi.
+Access logs can be expressed in a format of your choosing, and can contain any access details, with a
+minimum that it must include the 'requestId'. The list of  variables that can be expressed in the access
+log can be found
+[here](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html#context-variable-reference).
+Read more at [Setting Up CloudWatch API Logging in API
+Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-logging.html)
+
+```ts
+// production stage
+const prdLogGroup = new cwlogs.LogGroup(this, "PrdLogs");
+const api = new apigateway.RestApi(this, 'books', {
+  deployOptions: {
+    accessLogDestination: new apigateway.LogGroupLogDestination(prdLogGroup),
+    accessLogFormat: apigateway.AccessLogFormat.jsonWithStandardFields()
+  }
+})
+const deployment = new apigateway.Deployment(stack, 'Deployment', {api});
+
+// development stage
+const devLogGroup = new cwlogs.LogGroup(this, "DevLogs");
+new apigateway.Stage(this, 'dev', {
+  deployment,
+  accessLogDestination: new apigateway.LogGroupLogDestination(devLogGroup),
+  accessLogFormat: apigateway.AccessLogFormat.jsonWithStandardFields({
+    caller: false,
+    httpMethod: true,
+    ip: true,
+    protocol: true,
+    requestTime: true,
+    resourcePath: true,
+    responseLength: true,
+    status: true,
+    user: true
+  })
+});
+```
+
+The following code will generate the access log in the [CLF format](https://en.wikipedia.org/wiki/Common_Log_Format).
+
+```ts
+const logGroup = new cwlogs.LogGroup(this, "ApiGatewayAccessLogs");
+const api = new apigateway.RestApi(this, 'books', {
+  deployOptions: {
+    accessLogDestination: new apigateway.LogGroupLogDestination(logGroup),
+    accessLogFormat: apigateway.AccessLogFormat.clf(),
+  }});
+```
+
+You can also configure your own access log format by using the `AccessLogFormat.custom()` API.
+`AccessLogField` provides commonly used fields. The following code configures access log to contain.
+
+```ts
+const logGroup = new cwlogs.LogGroup(this, "ApiGatewayAccessLogs");
+new apigateway.RestApi(this, 'books', {
+  deployOptions: {
+    accessLogDestination: new apigateway.LogGroupLogDestination(logGroup),
+    accessLogFormat: apigateway.AccessLogFormat.custom(
+      `${AccessLogFormat.contextRequestId()} ${AccessLogField.contextErrorMessage()} ${AccessLogField.contextErrorMessageString()}`);
+  })
+};
+```
+
+You can use the `methodOptions` property to configure
+[default method throttling](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-request-throttling.html#apigateway-api-level-throttling-in-usage-plan)
+for a stage. The following snippet configures the a stage that accepts
+100 requests per minute, allowing burst up to 200 requests per minute.
+
+```ts
+const api = new apigateway.RestApi(this, 'books');
+const deployment = new apigateway.Deployment(this, 'my-deployment', { api });
+const stage = new apigateway.Stage(this, 'my-stage', {
+  deployment,
+  methodOptions: {
+    '/*/*': {  // This special path applies to all resource paths and all HTTP methods
+      throttlingRateLimit: 100,
+      throttlingBurstLimit: 200
+    }
+  }
+});
+```
+
+Configuring `methodOptions` on the `deployOptions` of `RestApi` will set the
+throttling behaviors on the default stage that is automatically created.
+
+```ts
+const api = new apigateway.RestApi(this, 'books', {
+  deployOptions: {
+    methodOptions: {
+      '/*/*': {  // This special path applies to all resource paths and all HTTP methods
+        throttlingRateLimit: 100,
+        throttlingBurstLimit: 1000
+      }
+    }
+  }
+});
 ```
 
 #### Deeper dive: invalidation of deployments
@@ -482,9 +693,12 @@ as `example.com`, and for subdomains, such as `www.example.com`. (You can create
 CNAME records only for subdomains.)
 
 ```ts
+import * as route53 from '@aws-cdk/aws-route53';
+import * as targets from '@aws-cdk/aws-route53-targets';
+
 new route53.ARecord(this, 'CustomDomainAliasRecord', {
   zone: hostedZoneForExampleCom,
-  target: route53.RecordTarget.fromAlias(new route53_targets.ApiGateway(api))
+  target: route53.RecordTarget.fromAlias(new targets.ApiGateway(api))
 });
 ```
 
@@ -494,7 +708,8 @@ You can also define a `DomainName` resource directly in order to customize the d
 new apigw.DomainName(this, 'custom-domain', {
   domainName: 'example.com',
   certificate: acmCertificateForExampleCom,
-  endpointType: apigw.EndpointType.EDGE // default is REGIONAL
+  endpointType: apigw.EndpointType.EDGE, // default is REGIONAL
+  securityPolicy: apigw.SecurityPolicy.TLS_1_2
 });
 ```
 
@@ -507,10 +722,18 @@ domain.addBasePathMapping(api1, { basePath: 'go-to-api1' });
 domain.addBasePathMapping(api2, { basePath: 'boom' });
 ```
 
-NOTE: currently, the mapping will always be assigned to the APIs
-`deploymentStage`, which will automatically assigned to the latest API
-deployment. Raise a GitHub issue if you require more granular control over
-mapping base paths to stages.
+You can specify the API `Stage` to which this base path URL will map to. By default, this will be the
+`deploymentStage` of the `RestApi`. 
+
+```ts
+const betaDeploy = new Deployment(this, 'beta-deployment', {
+  api: restapi,
+});
+const betaStage = new Stage(this, 'beta-stage', {
+  deployment: betaDeploy,
+});
+domain.addBasePathMapping(restapi, { basePath: 'api/beta', stage: betaStage });
+```
 
 If you don't specify `basePath`, all URLs under this domain will be mapped
 to the API, and you won't be able to map another API to the same domain:
@@ -522,12 +745,15 @@ domain.addBasePathMapping(api);
 This can also be achieved through the `mapping` configuration when defining the
 domain as demonstrated above.
 
-If you wish to setup this domain with an Amazon Route53 alias, use the `route53_targets.ApiGatewayDomain`:
+If you wish to setup this domain with an Amazon Route53 alias, use the `targets.ApiGatewayDomain`:
 
 ```ts
+import * as route53 from '@aws-cdk/aws-route53';
+import * as targets from '@aws-cdk/aws-route53-targets';
+
 new route53.ARecord(this, 'CustomDomainAliasRecord', {
   zone: hostedZoneForExampleCom,
-  target: route53.RecordTarget.fromAlias(new route53_targets.ApiGatewayDomain(domainName))
+  target: route53.RecordTarget.fromAlias(new targets.ApiGatewayDomain(domainName))
 });
 ```
 
@@ -539,7 +765,8 @@ running at one origin, access to selected resources from a different origin. A
 web application executes a cross-origin HTTP request when it requests a resource
 that has a different origin (domain, protocol, or port) from its own.
 
-You can add the CORS [preflight](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS#Preflighted_requests) OPTIONS HTTP method to any API resource via the `defaultCorsPreflightOptions` option or by calling the `addCorsPreflight` on a specific resource.
+You can add the CORS [preflight](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS#Preflighted_requests) OPTIONS 
+HTTP method to any API resource via the `defaultCorsPreflightOptions` option or by calling the `addCorsPreflight` on a specific resource.
 
 The following example will enable CORS for all methods and all origins on all resources of the API:
 
@@ -581,6 +808,42 @@ OPTIONS added to them.
 
 See [#906](https://github.com/aws/aws-cdk/issues/906) for a list of CORS
 features which are not yet supported.
+
+### Endpoint Configuration
+API gateway allows you to specify an 
+[API Endpoint Type](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-api-endpoint-types.html). 
+To define an endpoint type for the API gateway, use `endpointConfiguration` property:
+
+```ts
+const api = new apigw.RestApi(stack, 'api', {
+  endpointConfiguration: {
+    types: [ apigw.EndpointType.EDGE ]
+  }
+});
+```
+
+You can also create an association between your Rest API and a VPC endpoint. By doing so,
+API Gateway will generate a new
+Route53 Alias DNS record which you can use to invoke your private APIs. More info can be found
+[here](https://docs.aws.amazon.com/apigateway/latest/developerguide/associate-private-api-with-vpc-endpoint.html).
+
+Here is an example:
+
+```ts
+const someEndpoint: IVpcEndpoint = /* Get or Create endpoint here */
+const api = new apigw.RestApi(stack, 'api', {
+  endpointConfiguration: {
+    types: [ apigw.EndpointType.PRIVATE ],
+    vpcEndpoints: [ someEndpoint ]
+  }
+});
+```
+
+By performing this association, we can invoke the API gateway using the following format:
+
+```
+https://{rest-api-id}-{vpce-id}.execute-api.{region}.amazonaws.com/{stage}
+```
 
 ## APIGateway v2
 

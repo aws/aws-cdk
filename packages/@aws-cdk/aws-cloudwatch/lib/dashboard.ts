@@ -1,13 +1,25 @@
-import { Construct, Lazy, Resource, Stack, Token } from "@aws-cdk/core";
+import { Construct, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
 import { CfnDashboard } from './cloudwatch.generated';
-import { Column, Row } from "./layout";
-import { IWidget } from "./widget";
+import { Column, Row } from './layout';
+import { IWidget } from './widget';
 
+/**
+ * Specify the period for graphs when the CloudWatch dashboard loads
+ */
 export enum PeriodOverride {
+  /**
+   * Period of all graphs on the dashboard automatically adapt to the time range of the dashboard.
+   */
   AUTO = 'auto',
+  /**
+   * Period set for each graph will be used
+   */
   INHERIT = 'inherit',
 }
 
+/**
+ * Properties for defining a CloudWatch Dashboard
+ */
 export interface DashboardProps {
   /**
    * Name of the dashboard.

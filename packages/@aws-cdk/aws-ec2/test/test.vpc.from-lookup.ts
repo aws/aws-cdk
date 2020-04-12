@@ -1,7 +1,7 @@
-import { Construct, ContextProvider, GetContextValueOptions, GetContextValueResult, Lazy, Stack } from "@aws-cdk/core";
+import { Construct, ContextProvider, GetContextValueOptions, GetContextValueResult, Lazy, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
-import { Vpc } from "../lib";
+import { SubnetType, Vpc } from '../lib';
 
 export = {
   'Vpc.fromLookup()': {
@@ -102,6 +102,76 @@ export = {
       restoreContextProvider(previous);
       test.done();
     },
+
+    'selectSubnets onePerAz works on imported VPC'(test: Test) {
+      const previous = mockVpcContextProviderWith(test, {
+        vpcId: 'vpc-1234',
+        subnetGroups: [
+          {
+            name: 'Public',
+            type: cxapi.VpcSubnetGroupType.PUBLIC,
+            subnets: [
+              {
+                subnetId: 'pub-sub-in-us-east-1a',
+                availabilityZone: 'us-east-1a',
+                routeTableId: 'rt-123',
+              },
+              {
+                subnetId: 'pub-sub-in-us-east-1b',
+                availabilityZone: 'us-east-1b',
+                routeTableId: 'rt-123',
+              },
+            ],
+          },
+          {
+            name: 'Private',
+            type: cxapi.VpcSubnetGroupType.PRIVATE,
+            subnets: [
+              {
+                subnetId: 'pri-sub-1-in-us-east-1c',
+                availabilityZone: 'us-east-1c',
+                routeTableId: 'rt-123',
+              },
+              {
+                subnetId: 'pri-sub-2-in-us-east-1c',
+                availabilityZone: 'us-east-1c',
+                routeTableId: 'rt-123',
+              },
+              {
+                subnetId: 'pri-sub-1-in-us-east-1d',
+                availabilityZone: 'us-east-1d',
+                routeTableId: 'rt-123',
+              },
+              {
+                subnetId: 'pri-sub-2-in-us-east-1d',
+                availabilityZone: 'us-east-1d',
+                routeTableId: 'rt-123',
+              },
+            ],
+          },
+        ],
+      }, options => {
+        test.deepEqual(options.filter, {
+          isDefault: 'true',
+        });
+
+        test.equal(options.subnetGroupNameTag, undefined);
+      });
+
+      const stack = new Stack();
+      const vpc = Vpc.fromLookup(stack, 'Vpc', {
+        isDefault: true,
+      });
+
+      // WHEN
+      const subnets = vpc.selectSubnets({ subnetType: SubnetType.PRIVATE, onePerAz: true });
+
+      // THEN: we got 2 subnets and not 4
+      test.deepEqual(subnets.subnets.map(s => s.availabilityZone), ['us-east-1c', 'us-east-1d']);
+
+      restoreContextProvider(previous);
+      test.done();
+    },
   },
 };
 
@@ -110,8 +180,9 @@ interface MockVcpContextResponse {
   readonly subnetGroups: cxapi.VpcSubnetGroup[];
 }
 
-function mockVpcContextProviderWith(test: Test, response: MockVcpContextResponse,
-                                    paramValidator?: (options: cxapi.VpcContextQuery) => void) {
+function mockVpcContextProviderWith(
+  test: Test, response: MockVcpContextResponse,
+  paramValidator?: (options: cxapi.VpcContextQuery) => void) {
   const previous = ContextProvider.getValue;
   ContextProvider.getValue = (_scope: Construct, options: GetContextValueOptions) => {
     // do some basic sanity checks

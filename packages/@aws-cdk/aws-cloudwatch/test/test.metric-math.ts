@@ -268,6 +268,58 @@ export = {
 
       test.done();
     },
+
+    'can reuse the same metric between left and right axes'(test: Test) {
+      // GIVEN
+      const graph = new GraphWidget({
+        left: [
+          new MathExpression({
+            expression: 'a + 1',
+            usingMetrics: { a }
+          })
+        ],
+        right: [
+          new MathExpression({
+            expression: 'a + 2',
+            usingMetrics: { a }
+          })
+        ]
+      });
+
+      // THEN
+      graphMetricsAre(test, graph, [
+        [ { label: 'a + 1', expression: 'a + 1' } ],
+        [ 'Test', 'ACount', { visible: false, id: 'a' } ],
+        [ { label: 'a + 2', expression: 'a + 2', yAxis: 'right' } ]
+      ]);
+
+      test.done();
+    },
+
+    'detect name conflicts between left and right axes'(test: Test) {
+      // GIVEN
+      const graph = new GraphWidget({
+        left: [
+          new MathExpression({
+            expression: 'm1 + 1',
+            usingMetrics: { m1: a }
+          })
+        ],
+        right: [
+          new MathExpression({
+            expression: 'm1 + 1',
+            usingMetrics: { m1: b }
+          })
+        ]
+      });
+
+      // THEN
+      test.throws(() => {
+        graphMetricsAre(test, graph, []);
+      }, /Cannot have two different metrics share the same id \('m1'\)/);
+
+      test.done();
+    },
   },
 
   'in alarms': {
@@ -284,30 +336,30 @@ export = {
       // THEN
       alarmMetricsAre([
         {
-          Expression: "a + b",
-          Id: "expr_1"
+          Expression: 'a + b',
+          Id: 'expr_1'
         },
         {
-          Id: "a",
+          Id: 'a',
           MetricStat: {
             Metric: {
-              MetricName: "ACount",
-              Namespace: "Test"
+              MetricName: 'ACount',
+              Namespace: 'Test'
             },
             Period: 300,
-            Stat: "Average"
+            Stat: 'Average'
           },
           ReturnData: false
         },
         {
-          Id: "b",
+          Id: 'b',
           MetricStat: {
             Metric: {
-              MetricName: "BCount",
-              Namespace: "Test"
+              MetricName: 'BCount',
+              Namespace: 'Test'
             },
             Period: 300,
-            Stat: "Average"
+            Stat: 'Average'
           },
           ReturnData: false
         }
@@ -336,47 +388,47 @@ export = {
       // THEN
       alarmMetricsAre([
         {
-          Expression: "a + e",
-          Id: "expr_1"
+          Expression: 'a + e',
+          Id: 'expr_1'
         },
         {
-          Id: "a",
+          Id: 'a',
           MetricStat: {
             Metric: {
-              MetricName: "ACount",
-              Namespace: "Test"
+              MetricName: 'ACount',
+              Namespace: 'Test'
             },
             Period: 300,
-            Stat: "Average"
+            Stat: 'Average'
           },
           ReturnData: false
         },
         {
-          Expression: "b + c",
-          Id: "e",
+          Expression: 'b + c',
+          Id: 'e',
           ReturnData: false
         },
         {
-          Id: "b",
+          Id: 'b',
           MetricStat: {
             Metric: {
-              MetricName: "BCount",
-              Namespace: "Test"
+              MetricName: 'BCount',
+              Namespace: 'Test'
             },
             Period: 300,
-            Stat: "Average"
+            Stat: 'Average'
           },
           ReturnData: false
         },
         {
-          Id: "c",
+          Id: 'c',
           MetricStat: {
             Metric: {
-              MetricName: "CCount",
-              Namespace: "Test"
+              MetricName: 'CCount',
+              Namespace: 'Test'
             },
             Period: 300,
-            Stat: "Average"
+            Stat: 'Average'
           },
           ReturnData: false
         }
@@ -406,47 +458,47 @@ export = {
       // THEN
       alarmMetricsAre([
         {
-          Expression: "a + e",
-          Id: "expr_1"
+          Expression: 'a + e',
+          Id: 'expr_1'
         },
         {
-          Id: "a",
+          Id: 'a',
           MetricStat: {
             Metric: {
-              MetricName: "ACount",
-              Namespace: "Test"
+              MetricName: 'ACount',
+              Namespace: 'Test'
             },
             Period: 30,
-            Stat: "Average"
+            Stat: 'Average'
           },
           ReturnData: false
         },
         {
-          Expression: "b + c",
-          Id: "e",
+          Expression: 'b + c',
+          Id: 'e',
           ReturnData: false
         },
         {
-          Id: "b",
+          Id: 'b',
           MetricStat: {
             Metric: {
-              MetricName: "BCount",
-              Namespace: "Test"
+              MetricName: 'BCount',
+              Namespace: 'Test'
             },
             Period: 30,
-            Stat: "Average"
+            Stat: 'Average'
           },
           ReturnData: false
         },
         {
-          Id: "c",
+          Id: 'c',
           MetricStat: {
             Metric: {
-              MetricName: "CCount",
-              Namespace: "Test"
+              MetricName: 'CCount',
+              Namespace: 'Test'
             },
             Period: 30,
-            Stat: "Average"
+            Stat: 'Average'
           },
           ReturnData: false
         }
@@ -488,30 +540,30 @@ export = {
       // THEN
       alarmMetricsAre([
         {
-          Expression: "a + b99",
-          Id: "expr_1"
+          Expression: 'a + b99',
+          Id: 'expr_1'
         },
         {
-          Id: "a",
+          Id: 'a',
           MetricStat: {
             Metric: {
-              MetricName: "ACount",
-              Namespace: "Test"
+              MetricName: 'ACount',
+              Namespace: 'Test'
             },
             Period: 300,
-            Stat: "Average"
+            Stat: 'Average'
           },
           ReturnData: false
         },
         {
-          Id: "b99",
+          Id: 'b99',
           MetricStat: {
             Metric: {
-              MetricName: "BCount",
-              Namespace: "Test"
+              MetricName: 'BCount',
+              Namespace: 'Test'
             },
             Period: 300,
-            Stat: "p99"
+            Stat: 'p99'
           },
           ReturnData: false
         }

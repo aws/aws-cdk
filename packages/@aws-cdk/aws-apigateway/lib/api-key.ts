@@ -1,6 +1,6 @@
 import { Construct, IResource as IResourceBase, Resource } from '@aws-cdk/core';
 import { CfnApiKey } from './apigateway.generated';
-import { ResourceOptions } from "./resource";
+import { ResourceOptions } from './resource';
 import { RestApi } from './restapi';
 
 /**
@@ -20,6 +20,7 @@ export interface IApiKey extends IResourceBase {
  */
 export interface ApiKeyProps extends ResourceOptions {
   /**
+   * [disable-awslint:ref-via-interface]
    * A list of resources this api key is associated with.
    * @default none
    */

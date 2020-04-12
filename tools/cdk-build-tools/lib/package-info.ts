@@ -100,9 +100,23 @@ export interface CDKBuildOptions {
    */
   eslint?: {
     /**
+     * Disable linting
+     * @default false
+     */
+    disable?: boolean;
+
+    /**
      * Patterns to be ignored.
      */
     "ignore-pattern"?: string[];
+  };
+
+  tslint?: {
+    disable?: boolean;
+  };
+
+  pkglint?: {
+    disable?: boolean;
   };
 
   /**
@@ -111,6 +125,13 @@ export interface CDKBuildOptions {
    * (Typically a code generator)
    */
   pre?: string[];
+
+  /**
+   * An optional command (formatted as a list of strings) to run after building
+   *
+   * (Schema generator for example)
+   */
+  post?: string[];
 
   /**
    * An optional command (formatted as a list of strings) to run before testing.

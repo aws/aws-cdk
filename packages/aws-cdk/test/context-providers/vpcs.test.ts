@@ -1,20 +1,11 @@
 import * as aws from 'aws-sdk';
 import * as AWS from 'aws-sdk-mock';
-import { ISDK } from '../../lib/api';
 import { VpcNetworkContextProviderPlugin } from '../../lib/context-providers/vpcs';
+import { MockSdkProvider } from '../util/mock-sdk';
 
 AWS.setSDK(require.resolve('aws-sdk'));
 
-const mockSDK: ISDK = {
-  defaultAccount: () => Promise.resolve('123456789012'),
-  defaultRegion: () => Promise.resolve('bermuda-triangle-1337'),
-  cloudFormation: () => { throw new Error('Not Mocked'); },
-  ec2: () => Promise.resolve(new aws.EC2()),
-  ecr: () => { throw new Error('Not Mocked'); },
-  route53: () => { throw new Error('Not Mocked'); },
-  s3: () => { throw new Error('Not Mocked'); },
-  ssm: () => { throw new Error('Not Mocked'); },
-};
+const mockSDK = new MockSdkProvider();
 
 type AwsCallback<T> = (err: Error | null, val: T) => void;
 
@@ -145,22 +136,22 @@ test('Recognize public subnet by route table', async () => {
         RouteTableId: 'rtb-123456',
         Routes: [
           {
-            DestinationCidrBlock: "10.0.2.0/26",
-            Origin: "CreateRoute",
-            State: "active",
-            VpcPeeringConnectionId: "pcx-xxxxxx"
+            DestinationCidrBlock: '10.0.2.0/26',
+            Origin: 'CreateRoute',
+            State: 'active',
+            VpcPeeringConnectionId: 'pcx-xxxxxx'
           },
           {
-            DestinationCidrBlock: "10.0.1.0/24",
-            GatewayId: "local",
-            Origin: "CreateRouteTable",
-            State: "active"
+            DestinationCidrBlock: '10.0.1.0/24',
+            GatewayId: 'local',
+            Origin: 'CreateRouteTable',
+            State: 'active'
           },
           {
-            DestinationCidrBlock: "0.0.0.0/0",
-            GatewayId: "igw-xxxxxx",
-            Origin: "CreateRoute",
-            State: "active"
+            DestinationCidrBlock: '0.0.0.0/0',
+            GatewayId: 'igw-xxxxxx',
+            Origin: 'CreateRoute',
+            State: 'active'
           }
         ],
       },

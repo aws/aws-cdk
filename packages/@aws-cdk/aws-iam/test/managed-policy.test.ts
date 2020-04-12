@@ -1,6 +1,6 @@
 import '@aws-cdk/assert/jest';
 import * as cdk from '@aws-cdk/core';
-import { Group, ManagedPolicy, PolicyStatement, Role, ServicePrincipal, User } from '../lib';
+import { Group, ManagedPolicy, PolicyDocument, PolicyStatement, Role, ServicePrincipal, User } from '../lib';
 
 describe('managed policy', () => {
   let app: cdk.App;
@@ -12,10 +12,10 @@ describe('managed policy', () => {
   });
 
   test('simple AWS managed policy', () => {
-    const mp = ManagedPolicy.fromAwsManagedPolicyName("service-role/SomePolicy");
+    const mp = ManagedPolicy.fromAwsManagedPolicyName('service-role/SomePolicy');
 
     expect(stack.resolve(mp.managedPolicyArn)).toEqual({
-      "Fn::Join": ['', [
+      'Fn::Join': ['', [
         'arn:',
         { Ref: 'AWS::Partition' },
         ':iam::aws:policy/service-role/SomePolicy'
@@ -24,15 +24,21 @@ describe('managed policy', () => {
   });
 
   test('simple customer managed policy', () => {
-    const mp = ManagedPolicy.fromManagedPolicyName(stack, 'MyCustomerManagedPolicy', "SomeCustomerPolicy");
+    const mp = ManagedPolicy.fromManagedPolicyName(stack, 'MyCustomerManagedPolicy', 'SomeCustomerPolicy');
 
     expect(stack.resolve(mp.managedPolicyArn)).toEqual({
-      "Fn::Join": ['', [
+      'Fn::Join': ['', [
         'arn:',
         { Ref: 'AWS::Partition' },
         ':iam::1234:policy/SomeCustomerPolicy'
       ]]
     });
+  });
+
+  test('managed policy by arn', () => {
+    const mp = ManagedPolicy.fromManagedPolicyArn(stack, 'MyManagedPolicyByArn', 'arn:aws:iam::1234:policy/my-policy');
+
+    expect(stack.resolve(mp.managedPolicyArn)).toEqual('arn:aws:iam::1234:policy/my-policy');
   });
 
   test('managed policy with statements', () => {
@@ -52,7 +58,7 @@ describe('managed policy', () => {
             PolicyDocument: {
               Statement:
                 [{ Action: 'sqs:SendMessage', Effect: 'Allow', Resource: '*' },
-                { Action: 'sns:Subscribe', Effect: 'Allow', Resource: 'arn' }],
+                  { Action: 'sns:Subscribe', Effect: 'Allow', Resource: 'arn' }],
               Version: '2012-10-17'
             },
             Path: '/',
@@ -65,6 +71,69 @@ describe('managed policy', () => {
             ManagedPolicyArns: [
               { Ref: 'MyManagedPolicy9F3720AE' }
             ]
+          }
+        }
+      }
+    });
+  });
+
+  test('managed policy from policy document alone', () => {
+    new ManagedPolicy(stack, 'MyManagedPolicy', {
+      managedPolicyName: 'MyManagedPolicyName',
+      document: PolicyDocument.fromJson({
+        Statement: [{
+          Action: 'sqs:SendMessage',
+          Effect: 'Allow',
+          Resource: '*',
+        }],
+      })
+    });
+
+    expect(stack).toMatchTemplate({
+      Resources: {
+        MyManagedPolicy9F3720AE: {
+          Type: 'AWS::IAM::ManagedPolicy',
+          Properties: {
+            ManagedPolicyName: 'MyManagedPolicyName',
+            PolicyDocument: {
+              Statement: [{ Action: 'sqs:SendMessage', Effect: 'Allow', Resource: '*' }],
+              Version: '2012-10-17'
+            },
+            Path: '/',
+            Description: ''
+          }
+        }
+      }
+    });
+  });
+
+  test('managed policy from policy document with additional statements', () => {
+    new ManagedPolicy(stack, 'MyManagedPolicy', {
+      managedPolicyName: 'MyManagedPolicyName',
+      document: PolicyDocument.fromJson({
+        Statement: [{
+          Action: 'sqs:SendMessage',
+          Effect: 'Allow',
+          Resource: '*',
+        }],
+      }),
+      statements: [new PolicyStatement({ resources: ['arn'], actions: ['sns:Subscribe'] })]
+    });
+
+    expect(stack).toMatchTemplate({
+      Resources: {
+        MyManagedPolicy9F3720AE: {
+          Type: 'AWS::IAM::ManagedPolicy',
+          Properties: {
+            ManagedPolicyName: 'MyManagedPolicyName',
+            PolicyDocument: {
+              Statement:
+                [{ Action: 'sqs:SendMessage', Effect: 'Allow', Resource: '*' },
+                  { Action: 'sns:Subscribe', Effect: 'Allow', Resource: 'arn' }],
+              Version: '2012-10-17'
+            },
+            Path: '/',
+            Description: ''
           }
         }
       }
@@ -87,7 +156,7 @@ describe('managed policy', () => {
             PolicyDocument: {
               Statement:
                 [{ Action: 'sqs:SendMessage', Effect: 'Allow', Resource: '*' },
-                { Action: 'sns:Subscribe', Effect: 'Allow', Resource: 'arn' }],
+                  { Action: 'sns:Subscribe', Effect: 'Allow', Resource: 'arn' }],
               Version: '2012-10-17'
             },
             Path: '/',
@@ -328,12 +397,12 @@ describe('managed policy', () => {
           Properties: {
             ManagedPolicyArns: [
               {
-                "Fn::Join": [
-                  "",
+                'Fn::Join': [
+                  '',
                   [
-                    "arn:",
-                    { Ref: "AWS::Partition" },
-                    ":iam::aws:policy/AnAWSManagedPolicy"
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':iam::aws:policy/AnAWSManagedPolicy'
                   ]
                 ]
               }]
@@ -344,12 +413,12 @@ describe('managed policy', () => {
           Properties: {
             ManagedPolicyArns: [
               {
-                "Fn::Join": [
-                  "",
+                'Fn::Join': [
+                  '',
                   [
-                    "arn:",
-                    { Ref: "AWS::Partition" },
-                    ":iam::aws:policy/AnAWSManagedPolicy"
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':iam::aws:policy/AnAWSManagedPolicy'
                   ]
                 ]
               }]
@@ -360,12 +429,12 @@ describe('managed policy', () => {
           Properties: {
             ManagedPolicyArns: [
               {
-                "Fn::Join": [
-                  "",
+                'Fn::Join': [
+                  '',
                   [
-                    "arn:",
-                    { Ref: "AWS::Partition" },
-                    ":iam::aws:policy/AnAWSManagedPolicy"
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':iam::aws:policy/AnAWSManagedPolicy'
                   ]
                 ]
               }],
@@ -401,12 +470,12 @@ describe('managed policy', () => {
           Properties: {
             ManagedPolicyArns: [
               {
-                "Fn::Join": [
-                  "",
+                'Fn::Join': [
+                  '',
                   [
-                    "arn:",
-                    { Ref: "AWS::Partition" },
-                    ":iam::1234:policy/ACustomerManagedPolicyName"
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':iam::1234:policy/ACustomerManagedPolicyName'
                   ]
                 ]
               }]
@@ -417,12 +486,12 @@ describe('managed policy', () => {
           Properties: {
             ManagedPolicyArns: [
               {
-                "Fn::Join": [
-                  "",
+                'Fn::Join': [
+                  '',
                   [
-                    "arn:",
-                    { Ref: "AWS::Partition" },
-                    ":iam::1234:policy/ACustomerManagedPolicyName"
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':iam::1234:policy/ACustomerManagedPolicyName'
                   ]
                 ]
               }]
@@ -433,12 +502,12 @@ describe('managed policy', () => {
           Properties: {
             ManagedPolicyArns: [
               {
-                "Fn::Join": [
-                  "",
+                'Fn::Join': [
+                  '',
                   [
-                    "arn:",
-                    { Ref: "AWS::Partition" },
-                    ":iam::1234:policy/ACustomerManagedPolicyName"
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':iam::1234:policy/ACustomerManagedPolicyName'
                   ]
                 ]
               }],
@@ -470,11 +539,11 @@ describe('managed policy', () => {
     }));
 
     expect(stack.resolve(mp.managedPolicyName)).toEqual({
-      "Fn::Select": [ 1,
-        { "Fn::Split": [ "/",
-            { "Fn::Select": [ 5,
-              { "Fn::Split": [ ":",
-              { Ref: "Policy23B91518", }] }, ], }, ], }, ]
+      'Fn::Select': [ 1,
+        { 'Fn::Split': [ '/',
+          { 'Fn::Select': [ 5,
+            { 'Fn::Split': [ ':',
+              { Ref: 'Policy23B91518', }] }, ], }, ], }, ]
     });
   });
 
@@ -495,14 +564,14 @@ describe('managed policy', () => {
       Outputs: {
         Output: {
           Value: {
-            "Fn::Join": [
-              "",
+            'Fn::Join': [
+              '',
               [
-                "arn:",
+                'arn:',
                 {
-                  Ref: "AWS::Partition"
+                  Ref: 'AWS::Partition'
                 },
-                ":iam::1234:policy/mystackmystackpolicy17395e221b1b6deaf875"
+                ':iam::1234:policy/mystackmystackpolicy17395e221b1b6deaf875'
               ]
             ]
           }

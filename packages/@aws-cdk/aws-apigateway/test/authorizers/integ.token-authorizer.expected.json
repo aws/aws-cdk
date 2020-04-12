@@ -36,7 +36,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParameters6695c4a3dad80ddeef2797a1729306b7c136d67ce21d2187fdbc7bbad009993aS3Bucket115F9EA4"
+            "Ref": "AssetParameters117d87218ad224b78a720a7bd44a74ea06e5d5c63bc2b1f16a4756847a8fb472S3Bucket8B646A6B"
           },
           "S3Key": {
             "Fn::Join": [
@@ -49,7 +49,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters6695c4a3dad80ddeef2797a1729306b7c136d67ce21d2187fdbc7bbad009993aS3VersionKey1039487E"
+                          "Ref": "AssetParameters117d87218ad224b78a720a7bd44a74ea06e5d5c63bc2b1f16a4756847a8fb472S3VersionKeyB90F8B16"
                         }
                       ]
                     }
@@ -62,7 +62,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters6695c4a3dad80ddeef2797a1729306b7c136d67ce21d2187fdbc7bbad009993aS3VersionKey1039487E"
+                          "Ref": "AssetParameters117d87218ad224b78a720a7bd44a74ea06e5d5c63bc2b1f16a4756847a8fb472S3VersionKeyB90F8B16"
                         }
                       ]
                     }
@@ -84,6 +84,46 @@
       "DependsOn": [
         "MyAuthorizerFunctionServiceRole8A34C19E"
       ]
+    },
+    "MyAuthorizerFunctionTokenAuthorizerIntegMyAuthorizer793B1D5FPermissions7557AE26": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "MyAuthorizerFunction70F1223E",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "MyRestApi2D1F47A9"
+              },
+              "/authorizers/",
+              {
+                "Ref": "MyAuthorizer6575980E"
+              }
+            ]
+          ]
+        }
+      }
     },
     "MyRestApi2D1F47A9": {
       "Type": "AWS::ApiGateway::RestApi",
@@ -199,7 +239,6 @@
     "MyAuthorizer6575980E": {
       "Type": "AWS::ApiGateway::Authorizer",
       "Properties": {
-        "Name": "TokenAuthorizerIntegMyAuthorizer793B1D5F",
         "RestApiId": {
           "Ref": "MyRestApi2D1F47A9"
         },
@@ -223,62 +262,23 @@
             ]
           ]
         },
-        "IdentitySource": "method.request.header.Authorization"
-      }
-    },
-    "MyAuthorizerFunctionTokenAuthorizerIntegMyAuthorizer793B1D5FPermissions7557AE26": {
-      "Type": "AWS::Lambda::Permission",
-      "Properties": {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": {
-          "Fn::GetAtt": [
-            "MyAuthorizerFunction70F1223E",
-            "Arn"
-          ]
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": {
-          "Fn::Join": [
-            "",
-            [
-              "arn:",
-              {
-                "Ref": "AWS::Partition"
-              },
-              ":execute-api:",
-              {
-                "Ref": "AWS::Region"
-              },
-              ":",
-              {
-                "Ref": "AWS::AccountId"
-              },
-              ":",
-              {
-                "Ref": "MyRestApi2D1F47A9"
-              },
-              "/authorizers/",
-              {
-                "Ref": "MyAuthorizer6575980E"
-              }
-            ]
-          ]
-        }
+        "IdentitySource": "method.request.header.Authorization",
+        "Name": "TokenAuthorizerIntegMyAuthorizer793B1D5F"
       }
     }
   },
   "Parameters": {
-    "AssetParameters6695c4a3dad80ddeef2797a1729306b7c136d67ce21d2187fdbc7bbad009993aS3Bucket115F9EA4": {
+    "AssetParameters117d87218ad224b78a720a7bd44a74ea06e5d5c63bc2b1f16a4756847a8fb472S3Bucket8B646A6B": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"6695c4a3dad80ddeef2797a1729306b7c136d67ce21d2187fdbc7bbad009993a\""
+      "Description": "S3 bucket for asset \"117d87218ad224b78a720a7bd44a74ea06e5d5c63bc2b1f16a4756847a8fb472\""
     },
-    "AssetParameters6695c4a3dad80ddeef2797a1729306b7c136d67ce21d2187fdbc7bbad009993aS3VersionKey1039487E": {
+    "AssetParameters117d87218ad224b78a720a7bd44a74ea06e5d5c63bc2b1f16a4756847a8fb472S3VersionKeyB90F8B16": {
       "Type": "String",
-      "Description": "S3 key for asset version \"6695c4a3dad80ddeef2797a1729306b7c136d67ce21d2187fdbc7bbad009993a\""
+      "Description": "S3 key for asset version \"117d87218ad224b78a720a7bd44a74ea06e5d5c63bc2b1f16a4756847a8fb472\""
     },
-    "AssetParameters6695c4a3dad80ddeef2797a1729306b7c136d67ce21d2187fdbc7bbad009993aArtifactHash1A0BBA4E": {
+    "AssetParameters117d87218ad224b78a720a7bd44a74ea06e5d5c63bc2b1f16a4756847a8fb472ArtifactHash69D19DD5": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"6695c4a3dad80ddeef2797a1729306b7c136d67ce21d2187fdbc7bbad009993a\""
+      "Description": "Artifact hash for asset \"117d87218ad224b78a720a7bd44a74ea06e5d5c63bc2b1f16a4756847a8fb472\""
     }
   },
   "Outputs": {
