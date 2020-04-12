@@ -187,7 +187,7 @@ export interface ClusterProps {
    * A list of AWS Identity and Access Management (IAM) role that can be used by the cluster to access other AWS services.
    * Specify a maximum of 10 roles.
    *
-   * @default - A role is automatically created for you
+   * @default - No role is attached to the cluster.
    */
   readonly roles?: iam.IRole[];
 
