@@ -15,13 +15,13 @@ import { CfnCluster, CfnClusterSubnetGroup } from './redshift.generated';
  * used for defining {@link ClusterProps.nodeType}.
  */
 export enum NodeType {
-    DS2_XLARGE = "ds2.xlarge",
-    DS2_8XLARGE = "ds2.8xlarge",
-    DC1_LARGE = "dc1.large",
-    DC1_8XLARGE = "dc1.8xlarge",
-    DC2_LARGE = "dc2.large",
-    DC2_8XLARGE = "dc2.8xlarge",
-    RA3_16XLARGE = "ra3.16xlarge",
+  DS2_XLARGE = 'ds2.xlarge',
+  DS2_8XLARGE = 'ds2.8xlarge',
+  DC1_LARGE = 'dc1.large',
+  DC1_8XLARGE = 'dc1.8xlarge',
+  DC2_LARGE = 'dc2.large',
+  DC2_8XLARGE = 'dc2.8xlarge',
+  RA3_16XLARGE = 'ra3.16xlarge',
 }
 
 /**
@@ -29,8 +29,8 @@ export enum NodeType {
  * Used by {@link ClusterProps.clusterType}
  */
 export enum ClusterType {
-    SINGLE_NODE = "single-node",
-    MULTI_NODE = "multi-node",
+  SINGLE_NODE = 'single-node',
+  MULTI_NODE = 'multi-node',
 }
 
 /**
@@ -38,46 +38,46 @@ export enum ClusterType {
  * Implemented by {@link Cluster} via {@link ClusterBase}.
  */
 export interface ICluster extends IResource, ec2.IConnectable, secretsmanager.ISecretAttachmentTarget {
-    /**
+  /**
      * Name of the cluster
      *
      * @attribute ClusterName
      */
-    readonly clusterName: string;
+  readonly clusterName: string;
 
-    /**
+  /**
      * The endpoint to use for read/write operations
      *
      * @attribute EndpointAddress,EndpointPort
      */
-    readonly clusterEndpoint: Endpoint;
+  readonly clusterEndpoint: Endpoint;
 }
 
 /**
  * Properties that describe an existing cluster instance
  */
 export interface ClusterAttributes {
-    /**
+  /**
      * The security groups of the redshift cluster
      *
      * @default no security groups will be attached to the import
      */
-    readonly securityGroups?: ec2.ISecurityGroup[];
+  readonly securityGroups?: ec2.ISecurityGroup[];
 
-    /**
+  /**
      * Identifier for the cluster
      */
-    readonly clusterName: string;
+  readonly clusterName: string;
 
-    /**
+  /**
      * Cluster endpoint address
      */
-    readonly clusterEndpointAddress: string;
+  readonly clusterEndpointAddress: string;
 
-    /**
+  /**
      * Cluster endpoint port
      */
-    readonly clusterEndpointPort: number;
+  readonly clusterEndpointPort: number;
 
 }
 
@@ -86,67 +86,67 @@ export interface ClusterAttributes {
  */
 export interface ClusterProps {
 
-    /**
+  /**
      * An optional identifier for the cluster
      *
      * @default - A name is automatically generated.
      */
-    readonly clusterIdentifier?: string;
+  readonly clusterIdentifier?: string;
 
-    /**
+  /**
      * Additional parameters to pass to the database engine
      * https://docs.aws.amazon.com/redshift/latest/mgmt/working-with-parameter-groups.html
      *
      * @default - No parameter group.
      */
-    readonly parameterGroup?: IParameterGroup;
+  readonly parameterGroup?: IParameterGroup;
 
-    /**
+  /**
      * Number of compute nodes in the cluster
      *
      * Value must be at least 1 and no more than 100.
      *
      * @default 1
      */
-    readonly numberOfNodes?: number;
+  readonly numberOfNodes?: number;
 
-    /**
+  /**
      * The node type to be provisioned for the cluster.
      *
      * @default {@link NodeType.DC2_LARGE}
      */
-    readonly nodeType?: NodeType;
+  readonly nodeType?: NodeType;
 
-    /**
+  /**
      * Settings for the individual instances that are launched
      *
      * @default {@link ClusterType.MULTI_NODE}
      */
-    readonly clusterType?: ClusterType;
+  readonly clusterType?: ClusterType;
 
-    /**
+  /**
      * What port to listen on
      *
      * @default - The default for the engine is used.
      */
-    readonly port?: number;
+  readonly port?: number;
 
-    /**
+  /**
      * Whether to enable encryption of data in the cluster
      *
      * @default false
      */
-    readonly encrypted?: boolean
+  readonly encrypted?: boolean
 
-    /**
+  /**
      * The KMS key for storage encryption.
      * will be set to `true`.
      *
      * @default - default master key.
      */
-    readonly encryptionKey?: kms.IKey;
+  readonly encryptionKey?: kms.IKey;
 
-    /**
+  /**
      * A preferred maintenance window day/time range. Should be specified as a range ddd:hh24:mi-ddd:hh24:mi (24H Clock UTC).
      *
      * Example: 'Sun:23:45-Mon:00:15'
@@ -155,110 +155,110 @@ export interface ClusterProps {
      * each AWS Region, occurring on a random day of the week.
      * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_UpgradeDBInstance.Maintenance.html#Concepts.DBMaintenance
      */
-    readonly preferredMaintenanceWindow?: string;
+  readonly preferredMaintenanceWindow?: string;
 
-    /**
+  /**
      * The VPC to place the cluster in.
      *
      * @default a new Vpc will be created
      */
-    readonly vpc: ec2.IVpc;
+  readonly vpc: ec2.IVpc;
 
-    /**
+  /**
      * Where to place the instances within the VPC
      *
      * @default private subnets
      */
-    readonly vpcSubnets?: ec2.SubnetSelection;
+  readonly vpcSubnets?: ec2.SubnetSelection;
 
-    /**
+  /**
      * Security group.
      *
      * @default a new security group is created.
      */
-    readonly securityGroups?: ec2.ISecurityGroup[];
+  readonly securityGroup?: ec2.ISecurityGroup;
 
-    /**
+  /**
      * Username and password for the administrative user
      */
-    readonly masterUser: Login;
+  readonly masterUser: Login;
 
-    /**
+  /**
      * A list of AWS Identity and Access Management (IAM) role that can be used by the cluster to access other AWS services.
      * Specify a maximum of 10 roles.
      *
      * @default - A role is automatically created for you
      */
-    readonly roles?: iam.IRole[];
+  readonly roles?: iam.IRole[];
 
-    /**
+  /**
      * Name of a database which is automatically created inside the cluster
      *
      * @default - default_db
      */
-    readonly defaultDatabaseName?: string;
+  readonly defaultDatabaseName?: string;
 
-    /**
+  /**
      * Specifies logging information, such as queries and connection attempts, for the specified Amazon Redshift cluster.
      *
      * @default - No Logs
      */
-    readonly loggingProperties?: LoggingProperties;
+  readonly loggingProperties?: LoggingProperties;
 
-    /**
+  /**
      * The removal policy to apply when the cluster and its instances are removed
      * from the stack or replaced during an update.
      *
      * @default - RemovalPolicy.RETAIN
      */
-    readonly removalPolicy?: RemovalPolicy
+  readonly removalPolicy?: RemovalPolicy
 }
 
 /**
  * Properties for Redshift Logging
  */
 export interface LoggingProperties {
-    /**
+  /**
      * Bucket to send logs to
      */
-    readonly bucket: s3.IBucket
+  readonly bucket: s3.IBucket
 
-    /**
+  /**
      * Prefix
      *
      * @default - no prefix
      */
-    readonly s3KeyPrefix?: string
+  readonly s3KeyPrefix?: string
 }
 
 /**
  * A new or imported clustered database.
  */
 abstract class ClusterBase extends Resource implements ICluster {
-    /**
+  /**
      * Name of the cluster
      */
-    public abstract readonly clusterName: string;
+  public abstract readonly clusterName: string;
 
-    /**
+  /**
      * The endpoint to use for read/write operations
      */
-    public abstract readonly clusterEndpoint: Endpoint;
+  public abstract readonly clusterEndpoint: Endpoint;
 
-    /**
+  /**
      * Access to the network connections
      */
-    public abstract readonly connections: ec2.Connections;
+  public abstract readonly connections: ec2.Connections;
 
-    /**
+  /**
      * Renders the secret attachment target specifications.
      */
-    public asSecretAttachmentTarget(): secretsmanager.SecretAttachmentTargetProps {
-        return {
-            targetId: this.clusterName,
-            targetType: secretsmanager.AttachmentTargetType.REDSHIFT_CLUSTER,
-        };
-    }
+  public asSecretAttachmentTarget(): secretsmanager.SecretAttachmentTargetProps {
+    return {
+      targetId: this.clusterName,
+      targetType: secretsmanager.AttachmentTargetType.REDSHIFT_CLUSTER,
+    };
+  }
 }
 
 /**
@@ -267,199 +267,199 @@ abstract class ClusterBase extends Resource implements ICluster {
  * @resource AWS::Redshift::Cluster
  */
 export class Cluster extends ClusterBase {
-    /**
+  /**
      * Import an existing DatabaseCluster from properties
      */
-    public static fromClusterAttributes(scope: Construct, id: string, attrs: ClusterAttributes): ICluster {
-        class Import extends ClusterBase implements ICluster {
-            public readonly connections = new ec2.Connections({
-                securityGroups: attrs.securityGroups,
-                defaultPort: ec2.Port.tcp(attrs.clusterEndpointPort),
-            });
-            public readonly clusterName = attrs.clusterName;
-            public readonly instanceIdentifiers: string[] = [];
-            public readonly clusterEndpoint = new Endpoint(attrs.clusterEndpointAddress, attrs.clusterEndpointPort);
-        }
-
-        return new Import(scope, id);
+  public static fromClusterAttributes(scope: Construct, id: string, attrs: ClusterAttributes): ICluster {
+    class Import extends ClusterBase implements ICluster {
+      public readonly connections = new ec2.Connections({
+        securityGroups: attrs.securityGroups,
+        defaultPort: ec2.Port.tcp(attrs.clusterEndpointPort),
+      });
+      public readonly clusterName = attrs.clusterName;
+      public readonly instanceIdentifiers: string[] = [];
+      public readonly clusterEndpoint = new Endpoint(attrs.clusterEndpointAddress, attrs.clusterEndpointPort);
     }
 
-    /**
+    return new Import(scope, id);
+  }
+
+  /**
      * Identifier of the cluster
      */
-    public readonly clusterName: string;
+  public readonly clusterName: string;
 
-    /**
+  /**
      * The endpoint to use for read/write operations
      */
-    public readonly clusterEndpoint: Endpoint;
+  public readonly clusterEndpoint: Endpoint;
 
-    /**
+  /**
      * Access to the network connections
      */
-    public readonly connections: ec2.Connections;
+  public readonly connections: ec2.Connections;
 
-    /**
+  /**
      * The secret attached to this cluster
      */
-    public readonly secret?: secretsmanager.ISecret;
+  public readonly secret?: secretsmanager.ISecret;
 
-    private readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
-    private readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
+  private readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
+  private readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
 
-    /**
+  /**
      * The VPC where the DB subnet group is created.
      */
-    private readonly vpc: ec2.IVpc;
+  private readonly vpc: ec2.IVpc;
 
-    /**
+  /**
      * The subnets used by the DB subnet group.
      */
-    private readonly vpcSubnets?: ec2.SubnetSelection;
+  private readonly vpcSubnets?: ec2.SubnetSelection;
 
-    constructor(scope: Construct, id: string, props: ClusterProps) {
-        super(scope, id);
+  constructor(scope: Construct, id: string, props: ClusterProps) {
+    super(scope, id);
 
-        this.vpc = props.vpc;
-        this.vpcSubnets = props.vpcSubnets ? props.vpcSubnets : {
-            subnetType: ec2.SubnetType.PRIVATE,
-        };
+    this.vpc = props.vpc;
+    this.vpcSubnets = props.vpcSubnets ? props.vpcSubnets : {
+      subnetType: ec2.SubnetType.PRIVATE,
+    };
 
-        const { subnetIds } = this.vpc.selectSubnets(this.vpcSubnets);
+    const { subnetIds } = this.vpc.selectSubnets(this.vpcSubnets);
 
-        const subnetGroup = new CfnClusterSubnetGroup(this, 'Subnets', {
-            description: `Subnets for ${id} Redshift cluster`,
-            subnetIds,
-        });
+    const subnetGroup = new CfnClusterSubnetGroup(this, 'Subnets', {
+      description: `Subnets for ${id} Redshift cluster`,
+      subnetIds,
+    });
 
-        subnetGroup.applyRemovalPolicy(props.removalPolicy, {
-            applyToUpdateReplacePolicy: true
-        });
+    subnetGroup.applyRemovalPolicy(props.removalPolicy, {
+      applyToUpdateReplacePolicy: true
+    });
 
-        const securityGroups = props.securityGroups !== undefined ?
-            props.securityGroups : [new ec2.SecurityGroup(this, 'SecurityGroup', {
-                description: 'Redshift security group',
-                vpc: this.vpc,
-                securityGroupName: 'redshift SG'
-            })];
+    const securityGroups = props.securityGroup !== undefined ?
+      [props.securityGroup] : [new ec2.SecurityGroup(this, 'SecurityGroup', {
+        description: 'Redshift security group',
+        vpc: this.vpc,
+        securityGroupName: 'redshift SG'
+      })];
 
-        const securityGroupIds = securityGroups.map(sg => sg.securityGroupId);
+    const securityGroupIds = securityGroups.map(sg => sg.securityGroupId);
 
-        let secret: DatabaseSecret | undefined;
-        if (!props.masterUser.masterPassword) {
-            secret = new DatabaseSecret(this, 'Secret', {
-                username: props.masterUser.masterUsername,
-                encryptionKey: props.masterUser.kmsKey
-            });
-        }
-
-        const clusterType = props.clusterType || ClusterType.MULTI_NODE;
-        const nodeCount = props.numberOfNodes !== undefined ? props.numberOfNodes : (clusterType === ClusterType.MULTI_NODE ? 2 : 1);
-
-        if (clusterType === ClusterType.MULTI_NODE && nodeCount < 2) {
-            throw new Error('Number of nodes for cluster type multi-node must be at least 2');
-        }
-
-        this.singleUserRotationApplication = secretsmanager.SecretRotationApplication.REDSHIFT_ROTATION_SINGLE_USER;
-        this.multiUserRotationApplication = secretsmanager.SecretRotationApplication.REDSHIFT_ROTATION_MULTI_USER;
-
-        let loggingProperties;
-        if (props.loggingProperties) {
-            loggingProperties = {
-                bucketName: props.loggingProperties.bucket.bucketName,
-                s3KeyPrefix: props.loggingProperties.s3KeyPrefix
-            };
-        }
-
-        const cluster = new CfnCluster(this, 'Resource', {
-            // Basic
-            allowVersionUpgrade: true,
-            automatedSnapshotRetentionPeriod: 1,
-            clusterType,
-            clusterIdentifier: props.clusterIdentifier,
-            clusterSubnetGroupName: subnetGroup.ref,
-            vpcSecurityGroupIds: securityGroupIds,
-            port: props.port,
-            clusterParameterGroupName: props.parameterGroup && props.parameterGroup.parameterGroupName,
-            // Admin
-            masterUsername: secret ? secret.secretValueFromJson('username').toString() : props.masterUser.masterUsername,
-            masterUserPassword: secret
-                ? secret.secretValueFromJson('password').toString()
-                : (props.masterUser.masterPassword
-                    ? props.masterUser.masterPassword.toString()
-                    : "default"),
-            preferredMaintenanceWindow: props.preferredMaintenanceWindow,
-            nodeType: props.nodeType || NodeType.DC2_LARGE,
-            numberOfNodes: nodeCount,
-            loggingProperties,
-            iamRoles: props.roles ? props.roles.map(role => role.roleArn) : undefined,
-            dbName: props.defaultDatabaseName || "default_db",
-            publiclyAccessible: false,
-            // Encryption
-            kmsKeyId: props.encryptionKey && props.encryptionKey.keyArn,
-            encrypted: props.encrypted,
-        });
-
-        cluster.applyRemovalPolicy(props.removalPolicy, {
-            applyToUpdateReplacePolicy: true
-        });
-
-        this.clusterName = cluster.ref;
-
-        // create a number token that represents the port of the cluster
-        const portAttribute = Token.asNumber(cluster.attrEndpointPort);
-        this.clusterEndpoint = new Endpoint(cluster.attrEndpointAddress, portAttribute);
-
-        if (secret) {
-            this.secret = secret.attach(this);
-        }
-
-        const defaultPort = ec2.Port.tcp(this.clusterEndpoint.port);
-        this.connections = new ec2.Connections({ securityGroups, defaultPort });
+    let secret: DatabaseSecret | undefined;
+    if (!props.masterUser.masterPassword) {
+      secret = new DatabaseSecret(this, 'Secret', {
+        username: props.masterUser.masterUsername,
+        encryptionKey: props.masterUser.kmsKey
+      });
     }
 
-    /**
+    const clusterType = props.clusterType || ClusterType.MULTI_NODE;
+    const nodeCount = props.numberOfNodes !== undefined ? props.numberOfNodes : (clusterType === ClusterType.MULTI_NODE ? 2 : 1);
+
+    if (clusterType === ClusterType.MULTI_NODE && nodeCount < 2) {
+      throw new Error('Number of nodes for cluster type multi-node must be at least 2');
+    }
+
+    this.singleUserRotationApplication = secretsmanager.SecretRotationApplication.REDSHIFT_ROTATION_SINGLE_USER;
+    this.multiUserRotationApplication = secretsmanager.SecretRotationApplication.REDSHIFT_ROTATION_MULTI_USER;
+
+    let loggingProperties;
+    if (props.loggingProperties) {
+      loggingProperties = {
+        bucketName: props.loggingProperties.bucket.bucketName,
+        s3KeyPrefix: props.loggingProperties.s3KeyPrefix
+      };
+    }
+
+    const cluster = new CfnCluster(this, 'Resource', {
+      // Basic
+      allowVersionUpgrade: true,
+      automatedSnapshotRetentionPeriod: 1,
+      clusterType,
+      clusterIdentifier: props.clusterIdentifier,
+      clusterSubnetGroupName: subnetGroup.ref,
+      vpcSecurityGroupIds: securityGroupIds,
+      port: props.port,
+      clusterParameterGroupName: props.parameterGroup && props.parameterGroup.parameterGroupName,
+      // Admin
+      masterUsername: secret ? secret.secretValueFromJson('username').toString() : props.masterUser.masterUsername,
+      masterUserPassword: secret
+        ? secret.secretValueFromJson('password').toString()
+        : (props.masterUser.masterPassword
+          ? props.masterUser.masterPassword.toString()
+          : 'default'),
+      preferredMaintenanceWindow: props.preferredMaintenanceWindow,
+      nodeType: props.nodeType || NodeType.DC2_LARGE,
+      numberOfNodes: nodeCount,
+      loggingProperties,
+      iamRoles: props.roles ? props.roles.map(role => role.roleArn) : undefined,
+      dbName: props.defaultDatabaseName || 'default_db',
+      publiclyAccessible: false,
+      // Encryption
+      kmsKeyId: props.encryptionKey && props.encryptionKey.keyArn,
+      encrypted: props.encrypted,
+    });
+
+    cluster.applyRemovalPolicy(props.removalPolicy, {
+      applyToUpdateReplacePolicy: true
+    });
+
+    this.clusterName = cluster.ref;
+
+    // create a number token that represents the port of the cluster
+    const portAttribute = Token.asNumber(cluster.attrEndpointPort);
+    this.clusterEndpoint = new Endpoint(cluster.attrEndpointAddress, portAttribute);
+
+    if (secret) {
+      this.secret = secret.attach(this);
+    }
+
+    const defaultPort = ec2.Port.tcp(this.clusterEndpoint.port);
+    this.connections = new ec2.Connections({ securityGroups, defaultPort });
+  }
+
+  /**
      * Adds the single user rotation of the master password to this cluster.
      *
      * @param [automaticallyAfter=Duration.days(30)] Specifies the number of days after the previous rotation
      * before Secrets Manager triggers the next automatic rotation.
      */
-    public addRotationSingleUser(automaticallyAfter?: Duration): secretsmanager.SecretRotation {
-        if (!this.secret) {
-            throw new Error('Cannot add single user rotation for a cluster without secret.');
-        }
-
-        const id = 'RotationSingleUser';
-        const existing = this.node.tryFindChild(id);
-        if (existing) {
-            throw new Error('A single user rotation was already added to this cluster.');
-        }
-
-        return new secretsmanager.SecretRotation(this, id, {
-            secret: this.secret,
-            automaticallyAfter,
-            application: this.singleUserRotationApplication,
-            vpc: this.vpc,
-            vpcSubnets: this.vpcSubnets,
-            target: this,
-        });
+  public addRotationSingleUser(automaticallyAfter?: Duration): secretsmanager.SecretRotation {
+    if (!this.secret) {
+      throw new Error('Cannot add single user rotation for a cluster without secret.');
     }
 
-    /**
+    const id = 'RotationSingleUser';
+    const existing = this.node.tryFindChild(id);
+    if (existing) {
+      throw new Error('A single user rotation was already added to this cluster.');
+    }
+
+    return new secretsmanager.SecretRotation(this, id, {
+      secret: this.secret,
+      automaticallyAfter,
+      application: this.singleUserRotationApplication,
+      vpc: this.vpc,
+      vpcSubnets: this.vpcSubnets,
+      target: this,
+    });
+  }
+
+  /**
      * Adds the multi user rotation to this cluster.
      */
-    public addRotationMultiUser(id: string, options: RotationMultiUserOptions): secretsmanager.SecretRotation {
-        if (!this.secret) {
-            throw new Error('Cannot add multi user rotation for a cluster without secret.');
-        }
-        return new secretsmanager.SecretRotation(this, id, {
-            secret: options.secret,
-            masterSecret: this.secret,
-            automaticallyAfter: options.automaticallyAfter,
-            application: this.multiUserRotationApplication,
-            vpc: this.vpc,
-            vpcSubnets: this.vpcSubnets,
-            target: this,
-        });
+  public addRotationMultiUser(id: string, options: RotationMultiUserOptions): secretsmanager.SecretRotation {
+    if (!this.secret) {
+      throw new Error('Cannot add multi user rotation for a cluster without secret.');
     }
+    return new secretsmanager.SecretRotation(this, id, {
+      secret: options.secret,
+      masterSecret: this.secret,
+      automaticallyAfter: options.automaticallyAfter,
+      application: this.multiUserRotationApplication,
+      vpc: this.vpc,
+      vpcSubnets: this.vpcSubnets,
+      target: this,
+    });
+  }
 }

@@ -60,8 +60,8 @@ export interface ClusterParameterGroupProps {
  */
 // tslint:disable-next-line:no-empty-interface
 export interface ParameterGroupParameters {
-    readonly parameterName: string
-    readonly parameterValue: string
+  readonly parameterName: string
+  readonly parameterValue: string
 }
 /**
  * A cluster parameter group

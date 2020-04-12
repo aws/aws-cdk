@@ -25,16 +25,16 @@ test('check that instantiation works', () => {
   cdkExpect(stack).to(haveResource('AWS::Redshift::Cluster', {
     Properties: {
       AllowVersionUpgrade: true,
-      MasterUsername: "admin",
-      MasterUserPassword: "tooshort",
-      ClusterType: "multi-node",
+      MasterUsername: 'admin',
+      MasterUserPassword: 'tooshort',
+      ClusterType: 'multi-node',
       AutomatedSnapshotRetentionPeriod: 1,
       NumberOfNodes: 2,
-      NodeType: "dc2.large",
-      DBName: "default_db",
+      NodeType: 'dc2.large',
+      DBName: 'default_db',
       PubliclyAccessible: false,
-      ClusterSubnetGroupName: { Ref: "RedshiftSubnetsDFE70E0A" },
-      VpcSecurityGroupIds: [{ "Fn::GetAtt": ["RedshiftSecurityGroup796D74A7", "GroupId"] }]
+      ClusterSubnetGroupName: { Ref: 'RedshiftSubnetsDFE70E0A' },
+      VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['RedshiftSecurityGroup796D74A7', 'GroupId'] }]
     },
     DeletionPolicy: 'Retain',
     UpdateReplacePolicy: 'Retain'
@@ -42,11 +42,11 @@ test('check that instantiation works', () => {
 
   cdkExpect(stack).to(haveResource('AWS::Redshift::ClusterSubnetGroup', {
     Properties: {
-      Description: `Subnets for Redshift Redshift cluster`,
+      Description: 'Subnets for Redshift Redshift cluster',
       SubnetIds: [
-        { Ref: "VPCPrivateSubnet1Subnet8BCA10E0" },
-        { Ref: "VPCPrivateSubnet2SubnetCFCDAA7A" },
-        { Ref: "VPCPrivateSubnet3Subnet3EDCD457" }
+        { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
+        { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },
+        { Ref: 'VPCPrivateSubnet3Subnet3EDCD457' }
       ]
     },
     DeletionPolicy: 'Retain',
@@ -58,9 +58,9 @@ test('can create a cluster with imported vpc and security group', () => {
   // GIVEN
   const stack = testStack();
   const vpc = ec2.Vpc.fromLookup(stack, 'VPC', {
-    vpcId: "VPC12345"
+    vpcId: 'VPC12345'
   });
-  const sg = ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', "SecurityGroupId12345");
+  const sg = ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'SecurityGroupId12345');
 
   // WHEN
   new Cluster(stack, 'Redshift', {
@@ -74,10 +74,10 @@ test('can create a cluster with imported vpc and security group', () => {
 
   // THEN
   cdkExpect(stack).to(haveResource('AWS::Redshift::Cluster', {
-    ClusterSubnetGroupName: { Ref: "RedshiftSubnetsDFE70E0A" },
-    MasterUsername: "admin",
-    MasterUserPassword: "tooshort",
-    VpcSecurityGroupIds: ["SecurityGroupId12345"]
+    ClusterSubnetGroupName: { Ref: 'RedshiftSubnetsDFE70E0A' },
+    MasterUsername: 'admin',
+    MasterUserPassword: 'tooshort',
+    VpcSecurityGroupIds: ['SecurityGroupId12345']
   }));
 });
 
@@ -149,8 +149,8 @@ test('SIngle Node CLusters spawn only single node', () => {
 
   // THEN
   cdkExpect(stack).to(haveResource('AWS::Redshift::Cluster', {
-    ClusterType: "single-node",
-    NodeType: "dc1.8xlarge",
+    ClusterType: 'single-node',
+    NodeType: 'dc1.8xlarge',
     NumberOfNodes: 1,
   }));
 });
@@ -191,8 +191,8 @@ test('cluster with parameter group', () => {
     description: 'bye',
     parameters: [
       {
-        parameterName: "param",
-        parameterValue: "value"
+        parameterName: 'param',
+        parameterValue: 'value'
       }
     ]
   });
@@ -240,7 +240,7 @@ test('can create a cluster with logging enabled', () => {
   // GIVEN
   const stack = testStack();
   const vpc = new ec2.Vpc(stack, 'VPC');
-  const bucket = s3.Bucket.fromBucketName(stack, "bucket", "logging-bucket");
+  const bucket = s3.Bucket.fromBucketName(stack, 'bucket', 'logging-bucket');
 
   // WHEN
   new Cluster(stack, 'Redshift', {
@@ -250,7 +250,7 @@ test('can create a cluster with logging enabled', () => {
     vpc,
     loggingProperties: {
       bucket,
-      s3KeyPrefix: "prefix"
+      s3KeyPrefix: 'prefix'
     }
   });
 
