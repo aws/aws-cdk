@@ -2,6 +2,17 @@ import { Construct, IResource, Resource } from '@aws-cdk/core';
 import { CfnClusterParameterGroup } from './redshift.generated';
 
 /**
+ * Possible Parameter Group Families
+ * used for defining {@link ClusterParameterGroupProps.family}.
+ * > At this time, redshift-1.0 is the only version of the Amazon Redshift engine.
+ * see https://docs.aws.amazon.com/redshift/latest/mgmt/working-with-parameter-groups.html
+ */
+export enum ParameterGroupFamily {
+  REDSHIFT_1_0 = 'redshift-1.0',
+  DUMMY = 'dummy', // hack to circumvent known bug see https://github.com/aws/aws-cdk/pull/6948#issuecomment-604015109
+}
+
+/**
  * A parameter group
  */
 export interface IParameterGroup extends IResource {
@@ -38,9 +49,12 @@ abstract class ParameterGroupBase extends Resource implements IParameterGroup {
  */
 export interface ClusterParameterGroupProps {
   /**
-   * Database family of this parameter group
+   * The version of the Amazon Redshift engine to which the parameters in the parameter group apply.
+   * see https://docs.aws.amazon.com/redshift/latest/mgmt/working-with-parameter-groups.html
+   *
+   * @default ParameterGroupFamily.REDSHIFT_1_0
    */
-  readonly family: string;
+  readonly family?: ParameterGroupFamily;
 
   /**
    * Description for this parameter group
@@ -52,17 +66,9 @@ export interface ClusterParameterGroupProps {
   /**
    * The parameters in this parameter group
    */
-  readonly parameters: ParameterGroupParameters[];
+  readonly parameters: { [name: string]: string };
 }
 
-/**
- * Construction properties for a ClusterParameterGroup
- */
-// tslint:disable-next-line:no-empty-interface
-export interface ParameterGroupParameters {
-  readonly parameterName: string
-  readonly parameterValue: string
-}
 /**
  * A cluster parameter group
  *
@@ -79,8 +85,10 @@ export class ClusterParameterGroup extends ParameterGroupBase {
 
     const resource = new CfnClusterParameterGroup(this, 'Resource', {
       description: props.description || `Cluster parameter group for ${props.family}`,
-      parameterGroupFamily: props.family,
-      parameters: props.parameters,
+      parameterGroupFamily: props.family ? props.family : ParameterGroupFamily.REDSHIFT_1_0,
+      parameters: Object.entries(props.parameters).map(([name, value]) => {
+        return {parameterName: name, parameterValue: value};
+      }),
     });
 
     this.parameterGroupName = resource.ref;

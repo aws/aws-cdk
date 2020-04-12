@@ -8,17 +8,16 @@ test('create a cluster parameter group', () => {
 
   // WHEN
   new ClusterParameterGroup(stack, 'Params', {
-    family: 'hello',
     description: 'desc',
-    parameters: [
-      { parameterName: 'param', parameterValue: 'value' }
-    ]
+    parameters: {
+      param: 'value'
+    }
   });
 
   // THEN
   cdkExpect(stack).to(haveResource('AWS::Redshift::ClusterParameterGroup', {
     Description: 'desc',
-    ParameterGroupFamily: 'hello',
+    ParameterGroupFamily: 'redshift-1.0',
     Parameters: [
       {
         ParameterName: 'param',

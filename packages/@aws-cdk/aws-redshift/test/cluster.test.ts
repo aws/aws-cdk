@@ -187,14 +187,10 @@ test('cluster with parameter group', () => {
 
   // WHEN
   const group = new ClusterParameterGroup(stack, 'Params', {
-    family: 'hello',
     description: 'bye',
-    parameters: [
-      {
-        parameterName: 'param',
-        parameterValue: 'value'
-      }
-    ]
+    parameters: {
+      param: 'value'
+    }
   });
 
   new Cluster(stack, 'Redshift', {
