@@ -83,7 +83,6 @@
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
-    "jest": "^24.9.0",
     "pkglint": "0.0.0"
   },
   "dependencies": {
@@ -105,9 +104,6 @@
     "node": ">= 10.12.0"
   },
   "stability": "experimental",
-  "awslint": {
-    "exclude": []
-  },
   "awscdkio": {
     "announce": false
   }
