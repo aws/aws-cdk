@@ -5,7 +5,6 @@ import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as eks from '../lib';
 import { KubectlLayer } from '../lib/kubectl-layer';
-import { spotInterruptHandler } from '../lib/spot-interrupt-handler';
 import { testFixture, testFixtureNoVpc } from './util';
 
 // tslint:disable:max-line-length
@@ -217,6 +216,79 @@ export = {
       ]
     }));
 
+    test.done();
+  },
+
+  'create nodegroup with existing role'(test: Test) {
+    // GIVEN
+    const { stack } = testFixtureNoVpc();
+
+    // WHEN
+    const cluster = new eks.Cluster(stack, 'cluster', {
+      defaultCapacity: 10,
+      defaultCapacityInstance: new ec2.InstanceType('m2.xlarge')
+    });
+
+    const existingRole = new iam.Role(stack, 'ExistingRole', {
+      assumedBy: new iam.AccountRootPrincipal()
+    });
+
+    new eks.Nodegroup(stack, 'Nodegroup', {
+      cluster,
+      nodeRole: existingRole
+    });
+
+    // THEN
+    test.ok(cluster.defaultNodegroup);
+    expect(stack).to(haveResource('AWS::EKS::Nodegroup', {
+      ScalingConfig: {
+        DesiredSize: 10,
+        MaxSize: 10,
+        MinSize: 10
+      }
+    }));
+    test.done();
+  },
+
+  'adding bottlerocket capacity creates an ASG with tags'(test: Test) {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: false, defaultCapacity: 0 });
+
+    // WHEN
+    cluster.addCapacity('Bottlerocket', {
+      instanceType: new ec2.InstanceType('t2.medium'),
+      machineImageType: eks.MachineImageType.BOTTLEROCKET
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', {
+      Tags: [
+        {
+          Key: 'Name',
+          PropagateAtLaunch: true,
+          Value: 'Stack/Cluster/Bottlerocket'
+        },
+        {
+          Key: { 'Fn::Join': ['', ['kubernetes.io/cluster/', { Ref: 'ClusterEB0386A7' }]] },
+          PropagateAtLaunch: true,
+          Value: 'owned'
+        }
+      ]
+    }));
+    test.done();
+  },
+
+  'adding bottlerocket capacity with bootstrapOptions throws error'(test: Test) {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: false, defaultCapacity: 0 });
+
+    test.throws(() => cluster.addCapacity('Bottlerocket', {
+      instanceType: new ec2.InstanceType('t2.medium'),
+      machineImageType: eks.MachineImageType.BOTTLEROCKET,
+      bootstrapOptions: {}
+    }), /bootstrapOptions is not supported for Bottlerocket/);
     test.done();
   },
 
@@ -567,7 +639,14 @@ export = {
           });
 
           // THEN
-          expect(stack).to(haveResource(eks.KubernetesResource.RESOURCE_TYPE, { Manifest: JSON.stringify(spotInterruptHandler()) }));
+          expect(stack).to(haveResource(eks.HelmChart.RESOURCE_TYPE, {
+            Release: 'stackclusterchartspotinterrupthandlerdec62e07',
+            Chart: 'aws-node-termination-handler',
+            Wait: false,
+            Values: '{\"nodeSelector.lifecycle\":\"Ec2Spot\"}',
+            Namespace: 'kube-system',
+            Repository: 'https://aws.github.io/eks-charts'
+          }));
           test.done();
         },
 
