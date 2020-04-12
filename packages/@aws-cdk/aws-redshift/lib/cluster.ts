@@ -39,17 +39,17 @@ export enum ClusterType {
  */
 export interface ICluster extends IResource, ec2.IConnectable, secretsmanager.ISecretAttachmentTarget {
   /**
-     * Name of the cluster
-     *
-     * @attribute ClusterName
-     */
+   * Name of the cluster
+   *
+   * @attribute ClusterName
+   */
   readonly clusterName: string;
 
   /**
-     * The endpoint to use for read/write operations
-     *
-     * @attribute EndpointAddress,EndpointPort
-     */
+   * The endpoint to use for read/write operations
+   *
+   * @attribute EndpointAddress,EndpointPort
+   */
   readonly clusterEndpoint: Endpoint;
 }
 
@@ -58,25 +58,25 @@ export interface ICluster extends IResource, ec2.IConnectable, secretsmanager.IS
  */
 export interface ClusterAttributes {
   /**
-     * The security groups of the redshift cluster
-     *
-     * @default no security groups will be attached to the import
-     */
+   * The security groups of the redshift cluster
+   *
+   * @default no security groups will be attached to the import
+   */
   readonly securityGroups?: ec2.ISecurityGroup[];
 
   /**
-     * Identifier for the cluster
-     */
+   * Identifier for the cluster
+   */
   readonly clusterName: string;
 
   /**
-     * Cluster endpoint address
-     */
+   * Cluster endpoint address
+   */
   readonly clusterEndpointAddress: string;
 
   /**
-     * Cluster endpoint port
-     */
+   * Cluster endpoint port
+   */
   readonly clusterEndpointPort: number;
 
 }
@@ -87,130 +87,130 @@ export interface ClusterAttributes {
 export interface ClusterProps {
 
   /**
-     * An optional identifier for the cluster
-     *
-     * @default - A name is automatically generated.
-     */
+   * An optional identifier for the cluster
+   *
+   * @default - A name is automatically generated.
+   */
   readonly clusterIdentifier?: string;
 
   /**
-     * Additional parameters to pass to the database engine
-     * https://docs.aws.amazon.com/redshift/latest/mgmt/working-with-parameter-groups.html
-     *
-     * @default - No parameter group.
-     */
+   * Additional parameters to pass to the database engine
+   * https://docs.aws.amazon.com/redshift/latest/mgmt/working-with-parameter-groups.html
+   *
+   * @default - No parameter group.
+   */
   readonly parameterGroup?: IParameterGroup;
 
   /**
-     * Number of compute nodes in the cluster
-     *
-     * Value must be at least 1 and no more than 100.
-     *
-     * @default 1
-     */
+   * Number of compute nodes in the cluster
+   *
+   * Value must be at least 1 and no more than 100.
+   *
+   * @default 1
+   */
   readonly numberOfNodes?: number;
 
   /**
-     * The node type to be provisioned for the cluster.
-     *
-     * @default {@link NodeType.DC2_LARGE}
-     */
+   * The node type to be provisioned for the cluster.
+   *
+   * @default {@link NodeType.DC2_LARGE}
+   */
   readonly nodeType?: NodeType;
 
   /**
-     * Settings for the individual instances that are launched
-     *
-     * @default {@link ClusterType.MULTI_NODE}
-     */
+   * Settings for the individual instances that are launched
+   *
+   * @default {@link ClusterType.MULTI_NODE}
+   */
   readonly clusterType?: ClusterType;
 
   /**
-     * What port to listen on
-     *
-     * @default - The default for the engine is used.
-     */
+   * What port to listen on
+   *
+   * @default - The default for the engine is used.
+   */
   readonly port?: number;
 
   /**
-     * Whether to enable encryption of data in the cluster
-     *
-     * @default false
-     */
+   * Whether to enable encryption of data in the cluster
+   *
+   * @default false
+   */
   readonly encrypted?: boolean
 
   /**
-     * The KMS key for storage encryption.
-     * will be set to `true`.
-     *
-     * @default - default master key.
-     */
+   * The KMS key for storage encryption.
+   * will be set to `true`.
+   *
+   * @default - default master key.
+   */
   readonly encryptionKey?: kms.IKey;
 
   /**
-     * A preferred maintenance window day/time range. Should be specified as a range ddd:hh24:mi-ddd:hh24:mi (24H Clock UTC).
-     *
-     * Example: 'Sun:23:45-Mon:00:15'
-     *
-     * @default - 30-minute window selected at random from an 8-hour block of time for
-     * each AWS Region, occurring on a random day of the week.
-     * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_UpgradeDBInstance.Maintenance.html#Concepts.DBMaintenance
-     */
+   * A preferred maintenance window day/time range. Should be specified as a range ddd:hh24:mi-ddd:hh24:mi (24H Clock UTC).
+   *
+   * Example: 'Sun:23:45-Mon:00:15'
+   *
+   * @default - 30-minute window selected at random from an 8-hour block of time for
+   * each AWS Region, occurring on a random day of the week.
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_UpgradeDBInstance.Maintenance.html#Concepts.DBMaintenance
+   */
   readonly preferredMaintenanceWindow?: string;
 
   /**
-     * The VPC to place the cluster in.
-     *
-     * @default a new Vpc will be created
-     */
+   * The VPC to place the cluster in.
+   *
+   * @default a new Vpc will be created
+   */
   readonly vpc: ec2.IVpc;
 
   /**
-     * Where to place the instances within the VPC
-     *
-     * @default private subnets
-     */
+   * Where to place the instances within the VPC
+   *
+   * @default private subnets
+   */
   readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
-     * Security group.
-     *
-     * @default a new security group is created.
-     */
+   * Security group.
+   *
+   * @default a new security group is created.
+   */
   readonly securityGroup?: ec2.ISecurityGroup;
 
   /**
-     * Username and password for the administrative user
-     */
+   * Username and password for the administrative user
+   */
   readonly masterUser: Login;
 
   /**
-     * A list of AWS Identity and Access Management (IAM) role that can be used by the cluster to access other AWS services.
-     * Specify a maximum of 10 roles.
-     *
-     * @default - A role is automatically created for you
-     */
+   * A list of AWS Identity and Access Management (IAM) role that can be used by the cluster to access other AWS services.
+   * Specify a maximum of 10 roles.
+   *
+   * @default - A role is automatically created for you
+   */
   readonly roles?: iam.IRole[];
 
   /**
-     * Name of a database which is automatically created inside the cluster
-     *
-     * @default - default_db
-     */
+   * Name of a database which is automatically created inside the cluster
+   *
+   * @default - default_db
+   */
   readonly defaultDatabaseName?: string;
 
   /**
-     * Specifies logging information, such as queries and connection attempts, for the specified Amazon Redshift cluster.
-     *
-     * @default - No Logs
-     */
+   * Specifies logging information, such as queries and connection attempts, for the specified Amazon Redshift cluster.
+   *
+   * @default - No Logs
+   */
   readonly loggingProperties?: LoggingProperties;
 
   /**
-     * The removal policy to apply when the cluster and its instances are removed
-     * from the stack or replaced during an update.
-     *
-     * @default - RemovalPolicy.RETAIN
-     */
+   * The removal policy to apply when the cluster and its instances are removed
+   * from the stack or replaced during an update.
+   *
+   * @default - RemovalPolicy.RETAIN
+   */
   readonly removalPolicy?: RemovalPolicy
 }
 
@@ -219,15 +219,15 @@ export interface ClusterProps {
  */
 export interface LoggingProperties {
   /**
-     * Bucket to send logs to
-     */
+   * Bucket to send logs to
+   */
   readonly bucket: s3.IBucket
 
   /**
-     * Prefix
-     *
-     * @default - no prefix
-     */
+   * Prefix
+   *
+   * @default - no prefix
+   */
   readonly s3KeyPrefix?: string
 }
 
@@ -236,23 +236,23 @@ export interface LoggingProperties {
  */
 abstract class ClusterBase extends Resource implements ICluster {
   /**
-     * Name of the cluster
-     */
+   * Name of the cluster
+   */
   public abstract readonly clusterName: string;
 
   /**
-     * The endpoint to use for read/write operations
-     */
+   * The endpoint to use for read/write operations
+   */
   public abstract readonly clusterEndpoint: Endpoint;
 
   /**
-     * Access to the network connections
-     */
+   * Access to the network connections
+   */
   public abstract readonly connections: ec2.Connections;
 
   /**
-     * Renders the secret attachment target specifications.
-     */
+   * Renders the secret attachment target specifications.
+   */
   public asSecretAttachmentTarget(): secretsmanager.SecretAttachmentTargetProps {
     return {
       targetId: this.clusterName,
@@ -268,8 +268,8 @@ abstract class ClusterBase extends Resource implements ICluster {
  */
 export class Cluster extends ClusterBase {
   /**
-     * Import an existing DatabaseCluster from properties
-     */
+   * Import an existing DatabaseCluster from properties
+   */
   public static fromClusterAttributes(scope: Construct, id: string, attrs: ClusterAttributes): ICluster {
     class Import extends ClusterBase implements ICluster {
       public readonly connections = new ec2.Connections({
@@ -285,36 +285,36 @@ export class Cluster extends ClusterBase {
   }
 
   /**
-     * Identifier of the cluster
-     */
+   * Identifier of the cluster
+   */
   public readonly clusterName: string;
 
   /**
-     * The endpoint to use for read/write operations
-     */
+   * The endpoint to use for read/write operations
+   */
   public readonly clusterEndpoint: Endpoint;
 
   /**
-     * Access to the network connections
-     */
+   * Access to the network connections
+   */
   public readonly connections: ec2.Connections;
 
   /**
-     * The secret attached to this cluster
-     */
+   * The secret attached to this cluster
+   */
   public readonly secret?: secretsmanager.ISecret;
 
   private readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
   private readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
 
   /**
-     * The VPC where the DB subnet group is created.
-     */
+   * The VPC where the DB subnet group is created.
+   */
   private readonly vpc: ec2.IVpc;
 
   /**
-     * The subnets used by the DB subnet group.
-     */
+   * The subnets used by the DB subnet group.
+   */
   private readonly vpcSubnets?: ec2.SubnetSelection;
 
   constructor(scope: Construct, id: string, props: ClusterProps) {
@@ -419,11 +419,11 @@ export class Cluster extends ClusterBase {
   }
 
   /**
-     * Adds the single user rotation of the master password to this cluster.
-     *
-     * @param [automaticallyAfter=Duration.days(30)] Specifies the number of days after the previous rotation
-     * before Secrets Manager triggers the next automatic rotation.
-     */
+   * Adds the single user rotation of the master password to this cluster.
+   *
+   * @param [automaticallyAfter=Duration.days(30)] Specifies the number of days after the previous rotation
+   * before Secrets Manager triggers the next automatic rotation.
+   */
   public addRotationSingleUser(automaticallyAfter?: Duration): secretsmanager.SecretRotation {
     if (!this.secret) {
       throw new Error('Cannot add single user rotation for a cluster without secret.');
@@ -446,8 +446,8 @@ export class Cluster extends ClusterBase {
   }
 
   /**
-     * Adds the multi user rotation to this cluster.
-     */
+   * Adds the multi user rotation to this cluster.
+   */
   public addRotationMultiUser(id: string, options: RotationMultiUserOptions): secretsmanager.SecretRotation {
     if (!this.secret) {
       throw new Error('Cannot add multi user rotation for a cluster without secret.');
