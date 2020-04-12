@@ -26,6 +26,32 @@ represents the amount of errors reported by that Lambda function:
 const errors = fn.metricErrors();
 ```
 
+### Metrics from CDK Constructs
+
+Many CDK constructs have convenience methods to access their corresponding
+metrics. For example, here's a metric created from an SQS queue:
+
+```ts
+const queue = new sqs.Queue(this, 'MySqsQueue');
+const metric = queue.metricNumberOfMessagesReceived();
+```
+
+You can also instantiate `Metric` objects to reference any
+[published metric](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/aws-services-cloudwatch-metrics.html)
+that's not exposed using a convenience method on the CDK construct.
+For example:
+
+```ts
+const hostedZone = new route53.HostedZone(this, 'MyHostedZone', { zoneName: "example.org" });
+const metric = new Metric({
+  namespace: 'AWS/Route53',
+  metricName: 'DNSQueries',
+  dimensions: {
+    HostedZoneId: hostedZone.hostedZoneId
+  }
+})
+```
+
 ### Instantiating a new Metric object
 
 If you want to reference a metric that is not yet exposed by an existing construct,
