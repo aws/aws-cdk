@@ -3,11 +3,10 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Construct, Duration, IResource, RemovalPolicy, Resource, Token } from '@aws-cdk/core';
+import { Construct, Duration, IResource, RemovalPolicy, Resource, SecretValue, Token } from '@aws-cdk/core';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { IClusterParameterGroup } from './parameter-group';
-import { Login, RotationMultiUserOptions } from './props';
 import { CfnCluster, CfnClusterSubnetGroup } from './redshift.generated';
 
 /**
@@ -31,6 +30,61 @@ export enum NodeType {
 export enum ClusterType {
   SINGLE_NODE = 'single-node',
   MULTI_NODE = 'multi-node',
+}
+
+/**
+ * Username and password combination
+ */
+export interface Login {
+  /**
+   * Username
+   */
+  readonly masterUsername: string;
+
+  /**
+   * Password
+   *
+   * Do not put passwords in your CDK code directly.
+   *
+   * @default a Secrets Manager generated password
+   */
+  readonly masterPassword?: SecretValue;
+
+  /**
+   * KMS encryption key to encrypt the generated secret.
+   *
+   * @default default master key
+   */
+  readonly encryptionKey?: kms.IKey;
+}
+
+/**
+ * Options to add the multi user rotation
+ */
+export interface RotationMultiUserOptions {
+  /**
+   * The secret to rotate. It must be a JSON string with the following format:
+   * ```
+   * {
+   *   "engine": <required: database engine>,
+   *   "host": <required: instance host name>,
+   *   "username": <required: username>,
+   *   "password": <required: password>,
+   *   "dbname": <optional: database name>,
+   *   "port": <optional: if not specified, default port will be used>,
+   *   "masterarn": <required: the arn of the master secret which will be used to create users/change passwords>
+   * }
+   * ```
+   */
+  readonly secret: secretsmanager.ISecret;
+
+  /**
+   * Specifies the number of days after the previous rotation before
+   * Secrets Manager triggers the next automatic rotation.
+   *
+   * @default Duration.days(30)
+   */
+  readonly automaticallyAfter?: Duration;
 }
 
 /**
