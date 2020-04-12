@@ -1,6 +1,5 @@
 export * from './cluster';
 export * from './parameter-group';
-export * from './props';
 export * from './database-secret';
 export * from './endpoint';
 

@@ -253,11 +253,19 @@ export interface ClusterProps {
   readonly defaultDatabaseName?: string;
 
   /**
-   * Specifies logging information, such as queries and connection attempts, for the specified Amazon Redshift cluster.
+   * Bucket to send logs to.
+   * Logging information includes queries and connection attempts, for the specified Amazon Redshift cluster.
    *
    * @default - No Logs
    */
-  readonly loggingProperties?: LoggingProperties;
+  readonly loggingBucket?: s3.IBucket
+
+  /**
+   * Prefix used for logging
+   *
+   * @default - no prefix
+   */
+  readonly loggingKeyPrefix?: string
 
   /**
    * The removal policy to apply when the cluster and its instances are removed
@@ -266,23 +274,6 @@ export interface ClusterProps {
    * @default RemovalPolicy.RETAIN
    */
   readonly removalPolicy?: RemovalPolicy
-}
-
-/**
- * Properties for Redshift Logging
- */
-export interface LoggingProperties {
-  /**
-   * Bucket to send logs to
-   */
-  readonly bucket: s3.IBucket
-
-  /**
-   * Prefix
-   *
-   * @default - no prefix
-   */
-  readonly s3KeyPrefix?: string
 }
 
 /**
@@ -420,10 +411,10 @@ export class Cluster extends ClusterBase {
     this.multiUserRotationApplication = secretsmanager.SecretRotationApplication.REDSHIFT_ROTATION_MULTI_USER;
 
     let loggingProperties;
-    if (props.loggingProperties) {
+    if (props.loggingBucket) {
       loggingProperties = {
-        bucketName: props.loggingProperties.bucket.bucketName,
-        s3KeyPrefix: props.loggingProperties.s3KeyPrefix
+        bucketName: props.loggingBucket.bucketName,
+        s3KeyPrefix: props.loggingKeyPrefix
       };
     }
 
