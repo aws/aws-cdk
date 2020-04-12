@@ -10,13 +10,15 @@ import { ConcreteWidget } from './widget';
 export interface MetricWidgetProps {
   /**
    * Title for the graph
+   *
+   * @default - None
    */
   readonly title?: string;
 
   /**
    * The region the metrics of this graph should be taken from
    *
-   * @default Current region
+   * @default - Current region
    */
   readonly region?: string;
 
@@ -30,7 +32,8 @@ export interface MetricWidgetProps {
   /**
    * Height of the widget
    *
-   * @default Depends on the type of widget
+   * @default - 6 for Alarm and Graph widgets.
+   *   3 for single value widgets where most recent value of a metric is displayed.
    */
   readonly height?: number;
 }
@@ -297,6 +300,9 @@ export interface HorizontalAnnotation {
   readonly visible?: boolean;
 }
 
+/**
+ * Fill shading options that will be used with an annotation
+ */
 export enum Shading {
   /**
    * Don't add shading

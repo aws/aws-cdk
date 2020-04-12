@@ -6,9 +6,10 @@ import { IAlarm } from './alarm';
  */
 export interface IAlarmAction {
   /**
-   * 
-   * @param scope 
-   * @param alarm 
+   * Return the properties required to send alarm actions to this CloudWatch alarm.
+   *
+   * @param scope root Construct that allows creating new Constructs
+   * @param alarm CloudWatch alarm that the action will target
    */
   bind(scope: Construct, alarm: IAlarm): AlarmActionConfig;
 }

@@ -44,10 +44,29 @@ export interface Dimension {
  * Statistic to use over the aggregation period
  */
 export enum Statistic {
+  /**
+   * The count (number) of data points used for the statistical calculation.
+   */
   SAMPLE_COUNT = 'SampleCount',
+
+  /**
+   * The value of Sum / SampleCount during the specified period.
+   */
   AVERAGE = 'Average',
+  /**
+   * All values submitted for the matching metric added together.
+   * This statistic can be useful for determining the total volume of a metric.
+   */
   SUM = 'Sum',
+  /**
+   * The lowest value observed during the specified period.
+   * You can use this value to determine low volumes of activity for your application.
+   */
   MINIMUM = 'Minimum',
+  /**
+   * The highest value observed during the specified period.
+   * You can use this value to determine high volumes of activity for your application.
+   */
   MAXIMUM = 'Maximum'
 }
 
@@ -198,14 +217,14 @@ export interface MetricConfig {
   /**
    * In case the metric represents a query, the details of the query
    *
-   * @default - unset
+   * @default - None
    */
   readonly metricStat?: MetricStatConfig;
 
   /**
    * In case the metric is a math expression, the details of the math expression
    *
-   * @default - unset
+   * @default - None
    */
   readonly mathExpression?: MetricExpressionConfig;
 
@@ -215,7 +234,7 @@ export interface MetricConfig {
    * Examples are 'label' and 'color', but any key in here will be
    * added to dashboard graphs.
    *
-   * @default {}
+   * @default - None
    */
   readonly renderingProperties?: Record<string, unknown>;
 }
