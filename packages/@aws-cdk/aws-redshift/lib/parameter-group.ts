@@ -29,16 +29,6 @@ export interface IParameterGroup extends IResource {
  */
 abstract class ParameterGroupBase extends Resource implements IParameterGroup {
   /**
-   * Imports a parameter group
-   */
-  public static fromParameterGroupName(scope: Construct, id: string, parameterGroupName: string): IParameterGroup {
-    class Import extends Resource implements IParameterGroup {
-      public readonly parameterGroupName = parameterGroupName;
-    }
-    return new Import(scope, id);
-  }
-
-  /**
    * The name of the parameter group
    */
   public abstract readonly parameterGroupName: string;
@@ -75,6 +65,16 @@ export interface ClusterParameterGroupProps {
  * @resource AWS::Redshift::ClusterParameterGroup
  */
 export class ClusterParameterGroup extends ParameterGroupBase {
+  /**
+   * Imports a parameter group
+   */
+  public static fromParameterGroupName(scope: Construct, id: string, parameterGroupName: string): IParameterGroup {
+    class Import extends Resource implements IParameterGroup {
+      public readonly parameterGroupName = parameterGroupName;
+    }
+    return new Import(scope, id);
+  }
+
   /**
    * The name of the parameter group
    */
