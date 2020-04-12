@@ -10,9 +10,8 @@ import { FargateProfile, FargateProfileOptions } from './fargate-profile';
 import { HelmChart, HelmChartOptions } from './helm-chart';
 import { KubernetesPatch } from './k8s-patch';
 import { KubernetesResource } from './k8s-resource';
-import { Nodegroup, NodegroupOptions } from './managed-nodegroup';
-import { spotInterruptHandler } from './spot-interrupt-handler';
-import { renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
+import { Nodegroup, NodegroupOptions  } from './managed-nodegroup';
+import { LifecycleLabel, renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
 
 // defaults are based on https://eksctl.io
 const DEFAULT_CAPACITY_COUNT = 2;
@@ -597,7 +596,15 @@ export class Cluster extends Resource implements ICluster {
 
     // if this is an ASG with spot instances, install the spot interrupt handler (only if kubectl is enabled).
     if (autoScalingGroup.spotPrice && this.kubectlEnabled) {
-      this.addResource('spot-interrupt-handler', ...spotInterruptHandler());
+      this.addChart('spot-interrupt-handler', {
+        chart: 'aws-node-termination-handler',
+        version: '0.7.3',
+        repository: 'https://aws.github.io/eks-charts',
+        namespace: 'kube-system',
+        values: {
+          'nodeSelector.lifecycle': LifecycleLabel.SPOT
+        }
+      });
     }
   }
 

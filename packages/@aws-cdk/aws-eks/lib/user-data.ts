@@ -1,7 +1,6 @@
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import { Stack } from '@aws-cdk/core';
 import { BootstrapOptions, ICluster } from './cluster';
-import { LifecycleLabel } from './spot-interrupt-handler';
 
 // tslint:disable-next-line:max-line-length
 export function renderAmazonLinuxUserData(clusterName: string, autoScalingGroup: autoscaling.AutoScalingGroup, options: BootstrapOptions = {}): string[] {
@@ -54,4 +53,18 @@ export function renderBottlerocketUserData(cluster: ICluster): string[] {
     `cluster-certificate="${cluster.clusterCertificateAuthorityData}"`,
     `cluster-name="${cluster.clusterName}"`
   ];
+}
+
+/**
+ * The lifecycle label for node selector
+ */
+export enum LifecycleLabel {
+  /**
+   * on-demand instances
+   */
+  ON_DEMAND = 'OnDemand',
+  /**
+   * spot instances
+   */
+  SPOT = 'Ec2Spot'
 }
