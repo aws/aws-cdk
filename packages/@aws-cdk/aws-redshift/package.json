@@ -104,9 +104,8 @@
     "@aws-cdk/aws-secretsmanager": "0.0.0",
     "@aws-cdk/aws-kms": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
-    "@aws-cdk/core": "0.0.0",
-    "constructs": "^2.0.0"
   },
+
   "engines": {
     "node": ">= 10.12.0"
   },
