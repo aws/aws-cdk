@@ -209,7 +209,7 @@ export interface ClusterProps {
    * The removal policy to apply when the cluster and its instances are removed
    * from the stack or replaced during an update.
    *
-   * @default - RemovalPolicy.RETAIN
+   * @default RemovalPolicy.RETAIN
    */
   readonly removalPolicy?: RemovalPolicy
 }
@@ -325,6 +325,8 @@ export class Cluster extends ClusterBase {
       subnetType: ec2.SubnetType.PRIVATE,
     };
 
+    const removalPolicy = props.removalPolicy ? props.removalPolicy : RemovalPolicy.RETAIN;
+
     const { subnetIds } = this.vpc.selectSubnets(this.vpcSubnets);
 
     const subnetGroup = new CfnClusterSubnetGroup(this, 'Subnets', {
@@ -332,7 +334,7 @@ export class Cluster extends ClusterBase {
       subnetIds,
     });
 
-    subnetGroup.applyRemovalPolicy(props.removalPolicy, {
+    subnetGroup.applyRemovalPolicy(removalPolicy, {
       applyToUpdateReplacePolicy: true
     });
 
@@ -400,7 +402,7 @@ export class Cluster extends ClusterBase {
       encrypted: props.encrypted,
     });
 
-    cluster.applyRemovalPolicy(props.removalPolicy, {
+    cluster.applyRemovalPolicy(removalPolicy, {
       applyToUpdateReplacePolicy: true
     });
 
