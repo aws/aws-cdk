@@ -6,7 +6,6 @@ import { Test } from 'nodeunit';
 import * as eks from '../lib';
 import { KubectlLayer } from '../lib/kubectl-layer';
 import { testFixture, testFixtureNoVpc } from './util';
-import { MachineImageType, Nodegroup } from '../lib';
 
 // tslint:disable:max-line-length
 
@@ -234,7 +233,7 @@ export = {
       assumedBy: new iam.AccountRootPrincipal()
     });
 
-    new Nodegroup(stack, 'Nodegroup', {
+    new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
       nodeRole: existingRole
     });
@@ -259,7 +258,7 @@ export = {
     // WHEN
     cluster.addCapacity('Bottlerocket', {
       instanceType: new ec2.InstanceType('t2.medium'),
-      machineImageType: MachineImageType.BOTTLEROCKET
+      machineImageType: eks.MachineImageType.BOTTLEROCKET
     });
 
     // THEN
@@ -287,7 +286,7 @@ export = {
 
     test.throws(() => cluster.addCapacity('Bottlerocket', {
       instanceType: new ec2.InstanceType('t2.medium'),
-      machineImageType: MachineImageType.BOTTLEROCKET,
+      machineImageType: eks.MachineImageType.BOTTLEROCKET,
       bootstrapOptions: {}
     }), /bootstrapOptions is not supported for Bottlerocket/);
     test.done();
