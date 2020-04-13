@@ -21,8 +21,9 @@
     "build": "tsc -b && tslint -p . && chmod +x bin/cdk-build && chmod +x bin/cdk-test && chmod +x bin/cdk-watch && chmod +x bin/cdk-awslint && pkglint",
     "watch": "tsc -b -w",
     "pkglint": "pkglint -f",
+    "test": "echo success",
     "build+test+package": "npm run build+test",
-    "build+test": "npm run build"
+    "build+test": "npm run build && npm test"
   },
   "author": {
     "name": "Amazon Web Services",
@@ -37,7 +38,7 @@
     "pkglint": "0.0.0"
   },
   "dependencies": {
-    "@typescript-eslint/eslint-plugin": "^2.26.0",
+    "@typescript-eslint/eslint-plugin": "^2.27.0",
     "@typescript-eslint/parser": "^2.19.2",
     "awslint": "0.0.0",
     "colors": "^1.4.0",
@@ -62,6 +63,6 @@
   ],
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 10.3.0"
+    "node": ">= 10.12.0"
   }
 }

@@ -694,6 +694,27 @@
         "ToPort": 443
       }
     },
+    "ClusterControlPlaneSecurityGroupfromawscdkeksclustertestClusterBottlerocketNodesInstanceSecurityGroup83FE7914443ECEF3F30": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "IpProtocol": "tcp",
+        "Description": "from awscdkeksclustertestClusterBottlerocketNodesInstanceSecurityGroup83FE7914:443",
+        "FromPort": 443,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "ClusterControlPlaneSecurityGroupD274242C",
+            "GroupId"
+          ]
+        },
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "ClusterBottlerocketNodesInstanceSecurityGroup3794A94B",
+            "GroupId"
+          ]
+        },
+        "ToPort": 443
+      }
+    },
     "ClusterControlPlaneSecurityGroupfromawscdkeksclustertestClusterspotInstanceSecurityGroupF50F5D474431DE5485F": {
       "Type": "AWS::EC2::SecurityGroupIngress",
       "Properties": {
@@ -784,7 +805,9 @@
                 "eks:DeleteCluster",
                 "eks:UpdateClusterVersion",
                 "eks:UpdateClusterConfig",
-                "eks:CreateFargateProfile"
+                "eks:CreateFargateProfile",
+                "eks:TagResource",
+                "eks:UntagResource"
               ],
               "Effect": "Allow",
               "Resource": [
@@ -912,6 +935,13 @@
               {
                 "Fn::GetAtt": [
                   "ClusterNodesInstanceRoleC3C01328",
+                  "Arn"
+                ]
+              },
+              "\\\",\\\"username\\\":\\\"system:node:{{EC2PrivateDNSName}}\\\",\\\"groups\\\":[\\\"system:bootstrappers\\\",\\\"system:nodes\\\"]},{\\\"rolearn\\\":\\\"",
+              {
+                "Fn::GetAtt": [
+                  "ClusterBottlerocketNodesInstanceRole68E4BCFB",
                   "Arn"
                 ]
               },
@@ -1392,6 +1422,308 @@
         }
       }
     },
+    "ClusterBottlerocketNodesInstanceSecurityGroup3794A94B": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "aws-cdk-eks-cluster-test/Cluster/BottlerocketNodes/InstanceSecurityGroup",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1"
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-eks-cluster-test/Cluster/BottlerocketNodes"
+          },
+          {
+            "Key": {
+              "Fn::Join": [
+                "",
+                [
+                  "kubernetes.io/cluster/",
+                  {
+                    "Ref": "Cluster9EE0221C"
+                  }
+                ]
+              ]
+            },
+            "Value": "owned"
+          }
+        ],
+        "VpcId": {
+          "Ref": "ClusterDefaultVpcFA9F2722"
+        }
+      }
+    },
+    "ClusterBottlerocketNodesInstanceSecurityGroupfromawscdkeksclustertestClusterBottlerocketNodesInstanceSecurityGroup83FE7914ALLTRAFFIC7B6353A7": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "IpProtocol": "-1",
+        "Description": "from awscdkeksclustertestClusterBottlerocketNodesInstanceSecurityGroup83FE7914:ALL TRAFFIC",
+        "GroupId": {
+          "Fn::GetAtt": [
+            "ClusterBottlerocketNodesInstanceSecurityGroup3794A94B",
+            "GroupId"
+          ]
+        },
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "ClusterBottlerocketNodesInstanceSecurityGroup3794A94B",
+            "GroupId"
+          ]
+        }
+      }
+    },
+    "ClusterBottlerocketNodesInstanceSecurityGroupfromawscdkeksclustertestClusterControlPlaneSecurityGroup2F130134443A6D43789": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "IpProtocol": "tcp",
+        "Description": "from awscdkeksclustertestClusterControlPlaneSecurityGroup2F130134:443",
+        "FromPort": 443,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "ClusterBottlerocketNodesInstanceSecurityGroup3794A94B",
+            "GroupId"
+          ]
+        },
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "ClusterControlPlaneSecurityGroupD274242C",
+            "GroupId"
+          ]
+        },
+        "ToPort": 443
+      }
+    },
+    "ClusterBottlerocketNodesInstanceSecurityGroupfromawscdkeksclustertestClusterControlPlaneSecurityGroup2F1301341025655352CE8AD9A": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "IpProtocol": "tcp",
+        "Description": "from awscdkeksclustertestClusterControlPlaneSecurityGroup2F130134:1025-65535",
+        "FromPort": 1025,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "ClusterBottlerocketNodesInstanceSecurityGroup3794A94B",
+            "GroupId"
+          ]
+        },
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "ClusterControlPlaneSecurityGroupD274242C",
+            "GroupId"
+          ]
+        },
+        "ToPort": 65535
+      }
+    },
+    "ClusterBottlerocketNodesInstanceRole68E4BCFB": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "ec2.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/AmazonEKSWorkerNodePolicy"
+              ]
+            ]
+          },
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/AmazonEKS_CNI_Policy"
+              ]
+            ]
+          },
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+              ]
+            ]
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-eks-cluster-test/Cluster/BottlerocketNodes"
+          },
+          {
+            "Key": {
+              "Fn::Join": [
+                "",
+                [
+                  "kubernetes.io/cluster/",
+                  {
+                    "Ref": "Cluster9EE0221C"
+                  }
+                ]
+              ]
+            },
+            "Value": "owned"
+          }
+        ]
+      }
+    },
+    "ClusterBottlerocketNodesInstanceProfileB6E2F25A": {
+      "Type": "AWS::IAM::InstanceProfile",
+      "Properties": {
+        "Roles": [
+          {
+            "Ref": "ClusterBottlerocketNodesInstanceRole68E4BCFB"
+          }
+        ]
+      }
+    },
+    "ClusterBottlerocketNodesLaunchConfig76D7BEBE": {
+      "Type": "AWS::AutoScaling::LaunchConfiguration",
+      "Properties": {
+        "ImageId": {
+          "Ref": "SsmParameterValueawsservicebottlerocketawsk8s115x8664latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+        },
+        "InstanceType": "t3.small",
+        "IamInstanceProfile": {
+          "Ref": "ClusterBottlerocketNodesInstanceProfileB6E2F25A"
+        },
+        "SecurityGroups": [
+          {
+            "Fn::GetAtt": [
+              "ClusterBottlerocketNodesInstanceSecurityGroup3794A94B",
+              "GroupId"
+            ]
+          }
+        ],
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "",
+              [
+                "\n[settings.kubernetes]\napi-server=\"",
+                {
+                  "Fn::GetAtt": [
+                    "Cluster9EE0221C",
+                    "Endpoint"
+                  ]
+                },
+                "\"\ncluster-certificate=\"",
+                {
+                  "Fn::GetAtt": [
+                    "Cluster9EE0221C",
+                    "CertificateAuthorityData"
+                  ]
+                },
+                "\"\ncluster-name=\"",
+                {
+                  "Ref": "Cluster9EE0221C"
+                },
+                "\""
+              ]
+            ]
+          }
+        }
+      },
+      "DependsOn": [
+        "ClusterBottlerocketNodesInstanceRole68E4BCFB"
+      ]
+    },
+    "ClusterBottlerocketNodesASGA27A9B70": {
+      "Type": "AWS::AutoScaling::AutoScalingGroup",
+      "Properties": {
+        "MaxSize": "2",
+        "MinSize": "2",
+        "LaunchConfigurationName": {
+          "Ref": "ClusterBottlerocketNodesLaunchConfig76D7BEBE"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "PropagateAtLaunch": true,
+            "Value": "aws-cdk-eks-cluster-test/Cluster/BottlerocketNodes"
+          },
+          {
+            "Key": {
+              "Fn::Join": [
+                "",
+                [
+                  "kubernetes.io/cluster/",
+                  {
+                    "Ref": "Cluster9EE0221C"
+                  }
+                ]
+              ]
+            },
+            "PropagateAtLaunch": true,
+            "Value": "owned"
+          }
+        ],
+        "VPCZoneIdentifier": [
+          {
+            "Ref": "ClusterDefaultVpcPrivateSubnet1Subnet03F39409"
+          },
+          {
+            "Ref": "ClusterDefaultVpcPrivateSubnet2SubnetA526AEA7"
+          },
+          {
+            "Ref": "ClusterDefaultVpcPrivateSubnet3SubnetB64BC839"
+          }
+        ]
+      },
+      "UpdatePolicy": {
+        "AutoScalingRollingUpdate": {
+          "WaitOnResourceSignals": false,
+          "PauseTime": "PT0S",
+          "SuspendProcesses": [
+            "HealthCheck",
+            "ReplaceUnhealthy",
+            "AZRebalance",
+            "AlarmNotification",
+            "ScheduledActions"
+          ]
+        },
+        "AutoScalingScheduledAction": {
+          "IgnoreUnmodifiedGroupSizeProperties": true
+        }
+      }
+    },
     "ClusterspotInstanceSecurityGroup01F7B1CE": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
@@ -1681,8 +2013,8 @@
         }
       }
     },
-    "ClustermanifestspotinterrupthandlerFB832DCE": {
-      "Type": "Custom::AWSCDK-EKS-KubernetesResource",
+    "Clusterchartspotinterrupthandler79E2D768": {
+      "Type": "Custom::AWSCDK-EKS-HelmChart",
       "Properties": {
         "ServiceToken": {
           "Fn::GetAtt": [
@@ -1690,7 +2022,6 @@
             "Outputs.awscdkeksclustertestawscdkawseksKubectlProviderframeworkonEventC681B49AArn"
           ]
         },
-        "Manifest": "[{\"kind\":\"ClusterRole\",\"apiVersion\":\"rbac.authorization.k8s.io/v1\",\"metadata\":{\"name\":\"node-termination-handler\",\"namespace\":\"default\"},\"rules\":[{\"apiGroups\":[\"apps\"],\"resources\":[\"daemonsets\"],\"verbs\":[\"get\",\"delete\"]},{\"apiGroups\":[\"\"],\"resources\":[\"*\"],\"verbs\":[\"*\"]},{\"apiGroups\":[\"rbac.authorization.k8s.io\"],\"resources\":[\"*\"],\"verbs\":[\"*\"]},{\"apiGroups\":[\"apiextensions.k8s.io\"],\"resources\":[\"customresourcedefinitions\"],\"verbs\":[\"get\",\"list\",\"watch\",\"create\",\"delete\"]}]},{\"apiVersion\":\"v1\",\"kind\":\"ServiceAccount\",\"metadata\":{\"name\":\"node-termination-handler\"}},{\"kind\":\"ClusterRoleBinding\",\"apiVersion\":\"rbac.authorization.k8s.io/v1\",\"metadata\":{\"name\":\"node-termination-handler\",\"namespace\":\"default\"},\"subjects\":[{\"kind\":\"ServiceAccount\",\"name\":\"node-termination-handler\",\"namespace\":\"default\"}],\"roleRef\":{\"kind\":\"ClusterRole\",\"name\":\"node-termination-handler\",\"apiGroup\":\"rbac.authorization.k8s.io\"}},{\"apiVersion\":\"apps/v1beta2\",\"kind\":\"DaemonSet\",\"metadata\":{\"name\":\"node-termination-handler\",\"namespace\":\"default\"},\"spec\":{\"selector\":{\"matchLabels\":{\"app\":\"node-termination-handler\"}},\"template\":{\"metadata\":{\"labels\":{\"app\":\"node-termination-handler\"}},\"spec\":{\"serviceAccountName\":\"node-termination-handler\",\"containers\":[{\"name\":\"node-termination-handler\",\"image\":\"amazon/aws-node-termination-handler:v1.0.0\",\"imagePullPolicy\":\"Always\",\"env\":[{\"name\":\"NODE_NAME\",\"valueFrom\":{\"fieldRef\":{\"fieldPath\":\"spec.nodeName\"}}},{\"name\":\"POD_NAME\",\"valueFrom\":{\"fieldRef\":{\"fieldPath\":\"metadata.name\"}}},{\"name\":\"NAMESPACE\",\"valueFrom\":{\"fieldRef\":{\"fieldPath\":\"metadata.namespace\"}}},{\"name\":\"SPOT_POD_IP\",\"valueFrom\":{\"fieldRef\":{\"fieldPath\":\"status.podIP\"}}}],\"resources\":{\"requests\":{\"memory\":\"64Mi\",\"cpu\":\"50m\"},\"limits\":{\"memory\":\"128Mi\",\"cpu\":\"100m\"}}}],\"nodeSelector\":{\"lifecycle\":\"Ec2Spot\"}}}}}]",
         "ClusterName": {
           "Ref": "Cluster9EE0221C"
         },
@@ -1699,7 +2030,14 @@
             "ClusterCreationRole360249B6",
             "Arn"
           ]
-        }
+        },
+        "Release": "ksclustertestclusterchartspotinterrupthandlerf41ba997",
+        "Chart": "aws-node-termination-handler",
+        "Version": "0.7.3",
+        "Wait": false,
+        "Values": "{\"nodeSelector.lifecycle\":\"Ec2Spot\"}",
+        "Namespace": "kube-system",
+        "Repository": "https://aws.github.io/eks-charts"
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
@@ -2138,6 +2476,10 @@
     "SsmParameterValueawsserviceeksoptimizedami114amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
       "Type": "AWS::SSM::Parameter::Value<String>",
       "Default": "/aws/service/eks/optimized-ami/1.14/amazon-linux-2/recommended/image_id"
+    },
+    "SsmParameterValueawsservicebottlerocketawsk8s115x8664latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/aws/service/bottlerocket/aws-k8s-1.15/x86_64/latest/image_id"
     }
   }
 }

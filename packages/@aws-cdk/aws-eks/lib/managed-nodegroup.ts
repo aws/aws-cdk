@@ -12,7 +12,7 @@ export interface INodegroup extends IResource {
    * Name of the nodegroup
    * @attribute
    */
-  readonly nodegroupName: string
+  readonly nodegroupName: string;
 }
 
 /**
@@ -21,7 +21,13 @@ export interface INodegroup extends IResource {
  * uses the Amazon EKS-optimized Linux AMI.
  */
 export enum NodegroupAmiType {
+  /**
+   * Amazon Linux 2
+   */
   AL2_X86_64 = 'AL2_x86_64',
+  /**
+   * Amazon Linux 2 with GPU support
+   */
   AL2_X86_64_GPU = 'AL2_x86_64_GPU',
 }
 
@@ -202,7 +208,7 @@ export class Nodegroup extends Resource implements INodegroup {
   private readonly maxSize: number;
   private readonly minSize: number;
 
-  constructor(scope: Construct, id: string, props: NodegroupProps ) {
+  constructor(scope: Construct, id: string, props: NodegroupProps) {
     super(scope, id, {
       physicalName: props.nodegroupName
     });
