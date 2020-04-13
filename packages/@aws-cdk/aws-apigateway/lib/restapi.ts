@@ -2,6 +2,7 @@ import { IVpcEndpoint } from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import { CfnOutput, Construct, IResource as IResourceBase, Resource, Stack } from '@aws-cdk/core';
 import { ApiKey, IApiKey } from './api-key';
+import { APIDefinition, APIDefinitionConfig } from './apidefinition';
 import { CfnAccount, CfnRestApi } from './apigateway.generated';
 import { CorsOptions } from './cors';
 import { Deployment } from './deployment';
@@ -70,6 +71,14 @@ export interface RestApiProps extends ResourceOptions {
    * @default - ID of the RestApi construct.
    */
   readonly restApiName?: string;
+
+  /**
+   * A swagger or OpenAPI specification that defines a set of RESTful APIs in
+   * JSON or YAML format.
+   *
+   * @default - No API specification.
+   */
+  readonly apiDefinition?: APIDefinition;
 
   /**
    * Custom header parameters for the request.
@@ -228,6 +237,7 @@ export class RestApi extends Resource implements IRestApi {
   public readonly methods = new Array<Method>();
 
   private _domainName?: DomainName;
+  private _apiDefinition?: APIDefinitionConfig;
   private _latestDeployment: Deployment | undefined;
 
   constructor(scope: Construct, id: string, props: RestApiProps = { }) {
@@ -235,10 +245,17 @@ export class RestApi extends Resource implements IRestApi {
       physicalName: props.restApiName || id,
     });
 
+    if (props.apiDefinition !== undefined) {
+      this._apiDefinition = props.apiDefinition.bind(this);
+      verifyAPIDefinitionConfig(this._apiDefinition);
+    }
+
     const resource = new CfnRestApi(this, 'Resource', {
       name: this.physicalName,
       description: props.description,
       policy: props.policy,
+      body: props.apiDefinition?.isInline ? this._apiDefinition?.inlineDefinition : undefined,
+      bodyS3Location: props.apiDefinition?.isInline ? undefined : this._apiDefinition?.s3Location,
       failOnWarnings: props.failOnWarnings,
       minimumCompressionSize: props.minimumCompressionSize,
       binaryMediaTypes: props.binaryMediaTypes,
@@ -531,5 +548,12 @@ class RootResource extends ResourceBase {
     if (this.defaultCorsPreflightOptions) {
       this.addCorsPreflight(this.defaultCorsPreflightOptions);
     }
+  }
+}
+
+export function verifyAPIDefinitionConfig(definition: APIDefinitionConfig) {
+  // mutually exclusive
+  if ((!definition.inlineDefinition && !definition.s3Location) || (definition.inlineDefinition && definition.s3Location)) {
+    throw new Error('APIDefinition must specify one of "inlineDefinition" or "s3Location" but not both');
   }
 }
