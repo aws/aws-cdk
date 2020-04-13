@@ -62,9 +62,10 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
   // consumer is nested in the producer (directly or indirectly)
   // ----------------------------------------------------------------------
 
-  // if the consumer is a child of the producer, wire the reference through a
-  // CloudFormation parameter on the consumer and resolve recursively.
-  if (isParent(producer, consumer)) {
+  // if the consumer is nested within the producer (directly or indirectly),
+  // wire through a CloudFormation parameter on the consumer and resolve
+  // recursively.
+  if (isNested(consumer, producer)) {
     const parameterValue = createNestedStackParameter(consumer, reference);
     return resolveValue(consumer, parameterValue);
   }
@@ -260,17 +261,17 @@ function createNestedStackOutput(producer: Stack, reference: Reference): CfnRefe
  * If `child` is not a nested stack, always returns `false` because it can't
  * have a parent, dah.
  */
-export function isParent(parent: Stack, child: Stack): boolean {
-  // if "nested" is not a nested stack, then by definition we cannot be its parent
-  if (!child.nestedStackParent) {
-    return false;
-  }
-
-  // if this is the direct parent, then we found it
-  if (parent === child.nestedStackParent) {
+export function isNested(nested: Stack, parent: Stack): boolean {
+  // if the parent is a direct parent
+  if (nested.nestedStackParent === parent) {
     return true;
   }
 
-  // traverse up
-  return isParent(parent, child.nestedStackParent);
+  // we reached a top-level (non-nested) stack without finding the parent
+  if (!nested.nestedStackParent) {
+    return false;
+  }
+
+  // recurse with the child's direct parent
+  return isNested(nested.nestedStackParent, parent);
 }
