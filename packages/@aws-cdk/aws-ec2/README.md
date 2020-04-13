@@ -96,16 +96,16 @@ them in. For example, a VPC endpoint by default is placed into a subnet in
 every availability zone, but you can override which subnets to use. The property
 is typically called one of `subnets`, `vpcSubnets` or `subnetSelection`.
 
-The example below will place the endpoint into two AZs (`us-east-1a` and `us-east-1c1),
+The example below will place the endpoint into two AZs (`us-east-1a` and `us-east-1c`),
 in Isolated subnets:
 
 ```ts
-new InterfaceVpcEndpoint(stack, "VPC Endpoint", {
+new InterfaceVpcEndpoint(stack, 'VPC Endpoint', {
   vpc,
-  service: new InterfaceVpcEndpointService("com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc", 443),
+  service: new InterfaceVpcEndpointService('com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc', 443),
   subnets: {
     subnetType: SubnetType.ISOLATED,
-    availabilityZones: ["us-east-1a", "us-east-1c"]
+    availabilityZones: ['us-east-1a', 'us-east-1c']
   }
 });
 ```
@@ -113,9 +113,9 @@ new InterfaceVpcEndpoint(stack, "VPC Endpoint", {
 You can also specify specific subnet objects for granular control:
 
 ```ts
-new InterfaceVpcEndpoint(stack, "VPC Endpoint", {
+new InterfaceVpcEndpoint(stack, 'VPC Endpoint', {
   vpc,
-  service: new InterfaceVpcEndpointService("com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc", 443),
+  service: new InterfaceVpcEndpointService('com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc', 443),
   subnets: {
     subnets: [subnet1, subnet2]
   }
@@ -350,11 +350,11 @@ There are various classes that implement the connection peer part:
 
 ```ts fixture=conns
 // Simple connection peers
-let peer = ec2.Peer.ipv4("10.0.0.0/16");
+let peer = ec2.Peer.ipv4('10.0.0.0/16');
 peer = ec2.Peer.anyIpv4();
-peer = ec2.Peer.ipv6("::0/0");
+peer = ec2.Peer.ipv6('::0/0');
 peer = ec2.Peer.anyIpv6();
-peer = ec2.Peer.prefixList("pl-12345");
+peer = ec2.Peer.prefixList('pl-12345');
 appFleet.connections.allowTo(peer, ec2.Port.tcp(443), 'Allow outbound HTTPS');
 ```
 
@@ -487,13 +487,13 @@ unavailable AZs. You can determine what the available AZs are from the AWS conso
 The AZs CDK places the VPC endpoint in can be configured as follows:
 
 ```ts
-new InterfaceVpcEndpoint(stack, "VPC Endpoint", {
+new InterfaceVpcEndpoint(stack, 'VPC Endpoint', {
   vpc,
-  service: new InterfaceVpcEndpointService("com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc", 443),
+  service: new InterfaceVpcEndpointService('com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc', 443),
   // Choose which availability zones to place the VPC endpoint in, based on
   // available AZs
   subnets: {
-    availabilityZones: ["us-east-1a", "us-east-1c"]
+    availabilityZones: ['us-east-1a', 'us-east-1c']
   }
 });
 ```
@@ -514,10 +514,10 @@ Alternatively, existing security groups can be used by specifying the `securityG
 A VPC endpoint service enables you to expose a Network Load Balancer(s) as a provider service to consumers, who connect to your service over a VPC endpoint. You can restrict access to your service via whitelisted principals (anything that extends ArnPrincipal), and require that new connections be manually accepted.
 
 ```ts
-new VpcEndpointService(this, "EndpointService", {
+new VpcEndpointService(this, 'EndpointService', {
   vpcEndpointServiceLoadBalancers: [networkLoadBalancer1, networkLoadBalancer2],
   acceptanceRequired: true,
-  whitelistedPrincipals: [new ArnPrincipal("arn:aws:iam::123456789012:root")]
+  whitelistedPrincipals: [new ArnPrincipal('arn:aws:iam::123456789012:root')]
 });
 ```
 
