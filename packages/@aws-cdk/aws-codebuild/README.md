@@ -157,9 +157,9 @@ With local caching, the cache is stored on the codebuild instance itself. This i
 cheap and fast, but CodeBuild cannot guarantee a reuse of instance and hence cannot
 guarantee cache hits. For example, when a build starts and caches files locally, if two subsequent builds start at the same time afterwards only one of those builds would get the cache. Three different cache modes are supported, which can be turned on individually.
 
-* `LocalCacheMode.Source` caches Git metadata for primary and secondary sources.
-* `LocalCacheMode.DockerLayer` caches existing Docker layers.
-* `LocalCacheMode.Custom` caches directories you specify in the buildspec file.
+* `LocalCacheMode.SOURCE` caches Git metadata for primary and secondary sources.
+* `LocalCacheMode.DOCKER_LAYER` caches existing Docker layers.
+* `LocalCacheMode.CUSTOM` caches directories you specify in the buildspec file.
 
 ```typescript
 new codebuild.Project(this, 'Project', {
@@ -168,7 +168,7 @@ new codebuild.Project(this, 'Project', {
   }),
 
   // Enable Docker AND custom caching
-  cache: codebuild.Cache.local(LocalCacheMode.DockerLayer, LocalCacheMode.Custom)
+  cache: codebuild.Cache.local(LocalCacheMode.DOCKER_LAYER, LocalCacheMode.CUSTOM)
 });
 ```
 
