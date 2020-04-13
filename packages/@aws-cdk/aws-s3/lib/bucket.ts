@@ -905,12 +905,13 @@ export interface BucketProps {
 
   /**
    * Destination bucket for the server access logs.
-   * @default - Access logs are disabled
+   * @default - If "serverAccessLogsPrefix" undefined - access logs disabled, otherwise - log to current bucket.
    */
   readonly serverAccessLogsBucket?: IBucket;
 
   /**
    * Optional log file prefix to use for the bucket's access logs.
+   * If defined without "serverAccessLogsBucket", enables access logs to current bucket with this prefix.
    * @default - No log file prefix
    */
   readonly serverAccessLogsPrefix?: string;
@@ -1294,16 +1295,12 @@ export class Bucket extends BucketBase {
   }
 
   private parseServerAccessLogs(props: BucketProps): CfnBucket.LoggingConfigurationProperty | undefined {
-    if (props.serverAccessLogsPrefix && !props.serverAccessLogsBucket) {
-      throw new Error('"serverAccessLogsBucket" is required if "serverAccessLogsPrefix" is set');
-    }
-
-    if (!props.serverAccessLogsBucket) {
+    if (!props.serverAccessLogsBucket && !props.serverAccessLogsPrefix) {
       return undefined;
     }
 
     return {
-      destinationBucketName: props.serverAccessLogsBucket.bucketName,
+      destinationBucketName: props.serverAccessLogsBucket?.bucketName,
       logFilePrefix: props.serverAccessLogsPrefix,
     };
   }
