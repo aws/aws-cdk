@@ -1125,24 +1125,24 @@ export = {
     'Can select subnets by type and AZ'(test: Test) {
       // GIVEN
       const stack = getTestStack();
-      const vpc = new Vpc(stack, "VPC", {
+      const vpc = new Vpc(stack, 'VPC', {
         maxAzs: 3
       });
 
       // WHEN
-      new InterfaceVpcEndpoint(stack, "VPC Endpoint", {
+      new InterfaceVpcEndpoint(stack, 'VPC Endpoint', {
         vpc,
         privateDnsEnabled: false,
-        service: new InterfaceVpcEndpointService("com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc", 443),
+        service: new InterfaceVpcEndpointService('com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc', 443),
         subnets: {
           subnetType: SubnetType.PRIVATE,
-          availabilityZones: ["dummy1a", "dummy1c"]
+          availabilityZones: ['dummy1a', 'dummy1c']
         }
       });
 
       // THEN
       expect(stack).to(haveResource('AWS::EC2::VPCEndpoint', {
-        ServiceName: "com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc",
+        ServiceName: 'com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc',
         SubnetIds: [
           {
             Ref: 'VPCPrivateSubnet1Subnet8BCA10E0'
@@ -1158,22 +1158,22 @@ export = {
     'SubnetSelection filtered on az uses default subnetType when no subnet type specified'(test: Test) {
       // GIVEN
       const stack = getTestStack();
-      const vpc = new Vpc(stack, "VPC", {
+      const vpc = new Vpc(stack, 'VPC', {
         maxAzs: 3
       });
 
       // WHEN
-      new InterfaceVpcEndpoint(stack, "VPC Endpoint", {
+      new InterfaceVpcEndpoint(stack, 'VPC Endpoint', {
         vpc,
-        service: new InterfaceVpcEndpointService("com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc", 443),
+        service: new InterfaceVpcEndpointService('com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc', 443),
         subnets: {
-          availabilityZones: ["dummy1a", "dummy1c"]
+          availabilityZones: ['dummy1a', 'dummy1c']
         }
       });
 
       // THEN
       expect(stack).to(haveResource('AWS::EC2::VPCEndpoint', {
-        ServiceName: "com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc",
+        ServiceName: 'com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc',
         SubnetIds: [
           {
             Ref: 'VPCPrivateSubnet1Subnet8BCA10E0'
