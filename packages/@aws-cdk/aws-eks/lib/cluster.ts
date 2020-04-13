@@ -10,6 +10,7 @@ import { FargateProfile, FargateProfileOptions } from './fargate-profile';
 import { HelmChart, HelmChartOptions } from './helm-chart';
 import { KubernetesPatch } from './k8s-patch';
 import { KubernetesResource } from './k8s-resource';
+import { KubectlProvider } from './kubectl-provider';
 import { Nodegroup, NodegroupOptions  } from './managed-nodegroup';
 import { LifecycleLabel, renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
 
@@ -677,6 +678,19 @@ export class Cluster extends Resource implements ICluster {
     }
 
     return this._clusterResource.getCreationRoleArn(assumedBy);
+  }
+
+  /**
+   * Returns the custom resource provider for kubectl-related resources.
+   * @internal
+   */
+  public get _kubectlProvider(): KubectlProvider {
+    if (!this._clusterResource) {
+      throw new Error('Unable to perform this operation since kubectl is not enabled for this cluster');
+    }
+
+    const uid = '@aws-cdk/aws-eks.KubectlProvider';
+    return this.stack.node.tryFindChild(uid) as KubectlProvider || new KubectlProvider(this.stack, uid);
   }
 
   /**
