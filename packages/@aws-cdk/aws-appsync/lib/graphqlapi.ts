@@ -339,6 +339,12 @@ export interface BaseDataSourceProps {
    * @default - None
    */
   readonly description?: string;
+}
+
+/**
+ * properties for an AppSync datasource backed by a resource
+ */
+export interface BackedDataSourceProps extends BaseDataSourceProps {
   /**
    * The IAM service role to be assumed by AppSync to interact with the data source
    *
@@ -408,7 +414,7 @@ export abstract class BaseDataSource extends Construct implements IGrantable {
   protected api: GraphQLApi;
   protected serviceRole: IRole;
 
-  constructor(scope: Construct, id: string, props: BaseDataSourceProps, extended: ExtendedDataSourceProps) {
+  constructor(scope: Construct, id: string, props: BackedDataSourceProps, extended: ExtendedDataSourceProps) {
     super(scope, id);
 
     this.serviceRole = props.serviceRole || new Role(this, 'ServiceRole', { assumedBy: new ServicePrincipal('appsync') });
@@ -441,7 +447,7 @@ export abstract class BaseDataSource extends Construct implements IGrantable {
 /**
  * Properties for an AppSync DynamoDB datasource
  */
-export interface DynamoDbDataSourceProps extends BaseDataSourceProps {
+export interface DynamoDbDataSourceProps extends BackedDataSourceProps {
   /**
    * The DynamoDB table backing this data source
    * [disable-awslint:ref-via-interface]
@@ -485,7 +491,7 @@ export class DynamoDbDataSource extends BaseDataSource {
 /**
  * Properties for an AppSync Lambda datasource
  */
-export interface LambdaDataSourceProps extends BaseDataSourceProps {
+export interface LambdaDataSourceProps extends BackedDataSourceProps {
   /**
    * The Lambda function to call to interact with this data source
    */
