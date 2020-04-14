@@ -1,3 +1,4 @@
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { writeFileSync } from 'fs';
 import { join } from 'path';
@@ -142,7 +143,7 @@ describe('property absence', () => {
 function mkStack(template: any): cxapi.CloudFormationStackArtifact {
   const assembly = new cxapi.CloudAssemblyBuilder();
   assembly.addArtifact('test', {
-    type: cxapi.ArtifactType.AWS_CLOUDFORMATION_STACK,
+    type: cxschema.ArtifactType.AWS_CLOUDFORMATION_STACK,
     environment: cxapi.EnvironmentUtils.format('123456789', 'us-west-2'),
     properties: {
       templateFile: 'template.json'
