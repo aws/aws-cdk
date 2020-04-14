@@ -88,6 +88,7 @@
   "dependencies": {
     "@aws-cdk/aws-apigateway": "0.0.0",
     "@aws-cdk/aws-cloudfront": "0.0.0",
+    "@aws-cdk/aws-cognito": "0.0.0",
     "@aws-cdk/aws-ec2": "0.0.0",
     "@aws-cdk/aws-elasticloadbalancing": "0.0.0",
     "@aws-cdk/aws-elasticloadbalancingv2": "0.0.0",
@@ -102,6 +103,7 @@
   "peerDependencies": {
     "@aws-cdk/aws-apigateway": "0.0.0",
     "@aws-cdk/aws-cloudfront": "0.0.0",
+    "@aws-cdk/aws-cognito": "0.0.0",
     "@aws-cdk/aws-ec2": "0.0.0",
     "@aws-cdk/aws-elasticloadbalancing": "0.0.0",
     "@aws-cdk/aws-elasticloadbalancingv2": "0.0.0",
