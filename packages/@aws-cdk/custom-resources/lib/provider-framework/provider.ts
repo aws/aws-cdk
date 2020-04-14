@@ -1,11 +1,9 @@
-// tslint:disable: max-line-length
 import * as cfn from '@aws-cdk/aws-cloudformation';
 import * as lambda from '@aws-cdk/aws-lambda';
-import * as sfn from '@aws-cdk/aws-stepfunctions';
-import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
 import { Construct, Duration } from '@aws-cdk/core';
 import * as path from 'path';
 import * as consts from './runtime/consts';
+import { StateMachine } from './state-machine';
 import { calculateRetryPolicy } from './util';
 
 const RUNTIME_HANDLER_PATH = path.join(__dirname, 'runtime');
@@ -86,7 +84,8 @@ export class Provider extends Construct implements cfn.ICustomResourceProvider {
     super(scope, id);
 
     if (!props.isCompleteHandler && (props.queryInterval || props.totalTimeout)) {
-      throw new Error('"queryInterval" and "totalTimeout" can only be configured if "isCompleteHandler" is specified. Otherwise, they have no meaning');
+      throw new Error('"queryInterval" and "totalTimeout" can only be configured if "isCompleteHandler" is specified. '
+        + 'Otherwise, they have no meaning');
     }
 
     this.onEventHandler = props.onEventHandler;
@@ -98,12 +97,13 @@ export class Provider extends Construct implements cfn.ICustomResourceProvider {
       const isCompleteFunction = this.createFunction(consts.FRAMEWORK_IS_COMPLETE_HANDLER_NAME);
       const timeoutFunction = this.createFunction(consts.FRAMEWORK_ON_TIMEOUT_HANDLER_NAME);
 
-      const isCompleteTask = this.createTask(isCompleteFunction);
-      isCompleteTask.addCatch(this.createTask(timeoutFunction));
-      isCompleteTask.addRetry(calculateRetryPolicy(props));
-
-      const waiterStateMachine = new sfn.StateMachine(this, 'waiter-state-machine', {
-        definition: isCompleteTask
+      const retry = calculateRetryPolicy(props);
+      const waiterStateMachine = new StateMachine(this, 'waiter-state-machine', {
+        isCompleteHandler: isCompleteFunction,
+        timeoutHandler: timeoutFunction,
+        backoffRate: retry.backoffRate,
+        interval: retry.interval,
+        maxAttempts: retry.maxAttempts,
       });
 
       // the on-event entrypoint is going to start the execution of the waiter
@@ -140,11 +140,5 @@ export class Provider extends Construct implements cfn.ICustomResourceProvider {
     }
 
     return fn;
-  }
-
-  private createTask(handler: lambda.Function) {
-    return new sfn.Task(this, `${handler.node.id}-task`, {
-      task: new tasks.InvokeFunction(handler),
-    });
   }
 }

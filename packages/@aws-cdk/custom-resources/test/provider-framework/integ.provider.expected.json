@@ -963,22 +963,20 @@
             {
               "Action": "lambda:InvokeFunction",
               "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "comamazonawscdkcustomresourcess3assertproviderframeworkisComplete63829575",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": "lambda:InvokeFunction",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "comamazonawscdkcustomresourcess3assertproviderframeworkonTimeoutA1E1E5DC",
-                  "Arn"
-                ]
-              }
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "comamazonawscdkcustomresourcess3assertproviderframeworkisComplete63829575",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "comamazonawscdkcustomresourcess3assertproviderframeworkonTimeoutA1E1E5DC",
+                    "Arn"
+                  ]
+                }
+              ]
             }
           ],
           "Version": "2012-10-17"
@@ -1024,7 +1022,6 @@
         }
       },
       "DependsOn": [
-        "comamazonawscdkcustomresourcess3assertproviderwaiterstatemachineRoleDefaultPolicy9882AB39",
         "comamazonawscdkcustomresourcess3assertproviderwaiterstatemachineRole39E8529F"
       ]
     }
