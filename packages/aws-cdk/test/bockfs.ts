@@ -12,7 +12,7 @@ import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as path_ from 'path';
 
-const bockFsRoot = path_.join(os.tmpdir(), 'bockfs');
+const bockFsRoot = fs.mkdtempSync(path_.join(os.tmpdir(), 'bockfs'));
 let oldCwd: string | undefined;
 
 function bockfs(files: Record<string, string>) {

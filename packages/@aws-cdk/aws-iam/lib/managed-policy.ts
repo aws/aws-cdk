@@ -18,6 +18,9 @@ export interface IManagedPolicy {
   readonly managedPolicyArn: string;
 }
 
+/**
+ * Properties for defining an IAM managed policy
+ */
 export interface ManagedPolicyProps {
   /**
    * The name of the managed policy. If you specify multiple policies for an entity,

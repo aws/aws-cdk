@@ -96,7 +96,7 @@
     "constructs": "^2.0.0"
   },
   "engines": {
-    "node": ">= 10.3.0"
+    "node": ">= 10.12.0"
   },
   "awslint": {
     "exclude": [
@@ -106,10 +106,7 @@
       "resource-attribute:@aws-cdk/aws-eks.Cluster.clusterEncryptionConfigKeyArn",
       "props-no-arn-refs:@aws-cdk/aws-eks.ClusterProps.outputMastersRoleArn",
       "resource-attribute:@aws-cdk/aws-eks.Cluster.clusterSecurityGroupId",
-      "resource-attribute:@aws-cdk/aws-eks.Cluster.clusterSecurityGroupId",
-      "docs-public-apis:@aws-cdk/aws-eks.NodegroupAmiType.AL2_X86_64",
-      "docs-public-apis:@aws-cdk/aws-eks.NodegroupAmiType.AL2_X86_64_GPU"
-
+      "resource-attribute:@aws-cdk/aws-eks.Cluster.clusterSecurityGroupId"
     ]
   },
   "stability": "experimental",

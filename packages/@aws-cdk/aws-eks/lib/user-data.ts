@@ -1,9 +1,10 @@
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import { Stack } from '@aws-cdk/core';
-import { BootstrapOptions } from './cluster';
-import { LifecycleLabel } from './spot-interrupt-handler';
+import { BootstrapOptions, ICluster } from './cluster';
 
-export function renderUserData(clusterName: string, autoScalingGroup: autoscaling.AutoScalingGroup, options: BootstrapOptions = { }): string[] {
+// tslint:disable-next-line:max-line-length
+export function renderAmazonLinuxUserData(clusterName: string, autoScalingGroup: autoscaling.AutoScalingGroup, options: BootstrapOptions = {}): string[] {
+
   const stack = Stack.of(autoScalingGroup);
 
   // determine logical id of ASG so we can signal cloudformation
@@ -43,4 +44,27 @@ export function renderUserData(clusterName: string, autoScalingGroup: autoscalin
     `/etc/eks/bootstrap.sh ${clusterName} --kubelet-extra-args "${kubeletExtraArgs}" ${commandLineSuffix}`.trim(),
     `/opt/aws/bin/cfn-signal --exit-code $? --stack ${stack.stackName} --resource ${asgLogicalId} --region ${stack.region}`
   ];
+}
+
+export function renderBottlerocketUserData(cluster: ICluster): string[] {
+  return [
+    '[settings.kubernetes]',
+    `api-server="${cluster.clusterEndpoint}"`,
+    `cluster-certificate="${cluster.clusterCertificateAuthorityData}"`,
+    `cluster-name="${cluster.clusterName}"`
+  ];
+}
+
+/**
+ * The lifecycle label for node selector
+ */
+export enum LifecycleLabel {
+  /**
+   * on-demand instances
+   */
+  ON_DEMAND = 'OnDemand',
+  /**
+   * spot instances
+   */
+  SPOT = 'Ec2Spot'
 }
