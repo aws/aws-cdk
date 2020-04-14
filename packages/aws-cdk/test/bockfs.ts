@@ -12,27 +12,54 @@ import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as path_ from 'path';
 
-const bockFsRoot = path_.join(os.tmpdir(), 'bockfs');
+const bockFsRoot = fs.mkdtempSync(path_.join(os.tmpdir(), 'bockfs'));
+let oldCwd: string | undefined;
 
 function bockfs(files: Record<string, string>) {
+  oldCwd = process.cwd();
   for (const [fileName, contents] of Object.entries(files)) {
     bockfs.write(fileName, contents);
   }
 }
 
 namespace bockfs {
-  export function write(fileName: string, contents: string) {
-    const fullPath = path(fileName);
+  /**
+   * Write contents to a fake file
+   */
+  export function write(fakeFilename: string, contents: string) {
+    const fullPath = path(fakeFilename);
     fs.mkdirSync(path_.dirname(fullPath), { recursive: true });
     fs.writeFileSync(fullPath, contents, { encoding: 'utf-8' });
   }
 
-  export function path(x: string) {
-    if (x.startsWith('/')) { x = x.substr(1); } // Force path to be non-absolute
-    return path_.join(bockFsRoot, x);
+  /**
+   * Turn a fake path into a real path
+   */
+  export function path(fakePath: string) {
+    if (fakePath.startsWith('/')) { fakePath = fakePath.substr(1); } // Force path to be non-absolute
+    return path_.join(bockFsRoot, fakePath);
   }
 
+  /**
+   * Change to a fake directory
+   */
+  export function workingDirectory(fakePath: string) {
+    process.chdir(path(fakePath));
+  }
+
+  export function executable(...fakePaths: string[]) {
+    for (const fakepath of fakePaths) {
+      fs.chmodSync(path(fakepath), '755');
+    }
+  }
+
+  /**
+   * Remove all files and restore working directory
+   */
   export function restore() {
+    if (oldCwd) {
+      process.chdir(oldCwd);
+    }
     fs.removeSync(bockFsRoot);
   }
 }
