@@ -7,6 +7,9 @@ import { Schedule } from './schedule';
 import { IRuleTarget } from './target';
 import { mergeEventPattern } from './util';
 
+/**
+ * Properties for defining a CloudWatch Event Rule
+ */
 export interface RuleProps {
   /**
    * A description of the rule's purpose.
@@ -85,6 +88,13 @@ export interface RuleProps {
  */
 export class Rule extends Resource implements IRule {
 
+  /**
+   * Import an existing CloudWatch Event Rule provided an ARN
+   *
+   * @param scope The parent creating construct (usually `this`).
+   * @param id The construct's name.
+   * @param eventRuleArn Event Rule ARN (i.e. arn:aws:events:<region>:<account-id>:rule/MyScheduledRule).
+   */
   public static fromEventRuleArn(scope: Construct, id: string, eventRuleArn: string): IRule {
     const parts = Stack.of(scope).parseArn(eventRuleArn);
 
