@@ -52,6 +52,12 @@ export interface AssetProps extends AssetOptions {
  */
 export class Asset extends cdk.Construct implements assets.IAsset {
   /**
+   * Attribute which represents the HTTP URL of this asset.
+   * @example https://s3.us-west-1.amazonaws.com/bucket/key
+   */
+  public readonly httpUrl: string;
+
+  /**
    * Attribute that represents the name of the bucket this asset exists in.
    */
   public readonly s3BucketName: string;
@@ -63,9 +69,9 @@ export class Asset extends cdk.Construct implements assets.IAsset {
 
   /**
    * Attribute which represents the S3 URL of this asset.
-   * @example https://s3.us-west-1.amazonaws.com/bucket/key
+   * @example s3://bucket/key
    */
-  public readonly s3Url: string;
+  public readonly s3ObjectUrl: string;
 
   /**
    * The path to the asset (stringinfied token).
@@ -116,9 +122,10 @@ export class Asset extends cdk.Construct implements assets.IAsset {
       fileName: staging.stagedPath
     });
 
+    this.httpUrl = location.httpUrl;
     this.s3BucketName = location.bucketName;
     this.s3ObjectKey = location.objectKey;
-    this.s3Url = location.s3Url;
+    this.s3ObjectUrl = `s3://${this.s3BucketName}/${this.s3ObjectKey}`;
 
     this.bucket = s3.Bucket.fromBucketName(this, 'AssetBucket', this.s3BucketName);
 

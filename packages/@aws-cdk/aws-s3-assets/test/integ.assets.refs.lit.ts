@@ -12,9 +12,10 @@ class TestStack extends cdk.Stack {
       path: path.join(__dirname, 'sample-asset-directory')
     });
 
+    new cdk.CfnOutput(this, 'HTTPURL', { value: asset.httpUrl });
     new cdk.CfnOutput(this, 'S3BucketName', { value: asset.s3BucketName });
     new cdk.CfnOutput(this, 'S3ObjectKey', { value: asset.s3ObjectKey });
-    new cdk.CfnOutput(this, 'S3URL', { value: asset.s3Url });
+    new cdk.CfnOutput(this, 'S3ObjectUrl', { value: asset.s3ObjectUrl });
     /// !hide
 
     // we need at least one resource
