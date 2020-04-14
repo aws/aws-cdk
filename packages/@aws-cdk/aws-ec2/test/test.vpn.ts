@@ -1,7 +1,7 @@
 import { expect, haveResource,  } from '@aws-cdk/assert';
 import { Duration, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { Vpc, VpnConnection } from '../lib';
+import {PublicSubnet, Vpc, VpnConnection} from '../lib';
 
 export = {
   'can add a vpn connection to a vpc with a vpn gateway'(test: Test) {
@@ -298,5 +298,43 @@ export = {
     });
 
     test.done();
-  }
+  },
+
+  'fails when enabling vpnGateway without having subnets'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    test.throws(() => new Vpc(stack, 'VpcNetwork', {
+      vpnGateway: true,
+      subnetConfiguration: []
+    }), /VPN gateway/);
+
+    test.done();
+  },
+
+  'can add a vpn connection later to a vpc that initially had no subnets'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const vpc = new Vpc(stack, 'VpcNetwork', {
+      subnetConfiguration: []
+    });
+    const subnet = new PublicSubnet(stack, 'Subnet', {
+      vpcId: vpc.vpcId,
+      availabilityZone: 'eu-central-1a',
+      cidrBlock: '10.0.0.0/28'
+    });
+    vpc.publicSubnets.push(subnet);
+    vpc.addVpnConnection('VPNConnection', {
+      ip: '192.0.2.1'
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::EC2::VPNConnection', {
+      IpAddress: '192.0.2.1',
+      Type: 'ipsec.1'
+    }));
+    test.done();
+  },
 };
