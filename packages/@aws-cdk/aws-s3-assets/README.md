@@ -40,9 +40,10 @@ to an S3 bucket during deployment.
 
 `Asset` constructs expose the following deploy-time attributes:
 
+ * `httpUrl` - the HTTP URL of the asset (i.e. https://s3.us-east-1.amazonaws.com/mybucket/mykey.zip)
  * `s3BucketName` - the name of the assets S3 bucket.
  * `s3ObjectKey` - the S3 object key of the asset file (whether it's a file or a zip archive)
- * `s3Url` - the S3 URL of the asset (i.e. https://s3.us-east-1.amazonaws.com/mybucket/mykey.zip)
+ * `s3UrlObject` - the S3 URL of the asset (i.e. s3://mybucket/mykey.zip)
 
 In the following example, the various asset attributes are exported as stack outputs:
 

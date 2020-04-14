@@ -563,9 +563,9 @@ export class Stack extends Construct implements ITaggable {
     const s3Filename = Fn.select(1, Fn.split(cxapi.ASSET_PREFIX_SEPARATOR, encodedKey));
     const objectKey = `${s3Prefix}${s3Filename}`;
 
-    const s3Url = `https://s3.${this.region}.${this.urlSuffix}/${bucketName}/${objectKey}`;
+    const httpUrl = `https://s3.${this.region}.${this.urlSuffix}/${bucketName}/${objectKey}`;
 
-    return { bucketName, objectKey, s3Url };
+    return { bucketName, objectKey, httpUrl };
   }
 
   public addDockerImageAsset(asset: DockerImageAssetSource): DockerImageAssetLocation {
