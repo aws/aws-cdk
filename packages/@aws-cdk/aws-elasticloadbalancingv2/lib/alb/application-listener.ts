@@ -490,6 +490,7 @@ class ImportedApplicationListener extends Resource implements IApplicationListen
         listener: this,
         hostHeader: props.hostHeader,
         pathPattern: props.pathPattern,
+        pathPatterns: props.pathPatterns,
         priority: props.priority,
         targetGroups: props.targetGroups
       });
