@@ -1,10 +1,10 @@
 ## Amazon CloudWatch Construct Library
 <!--BEGIN STABILITY BANNER-->
-
 ---
 
-![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
+![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
 
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 <!--END STABILITY BANNER-->
@@ -24,6 +24,22 @@ represents the amount of errors reported by that Lambda function:
 
 ```ts
 const errors = fn.metricErrors();
+```
+
+You can also instantiate `Metric` objects to reference any
+[published metric](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/aws-services-cloudwatch-metrics.html)
+that's not exposed using a convenience method on the CDK construct.
+For example:
+
+```ts
+const hostedZone = new route53.HostedZone(this, 'MyHostedZone', { zoneName: "example.org" });
+const metric = new Metric({
+  namespace: 'AWS/Route53',
+  metricName: 'DNSQueries',
+  dimensions: {
+    HostedZoneId: hostedZone.hostedZoneId
+  }
+})
 ```
 
 ### Instantiating a new Metric object

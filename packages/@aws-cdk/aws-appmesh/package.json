@@ -135,6 +135,7 @@
     ]
   },
   "stability": "experimental",
+  "maturity": "developer-preview",
   "awscdkio": {
     "announce": false
   }

@@ -58,10 +58,10 @@
     "@types/jest": "^25.2.1",
     "@types/mock-fs": "^4.10.0",
     "cdk-build-tools": "0.0.0",
-    "jest": "^24.9.0",
+    "jest": "^25.3.0",
     "mock-fs": "^4.11.0",
     "pkglint": "0.0.0",
-    "typescript-json-schema": "^0.42.0"    
+    "typescript-json-schema": "^0.42.0"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
@@ -86,9 +86,10 @@
   },
   "dependencies": {
     "jsonschema": "^1.2.5",
-    "semver": "^7.2.2"
+    "semver": "^7.3.0"
   },
   "awscdkio": {
     "announce": false
-  }
+  },
+  "maturity": "stable"
 }
