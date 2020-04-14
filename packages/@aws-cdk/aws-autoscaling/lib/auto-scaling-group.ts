@@ -171,7 +171,7 @@ export interface CommonAutoScalingGroupProps {
    * @default - HealthCheck.ec2 with no grace period
    */
   readonly healthCheck?: HealthCheck;
-  
+
   /**
    * Specifies how block devices are exposed to the instance. You can specify virtual devices and EBS volumes.
    *
@@ -184,7 +184,7 @@ export interface CommonAutoScalingGroupProps {
    *
    * @default - Uses the block device mapping of the AMI
    */
-  readonly blockDevices?: autoscaling.BlockDevice[];
+  readonly blockDevices?: BlockDevice[];
 }
 
 /**
@@ -230,20 +230,6 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
    * @default A role will automatically be created, it can be accessed via the `role` property
    */
   readonly role?: iam.IRole;
-
-  /**
-   * Specifies how block devices are exposed to the instance. You can specify virtual devices and EBS volumes.
-   *
-   * Each instance that is launched has an associated root device volume,
-   * either an Amazon EBS volume or an instance store volume.
-   * You can use block device mappings to specify additional EBS volumes or
-   * instance store volumes to attach to an instance when it is launched.
-   *
-   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/block-device-mapping-concepts.html
-   *
-   * @default - Uses the block device mapping of the AMI
-   */
-  readonly blockDevices?: BlockDevice[];
 }
 
 abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGroup {
