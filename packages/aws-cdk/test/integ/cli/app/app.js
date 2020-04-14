@@ -61,6 +61,19 @@ class OtherParameterStack extends cdk.Stack {
   }
 }
 
+class MultiParameterStack extends cdk.Stack {
+  constructor(parent, id, props) {
+    super(parent, id, props);
+
+    new sns.Topic(this, 'TopicParameter', {
+      topicName: new cdk.CfnParameter(this, 'TopicNameParam')
+    });
+    new sns.Topic(this, 'OtherTopicParameter', {
+      topicName: new cdk.CfnParameter(this, 'OtherTopicNameParam')
+    });
+  }
+}
+
 class OutputsStack extends cdk.Stack {
   constructor(parent, id, props) {
     super(parent, id, props);
@@ -236,6 +249,8 @@ new YourStack(app, `${stackPrefix}-test-2`);
 // Deploy wildcard with parameters does ${stackPrefix}-param-test-*
 new ParameterStack(app, `${stackPrefix}-param-test-1`);
 new OtherParameterStack(app, `${stackPrefix}-param-test-2`);
+// Deploy stack with multiple parameters
+new MultiParameterStack(app, `${stackPrefix}-param-test-3`);
 // Deploy stack with outputs does ${stackPrefix}-outputs-test-*
 new OutputsStack(app, `${stackPrefix}-outputs-test-1`);
 new AnotherOutputsStack(app, `${stackPrefix}-outputs-test-2`);
