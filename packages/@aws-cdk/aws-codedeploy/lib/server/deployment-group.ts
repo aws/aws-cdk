@@ -247,9 +247,9 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
    * @returns a Construct representing a reference to an existing Deployment Group
    */
   public static fromServerDeploymentGroupAttributes(
-      scope: cdk.Construct,
-      id: string,
-      attrs: ServerDeploymentGroupAttributes): IServerDeploymentGroup {
+    scope: cdk.Construct,
+    id: string,
+    attrs: ServerDeploymentGroupAttributes): IServerDeploymentGroup {
     return new ImportedServerDeploymentGroup(scope, id, attrs);
   }
 
@@ -349,14 +349,14 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
         asg.addUserData(
           'PKG_CMD=`which yum 2>/dev/null`',
           'if [ -z "$PKG_CMD" ]; then',
-            'PKG_CMD=apt-get',
+          'PKG_CMD=apt-get',
           'else',
-            'PKG=CMD=yum',
+          'PKG=CMD=yum',
           'fi',
           '$PKG_CMD update -y',
           '$PKG_CMD install -y ruby2.0',
           'if [ $? -ne 0 ]; then',
-            '$PKG_CMD install -y ruby',
+          '$PKG_CMD install -y ruby',
           'fi',
           '$PKG_CMD install -y awscli',
           'TMP_DIR=`mktemp -d`',
@@ -378,7 +378,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
   }
 
   private loadBalancerInfo(loadBalancer?: LoadBalancer):
-      CfnDeploymentGroup.LoadBalancerInfoProperty | undefined {
+  CfnDeploymentGroup.LoadBalancerInfoProperty | undefined {
     if (!loadBalancer) {
       return undefined;
     }
@@ -400,7 +400,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
   }
 
   private ec2TagSet(tagSet?: InstanceTagSet):
-      CfnDeploymentGroup.EC2TagSetProperty | undefined {
+  CfnDeploymentGroup.EC2TagSetProperty | undefined {
     if (!tagSet || tagSet.instanceTagGroups.length === 0) {
       return undefined;
     }
@@ -416,7 +416,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
   }
 
   private onPremiseTagSet(tagSet?: InstanceTagSet):
-      CfnDeploymentGroup.OnPremisesTagSetProperty | undefined {
+  CfnDeploymentGroup.OnPremisesTagSetProperty | undefined {
     if (!tagSet || tagSet.instanceTagGroups.length === 0) {
       return undefined;
     }

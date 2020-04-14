@@ -67,7 +67,8 @@
     "cdk-integ-tools": "0.0.0",
     "nodeunit": "^0.11.3",
     "pkglint": "0.0.0",
-    "proxyquire": "^2.1.3"
+    "proxyquire": "^2.1.3",
+    "@aws-cdk/cloud-assembly-schema": "0.0.0"
   },
   "dependencies": {
     "@aws-cdk/assets": "0.0.0",
@@ -97,7 +98,7 @@
     "statements": 70
   },
   "engines": {
-    "node": ">= 10.3.0"
+    "node": ">= 10.12.0"
   },
   "bundledDependencies": [
     "minimatch"

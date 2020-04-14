@@ -25,23 +25,23 @@ export = {
     expect(stack).toMatch({
       Resources: {
         MyNamespaceD0BB8558: {
-          Type: "AWS::ServiceDiscovery::HttpNamespace",
+          Type: 'AWS::ServiceDiscovery::HttpNamespace',
           Properties: {
-            Name: "http"
+            Name: 'http'
           },
         },
         MyNamespaceMyService365E2470: {
-          Type: "AWS::ServiceDiscovery::Service",
+          Type: 'AWS::ServiceDiscovery::Service',
           Properties: {
-            Description: "service description",
+            Description: 'service description',
             HealthCheckCustomConfig: {
               FailureThreshold: 3,
             },
-            Name: "service",
+            Name: 'service',
             NamespaceId: {
-              "Fn::GetAtt": [
-                "MyNamespaceD0BB8558",
-                "Id"
+              'Fn::GetAtt': [
+                'MyNamespaceD0BB8558',
+                'Id'
               ]
             }
           }
@@ -73,25 +73,25 @@ export = {
     expect(stack).toMatch({
       Resources: {
         MyNamespaceD0BB8558: {
-          Type: "AWS::ServiceDiscovery::HttpNamespace",
+          Type: 'AWS::ServiceDiscovery::HttpNamespace',
           Properties: {
-            Name: "http"
+            Name: 'http'
           },
         },
         MyNamespaceMyService365E2470: {
-          Type: "AWS::ServiceDiscovery::Service",
+          Type: 'AWS::ServiceDiscovery::Service',
           Properties: {
-            Description: "service description",
+            Description: 'service description',
             HealthCheckConfig: {
               FailureThreshold: 1,
-              ResourcePath: "/check",
-              Type: "HTTP"
+              ResourcePath: '/check',
+              Type: 'HTTP'
             },
-            Name: "service",
+            Name: 'service',
             NamespaceId: {
-              "Fn::GetAtt": [
-                "MyNamespaceD0BB8558",
-                "Id"
+              'Fn::GetAtt': [
+                'MyNamespaceD0BB8558',
+                'Id'
               ]
             }
           }
@@ -122,38 +122,38 @@ export = {
     expect(stack).toMatch({
       Resources: {
         MyNamespaceD0BB8558: {
-          Type: "AWS::ServiceDiscovery::PublicDnsNamespace",
+          Type: 'AWS::ServiceDiscovery::PublicDnsNamespace',
           Properties: {
-            Name: "dns"
+            Name: 'dns'
           }
         },
         MyNamespaceMyService365E2470: {
-          Type: "AWS::ServiceDiscovery::Service",
+          Type: 'AWS::ServiceDiscovery::Service',
           Properties: {
-            Description: "service description",
+            Description: 'service description',
             DnsConfig: {
               DnsRecords: [
                 {
                   TTL: 60,
-                  Type: "A"
+                  Type: 'A'
                 }
               ],
               NamespaceId: {
-                "Fn::GetAtt": [
-                  "MyNamespaceD0BB8558",
-                  "Id"
+                'Fn::GetAtt': [
+                  'MyNamespaceD0BB8558',
+                  'Id'
                 ]
               },
-              RoutingPolicy: "MULTIVALUE"
+              RoutingPolicy: 'MULTIVALUE'
             },
             HealthCheckCustomConfig: {
               FailureThreshold: 3
             },
-            Name: "service",
+            Name: 'service',
             NamespaceId: {
-              "Fn::GetAtt": [
-                "MyNamespaceD0BB8558",
-                "Id"
+              'Fn::GetAtt': [
+                'MyNamespaceD0BB8558',
+                'Id'
               ]
             }
           }
@@ -180,37 +180,37 @@ export = {
     expect(stack).toMatch({
       Resources: {
         MyNamespaceD0BB8558: {
-          Type: "AWS::ServiceDiscovery::PublicDnsNamespace",
+          Type: 'AWS::ServiceDiscovery::PublicDnsNamespace',
           Properties: {
-            Name: "dns"
+            Name: 'dns'
           }
         },
         MyNamespaceMyService365E2470: {
-          Type: "AWS::ServiceDiscovery::Service",
+          Type: 'AWS::ServiceDiscovery::Service',
           Properties: {
             DnsConfig: {
               DnsRecords: [
                 {
                   TTL: 60,
-                  Type: "A"
+                  Type: 'A'
                 },
                 {
                   TTL: 60,
-                  Type: "AAAA"
+                  Type: 'AAAA'
                 }
               ],
               NamespaceId: {
-                "Fn::GetAtt": [
-                  "MyNamespaceD0BB8558",
-                  "Id"
+                'Fn::GetAtt': [
+                  'MyNamespaceD0BB8558',
+                  'Id'
                 ]
               },
-              RoutingPolicy: "MULTIVALUE",
+              RoutingPolicy: 'MULTIVALUE',
             },
             NamespaceId: {
-              "Fn::GetAtt": [
-                "MyNamespaceD0BB8558",
-                "Id"
+              'Fn::GetAtt': [
+                'MyNamespaceD0BB8558',
+                'Id'
               ]
             }
           }
@@ -237,33 +237,33 @@ export = {
     expect(stack).toMatch({
       Resources: {
         MyNamespaceD0BB8558: {
-          Type: "AWS::ServiceDiscovery::PublicDnsNamespace",
+          Type: 'AWS::ServiceDiscovery::PublicDnsNamespace',
           Properties: {
-            Name: "dns"
+            Name: 'dns'
           }
         },
         MyNamespaceMyService365E2470: {
-          Type: "AWS::ServiceDiscovery::Service",
+          Type: 'AWS::ServiceDiscovery::Service',
           Properties: {
             DnsConfig: {
               DnsRecords: [
                 {
                   TTL: 60,
-                  Type: "CNAME"
+                  Type: 'CNAME'
                 }
               ],
               NamespaceId: {
-                "Fn::GetAtt": [
-                  "MyNamespaceD0BB8558",
-                  "Id"
+                'Fn::GetAtt': [
+                  'MyNamespaceD0BB8558',
+                  'Id'
                 ]
               },
-              RoutingPolicy: "WEIGHTED",
+              RoutingPolicy: 'WEIGHTED',
             },
             NamespaceId: {
-              "Fn::GetAtt": [
-                "MyNamespaceD0BB8558",
-                "Id"
+              'Fn::GetAtt': [
+                'MyNamespaceD0BB8558',
+                'Id'
               ]
             }
           }
@@ -419,31 +419,31 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::ServiceDiscovery::PrivateDnsNamespace', {
-      Name: "private"
+      Name: 'private'
     }));
 
     expect(stack).to(haveResource('AWS::ServiceDiscovery::Service', {
-      Description: "service description",
+      Description: 'service description',
       DnsConfig: {
         DnsRecords: [
           {
             TTL: 60,
-            Type: "A"
+            Type: 'A'
           }
         ],
         NamespaceId: {
-          "Fn::GetAtt": [
-            "MyNamespaceD0BB8558",
-            "Id"
+          'Fn::GetAtt': [
+            'MyNamespaceD0BB8558',
+            'Id'
           ]
         },
-        RoutingPolicy: "MULTIVALUE"
+        RoutingPolicy: 'MULTIVALUE'
       },
-      Name: "service",
+      Name: 'service',
       NamespaceId: {
-        "Fn::GetAtt": [
-          "MyNamespaceD0BB8558",
-          "Id"
+        'Fn::GetAtt': [
+          'MyNamespaceD0BB8558',
+          'Id'
         ]
       }
     }));

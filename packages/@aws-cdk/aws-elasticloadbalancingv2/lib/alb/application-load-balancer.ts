@@ -60,7 +60,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
 
   constructor(scope: Construct, id: string, props: ApplicationLoadBalancerProps) {
     super(scope, id, props, {
-      type: "application",
+      type: 'application',
       securityGroups: Lazy.listValue({ produce: () => [this.securityGroup.securityGroupId] }),
       ipAddressType: props.ipAddressType,
     });

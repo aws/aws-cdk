@@ -297,18 +297,17 @@ const errorResponseModel = api.addModel('ErrorResponseModel', {
 And reference all on your method definition.
 
 ```ts
-// If you want to define parameter mappings for the request, you need a validator
-const validator = api.addRequestValidator('DefaultValidator', {
-  validateRequestBody: false,
-  validateRequestParameters: true
-});
 resource.addMethod('GET', integration, {
   // We can mark the parameters as required
   requestParameters: {
     'method.request.querystring.who': true
   },
-  // We need to set the validator for ensuring they are passed
-  requestValidator: validator,
+  // we can set request validator options like below
+  requestValidatorOptions: {
+    requestValidatorName: 'test-validator',
+    validateRequestBody: true,
+    validateRequestParameters: false
+  }
   methodResponses: [
     {
       // Successful response from the integration
@@ -339,6 +338,9 @@ resource.addMethod('GET', integration, {
   ]
 });
 ```
+
+Specifying `requestValidatorOptions` automatically creates the RequestValidator construct with the given options.
+However, if you have your RequestValidator already initialized or imported, use the `requestValidator` option instead.
 
 #### Default Integration and Method Options
 
@@ -544,6 +546,72 @@ const api = new apigateway.RestApi(this, 'books', {
     dataTraceEnabled: true
   }
 })
+```
+### Access Logging
+
+Access logging creates logs everytime an API method is accessed. Access logs can have information on
+who has accessed the API, how the caller accessed the API and what responses were generated.
+Access logs are configured on a Stage of the RestApi.
+Access logs can be expressed in a format of your choosing, and can contain any access details, with a
+minimum that it must include the 'requestId'. The list of  variables that can be expressed in the access
+log can be found
+[here](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html#context-variable-reference).
+Read more at [Setting Up CloudWatch API Logging in API
+Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-logging.html)
+
+```ts
+// production stage
+const prdLogGroup = new cwlogs.LogGroup(this, "PrdLogs");
+const api = new apigateway.RestApi(this, 'books', {
+  deployOptions: {
+    accessLogDestination: new apigateway.LogGroupLogDestination(prdLogGroup),
+    accessLogFormat: apigateway.AccessLogFormat.jsonWithStandardFields()
+  }
+})
+const deployment = new apigateway.Deployment(stack, 'Deployment', {api});
+
+// development stage
+const devLogGroup = new cwlogs.LogGroup(this, "DevLogs");
+new apigateway.Stage(this, 'dev', {
+  deployment,
+  accessLogDestination: new apigateway.LogGroupLogDestination(devLogGroup),
+  accessLogFormat: apigateway.AccessLogFormat.jsonWithStandardFields({
+    caller: false,
+    httpMethod: true,
+    ip: true,
+    protocol: true,
+    requestTime: true,
+    resourcePath: true,
+    responseLength: true,
+    status: true,
+    user: true
+  })
+});
+```
+
+The following code will generate the access log in the [CLF format](https://en.wikipedia.org/wiki/Common_Log_Format).
+
+```ts
+const logGroup = new cwlogs.LogGroup(this, "ApiGatewayAccessLogs");
+const api = new apigateway.RestApi(this, 'books', {
+  deployOptions: {
+    accessLogDestination: new apigateway.LogGroupLogDestination(logGroup),
+    accessLogFormat: apigateway.AccessLogFormat.clf(),
+  }});
+```
+
+You can also configure your own access log format by using the `AccessLogFormat.custom()` API.
+`AccessLogField` provides commonly used fields. The following code configures access log to contain.
+
+```ts
+const logGroup = new cwlogs.LogGroup(this, "ApiGatewayAccessLogs");
+new apigateway.RestApi(this, 'books', {
+  deployOptions: {
+    accessLogDestination: new apigateway.LogGroupLogDestination(logGroup),
+    accessLogFormat: apigateway.AccessLogFormat.custom(
+      `${AccessLogFormat.contextRequestId()} ${AccessLogField.contextErrorMessage()} ${AccessLogField.contextErrorMessageString()}`);
+  })
+};
 ```
 
 You can use the `methodOptions` property to configure

@@ -1,7 +1,7 @@
 import { Construct, SecretValue } from '@aws-cdk/core';
 import { ContainerDefinition } from '../container-definition';
 import { BaseLogDriverProps } from './base-log-driver';
-import { LogDriver, LogDriverConfig } from "./log-driver";
+import { LogDriver, LogDriverConfig } from './log-driver';
 import { ensureInRange, renderCommonLogDriverOptions, stringifyOptions } from './utils';
 
 /**

@@ -676,6 +676,7 @@ export class MustDependonCdkByPointVersions extends ValidationRule {
       '@aws-cdk/cfnspec',
       '@aws-cdk/cdk-assets-schema',
       '@aws-cdk/cx-api',
+      '@aws-cdk/cloud-assembly-schema',
       '@aws-cdk/region-info'
     ];
 
@@ -778,7 +779,7 @@ export class MustHaveNodeEnginesDeclaration extends ValidationRule {
   public readonly name = 'package-info/engines';
 
   public validate(pkg: PackageJson): void {
-    expectJSON(this.name, pkg, 'engines.node', '>= 10.3.0');
+    expectJSON(this.name, pkg, 'engines.node', '>= 10.12.0');
   }
 }
 

@@ -3,8 +3,8 @@ import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as cpactions from '@aws-cdk/aws-codepipeline-actions';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cdk from '@aws-cdk/core';
-import * as cxapi from '@aws-cdk/cx-api';
 
 export interface PipelineDeployStackActionProps {
   /**
@@ -101,7 +101,7 @@ export class PipelineDeployStackAction implements codepipeline.IAction {
 
   constructor(props: PipelineDeployStackActionProps) {
     this.stack = props.stack;
-    const assets = this.stack.node.metadata.filter(md => md.type === cxapi.ASSET_METADATA);
+    const assets = this.stack.node.metadata.filter(md => md.type === cxschema.ArtifactMetadataEntryType.ASSET);
     if (assets.length > 0) {
       // FIXME: Implement the necessary actions to publish assets
       throw new Error(`Cannot deploy the stack ${this.stack.stackName} because it references ${assets.length} asset(s)`);
@@ -134,10 +134,10 @@ export class PipelineDeployStackAction implements codepipeline.IAction {
   }
 
   public bind(scope: cdk.Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
-      codepipeline.ActionConfig {
+  codepipeline.ActionConfig {
     if (this.stack.environment !== cdk.Stack.of(scope).environment) {
       // FIXME: Add the necessary to extend to stacks in a different account
-      throw new Error(`Cross-environment deployment is not supported`);
+      throw new Error('Cross-environment deployment is not supported');
     }
 
     stage.addAction(this.prepareChangeSetAction);
@@ -148,7 +148,7 @@ export class PipelineDeployStackAction implements codepipeline.IAction {
 
   public get deploymentRole(): iam.IRole {
     if (!this._deploymentRole) {
-      throw new Error(`Use this action in a pipeline first before accessing 'deploymentRole'`);
+      throw new Error('Use this action in a pipeline first before accessing \'deploymentRole\'');
     }
 
     return this._deploymentRole;

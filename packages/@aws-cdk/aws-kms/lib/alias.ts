@@ -94,8 +94,18 @@ abstract class AliasBase extends Resource implements IAlias {
   }
 }
 
+/**
+ * Properties of a reference to an existing KMS Alias
+ */
 export interface AliasAttributes {
+  /**
+   * Specifies the alias name. This value must begin with alias/ followed by a name (i.e. alias/ExampleAlias)
+   */
   readonly aliasName: string;
+
+  /**
+   * The customer master key (CMK) to which the Alias refers.
+   */
   readonly aliasTargetKey: IKey;
 }
 
@@ -111,6 +121,13 @@ export interface AliasAttributes {
  * @resource AWS::KMS::Alias
  */
 export class Alias extends AliasBase {
+  /**
+   * Import an existing KMS Alias defined outside the CDK app.
+   *
+   * @param scope The parent creating construct (usually `this`).
+   * @param id The construct's name.
+   * @param attrs the properties of the referenced KMS Alias
+   */
   public static fromAliasAttributes(scope: Construct, id: string, attrs: AliasAttributes): IAlias {
     // tslint:disable-next-line: class-name
     class _Alias extends AliasBase {
@@ -140,7 +157,7 @@ export class Alias extends AliasBase {
       }
 
       if (!aliasName.match(/^[a-zA-Z0-9:/_-]{1,256}$/)) {
-        throw new Error(`Alias name must be between 1 and 256 characters in a-zA-Z0-9:/_-`);
+        throw new Error('Alias name must be between 1 and 256 characters in a-zA-Z0-9:/_-');
       }
     }
 

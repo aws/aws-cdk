@@ -1,4 +1,4 @@
-import { GRID_WIDTH, IWidget } from "./widget";
+import { GRID_WIDTH, IWidget } from './widget';
 
 // This file contains widgets that exist for layout purposes
 
@@ -123,7 +123,7 @@ export class Spacer implements IWidget {
   public readonly width: number;
   public readonly height: number;
 
-  constructor(props: SpacerProps) {
+  constructor(props: SpacerProps = {}) {
     this.width = props.width || 1;
     this.height = props.height || 1;
   }

@@ -10,9 +10,9 @@ import { FargateProfile, FargateProfileOptions } from './fargate-profile';
 import { HelmChart, HelmChartOptions } from './helm-chart';
 import { KubernetesPatch } from './k8s-patch';
 import { KubernetesResource } from './k8s-resource';
+import { KubectlProvider } from './kubectl-provider';
 import { Nodegroup, NodegroupOptions  } from './managed-nodegroup';
-import { spotInterruptHandler } from './spot-interrupt-handler';
-import { renderUserData } from './user-data';
+import { LifecycleLabel, renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
 
 // defaults are based on https://eksctl.io
 const DEFAULT_CAPACITY_COUNT = 2;
@@ -246,7 +246,7 @@ export interface ClusterProps extends ClusterOptions {
    *
    * @default NODEGROUP
    */
-  readonly defaultCapacityType?: DefaultCapacityType
+  readonly defaultCapacityType?: DefaultCapacityType;
 }
 
 /**
@@ -422,7 +422,7 @@ export class Cluster extends Resource implements ICluster {
     // map the IAM role to the `system:masters` group.
     if (props.mastersRole) {
       if (!this.kubectlEnabled) {
-        throw new Error(`Cannot specify a "masters" role if kubectl is disabled`);
+        throw new Error('Cannot specify a "masters" role if kubectl is disabled');
       }
 
       this.awsAuth.addMastersRole(props.mastersRole);
@@ -439,10 +439,10 @@ export class Cluster extends Resource implements ICluster {
     if (minCapacity > 0) {
       const instanceType = props.defaultCapacityInstance || DEFAULT_CAPACITY_TYPE;
       this.defaultCapacity = props.defaultCapacityType === DefaultCapacityType.EC2 ?
-      this.addCapacity('DefaultCapacity', { instanceType, minCapacity }) : undefined;
+        this.addCapacity('DefaultCapacity', { instanceType, minCapacity }) : undefined;
 
       this.defaultNodegroup = props.defaultCapacityType !== DefaultCapacityType.EC2 ?
-      this.addNodegroup('DefaultCapacity', { instanceType, minSize: minCapacity } ) : undefined;
+        this.addNodegroup('DefaultCapacity', { instanceType, minSize: minCapacity }) : undefined;
     }
 
     const outputConfigCommand = props.outputConfigCommand === undefined ? true : props.outputConfigCommand;
@@ -470,13 +470,18 @@ export class Cluster extends Resource implements ICluster {
    * [EC2 Spot Instance Termination Notices](https://aws.amazon.com/blogs/aws/new-ec2-spot-instance-termination-notices/).
    */
   public addCapacity(id: string, options: CapacityOptions): autoscaling.AutoScalingGroup {
+    if (options.machineImageType === MachineImageType.BOTTLEROCKET && options.bootstrapOptions !== undefined ) {
+      throw new Error('bootstrapOptions is not supported for Bottlerocket');
+    }
     const asg = new autoscaling.AutoScalingGroup(this, id, {
       ...options,
       vpc: this.vpc,
-      machineImage: new EksOptimizedImage({
-        nodeType: nodeTypeForInstanceType(options.instanceType),
-        kubernetesVersion: this.version,
-      }),
+      machineImage: options.machineImageType === MachineImageType.BOTTLEROCKET ?
+        new BottleRocketImage() :
+        new EksOptimizedImage({
+          nodeType: nodeTypeForInstanceType(options.instanceType),
+          kubernetesVersion: this.version,
+        }),
       updateType: options.updateType || autoscaling.UpdateType.ROLLING_UPDATE,
       instanceType: options.instanceType,
     });
@@ -484,7 +489,8 @@ export class Cluster extends Resource implements ICluster {
     this.addAutoScalingGroup(asg, {
       mapRole: options.mapRole,
       bootstrapOptions: options.bootstrapOptions,
-      bootstrapEnabled: options.bootstrapEnabled
+      bootstrapEnabled: options.bootstrapEnabled,
+      machineImageType: options.machineImageType
     });
 
     return asg;
@@ -546,11 +552,13 @@ export class Cluster extends Resource implements ICluster {
 
     const bootstrapEnabled = options.bootstrapEnabled !== undefined ? options.bootstrapEnabled : true;
     if (options.bootstrapOptions && !bootstrapEnabled) {
-      throw new Error(`Cannot specify "bootstrapOptions" if "bootstrapEnabled" is false`);
+      throw new Error('Cannot specify "bootstrapOptions" if "bootstrapEnabled" is false');
     }
 
     if (bootstrapEnabled) {
-      const userData = renderUserData(this.clusterName, autoScalingGroup, options.bootstrapOptions);
+      const userData = options.machineImageType === MachineImageType.BOTTLEROCKET ?
+        renderBottlerocketUserData(this) :
+        renderAmazonLinuxUserData(this.clusterName, autoScalingGroup, options.bootstrapOptions);
       autoScalingGroup.addUserData(...userData);
     }
 
@@ -564,7 +572,7 @@ export class Cluster extends Resource implements ICluster {
     });
 
     if (options.mapRole === true && !this.kubectlEnabled) {
-      throw new Error(`Cannot map instance IAM role to RBAC if kubectl is disabled for the cluster`);
+      throw new Error('Cannot map instance IAM role to RBAC if kubectl is disabled for the cluster');
     }
 
     // do not attempt to map the role if `kubectl` is not enabled for this
@@ -589,7 +597,15 @@ export class Cluster extends Resource implements ICluster {
 
     // if this is an ASG with spot instances, install the spot interrupt handler (only if kubectl is enabled).
     if (autoScalingGroup.spotPrice && this.kubectlEnabled) {
-      this.addResource('spot-interrupt-handler', ...spotInterruptHandler());
+      this.addChart('spot-interrupt-handler', {
+        chart: 'aws-node-termination-handler',
+        version: '0.7.3',
+        repository: 'https://aws.github.io/eks-charts',
+        namespace: 'kube-system',
+        values: {
+          'nodeSelector.lifecycle': LifecycleLabel.SPOT
+        }
+      });
     }
   }
 
@@ -598,7 +614,7 @@ export class Cluster extends Resource implements ICluster {
    */
   public get awsAuth() {
     if (!this.kubectlEnabled) {
-      throw new Error(`Cannot define aws-auth mappings if kubectl is disabled`);
+      throw new Error('Cannot define aws-auth mappings if kubectl is disabled');
     }
 
     if (!this._awsAuth) {
@@ -658,10 +674,23 @@ export class Cluster extends Resource implements ICluster {
    */
   public _getKubectlCreationRoleArn(assumedBy?: iam.IRole) {
     if (!this._clusterResource) {
-      throw new Error(`Unable to perform this operation since kubectl is not enabled for this cluster`);
+      throw new Error('Unable to perform this operation since kubectl is not enabled for this cluster');
     }
 
     return this._clusterResource.getCreationRoleArn(assumedBy);
+  }
+
+  /**
+   * Returns the custom resource provider for kubectl-related resources.
+   * @internal
+   */
+  public get _kubectlProvider(): KubectlProvider {
+    if (!this._clusterResource) {
+      throw new Error('Unable to perform this operation since kubectl is not enabled for this cluster');
+    }
+
+    const uid = '@aws-cdk/aws-eks.KubectlProvider';
+    return this.stack.node.tryFindChild(uid) as KubectlProvider || new KubectlProvider(this.stack, uid);
   }
 
   /**
@@ -683,13 +712,13 @@ export class Cluster extends Resource implements ICluster {
           continue;
         }
 
-        subnet.node.applyAspect(new Tag(tag, "1"));
+        subnet.node.applyAspect(new Tag(tag, '1'));
       }
     };
 
     // https://docs.aws.amazon.com/eks/latest/userguide/network_reqs.html
-    tagAllSubnets('private', this.vpc.privateSubnets, "kubernetes.io/role/internal-elb");
-    tagAllSubnets('public', this.vpc.publicSubnets, "kubernetes.io/role/elb");
+    tagAllSubnets('private', this.vpc.privateSubnets, 'kubernetes.io/role/internal-elb');
+    tagAllSubnets('public', this.vpc.publicSubnets, 'kubernetes.io/role/elb');
   }
 
   /**
@@ -699,7 +728,7 @@ export class Cluster extends Resource implements ICluster {
    */
   private defineCoreDnsComputeType(type: CoreDnsComputeType) {
     if (!this.kubectlEnabled) {
-      throw new Error(`kubectl must be enabled in order to define the compute type for CoreDNS`);
+      throw new Error('kubectl must be enabled in order to define the compute type for CoreDNS');
     }
 
     // ec2 is the "built in" compute type of the cluster so if this is the
@@ -771,6 +800,13 @@ export interface CapacityOptions extends autoscaling.CommonAutoScalingGroupProps
    * @default - none
    */
   readonly bootstrapOptions?: BootstrapOptions;
+
+  /**
+   * Machine image type
+   *
+   * @default MachineImageType.AMAZON_LINUX_2
+   */
+  readonly machineImageType?: MachineImageType;
 }
 
 /**
@@ -855,6 +891,13 @@ export interface AutoScalingGroupOptions {
    * @default - default options
    */
   readonly bootstrapOptions?: BootstrapOptions;
+
+  /**
+   * Allow options to specify different machine image type
+   *
+   * @default MachineImageType.AMAZON_LINUX_2
+   */
+  readonly machineImageType?: MachineImageType;
 }
 
 /**
@@ -871,7 +914,7 @@ class ImportedCluster extends Resource implements ICluster {
   constructor(scope: Construct, id: string, props: ClusterAttributes) {
     super(scope, id);
 
-    this.vpc = ec2.Vpc.fromVpcAttributes(this, "VPC", props.vpc);
+    this.vpc = ec2.Vpc.fromVpcAttributes(this, 'VPC', props.vpc);
     this.clusterName = props.clusterName;
     this.clusterEndpoint = props.clusterEndpoint;
     this.clusterArn = props.clusterArn;
@@ -922,9 +965,9 @@ export class EksOptimizedImage implements ec2.IMachineImage {
 
     // set the SSM parameter name
     this.amiParameterName = `/aws/service/eks/optimized-ami/${this.kubernetesVersion}/`
-      + ( this.nodeType === NodeType.STANDARD ? "amazon-linux-2/" : "" )
-      + ( this.nodeType === NodeType.GPU ? "amazon-linux2-gpu/" : "" )
-      + "recommended/image_id";
+      + ( this.nodeType === NodeType.STANDARD ? 'amazon-linux-2/' : '' )
+      + ( this.nodeType === NodeType.GPU ? 'amazon-linux2-gpu/' : '' )
+      + 'recommended/image_id';
   }
 
   /**
@@ -936,6 +979,38 @@ export class EksOptimizedImage implements ec2.IMachineImage {
       imageId: ami,
       osType: ec2.OperatingSystemType.LINUX,
       userData: ec2.UserData.forLinux(),
+    };
+  }
+}
+
+/**
+ * Construct an Bottlerocket image from the latest AMI published in SSM
+ */
+class BottleRocketImage implements ec2.IMachineImage {
+  private readonly kubernetesVersion?: string;
+
+  private readonly amiParameterName: string;
+
+  /**
+   * Constructs a new instance of the BottleRocketImage class.
+   */
+  public constructor() {
+    // only 1.15 is currently available
+    this.kubernetesVersion = '1.15';
+
+    // set the SSM parameter name
+    this.amiParameterName = `/aws/service/bottlerocket/aws-k8s-${this.kubernetesVersion}/x86_64/latest/image_id`;
+  }
+
+  /**
+   * Return the correct image
+   */
+  public getImage(scope: Construct): ec2.MachineImageConfig {
+    const ami = ssm.StringParameter.valueForStringParameter(scope, this.amiParameterName);
+    return {
+      imageId: ami,
+      osType: ec2.OperatingSystemType.LINUX,
+      userData: ec2.UserData.custom(''),
     };
   }
 }
@@ -985,6 +1060,20 @@ export enum DefaultCapacityType {
    * EC2 autoscaling group
    */
   EC2
+}
+
+/**
+ * The machine image type
+ */
+export enum MachineImageType {
+  /**
+   * Amazon EKS-optimized Linux AMI
+   */
+  AMAZON_LINUX_2,
+  /**
+   * Bottlerocket AMI
+   */
+  BOTTLEROCKET
 }
 
 const GPU_INSTANCETYPES = ['p2', 'p3', 'g4'];

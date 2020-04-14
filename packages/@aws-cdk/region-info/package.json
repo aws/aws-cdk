@@ -30,7 +30,12 @@
   "cdk-build": {
     "pre": [
       "npm run gen"
-    ]
+    ],
+    "eslint": {
+      "ignore-pattern": [
+        "lib/built-ins.generated.ts"
+      ]
+    }
   },
   "scripts": {
     "gen": "bash build-tools/generate.sh",
@@ -79,7 +84,7 @@
   ],
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 10.3.0"
+    "node": ">= 10.12.0"
   },
   "stability": "experimental",
   "awslint": {

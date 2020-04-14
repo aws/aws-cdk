@@ -26,6 +26,9 @@ intake and aggregation.
 - [Streams](#streams)
   - [Encryption](#encryption)
   - [Import](#import)
+  - [Permission Grants](#permission-grants)
+    - [Read Permissions](#read-permissions)
+    - [Write Permissions](#write-permissions)
 
 ## Streams
 
@@ -41,7 +44,7 @@ new Stream(this, "MyFirstStream", {
 ```
 
 You can also specify properties such as `shardCount` to indicate how many shards the stream should choose and a `retentionPeriod`
-to specify how many logn the data in the shards should remain accessible.
+to specify how long the data in the shards should remain accessible.
 Read more at [Creating and Managing Streams](https://docs.aws.amazon.com/streams/latest/dev/working-with-streams.html)
 
 ```ts
@@ -52,19 +55,15 @@ new Stream(this, "MyFirstStream", {
 });
 ```
 
-Streams are not encrypted by default.
-
 ### Encryption
 
 [Stream encryption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesis-stream-streamencryption.html) enables
 server-side encryption using an AWS KMS key for a specified stream.
 
-You can enable encryption on your stream with the master key owned by Kinesis Data Streams by specifying the `encryption` property.
+Encryption is enabled by default on your stream with the master key owned by Kinesis Data Streams in regions where it is supported.
 
 ```ts
-new Stream(this, 'MyEncryptedStream', {
-  encryption: StreamEncryption.MANAGED
-});
+new Stream(this, 'MyEncryptedStream');
 ```
 
 You can enable encryption on your stream with a user-managed key by specifying the `encryption` property.
@@ -123,3 +122,66 @@ const importedStream = Stream.fromStreamAttributes(
   }
 );
 ```
+
+### Permission Grants
+
+IAM roles, users or groups which need to be able to work with Amazon Kinesis streams at runtime should be granted IAM permissions.
+
+Any object that implements the `IGrantable` interface (has an associated principal) can be granted permissions by calling:
+
+- `grantRead(principal)` - grants the principal read access
+- `grantWrite(principal)` - grants the principal write permissions to a Stream
+- `grantReadWrite(principal)` - grants principal read and write permissions
+
+#### Read Permissions
+
+Grant `read` access to a stream by calling the `grantRead()` API.
+If the stream has an encryption key, read permissions will also be granted to the key.
+
+```ts
+const lambdaRole = new iam.Role(this, 'Role', {
+  assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+  description: 'Example role...',
+}
+
+const stream = new Stream(this, 'MyEncryptedStream', {
+    encryption: StreamEncryption.KMS
+});
+
+// give lambda permissions to read stream
+stream.grantRead(lambdaRole);
+```
+
+The following read permissions are provided to a service principal by the `grantRead()` API:
+
+- `kinesis:DescribeStream`
+- `kinesis:DescribeStreamSummary`
+- `kinesis:GetRecords`
+- `kinesis:GetShardIterator`
+- `kinesis:ListShards`
+- `kinesis:SubscribeToShard`
+
+#### Write Permissions
+
+Grant `write` permissions to a stream is provided by calling the `grantWrite()` API.
+If the stream has an encryption key, write permissions will also be granted to the key.
+
+```ts
+const lambdaRole = new iam.Role(this, 'Role', {
+  assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+  description: 'Example role...',
+}
+
+const stream = new Stream(this, 'MyEncryptedStream', {
+    encryption: StreamEncryption.KMS
+});
+
+// give lambda permissions to write to stream
+stream.grantWrite(lambdaRole);
+```
+
+The following write permissions are provided to a service principal by the `grantWrite()` API:
+
+- `kinesis:ListShards`
+- `kinesis:PutRecord`
+- `kinesis:PutRecords`

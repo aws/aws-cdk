@@ -53,8 +53,11 @@
             {
               "Action": [
                 "kinesis:DescribeStream",
+                "kinesis:DescribeStreamSummary",
                 "kinesis:GetRecords",
-                "kinesis:GetShardIterator"
+                "kinesis:GetShardIterator",
+                "kinesis:ListShards",
+                "kinesis:SubscribeToShard"
               ],
               "Effect": "Allow",
               "Resource": {
@@ -126,7 +129,19 @@
       "Type": "AWS::Kinesis::Stream",
       "Properties": {
         "ShardCount": 1,
-        "RetentionPeriodHours": 24
+        "RetentionPeriodHours": 24,
+        "StreamEncryption": {
+          "Fn::If": [
+            "AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
+            {
+              "Ref": "AWS::NoValue"
+            },
+            {
+              "EncryptionType": "KMS",
+              "KeyId": "alias/aws/kinesis"
+            }
+          ]
+        }
       }
     },
     "Q63C6E3AB": {
@@ -151,6 +166,28 @@
       "Value": {
         "Ref": "Q63C6E3AB"
       }
+    }
+  },
+  "Conditions": {
+    "AwsCdkKinesisEncryptedStreamsUnsupportedRegions": {
+      "Fn::Or": [
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "AWS::Region"
+            },
+            "cn-north-1"
+          ]
+        },
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "AWS::Region"
+            },
+            "cn-northwest-1"
+          ]
+        }
+      ]
     }
   }
 }

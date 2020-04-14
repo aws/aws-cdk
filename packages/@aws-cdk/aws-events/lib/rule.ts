@@ -7,6 +7,9 @@ import { Schedule } from './schedule';
 import { IRuleTarget } from './target';
 import { mergeEventPattern } from './util';
 
+/**
+ * Properties for defining a CloudWatch Event Rule
+ */
 export interface RuleProps {
   /**
    * A description of the rule's purpose.
@@ -85,6 +88,13 @@ export interface RuleProps {
  */
 export class Rule extends Resource implements IRule {
 
+  /**
+   * Import an existing CloudWatch Event Rule provided an ARN
+   *
+   * @param scope The parent creating construct (usually `this`).
+   * @param id The construct's name.
+   * @param eventRuleArn Event Rule ARN (i.e. arn:aws:events:<region>:<account-id>:rule/MyScheduledRule).
+   */
   public static fromEventRuleArn(scope: Construct, id: string, eventRuleArn: string): IRule {
     const parts = Stack.of(scope).parseArn(eventRuleArn);
 
@@ -110,7 +120,7 @@ export class Rule extends Resource implements IRule {
     });
 
     if (props.eventBus && props.schedule) {
-      throw new Error(`Cannot associate rule with 'eventBus' when using 'schedule'`);
+      throw new Error('Cannot associate rule with \'eventBus\' when using \'schedule\'');
     }
 
     this.description = props.description;
@@ -232,7 +242,7 @@ export class Rule extends Resource implements IRule {
             },
             stackName: `${targetStack.stackName}-EventBusPolicy-support-${targetRegion}-${sourceAccount}`,
           });
-          new CfnEventBusPolicy(eventBusPolicyStack, `GivePermToOtherAccount`, {
+          new CfnEventBusPolicy(eventBusPolicyStack, 'GivePermToOtherAccount', {
             action: 'events:PutEvents',
             statementId: 'MySid',
             principal: sourceAccount,
@@ -283,6 +293,7 @@ export class Rule extends Resource implements IRule {
       ecsParameters: targetProps.ecsParameters,
       kinesisParameters: targetProps.kinesisParameters,
       runCommandParameters: targetProps.runCommandParameters,
+      batchParameters: targetProps.batchParameters,
       sqsParameters: targetProps.sqsParameters,
       input: inputProps && inputProps.input,
       inputPath: inputProps && inputProps.inputPath,
@@ -360,7 +371,7 @@ export class Rule extends Resource implements IRule {
 
   protected validate() {
     if (Object.keys(this.eventPattern).length === 0 && !this.scheduleExpression) {
-      return [`Either 'eventPattern' or 'schedule' must be defined`];
+      return ['Either \'eventPattern\' or \'schedule\' must be defined'];
     }
 
     return [];

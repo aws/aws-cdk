@@ -569,10 +569,11 @@ abstract class BucketBase extends Resource implements IBucket {
     });
   }
 
-  private grant(grantee: iam.IGrantable,
-                bucketActions: string[],
-                keyActions: string[],
-                resourceArn: string, ...otherResourceArns: string[]) {
+  private grant(
+    grantee: iam.IGrantable,
+    bucketActions: string[],
+    keyActions: string[],
+    resourceArn: string, ...otherResourceArns: string[]) {
     const resources = [ resourceArn, ...otherResourceArns ];
 
     const crossAccountAccess = this.isGranteeFromAnotherAccount(grantee);
@@ -694,23 +695,23 @@ export enum HttpMethods {
   /**
    * The GET method requests a representation of the specified resource.
    */
-  GET = "GET",
+  GET = 'GET',
   /**
    * The PUT method replaces all current representations of the target resource with the request payload.
    */
-  PUT = "PUT",
+  PUT = 'PUT',
   /**
    * The HEAD method asks for a response identical to that of a GET request, but without the response body.
    */
-  HEAD = "HEAD",
+  HEAD = 'HEAD',
   /**
    * The POST method is used to submit an entity to the specified resource, often causing a change in state or side effects on the server.
    */
-  POST = "POST",
+  POST = 'POST',
   /**
    * The DELETE method deletes the specified resource.
    */
-  DELETE = "DELETE",
+  DELETE = 'DELETE',
 }
 
 /**
@@ -904,12 +905,13 @@ export interface BucketProps {
 
   /**
    * Destination bucket for the server access logs.
-   * @default - Access logs are disabled
+   * @default - If "serverAccessLogsPrefix" undefined - access logs disabled, otherwise - log to current bucket.
    */
   readonly serverAccessLogsBucket?: IBucket;
 
   /**
    * Optional log file prefix to use for the bucket's access logs.
+   * If defined without "serverAccessLogsBucket", enables access logs to current bucket with this prefix.
    * @default - No log file prefix
    */
   readonly serverAccessLogsPrefix?: string;
@@ -1293,16 +1295,12 @@ export class Bucket extends BucketBase {
   }
 
   private parseServerAccessLogs(props: BucketProps): CfnBucket.LoggingConfigurationProperty | undefined {
-    if (props.serverAccessLogsPrefix && !props.serverAccessLogsBucket) {
-      throw new Error(`"serverAccessLogsBucket" is required if "serverAccessLogsPrefix" is set`);
-    }
-
-    if (!props.serverAccessLogsBucket) {
+    if (!props.serverAccessLogsBucket && !props.serverAccessLogsPrefix) {
       return undefined;
     }
 
     return {
-      destinationBucketName: props.serverAccessLogsBucket.bucketName,
+      destinationBucketName: props.serverAccessLogsBucket?.bucketName,
       logFilePrefix: props.serverAccessLogsPrefix,
     };
   }
@@ -1361,11 +1359,11 @@ export class Bucket extends BucketBase {
     }
 
     if (props.websiteErrorDocument && !props.websiteIndexDocument) {
-      throw new Error(`"websiteIndexDocument" is required if "websiteErrorDocument" is set`);
+      throw new Error('"websiteIndexDocument" is required if "websiteErrorDocument" is set');
     }
 
     if (props.websiteRedirect && (props.websiteErrorDocument || props.websiteIndexDocument || props.websiteRoutingRules)) {
-        throw new Error('"websiteIndexDocument", "websiteErrorDocument" and, "websiteRoutingRules" cannot be set if "websiteRedirect" is used');
+      throw new Error('"websiteIndexDocument", "websiteErrorDocument" and, "websiteRoutingRules" cannot be set if "websiteRedirect" is used');
     }
 
     const routingRules =  props.websiteRoutingRules ? props.websiteRoutingRules.map<CfnBucket.RoutingRuleProperty>((rule) => {
@@ -1376,10 +1374,10 @@ export class Bucket extends BucketBase {
       return {
         redirectRule: {
           hostName: rule.hostName,
-            httpRedirectCode: rule.httpRedirectCode,
-            protocol: rule.protocol,
-            replaceKeyWith: rule.replaceKey && rule.replaceKey.withKey,
-            replaceKeyPrefixWith: rule.replaceKey && rule.replaceKey.prefixWithKey,
+          httpRedirectCode: rule.httpRedirectCode,
+          protocol: rule.protocol,
+          replaceKeyWith: rule.replaceKey && rule.replaceKey.withKey,
+          replaceKeyPrefixWith: rule.replaceKey && rule.replaceKey.prefixWithKey,
         },
         routingRuleCondition: rule.condition
       };

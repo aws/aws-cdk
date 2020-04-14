@@ -1,7 +1,7 @@
 // tslint:disable-next-line:max-line-length
 import * as asset_schema from '@aws-cdk/cdk-assets-schema';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
-import { CloudFormation } from 'aws-sdk';
 import * as colors from 'colors';
 import * as path from 'path';
 import { ToolkitInfo } from './api/toolkit-info';
@@ -15,43 +15,44 @@ import { AssetManifestBuilder } from './util/asset-manifest-builder';
  * pass Asset coordinates.
  */
 // tslint:disable-next-line:max-line-length
-export async function addMetadataAssetsToManifest(stack: cxapi.CloudFormationStackArtifact, assetManifest: AssetManifestBuilder, toolkitInfo?: ToolkitInfo, reuse?: string[]): Promise<CloudFormation.Parameter[]> {
+export async function addMetadataAssetsToManifest(stack: cxapi.CloudFormationStackArtifact, assetManifest: AssetManifestBuilder, toolkitInfo?: ToolkitInfo, reuse?: string[]): Promise<Record<string, string>> {
   reuse = reuse || [];
   const assets = stack.assets;
 
   if (assets.length === 0) {
-    return [];
+    return {};
   }
 
   if (!toolkitInfo) {
     // tslint:disable-next-line:max-line-length
-    throw new Error(`This stack uses assets, so the toolkit stack must be deployed to the environment (Run "${colors.blue("cdk bootstrap " + stack.environment!.name)}")`);
+    throw new Error(`This stack uses assets, so the toolkit stack must be deployed to the environment (Run "${colors.blue('cdk bootstrap ' + stack.environment!.name)}")`);
   }
 
-  let params = new Array<CloudFormation.Parameter>();
+  const params: Record<string, string> = {};
+
   for (const asset of assets) {
     // FIXME: Should have excluded by construct path here instead of by unique ID, preferably using
     // minimatch so we can support globs. Maybe take up during artifact refactoring.
     const reuseAsset = reuse.indexOf(asset.id) > -1;
 
     if (reuseAsset) {
-      debug(`Preparing asset ${asset.id}: ${JSON.stringify(asset)} (reusing)`);
-    } else {
-      debug(`Preparing asset ${asset.id}: ${JSON.stringify(asset)}`);
+      debug(`Reusing asset ${asset.id}: ${JSON.stringify(asset)}`);
+      continue;
     }
 
+    debug(`Preparing asset ${asset.id}: ${JSON.stringify(asset)}`);
     if (!stack.assembly) {
-      throw new Error(`Unexpected: stack assembly is required in order to find assets in assemly directory`);
+      throw new Error('Unexpected: stack assembly is required in order to find assets in assemly directory');
     }
 
-    params = params.concat(await prepareAsset(asset, assetManifest, toolkitInfo, reuseAsset));
+    Object.assign(params, await prepareAsset(asset, assetManifest, toolkitInfo));
   }
 
   return params;
 }
 
 // tslint:disable-next-line:max-line-length
-async function prepareAsset(asset: cxapi.AssetMetadataEntry, assetManifest: AssetManifestBuilder, toolkitInfo: ToolkitInfo, reuse: boolean): Promise<CloudFormation.Parameter[]> {
+async function prepareAsset(asset: cxschema.AssetMetadataEntry, assetManifest: AssetManifestBuilder, toolkitInfo: ToolkitInfo): Promise<Record<string, string>> {
   switch (asset.packaging) {
     case 'zip':
     case 'file':
@@ -59,10 +60,9 @@ async function prepareAsset(asset: cxapi.AssetMetadataEntry, assetManifest: Asse
         asset,
         assetManifest,
         toolkitInfo,
-        asset.packaging === 'zip' ? asset_schema.FileAssetPackaging.ZIP_DIRECTORY : asset_schema.FileAssetPackaging.FILE,
-        reuse);
+        asset.packaging === 'zip' ? asset_schema.FileAssetPackaging.ZIP_DIRECTORY : asset_schema.FileAssetPackaging.FILE);
     case 'container-image':
-      return await prepareDockerImageAsset(asset, assetManifest, toolkitInfo, reuse);
+      return await prepareDockerImageAsset(asset, assetManifest, toolkitInfo);
     default:
       // tslint:disable-next-line:max-line-length
       throw new Error(`Unsupported packaging type: ${(asset as any).packaging}. You might need to upgrade your aws-cdk toolkit to support this asset type.`);
@@ -70,19 +70,10 @@ async function prepareAsset(asset: cxapi.AssetMetadataEntry, assetManifest: Asse
 }
 
 function prepareFileAsset(
-    asset: cxapi.FileAssetMetadataEntry,
-    assetManifest: AssetManifestBuilder,
-    toolkitInfo: ToolkitInfo,
-    packaging: asset_schema.FileAssetPackaging,
-    reuse: boolean): CloudFormation.Parameter[] {
-
-  if (reuse) {
-    return [
-      { ParameterKey: asset.s3BucketParameter, UsePreviousValue: true },
-      { ParameterKey: asset.s3KeyParameter, UsePreviousValue: true },
-      { ParameterKey: asset.artifactHashParameter, UsePreviousValue: true },
-    ];
-  }
+  asset: cxschema.FileAssetMetadataEntry,
+  assetManifest: AssetManifestBuilder,
+  toolkitInfo: ToolkitInfo,
+  packaging: asset_schema.FileAssetPackaging): Record<string, string> {
 
   const extension = packaging === asset_schema.FileAssetPackaging.ZIP_DIRECTORY ? '.zip' : path.extname(asset.path);
   const baseName = `${asset.sourceHash}${extension}`;
@@ -101,30 +92,24 @@ function prepareFileAsset(
     objectKey: key,
   });
 
-  return [
-    { ParameterKey: asset.s3BucketParameter, ParameterValue: toolkitInfo.bucketName },
-    { ParameterKey: asset.s3KeyParameter, ParameterValue: `${s3Prefix}${cxapi.ASSET_PREFIX_SEPARATOR}${baseName}` },
-    { ParameterKey: asset.artifactHashParameter, ParameterValue: asset.sourceHash },
-  ];
+  return {
+    [asset.s3BucketParameter]: toolkitInfo.bucketName,
+    [asset.s3KeyParameter]: `${s3Prefix}${cxapi.ASSET_PREFIX_SEPARATOR}${baseName}`,
+    [asset.artifactHashParameter]: asset.sourceHash,
+  };
 }
 
 async function prepareDockerImageAsset(
-    asset: cxapi.ContainerImageAssetMetadataEntry,
-    assetManifest: AssetManifestBuilder,
-    toolkitInfo: ToolkitInfo,
-    reuse: boolean): Promise<CloudFormation.Parameter[]> {
-
-  if (reuse) {
-    if (!asset.imageNameParameter) { return []; }
-    return [{ ParameterKey: asset.imageNameParameter, UsePreviousValue: true }];
-  }
+  asset: cxschema.ContainerImageAssetMetadataEntry,
+  assetManifest: AssetManifestBuilder,
+  toolkitInfo: ToolkitInfo): Promise<Record<string, string>> {
 
   // Pre-1.21.0, repositoryName can be specified by the user or can be left out, in which case we make
   // a per-asset repository which will get adopted and cleaned up along with the stack.
   // Post-1.21.0, repositoryName will always be specified and it will be a shared repository between
   // all assets, and asset will have imageTag specified as well. Validate the combination.
   if (!asset.imageNameParameter && (!asset.repositoryName || !asset.imageTag)) {
-    throw new Error(`Invalid Docker image asset configuration: "repositoryName" and "imageTag" are required when "imageNameParameter" is left out`);
+    throw new Error('Invalid Docker image asset configuration: "repositoryName" and "imageTag" are required when "imageNameParameter" is left out');
   }
 
   const repositoryName = asset.repositoryName ?? 'cdk/' + asset.id.replace(/[:/]/g, '-').toLowerCase();
@@ -143,6 +128,6 @@ async function prepareDockerImageAsset(
     imageTag,
   });
 
-  if (!asset.imageNameParameter) { return []; }
-  return [{ ParameterKey: asset.imageNameParameter, ParameterValue: `${repositoryUri}:${imageTag}` }];
+  if (!asset.imageNameParameter) { return {}; }
+  return { [asset.imageNameParameter]: `${repositoryUri}:${imageTag}` };
 }
