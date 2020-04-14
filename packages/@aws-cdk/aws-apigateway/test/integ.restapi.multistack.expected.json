@@ -52,19 +52,6 @@
           "firstLambdaServiceRoleB6408C31"
         ]
       }
-    },
-    "Outputs": {
-      "ExportsOutputFnGetAttfirstLambda395F9ADEArn1A9B3BC3": {
-        "Value": {
-          "Fn::GetAtt": [
-            "firstLambda395F9ADE",
-            "Arn"
-          ]
-        },
-        "Export": {
-          "Name": "FirstStack:ExportsOutputFnGetAttfirstLambda395F9ADEArn1A9B3BC3"
-        }
-      }
     }
   },
   {
@@ -75,7 +62,7 @@
           "Name": "SecondRestAPI"
         }
       },
-      "BooksApiDeployment86CA39AFc929a0f95f673e230c62e2c9754726f6": {
+      "BooksApiDeployment86CA39AF1fbf5a64a37488eb322c504d670dd30c": {
         "Type": "AWS::ApiGateway::Deployment",
         "Properties": {
           "RestApiId": {
@@ -96,7 +83,7 @@
             "Ref": "BooksApi60AC975F"
           },
           "DeploymentId": {
-            "Ref": "BooksApiDeployment86CA39AFc929a0f95f673e230c62e2c9754726f6"
+            "Ref": "BooksApiDeployment86CA39AF1fbf5a64a37488eb322c504d670dd30c"
           },
           "StageName": "prod"
         }
@@ -185,7 +172,24 @@
         "Properties": {
           "Action": "lambda:InvokeFunction",
           "FunctionName": {
-            "Fn::ImportValue": "FirstStack:ExportsOutputFnGetAttfirstLambda395F9ADEArn1A9B3BC3"
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":lambda:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":",
+                {
+                  "Ref": "AWS::AccountId"
+                },
+                ":function:FirstLambda"
+              ]
+            ]
           },
           "Principal": "apigateway.amazonaws.com",
           "SourceArn": {
@@ -223,7 +227,24 @@
         "Properties": {
           "Action": "lambda:InvokeFunction",
           "FunctionName": {
-            "Fn::ImportValue": "FirstStack:ExportsOutputFnGetAttfirstLambda395F9ADEArn1A9B3BC3"
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":lambda:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":",
+                {
+                  "Ref": "AWS::AccountId"
+                },
+                ":function:FirstLambda"
+              ]
+            ]
           },
           "Principal": "apigateway.amazonaws.com",
           "SourceArn": {
@@ -278,11 +299,19 @@
                   {
                     "Ref": "AWS::Region"
                   },
-                  ":lambda:path/2015-03-31/functions/",
+                  ":lambda:path/2015-03-31/functions/arn:",
                   {
-                    "Fn::ImportValue": "FirstStack:ExportsOutputFnGetAttfirstLambda395F9ADEArn1A9B3BC3"
+                    "Ref": "AWS::Partition"
                   },
-                  "/invocations"
+                  ":lambda:",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ":",
+                  {
+                    "Ref": "AWS::AccountId"
+                  },
+                  ":function:FirstLambda/invocations"
                 ]
               ]
             }
