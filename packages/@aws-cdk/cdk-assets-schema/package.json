@@ -45,7 +45,7 @@
     "organization": true
   },
   "dependencies": {
-    "semver": "^7.2.1"
+    "semver": "^7.3.0"
   },
   "jest": {
     "moduleFileExtensions": [
@@ -68,7 +68,7 @@
   "devDependencies": {
     "@types/jest": "^25.2.1",
     "cdk-build-tools": "0.0.0",
-    "jest": "^24.9.0",
+    "jest": "^25.3.0",
     "pkglint": "0.0.0"
   },
   "repository": {
@@ -85,7 +85,7 @@
     "semver"
   ],
   "engines": {
-    "node": ">= 10.3.0"
+    "node": ">= 10.12.0"
   },
   "stability": "stable",
   "awscdkio": {

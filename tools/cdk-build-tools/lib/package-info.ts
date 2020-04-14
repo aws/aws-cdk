@@ -127,6 +127,13 @@ export interface CDKBuildOptions {
   pre?: string[];
 
   /**
+   * An optional command (formatted as a list of strings) to run after building
+   *
+   * (Schema generator for example)
+   */
+  post?: string[];
+
+  /**
    * An optional command (formatted as a list of strings) to run before testing.
    */
   test?: string[];
