@@ -22,7 +22,6 @@ export interface IVpcEndpointService extends IResource {
   /**
    * The service name of the VPC Endpoint Service that clients use to connect to,
    * like com.amazonaws.vpce.<region>.vpce-svc-xxxxxxxxxxxxxxxx
-   * @attribute
    */
   readonly vpcEndpointServiceName: string;
 }
@@ -61,7 +60,6 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
   /**
    * The service name of the VPC Endpoint Service that clients use to connect to,
    * like com.amazonaws.vpce.<region>.vpce-svc-xxxxxxxxxxxxxxxx
-   * @attribute
    */
   public readonly vpcEndpointServiceName: string;
 
@@ -85,7 +83,7 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
 
     this.vpcEndpointServiceId = this.endpointService.ref;
 
-    const {region} = Stack.of(this.stack);
+    const { region } = Stack.of(this);
     const serviceNamePrefix = !Token.isUnresolved(region) ?
       RegionInfo.get(region).vpcEndpointServiceNamePrefix ??
       Default.VPC_ENDPOINT_SERVICE_NAME_PREFIX :
@@ -109,7 +107,7 @@ export interface VpcEndpointServiceProps {
 
   /**
    * Name of the Vpc Endpoint Service
-   * @deprecate This property is not used
+   * @deprecated This property is not used
    * @default - CDK generated name
    * @experimental
    */
