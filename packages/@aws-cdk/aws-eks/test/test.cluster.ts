@@ -395,6 +395,43 @@ export = {
     test.done();
   },
 
+  'kubectl resources can be created in a separate stack'(test: Test) {
+    // GIVEN
+    const { stack, app } = testFixture();
+    const cluster = new eks.Cluster(stack, 'cluster'); // cluster is under stack2
+
+    // WHEN resource is under stack2
+    const stack2 = new cdk.Stack(app, 'stack2', { env: { account: stack.account, region: stack.region } });
+    new eks.KubernetesResource(stack2, 'myresource', {
+      cluster,
+      manifest: [ { foo: 'bar' } ]
+    });
+
+    // THEN
+    app.synth(); // no cyclic dependency (see https://github.com/aws/aws-cdk/issues/7231)
+
+    // expect a single resource in the 2nd stack
+    expect(stack2).toMatch({
+      Resources: {
+        myresource49C6D325: {
+          Type: 'Custom::AWSCDK-EKS-KubernetesResource',
+          Properties: {
+            ServiceToken: {
+              'Fn::ImportValue': 'Stack:ExportsOutputFnGetAttawscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6BOutputsStackawscdkawseksKubectlProviderframeworkonEvent8897FD9BArn49BEF20C'
+            },
+            Manifest: '[{\"foo\":\"bar\"}]',
+            ClusterName: { 'Fn::ImportValue': 'Stack:ExportsOutputRefclusterC5B25D0D98D553F5' },
+            RoleArn: { 'Fn::ImportValue': 'Stack:ExportsOutputFnGetAttclusterCreationRole2B3B5002ArnF05122FC' }
+          },
+          UpdateReplacePolicy: 'Delete',
+          DeletionPolicy: 'Delete'
+        }
+      }
+    });
+
+    test.done();
+  },
+
   'when kubectl is enabled (default) adding capacity will automatically map its IAM role'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();
