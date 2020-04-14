@@ -22,6 +22,8 @@ export interface IVpcEndpointService extends IResource {
   /**
    * The service name of the VPC Endpoint Service that clients use to connect to,
    * like com.amazonaws.vpce.<region>.vpce-svc-xxxxxxxxxxxxxxxx
+   *
+   * @attribute
    */
   readonly vpcEndpointServiceName: string;
 }
@@ -60,6 +62,8 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
   /**
    * The service name of the VPC Endpoint Service that clients use to connect to,
    * like com.amazonaws.vpce.<region>.vpce-svc-xxxxxxxxxxxxxxxx
+   *
+   * @attribute
    */
   public readonly vpcEndpointServiceName: string;
 
