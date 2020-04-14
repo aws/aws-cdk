@@ -109,7 +109,6 @@ export interface VpcEndpointServiceProps {
    * Name of the Vpc Endpoint Service
    * @deprecated This property is not used
    * @default - CDK generated name
-   * @experimental
    */
   readonly vpcEndpointServiceName?: string;
 
