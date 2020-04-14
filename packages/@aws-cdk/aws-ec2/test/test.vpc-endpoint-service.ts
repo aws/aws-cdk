@@ -2,6 +2,7 @@ import { expect, haveResource } from '@aws-cdk/assert';
 import { ArnPrincipal } from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
+
 // tslint:disable-next-line:max-line-length
 import { IVpcEndpointServiceLoadBalancer, Vpc, VpcEndpointService } from '../lib';
 
