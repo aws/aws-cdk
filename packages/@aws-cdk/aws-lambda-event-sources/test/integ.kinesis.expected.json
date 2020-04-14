@@ -38,13 +38,22 @@
           "Statement": [
             {
               "Action": [
-                "kinesis:DescribeStream",
                 "kinesis:DescribeStreamSummary",
                 "kinesis:GetRecords",
                 "kinesis:GetShardIterator",
                 "kinesis:ListShards",
                 "kinesis:SubscribeToShard"
               ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "Q63C6E3AB",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "kinesis:DescribeStream",
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [

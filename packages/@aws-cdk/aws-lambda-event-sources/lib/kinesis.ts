@@ -26,6 +26,7 @@ export class KinesisEventSource extends StreamEventSource {
     this._eventSourceMappingId = eventSourceMapping.eventSourceMappingId;
 
     this.stream.grantRead(target);
+    this.stream.grant(target, 'kinesis:DescribeStream');
   }
 
   /**

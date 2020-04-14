@@ -583,7 +583,6 @@ describe('Kinesis data streams', () => {
               Statement: [
                 {
                   Action: [
-                    'kinesis:DescribeStream',
                     'kinesis:DescribeStreamSummary',
                     'kinesis:GetRecords',
                     'kinesis:GetShardIterator',
@@ -836,7 +835,6 @@ describe('Kinesis data streams', () => {
               Statement: [
                 {
                   Action: [
-                    'kinesis:DescribeStream',
                     'kinesis:DescribeStreamSummary',
                     'kinesis:GetRecords',
                     'kinesis:GetShardIterator',
@@ -910,7 +908,6 @@ describe('Kinesis data streams', () => {
               Statement: [
                 {
                   Action: [
-                    'kinesis:DescribeStream',
                     'kinesis:DescribeStreamSummary',
                     'kinesis:GetRecords',
                     'kinesis:GetShardIterator',
@@ -1039,7 +1036,7 @@ describe('Kinesis data streams', () => {
     });
   }),
 
-  test('greatReadWrite creates and attaches a policy with write only access to Stream', () => {
+  test('grantReadWrite creates and attaches a policy with write only access to Stream', () => {
     const stack = new Stack();
     const stream = new Stream(stack, 'MyStream');
 
@@ -1077,7 +1074,6 @@ describe('Kinesis data streams', () => {
               Statement: [
                 {
                   Action: [
-                    'kinesis:DescribeStream',
                     'kinesis:DescribeStreamSummary',
                     'kinesis:GetRecords',
                     'kinesis:GetShardIterator',
@@ -1086,6 +1082,86 @@ describe('Kinesis data streams', () => {
                     'kinesis:PutRecord',
                     'kinesis:PutRecords',
                   ],
+                  Effect: 'Allow',
+                  Resource: {
+                    'Fn::GetAtt': ['MyStream5C050E93', 'Arn'],
+                  },
+                },
+              ],
+              Version: '2012-10-17',
+            },
+            PolicyName: 'MyUserDefaultPolicy7B897426',
+            Users: [
+              {
+                Ref: 'MyUserDC45028B',
+              },
+            ],
+          },
+        },
+      },
+      Conditions: {
+        AwsCdkKinesisEncryptedStreamsUnsupportedRegions: {
+          'Fn::Or': [
+            {
+              'Fn::Equals': [
+                {
+                  Ref: 'AWS::Region',
+                },
+                'cn-north-1',
+              ],
+            },
+            {
+              'Fn::Equals': [
+                {
+                  Ref: 'AWS::Region',
+                },
+                'cn-northwest-1',
+              ],
+            },
+          ],
+        },
+      },
+    });
+  }),
+
+  test('grant creates and attaches a policy to Stream which includes supplied permissions', () => {
+    const stack = new Stack();
+    const stream = new Stream(stack, 'MyStream');
+
+    const user = new iam.User(stack, 'MyUser');
+    stream.grant(user, 'kinesis:DescribeStream');
+
+    expect(stack).toMatchTemplate({
+      Resources: {
+        MyStream5C050E93: {
+          Type: 'AWS::Kinesis::Stream',
+          Properties: {
+            ShardCount: 1,
+            RetentionPeriodHours: 24,
+            StreamEncryption: {
+              'Fn::If': [
+                'AwsCdkKinesisEncryptedStreamsUnsupportedRegions',
+                {
+                  Ref: 'AWS::NoValue',
+                },
+                {
+                  EncryptionType: 'KMS',
+                  KeyId: 'alias/aws/kinesis',
+                },
+              ],
+            },
+          },
+        },
+        MyUserDC45028B: {
+          Type: 'AWS::IAM::User',
+        },
+        MyUserDefaultPolicy7B897426: {
+          Type: 'AWS::IAM::Policy',
+          Properties: {
+            PolicyDocument: {
+              Statement: [
+                {
+                  Action: 'kinesis:DescribeStream',
                   Effect: 'Allow',
                   Resource: {
                     'Fn::GetAtt': ['MyStream5C050E93', 'Arn'],
