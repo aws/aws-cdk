@@ -3,14 +3,14 @@
 
 ---
 
+
+
 ![Deprecated](https://img.shields.io/badge/deprecated-critical.svg?style=for-the-badge)
 
 > This API may emit warnings. Backward compatibility is not guaranteed.
 
-
 ---
 <!--END STABILITY BANNER-->
-
 
 **This module is available for backwards compatibility purposes only ([details](https://github.com/aws/aws-cdk/pull/5540)). It will
 no longer be released with the CDK starting March 1st, 2020. See [issue

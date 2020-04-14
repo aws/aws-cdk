@@ -1,5 +1,6 @@
 import * as caseUtils from 'case';
 import * as fs from 'fs';
+import * as glob from 'glob';
 import * as path from 'path';
 import * as semver from 'semver';
 import { LICENSE, NOTICE } from './licensing';
@@ -206,12 +207,12 @@ export class MaturitySetting extends ValidationRule {
     }
 
     if (maturity) {
-      this.validateReadmeHasBanner(pkg, maturity);
+      this.validateReadmeHasBanner(pkg, maturity, this.determinePackageLevels());
     }
   }
 
-  private validateReadmeHasBanner(pkg: PackageJson, maturity: string) {
-    const badge = this.readmeBadge(maturity);
+  private validateReadmeHasBanner(pkg: PackageJson, maturity: string, levelsPresent: string[]) {
+    const badge = this.readmeBadge(maturity, levelsPresent);
     if (!badge) {
       // Somehow, we don't have a badge for this stability level
       return;
@@ -221,6 +222,7 @@ export class MaturitySetting extends ValidationRule {
       // Presence of the file is asserted by another rule
       return;
     }
+
     const readmeContent = fs.readFileSync(readmeFile, { encoding: 'utf8' });
     const badgeRegex = new RegExp(badge.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\w+/g, '\\w+'));
     if (!badgeRegex.test(readmeContent)) {
@@ -234,8 +236,10 @@ export class MaturitySetting extends ValidationRule {
     }
   }
 
-  private readmeBadge(maturity: string) {
-    const bannerContents = fs.readFileSync(path.join(__dirname, 'banners', `${maturity}.md`), { encoding: 'utf-8' });
+  private readmeBadge(maturity: string, levelsPresent: string[]) {
+    const bannerContents = levelsPresent
+      .map(level => fs.readFileSync(path.join(__dirname, 'banners', `${level}.${maturity}.md`), { encoding: 'utf-8' }).trim())
+      .join('\n\n');
 
     const bannerLines = bannerContents.split('\n').map(s => s.trimRight());
 
@@ -250,6 +254,19 @@ export class MaturitySetting extends ValidationRule {
       '<!--END STABILITY BANNER-->',
       '',
     ].join('\n');
+  }
+
+  private determinePackageLevels(): string[] {
+    const libFiles = glob.sync('lib/*.ts');
+
+    const hasL1 = libFiles.some(f => f.endsWith('.generated.ts'));
+    const hasL2 = libFiles.some(f => !f.endsWith('.generated.ts') && !f.endsWith('index.ts'));
+
+    return [
+      ...hasL1 ? ['l1'] : [],
+      // If we don't have L1, then at least always paste in the L2 banner
+      ...hasL2 || !hasL1 ? ['l2'] : [],
+    ];
   }
 }
 
