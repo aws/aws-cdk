@@ -45,12 +45,13 @@ export interface SdkProviderOptions {
   /**
    * Custom endpoints for API calls
    *
-   * @default - standard AWS endpoints which are built from the Region you have configured
+   * @default - standard AWS endpoints which are built from the region you have configured
    */
   readonly endpoints?: string;
 }
+
 /**
- * custom service endpoints
+ * Mapping of services to endpoints that the SDK will use for API requests
  */
 export interface ServiceEndpoints {
   [serviceName: string]: string
@@ -305,8 +306,6 @@ function parseEndpoints(endpoints: string) {
     debug('Cannot parse `--endpoints` shorthand notation: %s. Failed with error: %s', endpoints, e);
   }
 
-  // tslint:disable-next-line: no-console
-  console.log(`returning endpoints ${JSON.stringify(endpointMapping)}`);
   return endpointMapping;
 }
 

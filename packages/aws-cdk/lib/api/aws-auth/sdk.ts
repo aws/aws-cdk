@@ -68,34 +68,45 @@ export class SDK implements ISDK {
   }
 
   public cloudFormation(): AWS.CloudFormation {
-    // const configuration = {
-    //   ...this.config,
-    //   endpoint: this.endpoints.clondformation
-    // };
-
-    // tslint:disable-next-line: no-console
-    console.log(`this.endpoints.cloudformation: ${this.endpoints.cloudformation}`);
-    return new AWS.CloudFormation({...this.config, endpoint: this.endpoints.cloudformation});
+    return new AWS.CloudFormation({
+      ...this.config,
+      endpoint: this.endpoints.cloudformation
+    });
   }
 
   public ec2(): AWS.EC2 {
-    return new AWS.EC2(this.config);
+    return new AWS.EC2({
+      ...this.config,
+      endpoint: this.endpoints.ec2
+    });
   }
 
   public ssm(): AWS.SSM {
-    return new AWS.SSM(this.config);
+    return new AWS.SSM({
+      ...this.config,
+      endpoint: this.endpoints.ssm
+    });
   }
 
   public s3(): AWS.S3 {
-    return new AWS.S3(this.config);
+    return new AWS.S3({
+      ...this.config,
+      endpoint: this.endpoints.s3
+    });
   }
 
   public route53(): AWS.Route53 {
-    return new AWS.Route53(this.config);
+    return new AWS.Route53({
+      ...this.config,
+      endpoint: this.endpoints.route53
+    });
   }
 
   public ecr(): AWS.ECR {
-    return new AWS.ECR(this.config);
+    return new AWS.ECR({
+      ...this.config,
+      endpoint: this.endpoints.ecr
+    });
   }
 
   public async currentAccount(): Promise<Account> {
