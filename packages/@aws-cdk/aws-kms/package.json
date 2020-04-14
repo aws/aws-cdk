@@ -86,11 +86,7 @@
   },
   "awslint": {
     "exclude": [
-      "props-physical-name:@aws-cdk/aws-kms.KeyProps",
-      "docs-public-apis:@aws-cdk/aws-kms.Alias.fromAliasAttributes",
-      "docs-public-apis:@aws-cdk/aws-kms.AliasAttributes",
-      "docs-public-apis:@aws-cdk/aws-kms.AliasAttributes.aliasName",
-      "docs-public-apis:@aws-cdk/aws-kms.AliasAttributes.aliasTargetKey"
+      "props-physical-name:@aws-cdk/aws-kms.KeyProps"
     ]
   },
   "stability": "stable",
