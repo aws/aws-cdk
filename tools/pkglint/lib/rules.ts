@@ -1,5 +1,6 @@
 import * as caseUtils from 'case';
 import * as fs from 'fs';
+import * as glob from 'glob';
 import * as path from 'path';
 import * as semver from 'semver';
 import { LICENSE, NOTICE } from './licensing';
@@ -162,7 +163,130 @@ export class ReadmeFile extends ValidationRule {
 }
 
 /**
- * There must be a stability setting, and that the appropriate banner is present in the README.md file.
+ * All packages must have a "maturity" declaration.
+ *
+ * The banner in the README must match the package maturity.
+ *
+ * As a way to seed the settings, if 'maturity' is missing but can
+ * be auto-derived from 'stability', that will be the fix (otherwise
+ * there is no fix).
+ */
+export class MaturitySetting extends ValidationRule {
+  public readonly name = 'package-info/maturity';
+
+  public validate(pkg: PackageJson): void {
+    if (pkg.json.private) {
+      // Does not apply to private packages!
+      return;
+    }
+
+    let maturity = pkg.json.maturity as string | undefined;
+    const stability = pkg.json.stability as string | undefined;
+    if (!maturity) {
+      let fix;
+      if (stability && ['stable', 'deprecated'].includes(stability)) {
+        // We can autofix!
+        fix = () => pkg.json.maturity = stability;
+        maturity = stability;
+      }
+
+      pkg.report({
+        ruleName: this.name,
+        message: `Package is missing "maturity" setting (expected one of ${Object.keys(MATURITY_TO_STABILITY)})`,
+        fix,
+      });
+    }
+
+    if (pkg.json.deprecated && maturity !== 'deprecated') {
+      pkg.report({
+        ruleName: this.name,
+        message: `Package is deprecated, but is marked with maturity "${maturity}"`,
+        fix: () => pkg.json.maturity = 'deprecated',
+      });
+      maturity = 'deprecated';
+    }
+
+    if (maturity) {
+      this.validateReadmeHasBanner(pkg, maturity, this.determinePackageLevels(pkg));
+    }
+  }
+
+  private validateReadmeHasBanner(pkg: PackageJson, maturity: string, levelsPresent: string[]) {
+    const badge = this.readmeBadge(maturity, levelsPresent);
+    if (!badge) {
+      // Somehow, we don't have a badge for this stability level
+      return;
+    }
+    const readmeFile = path.join(pkg.packageRoot, 'README.md');
+    if (!fs.existsSync(readmeFile)) {
+      // Presence of the file is asserted by another rule
+      return;
+    }
+
+    const readmeContent = fs.readFileSync(readmeFile, { encoding: 'utf8' });
+    const badgeRegex = new RegExp(badge.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\w+/g, '\\w+'));
+    if (!badgeRegex.test(readmeContent)) {
+      // Removing a possible old, now invalid stability indication from the README.md before adding a new one
+      const [title, ...body] = readmeContent.replace(/<!--BEGIN STABILITY BANNER-->(?:.|\n)+<!--END STABILITY BANNER-->\n+/m, '').split('\n');
+      pkg.report({
+        ruleName: this.name,
+        message: `Missing stability banner for ${maturity} in README.md file`,
+        fix: () => fs.writeFileSync(readmeFile, [title, badge, ...body].join('\n')),
+      });
+    }
+  }
+
+  private readmeBadge(maturity: string, levelsPresent: string[]) {
+    const bannerContents = levelsPresent
+      .map(level => fs.readFileSync(path.join(__dirname, 'banners', `${level}.${maturity}.md`), { encoding: 'utf-8' }).trim())
+      .join('\n\n')
+      .trim();
+
+    const bannerLines = bannerContents.split('\n').map(s => s.trimRight());
+
+    return [
+      '<!--BEGIN STABILITY BANNER-->',
+      '---',
+      '',
+      ...bannerLines,
+      '',
+      '---',
+      '<!--END STABILITY BANNER-->',
+      '',
+    ].join('\n');
+  }
+
+  private determinePackageLevels(pkg: PackageJson): string[] {
+    // Used to determine L1 by the presence of a .generated.ts file, but that depends
+    // on the source having been built. Much more robust to look at the build INSTRUCTIONS
+    // to see if this package has L1s.
+    const hasL1 = !!pkg.json['cdk-build']?.cloudformation;
+
+    const libFiles = glob.sync('lib/*.ts');
+    const hasL2 = libFiles.some(f => !f.endsWith('.generated.ts') && !f.endsWith('index.ts'));
+
+    return [
+      ...hasL1 ? ['l1'] : [],
+      // If we don't have L1, then at least always paste in the L2 banner
+      ...hasL2 || !hasL1 ? ['l2'] : [],
+    ];
+  }
+}
+
+const MATURITY_TO_STABILITY: Record<string, string> = {
+  'cfn-only': 'experimental',
+  'experimental': 'experimental',
+  'developer-preview': 'experimental',
+  'stable': 'stable',
+  'deprecated': 'deprecated',
+};
+
+/**
+ * There must be a stability setting, and it must match the package maturity.
+ *
+ * Maturity setting is leading here (as there are more options than the
+ * stability setting), but the stability setting must be present for `jsii`
+ * to properly read and encode it into the assembly.
  */
 export class StabilitySetting extends ValidationRule {
   public readonly name = 'package-info/stability';
@@ -173,97 +297,16 @@ export class StabilitySetting extends ValidationRule {
       return;
     }
 
-    let stability = pkg.json.stability;
-    switch (stability) {
-      case 'experimental':
-      case 'stable':
-      case 'deprecated':
-        if (pkg.json.deprecated && stability !== 'deprecated') {
-          pkg.report({
-            ruleName: this.name,
-            message: `Package is deprecated, but is marked with stability "${stability}"`,
-            fix: () => pkg.json.stability = 'deprecated',
-          });
-          stability = 'deprecated';
-        }
-        break;
-      default:
-        const defaultStability = pkg.json.deprecated ? 'deprecated' : 'experimental';
-        pkg.report({
-          ruleName: this.name,
-          message: `Invalid stability configuration in package.json: ${JSON.stringify(stability)}`,
-          fix: () => pkg.json.stability = defaultStability,
-        });
-        stability = defaultStability;
-    }
-    this.validateReadmeHasBanner(pkg, stability);
-  }
+    const maturity = pkg.json.maturity as string | undefined;
+    const stability = pkg.json.stability as string | undefined;
 
-  private validateReadmeHasBanner(pkg: PackageJson, stability: string) {
-    const badge = this.readmeBadge(stability);
-    if (!badge) {
-      // Somehow, we don't have a badge for this stability level
-      return;
-    }
-    const readmeFile = path.join(pkg.packageRoot, 'README.md');
-    if (!fs.existsSync(readmeFile)) {
-      // Presence of the file is asserted by another rule
-      return;
-    }
-    const readmeContent = fs.readFileSync(readmeFile, { encoding: 'utf8' });
-    const badgeRegex = new RegExp(badge.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\w+/g, '\\w+'));
-    if (!badgeRegex.test(readmeContent)) {
-      // Removing a possible old, now invalid stability indication from the README.md before adding a new one
-      const [title, ...body] = readmeContent.replace(/<!--BEGIN STABILITY BANNER-->(?:.|\n)+<!--END STABILITY BANNER-->\n+/m, '').split('\n');
+    const expectedStability = maturity ? MATURITY_TO_STABILITY[maturity] : undefined;
+    if (!stability || (expectedStability && stability !== expectedStability)) {
       pkg.report({
         ruleName: this.name,
-        message: `Missing stability banner for ${stability} in README.md file`,
-        fix: () => fs.writeFileSync(readmeFile, [title, badge, ...body].join('\n')),
+        message: `stability is '${stability}', but based on maturity is expected to be '${expectedStability}'`,
+        fix: expectedStability ? (() => pkg.json.stability = expectedStability) : undefined,
       });
-    }
-  }
-
-  private readmeBadge(stability: string) {
-    switch (stability) {
-      case 'deprecated':
-        return _div(
-          { label: 'Deprecated', color: 'critical' },
-          'This API may emit warnings. Backward compatibility is not guaranteed.',
-        );
-      case 'experimental':
-        return _div(
-          { label: 'Experimental', color: 'important' },
-          '**This is a _developer preview_ (public beta) module.**',
-          '',
-          'All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib))',
-          'are auto-generated from CloudFormation. They are stable and safe to use.',
-          '',
-          'However, all other classes, i.e., higher level constructs, are under active development and subject to non-backward',
-          'compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model.',
-          'This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.',
-        );
-      case 'stable':
-        return _div(
-          { label: 'Stable', color: 'success' },
-        );
-      default:
-        return undefined;
-    }
-
-    function _div(badge: { label: string, color: string }, ...messages: string[]) {
-      return [
-        '<!--BEGIN STABILITY BANNER-->',
-        '',
-        '---',
-        '',
-        `![Stability: ${badge.label}](https://img.shields.io/badge/stability-${badge.label}-${badge.color}.svg?style=for-the-badge)`,
-        '',
-        ...messages.map(message => `> ${message}`.trimRight()),
-        '',
-        '---',
-        '<!--END STABILITY BANNER-->',
-        '',
-      ].join('\n');
     }
   }
 }
@@ -676,6 +719,7 @@ export class MustDependonCdkByPointVersions extends ValidationRule {
       '@aws-cdk/cfnspec',
       '@aws-cdk/cdk-assets-schema',
       '@aws-cdk/cx-api',
+      '@aws-cdk/cloud-assembly-schema',
       '@aws-cdk/region-info'
     ];
 
@@ -778,7 +822,7 @@ export class MustHaveNodeEnginesDeclaration extends ValidationRule {
   public readonly name = 'package-info/engines';
 
   public validate(pkg: PackageJson): void {
-    expectJSON(this.name, pkg, 'engines.node', '>= 10.3.0');
+    expectJSON(this.name, pkg, 'engines.node', '>= 10.12.0');
   }
 }
 
