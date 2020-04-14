@@ -63,11 +63,9 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
   // ----------------------------------------------------------------------
 
   // if the consumer is nested within the producer (directly or indirectly),
-  // wire through a CloudFormation parameter on the consumer and resolve
-  // recursively.
+  // wire through a CloudFormation parameter.
   if (isNested(consumer, producer)) {
-    const parameterValue = createNestedStackParameter(consumer, reference);
-    return resolveValue(consumer, parameterValue);
+    return createNestedStackParameter(consumer, reference);
   }
 
   // ----------------------------------------------------------------------
@@ -217,19 +215,19 @@ function generateExportName(stackExports: Construct, id: string) {
  * Adds a CloudFormation parameter to a nested stack and assigns it with the
  * value of the reference.
  */
-function createNestedStackParameter(consumer: Stack, reference: Reference) {
+function createNestedStackParameter(nested: Stack, reference: Reference) {
   // we call "this.resolve" to ensure that tokens do not creep in (for example, if the reference display name includes tokens)
-  const paramId = consumer.resolve(`reference-to-${reference.target.node.uniqueId}.${reference.displayName}`);
-  let param = consumer.node.tryFindChild(paramId) as CfnParameter;
+  const paramId = nested.resolve(`reference-to-${reference.target.node.uniqueId}.${reference.displayName}`);
+  let param = nested.node.tryFindChild(paramId) as CfnParameter;
   if (!param) {
-    param = new CfnParameter(consumer, paramId, { type: 'String' });
+    param = new CfnParameter(nested, paramId, { type: 'String' });
 
     // Ugly little hack until we move NestedStack to this module.
-    if (!('setParameter' in consumer)) {
+    if (!('setParameter' in nested)) {
       throw new Error('assertion failed: nested stack should have a "setParameter" method');
     }
 
-    (consumer as any).setParameter(param.logicalId, Token.asString(reference));
+    (nested as any).setParameter(param.logicalId, Token.asString(reference));
   }
 
   return param.value as CfnReference;
