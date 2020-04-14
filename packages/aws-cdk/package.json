@@ -35,9 +35,6 @@
       ]
     }
   },
-  "cdk-package": {
-    "shrinkWrap": true
-  },
   "author": {
     "name": "Amazon Web Services",
     "url": "https://aws.amazon.com",

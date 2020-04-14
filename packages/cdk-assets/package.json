@@ -61,9 +61,6 @@
   "engines": {
     "node": ">= 10.12.0"
   },
-  "cdk-package": {
-    "shrinkWrap": true
-  },
   "stability": "experimental",
   "maturity": "experimental",
   "jest": {

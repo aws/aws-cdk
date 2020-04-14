@@ -17,7 +17,6 @@ nyc.config.js
 
 !test/integ/run-wrappers/dist
 !test/integ/cli/**/*
-npm-shrinkwrap.json
 
 # Might be created when running regression tests.
 # But normally should be deleted after execution.
