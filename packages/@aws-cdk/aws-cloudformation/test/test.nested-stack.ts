@@ -426,6 +426,30 @@ export = {
     test.done();
   },
 
+  'nested stack within a nested stack references a resource in a sibling top-level stack'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const consumerTopLevel = new Stack(app, 'ConsumerTopLevel');
+    const consumerNested1 = new NestedStack(consumerTopLevel, 'ConsumerNested1');
+    const consumerNested2 = new NestedStack(consumerNested1, 'ConsumerNested2');
+    const producerTopLevel = new Stack(app, 'ProducerTopLevel');
+    const producer = new CfnResource(producerTopLevel, 'Producer', { type: 'Producer' });
+
+    // WHEN
+    new CfnResource(consumerNested2, 'Consumer', {
+      type: 'Consumer',
+      properties: {
+        Ref: producer.ref
+      }
+    });
+
+    // THEN
+    const manifest = app.synth();
+    const consumerDeps = manifest.getStackArtifact(consumerTopLevel.artifactId).dependencies.map(d => d.id);
+    test.deepEqual(consumerDeps, [ 'ProducerTopLevel' ]);
+    test.done();
+  },
+
   'another non-nested stack takes a reference on a resource within the nested stack (the parent exports)'(test: Test) {
     // GIVEN
     const app = new App();
@@ -965,5 +989,5 @@ export = {
       },
     }));
     test.done();
-  }
+  },
 };

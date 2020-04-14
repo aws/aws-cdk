@@ -96,11 +96,10 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
   // export the value through a cloudformation "export name" and use an
   // Fn::ImportValue in the consumption site.
 
-  // delcare a dependency between the two top-level (non-nested) stacks to make
-  // sure the producer is deployed before the consumer.
-  const producerDep = producer.nestedStackParent ?? producer;
-  const consumerDep = consumer.nestedStackParent ?? consumer;
-  consumerDep.addDependency(producerDep,
+  // add a dependency between the producer and the consumer. dependency logic
+  // will take care of applying the dependency at the right level (e.g. the
+  // top-level stacks).
+  consumer.addDependency(producer,
     `${consumer.node.path} -> ${reference.target.node.path}.${reference.displayName}`);
 
   return createImportValue(reference);
@@ -261,7 +260,7 @@ function createNestedStackOutput(producer: Stack, reference: Reference): CfnRefe
  * If `child` is not a nested stack, always returns `false` because it can't
  * have a parent, dah.
  */
-export function isNested(nested: Stack, parent: Stack): boolean {
+function isNested(nested: Stack, parent: Stack): boolean {
   // if the parent is a direct parent
   if (nested.nestedStackParent === parent) {
     return true;
