@@ -65,6 +65,7 @@
     "shrinkWrap": true
   },
   "stability": "experimental",
+  "maturity": "experimental",
   "jest": {
     "moduleFileExtensions": [
       "js"
