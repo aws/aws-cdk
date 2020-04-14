@@ -447,7 +447,7 @@ export interface UserPoolProps {
    * Attributes which Cognito will look to verify automatically upon user sign up.
    * EMAIL and PHONE are the only available options.
    *
-   * @default - If `signIn` include email and/or phone, they will be included in `autoVerifiedAttributes` by default.
+   * @default - If `signInAlias` includes email and/or phone, they will be included in `autoVerifiedAttributes` by default.
    * If absent, no attributes will be auto-verified.
    */
   readonly autoVerify?: AutoVerifiedAttrs;

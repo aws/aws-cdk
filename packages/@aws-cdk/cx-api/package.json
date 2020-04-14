@@ -45,7 +45,11 @@
     "organization": true
   },
   "dependencies": {
-    "semver": "^7.2.1"
+    "semver": "^7.3.0",
+    "@aws-cdk/cloud-assembly-schema": "0.0.0"
+  },
+  "peerDependencies": {
+    "@aws-cdk/cloud-assembly-schema": "0.0.0"
   },
   "jest": {
     "moduleFileExtensions": [
@@ -70,7 +74,7 @@
     "@types/mock-fs": "^4.10.0",
     "@types/semver": "^7.1.0",
     "cdk-build-tools": "0.0.0",
-    "jest": "^24.9.0",
+    "jest": "^25.3.0",
     "mock-fs": "^4.11.0",
     "pkglint": "0.0.0"
   },
@@ -88,9 +92,10 @@
     "semver"
   ],
   "engines": {
-    "node": ">= 10.3.0"
+    "node": ">= 10.12.0"
   },
   "stability": "experimental",
+  "maturity": "experimental",
   "awslint": {
     "exclude": [
       "props-default-doc:@aws-cdk/cx-api.MetadataEntry.data",
