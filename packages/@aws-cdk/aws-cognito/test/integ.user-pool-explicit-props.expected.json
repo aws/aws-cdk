@@ -56,9 +56,23 @@
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
-          "Fn::GetAtt": [
-            "createAuthChallengeB185B225",
-            "Arn"
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":lambda:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":function:createAuthChallenge"
+            ]
           ]
         },
         "Principal": "cognito-idp.amazonaws.com"
@@ -120,9 +134,23 @@
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
-          "Fn::GetAtt": [
-            "customMessage52BA91E2",
-            "Arn"
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":lambda:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":function:customMessage"
+            ]
           ]
         },
         "Principal": "cognito-idp.amazonaws.com"
@@ -184,9 +212,23 @@
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
-          "Fn::GetAtt": [
-            "defineAuthChallengeAE7BCDA1",
-            "Arn"
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":lambda:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":function:defineAuthChallenge"
+            ]
           ]
         },
         "Principal": "cognito-idp.amazonaws.com"
@@ -248,9 +290,23 @@
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
-          "Fn::GetAtt": [
-            "postAuthentication741BD8E3",
-            "Arn"
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":lambda:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":function:postAuthentication"
+            ]
           ]
         },
         "Principal": "cognito-idp.amazonaws.com"
@@ -312,9 +368,23 @@
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
-          "Fn::GetAtt": [
-            "postConfirmationD5E3F1DD",
-            "Arn"
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":lambda:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":function:postConfirmation"
+            ]
           ]
         },
         "Principal": "cognito-idp.amazonaws.com"
@@ -376,9 +446,23 @@
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
-          "Fn::GetAtt": [
-            "preAuthentication56F78C81",
-            "Arn"
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":lambda:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":function:preAuthentication"
+            ]
           ]
         },
         "Principal": "cognito-idp.amazonaws.com"
@@ -440,9 +524,23 @@
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
-          "Fn::GetAtt": [
-            "preSignUp1934B27C",
-            "Arn"
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":lambda:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":function:preSignUp"
+            ]
           ]
         },
         "Principal": "cognito-idp.amazonaws.com"
@@ -504,9 +602,23 @@
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
-          "Fn::GetAtt": [
-            "preTokenGeneration1E968302",
-            "Arn"
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":lambda:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":function:preTokenGeneration"
+            ]
           ]
         },
         "Principal": "cognito-idp.amazonaws.com"
@@ -568,9 +680,23 @@
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
-          "Fn::GetAtt": [
-            "userMigrationAAA960EC",
-            "Arn"
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":lambda:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":function:userMigration"
+            ]
           ]
         },
         "Principal": "cognito-idp.amazonaws.com"
@@ -632,9 +758,23 @@
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
-          "Fn::GetAtt": [
-            "verifyAuthChallengeResponse211FE4A6",
-            "Arn"
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":lambda:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":function:verifyAuthChallengeResponse"
+            ]
           ]
         },
         "Principal": "cognito-idp.amazonaws.com"
@@ -707,63 +847,203 @@
         ],
         "LambdaConfig": {
           "CreateAuthChallenge": {
-            "Fn::GetAtt": [
-              "createAuthChallengeB185B225",
-              "Arn"
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":lambda:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":",
+                {
+                  "Ref": "AWS::AccountId"
+                },
+                ":function:createAuthChallenge"
+              ]
             ]
           },
           "CustomMessage": {
-            "Fn::GetAtt": [
-              "customMessage52BA91E2",
-              "Arn"
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":lambda:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":",
+                {
+                  "Ref": "AWS::AccountId"
+                },
+                ":function:customMessage"
+              ]
             ]
           },
           "DefineAuthChallenge": {
-            "Fn::GetAtt": [
-              "defineAuthChallengeAE7BCDA1",
-              "Arn"
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":lambda:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":",
+                {
+                  "Ref": "AWS::AccountId"
+                },
+                ":function:defineAuthChallenge"
+              ]
             ]
           },
           "PostAuthentication": {
-            "Fn::GetAtt": [
-              "postAuthentication741BD8E3",
-              "Arn"
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":lambda:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":",
+                {
+                  "Ref": "AWS::AccountId"
+                },
+                ":function:postAuthentication"
+              ]
             ]
           },
           "PostConfirmation": {
-            "Fn::GetAtt": [
-              "postConfirmationD5E3F1DD",
-              "Arn"
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":lambda:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":",
+                {
+                  "Ref": "AWS::AccountId"
+                },
+                ":function:postConfirmation"
+              ]
             ]
           },
           "PreAuthentication": {
-            "Fn::GetAtt": [
-              "preAuthentication56F78C81",
-              "Arn"
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":lambda:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":",
+                {
+                  "Ref": "AWS::AccountId"
+                },
+                ":function:preAuthentication"
+              ]
             ]
           },
           "PreSignUp": {
-            "Fn::GetAtt": [
-              "preSignUp1934B27C",
-              "Arn"
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":lambda:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":",
+                {
+                  "Ref": "AWS::AccountId"
+                },
+                ":function:preSignUp"
+              ]
             ]
           },
           "PreTokenGeneration": {
-            "Fn::GetAtt": [
-              "preTokenGeneration1E968302",
-              "Arn"
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":lambda:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":",
+                {
+                  "Ref": "AWS::AccountId"
+                },
+                ":function:preTokenGeneration"
+              ]
             ]
           },
           "UserMigration": {
-            "Fn::GetAtt": [
-              "userMigrationAAA960EC",
-              "Arn"
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":lambda:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":",
+                {
+                  "Ref": "AWS::AccountId"
+                },
+                ":function:userMigration"
+              ]
             ]
           },
           "VerifyAuthChallengeResponse": {
-            "Fn::GetAtt": [
-              "verifyAuthChallengeResponse211FE4A6",
-              "Arn"
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":lambda:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":",
+                {
+                  "Ref": "AWS::AccountId"
+                },
+                ":function:verifyAuthChallengeResponse"
+              ]
             ]
           }
         },
