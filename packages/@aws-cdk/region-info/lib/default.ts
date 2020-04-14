@@ -2,6 +2,14 @@
  * Provides default values for certain regional information points.
  */
 export class Default {
+
+  /**
+   * The default value for a VPC Endpoint Service name prefix, useful if you do
+   * not have a synthesize-time region literal available (all you have is
+   * `{ "Ref": "AWS::Region" }`)
+   */
+  public static readonly VPC_ENDPOINT_SERVICE_NAME_PREFIX = 'com.amazonaws.vpce';
+
   /**
    * Computes a "standard" AWS Service principal for a given service, region and suffix. This is useful for example when
    * you need to compute a service principal name, but you do not have a synthesize-time region literal available (so

@@ -29,5 +29,36 @@
         ]
       }
     }
+  },
+  "Outputs": {
+    "MyVpcEndpointServiceWithNoPrincipalsServiceName": {
+      "Description": "Give this to service consumers so they can connect via VPC Endpoint",
+      "Value": {
+        "Fn::Join": [
+          ".",
+          [
+            "com.amazonaws.vpce",
+            {
+              "Ref": "AWS::Region"
+            },
+            {
+              "Ref": "MyVpcEndpointServiceWithNoPrincipals9B24276E"
+            }
+          ]
+        ]
+      },
+      "Export": {
+        "Name": "ServiceName"
+      }
+    },
+    "MyVpcEndpointServiceWithPrincipalsEndpointServiceId": {
+      "Description": "Reference this service from other stacks",
+      "Value": {
+        "Ref": "MyVpcEndpointServiceWithPrincipals41EE2DF2"
+      },
+      "Export": {
+        "Name": "EndpointServiceId"
+      }
+    }
   }
 }
