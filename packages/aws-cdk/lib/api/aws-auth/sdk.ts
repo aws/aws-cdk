@@ -3,7 +3,7 @@ import { ConfigurationOptions } from 'aws-sdk/lib/config';
 import { debug } from '../../logging';
 import { cached } from '../../util/functions';
 import { AccountAccessKeyCache } from './account-cache';
-import { Account } from './sdk-provider';
+import { Account, ServiceEndpoints } from './sdk-provider';
 
 /** @experimental */
 export interface ISDK {
@@ -41,6 +41,8 @@ export class SDK implements ISDK {
 
   private readonly config: ConfigurationOptions;
 
+  private readonly endpoints: ServiceEndpoints;
+
   /**
    * Default retry options for SDK clients
    *
@@ -53,7 +55,8 @@ export class SDK implements ISDK {
    */
   private readonly retryOptions = { maxRetries: 6, retryDelayOptions: { base: 300 }};
 
-  constructor(private readonly credentials: AWS.Credentials, region: string, httpOptions: ConfigurationOptions = {}) {
+  // tslint:disable-next-line: max-line-length
+  constructor(private readonly credentials: AWS.Credentials, region: string, httpOptions: ConfigurationOptions = {}, endpoints: ServiceEndpoints = {}) {
     this.config = {
       ...httpOptions,
       ...this.retryOptions,
@@ -61,10 +64,18 @@ export class SDK implements ISDK {
       region,
     };
     this.currentRegion = region;
+    this.endpoints = endpoints;
   }
 
   public cloudFormation(): AWS.CloudFormation {
-    return new AWS.CloudFormation(this.config);
+    // const configuration = {
+    //   ...this.config,
+    //   endpoint: this.endpoints.clondformation
+    // };
+
+    // tslint:disable-next-line: no-console
+    console.log(`this.endpoints.cloudformation: ${this.endpoints.cloudformation}`);
+    return new AWS.CloudFormation({...this.config, endpoint: this.endpoints.cloudformation});
   }
 
   public ec2(): AWS.EC2 {

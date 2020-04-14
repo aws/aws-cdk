@@ -41,6 +41,19 @@ export interface SdkProviderOptions {
    * HTTP options for SDK
    */
   readonly httpOptions?: SdkHttpOptions;
+
+  /**
+   * Custom endpoints for API calls
+   *
+   * @default - standard AWS endpoints which are built from the Region you have configured
+   */
+  readonly endpoints?: string;
+}
+/**
+ * custom service endpoints
+ */
+export interface ServiceEndpoints {
+  [serviceName: string]: string
 }
 
 /**
@@ -89,11 +102,12 @@ export class SdkProvider {
    */
   public static async withAwsCliCompatibleDefaults(options: SdkProviderOptions = {}) {
     const sdkOptions = parseHttpOptions(options.httpOptions ?? {});
+    const endpoints = options.endpoints ? parseEndpoints(options.endpoints) : {};
 
     const chain = await AwsCliCompatible.credentialChain(options.profile, options.ec2creds, options.containerCreds, sdkOptions.httpOptions);
     const region = await AwsCliCompatible.region(options.profile);
 
-    return new SdkProvider(chain, region, sdkOptions);
+    return new SdkProvider(chain, region, sdkOptions, endpoints);
   }
 
   private readonly plugins = new CredentialPlugins();
@@ -104,7 +118,8 @@ export class SdkProvider {
      * Default region
      */
     public readonly defaultRegion: string,
-    private readonly sdkOptions: ConfigurationOptions = {}) {
+    private readonly sdkOptions: ConfigurationOptions = {},
+    private readonly endpoints: ServiceEndpoints = {}) {
   }
 
   /**
@@ -116,7 +131,7 @@ export class SdkProvider {
   public async forEnvironment(accountId: string | undefined, region: string | undefined, mode: Mode): Promise<ISDK> {
     const env = await this.resolveEnvironment(accountId, region);
     const creds = await this.obtainCredentials(env.account, mode);
-    return new SDK(creds, env.region, this.sdkOptions);
+    return new SDK(creds, env.region, this.sdkOptions, this.endpoints);
   }
 
   /**
@@ -263,6 +278,36 @@ export interface Account {
    * The partition ('aws' or 'aws-cn' or otherwise)
    */
   readonly partition: string;
+}
+
+/**
+ * Parse endpoints to produce a map of service to custom endpoints
+ * @param endpoints string version of endpoints separated by commas.
+ */
+function parseEndpoints(endpoints: string) {
+  let endpointMapping = {};
+  try {
+    endpointMapping = JSON.parse(endpoints);
+  } catch (e) {
+    debug('Cannot JSON parse `--endpoints` argument: %s. Failed with error: %s', endpoints, e);
+  }
+
+  try {
+    endpointMapping = endpointMapping ||
+    endpoints.split(/,/g).reduce<ServiceEndpoints>((acc, entry) => {
+      const [service, url] = entry.split('=');
+      if (service && url) {
+        acc[service] = url;
+      }
+      return acc;
+    }, {});
+  } catch (e) {
+    debug('Cannot parse `--endpoints` shorthand notation: %s. Failed with error: %s', endpoints, e);
+  }
+
+  // tslint:disable-next-line: no-console
+  console.log(`returning endpoints ${JSON.stringify(endpointMapping)}`);
+  return endpointMapping;
 }
 
 /**
