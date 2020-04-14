@@ -52,7 +52,7 @@ export interface MethodOptions {
    * for the integration response to be correctly mapped to a response to the client.
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-method-settings-method-response.html
    */
-  readonly methodResponses?: MethodResponse[]
+  readonly methodResponses?: MethodResponse[];
 
   /**
    * The request parameters that API Gateway accepts. Specify request parameters
@@ -65,15 +65,45 @@ export interface MethodOptions {
   readonly requestParameters?: { [param: string]: boolean };
 
   /**
-   * The resources that are used for the response's content type. Specify request
-   * models as key-value pairs (string-to-string mapping), with a content type
-   * as the key and a Model resource name as the value
+   * The models which describe data structure of request payload. This can work
+   * together with `requestValidator` or `requestValidatorOptions` to validate
+   * the API request payload before it reaches integrations like Lambda Proxy
+   * Integration. Specify `requestModels` as key-value pairs, with a content type
+   * (e.g. `'application/json'`) as the key and an API Gateway Model as the value.
+   *
+   * @example
+   *
+   *     const userModel: apigateway.Model = api.addModel('UserModel', {
+   *         schema: {
+   *             type: apigateway.JsonSchemaType.OBJECT
+   *             properties: {
+   *                 userId: {
+   *                     type: apigateway.JsonSchema.STRING
+   *                 },
+   *                 name: {
+   *                     type: apigateway.JsonSchema.STRING
+   *                 }
+   *             },
+   *             required: ['userId']
+   *         }
+   *     });
+   *     api.root.addResource('user').addMethod('POST',
+   *         new apigateway.LambdaIntegration(userLambda), {
+   *             requestModels: {
+   *                 'application/json': userModel
+   *             }
+   *         }
+   *     );
+   *
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-method-settings-method-request.html#setup-method-request-model
    */
   readonly requestModels?: { [param: string]: IModel };
 
   /**
    * The ID of the associated request validator.
    * Only one of `requestValidator` or `requestValidatorOptions` must be specified.
+   * It can work together with `requestModels` or `requestParameters` to validate
+   * the request before it reaches integration like Lambda Proxy Integration.
    * @default - No default validator
    */
   readonly requestValidator?: IRequestValidator;
@@ -84,11 +114,13 @@ export interface MethodOptions {
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-method.html#cfn-apigateway-method-authorizationscopes
    * @default - no authorization scopes
    */
-  readonly authorizationScopes?: string[]
+  readonly authorizationScopes?: string[];
 
   /**
    * Request validator options to create new validator
    * Only one of `requestValidator` or `requestValidatorOptions` must be specified.
+   * It can work together with `requestModels` or `requestParameters` to validate
+   * the request before it reaches integration like Lambda Proxy Integration.
    * @default - No default validator
    */
   readonly requestValidatorOptions?: RequestValidatorOptions;
