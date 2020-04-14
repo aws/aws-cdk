@@ -1,6 +1,5 @@
 ## Amazon Elastic Load Balancing V2 Construct Library
 <!--BEGIN STABILITY BANNER-->
-
 ---
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)

@@ -1,6 +1,5 @@
 # @monocdk-experiment/rewrite-imports
 <!--BEGIN STABILITY BANNER-->
-
 ---
 
 ![cdk-constructs: Developer Preview](https://img.shields.io/badge/cdk--constructs-developer--preview-informational.svg?style=for-the-badge)

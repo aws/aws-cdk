@@ -1,6 +1,5 @@
 # cdk-assets-schema
 <!--BEGIN STABILITY BANNER-->
-
 ---
 
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)

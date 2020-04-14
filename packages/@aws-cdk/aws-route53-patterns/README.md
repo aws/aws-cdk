@@ -1,6 +1,5 @@
 # Route53 Patterns for the CDK Route53 Library
 <!--BEGIN STABILITY BANNER-->
-
 ---
 
 ![cdk-constructs: Developer Preview](https://img.shields.io/badge/cdk--constructs-developer--preview-informational.svg?style=for-the-badge)

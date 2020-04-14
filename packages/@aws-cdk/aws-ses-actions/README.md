@@ -1,6 +1,5 @@
 ## Amazon Simple Email Service Actions Library
 <!--BEGIN STABILITY BANNER-->
-
 ---
 
 ![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)

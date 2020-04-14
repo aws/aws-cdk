@@ -207,7 +207,7 @@ export class MaturitySetting extends ValidationRule {
     }
 
     if (maturity) {
-      this.validateReadmeHasBanner(pkg, maturity, this.determinePackageLevels());
+      this.validateReadmeHasBanner(pkg, maturity, this.determinePackageLevels(pkg));
     }
   }
 
@@ -239,13 +239,13 @@ export class MaturitySetting extends ValidationRule {
   private readmeBadge(maturity: string, levelsPresent: string[]) {
     const bannerContents = levelsPresent
       .map(level => fs.readFileSync(path.join(__dirname, 'banners', `${level}.${maturity}.md`), { encoding: 'utf-8' }).trim())
-      .join('\n\n');
+      .join('\n\n')
+      .trim();
 
     const bannerLines = bannerContents.split('\n').map(s => s.trimRight());
 
     return [
       '<!--BEGIN STABILITY BANNER-->',
-      '',
       '---',
       '',
       ...bannerLines,
@@ -256,10 +256,13 @@ export class MaturitySetting extends ValidationRule {
     ].join('\n');
   }
 
-  private determinePackageLevels(): string[] {
-    const libFiles = glob.sync('lib/*.ts');
+  private determinePackageLevels(pkg: PackageJson): string[] {
+    // Used to determine L1 by the presence of a .generated.ts file, but that depends
+    // on the source having been built. Much more robust to look at the build INSTRUCTIONS
+    // to see if this package has L1s.
+    const hasL1 = !!pkg.json['cdk-build']?.cloudformation;
 
-    const hasL1 = libFiles.some(f => f.endsWith('.generated.ts'));
+    const libFiles = glob.sync('lib/*.ts');
     const hasL2 = libFiles.some(f => !f.endsWith('.generated.ts') && !f.endsWith('index.ts'));
 
     return [

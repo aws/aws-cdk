@@ -1,6 +1,5 @@
 ## Utilities to diff AWS CDK stacks against CloudFormation templates
 <!--BEGIN STABILITY BANNER-->
-
 ---
 
 ![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
