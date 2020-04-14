@@ -73,5 +73,6 @@
   "engines": {
     "node": ">= 10.12.0"
   },
-  "stability": "experimental"
+  "stability": "experimental",
+  "maturity": "developer-preview"
 }

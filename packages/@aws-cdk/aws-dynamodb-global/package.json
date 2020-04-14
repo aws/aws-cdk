@@ -92,5 +92,6 @@
   "stability": "deprecated",
   "awscdkio": {
     "announce": false
-  }
+  },
+  "maturity": "deprecated"
 }
