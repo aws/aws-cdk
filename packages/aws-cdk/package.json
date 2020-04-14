@@ -118,5 +118,6 @@
     "testMatch": [
       "**/?(*.)+(spec|test).js?(x)"
     ]
-  }
+  },
+  "maturity": "stable"
 }
