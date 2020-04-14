@@ -2,7 +2,7 @@ import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { App, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { renderUserData } from '../lib/user-data';
+import { renderAmazonLinuxUserData } from '../lib/user-data';
 
 // tslint:disable:max-line-length
 
@@ -12,7 +12,7 @@ export = {
     const { asg, stack } = newFixtures();
 
     // WHEN
-    const userData = stack.resolve(renderUserData('my-cluster-name', asg));
+    const userData = stack.resolve(renderAmazonLinuxUserData('my-cluster-name', asg));
 
     // THEN
     test.deepEqual(userData, [
@@ -29,7 +29,7 @@ export = {
     const { asg, stack } = newFixtures();
 
     // WHEN
-    const userData = stack.resolve(renderUserData('my-cluster-name', asg, {
+    const userData = stack.resolve(renderAmazonLinuxUserData('my-cluster-name', asg, {
       useMaxPods: true
     }));
 
@@ -43,7 +43,7 @@ export = {
     const { asg, stack } = newFixtures();
 
     // WHEN
-    const userData = stack.resolve(renderUserData('my-cluster-name', asg, {
+    const userData = stack.resolve(renderAmazonLinuxUserData('my-cluster-name', asg, {
       useMaxPods: false
     }));
 
@@ -57,7 +57,7 @@ export = {
     const { asg, stack } = newFixtures();
 
     // WHEN
-    const userData = stack.resolve(renderUserData('my-cluster-name', asg, {
+    const userData = stack.resolve(renderAmazonLinuxUserData('my-cluster-name', asg, {
       awsApiRetryAttempts: 123
     }));
 
@@ -71,7 +71,7 @@ export = {
     const { asg } = newFixtures();
 
     // WHEN
-    const userData = renderUserData('my-cluster-name', asg, {
+    const userData = renderAmazonLinuxUserData('my-cluster-name', asg, {
       dockerConfigJson: '{"docker":123}'
     });
 
@@ -85,7 +85,7 @@ export = {
     const { asg, stack } = newFixtures();
 
     // WHEN
-    const userData = stack.resolve(renderUserData('my-cluster-name', asg, {
+    const userData = stack.resolve(renderAmazonLinuxUserData('my-cluster-name', asg, {
       enableDockerBridge: true
     }));
 
@@ -99,7 +99,7 @@ export = {
     const { asg, stack } = newFixtures();
 
     // WHEN
-    const userData = stack.resolve(renderUserData('my-cluster-name', asg, {
+    const userData = stack.resolve(renderAmazonLinuxUserData('my-cluster-name', asg, {
       enableDockerBridge: false
     }));
 
@@ -113,7 +113,7 @@ export = {
     const { asg, stack } = newFixtures();
 
     // WHEN
-    const userData = stack.resolve(renderUserData('my-cluster-name', asg, {
+    const userData = stack.resolve(renderAmazonLinuxUserData('my-cluster-name', asg, {
       kubeletExtraArgs: '--extra-args-for --kubelet'
     }));
 
@@ -127,7 +127,7 @@ export = {
     const { asg, stack } = newFixtures();
 
     // WHEN
-    const userData = stack.resolve(renderUserData('my-cluster-name', asg, {
+    const userData = stack.resolve(renderAmazonLinuxUserData('my-cluster-name', asg, {
       additionalArgs: '--apiserver-endpoint 1111 --foo-bar'
     }));
 
@@ -141,7 +141,7 @@ export = {
     const { asg, stack } = newFixtures(true);
 
     // WHEN
-    const userData = stack.resolve(renderUserData('my-cluster-name', asg, {
+    const userData = stack.resolve(renderAmazonLinuxUserData('my-cluster-name', asg, {
       kubeletExtraArgs: '--node-labels X=y'
     }));
 

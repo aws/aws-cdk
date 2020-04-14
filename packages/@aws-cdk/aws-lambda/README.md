@@ -49,11 +49,6 @@ to our CDK project directory. This is especially important when we want to share
 this construct through a library. Different programming languages will have
 different techniques for bundling resources into libraries.
 
-When using `fromAsset` or `fromInline`, you can obtain the hash of source
-through the `function.codeHash` property. This property will return `undefined`
-if the code hash cannot be calculated during synthesis (e.g. when using code
-from an S3 bucket).
-
 ### Versions and Aliases
 
 You can use

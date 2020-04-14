@@ -23,7 +23,7 @@
   "types": "lib/index.d.ts",
   "devDependencies": {
     "@types/fs-extra": "^8.1.0",
-    "@types/md5": "^2.1.33",
+    "@types/md5": "^2.2.0",
     "@types/nodeunit": "^0.0.30",
     "cdk-build-tools": "0.0.0",
     "fast-json-patch": "^2.2.1",
