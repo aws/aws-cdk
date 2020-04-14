@@ -511,9 +511,9 @@ export class DynamoDbDataSource extends BaseDataSource {
       },
     });
     if (props.readOnlyAccess) {
-      props.table.grantReadData(this.serviceRole);
+      props.table.grantReadData(this);
     } else {
-      props.table.grantReadWriteData(this.serviceRole);
+      props.table.grantReadWriteData(this);
     }
   }
 }
@@ -539,7 +539,7 @@ export class LambdaDataSource extends BaseDataSource {
         lambdaFunctionArn: props.lambdaFunction.functionArn,
       },
     });
-    props.lambdaFunction.grantInvoke(this.serviceRole);
+    props.lambdaFunction.grantInvoke(this);
   }
 }
 
