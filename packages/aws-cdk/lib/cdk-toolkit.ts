@@ -1,3 +1,4 @@
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { AssetManifest } from 'cdk-assets';
 import * as colors from 'colors/safe';
@@ -609,8 +610,21 @@ export interface DestroyOptions {
  * @returns an array with the tags available in the stack metadata.
  */
 function tagsForStack(stack: cxapi.CloudFormationStackArtifact): Tag[] {
-  const tagLists = stack.findMetadataByType(cxapi.STACK_TAGS_METADATA_KEY).map(x => x.data);
+  const tagLists = stack.findMetadataByType(cxschema.ArtifactMetadataEntryType.STACK_TAGS).map(
+    // the tags in the cloud assembly are stored differently
+    // unfortunately.
+    x => toCloudFormationTags(x.data as cxschema.Tag[]));
   return Array.prototype.concat([], ...tagLists);
+}
+
+/**
+ * Transform tags as they are retrieved from the cloud assembly,
+ * to the way that CloudFormation expects them. (Different casing).
+ */
+function toCloudFormationTags(tags: cxschema.Tag[]): Tag[] {
+  return tags.map(t => {
+    return { Key: t.key, Value: t.value };
+  });
 }
 
 export interface Tag {

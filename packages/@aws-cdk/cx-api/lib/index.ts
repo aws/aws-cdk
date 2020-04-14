@@ -14,5 +14,3 @@ export * from './environment';
 export * from './metadata';
 export * from './features';
 export * from './app';
-
-export { CLOUD_ASSEMBLY_VERSION } from './versioning';

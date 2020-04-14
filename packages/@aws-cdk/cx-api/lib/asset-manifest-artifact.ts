@@ -1,5 +1,6 @@
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as path from 'path';
-import { ArtifactManifest, CloudArtifact } from './cloud-artifact';
+import { CloudArtifact } from './cloud-artifact';
 import { CloudAssembly } from './cloud-assembly';
 
 /**
@@ -11,7 +12,7 @@ export class AssetManifestArtifact extends CloudArtifact {
    */
   public readonly file: string;
 
-  constructor(assembly: CloudAssembly, name: string, artifact: ArtifactManifest) {
+  constructor(assembly: CloudAssembly, name: string, artifact: cxschema.ArtifactManifest) {
     super(assembly, name, artifact);
 
     const properties = (this.manifest.properties || {});

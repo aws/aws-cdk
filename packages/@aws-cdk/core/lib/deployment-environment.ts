@@ -1,4 +1,5 @@
 import * as asset_schema from '@aws-cdk/cdk-assets-schema';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -328,7 +329,7 @@ export class ConventionModeDeploymentEnvironment implements IDeploymentEnvironme
     fs.writeFileSync(outPath, text);
 
     session.assembly.addArtifact(artifactId, {
-      type: cxapi.ArtifactType.ASSET_MANIFEST,
+      type: cxschema.ArtifactType.ASSET_MANIFEST,
       properties: {
         file: manifestFile
       },
@@ -444,7 +445,7 @@ export class LegacyDeploymentEnvironment implements IDeploymentEnvironment {
 
     // only add every image (identified by source hash) once for each stack that uses it.
     if (!this.addedImageAssets.has(assetId)) {
-      const metadata: cxapi.ContainerImageAssetMetadataEntry = {
+      const metadata: cxschema.ContainerImageAssetMetadataEntry = {
         repositoryName,
         imageTag,
         id: assetId,
@@ -456,7 +457,7 @@ export class LegacyDeploymentEnvironment implements IDeploymentEnvironment {
         file: asset.dockerFile,
       };
 
-      this.stack.node.addMetadata(cxapi.ASSET_METADATA, metadata);
+      this.stack.node.addMetadata(cxschema.ArtifactMetadataEntryType.ASSET, metadata);
       this.addedImageAssets.add(assetId);
     }
 
@@ -471,7 +472,7 @@ export class LegacyDeploymentEnvironment implements IDeploymentEnvironment {
     if (!params) {
       params = new FileAssetParameters(this.assetParameters, asset.sourceHash);
 
-      const metadata: cxapi.FileAssetMetadataEntry = {
+      const metadata: cxschema.FileAssetMetadataEntry = {
         path: asset.fileName,
         id: asset.sourceHash,
         packaging: asset.packaging,
@@ -482,7 +483,7 @@ export class LegacyDeploymentEnvironment implements IDeploymentEnvironment {
         artifactHashParameter: params.artifactHashParameter.logicalId,
       };
 
-      this.stack.node.addMetadata(cxapi.ASSET_METADATA, metadata);
+      this.stack.node.addMetadata(cxschema.ArtifactMetadataEntryType.ASSET, metadata);
     }
 
     const bucketName = params.bucketNameParameter.valueAsString;

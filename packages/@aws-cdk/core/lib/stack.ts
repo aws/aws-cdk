@@ -1,3 +1,4 @@
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as crypto from 'crypto';
 import * as fs from 'fs';
@@ -225,7 +226,7 @@ export class Stack extends Construct implements ITaggable {
    * This is returned when the stack is synthesized under the 'missing' attribute
    * and allows tooling to obtain the context and re-synthesize.
    */
-  private readonly _missingContext = new Array<cxapi.MissingContext>();
+  private readonly _missingContext = new Array<cxschema.MissingContext>();
 
   private _templateUrl?: string;
   private readonly _stackName: string;
@@ -525,7 +526,7 @@ export class Stack extends Construct implements ITaggable {
   /**
    * Register a file asset on this Stack
    *
-   * @deprecated - Use `stack.deploymentEnvironment.addFileAsset()` if you are calling,
+   * @deprecated Use `stack.deploymentEnvironment.addFileAsset()` if you are calling,
    * and a different IDeploymentEnvironment class if you are implementing.
    */
   public addFileAsset(asset: FileAssetSource): FileAssetLocation {
@@ -535,7 +536,7 @@ export class Stack extends Construct implements ITaggable {
   /**
    * Register a docker image asset on this Stack
    *
-   * @deprecated - Use `stack.deploymentEnvironment.addDockerImageAsset()` if you are calling,
+   * @deprecated Use `stack.deploymentEnvironment.addDockerImageAsset()` if you are calling,
    * and a different `IDeploymentEnvironment` class if you are implementing.
    */
   public addDockerImageAsset(asset: DockerImageAssetSource): DockerImageAssetLocation {
@@ -724,7 +725,7 @@ export class Stack extends Construct implements ITaggable {
     }
 
     if (this.tags.hasTags()) {
-      this.node.addMetadata(cxapi.STACK_TAGS_METADATA_KEY, this.tags.renderTags());
+      this.node.addMetadata(cxschema.ArtifactMetadataEntryType.STACK_TAGS, this.tags.renderTags());
     }
 
     if (this.nestedStackParent) {
@@ -790,7 +791,7 @@ export class Stack extends Construct implements ITaggable {
 
     // add an artifact that represents this stack
     builder.addArtifact(this.artifactId, {
-      type: cxapi.ArtifactType.AWS_CLOUDFORMATION_STACK,
+      type: cxschema.ArtifactType.AWS_CLOUDFORMATION_STACK,
       environment: this.environment,
       properties,
       dependencies: deps.length > 0 ? deps : undefined,
@@ -931,7 +932,7 @@ export class Stack extends Construct implements ITaggable {
   }
 
   private collectMetadata() {
-    const output: { [id: string]: cxapi.MetadataEntry[] } = { };
+    const output: { [id: string]: cxschema.MetadataEntry[] } = { };
     const stack = this;
 
     visit(this);
@@ -947,7 +948,7 @@ export class Stack extends Construct implements ITaggable {
 
       if (node.node.metadata.length > 0) {
         // Make the path absolute
-        output[ConstructNode.PATH_SEP + node.node.path] = node.node.metadata.map(md => stack.resolve(md) as cxapi.MetadataEntry);
+        output[ConstructNode.PATH_SEP + node.node.path] = node.node.metadata.map(md => stack.resolve(md) as cxschema.MetadataEntry);
       }
 
       for (const child of node.node.children) {

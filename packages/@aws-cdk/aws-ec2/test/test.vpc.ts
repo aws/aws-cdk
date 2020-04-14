@@ -1,8 +1,9 @@
 import { countResources, expect, haveResource, haveResourceLike, isSuperObject, MatchStyle } from '@aws-cdk/assert';
 import { CfnOutput, Lazy, Stack, Tag } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { AclCidr, AclTraffic, CfnSubnet, CfnVPC, DefaultInstanceTenancy, GenericLinuxImage, InstanceType,
-  NatProvider, NetworkAcl, NetworkAclEntry, PrivateSubnet, PublicSubnet, RouterType, Subnet, SubnetType, TrafficDirection, Vpc } from '../lib';
+import { AclCidr, AclTraffic, CfnSubnet, CfnVPC, DefaultInstanceTenancy, GenericLinuxImage, InstanceType, InterfaceVpcEndpoint,
+  InterfaceVpcEndpointService, NatProvider, NetworkAcl, NetworkAclEntry, PrivateSubnet, PublicSubnet, RouterType, Subnet,
+  SubnetType, TrafficDirection, Vpc } from '../lib';
 
 export = {
   'When creating a VPC': {
@@ -1118,6 +1119,70 @@ export = {
       // THEN
       test.deepEqual(subnet.subnetId, 'pub-1');
       test.deepEqual(subnet.availabilityZone, 'az-1234');
+      test.done();
+    },
+
+    'Can select subnets by type and AZ'(test: Test) {
+      // GIVEN
+      const stack = getTestStack();
+      const vpc = new Vpc(stack, 'VPC', {
+        maxAzs: 3
+      });
+
+      // WHEN
+      new InterfaceVpcEndpoint(stack, 'VPC Endpoint', {
+        vpc,
+        privateDnsEnabled: false,
+        service: new InterfaceVpcEndpointService('com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc', 443),
+        subnets: {
+          subnetType: SubnetType.PRIVATE,
+          availabilityZones: ['dummy1a', 'dummy1c']
+        }
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::EC2::VPCEndpoint', {
+        ServiceName: 'com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc',
+        SubnetIds: [
+          {
+            Ref: 'VPCPrivateSubnet1Subnet8BCA10E0'
+          },
+          {
+            Ref: 'VPCPrivateSubnet3Subnet3EDCD457'
+          }
+        ]
+      }));
+      test.done();
+    },
+
+    'SubnetSelection filtered on az uses default subnetType when no subnet type specified'(test: Test) {
+      // GIVEN
+      const stack = getTestStack();
+      const vpc = new Vpc(stack, 'VPC', {
+        maxAzs: 3
+      });
+
+      // WHEN
+      new InterfaceVpcEndpoint(stack, 'VPC Endpoint', {
+        vpc,
+        service: new InterfaceVpcEndpointService('com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc', 443),
+        subnets: {
+          availabilityZones: ['dummy1a', 'dummy1c']
+        }
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::EC2::VPCEndpoint', {
+        ServiceName: 'com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc',
+        SubnetIds: [
+          {
+            Ref: 'VPCPrivateSubnet1Subnet8BCA10E0'
+          },
+          {
+            Ref: 'VPCPrivateSubnet3Subnet3EDCD457'
+          }
+        ]
+      }));
       test.done();
     }
 
