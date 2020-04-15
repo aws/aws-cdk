@@ -9,7 +9,7 @@ setup
 paramVal1="${STACK_NAME_PREFIX}bazinga"
 paramVal2="${STACK_NAME_PREFIX}=jagshemash"
 
-stack_arn=$(/Users/shivlaks/code/blankslate/aws-cdk/packages/aws-cdk/bin/cdk deploy -v ${STACK_NAME_PREFIX}-param-test-3 --parameters "DisplayNameParam=${paramVal1}" --parameters "OtherDisplayNameParam=${paramVal2}")
+stack_arn=$(cdk deploy -v ${STACK_NAME_PREFIX}-param-test-3 --parameters "DisplayNameParam=${paramVal1}" --parameters "OtherDisplayNameParam=${paramVal2}")
 echo "Stack deployed successfully"
 
 # verify that we only deployed a single stack (there's a single ARN in the output)
