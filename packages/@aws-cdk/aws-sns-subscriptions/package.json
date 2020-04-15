@@ -115,5 +115,6 @@
   },
   "awscdkio": {
     "announce": false
-  }
+  },
+  "maturity": "stable"
 }
