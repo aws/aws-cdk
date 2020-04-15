@@ -1,11 +1,11 @@
-import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
+import { ResourcePart } from '@aws-cdk/assert';
+import '@aws-cdk/assert/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import * as stepfunctions from '../lib';
 
-export = {
-  'Tasks can add permissions to the execution role'(test: Test) {
+describe('State Machine Resources', () => {
+  test('Tasks can add permissions to the execution role', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const task = new stepfunctions.Task(stack, 'Task', {
@@ -26,7 +26,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::IAM::Policy', {
+    expect(stack).toHaveResource('AWS::IAM::Policy', {
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [
@@ -37,12 +37,10 @@ export = {
           }
         ],
       }
-    }));
+    });
+  }),
 
-    test.done();
-  },
-
-  'Tasks hidden inside a Parallel state are also included'(test: Test) {
+  test('Tasks hidden inside a Parallel state are also included', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const task = new stepfunctions.Task(stack, 'Task', {
@@ -68,7 +66,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::IAM::Policy', {
+    expect(stack).toHaveResource('AWS::IAM::Policy', {
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [
@@ -79,12 +77,10 @@ export = {
           }
         ],
       }
-    }));
+    });
+  }),
 
-    test.done();
-  },
-
-  'Task should render InputPath / Parameters / OutputPath correctly'(test: Test) {
+  test('Task should render InputPath / Parameters / OutputPath correctly', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const task = new stepfunctions.Task(stack, 'Task', {
@@ -108,7 +104,7 @@ export = {
     const taskState = task.toStateJson();
 
     // THEN
-    test.deepEqual(taskState, { End: true,
+    expect(taskState).toStrictEqual({ End: true,
       Retry: undefined,
       Catch: undefined,
       InputPath: '$',
@@ -126,11 +122,9 @@ export = {
       TimeoutSeconds: undefined,
       HeartbeatSeconds: undefined
     });
+  }),
 
-    test.done();
-  },
-
-  'Task combines taskobject parameters with direct parameters'(test: Test) {
+  test('Task combines taskobject parameters with direct parameters', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const task = new stepfunctions.Task(stack, 'Task', {
@@ -153,7 +147,7 @@ export = {
     const taskState = task.toStateJson();
 
     // THEN
-    test.deepEqual(taskState, { End: true,
+    expect(taskState).toStrictEqual({ End: true,
       Retry: undefined,
       Catch: undefined,
       InputPath: '$',
@@ -168,11 +162,9 @@ export = {
       TimeoutSeconds: undefined,
       HeartbeatSeconds: undefined
     });
+  }),
 
-    test.done();
-  },
-
-  'Created state machine can grant start execution to a role'(test: Test) {
+  test('Created state machine can grant start execution to a role', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const task = new stepfunctions.Task(stack, 'Task', {
@@ -191,7 +183,7 @@ export = {
     stateMachine.grantStartExecution(role);
 
     // THEN
-    expect(stack).to(haveResource('AWS::IAM::Policy', {
+    expect(stack).toHaveResource('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -210,12 +202,11 @@ export = {
           Ref: 'Role1ABCC5F0'
         }
       ]
-    }));
+    });
 
-    test.done();
-  },
+  }),
 
-  'Imported state machine can grant start execution to a role'(test: Test) {
+  test('Imported state machine can grant start execution to a role', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const stateMachineArn = 'arn:aws:states:::my-state-machine';
@@ -228,7 +219,7 @@ export = {
     stateMachine.grantStartExecution(role);
 
     // THEN
-    expect(stack).to(haveResource('AWS::IAM::Policy', {
+    expect(stack).toHaveResource('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -245,12 +236,10 @@ export = {
           Ref: 'Role1ABCC5F0'
         }
       ]
-    }));
+    });
+  }),
 
-    test.done();
-  },
-
-  'Pass should render InputPath / Parameters / OutputPath correctly'(test: Test) {
+  test('Pass should render InputPath / Parameters / OutputPath correctly', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const task = new stepfunctions.Pass(stack, 'Pass', {
@@ -269,7 +258,7 @@ export = {
     const taskState = task.toStateJson();
 
     // THEN
-    test.deepEqual(taskState, { End: true,
+    expect(taskState).toStrictEqual({ End: true,
       InputPath: '$',
       OutputPath: '$.state',
       Parameters:
@@ -283,11 +272,9 @@ export = {
       Result: undefined,
       ResultPath: undefined,
     });
+  }),
 
-    test.done();
-  },
-
-  'State machines must depend on their roles'(test: Test) {
+  test('State machines must depend on their roles', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const task = new stepfunctions.Task(stack, 'Task', {
@@ -308,14 +295,12 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::StepFunctions::StateMachine', {
+    expect(stack).toHaveResource('AWS::StepFunctions::StateMachine', {
       DependsOn: [
         'StateMachineRoleDefaultPolicyDF1E6607',
         'StateMachineRoleB840431D'
       ]
-    }, ResourcePart.CompleteDefinition));
+    }, ResourcePart.CompleteDefinition);
+  });
 
-    test.done();
-  },
-
-};
+});

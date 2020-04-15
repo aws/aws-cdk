@@ -1,9 +1,9 @@
+import '@aws-cdk/assert/jest';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import * as stepfunctions from '../lib';
 
-export = {
-  'State Machine With Map State'(test: Test) {
+describe('Map State', () => {
+  test('State Machine With Map State', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -19,7 +19,7 @@ export = {
     map.iterator(new stepfunctions.Pass(stack, 'Pass State'));
 
     // THEN
-    test.deepEqual(render(map), {
+    expect(render(map)).toStrictEqual({
       StartAt: 'Map State',
       States: {
         'Map State': {
@@ -40,10 +40,9 @@ export = {
         }
       }
     });
+  }),
 
-    test.done();
-  },
-  'synth is successful'(test: Test) {
+  test('synth is successful', () => {
 
     const app = createAppWithMap((stack) => {
       const map = new stepfunctions.Map(stack, 'Map State', {
@@ -55,9 +54,9 @@ export = {
     });
 
     app.synth();
-    test.done();
-  },
-  'fails in synthesis if iterator is missing'(test: Test) {
+  }),
+
+  test('fails in synthesis if iterator is missing', () => {
 
     const app = createAppWithMap((stack) => {
       const map = new stepfunctions.Map(stack, 'Map State', {
@@ -68,13 +67,10 @@ export = {
       return map;
     });
 
-    test.throws(() => {
-      app.synth();
-    }, /Map state must have a non-empty iterator/, 'A validation was expected');
+    expect(() => app.synth()).toThrow(/Map state must have a non-empty iterator/);
+  }),
 
-    test.done();
-  },
-  'fails in synthesis when maxConcurrency is a float'(test: Test) {
+  test('fails in synthesis when maxConcurrency is a float', () => {
 
     const app = createAppWithMap((stack) => {
       const map = new stepfunctions.Map(stack, 'Map State', {
@@ -86,14 +82,10 @@ export = {
       return map;
     });
 
-    test.throws(() => {
-      app.synth();
-    }, /maxConcurrency has to be a positive integer/, 'A validation was expected');
+    expect(() => app.synth()).toThrow(/maxConcurrency has to be a positive integer/);
+  }),
 
-    test.done();
-
-  },
-  'fails in synthesis when maxConcurrency is a negative integer'(test: Test) {
+  test('fails in synthesis when maxConcurrency is a negative integer', () => {
 
     const app = createAppWithMap((stack) => {
       const map = new stepfunctions.Map(stack, 'Map State', {
@@ -105,13 +97,10 @@ export = {
       return map;
     });
 
-    test.throws(() => {
-      app.synth();
-    }, /maxConcurrency has to be a positive integer/, 'A validation was expected');
+    expect(() => app.synth()).toThrow(/maxConcurrency has to be a positive integer/);
+  }),
 
-    test.done();
-  },
-  'fails in synthesis when maxConcurrency is too big to be an integer'(test: Test) {
+  test('fails in synthesis when maxConcurrency is too big to be an integer', () => {
 
     const app = createAppWithMap((stack) => {
       const map = new stepfunctions.Map(stack, 'Map State', {
@@ -123,40 +112,34 @@ export = {
       return map;
     });
 
-    test.throws(() => {
-      app.synth();
-    }, /maxConcurrency has to be a positive integer/, 'A validation was expected');
+    expect(() => app.synth()).toThrow(/maxConcurrency has to be a positive integer/);
+  }),
 
-    test.done();
+  test('isPositiveInteger is false with negative number', () => {
+    expect(stepfunctions.isPositiveInteger(-1)).toEqual(false);
+  }),
 
-  },
-  'isPositiveInteger is false with negative number'(test: Test) {
-    test.equals(stepfunctions.isPositiveInteger(-1), false, '-1 is not a valid positive integer');
-    test.done();
-  },
-  'isPositiveInteger is false with decimal number'(test: Test) {
-    test.equals(stepfunctions.isPositiveInteger(1.2), false, '1.2 is not a valid positive integer');
-    test.done();
-  },
-  'isPositiveInteger is false with a value greater than safe integer '(test: Test) {
+  test('isPositiveInteger is false with decimal number', () => {
+    expect(stepfunctions.isPositiveInteger(1.2)).toEqual(false);
+  }),
+
+  test('isPositiveInteger is false with a value greater than safe integer', () => {
     const valueToTest = Number.MAX_SAFE_INTEGER + 1;
-    test.equals(stepfunctions.isPositiveInteger(valueToTest), false, `${valueToTest} is not a valid positive integer`);
-    test.done();
-  },
-  'isPositiveInteger is true with 0'(test: Test) {
-    test.equals(stepfunctions.isPositiveInteger(0), true, '0 is expected to be a positive integer');
-    test.done();
-  },
-  'isPositiveInteger is true with 10'(test: Test) {
-    test.equals(stepfunctions.isPositiveInteger(10), true, '10 is expected to be a positive integer');
-    test.done();
-  },
-  'isPositiveInteger is true with max integer value'(test: Test) {
-    test.equals(stepfunctions.isPositiveInteger(Number.MAX_SAFE_INTEGER), true,
-      `${Number.MAX_SAFE_INTEGER} is expected to be a positive integer`);
-    test.done();
-  }
-};
+    expect(stepfunctions.isPositiveInteger(valueToTest)).toEqual(false);
+  }),
+
+  test('isPositiveInteger is true with 0', () => {
+    expect(stepfunctions.isPositiveInteger(0)).toEqual(true);
+  }),
+
+  test('isPositiveInteger is true with 10', () => {
+    expect(stepfunctions.isPositiveInteger(10)).toEqual(true);
+  }),
+
+  test('isPositiveInteger is true with max integer value', () => {
+    expect(stepfunctions.isPositiveInteger(Number.MAX_SAFE_INTEGER)).toEqual(true);
+  });
+});
 
 function render(sm: stepfunctions.IChainable) {
   return new cdk.Stack().resolve(new stepfunctions.StateGraph(sm.startState, 'Test Graph').toGraphJson());
