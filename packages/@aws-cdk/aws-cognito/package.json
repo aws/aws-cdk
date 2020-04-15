@@ -95,7 +95,8 @@
   "awslint": {
     "exclude": [
       "attribute-tag:@aws-cdk/aws-cognito.UserPoolClient.userPoolClientName",
-      "resource-attribute:@aws-cdk/aws-cognito.UserPoolClient.userPoolClientClientSecret"
+      "resource-attribute:@aws-cdk/aws-cognito.UserPoolClient.userPoolClientClientSecret",
+      "props-physical-name:@aws-cdk/aws-cognito.UserPoolDomainProps"
     ]
   },
   "stability": "experimental",

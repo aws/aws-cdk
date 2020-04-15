@@ -10,11 +10,38 @@ import { IUserPool } from './user-pool';
 export interface IUserPoolDomain extends IResource {
   /**
    * The domain that was specified to be created.
-   * If a customDomain was selected, this holds the full domain name that was specified.
-   * If the `cognitoDomainPrefix` was used, it contains the prefix to the Cognito hosted domain.
+   * If `customDomain` was selected, this holds the full domain name that was specified.
+   * If the `cognitoDomain` was used, it contains the prefix to the Cognito hosted domain.
    * @attribute
    */
   readonly domainName: string;
+}
+
+/**
+ * Options while specifying custom domain
+ * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-add-custom-domain.html
+ */
+export interface CustomDomainOptions {
+  /**
+   * The custom domain name that you would like to associate with this User Pool.
+   */
+  readonly domainName: string;
+
+  /**
+   * The certificate to associate with this domain.
+   */
+  readonly certificate: ICertificate;
+}
+
+/**
+ * Options while specifying a cognito prefix domain.
+ * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-assign-domain-prefix.html
+ */
+export interface CognitoDomainOptions {
+  /**
+   * The prefix to the Cognito hosted domain name that will be associated with the user pool.
+   */
+  readonly domainPrefix: string;
 }
 
 /**
@@ -22,28 +49,20 @@ export interface IUserPoolDomain extends IResource {
  */
 export interface UserPoolDomainOptions {
   /**
-   * The domain name that you would like to associate with this User Pool.
-   * If this is specified, the `certificate` property must also be specified.
+   * Associate a custom domain with your user pool
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-add-custom-domain.html
-   * Both `userPoolDomainName` and `cognitoDomainPrefix` cannot be specified.
+   * One of, and only one of, `customDomain` and `cognitoDomain` can be specified.
    * @default - none
    */
-  readonly userPoolDomainName?: string;
+  readonly customDomain?: CustomDomainOptions;
 
   /**
-   * The prefix to the Cognito hosted domain name that will be associated with the user pool.
-   * The final domain name will be '[customPrefixDomain].auth.[region].amazoncognito.com'.
+   * Associate a cognito prefix domain with your user pool
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-assign-domain-prefix.html
-   * Both `userPoolDomainName` and `cognitoDomainPrefix` cannot be specified.
-   * @default - CDK will generate a unique prefix, unless `userPoolDomainName` is specified.
+   * One of, and only one of, `customDomain` and `cognitoDomain` can be specified.
+   * @default - none.
    */
-  readonly cognitoDomainPrefix?: string;
-
-  /**
-   * The certificate to associate with this domain when `userPoolDomainName` property is used.
-   * @default - none
-   */
-  readonly certificate?: ICertificate;
+  readonly cognitoDomain?: CognitoDomainOptions;
 }
 
 /**
@@ -65,18 +84,19 @@ export class UserPoolDomain extends Resource implements IUserPoolDomain {
   constructor(scope: Construct, id: string, props: UserPoolDomainProps) {
     super(scope, id);
 
-    if ((props.cognitoDomainPrefix && props.userPoolDomainName) || (!props.cognitoDomainPrefix && !props.userPoolDomainName)) {
-      throw new Error('One, and only one, of cognitoDomainPrefix and userPoolDomainName must be specified');
-    }
-    if (props.userPoolDomainName && !props.certificate) {
-      throw new Error('A certificate must be specified when creating your own domain');
+    if (!!props.cognitoDomain === !!props.customDomain) {
+      throw new Error('One, and only one, of cognitoDomain or customDomain must be specified');
     }
 
-    const domain = props.userPoolDomainName ?? props.cognitoDomainPrefix!;
+    if (props.cognitoDomain && !/^[a-z0-9-]+$/.test(props.cognitoDomain.domainPrefix)) {
+      throw new Error('domainPrefix for cognitoDomain can contain only lowercase alphabets, numbers and hyphens');
+    }
+
+    const domain = props.customDomain?.domainName ?? props.cognitoDomain?.domainPrefix!;
     const resource = new CfnUserPoolDomain(this, 'Resource', {
       userPoolId: props.userPool.userPoolId,
       domain,
-      customDomainConfig: props.certificate ? { certificateArn: props.certificate.certificateArn } : undefined,
+      customDomainConfig: props.customDomain ? { certificateArn: props.customDomain.certificate.certificateArn } : undefined,
     });
 
     this.domainName = resource.ref;

@@ -12,7 +12,9 @@ const stack = new Stack(app, 'integ-user-pool-domain');
 const userpool = new UserPool(stack, 'UserPool');
 
 const domain = userpool.addDomain('Domain', {
-  cognitoDomainPrefix: 'cdk-integ-user-pool-domain'
+  cognitoDomain: {
+    domainPrefix: 'cdk-integ-user-pool-domain'
+  }
 });
 
 new CfnOutput(stack, 'Domain', {

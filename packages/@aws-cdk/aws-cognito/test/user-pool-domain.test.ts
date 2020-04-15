@@ -14,8 +14,10 @@ describe('User Pool Client', () => {
       'arn:aws:acm:eu-west-1:0123456789:certificate/7ec3e4ac-808a-4649-b805-66ae02346ad8');
     new UserPoolDomain(stack, 'Domain', {
       userPool: pool,
-      userPoolDomainName: 'test-domain.example.com',
-      certificate,
+      customDomain: {
+        domainName: 'test-domain.example.com',
+        certificate,
+      }
     });
 
     // THEN
@@ -36,7 +38,9 @@ describe('User Pool Client', () => {
     // WHEN
     new UserPoolDomain(stack, 'Domain', {
       userPool: pool,
-      cognitoDomainPrefix: 'cognito-domain-prefix'
+      cognitoDomain: {
+        domainPrefix: 'cognito-domain-prefix'
+      }
     });
 
     // THEN
@@ -46,30 +50,38 @@ describe('User Pool Client', () => {
     });
   });
 
-  test('fails when both domainName and cognitoDomainPrefix are specified', () => {
+  test('fails when both customDomain and cognitoDomain are specified', () => {
     const stack = new Stack();
     const pool = new UserPool(stack, 'Pool');
+    const certificate = Certificate.fromCertificateArn(stack, 'cert',
+      'arn:aws:acm:eu-west-1:0123456789:certificate/7ec3e4ac-808a-4649-b805-66ae02346ad8');
 
     expect(() => pool.addDomain('Domain', {
-      cognitoDomainPrefix: 'cognito-domain-prefix',
-      userPoolDomainName: 'test-domain.example.com'
-    })).toThrow(/cognitoDomainPrefix and userPoolDomainName/);
+      cognitoDomain: { domainPrefix: 'cognito-domain-prefix' },
+      customDomain: { domainName: 'test-domain.example.com', certificate },
+    })).toThrow(/cognitoDomain or customDomain/);
   });
 
-  test('fails when neither domainName nor cognitoDomainPrefix are specified', () => {
+  test('fails when neither customDomain nor cognitoDomain are specified', () => {
     const stack = new Stack();
     const pool = new UserPool(stack, 'Pool');
 
-    expect(() => pool.addDomain('Domain')).toThrow(/cognitoDomainPrefix and userPoolDomainName/);
+    expect(() => pool.addDomain('Domain')).toThrow(/cognitoDomain or customDomain/);
   });
 
-  test('fails when certificate is not specified', () => {
+  test('fails when domainPrefix has characters outside the allowed charset', () => {
     const stack = new Stack();
     const pool = new UserPool(stack, 'Pool');
 
-    expect(() => pool.addDomain('Domain', {
-      userPoolDomainName: 'test-domain.example.com'
-    })).toThrow(/certificate must be specified/);
+    expect(() => pool.addDomain('Domain1', {
+      cognitoDomain: { domainPrefix: 'domain.prefix' }
+    })).toThrow(/lowercase alphabets, numbers and hyphens/);
+    expect(() => pool.addDomain('Domain2', {
+      cognitoDomain: { domainPrefix: 'Domain-Prefix' }
+    })).toThrow(/lowercase alphabets, numbers and hyphens/);
+    expect(() => pool.addDomain('Domain3', {
+      cognitoDomain: { domainPrefix: 'dómäin-prefix' }
+    })).toThrow(/lowercase alphabets, numbers and hyphens/);
   });
 
   test('custom resource is added when cloudFrontDistribution method is called', () => {
@@ -77,7 +89,9 @@ describe('User Pool Client', () => {
     const stack = new Stack();
     const pool = new UserPool(stack, 'Pool');
     const domain = pool.addDomain('Domain', {
-      cognitoDomainPrefix: 'cognito-domain-prefix',
+      cognitoDomain: {
+        domainPrefix: 'cognito-domain-prefix',
+      }
     });
 
     // WHEN
