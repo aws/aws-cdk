@@ -15,7 +15,7 @@ export async function compileCurrentPackage(timers: Timers, options: CDKBuildOpt
     await makeExecutable(script);
   }
 
-  // Always call linters
+  // call linters
 
   if (!options.eslint?.disable) {
     await shell([
@@ -23,7 +23,6 @@ export async function compileCurrentPackage(timers: Timers, options: CDKBuildOpt
       '.',
       '--ext=.js,.ts',
       `--resolve-plugins-relative-to=${__dirname}`,
-      ...options.eslint?.["ignore-pattern"]?.map(pattern => `--ignore-pattern=${pattern}`) || []
     ], { timers });
   }
 

@@ -46,14 +46,6 @@
     "build+test": "npm run build && npm test",
     "compat": "cdk-compat"
   },
-  "cdk-build": {
-    "eslint": {
-      "ignore-pattern": [
-        "test/function.test.handler2.js",
-        "test/integ-handlers/js-handler.js"
-      ]
-    }
-  },
   "keywords": [
     "aws",
     "cdk",
