@@ -36,6 +36,7 @@ and let us know if it's not up-to-date (even better, submit a PR with your  corr
   - [Finding dependency cycles between packages](#finding-dependency-cycles-between-packages)
   - [Updating all Dependencies](#updating-all-dependencies)
   - [Running CLI integration tests](#running-cli-integration-tests)
+  - [Changing the Cloud Assembly Schema](#changing-cloud-assembly-schema)
   - [API Compatibility Checks](#api-compatibility-checks)
   - [Examples](#examples)
   - [Feature Flags](#feature-flags)
@@ -48,13 +49,13 @@ and let us know if it's not up-to-date (even better, submit a PR with your  corr
 ## Getting Started
 
 For day-to-day development and normal contributions, the following SDKs and tools are required:
- - [Node.js 10.3.0](https://nodejs.org/download/release/latest-v10.x/)
+ - [Node.js 10.12.0](https://nodejs.org/download/release/latest-v10.x/)
  - [Yarn >= 1.19.1](https://yarnpkg.com/lang/en/docs/install)
  - [Java OpenJDK 8](http://openjdk.java.net/install/)
  - [.NET Core SDK 3.0](https://www.microsoft.com/net/download)
  - [Python 3.6.5](https://www.python.org/downloads/release/python-365/)
  - [Ruby 2.5.1](https://www.ruby-lang.org/en/news/2018/03/28/ruby-2-5-1-released/)
- 
+
 The basic commands to get the repository cloned and built locally follow:
 
 ```console
@@ -143,7 +144,7 @@ Integration tests perform a few functions in the CDK code base -
 3. (Optionally) Acts as a way to validate that constructs set up the CloudFormation resources as expected. A successful
    CloudFormation deployment does not mean that the resources are set up correctly.
 
-If you are working on a new feature that is using previously unused CloudFormation resource types, or involves 
+If you are working on a new feature that is using previously unused CloudFormation resource types, or involves
 configuring resource types across services, you need to write integration tests that use these resource types or
 features.
 
@@ -555,6 +556,11 @@ The CLI package (`packages/aws-cdk`) has some integration tests that aren't
 run as part of the regular build, since they have some particular requirements.
 See the [CLI CONTRIBUTING.md file](packages/aws-cdk/CONTRIBUTING.md) for
 more information on running those tests.
+
+### Changing Cloud Assembly Schema
+
+If you plan on making changes to the `cloud-assembly-schema` package, make sure you familiarize yourself with
+its own [contribution guide](./packages/@aws-cdk/cloud-assembly-schema/CONTRIBUTING.md)
 
 ### API Compatibility Checks
 

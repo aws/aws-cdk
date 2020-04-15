@@ -20,26 +20,31 @@ Object {
 `;
 
 exports[`assembly with missing context 1`] = `
-Object {
-  "key": "missing:context:key",
-  "props": Object {
-    "foo": 123,
+Array [
+  Object {
+    "key": "missing:context:key",
+    "props": Object {
+      "foo": 123,
+    },
+    "provider": "context-provider",
   },
-  "provider": "context-provider",
-}
+]
 `;
 
 exports[`assets 1`] = `
 Array [
   Object {
+    "artifactHashParameter": "hashParameter",
     "id": "logical-id-of-the-asset",
     "packaging": "zip",
     "path": "asset-dir",
+    "s3BucketParameter": "bucketParameter",
+    "s3KeyParameter": "keyParameter",
     "sourceHash": "xoxoxox",
   },
   Object {
     "id": "logical-id-of-the-asset-x1234",
-    "packaging": "docker",
+    "packaging": "container-image",
     "path": "docker-asset",
     "sourceHash": "docker-asset-source",
   },
@@ -48,7 +53,7 @@ Array [
 
 exports[`empty assembly 1`] = `
 Object {
-  "version": "1.21.0",
+  "version": "0.0.0",
 }
 `;
 
@@ -57,7 +62,9 @@ Array [
   Object {
     "entry": Object {
       "data": "boom",
-      "trace": "bam",
+      "trace": Array [
+        "bam",
+      ],
       "type": "aws:cdk:warning",
     },
     "id": "foo",
@@ -66,7 +73,9 @@ Array [
   Object {
     "entry": Object {
       "data": "error!!",
-      "trace": "bam!Error",
+      "trace": Array [
+        "bam!Error",
+      ],
       "type": "aws:cdk:error",
     },
     "id": "foo",
@@ -75,7 +84,9 @@ Array [
   Object {
     "entry": Object {
       "data": "info?",
-      "trace": "bam!Error",
+      "trace": Array [
+        "bam!Error",
+      ],
       "type": "aws:cdk:info",
     },
     "id": "bar",
