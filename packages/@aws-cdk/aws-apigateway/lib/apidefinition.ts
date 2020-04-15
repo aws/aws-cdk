@@ -3,8 +3,12 @@ import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import * as cdk from '@aws-cdk/core';
 import { CfnRestApi } from './apigateway.generated';
 
+/**
+ * Represents a API Gateway Swagger or OpenAPI specification.
+ */
 export abstract class APIDefinition {
   /**
+   * Creates an API definition from a specification file in an S3 bucket
    * @returns `APIDefinitionS3` associated with the specified S3 object.
    * @param bucket The S3 bucket
    * @param key The object key
@@ -15,6 +19,7 @@ export abstract class APIDefinition {
   }
 
   /**
+   * Creates an API definition from a string
    * @returns `InlineAPIDefinition` with inline specification.
    * @param code The actual API specification (limited to 4KiB)
    */
@@ -64,6 +69,9 @@ export abstract class APIDefinition {
   }
 }
 
+/**
+ * Post-Binding Configuration for a CDK construct
+ */
 export interface APIDefinitionConfig {
   /**
    * The location of the specification in S3 (mutually exclusive with `inlineDefinition`).
@@ -121,7 +129,7 @@ export class InlineAPIDefinition extends APIDefinition {
       throw new Error('Inline API definition cannot be empty');
     }
 
-    if (definition.length > 4906) {
+    if (definition.length > 4096) {
       throw new Error('API definition is too large, must be <= 4096 but is ' + definition.length);
     }
   }
@@ -156,20 +164,20 @@ export class AssetAPIDefinition extends APIDefinition {
       });
     }
 
-    if (this.asset.isZipArchive) {
+    if (this.asset?.isZipArchive) {
       throw new Error(`Asset cannot be a .zip file or a directory (${this.path})`);
     }
 
     return {
       s3Location: {
-        bucket: this.asset.s3BucketName,
-        key: this.asset.s3ObjectKey
+        bucket: this.asset?.s3BucketName,
+        key: this.asset?.s3ObjectKey
       }
     };
   }
 
   public bindToResource(resource: cdk.CfnResource, options: ResourceBindOptions = { }) {
-    if (!this.asset) {
+    if (this.asset === undefined) {
       throw new Error('bindToResource() must be called after bind()');
     }
 
@@ -180,6 +188,9 @@ export class AssetAPIDefinition extends APIDefinition {
   }
 }
 
+/**
+ * Post-Synthesis options
+ */
 export interface ResourceBindOptions {
   /**
    * The name of the CloudFormation property to annotate with asset metadata.

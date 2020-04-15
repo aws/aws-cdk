@@ -265,7 +265,7 @@ export class RestApi extends Resource implements IRestApi {
       parameters: props.parameters
     });
     this.node.defaultChild = resource;
-
+    props.apiDefinition?.bindToResource(resource);
     this.restApiId = resource.ref;
 
     this.configureDeployment(props);
@@ -411,7 +411,7 @@ export class RestApi extends Resource implements IRestApi {
    * Performs validation of the REST API.
    */
   protected validate() {
-    if (this.methods.length === 0) {
+    if (this.methods.length === 0 && this._apiDefinition === undefined) {
       return [ 'The REST API doesn\'t contain any methods' ];
     }
 
