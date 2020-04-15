@@ -1,3 +1,4 @@
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -11,12 +12,12 @@ export interface TestStackArtifact {
   env?: string,
   depends?: string[];
   metadata?: cxapi.StackMetadata;
-  assets?: cxapi.AssetMetadataEntry[];
+  assets?: cxschema.AssetMetadataEntry[];
 }
 
 export interface TestAssembly {
   stacks: TestStackArtifact[];
-  missing?: cxapi.MissingContext[];
+  missing?: cxschema.MissingContext[];
 }
 
 export class MockCloudExecutable extends CloudExecutable {
@@ -38,6 +39,10 @@ export class MockCloudExecutable extends CloudExecutable {
   }
 }
 
+function clone(obj: any) {
+  return JSON.parse(JSON.stringify(obj));
+}
+
 export function testAssembly(assembly: TestAssembly): cxapi.CloudAssembly {
   const builder = new cxapi.CloudAssemblyBuilder();
 
@@ -45,10 +50,12 @@ export function testAssembly(assembly: TestAssembly): cxapi.CloudAssembly {
     const templateFile = `${stack.stackName}.template.json`;
     fs.writeFileSync(path.join(builder.outdir, templateFile), JSON.stringify(stack.template, undefined, 2));
 
-    const metadata: { [path: string]: cxapi.MetadataEntry[] } = { ...stack.metadata };
+    // we call patchStackTags here to simulate the tags formatter
+    // that is used when building real manifest files.
+    const metadata: { [path: string]: cxschema.MetadataEntry[] } = patchStackTags({ ...stack.metadata });
     for (const asset of stack.assets || []) {
       metadata[asset.id] = [
-        { type: cxapi.ASSET_METADATA, data: asset }
+        { type: cxschema.ArtifactMetadataEntryType.ASSET, data: asset }
       ];
     }
 
@@ -57,7 +64,7 @@ export function testAssembly(assembly: TestAssembly): cxapi.CloudAssembly {
     }
 
     builder.addArtifact(stack.stackName, {
-      type: cxapi.ArtifactType.AWS_CLOUDFORMATION_STACK,
+      type: cxschema.ArtifactType.AWS_CLOUDFORMATION_STACK,
       environment: stack.env || 'aws://12345/here',
 
       dependencies: stack.depends,
@@ -69,6 +76,32 @@ export function testAssembly(assembly: TestAssembly): cxapi.CloudAssembly {
   }
 
   return builder.buildAssembly();
+}
+
+/**
+ * Transform stack tags from how they are decalred in source code (lower cased)
+ * to how they are stored on disk (upper cased). In real synthesis this is done
+ * by a special tags formatter.
+ *
+ * @see @aws-cdk/core/lib/stack.ts
+ */
+function patchStackTags(metadata: { [path: string]: cxschema.MetadataEntry[] }): { [path: string]: cxschema.MetadataEntry[] } {
+
+  const cloned = clone(metadata) as { [path: string]: cxschema.MetadataEntry[] };
+
+  for (const metadataEntries of Object.values(cloned)) {
+    for (const metadataEntry of metadataEntries) {
+      if (metadataEntry.type === cxschema.ArtifactMetadataEntryType.STACK_TAGS && metadataEntry.data) {
+
+        const metadataAny = metadataEntry as any;
+
+        metadataAny.data = metadataAny.data.map((t: any) => {
+          return { Key: t.key, Value: t.value };
+        });
+      }
+    }
+  }
+  return cloned;
 }
 
 export function testStack(stack: TestStackArtifact) {

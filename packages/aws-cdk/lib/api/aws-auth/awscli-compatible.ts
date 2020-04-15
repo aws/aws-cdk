@@ -30,7 +30,11 @@ export class AwsCliCompatible {
    * 3. Respects $AWS_SHARED_CREDENTIALS_FILE.
    * 4. Respects $AWS_DEFAULT_PROFILE in addition to $AWS_PROFILE.
    */
-  public static async credentialChain(profile: string | undefined, ec2creds: boolean | undefined, containerCreds: boolean | undefined) {
+  public static async credentialChain(
+    profile: string | undefined,
+    ec2creds: boolean | undefined,
+    containerCreds: boolean | undefined,
+    httpOptions: AWS.HTTPOptions | undefined) {
     await forceSdkToReadConfigIfPresent();
 
     profile = profile || process.env.AWS_PROFILE || process.env.AWS_DEFAULT_PROFILE || 'default';
@@ -41,11 +45,11 @@ export class AwsCliCompatible {
     ];
 
     if (await fs.pathExists(credentialsFileName())) {
-      sources.push(() => new AWS.SharedIniFileCredentials({ profile, filename: credentialsFileName() }));
+      sources.push(() => new AWS.SharedIniFileCredentials({ profile, filename: credentialsFileName(), httpOptions }));
     }
 
     if (await fs.pathExists(configFileName())) {
-      sources.push(() => new AWS.SharedIniFileCredentials({ profile, filename: credentialsFileName() }));
+      sources.push(() => new AWS.SharedIniFileCredentials({ profile, filename: credentialsFileName(), httpOptions }));
     }
 
     if (containerCreds ?? hasEcsCredentials()) {

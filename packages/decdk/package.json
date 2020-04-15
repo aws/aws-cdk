@@ -71,6 +71,7 @@
     "@aws-cdk/aws-config": "0.0.0",
     "@aws-cdk/aws-datapipeline": "0.0.0",
     "@aws-cdk/aws-dax": "0.0.0",
+    "@aws-cdk/aws-detective": "0.0.0",
     "@aws-cdk/aws-directoryservice": "0.0.0",
     "@aws-cdk/aws-dlm": "0.0.0",
     "@aws-cdk/aws-dms": "0.0.0",
@@ -168,6 +169,7 @@
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/custom-resources": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
+    "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
     "constructs": "^2.0.0",
     "fs-extra": "^8.1.0",
@@ -181,7 +183,7 @@
     "@types/jest": "^25.2.1",
     "@types/yaml": "1.2.0",
     "@types/yargs": "^15.0.4",
-    "jest": "^24.9.0",
+    "jest": "^25.3.0",
     "jsii": "^1.1.0"
   },
   "keywords": [

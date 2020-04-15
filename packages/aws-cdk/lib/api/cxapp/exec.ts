@@ -1,3 +1,4 @@
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as childProcess from 'child_process';
 import * as fs from 'fs-extra';
@@ -49,7 +50,7 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
   // bypass "synth" if app points to a cloud assembly
   if (await fs.pathExists(app) && (await fs.stat(app)).isDirectory()) {
     debug('--app points to a cloud assembly, so we bypass synth');
-    return new cxapi.CloudAssembly(app);
+    return createAssembly(app);
   }
 
   const commandLine = await guessExecutable(appToArray(app));
@@ -64,14 +65,27 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
   env[cxapi.OUTDIR_ENV] = outdir;
 
   // Send version information
-  env[cxapi.CLI_ASM_VERSION_ENV] = cxapi.CLOUD_ASSEMBLY_VERSION;
+  env[cxapi.CLI_ASM_VERSION_ENV] = cxschema.Manifest.version();
   env[cxapi.CLI_VERSION_ENV] = versionNumber();
 
   debug('env:', env);
 
   await exec();
 
-  return new cxapi.CloudAssembly(outdir);
+  return createAssembly(outdir);
+
+  function createAssembly(appDir: string) {
+    try {
+      return new cxapi.CloudAssembly(appDir);
+    } catch (error) {
+      if (error.message.includes(cxschema.VERSION_MISMATCH)) {
+        // this means the CLI version is too old.
+        // we instruct the user to upgrade.
+        throw new Error(`${error.message}.\nPlease upgrade your CLI in order to interact with this app.`);
+      }
+      throw error;
+    }
+  }
 
   async function exec() {
     return new Promise<string>((ok, fail) => {
