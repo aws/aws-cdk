@@ -990,4 +990,66 @@ export = {
     }));
     test.done();
   },
+
+  'bottom nested stack consumes value from a top-level stack through a parameter in a middle nested stack'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const top = new Stack(app, 'Grandparent');
+    const middle = new NestedStack(top, 'Parent');
+    const bottom = new NestedStack(middle, 'Child');
+    const resourceInGrandparent = new CfnResource(top, 'ResourceInGrandparent', { type: 'ResourceInGrandparent' });
+
+    // WHEN
+    new CfnResource(bottom, 'ResourceInChild', {
+      type: 'ResourceInChild',
+      properties: {
+        RefToGrandparent: resourceInGrandparent.ref
+      }
+    });
+
+    // THEN
+
+    // this is the name allocated for the parameter that's propagated through
+    // the hierarchy.
+    const paramName = 'referencetoGrandparentResourceInGrandparent010E997ARef';
+
+    // child (bottom) references through a parameter.
+    expect(bottom).toMatch({
+      Resources: {
+        ResourceInChild: {
+          Type: 'ResourceInChild',
+          Properties: {
+            RefToGrandparent: { Ref: paramName }
+          }
+        }
+      },
+      Parameters: {
+        [paramName]: { Type: 'String' }
+      }
+    });
+
+    // the parent (middle) sets the value of this parameter to be a reference to another parameter
+    expect(middle).to(haveResource('AWS::CloudFormation::Stack', {
+      Parameters: {
+        [paramName]: { Ref: paramName }
+      }
+    }));
+
+    // grandparent (top) assigns the actual value to the parameter
+    expect(top).to(haveResource('AWS::CloudFormation::Stack', {
+      Parameters: {
+        [paramName]: { Ref: 'ResourceInGrandparent' },
+
+        // these are for the asset of the bottom nested stack
+        referencetoGrandparentAssetParameters3208f43b793a1dbe28ca02cf31fb975489071beb42c492b22dc3d32decc3b4b7S3Bucket06EEE58DRef: {
+          Ref: 'AssetParameters3208f43b793a1dbe28ca02cf31fb975489071beb42c492b22dc3d32decc3b4b7S3Bucket01877C2E'
+        },
+        referencetoGrandparentAssetParameters3208f43b793a1dbe28ca02cf31fb975489071beb42c492b22dc3d32decc3b4b7S3VersionKeyD3B04909Ref: {
+          Ref: 'AssetParameters3208f43b793a1dbe28ca02cf31fb975489071beb42c492b22dc3d32decc3b4b7S3VersionKey5765F084'
+        }
+      }
+    }));
+
+    test.done();
+  }
 };

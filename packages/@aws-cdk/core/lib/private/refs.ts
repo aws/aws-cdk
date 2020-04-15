@@ -18,20 +18,28 @@ import { makeUniqueId } from './uniqueid';
  * This is called from the App level to resolve all references defined. Each
  * reference is resolved based on it's consumption context.
  */
-export function resolveReferences(scope: Construct) {
-  const edges = findAllReferences(scope);
+export function resolveReferences(scope: Construct): void {
+  let modified = true;
 
-  for (const { source, value } of edges) {
-    const consumer = Stack.of(source);
+  while (modified) {
+    const edges = findAllReferences(scope);
 
-    // skip if we already have a value for this consumer
-    if (value.hasValueForStack(consumer)) {
-      continue;
+    // start by assume all edges have been processed
+    modified = false;
+
+    for (const { source, value } of edges) {
+      const consumer = Stack.of(source);
+
+      // if the edge was not processed yet, resolve it's reference in the
+      // context of the consumer and signal that we need to repeat the process
+      // because resolution likely involved mutation of the parent/child to
+      // propagate the reference, so we need to locate it and resolve it again.
+      if (!value.hasValueForStack(consumer)) {
+        const resolved = resolveValue(consumer, value);
+        value.assignValueForStack(consumer, resolved);
+        modified = true;
+      }
     }
-
-    // resolve the value in the context of the consumer.
-    const resolved = resolveValue(consumer, value);
-    value.assignValueForStack(consumer, resolved);
   }
 }
 

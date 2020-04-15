@@ -18,12 +18,19 @@ export function prepareApp(root: Construct) {
     throw new Error('prepareApp must be called on the root node');
   }
 
-  const nestedStacks = findAllNestedStacks(root);
+  // depth-first (children first) queue of nested stacks. We will pop a stack
+  // from the head of this queue to prepare it's template asset.
+  const queue = findAllNestedStacks(root);
 
-  let more = true;
-  while (more) {
+  while (true) {
     resolveReferences(root);
-    more = defineNestedStackAssets(nestedStacks);
+
+    const nested = queue.shift();
+    if (!nested) {
+      break;
+    }
+
+    defineNestedStackAsset(nested);
   }
 }
 
@@ -33,19 +40,10 @@ export function prepareApp(root: Construct) {
  * implies that another round of reference resolution is in order. If this
  * function returns `false`, we know we are done.
  */
-function defineNestedStackAssets(nestedStacks: Stack[]): boolean {
-  for (const stack of nestedStacks) {
-    // this is needed temporarily until we move NestedStack to '@aws-cdk/core'.
-    const nested: INestedStackPrivateApi = stack as any;
-
-    // '_prepareTemplateAsset' returns `true` if an asset was added to the nested stack's parent
-    if (nested._prepareTemplateAsset()) {
-      return true;
-    }
-  }
-
-  // we are done, no more cycles
-  return false;
+function defineNestedStackAsset(nestedStack: Stack) {
+  // this is needed temporarily until we move NestedStack to '@aws-cdk/core'.
+  const nested: INestedStackPrivateApi = nestedStack as any;
+  nested._prepareTemplateAsset();
 }
 
 function findAllNestedStacks(root: Construct) {
