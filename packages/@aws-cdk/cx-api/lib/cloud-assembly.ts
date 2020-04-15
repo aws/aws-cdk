@@ -1,37 +1,11 @@
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { ArtifactManifest, ArtifactType, CloudArtifact } from './cloud-artifact';
+import { CloudArtifact } from './cloud-artifact';
 import { CloudFormationStackArtifact } from './cloudformation-artifact';
 import { topologicalSort } from './toposort';
 import { TreeCloudArtifact } from './tree-cloud-artifact';
-import { CLOUD_ASSEMBLY_VERSION, upgradeAssemblyManifest, verifyManifestVersion } from './versioning';
-
-/**
- * A manifest which describes the cloud assembly.
- */
-export interface AssemblyManifest {
-  /**
-   * Protocol version
-   */
-  readonly version: string;
-
-  /**
-   * The set of artifacts in this assembly.
-   */
-  readonly artifacts?: { [id: string]: ArtifactManifest };
-
-  /**
-   * Missing context information. If this field has values, it means that the
-   * cloud assembly is not complete and should not be deployed.
-   */
-  readonly missing?: MissingContext[];
-
-  /**
-   * Runtime information.
-   */
-  readonly runtime?: RuntimeInfo;
-}
 
 /**
  * The name of the root manifest file of the assembly.
@@ -60,12 +34,12 @@ export class CloudAssembly {
   /**
    * Runtime information such as module versions used to synthesize this assembly.
    */
-  public readonly runtime: RuntimeInfo;
+  public readonly runtime: cxschema.RuntimeInfo;
 
   /**
    * The raw assembly manifest.
    */
-  public readonly manifest: AssemblyManifest;
+  public readonly manifest: cxschema.AssemblyManifest;
 
   /**
    * Reads a cloud assembly from the specified directory.
@@ -74,12 +48,8 @@ export class CloudAssembly {
   constructor(directory: string) {
     this.directory = directory;
 
-    const manifest = JSON.parse(fs.readFileSync(path.join(directory, MANIFEST_FILE), 'UTF-8'));
-    this.manifest = upgradeAssemblyManifest(manifest);
-
+    this.manifest = cxschema.Manifest.load(path.join(directory, MANIFEST_FILE));
     this.version = this.manifest.version;
-    verifyManifestVersion(this.version);
-
     this.artifacts = this.renderArtifacts();
     this.runtime = this.manifest.runtime || { libraries: { } };
 
@@ -152,11 +122,11 @@ export class CloudAssembly {
    * @returns a `TreeCloudArtifact` object if there is one defined in the manifest, `undefined` otherwise.
    */
   public tree(): TreeCloudArtifact | undefined {
-    const trees = this.artifacts.filter(a => a.manifest.type === ArtifactType.CDK_TREE);
+    const trees = this.artifacts.filter(a => a.manifest.type === cxschema.ArtifactType.CDK_TREE);
     if (trees.length === 0) {
       return undefined;
     } else if (trees.length > 1) {
-      throw new Error(`Multiple artifacts of type ${ArtifactType.CDK_TREE} found in manifest`);
+      throw new Error(`Multiple artifacts of type ${cxschema.ArtifactType.CDK_TREE} found in manifest`);
     }
     const tree = trees[0];
 
@@ -208,8 +178,8 @@ export class CloudAssemblyBuilder {
    */
   public readonly outdir: string;
 
-  private readonly artifacts: { [id: string]: ArtifactManifest } = { };
-  private readonly missing = new Array<MissingContext>();
+  private readonly artifacts: { [id: string]: cxschema.ArtifactManifest } = { };
+  private readonly missing = new Array<cxschema.MissingContext>();
 
   /**
    * Initializes a cloud assembly builder.
@@ -237,7 +207,7 @@ export class CloudAssemblyBuilder {
    * @param id The ID of the artifact.
    * @param manifest The artifact manifest
    */
-  public addArtifact(id: string, manifest: ArtifactManifest) {
+  public addArtifact(id: string, manifest: cxschema.ArtifactManifest) {
     this.artifacts[id] = filterUndefined(manifest);
   }
 
@@ -245,7 +215,7 @@ export class CloudAssemblyBuilder {
    * Reports that some context is missing in order for this cloud assembly to be fully synthesized.
    * @param missing Missing context information.
    */
-  public addMissing(missing: MissingContext) {
+  public addMissing(missing: cxschema.MissingContext) {
     if (this.missing.every(m => m.key !== missing.key)) {
       this.missing.push(missing);
     }
@@ -257,23 +227,66 @@ export class CloudAssemblyBuilder {
    * @param options
    */
   public buildAssembly(options: AssemblyBuildOptions = { }): CloudAssembly {
-    const manifest: AssemblyManifest = filterUndefined({
-      version: CLOUD_ASSEMBLY_VERSION,
+
+    // explicitly initializing this type will help us detect
+    // breaking changes. (For example adding a required property will break compilation).
+    let manifest: cxschema.AssemblyManifest = {
+      version: cxschema.Manifest.version(),
       artifacts: this.artifacts,
       runtime: options.runtimeInfo,
       missing: this.missing.length > 0 ? this.missing : undefined
-    });
+    };
+
+    // now we can filter
+    manifest = filterUndefined(manifest);
 
     const manifestFilePath = path.join(this.outdir, MANIFEST_FILE);
-    fs.writeFileSync(manifestFilePath, JSON.stringify(manifest, undefined, 2));
+    cxschema.Manifest.save(manifest, manifestFilePath);
 
     // "backwards compatibility": in order for the old CLI to tell the user they
     // need a new version, we'll emit the legacy manifest with only "version".
     // this will result in an error "CDK Toolkit >= CLOUD_ASSEMBLY_VERSION is required in order to interact with this program."
-    fs.writeFileSync(path.join(this.outdir, 'cdk.out'), JSON.stringify({ version: CLOUD_ASSEMBLY_VERSION }));
+    fs.writeFileSync(path.join(this.outdir, 'cdk.out'), JSON.stringify({ version: manifest.version }));
 
     return new CloudAssembly(this.outdir);
   }
+
+}
+
+/**
+ * Backwards compatibility for when `RuntimeInfo`
+ * was defined here. This is necessary because its used as an input in the stable
+ * @aws-cdk/core library.
+ *
+ * @deprecated moved to package 'cloud-assembly-schema'
+ * @see core.ConstructNode.synth
+ */
+export interface RuntimeInfo extends cxschema.RuntimeInfo {
+
+}
+
+/**
+ * Backwards compatibility for when `MetadataEntry`
+ * was defined here. This is necessary because its used as an input in the stable
+ * @aws-cdk/core library.
+ *
+ * @deprecated moved to package 'cloud-assembly-schema'
+ * @see core.ConstructNode.metadata
+ */
+export interface MetadataEntry extends cxschema.MetadataEntry {
+
+}
+
+/**
+ * Backwards compatibility for when `MissingContext`
+ * was defined here. This is necessary because its used as an input in the stable
+ * @aws-cdk/core library.
+ *
+ * @deprecated moved to package 'cloud-assembly-schema'
+ * @see core.Stack.reportMissingContext
+ */
+export interface MissingContext extends cxschema.MissingContext {
+
 }
 
 export interface AssemblyBuildOptions {
@@ -282,40 +295,6 @@ export interface AssemblyBuildOptions {
    * @default - if this option is not specified, runtime info will not be included
    */
   readonly runtimeInfo?: RuntimeInfo;
-}
-
-/**
- * Information about the application's runtime components.
- */
-export interface RuntimeInfo {
-  /**
-   * The list of libraries loaded in the application, associated with their versions.
-   */
-  readonly libraries: { [name: string]: string };
-}
-
-/**
- * Represents a missing piece of context.
- */
-export interface MissingContext {
-  /**
-   * The missing context key.
-   */
-  readonly key: string;
-
-  /**
-   * The provider from which we expect this context key to be obtained.
-   */
-  readonly provider: string;
-
-  /**
-   * A set of provider-specific options.
-   */
-  readonly props: {
-    account?: string;
-    region?: string;
-    [key: string]: any;
-  };
 }
 
 /**

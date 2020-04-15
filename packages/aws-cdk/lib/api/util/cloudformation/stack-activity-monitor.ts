@@ -1,3 +1,4 @@
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as aws from 'aws-sdk';
 import * as colors from 'colors/safe';
@@ -237,12 +238,12 @@ export class StackActivityMonitor {
     this.lastPrintTime = +Infinity;
   }
 
-  private findMetadataFor(logicalId: string | undefined): { entry: cxapi.MetadataEntry, path: string } | undefined {
+  private findMetadataFor(logicalId: string | undefined): { entry: cxschema.MetadataEntry, path: string } | undefined {
     const metadata = this.stack.manifest.metadata;
     if (!logicalId || !metadata) { return undefined; }
     for (const path of Object.keys(metadata)) {
       const entry = metadata[path]
-        .filter(e => e.type === cxapi.LOGICAL_ID_METADATA_KEY)
+        .filter(e => e.type === cxschema.ArtifactMetadataEntryType.LOGICAL_ID)
         .find(e => e.data === logicalId);
       if (entry) {
         return { entry, path };
