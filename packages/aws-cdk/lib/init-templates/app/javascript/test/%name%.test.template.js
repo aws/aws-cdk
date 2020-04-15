@@ -1,6 +1,6 @@
-const { expect, matchTemplate, MatchStyle } = require('@aws-cdk/assert');
-const cdk = require('@aws-cdk/core');
-const %name.PascalCased% = require('../lib/%name%-stack');
+import { expect, matchTemplate, MatchStyle } from '@aws-cdk/assert';
+import * as cdk from '@aws-cdk/core';
+import * as %name.PascalCased% from '../lib/%name%-stack';
 
 test('Empty Stack', () => {
     const app = new cdk.App();
