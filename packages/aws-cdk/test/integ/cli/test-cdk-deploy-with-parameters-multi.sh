@@ -9,30 +9,29 @@ setup
 paramVal1="${STACK_NAME_PREFIX}bazinga"
 paramVal2="${STACK_NAME_PREFIX}=jagshemash"
 
-stack_arn=$(cdk deploy -v ${STACK_NAME_PREFIX}-param-test-3 --parameters "TopicNameParam=${paramVal1}" --parameters "OtherTopicNameParam=${paramVal2}")
+stack_arn=$(/Users/shivlaks/code/blankslate/aws-cdk/packages/aws-cdk/bin/cdk deploy -v ${STACK_NAME_PREFIX}-param-test-3 --parameters "DisplayNameParam=${paramVal1}" --parameters "OtherDisplayNameParam=${paramVal2}")
 echo "Stack deployed successfully"
 
 # verify that we only deployed a single stack (there's a single ARN in the output)
 assert_lines "${stack_arn}" 1
 
-# verify the number of resources in the stack
+# retrieve stack parameters
 response_json=$(mktemp).json
-aws cloudformation describe-stack-resources --stack-name ${stack_arn} > ${response_json}
-resource_count=$(node -e "console.log(require('${response_json}').StackResources.length)")
+aws cloudformation describe-stacks --stack-name ${stack_arn} > ${response_json}
+parameter_count=$(node -e "console.log(require('${response_json}').Stacks[0].Parameters.length)")
 
-# verify whether the stack has the same parameter values as we passed in cli
-for (( i=0; i<$resource_count; i++ )); do
-    passedParameterVal=$(node -e "console.log(require('${response_json}').StackResources[$i].PhysicalResourceId.split(':').reverse()[0])")
-    
-    if ! [[ "${passedParameterVal}" =~ ^(${paramVal1}|{$paramVal2})$ ]]; then
-        fail "expected stack to have parameter: ${passedParameterVal}"
+# verify stack parameter count
+if [ "${parameter_count}" -ne 2 ]; then
+    fail "stack has ${parameter_count} parameters, and we expected two"
+fi
+
+# verify stack parameters
+for (( i=0; i<$parameter_count; i++ )); do
+    passedParameterVal=$(node -e "console.log(require('${response_json}').Stacks[0].Parameters[$i].ParameterValue)")
+    if ! [[ "${passedParameterVal}" =~ ^($paramVal1|$paramVal2)$ ]]; then
+        fail "Unexpected parameter: '${passedParameterVal}'. Expected parameter values: '${paramVal1}' or '${paramVal2}'"
     fi
 done;
-
-# verify the number of resources in the stack
-if [ "${resource_count}" -ne 2 ]; then
-    fail "stack has ${resource_count} resources, and we expected two"
-fi
 
 # destroy
 cdk destroy -f ${STACK_NAME_PREFIX}-param-test-3
