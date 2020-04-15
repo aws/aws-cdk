@@ -1,4 +1,4 @@
-import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import { ABSENT, expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import * as codecommit from '@aws-cdk/aws-codecommit';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
@@ -1128,6 +1128,62 @@ export = {
             'Image': 'aws/codebuild/standard:1.0',
             'ComputeType': 'BUILD_GENERAL1_SMALL'
           }
+        }));
+
+        test.done();
+      },
+    },
+    'S3': {
+      'useBuildspecName is set to true'(test: Test) {
+        const stack = new cdk.Stack();
+        const bucket = new s3.Bucket(stack, 'MyBucket');
+        new codebuild.Project(stack, 'MyProject', {
+          source: codebuild.Source.s3({
+            bucket,
+            path: 'some/path',
+          }),
+          artifacts: codebuild.Artifacts.s3({
+            bucket,
+            path: 'another/path',
+            name: 'name',
+            identifier: 'artifact1',
+            useBuildspecName: true,
+          })
+        });
+
+        expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+          'Artifacts': 
+            {
+              'ArtifactIdentifier': 'artifact1',
+              'OverrideArtifactName': true,
+            },
+        }));
+
+        test.done();
+      },
+      'useBuildspecName is set to false'(test: Test) {
+        const stack = new cdk.Stack();
+        const bucket = new s3.Bucket(stack, 'MyBucket');
+        new codebuild.Project(stack, 'MyProject', {
+          source: codebuild.Source.s3({
+            bucket,
+            path: 'some/path',
+          }),
+          artifacts: codebuild.Artifacts.s3({
+            bucket,
+            path: 'another/path',
+            name: 'name',
+            identifier: 'artifact1',
+            useBuildspecName: false,
+          })
+        });
+
+        expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+          'Artifacts':
+            {
+              'ArtifactIdentifier': 'artifact1',
+              'OverrideArtifactName': ABSENT
+            },
         }));
 
         test.done();

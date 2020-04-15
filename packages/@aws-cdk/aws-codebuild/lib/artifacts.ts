@@ -121,6 +121,14 @@ export interface S3ArtifactsProps extends ArtifactsProps {
    * @default true - output will be encrypted
    */
   readonly encryption?: boolean;
+
+  /**
+   * If this is true, the name defined in the buildspec file will be used for artifacts.
+   * Otherwise, the artifact will use the <name> property.
+   *
+   * @default false - ignore buildspec artifact name
+   */
+  readonly useBuildspecName?: boolean;
 }
 
 /**
@@ -145,6 +153,7 @@ class S3Artifacts extends Artifacts {
         name: this.props.name,
         packaging: this.props.packageZip === false ? 'NONE' : 'ZIP',
         encryptionDisabled: this.props.encryption === false ? true : undefined,
+        overrideArtifactName: this.props.useBuildspecName === true ? true : undefined,
       }
     };
   }
