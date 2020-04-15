@@ -222,8 +222,8 @@ async function initCommandLine() {
         const parameterMap: { [name: string]: string | undefined } = {};
         for (const parameter of args.parameters) {
           if (typeof parameter === 'string') {
-            const keyValue = (parameter as string).split('=', 2);
-            parameterMap[keyValue[0]] = keyValue[1];
+            const keyValue = (parameter as string).split('=');
+            parameterMap[keyValue[0]] = keyValue.slice(1).join('=');
           }
         }
         return await cli.deploy({
