@@ -29,6 +29,19 @@ const api = new GraphQLApi(stack, 'Api', {
   },
 });
 
+const noneDS = api.addNoneDataSource('None', 'Dummy data source');
+
+noneDS.createResolver({
+  typeName: 'Query',
+  fieldName: 'getServiceVersion',
+  requestMappingTemplate: MappingTemplate.fromString(JSON.stringify({
+    version: '2017-02-28',
+  })),
+  responseMappingTemplate: MappingTemplate.fromString(JSON.stringify({
+    version: 'v1',
+  })),
+});
+
 const customerTable = new Table(stack, 'CustomerTable', {
   billingMode: BillingMode.PAY_PER_REQUEST,
   partitionKey: {
@@ -51,7 +64,7 @@ const orderTable = new Table(stack, 'OrderTable', {
 });
 
 const customerDS = api.addDynamoDbDataSource('Customer', 'The customer data source', customerTable);
-const orderDS = api.addDynamoDbDataSource('Order', 'The irder data source', orderTable);
+const orderDS = api.addDynamoDbDataSource('Order', 'The order data source', orderTable);
 
 customerDS.createResolver({
   typeName: 'Query',

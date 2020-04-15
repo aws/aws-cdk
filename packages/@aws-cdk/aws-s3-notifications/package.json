@@ -78,7 +78,7 @@
     "@aws-cdk/assert": "0.0.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
-    "jest": "^24.9.0",
+    "jest": "^25.3.0",
     "pkglint": "0.0.0"
   },
   "dependencies": {
@@ -106,5 +106,6 @@
   "stability": "stable",
   "awscdkio": {
     "announce": false
-  }
+  },
+  "maturity": "stable"
 }
