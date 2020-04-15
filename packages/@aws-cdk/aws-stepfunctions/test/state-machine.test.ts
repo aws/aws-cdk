@@ -1,11 +1,10 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import '@aws-cdk/assert/jest';
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import * as stepfunctions from '../lib';
 
-export = {
-  'Instantiate Default State Machine'(test: Test) {
+describe('State Machine', () => {
+  test('Instantiate Default State Machine', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -16,15 +15,13 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::StepFunctions::StateMachine', {
+    expect(stack).toHaveResource('AWS::StepFunctions::StateMachine', {
       StateMachineName: 'MyStateMachine',
       DefinitionString: '{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}'
-    }));
+    });
+  }),
 
-    test.done();
-  },
-
-  'Instantiate Standard State Machine'(test: Test) {
+  test('Instantiate Standard State Machine', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -36,16 +33,15 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::StepFunctions::StateMachine', {
+    expect(stack).toHaveResource('AWS::StepFunctions::StateMachine', {
       StateMachineName: 'MyStateMachine',
       StateMachineType: 'STANDARD',
       DefinitionString: '{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}'
-    }));
+    });
 
-    test.done();
-  },
+  }),
 
-  'Instantiate Express State Machine'(test: Test) {
+  test('Instantiate Express State Machine', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -57,16 +53,15 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::StepFunctions::StateMachine', {
+    expect(stack).toHaveResource('AWS::StepFunctions::StateMachine', {
       StateMachineName: 'MyStateMachine',
       StateMachineType: 'EXPRESS',
       DefinitionString: '{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}'
-    }));
+    });
 
-    test.done();
-  },
+  }),
 
-  'log configuration'(test: Test) {
+  test('log configuration', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -83,7 +78,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::StepFunctions::StateMachine', {
+    expect(stack).toHaveResource('AWS::StepFunctions::StateMachine', {
       DefinitionString: '{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}',
       LoggingConfiguration: {
         Destinations: [{
@@ -96,9 +91,9 @@ export = {
         IncludeExecutionData: false,
         Level: 'FATAL'
       }
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::IAM::Policy', {
+    expect(stack).toHaveResource('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [{
           Action: [
@@ -122,8 +117,7 @@ export = {
           Ref: 'MyStateMachineRoleD59FFEBC'
         }
       ]
-    }));
+    });
+  });
 
-    test.done();
-  },
-};
+});
