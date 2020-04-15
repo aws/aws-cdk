@@ -203,3 +203,32 @@ test('support tags', () => {
     ]
   }));
 });
+
+test('file system is created correctly when given a name', () => {
+  // WHEN
+  new EfsFileSystem(stack, 'EfsFileSystem', {
+    fileSystemName: 'MyNameableFileSystem',
+    vpc,
+  });
+
+  // THEN
+  expectCDK(stack).to(haveResource('AWS::EFS::FileSystem', {
+    FileSystemTags: [
+      {Key: 'Name', Value: 'MyNameableFileSystem'}
+    ]
+  }));
+});
+
+test('auto-named if none provided', () => {
+  // WHEN
+  const fileSystem = new EfsFileSystem(stack, 'EfsFileSystem', {
+    vpc,
+  });
+
+  // THEN
+  expectCDK(stack).to(haveResource('AWS::EFS::FileSystem', {
+    FileSystemTags: [
+      {Key: 'Name', Value: fileSystem.node.path}
+    ]
+  }));
+});
