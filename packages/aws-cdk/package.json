@@ -72,7 +72,7 @@
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
-    "archiver": "^3.1.1",
+    "archiver": "^4.0.1",
     "aws-sdk": "^2.656.0",
     "camelcase": "^6.0.0",
     "cdk-assets": "0.0.0",
@@ -84,7 +84,7 @@
     "minimatch": ">=3.0",
     "promptly": "^3.0.3",
     "proxy-agent": "^3.1.1",
-    "semver": "^7.3.0",
+    "semver": "^7.3.2",
     "source-map-support": "^0.5.16",
     "table": "^5.4.6",
     "uuid": "^7.0.3",
@@ -118,5 +118,6 @@
     "testMatch": [
       "**/?(*.)+(spec|test).js?(x)"
     ]
-  }
+  },
+  "maturity": "stable"
 }

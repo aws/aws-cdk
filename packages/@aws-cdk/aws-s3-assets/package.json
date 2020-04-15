@@ -92,6 +92,7 @@
     "node": ">= 10.12.0"
   },
   "stability": "experimental",
+  "maturity": "experimental",
   "awslint": {
     "exclude": [
       "docs-public-apis:@aws-cdk/aws-s3-assets.AssetOptions",

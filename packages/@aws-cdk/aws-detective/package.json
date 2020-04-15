@@ -82,5 +82,6 @@
   "stability": "experimental",
   "awscdkio": {
     "announce": false
-  }
+  },
+  "maturity": "cfn-only"
 }
