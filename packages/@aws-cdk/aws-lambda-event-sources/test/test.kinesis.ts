@@ -26,13 +26,22 @@ export = {
         'Statement': [
           {
             'Action': [
-              'kinesis:DescribeStream',
               'kinesis:DescribeStreamSummary',
               'kinesis:GetRecords',
               'kinesis:GetShardIterator',
               'kinesis:ListShards',
               'kinesis:SubscribeToShard'
             ],
+            'Effect': 'Allow',
+            'Resource': {
+              'Fn::GetAtt': [
+                'S509448A1',
+                'Arn'
+              ]
+            }
+          },
+          {
+            'Action': 'kinesis:DescribeStream',
             'Effect': 'Allow',
             'Resource': {
               'Fn::GetAtt': [

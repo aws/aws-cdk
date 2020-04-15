@@ -992,6 +992,38 @@ export = {
 
     test.done();
   },
+
+  'Add path patterns to imported application listener'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const group = new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', { vpc, port: 80 });
+    const listener = elbv2.ApplicationListener.fromApplicationListenerAttributes(stack, 'Listener', {
+      listenerArn: 'listener-arn',
+      defaultPort: 443,
+      securityGroupId: 'security-group-id'
+    });
+
+    // WHEN
+    listener.addTargetGroups('OtherTG', {
+      targetGroups: [group],
+      priority: 1,
+      pathPatterns: ['/path1', '/path2']
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::ListenerRule', {
+      Priority: 1,
+      Conditions: [
+        {
+          Field: 'path-pattern',
+          Values: ['/path1', '/path2']
+        }
+      ]
+    }));
+
+    test.done();
+  },
 };
 
 class ResourceWithLBDependency extends cdk.CfnResource {

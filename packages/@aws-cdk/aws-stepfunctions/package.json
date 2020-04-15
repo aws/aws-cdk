@@ -103,6 +103,7 @@
     ]
   },
   "stability": "experimental",
+  "maturity": "experimental",
   "awscdkio": {
     "announce": false
   }

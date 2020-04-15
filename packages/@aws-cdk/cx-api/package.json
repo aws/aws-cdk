@@ -45,7 +45,7 @@
     "organization": true
   },
   "dependencies": {
-    "semver": "^7.3.0",
+    "semver": "^7.3.2",
     "@aws-cdk/cloud-assembly-schema": "0.0.0"
   },
   "peerDependencies": {
@@ -95,6 +95,7 @@
     "node": ">= 10.12.0"
   },
   "stability": "experimental",
+  "maturity": "experimental",
   "awslint": {
     "exclude": [
       "props-default-doc:@aws-cdk/cx-api.MetadataEntry.data",
