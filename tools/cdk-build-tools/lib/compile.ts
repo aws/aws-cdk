@@ -21,7 +21,7 @@ export async function compileCurrentPackage(timers: Timers, options: CDKBuildOpt
     await shell([
       compilers.eslint || require.resolve('eslint/bin/eslint'),
       '.',
-      '--ext=.js,.ts',
+      '--ext=.ts',
       `--resolve-plugins-relative-to=${__dirname}`,
     ], { timers });
   }
