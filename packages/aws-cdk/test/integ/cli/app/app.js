@@ -66,10 +66,10 @@ class MultiParameterStack extends cdk.Stack {
     super(parent, id, props);
 
     new sns.Topic(this, 'TopicParameter', {
-      topicName: new cdk.CfnParameter(this, 'TopicNameParam')
+      displayName: new cdk.CfnParameter(this, 'DisplayNameParam')
     });
     new sns.Topic(this, 'OtherTopicParameter', {
-      topicName: new cdk.CfnParameter(this, 'OtherTopicNameParam')
+      displayName: new cdk.CfnParameter(this, 'OtherDisplayNameParam')
     });
   }
 }
