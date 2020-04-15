@@ -49,6 +49,9 @@
   "cdk-build": {
     "cloudformation": "AWS::ServiceDiscovery"
   },
+  "nyc": {
+    "statements": 75
+  },
   "keywords": [
     "aws",
     "cdk",
