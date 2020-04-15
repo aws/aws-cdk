@@ -5,7 +5,6 @@ import { IResolvable } from 'constructs';
 import { CfnStream } from './kinesis.generated';
 
 const READ_OPERATIONS = [
-  'kinesis:DescribeStream',
   'kinesis:DescribeStreamSummary',
   'kinesis:GetRecords',
   'kinesis:GetShardIterator',
@@ -68,6 +67,11 @@ export interface IStream extends IResource {
    * encrypt/decrypt will also be granted.
    */
   grantReadWrite(grantee: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant the indicated permissions on this stream to the provided IAM principal.
+   */
+  grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
 }
 
 /**
