@@ -25,7 +25,7 @@ intake and aggregation.
   - [Permission Grants](#permission-grants)
     - [Read Permissions](#read-permissions)
     - [Write Permissions](#write-permissions)
-    - [All other Permissions](#all-other-permissions)
+    - [Custom Permissions](#custom-permissions)
 
 ## Streams
 
@@ -182,9 +182,9 @@ The following write permissions are provided to a service principal by the `gran
 - `kinesis:PutRecord`
 - `kinesis:PutRecords`
 
-#### All other Permissions
+#### Custom Permissions
 
-You can add permissions to a stream by calling the `grant()` API.
+You can add any set of permissions to a stream by calling the `grant()` API.
 
 ```ts
 const user = new iam.User(stack, 'MyUser');
