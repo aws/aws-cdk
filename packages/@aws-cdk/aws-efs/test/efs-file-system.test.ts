@@ -2,7 +2,7 @@ import {expect as expectCDK, haveResource} from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import {Stack} from '@aws-cdk/core';
+import {Stack, Tag} from '@aws-cdk/core';
 import {EfsFileSystem, EfsLifecyclePolicyProperty, EfsPerformanceMode, EfsThroughputMode} from '../lib/efs-file-system';
 
 let stack = new Stack();
@@ -186,5 +186,20 @@ test('existing file system is imported correctly', () => {
   // THEN
   expectCDK(stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
     GroupId: 'sg-123456789',
+  }));
+});
+
+test('support tags', () => {
+  // WHEN
+  const fileSystem = new EfsFileSystem(stack, 'EfsFileSystem', {
+    vpc,
+  });
+  Tag.add(fileSystem, 'Name', 'LookAtMeAndMyFancyTags');
+
+  // THEN
+  expectCDK(stack).to(haveResource('AWS::EFS::FileSystem', {
+    FileSystemTags: [
+      {Key: 'Name', Value: 'LookAtMeAndMyFancyTags'}
+    ]
   }));
 });
