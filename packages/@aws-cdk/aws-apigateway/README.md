@@ -38,6 +38,14 @@ book.addMethod('GET');
 book.addMethod('DELETE');
 ```
 
+Optionally, you can import a Swagger/OpenAPI definition, and API Gateway will create resources
+and methods from your specification:
+```
+const api = new apigateway.RestApi(this, 'books-api', {
+  apiDefinition: apigateway.APIDefinition.fromAsset('path-to-your-swagger-file.json')
+});
+```
+
 ### AWS Lambda-backed APIs
 
 A very common practice is to use Amazon API Gateway with AWS Lambda as the
