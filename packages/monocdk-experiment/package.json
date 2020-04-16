@@ -169,7 +169,8 @@
     "@aws-cdk/aws-codeguruprofiler": "0.0.0",
     "@aws-cdk/aws-networkmanager": "0.0.0",
     "@aws-cdk/aws-resourcegroups": "0.0.0",
-    "@aws-cdk/aws-detective": "0.0.0"
+    "@aws-cdk/aws-detective": "0.0.0",
+    "@aws-cdk/aws-imagebuilder": "0.0.0"
   },
   "peerDependencies": {
     "constructs": "^2.0.0"
