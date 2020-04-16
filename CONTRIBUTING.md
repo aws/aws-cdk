@@ -295,8 +295,10 @@ All packages in the repo use a standard base configuration found at [eslintrc.js
 This can be customized for any package by modifying the `.eslintrc` file found at its root.
 
 If you're using the VS Code and would like to see eslint violations on it, install the [eslint
-extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) and add the following to the
-[settings](https://code.visualstudio.com/docs/getstarted/settings).
+extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint).
+
+The following additional [VS Code setting](https://code.visualstudio.com/docs/getstarted/settings) is required when the
+entire project is opened (not required if only a specific module is opened) -
 
 ```json
 "eslint.workingDirectories": [
