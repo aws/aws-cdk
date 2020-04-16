@@ -1,5 +1,6 @@
 import * as dynamodb from '@aws-cdk/aws-dynamodb';
 import * as ec2 from '@aws-cdk/aws-ec2';
+import * as efs from '@aws-cdk/aws-efs';
 import * as rds from '@aws-cdk/aws-rds';
 import { Construct, Stack } from '@aws-cdk/core';
 
@@ -75,6 +76,17 @@ export class BackupResource {
       service: 'ec2',
       resource: 'instance',
       resourceName: instance.instanceId,
+    }));
+  }
+
+  /**
+   * An EFS file system
+   */
+  public static fromEfsFileSystem(efsFileSystem: efs.EfsFileSystem) {
+    return BackupResource.fromArn(Stack.of(efsFileSystem).formatArn({
+      service: 'elasticfilesystem',
+      resource: 'file-system',
+      resourceName: efsFileSystem.fileSystemId,
     }));
   }
 
