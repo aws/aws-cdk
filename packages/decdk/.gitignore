@@ -3,4 +3,3 @@
 !deps.js
 test/fixture/.jsii
 cdk.schema.json
-!.eslintrc.js
