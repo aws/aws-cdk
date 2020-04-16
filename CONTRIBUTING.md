@@ -283,14 +283,6 @@ The following linters are used -
 Historically, the CDK has used tslint for linting its typescript source code. With [tslint's deprecation in
 2019](https://medium.com/palantir/tslint-in-2019-1a144c2317a9), we are slowly moving over to using eslint.
 
-It is executed automatically as part of `yarn build`.
-
-To run `eslint` on a specific package, at the root of the package, run
-
-```bash
-eslint . --ext=.ts,.js
-```
-
 All packages in the repo use a standard base configuration found at [eslintrc.js](tools/cdk-build-tools/config/eslintrc.js).
 This can be customized for any package by modifying the `.eslintrc` file found at its root.
 
