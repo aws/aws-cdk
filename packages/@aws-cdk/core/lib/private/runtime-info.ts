@@ -14,9 +14,9 @@ export function collectRuntimeInformation(): cxschema.RuntimeInfo {
     }
   }
 
-  // include only libraries that are in the @aws-cdk npm scope
+  // include only libraries that are in the @aws-cdk and @aws-solutions-konstruk npm scopes
   for (const name of Object.keys(libraries)) {
-    if (!name.startsWith('@aws-cdk/')) {
+    if ((!name.startsWith('@aws-cdk/')) && (!name.startsWith('@aws-solutions-konstruk/'))) {
       delete libraries[name];
     }
   }
