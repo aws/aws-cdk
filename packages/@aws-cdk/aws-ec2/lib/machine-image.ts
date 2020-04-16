@@ -97,10 +97,8 @@ export interface MachineImageConfig {
 
   /**
    * Initial UserData for this image
-   *
-   * @default - Default UserData appropriate for the osType is created
    */
-  readonly userData?: UserData;
+  readonly userData: UserData;
 }
 
 /**
@@ -139,7 +137,7 @@ export class WindowsImage implements IMachineImage  {
     const ami = ssm.StringParameter.valueForTypedStringParameter(scope, parameterName, ssm.ParameterType.AWS_EC2_IMAGE_ID);
     return {
       imageId: ami,
-      userData: this.props.userData,
+      userData: this.props.userData ?? UserData.forWindows(),
       osType: OperatingSystemType.WINDOWS,
     };
   }
@@ -233,7 +231,7 @@ export class AmazonLinuxImage implements IMachineImage {
 
     return {
       imageId: ami,
-      userData: this.props.userData,
+      userData: this.props.userData ?? UserData.forLinux(),
       osType: OperatingSystemType.LINUX,
     };
   }
@@ -338,7 +336,7 @@ export class GenericLinuxImage implements IMachineImage  {
   public getImage(scope: Construct): MachineImageConfig {
     const region = Stack.of(scope).region;
     if (Token.isUnresolved(region)) {
-      throw new Error(`Unable to determine AMI from AMI map since stack is region-agnostic`);
+      throw new Error('Unable to determine AMI from AMI map since stack is region-agnostic');
     }
 
     const ami = region !== 'test-region' ? this.amiMap[region] : 'ami-12345';
@@ -348,7 +346,7 @@ export class GenericLinuxImage implements IMachineImage  {
 
     return {
       imageId: ami,
-      userData: this.props.userData,
+      userData: this.props.userData ?? UserData.forLinux(),
       osType: OperatingSystemType.LINUX,
     };
   }
@@ -366,7 +364,7 @@ export class GenericWindowsImage implements IMachineImage  {
   public getImage(scope: Construct): MachineImageConfig {
     const region = Stack.of(scope).region;
     if (Token.isUnresolved(region)) {
-      throw new Error(`Unable to determine AMI from AMI map since stack is region-agnostic`);
+      throw new Error('Unable to determine AMI from AMI map since stack is region-agnostic');
     }
 
     const ami = region !== 'test-region' ? this.amiMap[region] : 'ami-12345';
@@ -376,7 +374,7 @@ export class GenericWindowsImage implements IMachineImage  {
 
     return {
       imageId: ami,
-      userData: this.props.userData,
+      userData: this.props.userData ?? UserData.forWindows(),
       osType: OperatingSystemType.WINDOWS,
     };
   }
@@ -422,7 +420,7 @@ export class LookupMachineImage implements IMachineImage {
       props: {
         owners: this.props.owners,
         filters,
-       } as cxapi.AmiContextQuery,
+      } as cxapi.AmiContextQuery,
       dummyValue: 'ami-1234',
     }).value as cxapi.AmiContextResponse;
 
@@ -430,10 +428,12 @@ export class LookupMachineImage implements IMachineImage {
       throw new Error(`Response to AMI lookup invalid, got: ${value}`);
     }
 
+    const osType = this.props.windows ? OperatingSystemType.WINDOWS : OperatingSystemType.LINUX;
+
     return {
       imageId: value,
-      osType: this.props.windows ? OperatingSystemType.WINDOWS : OperatingSystemType.LINUX,
-      userData: this.props.userData
+      osType,
+      userData: this.props.userData ?? UserData.forOperatingSystem(osType),
     };
   }
 }

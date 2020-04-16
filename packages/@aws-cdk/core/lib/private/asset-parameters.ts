@@ -1,5 +1,5 @@
 import { CfnParameter } from '../cfn-parameter';
-import { Construct } from '../construct';
+import { Construct } from '../construct-compat';
 
 export class FileAssetParameters extends Construct {
   public readonly bucketNameParameter: CfnParameter;

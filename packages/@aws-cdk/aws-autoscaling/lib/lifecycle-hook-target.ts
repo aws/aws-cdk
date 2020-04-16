@@ -1,4 +1,4 @@
-import { Construct } from '@aws-cdk/core/lib/construct';
+import { Construct } from '@aws-cdk/core';
 import { ILifecycleHook } from './lifecycle-hook';
 
 /**

@@ -206,7 +206,7 @@ function dropSpamCode(event: any, _: any, callback: any) {
   console.log('Spam filter');
 
   const sesNotification = event.Records[0].ses;
-  console.log("SES Notification:\n", JSON.stringify(sesNotification, null, 2));
+  console.log('SES Notification:\n', JSON.stringify(sesNotification, null, 2));
 
   // Check if any spam check failed
   if (sesNotification.receipt.spfVerdict.status === 'FAIL'

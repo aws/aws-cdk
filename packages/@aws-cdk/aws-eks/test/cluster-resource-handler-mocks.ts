@@ -84,7 +84,7 @@ export const client: EksClient = {
         name: req.name,
         version: '1.0',
         roleArn: 'arn:role',
-        arn: `arn:cluster-arn`,
+        arn: 'arn:cluster-arn',
         certificateAuthority: { data: 'certificateAuthority-data' },
         endpoint: 'http://endpoint',
         status: simulateResponse.describeClusterResponseMockStatus || 'ACTIVE'
@@ -154,9 +154,9 @@ export const MOCK_PROPS = {
 export const MOCK_ASSUME_ROLE_ARN = 'assume:role:arn';
 
 export function newRequest<T extends 'Create' | 'Update' | 'Delete'>(
-    requestType: T,
-    props?: Partial<sdk.EKS.CreateClusterRequest>,
-    oldProps?: Partial<sdk.EKS.CreateClusterRequest>) {
+  requestType: T,
+  props?: Partial<sdk.EKS.CreateClusterRequest>,
+  oldProps?: Partial<sdk.EKS.CreateClusterRequest>) {
   return {
     StackId: 'fake-stack-id',
     RequestId: 'fake-request-id',

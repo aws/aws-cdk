@@ -23,26 +23,26 @@ test('use of cross-stack role reference does not lead to URLSuffix being exporte
   expect(first).toMatchTemplate({
     Resources: {
       Role1ABCC5F0: {
-        Type: "AWS::IAM::Role",
+        Type: 'AWS::IAM::Role',
         Properties: {
           AssumeRolePolicyDocument: {
             Statement: [
               {
-                Action: "sts:AssumeRole",
-                Effect: "Allow",
-                Principal: { Service: "s3.amazonaws.com" }
+                Action: 'sts:AssumeRole',
+                Effect: 'Allow',
+                Principal: { Service: 's3.amazonaws.com' }
               }
             ],
-            Version: "2012-10-17"
+            Version: '2012-10-17'
           }
         }
       }
     },
     Outputs: {
       ExportsOutputFnGetAttRole1ABCC5F0ArnB4C0B73E: {
-        Value: { "Fn::GetAtt": [ "Role1ABCC5F0", "Arn" ] },
+        Value: { 'Fn::GetAtt': [ 'Role1ABCC5F0', 'Arn' ] },
         Export: {
-          Name: "First:ExportsOutputFnGetAttRole1ABCC5F0ArnB4C0B73E"
+          Name: 'First:ExportsOutputFnGetAttRole1ABCC5F0ArnB4C0B73E'
         }
       }
     }

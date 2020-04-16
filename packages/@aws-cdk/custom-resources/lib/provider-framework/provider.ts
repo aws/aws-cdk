@@ -86,7 +86,7 @@ export class Provider extends Construct implements cfn.ICustomResourceProvider {
     super(scope, id);
 
     if (!props.isCompleteHandler && (props.queryInterval || props.totalTimeout)) {
-      throw new Error(`"queryInterval" and "totalTimeout" can only be configured if "isCompleteHandler" is specified. Otherwise, they have no meaning`);
+      throw new Error('"queryInterval" and "totalTimeout" can only be configured if "isCompleteHandler" is specified. Otherwise, they have no meaning');
     }
 
     this.onEventHandler = props.onEventHandler;

@@ -1,5 +1,5 @@
 import { CfnElement } from './cfn-element';
-import { Construct } from './construct';
+import { Construct } from './construct-compat';
 import { CfnReference } from './private/cfn-reference';
 import { IResolvable, IResolveContext } from './resolvable';
 import { Token } from './token';

@@ -31,7 +31,7 @@ test('can use topic as alarm action', () => {
   // THEN
   expect(stack).toHaveResource('AWS::CloudWatch::Alarm', {
     AlarmActions: [
-      { Ref: "Action62AD07C0" }
+      { Ref: 'Action62AD07C0' }
     ],
   });
 });

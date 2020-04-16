@@ -125,12 +125,12 @@ export enum UpdateType {
 
 export function isUpdateType(str: string): str is UpdateType {
   switch (str) {
-  case UpdateType.Conditional:
-  case UpdateType.Immutable:
-  case UpdateType.Mutable:
-    return true;
-  default:
-    return false;
+    case UpdateType.Conditional:
+    case UpdateType.Immutable:
+    case UpdateType.Mutable:
+      return true;
+    default:
+      return false;
   }
 }
 
@@ -223,8 +223,8 @@ export function isPropertyScrutinyType(str: string): str is PropertyScrutinyType
 }
 
 const tagPropertyNames = {
-  Tags: "",
-  UserPoolTags: "",
+  Tags: '',
+  UserPoolTags: '',
 };
 
 export type TagPropertyName = keyof typeof tagPropertyNames;

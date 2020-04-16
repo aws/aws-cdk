@@ -17,10 +17,10 @@ export async function onEvent(event: AWSCDKAsyncCustomResource.OnEventRequest) {
 
 export async function putObject(event: AWSCDKAsyncCustomResource.OnEventRequest): Promise<AWSCDKAsyncCustomResource.OnEventResponse> {
   const bucketName = event.ResourceProperties[api.PROP_BUCKET_NAME];
-  if (!bucketName) { throw new Error(`"BucketName" is required`); }
+  if (!bucketName) { throw new Error('"BucketName" is required'); }
 
   const contents = event.ResourceProperties[api.PROP_CONTENTS];
-  if (!contents) { throw new Error(`"Contents" is required`); }
+  if (!contents) { throw new Error('"Contents" is required'); }
 
   // determine the object key which is the physical ID of the resource.
   // if it was not provided by the user, we generated it using the request ID.
@@ -58,11 +58,11 @@ export async function putObject(event: AWSCDKAsyncCustomResource.OnEventRequest)
 
 export async function deleteObject(event: AWSCDKAsyncCustomResource.OnEventRequest) {
   const bucketName = event.ResourceProperties.BucketName;
-  if (!bucketName) { throw new Error(`"BucketName" is required`); }
+  if (!bucketName) { throw new Error('"BucketName" is required'); }
 
   const objectKey = event.PhysicalResourceId;
   if (!objectKey) {
-    throw new Error(`PhysicalResourceId expected for DELETE events`);
+    throw new Error('PhysicalResourceId expected for DELETE events');
   }
 
   await s3.deleteObject({

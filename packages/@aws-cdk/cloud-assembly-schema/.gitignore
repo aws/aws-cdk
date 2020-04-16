@@ -1,0 +1,17 @@
+lib/*.js
+test/*.js
+scripts/*.js
+*.js.map
+*.d.ts
+node_modules
+dist
+tsconfig.json
+tslint.json
+.jsii
+
+.LAST_BUILD
+.LAST_PACKAGE
+*.snk
+.nyc_output
+coverage
+nyc.config.js

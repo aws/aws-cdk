@@ -1,5 +1,5 @@
-import { Construct } from "@aws-cdk/core";
-import { CfnInstance } from "./ec2.generated";
+import { Construct } from '@aws-cdk/core';
+import { CfnInstance } from './ec2.generated';
 
 /**
  * Block device

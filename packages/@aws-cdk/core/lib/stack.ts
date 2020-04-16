@@ -1,9 +1,10 @@
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation , FileAssetPackaging, FileAssetSource } from './assets';
-import { Construct, ConstructNode, IConstruct, ISynthesisSession } from './construct';
+import { Construct, ConstructNode, IConstruct, ISynthesisSession } from './construct-compat';
 import { ContextProvider } from './context-provider';
 import { Environment } from './environment';
 import { FileAssetParameters } from './private/asset-parameters';
@@ -22,7 +23,7 @@ const VALID_STACK_NAME_REGEX = /^[A-Za-z][A-Za-z0-9-]*$/;
  * image assets will be pushed into this repository with an image tag based on
  * the source hash.
  */
-const ASSETS_ECR_REPOSITORY_NAME = "aws-cdk/assets";
+const ASSETS_ECR_REPOSITORY_NAME = 'aws-cdk/assets';
 
 /**
  * This allows users to work around the fact that the ECR repository is
@@ -30,7 +31,7 @@ const ASSETS_ECR_REPOSITORY_NAME = "aws-cdk/assets";
  * repository name. The CLI will auto-create this ECR repository if it's not
  * already created.
  */
-const ASSETS_ECR_REPOSITORY_NAME_OVERRIDE_CONTEXT_KEY = "assets-ecr-repository-name";
+const ASSETS_ECR_REPOSITORY_NAME_OVERRIDE_CONTEXT_KEY = 'assets-ecr-repository-name';
 
 export interface StackProps {
   /**
@@ -225,7 +226,7 @@ export class Stack extends Construct implements ITaggable {
    * This is returned when the stack is synthesized under the 'missing' attribute
    * and allows tooling to obtain the context and re-synthesize.
    */
-  private readonly _missingContext = new Array<cxapi.MissingContext>();
+  private readonly _missingContext = new Array<cxschema.MissingContext>();
 
   /**
    * Includes all parameters synthesized for assets (lazy).
@@ -539,7 +540,7 @@ export class Stack extends Construct implements ITaggable {
     if (!params) {
       params = new FileAssetParameters(this.assetParameters, asset.sourceHash);
 
-      const metadata: cxapi.FileAssetMetadataEntry = {
+      const metadata: cxschema.FileAssetMetadataEntry = {
         path: asset.fileName,
         id: asset.sourceHash,
         packaging: asset.packaging,
@@ -550,7 +551,7 @@ export class Stack extends Construct implements ITaggable {
         artifactHashParameter: params.artifactHashParameter.logicalId,
       };
 
-      this.node.addMetadata(cxapi.ASSET_METADATA, metadata);
+      this.node.addMetadata(cxschema.ArtifactMetadataEntryType.ASSET, metadata);
     }
 
     const bucketName = params.bucketNameParameter.valueAsString;
@@ -580,7 +581,7 @@ export class Stack extends Construct implements ITaggable {
 
     // only add every image (identified by source hash) once for each stack that uses it.
     if (!this.addedImageAssets.has(assetId)) {
-      const metadata: cxapi.ContainerImageAssetMetadataEntry = {
+      const metadata: cxschema.ContainerImageAssetMetadataEntry = {
         repositoryName,
         imageTag,
         id: assetId,
@@ -592,7 +593,7 @@ export class Stack extends Construct implements ITaggable {
         file: asset.dockerFile,
       };
 
-      this.node.addMetadata(cxapi.ASSET_METADATA, metadata);
+      this.node.addMetadata(cxschema.ArtifactMetadataEntryType.ASSET, metadata);
       this.addedImageAssets.add(assetId);
     }
 
@@ -649,14 +650,14 @@ export class Stack extends Construct implements ITaggable {
   public _addAssemblyDependency(target: Stack, reason?: string) {
     // defensive: we should never get here for nested stacks
     if (this.nested || target.nested) {
-      throw new Error(`Cannot add assembly-level dependencies for nested stacks`);
+      throw new Error('Cannot add assembly-level dependencies for nested stacks');
     }
 
     reason = reason || 'dependency added using stack.addDependency()';
     const cycle = target.stackDependencyReasons(this);
     if (cycle !== undefined) {
-        // tslint:disable-next-line:max-line-length
-        throw new Error(`'${target.node.path}' depends on '${this.node.path}' (${cycle.join(', ')}). Adding this dependency (${reason}) would create a cyclic reference.`);
+      // tslint:disable-next-line:max-line-length
+      throw new Error(`'${target.node.path}' depends on '${this.node.path}' (${cycle.join(', ')}). Adding this dependency (${reason}) would create a cyclic reference.`);
     }
 
     let dep = this._stackDependencies[target.node.uniqueId];
@@ -784,7 +785,7 @@ export class Stack extends Construct implements ITaggable {
     }
 
     if (this.tags.hasTags()) {
-      this.node.addMetadata(cxapi.STACK_TAGS_METADATA_KEY, this.tags.renderTags());
+      this.node.addMetadata(cxschema.ArtifactMetadataEntryType.STACK_TAGS, this.tags.renderTags());
     }
 
     if (this.nestedStackParent) {
@@ -842,7 +843,7 @@ export class Stack extends Construct implements ITaggable {
 
     // add an artifact that represents this stack
     builder.addArtifact(this.artifactId, {
-      type: cxapi.ArtifactType.AWS_CLOUDFORMATION_STACK,
+      type: cxschema.ArtifactType.AWS_CLOUDFORMATION_STACK,
       environment: this.environment,
       properties,
       dependencies: deps.length > 0 ? deps : undefined,
@@ -983,7 +984,7 @@ export class Stack extends Construct implements ITaggable {
   }
 
   private collectMetadata() {
-    const output: { [id: string]: cxapi.MetadataEntry[] } = { };
+    const output: { [id: string]: cxschema.MetadataEntry[] } = { };
     const stack = this;
 
     visit(this);
@@ -999,7 +1000,7 @@ export class Stack extends Construct implements ITaggable {
 
       if (node.node.metadata.length > 0) {
         // Make the path absolute
-        output[ConstructNode.PATH_SEP + node.node.path] = node.node.metadata.map(md => stack.resolve(md) as cxapi.MetadataEntry);
+        output[ConstructNode.PATH_SEP + node.node.path] = node.node.metadata.map(md => stack.resolve(md) as cxschema.MetadataEntry);
       }
 
       for (const child of node.node.children) {
@@ -1060,15 +1061,15 @@ export class Stack extends Construct implements ITaggable {
     // unsupported: stacks from different apps
     if (target.node.root !== this.node.root) {
       throw new Error(
-        `Cannot reference across apps. ` +
-        `Consuming and producing stacks must be defined within the same CDK app.`);
+        'Cannot reference across apps. ' +
+        'Consuming and producing stacks must be defined within the same CDK app.');
     }
 
     // unsupported: stacks are not in the same environment
     if (target.environment !== this.environment) {
       throw new Error(
         `Stack "${this.node.path}" cannot consume a cross reference from stack "${target.node.path}". ` +
-        `Cross stack references are only supported for stacks deployed to the same environment or between nested stacks and their parent stack`);
+        'Cross stack references are only supported for stacks deployed to the same environment or between nested stacks and their parent stack');
     }
 
     // if one of the stacks is a nested stack, go ahead and give it the right to make the cross reference
@@ -1159,7 +1160,7 @@ export interface ITemplateOptions {
   /**
    * Metadata associated with the CloudFormation template.
    */
-   metadata?: { [key: string]: any };
+  metadata?: { [key: string]: any };
 }
 
 /**

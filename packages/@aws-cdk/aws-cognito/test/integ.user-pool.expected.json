@@ -45,7 +45,6 @@
         },
         "EmailVerificationMessage": "Hello {username}, Your verification code is {####}",
         "EmailVerificationSubject": "Verify your new account",
-        "LambdaConfig": {},
         "SmsConfiguration": {
           "ExternalId": "integuserpoolmyuserpoolDA38443C",
           "SnsCallerArn": {
@@ -63,6 +62,13 @@
           "EmailSubject": "Verify your new account",
           "SmsMessage": "The verification code to your new account is {####}"
         }
+      }
+    }
+  },
+  "Outputs": {
+    "userpoolid": {
+      "Value": {
+        "Ref": "myuserpool01998219"
       }
     }
   }

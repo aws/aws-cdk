@@ -15,9 +15,9 @@ export = {
     test.deepEqual(q.fifo, false);
 
     expect(stack).toMatch({
-      "Resources": {
-        "Queue4A7E3555": {
-        "Type": "AWS::SQS::Queue"
+      'Resources': {
+        'Queue4A7E3555': {
+          'Type': 'AWS::SQS::Queue'
         }
       }
     });
@@ -30,23 +30,23 @@ export = {
     new sqs.Queue(stack, 'Queue', { deadLetterQueue: { queue: dlq, maxReceiveCount: 3 } });
 
     expect(stack).toMatch({
-      "Resources": {
-        "DLQ581697C4": {
-        "Type": "AWS::SQS::Queue"
+      'Resources': {
+        'DLQ581697C4': {
+          'Type': 'AWS::SQS::Queue'
         },
-        "Queue4A7E3555": {
-        "Type": "AWS::SQS::Queue",
-        "Properties": {
-          "RedrivePolicy": {
-          "deadLetterTargetArn": {
-            "Fn::GetAtt": [
-            "DLQ581697C4",
-            "Arn"
-            ]
-          },
-          "maxReceiveCount": 3
+        'Queue4A7E3555': {
+          'Type': 'AWS::SQS::Queue',
+          'Properties': {
+            'RedrivePolicy': {
+              'deadLetterTargetArn': {
+                'Fn::GetAtt': [
+                  'DLQ581697C4',
+                  'Arn'
+                ]
+              },
+              'maxReceiveCount': 3
+            }
           }
-        }
         }
       }
     });
@@ -64,32 +64,32 @@ export = {
     }));
 
     expect(stack).toMatch({
-      "Resources": {
-        "MyQueueE6CA6235": {
-        "Type": "AWS::SQS::Queue"
+      'Resources': {
+        'MyQueueE6CA6235': {
+          'Type': 'AWS::SQS::Queue'
         },
-        "MyQueuePolicy6BBEDDAC": {
-        "Type": "AWS::SQS::QueuePolicy",
-        "Properties": {
-          "PolicyDocument": {
-          "Statement": [
-            {
-            "Action": "sqs:*",
-            "Effect": "Allow",
-            "Principal": {
-              "AWS": "arn"
+        'MyQueuePolicy6BBEDDAC': {
+          'Type': 'AWS::SQS::QueuePolicy',
+          'Properties': {
+            'PolicyDocument': {
+              'Statement': [
+                {
+                  'Action': 'sqs:*',
+                  'Effect': 'Allow',
+                  'Principal': {
+                    'AWS': 'arn'
+                  },
+                  'Resource': '*'
+                }
+              ],
+              'Version': '2012-10-17'
             },
-            "Resource": "*"
-            }
-          ],
-          "Version": "2012-10-17"
-          },
-          "Queues": [
-          {
-            "Ref": "MyQueueE6CA6235"
+            'Queues': [
+              {
+                'Ref': 'MyQueueE6CA6235'
+              }
+            ]
           }
-          ]
-        }
         }
       }
     });
@@ -174,19 +174,19 @@ export = {
       queue.grantPurge(user);
 
       expect(stack).to(haveResource('AWS::IAM::Policy', {
-        "PolicyDocument": {
-          "Statement": [
+        'PolicyDocument': {
+          'Statement': [
             {
-              "Action": [
-                "sqs:PurgeQueue",
-                "sqs:GetQueueAttributes",
-                "sqs:GetQueueUrl"
+              'Action': [
+                'sqs:PurgeQueue',
+                'sqs:GetQueueAttributes',
+                'sqs:GetQueueUrl'
               ],
-              "Effect": "Allow",
-              "Resource": "arn:aws:sqs:us-east-1:123456789012:queue1"
+              'Effect': 'Allow',
+              'Resource': 'arn:aws:sqs:us-east-1:123456789012:queue1'
             }
           ],
-          "Version": "2012-10-17"
+          'Version': '2012-10-17'
         }
       }));
 
@@ -203,7 +203,7 @@ export = {
 
       test.same(queue.encryptionMasterKey, key);
       expect(stack).to(haveResource('AWS::SQS::Queue', {
-        "KmsMasterKeyId": { "Fn::GetAtt": [ "CustomKey1E6D0D07", "Arn" ] }
+        'KmsMasterKeyId': { 'Fn::GetAtt': [ 'CustomKey1E6D0D07', 'Arn' ] }
       }));
 
       test.done();
@@ -216,11 +216,11 @@ export = {
 
       expect(stack).to(haveResource('AWS::KMS::Key'));
       expect(stack).to(haveResource('AWS::SQS::Queue', {
-        "KmsMasterKeyId": {
-        "Fn::GetAtt": [
-          "QueueKey39FCBAE6",
-          "Arn"
-        ]
+        'KmsMasterKeyId': {
+          'Fn::GetAtt': [
+            'QueueKey39FCBAE6',
+            'Arn'
+          ]
         }
       }));
 
@@ -232,13 +232,13 @@ export = {
 
       new sqs.Queue(stack, 'Queue', { encryption: sqs.QueueEncryption.KMS_MANAGED });
       expect(stack).toMatch({
-        "Resources": {
-        "Queue4A7E3555": {
-          "Type": "AWS::SQS::Queue",
-          "Properties": {
-          "KmsMasterKeyId": "alias/aws/sqs"
+        'Resources': {
+          'Queue4A7E3555': {
+            'Type': 'AWS::SQS::Queue',
+            'Properties': {
+              'KmsMasterKeyId': 'alias/aws/sqs'
+            }
           }
-        }
         }
       });
       test.done();
@@ -259,28 +259,28 @@ export = {
 
       // THEN
       expect(stack).to(haveResource('AWS::IAM::Policy', {
-        "PolicyDocument": {
-          "Statement": [
+        'PolicyDocument': {
+          'Statement': [
             {
-              "Action": [
-                "sqs:SendMessage",
-                "sqs:GetQueueAttributes",
-                "sqs:GetQueueUrl"
+              'Action': [
+                'sqs:SendMessage',
+                'sqs:GetQueueAttributes',
+                'sqs:GetQueueUrl'
               ],
-              "Effect": "Allow",
-              "Resource": { "Fn::GetAtt": [ "Queue4A7E3555", "Arn" ] }
+              'Effect': 'Allow',
+              'Resource': { 'Fn::GetAtt': [ 'Queue4A7E3555', 'Arn' ] }
             },
             {
-              "Action": [
-                "kms:Encrypt",
-                "kms:ReEncrypt*",
-                "kms:GenerateDataKey*"
+              'Action': [
+                'kms:Encrypt',
+                'kms:ReEncrypt*',
+                'kms:GenerateDataKey*'
               ],
-              "Effect": "Allow",
-              "Resource": { "Fn::GetAtt": [ "QueueKey39FCBAE6", "Arn" ] }
+              'Effect': 'Allow',
+              'Resource': { 'Fn::GetAtt': [ 'QueueKey39FCBAE6', 'Arn' ] }
             }
           ],
-          "Version": "2012-10-17"
+          'Version': '2012-10-17'
         },
       }));
 
@@ -297,12 +297,12 @@ export = {
     test.deepEqual(queue.fifo, true);
 
     expect(stack).toMatch({
-      "Resources": {
-        "Queue4A7E3555": {
-          "Type": "AWS::SQS::Queue",
-          "Properties": {
-            "QueueName": "MyQueue.fifo",
-            "FifoQueue": true
+      'Resources': {
+        'Queue4A7E3555': {
+          'Type': 'AWS::SQS::Queue',
+          'Properties': {
+            'QueueName': 'MyQueue.fifo',
+            'FifoQueue': true
           }
         }
       }
@@ -320,11 +320,11 @@ export = {
     test.deepEqual(queue.fifo, true);
 
     expect(stack).toMatch({
-      "Resources": {
-        "Queue4A7E3555": {
-          "Type": "AWS::SQS::Queue",
-          "Properties": {
-            "FifoQueue": true
+      'Resources': {
+        'Queue4A7E3555': {
+          'Type': 'AWS::SQS::Queue',
+          'Properties': {
+            'FifoQueue': true
           }
         }
       }
@@ -367,20 +367,20 @@ function testGrant(action: (q: sqs.Queue, principal: iam.IPrincipal) => void, ..
   action(queue, principal);
 
   expect(stack).to(haveResource('AWS::IAM::Policy', {
-    "PolicyDocument": {
-      "Statement": [
+    'PolicyDocument': {
+      'Statement': [
         {
-          "Action": expectedActions,
-          "Effect": "Allow",
-          "Resource": {
-            "Fn::GetAtt": [
-              "MyQueueE6CA6235",
-              "Arn"
+          'Action': expectedActions,
+          'Effect': 'Allow',
+          'Resource': {
+            'Fn::GetAtt': [
+              'MyQueueE6CA6235',
+              'Arn'
             ]
           }
         }
       ],
-      "Version": "2012-10-17"
+      'Version': '2012-10-17'
     }
   }));
 }

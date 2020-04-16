@@ -1,10 +1,8 @@
 # Event Targets for AWS CloudWatch Events
 <!--BEGIN STABILITY BANNER-->
-
 ---
 
-![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
-
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 <!--END STABILITY BANNER-->
@@ -22,6 +20,7 @@ Currently supported are:
 * Publish a message to an SNS topic
 * Send a message to an SQS queue
 * Start a StepFunctions state machine
+* Queue a Batch job
 * Make an AWS API call
 
 See the README of the `@aws-cdk/aws-events` library for more information on

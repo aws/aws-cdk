@@ -1,7 +1,7 @@
 import { expect, haveResource, not } from '@aws-cdk/assert';
 import { Intrinsic, Lazy, Stack, Token } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { Peer, Port, SecurityGroup, Vpc } from "../lib";
+import { Peer, Port, SecurityGroup, Vpc } from '../lib';
 
 export = {
   'security group can allows all outbound traffic by default'(test: Test) {
@@ -16,9 +16,9 @@ export = {
     expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
       SecurityGroupEgress: [
         {
-          CidrIp: "0.0.0.0/0",
-          Description: "Allow all outbound traffic by default",
-          IpProtocol: "-1"
+          CidrIp: '0.0.0.0/0',
+          Description: 'Allow all outbound traffic by default',
+          IpProtocol: '-1'
         }
       ],
     }));
@@ -39,9 +39,9 @@ export = {
     expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
       SecurityGroupEgress: [
         {
-          CidrIp: "0.0.0.0/0",
-          Description: "Allow all outbound traffic by default",
-          IpProtocol: "-1"
+          CidrIp: '0.0.0.0/0',
+          Description: 'Allow all outbound traffic by default',
+          IpProtocol: '-1'
         },
       ],
     }));
@@ -61,10 +61,10 @@ export = {
     expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
       SecurityGroupEgress: [
         {
-          CidrIp: "255.255.255.255/32",
-          Description: "Disallow all traffic",
+          CidrIp: '255.255.255.255/32',
+          Description: 'Disallow all traffic',
           FromPort: 252,
-          IpProtocol: "icmp",
+          IpProtocol: 'icmp',
           ToPort: 86
         }
       ],
@@ -86,10 +86,10 @@ export = {
     expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
       SecurityGroupEgress: [
         {
-          CidrIp: "0.0.0.0/0",
-          Description: "This replaces the other one",
+          CidrIp: '0.0.0.0/0',
+          Description: 'This replaces the other one',
           FromPort: 86,
-          IpProtocol: "tcp",
+          IpProtocol: 'tcp',
           ToPort: 86
         }
       ],
@@ -117,17 +117,17 @@ export = {
     const stack = new Stack();
 
     // WHEN
-    const sg = SecurityGroup.fromSecurityGroupId(stack, 'SG1', "test-id", {mutable: false});
+    const sg = SecurityGroup.fromSecurityGroupId(stack, 'SG1', 'test-id', {mutable: false});
     sg.addEgressRule(Peer.anyIpv4(), Port.tcp(86), 'This rule was not added');
     sg.addIngressRule(Peer.anyIpv4(), Port.tcp(86), 'This rule was not added');
 
     expect(stack).to(not(haveResource('AWS::EC2::SecurityGroup', {
       SecurityGroupEgress: [
         {
-          CidrIp: "0.0.0.0/0",
-          Description: "This rule was not added",
+          CidrIp: '0.0.0.0/0',
+          Description: 'This rule was not added',
           FromPort: 86,
-          IpProtocol: "tcp",
+          IpProtocol: 'tcp',
           ToPort: 86
         }
       ],
@@ -136,10 +136,10 @@ export = {
     expect(stack).to(not(haveResource('AWS::EC2::SecurityGroup', {
       SecurityGroupIngress: [
         {
-          CidrIp: "0.0.0.0/0",
-          Description: "This rule was not added",
+          CidrIp: '0.0.0.0/0',
+          Description: 'This rule was not added',
           FromPort: 86,
-          IpProtocol: "tcp",
+          IpProtocol: 'tcp',
           ToPort: 86
         }
       ],

@@ -52,7 +52,7 @@ function detectPropertyScrutiny(_typeName: string, propertyName: string, propert
     return;
   }
 
-  if (propertyName === "Policies" && schema.isComplexListProperty(propertySpec) && propertySpec.ItemType === 'Policy') {
+  if (propertyName === 'Policies' && schema.isComplexListProperty(propertySpec) && propertySpec.ItemType === 'Policy') {
     propertySpec.ScrutinyType = PropertyScrutinyType.InlineIdentityPolicies;
     return;
   }

@@ -68,7 +68,7 @@ export class PrivateDnsNamespace extends Resource implements IPrivateDnsNamespac
   constructor(scope: Construct, id: string, props: PrivateDnsNamespaceProps) {
     super(scope, id);
     if (props.vpc === undefined) {
-      throw new Error(`VPC must be specified for PrivateDNSNamespaces`);
+      throw new Error('VPC must be specified for PrivateDNSNamespaces');
     }
 
     const ns = new CfnPrivateDnsNamespace(this, 'Resource', {

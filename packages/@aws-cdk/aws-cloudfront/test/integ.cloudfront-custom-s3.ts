@@ -1,18 +1,18 @@
 import * as s3 from '@aws-cdk/aws-s3';
-import { App, Construct, Stack } from "@aws-cdk/core";
+import { App, Construct, Stack } from '@aws-cdk/core';
 import * as cloudfront from '../lib';
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
-    const bucket = new s3.Bucket(this, `Bucket`, {
+    const bucket = new s3.Bucket(this, 'Bucket', {
       publicReadAccess: true,
-      websiteIndexDocument: "index.html",
-      websiteErrorDocument: "404.html",
+      websiteIndexDocument: 'index.html',
+      websiteErrorDocument: '404.html',
     });
 
-    new cloudfront.CloudFrontWebDistribution(this, `Distribution`, {
+    new cloudfront.CloudFrontWebDistribution(this, 'Distribution', {
       viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
       priceClass: cloudfront.PriceClass.PRICE_CLASS_200,
       originConfigs: [

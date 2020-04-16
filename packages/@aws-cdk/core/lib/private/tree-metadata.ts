@@ -1,8 +1,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-import { ArtifactType } from '@aws-cdk/cx-api';
-import { Construct, IConstruct, ISynthesisSession } from '../construct';
+import { ArtifactType } from '@aws-cdk/cloud-assembly-schema';
+import { Construct, IConstruct, ISynthesisSession } from '../construct-compat';
 import { Stack } from '../stack';
 import { IInspectable, TreeInspector } from '../tree';
 

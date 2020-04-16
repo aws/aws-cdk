@@ -48,11 +48,11 @@ export = {
       image,
       logging: ecs.LogDrivers.firelens({
         options: {
-            Name: 'cloudwatch',
-            region: 'us-west-2',
-            log_group_name: 'firelens-fluent-bit',
-            auto_create_group: 'true',
-            log_stream_prefix: 'from-fluent-bit'
+          Name: 'cloudwatch',
+          region: 'us-west-2',
+          log_group_name: 'firelens-fluent-bit',
+          auto_create_group: 'true',
+          log_stream_prefix: 'from-fluent-bit'
         }
       }),
       memoryLimitMiB: 128
@@ -65,18 +65,18 @@ export = {
           LogConfiguration: {
             LogDriver: 'awsfirelens',
             Options: {
-                Name: 'cloudwatch',
-                region: 'us-west-2',
-                log_group_name: 'firelens-fluent-bit',
-                auto_create_group: 'true',
-                log_stream_prefix: 'from-fluent-bit'
+              Name: 'cloudwatch',
+              region: 'us-west-2',
+              log_group_name: 'firelens-fluent-bit',
+              auto_create_group: 'true',
+              log_stream_prefix: 'from-fluent-bit'
             }
           }
         },
         {
           Essential: true,
           FirelensConfiguration: {
-            Type: "fluentbit"
+            Type: 'fluentbit'
           }
         }
       ]
@@ -91,9 +91,9 @@ export = {
       image,
       logging: ecs.LogDrivers.firelens({
         options: {
-            Name: 'firehose',
-            region: 'us-west-2',
-            delivery_stream: 'my-stream',
+          Name: 'firehose',
+          region: 'us-west-2',
+          delivery_stream: 'my-stream',
         }
       }),
       memoryLimitMiB: 128
@@ -106,16 +106,16 @@ export = {
           LogConfiguration: {
             LogDriver: 'awsfirelens',
             Options: {
-                Name: 'firehose',
-                region: 'us-west-2',
-                delivery_stream: 'my-stream',
+              Name: 'firehose',
+              region: 'us-west-2',
+              delivery_stream: 'my-stream',
             }
           }
         },
         {
           Essential: true,
           FirelensConfiguration: {
-            Type: "fluentbit"
+            Type: 'fluentbit'
           }
         }
       ]
@@ -124,10 +124,10 @@ export = {
     test.done();
   },
 
-  "Firelens Configuration": {
-    "fluentd log router container"(test: Test) {
+  'Firelens Configuration': {
+    'fluentd log router container'(test: Test) {
       // GIVEN
-      td.addFirelensLogRouter("log_router", {
+      td.addFirelensLogRouter('log_router', {
         image: ecs.ContainerImage.fromRegistry('fluent/fluentd'),
         firelensConfig: {
           type: ecs.FirelensLogRouterType.FLUENTD,
@@ -140,9 +140,9 @@ export = {
         ContainerDefinitions: [
           {
             Essential: true,
-            Image: "fluent/fluentd",
+            Image: 'fluent/fluentd',
             MemoryReservation: 50,
-            Name: "log_router",
+            Name: 'log_router',
             FirelensConfiguration: {
               Type: 'fluentd',
             },
@@ -152,11 +152,11 @@ export = {
       test.done();
     },
 
-    "fluent-bit log router container with options"(test: Test) {
+    'fluent-bit log router container with options'(test: Test) {
       // GIVEN
       const stack2 = new cdk.Stack(undefined, 'Stack2', { env: { region: 'us-east-1' }});
       const td2 = new ecs.Ec2TaskDefinition(stack2, 'TaskDefinition');
-      td2.addFirelensLogRouter("log_router", {
+      td2.addFirelensLogRouter('log_router', {
         image: ecs.obtainDefaultFluentBitECRImage(td2, undefined, '2.1.0'),
         firelensConfig: {
           type: ecs.FirelensLogRouterType.FLUENTBIT,
@@ -191,7 +191,7 @@ export = {
       test.done();
     },
 
-    "fluent-bit log router with file config type"(test: Test) {
+    'fluent-bit log router with file config type'(test: Test) {
       // GIVEN
       td.addFirelensLogRouter('log_router', {
         image: ecs.obtainDefaultFluentBitECRImage(td, undefined, '2.1.0'),

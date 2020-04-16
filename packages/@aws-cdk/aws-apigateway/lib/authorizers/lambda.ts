@@ -75,7 +75,7 @@ abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
     this.role = props.assumeRole;
 
     if (props.resultsCacheTtl && props.resultsCacheTtl?.toSeconds() > 3600) {
-      throw new Error(`Lambda authorizer property 'resultsCacheTtl' must not be greater than 3600 seconds (1 hour)`);
+      throw new Error('Lambda authorizer property \'resultsCacheTtl\' must not be greater than 3600 seconds (1 hour)');
     }
   }
 
@@ -85,7 +85,7 @@ abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
    */
   public _attachToApi(restApi: RestApi) {
     if (this.restApiId && this.restApiId !== restApi.restApiId) {
-      throw new Error(`Cannot attach authorizer to two different rest APIs`);
+      throw new Error('Cannot attach authorizer to two different rest APIs');
     }
 
     this.restApiId = restApi.restApiId;
@@ -110,6 +110,21 @@ abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
         ]
       }));
     }
+  }
+
+  /**
+   * Returns a token that resolves to the Rest Api Id at the time of synthesis.
+   * Throws an error, during token resolution, if no RestApi is attached to this authorizer.
+   */
+  protected lazyRestApiId() {
+    return Lazy.stringValue({
+      produce: () => {
+        if (!this.restApiId) {
+          throw new Error(`Authorizer (${this.node.path}) must be attached to a RestApi`);
+        }
+        return this.restApiId;
+      }
+    });
   }
 }
 
@@ -150,7 +165,7 @@ export class TokenAuthorizer extends LambdaAuthorizer {
   constructor(scope: Construct, id: string, props: TokenAuthorizerProps) {
     super(scope, id, props);
 
-    const restApiId = Lazy.stringValue({ produce: () => this.restApiId });
+    const restApiId = this.lazyRestApiId();
     const resource = new CfnAuthorizer(this, 'Resource', {
       name: props.authorizerName ?? this.node.uniqueId,
       restApiId,
@@ -209,10 +224,10 @@ export class RequestAuthorizer extends LambdaAuthorizer {
     super(scope, id, props);
 
     if ((props.resultsCacheTtl === undefined || props.resultsCacheTtl.toSeconds() !== 0) && props.identitySources.length === 0) {
-      throw new Error(`At least one Identity Source is required for a REQUEST-based Lambda authorizer if caching is enabled.`);
+      throw new Error('At least one Identity Source is required for a REQUEST-based Lambda authorizer if caching is enabled.');
     }
 
-    const restApiId = Lazy.stringValue({ produce: () => this.restApiId });
+    const restApiId = this.lazyRestApiId();
     const resource = new CfnAuthorizer(this, 'Resource', {
       name: props.authorizerName ?? this.node.uniqueId,
       restApiId,

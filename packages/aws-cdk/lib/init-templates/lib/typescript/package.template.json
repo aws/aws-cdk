@@ -10,10 +10,10 @@
   },
   "devDependencies": {
     "@aws-cdk/assert": "%cdk-version%",
-    "@types/jest": "^24.0.22",
+    "@types/jest": "^25.2.1",
     "@types/node": "10.17.5",
-    "jest": "^24.9.0",
-    "ts-jest": "^24.1.0",
+    "jest": "^25.3.0",
+    "ts-jest": "^25.3.1",
     "typescript": "~3.7.2"
   },
   "peerDependencies": {

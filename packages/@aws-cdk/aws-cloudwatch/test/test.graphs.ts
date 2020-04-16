@@ -1,6 +1,6 @@
 import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { Alarm, AlarmWidget, GraphWidget, Metric, Shading, SingleValueWidget } from '../lib';
+import { Alarm, AlarmWidget, Color, GraphWidget, Metric, Shading, SingleValueWidget } from '../lib';
 
 export = {
   'add stacked property to graphs'(test: Test) {
@@ -194,7 +194,8 @@ export = {
     const metric = new Metric({ namespace: 'CDK', metricName: 'Test' });
 
     const alarm = metric.createAlarm(stack, 'Alarm', {
-      evaluationPeriods: 2,
+      evaluationPeriods: 7,
+      datapointsToAlarm: 2,
       threshold: 1000
     });
 
@@ -219,7 +220,7 @@ export = {
           horizontal: [{
             yAxis: 'right',
             value: 1000,
-            label: 'Test >= 1000 for 2 datapoints within 10 minutes',
+            label: 'Test >= 1000 for 2 datapoints within 35 minutes',
           }]
         },
         yAxis: {}
@@ -241,11 +242,11 @@ export = {
         new Metric({ namespace: 'CDK', metricName: 'Tast' })
       ],
       leftYAxis: ({
-        label: "Left yAxis",
+        label: 'Left yAxis',
         max: 100
       }),
       rightYAxis: ({
-        label: "Right yAxis",
+        label: 'Right yAxis',
         min: 10,
         showUnits: false
       })
@@ -265,8 +266,8 @@ export = {
           ['CDK', 'Tast', { yAxis: 'right' }]
         ],
         yAxis: {
-          left: { label: "Left yAxis", max: 100 },
-          right: { label: "Right yAxis", min: 10, showUnits: false } }
+          left: { label: 'Left yAxis', max: 100 },
+          right: { label: 'Right yAxis', min: 10, showUnits: false } }
       }
     }]);
 
@@ -338,9 +339,29 @@ export = {
     // test.ok(widget.toJson()[0].properties.metrics[0].visible === false);
     test.deepEqual(
       stack.resolve(widget.toJson())[0].properties.metrics[0],
-      ["CDK", "Test", { visible: false }]
+      ['CDK', 'Test', { visible: false }]
     );
 
+    test.done();
+  },
+
+  'GraphColor is correctly converted into the correct hexcode'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const metric = new Metric({ namespace: 'CDK', metricName: 'Test' });
+
+    // WHEN
+    const widget = new GraphWidget({
+      left: [metric.with({
+        color: Color.BLUE,
+      })],
+      leftAnnotations: [
+        { color: Color.RED, value: 100, },
+      ]
+    });
+
+    test.deepEqual(stack.resolve(widget.toJson())[0].properties.metrics[0], [ 'CDK', 'Test', { color: '#1f77b4' } ]);
+    test.deepEqual(stack.resolve(widget.toJson())[0].properties.annotations.horizontal[0], { yAxis: 'left', value: 100, color: '#d62728' });
     test.done();
   },
 };

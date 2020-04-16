@@ -28,6 +28,13 @@ rules:
   # Require use of the `import { foo } from 'bar';` form instead of `import foo = require('bar');`
   '@typescript-eslint/no-require-imports':
     - error
+  '@typescript-eslint/indent':
+    - error
+    - 2
+  'quotes':
+    - error
+    - single
+    - { avoidEscape: true }
 
   # Require all imported dependencies are actually declared in package.json
   'import/no-extraneous-dependencies':

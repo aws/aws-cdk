@@ -8,7 +8,7 @@ test('quote the word "ON"', () => {
 
   // tslint:disable-next-line:no-console
   const output = toYAML({
-    notABoolean: "ON"
+    notABoolean: 'ON'
   });
 
   expect(output.trim()).toEqual(`notABoolean: ${q}ON${q}`);
@@ -16,7 +16,7 @@ test('quote the word "ON"', () => {
 
 test('quote number-like strings with a leading 0', () => {
   const output = toYAML({
-    leadingZero: "012345"
+    leadingZero: '012345'
   });
 
   expect(output.trim()).toEqual(`leadingZero: ${q}012345${q}`);
@@ -32,7 +32,7 @@ test('do not quote octal numbers that arent really octal', () => {
   // leading 0) if it's unquoted, so that's the behavior we're testing for.
 
   const output = toYAML({
-    leadingZero: "0123456789"
+    leadingZero: '0123456789'
   });
 
   expect(output.trim()).toEqual(`leadingZero: ${q}0123456789${q}`);

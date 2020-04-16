@@ -28,8 +28,8 @@ test('use ALB as record target', () => {
   // THEN
   expect(stack).toHaveResource('AWS::Route53::RecordSet', {
     AliasTarget: {
-      DNSName: { "Fn::GetAtt": [ "LB8A12904C", "DNSName" ] },
-      HostedZoneId: { "Fn::GetAtt": [ "LB8A12904C", "CanonicalHostedZoneID" ] }
+      DNSName: { 'Fn::GetAtt': [ 'LB8A12904C', 'DNSName' ] },
+      HostedZoneId: { 'Fn::GetAtt': [ 'LB8A12904C', 'CanonicalHostedZoneID' ] }
     },
   });
 });

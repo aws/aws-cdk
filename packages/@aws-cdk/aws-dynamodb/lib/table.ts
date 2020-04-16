@@ -24,9 +24,9 @@ const READ_DATA_ACTIONS = [
 ];
 
 const READ_STREAM_DATA_ACTIONS = [
-  "dynamodb:DescribeStream",
-  "dynamodb:GetRecords",
-  "dynamodb:GetShardIterator",
+  'dynamodb:DescribeStream',
+  'dynamodb:GetRecords',
+  'dynamodb:GetShardIterator',
 ];
 
 const WRITE_DATA_ACTIONS = [
@@ -598,7 +598,7 @@ export class Table extends TableBase {
       if (!maybeTableName) { throw new Error('ARN for DynamoDB table must be in the form: ...'); }
       name = maybeTableName;
     } else {
-      if (attrs.tableArn) { throw new Error("Only one of tableArn or tableName can be provided"); }
+      if (attrs.tableArn) { throw new Error('Only one of tableArn or tableName can be provided'); }
       name = attrs.tableName;
       arn = stack.formatArn({
         service: 'dynamodb',
@@ -632,8 +632,8 @@ export class Table extends TableBase {
   private readonly globalSecondaryIndexes = new Array<CfnTable.GlobalSecondaryIndexProperty>();
   private readonly localSecondaryIndexes = new Array<CfnTable.LocalSecondaryIndexProperty>();
 
-  private readonly secondaryIndexNames: string[] = [];
-  private readonly nonKeyAttributes: string[] = [];
+  private readonly secondaryIndexNames = new Set<string>();
+  private readonly nonKeyAttributes = new Set<string>();
 
   private readonly tablePartitionKey: Attribute;
   private readonly tableSortKey?: Attribute;
@@ -723,7 +723,7 @@ export class Table extends TableBase {
     const gsiKeySchema = this.buildIndexKeySchema(props.partitionKey, props.sortKey);
     const gsiProjection = this.buildIndexProjection(props);
 
-    this.secondaryIndexNames.push(props.indexName);
+    this.secondaryIndexNames.add(props.indexName);
     this.globalSecondaryIndexes.push({
       indexName: props.indexName,
       keySchema: gsiKeySchema,
@@ -754,7 +754,7 @@ export class Table extends TableBase {
     const lsiKeySchema = this.buildIndexKeySchema(this.tablePartitionKey, props.sortKey);
     const lsiProjection = this.buildIndexProjection(props);
 
-    this.secondaryIndexNames.push(props.indexName);
+    this.secondaryIndexNames.add(props.indexName);
     this.localSecondaryIndexes.push({
       indexName: props.indexName,
       keySchema: lsiKeySchema,
@@ -895,11 +895,11 @@ export class Table extends TableBase {
    * @param indexName a name of global or local secondary index
    */
   private validateIndexName(indexName: string) {
-    if (this.secondaryIndexNames.includes(indexName)) {
+    if (this.secondaryIndexNames.has(indexName)) {
       // a duplicate index name causes validation exception, status code 400, while trying to create CFN stack
       throw new Error(`a duplicate index name, ${indexName}, is not allowed`);
     }
-    this.secondaryIndexNames.push(indexName);
+    this.secondaryIndexNames.add(indexName);
   }
 
   /**
@@ -908,21 +908,13 @@ export class Table extends TableBase {
    * @param nonKeyAttributes a list of non-key attribute names
    */
   private validateNonKeyAttributes(nonKeyAttributes: string[]) {
-    if (this.nonKeyAttributes.length + nonKeyAttributes.length > 20) {
+    if (this.nonKeyAttributes.size + nonKeyAttributes.length > 20) {
       // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Limits.html#limits-secondary-indexes
       throw new RangeError('a maximum number of nonKeyAttributes across all of secondary indexes is 20');
     }
 
     // store all non-key attributes
-    this.nonKeyAttributes.push(...nonKeyAttributes);
-
-    // throw error if key attribute is part of non-key attributes
-    this.attributeDefinitions.forEach(keyAttribute => {
-      if (typeof keyAttribute.attributeName === 'string' && this.nonKeyAttributes.includes(keyAttribute.attributeName)) {
-        throw new Error(`a key attribute, ${keyAttribute.attributeName}, is part of a list of non-key attributes, ${this.nonKeyAttributes}` +
-          ', which is not allowed since all key attributes are added automatically and this configuration causes stack creation failure');
-      }
-    });
+    nonKeyAttributes.forEach(att => this.nonKeyAttributes.add(att));
   }
 
   private buildIndexKeySchema(partitionKey: Attribute, sortKey?: Attribute): CfnTable.KeySchemaProperty[] {
@@ -983,8 +975,7 @@ export class Table extends TableBase {
    * @param attribute the key attribute of table or secondary index
    */
   private registerAttribute(attribute: Attribute) {
-    const name = attribute.name;
-    const type = attribute.type;
+    const { name, type } = attribute;
     const existingDef = this.attributeDefinitions.find(def => def.attributeName === name);
     if (existingDef && existingDef.attributeType !== type) {
       throw new Error(`Unable to specify ${name} as ${type} because it was already defined as ${existingDef.attributeType}`);

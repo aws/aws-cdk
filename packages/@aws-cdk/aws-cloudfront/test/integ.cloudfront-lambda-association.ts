@@ -33,6 +33,6 @@ new cloudfront.CloudFrontWebDistribution(stack, 'MyDistribution', {
       }]}]
     }
   ]
- });
+});
 
 app.synth();

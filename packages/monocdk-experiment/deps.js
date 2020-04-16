@@ -31,8 +31,6 @@ for (const dir of modules) {
     continue;
   }
 
-
-
   if (!exists) {
     console.error(`missing dependency: ${meta.name}`);
     errors = true;

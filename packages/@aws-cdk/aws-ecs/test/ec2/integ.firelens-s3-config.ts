@@ -21,7 +21,7 @@ const asset = new s3_assets.Asset(stack, 'SampleAsset', {
 });
 
 // firelens log router with custom s3 configuration file
-taskDefinition.addFirelensLogRouter("log_router", {
+taskDefinition.addFirelensLogRouter('log_router', {
   image: ecs.obtainDefaultFluentBitECRImage(taskDefinition, undefined, '2.1.0'),
   firelensConfig: {
     type: ecs.FirelensLogRouterType.FLUENTBIT,

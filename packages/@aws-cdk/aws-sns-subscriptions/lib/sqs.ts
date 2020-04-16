@@ -29,7 +29,7 @@ export class SqsSubscription implements sns.ITopicSubscription {
     // Create subscription under *consuming* construct to make sure it ends up
     // in the correct stack in cases of cross-stack subscriptions.
     if (!Construct.isConstruct(this.queue)) {
-      throw new Error(`The supplied Queue object must be an instance of Construct`);
+      throw new Error('The supplied Queue object must be an instance of Construct');
     }
 
     // add a statement to the queue resource policy which allows this topic

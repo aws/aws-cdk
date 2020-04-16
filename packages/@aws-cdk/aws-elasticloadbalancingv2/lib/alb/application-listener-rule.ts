@@ -179,7 +179,7 @@ export class ApplicationListenerRule extends cdk.Construct {
 
     const hasPathPatterns = props.pathPatterns || props.pathPattern;
     if (!props.hostHeader && !hasPathPatterns) {
-      throw new Error(`At least one of 'hostHeader', 'pathPattern' or 'pathPatterns' is required when defining a load balancing rule.`);
+      throw new Error('At least one of \'hostHeader\', \'pathPattern\' or \'pathPatterns\' is required when defining a load balancing rule.');
     }
 
     const possibleActions: Array<keyof ApplicationListenerRuleProps> = ['targetGroups', 'fixedResponse', 'redirectResponse'];

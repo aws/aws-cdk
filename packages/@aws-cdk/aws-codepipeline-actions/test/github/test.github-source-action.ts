@@ -1,7 +1,7 @@
-import { expect, haveResourceLike, SynthUtils } from "@aws-cdk/assert";
+import { expect, haveResourceLike, SynthUtils } from '@aws-cdk/assert';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
-import { SecretValue, Stack } from "@aws-cdk/core";
+import { SecretValue, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as cpactions from '../../lib';
 
@@ -43,17 +43,17 @@ export = {
       });
 
       expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
-        "Stages": [
+        'Stages': [
           {
-            "Name": "Source",
+            'Name': 'Source',
           },
           {
-            "Name": "Build",
-            "Actions": [
+            'Name': 'Build',
+            'Actions': [
               {
-                "Name": "Build",
-                "Configuration": {
-                  "EnvironmentVariables": '[{"name":"CommitUrl","type":"PLAINTEXT","value":"#{Source_Source_NS.CommitUrl}"}]',
+                'Name': 'Build',
+                'Configuration': {
+                  'EnvironmentVariables': '[{"name":"CommitUrl","type":"PLAINTEXT","value":"#{Source_Source_NS.CommitUrl}"}]',
                 },
               },
             ],
@@ -97,13 +97,13 @@ export = {
       });
 
       expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
-        "Stages": [
+        'Stages': [
           {
-            "Name": "Source",
-            "Actions": [
+            'Name': 'Source',
+            'Actions': [
               {
-                "Name": "Source",
-                "Namespace": "MyNamespace",
+                'Name': 'Source',
+                'Namespace': 'MyNamespace',
               },
             ],
           },

@@ -12,7 +12,7 @@ console.log = jest.fn();
 cfnResponse.includeStackTraces = false;
 
 const MOCK_PHYSICAL_ID = 'mock-physical-resource-id';
-const MOCK_PROPS = { Name: "Value", List: ["1", "2", "3"], ServiceToken: 'bla' };
+const MOCK_PROPS = { Name: 'Value', List: ['1', '2', '3'], ServiceToken: 'bla' };
 const MOCK_ATTRS = { MyAttribute: 'my-mock-attribute' };
 
 outbound.httpRequest = mocks.httpRequestMock;
@@ -198,7 +198,7 @@ test('isComplete always returns "false" and then a timeout occurs', async () => 
   });
 
   // THEN
-  expectCloudFormationFailed(`Operation timed out`);
+  expectCloudFormationFailed('Operation timed out');
 });
 
 test('isComplete: "Data" is not allowed if InComplete is "False"', async () => {
@@ -212,7 +212,7 @@ test('isComplete: "Data" is not allowed if InComplete is "False"', async () => {
     PhysicalResourceId: MOCK_PHYSICAL_ID
   });
 
-  expectCloudFormationFailed(`"Data" is not allowed if "IsComplete" is "False"`);
+  expectCloudFormationFailed('"Data" is not allowed if "IsComplete" is "False"');
 });
 
 test('if there is no user-defined "isComplete", the waiter will not be triggered or needed', async () => {

@@ -1,6 +1,6 @@
-import { CfnResource } from "./cfn-resource";
-import { Stack } from "./stack";
-import { findLastCommonElement, pathToTopLevelStack as pathToRoot } from "./util";
+import { CfnResource } from './cfn-resource';
+import { Stack } from './stack';
+import { findLastCommonElement, pathToTopLevelStack as pathToRoot } from './util';
 
 type Element = CfnResource | Stack;
 
@@ -62,7 +62,7 @@ export function addDependency<T extends Element>(source: T, target: T, reason?: 
   // `source` is a direct or indirect nested stack of `target`, and this is not
   // possible (nested stacks cannot depend on their parents).
   if (commonStack === target) {
-     throw new Error(`Nested stack '${sourceStack.node.path}' cannot depend on a parent stack '${targetStack.node.path}'`);
+    throw new Error(`Nested stack '${sourceStack.node.path}' cannot depend on a parent stack '${targetStack.node.path}'`);
   }
 
   // we have a common stack from which we can reach both `source` and `target`

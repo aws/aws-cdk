@@ -8,6 +8,11 @@ import { PolicyStatement } from './policy-statement';
 import { ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
 import { AttachedPolicies, undefinedIfEmpty } from './util';
 
+/**
+ * Represents an IAM user
+ *
+ * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users.html
+ */
 export interface IUser extends IIdentity {
   /**
    * The user's name
@@ -27,6 +32,9 @@ export interface IUser extends IIdentity {
   addToGroup(group: IGroup): void;
 }
 
+/**
+ * Properties for defining an IAM user
+ */
 export interface UserProps {
   /**
    * Groups to add this user to. You can also use `addToGroup` to add this
@@ -115,7 +123,11 @@ export interface UserProps {
  */
 export class User extends Resource implements IIdentity, IUser {
   /**
-   * Import an existing user given a username
+   * Import an existing user given a username.
+   *
+   * @param scope construct scope
+   * @param id construct id
+   * @param userName the username of the existing user to import
    */
   public static fromUserName(scope: Construct, id: string, userName: string): IUser {
     const arn = Stack.of(scope).formatArn({

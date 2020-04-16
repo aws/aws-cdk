@@ -8,26 +8,26 @@ import { IDistribution } from './distribution';
 import { IOriginAccessIdentity } from './origin_access_identity';
 
 export enum HttpVersion {
-  HTTP1_1 = "http1.1",
-  HTTP2 = "http2"
+  HTTP1_1 = 'http1.1',
+  HTTP2 = 'http2'
 }
 
 /**
  * The price class determines how many edge locations CloudFront will use for your distribution.
  */
 export enum PriceClass {
-  PRICE_CLASS_100 = "PriceClass_100",
-  PRICE_CLASS_200 = "PriceClass_200",
-  PRICE_CLASS_ALL = "PriceClass_All"
+  PRICE_CLASS_100 = 'PriceClass_100',
+  PRICE_CLASS_200 = 'PriceClass_200',
+  PRICE_CLASS_ALL = 'PriceClass_All'
 }
 
 /**
  * How HTTPs should be handled with your distribution.
  */
 export enum ViewerProtocolPolicy {
-  HTTPS_ONLY = "https-only",
-  REDIRECT_TO_HTTPS = "redirect-to-https",
-  ALLOW_ALL = "allow-all"
+  HTTPS_ONLY = 'https-only',
+  REDIRECT_TO_HTTPS = 'redirect-to-https',
+  ALLOW_ALL = 'allow-all'
 }
 
 /**
@@ -89,8 +89,8 @@ export interface AliasConfiguration {
  *
  */
 export enum SSLMethod {
-  SNI = "sni-only",
-  VIP = "vip"
+  SNI = 'sni-only',
+  VIP = 'vip'
 }
 
 /**
@@ -98,11 +98,11 @@ export enum SSLMethod {
  * CloudFront serves your objects only to browsers or devices that support at least the SSL version that you specify.
  */
 export enum SecurityPolicyProtocol {
-  SSL_V3 = "SSLv3",
-  TLS_V1 = "TLSv1",
-  TLS_V1_2016 = "TLSv1_2016",
-  TLS_V1_1_2016 = "TLSv1.1_2016",
-  TLS_V1_2_2018 = "TLSv1.2_2018"
+  SSL_V3 = 'SSLv3',
+  TLS_V1 = 'TLSv1',
+  TLS_V1_2016 = 'TLSv1_2016',
+  TLS_V1_1_2016 = 'TLSv1.1_2016',
+  TLS_V1_2_2018 = 'TLSv1.2_2018'
 }
 
 /**
@@ -225,16 +225,16 @@ export interface CustomOriginConfig {
 }
 
 export enum OriginSslPolicy {
-  SSL_V3 = "SSLv3",
-  TLS_V1 = "TLSv1",
-  TLS_V1_1 = "TLSv1.1",
-  TLS_V1_2 = "TLSv1.2",
+  SSL_V3 = 'SSLv3',
+  TLS_V1 = 'TLSv1',
+  TLS_V1_1 = 'TLSv1.1',
+  TLS_V1_2 = 'TLSv1.2',
 }
 
 export enum OriginProtocolPolicy {
-  HTTP_ONLY = "http-only",
-  MATCH_VIEWER = "match-viewer",
-  HTTPS_ONLY = "https-only",
+  HTTP_ONLY = 'http-only',
+  MATCH_VIEWER = 'match-viewer',
+  HTTPS_ONLY = 'https-only',
 }
 
 /**
@@ -258,17 +258,17 @@ export interface S3OriginConfig {
  * An enum for the supported methods to a CloudFront distribution.
  */
 export enum CloudFrontAllowedMethods {
-  GET_HEAD = "GH",
-  GET_HEAD_OPTIONS = "GHO",
-  ALL = "ALL"
+  GET_HEAD = 'GH',
+  GET_HEAD_OPTIONS = 'GHO',
+  ALL = 'ALL'
 }
 
 /**
  * Enums for the methods CloudFront can cache.
  */
 export enum CloudFrontAllowedCachedMethods {
-  GET_HEAD = "GH",
-  GET_HEAD_OPTIONS = "GHO",
+  GET_HEAD = 'GH',
+  GET_HEAD_OPTIONS = 'GHO',
 }
 
 /**
@@ -381,20 +381,20 @@ export enum LambdaEdgeEventType {
    * The origin-request specifies the request to the
    * origin location (e.g. S3)
    */
-  ORIGIN_REQUEST = "origin-request",
+  ORIGIN_REQUEST = 'origin-request',
   /**
    * The origin-response specifies the response from the
    * origin location (e.g. S3)
    */
-  ORIGIN_RESPONSE = "origin-response",
+  ORIGIN_RESPONSE = 'origin-response',
   /**
    * The viewer-request specifies the incoming request
    */
-  VIEWER_REQUEST = "viewer-request",
+  VIEWER_REQUEST = 'viewer-request',
   /**
    * The viewer-response specifies the outgoing reponse
    */
-  VIEWER_RESPONSE = "viewer-response",
+  VIEWER_RESPONSE = 'viewer-response',
 }
 
 export interface ViewerCertificateOptions {
@@ -437,9 +437,9 @@ export class ViewerCertificate {
    */
   public static fromAcmCertificate(certificate: certificatemanager.ICertificate, options: ViewerCertificateOptions = {}) {
     const {
-       sslMethod: sslSupportMethod = SSLMethod.SNI,
-       securityPolicy: minimumProtocolVersion,
-       aliases,
+      sslMethod: sslSupportMethod = SSLMethod.SNI,
+      securityPolicy: minimumProtocolVersion,
+      aliases,
     } = options;
 
     return new ViewerCertificate({
@@ -638,9 +638,9 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
    * Maps our methods to the string arrays they are
    */
   private readonly METHOD_LOOKUP_MAP = {
-    GH: ["GET", "HEAD"],
-    GHO: ["GET", "HEAD", "OPTIONS"],
-    ALL: ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"],
+    GH: ['GET', 'HEAD'],
+    GHO: ['GET', 'HEAD', 'OPTIONS'],
+    ALL: ['DELETE', 'GET', 'HEAD', 'OPTIONS', 'PATCH', 'POST', 'PUT'],
   };
 
   /**
@@ -660,7 +660,7 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
     let distributionConfig: CfnDistribution.DistributionConfigProperty = {
       comment: props.comment,
       enabled: true,
-      defaultRootObject: props.defaultRootObject !== undefined ? props.defaultRootObject : "index.html",
+      defaultRootObject: props.defaultRootObject !== undefined ? props.defaultRootObject : 'index.html',
       httpVersion: props.httpVersion || HttpVersion.HTTP2,
       priceClass: props.priceClass || PriceClass.PRICE_CLASS_100,
       ipv6Enabled: (props.enableIpV6 !== undefined) ? props.enableIpV6 : true,
@@ -677,10 +677,10 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
     for (const originConfig of props.originConfigs) {
       const originId = `origin${originIndex}`;
       if (!originConfig.s3OriginSource && !originConfig.customOriginSource) {
-        throw new Error("There must be at least one origin source - either an s3OriginSource or a customOriginSource");
+        throw new Error('There must be at least one origin source - either an s3OriginSource or a customOriginSource');
       }
       if (originConfig.customOriginSource && originConfig.s3OriginSource) {
-        throw new Error("There cannot be both an s3OriginSource and a customOriginSource in the same SourceConfiguration.");
+        throw new Error('There cannot be both an s3OriginSource and a customOriginSource in the same SourceConfiguration.');
       }
 
       const originHeaders: CfnDistribution.OriginCustomHeaderProperty[] = [];
@@ -704,8 +704,8 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
           s3OriginConfig = {
             originAccessIdentity:
               `origin-access-identity/cloudfront/${
-              originConfig.s3OriginSource.originAccessIdentity.originAccessIdentityName
-            }`
+                originConfig.s3OriginSource.originAccessIdentity.originAccessIdentityName
+              }`
           };
         } else {
           s3OriginConfig = {};
@@ -754,7 +754,7 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
 
     const defaultBehaviors = behaviors.filter(behavior => behavior.isDefaultBehavior);
     if (defaultBehaviors.length !== 1) {
-      throw new Error("There can only be one default behavior across all sources. [ One default behavior per distribution ].");
+      throw new Error('There can only be one default behavior across all sources. [ One default behavior per distribution ].');
     }
 
     distributionConfig = { ...distributionConfig, defaultCacheBehavior: this.toBehavior(defaultBehaviors[0], props.viewerProtocolPolicy) };
@@ -762,7 +762,7 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
     const otherBehaviors: CfnDistribution.CacheBehaviorProperty[] = [];
     for (const behavior of behaviors.filter(b => !b.isDefaultBehavior)) {
       if (!behavior.pathPattern) {
-        throw new Error("pathPattern is required for all non-default behaviors");
+        throw new Error('pathPattern is required for all non-default behaviors');
       }
       otherBehaviors.push(this.toBehavior(behavior, props.viewerProtocolPolicy) as CfnDistribution.CacheBehaviorProperty);
     }
@@ -797,7 +797,7 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
 
         if (validProtocols.indexOf(minimumProtocolVersion.toString()) === -1) {
           // tslint:disable-next-line:max-line-length
-          throw new Error(`${minimumProtocolVersion} is not compabtible with sslMethod ${sslSupportMethod}.\n\tValid Protocols are: ${validProtocols.join(", ")}`);
+          throw new Error(`${minimumProtocolVersion} is not compabtible with sslMethod ${sslSupportMethod}.\n\tValid Protocols are: ${validProtocols.join(', ')}`);
         }
       }
     } else {
@@ -807,7 +807,7 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
     }
 
     if (props.loggingConfig) {
-      this.loggingBucket = props.loggingConfig.bucket || new s3.Bucket(this, `LoggingBucket`);
+      this.loggingBucket = props.loggingConfig.bucket || new s3.Bucket(this, 'LoggingBucket');
       distributionConfig = {
         ...distributionConfig,
         logging: {
@@ -830,7 +830,7 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
       cachedMethods: this.METHOD_LOOKUP_MAP[input.cachedMethods || CloudFrontAllowedCachedMethods.GET_HEAD],
       compress: input.compress !== false,
       defaultTtl: input.defaultTtl && input.defaultTtl.toSeconds(),
-      forwardedValues: input.forwardedValues || { queryString: false, cookies: { forward: "none" } },
+      forwardedValues: input.forwardedValues || { queryString: false, cookies: { forward: 'none' } },
       maxTtl: input.maxTtl && input.maxTtl.toSeconds(),
       minTtl: input.minTtl && input.minTtl.toSeconds(),
       trustedSigners: input.trustedSigners,

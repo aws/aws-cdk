@@ -379,8 +379,8 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends Construct {
   private createLogDriver(enableLoggingProp?: boolean, logDriverProp?: LogDriver): LogDriver | undefined {
     const enableLogging = enableLoggingProp !== undefined ? enableLoggingProp : true;
     const logDriver = logDriverProp !== undefined
-                        ? logDriverProp : enableLogging
-                          ? this.createAWSLogDriver(this.node.id) : undefined;
+      ? logDriverProp : enableLogging
+        ? this.createAWSLogDriver(this.node.id) : undefined;
     return logDriver;
   }
 

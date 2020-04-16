@@ -1,4 +1,4 @@
-import { Construct } from './construct';
+import { Construct } from './construct-compat';
 
 // ----------------------------------------------------------------------
 // PROPERTY MAPPERS
@@ -40,7 +40,7 @@ export function dateToCloudFormation(x?: Date): any {
  */
 function pad(x: number) {
   if (x < 10) {
-    return "0" + x.toString();
+    return '0' + x.toString();
   }
   return x.toString();
 }
@@ -316,7 +316,7 @@ export function propertyValidator(propName: string, validator: Validator): Valid
  */
 export function requiredValidator(x: any) {
   if (x == null) {
-    return new ValidationResult(`required but missing`);
+    return new ValidationResult('required but missing');
   }
   return VALIDATION_SUCCESS;
 }

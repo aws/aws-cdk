@@ -1,7 +1,7 @@
-import { IBucket } from "@aws-cdk/aws-s3";
-import { Aws, Fn } from "@aws-cdk/core";
-import { CfnProject } from "./codebuild.generated";
-import { IProject } from "./project";
+import { IBucket } from '@aws-cdk/aws-s3';
+import { Aws, Fn } from '@aws-cdk/core';
+import { CfnProject } from './codebuild.generated';
+import { IProject } from './project';
 
 export interface BucketCacheOptions {
   /**

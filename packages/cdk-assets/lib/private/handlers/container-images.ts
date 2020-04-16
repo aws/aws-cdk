@@ -1,9 +1,9 @@
 import * as path from 'path';
 import { DockerImageManifestEntry } from '../../asset-manifest';
 import { EventType } from '../../progress';
-import { IAssetHandler, IHandlerHost } from "../asset-handler";
-import { Docker } from "../docker";
-import { replaceAwsPlaceholders } from "../placeholders";
+import { IAssetHandler, IHandlerHost } from '../asset-handler';
+import { Docker } from '../docker';
+import { replaceAwsPlaceholders } from '../placeholders';
 
 export class ContainerImageAssetHandler implements IAssetHandler {
   private readonly localTagName: string;
@@ -55,7 +55,7 @@ export class ContainerImageAssetHandler implements IAssetHandler {
 
     const source = this.asset.source;
 
-    const fullPath = path.join(this.workDir, source.directory);
+    const fullPath = path.resolve(this.workDir, source.directory);
     this.host.emitMessage(EventType.BUILD, `Building Docker image at ${fullPath}`);
 
     await this.docker.build({

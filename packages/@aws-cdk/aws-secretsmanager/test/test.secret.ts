@@ -93,73 +93,73 @@ export = {
       KeyPolicy: {
         Statement: [{
           Action: [
-            "kms:Create*",
-            "kms:Describe*",
-            "kms:Enable*",
-            "kms:List*",
-            "kms:Put*",
-            "kms:Update*",
-            "kms:Revoke*",
-            "kms:Disable*",
-            "kms:Get*",
-            "kms:Delete*",
-            "kms:ScheduleKeyDeletion",
-            "kms:CancelKeyDeletion",
-            "kms:GenerateDataKey",
-            "kms:TagResource",
-            "kms:UntagResource"
+            'kms:Create*',
+            'kms:Describe*',
+            'kms:Enable*',
+            'kms:List*',
+            'kms:Put*',
+            'kms:Update*',
+            'kms:Revoke*',
+            'kms:Disable*',
+            'kms:Get*',
+            'kms:Delete*',
+            'kms:ScheduleKeyDeletion',
+            'kms:CancelKeyDeletion',
+            'kms:GenerateDataKey',
+            'kms:TagResource',
+            'kms:UntagResource'
           ],
-          Effect: "Allow",
+          Effect: 'Allow',
           Principal: {
             AWS: {
-              "Fn::Join": [
-                "",
+              'Fn::Join': [
+                '',
                 [
-                  "arn:",
+                  'arn:',
                   {
-                    Ref: "AWS::Partition"
+                    Ref: 'AWS::Partition'
                   },
-                  ":iam::",
+                  ':iam::',
                   {
-                    Ref: "AWS::AccountId"
+                    Ref: 'AWS::AccountId'
                   },
-                  ":root"
+                  ':root'
                 ]
               ]
             }
           },
-          Resource: "*"
+          Resource: '*'
         }, {
-          Action: "kms:Decrypt",
+          Action: 'kms:Decrypt',
           Condition: {
             StringEquals: {
-              "kms:ViaService": {
-                "Fn::Join": [
-                  "",
+              'kms:ViaService': {
+                'Fn::Join': [
+                  '',
                   [
-                    "secretsmanager.",
+                    'secretsmanager.',
                     {
-                      Ref: "AWS::Region"
+                      Ref: 'AWS::Region'
                     },
-                    ".amazonaws.com"
+                    '.amazonaws.com'
                   ]
                 ]
               }
             }
           },
-          Effect: "Allow",
+          Effect: 'Allow',
           Principal: {
             AWS: {
-              "Fn::GetAtt": [
-                "Role1ABCC5F0",
-                "Arn"
+              'Fn::GetAtt': [
+                'Role1ABCC5F0',
+                'Arn'
               ]
             }
           },
-          Resource: "*"
+          Resource: '*'
         }
-      ],
-      Version: "2012-10-17"
+        ],
+        Version: '2012-10-17'
       }
     }));
     test.done();
@@ -195,73 +195,73 @@ export = {
       KeyPolicy: {
         Statement: [{
           Action: [
-            "kms:Create*",
-            "kms:Describe*",
-            "kms:Enable*",
-            "kms:List*",
-            "kms:Put*",
-            "kms:Update*",
-            "kms:Revoke*",
-            "kms:Disable*",
-            "kms:Get*",
-            "kms:Delete*",
-            "kms:ScheduleKeyDeletion",
-            "kms:CancelKeyDeletion",
-            "kms:GenerateDataKey",
-            "kms:TagResource",
-            "kms:UntagResource"
+            'kms:Create*',
+            'kms:Describe*',
+            'kms:Enable*',
+            'kms:List*',
+            'kms:Put*',
+            'kms:Update*',
+            'kms:Revoke*',
+            'kms:Disable*',
+            'kms:Get*',
+            'kms:Delete*',
+            'kms:ScheduleKeyDeletion',
+            'kms:CancelKeyDeletion',
+            'kms:GenerateDataKey',
+            'kms:TagResource',
+            'kms:UntagResource'
           ],
-          Effect: "Allow",
+          Effect: 'Allow',
           Principal: {
             AWS: {
-              "Fn::Join": [
-                "",
+              'Fn::Join': [
+                '',
                 [
-                  "arn:",
+                  'arn:',
                   {
-                    Ref: "AWS::Partition"
+                    Ref: 'AWS::Partition'
                   },
-                  ":iam::",
+                  ':iam::',
                   {
-                    Ref: "AWS::AccountId"
+                    Ref: 'AWS::AccountId'
                   },
-                  ":root"
+                  ':root'
                 ]
               ]
             }
           },
-          Resource: "*"
+          Resource: '*'
         }, {
-          Action: "kms:Decrypt",
+          Action: 'kms:Decrypt',
           Condition: {
             StringEquals: {
-              "kms:ViaService": {
-                "Fn::Join": [
-                  "",
+              'kms:ViaService': {
+                'Fn::Join': [
+                  '',
                   [
-                    "secretsmanager.",
+                    'secretsmanager.',
                     {
-                      Ref: "AWS::Region"
+                      Ref: 'AWS::Region'
                     },
-                    ".amazonaws.com"
+                    '.amazonaws.com'
                   ]
                 ]
               }
             }
           },
-          Effect: "Allow",
+          Effect: 'Allow',
           Principal: {
             AWS: {
-              "Fn::GetAtt": [
-                "Role1ABCC5F0",
-                "Arn"
+              'Fn::GetAtt': [
+                'Role1ABCC5F0',
+                'Arn'
               ]
             }
           },
-          Resource: "*"
+          Resource: '*'
         }
-      ],
-      Version: "2012-10-17"
+        ],
+        Version: '2012-10-17'
       }
     }));
     test.done();
