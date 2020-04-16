@@ -1,7 +1,7 @@
 import '@aws-cdk/assert/jest';
 import { Code, Function as lambdaFn, Runtime } from '@aws-cdk/aws-lambda';
 import { Duration, Stack } from '@aws-cdk/core';
-import { StateMachine } from '../../lib/provider-framework/state-machine';
+import { WaiterStateMachine } from '../../lib/provider-framework/waiter-state-machine';
 
 describe('state machine', () => {
   test('contains the needed resources', () => {
@@ -22,7 +22,7 @@ describe('state machine', () => {
     const backoffRate = 5;
 
     // WHEN
-    new StateMachine(stack, 'statemachine', {
+    new WaiterStateMachine(stack, 'statemachine', {
       isCompleteHandler,
       timeoutHandler,
       backoffRate,

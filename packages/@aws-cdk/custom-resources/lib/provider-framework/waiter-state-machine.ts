@@ -1,6 +1,6 @@
 import { Grant, IGrantable, PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { IFunction } from '@aws-cdk/aws-lambda';
-import { CfnResource, Construct, Duration } from '@aws-cdk/core';
+import { CfnResource, Construct, Duration, Stack } from '@aws-cdk/core';
 
 export interface StateMachineProps {
   readonly isCompleteHandler: IFunction;
@@ -18,7 +18,7 @@ export interface StateMachineProps {
  * A very simple StateMachine construct highly customized to the provider framework.
  * This is so that this package does not need to depend on aws-stepfunctions module.
  */
-export class StateMachine extends Construct {
+export class WaiterStateMachine extends Construct {
   public readonly stateMachineArn: string;
 
   constructor(scope: Construct, id: string, props: StateMachineProps) {
@@ -32,7 +32,7 @@ export class StateMachine extends Construct {
       resources: [ props.isCompleteHandler.functionArn, props.timeoutHandler.functionArn ],
     }));
 
-    const definition = JSON.stringify({
+    const definition = Stack.of(this).toJsonString({
       StartAt: 'framework-isComplete-task',
       States: {
         'framework-isComplete-task': {
@@ -65,7 +65,7 @@ export class StateMachine extends Construct {
         RoleArn: role.roleArn,
       }
     });
-    resource.addDependsOn(role.node.defaultChild as CfnResource);
+    resource.node.addDependency(role);
 
     this.stateMachineArn = resource.ref;
   }

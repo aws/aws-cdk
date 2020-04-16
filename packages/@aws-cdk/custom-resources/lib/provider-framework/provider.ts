@@ -3,8 +3,8 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import { Construct, Duration } from '@aws-cdk/core';
 import * as path from 'path';
 import * as consts from './runtime/consts';
-import { StateMachine } from './state-machine';
 import { calculateRetryPolicy } from './util';
+import { WaiterStateMachine } from './waiter-state-machine';
 
 const RUNTIME_HANDLER_PATH = path.join(__dirname, 'runtime');
 const FRAMEWORK_HANDLER_TIMEOUT = Duration.minutes(15); // keep it simple for now
@@ -98,7 +98,7 @@ export class Provider extends Construct implements cfn.ICustomResourceProvider {
       const timeoutFunction = this.createFunction(consts.FRAMEWORK_ON_TIMEOUT_HANDLER_NAME);
 
       const retry = calculateRetryPolicy(props);
-      const waiterStateMachine = new StateMachine(this, 'waiter-state-machine', {
+      const waiterStateMachine = new WaiterStateMachine(this, 'waiter-state-machine', {
         isCompleteHandler: isCompleteFunction,
         timeoutHandler: timeoutFunction,
         backoffRate: retry.backoffRate,
