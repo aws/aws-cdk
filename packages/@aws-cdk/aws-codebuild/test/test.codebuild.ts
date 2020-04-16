@@ -1152,7 +1152,7 @@ export = {
         });
 
         expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
-          'Artifacts': 
+          'Artifacts':
             {
               'ArtifactIdentifier': 'artifact1',
               'OverrideArtifactName': true,
