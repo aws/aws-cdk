@@ -80,8 +80,13 @@ describe('state machine', () => {
           {
             Action: 'lambda:InvokeFunction',
             Effect: 'Allow',
-            Resource: [ stack.resolve(isCompleteHandler.functionArn), stack.resolve(timeoutHandler.functionArn) ]
-          }
+            Resource: stack.resolve(isCompleteHandler.functionArn),
+          },
+          {
+            Action: 'lambda:InvokeFunction',
+            Effect: 'Allow',
+            Resource: stack.resolve(timeoutHandler.functionArn),
+          },
         ],
         Version: '2012-10-17'
       },

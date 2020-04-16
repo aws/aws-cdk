@@ -29,7 +29,11 @@ export class WaiterStateMachine extends Construct {
     });
     role.addToPolicy(new PolicyStatement({
       actions: [ 'lambda:InvokeFunction' ],
-      resources: [ props.isCompleteHandler.functionArn, props.timeoutHandler.functionArn ],
+      resources: [ props.isCompleteHandler.functionArn ],
+    }));
+    role.addToPolicy(new PolicyStatement({
+      actions: [ 'lambda:InvokeFunction' ],
+      resources: [ props.timeoutHandler.functionArn ],
     }));
 
     const definition = Stack.of(this).toJsonString({
