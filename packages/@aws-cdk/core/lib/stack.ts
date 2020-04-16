@@ -19,6 +19,16 @@ const MY_STACK_CACHE = Symbol.for('@aws-cdk/core.Stack.myStack');
 const VALID_STACK_NAME_REGEX = /^[A-Za-z][A-Za-z0-9-]*$/;
 
 /**
+ * The maximum number of resources allowed in a CloudFormation stack
+ */
+const MAX_RESOURCES_ERROR = 200;
+
+/**
+ * The number of resources above which to warn about approaching maximum resources
+ */
+const MAX_RESOURCES_WARN = MAX_RESOURCES_ERROR * 0.80;
+
+/**
  * The well-known name for the docker image asset ECR repository. All docker
  * image assets will be pushed into this repository with an image tag based on
  * the source hash.
@@ -810,7 +820,18 @@ export class Stack extends Construct implements ITaggable {
 
     // write the CloudFormation template as a JSON file
     const outPath = path.join(builder.outdir, this.templateFile);
-    const text = JSON.stringify(this._toCloudFormation(), undefined, 2);
+
+    const cfn = this._toCloudFormation();
+    const resources = cfn.Resources || {};
+    const numberOfResources = Object.keys(resources).length;
+
+    if (numberOfResources > MAX_RESOURCES_ERROR) {
+      this.node.addError(`Number of resources: ${numberOfResources} is greater than allowed maximum of ${MAX_RESOURCES_ERROR}`);
+    } else if (numberOfResources >= MAX_RESOURCES_WARN) {
+      this.node.addWarning(`Number of resources: ${numberOfResources} is approaching allowed maximum of ${MAX_RESOURCES_ERROR}`);
+    }
+
+    const text = JSON.stringify(cfn, undefined, 2);
     fs.writeFileSync(outPath, text);
 
     for (const ctx of this._missingContext) {
