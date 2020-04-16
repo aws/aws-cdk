@@ -151,14 +151,12 @@ export interface CustomAttributeConfig {
    * @default false
    */
   readonly mutable?: boolean
-
 }
 
 /**
- * Constraints that can be applied to a custom attribute of string type.
+ * Constraints that can be applied to a custom attribute of any type.
  */
 export interface CustomAttributeProps {
-
   /**
    * Specifies whether the value of the attribute can be changed.
    * For any user pool attribute that's mapped to an identity provider attribute, you must set this parameter to true.
@@ -168,39 +166,6 @@ export interface CustomAttributeProps {
    * @default false
    */
   readonly mutable?: boolean
-}
-
-/**
- * The base class for all custom attribute types.
- * All common properties are set here and the method `baseAttributeConfig`
- * should be used by subclasses to create base CustomAttributeConfig object inside the `bind()` method.
- */
-export abstract class CustomAttribute implements ICustomAttribute {
-  protected readonly mutable?: boolean;
-
-  /**
-   * Every subclass must define its dataType (i.e. `String`, `Number`, ...)
-   */
-  protected abstract readonly dataType: string;
-
-  constructor(props: CustomAttributeProps = {}) {
-    this.mutable = props.mutable;
-  }
-
-  public abstract bind(): CustomAttributeConfig;
-
-  /**
-   * Creates a CustomAttributeConfig to be used as starting point by each
-   * subclass do provide the right CustomAttributeConfig.
-   *
-   * This must contain all common properties between attribute types.
-   */
-  protected baseAttributeConfig(): CustomAttributeConfig {
-    return {
-      dataType: this.dataType,
-      mutable: this.mutable,
-    };
-  }
 }
 
 /**
@@ -223,19 +188,18 @@ export interface StringAttributeConstraints {
 /**
  * Props for constructing a StringAttr
  */
-export interface StringAttributeProps extends CustomAttributeProps, StringAttributeConstraints {
+export interface StringAttributeProps extends StringAttributeConstraints, CustomAttributeProps {
 }
 
 /**
  * The String custom attribute type.
  */
-export class StringAttribute extends CustomAttribute {
-  protected readonly dataType = 'String';
+export class StringAttribute implements ICustomAttribute {
   private readonly minLen?: number;
   private readonly maxLen?: number;
+  private readonly mutable?: boolean;
 
   constructor(props: StringAttributeProps = {}) {
-    super(props);
     if (props.minLen && props.minLen < 0) {
       throw new Error(`minLen cannot be less than 0 (value: ${props.minLen}).`);
     }
@@ -244,6 +208,7 @@ export class StringAttribute extends CustomAttribute {
     }
     this.minLen = props?.minLen;
     this.maxLen = props?.maxLen;
+    this.mutable = props?.mutable;
   }
 
   public bind(): CustomAttributeConfig {
@@ -255,12 +220,10 @@ export class StringAttribute extends CustomAttribute {
       };
     }
 
-    const aux = this.baseAttributeConfig();
-
     return {
-      dataType: aux.dataType,
-      mutable: aux.mutable,
+      dataType: 'String',
       stringConstraints,
+      mutable: this.mutable,
     };
   }
 }
@@ -285,21 +248,21 @@ export interface NumberAttributeConstraints {
 /**
  * Props for NumberAttr
  */
-export interface NumberAttributeProps extends CustomAttributeProps, NumberAttributeConstraints {
+export interface NumberAttributeProps extends NumberAttributeConstraints, CustomAttributeProps {
 }
 
 /**
  * The Number custom attribute type.
  */
-export class NumberAttribute extends CustomAttribute {
-  protected readonly dataType = 'Number';
+export class NumberAttribute implements ICustomAttribute {
   private readonly min?: number;
   private readonly max?: number;
+  private readonly mutable?: boolean;
 
   constructor(props: NumberAttributeProps = {}) {
-    super(props);
     this.min = props?.min;
     this.max = props?.max;
+    this.mutable = props?.mutable;
   }
 
   public bind(): CustomAttributeConfig {
@@ -311,12 +274,10 @@ export class NumberAttribute extends CustomAttribute {
       };
     }
 
-    const aux = this.baseAttributeConfig();
-
     return {
-      dataType: aux.dataType,
-      mutable: aux.mutable,
+      dataType: 'Number',
       numberConstraints,
+      mutable: this.mutable,
     };
   }
 }
@@ -324,19 +285,35 @@ export class NumberAttribute extends CustomAttribute {
 /**
  * The Boolean custom attribute type.
  */
-export class BooleanAttribute extends CustomAttribute {
-  protected readonly dataType = 'Boolean';
+export class BooleanAttribute implements ICustomAttribute {
+  private readonly mutable?: boolean;
+
+  constructor(props: CustomAttributeProps = {}) {
+    this.mutable = props?.mutable;
+  }
+
   public bind(): CustomAttributeConfig {
-    return this.baseAttributeConfig();
+    return {
+      dataType: 'Boolean',
+      mutable: this.mutable,
+    };
   }
 }
 
 /**
  * The DateTime custom attribute type.
  */
-export class DateTimeAttribute extends CustomAttribute {
-  protected readonly dataType = 'DateTime';
+export class DateTimeAttribute implements ICustomAttribute {
+  private readonly mutable?: boolean;
+
+  constructor(props: CustomAttributeProps = {}) {
+    this.mutable = props?.mutable;
+  }
+
   public bind(): CustomAttributeConfig {
-    return this.baseAttributeConfig();
+    return {
+      dataType: 'DateTime',
+      mutable: this.mutable,
+    };
   }
 }
