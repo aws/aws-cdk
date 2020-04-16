@@ -1,9 +1,9 @@
+import '@aws-cdk/assert/jest';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import * as stepfunctions from '../lib';
 
-export = {
-  'State Machine With Parallel State'(test: Test) {
+describe('Parallel State',  () => {
+  test('State Machine With Parallel State', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -13,7 +13,7 @@ export = {
     parallel.branch(new stepfunctions.Pass(stack, 'Branch 2'));
 
     // THEN
-    test.deepEqual(render(parallel), {
+    expect(render(parallel)).toStrictEqual({
       StartAt: 'Parallel State',
       States: {
         'Parallel State': {
@@ -26,10 +26,8 @@ export = {
         }
       }
     });
-
-    test.done();
-  }
-};
+  });
+});
 
 function render(sm: stepfunctions.IChainable) {
   return new cdk.Stack().resolve(new stepfunctions.StateGraph(sm.startState, 'Test Graph').toGraphJson());

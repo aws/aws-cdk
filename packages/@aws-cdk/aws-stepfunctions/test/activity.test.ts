@@ -1,10 +1,9 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import '@aws-cdk/assert/jest';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import * as stepfunctions from '../lib';
 
-export = {
-  'instantiate Activity'(test: Test) {
+describe('Activity', () => {
+  test('instantiate Activity', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -12,14 +11,12 @@ export = {
     new stepfunctions.Activity(stack, 'Activity');
 
     // THEN
-    expect(stack).to(haveResource('AWS::StepFunctions::Activity', {
+    expect(stack).toHaveResource('AWS::StepFunctions::Activity', {
       Name: 'Activity'
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'Activity exposes metrics'(test: Test) {
+  test('Activity exposes metrics', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -32,18 +29,16 @@ export = {
       namespace: 'AWS/States',
       dimensions: { ActivityArn: { Ref: 'Activity04690B0A' }},
     };
-    test.deepEqual(stack.resolve(activity.metricRunTime()), {
+    expect((stack.resolve(activity.metricRunTime()))).toEqual({
       ...sharedMetric,
       metricName: 'ActivityRunTime',
       statistic: 'Average'
     });
 
-    test.deepEqual(stack.resolve(activity.metricFailed()), {
+    expect(stack.resolve(activity.metricFailed())).toEqual({
       ...sharedMetric,
       metricName: 'ActivitiesFailed',
       statistic: 'Sum'
     });
-
-    test.done();
-  }
-};
+  });
+});
