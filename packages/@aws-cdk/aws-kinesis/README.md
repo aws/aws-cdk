@@ -4,11 +4,7 @@
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
 
-> All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) are always stable and safe to use.
-
-![cdk-constructs: Developer Preview](https://img.shields.io/badge/cdk--constructs-developer--preview-informational.svg?style=for-the-badge)
-
-> The APIs of higher level constructs in this module are in **developer preview** before they become stable. We will only make breaking changes to address unforeseen API issues. Therefore, these APIs are not subject to [Semantic Versioning](https://semver.org/), and breaking changes will be announced in release notes. This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 <!--END STABILITY BANNER-->
@@ -25,6 +21,7 @@ intake and aggregation.
   - [Permission Grants](#permission-grants)
     - [Read Permissions](#read-permissions)
     - [Write Permissions](#write-permissions)
+    - [Custom Permissions](#custom-permissions)
 
 ## Streams
 
@@ -150,7 +147,6 @@ stream.grantRead(lambdaRole);
 
 The following read permissions are provided to a service principal by the `grantRead()` API:
 
-- `kinesis:DescribeStream`
 - `kinesis:DescribeStreamSummary`
 - `kinesis:GetRecords`
 - `kinesis:GetShardIterator`
@@ -181,3 +177,16 @@ The following write permissions are provided to a service principal by the `gran
 - `kinesis:ListShards`
 - `kinesis:PutRecord`
 - `kinesis:PutRecords`
+
+#### Custom Permissions
+
+You can add any set of permissions to a stream by calling the `grant()` API.
+
+```ts
+const user = new iam.User(stack, 'MyUser');
+
+const stream = new Stream(stack, 'MyStream');
+
+// give my user permissions to list shards
+stream.grant(user, 'kinesis:ListShards');
+```
