@@ -44,6 +44,9 @@ export class PolicyStatement {
    * Statement ID for this statement
    */
   public sid?: string;
+  /**
+   * Whether to allow or deny the actions in this statement
+   */
   public effect: Effect;
 
   private readonly action = new Array<any>();
@@ -80,6 +83,13 @@ export class PolicyStatement {
   // Actions
   //
 
+  /**
+   * Specify allowed actions into the "Action" section of the policy statement.
+   *
+   * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_action.html
+   *
+   * @param actions actions that will be allowed.
+   */
   public addActions(...actions: string[]) {
     if (actions.length > 0 && this.notAction.length > 0) {
       throw new Error('Cannot add \'Actions\' to policy statement if \'NotActions\' have been added');
@@ -87,6 +97,14 @@ export class PolicyStatement {
     this.action.push(...actions);
   }
 
+  /**
+   * Explicitly allow all actions except the specified list of actions into the "NotAction" section
+   * of the policy document.
+   *
+   * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_notaction.html
+   *
+   * @param notActions actions that will be denied. All other actions will be permitted.
+   */
   public addNotActions(...notActions: string[]) {
     if (notActions.length > 0 && this.action.length > 0) {
       throw new Error('Cannot add \'NotActions\' to policy statement if \'Actions\' have been added');
@@ -105,6 +123,13 @@ export class PolicyStatement {
     return Object.keys(this.principal).length > 0 || Object.keys(this.notPrincipal).length > 0;
   }
 
+  /**
+   * Adds principals to the "Principal" section of a policy statement.
+   *
+   * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_principal.html
+   *
+   * @param principals IAM principals that will be added
+   */
   public addPrincipals(...principals: IPrincipal[]) {
     if (Object.keys(principals).length > 0 && Object.keys(this.notPrincipal).length > 0) {
       throw new Error('Cannot add \'Principals\' to policy statement if \'NotPrincipals\' have been added');
@@ -116,6 +141,14 @@ export class PolicyStatement {
     }
   }
 
+  /**
+   * Specify principals that is not allowed or denied access to the "NotPrincipal" section of
+   * a policy statement.
+   *
+   * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_notprincipal.html
+   *
+   * @param notPrincipals IAM principals that will be denied access
+   */
   public addNotPrincipals(...notPrincipals: IPrincipal[]) {
     if (Object.keys(notPrincipals).length > 0 && Object.keys(this.principal).length > 0) {
       throw new Error('Cannot add \'NotPrincipals\' to policy statement if \'Principals\' have been added');
@@ -127,10 +160,19 @@ export class PolicyStatement {
     }
   }
 
+  /**
+   * Specify AWS account ID as the principal entity to the "Principal" section of a policy statement.
+   */
   public addAwsAccountPrincipal(accountId: string) {
     this.addPrincipals(new AccountPrincipal(accountId));
   }
 
+  /**
+   * Specify a principal using the ARN  identifier of the principal.
+   * You cannot specify IAM groups and instance profiles as principals.
+   *
+   * @param arn ARN identifier of AWS account, IAM user, or IAM role (i.e. arn:aws:iam::123456789012:user/user-name)
+   */
   public addArnPrincipal(arn: string) {
     this.addPrincipals(new ArnPrincipal(arn));
   }
@@ -145,18 +187,36 @@ export class PolicyStatement {
     this.addPrincipals(new ServicePrincipal(service, opts));
   }
 
+  /**
+   * Adds a federated identity provider such as Amazon Cognito to this policy statement.
+   *
+   * @param federated federated identity provider (i.e. 'cognito-identity.amazonaws.com')
+   * @param conditions The conditions under which the policy is in effect.
+   *   See [the IAM documentation](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition.html).
+   */
   public addFederatedPrincipal(federated: any, conditions: Conditions) {
     this.addPrincipals(new FederatedPrincipal(federated, conditions));
   }
 
+  /**
+   * Adds an AWS account root user principal to this policy statement
+   */
   public addAccountRootPrincipal() {
     this.addPrincipals(new AccountRootPrincipal());
   }
 
+  /**
+   * Adds a canonical user ID principal to this policy document
+   *
+   * @param canonicalUserId unique identifier assigned by AWS for every account
+   */
   public addCanonicalUserPrincipal(canonicalUserId: string) {
     this.addPrincipals(new CanonicalUserPrincipal(canonicalUserId));
   }
 
+  /**
+   * Adds all identities in all accounts ("*") to this policy statement
+   */
   public addAnyPrincipal() {
     this.addPrincipals(new Anyone());
   }
@@ -165,6 +225,14 @@ export class PolicyStatement {
   // Resources
   //
 
+  /**
+   * Specify resources that this policy statement applies into the "Resource" section of
+   * this policy statement.
+   *
+   * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_resource.html
+   *
+   * @param arns Amazon Resource Names (ARNs) of the resources that this policy statement applies to
+   */
   public addResources(...arns: string[]) {
     if (arns.length > 0 && this.notResource.length > 0) {
       throw new Error('Cannot add \'Resources\' to policy statement if \'NotResources\' have been added');
@@ -172,6 +240,14 @@ export class PolicyStatement {
     this.resource.push(...arns);
   }
 
+  /**
+   * Specify resources that this policy statement will not apply to in the "NotResource" section
+   * of this policy statement. All resources except the specified list will be matched.
+   *
+   * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_notresource.html
+   *
+   * @param arns Amazon Resource Names (ARNs) of the resources that this policy statement does not apply to
+   */
   public addNotResources(...arns: string[]) {
     if (arns.length > 0 && this.resource.length > 0) {
       throw new Error('Cannot add \'NotResources\' to policy statement if \'Resources\' have been added');
@@ -221,6 +297,11 @@ export class PolicyStatement {
     this.addCondition('StringEquals', { 'sts:ExternalId': accountId });
   }
 
+  /**
+   * JSON-ify the policy statement
+   *
+   * Used when JSON.stringify() is called
+   */
   public toStatementJson(): any {
     return noUndef({
       Action: _norm(this.action),
@@ -282,6 +363,9 @@ export class PolicyStatement {
     }
   }
 
+  /**
+   * String representation of this policy statement
+   */
   public toString() {
     return cdk.Token.asString(this, {
       displayHint: 'PolicyStatement'
@@ -298,8 +382,22 @@ export class PolicyStatement {
   }
 }
 
+/**
+ * The Effect element of an IAM policy
+ *
+ * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_effect.html
+ */
 export enum Effect {
+  /**
+   * Allows access to a resource in an IAM policy statement. By default, access to resources are denied.
+   */
   ALLOW = 'Allow',
+
+  /**
+   * Explicitly deny access to a resource. By default, all requests are denied implicitly.
+   *
+   * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_evaluation-logic.html
+   */
   DENY = 'Deny',
 }
 
@@ -307,7 +405,19 @@ export enum Effect {
  * Condition for when an IAM policy is in effect. Maps from the keys in a request's context to
  * a string value or array of string values. See the Conditions interface for more details.
  */
-export type Condition = Record<string, any>;
+export type Condition = any;
+
+// NOTE! We'd ideally like to type this as `Record<string, any>`, because the
+// API expects a map which can take either strings or lists of strings.
+//
+// However, if we were to change this right now, the Java bindings for CDK would
+// emit a type of `Map<String, Object>`, but the most common types people would
+// instantiate would be an `ImmutableMap<String, String>` which would not be
+// assignable to `Map<String, Object>`. The types don't have a built-in notion
+// of co-contravariance, you have to indicate that on the type. So jsii would first
+// need to emit the type as `Map<String, ? extends Object>`.
+//
+// Feature request in https://github.com/aws/jsii/issues/1517
 
 /**
  * Conditions for when an IAM Policy is in effect, specified in the following structure:
@@ -388,7 +498,7 @@ export interface PolicyStatementProps {
   /**
    * Whether to allow or deny the actions in this statement
    *
-   * @default - allow
+   * @default Effect.ALLOW
    */
   readonly effect?: Effect;
 }

@@ -88,14 +88,15 @@ export class SdkProvider {
    * class `AwsCliCompatible` for the details.
    */
   public static async withAwsCliCompatibleDefaults(options: SdkProviderOptions = {}) {
-    const chain = await AwsCliCompatible.credentialChain(options.profile, options.ec2creds, options.containerCreds);
+    const sdkOptions = parseHttpOptions(options.httpOptions ?? {});
+
+    const chain = await AwsCliCompatible.credentialChain(options.profile, options.ec2creds, options.containerCreds, sdkOptions.httpOptions);
     const region = await AwsCliCompatible.region(options.profile);
 
-    return new SdkProvider(chain, region, options.httpOptions);
+    return new SdkProvider(chain, region, sdkOptions);
   }
 
   private readonly plugins = new CredentialPlugins();
-  private readonly httpOptions: ConfigurationOptions;
 
   public constructor(
     private readonly defaultChain: AWS.CredentialProviderChain,
@@ -103,8 +104,7 @@ export class SdkProvider {
      * Default region
      */
     public readonly defaultRegion: string,
-    httpOptions: SdkHttpOptions = {}) {
-    this.httpOptions = defaultHttpOptions(httpOptions);
+    private readonly sdkOptions: ConfigurationOptions = {}) {
   }
 
   /**
@@ -116,7 +116,7 @@ export class SdkProvider {
   public async forEnvironment(accountId: string | undefined, region: string | undefined, mode: Mode): Promise<ISDK> {
     const env = await this.resolveEnvironment(accountId, region);
     const creds = await this.obtainCredentials(env.account, mode);
-    return new SDK(creds, env.region, this.httpOptions);
+    return new SDK(creds, env.region, this.sdkOptions);
   }
 
   /**
@@ -139,12 +139,12 @@ export class SdkProvider {
       },
       stsConfig: {
         region,
-        ...this.httpOptions,
+        ...this.sdkOptions,
       },
       masterCredentials: await this.defaultCredentials(),
     });
 
-    return new SDK(creds, region, this.httpOptions);
+    return new SDK(creds, region, this.sdkOptions);
   }
 
   /**
@@ -199,7 +199,7 @@ export class SdkProvider {
           throw new Error('Unable to resolve AWS credentials (setup with "aws configure")');
         }
 
-        return new SDK(creds, this.defaultRegion, this.httpOptions).currentAccount();
+        return new SDK(creds, this.defaultRegion, this.sdkOptions).currentAccount();
       } catch (e) {
         debug('Unable to determine the default AWS account:', e);
         return undefined;
@@ -269,8 +269,11 @@ export interface Account {
  * Get HTTP options for the SDK
  *
  * Read from user input or environment variables.
+ *
+ * Returns a complete `ConfigurationOptions` object because that's where
+ * `customUserAgent` lives, but `httpOptions` is the most important attribute.
  */
-function defaultHttpOptions(options: SdkHttpOptions) {
+function parseHttpOptions(options: SdkHttpOptions) {
   const config: ConfigurationOptions = {};
   config.httpOptions = {};
 

@@ -1,3 +1,4 @@
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { SdkProvider } from '../api';
 import { debug } from '../logging';
@@ -16,7 +17,7 @@ export type ProviderMap = {[name: string]: ProviderConstructor};
  * Iterate over the list of missing context values and invoke the appropriate providers from the map to retrieve them
  */
 export async function provideContextValues(
-  missingValues: cxapi.MissingContext[],
+  missingValues: cxschema.MissingContext[],
   context: Context,
   sdk: SdkProvider) {
 
