@@ -1162,6 +1162,32 @@ export class DoNotAnnounceInCatalog extends ValidationRule {
   }
 }
 
+export class EslintSetup extends ValidationRule {
+  public readonly name = 'package-info/eslint';
+
+  public validate(pkg: PackageJson) {
+    const eslintrcFilename = '.eslintrc.js';
+    if (!fs.existsSync(eslintrcFilename)) {
+      pkg.report({
+        ruleName: this.name,
+        message: 'There must be a .eslintrc.js file at the root of the package',
+        fix: () => {
+          const dots = '../'.repeat(depthFromRoot());
+          fs.writeFileSync(
+            eslintrcFilename,
+            [
+              `const baseConfig = require('${dots}tools/cdk-build-tools/config/eslintrc');`,
+              'module.exports = baseConfig;'
+            ].join('\n') + '\n'
+          );
+        }
+      });
+    }
+    fileShouldContain(this.name, pkg, '.gitignore', '!.eslintrc.js');
+    fileShouldContain(this.name, pkg, '.npmignore', '.eslintrc.js');
+  }
+}
+
 /**
  * Determine whether this is a JSII package
  *
@@ -1207,4 +1233,18 @@ function shouldUseCDKBuildTools(pkg: PackageJson) {
   // The packages that DON'T use CDKBuildTools are the package itself
   // and the packages used by it.
   return pkg.packageName !== 'cdk-build-tools' && pkg.packageName !== 'merkle-build';
+}
+
+function depthFromRoot() {
+  let depth = 0;
+  let root = process.cwd();
+  while (!fs.existsSync(path.join(root, 'yarn.lock')) && depth < 50) {
+     // tslint:disable-next-line
+    console.log(`nijaa ${root}`);
+    depth = depth + 1;
+    root = path.dirname(root);
+  }
+  // tslint:disable-next-line
+  console.log(`nijaa ${depth}`);
+  return depth;
 }
