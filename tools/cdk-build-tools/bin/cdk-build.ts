@@ -49,7 +49,7 @@ async function main() {
   const overrides: CompilerOverrides = { eslint: args.eslint, jsii: args.jsii, tsc: args.tsc, tslint: args.tslint };
   await compileCurrentPackage(timers, overrides);
   await lintCurrentPackage(options, overrides);
-  
+
   if (options.post) {
     await shell(options.post, { timers });
   }
