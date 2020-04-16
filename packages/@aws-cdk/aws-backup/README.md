@@ -79,4 +79,6 @@ const vault = new BackupVault(stack, 'Vault', {
   notificationTopic: myTopic, // Send all vault events to this SNS topic
 });
 ```
-A vault has a default `RemovalPolicy` set to `RETAIN`.
+
+A vault has a default `RemovalPolicy` set to `RETAIN`. Note that removing a vault
+that contains recovery points will fail.

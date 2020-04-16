@@ -61,7 +61,8 @@ export interface BackupVaultProps {
   readonly notificationEvents?: BackupVaultEvents[];
 
   /**
-   * The removal policy to apply to the vault.
+   * The removal policy to apply to the vault. Note that removing a vault
+   * that contains recovery points will fail.
    *
    * @default RemovalPolicy.RETAIN
    */
