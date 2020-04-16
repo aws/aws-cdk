@@ -1,12 +1,12 @@
 // ----------------------------------------------------
 // CROSS REFERENCES
 // ----------------------------------------------------
+import { IResolvable } from 'constructs';
 import { CfnElement } from '../cfn-element';
 import { CfnOutput } from '../cfn-output';
 import { CfnParameter } from '../cfn-parameter';
 import { Construct } from '../construct-compat';
 import { Reference } from '../reference';
-import { IResolvable } from '../resolvable';
 import { Stack } from '../stack';
 import { Token } from '../token';
 import { CfnReference } from './cfn-reference';
@@ -19,26 +19,15 @@ import { makeUniqueId } from './uniqueid';
  * reference is resolved based on it's consumption context.
  */
 export function resolveReferences(scope: Construct): void {
-  let modified = true;
+  const edges = findAllReferences(scope);
 
-  while (modified) {
-    const edges = findAllReferences(scope);
+  for (const { source, value } of edges) {
+    const consumer = Stack.of(source);
 
-    // start by assume all edges have been processed
-    modified = false;
-
-    for (const { source, value } of edges) {
-      const consumer = Stack.of(source);
-
-      // if the edge was not processed yet, resolve it's reference in the
-      // context of the consumer and signal that we need to repeat the process
-      // because resolution likely involved mutation of the parent/child to
-      // propagate the reference, so we need to locate it and resolve it again.
-      if (!value.hasValueForStack(consumer)) {
-        const resolved = resolveValue(consumer, value);
-        value.assignValueForStack(consumer, resolved);
-        modified = true;
-      }
+    // resolve the value in the context of the consumer
+    if (!value.hasValueForStack(consumer)) {
+      const resolved = resolveValue(consumer, value);
+      value.assignValueForStack(consumer, resolved);
     }
   }
 }
@@ -71,9 +60,11 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
   // ----------------------------------------------------------------------
 
   // if the consumer is nested within the producer (directly or indirectly),
-  // wire through a CloudFormation parameter.
-  if (isNested(consumer, producer)) {
-    return createNestedStackParameter(consumer, reference);
+  // wire through a CloudFormation parameter and then resolve the reference with
+  // the parent stack as the consumer.
+  if (consumer.nestedStackParent && isNested(consumer, producer)) {
+    const parameterValue = resolveValue(consumer.nestedStackParent, reference);
+    return createNestedStackParameter(consumer, reference, parameterValue);
   }
 
   // ----------------------------------------------------------------------
@@ -169,7 +160,7 @@ function findAllReferences(root: Construct) {
  * Imports a value from another stack by creating an "Output" with an "ExportName"
  * and returning an "Fn::ImportValue" token.
  */
-function createImportValue(reference: Reference): IResolvable {
+function createImportValue(reference: Reference): Intrinsic {
   const exportingStack = Stack.of(reference.target);
 
   // Ensure a singleton "Exports" scoping Construct
@@ -223,7 +214,7 @@ function generateExportName(stackExports: Construct, id: string) {
  * Adds a CloudFormation parameter to a nested stack and assigns it with the
  * value of the reference.
  */
-function createNestedStackParameter(nested: Stack, reference: Reference) {
+function createNestedStackParameter(nested: Stack, reference: CfnReference, value: IResolvable) {
   // we call "this.resolve" to ensure that tokens do not creep in (for example, if the reference display name includes tokens)
   const paramId = nested.resolve(`reference-to-${reference.target.node.uniqueId}.${reference.displayName}`);
   let param = nested.node.tryFindChild(paramId) as CfnParameter;
@@ -235,7 +226,7 @@ function createNestedStackParameter(nested: Stack, reference: Reference) {
       throw new Error('assertion failed: nested stack should have a "setParameter" method');
     }
 
-    (nested as any).setParameter(param.logicalId, Token.asString(reference));
+    (nested as any).setParameter(param.logicalId, Token.asString(value));
   }
 
   return param.value as CfnReference;
