@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { ABSENT, expect, haveResource } from '@aws-cdk/assert';
 import { Construct, Duration, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { Alarm, IAlarm, IAlarmAction, Metric } from '../lib';
@@ -105,6 +105,7 @@ export = {
       MetricName: 'Metric',
       Namespace: 'CDK/Test',
       Period: 300,
+      Statistic: ABSENT,
       ExtendedStatistic: 'p99',
       Threshold: 1000,
     }));
