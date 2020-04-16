@@ -1,5 +1,6 @@
 // tslint:disable-next-line:max-line-length
 import * as asset_schema from '@aws-cdk/cdk-assets-schema';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as colors from 'colors';
 import * as path from 'path';
@@ -51,7 +52,7 @@ export async function addMetadataAssetsToManifest(stack: cxapi.CloudFormationSta
 }
 
 // tslint:disable-next-line:max-line-length
-async function prepareAsset(asset: cxapi.AssetMetadataEntry, assetManifest: AssetManifestBuilder, toolkitInfo: ToolkitInfo): Promise<Record<string, string>> {
+async function prepareAsset(asset: cxschema.AssetMetadataEntry, assetManifest: AssetManifestBuilder, toolkitInfo: ToolkitInfo): Promise<Record<string, string>> {
   switch (asset.packaging) {
     case 'zip':
     case 'file':
@@ -69,7 +70,7 @@ async function prepareAsset(asset: cxapi.AssetMetadataEntry, assetManifest: Asse
 }
 
 function prepareFileAsset(
-  asset: cxapi.FileAssetMetadataEntry,
+  asset: cxschema.FileAssetMetadataEntry,
   assetManifest: AssetManifestBuilder,
   toolkitInfo: ToolkitInfo,
   packaging: asset_schema.FileAssetPackaging): Record<string, string> {
@@ -99,7 +100,7 @@ function prepareFileAsset(
 }
 
 async function prepareDockerImageAsset(
-  asset: cxapi.ContainerImageAssetMetadataEntry,
+  asset: cxschema.ContainerImageAssetMetadataEntry,
   assetManifest: AssetManifestBuilder,
   toolkitInfo: ToolkitInfo): Promise<Record<string, string>> {
 
