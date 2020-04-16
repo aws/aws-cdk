@@ -273,6 +273,33 @@ const rule = project.onStateChange('BuildStateChange', {
 });
 ```
 
+## Artifacts
+
+CodeBuild Projects can produce Artifacts and upload the to S3. For example:
+
+```ts
+const project = codebuild.Project(stack, 'MyProject', {
+  buildSpec: codebuild.BuildSpec.fromObject({
+    version: '0.2',
+  }),
+  artifacts:
+    codebuild.Artifacts.s3({
+      bucket,
+      name: 'name',
+      includeBuildId: false,
+      packageZip: true,
+      path: 'another/path',
+      identifier: 'AddArtifact1',
+      useBuildspecName: true,
+    }),
+});
+```
+
+This example will produce an artifact named as defined in the Buildspec file, 
+uploaded to an S3 bucket (`bucket`). The path will be `another/path` and the 
+artifact will be a zipfile. In this case, the `name` parameter will be ignored 
+by CodeBuild in favour of that specified in the `buildspec.yml`.
+
 ## Secondary sources and artifacts
 
 CodeBuild Projects can get their sources from multiple places, and produce
