@@ -1239,12 +1239,8 @@ function depthFromRoot() {
   let depth = 0;
   let root = process.cwd();
   while (!fs.existsSync(path.join(root, 'yarn.lock')) && depth < 50) {
-     // tslint:disable-next-line
-    console.log(`nijaa ${root}`);
     depth = depth + 1;
     root = path.dirname(root);
   }
-  // tslint:disable-next-line
-  console.log(`nijaa ${depth}`);
   return depth;
 }

@@ -24,6 +24,6 @@ async function main() {
 
 main().catch(e => {
   process.stderr.write(`${e.toString()}\n`);
-  process.stderr.write(`Linting failed.\n`);
+  process.stderr.write('Linting failed.\n');
   process.exit(1);
 });
