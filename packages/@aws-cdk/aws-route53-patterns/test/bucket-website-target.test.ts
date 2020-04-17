@@ -30,8 +30,9 @@ test('create HTTPS redirect', () => {
   });
   expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
     DistributionConfig: {
-      Aliases: ['foo.example.com', 'baz.example.com']
-    }
+      Aliases: ['foo.example.com', 'baz.example.com'],
+      DefaultRootObject: '',
+    },
   });
   expect(stack).toHaveResource('AWS::Route53::RecordSet', {
     Name: 'foo.example.com.',
