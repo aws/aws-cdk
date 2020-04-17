@@ -20,9 +20,9 @@ export = {
     td.addContainer('Container', {
       image,
       logging: new ecs.JsonFileLogDriver({
-        env: ['hello']
+        env: ['hello'],
       }),
-      memoryLimitMiB: 128
+      memoryLimitMiB: 128,
     });
 
     // THEN
@@ -32,11 +32,11 @@ export = {
           LogConfiguration: {
             LogDriver: 'json-file',
             Options: {
-              env: 'hello'
-            }
-          }
-        }
-      ]
+              env: 'hello',
+            },
+          },
+        },
+      ],
     }));
 
     test.done();
@@ -47,7 +47,7 @@ export = {
     td.addContainer('Container', {
       image,
       logging: new ecs.JsonFileLogDriver(),
-      memoryLimitMiB: 128
+      memoryLimitMiB: 128,
     });
 
     // THEN
@@ -55,10 +55,10 @@ export = {
       ContainerDefinitions: [
         {
           LogConfiguration: {
-            LogDriver: 'json-file'
-          }
-        }
-      ]
+            LogDriver: 'json-file',
+          },
+        },
+      ],
     }));
 
     test.done();
@@ -69,7 +69,7 @@ export = {
     td.addContainer('Container', {
       image,
       logging: ecs.LogDrivers.jsonFile(),
-      memoryLimitMiB: 128
+      memoryLimitMiB: 128,
     });
 
     // THEN
@@ -78,10 +78,10 @@ export = {
         {
           LogConfiguration: {
             LogDriver: 'json-file',
-            Options: {}
-          }
-        }
-      ]
+            Options: {},
+          },
+        },
+      ],
     }));
 
     test.done();

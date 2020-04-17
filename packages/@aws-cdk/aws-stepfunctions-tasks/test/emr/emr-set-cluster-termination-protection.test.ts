@@ -14,8 +14,8 @@ test('Set termination protection with static ClusterId and TerminationProtected'
   const task = new sfn.Task(stack, 'Task', {
     task: new tasks.EmrSetClusterTerminationProtection({
       clusterId: 'ClusterId',
-      terminationProtected: false
-    })
+      terminationProtected: false,
+    }),
   });
 
   // THEN
@@ -36,7 +36,7 @@ test('Set termination protection with static ClusterId and TerminationProtected'
     End: true,
     Parameters: {
       ClusterId: 'ClusterId',
-      TerminationProtected: false
+      TerminationProtected: false,
     },
   });
 });
@@ -46,8 +46,8 @@ test('Set termination protection with static ClusterId and TerminationProtected 
   const task = new sfn.Task(stack, 'Task', {
     task: new tasks.EmrSetClusterTerminationProtection({
       clusterId: 'ClusterId',
-      terminationProtected: sfn.TaskInput.fromDataAt('$.TerminationProtected').value
-    })
+      terminationProtected: sfn.TaskInput.fromDataAt('$.TerminationProtected').value,
+    }),
   });
 
   // THEN
@@ -68,7 +68,7 @@ test('Set termination protection with static ClusterId and TerminationProtected 
     End: true,
     Parameters: {
       'ClusterId': 'ClusterId',
-      'TerminationProtected.$': '$.TerminationProtected'
+      'TerminationProtected.$': '$.TerminationProtected',
     },
   });
 });
@@ -78,8 +78,8 @@ test('Set termination protection with ClusterId from payload and static Terminat
   const task = new sfn.Task(stack, 'Task', {
     task: new tasks.EmrSetClusterTerminationProtection({
       clusterId: sfn.TaskInput.fromDataAt('$.ClusterId').value,
-      terminationProtected: false
-    })
+      terminationProtected: false,
+    }),
   });
 
   // THEN
@@ -100,7 +100,7 @@ test('Set termination protection with ClusterId from payload and static Terminat
     End: true,
     Parameters: {
       'ClusterId.$': '$.ClusterId',
-      'TerminationProtected': false
+      'TerminationProtected': false,
     },
   });
 });

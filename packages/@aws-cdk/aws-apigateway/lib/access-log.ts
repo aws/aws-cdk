@@ -33,7 +33,7 @@ export class LogGroupLogDestination implements IAccessLogDestination {
    */
   public bind(_stage: IStage): AccessLogDestinationConfig {
     return {
-      destinationArn: this.logGroup.logGroupArn
+      destinationArn: this.logGroup.logGroupArn,
     };
   }
 }
@@ -526,7 +526,7 @@ export class AccessLogFormat {
       resourcePath: true,
       status: true,
       protocol: true,
-      responseLength: true
+      responseLength: true,
     }): AccessLogFormat {
     return this.custom(JSON.stringify({
       requestId: AccessLogField.contextRequestId(),
@@ -538,7 +538,7 @@ export class AccessLogFormat {
       resourcePath: fields.resourcePath ? AccessLogField.contextResourcePath() : undefined,
       status: fields.status ? AccessLogField.contextStatus() : undefined,
       protocol: fields.protocol ? AccessLogField.contextProtocol() : undefined,
-      responseLength: fields.responseLength ? AccessLogField.contextResponseLength() : undefined
+      responseLength: fields.responseLength ? AccessLogField.contextResponseLength() : undefined,
     }));
   }
 

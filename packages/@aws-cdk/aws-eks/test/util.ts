@@ -26,7 +26,7 @@ export function testFixtureCluster() {
 // keyed from the target region.
 const env = {
   region: process.env.CDK_INTEG_REGION || process.env.CDK_DEFAULT_REGION,
-  account: process.env.CDK_INTEG_ACCOUNT || process.env.CDK_DEFAULT_ACCOUNT
+  account: process.env.CDK_INTEG_ACCOUNT || process.env.CDK_DEFAULT_ACCOUNT,
 };
 
 export class TestStack extends Stack {

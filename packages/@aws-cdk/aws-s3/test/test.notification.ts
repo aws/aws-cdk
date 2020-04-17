@@ -12,8 +12,8 @@ export = {
     bucket.addEventNotification(s3.EventType.OBJECT_CREATED, {
       bind: () => ({
         arn: 'ARN',
-        type: s3.BucketNotificationDestinationType.TOPIC
-      })
+        type: s3.BucketNotificationDestinationType.TOPIC,
+      }),
     });
 
     expect(stack).to(haveResource('AWS::S3::Bucket'));
@@ -30,7 +30,7 @@ export = {
     bucket.addEventNotification(s3.EventType.OBJECT_CREATED, {
       bind: () => ({
         arn: 'ARN',
-        type: s3.BucketNotificationDestinationType.TOPIC
+        type: s3.BucketNotificationDestinationType.TOPIC,
       }),
     }, { prefix: 'images/', suffix: '.png' });
 
@@ -39,26 +39,26 @@ export = {
         TopicConfigurations: [
           {
             Events: [
-              's3:ObjectCreated:*'
+              's3:ObjectCreated:*',
             ],
             Filter: {
               Key: {
                 FilterRules: [
                   {
                     Name: 'suffix',
-                    Value: '.png'
+                    Value: '.png',
                   },
                   {
                     Name: 'prefix',
-                    Value: 'images/'
-                  }
-                ]
-              }
+                    Value: 'images/',
+                  },
+                ],
+              },
             },
-            TopicArn: 'ARN'
-          }
-        ]
-      }
+            TopicArn: 'ARN',
+          },
+        ],
+      },
     }));
 
     test.done();
@@ -72,8 +72,8 @@ export = {
     bucket.addEventNotification(s3.EventType.OBJECT_CREATED, {
       bind: () => ({
         arn: 'ARN',
-        type: s3.BucketNotificationDestinationType.TOPIC
-      })
+        type: s3.BucketNotificationDestinationType.TOPIC,
+      }),
     });
 
     expect(stack).to(haveResourceLike('AWS::Lambda::Function', {
@@ -82,11 +82,11 @@ export = {
         Role: {
           'Fn::GetAtt': [
             'BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC',
-            'Arn'
-          ]
+            'Arn',
+          ],
         },
       }, DependsOn: [ 'BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36',
-        'BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC' ]
+        'BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC' ],
     }, ResourcePart.CompleteDefinition ) );
 
     test.done();
@@ -100,7 +100,7 @@ export = {
     test.throws(() => bucket.addEventNotification(s3.EventType.OBJECT_CREATED, {
       bind: () => ({
         arn: 'ARN',
-        type: s3.BucketNotificationDestinationType.TOPIC
+        type: s3.BucketNotificationDestinationType.TOPIC,
       }),
     }, { prefix: 'images/'}, { prefix: 'archive/' }), /prefix rule/);
 
@@ -115,10 +115,10 @@ export = {
     test.throws(() => bucket.addEventNotification(s3.EventType.OBJECT_CREATED, {
       bind: () => ({
         arn: 'ARN',
-        type: s3.BucketNotificationDestinationType.TOPIC
+        type: s3.BucketNotificationDestinationType.TOPIC,
       }),
     }, { suffix: '.png'}, { suffix: '.zip' }), /suffix rule/);
 
     test.done();
-  }
+  },
 };

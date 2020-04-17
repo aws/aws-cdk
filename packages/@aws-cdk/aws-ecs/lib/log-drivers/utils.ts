@@ -48,7 +48,7 @@ export function renderCommonLogDriverOptions(opts: BaseLogDriverProps) {
     'tag': opts.tag,
     'labels': joinWithCommas(opts.labels),
     'env': joinWithCommas(opts.env),
-    'env-regex': opts.envRegex
+    'env-regex': opts.envRegex,
   };
 }
 

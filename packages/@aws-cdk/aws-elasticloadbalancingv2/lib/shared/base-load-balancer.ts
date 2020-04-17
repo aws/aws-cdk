@@ -139,7 +139,7 @@ export abstract class BaseLoadBalancer extends Resource {
       subnets: subnetIds,
       scheme: internetFacing ? 'internet-facing' : 'internal',
       loadBalancerAttributes: Lazy.anyValue({ produce: () => renderAttributes(this.attributes) }, {omitEmptyArray: true} ),
-      ...additionalProps
+      ...additionalProps,
     });
     if (internetFacing) {
       resource.node.addDependency(internetConnectivityEstablished);

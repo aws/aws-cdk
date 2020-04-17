@@ -63,11 +63,11 @@ export class WaiterStateMachine extends Construct {
             ErrorEquals: [ 'States.ALL' ],
             IntervalSeconds: props.interval.toSeconds(),
             MaxAttempts: props.maxAttempts,
-            BackoffRate: props.backoffRate
+            BackoffRate: props.backoffRate,
           }],
           Catch: [{
             ErrorEquals: [ 'States.ALL' ],
-            Next: 'framework-onTimeout-task'
+            Next: 'framework-onTimeout-task',
           }],
           Type: 'Task',
           Resource: props.isCompleteHandler.functionArn,
@@ -75,9 +75,9 @@ export class WaiterStateMachine extends Construct {
         'framework-onTimeout-task': {
           End: true,
           Type: 'Task',
-          Resource: props.timeoutHandler.functionArn
-        }
-      }
+          Resource: props.timeoutHandler.functionArn,
+        },
+      },
     });
 
     const resource = new CfnResource(this, 'Resource', {
@@ -85,7 +85,7 @@ export class WaiterStateMachine extends Construct {
       properties: {
         DefinitionString: definition,
         RoleArn: role.roleArn,
-      }
+      },
     });
     resource.node.addDependency(role);
 
@@ -96,7 +96,7 @@ export class WaiterStateMachine extends Construct {
     return Grant.addToPrincipal({
       grantee: identity,
       actions: [ 'states:StartExecution' ],
-      resourceArns: [ this.stateMachineArn ]
+      resourceArns: [ this.stateMachineArn ],
     });
   }
 }

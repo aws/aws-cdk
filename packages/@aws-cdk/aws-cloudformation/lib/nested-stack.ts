@@ -182,7 +182,7 @@ export class NestedStack extends Stack {
     const templateLocation = this._parentStack.addFileAsset({
       packaging: FileAssetPackaging.FILE,
       sourceHash: templateHash,
-      fileName: this.templateFile
+      fileName: this.templateFile,
     });
 
     // if bucketName/objectKey are cfn parameters from a stack other than the parent stack, they will
@@ -199,7 +199,7 @@ export class NestedStack extends Stack {
         } else {
           return outerValue;
         }
-      }
+      },
     });
   }
 }

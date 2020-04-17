@@ -9,13 +9,13 @@ const READ_OPERATIONS = [
   'kinesis:GetRecords',
   'kinesis:GetShardIterator',
   'kinesis:ListShards',
-  'kinesis:SubscribeToShard'
+  'kinesis:SubscribeToShard',
 ];
 
 const WRITE_OPERATIONS = [
   'kinesis:ListShards',
   'kinesis:PutRecord',
-  'kinesis:PutRecords'
+  'kinesis:PutRecords',
 ];
 
 /**
@@ -272,7 +272,7 @@ export class Stream extends StreamBase {
       name: this.physicalName,
       retentionPeriodHours,
       shardCount,
-      streamEncryption
+      streamEncryption,
     });
 
     this.streamArn = this.getResourceArnAttribute(this.stream.attrArn, {
@@ -305,15 +305,15 @@ export class Stream extends StreamBase {
         new CfnCondition(Stack.of(this), conditionName, {
           expression: Fn.conditionOr(
             Fn.conditionEquals(Aws.REGION, 'cn-north-1'),
-            Fn.conditionEquals(Aws.REGION, 'cn-northwest-1')
-          )
+            Fn.conditionEquals(Aws.REGION, 'cn-northwest-1'),
+          ),
         });
       }
 
       return {
         streamEncryption: Fn.conditionIf(conditionName,
           Aws.NO_VALUE,
-          { EncryptionType: 'KMS', KeyId: 'alias/aws/kinesis'})
+          { EncryptionType: 'KMS', KeyId: 'alias/aws/kinesis'}),
       };
     }
 
@@ -337,12 +337,12 @@ export class Stream extends StreamBase {
 
     if (encryptionType === StreamEncryption.KMS) {
       const encryptionKey = props.encryptionKey || new kms.Key(this, 'Key', {
-        description: `Created by ${this.node.path}`
+        description: `Created by ${this.node.path}`,
       });
 
       const streamEncryption: CfnStream.StreamEncryptionProperty = {
         encryptionType: 'KMS',
-        keyId: encryptionKey.keyArn
+        keyId: encryptionKey.keyArn,
       };
       return { encryptionKey, streamEncryption };
     }

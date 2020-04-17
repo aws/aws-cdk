@@ -67,8 +67,8 @@ export class Construct extends constructs.Construct implements IConstruct {
     super(scope, id, {
       nodeFactory: {
         createNode: (h: constructs.Construct, s: constructs.IConstruct, i: string) =>
-          new ConstructNode(h as Construct, s as IConstruct, i)._actualNode
-      }
+          new ConstructNode(h as Construct, s as IConstruct, i)._actualNode,
+      },
     });
 
     Object.defineProperty(this, CONSTRUCT_SYMBOL, { value: true });
@@ -117,7 +117,7 @@ export class Construct extends constructs.Construct implements IConstruct {
   protected onSynthesize(session: constructs.ISynthesisSession): void {
     this.synthesize({
       outdir: session.outdir,
-      assembly: session.assembly!
+      assembly: session.assembly!,
     });
   }
 
@@ -227,8 +227,8 @@ export class ConstructNode {
       outdir: builder.outdir,
       skipValidation: options.skipValidation,
       sessionContext: {
-        assembly: builder
-      }
+        assembly: builder,
+      },
     });
 
     return builder.buildAssembly(options);
@@ -264,7 +264,7 @@ export class ConstructNode {
     Object.defineProperty(this._actualNode, ORIGINAL_CONSTRUCT_NODE_SYMBOL, {
       value: this,
       configurable: false,
-      enumerable: false
+      enumerable: false,
     });
   }
 

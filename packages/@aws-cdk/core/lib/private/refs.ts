@@ -128,7 +128,7 @@ function findAllReferences(root: Construct) {
 
         result.push({
           source: consumer,
-          value: token
+          value: token,
         });
       }
     }  catch (e) {

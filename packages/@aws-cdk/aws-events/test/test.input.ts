@@ -21,9 +21,9 @@ export = {
       expect(stack).to(haveResourceLike('AWS::Events::Rule', {
         Targets: [
           {
-            Input: '{"SomeObject":"withAValue"}'
-          }
-        ]
+            Input: '{"SomeObject":"withAValue"}',
+          },
+        ],
       }));
       test.done();
     },
@@ -47,7 +47,7 @@ export = {
           {
             InputTransformer: {
               InputPathsMap: {
-                f1: '$'
+                f1: '$',
               },
               InputTemplate: {
                 'Fn::Join': [
@@ -55,13 +55,13 @@ export = {
                   [
                     '{"data":<f1>,"stackName":"',
                     { Ref: 'AWS::StackName' },
-                    '"}'
-                  ]
-                ]
+                    '"}',
+                  ],
+                ],
               },
-            }
-          }
-        ]
+            },
+          },
+        ],
       }));
 
       test.done();
@@ -90,15 +90,15 @@ export = {
                   {
                     'Fn::GetAtt': [
                       'User00B015A1',
-                      'Arn'
-                    ]
+                      'Arn',
+                    ],
                   },
-                  '\"}'
-                ]
-              ]
-            }
-          }
-        ]
+                  '\"}',
+                ],
+              ],
+            },
+          },
+        ],
       }));
       test.done();
     },
@@ -119,9 +119,9 @@ export = {
       expect(stack).to(haveResourceLike('AWS::Events::Rule', {
         Targets: [
           {
-            Input: '"I have"\n"multiple lines"'
-          }
-        ]
+            Input: '"I have"\n"multiple lines"',
+          },
+        ],
       }));
 
       test.done();
@@ -141,9 +141,9 @@ export = {
       expect(stack).to(haveResourceLike('AWS::Events::Rule', {
         Targets: [
           {
-            Input: '"this is not\\\\na real newline"'
-          }
-        ]
+            Input: '"this is not\\\\na real newline"',
+          },
+        ],
       }));
 
       test.done();
@@ -165,13 +165,13 @@ export = {
       expect(stack).to(haveResourceLike('AWS::Events::Rule', {
         Targets: [
           {
-            Input: '"hello world"'
-          }
-        ]
+            Input: '"hello world"',
+          },
+        ],
       }));
 
       test.done();
-    }
+    },
   },
 };
 

@@ -16,8 +16,8 @@ test('Modify an InstanceFleet with static ClusterId, InstanceFleetName, and Inst
       clusterId: 'ClusterId',
       instanceFleetName: 'InstanceFleetName',
       targetOnDemandCapacity: 2,
-      targetSpotCapacity: 0
-    })
+      targetSpotCapacity: 0,
+    }),
   });
 
   // THEN
@@ -41,8 +41,8 @@ test('Modify an InstanceFleet with static ClusterId, InstanceFleetName, and Inst
       InstanceFleetName: 'InstanceFleetName',
       InstanceFleet: {
         TargetOnDemandCapacity: 2,
-        TargetSpotCapacity: 0
-      }
+        TargetSpotCapacity: 0,
+      },
     },
   });
 });
@@ -54,8 +54,8 @@ test('Modify an InstanceFleet with ClusterId from payload and static InstanceFle
       clusterId: sfn.Data.stringAt('$.ClusterId'),
       instanceFleetName: 'InstanceFleetName',
       targetOnDemandCapacity: 2,
-      targetSpotCapacity: 0
-    })
+      targetSpotCapacity: 0,
+    }),
   });
 
   // THEN
@@ -79,8 +79,8 @@ test('Modify an InstanceFleet with ClusterId from payload and static InstanceFle
       'InstanceFleetName': 'InstanceFleetName',
       'InstanceFleet': {
         TargetOnDemandCapacity: 2,
-        TargetSpotCapacity: 0
-      }
+        TargetSpotCapacity: 0,
+      },
     },
   });
 });
@@ -92,8 +92,8 @@ test('Modify an InstanceFleet with static ClusterId and InstanceFleetConfigurate
       clusterId: 'ClusterId',
       instanceFleetName: sfn.Data.stringAt('$.InstanceFleetName'),
       targetOnDemandCapacity: 2,
-      targetSpotCapacity: 0
-    })
+      targetSpotCapacity: 0,
+    }),
   });
 
   // THEN
@@ -117,8 +117,8 @@ test('Modify an InstanceFleet with static ClusterId and InstanceFleetConfigurate
       'InstanceFleetName.$': '$.InstanceFleetName',
       'InstanceFleet': {
         TargetOnDemandCapacity: 2,
-        TargetSpotCapacity: 0
-      }
+        TargetSpotCapacity: 0,
+      },
     },
   });
 });
@@ -130,8 +130,8 @@ test('Modify an InstanceFleet with static ClusterId and InstanceFleetName and Ta
       clusterId: 'ClusterId',
       instanceFleetName: 'InstanceFleetName',
       targetOnDemandCapacity: sfn.Data.numberAt('$.TargetOnDemandCapacity'),
-      targetSpotCapacity: sfn.Data.numberAt('$.TargetSpotCapacity')
-    })
+      targetSpotCapacity: sfn.Data.numberAt('$.TargetSpotCapacity'),
+    }),
   });
 
   // THEN
@@ -155,8 +155,8 @@ test('Modify an InstanceFleet with static ClusterId and InstanceFleetName and Ta
       InstanceFleetName: 'InstanceFleetName',
       InstanceFleet: {
         'TargetOnDemandCapacity.$': '$.TargetOnDemandCapacity',
-        'TargetSpotCapacity.$': '$.TargetSpotCapacity'
-      }
+        'TargetSpotCapacity.$': '$.TargetSpotCapacity',
+      },
     },
   });
 });

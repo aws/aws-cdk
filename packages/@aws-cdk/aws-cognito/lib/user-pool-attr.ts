@@ -257,7 +257,7 @@ export class NumberAttribute implements ICustomAttribute {
 export class BooleanAttribute implements ICustomAttribute {
   public bind(): CustomAttributeConfig {
     return {
-      dataType: 'Boolean'
+      dataType: 'Boolean',
     };
   }
 }
@@ -268,7 +268,7 @@ export class BooleanAttribute implements ICustomAttribute {
 export class DateTimeAttribute implements ICustomAttribute {
   public bind(): CustomAttributeConfig {
     return {
-      dataType: 'DateTime'
+      dataType: 'DateTime',
     };
   }
 }

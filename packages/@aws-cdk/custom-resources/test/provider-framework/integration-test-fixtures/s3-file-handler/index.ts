@@ -39,7 +39,7 @@ export async function putObject(event: AWSCDKAsyncCustomResource.OnEventRequest)
     Bucket: bucketName,
     Key: objectKey,
     Body: contents,
-    ACL: publicRead ? 'public-read' : undefined
+    ACL: publicRead ? 'public-read' : undefined,
   }).promise();
 
   // NOTE: updates to the object key will be handled automatically: a new object will be put and then we return
@@ -51,8 +51,8 @@ export async function putObject(event: AWSCDKAsyncCustomResource.OnEventRequest)
     Data: {
       [api.ATTR_OBJECT_KEY]: objectKey,
       [api.ATTR_ETAG]: resp.ETag,
-      [api.ATTR_URL]: `https://${bucketName}.s3.amazonaws.com/${objectKey}`
-    }
+      [api.ATTR_URL]: `https://${bucketName}.s3.amazonaws.com/${objectKey}`,
+    },
   };
 }
 
