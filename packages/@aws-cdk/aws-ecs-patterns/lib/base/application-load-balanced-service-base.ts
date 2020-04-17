@@ -1,8 +1,8 @@
 import { DnsValidatedCertificate, ICertificate } from '@aws-cdk/aws-certificatemanager';
 import { IVpc } from '@aws-cdk/aws-ec2';
 import { AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerImage, ICluster, LogDriver, PropagatedTagSource, Secret } from '@aws-cdk/aws-ecs';
-import { AddRuleProps, ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationTargetGroup,
-  IApplicationLoadBalancer, ListenerCertificate, NetworkListener} from '@aws-cdk/aws-elasticloadbalancingv2';
+import { ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationTargetGroup,
+  IApplicationLoadBalancer, ListenerCertificate } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { IRole } from '@aws-cdk/aws-iam';
 import { ARecord, IHostedZone, RecordTarget } from '@aws-cdk/aws-route53';
 import { LoadBalancerTarget } from '@aws-cdk/aws-route53-targets';
@@ -326,10 +326,6 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
     const protocol = props.protocol !== undefined ? props.protocol :
       (props.certificate ? ApplicationProtocol.HTTPS : ApplicationProtocol.HTTP);
 
-    if (props.certificate === undefined && props.containerProtocol === ApplicationProtocol.HTTPS) {
-        throw new Error('A certificate must be given if container protocol is HTTPS')
-    }
-
     const containerProtocol = props.containerProtocol !== undefined ? props.containerProtocol : ApplicationProtocol.HTTP;
 
     const targetProps = {
@@ -344,7 +340,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
     });
 
     this.targetGroup = this.listener.addTargets('ECS', targetProps);
-    if (protocol === ApplicationProtocol.HTTPS) {
+    if (protocol === ApplicationProtocol.HTTPS || containerProtocol === ApplicationProtocol.HTTPS) {
       if (typeof props.domainName === 'undefined' || typeof props.domainZone === 'undefined') {
         throw new Error('A domain name and zone is required when using the HTTPS protocol');
       }

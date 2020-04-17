@@ -6,7 +6,6 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as ecsPatterns from '../../lib';
-import { ApplicationListenerCertificate } from '../../../aws-elasticloadbalancingv2/lib/alb/application-listener-certificate';
 
 export = {
   'setting loadBalancerType to Network creates an NLB Public'(test: Test) {
@@ -451,7 +450,6 @@ export = {
       protocol: ApplicationProtocol.HTTPS,
       containerProtocol: ApplicationProtocol.HTTPS,
       taskImageOptions: {
-        containerPort: 2020,
         image: ecs.ContainerImage.fromRegistry('abiosoft/caddy')
       },
       domainName: 'domain.com',
@@ -466,8 +464,7 @@ export = {
 
     // THEN
     expect(stack).to(haveResourceLike('AWS::ElasticLoadBalancingV2::TargetGroup', {
-      Port: 2020,
-      Protocol: "HTTPS",
+      Protocol: 'HTTPS',
     }));
 
     test.done();
