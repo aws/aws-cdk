@@ -1,6 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
-import {Construct, Resource} from '@aws-cdk/core';
+import {Construct, Resource, Tag} from '@aws-cdk/core';
 import {CfnFileSystem, CfnMountTarget} from './efs.generated';
 
 // tslint:disable: max-line-length
@@ -113,6 +113,13 @@ export interface EfsFileSystemProps {
    * @default - false
    */
   readonly encrypted?: boolean;
+
+  /**
+   * The filesystem's name.
+   *
+   * @default - CDK generated name
+   */
+  readonly fileSystemName?: string;
 
   /**
    * The KMS key used for encryption. This is required to encrypt the data at rest if @encrypted is set to true.
@@ -255,6 +262,7 @@ export class EfsFileSystem extends EfsFileSystemBase {
 
     this.fileSystemId = this.efsFileSystem.ref;
     this.node.defaultChild = this.efsFileSystem;
+    Tag.add(this, 'Name', props.fileSystemName || this.node.path);
 
     const securityGroup = (props.securityGroup || new ec2.SecurityGroup(this, 'EfsSecurityGroup', {
       vpc: props.vpc
