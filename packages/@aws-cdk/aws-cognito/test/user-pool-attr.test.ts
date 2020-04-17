@@ -3,7 +3,7 @@ import { BooleanAttribute, CustomAttributeConfig, DateTimeAttribute, ICustomAttr
 
 describe('User Pool Attributes', () => {
 
-  describe('BaseCustomAttributeProperties', () => {
+  describe('mutable', () => {
     test('default', () => {
       // GIVEN
       const allAttributes: ICustomAttribute[] = [
@@ -22,7 +22,7 @@ describe('User Pool Attributes', () => {
       });
     });
 
-    describe('CustomAttribute base properties are set true as expected', () => {
+    describe('mutable is set to true when specified', () => {
       // GIVEN
       const allTrueProps = {
         mutable: true,
@@ -45,7 +45,7 @@ describe('User Pool Attributes', () => {
       });
     });
 
-    describe('CustomAttribute base properties are set false as expected', () => {
+    describe('mutable is set to false', () => {
       // GIVEN
       const allFalseProps = {
         mutable: false,
