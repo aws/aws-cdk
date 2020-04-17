@@ -15,4 +15,4 @@ tslint.json
 .nyc_output
 coverage
 nyc.config.js
-!.eslinrc.js
+!.eslintrc.js
