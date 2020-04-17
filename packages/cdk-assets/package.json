@@ -32,7 +32,7 @@
     "@types/glob": "^7.1.1",
     "@types/jest": "^25.2.1",
     "@types/mock-fs": "^4.10.0",
-    "@types/node": "^10.17.18",
+    "@types/node": "^13.11.1",
     "@types/yargs": "^15.0.4",
     "@types/jszip": "^3.1.7",
     "jszip": "^3.3.0",
