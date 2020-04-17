@@ -33,7 +33,7 @@ module.exports = {
     '@typescript-eslint/no-require-imports': [ 'error' ],
     '@typescript-eslint/indent': [ 'error', 2 ],
     'quotes': [ 'error', 'single', { avoidEscape: true } ],
-    'comma-dangle': [ 'error', 'always-multiline' ], // ensures clean diffs, see https://medium.com/@nikgraf/why-you-should-enforce-dangling-commas-for-multiline-statements-d034c98e36f8
+    'comma-dangle': [ 'error', 'always-multiline' ], // ensures clean diffs
 
     // Require all imported dependencies are actually declared in package.json
     'import/no-extraneous-dependencies': [
