@@ -25,15 +25,7 @@
   "cdk-build": {
     "pre": [
       "./generate.sh"
-    ],
-    "eslint": {
-      "ignore-pattern": [
-        "lib/init-templates/*/typescript/**/*.ts",
-        "lib/init-templates/*/javascript/**/*.js",
-        "test/integ/cli/app/**/*.js",
-        "test/integ/cli/cloud-assemblies/**/*.json.js"
-      ]
-    }
+    ]
   },
   "author": {
     "name": "Amazon Web Services",
