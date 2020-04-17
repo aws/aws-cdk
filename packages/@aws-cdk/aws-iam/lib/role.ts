@@ -10,6 +10,9 @@ import { ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals'
 import { ImmutableRole } from './private/immutable-role';
 import { AttachedPolicies } from './util';
 
+/**
+ * Properties for defining an IAM Role
+ */
 export interface RoleProps {
   /**
    * The IAM principal (i.e. `new ServicePrincipal('sns.amazonaws.com')`)
