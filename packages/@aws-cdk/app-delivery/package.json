@@ -94,6 +94,9 @@
   },
   "stability": "experimental",
   "maturity": "experimental",
+  "nyc": {
+    "statements": 75
+  },
   "awslint": {
     "exclude": [
       "docs-public-apis:@aws-cdk/app-delivery.PipelineDeployStackAction.actionProperties",
