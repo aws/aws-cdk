@@ -114,7 +114,7 @@ export interface FileAssetLocation {
    *
    * @example https://s3-us-east-1.amazonaws.com/mybucket/myobject
    */
-  readonly s3Url: string;
+  readonly httpUrl: string;
 }
 
 /**

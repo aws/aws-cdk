@@ -94,6 +94,7 @@
     "minimatch"
   ],
   "stability": "experimental",
+  "maturity": "experimental",
   "awslint": {
     "exclude": [
       "docs-public-apis:@aws-cdk/assets.StagingProps",

@@ -117,5 +117,6 @@
   "awscdkio": {
     "announce": false
   },
-  "jest": {}
+  "jest": {},
+  "maturity": "stable"
 }
