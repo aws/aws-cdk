@@ -88,3 +88,49 @@ const globalTable = new dynamodb.Table(this, 'Table', {
 
 When doing so, a CloudFormation Custom Resource will be added to the stack in order to create the replica tables in the
 selected regions.
+
+### Encryption
+
+All user data stored in Amazon DynamoDB is fully encrypted at rest. When creating a new table, you can choose to encrypt using the following customer master keys (CMK) to encrypt your table:
+* AWS owned CMK – Default encryption type. The key is owned by DynamoDB (no additional charge).
+* AWS managed CMK – The key is stored in your account and is managed by AWS KMS (AWS KMS charges apply).
+* Customer managed CMK – The key is stored in your account and is created, owned, and managed by you. You have full control over the CMK (AWS KMS charges apply).
+
+Define a Customer managed CMK encrypted Table:
+
+```ts
+  const table = new Table(stack, CONSTRUCT_NAME, {
+    serverSideEncryption: TableEncryption.Customer_Managed,
+    partitionKey: TABLE_PARTITION_KEY
+  });
+
+// you can access the encryption key:
+assert(table.encryptionKey instanceof kms.Key);
+```
+
+You can also supply your own key:
+
+```ts
+  const encryptionKey = new kms.Key(stack, 'Key', {
+    enableKeyRotation: true
+  });
+  const table = new Table(stack, CONSTRUCT_NAME, {
+    serverSideEncryption: TableEncryption.Customer_Managed,
+    encryptionKey,
+    partitionKey: TABLE_PARTITION_KEY,
+  });
+
+assert(table.encryptionKey === encryptionKey);
+```
+
+Use `TableEncryption.AWS_Managed`:
+
+```ts
+  const table = new Table(stack, CONSTRUCT_NAME, {
+    serverSideEncryption: TableEncryption.AWS_Managed,
+    encryptionKey,
+    partitionKey: TABLE_PARTITION_KEY,
+  });
+
+assert(table.encryptionKey == null);
+```
