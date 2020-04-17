@@ -77,7 +77,7 @@ export class HelmChart extends Construct {
     // we maintain a single manifest custom resource handler for each cluster
     const handler = this.getOrCreateHelmChartHandler(props.cluster);
     if (!handler) {
-      throw new Error(`Cannot define a Helm chart on a cluster with kubectl disabled`);
+      throw new Error('Cannot define a Helm chart on a cluster with kubectl disabled');
     }
 
     new CustomResource(this, 'Resource', {
@@ -106,7 +106,7 @@ export class HelmChart extends Construct {
         runtime: lambda.Runtime.PYTHON_3_7,
         handler: 'index.handler',
         timeout: Duration.minutes(15),
-        layers: [ KubectlLayer.getOrCreate(this, { version: "2.0.0-beta1" }) ],
+        layers: [ KubectlLayer.getOrCreate(this, { version: '2.0.0-beta1' }) ],
         memorySize: 256,
         environment: {
           CLUSTER_NAME: cluster.clusterName,

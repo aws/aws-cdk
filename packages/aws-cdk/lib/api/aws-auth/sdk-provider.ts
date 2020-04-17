@@ -8,7 +8,7 @@ import * as path from 'path';
 import { debug } from '../../logging';
 import { cached } from '../../util/functions';
 import { CredentialPlugins } from '../aws-auth/credential-plugins';
-import { Mode } from "../aws-auth/credentials";
+import { Mode } from '../aws-auth/credentials';
 import { AwsCliCompatible } from './awscli-compatible';
 import { ISDK, SDK } from './sdk';
 
@@ -88,14 +88,15 @@ export class SdkProvider {
    * class `AwsCliCompatible` for the details.
    */
   public static async withAwsCliCompatibleDefaults(options: SdkProviderOptions = {}) {
-    const chain = await AwsCliCompatible.credentialChain(options.profile, options.ec2creds, options.containerCreds);
+    const sdkOptions = parseHttpOptions(options.httpOptions ?? {});
+
+    const chain = await AwsCliCompatible.credentialChain(options.profile, options.ec2creds, options.containerCreds, sdkOptions.httpOptions);
     const region = await AwsCliCompatible.region(options.profile);
 
-    return new SdkProvider(chain, region, options.httpOptions);
+    return new SdkProvider(chain, region, sdkOptions);
   }
 
   private readonly plugins = new CredentialPlugins();
-  private readonly httpOptions: ConfigurationOptions;
 
   public constructor(
     private readonly defaultChain: AWS.CredentialProviderChain,
@@ -103,9 +104,8 @@ export class SdkProvider {
      * Default region
      */
     public readonly defaultRegion: string,
-    httpOptions: SdkHttpOptions = {}) {
-      this.httpOptions = defaultHttpOptions(httpOptions);
-    }
+    private readonly sdkOptions: ConfigurationOptions = {}) {
+  }
 
   /**
    * Return an SDK which can do operations in the given environment
@@ -116,7 +116,7 @@ export class SdkProvider {
   public async forEnvironment(accountId: string | undefined, region: string | undefined, mode: Mode): Promise<ISDK> {
     const env = await this.resolveEnvironment(accountId, region);
     const creds = await this.obtainCredentials(env.account, mode);
-    return new SDK(creds, env.region, this.httpOptions);
+    return new SDK(creds, env.region, this.sdkOptions);
   }
 
   /**
@@ -139,12 +139,12 @@ export class SdkProvider {
       },
       stsConfig: {
         region,
-        ...this.httpOptions,
+        ...this.sdkOptions,
       },
       masterCredentials: await this.defaultCredentials(),
     });
 
-    return new SDK(creds, region, this.httpOptions);
+    return new SDK(creds, region, this.sdkOptions);
   }
 
   /**
@@ -158,11 +158,11 @@ export class SdkProvider {
     accountId = accountId !== cxapi.UNKNOWN_ACCOUNT ? accountId : (await this.defaultAccount())?.accountId;
 
     if (!region) {
-      throw new Error(`AWS region must be configured either when you configure your CDK stack or through the environment`);
+      throw new Error('AWS region must be configured either when you configure your CDK stack or through the environment');
     }
 
     if (!accountId) {
-      throw new Error(`Unable to resolve AWS account to use. It must be either configured when you define your CDK or through the environment`);
+      throw new Error('Unable to resolve AWS account to use. It must be either configured when you define your CDK or through the environment');
     }
 
     const environment: cxapi.Environment = {
@@ -199,7 +199,7 @@ export class SdkProvider {
           throw new Error('Unable to resolve AWS credentials (setup with "aws configure")');
         }
 
-        return new SDK(creds, this.defaultRegion, this.httpOptions).currentAccount();
+        return new SDK(creds, this.defaultRegion, this.sdkOptions).currentAccount();
       } catch (e) {
         debug('Unable to determine the default AWS account:', e);
         return undefined;
@@ -228,7 +228,7 @@ export class SdkProvider {
 
     // No luck, format a useful error message
     const error = [`Need to perform AWS calls for account ${accountId}`];
-    error.push(defaultAccountId ? `but the current credentials are for ${defaultAccountId}` : `but no credentials have been configured`);
+    error.push(defaultAccountId ? `but the current credentials are for ${defaultAccountId}` : 'but no credentials have been configured');
     if (this.plugins.availablePluginNames.length > 0) {
       error.push(`and none of these plugins found any: ${this.plugins.availablePluginNames.join(', ')}`);
     }
@@ -269,8 +269,11 @@ export interface Account {
  * Get HTTP options for the SDK
  *
  * Read from user input or environment variables.
+ *
+ * Returns a complete `ConfigurationOptions` object because that's where
+ * `customUserAgent` lives, but `httpOptions` is the most important attribute.
  */
-function defaultHttpOptions(options: SdkHttpOptions) {
+function parseHttpOptions(options: SdkHttpOptions) {
   const config: ConfigurationOptions = {};
   config.httpOptions = {};
 

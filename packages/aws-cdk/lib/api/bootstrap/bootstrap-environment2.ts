@@ -1,3 +1,4 @@
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
 import * as os from 'os';
@@ -6,9 +7,10 @@ import { BootstrapEnvironmentProps, deployStack, DeployStackResult } from '..';
 import { loadStructuredFile } from '../../serialize';
 import { Mode, SdkProvider } from '../aws-auth';
 
-export async function bootstrapEnvironment2(environment: cxapi.Environment, sdkProvider: SdkProvider,
-                                            toolkitStackName: string, roleArn: string | undefined,
-                                            props: BootstrapEnvironmentProps = {}): Promise<DeployStackResult> {
+export async function bootstrapEnvironment2(
+  environment: cxapi.Environment, sdkProvider: SdkProvider,
+  toolkitStackName: string, roleArn: string | undefined,
+  props: BootstrapEnvironmentProps = {}): Promise<DeployStackResult> {
   if (props.trustedAccounts?.length && !props.cloudFormationExecutionPolicies?.length) {
     throw new Error('--cloudformation-execution-policies are required if --trust has been passed!');
   }
@@ -25,7 +27,7 @@ export async function bootstrapEnvironment2(environment: cxapi.Environment, sdkP
     bootstrapTemplateObject);
 
   builder.addArtifact(toolkitStackName, {
-    type: cxapi.ArtifactType.AWS_CLOUDFORMATION_STACK,
+    type: cxschema.ArtifactType.AWS_CLOUDFORMATION_STACK,
     environment: cxapi.EnvironmentUtils.format(environment.account, environment.region),
     properties: {
       templateFile,

@@ -1,5 +1,5 @@
-import { App, SecretValue, Stack } from "@aws-cdk/core";
-import { User } from "../lib";
+import { App, SecretValue, Stack } from '@aws-cdk/core';
+import { User } from '../lib';
 
 const app = new App();
 

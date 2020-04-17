@@ -1,4 +1,5 @@
-import { TemplateParameters } from '../../lib/api/util/cloudformation';
+import { CloudFormationStack, TemplateParameters } from '../../lib/api/util/cloudformation';
+import { MockedObject, MockSdkProvider, SyncHandlerSubsetOf } from './mock-sdk';
 
 const PARAM = 'TheParameter';
 const DEFAULT = 'TheDefault';
@@ -6,6 +7,29 @@ const OVERRIDE = 'TheOverride';
 
 const USE_OVERRIDE = { ParameterKey: PARAM, ParameterValue: OVERRIDE };
 const USE_PREVIOUS = { ParameterKey: PARAM, UsePreviousValue: true };
+
+let sdkProvider: MockSdkProvider;
+let cfnMocks: MockedObject<SyncHandlerSubsetOf<AWS.CloudFormation>>;
+let cfn: AWS.CloudFormation;
+beforeEach(async () => {
+  sdkProvider = new MockSdkProvider();
+
+  cfnMocks = {
+    describeStacks: jest.fn()
+      // No stacks exist
+      .mockImplementation(() => ({ Stacks: [] })),
+  };
+  sdkProvider.stubCloudFormation(cfnMocks as any);
+  cfn = (await sdkProvider.forEnvironment()).cloudFormation();
+});
+
+test('A non-existent stack pretends to have an empty template', async () => {
+  // WHEN
+  const stack = await CloudFormationStack.lookup(cfn, 'Dummy');
+
+  // THEN
+  expect(await stack.template()).toEqual({});
+});
 
 test('given override, always use the override', () => {
   for (const haveDefault of [false, true]) {

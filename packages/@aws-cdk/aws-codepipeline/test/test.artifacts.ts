@@ -201,25 +201,25 @@ export = {
       });
 
       expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
-        "Stages": [
+        'Stages': [
           {
-            "Name": "Source.@",
-            "Actions": [
+            'Name': 'Source.@',
+            'Actions': [
               {
-                "Name": "source1",
-                "OutputArtifacts": [
-                  { "Name": "Artifact_Source_source1" },
+                'Name': 'source1',
+                'OutputArtifacts': [
+                  { 'Name': 'Artifact_Source_source1' },
                 ],
               },
             ],
           },
           {
-            "Name": "Build",
-            "Actions": [
+            'Name': 'Build',
+            'Actions': [
               {
-                "Name": "build1",
-                "InputArtifacts": [
-                  { "Name": "Artifact_Source_source1" },
+                'Name': 'build1',
+                'InputArtifacts': [
+                  { 'Name': 'Artifact_Source_source1' },
                 ],
               },
             ],

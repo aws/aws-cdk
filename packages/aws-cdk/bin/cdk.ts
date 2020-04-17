@@ -78,7 +78,7 @@ async function parseCommandLineArguments() {
       .option('context-lines', { type: 'number', desc: 'Number of context lines to include in arbitrary JSON diff rendering', default: 3, requiresArg: true })
       .option('template', { type: 'string', desc: 'The path to the CloudFormation template to compare with', requiresArg: true })
       .option('strict', { type: 'boolean', desc: 'Do not filter out AWS::CDK::Metadata resources', default: false }))
-      .option('fail', { type: 'boolean', desc: 'Fail with exit code 1 in case of diff', default: false })
+    .option('fail', { type: 'boolean', desc: 'Fail with exit code 1 in case of diff', default: false })
     .command('metadata [STACK]', 'Returns all metadata associated with this stack')
     .command('init [TEMPLATE]', 'Create a new, empty CDK project from a template. Invoked without TEMPLATE, the app template will be used.', yargs => yargs
       .option('language', { type: 'string', alias: 'l', desc: 'The language to be used for the new project (default can be configured in ~/.cdk.json)', choices: initTemplateLanuages })
@@ -222,8 +222,8 @@ async function initCommandLine() {
         const parameterMap: { [name: string]: string | undefined } = {};
         for (const parameter of args.parameters) {
           if (typeof parameter === 'string') {
-            const keyValue = (parameter as string).split('=', 2);
-            parameterMap[keyValue[0]] = keyValue[1];
+            const keyValue = (parameter as string).split('=');
+            parameterMap[keyValue[0]] = keyValue.slice(1).join('=');
           }
         }
         return await cli.deploy({

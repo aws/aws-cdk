@@ -10,10 +10,12 @@
  * This file, in its entirety, is expected to be removed in v2.0.
  */
 
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as constructs from 'constructs';
 import { IAspect } from './aspect';
 import { IDependable } from './dependency';
+import { Token } from './token';
 
 const ORIGINAL_CONSTRUCT_NODE_SYMBOL = Symbol.for('@aws-cdk/core.ConstructNode');
 const CONSTRUCT_SYMBOL = Symbol.for('@aws-cdk/core.Construct');
@@ -69,6 +71,10 @@ export class Construct extends constructs.Construct implements IConstruct {
           new ConstructNode(h as Construct, s as IConstruct, i)._actualNode
       }
     });
+
+    if (Token.isUnresolved(id)) {
+      throw new Error(`Cannot use tokens in construct ID: ${id}`);
+    }
 
     Object.defineProperty(this, CONSTRUCT_SYMBOL, { value: true });
     this.node = ConstructNode._unwrap(constructs.Node.of(this));
@@ -208,7 +214,7 @@ export class ConstructNode {
   public static _unwrap(c: constructs.Node): ConstructNode {
     const x = (c as any)[ORIGINAL_CONSTRUCT_NODE_SYMBOL];
     if (!x) {
-      throw new Error(`invalid ConstructNode type`);
+      throw new Error('invalid ConstructNode type');
     }
 
     return x;
@@ -353,7 +359,12 @@ export class ConstructNode {
    * @param key The context key
    * @param value The context value
    */
-  public setContext(key: string, value: any) { this._actualNode.setContext(key, value); }
+  public setContext(key: string, value: any) {
+    if (Token.isUnresolved(key)) {
+      throw new Error('Invalid context key: context keys can\'t include tokens');
+    }
+    this._actualNode.setContext(key, value);
+  }
 
   /**
    * Retrieves a value from tree context.
@@ -363,7 +374,12 @@ export class ConstructNode {
    * @param key The context key
    * @returns The context value or `undefined` if there is no context value for thie key.
    */
-  public tryGetContext(key: string): any { return this._actualNode.tryGetContext(key); }
+  public tryGetContext(key: string): any {
+    if (Token.isUnresolved(key)) {
+      throw new Error('Invalid context key: context keys can\'t include tokens');
+    }
+    return this._actualNode.tryGetContext(key);
+  }
 
   /**
    * An immutable array of metadata objects associated with this construct.
@@ -389,7 +405,7 @@ export class ConstructNode {
    * @param message The info message.
    */
   public addInfo(message: string): void {
-    this._actualNode.addMetadata(cxapi.INFO_METADATA_KEY, message);
+    this._actualNode.addMetadata(cxschema.ArtifactMetadataEntryType.INFO, message);
   }
 
   /**
@@ -399,7 +415,7 @@ export class ConstructNode {
    * @param message The warning message.
    */
   public addWarning(message: string): void {
-    this._actualNode.addMetadata(cxapi.WARNING_METADATA_KEY, message);
+    this._actualNode.addMetadata(cxschema.ArtifactMetadataEntryType.WARN, message);
   }
 
   /**
@@ -408,7 +424,7 @@ export class ConstructNode {
    * @param message The error message.
    */
   public addError(message: string) {
-    this._actualNode.addMetadata(cxapi.ERROR_METADATA_KEY, message);
+    this._actualNode.addMetadata(cxschema.ArtifactMetadataEntryType.ERROR, message);
   }
 
   /**

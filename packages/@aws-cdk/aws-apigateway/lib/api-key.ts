@@ -1,6 +1,6 @@
 import { Construct, IResource as IResourceBase, Resource } from '@aws-cdk/core';
 import { CfnApiKey } from './apigateway.generated';
-import { ResourceOptions } from "./resource";
+import { ResourceOptions } from './resource';
 import { RestApi } from './restapi';
 
 /**

@@ -1,18 +1,10 @@
 ## Amazon Kinesis Construct Library
 <!--BEGIN STABILITY BANNER-->
-
 ---
 
-![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
+![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
 
-> **This is a _developer preview_ (public beta) module.**
->
-> All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib))
-> are auto-generated from CloudFormation. They are stable and safe to use.
->
-> However, all other classes, i.e., higher level constructs, are under active development and subject to non-backward
-> compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model.
-> This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 <!--END STABILITY BANNER-->
@@ -26,6 +18,10 @@ intake and aggregation.
 - [Streams](#streams)
   - [Encryption](#encryption)
   - [Import](#import)
+  - [Permission Grants](#permission-grants)
+    - [Read Permissions](#read-permissions)
+    - [Write Permissions](#write-permissions)
+    - [Custom Permissions](#custom-permissions)
 
 ## Streams
 
@@ -118,4 +114,79 @@ const importedStream = Stream.fromStreamAttributes(
     )
   }
 );
+```
+
+### Permission Grants
+
+IAM roles, users or groups which need to be able to work with Amazon Kinesis streams at runtime should be granted IAM permissions.
+
+Any object that implements the `IGrantable` interface (has an associated principal) can be granted permissions by calling:
+
+- `grantRead(principal)` - grants the principal read access
+- `grantWrite(principal)` - grants the principal write permissions to a Stream
+- `grantReadWrite(principal)` - grants principal read and write permissions
+
+#### Read Permissions
+
+Grant `read` access to a stream by calling the `grantRead()` API.
+If the stream has an encryption key, read permissions will also be granted to the key.
+
+```ts
+const lambdaRole = new iam.Role(this, 'Role', {
+  assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+  description: 'Example role...',
+}
+
+const stream = new Stream(this, 'MyEncryptedStream', {
+    encryption: StreamEncryption.KMS
+});
+
+// give lambda permissions to read stream
+stream.grantRead(lambdaRole);
+```
+
+The following read permissions are provided to a service principal by the `grantRead()` API:
+
+- `kinesis:DescribeStreamSummary`
+- `kinesis:GetRecords`
+- `kinesis:GetShardIterator`
+- `kinesis:ListShards`
+- `kinesis:SubscribeToShard`
+
+#### Write Permissions
+
+Grant `write` permissions to a stream is provided by calling the `grantWrite()` API.
+If the stream has an encryption key, write permissions will also be granted to the key.
+
+```ts
+const lambdaRole = new iam.Role(this, 'Role', {
+  assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+  description: 'Example role...',
+}
+
+const stream = new Stream(this, 'MyEncryptedStream', {
+    encryption: StreamEncryption.KMS
+});
+
+// give lambda permissions to write to stream
+stream.grantWrite(lambdaRole);
+```
+
+The following write permissions are provided to a service principal by the `grantWrite()` API:
+
+- `kinesis:ListShards`
+- `kinesis:PutRecord`
+- `kinesis:PutRecords`
+
+#### Custom Permissions
+
+You can add any set of permissions to a stream by calling the `grant()` API.
+
+```ts
+const user = new iam.User(stack, 'MyUser');
+
+const stream = new Stream(stack, 'MyStream');
+
+// give my user permissions to list shards
+stream.grant(user, 'kinesis:ListShards');
 ```

@@ -77,17 +77,17 @@ export = {
     });
 
     expect(stack).to(haveResourceLike('AWS::Lambda::Function', {
-      Type: "AWS::Lambda::Function",
+      Type: 'AWS::Lambda::Function',
       Properties: {
         Role: {
-          "Fn::GetAtt": [
-            "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC",
-            "Arn"
+          'Fn::GetAtt': [
+            'BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC',
+            'Arn'
           ]
         },
-      }, DependsOn: [ "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36",
-      "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC" ]
-     }, ResourcePart.CompleteDefinition ) );
+      }, DependsOn: [ 'BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36',
+        'BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC' ]
+    }, ResourcePart.CompleteDefinition ) );
 
     test.done();
   },

@@ -33,8 +33,8 @@ export = {
         MyResource1: { Type: 'ResourceType1', Properties: { P1: 1, P2: 2 } },
         MyResource2: { Type: 'ResourceType2' },
         MyResource3: { Type: 'ResourceType3', Properties: { P3: 'Hello' } } },
-       Outputs: {
-         MyOutput: { Description: 'Out!', Value: 'hey' } } });
+      Outputs: {
+        MyOutput: { Description: 'Out!', Value: 'hey' } } });
 
     test.done();
   },
@@ -79,17 +79,17 @@ const template = {
  */
 function clone(obj: any): any {
   switch (typeof obj) {
-  case 'object':
-    if (Array.isArray(obj)) {
-      return obj.map(elt => clone(elt));
-    } else {
-      const cloned: any = {};
-      for (const key of Object.keys(obj)) {
-        cloned[key] = clone(obj[key]);
+    case 'object':
+      if (Array.isArray(obj)) {
+        return obj.map(elt => clone(elt));
+      } else {
+        const cloned: any = {};
+        for (const key of Object.keys(obj)) {
+          cloned[key] = clone(obj[key]);
+        }
+        return cloned;
       }
-      return cloned;
-    }
-  default:
-    return obj;
+    default:
+      return obj;
   }
 }

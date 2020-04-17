@@ -23,7 +23,7 @@ export function toYAML(obj: any): string {
  * Parse YAML
  */
 export function fromYAML(str: string): any {
-    return YAML.parse(str, { schema: 'yaml-1.1' });
+  return YAML.parse(str, { schema: 'yaml-1.1' });
 }
 
 /**

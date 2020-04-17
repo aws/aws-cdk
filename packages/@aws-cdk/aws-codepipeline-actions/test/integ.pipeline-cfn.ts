@@ -36,8 +36,8 @@ const sourceStage = {
   ],
 };
 
-const changeSetName = "ChangeSetIntegTest";
-const stackName = "IntegTest-TestActionStack";
+const changeSetName = 'ChangeSetIntegTest';
+const stackName = 'IntegTest-TestActionStack';
 const role = new Role(stack, 'CfnChangeSetRole', {
   assumedBy: new ServicePrincipal('cloudformation.amazonaws.com'),
 });

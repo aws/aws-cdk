@@ -44,7 +44,7 @@ export = {
     // THEN
     expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
       Source: {
-        BuildSpec: "{\n  \"phases\": [\n    \"say hi\"\n  ]\n}",
+        BuildSpec: '{\n  "phases": [\n    "say hi"\n  ]\n}',
       }
     }));
 
@@ -93,7 +93,7 @@ export = {
       // THEN
       expect(stack).to(haveResource('AWS::CodeBuild::Project', {
         Source: {
-          Type: "GITHUB",
+          Type: 'GITHUB',
           Location: 'https://github.com/testowner/testrepo.git',
           ReportBuildStatus: true,
           GitCloneDepth: 3,
@@ -197,9 +197,9 @@ export = {
 
       // THEN
       expect(stack).to(haveResource('AWS::CodeBuild::SourceCredential', {
-        "ServerType": "GITHUB",
-        "AuthType": "PERSONAL_ACCESS_TOKEN",
-        "Token": "my-access-token",
+        'ServerType': 'GITHUB',
+        'AuthType': 'PERSONAL_ACCESS_TOKEN',
+        'Token': 'my-access-token',
       }));
 
       test.done();
@@ -238,9 +238,9 @@ export = {
 
       // THEN
       expect(stack).to(haveResource('AWS::CodeBuild::SourceCredential', {
-        "ServerType": "GITHUB_ENTERPRISE",
-        "AuthType": "PERSONAL_ACCESS_TOKEN",
-        "Token": "my-access-token",
+        'ServerType': 'GITHUB_ENTERPRISE',
+        'AuthType': 'PERSONAL_ACCESS_TOKEN',
+        'Token': 'my-access-token',
       }));
 
       test.done();
@@ -281,10 +281,10 @@ export = {
 
       // THEN
       expect(stack).to(haveResource('AWS::CodeBuild::SourceCredential', {
-        "ServerType": "BITBUCKET",
-        "AuthType": "BASIC_AUTH",
-        "Username": "my-username",
-        "Token": "password",
+        'ServerType': 'BITBUCKET',
+        'AuthType': 'BASIC_AUTH',
+        'Username': 'my-username',
+        'Token': 'password',
       }));
 
       test.done();
@@ -302,22 +302,22 @@ export = {
         path: 'path',
       }),
       cache: codebuild.Cache.bucket(new s3.Bucket(stack, 'Bucket'), {
-        prefix: "cache-prefix"
+        prefix: 'cache-prefix'
       })
     });
 
     // THEN
     expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
       Cache: {
-        Type: "S3",
+        Type: 'S3',
         Location: {
-          "Fn::Join": [
-            "/",
+          'Fn::Join': [
+            '/',
             [
               {
-                "Ref": "Bucket83908E77"
+                'Ref': 'Bucket83908E77'
               },
-              "cache-prefix"
+              'cache-prefix'
             ]
           ]
         }
@@ -367,11 +367,11 @@ export = {
     // THEN
     expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
       Cache: {
-        Type: "LOCAL",
+        Type: 'LOCAL',
         Modes: [
-          "LOCAL_CUSTOM_CACHE",
-          "LOCAL_DOCKER_LAYER_CACHE",
-          "LOCAL_SOURCE_CACHE"
+          'LOCAL_CUSTOM_CACHE',
+          'LOCAL_DOCKER_LAYER_CACHE',
+          'LOCAL_SOURCE_CACHE'
         ]
       },
     }));
@@ -424,9 +424,9 @@ export = {
     const stack = new cdk.Stack();
 
     const importedRole = iam.Role.fromRoleArn(stack, 'Role',
-        'arn:aws:iam::1234567890:role/service-role/codebuild-bruiser-service-role', {
-      mutable: false,
-    });
+      'arn:aws:iam::1234567890:role/service-role/codebuild-bruiser-service-role', {
+        mutable: false,
+      });
     const vpc = new ec2.Vpc(stack, 'Vpc');
 
     new codebuild.Project(stack, 'Project', {

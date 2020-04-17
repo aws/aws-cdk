@@ -22,7 +22,7 @@ export async function publishAssets(manifest: cdk_assets.AssetManifest, sdk: Sdk
   });
   await publisher.publish();
   if (publisher.hasFailures) {
-    throw new Error(`Failed to publish one or more assets. See the error messages above for more information.`);
+    throw new Error('Failed to publish one or more assets. See the error messages above for more information.');
   }
 }
 

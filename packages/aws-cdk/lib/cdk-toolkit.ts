@@ -1,3 +1,4 @@
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as colors from 'colors/safe';
 import * as fs from 'fs-extra';
@@ -163,7 +164,7 @@ export class CdkToolkit {
               'but terminal (TTY) is not attached so we are unable to get a confirmation from the user');
           }
 
-          const confirmed = await promptly.confirm(`Do you wish to deploy these changes (y/n)?`);
+          const confirmed = await promptly.confirm('Do you wish to deploy these changes (y/n)?');
           if (!confirmed) { throw new Error('Aborted by user'); }
         }
       }
@@ -190,8 +191,8 @@ export class CdkToolkit {
         });
 
         const message = result.noOp
-          ? ` ✅  %s (no changes)`
-          : ` ✅  %s`;
+          ? ' ✅  %s (no changes)'
+          : ' ✅  %s';
 
         success('\n' + message, stack.displayName);
 
@@ -326,8 +327,9 @@ export class CdkToolkit {
    *             all stacks are implicitly selected.
    * @param toolkitStackName the name to be used for the CDK Toolkit stack.
    */
-  public async bootstrap(environmentGlobs: string[], toolkitStackName: string, roleArn: string | undefined,
-                         useNewBootstrapping: boolean, props: BootstrapEnvironmentProps): Promise<void> {
+  public async bootstrap(
+    environmentGlobs: string[], toolkitStackName: string, roleArn: string | undefined,
+    useNewBootstrapping: boolean, props: BootstrapEnvironmentProps): Promise<void> {
     // Two modes of operation.
     //
     // If there is an '--app' argument, we select the environments from the app. Otherwise we just take the user
@@ -590,8 +592,21 @@ export interface DestroyOptions {
  * @returns an array with the tags available in the stack metadata.
  */
 function tagsForStack(stack: cxapi.CloudFormationStackArtifact): Tag[] {
-  const tagLists = stack.findMetadataByType(cxapi.STACK_TAGS_METADATA_KEY).map(x => x.data);
+  const tagLists = stack.findMetadataByType(cxschema.ArtifactMetadataEntryType.STACK_TAGS).map(
+    // the tags in the cloud assembly are stored differently
+    // unfortunately.
+    x => toCloudFormationTags(x.data as cxschema.Tag[]));
   return Array.prototype.concat([], ...tagLists);
+}
+
+/**
+ * Transform tags as they are retrieved from the cloud assembly,
+ * to the way that CloudFormation expects them. (Different casing).
+ */
+function toCloudFormationTags(tags: cxschema.Tag[]): Tag[] {
+  return tags.map(t => {
+    return { Key: t.key, Value: t.value };
+  });
 }
 
 export interface Tag {

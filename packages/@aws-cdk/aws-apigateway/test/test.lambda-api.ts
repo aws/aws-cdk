@@ -27,41 +27,41 @@ export = {
 
     // THEN -- template proxies everything
     expect(stack).to(haveResource('AWS::ApiGateway::Resource', {
-      "PathPart": "{proxy+}"
+      'PathPart': '{proxy+}'
     }));
 
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
-      "HttpMethod": "ANY",
-      "ResourceId": {
-        "Ref": "lambdarestapiproxyE3AE07E3"
+      'HttpMethod': 'ANY',
+      'ResourceId': {
+        'Ref': 'lambdarestapiproxyE3AE07E3'
       },
-      "RestApiId": {
-        "Ref": "lambdarestapiAAD10924"
+      'RestApiId': {
+        'Ref': 'lambdarestapiAAD10924'
       },
-      "AuthorizationType": "NONE",
-      "Integration": {
-        "IntegrationHttpMethod": "POST",
-        "Type": "AWS_PROXY",
-        "Uri": {
-          "Fn::Join": [
-            "",
+      'AuthorizationType': 'NONE',
+      'Integration': {
+        'IntegrationHttpMethod': 'POST',
+        'Type': 'AWS_PROXY',
+        'Uri': {
+          'Fn::Join': [
+            '',
             [
-              "arn:",
+              'arn:',
               {
-                "Ref": "AWS::Partition"
+                'Ref': 'AWS::Partition'
               },
-              ":apigateway:",
+              ':apigateway:',
               {
-                "Ref": "AWS::Region"
+                'Ref': 'AWS::Region'
               },
-              ":lambda:path/2015-03-31/functions/",
+              ':lambda:path/2015-03-31/functions/',
               {
-                "Fn::GetAtt": [
-                  "handlerE1533BD5",
-                  "Arn"
+                'Fn::GetAtt': [
+                  'handlerE1533BD5',
+                  'Arn'
                 ]
               },
-              "/invocations"
+              '/invocations'
             ]
           ]
         }
@@ -97,38 +97,38 @@ export = {
 
     // THEN -- template proxies everything
     expect(stack).to(haveResource('AWS::ApiGateway::Resource', {
-      "PathPart": "{proxy+}"
+      'PathPart': '{proxy+}'
     }));
 
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
-      "HttpMethod": "ANY",
-      "ResourceId": {
-        "Ref": "lambdarestapiproxyE3AE07E3"
+      'HttpMethod': 'ANY',
+      'ResourceId': {
+        'Ref': 'lambdarestapiproxyE3AE07E3'
       },
-      "RestApiId": {
-        "Ref": "lambdarestapiAAD10924"
+      'RestApiId': {
+        'Ref': 'lambdarestapiAAD10924'
       },
-      "AuthorizationType": "NONE",
-      "Integration": {
-        "IntegrationHttpMethod": "POST",
-        "Type": "AWS_PROXY",
-        "Uri": {
-          "Fn::Join": [
-            "",
+      'AuthorizationType': 'NONE',
+      'Integration': {
+        'IntegrationHttpMethod': 'POST',
+        'Type': 'AWS_PROXY',
+        'Uri': {
+          'Fn::Join': [
+            '',
             [
-              "arn:",
+              'arn:',
               {
-                "Ref": "AWS::Partition"
+                'Ref': 'AWS::Partition'
               },
-              ":apigateway:",
+              ':apigateway:',
               {
-                "Ref": "AWS::Region"
+                'Ref': 'AWS::Region'
               },
-              ":lambda:path/2015-03-31/functions/",
+              ':lambda:path/2015-03-31/functions/',
               {
-                "Ref": "alias68BF17F5"
+                'Ref': 'alias68BF17F5'
               },
-              "/invocations"
+              '/invocations'
             ]
           ]
         }
@@ -157,7 +157,7 @@ export = {
 
     // THEN
     expect(stack).notTo(haveResource('AWS::ApiGateway::Resource', {
-      "PathPart": "{proxy+}"
+      'PathPart': '{proxy+}'
     }));
 
     expect(stack).to(haveResource('AWS::ApiGateway::Resource', {
@@ -227,28 +227,28 @@ export = {
         IntegrationResponses: [
           {
             ResponseParameters: {
-              "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
-              "method.response.header.Access-Control-Allow-Origin": "'https://aws.amazon.com'",
-              "method.response.header.Vary": "'Origin'",
-              "method.response.header.Access-Control-Allow-Methods": "'GET,PUT'",
+              'method.response.header.Access-Control-Allow-Headers': "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+              'method.response.header.Access-Control-Allow-Origin': "'https://aws.amazon.com'",
+              'method.response.header.Vary': "'Origin'",
+              'method.response.header.Access-Control-Allow-Methods': "'GET,PUT'",
             },
-            StatusCode: "204"
+            StatusCode: '204'
           }
         ],
         RequestTemplates: {
-          "application/json": "{ statusCode: 200 }"
+          'application/json': '{ statusCode: 200 }'
         },
-        Type: "MOCK"
+        Type: 'MOCK'
       },
       MethodResponses: [
         {
           ResponseParameters: {
-            "method.response.header.Access-Control-Allow-Headers": true,
-            "method.response.header.Access-Control-Allow-Origin": true,
-            "method.response.header.Vary": true,
-            "method.response.header.Access-Control-Allow-Methods": true,
+            'method.response.header.Access-Control-Allow-Headers': true,
+            'method.response.header.Access-Control-Allow-Origin': true,
+            'method.response.header.Vary': true,
+            'method.response.header.Access-Control-Allow-Methods': true,
           },
-          StatusCode: "204"
+          StatusCode: '204'
         }
       ]
     }));

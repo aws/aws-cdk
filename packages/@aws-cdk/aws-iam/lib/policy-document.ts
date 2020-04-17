@@ -56,13 +56,16 @@ export class PolicyDocument implements cdk.IResolvable {
     return this.render();
   }
 
+  /**
+   * Whether the policy document contains any statements.
+   */
   public get isEmpty(): boolean {
     return this.statements.length === 0;
   }
 
   /**
    * The number of statements already added to this policy.
-   * Can be used, for example, to generate uniuqe "sid"s within the policy.
+   * Can be used, for example, to generate unique "sid"s within the policy.
    */
   public get statementCount(): number {
     return this.statements.length;

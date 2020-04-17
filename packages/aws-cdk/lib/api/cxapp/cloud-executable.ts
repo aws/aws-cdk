@@ -70,14 +70,14 @@ export class CloudExecutable {
 
         let tryLookup = true;
         if (previouslyMissingKeys && setsEqual(missingKeys, previouslyMissingKeys)) {
-          debug(`Not making progress trying to resolve environmental context. Giving up.`);
+          debug('Not making progress trying to resolve environmental context. Giving up.');
           tryLookup = false;
         }
 
         previouslyMissingKeys = missingKeys;
 
         if (tryLookup) {
-          debug(`Some context information is missing. Fetching...`);
+          debug('Some context information is missing. Fetching...');
 
           await contextproviders.provideContextValues(assembly.manifest.missing, this.props.configuration.context, this.props.sdkProvider);
 

@@ -287,7 +287,7 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
 
     for (const call of [props.onCreate, props.onUpdate, props.onDelete]) {
       if (call?.physicalResourceId?.responsePath) {
-        AwsCustomResource.breakIgnoreErrorsCircuit([call], "PhysicalResourceId.fromResponse");
+        AwsCustomResource.breakIgnoreErrorsCircuit([call], 'PhysicalResourceId.fromResponse');
       }
     }
 
@@ -350,7 +350,7 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
    * @param dataPath the path to the data
    */
   public getResponseFieldReference(dataPath: string) {
-    AwsCustomResource.breakIgnoreErrorsCircuit([this.props.onCreate, this.props.onUpdate], "getData");
+    AwsCustomResource.breakIgnoreErrorsCircuit([this.props.onCreate, this.props.onUpdate], 'getData');
     return this.customResource.getAtt(dataPath);
   }
 
@@ -366,7 +366,7 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
    * @param dataPath the path to the data
    */
   public getResponseField(dataPath: string): string {
-    AwsCustomResource.breakIgnoreErrorsCircuit([this.props.onCreate, this.props.onUpdate], "getDataString");
+    AwsCustomResource.breakIgnoreErrorsCircuit([this.props.onCreate, this.props.onUpdate], 'getDataString');
     return this.customResource.getAttString(dataPath);
   }
 

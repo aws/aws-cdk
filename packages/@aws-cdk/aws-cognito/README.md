@@ -1,18 +1,14 @@
 ## Amazon Cognito Construct Library
 <!--BEGIN STABILITY BANNER-->
-
 ---
 
-![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
+![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
 
-> **This is a _developer preview_ (public beta) module.**
->
-> All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib))
-> are auto-generated from CloudFormation. They are stable and safe to use.
->
-> However, all other classes, i.e., higher level constructs, are under active development and subject to non-backward
-> compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model.
-> This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
+> All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) are always stable and safe to use.
+
+![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
+
+> The APIs of higher level constructs in this module are experimental and under active development. They are subject to non-backward compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be announced in the release notes. This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
 
 ---
 <!--END STABILITY BANNER-->
@@ -341,13 +337,61 @@ Client](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-sett
 The following code creates an app client and retrieves the client id -
 
 ```ts
-const pool = new UserPool(this, 'Pool');
-
-const client = new UserPoolClient(stack, 'Client', {
-  userPool: pool
-});
-
-const clientId = client.userPoolClientId; 
+const pool = new UserPool(this, 'pool');
+const client = pool.addClient('customer-app-client');
+const clientId = client.userPoolClientId;
 ```
 
-Existing app clients can be imported into the CDK app using the `UserPoolClient.fromUserPoolClientId()` API.
+Existing app clients can be imported into the CDK app using the `UserPoolClient.fromUserPoolClientId()` API. For new
+and imported user pools, clients can also be created via the `UserPoolClient` constructor, as so -
+
+```ts
+const importedPool = UserPool.fromUserPoolId(this, 'imported-pool', 'us-east-1_oiuR12Abd');
+new UserPoolClient(this, 'customer-app-client', {
+  userPool: importedPool
+});
+```
+
+Clients can be configured with authentication flows. Authentication flows allow users on a client to be authenticated
+with a user pool. Cognito user pools provide several several different types of authentication, such as, SRP (Secure
+Remote Password) authentication, username-and-password authentication, etc. Learn more about this at [UserPool Authentication
+Flow](https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-authentication-flow.html).
+
+The following code configures a client to use both SRP and username-and-password authentication -
+
+```ts
+const pool = new UserPool(this, 'pool');
+pool.addClient('app-client', {
+  authFlows: {
+    userPassword: true,
+    userSrp: true,
+  }
+});
+```
+
+Custom authentication protocols can be configured by setting the `custom` property under `authFlow` and defining lambda
+functions for the corresponding user pool [triggers](#lambda-triggers). Learn more at [Custom Authentication
+Flow](https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-authentication-flow.html#amazon-cognito-user-pools-custom-authentication-flow).
+
+In addition to these authentication mechanisms, Cognito user pools also support using OAuth 2.0 framework for
+authenticating users. User pool clients can be configured with OAuth 2.0 authorization flows and scopes. Learn more
+about the [OAuth 2.0 authorization framework](https://tools.ietf.org/html/rfc6749) and [Cognito user pool's
+implementation of
+OAuth2.0](https://aws.amazon.com/blogs/mobile/understanding-amazon-cognito-user-pool-oauth-2-0-grants/).
+
+The following code configures an app client with the authorization code grant flow and registers the the app's welcome
+page as a callback (or redirect) URL. It also configures the access token scope to 'openid'. All of these concepts can
+be found in the [OAuth 2.0 RFC](https://tools.ietf.org/html/rfc6749).
+
+```ts
+const pool = new UserPool(this, 'Pool');
+pool.addClient('app-client', {
+  oAuth: {
+    flows: {
+      authorizationCodeGrant: true,
+    },
+    scopes: [ OAuthScope.OPENID ],
+    callbackUrls: [ 'https://my-app-domain.com/welcome' ],
+  }
+});
+```

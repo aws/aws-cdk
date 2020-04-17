@@ -20,16 +20,16 @@ test('use codebuild project as an eventrule target', () => {
     Targets: [
       {
         Arn: {
-          "Fn::GetAtt": [
-            "MyProject39F7B0AE",
-            "Arn"
+          'Fn::GetAtt': [
+            'MyProject39F7B0AE',
+            'Arn'
           ]
         },
-        Id: "Target0",
+        Id: 'Target0',
         RoleArn: {
-          "Fn::GetAtt": [
-            "MyProjectEventsRole5B7D93F5",
-            "Arn"
+          'Fn::GetAtt': [
+            'MyProjectEventsRole5B7D93F5',
+            'Arn'
           ]
         }
       }
@@ -40,12 +40,12 @@ test('use codebuild project as an eventrule target', () => {
     AssumeRolePolicyDocument: {
       Statement: [
         {
-          Action: "sts:AssumeRole",
-          Effect: "Allow",
-          Principal: { Service: "events.amazonaws.com" }
+          Action: 'sts:AssumeRole',
+          Effect: 'Allow',
+          Principal: { Service: 'events.amazonaws.com' }
         }
       ],
-      Version: "2012-10-17"
+      Version: '2012-10-17'
     }
   }));
 
@@ -53,17 +53,17 @@ test('use codebuild project as an eventrule target', () => {
     PolicyDocument: {
       Statement: [
         {
-          Action: "codebuild:StartBuild",
-          Effect: "Allow",
+          Action: 'codebuild:StartBuild',
+          Effect: 'Allow',
           Resource: {
-            "Fn::GetAtt": [
-              "MyProject39F7B0AE",
-              "Arn"
+            'Fn::GetAtt': [
+              'MyProject39F7B0AE',
+              'Arn'
             ]
           }
         }
       ],
-      Version: "2012-10-17"
+      Version: '2012-10-17'
     }
   }));
 });

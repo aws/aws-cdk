@@ -14,7 +14,7 @@ export class SSMContextProviderPlugin implements ContextProviderPlugin {
     const region = args.region;
     const account = args.account;
     if (!('parameterName' in args)) {
-        throw new Error('parameterName must be provided in props for SSMContextProviderPlugin');
+      throw new Error('parameterName must be provided in props for SSMContextProviderPlugin');
     }
     const parameterName = args.parameterName;
     debug(`Reading SSM parameter ${account}:${region}:${parameterName}`);

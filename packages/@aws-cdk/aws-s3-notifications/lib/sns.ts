@@ -16,7 +16,7 @@ export class SnsDestination implements s3.IBucketNotificationDestination {
       actions: ['sns:Publish'],
       resources: [this.topic.topicArn],
       conditions: {
-        ArnLike: { "aws:SourceArn": bucket.bucketArn }
+        ArnLike: { 'aws:SourceArn': bucket.bucketArn }
       }
     }));
 

@@ -19,61 +19,61 @@ test('asBucketNotificationDestination adds bucket permissions only once for each
   expect(stack).toMatchTemplate({
     Resources: {
       Bucket83908E77: {
-        Type: "AWS::S3::Bucket",
-        DeletionPolicy: "Retain",
-        UpdateReplacePolicy: "Retain",
+        Type: 'AWS::S3::Bucket',
+        DeletionPolicy: 'Retain',
+        UpdateReplacePolicy: 'Retain',
       },
       Bucket25524B414: {
-        Type: "AWS::S3::Bucket",
-        DeletionPolicy: "Retain",
-        UpdateReplacePolicy: "Retain",
+        Type: 'AWS::S3::Bucket',
+        DeletionPolicy: 'Retain',
+        UpdateReplacePolicy: 'Retain',
       },
       MyTopic86869434: {
-        Type: "AWS::SNS::Topic"
+        Type: 'AWS::SNS::Topic'
       },
       MyTopicPolicy12A5EC17: {
-        Type: "AWS::SNS::TopicPolicy",
+        Type: 'AWS::SNS::TopicPolicy',
         Properties: {
           PolicyDocument: {
             Statement: [
               {
-                Action: "sns:Publish",
+                Action: 'sns:Publish',
                 Condition: {
                   ArnLike: {
-                    "aws:SourceArn": { "Fn::GetAtt": ["Bucket83908E77", "Arn"] }
+                    'aws:SourceArn': { 'Fn::GetAtt': ['Bucket83908E77', 'Arn'] }
                   }
                 },
-                Effect: "Allow",
+                Effect: 'Allow',
                 Principal: {
-                  Service: "s3.amazonaws.com"
+                  Service: 's3.amazonaws.com'
                 },
                 Resource: {
-                  Ref: "MyTopic86869434"
+                  Ref: 'MyTopic86869434'
                 },
-                Sid: "0"
+                Sid: '0'
               },
               {
-                Action: "sns:Publish",
+                Action: 'sns:Publish',
                 Condition: {
                   ArnLike: {
-                    "aws:SourceArn": { "Fn::GetAtt": ["Bucket25524B414", "Arn" ]}
+                    'aws:SourceArn': { 'Fn::GetAtt': ['Bucket25524B414', 'Arn' ]}
                   }
                 },
-                Effect: "Allow",
+                Effect: 'Allow',
                 Principal: {
-                  Service: "s3.amazonaws.com"
+                  Service: 's3.amazonaws.com'
                 },
                 Resource: {
-                  Ref: "MyTopic86869434"
+                  Ref: 'MyTopic86869434'
                 },
-                Sid: "1"
+                Sid: '1'
               }
             ],
-            Version: "2012-10-17"
+            Version: '2012-10-17'
           },
           Topics: [
             {
-              Ref: "MyTopic86869434"
+              Ref: 'MyTopic86869434'
             }
           ]
         }

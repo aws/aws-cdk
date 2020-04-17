@@ -326,11 +326,11 @@ export abstract class FunctionBase extends Resource implements IFunction {
       return (principal as iam.AccountPrincipal).accountId;
     }
 
-    if (`service` in principal) {
+    if ('service' in principal) {
       return (principal as iam.ServicePrincipal).service;
     }
 
-    if (`arn` in principal) {
+    if ('arn' in principal) {
       return (principal as iam.ArnPrincipal).arn;
     }
 

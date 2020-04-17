@@ -119,8 +119,9 @@ function requireEnvVariable(variableName: string): string {
   return ret;
 }
 
-async function deployCdkApp(outdir: string, env: cxapi.Environment, sdkProvider: SdkProvider,
-                            sdk: ISDK, bootstrapStackName: string, cdkCode: (app: core.App) => void) {
+async function deployCdkApp(
+  outdir: string, env: cxapi.Environment, sdkProvider: SdkProvider,
+  sdk: ISDK, bootstrapStackName: string, cdkCode: (app: core.App) => void) {
   // clean the output directory, just to make 100% sure there is no junk left there
   await fs.remove(outdir);
 
