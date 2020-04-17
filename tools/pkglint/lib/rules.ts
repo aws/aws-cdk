@@ -1172,11 +1172,11 @@ export class EslintSetup extends ValidationRule {
         ruleName: this.name,
         message: 'There must be a .eslintrc.js file at the root of the package',
         fix: () => {
-          const dots = '../'.repeat(depthFromRoot());
+          const rootRelative = path.relative(pkg.packageRoot, repoRoot(pkg.packageRoot));
           fs.writeFileSync(
             eslintrcFilename,
             [
-              `const baseConfig = require('${dots}tools/cdk-build-tools/config/eslintrc');`,
+              `const baseConfig = require('${rootRelative}/tools/cdk-build-tools/config/eslintrc');`,
               'module.exports = baseConfig;'
             ].join('\n') + '\n'
           );
@@ -1235,12 +1235,10 @@ function shouldUseCDKBuildTools(pkg: PackageJson) {
   return pkg.packageName !== 'cdk-build-tools' && pkg.packageName !== 'merkle-build';
 }
 
-function depthFromRoot() {
-  let depth = 0;
-  let root = process.cwd();
-  while (!fs.existsSync(path.join(root, 'yarn.lock')) && depth < 50) {
-    depth = depth + 1;
+function repoRoot(dir: string) {
+  let root = dir;
+  for (let i = 0; i < 50 && !fs.existsSync(path.join(root, 'yarn.lock')); i++) {
     root = path.dirname(root);
   }
-  return depth;
+  return root;
 }
