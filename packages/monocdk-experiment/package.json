@@ -9,6 +9,7 @@
     "url": "https://github.com/aws/aws-cdk.git"
   },
   "stability": "experimental",
+  "maturity": "developer-preview",
   "scripts": {
     "build": "node deps.js && ./build.sh",
     "test": "echo done",
