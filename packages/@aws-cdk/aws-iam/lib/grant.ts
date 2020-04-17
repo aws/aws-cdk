@@ -58,6 +58,8 @@ export interface GrantWithResourceOptions extends CommonGrantOptions {
 export interface GrantOnPrincipalOptions extends CommonGrantOptions {
   /**
    * Construct to report warnings on in case grant could not be registered
+   *
+   * @default - the construct in which this construct is defined
    */
   readonly scope?: cdk.IConstruct;
 }
@@ -152,7 +154,7 @@ export class Grant {
   /**
    * Add a grant both on the principal and on the resource
    *
-   * As long as any principal is given, granting on the pricipal may fail (in
+   * As long as any principal is given, granting on the principal may fail (in
    * case of a non-identity principal), but granting on the resource will
    * never fail.
    *

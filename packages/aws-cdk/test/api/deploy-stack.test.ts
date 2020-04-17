@@ -61,8 +61,9 @@ test('correctly passes CFN parameters, ignoring ones with empty values', async (
     resolvedEnvironment: mockResolvedEnvironment(),
     parameters: {
       A: 'A-value',
-      B: undefined,
-      C: '',
+      B: 'B=value',
+      C: undefined,
+      D: '',
     },
   });
 
@@ -70,6 +71,7 @@ test('correctly passes CFN parameters, ignoring ones with empty values', async (
   expect(cfnMocks.createChangeSet).toHaveBeenCalledWith(expect.objectContaining({
     Parameters: [
       { ParameterKey: 'A', ParameterValue: 'A-value' },
+      { ParameterKey: 'B', ParameterValue: 'B=value' },
     ]
   }));
 });

@@ -19,3 +19,4 @@ dist
 
 
 tsconfig.json
+.eslintrc.js

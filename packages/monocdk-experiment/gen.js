@@ -21,6 +21,7 @@ const include_dev_deps = [
 
 const exclude_files = [
   'test',
+  'scripts',
   'node_modules', 
   'package.json', 
   'tsconfig.json', 

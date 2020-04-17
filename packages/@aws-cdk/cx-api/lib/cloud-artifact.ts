@@ -1,59 +1,9 @@
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { CloudAssembly } from './cloud-assembly';
 import {
-  ERROR_METADATA_KEY,
-  INFO_METADATA_KEY,
-  MetadataEntry,
   MetadataEntryResult,
   SynthesisMessage,
-  SynthesisMessageLevel,
-  WARNING_METADATA_KEY } from './metadata';
-
-/**
- * Type of cloud artifact.
- */
-export enum ArtifactType {
-  NONE = 'none', // required due to a jsii bug
-
-  /**
-   * The artifact is an AWS CloudFormation stack.
-   */
-  AWS_CLOUDFORMATION_STACK = 'aws:cloudformation:stack',
-
-  /**
-   * The artifact contains metadata generated out of the CDK application.
-   */
-  CDK_TREE = 'cdk:tree',
-}
-
-/**
- * A manifest for a single artifact within the cloud assembly.
- */
-export interface ArtifactManifest {
-  /**
-   * The type of artifact.
-   */
-  readonly type: ArtifactType;
-
-  /**
-   * The environment into which this artifact is deployed.
-   */
-  readonly environment?: string; // format: aws://account/region
-
-  /**
-   * Associated metadata.
-   */
-  readonly metadata?: { [path: string]: MetadataEntry[] };
-
-  /**
-   * IDs of artifacts that must be deployed before this artifact.
-   */
-  readonly dependencies?: string[];
-
-  /**
-   * The set of properties for this artifact (depends on type)
-   */
-  readonly properties?: { [name: string]: any };
-}
+  SynthesisMessageLevel } from './metadata';
 
 /**
  * Artifact properties for CloudFormation stacks.
@@ -87,11 +37,11 @@ export class CloudArtifact {
    * @param artifact The artifact manifest
    * @returns the `CloudArtifact` that matches the artifact type or `undefined` if it's an artifact type that is unrecognized by this module.
    */
-  public static fromManifest(assembly: CloudAssembly, id: string, artifact: ArtifactManifest): CloudArtifact | undefined {
+  public static fromManifest(assembly: CloudAssembly, id: string, artifact: cxschema.ArtifactManifest): CloudArtifact | undefined {
     switch (artifact.type) {
-      case ArtifactType.AWS_CLOUDFORMATION_STACK:
+      case cxschema.ArtifactType.AWS_CLOUDFORMATION_STACK:
         return new CloudFormationStackArtifact(assembly, id, artifact);
-      case ArtifactType.CDK_TREE:
+      case cxschema.ArtifactType.CDK_TREE:
         return new TreeCloudArtifact(assembly, id, artifact);
       default:
         return undefined;
@@ -101,7 +51,7 @@ export class CloudArtifact {
   /**
    * The artifact's manifest
    */
-  public readonly manifest: ArtifactManifest;
+  public readonly manifest: cxschema.ArtifactManifest;
 
   /**
    * The set of messages extracted from the artifact's metadata.
@@ -119,7 +69,7 @@ export class CloudArtifact {
    */
   private _deps?: CloudArtifact[];
 
-  protected constructor(public readonly assembly: CloudAssembly, public readonly id: string, manifest: ArtifactManifest) {
+  protected constructor(public readonly assembly: CloudAssembly, public readonly id: string, manifest: cxschema.ArtifactManifest) {
     this.manifest = manifest;
     this.messages = this.renderMessages();
     this._dependencyIDs = manifest.dependencies || [];
@@ -146,7 +96,7 @@ export class CloudArtifact {
    * @returns all the metadata entries of a specific type in this artifact.
    * @param type
    */
-  public findMetadataByType(type: string) {
+  public findMetadataByType(type: string): MetadataEntryResult[] {
     const result = new Array<MetadataEntryResult>();
     for (const path of Object.keys(this.manifest.metadata || {})) {
       for (const entry of (this.manifest.metadata || {})[path]) {
@@ -165,13 +115,13 @@ export class CloudArtifact {
       for (const entry of metadata) {
         let level: SynthesisMessageLevel;
         switch (entry.type) {
-          case WARNING_METADATA_KEY:
+          case cxschema.ArtifactMetadataEntryType.WARN:
             level = SynthesisMessageLevel.WARNING;
             break;
-          case ERROR_METADATA_KEY:
+          case cxschema.ArtifactMetadataEntryType.ERROR:
             level = SynthesisMessageLevel.ERROR;
             break;
-          case INFO_METADATA_KEY:
+          case cxschema.ArtifactMetadataEntryType.INFO:
             level = SynthesisMessageLevel.INFO;
             break;
           default:

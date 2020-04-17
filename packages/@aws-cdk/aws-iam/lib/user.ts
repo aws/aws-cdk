@@ -8,6 +8,11 @@ import { PolicyStatement } from './policy-statement';
 import { ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
 import { AttachedPolicies, undefinedIfEmpty } from './util';
 
+/**
+ * Represents an IAM user
+ *
+ * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users.html
+ */
 export interface IUser extends IIdentity {
   /**
    * The user's name
@@ -27,6 +32,9 @@ export interface IUser extends IIdentity {
   addToGroup(group: IGroup): void;
 }
 
+/**
+ * Properties for defining an IAM user
+ */
 export interface UserProps {
   /**
    * Groups to add this user to. You can also use `addToGroup` to add this

@@ -1,3 +1,4 @@
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { unlink, writeFileSync } from 'fs';
 import { join } from 'path';
@@ -187,7 +188,7 @@ function mkStack(template: any): cxapi.CloudFormationStackArtifact {
   const assembly = new cxapi.CloudAssemblyBuilder();
 
   assembly.addArtifact(stackName, {
-    type: cxapi.ArtifactType.AWS_CLOUDFORMATION_STACK,
+    type: cxschema.ArtifactType.AWS_CLOUDFORMATION_STACK,
     environment: cxapi.EnvironmentUtils.format('123456789012', 'bermuda-triangle-1'),
     properties: {
       templateFile: templateFileName

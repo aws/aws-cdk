@@ -1,4 +1,4 @@
-import * as cxapi from '@aws-cdk/cx-api';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { Test } from 'nodeunit';
 import { App as Root, Aws, Construct, ConstructNode, ConstructOrder, IConstruct, Lazy, ValidationError } from '../lib';
 
@@ -285,7 +285,7 @@ export = {
     const root = new Root();
     const con = new Construct(root, 'MyConstruct');
     con.node.addWarning('This construct is deprecated, use the other one instead');
-    test.deepEqual(con.node.metadata[0].type, cxapi.WARNING_METADATA_KEY);
+    test.deepEqual(con.node.metadata[0].type, cxschema.ArtifactMetadataEntryType.WARN);
     test.deepEqual(con.node.metadata[0].data, 'This construct is deprecated, use the other one instead');
     test.ok(con.node.metadata[0].trace && con.node.metadata[0].trace.length > 0);
     test.done();
@@ -295,7 +295,7 @@ export = {
     const root = new Root();
     const con = new Construct(root, 'MyConstruct');
     con.node.addError('Stop!');
-    test.deepEqual(con.node.metadata[0].type, cxapi.ERROR_METADATA_KEY);
+    test.deepEqual(con.node.metadata[0].type, cxschema.ArtifactMetadataEntryType.ERROR);
     test.deepEqual(con.node.metadata[0].data, 'Stop!');
     test.ok(con.node.metadata[0].trace && con.node.metadata[0].trace.length > 0);
     test.done();
@@ -305,7 +305,7 @@ export = {
     const root = new Root();
     const con = new Construct(root, 'MyConstruct');
     con.node.addInfo('Hey there, how do you do?');
-    test.deepEqual(con.node.metadata[0].type, cxapi.INFO_METADATA_KEY);
+    test.deepEqual(con.node.metadata[0].type, cxschema.ArtifactMetadataEntryType.INFO);
     test.deepEqual(con.node.metadata[0].data, 'Hey there, how do you do?');
     test.ok(con.node.metadata[0].trace && con.node.metadata[0].trace.length > 0);
     test.done();

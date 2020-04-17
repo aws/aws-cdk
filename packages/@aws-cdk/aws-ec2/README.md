@@ -1,10 +1,10 @@
 ## Amazon EC2 Construct Library
 <!--BEGIN STABILITY BANNER-->
-
 ---
 
-![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
+![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
 
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 <!--END STABILITY BANNER-->
@@ -87,6 +87,63 @@ itself to 2 Availability Zones.
 
 Therefore, to get the VPC to spread over 3 or more availability zones, you
 must specify the environment where the stack will be deployed.
+
+### Choosing subnets for resources
+
+When creating resources that create Elastic Network Interfaces (such as
+databases or instances), there is an option to choose which subnets to place
+them in. For example, a VPC endpoint by default is placed into a subnet in
+every availability zone, but you can override which subnets to use. The property
+is typically called one of `subnets`, `vpcSubnets` or `subnetSelection`.
+
+The example below will place the endpoint into two AZs (`us-east-1a` and `us-east-1c`),
+in Isolated subnets:
+
+```ts
+new InterfaceVpcEndpoint(stack, 'VPC Endpoint', {
+  vpc,
+  service: new InterfaceVpcEndpointService('com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc', 443),
+  subnets: {
+    subnetType: SubnetType.ISOLATED,
+    availabilityZones: ['us-east-1a', 'us-east-1c']
+  }
+});
+```
+
+You can also specify specific subnet objects for granular control:
+
+```ts
+new InterfaceVpcEndpoint(stack, 'VPC Endpoint', {
+  vpc,
+  service: new InterfaceVpcEndpointService('com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc', 443),
+  subnets: {
+    subnets: [subnet1, subnet2]
+  }
+});
+```
+
+Which subnets are selected is evaluated as follows:
+
+* `subnets`: if specific subnet objects are supplied, these are selected, and no other
+  logic is used.
+* `subnetType`/`subnetGroupName`: otherwise, a set of subnets is selected by
+  supplying either type or name:
+  * `subnetType` will select all subnets of the given type.
+  * `subnetGroupName` should be used to distinguish between multiple groups of subnets of
+    the same type (for example, you may want to separate your application instances and your
+    RDS instances into two distinct groups of Isolated subnets).
+  * If neither are given, the first available subnet group of a given type that
+    exists in the VPC will be used, in this order: Private, then Isolated, then Public.
+    In short: by default ENIs will preferentially be placed in subnets not connected to
+    the Internet.
+* `availabilityZones`/`onePerAz`: finally, some availability-zone based filtering may be done.
+  This filtering by availability zones will only be possible if the VPC has been created or
+  looked up in a non-environment agnostic stack (so account and region have been set and
+  availability zones have been looked up).
+  * `availabilityZones`: only the specific subnets from the selected subnet groups that are
+    in the given availability zones will be returned.
+  * `onePerAz`: per availability zone, a maximum of one subnet will be returned (Useful for resource
+    types that do not allow creating two ENIs in the same availability zone).
 
 ### Using NAT instances
 
@@ -293,11 +350,11 @@ There are various classes that implement the connection peer part:
 
 ```ts fixture=conns
 // Simple connection peers
-let peer = ec2.Peer.ipv4("10.0.0.0/16");
+let peer = ec2.Peer.ipv4('10.0.0.0/16');
 peer = ec2.Peer.anyIpv4();
-peer = ec2.Peer.ipv6("::0/0");
+peer = ec2.Peer.ipv6('::0/0');
 peer = ec2.Peer.anyIpv6();
-peer = ec2.Peer.prefixList("pl-12345");
+peer = ec2.Peer.prefixList('pl-12345');
 appFleet.connections.allowTo(peer, ec2.Port.tcp(443), 'Allow outbound HTTPS');
 ```
 
@@ -424,6 +481,23 @@ Endpoints are virtual devices. They are horizontally scaled, redundant, and high
 
 [example of setting up VPC endpoints](test/integ.vpc-endpoint.lit.ts)
 
+Not all VPC endpoint services are available in all availability zones. By default,
+CDK will place a VPC endpoint in one subnet per AZ, because CDK doesn't know about
+unavailable AZs. You can determine what the available AZs are from the AWS console.
+The AZs CDK places the VPC endpoint in can be configured as follows:
+
+```ts
+new InterfaceVpcEndpoint(stack, 'VPC Endpoint', {
+  vpc,
+  service: new InterfaceVpcEndpointService('com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc', 443),
+  // Choose which availability zones to place the VPC endpoint in, based on
+  // available AZs
+  subnets: {
+    availabilityZones: ['us-east-1a', 'us-east-1c']
+  }
+});
+```
+
 ### Security groups for interface VPC endpoints
 By default, interface VPC endpoints create a new security group and traffic is **not**
 automatically allowed from the VPC CIDR.
@@ -440,10 +514,10 @@ Alternatively, existing security groups can be used by specifying the `securityG
 A VPC endpoint service enables you to expose a Network Load Balancer(s) as a provider service to consumers, who connect to your service over a VPC endpoint. You can restrict access to your service via whitelisted principals (anything that extends ArnPrincipal), and require that new connections be manually accepted.
 
 ```ts
-new VpcEndpointService(this, "EndpointService", {
+new VpcEndpointService(this, 'EndpointService', {
   vpcEndpointServiceLoadBalancers: [networkLoadBalancer1, networkLoadBalancer2],
   acceptanceRequired: true,
-  whitelistedPrincipals: [new ArnPrincipal("arn:aws:iam::123456789012:root")]
+  whitelistedPrincipals: [new ArnPrincipal('arn:aws:iam::123456789012:root')]
 });
 ```
 

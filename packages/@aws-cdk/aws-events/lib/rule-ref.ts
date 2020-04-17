@@ -1,5 +1,8 @@
 import { IResource } from '@aws-cdk/core';
 
+/**
+ * Represents a CloudWatch Event Rule
+ */
 export interface IRule extends IResource {
   /**
    * The value of the event rule Amazon Resource Name (ARN), such as

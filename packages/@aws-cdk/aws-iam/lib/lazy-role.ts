@@ -6,6 +6,9 @@ import { PolicyStatement } from './policy-statement';
 import { IPrincipal, PrincipalPolicyFragment } from './principals';
 import { IRole, Role, RoleProps } from './role';
 
+/**
+ * Properties for defining a LazyRole
+ */
 // tslint:disable-next-line:no-empty-interface
 export interface LazyRoleProps extends RoleProps {
 
@@ -80,7 +83,11 @@ export class LazyRole extends cdk.Resource implements IRole {
     return this.instantiate().roleArn;
   }
 
-  /** @attribute RoleId */
+  /**
+   * Returns the stable and unique string identifying the role (i.e. AIDAJQABLZS4A3QDU576Q)
+   *
+   * @attribute
+   */
   public get roleId(): string {
     return this.instantiate().roleId;
   }

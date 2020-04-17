@@ -1,5 +1,6 @@
 import { expect, haveResource, ResourcePart, SynthUtils } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs';
@@ -341,7 +342,7 @@ export = {
       const session = app.synth();
       const artifact = session.getStackByName(stack.stackName);
       const metadata = artifact.manifest.metadata || {};
-      const md = Object.values(metadata)[0]![0]!.data;
+      const md = Object.values(metadata)[0]![0]!.data as cxschema.AssetMetadataEntry;
       test.deepEqual(md.path, 'asset.6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2');
       test.done();
     }

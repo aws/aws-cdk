@@ -247,7 +247,7 @@ export interface S3OriginConfig {
   readonly s3BucketSource: s3.IBucket;
 
   /**
-   * The optional Oriagin Access Identity of the origin identity cloudfront will use when calling your s3 bucket.
+   * The optional Origin Access Identity of the origin identity cloudfront will use when calling your s3 bucket.
    *
    * @default No Origin Access Identity which requires the S3 bucket to be public accessible
    */

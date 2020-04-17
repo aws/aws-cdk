@@ -35,9 +35,9 @@
     "eslint-plugin-node": "^10.0.0",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",
-    "jest": "^24.9.0",
+    "jest": "^25.3.0",
     "lambda-tester": "^3.6.0",
     "nock": "^11.7.0",
-    "ts-jest": "^24.2.0"
+    "ts-jest": "^25.3.1"
   }
 }

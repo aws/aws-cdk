@@ -1,4 +1,4 @@
-import { expect, haveResource, SynthUtils } from '@aws-cdk/assert';
+import { expect, haveResource, matchTemplate, SynthUtils } from '@aws-cdk/assert';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import * as sns from '@aws-cdk/aws-sns';
 import { App, CfnParameter, CfnResource, Construct, ContextProvider, Stack } from '@aws-cdk/core';
@@ -423,6 +423,30 @@ export = {
     test.deepEqual(stack1Artifact.dependencies.length, 1);
     test.deepEqual(stack2Artifact.dependencies.length, 0);
     test.same(stack1Artifact.dependencies[0], stack2Artifact);
+    test.done();
+  },
+
+  'nested stack within a nested stack references a resource in a sibling top-level stack'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const consumerTopLevel = new Stack(app, 'ConsumerTopLevel');
+    const consumerNested1 = new NestedStack(consumerTopLevel, 'ConsumerNested1');
+    const consumerNested2 = new NestedStack(consumerNested1, 'ConsumerNested2');
+    const producerTopLevel = new Stack(app, 'ProducerTopLevel');
+    const producer = new CfnResource(producerTopLevel, 'Producer', { type: 'Producer' });
+
+    // WHEN
+    new CfnResource(consumerNested2, 'Consumer', {
+      type: 'Consumer',
+      properties: {
+        Ref: producer.ref
+      }
+    });
+
+    // THEN
+    const manifest = app.synth();
+    const consumerDeps = manifest.getStackArtifact(consumerTopLevel.artifactId).dependencies.map(d => d.id);
+    test.deepEqual(consumerDeps, [ 'ProducerTopLevel' ]);
     test.done();
   },
 
@@ -909,4 +933,123 @@ export = {
 
     test.done();
   },
+
+  'references to a resource from a deeply nested stack'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const top = new Stack(app, 'stack');
+    const topLevel = new CfnResource(top, 'toplevel', { type: 'TopLevel' });
+    const nested1 = new NestedStack(top, 'nested1');
+    const nested2 = new NestedStack(nested1, 'nested2');
+
+    // WHEN
+    new CfnResource(nested2, 'refToTopLevel', {
+      type: 'BottomLevel',
+      properties: { RefToTopLevel: topLevel.ref }
+    });
+
+    // THEN
+    expect(top).to(haveResource('AWS::CloudFormation::Stack', {
+      Parameters: {
+        referencetostackAssetParameters842982bd421cce9742ba27151ef12ed699d44d22801f41e8029f63f2358a3f2fS3Bucket5DA5D2E7Ref: {
+          Ref: 'AssetParameters842982bd421cce9742ba27151ef12ed699d44d22801f41e8029f63f2358a3f2fS3BucketDD4D96B5'
+        },
+        referencetostackAssetParameters842982bd421cce9742ba27151ef12ed699d44d22801f41e8029f63f2358a3f2fS3VersionKey8FBE5C12Ref: {
+          Ref: 'AssetParameters842982bd421cce9742ba27151ef12ed699d44d22801f41e8029f63f2358a3f2fS3VersionKey83E381F3'
+        },
+        referencetostacktoplevelBB16BF13Ref: {
+          Ref: 'toplevel'
+        }
+      }
+    }));
+
+    expect(nested1).to(haveResource('AWS::CloudFormation::Stack', {
+      Parameters: {
+        referencetostacktoplevelBB16BF13Ref: {
+          Ref: 'referencetostacktoplevelBB16BF13Ref'
+        }
+      }
+    }));
+
+    expect(nested2).to(matchTemplate({
+      Resources: {
+        refToTopLevel: {
+          Type: 'BottomLevel',
+          Properties: {
+            RefToTopLevel: {
+              Ref: 'referencetostacktoplevelBB16BF13Ref'
+            }
+          }
+        }
+      },
+      Parameters: {
+        referencetostacktoplevelBB16BF13Ref: {
+          Type: 'String'
+        },
+      },
+    }));
+    test.done();
+  },
+
+  'bottom nested stack consumes value from a top-level stack through a parameter in a middle nested stack'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const top = new Stack(app, 'Grandparent');
+    const middle = new NestedStack(top, 'Parent');
+    const bottom = new NestedStack(middle, 'Child');
+    const resourceInGrandparent = new CfnResource(top, 'ResourceInGrandparent', { type: 'ResourceInGrandparent' });
+
+    // WHEN
+    new CfnResource(bottom, 'ResourceInChild', {
+      type: 'ResourceInChild',
+      properties: {
+        RefToGrandparent: resourceInGrandparent.ref
+      }
+    });
+
+    // THEN
+
+    // this is the name allocated for the parameter that's propagated through
+    // the hierarchy.
+    const paramName = 'referencetoGrandparentResourceInGrandparent010E997ARef';
+
+    // child (bottom) references through a parameter.
+    expect(bottom).toMatch({
+      Resources: {
+        ResourceInChild: {
+          Type: 'ResourceInChild',
+          Properties: {
+            RefToGrandparent: { Ref: paramName }
+          }
+        }
+      },
+      Parameters: {
+        [paramName]: { Type: 'String' }
+      }
+    });
+
+    // the parent (middle) sets the value of this parameter to be a reference to another parameter
+    expect(middle).to(haveResource('AWS::CloudFormation::Stack', {
+      Parameters: {
+        [paramName]: { Ref: paramName }
+      }
+    }));
+
+    // grandparent (top) assigns the actual value to the parameter
+    expect(top).to(haveResource('AWS::CloudFormation::Stack', {
+      Parameters: {
+        [paramName]: { Ref: 'ResourceInGrandparent' },
+
+        // these are for the asset of the bottom nested stack
+        referencetoGrandparentAssetParameters3208f43b793a1dbe28ca02cf31fb975489071beb42c492b22dc3d32decc3b4b7S3Bucket06EEE58DRef: {
+          Ref: 'AssetParameters3208f43b793a1dbe28ca02cf31fb975489071beb42c492b22dc3d32decc3b4b7S3Bucket01877C2E'
+        },
+        referencetoGrandparentAssetParameters3208f43b793a1dbe28ca02cf31fb975489071beb42c492b22dc3d32decc3b4b7S3VersionKeyD3B04909Ref: {
+          Ref: 'AssetParameters3208f43b793a1dbe28ca02cf31fb975489071beb42c492b22dc3d32decc3b4b7S3VersionKey5765F084'
+        }
+      }
+    }));
+
+    test.done();
+  }
 };

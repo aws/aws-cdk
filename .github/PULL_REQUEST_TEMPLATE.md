@@ -1,7 +1,7 @@
 ### Commit Message
+COMMIT TITLE HERE (copy from PR title, keep in sync)
 
-COMMIT MESSAGE HERE (preserve newline after "Commit Message" heading)
-
+COMMIT MESSAGE HERE
 ### End Commit Message
 
 ----

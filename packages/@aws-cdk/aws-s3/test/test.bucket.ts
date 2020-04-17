@@ -1780,11 +1780,16 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
 
-    // THEN
-    test.throws(() => new s3.Bucket(stack, 'MyBucket', {
+    new s3.Bucket(stack, 'MyBucket', {
       serverAccessLogsPrefix: 'hello'
-    }), /"serverAccessLogsBucket" is required if "serverAccessLogsPrefix" is set/);
+    });
 
+    // THEN
+    expect(stack).to(haveResource('AWS::S3::Bucket', {
+      LoggingConfiguration: {
+        LogFilePrefix: 'hello'
+      }
+    }));
     test.done();
   },
 
