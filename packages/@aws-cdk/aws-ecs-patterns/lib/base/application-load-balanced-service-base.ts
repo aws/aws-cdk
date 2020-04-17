@@ -2,7 +2,7 @@ import { DnsValidatedCertificate, ICertificate } from '@aws-cdk/aws-certificatem
 import { IVpc } from '@aws-cdk/aws-ec2';
 import { AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerImage, ICluster, LogDriver, PropagatedTagSource, Secret } from '@aws-cdk/aws-ecs';
 import { AddRuleProps, ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationTargetGroup,
-  IApplicationLoadBalancer, ListenerCertificate} from '@aws-cdk/aws-elasticloadbalancingv2';
+  IApplicationLoadBalancer, ListenerCertificate, NetworkListener} from '@aws-cdk/aws-elasticloadbalancingv2';
 import { IRole } from '@aws-cdk/aws-iam';
 import { ARecord, IHostedZone, RecordTarget } from '@aws-cdk/aws-route53';
 import { LoadBalancerTarget } from '@aws-cdk/aws-route53-targets';
@@ -168,12 +168,6 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    */
   readonly cloudMapOptions?: CloudMapOptions;
 
-  /**
-   * The options for configuring the listener rule for the service.
-   *
-   * @default - host header, path pattern, and priority are not set.
-   */
-  readonly listenerRuleConfig?: AddRuleProps;
 }
 
 export interface ApplicationLoadBalancedTaskImageOptions {
@@ -332,18 +326,15 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
     const protocol = props.protocol !== undefined ? props.protocol :
       (props.certificate ? ApplicationProtocol.HTTPS : ApplicationProtocol.HTTP);
 
-
     if (props.certificate === undefined && props.containerProtocol === ApplicationProtocol.HTTPS) {
         throw new Error('A certificate must be given if container protocol is HTTPS')
     }
 
+    const containerProtocol = props.containerProtocol !== undefined ? props.containerProtocol : ApplicationProtocol.HTTP;
+
     const targetProps = {
       port: 80,
-      protocol: props.containerProtocol,
-      hostHeader: props.listenerRuleConfig.hostHeader,
-      priority: props.listenerRuleConfig.priority,
-      pathPattern: props.listenerRuleConfig.pathPattern,
-      pathPatterns: props.listenerRuleConfig.pathPatterns,
+      protocol: containerProtocol,
     };
 
     this.listener = loadBalancer.addListener('PublicListener', {

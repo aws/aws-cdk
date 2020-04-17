@@ -444,7 +444,7 @@ export = {
 
   'setting ALB container protocol to initiate new HTTPS connection to container'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack()
+    const stack = new cdk.Stack();
 
     // WHEN
     new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'FargateALBService', {
@@ -470,45 +470,6 @@ export = {
       Protocol: "HTTPS",
     }));
 
-    test.done();
-  },
-
-  'setting listener rule config through props'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack()
-
-    // WHEN
-    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'FargateALBService', {
-      taskImageOptions: {
-        containerPort: 2020,
-        image: ecs.ContainerImage.fromRegistry('abiosoft/caddy')
-      },
-      listenerRuleConfig: {
-        pathPattern: "/app*",
-        priority: 100,
-      }
-    });
-
-    // THEN
-    expect(stack).to(haveResourceLike('AWS::ElasticLoadBalancingV2::ListenerRule', {
-      Actions: [
-        {
-          Type: 'forward'
-        }
-      ],
-      Conditions: [
-        {
-          Field: 'path-pattern',
-          PathPatternConfig: {
-            Values: ["/app*"],
-          },
-
-        }
-      ],
-      Priority: 100,
-    }));
-
-    // THEN
     test.done();
   },
 
