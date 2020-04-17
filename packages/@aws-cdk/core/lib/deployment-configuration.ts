@@ -293,25 +293,34 @@ export class DefaultDeploymentConfiguration implements IDeploymentConfiguration 
 
   public writeStackArtifacts(session: ISynthesisSession): void {
     // Add the stack's template to the artifact manifest
-    this.addStackTemplateToAssetManifest(session);
+    const stackTemplateAssetObjectUrl = this.addStackTemplateToAssetManifest(session);
 
     const artifactId = this.writeAssetManifest(session);
 
     writeStackToCloudAssembly(session, this.stack, {
       assumeRoleArn: this.deployActionRoleArn,
       cloudFormationExecutionRoleArn: this.cloudFormationExecutionRoleArn,
+      stackTemplateAssetObjectUrl,
     }, [artifactId]);
   }
 
+  /**
+   * Add the stack's template as one of the manifest assets
+   *
+   * This will make it get uploaded to S3 automatically by S3-assets. Return
+   * the URL.
+   */
   private addStackTemplateToAssetManifest(session: ISynthesisSession) {
     const templatePath = path.join(session.assembly.outdir, this.stack.templateFile);
     const template = fs.readFileSync(templatePath, { encoding: 'utf-8' });
 
-    this.addFileAsset({
+    const assetLocation = this.addFileAsset({
       fileName: this.stack.templateFile,
       packaging: FileAssetPackaging.FILE,
       sourceHash: contentHash(template)
     });
+
+    return assetLocation.s3Url;
   }
 
   /**

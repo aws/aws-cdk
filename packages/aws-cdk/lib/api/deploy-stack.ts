@@ -260,6 +260,13 @@ async function makeBodyParameter(
   resolvedEnvironment: cxapi.Environment,
   assetManifest: AssetManifestBuilder,
   toolkitInfo?: ToolkitInfo): Promise<TemplateBodyParameter> {
+
+  // If the template has already been uploaded to S3, just use it from there.
+  if (stack.stackTemplateAssetObjectUrl) {
+    return { TemplateURL: stack.stackTemplateAssetObjectUrl };
+  }
+
+  // Otherwise, pass via API call (if small) or upload here (if large)
   const templateJson = toYAML(stack.template);
 
   if (templateJson.length <= LARGE_TEMPLATE_SIZE_KB * 1024) {
