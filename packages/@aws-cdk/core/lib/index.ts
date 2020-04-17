@@ -8,7 +8,7 @@ export * from './lazy';
 export * from './tag-manager';
 export * from './dependency';
 export * from './string-fragments';
-export * from './deployment-environment';
+export * from './deployment-configuration';
 
 export * from './reference';
 export * from './cfn-condition';

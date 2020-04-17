@@ -278,7 +278,6 @@ async function makeBodyParameter(
 
   const templateHash = contentHash(templateJson);
   const key = `cdk/${stack.id}/${templateHash}.yml`;
-  const templateURL = `${toolkitInfo.bucketUrl}/${key}`;
 
   assetManifest.addFileAsset(templateHash, {
     path: stack.templateFile,
@@ -287,6 +286,7 @@ async function makeBodyParameter(
     objectKey: key,
   });
 
+  const templateURL = `${toolkitInfo.bucketUrl}/${key}`;
   debug('Storing template in S3 at:', templateURL);
   return { TemplateURL: templateURL };
 }

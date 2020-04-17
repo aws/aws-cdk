@@ -17,7 +17,7 @@ export class AssetManifestArtifact extends CloudArtifact {
 
     const properties = (this.manifest.properties || {});
     if (!properties.file) {
-      throw new Error('Invalid AssetManifestArtifact. Missing "fiel" property');
+      throw new Error('Invalid AssetManifestArtifact. Missing "file" property');
     }
     this.file = path.resolve(this.assembly.directory, properties.file);
   }

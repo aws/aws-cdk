@@ -35,6 +35,13 @@ export interface AwsCloudFormationStackProperties {
    * @default - No role is passed (currently assumed role/credentials are used)
    */
   readonly cloudFormationExecutionRoleArn?: string;
+
+  /**
+   * If the stack template has already been included in the asset manifest, its id
+   *
+   * @default - false
+   */
+  readonly stackTemplateAssetManifestId?: boolean;
 }
 
 /**

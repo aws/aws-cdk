@@ -4,7 +4,7 @@ import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation , FileAssetPackaging, FileAssetSource } from './assets';
-import { Construct, ConstructNode, IConstruct, ISynthesisSession } from './construct-compat';
+import { Construct, IConstruct, ISynthesisSession } from './construct-compat';
 import { ContextProvider } from './context-provider';
 import { Environment } from './environment';
 import { CLOUDFORMATION_TOKEN_RESOLVER, CloudFormationLang } from './private/cloudformation-lang';
@@ -52,7 +52,7 @@ export interface StackProps {
    *
    * @default - Convention mode deployments if the 'aws-cdk:conventionModeDeployments' flag is set, legacy mode otherwise
    */
-  readonly deploymentEnvironment?: IDeploymentEnvironment;
+  readonly deploymentConfiguration?: IDeploymentConfiguration;
 }
 
 /**
@@ -209,7 +209,7 @@ export class Stack extends Construct implements ITaggable {
    *
    * @experimental
    */
-  public readonly deploymentEnvironment: IDeploymentEnvironment;
+  public readonly deploymentConfiguration: IDeploymentConfiguration;
 
   /**
    * Logical ID generation strategy
@@ -282,10 +282,10 @@ export class Stack extends Construct implements ITaggable {
     this.templateFile = `${this.artifactId}.template.json`;
     this.templateUrl = Lazy.stringValue({ produce: () => this._templateUrl || '<unresolved>' });
 
-    this.deploymentEnvironment = props.deploymentEnvironment ?? (this.node.tryGetContext(cxapi.CONVENTION_MODE_DEPLOYMENTS_CONTEXT)
-      ? new ConventionModeDeploymentEnvironment()
-      : new LegacyDeploymentEnvironment());
-    this.deploymentEnvironment.bind(this);
+    this.deploymentConfiguration = props.deploymentConfiguration ?? (this.node.tryGetContext(cxapi.CONVENTION_MODE_DEPLOYMENTS_CONTEXT)
+      ? new DefaultDeploymentConfiguration()
+      : new LegacyDeploymentConfiguration());
+    this.deploymentConfiguration.bind(this);
   }
 
   /**
@@ -526,21 +526,21 @@ export class Stack extends Construct implements ITaggable {
   /**
    * Register a file asset on this Stack
    *
-   * @deprecated Use `stack.deploymentEnvironment.addFileAsset()` if you are calling,
+   * @deprecated Use `stack.deploymentConfiguration.addFileAsset()` if you are calling,
    * and a different IDeploymentEnvironment class if you are implementing.
    */
   public addFileAsset(asset: FileAssetSource): FileAssetLocation {
-    return this.deploymentEnvironment.addFileAsset(asset);
+    return this.deploymentConfiguration.addFileAsset(asset);
   }
 
   /**
    * Register a docker image asset on this Stack
    *
-   * @deprecated Use `stack.deploymentEnvironment.addDockerImageAsset()` if you are calling,
+   * @deprecated Use `stack.deploymentConfiguration.addDockerImageAsset()` if you are calling,
    * and a different `IDeploymentEnvironment` class if you are implementing.
    */
   public addDockerImageAsset(asset: DockerImageAssetSource): DockerImageAssetLocation {
-    return this.deploymentEnvironment.addDockerImageAsset(asset);
+    return this.deploymentConfiguration.addDockerImageAsset(asset);
   }
 
   /**
@@ -757,46 +757,8 @@ export class Stack extends Construct implements ITaggable {
       builder.addMissing(ctx);
     }
 
-    // if this is a nested stack, do not emit it as a cloud assembly artifact (it will be registered as an s3 asset instead)
-    if (this.nested) {
-      return;
-    }
-
-    const deploySynth = this.deploymentEnvironment.synthesize(session);
-    const deployConfig = this.deploymentEnvironment.stackDeploymentConfig(ConfigVariant.CLOUD_ASSEMBLY);
-
-    const deps = [
-      ...this.dependencies.map(s => s.artifactId),
-      ...deploySynth.additionalStackDependencies || []
-    ];
-    const meta = this.collectMetadata();
-
-    // backwards compatibility since originally artifact ID was always equal to
-    // stack name the stackName attribute is optional and if it is not specified
-    // the CLI will use the artifact ID as the stack name. we *could have*
-    // always put the stack name here but wanted to minimize the risk around
-    // changes to the assembly manifest. so this means that as long as stack
-    // name and artifact ID are the same, the cloud assembly manifest will not
-    // change.
-    const stackNameProperty = this.stackName === this.artifactId
-      ? { }
-      : { stackName: this.stackName };
-
-    const properties: cxapi.AwsCloudFormationStackProperties = {
-      templateFile: this.templateFile,
-      assumeRoleArn: deployConfig.assumeRoleArn,
-      cloudFormationExecutionRoleArn: deployConfig.cloudFormationExecutionRoleArn,
-      ...stackNameProperty
-    };
-
-    // add an artifact that represents this stack
-    builder.addArtifact(this.artifactId, {
-      type: cxschema.ArtifactType.AWS_CLOUDFORMATION_STACK,
-      environment: this.environment,
-      properties,
-      dependencies: deps.length > 0 ? deps : undefined,
-      metadata: Object.keys(meta).length > 0 ? meta : undefined,
-    });
+    // Delegate adding artifacts to the DeploymentConfiguration
+    this.deploymentConfiguration.writeStackArtifacts(session);
   }
 
   /**
@@ -929,44 +891,6 @@ export class Stack extends Construct implements ITaggable {
       }
     }
     return undefined;
-  }
-
-  private collectMetadata() {
-    const output: { [id: string]: cxschema.MetadataEntry[] } = { };
-    const stack = this;
-
-    visit(this);
-
-    return output;
-
-    function visit(node: IConstruct) {
-      // break off if we reached a node that is not a child of this stack
-      const parent = findParentStack(node);
-      if (parent !== stack) {
-        return;
-      }
-
-      if (node.node.metadata.length > 0) {
-        // Make the path absolute
-        output[ConstructNode.PATH_SEP + node.node.path] = node.node.metadata.map(md => stack.resolve(md) as cxschema.MetadataEntry);
-      }
-
-      for (const child of node.node.children) {
-        visit(child);
-      }
-    }
-
-    function findParentStack(node: IConstruct): Stack | undefined {
-      if (node instanceof Stack && node.nestedStackParent === undefined) {
-        return node;
-      }
-
-      if (!node.node.scope) {
-        return undefined;
-      }
-
-      return findParentStack(node.node.scope);
-    }
   }
 
   /**
@@ -1133,7 +1057,7 @@ import { Fn } from './cfn-fn';
 import { CfnOutput } from './cfn-output';
 import { Aws, ScopedAws } from './cfn-pseudo';
 import { CfnResource, TagType } from './cfn-resource';
-import { ConfigVariant, ConventionModeDeploymentEnvironment, IDeploymentEnvironment, LegacyDeploymentEnvironment } from './deployment-environment';
+import { DefaultDeploymentConfiguration, IDeploymentConfiguration, LegacyDeploymentConfiguration } from './deployment-configuration';
 import { addDependency } from './deps';
 import { Lazy } from './lazy';
 import { CfnReference } from './private/cfn-reference';

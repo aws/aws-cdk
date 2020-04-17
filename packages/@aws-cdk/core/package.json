@@ -104,7 +104,7 @@
       "docs-public-apis:@aws-cdk/core.StackProps",
       "docs-public-apis:@aws-cdk/core.RemovalPolicy",
       "docs-public-apis:@aws-cdk/core.TagType",
-      "integ-return-type:@aws-cdk/core.IDeploymentEnvironment.bind"
+      "integ-return-type:@aws-cdk/core.IDeploymentConfiguration.bind"
     ]
   },
   "scripts": {

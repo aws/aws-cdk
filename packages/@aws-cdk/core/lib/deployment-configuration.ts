@@ -1,13 +1,13 @@
 import * as asset_schema from '@aws-cdk/cdk-assets-schema';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
+import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
-import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from './assets';
+import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetPackaging, FileAssetSource } from './assets';
 import { Fn } from './cfn-fn';
-import { Construct, ISynthesisSession } from './construct-compat';
+import { Construct, ConstructNode, IConstruct, ISynthesisSession } from './construct-compat';
 import { FileAssetParameters } from './private/asset-parameters';
-import { TemplatedString } from './private/templated-string';
 import { Stack } from './stack';
 import { Token } from './token';
 
@@ -29,7 +29,7 @@ const ASSETS_ECR_REPOSITORY_NAME_OVERRIDE_CONTEXT_KEY = 'assets-ecr-repository-n
 /**
  * Encodes information how a certain Stack should be deployed
  */
-export interface IDeploymentEnvironment {
+export interface IDeploymentConfiguration {
   /**
    * Bind to the stack this environment is going to be used on
    *
@@ -52,41 +52,17 @@ export interface IDeploymentEnvironment {
   addDockerImageAsset(asset: DockerImageAssetSource): DockerImageAssetLocation;
 
   /**
-   * Access the stack deployment configuration
-   */
-  stackDeploymentConfig(variant: ConfigVariant): StackDeploymentConfig;
-
-  /**
-   * Synthesize additional artifacts into the session
+   * Synthesize all artifacts required for the stack into the session
    *
    * @experimental
    */
-  synthesize(session: ISynthesisSession): DeploymentEnvironmentSynthesisResult;
-}
-
-/**
- * What variant to return the config for
- */
-export enum ConfigVariant {
-  /**
-   * Return ARNs in a format that can be used in a CloudFormation template
-   *
-   * Unresolved environment references are encoded as CloudFormation intrinsics.
-   */
-  CLOUDFORMATION = 'cloudformation',
-
-  /**
-   * Return ARNs in a format that can be used in a Cloud Assembly
-   *
-   * Unresolved environment references are encoded as placeholder strings.
-   */
-  CLOUD_ASSEMBLY = 'cloud_assembly',
+  writeStackArtifacts(session: ISynthesisSession): void;
 }
 
 /**
  * Result of synthesis
  */
-export interface DeploymentEnvironmentSynthesisResult {
+export interface DeploymentConfigurationSynthesisResult {
   /**
    * Artifact names that got generated that the stack should depend on
    *
@@ -115,9 +91,9 @@ export interface StackDeploymentConfig {
 }
 
 /**
- * Configuration properties for ConventionModeDeploymentEnvironment
+ * Configuration properties for DefaultDeploymentConfiguration
  */
-export interface ConventionModeDeploymentEnvironmentProps {
+export interface DefaultDeploymentConfigurationProps {
   /**
    * Name of the staging bucket
    *
@@ -204,13 +180,13 @@ export interface ConventionModeDeploymentEnvironmentProps {
 /**
  * Uses conventionally named roles and reify asset storage locations
  *
- * This DeploymentEnvironment is the only DeploymentEnvironment that generates
+ * This DeploymentConfiguration is the only DeploymentConfiguration that generates
  * an asset manifest, and is required to deploy CDK applications using the
  * `@aws-cdk/app-delivery` CI/CD library.
  *
  * Requires the environment to have been bootstrapped with Bootstrap Stack V2.
  */
-export class ConventionModeDeploymentEnvironment implements IDeploymentEnvironment {
+export class DefaultDeploymentConfiguration implements IDeploymentConfiguration {
   private stack!: Stack;
   private bucketName!: string;
   private repositoryName!: string;
@@ -224,7 +200,7 @@ export class ConventionModeDeploymentEnvironment implements IDeploymentEnvironme
     dockerImages: {},
   };
 
-  constructor(private readonly props: ConventionModeDeploymentEnvironmentProps = {}) {
+  constructor(private readonly props: DefaultDeploymentConfigurationProps = {}) {
   }
 
   public bind(stack: Stack): void {
@@ -232,19 +208,27 @@ export class ConventionModeDeploymentEnvironment implements IDeploymentEnvironme
 
     const qualifier = this.props.qualifier ?? 'hnb659fds';
 
-    // NOTE: we purposely don't replace '${AWS::Partition}' since the only value we can replace it with is '${AWS::Partition}'
-    const TPL = (s: string) => new TemplatedString<'Qualifier' | 'AWS::AccountId' | 'AWS::Region'>(s).sub({
-      'Qualifier': qualifier,
-      'AWS::Region': resolvedOr(this.stack.region, cxapi.CloudFormationStackArtifact.CURRENT_REGION),
-      'AWS::AccountId': resolvedOr(this.stack.account, cxapi.CloudFormationStackArtifact.CURRENT_ACCOUNT),
-    }).get();
+    // Function to replace placeholders in the input string as much as possible
+    //
+    // We replace:
+    // - ${Qualifier}: always
+    // - ${AWS::AccountId}, ${AWS::Region}: only if we have the actual values available
+    // - ${AWS::Partition}: never, since we never have the actual partition value.
+    const specialize = (s: string) => {
+      s = replaceAll(s, '${Qualifier}', qualifier);
+      return cxapi.EnvironmentPlaceholders.replace(s, {
+        region: resolvedOr(this.stack.region, cxapi.EnvironmentPlaceholders.CURRENT_REGION),
+        accountId: resolvedOr(this.stack.account, cxapi.EnvironmentPlaceholders.CURRENT_ACCOUNT),
+        partition: cxapi.EnvironmentPlaceholders.CURRENT_PARTITION,
+      });
+    };
 
     // tslint:disable:max-line-length
-    this.bucketName = TPL(this.props.stagingBucketName ?? 'cdk-bootstrap-${Qualifier}-assets-${AWS::AccountId}-${AWS::Region}');
-    this.repositoryName = TPL(this.props.ecrRepositoryName ?? 'cdk-bootstrap-${Qualifier}-container-assets-${AWS::AccountId}-${AWS::Region}');
-    this.deployActionRoleArn = TPL(this.props.deployActionRoleArn ?? 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-bootstrap-deploy-action-role-${AWS::AccountId}-${AWS::Region}');
-    this.cloudFormationExecutionRoleArn = TPL(this.props.cloudFormationExecutionRole ?? 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-bootstrap-cfn-exec-role-${AWS::AccountId}-${AWS::Region}');
-    this.assetPublishingRoleArn = TPL(this.props.assetPublishingRoleArn ?? 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-bootstrap-publishing-role-${AWS::AccountId}-${AWS::Region}');
+    this.bucketName = specialize(this.props.stagingBucketName ?? 'cdk-bootstrap-${Qualifier}-assets-${AWS::AccountId}-${AWS::Region}');
+    this.repositoryName = specialize(this.props.ecrRepositoryName ?? 'cdk-bootstrap-${Qualifier}-container-assets-${AWS::AccountId}-${AWS::Region}');
+    this.deployActionRoleArn = specialize(this.props.deployActionRoleArn ?? 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-bootstrap-deploy-action-role-${AWS::AccountId}-${AWS::Region}');
+    this.cloudFormationExecutionRoleArn = specialize(this.props.cloudFormationExecutionRole ?? 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-bootstrap-cfn-exec-role-${AWS::AccountId}-${AWS::Region}');
+    this.assetPublishingRoleArn = specialize(this.props.assetPublishingRoleArn ?? 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-bootstrap-publishing-role-${AWS::AccountId}-${AWS::Region}');
     // tslint:enable:max-line-length
   }
 
@@ -307,21 +291,33 @@ export class ConventionModeDeploymentEnvironment implements IDeploymentEnvironme
     };
   }
 
-  public stackDeploymentConfig(variant: ConfigVariant): StackDeploymentConfig {
-    const resolve = variant === ConfigVariant.CLOUDFORMATION ? this.cfnify.bind(this) : (x: string) => x;
+  public writeStackArtifacts(session: ISynthesisSession): void {
+    // Add the stack's template to the artifact manifest
+    this.addStackTemplateToAssetManifest(session);
 
-    return {
-      assumeRoleArn: resolve(this.deployActionRoleArn),
-      cloudFormationExecutionRoleArn: resolve(this.cloudFormationExecutionRoleArn),
-    };
+    const artifactId = this.writeAssetManifest(session);
+
+    writeStackToCloudAssembly(session, this.stack, {
+      assumeRoleArn: this.deployActionRoleArn,
+      cloudFormationExecutionRoleArn: this.cloudFormationExecutionRoleArn,
+    }, [artifactId]);
   }
 
-  public synthesize(session: ISynthesisSession): DeploymentEnvironmentSynthesisResult {
-    if (Object.keys(this.assets.files!).length + Object.keys(this.assets.dockerImages!).length === 0) {
-      // Nothing to do
-      return { };
-    }
+  private addStackTemplateToAssetManifest(session: ISynthesisSession) {
+    const templatePath = path.join(session.assembly.outdir, this.stack.templateFile);
+    const template = fs.readFileSync(templatePath, { encoding: 'utf-8' });
 
+    this.addFileAsset({
+      fileName: this.stack.templateFile,
+      packaging: FileAssetPackaging.FILE,
+      sourceHash: contentHash(template)
+    });
+  }
+
+  /**
+   * Write an asset manifest to the Cloud Assembly, return the artifact IDs written
+   */
+  private writeAssetManifest(session: ISynthesisSession): string {
     const artifactId = `${this.stack.artifactId}.assets`;
     const manifestFile = `${artifactId}.json`;
     const outPath = path.join(session.assembly.outdir, manifestFile);
@@ -336,10 +332,7 @@ export class ConventionModeDeploymentEnvironment implements IDeploymentEnvironme
     });
 
     // FIXME: Add stack template as file asset
-
-    return {
-      additionalStackDependencies: [artifactId]
-    };
+    return artifactId;
   }
 
   /**
@@ -370,10 +363,10 @@ function resolvedOr<A>(x: string, def: A): string | A {
  * This deployment environment is restricted in cross-environment deployments,
  * CI/CD deployments, and will use up CloudFormation parameters in your template.
  *
- * This is the only DeploymentEnvironment that supports customizing asset behavior
+ * This is the only DeploymentConfiguration that supports customizing asset behavior
  * by overriding `Stack.addFileAsset()` and `Stack.addDockerImageAsset()`.
  */
-export class LegacyDeploymentEnvironment implements IDeploymentEnvironment {
+export class LegacyDeploymentConfiguration implements IDeploymentConfiguration {
   private stack!: Stack;
   private cycle = false;
 
@@ -428,12 +421,9 @@ export class LegacyDeploymentEnvironment implements IDeploymentEnvironment {
     }
   }
 
-  public stackDeploymentConfig(_variant: ConfigVariant): StackDeploymentConfig {
-    return { /* Legacy mode always uses current credentials */ };
-  }
-
-  public synthesize(_session: ISynthesisSession): DeploymentEnvironmentSynthesisResult {
-    return {};
+  public writeStackArtifacts(session: ISynthesisSession): void {
+    // Just do the default stuff, nothing special
+    writeStackToCloudAssembly(session, this.stack, {}, []);
   }
 
   private doAddDockerImageAsset(asset: DockerImageAssetSource): DockerImageAssetLocation {
@@ -511,10 +501,10 @@ export class LegacyDeploymentEnvironment implements IDeploymentEnvironment {
 /**
  * Deployment environment for a nested stack
  *
- * Interoperates with the DeploymentEnvironment of the parent stack.
+ * Interoperates with the DeploymentConfiguration of the parent stack.
  */
-export class NestedStackDeploymentEnvironment implements IDeploymentEnvironment {
-  constructor(private readonly parentDeployment: IDeploymentEnvironment) {
+export class NestedStackDeploymentConfiguration implements IDeploymentConfiguration {
+  constructor(private readonly parentDeployment: IDeploymentConfiguration) {
   }
 
   public bind(_stack: Stack): void {
@@ -533,35 +523,103 @@ export class NestedStackDeploymentEnvironment implements IDeploymentEnvironment 
     return this.parentDeployment.addDockerImageAsset(asset);
   }
 
-  public stackDeploymentConfig(_variant: ConfigVariant): StackDeploymentConfig {
-    throw new Error('NestedStackDeploymentEnvironment cannot be directly deployed. Deploy the parent stack instead.');
-  }
-
-  public synthesize(_session: ISynthesisSession): DeploymentEnvironmentSynthesisResult {
-    throw new Error('NestedStackDeploymentEnvironment cannot be directly synthesized. Deploy the parent stack instead.');
+  public writeStackArtifacts(_session: ISynthesisSession): void {
+    // Do not emit Nested Stack as a cloud assembly artifact.
+    // It will be registered as an S3 asset of its parent instead.
   }
 }
 
-// Sanity check on these values.
-//
-// Too simplify stack agnostic handling, we rely on very exact values for the
-// various 'current environment' placeholders. Yes, they're declared as constants
-// for readability, but they're not allowed to be changed. These assertions should
-// probably go into unit tests later, but for now they're here.
-//
-// - CX manifest and Asset manifest placeholders need to be the same, since the above
-//   code doesn't make a distinction where the placeholder will be used.
-// - Placeholder strings need to have the name of CloudFormation pseudo variables, so
-//   that we can do an optimization: simply wrap the resultant string in a { Fn::Sub },
-//   simplifies the implementation of cfnify.
-function assertEqual(a: string, b: string) {
-  if (a !== b) {
-    throw new Error(`Strings expectected to be equal but weren't: '${a}' and '${b}'`);
+/**
+ * Shared logic of writing stack artifact to the Cloud Assembly
+ *
+ * This logic is shared between DeploymentConfigurations.
+ */
+function writeStackToCloudAssembly(
+  session: ISynthesisSession,
+  stack: Stack,
+  stackProps: Partial<cxapi.AwsCloudFormationStackProperties>,
+  additionalStackDependencies: string[]) {
+
+  const deps = [
+    ...stack.dependencies.map(s => s.artifactId),
+    ...additionalStackDependencies
+  ];
+  const meta = collectStackMetadata(stack);
+
+  // backwards compatibility since originally artifact ID was always equal to
+  // stack name the stackName attribute is optional and if it is not specified
+  // the CLI will use the artifact ID as the stack name. we *could have*
+  // always put the stack name here but wanted to minimize the risk around
+  // changes to the assembly manifest. so this means that as long as stack
+  // name and artifact ID are the same, the cloud assembly manifest will not
+  // change.
+  const stackNameProperty = stack.stackName === stack.artifactId
+    ? { }
+    : { stackName: stack.stackName };
+
+  const properties: cxapi.AwsCloudFormationStackProperties = {
+    templateFile: stack.templateFile,
+    ...stackProps,
+    ...stackNameProperty
+  };
+
+  // add an artifact that represents this stack
+  session.assembly.addArtifact(stack.artifactId, {
+    type: cxschema.ArtifactType.AWS_CLOUDFORMATION_STACK,
+    environment: stack.environment,
+    properties,
+    dependencies: deps.length > 0 ? deps : undefined,
+    metadata: Object.keys(meta).length > 0 ? meta : undefined,
+  });
+}
+
+/**
+ * Collect the metadata from a stack
+ */
+function collectStackMetadata(stack: Stack) {
+  const output: { [id: string]: cxschema.MetadataEntry[] } = { };
+
+  visit(stack);
+
+  return output;
+
+  function visit(node: IConstruct) {
+    // break off if we reached a node that is not a child of this stack
+    const parent = findParentStack(node);
+    if (parent !== stack) {
+      return;
+    }
+
+    if (node.node.metadata.length > 0) {
+      // Make the path absolute
+      output[ConstructNode.PATH_SEP + node.node.path] = node.node.metadata.map(md => stack.resolve(md) as cxschema.MetadataEntry);
+    }
+
+    for (const child of node.node.children) {
+      visit(child);
+    }
+  }
+
+  function findParentStack(node: IConstruct): Stack | undefined {
+    if (node instanceof Stack && node.nestedStackParent === undefined) {
+      return node;
+    }
+
+    if (!node.node.scope) {
+      return undefined;
+    }
+
+    return findParentStack(node.node.scope);
   }
 }
-assertEqual(cxapi.CloudFormationStackArtifact.CURRENT_REGION, '${AWS::Region}');
-assertEqual(asset_schema.Placeholders.CURRENT_REGION, cxapi.CloudFormationStackArtifact.CURRENT_REGION);
-assertEqual(cxapi.CloudFormationStackArtifact.CURRENT_ACCOUNT, '${AWS::AccountId}');
-assertEqual(asset_schema.Placeholders.CURRENT_ACCOUNT, cxapi.CloudFormationStackArtifact.CURRENT_ACCOUNT);
-assertEqual(cxapi.CloudFormationStackArtifact.CURRENT_PARTITION, '${AWS::Partition}');
-assertEqual(asset_schema.Placeholders.CURRENT_PARTITION, cxapi.CloudFormationStackArtifact.CURRENT_PARTITION);
+
+function contentHash(content: string) {
+  return crypto.createHash('sha256').update(content).digest('hex');
+}
+
+/**
+ * A "replace-all" function that doesn't require us escaping a literal string to a regex
+ */
+function replaceAll(s: string, search: string, replace: string) {
+  return s.split(search).join(replace);
+}

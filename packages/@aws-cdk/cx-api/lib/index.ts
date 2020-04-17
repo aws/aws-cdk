@@ -13,4 +13,5 @@ export * from './assets';
 export * from './environment';
 export * from './metadata';
 export * from './features';
+export * from './placeholders';
 export * from './app';
