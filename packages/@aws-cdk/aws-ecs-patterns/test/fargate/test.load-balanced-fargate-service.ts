@@ -6,6 +6,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as ecsPatterns from '../../lib';
+import { ApplicationListenerCertificate } from '../../../aws-elasticloadbalancingv2/lib/alb/application-listener-certificate';
 
 export = {
   'setting loadBalancerType to Network creates an NLB Public'(test: Test) {
@@ -438,6 +439,76 @@ export = {
       Protocol: 'HTTP'
     }));
 
+    test.done();
+  },
+
+  'setting ALB container protocol to initiate new HTTPS connection to container'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack()
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'FargateALBService', {
+      protocol: ApplicationProtocol.HTTPS,
+      containerProtocol: ApplicationProtocol.HTTPS,
+      taskImageOptions: {
+        containerPort: 2020,
+        image: ecs.ContainerImage.fromRegistry('abiosoft/caddy')
+      },
+      domainName: 'domain.com',
+      domainZone: {
+        hostedZoneId: 'fakeId',
+        zoneName: 'domain.com',
+        hostedZoneArn: 'arn:aws:route53:::hostedzone/fakeId',
+        stack,
+        node: stack.node,
+      },
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      Port: 2020,
+      Protocol: "HTTPS",
+    }));
+
+    test.done();
+  },
+
+  'setting listener rule config through props'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack()
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'FargateALBService', {
+      taskImageOptions: {
+        containerPort: 2020,
+        image: ecs.ContainerImage.fromRegistry('abiosoft/caddy')
+      },
+      listenerRuleConfig: {
+        pathPattern: "/app*",
+        priority: 100,
+      }
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ElasticLoadBalancingV2::ListenerRule', {
+      Actions: [
+        {
+          Type: 'forward'
+        }
+      ],
+      Conditions: [
+        {
+          Field: 'path-pattern',
+          PathPatternConfig: {
+            Values: ["/app*"],
+          },
+
+        }
+      ],
+      Priority: 100,
+    }));
+
+    // THEN
     test.done();
   },
 

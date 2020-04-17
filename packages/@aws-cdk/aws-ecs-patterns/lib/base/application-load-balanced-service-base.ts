@@ -1,7 +1,7 @@
 import { DnsValidatedCertificate, ICertificate } from '@aws-cdk/aws-certificatemanager';
 import { IVpc } from '@aws-cdk/aws-ec2';
 import { AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerImage, ICluster, LogDriver, PropagatedTagSource, Secret } from '@aws-cdk/aws-ecs';
-import { ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationTargetGroup,
+import { AddRuleProps, ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationTargetGroup,
   IApplicationLoadBalancer, ListenerCertificate} from '@aws-cdk/aws-elasticloadbalancingv2';
 import { IRole } from '@aws-cdk/aws-iam';
 import { ARecord, IHostedZone, RecordTarget } from '@aws-cdk/aws-route53';
@@ -70,6 +70,14 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * set by default to HTTPS.
    */
   readonly protocol?: ApplicationProtocol;
+
+  /**
+   * The protocol for connections from the load balancer to the service targets.
+   * A domain name and zone must be specified if using HTTPS.
+   *
+   * @default HTTP.
+   */
+  readonly containerProtocol?: ApplicationProtocol;
 
   /**
    * The domain name for the service, e.g. "api.example.com."
@@ -159,6 +167,13 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * @default - AWS Cloud Map service discovery is not enabled.
    */
   readonly cloudMapOptions?: CloudMapOptions;
+
+  /**
+   * The options for configuring the listener rule for the service.
+   *
+   * @default - host header, path pattern, and priority are not set.
+   */
+  readonly listenerRuleConfig?: AddRuleProps;
 }
 
 export interface ApplicationLoadBalancedTaskImageOptions {
@@ -313,11 +328,22 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
     if (props.certificate !== undefined && props.protocol !== undefined && props.protocol !== ApplicationProtocol.HTTPS) {
       throw new Error('The HTTPS protocol must be used when a certificate is given');
     }
+
     const protocol = props.protocol !== undefined ? props.protocol :
       (props.certificate ? ApplicationProtocol.HTTPS : ApplicationProtocol.HTTP);
 
+
+    if (props.certificate === undefined && props.containerProtocol === ApplicationProtocol.HTTPS) {
+        throw new Error('A certificate must be given if container protocol is HTTPS')
+    }
+
     const targetProps = {
-      port: 80
+      port: 80,
+      protocol: props.containerProtocol,
+      hostHeader: props.listenerRuleConfig.hostHeader,
+      priority: props.listenerRuleConfig.priority,
+      pathPattern: props.listenerRuleConfig.pathPattern,
+      pathPatterns: props.listenerRuleConfig.pathPatterns,
     };
 
     this.listener = loadBalancer.addListener('PublicListener', {
@@ -325,8 +351,8 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
       port: props.listenerPort,
       open: true
     });
-    this.targetGroup = this.listener.addTargets('ECS', targetProps);
 
+    this.targetGroup = this.listener.addTargets('ECS', targetProps);
     if (protocol === ApplicationProtocol.HTTPS) {
       if (typeof props.domainName === 'undefined' || typeof props.domainZone === 'undefined') {
         throw new Error('A domain name and zone is required when using the HTTPS protocol');

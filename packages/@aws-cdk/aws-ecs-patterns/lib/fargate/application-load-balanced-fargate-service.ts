@@ -122,6 +122,7 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
       });
       container.addPortMappings({
         containerPort: taskImageOptions.containerPort || 80,
+        protocol: props.containerProtocol,
       });
     } else {
       throw new Error('You must specify one of: taskDefinition or image');
