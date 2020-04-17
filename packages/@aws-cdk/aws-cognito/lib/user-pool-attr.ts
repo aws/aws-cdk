@@ -141,6 +141,31 @@ export interface CustomAttributeConfig {
    * @default - None.
    */
   readonly numberConstraints?: NumberAttributeConstraints;
+
+  /**
+   * Specifies whether the value of the attribute can be changed.
+   * For any user pool attribute that's mapped to an identity provider attribute, you must set this parameter to true.
+   * Amazon Cognito updates mapped attributes when users sign in to your application through an identity provider.
+   * If an attribute is immutable, Amazon Cognito throws an error when it attempts to update the attribute.
+   *
+   * @default false
+   */
+  readonly mutable?: boolean
+}
+
+/**
+ * Constraints that can be applied to a custom attribute of any type.
+ */
+export interface CustomAttributeProps {
+  /**
+   * Specifies whether the value of the attribute can be changed.
+   * For any user pool attribute that's mapped to an identity provider attribute, you must set this parameter to true.
+   * Amazon Cognito updates mapped attributes when users sign in to your application through an identity provider.
+   * If an attribute is immutable, Amazon Cognito throws an error when it attempts to update the attribute.
+   *
+   * @default false
+   */
+  readonly mutable?: boolean
 }
 
 /**
@@ -163,7 +188,7 @@ export interface StringAttributeConstraints {
 /**
  * Props for constructing a StringAttr
  */
-export interface StringAttributeProps extends StringAttributeConstraints {
+export interface StringAttributeProps extends StringAttributeConstraints, CustomAttributeProps {
 }
 
 /**
@@ -172,6 +197,7 @@ export interface StringAttributeProps extends StringAttributeConstraints {
 export class StringAttribute implements ICustomAttribute {
   private readonly minLen?: number;
   private readonly maxLen?: number;
+  private readonly mutable?: boolean;
 
   constructor(props: StringAttributeProps = {}) {
     if (props.minLen && props.minLen < 0) {
@@ -182,6 +208,7 @@ export class StringAttribute implements ICustomAttribute {
     }
     this.minLen = props?.minLen;
     this.maxLen = props?.maxLen;
+    this.mutable = props?.mutable;
   }
 
   public bind(): CustomAttributeConfig {
@@ -196,6 +223,7 @@ export class StringAttribute implements ICustomAttribute {
     return {
       dataType: 'String',
       stringConstraints,
+      mutable: this.mutable,
     };
   }
 }
@@ -220,7 +248,7 @@ export interface NumberAttributeConstraints {
 /**
  * Props for NumberAttr
  */
-export interface NumberAttributeProps extends NumberAttributeConstraints {
+export interface NumberAttributeProps extends NumberAttributeConstraints, CustomAttributeProps {
 }
 
 /**
@@ -229,10 +257,12 @@ export interface NumberAttributeProps extends NumberAttributeConstraints {
 export class NumberAttribute implements ICustomAttribute {
   private readonly min?: number;
   private readonly max?: number;
+  private readonly mutable?: boolean;
 
   constructor(props: NumberAttributeProps = {}) {
     this.min = props?.min;
     this.max = props?.max;
+    this.mutable = props?.mutable;
   }
 
   public bind(): CustomAttributeConfig {
@@ -247,6 +277,7 @@ export class NumberAttribute implements ICustomAttribute {
     return {
       dataType: 'Number',
       numberConstraints,
+      mutable: this.mutable,
     };
   }
 }
@@ -255,9 +286,16 @@ export class NumberAttribute implements ICustomAttribute {
  * The Boolean custom attribute type.
  */
 export class BooleanAttribute implements ICustomAttribute {
+  private readonly mutable?: boolean;
+
+  constructor(props: CustomAttributeProps = {}) {
+    this.mutable = props?.mutable;
+  }
+
   public bind(): CustomAttributeConfig {
     return {
       dataType: 'Boolean',
+      mutable: this.mutable,
     };
   }
 }
@@ -266,9 +304,16 @@ export class BooleanAttribute implements ICustomAttribute {
  * The DateTime custom attribute type.
  */
 export class DateTimeAttribute implements ICustomAttribute {
+  private readonly mutable?: boolean;
+
+  constructor(props: CustomAttributeProps = {}) {
+    this.mutable = props?.mutable;
+  }
+
   public bind(): CustomAttributeConfig {
     return {
       dataType: 'DateTime',
+      mutable: this.mutable,
     };
   }
 }

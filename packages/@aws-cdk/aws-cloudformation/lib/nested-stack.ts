@@ -1,6 +1,5 @@
 import * as sns from '@aws-cdk/aws-sns';
-import { Aws, CfnResource, Construct, Duration, FileAssetPackaging, Fn, IResolveContext, Stack, Token } from '@aws-cdk/core';
-import { Lazy } from 'constructs';
+import { Aws, CfnResource, Construct, Duration, FileAssetPackaging, Fn, IResolveContext, Lazy, Stack, Token } from '@aws-cdk/core';
 import * as crypto from 'crypto';
 import { CfnStack } from './cloudformation.generated';
 
