@@ -64,6 +64,14 @@ function serve_npm_packages() {
     tarballs="${tarballs} $dist_root/js/aws-cdk-cfnspec-${version}.tgz"
     package_names="${package_names} @aws-cdk/cfnspec"
 
+    # Install the CLI
+    (cd $npmws && npm install ${tarballs})
+
+    # nullify these so that verdaccio doesn't serve anything
+    # in this case (TODO just disable verdaccio)
+    package_names=""
+    tarballs=""
+
   else
 
     echo "Testing against local versions of the framework"
