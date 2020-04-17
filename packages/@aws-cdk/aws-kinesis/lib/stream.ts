@@ -5,7 +5,6 @@ import { IResolvable } from 'constructs';
 import { CfnStream } from './kinesis.generated';
 
 const READ_OPERATIONS = [
-  'kinesis:DescribeStream',
   'kinesis:DescribeStreamSummary',
   'kinesis:GetRecords',
   'kinesis:GetShardIterator',
@@ -68,6 +67,11 @@ export interface IStream extends IResource {
    * encrypt/decrypt will also be granted.
    */
   grantReadWrite(grantee: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant the indicated permissions on this stream to the provided IAM principal.
+   */
+  grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
 }
 
 /**
@@ -91,20 +95,6 @@ export interface StreamAttributes {
 
 /**
  * Represents a Kinesis Stream.
- *
- * Streams can be either defined within this stack:
- *
- *   new Stream(this, 'MyStream', { props });
- *
- * Or imported from an existing stream:
- *
- *   Stream.import(this, 'MyImportedStream', { streamArn: ... });
- *
- * You can also export a stream and import it into another stack:
- *
- *   const ref = myStream.export();
- *   Stream.import(this, 'MyImportedStream', ref);
- *
  */
 abstract class StreamBase extends Resource implements IStream {
   /**
@@ -148,10 +138,7 @@ abstract class StreamBase extends Resource implements IStream {
    */
   public grantWrite(grantee: iam.IGrantable) {
     const ret = this.grant(grantee, ...WRITE_OPERATIONS);
-
-    if (this.encryptionKey) {
-      this.encryptionKey.grantEncrypt(grantee);
-    }
+    this.encryptionKey?.grantEncrypt(grantee);
 
     return ret;
   }
@@ -165,10 +152,7 @@ abstract class StreamBase extends Resource implements IStream {
    */
   public grantReadWrite(grantee: iam.IGrantable) {
     const ret = this.grant(grantee, ...Array.from(new Set([...READ_OPERATIONS, ...WRITE_OPERATIONS])));
-
-    if (this.encryptionKey) {
-      this.encryptionKey.grantEncryptDecrypt(grantee);
-    }
+    this.encryptionKey?.grantEncryptDecrypt(grantee);
 
     return ret;
   }

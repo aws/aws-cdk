@@ -46,3 +46,6 @@ incompatible-argument:@aws-cdk/aws-iam.PolicyStatement.addCondition
 incompatible-argument:@aws-cdk/aws-iam.PolicyStatement.addConditions
 incompatible-argument:@aws-cdk/aws-iam.PolicyStatement.addFederatedPrincipal
 incompatible-argument:@aws-cdk/aws-iam.PrincipalPolicyFragment.<initializer>
+changed-type:@aws-cdk/aws-iam.FederatedPrincipal.conditions
+changed-type:@aws-cdk/aws-iam.PrincipalPolicyFragment.conditions
+changed-type:@aws-cdk/aws-iam.PrincipalWithConditions.conditions

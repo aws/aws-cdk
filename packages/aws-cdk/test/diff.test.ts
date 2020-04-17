@@ -1,4 +1,4 @@
-import * as cxapi from '@aws-cdk/cx-api';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { Writable } from 'stream';
 import { NodeStringDecoder, StringDecoder  } from 'string_decoder';
 import { CloudFormationDeployments } from '../lib/api/cloudformation-deployments';
@@ -26,7 +26,7 @@ beforeEach(() => {
       metadata: {
         '/resource': [
           {
-            type: cxapi.ERROR_METADATA_KEY,
+            type: cxschema.ArtifactMetadataEntryType.ERROR,
             data: 'this is an error'
           }
         ]

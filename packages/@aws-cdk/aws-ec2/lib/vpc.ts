@@ -184,6 +184,13 @@ export interface SubnetSelection {
   readonly subnetType?: SubnetType;
 
   /**
+   * Select subnets only in the given AZs.
+   *
+   * @default no filtering on AZs is done
+   */
+  readonly availabilityZones?: string[];
+
+  /**
    * Select the subnet group with the given name
    *
    * Select the subnet group with the given name. This only needs
@@ -384,14 +391,27 @@ abstract class VpcBase extends Resource implements IVpc {
 
     if (selection.subnets !== undefined) {
       return selection.subnets;
-
-    } else if (selection.subnetGroupName !== undefined) { // Select by name
-      return this.selectSubnetObjectsByName(selection.subnetGroupName);
-
-    } else {
-      const type = selection.subnetType || SubnetType.PRIVATE;
-      return this.selectSubnetObjectsByType(type, !!selection.onePerAz);
     }
+
+    let subnets;
+
+    if (selection.subnetGroupName !== undefined) { // Select by name
+      subnets = this.selectSubnetObjectsByName(selection.subnetGroupName);
+
+    } else { // Or specify by type
+      const type = selection.subnetType || SubnetType.PRIVATE;
+      subnets = this.selectSubnetObjectsByType(type);
+    }
+
+    if (selection.availabilityZones !== undefined) { // Filter by AZs, if specified
+      subnets = retainByAZ(subnets, selection.availabilityZones);
+    }
+
+    if (!!selection.onePerAz && subnets.length > 0) { // Ensure one per AZ if specified
+      subnets = retainOnePerAz(subnets);
+    }
+
+    return subnets;
   }
 
   private selectSubnetObjectsByName(groupName: string) {
@@ -406,18 +426,14 @@ abstract class VpcBase extends Resource implements IVpc {
     return subnets;
   }
 
-  private selectSubnetObjectsByType(subnetType: SubnetType, onePerAz: boolean) {
+  private selectSubnetObjectsByType(subnetType: SubnetType) {
     const allSubnets = {
       [SubnetType.ISOLATED]: this.isolatedSubnets,
       [SubnetType.PRIVATE]: this.privateSubnets,
       [SubnetType.PUBLIC]: this.publicSubnets,
     };
 
-    let subnets = allSubnets[subnetType];
-
-    if (onePerAz && subnets.length > 0) {
-      subnets = retainOnePerAz(subnets);
-    }
+    const subnets = allSubnets[subnetType];
 
     // Force merge conflict here with https://github.com/aws/aws-cdk/pull/4089
     // see ImportedVpc
@@ -452,13 +468,30 @@ abstract class VpcBase extends Resource implements IVpc {
 
     if (placement.subnetType === undefined && placement.subnetGroupName === undefined && placement.subnets === undefined) {
       // Return default subnet type based on subnets that actually exist
-      if (this.privateSubnets.length > 0) { return { subnetType: SubnetType.PRIVATE, onePerAz: placement.onePerAz }; }
-      if (this.isolatedSubnets.length > 0) { return { subnetType: SubnetType.ISOLATED, onePerAz: placement.onePerAz }; }
-      return { subnetType: SubnetType.PUBLIC, onePerAz: placement.onePerAz };
+      if (this.privateSubnets.length > 0) {
+        return {
+          subnetType: SubnetType.PRIVATE,
+          onePerAz: placement.onePerAz,
+          availabilityZones: placement.availabilityZones};
+      }
+      if (this.isolatedSubnets.length > 0) {
+        return {
+          subnetType: SubnetType.ISOLATED,
+          onePerAz: placement.onePerAz,
+          availabilityZones: placement.availabilityZones };
+      }
+      return {
+        subnetType: SubnetType.PUBLIC,
+        onePerAz: placement.onePerAz,
+        availabilityZones: placement.availabilityZones };
     }
 
     return placement;
   }
+}
+
+function retainByAZ(subnets: ISubnet[], azs: string[]): ISubnet[] {
+  return subnets.filter(s => azs.includes(s.availabilityZone));
 }
 
 function retainOnePerAz(subnets: ISubnet[]): ISubnet[] {
