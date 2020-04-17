@@ -6,3 +6,4 @@ coverage
 *.tgz
 
 *.snk
+.eslintrc.js

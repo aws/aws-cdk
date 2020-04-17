@@ -50,6 +50,9 @@
   "cdk-build": {
     "cloudformation": "AWS::AppMesh"
   },
+  "nyc": {
+    "statements": 75
+  },
   "keywords": [
     "aws",
     "cdk",

@@ -1,7 +1,8 @@
-import fs = require('fs');
-import path = require('path');
-import semver = require('semver');
-import tjs = require('typescript-json-schema');
+import * as fs from 'fs';
+import * as path from 'path';
+import * as semver from 'semver';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import * as tjs from 'typescript-json-schema';
 
 function log(message: string) {
   // tslint:disable-next-line:no-console
@@ -12,6 +13,7 @@ function bump() {
 
   const metadataPath = '../schema/cloud-assembly.version.json';
 
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const metadata = require(metadataPath);
 
   const oldVersion = metadata.version;
@@ -38,7 +40,7 @@ export function generate(out: string, shouldBump: boolean) {
     strictNullChecks: true
   };
 
-  const program = tjs.getProgramFromFiles([path.join(__dirname, "../lib/schema.d.ts")], compilerOptions);
+  const program = tjs.getProgramFromFiles([path.join(__dirname, '../lib/schema.d.ts')], compilerOptions);
   const schema = tjs.generateSchema(program, 'AssemblyManifest', settings);
 
   augmentDescription(schema);
@@ -103,5 +105,5 @@ function augmentDescription(schema: any) {
  * compatibility checks.
  */
 function addAnyMetadataEntry(schema: any) {
-  schema.definitions.MetadataEntry.properties.data.anyOf.push({description: "Free form data."});
+  schema.definitions.MetadataEntry.properties.data.anyOf.push({description: 'Free form data.'});
 }

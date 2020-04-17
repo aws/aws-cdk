@@ -19,3 +19,4 @@ coverage
 *.tsbuildinfo
 
 tsconfig.json
+.eslintrc.js
