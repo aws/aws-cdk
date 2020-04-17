@@ -297,6 +297,7 @@ entire project is opened (not required if only a specific module is opened) -
   { "pattern": "./packages/@aws-cdk/*" },
   { "pattern": "./packages/@monocdk-experiment/*" },
   { "pattern": "./packages/*" },
+  { "pattern": "./tools/*" },
 ],
 ```
 
