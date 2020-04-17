@@ -43,8 +43,8 @@
   },
   "dependencies": {
     "@aws-cdk/cdk-assets-schema": "0.0.0",
-    "archiver": "^3.1.1",
-    "aws-sdk": "^2.656.0",
+    "archiver": "^4.0.1",
+    "aws-sdk": "^2.657.0",
     "glob": "^7.1.6",
     "yargs": "^15.3.1"
   },
@@ -60,9 +60,6 @@
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
     "node": ">= 10.12.0"
-  },
-  "cdk-package": {
-    "shrinkWrap": true
   },
   "stability": "experimental",
   "maturity": "experimental",

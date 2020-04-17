@@ -19,4 +19,3 @@ nyc.config.js
 !test/integ/cli/**/*
 .*
 assets.json
-npm-shrinkwrap.json
