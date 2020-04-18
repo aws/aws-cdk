@@ -204,7 +204,8 @@ async function main() {
       '.nycrc',
       '.LAST_PACKAGE',
       '*.snk',
-      'nyc.config.js'
+      'nyc.config.js',
+      '!.eslintrc.js',
     ]);
 
     await write('.npmignore', [
@@ -247,7 +248,6 @@ async function main() {
     await write('README.md', [
       `## ${namespace} Construct Library`,
       '<!--BEGIN STABILITY BANNER-->',
-      '',
       '---',
       '',
       '![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)',
@@ -262,6 +262,11 @@ async function main() {
       '```ts',
       `import ${lowcaseModuleName} = require('${packageName}');`,
       '```',
+    ]);
+
+    await write('.eslintrc.json', [
+      "const baseConfig = require('../../../tools/cdk-build-tools/config/eslintrc');",
+      'module.exports = baseConfig;',
     ]);
 
     const templateDir = path.join(__dirname, 'template');
