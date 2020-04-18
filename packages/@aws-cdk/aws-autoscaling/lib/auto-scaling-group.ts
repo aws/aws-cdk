@@ -171,6 +171,20 @@ export interface CommonAutoScalingGroupProps {
    * @default - HealthCheck.ec2 with no grace period
    */
   readonly healthCheck?: HealthCheck;
+
+  /**
+   * Specifies how block devices are exposed to the instance. You can specify virtual devices and EBS volumes.
+   *
+   * Each instance that is launched has an associated root device volume,
+   * either an Amazon EBS volume or an instance store volume.
+   * You can use block device mappings to specify additional EBS volumes or
+   * instance store volumes to attach to an instance when it is launched.
+   *
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/block-device-mapping-concepts.html
+   *
+   * @default - Uses the block device mapping of the AMI
+   */
+  readonly blockDevices?: BlockDevice[];
 }
 
 /**
@@ -216,20 +230,6 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
    * @default A role will automatically be created, it can be accessed via the `role` property
    */
   readonly role?: iam.IRole;
-
-  /**
-   * Specifies how block devices are exposed to the instance. You can specify virtual devices and EBS volumes.
-   *
-   * Each instance that is launched has an associated root device volume,
-   * either an Amazon EBS volume or an instance store volume.
-   * You can use block device mappings to specify additional EBS volumes or
-   * instance store volumes to attach to an instance when it is launched.
-   *
-   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/block-device-mapping-concepts.html
-   *
-   * @default - Uses the block device mapping of the AMI
-   */
-  readonly blockDevices?: BlockDevice[];
 }
 
 abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGroup {
@@ -467,7 +467,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     const desiredCapacity = props.desiredCapacity;
     const minCapacity = props.minCapacity !== undefined ? props.minCapacity : 1;
     const maxCapacity = props.maxCapacity !== undefined ? props.maxCapacity :
-                        desiredCapacity !== undefined ? desiredCapacity : Math.max(minCapacity, 1);
+      desiredCapacity !== undefined ? desiredCapacity : Math.max(minCapacity, 1);
 
     withResolved(minCapacity, maxCapacity, (min, max) => {
       if (min > max) {
@@ -488,7 +488,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     });
 
     if (desiredCapacity !== undefined) {
-      this.node.addWarning(`desiredCapacity has been configured. Be aware this will reset the size of your AutoScalingGroup on every deployment. See https://github.com/aws/aws-cdk/issues/5215`);
+      this.node.addWarning('desiredCapacity has been configured. Be aware this will reset the size of your AutoScalingGroup on every deployment. See https://github.com/aws/aws-cdk/issues/5215');
     }
 
     const { subnetIds, hasPublic } = props.vpc.selectSubnets(props.vpcSubnets);
@@ -504,10 +504,10 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
         {
           topicArn: props.notificationsTopic.topicArn,
           notificationTypes: [
-            "autoscaling:EC2_INSTANCE_LAUNCH",
-            "autoscaling:EC2_INSTANCE_LAUNCH_ERROR",
-            "autoscaling:EC2_INSTANCE_TERMINATE",
-            "autoscaling:EC2_INSTANCE_TERMINATE_ERROR"
+            'autoscaling:EC2_INSTANCE_LAUNCH',
+            'autoscaling:EC2_INSTANCE_LAUNCH_ERROR',
+            'autoscaling:EC2_INSTANCE_TERMINATE',
+            'autoscaling:EC2_INSTANCE_TERMINATE_ERROR'
           ],
         }
       ],

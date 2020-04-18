@@ -102,9 +102,9 @@ const handler = (event: any, context: any) => {
   // eslint-disable-next-line @typescript-eslint/no-require-imports, import/no-extraneous-dependencies
   const s3 = new (require('aws-sdk').S3)();
   // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const https = require("https");
+  const https = require('https');
   // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const url = require("url");
+  const url = require('url');
 
   log(JSON.stringify(event, undefined, 2));
 
@@ -122,9 +122,9 @@ const handler = (event: any, context: any) => {
   return s3.putBucketNotificationConfiguration(req, (err: any, data: any) => {
     log({ err, data });
     if (err) {
-      return submitResponse("FAILED", err.message + `\nMore information in CloudWatch Log Stream: ${context.logStreamName}`);
+      return submitResponse('FAILED', err.message + `\nMore information in CloudWatch Log Stream: ${context.logStreamName}`);
     } else {
-      return submitResponse("SUCCESS");
+      return submitResponse('SUCCESS');
     }
   });
 
@@ -138,7 +138,7 @@ const handler = (event: any, context: any) => {
   function submitResponse(responseStatus: string, reason?: string) {
     const responseBody = JSON.stringify({
       Status: responseStatus,
-      Reason: reason || "See the details in CloudWatch Log Stream: " + context.logStreamName,
+      Reason: reason || 'See the details in CloudWatch Log Stream: ' + context.logStreamName,
       PhysicalResourceId: event.PhysicalResourceId || event.LogicalResourceId,
       StackId: event.StackId,
       RequestId: event.RequestId,
@@ -153,10 +153,10 @@ const handler = (event: any, context: any) => {
       hostname: parsedUrl.hostname,
       port: 443,
       path: parsedUrl.path,
-      method: "PUT",
+      method: 'PUT',
       headers: {
-        "content-type": "",
-        "content-length": responseBody.length
+        'content-type': '',
+        'content-length': responseBody.length
       }
     };
 
@@ -165,7 +165,7 @@ const handler = (event: any, context: any) => {
       context.done();
     });
 
-    request.on("error", (error: any) => {
+    request.on('error', (error: any) => {
       log({ sendError: error });
       context.done();
     });

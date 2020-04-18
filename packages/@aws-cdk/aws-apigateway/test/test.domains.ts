@@ -26,15 +26,15 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::DomainName', {
-      "DomainName": "example.com",
-      "EndpointConfiguration": { "Types": [ "REGIONAL" ] },
-      "RegionalCertificateArn": { "Ref": "Cert5C9FAEC1" }
+      'DomainName': 'example.com',
+      'EndpointConfiguration': { 'Types': [ 'REGIONAL' ] },
+      'RegionalCertificateArn': { 'Ref': 'Cert5C9FAEC1' }
     }));
 
     expect(stack).to(haveResource('AWS::ApiGateway::DomainName', {
-      "DomainName": "example.com",
-      "EndpointConfiguration": { "Types": [ "EDGE" ] },
-      "CertificateArn": { "Ref": "Cert5C9FAEC1" }
+      'DomainName': 'example.com',
+      'EndpointConfiguration': { 'Types': [ 'EDGE' ] },
+      'CertificateArn': { 'Ref': 'Cert5C9FAEC1' }
     }));
 
     test.deepEqual(stack.resolve(regionalDomain.domainNameAliasDomainName), { 'Fn::GetAtt': [ 'mydomain592C948B', 'RegionalDomainName' ] });
@@ -58,9 +58,9 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::DomainName', {
-      "DomainName": "example.com",
-      "EndpointConfiguration": { "Types": [ "REGIONAL" ] },
-      "RegionalCertificateArn": { "Ref": "Cert5C9FAEC1" }
+      'DomainName': 'example.com',
+      'EndpointConfiguration': { 'Types': [ 'REGIONAL' ] },
+      'RegionalCertificateArn': { 'Ref': 'Cert5C9FAEC1' }
     }));
     test.done();
   },
@@ -90,24 +90,24 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::DomainName', {
-      "DomainName": "old.example.com",
-      "EndpointConfiguration": { "Types": [ "REGIONAL" ] },
-      "RegionalCertificateArn": { "Ref": "Cert5C9FAEC1" },
-      "SecurityPolicy": "TLS_1_0"
+      'DomainName': 'old.example.com',
+      'EndpointConfiguration': { 'Types': [ 'REGIONAL' ] },
+      'RegionalCertificateArn': { 'Ref': 'Cert5C9FAEC1' },
+      'SecurityPolicy': 'TLS_1_0'
     }));
 
     expect(stack).to(haveResource('AWS::ApiGateway::DomainName', {
-      "DomainName": "new.example.com",
-      "EndpointConfiguration": { "Types": [ "REGIONAL" ] },
-      "RegionalCertificateArn": { "Ref": "Cert5C9FAEC1" },
-      "SecurityPolicy": "TLS_1_2"
+      'DomainName': 'new.example.com',
+      'EndpointConfiguration': { 'Types': [ 'REGIONAL' ] },
+      'RegionalCertificateArn': { 'Ref': 'Cert5C9FAEC1' },
+      'SecurityPolicy': 'TLS_1_2'
     }));
 
     expect(stack).to(haveResource('AWS::ApiGateway::DomainName', {
-      "DomainName": "default.example.com",
-      "EndpointConfiguration": { "Types": [ "REGIONAL" ] },
-      "RegionalCertificateArn": { "Ref": "Cert5C9FAEC1" },
-      "SecurityPolicy": ABSENT
+      'DomainName': 'default.example.com',
+      'EndpointConfiguration': { 'Types': [ 'REGIONAL' ] },
+      'RegionalCertificateArn': { 'Ref': 'Cert5C9FAEC1' },
+      'SecurityPolicy': ABSENT
     }));
     test.done();
   },
@@ -128,14 +128,14 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::BasePathMapping', {
-      "DomainName": {
-        "Ref": "Domain66AC69E0"
+      'DomainName': {
+        'Ref': 'Domain66AC69E0'
       },
-      "RestApiId": {
-        "Ref": "apiC8550315"
+      'RestApiId': {
+        'Ref': 'apiC8550315'
       },
-      "Stage": {
-        "Ref": "apiDeploymentStageprod896C8101"
+      'Stage': {
+        'Ref': 'apiDeploymentStageprod896C8101'
       }
     }));
     test.done();
@@ -160,28 +160,28 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::BasePathMapping', {
-      "DomainName": {
-        "Ref": "mydomain592C948B"
+      'DomainName': {
+        'Ref': 'mydomain592C948B'
       },
-      "BasePath": "api1",
-      "RestApiId": {
-        "Ref": "api1A91238E2"
+      'BasePath': 'api1',
+      'RestApiId': {
+        'Ref': 'api1A91238E2'
       },
-      "Stage": {
-        "Ref": "api1DeploymentStageprod362746F6"
+      'Stage': {
+        'Ref': 'api1DeploymentStageprod362746F6'
       }
     }));
 
     expect(stack).to(haveResource('AWS::ApiGateway::BasePathMapping', {
-      "DomainName": {
-        "Ref": "mydomain592C948B"
+      'DomainName': {
+        'Ref': 'mydomain592C948B'
       },
-      "BasePath": "api2",
-      "RestApiId": {
-        "Ref": "api2C4850CEA"
+      'BasePath': 'api2',
+      'RestApiId': {
+        'Ref': 'api2C4850CEA'
       },
-      "Stage": {
-        "Ref": "api2DeploymentStageprod4120D74E"
+      'Stage': {
+        'Ref': 'api2DeploymentStageprod4120D74E'
       }
     }));
     test.done();
@@ -202,25 +202,25 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::DomainName', {
-      "DomainName": "my.domain.com",
-      "EndpointConfiguration": {
-        "Types": [
-          "REGIONAL"
+      'DomainName': 'my.domain.com',
+      'EndpointConfiguration': {
+        'Types': [
+          'REGIONAL'
         ]
       },
-      "RegionalCertificateArn": {
-        "Ref": "cert56CA94EB"
+      'RegionalCertificateArn': {
+        'Ref': 'cert56CA94EB'
       }
     }));
     expect(stack).to(haveResource('AWS::ApiGateway::BasePathMapping', {
-      "DomainName": {
-        "Ref": "apiCustomDomain64773C4F"
+      'DomainName': {
+        'Ref': 'apiCustomDomain64773C4F'
       },
-      "RestApiId": {
-        "Ref": "apiC8550315"
+      'RestApiId': {
+        'Ref': 'apiC8550315'
       },
-      "Stage": {
-        "Ref": "apiDeploymentStageprod896C8101"
+      'Stage': {
+        'Ref': 'apiDeploymentStageprod896C8101'
       }
     }));
 
@@ -242,25 +242,25 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::DomainName', {
-      "DomainName": domainName,
-      "EndpointConfiguration": {
-        "Types": [
-          "REGIONAL"
+      'DomainName': domainName,
+      'EndpointConfiguration': {
+        'Types': [
+          'REGIONAL'
         ]
       },
-      "RegionalCertificateArn": {
-        "Ref": "cert56CA94EB"
+      'RegionalCertificateArn': {
+        'Ref': 'cert56CA94EB'
       }
     }));
     expect(stack).to(haveResource('AWS::ApiGateway::BasePathMapping', {
-      "DomainName": {
-        "Ref": "apidomainId102F8DAA"
+      'DomainName': {
+        'Ref': 'apidomainId102F8DAA'
       },
-      "RestApiId": {
-        "Ref": "apiC8550315"
+      'RestApiId': {
+        'Ref': 'apiC8550315'
       },
-      "Stage": {
-        "Ref": "apiDeploymentStageprod896C8101"
+      'Stage': {
+        'Ref': 'apiDeploymentStageprod896C8101'
       }
     }));
 
@@ -286,47 +286,47 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::DomainName', {
-      "DomainName": 'my.domain.com',
-      "EndpointConfiguration": {
-        "Types": [
-          "REGIONAL"
+      'DomainName': 'my.domain.com',
+      'EndpointConfiguration': {
+        'Types': [
+          'REGIONAL'
         ]
       },
-      "RegionalCertificateArn": {
-        "Ref": "cert56CA94EB"
+      'RegionalCertificateArn': {
+        'Ref': 'cert56CA94EB'
       }
     }));
     expect(stack).to(haveResource('AWS::ApiGateway::DomainName', {
-      "DomainName": 'your.domain.com',
-      "EndpointConfiguration": {
-        "Types": [
-          "REGIONAL"
+      'DomainName': 'your.domain.com',
+      'EndpointConfiguration': {
+        'Types': [
+          'REGIONAL'
         ]
       },
-      "RegionalCertificateArn": {
-        "Ref": "cert56CA94EB"
+      'RegionalCertificateArn': {
+        'Ref': 'cert56CA94EB'
       }
     }));
     expect(stack).to(haveResource('AWS::ApiGateway::DomainName', {
-      "DomainName": 'our.domain.com',
-      "EndpointConfiguration": {
-        "Types": [
-          "REGIONAL"
+      'DomainName': 'our.domain.com',
+      'EndpointConfiguration': {
+        'Types': [
+          'REGIONAL'
         ]
       },
-      "RegionalCertificateArn": {
-        "Ref": "cert56CA94EB"
+      'RegionalCertificateArn': {
+        'Ref': 'cert56CA94EB'
       }
     }));
     expect(stack).to(haveResource('AWS::ApiGateway::BasePathMapping', {
-      "DomainName": {
-        "Ref": "apidomainId102F8DAA"
+      'DomainName': {
+        'Ref': 'apidomainId102F8DAA'
       },
-      "RestApiId": {
-        "Ref": "apiC8550315"
+      'RestApiId': {
+        'Ref': 'apiC8550315'
       },
-      "Stage": {
-        "Ref": "apiDeploymentStageprod896C8101"
+      'Stage': {
+        'Ref': 'apiDeploymentStageprod896C8101'
       }
     }));
 
@@ -360,26 +360,26 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::BasePathMapping', {
-      "DomainName": {
-        "Ref": "mydomain592C948B"
+      'DomainName': {
+        'Ref': 'mydomain592C948B'
       },
-      "BasePath": "api1",
-      "RestApiId": {
-        "Ref": "api1A91238E2"
+      'BasePath': 'api1',
+      'RestApiId': {
+        'Ref': 'api1A91238E2'
       },
-      "Stage": stack.resolve(testStage.stageName)
+      'Stage': stack.resolve(testStage.stageName)
     }));
 
     expect(stack).to(haveResource('AWS::ApiGateway::BasePathMapping', {
-      "DomainName": {
-        "Ref": "mydomain592C948B"
+      'DomainName': {
+        'Ref': 'mydomain592C948B'
       },
-      "BasePath": "api2",
-      "RestApiId": {
-        "Ref": "api2C4850CEA"
+      'BasePath': 'api2',
+      'RestApiId': {
+        'Ref': 'api2C4850CEA'
       },
-      "Stage": {
-        "Ref": "api2DeploymentStageprod4120D74E"
+      'Stage': {
+        'Ref': 'api2DeploymentStageprod4120D74E'
       }
     }));
     test.done();

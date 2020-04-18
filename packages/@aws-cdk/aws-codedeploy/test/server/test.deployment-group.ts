@@ -11,7 +11,7 @@ import * as codedeploy from '../../lib';
 
 export = {
   'CodeDeploy Server Deployment Group': {
-    "can be created by explicitly passing an Application"(test: Test) {
+    'can be created by explicitly passing an Application'(test: Test) {
       const stack = new cdk.Stack();
 
       const application = new codedeploy.ServerApplication(stack, 'MyApp');
@@ -20,8 +20,8 @@ export = {
       });
 
       expect(stack).to(haveResource('AWS::CodeDeploy::DeploymentGroup', {
-        "ApplicationName": {
-          "Ref": "MyApp3CE31C26"
+        'ApplicationName': {
+          'Ref': 'MyApp3CE31C26'
         },
       }));
 
@@ -42,7 +42,7 @@ export = {
       test.done();
     },
 
-    "created with ASGs contains the ASG names"(test: Test) {
+    'created with ASGs contains the ASG names'(test: Test) {
       const stack = new cdk.Stack();
 
       const asg = new autoscaling.AutoScalingGroup(stack, 'ASG', {
@@ -56,9 +56,9 @@ export = {
       });
 
       expect(stack).to(haveResource('AWS::CodeDeploy::DeploymentGroup', {
-        "AutoScalingGroups": [
+        'AutoScalingGroups': [
           {
-          "Ref": "ASG46ED3070",
+            'Ref': 'ASG46ED3070',
           },
         ]
       }));
@@ -66,7 +66,7 @@ export = {
       test.done();
     },
 
-    "created without ASGs but adding them later contains the ASG names"(test: Test) {
+    'created without ASGs but adding them later contains the ASG names'(test: Test) {
       const stack = new cdk.Stack();
 
       const asg = new autoscaling.AutoScalingGroup(stack, 'ASG', {
@@ -79,9 +79,9 @@ export = {
       deploymentGroup.addAutoScalingGroup(asg);
 
       expect(stack).to(haveResource('AWS::CodeDeploy::DeploymentGroup', {
-        "AutoScalingGroups": [
+        'AutoScalingGroups': [
           {
-          "Ref": "ASG46ED3070",
+            'Ref': 'ASG46ED3070',
           },
         ]
       }));
@@ -103,20 +103,20 @@ export = {
       });
 
       expect(stack).to(haveResource('AWS::CodeDeploy::DeploymentGroup', {
-        "LoadBalancerInfo": {
-          "TargetGroupInfoList": [
+        'LoadBalancerInfo': {
+          'TargetGroupInfoList': [
             {
-              "Name": {
-                "Fn::GetAtt": [
-                  "ALBListenerFleetGroup008CEEE4",
-                  "TargetGroupName",
+              'Name': {
+                'Fn::GetAtt': [
+                  'ALBListenerFleetGroup008CEEE4',
+                  'TargetGroupName',
                 ],
               },
             },
           ],
         },
-        "DeploymentStyle": {
-          "DeploymentOption": "WITH_TRAFFIC_CONTROL",
+        'DeploymentStyle': {
+          'DeploymentOption': 'WITH_TRAFFIC_CONTROL',
         },
       }));
 
@@ -137,20 +137,20 @@ export = {
       });
 
       expect(stack).to(haveResource('AWS::CodeDeploy::DeploymentGroup', {
-        "LoadBalancerInfo": {
-          "TargetGroupInfoList": [
+        'LoadBalancerInfo': {
+          'TargetGroupInfoList': [
             {
-              "Name": {
-                "Fn::GetAtt": [
-                  "NLBListenerFleetGroupB882EC86",
-                  "TargetGroupName",
+              'Name': {
+                'Fn::GetAtt': [
+                  'NLBListenerFleetGroupB882EC86',
+                  'TargetGroupName',
                 ],
               },
             },
           ],
         },
-        "DeploymentStyle": {
-          "DeploymentOption": "WITH_TRAFFIC_CONTROL",
+        'DeploymentStyle': {
+          'DeploymentOption': 'WITH_TRAFFIC_CONTROL',
         },
       }));
 
@@ -170,18 +170,18 @@ export = {
       });
 
       expect(stack).to(haveResource('AWS::CodeDeploy::DeploymentGroup', {
-        "Ec2TagSet": {
-          "Ec2TagSetList": [
+        'Ec2TagSet': {
+          'Ec2TagSetList': [
             {
-              "Ec2TagGroup": [
+              'Ec2TagGroup': [
                 {
-                  "Key": "some-key",
-                  "Value": "some-value",
-                  "Type": "KEY_AND_VALUE",
+                  'Key': 'some-key',
+                  'Value': 'some-value',
+                  'Type': 'KEY_AND_VALUE',
                 },
                 {
-                  "Key": "other-key",
-                  "Type": "KEY_ONLY",
+                  'Key': 'other-key',
+                  'Type': 'KEY_ONLY',
                 },
               ],
             },
@@ -207,27 +207,27 @@ export = {
       });
 
       expect(stack).to(haveResource('AWS::CodeDeploy::DeploymentGroup', {
-        "OnPremisesTagSet": {
-          "OnPremisesTagSetList": [
+        'OnPremisesTagSet': {
+          'OnPremisesTagSetList': [
             {
-              "OnPremisesTagGroup": [
+              'OnPremisesTagGroup': [
                 {
-                  "Key": "some-key",
-                  "Value": "some-value",
-                  "Type": "KEY_AND_VALUE",
+                  'Key': 'some-key',
+                  'Value': 'some-value',
+                  'Type': 'KEY_AND_VALUE',
                 },
                 {
-                  "Key": "some-key",
-                  "Value": "another-value",
-                  "Type": "KEY_AND_VALUE",
+                  'Key': 'some-key',
+                  'Value': 'another-value',
+                  'Type': 'KEY_AND_VALUE',
                 },
               ],
             },
             {
-              "OnPremisesTagGroup": [
+              'OnPremisesTagGroup': [
                 {
-                  "Value": "keyless-value",
-                  "Type": "VALUE_ONLY",
+                  'Value': 'keyless-value',
+                  'Type': 'VALUE_ONLY',
                 },
               ],
             },
@@ -280,15 +280,15 @@ export = {
       deploymentGroup.addAlarm(alarm);
 
       expect(stack).to(haveResource('AWS::CodeDeploy::DeploymentGroup', {
-        "AlarmConfiguration": {
-          "Alarms": [
+        'AlarmConfiguration': {
+          'Alarms': [
             {
-              "Name": {
-                "Ref": "Alarm1F9009D71",
+              'Name': {
+                'Ref': 'Alarm1F9009D71',
               },
             },
           ],
-          "Enabled": true,
+          'Enabled': true,
         },
       }));
 
@@ -301,10 +301,10 @@ export = {
       new codedeploy.ServerDeploymentGroup(stack, 'DeploymentGroup');
 
       expect(stack).to(haveResource('AWS::CodeDeploy::DeploymentGroup', {
-        "AutoRollbackConfiguration": {
-          "Enabled": true,
-          "Events": [
-            "DEPLOYMENT_FAILURE",
+        'AutoRollbackConfiguration': {
+          'Enabled': true,
+          'Events': [
+            'DEPLOYMENT_FAILURE',
           ],
         },
       }));
@@ -332,10 +332,10 @@ export = {
       deploymentGroup.addAlarm(alarm);
 
       expect(stack).to(haveResource('AWS::CodeDeploy::DeploymentGroup', {
-        "AutoRollbackConfiguration": {
-          "Enabled": true,
-          "Events": [
-            "DEPLOYMENT_STOP_ON_ALARM",
+        'AutoRollbackConfiguration': {
+          'Enabled': true,
+          'Events': [
+            'DEPLOYMENT_STOP_ON_ALARM',
           ],
         },
       }));

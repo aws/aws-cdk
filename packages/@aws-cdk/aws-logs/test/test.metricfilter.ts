@@ -26,7 +26,7 @@ export = {
         MetricValue: '$.latency',
       }],
       FilterPattern: '{ $.latency = "*" }',
-      LogGroupName: { Ref: "LogGroupF5B46931" }
+      LogGroupName: { Ref: 'LogGroupF5B46931' }
     }));
 
     test.done();

@@ -1,7 +1,7 @@
-import { expect, haveResourceLike } from "@aws-cdk/assert";
+import { expect, haveResourceLike } from '@aws-cdk/assert';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
-import { Stack } from "@aws-cdk/core";
+import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as cpactions from '../../lib';
 
@@ -41,29 +41,29 @@ export = {
       });
 
       expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
-        "Stages": [
+        'Stages': [
           {
-            "Name": "Source",
-            "Actions": [
+            'Name': 'Source',
+            'Actions': [
               {
-                "Name": "BitBucket",
-                "ActionTypeId": {
-                  "Owner": "AWS",
-                  "Provider": "CodeStarSourceConnection",
+                'Name': 'BitBucket',
+                'ActionTypeId': {
+                  'Owner': 'AWS',
+                  'Provider': 'CodeStarSourceConnection',
                 },
-                "Configuration": {
-                  "ConnectionArn": "arn:aws:codestar-connections:us-east-1:123456789012:connection/12345678-abcd-12ab-34cdef5678gh",
-                  "FullRepositoryId": "aws/aws-cdk",
-                  "BranchName": "master",
+                'Configuration': {
+                  'ConnectionArn': 'arn:aws:codestar-connections:us-east-1:123456789012:connection/12345678-abcd-12ab-34cdef5678gh',
+                  'FullRepositoryId': 'aws/aws-cdk',
+                  'BranchName': 'master',
                 },
               },
             ],
           },
           {
-            "Name": "Build",
-            "Actions": [
+            'Name': 'Build',
+            'Actions': [
               {
-                "Name": "CodeBuild",
+                'Name': 'CodeBuild',
               },
             ],
           },

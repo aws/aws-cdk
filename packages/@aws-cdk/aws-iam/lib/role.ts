@@ -10,6 +10,9 @@ import { ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals'
 import { ImmutableRole } from './private/immutable-role';
 import { AttachedPolicies } from './util';
 
+/**
+ * Properties for defining an IAM Role
+ */
 export interface RoleProps {
   /**
    * The IAM principal (i.e. `new ServicePrincipal('sns.amazonaws.com')`)
@@ -238,8 +241,9 @@ export class Role extends Resource implements IRole {
       ? new Import(scope, id)
       : new ImmutableRole(scope, `ImmutableRole${id}`, new Import(scope, id));
 
-    function accountsAreEqualOrOneIsUnresolved(account1: string | undefined,
-                                               account2: string | undefined): boolean {
+    function accountsAreEqualOrOneIsUnresolved(
+      account1: string | undefined,
+      account2: string | undefined): boolean {
       return Token.isUnresolved(account1) || Token.isUnresolved(account2) ||
         account1 === account2;
     }

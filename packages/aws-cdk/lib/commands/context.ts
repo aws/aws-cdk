@@ -54,11 +54,11 @@ function listContext(context: any) {
   const keys = contextKeys(context);
 
   if (keys.length === 0) {
-    print(`This CDK application does not have any saved context values yet.`);
+    print('This CDK application does not have any saved context values yet.');
     print('');
-    print(`Context will automatically be saved when you synthesize CDK apps`);
-    print(`that use environment context information like AZ information, VPCs,`);
-    print(`SSM parameters, and so on.`);
+    print('Context will automatically be saved when you synthesize CDK apps');
+    print('that use environment context information like AZ information, VPCs,');
+    print('SSM parameters, and so on.');
 
     return;
   }

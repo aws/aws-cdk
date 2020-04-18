@@ -19,20 +19,20 @@ export = {
     // THEN
     expect(stack).to(haveResourceLike('AWS::EKS::Nodegroup', {
       ClusterName: {
-        Ref: "Cluster9EE0221C"
+        Ref: 'Cluster9EE0221C'
       },
       NodeRole: {
-        "Fn::GetAtt": [
-          "NodegroupNodeGroupRole038A128B",
-          "Arn"
+        'Fn::GetAtt': [
+          'NodegroupNodeGroupRole038A128B',
+          'Arn'
         ]
       },
       Subnets: [
         {
-          Ref: "VPCPrivateSubnet1Subnet8BCA10E0"
+          Ref: 'VPCPrivateSubnet1Subnet8BCA10E0'
         },
         {
-          Ref: "VPCPrivateSubnet2SubnetCFCDAA7A"
+          Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A'
         }
       ],
       ForceUpdateEnabled: true,
@@ -57,16 +57,16 @@ export = {
         sshKeyName: 'foo',
         sourceSecurityGroups: [ new ec2.SecurityGroup(stack, 'SG', { vpc }) ]
       }
-     });
+    });
     // THEN
     expect(stack).to(haveResource('AWS::EKS::Nodegroup', {
       RemoteAccess: {
-        Ec2SshKey: "foo",
+        Ec2SshKey: 'foo',
         SourceSecurityGroups: [
           {
-            "Fn::GetAtt": [
-              "SGADB53937",
-              "GroupId"
+            'Fn::GetAtt': [
+              'SGADB53937',
+              'GroupId'
             ]
           }
         ]
@@ -99,12 +99,12 @@ export = {
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
       instanceType: new ec2.InstanceType('m5.large')
-     });
+    });
 
     // THEN
     expect(stack).to(haveResourceLike('AWS::EKS::Nodegroup', {
       InstanceTypes: [
-        "m5.large"
+        'm5.large'
       ],
     }
     ));
@@ -126,7 +126,7 @@ export = {
     // THEN
     expect(stack).to(haveResourceLike('AWS::EKS::Nodegroup', {
       RemoteAccess: {
-        Ec2SshKey: "foo"
+        Ec2SshKey: 'foo'
       },
     }
     ));
@@ -150,7 +150,7 @@ export = {
       Outputs: {
         NodegroupName: {
           Value: {
-            "Fn::ImportValue": "Stack:ExportsOutputRefNodegroup62B4B2C1EF8AB7C1"
+            'Fn::ImportValue': 'Stack:ExportsOutputRefNodegroup62B4B2C1EF8AB7C1'
           }
         }
       }
@@ -168,20 +168,20 @@ export = {
     // THEN
     expect(stack).to(haveResourceLike('AWS::EKS::Nodegroup', {
       ClusterName: {
-        Ref: "Cluster9EE0221C"
+        Ref: 'Cluster9EE0221C'
       },
       NodeRole: {
-        "Fn::GetAtt": [
-          "ClusterNodegroupngNodeGroupRoleDA0D35DA",
-          "Arn"
+        'Fn::GetAtt': [
+          'ClusterNodegroupngNodeGroupRoleDA0D35DA',
+          'Arn'
         ]
       },
       Subnets: [
         {
-          Ref: "VPCPrivateSubnet1Subnet8BCA10E0"
+          Ref: 'VPCPrivateSubnet1Subnet8BCA10E0'
         },
         {
-          Ref: "VPCPrivateSubnet2SubnetCFCDAA7A"
+          Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A'
         }
       ],
       ForceUpdateEnabled: true,

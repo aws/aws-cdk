@@ -21,8 +21,8 @@ export = {
 
     'disjunction of conjunctions'(test: Test) {
       const pattern = FilterPattern.anyTermGroup(
-        ["foo", "bar"],
-        ["baz"]
+        ['foo', 'bar'],
+        ['baz']
       );
 
       test.equal('?"foo" "bar" ?"baz"', pattern.logPatternString);
@@ -32,7 +32,7 @@ export = {
 
     'dont prefix with ? if only one disjunction'(test: Test) {
       const pattern = FilterPattern.anyTermGroup(
-        ["foo", "bar"]
+        ['foo', 'bar']
       );
 
       test.equal('"foo" "bar"', pattern.logPatternString);

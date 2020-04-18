@@ -1,4 +1,4 @@
-import { Context, Data } from "./fields";
+import { Context, Data } from './fields';
 
 /**
  * Type union for task classes that accept multiple types of payload

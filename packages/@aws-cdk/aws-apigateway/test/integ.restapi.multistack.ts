@@ -5,23 +5,23 @@ import * as cdk from '@aws-cdk/core';
 import * as apig from '../lib';
 
 class FirstStack extends cdk.Stack {
-    public readonly firstLambda: lambda.Function;
+  public readonly firstLambda: lambda.Function;
 
-    constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
-      super(scope, id, props);
+  constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+    super(scope, id, props);
 
-      this.firstLambda = new lambda.Function(this, 'firstLambda', {
-        functionName: 'FirstLambda',
-        code: lambda.Code.fromInline(`exports.handler = async function(event) {
+    this.firstLambda = new lambda.Function(this, 'firstLambda', {
+      functionName: 'FirstLambda',
+      code: lambda.Code.fromInline(`exports.handler = async function(event) {
           return  {
             'headers': { 'Content-Type': 'text/plain' },
             'statusCode': 200
           }
         }`),
-        handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_10_X,
-      });
-    }
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+    });
+  }
 }
 
 interface SecondStackProps extends cdk.StackProps {

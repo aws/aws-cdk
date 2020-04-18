@@ -24,8 +24,8 @@ export = {
       taskImageOptions: {
         image: ecs.ContainerImage.fromRegistry('test'),
         environment: {
-          TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
-          TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
+          TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
+          TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value'
         }
       },
       desiredCount: 2,
@@ -34,9 +34,9 @@ export = {
     // THEN - stack contains a load balancer and a service
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer'));
 
-    expect(stack).to(haveResource("AWS::ECS::Service", {
+    expect(stack).to(haveResource('AWS::ECS::Service', {
       DesiredCount: 2,
-      LaunchType: "EC2",
+      LaunchType: 'EC2',
     }));
 
     expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
@@ -44,12 +44,12 @@ export = {
         {
           Environment: [
             {
-              Name: "TEST_ENVIRONMENT_VARIABLE1",
-              Value: "test environment variable 1 value"
+              Name: 'TEST_ENVIRONMENT_VARIABLE1',
+              Value: 'test environment variable 1 value'
             },
             {
-              Name: "TEST_ENVIRONMENT_VARIABLE2",
-              Value: "test environment variable 2 value"
+              Name: 'TEST_ENVIRONMENT_VARIABLE2',
+              Value: 'test environment variable 2 value'
             }
           ],
           Memory: 1024
@@ -72,15 +72,15 @@ export = {
       taskImageOptions: {
         image: ecs.ContainerImage.fromRegistry('test'),
         environment: {
-          TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
-          TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
+          TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
+          TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value'
         }
       },
       desiredCount: 2,
     });
 
     // THEN - stack does not contain a LaunchConfiguration
-    expect(stack, true).notTo(haveResource("AWS::AutoScaling::LaunchConfiguration"));
+    expect(stack, true).notTo(haveResource('AWS::AutoScaling::LaunchConfiguration'));
 
     test.throws(() => expect(stack));
 
@@ -98,7 +98,7 @@ export = {
       cluster,
       vpc,
       taskImageOptions: {
-        image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app")
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app')
       }
     }));
 
@@ -161,15 +161,15 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource("AWS::ECS::Service", {
+    expect(stack).to(haveResource('AWS::ECS::Service', {
       ServiceRegistries: [
         {
-          ContainerName: "web",
+          ContainerName: 'web',
           ContainerPort: 8000,
           RegistryArn: {
-            "Fn::GetAtt": [
-              "ServiceCloudmapServiceDE76B29D",
-              "Arn"
+            'Fn::GetAtt': [
+              'ServiceCloudmapServiceDE76B29D',
+              'Arn'
             ]
           }
         }
@@ -181,7 +181,7 @@ export = {
         DnsRecords: [
           {
             TTL: 60,
-            Type: "SRV"
+            Type: 'SRV'
           }
         ],
         NamespaceId: {
@@ -195,7 +195,7 @@ export = {
       HealthCheckCustomConfig: {
         FailureThreshold: 1
       },
-      Name: "myApp",
+      Name: 'myApp',
       NamespaceId: {
         'Fn::GetAtt': [
           'EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F',
@@ -233,13 +233,13 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource("AWS::ECS::Service", {
+    expect(stack).to(haveResource('AWS::ECS::Service', {
       ServiceRegistries: [
         {
           RegistryArn: {
-            "Fn::GetAtt": [
-              "ServiceCloudmapServiceDE76B29D",
-              "Arn"
+            'Fn::GetAtt': [
+              'ServiceCloudmapServiceDE76B29D',
+              'Arn'
             ]
           }
         }
@@ -251,7 +251,7 @@ export = {
         DnsRecords: [
           {
             TTL: 60,
-            Type: "A"
+            Type: 'A'
           }
         ],
         NamespaceId: {
@@ -265,7 +265,7 @@ export = {
       HealthCheckCustomConfig: {
         FailureThreshold: 1
       },
-      Name: "myApp",
+      Name: 'myApp',
       NamespaceId: {
         'Fn::GetAtt': [
           'EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F',
@@ -289,8 +289,8 @@ export = {
       taskImageOptions: {
         image: ecs.ContainerImage.fromRegistry('test'),
         environment: {
-          TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
-          TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
+          TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
+          TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value'
         }
       },
       desiredCount: 2,
@@ -303,29 +303,29 @@ export = {
         {
           Environment: [
             {
-              Name: "TEST_ENVIRONMENT_VARIABLE1",
-              Value: "test environment variable 1 value"
+              Name: 'TEST_ENVIRONMENT_VARIABLE1',
+              Value: 'test environment variable 1 value'
             },
             {
-              Name: "TEST_ENVIRONMENT_VARIABLE2",
-              Value: "test environment variable 2 value"
+              Name: 'TEST_ENVIRONMENT_VARIABLE2',
+              Value: 'test environment variable 2 value'
             }
           ],
           LogConfiguration: {
-            LogDriver: "awslogs",
+            LogDriver: 'awslogs',
             Options: {
-              "awslogs-group": { Ref: "ServiceTaskDefwebLogGroup2A898F61" },
-              "awslogs-stream-prefix": "Service",
-              "awslogs-region": { Ref: "AWS::Region" }
+              'awslogs-group': { Ref: 'ServiceTaskDefwebLogGroup2A898F61' },
+              'awslogs-stream-prefix': 'Service',
+              'awslogs-region': { Ref: 'AWS::Region' }
             }
           },
         }
       ]
     }));
 
-    expect(stack).to(haveResource("AWS::ECS::Service", {
+    expect(stack).to(haveResource('AWS::ECS::Service', {
       DesiredCount: 2,
-      LaunchType: "FARGATE",
+      LaunchType: 'FARGATE',
     }));
 
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::Listener', {
@@ -349,8 +349,8 @@ export = {
         image: ecs.ContainerImage.fromRegistry('test'),
         enableLogging: false,
         environment: {
-          TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
-          TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
+          TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
+          TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value'
         },
       },
       desiredCount: 2,
@@ -362,20 +362,20 @@ export = {
         {
           Environment: [
             {
-              Name: "TEST_ENVIRONMENT_VARIABLE1",
-              Value: "test environment variable 1 value"
+              Name: 'TEST_ENVIRONMENT_VARIABLE1',
+              Value: 'test environment variable 1 value'
             },
             {
-              Name: "TEST_ENVIRONMENT_VARIABLE2",
-              Value: "test environment variable 2 value"
+              Name: 'TEST_ENVIRONMENT_VARIABLE2',
+              Value: 'test environment variable 2 value'
             }
           ],
           LogConfiguration: {
-            LogDriver: "awslogs",
+            LogDriver: 'awslogs',
             Options: {
-              "awslogs-group": { Ref: "ServiceTaskDefwebLogGroup2A898F61" },
-              "awslogs-stream-prefix": "Service",
-              "awslogs-region": { Ref: "AWS::Region" }
+              'awslogs-group': { Ref: 'ServiceTaskDefwebLogGroup2A898F61' },
+              'awslogs-stream-prefix': 'Service',
+              'awslogs-region': { Ref: 'AWS::Region' }
             }
           },
         }
@@ -410,28 +410,28 @@ export = {
       Port: 443,
       Protocol: 'HTTPS',
       Certificates: [{
-        CertificateArn: "helloworld"
+        CertificateArn: 'helloworld'
       }]
     }));
 
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
       Port: 80,
       Protocol: 'HTTP',
-      TargetType: "ip",
+      TargetType: 'ip',
       VpcId: {
-        Ref: "VPCB9E5F0B4"
+        Ref: 'VPCB9E5F0B4'
       }
     }));
 
-    expect(stack).to(haveResource("AWS::ECS::Service", {
+    expect(stack).to(haveResource('AWS::ECS::Service', {
       DesiredCount: 1,
-      LaunchType: "FARGATE",
+      LaunchType: 'FARGATE',
     }));
 
     expect(stack).to(haveResource('AWS::Route53::RecordSet', {
       Name: 'api.example.com.',
       HostedZoneId: {
-        Ref: "HostedZoneDB99F866"
+        Ref: 'HostedZoneDB99F866'
       },
       Type: 'A',
       AliasTarget: {
@@ -464,14 +464,14 @@ export = {
     // THEN - stack contains a load balancer, a service, and a certificate
     expect(stack).to(haveResource('AWS::CloudFormation::CustomResource', {
       ServiceToken: {
-      'Fn::GetAtt': [
-        'ServiceCertificateCertificateRequestorFunctionB69CD117',
-        'Arn'
+        'Fn::GetAtt': [
+          'ServiceCertificateCertificateRequestorFunctionB69CD117',
+          'Arn'
         ]
       },
       DomainName: 'api.example.com',
       HostedZoneId: {
-        Ref: "HostedZoneDB99F866"
+        Ref: 'HostedZoneDB99F866'
       }
     }));
 
@@ -488,15 +488,15 @@ export = {
       }]
     }));
 
-    expect(stack).to(haveResource("AWS::ECS::Service", {
+    expect(stack).to(haveResource('AWS::ECS::Service', {
       DesiredCount: 1,
-      LaunchType: "FARGATE",
+      LaunchType: 'FARGATE',
     }));
 
     expect(stack).to(haveResource('AWS::Route53::RecordSet', {
       Name: 'api.example.com.',
       HostedZoneId: {
-        Ref: "HostedZoneDB99F866"
+        Ref: 'HostedZoneDB99F866'
       },
       Type: 'A',
       AliasTarget: {
@@ -508,7 +508,7 @@ export = {
     test.done();
   },
 
-  "errors when setting domainName but not domainZone"(test: Test) {
+  'errors when setting domainName but not domainZone'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -582,11 +582,11 @@ export = {
         image: ecs.ContainerImage.fromRegistry('test'),
         enableLogging: false,
         environment: {
-          TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
-          TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
+          TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
+          TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value'
         },
         logDriver: new ecs.AwsLogDriver({
-          streamPrefix: "TestStream"
+          streamPrefix: 'TestStream'
         }),
       },
       desiredCount: 2,
@@ -598,20 +598,20 @@ export = {
         {
           Environment: [
             {
-              Name: "TEST_ENVIRONMENT_VARIABLE1",
-              Value: "test environment variable 1 value"
+              Name: 'TEST_ENVIRONMENT_VARIABLE1',
+              Value: 'test environment variable 1 value'
             },
             {
-              Name: "TEST_ENVIRONMENT_VARIABLE2",
-              Value: "test environment variable 2 value"
+              Name: 'TEST_ENVIRONMENT_VARIABLE2',
+              Value: 'test environment variable 2 value'
             }
           ],
           LogConfiguration: {
-            LogDriver: "awslogs",
+            LogDriver: 'awslogs',
             Options: {
-              "awslogs-group": { Ref: "ServiceTaskDefwebLogGroup2A898F61" },
-              "awslogs-stream-prefix": "TestStream",
-              "awslogs-region": { Ref: "AWS::Region" }
+              'awslogs-group': { Ref: 'ServiceTaskDefwebLogGroup2A898F61' },
+              'awslogs-stream-prefix': 'TestStream',
+              'awslogs-region': { Ref: 'AWS::Region' }
             }
           },
         }
@@ -634,8 +634,8 @@ export = {
         image: ecs.ContainerImage.fromRegistry('test'),
         enableLogging: true,
         environment: {
-          TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
-          TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
+          TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
+          TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value'
         }
       },
       desiredCount: 2,
@@ -647,20 +647,20 @@ export = {
         {
           Environment: [
             {
-              Name: "TEST_ENVIRONMENT_VARIABLE1",
-              Value: "test environment variable 1 value"
+              Name: 'TEST_ENVIRONMENT_VARIABLE1',
+              Value: 'test environment variable 1 value'
             },
             {
-              Name: "TEST_ENVIRONMENT_VARIABLE2",
-              Value: "test environment variable 2 value"
+              Name: 'TEST_ENVIRONMENT_VARIABLE2',
+              Value: 'test environment variable 2 value'
             }
           ],
           LogConfiguration: {
-            LogDriver: "awslogs",
+            LogDriver: 'awslogs',
             Options: {
-              "awslogs-group": { Ref: "ServiceTaskDefwebLogGroup2A898F61" },
-              "awslogs-stream-prefix": "Service",
-              "awslogs-region": { Ref: "AWS::Region" }
+              'awslogs-group': { Ref: 'ServiceTaskDefwebLogGroup2A898F61' },
+              'awslogs-stream-prefix': 'Service',
+              'awslogs-region': { Ref: 'AWS::Region' }
             }
           },
         }
@@ -677,8 +677,8 @@ export = {
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
     const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
-    taskDefinition.addContainer("web", {
-      image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+    taskDefinition.addContainer('web', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
       memoryLimitMiB: 512
     });
 
@@ -689,8 +689,8 @@ export = {
         image: ecs.ContainerImage.fromRegistry('test'),
         enableLogging: true,
         environment: {
-          TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
-          TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
+          TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
+          TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value'
         },
       },
       desiredCount: 2,
@@ -707,8 +707,8 @@ export = {
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
     const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
-    const container = taskDefinition.addContainer("passedTaskDef", {
-      image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+    const container = taskDefinition.addContainer('passedTaskDef', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
       memoryLimitMiB: 512
     });
     container.addPortMappings({
@@ -726,13 +726,13 @@ export = {
     expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
-          Image: "amazon/amazon-ecs-sample",
+          Image: 'amazon/amazon-ecs-sample',
           Memory: 512,
-          Name: "passedTaskDef",
+          Name: 'passedTaskDef',
           PortMappings: [
             {
               ContainerPort: 80,
-              Protocol: "tcp"
+              Protocol: 'tcp'
             }
           ],
         }
@@ -792,10 +792,10 @@ export = {
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
     // WHEN
-    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, "ALB123Service", {
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'ALB123Service', {
       cluster,
       taskImageOptions: {
-        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
       },
       minHealthyPercent: 100,
       maxHealthyPercent: 200
@@ -819,11 +819,11 @@ export = {
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
     // WHEN
-    new ecsPatterns.NetworkLoadBalancedFargateService(stack, "Service", {
+    new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'Service', {
       cluster,
       memoryLimitMiB: 1024,
       taskImageOptions: {
-        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
       },
       desiredCount: 1,
       minHealthyPercent: 100,
@@ -849,11 +849,11 @@ export = {
     cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
 
     // WHEN
-    new ecsPatterns.ApplicationLoadBalancedEc2Service(stack, "Service", {
+    new ecsPatterns.ApplicationLoadBalancedEc2Service(stack, 'Service', {
       cluster,
       memoryLimitMiB: 1024,
       taskImageOptions: {
-        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
       },
       desiredCount: 1,
       minHealthyPercent: 100,
@@ -879,11 +879,11 @@ export = {
     cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
 
     // WHEN
-    new ecsPatterns.NetworkLoadBalancedEc2Service(stack, "Service", {
+    new ecsPatterns.NetworkLoadBalancedEc2Service(stack, 'Service', {
       cluster,
       memoryLimitMiB: 1024,
       taskImageOptions: {
-        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
       },
       desiredCount: 1,
       minHealthyPercent: 100,
@@ -905,8 +905,8 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Vpc');
-    const cluster = new ecs.Cluster(stack, "Cluster", {vpc, clusterName: "MyCluster" });
-    cluster.addCapacity("Capacity", {instanceType: new ec2.InstanceType('t2.micro')});
+    const cluster = new ecs.Cluster(stack, 'Cluster', {vpc, clusterName: 'MyCluster' });
+    cluster.addCapacity('Capacity', {instanceType: new ec2.InstanceType('t2.micro')});
     const nlb = new NetworkLoadBalancer(stack, 'NLB', { vpc });
     const taskDef = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
     const container = taskDef.addContainer('Container', {
@@ -933,52 +933,52 @@ export = {
   },
 
   'NetworkLoadBalancedEC2Service accepts imported load balancer'(test: Test) {
-     // GIVEN
-     const stack = new cdk.Stack();
-     const nlbArn = "arn:aws:elasticloadbalancing::000000000000::dummyloadbalancer";
-     const vpc = new ec2.Vpc(stack, "Vpc");
-     const cluster = new ecs.Cluster(stack, "Cluster", {vpc, clusterName: "MyCluster" });
-     cluster.addCapacity("Capacity", {instanceType: new ec2.InstanceType('t2.micro')});
-     const nlb  = NetworkLoadBalancer.fromNetworkLoadBalancerAttributes(stack, "NLB", {
-       loadBalancerArn: nlbArn,
-       vpc,
-     });
-     const taskDef = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
-     const container = taskDef.addContainer('Container', {
-       image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-       memoryLimitMiB: 1024,
-     });
-     container.addPortMappings({
-       containerPort: 80,
-     });
+    // GIVEN
+    const stack = new cdk.Stack();
+    const nlbArn = 'arn:aws:elasticloadbalancing::000000000000::dummyloadbalancer';
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const cluster = new ecs.Cluster(stack, 'Cluster', {vpc, clusterName: 'MyCluster' });
+    cluster.addCapacity('Capacity', {instanceType: new ec2.InstanceType('t2.micro')});
+    const nlb  = NetworkLoadBalancer.fromNetworkLoadBalancerAttributes(stack, 'NLB', {
+      loadBalancerArn: nlbArn,
+      vpc,
+    });
+    const taskDef = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+    const container = taskDef.addContainer('Container', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      memoryLimitMiB: 1024,
+    });
+    container.addPortMappings({
+      containerPort: 80,
+    });
 
-     // WHEN
-     new ecsPatterns.NetworkLoadBalancedEc2Service(stack, "Service", {
-       cluster,
-       loadBalancer: nlb,
-       desiredCount: 1,
-       taskDefinition: taskDef
-     });
+    // WHEN
+    new ecsPatterns.NetworkLoadBalancedEc2Service(stack, 'Service', {
+      cluster,
+      loadBalancer: nlb,
+      desiredCount: 1,
+      taskDefinition: taskDef
+    });
 
-     // THEN
-     expect(stack).to(haveResourceLike('AWS::ECS::Service', {
-       LaunchType: 'EC2',
-       LoadBalancers: [{ContainerName: 'Container', ContainerPort: 80}]
-     }));
-     expect(stack).to(haveResourceLike('AWS::ElasticLoadBalancingV2::TargetGroup'));
-     expect(stack).to(haveResourceLike('AWS::ElasticLoadBalancingV2::Listener', {
-       LoadBalancerArn: nlb.loadBalancerArn,
-       Port: 80,
-     }));
-     test.done();
-   },
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+      LaunchType: 'EC2',
+      LoadBalancers: [{ContainerName: 'Container', ContainerPort: 80}]
+    }));
+    expect(stack).to(haveResourceLike('AWS::ElasticLoadBalancingV2::TargetGroup'));
+    expect(stack).to(haveResourceLike('AWS::ElasticLoadBalancingV2::Listener', {
+      LoadBalancerArn: nlb.loadBalancerArn,
+      Port: 80,
+    }));
+    test.done();
+  },
 
-   'ApplicationLoadBalancedEC2Service accepts previously created load balancer'(test: Test) {
+  'ApplicationLoadBalancedEC2Service accepts previously created load balancer'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Vpc');
-    const cluster = new ecs.Cluster(stack, "Cluster", {vpc, clusterName: "MyCluster" });
-    cluster.addCapacity("Capacity", {instanceType: new ec2.InstanceType('t2.micro')});
+    const cluster = new ecs.Cluster(stack, 'Cluster', {vpc, clusterName: 'MyCluster' });
+    cluster.addCapacity('Capacity', {instanceType: new ec2.InstanceType('t2.micro')});
     const sg = new ec2.SecurityGroup(stack, 'SG', { vpc });
     const alb = new ApplicationLoadBalancer(stack, 'NLB', {
       vpc,
@@ -1006,47 +1006,47 @@ export = {
       Type: 'application'
     }));
     test.done();
-   },
+  },
 
-   'ApplicationLoadBalancedEC2Service accepts imported load balancer'(test: Test) {
-     // GIVEN
-     const stack = new cdk.Stack();
-     const albArn = "arn:aws:elasticloadbalancing::000000000000::dummyloadbalancer";
-     const vpc = new ec2.Vpc(stack, "Vpc");
-     const cluster = new ecs.Cluster(stack, "Cluster", {vpc, clusterName: "MyCluster" });
-     cluster.addCapacity("Capacity", {instanceType: new ec2.InstanceType('t2.micro')});
-     const sg = new ec2.SecurityGroup(stack, "SG", { vpc, });
-     const alb = ApplicationLoadBalancer.fromApplicationLoadBalancerAttributes(stack, 'ALB', {
-       loadBalancerArn: albArn,
-       vpc,
-       securityGroupId: sg.securityGroupId,
-       loadBalancerDnsName: "MyName"
-     });
-     const taskDef = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
-     const container = taskDef.addContainer('Container', {
-       image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-       memoryLimitMiB: 1024,
-     });
-     container.addPortMappings({
-       containerPort: 80,
-     });
-     // WHEN
-     new ecsPatterns.ApplicationLoadBalancedEc2Service(stack, "Service", {
-       cluster,
-       loadBalancer: alb,
-       taskDefinition: taskDef,
-     });
-     // THEN
-     expect(stack).to(haveResourceLike('AWS::ECS::Service', {
-       LaunchType: 'EC2',
-       LoadBalancers: [{ContainerName: 'Container', ContainerPort: 80}]
-     }));
-     expect(stack).to(haveResourceLike('AWS::ElasticLoadBalancingV2::TargetGroup'));
-     expect(stack).to(haveResourceLike('AWS::ElasticLoadBalancingV2::Listener', {
-       LoadBalancerArn: alb.loadBalancerArn,
-       Port: 80,
-     }));
+  'ApplicationLoadBalancedEC2Service accepts imported load balancer'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const albArn = 'arn:aws:elasticloadbalancing::000000000000::dummyloadbalancer';
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const cluster = new ecs.Cluster(stack, 'Cluster', {vpc, clusterName: 'MyCluster' });
+    cluster.addCapacity('Capacity', {instanceType: new ec2.InstanceType('t2.micro')});
+    const sg = new ec2.SecurityGroup(stack, 'SG', { vpc, });
+    const alb = ApplicationLoadBalancer.fromApplicationLoadBalancerAttributes(stack, 'ALB', {
+      loadBalancerArn: albArn,
+      vpc,
+      securityGroupId: sg.securityGroupId,
+      loadBalancerDnsName: 'MyName'
+    });
+    const taskDef = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+    const container = taskDef.addContainer('Container', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      memoryLimitMiB: 1024,
+    });
+    container.addPortMappings({
+      containerPort: 80,
+    });
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedEc2Service(stack, 'Service', {
+      cluster,
+      loadBalancer: alb,
+      taskDefinition: taskDef,
+    });
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+      LaunchType: 'EC2',
+      LoadBalancers: [{ContainerName: 'Container', ContainerPort: 80}]
+    }));
+    expect(stack).to(haveResourceLike('AWS::ElasticLoadBalancingV2::TargetGroup'));
+    expect(stack).to(haveResourceLike('AWS::ElasticLoadBalancingV2::Listener', {
+      LoadBalancerArn: alb.loadBalancerArn,
+      Port: 80,
+    }));
 
-     test.done();
-   },
+    test.done();
+  },
 };

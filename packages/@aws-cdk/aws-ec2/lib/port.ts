@@ -197,5 +197,5 @@ export class Port {
 }
 
 function renderPort(port: number) {
-  return Token.isUnresolved(port) ? `{IndirectPort}` : port.toString();
+  return Token.isUnresolved(port) ? '{IndirectPort}' : port.toString();
 }

@@ -334,15 +334,15 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::RDS::DBInstance', {
       SourceDBInstanceIdentifier: {
-        "Fn::Join": ["", [
-          "arn:",
-          { Ref: "AWS::Partition" },
-          ":rds:",
-          { Ref: "AWS::Region" },
-          ":",
-          { Ref: "AWS::AccountId" },
-          ":db:",
-          { Ref: "InstanceC1063A87" },
+        'Fn::Join': ['', [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':rds:',
+          { Ref: 'AWS::Region' },
+          ':',
+          { Ref: 'AWS::AccountId' },
+          ':db:',
+          { Ref: 'InstanceC1063A87' },
         ]],
       },
       DBSubnetGroupName: {
@@ -578,8 +578,8 @@ export = {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
 
-    const monitoringRole = new Role(stack, "MonitoringRole", {
-      assumedBy: new ServicePrincipal("monitoring.rds.amazonaws.com"),
+    const monitoringRole = new Role(stack, 'MonitoringRole', {
+      assumedBy: new ServicePrincipal('monitoring.rds.amazonaws.com'),
       managedPolicies: [
         ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonRDSEnhancedMonitoringRole')
       ]
@@ -596,10 +596,10 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource("AWS::RDS::DBInstance", {
+    expect(stack).to(haveResource('AWS::RDS::DBInstance', {
       MonitoringInterval: 60,
       MonitoringRoleArn: {
-        "Fn::GetAtt": ["MonitoringRole90457BF9", "Arn"]
+        'Fn::GetAtt': ['MonitoringRole90457BF9', 'Arn']
       }
     }, ResourcePart.Properties));
 

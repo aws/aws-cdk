@@ -4,7 +4,7 @@ import { Test } from 'nodeunit';
 import * as ecs from '../lib';
 
 export = {
-  "correctly sets all appMeshProxyConfiguration"(test: Test) {
+  'correctly sets all appMeshProxyConfiguration'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -12,7 +12,7 @@ export = {
     const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
       networkMode: ecs.NetworkMode.AWS_VPC,
       proxyConfiguration: ecs.ProxyConfigurations.appMeshProxyConfiguration({
-        containerName: "envoy",
+        containerName: 'envoy',
         properties: {
           ignoredUID: 1337,
           ignoredGID: 1338,
@@ -20,60 +20,60 @@ export = {
           proxyIngressPort: 80,
           proxyEgressPort: 81,
           egressIgnoredPorts: [8081],
-          egressIgnoredIPs: ["169.254.170.2", "169.254.169.254"],
+          egressIgnoredIPs: ['169.254.170.2', '169.254.169.254'],
         }
       })
     });
-    taskDefinition.addContainer("web", {
+    taskDefinition.addContainer('web', {
       memoryLimitMiB: 1024,
-      image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample")
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample')
     });
-    taskDefinition.addContainer("envoy", {
+    taskDefinition.addContainer('envoy', {
       memoryLimitMiB: 1024,
-      image: ecs.ContainerImage.fromRegistry("envoyproxy/envoy")
+      image: ecs.ContainerImage.fromRegistry('envoyproxy/envoy')
     });
 
     // THEN
-    expect(stack).to(haveResourceLike("AWS::ECS::TaskDefinition", {
+    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
       ProxyConfiguration: {
-        ContainerName: "envoy",
+        ContainerName: 'envoy',
         ProxyConfigurationProperties: [
           {
-            Name: "IgnoredUID",
-            Value: "1337"
+            Name: 'IgnoredUID',
+            Value: '1337'
           },
           {
-            Name: "IgnoredGID",
-            Value: "1338"
+            Name: 'IgnoredGID',
+            Value: '1338'
           },
           {
-            Name: "AppPorts",
-            Value: "80,81"
+            Name: 'AppPorts',
+            Value: '80,81'
           },
           {
-            Name: "ProxyIngressPort",
-            Value: "80"
+            Name: 'ProxyIngressPort',
+            Value: '80'
           },
           {
-            Name: "ProxyEgressPort",
-            Value: "81"
+            Name: 'ProxyEgressPort',
+            Value: '81'
           },
           {
-            Name: "EgressIgnoredPorts",
-            Value: "8081"
+            Name: 'EgressIgnoredPorts',
+            Value: '8081'
           },
           {
-            Name: "EgressIgnoredIPs",
-            Value: "169.254.170.2,169.254.169.254"
+            Name: 'EgressIgnoredIPs',
+            Value: '169.254.170.2,169.254.169.254'
           }
         ],
-        Type: "APPMESH"
+        Type: 'APPMESH'
       }
     }));
     test.done();
   },
 
-  "correctly sets appMeshProxyConfiguration with default properties set"(test: Test) {
+  'correctly sets appMeshProxyConfiguration with default properties set'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -81,7 +81,7 @@ export = {
     const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
       networkMode: ecs.NetworkMode.AWS_VPC,
       proxyConfiguration: ecs.ProxyConfigurations.appMeshProxyConfiguration({
-        containerName: "envoy",
+        containerName: 'envoy',
         properties: {
           ignoredUID: 1337,
           appPorts: [80, 81],
@@ -90,44 +90,44 @@ export = {
         }
       })
     });
-    taskDefinition.addContainer("web", {
+    taskDefinition.addContainer('web', {
       memoryLimitMiB: 1024,
-      image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample")
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample')
     });
-    taskDefinition.addContainer("envoy", {
+    taskDefinition.addContainer('envoy', {
       memoryLimitMiB: 1024,
-      image: ecs.ContainerImage.fromRegistry("envoyproxy/envoy")
+      image: ecs.ContainerImage.fromRegistry('envoyproxy/envoy')
     });
 
     // THEN
-    expect(stack).to(haveResourceLike("AWS::ECS::TaskDefinition", {
+    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
       ProxyConfiguration: {
-        ContainerName: "envoy",
+        ContainerName: 'envoy',
         ProxyConfigurationProperties: [
           {
-            Name: "IgnoredUID",
-            Value: "1337"
+            Name: 'IgnoredUID',
+            Value: '1337'
           },
           {
-            Name: "AppPorts",
-            Value: "80,81"
+            Name: 'AppPorts',
+            Value: '80,81'
           },
           {
-            Name: "ProxyIngressPort",
-            Value: "80"
+            Name: 'ProxyIngressPort',
+            Value: '80'
           },
           {
-            Name: "ProxyEgressPort",
-            Value: "81"
+            Name: 'ProxyEgressPort',
+            Value: '81'
           }
         ],
-        Type: "APPMESH"
+        Type: 'APPMESH'
       }
     }));
     test.done();
   },
 
-  "correctly sets appMeshProxyConfiguration with empty egressIgnoredPorts and egressIgnoredIPs"(test: Test) {
+  'correctly sets appMeshProxyConfiguration with empty egressIgnoredPorts and egressIgnoredIPs'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -135,7 +135,7 @@ export = {
     const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
       networkMode: ecs.NetworkMode.AWS_VPC,
       proxyConfiguration: ecs.ProxyConfigurations.appMeshProxyConfiguration({
-        containerName: "envoy",
+        containerName: 'envoy',
         properties: {
           ignoredUID: 1337,
           appPorts: [80, 81],
@@ -146,44 +146,44 @@ export = {
         }
       })
     });
-    taskDefinition.addContainer("web", {
+    taskDefinition.addContainer('web', {
       memoryLimitMiB: 1024,
-      image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample")
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample')
     });
-    taskDefinition.addContainer("envoy", {
+    taskDefinition.addContainer('envoy', {
       memoryLimitMiB: 1024,
-      image: ecs.ContainerImage.fromRegistry("envoyproxy/envoy")
+      image: ecs.ContainerImage.fromRegistry('envoyproxy/envoy')
     });
 
     // THEN
-    expect(stack).to(haveResourceLike("AWS::ECS::TaskDefinition", {
+    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
       ProxyConfiguration: {
-        ContainerName: "envoy",
+        ContainerName: 'envoy',
         ProxyConfigurationProperties: [
           {
-            Name: "IgnoredUID",
-            Value: "1337"
+            Name: 'IgnoredUID',
+            Value: '1337'
           },
           {
-            Name: "AppPorts",
-            Value: "80,81"
+            Name: 'AppPorts',
+            Value: '80,81'
           },
           {
-            Name: "ProxyIngressPort",
-            Value: "80"
+            Name: 'ProxyIngressPort',
+            Value: '80'
           },
           {
-            Name: "ProxyEgressPort",
-            Value: "81"
+            Name: 'ProxyEgressPort',
+            Value: '81'
           }
         ],
-        Type: "APPMESH"
+        Type: 'APPMESH'
       }
     }));
     test.done();
   },
 
-  "throws when neither of IgnoredUID and IgnoredGID is set"(test: Test) {
+  'throws when neither of IgnoredUID and IgnoredGID is set'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -192,7 +192,7 @@ export = {
       new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
         networkMode: ecs.NetworkMode.AWS_VPC,
         proxyConfiguration: ecs.ProxyConfigurations.appMeshProxyConfiguration({
-          containerName: "envoy",
+          containerName: 'envoy',
           properties: {
             appPorts: [80, 81],
             proxyIngressPort: 80,

@@ -132,17 +132,17 @@ export = {
     });
 
     expect(stack).to(haveResource('AWS::CloudFormation::CustomResource', {
-        ServiceToken: {
+      ServiceToken: {
         'Fn::GetAtt': [
           'CertCertificateRequestorFunction98FDF273',
           'Arn'
-          ]
-        },
-        DomainName: 'example.com',
-        HostedZoneId: {
-          Ref: 'ExampleDotCom4D1B83AA'
-        }
-      }));
+        ]
+      },
+      DomainName: 'example.com',
+      HostedZoneId: {
+        Ref: 'ExampleDotCom4D1B83AA'
+      }
+    }));
     test.done();
   },
 
@@ -160,21 +160,21 @@ export = {
     new DnsValidatedCertificate(stack, 'Cert', {
       domainName: 'mydomain.com',
       hostedZone: imported,
-      route53Endpoint: "https://api.route53.xxx.com",
+      route53Endpoint: 'https://api.route53.xxx.com',
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::CloudFormation::CustomResource', {
-        ServiceToken: {
+      ServiceToken: {
         'Fn::GetAtt': [
           'CertCertificateRequestorFunction98FDF273',
           'Arn'
-          ]
-        },
-        DomainName: 'mydomain.com',
-        HostedZoneId: 'DUMMY',
-        Route53Endpoint: 'https://api.route53.xxx.com'
-      }));
+        ]
+      },
+      DomainName: 'mydomain.com',
+      HostedZoneId: 'DUMMY',
+      Route53Endpoint: 'https://api.route53.xxx.com'
+    }));
 
     test.done();
   },

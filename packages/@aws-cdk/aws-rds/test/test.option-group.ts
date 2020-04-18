@@ -82,7 +82,7 @@ export = {
           CidrIp: '0.0.0.0/0',
           Description: 'from 0.0.0.0/0:1158',
           FromPort: 1158,
-          IpProtocol: "tcp",
+          IpProtocol: 'tcp',
           ToPort: 1158
         }
       ],

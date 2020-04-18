@@ -1,8 +1,8 @@
 import * as cdk from '@aws-cdk/core';
-import { IAlarm } from "./alarm";
-import { IMetric } from "./metric-types";
+import { IAlarm } from './alarm';
+import { IMetric } from './metric-types';
 import { allMetricsGraphJson } from './private/rendering';
-import { ConcreteWidget } from "./widget";
+import { ConcreteWidget } from './widget';
 
 /**
  * Basic properties for widgets that display metrics
@@ -10,13 +10,15 @@ import { ConcreteWidget } from "./widget";
 export interface MetricWidgetProps {
   /**
    * Title for the graph
+   *
+   * @default - None
    */
   readonly title?: string;
 
   /**
    * The region the metrics of this graph should be taken from
    *
-   * @default Current region
+   * @default - Current region
    */
   readonly region?: string;
 
@@ -30,7 +32,8 @@ export interface MetricWidgetProps {
   /**
    * Height of the widget
    *
-   * @default Depends on the type of widget
+   * @default - 6 for Alarm and Graph widgets.
+   *   3 for single value widgets where most recent value of a metric is displayed.
    */
   readonly height?: number;
 }
@@ -49,14 +52,14 @@ export interface YAxisProps {
   /**
    * The max value
    *
-   * @default No maximum value
+   * @default - No maximum value
    */
   readonly max?: number;
 
   /**
    * The label
    *
-   * @default No label
+   * @default - No label
    */
   readonly label?: string;
 
@@ -79,6 +82,8 @@ export interface AlarmWidgetProps extends MetricWidgetProps {
 
   /**
    * Left Y axis
+   *
+   * @default - No minimum or maximum values for the left Y-axis
    */
   readonly leftYAxis?: YAxisProps;
 }
@@ -122,36 +127,50 @@ export class AlarmWidget extends ConcreteWidget {
 export interface GraphWidgetProps extends MetricWidgetProps {
   /**
    * Metrics to display on left Y axis
+   *
+   * @default - No metrics
    */
   readonly left?: IMetric[];
 
   /**
    * Metrics to display on right Y axis
+   *
+   * @default - No metrics
    */
   readonly right?: IMetric[];
 
   /**
    * Annotations for the left Y axis
+   *
+   * @default - No annotations
    */
   readonly leftAnnotations?: HorizontalAnnotation[];
 
   /**
    * Annotations for the right Y axis
+   *
+   * @default - No annotations
    */
   readonly rightAnnotations?: HorizontalAnnotation[];
 
   /**
    * Whether the graph should be shown as stacked lines
+   *
+   * @default false
    */
   readonly stacked?: boolean;
 
   /**
    * Left Y axis
+   *
+   * @default - None
    */
   readonly leftYAxis?: YAxisProps;
 
   /**
    * Right Y axis
+   *
+   * @default - None
    */
   readonly rightYAxis?: YAxisProps;
 }
@@ -281,6 +300,9 @@ export interface HorizontalAnnotation {
   readonly visible?: boolean;
 }
 
+/**
+ * Fill shading options that will be used with an annotation
+ */
 export enum Shading {
   /**
    * Don't add shading

@@ -174,7 +174,7 @@ export = {
 function expectedContextKey(stack: Stack): string {
   const missing = ConstructNode.synth(stack.node).manifest.missing;
   if (!missing || missing.length !== 1) {
-    throw new Error(`Expecting assembly to include a single missing context report`);
+    throw new Error('Expecting assembly to include a single missing context report');
   }
   return missing[0].key;
 }

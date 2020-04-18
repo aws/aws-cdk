@@ -95,11 +95,11 @@ export class NetworkListener extends BaseListener implements INetworkListener {
     }
 
     if (proto === Protocol.TLS && certs.filter(v => v != null).length === 0) {
-      throw new Error(`When the protocol is set to TLS, you must specify certificates`);
+      throw new Error('When the protocol is set to TLS, you must specify certificates');
     }
 
     if (proto !== Protocol.TLS && certs.length > 0) {
-      throw new Error(`Protocol must be TLS when certificates have been specified`);
+      throw new Error('Protocol must be TLS when certificates have been specified');
     }
 
     super(scope, id, {

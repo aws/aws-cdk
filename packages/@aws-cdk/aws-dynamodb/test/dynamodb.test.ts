@@ -1054,9 +1054,9 @@ test('can autoscale on a schedule', () => {
   expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalableTarget', {
     ScheduledActions: [
       {
-        ScalableTargetAction: { "MaxCapacity": 10 },
-        Schedule: "cron(* * * * ? *)",
-        ScheduledActionName: "SaveMoneyByNotScalingUp"
+        ScalableTargetAction: { 'MaxCapacity': 10 },
+        Schedule: 'cron(* * * * ? *)',
+        ScheduledActionName: 'SaveMoneyByNotScalingUp'
       }
     ]
   });
@@ -1203,17 +1203,17 @@ describe('grants', () => {
 
     // THEN
     expect(stack).toHaveResource('AWS::IAM::Policy', {
-      "PolicyDocument": {
-        "Statement": [
+      'PolicyDocument': {
+        'Statement': [
           {
-            "Action": "dynamodb:ListStreams",
-            "Effect": "Allow",
-            "Resource": "*"
+            'Action': 'dynamodb:ListStreams',
+            'Effect': 'Allow',
+            'Resource': '*'
           }
         ],
-        "Version": "2012-10-17"
+        'Version': '2012-10-17'
       },
-      "Users": [{ "Ref": "user2C2B57AE" }]
+      'Users': [{ 'Ref': 'user2C2B57AE' }]
     });
   });
 
@@ -1249,17 +1249,17 @@ describe('grants', () => {
 
     // THEN
     expect(stack).toHaveResource('AWS::IAM::Policy', {
-      "PolicyDocument": {
-        "Statement": [
+      'PolicyDocument': {
+        'Statement': [
           {
-            "Action": "dynamodb:ListStreams",
-            "Effect": "Allow",
-            "Resource": { "Fn::Join": ["", [{ "Fn::GetAtt": ["mytable0324D45C", "Arn"] }, "/stream/*"]] }
+            'Action': 'dynamodb:ListStreams',
+            'Effect': 'Allow',
+            'Resource': { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['mytable0324D45C', 'Arn'] }, '/stream/*']] }
           }
         ],
-        "Version": "2012-10-17"
+        'Version': '2012-10-17'
       },
-      "Users": [{ "Ref": "user2C2B57AE" }]
+      'Users': [{ 'Ref': 'user2C2B57AE' }]
     });
   });
 
@@ -1295,31 +1295,31 @@ describe('grants', () => {
 
     // THEN
     expect(stack).toHaveResource('AWS::IAM::Policy', {
-      "PolicyDocument": {
-        "Statement": [
+      'PolicyDocument': {
+        'Statement': [
           {
-            "Action": "dynamodb:ListStreams",
-            "Effect": "Allow",
-            "Resource": { "Fn::Join": ["", [{ "Fn::GetAtt": ["mytable0324D45C", "Arn"] }, "/stream/*"]] }
+            'Action': 'dynamodb:ListStreams',
+            'Effect': 'Allow',
+            'Resource': { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['mytable0324D45C', 'Arn'] }, '/stream/*']] }
           },
           {
-            "Action": [
-              "dynamodb:DescribeStream",
-              "dynamodb:GetRecords",
-              "dynamodb:GetShardIterator"
+            'Action': [
+              'dynamodb:DescribeStream',
+              'dynamodb:GetRecords',
+              'dynamodb:GetShardIterator'
             ],
-            "Effect": "Allow",
-            "Resource": {
-              "Fn::GetAtt": [
-                "mytable0324D45C",
-                "StreamArn"
+            'Effect': 'Allow',
+            'Resource': {
+              'Fn::GetAtt': [
+                'mytable0324D45C',
+                'StreamArn'
               ]
             }
           }
         ],
-        "Version": "2012-10-17"
+        'Version': '2012-10-17'
       },
-      "Users": [{ "Ref": "user2C2B57AE" }]
+      'Users': [{ 'Ref': 'user2C2B57AE' }]
     });
   });
 
@@ -1336,10 +1336,10 @@ describe('grants', () => {
 
     // THEN
     expect(stack).toHaveResource('AWS::IAM::Policy', {
-      "PolicyDocument": {
-        "Statement": [
+      'PolicyDocument': {
+        'Statement': [
           {
-            "Action": [
+            'Action': [
               'dynamodb:BatchGetItem',
               'dynamodb:GetRecords',
               'dynamodb:GetShardIterator',
@@ -1347,16 +1347,16 @@ describe('grants', () => {
               'dynamodb:GetItem',
               'dynamodb:Scan'
             ],
-            "Effect": "Allow",
-            "Resource": [
-              { "Fn::GetAtt": ["mytable0324D45C", "Arn"] },
-              { "Fn::Join": ["", [{ "Fn::GetAtt": ["mytable0324D45C", "Arn"] }, "/index/*"]] }
+            'Effect': 'Allow',
+            'Resource': [
+              { 'Fn::GetAtt': ['mytable0324D45C', 'Arn'] },
+              { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['mytable0324D45C', 'Arn'] }, '/index/*']] }
             ]
           }
         ],
-        "Version": "2012-10-17"
+        'Version': '2012-10-17'
       },
-      "Users": [{ "Ref": "user2C2B57AE" }]
+      'Users': [{ 'Ref': 'user2C2B57AE' }]
     });
   });
 });
@@ -1411,10 +1411,10 @@ describe('import', () => {
 
     // it is possible to obtain a permission statement for a ref
     expect(stack).toHaveResource('AWS::IAM::Policy', {
-      "PolicyDocument": {
-        "Statement": [
+      'PolicyDocument': {
+        'Statement': [
           {
-            "Action": [
+            'Action': [
               'dynamodb:BatchGetItem',
               'dynamodb:GetRecords',
               'dynamodb:GetShardIterator',
@@ -1422,17 +1422,17 @@ describe('import', () => {
               'dynamodb:GetItem',
               'dynamodb:Scan'
             ],
-            "Effect": "Allow",
-            "Resource": [
+            'Effect': 'Allow',
+            'Resource': [
               tableArn,
-              { "Ref": "AWS::NoValue" }
+              { 'Ref': 'AWS::NoValue' }
             ]
           }
         ],
-        "Version": "2012-10-17"
+        'Version': '2012-10-17'
       },
-      "PolicyName": 'NewRoleDefaultPolicy90E8F49D',
-      "Roles": [{ "Ref": 'NewRole99763075' }]
+      'PolicyName': 'NewRoleDefaultPolicy90E8F49D',
+      'Roles': [{ 'Ref': 'NewRole99763075' }]
     });
 
     expect(table.tableArn).toBe(tableArn);
@@ -1452,10 +1452,10 @@ describe('import', () => {
 
     // it is possible to obtain a permission statement for a ref
     expect(stack).toHaveResource('AWS::IAM::Policy', {
-      "PolicyDocument": {
-        "Statement": [
+      'PolicyDocument': {
+        'Statement': [
           {
-            "Action": [
+            'Action': [
               'dynamodb:BatchGetItem',
               'dynamodb:GetRecords',
               'dynamodb:GetShardIterator',
@@ -1467,38 +1467,38 @@ describe('import', () => {
               'dynamodb:UpdateItem',
               'dynamodb:DeleteItem'
             ],
-            "Effect": "Allow",
-            "Resource": [
+            'Effect': 'Allow',
+            'Resource': [
               {
-                "Fn::Join": [
-                  "",
+                'Fn::Join': [
+                  '',
                   [
-                    "arn:",
+                    'arn:',
                     {
-                      "Ref": "AWS::Partition"
+                      'Ref': 'AWS::Partition'
                     },
-                    ":dynamodb:",
+                    ':dynamodb:',
                     {
-                      "Ref": "AWS::Region"
+                      'Ref': 'AWS::Region'
                     },
-                    ":",
+                    ':',
                     {
-                      "Ref": "AWS::AccountId"
+                      'Ref': 'AWS::AccountId'
                     },
-                    ":table/MyTable"
+                    ':table/MyTable'
                   ]
                 ]
               },
               {
-                "Ref": "AWS::NoValue"
+                'Ref': 'AWS::NoValue'
               }
             ]
           }
         ],
-        "Version": "2012-10-17"
+        'Version': '2012-10-17'
       },
-      "PolicyName": 'NewRoleDefaultPolicy90E8F49D',
-      "Roles": [{ "Ref": 'NewRole99763075' }]
+      'PolicyName': 'NewRoleDefaultPolicy90E8F49D',
+      'Roles': [{ 'Ref': 'NewRole99763075' }]
     });
 
     expect(table.tableArn).toBe('arn:${Token[AWS::Partition.3]}:dynamodb:${Token[AWS::Region.4]}:${Token[AWS::AccountId.0]}:table/MyTable');
@@ -1537,7 +1537,7 @@ describe('import', () => {
         PolicyDocument: {
           Statement: [
             {
-              Action: "dynamodb:ListStreams",
+              Action: 'dynamodb:ListStreams',
               Effect: 'Allow',
               Resource: stack.resolve(`${table.tableArn}/stream/*`),
             },
@@ -1565,7 +1565,7 @@ describe('import', () => {
         PolicyDocument: {
           Statement: [
             {
-              Action: "dynamodb:ListStreams",
+              Action: 'dynamodb:ListStreams',
               Effect: 'Allow',
               Resource: stack.resolve(`${table.tableArn}/stream/*`),
             },
@@ -1740,19 +1740,19 @@ function testGrant(expectedActions: string[], invocation: (user: iam.IPrincipal,
   // THEN
   const action = expectedActions.length > 1 ? expectedActions.map(a => `dynamodb:${a}`) : `dynamodb:${expectedActions[0]}`;
   expect(stack).toHaveResource('AWS::IAM::Policy', {
-    "PolicyDocument": {
-      "Statement": [
+    'PolicyDocument': {
+      'Statement': [
         {
-          "Action": action,
-          "Effect": "Allow",
-          "Resource": [
-            { "Fn::GetAtt": [ "mytable0324D45C", "Arn" ] },
-            { "Ref" : "AWS::NoValue" }
+          'Action': action,
+          'Effect': 'Allow',
+          'Resource': [
+            { 'Fn::GetAtt': [ 'mytable0324D45C', 'Arn' ] },
+            { 'Ref' : 'AWS::NoValue' }
           ]
         }
       ],
-      "Version": "2012-10-17"
+      'Version': '2012-10-17'
     },
-    "Users": [ { "Ref": "user2C2B57AE" } ]
+    'Users': [ { 'Ref': 'user2C2B57AE' } ]
   });
 }

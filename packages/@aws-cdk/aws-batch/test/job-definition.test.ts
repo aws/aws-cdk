@@ -193,7 +193,7 @@ describe('Batch Job Definition', () => {
   test('can be imported from an ARN', () => {
     // WHEN
     const importedJob = batch.JobDefinition.fromJobDefinitionArn(stack, 'job-def-clone',
-    'arn:aws:batch:us-east-1:123456789012:job-definition/job-def-name:1');
+      'arn:aws:batch:us-east-1:123456789012:job-definition/job-def-name:1');
 
     // THEN
     expect(importedJob.jobDefinitionName).toEqual('job-def-name:1');

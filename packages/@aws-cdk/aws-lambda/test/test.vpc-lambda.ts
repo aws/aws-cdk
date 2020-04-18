@@ -32,11 +32,11 @@ export = {
       expect(this.stack).to(haveResource('AWS::Lambda::Function', {
         VpcConfig: {
           SecurityGroupIds: [
-            {"Fn::GetAtt": [ "LambdaSecurityGroupE74659A1", "GroupId" ]}
+            {'Fn::GetAtt': [ 'LambdaSecurityGroupE74659A1', 'GroupId' ]}
           ],
           SubnetIds: [
-            {Ref: "VPCPrivateSubnet1Subnet8BCA10E0"},
-            {Ref: "VPCPrivateSubnet2SubnetCFCDAA7A"},
+            {Ref: 'VPCPrivateSubnet1Subnet8BCA10E0'},
+            {Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A'},
           ]
         }
       }));
@@ -57,11 +57,11 @@ export = {
       expect(this.stack).to(haveResource('AWS::Lambda::Function', {
         VpcConfig: {
           SecurityGroupIds: [
-            {"Fn::GetAtt": [ "CustomSecurityGroupX6C7F3A78", "GroupId" ]}
+            {'Fn::GetAtt': [ 'CustomSecurityGroupX6C7F3A78', 'GroupId' ]}
           ],
           SubnetIds: [
-            {Ref: "VPCPrivateSubnet1Subnet8BCA10E0"},
-            {Ref: "VPCPrivateSubnet2SubnetCFCDAA7A"},
+            {Ref: 'VPCPrivateSubnet1Subnet8BCA10E0'},
+            {Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A'},
           ]
         }
       }));
@@ -85,12 +85,12 @@ export = {
       expect(this.stack).to(haveResource('AWS::Lambda::Function', {
         VpcConfig: {
           SecurityGroupIds: [
-            {"Fn::GetAtt": [ "CustomSecurityGroupA267F62DE", "GroupId" ]},
-            {"Fn::GetAtt": [ "CustomSecurityGroupB1118D0D5", "GroupId" ]}
+            {'Fn::GetAtt': [ 'CustomSecurityGroupA267F62DE', 'GroupId' ]},
+            {'Fn::GetAtt': [ 'CustomSecurityGroupB1118D0D5', 'GroupId' ]}
           ],
           SubnetIds: [
-            {Ref: "VPCPrivateSubnet1Subnet8BCA10E0"},
-            {Ref: "VPCPrivateSubnet2SubnetCFCDAA7A"},
+            {Ref: 'VPCPrivateSubnet1Subnet8BCA10E0'},
+            {Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A'},
           ]
         }
       }));
@@ -102,15 +102,15 @@ export = {
       // THEN
       test.throws(() => {
         new lambda.Function(this.stack, 'LambdaWithWrongProps', {
-        code: new lambda.InlineCode('foo'),
-        handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_10_X,
-        vpc: this.vpc,
-        securityGroup: new ec2.SecurityGroup(this.stack, 'CustomSecurityGroupB', { vpc: this.vpc }),
-        securityGroups: [
-          new ec2.SecurityGroup(this.stack, 'CustomSecurityGroupC', { vpc: this.vpc }),
-          new ec2.SecurityGroup(this.stack, 'CustomSecurityGroupD', { vpc: this.vpc }),
-        ],
+          code: new lambda.InlineCode('foo'),
+          handler: 'index.handler',
+          runtime: lambda.Runtime.NODEJS_10_X,
+          vpc: this.vpc,
+          securityGroup: new ec2.SecurityGroup(this.stack, 'CustomSecurityGroupB', { vpc: this.vpc }),
+          securityGroups: [
+            new ec2.SecurityGroup(this.stack, 'CustomSecurityGroupC', { vpc: this.vpc }),
+            new ec2.SecurityGroup(this.stack, 'CustomSecurityGroupD', { vpc: this.vpc }),
+          ],
         });
       }, /Only one of the function props, securityGroup or securityGroups, is allowed/);
 
@@ -126,22 +126,22 @@ export = {
       this.lambda.connections.allowTo(somethingConnectable, ec2.Port.allTcp(), 'Lambda can call connectable');
 
       // THEN: Lambda can connect to SomeSecurityGroup
-      expect(this.stack).to(haveResource("AWS::EC2::SecurityGroupEgress", {
-        GroupId: {"Fn::GetAtt": ["LambdaSecurityGroupE74659A1", "GroupId"]},
-        IpProtocol: "tcp",
-        Description: "Lambda can call connectable",
-        DestinationSecurityGroupId: {"Fn::GetAtt": [ "SomeSecurityGroupEF219AD6", "GroupId" ]},
+      expect(this.stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
+        GroupId: {'Fn::GetAtt': ['LambdaSecurityGroupE74659A1', 'GroupId']},
+        IpProtocol: 'tcp',
+        Description: 'Lambda can call connectable',
+        DestinationSecurityGroupId: {'Fn::GetAtt': [ 'SomeSecurityGroupEF219AD6', 'GroupId' ]},
         FromPort: 0,
         ToPort: 65535
       }));
 
       // THEN: SomeSecurityGroup accepts connections from Lambda
-      expect(this.stack).to(haveResource("AWS::EC2::SecurityGroupIngress", {
-        IpProtocol: "tcp",
-        Description: "Lambda can call connectable",
+      expect(this.stack).to(haveResource('AWS::EC2::SecurityGroupIngress', {
+        IpProtocol: 'tcp',
+        Description: 'Lambda can call connectable',
         FromPort: 0,
-        GroupId: { "Fn::GetAtt": ["SomeSecurityGroupEF219AD6", "GroupId"] },
-        SourceSecurityGroupId: {"Fn::GetAtt": ["LambdaSecurityGroupE74659A1", "GroupId" ]},
+        GroupId: { 'Fn::GetAtt': ['SomeSecurityGroupEF219AD6', 'GroupId'] },
+        SourceSecurityGroupId: {'Fn::GetAtt': ['LambdaSecurityGroupE74659A1', 'GroupId' ]},
         ToPort: 65535
       }));
 
@@ -158,16 +158,16 @@ export = {
       somethingConnectable.connections.allowFrom(this.lambda.connections, ec2.Port.allTcp(), 'Lambda can call connectable');
 
       // THEN: SomeSecurityGroup accepts connections from Lambda
-      expect(stack2).to(haveResource("AWS::EC2::SecurityGroupEgress", {
+      expect(stack2).to(haveResource('AWS::EC2::SecurityGroupEgress', {
         GroupId: {
-          "Fn::ImportValue": "stack:ExportsOutputFnGetAttLambdaSecurityGroupE74659A1GroupId8F3EC6F1"
+          'Fn::ImportValue': 'stack:ExportsOutputFnGetAttLambdaSecurityGroupE74659A1GroupId8F3EC6F1'
         },
-        IpProtocol: "tcp",
-        Description: "Lambda can call connectable",
+        IpProtocol: 'tcp',
+        Description: 'Lambda can call connectable',
         DestinationSecurityGroupId: {
-          "Fn::GetAtt": [
-            "SomeSecurityGroupEF219AD6",
-            "GroupId"
+          'Fn::GetAtt': [
+            'SomeSecurityGroupEF219AD6',
+            'GroupId'
           ]
         },
         FromPort: 0,
@@ -175,18 +175,18 @@ export = {
       }));
 
       // THEN: Lambda can connect to SomeSecurityGroup
-      expect(stack2).to(haveResource("AWS::EC2::SecurityGroupIngress", {
-        IpProtocol: "tcp",
-        Description: "Lambda can call connectable",
+      expect(stack2).to(haveResource('AWS::EC2::SecurityGroupIngress', {
+        IpProtocol: 'tcp',
+        Description: 'Lambda can call connectable',
         FromPort: 0,
         GroupId: {
-          "Fn::GetAtt": [
-            "SomeSecurityGroupEF219AD6",
-            "GroupId"
+          'Fn::GetAtt': [
+            'SomeSecurityGroupEF219AD6',
+            'GroupId'
           ]
         },
         SourceSecurityGroupId: {
-          "Fn::ImportValue": "stack:ExportsOutputFnGetAttLambdaSecurityGroupE74659A1GroupId8F3EC6F1"
+          'Fn::ImportValue': 'stack:ExportsOutputFnGetAttLambdaSecurityGroupE74659A1GroupId8F3EC6F1'
         },
         ToPort: 65535
       }));

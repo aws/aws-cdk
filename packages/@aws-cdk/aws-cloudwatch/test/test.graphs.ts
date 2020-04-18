@@ -194,7 +194,8 @@ export = {
     const metric = new Metric({ namespace: 'CDK', metricName: 'Test' });
 
     const alarm = metric.createAlarm(stack, 'Alarm', {
-      evaluationPeriods: 2,
+      evaluationPeriods: 7,
+      datapointsToAlarm: 2,
       threshold: 1000
     });
 
@@ -219,7 +220,7 @@ export = {
           horizontal: [{
             yAxis: 'right',
             value: 1000,
-            label: 'Test >= 1000 for 2 datapoints within 10 minutes',
+            label: 'Test >= 1000 for 2 datapoints within 35 minutes',
           }]
         },
         yAxis: {}
@@ -241,11 +242,11 @@ export = {
         new Metric({ namespace: 'CDK', metricName: 'Tast' })
       ],
       leftYAxis: ({
-        label: "Left yAxis",
+        label: 'Left yAxis',
         max: 100
       }),
       rightYAxis: ({
-        label: "Right yAxis",
+        label: 'Right yAxis',
         min: 10,
         showUnits: false
       })
@@ -265,8 +266,8 @@ export = {
           ['CDK', 'Tast', { yAxis: 'right' }]
         ],
         yAxis: {
-          left: { label: "Left yAxis", max: 100 },
-          right: { label: "Right yAxis", min: 10, showUnits: false } }
+          left: { label: 'Left yAxis', max: 100 },
+          right: { label: 'Right yAxis', min: 10, showUnits: false } }
       }
     }]);
 
@@ -338,7 +339,7 @@ export = {
     // test.ok(widget.toJson()[0].properties.metrics[0].visible === false);
     test.deepEqual(
       stack.resolve(widget.toJson())[0].properties.metrics[0],
-      ["CDK", "Test", { visible: false }]
+      ['CDK', 'Test', { visible: false }]
     );
 
     test.done();

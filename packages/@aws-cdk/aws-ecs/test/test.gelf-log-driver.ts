@@ -42,7 +42,7 @@ export = {
     test.done();
   },
 
-  "create a gelf log driver using gelf with minimum options"(test: Test) {
+  'create a gelf log driver using gelf with minimum options'(test: Test) {
     // WHEN
     td.addContainer('Container', {
       image,

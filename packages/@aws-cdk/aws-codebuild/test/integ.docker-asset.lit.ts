@@ -8,7 +8,7 @@ class TestStack extends cdk.Stack {
 
     new codebuild.Project(this, 'MyProject', {
       buildSpec: codebuild.BuildSpec.fromObject({
-        version: "0.2",
+        version: '0.2',
         phases: {
           build: {
             commands: [ 'ls' ]

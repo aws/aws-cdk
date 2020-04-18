@@ -389,9 +389,9 @@ export class Repository extends RepositoryBase {
  * Creates for a repository trigger to an SNS topic or Lambda function.
  */
 export interface RepositoryTriggerOptions {
-   /**
-    * A name for the trigger.Triggers on a repository must have unique names
-    */
+  /**
+   * A name for the trigger.Triggers on a repository must have unique names
+   */
   readonly name?: string;
 
   /**
