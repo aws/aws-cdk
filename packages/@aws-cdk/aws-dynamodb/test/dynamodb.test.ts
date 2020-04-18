@@ -1295,6 +1295,11 @@ describe('grants', () => {
     });
   });
 
+  // test('"grant" allows adding arbitrary actions associated with this table resource', () => {
+  //   testGrant(
+  //     ['action1', 'action2'], (p, t) => t.grant(p, ['dynamodb:action1', 'dynamodb:action2'], ['kms:*'], '*'));
+  // });
+
   test('"grantReadData" allows the principal to read data from the table', () => {
     testGrant(
       ['BatchGetItem', 'GetRecords', 'GetShardIterator', 'Query', 'GetItem', 'Scan'], (p, t) => t.grantReadData(p));
