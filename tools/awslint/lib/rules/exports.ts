@@ -1,6 +1,6 @@
 import { Linter } from '../linter';
 
-export const exportsLinter = new Linter(assembly => assembly.types);
+export const exportsLinter = new Linter(assembly => [...assembly.types]);
 
 exportsLinter.add({
   code: 'no-export',
