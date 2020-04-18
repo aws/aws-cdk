@@ -66,6 +66,7 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
+    "eslint": "^6.8.0",
     "@aws-cdk/assert": "0.0.0",
     "@types/aws-lambda": "^8.10.39",
     "@types/lodash": "^4.14.150",

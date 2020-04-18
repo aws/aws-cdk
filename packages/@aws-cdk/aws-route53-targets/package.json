@@ -76,6 +76,7 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
+    "eslint": "^6.8.0",
     "@aws-cdk/assert": "0.0.0",
     "@aws-cdk/aws-certificatemanager": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
