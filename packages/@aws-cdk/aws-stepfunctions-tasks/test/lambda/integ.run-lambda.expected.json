@@ -85,7 +85,7 @@
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
-          "ZipFile": "exports.handler = async function(event, context) {\n        return {\n          jobState: event.statusCode === 200 ? 'SUCCEEDED' : 'FAILED';\n        };\n  };"
+          "ZipFile": "exports.handler = async function(event, context) {\n        return {\n          status: event.statusCode === '200' ? 'SUCCEEDED' : 'FAILED';\n        };\n  };"
         },
         "Handler": "index.handler",
         "Role": {
@@ -171,23 +171,23 @@
           "Fn::Join": [
             "",
             [
-              "{\"StartAt\":\"Invoke Handler\",\"States\":{\"Invoke Handler\":{\"Next\":\"Invoke Handler with task token\",\"Parameters\":{\"FunctionName\":\"",
+              "{\"StartAt\":\"Invoke Handler\",\"States\":{\"Invoke Handler\":{\"Next\":\"Check the job state\",\"Parameters\":{\"FunctionName\":\"",
               {
                 "Ref": "submitJobLambdaEFB00F3C"
               },
-              "\"},\"Type\":\"Task\",\"Resource\":\"arn:",
+              "\"},\"OutputPath\":\"$.Payload\",\"Type\":\"Task\",\"Resource\":\"arn:",
               {
                 "Ref": "AWS::Partition"
               },
-              ":states:::lambda:invoke\"},\"Invoke Handler with task token\":{\"Next\":\"Job Complete?\",\"InputPath\":\"$.Payload\",\"Parameters\":{\"FunctionName\":\"",
+              ":states:::lambda:invoke\"},\"Check the job state\":{\"Next\":\"Job Complete?\",\"Parameters\":{\"FunctionName\":\"",
               {
                 "Ref": "checkJobStateLambda4618B7B7"
               },
-              "\",\"Payload.$\":\"$\"},\"Type\":\"Task\",\"Resource\":\"arn:",
+              "\",\"Payload.$\":\"$.Payload\"},\"OutputPath\":\"$.Payload\",\"Type\":\"Task\",\"Resource\":\"arn:",
               {
                 "Ref": "AWS::Partition"
               },
-              ":states:::lambda:invoke\",\"ResultPath\":\"$.status\"},\"Job Complete?\":{\"Type\":\"Choice\",\"Choices\":[{\"Variable\":\"$.status\",\"StringEquals\":\"FAILED\",\"Next\":\"Job Failed\"},{\"Variable\":\"$.status\",\"StringEquals\":\"SUCCEEDED\",\"Next\":\"Final step\"}]},\"Job Failed\":{\"Type\":\"Fail\",\"Error\":\"Received a status that was not 200\",\"Cause\":\"Job Failed\"},\"Final step\":{\"Type\":\"Pass\",\"End\":true}},\"TimeoutSeconds\":30}"
+              ":states:::lambda:invoke\"},\"Job Complete?\":{\"Type\":\"Choice\",\"Choices\":[{\"Variable\":\"$.status\",\"StringEquals\":\"FAILED\",\"Next\":\"Job Failed\"},{\"Variable\":\"$.status\",\"StringEquals\":\"SUCCEEDED\",\"Next\":\"Final step\"}]},\"Job Failed\":{\"Type\":\"Fail\",\"Error\":\"Received a status that was not 200\",\"Cause\":\"Job Failed\"},\"Final step\":{\"Type\":\"Pass\",\"End\":true}},\"TimeoutSeconds\":30}"
             ]
           ]
         },
