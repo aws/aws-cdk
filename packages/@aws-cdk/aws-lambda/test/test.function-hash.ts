@@ -5,7 +5,7 @@ import * as lambda from '../lib';
 import { calculateFunctionHash, trimFromStart } from '../lib/function-hash';
 
 export = {
-  "trimFromStart": {
+  'trimFromStart': {
 
     'trim not needed'(test: Test) {
       test.deepEqual(trimFromStart('foo', 100), 'foo');
@@ -23,7 +23,7 @@ export = {
 
   },
 
-  "calcHash": {
+  'calcHash': {
     'same configuration and code yields the same hash'(test: Test) {
       const stack1 = new Stack();
       const fn1 = new lambda.Function(stack1, 'MyFunction1', {

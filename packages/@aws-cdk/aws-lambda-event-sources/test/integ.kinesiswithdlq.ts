@@ -1,7 +1,7 @@
 import * as kinesis from '@aws-cdk/aws-kinesis';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { App, CfnOutput, Stack } from "@aws-cdk/core";
+import { App, CfnOutput, Stack } from '@aws-cdk/core';
 import { KinesisEventSource, SqsDlq } from '../lib';
 
 /*

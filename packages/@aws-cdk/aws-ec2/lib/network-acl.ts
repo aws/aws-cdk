@@ -149,12 +149,12 @@ export enum Action {
   /**
    * Allow the traffic
    */
-  ALLOW = "allow",
+  ALLOW = 'allow',
 
   /**
    * Deny the traffic
    */
-  DENY = "deny",
+  DENY = 'deny',
 }
 
 /**
@@ -290,10 +290,10 @@ export class NetworkAclEntry extends NetworkAclEntryBase {
  * @experimental
  */
 export interface ISubnetNetworkAclAssociation extends IResource {
- /**
-  * ID for the current SubnetNetworkAclAssociation
-  * @attribute
-  */
+  /**
+   * ID for the current SubnetNetworkAclAssociation
+   * @attribute
+   */
   readonly subnetNetworkAclAssociationAssociationId: string;
 }
 
@@ -336,8 +336,9 @@ abstract class SubnetNetworkAclAssociationBase extends Resource implements ISubn
   public abstract readonly subnetNetworkAclAssociationAssociationId: string;
 }
 export class SubnetNetworkAclAssociation extends SubnetNetworkAclAssociationBase {
-  public static fromSubnetNetworkAclAssociationAssociationId(scope: Construct, id: string,
-                                                             subnetNetworkAclAssociationAssociationId: string): ISubnetNetworkAclAssociation {
+  public static fromSubnetNetworkAclAssociationAssociationId(
+    scope: Construct, id: string,
+    subnetNetworkAclAssociationAssociationId: string): ISubnetNetworkAclAssociation {
     class Import extends SubnetNetworkAclAssociationBase {
       public readonly subnetNetworkAclAssociationAssociationId = subnetNetworkAclAssociationAssociationId;
     }

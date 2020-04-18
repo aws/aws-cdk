@@ -1,3 +1,4 @@
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cfnDiff from '@aws-cdk/cloudformation-diff';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as colors from 'colors/safe';
@@ -14,11 +15,11 @@ import { print, warning } from './logging';
  * @returns the count of differences that were rendered.
  */
 export function printStackDiff(
-      oldTemplate: any,
-      newTemplate: cxapi.CloudFormationStackArtifact,
-      strict: boolean,
-      context: number,
-      stream?: cfnDiff.FormatStream): number {
+  oldTemplate: any,
+  newTemplate: cxapi.CloudFormationStackArtifact,
+  strict: boolean,
+  context: number,
+  stream?: cfnDiff.FormatStream): number {
 
   const diff = cfnDiff.diffTemplate(oldTemplate, newTemplate.template);
 
@@ -60,7 +61,7 @@ export function printSecurityDiff(oldTemplate: any, newTemplate: cxapi.CloudForm
   if (difRequiresApproval(diff, requireApproval)) {
     // tslint:disable-next-line:max-line-length
     warning(`This deployment will make potentially sensitive changes according to your current security approval level (--require-approval ${requireApproval}).`);
-    warning(`Please confirm you intend to make the following modifications:\n`);
+    warning('Please confirm you intend to make the following modifications:\n');
 
     cfnDiff.formatSecurityChanges(process.stdout, diff, buildLogicalToPathMap(newTemplate));
     return true;
@@ -85,8 +86,8 @@ function difRequiresApproval(diff: cfnDiff.TemplateDiff, requireApproval: Requir
 
 function buildLogicalToPathMap(stack: cxapi.CloudFormationStackArtifact) {
   const map: { [id: string]: string } = {};
-  for (const md of stack.findMetadataByType(cxapi.LOGICAL_ID_METADATA_KEY)) {
-    map[md.data] = md.path;
+  for (const md of stack.findMetadataByType(cxschema.ArtifactMetadataEntryType.LOGICAL_ID)) {
+    map[md.data as string] = md.path;
   }
   return map;
 }

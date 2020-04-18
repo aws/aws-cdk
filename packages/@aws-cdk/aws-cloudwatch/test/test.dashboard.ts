@@ -13,17 +13,17 @@ export = {
     dashboard.addWidgets(new TextWidget({
       width: 10,
       height: 2,
-      markdown: "first"
+      markdown: 'first'
     }));
     dashboard.addWidgets(new TextWidget({
       width: 1,
       height: 4,
-      markdown: "second"
+      markdown: 'second'
     }));
     dashboard.addWidgets(new TextWidget({
       width: 4,
       height: 1,
-      markdown: "third"
+      markdown: 'third'
     }));
 
     // THEN
@@ -46,17 +46,17 @@ export = {
       new TextWidget({
         width: 10,
         height: 2,
-        markdown: "first"
+        markdown: 'first'
       }),
       new TextWidget({
         width: 1,
         height: 4,
-        markdown: "second"
+        markdown: 'second'
       }),
       new TextWidget({
         width: 4,
         height: 1,
-        markdown: "third"
+        markdown: 'third'
       }),
     );
 
@@ -82,10 +82,10 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::CloudWatch::Dashboard', {
-      DashboardBody: { "Fn::Join": [ "", [
-        "{\"widgets\":[{\"type\":\"metric\",\"width\":1,\"height\":1,\"x\":0,\"y\":0,\"properties\":{\"view\":\"timeSeries\",\"region\":\"",
-        { Ref: "AWS::Region" },
-        "\",\"yAxis\":{}}}]}"
+      DashboardBody: { 'Fn::Join': [ '', [
+        '{"widgets":[{"type":"metric","width":1,"height":1,"x":0,"y":0,"properties":{"view":"timeSeries","region":"',
+        { Ref: 'AWS::Region' },
+        '","yAxis":{}}}]}'
       ]]}
     }));
 
@@ -96,11 +96,11 @@ export = {
     // GIVEN
     const stack = new Stack();
     const dashboard = new Dashboard(stack, 'Dash',
-    {
-      start: '-9H',
-      end: '2018-12-17T06:00:00.000Z',
-      periodOverride: PeriodOverride.INHERIT
-    });
+      {
+        start: '-9H',
+        end: '2018-12-17T06:00:00.000Z',
+        periodOverride: PeriodOverride.INHERIT
+      });
 
     // WHEN
     dashboard.addWidgets(
@@ -109,11 +109,11 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::CloudWatch::Dashboard', {
-      DashboardBody: { "Fn::Join": [ "", [
-        "{\"start\":\"-9H\",\"end\":\"2018-12-17T06:00:00.000Z\",\"periodOverride\":\"inherit\",\
-\"widgets\":[{\"type\":\"metric\",\"width\":1,\"height\":1,\"x\":0,\"y\":0,\"properties\":{\"view\":\"timeSeries\",\"region\":\"",
-        { Ref: "AWS::Region" },
-        "\",\"yAxis\":{}}}]}"
+      DashboardBody: { 'Fn::Join': [ '', [
+        '{"start":"-9H","end":"2018-12-17T06:00:00.000Z","periodOverride":"inherit",\
+"widgets":[{"type":"metric","width":1,"height":1,"x":0,"y":0,"properties":{"view":"timeSeries","region":"',
+        { Ref: 'AWS::Region' },
+        '","yAxis":{}}}]}'
       ]]}
     }));
 

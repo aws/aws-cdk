@@ -21,22 +21,22 @@ export = {
     // THEN
     expect(stack).to(haveResource('Custom::AWSCDK-EKS-KubernetesPatch', {
       ServiceToken: {
-        "Fn::GetAtt": [
-          "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B",
-          "Outputs.awscdkawseksKubectlProviderframeworkonEvent0A650005Arn"
+        'Fn::GetAtt': [
+          'awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B',
+          'Outputs.awscdkawseksKubectlProviderframeworkonEvent0A650005Arn'
         ]
       },
-      ResourceName: "myResourceName",
-      ResourceNamespace: "default",
-      ApplyPatchJson: "{\"patch\":{\"to\":\"apply\"}}",
-      RestorePatchJson: "{\"restore\":{\"patch\":123}}",
+      ResourceName: 'myResourceName',
+      ResourceNamespace: 'default',
+      ApplyPatchJson: '{"patch":{"to":"apply"}}',
+      RestorePatchJson: '{"restore":{"patch":123}}',
       ClusterName: {
-        Ref: "MyCluster8AD82BF8"
+        Ref: 'MyCluster8AD82BF8'
       },
       RoleArn: {
-        "Fn::GetAtt": [
-          "MyClusterCreationRoleB5FA4FF3",
-          "Arn"
+        'Fn::GetAtt': [
+          'MyClusterCreationRoleB5FA4FF3',
+          'Arn'
         ]
       }
     }));
@@ -55,7 +55,7 @@ export = {
       resourceName: 'myResourceName',
     });
     expect(stack).to(haveResource('Custom::AWSCDK-EKS-KubernetesPatch', {
-      PatchType: "strategic"
+      PatchType: 'strategic'
     }));
     test.done();
   },
@@ -88,16 +88,16 @@ export = {
     });
 
     expect(stack).to(haveResource('Custom::AWSCDK-EKS-KubernetesPatch', {
-      ResourceName: "jsonPatchResource",
-      PatchType: "json"
+      ResourceName: 'jsonPatchResource',
+      PatchType: 'json'
     }));
     expect(stack).to(haveResource('Custom::AWSCDK-EKS-KubernetesPatch', {
-      ResourceName: "mergePatchResource",
-      PatchType: "merge"
+      ResourceName: 'mergePatchResource',
+      PatchType: 'merge'
     }));
     expect(stack).to(haveResource('Custom::AWSCDK-EKS-KubernetesPatch', {
-      ResourceName: "strategicPatchResource",
-      PatchType: "strategic"
+      ResourceName: 'strategicPatchResource',
+      PatchType: 'strategic'
     }));
     test.done();
   }

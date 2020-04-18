@@ -308,7 +308,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
     };
 
     const loadBalancer = props.loadBalancer !== undefined ? props.loadBalancer
-                        : new ApplicationLoadBalancer(this, 'LB', lbProps);
+      : new ApplicationLoadBalancer(this, 'LB', lbProps);
 
     if (props.certificate !== undefined && props.protocol !== undefined && props.protocol !== ApplicationProtocol.HTTPS) {
       throw new Error('The HTTPS protocol must be used when a certificate is given');
@@ -351,7 +351,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
         throw new Error('A Route53 hosted domain zone name is required to configure the specified domain name');
       }
 
-      const record = new ARecord(this, "DNS", {
+      const record = new ARecord(this, 'DNS', {
         zone: props.domainZone,
         recordName: props.domainName,
         target: RecordTarget.fromAlias(new LoadBalancerTarget(loadBalancer)),

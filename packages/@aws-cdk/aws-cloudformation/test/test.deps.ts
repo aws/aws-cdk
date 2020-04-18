@@ -43,7 +43,7 @@ export = {
       // nested stack to the nested stack resource itself so the nested stack
       // will only be deployed the dependent resource
       expect(parent).to(haveResource('AWS::CloudFormation::Stack', { DependsOn: [ 'ResourceInParent' ] }, ResourcePart.CompleteDefinition));
-      expect(nested).toMatch({ Resources: { ResourceInNested: { Type: "NESTED" } } }); // no DependsOn for the actual resource
+      expect(nested).toMatch({ Resources: { ResourceInNested: { Type: 'NESTED' } } }); // no DependsOn for the actual resource
       test.done();
     }),
 
@@ -61,7 +61,7 @@ export = {
       // THEN: the dependency needs to transfer from the resource within the
       // nested stack to the *parent* nested stack
       expect(grantparent).to(haveResource('AWS::CloudFormation::Stack', { DependsOn: [ 'ResourceInGrandparent' ] }, ResourcePart.CompleteDefinition));
-      expect(nested).toMatch({ Resources: { ResourceInNested: { Type: "NESTED" } } }); // no DependsOn for the actual resource
+      expect(nested).toMatch({ Resources: { ResourceInNested: { Type: 'NESTED' } } }); // no DependsOn for the actual resource
       test.done();
     }),
 
@@ -82,7 +82,7 @@ export = {
       test.done();
     }),
 
-  'resource in grantparent stack depends on resource in nested stack': matrixForResourceDependencyTest((test, addDep) => {
+    'resource in grantparent stack depends on resource in nested stack': matrixForResourceDependencyTest((test, addDep) => {
       // GIVEN
       const grandparent = new Stack(undefined, 'Grandparent');
       const parent = new NestedStack(grandparent, 'Parent');

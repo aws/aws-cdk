@@ -17,10 +17,10 @@ export = {
           Type: 'AWS::Glue::Database',
           Properties: {
             CatalogId: {
-              Ref: "AWS::AccountId"
+              Ref: 'AWS::AccountId'
             },
             DatabaseInput: {
-              Name: "test_database"
+              Name: 'test_database'
             }
           }
         }
@@ -44,11 +44,11 @@ export = {
           Type: 'AWS::Glue::Database',
           Properties: {
             CatalogId: {
-              Ref: "AWS::AccountId"
+              Ref: 'AWS::AccountId'
             },
             DatabaseInput: {
               LocationUri: 's3://my-uri/',
-              Name: "test_database"
+              Name: 'test_database'
             }
           }
         }
@@ -77,10 +77,10 @@ export = {
   'locationUri length must be >= 1'(test: Test) {
     const stack = new Stack();
     test.throws(() =>
-        new glue.Database(stack, 'Database', {
-          databaseName: 'test_database',
-          locationUri: ''
-        })
+      new glue.Database(stack, 'Database', {
+        databaseName: 'test_database',
+        locationUri: ''
+      })
     );
     test.done();
   },
@@ -88,10 +88,10 @@ export = {
   'locationUri length must be <= 1024'(test: Test) {
     const stack = new Stack();
     test.throws(() =>
-        new glue.Database(stack, 'Database', {
-          databaseName: 'test_database',
-          locationUri: 'a'.repeat(1025)
-        })
+      new glue.Database(stack, 'Database', {
+        databaseName: 'test_database',
+        locationUri: 'a'.repeat(1025)
+      })
     );
     test.done();
   }

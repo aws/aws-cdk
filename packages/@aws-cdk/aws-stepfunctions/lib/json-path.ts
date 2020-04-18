@@ -183,7 +183,7 @@ function renderNumber(key: string, value: number): {[key: string]: number | stri
  * Render a parameter boolean
  */
 function renderBoolean(key: string, value: boolean): {[key: string]: boolean} {
-    return { [key]: value };
+  return { [key]: value };
 }
 
 /**

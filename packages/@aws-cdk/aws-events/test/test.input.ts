@@ -21,7 +21,7 @@ export = {
       expect(stack).to(haveResourceLike('AWS::Events::Rule', {
         Targets: [
           {
-            Input: "{\"SomeObject\":\"withAValue\"}"
+            Input: '{"SomeObject":"withAValue"}'
           }
         ]
       }));
@@ -119,7 +119,7 @@ export = {
       expect(stack).to(haveResourceLike('AWS::Events::Rule', {
         Targets: [
           {
-            Input: "\"I have\"\n\"multiple lines\""
+            Input: '"I have"\n"multiple lines"'
           }
         ]
       }));
@@ -141,7 +141,7 @@ export = {
       expect(stack).to(haveResourceLike('AWS::Events::Rule', {
         Targets: [
           {
-            Input: "\"this is not\\\\na real newline\""
+            Input: '"this is not\\\\na real newline"'
           }
         ]
       }));
@@ -165,7 +165,7 @@ export = {
       expect(stack).to(haveResourceLike('AWS::Events::Rule', {
         Targets: [
           {
-            Input: "\"hello world\""
+            Input: '"hello world"'
           }
         ]
       }));

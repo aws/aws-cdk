@@ -1,4 +1,4 @@
-import { Duration } from "@aws-cdk/core";
+import { Duration } from '@aws-cdk/core';
 
 /**
  * Schedule for scheduled event rules
@@ -32,7 +32,7 @@ export abstract class Schedule {
    */
   public static cron(options: CronOptions): Schedule {
     if (options.weekDay !== undefined && options.day !== undefined) {
-      throw new Error(`Cannot supply both 'day' and 'weekDay', use at most one`);
+      throw new Error('Cannot supply both \'day\' and \'weekDay\', use at most one');
     }
 
     const minute = fallback(options.minute, '*');

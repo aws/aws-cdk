@@ -7,68 +7,68 @@ import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '
 // tslint:disable:object-literal-key-quotes
 
 test('aws sdk js custom resource with onCreate and onDelete', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
+  // GIVEN
+  const stack = new cdk.Stack();
 
-    // WHEN
-    new AwsCustomResource(stack, 'AwsSdk', {
-      resourceType: 'Custom::LogRetentionPolicy',
-      onCreate: {
-        service: 'CloudWatchLogs',
-        action: 'putRetentionPolicy',
-        parameters: {
-          logGroupName: '/aws/lambda/loggroup',
-          retentionInDays: 90
-        },
-        physicalResourceId: PhysicalResourceId.of('loggroup')
+  // WHEN
+  new AwsCustomResource(stack, 'AwsSdk', {
+    resourceType: 'Custom::LogRetentionPolicy',
+    onCreate: {
+      service: 'CloudWatchLogs',
+      action: 'putRetentionPolicy',
+      parameters: {
+        logGroupName: '/aws/lambda/loggroup',
+        retentionInDays: 90
       },
-      onDelete: {
-        service: 'CloudWatchLogs',
-        action: 'deleteRetentionPolicy',
-        parameters: {
-          logGroupName: '/aws/lambda/loggroup',
-        }
-      },
-      policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ANY_RESOURCE})
-    });
-
-    // THEN
-    expect(stack).toHaveResource('Custom::LogRetentionPolicy', {
-      "Create": {
-        "service": "CloudWatchLogs",
-        "action": "putRetentionPolicy",
-        "parameters": {
-          "logGroupName": "/aws/lambda/loggroup",
-          "retentionInDays": 90
-        },
-        "physicalResourceId": {
-          "id": "loggroup"
-        }
-      },
-      "Delete": {
-        "service": "CloudWatchLogs",
-        "action": "deleteRetentionPolicy",
-        "parameters": {
-          "logGroupName": "/aws/lambda/loggroup"
-        }
+      physicalResourceId: PhysicalResourceId.of('loggroup')
+    },
+    onDelete: {
+      service: 'CloudWatchLogs',
+      action: 'deleteRetentionPolicy',
+      parameters: {
+        logGroupName: '/aws/lambda/loggroup',
       }
-    });
+    },
+    policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ANY_RESOURCE})
+  });
 
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
-    "PolicyDocument": {
-      "Statement": [
+  // THEN
+  expect(stack).toHaveResource('Custom::LogRetentionPolicy', {
+    'Create': {
+      'service': 'CloudWatchLogs',
+      'action': 'putRetentionPolicy',
+      'parameters': {
+        'logGroupName': '/aws/lambda/loggroup',
+        'retentionInDays': 90
+      },
+      'physicalResourceId': {
+        'id': 'loggroup'
+      }
+    },
+    'Delete': {
+      'service': 'CloudWatchLogs',
+      'action': 'deleteRetentionPolicy',
+      'parameters': {
+        'logGroupName': '/aws/lambda/loggroup'
+      }
+    }
+  });
+
+  expect(stack).toHaveResource('AWS::IAM::Policy', {
+    'PolicyDocument': {
+      'Statement': [
         {
-          "Action": "logs:PutRetentionPolicy",
-          "Effect": "Allow",
-          "Resource": "*"
+          'Action': 'logs:PutRetentionPolicy',
+          'Effect': 'Allow',
+          'Resource': '*'
         },
         {
-          "Action": "logs:DeleteRetentionPolicy",
-          "Effect": "Allow",
-          "Resource": "*"
+          'Action': 'logs:DeleteRetentionPolicy',
+          'Effect': 'Allow',
+          'Resource': '*'
         }
       ],
-      "Version": "2012-10-17"
+      'Version': '2012-10-17'
     },
   });
 });
@@ -95,28 +95,28 @@ test('onCreate defaults to onUpdate', () => {
 
   // THEN
   expect(stack).toHaveResource('Custom::S3PutObject', {
-    "Create": {
-      "service": "s3",
-      "action": "putObject",
-      "parameters": {
-        "Bucket": "my-bucket",
-        "Key": "my-key",
-        "Body": "my-body"
+    'Create': {
+      'service': 's3',
+      'action': 'putObject',
+      'parameters': {
+        'Bucket': 'my-bucket',
+        'Key': 'my-key',
+        'Body': 'my-body'
       },
-      "physicalResourceId": {
-        "responsePath": "ETag"
+      'physicalResourceId': {
+        'responsePath': 'ETag'
       }
     },
-    "Update": {
-      "service": "s3",
-      "action": "putObject",
-      "parameters": {
-        "Bucket": "my-bucket",
-        "Key": "my-key",
-        "Body": "my-body"
+    'Update': {
+      'service': 's3',
+      'action': 'putObject',
+      'parameters': {
+        'Bucket': 'my-bucket',
+        'Key': 'my-key',
+        'Body': 'my-body'
       },
-      "physicalResourceId": {
-        "responsePath": "ETag"
+      'physicalResourceId': {
+        'responsePath': 'ETag'
       }
     },
   });
@@ -148,15 +148,15 @@ test('with custom policyStatements', () => {
 
   // THEN
   expect(stack).toHaveResource('AWS::IAM::Policy', {
-    "PolicyDocument": {
-      "Statement": [
+    'PolicyDocument': {
+      'Statement': [
         {
-          "Action": "s3:PutObject",
-          "Effect": "Allow",
-          "Resource": "arn:aws:s3:::my-bucket/my-key"
+          'Action': 's3:PutObject',
+          'Effect': 'Allow',
+          'Resource': 'arn:aws:s3:::my-bucket/my-key'
         },
       ],
-      "Version": "2012-10-17"
+      'Version': '2012-10-17'
     },
   });
 });
@@ -207,17 +207,17 @@ test('encodes booleans', () => {
 
   // THEN
   expect(stack).toHaveResource('Custom::ServiceAction', {
-    "Create": {
-      "service": "service",
-      "action": "action",
-      "parameters": {
-        "trueBoolean": "TRUE:BOOLEAN",
-        "trueString": "true",
-        "falseBoolean": "FALSE:BOOLEAN",
-        "falseString": "false"
+    'Create': {
+      'service': 'service',
+      'action': 'action',
+      'parameters': {
+        'trueBoolean': 'TRUE:BOOLEAN',
+        'trueString': 'true',
+        'falseBoolean': 'FALSE:BOOLEAN',
+        'falseString': 'false'
       },
-      "physicalResourceId": {
-        "id": "id"
+      'physicalResourceId': {
+        'id': 'id'
       }
     },
   });
@@ -366,13 +366,13 @@ test('fails when getData is used with `ignoreErrorCodesMatching`', () => {
         logGroupName: '/aws/lambda/loggroup',
         retentionInDays: 90
       },
-      ignoreErrorCodesMatching: ".*",
-      physicalResourceId: PhysicalResourceId.of("Id")
+      ignoreErrorCodesMatching: '.*',
+      physicalResourceId: PhysicalResourceId.of('Id')
     },
     policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ANY_RESOURCE}),
   });
 
-  expect(() => resource.getResponseFieldReference("ShouldFail")).toThrow(/`getData`.+`ignoreErrorCodesMatching`/);
+  expect(() => resource.getResponseFieldReference('ShouldFail')).toThrow(/`getData`.+`ignoreErrorCodesMatching`/);
 
 });
 
@@ -388,13 +388,13 @@ test('fails when getDataString is used with `ignoreErrorCodesMatching`', () => {
         logGroupName: '/aws/lambda/loggroup',
         retentionInDays: 90
       },
-      ignoreErrorCodesMatching: ".*",
-      physicalResourceId: PhysicalResourceId.of("Id"),
+      ignoreErrorCodesMatching: '.*',
+      physicalResourceId: PhysicalResourceId.of('Id'),
     },
     policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ANY_RESOURCE}),
   });
 
-  expect(() => resource.getResponseField("ShouldFail")).toThrow(/`getDataString`.+`ignoreErrorCodesMatching`/);
+  expect(() => resource.getResponseField('ShouldFail')).toThrow(/`getDataString`.+`ignoreErrorCodesMatching`/);
 
 });
 
@@ -409,8 +409,8 @@ test('fail when `PhysicalResourceId.fromResponse` is used with `ignoreErrorCodes
         logGroupName: '/aws/lambda/loggroup',
         retentionInDays: 90
       },
-      ignoreErrorCodesMatching: ".*",
-      physicalResourceId: PhysicalResourceId.fromResponse("Response")
+      ignoreErrorCodesMatching: '.*',
+      physicalResourceId: PhysicalResourceId.fromResponse('Response')
     },
     policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ANY_RESOURCE}),
   })).toThrow(/`PhysicalResourceId.fromResponse`.+`ignoreErrorCodesMatching`/);
@@ -423,8 +423,8 @@ test('fail when `PhysicalResourceId.fromResponse` is used with `ignoreErrorCodes
         logGroupName: '/aws/lambda/loggroup',
         retentionInDays: 90
       },
-      ignoreErrorCodesMatching: ".*",
-      physicalResourceId: PhysicalResourceId.fromResponse("Response")
+      ignoreErrorCodesMatching: '.*',
+      physicalResourceId: PhysicalResourceId.fromResponse('Response')
     },
     policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ANY_RESOURCE}),
   })).toThrow(/`PhysicalResourceId.fromResponse`.+`ignoreErrorCodesMatching`/);
@@ -437,8 +437,8 @@ test('fail when `PhysicalResourceId.fromResponse` is used with `ignoreErrorCodes
         logGroupName: '/aws/lambda/loggroup',
         retentionInDays: 90
       },
-      ignoreErrorCodesMatching: ".*",
-      physicalResourceId: PhysicalResourceId.fromResponse("Response")
+      ignoreErrorCodesMatching: '.*',
+      physicalResourceId: PhysicalResourceId.fromResponse('Response')
     },
     policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ANY_RESOURCE}),
   })).toThrow(/`PhysicalResourceId.fromResponse`.+`ignoreErrorCodesMatching`/);
@@ -484,7 +484,7 @@ test('getDataString', () => {
         }
       },
       physicalResourceId: {
-        "id": 'id'
+        'id': 'id'
       }
     }
   });

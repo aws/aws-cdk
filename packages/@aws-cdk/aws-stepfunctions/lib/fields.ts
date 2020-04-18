@@ -1,5 +1,5 @@
-import { Token } from "@aws-cdk/core";
-import { findReferencedPaths, jsonPathString, JsonPathToken, renderObject } from "./json-path";
+import { Token } from '@aws-cdk/core';
+import { findReferencedPaths, jsonPathString, JsonPathToken, renderObject } from './json-path';
 
 /**
  * Extract a field from the State Machine data that gets passed around between states

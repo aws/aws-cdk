@@ -21,6 +21,6 @@ const service = namespace.createService('Service', {
 
 const loadbalancer = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc, internetFacing: true });
 
-service.registerLoadBalancer("Loadbalancer", loadbalancer);
+service.registerLoadBalancer('Loadbalancer', loadbalancer);
 
 app.synth();

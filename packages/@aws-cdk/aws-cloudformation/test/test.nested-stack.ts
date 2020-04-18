@@ -1,4 +1,4 @@
-import { expect, haveResource, SynthUtils } from '@aws-cdk/assert';
+import { expect, haveResource, matchTemplate, SynthUtils } from '@aws-cdk/assert';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import * as sns from '@aws-cdk/aws-sns';
 import { App, CfnParameter, CfnResource, Construct, ContextProvider, Stack } from '@aws-cdk/core';
@@ -124,46 +124,46 @@ export = {
     expect(parent).toMatch({
       Resources: {
         nestedstackNestedStacknestedstackNestedStackResource71CDD241: {
-          Type: "AWS::CloudFormation::Stack",
+          Type: 'AWS::CloudFormation::Stack',
           Properties: {
             TemplateURL: {
-              "Fn::Join": [
-                "",
+              'Fn::Join': [
+                '',
                 [
-                  "https://s3.",
+                  'https://s3.',
                   {
-                    Ref: "AWS::Region"
+                    Ref: 'AWS::Region'
                   },
-                  ".",
+                  '.',
                   {
-                    Ref: "AWS::URLSuffix"
+                    Ref: 'AWS::URLSuffix'
                   },
-                  "/",
+                  '/',
                   {
-                    Ref: "AssetParametersc639c0a5e7320758aa22589669ecebc98f185b711300b074f53998c8f9a45096S3BucketDA8C3345"
+                    Ref: 'AssetParametersc639c0a5e7320758aa22589669ecebc98f185b711300b074f53998c8f9a45096S3BucketDA8C3345'
                   },
-                  "/",
+                  '/',
                   {
-                    "Fn::Select": [
+                    'Fn::Select': [
                       0,
                       {
-                        "Fn::Split": [
-                          "||",
+                        'Fn::Split': [
+                          '||',
                           {
-                            Ref: "AssetParametersc639c0a5e7320758aa22589669ecebc98f185b711300b074f53998c8f9a45096S3VersionKey09D03EE6"
+                            Ref: 'AssetParametersc639c0a5e7320758aa22589669ecebc98f185b711300b074f53998c8f9a45096S3VersionKey09D03EE6'
                           }
                         ]
                       }
                     ]
                   },
                   {
-                    "Fn::Select": [
+                    'Fn::Select': [
                       1,
                       {
-                        "Fn::Split": [
-                          "||",
+                        'Fn::Split': [
+                          '||',
                           {
-                            Ref: "AssetParametersc639c0a5e7320758aa22589669ecebc98f185b711300b074f53998c8f9a45096S3VersionKey09D03EE6"
+                            Ref: 'AssetParametersc639c0a5e7320758aa22589669ecebc98f185b711300b074f53998c8f9a45096S3VersionKey09D03EE6'
                           }
                         ]
                       }
@@ -177,16 +177,16 @@ export = {
       },
       Parameters: {
         AssetParametersc639c0a5e7320758aa22589669ecebc98f185b711300b074f53998c8f9a45096S3BucketDA8C3345: {
-          Type: "String",
-          Description: "S3 bucket for asset \"c639c0a5e7320758aa22589669ecebc98f185b711300b074f53998c8f9a45096\""
+          Type: 'String',
+          Description: 'S3 bucket for asset "c639c0a5e7320758aa22589669ecebc98f185b711300b074f53998c8f9a45096"'
         },
         AssetParametersc639c0a5e7320758aa22589669ecebc98f185b711300b074f53998c8f9a45096S3VersionKey09D03EE6: {
-          Type: "String",
-          Description: "S3 key for asset version \"c639c0a5e7320758aa22589669ecebc98f185b711300b074f53998c8f9a45096\""
+          Type: 'String',
+          Description: 'S3 key for asset version "c639c0a5e7320758aa22589669ecebc98f185b711300b074f53998c8f9a45096"'
         },
         AssetParametersc639c0a5e7320758aa22589669ecebc98f185b711300b074f53998c8f9a45096ArtifactHash8DE450C7: {
-          Type: "String",
-          Description: "Artifact hash for asset \"c639c0a5e7320758aa22589669ecebc98f185b711300b074f53998c8f9a45096\""
+          Type: 'String',
+          Description: 'Artifact hash for asset "c639c0a5e7320758aa22589669ecebc98f185b711300b074f53998c8f9a45096"'
         }
       }
     });
@@ -306,12 +306,12 @@ export = {
     expect(parentStack).to(haveResource('AWS::CloudFormation::Stack', {
       Parameters: {
         referencetoparentparentresourceD56EA8F7Ref: {
-          Ref: "parentresource"
+          Ref: 'parentresource'
         },
         referencetoparentparentresourceD56EA8F7Attr: {
-          "Fn::GetAtt": [
-            "parentresource",
-            "Attr"
+          'Fn::GetAtt': [
+            'parentresource',
+            'Attr'
           ]
         }
       },
@@ -361,9 +361,9 @@ export = {
     // parent template should pass in the value through the parameter
     expect(parentStack).to(haveResource('AWS::Parent::Resource', {
       RefToResourceInNestedStack: {
-        "Fn::GetAtt": [
-          "nestedNestedStacknestedNestedStackResource3DD143BF",
-          "Outputs.parentnestedresource4D680677Ref"
+        'Fn::GetAtt': [
+          'nestedNestedStacknestedNestedStackResource3DD143BF',
+          'Outputs.parentnestedresource4D680677Ref'
         ]
       }
     }));
@@ -393,12 +393,12 @@ export = {
     // producing stack should have an export
     expect(stack2).toMatch({
       Resources: {
-        ResourceInStack2: { Type: "MyResource" }
+        ResourceInStack2: { Type: 'MyResource' }
       },
       Outputs: {
         ExportsOutputFnGetAttResourceInStack2MyAttributeC15F1009: {
-          Value: { "Fn::GetAtt": ["ResourceInStack2", "MyAttribute"] },
-          Export: { Name: "Stack2:ExportsOutputFnGetAttResourceInStack2MyAttributeC15F1009" }
+          Value: { 'Fn::GetAtt': ['ResourceInStack2', 'MyAttribute'] },
+          Export: { Name: 'Stack2:ExportsOutputFnGetAttResourceInStack2MyAttributeC15F1009' }
         }
       }
     });
@@ -407,10 +407,10 @@ export = {
     expect(nestedUnderStack1).toMatch({
       Resources: {
         ResourceInNestedStack1: {
-          Type: "Nested::Resource",
+          Type: 'Nested::Resource',
           Properties: {
             RefToSibling: {
-              "Fn::ImportValue": "Stack2:ExportsOutputFnGetAttResourceInStack2MyAttributeC15F1009"
+              'Fn::ImportValue': 'Stack2:ExportsOutputFnGetAttResourceInStack2MyAttributeC15F1009'
             }
           }
         }
@@ -423,6 +423,30 @@ export = {
     test.deepEqual(stack1Artifact.dependencies.length, 1);
     test.deepEqual(stack2Artifact.dependencies.length, 0);
     test.same(stack1Artifact.dependencies[0], stack2Artifact);
+    test.done();
+  },
+
+  'nested stack within a nested stack references a resource in a sibling top-level stack'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const consumerTopLevel = new Stack(app, 'ConsumerTopLevel');
+    const consumerNested1 = new NestedStack(consumerTopLevel, 'ConsumerNested1');
+    const consumerNested2 = new NestedStack(consumerNested1, 'ConsumerNested2');
+    const producerTopLevel = new Stack(app, 'ProducerTopLevel');
+    const producer = new CfnResource(producerTopLevel, 'Producer', { type: 'Producer' });
+
+    // WHEN
+    new CfnResource(consumerNested2, 'Consumer', {
+      type: 'Consumer',
+      properties: {
+        Ref: producer.ref
+      }
+    });
+
+    // THEN
+    const manifest = app.synth();
+    const consumerDeps = manifest.getStackArtifact(consumerTopLevel.artifactId).dependencies.map(d => d.id);
+    test.deepEqual(consumerDeps, [ 'ProducerTopLevel' ]);
     test.done();
   },
 
@@ -449,15 +473,15 @@ export = {
     expect(nestedUnderStack1).toMatch({
       Resources: {
         ResourceInNestedStack: {
-          Type: "MyResource"
+          Type: 'MyResource'
         }
       },
       Outputs: {
         Stack1NestedUnderStack1ResourceInNestedStack6EE9DCD2MyAttribute: {
           Value: {
-            "Fn::GetAtt": [
-              "ResourceInNestedStack",
-              "MyAttribute"
+            'Fn::GetAtt': [
+              'ResourceInNestedStack',
+              'MyAttribute'
             ]
           }
         }
@@ -476,10 +500,10 @@ export = {
     expect(stack2).toMatch({
       Resources: {
         ResourceInStack2: {
-          Type: "JustResource",
+          Type: 'JustResource',
           Properties: {
             RefToSibling: {
-              "Fn::ImportValue": "Stack1:ExportsOutputFnGetAttNestedUnderStack1NestedStackNestedUnderStack1NestedStackResourceF616305BOutputsStack1NestedUnderStack1ResourceInNestedStack6EE9DCD2MyAttribute564EECF3"
+              'Fn::ImportValue': 'Stack1:ExportsOutputFnGetAttNestedUnderStack1NestedStackNestedUnderStack1NestedStackResourceF616305BOutputsStack1NestedUnderStack1ResourceInNestedStack6EE9DCD2MyAttribute564EECF3'
             }
           }
         }
@@ -518,13 +542,13 @@ export = {
     expect(nested1).toMatch({
       Resources: {
         Resource1: {
-          Type: "Resource1"
+          Type: 'Resource1'
         }
       },
       Outputs: {
         ParentNested1Resource15F3F0657Ref: {
           Value: {
-            Ref: "Resource1"
+            Ref: 'Resource1'
           }
         }
       }
@@ -534,17 +558,17 @@ export = {
     expect(nested2).toMatch({
       Resources: {
         Resource2: {
-          Type: "Resource2",
+          Type: 'Resource2',
           Properties: {
             RefToResource1: {
-              Ref: "referencetoParentNested1NestedStackNested1NestedStackResource9C05342COutputsParentNested1Resource15F3F0657Ref"
+              Ref: 'referencetoParentNested1NestedStackNested1NestedStackResource9C05342COutputsParentNested1Resource15F3F0657Ref'
             }
           }
         }
       },
       Parameters: {
         referencetoParentNested1NestedStackNested1NestedStackResource9C05342COutputsParentNested1Resource15F3F0657Ref: {
-          Type: "String"
+          Type: 'String'
         }
       }
     });
@@ -553,9 +577,9 @@ export = {
     expect(parent).to(haveResource('AWS::CloudFormation::Stack', {
       Parameters: {
         referencetoParentNested1NestedStackNested1NestedStackResource9C05342COutputsParentNested1Resource15F3F0657Ref: {
-          "Fn::GetAtt": [
-            "Nested1NestedStackNested1NestedStackResourceCD0AD36B",
-            "Outputs.ParentNested1Resource15F3F0657Ref"
+          'Fn::GetAtt': [
+            'Nested1NestedStackNested1NestedStackResourceCD0AD36B',
+            'Outputs.ParentNested1Resource15F3F0657Ref'
           ]
         }
       }
@@ -577,7 +601,7 @@ export = {
 
     // THEN
     expect(nested).to(haveResource('Nested::Resource', {
-      MyStackId: { Ref: "AWS::StackId" }
+      MyStackId: { Ref: 'AWS::StackId' }
     }));
 
     test.done();
@@ -596,7 +620,7 @@ export = {
 
     // THEN
     expect(parent).to(haveResource('Parent::Resource', {
-      NestedStackId: { Ref: "NestedStackNestedStackNestedStackNestedStackResourceB70834FD" }
+      NestedStackId: { Ref: 'NestedStackNestedStackNestedStackNestedStackResourceB70834FD' }
     }));
 
     test.done();
@@ -615,7 +639,7 @@ export = {
 
     // THEN
     expect(nested).to(haveResource('Nested::Resource', {
-      MyStackName: { Ref: "AWS::StackName" }
+      MyStackName: { Ref: 'AWS::StackName' }
     }));
 
     test.done();
@@ -635,13 +659,13 @@ export = {
     // THEN
     expect(parent).to(haveResource('Parent::Resource', {
       NestedStackName: {
-        "Fn::Select": [
+        'Fn::Select': [
           1,
           {
-            "Fn::Split": [
-              "/",
+            'Fn::Split': [
+              '/',
               {
-                Ref: "NestedStackNestedStackNestedStackNestedStackResourceB70834FD"
+                Ref: 'NestedStackNestedStackNestedStackNestedStackResourceB70834FD'
               }
             ]
           }
@@ -685,7 +709,7 @@ export = {
     // nested2 is a "leaf", so it's just the resource
     expect(nested2).toMatch({
       Resources: {
-        Resource2: { Type: "Resource::2" }
+        Resource2: { Type: 'Resource::2' }
       }
     });
 
@@ -712,8 +736,8 @@ export = {
     // proxy asset params to nested stack
     expect(parent).to(haveResource('AWS::CloudFormation::Stack', {
       Parameters: {
-        referencetostackAssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cS3BucketE8768F5CRef: { Ref: "AssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cS3BucketDE3B88D6" },
-        referencetostackAssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cS3VersionKey49DD83A2Ref: { Ref: "AssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cS3VersionKey3A62EFEA" }
+        referencetostackAssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cS3BucketE8768F5CRef: { Ref: 'AssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cS3BucketDE3B88D6' },
+        referencetostackAssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cS3VersionKey49DD83A2Ref: { Ref: 'AssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cS3VersionKey3A62EFEA' }
       }
     }));
 
@@ -758,8 +782,8 @@ export = {
     // asset proxy parameters are passed to the nested stack
     expect(parent).to(haveResource('AWS::CloudFormation::Stack', {
       Parameters: {
-        referencetoParentStackAssetParametersdb01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281S3Bucket82C55B96Ref: { Ref: "AssetParametersdb01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281S3BucketC188F637" },
-        referencetoParentStackAssetParametersdb01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281S3VersionKeyA43C3CC6Ref: { Ref: "AssetParametersdb01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281S3VersionKeyC7F4DBF2" },
+        referencetoParentStackAssetParametersdb01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281S3Bucket82C55B96Ref: { Ref: 'AssetParametersdb01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281S3BucketC188F637' },
+        referencetoParentStackAssetParametersdb01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281S3VersionKeyA43C3CC6Ref: { Ref: 'AssetParametersdb01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281S3VersionKeyC7F4DBF2' },
       }
     }));
 
@@ -857,15 +881,15 @@ export = {
     expect(nested).toMatch({
       Resources: {
         resourceinnested: {
-          Type: "CONSUMED"
+          Type: 'CONSUMED'
         }
       },
       Outputs: {
         nestedresourceinnested59B1F01CConsumedAttribute: {
           Value: {
-            "Fn::GetAtt": [
-              "resourceinnested",
-              "Consumed.Attribute"
+            'Fn::GetAtt': [
+              'resourceinnested',
+              'Consumed.Attribute'
             ]
           }
         }
@@ -873,9 +897,9 @@ export = {
     });
     expect(parent).to(haveResource('CONSUMER', {
       ConsumedAttribute: {
-        "Fn::GetAtt": [
-          "nestedNestedStacknestedNestedStackResource3DD143BF",
-          "Outputs.nestedresourceinnested59B1F01CConsumedAttribute"
+        'Fn::GetAtt': [
+          'nestedNestedStacknestedNestedStackResource3DD143BF',
+          'Outputs.nestedresourceinnested59B1F01CConsumedAttribute'
         ]
       }
     }));
@@ -909,4 +933,123 @@ export = {
 
     test.done();
   },
+
+  'references to a resource from a deeply nested stack'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const top = new Stack(app, 'stack');
+    const topLevel = new CfnResource(top, 'toplevel', { type: 'TopLevel' });
+    const nested1 = new NestedStack(top, 'nested1');
+    const nested2 = new NestedStack(nested1, 'nested2');
+
+    // WHEN
+    new CfnResource(nested2, 'refToTopLevel', {
+      type: 'BottomLevel',
+      properties: { RefToTopLevel: topLevel.ref }
+    });
+
+    // THEN
+    expect(top).to(haveResource('AWS::CloudFormation::Stack', {
+      Parameters: {
+        referencetostackAssetParameters842982bd421cce9742ba27151ef12ed699d44d22801f41e8029f63f2358a3f2fS3Bucket5DA5D2E7Ref: {
+          Ref: 'AssetParameters842982bd421cce9742ba27151ef12ed699d44d22801f41e8029f63f2358a3f2fS3BucketDD4D96B5'
+        },
+        referencetostackAssetParameters842982bd421cce9742ba27151ef12ed699d44d22801f41e8029f63f2358a3f2fS3VersionKey8FBE5C12Ref: {
+          Ref: 'AssetParameters842982bd421cce9742ba27151ef12ed699d44d22801f41e8029f63f2358a3f2fS3VersionKey83E381F3'
+        },
+        referencetostacktoplevelBB16BF13Ref: {
+          Ref: 'toplevel'
+        }
+      }
+    }));
+
+    expect(nested1).to(haveResource('AWS::CloudFormation::Stack', {
+      Parameters: {
+        referencetostacktoplevelBB16BF13Ref: {
+          Ref: 'referencetostacktoplevelBB16BF13Ref'
+        }
+      }
+    }));
+
+    expect(nested2).to(matchTemplate({
+      Resources: {
+        refToTopLevel: {
+          Type: 'BottomLevel',
+          Properties: {
+            RefToTopLevel: {
+              Ref: 'referencetostacktoplevelBB16BF13Ref'
+            }
+          }
+        }
+      },
+      Parameters: {
+        referencetostacktoplevelBB16BF13Ref: {
+          Type: 'String'
+        },
+      },
+    }));
+    test.done();
+  },
+
+  'bottom nested stack consumes value from a top-level stack through a parameter in a middle nested stack'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const top = new Stack(app, 'Grandparent');
+    const middle = new NestedStack(top, 'Parent');
+    const bottom = new NestedStack(middle, 'Child');
+    const resourceInGrandparent = new CfnResource(top, 'ResourceInGrandparent', { type: 'ResourceInGrandparent' });
+
+    // WHEN
+    new CfnResource(bottom, 'ResourceInChild', {
+      type: 'ResourceInChild',
+      properties: {
+        RefToGrandparent: resourceInGrandparent.ref
+      }
+    });
+
+    // THEN
+
+    // this is the name allocated for the parameter that's propagated through
+    // the hierarchy.
+    const paramName = 'referencetoGrandparentResourceInGrandparent010E997ARef';
+
+    // child (bottom) references through a parameter.
+    expect(bottom).toMatch({
+      Resources: {
+        ResourceInChild: {
+          Type: 'ResourceInChild',
+          Properties: {
+            RefToGrandparent: { Ref: paramName }
+          }
+        }
+      },
+      Parameters: {
+        [paramName]: { Type: 'String' }
+      }
+    });
+
+    // the parent (middle) sets the value of this parameter to be a reference to another parameter
+    expect(middle).to(haveResource('AWS::CloudFormation::Stack', {
+      Parameters: {
+        [paramName]: { Ref: paramName }
+      }
+    }));
+
+    // grandparent (top) assigns the actual value to the parameter
+    expect(top).to(haveResource('AWS::CloudFormation::Stack', {
+      Parameters: {
+        [paramName]: { Ref: 'ResourceInGrandparent' },
+
+        // these are for the asset of the bottom nested stack
+        referencetoGrandparentAssetParameters3208f43b793a1dbe28ca02cf31fb975489071beb42c492b22dc3d32decc3b4b7S3Bucket06EEE58DRef: {
+          Ref: 'AssetParameters3208f43b793a1dbe28ca02cf31fb975489071beb42c492b22dc3d32decc3b4b7S3Bucket01877C2E'
+        },
+        referencetoGrandparentAssetParameters3208f43b793a1dbe28ca02cf31fb975489071beb42c492b22dc3d32decc3b4b7S3VersionKeyD3B04909Ref: {
+          Ref: 'AssetParameters3208f43b793a1dbe28ca02cf31fb975489071beb42c492b22dc3d32decc3b4b7S3VersionKey5765F084'
+        }
+      }
+    }));
+
+    test.done();
+  }
 };

@@ -1,5 +1,5 @@
 // import * as os from 'os';
-import { Logger, shell, ShellOptions } from "./shell";
+import { Logger, shell, ShellOptions } from './shell';
 
 interface BuildOptions {
   readonly directory: string;
@@ -53,13 +53,13 @@ export class Docker {
       '--username', credentials.username,
       '--password-stdin',
       credentials.endpoint], {
-        input: credentials.password,
+      input: credentials.password,
 
-        // Need to quiet otherwise Docker will complain
-        // 'WARNING! Your password will be stored unencrypted'
-        // doesn't really matter since it's a token.
-        quiet: true,
-      });
+      // Need to quiet otherwise Docker will complain
+      // 'WARNING! Your password will be stored unencrypted'
+      // doesn't really matter since it's a token.
+      quiet: true,
+    });
   }
 
   public async tag(sourceTag: string, targetTag: string) {
@@ -75,7 +75,7 @@ export class Docker {
       await shell(['docker', ...args], { logger: this.logger, ...options });
     } catch (e) {
       if (e.code === 'ENOENT') {
-        throw new Error(`Unable to execute 'docker' in order to build a container asset. Please install 'docker' and try again.`);
+        throw new Error('Unable to execute \'docker\' in order to build a container asset. Please install \'docker\' and try again.');
       }
       throw e;
     }
@@ -83,7 +83,7 @@ export class Docker {
 }
 
 async function obtainEcrCredentials(ecr: AWS.ECR, logger?: Logger) {
-  if (logger) { logger(`Fetching ECR authorization token`); }
+  if (logger) { logger('Fetching ECR authorization token'); }
   const authData =  (await ecr.getAuthorizationToken({ }).promise()).authorizationData || [];
   if (authData.length === 0) {
     throw new Error('No authorization data received from ECR');

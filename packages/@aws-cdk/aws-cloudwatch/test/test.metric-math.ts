@@ -336,30 +336,30 @@ export = {
       // THEN
       alarmMetricsAre([
         {
-          Expression: "a + b",
-          Id: "expr_1"
+          Expression: 'a + b',
+          Id: 'expr_1'
         },
         {
-          Id: "a",
+          Id: 'a',
           MetricStat: {
             Metric: {
-              MetricName: "ACount",
-              Namespace: "Test"
+              MetricName: 'ACount',
+              Namespace: 'Test'
             },
             Period: 300,
-            Stat: "Average"
+            Stat: 'Average'
           },
           ReturnData: false
         },
         {
-          Id: "b",
+          Id: 'b',
           MetricStat: {
             Metric: {
-              MetricName: "BCount",
-              Namespace: "Test"
+              MetricName: 'BCount',
+              Namespace: 'Test'
             },
             Period: 300,
-            Stat: "Average"
+            Stat: 'Average'
           },
           ReturnData: false
         }
@@ -388,47 +388,47 @@ export = {
       // THEN
       alarmMetricsAre([
         {
-          Expression: "a + e",
-          Id: "expr_1"
+          Expression: 'a + e',
+          Id: 'expr_1'
         },
         {
-          Id: "a",
+          Id: 'a',
           MetricStat: {
             Metric: {
-              MetricName: "ACount",
-              Namespace: "Test"
+              MetricName: 'ACount',
+              Namespace: 'Test'
             },
             Period: 300,
-            Stat: "Average"
+            Stat: 'Average'
           },
           ReturnData: false
         },
         {
-          Expression: "b + c",
-          Id: "e",
+          Expression: 'b + c',
+          Id: 'e',
           ReturnData: false
         },
         {
-          Id: "b",
+          Id: 'b',
           MetricStat: {
             Metric: {
-              MetricName: "BCount",
-              Namespace: "Test"
+              MetricName: 'BCount',
+              Namespace: 'Test'
             },
             Period: 300,
-            Stat: "Average"
+            Stat: 'Average'
           },
           ReturnData: false
         },
         {
-          Id: "c",
+          Id: 'c',
           MetricStat: {
             Metric: {
-              MetricName: "CCount",
-              Namespace: "Test"
+              MetricName: 'CCount',
+              Namespace: 'Test'
             },
             Period: 300,
-            Stat: "Average"
+            Stat: 'Average'
           },
           ReturnData: false
         }
@@ -458,47 +458,47 @@ export = {
       // THEN
       alarmMetricsAre([
         {
-          Expression: "a + e",
-          Id: "expr_1"
+          Expression: 'a + e',
+          Id: 'expr_1'
         },
         {
-          Id: "a",
+          Id: 'a',
           MetricStat: {
             Metric: {
-              MetricName: "ACount",
-              Namespace: "Test"
+              MetricName: 'ACount',
+              Namespace: 'Test'
             },
             Period: 30,
-            Stat: "Average"
+            Stat: 'Average'
           },
           ReturnData: false
         },
         {
-          Expression: "b + c",
-          Id: "e",
+          Expression: 'b + c',
+          Id: 'e',
           ReturnData: false
         },
         {
-          Id: "b",
+          Id: 'b',
           MetricStat: {
             Metric: {
-              MetricName: "BCount",
-              Namespace: "Test"
+              MetricName: 'BCount',
+              Namespace: 'Test'
             },
             Period: 30,
-            Stat: "Average"
+            Stat: 'Average'
           },
           ReturnData: false
         },
         {
-          Id: "c",
+          Id: 'c',
           MetricStat: {
             Metric: {
-              MetricName: "CCount",
-              Namespace: "Test"
+              MetricName: 'CCount',
+              Namespace: 'Test'
             },
             Period: 30,
-            Stat: "Average"
+            Stat: 'Average'
           },
           ReturnData: false
         }
@@ -540,30 +540,30 @@ export = {
       // THEN
       alarmMetricsAre([
         {
-          Expression: "a + b99",
-          Id: "expr_1"
+          Expression: 'a + b99',
+          Id: 'expr_1'
         },
         {
-          Id: "a",
+          Id: 'a',
           MetricStat: {
             Metric: {
-              MetricName: "ACount",
-              Namespace: "Test"
+              MetricName: 'ACount',
+              Namespace: 'Test'
             },
             Period: 300,
-            Stat: "Average"
+            Stat: 'Average'
           },
           ReturnData: false
         },
         {
-          Id: "b99",
+          Id: 'b99',
           MetricStat: {
             Metric: {
-              MetricName: "BCount",
-              Namespace: "Test"
+              MetricName: 'BCount',
+              Namespace: 'Test'
             },
             Period: 300,
-            Stat: "p99"
+            Stat: 'p99'
           },
           ReturnData: false
         }

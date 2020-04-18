@@ -1,6 +1,6 @@
-import { Assertion } from "../assertion";
-import { StackInspector } from "../inspector";
-import { isSuperObject } from "./have-resource";
+import { Assertion } from '../assertion';
+import { StackInspector } from '../inspector';
+import { isSuperObject } from './have-resource';
 
 /**
  * An assertion to check whether a resource of a given type and with the given properties exists, disregarding properties
@@ -20,9 +20,10 @@ class CountResourcesAssertion extends Assertion<StackInspector> {
   private inspected: number = 0;
   private readonly props: any;
 
-  constructor(private readonly resourceType: string,
-              private readonly count: number,
-              props: any = null) {
+  constructor(
+    private readonly resourceType: string,
+    private readonly count: number,
+    props: any = null) {
     super();
     this.props = props;
   }

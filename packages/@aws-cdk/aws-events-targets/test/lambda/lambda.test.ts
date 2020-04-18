@@ -20,38 +20,38 @@ test('use lambda as an event rule target', () => {
   rule2.addTarget(new targets.LambdaFunction(fn));
 
   // THEN
-  const lambdaId = "MyLambdaCCE802FB";
+  const lambdaId = 'MyLambdaCCE802FB';
 
   expect(stack).to(haveResource('AWS::Lambda::Permission', {
-    Action: "lambda:InvokeFunction",
+    Action: 'lambda:InvokeFunction',
     FunctionName: {
-      "Fn::GetAtt": [
+      'Fn::GetAtt': [
         lambdaId,
-        "Arn"
+        'Arn'
       ]
     },
-    Principal: "events.amazonaws.com",
-    SourceArn: { "Fn::GetAtt": ["Rule4C995B7F", "Arn"] }
+    Principal: 'events.amazonaws.com',
+    SourceArn: { 'Fn::GetAtt': ['Rule4C995B7F', 'Arn'] }
   }));
 
   expect(stack).to(haveResource('AWS::Lambda::Permission', {
-    Action: "lambda:InvokeFunction",
+    Action: 'lambda:InvokeFunction',
     FunctionName: {
-      "Fn::GetAtt": [
+      'Fn::GetAtt': [
         lambdaId,
-        "Arn"
+        'Arn'
       ]
     },
-    Principal: "events.amazonaws.com",
-    SourceArn: { "Fn::GetAtt": ["Rule270732244", "Arn"] }
+    Principal: 'events.amazonaws.com',
+    SourceArn: { 'Fn::GetAtt': ['Rule270732244', 'Arn'] }
   }));
 
   expect(stack).to(countResources('AWS::Events::Rule', 2));
   expect(stack).to(haveResource('AWS::Events::Rule', {
     Targets: [
       {
-        Arn: { "Fn::GetAtt": [lambdaId, "Arn"] },
-        Id: "Target0"
+        Arn: { 'Fn::GetAtt': [lambdaId, 'Arn'] },
+        Id: 'Target0'
       }
     ]
   }));

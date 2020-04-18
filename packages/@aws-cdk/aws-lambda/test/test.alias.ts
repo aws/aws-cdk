@@ -22,19 +22,19 @@ export = {
 
     expect(stack).to(beASupersetOfTemplate({
       MyLambdaVersion16CDE3C40: {
-        Type: "AWS::Lambda::Version",
+        Type: 'AWS::Lambda::Version',
         Properties: {
-          FunctionName: { Ref: "MyLambdaCCE802FB" }
+          FunctionName: { Ref: 'MyLambdaCCE802FB' }
         }
-        },
-        Alias325C5727: {
-        Type: "AWS::Lambda::Alias",
+      },
+      Alias325C5727: {
+        Type: 'AWS::Lambda::Alias',
         Properties: {
-          FunctionName: { Ref: "MyLambdaCCE802FB" },
+          FunctionName: { Ref: 'MyLambdaCCE802FB' },
           FunctionVersion: stack.resolve(version.version),
-          Name: "prod"
+          Name: 'prod'
         }
-        }
+      }
     }));
 
     test.done();
@@ -54,7 +54,7 @@ export = {
     });
 
     expect(stack).to(haveResource('AWS::Lambda::Alias', {
-      FunctionName: { Ref: "MyLambdaCCE802FB" },
+      FunctionName: { Ref: 'MyLambdaCCE802FB' },
       FunctionVersion: '$LATEST',
       Name: 'latest',
     }));
@@ -79,12 +79,12 @@ export = {
     });
 
     expect(stack).to(haveResourceLike('AWS::Lambda::Version', {
-      FunctionName: { Ref: "MyLambdaCCE802FB" },
+      FunctionName: { Ref: 'MyLambdaCCE802FB' },
     }));
 
     expect(stack).to(haveResourceLike('AWS::Lambda::Alias', {
-      FunctionName: { Ref: "MyLambdaCCE802FB" },
-      Name: "prod"
+      FunctionName: { Ref: 'MyLambdaCCE802FB' },
+      Name: 'prod'
     }));
 
     test.done();
@@ -113,11 +113,11 @@ export = {
       RoutingConfig: {
         AdditionalVersionWeights: [
           {
-          FunctionVersion: stack.resolve(version2.version),
-          FunctionWeight: 0.1
+            FunctionVersion: stack.resolve(version2.version),
+            FunctionWeight: 0.1
           }
         ]
-        }
+      }
     }));
 
     test.done();
@@ -131,7 +131,7 @@ export = {
     });
 
     const pce = 5;
-    const version = fn.addVersion('1', undefined, "testing", pce);
+    const version = fn.addVersion('1', undefined, 'testing', pce);
 
     new lambda.Alias(stack, 'Alias', {
       aliasName: 'prod',
@@ -141,10 +141,10 @@ export = {
 
     expect(stack).to(beASupersetOfTemplate({
       MyLambdaVersion16CDE3C40: {
-        Type: "AWS::Lambda::Version",
+        Type: 'AWS::Lambda::Version',
         Properties: {
           FunctionName: {
-            Ref: "MyLambdaCCE802FB"
+            Ref: 'MyLambdaCCE802FB'
           },
           ProvisionedConcurrencyConfig: {
             ProvisionedConcurrentExecutions: 5
@@ -152,11 +152,11 @@ export = {
         }
       },
       Alias325C5727: {
-        Type: "AWS::Lambda::Alias",
+        Type: 'AWS::Lambda::Alias',
         Properties: {
-          FunctionName: { Ref: "MyLambdaCCE802FB" },
+          FunctionName: { Ref: 'MyLambdaCCE802FB' },
           FunctionVersion: stack.resolve(version.version),
-          Name: "prod",
+          Name: 'prod',
           ProvisionedConcurrencyConfig: {
             ProvisionedConcurrentExecutions: 5
           }
@@ -220,17 +220,17 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::CloudWatch::Alarm', {
       Dimensions: [{
-        Name: "FunctionName",
+        Name: 'FunctionName',
         Value: {
-          Ref: "MyLambdaCCE802FB"
+          Ref: 'MyLambdaCCE802FB'
         }
       }, {
-        Name: "Resource",
+        Name: 'Resource',
         Value: {
           'Fn::Join': [
             '',
             [
-              { Ref: "MyLambdaCCE802FB" },
+              { Ref: 'MyLambdaCCE802FB' },
               ':prod'
             ]
           ]
@@ -312,23 +312,23 @@ export = {
 
     // WHEN
     test.deepEqual(stack.resolve(alias.functionName), {
-      "Fn::Join": [
-        "",
+      'Fn::Join': [
+        '',
         [
           {
-            "Fn::Select": [
+            'Fn::Select': [
               6,
               {
-                "Fn::Split": [
-                  ":",
+                'Fn::Split': [
+                  ':',
                   {
-                    Ref: "Alias325C5727"
+                    Ref: 'Alias325C5727'
                   }
                 ]
               }
             ]
           },
-          ":prod"
+          ':prod'
         ]
       ]
     });

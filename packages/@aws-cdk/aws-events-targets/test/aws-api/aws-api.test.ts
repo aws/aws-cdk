@@ -36,12 +36,12 @@ test('use AwsApi as an event rule target', () => {
     Targets: [
       {
         Arn: {
-          "Fn::GetAtt": [
-            "AWSb4cf1abd4e4f4bc699441af7ccd9ec371511E620",
-            "Arn"
+          'Fn::GetAtt': [
+            'AWSb4cf1abd4e4f4bc699441af7ccd9ec371511E620',
+            'Arn'
           ]
         },
-        Id: "Target0",
+        Id: 'Target0',
         Input: JSON.stringify({
           service: 'ECS',
           action: 'updateService',
@@ -55,12 +55,12 @@ test('use AwsApi as an event rule target', () => {
       },
       {
         Arn: {
-          "Fn::GetAtt": [
-            "AWSb4cf1abd4e4f4bc699441af7ccd9ec371511E620",
-            "Arn"
+          'Fn::GetAtt': [
+            'AWSb4cf1abd4e4f4bc699441af7ccd9ec371511E620',
+            'Arn'
           ]
         },
-        Id: "Target1",
+        Id: 'Target1',
         Input: JSON.stringify({
           service: 'RDS',
           action: 'createDBSnapshot',
@@ -79,17 +79,17 @@ test('use AwsApi as an event rule target', () => {
     PolicyDocument: {
       Statement: [
         {
-          Action: "ecs:UpdateService",
-          Effect: "Allow",
-          Resource: "*"
+          Action: 'ecs:UpdateService',
+          Effect: 'Allow',
+          Resource: '*'
         },
         {
-          Action: "rds:CreateDBSnapshot",
-          Effect: "Allow",
-          Resource: "*"
+          Action: 'rds:CreateDBSnapshot',
+          Effect: 'Allow',
+          Resource: '*'
         }
       ],
-      Version: "2012-10-17"
+      Version: '2012-10-17'
     }
   }));
 });
@@ -116,12 +116,12 @@ test('with policy statement', () => {
     Targets: [
       {
         Arn: {
-          "Fn::GetAtt": [
-            "AWSb4cf1abd4e4f4bc699441af7ccd9ec371511E620",
-            "Arn"
+          'Fn::GetAtt': [
+            'AWSb4cf1abd4e4f4bc699441af7ccd9ec371511E620',
+            'Arn'
           ]
         },
-        Id: "Target0",
+        Id: 'Target0',
         Input: JSON.stringify({ // No `policyStatement`
           service: 'service',
           action: 'action',
@@ -134,12 +134,12 @@ test('with policy statement', () => {
     PolicyDocument: {
       Statement: [
         {
-          Action: "s3:GetObject",
-          Effect: "Allow",
-          Resource: "resource"
+          Action: 's3:GetObject',
+          Effect: 'Allow',
+          Resource: 'resource'
         },
       ],
-      Version: "2012-10-17"
+      Version: '2012-10-17'
     }
   }));
 });

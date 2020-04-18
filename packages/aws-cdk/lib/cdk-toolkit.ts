@@ -1,51 +1,83 @@
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import * as cxapi from '@aws-cdk/cx-api';
 import * as colors from 'colors/safe';
 import * as fs from 'fs-extra';
+import * as path from 'path';
 import * as promptly from 'promptly';
 import { format } from 'util';
+import { bootstrapEnvironment, BootstrapEnvironmentProps } from '../lib';
+import { environmentsFromDescriptors, globEnvironmentsFromStacks } from '../lib/api/cxapp/environments';
 import { SdkProvider } from './api/aws-auth';
-import { Mode } from './api/aws-auth/credentials';
-import { AppStacks, DefaultSelection, ExtendedStackSelection, Tag } from "./api/cxapp/stacks";
-import { destroyStack } from './api/deploy-stack';
-import { IDeploymentTarget } from './api/deployment-target';
-import { stackExists } from './api/util/cloudformation';
+import { bootstrapEnvironment2 } from './api/bootstrap/bootstrap-environment2';
+import { CloudFormationDeployments } from './api/cloudformation-deployments';
+import { CloudAssembly, DefaultSelection, ExtendedStackSelection, StackCollection } from './api/cxapp/cloud-assembly';
+import { CloudExecutable } from './api/cxapp/cloud-executable';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
 import { data, error, highlight, print, success, warning } from './logging';
 import { deserializeStructure } from './serialize';
+import { Configuration } from './settings';
 
 export interface CdkToolkitProps {
+
   /**
-   * The (stacks of the) CDK application
+   * The Cloud Executable
    */
-  appStacks: AppStacks;
+  cloudExecutable: CloudExecutable;
 
   /**
    * The provisioning engine used to apply changes to the cloud
    */
-  provisioner: IDeploymentTarget;
+  cloudFormation: CloudFormationDeployments;
+
+  /**
+   * Whether to be verbose
+   *
+   * @default false
+   */
+  verbose?: boolean;
+
+  /**
+   * Don't stop on error metadata
+   *
+   * @default false
+   */
+  ignoreErrors?: boolean;
+
+  /**
+   * Treat warnings in metadata as errors
+   *
+   * @default false
+   */
+  strict?: boolean;
+
+  /**
+   * Application configuration (settings and context)
+   */
+  configuration: Configuration;
+
+  /**
+   * AWS object (used by synthesizer and contextprovider)
+   */
+  sdkProvider: SdkProvider;
 }
 
 /**
  * Toolkit logic
  *
- * The toolkit takes CDK app models from the `appStacks`
- * object and applies them to the `provisioner`.
+ * The toolkit runs the `cloudExecutable` to obtain a cloud assembly and
+ * deploys applies them to `cloudFormation`.
  */
 export class CdkToolkit {
-  private readonly appStacks: AppStacks;
-  private readonly provisioner: IDeploymentTarget;
+  constructor(private readonly props: CdkToolkitProps) {
+  }
 
-  constructor(props: CdkToolkitProps) {
-    this.appStacks = props.appStacks;
-    this.provisioner = props.provisioner;
+  public async metadata(stackName: string) {
+    const stacks = await this.selectSingleStackByName(stackName);
+    return stacks.firstStack.manifest.metadata ?? {};
   }
 
   public async diff(options: DiffOptions): Promise<number> {
-    const stacks = await this.appStacks.selectStacks(options.stackNames, {
-      extend: options.exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Upstream,
-      defaultBehavior: DefaultSelection.AllStacks
-    });
-
-    this.appStacks.processMetadata(stacks);
+    const stacks = await this.selectStacksForDiff(options.stackNames, options.exclusively);
 
     const strict = !!options.strict;
     const contextLines = options.contextLines || 3;
@@ -54,7 +86,7 @@ export class CdkToolkit {
     let diffs = 0;
     if (options.templatePath !== undefined) {
       // Compare single stack against fixed template
-      if (stacks.length !== 1) {
+      if (stacks.stackCount !== 1) {
         throw new Error('Can only select one stack when comparing to fixed template. Use --exclusively to avoid selecting multiple stacks.');
       }
 
@@ -62,12 +94,12 @@ export class CdkToolkit {
         throw new Error(`There is no file at ${options.templatePath}`);
       }
       const template = deserializeStructure(await fs.readFile(options.templatePath, { encoding: 'UTF-8' }));
-      diffs = printStackDiff(template, stacks[0], strict, contextLines, stream);
+      diffs = printStackDiff(template, stacks.firstStack, strict, contextLines, stream);
     } else {
       // Compare N stacks against deployed templates
-      for (const stack of stacks) {
+      for (const stack of stacks.stackArtifacts) {
         stream.write(format('Stack %s\n', colors.bold(stack.displayName)));
-        const currentTemplate = await this.provisioner.readCurrentTemplate(stack);
+        const currentTemplate = await this.props.cloudFormation.readCurrentTemplate(stack);
         diffs = printStackDiff(currentTemplate, stack, strict, contextLines, stream);
       }
     }
@@ -76,14 +108,9 @@ export class CdkToolkit {
   }
 
   public async deploy(options: DeployOptions) {
+    const stacks = await this.selectStacksForDeploy(options.stackNames, options.exclusively);
+
     const requireApproval = options.requireApproval !== undefined ? options.requireApproval : RequireApproval.Broadening;
-
-    const stacks = await this.appStacks.selectStacks(options.stackNames, {
-      extend: options.exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Upstream,
-      defaultBehavior: DefaultSelection.OnlySingle
-    });
-
-    this.appStacks.processMetadata(stacks);
 
     const parameterMap: { [name: string]: { [name: string]: string | undefined } } = {'*': {}};
     for (const key in options.parameters) {
@@ -100,16 +127,18 @@ export class CdkToolkit {
       }
     }
 
-    for (const stack of stacks) {
-      if (stacks.length !== 1) { highlight(stack.displayName); }
+    const stackOutputs: { [key: string]: any } = { };
+    const outputsFile = options.outputsFile;
+
+    for (const stack of stacks.stackArtifacts) {
+      if (stacks.stackCount !== 1) { highlight(stack.displayName); }
       if (!stack.environment) {
         // tslint:disable-next-line:max-line-length
         throw new Error(`Stack ${stack.displayName} does not define an environment, and AWS credentials could not be obtained from standard locations or no region was configured.`);
       }
 
       if (Object.keys(stack.template.Resources || {}).length === 0) { // The generated stack has no resources
-        const cfn = await (await options.sdk.forEnvironment(stack.environment.account, stack.environment.region, Mode.ForReading)).cloudFormation();
-        if (!await stackExists(cfn, stack.stackName)) {
+        if (!await this.props.cloudFormation.stackExists({ stack }))  {
           warning('%s: stack has no resources, skipping deployment.', colors.bold(stack.displayName));
         } else {
           warning('%s: stack has no resources, deleting existing stack.', colors.bold(stack.displayName));
@@ -118,7 +147,6 @@ export class CdkToolkit {
             exclusively: true,
             force: true,
             roleArn: options.roleArn,
-            sdk: options.sdk,
             fromDeploy: true,
           });
         }
@@ -126,7 +154,7 @@ export class CdkToolkit {
       }
 
       if (requireApproval !== RequireApproval.Never) {
-        const currentTemplate = await this.provisioner.readCurrentTemplate(stack);
+        const currentTemplate = await this.props.cloudFormation.readCurrentTemplate(stack);
         if (printSecurityDiff(currentTemplate, stack, requireApproval)) {
 
           // only talk to user if STDIN is a terminal (otherwise, fail)
@@ -136,7 +164,7 @@ export class CdkToolkit {
               'but terminal (TTY) is not attached so we are unable to get a confirmation from the user');
           }
 
-          const confirmed = await promptly.confirm(`Do you wish to deploy these changes (y/n)?`);
+          const confirmed = await promptly.confirm('Do you wish to deploy these changes (y/n)?');
           if (!confirmed) { throw new Error('Aborted by user'); }
         }
       }
@@ -145,11 +173,11 @@ export class CdkToolkit {
 
       let tags = options.tags;
       if (!tags || tags.length === 0) {
-        tags = this.appStacks.getTagsFromStackMetadata(stack);
+        tags = tagsForStack(stack);
       }
 
       try {
-        const result = await this.provisioner.deployStack({
+        const result = await this.props.cloudFormation.deployStack({
           stack,
           deployName: stack.stackName,
           roleArn: options.roleArn,
@@ -163,13 +191,15 @@ export class CdkToolkit {
         });
 
         const message = result.noOp
-          ? ` ✅  %s (no changes)`
-          : ` ✅  %s`;
+          ? ' ✅  %s (no changes)'
+          : ' ✅  %s';
 
         success('\n' + message, stack.displayName);
 
         if (Object.keys(result.outputs).length > 0) {
           print('\nOutputs:');
+
+          stackOutputs[stack.stackName] = result.outputs;
         }
 
         for (const name of Object.keys(result.outputs)) {
@@ -183,38 +213,229 @@ export class CdkToolkit {
       } catch (e) {
         error('\n ❌  %s failed: %s', colors.bold(stack.displayName), e);
         throw e;
+      } finally {
+        // If an outputs file has been specified, create the file path and write stack outputs to it once.
+        // Outputs are written after all stacks have been deployed. If a stack deployment fails,
+        // all of the outputs from successfully deployed stacks before the failure will still be written.
+        if (outputsFile) {
+          fs.ensureFileSync(outputsFile);
+          await fs.writeJson(outputsFile, stackOutputs, {
+            spaces: 2,
+            encoding: 'utf8'
+          });
+        }
       }
     }
   }
 
   public async destroy(options: DestroyOptions) {
-    const stacks = await this.appStacks.selectStacks(options.stackNames, {
-      extend: options.exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Downstream,
-      defaultBehavior: DefaultSelection.OnlySingle
-    });
+    let stacks = await this.selectStacksForDestroy(options.stackNames, options.exclusively);
 
     // The stacks will have been ordered for deployment, so reverse them for deletion.
-    stacks.reverse();
+    stacks = stacks.reversed();
 
     if (!options.force) {
       // tslint:disable-next-line:max-line-length
-      const confirmed = await promptly.confirm(`Are you sure you want to delete: ${colors.blue(stacks.map(s => s.id).join(', '))} (y/n)?`);
+      const confirmed = await promptly.confirm(`Are you sure you want to delete: ${colors.blue(stacks.stackArtifacts.map(s => s.id).join(', '))} (y/n)?`);
       if (!confirmed) {
         return;
       }
     }
 
     const action = options.fromDeploy ? 'deploy' : 'destroy';
-    for (const stack of stacks) {
+    for (const stack of stacks.stackArtifacts) {
       success('%s: destroying...', colors.blue(stack.displayName));
       try {
-        await destroyStack({ stack, sdk: options.sdk, deployName: stack.stackName, roleArn: options.roleArn });
+        await this.props.cloudFormation.destroyStack({
+          stack,
+          deployName: stack.stackName,
+          roleArn: options.roleArn
+        });
         success(`\n ✅  %s: ${action}ed`, colors.blue(stack.displayName));
       } catch (e) {
         error(`\n ❌  %s: ${action} failed`, colors.blue(stack.displayName), e);
         throw e;
       }
     }
+  }
+
+  public async list(selectors: string[], options: { long?: boolean } = { }) {
+    const stacks = await this.selectStacksForList(selectors);
+
+    // if we are in "long" mode, emit the array as-is (JSON/YAML)
+    if (options.long) {
+      const long = [];
+      for (const stack of stacks.stackArtifacts) {
+        long.push({
+          id: stack.id,
+          name: stack.stackName,
+          environment: stack.environment
+        });
+      }
+      return long; // will be YAML formatted output
+    }
+
+    // just print stack IDs
+    for (const stack of stacks.stackArtifacts) {
+      data(stack.id);
+    }
+
+    return 0; // exit-code
+  }
+
+  /**
+   * Synthesize the given set of stacks (called when the user runs 'cdk synth')
+   *
+   * INPUT: Stack names can be supplied using a glob filter. If no stacks are
+   * given, all stacks from the application are implictly selected.
+   *
+   * OUTPUT: If more than one stack ends up being selected, an output directory
+   * should be supplied, where the templates will be written.
+   */
+  public async synth(stackNames: string[], exclusively: boolean): Promise<any> {
+    const stacks = await this.selectStacksForDiff(stackNames, exclusively);
+
+    // if we have a single stack, print it to STDOUT
+    if (stacks.stackCount === 1) {
+      return stacks.firstStack.template;
+    }
+
+    // This is a slight hack; in integ mode we allow multiple stacks to be synthesized to stdout sequentially.
+    // This is to make it so that we can support multi-stack integ test expectations, without so drastically
+    // having to change the synthesis format that we have to rerun all integ tests.
+    //
+    // Because this feature is not useful to consumers (the output is missing
+    // the stack names), it's not exposed as a CLI flag. Instead, it's hidden
+    // behind an environment variable.
+    const isIntegMode = process.env.CDK_INTEG_MODE === '1';
+    if (isIntegMode) {
+      return stacks.stackArtifacts.map(s => s.template);
+    }
+
+    // not outputting template to stdout, let's explain things to the user a little bit...
+    success(`Successfully synthesized to ${colors.blue(path.resolve(stacks.assembly.directory))}`);
+    print(`Supply a stack id (${stacks.stackArtifacts.map(s => colors.green(s.id)).join(', ')}) to display its template.`);
+
+    return undefined;
+  }
+
+  /**
+   * Bootstrap the CDK Toolkit stack in the accounts used by the specified stack(s).
+   *
+   * @param environmentGlobs environment names that need to have toolkit support
+   *             provisioned, as a glob filter. If none is provided,
+   *             all stacks are implicitly selected.
+   * @param toolkitStackName the name to be used for the CDK Toolkit stack.
+   */
+  public async bootstrap(
+    environmentGlobs: string[], toolkitStackName: string, roleArn: string | undefined,
+    useNewBootstrapping: boolean, props: BootstrapEnvironmentProps): Promise<void> {
+    // Two modes of operation.
+    //
+    // If there is an '--app' argument, we select the environments from the app. Otherwise we just take the user
+    // at their word that they know the name of the environment.
+    let environments: cxapi.Environment[];
+    if (this.props.cloudExecutable.hasApp) {
+      const stacks = await this.selectStacksForList([]);
+      environments = await globEnvironmentsFromStacks(stacks, environmentGlobs, this.props.sdkProvider);
+    } else {
+      environments = environmentsFromDescriptors(environmentGlobs);
+    }
+
+    await Promise.all(environments.map(async (environment) => {
+      success(' ⏳  Bootstrapping environment %s...', colors.blue(environment.name));
+      try {
+        const result = useNewBootstrapping
+          ? await bootstrapEnvironment2(environment, this.props.sdkProvider, toolkitStackName, roleArn, props)
+          : await bootstrapEnvironment(environment, this.props.sdkProvider, toolkitStackName, roleArn, props);
+        const message = result.noOp
+          ? ' ✅  Environment %s bootstrapped (no changes).'
+          : ' ✅  Environment %s bootstrapped.';
+        success(message, colors.blue(environment.name));
+      } catch (e) {
+        error(' ❌  Environment %s failed bootstrapping: %s', colors.blue(environment.name), e);
+        throw e;
+      }
+    }));
+  }
+
+  private async selectStacksForList(selectors: string[]) {
+    const assembly = await this.assembly();
+    const stacks = await assembly.selectStacks(selectors, { defaultBehavior: DefaultSelection.AllStacks });
+
+    // No validation
+
+    return stacks;
+  }
+
+  private async selectStacksForDeploy(stackNames: string[], exclusively?: boolean) {
+    const assembly = await this.assembly();
+    const stacks = await assembly.selectStacks(stackNames, {
+      extend: exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Upstream,
+      defaultBehavior: DefaultSelection.OnlySingle
+    });
+
+    await this.validateStacks(stacks);
+
+    return stacks;
+  }
+
+  private async selectStacksForDiff(stackNames: string[], exclusively?: boolean) {
+    const assembly = await this.assembly();
+    const stacks = await assembly.selectStacks(stackNames, {
+      extend: exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Upstream,
+      defaultBehavior: DefaultSelection.AllStacks
+    });
+
+    await this.validateStacks(stacks);
+
+    return stacks;
+  }
+
+  private async selectStacksForDestroy(stackNames: string[], exclusively?: boolean) {
+    const assembly = await this.assembly();
+    const stacks = await assembly.selectStacks(stackNames, {
+      extend: exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Downstream,
+      defaultBehavior: DefaultSelection.OnlySingle
+    });
+
+    // No validation
+
+    return stacks;
+  }
+
+  /**
+   * Validate the stacks for errors and warnings according to the CLI's current settings
+   */
+  private async validateStacks(stacks: StackCollection) {
+    stacks.processMetadataMessages({
+      ignoreErrors: this.props.ignoreErrors,
+      strict: this.props.strict,
+      verbose: this.props.verbose
+    });
+  }
+
+  /**
+   * Select a single stack by its name
+   */
+  private async selectSingleStackByName(stackName: string) {
+    const assembly = await this.assembly();
+
+    const stacks = await assembly.selectStacks([stackName], {
+      extend: ExtendedStackSelection.None,
+      defaultBehavior: DefaultSelection.None
+    });
+
+    // Could have been a glob so check that we evaluated to exactly one
+    if (stacks.stackCount > 1) {
+      throw new Error(`This command requires exactly one stack and we matched more than one: ${stacks.stackIds}`);
+    }
+
+    return assembly.stackById(stacks.firstStack.id);
+  }
+
+  private assembly(): Promise<CloudAssembly> {
+    return this.props.cloudExecutable.synthesize();
   }
 }
 
@@ -315,11 +536,6 @@ export interface DeployOptions {
   tags?: Tag[];
 
   /**
-   * AWS SDK
-   */
-  sdk: SdkProvider;
-
-  /**
    * Whether to execute the ChangeSet
    * Not providing `execute` parameter will result in execution of ChangeSet
    * @default true
@@ -337,6 +553,12 @@ export interface DeployOptions {
    * @default {}
    */
   parameters?: { [name: string]: string | undefined };
+
+  /**
+   * Path to file where stack outputs will be written after a successful deploy as JSON
+   * @default - Outputs are not written to any file
+   */
+  outputsFile?: string;
 }
 
 export interface DestroyOptions {
@@ -361,12 +583,33 @@ export interface DestroyOptions {
   roleArn?: string;
 
   /**
-   * AWS SDK
-   */
-  sdk: SdkProvider;
-
-  /**
    * Whether the destroy request came from a deploy.
    */
   fromDeploy?: boolean
+}
+
+/**
+ * @returns an array with the tags available in the stack metadata.
+ */
+function tagsForStack(stack: cxapi.CloudFormationStackArtifact): Tag[] {
+  const tagLists = stack.findMetadataByType(cxschema.ArtifactMetadataEntryType.STACK_TAGS).map(
+    // the tags in the cloud assembly are stored differently
+    // unfortunately.
+    x => toCloudFormationTags(x.data as cxschema.Tag[]));
+  return Array.prototype.concat([], ...tagLists);
+}
+
+/**
+ * Transform tags as they are retrieved from the cloud assembly,
+ * to the way that CloudFormation expects them. (Different casing).
+ */
+function toCloudFormationTags(tags: cxschema.Tag[]): Tag[] {
+  return tags.map(t => {
+    return { Key: t.key, Value: t.value };
+  });
+}
+
+export interface Tag {
+  readonly Key: string;
+  readonly Value: string;
 }

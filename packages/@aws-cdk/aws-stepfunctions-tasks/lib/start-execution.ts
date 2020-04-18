@@ -64,7 +64,7 @@ export class StartExecution implements sfn.IStepFunctionsTask {
 
   public bind(task: sfn.Task): sfn.StepFunctionsTaskConfig {
     return {
-      resourceArn: getResourceArn("states", "startExecution", this.integrationPattern),
+      resourceArn: getResourceArn('states', 'startExecution', this.integrationPattern),
       policyStatements: this.createScopedAccessPolicy(task),
       parameters: {
         Input: this.props.input,

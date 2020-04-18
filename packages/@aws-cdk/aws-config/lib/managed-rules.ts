@@ -31,10 +31,10 @@ export class AccessKeysRotated extends ManagedRule {
       inputParameters: {
         ...props.maxAge
           ? {
-              maxAccessKeyAge: props.maxAge.toDays()
-            }
+            maxAccessKeyAge: props.maxAge.toDays()
+          }
           : {}
-        }
+      }
     });
   }
 }

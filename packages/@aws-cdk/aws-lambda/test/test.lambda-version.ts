@@ -20,10 +20,10 @@ export = {
     expect(stack).toMatch({
       Outputs: {
         ARN: {
-          Value: "arn:aws:lambda:region:account-id:function:function-name:version"
+          Value: 'arn:aws:lambda:region:account-id:function:function-name:version'
         },
         Name: {
-          Value: "function-name:version"
+          Value: 'function-name:version'
         }
       }
     });
@@ -129,16 +129,16 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::Lambda::Alias', {
-      "FunctionName": {
-        "Ref": "Fn9270CBC0"
+      'FunctionName': {
+        'Ref': 'Fn9270CBC0'
       },
-      "FunctionVersion": {
-        "Fn::GetAtt": [
-          "FnCurrentVersion17A89ABB19ed45993ff69fd011ae9fd4ab6e2005",
-          "Version"
+      'FunctionVersion': {
+        'Fn::GetAtt': [
+          'FnCurrentVersion17A89ABB19ed45993ff69fd011ae9fd4ab6e2005',
+          'Version'
         ]
       },
-      "Name": "foo"
+      'Name': 'foo'
     }));
     test.done();
   }

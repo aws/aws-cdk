@@ -22,7 +22,7 @@ test('use InterfaceVpcEndpoint as record target', () => {
   });
 
   // WHEN
-  new route53.ARecord(stack, "AliasEndpointRecord", {
+  new route53.ARecord(stack, 'AliasEndpointRecord', {
     zone,
     recordName: 'foo',
     target: route53.RecordTarget.fromAlias(new targets.InterfaceVpcEndpointTarget(interfaceVpcEndpoint))
@@ -32,18 +32,18 @@ test('use InterfaceVpcEndpoint as record target', () => {
   expect(stack).toHaveResource('AWS::Route53::RecordSet', {
     AliasTarget: {
       HostedZoneId: {
-        "Fn::Select": [
+        'Fn::Select': [
           0,
           {
-            "Fn::Split": [
-              ":",
+            'Fn::Split': [
+              ':',
               {
-                "Fn::Select": [
+                'Fn::Select': [
                   0,
                   {
-                    "Fn::GetAtt": [
-                      "InterfaceEndpoint12DE6E71",
-                      "DnsEntries"
+                    'Fn::GetAtt': [
+                      'InterfaceEndpoint12DE6E71',
+                      'DnsEntries'
                     ]
                   }
                 ]
@@ -53,18 +53,18 @@ test('use InterfaceVpcEndpoint as record target', () => {
         ]
       },
       DNSName: {
-        "Fn::Select": [
+        'Fn::Select': [
           1,
           {
-            "Fn::Split": [
-              ":",
+            'Fn::Split': [
+              ':',
               {
-                "Fn::Select": [
+                'Fn::Select': [
                   0,
                   {
-                    "Fn::GetAtt": [
-                      "InterfaceEndpoint12DE6E71",
-                      "DnsEntries"
+                    'Fn::GetAtt': [
+                      'InterfaceEndpoint12DE6E71',
+                      'DnsEntries'
                     ]
                   }
                 ]

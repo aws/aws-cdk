@@ -88,7 +88,7 @@ export = {
 
       const certificate = Certificate.fromCertificateArn(
         stack, 'TestCertificate', 'arn:aws:acm:us-east-2:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'
-        );
+      );
 
       test.equals(getCertificateRegion(certificate), 'us-east-2');
       test.done();

@@ -1,6 +1,6 @@
-import { CfnResource, Stack } from "@aws-cdk/core";
+import { CfnResource, Stack } from '@aws-cdk/core';
 import * as crypto from 'crypto';
-import { Function as LambdaFunction } from "./function";
+import { Function as LambdaFunction } from './function';
 
 export function calculateFunctionHash(fn: LambdaFunction) {
   const stack = Stack.of(fn);
