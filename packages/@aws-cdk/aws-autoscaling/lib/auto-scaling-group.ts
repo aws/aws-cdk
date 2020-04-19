@@ -232,6 +232,74 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
   readonly role?: iam.IRole;
 }
 
+/**
+ * The frequency at which Amazon EC2 Auto Scaling sends aggregated data to CloudWatch
+ */
+export enum Granularity {
+  /**
+   * 1Minute
+   */
+  ONE_MINUNTE = '1Minute'
+}
+
+/**
+ * Group metrics that an Amazon EC2 Auto Scaling group sends to Amazon CloudWatch.
+ */
+export enum GroupMetric {
+  /**
+   * The minimum size of the Auto Scaling group
+   */
+  MIN_SIZE = "GroupMinSize",
+  /**
+   * The maximum size of the Auto Scaling group
+   */
+  MAX_SIZE = "GroupMaxSize",
+  /**
+   * The number of instances that the Auto Scaling group attempts to maintain
+   */
+  DESIERED_CAPACITY =  "GroupDesiredCapacity",
+  /**
+   * The number of instances that are running as part of the Auto Scaling group
+   * This metric does not include instances that are pending or terminating
+   */
+  IN_SERVICE_INSTANCES = "GroupInServiceInstances",
+  /**
+   * The number of instances that are pending
+   * A pending instance is not yet in serviceThis metric does not include instances that are in service or terminating
+   */
+  PENDING_INSTANCES = "GroupPendingInstances",
+  /**
+   * The number of instances that are in a Standby state
+   * Instances in this state are still running but are not actively in service
+   */
+  STANDBY_INSTANCES = "GroupStandbyInstances",
+  /**
+   * The number of instances that are in the process of terminating
+   * This metric does not include instances that are in service or pending
+   */
+  TERMINATING_INSTANCES = "GroupTerminatingInstances",
+  /**
+   * The total number of instances in the Auto Scaling group
+   * This metric identifies the number of instances that are in service, pending, and terminating
+   */
+  TOTAL_INSTANCES = "GroupTotalInstances",
+}
+
+export interface MetricsCollectionOptions {
+  /**
+   * The frequency at which Amazon EC2 Auto Scaling sends aggregated data to CloudWatch.
+   * @default 1Minute
+   */
+  readonly granularity?: Granularity;
+}
+
+export interface MetricsCollection extends MetricsCollectionOptions {
+  /**
+   * The list of Auto Scaling group metrics to collect
+   */
+  readonly metrics: GroupMetric[];
+}
+
 abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGroup {
 
   public abstract autoScalingGroupName: string;
@@ -415,6 +483,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   private readonly securityGroups: ec2.ISecurityGroup[] = [];
   private readonly loadBalancerNames: string[] = [];
   private readonly targetGroupArns: string[] = [];
+  private readonly metricsCollections: CfnAutoScalingGroup.MetricsCollectionProperty[] = [];
 
   constructor(scope: Construct, id: string, props: AutoScalingGroupProps) {
     super(scope, id);
@@ -511,6 +580,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
           ],
         }
       ],
+      metricsCollection: Lazy.anyValue({ produce: () => this.metricsCollections.length === 0 ? undefined : this.metricsCollections}),
       vpcZoneIdentifier: subnetIds,
       healthCheckType: props.healthCheck && props.healthCheck.type,
       healthCheckGracePeriod: props.healthCheck && props.healthCheck.gracePeriod && props.healthCheck.gracePeriod.toSeconds(),
@@ -543,6 +613,33 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
    */
   public addSecurityGroup(securityGroup: ec2.ISecurityGroup): void {
     this.securityGroups.push(securityGroup);
+  }
+
+  /**
+   * Emit all group metrics, these metrics describe the group rather than any of its instances
+   * see all available types https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-instance-monitoring.html#as-group-metrics
+   * if granularity is not provided, 1Minute will be set
+   * @default - disabled
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-metricscollection.html
+   */
+  public emitAllMetricsCollections(options?: MetricsCollectionOptions) {
+    this.emitMetricsCollection({
+      granularity : options?.granularity,
+      metrics: []
+    });
+  }
+
+  /**
+   * Emit a specifc subset of group metrics, these metrics describe the group rather than any of its instances
+   * to emit all group metrics use `emitAllMetricsCollections`
+   * @param collection which groups metrics to collect
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-metricscollection.html
+   */
+  public emitMetricsCollection(collection: MetricsCollection) {
+    this.metricsCollections.push({
+      metrics: collection.metrics.length === 0 ? undefined : collection.metrics,
+      granularity: collection.granularity ?? Granularity.ONE_MINUNTE
+    });
   }
 
   /**

@@ -957,6 +957,74 @@ export = {
     test.done();
   },
 
+  'test emitAllMetricsCollections adds a single MetricsCollection with no Metrics specified'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+    const asg = new autoscaling.AutoScalingGroup(stack, 'MyStack', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+      });
+
+    // When
+    asg.emitAllMetricsCollections();
+
+    // Then
+    expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', {
+      MetricsCollection: [
+        {
+          'Granularity': '1Minute'
+        }
+      ]
+    }));
+
+    test.done();
+  },
+
+  'test emitMetricsCollections adds MetricsCollection with a list of specified Metrics'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+    const asg = new autoscaling.AutoScalingGroup(stack, 'MyStack', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+      });
+
+    // When
+    asg.emitMetricsCollection({
+      metrics: [
+        autoscaling.GroupMetric.MIN_SIZE,
+        autoscaling.GroupMetric.MAX_SIZE,
+        autoscaling.GroupMetric.DESIERED_CAPACITY,
+        autoscaling.GroupMetric.IN_SERVICE_INSTANCES,
+      ]
+    });
+    asg.emitMetricsCollection({
+      metrics: [
+        autoscaling.GroupMetric.PENDING_INSTANCES,
+        autoscaling.GroupMetric.STANDBY_INSTANCES,
+        autoscaling.GroupMetric.TOTAL_INSTANCES,
+        autoscaling.GroupMetric.TERMINATING_INSTANCES
+      ]
+    });
+
+    // Then
+    expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', {
+      MetricsCollection: [
+        {
+          Granularity: '1Minute',
+          Metrics : [ 'GroupMinSize', 'GroupMaxSize', 'GroupDesiredCapacity', 'GroupInServiceInstances' ]
+        }, {
+          Granularity: '1Minute',
+          Metrics : [ 'GroupPendingInstances', 'GroupStandbyInstances', 'GroupTotalInstances', 'GroupTerminatingInstances' ]
+        }
+      ]
+    }));
+
+    test.done();
+  },
 };
 
 function mockVpc(stack: cdk.Stack) {
