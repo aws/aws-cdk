@@ -845,6 +845,46 @@ By performing this association, we can invoke the API gateway using the followin
 https://{rest-api-id}-{vpce-id}.execute-api.{region}.amazonaws.com/{stage}
 ```
 
+## Gateway response
+To add specific paramters or change the api response you can configure gateway response at the api level.
+A gateway response is indentified by response type defined by API gateway.
+For supported event types refer to [here](https://docs.aws.amazon.com/apigateway/latest/developerguide/supported-gateway-response-types.html)
+
+Here is an example to configure gateway response for supported response type:
+
+```ts
+const api = new apigateway.RestApi(this, 'books-api');
+api.addGatewayResponse('test-response', {
+      type: ResponseType.ACCESS_DENIED,
+      statusCode: '500',
+      parameters: {
+        'gatewayresponse.header.Access-Control-Allow-Origin': "test.com",
+        'gatewayresponse.header.test-key': 'test-value'
+      },
+      templates: {
+        'application/json': "{ \"message\": $context.error.messageString, \"statusCode\": '488', \"type\": \"$context.error.responseType\" }"
+      }
+});
+```
+
+You can also initialized a new gateway response for an exixting api as below :
+
+```ts
+const api = apigateway.RestApi.fromRestApiId(this, 'books-api', 'abhb8fds');
+new GatewayResponse(this, id, {
+      restApi: api,
+      type: ResponseType.ACCESS_DENIED,
+      statusCode: '500',
+      parameters: {
+        'gatewayresponse.header.Access-Control-Allow-Origin': "test.com",
+        'gatewayresponse.header.test-key': 'test-value'
+      },
+      templates: {
+        'application/json': "{ \"message\": $context.error.messageString, \"statusCode\": '488', \"type\": \"$context.error.responseType\" }"
+      }
+    });
+```
+
 ## APIGateway v2
 
 APIGateway v2 APIs are now moved to its own package named `aws-apigatewayv2`. For backwards compatibility, existing

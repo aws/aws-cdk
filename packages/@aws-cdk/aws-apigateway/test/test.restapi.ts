@@ -1,4 +1,4 @@
-import { expect, haveResource, haveResourceLike, ResourcePart, SynthUtils } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike, ResourcePart, SynthUtils, ABSENT } from '@aws-cdk/assert';
 import { GatewayVpcEndpoint } from '@aws-cdk/aws-ec2';
 import { App, CfnElement, CfnResource, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
@@ -807,6 +807,101 @@ export = {
         }
       }
     });
+
+    test.done();
+  },
+
+  'gateway response resource is created'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const api = new apigw.RestApi(stack, 'restapi', {
+      deploy: false,
+      cloudWatchRole: false,
+    });
+
+    api.root.addMethod('GET');
+    api.addGatewayResponse('test-response', {
+      type: apigw.ResponseType.ACCESS_DENIED
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::GatewayResponse', {
+      ResponseType: 'ACCESS_DENIED',
+      RestApiId: stack.resolve(api.restApiId),
+      StatusCode: ABSENT,
+      ResponseParameters: ABSENT,
+      ResponseTemplates: ABSENT
+    }));
+
+    test.done();
+  },
+
+  'gateway response resource is created with parameters'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const api = new apigw.RestApi(stack, 'restapi', {
+      deploy: false,
+      cloudWatchRole: false,
+    });
+
+    api.root.addMethod('GET');
+    api.addGatewayResponse('test-response', {
+      type: apigw.ResponseType.AUTHORIZER_FAILURE,
+      statusCode: '500',
+      parameters: {
+        'gatewayresponse.header.Access-Control-Allow-Origin': "test.com",
+        'gatewayresponse.header.test-key': 'test-value'
+      }
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::GatewayResponse', {
+      ResponseType: 'AUTHORIZER_FAILURE',
+      RestApiId: stack.resolve(api.restApiId),
+      StatusCode: '500',
+      ResponseParameters: {
+        'gatewayresponse.header.Access-Control-Allow-Origin': "test.com",
+        'gatewayresponse.header.test-key': 'test-value'
+      },
+      ResponseTemplates: ABSENT
+    }));
+
+    test.done();
+  },
+
+  'gateway response resource is created with templates'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const api = new apigw.RestApi(stack, 'restapi', {
+      deploy: false,
+      cloudWatchRole: false,
+    });
+
+    api.root.addMethod('GET');
+    api.addGatewayResponse('test-response', {
+      type: apigw.ResponseType.AUTHORIZER_FAILURE,
+      statusCode: '500',
+      templates: {
+        'application/json': "{ \"message\": $context.error.messageString, \"statusCode\": '488' }"
+      }
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::GatewayResponse', {
+      ResponseType: 'AUTHORIZER_FAILURE',
+      RestApiId: stack.resolve(api.restApiId),
+      StatusCode: '500',
+      ResponseParameters: ABSENT,
+      ResponseTemplates: {
+        'application/json': "{ \"message\": $context.error.messageString, \"statusCode\": '488' }"
+      }
+    }));
 
     test.done();
   }

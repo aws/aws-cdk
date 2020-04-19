@@ -13,6 +13,7 @@ import { RequestValidator, RequestValidatorOptions } from './requestvalidator';
 import { IResource, ResourceBase, ResourceOptions } from './resource';
 import { Stage, StageOptions } from './stage';
 import { UsagePlan, UsagePlanProps } from './usage-plan';
+import { GatewayResponseOptions, GatewayResponse } from './gateway-response';
 
 export interface IRestApi extends IResourceBase {
   /**
@@ -388,6 +389,16 @@ export class RestApi extends Resource implements IRestApi {
    */
   public _attachMethod(method: Method) {
     this.methods.push(method);
+  }
+
+  /**
+   * Adds a new gateway response.
+   */
+  public addGatewayResponse(id: string, options: GatewayResponseOptions) : GatewayResponse{
+    return new GatewayResponse(this, id, {
+      restApi: this,
+      ...options
+    });
   }
 
   /**
