@@ -1,6 +1,6 @@
 import { expect as expectCDK, haveResource, SynthUtils } from '@aws-cdk/assert';
 import * as cdk from '@aws-cdk/core';
-import %name.PascalCased% = require('../lib/index');
+import * as %name.PascalCased% from '../lib/index';
 
 test('SQS Queue Created', () => {
     const app = new cdk.App();
