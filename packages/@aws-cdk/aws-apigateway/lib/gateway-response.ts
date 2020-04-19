@@ -52,7 +52,7 @@ export class GatewayResponse extends Resource {
       responseTemplates: props.templates,
       statusCode: props.statusCode
     });
-    
+
     this.node.defaultChild = resource;
   }
 }
