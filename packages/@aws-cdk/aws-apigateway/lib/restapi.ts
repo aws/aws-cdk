@@ -6,6 +6,7 @@ import { CfnAccount, CfnRestApi } from './apigateway.generated';
 import { CorsOptions } from './cors';
 import { Deployment } from './deployment';
 import { DomainName, DomainNameOptions } from './domain-name';
+import { GatewayResponse, GatewayResponseOptions } from './gateway-response';
 import { Integration } from './integration';
 import { Method, MethodOptions } from './method';
 import { Model, ModelOptions } from './model';
@@ -13,7 +14,6 @@ import { RequestValidator, RequestValidatorOptions } from './requestvalidator';
 import { IResource, ResourceBase, ResourceOptions } from './resource';
 import { Stage, StageOptions } from './stage';
 import { UsagePlan, UsagePlanProps } from './usage-plan';
-import { GatewayResponseOptions, GatewayResponse } from './gateway-response';
 
 export interface IRestApi extends IResourceBase {
   /**
@@ -394,7 +394,7 @@ export class RestApi extends Resource implements IRestApi {
   /**
    * Adds a new gateway response.
    */
-  public addGatewayResponse(id: string, options: GatewayResponseOptions) : GatewayResponse{
+  public addGatewayResponse(id: string, options: GatewayResponseOptions): GatewayResponse {
     return new GatewayResponse(this, id, {
       restApi: this,
       ...options

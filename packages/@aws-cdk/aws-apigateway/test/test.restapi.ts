@@ -1,4 +1,4 @@
-import { expect, haveResource, haveResourceLike, ResourcePart, SynthUtils, ABSENT } from '@aws-cdk/assert';
+import { ABSENT, expect, haveResource, haveResourceLike, ResourcePart, SynthUtils } from '@aws-cdk/assert';
 import { GatewayVpcEndpoint } from '@aws-cdk/aws-ec2';
 import { App, CfnElement, CfnResource, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';

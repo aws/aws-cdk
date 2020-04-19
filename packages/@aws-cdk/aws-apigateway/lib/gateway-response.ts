@@ -39,7 +39,6 @@ export interface GatewayResponseOptions {
 /**
  * This resource creates a gateway response which will be applied to response from api gateway
  * as per the configuration based on the response type.
- * 
  * You will probably want to use `RestApi.addGatewayResponse` for adding new gateway response.
  */
 export class GatewayResponse extends Resource {
@@ -53,7 +52,7 @@ export class GatewayResponse extends Resource {
       responseTemplates: props.templates,
       statusCode: props.statusCode
     });
-        
+    
     this.node.defaultChild = resource;
   }
 }
