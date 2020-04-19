@@ -592,7 +592,7 @@ export interface TransformOutput {
    *
    * @default - default KMS key for Amazon S3 for your role's account.
    */
-  readonly encryptionKey?: kms.IKey;
+  readonly encryptionKey?: kms.Key;
 
   /**
    * S3 path where you want Amazon SageMaker to store the results of the transform job.
