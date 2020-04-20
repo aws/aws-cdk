@@ -82,7 +82,7 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
 
     this.endpointService = new CfnVPCEndpointService(this, id, {
       networkLoadBalancerArns: this.vpcEndpointServiceLoadBalancers.map(lb => lb.loadBalancerArn),
-      acceptanceRequired: this.acceptanceRequired
+      acceptanceRequired: this.acceptanceRequired,
     });
 
     this.vpcEndpointServiceId = this.endpointService.ref;
@@ -97,7 +97,7 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
     if (this.whitelistedPrincipals.length > 0) {
       new CfnVPCEndpointServicePermissions(this, 'Permissions', {
         serviceId: this.endpointService.ref,
-        allowedPrincipals: this.whitelistedPrincipals.map(x => x.arn)
+        allowedPrincipals: this.whitelistedPrincipals.map(x => x.arn),
       });
     }
   }

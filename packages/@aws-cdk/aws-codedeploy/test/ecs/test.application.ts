@@ -29,5 +29,5 @@ export = {
 
       test.done();
     },
-  }
+  },
 };

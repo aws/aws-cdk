@@ -118,7 +118,7 @@ export class Grant {
   public static addToPrincipalOrResource(options: GrantWithResourceOptions): Grant {
     const result = Grant.addToPrincipal({
       ...options,
-      scope: options.resource
+      scope: options.resource,
     });
 
     if (result.success) { return result; }
@@ -126,7 +126,7 @@ export class Grant {
     const statement = new PolicyStatement({
       actions: options.actions,
       resources: (options.resourceSelfArns || options.resourceArns),
-      principals: [options.grantee!.grantPrincipal]
+      principals: [options.grantee!.grantPrincipal],
     });
 
     options.resource.addToResourcePolicy(statement);
@@ -143,7 +143,7 @@ export class Grant {
   public static addToPrincipal(options: GrantOnPrincipalOptions): Grant {
     const statement = new PolicyStatement({
       actions: options.actions,
-      resources: options.resourceArns
+      resources: options.resourceArns,
     });
 
     const addedToPrincipal = options.grantee.grantPrincipal.addToPolicy(statement);
@@ -169,7 +169,7 @@ export class Grant {
     const statement = new PolicyStatement({
       actions: options.actions,
       resources: (options.resourceSelfArns || options.resourceArns),
-      principals: [options.resourcePolicyPrincipal || options.grantee!.grantPrincipal]
+      principals: [options.resourcePolicyPrincipal || options.grantee!.grantPrincipal],
     });
 
     options.resource.addToResourcePolicy(statement);
@@ -188,7 +188,7 @@ export class Grant {
    */
   public static drop(grantee: IGrantable, _intent: string): Grant {
     return new Grant({
-      options: { grantee, actions: [], resourceArns: [] }
+      options: { grantee, actions: [], resourceArns: [] },
     });
   }
 

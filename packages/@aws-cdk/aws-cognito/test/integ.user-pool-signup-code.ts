@@ -32,7 +32,7 @@ const userpool = new UserPool(stack, 'myuserpool', {
     requireLowercase: false,
     requireDigits: false,
     requireSymbols: false,
-  }
+  },
 });
 
 const client = new UserPoolClient(stack, 'myuserpoolclient', {
@@ -46,5 +46,5 @@ new CfnOutput(stack, 'user-pool-id', {
 });
 
 new CfnOutput(stack, 'client-id', {
-  value: client.userPoolClientId
+  value: client.userPoolClientId,
 });

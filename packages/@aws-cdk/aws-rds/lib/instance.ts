@@ -90,7 +90,7 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
       public readonly defaultPort = ec2.Port.tcp(attrs.port);
       public readonly connections = new ec2.Connections({
         securityGroups: attrs.securityGroups,
-        defaultPort: this.defaultPort
+        defaultPort: this.defaultPort,
       });
       public readonly instanceIdentifier = attrs.instanceIdentifier;
       public readonly dbInstanceEndpointAddress = attrs.instanceEndpointAddress;
@@ -119,7 +119,7 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
     const rule = new events.Rule(this, id, options);
     rule.addEventPattern({
       source: ['aws.rds'],
-      resources: [this.instanceArn]
+      resources: [this.instanceArn],
     });
     rule.addTarget(options.target);
     return rule;
@@ -133,7 +133,7 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
       service: 'rds',
       resource: 'db',
       sep: ':',
-      resourceName: this.instanceIdentifier
+      resourceName: this.instanceIdentifier,
     });
   }
 
@@ -143,7 +143,7 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
   public asSecretAttachmentTarget(): secretsmanager.SecretAttachmentTargetProps {
     return {
       targetId: this.instanceIdentifier,
-      targetType: secretsmanager.AttachmentTargetType.RDS_DB_INSTANCE
+      targetType: secretsmanager.AttachmentTargetType.RDS_DB_INSTANCE,
     };
   }
 }
@@ -158,13 +158,13 @@ export class DatabaseInstanceEngine extends DatabaseClusterEngine {
     { engineMajorVersion: '10.0', parameterGroupFamily: 'mariadb10.0' },
     { engineMajorVersion: '10.1', parameterGroupFamily: 'mariadb10.1' },
     { engineMajorVersion: '10.2', parameterGroupFamily: 'mariadb10.2' },
-    { engineMajorVersion: '10.3', parameterGroupFamily: 'mariadb10.3' }
+    { engineMajorVersion: '10.3', parameterGroupFamily: 'mariadb10.3' },
   ]);
 
   public static readonly MYSQL = new DatabaseInstanceEngine('mysql', secretsmanager.SecretRotationApplication.MYSQL_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.MYSQL_ROTATION_MULTI_USER, [
     { engineMajorVersion: '5.6', parameterGroupFamily: 'mysql5.6' },
     { engineMajorVersion: '5.7', parameterGroupFamily: 'mysql5.7' },
-    { engineMajorVersion: '8.0', parameterGroupFamily: 'mysql8.0' }
+    { engineMajorVersion: '8.0', parameterGroupFamily: 'mysql8.0' },
   ]);
 
   public static readonly ORACLE_EE = new DatabaseInstanceEngine('oracle-ee', secretsmanager.SecretRotationApplication.ORACLE_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.ORACLE_ROTATION_MULTI_USER, [
@@ -172,22 +172,22 @@ export class DatabaseInstanceEngine extends DatabaseClusterEngine {
     { engineMajorVersion: '12.1', parameterGroupFamily: 'oracle-ee-12.1' },
     { engineMajorVersion: '12.2', parameterGroupFamily: 'oracle-ee-12.2' },
     { engineMajorVersion: '18', parameterGroupFamily: 'oracle-ee-18' },
-    { engineMajorVersion: '19', parameterGroupFamily: 'oracle-ee-19' }
+    { engineMajorVersion: '19', parameterGroupFamily: 'oracle-ee-19' },
   ]);
 
   public static readonly ORACLE_SE2 = new DatabaseInstanceEngine('oracle-se2', secretsmanager.SecretRotationApplication.ORACLE_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.ORACLE_ROTATION_MULTI_USER, [
     { engineMajorVersion: '12.1', parameterGroupFamily: 'oracle-se2-12.1' },
     { engineMajorVersion: '12.2', parameterGroupFamily: 'oracle-se2-12.2' },
     { engineMajorVersion: '18', parameterGroupFamily: 'oracle-se2-18' },
-    { engineMajorVersion: '19', parameterGroupFamily: 'oracle-se2-19' }
+    { engineMajorVersion: '19', parameterGroupFamily: 'oracle-se2-19' },
   ]);
 
   public static readonly ORACLE_SE1 = new DatabaseInstanceEngine('oracle-se1', secretsmanager.SecretRotationApplication.ORACLE_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.ORACLE_ROTATION_MULTI_USER, [
-    { engineMajorVersion: '11.2', parameterGroupFamily: 'oracle-se1-11.2' }
+    { engineMajorVersion: '11.2', parameterGroupFamily: 'oracle-se1-11.2' },
   ]);
 
   public static readonly ORACLE_SE = new DatabaseInstanceEngine('oracle-se', secretsmanager.SecretRotationApplication.ORACLE_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.ORACLE_ROTATION_MULTI_USER, [
-    { engineMajorVersion: '11.2', parameterGroupFamily: 'oracle-se-11.2' }
+    { engineMajorVersion: '11.2', parameterGroupFamily: 'oracle-se-11.2' },
   ]);
 
   public static readonly POSTGRES = new DatabaseInstanceEngine('postgres', secretsmanager.SecretRotationApplication.POSTGRES_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.POSTGRES_ROTATION_MULTI_USER, [
@@ -203,28 +203,28 @@ export class DatabaseInstanceEngine extends DatabaseClusterEngine {
     { engineMajorVersion: '11', parameterGroupFamily: 'sqlserver-ee-11.0' },
     { engineMajorVersion: '12', parameterGroupFamily: 'sqlserver-ee-12.0' },
     { engineMajorVersion: '13', parameterGroupFamily: 'sqlserver-ee-13.0' },
-    { engineMajorVersion: '14', parameterGroupFamily: 'sqlserver-ee-14.0' }
+    { engineMajorVersion: '14', parameterGroupFamily: 'sqlserver-ee-14.0' },
   ]);
 
   public static readonly SQL_SERVER_SE = new DatabaseInstanceEngine('sqlserver-se', secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_MULTI_USER, [
     { engineMajorVersion: '11', parameterGroupFamily: 'sqlserver-se-11.0' },
     { engineMajorVersion: '12', parameterGroupFamily: 'sqlserver-se-12.0' },
     { engineMajorVersion: '13', parameterGroupFamily: 'sqlserver-se-13.0' },
-    { engineMajorVersion: '14', parameterGroupFamily: 'sqlserver-se-14.0' }
+    { engineMajorVersion: '14', parameterGroupFamily: 'sqlserver-se-14.0' },
   ]);
 
   public static readonly SQL_SERVER_EX = new DatabaseInstanceEngine('sqlserver-ex', secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_MULTI_USER, [
     { engineMajorVersion: '11', parameterGroupFamily: 'sqlserver-ex-11.0' },
     { engineMajorVersion: '12', parameterGroupFamily: 'sqlserver-ex-12.0' },
     { engineMajorVersion: '13', parameterGroupFamily: 'sqlserver-ex-13.0' },
-    { engineMajorVersion: '14', parameterGroupFamily: 'sqlserver-ex-14.0' }
+    { engineMajorVersion: '14', parameterGroupFamily: 'sqlserver-ex-14.0' },
   ]);
 
   public static readonly SQL_SERVER_WEB = new DatabaseInstanceEngine('sqlserver-web', secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_MULTI_USER, [
     { engineMajorVersion: '11', parameterGroupFamily: 'sqlserver-web-11.0' },
     { engineMajorVersion: '12', parameterGroupFamily: 'sqlserver-web-12.0' },
     { engineMajorVersion: '13', parameterGroupFamily: 'sqlserver-web-13.0' },
-    { engineMajorVersion: '14', parameterGroupFamily: 'sqlserver-web-14.0' }
+    { engineMajorVersion: '14', parameterGroupFamily: 'sqlserver-web-14.0' },
   ]);
   /* tslint:enable max-line-length */
 
@@ -576,17 +576,17 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
 
     const subnetGroup = new CfnDBSubnetGroup(this, 'SubnetGroup', {
       dbSubnetGroupDescription: `Subnet group for ${this.node.id} database`,
-      subnetIds
+      subnetIds,
     });
 
     const securityGroups = props.securityGroups || [new ec2.SecurityGroup(this, 'SecurityGroup', {
       description: `Security group for ${this.node.id} database`,
-      vpc: props.vpc
+      vpc: props.vpc,
     })];
 
     this.connections = new ec2.Connections({
       securityGroups,
-      defaultPort: ec2.Port.tcp(Lazy.numberValue({ produce: () => this.instanceEndpoint.port }))
+      defaultPort: ec2.Port.tcp(Lazy.numberValue({ produce: () => this.instanceEndpoint.port })),
     });
 
     let monitoringRole;
@@ -636,7 +636,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       publiclyAccessible: props.vpcPlacement && props.vpcPlacement.subnetType === ec2.SubnetType.PUBLIC,
       storageType,
       vpcSecurityGroups: securityGroups.map(s => s.securityGroupId),
-      maxAllocatedStorage: props.maxAllocatedStorage
+      maxAllocatedStorage: props.maxAllocatedStorage,
     };
   }
 
@@ -646,7 +646,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
         new lambda.LogRetention(this, `LogRetention${log}`, {
           logGroupName: `/aws/rds/instance/${this.instanceIdentifier}/${log}`,
           retention: this.cloudwatchLogsRetention,
-          role: this.cloudwatchLogsRetentionRole
+          role: this.cloudwatchLogsRetentionRole,
         });
       }
     }
@@ -762,7 +762,7 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
       engine: props.engine.name,
       engineVersion: props.engineVersion,
       licenseModel: props.licenseModel,
-      timezone: props.timezone
+      timezone: props.timezone,
     };
   }
 
@@ -875,7 +875,7 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
       masterUserPassword: secret
         ? secret.secretValueFromJson('password').toString()
         : props.masterUserPassword && props.masterUserPassword.toString(),
-      storageEncrypted: props.kmsKey ? true : props.storageEncrypted
+      storageEncrypted: props.kmsKey ? true : props.storageEncrypted,
     });
 
     this.instanceIdentifier = instance.ref;
@@ -887,7 +887,7 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
     this.instanceEndpoint = new Endpoint(instance.attrEndpointAddress, portAttribute);
 
     instance.applyRemovalPolicy(props.removalPolicy, {
-      applyToUpdateReplacePolicy: true
+      applyToUpdateReplacePolicy: true,
     });
 
     if (secret) {
@@ -985,7 +985,7 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
     this.instanceEndpoint = new Endpoint(instance.attrEndpointAddress, portAttribute);
 
     instance.applyRemovalPolicy(props.removalPolicy, {
-      applyToUpdateReplacePolicy: true
+      applyToUpdateReplacePolicy: true,
     });
 
     if (secret) {
@@ -1055,7 +1055,7 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
     this.instanceEndpoint = new Endpoint(instance.attrEndpointAddress, portAttribute);
 
     instance.applyRemovalPolicy(props.removalPolicy, {
-      applyToUpdateReplacePolicy: true
+      applyToUpdateReplacePolicy: true,
     });
 
     this.setLogRetention();

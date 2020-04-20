@@ -36,13 +36,13 @@ export class EmrCancelStep implements sfn.IStepFunctionsTask {
       policyStatements: [
         new iam.PolicyStatement({
           actions: ['elasticmapreduce:CancelSteps'],
-          resources: [`arn:aws:elasticmapreduce:${Aws.REGION}:${Aws.ACCOUNT_ID}:cluster/*`]
-        })
+          resources: [`arn:aws:elasticmapreduce:${Aws.REGION}:${Aws.ACCOUNT_ID}:cluster/*`],
+        }),
       ],
       parameters: {
         ClusterId: this.props.clusterId,
-        StepId: this.props.stepId
-      }
+        StepId: this.props.stepId,
+      },
     };
   }
 }

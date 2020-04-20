@@ -13,7 +13,7 @@ beforeEach(() => {
         theAsset: {
           source: {
             path: 'some_dir',
-            packaging: 'zip'
+            packaging: 'zip',
           },
           destinations: {
             theDestination: {
