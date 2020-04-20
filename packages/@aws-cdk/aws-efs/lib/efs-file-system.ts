@@ -101,9 +101,9 @@ export interface EfsFileSystemProps {
   readonly securityGroup?: ec2.ISecurityGroup;
 
   /**
-   * Where to place the mount target within the VPC.
+   * Which subnets to place the mount target in the VPC.
    *
-   * @default - Private subnets
+   * @default - the Vpc default strategy if not specified
    */
   readonly vpcSubnets?: ec2.SubnetSelection;
 
