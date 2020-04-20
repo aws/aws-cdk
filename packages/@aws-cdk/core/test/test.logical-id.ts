@@ -47,7 +47,7 @@ export = {
     const r = new CfnResource(stack, 'x'.repeat(256), { type: 'Resource' });
 
     // THEN
-    test.equals(stack.resolve(r.logicalId), 'x'.repeat(240) + `C7A139A2`);
+    test.equals(stack.resolve(r.logicalId), 'x'.repeat(240) + 'C7A139A2');
     test.done();
   },
 
@@ -112,9 +112,9 @@ export = {
     test.deepEqual(template, {
       Resources: {
         ParentChildHeyThere35220347: {
-          Type: 'AWS::TAAS::Thing'
-        }
-      }
+          Type: 'AWS::TAAS::Thing',
+        },
+      },
     });
 
     test.done();
@@ -218,9 +218,9 @@ export = {
         Construct2: {
           Type: 'R2',
           Properties: { ReferenceToR1: { Ref: 'NewName' } },
-          DependsOn: [ 'NewName' ]
-        }
-      }
+          DependsOn: [ 'NewName' ],
+        },
+      },
     });
 
     test.done();
@@ -231,7 +231,7 @@ export = {
       protected allocateLogicalId(element: CfnElement): string {
         if (element.node.id === 'A') { return 'LogicalIdOfA'; }
         if (element.node.id === 'B') { return 'LogicalIdOfB'; }
-        throw new Error(`Invalid element ID`);
+        throw new Error('Invalid element ID');
       }
     }
 
@@ -250,11 +250,11 @@ export = {
       Resources: {
         LogicalIdOfA: { Type: 'Type::Of::A' },
         BoomBoomB: { Type: 'Type::Of::B' },
-        TheC: { Type: 'Type::Of::C' }
-      }
+        TheC: { Type: 'Type::Of::C' },
+      },
     });
     test.done();
-  }
+  },
 };
 
 function generateString(chars: number) {

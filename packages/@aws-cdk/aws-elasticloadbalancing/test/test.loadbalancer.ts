@@ -19,13 +19,13 @@ export = {
       internalPort: 8080,
     });
 
-    expect(stack).to(haveResource("AWS::ElasticLoadBalancing::LoadBalancer", {
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancing::LoadBalancer', {
       Listeners: [{
-        InstancePort: "8080",
-        InstanceProtocol: "http",
-        LoadBalancerPort: "8080",
-        Protocol: "http"
-      }]
+        InstancePort: '8080',
+        InstanceProtocol: 'http',
+        LoadBalancerPort: '8080',
+        Protocol: 'http',
+      }],
     }));
 
     test.done();
@@ -44,17 +44,17 @@ export = {
         path: '/ping',
         protocol: LoadBalancingProtocol.HTTPS,
         port: 443,
-      }
+      },
     });
 
     // THEN
-    expect(stack).to(haveResource("AWS::ElasticLoadBalancing::LoadBalancer", {
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancing::LoadBalancer', {
       HealthCheck: {
-        HealthyThreshold: "2",
-        Interval: "60",
-        Target: "HTTPS:443/ping",
-        Timeout: "5",
-        UnhealthyThreshold: "5"
+        HealthyThreshold: '2',
+        Interval: '60',
+        Target: 'HTTPS:443/ping',
+        Timeout: '5',
+        UnhealthyThreshold: '5',
       },
     }));
 
@@ -72,7 +72,7 @@ export = {
         path: '/ping',
         protocol: LoadBalancingProtocol.HTTPS,
         port: 443,
-      }
+      },
     });
 
     // WHEN
@@ -84,11 +84,11 @@ export = {
       SecurityGroupEgress: [
         {
           Description: 'Port 8080 LB to fleet',
-          CidrIp: "666.666.666.666/666",
+          CidrIp: '666.666.666.666/666',
           FromPort: 8080,
-          IpProtocol: "tcp",
-          ToPort: 8080
-        }
+          IpProtocol: 'tcp',
+          ToPort: 8080,
+        },
       ],
     }));
 
@@ -108,7 +108,7 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::ElasticLoadBalancing::LoadBalancer', {
-      CrossZone: true
+      CrossZone: true,
     }));
 
     test.done();
@@ -127,7 +127,7 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::ElasticLoadBalancing::LoadBalancer', {
-      CrossZone: false
+      CrossZone: false,
     }));
 
     test.done();
@@ -145,7 +145,7 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::ElasticLoadBalancing::LoadBalancer', {
-      CrossZone: true
+      CrossZone: true,
     }));
 
     test.done();
@@ -159,18 +159,18 @@ export = {
         {
           name: 'public',
           subnetType: SubnetType.PUBLIC,
-          cidrMask: 21
+          cidrMask: 21,
         },
         {
           name: 'private1',
           subnetType: SubnetType.PRIVATE,
-          cidrMask: 21
+          cidrMask: 21,
         },
         {
           name: 'private2',
           subnetType: SubnetType.PRIVATE,
-          cidrMask: 21
-        }
+          cidrMask: 21,
+        },
       ],
     });
 
@@ -178,25 +178,25 @@ export = {
     new LoadBalancer(stack, 'LB', {
       vpc,
       subnetSelection: {
-        subnetName: 'private1'
+        subnetName: 'private1',
       },
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::ElasticLoadBalancing::LoadBalancer', {
       Subnets: vpc.selectSubnets({
-        subnetName: 'private1'
-      }).subnetIds.map((subnetId: string) => stack.resolve(subnetId))
+        subnetName: 'private1',
+      }).subnetIds.map((subnetId: string) => stack.resolve(subnetId)),
     }));
 
     test.done();
-  }
+  },
 
 };
 
 class FakeTarget implements ILoadBalancerTarget {
   public readonly connections = new Connections({
-    peer: Peer.ipv4('666.666.666.666/666')
+    peer: Peer.ipv4('666.666.666.666/666'),
   });
 
   public attachToClassicLB(_loadBalancer: LoadBalancer): void {

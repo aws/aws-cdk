@@ -1,5 +1,5 @@
-import { EventPattern } from "./event-pattern";
-import { IRuleTarget } from "./target";
+import { EventPattern } from './event-pattern';
+import { IRuleTarget } from './target';
 
 /**
  * Standard set of options for `onXxx` event handlers on construct

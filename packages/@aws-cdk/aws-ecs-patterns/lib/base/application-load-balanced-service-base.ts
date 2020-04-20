@@ -304,11 +304,11 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
 
     const lbProps = {
       vpc: this.cluster.vpc,
-      internetFacing
+      internetFacing,
     };
 
     const loadBalancer = props.loadBalancer !== undefined ? props.loadBalancer
-                        : new ApplicationLoadBalancer(this, 'LB', lbProps);
+      : new ApplicationLoadBalancer(this, 'LB', lbProps);
 
     if (props.certificate !== undefined && props.protocol !== undefined && props.protocol !== ApplicationProtocol.HTTPS) {
       throw new Error('The HTTPS protocol must be used when a certificate is given');
@@ -317,13 +317,13 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
       (props.certificate ? ApplicationProtocol.HTTPS : ApplicationProtocol.HTTP);
 
     const targetProps = {
-      port: 80
+      port: 80,
     };
 
     this.listener = loadBalancer.addListener('PublicListener', {
       protocol,
       port: props.listenerPort,
-      open: true
+      open: true,
     });
     this.targetGroup = this.listener.addTargets('ECS', targetProps);
 
@@ -337,7 +337,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
       } else {
         this.certificate = new DnsValidatedCertificate(this, 'Certificate', {
           domainName: props.domainName,
-          hostedZone: props.domainZone
+          hostedZone: props.domainZone,
         });
       }
     }
@@ -351,15 +351,13 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
         throw new Error('A Route53 hosted domain zone name is required to configure the specified domain name');
       }
 
-      if (internetFacing) {
-        const record = new ARecord(this, "DNS", {
-          zone: props.domainZone,
-          recordName: props.domainName,
-          target: RecordTarget.fromAlias(new LoadBalancerTarget(loadBalancer)),
-        });
+      const record = new ARecord(this, 'DNS', {
+        zone: props.domainZone,
+        recordName: props.domainName,
+        target: RecordTarget.fromAlias(new LoadBalancerTarget(loadBalancer)),
+      });
 
-        domainName = record.domainName;
-      }
+      domainName = record.domainName;
     }
 
     if (loadBalancer instanceof ApplicationLoadBalancer) {

@@ -1,4 +1,4 @@
-import * as cxapi from '@aws-cdk/cx-api';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { Test } from 'nodeunit';
 import { App as Root, Aws, Construct, ConstructNode, ConstructOrder, IConstruct, Lazy, ValidationError } from '../lib';
 
@@ -62,7 +62,7 @@ export = {
     test.done();
   },
 
-  "dont allow unresolved tokens to be used in construct IDs"(test: Test) {
+  'dont allow unresolved tokens to be used in construct IDs'(test: Test) {
     // GIVEN
     const root = new Root();
     const token = Lazy.stringValue({ produce: () => 'lazy' });
@@ -148,7 +148,7 @@ export = {
   'construct.getContext(key) can be used to read a value from context defined at the root level'(test: Test) {
     const context = {
       ctx1: 12,
-      ctx2: 'hello'
+      ctx2: 'hello',
     };
 
     const t = createTree(context);
@@ -285,7 +285,7 @@ export = {
     const root = new Root();
     const con = new Construct(root, 'MyConstruct');
     con.node.addWarning('This construct is deprecated, use the other one instead');
-    test.deepEqual(con.node.metadata[0].type, cxapi.WARNING_METADATA_KEY);
+    test.deepEqual(con.node.metadata[0].type, cxschema.ArtifactMetadataEntryType.WARN);
     test.deepEqual(con.node.metadata[0].data, 'This construct is deprecated, use the other one instead');
     test.ok(con.node.metadata[0].trace && con.node.metadata[0].trace.length > 0);
     test.done();
@@ -295,7 +295,7 @@ export = {
     const root = new Root();
     const con = new Construct(root, 'MyConstruct');
     con.node.addError('Stop!');
-    test.deepEqual(con.node.metadata[0].type, cxapi.ERROR_METADATA_KEY);
+    test.deepEqual(con.node.metadata[0].type, cxschema.ArtifactMetadataEntryType.ERROR);
     test.deepEqual(con.node.metadata[0].data, 'Stop!');
     test.ok(con.node.metadata[0].trace && con.node.metadata[0].trace.length > 0);
     test.done();
@@ -305,7 +305,7 @@ export = {
     const root = new Root();
     const con = new Construct(root, 'MyConstruct');
     con.node.addInfo('Hey there, how do you do?');
-    test.deepEqual(con.node.metadata[0].type, cxapi.INFO_METADATA_KEY);
+    test.deepEqual(con.node.metadata[0].type, cxschema.ArtifactMetadataEntryType.INFO);
     test.deepEqual(con.node.metadata[0].data, 'Hey there, how do you do?');
     test.ok(con.node.metadata[0].trace && con.node.metadata[0].trace.length > 0);
     test.done();
@@ -371,7 +371,7 @@ export = {
       { path: 'MyConstruct', message: 'my-error2' },
       { path: 'TheirConstruct/YourConstruct', message: 'your-error1' },
       { path: 'TheirConstruct', message: 'their-error' },
-      { path: '', message: 'stack-error' }
+      { path: '', message: 'stack-error' },
     ]);
 
     test.done();
@@ -490,8 +490,8 @@ export = {
         /Cannot determine default child for . There is both a child with id "Resource" and id "Default"/);
       test.done();
 
-    }
-  }
+    },
+  },
 };
 
 function createTree(context?: any) {
@@ -509,7 +509,7 @@ function createTree(context?: any) {
   const child2_1 = new Construct(child2, 'Child21');
 
   return {
-    root, child1, child2, child1_1, child1_2, child1_1_1, child2_1
+    root, child1, child2, child1_1, child1_2, child1_1_1, child2_1,
   };
 }
 

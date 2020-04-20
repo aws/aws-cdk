@@ -24,16 +24,16 @@ const defaultEksClient: EksClient = {
   configureAssumeRole: req => {
     console.log(JSON.stringify({ assumeRole: req }, undefined, 2));
     const creds = new aws.ChainableTemporaryCredentials({
-      params: req
+      params: req,
     });
 
     eks = new aws.EKS({ credentials: creds });
-  }
+  },
 };
 
 function getEksClient() {
   if (!eks) {
-    throw new Error(`EKS client not initialized (call "configureAssumeRole")`);
+    throw new Error('EKS client not initialized (call "configureAssumeRole")');
   }
 
   return eks;

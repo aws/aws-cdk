@@ -73,7 +73,7 @@ abstract class TagBase implements IAspect {
 
   public visit(construct: IConstruct): void {
     if (TagManager.isTaggable(construct)) {
-        this.applyTag(construct);
+      this.applyTag(construct);
     }
   }
 
@@ -120,7 +120,7 @@ export class Tag extends TagBase {
         this.key,
         this.value,
         this.props.priority !== undefined ? this.props.priority : this.defaultPriority,
-        this.props.applyToLaunchedInstances !== false
+        this.props.applyToLaunchedInstances !== false,
       );
     }
   }

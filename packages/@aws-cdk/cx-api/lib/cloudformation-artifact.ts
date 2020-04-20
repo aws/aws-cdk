@@ -1,7 +1,7 @@
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as fs from 'fs';
 import * as path from 'path';
-import { ASSET_METADATA, AssetMetadataEntry } from './assets';
-import { ArtifactManifest, AwsCloudFormationStackProperties, CloudArtifact } from './cloud-artifact';
+import { AwsCloudFormationStackProperties, CloudArtifact } from './cloud-artifact';
 import { CloudAssembly } from './cloud-assembly';
 import { Environment, EnvironmentUtils } from './environment';
 
@@ -24,7 +24,7 @@ export class CloudFormationStackArtifact extends CloudArtifact {
   /**
    * Any assets associated with this stack.
    */
-  public readonly assets: AssetMetadataEntry[];
+  public readonly assets: cxschema.AssetMetadataEntry[];
 
   /**
    * CloudFormation parameters to pass to the stack.
@@ -54,11 +54,11 @@ export class CloudFormationStackArtifact extends CloudArtifact {
    */
   public readonly environment: Environment;
 
-  constructor(assembly: CloudAssembly, artifactId: string, artifact: ArtifactManifest) {
+  constructor(assembly: CloudAssembly, artifactId: string, artifact: cxschema.ArtifactManifest) {
     super(assembly, artifactId, artifact);
 
     if (!artifact.properties || !artifact.properties.templateFile) {
-      throw new Error(`Invalid CloudFormation stack artifact. Missing "templateFile" property in cloud assembly manifest`);
+      throw new Error('Invalid CloudFormation stack artifact. Missing "templateFile" property in cloud assembly manifest');
     }
     if (!artifact.environment) {
       throw new Error('Invalid CloudFormation stack artifact. Missing environment');
@@ -70,7 +70,7 @@ export class CloudFormationStackArtifact extends CloudArtifact {
 
     this.stackName = properties.stackName || artifactId;
     this.template = JSON.parse(fs.readFileSync(path.join(this.assembly.directory, this.templateFile), 'utf-8'));
-    this.assets = this.findMetadataByType(ASSET_METADATA).map(e => e.data);
+    this.assets = this.findMetadataByType(cxschema.ArtifactMetadataEntryType.ASSET).map(e => e.data as cxschema.AssetMetadataEntry);
 
     this.displayName = this.stackName === artifactId
       ? this.stackName

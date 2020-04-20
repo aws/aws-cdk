@@ -24,14 +24,14 @@ export class AmiContextProviderPlugin implements ContextProviderPlugin {
       Owners: args.owners,
       Filters: Object.entries(args.filters).map(([key, values]) => ({
         Name: key,
-        Values: values
-      }))
+        Values: values,
+      })),
     }).promise();
 
     const images = [...response.Images || []].filter(i => i.ImageId !== undefined);
 
     if (images.length === 0) {
-      throw new Error(`No AMI found that matched the search criteria`);
+      throw new Error('No AMI found that matched the search criteria');
     }
 
     // Return the most recent one

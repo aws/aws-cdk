@@ -136,13 +136,13 @@ export class CodeDeployEcsDeployAction extends Action {
   }
 
   protected bound(_scope: Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
-      codepipeline.ActionConfig {
+  codepipeline.ActionConfig {
     // permissions, based on:
     // https://docs.aws.amazon.com/codedeploy/latest/userguide/auth-and-access-control-permissions-reference.html
 
     options.role.addToPolicy(new iam.PolicyStatement({
       resources: [this.actionProps.deploymentGroup.application.applicationArn],
-      actions: ['codedeploy:GetApplication', 'codedeploy:GetApplicationRevision', 'codedeploy:RegisterApplicationRevision']
+      actions: ['codedeploy:GetApplication', 'codedeploy:GetApplicationRevision', 'codedeploy:RegisterApplicationRevision'],
     }));
 
     options.role.addToPolicy(new iam.PolicyStatement({
@@ -152,13 +152,13 @@ export class CodeDeployEcsDeployAction extends Action {
 
     options.role.addToPolicy(new iam.PolicyStatement({
       resources: [this.actionProps.deploymentGroup.deploymentConfig.deploymentConfigArn],
-      actions: ['codedeploy:GetDeploymentConfig']
+      actions: ['codedeploy:GetDeploymentConfig'],
     }));
 
     // Allow action to register the task definition template file with ECS
     options.role.addToPolicy(new iam.PolicyStatement({
       resources: ['*'],
-      actions: ['ecs:RegisterTaskDefinition']
+      actions: ['ecs:RegisterTaskDefinition'],
     }));
 
     // Allow passing any roles specified in the task definition template file to ECS
@@ -170,8 +170,8 @@ export class CodeDeployEcsDeployAction extends Action {
           'iam:PassedToService': [
             'ecs-tasks.amazonaws.com',
           ],
-        }
-      }
+        },
+      },
     }));
 
     // the Action's Role needs to read from the Bucket to get artifacts

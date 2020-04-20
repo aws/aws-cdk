@@ -175,7 +175,7 @@ abstract class KeyBase extends Resource implements IKey {
     return this.grant(grantee,
       'kms:Encrypt',
       'kms:ReEncrypt*',
-      'kms:GenerateDataKey*'
+      'kms:GenerateDataKey*',
     );
   }
 
@@ -187,7 +187,7 @@ abstract class KeyBase extends Resource implements IKey {
       'kms:Decrypt',
       'kms:Encrypt',
       'kms:ReEncrypt*',
-      'kms:GenerateDataKey*'
+      'kms:GenerateDataKey*',
     );
   }
 
@@ -370,7 +370,7 @@ export class Key extends KeyBase {
     this.addToResourcePolicy(new iam.PolicyStatement({
       resources: ['*'],
       actions: ['kms:*'],
-      principals: [new iam.AccountRootPrincipal()]
+      principals: [new iam.AccountRootPrincipal()],
     }));
 
   }
@@ -381,27 +381,27 @@ export class Key extends KeyBase {
    */
   private allowAccountToAdmin() {
     const actions = [
-      "kms:Create*",
-      "kms:Describe*",
-      "kms:Enable*",
-      "kms:List*",
-      "kms:Put*",
-      "kms:Update*",
-      "kms:Revoke*",
-      "kms:Disable*",
-      "kms:Get*",
-      "kms:Delete*",
-      "kms:ScheduleKeyDeletion",
-      "kms:CancelKeyDeletion",
-      "kms:GenerateDataKey",
-      "kms:TagResource",
-      "kms:UntagResource"
+      'kms:Create*',
+      'kms:Describe*',
+      'kms:Enable*',
+      'kms:List*',
+      'kms:Put*',
+      'kms:Update*',
+      'kms:Revoke*',
+      'kms:Disable*',
+      'kms:Get*',
+      'kms:Delete*',
+      'kms:ScheduleKeyDeletion',
+      'kms:CancelKeyDeletion',
+      'kms:GenerateDataKey',
+      'kms:TagResource',
+      'kms:UntagResource',
     ];
 
     this.addToResourcePolicy(new iam.PolicyStatement({
       resources: ['*'],
       actions,
-      principals: [new iam.AccountRootPrincipal()]
+      principals: [new iam.AccountRootPrincipal()],
     }));
   }
 }

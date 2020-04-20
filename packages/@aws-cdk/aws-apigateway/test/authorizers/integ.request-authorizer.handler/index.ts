@@ -9,15 +9,15 @@ export const handler = async (event: any, _context: any = {}): Promise<any> => {
     return {
       principalId: 'user',
       policyDocument: {
-        Version: "2012-10-17",
+        Version: '2012-10-17',
         Statement: [
           {
-            Action: "execute-api:Invoke",
+            Action: 'execute-api:Invoke',
             Effect: authToken,
-            Resource: event.methodArn
-          }
-        ]
-      }
+            Resource: event.methodArn,
+          },
+        ],
+      },
     };
   } else {
     throw new Error('Unauthorized');

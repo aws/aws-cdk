@@ -9,7 +9,7 @@ repo.onImageScanCompleted('ImageScanComplete', {
 });
 
 new cdk.CfnOutput(stack, 'RepositoryURI', {
-  value: repo.repositoryUri
+  value: repo.repositoryUri,
 });
 
 app.synth();

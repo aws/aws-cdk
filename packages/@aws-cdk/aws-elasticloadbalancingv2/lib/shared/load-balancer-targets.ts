@@ -1,7 +1,7 @@
-import { IApplicationLoadBalancerTarget, IApplicationTargetGroup } from "../alb/application-target-group";
-import { INetworkLoadBalancerTarget, INetworkTargetGroup } from "../nlb/network-target-group";
-import { ITargetGroup, LoadBalancerTargetProps } from "./base-target-group";
-import { TargetType } from "./enums";
+import { IApplicationLoadBalancerTarget, IApplicationTargetGroup } from '../alb/application-target-group';
+import { INetworkLoadBalancerTarget, INetworkTargetGroup } from '../nlb/network-target-group';
+import { ITargetGroup, LoadBalancerTargetProps } from './base-target-group';
+import { TargetType } from './enums';
 
 /**
  * An EC2 instance that is the target for load balancing
@@ -44,7 +44,7 @@ export class InstanceTarget implements IApplicationLoadBalancerTarget, INetworkL
   private attach(_targetGroup: ITargetGroup): LoadBalancerTargetProps {
     return {
       targetType: TargetType.INSTANCE,
-      targetJson: { id: this.instanceId, port: this.port }
+      targetJson: { id: this.instanceId, port: this.port },
     };
   }
 }
@@ -111,7 +111,7 @@ export class IpTarget implements IApplicationLoadBalancerTarget, INetworkLoadBal
   private attach(_targetGroup: ITargetGroup): LoadBalancerTargetProps {
     return {
       targetType: TargetType.IP,
-      targetJson: { id: this.ipAddress, port: this.port, availabilityZone: this.availabilityZone }
+      targetJson: { id: this.ipAddress, port: this.port, availabilityZone: this.availabilityZone },
     };
   }
 }

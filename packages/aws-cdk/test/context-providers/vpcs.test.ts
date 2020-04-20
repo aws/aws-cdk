@@ -1,11 +1,11 @@
 import * as aws from 'aws-sdk';
 import * as AWS from 'aws-sdk-mock';
 import { VpcNetworkContextProviderPlugin } from '../../lib/context-providers/vpcs';
-import { MockSDK } from '../util/mock-sdk';
+import { MockSdkProvider } from '../util/mock-sdk';
 
 AWS.setSDK(require.resolve('aws-sdk'));
 
-const mockSDK = new MockSDK();
+const mockSDK = new MockSdkProvider();
 
 type AwsCallback<T> = (err: Error | null, val: T) => void;
 
@@ -22,13 +22,13 @@ test('looks up the requested VPC', async () => {
   mockVpcLookup({
     subnets: [
       { SubnetId: 'sub-123456', AvailabilityZone: 'bermuda-triangle-1337', MapPublicIpOnLaunch: true },
-      { SubnetId: 'sub-789012', AvailabilityZone: 'bermuda-triangle-1337', MapPublicIpOnLaunch: false }
+      { SubnetId: 'sub-789012', AvailabilityZone: 'bermuda-triangle-1337', MapPublicIpOnLaunch: false },
     ],
     routeTables: [
-      { Associations: [{ SubnetId: 'sub-123456' }], RouteTableId: 'rtb-123456', },
-      { Associations: [{ SubnetId: 'sub-789012' }], RouteTableId: 'rtb-789012', }
+      { Associations: [{ SubnetId: 'sub-123456' }], RouteTableId: 'rtb-123456' },
+      { Associations: [{ SubnetId: 'sub-789012' }], RouteTableId: 'rtb-789012' },
     ],
-    vpnGateways: [{ VpnGatewayId: 'gw-abcdef' }]
+    vpnGateways: [{ VpnGatewayId: 'gw-abcdef' }],
 
   });
 
@@ -90,13 +90,13 @@ test('uses the VPC main route table when a subnet has no specific association', 
   mockVpcLookup({
     subnets: [
       { SubnetId: 'sub-123456', AvailabilityZone: 'bermuda-triangle-1337', MapPublicIpOnLaunch: true },
-      { SubnetId: 'sub-789012', AvailabilityZone: 'bermuda-triangle-1337', MapPublicIpOnLaunch: false }
+      { SubnetId: 'sub-789012', AvailabilityZone: 'bermuda-triangle-1337', MapPublicIpOnLaunch: false },
     ],
     routeTables: [
-      { Associations: [{ SubnetId: 'sub-123456' }], RouteTableId: 'rtb-123456', },
-      { Associations: [{ Main: true }], RouteTableId: 'rtb-789012', }
+      { Associations: [{ SubnetId: 'sub-123456' }], RouteTableId: 'rtb-123456' },
+      { Associations: [{ Main: true }], RouteTableId: 'rtb-789012' },
     ],
-    vpnGateways: [{ VpnGatewayId: 'gw-abcdef' }]
+    vpnGateways: [{ VpnGatewayId: 'gw-abcdef' }],
   });
 
   // WHEN
@@ -136,23 +136,23 @@ test('Recognize public subnet by route table', async () => {
         RouteTableId: 'rtb-123456',
         Routes: [
           {
-            DestinationCidrBlock: "10.0.2.0/26",
-            Origin: "CreateRoute",
-            State: "active",
-            VpcPeeringConnectionId: "pcx-xxxxxx"
+            DestinationCidrBlock: '10.0.2.0/26',
+            Origin: 'CreateRoute',
+            State: 'active',
+            VpcPeeringConnectionId: 'pcx-xxxxxx',
           },
           {
-            DestinationCidrBlock: "10.0.1.0/24",
-            GatewayId: "local",
-            Origin: "CreateRouteTable",
-            State: "active"
+            DestinationCidrBlock: '10.0.1.0/24',
+            GatewayId: 'local',
+            Origin: 'CreateRouteTable',
+            State: 'active',
           },
           {
-            DestinationCidrBlock: "0.0.0.0/0",
-            GatewayId: "igw-xxxxxx",
-            Origin: "CreateRoute",
-            State: "active"
-          }
+            DestinationCidrBlock: '0.0.0.0/0',
+            GatewayId: 'igw-xxxxxx',
+            Origin: 'CreateRoute',
+            State: 'active',
+          },
         ],
       },
     ],
@@ -208,7 +208,7 @@ function mockVpcLookup(options: VpcLookupOptions) {
     expect(params.Filters).toEqual([
       { Name: 'attachment.vpc-id', Values: [ VpcId ] },
       { Name: 'attachment.state', Values: [ 'attached' ] },
-      { Name: 'state', Values: [ 'available' ] }
+      { Name: 'state', Values: [ 'available' ] },
     ]);
     return cb(null, { VpnGateways: options.vpnGateways });
   });

@@ -17,3 +17,6 @@ nyc.config.js
 
 !test/integ/run-wrappers/dist
 !test/integ/cli/**/*
+
+test/integ/cli-backwards-tests-*
+!.eslintrc.js

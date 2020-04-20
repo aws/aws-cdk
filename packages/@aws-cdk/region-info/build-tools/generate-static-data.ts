@@ -94,10 +94,13 @@ async function main(): Promise<void> {
     registerFact(region, 'CDK_METADATA_RESOURCE_AVAILABLE', AWS_CDK_METADATA.has(region) ? 'YES' : 'NO');
 
     registerFact(region, 'S3_STATIC_WEBSITE_ENDPOINT', AWS_OLDER_REGIONS.has(region)
-        ? `s3-website-${region}.${domainSuffix}`
-        : `s3-website.${region}.${domainSuffix}`);
+      ? `s3-website-${region}.${domainSuffix}`
+      : `s3-website.${region}.${domainSuffix}`);
 
     registerFact(region, 'S3_STATIC_WEBSITE_ZONE_53_HOSTED_ZONE_ID', ROUTE_53_BUCKET_WEBSITE_ZONE_IDS[region] || '');
+
+    const vpcEndpointServiceNamePrefix = region.startsWith('cn-') ? 'cn.com.amazonaws.vpce' : 'com.amazonaws.vpce';
+    registerFact(region, 'VPC_ENDPOINT_SERVICE_NAME_PREFIX', vpcEndpointServiceNamePrefix);
 
     for (const service of AWS_SERVICES) {
       registerFact(region, ['servicePrincipal', service], Default.servicePrincipal(service, region, domainSuffix));

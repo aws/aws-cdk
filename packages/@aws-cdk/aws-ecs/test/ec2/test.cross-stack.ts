@@ -14,21 +14,21 @@ let cluster: ecs.Cluster;
 let service: ecs.Ec2Service;
 
 export = {
-  "setUp"(cb: () => void) {
+  'setUp'(cb: () => void) {
     app = new App();
 
     stack1 = new Stack(app, 'Stack1');
     const vpc = new ec2.Vpc(stack1, 'Vpc');
     cluster = new ecs.Cluster(stack1, 'Cluster', {
       vpc,
-      capacity: { instanceType: new ec2.InstanceType('t2.micro'), }
+      capacity: { instanceType: new ec2.InstanceType('t2.micro') },
     });
 
     stack2 = new Stack(app, 'Stack2');
     const taskDefinition = new ecs.Ec2TaskDefinition(stack2, 'TD');
     const container = taskDefinition.addContainer('Main', {
       image: ecs.ContainerImage.fromRegistry('asdf'),
-      memoryLimitMiB: 512
+      memoryLimitMiB: 512,
     });
     container.addPortMappings({ containerPort: 8000 });
 
@@ -40,13 +40,13 @@ export = {
     cb();
   },
 
-  "ALB next to Service"(test: Test) {
+  'ALB next to Service'(test: Test) {
     // WHEN
-    const lb = new elbv2.ApplicationLoadBalancer(stack2, "ALB", { vpc: cluster.vpc });
-    const listener = lb.addListener("listener", { port: 80 });
-    listener.addTargets("target", {
+    const lb = new elbv2.ApplicationLoadBalancer(stack2, 'ALB', { vpc: cluster.vpc });
+    const listener = lb.addListener('listener', { port: 80 });
+    listener.addTargets('target', {
       port: 80,
-      targets: [service]
+      targets: [service],
     });
 
     // THEN: it shouldn't throw due to cyclic dependencies
@@ -57,13 +57,13 @@ export = {
     test.done();
   },
 
-  "ALB next to Cluster"(test: Test) {
+  'ALB next to Cluster'(test: Test) {
     // WHEN
-    const lb = new elbv2.ApplicationLoadBalancer(stack1, "ALB", { vpc: cluster.vpc });
-    const listener = lb.addListener("listener", { port: 80 });
-    listener.addTargets("target", {
+    const lb = new elbv2.ApplicationLoadBalancer(stack1, 'ALB', { vpc: cluster.vpc });
+    const listener = lb.addListener('listener', { port: 80 });
+    listener.addTargets('target', {
       port: 80,
-      targets: [service]
+      targets: [service],
     });
 
     // THEN: it shouldn't throw due to cyclic dependencies
@@ -73,14 +73,14 @@ export = {
     test.done();
   },
 
-  "ALB in its own stack"(test: Test) {
+  'ALB in its own stack'(test: Test) {
     // WHEN
     const stack3 = new Stack(app, 'Stack3');
-    const lb = new elbv2.ApplicationLoadBalancer(stack3, "ALB", { vpc: cluster.vpc });
-    const listener = lb.addListener("listener", { port: 80 });
-    listener.addTargets("target", {
+    const lb = new elbv2.ApplicationLoadBalancer(stack3, 'ALB', { vpc: cluster.vpc });
+    const listener = lb.addListener('listener', { port: 80 });
+    listener.addTargets('target', {
       port: 80,
-      targets: [service]
+      targets: [service],
     });
 
     // THEN: it shouldn't throw due to cyclic dependencies
@@ -95,6 +95,6 @@ function expectIngress(stack: Stack) {
   expect(stack).to(haveResource('AWS::EC2::SecurityGroupIngress', {
     FromPort: 32768,
     ToPort: 65535,
-    GroupId: { "Fn::ImportValue": "Stack1:ExportsOutputFnGetAttClusterDefaultAutoScalingGroupInstanceSecurityGroup1D15236AGroupIdEAB9C5E1" },
+    GroupId: { 'Fn::ImportValue': 'Stack1:ExportsOutputFnGetAttClusterDefaultAutoScalingGroupInstanceSecurityGroup1D15236AGroupIdEAB9C5E1' },
   }));
 }

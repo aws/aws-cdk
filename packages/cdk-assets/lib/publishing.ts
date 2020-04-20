@@ -1,6 +1,6 @@
 import { AssetManifest, IManifestEntry } from './asset-manifest';
-import { IAws } from "./aws";
-import { makeAssetHandler } from "./private/handlers";
+import { IAws } from './aws';
+import { makeAssetHandler } from './private/handlers';
 import { EventType, IPublishProgress, IPublishProgressListener } from './progress';
 
 export interface AssetPublishingOptions {

@@ -1,11 +1,11 @@
 import '@aws-cdk/assert/jest';
 import { Lazy, Stack, Token } from '@aws-cdk/core';
 import {
-  Anyone, AnyPrincipal, ArnPrincipal, CanonicalUserPrincipal, CompositePrincipal, Effect, FederatedPrincipal,
-  IPrincipal, PolicyDocument, PolicyStatement, PrincipalPolicyFragment, ServicePrincipal
+  AccountPrincipal, Anyone, AnyPrincipal, ArnPrincipal, CanonicalUserPrincipal, CompositePrincipal, Effect,
+  FederatedPrincipal, IPrincipal, PolicyDocument, PolicyStatement, PrincipalPolicyFragment, ServicePrincipal,
 } from '../lib';
 
-describe('IAM polocy document', () => {
+describe('IAM policy document', () => {
   test('the Permission class is a programming model for iam', () => {
     const stack = new Stack();
 
@@ -23,18 +23,18 @@ describe('IAM polocy document', () => {
       [ 'sqs:SendMessage',
         'dynamodb:CreateTable',
         'dynamodb:DeleteTable' ],
-       Resource: [ 'myQueue', 'yourQueue', '*' ],
-       Effect: 'Allow',
-       Principal:
+    Resource: [ 'myQueue', 'yourQueue', '*' ],
+    Effect: 'Allow',
+    Principal:
       { AWS:
          { 'Fn::Join':
           [ '',
-          [ 'arn:',
-            { Ref: 'AWS::Partition' },
-            ':iam::my',
-            { account: 'account' },
-            'name:root' ] ] } },
-       Condition: { StringEquals: { 'sts:ExternalId': '12221121221' } } });
+            [ 'arn:',
+              { Ref: 'AWS::Partition' },
+              ':iam::my',
+              { account: 'account' },
+              'name:root' ] ] } },
+    Condition: { StringEquals: { 'sts:ExternalId': '12221121221' } } });
   });
 
   test('the PolicyDocument class is a dom for iam policy documents', () => {
@@ -82,7 +82,7 @@ describe('IAM polocy document', () => {
   test('Throws with invalid actions', () => {
     expect(() => {
       new PolicyStatement({
-        actions: ['service:action', '*', 'service:acti*', 'in:val:id']
+        actions: ['service:action', '*', 'service:acti*', 'in:val:id'],
       });
     }).toThrow(/Action 'in:val:id' is invalid/);
   });
@@ -90,7 +90,7 @@ describe('IAM polocy document', () => {
   test('Throws with invalid not actions', () => {
     expect(() => {
       new PolicyStatement({
-        notActions: ['service:action', '*', 'service:acti*', 'in:val:id']
+        notActions: ['service:action', '*', 'service:acti*', 'in:val:id'],
       });
     }).toThrow(/Action 'in:val:id' is invalid/);
   });
@@ -143,13 +143,13 @@ describe('IAM polocy document', () => {
   test('canonicalUserPrincipal adds a principal to a policy with the passed canonical user id', () => {
     const stack = new Stack();
     const p = new PolicyStatement();
-    const canoncialUser = "averysuperduperlongstringfor";
+    const canoncialUser = 'averysuperduperlongstringfor';
     p.addPrincipals(new CanonicalUserPrincipal(canoncialUser));
     expect(stack.resolve(p.toStatementJson())).toEqual({
-      Effect: "Allow",
+      Effect: 'Allow',
       Principal: {
-        CanonicalUser: canoncialUser
-      }
+        CanonicalUser: canoncialUser,
+      },
     });
   });
 
@@ -159,36 +159,36 @@ describe('IAM polocy document', () => {
     const p = new PolicyStatement();
     p.addAccountRootPrincipal();
     expect(stack.resolve(p.toStatementJson())).toEqual({
-      Effect: "Allow",
+      Effect: 'Allow',
       Principal: {
         AWS: {
-        "Fn::Join": [
-          "",
-          [
-          "arn:",
-          { Ref: "AWS::Partition" },
-          ":iam::",
-          { Ref: "AWS::AccountId" },
-          ":root"
-          ]
-        ]
-        }
-      }
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':iam::',
+              { Ref: 'AWS::AccountId' },
+              ':root',
+            ],
+          ],
+        },
+      },
     });
   });
 
   test('addFederatedPrincipal adds a Federated principal with the passed value', () => {
     const stack = new Stack();
     const p = new PolicyStatement();
-    p.addFederatedPrincipal("com.amazon.cognito", { StringEquals: { key: 'value' }});
+    p.addFederatedPrincipal('com.amazon.cognito', { StringEquals: { key: 'value' }});
     expect(stack.resolve(p.toStatementJson())).toEqual({
-      Effect: "Allow",
+      Effect: 'Allow',
       Principal: {
-        Federated: "com.amazon.cognito"
+        Federated: 'com.amazon.cognito',
       },
       Condition: {
-        StringEquals: { key: 'value' }
-      }
+        StringEquals: { key: 'value' },
+      },
     });
   });
 
@@ -203,9 +203,9 @@ describe('IAM polocy document', () => {
       Principal: {
         AWS: [
           { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::1234:root']] },
-          { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::5678:root']] }
-        ]
-      }
+          { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::5678:root']] },
+        ],
+      },
     });
   });
 
@@ -262,9 +262,9 @@ describe('IAM polocy document', () => {
 
       expect(stack.resolve(p)).toEqual({
         Statement: [
-          { Effect: 'Allow', Principal: '*' }
+          { Effect: 'Allow', Principal: '*' },
         ],
-        Version: '2012-10-17'
+        Version: '2012-10-17',
       });
     });
 
@@ -276,9 +276,9 @@ describe('IAM polocy document', () => {
 
       expect(stack.resolve(p)).toEqual({
         Statement: [
-          { Effect: 'Allow', Principal: '*' }
+          { Effect: 'Allow', Principal: '*' },
         ],
-        Version: '2012-10-17'
+        Version: '2012-10-17',
       });
     });
 
@@ -292,9 +292,9 @@ describe('IAM polocy document', () => {
 
       expect(stack.resolve(p)).toEqual({
         Statement: [
-          { Effect: 'Allow', Principal: '*' }
+          { Effect: 'Allow', Principal: '*' },
         ],
-        Version: '2012-10-17'
+        Version: '2012-10-17',
       });
     });
   });
@@ -329,9 +329,9 @@ describe('IAM polocy document', () => {
     expect(stack.resolve(p)).toEqual({
       Statement: [
         { Effect: 'Allow', Principal: { CanonicalUser: 'cannonical-user-1' } },
-        { Effect: 'Allow', Principal: { CanonicalUser: 'cannonical-user-2' } }
+        { Effect: 'Allow', Principal: { CanonicalUser: 'cannonical-user-2' } },
       ],
-      Version: '2012-10-17'
+      Version: '2012-10-17',
     });
   });
 
@@ -341,7 +341,7 @@ describe('IAM polocy document', () => {
       get grantPrincipal() { return this; },
       assumeRoleAction: 'sts:AssumeRole',
       policyFragment: new PrincipalPolicyFragment({ AWS: ['foo', 'bar'] }),
-      addToPolicy() { return false; }
+      addToPolicy() { return false; },
     };
     const s = new PolicyStatement();
     s.addAccountRootPrincipal();
@@ -351,9 +351,9 @@ describe('IAM polocy document', () => {
       Principal: {
         AWS: [
           { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] },
-          'foo', 'bar'
-        ]
-      }
+          'foo', 'bar',
+        ],
+      },
     });
   });
 
@@ -370,7 +370,7 @@ describe('IAM polocy document', () => {
       Action: 'action',
       Effect: 'Allow',
       Principal: { AWS: '349494949494', Service: 'test.service' },
-      Resource: 'resource'
+      Resource: 'resource',
     });
   });
 
@@ -384,7 +384,7 @@ describe('IAM polocy document', () => {
       expect(stack.resolve(s.toStatementJson())).toEqual({
         Effect: 'Allow',
         Action: 'test:Action',
-        Principal: { Service: 'codedeploy.cn-north-1.amazonaws.com.cn' }
+        Principal: { Service: 'codedeploy.cn-north-1.amazonaws.com.cn' },
       });
     });
 
@@ -397,7 +397,7 @@ describe('IAM polocy document', () => {
       expect(stack.resolve(s.toStatementJson())).toEqual({
         Effect: 'Allow',
         Action: 'test:Action',
-        Principal: { Service: 'codedeploy.cn-north-1.amazonaws.com.cn' }
+        Principal: { Service: 'codedeploy.cn-north-1.amazonaws.com.cn' },
       });
     });
 
@@ -410,7 +410,7 @@ describe('IAM polocy document', () => {
       expect(stack.resolve(s.toStatementJson())).toEqual({
         Effect: 'Allow',
         Action: 'test:Action',
-        Principal: { Service: 'test.service-principal.dev' }
+        Principal: { Service: 'test.service-principal.dev' },
       });
     });
   });
@@ -427,7 +427,7 @@ describe('IAM polocy document', () => {
 
     test('conditions are not allowed on individual principals of a composite', () => {
       const p = new CompositePrincipal(new ArnPrincipal('i:am'));
-      expect(() => p.addPrincipals(new FederatedPrincipal('federated', { condition: 1 })))
+      expect(() => p.addPrincipals(new FederatedPrincipal('federated', { StringEquals: { 'aws:some-key': 'some-value' } })))
         .toThrow(/Components of a CompositePrincipal must not have conditions/);
     });
 
@@ -441,7 +441,7 @@ describe('IAM polocy document', () => {
       // add via `addPrincipals` (with condition)
       p.addPrincipals(
         new Anyone(),
-        new ServicePrincipal('another.service')
+        new ServicePrincipal('another.service'),
       );
 
       const statement = new PolicyStatement();
@@ -449,17 +449,17 @@ describe('IAM polocy document', () => {
 
       // add via policy statement
       statement.addArnPrincipal('aws-principal-3');
-      statement.addCondition('cond2', { boom: 123 });
+      statement.addCondition('cond2', { boom: '123' });
 
       expect(stack.resolve(statement.toStatementJson())).toEqual({
         Condition: {
-          cond2: { boom: 123 }
+          cond2: { boom: '123' },
         },
         Effect: 'Allow',
         Principal: {
           AWS: [ 'i:am:an:arn', '*', 'aws-principal-3' ],
           Service: [ 'amazon.com', 'another.service' ],
-        }
+        },
       });
     });
 
@@ -469,7 +469,95 @@ describe('IAM polocy document', () => {
 
       // THEN
       expect(() => p.addPrincipals(new FederatedPrincipal('fed', {}, 'sts:Boom')))
-       .toThrow(/Cannot add multiple principals with different "assumeRoleAction". Expecting "sts:AssumeRole", got "sts:Boom"/);
+        .toThrow(/Cannot add multiple principals with different "assumeRoleAction". Expecting "sts:AssumeRole", got "sts:Boom"/);
+    });
+  });
+
+  describe('PrincipalWithConditions can be used to add a principal with conditions', () => {
+    test('includes conditions from both the wrapped principal and the wrapper', () => {
+      const stack = new Stack();
+      const principalOpts = {
+        conditions: {
+          BinaryEquals: {
+            'principal-key': 'SGV5LCBmcmllbmQh',
+          },
+        },
+      };
+      const p = new ServicePrincipal('s3.amazonaws.com', principalOpts)
+        .withConditions({ StringEquals: { 'wrapper-key': ['val-1', 'val-2'] } });
+      const statement = new PolicyStatement();
+      statement.addPrincipals(p);
+      expect(stack.resolve(statement.toStatementJson())).toEqual({
+        Condition: {
+          BinaryEquals: { 'principal-key': 'SGV5LCBmcmllbmQh' },
+          StringEquals: { 'wrapper-key': ['val-1', 'val-2'] },
+        },
+        Effect: 'Allow',
+        Principal: {
+          Service: 's3.amazonaws.com',
+        },
+      });
+    });
+
+    test('conditions from addCondition are merged with those from the principal', () => {
+      const stack = new Stack();
+      const p = new AccountPrincipal('012345678900').withConditions({ StringEquals: { key: 'val' } });
+      const statement = new PolicyStatement();
+      statement.addPrincipals(p);
+      statement.addCondition('Null', { 'banned-key': 'true' });
+      expect(stack.resolve(statement.toStatementJson())).toEqual({
+        Effect: 'Allow',
+        Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::012345678900:root']] } },
+        Condition: { StringEquals: { key: 'val' }, Null: { 'banned-key': 'true' } },
+      });
+    });
+
+    test('adding conditions via `withConditions` does not affect the original principal', () => {
+      const originalPrincipal = new ArnPrincipal('iam:an:arn');
+      const principalWithConditions = originalPrincipal.withConditions({ StringEquals: { key: 'val' } });
+      expect(originalPrincipal.policyFragment.conditions).toEqual({});
+      expect(principalWithConditions.policyFragment.conditions).toEqual({ StringEquals: { key: 'val' } });
+    });
+
+    test('conditions are merged when operators conflict', () => {
+      const p = new FederatedPrincipal('fed', {
+        OperatorOne: { 'fed-key': 'fed-val' },
+        OperatorTwo: { 'fed-key': 'fed-val' },
+        OperatorThree: { 'fed-key': 'fed-val' },
+      }).withConditions({
+        OperatorTwo: { 'with-key': 'with-val' },
+        OperatorThree: { 'with-key': 'with-val' },
+      });
+      const statement = new PolicyStatement();
+      statement.addCondition('OperatorThree', { 'add-key': 'add-val' });
+      statement.addPrincipals(p);
+      expect(statement.toStatementJson()).toEqual({
+        Effect: 'Allow',
+        Principal: { Federated: 'fed' },
+        Condition: {
+          OperatorOne: { 'fed-key': 'fed-val' },
+          OperatorTwo: { 'fed-key': 'fed-val', 'with-key': 'with-val' },
+          OperatorThree: { 'fed-key': 'fed-val', 'with-key': 'with-val', 'add-key': 'add-val' },
+        },
+      });
+    });
+
+    test('values passed to `withConditions` overwrite values from the wrapped principal ' +
+      'when keys conflict within an operator', () => {
+      const p = new FederatedPrincipal('fed', {
+        Operator: { key: 'p-val' },
+      }).withConditions({
+        Operator: { key: 'with-val' },
+      });
+      const statement = new PolicyStatement();
+      statement.addPrincipals(p);
+      expect(statement.toStatementJson()).toEqual({
+        Effect: 'Allow',
+        Principal: { Federated: 'fed' },
+        Condition: {
+          Operator: { key: 'with-val' },
+        },
+      });
     });
   });
 
@@ -485,13 +573,13 @@ describe('IAM polocy document', () => {
       statement.addActions('action1', 'action2');
       statement.addServicePrincipal('service');
       statement.addConditions({
-          a: {
-            b: 'c'
-          },
-          d: {
-            e: 'f'
-          }
-        });
+        a: {
+          b: 'c',
+        },
+        d: {
+          e: 'f',
+        },
+      });
 
       // WHEN
       p.addStatements(statement);
@@ -527,7 +615,7 @@ describe('IAM polocy document', () => {
   test('autoAssignSids enables auto-assignment of a unique SID for each statement', () => {
     // GIVEN
     const doc = new PolicyDocument({
-      assignSids: true
+      assignSids: true,
     });
 
     // WHEN
@@ -543,7 +631,7 @@ describe('IAM polocy document', () => {
       Version: '2012-10-17',
       Statement: [
         { Action: 'service:action1', Effect: 'Allow', Resource: 'resource1', Sid: '0' },
-        { Action: 'service:action2', Effect: 'Allow', Resource: 'resource2', Sid: '1' }
+        { Action: 'service:action2', Effect: 'Allow', Resource: 'resource2', Sid: '1' },
       ],
     });
   });
@@ -566,8 +654,8 @@ describe('IAM polocy document', () => {
       resources: ['*'],
       principals: [new ArnPrincipal('arn')],
       conditions: {
-        key: { equals: 'value' }
-      }
+        key: { equals: 'value' },
+      },
     }));
 
     expect(stack.resolve(doc1)).toEqual(stack.resolve(doc2));
@@ -577,7 +665,7 @@ describe('IAM polocy document', () => {
     test("throws error when Statement isn't an array", () => {
       expect(() => {
         PolicyDocument.fromJson({
-          Statement: 'asdf'
+          Statement: 'asdf',
         });
       }).toThrow(/Statement must be an array/);
     });
@@ -594,7 +682,7 @@ describe('IAM polocy document', () => {
 
     expect(stack.resolve(p.toStatementJson())).toEqual({
       Effect: 'Allow',
-      Condition: {StringEquals: {'kms:ViaService': 'service', 'sts:ExternalId': '12221121221'}}
+      Condition: {StringEquals: {'kms:ViaService': 'service', 'sts:ExternalId': '12221121221'}},
     });
   });
 });

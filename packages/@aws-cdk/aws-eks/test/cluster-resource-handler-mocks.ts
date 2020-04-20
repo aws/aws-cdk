@@ -46,8 +46,8 @@ export const client: EksClient = {
         version: '1.0',
         arn: `arn:${req.name}`,
         certificateAuthority: { data: 'certificateAuthority-data' },
-        status: 'CREATING'
-      }
+        status: 'CREATING',
+      },
     };
   },
 
@@ -60,8 +60,8 @@ export const client: EksClient = {
     }
     return {
       cluster: {
-        name: req.name
-      }
+        name: req.name,
+      },
     };
   },
 
@@ -79,11 +79,11 @@ export const client: EksClient = {
         name: req.name,
         version: '1.0',
         roleArn: 'arn:role',
-        arn: `arn:cluster-arn`,
+        arn: 'arn:cluster-arn',
         certificateAuthority: { data: 'certificateAuthority-data' },
         endpoint: 'http://endpoint',
-        status: simulateResponse.describeClusterResponseMockStatus || 'ACTIVE'
-      }
+        status: simulateResponse.describeClusterResponseMockStatus || 'ACTIVE',
+      },
     };
   },
 
@@ -117,16 +117,16 @@ export const MOCK_PROPS = {
   roleArn: 'arn:of:role',
   resourcesVpcConfig: {
     subnetIds: [ 'subnet1', 'subnet2' ],
-    securityGroupIds: [ 'sg1', 'sg2', 'sg3' ]
-  }
+    securityGroupIds: [ 'sg1', 'sg2', 'sg3' ],
+  },
 };
 
 export const MOCK_ASSUME_ROLE_ARN = 'assume:role:arn';
 
 export function newRequest<T extends 'Create' | 'Update' | 'Delete'>(
-    requestType: T,
-    props?: Partial<sdk.EKS.CreateClusterRequest>,
-    oldProps?: Partial<sdk.EKS.CreateClusterRequest>) {
+  requestType: T,
+  props?: Partial<sdk.EKS.CreateClusterRequest>,
+  oldProps?: Partial<sdk.EKS.CreateClusterRequest>) {
   return {
     StackId: 'fake-stack-id',
     RequestId: 'fake-request-id',
@@ -138,12 +138,12 @@ export function newRequest<T extends 'Create' | 'Update' | 'Delete'>(
     RequestType: requestType,
     OldResourceProperties: {
       Config: oldProps,
-      AssumeRoleArn: MOCK_ASSUME_ROLE_ARN
+      AssumeRoleArn: MOCK_ASSUME_ROLE_ARN,
     },
     ResourceProperties: {
       ServiceToken: 'boom',
       Config: props,
-      AssumeRoleArn: MOCK_ASSUME_ROLE_ARN
-    }
+      AssumeRoleArn: MOCK_ASSUME_ROLE_ARN,
+    },
   };
 }

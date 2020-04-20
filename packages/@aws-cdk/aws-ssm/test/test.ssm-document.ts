@@ -18,5 +18,5 @@ export = {
       Name: 'document',
     }));
     test.done();
-  }
+  },
 };

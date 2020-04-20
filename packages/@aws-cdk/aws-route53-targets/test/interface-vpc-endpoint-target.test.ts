@@ -13,66 +13,66 @@ test('use InterfaceVpcEndpoint as record target', () => {
     vpc,
     service: {
       name: 'com.amazonaws.us-west-2.workspaces',
-      port: 80
-    }
+      port: 80,
+    },
   });
   const zone = new route53.PrivateHostedZone(stack, 'PrivateZone', {
     vpc,
-    zoneName: 'test.aws.cdk.com'
+    zoneName: 'test.aws.cdk.com',
   });
 
   // WHEN
-  new route53.ARecord(stack, "AliasEndpointRecord", {
+  new route53.ARecord(stack, 'AliasEndpointRecord', {
     zone,
     recordName: 'foo',
-    target: route53.RecordTarget.fromAlias(new targets.InterfaceVpcEndpointTarget(interfaceVpcEndpoint))
+    target: route53.RecordTarget.fromAlias(new targets.InterfaceVpcEndpointTarget(interfaceVpcEndpoint)),
   });
 
   // THEN
   expect(stack).toHaveResource('AWS::Route53::RecordSet', {
     AliasTarget: {
       HostedZoneId: {
-        "Fn::Select": [
+        'Fn::Select': [
           0,
           {
-            "Fn::Split": [
-              ":",
+            'Fn::Split': [
+              ':',
               {
-                "Fn::Select": [
+                'Fn::Select': [
                   0,
                   {
-                    "Fn::GetAtt": [
-                      "InterfaceEndpoint12DE6E71",
-                      "DnsEntries"
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
-        ]
+                    'Fn::GetAtt': [
+                      'InterfaceEndpoint12DE6E71',
+                      'DnsEntries',
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
       },
       DNSName: {
-        "Fn::Select": [
+        'Fn::Select': [
           1,
           {
-            "Fn::Split": [
-              ":",
+            'Fn::Split': [
+              ':',
               {
-                "Fn::Select": [
+                'Fn::Select': [
                   0,
                   {
-                    "Fn::GetAtt": [
-                      "InterfaceEndpoint12DE6E71",
-                      "DnsEntries"
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      }
-    }
+                    'Fn::GetAtt': [
+                      'InterfaceEndpoint12DE6E71',
+                      'DnsEntries',
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    },
   });
 });

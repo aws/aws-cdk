@@ -42,6 +42,12 @@ export interface RuleTargetConfig {
   readonly role?: iam.IRole;
 
   /**
+   * Parameters used when the rule invokes Amazon AWS Batch Job/Queue
+   * @default no parameters set
+   */
+  readonly batchParameters?: CfnRule.BatchParametersProperty;
+
+  /**
    * The Amazon ECS task definition and task count to use, if the event target
    * is an Amazon ECS task.
    */

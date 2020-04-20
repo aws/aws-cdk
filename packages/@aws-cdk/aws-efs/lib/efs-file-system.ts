@@ -1,7 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
-import {Construct, Resource} from "@aws-cdk/core";
-import {CfnFileSystem, CfnMountTarget} from "./efs.generated";
+import {Construct, Resource, Tag} from '@aws-cdk/core';
+import {CfnFileSystem, CfnMountTarget} from './efs.generated';
 
 // tslint:disable: max-line-length
 /**
@@ -45,13 +45,13 @@ export enum EfsPerformanceMode {
   /**
    * This is the general purpose performance mode for most file systems.
    */
-  GENERAL_PURPOSE = "generalPurpose",
+  GENERAL_PURPOSE = 'generalPurpose',
 
   /**
    * This performance mode can scale to higher levels of aggregate throughput and operations per second with a
    * tradeoff of slightly higher latencies.
    */
-  MAX_IO = "maxIO"
+  MAX_IO = 'maxIO'
 }
 
 /**
@@ -63,12 +63,12 @@ export enum EfsThroughputMode {
   /**
    *  This mode on Amazon EFS scales as the size of the file system in the standard storage class grows.
    */
-  BURSTING = "bursting",
+  BURSTING = 'bursting',
 
   /**
    * This mode can instantly provision the throughput of the file system (in MiB/s) independent of the amount of data stored.
    */
-  PROVISIONED = "provisioned"
+  PROVISIONED = 'provisioned'
 }
 
 /**
@@ -113,6 +113,13 @@ export interface EfsFileSystemProps {
    * @default - false
    */
   readonly encrypted?: boolean;
+
+  /**
+   * The filesystem's name.
+   *
+   * @default - CDK generated name
+   */
+  readonly fileSystemName?: string;
 
   /**
    * The KMS key used for encryption. This is required to encrypt the data at rest if @encrypted is set to true.
@@ -202,7 +209,7 @@ export class EfsFileSystem extends EfsFileSystemBase {
       public readonly fileSystemId = attrs.fileSystemID;
       public readonly connections = new ec2.Connections({
         securityGroups: [attrs.securityGroup],
-        defaultPort: ec2.Port.tcp(EfsFileSystem.DEFAULT_PORT)
+        defaultPort: ec2.Port.tcp(EfsFileSystem.DEFAULT_PORT),
       });
     }
 
@@ -236,33 +243,34 @@ export class EfsFileSystem extends EfsFileSystemBase {
       if (props.provisionedThroughputInMibps === undefined) {
         throw new Error('Property provisionedThroughputInMibps is required when throughputMode is PROVISIONED');
       } else if (!Number.isInteger(props.provisionedThroughputInMibps)) {
-        throw new Error("Invalid input for provisionedThroughputInMibps");
+        throw new Error('Invalid input for provisionedThroughputInMibps');
       } else if (props.provisionedThroughputInMibps < 1 || props.provisionedThroughputInMibps > 1024) {
-        this.node.addWarning("Valid values for throughput are 1-1024 MiB/s. You can get this limit increased by contacting AWS Support.");
+        this.node.addWarning('Valid values for throughput are 1-1024 MiB/s. You can get this limit increased by contacting AWS Support.');
       }
     }
 
-    this.efsFileSystem = new CfnFileSystem(this, "Resource", {
+    this.efsFileSystem = new CfnFileSystem(this, 'Resource', {
       encrypted: props.encrypted,
       kmsKeyId: (props.kmsKey ? props.kmsKey.keyId : undefined),
       lifecyclePolicies: (props.lifecyclePolicy ? Array.of({
-        transitionToIa: EfsLifecyclePolicyProperty[props.lifecyclePolicy]
+        transitionToIa: EfsLifecyclePolicyProperty[props.lifecyclePolicy],
       } as CfnFileSystem.LifecyclePolicyProperty) : undefined),
       performanceMode: props.performanceMode,
       throughputMode: props.throughputMode,
-      provisionedThroughputInMibps: props.provisionedThroughputInMibps
+      provisionedThroughputInMibps: props.provisionedThroughputInMibps,
     });
 
     this.fileSystemId = this.efsFileSystem.ref;
     this.node.defaultChild = this.efsFileSystem;
+    Tag.add(this, 'Name', props.fileSystemName || this.node.path);
 
     const securityGroup = (props.securityGroup || new ec2.SecurityGroup(this, 'EfsSecurityGroup', {
-      vpc: props.vpc
+      vpc: props.vpc,
     }));
 
     this.connections = new ec2.Connections({
       securityGroups: [securityGroup],
-      defaultPort: ec2.Port.tcp(EfsFileSystem.DEFAULT_PORT)
+      defaultPort: ec2.Port.tcp(EfsFileSystem.DEFAULT_PORT),
     });
 
     const subnets = props.vpc.selectSubnets(props.vpcSubnets);
@@ -271,11 +279,11 @@ export class EfsFileSystem extends EfsFileSystemBase {
     let mountTargetCount = 0;
     subnets.subnetIds.forEach((subnetId: string) => {
       new CfnMountTarget(this,
-        "EfsMountTarget" + (++mountTargetCount),
+        'EfsMountTarget' + (++mountTargetCount),
         {
           fileSystemId: this.fileSystemId,
           securityGroups: Array.of(securityGroup.securityGroupId),
-          subnetId
+          subnetId,
         });
     });
   }

@@ -11,17 +11,18 @@ class EksClusterStack extends TestStack {
 
     // allow all account users to assume this role in order to admin the cluster
     const mastersRole = new iam.Role(this, 'AdminRole', {
-      assumedBy: new iam.AccountRootPrincipal()
+      assumedBy: new iam.AccountRootPrincipal(),
     });
 
+    // create the cluster with a default nodegroup capacity
     const cluster = new eks.Cluster(this, 'Cluster', {
       mastersRole,
-      defaultCapacity: 0,
+      defaultCapacity: 2,
     });
 
-    // fargate profile for resources in the "default" namespace
+    // // fargate profile for resources in the "default" namespace
     cluster.addFargateProfile('default', {
-      selectors: [ { namespace: 'default' } ]
+      selectors: [{ namespace: 'default' }],
     });
 
     // add some capacity to the cluster. The IAM instance role will
@@ -31,6 +32,13 @@ class EksClusterStack extends TestStack {
       minCapacity: 3,
     });
 
+    // add bottlerocket nodes
+    cluster.addCapacity('BottlerocketNodes', {
+      instanceType: new ec2.InstanceType('t3.small'),
+      minCapacity: 2,
+      machineImageType: eks.MachineImageType.BOTTLEROCKET,
+    });
+
     // spot instances (up to 10)
     cluster.addCapacity('spot', {
       spotPrice: '0.1094',
@@ -38,14 +46,22 @@ class EksClusterStack extends TestStack {
       maxCapacity: 10,
       bootstrapOptions: {
         kubeletExtraArgs: '--node-labels foo=bar,goo=far',
-        awsApiRetryAttempts: 5
-      }
+        awsApiRetryAttempts: 5,
+      },
     });
 
-    // apply a kubernetes manifest
+    // add a extra nodegroup
+    cluster.addNodegroup('extra-ng', {
+      instanceType: new ec2.InstanceType('t3.small'),
+      minSize: 1,
+      // reusing the default capacity nodegroup instance role when available
+      nodeRole: cluster.defaultCapacity ? cluster.defaultCapacity.role : undefined,
+    });
+
+    // // apply a kubernetes manifest
     cluster.addResource('HelloApp', ...hello.resources);
 
-    // add two Helm charts to the cluster. This will be the Kubernetes dashboard and the Nginx Ingress Controller
+    // // add two Helm charts to the cluster. This will be the Kubernetes dashboard and the Nginx Ingress Controller
     cluster.addChart('dashboard', { chart: 'kubernetes-dashboard', repository: 'https://kubernetes-charts.storage.googleapis.com' });
     cluster.addChart('nginx-ingress', { chart: 'nginx-ingress', repository: 'https://helm.nginx.com/stable', namespace: 'kube-system' });
 

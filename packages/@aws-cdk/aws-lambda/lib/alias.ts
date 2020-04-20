@@ -20,27 +20,15 @@ export interface IAlias extends IFunction {
 }
 
 /**
- * Properties for a new Lambda alias
+ * Options for `lambda.Alias`.
  */
-export interface AliasProps extends EventInvokeConfigOptions {
+export interface AliasOptions extends EventInvokeConfigOptions {
   /**
    * Description for the alias
    *
    * @default No description
    */
   readonly description?: string;
-
-  /**
-   * Function version this alias refers to
-   *
-   * Use lambda.addVersion() to obtain a new lambda version to refer to.
-   */
-  readonly version: IVersion;
-
-  /**
-   * Name of this alias
-   */
-  readonly aliasName: string;
 
   /**
    * Additional versions with individual weights this alias points to
@@ -67,6 +55,23 @@ export interface AliasProps extends EventInvokeConfigOptions {
    * @default No provisioned concurrency
    */
   readonly provisionedConcurrentExecutions?: number;
+}
+
+/**
+ * Properties for a new Lambda alias
+ */
+export interface AliasProps extends AliasOptions {
+  /**
+   * Name of this alias
+   */
+  readonly aliasName: string;
+
+  /**
+   * Function version this alias refers to
+   *
+   * Use lambda.addVersion() to obtain a new lambda version to refer to.
+   */
+  readonly version: IVersion;
 }
 
 export interface AliasAttributes {
@@ -139,7 +144,7 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
       functionName: this.version.lambda.functionName,
       functionVersion: props.version.version,
       routingConfig: this.determineRoutingConfig(props),
-      provisionedConcurrencyConfig: this.determineProvisionedConcurrency(props)
+      provisionedConcurrencyConfig: this.determineProvisionedConcurrency(props),
     });
 
     this.functionArn = this.getResourceArnAttribute(alias.ref, {
@@ -163,7 +168,7 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
     // ARN parsing splits on `:`, so we can only get the function's name from the ARN as resourceName...
     // And we're parsing it out (instead of using the underlying function directly) in order to have use of it incur
     // an implicit dependency on the resource.
-    this.functionName = `${this.stack.parseArn(this.functionArn, ":").resourceName!}:${this.aliasName}`;
+    this.functionName = `${this.stack.parseArn(this.functionArn, ':').resourceName!}:${this.aliasName}`;
   }
 
   public get grantPrincipal() {
@@ -182,9 +187,9 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
         // construct the name from the underlying lambda so that alarms on an alias
         // don't cause a circular dependency with CodeDeploy
         // see: https://github.com/aws/aws-cdk/issues/2231
-        Resource: `${this.lambda.functionName}:${this.aliasName}`
+        Resource: `${this.lambda.functionName}:${this.aliasName}`,
       },
-      ...props
+      ...props,
     });
   }
 
@@ -202,9 +207,9 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
       additionalVersionWeights: props.additionalVersions.map(vw => {
         return {
           functionVersion: vw.version.version,
-          functionWeight: vw.weight
+          functionWeight: vw.weight,
         };
-      })
+      }),
     };
   }
 

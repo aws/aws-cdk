@@ -2,13 +2,14 @@
   "name": "monocdk-experiment",
   "version": "0.0.0",
   "description": "An experiment to bundle the entire CDK into a single module",
-  "main": "src/index.js",
-  "types": "src/index.d.ts",
+  "main": "index.js",
+  "types": "index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git"
   },
   "stability": "experimental",
+  "maturity": "developer-preview",
   "scripts": {
     "build": "node deps.js && ./build.sh",
     "test": "echo done",
@@ -23,7 +24,8 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "constructs": "2.0.0",
+    "typescript": "~3.8.3",
+    "constructs": "3.0.0",
     "@aws-cdk/alexa-ask": "0.0.0",
     "@aws-cdk/app-delivery": "0.0.0",
     "@aws-cdk/assets": "0.0.0",
@@ -159,15 +161,22 @@
     "@aws-cdk/custom-resources": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
-    "@types/node": "^10.17.17",
+    "@types/node": "^10.17.18",
+    "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/aws-chatbot": "0.0.0",
-    "@aws-cdk/aws-codestarconnections": "0.0.0"
+    "@aws-cdk/aws-codestarconnections": "0.0.0",
+    "@aws-cdk/aws-cassandra": "0.0.0",
+    "@aws-cdk/aws-codeguruprofiler": "0.0.0",
+    "@aws-cdk/aws-networkmanager": "0.0.0",
+    "@aws-cdk/aws-resourcegroups": "0.0.0",
+    "@aws-cdk/aws-detective": "0.0.0",
+    "@aws-cdk/aws-imagebuilder": "0.0.0"
   },
   "peerDependencies": {
-    "constructs": "^2.0.0"
+    "constructs": "^3.0.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 10.3.0"
+    "node": ">= 10.12.0"
   }
 }

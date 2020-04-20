@@ -1,6 +1,6 @@
 import { deployStack } from '../../lib';
 import { testStack } from '../util';
-import { MockSDK } from '../util/mock-sdk';
+import { MockedObject, mockResolvedEnvironment, MockSdk, MockSdkProvider, SyncHandlerSubsetOf } from '../util/mock-sdk';
 
 const FAKE_TEMPLATE = { resource: 'noerrorresource' };
 
@@ -9,463 +9,240 @@ const FAKE_STACK = testStack({
   template: FAKE_TEMPLATE,
 });
 
+let sdk: MockSdk;
+let sdkProvider: MockSdkProvider;
+let cfnMocks: MockedObject<SyncHandlerSubsetOf<AWS.CloudFormation>>;
+beforeEach(() => {
+  sdkProvider = new MockSdkProvider();
+  sdk = new MockSdk();
+
+  cfnMocks = {
+    describeStacks: jest.fn()
+      // First call, no stacks exist
+      .mockImplementationOnce(() => ({ Stacks: [] }))
+      // Second call, stack has been created
+      .mockImplementationOnce(() => ({ Stacks: [
+        {
+          StackStatus: 'CREATE_COMPLETE',
+          StackStatusReason: 'It is magic',
+        },
+      ] })),
+    createChangeSet: jest.fn((_o) => ({})),
+    describeChangeSet: jest.fn((_o) => ({
+      Status: 'CREATE_COMPLETE',
+      Changes: [],
+    })),
+    executeChangeSet: jest.fn((_o) => ({})),
+    getTemplate: jest.fn((_o) => ({ TemplateBody: JSON.stringify(FAKE_TEMPLATE) })),
+  };
+  sdk.stubCloudFormation(cfnMocks as any);
+});
+
 test('do deploy executable change set with 0 changes', async () => {
-  // GIVEN
-  const sdk = new MockSDK();
-
-  let executed = false;
-
-  sdk.stubCloudFormation({
-    describeStacks() {
-      return {
-        Stacks: []
-      };
-    },
-
-    createChangeSet() {
-      return {};
-    },
-
-    describeChangeSet() {
-      return {
-        Status: 'CREATE_COMPLETE',
-        Changes: [],
-      };
-    },
-
-    executeChangeSet() {
-      executed = true;
-      return {};
-    }
-  });
-
   // WHEN
   const ret = await deployStack({
     stack: FAKE_STACK,
+    resolvedEnvironment: mockResolvedEnvironment(),
     sdk,
+    sdkProvider,
   });
 
   // THEN
   expect(ret.noOp).toBeFalsy();
-  expect(executed).toBeTruthy();
+  expect(cfnMocks.executeChangeSet).toHaveBeenCalled();
 });
 
 test('correctly passes CFN parameters, ignoring ones with empty values', async () => {
+  // WHEN
+  await deployStack({
+    stack: FAKE_STACK,
+    sdk,
+    sdkProvider,
+    resolvedEnvironment: mockResolvedEnvironment(),
+    parameters: {
+      A: 'A-value',
+      B: 'B=value',
+      C: undefined,
+      D: '',
+    },
+  });
+
+  // THEN
+  expect(cfnMocks.createChangeSet).toHaveBeenCalledWith(expect.objectContaining({
+    Parameters: [
+      { ParameterKey: 'A', ParameterValue: 'A-value' },
+      { ParameterKey: 'B', ParameterValue: 'B=value' },
+    ],
+  }));
+});
+
+test('deploy is skipped if template did not change', async () => {
   // GIVEN
-  const sdk = new MockSDK();
+  givenStackExists();
 
-  let parameters: any[] | undefined;
+  // WHEN
+  await deployStack({
+    stack: FAKE_STACK,
+    sdk,
+    sdkProvider,
+    resolvedEnvironment: mockResolvedEnvironment(),
+  });
 
-  sdk.stubCloudFormation({
-    describeStacks() {
-      return {
-        Stacks: []
-      };
-    },
+  // THEN
+  expect(cfnMocks.executeChangeSet).not.toBeCalled();
+});
 
-    createChangeSet(options) {
-      parameters = options.Parameters;
-      return {};
-    },
+test('deploy not skipped if template did not change and --force is applied', async () => {
+  // GIVEN
+  givenStackExists();
 
-    describeChangeSet() {
-      return {
-        Status: 'CREATE_COMPLETE',
-        Changes: [],
-      };
-    },
+  // WHEN
+  await deployStack({
+    stack: FAKE_STACK,
+    sdk,
+    sdkProvider,
+    resolvedEnvironment: mockResolvedEnvironment(),
+    force: true,
+  });
 
-    executeChangeSet() {
-      return {};
-    }
+  // THEN
+  expect(cfnMocks.executeChangeSet).toHaveBeenCalled();
+});
+
+test('deploy is skipped if template and tags did not change', async () => {
+  // GIVEN
+  givenStackExists({
+    Tags: [
+      { Key: 'Key1', Value: 'Value1' },
+      { Key: 'Key2', Value: 'Value2' },
+    ],
+  });
+
+  // WHEN
+  await deployStack({
+    stack: FAKE_STACK,
+    tags: [
+      { Key: 'Key1', Value: 'Value1' },
+      { Key: 'Key2', Value: 'Value2' },
+    ],
+    sdk,
+    sdkProvider,
+    resolvedEnvironment: mockResolvedEnvironment(),
+  });
+
+  // THEN
+  expect(cfnMocks.createChangeSet).not.toBeCalled();
+  expect(cfnMocks.executeChangeSet).not.toBeCalled();
+  expect(cfnMocks.describeStacks).toHaveBeenCalledWith({ StackName: 'withouterrors' });
+  expect(cfnMocks.getTemplate).toHaveBeenCalledWith({ StackName: 'withouterrors', TemplateStage: 'Original' });
+});
+
+test('deploy not skipped if template did not change but tags changed', async () => {
+  // GIVEN
+  givenStackExists({
+    Tags: [
+      { Key: 'Key', Value: 'Value' },
+    ],
   });
 
   // WHEN
   await deployStack({
     stack: FAKE_STACK,
     sdk,
-    parameters: {
-      A: 'A-value',
-      B: undefined,
-      C: '',
-    },
-  });
-
-  // THEN
-  expect(parameters).toStrictEqual([
-    { ParameterKey: 'A', ParameterValue: 'A-value' },
-  ]);
-});
-
-test('deploy is skipped if template did not change', async () => {
-  const sdk = new MockSDK();
-  let describeStacksInput: AWS.CloudFormation.DescribeStacksInput;
-  let getTemplateInput: AWS.CloudFormation.GetTemplateInput;
-  let createChangeSetCalled = false;
-  let executeChangeSetCalled = false;
-
-  sdk.stubCloudFormation({
-    getTemplate(input) {
-      getTemplateInput = input;
-      return {
-        TemplateBody: JSON.stringify(FAKE_TEMPLATE)
-      };
-    },
-    describeStacks(input) {
-      describeStacksInput = input;
-      return {
-        Stacks: [
-          {
-            StackName: 'mock-stack-name',
-            StackId: 'mock-stack-id',
-            CreationTime: new Date(),
-            StackStatus: 'CREATE_COMPLETE'
-          }
-        ]
-      };
-    },
-    createChangeSet() {
-      createChangeSetCalled = true;
-      return { };
-    },
-    executeChangeSet() {
-      executeChangeSetCalled = true;
-      return { };
-    }
-  });
-
-  await deployStack({
-    stack: FAKE_STACK,
-    sdk
-  });
-
-  expect(createChangeSetCalled).toBeFalsy();
-  expect(executeChangeSetCalled).toBeFalsy();
-  expect(describeStacksInput!).toStrictEqual({ StackName: 'withouterrors' });
-  expect(getTemplateInput!).toStrictEqual({ StackName: 'withouterrors', TemplateStage: 'Original' });
-});
-
-test('deploy is skipped if template and tags did not change', async () => {
-  const sdk = new MockSDK();
-  let describeStacksInput: AWS.CloudFormation.DescribeStacksInput;
-  let getTemplateInput: AWS.CloudFormation.GetTemplateInput;
-  let createChangeSetCalled = false;
-  let executeChangeSetCalled = false;
-
-  sdk.stubCloudFormation({
-    getTemplate(input) {
-      getTemplateInput = input;
-      return {
-        TemplateBody: JSON.stringify(FAKE_TEMPLATE)
-      };
-    },
-    describeStacks(input) {
-      describeStacksInput = input;
-      return {
-        Stacks: [
-          {
-            StackName: 'mock-stack-name',
-            StackId: 'mock-stack-id',
-            CreationTime: new Date(),
-            StackStatus: 'CREATE_COMPLETE',
-            Tags: [
-              {
-                Key: 'Key1',
-                Value: 'Value1'
-              },
-              {
-                Key: 'Key2',
-                Value: 'Value2'
-              }
-            ]
-          }
-        ]
-      };
-    },
-    createChangeSet() {
-      createChangeSetCalled = true;
-      return { };
-    },
-    executeChangeSet() {
-      executeChangeSetCalled = true;
-      return { };
-    }
-  });
-
-  await deployStack({
-    stack: FAKE_STACK,
-    tags: [
-      {
-        Key: 'Key1',
-        Value: 'Value1'
-      },
-      {
-        Key: 'Key2',
-        Value: 'Value2'
-      }
-    ],
-    sdk
-  });
-
-  expect(createChangeSetCalled).toBeFalsy();
-  expect(executeChangeSetCalled).toBeFalsy();
-  expect(describeStacksInput!).toStrictEqual({ StackName: 'withouterrors' });
-  expect(getTemplateInput!).toStrictEqual({ StackName: 'withouterrors', TemplateStage: 'Original' });
-});
-
-test('deploy not skipped if template did not change but tags changed', async () => {
-  const sdk = new MockSDK();
-  let describeStacksInput: AWS.CloudFormation.DescribeStacksInput;
-  let getTemplateInput: AWS.CloudFormation.GetTemplateInput;
-  let createChangeSetCalled = false;
-  let executeChangeSetCalled = false;
-  let describeChangeSetCalled = false;
-
-  sdk.stubCloudFormation({
-    getTemplate(input) {
-      getTemplateInput = input;
-      return {
-        TemplateBody: JSON.stringify(FAKE_TEMPLATE)
-      };
-    },
-    describeStacks(input) {
-      describeStacksInput = input;
-      return {
-        Stacks: [
-          {
-            StackName: 'mock-stack-name',
-            StackId: 'mock-stack-id',
-            CreationTime: new Date(),
-            StackStatus: 'CREATE_COMPLETE',
-            Tags: [
-              {
-                Key: 'Key',
-                Value: 'Value'
-              },
-            ]
-          }
-        ]
-      };
-    },
-    createChangeSet() {
-      createChangeSetCalled = true;
-      return { };
-    },
-    executeChangeSet() {
-      executeChangeSetCalled = true;
-      return { };
-    },
-    describeChangeSet() {
-      describeChangeSetCalled = true;
-      return {
-        Status: 'CREATE_COMPLETE',
-        Changes: [],
-      };
-    }
-  });
-
-  await deployStack({
-    stack: FAKE_STACK,
-    sdk,
+    sdkProvider,
+    resolvedEnvironment: mockResolvedEnvironment(),
     tags: [
       {
         Key: 'Key',
-        Value: 'NewValue'
-      }
-    ]
+        Value: 'NewValue',
+      },
+    ],
   });
 
-  expect(createChangeSetCalled).toBeTruthy();
-  expect(executeChangeSetCalled).toBeTruthy();
-  expect(describeChangeSetCalled).toBeTruthy();
-  expect(describeStacksInput!).toStrictEqual({ StackName: "withouterrors" });
-  expect(getTemplateInput!).toStrictEqual({ StackName: 'withouterrors', TemplateStage: 'Original' });
+  // THEN
+  expect(cfnMocks.createChangeSet).toHaveBeenCalled();
+  expect(cfnMocks.executeChangeSet).toHaveBeenCalled();
+  expect(cfnMocks.describeChangeSet).toHaveBeenCalled();
+  expect(cfnMocks.describeStacks).toHaveBeenCalledWith({ StackName: 'withouterrors' });
+  expect(cfnMocks.getTemplate).toHaveBeenCalledWith({ StackName: 'withouterrors', TemplateStage: 'Original' });
 });
 
 test('deploy not skipped if template did not change but one tag removed', async () => {
-  const sdk = new MockSDK();
-  let describeStacksInput: AWS.CloudFormation.DescribeStacksInput;
-  let getTemplateInput: AWS.CloudFormation.GetTemplateInput;
-  let createChangeSetCalled = false;
-  let executeChangeSetCalled = false;
-  let describeChangeSetCalled = false;
-
-  sdk.stubCloudFormation({
-    getTemplate(input) {
-      getTemplateInput = input;
-      return {
-        TemplateBody: JSON.stringify(FAKE_TEMPLATE)
-      };
-    },
-    describeStacks(input) {
-      describeStacksInput = input;
-      return {
-        Stacks: [
-          {
-            StackName: 'mock-stack-name',
-            StackId: 'mock-stack-id',
-            CreationTime: new Date(),
-            StackStatus: 'CREATE_COMPLETE',
-            Tags: [
-              {
-                Key: 'Key1',
-                Value: 'Value1'
-              },
-              {
-                Key: 'Key2',
-                Value: 'Value2'
-              },
-            ]
-          }
-        ]
-      };
-    },
-    createChangeSet() {
-      createChangeSetCalled = true;
-      return { };
-    },
-    executeChangeSet() {
-      executeChangeSetCalled = true;
-      return { };
-    },
-    describeChangeSet() {
-      describeChangeSetCalled = true;
-      return {
-        Status: 'CREATE_COMPLETE',
-        Changes: [],
-      };
-    }
+  // GIVEN
+  givenStackExists({
+    Tags: [
+      { Key: 'Key1', Value: 'Value1' },
+      { Key: 'Key2', Value: 'Value2' },
+    ],
   });
 
+  // WHEN
   await deployStack({
     stack: FAKE_STACK,
     sdk,
+    sdkProvider,
+    resolvedEnvironment: mockResolvedEnvironment(),
     tags: [
-      {
-        Key: 'Key1',
-        Value: 'Value1'
-      }
-    ]
+      { Key: 'Key1', Value: 'Value1' },
+    ],
   });
 
-  expect(createChangeSetCalled).toBeTruthy();
-  expect(executeChangeSetCalled).toBeTruthy();
-  expect(describeChangeSetCalled).toBeTruthy();
-  expect(describeStacksInput!).toStrictEqual({ StackName: "withouterrors" });
-  expect(getTemplateInput!).toStrictEqual({ StackName: 'withouterrors', TemplateStage: 'Original' });
-});
-
-test('deploy not skipped if template did not change and --force is applied', async () => {
-  const sdk = new MockSDK();
-  let describeStacksInput: AWS.CloudFormation.DescribeStacksInput;
-  let getTemplateInput: AWS.CloudFormation.GetTemplateInput;
-  let createChangeSetCalled = false;
-  let executeChangeSetCalled = false;
-  let describeChangeSetCalled = false;
-
-  sdk.stubCloudFormation({
-    getTemplate(input) {
-      getTemplateInput = input;
-      return {
-        TemplateBody: JSON.stringify(FAKE_TEMPLATE)
-      };
-    },
-    describeStacks(input) {
-      describeStacksInput = input;
-      return {
-        Stacks: [
-          {
-            StackName: 'mock-stack-name',
-            StackId: 'mock-stack-id',
-            CreationTime: new Date(),
-            StackStatus: 'CREATE_COMPLETE'
-          }
-        ]
-      };
-    },
-    createChangeSet() {
-      createChangeSetCalled = true;
-      return { };
-    },
-    executeChangeSet() {
-      executeChangeSetCalled = true;
-      return { };
-    },
-    describeChangeSet() {
-      describeChangeSetCalled = true;
-      return {
-        Status: 'CREATE_COMPLETE',
-        Changes: [],
-      };
-    }
-  });
-
-  await deployStack({
-    stack: FAKE_STACK,
-    sdk,
-    force: true
-  });
-
-  expect(createChangeSetCalled).toBeTruthy();
-  expect(executeChangeSetCalled).toBeTruthy();
-  expect(describeChangeSetCalled).toBeTruthy();
-  expect(getTemplateInput!).toBeUndefined();
-  expect(describeStacksInput!).toStrictEqual({ StackName: "withouterrors" });
+  // THEN
+  expect(cfnMocks.createChangeSet).toHaveBeenCalled();
+  expect(cfnMocks.executeChangeSet).toHaveBeenCalled();
+  expect(cfnMocks.describeChangeSet).toHaveBeenCalled();
+  expect(cfnMocks.describeStacks).toHaveBeenCalledWith({ StackName: 'withouterrors' });
+  expect(cfnMocks.getTemplate).toHaveBeenCalledWith({ StackName: 'withouterrors', TemplateStage: 'Original' });
 });
 
 test('deploy not skipped if template changed', async () => {
-  const sdk = new MockSDK();
-  let describeStacksInput: AWS.CloudFormation.DescribeStacksInput;
-  let getTemplateInput: AWS.CloudFormation.GetTemplateInput;
-  let createChangeSetCalled = false;
-  let executeChangeSetCalled = false;
-  let describeChangeSetCalled = false;
-
-  sdk.stubCloudFormation({
-    getTemplate(input) {
-      getTemplateInput = input;
-      return {
-        TemplateBody: JSON.stringify({ changed: 123 })
-      };
-    },
-    describeStacks(input) {
-      describeStacksInput = input;
-      return {
-        Stacks: [
-          {
-            StackName: 'mock-stack-name',
-            StackId: 'mock-stack-id',
-            CreationTime: new Date(),
-            StackStatus: 'CREATE_COMPLETE'
-          }
-        ]
-      };
-    },
-    createChangeSet() {
-      createChangeSetCalled = true;
-      return { };
-    },
-    executeChangeSet() {
-      executeChangeSetCalled = true;
-      return { };
-    },
-    describeChangeSet() {
-      describeChangeSetCalled = true;
-      return {
-        Status: 'CREATE_COMPLETE',
-        Changes: [],
-      };
-    }
+  // GIVEN
+  givenStackExists();
+  cfnMocks.getTemplate!.mockReset();
+  cfnMocks.getTemplate!.mockReturnValue({
+    TemplateBody: JSON.stringify({ changed: 123 }),
   });
 
+  // WHEN
   await deployStack({
     stack: FAKE_STACK,
-    sdk
+    sdk,
+    sdkProvider,
+    resolvedEnvironment: mockResolvedEnvironment(),
   });
 
-  expect(createChangeSetCalled).toBeTruthy();
-  expect(executeChangeSetCalled).toBeTruthy();
-  expect(describeChangeSetCalled).toBeTruthy();
-  expect(describeStacksInput!).toStrictEqual({ StackName: "withouterrors" });
-  expect(getTemplateInput!).toStrictEqual({ StackName: 'withouterrors', TemplateStage: 'Original' });
+  // THEN
+  expect(cfnMocks.executeChangeSet).toHaveBeenCalled();
 });
+
+test('not executed and no error if --no-execute is given', async () => {
+  // WHEN
+  await deployStack({
+    stack: FAKE_STACK,
+    sdk,
+    sdkProvider,
+    execute: false,
+    resolvedEnvironment: mockResolvedEnvironment(),
+  });
+
+  // THEN
+  expect(cfnMocks.executeChangeSet).not.toHaveBeenCalled();
+});
+
+/**
+ * Set up the mocks so that it looks like the stack exists to start with
+ */
+function givenStackExists(overrides: Partial<AWS.CloudFormation.Stack> = {}) {
+  cfnMocks.describeStacks!.mockReset();
+  cfnMocks.describeStacks!.mockImplementation(() => ({
+    Stacks: [
+      {
+        StackName: 'mock-stack-name',
+        StackId: 'mock-stack-id',
+        CreationTime: new Date(),
+        StackStatus: 'CREATE_COMPLETE',
+        ...overrides,
+      },
+    ],
+  }));
+}

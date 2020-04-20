@@ -11,7 +11,7 @@ beforeEach(() => {
       files: {
         theAsset: {
           source: {
-            path: 'some_file'
+            path: 'some_file',
           },
           destinations: {
             theDestination: {
@@ -30,7 +30,7 @@ beforeEach(() => {
       files: {
         theAsset: {
           source: {
-            path: '/simple/cdk.out/some_file'
+            path: '/simple/cdk.out/some_file',
           },
           destinations: {
             theDestination: {
@@ -64,7 +64,7 @@ test('pass destination properties to AWS client', async () => {
 });
 
 test('Do nothing if file already exists', async () => {
-  const pub = new AssetPublishing(AssetManifest.fromPath('/simple/cdk.out') , { aws, });
+  const pub = new AssetPublishing(AssetManifest.fromPath('/simple/cdk.out') , { aws });
 
   aws.mockS3.headObject = mockedApiResult({ /* No error == file exists */ });
 
@@ -72,7 +72,7 @@ test('Do nothing if file already exists', async () => {
 
   expect(aws.mockS3.headObject).toHaveBeenCalledWith(expect.objectContaining({
     Bucket: 'some_bucket',
-    Key: 'some_key'
+    Key: 'some_key',
   }));
 });
 
@@ -86,10 +86,21 @@ test('upload file if new', async () => {
 
   expect(aws.mockS3.upload).toHaveBeenCalledWith(expect.objectContaining({
     Bucket: 'some_bucket',
-    Key: 'some_key'
+    Key: 'some_key',
   }));
 
   // We'll just have to assume the contents are correct
+});
+
+test('successful run does not need to query account ID', async () => {
+  const pub = new AssetPublishing(AssetManifest.fromPath('/simple/cdk.out'), { aws });
+
+  aws.mockS3.headObject = mockedApiFailure('NotFound', 'File does not exist');
+  aws.mockS3.upload = mockUpload('FILE_CONTENTS');
+
+  await pub.publish();
+
+  expect(aws.discoverCurrentAccount).not.toHaveBeenCalled();
 });
 
 test('correctly identify asset path if path is absolute', async () => {

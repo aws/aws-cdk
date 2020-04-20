@@ -10,7 +10,7 @@ const MAX_CLUSTER_NAME_LEN = 100;
 export class ClusterResourceHandler extends ResourceHandler {
   public get clusterName() {
     if (!this.physicalResourceId) {
-      throw new Error(`Cannot determine cluster name without physical resource ID`);
+      throw new Error('Cannot determine cluster name without physical resource ID');
     }
 
     return this.physicalResourceId;
@@ -48,7 +48,7 @@ export class ClusterResourceHandler extends ResourceHandler {
     }
 
     return {
-      PhysicalResourceId: resp.cluster.name
+      PhysicalResourceId: resp.cluster.name,
     };
   }
 
@@ -72,7 +72,7 @@ export class ClusterResourceHandler extends ResourceHandler {
       }
     }
     return {
-      PhysicalResourceId: this.clusterName
+      PhysicalResourceId: this.clusterName,
     };
   }
 
@@ -93,7 +93,7 @@ export class ClusterResourceHandler extends ResourceHandler {
     }
 
     return {
-      IsComplete: false
+      IsComplete: false,
     };
   }
 
@@ -103,7 +103,7 @@ export class ClusterResourceHandler extends ResourceHandler {
 
   protected async onUpdate() {
     const updates = analyzeUpdate(this.oldProps, this.newProps);
-    console.log(`onUpdate:`, JSON.stringify({ updates }, undefined, 2));
+    console.log('onUpdate:', JSON.stringify({ updates }, undefined, 2));
 
     // if there is an update that requires replacement, go ahead and just create
     // a new cluster with the new config. The old cluster will automatically be
@@ -134,7 +134,7 @@ export class ClusterResourceHandler extends ResourceHandler {
       await this.eks.updateClusterConfig({
         name: this.clusterName,
         logging: this.newProps.logging,
-        resourcesVpcConfig: this.newProps.resourcesVpcConfig
+        resourcesVpcConfig: this.newProps.resourcesVpcConfig,
       });
     }
 
@@ -143,7 +143,7 @@ export class ClusterResourceHandler extends ResourceHandler {
   }
 
   protected async isUpdateComplete() {
-    console.log(`isUpdateComplete`);
+    console.log('isUpdateComplete');
     return this.isActive();
   }
 
@@ -172,7 +172,7 @@ export class ClusterResourceHandler extends ResourceHandler {
     // returning attributes (Data) if isComplete is false.
     if (cluster?.status !== 'ACTIVE') {
       return {
-        IsComplete: false
+        IsComplete: false,
       };
     } else {
       return {
@@ -181,8 +181,8 @@ export class ClusterResourceHandler extends ResourceHandler {
           Name: cluster.name,
           Endpoint: cluster.endpoint,
           Arn: cluster.arn,
-          CertificateAuthorityData: cluster.certificateAuthority?.data
-        }
+          CertificateAuthorityData: cluster.certificateAuthority?.data,
+        },
       };
     }
   }

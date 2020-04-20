@@ -41,7 +41,7 @@ export class FilterPattern {
    * A log pattern that matches all events.
    */
   public static allEvents(): IFilterPattern {
-    return new LiteralLogPattern("");
+    return new LiteralLogPattern('');
   }
 
   /**
@@ -315,7 +315,7 @@ export class SpaceDelimitedTextPattern implements IFilterPattern {
 
     return new SpaceDelimitedTextPattern(this.columns, this.addRestriction(columnName, {
       comparison,
-      stringValue: value
+      stringValue: value,
     }));
   }
 
@@ -334,7 +334,7 @@ export class SpaceDelimitedTextPattern implements IFilterPattern {
 
     return new SpaceDelimitedTextPattern(this.columns, this.addRestriction(columnName, {
       comparison,
-      numberValue: value
+      numberValue: value,
     }));
   }
 

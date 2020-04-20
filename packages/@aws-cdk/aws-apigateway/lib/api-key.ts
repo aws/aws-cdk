@@ -1,6 +1,6 @@
 import { Construct, IResource as IResourceBase, Resource } from '@aws-cdk/core';
 import { CfnApiKey } from './apigateway.generated';
-import { ResourceOptions } from "./resource";
+import { ResourceOptions } from './resource';
 import { RestApi } from './restapi';
 
 /**
@@ -82,7 +82,7 @@ export class ApiKey extends Resource implements IApiKey {
       enabled: props.enabled || true,
       generateDistinctId: props.generateDistinctId,
       name: this.physicalName,
-      stageKeys: this.renderStageKeys(props.resources)
+      stageKeys: this.renderStageKeys(props.resources),
     });
 
     this.keyId = resource.ref;

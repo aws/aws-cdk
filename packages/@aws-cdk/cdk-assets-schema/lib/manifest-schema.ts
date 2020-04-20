@@ -1,5 +1,5 @@
-import { DockerImageAsset } from "./docker-image-asset";
-import { FileAsset } from "./file-asset";
+import { DockerImageAsset } from './docker-image-asset';
+import { FileAsset } from './file-asset';
 
 /**
  * Definitions for the asset manifest

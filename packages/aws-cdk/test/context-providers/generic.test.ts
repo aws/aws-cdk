@@ -1,8 +1,8 @@
 import * as contextproviders from '../../lib/context-providers';
 import { Context, TRANSIENT_CONTEXT_KEY } from '../../lib/settings';
-import { MockSDK } from '../util/mock-sdk';
+import { MockSdkProvider } from '../util/mock-sdk';
 
-const mockSDK = new MockSDK();
+const mockSDK = new MockSdkProvider();
 
 test('errors are reported into the context value', async () => {
   // GIVEN
@@ -15,7 +15,7 @@ test('errors are reported into the context value', async () => {
 
   // WHEN
   await contextproviders.provideContextValues([
-    { key: 'asdf', props: {}, provider: 'testprovider' }
+    { key: 'asdf', props: {}, provider: 'testprovider' },
   ], context, mockSDK);
 
   // THEN - error is now in context
@@ -36,7 +36,7 @@ test('errors are marked transient', async () => {
 
   // WHEN
   await contextproviders.provideContextValues([
-    { key: 'asdf', props: {}, provider: 'testprovider' }
+    { key: 'asdf', props: {}, provider: 'testprovider' },
   ], context, mockSDK);
 
   // THEN - error is marked transient
