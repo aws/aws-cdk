@@ -2,6 +2,9 @@ import { Construct, Resource } from '@aws-cdk/core';
 import { CfnGatewayResponse } from './apigateway.generated';
 import { IRestApi } from './restapi';
 
+/**
+ * Properties for a new gateway response.
+ */
 export interface GatewayResponseProps extends GatewayResponseOptions {
   /**
    * Rest api resource to target.
@@ -9,6 +12,9 @@ export interface GatewayResponseProps extends GatewayResponseOptions {
   readonly restApi: IRestApi;
 }
 
+/**
+ * Options to add gateway response.
+ */
 export interface GatewayResponseOptions {
   /**
    * Response type to associate with gateway response.
@@ -40,10 +46,14 @@ export interface GatewayResponseOptions {
  * This resource creates a gateway response which will be applied to response from api gateway
  * as per the configuration based on the response type.
  * You will probably want to use `RestApi.addGatewayResponse` for adding new gateway response.
+ *
+ * @resource AWS::ApiGateway::GatewayResponse
  */
 export class GatewayResponse extends Resource {
   constructor(scope: Construct, id: string, props: GatewayResponseProps) {
-    super(scope, id);
+    super(scope, id, {
+        physicalName: `${props.type}_Response`
+    });
 
     const resource = new CfnGatewayResponse(this, 'Resource', {
       restApiId: props.restApi.restApiId,
@@ -57,6 +67,9 @@ export class GatewayResponse extends Resource {
   }
 }
 
+/**
+ * Supported types of gateway responses.
+ */
 export enum ResponseType {
   /**
    * The gateway response for authorization failure.
