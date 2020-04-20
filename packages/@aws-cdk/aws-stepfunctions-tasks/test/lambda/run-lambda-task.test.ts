@@ -63,17 +63,10 @@ test('Lambda function can be used in a Task with Task Token', () => {
   const task = new sfn.Task(stack, 'Task', {
     task: new tasks.RunLambdaTask(fn, {
       integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
-<<<<<<< HEAD
       payload: sfn.TaskInput.fromObject({
         token: sfn.Context.taskToken
-      })
-    })
-=======
-      payload: {
-        token: sfn.Context.taskToken,
-      },
+      }),
     }),
->>>>>>> master
   });
   new sfn.StateMachine(stack, 'SM', {
     definition: task,
