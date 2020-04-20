@@ -37,7 +37,7 @@ export = {
     // WHEN
     new apigateway.RateLimitedApiKey(stack, 'test-api-key', {
       customerId: 'test-customer',
-      resources: [api]
+      resources: [api],
     });
 
     // THEN
@@ -46,9 +46,9 @@ export = {
       StageKeys: [
         {
           RestApiId: { Ref: 'testapiD6451F70' },
-          StageName: { Ref: 'testapiDeploymentStagetest5869DF71' }
-        }
-      ]
+          StageName: { Ref: 'testapiDeploymentStagetest5869DF71' },
+        },
+      ],
     }));
     // should not have a usage plan.
     expect(stack).notTo(haveResource(USAGE_PLAN_RESOURCE_TYPE));
@@ -70,8 +70,8 @@ export = {
       resources: [api],
       quota: {
         limit: 10000,
-        period: apigateway.Period.MONTH
-      }
+        period: apigateway.Period.MONTH,
+      },
     });
 
     // THEN
@@ -81,28 +81,28 @@ export = {
       StageKeys: [
         {
           RestApiId: { Ref: 'testapiD6451F70' },
-          StageName: { Ref: 'testapiDeploymentStagetest5869DF71' }
-        }
-      ]
+          StageName: { Ref: 'testapiDeploymentStagetest5869DF71' },
+        },
+      ],
     }));
     // should have a usage plan with specified quota.
     expect(stack).to(haveResource(USAGE_PLAN_RESOURCE_TYPE, {
       Quota: {
         Limit: 10000,
-        Period: 'MONTH'
-      }
+        Period: 'MONTH',
+      },
     }, ResourcePart.Properties));
     // should have a usage plan key linking the api key and usage plan
     expect(stack).to(haveResource(USAGE_PLAN_KEY_RESOURCE_TYPE, {
       KeyId: {
-        Ref: 'testapikey998028B6'
+        Ref: 'testapikey998028B6',
       },
       KeyType: 'API_KEY',
       UsagePlanId: {
-        Ref: 'testapikeyUsagePlanResource66DB63D6'
-      }
+        Ref: 'testapikeyUsagePlanResource66DB63D6',
+      },
     }, ResourcePart.Properties));
 
     test.done();
-  }
+  },
 };

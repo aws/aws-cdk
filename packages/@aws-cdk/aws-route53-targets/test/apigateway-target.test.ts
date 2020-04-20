@@ -13,17 +13,17 @@ test('targets.ApiGateway can be used to the default domain of an APIGW', () => {
     domainName: {
       domainName: 'example.com',
       certificate: cert,
-    }
+    },
   });
   const zone = new route53.HostedZone(stack, 'zone', {
-    zoneName: 'example.com'
+    zoneName: 'example.com',
   });
   api.root.addMethod('GET');
 
   // WHEN
   new route53.ARecord(stack, 'A', {
     zone,
-    target: route53.RecordTarget.fromAlias(new targets.ApiGateway(api))
+    target: route53.RecordTarget.fromAlias(new targets.ApiGateway(api)),
   });
 
   // THEN
@@ -34,19 +34,19 @@ test('targets.ApiGateway can be used to the default domain of an APIGW', () => {
       DNSName: {
         'Fn::GetAtt': [
           'apiCustomDomain64773C4F',
-          'RegionalDomainName'
-        ]
+          'RegionalDomainName',
+        ],
       },
       HostedZoneId: {
         'Fn::GetAtt': [
           'apiCustomDomain64773C4F',
-          'RegionalHostedZoneId'
-        ]
-      }
+          'RegionalHostedZoneId',
+        ],
+      },
     },
     HostedZoneId: {
-      Ref: 'zoneEB40FF1E'
-    }
+      Ref: 'zoneEB40FF1E',
+    },
   }));
 });
 
@@ -56,13 +56,13 @@ test('targets.ApiGatewayDomain can be used to directly reference a domain', () =
   const cert = new acm.Certificate(stack, 'cert', { domainName: 'example.com' });
   const domain = new apigw.DomainName(stack, 'domain', { domainName: 'example.com', certificate: cert });
   const zone = new route53.HostedZone(stack, 'zone', {
-    zoneName: 'example.com'
+    zoneName: 'example.com',
   });
 
   // WHEN
   new route53.ARecord(stack, 'A', {
     zone,
-    target: route53.RecordTarget.fromAlias(new targets.ApiGatewayDomain(domain))
+    target: route53.RecordTarget.fromAlias(new targets.ApiGatewayDomain(domain)),
   });
 
   // THEN
@@ -73,19 +73,19 @@ test('targets.ApiGatewayDomain can be used to directly reference a domain', () =
       DNSName: {
         'Fn::GetAtt': [
           'domainFBFFA2F6',
-          'RegionalDomainName'
-        ]
+          'RegionalDomainName',
+        ],
       },
       HostedZoneId: {
         'Fn::GetAtt': [
           'domainFBFFA2F6',
-          'RegionalHostedZoneId'
-        ]
-      }
+          'RegionalHostedZoneId',
+        ],
+      },
     },
     HostedZoneId: {
-      Ref: 'zoneEB40FF1E'
-    }
+      Ref: 'zoneEB40FF1E',
+    },
   }));
 });
 
@@ -94,7 +94,7 @@ test('fails if an ApiGateway is used with an API that does not define a domain n
   const stack = new Stack();
   const api = new apigw.RestApi(stack, 'api');
   const zone = new route53.HostedZone(stack, 'zone', {
-    zoneName: 'example.com'
+    zoneName: 'example.com',
   });
   api.root.addMethod('GET');
 
@@ -102,7 +102,7 @@ test('fails if an ApiGateway is used with an API that does not define a domain n
   expect(() => {
     new route53.ARecord(stack, 'A', {
       zone,
-      target: route53.RecordTarget.fromAlias(new targets.ApiGateway(api))
+      target: route53.RecordTarget.fromAlias(new targets.ApiGateway(api)),
     });
   }).toThrow(/API does not define a default domain name/);
 });

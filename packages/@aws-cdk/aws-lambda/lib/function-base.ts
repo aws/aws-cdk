@@ -260,7 +260,7 @@ export abstract class FunctionBase extends Resource implements IFunction {
   public addEventSourceMapping(id: string, options: EventSourceMappingOptions): EventSourceMapping {
     return new EventSourceMapping(this, id, {
       target: this,
-      ...options
+      ...options,
     });
   }
 
@@ -312,7 +312,7 @@ export abstract class FunctionBase extends Resource implements IFunction {
 
     new EventInvokeConfig(this, 'EventInvokeConfig', {
       function: this,
-      ...options
+      ...options,
     });
   }
 
@@ -363,7 +363,7 @@ export abstract class QualifiedFunctionBase extends FunctionBase {
     new EventInvokeConfig(this, 'EventInvokeConfig', {
       function: this.lambda,
       qualifier: this.qualifier,
-      ...options
+      ...options,
     });
   }
 }

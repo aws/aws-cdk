@@ -23,7 +23,7 @@ export interface CodeBuildProjectProps {
 export class CodeBuildProject implements events.IRuleTarget {
   constructor(
     private readonly project: codebuild.IProject,
-    private readonly props: CodeBuildProjectProps = {}
+    private readonly props: CodeBuildProjectProps = {},
   ) {}
 
   /**
@@ -36,11 +36,11 @@ export class CodeBuildProject implements events.IRuleTarget {
       role: singletonEventRole(this.project, [
         new iam.PolicyStatement({
           actions: ['codebuild:StartBuild'],
-          resources: [this.project.projectArn]
-        })
+          resources: [this.project.projectArn],
+        }),
       ]),
       input: this.props.event,
-      targetResource: this.project
+      targetResource: this.project,
     };
   }
 }

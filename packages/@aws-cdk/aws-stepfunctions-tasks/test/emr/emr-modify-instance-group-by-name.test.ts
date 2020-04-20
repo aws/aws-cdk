@@ -19,8 +19,8 @@ test('Modify an InstanceGroup with static ClusterId, InstanceGroupName, and Inst
         configurations: [{
           classification: 'Classification',
           properties: {
-            Key: 'Value'
-          }
+            Key: 'Value',
+          },
         }],
         eC2InstanceIdsToTerminate: ['InstanceToTerminate'],
         instanceCount: 1,
@@ -29,11 +29,11 @@ test('Modify an InstanceGroup with static ClusterId, InstanceGroupName, and Inst
           instanceResizePolicy: {
             instanceTerminationTimeout: cdk.Duration.seconds(1),
             instancesToProtect: ['InstanceToProtect'],
-            instancesToTerminate: ['InstanceToTerminate']
-          }
-        }
-      }
-    })
+            instancesToTerminate: ['InstanceToTerminate'],
+          },
+        },
+      },
+    }),
   });
 
   // THEN
@@ -59,8 +59,8 @@ test('Modify an InstanceGroup with static ClusterId, InstanceGroupName, and Inst
         Configurations: [{
           Classification: 'Classification',
           Properties: {
-            Key: 'Value'
-          }
+            Key: 'Value',
+          },
         }],
         EC2InstanceIdsToTerminate: ['InstanceToTerminate'],
         InstanceCount: 1,
@@ -69,11 +69,11 @@ test('Modify an InstanceGroup with static ClusterId, InstanceGroupName, and Inst
           InstanceResizePolicy: {
             InstanceTerminationTimeout: 1,
             InstancesToProtect: ['InstanceToProtect'],
-            InstancesToTerminate: ['InstanceToTerminate']
-          }
-        }
-      }
-    }
+            InstancesToTerminate: ['InstanceToTerminate'],
+          },
+        },
+      },
+    },
   });
 });
 
@@ -84,9 +84,9 @@ test('Modify an InstanceGroup with ClusterId from payload and static InstanceGro
       clusterId: sfn.Data.stringAt('$.ClusterId'),
       instanceGroupName: 'InstanceGroupName',
       instanceGroup: {
-        instanceCount: 1
-      }
-    })
+        instanceCount: 1,
+      },
+    }),
   });
 
   // THEN
@@ -109,9 +109,9 @@ test('Modify an InstanceGroup with ClusterId from payload and static InstanceGro
       'ClusterId.$': '$.ClusterId',
       'InstanceGroupName': 'InstanceGroupName',
       'InstanceGroup': {
-        InstanceCount: 1
-      }
-    }
+        InstanceCount: 1,
+      },
+    },
   });
 });
 
@@ -122,9 +122,9 @@ test('Modify an InstanceGroup with static ClusterId and InstanceGroupConfigurate
       clusterId: 'ClusterId',
       instanceGroupName: sfn.Data.stringAt('$.InstanceGroupName'),
       instanceGroup: {
-        instanceCount: 1
-      }
-    })
+        instanceCount: 1,
+      },
+    }),
   });
 
   // THEN
@@ -147,8 +147,8 @@ test('Modify an InstanceGroup with static ClusterId and InstanceGroupConfigurate
       'ClusterId': 'ClusterId',
       'InstanceGroupName.$': '$.InstanceGroupName',
       'InstanceGroup': {
-        InstanceCount: 1
-      }
+        InstanceCount: 1,
+      },
     },
   });
 });
@@ -160,9 +160,9 @@ test('Modify an InstanceGroup with static ClusterId and InstanceGroupName and In
       clusterId: 'ClusterId',
       instanceGroupName: 'InstanceGroupName',
       instanceGroup: {
-        instanceCount: sfn.Data.numberAt('$.InstanceCount')
-      }
-    })
+        instanceCount: sfn.Data.numberAt('$.InstanceCount'),
+      },
+    }),
   });
 
   // THEN
@@ -185,8 +185,8 @@ test('Modify an InstanceGroup with static ClusterId and InstanceGroupName and In
       ClusterId: 'ClusterId',
       InstanceGroupName: 'InstanceGroupName',
       InstanceGroup: {
-        'InstanceCount.$': '$.InstanceCount'
-      }
+        'InstanceCount.$': '$.InstanceCount',
+      },
     },
   });
 });

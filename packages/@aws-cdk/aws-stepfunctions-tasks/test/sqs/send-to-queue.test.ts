@@ -38,7 +38,7 @@ test('Send message to queue', () => {
     Parameters: {
       'QueueUrl': { Ref: 'Queue4A7E3555' },
       'MessageBody': 'Send this message',
-      'MessageDeduplicationId.$': '$.deduping'
+      'MessageDeduplicationId.$': '$.deduping',
     },
   });
 });
@@ -49,8 +49,8 @@ test('Send message to SQS queue with task token', () => {
     integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
     messageBody: sfn.TaskInput.fromObject({
       Input: 'Send this message',
-      Token: sfn.Context.taskToken
-    })
+      Token: sfn.Context.taskToken,
+    }),
   }) });
 
   // THEN
@@ -73,8 +73,8 @@ test('Send message to SQS queue with task token', () => {
       QueueUrl: { Ref: 'Queue4A7E3555' },
       MessageBody: {
         'Input': 'Send this message',
-        'Token.$': '$$.Task.Token'
-      }
+        'Token.$': '$$.Task.Token',
+      },
     },
   });
 });
@@ -84,7 +84,7 @@ test('Task throws if WAIT_FOR_TASK_TOKEN is supplied but task token is not inclu
     // WHEN
     new sfn.Task(stack, 'Send', { task: new tasks.SendToQueue(queue, {
       integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
-      messageBody: sfn.TaskInput.fromText('Send this message')
+      messageBody: sfn.TaskInput.fromText('Send this message'),
     }) });
     // THEN
   }).toThrow(/Task Token is missing in messageBody/i);
@@ -94,8 +94,8 @@ test('Message body can come from state', () => {
   // WHEN
   const task = new sfn.Task(stack, 'Send', {
     task: new tasks.SendToQueue(queue, {
-      messageBody: sfn.TaskInput.fromDataAt('$.theMessage')
-    })
+      messageBody: sfn.TaskInput.fromDataAt('$.theMessage'),
+    }),
   });
 
   // THEN
@@ -127,9 +127,9 @@ test('Message body can be an object', () => {
     task: new tasks.SendToQueue(queue, {
       messageBody: sfn.TaskInput.fromObject({
         literal: 'literal',
-        SomeInput: sfn.Data.stringAt('$.theMessage')
-      })
-    })
+        SomeInput: sfn.Data.stringAt('$.theMessage'),
+      }),
+    }),
   });
 
   // THEN
@@ -153,7 +153,7 @@ test('Message body can be an object', () => {
       MessageBody: {
         'literal': 'literal',
         'SomeInput.$': '$.theMessage',
-      }
+      },
     },
   });
 });
@@ -163,9 +163,9 @@ test('Message body object can contain references', () => {
   const task = new sfn.Task(stack, 'Send', {
     task: new tasks.SendToQueue(queue, {
       messageBody: sfn.TaskInput.fromObject({
-        queueArn: queue.queueArn
-      })
-    })
+        queueArn: queue.queueArn,
+      }),
+    }),
   });
 
   // THEN
@@ -187,8 +187,8 @@ test('Message body object can contain references', () => {
     Parameters: {
       QueueUrl: { Ref: 'Queue4A7E3555' },
       MessageBody: {
-        queueArn: { 'Fn::GetAtt': ['Queue4A7E3555', 'Arn'] }
-      }
+        queueArn: { 'Fn::GetAtt': ['Queue4A7E3555', 'Arn'] },
+      },
     },
   });
 });
@@ -197,7 +197,7 @@ test('Task throws if SYNC is supplied as service integration pattern', () => {
   expect(() => {
     new sfn.Task(stack, 'Send', { task: new tasks.SendToQueue(queue, {
       integrationPattern: sfn.ServiceIntegrationPattern.SYNC,
-      messageBody: sfn.TaskInput.fromText('Send this message')
+      messageBody: sfn.TaskInput.fromText('Send this message'),
     }) });
   }).toThrow(/Invalid Service Integration Pattern: SYNC is not supported to call SQS./i);
 });

@@ -40,13 +40,13 @@ test('create event with physical resource id path', async () => {
     Contents: [
       {
         Key: 'first-key',
-        ETag: 'first-key-etag'
+        ETag: 'first-key-etag',
       },
       {
         Key: 'second-key',
         ETag: 'second-key-etag',
-      }
-    ]
+      },
+    ],
   } as SDK.S3.ListObjectsOutput);
 
   AWS.mock('S3', 'listObjects', listObjectsFake);
@@ -60,23 +60,23 @@ test('create event with physical resource id path', async () => {
         service: 'S3',
         action: 'listObjects',
         parameters: {
-          Bucket: 'my-bucket'
+          Bucket: 'my-bucket',
         },
-        physicalResourceId: PhysicalResourceId.fromResponse('Contents.1.ETag')
-      } as AwsSdkCall
-    }
+        physicalResourceId: PhysicalResourceId.fromResponse('Contents.1.ETag'),
+      } as AwsSdkCall,
+    },
   };
 
   const request = createRequest(body =>
     body.Status === 'SUCCESS' &&
     body.PhysicalResourceId === 'second-key-etag' &&
-    body.Data!['Contents.0.Key'] === 'first-key'
+    body.Data!['Contents.0.Key'] === 'first-key',
   );
 
   await handler(event, {} as AWSLambda.Context);
 
   sinon.assert.calledWith(listObjectsFake, {
-    Bucket: 'my-bucket'
+    Bucket: 'my-bucket',
   });
 
   expect(request.isDone()).toBeTruthy();
@@ -99,16 +99,16 @@ test('update event with physical resource id', async () => {
         action: 'publish',
         parameters: {
           Message: 'hello',
-          TopicArn: 'topicarn'
+          TopicArn: 'topicarn',
         },
-        physicalResourceId: PhysicalResourceId.of('topicarn')
-      } as AwsSdkCall
-    }
+        physicalResourceId: PhysicalResourceId.of('topicarn'),
+      } as AwsSdkCall,
+    },
   };
 
   const request = createRequest(body =>
     body.Status === 'SUCCESS' &&
-    body.PhysicalResourceId === 'topicarn'
+    body.PhysicalResourceId === 'topicarn',
   );
 
   await handler(event, {} as AWSLambda.Context);
@@ -131,17 +131,17 @@ test('delete event', async () => {
         service: 'S3',
         action: 'listObjects',
         parameters: {
-          Bucket: 'my-bucket'
+          Bucket: 'my-bucket',
         },
-        physicalResourceId: PhysicalResourceId.fromResponse('Contents.1.ETag')
-      } as AwsSdkCall
-    }
+        physicalResourceId: PhysicalResourceId.fromResponse('Contents.1.ETag'),
+      } as AwsSdkCall,
+    },
   };
 
   const request = createRequest(body =>
     body.Status === 'SUCCESS' &&
     body.PhysicalResourceId === 'physicalResourceId' &&
-    Object.keys(body.Data!).length === 0
+    Object.keys(body.Data!).length === 0,
   );
 
   await handler(event, {} as AWSLambda.Context);
@@ -166,21 +166,21 @@ test('delete event with Delete call and no physical resource id in call', async 
         service: 'SSM',
         action: 'deleteParameter',
         parameters: {
-          Name: 'my-param'
+          Name: 'my-param',
         },
-      } as AwsSdkCall
-    }
+      } as AwsSdkCall,
+    },
   };
 
   const request = createRequest(body =>
     body.Status === 'SUCCESS' &&
-    body.PhysicalResourceId === 'physicalResourceId'
+    body.PhysicalResourceId === 'physicalResourceId',
   );
 
   await handler(event, {} as AWSLambda.Context);
 
   sinon.assert.calledWith(deleteParameterFake, {
-    Name: 'my-param'
+    Name: 'my-param',
   });
 
   expect(request.isDone()).toBeTruthy();
@@ -200,15 +200,15 @@ test('create event with Delete call only', async () => {
         service: 'SSM',
         action: 'deleteParameter',
         parameters: {
-          Name: 'my-param'
+          Name: 'my-param',
         },
-      } as AwsSdkCall
-    }
+      } as AwsSdkCall,
+    },
   };
 
   const request = createRequest(body =>
     body.Status === 'SUCCESS' &&
-    body.PhysicalResourceId === 'logicalResourceId'
+    body.PhysicalResourceId === 'logicalResourceId',
   );
 
   await handler(event, {} as AWSLambda.Context);
@@ -234,18 +234,18 @@ test('catch errors', async () => {
         service: 'S3',
         action: 'listObjects',
         parameters: {
-          Bucket: 'my-bucket'
+          Bucket: 'my-bucket',
         },
         physicalResourceId: PhysicalResourceId.of('physicalResourceId'),
-        ignoreErrorCodesMatching: 'NoSuchBucket'
-      } as AwsSdkCall
-    }
+        ignoreErrorCodesMatching: 'NoSuchBucket',
+      } as AwsSdkCall,
+    },
   };
 
   const request = createRequest(body =>
     body.Status === 'SUCCESS' &&
     body.PhysicalResourceId === 'physicalResourceId' &&
-    Object.keys(body.Data!).length === 0
+    Object.keys(body.Data!).length === 0,
   );
 
   await handler(event, {} as AWSLambda.Context);
@@ -270,26 +270,26 @@ test('decodes booleans', async () => {
           TableName: 'table',
           Item: {
             True: {
-              BOOL: 'TRUE:BOOLEAN'
+              BOOL: 'TRUE:BOOLEAN',
             },
             TrueString: {
-              S: 'true'
+              S: 'true',
             },
             False: {
-              BOOL: 'FALSE:BOOLEAN'
+              BOOL: 'FALSE:BOOLEAN',
             },
             FalseString: {
-              S: 'false'
+              S: 'false',
             },
-          }
+          },
         },
-        physicalResourceId: PhysicalResourceId.of('put-item')
-      } as AwsSdkCall
-    }
+        physicalResourceId: PhysicalResourceId.of('put-item'),
+      } as AwsSdkCall,
+    },
   };
 
   const request = createRequest(body =>
-    body.Status === 'SUCCESS'
+    body.Status === 'SUCCESS',
   );
 
   await handler(event, {} as AWSLambda.Context);
@@ -298,18 +298,18 @@ test('decodes booleans', async () => {
     TableName: 'table',
     Item: {
       True: {
-        BOOL: true
+        BOOL: true,
       },
       TrueString: {
-        S: 'true'
+        S: 'true',
       },
       False: {
-        BOOL: false
+        BOOL: false,
       },
       FalseString: {
-        S: 'false'
+        S: 'false',
       },
-    }
+    },
   });
 
   expect(request.isDone()).toBeTruthy();
@@ -320,13 +320,13 @@ test('restrict output path', async () => {
     Contents: [
       {
         Key: 'first-key',
-        ETag: 'first-key-etag'
+        ETag: 'first-key-etag',
       },
       {
         Key: 'second-key',
         ETag: 'second-key-etag',
-      }
-    ]
+      },
+    ],
   } as SDK.S3.ListObjectsOutput);
 
   AWS.mock('S3', 'listObjects', listObjectsFake);
@@ -340,19 +340,19 @@ test('restrict output path', async () => {
         service: 'S3',
         action: 'listObjects',
         parameters: {
-          Bucket: 'my-bucket'
+          Bucket: 'my-bucket',
         },
         physicalResourceId: PhysicalResourceId.of('id'),
-        outputPath: 'Contents.0'
-      } as AwsSdkCall
-    }
+        outputPath: 'Contents.0',
+      } as AwsSdkCall,
+    },
   };
 
   const request = createRequest(body =>
     body.Status === 'SUCCESS' &&
     body.PhysicalResourceId === 'id' &&
     body.Data!['Contents.0.Key'] === 'first-key' &&
-    body.Data!['Contents.1.Key'] === undefined
+    body.Data!['Contents.1.Key'] === undefined,
   );
 
   await handler(event, {} as AWSLambda.Context);
@@ -375,19 +375,19 @@ test('can specify apiVersion and region', async () => {
         action: 'publish',
         parameters: {
           Message: 'message',
-          TopicArn: 'topic'
+          TopicArn: 'topic',
         },
         apiVersion: '2010-03-31',
         region: 'eu-west-1',
         physicalResourceId: PhysicalResourceId.of('id'),
-      } as AwsSdkCall
-    }
+      } as AwsSdkCall,
+    },
   };
 
   const request = createRequest(body =>
     body.Status === 'SUCCESS' &&
     body.Data!.apiVersion === '2010-03-31' &&
-    body.Data!.region === 'eu-west-1'
+    body.Data!.region === 'eu-west-1',
   );
 
   await handler(event, {} as AWSLambda.Context);
@@ -400,7 +400,7 @@ test('flatten correctly flattens a nested object', () => {
     a: { b: 'c' },
     d: [
       { e: 'f' },
-      { g: 'h', i: 1, j: null, k: { l: false } }
+      { g: 'h', i: 1, j: null, k: { l: false } },
     ],
   })).toEqual({
     'a.b': 'c',
@@ -408,7 +408,7 @@ test('flatten correctly flattens a nested object', () => {
     'd.1.g': 'h',
     'd.1.i': 1,
     'd.1.j': null,
-    'd.1.k.l': false
+    'd.1.k.l': false,
   });
 });
 
@@ -431,15 +431,15 @@ test('installs the latest SDK', async () => {
         action: 'publish',
         parameters: {
           Message: 'message',
-          TopicArn: 'topic'
+          TopicArn: 'topic',
         },
         physicalResourceId: PhysicalResourceId.of('id'),
-      } as AwsSdkCall
-    }
+      } as AwsSdkCall,
+    },
   };
 
   const request = createRequest(body =>
-    body.Status === 'SUCCESS'
+    body.Status === 'SUCCESS',
   );
 
   await handler(event, {} as AWSLambda.Context);

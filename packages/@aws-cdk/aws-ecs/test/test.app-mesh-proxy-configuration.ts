@@ -21,16 +21,16 @@ export = {
           proxyEgressPort: 81,
           egressIgnoredPorts: [8081],
           egressIgnoredIPs: ['169.254.170.2', '169.254.169.254'],
-        }
-      })
+        },
+      }),
     });
     taskDefinition.addContainer('web', {
       memoryLimitMiB: 1024,
-      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample')
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
     });
     taskDefinition.addContainer('envoy', {
       memoryLimitMiB: 1024,
-      image: ecs.ContainerImage.fromRegistry('envoyproxy/envoy')
+      image: ecs.ContainerImage.fromRegistry('envoyproxy/envoy'),
     });
 
     // THEN
@@ -40,35 +40,35 @@ export = {
         ProxyConfigurationProperties: [
           {
             Name: 'IgnoredUID',
-            Value: '1337'
+            Value: '1337',
           },
           {
             Name: 'IgnoredGID',
-            Value: '1338'
+            Value: '1338',
           },
           {
             Name: 'AppPorts',
-            Value: '80,81'
+            Value: '80,81',
           },
           {
             Name: 'ProxyIngressPort',
-            Value: '80'
+            Value: '80',
           },
           {
             Name: 'ProxyEgressPort',
-            Value: '81'
+            Value: '81',
           },
           {
             Name: 'EgressIgnoredPorts',
-            Value: '8081'
+            Value: '8081',
           },
           {
             Name: 'EgressIgnoredIPs',
-            Value: '169.254.170.2,169.254.169.254'
-          }
+            Value: '169.254.170.2,169.254.169.254',
+          },
         ],
-        Type: 'APPMESH'
-      }
+        Type: 'APPMESH',
+      },
     }));
     test.done();
   },
@@ -86,17 +86,17 @@ export = {
           ignoredUID: 1337,
           appPorts: [80, 81],
           proxyIngressPort: 80,
-          proxyEgressPort: 81
-        }
-      })
+          proxyEgressPort: 81,
+        },
+      }),
     });
     taskDefinition.addContainer('web', {
       memoryLimitMiB: 1024,
-      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample')
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
     });
     taskDefinition.addContainer('envoy', {
       memoryLimitMiB: 1024,
-      image: ecs.ContainerImage.fromRegistry('envoyproxy/envoy')
+      image: ecs.ContainerImage.fromRegistry('envoyproxy/envoy'),
     });
 
     // THEN
@@ -106,23 +106,23 @@ export = {
         ProxyConfigurationProperties: [
           {
             Name: 'IgnoredUID',
-            Value: '1337'
+            Value: '1337',
           },
           {
             Name: 'AppPorts',
-            Value: '80,81'
+            Value: '80,81',
           },
           {
             Name: 'ProxyIngressPort',
-            Value: '80'
+            Value: '80',
           },
           {
             Name: 'ProxyEgressPort',
-            Value: '81'
-          }
+            Value: '81',
+          },
         ],
-        Type: 'APPMESH'
-      }
+        Type: 'APPMESH',
+      },
     }));
     test.done();
   },
@@ -142,17 +142,17 @@ export = {
           proxyIngressPort: 80,
           proxyEgressPort: 81,
           egressIgnoredIPs: [],
-          egressIgnoredPorts: []
-        }
-      })
+          egressIgnoredPorts: [],
+        },
+      }),
     });
     taskDefinition.addContainer('web', {
       memoryLimitMiB: 1024,
-      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample')
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
     });
     taskDefinition.addContainer('envoy', {
       memoryLimitMiB: 1024,
-      image: ecs.ContainerImage.fromRegistry('envoyproxy/envoy')
+      image: ecs.ContainerImage.fromRegistry('envoyproxy/envoy'),
     });
 
     // THEN
@@ -162,23 +162,23 @@ export = {
         ProxyConfigurationProperties: [
           {
             Name: 'IgnoredUID',
-            Value: '1337'
+            Value: '1337',
           },
           {
             Name: 'AppPorts',
-            Value: '80,81'
+            Value: '80,81',
           },
           {
             Name: 'ProxyIngressPort',
-            Value: '80'
+            Value: '80',
           },
           {
             Name: 'ProxyEgressPort',
-            Value: '81'
-          }
+            Value: '81',
+          },
         ],
-        Type: 'APPMESH'
-      }
+        Type: 'APPMESH',
+      },
     }));
     test.done();
   },
@@ -196,12 +196,12 @@ export = {
           properties: {
             appPorts: [80, 81],
             proxyIngressPort: 80,
-            proxyEgressPort: 81
-          }
-        })
+            proxyEgressPort: 81,
+          },
+        }),
       });
     }, /At least one of ignoredUID or ignoredGID should be specified./);
 
     test.done();
-  }
+  },
 };

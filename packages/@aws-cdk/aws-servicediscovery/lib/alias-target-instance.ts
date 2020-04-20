@@ -63,10 +63,10 @@ export class AliasTargetInstance extends InstanceBase {
     const resource = new CfnInstance(this, 'Resource', {
       instanceAttributes: {
         AWS_ALIAS_DNS_NAME: props.dnsName,
-        ...props.customAttributes
+        ...props.customAttributes,
       },
       instanceId: props.instanceId || this.node.uniqueId,
-      serviceId: props.service.serviceId
+      serviceId: props.service.serviceId,
     });
 
     this.service = props.service;

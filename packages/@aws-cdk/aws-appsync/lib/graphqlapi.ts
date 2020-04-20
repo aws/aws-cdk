@@ -214,7 +214,7 @@ export class GraphQLApi extends Construct {
           excludeVerboseContent: props.logConfig.excludeVerboseContent,
           fieldLogLevel: props.logConfig.fieldLogLevel ? props.logConfig.fieldLogLevel.toString() : undefined,
         },
-      }
+      },
     });
 
     this.apiId = this.api.attrApiId;
@@ -264,7 +264,7 @@ export class GraphQLApi extends Construct {
       api: this,
       description,
       name,
-      table
+      table,
     });
   }
 
@@ -279,7 +279,7 @@ export class GraphQLApi extends Construct {
       api: this,
       description,
       name,
-      lambdaFunction
+      lambdaFunction,
     });
   }
 
@@ -310,7 +310,7 @@ export class GraphQLApi extends Construct {
         userPoolId: upConfig.userPool.userPoolId,
         awsRegion: upConfig.userPool.stack.region,
         defaultAction: upConfig.defaultAction ? upConfig.defaultAction.toString() : 'ALLOW',
-      }
+      },
     };
   }
 

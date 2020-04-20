@@ -55,7 +55,7 @@ async function main() {
         const indexTs = [
           (await fs.readFile(indexTsPath, { encoding: 'utf8' })).trimRight(),
           `// ${namespace} CloudFormation Resources:`,
-          `export * from './${lowcaseModuleName}.generated';`
+          `export * from './${lowcaseModuleName}.generated';`,
         ].join('\n');
         await fs.writeFile(indexTsPath, indexTs, { encoding: 'utf8' });
         continue;
@@ -113,20 +113,20 @@ async function main() {
             packageId: dotnetPackage,
             signAssembly: true,
             assemblyOriginatorKeyFile: '../../key.snk',
-            iconUrl: 'https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png'
+            iconUrl: 'https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png',
           },
           java: {
             package: `${javaGroupId}.${javaPackage}`,
             maven: {
               groupId: javaGroupId,
-              artifactId: javaArtifactId
-            }
+              artifactId: javaArtifactId,
+            },
           },
           python: {
             distName: pythonDistName,
-            module: pythonModuleName
-          }
-        }
+            module: pythonModuleName,
+          },
+        },
       },
       repository: {
         type: 'git',
@@ -146,22 +146,22 @@ async function main() {
         cfn2ts: 'cfn2ts',
         'build+test+package': 'npm run build+test && npm run package',
         'build+test': 'npm run build && npm test',
-        compat: 'cdk-compat'
+        compat: 'cdk-compat',
       },
       'cdk-build': {
-        cloudformation: namespace
+        cloudformation: namespace,
       },
       keywords: [
         'aws',
         'cdk',
         'constructs',
         namespace,
-        moduleName
+        moduleName,
       ],
       author: {
         name: 'Amazon Web Services',
         url: 'https://aws.amazon.com',
-        organization: true
+        organization: true,
       },
       jest: {},
       license: 'Apache-2.0',
@@ -178,13 +178,13 @@ async function main() {
         '@aws-cdk/core': version,
       },
       engines: {
-        node: '>= 10.12.0'
+        node: '>= 10.12.0',
       },
       stability: 'experimental',
       maturity: 'cfn-only',
       awscdkio: {
-        announce: false
-      }
+        announce: false,
+      },
     });
 
     await write('.gitignore', [
@@ -233,7 +233,7 @@ async function main() {
 
     await write('lib/index.ts', [
       `// ${namespace} CloudFormation Resources:`,
-      `export * from './${lowcaseModuleName}.generated';`
+      `export * from './${lowcaseModuleName}.generated';`,
     ]);
 
     await write(`test/${lowcaseModuleName}.test.ts`, [
@@ -279,7 +279,7 @@ async function main() {
     const decdkPkg = JSON.parse(await fs.readFile(decdkPkgJsonPath, 'utf8'));
     const unorderedDeps = {
       ...decdkPkg.dependencies,
-      [packageName]: version
+      [packageName]: version,
     };
     decdkPkg.dependencies = {};
     Object.keys(unorderedDeps).sort().forEach(k => {

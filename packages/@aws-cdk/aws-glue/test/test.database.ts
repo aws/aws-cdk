@@ -17,14 +17,14 @@ export = {
           Type: 'AWS::Glue::Database',
           Properties: {
             CatalogId: {
-              Ref: 'AWS::AccountId'
+              Ref: 'AWS::AccountId',
             },
             DatabaseInput: {
-              Name: 'test_database'
-            }
-          }
-        }
-      }
+              Name: 'test_database',
+            },
+          },
+        },
+      },
     });
 
     test.done();
@@ -35,7 +35,7 @@ export = {
 
     new glue.Database(stack, 'Database', {
       databaseName: 'test_database',
-      locationUri: 's3://my-uri/'
+      locationUri: 's3://my-uri/',
     });
 
     expect(stack).toMatch({
@@ -44,15 +44,15 @@ export = {
           Type: 'AWS::Glue::Database',
           Properties: {
             CatalogId: {
-              Ref: 'AWS::AccountId'
+              Ref: 'AWS::AccountId',
             },
             DatabaseInput: {
               LocationUri: 's3://my-uri/',
-              Name: 'test_database'
-            }
-          }
-        }
-      }
+              Name: 'test_database',
+            },
+          },
+        },
+      },
     });
 
     test.done();
@@ -79,8 +79,8 @@ export = {
     test.throws(() =>
       new glue.Database(stack, 'Database', {
         databaseName: 'test_database',
-        locationUri: ''
-      })
+        locationUri: '',
+      }),
     );
     test.done();
   },
@@ -90,9 +90,9 @@ export = {
     test.throws(() =>
       new glue.Database(stack, 'Database', {
         databaseName: 'test_database',
-        locationUri: 'a'.repeat(1025)
-      })
+        locationUri: 'a'.repeat(1025),
+      }),
     );
     test.done();
-  }
+  },
 };

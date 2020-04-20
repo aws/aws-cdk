@@ -64,7 +64,7 @@ beforeEach(() => {
     return cb(null, {
       Account: `${uid}the_account_#`,
       UserId: 'you!',
-      Arn: 'arn:aws-here:iam::12345:role/test'
+      Arn: 'arn:aws-here:iam::12345:role/test',
     });
   });
 
@@ -178,7 +178,7 @@ describe('CLI compatible credentials loading', () => {
       profile: 'assumable',
       httpOptions: {
         proxyAddress: 'http://DOESNTMATTER/',
-      }
+      },
     });
 
     await provider.defaultAccount();

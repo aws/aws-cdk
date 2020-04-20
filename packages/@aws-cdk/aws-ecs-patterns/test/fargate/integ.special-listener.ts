@@ -14,7 +14,7 @@ const fargateNlbService = new ecsPatterns.NetworkLoadBalancedFargateService(stac
   listenerPort: 2015,
   taskImageOptions: {
     containerPort: 2015,
-    image: ecs.ContainerImage.fromRegistry('abiosoft/caddy')
+    image: ecs.ContainerImage.fromRegistry('abiosoft/caddy'),
   },
 });
 
@@ -23,7 +23,7 @@ const fargateAlbService = new ecsPatterns.ApplicationLoadBalancedFargateService(
   listenerPort: 2015,
   taskImageOptions: {
     containerPort: 2015,
-    image: ecs.ContainerImage.fromRegistry('abiosoft/caddy')
+    image: ecs.ContainerImage.fromRegistry('abiosoft/caddy'),
   },
 });
 

@@ -92,8 +92,8 @@ export class HelmChart extends Construct {
         Wait: props.wait || false,
         Values: (props.values ? stack.toJsonString(props.values) : undefined),
         Namespace: props.namespace || 'default',
-        Repository: props.repository
-      }
+        Repository: props.repository,
+      },
     });
   }
 }

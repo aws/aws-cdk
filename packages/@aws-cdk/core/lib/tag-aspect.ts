@@ -120,7 +120,7 @@ export class Tag extends TagBase {
         this.key,
         this.value,
         this.props.priority !== undefined ? this.props.priority : this.defaultPriority,
-        this.props.applyToLaunchedInstances !== false
+        this.props.applyToLaunchedInstances !== false,
       );
     }
   }

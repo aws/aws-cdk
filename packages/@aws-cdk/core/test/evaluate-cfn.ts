@@ -24,7 +24,7 @@ export function evaluateCFN(object: any, context: {[key: string]: string} = {}):
         throw new Error(`Trying to evaluate Fn::GetAtt of '${logicalId}.${attributeName}' but not in context!`);
       }
       return context[key];
-    }
+    },
   };
 
   return evaluate(object);

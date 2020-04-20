@@ -86,7 +86,7 @@ function prepareFileAsset(
 
   assetManifest.addFileAsset(asset.sourceHash, {
     path: asset.path,
-    packaging
+    packaging,
   }, {
     bucketName: toolkitInfo.bucketName,
     objectKey: key,
@@ -122,7 +122,7 @@ async function prepareDockerImageAsset(
     directory: asset.path,
     dockerBuildArgs: asset.buildArgs,
     dockerBuildTarget: asset.target,
-    dockerFile: asset.file
+    dockerFile: asset.file,
   }, {
     repositoryName,
     imageTag,

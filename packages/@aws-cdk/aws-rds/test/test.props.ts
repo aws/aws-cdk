@@ -107,5 +107,5 @@ export = {
     test.equals(engine2.parameterGroupFamily('2.0.2'), 'family-2');
 
     test.done();
-  }
+  },
 };

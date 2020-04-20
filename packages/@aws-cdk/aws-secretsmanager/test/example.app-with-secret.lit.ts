@@ -8,13 +8,13 @@ class ExampleStack extends cdk.Stack {
 
     /// !show
     const loginSecret = secretsmanager.Secret.fromSecretAttributes(this, 'Secret', {
-      secretArn: 'SomeLogin'
+      secretArn: 'SomeLogin',
     });
 
     new iam.User(this, 'User', {
       // Get the 'password' field from the secret that looks like
       // { "username": "XXXX", "password": "YYYY" }
-      password: loginSecret.secretValueFromJson('password')
+      password: loginSecret.secretValueFromJson('password'),
     });
     /// !hide
 

@@ -19,8 +19,8 @@ export = {
       Integration: {
         IntegrationHttpMethod: 'GET',
         Type: 'HTTP_PROXY',
-        Uri: 'http://foo/bar'
-      }
+        Uri: 'http://foo/bar',
+      },
     }));
 
     test.done();
@@ -36,8 +36,8 @@ export = {
       httpMethod: 'POST',
       proxy: false,
       options: {
-        cacheNamespace: 'hey'
-      }
+        cacheNamespace: 'hey',
+      },
     });
 
     api.root.addMethod('GET', integ);
@@ -48,10 +48,10 @@ export = {
         CacheNamespace: 'hey',
         IntegrationHttpMethod: 'POST',
         Type: 'HTTP',
-        Uri: 'http://foo/bar'
-      }
+        Uri: 'http://foo/bar',
+      },
     }));
 
     test.done();
-  }
+  },
 };

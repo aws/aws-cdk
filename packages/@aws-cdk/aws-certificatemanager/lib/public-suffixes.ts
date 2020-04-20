@@ -7,10 +7,10 @@ export const publicSuffixes = {
     'gov': {},
     'net': {},
     'mil': {},
-    'org': {}
+    'org': {},
   },
   'ad': {
-    'nom': {}
+    'nom': {},
   },
   'ae': {
     'co': {},
@@ -21,7 +21,7 @@ export const publicSuffixes = {
     'gov': {},
     'mil': {},
     'blogspot': {},
-    'nom': {}
+    'nom': {},
   },
   'aero': {
     'aerobatic': {},
@@ -105,28 +105,28 @@ export const publicSuffixes = {
     'trainer': {},
     'union': {},
     'workinggroup': {},
-    'works': {}
+    'works': {},
   },
   'af': {
     'gov': {},
     'com': {},
     'org': {},
     'net': {},
-    'edu': {}
+    'edu': {},
   },
   'ag': {
     'com': {},
     'org': {},
     'net': {},
     'co': {},
-    'nom': {}
+    'nom': {},
   },
   'ai': {
     'off': {},
     'com': {},
     'net': {},
     'org': {},
-    'nom': {}
+    'nom': {},
   },
   'al': {
     'com': {},
@@ -136,10 +136,10 @@ export const publicSuffixes = {
     'net': {},
     'org': {},
     'blogspot': {},
-    'nom': {}
+    'nom': {},
   },
   'am': {
-    'blogspot': {}
+    'blogspot': {},
   },
   'ao': {
     'ed': {},
@@ -147,12 +147,12 @@ export const publicSuffixes = {
     'og': {},
     'co': {},
     'pb': {},
-    'it': {}
+    'it': {},
   },
   'aq': {},
   'ar': {
     'com': {
-      'blogspot': {}
+      'blogspot': {},
     },
     'edu': {},
     'gob': {},
@@ -162,25 +162,25 @@ export const publicSuffixes = {
     'musica': {},
     'net': {},
     'org': {},
-    'tur': {}
+    'tur': {},
   },
   'arpa': {
     'e164': {},
     'ip6': {},
     'iris': {},
     'uri': {},
-    'urn': {}
+    'urn': {},
   },
   'as': {
-    'gov': {}
+    'gov': {},
   },
   'asia': {
-    'cloudns': {}
+    'cloudns': {},
   },
   'at': {
     'ac': {},
     'co': {
-      'blogspot': {}
+      'blogspot': {},
     },
     'gv': {},
     'or': {},
@@ -191,11 +191,11 @@ export const publicSuffixes = {
     'priv': {},
     '12hp': {},
     '2ix': {},
-    '4lima': {}
+    '4lima': {},
   },
   'au': {
     'com': {
-      'blogspot': {}
+      'blogspot': {},
     },
     'net': {},
     'org': {},
@@ -207,14 +207,14 @@ export const publicSuffixes = {
       'sa': {},
       'tas': {},
       'vic': {},
-      'wa': {}
+      'wa': {},
     },
     'gov': {
       'qld': {},
       'sa': {},
       'tas': {},
       'vic': {},
-      'wa': {}
+      'wa': {},
     },
     'asn': {},
     'id': {},
@@ -228,10 +228,10 @@ export const publicSuffixes = {
     'sa': {},
     'tas': {},
     'vic': {},
-    'wa': {}
+    'wa': {},
   },
   'aw': {
-    'com': {}
+    'com': {},
   },
   'ax': {},
   'az': {
@@ -246,7 +246,7 @@ export const publicSuffixes = {
     'mil': {},
     'name': {},
     'pro': {},
-    'biz': {}
+    'biz': {},
   },
   'ba': {
     'com': {},
@@ -255,7 +255,7 @@ export const publicSuffixes = {
     'mil': {},
     'net': {},
     'org': {},
-    'blogspot': {}
+    'blogspot': {},
   },
   'bb': {
     'biz': {},
@@ -267,15 +267,15 @@ export const publicSuffixes = {
     'net': {},
     'org': {},
     'store': {},
-    'tv': {}
+    'tv': {},
   },
   'be': {
     'ac': {},
     'webhosting': {},
-    'blogspot': {}
+    'blogspot': {},
   },
   'bf': {
-    'gov': {}
+    'gov': {},
   },
   'bg': {
     'a': {},
@@ -315,21 +315,21 @@ export const publicSuffixes = {
     '8': {},
     '9': {},
     'blogspot': {},
-    'barsy': {}
+    'barsy': {},
   },
   'bh': {
     'com': {},
     'edu': {},
     'net': {},
     'org': {},
-    'gov': {}
+    'gov': {},
   },
   'bi': {
     'co': {},
     'com': {},
     'edu': {},
     'or': {},
-    'org': {}
+    'org': {},
   },
   'biz': {
     'cloudns': {},
@@ -338,20 +338,20 @@ export const publicSuffixes = {
     'webhop': {},
     'mmafan': {},
     'myftp': {},
-    'dscloud': {}
+    'dscloud': {},
   },
   'bj': {
     'asso': {},
     'barreau': {},
     'gouv': {},
-    'blogspot': {}
+    'blogspot': {},
   },
   'bm': {
     'com': {},
     'edu': {},
     'gov': {},
     'net': {},
-    'org': {}
+    'org': {},
   },
   'bo': {
     'com': {},
@@ -394,7 +394,7 @@ export const publicSuffixes = {
     'tecnologia': {},
     'tksat': {},
     'transporte': {},
-    'wiki': {}
+    'wiki': {},
   },
   'br': {
     '9guacu': {},
@@ -425,7 +425,7 @@ export const publicSuffixes = {
     'cng': {},
     'cnt': {},
     'com': {
-      'blogspot': {}
+      'blogspot': {},
     },
     'contagem': {},
     'coop': {},
@@ -481,7 +481,7 @@ export const publicSuffixes = {
       'sc': {},
       'se': {},
       'sp': {},
-      'to': {}
+      'to': {},
     },
     'gru': {},
     'imb': {},
@@ -520,7 +520,7 @@ export const publicSuffixes = {
       'sc': {},
       'se': {},
       'sp': {},
-      'to': {}
+      'to': {},
     },
     'lel': {},
     'londrina': {},
@@ -580,7 +580,7 @@ export const publicSuffixes = {
     'vix': {},
     'vlog': {},
     'wiki': {},
-    'zlg': {}
+    'zlg': {},
   },
   'bs': {
     'com': {},
@@ -588,28 +588,28 @@ export const publicSuffixes = {
     'org': {},
     'edu': {},
     'gov': {},
-    'we': {}
+    'we': {},
   },
   'bt': {
     'com': {},
     'edu': {},
     'gov': {},
     'net': {},
-    'org': {}
+    'org': {},
   },
   'bv': {},
   'bw': {
     'co': {},
-    'org': {}
+    'org': {},
   },
   'by': {
     'gov': {},
     'mil': {},
     'com': {
-      'blogspot': {}
+      'blogspot': {},
     },
     'of': {},
-    'nym': {}
+    'nym': {},
   },
   'bz': {
     'com': {},
@@ -618,7 +618,7 @@ export const publicSuffixes = {
     'edu': {},
     'gov': {},
     'za': {},
-    'nym': {}
+    'nym': {},
   },
   'ca': {
     'ab': {},
@@ -637,7 +637,7 @@ export const publicSuffixes = {
     'yk': {},
     'gc': {},
     'co': {},
-    'blogspot': {}
+    'blogspot': {},
   },
   'cat': {},
   'cc': {
@@ -646,13 +646,13 @@ export const publicSuffixes = {
     'myphotos': {},
     'scrapping': {},
     'twmail': {},
-    'fantasyleague': {}
+    'fantasyleague': {},
   },
   'cd': {
-    'gov': {}
+    'gov': {},
   },
   'cf': {
-    'blogspot': {}
+    'blogspot': {},
   },
   'cg': {},
   'ch': {
@@ -661,7 +661,7 @@ export const publicSuffixes = {
     'gotdns': {},
     '12hp': {},
     '2ix': {},
-    '4lima': {}
+    '4lima': {},
   },
   'ci': {
     'org': {},
@@ -677,7 +677,7 @@ export const publicSuffixes = {
     'int': {},
     'presse': {},
     'md': {},
-    'gouv': {}
+    'gouv': {},
   },
   'cl': {
     'gov': {},
@@ -685,13 +685,13 @@ export const publicSuffixes = {
     'co': {},
     'mil': {},
     'blogspot': {},
-    'nom': {}
+    'nom': {},
   },
   'cm': {
     'co': {},
     'com': {},
     'gov': {},
-    'net': {}
+    'net': {},
   },
   'cn': {
     'ac': {},
@@ -734,12 +734,12 @@ export const publicSuffixes = {
     'zj': {},
     'hk': {},
     'mo': {},
-    'tw': {}
+    'tw': {},
   },
   'co': {
     'arts': {},
     'com': {
-      'blogspot': {}
+      'blogspot': {},
     },
     'edu': {},
     'firm': {},
@@ -752,12 +752,12 @@ export const publicSuffixes = {
     'org': {},
     'rec': {},
     'web': {},
-    'nodum': {}
+    'nodum': {},
   },
   'com': {
     'elasticbeanstalk': {},
     'amazonaws': {
-      's3': {}
+      's3': {},
     },
     'myasustor': {},
     'betainabox': {},
@@ -819,7 +819,7 @@ export const publicSuffixes = {
     'theworkpc': {},
     'mytuleap': {},
     'fbsbx': {
-      'apps': {}
+      'apps': {},
     },
     'firebaseapp': {},
     'flynnhub': {},
@@ -840,7 +840,7 @@ export const publicSuffixes = {
     'pixolino': {},
     'barsyonline': {},
     'meteorapp': {
-      'eu': {}
+      'eu': {},
     },
     'bitballoon': {},
     'netlify': {},
@@ -888,7 +888,7 @@ export const publicSuffixes = {
     'pagefrontapp': {},
     'gotpantheon': {},
     'prgmr': {
-      'xen': {}
+      'xen': {},
     },
     'qa2': {},
     'myqnapcloud': {},
@@ -908,9 +908,9 @@ export const publicSuffixes = {
     'hk': {},
     'remotewd': {},
     'xnbay': {
-      'u2': {}
+      'u2': {},
     },
-    'yolasite': {}
+    'yolasite': {},
   },
   'coop': {},
   'cr': {
@@ -920,7 +920,7 @@ export const publicSuffixes = {
     'fi': {},
     'go': {},
     'or': {},
-    'sa': {}
+    'sa': {},
   },
   'cu': {
     'com': {},
@@ -928,27 +928,27 @@ export const publicSuffixes = {
     'org': {},
     'net': {},
     'gov': {},
-    'inf': {}
+    'inf': {},
   },
   'cv': {
-    'blogspot': {}
+    'blogspot': {},
   },
   'cw': {
     'com': {},
     'edu': {},
     'net': {},
-    'org': {}
+    'org': {},
   },
   'cx': {
     'gov': {},
     'ath': {},
-    'info': {}
+    'info': {},
   },
   'cy': {
     'ac': {},
     'biz': {},
     'com': {
-      'blogspot': {}
+      'blogspot': {},
     },
     'ekloges': {},
     'gov': {},
@@ -959,7 +959,7 @@ export const publicSuffixes = {
     'parliament': {},
     'press': {},
     'pro': {},
-    'tm': {}
+    'tm': {},
   },
   'cz': {
     'co': {},
@@ -968,21 +968,21 @@ export const publicSuffixes = {
     'blogspot': {},
     'metacentrum': {
       'cloud': {},
-      'custom': {}
+      'custom': {},
     },
     'muni': {
       'cloud': {
         'flt': {},
-        'usr': {}
-      }
-    }
+        'usr': {},
+      },
+    },
   },
   'de': {
     'bplaced': {},
     'square7': {},
     'com': {},
     'cosidns': {
-      'dyn': {}
+      'dyn': {},
     },
     'dnsupdater': {},
     'dnshome': {},
@@ -994,7 +994,7 @@ export const publicSuffixes = {
     'traeumtgerade': {},
     'ddnss': {
       'dyn': {},
-      'dyndns': {}
+      'dyndns': {},
     },
     'dyndns1': {},
     'goip': {},
@@ -1004,13 +1004,13 @@ export const publicSuffixes = {
     'logoip': {},
     'spdns': {},
     'speedpartner': {
-      'customer': {}
+      'customer': {},
     },
     '12hp': {},
     '2ix': {},
     '4lima': {},
     'draydns': {},
-    'dynvpn': {}
+    'dynvpn': {},
   },
   'dj': {},
   'dk': {
@@ -1019,14 +1019,14 @@ export const publicSuffixes = {
     'firm': {},
     'reg': {},
     'store': {},
-    'blogspot': {}
+    'blogspot': {},
   },
   'dm': {
     'com': {},
     'net': {},
     'org': {},
     'edu': {},
-    'gov': {}
+    'gov': {},
   },
   'do': {
     'art': {},
@@ -1038,7 +1038,7 @@ export const publicSuffixes = {
     'net': {},
     'org': {},
     'sld': {},
-    'web': {}
+    'web': {},
   },
   'dz': {
     'com': {},
@@ -1048,7 +1048,7 @@ export const publicSuffixes = {
     'edu': {},
     'asso': {},
     'pol': {},
-    'art': {}
+    'art': {},
   },
   'ec': {
     'com': {},
@@ -1062,7 +1062,7 @@ export const publicSuffixes = {
     'edu': {},
     'gov': {},
     'gob': {},
-    'mil': {}
+    'mil': {},
   },
   'edu': {},
   'ee': {
@@ -1072,16 +1072,16 @@ export const publicSuffixes = {
     'lib': {},
     'med': {},
     'com': {
-      'blogspot': {}
+      'blogspot': {},
     },
     'pri': {},
     'aip': {},
     'org': {},
-    'fie': {}
+    'fie': {},
   },
   'eg': {
     'com': {
-      'blogspot': {}
+      'blogspot': {},
     },
     'edu': {},
     'eun': {},
@@ -1090,16 +1090,16 @@ export const publicSuffixes = {
     'name': {},
     'net': {},
     'org': {},
-    'sci': {}
+    'sci': {},
   },
   'es': {
     'com': {
-      'blogspot': {}
+      'blogspot': {},
     },
     'nom': {},
     'org': {},
     'gob': {},
-    'edu': {}
+    'edu': {},
   },
   'et': {
     'com': {},
@@ -1109,7 +1109,7 @@ export const publicSuffixes = {
     'biz': {},
     'name': {},
     'info': {},
-    'net': {}
+    'net': {},
   },
   'eu': {
     'mycd': {},
@@ -1117,13 +1117,13 @@ export const publicSuffixes = {
     'barsy': {},
     'wellbeingzone': {},
     'spdns': {},
-    'diskstation': {}
+    'diskstation': {},
   },
   'fi': {
     'aland': {},
     'dy': {},
     'blogspot': {},
-    'iki': {}
+    'iki': {},
   },
   'fm': {},
   'fo': {},
@@ -1149,12 +1149,12 @@ export const publicSuffixes = {
     'veterinaire': {},
     'fbxos': {},
     'freeboxos': {},
-    'blogspot': {}
+    'blogspot': {},
   },
   'ga': {},
   'gb': {},
   'gd': {
-    'nom': {}
+    'nom': {},
   },
   'ge': {
     'com': {},
@@ -1163,21 +1163,21 @@ export const publicSuffixes = {
     'org': {},
     'mil': {},
     'net': {},
-    'pvt': {}
+    'pvt': {},
   },
   'gf': {},
   'gg': {
     'co': {},
     'net': {},
     'org': {},
-    'cya': {}
+    'cya': {},
   },
   'gh': {
     'com': {},
     'edu': {},
     'gov': {},
     'org': {},
-    'mil': {}
+    'mil': {},
   },
   'gi': {
     'com': {},
@@ -1185,7 +1185,7 @@ export const publicSuffixes = {
     'gov': {},
     'mod': {},
     'edu': {},
-    'org': {}
+    'org': {},
   },
   'gl': {
     'co': {},
@@ -1193,7 +1193,7 @@ export const publicSuffixes = {
     'edu': {},
     'net': {},
     'org': {},
-    'nom': {}
+    'nom': {},
   },
   'gm': {},
   'gn': {
@@ -1202,7 +1202,7 @@ export const publicSuffixes = {
     'edu': {},
     'gov': {},
     'org': {},
-    'net': {}
+    'net': {},
   },
   'gov': {},
   'gp': {
@@ -1211,7 +1211,7 @@ export const publicSuffixes = {
     'mobi': {},
     'edu': {},
     'org': {},
-    'asso': {}
+    'asso': {},
   },
   'gq': {},
   'gr': {
@@ -1221,7 +1221,7 @@ export const publicSuffixes = {
     'org': {},
     'gov': {},
     'blogspot': {},
-    'nym': {}
+    'nym': {},
   },
   'gs': {},
   'gt': {
@@ -1232,7 +1232,7 @@ export const publicSuffixes = {
     'mil': {},
     'net': {},
     'org': {},
-    'nom': {}
+    'nom': {},
   },
   'gw': {},
   'gy': {
@@ -1241,7 +1241,7 @@ export const publicSuffixes = {
     'edu': {},
     'gov': {},
     'net': {},
-    'org': {}
+    'org': {},
   },
   'hk': {
     'com': {},
@@ -1252,7 +1252,7 @@ export const publicSuffixes = {
     'org': {},
     'blogspot': {},
     'ltd': {},
-    'inc': {}
+    'inc': {},
   },
   'hm': {},
   'hn': {
@@ -1262,14 +1262,14 @@ export const publicSuffixes = {
     'net': {},
     'mil': {},
     'gob': {},
-    'nom': {}
+    'nom': {},
   },
   'hr': {
     'iz': {},
     'from': {},
     'name': {},
     'com': {},
-    'blogspot': {}
+    'blogspot': {},
   },
   'ht': {
     'com': {},
@@ -1288,7 +1288,7 @@ export const publicSuffixes = {
     'edu': {},
     'rel': {},
     'gouv': {},
-    'perso': {}
+    'perso': {},
   },
   'hu': {
     'co': {},
@@ -1322,13 +1322,13 @@ export const publicSuffixes = {
     'tozsde': {},
     'utazas': {},
     'video': {},
-    'blogspot': {}
+    'blogspot': {},
   },
   'id': {
     'ac': {},
     'biz': {},
     'co': {
-      'blogspot': {}
+      'blogspot': {},
     },
     'desa': {},
     'go': {},
@@ -1337,29 +1337,29 @@ export const publicSuffixes = {
     'net': {},
     'or': {},
     'sch': {},
-    'web': {}
+    'web': {},
   },
   'ie': {
     'gov': {},
-    'blogspot': {}
+    'blogspot': {},
   },
   'il': {
     'ac': {},
     'co': {
-      'blogspot': {}
+      'blogspot': {},
     },
     'gov': {},
     'idf': {},
     'k12': {},
     'muni': {},
     'net': {},
-    'org': {}
+    'org': {},
   },
   'im': {
     'ac': {},
     'co': {
       'ltd': {},
-      'plc': {}
+      'plc': {},
     },
     'com': {},
     'net': {},
@@ -1367,7 +1367,7 @@ export const publicSuffixes = {
     'tt': {},
     'tv': {},
     'ro': {},
-    'nom': {}
+    'nom': {},
   },
   'in': {
     'co': {},
@@ -1384,7 +1384,7 @@ export const publicSuffixes = {
     'mil': {},
     'cloudns': {},
     'blogspot': {},
-    'barsy': {}
+    'barsy': {},
   },
   'info': {
     'cloudns': {},
@@ -1394,10 +1394,10 @@ export const publicSuffixes = {
     'webhop': {},
     'nsupdate': {},
     'dvrcam': {},
-    'ilovecollege': {}
+    'ilovecollege': {},
   },
   'int': {
-    'eu': {}
+    'eu': {},
   },
   'io': {
     'com': {},
@@ -1409,14 +1409,14 @@ export const publicSuffixes = {
     'drud': {},
     'definima': {},
     'enonic': {
-      'customer': {}
+      'customer': {},
     },
     'github': {},
     'gitlab': {},
     'azurecontainer': {},
     'ngrok': {},
     'nodeart': {
-      'stage': {}
+      'stage': {},
     },
     'nodum': {},
     'nid': {},
@@ -1425,31 +1425,31 @@ export const publicSuffixes = {
     'vaporcloud': {},
     'resindevice': {},
     'resinstaging': {
-      'devices': {}
+      'devices': {},
     },
     'hzc': {},
     'sandcats': {},
     'shiftedit': {},
     'lair': {
-      'apps': {}
+      'apps': {},
     },
     'spacekit': {},
     'thingdust': {
       'dev': {
-        'cust': {}
+        'cust': {},
       },
       'disrec': {
-        'cust': {}
+        'cust': {},
       },
       'prod': {
-        'cust': {}
+        'cust': {},
       },
       'testing': {
-        'cust': {}
-      }
+        'cust': {},
+      },
     },
     '2038': {},
-    'wedeploy': {}
+    'wedeploy': {},
   },
   'iq': {
     'gov': {},
@@ -1457,7 +1457,7 @@ export const publicSuffixes = {
     'mil': {},
     'com': {},
     'org': {},
-    'net': {}
+    'net': {},
   },
   'ir': {
     'ac': {},
@@ -1466,7 +1466,7 @@ export const publicSuffixes = {
     'id': {},
     'net': {},
     'org': {},
-    'sch': {}
+    'sch': {},
   },
   'is': {
     'net': {},
@@ -1476,7 +1476,7 @@ export const publicSuffixes = {
     'org': {},
     'int': {},
     'cupcake': {},
-    'blogspot': {}
+    'blogspot': {},
   },
   'it': {
     'gov': {},
@@ -1787,12 +1787,12 @@ export const publicSuffixes = {
     'vs': {},
     'vt': {},
     'vv': {},
-    'blogspot': {}
+    'blogspot': {},
   },
   'je': {
     'co': {},
     'net': {},
-    'org': {}
+    'org': {},
   },
   'jo': {
     'com': {},
@@ -1802,7 +1802,7 @@ export const publicSuffixes = {
     'sch': {},
     'gov': {},
     'mil': {},
-    'name': {}
+    'name': {},
   },
   'jobs': {},
   'jp': {
@@ -1867,7 +1867,7 @@ export const publicSuffixes = {
       'toyone': {},
       'toyota': {},
       'tsushima': {},
-      'yatomi': {}
+      'yatomi': {},
     },
     'akita': {
       'akita': {},
@@ -1897,7 +1897,7 @@ export const publicSuffixes = {
       'ogata': {},
       'semboku': {},
       'yokote': {},
-      'yurihonjo': {}
+      'yurihonjo': {},
     },
     'aomori': {
       'aomori': {},
@@ -1921,7 +1921,7 @@ export const publicSuffixes = {
       'takko': {},
       'towada': {},
       'tsugaru': {},
-      'tsuruta': {}
+      'tsuruta': {},
     },
     'chiba': {
       'abiko': {},
@@ -1981,7 +1981,7 @@ export const publicSuffixes = {
       'yachiyo': {},
       'yokaichiba': {},
       'yokoshibahikari': {},
-      'yotsukaido': {}
+      'yotsukaido': {},
     },
     'ehime': {
       'ainan': {},
@@ -2005,7 +2005,7 @@ export const publicSuffixes = {
       'toon': {},
       'uchiko': {},
       'uwajima': {},
-      'yawatahama': {}
+      'yawatahama': {},
     },
     'fukui': {
       'echizen': {},
@@ -2022,7 +2022,7 @@ export const publicSuffixes = {
       'sakai': {},
       'takahama': {},
       'tsuruga': {},
-      'wakasa': {}
+      'wakasa': {},
     },
     'fukuoka': {
       'ashiya': {},
@@ -2087,7 +2087,7 @@ export const publicSuffixes = {
       'yamada': {},
       'yame': {},
       'yanagawa': {},
-      'yukuhashi': {}
+      'yukuhashi': {},
     },
     'fukushima': {
       'aizubange': {},
@@ -2140,7 +2140,7 @@ export const publicSuffixes = {
       'yamato': {},
       'yamatsuri': {},
       'yanaizu': {},
-      'yugawa': {}
+      'yugawa': {},
     },
     'gifu': {
       'anpachi': {},
@@ -2180,7 +2180,7 @@ export const publicSuffixes = {
       'wanouchi': {},
       'yamagata': {},
       'yaotsu': {},
-      'yoro': {}
+      'yoro': {},
     },
     'gunma': {
       'annaka': {},
@@ -2218,7 +2218,7 @@ export const publicSuffixes = {
       'tsukiyono': {},
       'tsumagoi': {},
       'ueno': {},
-      'yoshioka': {}
+      'yoshioka': {},
     },
     'hiroshima': {
       'asaminami': {},
@@ -2245,7 +2245,7 @@ export const publicSuffixes = {
       'seranishi': {},
       'shinichi': {},
       'shobara': {},
-      'takehara': {}
+      'takehara': {},
     },
     'hokkaido': {
       'abashiri': {},
@@ -2389,7 +2389,7 @@ export const publicSuffixes = {
       'wakkanai': {},
       'wassamu': {},
       'yakumo': {},
-      'yoichi': {}
+      'yoichi': {},
     },
     'hyogo': {
       'aioi': {},
@@ -2437,7 +2437,7 @@ export const publicSuffixes = {
       'yabu': {},
       'yashiro': {},
       'yoka': {},
-      'yokawa': {}
+      'yokawa': {},
     },
     'ibaraki': {
       'ami': {},
@@ -2490,7 +2490,7 @@ export const publicSuffixes = {
       'yachiyo': {},
       'yamagata': {},
       'yawara': {},
-      'yuki': {}
+      'yuki': {},
     },
     'ishikawa': {
       'anamizu': {},
@@ -2511,7 +2511,7 @@ export const publicSuffixes = {
       'tsubata': {},
       'tsurugi': {},
       'uchinada': {},
-      'wajima': {}
+      'wajima': {},
     },
     'iwate': {
       'fudai': {},
@@ -2547,7 +2547,7 @@ export const publicSuffixes = {
       'tanohata': {},
       'tono': {},
       'yahaba': {},
-      'yamada': {}
+      'yamada': {},
     },
     'kagawa': {
       'ayagawa': {},
@@ -2564,7 +2564,7 @@ export const publicSuffixes = {
       'tonosho': {},
       'uchinomi': {},
       'utazu': {},
-      'zentsuji': {}
+      'zentsuji': {},
     },
     'kagoshima': {
       'akune': {},
@@ -2586,7 +2586,7 @@ export const publicSuffixes = {
       'satsumasendai': {},
       'soo': {},
       'tarumizu': {},
-      'yusui': {}
+      'yusui': {},
     },
     'kanagawa': {
       'aikawa': {},
@@ -2618,7 +2618,7 @@ export const publicSuffixes = {
       'yokosuka': {},
       'yugawara': {},
       'zama': {},
-      'zushi': {}
+      'zushi': {},
     },
     'kochi': {
       'aki': {},
@@ -2651,7 +2651,7 @@ export const publicSuffixes = {
       'tsuno': {},
       'umaji': {},
       'yasuda': {},
-      'yusuhara': {}
+      'yusuhara': {},
     },
     'kumamoto': {
       'amakusa': {},
@@ -2676,7 +2676,7 @@ export const publicSuffixes = {
       'uto': {},
       'yamaga': {},
       'yamato': {},
-      'yatsushiro': {}
+      'yatsushiro': {},
     },
     'kyoto': {
       'ayabe': {},
@@ -2709,7 +2709,7 @@ export const publicSuffixes = {
       'ujitawara': {},
       'wazuka': {},
       'yamashina': {},
-      'yawata': {}
+      'yawata': {},
     },
     'mie': {
       'asahi': {},
@@ -2741,7 +2741,7 @@ export const publicSuffixes = {
       'udono': {},
       'ureshino': {},
       'watarai': {},
-      'yokkaichi': {}
+      'yokkaichi': {},
     },
     'miyagi': {
       'furukawa': {},
@@ -2775,7 +2775,7 @@ export const publicSuffixes = {
       'wakuya': {},
       'watari': {},
       'yamamoto': {},
-      'zao': {}
+      'zao': {},
     },
     'miyazaki': {
       'aya': {},
@@ -2804,7 +2804,7 @@ export const publicSuffixes = {
       'takaharu': {},
       'takanabe': {},
       'takazaki': {},
-      'tsuno': {}
+      'tsuno': {},
     },
     'nagano': {
       'achi': {},
@@ -2881,7 +2881,7 @@ export const publicSuffixes = {
       'yamagata': {},
       'yamanouchi': {},
       'yasaka': {},
-      'yasuoka': {}
+      'yasuoka': {},
     },
     'nagasaki': {
       'chijiwa': {},
@@ -2905,7 +2905,7 @@ export const publicSuffixes = {
       'shinkamigoto': {},
       'togitsu': {},
       'tsushima': {},
-      'unzen': {}
+      'unzen': {},
     },
     'nara': {
       'ando': {},
@@ -2945,7 +2945,7 @@ export const publicSuffixes = {
       'yamatokoriyama': {},
       'yamatotakada': {},
       'yamazoe': {},
-      'yoshino': {}
+      'yoshino': {},
     },
     'niigata': {
       'aga': {},
@@ -2981,7 +2981,7 @@ export const publicSuffixes = {
       'uonuma': {},
       'yahiko': {},
       'yoita': {},
-      'yuzawa': {}
+      'yuzawa': {},
     },
     'oita': {
       'beppu': {},
@@ -3002,7 +3002,7 @@ export const publicSuffixes = {
       'tsukumi': {},
       'usa': {},
       'usuki': {},
-      'yufu': {}
+      'yufu': {},
     },
     'okayama': {
       'akaiwa': {},
@@ -3030,7 +3030,7 @@ export const publicSuffixes = {
       'tamano': {},
       'tsuyama': {},
       'wake': {},
-      'yakage': {}
+      'yakage': {},
     },
     'okinawa': {
       'aguni': {},
@@ -3074,7 +3074,7 @@ export const publicSuffixes = {
       'yomitan': {},
       'yonabaru': {},
       'yonaguni': {},
-      'zamami': {}
+      'zamami': {},
     },
     'osaka': {
       'abeno': {},
@@ -3126,7 +3126,7 @@ export const publicSuffixes = {
       'tondabayashi': {},
       'toyonaka': {},
       'toyono': {},
-      'yao': {}
+      'yao': {},
     },
     'saga': {
       'ariake': {},
@@ -3154,7 +3154,7 @@ export const publicSuffixes = {
       'taku': {},
       'tara': {},
       'tosu': {},
-      'yoshinogari': {}
+      'yoshinogari': {},
     },
     'saitama': {
       'arakawa': {},
@@ -3225,7 +3225,7 @@ export const publicSuffixes = {
       'yorii': {},
       'yoshida': {},
       'yoshikawa': {},
-      'yoshimi': {}
+      'yoshimi': {},
     },
     'shiga': {
       'aisho': {},
@@ -3250,7 +3250,7 @@ export const publicSuffixes = {
       'takatsuki': {},
       'torahime': {},
       'toyosato': {},
-      'yasu': {}
+      'yasu': {},
     },
     'shimane': {
       'akagi': {},
@@ -3275,7 +3275,7 @@ export const publicSuffixes = {
       'unnan': {},
       'yakumo': {},
       'yasugi': {},
-      'yatsuka': {}
+      'yatsuka': {},
     },
     'shizuoka': {
       'arai': {},
@@ -3313,7 +3313,7 @@ export const publicSuffixes = {
       'shizuoka': {},
       'susono': {},
       'yaizu': {},
-      'yoshida': {}
+      'yoshida': {},
     },
     'tochigi': {
       'ashikaga': {},
@@ -3346,7 +3346,7 @@ export const publicSuffixes = {
       'tsuga': {},
       'ujiie': {},
       'utsunomiya': {},
-      'yaita': {}
+      'yaita': {},
     },
     'tokushima': {
       'aizumi': {},
@@ -3365,7 +3365,7 @@ export const publicSuffixes = {
       'sanagochi': {},
       'shishikui': {},
       'tokushima': {},
-      'wajiki': {}
+      'wajiki': {},
     },
     'tokyo': {
       'adachi': {},
@@ -3424,7 +3424,7 @@ export const publicSuffixes = {
       'tachikawa': {},
       'taito': {},
       'tama': {},
-      'toshima': {}
+      'toshima': {},
     },
     'tottori': {
       'chizu': {},
@@ -3439,7 +3439,7 @@ export const publicSuffixes = {
       'tottori': {},
       'wakasa': {},
       'yazu': {},
-      'yonago': {}
+      'yonago': {},
     },
     'toyama': {
       'asahi': {},
@@ -3465,7 +3465,7 @@ export const publicSuffixes = {
       'toyama': {},
       'unazuki': {},
       'uozu': {},
-      'yamada': {}
+      'yamada': {},
     },
     'wakayama': {
       'arida': {},
@@ -3496,7 +3496,7 @@ export const publicSuffixes = {
       'tanabe': {},
       'wakayama': {},
       'yuasa': {},
-      'yura': {}
+      'yura': {},
     },
     'yamagata': {
       'asahi': {},
@@ -3532,7 +3532,7 @@ export const publicSuffixes = {
       'yamagata': {},
       'yamanobe': {},
       'yonezawa': {},
-      'yuza': {}
+      'yuza': {},
     },
     'yamaguchi': {
       'abu': {},
@@ -3550,7 +3550,7 @@ export const publicSuffixes = {
       'tokuyama': {},
       'toyota': {},
       'ube': {},
-      'yuu': {}
+      'yuu': {},
     },
     'yamanashi': {
       'chuo': {},
@@ -3579,14 +3579,14 @@ export const publicSuffixes = {
       'tsuru': {},
       'uenohara': {},
       'yamanakako': {},
-      'yamanashi': {}
+      'yamanashi': {},
     },
-    'blogspot': {}
+    'blogspot': {},
   },
   'ke': {
     'ac': {},
     'co': {
-      'blogspot': {}
+      'blogspot': {},
     },
     'go': {},
     'info': {},
@@ -3594,7 +3594,7 @@ export const publicSuffixes = {
     'mobi': {},
     'ne': {},
     'or': {},
-    'sc': {}
+    'sc': {},
   },
   'kg': {
     'org': {},
@@ -3602,7 +3602,7 @@ export const publicSuffixes = {
     'com': {},
     'edu': {},
     'gov': {},
-    'mil': {}
+    'mil': {},
   },
   'ki': {
     'edu': {},
@@ -3611,7 +3611,7 @@ export const publicSuffixes = {
     'org': {},
     'gov': {},
     'info': {},
-    'com': {}
+    'com': {},
   },
   'km': {
     'org': {},
@@ -3630,13 +3630,13 @@ export const publicSuffixes = {
     'notaires': {},
     'pharmaciens': {},
     'veterinaire': {},
-    'gouv': {}
+    'gouv': {},
   },
   'kn': {
     'net': {},
     'org': {},
     'edu': {},
-    'gov': {}
+    'gov': {},
   },
   'kp': {
     'com': {},
@@ -3644,7 +3644,7 @@ export const publicSuffixes = {
     'gov': {},
     'org': {},
     'rep': {},
-    'tra': {}
+    'tra': {},
   },
   'kr': {
     'ac': {},
@@ -3676,14 +3676,14 @@ export const publicSuffixes = {
     'jeonnam': {},
     'seoul': {},
     'ulsan': {},
-    'blogspot': {}
+    'blogspot': {},
   },
   'ky': {
     'edu': {},
     'gov': {},
     'com': {},
     'org': {},
-    'net': {}
+    'net': {},
   },
   'kz': {
     'org': {},
@@ -3692,7 +3692,7 @@ export const publicSuffixes = {
     'gov': {},
     'mil': {},
     'com': {},
-    'nym': {}
+    'nym': {},
   },
   'la': {
     'int': {},
@@ -3705,14 +3705,14 @@ export const publicSuffixes = {
     'org': {},
     'bnr': {},
     'c': {},
-    'nym': {}
+    'nym': {},
   },
   'lb': {
     'com': {},
     'edu': {},
     'gov': {},
     'net': {},
-    'org': {}
+    'org': {},
   },
   'lc': {
     'com': {},
@@ -3721,12 +3721,12 @@ export const publicSuffixes = {
     'org': {},
     'edu': {},
     'gov': {},
-    'oy': {}
+    'oy': {},
   },
   'li': {
     'blogspot': {},
     'nom': {},
-    'nym': {}
+    'nym': {},
   },
   'lk': {
     'gov': {},
@@ -3743,27 +3743,27 @@ export const publicSuffixes = {
     'assn': {},
     'grp': {},
     'hotel': {},
-    'ac': {}
+    'ac': {},
   },
   'lr': {
     'com': {},
     'edu': {},
     'gov': {},
     'org': {},
-    'net': {}
+    'net': {},
   },
   'ls': {
     'co': {},
-    'org': {}
+    'org': {},
   },
   'lt': {
     'gov': {},
     'blogspot': {},
-    'nym': {}
+    'nym': {},
   },
   'lu': {
     'blogspot': {},
-    'nym': {}
+    'nym': {},
   },
   'lv': {
     'com': {},
@@ -3774,7 +3774,7 @@ export const publicSuffixes = {
     'id': {},
     'net': {},
     'asn': {},
-    'conf': {}
+    'conf': {},
   },
   'ly': {
     'com': {},
@@ -3785,7 +3785,7 @@ export const publicSuffixes = {
     'sch': {},
     'med': {},
     'org': {},
-    'id': {}
+    'id': {},
   },
   'ma': {
     'co': {},
@@ -3793,14 +3793,14 @@ export const publicSuffixes = {
     'gov': {},
     'org': {},
     'ac': {},
-    'press': {}
+    'press': {},
   },
   'mc': {
     'tm': {},
-    'asso': {}
+    'asso': {},
   },
   'md': {
-    'blogspot': {}
+    'blogspot': {},
   },
   'me': {
     'co': {},
@@ -3813,7 +3813,7 @@ export const publicSuffixes = {
     'priv': {},
     'c66': {},
     'daplie': {
-      'localhost': {}
+      'localhost': {},
     },
     'filegear': {},
     'ravendb': {},
@@ -3832,7 +3832,7 @@ export const publicSuffixes = {
     'synology': {},
     'wedeploy': {},
     'yombo': {},
-    'nohost': {}
+    'nohost': {},
   },
   'mg': {
     'org': {},
@@ -3843,7 +3843,7 @@ export const publicSuffixes = {
     'edu': {},
     'mil': {},
     'com': {},
-    'co': {}
+    'co': {},
   },
   'mh': {},
   'mil': {},
@@ -3856,7 +3856,7 @@ export const publicSuffixes = {
     'inf': {},
     'name': {},
     'blogspot': {},
-    'nom': {}
+    'nom': {},
   },
   'ml': {
     'com': {},
@@ -3865,44 +3865,44 @@ export const publicSuffixes = {
     'gov': {},
     'net': {},
     'org': {},
-    'presse': {}
+    'presse': {},
   },
   'mn': {
     'gov': {},
     'edu': {},
     'org': {},
-    'nyc': {}
+    'nyc': {},
   },
   'mo': {
     'com': {},
     'net': {},
     'org': {},
     'edu': {},
-    'gov': {}
+    'gov': {},
   },
   'mobi': {
-    'dscloud': {}
+    'dscloud': {},
   },
   'mp': {},
   'mq': {},
   'mr': {
     'gov': {},
-    'blogspot': {}
+    'blogspot': {},
   },
   'ms': {
     'com': {},
     'edu': {},
     'gov': {},
     'net': {},
-    'org': {}
+    'org': {},
   },
   'mt': {
     'com': {
-      'blogspot': {}
+      'blogspot': {},
     },
     'edu': {},
     'net': {},
-    'org': {}
+    'org': {},
   },
   'mu': {
     'com': {},
@@ -3911,7 +3911,7 @@ export const publicSuffixes = {
     'gov': {},
     'ac': {},
     'co': {},
-    'or': {}
+    'or': {},
   },
   'museum': {
     'academy': {},
@@ -4453,7 +4453,7 @@ export const publicSuffixes = {
     'yosemite': {},
     'youth': {},
     'zoological': {},
-    'zoology': {}
+    'zoology': {},
   },
   'mv': {
     'aero': {},
@@ -4469,7 +4469,7 @@ export const publicSuffixes = {
     'name': {},
     'net': {},
     'org': {},
-    'pro': {}
+    'pro': {},
   },
   'mw': {
     'ac': {},
@@ -4482,7 +4482,7 @@ export const publicSuffixes = {
     'int': {},
     'museum': {},
     'net': {},
-    'org': {}
+    'org': {},
   },
   'mx': {
     'com': {},
@@ -4491,7 +4491,7 @@ export const publicSuffixes = {
     'edu': {},
     'net': {},
     'blogspot': {},
-    'nym': {}
+    'nym': {},
   },
   'my': {
     'com': {},
@@ -4501,7 +4501,7 @@ export const publicSuffixes = {
     'edu': {},
     'mil': {},
     'name': {},
-    'blogspot': {}
+    'blogspot': {},
   },
   'mz': {
     'ac': {},
@@ -4511,7 +4511,7 @@ export const publicSuffixes = {
     'gov': {},
     'mil': {},
     'net': {},
-    'org': {}
+    'org': {},
   },
   'na': {
     'info': {},
@@ -4530,19 +4530,19 @@ export const publicSuffixes = {
     'mobi': {},
     'co': {},
     'com': {},
-    'org': {}
+    'org': {},
   },
   'name': {
     'her': {
-      'forgot': {}
+      'forgot': {},
     },
     'his': {
-      'forgot': {}
-    }
+      'forgot': {},
+    },
   },
   'nc': {
     'asso': {},
-    'nom': {}
+    'nom': {},
   },
   'ne': {},
   'net': {
@@ -4561,7 +4561,7 @@ export const publicSuffixes = {
     'in': {},
     'cloudaccess': {},
     'cdn77': {
-      'r': {}
+      'r': {},
     },
     'cloudeity': {},
     'debian': {},
@@ -4591,20 +4591,20 @@ export const publicSuffixes = {
     'ru': {},
     'channelsdvr': {},
     'fastlylb': {
-      'map': {}
+      'map': {},
     },
     'fastly': {
       'freetls': {},
       'map': {},
       'prod': {
         'a': {},
-        'global': {}
+        'global': {},
       },
       'ssl': {
         'a': {},
         'b': {},
-        'global': {}
-      }
+        'global': {},
+      },
     },
     'flynnhosting': {},
     'cloudfunctions': {},
@@ -4631,7 +4631,7 @@ export const publicSuffixes = {
     'schokokeks': {},
     'dsmynas': {},
     'familyds': {},
-    'za': {}
+    'za': {},
   },
   'nf': {
     'com': {},
@@ -4643,11 +4643,11 @@ export const publicSuffixes = {
     'firm': {},
     'info': {},
     'other': {},
-    'store': {}
+    'store': {},
   },
   'ng': {
     'com': {
-      'blogspot': {}
+      'blogspot': {},
     },
     'edu': {},
     'gov': {},
@@ -4657,7 +4657,7 @@ export const publicSuffixes = {
     'name': {},
     'net': {},
     'org': {},
-    'sch': {}
+    'sch': {},
   },
   'ni': {
     'ac': {},
@@ -4673,7 +4673,7 @@ export const publicSuffixes = {
     'net': {},
     'nom': {},
     'org': {},
-    'web': {}
+    'web': {},
   },
   'nl': {
     'bv': {},
@@ -4681,7 +4681,7 @@ export const publicSuffixes = {
     'co': {},
     'blogspot': {},
     'cistron': {},
-    'demon': {}
+    'demon': {},
   },
   'no': {
     'fhs': {},
@@ -4697,64 +4697,64 @@ export const publicSuffixes = {
     'kommune': {},
     'herad': {},
     'aa': {
-      'gs': {}
+      'gs': {},
     },
     'ah': {
-      'gs': {}
+      'gs': {},
     },
     'bu': {
-      'gs': {}
+      'gs': {},
     },
     'fm': {
-      'gs': {}
+      'gs': {},
     },
     'hl': {
-      'gs': {}
+      'gs': {},
     },
     'hm': {
-      'gs': {}
+      'gs': {},
     },
     'mr': {
-      'gs': {}
+      'gs': {},
     },
     'nl': {
-      'gs': {}
+      'gs': {},
     },
     'nt': {
-      'gs': {}
+      'gs': {},
     },
     'of': {
-      'gs': {}
+      'gs': {},
     },
     'ol': {
-      'gs': {}
+      'gs': {},
     },
     'oslo': {
-      'gs': {}
+      'gs': {},
     },
     'rl': {
-      'gs': {}
+      'gs': {},
     },
     'sf': {
-      'gs': {}
+      'gs': {},
     },
     'st': {
-      'gs': {}
+      'gs': {},
     },
     'svalbard': {
-      'gs': {}
+      'gs': {},
     },
     'tm': {
-      'gs': {}
+      'gs': {},
     },
     'tr': {
-      'gs': {}
+      'gs': {},
     },
     'va': {
-      'gs': {}
+      'gs': {},
     },
     'vf': {
-      'gs': {}
+      'gs': {},
     },
     'akrehamn': {},
     'algard': {},
@@ -4851,11 +4851,11 @@ export const publicSuffixes = {
     'bykle': {},
     'barum': {},
     'telemark': {
-      'bo': {}
+      'bo': {},
     },
     'nordland': {
       'bo': {},
-      'heroy': {}
+      'heroy': {},
     },
     'bievat': {},
     'bomlo': {},
@@ -5070,10 +5070,10 @@ export const publicSuffixes = {
     'narviika': {},
     'naustdal': {},
     'akershus': {
-      'nes': {}
+      'nes': {},
     },
     'buskerud': {
-      'nes': {}
+      'nes': {},
     },
     'nesna': {},
     'nesodden': {},
@@ -5100,10 +5100,10 @@ export const publicSuffixes = {
     'orsta': {},
     'hedmark': {
       'os': {},
-      'valer': {}
+      'valer': {},
     },
     'hordaland': {
-      'os': {}
+      'os': {},
     },
     'osen': {},
     'osteroy': {},
@@ -5145,7 +5145,7 @@ export const publicSuffixes = {
     'salat': {},
     'samnanger': {},
     'vestfold': {
-      'sande': {}
+      'sande': {},
     },
     'sandefjord': {},
     'sandnes': {},
@@ -5272,10 +5272,10 @@ export const publicSuffixes = {
     'vagsoy': {},
     'vaga': {},
     'ostfold': {
-      'valer': {}
+      'valer': {},
     },
     'co': {},
-    'blogspot': {}
+    'blogspot': {},
   },
   'nr': {
     'biz': {},
@@ -5284,18 +5284,18 @@ export const publicSuffixes = {
     'edu': {},
     'org': {},
     'net': {},
-    'com': {}
+    'com': {},
   },
   'nu': {
     'merseine': {},
     'mine': {},
     'shacknet': {},
-    'nom': {}
+    'nom': {},
   },
   'nz': {
     'ac': {},
     'co': {
-      'blogspot': {}
+      'blogspot': {},
     },
     'cri': {},
     'geek': {},
@@ -5310,7 +5310,7 @@ export const publicSuffixes = {
     'org': {},
     'parliament': {},
     'school': {},
-    'nym': {}
+    'nym': {},
   },
   'om': {
     'co': {},
@@ -5321,12 +5321,12 @@ export const publicSuffixes = {
     'museum': {},
     'net': {},
     'org': {},
-    'pro': {}
+    'pro': {},
   },
   'onion': {},
   'org': {
     'amune': {
-      'tele': {}
+      'tele': {},
     },
     'pimienta': {},
     'poivron': {},
@@ -5337,14 +5337,14 @@ export const publicSuffixes = {
     'certmgr': {},
     'cdn77': {
       'c': {},
-      'rsc': {}
+      'rsc': {},
     },
     'cloudns': {},
     'duckdns': {},
     'tunk': {},
     'dyndns': {
       'go': {},
-      'home': {}
+      'home': {},
     },
     'blogdns': {},
     'blogsite': {},
@@ -5432,7 +5432,7 @@ export const publicSuffixes = {
       'sk': {},
       'tr': {},
       'uk': {},
-      'us': {}
+      'us': {},
     },
     'twmail': {},
     'fedorainfracloud': {},
@@ -5440,13 +5440,13 @@ export const publicSuffixes = {
     'fedoraproject': {
       'cloud': {},
       'os': {
-        'app': {}
+        'app': {},
       },
       'stg': {
         'os': {
-          'app': {}
-        }
-      }
+          'app': {},
+        },
+      },
     },
     'hepforge': {},
     'js': {},
@@ -5469,7 +5469,7 @@ export const publicSuffixes = {
     'diskstation': {},
     'hk': {},
     'wmflabs': {},
-    'za': {}
+    'za': {},
   },
   'pa': {
     'ac': {},
@@ -5482,7 +5482,7 @@ export const publicSuffixes = {
     'ing': {},
     'abo': {},
     'med': {},
-    'nom': {}
+    'nom': {},
   },
   'pe': {
     'edu': {},
@@ -5493,12 +5493,12 @@ export const publicSuffixes = {
     'com': {},
     'net': {},
     'blogspot': {},
-    'nym': {}
+    'nym': {},
   },
   'pf': {
     'com': {},
     'org': {},
-    'edu': {}
+    'edu': {},
   },
   'ph': {
     'com': {},
@@ -5508,7 +5508,7 @@ export const publicSuffixes = {
     'edu': {},
     'ngo': {},
     'mil': {},
-    'i': {}
+    'i': {},
   },
   'pk': {
     'com': {},
@@ -5524,7 +5524,7 @@ export const publicSuffixes = {
     'gon': {},
     'gop': {},
     'gos': {},
-    'info': {}
+    'info': {},
   },
   'pl': {
     'com': {},
@@ -5607,7 +5607,7 @@ export const publicSuffixes = {
       'mup': {},
       'wuoz': {},
       'konsulat': {},
-      'oirm': {}
+      'oirm': {},
     },
     'augustow': {},
     'bedzin': {},
@@ -5735,17 +5735,17 @@ export const publicSuffixes = {
     'gdansk': {},
     'gdynia': {},
     'med': {},
-    'sopot': {}
+    'sopot': {},
   },
   'pm': {
-    'own': {}
+    'own': {},
   },
   'pn': {
     'gov': {},
     'co': {},
     'org': {},
     'edu': {},
-    'net': {}
+    'net': {},
   },
   'post': {},
   'pr': {
@@ -5761,7 +5761,7 @@ export const publicSuffixes = {
     'name': {},
     'est': {},
     'prof': {},
-    'ac': {}
+    'ac': {},
   },
   'pro': {
     'aaa': {},
@@ -5775,7 +5775,7 @@ export const publicSuffixes = {
     'law': {},
     'med': {},
     'recht': {},
-    'cloudns': {}
+    'cloudns': {},
   },
   'ps': {
     'edu': {},
@@ -5784,7 +5784,7 @@ export const publicSuffixes = {
     'plo': {},
     'com': {},
     'org': {},
-    'net': {}
+    'net': {},
   },
   'pt': {
     'net': {},
@@ -5796,7 +5796,7 @@ export const publicSuffixes = {
     'com': {},
     'nome': {},
     'blogspot': {},
-    'nym': {}
+    'nym': {},
   },
   'pw': {
     'co': {},
@@ -5806,7 +5806,7 @@ export const publicSuffixes = {
     'go': {},
     'belau': {},
     'cloudns': {},
-    'nom': {}
+    'nom': {},
   },
   'py': {
     'com': {},
@@ -5815,7 +5815,7 @@ export const publicSuffixes = {
     'gov': {},
     'mil': {},
     'net': {},
-    'org': {}
+    'org': {},
   },
   'qa': {
     'com': {},
@@ -5827,13 +5827,13 @@ export const publicSuffixes = {
     'org': {},
     'sch': {},
     'blogspot': {},
-    'nom': {}
+    'nom': {},
   },
   're': {
     'asso': {},
     'com': {},
     'nom': {},
-    'blogspot': {}
+    'blogspot': {},
   },
   'ro': {
     'arts': {},
@@ -5848,7 +5848,7 @@ export const publicSuffixes = {
     'tm': {},
     'www': {},
     'shop': {},
-    'blogspot': {}
+    'blogspot': {},
   },
   'rs': {
     'ac': {},
@@ -5859,7 +5859,7 @@ export const publicSuffixes = {
     'org': {},
     'blogspot': {},
     'nom': {},
-    'ox': {}
+    'ox': {},
   },
   'ru': {
     'ac': {},
@@ -5890,12 +5890,12 @@ export const publicSuffixes = {
     'blogspot': {},
     'myjino': {},
     'cldmail': {
-      'hb': {}
+      'hb': {},
     },
     'net': {},
     'org': {},
     'pp': {},
-    'ras': {}
+    'ras': {},
   },
   'rw': {
     'gov': {},
@@ -5906,7 +5906,7 @@ export const publicSuffixes = {
     'co': {},
     'int': {},
     'mil': {},
-    'gouv': {}
+    'gouv': {},
   },
   'sa': {
     'com': {},
@@ -5916,21 +5916,21 @@ export const publicSuffixes = {
     'med': {},
     'pub': {},
     'edu': {},
-    'sch': {}
+    'sch': {},
   },
   'sb': {
     'com': {},
     'edu': {},
     'gov': {},
     'net': {},
-    'org': {}
+    'org': {},
   },
   'sc': {
     'com': {},
     'gov': {},
     'net': {},
     'org': {},
-    'edu': {}
+    'edu': {},
   },
   'sd': {
     'com': {},
@@ -5940,7 +5940,7 @@ export const publicSuffixes = {
     'med': {},
     'tv': {},
     'gov': {},
-    'info': {}
+    'info': {},
   },
   'se': {
     'a': {},
@@ -5983,7 +5983,7 @@ export const publicSuffixes = {
     'y': {},
     'z': {},
     'com': {},
-    'blogspot': {}
+    'blogspot': {},
   },
   'sg': {
     'com': {},
@@ -5992,7 +5992,7 @@ export const publicSuffixes = {
     'gov': {},
     'edu': {},
     'per': {},
-    'blogspot': {}
+    'blogspot': {},
   },
   'sh': {
     'com': {},
@@ -6002,23 +6002,23 @@ export const publicSuffixes = {
     'mil': {},
     'hashbang': {},
     'wedeploy': {},
-    'now': {}
+    'now': {},
   },
   'si': {
     'blogspot': {},
-    'nom': {}
+    'nom': {},
   },
   'sj': {},
   'sk': {
     'blogspot': {},
-    'nym': {}
+    'nym': {},
   },
   'sl': {
     'com': {},
     'net': {},
     'edu': {},
     'gov': {},
-    'org': {}
+    'org': {},
   },
   'sm': {},
   'sn': {
@@ -6029,12 +6029,12 @@ export const publicSuffixes = {
     'org': {},
     'perso': {},
     'univ': {},
-    'blogspot': {}
+    'blogspot': {},
   },
   'so': {
     'com': {},
     'net': {},
-    'org': {}
+    'org': {},
   },
   'sr': {},
   'st': {
@@ -6050,7 +6050,7 @@ export const publicSuffixes = {
     'principe': {},
     'saotome': {},
     'store': {},
-    'noho': {}
+    'noho': {},
   },
   'su': {
     'abkhazia': {},
@@ -6103,18 +6103,18 @@ export const publicSuffixes = {
     'vladikavkaz': {},
     'vladimir': {},
     'vologda': {},
-    'nym': {}
+    'nym': {},
   },
   'sv': {
     'com': {},
     'edu': {},
     'gob': {},
     'org': {},
-    'red': {}
+    'red': {},
   },
   'sx': {
     'gov': {},
-    'nym': {}
+    'nym': {},
   },
   'sy': {
     'edu': {},
@@ -6122,16 +6122,16 @@ export const publicSuffixes = {
     'net': {},
     'mil': {},
     'com': {},
-    'org': {}
+    'org': {},
   },
   'sz': {
     'co': {},
     'ac': {},
-    'org': {}
+    'org': {},
   },
   'tc': {},
   'td': {
-    'blogspot': {}
+    'blogspot': {},
   },
   'tel': {},
   'tf': {},
@@ -6143,7 +6143,7 @@ export const publicSuffixes = {
     'in': {},
     'mi': {},
     'net': {},
-    'or': {}
+    'or': {},
   },
   'tj': {
     'ac': {},
@@ -6160,11 +6160,11 @@ export const publicSuffixes = {
     'nic': {},
     'org': {},
     'test': {},
-    'web': {}
+    'web': {},
   },
   'tk': {},
   'tl': {
-    'gov': {}
+    'gov': {},
   },
   'tm': {
     'com': {},
@@ -6174,7 +6174,7 @@ export const publicSuffixes = {
     'nom': {},
     'gov': {},
     'mil': {},
-    'edu': {}
+    'edu': {},
   },
   'tn': {
     'com': {},
@@ -6196,7 +6196,7 @@ export const publicSuffixes = {
     'mincom': {},
     'agrinet': {},
     'defense': {},
-    'turen': {}
+    'turen': {},
   },
   'to': {
     'com': {},
@@ -6205,11 +6205,11 @@ export const publicSuffixes = {
     'org': {},
     'edu': {},
     'mil': {},
-    'vpnplus': {}
+    'vpnplus': {},
   },
   'tr': {
     'com': {
-      'blogspot': {}
+      'blogspot': {},
     },
     'info': {},
     'biz': {},
@@ -6231,8 +6231,8 @@ export const publicSuffixes = {
     'edu': {},
     'kep': {},
     'nc': {
-      'gov': {}
-    }
+      'gov': {},
+    },
   },
   'travel': {},
   'tt': {
@@ -6252,17 +6252,17 @@ export const publicSuffixes = {
     'aero': {},
     'name': {},
     'gov': {},
-    'edu': {}
+    'edu': {},
   },
   'tv': {
-    'dyndns': {}
+    'dyndns': {},
   },
   'tw': {
     'edu': {},
     'gov': {},
     'mil': {},
     'com': {
-      'mymailer': {}
+      'mymailer': {},
     },
     'net': {},
     'org': {},
@@ -6272,7 +6272,7 @@ export const publicSuffixes = {
     'club': {},
     'url': {},
     'blogspot': {},
-    'nym': {}
+    'nym': {},
   },
   'tz': {
     'ac': {},
@@ -6286,7 +6286,7 @@ export const publicSuffixes = {
     'ne': {},
     'or': {},
     'sc': {},
-    'tv': {}
+    'tv': {},
   },
   'ua': {
     'com': {},
@@ -6369,7 +6369,7 @@ export const publicSuffixes = {
     'ltd': {},
     'biz': {},
     'co': {},
-    'pp': {}
+    'pp': {},
   },
   'ug': {
     'co': {},
@@ -6381,18 +6381,18 @@ export const publicSuffixes = {
     'com': {},
     'org': {},
     'blogspot': {},
-    'nom': {}
+    'nom': {},
   },
   'uk': {
     'ac': {},
     'co': {
       'blogspot': {},
       'wellbeingzone': {},
-      'gwiddle': {}
+      'gwiddle': {},
     },
     'gov': {
       'service': {},
-      'homeoffice': {}
+      'homeoffice': {},
     },
     'ltd': {},
     'me': {},
@@ -6401,10 +6401,10 @@ export const publicSuffixes = {
     'org': {
       'glug': {},
       'lug': {},
-      'lugs': {}
+      'lugs': {},
     },
     'plc': {},
-    'police': {}
+    'police': {},
   },
   'us': {
     'dni': {},
@@ -6415,125 +6415,125 @@ export const publicSuffixes = {
     'ak': {
       'k12': {},
       'cc': {},
-      'lib': {}
+      'lib': {},
     },
     'al': {
       'k12': {},
       'cc': {},
-      'lib': {}
+      'lib': {},
     },
     'ar': {
       'k12': {},
       'cc': {},
-      'lib': {}
+      'lib': {},
     },
     'as': {
       'k12': {},
       'cc': {},
-      'lib': {}
+      'lib': {},
     },
     'az': {
       'k12': {},
       'cc': {},
-      'lib': {}
+      'lib': {},
     },
     'ca': {
       'k12': {},
       'cc': {},
-      'lib': {}
+      'lib': {},
     },
     'co': {
       'k12': {},
       'cc': {},
-      'lib': {}
+      'lib': {},
     },
     'ct': {
       'k12': {},
       'cc': {},
-      'lib': {}
+      'lib': {},
     },
     'dc': {
       'k12': {},
       'cc': {},
-      'lib': {}
+      'lib': {},
     },
     'de': {
       'k12': {},
       'cc': {},
-      'lib': {}
+      'lib': {},
     },
     'fl': {
       'k12': {},
       'cc': {},
-      'lib': {}
+      'lib': {},
     },
     'ga': {
       'k12': {},
       'cc': {},
-      'lib': {}
+      'lib': {},
     },
     'gu': {
       'k12': {},
       'cc': {},
-      'lib': {}
+      'lib': {},
     },
     'hi': {
       'cc': {},
-      'lib': {}
+      'lib': {},
     },
     'ia': {
       'k12': {},
       'cc': {},
-      'lib': {}
+      'lib': {},
     },
     'id': {
       'k12': {},
       'cc': {},
-      'lib': {}
+      'lib': {},
     },
     'il': {
       'k12': {},
       'cc': {},
-      'lib': {}
+      'lib': {},
     },
     'in': {
       'k12': {},
       'cc': {},
-      'lib': {}
+      'lib': {},
     },
     'ks': {
       'k12': {},
       'cc': {},
-      'lib': {}
+      'lib': {},
     },
     'ky': {
       'k12': {},
       'cc': {},
-      'lib': {}
+      'lib': {},
     },
     'la': {
       'k12': {},
       'cc': {},
-      'lib': {}
+      'lib': {},
     },
     'ma': {
       'k12': {
         'pvt': {},
         'chtr': {},
-        'paroch': {}
+        'paroch': {},
       },
       'cc': {},
-      'lib': {}
+      'lib': {},
     },
     'md': {
       'k12': {},
       'cc': {},
-      'lib': {}
+      'lib': {},
     },
     'me': {
       'k12': {},
       'cc': {},
-      'lib': {}
+      'lib': {},
     },
     'mi': {
       'k12': {},
@@ -6545,176 +6545,176 @@ export const publicSuffixes = {
       'gen': {},
       'mus': {},
       'tec': {},
-      'washtenaw': {}
+      'washtenaw': {},
     },
     'mn': {
       'k12': {},
       'cc': {},
-      'lib': {}
+      'lib': {},
     },
     'mo': {
       'k12': {},
       'cc': {},
-      'lib': {}
+      'lib': {},
     },
     'ms': {
       'k12': {},
       'cc': {},
-      'lib': {}
+      'lib': {},
     },
     'mt': {
       'k12': {},
       'cc': {},
-      'lib': {}
+      'lib': {},
     },
     'nc': {
       'k12': {},
       'cc': {},
-      'lib': {}
+      'lib': {},
     },
     'nd': {
       'cc': {},
-      'lib': {}
+      'lib': {},
     },
     'ne': {
       'k12': {},
       'cc': {},
-      'lib': {}
+      'lib': {},
     },
     'nh': {
       'k12': {},
       'cc': {},
-      'lib': {}
+      'lib': {},
     },
     'nj': {
       'k12': {},
       'cc': {},
-      'lib': {}
+      'lib': {},
     },
     'nm': {
       'k12': {},
       'cc': {},
-      'lib': {}
+      'lib': {},
     },
     'nv': {
       'k12': {},
       'cc': {},
-      'lib': {}
+      'lib': {},
     },
     'ny': {
       'k12': {},
       'cc': {},
-      'lib': {}
+      'lib': {},
     },
     'oh': {
       'k12': {},
       'cc': {},
-      'lib': {}
+      'lib': {},
     },
     'ok': {
       'k12': {},
       'cc': {},
-      'lib': {}
+      'lib': {},
     },
     'or': {
       'k12': {},
       'cc': {},
-      'lib': {}
+      'lib': {},
     },
     'pa': {
       'k12': {},
       'cc': {},
-      'lib': {}
+      'lib': {},
     },
     'pr': {
       'k12': {},
       'cc': {},
-      'lib': {}
+      'lib': {},
     },
     'ri': {
       'k12': {},
       'cc': {},
-      'lib': {}
+      'lib': {},
     },
     'sc': {
       'k12': {},
       'cc': {},
-      'lib': {}
+      'lib': {},
     },
     'sd': {
       'cc': {},
-      'lib': {}
+      'lib': {},
     },
     'tn': {
       'k12': {},
       'cc': {},
-      'lib': {}
+      'lib': {},
     },
     'tx': {
       'k12': {},
       'cc': {},
-      'lib': {}
+      'lib': {},
     },
     'ut': {
       'k12': {},
       'cc': {},
-      'lib': {}
+      'lib': {},
     },
     'vi': {
       'k12': {},
       'cc': {},
-      'lib': {}
+      'lib': {},
     },
     'vt': {
       'k12': {},
       'cc': {},
-      'lib': {}
+      'lib': {},
     },
     'va': {
       'k12': {},
       'cc': {},
-      'lib': {}
+      'lib': {},
     },
     'wa': {
       'k12': {},
       'cc': {},
-      'lib': {}
+      'lib': {},
     },
     'wi': {
       'k12': {},
       'cc': {},
-      'lib': {}
+      'lib': {},
     },
     'wv': {
-      'cc': {}
+      'cc': {},
     },
     'wy': {
       'k12': {},
       'cc': {},
-      'lib': {}
+      'lib': {},
     },
     'cloudns': {},
     'drud': {},
     'golffan': {},
     'noip': {},
-    'pointto': {}
+    'pointto': {},
   },
   'uy': {
     'com': {
-      'blogspot': {}
+      'blogspot': {},
     },
     'edu': {},
     'gub': {},
     'mil': {},
     'net': {},
     'org': {},
-    'nom': {}
+    'nom': {},
   },
   'uz': {
     'co': {},
     'com': {},
     'net': {},
-    'org': {}
+    'org': {},
   },
   'va': {},
   'vc': {
@@ -6724,7 +6724,7 @@ export const publicSuffixes = {
     'gov': {},
     'mil': {},
     'edu': {},
-    'nom': {}
+    'nom': {},
   },
   've': {
     'arts': {},
@@ -6743,17 +6743,17 @@ export const publicSuffixes = {
     'rec': {},
     'store': {},
     'tec': {},
-    'web': {}
+    'web': {},
   },
   'vg': {
-    'nom': {}
+    'nom': {},
   },
   'vi': {
     'co': {},
     'com': {},
     'k12': {},
     'net': {},
-    'org': {}
+    'org': {},
   },
   'vn': {
     'com': {},
@@ -6768,13 +6768,13 @@ export const publicSuffixes = {
     'name': {},
     'pro': {},
     'health': {},
-    'blogspot': {}
+    'blogspot': {},
   },
   'vu': {
     'com': {},
     'edu': {},
     'net': {},
-    'org': {}
+    'org': {},
   },
   'wf': {},
   'ws': {
@@ -6785,7 +6785,7 @@ export const publicSuffixes = {
     'edu': {},
     'cloud66': {},
     'dyndns': {},
-    'mypets': {}
+    'mypets': {},
   },
   'yt': {},
   'xxx': {},
@@ -6794,7 +6794,7 @@ export const publicSuffixes = {
     'agric': {},
     'alt': {},
     'co': {
-      'blogspot': {}
+      'blogspot': {},
     },
     'edu': {},
     'gov': {},
@@ -6808,7 +6808,7 @@ export const publicSuffixes = {
     'org': {},
     'school': {},
     'tm': {},
-    'web': {}
+    'web': {},
   },
   'zm': {
     'ac': {},
@@ -6821,14 +6821,14 @@ export const publicSuffixes = {
     'mil': {},
     'net': {},
     'org': {},
-    'sch': {}
+    'sch': {},
   },
   'zw': {
     'ac': {},
     'co': {},
     'gov': {},
     'mil': {},
-    'org': {}
+    'org': {},
   },
   'aaa': {},
   'aarp': {},
@@ -6841,7 +6841,7 @@ export const publicSuffixes = {
   'abogado': {},
   'abudhabi': {},
   'academy': {
-    'official': {}
+    'official': {},
   },
   'accenture': {},
   'accountant': {},
@@ -7051,10 +7051,10 @@ export const publicSuffixes = {
   'cloud': {
     'linkyard': {},
     'vapor': {},
-    'trafficplex': {}
+    'trafficplex': {},
   },
   'club': {
-    'cloudns': {}
+    'cloudns': {},
   },
   'clubmed': {},
   'coach': {},
@@ -7065,7 +7065,7 @@ export const publicSuffixes = {
   'comcast': {},
   'commbank': {},
   'community': {
-    'ravendb': {}
+    'ravendb': {},
   },
   'company': {},
   'compare': {},
@@ -7079,7 +7079,7 @@ export const publicSuffixes = {
   'cooking': {},
   'cookingchannel': {},
   'cool': {
-    'de': {}
+    'de': {},
   },
   'corsica': {},
   'country': {},
@@ -7174,8 +7174,8 @@ export const publicSuffixes = {
   'eurovision': {},
   'eus': {
     'party': {
-      'user': {}
-    }
+      'user': {},
+    },
   },
   'events': {},
   'everbank': {},
@@ -7188,13 +7188,13 @@ export const publicSuffixes = {
   'fail': {},
   'fairwinds': {},
   'faith': {
-    'ybo': {}
+    'ybo': {},
   },
   'family': {},
   'fan': {},
   'fans': {},
   'farm': {
-    'storj': {}
+    'storj': {},
   },
   'farmers': {},
   'fashion': {},
@@ -7216,7 +7216,7 @@ export const publicSuffixes = {
   'fish': {},
   'fishing': {},
   'fit': {
-    'ptplus': {}
+    'ptplus': {},
   },
   'fitness': {},
   'flickr': {},
@@ -7285,7 +7285,7 @@ export const publicSuffixes = {
   'goodhands': {},
   'goodyear': {},
   'goog': {
-    'cloud': {}
+    'cloud': {},
   },
   'google': {},
   'gop': {},
@@ -7336,10 +7336,10 @@ export const publicSuffixes = {
   'host': {
     'cloudaccess': {},
     'freesite': {},
-    'pcloud': {}
+    'pcloud': {},
   },
   'hosting': {
-    'opencraft': {}
+    'opencraft': {},
   },
   'hot': {},
   'hoteles': {},
@@ -7422,7 +7422,7 @@ export const publicSuffixes = {
   'kpn': {},
   'krd': {
     'co': {},
-    'edu': {}
+    'edu': {},
   },
   'kred': {},
   'kuokgroup': {},
@@ -7437,8 +7437,8 @@ export const publicSuffixes = {
   'land': {
     'static': {
       'dev': {},
-      'sites': {}
-    }
+      'sites': {},
+    },
   },
   'landrover': {},
   'lanxess': {},
@@ -7470,7 +7470,7 @@ export const publicSuffixes = {
   'linde': {},
   'link': {
     'cyon': {},
-    'mypep': {}
+    'mypep': {},
   },
   'lipsy': {},
   'live': {},
@@ -7502,7 +7502,7 @@ export const publicSuffixes = {
   'makeup': {},
   'man': {},
   'management': {
-    'router': {}
+    'router': {},
   },
   'mango': {},
   'map': {},
@@ -7605,12 +7605,12 @@ export const publicSuffixes = {
   'ollo': {},
   'omega': {},
   'one': {
-    'homelink': {}
+    'homelink': {},
   },
   'ong': {},
   'onl': {},
   'online': {
-    'barsy': {}
+    'barsy': {},
   },
   'onyourside': {},
   'ooo': {},
@@ -7623,7 +7623,7 @@ export const publicSuffixes = {
   'otsuka': {},
   'ott': {},
   'ovh': {
-    'nerdpol': {}
+    'nerdpol': {},
   },
   'page': {},
   'panasonic': {},
@@ -7633,7 +7633,7 @@ export const publicSuffixes = {
   'partners': {},
   'parts': {},
   'party': {
-    'ybo': {}
+    'ybo': {},
   },
   'passagens': {},
   'pay': {},
@@ -7652,7 +7652,7 @@ export const publicSuffixes = {
   'pics': {},
   'pictet': {},
   'pictures': {
-    '1337': {}
+    '1337': {},
   },
   'pid': {},
   'pin': {},
@@ -7715,7 +7715,7 @@ export const publicSuffixes = {
   'rest': {},
   'restaurant': {},
   'review': {
-    'ybo': {}
+    'ybo': {},
   },
   'reviews': {},
   'rexroth': {},
@@ -7726,13 +7726,13 @@ export const publicSuffixes = {
   'ril': {},
   'rio': {},
   'rip': {
-    'clan': {}
+    'clan': {},
   },
   'rmit': {},
   'rocher': {},
   'rocks': {
     'myddns': {},
-    'webspace': {}
+    'webspace': {},
   },
   'rodeo': {},
   'rogers': {},
@@ -7742,7 +7742,7 @@ export const publicSuffixes = {
   'ruhr': {},
   'run': {
     'development': {},
-    'ravendb': {}
+    'ravendb': {},
   },
   'rwe': {},
   'ryukyu': {},
@@ -7774,7 +7774,7 @@ export const publicSuffixes = {
   'schule': {},
   'schwarz': {},
   'science': {
-    'ybo': {}
+    'ybo': {},
   },
   'scjohnson': {},
   'scor': {},
@@ -7811,7 +7811,7 @@ export const publicSuffixes = {
   'singles': {},
   'site': {
     'cyon': {},
-    'byen': {}
+    'byen': {},
   },
   'ski': {},
   'skin': {},
@@ -7834,7 +7834,7 @@ export const publicSuffixes = {
   'space': {
     'stackspace': {},
     'uber': {},
-    'xs4all': {}
+    'xs4all': {},
   },
   'spiegel': {},
   'sport': {},
@@ -7862,7 +7862,7 @@ export const publicSuffixes = {
   'supplies': {},
   'supply': {},
   'support': {
-    'barsy': {}
+    'barsy': {},
   },
   'surf': {},
   'surgery': {},
@@ -7873,7 +7873,7 @@ export const publicSuffixes = {
   'sydney': {},
   'symantec': {},
   'systems': {
-    'knightpoint': {}
+    'knightpoint': {},
   },
   'tab': {},
   'taipei': {},
@@ -7921,7 +7921,7 @@ export const publicSuffixes = {
   'toyota': {},
   'toys': {},
   'trade': {
-    'ybo': {}
+    'ybo': {},
   },
   'trading': {},
   'training': {},
@@ -8016,7 +8016,7 @@ export const publicSuffixes = {
   'xperia': {},
   'xyz': {
     'blogsite': {},
-    'fhapp': {}
+    'fhapp': {},
   },
   'yachts': {},
   'yahoo': {},
@@ -8034,7 +8034,7 @@ export const publicSuffixes = {
   'zip': {},
   'zippo': {},
   'zone': {
-    'lima': {}
+    'lima': {},
   },
-  'zuerich': {}
+  'zuerich': {},
 };

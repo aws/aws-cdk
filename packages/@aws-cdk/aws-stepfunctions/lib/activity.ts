@@ -61,7 +61,7 @@ export class Activity extends Resource implements IActivity {
     });
 
     const resource = new CfnActivity(this, 'Resource', {
-      name: this.physicalName! // not null because of above call to `super`
+      name: this.physicalName!, // not null because of above call to `super`
     });
 
     this.activityArn = this.getResourceArnAttribute(resource.ref, {
@@ -84,7 +84,7 @@ export class Activity extends Resource implements IActivity {
       metricName,
       dimensions: { ActivityArn: this.activityArn },
       statistic: 'sum',
-      ...props
+      ...props,
     }).attachTo(this);
   }
 

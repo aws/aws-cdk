@@ -443,7 +443,7 @@ export class ViewerCertificate {
     } = options;
 
     return new ViewerCertificate({
-      acmCertificateArn: certificate.certificateArn, sslSupportMethod, minimumProtocolVersion
+      acmCertificateArn: certificate.certificateArn, sslSupportMethod, minimumProtocolVersion,
     }, aliases);
   }
 
@@ -461,7 +461,7 @@ export class ViewerCertificate {
     } = options;
 
     return new ViewerCertificate({
-      iamCertificateId, sslSupportMethod, minimumProtocolVersion
+      iamCertificateId, sslSupportMethod, minimumProtocolVersion,
     }, aliases);
   }
 
@@ -649,7 +649,7 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
   private readonly VALID_SSL_PROTOCOLS: { [method in SSLMethod]: string[] } = {
     [SSLMethod.SNI]: [
       SecurityPolicyProtocol.TLS_V1, SecurityPolicyProtocol.TLS_V1_1_2016,
-      SecurityPolicyProtocol.TLS_V1_2016, SecurityPolicyProtocol.TLS_V1_2_2018
+      SecurityPolicyProtocol.TLS_V1_2016, SecurityPolicyProtocol.TLS_V1_2_2018,
     ],
     [SSLMethod.VIP]: [SecurityPolicyProtocol.SSL_V3, SecurityPolicyProtocol.TLS_V1],
   };
@@ -688,7 +688,7 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
         Object.keys(originConfig.originHeaders).forEach(key => {
           const oHeader: CfnDistribution.OriginCustomHeaderProperty = {
             headerName: key,
-            headerValue: originConfig.originHeaders![key]
+            headerValue: originConfig.originHeaders![key],
           };
           originHeaders.push(oHeader);
         });
@@ -705,7 +705,7 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
             originAccessIdentity:
               `origin-access-identity/cloudfront/${
                 originConfig.s3OriginSource.originAccessIdentity.originAccessIdentityName
-              }`
+              }`,
           };
         } else {
           s3OriginConfig = {};
@@ -729,9 +729,9 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
             originReadTimeout: originConfig.customOriginSource.originReadTimeout
               && originConfig.customOriginSource.originReadTimeout.toSeconds() || 30,
             originProtocolPolicy: originConfig.customOriginSource.originProtocolPolicy || OriginProtocolPolicy.HTTPS_ONLY,
-            originSslProtocols: originConfig.customOriginSource.allowedOriginSSLVersions || [OriginSslPolicy.TLS_V1_2]
+            originSslProtocols: originConfig.customOriginSource.allowedOriginSSLVersions || [OriginSslPolicy.TLS_V1_2],
           }
-          : undefined
+          : undefined,
       };
 
       for (const behavior of originConfig.behaviors) {
@@ -749,7 +749,7 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
     });
     distributionConfig = {
       ...distributionConfig,
-      origins
+      origins,
     };
 
     const defaultBehaviors = behaviors.filter(behavior => behavior.isDefaultBehavior);
@@ -772,7 +772,7 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
     if (props.aliasConfiguration && props.viewerCertificate) {
       throw new Error([
         'You cannot set both aliasConfiguration and viewerCertificate properties.',
-        'Please only use viewerCertificate, as aliasConfiguration is deprecated.'
+        'Please only use viewerCertificate, as aliasConfiguration is deprecated.',
       ].join(' '));
     }
 
@@ -782,7 +782,7 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
 
       _viewerCertificate = ViewerCertificate.fromAcmCertificate(
         certificatemanager.Certificate.fromCertificateArn(this, 'AliasConfigurationCert', acmCertRef),
-        { securityPolicy, sslMethod, aliases }
+        { securityPolicy, sslMethod, aliases },
       );
     }
 
@@ -802,7 +802,7 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
       }
     } else {
       distributionConfig = { ...distributionConfig,
-        viewerCertificate: { cloudFrontDefaultCertificate: true }
+        viewerCertificate: { cloudFrontDefaultCertificate: true },
       };
     }
 
@@ -813,8 +813,8 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
         logging: {
           bucket: this.loggingBucket.bucketRegionalDomainName,
           includeCookies: props.loggingConfig.includeCookies || false,
-          prefix: props.loggingConfig.prefix
-        }
+          prefix: props.loggingConfig.prefix,
+        },
       };
     }
 
@@ -846,7 +846,7 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
           .map(fna => ({
             eventType: fna.eventType,
             lambdaFunctionArn: fna.lambdaFunction && fna.lambdaFunction.functionArn,
-          }))
+          })),
       });
 
       // allow edgelambda.amazonaws.com to assume the functions' execution role.
@@ -854,7 +854,7 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
         if (a.lambdaFunction.role && a.lambdaFunction.role instanceof iam.Role && a.lambdaFunction.role.assumeRolePolicy) {
           a.lambdaFunction.role.assumeRolePolicy.addStatements(new iam.PolicyStatement({
             actions: [ 'sts:AssumeRole' ],
-            principals: [ new iam.ServicePrincipal('edgelambda.amazonaws.com') ]
+            principals: [ new iam.ServicePrincipal('edgelambda.amazonaws.com') ],
           }));
         }
       }

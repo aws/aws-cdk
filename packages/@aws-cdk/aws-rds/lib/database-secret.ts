@@ -40,11 +40,11 @@ export class DatabaseSecret extends secretsmanager.Secret {
         passwordLength: 30, // Oracle password cannot have more than 30 characters
         secretStringTemplate: JSON.stringify({
           username: props.username,
-          masterarn: props.masterSecret?.secretArn
+          masterarn: props.masterSecret?.secretArn,
         }),
         generateStringKey: 'password',
-        excludeCharacters: '"@/\\'
-      }
+        excludeCharacters: '"@/\\',
+      },
     });
   }
 }

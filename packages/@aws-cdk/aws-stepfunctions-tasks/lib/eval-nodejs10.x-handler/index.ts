@@ -7,7 +7,7 @@ export async function handler(event: Event): Promise<any> {
   const expression = Object.entries(event.expressionAttributeValues)
     .reduce(
       (exp, [k, v]) => exp.replace(k, JSON.stringify(v)),
-      event.expression
+      event.expression,
     );
   console.log(`Expression: ${expression}`);
 

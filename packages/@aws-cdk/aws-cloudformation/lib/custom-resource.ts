@@ -164,12 +164,12 @@ export class CustomResource extends Resource {
       type,
       properties: {
         ServiceToken: providerConfig.serviceToken,
-        ...uppercaseProperties(props.properties || {})
-      }
+        ...uppercaseProperties(props.properties || {}),
+      },
     });
 
     this.resource.applyRemovalPolicy(props.removalPolicy, {
-      default: RemovalPolicy.DESTROY
+      default: RemovalPolicy.DESTROY,
     });
   }
 

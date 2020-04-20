@@ -8,15 +8,15 @@ export = {
     const stack = new Stack();
 
     new Certificate(stack, 'Certificate', {
-      domainName: 'test.example.com'
+      domainName: 'test.example.com',
     });
 
     expect(stack).to(haveResource('AWS::CertificateManager::Certificate', {
       DomainName: 'test.example.com',
       DomainValidationOptions: [{
         DomainName: 'test.example.com',
-        ValidationDomain: 'example.com'
-      }]
+        ValidationDomain: 'example.com',
+      }],
     }));
 
     test.done();
@@ -28,15 +28,15 @@ export = {
     new Certificate(stack, 'Certificate', {
       domainName: 'test.example.com',
       validationDomains: {
-        'test.example.com': 'test.example.com'
-      }
+        'test.example.com': 'test.example.com',
+      },
     });
 
     expect(stack).to(haveResource('AWS::CertificateManager::Certificate', {
       DomainValidationOptions: [{
         DomainName: 'test.example.com',
-        ValidationDomain: 'test.example.com'
-      }]
+        ValidationDomain: 'test.example.com',
+      }],
     }));
 
     test.done();
@@ -59,7 +59,7 @@ export = {
 
     new Certificate(stack, 'Certificate', {
       domainName: 'test.example.com',
-      validationMethod: ValidationMethod.DNS
+      validationMethod: ValidationMethod.DNS,
     });
 
     expect(stack).to(haveResource('AWS::CertificateManager::Certificate', {
@@ -90,16 +90,16 @@ export = {
     new Certificate(stack, 'Certificate', {
       domainName,
       validationDomains: {
-        [domainName]: 'example.com'
-      }
+        [domainName]: 'example.com',
+      },
     });
 
     expect(stack).to(haveResource('AWS::CertificateManager::Certificate', {
       DomainName: 'my.example.com',
       DomainValidationOptions: [{
         DomainName: 'my.example.com',
-        ValidationDomain: 'example.com'
-      }]
+        ValidationDomain: 'example.com',
+      }],
     }));
 
     test.done();

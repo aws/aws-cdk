@@ -20,14 +20,14 @@ test('Can create target groups with lambda targets', () => {
 
   // WHEN
   listener.addTargets('Targets', {
-    targets: [new targets.LambdaTarget(fn)]
+    targets: [new targets.LambdaTarget(fn)],
   });
 
   // THEN
   expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
     TargetType: 'lambda',
     Targets: [
-      { Id: { 'Fn::GetAtt': [ 'FunA2CCED21', 'Arn' ] } }
-    ]
+      { Id: { 'Fn::GetAtt': [ 'FunA2CCED21', 'Arn' ] } },
+    ],
   }));
 });

@@ -36,7 +36,7 @@ class TestStack extends Stack {
     first.configureAsyncInvoke({
       onSuccess: new destinations.LambdaDestination(second, { responseOnly: true }),
       onFailure: new destinations.LambdaDestination(error, { responseOnly: true }),
-      retryAttempts: 0
+      retryAttempts: 0,
     });
 
     second.configureAsyncInvoke({

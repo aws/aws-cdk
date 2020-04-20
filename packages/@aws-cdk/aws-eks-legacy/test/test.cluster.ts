@@ -25,8 +25,8 @@ export = {
           { Ref: 'VPCPublicSubnet2Subnet74179F39' },
           { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
           { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },
-        ]
-      }
+        ],
+      },
     }));
 
     test.done();
@@ -67,7 +67,7 @@ export = {
       // WHEN
       const cluster = new eks.Cluster(stack, 'cluster', {
         defaultCapacity: 10,
-        defaultCapacityInstance: new ec2.InstanceType('m2.xlarge')
+        defaultCapacityInstance: new ec2.InstanceType('m2.xlarge'),
       });
 
       // THEN
@@ -89,7 +89,7 @@ export = {
       expect(stack).notTo(haveResource('AWS::AutoScaling::AutoScalingGroup'));
       expect(stack).notTo(haveResource('AWS::AutoScaling::LaunchConfiguration'));
       test.done();
-    }
+    },
   },
 
   'creating a cluster tags the private VPC subnets'(test: Test) {
@@ -105,8 +105,8 @@ export = {
         { Key: 'Name', Value: 'Stack/VPC/PrivateSubnet1' },
         { Key: 'aws-cdk:subnet-name', Value: 'Private' },
         { Key: 'aws-cdk:subnet-type', Value: 'Private' },
-        { Key: 'kubernetes.io/role/internal-elb', Value: '1' }
-      ]
+        { Key: 'kubernetes.io/role/internal-elb', Value: '1' },
+      ],
     }));
 
     test.done();
@@ -126,8 +126,8 @@ export = {
         { Key: 'Name', Value: 'Stack/VPC/PublicSubnet1' },
         { Key: 'aws-cdk:subnet-name', Value: 'Public' },
         { Key: 'aws-cdk:subnet-type', Value: 'Public' },
-        { Key: 'kubernetes.io/role/elb', Value: '1' }
-      ]
+        { Key: 'kubernetes.io/role/elb', Value: '1' },
+      ],
     }));
 
     test.done();
@@ -149,14 +149,14 @@ export = {
         {
           Key: 'Name',
           PropagateAtLaunch: true,
-          Value: 'Stack/Cluster/Default'
+          Value: 'Stack/Cluster/Default',
         },
         {
           Key: { 'Fn::Join': [ '', [ 'kubernetes.io/cluster/', { Ref: 'ClusterEB0386A7' } ] ] },
           PropagateAtLaunch: true,
-          Value: 'owned'
-        }
-      ]
+          Value: 'owned',
+        },
+      ],
     }));
 
     test.done();
@@ -175,7 +175,7 @@ export = {
       clusterEndpoint: cluster.clusterEndpoint,
       clusterName: cluster.clusterName,
       securityGroups: cluster.connections.securityGroups,
-      clusterCertificateAuthorityData: cluster.clusterCertificateAuthorityData
+      clusterCertificateAuthorityData: cluster.clusterCertificateAuthorityData,
     });
 
     // this should cause an export/import
@@ -186,10 +186,10 @@ export = {
       Outputs: {
         ClusterARN: {
           Value: {
-            'Fn::ImportValue': 'Stack:ExportsOutputFnGetAttClusterEB0386A7Arn2F2E3C3F'
-          }
-        }
-      }
+            'Fn::ImportValue': 'Stack:ExportsOutputFnGetAttClusterEB0386A7Arn2F2E3C3F',
+          },
+        },
+      },
     });
     test.done();
   },
@@ -225,13 +225,13 @@ export = {
             {
               'Fn::GetAtt': [
                 'roleC7B7E775',
-                'Arn'
-              ]
+                'Arn',
+              ],
             },
-            '\\",\\"groups\\":[\\"system:masters\\"]}]","mapUsers":"[]","mapAccounts":"[]"}}]'
-          ]
-        ]
-      }
+            '\\",\\"groups\\":[\\"system:masters\\"]}]","mapUsers":"[]","mapAccounts":"[]"}}]',
+          ],
+        ],
+      },
     }));
 
     test.done();
@@ -248,11 +248,11 @@ export = {
 
     // THEN
     expect(stack).to(haveResource(eks.KubernetesResource.RESOURCE_TYPE, {
-      Manifest: '[{"foo":123}]'
+      Manifest: '[{"foo":123}]',
     }));
 
     expect(stack).to(haveResource(eks.KubernetesResource.RESOURCE_TYPE, {
-      Manifest: '[{"bar":123},{"boor":[1,2,3]}]'
+      Manifest: '[{"bar":123},{"boor":[1,2,3]}]',
     }));
 
     test.done();
@@ -278,13 +278,13 @@ export = {
             {
               'Fn::GetAtt': [
                 'ClusterdefaultInstanceRoleF20A29CD',
-                'Arn'
-              ]
+                'Arn',
+              ],
             },
-            '\\",\\"username\\":\\"system:node:{{EC2PrivateDNSName}}\\",\\"groups\\":[\\"system:bootstrappers\\",\\"system:nodes\\"]}]","mapUsers":"[]","mapAccounts":"[]"}}]'
-          ]
-        ]
-      }
+            '\\",\\"username\\":\\"system:node:{{EC2PrivateDNSName}}\\",\\"groups\\":[\\"system:bootstrappers\\",\\"system:nodes\\"]}]","mapUsers":"[]","mapAccounts":"[]"}}]',
+          ],
+        ],
+      },
     }));
 
     test.done();
@@ -298,7 +298,7 @@ export = {
     // WHEN
     cluster.addCapacity('default', {
       instanceType: new ec2.InstanceType('t2.nano'),
-      mapRole: false
+      mapRole: false,
     });
 
     // THEN
@@ -313,7 +313,7 @@ export = {
 
     // WHEN
     cluster.addCapacity('default', {
-      instanceType: new ec2.InstanceType('t2.nano')
+      instanceType: new ec2.InstanceType('t2.nano'),
     });
 
     // THEN
@@ -334,7 +334,7 @@ export = {
       const template = assembly.getStackByName(stack.stackName).template;
       test.deepEqual(template.Outputs, {
         ClusterConfigCommand43AAE40F: { Value: { 'Fn::Join': [ '', [ 'aws eks update-kubeconfig --name ', { Ref: 'Cluster9EE0221C' }, ' --region us-east-1' ] ] } },
-        ClusterGetTokenCommand06AE992E: { Value: { 'Fn::Join': [ '', [ 'aws eks get-token --cluster-name ', { Ref: 'Cluster9EE0221C' }, ' --region us-east-1' ] ] } }
+        ClusterGetTokenCommand06AE992E: { Value: { 'Fn::Join': [ '', [ 'aws eks get-token --cluster-name ', { Ref: 'Cluster9EE0221C' }, ' --region us-east-1' ] ] } },
       });
       test.done();
     },
@@ -352,7 +352,7 @@ export = {
       const template = assembly.getStackByName(stack.stackName).template;
       test.deepEqual(template.Outputs, {
         ClusterConfigCommand43AAE40F: { Value: { 'Fn::Join': [ '', [ 'aws eks update-kubeconfig --name ', { Ref: 'Cluster9EE0221C' }, ' --region us-east-1 --role-arn ', { 'Fn::GetAtt': [ 'masters0D04F23D', 'Arn' ] } ] ] } },
-        ClusterGetTokenCommand06AE992E: { Value: { 'Fn::Join': [ '', [ 'aws eks get-token --cluster-name ', { Ref: 'Cluster9EE0221C' }, ' --region us-east-1 --role-arn ', { 'Fn::GetAtt': [ 'masters0D04F23D', 'Arn' ] } ] ] } }
+        ClusterGetTokenCommand06AE992E: { Value: { 'Fn::Join': [ '', [ 'aws eks get-token --cluster-name ', { Ref: 'Cluster9EE0221C' }, ' --region us-east-1 --role-arn ', { 'Fn::GetAtt': [ 'masters0D04F23D', 'Arn' ] } ] ] } },
       });
       test.done();
     },
@@ -382,14 +382,14 @@ export = {
       // WHEN
       new eks.Cluster(stack, 'Cluster', {
         outputConfigCommand: false,
-        outputClusterName: true
+        outputClusterName: true,
       });
 
       // THEN
       const assembly = app.synth();
       const template = assembly.getStackByName(stack.stackName).template;
       test.deepEqual(template.Outputs, {
-        ClusterClusterNameEB26049E: { Value: { Ref: 'Cluster9EE0221C' } }
+        ClusterClusterNameEB26049E: { Value: { Ref: 'Cluster9EE0221C' } },
       });
       test.done();
     },
@@ -402,14 +402,14 @@ export = {
       new eks.Cluster(stack, 'Cluster', {
         outputConfigCommand: false,
         outputMastersRoleArn: true,
-        mastersRole: new iam.Role(stack, 'masters', { assumedBy: new iam.AccountRootPrincipal() })
+        mastersRole: new iam.Role(stack, 'masters', { assumedBy: new iam.AccountRootPrincipal() }),
       });
 
       // THEN
       const assembly = app.synth();
       const template = assembly.getStackByName(stack.stackName).template;
       test.deepEqual(template.Outputs, {
-        ClusterMastersRoleArnB15964B1: { Value: { 'Fn::GetAtt': [ 'masters0D04F23D', 'Arn' ] } }
+        ClusterMastersRoleArnB15964B1: { Value: { 'Fn::GetAtt': [ 'masters0D04F23D', 'Arn' ] } },
       });
       test.done();
     },
@@ -421,7 +421,7 @@ export = {
       // WHEN
       new eks.Cluster(stack, 'Cluster', {
         outputConfigCommand: false,
-        kubectlEnabled: false
+        kubectlEnabled: false,
       });
 
       // THEN
@@ -429,8 +429,8 @@ export = {
       const template = assembly.getStackByName(stack.stackName).template;
       test.deepEqual(template.Outputs, {
         ClusterDefaultCapacityInstanceRoleARN7DADF219: {
-          Value: { 'Fn::GetAtt': [ 'ClusterDefaultCapacityInstanceRole3E209969', 'Arn' ] }
-        }
+          Value: { 'Fn::GetAtt': [ 'ClusterDefaultCapacityInstanceRole3E209969', 'Arn' ] },
+        },
       });
       test.done();
     },
@@ -461,7 +461,7 @@ export = {
       // WHEN
       cluster.addCapacity('MyCapcity', {
         instanceType: new ec2.InstanceType('m3.xlargs'),
-        bootstrapEnabled: false
+        bootstrapEnabled: false,
       });
 
       // THEN
@@ -481,8 +481,8 @@ export = {
       cluster.addCapacity('MyCapcity', {
         instanceType: new ec2.InstanceType('m3.xlargs'),
         bootstrapOptions: {
-          kubeletExtraArgs: '--node-labels FOO=42'
-        }
+          kubeletExtraArgs: '--node-labels FOO=42',
+        },
       });
 
       // THEN
@@ -502,7 +502,7 @@ export = {
         // WHEN
         cluster.addCapacity('MyCapcity', {
           instanceType: new ec2.InstanceType('m3.xlargs'),
-          spotPrice: '0.01'
+          spotPrice: '0.01',
         });
 
         // THEN
@@ -520,7 +520,7 @@ export = {
         // WHEN
         cluster.addCapacity('MyCapcity', {
           instanceType: new ec2.InstanceType('m3.xlargs'),
-          spotPrice: '0.01'
+          spotPrice: '0.01',
         });
 
         // THEN
@@ -536,15 +536,15 @@ export = {
         // WHEN
         cluster.addCapacity('MyCapcity', {
           instanceType: new ec2.InstanceType('m3.xlargs'),
-          spotPrice: '0.01'
+          spotPrice: '0.01',
         });
 
         // THEN
         expect(stack).notTo(haveResource(eks.KubernetesResource.RESOURCE_TYPE));
         test.done();
-      }
+      },
 
-    }
+    },
 
   },
 
@@ -557,7 +557,7 @@ export = {
     test.throws(() => cluster.addCapacity('MyCapcity', {
       instanceType: new ec2.InstanceType('m3.xlargs'),
       bootstrapEnabled: false,
-      bootstrapOptions: { awsApiRetryAttempts: 10 }
+      bootstrapOptions: { awsApiRetryAttempts: 10 },
     }), /Cannot specify "bootstrapOptions" if "bootstrapEnabled" is false/);
     test.done();
   },
@@ -576,7 +576,7 @@ export = {
     const assembly = app.synth();
     const parameters = assembly.getStackByName(stack.stackName).template.Parameters;
     test.ok(Object.entries(parameters).some(
-      ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') && (v as any).Default.includes('amazon-linux2-gpu')
+      ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') && (v as any).Default.includes('amazon-linux2-gpu'),
     ), 'EKS AMI with GPU should be in ssm parameters');
     test.done();
   },

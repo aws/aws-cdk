@@ -16,7 +16,7 @@ class EventStack extends cdk.Stack {
 
     const cluster = new ecs.Cluster(this, 'EcsCluster', { vpc });
     cluster.addCapacity('DefaultAutoScalingGroup', {
-      instanceType: new ec2.InstanceType('t2.micro')
+      instanceType: new ec2.InstanceType('t2.micro'),
     });
 
     /// !show
@@ -25,7 +25,7 @@ class EventStack extends cdk.Stack {
     taskDefinition.addContainer('TheContainer', {
       image: ecs.ContainerImage.fromAsset(path.resolve(__dirname, 'eventhandler-image')),
       memoryLimitMiB: 256,
-      logging: new ecs.AwsLogDriver({ streamPrefix: 'EventDemo' })
+      logging: new ecs.AwsLogDriver({ streamPrefix: 'EventDemo' }),
     });
 
     // An Rule that describes the event trigger (in this case a scheduled run)
@@ -41,9 +41,9 @@ class EventStack extends cdk.Stack {
       containerOverrides: [{
         containerName: 'TheContainer',
         environment: [
-          { name: 'I_WAS_TRIGGERED', value: 'From CloudWatch Events' }
-        ]
-      }]
+          { name: 'I_WAS_TRIGGERED', value: 'From CloudWatch Events' },
+        ],
+      }],
     }));
     /// !hide
   }

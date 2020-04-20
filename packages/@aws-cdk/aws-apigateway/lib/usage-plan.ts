@@ -186,7 +186,7 @@ export class UsagePlan extends Resource {
     new CfnUsagePlanKey(this, id, {
       keyId: apiKey.keyId,
       keyType: UsagePlanKeyType.API_KEY,
-      usagePlanId: this.usagePlanId
+      usagePlanId: this.usagePlanId,
     });
   }
 
@@ -220,7 +220,7 @@ export class UsagePlan extends Resource {
     return {
       apiId,
       stage,
-      throttle
+      throttle,
     };
   }
 
@@ -233,7 +233,7 @@ export class UsagePlan extends Resource {
       const ret = {
         limit: limit ? limit : undefined,
         offset: props.quota ? props.quota.offset : undefined,
-        period: props.quota ? props.quota.period : undefined
+        period: props.quota ? props.quota.period : undefined,
       };
       return ret;
     }
@@ -249,7 +249,7 @@ export class UsagePlan extends Resource {
 
       ret = {
         burstLimit: burstLimit ? burstLimit : undefined,
-        rateLimit: rateLimit ? rateLimit : undefined
+        rateLimit: rateLimit ? rateLimit : undefined,
       };
     }
     return ret!;

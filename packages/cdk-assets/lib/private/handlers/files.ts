@@ -51,7 +51,7 @@ export class FileAssetHandler implements IAssetHandler {
       Bucket: destination.bucketName,
       Key: destination.objectKey,
       Body: createReadStream(publishFile),
-      ContentType: contentType
+      ContentType: contentType,
     }).promise();
   }
 

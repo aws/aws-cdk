@@ -34,7 +34,7 @@ export = {
     });
     pipeline.addStage({
       stageName: 'source',
-      actions: [source]
+      actions: [source],
     });
 
     /** Build! */
@@ -83,41 +83,41 @@ export = {
     expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
       'ArtifactStore': {
         'Location': {
-          'Ref': 'MagicPipelineArtifactsBucket212FE7BF'
+          'Ref': 'MagicPipelineArtifactsBucket212FE7BF',
         },
-        'Type': 'S3'
+        'Type': 'S3',
       }, 'RoleArn': {
         'Fn::GetAtt': ['MagicPipelineRoleFB2BD6DE',
-          'Arn'
-        ]
+          'Arn',
+        ],
       },
       'Stages': [{
         'Actions': [
           {
             'ActionTypeId': {
               'Category': 'Source',
-              'Owner': 'AWS', 'Provider': 'CodeCommit', 'Version': '1'
+              'Owner': 'AWS', 'Provider': 'CodeCommit', 'Version': '1',
             },
             'Configuration': {
               'RepositoryName': {
                 'Fn::GetAtt': [
                   'MyVeryImportantRepo11BC3EBD',
-                  'Name'
-                ]
+                  'Name',
+                ],
               },
               'BranchName': 'master',
-              'PollForSourceChanges': true
+              'PollForSourceChanges': true,
             },
             'Name': 'source',
             'OutputArtifacts': [
               {
-                'Name': 'SourceArtifact'
-              }
+                'Name': 'SourceArtifact',
+              },
             ],
-            'RunOrder': 1
-          }
+            'RunOrder': 1,
+          },
         ],
-        'Name': 'source'
+        'Name': 'source',
       },
       {
         'Actions': [
@@ -126,28 +126,28 @@ export = {
               'Category': 'Build',
               'Owner': 'AWS',
               'Provider': 'CodeBuild',
-              'Version': '1'
+              'Version': '1',
             },
             'Configuration': {
               'ProjectName': {
-                'Ref': 'MyBuildProject30DB9D6E'
-              }
+                'Ref': 'MyBuildProject30DB9D6E',
+              },
             },
             'InputArtifacts': [
               {
-                'Name': 'SourceArtifact'
-              }
+                'Name': 'SourceArtifact',
+              },
             ],
             'Name': 'build',
             'OutputArtifacts': [
               {
-                'Name': 'OutputYo'
-              }
+                'Name': 'OutputYo',
+              },
             ],
-            'RunOrder': 1
-          }
+            'RunOrder': 1,
+          },
         ],
-        'Name': 'build'
+        'Name': 'build',
       },
       {
         'Actions': [
@@ -156,7 +156,7 @@ export = {
               'Category': 'Deploy',
               'Owner': 'AWS',
               'Provider': 'CloudFormation',
-              'Version': '1'
+              'Version': '1',
             },
             'Configuration': {
               'ActionMode': 'CHANGE_SET_REPLACE',
@@ -164,35 +164,35 @@ export = {
               'RoleArn': {
                 'Fn::GetAtt': [
                   'ChangeSetRole0BCF99E6',
-                  'Arn'
-                ]
+                  'Arn',
+                ],
               },
               'StackName': 'BrelandsStack',
               'TemplatePath': 'OutputYo::template.yaml',
-              'TemplateConfiguration': 'OutputYo::templateConfig.json'
+              'TemplateConfiguration': 'OutputYo::templateConfig.json',
             },
             'InputArtifacts': [{'Name': 'OutputYo'}],
             'Name': 'BuildChangeSetProd',
-            'RunOrder': 1
+            'RunOrder': 1,
           },
           {
             'ActionTypeId': {
               'Category': 'Deploy',
               'Owner': 'AWS',
               'Provider': 'CloudFormation',
-              'Version': '1'
+              'Version': '1',
             },
             'Configuration': {
               'ActionMode': 'CHANGE_SET_EXECUTE',
-              'ChangeSetName': 'MyMagicalChangeSet'
+              'ChangeSetName': 'MyMagicalChangeSet',
             },
             'Name': 'ExecuteChangeSetProd',
-            'RunOrder': 1
-          }
+            'RunOrder': 1,
+          },
         ],
-        'Name': 'prod'
-      }
-      ]
+        'Name': 'prod',
+      },
+      ],
     }));
 
     test.done();
@@ -226,14 +226,14 @@ export = {
                 'RoleArn': { 'Fn::GetAtt': [ roleId, 'Arn' ] },
                 'ActionMode': 'CREATE_UPDATE',
                 'StackName': 'MyStack',
-                'TemplatePath': 'SourceArtifact::template.yaml'
+                'TemplatePath': 'SourceArtifact::template.yaml',
               },
               'InputArtifacts': [{'Name': 'SourceArtifact'}],
               'Name': 'CreateUpdate',
             },
           ],
-        }
-      ]
+        },
+      ],
     }));
 
     // THEN: Role is created with full permissions
@@ -259,11 +259,11 @@ export = {
           {
             Action: '*',
             Effect: 'Allow',
-            Resource: '*'
-          }
+            Resource: '*',
+          },
         ],
       },
-      Roles: [{ Ref: roleId }]
+      Roles: [{ Ref: roleId }],
     }));
 
     test.done();
@@ -294,8 +294,8 @@ export = {
               'Name': 'CreateUpdate',
             },
           ],
-        }
-      ]
+        },
+      ],
     }));
 
     test.done();
@@ -328,8 +328,8 @@ export = {
               'Name': 'CreateUpdate',
             },
           ],
-        }
-      ]
+        },
+      ],
     }));
 
     test.done();
@@ -346,8 +346,8 @@ export = {
       templatePath: stack.sourceOutput.atPath('template.yaml'),
       adminPermissions: false,
       parameterOverrides: {
-        RepoName: stack.repo.repositoryName
-      }
+        RepoName: stack.repo.repositoryName,
+      },
     }));
 
     // THEN
@@ -362,14 +362,14 @@ export = {
                 'ParameterOverrides': { 'Fn::Join': [ '', [
                   '{"RepoName":"',
                   { 'Fn::GetAtt': [ 'MyVeryImportantRepo11BC3EBD', 'Name' ] },
-                  '"}'
-                ]]}
+                  '"}',
+                ]]},
               },
               'Name': 'CreateUpdate',
             },
           ],
-        }
-      ]
+        },
+      ],
     }));
 
     test.done();
@@ -380,7 +380,7 @@ export = {
 
     const importedRole = Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::000000000000:role/action-role');
     const freshRole = new Role(stack, 'FreshRole', {
-      assumedBy: new ServicePrincipal('magicservice')
+      assumedBy: new ServicePrincipal('magicservice'),
     });
 
     stack.deployStage.addAction(new cpactions.CloudFormationExecuteChangeSetAction({
@@ -400,27 +400,27 @@ export = {
     expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
       'Stages': [
         {
-          'Name': 'Source' /* don't care about the rest */
+          'Name': 'Source', /* don't care about the rest */
         },
         {
           'Name': 'Deploy',
           'Actions': [
             {
               'Name': 'ImportedRoleAction',
-              'RoleArn': 'arn:aws:iam::000000000000:role/action-role'
+              'RoleArn': 'arn:aws:iam::000000000000:role/action-role',
             },
             {
               'Name': 'FreshRoleAction',
               'RoleArn': {
                 'Fn::GetAtt': [
                   'FreshRole472F6E18',
-                  'Arn'
-                ]
-              }
-            }
-          ]
-        }
-      ]
+                  'Arn',
+                ],
+              },
+            },
+          ],
+        },
+      ],
     }));
 
     test.done();
@@ -437,8 +437,8 @@ export = {
       templatePath: stack.sourceOutput.atPath('template.yaml'),
       adminPermissions: false,
       capabilities: [
-        CloudFormationCapabilities.NAMED_IAM
-      ]
+        CloudFormationCapabilities.NAMED_IAM,
+      ],
     }));
 
     const roleId = 'PipelineDeployCreateUpdateRole515CB7D4';
@@ -456,14 +456,14 @@ export = {
                 'RoleArn': { 'Fn::GetAtt': [ roleId, 'Arn' ] },
                 'ActionMode': 'CREATE_UPDATE',
                 'StackName': 'MyStack',
-                'TemplatePath': 'SourceArtifact::template.yaml'
+                'TemplatePath': 'SourceArtifact::template.yaml',
               },
               'InputArtifacts': [{'Name': 'SourceArtifact'}],
               'Name': 'CreateUpdate',
             },
           ],
-        }
-      ]
+        },
+      ],
     }));
 
     test.done();
@@ -481,8 +481,8 @@ export = {
       adminPermissions: false,
       capabilities: [
         CloudFormationCapabilities.NAMED_IAM,
-        CloudFormationCapabilities.AUTO_EXPAND
-      ]
+        CloudFormationCapabilities.AUTO_EXPAND,
+      ],
     }));
 
     const roleId = 'PipelineDeployCreateUpdateRole515CB7D4';
@@ -500,14 +500,14 @@ export = {
                 'RoleArn': { 'Fn::GetAtt': [ roleId, 'Arn' ] },
                 'ActionMode': 'CREATE_UPDATE',
                 'StackName': 'MyStack',
-                'TemplatePath': 'SourceArtifact::template.yaml'
+                'TemplatePath': 'SourceArtifact::template.yaml',
               },
               'InputArtifacts': [{'Name': 'SourceArtifact'}],
               'Name': 'CreateUpdate',
             },
           ],
-        }
-      ]
+        },
+      ],
     }));
 
     test.done();
@@ -524,8 +524,8 @@ export = {
       templatePath: stack.sourceOutput.atPath('template.yaml'),
       adminPermissions: false,
       capabilities: [
-        CloudFormationCapabilities.NONE
-      ]
+        CloudFormationCapabilities.NONE,
+      ],
     }));
 
     const roleId = 'PipelineDeployCreateUpdateRole515CB7D4';
@@ -542,14 +542,14 @@ export = {
                 'RoleArn': { 'Fn::GetAtt': [ roleId, 'Arn' ] },
                 'ActionMode': 'CREATE_UPDATE',
                 'StackName': 'MyStack',
-                'TemplatePath': 'SourceArtifact::template.yaml'
+                'TemplatePath': 'SourceArtifact::template.yaml',
               },
               'InputArtifacts': [{'Name': 'SourceArtifact'}],
               'Name': 'CreateUpdate',
             },
           ],
-        }
-      ]
+        },
+      ],
     }));
 
     test.done();

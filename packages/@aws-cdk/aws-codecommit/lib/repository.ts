@@ -142,7 +142,7 @@ abstract class RepositoryBase extends Resource implements IRepository {
     const rule = new events.Rule(this, id, options);
     rule.addEventPattern({
       source: [ 'aws.codecommit' ],
-      resources: [ this.repositoryArn ]
+      resources: [ this.repositoryArn ],
     });
     rule.addTarget(options.target);
     return rule;

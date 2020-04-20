@@ -15,7 +15,7 @@ export = {
     // WHEN
     new LogRetention(stack, 'MyLambda', {
       logGroupName: 'group',
-      retention: logs.RetentionDays.ONE_MONTH
+      retention: logs.RetentionDays.ONE_MONTH,
     });
 
     // THEN
@@ -25,31 +25,31 @@ export = {
           {
             'Action': [
               'logs:PutRetentionPolicy',
-              'logs:DeleteRetentionPolicy'
+              'logs:DeleteRetentionPolicy',
             ],
             'Effect': 'Allow',
-            'Resource': '*'
-          }
+            'Resource': '*',
+          },
         ],
-        'Version': '2012-10-17'
+        'Version': '2012-10-17',
       },
       'PolicyName': 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB',
       'Roles': [
         {
-          'Ref': 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB'
-        }
-      ]
+          'Ref': 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB',
+        },
+      ],
     }));
 
     expect(stack).to(haveResource('Custom::LogRetention', {
       'ServiceToken': {
         'Fn::GetAtt': [
           'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A',
-          'Arn'
-        ]
+          'Arn',
+        ],
       },
       'LogGroupName': 'group',
-      'RetentionInDays': 30
+      'RetentionInDays': 30,
     }));
 
     test.done();
@@ -65,7 +65,7 @@ export = {
     new LogRetention(stack, 'MyLambda', {
       logGroupName: 'group',
       retention: logs.RetentionDays.ONE_MONTH,
-      role
+      role,
     });
 
     // THEN
@@ -75,18 +75,18 @@ export = {
           {
             'Action': [
               'logs:PutRetentionPolicy',
-              'logs:DeleteRetentionPolicy'
+              'logs:DeleteRetentionPolicy',
             ],
             'Effect': 'Allow',
-            'Resource': '*'
-          }
+            'Resource': '*',
+          },
         ],
-        'Version': '2012-10-17'
+        'Version': '2012-10-17',
       },
       'PolicyName': 'RolePolicy72E7D967',
       'Roles': [
-        'CoolRole'
-      ]
+        'CoolRole',
+      ],
     }));
 
     expect(stack).to(countResources('AWS::IAM::Role', 0));
@@ -104,7 +104,7 @@ export = {
     });
 
     expect(stack).to(haveResource('Custom::LogRetention', {
-      RetentionInDays: ABSENT
+      RetentionInDays: ABSENT,
     }));
 
     test.done();

@@ -95,7 +95,7 @@ export class BasicAuth {
       generateSecretString: {
         secretStringTemplate: JSON.stringify({ username: this.props.username }),
         generateStringKey: 'password',
-      }
+      },
     });
     return {
       ...config,

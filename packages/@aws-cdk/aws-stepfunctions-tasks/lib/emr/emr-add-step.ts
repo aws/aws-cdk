@@ -121,7 +121,7 @@ export class EmrAddStep implements sfn.IStepFunctionsTask {
 
     const supportedPatterns = [
       sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
-      sfn.ServiceIntegrationPattern.SYNC
+      sfn.ServiceIntegrationPattern.SYNC,
     ];
 
     if (!supportedPatterns.includes(this.integrationPattern)) {
@@ -147,12 +147,12 @@ export class EmrAddStep implements sfn.IStepFunctionsTask {
               Object.entries(this.props.properties).map(
                 kv => ({
                   Key: kv[0],
-                  Value: kv[1]
-                })
-              )
-          }
-        }
-      }
+                  Value: kv[1],
+                }),
+              ),
+          },
+        },
+      },
     };
   }
 
@@ -167,10 +167,10 @@ export class EmrAddStep implements sfn.IStepFunctionsTask {
         actions: [
           'elasticmapreduce:AddJobFlowSteps',
           'elasticmapreduce:DescribeStep',
-          'elasticmapreduce:CancelSteps'
+          'elasticmapreduce:CancelSteps',
         ],
-        resources: [`arn:aws:elasticmapreduce:${Aws.REGION}:${Aws.ACCOUNT_ID}:cluster/*`]
-      })
+        resources: [`arn:aws:elasticmapreduce:${Aws.REGION}:${Aws.ACCOUNT_ID}:cluster/*`],
+      }),
     ];
 
     if (this.integrationPattern === sfn.ServiceIntegrationPattern.SYNC) {
@@ -179,8 +179,8 @@ export class EmrAddStep implements sfn.IStepFunctionsTask {
         resources: [stack.formatArn({
           service: 'events',
           resource: 'rule',
-          resourceName: 'StepFunctionsGetEventForEMRAddJobFlowStepsRule'
-        })]
+          resourceName: 'StepFunctionsGetEventForEMRAddJobFlowStepsRule',
+        })],
       }));
     }
 

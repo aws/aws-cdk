@@ -43,7 +43,7 @@ export class Source {
    */
   public static bucket(bucket: s3.IBucket, zipObjectKey: string): ISource {
     return {
-      bind: () => ({ bucket, zipObjectKey })
+      bind: () => ({ bucket, zipObjectKey }),
     };
   }
 
@@ -67,9 +67,9 @@ export class Source {
         }
         return {
           bucket: asset.bucket,
-          zipObjectKey: asset.s3ObjectKey
+          zipObjectKey: asset.s3ObjectKey,
         };
-      }
+      },
     };
   }
 

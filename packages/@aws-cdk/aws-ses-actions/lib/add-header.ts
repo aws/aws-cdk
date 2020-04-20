@@ -44,8 +44,8 @@ export class AddHeader implements ses.IReceiptRuleAction {
     return {
       addHeaderAction: {
         headerName: this.name,
-        headerValue: this.value
-      }
+        headerValue: this.value,
+      },
     };
   }
 }

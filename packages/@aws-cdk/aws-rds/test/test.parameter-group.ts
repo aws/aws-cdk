@@ -13,8 +13,8 @@ export = {
       family: 'hello',
       description: 'desc',
       parameters: {
-        key: 'value'
-      }
+        key: 'value',
+      },
     });
 
     // THEN
@@ -22,8 +22,8 @@ export = {
       Description: 'desc',
       Family: 'hello',
       Parameters: {
-        key: 'value'
-      }
+        key: 'value',
+      },
     }));
 
     test.done();
@@ -38,8 +38,8 @@ export = {
       family: 'hello',
       description: 'desc',
       parameters: {
-        key: 'value'
-      }
+        key: 'value',
+      },
     });
 
     // THEN
@@ -47,8 +47,8 @@ export = {
       Description: 'desc',
       Family: 'hello',
       Parameters: {
-        key: 'value'
-      }
+        key: 'value',
+      },
     }));
 
     test.done();
@@ -63,8 +63,8 @@ export = {
       family: 'hello',
       description: 'desc',
       parameters: {
-        key1: 'value1'
-      }
+        key1: 'value1',
+      },
     });
 
     clusterParameterGroup.addParameter('key2', 'value2');
@@ -75,10 +75,10 @@ export = {
       Family: 'hello',
       Parameters: {
         key1: 'value1',
-        key2: 'value2'
-      }
+        key2: 'value2',
+      },
     }));
 
     test.done();
-  }
+  },
 };

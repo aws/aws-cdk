@@ -281,12 +281,12 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
     return this.addMethod('OPTIONS', new MockIntegration({
       requestTemplates: { 'application/json': '{ statusCode: 200 }' },
       integrationResponses: [
-        { statusCode: `${statusCode}`, responseParameters: integrationResponseParams, responseTemplates: renderResponseTemplate() }
+        { statusCode: `${statusCode}`, responseParameters: integrationResponseParams, responseTemplates: renderResponseTemplate() },
       ],
     }), {
       methodResponses: [
-        { statusCode: `${statusCode}`, responseParameters: methodReponseParams }
-      ]
+        { statusCode: `${statusCode}`, responseParameters: methodReponseParams },
+      ],
     });
 
     // renders the response template to match all possible origins (if we have more than one)
@@ -309,7 +309,7 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
       template.push('#end');
 
       return {
-        'application/json': template.join('\n')
+        'application/json': template.join('\n'),
       };
     }
   }
@@ -382,7 +382,7 @@ export class Resource extends ResourceBase {
     const resourceProps: CfnResourceProps = {
       restApiId: props.parent.restApi.restApiId,
       parentId: props.parent.resourceId,
-      pathPart: props.pathPart
+      pathPart: props.pathPart,
     };
     const resource = new CfnResource(this, 'Resource', resourceProps);
 
@@ -405,7 +405,7 @@ export class Resource extends ResourceBase {
     this.defaultIntegration = props.defaultIntegration || props.parent.defaultIntegration;
     this.defaultMethodOptions = {
       ...props.parent.defaultMethodOptions,
-      ...props.defaultMethodOptions
+      ...props.defaultMethodOptions,
     };
     this.defaultCorsPreflightOptions = props.defaultCorsPreflightOptions || props.parent.defaultCorsPreflightOptions;
 

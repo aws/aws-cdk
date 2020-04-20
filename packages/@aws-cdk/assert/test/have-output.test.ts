@@ -14,65 +14,65 @@ beforeEach(done => {
       SomeResource: {
         Type: 'Some::Resource',
         Properties: {
-          PropA: 'somevalue'
-        }
+          PropA: 'somevalue',
+        },
       },
       AnotherResource: {
         Type: 'Some::AnotherResource',
         Properties: {
-          PropA: 'anothervalue'
-        }
-      }
+          PropA: 'anothervalue',
+        },
+      },
     },
     Outputs: {
       TestOutput: {
         Value: {
           'Fn::GetAtt': [
             'SomeResource',
-            'Arn'
-          ]
+            'Arn',
+          ],
         },
         Export: {
-          Name: 'TestOutputExportName'
-        }
+          Name: 'TestOutputExportName',
+        },
       },
       ComplexExportNameOutput: {
         Value: {
           'Fn::GetAtt': [
             'ComplexOutputResource',
-            'Arn'
-          ]
+            'Arn',
+          ],
         },
         Export: {
           Name: {
-            'Fn::Sub': '${AWS::StackName}-ComplexExportNameOutput'
-          }
-        }
-      }
-    }
+            'Fn::Sub': '${AWS::StackName}-ComplexExportNameOutput',
+          },
+        },
+      },
+    },
   });
   noOutputStack = mkStack({
     Resources: {
       SomeResource: {
         Type: 'Some::Resource',
         Properties: {
-          PropA: 'somevalue'
-        }
-      }
-    }
+          PropA: 'somevalue',
+        },
+      },
+    },
   });
   done();
 });
 
 test('haveOutput should assert true when output with correct name is provided', () => {
   expect(synthStack).toHaveOutput({
-    outputName: 'TestOutput'
+    outputName: 'TestOutput',
   });
 });
 
 test('haveOutput should assert false when output with incorrect name is provided', () => {
   expect(synthStack).not.toHaveOutput({
-    outputName: 'WrongOutput'
+    outputName: 'WrongOutput',
   });
 });
 
@@ -97,9 +97,9 @@ test('haveOutput should assert true when output with correct name, export name a
     outputValue: {
       'Fn::GetAtt': [
         'SomeResource',
-        'Arn'
-      ]
-    }
+        'Arn',
+      ],
+    },
   });
 });
 
@@ -107,7 +107,7 @@ test('haveOutput should assert false when output with correct name and export na
   expect(synthStack).not.toHaveOutput({
     outputName: 'TestOutput',
     exportName: 'TestOutputExportName',
-    outputValue: 'SomeWrongValue'
+    outputValue: 'SomeWrongValue',
   });
 });
 
@@ -117,16 +117,16 @@ test('haveOutput should assert true when output with correct export name and val
     outputValue: {
       'Fn::GetAtt': [
         'SomeResource',
-        'Arn'
-      ]
-    }
+        'Arn',
+      ],
+    },
   });
 });
 
 test('haveOutput should assert false when output with correct export name and incorrect value is provided', () => {
   expect(synthStack).not.toHaveOutput({
     exportName: 'TestOutputExportName',
-    outputValue: 'WrongValue'
+    outputValue: 'WrongValue',
   });
 });
 
@@ -136,16 +136,16 @@ test('haveOutput should assert true when output with correct output name and val
     outputValue: {
       'Fn::GetAtt': [
         'SomeResource',
-        'Arn'
-      ]
-    }
+        'Arn',
+      ],
+    },
   });
 });
 
 test('haveOutput should assert false when output with correct output name and incorrect value is provided', () => {
   expect(synthStack).not.toHaveOutput({
     outputName: 'TestOutput',
-    outputValue: 'WrongValue'
+    outputValue: 'WrongValue',
   });
 });
 
@@ -153,7 +153,7 @@ test('haveOutput should assert false when asserting against noOutputStack', () =
   expect(noOutputStack).not.toHaveOutput({
     outputName: 'TestOutputName',
     exportName: 'TestExportName',
-    outputValue: 'TestOutputValue'
+    outputValue: 'TestOutputValue',
   });
 });
 
@@ -168,9 +168,9 @@ test('haveOutput should be able to handle complex exportName values', () => {
     outputValue: {
       'Fn::GetAtt': [
         'ComplexOutputResource',
-        'Arn'
-      ]
-    }
+        'Arn',
+      ],
+    },
   });
 });
 
@@ -191,8 +191,8 @@ function mkStack(template: any): cxapi.CloudFormationStackArtifact {
     type: cxschema.ArtifactType.AWS_CLOUDFORMATION_STACK,
     environment: cxapi.EnvironmentUtils.format('123456789012', 'bermuda-triangle-1'),
     properties: {
-      templateFile: templateFileName
-    }
+      templateFile: templateFileName,
+    },
   });
 
   templateFilePath = join(assembly.outdir, templateFileName);

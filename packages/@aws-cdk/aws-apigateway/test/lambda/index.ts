@@ -1,5 +1,5 @@
 exports.handler = async (_: any) => {
   return {
-    statusCode: 200
+    statusCode: 200,
   };
 };

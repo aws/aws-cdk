@@ -126,9 +126,9 @@ export class ReceiptRule extends Resource implements IReceiptRule {
         name: this.physicalName,
         recipients: props.recipients,
         scanEnabled: props.scanEnabled,
-        tlsPolicy: props.tlsPolicy
+        tlsPolicy: props.tlsPolicy,
       },
-      ruleSetName: props.ruleSet.receiptRuleSetName
+      ruleSetName: props.ruleSet.receiptRuleSetName,
     });
 
     this.receiptRuleName = resource.ref;
@@ -174,13 +174,13 @@ export class DropSpamReceiptRule extends Construct {
       runtime: lambda.Runtime.NODEJS_10_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline(`exports.handler = ${dropSpamCode}`),
-      uuid: '224e77f9-a32e-4b4d-ac32-983477abba16'
+      uuid: '224e77f9-a32e-4b4d-ac32-983477abba16',
     });
 
     fn.addPermission('AllowSes', {
       action: 'lambda:InvokeFunction',
       principal: new iam.ServicePrincipal('ses.amazonaws.com'),
-      sourceAccount: Aws.ACCOUNT_ID
+      sourceAccount: Aws.ACCOUNT_ID,
     });
 
     this.rule = new ReceiptRule(this, 'Rule', {
@@ -190,12 +190,12 @@ export class DropSpamReceiptRule extends Construct {
             lambdaAction: {
               functionArn: fn.functionArn,
               invocationType: 'RequestResponse',
-            }
-          })
+            },
+          }),
         },
       ],
       scanEnabled: true,
-      ruleSet: props.ruleSet
+      ruleSet: props.ruleSet,
     });
   }
 }

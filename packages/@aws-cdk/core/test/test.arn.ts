@@ -9,7 +9,7 @@ export = {
 
     const arn = stack.formatArn({
       service: 'sqs',
-      resource: 'myqueuename'
+      resource: 'myqueuename',
     });
 
     const pseudo = new ScopedAws(stack);
@@ -28,7 +28,7 @@ export = {
       account: '123456789012',
       region: 'us-east-1',
       partition: 'aws-cn',
-      resourceName: 'mytable/stream/label'
+      resourceName: 'mytable/stream/label',
     });
 
     test.deepEqual(stack.resolve(arn),
@@ -60,7 +60,7 @@ export = {
       service: 'codedeploy',
       resource: 'application',
       sep: ':',
-      resourceName: 'WordPress_App'
+      resourceName: 'WordPress_App',
     });
 
     const pseudo = new ScopedAws(stack);
@@ -77,7 +77,7 @@ export = {
       service: 'ssm',
       resource: 'parameter',
       sep: '',
-      resourceName: '/parameter-name'
+      resourceName: '/parameter-name',
     });
 
     const pseudo = new ScopedAws(stack);
@@ -122,7 +122,7 @@ export = {
         const stack = new Stack();
         test.throws(() => stack.parseArn('arn:aws:service:::'), /The `resource` component \(6th component\) is required/);
         test.done();
-      }
+      },
     },
 
     'various successful parses'(test: Test) {
@@ -135,7 +135,7 @@ export = {
           account: 'accountid',
           resource: 'resourcetype',
           resourceName: 'resource',
-          sep: '/'
+          sep: '/',
         },
         'arn:aws:apigateway:us-east-1::a123456789012bc3de45678901f23a45:/test/mydemoresource/*': {
           partition: 'aws',
@@ -144,7 +144,7 @@ export = {
           account: '',
           resource: 'a123456789012bc3de45678901f23a45',
           sep: ':',
-          resourceName: '/test/mydemoresource/*'
+          resourceName: '/test/mydemoresource/*',
         },
         'arn:aws-cn:cloud9::123456789012:environment:81e900317347585a0601e04c8d52eaEX': {
           partition: 'aws-cn',
@@ -153,7 +153,7 @@ export = {
           account: '123456789012',
           resource: 'environment',
           resourceName: '81e900317347585a0601e04c8d52eaEX',
-          sep: ':'
+          sep: ':',
         },
         'arn::cognito-sync:::identitypool/us-east-1:1a1a1a1a-ffff-1111-9999-12345678:bla': {
           service: 'cognito-sync',
@@ -161,15 +161,15 @@ export = {
           account: '',
           resource: 'identitypool',
           resourceName: 'us-east-1:1a1a1a1a-ffff-1111-9999-12345678:bla',
-          sep: '/'
+          sep: '/',
         },
         'arn:aws:s3:::my_corporate_bucket': {
           partition: 'aws',
           service: 's3',
           region: '',
           account: '',
-          resource: 'my_corporate_bucket'
-        }
+          resource: 'my_corporate_bucket',
+        },
       };
 
       Object.keys(tests).forEach(arn => {
@@ -221,12 +221,12 @@ export = {
         account: '123456789012',
         resource: 'role',
         resourceName: 'abc123',
-        sep: '/'
+        sep: '/',
       };
 
       test.deepEqual(stack.parseArn(arn), expected, arn);
       test.done();
-    }
+    },
   },
 
   'can use a fully specified ARN from a different stack without incurring an import'(test: Test) {
@@ -249,9 +249,9 @@ export = {
         SomeValue: {
           Value: {
             // Look ma, no Fn::ImportValue!
-            'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':bla:us-turbo-5:12345678:thing/thong']] }
-        }
-      }
+            'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':bla:us-turbo-5:12345678:thing/thong']] },
+        },
+      },
     });
 
     test.done();

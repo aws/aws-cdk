@@ -19,8 +19,8 @@ export = {
       events: [ s3.EventType.OBJECT_CREATED, s3.EventType.OBJECT_REMOVED ],
       filters: [
         { prefix: 'prefix/' },
-        { suffix: '.png' }
-      ]
+        { suffix: '.png' },
+      ],
     }));
 
     // THEN
@@ -29,57 +29,57 @@ export = {
         'LambdaFunctionConfigurations': [
           {
             'Events': [
-              's3:ObjectCreated:*'
+              's3:ObjectCreated:*',
             ],
             'Filter': {
               'Key': {
                 'FilterRules': [
                   {
                     'Name': 'prefix',
-                    'Value': 'prefix/'
+                    'Value': 'prefix/',
                   },
                   {
                     'Name': 'suffix',
-                    'Value': '.png'
-                  }
-                ]
-              }
+                    'Value': '.png',
+                  },
+                ],
+              },
             },
             'LambdaFunctionArn': {
               'Fn::GetAtt': [
                 'Fn9270CBC0',
-                'Arn'
-              ]
-            }
+                'Arn',
+              ],
+            },
           },
           {
             'Events': [
-              's3:ObjectRemoved:*'
+              's3:ObjectRemoved:*',
             ],
             'Filter': {
               'Key': {
                 'FilterRules': [
                   {
                     'Name': 'prefix',
-                    'Value': 'prefix/'
+                    'Value': 'prefix/',
                   },
                   {
                     'Name': 'suffix',
-                    'Value': '.png'
-                  }
-                ]
-              }
+                    'Value': '.png',
+                  },
+                ],
+              },
             },
             'LambdaFunctionArn': {
               'Fn::GetAtt': [
                 'Fn9270CBC0',
-                'Arn'
-              ]
-            }
-          }
-        ]
-      }
+                'Arn',
+              ],
+            },
+          },
+        ],
+      },
     }));
     test.done();
-  }
+  },
 };

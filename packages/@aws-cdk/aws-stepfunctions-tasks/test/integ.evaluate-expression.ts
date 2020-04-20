@@ -9,21 +9,21 @@ const sum = new sfn.Task(stack, 'Sum', {
   task: new tasks.EvaluateExpression({
     expression: '$.a + $.b',
   }),
-  resultPath: '$.c'
+  resultPath: '$.c',
 });
 
 const multiply = new sfn.Task(stack, 'Multiply', {
   task: new tasks.EvaluateExpression({
-    expression: '$.c * 2'
+    expression: '$.c * 2',
   }),
-  resultPath: '$.waitSeconds'
+  resultPath: '$.waitSeconds',
 });
 
 new sfn.StateMachine(stack, 'StateMachine', {
   definition: sum
     .next(multiply)
     .next(new sfn.Wait(stack, 'Wait', {
-      time: sfn.WaitTime.secondsPath('$.waitSeconds')
+      time: sfn.WaitTime.secondsPath('$.waitSeconds'),
     })),
 });
 

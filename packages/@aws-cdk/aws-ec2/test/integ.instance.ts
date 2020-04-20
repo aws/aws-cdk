@@ -19,7 +19,7 @@ class TestStack extends cdk.Stack {
 
     instance.addToRolePolicy(new PolicyStatement({
       actions: ['ssm:*'],
-      resources: ['*']
+      resources: ['*'],
     }));
 
     instance.connections.allowFromAnyIpv4(ec2.Port.icmpPing());

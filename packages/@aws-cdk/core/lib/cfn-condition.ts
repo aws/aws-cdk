@@ -40,8 +40,8 @@ export class CfnCondition extends CfnElement implements ICfnConditionExpression,
 
     return {
       Conditions: {
-        [this.logicalId]: this.expression
-      }
+        [this.logicalId]: this.expression,
+      },
     };
   }
 

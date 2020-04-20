@@ -135,28 +135,28 @@ describe('IAM policy statement', () => {
             'Sid': 'FirstStatement',
             'Effect': 'Allow',
             'Action': 'iam:ChangePassword',
-            'Resource': '*'
+            'Resource': '*',
           },
           {
             'Sid': 'SecondStatement',
             'Effect': 'Allow',
             'Action': 's3:ListAllMyBuckets',
-            'Resource': '*'
+            'Resource': '*',
           },
           {
             'Sid': 'ThirdStatement',
             'Effect': 'Allow',
             'Action': [
               's3:List*',
-              's3:Get*'
+              's3:Get*',
             ],
             'Resource': [
               'arn:aws:s3:::confidential-data',
-              'arn:aws:s3:::confidential-data/*'
+              'arn:aws:s3:::confidential-data/*',
             ],
-            'Condition': {'Bool': {'aws:MultiFactorAuthPresent': 'true'}}
-          }
-        ]
+            'Condition': {'Bool': {'aws:MultiFactorAuthPresent': 'true'}},
+          },
+        ],
       };
       /* tslint:enable */
 
@@ -168,7 +168,7 @@ describe('IAM policy statement', () => {
     test('throws error with field data being object', () => {
       expect(() => {
         PolicyStatement.fromJson({
-          Action: {}
+          Action: {},
         });
       }).toThrow(/Fields must be either a string or an array of strings/);
     });
@@ -176,7 +176,7 @@ describe('IAM policy statement', () => {
     test('throws error with field data being array of non-strings', () => {
       expect(() => {
         PolicyStatement.fromJson({
-          Action: [{}]
+          Action: [{}],
         });
       }).toThrow(/Fields must be either a string or an array of strings/);
     });

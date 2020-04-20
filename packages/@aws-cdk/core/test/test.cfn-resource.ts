@@ -17,14 +17,14 @@ export = nodeunit.testCase({
       test.deepEqual(app.synth().getStackByName(stack.stackName).template, {
         Resources: {
           DefaultResource: {
-            Type: 'Test::Resource::Fake'
-          }
-        }
+            Type: 'Test::Resource::Fake',
+          },
+        },
       });
       test.ok(called, 'renderProperties must be called called');
 
       test.done();
-    }
+    },
   },
 
   'applyRemovalPolicy default includes Update policy'(test: nodeunit.Test) {
@@ -43,8 +43,8 @@ export = nodeunit.testCase({
           Type: 'Test::Resource::Fake',
           DeletionPolicy: 'Retain',
           UpdateReplacePolicy: 'Retain',
-        }
-      }
+        },
+      },
     });
 
     test.done();
@@ -58,7 +58,7 @@ export = nodeunit.testCase({
 
     // WHEN
     resource.applyRemovalPolicy(core.RemovalPolicy.RETAIN, {
-      applyToUpdateReplacePolicy: false
+      applyToUpdateReplacePolicy: false,
     });
 
     // THEN
@@ -67,8 +67,8 @@ export = nodeunit.testCase({
         DefaultResource: {
           Type: 'Test::Resource::Fake',
           DeletionPolicy: 'Retain',
-        }
-      }
+        },
+      },
     });
 
     test.done();

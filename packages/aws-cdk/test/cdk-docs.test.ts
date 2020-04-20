@@ -12,7 +12,7 @@ describe('`cdk docs`', () => {
       debug() { return; },
       error() { return; },
       print() { return; },
-      warning() { return; }
+      warning() { return; },
     });
     mockery.enable({ useCleanCache: true, warnOnReplace: true, warnOnUnregistered: false });
     done();
@@ -35,7 +35,7 @@ describe('`cdk docs`', () => {
     mockery.registerMock('child_process', {
       exec(_: string, cb: (err: Error, stdout?: string, stderr?: string) => void) {
         cb(new Error('TEST'));
-      }
+      },
     });
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     require('../lib/commands/docs').handler(argv);

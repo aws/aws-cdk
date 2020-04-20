@@ -93,7 +93,7 @@ export class AppMeshProxyConfiguration extends ProxyConfiguration {
     return {
       containerName: this.props.containerName,
       proxyConfigurationProperties: renderProperties(configProps),
-      type: configType
+      type: configType,
     };
   }
 }

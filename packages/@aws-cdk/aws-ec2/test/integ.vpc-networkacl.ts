@@ -24,7 +24,7 @@ nacl1.addEntry('AllowDNSIngress', {
   ruleNumber: 100,
   traffic: ec2.AclTraffic.udpPort(53),
   direction: ec2.TrafficDirection.INGRESS,
-  cidr: ec2.AclCidr.anyIpv4()
+  cidr: ec2.AclCidr.anyIpv4(),
 });
 
 app.synth();

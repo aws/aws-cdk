@@ -61,7 +61,7 @@ export class Lambda implements ses.IReceiptRuleAction {
       this.props.function.addPermission(permissionId, {
         action: 'lambda:InvokeFunction',
         principal: new iam.ServicePrincipal('ses.amazonaws.com'),
-        sourceAccount: cdk.Aws.ACCOUNT_ID
+        sourceAccount: cdk.Aws.ACCOUNT_ID,
       });
     }
 
@@ -78,8 +78,8 @@ export class Lambda implements ses.IReceiptRuleAction {
       lambdaAction: {
         functionArn: this.props.function.functionArn,
         invocationType: this.props.invocationType,
-        topicArn: this.props.topic ? this.props.topic.topicArn : undefined
-      }
+        topicArn: this.props.topic ? this.props.topic.topicArn : undefined,
+      },
     };
   }
 }

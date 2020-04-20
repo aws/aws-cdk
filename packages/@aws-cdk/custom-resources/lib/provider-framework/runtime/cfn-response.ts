@@ -30,7 +30,7 @@ export async function submitResponse(status: 'SUCCESS' | 'FAILED', event: CloudF
     PhysicalResourceId: event.PhysicalResourceId || MISSING_PHYSICAL_ID_MARKER,
     LogicalResourceId: event.LogicalResourceId,
     NoEcho: options.noEcho,
-    Data: event.Data
+    Data: event.Data,
   };
 
   log('submit response to cloudformation', json);
@@ -44,8 +44,8 @@ export async function submitResponse(status: 'SUCCESS' | 'FAILED', event: CloudF
     method: 'PUT',
     headers: {
       'content-type': '',
-      'content-length': responseBody.length
-    }
+      'content-length': responseBody.length,
+    },
   }, responseBody);
 }
 

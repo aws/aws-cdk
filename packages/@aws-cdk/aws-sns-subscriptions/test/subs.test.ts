@@ -14,7 +14,7 @@ beforeEach(() => {
   stack = new Stack();
   topic = new sns.Topic(stack, 'MyTopic', {
     topicName: 'topicName',
-    displayName: 'displayName'
+    displayName: 'displayName',
   });
 });
 
@@ -27,8 +27,8 @@ test('url subscription', () => {
         'Type': 'AWS::SNS::Topic',
         'Properties': {
           'DisplayName': 'displayName',
-          'TopicName': 'topicName'
-        }
+          'TopicName': 'topicName',
+        },
       },
       'MyTopichttpsfoobarcomDEA92AB5': {
         'Type': 'AWS::SNS::Subscription',
@@ -36,17 +36,17 @@ test('url subscription', () => {
           'Endpoint': 'https://foobar.com/',
           'Protocol': 'https',
           'TopicArn': {
-            'Ref': 'MyTopic86869434'
-          }
-        }
-      }
-    }
+            'Ref': 'MyTopic86869434',
+          },
+        },
+      },
+    },
   });
 });
 
 test('url subscription (with raw delivery)', () => {
   topic.addSubscription(new subs.UrlSubscription('https://foobar.com/', {
-    rawMessageDelivery: true
+    rawMessageDelivery: true,
   }));
 
   expect(stack).toMatchTemplate({
@@ -55,8 +55,8 @@ test('url subscription (with raw delivery)', () => {
         'Type': 'AWS::SNS::Topic',
         'Properties': {
           'DisplayName': 'displayName',
-          'TopicName': 'topicName'
-        }
+          'TopicName': 'topicName',
+        },
       },
       'MyTopichttpsfoobarcomDEA92AB5': {
         'Type': 'AWS::SNS::Subscription',
@@ -64,10 +64,10 @@ test('url subscription (with raw delivery)', () => {
           'Endpoint': 'https://foobar.com/',
           'Protocol': 'https',
           'TopicArn': { 'Ref': 'MyTopic86869434' },
-          'RawMessageDelivery': true
-        }
-      }
-    }
+          'RawMessageDelivery': true,
+        },
+      },
+    },
   });
 });
 
@@ -81,20 +81,20 @@ test('url subscription (unresolved url with protocol)', () => {
         'Type': 'AWS::SNS::Topic',
         'Properties': {
           'DisplayName': 'displayName',
-          'TopicName': 'topicName'
-        }
+          'TopicName': 'topicName',
+        },
       },
       'MyTopicTokenSubscription141DD1BE2': {
         'Type': 'AWS::SNS::Subscription',
         'Properties': {
           'Endpoint': {
-            'Ref': 'my-url-1'
+            'Ref': 'my-url-1',
           },
           'Protocol': 'https',
           'TopicArn': { 'Ref': 'MyTopic86869434' },
-        }
-      }
-    }
+        },
+      },
+    },
   });
 });
 
@@ -111,30 +111,30 @@ test('url subscription (double unresolved url with protocol)', () => {
         'Type': 'AWS::SNS::Topic',
         'Properties': {
           'DisplayName': 'displayName',
-          'TopicName': 'topicName'
-        }
+          'TopicName': 'topicName',
+        },
       },
       'MyTopicTokenSubscription141DD1BE2': {
         'Type': 'AWS::SNS::Subscription',
         'Properties': {
           'Endpoint': {
-            'Ref' : 'my-url-1'
+            'Ref' : 'my-url-1',
           },
           'Protocol': 'https',
           'TopicArn': { 'Ref': 'MyTopic86869434' },
-        }
+        },
       },
       'MyTopicTokenSubscription293BFE3F9': {
         'Type': 'AWS::SNS::Subscription',
         'Properties': {
           'Endpoint': {
-            'Ref' : 'my-url-2'
+            'Ref' : 'my-url-2',
           },
           'Protocol': 'https',
           'TopicArn': { 'Ref': 'MyTopic86869434' },
-        }
-      }
-    }
+        },
+      },
+    },
   });
 });
 
@@ -161,11 +161,11 @@ test('queue subscription', () => {
         'Type': 'AWS::SNS::Topic',
         'Properties': {
           'DisplayName': 'displayName',
-          'TopicName': 'topicName'
-        }
+          'TopicName': 'topicName',
+        },
       },
       'MyQueueE6CA6235': {
-        'Type': 'AWS::SQS::Queue'
+        'Type': 'AWS::SQS::Queue',
       },
       'MyQueuePolicy6BBEDDAC': {
         'Type': 'AWS::SQS::QueuePolicy',
@@ -177,47 +177,47 @@ test('queue subscription', () => {
                 'Condition': {
                   'ArnEquals': {
                     'aws:SourceArn': {
-                      'Ref': 'MyTopic86869434'
-                    }
-                  }
+                      'Ref': 'MyTopic86869434',
+                    },
+                  },
                 },
                 'Effect': 'Allow',
                 'Principal': {
-                  'Service': 'sns.amazonaws.com'
+                  'Service': 'sns.amazonaws.com',
                 },
                 'Resource': {
                   'Fn::GetAtt': [
                     'MyQueueE6CA6235',
-                    'Arn'
-                  ]
-                }
-              }
+                    'Arn',
+                  ],
+                },
+              },
             ],
-            'Version': '2012-10-17'
+            'Version': '2012-10-17',
           },
           'Queues': [
             {
-              'Ref': 'MyQueueE6CA6235'
-            }
-          ]
-        }
+              'Ref': 'MyQueueE6CA6235',
+            },
+          ],
+        },
       },
       'MyQueueMyTopic9B00631B': {
         'Type': 'AWS::SNS::Subscription',
         'Properties': {
           'Protocol': 'sqs',
           'TopicArn': {
-            'Ref': 'MyTopic86869434'
+            'Ref': 'MyTopic86869434',
           },
           'Endpoint': {
             'Fn::GetAtt': [
               'MyQueueE6CA6235',
-              'Arn'
-            ]
-          }
-        }
-      }
-    }
+              'Arn',
+            ],
+          },
+        },
+      },
+    },
   });
 });
 
@@ -230,14 +230,14 @@ test('queue subscription (with raw delivery)', () => {
     'Endpoint': {
       'Fn::GetAtt': [
         'MyQueueE6CA6235',
-        'Arn'
-      ]
+        'Arn',
+      ],
     },
     'Protocol': 'sqs',
     'TopicArn': {
-      'Ref': 'MyTopic86869434'
+      'Ref': 'MyTopic86869434',
     },
-    'RawMessageDelivery': true
+    'RawMessageDelivery': true,
   });
 });
 
@@ -245,7 +245,7 @@ test('lambda subscription', () => {
   const fction = new lambda.Function(stack, 'MyFunc', {
     runtime: lambda.Runtime.NODEJS_10_X,
     handler: 'index.handler',
-    code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }')
+    code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }'),
   });
 
   topic.addSubscription(new subs.LambdaSubscription(fction));
@@ -256,8 +256,8 @@ test('lambda subscription', () => {
         'Type': 'AWS::SNS::Topic',
         'Properties': {
           'DisplayName': 'displayName',
-          'TopicName': 'topicName'
-        }
+          'TopicName': 'topicName',
+        },
       },
       'MyFuncServiceRole54065130': {
         'Type': 'AWS::IAM::Role',
@@ -268,11 +268,11 @@ test('lambda subscription', () => {
                 'Action': 'sts:AssumeRole',
                 'Effect': 'Allow',
                 'Principal': {
-                  'Service': 'lambda.amazonaws.com'
-                }
-              }
+                  'Service': 'lambda.amazonaws.com',
+                },
+              },
             ],
-            'Version': '2012-10-17'
+            'Version': '2012-10-17',
           },
           'ManagedPolicyArns': [
             {
@@ -281,33 +281,33 @@ test('lambda subscription', () => {
                 [
                   'arn:',
                   {
-                    'Ref': 'AWS::Partition'
+                    'Ref': 'AWS::Partition',
                   },
-                  ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
-                ]
-              ]
-            }
-          ]
-        }
+                  ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole',
+                ],
+              ],
+            },
+          ],
+        },
       },
       'MyFunc8A243A2C': {
         'Type': 'AWS::Lambda::Function',
         'Properties': {
           'Code': {
-            'ZipFile': 'exports.handler = function(e, c, cb) { return cb() }'
+            'ZipFile': 'exports.handler = function(e, c, cb) { return cb() }',
           },
           'Handler': 'index.handler',
           'Role': {
             'Fn::GetAtt': [
               'MyFuncServiceRole54065130',
-              'Arn'
-            ]
+              'Arn',
+            ],
           },
-          'Runtime': 'nodejs10.x'
+          'Runtime': 'nodejs10.x',
         },
         'DependsOn': [
-          'MyFuncServiceRole54065130'
-        ]
+          'MyFuncServiceRole54065130',
+        ],
       },
       'MyFuncAllowInvokeMyTopicDD0A15B8': {
         'Type': 'AWS::Lambda::Permission',
@@ -316,31 +316,31 @@ test('lambda subscription', () => {
           'FunctionName': {
             'Fn::GetAtt': [
               'MyFunc8A243A2C',
-              'Arn'
-            ]
+              'Arn',
+            ],
           },
           'Principal': 'sns.amazonaws.com',
           'SourceArn': {
-            'Ref': 'MyTopic86869434'
-          }
-        }
+            'Ref': 'MyTopic86869434',
+          },
+        },
       },
       'MyFuncMyTopic93B6FB00': {
         'Type': 'AWS::SNS::Subscription',
         'Properties': {
           'Protocol': 'lambda',
           'TopicArn': {
-            'Ref': 'MyTopic86869434'
+            'Ref': 'MyTopic86869434',
           },
           'Endpoint': {
             'Fn::GetAtt': [
               'MyFunc8A243A2C',
-              'Arn'
-            ]
-          }
-        }
-      }
-    }
+              'Arn',
+            ],
+          },
+        },
+      },
+    },
   });
 });
 
@@ -353,8 +353,8 @@ test('email subscription', () => {
         'Type': 'AWS::SNS::Topic',
         'Properties': {
           'DisplayName': 'displayName',
-          'TopicName': 'topicName'
-        }
+          'TopicName': 'topicName',
+        },
       },
       'MyTopicfoobarcomA344CADA': {
         'Type': 'AWS::SNS::Subscription',
@@ -362,11 +362,11 @@ test('email subscription', () => {
           'Endpoint': 'foo@bar.com',
           'Protocol': 'email',
           'TopicArn': {
-            'Ref': 'MyTopic86869434'
-          }
-        }
-      }
-    }
+            'Ref': 'MyTopic86869434',
+          },
+        },
+      },
+    },
   });
 });
 
@@ -380,22 +380,22 @@ test('email subscription with unresolved', () => {
         'Type': 'AWS::SNS::Topic',
         'Properties': {
           'DisplayName': 'displayName',
-          'TopicName': 'topicName'
-        }
+          'TopicName': 'topicName',
+        },
       },
       'MyTopicTokenSubscription141DD1BE2': {
         'Type': 'AWS::SNS::Subscription',
         'Properties': {
           'Endpoint': {
-            'Ref' : 'my-email-1'
+            'Ref' : 'my-email-1',
           },
           'Protocol': 'email',
           'TopicArn': {
-            'Ref': 'MyTopic86869434'
-          }
-        }
-      }
-    }
+            'Ref': 'MyTopic86869434',
+          },
+        },
+      },
+    },
   });
 });
 
@@ -411,34 +411,34 @@ test('email and url subscriptions with unresolved', () => {
         'Type': 'AWS::SNS::Topic',
         'Properties': {
           'DisplayName': 'displayName',
-          'TopicName': 'topicName'
-        }
+          'TopicName': 'topicName',
+        },
       },
       'MyTopicTokenSubscription141DD1BE2': {
         'Type': 'AWS::SNS::Subscription',
         'Properties': {
           'Endpoint': {
-            'Ref' : 'my-email-1'
+            'Ref' : 'my-email-1',
           },
           'Protocol': 'email',
           'TopicArn': {
-            'Ref': 'MyTopic86869434'
-          }
-        }
+            'Ref': 'MyTopic86869434',
+          },
+        },
       },
       'MyTopicTokenSubscription293BFE3F9': {
         'Type': 'AWS::SNS::Subscription',
         'Properties': {
           'Endpoint': {
-            'Ref' : 'my-url-1'
+            'Ref' : 'my-url-1',
           },
           'Protocol': 'https',
           'TopicArn': {
-            'Ref': 'MyTopic86869434'
-          }
-        }
-      }
-    }
+            'Ref': 'MyTopic86869434',
+          },
+        },
+      },
+    },
   });
 });
 
@@ -459,58 +459,58 @@ test('email and url subscriptions with unresolved - four subscriptions', () => {
         'Type': 'AWS::SNS::Topic',
         'Properties': {
           'DisplayName': 'displayName',
-          'TopicName': 'topicName'
-        }
+          'TopicName': 'topicName',
+        },
       },
       'MyTopicTokenSubscription141DD1BE2': {
         'Type': 'AWS::SNS::Subscription',
         'Properties': {
           'Endpoint': {
-            'Ref' : 'my-email-1'
+            'Ref' : 'my-email-1',
           },
           'Protocol': 'email',
           'TopicArn': {
-            'Ref': 'MyTopic86869434'
-          }
-        }
+            'Ref': 'MyTopic86869434',
+          },
+        },
       },
       'MyTopicTokenSubscription293BFE3F9': {
         'Type': 'AWS::SNS::Subscription',
         'Properties': {
           'Endpoint': {
-            'Ref' : 'my-email-2'
+            'Ref' : 'my-email-2',
           },
           'Protocol': 'email',
           'TopicArn': {
-            'Ref': 'MyTopic86869434'
-          }
-        }
+            'Ref': 'MyTopic86869434',
+          },
+        },
       },
       'MyTopicTokenSubscription335C2B4CA': {
         'Type': 'AWS::SNS::Subscription',
         'Properties': {
           'Endpoint': {
-            'Ref' : 'my-email-3'
+            'Ref' : 'my-email-3',
           },
           'Protocol': 'email',
           'TopicArn': {
-            'Ref': 'MyTopic86869434'
-          }
-        }
+            'Ref': 'MyTopic86869434',
+          },
+        },
       },
       'MyTopicTokenSubscription4DBE52A3F': {
         'Type': 'AWS::SNS::Subscription',
         'Properties': {
           'Endpoint': {
-            'Ref' : 'my-email-4'
+            'Ref' : 'my-email-4',
           },
           'Protocol': 'email',
           'TopicArn': {
-            'Ref': 'MyTopic86869434'
-          }
-        }
-      }
-    }
+            'Ref': 'MyTopic86869434',
+          },
+        },
+      },
+    },
   });
 });
 
@@ -519,7 +519,7 @@ test('multiple subscriptions', () => {
   const func = new lambda.Function(stack, 'MyFunc', {
     runtime: lambda.Runtime.NODEJS_10_X,
     handler: 'index.handler',
-    code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }')
+    code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }'),
   });
 
   topic.addSubscription(new subs.SqsSubscription(queue));
@@ -531,11 +531,11 @@ test('multiple subscriptions', () => {
         'Type': 'AWS::SNS::Topic',
         'Properties': {
           'DisplayName': 'displayName',
-          'TopicName': 'topicName'
-        }
+          'TopicName': 'topicName',
+        },
       },
       'MyQueueE6CA6235': {
-        'Type': 'AWS::SQS::Queue'
+        'Type': 'AWS::SQS::Queue',
       },
       'MyQueuePolicy6BBEDDAC': {
         'Type': 'AWS::SQS::QueuePolicy',
@@ -547,45 +547,45 @@ test('multiple subscriptions', () => {
                 'Condition': {
                   'ArnEquals': {
                     'aws:SourceArn': {
-                      'Ref': 'MyTopic86869434'
-                    }
-                  }
+                      'Ref': 'MyTopic86869434',
+                    },
+                  },
                 },
                 'Effect': 'Allow',
                 'Principal': {
-                  'Service': 'sns.amazonaws.com'
+                  'Service': 'sns.amazonaws.com',
                 },
                 'Resource': {
                   'Fn::GetAtt': [
                     'MyQueueE6CA6235',
-                    'Arn'
-                  ]
-                }
-              }
+                    'Arn',
+                  ],
+                },
+              },
             ],
-            'Version': '2012-10-17'
+            'Version': '2012-10-17',
           },
           'Queues': [
             {
-              'Ref': 'MyQueueE6CA6235'
-            }
-          ]
-        }
+              'Ref': 'MyQueueE6CA6235',
+            },
+          ],
+        },
       },
       'MyQueueMyTopic9B00631B': {
         'Type': 'AWS::SNS::Subscription',
         'Properties': {
           'Protocol': 'sqs',
           'TopicArn': {
-            'Ref': 'MyTopic86869434'
+            'Ref': 'MyTopic86869434',
           },
           'Endpoint': {
             'Fn::GetAtt': [
               'MyQueueE6CA6235',
-              'Arn'
-            ]
-          }
-        }
+              'Arn',
+            ],
+          },
+        },
       },
       'MyFuncServiceRole54065130': {
         'Type': 'AWS::IAM::Role',
@@ -596,11 +596,11 @@ test('multiple subscriptions', () => {
                 'Action': 'sts:AssumeRole',
                 'Effect': 'Allow',
                 'Principal': {
-                  'Service': 'lambda.amazonaws.com'
-                }
-              }
+                  'Service': 'lambda.amazonaws.com',
+                },
+              },
             ],
-            'Version': '2012-10-17'
+            'Version': '2012-10-17',
           },
           'ManagedPolicyArns': [
             {
@@ -609,33 +609,33 @@ test('multiple subscriptions', () => {
                 [
                   'arn:',
                   {
-                    'Ref': 'AWS::Partition'
+                    'Ref': 'AWS::Partition',
                   },
-                  ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
-                ]
-              ]
-            }
-          ]
-        }
+                  ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole',
+                ],
+              ],
+            },
+          ],
+        },
       },
       'MyFunc8A243A2C': {
         'Type': 'AWS::Lambda::Function',
         'Properties': {
           'Code': {
-            'ZipFile': 'exports.handler = function(e, c, cb) { return cb() }'
+            'ZipFile': 'exports.handler = function(e, c, cb) { return cb() }',
           },
           'Handler': 'index.handler',
           'Role': {
             'Fn::GetAtt': [
               'MyFuncServiceRole54065130',
-              'Arn'
-            ]
+              'Arn',
+            ],
           },
-          'Runtime': 'nodejs10.x'
+          'Runtime': 'nodejs10.x',
         },
         'DependsOn': [
-          'MyFuncServiceRole54065130'
-        ]
+          'MyFuncServiceRole54065130',
+        ],
       },
       'MyFuncAllowInvokeMyTopicDD0A15B8': {
         'Type': 'AWS::Lambda::Permission',
@@ -644,31 +644,31 @@ test('multiple subscriptions', () => {
           'FunctionName': {
             'Fn::GetAtt': [
               'MyFunc8A243A2C',
-              'Arn'
-            ]
+              'Arn',
+            ],
           },
           'Principal': 'sns.amazonaws.com',
           'SourceArn': {
-            'Ref': 'MyTopic86869434'
-          }
-        }
+            'Ref': 'MyTopic86869434',
+          },
+        },
       },
       'MyFuncMyTopic93B6FB00': {
         'Type': 'AWS::SNS::Subscription',
         'Properties': {
           'Protocol': 'lambda',
           'TopicArn': {
-            'Ref': 'MyTopic86869434'
+            'Ref': 'MyTopic86869434',
           },
           'Endpoint': {
             'Fn::GetAtt': [
               'MyFunc8A243A2C',
-              'Arn'
-            ]
-          }
-        }
-      }
-    }
+              'Arn',
+            ],
+          },
+        },
+      },
+    },
   });
 });
 
@@ -685,7 +685,7 @@ test('with filter policy', () => {
   const fction = new lambda.Function(stack, 'MyFunc', {
     runtime: lambda.Runtime.NODEJS_10_X,
     handler: 'index.handler',
-    code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }')
+    code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }'),
   });
 
   topic.addSubscription(new subs.LambdaSubscription(fction, {
@@ -698,9 +698,9 @@ test('with filter policy', () => {
         blacklist: ['small', 'medium'],
       }),
       price: sns.SubscriptionFilter.numericFilter({
-        between: { start: 100, stop: 200 }
-      })
-    }
+        between: { start: 100, stop: 200 },
+      }),
+    },
   }));
 
   expect(stack).toHaveResource('AWS::SNS::Subscription', {
@@ -708,19 +708,19 @@ test('with filter policy', () => {
       'color': [
         'red',
         {
-          'prefix': 'bl'
+          'prefix': 'bl',
         },
         {
-          'prefix': 'ye'
-        }
+          'prefix': 'ye',
+        },
       ],
       'size': [
         {
           'anything-but': [
             'small',
-            'medium'
-          ]
-        }
+            'medium',
+          ],
+        },
       ],
       'price': [
         {
@@ -728,11 +728,11 @@ test('with filter policy', () => {
             '>=',
             100,
             '<=',
-            200
-          ]
-        }
-      ]
-    }
+            200,
+          ],
+        },
+      ],
+    },
   });
 });
 
@@ -742,7 +742,7 @@ test('region property is present on an imported topic', () => {
   imported.addSubscription(new subs.SqsSubscription(queue));
 
   expect(stack).toHaveResource('AWS::SNS::Subscription', {
-    Region: 'us-east-1'
+    Region: 'us-east-1',
   });
 });
 
@@ -754,7 +754,7 @@ test('region property on an imported topic as a parameter', () => {
 
   expect(stack).toHaveResource('AWS::SNS::Subscription', {
     Region: {
-      'Fn::Select': [ 3, { 'Fn::Split': [ ':', { 'Ref': 'topicArn' } ] } ]
-    }
+      'Fn::Select': [ 3, { 'Fn::Split': [ ':', { 'Ref': 'topicArn' } ] } ],
+    },
   });
 });

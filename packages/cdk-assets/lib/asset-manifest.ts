@@ -91,7 +91,7 @@ export class AssetManifest {
   public list() {
     return [
       ...describeAssets('file', this.manifest.files || {}),
-      ...describeAssets('docker-image', this.manifest.dockerImages || {})
+      ...describeAssets('docker-image', this.manifest.dockerImages || {}),
     ];
 
     function describeAssets(type: string, assets: Record<string, { source: any, destinations: Record<string, any> }>) {

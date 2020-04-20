@@ -23,11 +23,11 @@ const cluster = new DatabaseCluster(stack, 'Database', {
   instanceProps: {
     instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
     vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
-    vpc
+    vpc,
   },
   kmsKey,
   s3ImportBuckets: [importBucket],
-  s3ExportBuckets: [exportBucket]
+  s3ExportBuckets: [exportBucket],
 });
 
 cluster.connections.allowDefaultPortFromAnyIpv4('Open to the world');

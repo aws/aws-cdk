@@ -18,7 +18,7 @@ export = {
       { name: 'BlahBleep123.@-_', shouldPassValidation: true, explanation: 'should be valid' },
       { name: '', shouldPassValidation: false, explanation: 'the empty string should be invalid' },
       { name: ' BlahBleep', shouldPassValidation: false, explanation: 'spaces should be invalid' },
-      { name: '!BlahBleep', shouldPassValidation: false, explanation: '\'!\' should be invalid' }
+      { name: '!BlahBleep', shouldPassValidation: false, explanation: '\'!\' should be invalid' },
     ];
 
     cases.forEach(testCase => {
@@ -41,7 +41,7 @@ export = {
       test.deepEqual((stage as any).validate().length, 1);
 
       test.done();
-    }
+    },
   },
 
   'Pipeline validation': {
@@ -71,8 +71,8 @@ export = {
       test.deepEqual(cdk.ConstructNode.validate(pipeline.node).length, 1);
 
       test.done();
-    }
-  }
+    },
+  },
 };
 
 function stageForTesting(): IStage {

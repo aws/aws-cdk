@@ -41,6 +41,6 @@ export function renderUserData(clusterName: string, autoScalingGroup: autoscalin
   return [
     'set -o xtrace',
     `/etc/eks/bootstrap.sh ${clusterName} --kubelet-extra-args "${kubeletExtraArgs}" ${commandLineSuffix}`.trim(),
-    `/opt/aws/bin/cfn-signal --exit-code $? --stack ${stack.stackName} --resource ${asgLogicalId} --region ${stack.region}`
+    `/opt/aws/bin/cfn-signal --exit-code $? --stack ${stack.stackName} --resource ${asgLogicalId} --region ${stack.region}`,
   ];
 }

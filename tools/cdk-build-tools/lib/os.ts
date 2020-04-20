@@ -21,7 +21,7 @@ export async function shell(command: string[], options: ShellOptions = {}): Prom
   const child = child_process.spawn(command[0], command.slice(1), {
     // Need this for Windows where we want .cmd and .bat to be found as well.
     shell: true,
-    stdio: [ 'ignore', 'pipe', 'pipe' ]
+    stdio: [ 'ignore', 'pipe', 'pipe' ],
   });
 
   const makeRed = process.stderr.isTTY ? colors.red : (x: string) => x;

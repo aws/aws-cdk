@@ -62,8 +62,8 @@ export class CfnMapping extends CfnRefElement {
   public _toCloudFormation(): object {
     return {
       Mappings: {
-        [this.logicalId]: this.mapping
-      }
+        [this.logicalId]: this.mapping,
+      },
     };
   }
 }

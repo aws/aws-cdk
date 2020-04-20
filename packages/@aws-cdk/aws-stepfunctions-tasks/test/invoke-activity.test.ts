@@ -11,7 +11,7 @@ test('Activity can be used in a Task', () => {
   const activity = new sfn.Activity(stack, 'Activity');
   const task = new sfn.Task(stack, 'Task', { task: new tasks.InvokeActivity(activity) });
   new sfn.StateMachine(stack, 'SM', {
-    definition: task
+    definition: task,
   });
 
   // THEN
@@ -20,8 +20,8 @@ test('Activity can be used in a Task', () => {
       'Fn::Join': ['', [
         '{"StartAt":"Task","States":{"Task":{"End":true,"Type":"Task","Resource":"',
         { Ref: 'Activity04690B0A' },
-        '"}}}'
-      ]]
+        '"}}}',
+      ]],
     },
   });
 });
@@ -42,7 +42,7 @@ test('Activity Task metrics and Activity metrics are the same', () => {
     activity.metricStarted(),
     activity.metricSucceeded(),
     activity.metricTime(),
-    activity.metricTimedOut()
+    activity.metricTimedOut(),
   ];
 
   const taskMetrics = [

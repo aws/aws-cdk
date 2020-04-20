@@ -21,13 +21,13 @@ class TestStack extends Stack {
 
     const file2 = new S3File(this, 'file2', {
       bucket,
-      contents: file2Contents
+      contents: file2Contents,
     });
 
     new S3Assert(this, 'assert-file', {
       bucket,
       objectKey: file2.objectKey,
-      expectedContent: file2Contents
+      expectedContent: file2Contents,
     });
 
     // delay file2 updates so we can test async assertions

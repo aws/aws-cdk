@@ -9,11 +9,11 @@ test('use ALB as record target', () => {
   // GIVEN
   const stack = new Stack();
   const vpc = new ec2.Vpc(stack, 'VPC', {
-    maxAzs: 2
+    maxAzs: 2,
   });
   const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', {
     vpc,
-    internetFacing: true
+    internetFacing: true,
   });
 
   const zone = new route53.PublicHostedZone(stack, 'HostedZone', { zoneName: 'test.public' });
@@ -22,14 +22,14 @@ test('use ALB as record target', () => {
   new route53.ARecord(zone, 'Alias', {
     zone,
     recordName: '_foo',
-    target: route53.RecordTarget.fromAlias(new targets.LoadBalancerTarget(lb))
+    target: route53.RecordTarget.fromAlias(new targets.LoadBalancerTarget(lb)),
   });
 
   // THEN
   expect(stack).toHaveResource('AWS::Route53::RecordSet', {
     AliasTarget: {
       DNSName: { 'Fn::GetAtt': [ 'LB8A12904C', 'DNSName' ] },
-      HostedZoneId: { 'Fn::GetAtt': [ 'LB8A12904C', 'CanonicalHostedZoneID' ] }
+      HostedZoneId: { 'Fn::GetAtt': [ 'LB8A12904C', 'CanonicalHostedZoneID' ] },
     },
   });
 });

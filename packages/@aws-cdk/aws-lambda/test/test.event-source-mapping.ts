@@ -8,7 +8,7 @@ export = {
     const fn = new Function(stack, 'fn', {
       handler: 'index.handler',
       code: Code.fromInline('exports.handler = ${handler.toString()}'),
-      runtime: Runtime.NODEJS_10_X
+      runtime: Runtime.NODEJS_10_X,
     });
 
     test.throws(() =>
@@ -18,7 +18,7 @@ export = {
         {
           target: fn,
           eventSourceArn: '',
-          maxBatchingWindow: cdk.Duration.seconds(301)
+          maxBatchingWindow: cdk.Duration.seconds(301),
         }), /maxBatchingWindow cannot be over 300 seconds/);
 
     test.done();
@@ -28,7 +28,7 @@ export = {
     const fn = new Function(stack, 'fn', {
       handler: 'index.handler',
       code: Code.fromInline('exports.handler = ${handler.toString()}'),
-      runtime: Runtime.NODEJS_10_X
+      runtime: Runtime.NODEJS_10_X,
     });
 
     test.throws(() =>
@@ -38,7 +38,7 @@ export = {
         {
           target: fn,
           eventSourceArn: '',
-          maxRecordAge: cdk.Duration.seconds(59)
+          maxRecordAge: cdk.Duration.seconds(59),
         }), /maxRecordAge must be between 60 seconds and 7 days inclusive/);
 
     test.done();
@@ -48,7 +48,7 @@ export = {
     const fn = new Function(stack, 'fn', {
       handler: 'index.handler',
       code: Code.fromInline('exports.handler = ${handler.toString()}'),
-      runtime: Runtime.NODEJS_10_X
+      runtime: Runtime.NODEJS_10_X,
     });
 
     test.throws(() =>
@@ -58,7 +58,7 @@ export = {
         {
           target: fn,
           eventSourceArn: '',
-          maxRecordAge: cdk.Duration.seconds(604801)
+          maxRecordAge: cdk.Duration.seconds(604801),
         }), /maxRecordAge must be between 60 seconds and 7 days inclusive/);
 
     test.done();
@@ -68,7 +68,7 @@ export = {
     const fn = new Function(stack, 'fn', {
       handler: 'index.handler',
       code: Code.fromInline('exports.handler = ${handler.toString()}'),
-      runtime: Runtime.NODEJS_10_X
+      runtime: Runtime.NODEJS_10_X,
     });
 
     test.throws(() =>
@@ -78,7 +78,7 @@ export = {
         {
           target: fn,
           eventSourceArn: '',
-          retryAttempts: -1
+          retryAttempts: -1,
         }), /retryAttempts must be between 0 and 10000 inclusive, got -1/);
 
     test.done();
@@ -88,7 +88,7 @@ export = {
     const fn = new Function(stack, 'fn', {
       handler: 'index.handler',
       code: Code.fromInline('exports.handler = ${handler.toString()}'),
-      runtime: Runtime.NODEJS_10_X
+      runtime: Runtime.NODEJS_10_X,
     });
 
     test.throws(() =>
@@ -98,7 +98,7 @@ export = {
         {
           target: fn,
           eventSourceArn: '',
-          retryAttempts: 10001
+          retryAttempts: 10001,
         }), /retryAttempts must be between 0 and 10000 inclusive, got 10001/);
 
     test.done();
@@ -108,7 +108,7 @@ export = {
     const fn = new Function(stack, 'fn', {
       handler: 'index.handler',
       code: Code.fromInline('exports.handler = ${handler.toString()}'),
-      runtime: Runtime.NODEJS_10_X
+      runtime: Runtime.NODEJS_10_X,
     });
 
     test.throws(() =>
@@ -118,7 +118,7 @@ export = {
         {
           target: fn,
           eventSourceArn: '',
-          parallelizationFactor: 0
+          parallelizationFactor: 0,
         }), /parallelizationFactor must be between 1 and 10 inclusive, got 0/);
 
     test.done();
@@ -128,7 +128,7 @@ export = {
     const fn = new Function(stack, 'fn', {
       handler: 'index.handler',
       code: Code.fromInline('exports.handler = ${handler.toString()}'),
-      runtime: Runtime.NODEJS_10_X
+      runtime: Runtime.NODEJS_10_X,
     });
 
     test.throws(() =>
@@ -138,7 +138,7 @@ export = {
         {
           target: fn,
           eventSourceArn: '',
-          parallelizationFactor: 11
+          parallelizationFactor: 11,
         }), /parallelizationFactor must be between 1 and 10 inclusive, got 11/);
 
     test.done();

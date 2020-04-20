@@ -233,7 +233,7 @@ export class Pipeline extends PipelineBase {
         encryptionKey,
         encryption: s3.BucketEncryption.KMS,
         blockPublicAccess: new s3.BlockPublicAccess(s3.BlockPublicAccess.BLOCK_ALL),
-        removalPolicy: RemovalPolicy.RETAIN
+        removalPolicy: RemovalPolicy.RETAIN,
       });
       // add an alias to make finding the key in the console easier
       new kms.Alias(this, 'ArtifactsBucketEncryptionKeyAlias', {
@@ -246,7 +246,7 @@ export class Pipeline extends PipelineBase {
 
     // If a role has been provided, use it - otherwise, create a role.
     this.role = props.role || new iam.Role(this, 'Role', {
-      assumedBy: new iam.ServicePrincipal('codepipeline.amazonaws.com')
+      assumedBy: new iam.ServicePrincipal('codepipeline.amazonaws.com'),
     });
 
     const codePipeline = new CfnPipeline(this, 'Resource', {
@@ -276,7 +276,7 @@ export class Pipeline extends PipelineBase {
     // Does not expose a Fn::GetAtt for the ARN so we'll have to make it ourselves
     this.pipelineArn = Stack.of(this).formatArn({
       service: 'codepipeline',
-      resource: this.pipelineName
+      resource: this.pipelineName,
     });
 
     for (const stage of props.stages || []) {
@@ -525,7 +525,7 @@ export class Pipeline extends PipelineBase {
     if (actionRole) {
       this.role.addToPolicy(new iam.PolicyStatement({
         actions: ['sts:AssumeRole'],
-        resources: [actionRole.roleArn]
+        resources: [actionRole.roleArn],
       }));
     }
 

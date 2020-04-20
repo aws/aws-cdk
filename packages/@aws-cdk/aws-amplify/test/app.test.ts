@@ -15,7 +15,7 @@ test('create an app connected to a GitHub repository', () => {
     sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
       owner: 'aws',
       repository: 'aws-cdk',
-      oauthToken: SecretValue.plainText('secret')
+      oauthToken: SecretValue.plainText('secret'),
     }),
     buildSpec: codebuild.BuildSpec.fromObject({
       version: '1.0',
@@ -23,12 +23,12 @@ test('create an app connected to a GitHub repository', () => {
         phases: {
           build: {
             commands: [
-              'npm run build'
-            ]
-          }
-        }
-      }
-    })
+              'npm run build',
+            ],
+          },
+        },
+      },
+    }),
   });
 
   // THEN
@@ -38,11 +38,11 @@ test('create an app connected to a GitHub repository', () => {
     IAMServiceRole: {
       'Fn::GetAtt': [
         'AppRole1AF9B530',
-        'Arn'
-      ]
+        'Arn',
+      ],
     },
     OauthToken: 'secret',
-    Repository: 'https://github.com/aws/aws-cdk'
+    Repository: 'https://github.com/aws/aws-cdk',
   });
 
   expect(stack).toHaveResource('AWS::IAM::Role', {
@@ -52,12 +52,12 @@ test('create an app connected to a GitHub repository', () => {
           Action: 'sts:AssumeRole',
           Effect: 'Allow',
           Principal: {
-            Service: 'amplify.amazonaws.com'
-          }
-        }
+            Service: 'amplify.amazonaws.com',
+          },
+        },
       ],
-      Version: '2012-10-17'
-    }
+      Version: '2012-10-17',
+    },
   });
 });
 
@@ -74,8 +74,8 @@ test('create an app connected to a CodeCommit repository', () => {
     IAMServiceRole: {
       'Fn::GetAtt': [
         'AppRole1AF9B530',
-        'Arn'
-      ]
+        'Arn',
+      ],
     },
     Repository: {
       'Fn::Join': [
@@ -83,16 +83,16 @@ test('create an app connected to a CodeCommit repository', () => {
         [
           'https://git-codecommit.',
           {
-            Ref: 'AWS::Region'
+            Ref: 'AWS::Region',
           },
           '.',
           {
-            Ref: 'AWS::URLSuffix'
+            Ref: 'AWS::URLSuffix',
           },
-          '/v1/repos/my-repo'
-        ]
-      ]
-    }
+          '/v1/repos/my-repo',
+        ],
+      ],
+    },
   });
 
   expect(stack).toHaveResource('AWS::IAM::Policy', {
@@ -107,29 +107,29 @@ test('create an app connected to a CodeCommit repository', () => {
               [
                 'arn:',
                 {
-                  Ref: 'AWS::Partition'
+                  Ref: 'AWS::Partition',
                 },
                 ':codecommit:',
                 {
-                  Ref: 'AWS::Region'
+                  Ref: 'AWS::Region',
                 },
                 ':',
                 {
-                  Ref: 'AWS::AccountId'
+                  Ref: 'AWS::AccountId',
                 },
-                ':my-repo'
-              ]
-            ]
+                ':my-repo',
+              ],
+            ],
           },
-        }
+        },
       ],
-      Version: '2012-10-17'
+      Version: '2012-10-17',
     },
     Roles: [
       {
-        Ref: 'AppRole1AF9B530'
-      }
-    ]
+        Ref: 'AppRole1AF9B530',
+      },
+    ],
   });
 });
 
@@ -139,9 +139,9 @@ test('with basic auth from credentials', () => {
     sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
       owner: 'aws',
       repository: 'aws-cdk',
-      oauthToken: SecretValue.plainText('secret')
+      oauthToken: SecretValue.plainText('secret'),
     }),
-    basicAuth: amplify.BasicAuth.fromCredentials('username', SecretValue.plainText('password'))
+    basicAuth: amplify.BasicAuth.fromCredentials('username', SecretValue.plainText('password')),
   });
 
   // THEN
@@ -149,8 +149,8 @@ test('with basic auth from credentials', () => {
     BasicAuthConfig: {
       EnableBasicAuth: true,
       Password: 'password',
-      Username: 'username'
-    }
+      Username: 'username',
+    },
   });
 });
 
@@ -160,9 +160,9 @@ test('with basic auth from generated password', () => {
     sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
       owner: 'aws',
       repository: 'aws-cdk',
-      oauthToken: SecretValue.plainText('secret')
+      oauthToken: SecretValue.plainText('secret'),
     }),
-    basicAuth: amplify.BasicAuth.fromGeneratedPassword('username')
+    basicAuth: amplify.BasicAuth.fromGeneratedPassword('username'),
   });
 
   // THEN
@@ -175,21 +175,21 @@ test('with basic auth from generated password', () => {
           [
             '{{resolve:secretsmanager:',
             {
-              Ref: 'AppAppBasicAuthE743F015'
+              Ref: 'AppAppBasicAuthE743F015',
             },
-            ':SecretString:password::}}'
-          ]
-        ]
+            ':SecretString:password::}}',
+          ],
+        ],
       },
-      Username: 'username'
-    }
+      Username: 'username',
+    },
   });
 
   expect(stack).toHaveResource('AWS::SecretsManager::Secret', {
     GenerateSecretString: {
       GenerateStringKey: 'password',
-      SecretStringTemplate: '{\"username\":\"username\"}'
-    }
+      SecretStringTemplate: '{\"username\":\"username\"}',
+    },
   });
 });
 
@@ -199,11 +199,11 @@ test('with env vars', () => {
     sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
       owner: 'aws',
       repository: 'aws-cdk',
-      oauthToken: SecretValue.plainText('secret')
+      oauthToken: SecretValue.plainText('secret'),
     }),
     environmentVariables: {
-      key1: 'value1'
-    }
+      key1: 'value1',
+    },
   });
   app.addEnvironment('key2', 'value2');
 
@@ -212,13 +212,13 @@ test('with env vars', () => {
     EnvironmentVariables: [
       {
         Name: 'key1',
-        Value: 'value1'
+        Value: 'value1',
       },
       {
         Name: 'key2',
-        Value: 'value2'
-      }
-    ]
+        Value: 'value2',
+      },
+    ],
   });
 });
 
@@ -228,20 +228,20 @@ test('with custom rules', () => {
     sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
       owner: 'aws',
       repository: 'aws-cdk',
-      oauthToken: SecretValue.plainText('secret')
+      oauthToken: SecretValue.plainText('secret'),
     }),
     customRules: [
       {
         source: '/source1',
         target: '/target1',
-        status: amplify.RedirectStatus.PERMANENT_REDIRECT
-      }
-    ]
+        status: amplify.RedirectStatus.PERMANENT_REDIRECT,
+      },
+    ],
   });
   app.addCustomRule({
     source: '/source2',
     target: '/target2',
-    status: amplify.RedirectStatus.TEMPORARY_REDIRECT
+    status: amplify.RedirectStatus.TEMPORARY_REDIRECT,
   });
 
   // THEN
@@ -250,14 +250,14 @@ test('with custom rules', () => {
       {
         Source: '/source1',
         Status: '301',
-        Target: '/target1'
+        Target: '/target1',
       },
       {
         Source: '/source2',
         Status: '302',
-        Target: '/target2'
-      }
-    ]
+        Target: '/target2',
+      },
+    ],
   });
 });
 
@@ -267,13 +267,13 @@ test('with auto branch creation', () => {
     sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
       owner: 'aws',
       repository: 'aws-cdk',
-      oauthToken: SecretValue.plainText('secret')
+      oauthToken: SecretValue.plainText('secret'),
     }),
     autoBranchCreation: {
       environmentVariables: {
-        key1: 'value1'
-      }
-    }
+        key1: 'value1',
+      },
+    },
   });
   app.addAutoBranchEnvironment('key2', 'value2');
 
@@ -286,13 +286,13 @@ test('with auto branch creation', () => {
       EnvironmentVariables: [
         {
           Name: 'key1',
-          Value: 'value1'
+          Value: 'value1',
         },
         {
           Name: 'key2',
-          Value: 'value2'
-        }
-      ]
-    }
+          Value: 'value2',
+        },
+      ],
+    },
   });
 });

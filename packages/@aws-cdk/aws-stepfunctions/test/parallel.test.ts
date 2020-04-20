@@ -21,10 +21,10 @@ describe('Parallel State',  () => {
           End: true,
           Branches: [
             { StartAt: 'Branch 1', States: { 'Branch 1': { Type: 'Pass', End: true } } },
-            { StartAt: 'Branch 2', States: { 'Branch 2': { Type: 'Pass', End: true } } }
-          ]
-        }
-      }
+            { StartAt: 'Branch 2', States: { 'Branch 2': { Type: 'Pass', End: true } } },
+          ],
+        },
+      },
     });
   });
 });

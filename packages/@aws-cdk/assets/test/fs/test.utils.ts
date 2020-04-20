@@ -190,6 +190,6 @@ export = {
           mockFsExists.restore();
         }
       },
-    }
+    },
   },
 };

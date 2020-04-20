@@ -20,9 +20,9 @@ new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'L3', {
     executionRole: new iam.Role(stack, 'ExecutionRole', {
       assumedBy: new iam.CompositePrincipal(
         new iam.ServicePrincipal('ecs.amazonaws.com'),
-        new iam.ServicePrincipal('ecs-tasks.amazonaws.com')
-      )
-    })
+        new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+      ),
+    }),
   },
 });
 

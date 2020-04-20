@@ -7,8 +7,8 @@ test('with numbers', async () => {
     expression: '$.a + $.b',
     expressionAttributeValues: {
       '$.a': 4,
-      '$.b': 5
-    }
+      '$.b': 5,
+    },
   };
 
   // THEN
@@ -22,8 +22,8 @@ test('with strings', async () => {
     expression: '`${$.a} ${$.b}`',
     expressionAttributeValues: {
       '$.a': 'Hello',
-      '$.b': 'world!'
-    }
+      '$.b': 'world!',
+    },
   };
 
   // THEN
@@ -37,7 +37,7 @@ test('with lists', async () => {
     expression: '$.a.map(x => x * 2)',
     expressionAttributeValues: {
       '$.a': [1, 2, 3],
-    }
+    },
   };
 
   // THEN

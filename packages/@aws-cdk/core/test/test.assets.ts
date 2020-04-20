@@ -12,7 +12,7 @@ export = {
     stack.addFileAsset({
       fileName: 'file-name',
       packaging: FileAssetPackaging.ZIP_DIRECTORY,
-      sourceHash: 'source-hash'
+      sourceHash: 'source-hash',
     });
 
     // THEN
@@ -32,17 +32,17 @@ export = {
       Parameters: {
         AssetParameterssourcehashS3BucketE6E91E3E: {
           Type: 'String',
-          Description: 'S3 bucket for asset "source-hash"'
+          Description: 'S3 bucket for asset "source-hash"',
         },
         AssetParameterssourcehashS3VersionKeyAC4157C3: {
           Type: 'String',
-          Description: 'S3 key for asset version "source-hash"'
+          Description: 'S3 key for asset version "source-hash"',
         },
         AssetParameterssourcehashArtifactHashADBAE418: {
           Type: 'String',
-          Description: 'Artifact hash for asset "source-hash"'
-        }
-      }
+          Description: 'Artifact hash for asset "source-hash"',
+        },
+      },
     });
 
     test.done();
@@ -57,7 +57,7 @@ export = {
     stack.addDockerImageAsset({
       sourceHash: 'source-hash',
       directoryName: 'directory-name',
-      repositoryName: 'repository-name'
+      repositoryName: 'repository-name',
     });
 
     // THEN

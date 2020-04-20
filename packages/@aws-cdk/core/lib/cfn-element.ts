@@ -58,7 +58,7 @@ export abstract class CfnElement extends Construct {
     this.stack = Stack.of(this);
 
     this.logicalId = Lazy.stringValue({ produce: () => this.synthesizeLogicalId() }, {
-      displayHint: `${notTooLong(this.node.path)}.LogicalID`
+      displayHint: `${notTooLong(this.node.path)}.LogicalID`,
     });
 
     this.node.addMetadata(cxschema.ArtifactMetadataEntryType.LOGICAL_ID, this.logicalId, this.constructor);

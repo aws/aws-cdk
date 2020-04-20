@@ -40,10 +40,10 @@ export async function onEventHandler(event: OnEventRequest): Promise<OnEventResp
       ReplicaUpdates: [
         {
           [event.RequestType]: {
-            RegionName: event.ResourceProperties.Region
-          }
+            RegionName: event.ResourceProperties.Region,
+          },
         },
-      ]
+      ],
     }).promise();
     console.log('Update table: %j', data);
   }
@@ -57,7 +57,7 @@ export async function isCompleteHandler(event: IsCompleteRequest): Promise<IsCom
   const dynamodb = new DynamoDB();
 
   const data = await dynamodb.describeTable({
-    TableName: event.ResourceProperties.TableName
+    TableName: event.ResourceProperties.TableName,
   }).promise();
   console.log('Describe table: %j', data);
 

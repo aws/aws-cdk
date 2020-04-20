@@ -17,7 +17,7 @@ describe('User Pool', () => {
     expect(stack).toHaveResource('AWS::Cognito::UserPool', {
       AdminCreateUserConfig: {
         AllowAdminCreateUserOnly: true,
-        InviteMessageTemplate: ABSENT
+        InviteMessageTemplate: ABSENT,
       },
       EmailVerificationMessage: 'Hello {username}, Your verification code is {####}',
       EmailVerificationSubject: 'Verify your new account',
@@ -32,7 +32,7 @@ describe('User Pool', () => {
         SnsCallerArn: {
           'Fn::GetAtt': [ 'PoolsmsRoleC3352CE6', 'Arn' ],
         },
-        ExternalId: 'Pool'
+        ExternalId: 'Pool',
       },
       lambdaTriggers: ABSENT,
     });
@@ -44,16 +44,16 @@ describe('User Pool', () => {
             Action: 'sts:AssumeRole',
             Condition: {
               StringEquals: {
-                'sts:ExternalId': 'Pool'
-              }
+                'sts:ExternalId': 'Pool',
+              },
             },
             Effect: 'Allow',
             Principal: {
-              Service: 'cognito-idp.amazonaws.com'
-            }
-          }
+              Service: 'cognito-idp.amazonaws.com',
+            },
+          },
         ],
-        Version: '2012-10-17'
+        Version: '2012-10-17',
       },
       Policies: [
         {
@@ -62,14 +62,14 @@ describe('User Pool', () => {
               {
                 Action: 'sns:Publish',
                 Effect: 'Allow',
-                Resource: '*'
-              }
+                Resource: '*',
+              },
             ],
-            Version: '2012-10-17'
+            Version: '2012-10-17',
           },
-          PolicyName: 'sns-publish'
-        }
-      ]
+          PolicyName: 'sns-publish',
+        },
+      ],
     });
   });
 
@@ -79,14 +79,14 @@ describe('User Pool', () => {
 
     // WHEN
     new UserPool(stack, 'Pool', {
-      selfSignUpEnabled: true
+      selfSignUpEnabled: true,
     });
 
     // THEN
     expect(stack).toHaveResource('AWS::Cognito::UserPool', {
       AdminCreateUserConfig: {
-        AllowAdminCreateUserOnly: false
-      }
+        AllowAdminCreateUserOnly: false,
+      },
     });
   });
 
@@ -98,7 +98,7 @@ describe('User Pool', () => {
     new UserPool(stack, 'Pool', {
       userVerification: {
         emailStyle: VerificationEmailStyle.LINK,
-      }
+      },
     });
 
     // THEN
@@ -111,7 +111,7 @@ describe('User Pool', () => {
         EmailMessageByLink: 'Hello {username}, Verify your account by clicking on {##Verify Email##}',
         EmailSubjectByLink: 'Verify your new account',
         SmsMessage: 'The verification code to your new account is {####}',
-      }
+      },
     });
   }),
 
@@ -122,42 +122,42 @@ describe('User Pool', () => {
       userVerification: {
         emailStyle: VerificationEmailStyle.CODE,
         emailBody: 'invalid email body',
-      }
+      },
     })).toThrow(/Verification email body/);
 
     expect(() => new UserPool(stack, 'Pool2', {
       userVerification: {
         emailStyle: VerificationEmailStyle.CODE,
         emailBody: 'valid email body {####}',
-      }
+      },
     })).not.toThrow();
 
     expect(() => new UserPool(stack, 'Pool3', {
       userVerification: {
         emailStyle: VerificationEmailStyle.CODE,
         smsMessage: 'invalid sms message',
-      }
+      },
     })).toThrow(/SMS message/);
 
     expect(() => new UserPool(stack, 'Pool4', {
       userVerification: {
         emailStyle: VerificationEmailStyle.CODE,
         smsMessage: 'invalid sms message {####}',
-      }
+      },
     })).not.toThrow();
 
     expect(() => new UserPool(stack, 'Pool5', {
       userVerification: {
         emailStyle: VerificationEmailStyle.LINK,
         emailBody: 'invalid email body {####}',
-      }
+      },
     })).toThrow(/Verification email body/);
 
     expect(() => new UserPool(stack, 'Pool6', {
       userVerification: {
         emailStyle: VerificationEmailStyle.LINK,
         emailBody: 'invalid email body {##Verify Email##}',
-      }
+      },
     })).not.toThrow();
   });
 
@@ -170,8 +170,8 @@ describe('User Pool', () => {
       userInvitation: {
         emailBody: 'invitation email body',
         emailSubject: 'invitation email subject',
-        smsMessage: 'invitation sms'
-      }
+        smsMessage: 'invitation sms',
+      },
     });
 
     // THEN
@@ -180,9 +180,9 @@ describe('User Pool', () => {
         InviteMessageTemplate: {
           EmailMessage: 'invitation email body',
           EmailSubject: 'invitation email subject',
-          SMSMessage: 'invitation sms'
-        }
-      }
+          SMSMessage: 'invitation sms',
+        },
+      },
     });
   });
 
@@ -194,22 +194,22 @@ describe('User Pool', () => {
     // WHEN
     new UserPool(stack, 'Pool', {
       smsRole: role,
-      smsRoleExternalId: 'test-external-id'
+      smsRoleExternalId: 'test-external-id',
     });
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
       SmsConfiguration: {
         ExternalId: 'test-external-id',
-        SnsCallerArn: role.roleArn
-      }
+        SnsCallerArn: role.roleArn,
+      },
     });
   });
 
   test('import using id', () => {
     // GIVEN
     const stack = new Stack(undefined, undefined, {
-      env: { region: 'some-region-1', account: '0123456789012' }
+      env: { region: 'some-region-1', account: '0123456789012' },
     });
     const userPoolId = 'test-user-pool';
 
@@ -235,8 +235,8 @@ describe('User Pool', () => {
         { Ref: 'AWS::Region' },
         ':',
         { Ref: 'AWS::AccountId' },
-        ':userpool/test-user-pool'
-      ] ]
+        ':userpool/test-user-pool',
+      ] ],
     });
   });
 
@@ -255,7 +255,7 @@ describe('User Pool', () => {
       UserPoolName: 'myPool',
       UserPoolTags: {
         PoolTag: 'PoolParty',
-      }
+      },
     });
   });
 
@@ -267,15 +267,15 @@ describe('User Pool', () => {
     // WHEN
     new UserPool(stack, 'Pool', {
       lambdaTriggers: {
-        preSignUp: fn
-      }
+        preSignUp: fn,
+      },
     });
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
       LambdaConfig: {
         PreSignUp: stack.resolve(fn.functionArn),
-      }
+      },
     });
     expect(stack).toHaveResourceLike('AWS::Lambda::Permission', {
       Action: 'lambda:InvokeFunction',
@@ -324,8 +324,8 @@ describe('User Pool', () => {
         PreSignUp: stack.resolve(preSignUp.functionArn),
         PreTokenGeneration: stack.resolve(preTokenGeneration.functionArn),
         UserMigration: stack.resolve(userMigration.functionArn),
-        VerifyAuthChallengeResponse: stack.resolve(verifyAuthChallengeResponse.functionArn)
-      }
+        VerifyAuthChallengeResponse: stack.resolve(verifyAuthChallengeResponse.functionArn),
+      },
     });
 
     [ createAuthChallenge, customMessage, defineAuthChallenge, postAuthentication,
@@ -377,7 +377,7 @@ describe('User Pool', () => {
   test('fails when preferredUsername is used without username', () => {
     const stack = new Stack();
     expect(() => new UserPool(stack, 'Pool', {
-      signInAliases: { preferredUsername: true }
+      signInAliases: { preferredUsername: true },
     })).toThrow(/username/);
   });
 
@@ -387,7 +387,7 @@ describe('User Pool', () => {
 
     // WHEN
     new UserPool(stack, 'Pool', {
-      signInAliases: { username: true, email: true }
+      signInAliases: { username: true, email: true },
     });
 
     // THEN
@@ -403,7 +403,7 @@ describe('User Pool', () => {
 
     // WHEN
     new UserPool(stack, 'Pool', {
-      signInAliases: { email: true, phone: true }
+      signInAliases: { email: true, phone: true },
     });
 
     // THEN
@@ -420,11 +420,11 @@ describe('User Pool', () => {
     // WHEN
     new UserPool(stack, 'Pool1', {
       userPoolName: 'Pool1',
-      signInAliases: { email: true }
+      signInAliases: { email: true },
     });
     new UserPool(stack, 'Pool2', {
       userPoolName: 'Pool2',
-      signInAliases: { email: true, phone: true }
+      signInAliases: { email: true, phone: true },
     });
 
     // THEN
@@ -463,7 +463,7 @@ describe('User Pool', () => {
       requiredAttributes: {
         fullname: true,
         timezone: true,
-      }
+      },
     });
 
     // THEN
@@ -471,13 +471,13 @@ describe('User Pool', () => {
       Schema: [
         {
           Name: 'name',
-          Required: true
+          Required: true,
         },
         {
           Name: 'zoneinfo',
-          Required: true
+          Required: true,
         },
-      ]
+      ],
     });
   });
 
@@ -493,17 +493,17 @@ describe('User Pool', () => {
       userPoolName: 'Pool2',
       requiredAttributes: {
         familyName: false,
-      }
+      },
     });
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
       UserPoolName: 'Pool1',
-      Schema: ABSENT
+      Schema: ABSENT,
     });
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
       UserPoolName: 'Pool2',
-      Schema: ABSENT
+      Schema: ABSENT,
     });
   });
 
@@ -516,7 +516,7 @@ describe('User Pool', () => {
       customAttributes: {
         'custom-string-attr': new StringAttribute(),
         'custom-number-attr': new NumberAttribute(),
-      }
+      },
     });
 
     // THEN
@@ -533,8 +533,8 @@ describe('User Pool', () => {
           AttributeDataType: 'Number',
           StringAttributeConstraints: ABSENT,
           NumberAttributeConstraints: ABSENT,
-        }
-      ]
+        },
+      ],
     });
   });
 
@@ -547,7 +547,7 @@ describe('User Pool', () => {
       customAttributes: {
         'custom-string-attr': new StringAttribute({ minLen: 5, maxLen: 50 }),
         'custom-number-attr': new NumberAttribute({ min: 500, max: 2000 }),
-      }
+      },
     });
 
     // THEN
@@ -559,7 +559,7 @@ describe('User Pool', () => {
           StringAttributeConstraints: {
             MaxLength: '50',
             MinLength: '5',
-          }
+          },
         },
         {
           AttributeDataType: 'Number',
@@ -567,9 +567,9 @@ describe('User Pool', () => {
           NumberAttributeConstraints: {
             MaxValue: '2000',
             MinValue: '500',
-          }
-        }
-      ]
+          },
+        },
+      ],
     });
   });
 
@@ -583,7 +583,7 @@ describe('User Pool', () => {
       mfaSecondFactor: {
         sms: true,
         otp: true,
-      }
+      },
     });
     new UserPool(stack, 'Pool2', {
       userPoolName: 'Pool2',
@@ -591,7 +591,7 @@ describe('User Pool', () => {
       mfaSecondFactor: {
         sms: true,
         otp: true,
-      }
+      },
     });
 
     // THEN
@@ -644,7 +644,7 @@ describe('User Pool', () => {
       mfaSecondFactor: {
         sms: true,
         otp: true,
-      }
+      },
     });
 
     // THEN
@@ -666,7 +666,7 @@ describe('User Pool', () => {
         requireLowercase: true,
         requireUppercase: true,
         requireSymbols: true,
-      }
+      },
     });
 
     // THEN
@@ -693,7 +693,7 @@ describe('User Pool', () => {
       passwordPolicy: {
         tempPasswordValidity: Duration.days(2),
         requireDigits: true,
-      }
+      },
     });
 
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
@@ -711,7 +711,7 @@ describe('User Pool', () => {
     expect(() => new UserPool(stack, 'Pool', {
       passwordPolicy: {
         tempPasswordValidity: Duration.hours(30),
-      }
+      },
     })).toThrow();
   });
 
@@ -721,7 +721,7 @@ describe('User Pool', () => {
     expect(() => new UserPool(stack, 'Pool', {
       passwordPolicy: {
         tempPasswordValidity: Duration.days(400),
-      }
+      },
     })).toThrow(/tempPasswordValidity cannot be greater than/);
   });
 
@@ -749,16 +749,16 @@ describe('User Pool', () => {
     new UserPool(stack, 'Pool', {
       emailSettings: {
         from: 'from@myawesomeapp.com',
-        replyTo: 'replyTo@myawesomeapp.com'
-      }
+        replyTo: 'replyTo@myawesomeapp.com',
+      },
     });
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
       EmailConfiguration: {
         From: 'from@myawesomeapp.com',
-        ReplyToEmailAddress: 'replyTo@myawesomeapp.com'
-      }
+        ReplyToEmailAddress: 'replyTo@myawesomeapp.com',
+      },
     });
   });
 });
@@ -770,11 +770,11 @@ test('addClient', () => {
   // WHEN
   const userpool = new UserPool(stack, 'Pool');
   userpool.addClient('UserPoolClient', {
-    userPoolClientName: 'userpoolclient'
+    userPoolClientName: 'userpoolclient',
   });
   const imported = UserPool.fromUserPoolId(stack, 'imported', 'imported-userpool-id');
   imported.addClient('UserPoolImportedClient', {
-    userPoolClientName: 'userpoolimportedclient'
+    userPoolClientName: 'userpoolimportedclient',
   });
 
   // THEN

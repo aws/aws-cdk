@@ -177,7 +177,7 @@ export class EmrCreateCluster implements sfn.IStepFunctionsTask {
 
     const supportedPatterns = [
       sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
-      sfn.ServiceIntegrationPattern.SYNC
+      sfn.ServiceIntegrationPattern.SYNC,
     ];
 
     if (!supportedPatterns.includes(this.integrationPattern)) {
@@ -258,8 +258,8 @@ export class EmrCreateCluster implements sfn.IStepFunctionsTask {
         ScaleDownBehavior: cdk.stringToCloudFormation(this.props.scaleDownBehavior?.valueOf()),
         SecurityConfiguration: cdk.stringToCloudFormation(this.props.securityConfiguration),
         Tags: cdk.listMapper(cdk.cfnTagToCloudFormation)(this.props.tags),
-        VisibleToAllUsers: cdk.booleanToCloudFormation(this.visibleToAllUsers)
-      }
+        VisibleToAllUsers: cdk.booleanToCloudFormation(this.visibleToAllUsers),
+      },
     };
   }
 
@@ -276,10 +276,10 @@ export class EmrCreateCluster implements sfn.IStepFunctionsTask {
         actions: [
           'elasticmapreduce:RunJobFlow',
           'elasticmapreduce:DescribeCluster',
-          'elasticmapreduce:TerminateJobFlows'
+          'elasticmapreduce:TerminateJobFlows',
         ],
-        resources: ['*']
-      })
+        resources: ['*'],
+      }),
     ];
 
     // Allow the StateMachine to PassRole to Cluster roles
@@ -287,13 +287,13 @@ export class EmrCreateCluster implements sfn.IStepFunctionsTask {
       actions: ['iam:PassRole'],
       resources: [
         serviceRole.roleArn,
-        clusterRole.roleArn
-      ]
+        clusterRole.roleArn,
+      ],
     }));
     if (autoScalingRole !== undefined) {
       policyStatements.push(new iam.PolicyStatement({
         actions: ['iam:PassRole'],
-        resources: [ autoScalingRole.roleArn ]
+        resources: [ autoScalingRole.roleArn ],
       }));
     }
 
@@ -303,8 +303,8 @@ export class EmrCreateCluster implements sfn.IStepFunctionsTask {
         resources: [stack.formatArn({
           service: 'events',
           resource: 'rule',
-          resourceName: 'StepFunctionsGetEventForEMRRunJobFlowRule'
-        })]
+          resourceName: 'StepFunctionsGetEventForEMRRunJobFlowRule',
+        })],
       }));
     }
 
@@ -318,8 +318,8 @@ export class EmrCreateCluster implements sfn.IStepFunctionsTask {
     return new iam.Role(task, 'ServiceRole', {
       assumedBy: new iam.ServicePrincipal('elasticmapreduce.amazonaws.com'),
       managedPolicies: [
-        iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonElasticMapReduceRole')
-      ]
+        iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonElasticMapReduceRole'),
+      ],
     });
   }
 
@@ -330,12 +330,12 @@ export class EmrCreateCluster implements sfn.IStepFunctionsTask {
    */
   private createClusterRole(task: sfn.Task): iam.IRole {
     const role = new iam.Role(task, 'InstanceRole', {
-      assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
+      assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
     });
 
     new iam.CfnInstanceProfile(task, 'InstanceProfile', {
       roles: [ role.roleName ],
-      instanceProfileName: role.roleName
+      instanceProfileName: role.roleName,
     });
 
     return role;
@@ -348,19 +348,19 @@ export class EmrCreateCluster implements sfn.IStepFunctionsTask {
     const role = new iam.Role(task, 'AutoScalingRole', {
       assumedBy: new iam.ServicePrincipal('elasticmapreduce.amazonaws.com'),
       managedPolicies: [
-        iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonElasticMapReduceforAutoScalingRole')
-      ]
+        iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonElasticMapReduceforAutoScalingRole'),
+      ],
     });
 
     role.assumeRolePolicy?.addStatements(
       new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
         principals: [
-          new iam.ServicePrincipal('application-autoscaling.amazonaws.com')
+          new iam.ServicePrincipal('application-autoscaling.amazonaws.com'),
         ],
         actions: [
-          'sts:AssumeRole'
-        ]
+          'sts:AssumeRole',
+        ],
       })
     );
 
@@ -488,9 +488,9 @@ export namespace EmrCreateCluster {
       VolumeSpecification: {
         Iops: cdk.numberToCloudFormation(property.volumeSpecification.iops),
         SizeInGB: cdk.numberToCloudFormation(property.volumeSpecification.sizeInGB),
-        VolumeType: cdk.stringToCloudFormation(property.volumeSpecification.volumeType?.valueOf())
+        VolumeType: cdk.stringToCloudFormation(property.volumeSpecification.volumeType?.valueOf()),
       },
-      VolumesPerInstance: cdk.numberToCloudFormation(property.volumesPerInstance)
+      VolumesPerInstance: cdk.numberToCloudFormation(property.volumesPerInstance),
     };
   }
 
@@ -525,7 +525,7 @@ export namespace EmrCreateCluster {
   export function EbsConfigurationPropertyToJson(property: EbsConfigurationProperty) {
     return {
       EbsBlockDeviceConfigs: cdk.listMapper(EbsBlockDeviceConfigPropertyToJson)(property.ebsBlockDeviceConfigs),
-      EbsOptimized: cdk.booleanToCloudFormation(property.ebsOptimized)
+      EbsOptimized: cdk.booleanToCloudFormation(property.ebsOptimized),
     };
   }
 
@@ -595,7 +595,7 @@ export namespace EmrCreateCluster {
         property.ebsConfiguration :
         EbsConfigurationPropertyToJson(property.ebsConfiguration),
       InstanceType: cdk.stringToCloudFormation(property.instanceType?.valueOf()),
-      WeightedCapacity: cdk.numberToCloudFormation(property.weightedCapacity)
+      WeightedCapacity: cdk.numberToCloudFormation(property.weightedCapacity),
     };
   }
 
@@ -665,8 +665,8 @@ export namespace EmrCreateCluster {
       SpotSpecification: {
         BlockDurationMinutes: cdk.numberToCloudFormation(property.spotSpecification.blockDurationMinutes),
         TimeoutAction: cdk.stringToCloudFormation(property.spotSpecification.timeoutAction?.valueOf()),
-        TimeoutDurationMinutes: cdk.numberToCloudFormation(property.spotSpecification.timeoutDurationMinutes)
-      }
+        TimeoutDurationMinutes: cdk.numberToCloudFormation(property.spotSpecification.timeoutDurationMinutes),
+      },
     };
   }
 
@@ -733,7 +733,7 @@ export namespace EmrCreateCluster {
         InstanceFleetProvisioningSpecificationsPropertyToJson(property.launchSpecifications),
       Name: cdk.stringToCloudFormation(property.name),
       TargetOnDemandCapacity: cdk.numberToCloudFormation(property.targetOnDemandCapacity),
-      TargetSpotCapacity: cdk.numberToCloudFormation(property.targetSpotCapacity)
+      TargetSpotCapacity: cdk.numberToCloudFormation(property.targetSpotCapacity),
     };
   }
 
@@ -934,7 +934,7 @@ export namespace EmrCreateCluster {
   export function MetricDimensionPropertyToJson(property: MetricDimensionProperty) {
     return {
       Key: cdk.stringToCloudFormation(property.key),
-      Value: cdk.stringToCloudFormation(property.value)
+      Value: cdk.stringToCloudFormation(property.value),
     };
   }
 
@@ -1040,8 +1040,8 @@ export namespace EmrCreateCluster {
         Period: cdk.numberToCloudFormation(property.cloudWatchAlarmDefinition.period.toSeconds()),
         Statistic: cdk.stringToCloudFormation(property.cloudWatchAlarmDefinition.statistic?.valueOf()),
         Threshold: cdk.numberToCloudFormation(property.cloudWatchAlarmDefinition.threshold),
-        Unit: cdk.stringToCloudFormation(property.cloudWatchAlarmDefinition.unit?.valueOf())
-      }
+        Unit: cdk.stringToCloudFormation(property.cloudWatchAlarmDefinition.unit?.valueOf()),
+      },
     };
   }
 
@@ -1148,8 +1148,8 @@ export namespace EmrCreateCluster {
       SimpleScalingPolicyConfiguration: {
         AdjustmentType: cdk.stringToCloudFormation(property.simpleScalingPolicyConfiguration.adjustmentType),
         CoolDown: cdk.numberToCloudFormation(property.simpleScalingPolicyConfiguration.coolDown),
-        ScalingAdjustment: cdk.numberToCloudFormation(property.simpleScalingPolicyConfiguration.scalingAdjustment)
-      }
+        ScalingAdjustment: cdk.numberToCloudFormation(property.simpleScalingPolicyConfiguration.scalingAdjustment),
+      },
     };
   }
 
@@ -1195,7 +1195,7 @@ export namespace EmrCreateCluster {
       Action: ScalingActionPropertyToJson(property.action),
       Description: cdk.stringToCloudFormation(property.description),
       Name: cdk.stringToCloudFormation(property.name),
-      Trigger: ScalingTriggerPropertyToJson(property.trigger)
+      Trigger: ScalingTriggerPropertyToJson(property.trigger),
     };
   }
 
@@ -1250,9 +1250,9 @@ export namespace EmrCreateCluster {
     return {
       Constraints: {
         MaxCapacity: cdk.numberToCloudFormation(property.constraints.maxCapacity),
-        MinCapacity: cdk.numberToCloudFormation(property.constraints.minCapacity)
+        MinCapacity: cdk.numberToCloudFormation(property.constraints.minCapacity),
       },
-      Rules: cdk.listMapper(ScalingRulePropertyToJson)(property.rules)
+      Rules: cdk.listMapper(ScalingRulePropertyToJson)(property.rules),
     };
   }
 
@@ -1341,7 +1341,7 @@ export namespace EmrCreateCluster {
       InstanceRole: cdk.stringToCloudFormation(property.instanceRole?.valueOf()),
       InstanceType: cdk.stringToCloudFormation(property.instanceType),
       Market: cdk.stringToCloudFormation(property.market?.valueOf()),
-      Name: cdk.stringToCloudFormation(property.name)
+      Name: cdk.stringToCloudFormation(property.name),
     };
   }
 
@@ -1378,7 +1378,7 @@ export namespace EmrCreateCluster {
   export function PlacementTypePropertyToJson(property: PlacementTypeProperty) {
     return {
       AvailabilityZone: cdk.stringToCloudFormation(property.availabilityZone),
-      AvailabilityZones: cdk.listMapper(cdk.stringToCloudFormation)(property.availabilityZones)
+      AvailabilityZones: cdk.listMapper(cdk.stringToCloudFormation)(property.availabilityZones),
     };
   }
 
@@ -1533,7 +1533,7 @@ export namespace EmrCreateCluster {
         PlacementTypePropertyToJson(property.placement),
       ServiceAccessSecurityGroup: cdk.stringToCloudFormation(property.serviceAccessSecurityGroup),
       SlaveInstanceType: cdk.stringToCloudFormation(property.slaveInstanceType),
-      TerminationProtected: cdk.booleanToCloudFormation(property.terminationProtected)
+      TerminationProtected: cdk.booleanToCloudFormation(property.terminationProtected),
     };
   }
 
@@ -1588,7 +1588,7 @@ export namespace EmrCreateCluster {
       Name: cdk.stringToCloudFormation(property.name),
       Args: cdk.listMapper(cdk.stringToCloudFormation)(property.args),
       Version: cdk.stringToCloudFormation(property.version),
-      AdditionalInfo: cdk.objectToCloudFormation(property.additionalInfo)
+      AdditionalInfo: cdk.objectToCloudFormation(property.additionalInfo),
     };
   }
 
@@ -1644,8 +1644,8 @@ export namespace EmrCreateCluster {
       Name: cdk.stringToCloudFormation(property.name),
       ScriptBootstrapAction: {
         Path: cdk.stringToCloudFormation(property.scriptBootstrapAction.path),
-        Args: cdk.listMapper(cdk.stringToCloudFormation)(property.scriptBootstrapAction.args)
-      }
+        Args: cdk.listMapper(cdk.stringToCloudFormation)(property.scriptBootstrapAction.args),
+      },
     };
   }
 
@@ -1691,7 +1691,7 @@ export namespace EmrCreateCluster {
     return {
       Classification: cdk.stringToCloudFormation(property.classification),
       Properties: cdk.objectToCloudFormation(property.properties),
-      Configurations: cdk.listMapper(ConfigurationPropertyToJson)(property.configurations)
+      Configurations: cdk.listMapper(ConfigurationPropertyToJson)(property.configurations),
     };
   }
 
@@ -1753,7 +1753,7 @@ export namespace EmrCreateCluster {
       ADDomainJoinUser: cdk.stringToCloudFormation(property.adDomainJoinUser),
       CrossRealmTrustPrincipalPassword: cdk.stringToCloudFormation(property.crossRealmTrustPrincipalPassword),
       KdcAdminPassword: cdk.stringToCloudFormation(property.kdcAdminPassword),
-      Realm: cdk.stringToCloudFormation(property.realm)
+      Realm: cdk.stringToCloudFormation(property.realm),
     };
   }
 }

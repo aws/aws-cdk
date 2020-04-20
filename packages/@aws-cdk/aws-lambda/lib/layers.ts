@@ -133,7 +133,7 @@ export class LayerVersion extends LayerVersionBase {
   public static fromLayerVersionArn(scope: Construct, id: string, layerVersionArn: string): ILayerVersion {
     return LayerVersion.fromLayerVersionAttributes(scope, id, {
       layerVersionArn,
-      compatibleRuntimes: Runtime.ALL
+      compatibleRuntimes: Runtime.ALL,
     });
   }
 
@@ -185,7 +185,7 @@ export class LayerVersion extends LayerVersionBase {
       content: {
         s3Bucket: code.s3Location.bucketName,
         s3Key: code.s3Location.objectKey,
-        s3ObjectVersion: code.s3Location.objectVersion
+        s3ObjectVersion: code.s3Location.objectVersion,
       },
       description: props.description,
       layerName: this.physicalName,
@@ -193,7 +193,7 @@ export class LayerVersion extends LayerVersionBase {
     });
 
     props.code.bindToResource(resource, {
-      resourceProperty: 'Content'
+      resourceProperty: 'Content',
     });
 
     this.layerVersionArn = resource.ref;

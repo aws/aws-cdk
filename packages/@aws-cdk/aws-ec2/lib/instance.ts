@@ -262,7 +262,7 @@ export class Instance extends Resource implements IInstance {
     } else {
       this.securityGroup = new SecurityGroup(this, 'InstanceSecurityGroup', {
         vpc: props.vpc,
-        allowAllOutbound: props.allowAllOutbound !== false
+        allowAllOutbound: props.allowAllOutbound !== false,
       });
     }
     this.connections = new Connections({ securityGroups: [this.securityGroup] });
@@ -270,12 +270,12 @@ export class Instance extends Resource implements IInstance {
     Tag.add(this, NAME_TAG, props.instanceName || this.node.path);
 
     this.role = props.role || new iam.Role(this, 'InstanceRole', {
-      assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
+      assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
     });
     this.grantPrincipal = this.role;
 
     const iamProfile = new iam.CfnInstanceProfile(this, 'InstanceProfile', {
-      roles: [this.role.roleName]
+      roles: [this.role.roleName],
     });
 
     // use delayed evaluation
@@ -308,7 +308,7 @@ export class Instance extends Resource implements IInstance {
       availabilityZone: subnet.availabilityZone,
       sourceDestCheck: props.sourceDestCheck,
       blockDeviceMappings: props.blockDevices !== undefined ? synthesizeBlockDeviceMappings(this, props.blockDevices) : undefined,
-      privateIpAddress: props.privateIpAddress
+      privateIpAddress: props.privateIpAddress,
     });
     this.instance.node.addDependency(this.role);
 
@@ -358,7 +358,7 @@ export class Instance extends Resource implements IInstance {
         ...this.instance.cfnOptions.creationPolicy,
         resourceSignal: {
           timeout: props.resourceSignalTimeout && props.resourceSignalTimeout.toISOString(),
-        }
+        },
       };
     }
   }

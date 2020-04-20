@@ -8,7 +8,7 @@ export class Cloud9Env extends cdk.Stack {
 
     const vpc = new ec2.Vpc(this, 'VPC', {
       maxAzs: 2,
-      natGateways: 1
+      natGateways: 1,
     });
 
     // create a cloud9 ec2 environment in a new VPC

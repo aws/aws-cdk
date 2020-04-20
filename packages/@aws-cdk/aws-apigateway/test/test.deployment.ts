@@ -25,36 +25,36 @@ export = {
             ResourceId: {
               'Fn::GetAtt': [
                 'apiC8550315',
-                'RootResourceId'
-              ]
+                'RootResourceId',
+              ],
             },
             RestApiId: {
-              Ref: 'apiC8550315'
+              Ref: 'apiC8550315',
             },
             AuthorizationType: 'NONE',
             Integration: {
-              Type: 'MOCK'
-            }
-          }
+              Type: 'MOCK',
+            },
+          },
         },
         apiC8550315: {
           Type: 'AWS::ApiGateway::RestApi',
           Properties: {
-            Name: 'api'
-          }
+            Name: 'api',
+          },
         },
         deployment33381975: {
           Type: 'AWS::ApiGateway::Deployment',
           Properties: {
             RestApiId: {
-              Ref: 'apiC8550315'
-            }
+              Ref: 'apiC8550315',
+            },
           },
           DependsOn: [
-            'apiGETECF0BD67'
-          ]
-        }
-      }
+            'apiGETECF0BD67',
+          ],
+        },
+      },
     });
 
     test.done();
@@ -79,38 +79,38 @@ export = {
             ResourceId: {
               'Fn::GetAtt': [
                 'apiC8550315',
-                'RootResourceId'
-              ]
+                'RootResourceId',
+              ],
             },
             RestApiId: {
-              Ref: 'apiC8550315'
+              Ref: 'apiC8550315',
             },
             AuthorizationType: 'NONE',
             Integration: {
-              Type: 'MOCK'
-            }
-          }
+              Type: 'MOCK',
+            },
+          },
         },
         apiC8550315: {
           Type: 'AWS::ApiGateway::RestApi',
           Properties: {
-            Name: 'api'
-          }
+            Name: 'api',
+          },
         },
         deployment33381975: {
           Type: 'AWS::ApiGateway::Deployment',
           Properties: {
             RestApiId: {
-              Ref: 'apiC8550315'
-            }
+              Ref: 'apiC8550315',
+            },
           },
           DeletionPolicy: 'Retain',
           UpdateReplacePolicy: 'Retain',
           DependsOn: [
-            'apiGETECF0BD67'
-          ]
-        }
-      }
+            'apiGETECF0BD67',
+          ],
+        },
+      },
     });
 
     test.done();
@@ -127,7 +127,7 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::Deployment', {
-      Description: 'this is my deployment'
+      Description: 'this is my deployment',
     }));
 
     test.done();
@@ -180,7 +180,7 @@ export = {
     expect(stack).to(haveResource('AWS::ApiGateway::Deployment', {
       DependsOn: [
         'apiGETECF0BD67',
-        'MyResource'
+        'MyResource',
       ],
     }, ResourcePart.CompleteDefinition));
 
@@ -194,30 +194,30 @@ export = {
     const handler1 = new lambda.Function(stack1, 'handler1', {
       code: lambda.Code.fromAsset(path.join(__dirname, 'lambda')),
       runtime: lambda.Runtime.NODEJS_10_X,
-      handler: 'index.handler'
+      handler: 'index.handler',
     });
     const handler2 = new lambda.Function(stack2, 'handler2', {
       code: lambda.Code.fromAsset(path.join(__dirname, 'lambda')),
       runtime: lambda.Runtime.NODEJS_10_X,
-      handler: 'index.handler'
+      handler: 'index.handler',
     });
 
     // WHEN
     const api1 = new apigateway.RestApi(stack1, 'myapi', {
-      defaultIntegration: new apigateway.LambdaIntegration(handler1)
+      defaultIntegration: new apigateway.LambdaIntegration(handler1),
     });
     const api2 = new apigateway.RestApi(stack2, 'myapi', {
-      defaultIntegration: new apigateway.LambdaIntegration(handler2)
+      defaultIntegration: new apigateway.LambdaIntegration(handler2),
     });
     api1.root.addMethod('GET');
     api2.root.addMethod('GET');
 
     // THEN
     expect(stack1).to(haveResource('AWS::ApiGateway::Stage', {
-      DeploymentId: { Ref: 'myapiDeploymentB7EF8EB7e0b8372768854261d2d1218739e0a307' }
+      DeploymentId: { Ref: 'myapiDeploymentB7EF8EB7e0b8372768854261d2d1218739e0a307' },
     }));
     expect(stack2).to(haveResource('AWS::ApiGateway::Stage', {
-      DeploymentId: { Ref: 'myapiDeploymentB7EF8EB77c517352b0f7ab73c333e36585c8f1f3' }
+      DeploymentId: { Ref: 'myapiDeploymentB7EF8EB77c517352b0f7ab73c333e36585c8f1f3' },
     }));
     test.done();
   },
@@ -225,15 +225,15 @@ export = {
   'deployment resource depends on all restapi methods defined'(test: Test) {
     const stack = new Stack();
     const restapi = new apigateway.RestApi(stack, 'myapi', {
-      deploy: false
+      deploy: false,
     });
     restapi.root.addMethod('GET');
 
     const deployment = new apigateway.Deployment(stack, 'mydeployment', {
-      api: restapi
+      api: restapi,
     });
     const stage = new apigateway.Stage(stack, 'mystage', {
-      deployment
+      deployment,
     });
     restapi.deploymentStage = stage;
 
@@ -245,10 +245,10 @@ export = {
       DependsOn: [
         'myapiGET9B7CD29E',
         'myapimyresourceGET732851A5',
-        'myapiPOST23417BD2'
-      ]
+        'myapiPOST23417BD2',
+      ],
     }, ResourcePart.CompleteDefinition));
 
     test.done();
-  }
+  },
 };

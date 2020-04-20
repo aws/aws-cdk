@@ -16,22 +16,22 @@ test('cloud assembly builder', () => {
     environment: 'aws://1222344/us-east-1',
     dependencies: ['minimal-artifact'],
     metadata: {
-      foo: [ { data: '123', type: 'foo', trace: [] } ]
+      foo: [ { data: '123', type: 'foo', trace: [] } ],
     },
     properties: {
       templateFile,
       parameters: {
         prop1: '1234',
-        prop2: '555'
-      }
+        prop2: '555',
+      },
     },
   });
 
   session.addArtifact('tree-artifact', {
     type: cxschema.ArtifactType.CDK_TREE,
     properties: {
-      file: 'foo.tree.json'
-    }
+      file: 'foo.tree.json',
+    },
   });
 
   session.addMissing({
@@ -39,24 +39,24 @@ test('cloud assembly builder', () => {
     provider: 'context-provider',
     props: {
       a: 'A',
-      b: 2
-    }
+      b: 2,
+    },
   });
 
   session.addArtifact('minimal-artifact', {
     type: cxschema.ArtifactType.AWS_CLOUDFORMATION_STACK,
     environment: 'aws://111/helo-world',
     properties: {
-      templateFile
-    }
+      templateFile,
+    },
   });
 
   fs.writeFileSync(path.join(session.outdir, templateFile), JSON.stringify({
     Resources: {
       MyTopic: {
-        Type: 'AWS::S3::Topic'
-      }
-    }
+        Type: 'AWS::S3::Topic',
+      },
+    },
   }));
 
   const assembly = session.buildAssembly();
@@ -67,14 +67,14 @@ test('cloud assembly builder', () => {
   expect(manifest).toStrictEqual({
     version: cxschema.Manifest.version(),
     missing: [
-      { key: 'foo', provider: 'context-provider', props: { a: 'A', b: 2 } }
+      { key: 'foo', provider: 'context-provider', props: { a: 'A', b: 2 } },
     ],
     artifacts: {
       'tree-artifact': {
         type: 'cdk:tree',
         properties: {
-          file: 'foo.tree.json'
-        }
+          file: 'foo.tree.json',
+        },
       },
       'my-first-artifact': {
         type: 'aws:cloudformation:stack',
@@ -85,25 +85,25 @@ test('cloud assembly builder', () => {
           templateFile: 'foo.template.json',
           parameters: {
             prop1: '1234',
-            prop2: '555'
+            prop2: '555',
           },
         },
       },
       'minimal-artifact': {
         type: 'aws:cloudformation:stack',
         environment: 'aws://111/helo-world',
-        properties: { templateFile: 'foo.template.json' }
-      }
-    }
+        properties: { templateFile: 'foo.template.json' },
+      },
+    },
   });
 
   // verify we have a template file
   expect(assembly.getStackByName('minimal-artifact').template).toStrictEqual({
     Resources: {
       MyTopic: {
-        Type: 'AWS::S3::Topic'
-      }
-    }
+        Type: 'AWS::S3::Topic',
+      },
+    },
   });
 });
 

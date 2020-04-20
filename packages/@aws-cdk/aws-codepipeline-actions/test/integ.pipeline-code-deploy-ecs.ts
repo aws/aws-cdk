@@ -12,7 +12,7 @@ const application = codedeploy.EcsApplication.fromEcsApplicationName(stack, 'Cod
 
 const deploymentGroup = codedeploy.EcsDeploymentGroup.fromEcsDeploymentGroupAttributes(stack, 'CodeDeployGroup', {
   application,
-  deploymentGroupName: 'IntegTestDeploymentGroup'
+  deploymentGroupName: 'IntegTestDeploymentGroup',
 });
 
 const bucket = new s3.Bucket(stack, 'CodeDeployPipelineIntegTest', {
@@ -43,9 +43,9 @@ deployStage.addAction(new cpactions.CodeDeployEcsDeployAction({
   containerImageInputs: [
     {
       input: sourceOutput,
-      taskDefinitionPlaceholder: 'PLACEHOLDER'
-    }
-  ]
+      taskDefinitionPlaceholder: 'PLACEHOLDER',
+    },
+  ],
 }));
 
 app.synth();

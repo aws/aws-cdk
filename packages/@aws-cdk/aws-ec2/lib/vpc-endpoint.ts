@@ -178,7 +178,7 @@ export class GatewayVpcEndpoint extends VpcEndpoint implements IGatewayVpcEndpoi
       routeTableIds,
       serviceName: props.service.name,
       vpcEndpointType: VpcEndpointType.GATEWAY,
-      vpcId: props.vpc.vpcId
+      vpcId: props.vpc.vpcId,
     });
 
     this.vpcEndpointId = endpoint.ref;
@@ -430,13 +430,13 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
     super(scope, id);
 
     const securityGroups = props.securityGroups || [new SecurityGroup(this, 'SecurityGroup', {
-      vpc: props.vpc
+      vpc: props.vpc,
     })];
 
     this.securityGroupId = securityGroups[0].securityGroupId;
     this.connections = new Connections({
       defaultPort: Port.tcp(props.service.port),
-      securityGroups
+      securityGroups,
     });
 
     if (props.open !== false) {
@@ -453,7 +453,7 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
       serviceName: props.service.name,
       vpcEndpointType: VpcEndpointType.INTERFACE,
       subnetIds,
-      vpcId: props.vpc.vpcId
+      vpcId: props.vpc.vpcId,
     });
 
     this.vpcEndpointId = endpoint.ref;

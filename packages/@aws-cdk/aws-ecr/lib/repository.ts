@@ -157,8 +157,8 @@ export abstract class RepositoryBase extends Resource implements IRepository {
       detail: {
         requestParameters: {
           repositoryName: [this.repositoryName],
-        }
-      }
+        },
+      },
     });
     return rule;
   }
@@ -201,8 +201,8 @@ export abstract class RepositoryBase extends Resource implements IRepository {
       detail: {
         'repository-name': [this.repositoryName],
         'scan-status': ['COMPLETE'],
-        'image-tags': options.imageTags ? options.imageTags : undefined
-      }
+        'image-tags': options.imageTags ? options.imageTags : undefined,
+      },
     });
     return rule;
   }
@@ -215,7 +215,7 @@ export abstract class RepositoryBase extends Resource implements IRepository {
     const rule = new events.Rule(this, id, options);
     rule.addEventPattern({
       source: ['aws.ecr'],
-      resources: [this.repositoryArn]
+      resources: [this.repositoryArn],
     });
     rule.addTarget(options.target);
     return rule;
@@ -387,7 +387,7 @@ export class Repository extends RepositoryBase {
     return Stack.of(scope).formatArn({
       service: 'ecr',
       resource: 'repository',
-      resourceName: repositoryName
+      resourceName: repositoryName,
     });
   }
 
@@ -504,7 +504,7 @@ export class Repository extends RepositoryBase {
     for (const rule of prioritizedRules.concat(autoPrioritizedRules).concat(anyRules)) {
       ret.push({
         ...rule,
-        rulePriority: rule.rulePriority !== undefined ? rule.rulePriority : autoPrio++
+        rulePriority: rule.rulePriority !== undefined ? rule.rulePriority : autoPrio++,
       });
     }
 
@@ -539,8 +539,8 @@ function renderLifecycleRule(rule: LifecycleRule) {
       countUnit: rule.maxImageAge !== undefined ? 'days' : undefined,
     },
     action: {
-      type: 'expire'
-    }
+      type: 'expire',
+    },
   };
 }
 

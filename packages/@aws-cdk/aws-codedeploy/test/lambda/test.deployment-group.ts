@@ -10,15 +10,15 @@ function mockFunction(stack: cdk.Stack, id: string) {
   return new lambda.Function(stack, id, {
     code: lambda.Code.fromInline('mock'),
     handler: 'index.handler',
-    runtime: lambda.Runtime.NODEJS_10_X
+    runtime: lambda.Runtime.NODEJS_10_X,
   });
 }
 function mockAlias(stack: cdk.Stack) {
   return new lambda.Alias(stack, 'Alias', {
     aliasName: 'my-alias',
     version: new lambda.Version(stack, 'Version', {
-      lambda: mockFunction(stack, 'Function')
-    })
+      lambda: mockFunction(stack, 'Function'),
+    }),
   });
 }
 
@@ -31,56 +31,56 @@ export = {
       new codedeploy.LambdaDeploymentGroup(stack, 'MyDG', {
         application,
         alias,
-        deploymentConfig: codedeploy.LambdaDeploymentConfig.ALL_AT_ONCE
+        deploymentConfig: codedeploy.LambdaDeploymentConfig.ALL_AT_ONCE,
       });
 
       expect(stack).to(haveResource('AWS::CodeDeploy::DeploymentGroup', {
         ApplicationName: {
-          Ref: 'MyApp3CE31C26'
+          Ref: 'MyApp3CE31C26',
         },
         ServiceRoleArn: {
           'Fn::GetAtt': [
             'MyDGServiceRole5E94FD88',
-            'Arn'
-          ]
+            'Arn',
+          ],
         },
         AutoRollbackConfiguration: {
           Enabled: true,
           Events: [
-            'DEPLOYMENT_FAILURE'
-          ]
+            'DEPLOYMENT_FAILURE',
+          ],
         },
         DeploymentConfigName: 'CodeDeployDefault.LambdaAllAtOnce',
         DeploymentStyle: {
           DeploymentOption: 'WITH_TRAFFIC_CONTROL',
-          DeploymentType: 'BLUE_GREEN'
-        }
+          DeploymentType: 'BLUE_GREEN',
+        },
       }));
 
       expect(stack).to(haveResource('AWS::Lambda::Alias', {
         Type: 'AWS::Lambda::Alias',
         Properties: {
           FunctionName: {
-            Ref: 'Function76856677'
+            Ref: 'Function76856677',
           },
           FunctionVersion: {
             'Fn::GetAtt': [
               'Version6A868472',
-              'Version'
-            ]
+              'Version',
+            ],
           },
-          Name: 'my-alias'
+          Name: 'my-alias',
         },
         UpdatePolicy: {
           CodeDeployLambdaAliasUpdate: {
             ApplicationName: {
-              Ref: 'MyApp3CE31C26'
+              Ref: 'MyApp3CE31C26',
             },
             DeploymentGroupName: {
-              Ref: 'MyDGC350BD3F'
-            }
-          }
-        }
+              Ref: 'MyDGC350BD3F',
+            },
+          },
+        },
       }, ResourcePart.CompleteDefinition));
 
       expect(stack).to(haveResource('AWS::IAM::Role', {
@@ -89,10 +89,10 @@ export = {
             Action: 'sts:AssumeRole',
             Effect: 'Allow',
             Principal: {
-              Service: { 'Fn::Join': ['', ['codedeploy.', { Ref: 'AWS::Region' }, '.', { Ref: 'AWS::URLSuffix' }]] }
-            }
+              Service: { 'Fn::Join': ['', ['codedeploy.', { Ref: 'AWS::Region' }, '.', { Ref: 'AWS::URLSuffix' }]] },
+            },
           }],
-          Version: '2012-10-17'
+          Version: '2012-10-17',
         },
         ManagedPolicyArns: [
           {
@@ -101,11 +101,11 @@ export = {
               [
                 'arn:',
                 { Ref: 'AWS::Partition' },
-                ':iam::aws:policy/service-role/AWSCodeDeployRoleForLambda'
-              ]
-            ]
-          }
-        ]
+                ':iam::aws:policy/service-role/AWSCodeDeployRoleForLambda',
+              ],
+            ],
+          },
+        ],
       }));
 
       test.done();
@@ -132,14 +132,14 @@ export = {
       const application = new codedeploy.LambdaApplication(stack, 'MyApp');
       const alias = mockAlias(stack);
       const serviceRole = new iam.Role(stack, 'MyRole', {
-        assumedBy: new iam.ServicePrincipal('not-codedeploy.test')
+        assumedBy: new iam.ServicePrincipal('not-codedeploy.test'),
       });
 
       new codedeploy.LambdaDeploymentGroup(stack, 'MyDG', {
         application,
         alias,
         deploymentConfig: codedeploy.LambdaDeploymentConfig.ALL_AT_ONCE,
-        role: serviceRole
+        role: serviceRole,
       });
 
       expect(stack).to(haveResource('AWS::IAM::Role', {
@@ -148,10 +148,10 @@ export = {
             Action: 'sts:AssumeRole',
             Effect: 'Allow',
             Principal: {
-              Service: 'not-codedeploy.test'
-            }
+              Service: 'not-codedeploy.test',
+            },
           }],
-          Version: '2012-10-17'
+          Version: '2012-10-17',
         },
         ManagedPolicyArns: [
           {
@@ -160,11 +160,11 @@ export = {
               [
                 'arn:',
                 { Ref: 'AWS::Partition' },
-                ':iam::aws:policy/service-role/AWSCodeDeployRoleForLambda'
-              ]
-            ]
-          }
-        ]
+                ':iam::aws:policy/service-role/AWSCodeDeployRoleForLambda',
+              ],
+            ],
+          },
+        ],
       }));
 
       test.done();
@@ -176,30 +176,30 @@ export = {
       new codedeploy.LambdaDeploymentGroup(stack, 'MyDG', {
         application,
         alias,
-        deploymentConfig: codedeploy.LambdaDeploymentConfig.LINEAR_10PERCENT_EVERY_1MINUTE
+        deploymentConfig: codedeploy.LambdaDeploymentConfig.LINEAR_10PERCENT_EVERY_1MINUTE,
       });
 
       expect(stack).to(haveResource('AWS::CodeDeploy::DeploymentGroup', {
         ApplicationName: {
-          Ref: 'MyApp3CE31C26'
+          Ref: 'MyApp3CE31C26',
         },
         ServiceRoleArn: {
           'Fn::GetAtt': [
             'MyDGServiceRole5E94FD88',
-            'Arn'
-          ]
+            'Arn',
+          ],
         },
         AutoRollbackConfiguration: {
           Enabled: true,
           Events: [
-            'DEPLOYMENT_FAILURE'
-          ]
+            'DEPLOYMENT_FAILURE',
+          ],
         },
         DeploymentConfigName: 'CodeDeployDefault.LambdaLinear10PercentEvery1Minute',
         DeploymentStyle: {
           DeploymentOption: 'WITH_TRAFFIC_CONTROL',
-          DeploymentType: 'BLUE_GREEN'
-        }
+          DeploymentType: 'BLUE_GREEN',
+        },
       }));
 
       test.done();
@@ -216,25 +216,25 @@ export = {
           metric: alias.metricErrors(),
           comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
           threshold: 1,
-          evaluationPeriods: 1
-        })]
+          evaluationPeriods: 1,
+        })],
       });
 
       expect(stack).to(haveResourceLike('AWS::CodeDeploy::DeploymentGroup', {
         AlarmConfiguration: {
           Alarms: [{
             Name: {
-              Ref: 'Failures8A3E1A2F'
-            }
+              Ref: 'Failures8A3E1A2F',
+            },
           }],
-          Enabled: true
+          Enabled: true,
         },
         AutoRollbackConfiguration: {
           Enabled: true,
           Events: [
             'DEPLOYMENT_FAILURE',
-            'DEPLOYMENT_STOP_ON_ALARM'
-          ]
+            'DEPLOYMENT_STOP_ON_ALARM',
+          ],
         },
       }));
 
@@ -246,7 +246,7 @@ export = {
       const group = new codedeploy.LambdaDeploymentGroup(stack, 'MyDG', {
         alias,
         preHook: mockFunction(stack, 'PreHook'),
-        deploymentConfig: codedeploy.LambdaDeploymentConfig.ALL_AT_ONCE
+        deploymentConfig: codedeploy.LambdaDeploymentConfig.ALL_AT_ONCE,
       });
       test.throws(() => group.addPreHook(mockFunction(stack, 'PreHook2')));
       test.done();
@@ -257,7 +257,7 @@ export = {
       const group = new codedeploy.LambdaDeploymentGroup(stack, 'MyDG', {
         alias,
         postHook: mockFunction(stack, 'PostHook'),
-        deploymentConfig: codedeploy.LambdaDeploymentConfig.ALL_AT_ONCE
+        deploymentConfig: codedeploy.LambdaDeploymentConfig.ALL_AT_ONCE,
       });
       test.throws(() => group.addPostHook(mockFunction(stack, 'PostHook2')));
       test.done();
@@ -270,29 +270,29 @@ export = {
         application,
         alias,
         preHook: mockFunction(stack, 'PreHook'),
-        deploymentConfig: codedeploy.LambdaDeploymentConfig.ALL_AT_ONCE
+        deploymentConfig: codedeploy.LambdaDeploymentConfig.ALL_AT_ONCE,
       });
 
       expect(stack).to(haveResourceLike('AWS::Lambda::Alias', {
         UpdatePolicy: {
           CodeDeployLambdaAliasUpdate: {
             ApplicationName: {
-              Ref: 'MyApp3CE31C26'
+              Ref: 'MyApp3CE31C26',
             },
             DeploymentGroupName: {
-              Ref: 'MyDGC350BD3F'
+              Ref: 'MyDGC350BD3F',
             },
             BeforeAllowTrafficHook: {
-              Ref: 'PreHook8B53F672'
-            }
-          }
-        }
+              Ref: 'PreHook8B53F672',
+            },
+          },
+        },
       }, ResourcePart.CompleteDefinition));
 
       expect(stack).to(haveResource('AWS::IAM::Policy', {
         PolicyName: 'MyDGServiceRoleDefaultPolicy65E8E1EA',
         Roles: [{
-          Ref: 'MyDGServiceRole5E94FD88'
+          Ref: 'MyDGServiceRole5E94FD88',
         }],
         PolicyDocument: {
           Statement: [{
@@ -300,13 +300,13 @@ export = {
             Resource: {
               'Fn::GetAtt': [
                 'PreHook8B53F672',
-                'Arn'
-              ]
+                'Arn',
+              ],
             },
-            Effect: 'Allow'
+            Effect: 'Allow',
           }],
-          Version: '2012-10-17'
-        }
+          Version: '2012-10-17',
+        },
       }));
 
       test.done();
@@ -318,7 +318,7 @@ export = {
       const group = new codedeploy.LambdaDeploymentGroup(stack, 'MyDG', {
         application,
         alias,
-        deploymentConfig: codedeploy.LambdaDeploymentConfig.ALL_AT_ONCE
+        deploymentConfig: codedeploy.LambdaDeploymentConfig.ALL_AT_ONCE,
       });
       group.addPreHook(mockFunction(stack, 'PreHook'));
 
@@ -326,22 +326,22 @@ export = {
         UpdatePolicy: {
           CodeDeployLambdaAliasUpdate: {
             ApplicationName: {
-              Ref: 'MyApp3CE31C26'
+              Ref: 'MyApp3CE31C26',
             },
             DeploymentGroupName: {
-              Ref: 'MyDGC350BD3F'
+              Ref: 'MyDGC350BD3F',
             },
             BeforeAllowTrafficHook: {
-              Ref: 'PreHook8B53F672'
-            }
-          }
-        }
+              Ref: 'PreHook8B53F672',
+            },
+          },
+        },
       }, ResourcePart.CompleteDefinition));
 
       expect(stack).to(haveResource('AWS::IAM::Policy', {
         PolicyName: 'MyDGServiceRoleDefaultPolicy65E8E1EA',
         Roles: [{
-          Ref: 'MyDGServiceRole5E94FD88'
+          Ref: 'MyDGServiceRole5E94FD88',
         }],
         PolicyDocument: {
           Statement: [{
@@ -349,13 +349,13 @@ export = {
             Resource: {
               'Fn::GetAtt': [
                 'PreHook8B53F672',
-                'Arn'
-              ]
+                'Arn',
+              ],
             },
-            Effect: 'Allow'
+            Effect: 'Allow',
           }],
-          Version: '2012-10-17'
-        }
+          Version: '2012-10-17',
+        },
       }));
 
       test.done();
@@ -368,29 +368,29 @@ export = {
         application,
         alias,
         postHook: mockFunction(stack, 'PostHook'),
-        deploymentConfig: codedeploy.LambdaDeploymentConfig.ALL_AT_ONCE
+        deploymentConfig: codedeploy.LambdaDeploymentConfig.ALL_AT_ONCE,
       });
 
       expect(stack).to(haveResourceLike('AWS::Lambda::Alias', {
         UpdatePolicy: {
           CodeDeployLambdaAliasUpdate: {
             ApplicationName: {
-              Ref: 'MyApp3CE31C26'
+              Ref: 'MyApp3CE31C26',
             },
             DeploymentGroupName: {
-              Ref: 'MyDGC350BD3F'
+              Ref: 'MyDGC350BD3F',
             },
             AfterAllowTrafficHook: {
-              Ref: 'PostHookF2E49B30'
-            }
-          }
-        }
+              Ref: 'PostHookF2E49B30',
+            },
+          },
+        },
       }, ResourcePart.CompleteDefinition));
 
       expect(stack).to(haveResource('AWS::IAM::Policy', {
         PolicyName: 'MyDGServiceRoleDefaultPolicy65E8E1EA',
         Roles: [{
-          Ref: 'MyDGServiceRole5E94FD88'
+          Ref: 'MyDGServiceRole5E94FD88',
         }],
         PolicyDocument: {
           Statement: [{
@@ -398,12 +398,12 @@ export = {
             Resource: {
               'Fn::GetAtt': [
                 'PostHookF2E49B30',
-                'Arn'
-              ]
+                'Arn',
+              ],
             },
-            Effect: 'Allow'
+            Effect: 'Allow',
           }],
-          Version: '2012-10-17'
+          Version: '2012-10-17',
         },
       }));
 
@@ -416,7 +416,7 @@ export = {
       const group = new codedeploy.LambdaDeploymentGroup(stack, 'MyDG', {
         application,
         alias,
-        deploymentConfig: codedeploy.LambdaDeploymentConfig.ALL_AT_ONCE
+        deploymentConfig: codedeploy.LambdaDeploymentConfig.ALL_AT_ONCE,
       });
       group.addPostHook(mockFunction(stack, 'PostHook'));
 
@@ -424,22 +424,22 @@ export = {
         UpdatePolicy: {
           CodeDeployLambdaAliasUpdate: {
             ApplicationName: {
-              Ref: 'MyApp3CE31C26'
+              Ref: 'MyApp3CE31C26',
             },
             DeploymentGroupName: {
-              Ref: 'MyDGC350BD3F'
+              Ref: 'MyDGC350BD3F',
             },
             AfterAllowTrafficHook: {
-              Ref: 'PostHookF2E49B30'
-            }
-          }
-        }
+              Ref: 'PostHookF2E49B30',
+            },
+          },
+        },
       }, ResourcePart.CompleteDefinition));
 
       expect(stack).to(haveResource('AWS::IAM::Policy', {
         PolicyName: 'MyDGServiceRoleDefaultPolicy65E8E1EA',
         Roles: [{
-          Ref: 'MyDGServiceRole5E94FD88'
+          Ref: 'MyDGServiceRole5E94FD88',
         }],
         PolicyDocument: {
           Statement: [{
@@ -447,12 +447,12 @@ export = {
             Resource: {
               'Fn::GetAtt': [
                 'PostHookF2E49B30',
-                'Arn'
-              ]
+                'Arn',
+              ],
             },
-            Effect: 'Allow'
+            Effect: 'Allow',
           }],
-          Version: '2012-10-17'
+          Version: '2012-10-17',
         },
       }));
 
@@ -472,19 +472,19 @@ export = {
           metric: alias.metricErrors(),
           comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
           threshold: 1,
-          evaluationPeriods: 1
-        })]
+          evaluationPeriods: 1,
+        })],
       });
 
       expect(stack).to(haveResourceLike('AWS::CodeDeploy::DeploymentGroup', {
         AlarmConfiguration: {
           Alarms: [{
             Name: {
-              Ref: 'Failures8A3E1A2F'
-            }
+              Ref: 'Failures8A3E1A2F',
+            },
           }],
           Enabled: true,
-          IgnorePollAlarmFailure: true
+          IgnorePollAlarmFailure: true,
         },
       }));
 
@@ -500,25 +500,25 @@ export = {
         postHook: mockFunction(stack, 'PostHook'),
         deploymentConfig: codedeploy.LambdaDeploymentConfig.ALL_AT_ONCE,
         autoRollback: {
-          failedDeployment: false
-        }
+          failedDeployment: false,
+        },
       });
 
       expect(stack).to(haveResource('AWS::CodeDeploy::DeploymentGroup', {
         ApplicationName: {
-          Ref: 'MyApp3CE31C26'
+          Ref: 'MyApp3CE31C26',
         },
         ServiceRoleArn: {
           'Fn::GetAtt': [
             'MyDGServiceRole5E94FD88',
-            'Arn'
-          ]
+            'Arn',
+          ],
         },
         DeploymentConfigName: 'CodeDeployDefault.LambdaAllAtOnce',
         DeploymentStyle: {
           DeploymentOption: 'WITH_TRAFFIC_CONTROL',
-          DeploymentType: 'BLUE_GREEN'
-        }
+          DeploymentType: 'BLUE_GREEN',
+        },
       }));
 
       test.done();
@@ -533,8 +533,8 @@ export = {
         postHook: mockFunction(stack, 'PostHook'),
         deploymentConfig: codedeploy.LambdaDeploymentConfig.ALL_AT_ONCE,
         autoRollback: {
-          stoppedDeployment: true
-        }
+          stoppedDeployment: true,
+        },
       });
 
       expect(stack).to(haveResourceLike('AWS::CodeDeploy::DeploymentGroup', {
@@ -542,8 +542,8 @@ export = {
           Enabled: true,
           Events: [
             'DEPLOYMENT_FAILURE',
-            'DEPLOYMENT_STOP_ON_REQUEST'
-          ]
+            'DEPLOYMENT_STOP_ON_REQUEST',
+          ],
         },
       }));
 
@@ -559,14 +559,14 @@ export = {
         postHook: mockFunction(stack, 'PostHook'),
         deploymentConfig: codedeploy.LambdaDeploymentConfig.ALL_AT_ONCE,
         autoRollback: {
-          deploymentInAlarm: false
+          deploymentInAlarm: false,
         },
         alarms: [new cloudwatch.Alarm(stack, 'Failures', {
           metric: alias.metricErrors(),
           comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
           threshold: 1,
-          evaluationPeriods: 1
-        })]
+          evaluationPeriods: 1,
+        })],
       });
 
       expect(stack).to(haveResourceLike('AWS::CodeDeploy::DeploymentGroup', {
@@ -574,7 +574,7 @@ export = {
           Enabled: true,
           Events: [
             'DEPLOYMENT_FAILURE',
-          ]
+          ],
         },
       }));
 

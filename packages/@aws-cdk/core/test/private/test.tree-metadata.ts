@@ -7,7 +7,7 @@ import { App, CfnParameter, CfnResource, Construct, Lazy, Stack, TreeInspector }
 abstract class AbstractCfnResource extends CfnResource {
   constructor(scope: Construct, id: string) {
     super(scope, id, {
-      type: 'CDK::UnitTest::MyCfnResource'
+      type: 'CDK::UnitTest::MyCfnResource',
     });
   }
 
@@ -38,7 +38,7 @@ export = {
         children: {
           Tree: {
             id: 'Tree',
-            path: 'Tree'
+            path: 'Tree',
           },
           mystack: {
             id: 'mystack',
@@ -46,12 +46,12 @@ export = {
             children: {
               myconstruct: {
                 id: 'myconstruct',
-                path: 'mystack/myconstruct'
-              }
-            }
-          }
-        }
-      }
+                path: 'mystack/myconstruct',
+              },
+            },
+          },
+        },
+      },
     });
     test.done();
   },
@@ -64,8 +64,8 @@ export = {
           mylistpropkey: ['listitem1'],
           mystructpropkey: {
             myboolpropkey: true,
-            mynumpropkey: 50
-          }
+            mynumpropkey: 50,
+          },
         };
       }
     }
@@ -86,7 +86,7 @@ export = {
         children: {
           Tree: {
             id: 'Tree',
-            path: 'Tree'
+            path: 'Tree',
           },
           mystack: {
             id: 'mystack',
@@ -102,15 +102,15 @@ export = {
                     mylistpropkey: ['listitem1'],
                     mystructpropkey: {
                       myboolpropkey: true,
-                      mynumpropkey: 50
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
+                      mynumpropkey: 50,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     });
     test.done();
   },
@@ -124,7 +124,7 @@ export = {
       protected get cfnProperties(): { [key: string]: any } {
         return {
           lazykey: Lazy.stringValue({ produce: () => 'LazyResolved!' }),
-          cfnparamkey: cfnparam
+          cfnparamkey: cfnparam,
         };
       }
     }
@@ -143,7 +143,7 @@ export = {
         children: {
           Tree: {
             id: 'Tree',
-            path: 'Tree'
+            path: 'Tree',
           },
           mystack: {
             id: 'mystack',
@@ -151,7 +151,7 @@ export = {
             children: {
               mycfnparam: {
                 id: 'mycfnparam',
-                path: 'mystack/mycfnparam'
+                path: 'mystack/mycfnparam',
               },
               mycfnresource: {
                 id: 'mycfnresource',
@@ -160,14 +160,14 @@ export = {
                   'aws:cdk:cloudformation:type': 'CDK::UnitTest::MyCfnResource',
                   'aws:cdk:cloudformation:props': {
                     lazykey: 'LazyResolved!',
-                    cfnparamkey: { Ref: 'mycfnparam' }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
+                    cfnparamkey: { Ref: 'mycfnparam' },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     });
     test.done();
   },
@@ -183,7 +183,7 @@ export = {
 
       protected get cfnProperties(): { [key: string]: any } {
         return {
-          lazykey: this.lazykey
+          lazykey: this.lazykey,
         };
       }
     }
@@ -198,7 +198,7 @@ export = {
 
       protected get cfnProperties(): { [key: string]: any } {
         return {
-          myprop: this.myprop
+          myprop: this.myprop,
         };
       }
     }
@@ -221,7 +221,7 @@ export = {
         children: {
           Tree: {
             id: 'Tree',
-            path: 'Tree'
+            path: 'Tree',
           },
           myfirststack: {
             id: 'myfirststack',
@@ -233,11 +233,11 @@ export = {
                 attributes: {
                   'aws:cdk:cloudformation:type': 'CDK::UnitTest::MyCfnResource',
                   'aws:cdk:cloudformation:props': {
-                    lazykey: 'LazyResolved!'
-                  }
-                }
-              }
-            }
+                    lazykey: 'LazyResolved!',
+                  },
+                },
+              },
+            },
           },
           mysecondstack: {
             id: 'mysecondstack',
@@ -249,14 +249,14 @@ export = {
                 attributes: {
                   'aws:cdk:cloudformation:type': 'CDK::UnitTest::MyCfnResource',
                   'aws:cdk:cloudformation:props': {
-                    myprop: 'LazyResolved!'
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
+                    myprop: 'LazyResolved!',
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     });
 
     test.done();
@@ -272,7 +272,7 @@ export = {
     const app = new App();
     const stack = new Stack(app, 'mystack');
     new MyCfnResource(stack, 'mycfnresource', {
-      type: 'CDK::UnitTest::MyCfnResource'
+      type: 'CDK::UnitTest::MyCfnResource',
     });
 
     const assembly = app.synth();
@@ -297,14 +297,14 @@ export = {
         children: {
           Tree: {
             id: 'Tree',
-            path: 'Tree'
+            path: 'Tree',
           },
           mystack: {
             id: 'mystack',
-            path: 'mystack'
-          }
-        }
-      }
+            path: 'mystack',
+          },
+        },
+      },
     });
 
     test.done();

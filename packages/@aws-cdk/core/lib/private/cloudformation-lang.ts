@@ -69,8 +69,8 @@ export class CloudFormationLang {
       JSON.stringify(resolve(obj, {
         preparing: ctx.preparing,
         scope: ctx.scope,
-        resolver: new IntrinsincWrapper()
-      }), undefined, space)
+        resolver: new IntrinsincWrapper(),
+      }), undefined, space),
     });
 
     function wrap(value: any): any {
@@ -139,7 +139,7 @@ function deepQuoteStringsForJSON(x: any): any {
 const CLOUDFORMATION_CONCAT: IFragmentConcatenator = {
   join(left: any, right: any) {
     return CloudFormationLang.concat(left, right);
-  }
+  },
 };
 
 /**

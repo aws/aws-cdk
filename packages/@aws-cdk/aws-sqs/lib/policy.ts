@@ -24,7 +24,7 @@ export class QueuePolicy extends Resource {
 
     new CfnQueuePolicy(this, 'Resource', {
       policyDocument: this.document,
-      queues: props.queues.map(q => q.queueUrl)
+      queues: props.queues.map(q => q.queueUrl),
     });
   }
 }

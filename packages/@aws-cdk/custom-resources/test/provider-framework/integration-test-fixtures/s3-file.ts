@@ -48,8 +48,8 @@ export class S3File extends Construct {
         [api.PROP_BUCKET_NAME]: props.bucket.bucketName,
         [api.PROP_CONTENTS]: props.contents,
         [api.PROP_OBJECT_KEY]: props.objectKey,
-        [api.PROP_PUBLIC]: props.public
-      }
+        [api.PROP_PUBLIC]: props.public,
+      },
     });
 
     this.objectKey = resource.getAttString(api.ATTR_OBJECT_KEY);
@@ -89,9 +89,9 @@ class S3FileProvider extends Construct {
               's3:List*',
               's3:DeleteObject*',
               's3:PutObject*',
-              's3:Abort*'
-            ] })
-        ]
+              's3:Abort*',
+            ] }),
+        ],
       }),
     });
   }

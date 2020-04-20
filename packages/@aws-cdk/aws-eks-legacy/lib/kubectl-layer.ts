@@ -57,12 +57,12 @@ export class KubectlLayer extends Construct implements lambda.ILayerVersion {
       properties: {
         Location: {
           ApplicationId: KUBECTL_APP_ARN,
-          SemanticVersion: version
+          SemanticVersion: version,
         },
         Parameters: {
-          LayerName: `kubectl-${uniqueId}`
-        }
-      }
+          LayerName: `kubectl-${uniqueId}`,
+        },
+      },
     });
 
     this.layerVersionArn = Token.asString(resource.getAtt('Outputs.LayerVersionArn'));

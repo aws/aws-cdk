@@ -126,7 +126,7 @@ export class CodeBuildAction extends Action {
         'codebuild:BatchGetBuilds',
         'codebuild:StartBuild',
         'codebuild:StopBuild',
-      ]
+      ],
     }));
 
     // allow the Project access to the Pipeline's artifact Bucket

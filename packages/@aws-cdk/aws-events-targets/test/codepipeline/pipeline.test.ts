@@ -21,8 +21,8 @@ describe('CodePipeline event target', () => {
         actionName: 'Hello',
         category: codepipeline.ActionCategory.SOURCE,
         provider: 'x',
-        artifactBounds: { minInputs: 0, maxInputs: 0 , minOutputs: 1, maxOutputs: 1, },
-        outputs: [srcArtifact]})]
+        artifactBounds: { minInputs: 0, maxInputs: 0 , minOutputs: 1, maxOutputs: 1 },
+        outputs: [srcArtifact]})],
     });
     pipeline.addStage({
       stageName: 'Build',
@@ -32,7 +32,7 @@ describe('CodePipeline event target', () => {
         provider: 'y',
         inputs: [srcArtifact],
         outputs: [buildArtifact],
-        artifactBounds: { minInputs: 1, maxInputs: 1 , minOutputs: 1, maxOutputs: 1, }})]
+        artifactBounds: { minInputs: 1, maxInputs: 1 , minOutputs: 1, maxOutputs: 1 }})],
     });
     pipelineArn = {
       'Fn::Join': [ '', [
@@ -43,8 +43,8 @@ describe('CodePipeline event target', () => {
         ':',
         { Ref: 'AWS::AccountId' },
         ':',
-        { Ref: 'PipelineC660917D' }]
-      ]
+        { Ref: 'PipelineC660917D' }],
+      ],
     };
   });
 
@@ -82,10 +82,10 @@ describe('CodePipeline event target', () => {
                 Action: 'codepipeline:StartPipelineExecution',
                 Effect: 'Allow',
                 Resource: pipelineArn,
-              }
+              },
             ],
-            Version: '2012-10-17'
-          }
+            Version: '2012-10-17',
+          },
         }));
       });
     });

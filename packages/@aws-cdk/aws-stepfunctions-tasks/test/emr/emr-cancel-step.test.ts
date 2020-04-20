@@ -14,8 +14,8 @@ test('Cancel a Step with static ClusterId and StepId', () => {
   const task = new sfn.Task(stack, 'Task', {
     task: new tasks.EmrCancelStep({
       clusterId: 'ClusterId',
-      stepId: 'StepId'
-    })
+      stepId: 'StepId',
+    }),
   });
 
   // THEN
@@ -36,7 +36,7 @@ test('Cancel a Step with static ClusterId and StepId', () => {
     End: true,
     Parameters: {
       ClusterId: 'ClusterId',
-      StepId: 'StepId'
+      StepId: 'StepId',
     },
   });
 });
@@ -46,8 +46,8 @@ test('Cancel a Step with static ClusterId and StepId from payload', () => {
   const task = new sfn.Task(stack, 'Task', {
     task: new tasks.EmrCancelStep({
       clusterId: 'ClusterId',
-      stepId: sfn.TaskInput.fromDataAt('$.StepId').value
-    })
+      stepId: sfn.TaskInput.fromDataAt('$.StepId').value,
+    }),
   });
 
   // THEN
@@ -68,7 +68,7 @@ test('Cancel a Step with static ClusterId and StepId from payload', () => {
     End: true,
     Parameters: {
       'ClusterId': 'ClusterId',
-      'StepId.$': '$.StepId'
+      'StepId.$': '$.StepId',
     },
   });
 });
@@ -78,8 +78,8 @@ test('Cancel a Step with ClusterId from payload and static StepId', () => {
   const task = new sfn.Task(stack, 'Task', {
     task: new tasks.EmrCancelStep({
       clusterId: sfn.TaskInput.fromDataAt('$.ClusterId').value,
-      stepId: 'StepId'
-    })
+      stepId: 'StepId',
+    }),
   });
 
   // THEN
@@ -100,7 +100,7 @@ test('Cancel a Step with ClusterId from payload and static StepId', () => {
     End: true,
     Parameters: {
       'ClusterId.$': '$.ClusterId',
-      'StepId': 'StepId'
+      'StepId': 'StepId',
     },
   });
 });

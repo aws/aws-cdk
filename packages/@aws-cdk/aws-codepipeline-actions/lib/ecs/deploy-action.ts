@@ -55,7 +55,7 @@ export class EcsDeployAction extends Action {
       provider: 'ECS',
       artifactBounds: deployArtifactBounds(),
       inputs: [determineInputArtifact(props)],
-      resource: props.service
+      resource: props.service,
     });
 
     this.props = props;
@@ -74,7 +74,7 @@ export class EcsDeployAction extends Action {
         'ecs:RegisterTaskDefinition',
         'ecs:UpdateService',
       ],
-      resources: ['*']
+      resources: ['*'],
     }));
 
     options.role.addToPolicy(new iam.PolicyStatement({
@@ -86,8 +86,8 @@ export class EcsDeployAction extends Action {
             'ec2.amazonaws.com',
             'ecs-tasks.amazonaws.com',
           ],
-        }
-      }
+        },
+      },
     }));
 
     options.bucket.grantRead(options.role);

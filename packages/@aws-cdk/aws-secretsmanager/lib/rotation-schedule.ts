@@ -42,8 +42,8 @@ export class RotationSchedule extends Resource {
       secretId: props.secret.secretArn,
       rotationLambdaArn: props.rotationLambda.functionArn,
       rotationRules: {
-        automaticallyAfterDays: props.automaticallyAfter && props.automaticallyAfter.toDays() || 30
-      }
+        automaticallyAfterDays: props.automaticallyAfter && props.automaticallyAfter.toDays() || 30,
+      },
     });
   }
 }

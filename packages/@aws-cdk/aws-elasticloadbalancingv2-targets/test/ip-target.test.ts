@@ -14,7 +14,7 @@ test('Can create target groups with lambda targets', () => {
   // WHEN
   listener.addTargets('Targets', {
     targets: [new targets.IpTarget('1.2.3.4')],
-    port: 80
+    port: 80,
   });
 
   // THEN
@@ -22,7 +22,7 @@ test('Can create target groups with lambda targets', () => {
     Port: 80,
     Protocol: 'HTTP',
     Targets: [
-      { Id: '1.2.3.4' }
+      { Id: '1.2.3.4' },
     ],
     TargetType: 'ip',
   }));

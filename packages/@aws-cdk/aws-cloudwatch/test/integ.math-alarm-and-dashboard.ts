@@ -18,7 +18,7 @@ const metricA = new cloudwatch.Metric({
   metricName: 'ApproximateNumberOfMessagesVisible',
   dimensions: { QueueName: queue.getAtt('QueueName') },
   period: cdk.Duration.seconds(10),
-  label: 'Visible Messages'
+  label: 'Visible Messages',
 });
 
 const metricB = new cloudwatch.Metric({
@@ -26,17 +26,17 @@ const metricB = new cloudwatch.Metric({
   metricName: 'ApproximateNumberOfMessagesNotVisible',
   dimensions: { QueueName: queue.getAtt('QueueName') },
   period: cdk.Duration.seconds(30),
-  label: 'NotVisible Messages'
+  label: 'NotVisible Messages',
 });
 
 const sumExpression = new cloudwatch.MathExpression({
   expression: 'm1+m2',
   usingMetrics: {
     m1: metricA,
-    m2: metricB
+    m2: metricB,
   },
   label: 'Total Messages',
-  period: cdk.Duration.minutes(1)
+  period: cdk.Duration.minutes(1),
 });
 
 const alarm = sumExpression.createAlarm(stack, 'Alarm', {
@@ -45,7 +45,7 @@ const alarm = sumExpression.createAlarm(stack, 'Alarm', {
 });
 
 const dashboard = new cloudwatch.Dashboard(stack, 'Dash', {
-  dashboardName: 'MyMathExpressionDashboardName'
+  dashboardName: 'MyMathExpressionDashboardName',
 });
 dashboard.addWidgets(new cloudwatch.AlarmWidget({
   title: 'Total messages in queue',
@@ -56,12 +56,12 @@ dashboard.addWidgets(new cloudwatch.GraphWidget({
   title: 'More total messages in queue with alarm annotation',
   left: [sumExpression],
   right: [metricA, metricB],
-  leftAnnotations: [alarm.toAnnotation()]
+  leftAnnotations: [alarm.toAnnotation()],
 }));
 
 dashboard.addWidgets(new cloudwatch.SingleValueWidget({
   title: 'Current total messages in queue',
-  metrics: [sumExpression]
+  metrics: [sumExpression],
 }));
 
 app.synth();

@@ -11,7 +11,7 @@ test('detect addition of all types of rules', () => {
           FromPort: 80,
           ToPort: 80,
           IpProtocol: 'tcp',
-        }
+        },
       ],
       SecurityGroupEgress: [
         {
@@ -19,7 +19,7 @@ test('detect addition of all types of rules', () => {
           FromPort: 80,
           ToPort: 80,
           IpProtocol: 'tcp',
-        }
+        },
       ],
     }),
     InRule: resource('AWS::EC2::SecurityGroupIngress', {
@@ -46,15 +46,15 @@ test('detect addition of all types of rules', () => {
         ipProtocol: 'tcp',
         fromPort: 80,
         toPort: 80,
-        peer: { kind: 'cidr-ip', ip: '1.2.3.4/8' }
+        peer: { kind: 'cidr-ip', ip: '1.2.3.4/8' },
       },
       {
         groupId: '${SG.GroupId}',
         ipProtocol: 'icmp',
         fromPort: -1,
         toPort: -1,
-        peer: { kind: 'prefix-list', prefixListId: 'pl-1234' }
-      }
+        peer: { kind: 'prefix-list', prefixListId: 'pl-1234' },
+      },
     ],
     egressRuleAdditions: [
       {
@@ -62,15 +62,15 @@ test('detect addition of all types of rules', () => {
         ipProtocol: 'tcp',
         fromPort: 80,
         toPort: 80,
-        peer: { kind: 'security-group', securityGroupId: '${ThatOtherGroup.GroupId}' }
+        peer: { kind: 'security-group', securityGroupId: '${ThatOtherGroup.GroupId}' },
       },
       {
         groupId: '${SG.GroupId}',
         ipProtocol: 'udp',
         fromPort: -1,
         toPort: -1,
-        peer: { kind: 'cidr-ip', ip: '7.8.9.0/24' }
-      }
-    ]
+        peer: { kind: 'cidr-ip', ip: '7.8.9.0/24' },
+      },
+    ],
   });
 });

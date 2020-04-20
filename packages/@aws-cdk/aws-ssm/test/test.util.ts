@@ -12,7 +12,7 @@ export = {
       'concrete parameterName and no physical name (sep is "/")'(test: Test) {
         const stack = new Stack();
         test.deepEqual(stack.resolve(arnForParameterName(stack, 'myParam', undefined)), {
-          'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter/myParam']]
+          'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter/myParam']],
         });
         test.done();
       },
@@ -20,7 +20,7 @@ export = {
       'token parameterName and concrete physical name (no additional "/")'(test: Test) {
         const stack = new Stack();
         test.deepEqual(stack.resolve(arnForParameterName(stack, Token.asString({ Ref: 'Boom' }), { physicalName: 'myParam' })), {
-          'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter/', { Ref: 'Boom' }]]
+          'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter/', { Ref: 'Boom' }]],
         });
         test.done();
       },
@@ -28,10 +28,10 @@ export = {
       'token parameterName, explicit "/" separator'(test: Test) {
         const stack = new Stack();
         test.deepEqual(stack.resolve(arnForParameterName(stack, Token.asString({ Ref: 'Boom' }), { simpleName: true })), {
-          'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter/', { Ref: 'Boom' }]]
+          'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter/', { Ref: 'Boom' }]],
         });
         test.done();
-      }
+      },
 
     },
 
@@ -40,7 +40,7 @@ export = {
       'concrete parameterName and no physical name (sep is "/")'(test: Test) {
         const stack = new Stack();
         test.deepEqual(stack.resolve(arnForParameterName(stack, '/foo/bar', undefined)), {
-          'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter/foo/bar']]
+          'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter/foo/bar']],
         });
         test.done();
       },
@@ -48,7 +48,7 @@ export = {
       'token parameterName and concrete physical name (no sep)'(test: Test) {
         const stack = new Stack();
         test.deepEqual(stack.resolve(arnForParameterName(stack, Token.asString({ Ref: 'Boom' }), { physicalName: '/foo/bar' })), {
-          'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter', { Ref: 'Boom' }]]
+          'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter', { Ref: 'Boom' }]],
         });
         test.done();
       },
@@ -56,10 +56,10 @@ export = {
       'token parameterName, explicit "" separator'(test: Test) {
         const stack = new Stack();
         test.deepEqual(stack.resolve(arnForParameterName(stack, Token.asString({ Ref: 'Boom' }), { simpleName: false })), {
-          'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter', { Ref: 'Boom' }]]
+          'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter', { Ref: 'Boom' }]],
         });
         test.done();
-      }
+      },
 
     },
 
@@ -67,7 +67,7 @@ export = {
       const stack = new Stack();
       test.throws(() => arnForParameterName(stack, Token.asString({ Ref: 'Boom' })), /Unable to determine ARN separator for SSM parameter since the parameter name is an unresolved token. Use "fromAttributes" and specify "simpleName" explicitly/);
       test.done();
-    }
+    },
 
-  }
+  },
 };

@@ -17,7 +17,7 @@ class AcmCertificateAliasStack extends Stack {
     const distribution = new cloudfront.CloudFrontWebDistribution(this, 'AnAmazingWebsiteProbably', {
       originConfigs: [{
         s3OriginSource: { s3BucketSource },
-        behaviors: [{ isDefaultBehavior: true }]
+        behaviors: [{ isDefaultBehavior: true }],
       }],
       viewerCertificate: cloudfront.ViewerCertificate.fromAcmCertificate(
         certificate,
@@ -25,7 +25,7 @@ class AcmCertificateAliasStack extends Stack {
           aliases: ['example.com', 'www.example.com'],
           securityPolicy: cloudfront.SecurityPolicyProtocol.TLS_V1, // default
           sslMethod: cloudfront.SSLMethod.SNI, // default
-        }
+        },
       ),
     });
     /// !hide

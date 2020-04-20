@@ -76,7 +76,7 @@ export class Subscription extends Resource {
       this.filterPolicy = Object.entries(props.filterPolicy)
         .reduce(
           (acc, [k, v]) => ({ ...acc, [k]: v.conditions }),
-          {}
+          {},
         );
 
       let total = 1;

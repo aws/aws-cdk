@@ -10,11 +10,11 @@ const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2 });
 
 const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 cluster.addCapacity('DefaultAutoScalingGroup', {
-  instanceType: new ec2.InstanceType('t2.micro')
+  instanceType: new ec2.InstanceType('t2.micro'),
 });
 
 const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
-  networkMode: ecs.NetworkMode.HOST
+  networkMode: ecs.NetworkMode.HOST,
 });
 
 const container = taskDefinition.addContainer('web', {
@@ -24,7 +24,7 @@ const container = taskDefinition.addContainer('web', {
 
 container.addPortMappings({
   containerPort: 80,
-  protocol: ecs.Protocol.TCP
+  protocol: ecs.Protocol.TCP,
 });
 
 const service = new ecs.Ec2Service(stack, 'Service', {

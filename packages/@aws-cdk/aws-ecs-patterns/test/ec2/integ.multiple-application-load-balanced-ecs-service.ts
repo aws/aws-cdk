@@ -24,9 +24,9 @@ new ApplicationMultipleTargetGroupsEc2Service(stack, 'myService', {
     {
       containerPort: 90,
       pathPattern: 'a/b/c',
-      priority: 10
-    }
-  ]
+      priority: 10,
+    },
+  ],
 });
 
 app.synth();

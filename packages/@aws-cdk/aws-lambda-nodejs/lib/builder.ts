@@ -74,7 +74,7 @@ export class Builder {
       if (this.options.nodeVersion && pkgPath) {
         // Update engines.node (Babel target)
         originalPkg = updatePkg(pkgPath, {
-          engines: { node: `>= ${this.options.nodeVersion}` }
+          engines: { node: `>= ${this.options.nodeVersion}` },
         });
       }
 

@@ -42,7 +42,7 @@ export function renderAmazonLinuxUserData(clusterName: string, autoScalingGroup:
   return [
     'set -o xtrace',
     `/etc/eks/bootstrap.sh ${clusterName} --kubelet-extra-args "${kubeletExtraArgs}" ${commandLineSuffix}`.trim(),
-    `/opt/aws/bin/cfn-signal --exit-code $? --stack ${stack.stackName} --resource ${asgLogicalId} --region ${stack.region}`
+    `/opt/aws/bin/cfn-signal --exit-code $? --stack ${stack.stackName} --resource ${asgLogicalId} --region ${stack.region}`,
   ];
 }
 
@@ -51,7 +51,7 @@ export function renderBottlerocketUserData(cluster: ICluster): string[] {
     '[settings.kubernetes]',
     `api-server="${cluster.clusterEndpoint}"`,
     `cluster-certificate="${cluster.clusterCertificateAuthorityData}"`,
-    `cluster-name="${cluster.clusterName}"`
+    `cluster-name="${cluster.clusterName}"`,
   ];
 }
 

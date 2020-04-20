@@ -339,7 +339,7 @@ abstract class VpcBase extends Resource implements IVpc {
       availabilityZones: subnets.map(s => s.availabilityZone),
       internetConnectivityEstablished: tap(new CompositeDependable(), d => subnets.forEach(s => d.add(s.internetConnectivityEstablished))),
       subnets,
-      hasPublic: subnets.some(s => pubs.has(s))
+      hasPublic: subnets.some(s => pubs.has(s)),
     };
   }
 
@@ -349,7 +349,7 @@ abstract class VpcBase extends Resource implements IVpc {
   public addVpnConnection(id: string, options: VpnConnectionOptions): VpnConnection {
     return new VpnConnection(this, id, {
       vpc: this,
-      ...options
+      ...options,
     });
   }
 
@@ -359,7 +359,7 @@ abstract class VpcBase extends Resource implements IVpc {
   public addInterfaceEndpoint(id: string, options: InterfaceVpcEndpointOptions): InterfaceVpcEndpoint {
     return new InterfaceVpcEndpoint(this, id, {
       vpc: this,
-      ...options
+      ...options,
     });
   }
 
@@ -369,7 +369,7 @@ abstract class VpcBase extends Resource implements IVpc {
   public addGatewayEndpoint(id: string, options: GatewayVpcEndpointOptions): GatewayVpcEndpoint {
     return new GatewayVpcEndpoint(this, id, {
       vpc: this,
-      ...options
+      ...options,
     });
   }
 
@@ -379,7 +379,7 @@ abstract class VpcBase extends Resource implements IVpc {
   public addFlowLog(id: string, options?: FlowLogOptions): FlowLog {
     return new FlowLog(this, id, {
       resourceType: FlowLogResourceType.fromVpc(this),
-      ...options
+      ...options,
     });
   }
 
@@ -912,7 +912,7 @@ export class Vpc extends VpcBase {
     {
       subnetType: SubnetType.PRIVATE,
       name: defaultSubnetName(SubnetType.PRIVATE),
-    }
+    },
   ];
 
   /**
@@ -1122,7 +1122,7 @@ export class Vpc extends VpcBase {
       this._internetConnectivityEstablished.add(igw);
       const att = new CfnVPCGatewayAttachment(this, 'VPCGW', {
         internetGatewayId: igw.ref,
-        vpcId: this.resource.ref
+        vpcId: this.resource.ref,
       });
 
       (this.publicSubnets as PublicSubnet[]).forEach(publicSubnet => {
@@ -1143,7 +1143,7 @@ export class Vpc extends VpcBase {
     if (props.vpnGateway || props.vpnConnections || props.vpnGatewayAsn) {
       const vpnGateway = new CfnVPNGateway(this, 'VpnGateway', {
         amazonSideAsn: props.vpnGatewayAsn,
-        type: VpnConnectionType.IPSEC_1
+        type: VpnConnectionType.IPSEC_1,
       });
 
       const attachment = new CfnVPCGatewayAttachment(this, 'VPCVPNGW', {
@@ -1158,7 +1158,7 @@ export class Vpc extends VpcBase {
       const routeTableIds = allRouteTableIds(...vpnRoutePropagation.map(s => this.selectSubnets(s)));
       const routePropagation = new CfnVPNGatewayRoutePropagation(this, 'RoutePropagation', {
         routeTableIds,
-        vpnGatewayId: this.vpnGatewayId
+        vpnGatewayId: this.vpnGatewayId,
       });
 
       // The AWS::EC2::VPNGatewayRoutePropagation resource cannot use the VPN gateway
@@ -1200,7 +1200,7 @@ export class Vpc extends VpcBase {
     return new GatewayVpcEndpoint(this, id, {
       service: GatewayVpcEndpointAwsService.S3,
       vpc: this,
-      subnets
+      subnets,
     });
   }
 
@@ -1213,7 +1213,7 @@ export class Vpc extends VpcBase {
     return new GatewayVpcEndpoint(this, id, {
       service: GatewayVpcEndpointAwsService.DYNAMODB,
       vpc: this,
-      subnets
+      subnets,
     });
   }
 
@@ -1228,7 +1228,7 @@ export class Vpc extends VpcBase {
     provider.configureNat({
       vpc: this,
       natSubnets: natSubnets.slice(0, natCount),
-      privateSubnets: this.privateSubnets as PrivateSubnet[]
+      privateSubnets: this.privateSubnets as PrivateSubnet[],
     });
   }
 
@@ -1441,7 +1441,7 @@ export class Subnet extends Resource implements ISubnet {
     // Associate the public route table for this subnet, to this subnet
     new CfnSubnetRouteTableAssociation(this, 'RouteTableAssociation', {
       subnetId: this.subnetId,
-      routeTableId: table.ref
+      routeTableId: table.ref,
     });
 
     this.internetConnectivityEstablished = this._internetConnectivityEstablished;
@@ -1458,7 +1458,7 @@ export class Subnet extends Resource implements ISubnet {
     const route = new CfnRoute(this, 'DefaultRoute', {
       routeTableId: this.routeTable.routeTableId,
       destinationCidrBlock: '0.0.0.0/0',
-      gatewayId
+      gatewayId,
     });
     route.node.addDependency(gatewayAttachment);
 
@@ -1644,7 +1644,7 @@ export class PublicSubnet extends Subnet implements IPublicSubnet {
     const ngw = new CfnNatGateway(this, 'NATGateway', {
       subnetId: this.subnetId,
       allocationId: new CfnEIP(this, 'EIP', {
-        domain: 'vpc'
+        domain: 'vpc',
       }).attrAllocationId,
     });
     return ngw;
@@ -1794,7 +1794,7 @@ class CompositeDependable implements IDependable {
           ret.push(...DependableTrait.get(dep).dependencyRoots);
         }
         return ret;
-      }
+      },
     });
   }
 
@@ -1835,7 +1835,7 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
     this.subnetId = attrs.subnetId;
     this.routeTable = {
       // Forcing routeTableId to pretend non-null to maintain backwards-compatibility. See https://github.com/aws/aws-cdk/pull/3171
-      routeTableId: attrs.routeTableId!
+      routeTableId: attrs.routeTableId!,
     };
   }
 

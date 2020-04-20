@@ -148,7 +148,7 @@ export class TemplateDiff implements ITemplateDiff {
       const commonProps = {
         oldProperties: resourceChange.oldProperties,
         newProperties: resourceChange.newProperties,
-        resourceLogicalId
+        resourceLogicalId,
       };
 
       // Even though it's not physically possible in CFN, let's pretend to handle a change of 'Type'.
@@ -510,7 +510,7 @@ export class ResourceDifference implements IDifference<Resource> {
       resourceType: { oldType?: string, newType?: string },
       propertyDiffs: { [key: string]: PropertyDifference<any> },
       otherDiffs: { [key: string]: Difference<any> }
-    }
+    },
   ) {
     this.resourceTypes = args.resourceType;
     this.propertyDiffs = args.propertyDiffs;

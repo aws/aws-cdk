@@ -68,6 +68,6 @@ export function makeHostedZoneArn(construct: Construct, hostedZoneId: string): s
     region: '',
     service: 'route53',
     resource: 'hostedzone',
-    resourceName: hostedZoneId
+    resourceName: hostedZoneId,
   });
 }

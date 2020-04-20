@@ -73,14 +73,14 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
     this.taskDefinition = new FargateTaskDefinition(this, 'QueueProcessingTaskDef', {
       memoryLimitMiB: props.memoryLimitMiB || 512,
       cpu: props.cpu || 256,
-      family: props.family
+      family: props.family,
     });
     this.taskDefinition.addContainer('QueueProcessingContainer', {
       image: props.image,
       command: props.command,
       environment: this.environment,
       secrets: this.secrets,
-      logging: this.logDriver
+      logging: this.logDriver,
     });
 
     // Create a Fargate service with the previously defined Task Definition and configure

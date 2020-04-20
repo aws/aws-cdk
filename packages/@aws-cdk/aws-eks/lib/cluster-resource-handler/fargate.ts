@@ -11,7 +11,7 @@ export class FargateProfileResourceHandler extends ResourceHandler {
 
     const createFargateProfile: aws.EKS.CreateFargateProfileRequest = {
       fargateProfileName,
-      ...this.event.ResourceProperties.Config
+      ...this.event.ResourceProperties.Config,
     };
 
     this.log({ createFargateProfile });
@@ -26,7 +26,7 @@ export class FargateProfileResourceHandler extends ResourceHandler {
       PhysicalResourceId: createFargateProfileResponse.fargateProfile.fargateProfileName,
       Data: {
         fargateProfileArn: createFargateProfileResponse.fargateProfile.fargateProfileArn,
-      }
+      },
     };
   }
 
@@ -37,7 +37,7 @@ export class FargateProfileResourceHandler extends ResourceHandler {
 
     const deleteFargateProfile: aws.EKS.DeleteFargateProfileRequest = {
       clusterName: this.event.ResourceProperties.Config.clusterName,
-      fargateProfileName: this.physicalResourceId
+      fargateProfileName: this.physicalResourceId,
     };
 
     this.log({ deleteFargateProfile });
@@ -61,14 +61,14 @@ export class FargateProfileResourceHandler extends ResourceHandler {
   protected async isUpdateComplete() {
     const status = await this.queryStatus();
     return {
-      IsComplete: status === 'ACTIVE'
+      IsComplete: status === 'ACTIVE',
     };
   }
 
   protected async isDeleteComplete() {
     const status = await this.queryStatus();
     return {
-      IsComplete: status === 'NOT_FOUND'
+      IsComplete: status === 'NOT_FOUND',
     };
   }
 
@@ -92,7 +92,7 @@ export class FargateProfileResourceHandler extends ResourceHandler {
 
     const describeFargateProfile: aws.EKS.DescribeFargateProfileRequest = {
       clusterName: this.event.ResourceProperties.Config.clusterName,
-      fargateProfileName: this.physicalResourceId
+      fargateProfileName: this.physicalResourceId,
     };
 
     try {

@@ -7,7 +7,7 @@ export = {
     },
     'with no specific version'(test: Test) {
       test.done();
-    }
+    },
   },
 
   update: {
@@ -23,7 +23,7 @@ export = {
       },
       'change of "roleArn" and "version"'(test: Test) {
         test.done();
-      }
+      },
     },
 
     'in-place': {
@@ -38,8 +38,8 @@ export = {
 
         'fails from specific value to undefined'(test: Test) {
           test.done();
-        }
-      }
+        },
+      },
     },
 
     'update failure returns the previous physical name': {
@@ -54,16 +54,16 @@ export = {
 
       'for "roleArn" updates'(test: Test) {
         test.done();
-      }
+      },
 
-    }
+    },
   },
 
   delete: {
     'delete failure': {
       'returns correct physical name'(test: Test) {
         test.done();
-      }
-    }
-  }
+      },
+    },
+  },
 };

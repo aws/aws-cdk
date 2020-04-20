@@ -18,7 +18,7 @@ const eventCommon = {
 };
 
 const context = {
-  functionName: 'provider'
+  functionName: 'provider',
 } as AWSLambda.Context;
 
 function createRequest(type: string) {
@@ -49,8 +49,8 @@ export = {
       ResourceProperties: {
         ServiceToken: 'token',
         RetentionInDays: '30',
-        LogGroupName: 'group'
-      }
+        LogGroupName: 'group',
+      },
     };
 
     const request = createRequest('SUCCESS');
@@ -58,21 +58,21 @@ export = {
     await provider.handler(event as AWSLambda.CloudFormationCustomResourceCreateEvent, context);
 
     sinon.assert.calledWith(createLogGroupFake, {
-      logGroupName: 'group'
+      logGroupName: 'group',
     });
 
     sinon.assert.calledWith(putRetentionPolicyFake, {
       logGroupName: 'group',
-      retentionInDays: 30
+      retentionInDays: 30,
     });
 
     sinon.assert.calledWith(createLogGroupFake, {
-      logGroupName: '/aws/lambda/provider'
+      logGroupName: '/aws/lambda/provider',
     });
 
     sinon.assert.calledWith(putRetentionPolicyFake, {
       logGroupName: '/aws/lambda/provider',
-      retentionInDays: 1
+      retentionInDays: 1,
     });
 
     sinon.assert.notCalled(deleteRetentionPolicyFake);
@@ -100,13 +100,13 @@ export = {
       ResourceProperties: {
         ServiceToken: 'token',
         RetentionInDays: '365',
-        LogGroupName: 'group'
+        LogGroupName: 'group',
       },
       OldResourceProperties: {
         ServiceToken: 'token',
         LogGroupName: 'group',
-        RetentionInDays: '30'
-      }
+        RetentionInDays: '30',
+      },
     };
 
     const request = createRequest('SUCCESS');
@@ -114,12 +114,12 @@ export = {
     await provider.handler(event as AWSLambda.CloudFormationCustomResourceUpdateEvent, context);
 
     sinon.assert.calledWith(createLogGroupFake, {
-      logGroupName: 'group'
+      logGroupName: 'group',
     });
 
     sinon.assert.calledWith(putRetentionPolicyFake, {
       logGroupName: 'group',
-      retentionInDays: 365
+      retentionInDays: 365,
     });
 
     sinon.assert.notCalled(deleteRetentionPolicyFake);
@@ -147,13 +147,13 @@ export = {
       PhysicalResourceId: 'group',
       ResourceProperties: {
         ServiceToken: 'token',
-        LogGroupName: 'group'
+        LogGroupName: 'group',
       },
       OldResourceProperties: {
         ServiceToken: 'token',
         LogGroupName: 'group',
-        RetentionInDays: '365'
-      }
+        RetentionInDays: '365',
+      },
     };
 
     const request = createRequest('SUCCESS');
@@ -161,11 +161,11 @@ export = {
     await provider.handler(event as AWSLambda.CloudFormationCustomResourceUpdateEvent, context);
 
     sinon.assert.calledWith(createLogGroupFake, {
-      logGroupName: 'group'
+      logGroupName: 'group',
     });
 
     sinon.assert.calledWith(deleteRetentionPolicyFake, {
-      logGroupName: 'group'
+      logGroupName: 'group',
     });
 
     test.equal(request.isDone(), true);
@@ -188,8 +188,8 @@ export = {
       PhysicalResourceId: 'group',
       ResourceProperties: {
         ServiceToken: 'token',
-        LogGroupName: 'group'
-      }
+        LogGroupName: 'group',
+      },
     };
 
     const request = createRequest('SUCCESS');
@@ -218,8 +218,8 @@ export = {
       ResourceProperties: {
         ServiceToken: 'token',
         RetentionInDays: '30',
-        LogGroupName: 'group'
-      }
+        LogGroupName: 'group',
+      },
     };
 
     const request = createRequest('FAILED');
@@ -252,8 +252,8 @@ export = {
       ResourceProperties: {
         ServiceToken: 'token',
         RetentionInDays: '30',
-        LogGroupName: 'group'
-      }
+        LogGroupName: 'group',
+      },
     };
 
     const request = createRequest('SUCCESS');
@@ -275,8 +275,8 @@ export = {
       ResourceProperties: {
         ServiceToken: 'token',
         RetentionInDays: '30',
-        LogGroupName: 'group'
-      }
+        LogGroupName: 'group',
+      },
     };
 
     async function withOperation(operation: string) {

@@ -9,7 +9,7 @@ class TestStack extends cdk.Stack {
 
     /// !show
     const asset = new assets.Asset(this, 'SampleAsset', {
-      path: path.join(__dirname, 'sample-asset-directory')
+      path: path.join(__dirname, 'sample-asset-directory'),
     });
 
     new cdk.CfnOutput(this, 'S3BucketName', { value: asset.s3BucketName });

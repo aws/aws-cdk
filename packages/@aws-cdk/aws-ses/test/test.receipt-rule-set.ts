@@ -17,7 +17,7 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::SES::ReceiptRuleSet', {
-      RuleSetName: 'MyRuleSet'
+      RuleSetName: 'MyRuleSet',
     }));
 
     test.done();
@@ -29,7 +29,7 @@ export = {
 
     // WHEN
     new ReceiptRuleSet(stack, 'RuleSet', {
-      dropSpam: true
+      dropSpam: true,
     });
 
     // THEN
@@ -41,16 +41,16 @@ export = {
               FunctionArn: {
                 'Fn::GetAtt': [
                   'SingletonLambda224e77f9a32e4b4dac32983477abba164533EA15',
-                  'Arn'
-                ]
+                  'Arn',
+                ],
               },
-              InvocationType: 'RequestResponse'
-            }
-          }
+              InvocationType: 'RequestResponse',
+            },
+          },
         ],
         Enabled: true,
-        ScanEnabled: true
-      }
+        ScanEnabled: true,
+      },
     }));
 
     expect(stack).to(haveResource('AWS::Lambda::Function'));
@@ -74,14 +74,14 @@ export = {
           'Type': 'AWS::SES::ReceiptRule',
           'Properties': {
             'Rule': {
-              'Enabled': true
+              'Enabled': true,
             },
-            'RuleSetName': 'MyRuleSet'
-          }
-        }
+            'RuleSetName': 'MyRuleSet',
+          },
+        },
       },
     });
 
     test.done();
-  }
+  },
 };

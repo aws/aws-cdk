@@ -11,7 +11,7 @@ export = {
       networkAclId: 'asdf',
       protocol: 5,
       ruleAction: 'action',
-      ruleNumber: 1
+      ruleNumber: 1,
     });
 
     test.done();

@@ -11,7 +11,7 @@ describe('User Pool Client', () => {
 
     // WHEN
     new UserPoolClient(stack, 'Client', {
-      userPool: pool
+      userPool: pool,
     });
 
     // THEN
@@ -28,7 +28,7 @@ describe('User Pool Client', () => {
     // WHEN
     const client1 = new UserPoolClient(stack, 'Client1', {
       userPool: pool,
-      userPoolClientName: 'myclient'
+      userPoolClientName: 'myclient',
     });
     const client2 = new UserPoolClient(stack, 'Client2', {
       userPool: pool,
@@ -77,7 +77,7 @@ describe('User Pool Client', () => {
         refreshToken: true,
         userPassword: true,
         userSrp: true,
-      }
+      },
     });
 
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
@@ -152,7 +152,7 @@ describe('User Pool Client', () => {
       oAuth: {
         flows: { authorizationCodeGrant: true },
         scopes: [ OAuthScope.PHONE ],
-      }
+      },
     })).toThrow(/callbackUrl must be specified/);
 
     expect(() => pool.addClient('Client2', {
@@ -166,7 +166,7 @@ describe('User Pool Client', () => {
       oAuth: {
         flows: { clientCredentials: true },
         scopes: [ OAuthScope.PHONE ],
-      }
+      },
     })).not.toThrow();
   });
 
@@ -205,7 +205,7 @@ describe('User Pool Client', () => {
     // WHEN
     pool.addClient('Client', {
       oAuth: {
-        flows: { clientCredentials: true, },
+        flows: { clientCredentials: true },
         scopes: [
           OAuthScope.PHONE,
           OAuthScope.EMAIL,
@@ -225,7 +225,7 @@ describe('User Pool Client', () => {
         'openid',
         'profile',
         'aws.cognito.signin.user.admin',
-        'my-resource-server/my-own-scope'
+        'my-resource-server/my-own-scope',
       ],
     });
   });
@@ -239,44 +239,44 @@ describe('User Pool Client', () => {
     pool.addClient('Client1', {
       userPoolClientName: 'Client1',
       oAuth: {
-        flows: { clientCredentials: true, },
-        scopes: [ OAuthScope.PHONE, ],
+        flows: { clientCredentials: true },
+        scopes: [ OAuthScope.PHONE ],
       },
     });
     pool.addClient('Client2', {
       userPoolClientName: 'Client2',
       oAuth: {
-        flows: { clientCredentials: true, },
-        scopes: [ OAuthScope.EMAIL, ],
+        flows: { clientCredentials: true },
+        scopes: [ OAuthScope.EMAIL ],
       },
     });
     pool.addClient('Client3', {
       userPoolClientName: 'Client3',
       oAuth: {
-        flows: { clientCredentials: true, },
-        scopes: [ OAuthScope.PROFILE, ],
+        flows: { clientCredentials: true },
+        scopes: [ OAuthScope.PROFILE ],
       },
     });
     pool.addClient('Client4', {
       userPoolClientName: 'Client4',
       oAuth: {
-        flows: { clientCredentials: true, },
-        scopes: [ OAuthScope.COGNITO_ADMIN, ],
+        flows: { clientCredentials: true },
+        scopes: [ OAuthScope.COGNITO_ADMIN ],
       },
     });
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
       ClientName: 'Client1',
-      AllowedOAuthScopes: [ 'phone', 'openid', ],
+      AllowedOAuthScopes: [ 'phone', 'openid' ],
     });
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
       ClientName: 'Client2',
-      AllowedOAuthScopes: [ 'email', 'openid', ],
+      AllowedOAuthScopes: [ 'email', 'openid' ],
     });
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
       ClientName: 'Client3',
-      AllowedOAuthScopes: [ 'profile', 'openid', ],
+      AllowedOAuthScopes: [ 'profile', 'openid' ],
     });
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
       ClientName: 'Client4',

@@ -145,7 +145,7 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
     return iam.Grant.addToPrincipal({
       grantee: identity,
       actions: ['states:StartExecution'],
-      resourceArns: [this.stateMachineArn]
+      resourceArns: [this.stateMachineArn],
     });
   }
 }
@@ -196,7 +196,7 @@ export class StateMachine extends StateMachineBase {
       loggingConfiguration = {
         destinations: [{ cloudWatchLogsLogGroup: { logGroupArn: conf.destination.logGroupArn } }],
         includeExecutionData: conf.includeExecutionData,
-        level: conf.level || 'ERROR'
+        level: conf.level || 'ERROR',
       };
       // https://docs.aws.amazon.com/step-functions/latest/dg/cw-logs.html#cloudwatch-iam-policy
       this.addToRolePolicy(new iam.PolicyStatement({
@@ -209,9 +209,9 @@ export class StateMachine extends StateMachineBase {
           'logs:ListLogDeliveries',
           'logs:PutResourcePolicy',
           'logs:DescribeResourcePolicies',
-          'logs:DescribeLogGroups'
+          'logs:DescribeLogGroups',
         ],
-        resources: ['*']
+        resources: ['*'],
       }));
     }
 
@@ -220,7 +220,7 @@ export class StateMachine extends StateMachineBase {
       stateMachineType: props.stateMachineType ? props.stateMachineType : undefined,
       roleArn: this.role.roleArn,
       definitionString: Stack.of(this).toJsonString(graph.toGraphJson()),
-      loggingConfiguration
+      loggingConfiguration,
     });
 
     resource.node.addDependency(this.role);
@@ -256,7 +256,7 @@ export class StateMachine extends StateMachineBase {
       metricName,
       dimensions: { StateMachineArn: this.stateMachineArn },
       statistic: 'sum',
-      ...props
+      ...props,
     }).attachTo(this);
   }
 

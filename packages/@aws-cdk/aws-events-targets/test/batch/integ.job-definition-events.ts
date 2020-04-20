@@ -12,16 +12,16 @@ const queue = new batch.JobQueue(stack, 'MyQueue', {
   computeEnvironments: [
     {
       computeEnvironment: new batch.ComputeEnvironment(stack, 'ComputeEnvironment', {
-        managed: false
+        managed: false,
       }),
-      order: 1
-    }
-  ]
+      order: 1,
+    },
+  ],
 });
 const job = new batch.JobDefinition(stack, 'MyJob', {
   container: {
-    image: ContainerImage.fromRegistry('test-repo')
-  }
+    image: ContainerImage.fromRegistry('test-repo'),
+  },
 });
 
 const timer = new events.Rule(stack, 'Timer', {

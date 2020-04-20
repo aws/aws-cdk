@@ -9,7 +9,7 @@ const cluster = new ecs.Cluster(stack, 'FargateCluster', { vpc });
 
 const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef', {
   memoryLimitMiB: 1024,
-  cpu: 512
+  cpu: 512,
 });
 
 // new container with firelens log driver, firelens log router will be created automatically.
@@ -21,14 +21,14 @@ const container = taskDefinition.addContainer('nginx', {
       region: stack.region,
       log_group_name: 'ecs-integ-test',
       auto_create_group: 'true',
-      log_stream_prefix: 'nginx'
-    }
+      log_stream_prefix: 'nginx',
+    },
   }),
 });
 
 container.addPortMappings({
   containerPort: 80,
-  protocol: ecs.Protocol.TCP
+  protocol: ecs.Protocol.TCP,
 });
 
 // Create a security group that allows tcp @ port 80

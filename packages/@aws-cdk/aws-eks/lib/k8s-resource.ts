@@ -66,8 +66,8 @@ export class KubernetesResource extends Construct {
         // StepFunctions, CloudWatch Dashboards etc).
         Manifest: stack.toJsonString(props.manifest),
         ClusterName: props.cluster.clusterName,
-        RoleArn: props.cluster._getKubectlCreationRoleArn(provider.role)
-      }
+        RoleArn: props.cluster._getKubectlCreationRoleArn(provider.role),
+      },
     });
   }
 }

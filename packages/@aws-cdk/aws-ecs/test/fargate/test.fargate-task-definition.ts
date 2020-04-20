@@ -29,13 +29,13 @@ export = {
 
       new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
         cpu: cdk.Lazy.numberValue({produce: () => 128}),
-        memoryLimitMiB: cdk.Lazy.numberValue({produce: () => 1024})
+        memoryLimitMiB: cdk.Lazy.numberValue({produce: () => 1024}),
       });
 
       // THEN
       expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
         Cpu: '128',
-        Memory: '1024'
+        Memory: '1024',
       }));
 
       test.done();
@@ -50,21 +50,21 @@ export = {
           path: '/',
           assumedBy: new iam.CompositePrincipal(
             new iam.ServicePrincipal('ecs.amazonaws.com'),
-            new iam.ServicePrincipal('ecs-tasks.amazonaws.com')
-          )
+            new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+          ),
         }),
         family: 'myApp',
         memoryLimitMiB: 1024,
         taskRole: new iam.Role(stack, 'TaskRole', {
           assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
-        })
+        }),
       });
 
       taskDefinition.addVolume({
         host: {
           sourcePath: '/tmp/cache',
         },
-        name: 'scratch'
+        name: 'scratch',
       });
 
       // THEN
@@ -73,29 +73,29 @@ export = {
         ExecutionRoleArn: {
           'Fn::GetAtt': [
             'ExecutionRole605A040B',
-            'Arn'
-          ]
+            'Arn',
+          ],
         },
         Family: 'myApp',
         Memory: '1024',
         NetworkMode: 'awsvpc',
         RequiresCompatibilities: [
-          ecs.LaunchType.FARGATE
+          ecs.LaunchType.FARGATE,
         ],
         TaskRoleArn: {
           'Fn::GetAtt': [
             'TaskRole30FC0FBB',
-            'Arn'
-          ]
+            'Arn',
+          ],
         },
         Volumes: [
           {
             Host: {
-              SourcePath: '/tmp/cache'
+              SourcePath: '/tmp/cache',
             },
-            Name: 'scratch'
-          }
-        ]
+            Name: 'scratch',
+          },
+        ],
       }));
 
       test.done();
@@ -112,6 +112,6 @@ export = {
       }, /Cannot set placement constraints on tasks that run on Fargate/);
 
       test.done();
-    }
-  }
+    },
+  },
 };

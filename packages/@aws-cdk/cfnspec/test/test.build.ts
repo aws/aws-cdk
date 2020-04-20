@@ -13,13 +13,13 @@ export = {
               PrimitiveType: 'String',
             } as schema.ScalarProperty), // ts is being weird and doesn't correctly match the type
           },
-        }
+        },
       },
       ResourceTypes: {
         'CDK::Test::Resource': {
           Attributes: {
             Attribute1: ({
-              PrimitiveType: 'String'
+              PrimitiveType: 'String',
             } as schema.PrimitiveAttribute), // ts is being weird and doesn't correctly match the type
             Attribute2: ({} as schema.PrimitiveAttribute),
           },
@@ -28,9 +28,9 @@ export = {
             ResourceArn: ({
               PrimitiveType: 'String',
             } as schema.PrimitiveProperty), // ts is being weird and doesn't correctly match the type
-          }
-        }
-      }
+          },
+        },
+      },
     };
 
     massageSpec(spec);
@@ -44,13 +44,13 @@ export = {
               PrimitiveType: 'String',
             } as schema.ScalarProperty), // ts is being weird and doesn't correctly match the type
           },
-        }
+        },
       },
       ResourceTypes: {
         'CDK::Test::Resource': {
           Attributes: {
             Attribute1: ({
-              PrimitiveType: 'String'
+              PrimitiveType: 'String',
             }),
           },
           Documentation: 'https://documentation-url/cdk/test/resource',
@@ -58,11 +58,11 @@ export = {
             ResourceArn: {
               PrimitiveType: 'String',
             },
-          }
-        }
-      }
+          },
+        },
+      },
     });
 
     test.done();
-  }
+  },
 };

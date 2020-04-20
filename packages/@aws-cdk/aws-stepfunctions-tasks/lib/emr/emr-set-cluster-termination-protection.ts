@@ -36,13 +36,13 @@ export class EmrSetClusterTerminationProtection implements sfn.IStepFunctionsTas
       policyStatements: [
         new iam.PolicyStatement({
           actions: ['elasticmapreduce:SetTerminationProtection'],
-          resources: [`arn:aws:elasticmapreduce:${Aws.REGION}:${Aws.ACCOUNT_ID}:cluster/*`]
-        })
+          resources: [`arn:aws:elasticmapreduce:${Aws.REGION}:${Aws.ACCOUNT_ID}:cluster/*`],
+        }),
       ],
       parameters: {
         ClusterId: this.props.clusterId,
-        TerminationProtected: this.props.terminationProtected
-      }
+        TerminationProtected: this.props.terminationProtected,
+      },
     };
   }
 }

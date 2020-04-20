@@ -11,15 +11,15 @@ const nested3 = new NestedStack(nested2, 'Nested3');
 
 // WHEN
 const level2 = new sns.Topic(nested2, 'Level2ReferencesLevel1', {
-  displayName: shortName(level1.topicName)
+  displayName: shortName(level1.topicName),
 });
 
 new sns.Topic(nested3, 'Level3ReferencesLevel1', {
-  displayName: shortName(level1.topicName)
+  displayName: shortName(level1.topicName),
 });
 
 new sns.Topic(nested3, 'Level3ReferencesLevel2', {
-  displayName: shortName(level2.topicName)
+  displayName: shortName(level2.topicName),
 });
 
 app.synth();

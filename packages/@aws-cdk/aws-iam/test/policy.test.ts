@@ -68,7 +68,7 @@ describe('IAM policy', () => {
     const user1 = new User(stack, 'User1');
     const group1 = new Group(stack, 'Group1');
     const role1 = new Role(stack, 'Role1', {
-      assumedBy: new ServicePrincipal('test.service')
+      assumedBy: new ServicePrincipal('test.service'),
     });
 
     new Policy(stack, 'MyTestPolicy', {
@@ -269,8 +269,8 @@ describe('IAM policy', () => {
       Resources: {
         Resource: {
           Type: 'Some::Resource',
-        }
-      }
+        },
+      },
     });
   });
 
@@ -293,7 +293,7 @@ describe('IAM policy', () => {
     // THEN
     expect(stack).toHaveResource('Some::Resource', {
       Type: 'Some::Resource',
-      DependsOn: [ 'Pol0FE9AD5D' ]
+      DependsOn: [ 'Pol0FE9AD5D' ],
     }, ResourcePart.CompleteDefinition);
   });
 

@@ -66,10 +66,10 @@ class MockStack {
         {
           type: cxschema.ArtifactMetadataEntryType.STACK_TAGS,
           data: [
-            { key: 'Foo', value: 'Bar' }
-          ]
-        }
-      ]
+            { key: 'Foo', value: 'Bar' },
+          ],
+        },
+      ],
     },
   };
   public static readonly MOCK_STACK_B: TestStackArtifact = {
@@ -81,10 +81,10 @@ class MockStack {
         {
           type: cxschema.ArtifactMetadataEntryType.STACK_TAGS,
           data: [
-            { key: 'Baz', value: 'Zinga!' }
-          ]
-        }
-      ]
+            { key: 'Baz', value: 'Zinga!' },
+          ],
+        },
+      ],
     },
   };
 }

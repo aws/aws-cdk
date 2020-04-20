@@ -12,7 +12,7 @@ export = {
     const logGroup = new LogGroup(stack, 'LogGroup');
 
     new LogStream(stack, 'Stream', {
-      logGroup
+      logGroup,
     });
 
     // THEN

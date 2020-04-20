@@ -316,7 +316,7 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
         if (call) {
           provider.addToRolePolicy(new iam.PolicyStatement({
             actions: [awsSdkToIamAction(call.service, call.action)],
-            resources: props.policy.resources
+            resources: props.policy.resources,
           }));
         }
       }
@@ -330,8 +330,8 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
       properties: {
         create: create && encodeBooleans(create),
         update: props.onUpdate && encodeBooleans(props.onUpdate),
-        delete: props.onDelete && encodeBooleans(props.onDelete)
-      }
+        delete: props.onDelete && encodeBooleans(props.onDelete),
+      },
     });
   }
 

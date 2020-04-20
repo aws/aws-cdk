@@ -26,18 +26,18 @@ class RunBatchStack extends cdk.Stack {
         {
           order: 1,
           computeEnvironment: new batch.ComputeEnvironment(this, 'ComputeEnv', {
-            computeResources: { vpc }
-          })
-        }
-      ]
+            computeResources: { vpc },
+          }),
+        },
+      ],
     });
 
     const batchJobDefinition = new batch.JobDefinition(this, 'JobDefinition', {
       container: {
         image: ecs.ContainerImage.fromAsset(
-          path.resolve(__dirname, 'batchjob-image')
-        )
-      }
+          path.resolve(__dirname, 'batchjob-image'),
+        ),
+      },
     });
 
     const submitJob = new sfn.Task(this, 'Submit Job', {
@@ -48,29 +48,29 @@ class RunBatchStack extends cdk.Stack {
         containerOverrides: {
           environment: { key: 'value' },
           memory: 256,
-          vcpus: 1
+          vcpus: 1,
         },
         payload: {
-          foo: sfn.Data.stringAt('$.bar')
+          foo: sfn.Data.stringAt('$.bar'),
         },
         attempts: 3,
-        timeout: cdk.Duration.seconds(60)
-      })
+        timeout: cdk.Duration.seconds(60),
+      }),
     });
 
     const definition = new sfn.Pass(this, 'Start', {
-      result: sfn.Result.fromObject({ bar: 'SomeValue' })
+      result: sfn.Result.fromObject({ bar: 'SomeValue' }),
     }).next(submitJob);
 
     const stateMachine = new sfn.StateMachine(this, 'StateMachine', {
-      definition
+      definition,
     });
 
     new cdk.CfnOutput(this, 'JobQueueArn', {
-      value: batchQueue.jobQueueArn
+      value: batchQueue.jobQueueArn,
     });
     new cdk.CfnOutput(this, 'StateMachineArn', {
-      value: stateMachine.stateMachineArn
+      value: stateMachine.stateMachineArn,
     });
   }
 }

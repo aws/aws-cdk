@@ -40,15 +40,15 @@ export class AwsAuth extends Construct {
           kind: 'ConfigMap',
           metadata: {
             name: 'aws-auth',
-            namespace: 'kube-system'
+            namespace: 'kube-system',
           },
           data: {
             mapRoles: this.synthesizeMapRoles(),
             mapUsers: this.synthesizeMapUsers(),
             mapAccounts: this.synthesizeMapAccounts(),
-          }
-        }
-      ]
+          },
+        },
+      ],
     });
   }
 
@@ -62,7 +62,7 @@ export class AwsAuth extends Construct {
   public addMastersRole(role: iam.IRole, username?: string) {
     this.addRoleMapping(role, {
       username,
-      groups: [ 'system:masters' ]
+      groups: [ 'system:masters' ],
     });
   }
 
@@ -99,8 +99,8 @@ export class AwsAuth extends Construct {
       produce: () => this.stack.toJsonString(this.roleMappings.map(m => ({
         rolearn: m.role.roleArn,
         username: m.mapping.username ?? m.role.roleArn,
-        groups: m.mapping.groups
-      })))
+        groups: m.mapping.groups,
+      }))),
     });
   }
 
@@ -109,14 +109,14 @@ export class AwsAuth extends Construct {
       produce: () => this.stack.toJsonString(this.userMappings.map(m => ({
         userarn: m.user.userArn,
         username: m.mapping.username ?? m.user.userArn,
-        groups: m.mapping.groups
-      })))
+        groups: m.mapping.groups,
+      }))),
     });
   }
 
   private synthesizeMapAccounts() {
     return Lazy.anyValue({
-      produce: () => this.stack.toJsonString(this.accounts)
+      produce: () => this.stack.toJsonString(this.accounts),
     });
   }
 }
