@@ -21,57 +21,29 @@ function serve_npm_packages() {
     return 1
   fi
 
+  tarballs_glob="$dist_root/js/*.tgz"
+
   if [ ! -z "${USE_PUBLISHED_FRAMEWORK_VERSION:-}" ]; then
 
     echo "Testing against latest published versions of the framework"
 
-    # when using latest published framework, only
-    # install the cli and its dependencies.
+    header "Installing aws-cdk from local tarballs..."
+    (cd ${npmws} && eval $(npx serve-npm-tarballs --glob "${tarballs_glob}" npm install aws-cdk))    
+    export PATH=$npmws/node_modules/.bin:$PATH    
 
-    cli_root=./package
-
-    version=$(node -p "require('${cli_root}/package.json').version")
-
-    # good lord
-    echo "Fetching @aws-cdk CLI dependencies from package.json"
-    cli_deps=$(node -p "Object.entries(require('${cli_root}/package.json').dependencies).filter(x => x[0].includes('@aws-cdk')).map(x => x[0].replace('@aws-cdk/', '')).join(' ')")
-
-    # tarballs_glob is going to look like "{file,file,...}"
-    tarballs_glob="{$dist_root/js/aws-cdk-${version}.tgz"
-
-    for dep in ${cli_deps}; do
-      tarball=$dist_root/js/${dep}@${version}.jsii.tgz
-      if [ ! -f ${tarball} ]; then
-        # not a jsii dependency, the tarball is different...
-        tarball=$dist_root/js/aws-cdk-${dep}-${version}.tgz
-      fi
-
-      tarballs_glob="${tarballs_glob},${tarball}"
-    done
-
-    # manually add cdk-assets since its not prefixed with @aws-cdk and
-    # hence isn't picked up from package.json
-    echo "Adding cdk-assets to CLI dependencies"
-    tarballs_glob="${tarballs_glob},$dist_root/js/cdk-assets-${version}.tgz"
-
-    # manually add @aws-cdk/cfnspec since its a transitive dependency via @aws-cdk/cloudformation-diff
-    # hence isn't picked up from package.json
-    echo "Adding @aws-cdk/cfnspec to CLI dependencies"
-    tarballs_glob="${tarballs_glob},$dist_root/js/aws-cdk-cfnspec-${version}.tgz"
-
-    tarballs_glob="${tarballs_glob}}"
   else
 
     echo "Testing against local versions of the framework"
-    tarballs_glob="$dist_root/js/*.tgz"
+
+    #------------------------------------------------------------------------------
+    # Start a mock npm repository from the given tarballs
+    #------------------------------------------------------------------------------
+    header "Starting local NPM Repository"
+    eval $(npx serve-npm-tarballs --glob "${tarballs_glob}" --daemon)
+    trap "kill $SERVE_NPM_TARBALLS_PID" EXIT
+
   fi
 
-  #------------------------------------------------------------------------------
-  # Start a mock npm repository from the given tarballs
-  #------------------------------------------------------------------------------
-  header "Starting local NPM Repository"
-  eval $(npx serve-npm-tarballs --glob "${tarballs_glob}" --daemon)
-  trap "kill $SERVE_NPM_TARBALLS_PID" EXIT
 }
 
 # Make sure that installed CLI matches the build version
