@@ -20,9 +20,9 @@ export = {
     td.addContainer('Container', {
       image,
       logging: new ecs.JournaldLogDriver({
-        tag: 'hello'
+        tag: 'hello',
       }),
-      memoryLimitMiB: 128
+      memoryLimitMiB: 128,
     });
 
     // THEN
@@ -32,11 +32,11 @@ export = {
           LogConfiguration: {
             LogDriver: 'journald',
             Options: {
-              tag: 'hello'
-            }
-          }
-        }
-      ]
+              tag: 'hello',
+            },
+          },
+        },
+      ],
     }));
 
     test.done();
@@ -47,7 +47,7 @@ export = {
     td.addContainer('Container', {
       image,
       logging: new ecs.JournaldLogDriver(),
-      memoryLimitMiB: 128
+      memoryLimitMiB: 128,
     });
 
     // THEN
@@ -55,10 +55,10 @@ export = {
       ContainerDefinitions: [
         {
           LogConfiguration: {
-            LogDriver: 'journald'
-          }
-        }
-      ]
+            LogDriver: 'journald',
+          },
+        },
+      ],
     }));
 
     test.done();
@@ -69,7 +69,7 @@ export = {
     td.addContainer('Container', {
       image,
       logging: ecs.LogDrivers.journald(),
-      memoryLimitMiB: 128
+      memoryLimitMiB: 128,
     });
 
     // THEN
@@ -78,10 +78,10 @@ export = {
         {
           LogConfiguration: {
             LogDriver: 'journald',
-            Options: {}
-          }
-        }
-      ]
+            Options: {},
+          },
+        },
+      ],
     }));
 
     test.done();

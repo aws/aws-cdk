@@ -24,10 +24,10 @@ test('Invoke lambda with default magic ARN', () => {
       invocationType: tasks.InvocationType.REQUEST_RESPONSE,
       clientContext: 'eyJoZWxsbyI6IndvcmxkIn0=',
       qualifier: '1',
-    })
+    }),
   });
   new sfn.StateMachine(stack, 'SM', {
-    definition: task
+    definition: task,
   });
 
   expect(stack.resolve(task.toStateJson())).toEqual({
@@ -47,14 +47,14 @@ test('Invoke lambda with default magic ARN', () => {
     End: true,
     Parameters: {
       FunctionName: {
-        Ref: 'Fn9270CBC0'
+        Ref: 'Fn9270CBC0',
       },
       Payload: {
-        foo: 'bar'
+        foo: 'bar',
       },
       InvocationType: 'RequestResponse',
       ClientContext: 'eyJoZWxsbyI6IndvcmxkIn0=',
-      Qualifier: '1'
+      Qualifier: '1',
     },
   });
 });
@@ -63,13 +63,20 @@ test('Lambda function can be used in a Task with Task Token', () => {
   const task = new sfn.Task(stack, 'Task', {
     task: new tasks.RunLambdaTask(fn, {
       integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
+<<<<<<< HEAD
       payload: sfn.TaskInput.fromObject({
         token: sfn.Context.taskToken
       })
     })
+=======
+      payload: {
+        token: sfn.Context.taskToken,
+      },
+    }),
+>>>>>>> master
   });
   new sfn.StateMachine(stack, 'SM', {
-    definition: task
+    definition: task,
   });
 
   expect(stack.resolve(task.toStateJson())).toEqual({
@@ -89,11 +96,11 @@ test('Lambda function can be used in a Task with Task Token', () => {
     End: true,
     Parameters: {
       FunctionName: {
-        Ref: 'Fn9270CBC0'
+        Ref: 'Fn9270CBC0',
       },
       Payload: {
-        'token.$': '$$.Task.Token'
-      }
+        'token.$': '$$.Task.Token',
+      },
     },
   });
 });
@@ -102,8 +109,8 @@ test('Task throws if WAIT_FOR_TASK_TOKEN is supplied but task token is not inclu
   expect(() => {
     new sfn.Task(stack, 'Task', {
       task: new tasks.RunLambdaTask(fn, {
-        integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN
-      })
+        integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
+      }),
     });
   }).toThrow(/Task Token is missing in payload/i);
 });
@@ -112,8 +119,8 @@ test('Task throws if SYNC is supplied as service integration pattern', () => {
   expect(() => {
     new sfn.Task(stack, 'Task', {
       task: new tasks.RunLambdaTask(fn, {
-        integrationPattern: sfn.ServiceIntegrationPattern.SYNC
-      })
+        integrationPattern: sfn.ServiceIntegrationPattern.SYNC,
+      }),
     });
   }).toThrow(/Invalid Service Integration Pattern: SYNC is not supported to call Lambda./i);
 });

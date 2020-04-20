@@ -15,7 +15,7 @@ describe('AWS::CDK::Metadata', () => {
       Type: 'AWS::CDK::Metadata',
       Properties: {
         // eslint-disable-next-line @typescript-eslint/no-require-imports
-        Modules: `${require('../../package.json').name}=${require('../../package.json').version}`
+        Modules: `${require('../../package.json').name}=${require('../../package.json').version}`,
       },
       Condition: 'CDKMetadataAvailable',
     });
@@ -33,8 +33,8 @@ describe('AWS::CDK::Metadata', () => {
       Type: 'AWS::CDK::Metadata',
       Properties: {
         // eslint-disable-next-line @typescript-eslint/no-require-imports
-        Modules: `${require('../../package.json').name}=${require('../../package.json').version}`
-      }
+        Modules: `${require('../../package.json').name}=${require('../../package.json').version}`,
+      },
     });
   });
 
@@ -62,8 +62,8 @@ test('stop executing if context providers are not making progress', async () => 
     }],
     // Always return the same missing keys, synthesis should still finish.
     missing: [
-      { key: 'abcdef', props: {}, provider: 'testprovider' }
-    ]
+      { key: 'abcdef', props: {}, provider: 'testprovider' },
+    ],
   });
   const cxasm = await cloudExecutable.synthesize();
 
@@ -88,11 +88,11 @@ async function testCloudExecutable({ env, versionReporting = true }: { env?: str
         '/resource': [
           {
             type: cxschema.ArtifactMetadataEntryType.ERROR,
-            data: 'this is an error'
-          }
-        ]
+            data: 'this is an error',
+          },
+        ],
       },
-    }]
+    }],
   });
   cloudExec.configuration.settings.set(['versionReporting'], versionReporting);
 

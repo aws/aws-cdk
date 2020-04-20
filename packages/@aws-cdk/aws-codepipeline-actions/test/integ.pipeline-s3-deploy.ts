@@ -39,7 +39,7 @@ new codepipeline.Pipeline(stack, 'Pipeline', {
             cpactions.CacheControl.setPublic(),
             cpactions.CacheControl.maxAge(cdk.Duration.hours(12)),
           ],
-        })
+        }),
       ],
     },
   ],

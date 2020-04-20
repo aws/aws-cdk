@@ -16,11 +16,11 @@ test('GetItem task', () => {
     task: tasks.CallDynamoDB.getItem({
       partitionKey: {
         name: 'SOME_KEY',
-        value: new tasks.DynamoAttributeValue().withS('1234')
+        value: new tasks.DynamoAttributeValue().withS('1234'),
       },
       sortKey: {
         name: 'OTHER_KEY',
-        value: new tasks.DynamoAttributeValue().withN('4321')
+        value: new tasks.DynamoAttributeValue().withN('4321'),
       },
       tableName: TABLE_NAME,
       consistentRead: true,
@@ -30,10 +30,10 @@ test('GetItem task', () => {
           .withAttribute('Messages')
           .atIndex(1)
           .withAttribute('Tags'),
-        new tasks.DynamoProjectionExpression().withAttribute('ID')
+        new tasks.DynamoProjectionExpression().withAttribute('ID'),
       ],
-      returnConsumedCapacity: tasks.DynamoConsumedCapacity.TOTAL
-    })
+      returnConsumedCapacity: tasks.DynamoConsumedCapacity.TOTAL,
+    }),
   });
 
   // THEN
@@ -45,11 +45,11 @@ test('GetItem task', () => {
         [
           'arn:',
           {
-            Ref: 'AWS::Partition'
+            Ref: 'AWS::Partition',
           },
-          ':states:::dynamodb:getItem'
-        ]
-      ]
+          ':states:::dynamodb:getItem',
+        ],
+      ],
     },
     End: true,
     Parameters: {
@@ -58,8 +58,8 @@ test('GetItem task', () => {
       ConsistentRead: true,
       ExpressionAttributeNames: { OTHER_KEY: '#OK' },
       ProjectionExpression: 'Messages[1].Tags,ID',
-      ReturnConsumedCapacity: 'TOTAL'
-    }
+      ReturnConsumedCapacity: 'TOTAL',
+    },
   });
 });
 
@@ -73,13 +73,13 @@ test('PutItem task', () => {
       expressionAttributeNames: { OTHER_KEY: '#OK' },
       expressionAttributeValues: {
         ':val': new tasks.DynamoAttributeValue().withN(
-          sfn.Data.stringAt('$.Item.TotalCount.N')
-        )
+          sfn.Data.stringAt('$.Item.TotalCount.N'),
+        ),
       },
       returnConsumedCapacity: tasks.DynamoConsumedCapacity.TOTAL,
       returnItemCollectionMetrics: tasks.DynamoItemCollectionMetrics.SIZE,
-      returnValues: tasks.DynamoReturnValues.ALL_NEW
-    })
+      returnValues: tasks.DynamoReturnValues.ALL_NEW,
+    }),
   });
 
   // THEN
@@ -91,11 +91,11 @@ test('PutItem task', () => {
         [
           'arn:',
           {
-            Ref: 'AWS::Partition'
+            Ref: 'AWS::Partition',
           },
-          ':states:::dynamodb:putItem'
-        ]
-      ]
+          ':states:::dynamodb:putItem',
+        ],
+      ],
     },
     End: true,
     Parameters: {
@@ -106,8 +106,8 @@ test('PutItem task', () => {
       ExpressionAttributeValues: { ':val': { 'N.$': '$.Item.TotalCount.N' } },
       ReturnConsumedCapacity: 'TOTAL',
       ReturnItemCollectionMetrics: 'SIZE',
-      ReturnValues: 'ALL_NEW'
-    }
+      ReturnValues: 'ALL_NEW',
+    },
   });
 });
 
@@ -117,72 +117,20 @@ test('DeleteItem task', () => {
     task: tasks.CallDynamoDB.deleteItem({
       partitionKey: {
         name: 'SOME_KEY',
-        value: new tasks.DynamoAttributeValue().withS('1234')
+        value: new tasks.DynamoAttributeValue().withS('1234'),
       },
       tableName: TABLE_NAME,
       conditionExpression: 'ForumName <> :f and Subject <> :s',
       expressionAttributeNames: { OTHER_KEY: '#OK' },
       expressionAttributeValues: {
         ':val': new tasks.DynamoAttributeValue().withN(
-          sfn.Data.stringAt('$.Item.TotalCount.N')
-        )
-      },
-      returnConsumedCapacity: tasks.DynamoConsumedCapacity.TOTAL,
-      returnItemCollectionMetrics: tasks.DynamoItemCollectionMetrics.SIZE,
-      returnValues: tasks.DynamoReturnValues.ALL_NEW
-    })
-  });
-
-  // THEN
-  expect(stack.resolve(task.toStateJson())).toEqual({
-    Type: 'Task',
-    Resource: {
-      'Fn::Join': [
-        '',
-        [
-          'arn:',
-          {
-            Ref: 'AWS::Partition'
-          },
-          ':states:::dynamodb:deleteItem'
-        ]
-      ]
-    },
-    End: true,
-    Parameters: {
-      Key: { SOME_KEY: { S: '1234' } },
-      TableName: TABLE_NAME,
-      ConditionExpression: 'ForumName <> :f and Subject <> :s',
-      ExpressionAttributeNames: { OTHER_KEY: '#OK' },
-      ExpressionAttributeValues: { ':val': { 'N.$': '$.Item.TotalCount.N' } },
-      ReturnConsumedCapacity: 'TOTAL',
-      ReturnItemCollectionMetrics: 'SIZE',
-      ReturnValues: 'ALL_NEW'
-    }
-  });
-});
-
-test('UpdateItem task', () => {
-  // WHEN
-  const task = new sfn.Task(stack, 'UpdateItem', {
-    task: tasks.CallDynamoDB.updateItem({
-      partitionKey: {
-        name: 'SOME_KEY',
-        value: new tasks.DynamoAttributeValue().withS('1234')
-      },
-      tableName: TABLE_NAME,
-      conditionExpression: 'ForumName <> :f and Subject <> :s',
-      expressionAttributeNames: { OTHER_KEY: '#OK' },
-      expressionAttributeValues: {
-        ':val': new tasks.DynamoAttributeValue().withN(
-          sfn.Data.stringAt('$.Item.TotalCount.N')
-        )
+          sfn.Data.stringAt('$.Item.TotalCount.N'),
+        ),
       },
       returnConsumedCapacity: tasks.DynamoConsumedCapacity.TOTAL,
       returnItemCollectionMetrics: tasks.DynamoItemCollectionMetrics.SIZE,
       returnValues: tasks.DynamoReturnValues.ALL_NEW,
-      updateExpression: 'SET TotalCount = TotalCount + :val'
-    })
+    }),
   });
 
   // THEN
@@ -194,11 +142,11 @@ test('UpdateItem task', () => {
         [
           'arn:',
           {
-            Ref: 'AWS::Partition'
+            Ref: 'AWS::Partition',
           },
-          ':states:::dynamodb:updateItem'
-        ]
-      ]
+          ':states:::dynamodb:deleteItem',
+        ],
+      ],
     },
     End: true,
     Parameters: {
@@ -210,39 +158,31 @@ test('UpdateItem task', () => {
       ReturnConsumedCapacity: 'TOTAL',
       ReturnItemCollectionMetrics: 'SIZE',
       ReturnValues: 'ALL_NEW',
-      UpdateExpression: 'SET TotalCount = TotalCount + :val'
-    }
+    },
   });
 });
 
-test('supports tokens', () => {
+test('UpdateItem task', () => {
   // WHEN
-  const task = new sfn.Task(stack, 'GetItem', {
-    task: tasks.CallDynamoDB.getItem({
+  const task = new sfn.Task(stack, 'UpdateItem', {
+    task: tasks.CallDynamoDB.updateItem({
       partitionKey: {
         name: 'SOME_KEY',
-        value: new tasks.DynamoAttributeValue().withS(
-          sfn.Data.stringAt('$.partitionKey')
-        )
+        value: new tasks.DynamoAttributeValue().withS('1234'),
       },
-      sortKey: {
-        name: 'OTHER_KEY',
-        value: new tasks.DynamoAttributeValue().withN(
-          sfn.Data.stringAt('$.sortKey')
-        )
+      tableName: TABLE_NAME,
+      conditionExpression: 'ForumName <> :f and Subject <> :s',
+      expressionAttributeNames: { OTHER_KEY: '#OK' },
+      expressionAttributeValues: {
+        ':val': new tasks.DynamoAttributeValue().withN(
+          sfn.Data.stringAt('$.Item.TotalCount.N'),
+        ),
       },
-      tableName: sfn.Data.stringAt('$.tableName'),
-      consistentRead: true,
-      expressionAttributeNames: { OTHER_KEY: sfn.Data.stringAt('$.otherKey') },
-      projectionExpression: [
-        new tasks.DynamoProjectionExpression()
-          .withAttribute('Messages')
-          .atIndex(1)
-          .withAttribute('Tags'),
-        new tasks.DynamoProjectionExpression().withAttribute('ID')
-      ],
-      returnConsumedCapacity: tasks.DynamoConsumedCapacity.TOTAL
-    })
+      returnConsumedCapacity: tasks.DynamoConsumedCapacity.TOTAL,
+      returnItemCollectionMetrics: tasks.DynamoItemCollectionMetrics.SIZE,
+      returnValues: tasks.DynamoReturnValues.ALL_NEW,
+      updateExpression: 'SET TotalCount = TotalCount + :val',
+    }),
   });
 
   // THEN
@@ -254,25 +194,85 @@ test('supports tokens', () => {
         [
           'arn:',
           {
-            Ref: 'AWS::Partition'
+            Ref: 'AWS::Partition',
           },
-          ':states:::dynamodb:getItem'
-        ]
-      ]
+          ':states:::dynamodb:updateItem',
+        ],
+      ],
+    },
+    End: true,
+    Parameters: {
+      Key: { SOME_KEY: { S: '1234' } },
+      TableName: TABLE_NAME,
+      ConditionExpression: 'ForumName <> :f and Subject <> :s',
+      ExpressionAttributeNames: { OTHER_KEY: '#OK' },
+      ExpressionAttributeValues: { ':val': { 'N.$': '$.Item.TotalCount.N' } },
+      ReturnConsumedCapacity: 'TOTAL',
+      ReturnItemCollectionMetrics: 'SIZE',
+      ReturnValues: 'ALL_NEW',
+      UpdateExpression: 'SET TotalCount = TotalCount + :val',
+    },
+  });
+});
+
+test('supports tokens', () => {
+  // WHEN
+  const task = new sfn.Task(stack, 'GetItem', {
+    task: tasks.CallDynamoDB.getItem({
+      partitionKey: {
+        name: 'SOME_KEY',
+        value: new tasks.DynamoAttributeValue().withS(
+          sfn.Data.stringAt('$.partitionKey'),
+        ),
+      },
+      sortKey: {
+        name: 'OTHER_KEY',
+        value: new tasks.DynamoAttributeValue().withN(
+          sfn.Data.stringAt('$.sortKey'),
+        ),
+      },
+      tableName: sfn.Data.stringAt('$.tableName'),
+      consistentRead: true,
+      expressionAttributeNames: { OTHER_KEY: sfn.Data.stringAt('$.otherKey') },
+      projectionExpression: [
+        new tasks.DynamoProjectionExpression()
+          .withAttribute('Messages')
+          .atIndex(1)
+          .withAttribute('Tags'),
+        new tasks.DynamoProjectionExpression().withAttribute('ID'),
+      ],
+      returnConsumedCapacity: tasks.DynamoConsumedCapacity.TOTAL,
+    }),
+  });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::dynamodb:getItem',
+        ],
+      ],
     },
     End: true,
     Parameters: {
       // tslint:disable:object-literal-key-quotes
       Key: {
         SOME_KEY: { 'S.$': '$.partitionKey' },
-        OTHER_KEY: { 'N.$': '$.sortKey' }
+        OTHER_KEY: { 'N.$': '$.sortKey' },
       },
       'TableName.$': '$.tableName',
       ConsistentRead: true,
       ExpressionAttributeNames: { 'OTHER_KEY.$': '$.otherKey' },
       ProjectionExpression: 'Messages[1].Tags,ID',
-      ReturnConsumedCapacity: 'TOTAL'
-    }
+      ReturnConsumedCapacity: 'TOTAL',
+    },
   });
 });
 
@@ -282,13 +282,13 @@ test('Invalid value of TableName should throw', () => {
       task: tasks.CallDynamoDB.getItem({
         partitionKey: {
           name: 'SOME_KEY',
-          value: new tasks.DynamoAttributeValue().withS('1234')
+          value: new tasks.DynamoAttributeValue().withS('1234'),
         },
-        tableName: 'ab'
-      })
+        tableName: 'ab',
+      }),
     });
   }).toThrow(
-    /TableName should not contain alphanumeric characters and should be between 3-255 characters long. Received: ab/
+    /TableName should not contain alphanumeric characters and should be between 3-255 characters long. Received: ab/,
   );
 
   expect(() => {
@@ -296,14 +296,14 @@ test('Invalid value of TableName should throw', () => {
       task: tasks.CallDynamoDB.getItem({
         partitionKey: {
           name: 'SOME_KEY',
-          value: new tasks.DynamoAttributeValue().withS('1234')
+          value: new tasks.DynamoAttributeValue().withS('1234'),
         },
         tableName:
-          'abU93s5MTZDv6TYLk3Q3BE3Hj3AMca3NOb5ypSNZv1JZIONg7p8L8LNxuAStavPxYZKcoG36KwXktkuFHf0jJvt7SKofEqwYHmmK0tNJSkGoPe3MofnB7IWu3V48HbrqNGZqW005CMmDHESQWf40JK8qK0CSQtM8Z64zqysB7SZZazDRm7kKr062RXQKL82nvTxnKxTPfCHiG2YJEhuFdUywHCTN2Rjinl3P7TpwyIuPWyYHm6nZodRKLMmWpgUftZ'
-      })
+          'abU93s5MTZDv6TYLk3Q3BE3Hj3AMca3NOb5ypSNZv1JZIONg7p8L8LNxuAStavPxYZKcoG36KwXktkuFHf0jJvt7SKofEqwYHmmK0tNJSkGoPe3MofnB7IWu3V48HbrqNGZqW005CMmDHESQWf40JK8qK0CSQtM8Z64zqysB7SZZazDRm7kKr062RXQKL82nvTxnKxTPfCHiG2YJEhuFdUywHCTN2Rjinl3P7TpwyIuPWyYHm6nZodRKLMmWpgUftZ',
+      }),
     });
   }).toThrow(
-    /TableName should not contain alphanumeric characters and should be between 3-255 characters long. Received: abU93s5MTZDv6TYLk3Q3BE3Hj3AMca3NOb5ypSNZv1JZIONg7p8L8LNxuAStavPxYZKcoG36KwXktkuFHf0jJvt7SKofEqwYHmmK0tNJSkGoPe3MofnB7IWu3V48HbrqNGZqW005CMmDHESQWf40JK8qK0CSQtM8Z64zqysB7SZZazDRm7kKr062RXQKL82nvTxnKxTPfCHiG2YJEhuFdUywHCTN2Rjinl3P7TpwyIuPWyYHm6nZodRKLMmWpgUftZ/
+    /TableName should not contain alphanumeric characters and should be between 3-255 characters long. Received: abU93s5MTZDv6TYLk3Q3BE3Hj3AMca3NOb5ypSNZv1JZIONg7p8L8LNxuAStavPxYZKcoG36KwXktkuFHf0jJvt7SKofEqwYHmmK0tNJSkGoPe3MofnB7IWu3V48HbrqNGZqW005CMmDHESQWf40JK8qK0CSQtM8Z64zqysB7SZZazDRm7kKr062RXQKL82nvTxnKxTPfCHiG2YJEhuFdUywHCTN2Rjinl3P7TpwyIuPWyYHm6nZodRKLMmWpgUftZ/,
   );
 
   expect(() => {
@@ -311,13 +311,13 @@ test('Invalid value of TableName should throw', () => {
       task: tasks.CallDynamoDB.getItem({
         partitionKey: {
           name: 'SOME_KEY',
-          value: new tasks.DynamoAttributeValue().withS('1234')
+          value: new tasks.DynamoAttributeValue().withS('1234'),
         },
-        tableName: 'abcd@'
-      })
+        tableName: 'abcd@',
+      }),
     });
   }).toThrow(
-    /TableName should not contain alphanumeric characters and should be between 3-255 characters long. Received: abcd@/
+    /TableName should not contain alphanumeric characters and should be between 3-255 characters long. Received: abcd@/,
   );
 });
 
@@ -331,7 +331,7 @@ describe('DynamoProjectionExpression', () => {
         .withAttribute('Tags')
         .withAttribute('Items')
         .atIndex(0)
-        .toString()
+        .toString(),
     ).toEqual('Messages[1][10].Tags.Items[0]');
   });
 
@@ -340,7 +340,7 @@ describe('DynamoProjectionExpression', () => {
       new tasks.DynamoProjectionExpression()
         .atIndex(1)
         .withAttribute('Messages')
-        .toString()
+        .toString(),
     ).toThrow(/Expression must start with an attribute/);
   });
 });

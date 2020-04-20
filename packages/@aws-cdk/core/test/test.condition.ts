@@ -13,7 +13,7 @@ export = {
 
     // WHEN
     new cdk.CfnCondition(stack, 'Condition4', {
-      expression: cdk.Fn.conditionOr(cond1, cond2, cdk.Fn.conditionNot(cond3))
+      expression: cdk.Fn.conditionOr(cond1, cond2, cdk.Fn.conditionNot(cond3)),
     });
 
     // THEN
@@ -40,8 +40,8 @@ export = {
     new cdk.CfnResource(stack, 'MyResource', {
       type: 'AWS::Foo::Bar',
       properties: {
-        StringProp: propValue
-      }
+        StringProp: propValue,
+      },
     });
 
     // THEN
@@ -51,11 +51,11 @@ export = {
         MyResource: {
           Type: 'AWS::Foo::Bar',
           Properties: {
-            StringProp: { 'Fn::If': [ 'Cond', 'A', 'B' ] }
-          }
-        }
-      }
+            StringProp: { 'Fn::If': [ 'Cond', 'A', 'B' ] },
+          },
+        },
+      },
     });
     test.done();
-  }
+  },
 };
