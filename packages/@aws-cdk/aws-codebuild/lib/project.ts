@@ -211,8 +211,8 @@ abstract class ProjectBase extends Resource implements IProject {
     rule.addEventPattern({
       source: ['aws.codebuild'],
       detail: {
-        'project-name': [this.projectName]
-      }
+        'project-name': [this.projectName],
+      },
     });
     return rule;
   }
@@ -274,8 +274,8 @@ abstract class ProjectBase extends Resource implements IProject {
     const rule = this.onStateChange(id, options);
     rule.addEventPattern({
       detail: {
-        'build-status': ['IN_PROGRESS']
-      }
+        'build-status': ['IN_PROGRESS'],
+      },
     });
     return rule;
   }
@@ -290,8 +290,8 @@ abstract class ProjectBase extends Resource implements IProject {
     const rule = this.onStateChange(id, options);
     rule.addEventPattern({
       detail: {
-        'build-status': ['FAILED']
-      }
+        'build-status': ['FAILED'],
+      },
     });
     return rule;
   }
@@ -306,8 +306,8 @@ abstract class ProjectBase extends Resource implements IProject {
     const rule = this.onStateChange(id, options);
     rule.addEventPattern({
       detail: {
-        'build-status': ['SUCCEEDED']
-      }
+        'build-status': ['SUCCEEDED'],
+      },
     });
     return rule;
   }
@@ -322,7 +322,7 @@ abstract class ProjectBase extends Resource implements IProject {
       namespace: 'AWS/CodeBuild',
       metricName,
       dimensions: { ProjectName: this.projectName },
-      ...props
+      ...props,
     }).attachTo(this);
   }
 
@@ -354,7 +354,7 @@ abstract class ProjectBase extends Resource implements IProject {
   public metricDuration(props?: cloudwatch.MetricOptions) {
     return this.metric('Duration', {
       statistic: 'avg',
-      ...props
+      ...props,
     });
   }
 
@@ -677,7 +677,7 @@ export class Project extends ProjectBase {
 
     this.role = props.role || new iam.Role(this, 'Role', {
       roleName: PhysicalName.GENERATE_IF_NEEDED,
-      assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com')
+      assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),
     });
     this.grantPrincipal = this.role;
 
@@ -732,7 +732,7 @@ export class Project extends ProjectBase {
       description: props.description,
       source: {
         ...sourceConfig.sourceProperty,
-        buildSpec: buildSpec && buildSpec.toBuildSpec()
+        buildSpec: buildSpec && buildSpec.toBuildSpec(),
       },
       artifacts: artifactsConfig.artifactsProperty,
       serviceRole: this.role.roleArn,
@@ -975,7 +975,7 @@ export class Project extends ProjectBase {
       const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {
         vpc: props.vpc,
         description: 'Automatic generated security group for CodeBuild ' + this.node.uniqueId,
-        allowAllOutbound: props.allowAllOutbound
+        allowAllOutbound: props.allowAllOutbound,
       });
       securityGroups = [securityGroup];
     }
@@ -984,7 +984,7 @@ export class Project extends ProjectBase {
     return {
       vpcId: props.vpc.vpcId,
       subnets: props.vpc.selectSubnets(props.subnetSelection).subnetIds,
-      securityGroupIds: this.connections.securityGroups.map(s => s.securityGroupId)
+      securityGroupIds: this.connections.securityGroups.map(s => s.securityGroupId),
     };
   }
 
@@ -1001,7 +1001,7 @@ export class Project extends ProjectBase {
           'ec2:Subnet': props.vpc
             .selectSubnets(props.subnetSelection).subnetIds
             .map(si => `arn:aws:ec2:${Aws.REGION}:${Aws.ACCOUNT_ID}:subnet/${si}`),
-          'ec2:AuthorizedService': 'codebuild.amazonaws.com'
+          'ec2:AuthorizedService': 'codebuild.amazonaws.com',
         },
       },
     }));
@@ -1404,7 +1404,7 @@ function runScriptLinuxBuildSpec(entrypoint: string) {
           `aws s3 cp s3://\${${S3_BUCKET_ENV}}/\${${S3_KEY_ENV}} /tmp`,
           'mkdir -p /tmp/scriptdir',
           `unzip /tmp/$(basename \$${S3_KEY_ENV}) -d /tmp/scriptdir`,
-        ]
+        ],
       },
       build: {
         commands: [
@@ -1412,9 +1412,9 @@ function runScriptLinuxBuildSpec(entrypoint: string) {
           `echo "Running ${entrypoint}"`,
           `chmod +x /tmp/scriptdir/${entrypoint}`,
           `/tmp/scriptdir/${entrypoint}`,
-        ]
-      }
-    }
+        ],
+      },
+    },
   });
 }
 
@@ -1535,7 +1535,7 @@ export class WindowsBuildImage implements IBuildImage {
           // but I don't know how to propagate the value of $TEMPDIR.
           //
           // Punting for someone who knows PowerShell well enough.
-          commands: []
+          commands: [],
         },
         build: {
           commands: [
@@ -1544,10 +1544,10 @@ export class WindowsBuildImage implements IBuildImage {
             'New-Item -ItemType Directory -Path $TEMPDIR\\scriptdir',
             'Expand-Archive -Path $TEMPDIR/scripts.zip -DestinationPath $TEMPDIR\\scriptdir',
             '$env:SCRIPT_DIR = "$TEMPDIR\\scriptdir"',
-            `& $TEMPDIR\\scriptdir\\${entrypoint}`
-          ]
-        }
-      }
+            `& $TEMPDIR\\scriptdir\\${entrypoint}`,
+          ],
+        },
+      },
     });
   }
 }

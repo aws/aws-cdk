@@ -22,7 +22,7 @@ class TestStack extends Stack {
         };
       };`),
       runtime: lambda.Runtime.NODEJS_10_X,
-      handler: 'index.handler'
+      handler: 'index.handler',
     });
 
     const certificate = acm.Certificate.fromCertificateArn(this, 'cert', certArn);
@@ -33,17 +33,17 @@ class TestStack extends Stack {
         certificate,
         domainName,
         endpointType: apig.EndpointType.REGIONAL,
-      }
+      },
     });
 
     const zone = route53.HostedZone.fromHostedZoneAttributes(this, 'hosted-zone', {
       zoneName: domainName,
-      hostedZoneId
+      hostedZoneId,
     });
 
     new route53.ARecord(this, 'Alias', {
       zone,
-      target: route53.RecordTarget.fromAlias(new targets.ApiGateway(api))
+      target: route53.RecordTarget.fromAlias(new targets.ApiGateway(api)),
     });
   }
 }

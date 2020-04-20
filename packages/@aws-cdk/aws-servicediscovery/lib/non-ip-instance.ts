@@ -50,8 +50,8 @@ export class NonIpInstance extends InstanceBase {
       instanceId: props.instanceId || this.uniqueInstanceId(),
       serviceId: props.service.serviceId,
       instanceAttributes: {
-        ...props.customAttributes
-      }
+        ...props.customAttributes,
+      },
     });
 
     this.service = props.service;

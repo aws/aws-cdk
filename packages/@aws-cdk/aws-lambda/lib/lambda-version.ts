@@ -168,12 +168,12 @@ export class Version extends QualifiedFunctionBase implements IVersion {
       codeSha256: props.codeSha256,
       description: props.description,
       functionName: props.lambda.functionName,
-      provisionedConcurrencyConfig: this.determineProvisionedConcurrency(props)
+      provisionedConcurrencyConfig: this.determineProvisionedConcurrency(props),
     });
 
     if (props.removalPolicy) {
       version.applyRemovalPolicy(props.removalPolicy, {
-        default: RemovalPolicy.DESTROY
+        default: RemovalPolicy.DESTROY,
       });
     }
 
@@ -208,9 +208,9 @@ export class Version extends QualifiedFunctionBase implements IVersion {
         // construct the ARN from the underlying lambda so that alarms on an alias
         // don't cause a circular dependency with CodeDeploy
         // see: https://github.com/aws/aws-cdk/issues/2231
-        Resource: `${this.lambda.functionArn}:${this.version}`
+        Resource: `${this.lambda.functionArn}:${this.version}`,
       },
-      ...props
+      ...props,
     });
   }
 

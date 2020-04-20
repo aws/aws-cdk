@@ -27,7 +27,7 @@ export = {
     // WHEN
     new apigateway.ApiKey(stack, 'test-api-key', {
       customerId: 'test-customer',
-      resources: [api]
+      resources: [api],
     });
 
     // THEN
@@ -36,11 +36,11 @@ export = {
       StageKeys: [
         {
           RestApiId: { Ref: 'testapiD6451F70' },
-          StageName: { Ref: 'testapiDeploymentStagetest5869DF71' }
-        }
-      ]
+          StageName: { Ref: 'testapiDeploymentStagetest5869DF71' },
+        },
+      ],
     }));
 
     test.done();
-  }
+  },
 };

@@ -12,7 +12,7 @@ export = {
     const bucket = new Bucket(stack, 'Bucket');
     bucket.addCorsRule({
       allowedMethods: [HttpMethods.GET, HttpMethods.HEAD],
-      allowedOrigins: ['https://example.com']
+      allowedOrigins: ['https://example.com'],
     });
 
     // THEN
@@ -20,9 +20,9 @@ export = {
       CorsConfiguration: {
         CorsRules: [{
           AllowedMethods: ['GET', 'HEAD'],
-          AllowedOrigins: ['https://example.com']
-        }]
-      }
+          AllowedOrigins: ['https://example.com'],
+        }],
+      },
     }));
 
     test.done();
@@ -37,40 +37,40 @@ export = {
       cors: [
         {
           allowedHeaders: [
-            '*'
+            '*',
           ],
           allowedMethods: [
-            HttpMethods.GET
+            HttpMethods.GET,
           ],
           allowedOrigins: [
-            '*'
+            '*',
           ],
           exposedHeaders: [
-            'Date'
+            'Date',
           ],
           id: 'myCORSRuleId1',
-          maxAge: 3600
+          maxAge: 3600,
         },
         {
           allowedHeaders: [
-            'x-amz-*'
+            'x-amz-*',
           ],
           allowedMethods: [
-            HttpMethods.DELETE
+            HttpMethods.DELETE,
           ],
           allowedOrigins: [
             'http://www.example1.com',
-            'http://www.example2.com'
+            'http://www.example2.com',
           ],
           exposedHeaders: [
             'Connection',
             'Server',
-            'Date'
+            'Date',
           ],
           id: 'myCORSRuleId2',
-          maxAge: 1800
-        }
-      ]
+          maxAge: 1800,
+        },
+      ],
     });
 
     // THEN
@@ -79,41 +79,41 @@ export = {
         CorsRules: [
           {
             AllowedHeaders: [
-              '*'
+              '*',
             ],
             AllowedMethods: [
-              'GET'
+              'GET',
             ],
             AllowedOrigins: [
-              '*'
+              '*',
             ],
             ExposedHeaders: [
-              'Date'
+              'Date',
             ],
             Id: 'myCORSRuleId1',
-            MaxAge: 3600
+            MaxAge: 3600,
           },
           {
             AllowedHeaders: [
-              'x-amz-*'
+              'x-amz-*',
             ],
             AllowedMethods: [
-              'DELETE'
+              'DELETE',
             ],
             AllowedOrigins: [
               'http://www.example1.com',
-              'http://www.example2.com'
+              'http://www.example2.com',
             ],
             ExposedHeaders: [
               'Connection',
               'Server',
-              'Date'
+              'Date',
             ],
             Id: 'myCORSRuleId2',
-            MaxAge: 1800
-          }
-        ]
-      }
+            MaxAge: 1800,
+          },
+        ],
+      },
     }));
 
     test.done();

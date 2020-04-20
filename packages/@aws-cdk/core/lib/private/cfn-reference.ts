@@ -131,7 +131,7 @@ export class CfnReference extends Reference {
    */
   public toString(): string {
     return Token.asString(this, {
-      displayHint: `${this.target.node.id}.${this.displayName}`
+      displayHint: `${this.target.node.id}.${this.displayName}`,
     });
   }
 }

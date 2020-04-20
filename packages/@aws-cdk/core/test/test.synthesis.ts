@@ -10,7 +10,7 @@ function createModernApp() {
   return new cdk.App({
     context: {
       [cxapi.DISABLE_VERSION_REPORTING]: 'true', // for test reproducibility
-    }
+    },
   });
 }
 
@@ -28,8 +28,8 @@ export = {
     test.deepEqual(readJson(session.directory, 'manifest.json').artifacts, {
       Tree: {
         type: 'cdk:tree',
-        properties: { file: 'tree.json' }
-      }
+        properties: { file: 'tree.json' },
+      },
     });
     test.deepEqual(readJson(session.directory, 'tree.json'), {
       version: 'tree-0.1',
@@ -37,9 +37,9 @@ export = {
         id: 'App',
         path: '',
         children: {
-          Tree: { id: 'Tree', path: 'Tree' }
-        }
-      }
+          Tree: { id: 'Tree', path: 'Tree' },
+        },
+      },
     });
     test.done();
   },
@@ -78,8 +78,8 @@ export = {
           type: cxschema.ArtifactType.AWS_CLOUDFORMATION_STACK,
           environment: 'aws://12345/bar',
           properties: {
-            templateFile: 'foo.json'
-          }
+            templateFile: 'foo.json',
+          },
         });
       }
     }
@@ -99,18 +99,18 @@ export = {
       artifacts: {
         'Tree': {
           type: 'cdk:tree',
-          properties: { file: 'tree.json' }
+          properties: { file: 'tree.json' },
         },
         'my-random-construct': {
           type: 'aws:cloudformation:stack',
           environment: 'aws://12345/bar',
-          properties: { templateFile: 'foo.json' }
+          properties: { templateFile: 'foo.json' },
         },
         'one-stack': {
           type: 'aws:cloudformation:stack',
           environment: 'aws://unknown-account/unknown-region',
           properties: { templateFile: 'one-stack.template.json' },
-        }
+        },
       },
     });
     test.done();
@@ -133,10 +133,10 @@ export = {
             templateFile: 'hey.json',
             parameters: {
               paramId: 'paramValue',
-              paramId2: 'paramValue2'
-            }
+              paramId2: 'paramValue2',
+            },
           },
-          environment: 'aws://unknown-account/us-east-1'
+          environment: 'aws://unknown-account/us-east-1',
         });
 
         writeJson(session.assembly.outdir, 'hey.json', { hello: 123 });

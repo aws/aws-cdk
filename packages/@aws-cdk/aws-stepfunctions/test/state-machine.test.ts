@@ -11,13 +11,13 @@ describe('State Machine', () => {
     // WHEN
     new stepfunctions.StateMachine(stack, 'MyStateMachine', {
       stateMachineName: 'MyStateMachine',
-      definition: stepfunctions.Chain.start(new stepfunctions.Pass(stack, 'Pass'))
+      definition: stepfunctions.Chain.start(new stepfunctions.Pass(stack, 'Pass')),
     });
 
     // THEN
     expect(stack).toHaveResource('AWS::StepFunctions::StateMachine', {
       StateMachineName: 'MyStateMachine',
-      DefinitionString: '{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}'
+      DefinitionString: '{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}',
     });
   }),
 
@@ -29,14 +29,14 @@ describe('State Machine', () => {
     new stepfunctions.StateMachine(stack, 'MyStateMachine', {
       stateMachineName: 'MyStateMachine',
       definition: stepfunctions.Chain.start(new stepfunctions.Pass(stack, 'Pass')),
-      stateMachineType: stepfunctions.StateMachineType.STANDARD
+      stateMachineType: stepfunctions.StateMachineType.STANDARD,
     });
 
     // THEN
     expect(stack).toHaveResource('AWS::StepFunctions::StateMachine', {
       StateMachineName: 'MyStateMachine',
       StateMachineType: 'STANDARD',
-      DefinitionString: '{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}'
+      DefinitionString: '{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}',
     });
 
   }),
@@ -49,14 +49,14 @@ describe('State Machine', () => {
     new stepfunctions.StateMachine(stack, 'MyStateMachine', {
       stateMachineName: 'MyStateMachine',
       definition: stepfunctions.Chain.start(new stepfunctions.Pass(stack, 'Pass')),
-      stateMachineType: stepfunctions.StateMachineType.EXPRESS
+      stateMachineType: stepfunctions.StateMachineType.EXPRESS,
     });
 
     // THEN
     expect(stack).toHaveResource('AWS::StepFunctions::StateMachine', {
       StateMachineName: 'MyStateMachine',
       StateMachineType: 'EXPRESS',
-      DefinitionString: '{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}'
+      DefinitionString: '{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}',
     });
 
   }),
@@ -73,8 +73,8 @@ describe('State Machine', () => {
       logs: {
         destination: logGroup,
         level: stepfunctions.LogLevel.FATAL,
-        includeExecutionData: false
-      }
+        includeExecutionData: false,
+      },
     });
 
     // THEN
@@ -84,13 +84,13 @@ describe('State Machine', () => {
         Destinations: [{
           CloudWatchLogsLogGroup: {
             LogGroupArn: {
-              'Fn::GetAtt': ['MyLogGroup5C0DAD85', 'Arn']
-            }
-          }
+              'Fn::GetAtt': ['MyLogGroup5C0DAD85', 'Arn'],
+            },
+          },
         }],
         IncludeExecutionData: false,
-        Level: 'FATAL'
-      }
+        Level: 'FATAL',
+      },
     });
 
     expect(stack).toHaveResource('AWS::IAM::Policy', {
@@ -104,19 +104,19 @@ describe('State Machine', () => {
             'logs:ListLogDeliveries',
             'logs:PutResourcePolicy',
             'logs:DescribeResourcePolicies',
-            'logs:DescribeLogGroups'
+            'logs:DescribeLogGroups',
           ],
           Effect: 'Allow',
-          Resource: '*'
+          Resource: '*',
         }],
-        Version: '2012-10-17'
+        Version: '2012-10-17',
       },
       PolicyName: 'MyStateMachineRoleDefaultPolicyE468EB18',
       Roles: [
         {
-          Ref: 'MyStateMachineRoleD59FFEBC'
-        }
-      ]
+          Ref: 'MyStateMachineRoleD59FFEBC',
+        },
+      ],
     });
   });
 

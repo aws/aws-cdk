@@ -17,15 +17,15 @@ export = {
     new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
-      vpc
+      vpc,
     });
 
     expect(stack).toMatch({
       'Parameters': {
         'SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter': {
           'Type': 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
-          'Default': '/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2'
-        }
+          'Default': '/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2',
+        },
       },
       'Resources': {
         'MyFleetInstanceSecurityGroup774E8234': {
@@ -37,17 +37,17 @@ export = {
                 'CidrIp': '0.0.0.0/0',
                 'Description': 'Allow all outbound traffic by default',
                 'IpProtocol': '-1',
-              }
+              },
             ],
             'Tags': [
               {
                 'Key': 'Name',
-                'Value': 'MyFleet'
-              }
+                'Value': 'MyFleet',
+              },
             ],
 
-            'VpcId': 'my-vpc'
-          }
+            'VpcId': 'my-vpc',
+          },
         },
         'MyFleetInstanceRole25A84AB8': {
           'Type': 'AWS::IAM::Role',
@@ -58,35 +58,35 @@ export = {
                   'Action': 'sts:AssumeRole',
                   'Effect': 'Allow',
                   'Principal': {
-                    'Service': 'ec2.amazonaws.com'
-                  }
-                }
+                    'Service': 'ec2.amazonaws.com',
+                  },
+                },
               ],
-              'Version': '2012-10-17'
+              'Version': '2012-10-17',
             },
             'Tags': [
               {
                 'Key': 'Name',
-                'Value': 'MyFleet'
-              }
+                'Value': 'MyFleet',
+              },
             ],
-          }
+          },
         },
         'MyFleetInstanceProfile70A58496': {
           'Type': 'AWS::IAM::InstanceProfile',
           'Properties': {
             'Roles': [
               {
-                'Ref': 'MyFleetInstanceRole25A84AB8'
-              }
-            ]
-          }
+                'Ref': 'MyFleetInstanceRole25A84AB8',
+              },
+            ],
+          },
         },
         'MyFleetLaunchConfig5D7F9801': {
           'Type': 'AWS::AutoScaling::LaunchConfiguration',
           'Properties': {
             'IamInstanceProfile': {
-              'Ref': 'MyFleetInstanceProfile70A58496'
+              'Ref': 'MyFleetInstanceProfile70A58496',
             },
             'ImageId': { 'Ref': 'SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter' },
             'InstanceType': 'm4.micro',
@@ -94,45 +94,45 @@ export = {
               {
                 'Fn::GetAtt': [
                   'MyFleetInstanceSecurityGroup774E8234',
-                  'GroupId'
-                ]
-              }
+                  'GroupId',
+                ],
+              },
             ],
             'UserData': {
-              'Fn::Base64': '#!/bin/bash'
-            }
+              'Fn::Base64': '#!/bin/bash',
+            },
           },
           'DependsOn': [
-            'MyFleetInstanceRole25A84AB8'
-          ]
+            'MyFleetInstanceRole25A84AB8',
+          ],
         },
         'MyFleetASG88E55886': {
           'Type': 'AWS::AutoScaling::AutoScalingGroup',
           'UpdatePolicy': {
             'AutoScalingScheduledAction': {
-              'IgnoreUnmodifiedGroupSizeProperties': true
-            }
+              'IgnoreUnmodifiedGroupSizeProperties': true,
+            },
           },
           'Properties': {
             'LaunchConfigurationName': {
-              'Ref': 'MyFleetLaunchConfig5D7F9801'
+              'Ref': 'MyFleetLaunchConfig5D7F9801',
             },
             'Tags': [
               {
                 'Key': 'Name',
                 'PropagateAtLaunch': true,
-                'Value': 'MyFleet'
-              }
+                'Value': 'MyFleet',
+              },
             ],
 
             'MaxSize': '1',
             'MinSize': '1',
             'VPCZoneIdentifier': [
-              'pri1'
-            ]
-          }
-        }
-      }
+              'pri1',
+            ],
+          },
+        },
+      },
     });
 
     test.done();
@@ -148,14 +148,14 @@ export = {
       vpc,
       minCapacity: 0,
       maxCapacity: 0,
-      desiredCapacity: 0
+      desiredCapacity: 0,
     });
 
     expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', {
       MinSize: '0',
       MaxSize: '0',
       DesiredCapacity: '0',
-    }
+    },
     ));
 
     test.done();
@@ -179,7 +179,7 @@ export = {
       MinSize: '5',
       MaxSize: '1',
       DesiredCapacity: '20',
-    }
+    },
     ));
 
     test.done();
@@ -197,7 +197,7 @@ export = {
     const asg = new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage({
-        userData: ud
+        userData: ud,
       }),
       vpc,
     });
@@ -223,10 +223,10 @@ export = {
     const asg = new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage({
-        userData: ud1
+        userData: ud1,
       }),
       vpc,
-      userData: ud2
+      userData: ud2,
     });
 
     // THEN
@@ -245,14 +245,14 @@ export = {
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
-      minCapacity: 10
+      minCapacity: 10,
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', {
       MinSize: '10',
       MaxSize: '10',
-    }
+    },
     ));
 
     test.done();
@@ -268,14 +268,14 @@ export = {
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
-      maxCapacity: 10
+      maxCapacity: 10,
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', {
       MinSize: '1',
-      MaxSize: '10'
-    }
+      MaxSize: '10',
+    },
     ));
 
     test.done();
@@ -291,7 +291,7 @@ export = {
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
-      desiredCapacity: 10
+      desiredCapacity: 10,
     });
 
     // THEN
@@ -299,7 +299,7 @@ export = {
       MinSize: '1',
       MaxSize: '10',
       DesiredCapacity: '10',
-    }
+    },
     ));
 
     test.done();
@@ -312,12 +312,12 @@ export = {
     const fleet = new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
-      vpc
+      vpc,
     });
 
     fleet.addToRolePolicy(new iam.PolicyStatement({
       actions: ['test:SpecialName'],
-      resources: ['*']
+      resources: ['*'],
     }));
 
     expect(stack).to(haveResource('AWS::IAM::Policy', {
@@ -327,8 +327,8 @@ export = {
           {
             Action: 'test:SpecialName',
             Effect: 'Allow',
-            Resource: '*'
-          }
+            Resource: '*',
+          },
         ],
       },
     }));
@@ -346,21 +346,21 @@ export = {
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
       updateType: autoscaling.UpdateType.REPLACING_UPDATE,
-      replacingUpdateMinSuccessfulInstancesPercent: 50
+      replacingUpdateMinSuccessfulInstancesPercent: 50,
     });
 
     // THEN
     expect(stack).to(haveResourceLike('AWS::AutoScaling::AutoScalingGroup', {
       UpdatePolicy: {
         AutoScalingReplacingUpdate: {
-          WillReplace: true
-        }
+          WillReplace: true,
+        },
       },
       CreationPolicy: {
         AutoScalingCreationPolicy: {
-          MinSuccessfulInstancesPercent: 50
-        }
-      }
+          MinSuccessfulInstancesPercent: 50,
+        },
+      },
     }, ResourcePart.CompleteDefinition));
 
     test.done();
@@ -379,8 +379,8 @@ export = {
       updateType: autoscaling.UpdateType.ROLLING_UPDATE,
       rollingUpdateConfiguration: {
         minSuccessfulInstancesPercent: 50,
-        pauseTime: cdk.Duration.seconds(345)
-      }
+        pauseTime: cdk.Duration.seconds(345),
+      },
     });
 
     // THEN
@@ -390,9 +390,9 @@ export = {
           'MinSuccessfulInstancesPercent': 50,
           'WaitOnResourceSignals': true,
           'PauseTime': 'PT5M45S',
-          'SuspendProcesses': ['HealthCheck', 'ReplaceUnhealthy', 'AZRebalance', 'AlarmNotification', 'ScheduledActions']
+          'SuspendProcesses': ['HealthCheck', 'ReplaceUnhealthy', 'AZRebalance', 'AlarmNotification', 'ScheduledActions'],
         },
-      }
+      },
     }, ResourcePart.CompleteDefinition));
 
     test.done();
@@ -409,7 +409,7 @@ export = {
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
       resourceSignalCount: 5,
-      resourceSignalTimeout: cdk.Duration.seconds(666)
+      resourceSignalTimeout: cdk.Duration.seconds(666),
     });
 
     // THEN
@@ -417,9 +417,9 @@ export = {
       CreationPolicy: {
         ResourceSignal: {
           Count: 5,
-          Timeout: 'PT11M6S'
+          Timeout: 'PT11M6S',
         },
-      }
+      },
     }, ResourcePart.CompleteDefinition));
 
     test.done();
@@ -435,7 +435,7 @@ export = {
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
-      healthCheck: autoscaling.HealthCheck.ec2()
+      healthCheck: autoscaling.HealthCheck.ec2(),
     });
 
     // THEN
@@ -456,13 +456,13 @@ export = {
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
-      healthCheck: autoscaling.HealthCheck.elb({grace: cdk.Duration.minutes(15)})
+      healthCheck: autoscaling.HealthCheck.elb({grace: cdk.Duration.minutes(15)}),
     });
 
     // THEN
     expect(stack).to(haveResourceLike('AWS::AutoScaling::AutoScalingGroup', {
       HealthCheckType: 'ELB',
-      HealthCheckGracePeriod: 900
+      HealthCheckGracePeriod: 900,
     }));
 
     test.done();
@@ -485,8 +485,8 @@ export = {
         {
           'Fn::GetAtt': [
             'MyFleetInstanceSecurityGroup774E8234',
-            'GroupId'
-          ]
+            'GroupId',
+          ],
         },
         'most-secure'],
     }));
@@ -507,7 +507,7 @@ export = {
       updateType: autoscaling.UpdateType.ROLLING_UPDATE,
       rollingUpdateConfiguration: {
         minSuccessfulInstancesPercent: 50,
-        pauseTime: cdk.Duration.seconds(345)
+        pauseTime: cdk.Duration.seconds(345),
       },
     });
     asg.node.applyAspect(new cdk.Tag('superfood', 'acai'));
@@ -531,7 +531,7 @@ export = {
           PropagateAtLaunch: false,
           Value: 'caramel',
         },
-      ]
+      ],
     }));
     test.done();
   },
@@ -580,7 +580,7 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::AutoScaling::LaunchConfiguration', {
       AssociatePublicIpAddress: true,
-    }
+    },
     ));
     test.done();
   },
@@ -624,7 +624,7 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::AutoScaling::LaunchConfiguration', {
       AssociatePublicIpAddress: false,
-    }
+    },
     ));
     test.done();
   },
@@ -668,13 +668,13 @@ export = {
       vpc,
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
-      role: importedRole
+      role: importedRole,
     });
 
     // THEN
     test.same(asg.role, importedRole);
     expect(stack).to(haveResource('AWS::IAM::InstanceProfile', {
-      'Roles': ['HelloDude']
+      'Roles': ['HelloDude'],
     }));
     test.done();
   },
@@ -711,7 +711,7 @@ export = {
           encrypted: true,
           volumeType: autoscaling.EbsDeviceVolumeType.IO1,
           iops: 5000,
-        })
+        }),
       }, {
         deviceName: 'ebs-snapshot',
         mappingEnabled: false,
@@ -719,11 +719,11 @@ export = {
           volumeSize: 500,
           deleteOnTermination: false,
           volumeType: autoscaling.EbsDeviceVolumeType.SC1,
-        })
+        }),
       }, {
         deviceName: 'ephemeral',
-        volume: autoscaling.BlockDeviceVolume.ephemeral(0)
-      }]
+        volume: autoscaling.BlockDeviceVolume.ephemeral(0),
+      }],
     });
 
     // THEN
@@ -736,9 +736,9 @@ export = {
             Encrypted: true,
             Iops: 5000,
             VolumeSize: 15,
-            VolumeType: 'io1'
+            VolumeType: 'io1',
           },
-          NoDevice: ABSENT
+          NoDevice: ABSENT,
         },
         {
           DeviceName: 'ebs-snapshot',
@@ -746,16 +746,16 @@ export = {
             DeleteOnTermination: false,
             SnapshotId: 'snapshot-id',
             VolumeSize: 500,
-            VolumeType: 'sc1'
+            VolumeType: 'sc1',
           },
-          NoDevice: true
+          NoDevice: true,
         },
         {
           DeviceName: 'ephemeral',
           VirtualName: 'ephemeral0',
-          NoDevice: ABSENT
-        }
-      ]
+          NoDevice: ABSENT,
+        },
+      ],
     }));
 
     test.done();
@@ -774,8 +774,8 @@ export = {
         vpc,
         blockDevices: [{
           deviceName: 'ephemeral',
-          volume: autoscaling.BlockDeviceVolume.ephemeral(-1)
-        }]
+          volume: autoscaling.BlockDeviceVolume.ephemeral(-1),
+        }],
       });
     }, /volumeIndex must be a number starting from 0/);
 
@@ -799,8 +799,8 @@ export = {
             deleteOnTermination: true,
             encrypted: true,
             volumeType: autoscaling.EbsDeviceVolumeType.IO1,
-          })
-        }]
+          }),
+        }],
       });
     }, /ops property is required with volumeType: EbsDeviceVolumeType.IO1/);
 
@@ -822,8 +822,8 @@ export = {
           deleteOnTermination: true,
           encrypted: true,
           iops: 5000,
-        })
-      }]
+        }),
+      }],
     });
 
     // THEN
@@ -849,8 +849,8 @@ export = {
           encrypted: true,
           volumeType: autoscaling.EbsDeviceVolumeType.GP2,
           iops: 5000,
-        })
-      }]
+        }),
+      }],
     });
 
     // THEN
@@ -880,8 +880,8 @@ export = {
       scalingSteps: [
         { change: -1, lower: 0, upper: 49 },
         { change: 0, lower: 50, upper: 99 },
-        { change: 1, lower: 100 }
-      ]
+        { change: 1, lower: 100 },
+      ],
     });
 
     // THEN
@@ -914,20 +914,20 @@ export = {
           a: new cloudwatch.Metric({
             namespace: 'Test',
             metricName: 'Metric',
-          })
+          }),
         },
       }),
       adjustmentType: autoscaling.AdjustmentType.CHANGE_IN_CAPACITY,
       scalingSteps: [
         { change: -1, lower: 0, upper: 49 },
         { change: 0, lower: 50, upper: 99 },
-        { change: 1, lower: 100 }
-      ]
+        { change: 1, lower: 100 },
+      ],
     });
 
     // THEN
     expect(stack).notTo(haveResource('AWS::CloudWatch::Alarm', {
-      Period: 60
+      Period: 60,
     }));
 
     expect(stack).to(haveResource('AWS::CloudWatch::Alarm', {
@@ -936,22 +936,22 @@ export = {
       'Metrics': [
         {
           'Expression': 'a',
-          'Id': 'expr_1'
+          'Id': 'expr_1',
         },
         {
           'Id': 'a',
           'MetricStat': {
             'Metric': {
               'MetricName': 'Metric',
-              'Namespace': 'Test'
+              'Namespace': 'Test',
             },
             'Period': 300,
-            'Stat': 'Average'
+            'Stat': 'Average',
           },
-          'ReturnData': false
-        }
+          'ReturnData': false,
+        },
       ],
-      'Threshold': 49
+      'Threshold': 49,
     }));
 
     test.done();

@@ -159,7 +159,7 @@ export class Map extends State implements INextable {
       ...this.renderRetryCatch(),
       ...this.renderIterator(),
       ...this.renderItemsPath(),
-      MaxConcurrency: this.maxConcurrency
+      MaxConcurrency: this.maxConcurrency,
     };
   }
 
@@ -182,7 +182,7 @@ export class Map extends State implements INextable {
 
   private renderItemsPath(): any {
     return {
-      ItemsPath: renderJsonPath(this.itemsPath)
+      ItemsPath: renderJsonPath(this.itemsPath),
     };
   }
 }
