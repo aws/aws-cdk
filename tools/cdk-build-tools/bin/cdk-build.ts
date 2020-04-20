@@ -1,7 +1,8 @@
 import * as yargs from 'yargs';
 import { compileCurrentPackage } from '../lib/compile';
+import { lintCurrentPackage } from '../lib/lint';
 import { shell } from '../lib/os';
-import { cdkBuildOptions } from '../lib/package-info';
+import { cdkBuildOptions, CompilerOverrides } from '../lib/package-info';
 import { Timers } from '../lib/timer';
 
 async function main() {
@@ -45,7 +46,9 @@ async function main() {
     await shell(['cfn2ts', ...options.cloudformation.map(scope => `--scope=${scope}`)], { timers });
   }
 
-  await compileCurrentPackage(timers, options, { eslint: args.eslint, jsii: args.jsii, tsc: args.tsc, tslint: args.tslint });
+  const overrides: CompilerOverrides = { eslint: args.eslint, jsii: args.jsii, tsc: args.tsc, tslint: args.tslint };
+  await compileCurrentPackage(timers, overrides);
+  await lintCurrentPackage(options, overrides);
 
   if (options.post) {
     await shell(options.post, { timers });
@@ -60,7 +63,7 @@ main().then(() => {
 }).catch(e => {
   buildTimer.end();
   process.stderr.write(`${e.toString()}\n`);
-  process.stderr.write(`Build failed. ${timers.display()}\n`);
-  process.stderr.write(`!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n`);
+  process.stderr.write('Build failed. ${timers.display()}\n');
+  process.stderr.write('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n');
   process.exit(1);
 });
