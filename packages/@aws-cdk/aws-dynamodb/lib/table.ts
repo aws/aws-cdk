@@ -238,7 +238,12 @@ export interface ITable extends IResource {
   /**
    * Permits an IAM principal all data read operations from this table:
    * BatchGetItem, GetRecords, GetShardIterator, Query, GetItem, Scan.
+   * 
+   * If an encryption key is used, permission to use the key for
+   * encrypt/decrypt will also be granted
+   * 
    * @param grantee The principal to grant access to
+   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
   grantReadData(grantee: iam.IGrantable, objectsKeyPattern?: any): iam.Grant;
 
@@ -253,14 +258,24 @@ export interface ITable extends IResource {
    * Permits an IAM principal all stream data read operations for this
    * table's stream:
    * DescribeStream, GetRecords, GetShardIterator, ListStreams.
+   * 
+   * If an encryption key is used, permission to use the key for
+   * encrypt/decrypt will also be granted
+   * 
    * @param grantee The principal to grant access to
+   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
   grantStreamRead(grantee: iam.IGrantable, objectsKeyPattern?: any): iam.Grant;
 
   /**
    * Permits an IAM principal all data write operations to this table:
    * BatchWriteItem, PutItem, UpdateItem, DeleteItem.
+   * 
+   * If an encryption key is used, permission to use the key for
+   * encrypt/decrypt will also be granted
+   * 
    * @param grantee The principal to grant access to
+   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
   grantWriteData(grantee: iam.IGrantable, objectsKeyPattern?: any): iam.Grant;
 
@@ -268,7 +283,12 @@ export interface ITable extends IResource {
    * Permits an IAM principal to all data read/write operations to this table.
    * BatchGetItem, GetRecords, GetShardIterator, Query, GetItem, Scan,
    * BatchWriteItem, PutItem, UpdateItem, DeleteItem
+   * 
+   * If an encryption key is used, permission to use the key for
+   * encrypt/decrypt will also be granted
+   * 
    * @param grantee The principal to grant access to
+   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
   grantReadWriteData(grantee: iam.IGrantable, objectsKeyPattern?: any): iam.Grant;
 
@@ -391,7 +411,9 @@ abstract class TableBase extends Resource implements ITable {
    * Adds an IAM policy statement associated with this table to an IAM
    * principal's policy.
    * @param grantee The principal (no-op if undefined)
-   * @param actions The set of actions to allow (i.e. "dynamodb:PutItem", "dynamodb:GetItem", ...)
+   * @param tableActions The set of actions to allow (i.e. "dynamodb:PutItem", "dynamodb:GetItem", ...)
+   * @param keyActions The set of actions to allow (i.e. "kms:Encrypt", "kms:Decrypt", ...)
+   * @param otherResourceArns 
    */
   public grant(grantee: iam.IGrantable, tableActions: string[], keyActions: string[], ...otherResourceArns: string[]) {
     const resources = [this.tableArn, Lazy.stringValue({ produce: () => this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE }), ...otherResourceArns];
@@ -411,16 +433,18 @@ abstract class TableBase extends Resource implements ITable {
    * Adds an IAM policy statement associated with this table's stream to an
    * IAM principal's policy.
    * @param grantee The principal (no-op if undefined)
-   * @param actions The set of actions to allow (i.e. "dynamodb:DescribeStream", "dynamodb:GetRecords", ...)
+   * @param streamActions The set of actions to allow (i.e. "dynamodb:DescribeStream", "dynamodb:GetRecords", ...)
+   * @param keyActions The set of actions to allow (i.e. "kms:Encrypt", "kms:Decrypt", ...)
+   * @param otherResourceArns
    */
-  public grantStream(grantee: iam.IGrantable, tableActions: string[], keyActions: string[], ...otherResourceArns: string[]) {
+  public grantStream(grantee: iam.IGrantable, streamActions: string[], keyActions: string[], ...otherResourceArns: string[]) {
     if (!this.tableStreamArn) {
       throw new Error(`DynamoDB Streams must be enabled on the table ${this.node.path}`);
     }
     const resources = [ this.tableStreamArn, ...otherResourceArns];
     const ret = iam.Grant.addToPrincipal({
       grantee,
-      actions: tableActions,
+      actions: streamActions,
       resourceArns: resources,
       scope: this
     });
@@ -433,7 +457,11 @@ abstract class TableBase extends Resource implements ITable {
   /**
    * Permits an IAM principal all data read operations from this table:
    * BatchGetItem, GetRecords, GetShardIterator, Query, GetItem, Scan.
+   * 
+   * If an encryption key is used, permission to use the key for
+   * encrypt/decrypt will also be granted.
    * @param grantee The principal to grant access to
+   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
   public grantReadData(grantee: iam.IGrantable, objectsKeyPattern: any = '*'): iam.Grant {
     return this.grant(grantee, perms.READ_DATA_ACTIONS, perms.KEY_READ_ACTIONS, this.arnForObjects(objectsKeyPattern));
@@ -461,7 +489,12 @@ abstract class TableBase extends Resource implements ITable {
    * Permits an IAM principal all stream data read operations for this
    * table's stream:
    * DescribeStream, GetRecords, GetShardIterator, ListStreams.
+   * 
+   * If an encryption key is used, permission to use the key for
+   * encrypt/decrypt will also be granted.
+   * 
    * @param grantee The principal to grant access to
+   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
   public grantStreamRead(grantee: iam.IGrantable, objectsKeyPattern: any = '*'): iam.Grant {
     this.grantTableListStreams(grantee);
@@ -471,7 +504,12 @@ abstract class TableBase extends Resource implements ITable {
   /**
    * Permits an IAM principal all data write operations to this table:
    * BatchWriteItem, PutItem, UpdateItem, DeleteItem.
+   * 
+   * If an encryption key is used, permission to use the key for
+   * encrypt/decrypt will also be granted.
+   * 
    * @param grantee The principal to grant access to
+   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
   public grantWriteData(grantee: iam.IGrantable, objectsKeyPattern: any = '*'): iam.Grant {
     return this.grant(grantee, perms.WRITE_DATA_ACTIONS, perms.KEY_WRITE_ACTIONS, this.arnForObjects(objectsKeyPattern));
@@ -481,7 +519,12 @@ abstract class TableBase extends Resource implements ITable {
    * Permits an IAM principal to all data read/write operations to this table.
    * BatchGetItem, GetRecords, GetShardIterator, Query, GetItem, Scan,
    * BatchWriteItem, PutItem, UpdateItem, DeleteItem
+   * 
+   * If an encryption key is used, permission to use the key for
+   * encrypt/decrypt will also be granted.
+   * 
    * @param grantee The principal to grant access to
+   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
   public grantReadWriteData(grantee: iam.IGrantable, objectsKeyPattern: any = '*'): iam.Grant {
     const tableActions = perms.READ_DATA_ACTIONS.concat(perms.WRITE_DATA_ACTIONS);
@@ -491,7 +534,13 @@ abstract class TableBase extends Resource implements ITable {
 
   /**
    * Permits all DynamoDB operations ("dynamodb:*") to an IAM principal.
+   * 
+   * If an encryption key is used, permission to use the key for
+   * encrypt/decrypt will also be granted.
+   * 
+   * 
    * @param grantee The principal to grant access to
+   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
   public grantFullAccess(grantee: iam.IGrantable, objectsKeyPattern: any = '*') {
     const keyActions = perms.KEY_READ_ACTIONS.concat(perms.KEY_WRITE_ACTIONS);
