@@ -212,7 +212,7 @@ export = {
                   'Name': 'Artifact_Source_CodeCommit',
                 },
               ],
-            }
+            },
           ],
         },
         {
@@ -223,14 +223,14 @@ export = {
               'InputArtifacts': [
                 {
                   'Name': 'Artifact_Source_CodeCommit',
-                }
+                },
               ],
               'OutputArtifacts': [
                 {
                   'Name': 'Artifact_Build_CodeBuild',
                 },
               ],
-            }
+            },
           ],
         },
       ],

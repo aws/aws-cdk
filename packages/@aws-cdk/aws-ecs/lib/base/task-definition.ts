@@ -289,7 +289,7 @@ export class TaskDefinition extends TaskDefinitionBase {
       ],
       networkMode: this.renderNetworkMode(this.networkMode),
       placementConstraints: Lazy.anyValue({ produce: () =>
-        !isFargateCompatible(this.compatibility) ? this.placementConstraints : undefined
+        !isFargateCompatible(this.compatibility) ? this.placementConstraints : undefined,
       }, { omitEmptyArray: true }),
       proxyConfiguration: props.proxyConfiguration ? props.proxyConfiguration.bind(this.stack, this) : undefined,
       cpu: props.cpu,
@@ -326,7 +326,7 @@ export class TaskDefinition extends TaskDefinitionBase {
     }
     return {
       containerName: options.containerName,
-      portMapping
+      portMapping,
     };
   }
 

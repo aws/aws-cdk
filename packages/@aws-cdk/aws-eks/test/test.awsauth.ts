@@ -22,8 +22,8 @@ export = {
         apiVersion: 'v1',
         kind: 'ConfigMap',
         metadata: { name: 'aws-auth', namespace: 'kube-system' },
-        data: { mapRoles: '[]', mapUsers: '[]', mapAccounts: '[]' }
-      }])
+        data: { mapRoles: '[]', mapUsers: '[]', mapAccounts: '[]' },
+      }]),
     }));
     test.done();
   },
@@ -54,48 +54,48 @@ export = {
             {
               'Fn::GetAtt': [
                 'roleC7B7E775',
-                'Arn'
-              ]
+                'Arn',
+              ],
             },
             '\\",\\"username\\":\\"roleuser\\",\\"groups\\":[\\"role-group1\\"]},{\\"rolearn\\":\\"',
             {
               'Fn::GetAtt': [
                 'roleC7B7E775',
-                'Arn'
-              ]
+                'Arn',
+              ],
             },
             '\\",\\"username\\":\\"',
             {
               'Fn::GetAtt': [
                 'roleC7B7E775',
-                'Arn'
-              ]
+                'Arn',
+              ],
             },
             '\\",\\"groups\\":[\\"role-group2\\",\\"role-group3\\"]}]","mapUsers":"[{\\"userarn\\":\\"',
             {
               'Fn::GetAtt': [
                 'user2C2B57AE',
-                'Arn'
-              ]
+                'Arn',
+              ],
             },
             '\\",\\"username\\":\\"',
             {
               'Fn::GetAtt': [
                 'user2C2B57AE',
-                'Arn'
-              ]
+                'Arn',
+              ],
             },
             '\\",\\"groups\\":[\\"user-group1\\",\\"user-group2\\"]},{\\"userarn\\":\\"',
             {
               'Fn::GetAtt': [
                 'user2C2B57AE',
-                'Arn'
-              ]
+                'Arn',
+              ],
             },
-            '\\",\\"username\\":\\"foo\\",\\"groups\\":[\\"user-group1\\",\\"user-group2\\"]}]","mapAccounts":"[\\"112233\\",\\"5566776655\\"]"}}]'
-          ]
-        ]
-      }
+            '\\",\\"username\\":\\"foo\\",\\"groups\\":[\\"user-group1\\",\\"user-group2\\"]}]","mapAccounts":"[\\"112233\\",\\"5566776655\\"]"}}]',
+          ],
+        ],
+      },
     }));
 
     test.done();
@@ -120,26 +120,26 @@ export = {
           [
             '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system"},"data":{"mapRoles":"[{\\"rolearn\\":\\"arn:aws:iam::123456789012:role/S3Access\\",\\"username\\":\\"arn:aws:iam::123456789012:role/S3Access\\",\\"groups\\":[\\"group1\\"]}]","mapUsers":"[{\\"userarn\\":\\"arn:',
             {
-              Ref: 'AWS::Partition'
+              Ref: 'AWS::Partition',
             },
             ':iam::',
             {
-              Ref: 'AWS::AccountId'
+              Ref: 'AWS::AccountId',
             },
             ':user/MyUserName\\",\\"username\\":\\"arn:',
             {
-              Ref: 'AWS::Partition'
+              Ref: 'AWS::Partition',
             },
             ':iam::',
             {
-              Ref: 'AWS::AccountId'
+              Ref: 'AWS::AccountId',
             },
-            ':user/MyUserName\\",\\"groups\\":[\\"group2\\"]}]","mapAccounts":"[]"}}]'
-          ]
-        ]
-      }
+            ':user/MyUserName\\",\\"groups\\":[\\"group2\\"]}]","mapAccounts":"[]"}}]',
+          ],
+        ],
+      },
     }));
 
     test.done();
-  }
+  },
 };

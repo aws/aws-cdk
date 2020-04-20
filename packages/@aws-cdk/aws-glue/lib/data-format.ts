@@ -166,7 +166,7 @@ export namespace DataFormat {
   export const ApacheLogs: DataFormat = {
     inputFormat: InputFormat.TEXT,
     outputFormat: OutputFormat.HIVE_IGNORE_KEY_TEXT,
-    serializationLibrary: SerializationLibrary.REGEXP
+    serializationLibrary: SerializationLibrary.REGEXP,
   };
 
   /**
@@ -177,7 +177,7 @@ export namespace DataFormat {
   export const Avro: DataFormat = {
     inputFormat: InputFormat.AVRO,
     outputFormat: OutputFormat.AVRO,
-    serializationLibrary: SerializationLibrary.AVRO
+    serializationLibrary: SerializationLibrary.AVRO,
   };
 
   /**
@@ -188,7 +188,7 @@ export namespace DataFormat {
   export const CloudTrailLogs: DataFormat = {
     inputFormat: InputFormat.CLOUDTRAIL,
     outputFormat: OutputFormat.HIVE_IGNORE_KEY_TEXT,
-    serializationLibrary: SerializationLibrary.CLOUDTRAIL
+    serializationLibrary: SerializationLibrary.CLOUDTRAIL,
   };
 
   /**
@@ -199,7 +199,7 @@ export namespace DataFormat {
   export const CSV: DataFormat = {
     inputFormat: InputFormat.TEXT,
     outputFormat: OutputFormat.HIVE_IGNORE_KEY_TEXT,
-    serializationLibrary: SerializationLibrary.OPEN_CSV
+    serializationLibrary: SerializationLibrary.OPEN_CSV,
   };
 
   /**
@@ -211,7 +211,7 @@ export namespace DataFormat {
   export const Json: DataFormat = {
     inputFormat: InputFormat.TEXT,
     outputFormat: OutputFormat.HIVE_IGNORE_KEY_TEXT,
-    serializationLibrary: SerializationLibrary.OPENX_JSON
+    serializationLibrary: SerializationLibrary.OPENX_JSON,
   };
 
   /**
@@ -222,7 +222,7 @@ export namespace DataFormat {
   export const Logstash: DataFormat = {
     inputFormat: InputFormat.TEXT,
     outputFormat: OutputFormat.HIVE_IGNORE_KEY_TEXT,
-    serializationLibrary: SerializationLibrary.GROK
+    serializationLibrary: SerializationLibrary.GROK,
   };
 
   /**
@@ -233,7 +233,7 @@ export namespace DataFormat {
   export const Orc: DataFormat = {
     inputFormat: InputFormat.ORC,
     outputFormat: OutputFormat.ORC,
-    serializationLibrary: SerializationLibrary.ORC
+    serializationLibrary: SerializationLibrary.ORC,
   };
 
   /**
@@ -244,7 +244,7 @@ export namespace DataFormat {
   export const Parquet: DataFormat = {
     inputFormat: InputFormat.PARQUET,
     outputFormat: OutputFormat.PARQUET,
-    serializationLibrary: SerializationLibrary.PARQUET
+    serializationLibrary: SerializationLibrary.PARQUET,
   };
 
   /**
@@ -255,6 +255,6 @@ export namespace DataFormat {
   export const TSV: DataFormat = {
     inputFormat: InputFormat.TEXT,
     outputFormat: OutputFormat.HIVE_IGNORE_KEY_TEXT,
-    serializationLibrary: SerializationLibrary.LAZY_SIMPLE
+    serializationLibrary: SerializationLibrary.LAZY_SIMPLE,
   };
 }

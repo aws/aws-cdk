@@ -98,7 +98,7 @@ abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
     if (!this.role) {
       this.handler.addPermission(`${this.node.uniqueId}:Permissions`, {
         principal: new iam.ServicePrincipal('apigateway.amazonaws.com'),
-        sourceArn: this.authorizerArn
+        sourceArn: this.authorizerArn,
       });
     } else if (this.role instanceof iam.Role) { // i.e. not imported
       this.role.attachInlinePolicy(new iam.Policy(this, 'authorizerInvokePolicy', {
@@ -106,8 +106,8 @@ abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
           new iam.PolicyStatement({
             resources: [ this.handler.functionArn ],
             actions: [ 'lambda:InvokeFunction' ],
-          })
-        ]
+          }),
+        ],
       }));
     }
   }
@@ -123,7 +123,7 @@ abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
           throw new Error(`Authorizer (${this.node.path}) must be attached to a RestApi`);
         }
         return this.restApiId;
-      }
+      },
     });
   }
 }
@@ -181,7 +181,7 @@ export class TokenAuthorizer extends LambdaAuthorizer {
     this.authorizerArn = Stack.of(this).formatArn({
       service: 'execute-api',
       resource: restApiId,
-      resourceName: `authorizers/${this.authorizerId}`
+      resourceName: `authorizers/${this.authorizerId}`,
     });
 
     this.setupPermissions();
@@ -242,7 +242,7 @@ export class RequestAuthorizer extends LambdaAuthorizer {
     this.authorizerArn = Stack.of(this).formatArn({
       service: 'execute-api',
       resource: restApiId,
-      resourceName: `authorizers/${this.authorizerId}`
+      resourceName: `authorizers/${this.authorizerId}`,
     });
 
     this.setupPermissions();

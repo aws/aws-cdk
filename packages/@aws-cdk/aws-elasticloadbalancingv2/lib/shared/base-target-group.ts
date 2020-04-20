@@ -243,21 +243,21 @@ export abstract class TargetGroupBase extends cdk.Construct implements ITargetGr
       // HEALTH CHECK
       healthCheckEnabled: cdk.Lazy.anyValue({ produce: () => this.healthCheck && this.healthCheck.enabled}),
       healthCheckIntervalSeconds: cdk.Lazy.numberValue({
-        produce: () => this.healthCheck && this.healthCheck.interval && this.healthCheck.interval.toSeconds()
+        produce: () => this.healthCheck && this.healthCheck.interval && this.healthCheck.interval.toSeconds(),
       }),
       healthCheckPath: cdk.Lazy.stringValue({ produce: () => this.healthCheck && this.healthCheck.path }),
       healthCheckPort: cdk.Lazy.stringValue({ produce: () => this.healthCheck && this.healthCheck.port }),
       healthCheckProtocol: cdk.Lazy.stringValue({ produce: () => this.healthCheck && this.healthCheck.protocol }),
       healthCheckTimeoutSeconds: cdk.Lazy.numberValue({
-        produce: () => this.healthCheck && this.healthCheck.timeout && this.healthCheck.timeout.toSeconds()
+        produce: () => this.healthCheck && this.healthCheck.timeout && this.healthCheck.timeout.toSeconds(),
       }),
       healthyThresholdCount: cdk.Lazy.numberValue({ produce: () => this.healthCheck && this.healthCheck.healthyThresholdCount }),
       unhealthyThresholdCount: cdk.Lazy.numberValue({ produce: () => this.healthCheck && this.healthCheck.unhealthyThresholdCount }),
       matcher: cdk.Lazy.anyValue({ produce: () => this.healthCheck && this.healthCheck.healthyHttpCodes !== undefined ? {
-        httpCode: this.healthCheck.healthyHttpCodes
+        httpCode: this.healthCheck.healthyHttpCodes,
       } : undefined }),
 
-      ...additionalProps
+      ...additionalProps,
     });
 
     this.targetGroupLoadBalancerArns = this.resource.attrLoadBalancerArns;

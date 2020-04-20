@@ -12,7 +12,7 @@ export interface INodegroup extends IResource {
    * Name of the nodegroup
    * @attribute
    */
-  readonly nodegroupName: string
+  readonly nodegroupName: string;
 }
 
 /**
@@ -21,7 +21,13 @@ export interface INodegroup extends IResource {
  * uses the Amazon EKS-optimized Linux AMI.
  */
 export enum NodegroupAmiType {
+  /**
+   * Amazon Linux 2
+   */
   AL2_X86_64 = 'AL2_x86_64',
+  /**
+   * Amazon Linux 2 with GPU support
+   */
   AL2_X86_64_GPU = 'AL2_x86_64_GPU',
 }
 
@@ -202,9 +208,9 @@ export class Nodegroup extends Resource implements INodegroup {
   private readonly maxSize: number;
   private readonly minSize: number;
 
-  constructor(scope: Construct, id: string, props: NodegroupProps ) {
+  constructor(scope: Construct, id: string, props: NodegroupProps) {
     super(scope, id, {
-      physicalName: props.nodegroupName
+      physicalName: props.nodegroupName,
     });
 
     this.cluster = props.cluster;
@@ -222,7 +228,7 @@ export class Nodegroup extends Resource implements INodegroup {
 
     if (!props.nodeRole) {
       const ngRole = new Role(this, 'NodeGroupRole', {
-        assumedBy: new ServicePrincipal('ec2.amazonaws.com')
+        assumedBy: new ServicePrincipal('ec2.amazonaws.com'),
       });
 
       ngRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AmazonEKSWorkerNodePolicy'));
@@ -247,14 +253,14 @@ export class Nodegroup extends Resource implements INodegroup {
       remoteAccess: props.remoteAccess ? {
         ec2SshKey: props.remoteAccess.sshKeyName,
         sourceSecurityGroups: props.remoteAccess.sourceSecurityGroups ?
-          props.remoteAccess.sourceSecurityGroups.map(m => m.securityGroupId) : undefined
+          props.remoteAccess.sourceSecurityGroups.map(m => m.securityGroupId) : undefined,
       } : undefined,
       scalingConfig: {
         desiredSize: this.desiredSize,
         maxSize: this.maxSize,
-        minSize: this.minSize
+        minSize: this.minSize,
       },
-      tags: props.tags
+      tags: props.tags,
     });
 
     // As managed nodegroup will auto map the instance role to RBAC behind the scene and users don't have to manually

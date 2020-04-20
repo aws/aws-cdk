@@ -13,8 +13,8 @@ export const builder = {
     alias: 'b',
     desc: 'the command to use to open the browser, using %u as a placeholder for the path of the file to open',
     type: 'string',
-    default: process.platform === 'win32' ? 'start %u' : 'open %u'
-  }
+    default: process.platform === 'win32' ? 'start %u' : 'open %u',
+  },
 };
 
 export interface Arguments extends yargs.Arguments {

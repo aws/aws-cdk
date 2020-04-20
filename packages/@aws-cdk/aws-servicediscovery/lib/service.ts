@@ -259,7 +259,7 @@ export class Service extends ServiceBase {
       failureThreshold: 1,
       resourcePath: props.healthCheck && props.healthCheck.type !== HealthCheckType.TCP
         ? '/'
-        : undefined
+        : undefined,
     };
 
     const healthCheckConfig = props.healthCheck && { ...healthCheckConfigDefaults, ...props.healthCheck };
@@ -272,7 +272,7 @@ export class Service extends ServiceBase {
       dnsConfig,
       healthCheckConfig,
       healthCheckCustomConfig,
-      namespaceId: props.namespace.namespaceId
+      namespaceId: props.namespace.namespaceId,
     });
 
     this.serviceName = service.attrName;
@@ -290,7 +290,7 @@ export class Service extends ServiceBase {
     return new AliasTargetInstance(this, id, {
       service: this,
       dnsName: loadBalancer.loadBalancerDnsName,
-      customAttributes
+      customAttributes,
     });
   }
 
@@ -300,7 +300,7 @@ export class Service extends ServiceBase {
   public registerNonIpInstance(id: string, props: NonIpInstanceBaseProps): IInstance {
     return new NonIpInstance(this, id, {
       service: this,
-      ...props
+      ...props,
     });
   }
 
@@ -310,7 +310,7 @@ export class Service extends ServiceBase {
   public registerIpInstance(id: string, props: IpInstanceBaseProps): IInstance {
     return new IpInstance(this, id, {
       service: this,
-      ...props
+      ...props,
     });
   }
 
@@ -320,7 +320,7 @@ export class Service extends ServiceBase {
   public registerCnameInstance(id: string, props: CnameInstanceBaseProps): IInstance {
     return new CnameInstance(this, id, {
       service: this,
-      ...props
+      ...props,
     });
   }
 }
@@ -331,7 +331,7 @@ function renderDnsRecords(dnsRecordType: DnsRecordType, dnsTtl: Duration = Durat
   if (dnsRecordType === DnsRecordType.A_AAAA) {
     return [{
       type: DnsRecordType.A,
-      ttl
+      ttl,
     }, {
       type: DnsRecordType.AAAA,
       ttl,

@@ -417,14 +417,14 @@ export class ContainerDefinition extends cdk.Construct {
     const mountPoint = {
       containerPath: scratch.containerPath,
       readOnly: scratch.readOnly,
-      sourceVolume: scratch.name
+      sourceVolume: scratch.name,
     };
 
     const volume = {
       host: {
-        sourcePath: scratch.sourcePath
+        sourcePath: scratch.sourcePath,
       },
-      name: scratch.name
+      name: scratch.name,
     };
 
     this.taskDefinition.addVolume(volume);
@@ -446,7 +446,7 @@ export class ContainerDefinition extends cdk.Construct {
         if (pm.hostPort === undefined) {
           pm = {
             ...pm,
-            hostPort: 0
+            hostPort: 0,
           };
         }
       }
@@ -587,7 +587,7 @@ export class ContainerDefinition extends cdk.Construct {
       v.grantRead(this.taskDefinition.obtainExecutionRole());
       secrets.push({
         name: k,
-        valueFrom: v.arn
+        valueFrom: v.arn,
       });
     }
 
@@ -793,7 +793,7 @@ export enum ContainerDependencyCondition {
 function renderContainerDependency(containerDependency: ContainerDependency): CfnTaskDefinition.ContainerDependencyProperty {
   return {
     containerName: containerDependency.container.containerName,
-    condition: containerDependency.condition || ContainerDependencyCondition.HEALTHY
+    condition: containerDependency.condition || ContainerDependencyCondition.HEALTHY,
   };
 }
 

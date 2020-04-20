@@ -27,9 +27,9 @@ export = {
             Essential: true,
             Image: '/aws/aws-example-app',
             Memory: 2048,
-            Name: 'Container'
-          }
-        ]
+            Name: 'Container',
+          },
+        ],
       }));
 
       test.done();
@@ -52,17 +52,17 @@ export = {
         dnsServers: ['host.com'],
         dockerLabels: {
           key: 'fooLabel',
-          value: 'barLabel'
+          value: 'barLabel',
         },
         dockerSecurityOptions: ['ECS_SELINUX_CAPABLE=true'],
         entryPoint: ['top', '-b'],
         environment: {
           key: 'foo',
-          value: 'bar'
+          value: 'bar',
         },
         essential: true,
         extraHosts: {
-          name: 'dev-db.hostname.pvt'
+          name: 'dev-db.hostname.pvt',
         },
         gpuCount: 256,
         hostname: 'host.example.com',
@@ -73,13 +73,13 @@ export = {
         user: 'rootUser',
         workingDirectory: 'a/b/c',
         healthCheck: {
-          command: ['curl localhost:8000']
+          command: ['curl localhost:8000'],
         },
         linuxParameters: new ecs.LinuxParameters(stack, 'LinuxParameters'),
         logging: new ecs.AwsLogDriver({ streamPrefix: 'prefix' }),
         secrets: {
           SECRET: ecs.Secret.fromSecretsManager(secret),
-        }
+        },
       });
 
       // THEN
@@ -87,69 +87,69 @@ export = {
         ContainerDefinitions: [
           {
             Command: [
-              'CMD-SHELL'
+              'CMD-SHELL',
             ],
             Cpu: 128,
             DisableNetworking: true,
             DnsSearchDomains: [
-              'example.com'
+              'example.com',
             ],
             DnsServers: [
-              'host.com'
+              'host.com',
             ],
             DockerLabels: {
               key: 'fooLabel',
-              value: 'barLabel'
+              value: 'barLabel',
             },
             DockerSecurityOptions: [
-              'ECS_SELINUX_CAPABLE=true'
+              'ECS_SELINUX_CAPABLE=true',
             ],
             EntryPoint: [
               'top',
-              '-b'
+              '-b',
             ],
             Environment: [
               {
                 Name: 'key',
-                Value: 'foo'
+                Value: 'foo',
               },
               {
                 Name: 'value',
-                Value: 'bar'
-              }
+                Value: 'bar',
+              },
             ],
             Essential: true,
             ExtraHosts: [
               {
                 Hostname: 'name',
-                IpAddress: 'dev-db.hostname.pvt'
-              }
+                IpAddress: 'dev-db.hostname.pvt',
+              },
             ],
             HealthCheck: {
               Command: [
                 'CMD-SHELL',
-                'curl localhost:8000'
+                'curl localhost:8000',
               ],
               Interval: 30,
               Retries: 3,
-              Timeout: 5
+              Timeout: 5,
             },
             Hostname: 'host.example.com',
             Image: '/aws/aws-example-app',
             LinuxParameters: {
-              Capabilities: {}
+              Capabilities: {},
             },
             LogConfiguration: {
               LogDriver: 'awslogs',
               Options: {
                 'awslogs-group': {
-                  Ref: 'ContainerLogGroupE6FD74A4'
+                  Ref: 'ContainerLogGroupE6FD74A4',
                 },
                 'awslogs-stream-prefix': 'prefix',
                 'awslogs-region': {
-                  Ref: 'AWS::Region'
-                }
-              }
+                  Ref: 'AWS::Region',
+                },
+              },
             },
             Memory: 1024,
             MemoryReservation: 512,
@@ -159,23 +159,23 @@ export = {
             ResourceRequirements: [
               {
                 Type: 'GPU',
-                Value: '256'
-              }
+                Value: '256',
+              },
             ],
             Secrets: [
               {
                 Name: 'SECRET',
                 ValueFrom: {
-                  Ref: 'SecretA720EF05'
-                }
-              }
+                  Ref: 'SecretA720EF05',
+                },
+              },
             ],
             StartTimeout: 2,
             StopTimeout: 5,
             User: 'rootUser',
-            WorkingDirectory: 'a/b/c'
-          }
-        ]
+            WorkingDirectory: 'a/b/c',
+          },
+        ],
       }));
 
       test.done();
@@ -216,7 +216,7 @@ export = {
         test.throws(() => {
           container.addPortMappings({
             containerPort: 8080,
-            hostPort: 8081
+            hostPort: 8081,
           });
         });
 
@@ -237,7 +237,7 @@ export = {
 
         container.addPortMappings({
           containerPort: 8080,
-          hostPort: 8080
+          hostPort: 8080,
         });
 
         // THEN no exception raised
@@ -283,7 +283,7 @@ export = {
         test.throws(() => {
           container.addPortMappings({
             containerPort: 8080,
-            hostPort: 8081
+            hostPort: 8081,
           });
         });
 
@@ -304,7 +304,7 @@ export = {
 
         container.addPortMappings({
           containerPort: 8080,
-          hostPort: 8080
+          hostPort: 8080,
         });
 
         // THEN no exception raised
@@ -393,7 +393,7 @@ export = {
 
         container.addPortMappings({
           containerPort: 8080,
-          hostPort: 8084
+          hostPort: 8084,
         });
 
         // THEN no exception raises
@@ -432,7 +432,7 @@ export = {
         // WHEN
         new ecs.TaskDefinition(stack, 'TD', {
           compatibility: ecs.Compatibility.EC2,
-          networkMode: ecs.NetworkMode.NAT
+          networkMode: ecs.NetworkMode.NAT,
         });
 
         // THEN
@@ -446,8 +446,8 @@ export = {
         }));
 
         test.done();
-      }
-    }
+      },
+    },
   },
 
   'Container Port': {
@@ -488,7 +488,7 @@ export = {
 
       const container = taskDefinition.addContainer('MyContainer', {
         image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
-        memoryLimitMiB: 2048
+        memoryLimitMiB: 2048,
       });
 
       // THEN
@@ -537,7 +537,7 @@ export = {
 
         const container = taskDefinition.addContainer('MyContainer', {
           image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
-          memoryLimitMiB: 2048
+          memoryLimitMiB: 2048,
         });
 
         // THEN
@@ -574,7 +574,7 @@ export = {
         const expected = 8080;
         test.equal(actual, expected);
         test.done();
-      }
+      },
     },
 
     'With network mode Bridge': {
@@ -625,7 +625,7 @@ export = {
         const expected = 0;
         test.equal(actual, expected);
         test.done();
-      }
+      },
     },
   },
 
@@ -639,8 +639,8 @@ export = {
       image: ecs.ContainerImage.fromRegistry('test'),
       memoryLimitMiB: 1024,
       environment: {
-        TEST_ENVIRONMENT_VARIABLE: 'test environment variable value'
-      }
+        TEST_ENVIRONMENT_VARIABLE: 'test environment variable value',
+      },
     });
 
     // THEN
@@ -649,10 +649,10 @@ export = {
         {
           Environment: [{
             Name: 'TEST_ENVIRONMENT_VARIABLE',
-            Value: 'test environment variable value'
-          }]
-        }
-      ]
+            Value: 'test environment variable value',
+          }],
+        },
+      ],
     }));
 
     test.done();
@@ -680,11 +680,11 @@ export = {
             ResourceRequirements: [
               {
                 Type: 'GPU',
-                Value: '4'
-              }
-            ]
-          }
-        ]
+                Value: '4',
+              },
+            ],
+          },
+        ],
       }));
 
       test.done();
@@ -699,7 +699,7 @@ export = {
     const secret = new secretsmanager.Secret(stack, 'Secret');
     const parameter = ssm.StringParameter.fromSecureStringParameterAttributes(stack, 'Parameter', {
       parameterName: '/name',
-      version: 1
+      version: 1,
     });
 
     // WHEN
@@ -709,7 +709,7 @@ export = {
       secrets: {
         SECRET: ecs.Secret.fromSecretsManager(secret),
         PARAMETER: ecs.Secret.fromSsmParameter(parameter),
-      }
+      },
     });
 
     // THEN
@@ -720,8 +720,8 @@ export = {
             {
               Name: 'SECRET',
               ValueFrom: {
-                Ref: 'SecretA720EF05'
-              }
+                Ref: 'SecretA720EF05',
+              },
             },
             {
               Name: 'PARAMETER',
@@ -731,24 +731,24 @@ export = {
                   [
                     'arn:',
                     {
-                      Ref: 'AWS::Partition'
+                      Ref: 'AWS::Partition',
                     },
                     ':ssm:',
                     {
-                      Ref: 'AWS::Region'
+                      Ref: 'AWS::Region',
                     },
                     ':',
                     {
-                      Ref: 'AWS::AccountId'
+                      Ref: 'AWS::AccountId',
                     },
-                    ':parameter/name'
-                  ]
-                ]
-              }
+                    ':parameter/name',
+                  ],
+                ],
+              },
             },
-          ]
-        }
-      ]
+          ],
+        },
+      ],
     }));
 
     expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
@@ -758,15 +758,15 @@ export = {
             Action: 'secretsmanager:GetSecretValue',
             Effect: 'Allow',
             Resource: {
-              Ref: 'SecretA720EF05'
-            }
+              Ref: 'SecretA720EF05',
+            },
           },
           {
             Action: [
               'ssm:DescribeParameters',
               'ssm:GetParameters',
               'ssm:GetParameter',
-              'ssm:GetParameterHistory'
+              'ssm:GetParameterHistory',
             ],
             Effect: 'Allow',
             Resource: {
@@ -775,24 +775,24 @@ export = {
                 [
                   'arn:',
                   {
-                    Ref: 'AWS::Partition'
+                    Ref: 'AWS::Partition',
                   },
                   ':ssm:',
                   {
-                    Ref: 'AWS::Region'
+                    Ref: 'AWS::Region',
                   },
                   ':',
                   {
-                    Ref: 'AWS::AccountId'
+                    Ref: 'AWS::AccountId',
                   },
-                  ':parameter/name'
-                ]
-              ]
-            }
-          }
+                  ':parameter/name',
+                ],
+              ],
+            },
+          },
         ],
-        Version: '2012-10-17'
-      }
+        Version: '2012-10-17',
+      },
     }));
 
     test.equal(ecs.Secret.fromSecretsManager(secret).hasField, false);
@@ -815,7 +815,7 @@ export = {
       memoryLimitMiB: 1024,
       secrets: {
         SECRET_KEY: ecs.Secret.fromSecretsManager(secret, 'specificKey'),
-      }
+      },
     });
 
     // THEN
@@ -830,16 +830,16 @@ export = {
                   '',
                   [
                     {
-                      Ref: 'SecretA720EF05'
+                      Ref: 'SecretA720EF05',
                     },
-                    ':specificKey::'
-                  ]
-                ]
-              }
+                    ':specificKey::',
+                  ],
+                ],
+              },
             },
-          ]
-        }
-      ]
+          ],
+        },
+      ],
     }));
 
     test.done();
@@ -860,7 +860,7 @@ export = {
       memoryLimitMiB: 1024,
       secrets: {
         SECRET_KEY: ecs.Secret.fromSecretsManager(secret, 'specificKey'),
-      }
+      },
     });
 
     // THEN
@@ -878,7 +878,7 @@ export = {
     taskDefinition.addContainer('cont', {
       image: ecs.ContainerImage.fromRegistry('test'),
       memoryLimitMiB: 1024,
-      logging: new ecs.AwsLogDriver({ streamPrefix: 'prefix' })
+      logging: new ecs.AwsLogDriver({ streamPrefix: 'prefix' }),
     });
 
     // THEN
@@ -890,11 +890,11 @@ export = {
             Options: {
               'awslogs-group': { Ref: 'TaskDefcontLogGroup4E10DCBF' },
               'awslogs-stream-prefix': 'prefix',
-              'awslogs-region': { Ref: 'AWS::Region' }
-            }
+              'awslogs-region': { Ref: 'AWS::Region' },
+            },
           },
-        }
-      ]
+        },
+      ],
     }));
 
     expect(stack).to(haveResource('AWS::IAM::Policy', {
@@ -903,11 +903,11 @@ export = {
           {
             Action: ['logs:CreateLogStream', 'logs:PutLogEvents'],
             Effect: 'Allow',
-            Resource: { 'Fn::GetAtt': ['TaskDefcontLogGroup4E10DCBF', 'Arn'] }
-          }
+            Resource: { 'Fn::GetAtt': ['TaskDefcontLogGroup4E10DCBF', 'Arn'] },
+          },
         ],
-        Version: '2012-10-17'
-      }
+        Version: '2012-10-17',
+      },
     }));
 
     test.done();
@@ -924,8 +924,8 @@ export = {
       image: ecs.ContainerImage.fromRegistry('test'),
       memoryLimitMiB: 1024,
       healthCheck: {
-        command: [hcCommand]
-      }
+        command: [hcCommand],
+      },
     });
 
     // THEN
@@ -936,10 +936,10 @@ export = {
             Command: ['CMD-SHELL', hcCommand],
             Interval: 30,
             Retries: 3,
-            Timeout: 5
+            Timeout: 5,
           },
-        }
-      ]
+        },
+      ],
     }));
 
     test.done();
@@ -955,8 +955,8 @@ export = {
       image: ecs.ContainerImage.fromRegistry('test'),
       memoryLimitMiB: 1024,
       healthCheck: {
-        command: []
-      }
+        command: [],
+      },
     });
 
     // THEN
@@ -968,10 +968,10 @@ export = {
               Command: [],
               Interval: 30,
               Retries: 3,
-              Timeout: 5
+              Timeout: 5,
             },
-          }
-        ]
+          },
+        ],
       }));
     }, /At least one argument must be supplied for health check command./);
 
@@ -992,8 +992,8 @@ export = {
         command: [hcCommand],
         interval: cdk.Duration.seconds(20),
         retries: 5,
-        startPeriod: cdk.Duration.seconds(10)
-      }
+        startPeriod: cdk.Duration.seconds(10),
+      },
     });
 
     // THEN
@@ -1005,10 +1005,10 @@ export = {
             Interval: 20,
             Retries: 5,
             Timeout: 5,
-            StartPeriod: 10
+            StartPeriod: 10,
           },
-        }
-      ]
+        },
+      ],
     }));
 
     test.done();
@@ -1028,8 +1028,8 @@ export = {
         command: ['CMD-SHELL', hcCommand],
         interval: cdk.Duration.seconds(20),
         retries: 5,
-        startPeriod: cdk.Duration.seconds(10)
-      }
+        startPeriod: cdk.Duration.seconds(10),
+      },
     });
 
     // THEN
@@ -1041,10 +1041,10 @@ export = {
             Interval: 20,
             Retries: 5,
             Timeout: 5,
-            StartPeriod: 10
+            StartPeriod: 10,
           },
-        }
-      ]
+        },
+      ],
     }));
 
     test.done();
@@ -1064,8 +1064,8 @@ export = {
         command: ['CMD', hcCommand],
         interval: cdk.Duration.seconds(20),
         retries: 5,
-        startPeriod: cdk.Duration.seconds(10)
-      }
+        startPeriod: cdk.Duration.seconds(10),
+      },
     });
 
     // THEN
@@ -1077,10 +1077,10 @@ export = {
             Interval: 20,
             Retries: 5,
             Timeout: 5,
-            StartPeriod: 10
+            StartPeriod: 10,
           },
-        }
-      ]
+        },
+      ],
     }));
 
     test.done();
@@ -1097,7 +1097,7 @@ export = {
     // WHEN
     taskDefinition.addContainer('Container', {
       image: ecs.ContainerImage.fromRegistry('user-x/my-app', {
-        credentials: repoCreds
+        credentials: repoCreds,
       }),
       memoryLimitMiB: 2048,
     });
@@ -1108,10 +1108,10 @@ export = {
         {
           Image: 'user-x/my-app',
           RepositoryCredentials: {
-            CredentialsParameter: mySecretArn
+            CredentialsParameter: mySecretArn,
           },
-        }
-      ]
+        },
+      ],
     }));
 
     expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
@@ -1120,10 +1120,10 @@ export = {
           {
             Action: 'secretsmanager:GetSecretValue',
             Effect: 'Allow',
-            Resource: mySecretArn
-          }
-        ]
-      }
+            Resource: mySecretArn,
+          },
+        ],
+      },
     }));
 
     test.done();
@@ -1139,7 +1139,7 @@ export = {
       const container = taskDefinition.addContainer('cont', {
         image: ecs.ContainerImage.fromRegistry('test'),
         memoryLimitMiB: 1024,
-        essential: true
+        essential: true,
       });
 
       // THEN
@@ -1157,14 +1157,14 @@ export = {
       taskDefinition.addContainer('cont', {
         image: ecs.ContainerImage.fromRegistry('test'),
         memoryLimitMiB: 1024,
-        essential: false
+        essential: false,
       });
 
       // THEN
       test.equal(taskDefinition.defaultContainer, undefined);
 
       test.done();
-    }
+    },
   },
 
   'Can specify linux parameters': {
@@ -1189,9 +1189,9 @@ export = {
             Image: 'test',
             LinuxParameters: {
               Capabilities: {},
-            }
-          }
-        ]
+            },
+          },
+        ],
       }));
 
       test.done();
@@ -1225,13 +1225,13 @@ export = {
             LinuxParameters: {
               Capabilities: {
                 Add: ['ALL'],
-                Drop: ['KILL']
+                Drop: ['KILL'],
               },
               InitProcessEnabled: true,
               SharedMemorySize: 1024,
             },
-          }
-        ]
+          },
+        ],
       }));
 
       test.done();
@@ -1267,13 +1267,13 @@ export = {
             LinuxParameters: {
               Capabilities: {
                 Add: ['ALL'],
-                Drop: ['SETUID']
+                Drop: ['SETUID'],
               },
               InitProcessEnabled: true,
               SharedMemorySize: 1024,
             },
-          }
-        ]
+          },
+        ],
       }));
 
       test.done();
@@ -1308,14 +1308,14 @@ export = {
             LinuxParameters: {
               Devices: [
                 {
-                  HostPath: 'a/b/c'
-                }
+                  HostPath: 'a/b/c',
+                },
               ],
               InitProcessEnabled: true,
               SharedMemorySize: 1024,
             },
-          }
-        ]
+          },
+        ],
       }));
 
       test.done();
@@ -1334,7 +1334,7 @@ export = {
       // WHEN
       linuxParameters.addTmpfs({
         containerPath: 'a/b/c',
-        size: 1024
+        size: 1024,
       });
 
       taskDefinition.addContainer('cont', {
@@ -1352,18 +1352,18 @@ export = {
               Tmpfs: [
                 {
                   ContainerPath: 'a/b/c',
-                  Size: 1024
-                }
+                  Size: 1024,
+                },
               ],
               InitProcessEnabled: true,
               SharedMemorySize: 1024,
             },
-          }
-        ]
+          },
+        ],
       }));
 
       test.done();
-    }
+    },
   },
 
   'can use a DockerImageAsset directly for a container image'(test: Test) {
@@ -1371,13 +1371,13 @@ export = {
     const stack = new cdk.Stack();
     const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
     const asset = new ecr_assets.DockerImageAsset(stack, 'MyDockerImage', {
-      directory: path.join(__dirname, 'demo-image')
+      directory: path.join(__dirname, 'demo-image'),
     });
 
     // WHEN
     taskDefinition.addContainer('default', {
       image: ecs.ContainerImage.fromDockerImageAsset(asset),
-      memoryLimitMiB: 1024
+      memoryLimitMiB: 1024,
     });
 
     // THEN
@@ -1394,14 +1394,14 @@ export = {
                 { Ref: 'AWS::Region' },
                 '.',
                 { Ref: 'AWS::URLSuffix' },
-                '/aws-cdk/assets:baa2d6eb2a17c75424df631c8c70ff39f2d5f3bee8b9e1a109ee24ca17300540'
-              ]
-            ]
+                '/aws-cdk/assets:baa2d6eb2a17c75424df631c8c70ff39f2d5f3bee8b9e1a109ee24ca17300540',
+              ],
+            ],
           },
           Memory: 1024,
-          Name: 'default'
-        }
-      ]
+          Name: 'default',
+        },
+      ],
     }));
     expect(stack).to(haveResource('AWS::IAM::Policy', {
       PolicyDocument: {
@@ -1410,24 +1410,24 @@ export = {
             Action: [
               'ecr:BatchCheckLayerAvailability',
               'ecr:GetDownloadUrlForLayer',
-              'ecr:BatchGetImage'
+              'ecr:BatchGetImage',
             ],
             Effect: 'Allow',
             Resource: {
               'Fn::Join': [
                 '',
-                [ 'arn:', { Ref: 'AWS::Partition' }, ':ecr:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':repository/aws-cdk/assets' ]
-              ]
-            }
+                [ 'arn:', { Ref: 'AWS::Partition' }, ':ecr:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':repository/aws-cdk/assets' ],
+              ],
+            },
           },
           {
             Action: 'ecr:GetAuthorizationToken',
             Effect: 'Allow',
-            Resource: '*'
-          }
+            Resource: '*',
+          },
         ],
-        Version: '2012-10-17'
-      }
+        Version: '2012-10-17',
+      },
     }));
     test.done();
   },
@@ -1443,8 +1443,8 @@ export = {
       memoryLimitMiB: 1024,
       image: ecs.ContainerImage.fromAsset(path.join(__dirname, 'demo-image'), {
         file: 'index.py', // just because it's there already
-        target: 'build-target'
-      })
+        target: 'build-target',
+      }),
     });
 
     // THEN
@@ -1457,8 +1457,8 @@ export = {
       path: 'asset.f9014d1df7c8f5a5e7abaf18eb5bc895e82f8b06eeed6f75a40cf1bc2a78955a',
       sourceHash: 'f9014d1df7c8f5a5e7abaf18eb5bc895e82f8b06eeed6f75a40cf1bc2a78955a',
       target: 'build-target',
-      file: 'index.py'
+      file: 'index.py',
     });
     test.done();
-  }
+  },
 };

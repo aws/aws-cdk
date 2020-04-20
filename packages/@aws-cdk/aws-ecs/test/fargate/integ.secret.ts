@@ -8,8 +8,8 @@ const stack = new cdk.Stack(app, 'aws-ecs-integ-secret');
 const secret = new secretsmanager.Secret(stack, 'Secret', {
   generateSecretString: {
     generateStringKey: 'password',
-    secretStringTemplate: JSON.stringify({ username: 'user' })
-  }
+    secretStringTemplate: JSON.stringify({ username: 'user' }),
+  },
 });
 
 const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
@@ -17,8 +17,8 @@ const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
 taskDefinition.addContainer('web', {
   image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
   secrets: {
-    SECRET: ecs.Secret.fromSecretsManager(secret)
-  }
+    SECRET: ecs.Secret.fromSecretsManager(secret),
+  },
 });
 
 app.synth();

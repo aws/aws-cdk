@@ -15,13 +15,13 @@ class Test extends cdk.Stack {
     const vpc = new ec2.Vpc(this, 'MyVpc', {});
 
     const vpcEndpoint = vpc.addInterfaceEndpoint('MyVpcEndpoint', {
-      service: ec2.InterfaceVpcEndpointAwsService.APIGATEWAY
+      service: ec2.InterfaceVpcEndpointAwsService.APIGATEWAY,
     });
 
     const api = new apigateway.RestApi(this, 'MyApi', {
       endpointConfiguration: {
         types: [ apigateway.EndpointType.PRIVATE ],
-        vpcEndpoints: [ vpcEndpoint ]
+        vpcEndpoints: [ vpcEndpoint ],
       },
       policy: new iam.PolicyDocument({
         statements: [
@@ -30,8 +30,8 @@ class Test extends cdk.Stack {
             actions: ['execute-api:Invoke'],
             effect: iam.Effect.ALLOW,
           }),
-        ]
-      })
+        ],
+      }),
     });
     api.root.addMethod('GET');
   }
