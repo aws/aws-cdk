@@ -10,7 +10,7 @@ const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2 });
 const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 
 cluster.addCapacity('DefaultAutoScalingGroup', {
-  instanceType: new ec2.InstanceType('t2.micro')
+  instanceType: new ec2.InstanceType('t2.micro'),
 });
 
 // Add Private DNS Namespace
@@ -21,7 +21,7 @@ cluster.addDefaultCloudMapNamespace({
 
 // Create frontend service
 const frontendTD = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
-  networkMode: ecs.NetworkMode.AWS_VPC
+  networkMode: ecs.NetworkMode.AWS_VPC,
 });
 
 const frontend = frontendTD.addContainer('frontend', {
@@ -32,15 +32,15 @@ const frontend = frontendTD.addContainer('frontend', {
 frontend.addPortMappings({
   containerPort: 80,
   hostPort: 80,
-  protocol: ecs.Protocol.TCP
+  protocol: ecs.Protocol.TCP,
 });
 
 new ecs.Ec2Service(stack, 'FrontendService', {
   cluster,
   taskDefinition: frontendTD,
   cloudMapOptions: {
-    name: 'frontend'
-  }
+    name: 'frontend',
+  },
 });
 
 app.synth();

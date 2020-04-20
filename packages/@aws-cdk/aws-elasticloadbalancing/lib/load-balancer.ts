@@ -245,7 +245,7 @@ export class LoadBalancer extends Resource implements IConnectable {
       listeners: Lazy.anyValue({ produce: () => this.listeners }),
       scheme: props.internetFacing ? 'internet-facing' : 'internal',
       healthCheck: props.healthCheck && healthCheckToJSON(props.healthCheck),
-      crossZone: (props.crossZone === undefined || props.crossZone) ? true : false
+      crossZone: (props.crossZone === undefined || props.crossZone) ? true : false,
     });
     if (props.internetFacing) {
       this.elb.node.addDependency(selectedSubnets.internetConnectivityEstablished);
@@ -273,7 +273,7 @@ export class LoadBalancer extends Resource implements IConnectable {
       instancePort: instancePort.toString(),
       instanceProtocol,
       sslCertificateId: listener.sslCertificateId,
-      policyNames: listener.policyNames
+      policyNames: listener.policyNames,
     });
 
     const port = new ListenerPort(this.securityGroup, Port.tcp(listener.externalPort));
@@ -443,11 +443,11 @@ function loadBalancerSubnets(props: LoadBalancerProps): SelectedSubnets {
     return props.vpc.selectSubnets(props.subnetSelection);
   } else if (props.internetFacing) {
     return props.vpc.selectSubnets({
-      subnetType: SubnetType.PUBLIC
+      subnetType: SubnetType.PUBLIC,
     });
   } else {
     return props.vpc.selectSubnets({
-      subnetType: SubnetType.PRIVATE
+      subnetType: SubnetType.PRIVATE,
     });
   }
 }

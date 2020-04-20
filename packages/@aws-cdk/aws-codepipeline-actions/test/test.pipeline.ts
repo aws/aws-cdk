@@ -84,7 +84,7 @@ export = {
           oauthToken: SecretValue.plainText(secret.valueAsString),
           owner: 'foo',
           repo: 'bar',
-          trigger: cpactions.GitHubTrigger.POLL
+          trigger: cpactions.GitHubTrigger.POLL,
         }),
       ],
     });
@@ -104,22 +104,22 @@ export = {
           'Actions': [
             {
               'Configuration': {
-                'PollForSourceChanges': true
+                'PollForSourceChanges': true,
               },
-              'Name': 'GH'
-            }
+              'Name': 'GH',
+            },
           ],
-          'Name': 'Source'
+          'Name': 'Source',
         },
         {
           'Actions': [
             {
               'Name': 'Boo',
-            }
+            },
           ],
-          'Name': 'Two'
-        }
-      ]
+          'Name': 'Two',
+        },
+      ],
     }));
 
     test.done();
@@ -143,7 +143,7 @@ export = {
           oauthToken: SecretValue.plainText(secret.valueAsString),
           owner: 'foo',
           repo: 'bar',
-          trigger: cpactions.GitHubTrigger.NONE
+          trigger: cpactions.GitHubTrigger.NONE,
         }),
       ],
     });
@@ -163,22 +163,22 @@ export = {
           'Actions': [
             {
               'Configuration': {
-                'PollForSourceChanges': false
+                'PollForSourceChanges': false,
               },
-              'Name': 'GH'
-            }
+              'Name': 'GH',
+            },
           ],
-          'Name': 'Source'
+          'Name': 'Source',
         },
         {
           'Actions': [
             {
               'Name': 'Boo',
-            }
+            },
           ],
-          'Name': 'Two'
-        }
-      ]
+          'Name': 'Two',
+        },
+      ],
     }));
 
     test.done();
@@ -201,7 +201,7 @@ export = {
           branch: 'branch',
           oauthToken: SecretValue.plainText(secret.valueAsString),
           owner: 'foo',
-          repo: 'bar'
+          repo: 'bar',
         }),
       ],
     });
@@ -218,15 +218,15 @@ export = {
     expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
       'ArtifactStore': {
         'Location': {
-          'Ref': 'PArtifactsBucket5E711C12'
+          'Ref': 'PArtifactsBucket5E711C12',
         },
-        'Type': 'S3'
+        'Type': 'S3',
       },
       'RoleArn': {
         'Fn::GetAtt': [
           'PRole07BDC907',
-          'Arn'
-        ]
+          'Arn',
+        ],
       },
       'Stages': [
         {
@@ -236,27 +236,27 @@ export = {
                 'Category': 'Source',
                 'Owner': 'ThirdParty',
                 'Provider': 'GitHub',
-                'Version': '1'
+                'Version': '1',
               },
               'Configuration': {
                 'Owner': 'foo',
                 'Repo': 'bar',
                 'Branch': 'branch',
                 'OAuthToken': {
-                  'Ref': 'GitHubToken'
+                  'Ref': 'GitHubToken',
                 },
-                'PollForSourceChanges': false
+                'PollForSourceChanges': false,
               },
               'Name': 'GH',
               'OutputArtifacts': [
                 {
-                  'Name': 'A'
-                }
+                  'Name': 'A',
+                },
               ],
-              'RunOrder': 8
-            }
+              'RunOrder': 8,
+            },
           ],
-          'Name': 'Source'
+          'Name': 'Source',
         },
         {
           'Actions': [
@@ -265,15 +265,15 @@ export = {
                 'Category': 'Approval',
                 'Owner': 'AWS',
                 'Provider': 'Manual',
-                'Version': '1'
+                'Version': '1',
               },
               'Name': 'Boo',
-              'RunOrder': 1
-            }
+              'RunOrder': 1,
+            },
           ],
-          'Name': 'Two'
-        }
-      ]
+          'Name': 'Two',
+        },
+      ],
     }));
 
     test.deepEqual([], ConstructNode.validate(p.node));
@@ -294,7 +294,7 @@ export = {
           actionName: 'A1',
           output: new codepipeline.Artifact('Artifact'),
           bucket: new s3.Bucket(stack, 'Bucket'),
-          bucketKey: 'Key'
+          bucketKey: 'Key',
         }),
       ],
     });
@@ -311,9 +311,9 @@ export = {
       description: 'desc',
       eventPattern: {
         detail: {
-          state: [ 'FAILED' ]
-        }
-      }
+          state: [ 'FAILED' ],
+        },
+      },
     });
 
     expect(stack).to(haveResource('AWS::Events::Rule', {
@@ -321,14 +321,14 @@ export = {
       'EventPattern': {
         'detail': {
           'state': [
-            'FAILED'
-          ]
+            'FAILED',
+          ],
         },
         'detail-type': [
-          'CodePipeline Pipeline Execution State Change'
+          'CodePipeline Pipeline Execution State Change',
         ],
         'source': [
-          'aws.codepipeline'
+          'aws.codepipeline',
         ],
         'resources': [
           {
@@ -337,34 +337,34 @@ export = {
               [
                 'arn:',
                 {
-                  'Ref': 'AWS::Partition'
+                  'Ref': 'AWS::Partition',
                 },
                 ':codepipeline:',
                 {
-                  'Ref': 'AWS::Region'
+                  'Ref': 'AWS::Region',
                 },
                 ':',
                 {
-                  'Ref': 'AWS::AccountId'
+                  'Ref': 'AWS::AccountId',
                 },
                 ':',
                 {
-                  'Ref': 'PLD5425AEA'
-                }
-              ]
-            ]
-          }
-        ]
+                  'Ref': 'PLD5425AEA',
+                },
+              ],
+            ],
+          },
+        ],
       },
       'State': 'ENABLED',
       'Targets': [
         {
           'Arn': {
-            'Ref': 'TopicBFC7AF6E'
+            'Ref': 'TopicBFC7AF6E',
           },
-          'Id': 'Target0'
-        }
-      ]
+          'Id': 'Target0',
+        },
+      ],
     }));
 
     test.deepEqual([], ConstructNode.validate(pipeline.node));
@@ -383,28 +383,28 @@ export = {
         expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
           'Name': 'MyProject',
           'Source': {
-            'Type': 'CODEPIPELINE'
+            'Type': 'CODEPIPELINE',
           },
           'Artifacts': {
-            'Type': 'CODEPIPELINE'
+            'Type': 'CODEPIPELINE',
           },
           'ServiceRole': {
             'Fn::GetAtt': [
               'MyProjectRole9BBE5233',
-              'Arn'
-            ]
+              'Arn',
+            ],
           },
           'Environment': {
             'Type': 'LINUX_CONTAINER',
             'PrivilegedMode': false,
             'Image': 'aws/codebuild/standard:1.0',
-            'ComputeType': 'BUILD_GENERAL1_SMALL'
-          }
+            'ComputeType': 'BUILD_GENERAL1_SMALL',
+          },
         }));
 
         test.done();
-      }
-    }
+      },
+    },
   },
 
   'Lambda PipelineInvokeAction can be used to invoke Lambda functions from a CodePipeline'(test: Test) {
@@ -462,15 +462,15 @@ export = {
     expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
       'ArtifactStore': {
         'Location': {
-          'Ref': 'PipelineArtifactsBucket22248F97'
+          'Ref': 'PipelineArtifactsBucket22248F97',
         },
-        'Type': 'S3'
+        'Type': 'S3',
       },
       'RoleArn': {
         'Fn::GetAtt': [
           'PipelineRoleD68726F7',
-          'Arn'
-        ]
+          'Arn',
+        ],
       },
       'Stages': [
         {
@@ -483,11 +483,11 @@ export = {
                 'Category': 'Invoke',
                 'Owner': 'AWS',
                 'Provider': 'Lambda',
-                'Version': '1'
+                'Version': '1',
               },
               'Configuration': {
                 'FunctionName': {
-                  'Ref': 'Function76856677'
+                  'Ref': 'Function76856677',
                 },
               },
               'InputArtifacts': [
@@ -500,12 +500,12 @@ export = {
                 { 'Name': 'lambdaOutput2' },
                 { 'Name': 'lambdaOutput3' },
               ],
-              'RunOrder': 1
-            }
+              'RunOrder': 1,
+            },
           ],
-          'Name': 'Stage'
-        }
-      ]
+          'Name': 'Stage',
+        },
+      ],
     }));
 
     test.equal((lambdaAction.actionProperties.outputs || []).length, 3);
@@ -516,20 +516,20 @@ export = {
           {
             'Action': [
               'codepipeline:PutJobSuccessResult',
-              'codepipeline:PutJobFailureResult'
+              'codepipeline:PutJobFailureResult',
             ],
             'Effect': 'Allow',
-            'Resource': '*'
-          }
+            'Resource': '*',
+          },
         ],
-        'Version': '2012-10-17'
+        'Version': '2012-10-17',
       },
       'PolicyName': 'FunctionServiceRoleDefaultPolicy2F49994A',
       'Roles': [
         {
-          'Ref': 'FunctionServiceRole675BB04A'
-        }
-      ]
+          'Ref': 'FunctionServiceRole675BB04A',
+        },
+      ],
     }));
 
     test.done();
@@ -686,7 +686,7 @@ export = {
         crossRegionReplicationBuckets: {
           [pipelineRegion]: new s3.Bucket(stack, 'Bucket', {
             bucketName: 'my-pipeline-bucket',
-          })
+          }),
         },
         stages: [
           {
@@ -785,7 +785,7 @@ export = {
                     ],
                   ],
                 },
-                'Type': 'KMS'
+                'Type': 'KMS',
               },
             },
           },

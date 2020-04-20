@@ -19,7 +19,7 @@ export = {
           ['',
             ['arn:',
               { Ref: 'AWS::Partition' },
-              ':s3:::hello']]
+              ':s3:::hello']],
       });
       test.done();
     },
@@ -28,7 +28,7 @@ export = {
       const stack = new cdk.Stack();
       test.throws(() => parseBucketArn(stack, {}), /Cannot determine bucket ARN. At least `bucketArn` or `bucketName` is needed/);
       test.done();
-    }
+    },
   },
 
   parseBucketName: {
@@ -69,18 +69,18 @@ export = {
                           [
                             'arn:aws:s3:::',
                             {
-                              Ref: 'my-bucket'
-                            }
-                          ]
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
-        ]
+                              Ref: 'my-bucket',
+                            },
+                          ],
+                        ],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
       });
       test.done();
     },

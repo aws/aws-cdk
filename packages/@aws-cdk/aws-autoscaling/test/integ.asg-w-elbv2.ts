@@ -8,7 +8,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-asg-integ');
 
 const vpc = new ec2.Vpc(stack, 'VPC', {
-  maxAzs: 2
+  maxAzs: 2,
 });
 
 const asg = new autoscaling.AutoScalingGroup(stack, 'Fleet', {
@@ -19,7 +19,7 @@ const asg = new autoscaling.AutoScalingGroup(stack, 'Fleet', {
 
 const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', {
   vpc,
-  internetFacing: true
+  internetFacing: true,
 });
 
 const listener = lb.addListener('Listener', {
@@ -28,13 +28,13 @@ const listener = lb.addListener('Listener', {
 
 listener.addTargets('Target', {
   port: 80,
-  targets: [asg]
+  targets: [asg],
 });
 
 listener.connections.allowDefaultPortFromAnyIpv4('Open to the world');
 
 asg.scaleOnRequestCount('AModestLoad', {
-  targetRequestsPerSecond: 1
+  targetRequestsPerSecond: 1,
 });
 
 app.synth();

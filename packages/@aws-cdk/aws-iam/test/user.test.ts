@@ -8,7 +8,7 @@ describe('IAM user', () => {
     const stack = new Stack(app, 'MyStack');
     new User(stack, 'MyUser');
     expect(stack).toMatchTemplate({
-      Resources: { MyUserDC45028B: { Type: 'AWS::IAM::User' } }
+      Resources: { MyUserDC45028B: { Type: 'AWS::IAM::User' } },
     });
   });
 
@@ -16,7 +16,7 @@ describe('IAM user', () => {
     const app = new App();
     const stack = new Stack(app, 'MyStack');
     new User(stack, 'MyUser', {
-      password: SecretValue.plainText('1234')
+      password: SecretValue.plainText('1234'),
     });
 
     expect(stack).toMatchTemplate({
@@ -25,9 +25,9 @@ describe('IAM user', () => {
         MyUserDC45028B:
         {
           Type: 'AWS::IAM::User',
-          Properties: { LoginProfile: { Password: '1234' } }
-        }
-      }
+          Properties: { LoginProfile: { Password: '1234' } },
+        },
+      },
     });
   });
 
@@ -44,14 +44,14 @@ describe('IAM user', () => {
 
     // WHEN
     new User(stack, 'MyUser', {
-      managedPolicies: [ManagedPolicy.fromAwsManagedPolicyName('asdf')]
+      managedPolicies: [ManagedPolicy.fromAwsManagedPolicyName('asdf')],
     });
 
     // THEN
     expect(stack).toHaveResource('AWS::IAM::User', {
       ManagedPolicyArns: [
-        { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/asdf']] }
-      ]
+        { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/asdf']] },
+      ],
     });
   });
 
@@ -72,12 +72,12 @@ describe('IAM user', () => {
           [
             'arn:',
             {
-              Ref: 'AWS::Partition'
+              Ref: 'AWS::Partition',
             },
-            ':iam::aws:policy/managed-policy'
-          ]
-        ]
-      }
+            ':iam::aws:policy/managed-policy',
+          ],
+        ],
+      },
     });
   });
 
@@ -90,7 +90,7 @@ describe('IAM user', () => {
 
     // THEN
     expect(stack.resolve(user.userArn)).toStrictEqual({
-      'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':user/MyUserName']]
+      'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':user/MyUserName']],
     });
   });
 });

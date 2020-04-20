@@ -111,12 +111,12 @@ export class AlarmWidget extends ConcreteWidget {
         title: this.props.title,
         region: this.props.region || cdk.Aws.REGION,
         annotations: {
-          alarms: [this.props.alarm.alarmArn]
+          alarms: [this.props.alarm.alarmArn],
         },
         yAxis: {
-          left: this.props.leftYAxis !== undefined ? this.props.leftYAxis : undefined
-        }
-      }
+          left: this.props.leftYAxis !== undefined ? this.props.leftYAxis : undefined,
+        },
+      },
     }];
   }
 }
@@ -209,8 +209,8 @@ export class GraphWidget extends ConcreteWidget {
         yAxis: {
           left: this.props.leftYAxis !== undefined ? this.props.leftYAxis : undefined,
           right: this.props.rightYAxis !== undefined ? this.props.rightYAxis : undefined,
-        }
-      }
+        },
+      },
     }];
   }
 }
@@ -255,8 +255,8 @@ export class SingleValueWidget extends ConcreteWidget {
         title: this.props.title,
         region: this.props.region || cdk.Aws.REGION,
         metrics: allMetricsGraphJson(this.props.metrics, []),
-        setPeriodToTimeRange: this.props.setPeriodToTimeRange
-      }
+        setPeriodToTimeRange: this.props.setPeriodToTimeRange,
+      },
     }];
   }
 }

@@ -18,8 +18,8 @@ class MyNestedStack extends cfn.NestedStack {
 
     super(scope, id, {
       parameters: {
-        [topicNamePrefixLogicalId]: props.topicNamePrefix // pass in a parameter to the nested stack
-      }
+        [topicNamePrefixLogicalId]: props.topicNamePrefix, // pass in a parameter to the nested stack
+      },
     });
 
     const topicNamePrefixParameter = new CfnParameter(this, 'TopicNamePrefix', { type: 'String' });
@@ -41,8 +41,8 @@ class MyNestedStack extends cfn.NestedStack {
         handler: 'index.handler',
         environment: {
           TOPIC_ARN: props.siblingTopic ? props.siblingTopic.topicArn : '',
-          QUEUE_URL: props.subscriber.queueUrl // nested stack references a resource in the parent
-        }
+          QUEUE_URL: props.subscriber.queueUrl, // nested stack references a resource in the parent
+        },
       });
     }
   }
