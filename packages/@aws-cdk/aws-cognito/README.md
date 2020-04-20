@@ -409,9 +409,21 @@ The following code sets up a user pool domain in Amazon Cognito hosted domain wi
 ```ts
 const pool = new UserPool(this, 'Pool');
 pool.addDomain('domain', {
-  cognitoDomainPrefix: 'my-awesome-app',
+  domain: UserPoolDomainType.cognitoDomain({
+    domainPrefix: 'my-awesome-app',
+  }),
 });
 ```
 
-The `UserPoolDomain` construct exposes a `cloudFrontDomainName` attribute that returns the CloudFront domain name. This
-can then be used to wire it up with a CloudFront distribution or to a Route53 target.
+On the other hand, the following code sets up a user pool domain and use your own custom domain -
+
+```ts
+const domainCert = new acm.Certificate.fromCertificateArn(this, 'domainCert', certificateArn);
+const pool = new UserPool(this, 'Pool');
+pool.addDomain('domain', {
+  domain: UserPoolDomainType.customDomain({
+    domainPrefix: 'my-awesome-app',
+    certificate: domainCert,
+  }),
+});
+```

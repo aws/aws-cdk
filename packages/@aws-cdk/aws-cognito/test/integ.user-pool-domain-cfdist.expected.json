@@ -9,7 +9,7 @@
               "Action": "sts:AssumeRole",
               "Condition": {
                 "StringEquals": {
-                  "sts:ExternalId": "integuserpooldomainUserPool1E764E19"
+                  "sts:ExternalId": "integuserpooldomaincfdistUserPool17475E8A"
                 }
               },
               "Effect": "Allow",
@@ -46,7 +46,7 @@
         "EmailVerificationMessage": "Hello {username}, Your verification code is {####}",
         "EmailVerificationSubject": "Verify your new account",
         "SmsConfiguration": {
-          "ExternalId": "integuserpooldomainUserPool1E764E19",
+          "ExternalId": "integuserpooldomaincfdistUserPool17475E8A",
           "SnsCallerArn": {
             "Fn::GetAtt": [
               "UserPoolsmsRole4EA729DD",

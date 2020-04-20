@@ -1,7 +1,7 @@
 import '@aws-cdk/assert/jest';
 import { Certificate } from '@aws-cdk/aws-certificatemanager';
 import { Stack } from '@aws-cdk/core';
-import { UserPool, UserPoolDomain } from '../lib';
+import { UserPool, UserPoolDomain, UserPoolDomainType } from '../lib';
 
 describe('User Pool Client', () => {
   test('custom domain name', () => {
@@ -14,10 +14,10 @@ describe('User Pool Client', () => {
       'arn:aws:acm:eu-west-1:0123456789:certificate/7ec3e4ac-808a-4649-b805-66ae02346ad8');
     new UserPoolDomain(stack, 'Domain', {
       userPool: pool,
-      customDomain: {
+      domain: UserPoolDomainType.customDomain({
         domainName: 'test-domain.example.com',
         certificate,
-      }
+      }),
     });
 
     // THEN
@@ -38,9 +38,9 @@ describe('User Pool Client', () => {
     // WHEN
     new UserPoolDomain(stack, 'Domain', {
       userPool: pool,
-      cognitoDomain: {
+      domain: UserPoolDomainType.cognitoDomain({
         domainPrefix: 'cognito-domain-prefix'
-      }
+      }),
     });
 
     // THEN
@@ -50,37 +50,15 @@ describe('User Pool Client', () => {
     });
   });
 
-  test('fails when both customDomain and cognitoDomain are specified', () => {
-    const stack = new Stack();
-    const pool = new UserPool(stack, 'Pool');
-    const certificate = Certificate.fromCertificateArn(stack, 'cert',
-      'arn:aws:acm:eu-west-1:0123456789:certificate/7ec3e4ac-808a-4649-b805-66ae02346ad8');
-
-    expect(() => pool.addDomain('Domain', {
-      cognitoDomain: { domainPrefix: 'cognito-domain-prefix' },
-      customDomain: { domainName: 'test-domain.example.com', certificate },
-    })).toThrow(/cognitoDomain or customDomain/);
-  });
-
-  test('fails when neither customDomain nor cognitoDomain are specified', () => {
-    const stack = new Stack();
-    const pool = new UserPool(stack, 'Pool');
-
-    expect(() => pool.addDomain('Domain')).toThrow(/cognitoDomain or customDomain/);
-  });
-
   test('fails when domainPrefix has characters outside the allowed charset', () => {
-    const stack = new Stack();
-    const pool = new UserPool(stack, 'Pool');
-
-    expect(() => pool.addDomain('Domain1', {
-      cognitoDomain: { domainPrefix: 'domain.prefix' }
+    expect(() => UserPoolDomainType.cognitoDomain({
+      domainPrefix: 'domain.prefix'
     })).toThrow(/lowercase alphabets, numbers and hyphens/);
-    expect(() => pool.addDomain('Domain2', {
-      cognitoDomain: { domainPrefix: 'Domain-Prefix' }
+    expect(() => UserPoolDomainType.cognitoDomain({
+      domainPrefix: 'Domain-Prefix'
     })).toThrow(/lowercase alphabets, numbers and hyphens/);
-    expect(() => pool.addDomain('Domain3', {
-      cognitoDomain: { domainPrefix: 'dómäin-prefix' }
+    expect(() => UserPoolDomainType.cognitoDomain({
+      domainPrefix: 'dómäin-prefix'
     })).toThrow(/lowercase alphabets, numbers and hyphens/);
   });
 
@@ -89,9 +67,9 @@ describe('User Pool Client', () => {
     const stack = new Stack();
     const pool = new UserPool(stack, 'Pool');
     const domain = pool.addDomain('Domain', {
-      cognitoDomain: {
+      domain: UserPoolDomainType.cognitoDomain({
         domainPrefix: 'cognito-domain-prefix',
-      }
+      }),
     });
 
     // WHEN

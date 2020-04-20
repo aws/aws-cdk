@@ -674,7 +674,7 @@ export class UserPool extends Resource implements IUserPool {
    * Associate a domain to this user pool.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-assign-domain.html
    */
-  public addDomain(id: string, options?: UserPoolDomainOptions): UserPoolDomain {
+  public addDomain(id: string, options: UserPoolDomainOptions): UserPoolDomain {
     return new UserPoolDomain(this, id, {
       userPool: this,
       ...options

@@ -1,6 +1,6 @@
 import { Code, Function, IFunction, Runtime } from '@aws-cdk/aws-lambda';
 import { App, CfnOutput, Duration, Stack } from '@aws-cdk/core';
-import { BooleanAttribute, DateTimeAttribute, Mfa, NumberAttribute, StringAttribute, UserPool } from '../lib';
+import { BooleanAttribute, DateTimeAttribute, Mfa, NumberAttribute, StringAttribute, UserPool, UserPoolDomainType } from '../lib';
 
 const app = new App();
 const stack = new Stack(app, 'integ-user-pool');
@@ -70,9 +70,9 @@ const userpool = new UserPool(stack, 'myuserpool', {
 });
 
 const cognitoDomain = userpool.addDomain('myuserpooldomain', {
-  cognitoDomain: {
+  domain: UserPoolDomainType.cognitoDomain({
     domainPrefix: 'myawesomeapp'
-  }
+  }),
 });
 
 new CfnOutput(stack, 'userpoolId', {
