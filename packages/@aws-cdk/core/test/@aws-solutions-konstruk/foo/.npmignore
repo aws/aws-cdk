@@ -22,5 +22,3 @@ dist
 
 tsconfig.json
 .eslintrc.js
-
-test/@aws-solutions-konstruk/foo/node_modules
