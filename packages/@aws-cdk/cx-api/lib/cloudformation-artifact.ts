@@ -45,6 +45,13 @@ export interface AwsCloudFormationStackProperties {
    * @default - Not uploaded yet, upload just before deploying
    */
   readonly stackTemplateAssetObjectUrl?: string;
+
+  /**
+   * Version of bootstrap stack required to deploy this stack
+   *
+   * @default - Version 0 (legacy bootstrap stack)
+   */
+  readonly requiresBootstrapStackVersion?: number;
 }
 
 export class CloudFormationStackArtifact extends CloudArtifact {
@@ -117,6 +124,13 @@ export class CloudFormationStackArtifact extends CloudArtifact {
    */
   public readonly stackTemplateAssetObjectUrl?: string;
 
+  /**
+   * Version of bootstrap stack required to deploy this stack
+   *
+   * @default - Version 1
+   */
+  public readonly requiresBootstrapStackVersion?: number;
+
   constructor(assembly: CloudAssembly, artifactId: string, artifact: cxschema.ArtifactManifest) {
     super(assembly, artifactId, artifact);
 
@@ -133,6 +147,7 @@ export class CloudFormationStackArtifact extends CloudArtifact {
     this.assumeRoleArn = properties.assumeRoleArn;
     this.cloudFormationExecutionRoleArn = properties.cloudFormationExecutionRoleArn;
     this.stackTemplateAssetObjectUrl = properties.stackTemplateAssetObjectUrl;
+    this.requiresBootstrapStackVersion = properties.requiresBootstrapStackVersion;
 
     this.stackName = properties.stackName || artifactId;
     this.template = JSON.parse(fs.readFileSync(path.resolve(this.assembly.directory, this.templateFile), 'utf-8'));

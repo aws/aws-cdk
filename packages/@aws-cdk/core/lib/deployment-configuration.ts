@@ -301,6 +301,7 @@ export class DefaultDeploymentConfiguration implements IDeploymentConfiguration 
       assumeRoleArn: this.deployActionRoleArn,
       cloudFormationExecutionRoleArn: this.cloudFormationExecutionRoleArn,
       stackTemplateAssetObjectUrl,
+      requiresBootstrapStackVersion: 1,
     }, [artifactId]);
   }
 
