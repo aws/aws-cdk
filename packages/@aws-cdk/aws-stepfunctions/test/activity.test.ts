@@ -12,7 +12,7 @@ describe('Activity', () => {
 
     // THEN
     expect(stack).toHaveResource('AWS::StepFunctions::Activity', {
-      Name: 'Activity'
+      Name: 'Activity',
     });
   });
 
@@ -32,13 +32,13 @@ describe('Activity', () => {
     expect((stack.resolve(activity.metricRunTime()))).toEqual({
       ...sharedMetric,
       metricName: 'ActivityRunTime',
-      statistic: 'Average'
+      statistic: 'Average',
     });
 
     expect(stack.resolve(activity.metricFailed())).toEqual({
       ...sharedMetric,
       metricName: 'ActivitiesFailed',
-      statistic: 'Sum'
+      statistic: 'Sum',
     });
   });
 });

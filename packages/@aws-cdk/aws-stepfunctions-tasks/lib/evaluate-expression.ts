@@ -63,9 +63,9 @@ export class EvaluateExpression implements sfn.IStepFunctionsTask {
     const expressionAttributeValues = matches.reduce(
       (acc, m) => ({
         ...acc,
-        [m]: sfn.Data.stringAt(m) // It's okay to always use `stringAt` here
+        [m]: sfn.Data.stringAt(m), // It's okay to always use `stringAt` here
       }),
-      {}
+      {},
     );
 
     const evalFn = createEvalFn(this.props.runtime || lambda.Runtime.NODEJS_10_X, task);
@@ -79,7 +79,7 @@ export class EvaluateExpression implements sfn.IStepFunctionsTask {
       parameters: {
         expression: this.props.expression,
         expressionAttributeValues,
-      } as Event
+      } as Event,
     };
   }
 }

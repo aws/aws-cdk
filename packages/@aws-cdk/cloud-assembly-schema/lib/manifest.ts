@@ -71,7 +71,7 @@ export class Manifest {
       // does exist but is not in the TypeScript definitions
       nestedErrors: true,
 
-      allowUnknownAttributes: false
+      allowUnknownAttributes: false,
 
     } as any);
     if (!result.valid) {

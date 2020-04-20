@@ -32,7 +32,7 @@ def handler(event, context):
     });
 
     listener.addTargets('Targets', {
-      targets: [new targets.LambdaTarget(fn)]
+      targets: [new targets.LambdaTarget(fn)],
     });
   }
 }

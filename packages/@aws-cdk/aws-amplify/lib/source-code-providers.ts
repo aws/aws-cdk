@@ -31,7 +31,7 @@ export class GitHubSourceCodeProvider implements ISourceCodeProvider {
   public bind(_app: App): SourceCodeProviderConfig {
     return {
       repository: `https://github.com/${this.props.owner}/${this.props.repository}`,
-      oauthToken: this.props.oauthToken
+      oauthToken: this.props.oauthToken,
     };
   }
 }
@@ -56,7 +56,7 @@ export class CodeCommitSourceCodeProvider implements ISourceCodeProvider {
     this.props.repository.grantPull(app);
 
     return {
-      repository: this.props.repository.repositoryCloneUrlHttp
+      repository: this.props.repository.repositoryCloneUrlHttp,
     };
   }
 }

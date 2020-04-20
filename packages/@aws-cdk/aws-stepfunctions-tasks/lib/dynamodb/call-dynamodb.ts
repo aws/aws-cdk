@@ -557,7 +557,7 @@ export class DynamoGetItem implements sfn.IStepFunctionsTask {
       policyStatements: getDynamoPolicyStatements(
         _task,
         this.props.tableName,
-        DynamoMethod.GET
+        DynamoMethod.GET,
       ),
       parameters: {
         Key: configurePrimaryKey(this.props.partitionKey, this.props.sortKey),
@@ -565,15 +565,15 @@ export class DynamoGetItem implements sfn.IStepFunctionsTask {
         ConsistentRead: this.props.consistentRead ?? false,
         ExpressionAttributeNames: this.props.expressionAttributeNames,
         ProjectionExpression: this.configureProjectionExpression(
-          this.props.projectionExpression
+          this.props.projectionExpression,
         ),
-        ReturnConsumedCapacity: this.props.returnConsumedCapacity
-      }
+        ReturnConsumedCapacity: this.props.returnConsumedCapacity,
+      },
     };
   }
 
   private configureProjectionExpression(
-    expressions?: DynamoProjectionExpression[]
+    expressions?: DynamoProjectionExpression[],
   ): string | undefined {
     return expressions
       ? expressions.map(expression => expression.toString()).join(',')
@@ -595,7 +595,7 @@ export class DynamoPutItem implements sfn.IStepFunctionsTask {
       policyStatements: getDynamoPolicyStatements(
         _task,
         this.props.tableName,
-        DynamoMethod.PUT
+        DynamoMethod.PUT,
       ),
       parameters: {
         Item: transformAttributeValueMap(this.props.item),
@@ -603,12 +603,12 @@ export class DynamoPutItem implements sfn.IStepFunctionsTask {
         ConditionExpression: this.props.conditionExpression,
         ExpressionAttributeNames: this.props.expressionAttributeNames,
         ExpressionAttributeValues: transformAttributeValueMap(
-          this.props.expressionAttributeValues
+          this.props.expressionAttributeValues,
         ),
         ReturnConsumedCapacity: this.props.returnConsumedCapacity,
         ReturnItemCollectionMetrics: this.props.returnItemCollectionMetrics,
-        ReturnValues: this.props.returnValues
-      }
+        ReturnValues: this.props.returnValues,
+      },
     };
   }
 }
@@ -627,7 +627,7 @@ export class DynamoDeleteItem implements sfn.IStepFunctionsTask {
       policyStatements: getDynamoPolicyStatements(
         _task,
         this.props.tableName,
-        DynamoMethod.DELETE
+        DynamoMethod.DELETE,
       ),
       parameters: {
         Key: configurePrimaryKey(this.props.partitionKey, this.props.sortKey),
@@ -635,12 +635,12 @@ export class DynamoDeleteItem implements sfn.IStepFunctionsTask {
         ConditionExpression: this.props.conditionExpression,
         ExpressionAttributeNames: this.props.expressionAttributeNames,
         ExpressionAttributeValues: transformAttributeValueMap(
-          this.props.expressionAttributeValues
+          this.props.expressionAttributeValues,
         ),
         ReturnConsumedCapacity: this.props.returnConsumedCapacity,
         ReturnItemCollectionMetrics: this.props.returnItemCollectionMetrics,
-        ReturnValues: this.props.returnValues
-      }
+        ReturnValues: this.props.returnValues,
+      },
     };
   }
 }
@@ -659,7 +659,7 @@ export class DynamoUpdateItem implements sfn.IStepFunctionsTask {
       policyStatements: getDynamoPolicyStatements(
         _task,
         this.props.tableName,
-        DynamoMethod.UPDATE
+        DynamoMethod.UPDATE,
       ),
       parameters: {
         Key: configurePrimaryKey(this.props.partitionKey, this.props.sortKey),
@@ -667,13 +667,13 @@ export class DynamoUpdateItem implements sfn.IStepFunctionsTask {
         ConditionExpression: this.props.conditionExpression,
         ExpressionAttributeNames: this.props.expressionAttributeNames,
         ExpressionAttributeValues: transformAttributeValueMap(
-          this.props.expressionAttributeValues
+          this.props.expressionAttributeValues,
         ),
         ReturnConsumedCapacity: this.props.returnConsumedCapacity,
         ReturnItemCollectionMetrics: this.props.returnItemCollectionMetrics,
         ReturnValues: this.props.returnValues,
-        UpdateExpression: this.props.updateExpression
-      }
+        UpdateExpression: this.props.updateExpression,
+      },
     };
   }
 }
@@ -733,7 +733,7 @@ function validateTableName(tableName: string) {
     !new RegExp(/[a-zA-Z0-9_.-]+$/).test(tableName)
   ) {
     throw new Error(
-      `TableName should not contain alphanumeric characters and should be between 3-255 characters long. Received: ${tableName}`
+      `TableName should not contain alphanumeric characters and should be between 3-255 characters long. Received: ${tableName}`,
     );
   }
 }
@@ -742,14 +742,14 @@ function getDynamoResourceArn(method: DynamoMethod) {
   return getResourceArn(
     'dynamodb',
     `${method.toLowerCase()}Item`,
-    sfn.ServiceIntegrationPattern.FIRE_AND_FORGET
+    sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
   );
 }
 
 function getDynamoPolicyStatements(
   task: sfn.Task,
   tableName: string,
-  method: DynamoMethod
+  method: DynamoMethod,
 ) {
   return [
     new iam.PolicyStatement({
@@ -757,20 +757,20 @@ function getDynamoPolicyStatements(
         Stack.of(task).formatArn({
           service: 'dynamodb',
           resource: 'table',
-          resourceName: tableName
-        })
+          resourceName: tableName,
+        }),
       ],
-      actions: [`dynamodb:${method}Item`]
-    })
+      actions: [`dynamodb:${method}Item`],
+    }),
   ];
 }
 
 function configurePrimaryKey(
   partitionKey: DynamoAttribute,
-  sortKey?: DynamoAttribute
+  sortKey?: DynamoAttribute,
 ) {
   const key = {
-    [partitionKey.name]: partitionKey.value.toObject()
+    [partitionKey.name]: partitionKey.value.toObject(),
   };
 
   if (sortKey) {

@@ -24,11 +24,11 @@ new StateMachine(stack, 'StateMachine', {
       },
       inputDataConfig: [{ channelName: 'InputData', dataSource: {
         s3DataSource: {
-          s3Location: S3Location.fromBucket(trainingData, 'data/')
-        }
+          s3Location: S3Location.fromBucket(trainingData, 'data/'),
+        },
       } }],
       outputDataConfig: { s3OutputLocation: S3Location.fromBucket(trainingData, 'result/') },
       trainingJobName: 'MyTrainingJob',
-    })
-  })
+    }),
+  }),
 });

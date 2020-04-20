@@ -39,8 +39,8 @@ export class SqsSubscription implements sns.ITopicSubscription {
       actions: ['sqs:SendMessage'],
       principals: [new iam.ServicePrincipal('sns.amazonaws.com')],
       conditions: {
-        ArnEquals: { 'aws:SourceArn': topic.topicArn }
-      }
+        ArnEquals: { 'aws:SourceArn': topic.topicArn },
+      },
     }));
 
     return {
