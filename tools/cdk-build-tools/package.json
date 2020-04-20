@@ -15,10 +15,11 @@
     "cdk-watch": "bin/cdk-watch",
     "cdk-test": "bin/cdk-test",
     "cdk-package": "bin/cdk-package",
-    "cdk-awslint": "bin/cdk-awslint"
+    "cdk-awslint": "bin/cdk-awslint",
+    "cdk-lint": "bin/cdk-lint"
   },
   "scripts": {
-    "build": "tsc -b && tslint -p . && chmod +x bin/cdk-build && chmod +x bin/cdk-test && chmod +x bin/cdk-watch && chmod +x bin/cdk-awslint && pkglint",
+    "build": "tsc -b && tslint -p . && chmod +x bin/cdk-build && chmod +x bin/cdk-test && chmod +x bin/cdk-watch && chmod +x bin/cdk-awslint && chmod +x bin/cdk-lint && pkglint && eslint . --ext=.ts",
     "watch": "tsc -b -w",
     "pkglint": "pkglint -f",
     "test": "echo success",
@@ -47,12 +48,12 @@
     "eslint-import-resolver-typescript": "^2.0.0",
     "eslint-plugin-import": "^2.20.2",
     "fs-extra": "^8.1.0",
-    "jest": "^25.3.0",
+    "jest": "^25.4.0",
     "jsii": "^1.1.0",
     "jsii-pacmak": "^1.1.0",
     "nodeunit": "^0.11.3",
     "nyc": "^15.0.1",
-    "ts-jest": "^25.3.1",
+    "ts-jest": "^25.4.0",
     "tslint": "^5.20.1",
     "typescript": "~3.8.3",
     "yargs": "^15.3.1"
