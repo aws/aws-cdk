@@ -241,8 +241,8 @@ export abstract class State extends cdk.Construct implements IChainable {
       next: handler,
       props: {
         errors: props.errors ? props.errors : [Errors.ALL],
-        resultPath: props.resultPath
-      }
+        resultPath: props.resultPath,
+      },
     });
     handler.addIncoming(this);
     if (this.containingGraph) {
@@ -344,7 +344,7 @@ export abstract class State extends cdk.Construct implements IChainable {
    */
   protected renderBranches(): any {
     return {
-      Branches: this.branches.map(b => b.toGraphJson())
+      Branches: this.branches.map(b => b.toGraphJson()),
     };
   }
 
@@ -356,7 +356,7 @@ export abstract class State extends cdk.Construct implements IChainable {
       throw new Error('Iterator must not be undefined !');
     }
     return {
-      Iterator: this.iteration.toGraphJson()
+      Iterator: this.iteration.toGraphJson(),
     };
   }
 
@@ -438,7 +438,7 @@ interface ChoiceTransition {
 function renderChoice(c: ChoiceTransition) {
   return {
     ...c.condition.renderCondition(),
-    Next: c.next.stateId
+    Next: c.next.stateId,
   };
 }
 
@@ -465,7 +465,7 @@ function renderRetry(retry: RetryProps) {
     ErrorEquals: retry.errors,
     IntervalSeconds: retry.interval && retry.interval.toSeconds(),
     MaxAttempts: retry.maxAttempts,
-    BackoffRate: retry.backoffRate
+    BackoffRate: retry.backoffRate,
   };
 }
 

@@ -21,7 +21,7 @@ test('create a selection', () => {
       BackupResource.fromArn('arn2'),
       BackupResource.fromTag('stage', 'prod'),
       BackupResource.fromTag('cost center', 'cloud'),
-    ]
+    ],
   });
 
   // THEN
@@ -29,34 +29,34 @@ test('create a selection', () => {
     BackupPlanId: {
       'Fn::GetAtt': [
         'PlanDAF4E53A',
-        'BackupPlanId'
-      ]
+        'BackupPlanId',
+      ],
     },
     BackupSelection: {
       IamRoleArn: {
         'Fn::GetAtt': [
           'SelectionRoleD0EAEC83',
-          'Arn'
-        ]
+          'Arn',
+        ],
       },
       ListOfTags: [
         {
           ConditionKey: 'stage',
           ConditionType: 'STRINGEQUALS',
-          ConditionValue: 'prod'
+          ConditionValue: 'prod',
         },
         {
           ConditionKey: 'cost center',
           ConditionType: 'STRINGEQUALS',
-          ConditionValue: 'cloud'
-        }
+          ConditionValue: 'cloud',
+        },
       ],
       Resources: [
         'arn1',
-        'arn2'
+        'arn2',
       ],
-      SelectionName: 'Selection'
-    }
+      SelectionName: 'Selection',
+    },
   });
 
   expect(stack).toHaveResource('AWS::IAM::Role', {
@@ -67,13 +67,13 @@ test('create a selection', () => {
           [
             'arn:',
             {
-              Ref: 'AWS::Partition'
+              Ref: 'AWS::Partition',
             },
-            ':iam::aws:policy/service-role/AWSBackupServiceRolePolicyForBackup'
-          ]
-        ]
-      }
-    ]
+            ':iam::aws:policy/service-role/AWSBackupServiceRolePolicyForBackup',
+          ],
+        ],
+      },
+    ],
   });
 });
 
@@ -96,11 +96,11 @@ test('allow restores', () => {
           [
             'arn:',
             {
-              Ref: 'AWS::Partition'
+              Ref: 'AWS::Partition',
             },
-            ':iam::aws:policy/service-role/AWSBackupServiceRolePolicyForBackup'
-          ]
-        ]
+            ':iam::aws:policy/service-role/AWSBackupServiceRolePolicyForBackup',
+          ],
+        ],
       },
       {
         'Fn::Join': [
@@ -108,13 +108,13 @@ test('allow restores', () => {
           [
             'arn:',
             {
-              Ref: 'AWS::Partition'
+              Ref: 'AWS::Partition',
             },
-            ':iam::aws:policy/service-role/AWSBackupServiceRolePolicyForRestores'
-          ]
-        ]
-      }
-    ]
+            ':iam::aws:policy/service-role/AWSBackupServiceRolePolicyForRestores',
+          ],
+        ],
+      },
+    ],
   });
 });
 
@@ -133,8 +133,8 @@ test('fromConstruct', () => {
       new dynamodb.Table(this, 'Table', {
         partitionKey: {
           name: 'id',
-          type: dynamodb.AttributeType.STRING
-        }
+          type: dynamodb.AttributeType.STRING,
+        },
       });
 
       new EfsConstruct(this, 'EFS');
@@ -148,7 +148,7 @@ test('fromConstruct', () => {
     resources: [
       BackupResource.fromConstruct(myConstruct),
       BackupResource.fromConstruct(efsConstruct),
-    ]
+    ],
   });
 
   // THEN
@@ -157,8 +157,8 @@ test('fromConstruct', () => {
       IamRoleArn: {
         'Fn::GetAtt': [
           'PlanSelectionRole6D10F4B7',
-          'Arn'
-        ]
+          'Arn',
+        ],
       },
       Resources: [
         {
@@ -167,22 +167,22 @@ test('fromConstruct', () => {
             [
               'arn:',
               {
-                Ref: 'AWS::Partition'
+                Ref: 'AWS::Partition',
               },
               ':dynamodb:',
               {
-                Ref: 'AWS::Region'
+                Ref: 'AWS::Region',
               },
               ':',
               {
-                Ref: 'AWS::AccountId'
+                Ref: 'AWS::AccountId',
               },
               ':table/',
               {
-                Ref: 'MyConstructTable25959456'
-              }
-            ]
-          ]
+                Ref: 'MyConstructTable25959456',
+              },
+            ],
+          ],
         },
         {
           'Fn::Join': [
@@ -190,22 +190,22 @@ test('fromConstruct', () => {
             [
               'arn:',
               {
-                Ref: 'AWS::Partition'
+                Ref: 'AWS::Partition',
               },
               ':elasticfilesystem:',
               {
-                Ref: 'AWS::Region'
+                Ref: 'AWS::Region',
               },
               ':',
               {
-                Ref: 'AWS::AccountId'
+                Ref: 'AWS::AccountId',
               },
               ':file-system/',
               {
-                Ref: 'MyConstructEFSFileSystemC68B6B78'
-              }
-            ]
-          ]
+                Ref: 'MyConstructEFSFileSystemC68B6B78',
+              },
+            ],
+          ],
         },
         {
           'Fn::Join': [
@@ -213,26 +213,26 @@ test('fromConstruct', () => {
             [
               'arn:',
               {
-                Ref: 'AWS::Partition'
+                Ref: 'AWS::Partition',
               },
               ':elasticfilesystem:',
               {
-                Ref: 'AWS::Region'
+                Ref: 'AWS::Region',
               },
               ':',
               {
-                Ref: 'AWS::AccountId'
+                Ref: 'AWS::AccountId',
               },
               ':file-system/',
               {
-                Ref: 'EfsConstructFileSystemFBE43F88'
-              }
-            ]
-          ]
-        }
+                Ref: 'EfsConstructFileSystemFBE43F88',
+              },
+            ],
+          ],
+        },
       ],
-      SelectionName: 'Selection'
-    }
+      SelectionName: 'Selection',
+    },
   });
 });
 
@@ -249,7 +249,7 @@ test('fromEc2Instance', () => {
   plan.addSelection('Selection', {
     resources: [
       BackupResource.fromEc2Instance(instance),
-    ]
+    ],
   });
 
   // THEN
@@ -258,8 +258,8 @@ test('fromEc2Instance', () => {
       IamRoleArn: {
         'Fn::GetAtt': [
           'PlanSelectionRole6D10F4B7',
-          'Arn'
-        ]
+          'Arn',
+        ],
       },
       Resources: [
         {
@@ -268,25 +268,25 @@ test('fromEc2Instance', () => {
             [
               'arn:',
               {
-                Ref: 'AWS::Partition'
+                Ref: 'AWS::Partition',
               },
               ':ec2:',
               {
-                Ref: 'AWS::Region'
+                Ref: 'AWS::Region',
               },
               ':',
               {
-                Ref: 'AWS::AccountId'
+                Ref: 'AWS::AccountId',
               },
               ':instance/',
               {
-                Ref: 'InstanceC1063A87'
-              }
-            ]
-          ]
+                Ref: 'InstanceC1063A87',
+              },
+            ],
+          ],
         },
       ],
-      SelectionName: 'Selection'
-    }
+      SelectionName: 'Selection',
+    },
   });
 });

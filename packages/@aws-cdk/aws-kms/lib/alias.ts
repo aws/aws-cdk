@@ -169,7 +169,7 @@ export class Alias extends AliasBase {
 
     const resource = new CfnAlias(this, 'Resource', {
       aliasName: this.physicalName,
-      targetKeyId: this.aliasTargetKey.keyArn
+      targetKeyId: this.aliasTargetKey.keyArn,
     });
 
     this.aliasName = this.getResourceNameAttribute(resource.aliasName);

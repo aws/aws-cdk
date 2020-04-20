@@ -10,7 +10,7 @@ class TestStack extends Stack {
     new dynamodb.Table(this, 'Table', {
       partitionKey: {
         name: 'id',
-        type: dynamodb.AttributeType.STRING
+        type: dynamodb.AttributeType.STRING,
       },
       removalPolicy: RemovalPolicy.DESTROY,
     });
@@ -18,7 +18,7 @@ class TestStack extends Stack {
     new efs.CfnFileSystem(this, 'FileSystem');
 
     const vault = new backup.BackupVault(this, 'Vault', {
-      removalPolicy: RemovalPolicy.DESTROY
+      removalPolicy: RemovalPolicy.DESTROY,
     });
     const plan = backup.BackupPlan.dailyWeeklyMonthly5YearRetention(this, 'Plan', vault);
 
@@ -26,7 +26,7 @@ class TestStack extends Stack {
       resources: [
         backup.BackupResource.fromConstruct(this), // All backupable resources in this construct
         backup.BackupResource.fromTag('stage', 'prod'), // Resources that are tagged stage=prod
-      ]
+      ],
     });
   }
 }

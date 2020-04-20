@@ -112,7 +112,7 @@ export class BackupResource {
     return new BackupResource(undefined, {
       key,
       value,
-      operation
+      operation,
     });
   }
 

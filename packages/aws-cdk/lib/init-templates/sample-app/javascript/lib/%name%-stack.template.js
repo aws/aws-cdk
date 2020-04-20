@@ -1,7 +1,7 @@
-const sns = require('@aws-cdk/aws-sns');
-const subs = require('@aws-cdk/aws-sns-subscriptions');
-const sqs = require('@aws-cdk/aws-sqs');
-const cdk = require('@aws-cdk/core');
+import * as sns from '@aws-cdk/aws-sns';
+import * as subs from '@aws-cdk/aws-sns-subscriptions';
+import * as sqs from '@aws-cdk/aws-sqs';
+import * as cdk from '@aws-cdk/core';
 
 class %name.PascalCased%Stack extends cdk.Stack {
   /**

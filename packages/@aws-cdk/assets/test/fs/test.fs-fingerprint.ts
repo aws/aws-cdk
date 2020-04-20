@@ -153,7 +153,7 @@ export = {
       test.deepEqual(original, afterChange);
       test.deepEqual(afterRevert, original);
       test.done();
-    }
+    },
   },
   exclude: {
     'encodes exclude patterns'(test: Test) {
@@ -170,5 +170,5 @@ export = {
       test.notDeepEqual(f1, f2);
       test.done();
     },
-  }
+  },
 };

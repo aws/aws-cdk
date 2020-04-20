@@ -125,7 +125,7 @@ export class BackupPlan extends Resource implements IBackupPlan {
       backupPlan: {
         backupPlanName: props.backupPlanName || id,
         backupPlanRule: Lazy.anyValue({ produce: () => this.rules }, { omitEmptyArray: true }),
-      }
+      },
     });
 
     this.backupPlanId = plan.attrBackupPlanId;
@@ -159,7 +159,7 @@ export class BackupPlan extends Resource implements IBackupPlan {
       completionWindowMinutes: rule.props.completionWindow?.toMinutes(),
       lifecycle: (rule.props.deleteAfter || rule.props.moveToColdStorageAfter) && {
         deleteAfterDays: rule.props.deleteAfter?.toDays(),
-        moveToColdStorageAfterDays: rule.props.moveToColdStorageAfter?.toDays()
+        moveToColdStorageAfterDays: rule.props.moveToColdStorageAfter?.toDays(),
       },
       ruleName: rule.props.ruleName ?? `${this.node.id}Rule${this.rules.length}`,
       scheduleExpression: rule.props.scheduleExpression?.expressionString,

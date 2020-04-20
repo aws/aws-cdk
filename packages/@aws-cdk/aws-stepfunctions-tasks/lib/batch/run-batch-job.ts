@@ -181,12 +181,12 @@ export class RunBatchJob implements sfn.IStepFunctionsTask {
 
     const supportedPatterns = [
       sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
-      sfn.ServiceIntegrationPattern.SYNC
+      sfn.ServiceIntegrationPattern.SYNC,
     ];
 
     if (!supportedPatterns.includes(this.integrationPattern)) {
       throw new Error(
-        `Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call RunBatchJob.`
+        `Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call RunBatchJob.`,
       );
     }
 
@@ -223,7 +223,7 @@ export class RunBatchJob implements sfn.IStepFunctionsTask {
       Object.keys(props.containerOverrides.environment).forEach(key => {
         if (key.match(/^AWS_BATCH/)) {
           throw new Error(
-            `Invalid environment variable name: ${key}. Environment variable names starting with 'AWS_BATCH' are reserved.`
+            `Invalid environment variable name: ${key}. Environment variable names starting with 'AWS_BATCH' are reserved.`,
           );
         }
       });
@@ -235,7 +235,7 @@ export class RunBatchJob implements sfn.IStepFunctionsTask {
       resourceArn: getResourceArn(
         'batch',
         'submitJob',
-        this.integrationPattern
+        this.integrationPattern,
       ),
       policyStatements: this.configurePolicyStatements(_task),
       parameters: {
@@ -256,7 +256,7 @@ export class RunBatchJob implements sfn.IStepFunctionsTask {
         DependsOn: this.props.dependsOn
           ? this.props.dependsOn.map(jobDependency => ({
             JobId: jobDependency.jobId,
-            Type: jobDependency.type
+            Type: jobDependency.type,
           }))
           : undefined,
 
@@ -267,8 +267,8 @@ export class RunBatchJob implements sfn.IStepFunctionsTask {
 
         Timeout: this.props.timeout
           ? { AttemptDurationSeconds: this.props.timeout.toSeconds() }
-          : undefined
-      }
+          : undefined,
+      },
     };
   }
 
@@ -282,21 +282,21 @@ export class RunBatchJob implements sfn.IStepFunctionsTask {
           Stack.of(task).formatArn({
             service: 'batch',
             resource: 'job-definition',
-            resourceName: '*'
+            resourceName: '*',
           }),
-          this.props.jobQueue.jobQueueArn
+          this.props.jobQueue.jobQueueArn,
         ],
-        actions: ['batch:SubmitJob']
+        actions: ['batch:SubmitJob'],
       }),
       new iam.PolicyStatement({
         resources: [
           Stack.of(task).formatArn({
             service: 'events',
-            resource: 'rule/StepFunctionsGetEventsForBatchJobsRule'
-          })
+            resource: 'rule/StepFunctionsGetEventsForBatchJobsRule',
+          }),
         ],
-        actions: ['events:PutTargets', 'events:PutRule', 'events:DescribeRule']
-      })
+        actions: ['events:PutTargets', 'events:PutRule', 'events:DescribeRule'],
+      }),
     ];
   }
 
@@ -306,8 +306,8 @@ export class RunBatchJob implements sfn.IStepFunctionsTask {
       environment = Object.entries(containerOverrides.environment).map(
         ([key, value]) => ({
           Name: key,
-          Value: value
-        })
+          Value: value,
+        }),
       );
     }
 
@@ -316,8 +316,8 @@ export class RunBatchJob implements sfn.IStepFunctionsTask {
       resources = [
         {
           Type: 'GPU',
-          Value: `${containerOverrides.gpuCount}`
-        }
+          Value: `${containerOverrides.gpuCount}`,
+        },
       ];
     }
 
@@ -327,7 +327,7 @@ export class RunBatchJob implements sfn.IStepFunctionsTask {
       InstanceType: containerOverrides.instanceType?.toString(),
       Memory: containerOverrides.memory,
       ResourceRequirements: resources,
-      Vcpus: containerOverrides.vcpus
+      Vcpus: containerOverrides.vcpus,
     };
   }
 }

@@ -50,6 +50,7 @@ export class HttpsRedirect extends Construct {
       removalPolicy: RemovalPolicy.DESTROY,
     });
     const redirectDist = new CloudFrontWebDistribution(this, 'RedirectDistribution', {
+      defaultRootObject: '',
       originConfigs: [{
         behaviors: [{ isDefaultBehavior: true }],
         customOriginSource: {

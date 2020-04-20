@@ -32,7 +32,7 @@ export class MinimumHealthyHosts {
   public static count(value: number): MinimumHealthyHosts {
     return new MinimumHealthyHosts({
       type: 'HOST_COUNT',
-      value
+      value,
     });
   }
 
@@ -42,7 +42,7 @@ export class MinimumHealthyHosts {
   public static percentage(value: number): MinimumHealthyHosts {
     return new MinimumHealthyHosts({
       type: 'FLEET_PERCENT',
-      value
+      value,
     });
   }
 

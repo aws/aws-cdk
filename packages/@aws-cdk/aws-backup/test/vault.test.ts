@@ -22,11 +22,11 @@ test('create a vault', () => {
         [
           'Vault',
           {
-            Ref: 'AWS::StackName'
-          }
-        ]
-      ]
-    }
+            Ref: 'AWS::StackName',
+          },
+        ],
+      ],
+    },
   });
 });
 
@@ -42,12 +42,12 @@ test('with access policy', () => {
         conditions: {
           StringNotLike: {
             'aws:userId': [
-              'user-arn'
-            ]
-          }
-        }
-      })
-    ]
+              'user-arn',
+            ],
+          },
+        },
+      }),
+    ],
   });
 
   // WHEN
@@ -68,13 +68,13 @@ test('with access policy', () => {
           Condition: {
             StringNotLike: {
               'aws:userId': [
-                'user-arn'
-              ]
-            }
-          }
-        }
-      ]
-    }
+                'user-arn',
+              ],
+            },
+          },
+        },
+      ],
+    },
   });
 });
 
@@ -92,9 +92,9 @@ test('with encryption key', () => {
     EncryptionKeyArn: {
       'Fn::GetAtt': [
         'Key961B73FD',
-        'Arn'
-      ]
-    }
+        'Arn',
+      ],
+    },
   });
 });
 
@@ -107,8 +107,8 @@ test('with notifications', () => {
     notificationTopic: topic,
     notificationEvents: [
       BackupVaultEvents.BACKUP_JOB_COMPLETED,
-      BackupVaultEvents.COPY_JOB_FAILED
-    ]
+      BackupVaultEvents.COPY_JOB_FAILED,
+    ],
   });
 
   // THEN
@@ -116,12 +116,12 @@ test('with notifications', () => {
     Notifications: {
       BackupVaultEvents: [
         'BACKUP_JOB_COMPLETED',
-        'COPY_JOB_FAILED'
+        'COPY_JOB_FAILED',
       ],
       SNSTopicArn: {
-        Ref: 'TopicBFC7AF6E'
-      }
-    }
+        Ref: 'TopicBFC7AF6E',
+      },
+    },
   });
 });
 
@@ -139,14 +139,14 @@ test('defaults to all notifications', () => {
     Notifications: {
       BackupVaultEvents: Object.values(BackupVaultEvents),
       SNSTopicArn: {
-        Ref: 'TopicBFC7AF6E'
-      }
-    }
+        Ref: 'TopicBFC7AF6E',
+      },
+    },
   });
 });
 
 test('throws with invalid name', () => {
   expect(() => new BackupVault(stack, 'Vault', {
-    backupVaultName: 'Hello!Inv@lid'
+    backupVaultName: 'Hello!Inv@lid',
   })).toThrow(/Expected vault name to match pattern/);
 });

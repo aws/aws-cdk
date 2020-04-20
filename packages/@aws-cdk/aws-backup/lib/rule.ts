@@ -75,7 +75,7 @@ export class BackupPlanRule {
         hour: '5',
         minute: '0',
       }),
-      deleteAfter: Duration.days(35)
+      deleteAfter: Duration.days(35),
     });
   }
 
@@ -89,9 +89,9 @@ export class BackupPlanRule {
       scheduleExpression: events.Schedule.cron({
         hour: '5',
         minute: '0',
-        weekDay: 'SAT'
+        weekDay: 'SAT',
       }),
-      deleteAfter: Duration.days(30 * 3)
+      deleteAfter: Duration.days(30 * 3),
     });
   }
 
@@ -108,7 +108,7 @@ export class BackupPlanRule {
         minute: '0',
       }),
       moveToColdStorageAfter: Duration.days(30),
-      deleteAfter: Duration.days(365)
+      deleteAfter: Duration.days(365),
     });
   }
 
@@ -125,7 +125,7 @@ export class BackupPlanRule {
         minute: '0',
       }),
       moveToColdStorageAfter: Duration.days(30 * 3),
-      deleteAfter: Duration.days(365 * 5)
+      deleteAfter: Duration.days(365 * 5),
     });
   }
 
@@ -142,7 +142,7 @@ export class BackupPlanRule {
         minute: '0',
       }),
       moveToColdStorageAfter: Duration.days(30 * 3),
-      deleteAfter: Duration.days(365 * 7)
+      deleteAfter: Duration.days(365 * 7),
     });
   }
 

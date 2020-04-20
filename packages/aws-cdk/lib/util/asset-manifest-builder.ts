@@ -12,8 +12,8 @@ export class AssetManifestBuilder {
     this.manifest.files![id] = {
       source,
       destinations: {
-        current: destination
-      }
+        current: destination,
+      },
     };
   }
 
@@ -21,8 +21,8 @@ export class AssetManifestBuilder {
     this.manifest.dockerImages![id] = {
       source,
       destinations: {
-        current: destination
-      }
+        current: destination,
+      },
     };
   }
 

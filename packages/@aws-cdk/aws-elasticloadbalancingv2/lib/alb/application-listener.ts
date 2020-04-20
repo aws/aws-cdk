@@ -187,7 +187,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
     if (additionalCerts.length > 0) {
       new ApplicationListenerCertificate(this, id, {
         listener: this,
-        certificates: additionalCerts
+        certificates: additionalCerts,
       });
     }
   }
@@ -211,7 +211,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
         pathPattern: props.pathPattern,
         pathPatterns: props.pathPatterns,
         priority: props.priority,
-        targetGroups: props.targetGroups
+        targetGroups: props.targetGroups,
       });
     } else {
       // New default target(s)
@@ -247,7 +247,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
       stickinessCookieDuration: props.stickinessCookieDuration,
       targetGroupName: props.targetGroupName,
       targets: props.targets,
-      vpc: this.loadBalancer.vpc
+      vpc: this.loadBalancer.vpc,
     });
 
     this.addTargetGroups(id, {
@@ -270,7 +270,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
     const fixedResponse: FixedResponse = {
       statusCode: props.statusCode,
       contentType: props.contentType,
-      messageBody: props.messageBody
+      messageBody: props.messageBody,
     };
 
     validateFixedResponse(fixedResponse);
@@ -280,12 +280,12 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
         listener: this,
         priority: props.priority,
         fixedResponse,
-        ...props
+        ...props,
       });
     } else {
       this._addDefaultAction({
         fixedResponseConfig: fixedResponse,
-        type: 'fixed-response'
+        type: 'fixed-response',
       });
     }
   }
@@ -301,7 +301,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
       port: props.port,
       protocol: props.protocol,
       query: props.query,
-      statusCode: props.statusCode
+      statusCode: props.statusCode,
     };
 
     validateRedirectResponse(redirectResponse);
@@ -311,12 +311,12 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
         listener: this,
         priority: props.priority,
         redirectResponse,
-        ...props
+        ...props,
       });
     } else {
       this._addDefaultAction({
         redirectConfig: redirectResponse,
-        type: 'redirect'
+        type: 'redirect',
       });
     }
   }
@@ -453,7 +453,7 @@ class ImportedApplicationListener extends Resource implements IApplicationListen
       securityGroup = props.securityGroup;
     } else if (props.securityGroupId) {
       securityGroup = ec2.SecurityGroup.fromSecurityGroupId(scope, 'SecurityGroup', props.securityGroupId, {
-        allowAllOutbound: props.securityGroupAllowsAllOutbound
+        allowAllOutbound: props.securityGroupAllowsAllOutbound,
       });
     } else {
       throw new Error('Either `securityGroup` or `securityGroupId` must be specified to import an application listener.');
@@ -471,7 +471,7 @@ class ImportedApplicationListener extends Resource implements IApplicationListen
   public addCertificateArns(id: string, arns: string[]): void {
     new ApplicationListenerCertificate(this, id, {
       listener: this,
-      certificateArns: arns
+      certificateArns: arns,
     });
   }
 
@@ -492,7 +492,7 @@ class ImportedApplicationListener extends Resource implements IApplicationListen
         pathPattern: props.pathPattern,
         pathPatterns: props.pathPatterns,
         priority: props.priority,
-        targetGroups: props.targetGroups
+        targetGroups: props.targetGroups,
       });
     } else {
       throw new Error('Cannot add default Target Groups to imported ApplicationListener');

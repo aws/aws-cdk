@@ -119,7 +119,7 @@ export class Provider extends Construct implements cfn.ICustomResourceProvider {
    */
   public bind(_: Construct): cfn.CustomResourceProviderConfig {
     return {
-      serviceToken: this.entrypoint.functionArn
+      serviceToken: this.entrypoint.functionArn,
     };
   }
 

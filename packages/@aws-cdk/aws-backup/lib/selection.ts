@@ -96,12 +96,12 @@ export class BackupSelection extends Resource implements iam.IGrantable {
         iamRoleArn: role.roleArn,
         selectionName: props.backupSelectionName || this.node.id,
         listOfTags: Lazy.anyValue({
-          produce: () => this.listOfTags
+          produce: () => this.listOfTags,
         }, { omitEmptyArray: true }),
         resources: Lazy.listValue({
-          produce: () => [...this.resources, ...this.backupableResourcesCollector.resources ]
+          produce: () => [...this.resources, ...this.backupableResourcesCollector.resources ],
         }, { omitEmpty: true }),
-      }
+      },
     });
 
     this.backupPlanId = selection.attrBackupPlanId;

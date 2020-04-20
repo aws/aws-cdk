@@ -23,11 +23,11 @@ test('create a plan and add rules', () => {
         scheduleExpression: events.Schedule.cron({
           day: '15',
           hour: '3',
-          minute: '30'
+          minute: '30',
         }),
-        moveToColdStorageAfter: Duration.days(30)
-      })
-    ]
+        moveToColdStorageAfter: Duration.days(30),
+      }),
+    ],
   });
   plan.addRule(BackupPlanRule.monthly5Year(otherVault));
 
@@ -39,7 +39,7 @@ test('create a plan and add rules', () => {
         {
           CompletionWindowMinutes: 120,
           Lifecycle: {
-            MoveToColdStorageAfterDays: 30
+            MoveToColdStorageAfterDays: 30,
           },
           RuleName: 'PlanRule0',
           ScheduleExpression: 'cron(30 3 15 * ? *)',
@@ -47,26 +47,26 @@ test('create a plan and add rules', () => {
           TargetBackupVault: {
             'Fn::GetAtt': [
               'Vault23237E5B',
-              'BackupVaultName'
-            ]
-          }
+              'BackupVaultName',
+            ],
+          },
         },
         {
           Lifecycle: {
             DeleteAfterDays: 1825,
-            MoveToColdStorageAfterDays: 90
+            MoveToColdStorageAfterDays: 90,
           },
           RuleName: 'Monthly5Year',
           ScheduleExpression: 'cron(0 5 1 * ? *)',
           TargetBackupVault: {
             'Fn::GetAtt': [
               'OtherVault3C99BCE2',
-              'BackupVaultName'
-            ]
-          }
-        }
-      ]
-    }
+              'BackupVaultName',
+            ],
+          },
+        },
+      ],
+    },
   });
 });
 
@@ -88,12 +88,12 @@ test('daily35DayRetention', () => {
           TargetBackupVault: {
             'Fn::GetAtt': [
               'D35Vault2A9EB06F',
-              'BackupVaultName'
-            ]
-          }
+              'BackupVaultName',
+            ],
+          },
         },
-      ]
-    }
+      ],
+    },
   });
 });
 
@@ -115,9 +115,9 @@ test('dailyWeeklyMonthly7YearRetention', () => {
           TargetBackupVault: {
             'Fn::GetAtt': [
               'DWM7Vault21F17E61',
-              'BackupVaultName'
-            ]
-          }
+              'BackupVaultName',
+            ],
+          },
         },
         {
           Lifecycle: {
@@ -128,26 +128,26 @@ test('dailyWeeklyMonthly7YearRetention', () => {
           TargetBackupVault: {
             'Fn::GetAtt': [
               'DWM7Vault21F17E61',
-              'BackupVaultName'
-            ]
-          }
+              'BackupVaultName',
+            ],
+          },
         },
         {
           Lifecycle: {
             DeleteAfterDays: 2555,
-            MoveToColdStorageAfterDays: 90
+            MoveToColdStorageAfterDays: 90,
           },
           RuleName: 'Monthly7Year',
           ScheduleExpression: 'cron(0 5 1 * ? *)',
           TargetBackupVault: {
             'Fn::GetAtt': [
               'DWM7Vault21F17E61',
-              'BackupVaultName'
-            ]
-          }
-        }
-      ]
-    }
+              'BackupVaultName',
+            ],
+          },
+        },
+      ],
+    },
   });
 });
 
@@ -172,25 +172,25 @@ test('automatically creates a new vault', () => {
           TargetBackupVault: {
             'Fn::GetAtt': [
               'PlanVault0284B0C2',
-              'BackupVaultName'
-            ]
-          }
+              'BackupVaultName',
+            ],
+          },
         },
-      ]
-    }
+      ],
+    },
   });
 });
 
 test('throws when deleteAfter is not greater than moveToColdStorageAfter', () => {
   expect(() => new BackupPlanRule({
     deleteAfter: Duration.days(5),
-    moveToColdStorageAfter: Duration.days(6)
+    moveToColdStorageAfter: Duration.days(6),
   })).toThrow(/`deleteAfter` must be greater than `moveToColdStorageAfter`/);
 });
 
 test('throws when scheduleExpression is not of type cron', () => {
   expect(() => new BackupPlanRule({
-    scheduleExpression: events.Schedule.rate(Duration.hours(5))
+    scheduleExpression: events.Schedule.rate(Duration.hours(5)),
   })).toThrow(/`scheduleExpression` must be of type `cron`/);
 });
 
